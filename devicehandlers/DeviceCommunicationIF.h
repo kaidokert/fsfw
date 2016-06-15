@@ -1,0 +1,63 @@
+#ifndef DEVICECOMMUNICATIONIF_H_
+#define DEVICECOMMUNICATIONIF_H_
+
+#include <framework/devicehandlers/Cookie.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
+
+class DeviceCommunicationIF: public HasReturnvaluesIF {
+public:
+	static const uint8_t INTERFACE_ID = DEVICE_COMMUNICATION_IF;
+
+	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t NOT_ACTIVE = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t INVALID_ADDRESS = MAKE_RETURN_CODE(0x03);
+	static const ReturnValue_t TOO_MUCH_DATA = MAKE_RETURN_CODE(0x04);
+	static const ReturnValue_t NULLPOINTER = MAKE_RETURN_CODE(0x05);
+	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x06);
+	static const ReturnValue_t CANT_CHANGE_REPLY_LEN = MAKE_RETURN_CODE(0x07);
+
+	virtual ~DeviceCommunicationIF() {
+
+	}
+
+	virtual ReturnValue_t open(Cookie **cookie, uint32_t address,
+			uint32_t maxReplyLen) = 0;
+
+	/**
+	 * Use an existing cookie to open a connection to a new DeviceCommunication.
+	 * The previous connection must not be closed.
+	 * If the returnvalue is not RETURN_OK, the cookie is unchanged and
+	 * can be used with the previous connection.
+	 *
+	 * @param cookie
+	 * @param address
+	 * @param maxReplyLen
+	 * @return
+	 */
+	virtual ReturnValue_t reOpen(Cookie *cookie, uint32_t address,
+			uint32_t maxReplyLen) = 0;
+
+	virtual void close(Cookie *cookie) = 0;
+
+	//TODO can data be const?
+	virtual ReturnValue_t sendMessage(Cookie *cookie, uint8_t *data,
+			uint32_t len) = 0;
+
+	virtual ReturnValue_t getSendSuccess(Cookie *cookie) = 0;
+
+	virtual ReturnValue_t requestReceiveMessage(Cookie *cookie) = 0;
+
+	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
+			uint32_t *size) = 0;
+
+	virtual ReturnValue_t setAddress(Cookie *cookie, uint32_t address) = 0;
+
+	virtual uint32_t getAddress(Cookie *cookie) = 0;
+
+	virtual ReturnValue_t setParameter(Cookie *cookie, uint32_t parameter) = 0;
+
+	virtual uint32_t getParameter(Cookie *cookie) = 0;
+
+};
+
+#endif /* DEVICECOMMUNICATIONIF_H_ */

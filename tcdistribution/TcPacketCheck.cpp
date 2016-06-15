@@ -1,0 +1,45 @@
+/*
+ * TcPacketCheck.cpp
+ *
+ *  Created on: 19.06.2012
+ *      Author: baetz
+ */
+
+
+#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/storagemanager/StorageManagerIF.h>
+#include <framework/tcdistribution/TcPacketCheck.h>
+#include <framework/tmtcservices/VerificationCodes.h>
+
+TcPacketCheck::TcPacketCheck( uint16_t set_apid ) : apid(set_apid) {
+}
+
+ReturnValue_t TcPacketCheck::checkPacket( TcPacketStored* current_packet ) {
+	uint16_t calculated_crc = ::Calculate_CRC ( current_packet->getWholeData(), current_packet->getFullSize() );
+	if ( calculated_crc != 0 ) {
+		return INCORRECT_CHECKSUM;
+	}
+	bool condition = !(current_packet->hasSecondaryHeader()) ||
+			current_packet->getPacketVersionNumber() != CCSDS_VERSION_NUMBER ||
+			!(current_packet->isTelecommand());
+	if ( condition ) {
+		return INCORRECT_PRIMARY_HEADER;
+	}
+	if ( current_packet->getAPID() != this->apid )
+		return ILLEGAL_APID;
+
+	if ( !current_packet->isSizeCorrect() ) {
+		return INCOMPLETE_PACKET;
+	}
+	condition = (current_packet->getSecondaryHeaderFlag() != CCSDS_SECONDARY_HEADER_FLAG) ||
+			(current_packet->getPusVersionNumber() != PUS_VERSION_NUMBER);
+	if ( condition ) {
+		return INCORRECT_SECONDARY_HEADER;
+	}
+	return RETURN_OK;
+}
+
+uint16_t TcPacketCheck::getApid() const {
+	return apid;
+}

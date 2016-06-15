@@ -1,0 +1,104 @@
+/*
+ * MemoryMessage.cpp
+ *
+ *  Created on: 17.07.2013
+ *      Author: Bastian
+ */
+
+
+#include <framework/memory/MemoryMessage.h>
+#include <framework/objectmanager/ObjectManagerIF.h>
+MemoryMessage::MemoryMessage() {
+}
+
+uint32_t MemoryMessage::getAddress(const CommandMessage* message) {
+	return message->getParameter();
+}
+
+store_address_t MemoryMessage::getStoreID(const CommandMessage* message) {
+	store_address_t temp;
+	temp.raw = message->getParameter2();
+	return temp;
+}
+
+uint32_t MemoryMessage::getLength(const CommandMessage* message) {
+	return message->getParameter2();
+}
+
+ReturnValue_t MemoryMessage::setMemoryDumpCommand(CommandMessage* message,
+		uint32_t address, uint32_t length) {
+	message->setCommand(CMD_MEMORY_DUMP);
+	message->setParameter( address );
+	message->setParameter2( length );
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t MemoryMessage::setMemoryDumpReply(CommandMessage* message, store_address_t storageID) {
+	message->setCommand(REPLY_MEMORY_DUMP);
+	message->setParameter2( storageID.raw );
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t MemoryMessage::setMemoryLoadCommand(CommandMessage* message,
+		uint32_t address, store_address_t storageID) {
+	message->setCommand(CMD_MEMORY_LOAD);
+	message->setParameter( address );
+	message->setParameter2( storageID.raw );
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t MemoryMessage::getErrorCode(const CommandMessage* message) {
+	return message->getParameter();
+}
+
+void MemoryMessage::clear(CommandMessage* message) {
+	switch (message->getCommand()) {
+	case CMD_MEMORY_LOAD:
+	case REPLY_MEMORY_DUMP: {
+		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+				objects::IPC_STORE);
+		if (ipcStore != NULL) {
+			ipcStore->deleteData(getStoreID(message));
+		}
+	}
+		/* NO BREAK*/
+	case CMD_MEMORY_DUMP:
+	case CMD_MEMORY_CHECK:
+	case REPLY_MEMORY_CHECK:
+		message->setCommand(CommandMessage::CMD_NONE);
+		message->setParameter(0);
+		message->setParameter2(0);
+		break;
+		}
+}
+
+ReturnValue_t MemoryMessage::setMemoryCheckCommand(CommandMessage* message,
+		uint32_t address, uint32_t length) {
+	message->setCommand(CMD_MEMORY_CHECK);
+	message->setParameter( address );
+	message->setParameter2( length );
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t MemoryMessage::setMemoryCheckReply(CommandMessage* message,
+		uint16_t crc) {
+	message->setCommand(REPLY_MEMORY_CHECK);
+	message->setParameter( crc );
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+uint16_t MemoryMessage::getCrc(const CommandMessage* message) {
+	return (uint16_t)(message->getParameter());
+}
+
+Command_t MemoryMessage::getInitialCommand(const CommandMessage* message) {
+	return message->getParameter2();
+}
+
+ReturnValue_t MemoryMessage::setMemoryReplyFailed(CommandMessage* message,
+		ReturnValue_t errorCode, Command_t initialCommand) {
+	message->setCommand(REPLY_MEMORY_FAILED);
+	message->setParameter(errorCode);
+	message->setParameter2(initialCommand);
+	return HasReturnvaluesIF::RETURN_OK;
+}

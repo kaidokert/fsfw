@@ -1,0 +1,42 @@
+#ifndef SGP4PROPAGATOR_H_
+#define SGP4PROPAGATOR_H_
+
+#include <sys/time.h>
+#include <contrib/sgp4/sgp4unit.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
+
+class Sgp4Propagator {
+public:
+	static const uint8_t INTERFACE_ID = SGP4PROPAGATOR_CLASS;
+	static const ReturnValue_t INVALID_ECCENTRICITY = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t INVALID_MEAN_MOTION = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t INVALID_PERTURBATION_ELEMENTS = MAKE_RETURN_CODE(0x03);
+	static const ReturnValue_t INVALID_SEMI_LATUS_RECTUM = MAKE_RETURN_CODE(0x04);
+	static const ReturnValue_t INVALID_EPOCH_ELEMENTS = MAKE_RETURN_CODE(0x05);
+	static const ReturnValue_t SATELLITE_HAS_DECAYED = MAKE_RETURN_CODE(0x06);
+	static const ReturnValue_t TLE_TOO_OLD = MAKE_RETURN_CODE(0xA1);
+
+
+
+	Sgp4Propagator();
+	virtual ~Sgp4Propagator();
+
+	ReturnValue_t initialize(const uint8_t *line1, const uint8_t *line2);
+
+	/**
+	 *
+	 * @param[out] position in ECF
+	 * @param[out] velocity in ECF
+	 * @param time to which to propagate
+	 * @return
+	 */
+	ReturnValue_t propagate(double *position, double *velocity, timeval time, uint8_t gpsUtcOffset);
+
+private:
+	timeval epoch;
+	elsetrec satrec;
+	gravconsttype whichconst;
+
+};
+
+#endif /* SGP4PROPAGATOR_H_ */

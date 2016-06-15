@@ -1,0 +1,208 @@
+/*
+ * MatchTree.h
+ *
+ *  Created on: 09.03.2015
+ *      Author: baetz
+ */
+
+#ifndef FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_
+#define FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_
+
+#include <framework/container/BinaryTree.h>
+#include <framework/globalfunctions/matching/SerializeableMatcherIF.h>
+#include <framework/serialize/SerializeAdapter.h>
+
+template<typename T>
+class MatchTree: public SerializeableMatcherIF<T>, public BinaryTree<
+		SerializeableMatcherIF<T>> {
+public:
+
+	static const uint8_t INTERFACE_ID = MATCH_TREE_CLASS;
+	static const ReturnValue_t TOO_DETAILED_REQUEST = MAKE_RETURN_CODE(1);
+	static const ReturnValue_t TOO_GENERAL_REQUEST = MAKE_RETURN_CODE(2);
+	static const ReturnValue_t NO_MATCH = MAKE_RETURN_CODE(3);
+	static const ReturnValue_t FULL = MAKE_RETURN_CODE(4);
+
+	typedef typename BinaryTree<SerializeableMatcherIF<T>>::iterator iterator;
+	typedef BinaryNode<SerializeableMatcherIF<T>> Node;
+	static const bool AND = true; //LEFT
+	static const bool OR = false; //RIGHT
+	MatchTree(BinaryNode<SerializeableMatcherIF<T>>* root,
+			uint8_t maxDepth = -1) :
+			BinaryTree<SerializeableMatcherIF<T>>(root), maxDepth(maxDepth) {
+	}
+	MatchTree(iterator root, uint8_t maxDepth = -1) :
+			BinaryTree<SerializeableMatcherIF<T>>(root.element), maxDepth(
+					maxDepth) {
+	}
+	MatchTree() :
+			BinaryTree<SerializeableMatcherIF<T>>(), maxDepth(-1) {
+	}
+	virtual ~MatchTree() {
+	}
+	virtual bool match(T number) {
+		return matchesTree(number, NULL, NULL);
+	}
+	bool matchesTree(T number, iterator* lastTest, uint8_t* hierarchyLevel) {
+		bool match = false;
+		iterator iter = this->begin();
+		while (iter != this->end()) {
+			if (lastTest != NULL) {
+				*lastTest = iter;
+			}
+			match = iter->match(number);
+			if (match) {
+				iter = iter.left();
+				if (hierarchyLevel != NULL) {
+					(*hierarchyLevel)++;
+				}
+			} else {
+				iter = iter.right();
+			}
+		}
+		return match;
+	}
+
+	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
+			const uint32_t max_size, bool bigEndian) const {
+		iterator iter = this->begin();
+		uint8_t count = this->countRight(iter);
+		ReturnValue_t result = SerializeAdapter<uint8_t>::serialize(&count,
+				buffer, size, max_size, bigEndian);
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+		if (iter == this->end()) {
+			return HasReturnvaluesIF::RETURN_OK;
+		}
+		result = iter->serialize(buffer, size, max_size, bigEndian);
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+		if (maxDepth > 0) {
+			MatchTree<T> temp(iter.left(), maxDepth - 1);
+			result = temp.serialize(buffer, size, max_size, bigEndian);
+		}
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+		iter = iter.right();
+		while (iter != this->end()) {
+			result = iter->serialize(buffer, size, max_size, bigEndian);
+			if (result != HasReturnvaluesIF::RETURN_OK) {
+				return result;
+			}
+			if (maxDepth > 0) {
+				MatchTree<T> temp(iter.left(), maxDepth - 1);
+				result = temp.serialize(buffer, size, max_size, bigEndian);
+			}
+			if (result != HasReturnvaluesIF::RETURN_OK) {
+				return result;
+			}
+			iter = iter.right();
+		}
+		return result;
+	}
+
+	uint32_t getSerializedSize() const {
+		//Analogous to serialize!
+		uint32_t size = 1; //One for count
+		iterator iter = this->begin();
+		if (iter == this->end()) {
+			return size;
+		}
+		//Count object itself
+		size += iter->getSerializedSize();
+		//Handle everything below on AND side
+		if (maxDepth > 0) {
+			MatchTree<T> temp(iter.left(), maxDepth - 1);
+			size += temp.getSerializedSize();
+		}
+		//Handle everything on OR side
+		iter = iter.right();
+		//Iterate over every object on the OR branch
+		while (iter != this->end()) {
+			size += iter->getSerializedSize();
+			if (maxDepth > 0) {
+				//If we are allowed to go deeper, handle AND elements.
+				MatchTree<T> temp(iter.left(), maxDepth - 1);
+				size += temp.getSerializedSize();
+			}
+			iter = iter.right();
+		}
+		return size;
+	}
+
+	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	bool bigEndian) {
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+protected:
+
+	bool isOnAndBranch(iterator position) {
+		if ((position == this->end()) || (position.up() == this->end())) {
+			return false;
+		}
+		if (position.up().left() == position) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	//TODO: What to do if insertion/deletion fails. Throw event?
+	ReturnValue_t removeElementAndAllChildren(iterator position) {
+		auto children = erase(position);
+		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+		if (children.first != this->end()) {
+			result = removeElementAndAllChildren(children.first);
+		}
+		if (children.second != this->end()) {
+			result = removeElementAndAllChildren(children.second);
+		}
+		//Delete element itself.
+		return cleanUpElement(position);
+	}
+
+	ReturnValue_t removeElementAndReconnectChildren(iterator position) {
+		if (position == this->end()) {
+			return HasReturnvaluesIF::RETURN_OK;
+		}
+		//Delete everything from the AND branch.
+		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+		if (position.left() != this->end()) {
+			result = removeElementAndAllChildren(position.left());
+		}
+		if (position.right() != this->end()) {
+			//There's something at the OR branch, reconnect to parent.
+			if (isOnAndBranch(position)) {
+				//Either one hierarchy up AND branch...
+				insert(AND, position.up(), position.right().element);
+			} else {
+				//or on another OR'ed element (or install new root node).
+				insert(OR, position.up(), position.right().element);
+			}
+		} else {
+			if (isOnAndBranch(position)) {
+				//Recursively delete parent node as well, because it is not expected to be there anymore.
+				return removeElementAndReconnectChildren(position.up());
+			} else {
+				//simply delete self.
+				erase(position);
+			}
+
+		}
+		//Delete element itself.
+		return cleanUpElement(position);
+	}
+
+	virtual ReturnValue_t cleanUpElement(iterator position) {
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+private:
+	uint8_t maxDepth;
+};
+
+#endif /* FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_ */

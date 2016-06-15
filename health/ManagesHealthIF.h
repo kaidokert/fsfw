@@ -1,0 +1,64 @@
+/*
+ * ManagesHealthIF.h
+ *
+ *  Created on: 13.10.2015
+ *      Author: baetz
+ */
+
+#ifndef FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
+#define FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
+
+#include <framework/health/HasHealthIF.h>
+#include <framework/objectmanager/ObjectManagerIF.h>
+class ManagesHealthIF {
+public:
+	virtual ~ManagesHealthIF() {
+	}
+	virtual bool hasHealth(object_id_t object) = 0;
+	virtual void setHealth(object_id_t object,
+			HasHealthIF::HealthState newState) = 0;
+	virtual HasHealthIF::HealthState getHealth(object_id_t) = 0;
+
+	virtual bool isHealthy(object_id_t object) {
+		return (getHealth(object) == HasHealthIF::HEALTHY);
+	}
+
+	virtual bool isHealthy(HasHealthIF::HealthState health) {
+		return (health == HasHealthIF::HEALTHY);
+	}
+
+	virtual bool isFaulty(object_id_t object) {
+		HasHealthIF::HealthState health = getHealth(object);
+		return isFaulty(health);
+	}
+
+	virtual bool isPermanentFaulty(object_id_t object) {
+		HasHealthIF::HealthState health = getHealth(object);
+		return isPermanentFaulty(health);
+	}
+
+	virtual bool isPermanentFaulty(HasHealthIF::HealthState health) {
+		return (health == HasHealthIF::PERMANENT_FAULTY);
+	}
+
+	virtual bool shouldBeMonitored(object_id_t object) {
+		HasHealthIF::HealthState health = getHealth(object);
+		return shouldBeMonitored(health);
+	}
+
+	static bool isFaulty(HasHealthIF::HealthState health) {
+		return ((health == HasHealthIF::FAULTY)
+				|| (health == HasHealthIF::PERMANENT_FAULTY)
+				|| (health == HasHealthIF::NEEDS_RECOVERY));
+	}
+
+	virtual bool isCommandable(object_id_t object) {
+		return (getHealth(object) != HasHealthIF::EXTERNAL_CONTROL);
+	}
+
+	virtual bool isCommandable(HasHealthIF::HealthState health) {
+		return (health != HasHealthIF::EXTERNAL_CONTROL);
+	}
+};
+
+#endif /* FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_ */

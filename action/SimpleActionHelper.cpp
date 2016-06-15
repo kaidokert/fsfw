@@ -1,0 +1,75 @@
+
+#include <framework/action/HasActionsIF.h>
+#include <framework/action/SimpleActionHelper.h>
+SimpleActionHelper::SimpleActionHelper(HasActionsIF* setOwner,
+		MessageQueue* useThisQueue) :
+		ActionHelper(setOwner, useThisQueue), isExecuting(false), lastCommander(
+				0), lastAction(0), stepCount(0) {
+}
+
+SimpleActionHelper::~SimpleActionHelper() {
+}
+
+void SimpleActionHelper::step(ReturnValue_t result) {
+	//STEP_OFFESET is subtracted to compensate for adding offset in base method, which is not necessary here.
+	ActionHelper::step(stepCount - STEP_OFFSET, lastCommander, lastAction,
+			result);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		resetHelper();
+	}
+}
+
+void SimpleActionHelper::finish(ReturnValue_t result) {
+	ActionHelper::finish(lastCommander, lastAction, result);
+	resetHelper();
+}
+
+void SimpleActionHelper::reportData(SerializeIF* data) {
+	ActionHelper::reportData(lastCommander, lastAction, data);
+}
+
+void SimpleActionHelper::resetHelper() {
+	stepCount = 0;
+	isExecuting = false;
+	lastAction = 0;
+	lastCommander = 0;
+}
+
+void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy,
+		ActionId_t actionId, store_address_t dataAddress) {
+	CommandMessage reply;
+	if (isExecuting) {
+		ipcStore->deleteData(dataAddress);
+		ActionMessage::setStepReply(&reply, actionId, 0,
+				HasActionsIF::IS_BUSY);
+		queueToUse->sendMessage(commandedBy, &reply);
+	}
+	const uint8_t* dataPtr = NULL;
+	uint32_t size = 0;
+	ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		ActionMessage::setStepReply(&reply, actionId, 0, result);
+		queueToUse->sendMessage(commandedBy, &reply);
+		return;
+	}
+	lastCommander = commandedBy;
+	lastAction = actionId;
+	result = owner->executeAction(actionId, commandedBy, dataPtr, size);
+	ipcStore->deleteData(dataAddress);
+	switch (result) {
+	case HasReturnvaluesIF::RETURN_OK:
+		isExecuting = true;
+		stepCount++;
+		break;
+	case HasActionsIF::EXECUTION_FINISHED:
+		ActionMessage::setCompletionReply(&reply, actionId,
+				HasReturnvaluesIF::RETURN_OK);
+		queueToUse->sendMessage(commandedBy, &reply);
+		break;
+	default:
+		ActionMessage::setStepReply(&reply, actionId, 0, result);
+		queueToUse->sendMessage(commandedBy, &reply);
+		break;
+	}
+
+}

@@ -1,0 +1,58 @@
+/**
+ * @file	HasModesIF.h
+ * @brief	This file defines the HasModesIF class.
+ * @date	20.06.2013
+ * @author	baetz
+ */
+
+#ifndef HASMODESIF_H_
+#define HASMODESIF_H_
+
+#include <framework/events/Event.h>
+#include <framework/modes/ModeHelper.h>
+#include <framework/modes/ModeMessage.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <stdint.h>
+
+
+class HasModesIF {
+	friend class ModeHelper;
+public:
+	static const uint8_t INTERFACE_ID = HAS_MODES_IF;
+	static const ReturnValue_t INVALID_MODE = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t TRANS_NOT_ALLOWED = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t IN_TRANSITION = MAKE_RETURN_CODE(0x03);
+	static const ReturnValue_t INVALID_SUBMODE = MAKE_RETURN_CODE(0x04);
+
+	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::SYSTEM_MANAGER;
+	static const Event CHANGING_MODE = MAKE_EVENT(0, SEVERITY::INFO); //!< An object announces changing the mode. p1: target mode. p2: target submode
+	static const Event MODE_INFO = MAKE_EVENT(1, SEVERITY::INFO); //!< An Object announces its mode; parameter1 is mode, parameter2 is  submode
+	static const Event FALLBACK_FAILED = MAKE_EVENT(2, SEVERITY::HIGH);
+	static const Event MODE_TRANSITION_FAILED = MAKE_EVENT(3, SEVERITY::LOW);
+	static const Event CANT_KEEP_MODE = MAKE_EVENT(4, SEVERITY::HIGH);
+	static const Event OBJECT_IN_INVALID_MODE = MAKE_EVENT(5, SEVERITY::LOW); //!< Indicates a bug or configuration failure: Object is in a mode it should never be in.
+	static const Event FORCING_MODE = MAKE_EVENT(6, SEVERITY::MEDIUM); //!< The mode is changed, but for some reason, the change is forced, i.e. EXTERNAL_CONTROL ignored. p1: target mode. p2: target submode
+	static const Event MODE_CMD_REJECTED = MAKE_EVENT(7, SEVERITY::LOW); //!< A mode command was rejected by the called object. Par1: called object id, Par2: return code.
+
+	static const Mode_t MODE_ON = 1; //!< The device is powered and ready to perform operations. In this mode, no commands are sent by the device handler itself, but direct commands van be commanded and will be interpreted
+	static const Mode_t MODE_OFF = 0; //!< The device is powered off. The only command accepted in this mode is a mode change to on.
+	static const Submode_t SUBMODE_NONE = 0; //!< To avoid checks against magic number "0".
+	virtual ~HasModesIF() {
+	}
+	virtual MessageQueueId_t getCommandQueue() const = 0;
+	virtual void getMode(Mode_t *mode, Submode_t *submode) {
+	}
+protected:
+	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
+			uint32_t *msToReachTheMode) {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	virtual void startTransition(Mode_t mode, Submode_t submode) {
+	}
+	virtual void setToExternalControl() {
+	}
+	virtual void announceMode(bool recursive) {
+	}
+};
+
+#endif /* HASMODESIF_H_ */
