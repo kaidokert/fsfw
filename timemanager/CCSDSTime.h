@@ -1,25 +1,19 @@
-/*
- * CCSDSTimeHelper.h
- *
- *  Created on: 22.03.2013
- *      Author: tod
- */
-
 #ifndef CCSDSTIME_H_
 #define CCSDSTIME_H_
 
-#include <framework/osal/OSAL.h>
+#include <framework/timemanager/Clock.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <stdint.h>
 
 bool operator<(const timeval& lhs, const timeval& rhs);
+bool operator<=(const timeval& lhs, const timeval& rhs);
 bool operator==(const timeval& lhs, const timeval& rhs);
 /**
  * static helper class for CCSDS Time Code Formats
  *
  * as described in CCSDS 301.0-B-3
  *
- * Still work in progress thus TODO finishme
+ * Still work in progress
  */
 class CCSDSTime: public HasReturnvaluesIF {
 public:
@@ -37,6 +31,7 @@ public:
 			+ 2;
 	static const uint8_t P_FIELD_CUC_6B_AGENCY = (CUC_LEVEL2 << 4) + (3 << 2)
 			+ 2;
+	static const uint8_t P_FIELD_CDS_SHORT = (CDS << 4);
 	/**
 	 * Struct for CDS day-segmented format.
 	 */
@@ -50,7 +45,7 @@ public:
 		uint8_t msDay_ll;
 	};
 	/**
-	 * Struct for the CCS fromat in day of month variation with seconds resolution
+	 * Struct for the CCS fromat in day of month variation with max resolution
 	 */
 	struct Ccs_seconds {
 		uint8_t pField;
@@ -95,7 +90,7 @@ public:
 		}
 	};
 
-	static const uint8_t INTERFACE_ID = CCSDS_TIME_HELPER_CLASS;
+	static const uint8_t INTERFACE_ID = CLASS_ID::CCSDS_TIME_HELPER_CLASS;
 	static const ReturnValue_t UNSUPPORTED_TIME_FORMAT = MAKE_RETURN_CODE(0);
 	static const ReturnValue_t NOT_ENOUGH_INFORMATION_FOR_TARGET_FORMAT =
 			MAKE_RETURN_CODE(1);
@@ -107,15 +102,14 @@ public:
 	/**
 	 * convert a TimeofDay struct to ccs with seconds resolution
 	 *
-	 * Assumes a valid TimeOfDay. TODO: maybe check it anyway?
-	 *
 	 * @param to pointer to a CCS struct
 	 * @param from pointer to a TimeOfDay Struct
 	 * @return
-	 * 		- @c RETURN_OK as it assumes a valid TimeOfDay
+	 * 		- @c RETURN_OK if OK
+	 * 		- @c INVALID_TIMECODE if not OK
 	 */
 	static ReturnValue_t convertToCcsds(Ccs_seconds *to,
-			TimeOfDay_t const *from);
+			Clock::TimeOfDay_t const *from);
 
 	/**
 	 * Converts to CDS format from timeval.
@@ -127,23 +121,23 @@ public:
 	static ReturnValue_t convertToCcsds(CDS_short* to, timeval const *from);
 
 	static ReturnValue_t convertToCcsds(OBT_FLP* to, timeval const *from);
+
 	/**
 	 * convert a TimeofDay struct to ccs with 10E-3 seconds resolution
-	 *
-	 * Assumes a valid TimeOfDay. TODO: maybe check it anyway?
 	 *
 	 * The 10E-4 seconds in the CCS Struct are 0 as the TimeOfDay only has ms resolution
 	 *
 	 * @param to pointer to a CCS struct
 	 * @param from pointer to a TimeOfDay Struct
 	 * @return
-	 * 		- @c RETURN_OK as it assumes a valid TimeOfDay
+	 * 		- @c RETURN_OK if OK
+	 * 		- @c INVALID_TIMECODE if not OK
 	 */
 	static ReturnValue_t convertToCcsds(Ccs_mseconds *to,
-			TimeOfDay_t const *from);
+			Clock::TimeOfDay_t const *from);
 
 	/**
-	 * TODO: can this be modified to recognize padding?
+	 * SHOULDDO: can this be modified to recognize padding?
 	 * Tries to interpret a Level 1 CCSDS time code
 	 *
 	 * It assumes binary formats contain a valid P Field and recognizes the ASCII format
@@ -154,11 +148,11 @@ public:
 	 * @param length length of the Time code
 	 * @return
 	 * 		- @c RETURN_OK if successful
-	 * 		- @c UNSUPPORTED_TIME_FORMAT if a (possibly valid) time code is not supported TODO: the missing codes should be implemented...
+	 * 		- @c UNSUPPORTED_TIME_FORMAT if a (possibly valid) time code is not supported
 	 * 		- @c LENGTH_MISMATCH if the length does not match the P Field
 	 * 		- @c INVALID_TIME_FORMAT if the format or a value is invalid
 	 */
-	static ReturnValue_t convertFromCcsds(TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCcsds(Clock::TimeOfDay_t *to, uint8_t const *from,
 			uint32_t length);
 
 	/**
@@ -171,7 +165,7 @@ public:
 	static ReturnValue_t convertFromCcsds(timeval *to, uint8_t const *from,
 			uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromCUC(TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCUC(Clock::TimeOfDay_t *to, uint8_t const *from,
 			uint8_t length);
 
 	static ReturnValue_t convertFromCUC(timeval *to, uint8_t const *from,
@@ -186,16 +180,16 @@ public:
 	static ReturnValue_t convertFromCCS(timeval *to, uint8_t pField,
 			uint8_t const *from, uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromCDS(TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCDS(Clock::TimeOfDay_t *to, uint8_t const *from,
 			uint8_t length);
 
 	static ReturnValue_t convertFromCDS(timeval *to, uint8_t const *from,
 			uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromCCS(TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCCS(Clock::TimeOfDay_t *to, uint8_t const *from,
 			uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromASCII(TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromASCII(Clock::TimeOfDay_t *to, uint8_t const *from,
 			uint8_t length);
 
 	static uint32_t subsecondsToMicroseconds(uint16_t subseconds);
@@ -203,14 +197,17 @@ private:
 	CCSDSTime();
 	virtual ~CCSDSTime();
 	/**
-	 * checks a ccs time struct for validity
+	 * checks a ccs time stream for validity
 	 *
-	 * only checks year to second, subseconds must be checked elsewhere
+	 * Stream may be longer than the actual timecode
 	 *
-	 * @param time pointer to an Ccs struct (should be cast to Ccs_seconds as subseconds are not checked. Cast is save as subseconds are at the end of the struct)
+	 * @param time pointer to an Ccs stream
+	 * @param length length of stream
 	 * @return
 	 */
-	static ReturnValue_t checkCcs(Ccs_seconds *time);
+	static ReturnValue_t checkCcs(const uint8_t* time, uint8_t length);
+
+	static ReturnValue_t checkTimeOfDay(const Clock::TimeOfDay_t *time);
 
 	static const uint32_t SECONDS_PER_DAY = 24 * 60 * 60;
 	static const uint32_t SECONDS_PER_NON_LEAP_YEAR = SECONDS_PER_DAY * 365;
@@ -226,8 +223,8 @@ private:
 	static ReturnValue_t convertDaysOfYear(uint16_t dayofYear, uint16_t year,
 			uint8_t *month, uint8_t *day);
 
-	static bool isLeapYear(uint16_t year);
-	static ReturnValue_t convertTimevalToTimeOfDay(TimeOfDay_t* to,
+	static bool isLeapYear(uint32_t year);
+	static ReturnValue_t convertTimevalToTimeOfDay(Clock::TimeOfDay_t* to,
 			timeval* from);
 };
 

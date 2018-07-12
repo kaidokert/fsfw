@@ -1,26 +1,26 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tcdistribution/TcDistributor.h>
 #include <framework/tmtcservices/TmTcMessage.h>
+#include <framework/ipc/QueueFactory.h>
 
 TcDistributor::TcDistributor(object_id_t set_object_id) :
-		SystemObject(set_object_id), tcQueue(DISTRIBUTER_MAX_PACKETS) {
-
+		SystemObject(set_object_id), tcQueue(NULL) {
+	tcQueue = QueueFactory::instance()->createMessageQueue(DISTRIBUTER_MAX_PACKETS);
 }
 
 TcDistributor::~TcDistributor() {
-	//Nothing to do in the destructor, MQ's are destroyed elsewhere.
+	QueueFactory::instance()->deleteMessageQueue(tcQueue);
 }
 
-ReturnValue_t TcDistributor::performOperation(void) {
+ReturnValue_t TcDistributor::performOperation(uint8_t opCode) {
 	ReturnValue_t status = RETURN_OK;
 //	debug << "TcDistributor: performing Operation." << std::endl;
-	for (status = tcQueue.receiveMessage(&currentMessage); status == RETURN_OK;
-			status = tcQueue.receiveMessage(&currentMessage)) {
+	for (status = tcQueue->receiveMessage(&currentMessage); status == RETURN_OK;
+			status = tcQueue->receiveMessage(&currentMessage)) {
 		status = handlePacket();
 	}
-	if (status == OSAL::QUEUE_EMPTY) {
+	if (status == OperatingSystemIF::QUEUE_EMPTY) {
 		return RETURN_OK;
 	} else {
 		return status;
@@ -32,7 +32,7 @@ ReturnValue_t TcDistributor::handlePacket() {
 	iterator_t queueMapIt = this->selectDestination();
 	ReturnValue_t returnValue = RETURN_FAILED;
 	if (queueMapIt != this->queueMap.end()) {
-		returnValue = this->tcQueue.sendMessage(queueMapIt->second,
+		returnValue = this->tcQueue->sendMessage(queueMapIt->second,
 				&this->currentMessage);
 	}
 	return this->callbackAfterSending(returnValue);

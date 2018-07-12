@@ -4,8 +4,8 @@
 #include <framework/action/HasActionsIF.h>
 #include <framework/devicehandlers/DeviceHandlerMessage.h>
 #include <framework/events/Event.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/modes/HasModesIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 /**
  * This is the Interface used to communicate with a device handler.
@@ -52,7 +52,7 @@ public:
 		static const Event MONITORING_LIMIT_EXCEEDED = MAKE_EVENT(9, SEVERITY::LOW);
 		static const Event MONITORING_AMBIGUOUS = MAKE_EVENT(10, SEVERITY::HIGH);
 
-		static const uint8_t INTERFACE_ID = DEVICE_HANDLER_IF;
+		static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_IF;
 		static const ReturnValue_t NO_COMMAND_DATA = MAKE_RETURN_CODE(0xA0);
 		static const ReturnValue_t COMMAND_NOT_SUPPORTED = MAKE_RETURN_CODE(0xA1);
 		static const ReturnValue_t COMMAND_ALREADY_SENT = MAKE_RETURN_CODE(0xA2);
@@ -63,6 +63,7 @@ public:
 		static const ReturnValue_t BUSY = MAKE_RETURN_CODE(0xA7);
 		static const ReturnValue_t NO_REPLY_EXPECTED = MAKE_RETURN_CODE(0xA8); //!< Used to indicate that this is a command-only command.
 		static const ReturnValue_t NON_OP_TEMPERATURE = MAKE_RETURN_CODE(0xA9);
+		static const ReturnValue_t COMMAND_NOT_IMPLEMENTED = MAKE_RETURN_CODE(0xAA);
 
 		//standard codes used in scan for reply
 	//	static const ReturnValue_t TOO_SHORT = MAKE_RETURN_CODE(0xB1);
@@ -82,6 +83,19 @@ public:
 				0xD0);
 		static const ReturnValue_t INVALID_NUMBER_OR_LENGTH_OF_PARAMETERS =
 				MAKE_RETURN_CODE(0xD1);
+
+		/**
+		 * RMAP Action that will be executed.
+		 *
+		 * This is used by the child class to tell the base class what to do.
+		 */
+		enum RmapAction_t {
+			SEND_WRITE,//!< RMAP send write
+			GET_WRITE, //!< RMAP get write
+			SEND_READ, //!< RMAP send read
+			GET_READ,  //!< RMAP get read
+			NOTHING    //!< Do nothing.
+		};
 	/**
 	 * Default Destructor
 	 */

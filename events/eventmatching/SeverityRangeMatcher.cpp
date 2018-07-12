@@ -1,10 +1,3 @@
-/*
- * SeverityRangeMatcher.cpp
- *
- *  Created on: 27.08.2015
- *      Author: baetz
- */
-
 #include <framework/events/eventmatching/SeverityRangeMatcher.h>
 #include <framework/events/EventMessage.h>
 #include <framework/serialize/SerializeAdapter.h>

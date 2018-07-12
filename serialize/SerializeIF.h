@@ -1,10 +1,3 @@
-/*
- * SerializeIF.h
- *
- *  Created on: 19.03.2014
- *      Author: baetz
- */
-
 #ifndef SERIALIZEIF_H_
 #define SERIALIZEIF_H_
 
@@ -12,7 +5,7 @@
 
 class SerializeIF {
 public:
-	static const uint8_t INTERFACE_ID = SERIALIZE_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::SERIALIZE_IF;
 	static const ReturnValue_t BUFFER_TOO_SHORT = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t STREAM_TOO_SHORT = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t TOO_MANY_ELEMENTS = MAKE_RETURN_CODE(3);

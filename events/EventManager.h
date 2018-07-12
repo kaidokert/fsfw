@@ -4,16 +4,17 @@
 #include <framework/events/eventmatching/EventMatchTree.h>
 #include <framework/events/EventManagerIF.h>
 #include <framework/objectmanager/SystemObject.h>
-#include <framework/osal/OSAL.h>
 #include <framework/storagemanager/LocalPool.h>
 #include <framework/tasks/ExecutableObjectIF.h>
+#include <framework/ipc/MessageQueueIF.h>
+#include <framework/ipc/MutexIF.h>
 #include <map>
 
 class EventManager: public EventManagerIF,
 		public ExecutableObjectIF,
 		public SystemObject {
 public:
-	static const uint16_t MAX_EVENTS_PER_CYCLE = 150;
+	static const uint16_t MAX_EVENTS_PER_CYCLE = 80;
 
 	EventManager(object_id_t setObjectId);
 	virtual ~EventManager();
@@ -32,17 +33,15 @@ public:
 			EventId_t idFrom = 0, EventId_t idTo = 0, bool idInverted = false,
 			object_id_t reporterFrom = 0, object_id_t reporterTo = 0,
 			bool reporterInverted = false);
-	ReturnValue_t performOperation();
+	ReturnValue_t performOperation(uint8_t opCode);
 
 protected:
 
-	MessageQueue eventReportQueue;
-
-	MessageQueueSender eventForwardingSender;
+	MessageQueueIF* eventReportQueue;
 
 	std::map<MessageQueueId_t, EventMatchTree> listenerList;
 
-	MutexId_t* mutex;
+	MutexIF* mutex;
 
 	static const uint8_t N_POOLS = 3;
 	LocalPool<N_POOLS> factoryBackend;
@@ -51,7 +50,9 @@ protected:
 
 	void notifyListeners(EventMessage *message);
 
+#ifdef DEBUG
 	void printEvent(EventMessage *message);
+#endif
 
 	void lockMutex();
 

@@ -1,12 +1,9 @@
-/*
- * ServiceInterfaceBuffer.cpp
- *
- *  Created on: 06.08.2015
- *      Author: baetz
- */
-
-#include <framework/osal/OSAL.h>
+#include <framework/timemanager/Clock.h>
 #include <framework/serviceinterface/ServiceInterfaceBuffer.h>
+#include <cstring>
+
+//TODO Think of something different
+#include <framework/osal/rtems/Interrupt.h>
 
 int ServiceInterfaceBuffer::overflow(int c) {
 	// Handle output
@@ -24,8 +21,8 @@ int ServiceInterfaceBuffer::overflow(int c) {
 
 int ServiceInterfaceBuffer::sync(void) {
 	if (this->isActive) {
-		TimeOfDay_t loggerTime;
-		OSAL::getDateAndTime(&loggerTime);
+		Clock::TimeOfDay_t loggerTime;
+		Clock::getDateAndTime(&loggerTime);
 		char preamble[96] = { 0 };
 		sprintf(preamble, "%s: | %lu:%02lu:%02lu.%03lu | ",
 				this->log_message.c_str(), (unsigned long) loggerTime.hour,
@@ -57,16 +54,12 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 	}
 	memcpy(array, begin, length);
 
-#ifdef DEBUG
-	if (!OSAL::isInterruptInProgress()) {
+	if (!Interrupt::isInterruptInProgress()) {
 		std::cout << array;
 	} else {
 		//Uncomment the following line if you need ISR debug output.
 //		printk(array);
 	}
-#else
-#error Non-DEBUG out messages are not implemented. define DEBUG flag!
-#endif
 }
 #endif //UT699
 
@@ -95,14 +88,12 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 	if (udpSocket <= 0) {
 		initSocket();
 	}
-#ifdef DEBUG
+
 	if (udpSocket > 0) {
 		sendto(udpSocket, array, length, 0, (sockaddr*) &remoteAddress,
 				sizeof(remoteAddress));
 	}
-#else
-#error Non-DEBUG out messages are not implemented. define DEBUG flag!
-#endif
+
 }
 
 void ServiceInterfaceBuffer::initSocket() {

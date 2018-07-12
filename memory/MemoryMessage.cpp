@@ -1,11 +1,3 @@
-/*
- * MemoryMessage.cpp
- *
- *  Created on: 17.07.2013
- *      Author: Bastian
- */
-
-
 #include <framework/memory/MemoryMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 MemoryMessage::MemoryMessage() {
@@ -61,10 +53,11 @@ void MemoryMessage::clear(CommandMessage* message) {
 			ipcStore->deleteData(getStoreID(message));
 		}
 	}
-		/* NO BREAK*/
+	/* NO BREAK falls through*/
 	case CMD_MEMORY_DUMP:
 	case CMD_MEMORY_CHECK:
 	case REPLY_MEMORY_CHECK:
+	case END_OF_MEMORY_COPY:
 		message->setCommand(CommandMessage::CMD_NONE);
 		message->setParameter(0);
 		message->setParameter2(0);
@@ -87,8 +80,16 @@ ReturnValue_t MemoryMessage::setMemoryCheckReply(CommandMessage* message,
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
+void MemoryMessage::setCrcReturnValue(CommandMessage* message, ReturnValue_t returnValue){
+	message->setParameter(returnValue<<16);
+};
+
 uint16_t MemoryMessage::getCrc(const CommandMessage* message) {
 	return (uint16_t)(message->getParameter());
+}
+
+ReturnValue_t MemoryMessage::getCrcReturnValue(const CommandMessage* message){
+	return (message->getParameter()>>16);
 }
 
 Command_t MemoryMessage::getInitialCommand(const CommandMessage* message) {
@@ -102,3 +103,11 @@ ReturnValue_t MemoryMessage::setMemoryReplyFailed(CommandMessage* message,
 	message->setParameter2(initialCommand);
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
+ReturnValue_t MemoryMessage::setMemoryCopyEnd(CommandMessage* message) {
+	message->setCommand(END_OF_MEMORY_COPY);
+	message->setParameter(0);
+	message->setParameter2(0);
+	return HasReturnvaluesIF::RETURN_OK;
+}
+

@@ -1,15 +1,8 @@
-/*
- * CCSDSDistributorIF.h
- *
- *  Created on: 21.11.2012
- *      Author: baetz
- */
-
 #ifndef CCSDSDISTRIBUTORIF_H_
 #define CCSDSDISTRIBUTORIF_H_
 
-#include <framework/ipc/MessageQueue.h>
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 /**
  * This is the Interface to a CCSDS Distributor.
  * On a CCSDS Distributor, Applications (in terms of CCSDS) may register themselves,

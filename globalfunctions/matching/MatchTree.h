@@ -1,10 +1,3 @@
-/*
- * MatchTree.h
- *
- *  Created on: 09.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_
 #define FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_
 
@@ -17,11 +10,12 @@ class MatchTree: public SerializeableMatcherIF<T>, public BinaryTree<
 		SerializeableMatcherIF<T>> {
 public:
 
-	static const uint8_t INTERFACE_ID = MATCH_TREE_CLASS;
+	static const uint8_t INTERFACE_ID = CLASS_ID::MATCH_TREE_CLASS;
 	static const ReturnValue_t TOO_DETAILED_REQUEST = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t TOO_GENERAL_REQUEST = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t NO_MATCH = MAKE_RETURN_CODE(3);
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(4);
+	static const ReturnValue_t NEW_NODE_CREATED = MAKE_RETURN_CODE(5);
 
 	typedef typename BinaryTree<SerializeableMatcherIF<T>>::iterator iterator;
 	typedef BinaryNode<SerializeableMatcherIF<T>> Node;
@@ -41,26 +35,14 @@ public:
 	virtual ~MatchTree() {
 	}
 	virtual bool match(T number) {
-		return matchesTree(number, NULL, NULL);
+		return matchesTree(number);
 	}
-	bool matchesTree(T number, iterator* lastTest, uint8_t* hierarchyLevel) {
-		bool match = false;
+	bool matchesTree(T number) {
 		iterator iter = this->begin();
-		while (iter != this->end()) {
-			if (lastTest != NULL) {
-				*lastTest = iter;
-			}
-			match = iter->match(number);
-			if (match) {
-				iter = iter.left();
-				if (hierarchyLevel != NULL) {
-					(*hierarchyLevel)++;
-				}
-			} else {
-				iter = iter.right();
-			}
+		if (iter == this->end()) {
+			return false;
 		}
-		return match;
+		return matchSubtree(iter, number);
 	}
 
 	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
@@ -134,7 +116,7 @@ public:
 	}
 
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian) {
+			bool bigEndian) {
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
@@ -151,15 +133,21 @@ protected:
 		}
 	}
 
-	//TODO: What to do if insertion/deletion fails. Throw event?
+	//SHOULDDO: What to do if insertion/deletion fails. Throw event?
 	ReturnValue_t removeElementAndAllChildren(iterator position) {
-		auto children = erase(position);
+		auto children = this->erase(position);
 		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 		if (children.first != this->end()) {
 			result = removeElementAndAllChildren(children.first);
 		}
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
 		if (children.second != this->end()) {
 			result = removeElementAndAllChildren(children.second);
+		}
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
 		}
 		//Delete element itself.
 		return cleanUpElement(position);
@@ -173,15 +161,19 @@ protected:
 		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 		if (position.left() != this->end()) {
 			result = removeElementAndAllChildren(position.left());
+			if (result != HasReturnvaluesIF::RETURN_OK) {
+				return result;
+			}
 		}
+
 		if (position.right() != this->end()) {
 			//There's something at the OR branch, reconnect to parent.
 			if (isOnAndBranch(position)) {
 				//Either one hierarchy up AND branch...
-				insert(AND, position.up(), position.right().element);
+				this->insert(AND, position.up(), position.right().element);
 			} else {
 				//or on another OR'ed element (or install new root node).
-				insert(OR, position.up(), position.right().element);
+				this->insert(OR, position.up(), position.right().element);
 			}
 		} else {
 			if (isOnAndBranch(position)) {
@@ -189,7 +181,7 @@ protected:
 				return removeElementAndReconnectChildren(position.up());
 			} else {
 				//simply delete self.
-				erase(position);
+				this->erase(position);
 			}
 
 		}
@@ -201,6 +193,22 @@ protected:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
+	bool matchSubtree(iterator iter, T number) {
+		bool isMatch = iter->match(number);
+		if (isMatch) {
+			if (iter.left() == this->end()) {
+				return true;
+			}
+			isMatch = matchSubtree(iter.left(), number);
+			if (isMatch) {
+				return true;
+			}
+		}
+		if (iter.right() == this->end()) {
+			return false;
+		}
+		return matchSubtree(iter.right(), number);
+	}
 private:
 	uint8_t maxDepth;
 };

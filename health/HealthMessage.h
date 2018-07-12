@@ -1,10 +1,3 @@
-/*
- * HealthMessage.h
- *
- *  Created on: 15.07.2013
- *      Author: tod
- */
-
 #ifndef HEALTHMESSAGE_H_
 #define HEALTHMESSAGE_H_
 
@@ -13,7 +6,7 @@
 
 class HealthMessage {
 public:
-	static const uint8_t MESSAGE_ID = HEALTH_COMMAND_MESSAGE_ID;
+	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::HEALTH_COMMAND;
 	static const Command_t HEALTH_SET = MAKE_COMMAND_ID(1);//REPLY_COMMAND_OK/REPLY_REJECTED
 	static const Command_t HEALTH_ANNOUNCE = MAKE_COMMAND_ID(3);	//NO REPLY!
 	static const Command_t HEALTH_INFO = MAKE_COMMAND_ID(5);

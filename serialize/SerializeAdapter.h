@@ -1,10 +1,3 @@
-/*
- * SerializeAdapter.h
- *
- *  Created on: 19.03.2014
- *      Author: baetz
- */
-
 #ifndef SERIALIZEADAPTER_H_
 #define SERIALIZEADAPTER_H_
 
@@ -97,6 +90,28 @@ public:
 		return adapter.getSerializedSize(object);
 	}
 
+	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
+			int32_t* size, bool bigEndian) {
+		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+		return adapter.deSerialize(object, buffer, size, bigEndian);
+	}
+};
+
+
+class AutoSerializeAdapter {
+public:
+	template<typename T>
+	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
+			uint32_t* size, const uint32_t max_size, bool bigEndian) {
+		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+		return adapter.serialize(object, buffer, size, max_size, bigEndian);
+	}
+	template<typename T>
+	static uint32_t getSerializedSize(const T* object) {
+		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+		return adapter.getSerializedSize(object);
+	}
+	template<typename T>
 	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
 			int32_t* size, bool bigEndian) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;

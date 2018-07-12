@@ -7,6 +7,8 @@
 #include <framework/modes/ModeHelper.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/tasks/ExecutableObjectIF.h>
+#include <framework/datapool/HkSwitchHelper.h>
+
 
 class ControllerBase: public HasModesIF,
 		public HasHealthIF,
@@ -17,14 +19,15 @@ public:
 
 	static const Mode_t MODE_NORMAL = 2;
 
-	ControllerBase(uint32_t setObjectId, uint32_t parentId, size_t commandQueueDepth = 3);
+	ControllerBase(uint32_t setObjectId, uint32_t parentId,
+			size_t commandQueueDepth = 3);
 	virtual ~ControllerBase();
 
 	ReturnValue_t initialize();
 
 	virtual MessageQueueId_t getCommandQueue() const;
 
-	virtual ReturnValue_t performOperation();
+	virtual ReturnValue_t performOperation(uint8_t opCode);
 
 	virtual ReturnValue_t setHealth(HealthState health);
 
@@ -36,11 +39,13 @@ protected:
 
 	Submode_t submode;
 
-	MessageQueue commandQueue;
+	MessageQueueIF* commandQueue;
 
 	ModeHelper modeHelper;
 
 	HealthHelper healthHelper;
+
+	HkSwitchHelper hkSwitcher;
 
 	void handleQueue();
 
@@ -53,6 +58,7 @@ protected:
 	virtual void getMode(Mode_t *mode, Submode_t *submode);
 	virtual void setToExternalControl();
 	virtual void announceMode(bool recursive);
+	virtual void changeHK(Mode_t mode, Submode_t submode, bool enable);
 };
 
 #endif /* CONTROLLERBASE_H_ */

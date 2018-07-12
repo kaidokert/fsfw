@@ -1,10 +1,9 @@
 #ifndef MESSAGEQUEUEMESSAGE_H_
 #define MESSAGEQUEUEMESSAGE_H_
 
-#include <framework/osal/OSAL.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
+#include <stddef.h>
 
-class MessageQueue;
-class MessageQueueSender;
 /**
  *	\brief		This class is the representation and data organizer for interprocess messages.
  *
@@ -20,8 +19,6 @@ class MessageQueueSender;
  *	\ingroup message_queue
  */
 class MessageQueueMessage {
-	friend class MessageQueue;
-	friend class MessageQueueSender;
 public:
 	/**
 	 * \brief	This constant defines the maximum size of the data content, excluding the header.
@@ -44,20 +41,6 @@ private:
 	 * \brief	This is the internal buffer that contains the actual message data.
 	 */
 	uint8_t internalBuffer[MAX_MESSAGE_SIZE];
-protected:
-	/**
-	 * \brief	This method is used to set the sender's message queue id information prior to
-	 * 			sending the message.
-	 * \param setId	The message queue id that identifies the sending message queue.
-	 */
-	void setSender(MessageQueueId_t setId);
-	/**
-	 * \brief	This helper function is used by the MessageQueue class to check the size of an
-	 * 			incoming message.
-	 * \details	The method must be overwritten by child classes if size checks shall be more strict.
-	 * @return	The default implementation returns HEADER_SIZE.
-	 */
-	virtual size_t getMinimumMessageSize();
 public:
 	/**
 	 * \brief	The size information of each message is stored in this attribute.
@@ -117,6 +100,19 @@ public:
 	 * \brief	This is a debug method that prints the content (till messageSize) to the debug output.
 	 */
 	void print();
+	/**
+	 * \brief	This method is used to set the sender's message queue id information prior to
+	 * 			sending the message.
+	 * \param setId	The message queue id that identifies the sending message queue.
+	 */
+	void setSender(MessageQueueId_t setId);
+	/**
+	 * \brief	This helper function is used by the MessageQueue class to check the size of an
+	 * 			incoming message.
+	 * \details	The method must be overwritten by child classes if size checks shall be more strict.
+	 * @return	The default implementation returns HEADER_SIZE.
+	 */
+	virtual size_t getMinimumMessageSize();
 };
 
 #endif /* MESSAGEQUEUEMESSAGE_H_ */

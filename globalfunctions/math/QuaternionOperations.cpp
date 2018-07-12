@@ -1,6 +1,5 @@
-#include <framework/globalfunctions/math/QuaternionOperations.h>
+#include "QuaternionOperations.h"
 #include <framework/globalfunctions/math/VectorOperations.h>
-#include "VectorOperations.h"
 
 #include <cmath>
 #include <cstring>
@@ -79,7 +78,7 @@ void QuaternionOperations::fromDcm(const double dcm[][3], double* quaternion,
 
 	uint8_t maxAIndex = 0;
 
-	VectorOperations<double>::maxAbsValue(a, 4, &maxAIndex);
+	VectorOperations<double>::maxValue(a, 4, &maxAIndex);
 
 	if (index != 0) {
 		*index = maxAIndex;

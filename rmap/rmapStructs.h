@@ -1,16 +1,9 @@
-/*
- * rmapStructs.h
- *
- *  Created on: 30.05.2013
- *      Author: tod
- */
-
 #ifndef RMAPSTRUCTS_H_
 #define RMAPSTRUCTS_H_
 
 #include <stdint.h>
 
-//TODO: having the defines within a namespace would be nice. Problem are the defines referencing the previous define, eg RMAP_COMMAND_WRITE
+//SHOULDDO: having the defines within a namespace would be nice. Problem are the defines referencing the previous define, eg RMAP_COMMAND_WRITE
 
 //////////////////////////////////////////////////////////////////////////////////
 // RMAP command bits

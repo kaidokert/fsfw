@@ -4,14 +4,13 @@
 #include <framework/container/HybridIterator.h>
 #include <framework/health/HasHealthIF.h>
 #include <framework/health/HealthHelper.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/modes/HasModesIF.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/subsystem/modes/HasModeSequenceIF.h>
 #include <framework/tasks/ExecutableObjectIF.h>
+#include <framework/ipc/MessageQueueIF.h>
 #include <map>
-
 
 class SubsystemBase: public SystemObject,
 		public HasModesIF,
@@ -19,7 +18,7 @@ class SubsystemBase: public SystemObject,
 		public HasReturnvaluesIF,
 		public ExecutableObjectIF {
 public:
-	static const uint8_t INTERFACE_ID = SUBSYSTEM_BASE;
+	static const uint8_t INTERFACE_ID = CLASS_ID::SUBSYSTEM_BASE;
 	static const ReturnValue_t CHILD_NOT_FOUND = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t CHILD_INFO_UPDATED = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t CHILD_DOESNT_HAVE_MODES = MAKE_RETURN_CODE(0x03);
@@ -37,7 +36,7 @@ public:
 
 	virtual ReturnValue_t initialize();
 
-	virtual ReturnValue_t performOperation();
+	virtual ReturnValue_t performOperation(uint8_t opCode);
 
 	virtual ReturnValue_t setHealth(HealthState health);
 
@@ -47,8 +46,7 @@ protected:
 	struct ChildInfo {
 		MessageQueueId_t commandQueue;
 		Mode_t mode;
-		Submode_t submode;
-		bool healthChanged;
+		Submode_t submode;bool healthChanged;
 	};
 
 	Mode_t mode;
@@ -62,7 +60,7 @@ protected:
 	 */
 	int32_t commandsOutstanding;
 
-	MessageQueue commandQueue;
+	MessageQueueIF* commandQueue;
 
 	HealthHelper healthHelper;
 
@@ -75,15 +73,24 @@ protected:
 
 	void checkCommandQueue();
 
+	/**
+	 * We need to know the target Submode, as children are able to inherit the submode
+	 */
 	ReturnValue_t checkStateAgainstTable(
-			HybridIterator<ModeListEntry> tableIter);
+			HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode);
 
-	void executeTable(HybridIterator<ModeListEntry> tableIter);
+	/**
+	 * We need to know the target Submode, as children are able to inherit the submode
+	 * Still, we have a default for all child implementations which do not use submode inheritance
+	 */
+	void executeTable(HybridIterator<ModeListEntry> tableIter,
+			Submode_t targetSubmode = SUBMODE_NONE);
 
 	ReturnValue_t updateChildMode(MessageQueueId_t queue, Mode_t mode,
 			Submode_t submode);
 
-	ReturnValue_t updateChildChangedHealth(MessageQueueId_t queue, bool changedHealth = true);
+	ReturnValue_t updateChildChangedHealth(MessageQueueId_t queue,
+			bool changedHealth = true);
 
 	virtual ReturnValue_t handleModeReply(CommandMessage *message);
 
@@ -111,6 +118,8 @@ protected:
 	virtual void setToExternalControl();
 
 	virtual void announceMode(bool recursive);
+
+	virtual void modeChanged();
 };
 
 #endif /* SUBSYSTEMBASE_H_ */

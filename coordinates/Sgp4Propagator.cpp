@@ -1,14 +1,12 @@
-#include <framework/osal/OSAL.h>
 #include <framework/coordinates/CoordinateTransformations.h>
 #include <framework/coordinates/Sgp4Propagator.h>
 #include <framework/globalfunctions/constants.h>
 #include <framework/globalfunctions/math/MatrixOperations.h>
 #include <framework/globalfunctions/math/VectorOperations.h>
 #include <framework/globalfunctions/timevalOperations.h>
-#include <framework/osal/OSAL.h>
-
+#include <cstring>
 Sgp4Propagator::Sgp4Propagator() :
-		whichconst(wgs84) {
+		initialized(false), epoch({0, 0}), whichconst(wgs84) {
 
 }
 
@@ -16,7 +14,6 @@ Sgp4Propagator::~Sgp4Propagator() {
 
 }
 
-//TODO move to OSAL
 void jday(int year, int mon, int day, int hr, int minute, double sec,
 		double& jd) {
 	jd = 367.0 * year - floor((7 * (year + floor((mon + 9) / 12.0))) * 0.25)
@@ -25,7 +22,6 @@ void jday(int year, int mon, int day, int hr, int minute, double sec,
 			// - 0.5*sgn(100.0*year + mon - 190002.5) + 0.5;
 }
 
-//TODO move to OSAL
 void days2mdhms(int year, double days, int& mon, int& day, int& hr, int& minute,
 		double& sec) {
 	int i, inttemp, dayofyr;
@@ -169,14 +165,14 @@ ReturnValue_t Sgp4Propagator::initialize(const uint8_t* line1,
 
 	// ---------------- initialize the orbit at sgp4epoch -------------------
 	uint8_t result = sgp4init(whichconst, satrec.satnum,
-			satrec.jdsatepoch
-					- 2433282.5 /*TODO verify, source says it's 2433281.5*/,
-			satrec.bstar, satrec.ecco, satrec.argpo, satrec.inclo, satrec.mo,
-			satrec.no, satrec.nodeo, satrec);
+			satrec.jdsatepoch - 2433281.5, satrec.bstar, satrec.ecco,
+			satrec.argpo, satrec.inclo, satrec.mo, satrec.no, satrec.nodeo,
+			satrec);
 
 	if (result != 00) {
 		return MAKE_RETURN_CODE(result);
 	} else {
+		initialized = true;
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
@@ -185,9 +181,14 @@ ReturnValue_t Sgp4Propagator::initialize(const uint8_t* line1,
 ReturnValue_t Sgp4Propagator::propagate(double* position, double* velocity,
 		timeval time, uint8_t gpsUtcOffset) {
 
+	if (!initialized) {
+		return TLE_NOT_INITIALIZED;
+	}
+
 	//Time since epoch in minutes
 	timeval timeSinceEpoch = time - epoch;
-	double minutesSinceEpoch = timeSinceEpoch.tv_sec / 60. + timeSinceEpoch.tv_usec / 60000000.;
+	double minutesSinceEpoch = timeSinceEpoch.tv_sec / 60.
+			+ timeSinceEpoch.tv_usec / 60000000.;
 
 	double yearsSinceEpoch = minutesSinceEpoch / 60 / 24 / 365;
 
@@ -206,8 +207,7 @@ ReturnValue_t Sgp4Propagator::propagate(double* position, double* velocity,
 
 	//Transform to ECF
 	double earthRotationMatrix[3][3];
-	CoordinateTransformations transform(gpsUtcOffset);
-	transform.getEarthRotationMatrix(time,
+	CoordinateTransformations::getEarthRotationMatrix(time,
 			earthRotationMatrix);
 
 	MatrixOperations<double>::multiply(earthRotationMatrix[0], positionTEME,
@@ -221,7 +221,7 @@ ReturnValue_t Sgp4Propagator::propagate(double* position, double* velocity,
 	VectorOperations<double>::subtract(velocity, velocityCorrection, velocity);
 
 	if (result != 0) {
-		return MAKE_RETURN_CODE(result);
+		return MAKE_RETURN_CODE(result || 0xB0);
 	} else {
 		return HasReturnvaluesIF::RETURN_OK;
 	}

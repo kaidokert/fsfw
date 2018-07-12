@@ -15,7 +15,7 @@ public:
 	static const uint8_t CONFIRMATION_REQUEST = 1; //!< Request to parent if event is caused by child or not.
 	static const uint8_t YOUR_FAULT = 2; //!< The fault was caused by child, parent believes it's ok.
 	static const uint8_t MY_FAULT = 3; //!< The fault was caused by the parent, child is ok.
-	//TODO: Add other messageIDs here if necessary.
+	//Add other messageIDs here if necessary.
 	static const uint8_t EVENT_MESSAGE_SIZE = HEADER_SIZE + sizeof(Event)
 			+ 3 * sizeof(uint32_t);
 

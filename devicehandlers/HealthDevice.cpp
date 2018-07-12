@@ -1,18 +1,20 @@
 #include <framework/devicehandlers/HealthDevice.h>
+#include <framework/ipc/QueueFactory.h>
 
 HealthDevice::HealthDevice(object_id_t setObjectId,
 		MessageQueueId_t parentQueue) :
 		SystemObject(setObjectId), lastHealth(HEALTHY), parentQueue(
-				parentQueue), commandQueue(3,
-				CommandMessage::COMMAND_MESSAGE_SIZE), healthHelper(this, setObjectId) {
+				parentQueue), commandQueue(), healthHelper(this, setObjectId) {
+	commandQueue = QueueFactory::instance()->createMessageQueue(3, CommandMessage::COMMAND_MESSAGE_SIZE);
 }
 
 HealthDevice::~HealthDevice() {
+	QueueFactory::instance()->deleteMessageQueue(commandQueue);
 }
 
-ReturnValue_t HealthDevice::performOperation() {
+ReturnValue_t HealthDevice::performOperation(uint8_t opCode) {
 	CommandMessage message;
-	ReturnValue_t result = commandQueue.receiveMessage(&message);
+	ReturnValue_t result = commandQueue->receiveMessage(&message);
 	if (result == HasReturnvaluesIF::RETURN_OK) {
 		healthHelper.handleHealthCommand(&message);
 	}
@@ -32,7 +34,7 @@ ReturnValue_t HealthDevice::initialize() {
 }
 
 MessageQueueId_t HealthDevice::getCommandQueue() const {
-	return commandQueue.getId();
+	return commandQueue->getId();
 }
 
 void HealthDevice::setParentQueue(MessageQueueId_t parentQueue) {

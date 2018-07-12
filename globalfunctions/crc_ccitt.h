@@ -1,10 +1,3 @@
-/*
- * crc.h
- *
- *  Created on: 03.04.2012
- *      Author: bucher
- */
-
 #ifndef CRC_CCITT_H_
 #define CRC_CCITT_H_
 

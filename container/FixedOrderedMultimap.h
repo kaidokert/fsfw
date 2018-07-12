@@ -1,10 +1,3 @@
-/*
- * FixedOrderedMultimap.h
- *
- *  Created on: 22.01.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 #define FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 
@@ -15,7 +8,7 @@
 template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
 class FixedOrderedMultimap {
 public:
-	static const uint8_t INTERFACE_ID = FIXED_MAP;
+	static const uint8_t INTERFACE_ID = CLASS_ID::FIXED_MAP;
 	static const ReturnValue_t KEY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t MAP_FULL = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t KEY_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x03);

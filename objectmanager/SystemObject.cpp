@@ -1,10 +1,3 @@
-/*
- * SystemObject.cpp
- *
- *  Created on: 07.11.2012
- *      Author: mohr
- */
-
 #include <framework/events/EventManagerIF.h>
 #include <framework/objectmanager/ObjectManager.h>
 #include <framework/objectmanager/SystemObject.h>
@@ -22,7 +15,7 @@ SystemObject::~SystemObject() {
 	}
 }
 
-const object_id_t SystemObject::getObjectId() const {
+object_id_t SystemObject::getObjectId() const {
 	return objectId;
 }
 

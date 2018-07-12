@@ -1,10 +1,3 @@
-/*
- * PusVerificationReport.h
- *
- *  Created on: 22.05.2012
- *      Author: baetz
- */
-
 #ifndef PUSVERIFICATIONREPORT_H_
 #define PUSVERIFICATIONREPORT_H_
 

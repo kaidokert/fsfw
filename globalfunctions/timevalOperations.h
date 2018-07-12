@@ -32,6 +32,14 @@ bool operator<=(const timeval& lhs, const timeval& rhs);
 bool operator>=(const timeval& lhs, const timeval& rhs);
 
 namespace timevalOperations {
+/**
+ * returns the seconds and subseconds stored in the timeval
+ * as double [s]
+ *
+ *
+ * @param timeval
+ * @return seconds
+ */
 double toDouble(const timeval timeval);
 }
 

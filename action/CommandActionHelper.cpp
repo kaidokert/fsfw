@@ -1,4 +1,3 @@
-
 #include <framework/action/ActionMessage.h>
 #include <framework/action/CommandActionHelper.h>
 #include <framework/action/CommandsActionsIF.h>

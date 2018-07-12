@@ -1,10 +1,3 @@
-/*
- * MemoryProxyIF.h
- *
- *  Created on: 18.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_MEMORY_MEMORYPROXYIF_H_
 #define FRAMEWORK_MEMORY_MEMORYPROXYIF_H_
 

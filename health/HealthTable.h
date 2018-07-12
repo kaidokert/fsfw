@@ -3,7 +3,7 @@
 
 #include <framework/health/HealthTableIF.h>
 #include <framework/objectmanager/SystemObject.h>
-#include <framework/osal/OSAL.h>
+#include <framework/ipc/MutexIF.h>
 #include <map>
 
 typedef std::map<object_id_t, HasHealthIF::HealthState> HealthMap;
@@ -24,7 +24,7 @@ public:
 	virtual void printAll(uint8_t *pointer, uint32_t maxSize);
 
 protected:
-	MutexId_t* mutex;
+	MutexIF* mutex;
 	HealthMap healthMap;
 
 	HealthMap::iterator mapIterator;

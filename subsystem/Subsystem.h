@@ -1,10 +1,3 @@
-/*
- * Subsystem.h
- *
- *  Created on: 12.07.2013
- *      Author: tod
- */
-
 #ifndef SUBSYSTEM_H_
 #define SUBSYSTEM_H_
 
@@ -18,7 +11,7 @@
 
 class Subsystem: public SubsystemBase, public HasModeSequenceIF {
 public:
-	static const uint8_t INTERFACE_ID = SUBSYSTEM;
+	static const uint8_t INTERFACE_ID = CLASS_ID::SUBSYSTEM;
 	static const ReturnValue_t SEQUENCE_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t TABLE_ALREADY_EXISTS = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t TABLE_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x03);
@@ -91,7 +84,7 @@ protected:
 		EntryPointer entries;
 	};
 
-	static const uint8_t MAX_NUMBER_OF_TABLES_OR_SEQUENCES = 60;
+	static const uint8_t MAX_NUMBER_OF_TABLES_OR_SEQUENCES = 70;
 
 	static const uint8_t MAX_LENGTH_OF_TABLE_OR_SEQUENCE = 20;
 
@@ -117,7 +110,9 @@ protected:
 
 	StorageManagerIF *IPCStore;
 
+#ifdef USE_MODESTORE
 	ModeStoreIF *modeStore;
+#endif
 
 	bool existsModeSequence(Mode_t id);
 

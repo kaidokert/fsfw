@@ -1,10 +1,3 @@
-/*
- * HealthMessage.cpp
- *
- *  Created on: 15.07.2013
- *      Author: tod
- */
-
 #include <framework/health/HealthMessage.h>
 
 void HealthMessage::setHealthMessage(CommandMessage* message, Command_t command,

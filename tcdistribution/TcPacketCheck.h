@@ -1,10 +1,3 @@
-/*
- * TcPacketCheck.h
- *
- *  Created on: 19.06.2012
- *      Author: baetz
- */
-
 #ifndef TCPACKETCHECK_H_
 #define TCPACKETCHECK_H_
 
@@ -36,7 +29,7 @@ protected:
 	 */
 	uint16_t apid;
 public:
-	static const uint8_t INTERFACE_ID = TC_PACKET_CHECK;
+	static const uint8_t INTERFACE_ID = CLASS_ID::TC_PACKET_CHECK;
 	static const ReturnValue_t ILLEGAL_APID = MAKE_RETURN_CODE( 0 );
 	static const ReturnValue_t INCOMPLETE_PACKET = MAKE_RETURN_CODE( 1 );
 	static const ReturnValue_t INCORRECT_CHECKSUM = MAKE_RETURN_CODE( 2 );

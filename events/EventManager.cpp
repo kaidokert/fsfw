@@ -1,40 +1,43 @@
-#include <config/objects/translateObjects.h>
-#include <config/events/translateEvents.h>
-
 #include <framework/events/EventManager.h>
 #include <framework/events/EventMessage.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/ipc/QueueFactory.h>
+#include <framework/ipc/MutexFactory.h>
+
 
 const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
 		sizeof(EventMatchTree::Node), sizeof(EventIdRangeMatcher),
 		sizeof(ReporterRangeMatcher) };
-//TODO: Rather arbitrary. Adjust!
+//If one checks registerListener calls, there are around 40 (to max 50) objects registering for certain events.
+//Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher. So a good guess is 75 to a max of 100 pools required for each, which fits well.
 const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
 
 EventManager::EventManager(object_id_t setObjectId) :
-		SystemObject(setObjectId), eventReportQueue(MAX_EVENTS_PER_CYCLE,
-				EventMessage::EVENT_MESSAGE_SIZE), mutex(NULL), factoryBackend(
+		SystemObject(setObjectId), eventReportQueue(NULL), mutex(NULL), factoryBackend(
 				0, POOL_SIZES, N_ELEMENTS, false, true) {
-	mutex = new MutexId_t;
-	OSAL::createMutex(setObjectId + 1, (mutex));
+	mutex = MutexFactory::instance()->createMutex();
+	eventReportQueue = QueueFactory::instance()->createMessageQueue(
+			MAX_EVENTS_PER_CYCLE, EventMessage::EVENT_MESSAGE_SIZE);
 }
 
 EventManager::~EventManager() {
-	OSAL::deleteMutex(mutex);
-	delete mutex;
+	QueueFactory::instance()->deleteMessageQueue(eventReportQueue);
+	MutexFactory::instance()->deleteMutex(mutex);
 }
 
 MessageQueueId_t EventManager::getEventReportQueue() {
-	return eventReportQueue.getId();
+	return eventReportQueue->getId();
 }
 
-ReturnValue_t EventManager::performOperation() {
+ReturnValue_t EventManager::performOperation(uint8_t opCode) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	while (result == HasReturnvaluesIF::RETURN_OK) {
 		EventMessage message;
-		result = eventReportQueue.receiveMessage(&message);
+		result = eventReportQueue->receiveMessage(&message);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
+#ifdef DEBUG
 			printEvent(&message);
+#endif
 			notifyListeners(&message);
 		}
 	}
@@ -45,7 +48,7 @@ void EventManager::notifyListeners(EventMessage* message) {
 	lockMutex();
 	for (auto iter = listenerList.begin(); iter != listenerList.end(); ++iter) {
 		if (iter->second.match(message)) {
-			eventForwardingSender.sendMessage(iter->first, message,
+			MessageQueueSenderIF::sendMessage(iter->first, message,
 					message->getSender());
 		}
 	}
@@ -103,21 +106,27 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 	return result;
 }
 
+#ifdef DEBUG
+
+//forward declaration, should be implemented by mission
+const char* translateObject(object_id_t object);
+const char * translateEvents(Event event);
+
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
 	case SEVERITY::INFO:
-		string = translateObject(message->getReporter());
-		info << "EVENT: ";
-		if (string != 0) {
-			info << string;
-		} else {
-			info << "0x" << std::hex << message->getReporter() << std::dec;
-		}
-		info << " reported " << translateEvents(message->getEvent()) << " ("
-				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
-				<< message->getParameter1() << " P2: 0x"
-				<< message->getParameter2() << std::dec << std::endl;
+//		string = translateObject(message->getReporter());
+//		info << "EVENT: ";
+//		if (string != 0) {
+//			info << string;
+//		} else {
+//			info << "0x" << std::hex << message->getReporter() << std::dec;
+//		}
+//		info << " reported " << translateEvents(message->getEvent()) << " ("
+//				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
+//				<< message->getParameter1() << " P2: 0x"
+//				<< message->getParameter2() << std::dec << std::endl;
 		break;
 	default:
 		string = translateObject(message->getReporter());
@@ -135,11 +144,12 @@ void EventManager::printEvent(EventMessage* message) {
 	}
 
 }
+#endif
 
 void EventManager::lockMutex() {
-	OSAL::lockMutex(this->mutex, OSAL::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::NO_TIMEOUT);
 }
 
 void EventManager::unlockMutex() {
-	OSAL::unlockMutex(this->mutex);
+	mutex->unlockMutex();
 }

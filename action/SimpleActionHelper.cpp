@@ -1,8 +1,7 @@
-
 #include <framework/action/HasActionsIF.h>
 #include <framework/action/SimpleActionHelper.h>
 SimpleActionHelper::SimpleActionHelper(HasActionsIF* setOwner,
-		MessageQueue* useThisQueue) :
+		MessageQueueIF* useThisQueue) :
 		ActionHelper(setOwner, useThisQueue), isExecuting(false), lastCommander(
 				0), lastAction(0), stepCount(0) {
 }
@@ -24,8 +23,8 @@ void SimpleActionHelper::finish(ReturnValue_t result) {
 	resetHelper();
 }
 
-void SimpleActionHelper::reportData(SerializeIF* data) {
-	ActionHelper::reportData(lastCommander, lastAction, data);
+ReturnValue_t SimpleActionHelper::reportData(SerializeIF* data) {
+	return ActionHelper::reportData(lastCommander, lastAction, data);
 }
 
 void SimpleActionHelper::resetHelper() {

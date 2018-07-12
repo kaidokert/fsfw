@@ -1,24 +1,16 @@
-/*
- * DataPool.cpp
- *
- *  Created on: 17.10.2012
- *      Author: baetz
- */
-
-
 #include <framework/datapool/DataPool.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/ipc/MutexFactory.h>
+
 DataPool::DataPool( void ( *initFunction )( std::map<uint32_t, PoolEntryIF*>* pool_map ) ) {
-	this->mutex = new MutexId_t;
-	OSAL::createMutex( OSAL::buildName('M','T','X','0'), ( this->mutex ) );
+	mutex = MutexFactory::instance()->createMutex();
 	if (initFunction != NULL ) {
 		initFunction( &this->data_pool );
 	}
 }
 
 DataPool::~DataPool() {
-	OSAL::deleteMutex( this->mutex );
-	delete this->mutex;
+	MutexFactory::instance()->deleteMutex(mutex);
 	for ( std::map<uint32_t, PoolEntryIF*>::iterator it = this->data_pool.begin(); it != this->data_pool.end(); ++it ) {
 		delete it->second;
 	}
@@ -61,7 +53,7 @@ PoolEntryIF* DataPool::getRawData( uint32_t data_pool_id ) {
 //}
 
 ReturnValue_t DataPool::freeDataPoolLock() {
-	ReturnValue_t status = OSAL::unlockMutex( this->mutex );
+	ReturnValue_t status = mutex->unlockMutex();
 	if ( status != RETURN_OK ) {
 		error << "DataPool::DataPool: unlock of mutex failed with error code: " << status << std::endl;
 	}
@@ -69,7 +61,7 @@ ReturnValue_t DataPool::freeDataPoolLock() {
 }
 
 ReturnValue_t DataPool::lockDataPool() {
-	ReturnValue_t status = OSAL::lockMutex( this->mutex, OSAL::NO_TIMEOUT );
+	ReturnValue_t status = mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	if ( status != RETURN_OK ) {
 		error << "DataPool::DataPool: lock of mutex failed with error code: " << status << std::endl;
 	}
@@ -112,14 +104,17 @@ uint32_t DataPool::poolIdAndPositionToPid(uint32_t poolId, uint8_t index) {
 	return (poolId << 8) + index;
 }
 
-//TODO: This is not 100% clean. Should return returnValue and type by passing...
-//TODO: Do we need a mutex lock here... I don't think so, as we only check static const values of elements in a list that do not change.
-Type DataPool::getType(uint32_t parameter_id) {
+
+//SHOULDDO: Do we need a mutex lock here... I don't think so, as we only check static const values of elements in a list that do not change.
+//there is no guarantee in the standard, but it seems to me that the implementation is safe -UM
+ReturnValue_t DataPool::getType(uint32_t parameter_id, Type* type) {
 	std::map<uint32_t, PoolEntryIF*>::iterator it = this->data_pool.find( PIDToDataPoolId(parameter_id));
 	if ( it != this->data_pool.end() ) {
-		return it->second->getType();
+		*type = it->second->getType();
+		return RETURN_OK;
 	} else {
-		return Type::UNKNOWN_TYPE;
+		*type = Type::UNKNOWN_TYPE;
+		return RETURN_FAILED;
 	}
 }
 

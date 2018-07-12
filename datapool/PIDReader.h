@@ -1,10 +1,3 @@
-/*
- * PIDReader.h
- *
- *  Created on: 14.05.2014
- *      Author: baetz
- */
-
 #ifndef PIDREADER_H_
 #define PIDREADER_H_
 #include <framework/datapool/DataPool.h>

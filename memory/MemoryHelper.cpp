@@ -1,25 +1,22 @@
-/*
- * MemoryHelper.cpp
- *
- *  Created on: 29.10.2013
- *      Author: Bastian
- */
-
 #include <framework/globalfunctions/crc_ccitt.h>
 #include <framework/memory/MemoryHelper.h>
 #include <framework/memory/MemoryMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serialize/EndianSwapper.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueue* useThisQueue) :
+MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue) :
 		workOnThis(workOnThis), queueToUse(useThisQueue), ipcStore(NULL), ipcAddress(), lastCommand(
 				CommandMessage::CMD_NONE), lastSender(0), reservedSpaceInIPC(
-				NULL) {
+				NULL), busy(false) {
 }
 
 ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
 	lastSender = message->getSender();
 	lastCommand = message->getCommand();
+	if (busy) {
+		debug << "MemHelper: Busy!" << std::endl;
+	}
 	switch (lastCommand) {
 	case MemoryMessage::CMD_MEMORY_DUMP:
 		handleMemoryCheckOrDump(message);
@@ -47,8 +44,10 @@ ReturnValue_t MemoryHelper::initialize() {
 
 void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 		const uint8_t* dataToCopy, const uint32_t size, uint8_t* copyHere) {
+	busy = false;
 	switch (errorCode) {
 	case HasMemoryIF::DO_IT_MYSELF:
+		busy = true;
 		return;
 	case HasMemoryIF::POINTS_TO_MEMORY:
 		memcpy(copyHere, dataToCopy, size);
@@ -75,10 +74,12 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 
 void MemoryHelper::completeDump(ReturnValue_t errorCode,
 		const uint8_t* dataToCopy, const uint32_t size) {
+	busy = false;
 	CommandMessage reply;
 	MemoryMessage::setMemoryReplyFailed(&reply, errorCode, lastCommand);
 	switch (errorCode) {
 	case HasMemoryIF::DO_IT_MYSELF:
+		busy = true;
 		return;
 	case HasReturnvaluesIF::RETURN_OK:
 	case HasMemoryIF::POINTS_TO_MEMORY:
@@ -89,6 +90,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 		} else {
 			memcpy(reservedSpaceInIPC, dataToCopy, size);
 		}
+		/* NO BREAK falls through*/
 	case HasMemoryIF::ACTIVITY_COMPLETED:
 		switch (lastCommand) {
 		case MemoryMessage::CMD_MEMORY_DUMP: {
@@ -109,6 +111,13 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 			reply.setParameter(STATE_MISMATCH);
 			break;
 		}
+		break;
+	case HasMemoryIF::DUMP_NOT_SUPPORTED:
+		if (lastCommand == MemoryMessage::CMD_MEMORY_CHECK){
+			MemoryMessage::setMemoryCheckReply(&reply, 0);
+			MemoryMessage::setCrcReturnValue(&reply,HasMemoryIF::DUMP_NOT_SUPPORTED);
+		}
+		ipcStore->deleteData(ipcAddress);
 		break;
 	default:
 		//Reply is already set to REJECTED.

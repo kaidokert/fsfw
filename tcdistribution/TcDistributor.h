@@ -1,13 +1,13 @@
 #ifndef TCDISTRIBUTOR_H_
 #define TCDISTRIBUTOR_H_
-#include <framework/ipc/MessageQueue.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/objectmanager/SystemObject.h>
-#include <framework/osal/OSAL.h>
+#include <framework/osal/OperatingSystemIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/tasks/ExecutableObjectIF.h>
 #include <framework/tmtcservices/TmTcMessage.h>
+#include <framework/ipc/MessageQueueIF.h>
 #include <map>
 
 
@@ -42,7 +42,7 @@ protected:
 	 * This is the receiving queue for incoming Telecommands.
 	 * The child classes must make its queue id public.
 	 */
-	MessageQueue tcQueue;
+	MessageQueueIF* tcQueue;
 	/**
 	 * The last received incoming packet information is stored in this
 	 * member.
@@ -82,7 +82,7 @@ protected:
 	 */
 	virtual ReturnValue_t callbackAfterSending( ReturnValue_t queueStatus );
 public:
-	static const uint8_t INTERFACE_ID = PACKET_DISTRIBUTION;
+	static const uint8_t INTERFACE_ID = CLASS_ID::PACKET_DISTRIBUTION;
 	static const ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE( 1 );
 	static const ReturnValue_t DESTINATION_NOT_FOUND = MAKE_RETURN_CODE( 2 );
 	/**
@@ -105,7 +105,7 @@ public:
 	 * with distribution.
 	 * @return The error code of the message queue call.
 	 */
-	ReturnValue_t performOperation();
+	ReturnValue_t performOperation(uint8_t opCode);
 	/**
 	 * A simple debug print, that prints all distribution information stored in
 	 * queueMap.

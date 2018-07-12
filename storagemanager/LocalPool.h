@@ -1,10 +1,3 @@
-/*
- * LocalPool.h
- *
- *  Created on: 11.02.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
 #define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
 
@@ -20,9 +13,9 @@
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/storagemanager/StorageManagerIF.h>
+#include <framework/objectmanager/ObjectManagerIF.h>
+#include <framework/internalError/InternalErrorReporterIF.h>
 #include <string.h>
-//TODO: Debugging.. remove!
-//#include <config/objects/translateObjects.h>
 
 /**
  * @brief	The LocalPool class provides an intermediate data storage with
@@ -119,22 +112,6 @@ private:
 	 */
 	uint32_t getRawPosition(store_address_t packet_id);
 	/**
-	 * With this helper method, a free element of \c size is reserved.
-	 *
-	 * @param size	The minimum packet size that shall be reserved.
-	 * @return	Returns the storage identifier within the storage or
-	 * 			StorageManagerIF::INVALID_ADDRESS (in raw).
-	 */
-	/**
-	 * With this helper method, a free element of \c size is reserved.
-	 * @param size	The minimum packet size that shall be reserved.
-	 * @param[out] address Storage ID of the reserved data.
-	 * @return	- #RETURN_OK on success,
-	 * 			- the return codes of #getPoolIndex or #findEmpty otherwise.
-	 */
-	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address);
-protected:
-	/**
 	 * @brief	This is a helper method to find an empty element in a given pool.
 	 * @details	The method searches size_list for the first empty element, so
 	 * 			duration grows with the fill level of the pool.
@@ -143,7 +120,18 @@ protected:
 	 * @return	- #RETURN_OK on success,
 	 * 			- #DATA_STORAGE_FULL if the store is full
 	 */
-	virtual ReturnValue_t findEmpty(uint16_t pool_index, uint16_t* element);
+	ReturnValue_t findEmpty(uint16_t pool_index, uint16_t* element);
+protected:
+	/**
+	 * With this helper method, a free element of \c size is reserved.
+	 * @param size	The minimum packet size that shall be reserved.
+	 * @param[out] address Storage ID of the reserved data.
+	 * @return	- #RETURN_OK on success,
+	 * 			- the return codes of #getPoolIndex or #findEmpty otherwise.
+	 */
+	virtual ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address, bool ignoreFault);
+
+	InternalErrorReporterIF *internalErrorReporter;
 public:
 	/**
 	 * @brief	This is the default constructor for a pool manager instance.
@@ -172,10 +160,17 @@ public:
 	 */
 	virtual ~LocalPool(void);
 	ReturnValue_t addData(store_address_t* storageId, const uint8_t * data,
-			uint32_t size);
+			uint32_t size, bool ignoreFault = false);
 
+	/**
+	 * With this helper method, a free element of \c size is reserved.
+	 *
+	 * @param size	The minimum packet size that shall be reserved.
+	 * @return	Returns the storage identifier within the storage or
+	 * 			StorageManagerIF::INVALID_ADDRESS (in raw).
+	 */
 	ReturnValue_t getFreeElement(store_address_t* storageId,
-			const uint32_t size, uint8_t** p_data);
+			const uint32_t size, uint8_t** p_data, bool ignoreFault = false);
 	ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
 			uint32_t* size);
 	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
@@ -245,11 +240,12 @@ inline uint32_t LocalPool<NUMBER_OF_POOLS>::getRawPosition(
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::reserveSpace(
-		const uint32_t size, store_address_t* address) {
+		const uint32_t size, store_address_t* address, bool ignoreFault) {
 	ReturnValue_t status = getPoolIndex(size, &address->pool_index);
 	if (status != RETURN_OK) {
 		error << "LocalPool( " << std::hex << getObjectId() << std::dec
 				<< " )::reserveSpace: Packet too large." << std::endl;
+		return status;
 	}
 	status = findEmpty(address->pool_index, &address->packet_index);
 	while (status != RETURN_OK && spillsToHigherPools) {
@@ -261,11 +257,17 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::reserveSpace(
 		status = findEmpty(address->pool_index, &address->packet_index);
 	}
 	if (status == RETURN_OK) {
-//		debug << "LocalPool( " << translateObject(getObjectId()) << " )::reserveSpace: Empty position found: Position: Pool: " << address->pool_index << " Index: " << address->packet_index << std::endl;
+//		if (getObjectId() == objects::IPC_STORE && address->pool_index >= 3) {
+//			debug << "Reserve: Pool: " << std::dec << address->pool_index << " Index: " << address->packet_index << std::endl;
+//		}
+
 		size_list[address->pool_index][address->packet_index] = size;
 	} else {
-		error << "LocalPool( " << std::hex << getObjectId() << std::dec
-				<< " )::reserveSpace: Packet store is full." << std::endl;
+		if (!ignoreFault) {
+			internalErrorReporter->storeFull();
+		}
+//		error << "LocalPool( " << std::hex << getObjectId() << std::dec
+//				<< " )::reserveSpace: Packet store is full." << std::endl;
 	}
 	return status;
 }
@@ -274,7 +276,7 @@ template<uint8_t NUMBER_OF_POOLS>
 inline LocalPool<NUMBER_OF_POOLS>::LocalPool(object_id_t setObjectId,
 		const uint16_t element_sizes[NUMBER_OF_POOLS],
 		const uint16_t n_elements[NUMBER_OF_POOLS], bool registered, bool spillsToHigherPools) :
-		SystemObject(setObjectId, registered), spillsToHigherPools(spillsToHigherPools) {
+		SystemObject(setObjectId, registered), spillsToHigherPools(spillsToHigherPools), internalErrorReporter(NULL) {
 	for (uint16_t n = 0; n < NUMBER_OF_POOLS; n++) {
 		this->element_sizes[n] = element_sizes[n];
 		this->n_elements[n] = n_elements[n];
@@ -295,8 +297,8 @@ inline LocalPool<NUMBER_OF_POOLS>::~LocalPool(void) {
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(
-		store_address_t* storageId, const uint8_t* data, uint32_t size) {
-	ReturnValue_t status = reserveSpace(size, storageId);
+		store_address_t* storageId, const uint8_t* data, uint32_t size, bool ignoreFault) {
+	ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
 	if (status == RETURN_OK) {
 		write(*storageId, data, size);
 	}
@@ -305,8 +307,8 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getFreeElement(
-		store_address_t* storageId, const uint32_t size, uint8_t** p_data) {
-	ReturnValue_t status = reserveSpace(size, storageId);
+		store_address_t* storageId, const uint32_t size, uint8_t** p_data, bool ignoreFault) {
+	ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
 	if (status == RETURN_OK) {
 		*p_data = &store[storageId->pool_index][getRawPosition(*storageId)];
 	} else {
@@ -328,19 +330,20 @@ template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(store_address_t packet_id,
 		uint8_t** packet_ptr, uint32_t* size) {
 	ReturnValue_t status = RETURN_FAILED;
-	if ((packet_id.packet_index < n_elements[packet_id.pool_index])
-			&& (packet_id.pool_index < NUMBER_OF_POOLS)) {
-		if (size_list[packet_id.pool_index][packet_id.packet_index]
-				!= STORAGE_FREE) {
-			uint32_t packet_position = getRawPosition(packet_id);
-			*packet_ptr = &store[packet_id.pool_index][packet_position];
-			*size = size_list[packet_id.pool_index][packet_id.packet_index];
-			status = RETURN_OK;
-		} else {
-			status = DATA_DOES_NOT_EXIST;
-		}
+	if (packet_id.pool_index >= NUMBER_OF_POOLS) {
+		return ILLEGAL_STORAGE_ID;
+	}
+	if ((packet_id.packet_index >= n_elements[packet_id.pool_index])) {
+		return ILLEGAL_STORAGE_ID;
+	}
+	if (size_list[packet_id.pool_index][packet_id.packet_index]
+			!= STORAGE_FREE) {
+		uint32_t packet_position = getRawPosition(packet_id);
+		*packet_ptr = &store[packet_id.pool_index][packet_position];
+		*size = size_list[packet_id.pool_index][packet_id.packet_index];
+		status = RETURN_OK;
 	} else {
-		status = ILLEGAL_STORAGE_ID;
+		status = DATA_DOES_NOT_EXIST;
 	}
 	return status;
 }
@@ -348,7 +351,10 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(store_address_t pack
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::deleteData(
 		store_address_t packet_id) {
-//		debug << "LocalPool( " << translateObject(getObjectId()) << " )::deleteData from store " << packet_id.pool_index << ". id is " << packet_id.packet_index << std::endl;
+
+//	if (getObjectId() == objects::IPC_STORE && packet_id.pool_index >= 3) {
+//		debug << "Delete: Pool: " << std::dec << packet_id.pool_index << " Index: " << packet_id.packet_index << std::endl;
+//	}
 	ReturnValue_t status = RETURN_OK;
 	uint32_t page_size = getPageSize(packet_id.pool_index);
 	if ((page_size != 0)
@@ -359,7 +365,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::deleteData(
 		//Set free list
 		size_list[packet_id.pool_index][packet_id.packet_index] = STORAGE_FREE;
 	} else {
-		//packet_index is too large
+		//pool_index or packet_index is too large
 		error << "LocalPool:deleteData failed." << std::endl;
 		status = ILLEGAL_STORAGE_ID;
 	}
@@ -382,7 +388,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::deleteData(uint8_t* ptr,
 		//Not sure if new allocates all stores in order. so better be careful.
 		if ((store[n] <= ptr) && (&store[n][n_elements[n]*element_sizes[n]]) > ptr) {
 			localId.pool_index = n;
-			uint32_t deltaAddress = (uint32_t) ptr - (uint32_t) store[n];
+			uint32_t deltaAddress = ptr - store[n];
 			//Getting any data from the right "block" is ok. This is necessary, as IF's sometimes don't point to the first element of an object.
 			localId.packet_index = deltaAddress / element_sizes[n];
 			result = deleteData(localId);
@@ -404,6 +410,11 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::initialize() {
 	if (result != RETURN_OK) {
 		return result;
 	}
+	internalErrorReporter = objectManager->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
+	if (internalErrorReporter == NULL){
+		return RETURN_FAILED;
+	}
+
 	//Check if any pool size is large than the maximum allowed.
 	for (uint8_t count = 0; count < NUMBER_OF_POOLS; count++) {
 		if (element_sizes[count] >= STORAGE_FREE) {

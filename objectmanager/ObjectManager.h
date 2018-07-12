@@ -54,7 +54,7 @@ public:
 	/**
 	 *	@brief	In the class's destructor, all objects in the list are deleted.
 	 */
-	//TODO: Check, if deleting works!
+	//SHOULDDO: If, for some reason, deleting an ObjectManager instance is required, check if this works.
 	virtual ~ObjectManager( void );
 	ReturnValue_t insert( object_id_t id, SystemObjectIF* object );
 	ReturnValue_t remove( object_id_t id );

@@ -1,4 +1,5 @@
 #include <framework/tmtcservices/TmTcMessage.h>
+#include <string.h>
 
 
 TmTcMessage::TmTcMessage() {

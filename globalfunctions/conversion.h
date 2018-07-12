@@ -1,15 +1,8 @@
-/*
- * conversion.h
- *
- *  Created on: 07.05.2012
- *      Author: baetz
- */
-
 #ifndef CONVERSION_H_
 #define CONVERSION_H_
 
 
-#include <framework/osal/OSAL.h>
+#include <stdint.h>
 
 
 void convertToByteStream( uint16_t value, uint8_t* buffer, uint32_t* size );

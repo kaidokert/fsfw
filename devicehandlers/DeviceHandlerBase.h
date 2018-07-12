@@ -6,9 +6,7 @@
 #include <framework/datapool/DataSet.h>
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/devicehandlers/DeviceCommunicationIF.h>
-#include <framework/devicehandlers/DeviceHandlerFDIR.h>
 #include <framework/devicehandlers/DeviceHandlerIF.h>
-#include <framework/devicehandlers/PollingSequenceExecutableIF.h>
 #include <framework/health/HealthHelper.h>
 #include <framework/modes/HasModesIF.h>
 #include <framework/objectmanager/SystemObject.h>
@@ -16,7 +14,17 @@
 #include <framework/parameters/ParameterHelper.h>
 #include <framework/power/PowerSwitchIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <framework/tasks/ExecutableObjectIF.h>
+#include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
+#include <framework/datapool/HkSwitchHelper.h>
+#include <framework/serialize/SerialFixedArrayListAdapter.h>
 #include <map>
+#include <framework/ipc/MessageQueueIF.h>
+#include <framework/tasks/PeriodicTaskIF.h>
+
+namespace Factory{
+void setStaticFrameworkObjectIds();
+}
 
 class StorageManagerIF;
 
@@ -27,7 +35,7 @@ class StorageManagerIF;
  * communication with commanding objects.
  * It inherits SystemObject and thus can be created by the ObjectManagerIF.
  *
- * This class is called by the PollingSequenceTable periodically. Thus, the execution is divided into PST cycles and steps within a cycle.
+ * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
  * For each step an RMAP action is selected and executed. If data has been received (eg in case of an RMAP Read), the data will be interpreted.
  * The action for each step can be defined by the child class but as most device handlers share a 4-call (Read-getRead-write-getWrite) structure,
  * a default implementation is provided.
@@ -36,12 +44,13 @@ class StorageManagerIF;
  */
 class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasReturnvaluesIF,
-		public PollingSequenceExecutableIF,
+		public ExecutableObjectIF,
 		public SystemObject,
 		public HasModesIF,
 		public HasHealthIF,
 		public HasActionsIF,
 		public ReceivesParameterMessagesIF {
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
 	 * The constructor passes the objectId to the SystemObject().
@@ -54,16 +63,16 @@ public:
 			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
 			object_id_t deviceCommunication, uint32_t thermalStatePoolId =
 					PoolVariableIF::NO_PARAMETER,
-			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER, FDIRBase* fdirInstance = NULL, uint32_t cmdQueueSize = 20);
+			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
+			FailureIsolationBase* fdirInstance = NULL, uint32_t cmdQueueSize = 20);
 
 	virtual MessageQueueId_t getCommandQueue(void) const;
 
-	virtual void performInPST(uint8_t counter);
+	virtual ReturnValue_t performOperation(uint8_t counter);
 
 	virtual ReturnValue_t initialize();
 
 	/**
-	 * MUST be called after initialize(), not before! TODO: Is this statement still valid?
 	 *
 	 * @param parentQueueId
 	 */
@@ -81,13 +90,15 @@ public:
 	HealthState getHealth();
 	ReturnValue_t setHealth(HealthState health);
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-				ParameterWrapper *parameterWrapper,
-				const ParameterWrapper *newValues, uint16_t startAtIndex);
+			ParameterWrapper *parameterWrapper,
+			const ParameterWrapper *newValues, uint16_t startAtIndex);
+
+	void setTaskIF(PeriodicTaskIF* interface);
 protected:
 	/**
 	 * The Returnvalues id of this class, required by HasReturnvaluesIF
 	 */
-	static const uint8_t INTERFACE_ID = DEVICE_HANDLER_BASE;
+	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
 
 	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(4);
 	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5);
@@ -105,19 +116,6 @@ protected:
 	static const DeviceCommandId_t RAW_COMMAND_ID = -1;
 	static const DeviceCommandId_t NO_COMMAND_ID = -2;
 	static const MessageQueueId_t NO_COMMANDER = 0;
-
-	/**
-	 * RMAP Action that will be executed.
-	 *
-	 * This is used by the child class to tell the base class what to do.
-	 */
-	enum RmapAction_t {
-		SEND_WRITE,				//!< RMAP send write
-		GET_WRITE, //!< RMAP get write
-		SEND_READ, //!< RMAP send read
-		GET_READ,  //!< RMAP get read
-		NOTHING    //!< Do nothing.
-	};
 
 	/**
 	 * Pointer to the raw packet that will be sent.
@@ -143,7 +141,7 @@ protected:
 	Submode_t submode;
 
 	/**
-	 * This is the counter value from performInPST().
+	 * This is the counter value from performOperation().
 	 */
 	uint8_t pstStep;
 
@@ -163,11 +161,12 @@ protected:
 	} wiretappingMode;
 
 	/**
-	 * the message queue which commanded raw mode
+	 * A message queue that accepts raw replies
 	 *
-	 * This is the one to receive raw replies
+	 * Statically initialized in initialize() to a configurable object. Used when there is no method
+	 * of finding a recipient, ie raw mode and reporting erreonous replies
 	 */
-	MessageQueueId_t theOneWhoReceivesRawTraffic;
+	MessageQueueId_t defaultRawReceiver;
 
 	store_address_t storedRawData;
 
@@ -176,7 +175,7 @@ protected:
 	 *
 	 * if #isWiretappingActive all raw communication from and to the device will be sent to this queue
 	 */
-	MessageQueueId_t theOneWhoWantsToReadRawTraffic;
+	MessageQueueId_t requestedRawTraffic;
 
 	/**
 	 * the object used to set power switches
@@ -208,7 +207,7 @@ protected:
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
 	 */
-	MessageQueue commandQueue;
+	MessageQueueIF* commandQueue;
 
 	/**
 	 * this is the datapool variable with the thermal state of the device
@@ -241,12 +240,21 @@ protected:
 
 	uint32_t ignoreMissedRepliesCount; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
 
-	FDIRBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
+	FailureIsolationBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
+
+	HkSwitchHelper hkSwitcher;
 
 	bool defaultFDIRUsed; //!< To correctly delete the default instance.
 
 	bool switchOffWasReported; //!< Indicates if SWITCH_WENT_OFF was already thrown.
 
+	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
+
+	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
+
+	static object_id_t defaultFDIRParentId; //!< Object which may be the root cause of an identified fault.
+
+	PeriodicTaskIF* executingTask;
 	/**
 	 * Helper function to report a missed reply
 	 *
@@ -594,6 +602,12 @@ protected:
 			MessageQueueId_t sendTo, bool isCommand = false);
 
 	/**
+	 * Calls replyRawData() with #defaultRawReceiver, but checks if wiretapping is active and if so,
+	 * does not send the Data as the wiretapping will have sent it already
+	 */
+	void replyRawReplyIfnotWiretapped(const uint8_t *data, size_t len);
+
+	/**
 	 * Return the switches connected to the device.
 	 *
 	 * The default implementation returns one switch set in the ctor.
@@ -664,6 +678,11 @@ protected:
 	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
 	/**
+	 * build a list of sids and pass it to the #hkSwitcher
+	 */
+	virtual void changeHK(Mode_t mode, Submode_t submode, bool enable);
+
+	/**
 	 * Children can overwrite this function to suppress checking of the command Queue
 	 *
 	 * This can be used when the child does not want to receive a command in a certain
@@ -679,7 +698,7 @@ protected:
 	bool isAwaitingReply();
 
 	void handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t commandId,
-			bool neverInDataPool = false);
+			bool neverInDataPool = false, bool forceDirectTm = false);
 
 	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
 			uint32_t *msToReachTheMode);
@@ -732,12 +751,6 @@ protected:
 	virtual ReturnValue_t acceptExternalDeviceCommands();
 
 	bool commandIsExecuting(DeviceCommandId_t commandId);
-private:
-
-	/**
-	 * Information about commands
-	 */
-	DeviceCommandMap deviceCommandMap;
 
 	/**
 	 * Information about expected replies
@@ -750,6 +763,7 @@ private:
 		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
 		DeviceCommandMap::iterator command; //!< The command that expects this reply.
 	};
+
 	/**
 	 * Definition for the important reply Map.
 	 */
@@ -766,6 +780,15 @@ private:
 	 *     - The deviceReplyInfo.delayCycles is == 0
 	 */
 	DeviceReplyMap deviceReplyMap;
+
+	/**
+	 * Information about commands
+	 */
+	DeviceCommandMap deviceCommandMap;
+
+	ActionHelper actionHelper;
+
+private:
 
 	/**
 	 * State a cookie is in.
@@ -837,8 +860,6 @@ private:
 	 */
 	const uint8_t deviceSwitch;
 
-	ActionHelper actionHelper;
-
 	/**
 	 * read the command queue
 	 */
@@ -880,8 +901,9 @@ private:
 	 *
 	 * @param data the found packet
 	 * @param id the found id
+	 * @foundLen the length of the packet
 	 */
-	void handleReply(const uint8_t *data, DeviceCommandId_t id);
+	void handleReply(const uint8_t *data, DeviceCommandId_t id, uint32_t foundLen);
 
 	void replyToReply(DeviceReplyMap::iterator iter, ReturnValue_t status);
 	/**

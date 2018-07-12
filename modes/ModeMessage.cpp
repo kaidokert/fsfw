@@ -1,10 +1,3 @@
-/*
- * ModeMessage.cpp
- *
- *  Created on: 12.07.2013
- *      Author: tod
- */
-
 #include <framework/modes/ModeMessage.h>
 
 Mode_t ModeMessage::getMode(const CommandMessage* message) {

@@ -1,10 +1,3 @@
-/*
- * Subsystem.cpp
- *
- *  Created on: 12.07.2013
- *      Author: tod
- */
-
 #include <framework/health/HealthMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serialize/SerialArrayListAdapter.h>
@@ -20,7 +13,11 @@ Subsystem::Subsystem(object_id_t setObjectId, object_id_t parent,
 				false), uptimeStartTable(0), currentTargetTable(), targetMode(
 				0), targetSubmode(SUBMODE_NONE), initialMode(0), currentSequenceIterator(), modeTables(
 				maxNumberOfTables), modeSequences(maxNumberOfSequences), IPCStore(
-				NULL), modeStore(NULL) {
+				NULL)
+#ifdef USE_MODESTORE
+,modeStore(NULL)
+#endif
+{
 
 }
 
@@ -78,7 +75,7 @@ void Subsystem::performChildOperation() {
 	if (isInTransition) {
 		if (commandsOutstanding <= 0) { //all children of the current table were commanded and replied
 			if (currentSequenceIterator.value == NULL) { //we're through with this sequence
-				if (checkStateAgainstTable(currentTargetTable) == RETURN_OK) {
+				if (checkStateAgainstTable(currentTargetTable, targetSubmode) == RETURN_OK) {
 					setMode(targetMode, targetSubmode);
 					isInTransition = false;
 					return;
@@ -89,19 +86,19 @@ void Subsystem::performChildOperation() {
 				}
 			}
 			if (currentSequenceIterator->checkSuccess()) {
-				if (checkStateAgainstTable(getCurrentTable()) != RETURN_OK) {
+				if (checkStateAgainstTable(getCurrentTable(), targetSubmode) != RETURN_OK) {
 					transitionFailed(TABLE_CHECK_FAILED,
 							currentSequenceIterator->getTableId());
 					return;
 				}
 			}
 			if (currentSequenceIterator->getWaitSeconds() != 0) {
-				if (uptimeStartTable != 0) {
-					OSAL::getUptime(&uptimeStartTable);
+				if (uptimeStartTable == 0) {
+					Clock::getUptime(&uptimeStartTable);
 					return;
 				} else {
 					uint32_t uptimeNow;
-					OSAL::getUptime(&uptimeNow);
+					Clock::getUptime(&uptimeNow);
 					if ((uptimeNow - uptimeStartTable)
 							< (currentSequenceIterator->getWaitSeconds() * 1000)) {
 						return;
@@ -111,7 +108,7 @@ void Subsystem::performChildOperation() {
 			uptimeStartTable = 0;
 			//next Table, but only if there is one
 			if ((++currentSequenceIterator).value != NULL) { //we're through with this sequence
-				executeTable(getCurrentTable());
+				executeTable(getCurrentTable(), targetSubmode);
 			}
 		}
 	} else {
@@ -120,7 +117,7 @@ void Subsystem::performChildOperation() {
 			childrenChangedHealth = false;
 			startTransition(mode, submode);
 		} else if (childrenChangedMode) {
-			if (checkStateAgainstTable(currentTargetTable) != RETURN_OK) {
+			if (checkStateAgainstTable(currentTargetTable, submode) != RETURN_OK) {
 				triggerEvent(CANT_KEEP_MODE, mode, submode);
 				cantKeepMode();
 			}
@@ -315,7 +312,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 		CommandMessage reply;
 		ModeSequenceMessage::setModeSequenceMessage(&reply,
 				ModeSequenceMessage::FREE_SEQUENCE_SLOTS, freeSlots);
-		commandQueue.reply(&reply);
+		commandQueue->reply(&reply);
 	}
 		break;
 	case ModeSequenceMessage::READ_FREE_TABLE_SLOTS: {
@@ -323,7 +320,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 		CommandMessage reply;
 		ModeSequenceMessage::setModeSequenceMessage(&reply,
 				ModeSequenceMessage::FREE_TABLE_SLOTS, free);
-		commandQueue.reply(&reply);
+		commandQueue->reply(&reply);
 	}
 		break;
 	default:
@@ -335,10 +332,10 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 void Subsystem::replyToCommand(ReturnValue_t status, uint32_t parameter) {
 	if (status == RETURN_OK) {
 		CommandMessage reply(CommandMessage::REPLY_COMMAND_OK, 0, 0);
-		commandQueue.reply(&reply);
+		commandQueue->reply(&reply);
 	} else {
 		CommandMessage reply(CommandMessage::REPLY_REJECTED, status, 0);
-		commandQueue.reply(&reply);
+		commandQueue->reply(&reply);
 	}
 }
 
@@ -372,13 +369,20 @@ ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry>* sequence,
 	}
 
 	if (inStore) {
+#ifdef USE_MODESTORE
 		result = modeStore->storeArray(sequence,
 				&(modeSequences.find(id)->entries.firstLinkedElement));
 		if (result != RETURN_OK) {
 			modeSequences.erase(id);
 		}
+#else
+		modeSequences.erase(id);
+		return RETURN_FAILED;
+#endif
 	}
+
 	return result;
+
 }
 
 ReturnValue_t Subsystem::addTable(ArrayList<ModeListEntry> *table, Mode_t id,
@@ -408,11 +412,16 @@ ReturnValue_t Subsystem::addTable(ArrayList<ModeListEntry> *table, Mode_t id,
 	}
 
 	if (inStore) {
+#ifdef USE_MODESTORE
 		result = modeStore->storeArray(table,
 				&(modeTables.find(id)->firstLinkedElement));
 		if (result != RETURN_OK) {
 			modeTables.erase(id);
 		}
+#else
+		modeTables.erase(id);
+		return RETURN_FAILED;
+#endif
 	}
 	return result;
 }
@@ -433,7 +442,9 @@ ReturnValue_t Subsystem::deleteSequence(Mode_t id) {
 		return ACCESS_DENIED;
 	}
 
+#ifdef USE_MODESTORE
 	modeStore->deleteList(sequenceInfo->entries.firstLinkedElement);
+#endif
 	modeSequences.erase(id);
 	return RETURN_OK;
 }
@@ -453,7 +464,10 @@ ReturnValue_t Subsystem::deleteTable(Mode_t id) {
 	if (!pointer->islinked) {
 		return ACCESS_DENIED;
 	}
+
+#ifdef USE_MODESTORE
 	modeStore->deleteList(pointer->firstLinkedElement);
+#endif
 	modeSequences.erase(id);
 	return RETURN_OK;
 }
@@ -466,11 +480,17 @@ ReturnValue_t Subsystem::initialize() {
 	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	modeStore = objectManager->get<ModeStoreIF>(objects::MODE_STORE);
-
-	if ((IPCStore == NULL) || (modeStore == NULL)) {
+	if (IPCStore == NULL) {
 		return RETURN_FAILED;
 	}
+
+#ifdef USE_MODESTORE
+	modeStore = objectManager->get<ModeStoreIF>(objects::MODE_STORE);
+
+	if (modeStore == NULL) {
+		return RETURN_FAILED;
+	}
+#endif
 
 	if ((modeSequences.maxSize() > MAX_NUMBER_OF_TABLES_OR_SEQUENCES)
 			|| (modeTables.maxSize() > MAX_NUMBER_OF_TABLES_OR_SEQUENCES)) {
@@ -488,9 +508,10 @@ MessageQueueId_t Subsystem::getSequenceCommandQueue() const {
 
 ReturnValue_t Subsystem::checkModeCommand(Mode_t mode, Submode_t submode,
 		uint32_t* msToReachTheMode) {
-	if (submode != SUBMODE_NONE) {
-		return INVALID_SUBMODE;
-	}
+	//Need to accept all submodes to be able to inherit submodes
+//	if (submode != SUBMODE_NONE) {
+//		return INVALID_SUBMODE;
+//	}
 
 	if (isInTransition && (mode != getFallbackSequence(targetMode))) {
 		return HasModesIF::IN_TRANSITION;
@@ -516,7 +537,7 @@ void Subsystem::startTransition(Mode_t sequence, Submode_t submode) {
 	++currentSequenceIterator;
 
 	if (currentSequenceIterator.value != NULL) {
-		executeTable(getCurrentTable());
+		executeTable(getCurrentTable(), targetSubmode);
 	}
 }
 
@@ -598,7 +619,7 @@ void Subsystem::sendSerializablesAsCommandMessage(Command_t command,
 	}
 	CommandMessage reply;
 	ModeSequenceMessage::setModeSequenceMessage(&reply, command, address);
-	if (commandQueue.reply(&reply) != RETURN_OK) {
+	if (commandQueue->reply(&reply) != RETURN_OK) {
 		IPCStore->deleteData(address);
 	}
 }

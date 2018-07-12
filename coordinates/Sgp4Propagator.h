@@ -7,14 +7,15 @@
 
 class Sgp4Propagator {
 public:
-	static const uint8_t INTERFACE_ID = SGP4PROPAGATOR_CLASS;
-	static const ReturnValue_t INVALID_ECCENTRICITY = MAKE_RETURN_CODE(0x01);
-	static const ReturnValue_t INVALID_MEAN_MOTION = MAKE_RETURN_CODE(0x02);
-	static const ReturnValue_t INVALID_PERTURBATION_ELEMENTS = MAKE_RETURN_CODE(0x03);
-	static const ReturnValue_t INVALID_SEMI_LATUS_RECTUM = MAKE_RETURN_CODE(0x04);
-	static const ReturnValue_t INVALID_EPOCH_ELEMENTS = MAKE_RETURN_CODE(0x05);
-	static const ReturnValue_t SATELLITE_HAS_DECAYED = MAKE_RETURN_CODE(0x06);
-	static const ReturnValue_t TLE_TOO_OLD = MAKE_RETURN_CODE(0xA1);
+	static const uint8_t INTERFACE_ID = CLASS_ID::SGP4PROPAGATOR_CLASS;
+	static const ReturnValue_t INVALID_ECCENTRICITY = MAKE_RETURN_CODE(0xA1);
+	static const ReturnValue_t INVALID_MEAN_MOTION = MAKE_RETURN_CODE(0xA2);
+	static const ReturnValue_t INVALID_PERTURBATION_ELEMENTS = MAKE_RETURN_CODE(0xA3);
+	static const ReturnValue_t INVALID_SEMI_LATUS_RECTUM = MAKE_RETURN_CODE(0xA4);
+	static const ReturnValue_t INVALID_EPOCH_ELEMENTS = MAKE_RETURN_CODE(0xA5);
+	static const ReturnValue_t SATELLITE_HAS_DECAYED = MAKE_RETURN_CODE(0xA6);
+	static const ReturnValue_t TLE_TOO_OLD = MAKE_RETURN_CODE(0xB1);
+	static const ReturnValue_t TLE_NOT_INITIALIZED = MAKE_RETURN_CODE(0xB2);
 
 
 
@@ -33,6 +34,7 @@ public:
 	ReturnValue_t propagate(double *position, double *velocity, timeval time, uint8_t gpsUtcOffset);
 
 private:
+	bool initialized;
 	timeval epoch;
 	elsetrec satrec;
 	gravconsttype whichconst;

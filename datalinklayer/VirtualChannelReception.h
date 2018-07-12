@@ -67,7 +67,7 @@ protected:
 	 * required.
 	 * @param frame	The Tc Transfer Frame to handle.
 	 * @param clcw	Any changes on the CLCW shall be done with this method.
-	 * @return Always returns @c FRAME_OK.
+	 * @return Always returns @c RETURN_OK.
 	 */
 	ReturnValue_t handleBDFrame( TcTransferFrame* frame, ClcwIF* clcw );
 	/**

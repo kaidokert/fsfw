@@ -1,10 +1,3 @@
-/*
- * DataSet.cpp
- *
- *  Created on: 24.10.2012
- *      Author: baetz
- */
-
 #include <framework/datapool/DataSet.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
@@ -45,12 +38,7 @@ ReturnValue_t DataSet::read() {
 }
 
 ReturnValue_t DataSet::commit(uint8_t valid) {
-	for (uint16_t count = 0; count < fill_count; count++) {
-		if (registeredVariables[count]->getReadWriteMode()
-				!= PoolVariableIF::VAR_READ) {
-			registeredVariables[count]->setValid(valid);
-		}
-	}
+	setValid(valid);
 	return commit();
 }
 
@@ -137,6 +125,15 @@ uint32_t DataSet::getSerializedSize() const {
 		size += registeredVariables[count]->getSerializedSize();
 	}
 	return size;
+}
+
+void DataSet::setValid(uint8_t valid) {
+	for (uint16_t count = 0; count < fill_count; count++) {
+		if (registeredVariables[count]->getReadWriteMode()
+				!= PoolVariableIF::VAR_READ) {
+			registeredVariables[count]->setValid(valid);
+		}
+	}
 }
 
 ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, int32_t* size,

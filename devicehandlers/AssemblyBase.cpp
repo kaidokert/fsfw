@@ -40,11 +40,6 @@ void AssemblyBase::doStartTransition(Mode_t mode, Submode_t submode) {
 	ReturnValue_t result = commandChildren(mode, submode);
 	if (result == NEED_SECOND_STEP) {
 		internalState = STATE_NEED_SECOND_STEP;
-	} else if (result != RETURN_OK) {
-		//TODO: Debug
-		debug << std::hex << getObjectId()
-				<< ": AssemblyBase::commandChildren returned: " << result
-				<< std::dec << std::endl;
 	}
 }
 
@@ -140,7 +135,6 @@ void AssemblyBase::handleModeTransitionFailed(ReturnValue_t result) {
 	if (targetMode == MODE_OFF) {
 		triggerEvent(CHILD_PROBLEMS, result);
 		internalState = STATE_NONE;
-		//TODO: Maybe go to ERROR_ON here. Does this cause problems in subsystem?
 		setMode(targetMode, targetSubmode);
 	} else {
 		if (handleChildrenChangedHealth()) {
@@ -157,7 +151,7 @@ void AssemblyBase::sendHealthCommand(MessageQueueId_t sendTo,
 	CommandMessage command;
 	HealthMessage::setHealthMessage(&command, HealthMessage::HEALTH_SET,
 			health);
-	if (commandQueue.sendMessage(sendTo, &command) == RETURN_OK) {
+	if (commandQueue->sendMessage(sendTo, &command) == RETURN_OK) {
 		commandsOutstanding++;
 	}
 }

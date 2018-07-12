@@ -9,12 +9,14 @@
 #define TIMEMESSAGE_H_
 
 #include <framework/ipc/MessageQueueMessage.h>
+#include <framework/timemanager/Clock.h>
+#include <cstring>
 
 class TimeMessage : public MessageQueueMessage {
 protected:
 	/**
 	 * @brief	This call always returns the same fixed size of the message.
-	 * @return	Returns HEADER_SIZE + \c sizeof(timeval).
+	 * @return	Returns HEADER_SIZE + \c sizeof(timeval) + sizeof(uint32_t).
 	 */
 	size_t getMinimumMessageSize();
 public:
@@ -22,7 +24,7 @@ public:
 	/**
 	 * @ brief the size of a TimeMessage
 	 */
-	static const uint32_t MAX_SIZE = HEADER_SIZE + sizeof(timeval);
+	static const uint32_t MAX_SIZE = HEADER_SIZE + sizeof(timeval) + sizeof(uint32_t);
 
 	/**
 	 * @brief	In the default constructor, only the message_size is set.
@@ -31,9 +33,10 @@ public:
 	/**
 	 * @brief	With this constructor, the passed time information is directly put
 	 * 			into the message.
-	 * @param setTime The time information to put into the message.
+	 * @param 	setTime The time information to put into the message.
+	 * @param 	counterValue The counterValue to put into the message (GPS PPS).
 	 */
-	TimeMessage( timeval setTime );
+	TimeMessage( timeval setTime, uint32_t counterValue = 0 );
 	/**
 	 * @brief	The class's destructor is empty.
 	 */
@@ -43,6 +46,11 @@ public:
 	 * @return	Returns the time stored in this packet.
 	 */
 	timeval getTime();
+	/**
+	 * @brief 	This getter returns the CounterValue in uint32_t format.
+	 * @return 	Returns the CounterValue stored in this packet.
+	 */
+	uint32_t getCounterValue();
 };
 
 #endif /* TIMEMESSAGE_H_ */

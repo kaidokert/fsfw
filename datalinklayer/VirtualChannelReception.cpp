@@ -48,15 +48,22 @@ ReturnValue_t VirtualChannelReception::doFARM(TcTransferFrame* frame, ClcwIF* cl
 
 ReturnValue_t VirtualChannelReception::frameAcceptanceAndReportingMechanism(TcTransferFrame* frame,
 		ClcwIF* clcw) {
-	ReturnValue_t status = FRAME_OK;
-	status = doFARM(frame, &internalClcw);
+	ReturnValue_t result = RETURN_OK;
+	result = doFARM(frame, &internalClcw);
 	internalClcw.setReceiverFrameSequenceNumber(vR);
 	internalClcw.setFarmBCount(farmBCounter);
 	clcw->setWhole(internalClcw.getAsWhole());
-	if (status == FRAME_OK) {
-		status = mapDemultiplexing(frame);
+	switch (result) {
+	case RETURN_OK:
+		return mapDemultiplexing(frame);
+	case BC_IS_SET_VR_COMMAND:
+	case BC_IS_UNLOCK_COMMAND:
+		//Need to catch these codes to avoid error reporting later.
+		return RETURN_OK;
+	default:
+		break;
 	}
-	return status;
+	return result;
 }
 
 ReturnValue_t VirtualChannelReception::addMapChannel(uint8_t mapId, MapPacketExtractionIF* object) {
@@ -71,7 +78,7 @@ ReturnValue_t VirtualChannelReception::addMapChannel(uint8_t mapId, MapPacketExt
 
 ReturnValue_t VirtualChannelReception::handleBDFrame(TcTransferFrame* frame, ClcwIF* clcw) {
 	farmBCounter++;
-	return FRAME_OK;
+	return RETURN_OK;
 }
 
 ReturnValue_t VirtualChannelReception::handleBCFrame(TcTransferFrame* frame, ClcwIF* clcw) {

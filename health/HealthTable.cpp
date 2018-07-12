@@ -1,17 +1,16 @@
 #include <framework/health/HealthTable.h>
 #include <framework/serialize/SerializeAdapter.h>
+#include <framework/ipc/MutexFactory.h>
 
 HealthTable::HealthTable(object_id_t objectid) :
 		SystemObject(objectid) {
-	mutex = new MutexId_t;
-	OSAL::createMutex(objectid + 1, mutex);
+	mutex = MutexFactory::instance()->createMutex();;
 
 	mapIterator = healthMap.begin();
 }
 
 HealthTable::~HealthTable() {
-	OSAL::deleteMutex(mutex);
-	delete mutex;
+	MutexFactory::instance()->deleteMutex(mutex);
 }
 
 ReturnValue_t HealthTable::registerObject(object_id_t object,
@@ -27,45 +26,45 @@ ReturnValue_t HealthTable::registerObject(object_id_t object,
 
 void HealthTable::setHealth(object_id_t object,
 		HasHealthIF::HealthState newState) {
-	OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		iter->second = newState;
 	}
-	OSAL::unlockMutex(mutex);
+	mutex->unlockMutex();
 }
 
 HasHealthIF::HealthState HealthTable::getHealth(object_id_t object) {
 	HasHealthIF::HealthState state = HasHealthIF::HEALTHY;
-	OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		state = iter->second;
 	}
-	OSAL::unlockMutex(mutex);
+	mutex->unlockMutex();
 	return state;
 }
 
 uint32_t HealthTable::getPrintSize() {
-	OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	uint32_t size = healthMap.size() * 5 + 2;
-	OSAL::unlockMutex(mutex);
+	mutex->unlockMutex();
 	return size;
 }
 
 bool HealthTable::hasHealth(object_id_t object) {
 	bool exits = false;
-	OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		exits = true;
 	}
-	OSAL::unlockMutex(mutex);
+	mutex->unlockMutex();
 	return exits;
 }
 
 void HealthTable::printAll(uint8_t* pointer, uint32_t maxSize) {
-	OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	uint32_t size = 0;
 	uint16_t count = healthMap.size();
 	ReturnValue_t result = SerializeAdapter<uint16_t>::serialize(&count,
@@ -80,13 +79,13 @@ void HealthTable::printAll(uint8_t* pointer, uint32_t maxSize) {
 		result = SerializeAdapter<uint8_t>::serialize(&health, &pointer, &size,
 				maxSize, true);
 	}
-	OSAL::unlockMutex(mutex);
+	mutex->unlockMutex();
 }
 
 ReturnValue_t HealthTable::iterate(
 		std::pair<object_id_t, HasHealthIF::HealthState> *value, bool reset) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	if (reset) {
 		mapIterator = healthMap.begin();
 	}
@@ -95,7 +94,7 @@ ReturnValue_t HealthTable::iterate(
 	}
 	*value = *mapIterator;
 	mapIterator++;
-	OSAL::unlockMutex(mutex);
+	mutex->unlockMutex();
 
 	return result;
 }

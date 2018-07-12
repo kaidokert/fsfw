@@ -1,11 +1,5 @@
-/*
- * ParameterMessage.cpp
- *
- *  Created on: 28.11.2015
- *      Author: mohr
- */
-
 #include <framework/parameters/ParameterMessage.h>
+#include <framework/objectmanager/ObjectManagerIF.h>
 
 ParameterId_t ParameterMessage::getParameterId(const CommandMessage* message) {
 	return message->getParameter();
@@ -35,4 +29,20 @@ void ParameterMessage::setParameterLoadCommand(CommandMessage* message,
 	message->setCommand(CMD_PARAMETER_LOAD);
 	message->setParameter(id);
 	message->setParameter2(storageID.raw);
+}
+
+void ParameterMessage::clear(CommandMessage* message) {
+	switch (message->getCommand()) {
+	case CMD_PARAMETER_LOAD:
+	case REPLY_PARAMETER_DUMP: {
+		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+				objects::IPC_STORE);
+		if (ipcStore != NULL) {
+			ipcStore->deleteData(getStoreId(message));
+		}
+		break;
+	}
+	default:
+		break;
+	}
 }

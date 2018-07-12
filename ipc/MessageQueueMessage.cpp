@@ -1,11 +1,7 @@
-/*
- * MessageQueueMessage.cpp
- *
- *  Created on: 22.11.2012
- *      Author: baetz
- */
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+
+#include <string.h>
 
 MessageQueueMessage::MessageQueueMessage() :
 		messageSize(this->HEADER_SIZE) {

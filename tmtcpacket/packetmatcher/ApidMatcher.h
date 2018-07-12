@@ -1,10 +1,3 @@
-/*
- * ApidMatcher.h
- *
- *  Created on: 09.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_TMTCPACKET_PACKETMATCHER_APIDMATCHER_H_
 #define FRAMEWORK_TMTCPACKET_PACKETMATCHER_APIDMATCHER_H_
 
@@ -18,6 +11,9 @@ private:
 public:
 	ApidMatcher(uint16_t setApid) :
 			apid(setApid) {
+	}
+	ApidMatcher(TmPacketMinimal* test) :
+			apid(test->getAPID()) {
 	}
 	bool match(TmPacketMinimal* packet) {
 		if (packet->getAPID() == apid) {

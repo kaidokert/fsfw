@@ -15,8 +15,7 @@
  */
 class CCSDSReturnValuesIF: public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = CCSDS_HANDLER_IF;	//!< Basic ID of the interface.
-	static const ReturnValue_t FRAME_OK = RETURN_OK;	//!< A value to indicate that a frame is ok.
+	static const uint8_t INTERFACE_ID = CLASS_ID::CCSDS_HANDLER_IF;	//!< Basic ID of the interface.
 
 	static const ReturnValue_t BC_IS_SET_VR_COMMAND = MAKE_RETURN_CODE( 0x01 );	//!< A value to describe a BC frame.
 	static const ReturnValue_t BC_IS_UNLOCK_COMMAND = MAKE_RETURN_CODE( 0x02 );	//!< A value to describe a BC frame.

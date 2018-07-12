@@ -5,6 +5,7 @@
 #include <framework/health/HealthHelper.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/tasks/ExecutableObjectIF.h>
+#include <framework/ipc/MessageQueueIF.h>
 
 class HealthDevice: public SystemObject,
 		public ExecutableObjectIF,
@@ -13,7 +14,7 @@ public:
 	HealthDevice(object_id_t setObjectId, MessageQueueId_t parentQueue);
 	virtual ~HealthDevice();
 
-	ReturnValue_t performOperation();
+	ReturnValue_t performOperation(uint8_t opCode);
 
 	ReturnValue_t initialize();
 
@@ -31,7 +32,7 @@ protected:
 	HealthState lastHealth;
 
 	MessageQueueId_t parentQueue;
-	MessageQueue commandQueue;
+	MessageQueueIF* commandQueue;
 public:
 	HealthHelper healthHelper;
 };

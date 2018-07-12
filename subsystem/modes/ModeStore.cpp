@@ -1,8 +1,10 @@
 #include <framework/subsystem/modes/ModeStore.h>
 
+#ifdef USE_MODESTORE
+
 ModeStore::ModeStore(object_id_t objectId, uint32_t slots) :
 		SystemObject(objectId), store(slots), emptySlot(store.front()) {
-	mutex = new MutexId_t;
+	mutex = MutexFactory::instance()->createMutex();;
 	OSAL::createMutex(objectId + 1, mutex);
 	clear();
 }
@@ -38,7 +40,7 @@ ReturnValue_t ModeStore::storeArray(ArrayList<ModeListEntry>* sequence,
 
 	ArrayList<ModeListEntry>::Iterator iter;
 	for (iter = sequence->begin(); iter != sequence->end(); ++iter) {
-		//TODO: I need to check this in detail. What is the idea? Why does it not work?
+		//SHOULDDO: I need to check this in detail. What is the idea? Why does it not work?
 		pointer = pointer->getNext()->value;
 		if (pointer == NULL) {
 			deleteListNoLock(*storedFirstEntry);
@@ -120,3 +122,5 @@ ReturnValue_t ModeStore::isValidEntry(ModeListEntry* sequence) {
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
+#endif

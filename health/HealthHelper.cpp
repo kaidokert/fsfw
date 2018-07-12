@@ -1,6 +1,5 @@
-#include <framework/ipc/MessageQueueSender.h>
 #include <framework/health/HealthHelper.h>
-#include <framework/ipc/MessageQueueSender.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId) :
 		healthTable(NULL), eventSender(NULL), objectId(objectId), parentQueue(
@@ -67,11 +66,10 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
 		return;
 	}
 	CommandMessage message;
-	MessageQueueSender sender(parentQueue);
 	HealthMessage::setHealthMessage(&message, HealthMessage::HEALTH_INFO,
 			health, oldHealth);
-	if (sender.sendToDefault(&message, owner->getCommandQueue())
-			!= HasReturnvaluesIF::RETURN_OK) {
+	if (MessageQueueSenderIF::sendMessage(parentQueue, &message,
+			owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
 		debug << "HealthHelper::informParent: sending health reply failed."
 				<< std::endl;
 	}
@@ -89,9 +87,8 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* message) {
 	} else {
 		reply.setReplyRejected(result, message->getCommand());
 	}
-	MessageQueueSender sender(message->getSender());
-	if (sender.sendToDefault(&reply, owner->getCommandQueue())
-			!= HasReturnvaluesIF::RETURN_OK) {
+	if (MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
+			owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
 		debug
 				<< "HealthHelper::handleHealthCommand: sending health reply failed."
 				<< std::endl;

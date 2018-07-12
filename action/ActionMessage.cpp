@@ -1,4 +1,3 @@
-
 #include <framework/action/ActionMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>

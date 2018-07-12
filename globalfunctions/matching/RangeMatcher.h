@@ -21,7 +21,7 @@ public:
 
 	bool match(T input) {
 		if (inverted) {
-			return ~doMatch(input);
+			return !doMatch(input);
 		} else {
 			return doMatch(input);
 		}

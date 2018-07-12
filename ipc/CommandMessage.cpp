@@ -13,7 +13,12 @@
 #include <framework/monitoring/MonitoringMessage.h>
 #include <framework/subsystem/modes/ModeSequenceMessage.h>
 #include <framework/tmstorage/TmStoreMessage.h>
-#include <mission/payloaddevices/commonPayloadStuff/PayloadHandlerMessage.h>
+#include <framework/parameters/ParameterMessage.h>
+
+namespace MESSAGE_TYPE {
+void clearMissionMessage(CommandMessage* message);
+}
+
 
 CommandMessage::CommandMessage() {
 	this->messageSize = COMMAND_MESSAGE_SIZE;
@@ -62,35 +67,35 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
 
 void CommandMessage::clearCommandMessage() {
 	switch((getCommand()>>8) & 0xff){
-	case  MODE_COMMAND_MESSAGE_ID:
+	case  MESSAGE_TYPE::MODE_COMMAND:
 		ModeMessage::clear(this);
 		break;
-	case HEALTH_COMMAND_MESSAGE_ID:
+	case MESSAGE_TYPE::HEALTH_COMMAND:
 		HealthMessage::clear(this);
 		break;
-	case MODE_SEQUENCE_MESSAGE_ID:
+	case MESSAGE_TYPE::MODE_SEQUENCE:
 		ModeSequenceMessage::clear(this);
 		break;
-	case FUNCTION_MESSAGE_ID:
+	case MESSAGE_TYPE::ACTION:
 		ActionMessage::clear(this);
 		break;
-	case DEVICE_HANDLER_COMMAND_MESSAGE_ID:
+	case MESSAGE_TYPE::DEVICE_HANDLER_COMMAND:
 		DeviceHandlerMessage::clear(this);
 		break;
-	case MEMORY_MESSAGE_ID:
+	case MESSAGE_TYPE::MEMORY:
 		MemoryMessage::clear(this);
 		break;
-	case PAYLOAD_HANDLER_MESSAGE_ID:
-		PayloadHandlerMessage::clear(this);
-		break;
-	case LIMIT_MESSAGE_ID:
+	case MESSAGE_TYPE::MONITORING:
 		MonitoringMessage::clear(this);
 		break;
-	case TM_STORE_MESSAGE_ID:
+	case MESSAGE_TYPE::TM_STORE:
 		TmStoreMessage::clear(this);
 		break;
+	case MESSAGE_TYPE::PARAMETER:
+		ParameterMessage::clear(this);
+		break;
 	default:
-		setCommand(CMD_NONE);
+		MESSAGE_TYPE::clearMissionMessage(this);
 		break;
 	}
 }
@@ -103,7 +108,9 @@ size_t CommandMessage::getMinimumMessageSize() const {
 	return COMMAND_MESSAGE_SIZE;
 }
 
-void CommandMessage::setToUnknownCommand(Command_t initialCommand) {
+void CommandMessage::setToUnknownCommand() {
+	Command_t initialCommand = getCommand();
+	clearCommandMessage();
 	setReplyRejected(UNKNOW_COMMAND, initialCommand);
 }
 

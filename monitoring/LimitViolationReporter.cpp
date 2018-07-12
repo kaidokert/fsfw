@@ -33,17 +33,17 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 	}
 	CommandMessage report;
 	MonitoringMessage::setLimitViolationReport(&report, storeId);
-	return reportQueue.sendToDefault(&report);
+	return MessageQueueSenderIF::sendMessage(reportQueue, &report);
 }
 
 ReturnValue_t LimitViolationReporter::checkClassLoaded() {
-	if (reportQueue.getDefaultDestination() == 0) {
+	if (reportQueue == 0) {
 		ReceivesMonitoringReportsIF* receiver = objectManager->get<
-				ReceivesMonitoringReportsIF>(objects::PUS_MONITORING_SERVICE);
+				ReceivesMonitoringReportsIF>(reportingTarget);
 		if (receiver == NULL) {
 			return ObjectManagerIF::NOT_FOUND;
 		}
-		reportQueue.setDefaultDestination(receiver->getCommandQueue());
+		reportQueue = receiver->getCommandQueue();
 	}
 	if (ipcStore == NULL) {
 		ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
@@ -55,5 +55,6 @@ ReturnValue_t LimitViolationReporter::checkClassLoaded() {
 }
 
 //Lazy initialization.
-MessageQueueSender LimitViolationReporter::reportQueue;
+MessageQueueId_t LimitViolationReporter::reportQueue = 0;
 StorageManagerIF* LimitViolationReporter::ipcStore = NULL;
+object_id_t LimitViolationReporter::reportingTarget = 0;

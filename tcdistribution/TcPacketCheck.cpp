@@ -1,11 +1,3 @@
-/*
- * TcPacketCheck.cpp
- *
- *  Created on: 19.06.2012
- *      Author: baetz
- */
-
-
 #include <framework/globalfunctions/crc_ccitt.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/storagemanager/StorageManagerIF.h>

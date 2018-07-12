@@ -1,10 +1,3 @@
-/*
- * RMAPCookie.h
- *
- *  Created on: 07.11.2012
- *      Author: mohr
- */
-
 #ifndef RMAPCOOKIE_H_
 #define RMAPCOOKIE_H_
 

@@ -80,6 +80,8 @@ public:
 	 * @return Returns true if the bit is set and false if not.
 	 */
 	bool isTelecommand( void );
+
+	void initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader, uint16_t apid, uint16_t sequenceCount = 0);
 	/**
 	 * The CCSDS header provides a secondary header flag (the fifth-highest bit),
 	 *  which is checked with this method.
@@ -97,7 +99,7 @@ public:
 	 * id.
 	 * @return The CCSDS APID.
 	 */
-	uint16_t getAPID( void );
+	uint16_t getAPID( void ) const;
 	/**
 	 * Sets the APID of a packet, which are the lowest 11 bit of the packet
 	 * id.
@@ -122,7 +124,7 @@ public:
 	 * packet sequence control field.
 	 * @return The CCSDS sequence count.
 	 */
-	uint16_t getPacketSequenceCount( void );
+	uint16_t getPacketSequenceCount( void ) const;
 	/**
 	 * Sets the packet sequence count, which are the lowest 14 bit of the
 	 * packet sequence control field.
@@ -153,6 +155,8 @@ public:
 	 * @return	A \c uint8_t pointer to the first byte of the CCSDS primary header.
 	 */
 	virtual uint8_t* getWholeData( void );
+
+	uint8_t* getPacketData();
 	/**
 	 * With this method, the packet data pointer can be redirected to another
 	 * location.
@@ -164,6 +168,8 @@ public:
 	 * @return	The full size of the packet in bytes.
 	 */
 	uint32_t getFullSize();
+
+	uint32_t getApidAndSequenceCount() const;
 
 };
 

@@ -1,10 +1,3 @@
-/*
- * SubserviceMatcher.h
- *
- *  Created on: 09.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_TMTCPACKET_PACKETMATCHER_SUBSERVICEMATCHER_H_
 #define FRAMEWORK_TMTCPACKET_PACKETMATCHER_SUBSERVICEMATCHER_H_
 
@@ -16,6 +9,9 @@ class SubServiceMatcher: public SerializeableMatcherIF<TmPacketMinimal*> {
 public:
 	SubServiceMatcher(uint8_t subService) :
 			subService(subService) {
+	}
+	SubServiceMatcher(TmPacketMinimal* test) :
+			subService(test->getSubService()) {
 	}
 	bool match(TmPacketMinimal* packet) {
 		if (packet->getSubService() == subService) {

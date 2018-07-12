@@ -1,10 +1,3 @@
-/*
- * PoolEntry.cpp
- *
- *  Created on: Oct 25, 2012
- *      Author: baetz
- */
-
 #include <framework/datapool/PoolEntry.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 

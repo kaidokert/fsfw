@@ -1,9 +1,9 @@
 #ifndef ENDIANSWAPPER_H_
 #define ENDIANSWAPPER_H_
 
-#include <framework/osal/OSAL.h>
 //#include <endian.h> //for testing on x86
-
+#include <framework/osal/Endiness.h>
+#include <cstring>
 
 class EndianSwapper {
 private:

@@ -1,10 +1,3 @@
-/*
- * PoolVarList.h
- *
- *  Created on: 06.03.2014
- *      Author: baetz
- */
-
 #ifndef POOLVARLIST_H_
 #define POOLVARLIST_H_
 

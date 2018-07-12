@@ -1,28 +1,32 @@
 #ifndef COORDINATETRANSFORMATIONS_H_
 #define COORDINATETRANSFORMATIONS_H_
 
-#include <framework/osal/OSAL.h>
+#include <framework/timemanager/Clock.h>
 
 class CoordinateTransformations {
 public:
-	CoordinateTransformations(uint8_t utcGpsOffset);
+	static void positionEcfToEci(const double* ecfCoordinates, double* eciCoordinates, timeval *timeUTC = NULL);
 
-	virtual ~CoordinateTransformations();
-
-	void positionEcfToEci(const double* ecfCoordinates, double* eciCoordinates);
-
-	void velocityEcfToEci(const double* ecfVelocity,
+	static void velocityEcfToEci(const double* ecfVelocity,
 			const double* ecfPosition,
-			double* eciVelocity);
+			double* eciVelocity, timeval *timeUTC = NULL);
 
-	double getEarthRotationAngle(timeval time);
+	static void positionEciToEcf(const double* eciCoordinates, double* ecfCoordinates,timeval *timeUTC = NULL);
+	static void velocityEciToEcf(const double* eciVelocity,const double* eciPosition, double* ecfVelocity,timeval* timeUTC = NULL);
 
-	void getEarthRotationMatrix(timeval time, double matrix[][3]);
-	void setUtcGpsOffset(uint8_t offset);
+	static double getEarthRotationAngle(timeval timeUTC);
+
+	static void getEarthRotationMatrix(timeval timeUTC, double matrix[][3]);
 private:
-	uint8_t utcGpsOffset;
-	void ecfToEci(const double* ecfCoordinates, double* eciCoordinates,
-			const double* ecfPositionIfCoordinatesAreVelocity);
+	CoordinateTransformations();
+	static void ecfToEci(const double* ecfCoordinates, double* eciCoordinates,
+			const double* ecfPositionIfCoordinatesAreVelocity, timeval *timeUTCin);
+	static void eciToEcf(const double* eciCoordinates,
+				double* ecfCoordinates,
+				const double* eciPositionIfCoordinatesAreVelocity,timeval *timeUTCin);
+
+	static double getJuleanCenturiesTT(timeval timeUTC);
+	static void getTransMatrixECITOECF(timeval time,double Tfi[3][3]);
 
 };
 

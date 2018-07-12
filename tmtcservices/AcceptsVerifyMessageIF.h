@@ -1,14 +1,7 @@
-/*
- * AcceptsVerifyMessageIF.h
- *
- *  Created on: 23.11.2012
- *      Author: baetz
- */
-
 #ifndef ACCEPTSVERIFICATIONMESSAGEIF_H_
 #define ACCEPTSVERIFICATIONMESSAGEIF_H_
 
-#include <framework/ipc/MessageQueue.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 class AcceptsVerifyMessageIF {
 public:

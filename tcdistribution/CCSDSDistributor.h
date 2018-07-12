@@ -1,10 +1,3 @@
-/*
- * CCSDSDistributor.h
- *
- *  Created on: 18.06.2012
- *      Author: baetz
- */
-
 #ifndef CCSDSDISTRIBUTOR_H_
 #define CCSDSDISTRIBUTOR_H_
 
@@ -48,7 +41,7 @@ public:
 	 * \c tcStore is set in the \c initialize method.
 	 * @param set_default_apid The default APID, where packets with unknown destination are sent to.
 	 */
-	CCSDSDistributor( uint16_t set_default_apid = 0x35 );
+	CCSDSDistributor( uint16_t setDefaultApid, object_id_t setObjectId );
 	/**
 	 * The destructor is empty.
 	 */

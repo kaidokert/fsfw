@@ -17,7 +17,7 @@ template<typename T, typename count_t = uint8_t>
 class ArrayList {
 	template<typename U, typename count> friend class SerialArrayListAdapter;
 public:
-	static const uint8_t INTERFACE_ID = ARRAY_LIST;
+	static const uint8_t INTERFACE_ID = CLASS_ID::ARRAY_LIST;
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(0x01);
 
 	/**
@@ -80,13 +80,17 @@ public:
 			return value;
 		}
 
+		const T *operator->() const{
+			return value;
+		}
+
 		//SHOULDDO this should be implemented as non-member
-		bool operator==(const typename ArrayList<T, count_t>::Iterator& other) {
+		bool operator==(const typename ArrayList<T, count_t>::Iterator& other) const{
 			return (value == other.value);
 		}
 
 		//SHOULDDO this should be implemented as non-member
-		bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) {
+		bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) const {
 			return !(*this == other);
 		}
 	}
@@ -116,9 +120,10 @@ public:
 	 *
 	 * @param storage the array to use as backend
 	 * @param maxSize size of storage
+	 * @param size size of data already present in storage
 	 */
-	ArrayList(T *storage, count_t maxSize) :
-			size(0), entries(storage), maxSize_(maxSize), allocated(false) {
+	ArrayList(T *storage, count_t maxSize, count_t size = 0) :
+			size(size), entries(storage), maxSize_(maxSize), allocated(false) {
 	}
 
 	/**
@@ -170,6 +175,12 @@ public:
 	 */
 	T *back() {
 		return &entries[size - 1];
+		//Alternative solution
+		//return const_cast<T*>(static_cast<const T*>(*this).back());
+	}
+
+	const T* back() const{
+		return &entries[size-1];
 	}
 
 	/**
@@ -212,11 +223,6 @@ public:
 	count_t remaining() {
 		return (maxSize_ - size);
 	}
-protected:
-	/**
-	 * pointer to the array in which the entries are stored
-	 */
-	T *entries;
 private:
 	/**
 	 * This is the copy constructor
@@ -230,7 +236,11 @@ private:
 			size(other.size), entries(other.entries), maxSize_(other.maxSize_), allocated(
 					false) {
 	}
-private:
+protected:
+	/**
+	 * pointer to the array in which the entries are stored
+	 */
+	T *entries;
 	/**
 	 * remembering the maximum size
 	 */

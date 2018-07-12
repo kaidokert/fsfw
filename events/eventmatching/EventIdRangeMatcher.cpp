@@ -1,10 +1,3 @@
-/*
- * EventIdRangeMatcher.cpp
- *
- *  Created on: 27.08.2015
- *      Author: baetz
- */
-
 #include <framework/events/eventmatching/EventIdRangeMatcher.h>
 
 EventIdRangeMatcher::EventIdRangeMatcher(EventId_t lower, EventId_t upper,

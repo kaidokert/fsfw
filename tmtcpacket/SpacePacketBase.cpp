@@ -1,11 +1,7 @@
-/*
- * SpacePacketBase.cpp
- *
- *  Created on: 21.03.2012
- *      Author: baetz
- */
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/SpacePacketBase.h>
+#include <string.h>
+
 SpacePacketBase::SpacePacketBase( const uint8_t* set_address ) {
 	this->data = (SpacePacketPointer*) set_address;
 }
@@ -16,6 +12,20 @@ SpacePacketBase::~SpacePacketBase() {
 //CCSDS Methods:
 uint8_t SpacePacketBase::getPacketVersionNumber( void ) {
 	return (this->data->header.packet_id_h & 0b11100000) >> 5;
+}
+
+void SpacePacketBase::initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader, uint16_t apid, uint16_t sequenceCount) {
+	//reset header to zero:
+	memset(data,0, sizeof(this->data->header) );
+	//Set TC/TM bit.
+	data->header.packet_id_h = ((isTelecommand? 1 : 0)) << 4;
+	//Set secondaryHeader bit
+	data->header.packet_id_h |= ((hasSecondaryHeader? 1 : 0)) << 3;
+	this->setAPID( apid );
+	//Always initialize as standalone packets.
+	data->header.sequence_control_h = 0b11000000;
+	setPacketSequenceCount(sequenceCount);
+
 }
 
 bool SpacePacketBase::isTelecommand( void ) {
@@ -31,7 +41,7 @@ uint16_t SpacePacketBase::getPacketId() {
 			this->data->header.packet_id_l;
 }
 
-uint16_t SpacePacketBase::getAPID( void ) {
+uint16_t SpacePacketBase::getAPID( void ) const {
 	return ( (this->data->header.packet_id_h & 0b00000111) << 8 ) +
 			this->data->header.packet_id_l;
 }
@@ -51,7 +61,7 @@ uint8_t SpacePacketBase::getSequenceFlags( void ) {
 	return (this->data->header.sequence_control_h & 0b11000000) >> 6 ;
 }
 
-uint16_t SpacePacketBase::getPacketSequenceCount( void ) {
+uint16_t SpacePacketBase::getPacketSequenceCount( void ) const {
 	return ( (this->data->header.sequence_control_h & 0b00111111) << 8 )
 		+ this->data->header.sequence_control_l;
 }
@@ -82,4 +92,12 @@ uint8_t* SpacePacketBase::getWholeData() {
 
 void SpacePacketBase::setData( const uint8_t* p_Data ) {
 	this->data = (SpacePacketPointer*)p_Data;
+}
+
+uint32_t SpacePacketBase::getApidAndSequenceCount() const {
+	return (getAPID() << 16) + getPacketSequenceCount();
+}
+
+uint8_t* SpacePacketBase::getPacketData() {
+	return &(data->packet_data);
 }

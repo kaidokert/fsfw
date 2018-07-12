@@ -1,0 +1,21 @@
+Flight Software Framework
+
+The initial version of the Flight Software Framework was developed during
+the Flying Laptop Project by the Universität Stuttgart in coorporation
+with Airbus Defence and Space GmbH.
+
+Copyrights in the Flight Software Framework are retained by their contributors.
+No copyright assignment is required to contribute to the Flight Software Framework.
+
+Some files include explicit copyright notices and/or license notices.
+For full authorship information, see the version control history.
+
+Except as otherwise noted (below and/or in individual files), the
+Flight Software Framework is licensed under the Apache License, Version 2.0.
+
+The Flight Software Framework includes modules written by third parties.
+The following third party modules are included, and carry
+their own copyright notices and license terms:
+
+under contrib/:
+    * sgp4: sgp4 code developed by david vallado under public domain, see https://www.celestrak.com/publications/AIAA/2006-6753/

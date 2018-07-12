@@ -1,10 +1,3 @@
-/*
- * HealthTabelIF.h
- *
- *  Created on: 15.07.2013
- *      Author: tod
- */
-
 #ifndef HEALTHTABLEIF_H_
 #define HEALTHTABLEIF_H_
 

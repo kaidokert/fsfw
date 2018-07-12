@@ -1,10 +1,3 @@
-/*
- * PacketMatchTree.cpp
- *
- *  Created on: 10.03.2015
- *      Author: baetz
- */
-
 #include <framework/tmtcpacket/packetmatcher/ApidMatcher.h>
 #include <framework/tmtcpacket/packetmatcher/PacketMatchTree.h>
 #include <framework/tmtcpacket/packetmatcher/ServiceMatcher.h>
@@ -31,116 +24,148 @@ PacketMatchTree::~PacketMatchTree() {
 ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type,
 		uint8_t subtype) {
 	//We assume adding APID is always requested.
-	uint8_t expectedHierarchy = 0;
-	if (type != 0) {
-		expectedHierarchy++;
-		if (subtype != 0) {
-			expectedHierarchy++;
-		}
-	}
 	TmPacketMinimal::TmPacketMinimalPointer data;
 	data.data_field.service_type = type;
 	data.data_field.service_subtype = subtype;
-	TmPacketMinimal testPacket((uint8_t*)&data);
+	TmPacketMinimal testPacket((uint8_t*) &data);
 	testPacket.setAPID(apid);
-	uint8_t realHierarchy = 0;
-	iterator lastMatch;
-	bool isInTree = matchesTree(&testPacket, &lastMatch, &realHierarchy);
-	if (isInTree) {
-		//Matches somehow.
-		//TODO: Are we interested in details?
+	iterator lastTest;
+	iterator rollback;
+	ReturnValue_t result = findOrInsertMatch<TmPacketMinimal*, ApidMatcher>(
+			this->begin(), &testPacket, &lastTest);
+	if (result == NEW_NODE_CREATED) {
+		rollback = lastTest;
+	} else if (result != RETURN_OK) {
+		return result;
+	}
+	if (type == 0) {
+		//Check if lastTest has no children, otherwise, delete them,
+		//as a more general check is requested.
+		if (lastTest.left() != this->end()) {
+			removeElementAndAllChildren(lastTest.left());
+		}
 		return RETURN_OK;
 	}
-	if (expectedHierarchy == realHierarchy) {
-		//Add another element (of correct type) at the OR branch.
-		lastMatch = addElement(OR, realHierarchy, lastMatch, &testPacket);
-		if (lastMatch == this->end()) {
-			return FULL;
+	//Type insertion required.
+	result = findOrInsertMatch<TmPacketMinimal*, ServiceMatcher>(
+			lastTest.left(), &testPacket, &lastTest);
+	if (result == NEW_NODE_CREATED) {
+		if  (rollback == this->end()) {
+			rollback = lastTest;
 		}
-	} else if (expectedHierarchy > realHierarchy) {
-		//A certain amount of downward structure does not exist. Add first element as OR, rest as AND.
-
-		lastMatch = addElement(OR, realHierarchy, lastMatch, &testPacket);
-		if (lastMatch == end()) {
-			return FULL;
+	} else if (result != RETURN_OK) {
+		if (rollback != this->end()) {
+			removeElementAndAllChildren(rollback);
 		}
-		iterator firstOfList = lastMatch;
-		while (lastMatch != end() && realHierarchy < expectedHierarchy) {
-			realHierarchy++;
-			lastMatch = addElement(AND, realHierarchy, lastMatch, &testPacket);
+		return result;
+	}
+	if (subtype == 0) {
+		if (lastTest.left() != this->end()) {
+			//See above
+			removeElementAndAllChildren(lastTest.left());
 		}
-		if (lastMatch == end()) {
-			//At least one element could not be inserted. So delete everything.
-			removeElementAndAllChildren(firstOfList);
-			return FULL;
+		return RETURN_OK;
+	}
+	//Subtype insertion required.
+	result = findOrInsertMatch<TmPacketMinimal*, SubServiceMatcher>(
+			lastTest.left(), &testPacket, &lastTest);
+	if (result == NEW_NODE_CREATED) {
+		return RETURN_OK;
+	} else if (result != RETURN_OK) {
+		if (rollback != this->end()) {
+			removeElementAndAllChildren(rollback);
 		}
-	} else {
-		//Might work like that.
-		//Too detailed match, delete the last element and all its children.
-		while (lastMatch.up() != end() && lastMatch.up().left() != lastMatch) {
-			lastMatch = lastMatch.up();
-		}
-		removeElementAndAllChildren(lastMatch);
+		return result;
 	}
 	return RETURN_OK;
 }
 
-ReturnValue_t PacketMatchTree::removeMatch(uint16_t apid, uint8_t type,
-		uint8_t subtype) {
-	//We assume APID is always in request.
-	uint8_t expectedHierarchy = 1;
-	if (type != 0) {
-		expectedHierarchy++;
-		if (subtype != 0) {
-			expectedHierarchy++;
-		}
-	}
-	TmPacketMinimal::TmPacketMinimalPointer data;
-	data.data_field.service_type = type;
-	data.data_field.service_subtype = subtype;
-	TmPacketMinimal testPacket((uint8_t*)&data);
-	testPacket.setAPID(apid);
-	uint8_t realHierarchy = 0;
-	iterator lastMatch;
-	bool isInTree = matchesTree(&testPacket, &lastMatch, &realHierarchy);
-	if (isInTree) {
-		if (expectedHierarchy == realHierarchy) {
-			return removeElementAndReconnectChildren(lastMatch);
+template<typename VALUE_T, typename INSERTION_T>
+ReturnValue_t PacketMatchTree::findOrInsertMatch(iterator startAt, VALUE_T test,
+		iterator* lastTest) {
+	bool attachToBranch = AND;
+	iterator iter = startAt;
+	while (iter != this->end()) {
+		bool isMatch = iter->match(test);
+		attachToBranch = OR;
+		*lastTest = iter;
+		if (isMatch) {
+			return RETURN_OK;
 		} else {
-			return TOO_DETAILED_REQUEST;
+			//Go down OR branch.
+			iter = iter.right();
 		}
-	} else {
-		//TODO: Maybe refine this a bit.
-		return NO_MATCH;
 	}
-}
-
-PacketMatchTree::iterator PacketMatchTree::addElement(bool andBranch,
-		uint8_t level, PacketMatchTree::iterator position,
-		TmPacketMinimal* content) {
-	SerializeableMatcherIF<TmPacketMinimal*>* newContent = NULL;
-	switch (level) {
-	case 0:
-		newContent = factory.generate<ApidMatcher>(content->getAPID());
-		break;
-	case 1:
-		newContent = factory.generate<ServiceMatcher>(content->getService());
-		break;
-	case 2:
-		newContent = factory.generate<SubServiceMatcher>(
-				content->getSubService());
-		break;
-	default:
-		break;
-	}
+	//Only reached if nothing was found.
+	SerializeableMatcherIF<VALUE_T>* newContent = factory.generate<INSERTION_T>(
+			test);
 	if (newContent == NULL) {
-		return end();
+		return FULL;
 	}
 	Node* newNode = factory.generate<Node>(newContent);
 	if (newNode == NULL) {
-		return end();
+		//Need to make sure partially generated content is deleted, otherwise, that's a leak.
+		factory.destroy<INSERTION_T>(static_cast<INSERTION_T*>(newContent));
+		return FULL;
 	}
-	return insert(andBranch, position, newNode);
+	*lastTest = insert(attachToBranch, *lastTest, newNode);
+	if (*lastTest == end()) {
+		//This actaully never fails, so creating a dedicated returncode seems an overshoot.
+		return RETURN_FAILED;
+	}
+	return NEW_NODE_CREATED;
+}
+
+ReturnValue_t PacketMatchTree::removeMatch(uint16_t apid, uint8_t type,
+		uint8_t subtype) {
+	TmPacketMinimal::TmPacketMinimalPointer data;
+	data.data_field.service_type = type;
+	data.data_field.service_subtype = subtype;
+	TmPacketMinimal testPacket((uint8_t*) &data);
+	testPacket.setAPID(apid);
+	iterator foundElement = findMatch(begin(), &testPacket);
+	if (foundElement == this->end()) {
+		return NO_MATCH;
+	}
+	if (type == 0) {
+		if (foundElement.left() == end()) {
+			return removeElementAndReconnectChildren(foundElement);
+		} else {
+			return TOO_GENERAL_REQUEST;
+		}
+	}
+	//Go down AND branch. Will abort if empty.
+	foundElement = findMatch(foundElement.left(), &testPacket);
+	if (foundElement == this->end()) {
+		return NO_MATCH;
+	}
+	if (subtype == 0) {
+		if (foundElement.left() == end()) {
+			return removeElementAndReconnectChildren(foundElement);
+		} else {
+			return TOO_GENERAL_REQUEST;
+		}
+	}
+	//Again, go down AND branch.
+	foundElement = findMatch(foundElement.left(), &testPacket);
+	if (foundElement == end()) {
+		return NO_MATCH;
+	}
+	return removeElementAndReconnectChildren(foundElement);
+}
+
+PacketMatchTree::iterator PacketMatchTree::findMatch(iterator startAt,
+		TmPacketMinimal* test) {
+	iterator iter = startAt;
+	while (iter != end()) {
+		bool isMatch = iter->match(test);
+		if (isMatch) {
+			break;
+		} else {
+			iter = iter.right(); //next OR element
+		}
+	}
+	return iter;
 }
 
 ReturnValue_t PacketMatchTree::initialize() {
@@ -150,7 +175,7 @@ ReturnValue_t PacketMatchTree::initialize() {
 const uint16_t PacketMatchTree::POOL_SIZES[N_POOLS] = { sizeof(ServiceMatcher),
 		sizeof(SubServiceMatcher), sizeof(ApidMatcher),
 		sizeof(PacketMatchTree::Node) };
-//TODO: Rather arbitrary. Adjust!
+//Maximum number of types and subtypes to filter should be more than sufficient.
 const uint16_t PacketMatchTree::N_ELEMENTS[N_POOLS] = { 10, 20, 2, 40 };
 
 ReturnValue_t PacketMatchTree::changeMatch(bool addToMatch, uint16_t apid,
@@ -163,7 +188,8 @@ ReturnValue_t PacketMatchTree::changeMatch(bool addToMatch, uint16_t apid,
 }
 
 ReturnValue_t PacketMatchTree::cleanUpElement(iterator position) {
-	//TODO: What if first deletion fails?
 	factory.destroy(position.element->value);
+	//Go on anyway, there's nothing we can do.
+	//SHOULDDO: Throw event, or write debug message?
 	return factory.destroy(position.element);
 }

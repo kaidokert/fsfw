@@ -7,7 +7,7 @@
 
 class MonitoringIF : public SerializeIF {
 public:
-	static const uint8_t VIOLATION_REPORT_MAX_SIZE = 30;
+	static const uint8_t VIOLATION_REPORT_MAX_SIZE = 32;
 	static const uint8_t LIMIT_TYPE_NO_TYPE = 0xFF;
 	static const uint8_t LIMIT_TYPE_LIMIT_CHECK = 0;
 	static const uint8_t LIMIT_TYPE_DELTA_CHECK = 1;
@@ -20,7 +20,7 @@ public:
 	static const Event VALUE_ABOVE_HIGH_LIMIT = MAKE_EVENT(3, SEVERITY::LOW);
 	static const Event VALUE_OUT_OF_RANGE = MAKE_EVENT(4, SEVERITY::LOW);
 
-	static const uint8_t INTERFACE_ID = LIMITS_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::LIMITS_IF;
 	static const ReturnValue_t UNCHECKED = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t INVALID = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t UNSELECTED = MAKE_RETURN_CODE(3);
@@ -55,8 +55,8 @@ public:
 	virtual ReturnValue_t setLimits( uint8_t type, const uint8_t* data, uint32_t size) = 0;
 	virtual ReturnValue_t setChecking(uint8_t strategy) = 0;
 	virtual ReturnValue_t setToUnchecked() = 0;
-	virtual const uint8_t getLimitType() const = 0;
-	virtual const uint32_t getLimitId() const = 0;
+	virtual uint8_t getLimitType() const = 0;
+	virtual uint32_t getLimitId() const = 0;
 //	virtual ReturnValue_t setEventReporting(bool active) = 0;
 	virtual ~MonitoringIF() {
 	}

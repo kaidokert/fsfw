@@ -6,17 +6,19 @@
  */
 
 #include <framework/datalinklayer/MapPacketExtraction.h>
+#include <framework/ipc/QueueFactory.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/tmtcpacket/SpacePacketBase.h>
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/tmtcservices/TmTcMessage.h>
+#include <string.h>
 
 MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,
 		object_id_t setPacketDestination) :
 		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0), bufferPosition(
 				packetBuffer), packetDestination(setPacketDestination), packetStore(
-				NULL) {
+				NULL), tcQueueId(MessageQueueSenderIF::NO_QUEUE) {
 	memset(packetBuffer, 0, sizeof(packetBuffer));
 }
 
@@ -32,7 +34,7 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
 		if (packetLength <= MAX_PACKET_SIZE) {
 			memcpy(packetBuffer, frame->getDataField(), packetLength);
 			bufferPosition = &packetBuffer[packetLength];
-			status = FRAME_OK;
+			status = RETURN_OK;
 		} else {
 			error
 					<< "MapPacketExtraction::extractPackets. Packet too large! Size: "
@@ -54,7 +56,7 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
 					status = sendCompletePacket(packetBuffer, packetLength);
 					clearBuffers();
 				}
-				status = FRAME_OK;
+				status = RETURN_OK;
 			} else {
 				error
 						<< "MapPacketExtraction::extractPackets. Packet too large! Size: "
@@ -97,7 +99,7 @@ ReturnValue_t MapPacketExtraction::unpackBlockingPackets(
 					packet.getFullSize());
 			totalLength -= packet.getFullSize();
 			position += packet.getFullSize();
-			status = FRAME_OK;
+			status = RETURN_OK;
 		} else {
 			status = DATA_CORRUPTED;
 			totalLength = 0;
@@ -115,7 +117,7 @@ ReturnValue_t MapPacketExtraction::sendCompletePacket(uint8_t* data,
 	ReturnValue_t status = this->packetStore->addData(&store_id, data, size);
 	if (status == RETURN_OK) {
 		TmTcMessage message(store_id);
-		status = this->tcQueue.sendToDefault(&message);
+		status = MessageQueueSenderIF::sendMessage(tcQueueId,&message);
 	}
 	return status;
 }
@@ -132,7 +134,7 @@ ReturnValue_t MapPacketExtraction::initialize() {
 	AcceptsTelecommandsIF* distributor = objectManager->get<
 			AcceptsTelecommandsIF>(packetDestination);
 	if ((packetStore != NULL) && (distributor != NULL)) {
-		tcQueue.setDefaultDestination(distributor->getRequestQueue());
+		tcQueueId = distributor->getRequestQueue();
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;

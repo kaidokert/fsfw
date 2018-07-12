@@ -37,7 +37,7 @@ public:
 	 * This is a simple getter to return the object identifier.
 	 * @return	Returns the object id of this object.
 	 */
-	virtual const object_id_t getObjectId() const = 0;
+	virtual object_id_t getObjectId() const = 0;
 	/**
 	 * The empty virtual destructor as required for C++ interfaces.
 	 */

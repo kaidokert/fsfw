@@ -1,4 +1,3 @@
-
 #ifndef SIMPLEACTIONHELPER_H_
 #define SIMPLEACTIONHELPER_H_
 
@@ -6,11 +5,11 @@
 
 class SimpleActionHelper: public ActionHelper {
 public:
-	SimpleActionHelper(HasActionsIF* setOwner, MessageQueue* useThisQueue);
+	SimpleActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue);
 	virtual ~SimpleActionHelper();
 	void step(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
 	void finish(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
-	void reportData(SerializeIF* data);
+	ReturnValue_t reportData(SerializeIF* data);
 	void resetHelper();
 protected:
 	void prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId, store_address_t dataAddress);

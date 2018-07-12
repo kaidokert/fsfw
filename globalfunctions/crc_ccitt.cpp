@@ -1,10 +1,3 @@
-/*
- * crc.cpp
- *
- *  Created on: 03.04.2012
- *      Author: bucher
- */
-
 #include <framework/globalfunctions/crc_ccitt.h>
 #include <math.h>
 

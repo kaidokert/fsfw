@@ -3,13 +3,13 @@
 
 #include <framework/events/eventmatching/eventmatching.h>
 #include <framework/events/EventMessage.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 class EventManagerIF {
 public:
 
-	static const uint8_t INTERFACE_ID = EVENT_MANAGER_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::EVENT_MANAGER_IF;
 	static const ReturnValue_t LISTENER_NOT_FOUND = MAKE_RETURN_CODE(1);
 	virtual ~EventManagerIF() {
 	}
@@ -44,8 +44,7 @@ public:
 				eventmanagerQueue = eventmanager->getEventReportQueue();
 			}
 		}
-		MessageQueueSender sender(eventmanagerQueue);
-		sender.sendToDefault(message, sentFrom);
+		MessageQueueSenderIF::sendMessage(eventmanagerQueue, message, sentFrom);
 	}
 
 };

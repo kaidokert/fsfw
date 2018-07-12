@@ -1,13 +1,5 @@
-/*
- * DataLinkLayer.cpp
- *
- *  Created on: 02.03.2012
- *      Author: baetz
- */
-
 #include <framework/datalinklayer/DataLinkLayer.h>
 #include <framework/globalfunctions/crc_ccitt.h>
-#include <framework/osal/OSAL.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 DataLinkLayer::DataLinkLayer(uint8_t* set_frame_buffer, ClcwIF* setClcw,
@@ -25,15 +17,15 @@ ReturnValue_t DataLinkLayer::frameDelimitingAndFillRemoval() {
 	if ((receivedDataLength - startSequenceLength) < FRAME_PRIMARY_HEADER_LENGTH) {
 		return SHORTER_THAN_HEADER;
 	}
-	//Removing start sequence
-	//TODO: What does the start sequence look like? Better search for the pattern.
+	//Removing start sequence.
+	//SHOULDDO: Not implemented here.
 	while ( *frameBuffer == START_SEQUENCE_PATTERN ) {
 		frameBuffer++;
 	}
 	TcTransferFrame frame_candidate(frameBuffer);
 	this->currentFrame = frame_candidate; //should work with shallow copy.
 
-	return FRAME_OK;
+	return RETURN_OK;
 }
 
 ReturnValue_t DataLinkLayer::frameValidationCheck() {
@@ -64,14 +56,14 @@ ReturnValue_t DataLinkLayer::frameValidationCheck() {
 	if (USE_CRC) {
 		return this->frameCheckCRC();
 	}
-	return FRAME_OK;
+	return RETURN_OK;
 }
 
 ReturnValue_t DataLinkLayer::frameCheckCRC() {
 	uint16_t checkValue = ::Calculate_CRC(this->currentFrame.getFullFrame(),
 			this->currentFrame.getFullSize());
 	if (checkValue == 0) {
-		return FRAME_OK;
+		return RETURN_OK;
 	} else {
 		return CRC_FAILED;
 	}
@@ -80,7 +72,7 @@ ReturnValue_t DataLinkLayer::frameCheckCRC() {
 
 ReturnValue_t DataLinkLayer::allFramesReception() {
 	ReturnValue_t status = this->frameDelimitingAndFillRemoval();
-	if (status != FRAME_OK) {
+	if (status != RETURN_OK) {
 		return status;
 	}
 	return this->frameValidationCheck();
@@ -96,7 +88,7 @@ ReturnValue_t DataLinkLayer::virtualChannelDemultiplexing() {
 	virtualChannelIterator iter = virtualChannels.find(vcId);
 	if (iter == virtualChannels.end()) {
 		//Do not report because passive board will get this error all the time.
-		return FRAME_OK;
+		return RETURN_OK;
 	} else {
 		return (iter->second)->frameAcceptanceAndReportingMechanism(&currentFrame, clcw);
 	}
@@ -105,7 +97,7 @@ ReturnValue_t DataLinkLayer::virtualChannelDemultiplexing() {
 ReturnValue_t DataLinkLayer::processFrame(uint16_t length) {
 	receivedDataLength = length;
 	ReturnValue_t status = allFramesReception();
-	if (status != FRAME_OK) {
+	if (status != RETURN_OK) {
 		error << "DataLinkLayer::processFrame: frame reception failed. Error code: " << std::hex
 				<< status << std::dec << std::endl;
 //		currentFrame.print();

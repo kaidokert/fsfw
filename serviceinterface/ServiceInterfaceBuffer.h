@@ -1,10 +1,3 @@
-/*
- * ServiceInterfaceBuffer.h
- *
- *  Created on: 06.08.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 

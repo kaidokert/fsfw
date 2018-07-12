@@ -4,6 +4,8 @@
 #include <framework/serialize/SerializeIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/tmtcpacket/pus/TmPacketBase.h>
+#include <framework/internalError/InternalErrorReporterIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 /**
  *	This class generates a ECSS PUS Telemetry packet within a given
@@ -24,6 +26,9 @@ private:
 	 * The default store is objects::TM_STORE.
 	 */
 	static StorageManagerIF* store;
+
+	static InternalErrorReporterIF *internalErrorReporter;
+
 	/**
 	 * The address where the packet data of the object instance is stored.
 	 */
@@ -36,6 +41,8 @@ private:
 	 * 			@li \c false otherwise.
 	 */
 	bool checkAndSetStore();
+
+	void checkAndReportLostTm();
 public:
 	/**
 	 * This is a default constructor which does not set the data pointer.
@@ -81,6 +88,8 @@ public:
 	 * @param setAddress	The new packet id to link to.
 	 */
 	void setStoreAddress( store_address_t setAddress );
+
+	ReturnValue_t sendPacket( MessageQueueId_t destination, MessageQueueId_t sentFrom, bool doErrorReporting = true );
 };
 
 

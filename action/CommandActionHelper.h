@@ -1,13 +1,12 @@
-
 #ifndef COMMANDACTIONHELPER_H_
 #define COMMANDACTIONHELPER_H_
 
 #include <framework/action/ActionMessage.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serialize/SerializeIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
+#include <framework/ipc/MessageQueueIF.h>
 
 class CommandsActionsIF;
 
@@ -25,7 +24,7 @@ public:
 	uint8_t getCommandCount() const;
 private:
 	CommandsActionsIF* owner;
-	MessageQueue* queueToUse;
+	MessageQueueIF* queueToUse;
 	StorageManagerIF* ipcStore;
 	uint8_t commandCount;
 	MessageQueueId_t lastTarget;

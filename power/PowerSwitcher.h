@@ -1,10 +1,3 @@
-/*
- * PowerSwitcher.h
- *
- *  Created on: 21.01.2014
- *      Author: baetz
- */
-
 #ifndef POWERSWITCHER_H_
 #define POWERSWITCHER_H_
 #include <framework/power/PowerSwitchIF.h>
@@ -20,11 +13,11 @@ public:
 		SWITCH_IS_ON,
 	};
 	State_t state;
-	static const uint8_t INTERFACE_ID = POWER_SWITCHER;
+	static const uint8_t INTERFACE_ID = CLASS_ID::POWER_SWITCHER;
 	static const ReturnValue_t IN_POWER_TRANSITION = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t SWITCH_STATE_MISMATCH = MAKE_RETURN_CODE(2);
 	PowerSwitcher( uint8_t setSwitch1, uint8_t setSwitch2 = NO_SWITCH, State_t setStartState = SWITCH_IS_OFF );
-	ReturnValue_t initialize();
+	ReturnValue_t initialize(object_id_t powerSwitchId);
 	void turnOn();
 	void turnOff();
 	void doStateMachine();

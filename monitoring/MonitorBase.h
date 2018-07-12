@@ -1,10 +1,3 @@
-/*
- * MonitorBase.h
- *
- *  Created on: 25.07.2014
- *      Author: baetz
- */
-
 #ifndef MONITORBASE_H_
 #define MONITORBASE_H_
 
@@ -38,7 +31,7 @@ public:
 
 		//2. If returning from fetch != OK, parameter is invalid. Report (if oldState is != invalidity).
 		if (validity != HasReturnvaluesIF::RETURN_OK) {
-			monitorStateIs(validity, sample, 0);
+			this->monitorStateIs(validity, sample, 0);
 			//3. Otherwise, check sample.
 		} else {
 			this->oldState = doCheck(sample);
@@ -46,7 +39,7 @@ public:
 		return this->oldState;
 	}
 	virtual ReturnValue_t doCheck(T sample) {
-		T crossedLimit;
+		T crossedLimit = 0.0;
 		ReturnValue_t currentState = checkSample(sample, &crossedLimit);
 		return this->monitorStateIs(currentState,sample, crossedLimit);
 	}

@@ -1,7 +1,6 @@
 #ifndef PARAMETERWRAPPER_H_
 #define PARAMETERWRAPPER_H_
 
-#include <framework/globalfunctions/Type.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serialize/SerializeAdapter.h>
 #include <framework/serialize/SerializeIF.h>
@@ -9,8 +8,9 @@
 #include <framework/globalfunctions/Type.h>
 
 class ParameterWrapper: public SerializeIF {
+	friend class DataPoolParameterWrapper;
 public:
-	static const uint8_t INTERFACE_ID = PARAMETER_WRAPPER;
+	static const uint8_t INTERFACE_ID = CLASS_ID::PARAMETER_WRAPPER;
 	static const ReturnValue_t UNKNOW_DATATYPE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t DATATYPE_MISSMATCH = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t READONLY = MAKE_RETURN_CODE(0x03);
@@ -46,7 +46,7 @@ public:
 			return DATATYPE_MISSMATCH;
 		}
 
-		if ((row > rows) || (column > columns)) {
+		if ((row >= rows) || (column >= columns)) {
 			return OUT_OF_BOUNDS;
 		}
 
@@ -95,7 +95,7 @@ public:
 
 	template<typename T>
 	void setVector(T& member) {
-		this->set(member, 1, sizeof(member)/sizeof(member[0]));
+		this->set(member, sizeof(member)/sizeof(member[0]), 1);
 	}
 
 	template<typename T>

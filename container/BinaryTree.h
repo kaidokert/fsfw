@@ -1,10 +1,3 @@
-/*
- * BinaryTree.h
- *
- *  Created on: 09.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_CONTAINER_BINARYTREE_H_
 #define FRAMEWORK_CONTAINER_BINARYTREE_H_
 
@@ -99,9 +92,6 @@ public:
 	}
 	iterator insert(bool insertLeft, iterator parentNode, Node* newNode ) {
 		newNode->parent = parentNode.element;
-		//TODO: Why do I delete the child references of the node? This kills reconnection :-p
-//		newNode->left = NULL;
-//		newNode->right = NULL;
 		if (parentNode.element != NULL) {
 			if (insertLeft) {
 				parentNode.element->left = newNode;

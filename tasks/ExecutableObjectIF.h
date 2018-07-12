@@ -12,12 +12,13 @@
 #define EXECUTABLEOBJECTIF_H_
 
 
-#include <framework/osal/OSAL.h>
+#include <framework/osal/OperatingSystemIF.h>
+class PeriodicTaskIF;
 
 /**
  * @brief	The interface provides a method to execute objects within a task.
  * @details	The performOperation method, that is required by the interface is
- * 			executed cyclically within the ObjectTask's context.
+ * 			executed cyclically within a task context.
  */
 class ExecutableObjectIF {
 public:
@@ -26,12 +27,14 @@ public:
 	 */
 	virtual ~ExecutableObjectIF() { }
 	/**
-	 * @brief	The performOperation method is executed in the ObjectTask context.
+	 * @brief	The performOperation method is executed in a task.
 	 * @details	There are no restrictions for calls within this method, so any
 	 * 			other member of the class can be used.
 	 * @return	Currently, the return value is ignored.
 	 */
-	virtual ReturnValue_t performOperation() = 0;
+	virtual ReturnValue_t performOperation(uint8_t operationCode = 0) = 0;
+
+	virtual void setTaskIF(PeriodicTaskIF* interface) {};
 };
 
 #endif /* EXECUTABLEOBJECTIF_H_ */

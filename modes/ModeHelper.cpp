@@ -1,5 +1,6 @@
 #include <framework/modes/HasModesIF.h>
 #include <framework/modes/ModeHelper.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 ModeHelper::ModeHelper(HasModesIF *owner) :
 		theOneWhoCommandedAMode(0), commandedMode(HasModesIF::MODE_OFF), commandedSubmode(
@@ -18,7 +19,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
 	switch (message->getCommand()) {
 	case ModeMessage::CMD_MODE_COMMAND_FORCED:
 		forced = true;
-		/*NO BREAK*/
+		/* NO BREAK falls through*/
 	case ModeMessage::CMD_MODE_COMMAND: {
 		mode = ModeMessage::getMode(message);
 		submode = ModeMessage::getSubmode(message);
@@ -26,7 +27,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
 		ReturnValue_t result = owner->checkModeCommand(mode, submode, &timeout);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			ModeMessage::cantReachMode(&reply, result);
-			sender.sendMessage(message->getSender(), &reply,
+			MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
 					owner->getCommandQueue());
 			break;
 		}
@@ -35,7 +36,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
 		commandedMode = mode;
 		commandedSubmode = submode;
 
-		if ((parentQueueId != MessageQueueSender::NO_QUEUE)
+		if ((parentQueueId != MessageQueueSenderIF::NO_QUEUE)
 				&& (theOneWhoCommandedAMode != parentQueueId)) {
 			owner->setToExternalControl();
 		}
@@ -49,7 +50,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
 		owner->getMode(&mode, &submode);
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_REPLY, mode,
 				submode);
-		sender.sendMessage(message->getSender(), &reply,
+		MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
 				owner->getCommandQueue());
 	}
 		break;
@@ -73,7 +74,7 @@ ReturnValue_t ModeHelper::initialize(MessageQueueId_t parentQueueId) {
 void ModeHelper::modeChanged(Mode_t mode, Submode_t submode) {
 	forced = false;
 	CommandMessage reply;
-	if (theOneWhoCommandedAMode != MessageQueueSender::NO_QUEUE) {
+	if (theOneWhoCommandedAMode != MessageQueueSenderIF::NO_QUEUE) {
 		if ((mode != commandedMode) || (submode != commandedSubmode)) {
 			ModeMessage::setModeMessage(&reply,
 					ModeMessage::REPLY_WRONG_MODE_REPLY, mode, submode);
@@ -81,16 +82,16 @@ void ModeHelper::modeChanged(Mode_t mode, Submode_t submode) {
 			ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_REPLY,
 					mode, submode);
 		}
-		sender.sendMessage(theOneWhoCommandedAMode, &reply,
+		MessageQueueSenderIF::sendMessage(theOneWhoCommandedAMode, &reply,
 				owner->getCommandQueue());
 	}
 	if (theOneWhoCommandedAMode != parentQueueId
-			&& parentQueueId != MessageQueueSender::NO_QUEUE) {
+			&& parentQueueId != MessageQueueSenderIF::NO_QUEUE) {
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_INFO, mode,
 				submode);
-		sender.sendMessage(parentQueueId, &reply, owner->getCommandQueue());
+		MessageQueueSenderIF::sendMessage(parentQueueId, &reply, owner->getCommandQueue());
 	}
-	theOneWhoCommandedAMode = MessageQueueSender::NO_QUEUE;
+	theOneWhoCommandedAMode = MessageQueueSenderIF::NO_QUEUE;
 }
 
 void ModeHelper::startTimer(uint32_t timeoutMs) {

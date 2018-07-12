@@ -1,10 +1,3 @@
-/*
- * ParameterHelper.h
- *
- *  Created on: 28.11.2015
- *      Author: mohr
- */
-
 #ifndef PARAMETERHELPER_H_
 #define PARAMETERHELPER_H_
 

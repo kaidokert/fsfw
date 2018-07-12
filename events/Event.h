@@ -1,14 +1,9 @@
-/*
- * Event.h
- *
- *  Created on: 18.08.2015
- *      Author: baetz
- */
-
 #ifndef EVENTOBJECT_EVENT_H_
 #define EVENTOBJECT_EVENT_H_
 
 #include <stdint.h>
+#include <framework/events/fwSubsystemIdRanges.h>
+//could be move to more suitable location
 #include <config/tmtc/subsystemIdRanges.h>
 
 typedef uint16_t EventId_t;

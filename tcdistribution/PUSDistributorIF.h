@@ -1,15 +1,8 @@
-/*
- * PUSDistributorIF.h
- *
- *  Created on: 21.11.2012
- *      Author: baetz
- */
-
 #ifndef PUSDISTRIBUTORIF_H_
 #define PUSDISTRIBUTORIF_H_
 
-#include <framework/ipc/MessageQueue.h>
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 /**
  * This interface allows PUS Services to register themselves at a PUS Distributor.
  * \ingroup tc_distribution

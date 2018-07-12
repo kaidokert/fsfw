@@ -1,12 +1,11 @@
-/*
- * conversion.cpp
- *
- *  Created on: 07.05.2012
- *      Author: baetz
- */
-
 #include <framework/globalfunctions/conversion.h>
-//TODO: This shall be optimized (later)!
+//TODO REMOVE. Needed because of BYTE_ORDER
+#include <framework/osal/Endiness.h>
+#include <cstring>
+
+
+
+//SHOULDDO: This shall be optimized (later)!
 void convertToByteStream( uint16_t value, uint8_t* buffer, uint32_t* size ) {
 	buffer[0] = (value & 0xFF00) >> 8;
 	buffer[1] = (value & 0x00FF);

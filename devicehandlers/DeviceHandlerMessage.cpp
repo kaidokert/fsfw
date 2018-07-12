@@ -89,7 +89,7 @@ void DeviceHandlerMessage::clear(CommandMessage* message) {
 			ipcStore->deleteData(getStoreAddress(message));
 		}
 	}
-		/* NO BREAK*/
+		/* NO BREAK falls through*/
 	case CMD_SWITCH_IOBOARD:
 	case CMD_WIRETAPPING:
 		message->setCommand(CommandMessage::CMD_NONE);

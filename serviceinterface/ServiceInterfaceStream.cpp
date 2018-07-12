@@ -1,11 +1,3 @@
-/*
- * ServiceInterfaceStream.cpp
- *
- *  Created on: 06.08.2015
- *      Author: baetz
- */
-
-
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 void ServiceInterfaceStream::setActive( bool myActive) {

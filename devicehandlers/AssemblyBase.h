@@ -7,7 +7,7 @@
 
 class AssemblyBase: public SubsystemBase {
 public:
-	static const uint8_t INTERFACE_ID = ASSEMBLY_BASE;
+	static const uint8_t INTERFACE_ID = CLASS_ID::ASSEMBLY_BASE;
 	static const ReturnValue_t NEED_SECOND_STEP = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t NEED_TO_RECONFIGURE = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t MODE_FALLBACK = MAKE_RETURN_CODE(0x03);

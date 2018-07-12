@@ -81,8 +81,9 @@ public:
 	/**
 	 * With this call, the packet is deleted.
 	 * It removes itself from the store and sets its data pointer to NULL.
+	 * @return	returncode from deleting the data.
 	 */
-	void deletePacket();
+	ReturnValue_t deletePacket();
 	/**
 	 * With this call, a packet can be linked to another store. This is useful
 	 * if the packet is a class member and used for more than one packet.

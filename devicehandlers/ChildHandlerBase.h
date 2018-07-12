@@ -10,7 +10,7 @@ public:
 			object_id_t deviceCommunication, uint32_t maxDeviceReplyLen,
 			uint8_t setDeviceSwitch, uint32_t thermalStatePoolId,
 			uint32_t thermalRequestPoolId, uint32_t parent,
-			FDIRBase* customFdir = NULL,
+			FailureIsolationBase* customFdir = NULL,
 			uint32_t cmdQueueSize = 20);
 	virtual ~ChildHandlerBase();
 

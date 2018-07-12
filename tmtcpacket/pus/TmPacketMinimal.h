@@ -1,16 +1,12 @@
-/*
- * TmPacketMinimal.h
- *
- *  Created on: 09.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 #define FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 
 
 #include <framework/tmtcpacket/SpacePacketBase.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
 
+struct timeval;
+class PacketTimestampInterpreterIF;
 /**
  * This is a minimal version of a PUS TmPacket without any variable field, or,
  * in other words with Service Type, Subtype and subcounter only.
@@ -54,6 +50,11 @@ public:
 		uint8_t subcounter;
 	};
 
+	ReturnValue_t getPacketTime(timeval* timestamp);
+
+	ReturnValue_t getPacketTimeRaw(const uint8_t** timePtr, uint32_t* size);
+
+	static void setInterpretTimestampObject(PacketTimestampInterpreterIF* interpreter);
 	/**
 	 * This struct defines the data structure of a PUS Telecommand Packet when
 	 * accessed via a pointer.
@@ -64,7 +65,8 @@ public:
 		PUSTmMinimalHeader data_field;
 		uint8_t rest;
 	};
-	static const uint16_t MINIMUM_SIZE = sizeof(TmPacketMinimalPointer) -1;
+	//Must include a checksum and is therefore at least one larger than the above struct.
+	static const uint16_t MINIMUM_SIZE = sizeof(TmPacketMinimalPointer) +1;
 protected:
 	/**
 	 * A pointer to a structure which defines the data structure of
@@ -73,6 +75,8 @@ protected:
 	 * To be hardware-safe, all elements are of byte size.
 	 */
 	TmPacketMinimalPointer* tm_data;
+
+	static PacketTimestampInterpreterIF* timestampInterpreter;
 };
 
 

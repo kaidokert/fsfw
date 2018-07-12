@@ -8,9 +8,9 @@
 #ifndef ACCEPTSMEMORYMESSAGESIF_H_
 #define ACCEPTSMEMORYMESSAGESIF_H_
 
-#include <framework/ipc/MessageQueue.h>
 #include <framework/memory/HasMemoryIF.h>
 #include <framework/memory/MemoryMessage.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 class AcceptsMemoryMessagesIF : public HasMemoryIF {
 public:

@@ -54,7 +54,7 @@ public:
 			return HasReturnvaluesIF::RETURN_OK;
 		}
 	}
-	static const uint8_t INTERFACE_ID = FIFO_CLASS;
+	static const uint8_t INTERFACE_ID = CLASS_ID::FIFO_CLASS;
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t EMPTY = MAKE_RETURN_CODE(2);
 };

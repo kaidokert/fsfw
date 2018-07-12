@@ -1,13 +1,3 @@
-/*
- * Event.cpp
- *
- *  Created on: 25.08.2015
- *      Author: baetz
- */
-
-
-
-
 #include <framework/events/Event.h>
 namespace EVENT {
 EventId_t getEventId(Event event) {

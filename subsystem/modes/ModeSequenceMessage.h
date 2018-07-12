@@ -7,7 +7,7 @@
 
 class ModeSequenceMessage {
 public:
-	static const uint8_t MESSAGE_ID = MODE_SEQUENCE_MESSAGE_ID;
+	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::MODE_SEQUENCE;
 
 	static const Command_t ADD_SEQUENCE = MAKE_COMMAND_ID(0x01);
 	static const Command_t ADD_TABLE = MAKE_COMMAND_ID(0x02);

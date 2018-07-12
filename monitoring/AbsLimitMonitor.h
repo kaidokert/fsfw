@@ -1,4 +1,3 @@
-
 #ifndef FRAMEWORK_MONITORING_ABSLIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_ABSLIMITMONITOR_H_
 
@@ -15,14 +14,13 @@ public:
 	virtual ~AbsLimitMonitor() {
 	}
 	virtual ReturnValue_t checkSample(T sample, T* crossedLimit) {
+		*crossedLimit = limit;
 		if (aboveIsViolation) {
 			if ((std::abs(sample) > limit)) {
-				*crossedLimit = limit;
 				return MonitoringIF::OUT_OF_RANGE;
 			}
 		} else {
 			if ((std::abs(sample) < limit)) {
-				*crossedLimit = limit;
 				return MonitoringIF::OUT_OF_RANGE;
 			}
 		}

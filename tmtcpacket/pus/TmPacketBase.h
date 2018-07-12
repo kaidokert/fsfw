@@ -3,6 +3,12 @@
 
 #include <framework/timemanager/TimeStamperIF.h>
 #include <framework/tmtcpacket/SpacePacketBase.h>
+#include <framework/timemanager/Clock.h>
+#include <framework/objectmanager/SystemObjectIF.h>
+
+namespace Factory{
+void setStaticFrameworkObjectIds();
+}
 
 /**
  * This struct defines a byte-wise structured PUS TM Data Field Header.
@@ -31,8 +37,6 @@ struct TmPacketPointer {
 	uint8_t data;
 };
 
-//TODO: add getTime, getSubcounter, getDestionation (if required)
-
 /**
  * This class is the basic data handler for any ECSS PUS Telemetry packet.
  *
@@ -45,7 +49,14 @@ struct TmPacketPointer {
  * @ingroup tmtcpackets
  */
 class TmPacketBase : public SpacePacketBase {
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
+	/**
+	 * This constant defines the minimum size of a valid PUS Telemetry Packet.
+	 */
+	static const uint32_t  TM_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) + sizeof(PUSTmDataFieldHeader) + 2); //!< Minimum size of a valid PUS Telemetry Packet.
+	static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048; //!< Maximum size of a TM Packet in this mission.
+	static const uint8_t VERSION_NUMBER_BYTE_PUS_A = 0b00010000; //!< First byte of secondary header for PUS-A packets.
 	/**
 	 * This is the default constructor.
 	 * It sets its internal data pointer to the address passed and also
@@ -57,6 +68,15 @@ public:
 	 * This is the empty default destructor.
 	 */
 	virtual ~TmPacketBase();
+	/**
+	 * Initializes the Tm Packet header.
+	 * Does set the timestamp (to now), but not the error control field.
+	 * @param apid APID used.
+	 * @param service	PUS Service
+	 * @param subservice PUS Subservice
+	 * @param packetSubcounter Additional subcounter used.
+	 */
+	void initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice, uint8_t packetSubcounter);
 	/**
 	 * This is a getter for the packet's PUS Service ID, which is the second
 	 * byte of the Data Field Header.
@@ -85,6 +105,12 @@ public:
 	 * @return	The size of the PUS Source Data (without Error Control field)
 	 */
 	uint16_t getSourceDataSize();
+
+	/**
+	 * In case data was filled manually (almost never the case).
+	 * @param size Size of source data (without CRC and data filed header!).
+	 */
+	void setSourceDataSize(uint16_t size);
 	/**
 	 * This getter returns the Error Control Field of the packet.
 	 *
@@ -115,10 +141,18 @@ public:
 	 */
 	void print();
 	/**
-	 * This constant defines the minimum size of a valid PUS Telemetry Packet.
+	 * Interprets the "time"-field in the secondary header and returns it in timeval format.
+	 * @return Converted timestamp of packet.
 	 */
-	static const uint32_t  TM_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) + sizeof(PUSTmDataFieldHeader) + 2);
-	static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048; //!< Maximum size of a TM Packet in this mission.
+	ReturnValue_t getPacketTime(timeval* timestamp) const;
+	/**
+	 * Returns a raw pointer to the beginning of the time field.
+	 * @return Raw pointer to time field.
+	 */
+	uint8_t* getPacketTimeRaw() const;
+
+	uint32_t getTimestampSize() const;
+
 protected:
 	/**
 	 * A pointer to a structure which defines the data structure of
@@ -132,6 +166,8 @@ protected:
 	 * It is initialized lazy.
 	 */
 	static TimeStamperIF* timeStamper;
+
+	static object_id_t timeStamperId; //!< The ID to use when looking for a time stamper.
 	/**
 	 * Checks if a time stamper is available and tries to set it if not.
 	 * @return Returns false if setting failed.

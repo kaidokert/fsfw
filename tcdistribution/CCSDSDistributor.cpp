@@ -1,16 +1,9 @@
-/*
- * CCSDSDistributor.cpp
- *
- *  Created on: 18.06.2012
- *      Author: baetz
- */
-
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tcdistribution/CCSDSDistributor.h>
 #include <framework/tmtcpacket/SpacePacketBase.h>
 
-CCSDSDistributor::CCSDSDistributor( uint16_t set_default_apid ) :
-		TcDistributor( objects::CCSDS_PACKET_DISTRIBUTOR ), default_apid( set_default_apid ), tcStore(NULL) {
+CCSDSDistributor::CCSDSDistributor( uint16_t setDefaultApid, object_id_t setObjectId ) :
+		TcDistributor( setObjectId ), default_apid( setDefaultApid ), tcStore(NULL) {
 }
 
 CCSDSDistributor::~CCSDSDistributor() {
@@ -21,6 +14,7 @@ iterator_t CCSDSDistributor::selectDestination() {
 //	debug << "CCSDSDistributor::selectDestination received: " << this->currentMessage.getStorageId().pool_index << ", " << this->currentMessage.getStorageId().packet_index << std::endl;
 	const uint8_t* p_packet = NULL;
 	uint32_t size = 0;
+	//TODO check returncode?
 	this->tcStore->getData( this->currentMessage.getStorageId(), &p_packet, &size );
 	SpacePacketBase current_packet( p_packet );
 //	info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex << current_packet.getAPID() << std::dec << std::endl;
@@ -35,7 +29,7 @@ iterator_t CCSDSDistributor::selectDestination() {
 }
 
 MessageQueueId_t CCSDSDistributor::getRequestQueue() {
-	return this->tcQueue.getId();
+	return tcQueue->getId();
 }
 
 ReturnValue_t CCSDSDistributor::registerApplication(

@@ -1,15 +1,20 @@
 #include <framework/subsystem/SubsystemBase.h>
 #include <framework/controller/ControllerBase.h>
 #include <framework/subsystem/SubsystemBase.h>
+#include <framework/ipc/QueueFactory.h>
+#include <framework/action/HasActionsIF.h>
 
 ControllerBase::ControllerBase(uint32_t setObjectId, uint32_t parentId,
 		size_t commandQueueDepth) :
 		SystemObject(setObjectId), parentId(parentId), mode(MODE_OFF), submode(
-				SUBMODE_NONE), commandQueue(commandQueueDepth), modeHelper(
-				this), healthHelper(this, setObjectId) {
+				SUBMODE_NONE), commandQueue(NULL), modeHelper(
+				this), healthHelper(this, setObjectId),hkSwitcher(this) {
+	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth);
+
 }
 
 ControllerBase::~ControllerBase() {
+	QueueFactory::instance()->deleteMessageQueue(commandQueue);
 }
 
 ReturnValue_t ControllerBase::initialize() {
@@ -38,18 +43,23 @@ ReturnValue_t ControllerBase::initialize() {
 	if (result != RETURN_OK) {
 		return result;
 	}
+
+	result = hkSwitcher.initialize();
+	if (result != RETURN_OK) {
+		return result;
+	}
 	return RETURN_OK;
 }
 
 MessageQueueId_t ControllerBase::getCommandQueue() const {
-	return commandQueue.getId();
+	return commandQueue->getId();
 }
 
 void ControllerBase::handleQueue() {
 	CommandMessage message;
 	ReturnValue_t result;
-	for (result = commandQueue.receiveMessage(&message); result == RETURN_OK;
-			result = commandQueue.receiveMessage(&message)) {
+	for (result = commandQueue->receiveMessage(&message); result == RETURN_OK;
+			result = commandQueue->receiveMessage(&message)) {
 
 		result = modeHelper.handleModeCommand(&message);
 		if (result == RETURN_OK) {
@@ -64,21 +74,21 @@ void ControllerBase::handleQueue() {
 		if (result == RETURN_OK) {
 			continue;
 		}
-		message.clearCommandMessage();
-		CommandMessage reply(CommandMessage::REPLY_REJECTED,
-				CommandMessage::UNKNOW_COMMAND, 0);
-		commandQueue.reply(&reply);
+		message.setToUnknownCommand();
+		commandQueue->reply(&message);
 	}
 
 }
 
 void ControllerBase::startTransition(Mode_t mode, Submode_t submode) {
+	changeHK(this->mode, this->submode, false);
 	triggerEvent(CHANGING_MODE, mode, submode);
-	modeHelper.modeChanged(mode, submode);
-	modeChanged(mode, submode);
 	this->mode = mode;
 	this->submode = submode;
+	modeHelper.modeChanged(mode, submode);
+	modeChanged(mode, submode);
 	announceMode(false);
+	changeHK(this->mode, this->submode, true);
 }
 
 void ControllerBase::getMode(Mode_t* mode, Submode_t* submode) {
@@ -94,8 +104,9 @@ void ControllerBase::announceMode(bool recursive) {
 	triggerEvent(MODE_INFO, mode, submode);
 }
 
-ReturnValue_t ControllerBase::performOperation() {
+ReturnValue_t ControllerBase::performOperation(uint8_t opCode) {
 	handleQueue();
+	hkSwitcher.performOperation();
 	performControlOperation();
 	return RETURN_OK;
 }
@@ -117,4 +128,7 @@ ReturnValue_t ControllerBase::setHealth(HealthState health) {
 
 HasHealthIF::HealthState ControllerBase::getHealth() {
 	return healthHelper.getHealth();
+}
+
+void ControllerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
 }

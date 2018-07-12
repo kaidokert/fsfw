@@ -1,4 +1,3 @@
-
 #ifndef FRAMEWORK_MONITORING_MONITORREPORTER_H_
 #define FRAMEWORK_MONITORING_MONITORREPORTER_H_
 
@@ -12,10 +11,13 @@ template<typename T>
 class MonitorReporter: public HasParametersIF {
 public:
 
+	static const uint8_t ENABLED = 1;
+	static const uint8_t DISABLED = 0;
+
 	MonitorReporter(object_id_t reportingId, uint8_t monitorId, uint32_t parameterId, uint16_t confirmationLimit) :
 			monitorId(monitorId), parameterId(parameterId), reportingId(
 					reportingId), oldState(MonitoringIF::UNCHECKED), reportingEnabled(
-			true), eventEnabled(true), currentCounter(0), confirmationLimit(
+			ENABLED), eventEnabled(ENABLED), currentCounter(0), confirmationLimit(
 					confirmationLimit) {
 	}
 
@@ -26,12 +28,13 @@ public:
 			T crossedLimit = 0) {
 		if (state != oldState) {
 			if (isConfirmed(state)) {
-				if (this->eventEnabled) {
+				if (eventEnabled == ENABLED) {
 					sendTransitionEvent(parameterValue, state);
 				}
-				if (this->reportingEnabled) {
+				if (reportingEnabled == ENABLED) {
 					sendTransitionReport(parameterValue, crossedLimit, state);
 				}
+				oldState = state;
 			} else {
 				//This is to ensure confirmation works.
 				//Needs to be reset to be able to confirm against oldState again next time.
@@ -50,13 +53,13 @@ public:
 			return INVALID_DOMAIN_ID;
 		}
 		switch (parameterId) {
-		case 1:
+		case 0:
 			parameterWrapper->set(this->confirmationLimit);
 			break;
-		case 2:
+		case 1:
 			parameterWrapper->set(this->reportingEnabled);
 			break;
-		case 3:
+		case 2:
 			parameterWrapper->set(this->eventEnabled);
 			break;
 		default:
@@ -73,15 +76,28 @@ public:
 	object_id_t getReporterId() const {
 		return reportingId;
 	}
+
+	void setEventEnabled(uint8_t eventEnabled) {
+		this->eventEnabled = eventEnabled;
+	}
+
+	void setReportingEnabled(uint8_t reportingEnabled) {
+		this->reportingEnabled = reportingEnabled;
+	}
+
+	bool isEventEnabled() const {
+		return (eventEnabled == ENABLED);
+	}
+
 protected:
 	const uint8_t monitorId;
 	const uint32_t parameterId;
 	object_id_t reportingId;
 	ReturnValue_t oldState;
 
-	bool reportingEnabled;
+	uint8_t reportingEnabled;
 
-	bool eventEnabled;
+	uint8_t eventEnabled;
 
 	uint16_t currentCounter;
 	uint16_t confirmationLimit;
@@ -149,8 +165,8 @@ protected:
 		LimitViolationReporter::sendLimitViolationReport(&report);
 	}
 	ReturnValue_t setToState(ReturnValue_t state) {
-		if (oldState != state) {
-			MonitoringReportContent<float> report(parameterId, 0, 0, oldState,
+		if (oldState != state && reportingEnabled) {
+			MonitoringReportContent<T> report(parameterId, 0, 0, oldState,
 					state);
 			LimitViolationReporter::sendLimitViolationReport(&report);
 			oldState = state;

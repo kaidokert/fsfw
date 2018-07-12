@@ -1,29 +1,31 @@
-/*
- * LocalMemory.cpp
- *
- *  Created on: 05.11.2013
- *      Author: Bastian
- */
-
+#ifdef LEON
 #include <bsp_flp/hw_prom/HwProm.h>
+#endif
+
 #include <framework/memory/LocalMemory.h>
 #include <framework/serialize/SerializeAdapter.h>
+#include <framework/ipc/QueueFactory.h>
 
 LocalMemory::LocalMemory(object_id_t setObjectId) :
-		SystemObject(setObjectId), commandQueue(), memoryHelper(this,
-				&commandQueue) {
+		SystemObject(setObjectId), commandQueue(NULL), memoryHelper(this,
+				commandQueue) {
+	commandQueue = QueueFactory::instance()->createMessageQueue();
 }
 
-ReturnValue_t LocalMemory::performOperation() {
+LocalMemory::~LocalMemory() {
+QueueFactory::instance()->deleteMessageQueue(commandQueue);
+}
+
+ReturnValue_t LocalMemory::performOperation(uint8_t opCode) {
 	ReturnValue_t handleResult;
 	CommandMessage message;
-	for (ReturnValue_t result = commandQueue.receiveMessage(&message);
+	for (ReturnValue_t result = commandQueue->receiveMessage(&message);
 			result == HasReturnvaluesIF::RETURN_OK;
-			result = commandQueue.receiveMessage(&message)) {
+			result = commandQueue->receiveMessage(&message)) {
 		handleResult = memoryHelper.handleMemoryCommand(&message);
 		if (handleResult != HasReturnvaluesIF::RETURN_OK) {
-			message.setToUnknownCommand(message.getCommand());
-			commandQueue.reply(&message);
+			message.setToUnknownCommand();
+			commandQueue->reply(&message);
 		}
 	}
 	return HasReturnvaluesIF::RETURN_OK;
@@ -54,7 +56,7 @@ ReturnValue_t LocalMemory::initialize() {
 }
 
 MessageQueueId_t LocalMemory::getCommandQueue() const {
-	return commandQueue.getId();
+	return commandQueue->getId();
 }
 
 ReturnValue_t LocalMemory::checkWriteAccess(uint32_t address, uint32_t size) {
@@ -66,14 +68,13 @@ ReturnValue_t LocalMemory::checkWriteAccess(uint32_t address, uint32_t size) {
 	if ((size % 4) != 0) {
 		return INVALID_SIZE;
 	}
-
+#ifdef LEON
 	if (address < 0x40000000) {
 		HwProm prom(false);
 		if (prom.getPromWriteEnabled() != HwProm::WRITE_ENABLED) {
 			return WRITE_PROTECTED;
 		}
 	}
-
+#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
-

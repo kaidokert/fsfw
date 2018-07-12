@@ -1,10 +1,3 @@
-/*
- * SerializeElement.h
- *
- *  Created on: 24.03.2014
- *      Author: baetz
- */
-
 #ifndef SERIALIZEELEMENT_H_
 #define SERIALIZEELEMENT_H_
 

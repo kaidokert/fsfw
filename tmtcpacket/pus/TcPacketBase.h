@@ -46,8 +46,9 @@ protected:
 	 *
 	 * To be hardware-safe, all elements are of byte size.
 	 */
-	TcPacketPointer* tc_data;
+	TcPacketPointer* tcData;
 public:
+	static const uint16_t TC_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) + sizeof(PUSTcDataFieldHeader) + 2);
 	/**
 	 * With this constant for the acknowledge field responses on all levels are expected.
 	 */
@@ -83,6 +84,22 @@ public:
 	 * This is the empty default destructor.
 	 */
 	virtual ~TcPacketBase();
+	/**
+	 * Initializes the Tc Packet header.
+	 * @param apid APID used.
+	 * @param service	PUS Service
+	 * @param subservice PUS Subservice
+	 * @param packetSubcounter Additional subcounter used.
+	 */
+	/**
+	 * Initializes the Tc Packet header.
+	 * @param apid APID used.
+	 * @param sequenceCount Sequence Count in the primary header.
+	 * @param ack Which acknowledeges are expected from the receiver.
+	 * @param service	PUS Service
+	 * @param subservice PUS Subservice
+	 */
+	void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack, uint8_t service, uint8_t subservice);
 	/**
 	 * This command returns the CCSDS Secondary Header Flag.
 	 * It shall always be zero for PUS Packets. This is the

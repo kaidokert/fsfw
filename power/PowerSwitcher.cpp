@@ -1,10 +1,3 @@
-/*
- * PowerSwitcher.cpp
- *
- *  Created on: 21.01.2014
- *      Author: baetz
- */
-
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/power/PowerSwitcher.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
@@ -14,8 +7,8 @@ PowerSwitcher::PowerSwitcher(uint8_t setSwitch1, uint8_t setSwitch2,
 		state(setStartState), firstSwitch(setSwitch1), secondSwitch(setSwitch2), power(NULL) {
 }
 
-ReturnValue_t PowerSwitcher::initialize() {
-	power = objectManager->get<PowerSwitchIF>(objects::PCDU_HANDLER);
+ReturnValue_t PowerSwitcher::initialize(object_id_t powerSwitchId) {
+	power = objectManager->get<PowerSwitchIF>(powerSwitchId);
 	if (power == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -47,7 +40,7 @@ void PowerSwitcher::commandSwitches(ReturnValue_t onOff) {
 	switch (result) {
 	case TWO_SWITCHES:
 		power->sendSwitchCommand(secondSwitch, onOff);
-		/*NO BREAK*/
+		/* NO BREAK falls through*/
 	case ONE_SWITCH:
 		power->sendSwitchCommand(firstSwitch, onOff);
 		break;

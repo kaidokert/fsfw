@@ -1,10 +1,3 @@
-/*
- * PusVerificationReport.cpp
- *
- *  Created on: 22.05.2012
- *      Author: baetz
- */
-
 #include <framework/serialize/SerializeAdapter.h>
 #include <framework/tmtcservices/PusVerificationReport.h>
 

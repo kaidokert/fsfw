@@ -1,13 +1,3 @@
-/*
- * ObjectManager.cpp
- *
- *  Created on: Sep 18, 2012
- *      Author: baetz
- */
-
-
-
-
 #include <framework/objectmanager/ObjectManager.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <cstdlib>
@@ -37,7 +27,6 @@ ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 }
 
 ReturnValue_t ObjectManager::remove( object_id_t id ) {
-	std::map<object_id_t, SystemObjectIF*>::iterator it = this->objectList.find( id );
 	if ( this->getSystemObject(id) != NULL ) {
 		this->objectList.erase( id );
 		debug << "ObjectManager::removeObject: Object " << std::hex << (int)id << std::dec << " removed." << std::endl;
@@ -67,7 +56,6 @@ ObjectManager::ObjectManager( ) : produceObjects(NULL) {
 }
 
 void ObjectManager::initialize() {
-	//TODO: Include check if already initialized?
 	this->produceObjects();
 	ReturnValue_t return_value = RETURN_FAILED;
 	uint32_t error_count = 0;

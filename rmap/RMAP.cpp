@@ -8,8 +8,6 @@ ReturnValue_t RMAP::reset(RMAPCookie* cookie) {
 	return cookie->channel->reset();
 }
 
-//TODO Check for channel == NULL
-//Done. BB
 RMAP::RMAP(){
 
 }

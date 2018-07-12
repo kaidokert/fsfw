@@ -5,7 +5,7 @@
 
 class InternalErrorCodes {
 public:
-	static const uint8_t INTERFACE_ID = INTERNAL_ERROR_CODES;
+	static const uint8_t INTERFACE_ID = CLASS_ID::INTERNAL_ERROR_CODES;
 
 static const ReturnValue_t NO_CONFIGURATION_TABLE = MAKE_RETURN_CODE(0x01 );
 static const ReturnValue_t NO_CPU_TABLE = MAKE_RETURN_CODE(0x02 );

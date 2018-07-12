@@ -1,10 +1,3 @@
-/*
- * FaultCounter.h
- *
- *  Created on: 15.09.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_FDIR_FAULTCOUNTER_H_
 #define FRAMEWORK_FDIR_FAULTCOUNTER_H_
 

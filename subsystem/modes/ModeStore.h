@@ -1,6 +1,8 @@
 #ifndef MODESTORE_H_
 #define MODESTORE_H_
 
+#ifdef USE_MODESTORE
+
 #include <framework/container/ArrayList.h>
 #include <framework/container/SinglyLinkedList.h>
 #include <framework/objectmanager/SystemObject.h>
@@ -36,6 +38,8 @@ private:
 
 	ReturnValue_t isValidEntry(ModeListEntry *sequence);
 };
+
+#endif
 
 #endif /* MODESTORE_H_ */
 

@@ -1,10 +1,3 @@
-/*
- * ManagesHealthIF.h
- *
- *  Created on: 13.10.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
 #define FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
 
@@ -39,11 +32,6 @@ public:
 
 	virtual bool isPermanentFaulty(HasHealthIF::HealthState health) {
 		return (health == HasHealthIF::PERMANENT_FAULTY);
-	}
-
-	virtual bool shouldBeMonitored(object_id_t object) {
-		HasHealthIF::HealthState health = getHealth(object);
-		return shouldBeMonitored(health);
 	}
 
 	static bool isFaulty(HasHealthIF::HealthState health) {

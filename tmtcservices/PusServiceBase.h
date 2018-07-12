@@ -1,7 +1,6 @@
 #ifndef PUSSERVICEBASE_H_
 #define PUSSERVICEBASE_H_
 
-#include <framework/ipc/MessageQueue.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
@@ -10,6 +9,12 @@
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/tmtcservices/VerificationCodes.h>
 #include <framework/tmtcservices/VerificationReporter.h>
+#include <framework/internalError/InternalErrorReporterIF.h>
+#include <framework/ipc/MessageQueueIF.h>
+
+namespace Factory{
+void setStaticFrameworkObjectIds();
+}
 
 /**
  * \defgroup pus_services PUS Service Framework
@@ -26,44 +31,7 @@
  * \ingroup pus_services
  */
 class PusServiceBase : public ExecutableObjectIF, public AcceptsTelecommandsIF, public SystemObject, public HasReturnvaluesIF {
-private:
-	/**
-	 * This constant sets the maximum number of packets accepted per call.
-	 * Remember that one packet must be completely handled in one #handleRequest call.
-	 */
-	static const uint8_t PUS_SERVICE_MAX_RECEPTION = 10;
-protected:
-	/**
-	 * The APID of this instance of the Service.
-	 */
-	uint16_t apid;
-	/**
-	 * The Service Identifier.
-	 */
-	uint8_t serviceId;
-	/**
-	 * One of two error parameters for additional error information.
-	 */
-	uint32_t errorParameter1;
-	/**
-	 * One of two error parameters for additional error information.
-	 */
-	uint8_t errorParameter2;
-	/**
-	 * This is a complete instance of the Telecommand reception queue of the class.
-	 * It is initialized on construction of the class.
-	 */
-	MessageQueue requestQueue;
-	/**
-	 * An instance of the VerificationReporter class, that simplifies sending any kind of
-	 * Verification Message to the TC Verification Service.
-	 */
-	VerificationReporter verifyReporter;
-	/**
-	 * The current Telecommand to be processed.
-	 * It is deleted after handleRequest was executed.
-	 */
-	TcPacketStored currentPacket;
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
 	 * The constructor for the class.
@@ -72,7 +40,7 @@ public:
 	 * @param set_apid			The APID the Service is instantiated for.
 	 * @param set_service_id	The Service Identifier as specified in ECSS PUS.
 	 */
-	PusServiceBase(	object_id_t setObjectId, uint16_t set_apid, uint8_t set_service_id );
+	PusServiceBase(	object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId);
 	/**
 	 * The destructor is empty.
 	 */
@@ -103,10 +71,52 @@ public:
 	 * @return	- \c RETURN_OK if the periodic performService was successfull.
 	 * 			- \c RETURN_FAILED else.
 	 */
-	ReturnValue_t performOperation();
+	ReturnValue_t performOperation(uint8_t opCode);
 	virtual uint16_t getIdentifier();
 	MessageQueueId_t getRequestQueue();
 	virtual ReturnValue_t initialize();
+protected:
+	/**
+	 * The APID of this instance of the Service.
+	 */
+	uint16_t apid;
+	/**
+	 * The Service Identifier.
+	 */
+	uint8_t serviceId;
+	/**
+	 * One of two error parameters for additional error information.
+	 */
+	uint32_t errorParameter1;
+	/**
+	 * One of two error parameters for additional error information.
+	 */
+	uint8_t errorParameter2;
+	/**
+	 * This is a complete instance of the Telecommand reception queue of the class.
+	 * It is initialized on construction of the class.
+	 */
+	MessageQueueIF* requestQueue;
+	/**
+	 * An instance of the VerificationReporter class, that simplifies sending any kind of
+	 * Verification Message to the TC Verification Service.
+	 */
+	VerificationReporter verifyReporter;
+	/**
+	 * The current Telecommand to be processed.
+	 * It is deleted after handleRequest was executed.
+	 */
+	TcPacketStored currentPacket;
+
+	static object_id_t packetSource;
+
+	static object_id_t packetDestination;
+private:
+	/**
+	 * This constant sets the maximum number of packets accepted per call.
+	 * Remember that one packet must be completely handled in one #handleRequest call.
+	 */
+	static const uint8_t PUS_SERVICE_MAX_RECEPTION = 10;
 };
 
 #endif /* PUSSERVICEBASE_H_ */

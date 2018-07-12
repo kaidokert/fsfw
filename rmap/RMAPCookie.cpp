@@ -1,15 +1,8 @@
-/*
- * RMAPcpp
- *
- *  Created on: 07.11.2012
- *      Author: mohr
- */
-
 #include <framework/rmap/RMAPChannelIF.h>
 #include <framework/rmap/RMAPCookie.h>
 #include <stddef.h>
 
-//TODO use ctor initialization list
+
 RMAPCookie::RMAPCookie() {
 	this->header.dest_address = 0;
 	this->header.protocol = 0x01;

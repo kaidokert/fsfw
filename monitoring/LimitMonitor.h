@@ -1,4 +1,3 @@
-
 #ifndef FRAMEWORK_MONITORING_LIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_LIMITMONITOR_H_
 
@@ -24,6 +23,7 @@ public:
 	virtual ~LimitMonitor() {
 	}
 	virtual ReturnValue_t checkSample(T sample, T* crossedLimit) {
+		*crossedLimit = 0.0;
 		if (sample > upperLimit) {
 			*crossedLimit = upperLimit;
 			return MonitoringIF::ABOVE_HIGH_LIMIT;
@@ -49,7 +49,7 @@ public:
 			parameterWrapper->set(this->lowerLimit);
 			break;
 		case 11:
-			parameterWrapper->set(this->lowerLimit);
+			parameterWrapper->set(this->upperLimit);
 			break;
 		default:
 			return this->INVALID_MATRIX_ID;
@@ -63,6 +63,15 @@ public:
 			return false;
 		}
 	}
+
+	T getLowerLimit() const {
+		return lowerLimit;
+	}
+
+	T getUpperLimit() const {
+		return upperLimit;
+	}
+
 protected:
 	void sendTransitionEvent(T currentValue, ReturnValue_t state) {
 		switch (state) {

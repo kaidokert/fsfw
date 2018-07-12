@@ -8,6 +8,7 @@
 #ifndef OBJECTMANAGERIF_H_
 #define OBJECTMANAGERIF_H_
 
+#include <framework/objectmanager/frameworkObjects.h>
 #include <config/objects/systemObjectList.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
@@ -23,7 +24,7 @@
  */
 class ObjectManagerIF : public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = OBJECT_MANAGER_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::OBJECT_MANAGER_IF;
 	static const ReturnValue_t INSERTION_FAILED = MAKE_RETURN_CODE( 1 );
 	static const ReturnValue_t NOT_FOUND = MAKE_RETURN_CODE( 2 );
 protected:

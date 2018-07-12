@@ -1,10 +1,3 @@
-/*
- * PlacementFactory.h
- *
- *  Created on: 10.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_CONTAINER_PLACEMENTFACTORY_H_
 #define FRAMEWORK_CONTAINER_PLACEMENTFACTORY_H_
 
@@ -30,7 +23,8 @@ public:
 	}
 	template<typename T>
 	ReturnValue_t destroy(T* thisElement) {
-		//TODO: Shouldn't we call the destructor here first, in case something was allocated by the object (shouldn't do that, however).
+		//Need to call destructor first, in case something was allocated by the object (shouldn't do that, however).
+		thisElement->~T();
 		uint8_t* pointer = (uint8_t*) (thisElement);
 		return dataBackend->deleteData(pointer, sizeof(T));
 	}

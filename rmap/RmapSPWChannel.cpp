@@ -1,10 +1,3 @@
-/*
- * RMAPStack.cpp
- *
- *  Created on: 30.05.2013
- *      Author: tod
- */
-
 #include <framework/rmap/RmapSPWChannel.h>
 extern "C" {
 #include <bsp_flp/hw_timer/hw_timer.h>
@@ -33,18 +26,18 @@ extern "C" {
 
 RmapSPWChannel::RmapSPWChannel(object_id_t setObjectId,
 		uint16_t buffersize_words, uint32_t maxPacketSize, int8_t portNr,
-		uint8_t dest_addr, uint8_t src_addr,
+		uint8_t dest_addr, uint8_t src_addr, PeriodicTaskIF* currentTask,
 		datapool::opus_variable_id portVariable) :
-		SystemObject(setObjectId), port(NULL), port_has_crc(0), rx_index(0), max_rx(
-				128), tx_index(0), max_tx(64), src_addr(src_addr), dest_addr(
-				dest_addr), portPoolId(portVariable) {
+		SystemObject(setObjectId), port(NULL), rx_index(0), max_rx(128), tx_index(
+				0), max_tx(64), src_addr(src_addr), dest_addr(dest_addr), portPoolId(
+				portVariable) {
 	buffer = new uint32_t[buffersize_words];
 	buffer_pointer = buffer;
 	end_of_buffer = &buffer[buffersize_words];
 	max_packet_len = maxPacketSize & 0x1FFFFFC;
 	tid = 0;
 	failure_table = new uint16_t[128];
-	setPort(portNr, dest_addr, src_addr);
+	setPort(portNr, dest_addr, src_addr, currentTask);
 }
 
 RmapSPWChannel::~RmapSPWChannel() {
@@ -56,8 +49,6 @@ ReturnValue_t RmapSPWChannel::reset() {
 	uint8_t link_down = 0;
 	uint8_t missed, i;
 	uint32_t state;
-
-	//printf_sif_rmap("reset channel %i\n", channel_nr);
 
 	//check if channel has a port
 	if (port == NULL) {
@@ -114,7 +105,7 @@ ReturnValue_t RmapSPWChannel::reset() {
 	if (missed == rx_index) {
 		link_down++;
 	}
-	//TODO: checkme
+
 	for (i = rx_index - missed; i > 0; i--) {
 		if (!(failure_table[i - 1] & 1)) {
 			checkRxDescPacket(&(rx_descriptor_table[i - 1]),
@@ -166,7 +157,7 @@ ReturnValue_t RmapSPWChannel::isActive() {
 }
 
 ReturnValue_t RmapSPWChannel::setPort(int8_t portNr, uint8_t dest_addr,
-		uint8_t src_addr) {
+		uint8_t src_addr, PeriodicTaskIF* currentTask) {
 
 	SPW_dev *new_port;
 
@@ -175,8 +166,13 @@ ReturnValue_t RmapSPWChannel::setPort(int8_t portNr, uint8_t dest_addr,
 		return COMMAND_PORT_OUT_OF_RANGE;
 	}
 
+	//check if crc is enabled
+
 	if (portNr != -1) {
 		new_port = SPW_devices.devices[portNr];
+		if (!spw_crc_enabled(new_port)) {
+			return NO_HW_CRC;
+		}
 	} else {
 		new_port = NULL;
 	}
@@ -203,8 +199,6 @@ ReturnValue_t RmapSPWChannel::setPort(int8_t portNr, uint8_t dest_addr,
 
 //stop the new port
 	spw_stop(new_port);
-//check if crc is enabled
-	port_has_crc = spw_crc_enabled(new_port);
 //make sure the new port has the max len set
 	new_port->SPWRXL = max_packet_len;
 //set the addresses
@@ -218,13 +212,13 @@ ReturnValue_t RmapSPWChannel::setPort(int8_t portNr, uint8_t dest_addr,
 	spw_reset_txdesc_table(new_port);
 //reset the channel
 	spw_start(new_port);
-	OSAL::sleepFor(10);
+	currentTask->sleepFor(10);
 	reset();
 	return RETURN_OK;
 }
 
-ReturnValue_t RmapSPWChannel::setPort(int8_t port) {
-	return setPort(port, this->dest_addr, this->src_addr);
+ReturnValue_t RmapSPWChannel::setPort(int8_t port, PeriodicTaskIF* currentTask) {
+	return setPort(port, this->dest_addr, this->src_addr, currentTask);
 }
 
 spw_rx_desc* RmapSPWChannel::findReply(RMAPCookie* cookie) {
@@ -232,7 +226,6 @@ spw_rx_desc* RmapSPWChannel::findReply(RMAPCookie* cookie) {
 	uint8_t i;
 
 //look downwards
-//TODO: checkme
 	for (i = cookie->rxdesc_index; i < 200; i--) {
 		if ((rxdesc = checkRxDesc(cookie, i)) != NULL) {
 			return rxdesc;
@@ -334,21 +327,6 @@ ReturnValue_t RmapSPWChannel::sendCommand(RMAPCookie* cookie,
 		buffer_pointer += BYTES2WORDS(RMAP_READ_REPLY_HEADER_LEN + datalen + 1); //+1 for crc
 	}
 
-//calculate crc if not done in hw
-	if (!port_has_crc) {
-		cookie->header.header_crc = crc_calculate((uint8_t *) &cookie->header,
-				RMAP_COMMAND_HEADER_LEN - 1);
-		headerlen = RMAP_COMMAND_HEADER_LEN;
-		if (instruction & (1 << RMAP_COMMAND_BIT_WRITE)) {
-			if (datalen == 0) {
-				data = &null_crc;
-			} else {
-				data[datalen] = crc_calculate(data, datalen);
-			}
-			datalen++;
-		}
-	}
-
 //configure tx_descriptor
 	tx_descriptor_table[tx_index].word1 = (uint32_t) &cookie->header;
 	if (instruction & (1 << RMAP_COMMAND_BIT_WRITE)) {
@@ -357,18 +335,14 @@ ReturnValue_t RmapSPWChannel::sendCommand(RMAPCookie* cookie,
 		tx_descriptor_table[tx_index].word2 = 0;
 	}
 	tx_descriptor_table[tx_index].word3 = (uint32_t) data;
-	if (port_has_crc) {
-		if (instruction & (1 << RMAP_COMMAND_BIT_WRITE)) {
-			tx_descriptor_table[tx_index].word0 = headerlen
-					| (1 << SPW_DESC_TX_ENABLE) | (1 << SPW_DESC_TX_CRC_DATA)
-					| (1 << SPW_DESC_TX_CRC_HEADER);
-		} else {
-			tx_descriptor_table[tx_index].word0 = headerlen
-					| (1 << SPW_DESC_TX_ENABLE) | (1 << SPW_DESC_TX_CRC_HEADER);
-		}
+
+	if (instruction & (1 << RMAP_COMMAND_BIT_WRITE)) {
+		tx_descriptor_table[tx_index].word0 = headerlen
+				| (1 << SPW_DESC_TX_ENABLE) | (1 << SPW_DESC_TX_CRC_DATA)
+				| (1 << SPW_DESC_TX_CRC_HEADER);
 	} else {
 		tx_descriptor_table[tx_index].word0 = headerlen
-				| (1 << SPW_DESC_TX_ENABLE);
+				| (1 << SPW_DESC_TX_ENABLE) | (1 << SPW_DESC_TX_CRC_HEADER);
 	}
 
 //remember descriptors to find them faster when looking for the reply
@@ -404,7 +378,6 @@ ReturnValue_t RmapSPWChannel::getReply(RMAPCookie* cookie, uint8_t** databuffer,
 //reply_header = (rmap_write_reply_header *) rxdesc->word1;
 	if (databuffer != NULL) {
 		packetlen = (rxdesc->word0 & 0x1FFFFFF);
-		//		printf_sif("Reached critical entry.\n");
 		*databuffer = ((uint8_t *) rxdesc->word1) + RMAP_READ_REPLY_HEADER_LEN;
 		*len = packetlen - RMAP_READ_REPLY_HEADER_LEN - 1;
 	}
@@ -623,7 +596,7 @@ ReturnValue_t RmapSPWChannel::sendCommandBlocking(RMAPCookie *cookie,
 	return REPLY_TIMEOUT;
 }
 
-//TODO find a better way to inject the Extended address
+//SHOULDDO find a better way to inject the Extended address
 #include <config/hardware/IoBoardAddresses.h>
 ReturnValue_t RmapSPWChannel::open(Cookie **cookie, uint32_t address,
 		uint32_t maxReplyLen) {
@@ -647,7 +620,7 @@ ReturnValue_t RmapSPWChannel::reOpen(Cookie* cookie, uint32_t address,
 	rCookie->setCommandMask(0);
 	rCookie->setExtendedAddress(IoBoardExtendedAddresses::DEVICE_BUFFER);
 	rCookie->setMaxReplyLen(maxReplyLen);
-	return REPLY_OK;
+	return RETURN_OK;
 }
 
 void RmapSPWChannel::close(Cookie* cookie) {
@@ -692,7 +665,6 @@ uint32_t RmapSPWChannel::getParameter(Cookie* cookie) {
 
 void RmapSPWChannel::reportFailures(uint16_t failureEntry,
 		uint8_t descriptorNr) {
-	//TODO: Communicate to Kai, adjust return codes.
 	if (failureEntry & (1 << RMAP_RX_FAIL_CRC)) {
 		triggerEvent(RMAP_PROTOCOL_ERROR, REPLY_INVALID_DATA_CRC, descriptorNr);
 	}
@@ -730,13 +702,11 @@ void RmapSPWChannel::reportFailures(uint16_t failureEntry,
 	}
 	if (failureEntry & (1 << RMAP_RX_FAIL_WRONG_REPLY)) {
 		triggerEvent(RMAP_PROTOCOL_ERROR, REPLY_INVALID_KEY, descriptorNr);
-		;
 	}
 
 }
 
 void RmapSPWChannel::reportSpwstr(uint32_t spwstr) {
-	//TODO: Communicate to Kai.
 	if (spwstr & (1 << SPW_SPWSTR_CE)) {
 		triggerEvent(SPW_ERROR, SPW_CREDIT);
 	}

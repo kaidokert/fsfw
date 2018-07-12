@@ -57,11 +57,13 @@ public:
 
 	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list, const uint8_t** buffer, int32_t* size,
 			bool bigEndian) {
-		ReturnValue_t result = SerializeAdapter<count_t>::deSerialize(&list->size,
+		count_t tempSize = 0;
+		ReturnValue_t result = SerializeAdapter<count_t>::deSerialize(&tempSize,
 				buffer, size, bigEndian);
-		if (list->size > list->maxSize()) {
+		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
+		list->size = tempSize;
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
 			result = SerializeAdapter<T>::deSerialize(

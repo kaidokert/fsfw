@@ -8,19 +8,9 @@
 #ifndef COMMANDMESSAGE_H_
 #define COMMANDMESSAGE_H_
 
-//Remember to add new Message Types to the clear function!
-#define MODE_COMMAND_MESSAGE_ID 1
-#define HEALTH_COMMAND_MESSAGE_ID 2
-#define MODE_SEQUENCE_MESSAGE_ID 3
-#define FUNCTION_MESSAGE_ID 4
-#define TM_STORE_MESSAGE_ID 5
-#define TTC_TM_MESSAGE_ID 0x10
-#define DEVICE_HANDLER_COMMAND_MESSAGE_ID 0x44
-#define LIMIT_MESSAGE_ID 0x4C
-#define MEMORY_MESSAGE_ID 0x4D
-#define PAYLOAD_HANDLER_MESSAGE_ID 0x50
-#define PARAMETER_MESSAGE_ID 0x60
 
+#include <framework/ipc/FwMessageTypes.h>
+#include <config/ipc/MissionMessageTypes.h>
 
 #include <framework/ipc/MessageQueueMessage.h>
 
@@ -29,11 +19,11 @@ typedef ReturnValue_t Command_t;
 
 class CommandMessage : public MessageQueueMessage {
 public:
-	static const uint8_t INTERFACE_ID = COMMAND_MESSAGE;
+	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
 	static const ReturnValue_t UNKNOW_COMMAND = MAKE_RETURN_CODE(0x01);
 
 
-	static const uint8_t MESSAGE_ID = 0;
+	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::COMMAND;
 	static const Command_t CMD_NONE = MAKE_COMMAND_ID( 0 );//!< Used internally, will be ignored
 	static const Command_t REPLY_COMMAND_OK = MAKE_COMMAND_ID( 3 );
 	static const Command_t REPLY_REJECTED = MAKE_COMMAND_ID( 0xD1 );//!< Reply indicating that the current command was rejected, par1 should contain the error code
@@ -112,6 +102,10 @@ public:
 	 * Set the command to CMD_NONE and try to find
 	 * the correct class to handle a more detailed
 	 * clear.
+	 * Also, calls a mission-specific clearMissionMessage
+	 * function to separate between framework and mission
+	 * messages. Not optimal, may be replaced by totally
+	 * different auto-delete solution (e.g. smart pointers).
 	 *
 	 */
 	void clearCommandMessage();
@@ -128,7 +122,7 @@ public:
 	 * Sets the command to REPLY_REJECTED with parameter UNKNOWN_COMMAND.
 	 * Is needed quite often, so we better code it once only.
 	 */
-	void setToUnknownCommand(Command_t initialCommand);
+	void setToUnknownCommand();
 	void setReplyRejected(ReturnValue_t reason, Command_t initialCommand = CMD_NONE);
 	size_t getMinimumMessageSize() const;
 };

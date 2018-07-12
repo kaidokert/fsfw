@@ -1,10 +1,3 @@
-/*
- * ModeTable.h
- *
- *  Created on: 12.07.2013
- *      Author: tod
- */
-
 #ifndef MODEDEFINITIONS_H_
 #define MODEDEFINITIONS_H_
 
@@ -15,13 +8,15 @@
 class ModeListEntry: public SerializeIF, public LinkedElement<ModeListEntry> {
 public:
 	ModeListEntry() :
-			LinkedElement<ModeListEntry>(this), value1(0), value2(0), value3(0) {
+			LinkedElement<ModeListEntry>(this), value1(0), value2(0), value3(0), value4(
+					0) {
 
 	}
 
 	uint32_t value1;
 	uint32_t value2;
 	uint8_t value3;
+	uint8_t value4;
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) const {
@@ -43,16 +38,23 @@ public:
 		result = SerializeAdapter<uint8_t>::serialize(&value3, buffer, size,
 				max_size, bigEndian);
 
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+
+		result = SerializeAdapter<uint8_t>::serialize(&value4, buffer, size,
+				max_size, bigEndian);
+
 		return result;
 
 	}
 
 	virtual uint32_t getSerializedSize() const {
-		return sizeof(value1) + sizeof(value2) + sizeof(value3);
+		return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
 	}
 
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
+	bool bigEndian) {
 		ReturnValue_t result;
 
 		result = SerializeAdapter<uint32_t>::deSerialize(&value1, buffer, size,
@@ -68,6 +70,12 @@ public:
 			return result;
 		}
 		result = SerializeAdapter<uint8_t>::deSerialize(&value3, buffer, size,
+				bigEndian);
+
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+		result = SerializeAdapter<uint8_t>::deSerialize(&value4, buffer, size,
 				bigEndian);
 
 		return result;
@@ -98,7 +106,6 @@ public:
 		this->value3 = checkSuccess;
 	}
 
-
 	//for Tables
 	object_id_t getObject() const {
 		return value1;
@@ -108,7 +115,6 @@ public:
 		this->value1 = object;
 	}
 
-	//TODO no cast!
 	Mode_t getMode() const {
 		return value2;
 	}
@@ -123,6 +129,18 @@ public:
 
 	void setSubmode(Submode_t submode) {
 		this->value3 = submode;
+	}
+
+	bool inheritSubmode() const {
+		return value4 == 1;
+	}
+
+	void setInheritSubmode(bool inherit){
+		if (inherit){
+			value4 = 1;
+		} else {
+			value4 = 0;
+		}
 	}
 
 	bool operator==(ModeListEntry other) {

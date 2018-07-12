@@ -9,9 +9,10 @@
 #define MAPPACKETEXTRACTION_H_
 
 #include <framework/datalinklayer/MapPacketExtractionIF.h>
-#include <framework/ipc/MessageQueueSender.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
+
 class StorageManagerIF;
 
 /**
@@ -30,7 +31,7 @@ private:
 	uint8_t packetBuffer[MAX_PACKET_SIZE];	//!< The internal Space Packet Buffer.
 	object_id_t packetDestination;
 	StorageManagerIF* packetStore;	//!< Pointer to the store where full TC packets are stored.
-	MessageQueueSender tcQueue;		//!< Sender Queue to send found packets to the distributor.
+	MessageQueueId_t tcQueueId;		//!< QueueId to send found packets to the distributor.
 	/**
 	 * Debug method to print the packet Buffer's content.
 	 */
@@ -39,7 +40,7 @@ private:
 	 * Method that is called if the segmentation flag is @c NO_SEGMENTATION.
 	 * The method extracts one or more packets within the frame and forwards them to the OBSW.
 	 * @param frame	The TC Transfer Frame to work on.
-	 * @return	@c FRAME_OK if all Packets were extracted. If something is entirely wrong,
+	 * @return	@c RETURN_OK if all Packets were extracted. If something is entirely wrong,
 	 * 	 @c DATA_CORRUPTED is returned, if some bytes are left over @c RESIDUAL_DATA.
 	 */
 	ReturnValue_t unpackBlockingPackets(TcTransferFrame* frame);

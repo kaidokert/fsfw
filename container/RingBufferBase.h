@@ -1,10 +1,3 @@
-/*
- * RingBufferBase.h
- *
- *  Created on: 06.02.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
 #define FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
 
@@ -77,16 +70,16 @@ public:
 	uint32_t readTillWrap(uint8_t n = 0) {
 		return (start + size) - read[n];
 	}
-	const uint32_t getStart() const {
+	uint32_t getStart() const {
 		return start;
 	}
-	const bool overwritesOld() const {
+	bool overwritesOld() const {
 		return overwriteOld;
 	}
 	uint32_t maxSize() const {
 		return size - 1;
 	}
-private:
+protected:
 	const uint32_t start;
 	uint32_t write;
 	uint32_t read[N_READ_PTRS];

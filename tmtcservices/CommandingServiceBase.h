@@ -4,7 +4,6 @@
 #include <framework/container/FixedMap.h>
 #include <framework/container/FIFO.h>
 #include <framework/ipc/CommandMessage.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/serialize/SerializeAdapter.h>
@@ -17,6 +16,9 @@
 #include <framework/tmtcservices/AcceptsTelemetryIF.h>
 #include <framework/tmtcservices/TmTcMessage.h>
 #include <framework/tmtcservices/VerificationReporter.h>
+#include <framework/internalError/InternalErrorReporterIF.h>
+#include <framework/ipc/QueueFactory.h>
+#include <framework/timemanager/Clock.h>
 
 template<typename STATE_T>
 class CommandingServiceBase: public SystemObject,
@@ -24,7 +26,7 @@ class CommandingServiceBase: public SystemObject,
 		public ExecutableObjectIF,
 		public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = COMMAND_SERVICE_BASE;
+	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_SERVICE_BASE;
 	static const ReturnValue_t EXECUTION_COMPLETE = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t NO_STEP_MESSAGE = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t OBJECT_BUSY = MAKE_RETURN_CODE(3);
@@ -35,10 +37,11 @@ public:
 
 	CommandingServiceBase(object_id_t setObjectId, uint16_t apid,
 			uint8_t service, uint8_t numberOfParallelCommands,
-			uint16_t commandTimeout_seconds, size_t queueDepth = 20);
+			uint16_t commandTimeout_seconds, object_id_t setPacketSource,
+			object_id_t setPacketDestination, size_t queueDepth = 20);
 	virtual ~CommandingServiceBase();
 
-	virtual ReturnValue_t performOperation();
+	virtual ReturnValue_t performOperation(uint8_t opCode);
 
 	virtual uint16_t getIdentifier();
 
@@ -74,9 +77,9 @@ protected:
 
 	StorageManagerIF *TCStore;
 
-	MessageQueue commandQueue;
+	MessageQueueIF* commandQueue;
 
-	MessageQueue requestQueue;
+	MessageQueueIF* requestQueue;
 
 	VerificationReporter verificationReporter;
 
@@ -85,12 +88,17 @@ protected:
 	uint32_t failureParameter1; //!< May be set be children to return a more precise failure condition.
 	uint32_t failureParameter2; //!< May be set be children to return a more precise failure condition.
 
-	void sendTmPacket(uint8_t subservice, const uint8_t *data,
-			uint32_t dataLen);
+	object_id_t packetSource;
+
+	object_id_t packetDestination;
+
+	void sendTmPacket(uint8_t subservice, const uint8_t *data, uint32_t dataLen,
+			const uint8_t* headerData = NULL, uint32_t headerSize = 0);
 	void sendTmPacket(uint8_t subservice, object_id_t objectId,
 			const uint8_t *data, uint32_t dataLen);
 
-	void sendTmPacket(uint8_t subservice, SerializeIF* content);
+	void sendTmPacket(uint8_t subservice, SerializeIF* content,
+			SerializeIF* header = NULL);
 	virtual ReturnValue_t isValidSubservice(uint8_t subservice) = 0;
 
 	virtual ReturnValue_t prepareCommand(CommandMessage *message,
@@ -110,6 +118,9 @@ protected:
 
 	virtual void doPeriodicOperation();
 
+	void checkAndExecuteFifo(
+			typename FixedMap<MessageQueueId_t, CommandInfo>::Iterator *iter);
+
 private:
 	void handleCommandQueue();
 
@@ -123,29 +134,32 @@ private:
 	void startExecution(TcPacketStored *storedPacket,
 			typename FixedMap<MessageQueueId_t, CommandInfo>::Iterator *iter);
 
-	void checkAndExecuteFifo(
-			typename FixedMap<MessageQueueId_t, CommandInfo>::Iterator *iter);
-
 	void checkTimeout();
 };
 
 template<typename STATE_T>
 CommandingServiceBase<STATE_T>::CommandingServiceBase(object_id_t setObjectId,
 		uint16_t apid, uint8_t service, uint8_t numberOfParallelCommands,
-		uint16_t commandTimeout_seconds, size_t queueDepth) :
+		uint16_t commandTimeout_seconds, object_id_t setPacketSource,
+		object_id_t setPacketDestination, size_t queueDepth) :
 		SystemObject(setObjectId), apid(apid), service(service), timeout_seconds(
 				commandTimeout_seconds), tmPacketCounter(0), IPCStore(NULL), TCStore(
-		NULL), commandQueue(queueDepth), requestQueue(20), commandMap(
+		NULL), commandQueue(NULL), requestQueue(NULL), commandMap(
 				numberOfParallelCommands), failureParameter1(0), failureParameter2(
-				0) {
+				0), packetSource(setPacketSource), packetDestination(
+				setPacketDestination) {
+	commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
+	requestQueue = QueueFactory::instance()->createMessageQueue(20); //TODO: Funny magic number.
 }
 
 template<typename STATE_T>
 CommandingServiceBase<STATE_T>::~CommandingServiceBase() {
+	QueueFactory::instance()->deleteMessageQueue(commandQueue);
+	QueueFactory::instance()->deleteMessageQueue(requestQueue);
 }
 
 template<typename STATE_T>
-ReturnValue_t CommandingServiceBase<STATE_T>::performOperation() {
+ReturnValue_t CommandingServiceBase<STATE_T>::performOperation(uint8_t opCode) {
 	handleCommandQueue();
 	handleRequestQueue();
 	checkTimeout();
@@ -160,7 +174,7 @@ uint16_t CommandingServiceBase<STATE_T>::getIdentifier() {
 
 template<typename STATE_T>
 MessageQueueId_t CommandingServiceBase<STATE_T>::getRequestQueue() {
-	return requestQueue.getId();
+	return requestQueue->getId();
 }
 
 template<typename STATE_T>
@@ -171,16 +185,15 @@ ReturnValue_t CommandingServiceBase<STATE_T>::initialize() {
 	}
 
 	AcceptsTelemetryIF* packetForwarding =
-			objectManager->get<AcceptsTelemetryIF>(
-					objects::PUS_PACKET_FORWARDING);
+			objectManager->get<AcceptsTelemetryIF>(packetDestination);
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
-			objects::PUS_PACKET_DISTRIBUTOR);
+			packetSource);
 	if ((packetForwarding == NULL) && (distributor == NULL)) {
 		return RETURN_FAILED;
 	}
 
 	distributor->registerService(this);
-	requestQueue.setDefaultDestination(
+	requestQueue->setDefaultDestination(
 			packetForwarding->getReportReceptionQueue());
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
@@ -200,11 +213,15 @@ void CommandingServiceBase<STATE_T>::handleCommandQueue() {
 	CommandMessage reply, nextCommand;
 	ReturnValue_t result, sendResult = RETURN_OK;
 	bool isStep = false;
-	for (result = commandQueue.receiveMessage(&reply); result == RETURN_OK;
-			result = commandQueue.receiveMessage(&reply)) {
+	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
+			result = commandQueue->receiveMessage(&reply)) {
 		isStep = false;
 		typename FixedMap<MessageQueueId_t,
 				CommandingServiceBase<STATE_T>::CommandInfo>::Iterator iter;
+		if (reply.getSender() == MessageQueueIF::NO_QUEUE) {
+			handleUnrequestedReply(&reply);
+			continue;
+		}
 		if ((iter = commandMap.find(reply.getSender())) == commandMap.end()) {
 			handleUnrequestedReply(&reply);
 			continue;
@@ -218,7 +235,7 @@ void CommandingServiceBase<STATE_T>::handleCommandQueue() {
 		case NO_STEP_MESSAGE:
 			iter->command = nextCommand.getCommand();
 			if (nextCommand.getCommand() != CommandMessage::CMD_NONE) {
-				sendResult = commandQueue.sendMessage(reply.getSender(),
+				sendResult = commandQueue->sendMessage(reply.getSender(),
 						&nextCommand);
 			}
 			if (sendResult == RETURN_OK) {
@@ -249,8 +266,8 @@ void CommandingServiceBase<STATE_T>::handleCommandQueue() {
 					verificationReporter.sendFailureReport(
 							TC_VERIFY::COMPLETION_FAILURE,
 							iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
-							iter->tcInfo.tcSequenceControl, sendResult,
-							0, failureParameter1, failureParameter2);
+							iter->tcInfo.tcSequenceControl, sendResult, 0,
+							failureParameter1, failureParameter2);
 				}
 				failureParameter1 = 0;
 				failureParameter2 = 0;
@@ -266,7 +283,8 @@ void CommandingServiceBase<STATE_T>::handleCommandQueue() {
 				verificationReporter.sendFailureReport(
 						TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
 						iter->tcInfo.tcPacketId, iter->tcInfo.tcSequenceControl,
-						result, ++iter->step, failureParameter1, failureParameter2);
+						result, ++iter->step, failureParameter1,
+						failureParameter2);
 			} else {
 				verificationReporter.sendFailureReport(
 						TC_VERIFY::COMPLETION_FAILURE, iter->tcInfo.ackFlags,
@@ -290,8 +308,8 @@ void CommandingServiceBase<STATE_T>::handleRequestQueue() {
 	TcPacketStored packet;
 	MessageQueueId_t queue;
 	object_id_t objectId;
-	for (result = requestQueue.receiveMessage(&message); result == RETURN_OK;
-			result = requestQueue.receiveMessage(&message)) {
+	for (result = requestQueue->receiveMessage(&message); result == RETURN_OK;
+			result = requestQueue->receiveMessage(&message)) {
 		address = message.getStorageId();
 		packet.setStoreAddress(address);
 
@@ -334,12 +352,14 @@ void CommandingServiceBase<STATE_T>::handleRequestQueue() {
 
 template<typename STATE_T>
 void CommandingServiceBase<STATE_T>::sendTmPacket(uint8_t subservice,
-		const uint8_t* data, uint32_t dataLen) {
+		const uint8_t* data, uint32_t dataLen, const uint8_t* headerData,
+		uint32_t headerSize) {
 	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
-			this->tmPacketCounter++, data, dataLen);
-	TmTcMessage tmMessage(tmPacketStored.getStoreAddress());
-	if (requestQueue.sendToDefault(&tmMessage) != RETURN_OK) {
-		tmPacketStored.deletePacket();
+			this->tmPacketCounter, data, dataLen, headerData, headerSize);
+	ReturnValue_t result = tmPacketStored.sendPacket(
+			requestQueue->getDefaultDestination(), requestQueue->getId());
+	if (result == HasReturnvaluesIF::RETURN_OK) {
+		this->tmPacketCounter++;
 	}
 }
 
@@ -352,21 +372,24 @@ void CommandingServiceBase<STATE_T>::sendTmPacket(uint8_t subservice,
 	SerializeAdapter<object_id_t>::serialize(&objectId, &pBuffer, &size,
 			sizeof(object_id_t), true);
 	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
-			this->tmPacketCounter++, data, dataLen, buffer, size);
-	TmTcMessage tmMessage(tmPacketStored.getStoreAddress());
-	if (requestQueue.sendToDefault(&tmMessage) != RETURN_OK) {
-		tmPacketStored.deletePacket();
+			this->tmPacketCounter, data, dataLen, buffer, size);
+	ReturnValue_t result = tmPacketStored.sendPacket(
+			requestQueue->getDefaultDestination(), requestQueue->getId());
+	if (result == HasReturnvaluesIF::RETURN_OK) {
+		this->tmPacketCounter++;
 	}
+
 }
 
 template<typename STATE_T>
 void CommandingServiceBase<STATE_T>::sendTmPacket(uint8_t subservice,
-		SerializeIF* content) {
+		SerializeIF* content, SerializeIF* header) {
 	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
-			this->tmPacketCounter++, content);
-	TmTcMessage tmMessage(tmPacketStored.getStoreAddress());
-	if (requestQueue.sendToDefault(&tmMessage) != RETURN_OK) {
-		tmPacketStored.deletePacket();
+			this->tmPacketCounter, content, header);
+	ReturnValue_t result = tmPacketStored.sendPacket(
+			requestQueue->getDefaultDestination(), requestQueue->getId());
+	if (result == HasReturnvaluesIF::RETURN_OK) {
+		this->tmPacketCounter++;
 	}
 }
 
@@ -386,11 +409,11 @@ void CommandingServiceBase<STATE_T>::startExecution(
 	switch (result) {
 	case RETURN_OK:
 		if (message.getCommand() != CommandMessage::CMD_NONE) {
-			sendResult = commandQueue.sendMessage((*iter).value->first,
+			sendResult = commandQueue->sendMessage((*iter).value->first,
 					&message);
 		}
 		if (sendResult == RETURN_OK) {
-			OSAL::getUptime(&(*iter)->uptimeOfStart);
+			Clock::getUptime(&(*iter)->uptimeOfStart);
 			(*iter)->step = 0;
 //			(*iter)->state = 0;
 			(*iter)->subservice = storedPacket->getSubService();
@@ -409,7 +432,7 @@ void CommandingServiceBase<STATE_T>::startExecution(
 	case EXECUTION_COMPLETE:
 		if (message.getCommand() != CommandMessage::CMD_NONE) {
 			//Fire-and-forget command.
-			sendResult = commandQueue.sendMessage((*iter).value->first,
+			sendResult = commandQueue->sendMessage((*iter).value->first,
 					&message);
 		}
 		if (sendResult == RETURN_OK) {
@@ -470,7 +493,7 @@ inline void CommandingServiceBase<STATE_T>::doPeriodicOperation() {
 template<typename STATE_T>
 void CommandingServiceBase<STATE_T>::checkTimeout() {
 	uint32_t uptime;
-	OSAL::getUptime(&uptime);
+	Clock::getUptime(&uptime);
 	typename FixedMap<MessageQueueId_t,
 			CommandingServiceBase<STATE_T>::CommandInfo>::Iterator iter;
 	for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {

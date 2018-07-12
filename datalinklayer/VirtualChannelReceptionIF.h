@@ -38,7 +38,7 @@ public:
 	 * Handling the Frame includes forwarding to higher-level procedures.
 	 * @param frame	The Tc Transfer Frame that was received and checked.
 	 * @param clcw	Any changes to the CLCW value are forwarded by using this parameter.
-	 * @return The return Value shall indicate successful processing with @c FRAME_OK.
+	 * @return The return Value shall indicate successful processing with @c RETURN_OK.
 	 */
 	virtual ReturnValue_t frameAcceptanceAndReportingMechanism( TcTransferFrame* frame, ClcwIF* clcw ) = 0;
 	/**

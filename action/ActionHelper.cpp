@@ -1,8 +1,7 @@
-
 #include <framework/action/ActionHelper.h>
 #include <framework/action/HasActionsIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
-ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueue* useThisQueue) :
+ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue) :
 		owner(setOwner), queueToUse(useThisQueue), ipcStore(
 				NULL) {
 }
@@ -41,6 +40,10 @@ void ActionHelper::finish(MessageQueueId_t reportTo, ActionId_t commandId, Retur
 	queueToUse->sendMessage(reportTo, &reply);
 }
 
+void ActionHelper::setQueueToUse(MessageQueueIF* queue) {
+	queueToUse = queue;
+}
+
 void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId,
 		store_address_t dataAddress) {
 	const uint8_t* dataPtr = NULL;
@@ -62,31 +65,38 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
 	}
 }
 
-void ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t replyId, SerializeIF* data) {
+ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t replyId, SerializeIF* data, bool hideSender) {
 	CommandMessage reply;
 	store_address_t storeAddress;
 	uint8_t *dataPtr;
 	uint32_t maxSize = data->getSerializedSize();
 	if (maxSize == 0) {
-		return;
+		//No error, there's simply nothing to report.
+		return HasReturnvaluesIF::RETURN_OK;
 	}
 	uint32_t size = 0;
 	ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, maxSize,
 			&dataPtr);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
-		//TODO event?
-		return;
+		return result;
 	}
 	result = data->serialize(&dataPtr, &size, maxSize, true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		ipcStore->deleteData(storeAddress);
-		//TODO event?
-		return;
+		return result;
 	}
+	//We don't need to report the objectId, as we receive REQUESTED data before the completion success message.
+	//True aperiodic replies need to be reported with another dedicated message.
 	ActionMessage::setDataReply(&reply, replyId, storeAddress);
-	if (queueToUse->sendMessage(reportTo, &reply) != HasReturnvaluesIF::RETURN_OK){
+
+	//TODO Service Implementation sucks at the moment
+	if (hideSender){
+		result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
+	} else {
+		result = queueToUse->sendMessage(reportTo, &reply);
+	}
+	if ( result != HasReturnvaluesIF::RETURN_OK){
 		ipcStore->deleteData(storeAddress);
 	}
-	//We don't neeed the objectId, as we receive REQUESTED data before the completion success message.
-	//True aperiodic replies need to be reported with dedicated DH message.
+	return result;
 }

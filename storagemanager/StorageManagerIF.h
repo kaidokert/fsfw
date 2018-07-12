@@ -5,8 +5,6 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <stddef.h>
 
-//TODO: Check setting and returning of store sizes.
-
 /**
  * This union defines the type that identifies where a data packet is stored in the store.
  * It comprises of a raw part to read it as raw value and a structured part to use it in
@@ -67,7 +65,7 @@ union store_address_t {
  */
 class StorageManagerIF : public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = STORAGE_MANAGER_IF; //!< The unique ID for return codes for this interface.
+	static const uint8_t INTERFACE_ID = CLASS_ID::STORAGE_MANAGER_IF; //!< The unique ID for return codes for this interface.
 	static const ReturnValue_t DATA_TOO_LARGE = MAKE_RETURN_CODE(1); //!< This return code indicates that the data to be stored is too large for the store.
 	static const ReturnValue_t DATA_STORAGE_FULL = MAKE_RETURN_CODE(2); //!< This return code indicates that a data storage is full.
 	static const ReturnValue_t ILLEGAL_STORAGE_ID = MAKE_RETURN_CODE(3); //!< This return code indicates that data was requested with an illegal storage ID.
@@ -96,7 +94,7 @@ public:
 	 * 					@li	RETURN_FAILED if data could not be added.
 	 * 						storageId is unchanged then.
 	 */
-	virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t * data, uint32_t size) = 0;
+	virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t * data, uint32_t size, bool ignoreFault = false) = 0;
 	/**
 	 * @brief	With deleteData, the storageManager frees the memory region
 	 * 			identified by packet_id.
@@ -146,7 +144,7 @@ public:
 	 * 					@li	RETURN_FAILED if data could not be added.
 	 * 						storageId is unchanged then.
 	 */
-	virtual ReturnValue_t getFreeElement(store_address_t* storageId, const uint32_t size, uint8_t** p_data ) = 0;
+	virtual ReturnValue_t getFreeElement(store_address_t* storageId, const uint32_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
 	/**
 	 * Clears the whole store.
 	 * Use with care!

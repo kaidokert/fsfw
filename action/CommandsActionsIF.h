@@ -1,10 +1,9 @@
-
 #ifndef COMMANDSACTIONSIF_H_
 #define COMMANDSACTIONSIF_H_
 
 #include <framework/action/CommandActionHelper.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <framework/ipc/MessageQueueIF.h>
 
 /**
  * Interface to separate commanding actions of other objects.
@@ -18,11 +17,11 @@
 class CommandsActionsIF {
 	friend class CommandActionHelper;
 public:
-	static const uint8_t INTERFACE_ID = COMMANDS_ACTIONS_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::COMMANDS_ACTIONS_IF;
 	static const ReturnValue_t OBJECT_HAS_NO_FUNCTIONS = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t ALREADY_COMMANDING = MAKE_RETURN_CODE(2);
 	virtual ~CommandsActionsIF() {}
-	virtual MessageQueue* getCommandQueuePtr() = 0;
+	virtual MessageQueueIF* getCommandQueuePtr() = 0;
 protected:
 	virtual void stepSuccessfulReceived(ActionId_t actionId, uint8_t step) = 0;
 	virtual void stepFailedReceived(ActionId_t actionId, uint8_t step, ReturnValue_t returnCode) = 0;

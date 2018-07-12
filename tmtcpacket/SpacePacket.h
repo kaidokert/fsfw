@@ -13,21 +13,19 @@
  * so the parent's methods are reachable.
  * @ingroup tmtcpackets
  */
-class SpacePacket : public SpacePacketBase {
-	public:
-	static const uint16_t PACKET_MAX_SIZE =  1024;
+class SpacePacket: public SpacePacketBase {
+public:
+	static const uint16_t PACKET_MAX_SIZE = 1024;
 	/**
 	 * The constructor initializes the packet and sets all header information
 	 * according to the passed parameters.
-	 * @param set_packet_data_length 	Sets the packet data length field and
-	 * 			therefore specifies the size of the packet.
-	 * @param set_type	Sets the packet type field to either 0 (TM) or 1 (TC).
-	 * @param set_apid	Sets the packet's APID field. The default value
-	 * 			describes an idle packet.
-	 * @param set_sequence_count	Sets the packet's Source Sequence Count
-	 * 			field.
+	 * @param packetDataLength Sets the packet data length field and therefore specifies the size of the packet.
+	 * @param isTelecommand Sets the packet type field to either TC (true) or TM (false).
+	 * @param apid Sets the packet's APID field. The default value describes an idle packet.
+	 * @param sequenceCount ets the packet's Source Sequence Count field.
 	 */
-	SpacePacket( uint16_t set_packet_data_length, uint8_t set_type = 0, uint16_t set_apid = APID_IDLE_PACKET, uint16_t set_sequence_count = 0 );
+	SpacePacket(uint16_t packetDataLength, bool isTelecommand = false,
+			uint16_t apid = APID_IDLE_PACKET, uint16_t sequenceCount = 0);
 	/**
 	 * The class's default destructor.
 	 */
@@ -40,7 +38,7 @@ class SpacePacket : public SpacePacketBase {
 	 * @return	@li	\c true if packet_size is smaller than \c MAX_PACKET_SIZE.
 	 * 			@li \c false else.
 	 */
-	bool addWholeData( const uint8_t* p_data, uint32_t packet_size );
+	bool addWholeData(const uint8_t* p_data, uint32_t packet_size);
 protected:
 	/**
 	 * This structure defines the data structure of a Space Packet as local data.
@@ -66,7 +64,7 @@ protected:
 	 * packed in an union, so the data can be accessed as a byte stream without
 	 * a cast.
 	 */
-	SpacePacketData local_data;
+	SpacePacketData localData;
 };
 
 #endif /* SPACEPACKET_H_ */

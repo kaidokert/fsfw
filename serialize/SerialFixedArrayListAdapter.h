@@ -1,10 +1,3 @@
-/*
- * SerialFixedArrayListAdapter.h
- *
- *  Created on: 22.07.2014
- *      Author: baetz
- */
-
 #ifndef SERIALFIXEDARRAYLISTADAPTER_H_
 #define SERIALFIXEDARRAYLISTADAPTER_H_
 

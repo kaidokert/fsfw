@@ -1,10 +1,3 @@
-/*
- * PacketMatchTree.h
- *
- *  Created on: 10.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_TMTCPACKET_PACKETMATCHER_PACKETMATCHTREE_H_
 #define FRAMEWORK_TMTCPACKET_PACKETMATCHER_PACKETMATCHTREE_H_
 
@@ -34,7 +27,9 @@ private:
 	PlacementFactory factory;
 	static const uint16_t POOL_SIZES[N_POOLS];
 	static const uint16_t N_ELEMENTS[N_POOLS];
-	iterator addElement(bool andBranch, uint8_t level, iterator position, TmPacketMinimal* content);
+	template<typename VALUE_T, typename INSERTION_T>
+	ReturnValue_t findOrInsertMatch(iterator startAt, VALUE_T test, iterator* lastTest);
+	iterator findMatch(iterator startAt, TmPacketMinimal* test);
 };
 
 #endif /* FRAMEWORK_TMTCPACKET_PACKETMATCHER_PACKETMATCHTREE_H_ */

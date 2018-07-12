@@ -12,9 +12,6 @@
 #ifndef DATASETIF_H_
 #define DATASETIF_H_
 
-
-#include <framework/osal/OSAL.h>
-
 class PoolVariableIF;
 
 /**

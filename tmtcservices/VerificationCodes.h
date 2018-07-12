@@ -1,10 +1,3 @@
-/*
- * VerificationCodes.h
- *
- *  Created on: Aug 8, 2012
- *      Author: baetz
- */
-
 #ifndef VERIFICATIONCODES_H_
 #define VERIFICATIONCODES_H_
 

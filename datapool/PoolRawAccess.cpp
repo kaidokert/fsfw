@@ -1,18 +1,13 @@
-/*
- * PoolRawAccess.cpp
- *
- *  Created on: 29.10.2012
- *      Author: baetz
- */
-
 #include <framework/datapool/DataPool.h>
 #include <framework/datapool/PoolEntryIF.h>
 #include <framework/datapool/PoolRawAccess.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/osal/Endiness.h>
+
 PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 		DataSetIF* data_set, ReadWriteMode_t setReadWriteMode) :
-		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false), typeSize(
-				0), sizeTillEnd(0), readWriteMode(setReadWriteMode) {
+		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false), type(Type::UNKNOWN_TYPE), typeSize(
+				0), arraySize(0), sizeTillEnd(0), readWriteMode(setReadWriteMode) {
 	memset(value, 0, sizeof(value));
 	if (data_set != NULL) {
 		data_set->registerVariable(this);
@@ -28,7 +23,9 @@ ReturnValue_t PoolRawAccess::read() {
 	if (read_out != NULL) {
 		valid = read_out->getValid();
 		if (read_out->getSize() > arrayEntry) {
+			arraySize = read_out->getSize();
 			typeSize = read_out->getByteSize() / read_out->getSize();
+			type = read_out->getType();
 			if (typeSize <= sizeof(value)) {
 				uint16_t arrayPosition = arrayEntry * typeSize;
 				sizeTillEnd = read_out->getByteSize() - arrayPosition;
@@ -92,8 +89,16 @@ ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
+Type PoolRawAccess::getType() {
+	return type;
+}
+
 uint8_t PoolRawAccess::getSizeOfType() {
 	return typeSize;
+}
+
+uint8_t PoolRawAccess::getArraySize(){
+	return arraySize;
 }
 
 uint32_t PoolRawAccess::getDataPoolId() const {

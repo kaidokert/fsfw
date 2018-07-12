@@ -18,7 +18,7 @@
 class HasModesIF {
 	friend class ModeHelper;
 public:
-	static const uint8_t INTERFACE_ID = HAS_MODES_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::HAS_MODES_IF;
 	static const ReturnValue_t INVALID_MODE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t TRANS_NOT_ALLOWED = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t IN_TRANSITION = MAKE_RETURN_CODE(0x03);
@@ -40,8 +40,7 @@ public:
 	virtual ~HasModesIF() {
 	}
 	virtual MessageQueueId_t getCommandQueue() const = 0;
-	virtual void getMode(Mode_t *mode, Submode_t *submode) {
-	}
+	virtual void getMode(Mode_t *mode, Submode_t *submode) = 0;
 protected:
 	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
 			uint32_t *msToReachTheMode) {

@@ -1,10 +1,3 @@
-/*
- * ServiceMatcher.h
- *
- *  Created on: 09.03.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_TMTCPACKET_PACKETMATCHER_SERVICEMATCHER_H_
 #define FRAMEWORK_TMTCPACKET_PACKETMATCHER_SERVICEMATCHER_H_
 
@@ -18,6 +11,9 @@ private:
 public:
 	ServiceMatcher(uint8_t setService) :
 			service(setService) {
+	}
+	ServiceMatcher(TmPacketMinimal* test) :
+			service(test->getService()) {
 	}
 	bool match(TmPacketMinimal* packet) {
 		if (packet->getService() == service) {

@@ -8,7 +8,7 @@
 #ifndef COUNTDOWN_H_
 #define COUNTDOWN_H_
 
-#include <framework/osal/OSAL.h>
+#include <framework/timemanager/Clock.h>
 
 class Countdown {
 private:
@@ -24,6 +24,8 @@ public:
 	bool isBusy() const;
 
 	ReturnValue_t resetTimer(); //!< Use last set timeout value and restart timer.
+
+	void timeOut(); //!< Make hasTimedOut() return true
 };
 
 #endif /* COUNTDOWN_H_ */

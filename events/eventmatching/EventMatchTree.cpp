@@ -1,17 +1,12 @@
-/*
- * EventMatchTree.cpp
- *
- *  Created on: 27.08.2015
- *      Author: baetz
- */
-
 #include <framework/events/eventmatching/EventIdRangeMatcher.h>
 #include <framework/events/eventmatching/EventMatchTree.h>
 #include <framework/events/eventmatching/ReporterRangeMatcher.h>
 #include <framework/events/eventmatching/SeverityRangeMatcher.h>
 
-EventMatchTree::EventMatchTree(StorageManagerIF* storageBackend, bool invertedMatch) :
-		MatchTree<EventMessage*>(end(), 1), factory(storageBackend), invertedMatch(invertedMatch) {
+EventMatchTree::EventMatchTree(StorageManagerIF* storageBackend,
+		bool invertedMatch) :
+		MatchTree<EventMessage*>(end(), 1), factory(storageBackend), invertedMatch(
+				invertedMatch) {
 }
 
 EventMatchTree::~EventMatchTree() {
@@ -25,9 +20,9 @@ bool EventMatchTree::match(EventMessage* number) {
 	}
 }
 
-ReturnValue_t EventMatchTree::addMatch(EventId_t idFrom,
-		EventId_t idTo, bool idInverted, object_id_t reporterFrom,
-		object_id_t reporterTo, bool reporterInverted) {
+ReturnValue_t EventMatchTree::addMatch(EventId_t idFrom, EventId_t idTo,
+		bool idInverted, object_id_t reporterFrom, object_id_t reporterTo,
+		bool reporterInverted) {
 	if (idFrom == 0) {
 		//Assuming all events shall be forwarded.
 		idTo = 0;
@@ -37,8 +32,8 @@ ReturnValue_t EventMatchTree::addMatch(EventId_t idFrom,
 		idTo = idFrom;
 	}
 	iterator lastTest;
-	ReturnValue_t result = findOrInsertRangeMatcher<EventId_t, EventIdRangeMatcher>(
-			begin(), idFrom, idTo, idInverted, &lastTest);
+	ReturnValue_t result = findOrInsertRangeMatcher<EventId_t,
+			EventIdRangeMatcher>(begin(), idFrom, idTo, idInverted, &lastTest);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -54,9 +49,9 @@ ReturnValue_t EventMatchTree::addMatch(EventId_t idFrom,
 			&lastTest);
 }
 
-ReturnValue_t EventMatchTree::removeMatch(EventId_t idFrom,
-		EventId_t idTo, bool idInverted, object_id_t reporterFrom,
-		object_id_t reporterTo, bool reporterInverted) {
+ReturnValue_t EventMatchTree::removeMatch(EventId_t idFrom, EventId_t idTo,
+		bool idInverted, object_id_t reporterFrom, object_id_t reporterTo,
+		bool reporterInverted) {
 
 	iterator foundElement;
 
@@ -68,8 +63,8 @@ ReturnValue_t EventMatchTree::removeMatch(EventId_t idFrom,
 	if (idTo == 0) {
 		idTo = idFrom;
 	}
-	foundElement = findRangeMatcher<EventId_t, EventIdRangeMatcher>(
-			begin(), idFrom, idTo, idInverted);
+	foundElement = findRangeMatcher<EventId_t, EventIdRangeMatcher>(begin(),
+			idFrom, idTo, idInverted);
 	if (foundElement == end()) {
 		return NO_MATCH; //Can't tell if too detailed or just not found.
 	}
@@ -117,6 +112,8 @@ inline ReturnValue_t EventMatchTree::findOrInsertRangeMatcher(iterator start,
 	}
 	Node* newNode = factory.generate<Node>(newContent);
 	if (newNode == NULL) {
+		//Need to make sure partially generated content is deleted, otherwise, that's a leak.
+		factory.destroy<INSERTION_T>(static_cast<INSERTION_T*>(newContent));
 		return FULL;
 	}
 	*lastTest = insert(attachToBranch, *lastTest, newNode);
@@ -145,7 +142,8 @@ EventMatchTree::iterator EventMatchTree::findRangeMatcher(iterator start,
 }
 
 ReturnValue_t EventMatchTree::cleanUpElement(iterator position) {
-	//TODO: What if first deletion fails?
 	factory.destroy(position.element->value);
+	//If deletion fails, delete element anyway, nothing we can do.
+	//SHOULDO: Throw event, or write debug output.
 	return factory.destroy(position.element);
 }

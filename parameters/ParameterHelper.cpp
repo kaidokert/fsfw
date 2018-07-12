@@ -1,10 +1,3 @@
-/*
- * ParameterHelper.cpp
- *
- *  Created on: 28.11.2015
- *      Author: mohr
- */
-
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/parameters/ParameterHelper.h>
 #include <framework/parameters/ParameterMessage.h>
@@ -26,7 +19,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 				ParameterMessage::getParameterId(message));
 		uint16_t parameterId = HasParametersIF::getMatrixId(
 				ParameterMessage::getParameterId(message));
-		ReturnValue_t result = owner->getParameter(domain, parameterId,
+		result = owner->getParameter(domain, parameterId,
 				&description, &description, 0);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
 			result = sendParameter(message->getSender(),
@@ -45,7 +38,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 
 		const uint8_t *storedStream;
 		uint32_t storedStreamSize;
-		ReturnValue_t result = storage->getData(
+		result = storage->getData(
 				ParameterMessage::getStoreId(message), &storedStream,
 				&storedStreamSize);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -115,8 +108,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 
 	ParameterMessage::setParameterDumpReply(&reply, id, address);
 
-	MessageQueueSender sender;
-	sender.sendMessage(to, &reply, ownerQueueId);
+	MessageQueueSenderIF::sendMessage(to, &reply, ownerQueueId);
 
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -133,6 +125,5 @@ ReturnValue_t ParameterHelper::initialize() {
 void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason, Command_t initialCommand) {
 	CommandMessage reply;
 	reply.setReplyRejected(reason, initialCommand);
-	MessageQueueSender sender;
-	sender.sendMessage(to, &reply, ownerQueueId);
+	MessageQueueSenderIF::sendMessage(to, &reply, ownerQueueId);
 }

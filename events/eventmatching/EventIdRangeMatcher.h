@@ -1,10 +1,3 @@
-/*
- * EventIdRangeMatcher.h
- *
- *  Created on: 27.08.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_EVENTS_EVENTMATCHING_EVENTIDRANGEMATCHER_H_
 #define FRAMEWORK_EVENTS_EVENTMATCHING_EVENTIDRANGEMATCHER_H_
 

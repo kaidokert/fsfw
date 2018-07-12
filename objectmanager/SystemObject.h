@@ -10,8 +10,8 @@
 
 #include <framework/events/Event.h>
 #include <framework/events/EventReportingProxyIF.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/objectmanager/SystemObjectIF.h>
+#include <framework/timemanager/Clock.h>
 
 /**
  * @brief	This class automates insertion into the ObjectManager and
@@ -51,7 +51,7 @@ public:
 	 * @brief	On destruction, the object removes itself from the list.
 	 */
 	virtual ~SystemObject();
-	const object_id_t getObjectId() const;
+	object_id_t getObjectId() const;
 	virtual ReturnValue_t initialize();
 	virtual ReturnValue_t checkObjectConnections();
 

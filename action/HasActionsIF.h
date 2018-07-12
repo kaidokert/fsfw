@@ -1,21 +1,14 @@
-/*
- * HasActionsIF.h
- *
- *  Created on: 20.02.2014
- *      Author: baetz
- */
-
 #ifndef HASACTIONSIF_H_
 #define HASACTIONSIF_H_
 
 #include <framework/action/ActionHelper.h>
 #include <framework/action/ActionMessage.h>
 #include <framework/action/SimpleActionHelper.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <framework/ipc/MessageQueueIF.h>
 class HasActionsIF {
 public:
-	static const uint8_t INTERFACE_ID = HAS_ACTIONS_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::HAS_ACTIONS_IF;
 	static const ReturnValue_t IS_BUSY = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t EXECUTION_FINISHED = MAKE_RETURN_CODE(3);

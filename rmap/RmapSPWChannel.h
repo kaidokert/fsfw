@@ -1,10 +1,3 @@
-/*
- * RMAPStack.h
- *
- *  Created on: 30.05.2013
- *      Author: tod
- */
-
 #ifndef RMAPCHANNEL_H_
 #define RMAPCHANNEL_H_
 
@@ -16,6 +9,7 @@ extern "C" {
 #include <config/datapool/dataPoolInit.h>
 #include <framework/devicehandlers/DeviceCommunicationIF.h>
 #include <framework/events/Event.h>
+#include <framework/tasks/PeriodicTaskIF.h>
 
 class RmapSPWChannel: public SystemObject,
 		public RMAPChannelIF,
@@ -52,7 +46,7 @@ public:
 
 	RmapSPWChannel(object_id_t setObjectId, uint16_t buffersize_words,
 			uint32_t maxPacketSize, int8_t portNr, uint8_t dest_addr,
-			uint8_t src_addr, datapool::opus_variable_id portVariable =
+			uint8_t src_addr, PeriodicTaskIF* currentTask, datapool::opus_variable_id portVariable =
 					datapool::NO_PARAMETER);
 
 	virtual ~RmapSPWChannel();
@@ -62,9 +56,9 @@ public:
 	virtual ReturnValue_t isActive();
 
 	virtual ReturnValue_t setPort(int8_t port, uint8_t dest_addr,
-			uint8_t src_addr);
+			uint8_t src_addr, PeriodicTaskIF* currentTask);
 
-	virtual ReturnValue_t setPort(int8_t port);
+	virtual ReturnValue_t setPort(int8_t port, PeriodicTaskIF* currentTask);
 
 	virtual ReturnValue_t sendCommand(RMAPCookie *cookie, uint8_t instruction,
 			uint8_t *data, uint32_t datalen);
@@ -111,7 +105,7 @@ private:
 	uint16_t *failure_table;
 	uint32_t max_packet_len;
 	uint16_t tid;
-	uint8_t port_has_crc;
+//	uint8_t port_has_crc;
 	uint8_t rx_index; //index of the next unused rx descriptor
 	uint8_t max_rx;
 	uint8_t tx_index; //index of the next unused tx descriptor

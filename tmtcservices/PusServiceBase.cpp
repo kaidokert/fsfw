@@ -1,30 +1,28 @@
-/*
- * PusServiceBase.cpp
- *
- *  Created on: May 9, 2012
- *      Author: baetz
- */
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tcdistribution/PUSDistributorIF.h>
 #include <framework/tmtcservices/AcceptsTelemetryIF.h>
 #include <framework/tmtcservices/PusServiceBase.h>
 #include <framework/tmtcservices/PusVerificationReport.h>
 #include <framework/tmtcservices/TmTcMessage.h>
+#include <framework/ipc/QueueFactory.h>
 
-PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t set_apid,
-		uint8_t set_service_id) :
-		SystemObject(setObjectId), apid(set_apid), serviceId(set_service_id), errorParameter1(
-				0), errorParameter2(0), requestQueue(PUS_SERVICE_MAX_RECEPTION) {
+object_id_t PusServiceBase::packetSource = 0;
+object_id_t PusServiceBase::packetDestination = 0;
+
+PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId) :
+		SystemObject(setObjectId), apid(setApid), serviceId(setServiceId), errorParameter1(
+				0), errorParameter2(0), requestQueue(NULL) {
+	requestQueue = QueueFactory::instance()->createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
 }
 
 PusServiceBase::~PusServiceBase() {
-
+	QueueFactory::instance()->deleteMessageQueue(requestQueue);
 }
 
-ReturnValue_t PusServiceBase::performOperation() {
+ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 	TmTcMessage message;
 	for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
-		ReturnValue_t status = this->requestQueue.receiveMessage(&message);
+		ReturnValue_t status = this->requestQueue->receiveMessage(&message);
 		//	debug << "PusServiceBase::performOperation: Receiving from MQ ID: " << std::hex << this->requestQueue.getId() << std::dec << " returned: " << status << std::endl;
 		if (status == RETURN_OK) {
 			this->currentPacket.setStoreAddress(message.getStorageId());
@@ -44,7 +42,7 @@ ReturnValue_t PusServiceBase::performOperation() {
 			this->currentPacket.deletePacket();
 			errorParameter1 = 0;
 			errorParameter2 = 0;
-		} else if (status == OSAL::QUEUE_EMPTY) {
+		} else if (status == OperatingSystemIF::QUEUE_EMPTY) {
 			status = RETURN_OK;
 			//		debug << "PusService " << (uint16_t)this->serviceId << ": no new packet." << std::endl;
 			break;
@@ -73,7 +71,7 @@ uint16_t PusServiceBase::getIdentifier() {
 }
 
 MessageQueueId_t PusServiceBase::getRequestQueue() {
-	return this->requestQueue.getId();
+	return this->requestQueue->getId();
 }
 
 ReturnValue_t PusServiceBase::initialize() {
@@ -82,18 +80,18 @@ ReturnValue_t PusServiceBase::initialize() {
 		return result;
 	}
 	AcceptsTelemetryIF* dest_service = objectManager->get<AcceptsTelemetryIF>(
-			objects::PUS_PACKET_FORWARDING);
+			packetDestination);
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
-			objects::PUS_PACKET_DISTRIBUTOR);
+			packetSource);
 	if ((dest_service != NULL) && (distributor != NULL)) {
-		this->requestQueue.setDefaultDestination(
+		this->requestQueue->setDefaultDestination(
 				dest_service->getReportReceptionQueue());
 		distributor->registerService(this);
 		return RETURN_OK;
 	} else {
 		error << "PusServiceBase::PusServiceBase: Service "
 				<< (uint32_t) this->serviceId << ": Configuration error."
-				<< std::endl;
+				<< " Make sure packetSource and packetDestination are defined correctly" << std::endl;
 		return RETURN_FAILED;
 	}
 }

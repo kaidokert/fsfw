@@ -4,7 +4,7 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/rmap/RMAPCookie.h>
 
-//TODO: clean up includes for RMAP, should be enough to include RMAP.h but right now it's quite chaotic...
+//SHOULDTODO: clean up includes for RMAP, should be enough to include RMAP.h but right now it's quite chaotic...
 
 /**
  * API for a Cookie/Channel based RMAP implementation.
@@ -36,7 +36,7 @@
  */
 class RMAP: public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = RMAP_CHANNEL;
+	static const uint8_t INTERFACE_ID = CLASS_ID::RMAP_CHANNEL;
 
 	//static const ReturnValue_t COMMAND_OK = MAKE_RETURN_CODE(0x00);
 	static const ReturnValue_t COMMAND_NO_DESCRIPTORS_AVAILABLE =
@@ -53,6 +53,7 @@ public:
 			0xE7);	//The specified port is not valid
 	static const ReturnValue_t COMMAND_PORT_IN_USE = MAKE_RETURN_CODE(0xE8);//The specified port is already in use
 	static const ReturnValue_t COMMAND_NO_CHANNEL = MAKE_RETURN_CODE(0xE9);//The cookie to work with has no channel assigned.
+	static const ReturnValue_t NO_HW_CRC = MAKE_RETURN_CODE(0xEA);//The SpW port does not support HW CRC generation, which is unsupported
 	//return values for both get_write_reply and get_read_reply
 	static const ReturnValue_t REPLY_NO_REPLY = MAKE_RETURN_CODE(0xD0);	//no reply was received
 	static const ReturnValue_t REPLY_NOT_SENT = MAKE_RETURN_CODE(0xD1);	//command was not sent, implies no reply

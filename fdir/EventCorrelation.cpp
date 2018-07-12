@@ -1,10 +1,3 @@
-/*
- * EventCorrelation.cpp
- *
- *  Created on: 15.10.2015
- *      Author: baetz
- */
-
 #include <framework/fdir/EventCorrelation.h>
 
 EventCorrelation::EventCorrelation(uint32_t timeout) :

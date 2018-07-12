@@ -1,10 +1,3 @@
-/*
- * EventCorrelation.h
- *
- *  Created on: 15.10.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_FDIR_EVENTCORRELATION_H_
 #define FRAMEWORK_FDIR_EVENTCORRELATION_H_
 

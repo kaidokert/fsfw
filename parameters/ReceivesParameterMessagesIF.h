@@ -2,12 +2,13 @@
 #define RECEIVESPARAMETERMESSAGESIF_H_
 
 
-#include <framework/ipc/MessageQueue.h>
 #include <framework/parameters/HasParametersIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 class ReceivesParameterMessagesIF : public HasParametersIF {
 public:
 
+	static const uint8_t DOMAIN_ID_BASE = 0;
 	virtual ~ReceivesParameterMessagesIF() {
 	}
 

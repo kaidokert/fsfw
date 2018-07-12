@@ -1,7 +1,6 @@
 #ifndef MODEHELPER_H_
 #define MODEHELPER_H_
 
-#include <framework/ipc/MessageQueueSender.h>
 #include <framework/modes/ModeMessage.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/timemanager/Countdown.h>
@@ -43,7 +42,6 @@ protected:
 	MessageQueueId_t parentQueueId;
 
 	Countdown countdown;
-	MessageQueueSender sender;
 
 	bool forced;
 };

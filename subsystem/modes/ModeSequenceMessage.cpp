@@ -69,7 +69,7 @@ void ModeSequenceMessage::clear(CommandMessage *message) {
 			ipcStore->deleteData(ModeSequenceMessage::getStoreAddress(message));
 		}
 	}
-		/*NO BREAK*/
+	/* NO BREAK falls through*/
 	case DELETE_SEQUENCE:
 	case DELETE_TABLE:
 	case READ_SEQUENCE:

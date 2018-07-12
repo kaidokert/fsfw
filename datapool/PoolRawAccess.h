@@ -26,9 +26,17 @@ private:
 	 */
 	uint8_t valid;
 	/**
+	 *  \brief	This value contains the type of the data pool entry.
+	 */
+	Type type;
+	/**
 	 * \brief	This value contains the size of the data pool entry in bytes.
 	 */
 	uint8_t typeSize;
+	/**
+	 * The size of the DP array (single values return 1)
+	 */
+	uint8_t arraySize;
 	/**
 	 * The size (in bytes) from the selected entry till the end of this DataPool variable.
 	 */
@@ -57,7 +65,7 @@ protected:
 	 */
 	ReturnValue_t commit();
 public:
-	static const uint8_t INTERFACE_ID = POOL_RAW_ACCESS_CLASS;
+	static const uint8_t INTERFACE_ID = CLASS_ID::POOL_RAW_ACCESS_CLASS;
 	static const ReturnValue_t INCORRECT_SIZE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
 	uint8_t value[RAW_MAX_SIZE];
@@ -101,9 +109,18 @@ public:
 	ReturnValue_t setEntryFromBigEndian(const uint8_t* buffer,
 			uint32_t setSize);
 	/**
+	 *  \brief This operation returns the type of the entry currently stored.
+	 */
+	Type getType();
+	/**
 	 *  \brief This operation returns the size of the entry currently stored.
 	 */
 	uint8_t getSizeOfType();
+	/**
+	 *
+	 * @return the size of the datapool array
+	 */
+	uint8_t getArraySize();
 	/**
 	 * \brief	This operation returns the data pool id of the variable.
 	 */

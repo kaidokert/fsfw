@@ -11,9 +11,14 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/timemanager/TimeStamperIF.h>
 
+namespace Factory{
+void setStaticFrameworkObjectIds();
+}
+
 //PID(uint32_t), TYPE, LIMIT_ID, value,limitValue, previous, later, timestamp
 template<typename T>
 class MonitoringReportContent: public SerialLinkedListAdapter<SerializeIF> {
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	SerializeElement<uint8_t> monitorId;
 	SerializeElement<uint32_t> parameterId;
@@ -22,7 +27,7 @@ public:
 	SerializeElement<ReturnValue_t> oldState;
 	SerializeElement<ReturnValue_t> newState;
 	uint8_t rawTimestamp[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
-	SerializeElement<SerialBufferAdapter> timestampSerializer;
+	SerializeElement<SerialBufferAdapter<uint8_t>> timestampSerializer;
 	TimeStamperIF* timeStamper;
 	MonitoringReportContent() :
 			SerialLinkedListAdapter<SerializeIF>(
@@ -35,9 +40,9 @@ public:
 	MonitoringReportContent(uint32_t setPID, T value, T limitValue,
 			ReturnValue_t oldState, ReturnValue_t newState) :
 			SerialLinkedListAdapter<SerializeIF>(
-					LinkedElement<SerializeIF>::Iterator(&parameterId)), parameterId(
+					LinkedElement<SerializeIF>::Iterator(&parameterId)), monitorId(0), parameterId(
 					setPID), parameterValue(value), limitValue(limitValue), oldState(
-					oldState), newState(newState), rawTimestamp( { 0 }), timestampSerializer(rawTimestamp,
+					oldState), newState(newState), timestampSerializer(rawTimestamp,
 							sizeof(rawTimestamp)), timeStamper(NULL) {
 		setAllNext();
 		if (checkAndSetStamper()) {
@@ -45,6 +50,8 @@ public:
 		}
 	}
 private:
+
+	static object_id_t timeStamperId;
 	void setAllNext() {
 		parameterId.setNext(&parameterValue);
 		parameterValue.setNext(&limitValue);
@@ -54,8 +61,7 @@ private:
 	}
 	bool checkAndSetStamper() {
 		if (timeStamper == NULL) {
-			//TODO: Adjust name?
-			timeStamper = objectManager->get<TimeStamperIF>( objects::TIME_MANAGER );
+			timeStamper = objectManager->get<TimeStamperIF>( timeStamperId );
 			if ( timeStamper == NULL ) {
 				error << "MonitoringReportContent::checkAndSetStamper: Stamper not found!" << std::endl;
 				return false;
@@ -64,45 +70,7 @@ private:
 		return true;
 	}
 };
-
-//TODO: Next message would be update_limit message.
-//PID(uint32_t), Data{type, n_entries {LIMIT_ID(uint8_t), TYPE(uint8_t) newLimits(data, depends)
-
 template<typename T>
-class UpdateLimitMonitorContent: public SerialLinkedListAdapter<SerializeIF> {
-public:
-	SerializeElement<T> lowValue;
-	SerializeElement<T> highValue;
-	UpdateLimitMonitorContent() :
-			SerialLinkedListAdapter<SerializeIF>(&lowValue), lowValue(0), highValue(
-					0) {
-		lowValue.setNext(&highValue);
-	}
-private:
-};
-
-//Not used at the moment.
-//class EnableDisableInner: public SerialLinkedListAdapter<SerializeIF> {
-//public:
-//	SerializeElement<uint32_t> parameterId;
-//	typedef FixedArrayList<uint32_t, HasMonitorsIF::MAX_N_LIMIT_ID> LimitIdList;
-//	SerializeElement<LimitIdList> limitList;
-//	EnableDisableInner() :
-//			SerialLinkedListAdapter<SerializeIF>(&parameterId) {
-//		parameterId.setNext(&limitList);
-//	}
-//};
-
-class EnableDisableContent {
-public:
-	typedef SerialFixedArrayListAdapter<uint32_t, HasMonitorsIF::MAX_N_PARAMETER> EnableDisableList;
-	EnableDisableList funkyList;
-	EnableDisableContent() {
-	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian) {
-		return funkyList.deSerialize(buffer, size, bigEndian);
-	}
-};
+object_id_t MonitoringReportContent<T>::timeStamperId = 0;
 
 #endif /* MONITORINGMESSAGECONTENT_H_ */

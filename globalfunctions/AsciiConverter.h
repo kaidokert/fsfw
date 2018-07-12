@@ -5,7 +5,7 @@
 
 class AsciiConverter: public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = ASCII_CONVERTER;
+	static const uint8_t INTERFACE_ID = CLASS_ID::ASCII_CONVERTER;
 	static const ReturnValue_t TOO_LONG_FOR_TARGET_TYPE = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t INVALID_CHARACTERS = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t BUFFER_TOO_SMALL = MAKE_RETURN_CODE(0x3);

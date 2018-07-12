@@ -1,10 +1,3 @@
-/*
- * PIDReaderList.h
- *
- *  Created on: 15.07.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_DATAPOOL_PIDREADERLIST_H_
 #define FRAMEWORK_DATAPOOL_PIDREADERLIST_H_
 

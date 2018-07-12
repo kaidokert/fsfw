@@ -3,7 +3,8 @@
 
 
 #include <framework/datapool/PoolEntryIF.h>
-#include <framework/osal/OSAL.h>
+#include <stddef.h>
+#include <cstring>
 /**
  * \brief		This is a small helper class that defines a single data pool entry.
  *

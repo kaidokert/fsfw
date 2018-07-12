@@ -38,7 +38,7 @@
  */
 class DataSet: public DataSetIF, public HasReturnvaluesIF, public SerializeIF {
 private:
-	//TODO we could use a linked list of datapool variables
+	//SHOULDDO we could use a linked list of datapool variables
 	static const uint8_t DATA_SET_MAX_SIZE = 63; //!< This definition sets the maximum number of variables to register in one DataSet.
 
 	/**
@@ -75,7 +75,7 @@ private:
 	uint8_t freeDataPoolLock();
 
 public:
-	static const uint8_t INTERFACE_ID = DATA_SET_CLASS;
+	static const uint8_t INTERFACE_ID = CLASS_ID::DATA_SET_CLASS;
 	static const ReturnValue_t INVALID_PARAMETER_DEFINITION =
 			MAKE_RETURN_CODE( 0x01 );
 	static const ReturnValue_t SET_WAS_ALREADY_READ = MAKE_RETURN_CODE( 0x02 );
@@ -138,6 +138,13 @@ public:
 	 * 			free space in the registeredVariables list.
 	 */
 	void registerVariable(PoolVariableIF* variable);
+
+	/**
+	 * Set the valid information of all variables contained in the set which are not readonly
+	 *
+	 * @param valid Validity information from PoolVariableIF.
+	 */
+	void setValid(uint8_t valid);
 
 	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) const;

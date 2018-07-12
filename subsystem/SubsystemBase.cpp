@@ -1,8 +1,19 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/subsystem/SubsystemBase.h>
+#include <framework/ipc/QueueFactory.h>
+
+SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
+		Mode_t initialMode, uint16_t commandQueueDepth) :
+		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE), childrenChangedMode(
+		false), commandsOutstanding(0), commandQueue(NULL), healthHelper(this,
+				setObjectId), modeHelper(this), parentId(parent) {
+	QueueFactory::instance()->createMessageQueue(commandQueueDepth,
+			CommandMessage::MAX_MESSAGE_SIZE);
+}
 
 SubsystemBase::~SubsystemBase() {
+	QueueFactory::instance()->deleteMessageQueue(commandQueue);
 
 }
 
@@ -38,7 +49,7 @@ ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
 }
 
 ReturnValue_t SubsystemBase::checkStateAgainstTable(
-		HybridIterator<ModeListEntry> tableIter) {
+		HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
 
 	std::map<object_id_t, ChildInfo>::iterator childIter;
 
@@ -52,14 +63,20 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(
 		if (childIter->second.mode != tableIter.value->getMode()) {
 			return RETURN_FAILED;
 		}
-		if (childIter->second.submode != tableIter.value->getSubmode()) {
+
+		Submode_t submodeToCheckAgainst = tableIter.value->getSubmode();
+		if (tableIter.value->inheritSubmode()) {
+			submodeToCheckAgainst = targetSubmode;
+		}
+
+		if (childIter->second.submode != submodeToCheckAgainst) {
 			return RETURN_FAILED;
 		}
 	}
 	return RETURN_OK;
 }
 
-void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter) {
+void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
 
 	CommandMessage message;
 
@@ -70,9 +87,15 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter) {
 	for (; tableIter.value != NULL; ++tableIter) {
 		object_id_t object = tableIter.value->getObject();
 		if ((iter = childrenMap.find(object)) == childrenMap.end()) {
-			//illegal table entry
-			//TODO: software error
+			//illegal table entry, should only happen due to misconfigured mode table
+			debug << std::hex << getObjectId() << ": invalid mode table entry"
+					<< std::endl;
 			continue;
+		}
+
+		Submode_t submodeToCommand = tableIter.value->getSubmode();
+		if (tableIter.value->inheritSubmode()) {
+			submodeToCommand = targetSubmode;
 		}
 
 		if (healthHelper.healthTable->hasHealth(object)) {
@@ -84,14 +107,12 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter) {
 				if (modeHelper.isForced()) {
 					ModeMessage::setModeMessage(&message,
 							ModeMessage::CMD_MODE_COMMAND_FORCED,
-							tableIter.value->getMode(),
-							tableIter.value->getSubmode());
+							tableIter.value->getMode(), submodeToCommand);
 				} else {
 					if (healthHelper.healthTable->isCommandable(object)) {
 						ModeMessage::setModeMessage(&message,
 								ModeMessage::CMD_MODE_COMMAND,
-								tableIter.value->getMode(),
-								tableIter.value->getSubmode());
+								tableIter.value->getMode(), submodeToCommand);
 					} else {
 						continue;
 					}
@@ -99,20 +120,19 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter) {
 			}
 		} else {
 			ModeMessage::setModeMessage(&message, ModeMessage::CMD_MODE_COMMAND,
-					tableIter.value->getMode(), tableIter.value->getSubmode());
+					tableIter.value->getMode(), submodeToCommand);
 		}
-		//TODO: This may causes trouble with more than two layers, sys commands subsys off, which is already off, but children are on (external).
-		// So, they stay on. Might only be an issue if mode is forced, so we do
+
 		if ((iter->second.mode == ModeMessage::getMode(&message))
-				&& (iter->second.submode == ModeMessage::getSubmode(&message)) && !modeHelper.isForced()) {
-			continue; //don't send redundant mode commands (produces event spam)
+				&& (iter->second.submode == ModeMessage::getSubmode(&message))
+				&& !modeHelper.isForced()) {
+			continue; //don't send redundant mode commands (produces event spam), but still command if mode is forced to reach lower levels
 		}
-		ReturnValue_t result = commandQueue.sendMessage(
+		ReturnValue_t result = commandQueue->sendMessage(
 				iter->second.commandQueue, &message);
-		if (result != RETURN_OK) {
-			//TODO OBSW internal error
+		if (result == RETURN_OK) {
+			++commandsOutstanding;
 		}
-		++commandsOutstanding;
 	}
 
 }
@@ -132,7 +152,7 @@ ReturnValue_t SubsystemBase::updateChildMode(MessageQueueId_t queue,
 }
 
 ReturnValue_t SubsystemBase::updateChildChangedHealth(MessageQueueId_t queue,
-		bool changedHealth) {
+bool changedHealth) {
 	for (auto iter = childrenMap.begin(); iter != childrenMap.end(); iter++) {
 		if (iter->second.commandQueue == queue) {
 			iter->second.healthChanged = changedHealth;
@@ -142,15 +162,8 @@ ReturnValue_t SubsystemBase::updateChildChangedHealth(MessageQueueId_t queue,
 	return CHILD_NOT_FOUND;
 }
 
-SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
-		Mode_t initialMode, uint16_t commandQueueDepth) :
-		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE), childrenChangedMode(
-				false), commandsOutstanding(0), commandQueue(commandQueueDepth,
-				CommandMessage::MAX_MESSAGE_SIZE), healthHelper(this, setObjectId), modeHelper(this), parentId(parent) {
-}
-
 MessageQueueId_t SubsystemBase::getCommandQueue() const {
-	return commandQueue.getId();
+	return commandQueue->getId();
 }
 
 ReturnValue_t SubsystemBase::initialize() {
@@ -186,7 +199,7 @@ ReturnValue_t SubsystemBase::initialize() {
 	return RETURN_OK;
 }
 
-ReturnValue_t SubsystemBase::performOperation() {
+ReturnValue_t SubsystemBase::performOperation(uint8_t opCode) {
 
 	childrenChangedMode = false;
 
@@ -217,7 +230,8 @@ ReturnValue_t SubsystemBase::handleModeReply(CommandMessage* message) {
 			for (auto iter = childrenMap.begin(); iter != childrenMap.end();
 					iter++) {
 				if (iter->second.commandQueue == message->getSender()) {
-					triggerEvent(MODE_CMD_REJECTED, iter->first, message->getParameter());
+					triggerEvent(MODE_CMD_REJECTED, iter->first,
+							message->getParameter());
 				}
 			}
 		}
@@ -249,13 +263,14 @@ ReturnValue_t SubsystemBase::checkTable(
 }
 
 void SubsystemBase::replyToCommand(CommandMessage* message) {
-	commandQueue.reply(message);
+	commandQueue->reply(message);
 }
 
 void SubsystemBase::setMode(Mode_t newMode, Submode_t newSubmode) {
 	modeHelper.modeChanged(newMode, newSubmode);
 	mode = newMode;
 	submode = newSubmode;
+	modeChanged();
 	announceMode(false);
 }
 
@@ -266,7 +281,7 @@ void SubsystemBase::setMode(Mode_t newMode) {
 void SubsystemBase::commandAllChildren(CommandMessage* message) {
 	std::map<object_id_t, ChildInfo>::iterator iter;
 	for (iter = childrenMap.begin(); iter != childrenMap.end(); ++iter) {
-		commandQueue.sendMessage(iter->second.commandQueue, message);
+		commandQueue->sendMessage(iter->second.commandQueue, message);
 	}
 }
 
@@ -293,8 +308,8 @@ void SubsystemBase::checkCommandQueue() {
 	ReturnValue_t result;
 	CommandMessage message;
 
-	for (result = commandQueue.receiveMessage(&message); result == RETURN_OK;
-			result = commandQueue.receiveMessage(&message)) {
+	for (result = commandQueue->receiveMessage(&message); result == RETURN_OK;
+			result = commandQueue->receiveMessage(&message)) {
 
 		result = healthHelper.handleHealthCommand(&message);
 		if (result == RETURN_OK) {
@@ -314,7 +329,8 @@ void SubsystemBase::checkCommandQueue() {
 		result = handleCommandMessage(&message);
 		if (result != RETURN_OK) {
 			CommandMessage reply;
-			reply.setReplyRejected(CommandMessage::UNKNOW_COMMAND, message.getCommand());
+			reply.setReplyRejected(CommandMessage::UNKNOW_COMMAND,
+					message.getCommand());
 			replyToCommand(&reply);
 		}
 	}
@@ -334,3 +350,7 @@ ReturnValue_t SubsystemBase::setHealth(HealthState health) {
 HasHealthIF::HealthState SubsystemBase::getHealth() {
 	return healthHelper.getHealth();
 }
+
+void SubsystemBase::modeChanged() {
+}
+

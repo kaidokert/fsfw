@@ -8,7 +8,6 @@
 #ifndef RECEIVESTIMEINFOIF_H_
 #define RECEIVESTIMEINFOIF_H_
 
-#include <framework/osal/OSAL.h>
 /**
  * This is a Interface for classes that receive timing information
  * with the help of a dedicated message queue.
@@ -19,7 +18,7 @@ public:
 	 * Returns the id of the queue which receives the timing information.
 	 * @return Queue id of the timing queue.
 	 */
-	virtual MessageQueueId_t getTimeReceptionQueue() = 0;
+	virtual MessageQueueId_t getTimeReceptionQueue() const = 0;
 	/**
 	 * Empty virtual destructor.
 	 */

@@ -1,14 +1,8 @@
-/*
- * RMAPChannelIF.h
- *
- *  Created on: 31.05.2013
- *      Author: tod
- */
-
 #ifndef RMAPCHANNELIF_H_
 #define RMAPCHANNELIF_H_
 
 #include <framework/rmap/RMAP.h>
+#include <framework/tasks/PeriodicTaskIF.h>
 
 class RMAPChannelIF: public RMAP {
 public:
@@ -48,7 +42,7 @@ public:
 	 *      - @c COMMAND_PORT_OUT_OF_RANGE if the port is invalid
 	 */
 	virtual ReturnValue_t setPort(int8_t port, uint8_t dest_addr,
-			uint8_t src_addr)=0;
+			uint8_t src_addr, PeriodicTaskIF* currentTask)=0;
 
 	/**
 	 * Assign a SpaceWire port to the Channel
@@ -60,7 +54,7 @@ public:
 	 *      - @c COMMAND_OK if port was changed
 	 *      - @c COMMAND_PORT_OUT_OF_RANGE if the port is invalid
 	 */
-	virtual ReturnValue_t setPort(int8_t port)=0;
+	virtual ReturnValue_t setPort(int8_t port, PeriodicTaskIF* currentTask)=0;
 
 	/**
 	 * Send an RMAP command

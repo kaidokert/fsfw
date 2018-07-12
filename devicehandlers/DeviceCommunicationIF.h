@@ -6,7 +6,7 @@
 
 class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = DEVICE_COMMUNICATION_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
 
 	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t NOT_ACTIVE = MAKE_RETURN_CODE(0x02);
@@ -39,7 +39,7 @@ public:
 
 	virtual void close(Cookie *cookie) = 0;
 
-	//TODO can data be const?
+	//SHOULDDO can data be const?
 	virtual ReturnValue_t sendMessage(Cookie *cookie, uint8_t *data,
 			uint32_t len) = 0;
 

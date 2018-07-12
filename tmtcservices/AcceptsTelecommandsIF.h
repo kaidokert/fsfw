@@ -1,7 +1,7 @@
 #ifndef ACCEPTSTELECOMMANDSIF_H_
 #define ACCEPTSTELECOMMANDSIF_H_
 
-#include <framework/ipc/MessageQueue.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 /**
  * @brief 	This interface is implemented by classes that are sinks for
@@ -11,7 +11,7 @@
  */
 class AcceptsTelecommandsIF {
 public:
-	static const uint8_t INTERFACE_ID = ACCEPTS_TELECOMMANDS_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::ACCEPTS_TELECOMMANDS_IF;
 	static const ReturnValue_t ACTIVITY_STARTED = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t INVALID_SUBSERVICE = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t ILLEGAL_APPLICATION_DATA = MAKE_RETURN_CODE(3);

@@ -114,7 +114,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 	const uint8_t *fromAsStream = (const uint8_t *) from;
 	int32_t streamSize = fromRows * fromColumns * sizeof(T);
 
-	ReturnValue_t result;
+	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 
 	for (uint8_t fromRow = 0; fromRow < fromRows; fromRow++) {
 
@@ -219,7 +219,7 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper* from,
 
 	uint8_t typeSize = type.getSize();
 
-	ReturnValue_t result;
+	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	//copy data
 	if (from->pointsToStream) {
 		switch (type) {
@@ -271,5 +271,5 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper* from,
 		}
 	}
 
-	return HasReturnvaluesIF::RETURN_OK;
+	return result;
 }

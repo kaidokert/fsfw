@@ -1,10 +1,3 @@
-/*
- * HasMemoryIF.h
- *
- *  Created on: 12.07.2013
- *      Author: Bastian
- */
-
 #ifndef HASMEMORYIF_H_
 #define HASMEMORYIF_H_
 
@@ -12,7 +5,7 @@
 
 class HasMemoryIF {
 public:
-	static const uint8_t INTERFACE_ID = HAS_MEMORY_IF;
+	static const uint8_t INTERFACE_ID = CLASS_ID::HAS_MEMORY_IF;
 	static const ReturnValue_t DO_IT_MYSELF = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t POINTS_TO_VARIABLE = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t POINTS_TO_MEMORY =  MAKE_RETURN_CODE(3);
@@ -21,6 +14,7 @@ public:
 	static const ReturnValue_t POINTS_TO_VECTOR_UINT16 = MAKE_RETURN_CODE(6);
 	static const ReturnValue_t POINTS_TO_VECTOR_UINT32 = MAKE_RETURN_CODE(7);
 	static const ReturnValue_t POINTS_TO_VECTOR_FLOAT = MAKE_RETURN_CODE(8);
+	static const ReturnValue_t DUMP_NOT_SUPPORTED = MAKE_RETURN_CODE(0xA0);
 	static const ReturnValue_t INVALID_SIZE = MAKE_RETURN_CODE(0xE0);
 	static const ReturnValue_t INVALID_ADDRESS = MAKE_RETURN_CODE(0xE1);
 	static const ReturnValue_t INVALID_CONTENT = MAKE_RETURN_CODE(0xE2);

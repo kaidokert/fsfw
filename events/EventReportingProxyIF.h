@@ -1,10 +1,3 @@
-/*
- * EventReportingProxyIF.h
- *
- *  Created on: 19.08.2015
- *      Author: baetz
- */
-
 #ifndef FRAMEWORK_EVENTS_EVENTREPORTINGPROXYIF_H_
 #define FRAMEWORK_EVENTS_EVENTREPORTINGPROXYIF_H_
 

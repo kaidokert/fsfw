@@ -49,7 +49,7 @@ public:
 	virtual ~LinkedElement(){
 
 	}
-	virtual LinkedElement* const getNext() const {
+	virtual LinkedElement* getNext() const {
 		return next;
 	}
 

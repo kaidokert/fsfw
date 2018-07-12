@@ -13,7 +13,7 @@
 
 #include <framework/datapool/PoolEntry.h>
 #include <framework/globalfunctions/Type.h>
-#include <framework/osal/OSAL.h>
+#include <framework/ipc/MutexIF.h>
 #include <map>
 
 /**
@@ -50,7 +50,7 @@ public:
 	 * \brief	The mutex is created in the constructor and makes access mutual exclusive.
 	 * \details	Locking and unlocking the pool is only done by the DataSet class.
 	 */
-	MutexId_t*	mutex;
+	MutexIF*	mutex;
 	/**
 	 * \brief	In the classes constructor, the passed initialization function is called.
 	 * \details	To enable filling the pool,
@@ -113,7 +113,14 @@ public:
 	 */
 	static uint32_t poolIdAndPositionToPid( uint32_t poolId, uint8_t index );
 
-	Type getType( uint32_t parameter_id );
+	/**
+	 * Method to return the type of a pool variable.
+	 * @param parameter_id A parameterID (not pool id) of a DP member.
+	 * @param type Returns the type or TYPE::UNKNOWN_TYPE
+	 * @return RETURN_OK if parameter exists, RETURN_FAILED else.
+	 */
+	ReturnValue_t getType( uint32_t parameter_id, Type* type );
+
 	/**
 	 * Method to check if a PID exists.
 	 * Does not lock, as there's no possibility to alter the list that is checked during run-time.
@@ -123,7 +130,6 @@ public:
 	bool exists(uint32_t parameterId);
 };
 
-//TODO: Remove this, if data pool is get by Satellite Manager
-//Better make clean Singleton.
+//We assume someone globally instantiates a DataPool.
 extern DataPool dataPool;
 #endif /* DATAPOOL_H_ */

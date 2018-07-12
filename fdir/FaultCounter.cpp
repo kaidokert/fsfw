@@ -1,10 +1,3 @@
-/*
- * FaultCounter.cpp
- *
- *  Created on: 15.09.2015
- *      Author: baetz
- */
-
 #include <framework/fdir/FaultCounter.h>
 
 FaultCounter::FaultCounter(uint32_t failureThreshold, uint32_t decrementAfterMs,

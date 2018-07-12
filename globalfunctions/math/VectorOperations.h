@@ -38,11 +38,11 @@ public:
 	}
 
 	static void subtract(const T vector1[], const T vector2[], T sum[],
-				uint8_t size = 3) {
-			for (; size > 0; size--) {
-				sum[size - 1] = vector1[size - 1] - vector2[size - 1];
-			}
+			uint8_t size = 3) {
+		for (; size > 0; size--) {
+			sum[size - 1] = vector1[size - 1] - vector2[size - 1];
 		}
+	}
 
 	static T norm(const T *vector, uint8_t size) {
 		T result = 0;
@@ -74,6 +74,26 @@ public:
 			}
 		}
 		return max;
+	}
+
+	static T maxValue(const T *vector, uint8_t size, uint8_t *index = 0) {
+
+			T max = -1;
+
+			for (; size > 0; size--) {
+				if (vector[size - 1] > max) {
+					max = vector[size - 1];
+					if (index != 0) {
+						*index = size - 1;
+					}
+				}
+			}
+			return max;
+		}
+
+
+	static void copy(const T *in, T *out, uint8_t size) {
+		mulScalar(in, 1, out, size);
 	}
 
 private:

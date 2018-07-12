@@ -8,8 +8,8 @@
 #define HASMONITORSIF_H_
 
 #include <framework/events/EventReportingProxyIF.h>
-#include <framework/ipc/MessageQueue.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 class HasMonitorsIF {
 public:
