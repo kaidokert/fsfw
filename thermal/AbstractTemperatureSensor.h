@@ -21,8 +21,7 @@ public:
 	static const Event TEMP_SENSOR_LOW = MAKE_EVENT(1, SEVERITY::LOW);
 	static const Event TEMP_SENSOR_GRADIENT = MAKE_EVENT(2, SEVERITY::LOW);
 
-	//TODO, modern gcc complains about const
-	static const float ZERO_KELVIN_C = -273.15;
+	static constexpr float ZERO_KELVIN_C = -273.15;
 	AbstractTemperatureSensor(object_id_t setObjectid,
 			ThermalModuleIF *thermalModule);
 	virtual ~AbstractTemperatureSensor();

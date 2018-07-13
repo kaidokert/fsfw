@@ -1,6 +1,8 @@
 #ifndef CCSDSTIME_H_
 #define CCSDSTIME_H_
 
+// COULDDO: have calls in Clock.h which return time quality and use timespec accordingly
+
 #include <framework/timemanager/Clock.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <stdint.h>

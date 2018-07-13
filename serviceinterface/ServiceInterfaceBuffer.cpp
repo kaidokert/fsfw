@@ -2,8 +2,8 @@
 #include <framework/serviceinterface/ServiceInterfaceBuffer.h>
 #include <cstring>
 
-//TODO Think of something different
-#include <framework/osal/rtems/Interrupt.h>
+// to be implemented by bsp
+extern "C" void printChar(const char*);
 
 int ServiceInterfaceBuffer::overflow(int c) {
 	// Handle output
@@ -28,7 +28,7 @@ int ServiceInterfaceBuffer::sync(void) {
 				this->log_message.c_str(), (unsigned long) loggerTime.hour,
 				(unsigned long) loggerTime.minute,
 				(unsigned long) loggerTime.second,
-				(unsigned long) loggerTime.ticks);
+				(unsigned long) loggerTime.usecond /1000);
 		// Write log_message and time
 		this->putChars(preamble, preamble + sizeof(preamble));
 		// Handle output
@@ -37,6 +37,27 @@ int ServiceInterfaceBuffer::sync(void) {
 	// This tells that buffer is empty again
 	setp(buf, buf + BUF_SIZE - 1);
 	return 0;
+}
+
+
+ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message, uint16_t port) {
+	this->log_message = set_message;
+	this->isActive = true;
+	setp( buf, buf + BUF_SIZE );
+}
+
+void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
+	char array[BUF_SIZE];
+	uint32_t length = end - begin;
+	if (length > sizeof(array)) {
+		length = sizeof(array);
+	}
+	memcpy(array, begin, length);
+
+	for( ; begin != end; begin++){
+		printChar(begin);
+	}
+
 }
 
 #ifdef UT699

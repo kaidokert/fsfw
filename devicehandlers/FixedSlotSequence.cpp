@@ -30,7 +30,7 @@ void FixedSlotSequence::executeAndAdvance() {
 	}
 }
 
-uint32_t FixedSlotSequence::getIntervalMs() {
+uint32_t FixedSlotSequence::getIntervalToNextSlotMs() {
 	uint32_t oldTime;
 	std::list<FixedSequenceSlot*>::iterator it;
 	it = current;
@@ -51,6 +51,23 @@ uint32_t FixedSlotSequence::getIntervalMs() {
 	// and adding the start time of the first handler in the list.
 	it = slotList.begin();
 	return lengthMs - oldTime + (*it)->pollingTimeMs;
+}
+
+uint32_t FixedSlotSequence::getIntervalToPreviousSlotMs() {
+	uint32_t currentTime;
+	std::list<FixedSequenceSlot*>::iterator it;
+	it = current;
+	// Get the pollingTimeMs of the current slot object.
+	currentTime = (*it)->pollingTimeMs;
+
+	//if it is the first slot, calculate difference to last slot
+	if (it == slotList.begin()){
+		return lengthMs - (*(--slotList.end()))->pollingTimeMs + currentTime;
+	}
+	// get previous slot
+	it--;
+
+	return currentTime - (*it)->pollingTimeMs;
 }
 
 bool FixedSlotSequence::slotFollowsImmediately() {

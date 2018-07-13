@@ -21,8 +21,7 @@ class Fuse: public SystemObject,
 		public ReceivesParameterMessagesIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 private:
-	//TODO, modern gcc complains about const
-	static const float RESIDUAL_POWER = 0.005 * 28.5; //!< This is the upper limit of residual power lost by fuses and switches. Worst case is Fuse and one of two switches on. See PCDU ICD 1.9 p29 bottom
+	static constexpr float RESIDUAL_POWER = 0.005 * 28.5; //!< This is the upper limit of residual power lost by fuses and switches. Worst case is Fuse and one of two switches on. See PCDU ICD 1.9 p29 bottom
 public:
 	struct VariableIds {
 		uint32_t pidVoltage;

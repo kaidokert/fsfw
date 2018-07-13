@@ -86,7 +86,7 @@ void PollingTask::taskFunctionality() {
 			//Do nothing
 		} else {
 			//The interval for the next polling slot is selected.
-			interval = this->pst.getIntervalMs();
+			interval = RtemsBasic::convertMsToTicks(this->pst.getIntervalToNextSlotMs());
 			//The period is checked and restarted with the new interval.
 			//If the deadline was missed, the deadlineMissedFunc is called.
 			status = rtems_rate_monotonic_period(periodId, interval);

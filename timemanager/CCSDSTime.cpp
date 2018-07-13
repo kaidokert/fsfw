@@ -44,8 +44,8 @@ ReturnValue_t CCSDSTime::convertToCcsds(Ccs_mseconds* to,
 	to->hour = from->hour;
 	to->minute = from->minute;
 	to->second = from->second;
-	to->secondEminus2 = from->ticks / 10;
-	to->secondEminus4 = (from->ticks % 10) * 10;
+	to->secondEminus2 = from->usecond / 10000;
+	to->secondEminus4 = (from->usecond % 10) * 10 / 1000;
 
 	return RETURN_OK;
 }
@@ -128,13 +128,13 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
 	to->month = temp->month;
 	to->day = temp->day;
 
-	to->ticks = 0;
+	to->usecond = 0;
 	if (subsecondsLength > 0) {
 		*foundLength += 1;
 		if (temp->secondEminus2 >= 100) {
 			return INVALID_TIME_FORMAT;
 		}
-		to->ticks = temp->secondEminus2 * 10;
+		to->usecond = temp->secondEminus2 * 10000;
 	}
 
 	if (subsecondsLength > 1) {
@@ -142,7 +142,7 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
 		if (temp->secondEminus4 >= 100) {
 			return INVALID_TIME_FORMAT;
 		}
-		to->ticks += temp->secondEminus4 / 10;
+		to->usecond += temp->secondEminus4 / 10 * 1000;
 	}
 
 	return RETURN_OK;
@@ -170,7 +170,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 		to->hour = hour;
 		to->minute = minute;
 		to->second = second;
-		to->ticks = (second - floor(second)) * 1000;
+		to->usecond = (second - floor(second)) * 1000000;
 		return RETURN_OK;
 	}
 
@@ -190,7 +190,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 		to->hour = hour;
 		to->minute = minute;
 		to->second = second;
-		to->ticks = (second - floor(second)) * 1000;
+		to->usecond = (second - floor(second)) * 1000000;
 		return RETURN_OK;
 	}
 
@@ -425,7 +425,7 @@ ReturnValue_t CCSDSTime::checkTimeOfDay(const Clock::TimeOfDay_t* time) {
 		return INVALID_TIME_FORMAT;
 	}
 
-	if (time->ticks > 999) {
+	if (time->usecond > 999999) {
 		return INVALID_TIME_FORMAT;
 	}
 

@@ -1,5 +1,5 @@
 #include <framework/datapool/HkSwitchHelper.h>
-#include <mission/tmtcservices/HKService_03.h>
+//#include <mission/tmtcservices/HKService_03.h>
 #include <framework/ipc/QueueFactory.h>
 
 HkSwitchHelper::HkSwitchHelper(EventReportingProxyIF* eventProxy) :
@@ -56,18 +56,19 @@ void HkSwitchHelper::completionFailedReceived(ActionId_t actionId,
 }
 
 ReturnValue_t HkSwitchHelper::switchHK(SerializeIF* sids, bool enable) {
-	ActionId_t action = HKService::DISABLE_HK;
-	if (enable) {
-		action = HKService::ENABLE_HK;
-	}
-
-	ReturnValue_t result = commandActionHelper.commandAction(
-			objects::PUS_HK_SERVICE, action, sids);
-
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		eventProxy->forwardEvent(SWITCHING_TM_FAILED, result);
-	}
-	return result;
+//	ActionId_t action = HKService::DISABLE_HK;
+//	if (enable) {
+//		action = HKService::ENABLE_HK;
+//	}
+//
+//	ReturnValue_t result = commandActionHelper.commandAction(
+//			objects::PUS_HK_SERVICE, action, sids);
+//
+//	if (result != HasReturnvaluesIF::RETURN_OK) {
+//		eventProxy->forwardEvent(SWITCHING_TM_FAILED, result);
+//	}
+//	return result;
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 MessageQueueIF* HkSwitchHelper::getCommandQueuePtr() {

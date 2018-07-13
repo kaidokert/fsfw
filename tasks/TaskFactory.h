@@ -1,16 +1,14 @@
 #ifndef FRAMEWORK_TASKS_TASKFACTORY_H_
 #define FRAMEWORK_TASKS_TASKFACTORY_H_
 
+#include <stdlib.h>
 #include <framework/tasks/FixedTimeslotTaskIF.h>
 #include <framework/tasks/Typedef.h>
-
-
-
 
 /**
  * Singleton Class that produces Tasks.
  */
-class TaskFactory{
+class TaskFactory {
 public:
 	virtual ~TaskFactory();
 	/**
@@ -29,7 +27,10 @@ public:
 	 * @param deadLineMissedFunction_ Function to be called if a deadline was missed
 	 * @return PeriodicTaskIF* Pointer to the newly created Task
 	 */
-	PeriodicTaskIF* createPeriodicTask(OSAL::TaskName name_,OSAL::TaskPriority taskPriority_,OSAL::TaskStackSize stackSize_,OSAL::TaskPeriod periodInSeconds_,OSAL::TaskDeadlineMissedFunction deadLineMissedFunction_);
+	PeriodicTaskIF* createPeriodicTask(TaskName name_,
+			TaskPriority taskPriority_, TaskStackSize stackSize_,
+			TaskPeriod periodInSeconds_,
+			TaskDeadlineMissedFunction deadLineMissedFunction_);
 
 	/**
 	 *
@@ -40,15 +41,24 @@ public:
 	 * @param deadLineMissedFunction_ Function to be called if a deadline was missed
 	 * @return FixedTimeslotTaskIF* Pointer to the newly created Task
 	 */
-	FixedTimeslotTaskIF* createFixedTimeslotTask(OSAL::TaskName name_,OSAL::TaskPriority taskPriority_,OSAL::TaskStackSize stackSize_,OSAL::TaskPeriod periodInSeconds_,OSAL::TaskDeadlineMissedFunction deadLineMissedFunction_);
-
+	FixedTimeslotTaskIF* createFixedTimeslotTask(TaskName name_,
+			TaskPriority taskPriority_, TaskStackSize stackSize_,
+			TaskPeriod periodInSeconds_,
+			TaskDeadlineMissedFunction deadLineMissedFunction_);
 
 	/**
 	 * Function to be called to delete a task
-	 * @param task The pointer to the task that shall be deleted
+	 * @param task The pointer to the task that shall be deleted, NULL specifies current Task
 	 * @return Success of deletion
 	 */
-	ReturnValue_t deleteTask(PeriodicTaskIF* task);
+	static ReturnValue_t deleteTask(PeriodicTaskIF* task = NULL);
+
+	/**
+	 * Function to be called to delay current task
+	 * @param delay The delay in milliseconds
+	 * @return Success of deletion
+	 */
+	static ReturnValue_t delayTask(uint32_t delayMs);
 
 private:
 	/**
@@ -57,9 +67,6 @@ private:
 	TaskFactory();
 	static TaskFactory* factoryInstance;
 
-
 };
-
-
 
 #endif /* FRAMEWORK_TASKS_TASKFACTORY_H_ */

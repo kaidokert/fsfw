@@ -1,6 +1,8 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUEIF_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUEIF_H_
 
+// COULDDO: We could support blocking calls
+
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
 class MessageQueueIF {

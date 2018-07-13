@@ -25,6 +25,8 @@ public:
 		return tmp;
 #elif BYTE_ORDER == BIG_ENDIAN
 		return in;
+#else
+#error Unknown Byte Order
 #endif
 	}
 	static void swap(uint8_t* out, const uint8_t* in, uint32_t size) {

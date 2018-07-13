@@ -1,7 +1,9 @@
-# This file needs FRAMEWORK_PATH set correctly
+# This file needs FRAMEWORK_PATH and API set correctly
+# Valid API settings: rtems, linux, freeRTOS
 
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/action/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/container/*.cpp)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/contrib/sgp4/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/controller/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/coordinates/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/datalinklayer/*.cpp)
@@ -22,12 +24,25 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/modes/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/monitoring/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/objectmanager/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/*.cpp)
-#TODO should be ifdef'd
+
+# select the OS
+ifeq ($(OS),rtems)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/rtems/*.cpp)
+else ifeq ($(OS),linux)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/linux/*.cpp)
+else ifeq ($(OS),freeRTOS)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/FreeRTOS/*.cpp)
+else
+$(error invalid OS specified, valid OS are rtems, linux, freeRTOS)
+endif
+
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/parameters/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/power/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/returnvalues/*.cpp)
-CXXSRC += $(wildcard $(FRAMEWORK_PATH)/rmap/*.cpp)
+
+# easier without it for now
+#CXXSRC += $(wildcard $(FRAMEWORK_PATH)/rmap/*.cpp)
+
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/serialize/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/serviceinterface/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/storagemanager/*.cpp)

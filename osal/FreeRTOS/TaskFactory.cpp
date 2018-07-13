@@ -1,0 +1,50 @@
+#include <framework/tasks/TaskFactory.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
+
+#include "PeriodicTask.h"
+#include "FixedTimeslotTask.h"
+
+//TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
+TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
+
+TaskFactory::~TaskFactory() {
+}
+
+TaskFactory* TaskFactory::instance() {
+	return TaskFactory::factoryInstance;
+}
+
+PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,
+		TaskPriority taskPriority_, TaskStackSize stackSize_,
+		TaskPeriod period_,
+		TaskDeadlineMissedFunction deadLineMissedFunction_) {
+	return (PeriodicTaskIF*) (new PeriodicTask(name_, taskPriority_, stackSize_,
+			period_, deadLineMissedFunction_));
+}
+
+FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,
+		TaskPriority taskPriority_, TaskStackSize stackSize_,
+		TaskPeriod period_,
+		TaskDeadlineMissedFunction deadLineMissedFunction_) {
+	return (FixedTimeslotTaskIF*) (new FixedTimeslotTask(name_, taskPriority_,
+			stackSize_, period_, deadLineMissedFunction_));
+}
+
+ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
+	if (task == NULL) {
+		//delete self
+		vTaskDelete(NULL);
+		return HasReturnvaluesIF::RETURN_OK;
+	} else {
+		//TODO not implemented
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+}
+
+ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
+	vTaskDelay(pdMS_TO_TICKS(delayMs));
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+TaskFactory::TaskFactory() {
+}

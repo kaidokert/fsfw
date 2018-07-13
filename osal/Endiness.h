@@ -1,12 +1,29 @@
 #ifndef FRAMEWORK_OSAL_ENDINESS_H_
 #define FRAMEWORK_OSAL_ENDINESS_H_
 
-//We have to define BYTE_ORDER for that specific OS/Hardware so this must be done somewhere
-#ifndef API
-#error Please specify Operating System API. Supported: API=RTEMS_API
-#elif API == RTEMS_API
-#include "rtems/RtemsBasic.h"
+
+/*
+ * BSD-style endian declaration
+ */
+#ifndef BIG_ENDIAN
+#define BIG_ENDIAN	4321
 #endif
+#ifndef LITTLE_ENDIAN
+#define LITTLE_ENDIAN	1234
+#endif
+
+
+// This is a GCC C extension
+#ifndef BYTE_ORDER
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define BYTE_ORDER BIG_ENDIAN
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#define BYTE_ORDER LITTLE_ENDIAN
+#else
+#error "Can't decide which end is which!"
+#endif
+#endif
+
 
 
 

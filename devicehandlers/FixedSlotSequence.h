@@ -59,10 +59,20 @@ public:
 	 *
 	 * \details	This method is vitally important for the operation of the PST. By fetching the polling time
 	 * 			of the current slot and that of the next one (or the first one, if the list end is reached)
-	 * 			it calculates and returns the interval in clock ticks within which the handler execution
-	 * 			shall take place.
+	 * 			it calculates and returns the interval in milliseconds within which the handler execution
+	 * 			shall take place. If the next slot has the same time as the current one, it is ignored until
+	 * 			a slot with different time or the end of the PST is found.
 	 */
-	uint32_t getIntervalMs();
+	uint32_t getIntervalToNextSlotMs();
+
+	/**
+	 * \brief	This method returns the time difference between the current slot and the previous slot
+	 *
+	 * \details	This method is vitally important for the operation of the PST. By fetching the polling time
+	 * 			of the current slot and that of the prevous one (or the last one, if the slot is the first one)
+	 * 			it calculates and returns the interval in milliseconds that the handler execution shall be delayed.
+	 */
+	uint32_t getIntervalToPreviousSlotMs();
 
 	/**
 	 * \brief	This method returns the length of this FixedSlotSequence instance.

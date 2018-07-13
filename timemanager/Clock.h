@@ -18,13 +18,15 @@ public:
 	  uint32_t hour; //!< Hour, 0 .. 23.
 	  uint32_t minute; //!< Minute, 0 .. 59.
 	  uint32_t second; //!< Second, 0 .. 59.
-	  uint32_t ticks; //!< Elapsed ticks between seconds.
+	  uint32_t usecond; //!< Microseconds, 0 .. 999999
 	}   TimeOfDay_t;
 
 	/**static Clock* TimeOfDay_t();
 	 * This method returns the number of clock ticks per second.
 	 * In RTEMS, this is typically 1000.
 	 * @return	The number of ticks.
+	 *
+	 * @deprecated, we should not worry about ticks, but only time
 	 */
 	static uint32_t getTicksPerSecond(void);
 	/**
@@ -55,8 +57,12 @@ public:
 	 *
 	 * @param[out] time A pointer to a timeval struct where the uptime is stored.
 	 * @return\c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 *
+	 * @deprecated, I do not think this should be able to fail, use timeval getUptime()
 	 */
 	static ReturnValue_t getUptime(timeval* uptime);
+
+	static timeval getUptime();
 
 	/**
 	 * Get the time since boot in milliseconds

@@ -18,8 +18,7 @@ public:
 		NON_OPERATIONAL = 0, OPERATIONAL = 1, UNKNOWN = 2
 	};
 
-	//TODO, modern gcc complains about const
-	static const float INVALID_TEMPERATURE = 999;
+	static constexpr float INVALID_TEMPERATURE = 999;
 
 	virtual ~ThermalModuleIF() {
 
