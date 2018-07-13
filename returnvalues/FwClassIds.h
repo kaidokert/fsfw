@@ -55,7 +55,10 @@ enum {
 	DEVICE_COMMUNICATION_IF, //DC
 	BSP, //BSP
 	TIME_STAMPER_IF, //TSI 52
+	//TODO This will shift all IDs for FLP
 	SGP4PROPAGATOR_CLASS, //SGP4 53
+	MUTEX_IF, //MUX 54
+	MESSAGE_QUEUE_IF,//MQI 55
 	FW_CLASS_ID_COUNT //is actually count + 1 !
 
 };

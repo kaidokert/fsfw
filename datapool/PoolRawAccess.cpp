@@ -76,13 +76,13 @@ ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 		return DATA_POOL_ACCESS_FAILED;
 	if (typeSize > max_size)
 		return INCORRECT_SIZE;
-#ifndef BYTE_ORDER
-#error BYTE_ORDER not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 	for (uint8_t count = 0; count < typeSize; count++) {
 		buffer[count] = data_ptr[typeSize - count - 1];
 	}
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 	memcpy(buffer, data_ptr, typeSize);
 #endif
 	*writtenBytes = typeSize;
@@ -112,13 +112,13 @@ PoolVariableIF::ReadWriteMode_t PoolRawAccess::getReadWriteMode() const {
 ReturnValue_t PoolRawAccess::setEntryFromBigEndian(const uint8_t* buffer,
 		uint32_t setSize) {
 	if (typeSize == setSize) {
-#ifndef BYTE_ORDER
-#error BYTE_ORDER not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 		for (uint8_t count = 0; count < typeSize; count++) {
 			value[count] = buffer[typeSize - count - 1];
 		}
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 		memcpy(value, buffer, typeSize);
 #endif
 		return HasReturnvaluesIF::RETURN_OK;
@@ -149,13 +149,13 @@ ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, uint32_t* size,
 		const uint32_t max_size, bool bigEndian) const {
 	if (typeSize + *size <= max_size) {
 		if (bigEndian) {
-#ifndef BYTE_ORDER
-#error BYTE_ORDER not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 			for (uint8_t count = 0; count < typeSize; count++) {
 				(*buffer)[count] = value[typeSize - count - 1];
 			}
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 			memcpy(*buffer, value, typeSize);
 #endif
 		} else {
@@ -179,13 +179,13 @@ ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, int32_t* size,
 	if (*size >= 0) {
 
 		if (bigEndian) {
-#ifndef BYTE_ORDER
-#error BYTE_ORDER not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 			for (uint8_t count = 0; count < typeSize; count++) {
 				value[count] = (*buffer)[typeSize - count - 1];
 			}
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 			memcpy(value, *buffer, typeSize);
 #endif
 		} else {

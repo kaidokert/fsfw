@@ -20,7 +20,7 @@ ReturnValue_t TcDistributor::performOperation(uint8_t opCode) {
 			status = tcQueue->receiveMessage(&currentMessage)) {
 		status = handlePacket();
 	}
-	if (status == OperatingSystemIF::QUEUE_EMPTY) {
+	if (status == MessageQueueIF::EMPTY) {
 		return RETURN_OK;
 	} else {
 		return status;

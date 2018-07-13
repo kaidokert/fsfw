@@ -8,25 +8,21 @@
 #include <unistd.h>
 
 //#include <fstream>
-
+uint16_t Clock::leapSeconds = 0;
+MutexIF* Clock::timeMutex = NULL;
 
 uint32_t Clock::getTicksPerSecond(void){
-	//TODO This function returns the ticks per second for thread ticks not clock ticks
-//	timespec ticks;
-//	int status = clock_getres(CLOCK_REALTIME,&ticks);
-//
-//	if(status!=0){
-//		//TODO errno
-//		return 0xFFFFFFFF;
-//	}
-//	uint32_t resolution = 1e9 / ticks.tv_nsec;
-	uint32_t resolution = sysconf(_SC_CLK_TCK);
-	return resolution;
+	uint32_t ticks = sysconf(_SC_CLK_TCK);
+	return ticks;
 }
 
 ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
-	//TODO timeOfDay conversion
 	timespec timeUnix;
+	timeval timeTimeval;
+	convertTimeOfDayToTimeval(time,&timeTimeval);
+	timeUnix.tv_sec = timeTimeval.tv_sec;
+	timeUnix.tv_nsec = (__syscall_slong_t) timeTimeval.tv_usec * 1000;
+
 	int status = clock_settime(CLOCK_REALTIME,&timeUnix);
 	if(status!=0){
 		//TODO errno
@@ -109,14 +105,6 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 		//TODO errno
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	timespec ticks;
-	status = clock_getres(CLOCK_REALTIME,&ticks);
-	if(status!=0){
-		//TODO errno
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	uint32_t resolution = 1e9 / ticks.tv_nsec;
-
 
 	struct tm* timeInfo;
 	timeInfo = gmtime(&timeUnix.tv_sec);
@@ -126,7 +114,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 	time->hour = timeInfo->tm_hour;
 	time->minute = timeInfo->tm_min;
 	time->second = timeInfo->tm_sec;
-	time->ticks = (timeUnix.tv_nsec / (double) 1e9) * resolution;
+	time->usecond = timeUnix.tv_nsec / 1000.0;
 
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -143,34 +131,81 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from,
 	fromTm.tm_min = from->minute;
 	fromTm.tm_sec = from->second;
 
-	timespec ticks;
-	uint32_t status = clock_getres(CLOCK_REALTIME,&ticks);
-	if(status!=0){
-		//TODO errno
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	uint32_t resolution = 1e9 / ticks.tv_nsec;
-
 	to->tv_sec = mktime(&fromTm);
-	to->tv_usec = (from->ticks /(double) resolution) * 1e6;
-
-
-
+	to->tv_usec = from->usecond;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
-	return HasReturnvaluesIF::RETURN_FAILED;
+	*JD2000 = (time.tv_sec - 946728000. + time.tv_usec / 1000000.) / 24.
+			/ 3600.;
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval* tt) {
-	return HasReturnvaluesIF::RETURN_FAILED;
+	//SHOULDDO: works not for dates in the past (might have less leap seconds)
+	if (timeMutex == NULL) {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
+	uint16_t leapSeconds;
+	ReturnValue_t result = getLeapSeconds(&leapSeconds);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+	timeval leapSeconds_timeval = { 0, 0 };
+	leapSeconds_timeval.tv_sec = leapSeconds;
+
+	//initial offset between UTC and TAI
+	timeval UTCtoTAI1972 = { 10, 0 };
+
+	timeval TAItoTT = { 32, 184000 };
+
+	*tt = utc + leapSeconds_timeval + UTCtoTAI1972 + TAItoTT;
+
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
-	return HasReturnvaluesIF::RETURN_FAILED;
+	if(checkOrCreateClockMutex()!=HasReturnvaluesIF::RETURN_OK){
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	ReturnValue_t result = timeMutex->lockMutex(MutexIF::NO_TIMEOUT);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+
+	leapSeconds = leapSeconds_;
+
+	result = timeMutex->unlockMutex();
+	return result;
 }
 
 ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
-	return HasReturnvaluesIF::RETURN_FAILED;
+	if(timeMutex==NULL){
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	ReturnValue_t result = timeMutex->lockMutex(MutexIF::NO_TIMEOUT);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+
+	*leapSeconds_ = leapSeconds;
+
+	result = timeMutex->unlockMutex();
+	return result;
+}
+
+ReturnValue_t Clock::checkOrCreateClockMutex(){
+	if(timeMutex==NULL){
+		MutexFactory* mutexFactory = MutexFactory::instance();
+		if (mutexFactory == NULL) {
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
+		timeMutex = mutexFactory->createMutex();
+		if (timeMutex == NULL) {
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 }

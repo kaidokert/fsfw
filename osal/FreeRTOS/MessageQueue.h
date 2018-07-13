@@ -117,7 +117,7 @@ public:
 	 * 					This variable is set to zero by default.
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
-	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
+	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
 	/**
 	 * \brief	The sendToDefault method sends a queue message to the default destination.
 	 * \details	In all other aspects, it works identical to the sendMessage method.
@@ -125,7 +125,7 @@ public:
 	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
 	 * 					This variable is set to zero by default.
 	 */
-	virtual ReturnValue_t sendToDefault( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
 	/**
 	 * \brief	This method is a simple setter for the default destination.
 	 */

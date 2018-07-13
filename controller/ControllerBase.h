@@ -32,6 +32,16 @@ public:
 	virtual ReturnValue_t setHealth(HealthState health);
 
 	virtual HasHealthIF::HealthState getHealth();
+
+	/**
+	 * Implementation of ExecutableObjectIF function
+	 *
+	 * Used to setup the reference of the task, that executes this component
+	 * @param task_ Pointer to the taskIF of this task
+	 */
+	virtual  void setTaskIF(PeriodicTaskIF* task_);
+
+
 protected:
 	const uint32_t parentId;
 
@@ -46,6 +56,11 @@ protected:
 	HealthHelper healthHelper;
 
 	HkSwitchHelper hkSwitcher;
+
+	/**
+	 * Pointer to the task which executes this component, is invalid before setTaskIF was called.
+	 */
+	PeriodicTaskIF* executingTask;
 
 	void handleQueue();
 

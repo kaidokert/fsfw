@@ -7,28 +7,45 @@
 
 //////////////////////////////////////////////////////////////////////////////////
 // RMAP command bits
-#define RMAP_COMMAND_BIT_INCREMENT	2
-#define RMAP_COMMAND_BIT_REPLY		3
-#define RMAP_COMMAND_BIT_WRITE		5
-#define RMAP_COMMAND_BIT_VERIFY		4
-#define RMAP_COMMAND_BIT			6
+//#define RMAP_COMMAND_BIT_INCREMENT	2
+//#define RMAP_COMMAND_BIT_REPLY		3
+//#define RMAP_COMMAND_BIT_WRITE		5
+//#define RMAP_COMMAND_BIT_VERIFY		4
+//#define RMAP_COMMAND_BIT			6
+
+namespace RMAPIds{
+
+static const uint8_t RMAP_COMMAND_BIT_INCREMENT = 2;
+static const uint8_t RMAP_COMMAND_BIT_REPLY = 3;
+static const uint8_t RMAP_COMMAND_BIT_WRITE = 5;
+static const uint8_t RMAP_COMMAND_BIT_VERIFY = 4;
+static const uint8_t RMAP_COMMAND_BIT = 6;
 
 //////////////////////////////////////////////////////////////////////////////////
 // RMAP commands
-
-#define RMAP_COMMAND_WRITE			((1<<RMAP_COMMAND_BIT) | (1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY))
+static const uint8_t RMAP_COMMAND_WRITE = ((1<<RMAP_COMMAND_BIT) | (1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY));
+static const uint8_t RMAP_COMMAND_READ = ((1<<RMAP_COMMAND_BIT) | (1<<RMAP_COMMAND_BIT_REPLY));
+static const uint8_t RMAP_REPLY_WRITE = ((1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY));
+static const uint8_t RMAP_REPLY_READ = ((1<<RMAP_COMMAND_BIT_REPLY));
+//#define RMAP_COMMAND_WRITE			((1<<RMAP_COMMAND_BIT) | (1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY))
 //#define RMAP_COMMAND_WRITE_VERIFY	((1<<RMAP_COMMAND_BIT) | (1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY) | (1<<RMAP_COMMAND_BIT_VERIFY))
-#define RMAP_COMMAND_READ			((1<<RMAP_COMMAND_BIT) | (1<<RMAP_COMMAND_BIT_REPLY))
+//#define RMAP_COMMAND_READ			((1<<RMAP_COMMAND_BIT) | (1<<RMAP_COMMAND_BIT_REPLY))
 
-#define RMAP_REPLY_WRITE			((1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY))
+//#define RMAP_REPLY_WRITE			((1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY))
 //#define RMAP_REPLY_WRITE_VERIFY		((1<<RMAP_COMMAND_BIT_WRITE) | (1<<RMAP_COMMAND_BIT_REPLY) | (1<<RMAP_COMMAND_BIT_VERIFY))
-#define RMAP_REPLY_READ				((1<<RMAP_COMMAND_BIT_REPLY))
+//#define RMAP_REPLY_READ				((1<<RMAP_COMMAND_BIT_REPLY))
 
 //////////////////////////////////////////////////////////////////////////////////
 // useful info
-#define RMAP_COMMAND_HEADER_LEN		16
-#define RMAP_WRITE_REPLY_HEADER_LEN	8
-#define RMAP_READ_REPLY_HEADER_LEN	12
+static const uint8_t RMAP_COMMAND_HEADER_LEN = 16;
+static const uint8_t RMAP_WRITE_REPLY_HEADER_LEN = 8;
+static const uint8_t RMAP_READ_REPLY_HEADER_LEN = 12;
+static const uint8_t RMAP_DATA_FOOTER_SIZE = 1; //SIZE OF CRC
+//#define RMAP_COMMAND_HEADER_LEN		16
+//#define RMAP_WRITE_REPLY_HEADER_LEN	8
+//#define RMAP_READ_REPLY_HEADER_LEN	12
+
+}
 
 namespace RMAPStructs {
 struct rmap_cmd_header {

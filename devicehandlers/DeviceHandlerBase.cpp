@@ -30,19 +30,7 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
 				thermalRequestPoolId), healthHelper(this, setObjectId), modeHelper(
 				this), parameterHelper(this), childTransitionFailure(RETURN_OK), ignoreMissedRepliesCount(
 				0), fdirInstance(fdirInstance), hkSwitcher(this), defaultFDIRUsed(
-				fdirInstance == NULL), switchOffWasReported(false), executingTask(
-		NULL), actionHelper(this, commandQueue), cookieInfo(), ioBoardAddress(
-//=======
-//		NULL), IPCStore(NULL), deviceCommunicationId(deviceCommunication), communicationInterface(
-//				NULL), cookie(
-//		NULL), commandQueue(cmdQueueSize, CommandMessage::MAX_MESSAGE_SIZE), deviceThermalStatePoolId(
-//				thermalStatePoolId), deviceThermalRequestPoolId(
-//				thermalRequestPoolId), healthHelper(this, setObjectId), modeHelper(
-//				this), parameterHelper(this), childTransitionFailure(RETURN_OK), ignoreMissedRepliesCount(
-//				0), fdirInstance(fdirInstance), defaultFDIRUsed(
-//				fdirInstance == NULL), switchOffWasReported(false), actionHelper(
-//				this, &commandQueue), cookieInfo(), ioBoardAddress(
-//>>>>>>> makefile
+				fdirInstance == NULL), switchOffWasReported(false),executingTask(NULL), actionHelper(this, NULL), cookieInfo(), ioBoardAddress(
 				ioBoardAddress), timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(
 				_MODE_POWER_DOWN), transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(
 				setDeviceSwitch) {
@@ -636,7 +624,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	if (result != RETURN_OK) {
 		return result;
 	}
-	result = actionHelper.initialize();
+	result = actionHelper.initialize(commandQueue);
 	if (result != RETURN_OK) {
 		return result;
 	}
@@ -1021,10 +1009,6 @@ ReturnValue_t DeviceHandlerBase::acceptExternalDeviceCommands() {
 	return RETURN_OK;
 }
 
-void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* interface) {
-	executingTask = interface;
-}
-
 void DeviceHandlerBase::replyRawReplyIfnotWiretapped(const uint8_t* data,
 		size_t len) {
 	if ((wiretappingMode == RAW)
@@ -1280,4 +1264,8 @@ bool DeviceHandlerBase::commandIsExecuting(DeviceCommandId_t commandId) {
 }
 
 void DeviceHandlerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
+}
+
+void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
+			executingTask = task_;
 }

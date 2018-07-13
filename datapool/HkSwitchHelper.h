@@ -24,6 +24,8 @@ public:
 
 	ReturnValue_t switchHK(SerializeIF *sids, bool enable);
 
+	virtual void setTaskIF(PeriodicTaskIF* task_){};
+
 protected:
 	virtual void stepSuccessfulReceived(ActionId_t actionId, uint8_t step);
 	virtual void stepFailedReceived(ActionId_t actionId, uint8_t step,

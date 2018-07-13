@@ -1,5 +1,18 @@
+#include <framework/devicehandlers/FixedSequenceSlot.h>
+#include <framework/objectmanager/SystemObjectIF.h>
+#include <framework/osal/rtems/PollingTask.h>
+#include <framework/osal/rtems/RtemsBasic.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include "PollingTask.h"
+#include <rtems/bspIo.h>
+#include <rtems/rtems/ratemon.h>
+#include <rtems/rtems/status.h>
+#include <rtems/rtems/tasks.h>
+#include <rtems/rtems/types.h>
+#include <stddef.h>
+#include <sys/_stdint.h>
+#include <iostream>
+#include <list>
 
 uint32_t PollingTask::deadlineMissedCount = 0;
 
@@ -10,13 +23,6 @@ PollingTask::PollingTask(const char *name, rtems_task_priority setPriority,
 				setOverallPeriod) {
 	// All additional attributes are applied to the object.
 	this->deadlineMissedFunc = setDeadlineMissedFunc;
-	rtems_name periodName = (('P' << 24) + ('e' << 16) + ('r' << 8) + 'd');
-	rtems_status_code status = rtems_rate_monotonic_create(periodName,
-			&periodId);
-	if (status != RTEMS_SUCCESSFUL) {
-		error << "PollingTask::period create failed with status " << status
-				<< std::endl;
-	}
 }
 
 PollingTask::~PollingTask() {
@@ -47,7 +53,17 @@ ReturnValue_t PollingTask::startTask() {
 		error << "PollingTask::startTask for " << std::hex << this->getId()
 				<< std::dec << " failed." << std::endl;
 	}
-	return RtemsBasic::convertReturnCode(status);
+	switch(status){
+	case RTEMS_SUCCESSFUL:
+		//ask started successfully
+		return HasReturnvaluesIF::RETURN_OK;
+	default:
+/*		RTEMS_INVALID_ADDRESS - invalid task entry point
+		RTEMS_INVALID_ID - invalid task id
+		RTEMS_INCORRECT_STATE - task not in the dormant state
+		RTEMS_ILLEGAL_ON_REMOTE_OBJECT - cannot start remote task */
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
 }
 
 ReturnValue_t PollingTask::addSlot(object_id_t componentId, uint32_t slotTimeMs,
@@ -64,6 +80,8 @@ ReturnValue_t PollingTask::checkSequence() const {
 	return pst.checkSequence();
 }
 
+#include <rtems/io.h>
+
 void PollingTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
 	std::list<FixedSequenceSlot*>::iterator it = pst.current;
@@ -71,15 +89,7 @@ void PollingTask::taskFunctionality() {
 	//The start time for the first entry is read.
 	rtems_interval interval = RtemsBasic::convertMsToTicks(
 			(*it)->pollingTimeMs);
-	//The period is set up and started with the system call.
-	//The +1 is necessary to avoid a call with period = 0, which does not start the period.
-	rtems_status_code status = rtems_rate_monotonic_period(periodId,
-			interval + 1);
-	if (status != RTEMS_SUCCESSFUL) {
-		error << "PollingTask::period start failed with status " << status
-				<< std::endl;
-		return;
-	}
+	TaskBase::setAndStartPeriod(interval,&periodId);
 	//The task's "infinite" inner loop is entered.
 	while (1) {
 		if (pst.slotFollowsImmediately()) {
@@ -89,7 +99,7 @@ void PollingTask::taskFunctionality() {
 			interval = RtemsBasic::convertMsToTicks(this->pst.getIntervalToNextSlotMs());
 			//The period is checked and restarted with the new interval.
 			//If the deadline was missed, the deadlineMissedFunc is called.
-			status = rtems_rate_monotonic_period(periodId, interval);
+			rtems_status_code status = TaskBase::restartPeriod(interval,periodId);
 			if (status == RTEMS_TIMEOUT) {
 				if (this->deadlineMissedFunc != NULL) {
 					this->deadlineMissedFunc();

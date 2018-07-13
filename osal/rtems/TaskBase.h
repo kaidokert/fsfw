@@ -37,6 +37,10 @@ public:
 	rtems_id getId();
 
 	ReturnValue_t sleepFor(uint32_t ms);
+	static ReturnValue_t setAndStartPeriod(rtems_interval period, rtems_id *periodId);
+	static rtems_status_code restartPeriod(rtems_interval period, rtems_id periodId);
+private:
+	static ReturnValue_t convertReturnCode(rtems_status_code inValue);
 };
 
 

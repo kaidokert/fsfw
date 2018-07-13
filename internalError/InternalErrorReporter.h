@@ -22,7 +22,6 @@ public:
 	virtual void lostTm();
 
 	virtual void storeFull();
-
 protected:
 	MutexIF* mutex;
 

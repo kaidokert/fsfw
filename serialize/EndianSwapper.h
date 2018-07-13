@@ -1,9 +1,9 @@
 #ifndef ENDIANSWAPPER_H_
 #define ENDIANSWAPPER_H_
 
-//#include <endian.h> //for testing on x86
 #include <framework/osal/Endiness.h>
 #include <cstring>
+#include <iostream>
 
 class EndianSwapper {
 private:
@@ -13,9 +13,9 @@ private:
 public:
 	template<typename T>
 	static T swap(T in) {
-#ifndef BYTE_ORDER
-#error BYTE_ORDER not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 		T tmp;
 		uint8_t *pointerOut = (uint8_t *) &tmp;
 		uint8_t *pointerIn = (uint8_t *) &in;
@@ -23,21 +23,21 @@ public:
 			pointerOut[sizeof(T) - count - 1] = pointerIn[count];
 		}
 		return tmp;
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 		return in;
 #else
 #error Unknown Byte Order
 #endif
 	}
 	static void swap(uint8_t* out, const uint8_t* in, uint32_t size) {
-#ifndef BYTE_ORDER
-#error BYTE_ORDER not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 		for (uint8_t count = 0; count < size; count++) {
 			out[size - count - 1] = in[count];
 		}
 		return;
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 		memcpy(out, in, size);
 		return;
 #endif

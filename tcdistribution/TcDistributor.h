@@ -2,7 +2,6 @@
 #define TCDISTRIBUTOR_H_
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/objectmanager/SystemObject.h>
-#include <framework/osal/OperatingSystemIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/tasks/ExecutableObjectIF.h>

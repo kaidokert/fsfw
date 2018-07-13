@@ -2,6 +2,7 @@
 #define COORDINATETRANSFORMATIONS_H_
 
 #include <framework/timemanager/Clock.h>
+#include <cstring>
 
 class CoordinateTransformations {
 public:

@@ -5,10 +5,21 @@
 
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
 class MessageQueueIF {
 public:
 
 	static const MessageQueueId_t NO_QUEUE = MessageQueueSenderIF::NO_QUEUE; //!< Ugly hack.
+
+	static const uint8_t INTERFACE_ID = CLASS_ID::MESSAGE_QUEUE_IF;
+	/**
+	 * No new messages on the queue
+	 */
+	static const ReturnValue_t EMPTY = MAKE_RETURN_CODE(1);
+	/**
+	 * No space left for more messages
+	 */
+	static const ReturnValue_t FULL = MAKE_RETURN_CODE(2);
 
 	virtual ~MessageQueueIF() {}
 	/**
@@ -65,16 +76,32 @@ public:
 	 * 					This variable is set to zero by default.
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full (if implemented).
 	 */
-	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false ) = 0;
+	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
+	/**
+		 * @brief	This operation sends a message to the given destination.
+		 * @details	It directly uses the sendMessage call of the MessageQueueSender parent, but passes its
+		 * 			queue id as "sentFrom" parameter.
+		 * @param sendTo	This parameter specifies the message queue id of the destination message queue.
+		 * @param message	A pointer to a previously created message, which is sent.
+		 * @param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
+		 */
+	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo, MessageQueueMessage* message, bool ignoreFault = false ) = 0;
 
 	/**
-	 * \brief	The sendToDefault method sends a queue message to the default destination.
+	 * \brief	The sendToDefaultFrom method sends a queue message to the default destination.
 	 * \details	In all other aspects, it works identical to the sendMessage method.
 	 * \param message	This is a pointer to a previously created message, which is sent.
 	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
 	 * 					This variable is set to zero by default.
 	 */
-	virtual ReturnValue_t sendToDefault( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false ) = 0;
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
+	/**
+	 * @brief	This operation sends a message to the default destination.
+	 * @details	As in the sendMessage method, this function uses the sendToDefault call of the
+	 * 			Implementation class and adds its queue id as "sentFrom" information.
+	 * @param message	A pointer to a previously created message, which is sent.
+	 */
+	virtual ReturnValue_t sendToDefault( MessageQueueMessage* message )  = 0;
 	/**
 	 * \brief	This method is a simple setter for the default destination.
 	 */

@@ -6,7 +6,7 @@
 #include <sstream>
 #include <cstdio>
 
-
+#ifndef UT699
 class ServiceInterfaceBuffer: public std::basic_streambuf<char,
 		std::char_traits<char> > {
 	friend class ServiceInterfaceStream;
@@ -36,7 +36,7 @@ private:
 	// In this function, the characters are parsed.
 	void putChars(char const* begin, char const* end);
 };
-
+#endif
 
 
 

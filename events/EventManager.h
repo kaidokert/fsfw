@@ -34,7 +34,6 @@ public:
 			object_id_t reporterFrom = 0, object_id_t reporterTo = 0,
 			bool reporterInverted = false);
 	ReturnValue_t performOperation(uint8_t opCode);
-
 protected:
 
 	MessageQueueIF* eventReportQueue;

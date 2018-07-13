@@ -20,12 +20,10 @@ RMAPCookie::RMAPCookie() {
 	this->header.datalen_m = 0;
 	this->header.datalen_l = 0;
 	this->header.header_crc = 0;
-
-
-	this->txdesc = NULL;
-	this->rxdesc_index = 0;
 	this->channel = NULL;
 	this->command_mask = 0;
+
+	this->dataCRC = 0;
 
 	this->maxReplyLen = 0;
 }
@@ -47,11 +45,9 @@ RMAPCookie::RMAPCookie(uint32_t set_address, uint8_t set_extended_address,
 	this->header.datalen_m = 0;
 	this->header.datalen_l = 0;
 	this->header.header_crc = 0;
-
-	this->txdesc = NULL;
-	this->rxdesc_index = 0;
 	this->channel = set_channel;
 	this->command_mask = set_command_mask;
+	this->dataCRC = 0;
 
 	this->maxReplyLen = maxReplyLen;
 }
@@ -103,4 +99,26 @@ uint32_t RMAPCookie::getMaxReplyLen() const {
 
 void RMAPCookie::setMaxReplyLen(uint32_t maxReplyLen) {
 	this->maxReplyLen = maxReplyLen;
+}
+
+RMAPStructs::rmap_cmd_header* RMAPCookie::getHeader(){
+	return &this->header;
+}
+
+uint16_t RMAPCookie::getTransactionIdentifier() const {
+	return static_cast<uint16_t>((header.tid_h << 8) | (header.tid_l));
+}
+
+void RMAPCookie::setTransactionIdentifier(uint16_t id_) {
+	header.tid_l  = id_ & 0xFF;
+	header.tid_h = (id_ >> 8 ) & 0xFF;
+}
+
+uint32_t RMAPCookie::getDataLength() const {
+	return static_cast<uint32_t>(header.datalen_h << 16 | header.datalen_m << 8 | header.datalen_l);
+}
+void RMAPCookie::setDataLength(uint32_t length_) {
+	header.datalen_l = length_ & 0xff;
+	header.datalen_m = (length_ >> 8) & 0xff;
+	header.datalen_h = (length_ >> 16) & 0xff;
 }

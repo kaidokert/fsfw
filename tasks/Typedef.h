@@ -4,7 +4,7 @@
 //TODO more generic?
 typedef const char* TaskName;
 typedef uint8_t TaskPriority;
-typedef uint16_t TaskStackSize;
+typedef size_t TaskStackSize;
 typedef double TaskPeriod;
 typedef void (*TaskDeadlineMissedFunction)();
 

@@ -49,6 +49,16 @@ public:
 
 	virtual ReturnValue_t initialize();
 
+	/**
+	 * Implementation of ExecutableObjectIF function
+	 *
+	 * Used to setup the reference of the task, that executes this component
+	 * @param task_ Pointer to the taskIF of this task
+	 */
+	virtual void setTaskIF(PeriodicTaskIF* task_){
+		executingTask = task_;
+	};
+
 protected:
 	struct CommandInfo {
 		struct tcInfo {
@@ -91,6 +101,11 @@ protected:
 	object_id_t packetSource;
 
 	object_id_t packetDestination;
+
+	/**
+	 * Pointer to the task which executes this component, is invalid before setTaskIF was called.
+	 */
+	PeriodicTaskIF* executingTask;
 
 	void sendTmPacket(uint8_t subservice, const uint8_t *data, uint32_t dataLen,
 			const uint8_t* headerData = NULL, uint32_t headerSize = 0);
@@ -147,7 +162,7 @@ CommandingServiceBase<STATE_T>::CommandingServiceBase(object_id_t setObjectId,
 		NULL), commandQueue(NULL), requestQueue(NULL), commandMap(
 				numberOfParallelCommands), failureParameter1(0), failureParameter2(
 				0), packetSource(setPacketSource), packetDestination(
-				setPacketDestination) {
+				setPacketDestination),executingTask(NULL) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
 	requestQueue = QueueFactory::instance()->createMessageQueue(20); //TODO: Funny magic number.
 }

@@ -21,16 +21,16 @@ MessageQueue::~MessageQueue() {
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
 		MessageQueueMessage* message, bool ignoreFault) {
-	return sendMessage(sendTo, message, this->getId(), ignoreFault);
+	return sendMessageFrom(sendTo, message, this->getId(), ignoreFault);
 }
 
 ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessage* message) {
-	return sendToDefault(message, this->getId());
+	return sendToDefaultFrom(message, this->getId());
 }
 
 ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 	if (this->lastPartner != 0) {
-		return sendMessage(this->lastPartner, message, this->getId());
+		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
 		//TODO: Good returnCode
 		return HasReturnvaluesIF::RETURN_FAILED;
@@ -49,8 +49,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 	if (result == pdPASS){
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		//TODO Queue Empty
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MessageQueueIF::EMPTY;
 	}
 }
 
@@ -73,7 +72,7 @@ void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
 	this->defaultDestination = defaultDestination;
 }
 
-ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
+ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessage* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	message->setSender(sentFrom);
@@ -83,15 +82,14 @@ ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
 		if (!ignoreFault) {
 			//TODO errr reporter
 		}
-		//TODO queue is full
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MessageQueueIF::FULL;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
 		MessageQueueId_t sentFrom, bool ignoreFault) {
-	return 0;
+	return sendMessageFrom(defaultDestination,message,sentFrom,ignoreFault);
 }
 
 MessageQueueId_t MessageQueue::getDefaultDestination() const {

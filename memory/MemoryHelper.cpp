@@ -183,3 +183,13 @@ void MemoryHelper::handleMemoryCheckOrDump(CommandMessage* message) {
 		queueToUse->sendMessage(lastSender, &reply);
 	}
 }
+
+ReturnValue_t MemoryHelper::initialize(MessageQueueIF* queueToUse_) {
+	if(queueToUse_!=NULL){
+		this->queueToUse = queueToUse_;
+	}else{
+		return MessageQueueIF::NO_QUEUE;
+	}
+
+	return initialize();
+}

@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 ReturnValue_t RMAP::reset(RMAPCookie* cookie) {
-	return cookie->channel->reset();
+	return cookie->getChannel()->reset();
 }
 
 RMAP::RMAP(){
@@ -22,7 +22,7 @@ ReturnValue_t RMAP::sendWriteCommand(RMAPCookie *cookie, uint8_t* buffer,
 	if (cookie->getChannel() == NULL) {
 		return COMMAND_NO_CHANNEL;
 	}
-	instruction = RMAP_COMMAND_WRITE | cookie->command_mask;
+	instruction = RMAPIds::RMAP_COMMAND_WRITE | cookie->getCommandMask();
 	return cookie->getChannel()->sendCommand(cookie, instruction, buffer,
 			length);
 
@@ -32,7 +32,7 @@ ReturnValue_t RMAP::getWriteReply(RMAPCookie *cookie) {
 	if (cookie->getChannel() == NULL) {
 		return COMMAND_NO_CHANNEL;
 	}
-	if (cookie->header.instruction & (1 << RMAP_COMMAND_BIT_WRITE)) {
+	if (cookie->getHeader()->instruction & (1 <<  RMAPIds::RMAP_COMMAND_BIT_WRITE)) {
 		return cookie->getChannel()->getReply(cookie, NULL, NULL);
 	} else {
 		return REPLY_MISSMATCH;
@@ -53,8 +53,8 @@ ReturnValue_t RMAP::sendReadCommand(RMAPCookie *cookie, uint32_t expLength) {
 	if (cookie->getChannel() == NULL) {
 		return COMMAND_NO_CHANNEL;
 	}
-	command = RMAP_COMMAND_READ
-			| (cookie->command_mask & ~(1 << RMAP_COMMAND_BIT_VERIFY));
+	command =  RMAPIds::RMAP_COMMAND_READ
+			| (cookie->getCommandMask() & ~(1 <<  RMAPIds::RMAP_COMMAND_BIT_VERIFY));
 
 	return cookie->getChannel()->sendCommand(cookie, command, NULL, expLength);
 
@@ -68,7 +68,7 @@ ReturnValue_t RMAP::getReadReply(RMAPCookie *cookie, uint8_t **buffer,
 	if (buffer == NULL || size == NULL) {
 		return DeviceCommunicationIF::NULLPOINTER;
 	}
-	if (cookie->header.instruction & (1 << RMAP_COMMAND_BIT_WRITE)) {
+	if (cookie->getHeader()->instruction & (1 <<  RMAPIds::RMAP_COMMAND_BIT_WRITE)) {
 		return REPLY_MISSMATCH;
 	} else {
 		return cookie->getChannel()->getReply(cookie, buffer, size);

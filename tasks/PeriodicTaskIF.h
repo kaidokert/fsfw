@@ -2,6 +2,7 @@
 #define PERIODICTASKIF_H_
 
 #include <framework/objectmanager/SystemObjectIF.h>
+#include <cstddef>
 class ExecutableObjectIF;
 /**
  * New version of TaskIF
@@ -10,7 +11,7 @@ class ExecutableObjectIF;
 */
 class PeriodicTaskIF {
 public:
-	static const uint64_t MINIMUM_STACK_SIZE;
+	static const size_t MINIMUM_STACK_SIZE;
 	/**
 	 * @brief	A virtual destructor as it is mandatory for interfaces.
 	 */
@@ -20,7 +21,7 @@ public:
 	 */
 	virtual ReturnValue_t startTask() = 0;
 
-	virtual ReturnValue_t addComponent(object_id_t) {return HasReturnvaluesIF::RETURN_FAILED;};
+	virtual ReturnValue_t addComponent(object_id_t object) {return HasReturnvaluesIF::RETURN_FAILED;};
 
 	virtual ReturnValue_t sleepFor(uint32_t ms) = 0;
 

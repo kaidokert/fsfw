@@ -52,7 +52,8 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 	errorCode = this->queueMap.insert(
 			std::pair<uint32_t, MessageQueueId_t>(serviceId, queue)).second;
 	if (errorCode == false) {
-		returnValue = OperatingSystemIF::RESOURCE_IN_USE;
+		//TODO Return Code
+		returnValue = MessageQueueIF::NO_QUEUE;
 	}
 	return returnValue;
 }

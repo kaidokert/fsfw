@@ -45,7 +45,7 @@ ReturnValue_t CCSDSTime::convertToCcsds(Ccs_mseconds* to,
 	to->minute = from->minute;
 	to->second = from->second;
 	to->secondEminus2 = from->usecond / 10000;
-	to->secondEminus4 = (from->usecond % 10) * 10 / 1000;
+	to->secondEminus4 = (from->usecond % 10000) / 100;
 
 	return RETURN_OK;
 }
@@ -142,7 +142,7 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
 		if (temp->secondEminus4 >= 100) {
 			return INVALID_TIME_FORMAT;
 		}
-		to->usecond += temp->secondEminus4 / 10 * 1000;
+		to->usecond += temp->secondEminus4 * 100;
 	}
 
 	return RETURN_OK;

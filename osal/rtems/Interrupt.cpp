@@ -1,5 +1,8 @@
 #include "Interrupt.h"
-#include <bsp_flp/bsp_flp.h>
+extern "C" {
+#include <bsp_flp/hw_timer/hw_timer.h>
+#include <bsp_flp/hw_uart/hw_uart.h>
+}
 #include "RtemsBasic.h"
 
 
@@ -24,7 +27,20 @@ ReturnValue_t Interrupt::setInterruptServiceRoutine(IsrHandler_t handler,
 	//+ 0x10 comes because of trap type assignment to IRQs in UT699 processor
 	rtems_status_code status = rtems_interrupt_catch(handler, interrupt + 0x10,
 			oldHandler);
-	return RtemsBasic::convertReturnCode(status);
+	switch(status){
+	case RTEMS_SUCCESSFUL:
+		//ISR established successfully
+		return HasReturnvaluesIF::RETURN_OK;
+	case RTEMS_INVALID_NUMBER:
+		//illegal vector number
+		return HasReturnvaluesIF::RETURN_FAILED;
+	case RTEMS_INVALID_ADDRESS:
+		//illegal ISR entry point or invalid old_isr_handler
+		return HasReturnvaluesIF::RETURN_FAILED;
+	default:
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 }
 
 ReturnValue_t Interrupt::disableInterrupt(InterruptNumber_t interruptNumber) {

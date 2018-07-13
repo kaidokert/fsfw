@@ -10,9 +10,10 @@ public:
 	void step(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
 	void finish(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
 	ReturnValue_t reportData(SerializeIF* data);
-	void resetHelper();
+
 protected:
 	void prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId, store_address_t dataAddress);
+	virtual  void resetHelper();
 private:
 	bool isExecuting;
 	MessageQueueId_t lastCommander;

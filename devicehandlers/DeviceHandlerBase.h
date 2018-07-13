@@ -92,8 +92,13 @@ public:
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 			ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex);
-
-	void setTaskIF(PeriodicTaskIF* interface);
+	/**
+	 * Implementation of ExecutableObjectIF function
+	 *
+	 * Used to setup the reference of the task, that executes this component
+	 * @param task_ Pointer to the taskIF of this task
+	 */
+	virtual  void setTaskIF(PeriodicTaskIF* task_);
 protected:
 	/**
 	 * The Returnvalues id of this class, required by HasReturnvaluesIF
@@ -248,13 +253,13 @@ protected:
 
 	bool switchOffWasReported; //!< Indicates if SWITCH_WENT_OFF was already thrown.
 
+	PeriodicTaskIF* executingTask;//!< Pointer to the task which executes this component, is invalid before setTaskIF was called.
+
 	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
 
 	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
 
 	static object_id_t defaultFDIRParentId; //!< Object which may be the root cause of an identified fault.
-
-	PeriodicTaskIF* executingTask;
 	/**
 	 * Helper function to report a missed reply
 	 *
@@ -787,7 +792,6 @@ protected:
 	DeviceCommandMap deviceCommandMap;
 
 	ActionHelper actionHelper;
-
 private:
 
 	/**

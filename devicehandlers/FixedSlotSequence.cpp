@@ -17,7 +17,6 @@ FixedSlotSequence::~FixedSlotSequence() {
 }
 
 void FixedSlotSequence::executeAndAdvance() {
-//	(*this->current)->print();
 	(*this->current)->handler->performOperation((*this->current)->opcode);
 //	if (returnValue != RETURN_OK) {
 //		this->sendErrorMessage( returnValue );

@@ -39,10 +39,7 @@ endif
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/parameters/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/power/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/returnvalues/*.cpp)
-
-# easier without it for now
-#CXXSRC += $(wildcard $(FRAMEWORK_PATH)/rmap/*.cpp)
-
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/rmap/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/serialize/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/serviceinterface/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/storagemanager/*.cpp)

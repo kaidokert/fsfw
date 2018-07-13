@@ -15,10 +15,10 @@ private:
 public:
 	SourceSequenceCounter() : sequenceCount(0) {}
 	void increment() {
-		this->sequenceCount = (++this->sequenceCount) % (SpacePacketBase::LIMIT_SEQUENCE_COUNT);
+		sequenceCount = (sequenceCount+1) % (SpacePacketBase::LIMIT_SEQUENCE_COUNT);
 	}
 	void decrement() {
-		this->sequenceCount = (--this->sequenceCount) % (SpacePacketBase::LIMIT_SEQUENCE_COUNT);
+		sequenceCount = (sequenceCount-1) % (SpacePacketBase::LIMIT_SEQUENCE_COUNT);
 	}
 	uint16_t get() { return this->sequenceCount; }
 	void reset(uint16_t toValue = 0) {

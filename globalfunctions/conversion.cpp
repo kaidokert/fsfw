@@ -1,5 +1,4 @@
 #include <framework/globalfunctions/conversion.h>
-//TODO REMOVE. Needed because of BYTE_ORDER
 #include <framework/osal/Endiness.h>
 #include <cstring>
 
@@ -59,9 +58,9 @@ void convertToByteStream( int32_t value, uint8_t* buffer, uint32_t* size ) {
 //}
 
 void convertToByteStream( float in_value, uint8_t* buffer, uint32_t* size ) {
-#ifndef BYTE_ORDER
-	#error BYTE_ORDER not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+	#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 	union float_union {
 		float value;
 		uint8_t chars[4];
@@ -73,16 +72,16 @@ void convertToByteStream( float in_value, uint8_t* buffer, uint32_t* size ) {
 	buffer[2] = temp.chars[1];
 	buffer[3] = temp.chars[0];
 	*size += 4;
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 	memcpy(buffer, &in_value, sizeof(in_value));
 	*size += sizeof(in_value);
 #endif
 }
 
 void convertToByteStream( double in_value, uint8_t* buffer, uint32_t* size ) {
-#ifndef BYTE_ORDER
-	#error Endianess not defined
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#ifndef BYTE_ORDER_SYSTEM
+	#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
 	union double_union {
 		double value;
 		uint8_t chars[8];
@@ -98,7 +97,7 @@ void convertToByteStream( double in_value, uint8_t* buffer, uint32_t* size ) {
 	buffer[6] = temp.chars[1];
 	buffer[7] = temp.chars[0];
 	*size += 8;
-#elif BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 	memcpy(buffer, &in_value, sizeof(in_value));
 	*size += sizeof(in_value);
 #endif

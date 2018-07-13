@@ -19,11 +19,11 @@ public:
 	}
 	ReturnValue_t doCheck(T lowSample, T highSample) {
 		T crossedLimit;
-		ReturnValue_t currentState = checkSample(lowSample, &crossedLimit);
+		ReturnValue_t currentState = this->checkSample(lowSample, &crossedLimit);
 		if (currentState != HasReturnvaluesIF::RETURN_OK) {
 			return this->monitorStateIs(currentState, lowSample, crossedLimit);
 		}
-		currentState = checkSample(highSample, &crossedLimit);
+		currentState = this->checkSample(highSample, &crossedLimit);
 		return this->monitorStateIs(currentState, highSample, crossedLimit);
 	}
 protected:

@@ -1,8 +1,6 @@
 #ifndef OS_RTEMS_INITTASK_H_
 #define OS_RTEMS_INITTASK_H_
 
-#include <framework/tasks/PeriodicTaskIF.h>
-
 //TODO move into static function in TaskIF
 
 /**
@@ -12,17 +10,10 @@
  * Warning: The init task is deleted with this stub, i.e. the destructor
  * calls rtems_task_delete(RTEMS_SELF)
  */
-class InitTask: public PeriodicTaskIF {
+class InitTask {
 public:
 	InitTask();
 	virtual ~InitTask();
-	ReturnValue_t startTask();
-
-	ReturnValue_t sleepFor(uint32_t ms);
-
-	uint32_t getPeriodMs() const;
-
-	void deleteTask();
 };
 
 #endif /* OS_RTEMS_INITTASK_H_ */

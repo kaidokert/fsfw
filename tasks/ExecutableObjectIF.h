@@ -11,10 +11,11 @@
 #ifndef EXECUTABLEOBJECTIF_H_
 #define EXECUTABLEOBJECTIF_H_
 
-
-#include <framework/osal/OperatingSystemIF.h>
 class PeriodicTaskIF;
 
+#include <framework/returnvalues/HasReturnvaluesIF.h>
+
+#include <cstring>
 /**
  * @brief	The interface provides a method to execute objects within a task.
  * @details	The performOperation method, that is required by the interface is
@@ -34,7 +35,15 @@ public:
 	 */
 	virtual ReturnValue_t performOperation(uint8_t operationCode = 0) = 0;
 
-	virtual void setTaskIF(PeriodicTaskIF* interface) {};
+	/**
+	 * @brief Function called during setup assignment of object to task
+	 * @details Has to be called from the function that assigns the object to a task and
+	 * 			enables the object implementation to overwrite this function and get a reference to the executing task
+	 * @param task_ Pointer to the taskIF of this task
+	 */
+	virtual void setTaskIF(PeriodicTaskIF* task_) {
+
+	}
 };
 
 #endif /* EXECUTABLEOBJECTIF_H_ */

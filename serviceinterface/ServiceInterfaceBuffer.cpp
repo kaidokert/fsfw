@@ -39,6 +39,7 @@ int ServiceInterfaceBuffer::sync(void) {
 	return 0;
 }
 
+#ifndef UT699
 
 ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message, uint16_t port) {
 	this->log_message = set_message;
@@ -59,8 +60,11 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 	}
 
 }
+#endif
 
 #ifdef UT699
+#include <framework/osal/rtems/Interrupt.h>
+
 ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message, uint16_t port) {
 	this->log_message = set_message;
 	this->isActive = true;

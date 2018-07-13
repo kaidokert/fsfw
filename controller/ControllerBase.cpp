@@ -8,7 +8,7 @@ ControllerBase::ControllerBase(uint32_t setObjectId, uint32_t parentId,
 		size_t commandQueueDepth) :
 		SystemObject(setObjectId), parentId(parentId), mode(MODE_OFF), submode(
 				SUBMODE_NONE), commandQueue(NULL), modeHelper(
-				this), healthHelper(this, setObjectId),hkSwitcher(this) {
+				this), healthHelper(this, setObjectId),hkSwitcher(this),executingTask(NULL) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth);
 
 }
@@ -128,6 +128,9 @@ ReturnValue_t ControllerBase::setHealth(HealthState health) {
 
 HasHealthIF::HealthState ControllerBase::getHealth() {
 	return healthHelper.getHealth();
+}
+void ControllerBase::setTaskIF(PeriodicTaskIF* task_){
+			executingTask = task_;
 }
 
 void ControllerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {

@@ -5,7 +5,7 @@
 #include <framework/objectmanager/ObjectManagerIF.h>
 
 CommandActionHelper::CommandActionHelper(CommandsActionsIF* setOwner) :
-		owner(setOwner), queueToUse(setOwner->getCommandQueuePtr()), ipcStore(
+		owner(setOwner), queueToUse(NULL), ipcStore(
 				NULL), commandCount(0), lastTarget(0) {
 }
 
@@ -66,11 +66,15 @@ ReturnValue_t CommandActionHelper::sendCommand(MessageQueueId_t queueId,
 
 ReturnValue_t CommandActionHelper::initialize() {
 	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (ipcStore != NULL) {
-		return HasReturnvaluesIF::RETURN_OK;
-	} else {
+	if (ipcStore == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+
+	queueToUse = owner->getCommandQueuePtr();
+	if(queueToUse == NULL){
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t CommandActionHelper::handleReply(CommandMessage* reply) {

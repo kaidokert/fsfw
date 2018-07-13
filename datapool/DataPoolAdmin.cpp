@@ -8,7 +8,7 @@
 
 DataPoolAdmin::DataPoolAdmin(object_id_t objectId) :
 		SystemObject(objectId), storage(NULL), commandQueue(NULL), memoryHelper(
-				this, commandQueue), actionHelper(this, commandQueue) {
+				this, NULL), actionHelper(this, NULL) {
 	commandQueue = QueueFactory::instance()->createMessageQueue();
 }
 
@@ -171,7 +171,7 @@ ReturnValue_t DataPoolAdmin::initialize() {
 		return result;
 	}
 
-	result = memoryHelper.initialize();
+	result = memoryHelper.initialize(commandQueue);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -181,7 +181,7 @@ ReturnValue_t DataPoolAdmin::initialize() {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
-	result = actionHelper.initialize();
+	result = actionHelper.initialize(commandQueue);
 
 	return result;
 }

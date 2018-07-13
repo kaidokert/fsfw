@@ -12,8 +12,7 @@
 
 
 #include <framework/storagemanager/LocalPool.h>
-#include <framework/ipc/MutexIF.h>
-#include <framework/ipc/MutexFactory.h>
+#include <framework/ipc/MutexHelper.h>
 
 /**
  * @brief	The PoolManager class provides an intermediate data storage with
@@ -50,19 +49,9 @@ public:
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::reserveSpace(const uint32_t size, store_address_t* address, bool ignoreFault) {
-	ReturnValue_t mutexStatus = mutex->lockMutex(MutexIF::NO_TIMEOUT);
-	ReturnValue_t status = this->DATA_STORAGE_FULL;
-	if ( mutexStatus == this->RETURN_OK ) {
-		status = LocalPool<NUMBER_OF_POOLS>::reserveSpace(size,address,ignoreFault);
-	} else {
-		error << "PoolManager::findEmpty: Mutex could not be acquired. Error code: " << mutexStatus << std::endl;
-	}
-	mutexStatus = mutex->lockMutex(MutexIF::NO_TIMEOUT);
-	if (mutexStatus != this->RETURN_OK) {
-		return mutexStatus;
-	} else {
-		return status;
-	}
+	MutexHelper mutexHelper(mutex,MutexIF::NO_TIMEOUT);
+	ReturnValue_t status = LocalPool<NUMBER_OF_POOLS>::reserveSpace(size,address,ignoreFault);
+	return status;
 }
 
 template<uint8_t NUMBER_OF_POOLS>
@@ -81,37 +70,17 @@ template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(
 		store_address_t packet_id) {
 	//	debug << "PoolManager( " << translateObject(getObjectId()) << " )::deleteData from store " << packet_id.pool_index << ". id is " << packet_id.packet_index << std::endl;
-		ReturnValue_t mutexStatus = mutex->lockMutex(MutexIF::NO_TIMEOUT);
-		ReturnValue_t status = this->RETURN_OK;
-		if ( mutexStatus == this->RETURN_OK ) {
-			LocalPool<NUMBER_OF_POOLS>::deleteData(packet_id);
-		} else {
-			error << "PoolManager:deleteData: Mutex could not be acquired. Error code: " << status << std::endl;
-		}
-		mutexStatus = mutex->lockMutex(MutexIF::NO_TIMEOUT);
-		if (mutexStatus != this->RETURN_OK) {
-			return mutexStatus;
-		} else {
-			return status;
-		}
+		MutexHelper mutexHelper(mutex,MutexIF::NO_TIMEOUT);
+		ReturnValue_t status = LocalPool<NUMBER_OF_POOLS>::deleteData(packet_id);
+		return status;
 }
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(uint8_t* buffer, uint32_t size,
 		store_address_t* storeId) {
-	ReturnValue_t mutexStatus = mutex->lockMutex(MutexIF::NO_TIMEOUT);
-	ReturnValue_t status = this->RETURN_OK;
-	if ( mutexStatus == this->RETURN_OK ) {
-		LocalPool<NUMBER_OF_POOLS>::deleteData(buffer, size, storeId);
-	} else {
-		error << "PoolManager:deleteData: Mutex could not be acquired. Error code: " << status << std::endl;
-	}
-	mutexStatus = mutex->lockMutex(MutexIF::NO_TIMEOUT);
-	if (mutexStatus != this->RETURN_OK) {
-		return mutexStatus;
-	} else {
-		return status;
-	}
+	MutexHelper mutexHelper(mutex,MutexIF::NO_TIMEOUT);
+	ReturnValue_t status = LocalPool<NUMBER_OF_POOLS>::deleteData(buffer, size, storeId);
+	return status;
 }
 
 #endif /* POOLMANAGER_H_ */

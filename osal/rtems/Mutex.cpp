@@ -26,10 +26,40 @@ Mutex::~Mutex() {
 
 ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 	rtems_status_code status = rtems_semaphore_obtain(mutexId, RTEMS_WAIT, timeoutMs);
-	return RtemsBasic::convertReturnCode(status);
+	switch(status){
+	case RTEMS_SUCCESSFUL:
+		//semaphore obtained successfully
+		return HasReturnvaluesIF::RETURN_OK;
+	case RTEMS_UNSATISFIED:
+		//semaphore not available
+		return MUTEX_NOT_FOUND;
+	case RTEMS_TIMEOUT:
+		//timed out waiting for semaphore
+		return MUTEX_TIMEOUT;
+	case RTEMS_OBJECT_WAS_DELETED:
+		//semaphore deleted while waiting
+		return MUTEX_DESTROYED_WHILE_WAITING;
+	case RTEMS_INVALID_ID:
+		//invalid semaphore id
+		return MUTEX_INVALID_ID;
+	default:
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
 }
 
 ReturnValue_t Mutex::unlockMutex() {
 	rtems_status_code status = rtems_semaphore_release(mutexId);
-	return RtemsBasic::convertReturnCode(status);
+	switch(status){
+	case RTEMS_SUCCESSFUL:
+		//semaphore obtained successfully
+		return HasReturnvaluesIF::RETURN_OK;
+	case RTEMS_NOT_OWNER_OF_RESOURCE:
+		//semaphore not available
+		return CURR_THREAD_DOES_NOT_OWN_MUTEX;
+	case RTEMS_INVALID_ID:
+		//invalid semaphore id
+		return MUTEX_INVALID_ID;
+	default:
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
 }

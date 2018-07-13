@@ -42,7 +42,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 			this->currentPacket.deletePacket();
 			errorParameter1 = 0;
 			errorParameter2 = 0;
-		} else if (status == OperatingSystemIF::QUEUE_EMPTY) {
+		} else if (status == MessageQueueIF::EMPTY) {
 			status = RETURN_OK;
 			//		debug << "PusService " << (uint16_t)this->serviceId << ": no new packet." << std::endl;
 			break;

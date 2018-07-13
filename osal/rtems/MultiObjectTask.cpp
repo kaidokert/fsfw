@@ -14,13 +14,6 @@ MultiObjectTask::MultiObjectTask(const char *name, rtems_task_priority setPriori
 		TaskBase(setPriority, setStack, name), periodTicks(
 				RtemsBasic::convertMsToTicks(setPeriod)), periodId(0), deadlineMissedFunc(
 				setDeadlineMissedFunc) {
-	rtems_name periodName = (('P' << 24) + ('e' << 16) + ('r' << 8) + 'd');
-	rtems_status_code status = rtems_rate_monotonic_create(periodName,
-			&periodId);
-	if (status != RTEMS_SUCCESSFUL) {
-		error << "ObjectTask::period create failed with status " << status
-				<< std::endl;
-	}
 }
 
 MultiObjectTask::~MultiObjectTask(void) {
@@ -40,7 +33,17 @@ ReturnValue_t MultiObjectTask::startTask() {
 		error << "ObjectTask::startTask for " << std::hex << this->getId()
 				<< std::dec << " failed." << std::endl;
 	}
-	return RtemsBasic::convertReturnCode(status);
+	switch(status){
+	case RTEMS_SUCCESSFUL:
+		//ask started successfully
+		return HasReturnvaluesIF::RETURN_OK;
+	default:
+/*		RTEMS_INVALID_ADDRESS - invalid task entry point
+		RTEMS_INVALID_ID - invalid task id
+		RTEMS_INCORRECT_STATE - task not in the dormant state
+		RTEMS_ILLEGAL_ON_REMOTE_OBJECT - cannot start remote task */
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
 }
 
 ReturnValue_t MultiObjectTask::sleepFor(uint32_t ms) {
@@ -48,21 +51,14 @@ ReturnValue_t MultiObjectTask::sleepFor(uint32_t ms) {
 }
 
 void MultiObjectTask::taskFunctionality() {
-	//The +1 is necessary to avoid a call with period = 0, which does not start the period.
-	rtems_status_code status = rtems_rate_monotonic_period(periodId,
-			periodTicks + 1);
-	if (status != RTEMS_SUCCESSFUL) {
-		error << "ObjectTask::period start failed with status " << status
-				<< std::endl;
-		return;
-	}
+	TaskBase::setAndStartPeriod(periodTicks,&periodId);
 	//The task's "infinite" inner loop is entered.
 	while (1) {
 		for (ObjectList::iterator it = objectList.begin();
 				it != objectList.end(); ++it) {
 			(*it)->performOperation();
 		}
-		status = rtems_rate_monotonic_period(periodId, periodTicks + 1);
+		rtems_status_code status = TaskBase::restartPeriod(periodTicks,periodId);
 		if (status == RTEMS_TIMEOUT) {
 			char nameSpace[8] = { 0 };
 			char* ptr = rtems_object_get_name(getId(), sizeof(nameSpace),

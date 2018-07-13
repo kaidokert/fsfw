@@ -1,4 +1,4 @@
-#include <framework/osal/CpuUsage.h>
+#include "CpuUsage.h"
 #include <framework/serialize/SerialArrayListAdapter.h>
 #include <framework/serialize/SerializeAdapter.h>
 #include <string.h>
@@ -80,7 +80,7 @@ void CpuUsage::resetCpuUsage() {
 }
 
 void CpuUsage::read() {
-	rtems_cpu_usage_report_with_plugin(this, &handlePrint);
+	//rtems_cpu_usage_report_with_plugin(this, &handlePrint);
 }
 
 void CpuUsage::clear() {

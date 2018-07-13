@@ -20,11 +20,13 @@ ReturnValue_t ActionHelper::handleActionMessage(CommandMessage* command) {
 	}
 }
 
-ReturnValue_t ActionHelper::initialize() {
+ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
 	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (ipcStore == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+	setQueueToUse(queueToUse_);
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -99,4 +101,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
 		ipcStore->deleteData(storeAddress);
 	}
 	return result;
+}
+
+void ActionHelper::resetHelper() {
 }

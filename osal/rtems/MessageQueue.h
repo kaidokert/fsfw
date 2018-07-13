@@ -13,6 +13,7 @@
 #include <framework/internalError/InternalErrorReporterIF.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/ipc/MessageQueueMessage.h>
+#include "RtemsBasic.h"
 
 /**
  *	@brief		This class manages sending and receiving of message queue messages.
@@ -120,7 +121,7 @@ public:
 	 * 					This variable is set to zero by default.
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
-	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
+	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
 	/**
 	 * \brief	The sendToDefault method sends a queue message to the default destination.
 	 * \details	In all other aspects, it works identical to the sendMessage method.
@@ -128,7 +129,7 @@ public:
 	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
 	 * 					This variable is set to zero by default.
 	 */
-	virtual ReturnValue_t sendToDefault( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
 	/**
 	 * \brief	This method is a simple setter for the default destination.
 	 */
@@ -169,6 +170,12 @@ private:
 	InternalErrorReporterIF *internalErrorReporter;
 
 	static uint16_t queueCounter;
+	/**
+	 * A method to convert an OS-specific return code to the frameworks return value concept.
+	 * @param inValue The return code coming from the OS.
+	 * @return The converted return value.
+	 */
+	static ReturnValue_t convertReturnCode(rtems_status_code inValue);
 };
 
 #endif /* MESSAGEQUEUE_H_ */

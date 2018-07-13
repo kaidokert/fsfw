@@ -8,7 +8,7 @@
 
 LocalMemory::LocalMemory(object_id_t setObjectId) :
 		SystemObject(setObjectId), commandQueue(NULL), memoryHelper(this,
-				commandQueue) {
+				NULL) {
 	commandQueue = QueueFactory::instance()->createMessageQueue();
 }
 
@@ -52,7 +52,7 @@ ReturnValue_t LocalMemory::handleMemoryDump(uint32_t address, uint32_t size,
 }
 
 ReturnValue_t LocalMemory::initialize() {
-	return memoryHelper.initialize();
+	return memoryHelper.initialize(commandQueue);
 }
 
 MessageQueueId_t LocalMemory::getCommandQueue() const {

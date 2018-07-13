@@ -4,7 +4,7 @@
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner) :
 		owner(owner), storage(NULL) {
-	ownerQueueId = owner->getCommandQueue();
+
 }
 
 ParameterHelper::~ParameterHelper() {
@@ -114,6 +114,9 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 }
 
 ReturnValue_t ParameterHelper::initialize() {
+	ownerQueueId = owner->getCommandQueue();
+
+
 	storage = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (storage == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
