@@ -3,7 +3,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
+/**
+ * \ingroup container
+ */
 template<typename T>
 class LinkedElement {
 public:

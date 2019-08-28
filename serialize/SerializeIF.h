@@ -3,6 +3,15 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
+/**
+ * \defgroup serialize Serialization
+ * Contains serialisation services.
+ */
+
+/**
+ * Translation of objects into data streams.
+ * \ingroup serialize
+ */
 class SerializeIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SERIALIZE_IF;

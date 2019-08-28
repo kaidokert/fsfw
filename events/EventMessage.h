@@ -30,7 +30,7 @@ public:
 	uint8_t getMessageId();
 	void setMessageId(uint8_t id);
 	EventSeverity_t getSeverity();
-	void setSeverety(EventSeverity_t severity);
+	void setSeverity(EventSeverity_t severity);
 	EventId_t getEventId();
 	void setEventId(EventId_t event);
 	object_id_t getReporter();

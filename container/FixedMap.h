@@ -5,7 +5,9 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <utility>
 
-
+/**
+ * \ingroup container
+ */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
 public:

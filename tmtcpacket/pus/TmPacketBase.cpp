@@ -89,6 +89,9 @@ void TmPacketBase::initializeTmPacket(uint16_t apid, uint8_t service, uint8_t su
 	//First, set to zero.
 	memset(&tm_data->data_field, 0, sizeof(tm_data->data_field));
 	//Set CCSDS_secondary header flag to 0, version number to 001 and ack to 0000
+	// NOTE: In PUS-C, the PUS Version is 2 and specified for the first 4 bits.
+	// The other 4 bits of the first byte are the spacecraft time reference status
+	// To change to PUS-C, set 0b00100000
 	tm_data->data_field.version_type_ack = 0b00010000;
 	tm_data->data_field.service_type = service;
 	tm_data->data_field.service_subtype = subservice;

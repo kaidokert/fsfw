@@ -28,6 +28,7 @@
  *	\ingroup message_queue
  */
 class MessageQueue : public MessageQueueIF {
+	friend class MessageQueueSenderIF;
 public:
 	/**
 	 * @brief	The constructor initializes and configures the message queue.
@@ -136,6 +137,19 @@ public:
 	MessageQueueId_t getDefaultDestination() const;
 
 	bool isDefaultDestinationSet() const;
+protected:
+	/**
+	 * Implementation to be called from any send Call within MessageQueue and MessageQueueSenderIF
+	 * 	 \details	This method takes the message provided, adds the sentFrom information and passes
+	 * 			it on to the destination provided with an operating system call. The OS's return
+	 * 			value is returned.
+	 * \param sendTo	This parameter specifies the message queue id to send the message to.
+	 * \param message	This is a pointer to a previously created message, which is sent.
+	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
+	 * 					This variable is set to zero by default.
+	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
+	 */
+	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,bool ignoreFault=false);
 private:
 	QueueHandle_t handle;
 	MessageQueueId_t defaultDestination;

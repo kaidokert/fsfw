@@ -11,6 +11,9 @@
 #include <framework/serialize/SerializeIF.h>
 #include <utility>
 
+/**
+ * \ingroup serialize
+ */
 template<typename T, typename count_t = uint8_t>
 class SerialArrayListAdapter : public SerializeIF {
 public:

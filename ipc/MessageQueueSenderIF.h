@@ -27,7 +27,7 @@ public:
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
 			MessageQueueMessage* message, MessageQueueId_t sentFrom =
-					MessageQueueSenderIF::NO_QUEUE);
+					MessageQueueSenderIF::NO_QUEUE, bool ignoreFault=false);
 private:
 	MessageQueueSenderIF() {}
 };

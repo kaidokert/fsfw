@@ -51,7 +51,7 @@ EventSeverity_t EventMessage::getSeverity() {
 	return EVENT::getSeverity(event);
 }
 
-void EventMessage::setSeverety(EventSeverity_t severity) {
+void EventMessage::setSeverity(EventSeverity_t severity) {
 	Event event;
 	memcpy(&event, getData(), sizeof(Event));
 	event = (event & 0xFF00FFFF) + (severity << 16);

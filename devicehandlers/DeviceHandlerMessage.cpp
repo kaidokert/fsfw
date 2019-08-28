@@ -56,7 +56,7 @@ object_id_t DeviceHandlerMessage::getDeviceObjectId(
 	return message->getParameter();
 }
 
-void DeviceHandlerMessage::setDeviceHandlerRawReplayMessage(
+void DeviceHandlerMessage::setDeviceHandlerRawReplyMessage(
 		CommandMessage* message, object_id_t deviceObjectid,
 		store_address_t rawPacketStoreId, bool isCommand) {
 	if (isCommand) {

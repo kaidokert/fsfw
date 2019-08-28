@@ -3,20 +3,21 @@
 
 namespace SUBSYSTEM_ID {
 enum {
+	MEMORY = 22,
 	OBSW = 26,
-		CDH = 28,
-		TCS_1 = 59,
-		PCDU_1 = 42,
-		PCDU_2 = 43,
-		HEATER = 50,
-		T_SENSORS = 52,
-		FDIR = 70,
-		FDIR_1 = 71,
-		FDIR_2 = 72,
-		HK = 73,
-		SYSTEM_MANAGER = 74,
-		SYSTEM_MANAGER_1 = 75,
-		SYSTEM_1 = 79,
+	CDH = 28,
+	TCS_1 = 59,
+	PCDU_1 = 42,
+	PCDU_2 = 43,
+	HEATER = 50,
+	T_SENSORS = 52,
+	FDIR = 70,
+	FDIR_1 = 71,
+	FDIR_2 = 72,
+	HK = 73,
+	SYSTEM_MANAGER = 74,
+	SYSTEM_MANAGER_1 = 75,
+	SYSTEM_1 = 79,
 };
 }
 

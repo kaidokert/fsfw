@@ -23,7 +23,7 @@ void setStaticFrameworkObjectIds();
  */
 
 /**
- * This class is the basis for all PUS Services, which can immediately process Telecommand Packets.
+ * \brief This class is the basis for all PUS Services, which can immediately process Telecommand Packets.
  * It manages Telecommand reception and the generation of Verification Reports. Every class that inherits
  * from this abstract class has to implement handleRequest and performService. Services that are created with this
  * Base class have to handle any kind of request immediately on reception.
@@ -68,7 +68,7 @@ public:
 	 * It checks for new requests, and, if found, calls handleRequest, sends completion verification messages and deletes
 	 * the TC requests afterwards.
 	 * performService is always executed afterwards.
-	 * @return	- \c RETURN_OK if the periodic performService was successfull.
+	 * @return	- \c RETURN_OK if the periodic performService was successful.
 	 * 			- \c RETURN_FAILED else.
 	 */
 	ReturnValue_t performOperation(uint8_t opCode);

@@ -5,11 +5,10 @@
 // TODO I guess we should have a way of checking if we are in an ISR and then use the "fromISR" versions of all calls
 
 MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
-		lastPartner(0), defaultDestination(0) {
+defaultDestination(0),lastPartner(0)  {
 	handle = xQueueCreate(message_depth, max_message_size);
 	if (handle == NULL) {
-		//TODO
-		;
+		error << "MessageQueue creation failed" << std::endl;
 	}
 }
 
@@ -32,8 +31,7 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 	if (this->lastPartner != 0) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
-		//TODO: Good returnCode
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return NO_REPLY_PARTNER;
 	}
 }
 
@@ -45,8 +43,9 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 }
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
-	BaseType_t result = xQueueReceive(handle, message, 0);
+	BaseType_t result = xQueueReceive(handle,reinterpret_cast<void*>(message->getBuffer()), 0);
 	if (result == pdPASS){
+		this->lastPartner = message->getSender();
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
 		return MessageQueueIF::EMPTY;
@@ -75,16 +74,7 @@ void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessage* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
-	message->setSender(sentFrom);
-
-	BaseType_t result = xQueueSendToBack((void * )sendTo, message, 0);
-	if (result != pdPASS) {
-		if (!ignoreFault) {
-			//TODO errr reporter
-		}
-		return MessageQueueIF::FULL;
-	}
-	return HasReturnvaluesIF::RETURN_OK;
+	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault);
 }
 
 ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
@@ -98,5 +88,24 @@ MessageQueueId_t MessageQueue::getDefaultDestination() const {
 
 bool MessageQueue::isDefaultDestinationSet() const {
 	return 0;
+}
+ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
+		MessageQueueMessage *message, MessageQueueId_t sentFrom,
+		bool ignoreFault) {
+	message->setSender(sentFrom);
+
+		BaseType_t result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),reinterpret_cast<const void*>(message->getBuffer()), 0);
+		if (result != pdPASS) {
+			if (!ignoreFault) {
+				InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+							objects::INTERNAL_ERROR_REPORTER);
+				if (internalErrorReporter != NULL) {
+					internalErrorReporter->queueMessageNotSent();
+				}
+			}
+			return MessageQueueIF::FULL;
+		}
+		return HasReturnvaluesIF::RETURN_OK;
+
 }
 

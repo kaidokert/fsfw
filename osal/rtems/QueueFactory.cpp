@@ -6,7 +6,8 @@ QueueFactory* QueueFactory::factoryInstance = NULL;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom) {
+			MessageQueueMessage* message, MessageQueueId_t sentFrom,bool ignoreFault) {
+	//TODO add ignoreFault functionality
 	message->setSender(sentFrom);
 	rtems_status_code result = rtems_message_queue_send(sendTo, message->getBuffer(),
 			message->messageSize);

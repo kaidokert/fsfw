@@ -53,9 +53,6 @@ void FixedTimeslotTask::taskFunctionality() {
 	if (!started) {
 		suspend();
 	}
-	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
-	std::list<FixedSequenceSlot*>::iterator it = pst.current;
-
 	//The start time for the first entry is read.
 	uint64_t lastWakeTime = getCurrentMonotonicTimeMs();
 	uint64_t interval = pst.getIntervalToNextSlotMs();

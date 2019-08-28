@@ -20,6 +20,10 @@ public:
 	 * No space left for more messages
 	 */
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(2);
+	/**
+	 * Returned if a reply method was called without partner
+	 */
+	static const ReturnValue_t NO_REPLY_PARTNER = MAKE_RETURN_CODE(3);
 
 	virtual ~MessageQueueIF() {}
 	/**
@@ -28,6 +32,8 @@ public:
 	 * 			lastParnter information as destination. If there was no message received yet
 	 * 			(i.e. lastPartner is zero), an error code is returned.
 	 * @param message	A pointer to a previously created message, which is sent.
+	 * \return RETURN_OK if ok
+	 * \return NO_REPLY_PARTNER Should return NO_REPLY_PARTNER if partner was found
 	 */
 	virtual ReturnValue_t reply( MessageQueueMessage* message ) = 0;
 

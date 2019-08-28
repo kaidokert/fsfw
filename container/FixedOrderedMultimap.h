@@ -4,7 +4,9 @@
 #include <framework/container/ArrayList.h>
 #include <cstring>
 #include <set>
-
+/**
+ * \ingroup container
+ */
 template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
 class FixedOrderedMultimap {
 public:

@@ -1,5 +1,3 @@
- */
-
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/pus/TcPacketStored.h>

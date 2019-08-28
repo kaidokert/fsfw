@@ -8,8 +8,7 @@
 
 
 MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
-		id(0), lastPartner(0), defaultDestination(NO_QUEUE), internalErrorReporter(
-		NULL) {
+		id(0), lastPartner(0), defaultDestination(NO_QUEUE) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
 	this->id = 0;
@@ -81,8 +80,7 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 	if (this->lastPartner != 0) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
-		//TODO: Good returnCode
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return NO_REPLY_PARTNER;
 	}
 }
 
@@ -198,19 +196,40 @@ void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessage* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
+	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault);
 
+}
+
+ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
+		MessageQueueId_t sentFrom, bool ignoreFault) {
+	return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
+}
+
+MessageQueueId_t MessageQueue::getDefaultDestination() const {
+	return this->defaultDestination;
+}
+
+bool MessageQueue::isDefaultDestinationSet() const {
+	return (defaultDestination != NO_QUEUE);
+}
+
+uint16_t MessageQueue::queueCounter = 0;
+
+ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
+		MessageQueueMessage *message, MessageQueueId_t sentFrom,
+		bool ignoreFault) {
 	message->setSender(sentFrom);
 	int result = mq_send(sendTo,
 			reinterpret_cast<const char*>(message->getBuffer()), message->messageSize,0);
 
 	//TODO: Check if we're in ISR.
-	if (result != 0 && !ignoreFault) {
-		if (internalErrorReporter == NULL) {
-			internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
-					objects::INTERNAL_ERROR_REPORTER);
-		}
-		if (internalErrorReporter != NULL) {
-			internalErrorReporter->queueMessageNotSent();
+	if (result != 0) {
+		if(!ignoreFault){
+			InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+						objects::INTERNAL_ERROR_REPORTER);
+			if (internalErrorReporter != NULL) {
+				internalErrorReporter->queueMessageNotSent();
+			}
 		}
 		switch(errno){
 		case EAGAIN:
@@ -241,18 +260,3 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
-
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
-		MessageQueueId_t sentFrom, bool ignoreFault) {
-	return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
-}
-
-MessageQueueId_t MessageQueue::getDefaultDestination() const {
-	return this->defaultDestination;
-}
-
-bool MessageQueue::isDefaultDestinationSet() const {
-	return (defaultDestination != NO_QUEUE);
-}
-
-uint16_t MessageQueue::queueCounter = 0;

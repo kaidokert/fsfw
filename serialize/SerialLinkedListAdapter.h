@@ -12,6 +12,10 @@
 #include <framework/serialize/SerializeElement.h>
 #include <framework/serialize/SerializeIF.h>
 //This is where we need the SerializeAdapter!
+
+/**
+ * \ingroup serialize
+ */
 template<typename T, typename count_t = uint8_t>
 class SerialLinkedListAdapter: public SinglyLinkedList<T>, public SerializeIF {
 public:

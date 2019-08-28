@@ -71,7 +71,7 @@ public:
 	static void setDeviceHandlerRawCommandMessage(CommandMessage* message,
 			store_address_t rawPacketStoreId);
 
-	static void setDeviceHandlerRawReplayMessage(CommandMessage* message,
+	static void setDeviceHandlerRawReplyMessage(CommandMessage* message,
 			object_id_t deviceObjectid, store_address_t rawPacketStoreId,
 			bool isCommand);
 

@@ -4,6 +4,9 @@
 #include <framework/container/FixedArrayList.h>
 #include <framework/serialize/SerialArrayListAdapter.h>
 
+/**
+ * \ingroup serialize
+ */
 template<typename T, uint32_t MAX_SIZE, typename count_t = uint8_t>
 class SerialFixedArrayListAdapter : public FixedArrayList<T, MAX_SIZE, count_t>, public SerializeIF {
 public:

@@ -7,6 +7,9 @@
 #include <framework/serialize/SerializeIF.h>
 #include <string.h>
 
+/**
+ * \ingroup serialize
+ */
 template<typename T, int>
 class SerializeAdapter_ {
 public:

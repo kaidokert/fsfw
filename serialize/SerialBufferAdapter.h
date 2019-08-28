@@ -4,6 +4,9 @@
 #include <framework/serialize/SerializeIF.h>
 #include <framework/serialize/SerializeAdapter.h>
 
+/**
+ * \ingroup serialize
+ */
 template<typename T>
 class SerialBufferAdapter: public SerializeIF {
 public:

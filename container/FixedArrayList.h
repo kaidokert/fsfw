@@ -2,7 +2,9 @@
 #define FIXEDARRAYLIST_H_
 
 #include <framework/container/ArrayList.h>
-
+/**
+ * \ingroup container
+ */
 template<typename T, uint32_t MAX_SIZE, typename count_t = uint8_t>
 class FixedArrayList: public ArrayList<T, count_t> {
 private:

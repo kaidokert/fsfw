@@ -5,6 +5,9 @@
 #include <framework/serialize/SerializeAdapter.h>
 #include <utility>
 
+/**
+ * \ingroup serialize
+ */
 template<typename T>
 class SerializeElement : public SerializeIF, public LinkedElement<SerializeIF> {
 public:

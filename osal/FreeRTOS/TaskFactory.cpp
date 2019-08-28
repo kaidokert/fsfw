@@ -4,7 +4,7 @@
 #include "PeriodicTask.h"
 #include "FixedTimeslotTask.h"
 
-//TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
+
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
 
 TaskFactory::~TaskFactory() {
@@ -13,7 +13,9 @@ TaskFactory::~TaskFactory() {
 TaskFactory* TaskFactory::instance() {
 	return TaskFactory::factoryInstance;
 }
-
+/***
+ * Keep in Mind that you need to call before this vTaskStartScheduler()!
+ */
 PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,
 		TaskPriority taskPriority_, TaskStackSize stackSize_,
 		TaskPeriod period_,
@@ -21,7 +23,9 @@ PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,
 	return (PeriodicTaskIF*) (new PeriodicTask(name_, taskPriority_, stackSize_,
 			period_, deadLineMissedFunction_));
 }
-
+/***
+ * Keep in Mind that you need to call before this vTaskStartScheduler()!
+ */
 FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,
 		TaskPriority taskPriority_, TaskStackSize stackSize_,
 		TaskPeriod period_,

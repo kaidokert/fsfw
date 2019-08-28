@@ -32,8 +32,7 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 	if (this->lastPartner != 0) {
 		return sendMessage(this->lastPartner, message, this->getId());
 	} else {
-		//TODO: Good returnCode
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return NO_REPLY_PARTNER;
 	}
 }
 

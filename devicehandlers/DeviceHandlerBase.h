@@ -29,7 +29,15 @@ void setStaticFrameworkObjectIds();
 class StorageManagerIF;
 
 /**
- * This is the abstract base class for device handlers.
+ * \defgroup devices Devices
+ * Contains all devices and the DeviceHandlerBase class.
+ */
+
+/**
+ * \brief This is the abstract base class for device handlers.
+ *
+ * Documentation: Dissertation Baetz p.138,139, p.141-149
+ * SpaceWire Remote Memory Access Protocol (RMAP)
  *
  * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, the RMAP communication and the
  * communication with commanding objects.
@@ -41,6 +49,9 @@ class StorageManagerIF;
  * a default implementation is provided.
  *
  * Device handler instances should extend this class and implement the abstract functions.
+ * Components and drivers can send so called cookies which are used for communication
+ *
+ * \ingroup devices
  */
 class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasReturnvaluesIF,
@@ -68,6 +79,32 @@ public:
 
 	virtual MessageQueueId_t getCommandQueue(void) const;
 
+
+	/**
+		 * This function is a core component and is called periodically.
+		 * General sequence:
+		 * If the State is SEND_WRITE:
+		 *   1. Set the cookie state to COOKIE_UNUSED and read the command queue
+		 *   2. Handles Device State Modes by calling doStateMachine().
+		 *      This function calls callChildStatemachine() which calls the abstract functions
+		 *      doStartUp() and doShutDown()
+		 *   3. Check switch states by calling checkSwitchStates()
+		 *   4. Decrements counter for timeout of replies by calling decrementDeviceReplyMap()
+		 *   5. Performs FDIR check for failures
+		 *   6. Calls hkSwitcher.performOperation()
+		 *   7. If the device mode is MODE_OFF, return RETURN_OK. Otherwise, perform the Action property
+		 *   	and performs depending on value specified
+		 *      by input value counter. The child class tells base class what to do by setting this value.
+		 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite()
+		 *     	 Calls abstract funtions buildNomalDeviceCommand()
+		 *     	 or buildTransitionDeviceCommand()
+		 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite().
+		 *       Calls abstract functions scanForReply() and interpretDeviceReply().
+		 *     - SEND_READ: Request reading data from device by calling doSendRead()
+		 *     - GET_READ: Access requested reading data by calling doGetRead()
+		 * @param counter Specifies which Action to perform
+		 * @return RETURN_OK for successful execution
+		 */
 	virtual ReturnValue_t performOperation(uint8_t counter);
 
 	virtual ReturnValue_t initialize();

@@ -2,6 +2,7 @@
 #include "FixedTimeslotTask.h"
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
+const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;
 
 FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod overallPeriod,

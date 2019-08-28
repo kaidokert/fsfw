@@ -10,6 +10,7 @@
 #include <framework/subsystem/SubsystemBase.h>
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/ipc/QueueFactory.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
@@ -372,7 +373,7 @@ void DeviceHandlerBase::setMode(Mode_t newMode) {
 
 void DeviceHandlerBase::replyReturnvalueToCommand(ReturnValue_t status,
 		uint32_t parameter) {
-//This is actually the reply protocol for raw and misc dh commands.
+	//This is actually the reply protocol for raw and misc DH commands.
 	if (status == RETURN_OK) {
 		CommandMessage reply(CommandMessage::REPLY_COMMAND_OK, 0, parameter);
 		commandQueue->reply(&reply);
@@ -672,7 +673,7 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 
 	CommandMessage message;
 
-	DeviceHandlerMessage::setDeviceHandlerRawReplayMessage(&message,
+	DeviceHandlerMessage::setDeviceHandlerRawReplyMessage(&message,
 			getObjectId(), address, isCommand);
 
 //	this->DeviceHandlerCommand = CommandMessage::CMD_NONE;
