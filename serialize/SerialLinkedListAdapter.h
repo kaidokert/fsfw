@@ -13,7 +13,21 @@
 #include <framework/serialize/SerializeIF.h>
 //This is where we need the SerializeAdapter!
 
-/**
+ /**
+ * An alternative to the AutoSerializeAdapter functions to implement the conversion
+ * of object data to data streams or vice-versa, using linked lists.
+ *
+ * All object members with a datatype are declared as SerializeElement<element_type> inside the class.
+ *
+ * Buffers with a size header inside that class can be declared with
+ * SerialFixedArrayListAdapter<uint8_t,MAX_BUFFER_LENGTH,typeOfMaxData>.
+ * typeOfMaxData specifies the data type of the buffer header containing the buffer size that follows
+ * and MAX_BUFFER_LENGTH specifies the maximum allowed value for the buffer size.
+ * The sequence of objects is defined in the constructor by using the setStart and setNext functions.
+ *
+ * The serialization and deserialization process is done by instantiating the class and
+ * calling the serialize or deserialize function.
+ *
  * \ingroup serialize
  */
 template<typename T, typename count_t = uint8_t>

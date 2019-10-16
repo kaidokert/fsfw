@@ -7,7 +7,19 @@
 #include <framework/serialize/SerializeIF.h>
 #include <string.h>
 
-/**
+ /**
+ * This adapter provides an interface to use the SerializeIF functions
+ * with arbitrary template objects to facilitate and simplify the serialization of classes
+ * with different multiple different data types into buffers vice-versa.
+ *
+ * Examples:
+ * A report class is converted into a TM buffer. The report class implements a serialize functions and calls
+ * the AutoSerializeAdapter::serialize function repeatedly on all object data fields.
+ * The getSerializedSize function is implemented by calling the
+ * AutoSerializeAdapter::getSerializedSize function repeatedly on all data fields.
+ *
+ * The AutoSerializeAdapter functions can also be used as an alternative to memcpy
+ * to retrieve data out of a buffer directly into a class variable with data type T while being able to specify endianness.
  * \ingroup serialize
  */
 template<typename T, int>

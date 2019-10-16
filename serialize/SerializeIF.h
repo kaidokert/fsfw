@@ -9,7 +9,7 @@
  */
 
 /**
- * Translation of objects into data streams.
+ * An interface for alle classes which require translation of objects data into data streams and vice-versa.
  * \ingroup serialize
  */
 class SerializeIF {
