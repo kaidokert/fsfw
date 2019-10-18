@@ -21,20 +21,19 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
 		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
-		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(
-				MODE_OFF), submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(
-				maxDeviceReplyLen), wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(
-				StorageManagerIF::INVALID_ADDRESS), requestedRawTraffic(0), powerSwitcher(
-		NULL), IPCStore(NULL), deviceCommunicationId(deviceCommunication), communicationInterface(
-		NULL), cookie(
-		NULL), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId), deviceThermalRequestPoolId(
-				thermalRequestPoolId), healthHelper(this, setObjectId), modeHelper(
-				this), parameterHelper(this), childTransitionFailure(RETURN_OK), ignoreMissedRepliesCount(
-				0), fdirInstance(fdirInstance), hkSwitcher(this), defaultFDIRUsed(
-				fdirInstance == NULL), switchOffWasReported(false),executingTask(NULL), actionHelper(this, NULL), cookieInfo(), ioBoardAddress(
-				ioBoardAddress), timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(
-				_MODE_POWER_DOWN), transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(
-				setDeviceSwitch) {
+		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
+		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
+		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
+		requestedRawTraffic(0), powerSwitcher(NULL), IPCStore(NULL),
+		deviceCommunicationId(deviceCommunication), communicationInterface(NULL),
+		cookie(NULL), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId),
+		deviceThermalRequestPoolId(thermalRequestPoolId), healthHelper(this, setObjectId),
+		modeHelper(this), parameterHelper(this), childTransitionFailure(RETURN_OK),
+		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
+		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
+		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), ioBoardAddress(ioBoardAddress),
+		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
+		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
