@@ -27,8 +27,8 @@ public:
 	/**
 	 * ctor
 	 *
+	 * @param owner
 	 * @param objectId the object Id to use when communication with the HealthTable
-	 * @param useAsFrom id to use as from id when sending replies, can be set to 0
 	 */
 	HealthHelper(HasHealthIF* owner, object_id_t objectId);
 

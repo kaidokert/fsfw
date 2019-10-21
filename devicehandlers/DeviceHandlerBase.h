@@ -142,6 +142,11 @@ public:
 	virtual  void setTaskIF(PeriodicTaskIF* task_);
 protected:
 	/**
+	* cached from ctor for initialize()
+	*/
+	const uint32_t ioBoardAddress;
+
+	/**
 	 * The Returnvalues id of this class, required by HasReturnvaluesIF
 	 */
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
@@ -162,6 +167,8 @@ protected:
 	static const DeviceCommandId_t RAW_COMMAND_ID = -1;
 	static const DeviceCommandId_t NO_COMMAND_ID = -2;
 	static const MessageQueueId_t NO_COMMANDER = 0;
+
+
 
 	/**
 	 * Pointer to the raw packet that will be sent.
@@ -833,6 +840,9 @@ protected:
 	DeviceCommandMap deviceCommandMap;
 
 	ActionHelper actionHelper;
+
+
+
 private:
 
 	/**
@@ -865,10 +875,6 @@ private:
 	 */
 	CookieInfo cookieInfo;
 
-	/**
-	 * cached from ctor for initialize()
-	 */
-	const uint32_t ioBoardAddress;
 
 	/**
 	 * Used for timing out mode transitions.

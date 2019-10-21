@@ -22,11 +22,9 @@ public:
 	 *
 	 * @details The mode of the device handler must not be confused with the mode the device is in.
 	 * The mode of the device itself is transparent to the user but related to the mode of the handler.
+	 * MODE_ON and MODE_OFF are included in hasModesIF.h
 	 */
-		// Robin: The first two modes (MODE_ON, MODE_OFF) are specified in hasModesIF.
-		// We could mention in a comment where those modes are located.
-		// The comments for _MODE_TO_ON have been taken from the comments in DeviceHandlerBase.cpp file.
-		// Is the same explanation valid for _MODE_TO_RAW and MODE_TO_NORMAL?
+
 
 //		MODE_ON = 0, //!< The device is powered and ready to perform operations. In this mode, no commands are sent by the device handler itself, but direct commands van be commanded and will be interpreted
 //		MODE_OFF = 1, //!< The device is powered off. The only command accepted in this mode is a mode change to on.

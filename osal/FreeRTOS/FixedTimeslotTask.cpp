@@ -19,8 +19,7 @@ FixedTimeslotTask::~FixedTimeslotTask() {
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
 
 	//The argument is re-interpreted as FixedTimeslotTask. The Task object is global, so it is found from any place.
-	FixedTimeslotTask *originalTask(
-			reinterpret_cast<FixedTimeslotTask*>(argument));
+	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
 	// Task should not start until explicitly requested
 	// in FreeRTOS, tasks start as soon as they are created if the scheduler is running
 	// but not if the scheduler is not running.
