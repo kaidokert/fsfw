@@ -23,6 +23,11 @@ public:
 	 * @details The mode of the device handler must not be confused with the mode the device is in.
 	 * The mode of the device itself is transparent to the user but related to the mode of the handler.
 	 */
+		// Robin: The first two modes (MODE_ON, MODE_OFF) are specified in hasModesIF.
+		// We could mention in a comment where those modes are located.
+		// The comments for _MODE_TO_ON have been taken from the comments in DeviceHandlerBase.cpp file.
+		// Is the same explanation valid for _MODE_TO_RAW and MODE_TO_NORMAL?
+
 //		MODE_ON = 0, //!< The device is powered and ready to perform operations. In this mode, no commands are sent by the device handler itself, but direct commands van be commanded and will be interpreted
 //		MODE_OFF = 1, //!< The device is powered off. The only command accepted in this mode is a mode change to on.
 		static const Mode_t MODE_NORMAL = 2; //!< The device is powered on and the device handler periodically sends commands. The commands to be sent are selected by the handler according to the submode.
@@ -30,7 +35,7 @@ public:
 		static const Mode_t MODE_ERROR_ON = 4; //!4< The device is shut down but the switch could not be turned off, so the device still is powered. In this mode, only a mode change to @c MODE_OFF can be commanded, which tries to switch off the device again.
 		static const Mode_t _MODE_START_UP = TRANSITION_MODE_CHILD_ACTION_MASK | 5; //!< This is a transitional state which can not be commanded. The device handler performs all commands to get the device in a state ready to perform commands. When this is completed, the mode changes to @c MODE_ON.
 		static const Mode_t _MODE_SHUT_DOWN = TRANSITION_MODE_CHILD_ACTION_MASK | 6; //!< This is a transitional state which can not be commanded. The device handler performs all actions and commands to get the device shut down. When the device is off, the mode changes to @c MODE_OFF.
-		static const Mode_t _MODE_TO_ON = TRANSITION_MODE_CHILD_ACTION_MASK | HasModesIF::MODE_ON;
+		static const Mode_t _MODE_TO_ON = TRANSITION_MODE_CHILD_ACTION_MASK | HasModesIF::MODE_ON; //!< It is possible to set the mode to _MODE_TO_ON to use the to on transition if available.
 		static const Mode_t _MODE_TO_RAW = TRANSITION_MODE_CHILD_ACTION_MASK | MODE_RAW;
 		static const Mode_t _MODE_TO_NORMAL = TRANSITION_MODE_CHILD_ACTION_MASK | MODE_NORMAL;
 		static const Mode_t _MODE_POWER_DOWN = TRANSITION_MODE_BASE_ACTION_MASK | 1; //!< This is a transitional state which can not be commanded. The device is shut down and ready to be switched off. After the command to set the switch off has been sent, the mode changes to @c MODE_WAIT_OFF

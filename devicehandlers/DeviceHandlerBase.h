@@ -33,6 +33,7 @@ class StorageManagerIF;
  * Contains all devices and the DeviceHandlerBase class.
  */
 
+// Robin: We're not really using RMAP, right? Maybe we should adapt class description for that?
 /**
  * \brief This is the abstract base class for device handlers.
  *
@@ -81,7 +82,7 @@ public:
 
 
 	/**
-		 * This function is a core component and is called periodically.
+		 * This function is the device handler base core component and is called periodically.
 		 * General sequence:
 		 * If the State is SEND_WRITE:
 		 *   1. Set the cookie state to COOKIE_UNUSED and read the command queue
@@ -95,13 +96,16 @@ public:
 		 *   7. If the device mode is MODE_OFF, return RETURN_OK. Otherwise, perform the Action property
 		 *   	and performs depending on value specified
 		 *      by input value counter. The child class tells base class what to do by setting this value.
-		 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite()
-		 *     	 Calls abstract funtions buildNomalDeviceCommand()
-		 *     	 or buildTransitionDeviceCommand()
-		 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite().
+		 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite() which calls
+		 *       sendMessage function of #communicationInterface
+		 *     	 and calls buildInternalCommand if the cookie state is COOKIE_UNUSED
+		 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite() which calls
+		 *       getSendSuccess of #communicationInterface.
 		 *       Calls abstract functions scanForReply() and interpretDeviceReply().
-		 *     - SEND_READ: Request reading data from device by calling doSendRead()
-		 *     - GET_READ: Access requested reading data by calling doGetRead()
+		 *     - SEND_READ: Request reading data from device by calling doSendRead() which calls
+		 *       requestReceiveMessage of #communcationInterface
+		 *     - GET_READ: Access requested reading data by calling doGetRead() which calls
+		 *       readReceivedMessage of #communicationInterface
 		 * @param counter Specifies which Action to perform
 		 * @return RETURN_OK for successful execution
 		 */
