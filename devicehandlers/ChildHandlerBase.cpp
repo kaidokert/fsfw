@@ -7,8 +7,8 @@ ChildHandlerBase::ChildHandlerBase(uint32_t ioBoardAddress,
 		uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		uint32_t parent, FailureIsolationBase* customFdir, uint32_t cmdQueueSize) :
-		DeviceHandlerBase(ioBoardAddress, setObjectId, maxDeviceReplyLen,
-				setDeviceSwitch, deviceCommunication, thermalStatePoolId,
+		DeviceHandlerBase(setObjectId, maxDeviceReplyLen,
+				setDeviceSwitch, deviceCommunication,ioBoardAddress, thermalStatePoolId,
 				thermalRequestPoolId, (customFdir == NULL? &childHandlerFdir : customFdir), cmdQueueSize), parentId(
 				parent), childHandlerFdir(setObjectId) {
 }

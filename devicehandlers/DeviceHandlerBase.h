@@ -71,10 +71,10 @@ public:
 	 * @param maxDeviceReplyLen the length the RMAP getRead call will be sent with
 	 * @param setDeviceSwitch the switch the device is connected to, for devices using two switches, overwrite getSwitches()
 	 */
-	DeviceHandlerBase(uint32_t ioBoardAddress, object_id_t setObjectId,
+	DeviceHandlerBase(object_id_t setObjectId,
 			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
-			object_id_t deviceCommunication, uint32_t thermalStatePoolId =
-					PoolVariableIF::NO_PARAMETER,
+			object_id_t deviceCommunication,uint32_t ioBoardAddress = 0,
+			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
 			FailureIsolationBase* fdirInstance = NULL, uint32_t cmdQueueSize = 20);
 
@@ -111,6 +111,21 @@ public:
 		 */
 	virtual ReturnValue_t performOperation(uint8_t counter);
 
+	/**
+	 * Prerequisites to call initialize function without custom implementation:
+	 *   1. The three static framework IDs are set to respective objects in the Factory function
+	 *  	- First ID: Power Switcher ID. Example: PCDU Handler Object
+	 *  	- Second ID: Raw Data Receiver. Example: PUS Service 2 Object
+	 *  	- Third ID: Default FDIR parent ID. Example: ?
+	 *   2. Communication Interface Object for respective device.
+	 *      Example: UART Communication Interface which calls respective UART drivers
+	 *   3. Health table class has been instantiated in Factory
+	 *   4. deviceThermalRequestPoolId and deviceThermalStatePoolId are set to the respective data pool entries.
+	 *   	This is only required if thermal checking is needed. Otherwise, set both variables to
+	 *   	PoolVariableIF::NO_PARAMETER
+	 *
+	 * @return
+	 */
 	virtual ReturnValue_t initialize();
 
 	/**
