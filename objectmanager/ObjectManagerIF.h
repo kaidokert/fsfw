@@ -78,6 +78,13 @@ public:
 	virtual void printList() = 0;
 };
 
+/**
+ * Used to retrieve Target Interface Pointers of objects.
+ * The object has to implement the SystemObject or SystemObjectIF at the very least,
+ * otherwise NULL will be returned.
+ * @param id
+ * @return NULL or pointer to target interface specified by template object
+ */
 template <typename T>
 T* ObjectManagerIF::get( object_id_t id ) {
 	SystemObjectIF* temp = this->getSystemObject(id);
