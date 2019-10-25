@@ -10,6 +10,13 @@
 
 /**
  * An interface for alle classes which require translation of objects data into data streams and vice-versa.
+ *
+ * In the SOURCE mission , the target architecture is little endian,
+ * so any buffers must be deSerialized with bool bigEndian = false if
+ * the parameters are used in the FSFW.
+ * When serializing for downlink, the packets are generally serialized into big endian for the network when using a TC/UDP client
+ * like seen in TmPacketStored.cpp for example.
+ *
  * \ingroup serialize
  */
 class SerializeIF {

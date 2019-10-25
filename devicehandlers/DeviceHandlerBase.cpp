@@ -53,7 +53,6 @@ DeviceHandlerBase::~DeviceHandlerBase() {
 
 ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	this->pstStep = counter;
-
 	if (counter == 0) {
 		cookieInfo.state = COOKIE_UNUSED;
 		readCommandQueue();
@@ -670,7 +669,6 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 	}
 
 	CommandMessage message;
-
 	DeviceHandlerMessage::setDeviceHandlerRawReplyMessage(&message,
 			getObjectId(), address, isCommand);
 
