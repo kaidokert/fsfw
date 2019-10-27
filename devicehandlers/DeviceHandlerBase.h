@@ -33,24 +33,29 @@ class StorageManagerIF;
  * Contains all devices and the DeviceHandlerBase class.
  */
 
-// Robin: We're not really using RMAP, right? Maybe we should adapt class description for that?
+
 /**
  * \brief This is the abstract base class for device handlers.
  *
  * Documentation: Dissertation Baetz p.138,139, p.141-149
- * SpaceWire Remote Memory Access Protocol (RMAP)
  *
- * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, the RMAP communication and the
- * communication with commanding objects.
+ * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, communication with
+ * physical devices, using the @link DeviceCommunicationIF, and communication with commanding objects.
+ *
+ * NOTE: RMAP is a legacy standard which is used for FLP.
+ * RMAP communication is not mandatory for projects implementing the FSFW.
+ * However, the communication principles are similar to RMAP as there are two write and two send calls involved.
+ *
  * It inherits SystemObject and thus can be created by the ObjectManagerIF.
  *
  * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
- * For each step an RMAP action is selected and executed. If data has been received (eg in case of an RMAP Read), the data will be interpreted.
- * The action for each step can be defined by the child class but as most device handlers share a 4-call (Read-getRead-write-getWrite) structure,
- * a default implementation is provided.
+ * For each step an RMAP action is selected and executed. If data has been received (GET_READ), the data will be interpreted.
+ * The action for each step can be defined by the child class but as most device handlers share a 4-call
+ * (sendRead-getRead-sendWrite-getWrite) structure, a default implementation is provided.
  *
  * Device handler instances should extend this class and implement the abstract functions.
  * Components and drivers can send so called cookies which are used for communication
+ * and contain information about the communcation (e.g. slave address for I2C or RMAP structs).
  *
  * \ingroup devices
  */
