@@ -20,11 +20,31 @@
  *
  * The AutoSerializeAdapter functions can also be used as an alternative to memcpy
  * to retrieve data out of a buffer directly into a class variable with data type T while being able to specify endianness.
+ * The boolean bigEndian specifies the endiness of the data to serialize or deSerialize.
  *
- * In the SOURCE mission , the target architecture is little endian,
- * so any buffers must be deSerialized with bool bigEndian = false if
- * the parameters are used in the FSFW.
- * When serializing for downlink, the packets are generally serialized into big endian for the network when using a TC/UDP client
+ * If the target architecture is little endian (ARM), any data types created might
+ * have the wrong endiness if they are to be used for the FSFW.
+ * there are three ways to retrieve data out of a buffer to be used in the FSFW to use regular aligned (big endian) data.
+ * This can also be applied to uint32_t and uint64_t:
+ *
+ *   1. Use the AutoSerializeAdapter::deSerialize function with bool bigEndian = true:
+ *
+ *   	uint16_t data;
+ *   	int32_t dataLen = sizeof(data);
+ *   	ReturnValue_t result = AutoSerializeAdapter::deSerialize(&data,&buffer,&dataLen,true);
+ *
+ *   2. Perform a bitshift operation:
+ *
+ *   	uint16_t data;
+ *   	data = buffer[targetByte1] >> 8 | buffer[targetByte2];
+ *
+ *   3. Memcpy can be used when data is little-endian. Otherwise, endian-swapper has to be used.
+ *
+ *   	uint16_t data;
+ *   	memcpy(&data,buffer + positionOfTargetByte1,sizeof(data));
+ *   	data = EndianSwapper::swap(data);
+ *
+ * When serializing for downlink, the packets are generally serialized assuming big endian data format
  * like seen in TmPacketStored.cpp for example.
  *
  * \ingroup serialize

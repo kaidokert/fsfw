@@ -11,10 +11,16 @@
 /**
  * An interface for alle classes which require translation of objects data into data streams and vice-versa.
  *
- * In the SOURCE mission , the target architecture is little endian,
- * so any buffers must be deSerialized with bool bigEndian = false if
- * the parameters are used in the FSFW.
- * When serializing for downlink, the packets are generally serialized into big endian for the network when using a TC/UDP client
+ * If the target architecture is little endian (ARM), any data types created might
+ * have the wrong endiness if they are to be used for the FSFW.
+ * there are three ways to retrieve data out of a buffer to be used in the FSFW to use regular aligned (big endian) data.
+ * This can also be applied to uint32_t and uint64_t:
+ *
+ *   1. Use the @c AutoSerializeAdapter::deSerialize function with @c bigEndian = true
+ *   2. Perform a bitshift operation
+ *   3. @c memcpy can be used when data is little-endian. Otherwise, @c EndianSwapper has to be used.
+ *
+ * When serializing for downlink, the packets are generally serialized assuming big endian data format
  * like seen in TmPacketStored.cpp for example.
  *
  * \ingroup serialize

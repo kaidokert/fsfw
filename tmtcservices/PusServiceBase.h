@@ -68,8 +68,8 @@ public:
 	 * It checks for new requests, and, if found, calls handleRequest, sends completion verification messages and deletes
 	 * the TC requests afterwards.
 	 * performService is always executed afterwards.
-	 * @return	- \c RETURN_OK if the periodic performService was successful.
-	 * 			- \c RETURN_FAILED else.
+	 * @return	\c RETURN_OK if the periodic performService was successful.
+	 * 			\c RETURN_FAILED else.
 	 */
 	ReturnValue_t performOperation(uint8_t opCode);
 	virtual uint16_t getIdentifier();
