@@ -64,7 +64,7 @@ public:
 	virtual ~CommandingServiceBase();
 
 	/***
-	 * This is the periodic called function
+	 * This is the periodically called function.
 	 * Handle request queue for external commands.
 	 * Handle command Queue for internal commands.
 	 * @param opCode is unused here at the moment
@@ -226,13 +226,15 @@ protected:
 	 * and the respective PUS Commanding Service once the execution has started.
 	 * The PUS Commanding Service receives replies from the target device and forwards them by calling this function.
 	 * There are different translations of these replies to specify how the Command Service proceeds.
-	 * @param reply Command Message which determines how CommandServiceBase proceeds
+	 * @param reply Command Message which contains information about the command
 	 * @param previousCommand
 	 * @param state
 	 * @param optionalNextCommand
 	 * @param objectId
 	 * @param isStep Flag value to mark steps of command execution
-	 * @return
+	 * @return - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to generate TC verification success
+	 *         - @c INVALID_REPLY can handle unrequested replies
+	 *         - Anything else triggers a TC verification failure
 	 */
 	virtual ReturnValue_t handleReply(const CommandMessage *reply,
 			Command_t previousCommand, uint32_t *state,
