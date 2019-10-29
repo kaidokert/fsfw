@@ -11,6 +11,7 @@
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/ipc/QueueFactory.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <mission/test/DummyCookie.h>
 
 object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
@@ -452,7 +453,7 @@ void DeviceHandlerBase::doGetWrite() {
 		if (wiretappingMode == RAW) {
 			replyRawData(rawPacket, rawPacketLen, requestedRawTraffic, true);
 		}
-		//We need to distinguish here, because a raw command never expects a reply. (Could be done in eRIRM, but then child implementations need to be careful.
+		// We need to distinguish here, because a raw command never expects a reply. (Could be done in eRIRM, but then child implementations need to be careful.
 		result = enableReplyInReplyMap(cookieInfo.pendingCommand);
 	} else {
 		//always generate a failure event, so that FDIR knows what's up
@@ -473,9 +474,9 @@ void DeviceHandlerBase::doSendRead() {
 		cookieInfo.state = COOKIE_READ_SENT;
 	} else {
 		triggerEvent(DEVICE_REQUESTING_REPLY_FAILED, result);
-		//We can't inform anyone, because we don't know which command was sent last.
-		//So, we need to wait for a timeout.
-		//but I think we can allow to ignore one missedReply.
+		// We can't inform anyone, because we don't know which command was sent last.
+		// So, we need to wait for a timeout.
+		// but I think we can allow to ignore one missedReply.
 		ignoreMissedRepliesCount++;
 		cookieInfo.state = COOKIE_UNUSED;
 	}
@@ -1266,3 +1267,5 @@ void DeviceHandlerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
 void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 			executingTask = task_;
 }
+
+

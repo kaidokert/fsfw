@@ -21,6 +21,10 @@ public:
 			uint8_t messageDepth = 10, uint8_t parameterDomainBase = 0xF0);
 	virtual ~FailureIsolationBase();
 	virtual ReturnValue_t initialize();
+
+	/**
+	 * This is called by the DHB in performOperation()
+	 */
 	void checkForFailures();
 	MessageQueueId_t getEventReceptionQueue();
 	virtual void triggerEvent(Event event, uint32_t parameter1 = 0,

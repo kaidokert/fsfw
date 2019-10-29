@@ -21,7 +21,7 @@ public:
 			readIndex(0), writeIndex(0), currentSize(0) {
 	}
 
-	bool emtpy() {
+	bool empty() {
 		return (currentSize == 0);
 	}
 
@@ -45,7 +45,7 @@ public:
 	}
 
 	ReturnValue_t retrieve(T *value) {
-		if (emtpy()) {
+		if (empty()) {
 			return EMPTY;
 		} else {
 			*value = data[readIndex];

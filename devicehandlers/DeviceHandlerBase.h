@@ -33,24 +33,29 @@ class StorageManagerIF;
  * Contains all devices and the DeviceHandlerBase class.
  */
 
-// Robin: We're not really using RMAP, right? Maybe we should adapt class description for that?
+
 /**
  * \brief This is the abstract base class for device handlers.
  *
  * Documentation: Dissertation Baetz p.138,139, p.141-149
- * SpaceWire Remote Memory Access Protocol (RMAP)
  *
- * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, the RMAP communication and the
- * communication with commanding objects.
+ * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, communication with
+ * physical devices, using the @link DeviceCommunicationIF, and communication with commanding objects.
+ *
+ * NOTE: RMAP is a legacy standard which is used for FLP.
+ * RMAP communication is not mandatory for projects implementing the FSFW.
+ * However, the communication principles are similar to RMAP as there are two write and two send calls involved.
+ *
  * It inherits SystemObject and thus can be created by the ObjectManagerIF.
  *
  * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
- * For each step an RMAP action is selected and executed. If data has been received (eg in case of an RMAP Read), the data will be interpreted.
- * The action for each step can be defined by the child class but as most device handlers share a 4-call (Read-getRead-write-getWrite) structure,
- * a default implementation is provided.
+ * For each step an RMAP action is selected and executed. If data has been received (GET_READ), the data will be interpreted.
+ * The action for each step can be defined by the child class but as most device handlers share a 4-call
+ * (sendRead-getRead-sendWrite-getWrite) structure, a default implementation is provided.
  *
  * Device handler instances should extend this class and implement the abstract functions.
  * Components and drivers can send so called cookies which are used for communication
+ * and contain information about the communcation (e.g. slave address for I2C or RMAP structs).
  *
  * \ingroup devices
  */
@@ -167,7 +172,7 @@ protected:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
 
 	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(4);
-	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5);
+	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5); //!< This is used to specify for replies from a device which are not replies to requests
 	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(6);
 //	static const ReturnValue_t ONE_SWITCH = MAKE_RETURN_CODE(8);
 //	static const ReturnValue_t TWO_SWITCHES = MAKE_RETURN_CODE(9);
@@ -626,9 +631,9 @@ protected:
 	 * @param[out] foundLen length of the packet found
 	 * @return
 	 *     - @c RETURN_OK a valid packet was found at @c start, @c foundLen is valid
-	 *     - @c NO_VALID_REPLY no reply could be found starting at @c start, implies @c foundLen is not valid, base class will call scanForReply() again with ++start
-	 *     - @c INVALID_REPLY a packet was found but it is invalid, eg checksum error, implies @c foundLen is valid, can be used to skip some bytes
-	 *     - @c TOO_SHORT @c len is too short for any valid packet
+	 *     - @c RETURN_FAILED no reply could be found starting at @c start, implies @c foundLen is not valid, base class will call scanForReply() again with ++start
+	 *     - @c DeviceHandlerIF::INVALID_DATA a packet was found but it is invalid, eg checksum error, implies @c foundLen is valid, can be used to skip some bytes
+	 *     - @c DeviceHandlerIF::LENGTH_MISSMATCH @c len is invalid
 	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been requested by a command, but should be handled anyway (@see also fillCommandAndCookieMap() )
 	 */
 	virtual ReturnValue_t scanForReply(const uint8_t *start, uint32_t len,
@@ -954,6 +959,7 @@ private:
 	 *
 	 * This is called at the beginning of each cycle. It checks whether a reply has timed out (that means a reply was expected
 	 * but not received).
+	 * In case the reply is periodic, the counter is simply set back to a specified value.
 	 */
 	void decrementDeviceReplyMap(void);
 
@@ -1053,6 +1059,8 @@ private:
 	ReturnValue_t switchCookieChannel(object_id_t newChannelId);
 
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
+
+
 };
 
 #endif /* DEVICEHANDLERBASE_H_ */
