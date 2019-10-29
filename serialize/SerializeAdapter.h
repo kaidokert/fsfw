@@ -28,6 +28,8 @@
  * This can also be applied to uint32_t and uint64_t:
  *
  *   1. Use the AutoSerializeAdapter::deSerialize function with bool bigEndian = true:
+ *		The pointer *buffer will be incremented automatically by the typeSize of data,
+ *		so this function can be called on &buffer without adjusting pointer position
  *
  *   	uint16_t data;
  *   	int32_t dataLen = sizeof(data);

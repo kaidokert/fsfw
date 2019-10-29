@@ -4,6 +4,22 @@
 #include <framework/devicehandlers/Cookie.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
+/**
+ * Documentation: Dissertation Baetz p.138
+ *
+ * This is an interface to decouple device communication from
+ * the device handler to allow reuse of these components.
+ * It works with the assumption that received data
+ * is polled by a component. There are four generic steps of device communication:
+ *
+ *   1. Send data to a device
+ *   2. Get acknowledgement for sending
+ *   3. Request reading data from a device
+ *   4. Read received data
+ *
+ *  To identify different connection over a single interface can return so-called cookies to components.
+ *
+ */
 class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
@@ -39,7 +55,15 @@ public:
 
 	virtual void close(Cookie *cookie) = 0;
 
-	//SHOULDDO can data be const?
+	/**
+	 * Called by DHB in the SEND_WRITE doSendWrite().
+	 * This function is used to send data to the physical device
+	 * by implementing and calling related drivers or wrapper functions.
+	 * @param cookie
+	 * @param data
+	 * @param len
+	 * @return
+	 */
 	virtual ReturnValue_t sendMessage(Cookie *cookie,const uint8_t *data,
 			uint32_t len) = 0;
 
@@ -47,6 +71,15 @@ public:
 
 	virtual ReturnValue_t requestReceiveMessage(Cookie *cookie) = 0;
 
+	/**
+	 * Called by DHB in the GET_WIRTE doGetRead().
+	 * This function is used to receive data from the physical device
+	 * by implementing and calling related drivers or wrapper functions.
+	 * @param cookie
+	 * @param data
+	 * @param len
+	 * @return
+	 */
 	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
 			uint32_t *size) = 0;
 
