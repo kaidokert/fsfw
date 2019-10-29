@@ -40,7 +40,7 @@ public:
 	virtual void close(Cookie *cookie) = 0;
 
 	//SHOULDDO can data be const?
-	virtual ReturnValue_t sendMessage(Cookie *cookie, uint8_t *data,
+	virtual ReturnValue_t sendMessage(Cookie *cookie,const uint8_t *data,
 			uint32_t len) = 0;
 
 	virtual ReturnValue_t getSendSuccess(Cookie *cookie) = 0;
