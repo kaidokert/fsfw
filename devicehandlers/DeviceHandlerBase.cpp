@@ -11,7 +11,6 @@
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/ipc/QueueFactory.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <mission/test/DummyCookie.h>
 
 object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
