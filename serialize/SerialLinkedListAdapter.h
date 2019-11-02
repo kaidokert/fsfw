@@ -17,12 +17,20 @@
  * An alternative to the AutoSerializeAdapter functions to implement the conversion
  * of object data to data streams or vice-versa, using linked lists.
  *
- * All object members with a datatype are declared as SerializeElement<element_type> inside the class.
+ * All object members with a datatype are declared as SerializeElement<element_type> inside the class
+ * implementing this adapter.
  *
  * Buffers with a size header inside that class can be declared with
  * SerialFixedArrayListAdapter<uint8_t,MAX_BUFFER_LENGTH,typeOfMaxData>.
  * typeOfMaxData specifies the data type of the buffer header containing the buffer size that follows
  * and MAX_BUFFER_LENGTH specifies the maximum allowed value for the buffer size.
+ * Please note that a direct link from a linked element to a SerialFixedArrayListAdapter element is not possible and a
+ * helper needs to be used by calling <LinkedElement>.setNext(&linkHelper)
+ * and initialising the link helper as linkHelper(&SerialFixedArrayListAdapterElement).
+ *
+ * For buffers with no size header, declare
+ * SerializeElement<SerializeBufferAdapter<T>> and initialise the buffer adapter in the constructor.
+ *
  * The sequence of objects is defined in the constructor by using the setStart and setNext functions.
  *
  * The serialization and deserialization process is done by instantiating the class and

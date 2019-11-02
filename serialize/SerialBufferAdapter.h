@@ -5,6 +5,14 @@
 #include <framework/serialize/SerializeAdapter.h>
 
 /**
+ * This adapter provides an interface for SerializeIF to serialize or deserialize
+ * buffers with no length header but a known size.
+ *
+ * Additionally, the buffer length can be serialized too and will be put in front of the serialized buffer.
+ *
+ * Can be used with SerialLinkedListAdapter by declaring a SerializeElement with
+ * SerialElement<SerialBufferAdapter<T(will be uint8_t mostly)>> serialBufferElement
+ *
  * \ingroup serialize
  */
 template<typename T>

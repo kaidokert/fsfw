@@ -5,15 +5,15 @@
 
 template<typename T>
 SerialBufferAdapter<T>::SerialBufferAdapter(const uint8_t* buffer,
-		T bufferLength, bool serializeLenght) :
-		serializeLength(serializeLenght), constBuffer(buffer), buffer(NULL), bufferLength(
+		T bufferLength, bool serializeLength) :
+		serializeLength(serializeLength), constBuffer(buffer), buffer(NULL), bufferLength(
 				bufferLength) {
 }
 
 template<typename T>
 SerialBufferAdapter<T>::SerialBufferAdapter(uint8_t* buffer, T bufferLength,
-		bool serializeLenght) :
-		serializeLength(serializeLenght), constBuffer(NULL), buffer(buffer), bufferLength(
+		bool serializeLength) :
+		serializeLength(serializeLength), constBuffer(NULL), buffer(buffer), bufferLength(
 				bufferLength) {
 }
 
