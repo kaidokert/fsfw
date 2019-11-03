@@ -255,9 +255,9 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 
 ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
 		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
-		uint8_t periodic, bool hasDifferentReplyId, DeviceCommandId_t replyId) {
-//No need to check, as we may try to insert multiple times.
-	insertInCommandMap(deviceCommand);
+		uint8_t periodic, uint8_t expectedReplies, bool hasDifferentReplyId, DeviceCommandId_t replyId) {
+	//No need to check, as we may try to insert multiple times.
+	insertInCommandMap(deviceCommand,expectedReplies);
 	if (hasDifferentReplyId) {
 		return insertInReplyMap(replyId, maxDelayCycles, periodic);
 	} else {
@@ -283,9 +283,9 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
 }
 
 ReturnValue_t DeviceHandlerBase::insertInCommandMap(
-		DeviceCommandId_t deviceCommand) {
+		DeviceCommandId_t deviceCommand, uint8_t expectedReplies) {
 	DeviceCommandInfo info;
-	info.expectedReplies = 0;
+	info.expectedReplies = expectedReplies;
 	info.isExecuting = false;
 	info.sendReplyTo = NO_COMMANDER;
 	std::pair<std::map<DeviceCommandId_t, DeviceCommandInfo>::iterator, bool> returnValue;
@@ -712,6 +712,7 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 		DeviceCommandId_t foundId, uint32_t foundLen) {
 	ReturnValue_t result;
 	DeviceReplyMap::iterator iter = deviceReplyMap.find(foundId);
+	MessageQueueId_t commander;
 
 	if (iter == deviceReplyMap.end()) {
 		replyRawReplyIfnotWiretapped(receivedData, foundLen);
@@ -728,7 +729,17 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 		} else {
 			info->delayCycles = 0;
 		}
-		result = interpretDeviceReply(foundId, receivedData);
+
+		DeviceCommandMap::iterator commandIter = deviceCommandMap.find(foundId);
+		// could be a reply only packet
+		if(commandIter == deviceCommandMap.end()) {
+			commander = 0;
+		}
+		else {
+			commander = commandIter->second.sendReplyTo;
+		}
+
+		result = interpretDeviceReply(foundId, receivedData,commander);
 		if (result != RETURN_OK) {
 			//Report failed interpretation to FDIR.
 			replyRawReplyIfnotWiretapped(receivedData, foundLen);
@@ -798,7 +809,7 @@ void DeviceHandlerBase::modeChanged(void) {
 }
 
 ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(
-		DeviceCommandMap::iterator command, uint8_t expectedReplies,
+		DeviceCommandMap::iterator command,/* uint8_t expectedReplies, */
 		bool useAlternativeId, DeviceCommandId_t alternativeReply) {
 	DeviceReplyMap::iterator iter;
 	if (useAlternativeId) {
@@ -810,7 +821,7 @@ ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(
 		DeviceReplyInfo *info = &(iter->second);
 		info->delayCycles = info->maxDelayCycles;
 		info->command = command;
-		command->second.expectedReplies = expectedReplies;
+		// command->second.expectedReplies = expectedReplies;
 		return RETURN_OK;
 	} else {
 		return NO_REPLY_EXPECTED;
@@ -1108,8 +1119,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 
 			// hiding of sender needed so the service will handle it as unexpected Data, no matter what state
 			//(progress or completed) it is in
-			actionHelper.reportData(defaultRawReceiver, replyId, &wrapper,
-			true);
+			actionHelper.reportData(defaultRawReceiver, replyId, &wrapper);
 
 		}
 	} else { //unrequested/aperiodic replies
@@ -1122,7 +1132,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 			true);
 		}
 	}
-//Try to cast to DataSet and commit data.
+	//Try to cast to DataSet and commit data.
 	if (!neverInDataPool) {
 		DataSet* dataSet = dynamic_cast<DataSet*>(data);
 		if (dataSet != NULL) {
