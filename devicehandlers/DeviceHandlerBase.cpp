@@ -1119,7 +1119,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 
 			// hiding of sender needed so the service will handle it as unexpected Data, no matter what state
 			//(progress or completed) it is in
-			actionHelper.reportData(defaultRawReceiver, replyId, &wrapper);
+			actionHelper.reportData(defaultRawReceiver, replyId, &wrapper, true);
 
 		}
 	} else { //unrequested/aperiodic replies
