@@ -285,7 +285,8 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
 ReturnValue_t DeviceHandlerBase::insertInCommandMap(
 		DeviceCommandId_t deviceCommand, uint8_t expectedReplies) {
 	DeviceCommandInfo info;
-	info.expectedReplies = expectedReplies;
+	info.expectedReplies = 0;
+	info.expectedRepliesWhenEnablingReplyMap = expectedReplies;
 	info.isExecuting = false;
 	info.sendReplyTo = NO_COMMANDER;
 	std::pair<std::map<DeviceCommandId_t, DeviceCommandInfo>::iterator, bool> returnValue;
@@ -821,7 +822,7 @@ ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(
 		DeviceReplyInfo *info = &(iter->second);
 		info->delayCycles = info->maxDelayCycles;
 		info->command = command;
-		// command->second.expectedReplies = expectedReplies;
+		command->second.expectedReplies = command->second.expectedRepliesWhenEnablingReplyMap;
 		return RETURN_OK;
 	} else {
 		return NO_REPLY_EXPECTED;

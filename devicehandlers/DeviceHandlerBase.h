@@ -704,7 +704,8 @@ protected:
 
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.
-		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected.
+		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected. Inititated with 0.
+		uint8_t expectedRepliesWhenEnablingReplyMap; //!< Constant value which specifies expected replies when enabling reply map. Inititated in insertInCommandAndReplyMap()
 		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
 	};
 
@@ -732,8 +733,12 @@ protected:
 	 * 				do not expect a reply.
 	 */
 	// Proposal: Set expected replies in insertInCommandAndReplyMap so we don't have to overwrite that function anymore.
+	// Replies are only checked when a write was issued and the default value here was one, so
+	// it should be possible to set this in the DeviceCommandMap with default value one.
+	// UPDATE: The default value of 0 when inserting into command and reply map is retained now by introducing a new
+	// variable in the DeviceCommandInfo which specifies expected replies if this function is called.
 	virtual ReturnValue_t enableReplyInReplyMap(DeviceCommandMap::iterator cmd,
-			/* uint8_t expectedReplies = 0 */ bool useAlternateId = false,
+			/* uint8_t expectedReplies = 1, */ bool useAlternateId = false,
 			DeviceCommandId_t alternateReplyID = 0);
 
 	/**
