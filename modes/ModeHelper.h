@@ -16,11 +16,17 @@ public:
 	ModeHelper(HasModesIF *owner);
 	virtual ~ModeHelper();
 
+	/**
+	 * This is used by DHB to handle all mode messages issued by a service
+	 * @param message
+	 * @return
+	 */
 	ReturnValue_t handleModeCommand(CommandMessage *message);
 
 	/**
 	 *
-	 * @param parentQueue the Queue id of the parent object. Set to 0 if no parent present
+	 * @param parentQueue the Queue id of the parent object (assembly or subsystem object).
+	 *        Set to 0 if no parent present
 	 */
 	void setParentQueue(MessageQueueId_t parentQueueId);
 
@@ -28,6 +34,11 @@ public:
 
 	ReturnValue_t initialize(void); //void is there to stop eclipse CODAN from falsely reporting an error
 
+	/**
+	 * Used to notify
+	 * @param mode
+	 * @param submode
+	 */
 	void modeChanged(Mode_t mode, Submode_t submode);
 
 	void startTimer(uint32_t timeoutMs);

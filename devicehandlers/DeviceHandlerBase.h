@@ -576,8 +576,9 @@ protected:
 	 *		 			Default is aperiodic (0)
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
+	// Proposal: Set expected replies for a command in insertInCommandAndReplyMap so we don't have to overwrite enableReplyInReplyMap
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, uint8_t periodic = 0,
+			uint16_t maxDelayCycles, uint8_t periodic = 0, uint8_t expectedReplies = 1,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 	/**
 	 * This is a helper method to insert replies in the reply map.
@@ -594,7 +595,7 @@ protected:
 	 * @param deviceCommand The command to add
 	 * @return RETURN_OK if the command was successfully inserted, RETURN_FAILED else.
 	 */
-	ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand);
+	ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand, uint8_t expectedReplies = 1);
 	/**
 	 * This is a helper method to facilitate updating entries in the reply map.
 	 * @param deviceCommand		Identifier of the reply to update.
@@ -644,18 +645,19 @@ protected:
 	 *
 	 * This is called after scanForReply() found a valid packet, it can be assumed that the length and structure is valid.
 	 * This routine extracts the data from the packet into a DataSet and then calls handleDeviceTM(), which either sends
-	 * a TM packet or stores the data in the DataPool depending on whether the it was an external command.
+	 * a TM packet or stores the data in the DataPool depending on whether it was an external command.
 	 * No packet length is given, as it should be defined implicitly by the id.
 	 *
 	 * @param id the id found by scanForReply()
 	 * @param packet
-	 * @param commander the one who initiated the command, is 0 if not external commanded
+	 * @param commander the one who initiated the command, is 0 if not external commanded.
+	 *        UPDATE: This parameter does not exist anymore. Why?
 	 * @return
 	 *     - @c RETURN_OK when the reply was interpreted.
 	 *     - @c RETURN_FAILED when the reply could not be interpreted, eg. logical errors or range violations occurred
 	 */
 	virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id,
-			const uint8_t *packet) = 0;
+			const uint8_t *packet, MessageQueueId_t commander = 0) = 0;
 
 	/**
 	 * Construct a command reply containing a raw reply.
@@ -702,7 +704,8 @@ protected:
 
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.
-		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected.
+		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected. Inititated with 0.
+		uint8_t expectedRepliesWhenEnablingReplyMap; //!< Constant value which specifies expected replies when enabling reply map. Inititated in insertInCommandAndReplyMap()
 		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
 	};
 
@@ -723,13 +726,19 @@ protected:
 	 * 	- If the command was not found in the reply map, NO_REPLY_EXPECTED MUST be returned.
 	 * 	- A failure code may be returned if something went fundamentally wrong.
 	 *
+	 *
 	 * @param deviceCommand
 	 * @return 	- RETURN_OK if a reply was activated.
 	 * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an error case as many commands
 	 * 				do not expect a reply.
 	 */
+	// Proposal: Set expected replies in insertInCommandAndReplyMap so we don't have to overwrite that function anymore.
+	// Replies are only checked when a write was issued and the default value here was one, so
+	// it should be possible to set this in the DeviceCommandMap with default value one.
+	// UPDATE: The default value of 0 when inserting into command and reply map is retained now by introducing a new
+	// variable in the DeviceCommandInfo which specifies expected replies if this function is called.
 	virtual ReturnValue_t enableReplyInReplyMap(DeviceCommandMap::iterator cmd,
-			uint8_t expectedReplies = 1, bool useAlternateId = false,
+			/* uint8_t expectedReplies = 1, */ bool useAlternateId = false,
 			DeviceCommandId_t alternateReplyID = 0);
 
 	/**
