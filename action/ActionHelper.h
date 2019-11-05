@@ -74,7 +74,7 @@ public:
 protected:
 	static const uint8_t STEP_OFFSET = 1;//!< Increase of value of this per step
 	HasActionsIF* owner;//!< Pointer to the owner
-	MessageQueueIF* queueToUse;//!< Queue to be used as response sender, has to be set with @c setQueueToUse
+	MessageQueueIF* queueToUse;//!< Queue to be used as response sender, has to be set with
 	StorageManagerIF* ipcStore;//!< Pointer to an IPC Store, initialized during construction or initialize(MessageQueueIF* queueToUse_) or with setQueueToUse(MessageQueueIF *queue)
 	/**
 	 *Internal function called by handleActionMessage(CommandMessage* command)
