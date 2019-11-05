@@ -16,10 +16,11 @@ object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
-DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
-		uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
-		object_id_t deviceCommunication, uint32_t ioBoardAddress, uint32_t thermalStatePoolId,
-		uint32_t thermalRequestPoolId, FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
+DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
+		object_id_t setObjectId, uint32_t maxDeviceReplyLen,
+		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
+		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
+		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
 		SystemObject(setObjectId),ioBoardAddress(ioBoardAddress), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
 		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
 		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
