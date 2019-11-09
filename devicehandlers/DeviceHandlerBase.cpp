@@ -21,7 +21,7 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t logicalAddress_,
 		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
-		SystemObject(setObjectId),logicalAddress(logicalAddress_), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
+		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
 		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
 		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		requestedRawTraffic(0), powerSwitcher(NULL), IPCStore(NULL),
@@ -31,7 +31,7 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t logicalAddress_,
 		modeHelper(this), parameterHelper(this), childTransitionFailure(RETURN_OK),
 		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
 		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
-		executingTask(NULL), actionHelper(this, NULL), cookieInfo(),
+		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), logicalAddress(logicalAddress_),
 		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
 		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
@@ -1018,6 +1018,7 @@ void DeviceHandlerBase::replyRawReplyIfnotWiretapped(const uint8_t* data,
 	}
 }
 
+
 ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 		CommandMessage * message) {
 	ReturnValue_t result;
@@ -1271,4 +1272,6 @@ void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 void DeviceHandlerBase::debugInterface(uint8_t positionTracker) {
 }
 
-
+uint32_t DeviceHandlerBase::getLogicalAddress() {
+	return logicalAddress;
+}

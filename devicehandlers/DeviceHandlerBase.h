@@ -147,11 +147,6 @@ public:
 	virtual  void setTaskIF(PeriodicTaskIF* task_);
 protected:
 	/**
-	* cached from ctor for initialize()
-	*/
-	const uint32_t logicalAddress;
-
-	/**
 	 * The Returnvalues id of this class, required by HasReturnvaluesIF
 	 */
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
@@ -763,6 +758,11 @@ protected:
 	 */
 	virtual bool dontCheckQueue();
 
+	/**
+	 * Used to retrieve logical address
+	 * @return
+	 */
+	virtual uint32_t getLogicalAddress();
 	Mode_t getBaseMode(Mode_t transitionMode);
 
 	bool isAwaitingReply();
@@ -775,7 +775,6 @@ protected:
 	virtual void startTransition(Mode_t mode, Submode_t submode);
 	virtual void setToExternalControl();
 	virtual void announceMode(bool recursive);
-
 	virtual ReturnValue_t letChildHandleMessage(CommandMessage *message);
 
 	/**
@@ -862,6 +861,8 @@ protected:
 
 private:
 
+
+
 	/**
 	 * State a cookie is in.
 	 *
@@ -892,6 +893,10 @@ private:
 	 */
 	CookieInfo cookieInfo;
 
+	/**
+	* cached from ctor for initialize()
+	*/
+	const uint32_t logicalAddress;
 
 	/**
 	 * Used for timing out mode transitions.
