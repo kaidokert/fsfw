@@ -553,12 +553,13 @@ protected:
 	 * @brief   Can be implemented by child handler to
 	 *          perform debugging
 	 * @details Example: Calling this in performOperation
-	 *          to track values like mode. An optional position tracker can be supplied
-	 *          to provide the child handler a way to know where the debugInterface was called
-	 *
+	 *          to track values like mode.
+	 * @param positionTracker Provide the child handler a way to know where the debugInterface was called
+	 * @param objectId Provide the child handler object Id to specify actions for spefic devices
+	 * @param parameter Supply a parameter of interest
 	 * Please delete all debugInterface calls in DHB after debugging is finished !
 	 */
-	virtual void debugInterface(uint8_t positionTracker = 0);
+	virtual void debugInterface(uint8_t positionTracker = 0, object_id_t objectId = 0, uint32_t parameter = 0);
 
 	/**
 	 * This is a helper method to facilitate inserting entries in the command map.

@@ -33,14 +33,15 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t logicalAddress_,
 		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
 		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), logicalAddress(logicalAddress_),
 		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
-		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
-	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
-			CommandMessage::MAX_MESSAGE_SIZE);
+		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch)
+{
+	commandQueue = QueueFactory::instance()->
+			createMessageQueue(cmdQueueSize, CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);
 	if (this->fdirInstance == NULL) {
-		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
-				defaultFDIRParentId);
+		this->fdirInstance =
+				new DeviceHandlerFailureIsolation(setObjectId, defaultFDIRParentId);
 	}
 }
 
@@ -468,7 +469,6 @@ void DeviceHandlerBase::doGetWrite() {
 
 void DeviceHandlerBase::doSendRead() {
 	ReturnValue_t result;
-
 	result = communicationInterface->requestReceiveMessage(cookie);
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
@@ -1269,7 +1269,7 @@ void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 			executingTask = task_;
 }
 
-void DeviceHandlerBase::debugInterface(uint8_t positionTracker) {
+void DeviceHandlerBase::debugInterface(uint8_t positionTracker, object_id_t objectId, uint32_t parameter) {
 }
 
 uint32_t DeviceHandlerBase::getLogicalAddress() {
