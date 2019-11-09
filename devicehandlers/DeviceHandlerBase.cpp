@@ -834,8 +834,9 @@ ReturnValue_t DeviceHandlerBase::getStateOfSwitches(void) {
 	ReturnValue_t result = getSwitches(&switches, &numberOfSwitches);
 	if ((result == RETURN_OK) && (numberOfSwitches != 0)) {
 		while (numberOfSwitches > 0) {
-			if (powerSwitcher->getSwitchState(switches[numberOfSwitches - 1])
-					== PowerSwitchIF::SWITCH_OFF) {
+			if (powerSwitcher-> getSwitchState(switches[numberOfSwitches - 1])
+				== PowerSwitchIF::SWITCH_OFF)
+			{
 				return PowerSwitchIF::SWITCH_OFF;
 			}
 			numberOfSwitches--;
@@ -1265,6 +1266,9 @@ void DeviceHandlerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
 
 void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 			executingTask = task_;
+}
+
+void DeviceHandlerBase::debugInterface(uint8_t positionTracker) {
 }
 
 

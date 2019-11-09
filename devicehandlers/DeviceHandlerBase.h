@@ -553,6 +553,18 @@ protected:
 	 */
 	virtual void fillCommandAndReplyMap() = 0;
 
+
+	/**
+	 * @brief   Can be implemented by child handler to
+	 *          perform debugging
+	 * @details Example: Calling this in performOperation
+	 *          to track values like mode. An optional position tracker can be supplied
+	 *          to provide the child handler a way to know where the debugInterface was called
+	 *
+	 * Please delete all debugInterface calls in DHB after debugging is finished !
+	 */
+	virtual void debugInterface(uint8_t positionTracker = 0);
+
 	/**
 	 * This is a helper method to facilitate inserting entries in the command map.
 	 * @param deviceCommand	Identifier of the command to add.
