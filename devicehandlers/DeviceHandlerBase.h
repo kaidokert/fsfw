@@ -76,7 +76,7 @@ public:
 	 * @param maxDeviceReplyLen the length the RMAP getRead call will be sent with
 	 * @param setDeviceSwitch the switch the device is connected to, for devices using two switches, overwrite getSwitches()
 	 */
-	DeviceHandlerBase(uint32_t ioBoardAddress, object_id_t setObjectId,
+	DeviceHandlerBase(uint32_t logicalAddress, object_id_t setObjectId,
 			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
 			object_id_t deviceCommunication, uint32_t thermalStatePoolId =
 					PoolVariableIF::NO_PARAMETER,
@@ -149,7 +149,7 @@ protected:
 	/**
 	* cached from ctor for initialize()
 	*/
-	const uint32_t ioBoardAddress;
+	const uint32_t logicalAddress;
 
 	/**
 	 * The Returnvalues id of this class, required by HasReturnvaluesIF

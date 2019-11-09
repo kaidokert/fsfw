@@ -16,12 +16,12 @@ object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
-DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
+DeviceHandlerBase::DeviceHandlerBase(uint32_t logicalAddress_,
 		object_id_t setObjectId, uint32_t maxDeviceReplyLen,
 		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
-		SystemObject(setObjectId),ioBoardAddress(ioBoardAddress), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
+		SystemObject(setObjectId),logicalAddress(logicalAddress_), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
 		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
 		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		requestedRawTraffic(0), powerSwitcher(NULL), IPCStore(NULL),
@@ -589,7 +589,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return RETURN_FAILED;
 	}
 
-	result = communicationInterface->open(&cookie, ioBoardAddress,
+	result = communicationInterface->open(&cookie, logicalAddress,
 			maxDeviceReplyLen);
 	if (result != RETURN_OK) {
 		return result;
@@ -750,7 +750,7 @@ ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
 			DeviceCommunicationIF>(newChannelId);
 
 	if (newCommunication != NULL) {
-		ReturnValue_t result = newCommunication->reOpen(cookie, ioBoardAddress,
+		ReturnValue_t result = newCommunication->reOpen(cookie, logicalAddress,
 				maxDeviceReplyLen);
 		if (result != RETURN_OK) {
 			return result;
