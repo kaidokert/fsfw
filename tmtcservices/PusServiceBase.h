@@ -52,7 +52,7 @@ public:
 	 * Success or Failure Reports are generated automatically after execution of this method.
 	 * If a Telecommand can not be executed within one call cycle, this Base class is not the right parent.
 	 * The child class may add additional error information in #errorParameters which are attached to the generated
-	 * verification message.
+	 * verification message. Subservice checking should be implemented in this method.
 	 * @return	The returned status_code is directly taken as main error code in the Verification Report.
 	 * 			On success, RETURN_OK shall be returned.
 	 */
