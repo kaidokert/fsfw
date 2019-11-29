@@ -153,7 +153,8 @@ protected:
 
 	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(4);
 	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5); //!< This is used to specify for replies from a device which are not replies to requests
-	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(6);
+	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(6); //!< Ignore parts of the received packet
+	static const ReturnValue_t IGNORE_FULL_PACKET = MAKE_RETURN_CODE(7); //!< Ignore full received packet
 //	static const ReturnValue_t ONE_SWITCH = MAKE_RETURN_CODE(8);
 //	static const ReturnValue_t TWO_SWITCHES = MAKE_RETURN_CODE(9);
 	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(10);
@@ -607,6 +608,7 @@ protected:
 	 * @return	The current delay count. If the command does not exist (should never happen) it returns 0.
 	 */
 	uint8_t getReplyDelayCycles(DeviceCommandId_t deviceCommand);
+
 	/**
 	 * Scans a buffer for a valid reply.
 	 *
@@ -618,15 +620,17 @@ protected:
 	 * Errors should be reported directly, the base class does NOT report any errors based on the return
 	 * value of this function.
 	 *
-	 * @param start start of data
-	 * @param len length of data
-	 * @param[out] foundId the id of the packet starting at @c start
-	 * @param[out] foundLen length of the packet found
+	 * @param start start of remaining buffer to be scanned
+	 * @param len length of remaining buffer to be scanned
+	 * @param[out] foundId the id of the data found in the buffer.
+	 * @param[out] foundLen length of the data found. Is to be set in function, buffer is scanned at previous position + foundLen.
 	 * @return
 	 *     - @c RETURN_OK a valid packet was found at @c start, @c foundLen is valid
 	 *     - @c RETURN_FAILED no reply could be found starting at @c start, implies @c foundLen is not valid, base class will call scanForReply() again with ++start
 	 *     - @c DeviceHandlerIF::INVALID_DATA a packet was found but it is invalid, eg checksum error, implies @c foundLen is valid, can be used to skip some bytes
 	 *     - @c DeviceHandlerIF::LENGTH_MISSMATCH @c len is invalid
+	 *     - @c DeviceHandlerIF::IGNORE_REPLY_DATA Ignore this specific part of the packet
+	 *     - @c DeviceHandlerIF::IGNORE_FULL_PACKET Ignore the packet
 	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been requested by a command, but should be handled anyway (@see also fillCommandAndCookieMap() )
 	 */
 	virtual ReturnValue_t scanForReply(const uint8_t *start, uint32_t len,

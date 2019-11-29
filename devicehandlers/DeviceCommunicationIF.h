@@ -62,7 +62,8 @@ public:
 	 * @param cookie
 	 * @param data
 	 * @param len
-	 * @return
+	 * @return @c RETURN_OK for successfull send
+	 *         Everything else triggers sending failed event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t sendMessage(Cookie *cookie,const uint8_t *data,
 			uint32_t len) = 0;
@@ -78,7 +79,8 @@ public:
 	 * @param cookie
 	 * @param data
 	 * @param len
-	 * @return
+	 * @return @c RETURN_OK for successfull receive
+	 *         Everything else triggers receiving failed with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
 			uint32_t *size) = 0;
