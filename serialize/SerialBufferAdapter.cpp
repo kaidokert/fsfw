@@ -1,8 +1,6 @@
 #include <framework/serialize/SerialBufferAdapter.h>
 #include <cstring>
 
-
-
 template<typename T>
 SerialBufferAdapter<T>::SerialBufferAdapter(const uint8_t* buffer,
 		T bufferLength, bool serializeLength) :
@@ -15,6 +13,13 @@ SerialBufferAdapter<T>::SerialBufferAdapter(uint8_t* buffer, T bufferLength,
 		bool serializeLength) :
 		serializeLength(serializeLength), constBuffer(NULL), buffer(buffer), bufferLength(
 				bufferLength) {
+}
+
+template<typename T>
+SerialBufferAdapter<T>::SerialBufferAdapter(uint32_t* buffer,
+		T bufferLength, bool serializeLength) :
+		serializeLength(serializeLength), constBuffer(NULL), buffer(reinterpret_cast<uint8_t *>(buffer)),
+		bufferLength(bufferLength*4) {
 }
 
 template<typename T>
@@ -86,6 +91,10 @@ ReturnValue_t SerialBufferAdapter<T>::deSerialize(const uint8_t** buffer,
 	}
 }
 
+template<typename T>
+uint8_t * SerialBufferAdapter<T>::getBuffer() {
+	return buffer;
+}
 
 //forward Template declaration for linker
 template class SerialBufferAdapter<uint8_t>;
