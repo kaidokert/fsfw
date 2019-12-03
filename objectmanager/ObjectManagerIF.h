@@ -79,11 +79,7 @@ public:
 };
 
 /**
- * Used to retrieve Target Interface Pointers of objects.
- * The object has to implement the SystemObject or SystemObjectIF at the very least,
- * otherwise NULL will be returned.
- * @param id
- * @return NULL or pointer to target interface specified by template object
+ * @brief Documentation can be found in the class method declration.
  */
 template <typename T>
 T* ObjectManagerIF::get( object_id_t id ) {

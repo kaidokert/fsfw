@@ -35,14 +35,14 @@ class StorageManagerIF;
 
 
 /**
- * \brief This is the abstract base class for device handlers.
- *
+ * @brief This is the abstract base class for device handlers.
+ * @details
  * Documentation: Dissertation Baetz p.138,139, p.141-149
  *
  * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, communication with
  * physical devices, using the @link DeviceCommunicationIF, and communication with commanding objects.
  *
- * NOTE: RMAP is a legacy standard which is used for FLP.
+ * NOTE: RMAP is a standard which is used for FLP.
  * RMAP communication is not mandatory for projects implementing the FSFW.
  * However, the communication principles are similar to RMAP as there are two write and two send calls involved.
  *
@@ -57,7 +57,7 @@ class StorageManagerIF;
  * Components and drivers can send so called cookies which are used for communication
  * and contain information about the communcation (e.g. slave address for I2C or RMAP structs).
  *
- * \ingroup devices
+ * @ingroup devices
  */
 class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasReturnvaluesIF,
@@ -87,33 +87,34 @@ public:
 
 
 	/**
-		 * This function is the device handler base core component and is called periodically.
-		 * General sequence:
-		 * If the State is SEND_WRITE:
-		 *   1. Set the cookie state to COOKIE_UNUSED and read the command queue
-		 *   2. Handles Device State Modes by calling doStateMachine().
-		 *      This function calls callChildStatemachine() which calls the abstract functions
-		 *      doStartUp() and doShutDown()
-		 *   3. Check switch states by calling checkSwitchStates()
-		 *   4. Decrements counter for timeout of replies by calling decrementDeviceReplyMap()
-		 *   5. Performs FDIR check for failures
-		 *   6. Calls hkSwitcher.performOperation()
-		 *   7. If the device mode is MODE_OFF, return RETURN_OK. Otherwise, perform the Action property
-		 *   	and performs depending on value specified
-		 *      by input value counter. The child class tells base class what to do by setting this value.
-		 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite() which calls
-		 *       sendMessage function of #communicationInterface
-		 *     	 and calls buildInternalCommand if the cookie state is COOKIE_UNUSED
-		 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite() which calls
-		 *       getSendSuccess of #communicationInterface.
-		 *       Calls abstract functions scanForReply() and interpretDeviceReply().
-		 *     - SEND_READ: Request reading data from device by calling doSendRead() which calls
-		 *       requestReceiveMessage of #communcationInterface
-		 *     - GET_READ: Access requested reading data by calling doGetRead() which calls
-		 *       readReceivedMessage of #communicationInterface
-		 * @param counter Specifies which Action to perform
-		 * @return RETURN_OK for successful execution
-		 */
+	 * @brief This function is the device handler base core component and is called periodically.
+	 * @details
+	 * General sequence, showing where abstract virtual functions are called:
+	 * If the State is SEND_WRITE:
+	 *   1. Set the cookie state to COOKIE_UNUSED and read the command queue
+	 *   2. Handles Device State Modes by calling doStateMachine().
+	 *      This function calls callChildStatemachine() which calls the abstract functions
+	 *      doStartUp() and doShutDown()
+	 *   3. Check switch states by calling checkSwitchStates()
+	 *   4. Decrements counter for timeout of replies by calling decrementDeviceReplyMap()
+	 *   5. Performs FDIR check for failures
+	 *   6. Calls hkSwitcher.performOperation()
+	 *   7. If the device mode is MODE_OFF, return RETURN_OK. Otherwise, perform the Action property
+	 *   	and performs depending on value specified
+	 *      by input value counter. The child class tells base class what to do by setting this value.
+	 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite() which calls
+	 *       sendMessage function of #communicationInterface
+	 *     	 and calls buildInternalCommand if the cookie state is COOKIE_UNUSED
+	 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite() which calls
+	 *       getSendSuccess of #communicationInterface.
+	 *       Calls abstract functions scanForReply() and interpretDeviceReply().
+	 *     - SEND_READ: Request reading data from device by calling doSendRead() which calls
+	 *       requestReceiveMessage of #communcationInterface
+	 *     - GET_READ: Access requested reading data by calling doGetRead() which calls
+	 *       readReceivedMessage of #communicationInterface
+	 * @param counter Specifies which Action to perform
+	 * @return RETURN_OK for successful execution
+	 */
 	virtual ReturnValue_t performOperation(uint8_t counter);
 
 	virtual ReturnValue_t initialize();

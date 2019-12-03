@@ -3,6 +3,7 @@
 
 #include <framework/datapool/DataSetIF.h>
 #include <framework/datapool/PoolVariableIF.h>
+#include <framework/globalfunctions/Type.h>
 
 /**
  * This class allows accessing Data Pool variables as raw bytes.
@@ -79,9 +80,8 @@ public:
 	~PoolRawAccess();
 	/**
 	 * \brief	This operation returns a pointer to the entry fetched.
-	 * \details	This means, it does not return a pointer to byte "index", but to the start byte of
-	 * 			array entry "index". Example: If the original data pool array consists of an double
-	 * 			array of size four, getEntry(1) returns &(this->value[8]).
+	 * \details	Return pointer to the buffer containing the raw data
+	 *          Size and number of data can be retrieved by other means.
 	 */
 	uint8_t* getEntry();
 	/**

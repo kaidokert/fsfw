@@ -112,8 +112,7 @@ public:
 	 * 					corresponds to.
 	 * \param dataSet	The data set in which the variable shall register itself. If NULL,
 	 * 					the variable is not registered.
-	 * \param setWritable If this flag is set to true, changes in the value attribute can be
-	 * 					written back to the data pool, otherwise not.
+	 * \param setReadWriteMode
 	 */
 	PoolVariable(uint32_t set_id, DataSetIF* dataSet,
 			ReadWriteMode_t setReadWriteMode) :
