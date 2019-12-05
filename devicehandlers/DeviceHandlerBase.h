@@ -331,9 +331,10 @@ protected:
 			uint32_t parameter = 0);
 
 	/**
-	 *
-
-	 * @param parameter2 additional parameter
+	 * Send reply to a command, differentiate between raw command
+	 * and normal command.
+	 * @param status
+	 * @param parameter
 	 */
 	void replyToCommand(ReturnValue_t status, uint32_t parameter = 0);
 
@@ -532,10 +533,9 @@ protected:
 			size_t commandDataLen) = 0;
 
 	/**
-	 * fill the #deviceCommandMap
-	 *
-	 * called by the initialize() of the base class
-	 *
+	 * @brief fill the #deviceCommandMap
+	 *	 	  called by the initialize() of the base class
+	 * @details
 	 * This is used to let the base class know which replies are expected.
 	 * There are different scenarios regarding this:
 	 * - "Normal" commands. These are commands, that trigger a direct reply from the device. In this case, the id of the command should be added to the command map
@@ -556,9 +556,9 @@ protected:
 	 *          perform debugging
 	 * @details Example: Calling this in performOperation
 	 *          to track values like mode.
-	 * @param positionTracker Provide the child handler a way to know where the debugInterface was called
-	 * @param objectId Provide the child handler object Id to specify actions for spefic devices
-	 * @param parameter Supply a parameter of interest
+	 * @param 	positionTracker Provide the child handler a way to know where the debugInterface was called
+	 * @param 	objectId Provide the child handler object Id to specify actions for spefic devices
+	 * @param 	parameter Supply a parameter of interest
 	 * Please delete all debugInterface calls in DHB after debugging is finished !
 	 */
 	virtual void debugInterface(uint8_t positionTracker = 0, object_id_t objectId = 0, uint32_t parameter = 0);
@@ -766,7 +766,7 @@ protected:
 
 	/**
 	 * Used to retrieve logical address
-	 * @return
+	 * @return logicalAddress
 	 */
 	virtual uint32_t getLogicalAddress();
 	Mode_t getBaseMode(Mode_t transitionMode);
@@ -863,11 +863,7 @@ protected:
 
 	ActionHelper actionHelper;
 
-
-
 private:
-
-
 
 	/**
 	 * State a cookie is in.
@@ -956,11 +952,6 @@ private:
 
 	void buildRawDeviceCommand(CommandMessage* message);
 	void buildInternalCommand(void);
-
-//	/**
-//	 * Send a reply with the current mode and submode.
-//	 */
-//	void announceMode(void);
 
 	/**
 	 * Decrement the counter for the timout of replies.
@@ -1066,6 +1057,11 @@ private:
 	 */
 	ReturnValue_t switchCookieChannel(object_id_t newChannelId);
 
+	/**
+	 * Handle device handler messages (e.g. commands sent by PUS Service 2)
+	 * @param message
+	 * @return
+	 */
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
 
 

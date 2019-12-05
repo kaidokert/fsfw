@@ -5,10 +5,10 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
 /**
- * Documentation: Dissertation Baetz p.138
- *
- * This is an interface to decouple device communication from
+ * @brief This is an interface to decouple device communication from
  * the device handler to allow reuse of these components.
+ * @details
+ * Documentation: Dissertation Baetz p.138
  * It works with the assumption that received data
  * is polled by a component. There are four generic steps of device communication:
  *

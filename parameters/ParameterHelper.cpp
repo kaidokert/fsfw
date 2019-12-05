@@ -3,7 +3,7 @@
 #include <framework/parameters/ParameterMessage.h>
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner) :
-		owner(owner), storage(NULL) {
+		owner(owner), ownerQueueId(0), storage(NULL){
 
 }
 
