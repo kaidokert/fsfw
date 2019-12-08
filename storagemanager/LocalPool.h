@@ -149,6 +149,8 @@ public:
 	 * 						The position of these values correspond to those in
 	 * 						element_sizes.
 	 * @param registered	Register the pool in object manager or not. Default is false (local pool).
+	 * @param spillsToHigherPools
+	 * 						A variable to determine whether higher n pools are used if the store is full.
 	 */
 	LocalPool(object_id_t setObjectId,
 			const uint16_t element_sizes[NUMBER_OF_POOLS],

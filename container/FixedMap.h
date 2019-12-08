@@ -6,8 +6,10 @@
 #include <utility>
 
 /**
- * @brief 	Implementation of a fixed map using an array list
- * @details Initialize with desired fixed size
+ * @brief 	Map implementation for maps with a pre-defined size.
+ * @details Can be initialized with desired maximum size.
+ * 	        Iterator is used to access <key,value> pair and
+ * 	        iterate through map entries.
  * @ingroup container
  */
 template<typename key_t, typename T>
@@ -54,18 +56,23 @@ public:
 			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
 		}
 
+		// -> operator overloaded, can be used to access value
 		T *operator->() {
 			return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
 		}
 
+		// Can be used to access the key of the iterator
 		key_t first() {
 			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->first;
 		}
 
+		// Alternative to access value, similar to std::map implementation
 		T second() {
 			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
 		}
 	};
+
+
 
 	Iterator begin() const {
 		return Iterator(&theMap[0]);
