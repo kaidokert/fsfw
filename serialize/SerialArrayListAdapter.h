@@ -27,6 +27,7 @@ public:
 
 	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) {
+		// Serialize length field first
 		ReturnValue_t result = SerializeAdapter<count_t>::serialize(&list->size,
 				buffer, size, max_size, bigEndian);
 		count_t i = 0;

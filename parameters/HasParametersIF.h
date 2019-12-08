@@ -46,7 +46,6 @@ public:
 	 * @param startAtIndex
 	 * @return
 	 */
-	// shouldnt startAtIndex be uint8?
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 			ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex) = 0;

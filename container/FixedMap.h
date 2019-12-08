@@ -6,7 +6,9 @@
 #include <utility>
 
 /**
- * \ingroup container
+ * @brief 	Implementation of a fixed map using an array list
+ * @details Initialize with desired fixed size
+ * @ingroup container
  */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
@@ -56,6 +58,13 @@ public:
 			return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
 		}
 
+		key_t first() {
+			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->first;
+		}
+
+		T second() {
+			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
+		}
 	};
 
 	Iterator begin() const {
@@ -87,7 +96,7 @@ public:
 	}
 
 	ReturnValue_t insert(std::pair<key_t, T> pair) {
-		return insert(pair.fist, pair.second);
+		return insert(pair.first, pair.second);
 	}
 
 	ReturnValue_t exists(key_t key) const {

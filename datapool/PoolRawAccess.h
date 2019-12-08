@@ -31,7 +31,7 @@ private:
 	 */
 	Type type;
 	/**
-	 * \brief	This value contains the size of the data pool entry in bytes.
+	 * \brief	This value contains the size of the data pool entry type in bytes.
 	 */
 	uint8_t typeSize;
 	/**
@@ -48,15 +48,7 @@ private:
 	ReadWriteMode_t readWriteMode;
 	static const uint8_t RAW_MAX_SIZE = sizeof(double);
 protected:
-	/**
-	 * \brief	This is a call to read the value from the global data pool.
-	 * \details	When executed, this operation tries to fetch the pool entry with matching
-	 * 			data pool id from the global data pool and copies the value and the valid
-	 * 			information to its local attributes. In case of a failure (wrong type or
-	 * 			pool id not found), the variable is set to zero and invalid.
-	 * 			The operation does NOT provide any mutual exclusive protection by itself.
-	 */
-	ReturnValue_t read();
+
 	/**
 	 * \brief	The commit call writes back the variable's value to the data pool.
 	 * \details	It checks type and size, as well as if the variable is writable. If so,
@@ -66,6 +58,7 @@ protected:
 	 */
 	ReturnValue_t commit();
 public:
+
 	static const uint8_t INTERFACE_ID = CLASS_ID::POOL_RAW_ACCESS_CLASS;
 	static const ReturnValue_t INCORRECT_SIZE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
@@ -78,6 +71,15 @@ public:
 	 * 			discarded and not written back to the data pool.
 	 */
 	~PoolRawAccess();
+	/**
+	 * \brief	This is a call to read the value from the global data pool.
+	 * \details	When executed, this operation tries to fetch the pool entry with matching
+	 * 			data pool id from the global data pool and copies the value and the valid
+	 * 			information to its local attributes. In case of a failure (wrong type or
+	 * 			pool id not found), the variable is set to zero and invalid.
+	 * 			The operation does NOT provide any mutual exclusive protection by itself.
+	 */
+	ReturnValue_t read();
 	/**
 	 * \brief	This operation returns a pointer to the entry fetched.
 	 * \details	Return pointer to the buffer containing the raw data

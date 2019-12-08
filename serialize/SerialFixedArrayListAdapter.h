@@ -24,10 +24,12 @@ public:
 	template<typename... Args>
 	SerialFixedArrayListAdapter(Args... args) : FixedArrayList<T, MAX_SIZE, count_t>(std::forward<Args>(args)...) {
 	}
+
 	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) const {
 		return SerialArrayListAdapter<T, count_t>::serialize(this, buffer, size, max_size, bigEndian);
 	}
+
 	uint32_t getSerializedSize() const {
 		return SerialArrayListAdapter<T, count_t>::getSerializedSize(this);
 	}

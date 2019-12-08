@@ -159,6 +159,15 @@ public:
 	 * @brief	In the LocalPool's destructor all allocated memory is freed.
 	 */
 	virtual ~LocalPool(void);
+
+	/**
+	 * Add data to local data pool, performs range check
+	 * @param storageId [out] Store ID in which the data will be stored
+	 * @param data
+	 * @param size
+	 * @param ignoreFault
+	 * @return @c RETURN_OK if write was successful
+	 */
 	ReturnValue_t addData(store_address_t* storageId, const uint8_t * data,
 			uint32_t size, bool ignoreFault = false);
 
@@ -171,8 +180,24 @@ public:
 	 */
 	ReturnValue_t getFreeElement(store_address_t* storageId,
 			const uint32_t size, uint8_t** p_data, bool ignoreFault = false);
+
+	/**
+	 * Retrieve data from local pool
+	 * @param packet_id
+	 * @param packet_ptr
+	 * @param size [out] Size of retrieved data
+	 * @return @c RETURN_OK if data retrieval was successfull
+	 */
 	ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
 			uint32_t* size);
+
+	/**
+	 * Modify data by supplying a previously obtaind packet pointer
+	 * @param packet_id Store ID of data to modify
+	 * @param packet_ptr
+	 * @param size [out] size of changed data
+	 * @return
+	 */
 	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
 			uint32_t* size);
 	virtual ReturnValue_t deleteData(store_address_t);
