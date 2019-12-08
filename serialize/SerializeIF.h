@@ -4,17 +4,18 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
 /**
- * \defgroup serialize Serialization
+ * @defgroup serialize Serialization
  * Contains serialisation services.
  */
 
 /**
- * An interface for alle classes which require translation of objects data into data streams and vice-versa.
- *
+ * @brief An interface for alle classes which require
+ *        translation of objects data into data streams and vice-versa.
+ * @details
  * If the target architecture is little endian (e.g. ARM), any data types created might
  * have the wrong endiness if they are to be used for the FSFW.
- * There are three ways to retrieve data out of a buffer to be used in the FSFW to use regular aligned (big endian) data.
- * This can also be applied to uint32_t and uint64_t:
+ * There are three ways to retrieve data out of a buffer to be used in the FSFW to use
+ * regular aligned (big endian) data. This can also be applied to uint32_t and uint64_t:
  *
  *   1. Use the @c AutoSerializeAdapter::deSerialize function with @c bigEndian = true
  *   2. Perform a bitshift operation
@@ -23,7 +24,7 @@
  * When serializing for downlink, the packets are generally serialized assuming big endian data format
  * like seen in TmPacketStored.cpp for example.
  *
- * \ingroup serialize
+ * @ingroup serialize
  */
 class SerializeIF {
 public:

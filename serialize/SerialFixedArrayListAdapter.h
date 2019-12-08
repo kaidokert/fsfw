@@ -5,18 +5,18 @@
 #include <framework/serialize/SerialArrayListAdapter.h>
 
 /**
- * This adapter provides an interface for SerializeIF to serialize and deserialize
- * buffers with a header containing the buffer length.
- *
- * Can be used by SerialLinkedListAdapter.
- *
+ * @brief This adapter provides an interface for SerializeIF to serialize and deserialize
+ *        buffers with a header containing the buffer length.
+ * @details
+ * Can be used by SerialLinkedListAdapter by using this type in
+ * SerializeElement<>
  * Buffers with a size header inside that class can be declared with
- * SerialFixedArrayListAdapter<uint8_t,MAX_BUFFER_LENGTH,typeOfMaxData>.
+ * SerialFixedArrayListAdapter<bufferType,MAX_BUFFER_LENGTH,typeOfMaxData>.
  * typeOfMaxData specifies the data type of the buffer header containing the buffer size that follows
  * and MAX_BUFFER_LENGTH specifies the maximum allowed value for the buffer size.
  * The sequence of objects is defined in the constructor by using the setStart and setNext functions.
  *
- * \ingroup serialize
+ * @ingroup serialize
  */
 template<typename T, uint32_t MAX_SIZE, typename count_t = uint8_t>
 class SerialFixedArrayListAdapter : public FixedArrayList<T, MAX_SIZE, count_t>, public SerializeIF {

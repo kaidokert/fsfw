@@ -8,10 +8,10 @@
 #include <string.h>
 
  /**
- * This adapter provides an interface to use the SerializeIF functions
- * with arbitrary template objects to facilitate and simplify the serialization of classes
- * with different multiple different data types into buffers vice-versa.
- *
+ * @brief This adapter provides an interface to use the SerializeIF functions
+ * 		  with arbitrary template objects to facilitate and simplify the serialization of classes
+ * 		  with different multiple different data types into buffers vice-versa.
+ * @details
  * Examples:
  * A report class is converted into a TM buffer. The report class implements a serialize functions and calls
  * the AutoSerializeAdapter::serialize function repeatedly on all object data fields.
@@ -49,7 +49,7 @@
  * When serializing for downlink, the packets are generally serialized assuming big endian data format
  * like seen in TmPacketStored.cpp for example.
  *
- * \ingroup serialize
+ * @ingroup serialize
  */
 template<typename T, int>
 class SerializeAdapter_ {
@@ -141,7 +141,7 @@ public:
 	}
 };
 
-
+// No type specification necessary here.
 class AutoSerializeAdapter {
 public:
 	template<typename T>

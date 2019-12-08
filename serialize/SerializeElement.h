@@ -6,7 +6,15 @@
 #include <utility>
 
 /**
- * \ingroup serialize
+ * @brief This class is used to mark datatypes for serialization with the
+ *        SerialLinkedListAdapter
+ * @details
+ * Used by declaring any arbitrary datatype with SerializeElement<T> myVariable,
+ * inside a SerialLinkedListAdapter implementation and setting the sequence
+ * of objects with setNext() and setStart().
+ * Serilization and Deserialization is then performed automatically in
+ * specified sequence order.
+ * @ingroup serialize
  */
 template<typename T>
 class SerializeElement : public SerializeIF, public LinkedElement<SerializeIF> {

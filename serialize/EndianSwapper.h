@@ -5,6 +5,10 @@
 #include <cstring>
 #include <iostream>
 
+/**
+ * @brief Can be used to swap endianness of data
+ *        into big endian
+ */
 class EndianSwapper {
 private:
 	EndianSwapper() {
