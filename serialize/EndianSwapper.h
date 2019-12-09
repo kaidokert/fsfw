@@ -46,6 +46,27 @@ public:
 		return;
 #endif
 	}
+
+	template<typename T>
+	static void swap(T * out, const T * in, uint32_t size) {
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
+		const uint8_t * in_buffer = reinterpret_cast<const uint8_t *>(in);
+		uint8_t * out_buffer = reinterpret_cast<uint8_t *>(out);
+		for (uint8_t count = 0; count < size; count++) {
+			for(uint8_t i = 0; i < sizeof(T);i++) {
+				out_buffer[sizeof(T)* (count + 1) - i - 1] = in_buffer[count * sizeof(T) + i];
+			}
+
+		}
+
+		return;
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
+		memcpy(out, in, size*sizeof(T));
+		return;
+#endif
+	}
 };
 
 #endif /* ENDIANSWAPPER_H_ */

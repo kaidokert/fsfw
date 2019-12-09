@@ -76,6 +76,14 @@ public:
 		}
 	}
 
+	/**
+	 * Deserialize buffer into object
+	 * @param object [out] Object to be deserialized with buffer data
+	 * @param buffer buffer containing the data
+	 * @param size int32_t type to allow value to be values smaller than 0, needed for range/size checking
+	 * @param bigEndian Specify endianness
+	 * @return
+	 */
 	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, int32_t* size,
 			bool bigEndian) {
 		T tmp;

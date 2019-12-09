@@ -31,7 +31,10 @@ ReturnValue_t PoolRawAccess::read() {
 				sizeTillEnd = read_out->getByteSize() - arrayPosition;
 				uint8_t* ptr =
 						&((uint8_t*) read_out->getRawData())[arrayPosition];
-				memcpy(value, ptr, typeSize);
+				for(uint8_t arrayCount = 0; arrayCount < arraySize; arrayCount++) {
+					memcpy(value + typeSize * arrayCount, ptr + typeSize * arrayCount, typeSize);
+				}
+
 				return HasReturnvaluesIF::RETURN_OK;
 			} else {
 				//Error value type too large.
@@ -152,17 +155,20 @@ ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, uint32_t* size,
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-			for (uint8_t count = 0; count < typeSize; count++) {
-				(*buffer)[count] = value[typeSize - count - 1];
+			for(uint8_t arrayCount = 0; arrayCount < arraySize; arrayCount++) {
+				for (uint8_t count = 0; count < typeSize; count++) {
+					(*buffer)[typeSize * (arrayCount + 1) - count - 1] =
+							value[typeSize * arrayCount + count];
+				}
 			}
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			memcpy(*buffer, value, typeSize);
+			memcpy(*buffer, value, typeSize * arraySize);
 #endif
 		} else {
-			memcpy(*buffer, value, typeSize);
+			memcpy(*buffer, value, typeSize * arraySize);
 		}
-		*size += typeSize;
-		(*buffer) += typeSize;
+		*size += typeSize * arraySize;
+		(*buffer) += typeSize * arraySize;
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
 		return SerializeIF::BUFFER_TOO_SHORT;

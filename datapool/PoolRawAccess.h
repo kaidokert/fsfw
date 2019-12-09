@@ -48,7 +48,6 @@ private:
 	ReadWriteMode_t readWriteMode;
 	static const uint8_t RAW_MAX_SIZE = sizeof(double);
 protected:
-
 	/**
 	 * \brief	The commit call writes back the variable's value to the data pool.
 	 * \details	It checks type and size, as well as if the variable is writable. If so,
@@ -80,6 +79,20 @@ public:
 	 * 			The operation does NOT provide any mutual exclusive protection by itself.
 	 */
 	ReturnValue_t read();
+
+	/**
+	 * @brief 	Serialize raw pool entry into provided buffer directly
+	 * @details Should be called after read() call. Endianness can be specified too
+	 * @param buffer Provided buffer. Raw pool data will be copied here
+	 * @param size [out] Increment provided size value by serialized size
+	 * @param max_size Maximum allowed serialization size
+	 * @param bigEndian Specify endianess
+	 * @return - @c RETURN_OK if serialization was successfull
+	 *         - @c SerializeIF::BUFFER_TOO_SHORT if range check failed
+	 */
+	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
+			const uint32_t max_size, bool bigEndian) const;
+
 	/**
 	 * \brief	This operation returns a pointer to the entry fetched.
 	 * \details	Return pointer to the buffer containing the raw data
@@ -141,9 +154,6 @@ public:
 	 * Getter for the remaining size.
 	 */
 	uint16_t getSizeTillEnd() const;
-
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
 
 	uint32_t getSerializedSize() const;
 

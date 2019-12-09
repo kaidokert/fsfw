@@ -56,6 +56,7 @@ public:
 			bool bigEndian);
 
 	uint8_t * getBuffer();
+	//void setBuffer(uint8_t * buffer_);
 private:
 	bool serializeLength;
 	const uint8_t *constBuffer;
