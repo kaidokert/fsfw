@@ -82,7 +82,6 @@ public:
 
 	/**
 	 * @brief 	Serialize raw pool entry into provided buffer directly
-	 * @details Should be called after read() call. Endianness can be specified too
 	 * @param buffer Provided buffer. Raw pool data will be copied here
 	 * @param size [out] Increment provided size value by serialized size
 	 * @param max_size Maximum allowed serialization size
