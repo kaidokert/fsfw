@@ -78,16 +78,21 @@ public:
 	static const ReturnValue_t INCORRECT_SIZE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
 	uint8_t value[RAW_MAX_SIZE];
-	//uint8_t value[RAW_MAX_SIZE*3];
 
 	/**
 	 * This constructor is used to access a data pool entry with a
 	 * given ID if the target type is not known. A DataSet object is supplied
-	 * and the data pool entry with the given ID is registered to that data set
+	 * and the data pool entry with the given ID is registered to that data set.
+	 * Please note that a pool raw access buffer only has a buffer
+	 * with a size of double. As such, for vector entries which have
 	 * @param data_pool_id Target data pool entry ID
 	 * @param arrayEntry
 	 * @param data_set Dataset to register data pool entry to
 	 * @param setReadWriteMode
+	 * @param registerVectors If set to true, the constructor checks if
+	 *                        there are multiple vector entries to registers
+	 *                        and registers all of them recursively into the data_set
+	 *
 	 */
 	PoolRawAccess(uint32_t data_pool_id, uint8_t arrayEntry,
 			DataSetIF* data_set, ReadWriteMode_t setReadWriteMode =
