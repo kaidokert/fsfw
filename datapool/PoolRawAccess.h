@@ -6,10 +6,14 @@
 #include <framework/globalfunctions/Type.h>
 
 /**
- * This class allows accessing Data Pool variables as raw bytes.
+ * @brief This class allows accessing Data Pool variables as raw bytes.
+ * @details
  * This is necessary to have an access method for HK data, as the PID's alone do not
- * provide a type information.
- *	\ingroup data_pool
+ * provide a type information. Please note that the the raw pool access read() and commit()
+ * calls are not thread-safe and therefore private.
+ * Please supply a data set and use the data set read(), commit() calls for thread-safe
+ * data pool access.
+ * @ingroup data_pool
  */
 class PoolRawAccess: public PoolVariableIF {
 private:
@@ -49,6 +53,18 @@ private:
 	static const uint8_t RAW_MAX_SIZE = sizeof(double);
 protected:
 	/**
+	 * \brief	This is a call to read the value from the global data pool.
+	 * \details	When executed, this operation tries to fetch the pool entry with matching
+	 * 			data pool id from the global data pool and copies the value and the valid
+	 * 			information to its local attributes. In case of a failure (wrong type or
+	 * 			pool id not found), the variable is set to zero and invalid.
+	 * 			The operation does NOT provide any mutual exclusive protection by itself !
+	 * 			If reading from the data pool without information about the type is desired,
+	 * 			initialize the raw pool access by supplying a data set and using the data set
+	 * 			read function, which calls this read function.
+	 */
+	ReturnValue_t read();
+	/**
 	 * \brief	The commit call writes back the variable's value to the data pool.
 	 * \details	It checks type and size, as well as if the variable is writable. If so,
 	 * 			the value is copied and the valid flag is automatically set to "valid".
@@ -62,23 +78,25 @@ public:
 	static const ReturnValue_t INCORRECT_SIZE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
 	uint8_t value[RAW_MAX_SIZE];
+	//uint8_t value[RAW_MAX_SIZE*3];
+
+	/**
+	 * This constructor is used to access a data pool entry with a
+	 * given ID if the target type is not known. A DataSet object is supplied
+	 * and the data pool entry with the given ID is registered to that data set
+	 * @param data_pool_id Target data pool entry ID
+	 * @param arrayEntry
+	 * @param data_set Dataset to register data pool entry to
+	 * @param setReadWriteMode
+	 */
 	PoolRawAccess(uint32_t data_pool_id, uint8_t arrayEntry,
 			DataSetIF* data_set, ReadWriteMode_t setReadWriteMode =
-					PoolVariableIF::VAR_READ);
+			PoolVariableIF::VAR_READ,bool registerVectors = false);
 	/**
 	 * \brief	The classes destructor is empty. If commit() was not called, the local value is
 	 * 			discarded and not written back to the data pool.
 	 */
 	~PoolRawAccess();
-	/**
-	 * \brief	This is a call to read the value from the global data pool.
-	 * \details	When executed, this operation tries to fetch the pool entry with matching
-	 * 			data pool id from the global data pool and copies the value and the valid
-	 * 			information to its local attributes. In case of a failure (wrong type or
-	 * 			pool id not found), the variable is set to zero and invalid.
-	 * 			The operation does NOT provide any mutual exclusive protection by itself.
-	 */
-	ReturnValue_t read();
 
 	/**
 	 * @brief 	Serialize raw pool entry into provided buffer directly

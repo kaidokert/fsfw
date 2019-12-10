@@ -5,13 +5,27 @@
 #include <framework/osal/Endiness.h>
 
 PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
-		DataSetIF* data_set, ReadWriteMode_t setReadWriteMode) :
+		DataSetIF* data_set, ReadWriteMode_t setReadWriteMode,
+		bool registerVectors) :
 		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false), type(Type::UNKNOWN_TYPE), typeSize(
 				0), arraySize(0), sizeTillEnd(0), readWriteMode(setReadWriteMode) {
 	memset(value, 0, sizeof(value));
 	if (data_set != NULL) {
 		data_set->registerVariable(this);
 	}
+	if(registerVectors == true) {
+		this->read();
+		if(arraySize > 1) {
+			for(uint16_t vectorCount = typeSize;vectorCount < arraySize;vectorCount += typeSize)
+			{
+				PoolRawAccess * newPoolRawAccess =
+						new PoolRawAccess(set_id, setArrayEntry + typeSize,
+								          data_set,setReadWriteMode,true);
+				if(newPoolRawAccess) {};
+			}
+		}
+	}
+
 }
 
 PoolRawAccess::~PoolRawAccess() {
@@ -31,9 +45,10 @@ ReturnValue_t PoolRawAccess::read() {
 				sizeTillEnd = read_out->getByteSize() - arrayPosition;
 				uint8_t* ptr =
 						&((uint8_t*) read_out->getRawData())[arrayPosition];
-				for(uint8_t arrayCount = 0; arrayCount < arraySize; arrayCount++) {
-					memcpy(value + typeSize * arrayCount, ptr + typeSize * arrayCount, typeSize);
-				}
+				memcpy(value, ptr, typeSize);
+				//for(uint8_t arrayCount = 0; arrayCount < arraySize; arrayCount++) {
+				//	memcpy(value + typeSize * arrayCount, ptr + typeSize * arrayCount, typeSize);
+				//}
 
 				return HasReturnvaluesIF::RETURN_OK;
 			} else {
@@ -155,20 +170,25 @@ ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, uint32_t* size,
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-			for(uint8_t arrayCount = 0; arrayCount < arraySize; arrayCount++) {
-				for (uint8_t count = 0; count < typeSize; count++) {
-					(*buffer)[typeSize * (arrayCount + 1) - count - 1] =
-							value[typeSize * arrayCount + count];
-				}
+			for (uint8_t count = 0; count < typeSize; count++) {
+				(*buffer)[count] = value[typeSize - count - 1];
 			}
+			//for(uint8_t arrayCount = 0; arrayCount < arraySize; arrayCount++) {
+			//	for (uint8_t count = 0; count < typeSize; count++) {
+			//		(*buffer)[typeSize * (arrayCount + 1) - count - 1] =
+			//				value[typeSize * arrayCount + count];
+			//	}
+			//}
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			memcpy(*buffer, value, typeSize * arraySize);
+			memcpy(*buffer, value, typeSize);
+			//memcpy(*buffer, value, typeSize * arraySize);
 #endif
 		} else {
-			memcpy(*buffer, value, typeSize * arraySize);
+			memcpy(*buffer, value, typeSize);
+			//memcpy(*buffer, value, typeSize * arraySize);
 		}
-		*size += typeSize * arraySize;
-		(*buffer) += typeSize * arraySize;
+		*size += typeSize;// * arraySize;
+		(*buffer) += typeSize;// * arraySize;
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
 		return SerializeIF::BUFFER_TOO_SHORT;
