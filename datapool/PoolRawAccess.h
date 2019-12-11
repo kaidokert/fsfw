@@ -50,7 +50,7 @@ private:
 	 * \brief	The information whether the class is read-write or read-only is stored here.
 	 */
 	ReadWriteMode_t readWriteMode;
-	PoolRawAccess * nextPoolRawAccess;
+	//PoolRawAccess * nextPoolRawAccess;
 	static const uint8_t RAW_MAX_SIZE = sizeof(double);
 protected:
 	/**
@@ -79,7 +79,7 @@ public:
 	static const ReturnValue_t INCORRECT_SIZE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
 	uint8_t value[RAW_MAX_SIZE];
-
+	//PoolRawAccess();
 	/**
 	 * This constructor is used to access a data pool entry with a
 	 * given ID if the target type is not known. A DataSet object is supplied
