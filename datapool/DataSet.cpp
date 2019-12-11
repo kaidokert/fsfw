@@ -148,3 +148,9 @@ ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, int32_t* size,
 	}
 	return result;
 }
+
+ReturnValue_t DataSet::serializeRawFromIdBuffer(uint8_t ** buffer, uint32_t * size,
+		const uint32_t max_size, bool bigEndian, uint32_t * poolIdBuffer,
+		uint32_t poolIdSize) {
+	return RETURN_OK;
+}

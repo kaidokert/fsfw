@@ -10,7 +10,7 @@
  * @details
  * This is necessary to have an access method for HK data, as the PID's alone do not
  * provide a type information. Please note that the the raw pool access read() and commit()
- * calls are not thread-safe and therefore private.
+ * calls are not thread-safe.
  * Please supply a data set and use the data set read(), commit() calls for thread-safe
  * data pool access.
  * @ingroup data_pool

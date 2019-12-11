@@ -146,6 +146,14 @@ public:
 	 */
 	void setValid(uint8_t valid);
 
+	/**
+	 * Serialize all registered pool variables into the provided buffer
+	 * @param buffer
+	 * @param size Is incremented by serialized size
+	 * @param max_size
+	 * @param bigEndian
+	 * @return
+	 */
 	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) const;
 
@@ -154,6 +162,9 @@ public:
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 			bool bigEndian);
 
+	ReturnValue_t serializeRawFromIdBuffer(uint8_t ** buffer, uint32_t * size,
+			const uint32_t max_size, bool bigEndian, uint32_t * poolIdBuffer,
+			uint32_t poolIdSize);
 };
 
 #endif /* DATASET_H_ */
