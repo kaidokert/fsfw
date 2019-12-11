@@ -3,6 +3,7 @@
 #include <framework/datapool/PoolRawAccess.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/Endiness.h>
+#include "DataSet.h"
 
 PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 		DataSetIF* data_set, ReadWriteMode_t setReadWriteMode,
@@ -15,12 +16,12 @@ PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 	}
 	if(registerVectors == true) {
 		this->read();
+//		DataSet * myDataSetTest = (DataSet *) data_set;
+//		myDataSetTest->read();
 		if(arrayEntry < arraySize - 1) {
 			uint8_t nextArrayEntry = arrayEntry + 1;
-			PoolRawAccess * newPoolRawAccess =
-				new PoolRawAccess(set_id, nextArrayEntry,
-								  data_set,setReadWriteMode,true);
-			if(newPoolRawAccess) {};
+			nextPoolRawAccess = new PoolRawAccess(set_id, nextArrayEntry,
+					data_set,setReadWriteMode,true);
 		}
 	}
 }
