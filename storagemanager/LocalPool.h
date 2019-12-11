@@ -194,10 +194,11 @@ public:
 			uint32_t* size);
 
 	/**
-	 * Modify data by supplying a previously obtaind packet pointer
+	 * Modify data by supplying a packet pointer and using that packet pointer
+	 * to access and modify the pool entry (via *pointer call)
 	 * @param packet_id Store ID of data to modify
-	 * @param packet_ptr
-	 * @param size [out] size of changed data
+	 * @param packet_ptr [out] pointer to the pool entry to modify
+	 * @param size [out] size of pool entry
 	 * @return
 	 */
 	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
