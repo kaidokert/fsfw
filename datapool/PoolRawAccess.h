@@ -50,7 +50,6 @@ private:
 	 * \brief	The information whether the class is read-write or read-only is stored here.
 	 */
 	ReadWriteMode_t readWriteMode;
-	//PoolRawAccess * nextPoolRawAccess;
 	static const uint8_t RAW_MAX_SIZE = sizeof(double);
 protected:
 	/**

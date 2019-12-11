@@ -4,9 +4,6 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/Endiness.h>
 
-//PoolRawAccess::PoolRawAccess() {
-//}
-
 PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 		DataSetIF* data_set, ReadWriteMode_t setReadWriteMode,
 		bool registerVectors) :
@@ -16,14 +13,6 @@ PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 	if (data_set != NULL) {
 		data_set->registerVariable(this);
 	}
-//	if(registerVectors == true) {
-//		this->read();
-//		if(arrayEntry < arraySize - 1) {
-//			uint8_t nextArrayEntry = arrayEntry + 1;
-//			nextPoolRawAccess = new PoolRawAccess(set_id, nextArrayEntry,
-//					data_set,setReadWriteMode,true);
-//		}
-//	}
 }
 
 PoolRawAccess::~PoolRawAccess() {
