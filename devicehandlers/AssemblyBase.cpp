@@ -2,10 +2,10 @@
 
 AssemblyBase::AssemblyBase(object_id_t objectId, object_id_t parentId,
 		uint16_t commandQueueDepth) :
-		SubsystemBase(objectId, parentId, MODE_OFF, commandQueueDepth), internalState(
-				STATE_NONE), recoveryState(RECOVERY_IDLE), recoveringDevice(
-				childrenMap.end()), targetMode(MODE_OFF), targetSubmode(
-				SUBMODE_NONE) {
+		SubsystemBase(objectId, parentId, MODE_OFF, commandQueueDepth),
+		internalState(STATE_NONE), recoveryState(RECOVERY_IDLE),
+		recoveringDevice(childrenMap.end()), targetMode(MODE_OFF),
+		targetSubmode(SUBMODE_NONE) {
 	recoveryOffTimer.setTimeout(POWER_OFF_TIME_MS);
 }
 
