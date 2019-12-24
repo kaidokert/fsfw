@@ -14,8 +14,10 @@
  * @brief 	This helper function simplifies accessing data pool entries
  *  	  	via PoolRawAccess
  * @details Can be used for a Housekeeping Service
- * 			like PUS Service 3 if the type of the datapool entries is unknown.
- * 			The provided dataset is serialized into a provided buffer automatically.
+ * 			like  ECSS PUS Service 3 if the type of the datapool entries is unknown.
+ * 			The provided dataset can be serialized into a provided buffer automatically by
+ * 			providing a buffer of pool IDs
+ * @ingroup data_pool
  */
 class PoolRawAccessHelper: public HasReturnvaluesIF {
 public:
@@ -62,9 +64,32 @@ private:
 	const uint8_t * poolIdBuffer;
 	uint8_t numberOfParameters;
 
-	void serializeCurrentPoolEntryIntoBuffer(const uint8_t ** pPoolIdBuffer,uint8_t ** buffer,
+	uint8_t validBufferIndex;
+	uint8_t validBufferIndexBit;
+
+	/**
+	 * Helper function to serialize single pool entries
+	 * @param pPoolIdBuffer
+	 * @param buffer
+	 * @param remainingParameters
+	 * @param hkDataSize
+	 * @param max_size
+	 * @param bigEndian
+	 * @param withValidMask Can be set optionally to set a provided validity mask
+	 * @param validityMask Can be supplied and will be set if @c withValidMask is set to true
+	 * @return
+	 */
+	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(const uint8_t ** pPoolIdBuffer,uint8_t ** buffer,
 				int32_t * remainingParameters, uint32_t * hkDataSize,const uint32_t max_size,
-				bool bigEndian, bool withValidMask);
+				bool bigEndian, bool withValidMask = false, uint8_t * validityMask = NULL);
+
+	/**
+	 * Sets specific bit of a byte
+	 * @param byte
+	 * @param position Position of byte to set from 1 to 8
+	 * @param value Binary value to set
+	 * @return
+	 */
 	uint8_t bitSetter(uint8_t byte, uint8_t position, bool value);
 };
 
