@@ -25,7 +25,7 @@ public:
 	virtual ~TmTcBridge();
 
 	/**
-	 * Initializes basic FSFW components for TMTC Bridge
+	 * Initializes basic FSFW components for the TMTC Bridge
 	 * @return
 	 */
 	virtual ReturnValue_t initialize();
