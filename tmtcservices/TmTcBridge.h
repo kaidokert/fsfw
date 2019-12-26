@@ -60,7 +60,8 @@ protected:
 	virtual ReturnValue_t handleTc();
 
 	/**
-	 * Implemented by child class. Perform receiving of Telecommand
+	 * Implemented by child class. Perform receiving of Telecommand, for example by implementing
+	 * specific drivers or wrappers, e.g. UART Communication or lwIP stack
 	 * @return
 	 */
 	virtual ReturnValue_t receiveTc() = 0;
@@ -79,7 +80,8 @@ protected:
 	virtual ReturnValue_t readTmQueue();
 
 	/**
-	 * Implemented by child class. Perform sending of Telemetry
+	 * Implemented by child class. Perform sending of Telemetry by implementing
+	 * communication drivers or wrappers, e.g. UART communication or lwIP stack.
 	 * @param data
 	 * @param dataLen
 	 * @return
