@@ -115,7 +115,6 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	}
 	storeId = message->getStorageId();
 	fifo.insert(storeId);
-	//storageIdBufferCounter ++;
 	tmStored = true;
 	return RETURN_OK;
 }
