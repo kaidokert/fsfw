@@ -22,6 +22,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 			(TmPacketBase::TM_PACKET_MIN_SIZE + size + headerSize), &pData);
 
 	if (returnValue != store->RETURN_OK) {
+		debug << "TM Packet Stored: Issue getting free storage" << std::endl;
 		checkAndReportLostTm();
 		return;
 	}

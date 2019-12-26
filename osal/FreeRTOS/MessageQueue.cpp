@@ -89,23 +89,24 @@ MessageQueueId_t MessageQueue::getDefaultDestination() const {
 bool MessageQueue::isDefaultDestinationSet() const {
 	return 0;
 }
+
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		MessageQueueMessage *message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	message->setSender(sentFrom);
 
-		BaseType_t result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),reinterpret_cast<const void*>(message->getBuffer()), 0);
-		if (result != pdPASS) {
-			if (!ignoreFault) {
-				InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
-							objects::INTERNAL_ERROR_REPORTER);
-				if (internalErrorReporter != NULL) {
-					internalErrorReporter->queueMessageNotSent();
-				}
+	BaseType_t result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),reinterpret_cast<const void*>(message->getBuffer()), 0);
+	if (result != pdPASS) {
+		if (!ignoreFault) {
+			InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+					objects::INTERNAL_ERROR_REPORTER);
+			if (internalErrorReporter != NULL) {
+				internalErrorReporter->queueMessageNotSent();
 			}
-			return MessageQueueIF::FULL;
 		}
-		return HasReturnvaluesIF::RETURN_OK;
+		return MessageQueueIF::FULL;
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 
 }
 

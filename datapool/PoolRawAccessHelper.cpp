@@ -6,10 +6,11 @@
  */
 
 #include <framework/datapool/PoolRawAccessHelper.h>
+#include <framework/datapool/DataSet.h>
 
-PoolRawAccessHelper::PoolRawAccessHelper(DataSet *dataSet_,
-		const uint8_t * poolIdBuffer_, uint8_t  numberOfParameters_):
-		dataSet(dataSet_), poolIdBuffer(poolIdBuffer_),
+PoolRawAccessHelper::PoolRawAccessHelper(uint8_t * poolIdBuffer_,
+		uint8_t  numberOfParameters_):
+		poolIdBuffer(poolIdBuffer_),
 		numberOfParameters(numberOfParameters_), validBufferIndex(0), validBufferIndexBit(1){
 }
 
@@ -19,52 +20,61 @@ PoolRawAccessHelper::~PoolRawAccessHelper() {
 ReturnValue_t PoolRawAccessHelper::serialize(uint8_t **buffer, uint32_t *size,
 		const uint32_t max_size, bool bigEndian) {
 	ReturnValue_t result;
-	const uint8_t ** pPoolIdBuffer = &poolIdBuffer;
 	int32_t remainingParametersSize = numberOfParameters * 4;
 	for(uint8_t count=0; count < numberOfParameters; count++) {
-		result = serializeCurrentPoolEntryIntoBuffer(pPoolIdBuffer,buffer,
+		result = serializeCurrentPoolEntryIntoBuffer(buffer,
 				&remainingParametersSize,size,max_size, bigEndian, false);
 		if(result != RETURN_OK) {
 			return result;
 		}
 	}
-	return RETURN_OK;
+	if(remainingParametersSize != 0) {
+		debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
+		result = RETURN_FAILED;
+	}
+	return result;
 }
 
 ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t **buffer,
 		uint32_t *size, const uint32_t max_size, bool bigEndian) {
 	ReturnValue_t result;
-	const uint8_t ** pPoolIdBuffer = &poolIdBuffer;
 	int32_t remainingParametersSize = numberOfParameters * 4;
 	uint8_t validityMaskSize = numberOfParameters/8;
 	uint8_t validityMask[validityMaskSize];
 	memset(validityMask,0, validityMaskSize);
-	for(uint8_t count=0; count < numberOfParameters; count++) {
-		result = serializeCurrentPoolEntryIntoBuffer(pPoolIdBuffer,buffer,
+	for(uint8_t count = 0; count < numberOfParameters; count++) {
+		result = serializeCurrentPoolEntryIntoBuffer(buffer,
 				&remainingParametersSize,size,max_size, bigEndian,true,validityMask);
 		if (result != RETURN_OK) {
 			return result;
 		}
 	}
+	if(remainingParametersSize != 0) {
+		debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
+		result = RETURN_FAILED;
+	}
 	memcpy(*buffer + *size, validityMask, validityMaskSize);
 	*size += validityMaskSize;
 	validBufferIndex = 1;
 	validBufferIndexBit = 0;
-	return RETURN_OK;
+	return result;
 }
 
-ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(const uint8_t ** pPoolIdBuffer,
-		uint8_t ** buffer, int32_t * remainingParameters, uint32_t * hkDataSize,
+ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(uint8_t ** buffer,
+		int32_t * remainingParameters, uint32_t * hkDataSize,
 		const uint32_t max_size, bool bigEndian, bool withValidMask, uint8_t * validityMask) {
 	uint32_t currentPoolId;
+	DataSet currentDataSet = DataSet();
 	// Deserialize current pool ID from pool ID buffer
 	ReturnValue_t result = AutoSerializeAdapter::deSerialize(&currentPoolId,
-			pPoolIdBuffer,remainingParameters,true);
+			&poolIdBuffer,remainingParameters,true);
 	if(result != RETURN_OK) {
 		debug << std::hex << "Pool Raw Access Helper: Error deSeralizing pool IDs" << std::dec << std::endl;
 		return result;
 	}
-	PoolRawAccess currentPoolRawAccess(currentPoolId,0,dataSet,PoolVariableIF::VAR_READ);
+
+	// info << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
+	PoolRawAccess currentPoolRawAccess(currentPoolId,0,&currentDataSet,PoolVariableIF::VAR_READ);
 
 	// set valid mask bit if necessary
 	if(withValidMask) {
@@ -79,12 +89,12 @@ ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(const uin
 		}
 	}
 
-	result = dataSet->read();
+	result = currentDataSet.read();
 	if (result != RETURN_OK) {
 		debug << std::hex << "Pool Raw Access Helper: Error read raw dataset" << std::dec << std::endl;
 		return result;
 	}
-	result = dataSet->serialize(buffer, hkDataSize,
+	result = currentDataSet.serialize(buffer, hkDataSize,
 			max_size, bigEndian);
 	if (result != RETURN_OK) {
 		debug << "Pool Raw Access Helper: Error serializing pool data into send buffer" << std::endl;

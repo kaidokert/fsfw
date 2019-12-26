@@ -28,8 +28,7 @@ public:
 	 * @param poolIdBuffer_ A buffer of uint32_t pool IDs
 	 * @param numberOfParameters_ The number of parameters / pool IDs
 	 */
-	PoolRawAccessHelper(DataSet * dataSet_, const uint8_t * poolIdBuffer_,
-			uint8_t numberOfParameters_);
+	PoolRawAccessHelper(uint8_t * poolIdBuffer_, uint8_t numberOfParameters_);
 	virtual ~PoolRawAccessHelper();
 
 	/**
@@ -60,7 +59,7 @@ public:
 
 
 private:
-	DataSet * dataSet;
+	// DataSet * dataSet;
 	const uint8_t * poolIdBuffer;
 	uint8_t numberOfParameters;
 
@@ -79,7 +78,7 @@ private:
 	 * @param validityMask Can be supplied and will be set if @c withValidMask is set to true
 	 * @return
 	 */
-	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(const uint8_t ** pPoolIdBuffer,uint8_t ** buffer,
+	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(uint8_t ** buffer,
 				int32_t * remainingParameters, uint32_t * hkDataSize,const uint32_t max_size,
 				bool bigEndian, bool withValidMask = false, uint8_t * validityMask = NULL);
 
