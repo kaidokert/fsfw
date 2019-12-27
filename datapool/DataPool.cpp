@@ -79,6 +79,7 @@ void DataPool::print() {
 	}
 }
 
+template PoolEntry<bool>* DataPool::getData<bool>( uint32_t data_pool_id,  uint8_t size );
 template PoolEntry<uint8_t>* DataPool::getData<uint8_t>( uint32_t data_pool_id,  uint8_t size );
 template PoolEntry<uint16_t>* DataPool::getData<uint16_t>( uint32_t data_pool_id,  uint8_t size );
 template PoolEntry<uint32_t>* DataPool::getData<uint32_t>( uint32_t data_pool_id,  uint8_t size );
