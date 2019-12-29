@@ -9,7 +9,7 @@
  *        buffers with a header containing the buffer length.
  * @details
  * Can be used by SerialLinkedListAdapter by using this type in
- * SerializeElement<>
+ * SerializeElement<>.
  * Buffers with a size header inside that class can be declared with
  * SerialFixedArrayListAdapter<bufferType,MAX_BUFFER_LENGTH,typeOfMaxData>.
  * typeOfMaxData specifies the data type of the buffer header containing the buffer size that follows

@@ -66,6 +66,12 @@ private:
 	uint8_t validBufferIndex;
 	uint8_t validBufferIndexBit;
 
+	struct SerializationArgs {
+		uint8_t ** buffer;
+		uint32_t * size;
+		const uint32_t max_size;
+		bool bigEndian;
+	};
 	/**
 	 * Helper function to serialize single pool entries
 	 * @param pPoolIdBuffer
@@ -78,10 +84,13 @@ private:
 	 * @param validityMask Can be supplied and will be set if @c withValidMask is set to true
 	 * @return
 	 */
-	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(uint8_t ** buffer,
-				int32_t * remainingParameters, uint32_t * hkDataSize,const uint32_t max_size,
-				bool bigEndian, bool withValidMask = false, uint8_t * validityMask = NULL);
+	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(SerializationArgs argStruct,
+				int32_t * remainingParameters, bool withValidMask = false, uint8_t * validityMask = NULL);
 
+	ReturnValue_t handlePoolEntrySerialization(uint32_t currentPoolId,SerializationArgs argStruct,
+				bool withValidMask = false, uint8_t * validityMask = NULL);
+
+	void handleMaskModification(uint8_t * validityMask);
 	/**
 	 * Sets specific bit of a byte
 	 * @param byte
