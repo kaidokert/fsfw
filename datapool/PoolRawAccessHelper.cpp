@@ -81,7 +81,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t current
 	ReturnValue_t result;
 	uint8_t arrayPosition = 0;
 	bool poolEntrySerialized = false;
-	info << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
+	//info << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
 	while(not poolEntrySerialized) {
 		DataSet currentDataSet = DataSet();
 		PoolRawAccess currentPoolRawAccess(currentPoolId,arrayPosition,&currentDataSet,PoolVariableIF::VAR_READ);
