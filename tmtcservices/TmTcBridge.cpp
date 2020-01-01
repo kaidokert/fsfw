@@ -14,7 +14,7 @@
 TmTcBridge::TmTcBridge(object_id_t objectId_, object_id_t ccsdsPacketDistributor_):
 	SystemObject(objectId_),tcStore(NULL), tmStore(NULL),
 	ccsdsPacketDistributor(ccsdsPacketDistributor_), communicationLinkUp(false),
-	tmStored(false), size(0) {
+	tmStored(false),recvBuffer(NULL), size(0) {
 	TmTcReceptionQueue = QueueFactory::instance()->
 			createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
 
