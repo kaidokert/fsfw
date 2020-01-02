@@ -80,7 +80,7 @@ ReturnValue_t TmTcBridge::readTmQueue() {
 	for (ReturnValue_t result = TmTcReceptionQueue->receiveMessage(&message);
 		 result == RETURN_OK; result = TmTcReceptionQueue->receiveMessage(&message))
 	{
-		if(not communicationLinkUp) {
+		if(communicationLinkUp == false) {
 			result = storeDownlinkData(&message);
 			return result;
 		}
@@ -92,7 +92,7 @@ ReturnValue_t TmTcBridge::readTmQueue() {
 
 		result = sendTm(data, size);
 		if (result != RETURN_OK) {
-			error << "UDP Server: Could not send TM packet"<< std::endl;
+			error << "TMTC Bridge: Could not send TM packet"<< std::endl;
 			tmStore->deleteData(message.getStorageId());
 			return result;
 
