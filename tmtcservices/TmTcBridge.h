@@ -45,6 +45,8 @@ public:
 	 */
 	virtual MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0);
 
+	void registerCommConnect();
+	void registerCommDisconnect();
 protected:
 	MessageQueueIF* TmTcReceptionQueue; //!< Used to send and receive TMTC messages. TmTcMessage is used to transport messages between tasks.
 	StorageManagerIF* tcStore;
@@ -109,9 +111,6 @@ protected:
 	 * @param dataLen
 	 */
 	void printData(uint8_t * data, uint32_t dataLen);
-
-	void registerCommConnect();
-	void registerCommDisconnect();
 
 private:
 	static const uint8_t TMTC_RECEPTION_QUEUE_DEPTH = 20;
