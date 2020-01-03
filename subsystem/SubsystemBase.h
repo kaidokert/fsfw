@@ -12,6 +12,10 @@
 #include <framework/ipc/MessageQueueIF.h>
 #include <map>
 
+/**
+ * @defgroup subsystems Subsystem Objects
+ * Contains all Subsystem and Assemblies
+ */
 class SubsystemBase: public SystemObject,
 		public HasModesIF,
 		public HasHealthIF,

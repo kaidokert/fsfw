@@ -3,6 +3,10 @@
 
 #include <framework/devicehandlers/Cookie.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+/**
+ * @defgroup interfaces Interfaces
+ * @brief Communication interfaces for flight software objects
+ */
 
 /**
  * @brief This is an interface to decouple device communication from
