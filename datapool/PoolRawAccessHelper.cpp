@@ -8,9 +8,9 @@
 #include <framework/datapool/PoolRawAccessHelper.h>
 #include <framework/datapool/DataSet.h>
 
-PoolRawAccessHelper::PoolRawAccessHelper(uint8_t * poolIdBuffer_,
+PoolRawAccessHelper::PoolRawAccessHelper(uint32_t * poolIdBuffer_,
 		uint8_t  numberOfParameters_):
-		poolIdBuffer(poolIdBuffer_),
+		poolIdBuffer(reinterpret_cast<uint8_t * >(poolIdBuffer_)),
 		numberOfParameters(numberOfParameters_), validBufferIndex(0), validBufferIndexBit(1){
 }
 

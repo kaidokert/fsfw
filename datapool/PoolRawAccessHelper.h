@@ -28,7 +28,7 @@ public:
 	 * @param poolIdBuffer_ A buffer of uint32_t pool IDs
 	 * @param numberOfParameters_ The number of parameters / pool IDs
 	 */
-	PoolRawAccessHelper(uint8_t * poolIdBuffer_, uint8_t numberOfParameters_);
+	PoolRawAccessHelper(uint32_t * poolIdBuffer_, uint8_t numberOfParameters_);
 	virtual ~PoolRawAccessHelper();
 
 	/**
