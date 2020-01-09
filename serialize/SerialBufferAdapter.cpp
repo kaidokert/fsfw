@@ -96,10 +96,10 @@ uint8_t * SerialBufferAdapter<T>::getBuffer() {
 	return buffer;
 }
 
-//template<typename T>
-//void SerialBufferAdapter<T>::setBuffer(uint8_t * buffer_) {
-//	buffer = buffer_;
-//}
+template<typename T>
+void SerialBufferAdapter<T>::setBuffer(uint8_t * buffer_) {
+	buffer = buffer_;
+}
 
 //forward Template declaration for linker
 template class SerialBufferAdapter<uint8_t>;
