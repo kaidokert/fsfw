@@ -195,7 +195,7 @@ protected:
 	 * @param tcData Application Data of TC Packet
 	 * @param tcDataLen
 	 * @param id MessageQueue ID is stored here
-	 * @param objectId
+	 * @param objectId Object ID is extracted and stored here
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED
 	 *         - @c CSB or implementation specific return codes
@@ -206,15 +206,15 @@ protected:
 
 	/**
 	 * After the Message Queue and Object ID are determined,
-	 * the command is prepared by using an implementation specific CommandMessage type which is sent to
-	 * the target device. It contains all necessary information for the device to
-	 * execute telecommands.
+	 * the command is prepared by using an implementation specific CommandMessage type
+	 * which is sent to the target object.
+	 * It contains all necessary information for the device to execute telecommands.
 	 * @param message
 	 * @param subservice
 	 * @param tcData
 	 * @param tcDataLen
 	 * @param state
-	 * @param objectId
+	 * @param objectId Target object ID
 	 * @return
 	 */
 	virtual ReturnValue_t prepareCommand(CommandMessage *message,
@@ -226,11 +226,11 @@ protected:
 	 * and the respective PUS Commanding Service once the execution has started.
 	 * The PUS Commanding Service receives replies from the target device and forwards them by calling this function.
 	 * There are different translations of these replies to specify how the Command Service proceeds.
-	 * @param reply Command Message which contains information about the command
-	 * @param previousCommand
+	 * @param reply[out] Command Message which contains information about the command
+	 * @param previousCommand [out]
 	 * @param state
 	 * @param optionalNextCommand
-	 * @param objectId
+	 * @param objectId Source object ID
 	 * @param isStep Flag value to mark steps of command execution
 	 * @return - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to generate TC verification success
 	 *         - @c INVALID_REPLY can handle unrequested replies
