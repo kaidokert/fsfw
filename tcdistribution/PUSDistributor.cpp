@@ -48,6 +48,7 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 	ReturnValue_t returnValue = RETURN_OK;
 	bool errorCode = true;
 	uint16_t serviceId = service->getIdentifier();
+	//info << "Service ID: " << (int)serviceId << std::endl;
 	MessageQueueId_t queue = service->getRequestQueue();
 	errorCode = this->queueMap.insert(
 			std::pair<uint32_t, MessageQueueId_t>(serviceId, queue)).second;

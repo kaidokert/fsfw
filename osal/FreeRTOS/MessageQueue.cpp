@@ -38,7 +38,9 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 		MessageQueueId_t* receivedFrom) {
 	ReturnValue_t status = this->receiveMessage(message);
-	*receivedFrom = this->lastPartner;
+	if(status == HasReturnvaluesIF::RETURN_OK) {
+		*receivedFrom = this->lastPartner;
+	}
 	return status;
 }
 
