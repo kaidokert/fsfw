@@ -5,8 +5,9 @@
 #include <stddef.h>
 
 /**
- * Circular buffer implementation, useful for buffering into data streams.
- * Note that the deleteData() has to be called to increment the read pointer
+ * @brief 	Circular buffer implementation, useful for buffering into data streams.
+ * @details Note that the deleteData() has to be called to increment the read pointer
+ * @ingroup containers
  */
 class SimpleRingBuffer: public RingBufferBase<> {
 public:

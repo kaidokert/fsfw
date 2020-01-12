@@ -31,7 +31,7 @@ iterator_t PUSDistributor::selectDestination() {
 	}
 
 	if (tcStatus != RETURN_OK) {
-		debug << "PUSDistributor::handlePacket: error with " << (int) tcStatus
+		debug << "PUSDistributor::handlePacket: error with 0x" << std::hex << (int) tcStatus
 				<< std::endl;
 		return this->queueMap.end();
 	} else {
