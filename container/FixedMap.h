@@ -164,6 +164,15 @@ public:
 		return theMap.maxSize();
 	}
 
+	bool full() {
+		if(_size == theMap.maxSize()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) const {
 		ReturnValue_t result = SerializeAdapter<uint32_t>::serialize(&this->_size,

@@ -92,11 +92,12 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t current
 		counter ++;
 
 		DataSet currentDataSet = DataSet();
+		info << "Current array position: " << (int)arrayPosition << std::endl;
 		PoolRawAccess currentPoolRawAccess(currentPoolId,arrayPosition,&currentDataSet,PoolVariableIF::VAR_READ);
 
 		result = currentDataSet.read();
 		if (result != RETURN_OK) {
-			debug << std::hex << "Pool Raw Access Helper: Error reading raw dataset with returncode "
+			debug << std::hex << "Pool Raw Access Helper: Error reading raw dataset with returncode 0x"
 				  << result << std::dec << std::endl;
 			return result;
 		}
@@ -134,7 +135,7 @@ ReturnValue_t PoolRawAccessHelper::checkRemainingSize(PoolRawAccess * currentPoo
 		*isSerialized = true;
 	}
 	else if(remainingSize > 0) {
-		*arrayPosition += currentPoolRawAccess->getSizeOfType();
+		*arrayPosition += 1;
 	}
 	else {
 		return RETURN_FAILED;
