@@ -82,7 +82,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t current
 	uint8_t arrayPosition = 0;
 	uint8_t counter = 0;
 	bool poolEntrySerialized = false;
-	info << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
+	//debug << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
 	while(not poolEntrySerialized) {
 
 		if(counter > DataSet::DATA_SET_MAX_SIZE) {
@@ -92,7 +92,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t current
 		counter ++;
 
 		DataSet currentDataSet = DataSet();
-		info << "Current array position: " << (int)arrayPosition << std::endl;
+		//debug << "Current array position: " << (int)arrayPosition << std::endl;
 		PoolRawAccess currentPoolRawAccess(currentPoolId,arrayPosition,&currentDataSet,PoolVariableIF::VAR_READ);
 
 		result = currentDataSet.read();
