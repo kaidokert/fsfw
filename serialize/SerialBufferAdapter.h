@@ -11,7 +11,8 @@
  * Additionally, the buffer length can be serialized too and will be put in front of the serialized buffer.
  *
  * Can be used with SerialLinkedListAdapter by declaring a SerializeElement with
- * SerialElement<SerialBufferAdapter<bufferLengthType(will be uint8_t mostly)>> serialBufferElement
+ * SerialElement<SerialBufferAdapter<bufferLengthType(will be uint8_t mostly)>> serialBufferElement.
+ * Right now, the SerialBufferAdapter must always be initialized with the buffer and size !
  *
  * \ingroup serialize
  */
