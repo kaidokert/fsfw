@@ -90,6 +90,8 @@ private:
 	ReturnValue_t handlePoolEntrySerialization(uint32_t currentPoolId,SerializationArgs argStruct,
 				bool withValidMask = false, uint8_t * validityMask = NULL);
 
+	ReturnValue_t checkRemainingSize(PoolRawAccess * currentPoolRawAccess,
+			bool * isSerialized, uint8_t * arrayPosition);
 	void handleMaskModification(uint8_t * validityMask);
 	/**
 	 * Sets specific bit of a byte

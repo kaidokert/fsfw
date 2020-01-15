@@ -37,44 +37,11 @@
  *	\ingroup data_pool
  */
 class DataSet: public DataSetIF, public HasReturnvaluesIF, public SerializeIF {
-private:
+
+public:
 	//SHOULDDO we could use a linked list of datapool variables
 	static const uint8_t DATA_SET_MAX_SIZE = 63; //!< This definition sets the maximum number of variables to register in one DataSet.
 
-	/**
-	 * \brief	This array represents all pool variables registered in this set.
-	 * \details	It has a maximum size of DATA_SET_MAX_SIZE.
-	 */
-	PoolVariableIF* registeredVariables[DATA_SET_MAX_SIZE];
-	/**
-	 * \brief	The fill_count attribute ensures that the variables register in the correct array
-	 * 			position and that the maximum number of variables is not exceeded.
-	 */
-	uint16_t fill_count;
-	/**
-	 * States of the seet.
-	 */
-	enum States {
-		DATA_SET_UNINITIALISED, //!< DATA_SET_UNINITIALISED
-		DATA_SET_WAS_READ     //!< DATA_SET_WAS_READ
-	};
-	/**
-	 * \brief	state manages the internal state of the data set, which is important e.g. for the
-	 * 			behavior on destruction.
-	 */
-	States state;
-	/**
-	 * \brief	This is a small helper function to facilitate locking the global data pool.
-	 * \details	It makes use of the lockDataPool method offered by the DataPool class.
-	 */
-	uint8_t lockDataPool();
-	/**
-	 * \brief	This is a small helper function to facilitate unlocking the global data pool.
-	 * \details	It makes use of the freeDataPoolLock method offered by the DataPool class.
-	 */
-	uint8_t freeDataPoolLock();
-
-public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DATA_SET_CLASS;
 	static const ReturnValue_t INVALID_PARAMETER_DEFINITION =
 			MAKE_RETURN_CODE( 0x01 );
@@ -165,6 +132,40 @@ public:
 	ReturnValue_t serializeRawFromIdBuffer(uint8_t ** buffer, uint32_t * size,
 			const uint32_t max_size, bool bigEndian, uint32_t * poolIdBuffer,
 			uint32_t poolIdSize);
+private:
+	/**
+	 * \brief	This array represents all pool variables registered in this set.
+	 * \details	It has a maximum size of DATA_SET_MAX_SIZE.
+	 */
+	PoolVariableIF* registeredVariables[DATA_SET_MAX_SIZE];
+	/**
+	 * \brief	The fill_count attribute ensures that the variables register in the correct array
+	 * 			position and that the maximum number of variables is not exceeded.
+	 */
+	uint16_t fill_count;
+	/**
+	 * States of the seet.
+	 */
+	enum States {
+		DATA_SET_UNINITIALISED, //!< DATA_SET_UNINITIALISED
+		DATA_SET_WAS_READ     //!< DATA_SET_WAS_READ
+	};
+	/**
+	 * \brief	state manages the internal state of the data set, which is important e.g. for the
+	 * 			behavior on destruction.
+	 */
+	States state;
+	/**
+	 * \brief	This is a small helper function to facilitate locking the global data pool.
+	 * \details	It makes use of the lockDataPool method offered by the DataPool class.
+	 */
+	uint8_t lockDataPool();
+	/**
+	 * \brief	This is a small helper function to facilitate unlocking the global data pool.
+	 * \details	It makes use of the freeDataPoolLock method offered by the DataPool class.
+	 */
+	uint8_t freeDataPoolLock();
+
 };
 
 #endif /* DATASET_H_ */

@@ -294,8 +294,8 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::reserveSpace(
 		if (!ignoreFault) {
 			internalErrorReporter->storeFull();
 		}
-//		error << "LocalPool( " << std::hex << getObjectId() << std::dec
-//				<< " )::reserveSpace: Packet store is full." << std::endl;
+		error << "LocalPool( " << std::hex << getObjectId() << std::dec
+				<< " )::reserveSpace: Packet store is full." << std::endl;
 	}
 	return status;
 }

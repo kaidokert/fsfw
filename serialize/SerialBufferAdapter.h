@@ -28,7 +28,7 @@ public:
 	SerialBufferAdapter(const uint8_t * buffer, T bufferLength, bool serializeLength = false);
 
 	/**
-	 * Constructoor for non-constant uint8_t buffer. Length field can be serialized optionally.
+	 * Constructor for non-constant uint8_t buffer. Length field can be serialized optionally.
 	 * Type of length can be supplied as template type.
 	 * @param buffer
 	 * @param bufferLength
@@ -56,8 +56,16 @@ public:
 			bool bigEndian);
 
 	uint8_t * getBuffer();
+	const uint8_t * getConstBuffer();
 	void setBuffer(uint8_t * buffer_);
 private:
+
+	enum bufferType {
+		NORMAL,
+		CONST
+	};
+	bufferType currentBufferType;
+
 	bool serializeLength;
 	const uint8_t *constBuffer;
 	uint8_t *buffer;

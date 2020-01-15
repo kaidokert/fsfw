@@ -1,24 +1,27 @@
 #include <framework/serialize/SerialBufferAdapter.h>
 #include <cstring>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 template<typename T>
 SerialBufferAdapter<T>::SerialBufferAdapter(const uint8_t* buffer,
 		T bufferLength, bool serializeLength) :
-		serializeLength(serializeLength), constBuffer(buffer), buffer(NULL), bufferLength(
-				bufferLength) {
+		currentBufferType(bufferType::CONST), serializeLength(serializeLength),
+		constBuffer(buffer), buffer(NULL), bufferLength(bufferLength) {
+
 }
 
 template<typename T>
 SerialBufferAdapter<T>::SerialBufferAdapter(uint8_t* buffer, T bufferLength,
 		bool serializeLength) :
-		serializeLength(serializeLength), constBuffer(NULL), buffer(buffer), bufferLength(
-				bufferLength) {
+		currentBufferType(bufferType::NORMAL),serializeLength(serializeLength), constBuffer(NULL), buffer(buffer),
+		bufferLength(bufferLength) {
 }
 
 template<typename T>
 SerialBufferAdapter<T>::SerialBufferAdapter(uint32_t* buffer,
 		T bufferLength, bool serializeLength) :
-		serializeLength(serializeLength), constBuffer(NULL), buffer(reinterpret_cast<uint8_t *>(buffer)),
+		currentBufferType(bufferType::NORMAL),serializeLength(serializeLength),
+		constBuffer(NULL), buffer(reinterpret_cast<uint8_t *>(buffer)),
 		bufferLength(bufferLength*4) {
 }
 
@@ -93,13 +96,27 @@ ReturnValue_t SerialBufferAdapter<T>::deSerialize(const uint8_t** buffer,
 
 template<typename T>
 uint8_t * SerialBufferAdapter<T>::getBuffer() {
+	if(currentBufferType != NORMAL) {
+		warning << "Wrong access function for stored type ! Use getConstBuffer()" << std::endl;
+		return 0;
+	}
 	return buffer;
+}
+
+template<typename T>
+const uint8_t * SerialBufferAdapter<T>::getConstBuffer() {
+	if(currentBufferType != CONST) {
+		warning << "Wrong access function for stored type ! Use getBuffer()" << std::endl;
+		return 0;
+	}
+	return constBuffer;
 }
 
 template<typename T>
 void SerialBufferAdapter<T>::setBuffer(uint8_t * buffer_) {
 	buffer = buffer_;
 }
+
 
 //forward Template declaration for linker
 template class SerialBufferAdapter<uint8_t>;

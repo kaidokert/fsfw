@@ -78,43 +78,69 @@ ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(Serializa
 
 ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t currentPoolId,SerializationArgs argStruct,
 		bool withValidMask, uint8_t * validityMask) {
-	ReturnValue_t result;
+	ReturnValue_t result = RETURN_FAILED;
 	uint8_t arrayPosition = 0;
+	uint8_t counter = 0;
 	bool poolEntrySerialized = false;
-	//info << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
+	//debug << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
 	while(not poolEntrySerialized) {
+
+		if(counter > DataSet::DATA_SET_MAX_SIZE) {
+			error << "Pool Raw Access Helper: Config error, max. number of possible data set variables exceeded" << std::endl;
+			return result;
+		}
+		counter ++;
+
 		DataSet currentDataSet = DataSet();
+		//debug << "Current array position: " << (int)arrayPosition << std::endl;
 		PoolRawAccess currentPoolRawAccess(currentPoolId,arrayPosition,&currentDataSet,PoolVariableIF::VAR_READ);
+
 		result = currentDataSet.read();
 		if (result != RETURN_OK) {
-			debug << std::hex << "Pool Raw Access Helper: Error reading raw dataset" << std::dec << std::endl;
+			debug << std::hex << "Pool Raw Access Helper: Error reading raw dataset with returncode 0x"
+				  << result << std::dec << std::endl;
 			return result;
 		}
-		uint8_t remainingSize = currentPoolRawAccess.getSizeTillEnd() - currentPoolRawAccess.getSizeOfType();
-		if(remainingSize == 0) {
-			poolEntrySerialized = true;
-		}
-		else if(remainingSize > 0) {
-			arrayPosition += currentPoolRawAccess.getSizeOfType() / 8;
-		}
-		else {
-			error << "Pool Raw Access Helper: Configuration Error. Size till end smaller than 0" << std::endl;
+
+		result = checkRemainingSize(&currentPoolRawAccess, &poolEntrySerialized, &arrayPosition);
+		if(result != RETURN_OK) {
+			error << "Pool Raw Access Helper: Configuration Error at pool ID " << std::hex << currentPoolId
+				  << ". Size till end smaller than 0" << std::dec << std::endl;
 			return result;
 		}
+
 		// set valid mask bit if necessary
 		if(withValidMask) {
 			if(currentPoolRawAccess.isValid()) {
 				handleMaskModification(validityMask);
 			}
 		}
+
 		result = currentDataSet.serialize(argStruct.buffer, argStruct.size,
 				argStruct.max_size, argStruct.bigEndian);
 		if (result != RETURN_OK) {
-			debug << "Pool Raw Access Helper: Error serializing pool data into send buffer" << std::endl;
+			debug << "Pool Raw Access Helper: Error serializing pool data with ID 0x" << std::hex <<
+					currentPoolId << " into send buffer with return code " << result << std::dec << std::endl;
 			return result;
 		}
+
 	}
 	return result;
+}
+
+ReturnValue_t PoolRawAccessHelper::checkRemainingSize(PoolRawAccess * currentPoolRawAccess,
+		bool * isSerialized, uint8_t * arrayPosition) {
+	int8_t remainingSize = currentPoolRawAccess->getSizeTillEnd() - currentPoolRawAccess->getSizeOfType();
+	if(remainingSize == 0) {
+		*isSerialized = true;
+	}
+	else if(remainingSize > 0) {
+		*arrayPosition += 1;
+	}
+	else {
+		return RETURN_FAILED;
+	}
+	return RETURN_OK;
 }
 
 void PoolRawAccessHelper::handleMaskModification(uint8_t * validityMask) {

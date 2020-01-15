@@ -15,70 +15,17 @@
  * data pool access.
  * @ingroup data_pool
  */
-class PoolRawAccess: public PoolVariableIF {
-private:
-	/**
-	 * \brief	To access the correct data pool entry on read and commit calls, the data pool id
-	 * 			is stored.
-	 */
-	uint32_t dataPoolId;
-	/**
-	 * \brief	The array entry that is fetched from the data pool.
-	 */
-	uint8_t arrayEntry;
-	/**
-	 * \brief	The valid information as it was stored in the data pool is copied to this attribute.
-	 */
-	uint8_t valid;
-	/**
-	 *  \brief	This value contains the type of the data pool entry.
-	 */
-	Type type;
-	/**
-	 * \brief	This value contains the size of the data pool entry type in bytes.
-	 */
-	uint8_t typeSize;
-	/**
-	 * The size of the DP array (single values return 1)
-	 */
-	uint8_t arraySize;
-	/**
-	 * The size (in bytes) from the selected entry till the end of this DataPool variable.
-	 */
-	uint16_t sizeTillEnd;
-	/**
-	 * \brief	The information whether the class is read-write or read-only is stored here.
-	 */
-	ReadWriteMode_t readWriteMode;
-	static const uint8_t RAW_MAX_SIZE = sizeof(double);
-protected:
-	/**
-	 * \brief	This is a call to read the value from the global data pool.
-	 * \details	When executed, this operation tries to fetch the pool entry with matching
-	 * 			data pool id from the global data pool and copies the value and the valid
-	 * 			information to its local attributes. In case of a failure (wrong type or
-	 * 			pool id not found), the variable is set to zero and invalid.
-	 * 			The operation does NOT provide any mutual exclusive protection by itself !
-	 * 			If reading from the data pool without information about the type is desired,
-	 * 			initialize the raw pool access by supplying a data set and using the data set
-	 * 			read function, which calls this read function.
-	 */
-	ReturnValue_t read();
-	/**
-	 * \brief	The commit call writes back the variable's value to the data pool.
-	 * \details	It checks type and size, as well as if the variable is writable. If so,
-	 * 			the value is copied and the valid flag is automatically set to "valid".
-	 * 			The operation does NOT provide any mutual exclusive protection by itself.
-	 *
-	 */
-	ReturnValue_t commit();
+class PoolRawAccess: public PoolVariableIF, HasReturnvaluesIF {
 public:
-
 	static const uint8_t INTERFACE_ID = CLASS_ID::POOL_RAW_ACCESS_CLASS;
 	static const ReturnValue_t INCORRECT_SIZE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t READ_TYPE_TOO_LARGE = MAKE_RETURN_CODE(0x03);
+	static const ReturnValue_t READ_INDEX_TOO_LARGE = MAKE_RETURN_CODE(0x04);
+	static const ReturnValue_t READ_ENTRY_NON_EXISTENT =  MAKE_RETURN_CODE(0x05);
+	static const uint8_t RAW_MAX_SIZE = sizeof(double);
 	uint8_t value[RAW_MAX_SIZE];
-	//PoolRawAccess();
+
 	/**
 	 * This constructor is used to access a data pool entry with a
 	 * given ID if the target type is not known. A DataSet object is supplied
@@ -96,24 +43,12 @@ public:
 	 */
 	PoolRawAccess(uint32_t data_pool_id, uint8_t arrayEntry,
 			DataSetIF* data_set, ReadWriteMode_t setReadWriteMode =
-			PoolVariableIF::VAR_READ,bool registerVectors = false);
+			PoolVariableIF::VAR_READ);
 	/**
 	 * \brief	The classes destructor is empty. If commit() was not called, the local value is
 	 * 			discarded and not written back to the data pool.
 	 */
 	~PoolRawAccess();
-
-	/**
-	 * @brief 	Serialize raw pool entry into provided buffer directly
-	 * @param buffer Provided buffer. Raw pool data will be copied here
-	 * @param size [out] Increment provided size value by serialized size
-	 * @param max_size Maximum allowed serialization size
-	 * @param bigEndian Specify endianess
-	 * @return - @c RETURN_OK if serialization was successfull
-	 *         - @c SerializeIF::BUFFER_TOO_SHORT if range check failed
-	 */
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
 
 	/**
 	 * \brief	This operation returns a pointer to the entry fetched.
@@ -136,6 +71,19 @@ public:
 	 */
 	ReturnValue_t getEntryEndianSafe(uint8_t* buffer, uint32_t* size,
 			uint32_t max_size);
+
+	/**
+	 * @brief 	Serialize raw pool entry into provided buffer directly
+	 * @param buffer Provided buffer. Raw pool data will be copied here
+	 * @param size [out] Increment provided size value by serialized size
+	 * @param max_size Maximum allowed serialization size
+	 * @param bigEndian Specify endianess
+	 * @return - @c RETURN_OK if serialization was successfull
+	 *         - @c SerializeIF::BUFFER_TOO_SHORT if range check failed
+	 */
+	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
+			const uint32_t max_size, bool bigEndian) const;
+
 	/**
 	 * With this method, the content can be set from a big endian buffer safely.
 	 * @param buffer	Pointer to the data to set
@@ -181,6 +129,67 @@ public:
 
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 			bool bigEndian);
+
+protected:
+	/**
+	 * \brief	This is a call to read the value from the global data pool.
+	 * \details	When executed, this operation tries to fetch the pool entry with matching
+	 * 			data pool id from the global data pool and copies the value and the valid
+	 * 			information to its local attributes. In case of a failure (wrong type or
+	 * 			pool id not found), the variable is set to zero and invalid.
+	 * 			The operation does NOT provide any mutual exclusive protection by itself !
+	 * 			If reading from the data pool without information about the type is desired,
+	 * 			initialize the raw pool access by supplying a data set and using the data set
+	 * 			read function, which calls this read function.
+	 * @return -@c RETURN_OK Read successfull
+	 * 		   -@c READ_TYPE_TOO_LARGE
+	 * 		   -@c READ_INDEX_TOO_LARGE
+	 * 		   -@c READ_ENTRY_NON_EXISTENT
+	 */
+	ReturnValue_t read();
+	/**
+	 * \brief	The commit call writes back the variable's value to the data pool.
+	 * \details	It checks type and size, as well as if the variable is writable. If so,
+	 * 			the value is copied and the valid flag is automatically set to "valid".
+	 * 			The operation does NOT provide any mutual exclusive protection by itself.
+	 *
+	 */
+	ReturnValue_t commit();
+
+private:
+	/**
+	 * \brief	To access the correct data pool entry on read and commit calls, the data pool id
+	 * 			is stored.
+	 */
+	uint32_t dataPoolId;
+	/**
+	 * \brief	The array entry that is fetched from the data pool.
+	 */
+	uint8_t arrayEntry;
+	/**
+	 * \brief	The valid information as it was stored in the data pool is copied to this attribute.
+	 */
+	uint8_t valid;
+	/**
+	 *  \brief	This value contains the type of the data pool entry.
+	 */
+	Type type;
+	/**
+	 * \brief	This value contains the size of the data pool entry type in bytes.
+	 */
+	uint8_t typeSize;
+	/**
+	 * The size of the DP array (single values return 1)
+	 */
+	uint8_t arraySize;
+	/**
+	 * The size (in bytes) from the selected entry till the end of this DataPool variable.
+	 */
+	uint16_t sizeTillEnd;
+	/**
+	 * \brief	The information whether the class is read-write or read-only is stored here.
+	 */
+	ReadWriteMode_t readWriteMode;
 };
 
 #endif /* POOLRAWACCESS_H_ */
