@@ -14,6 +14,9 @@ public:
 		float hysteresis;
 		float heaterSwitchoff;
 	};
+
+	// TODO: Documentaiton ,what is NOP?
+	// propably Non-operational?
 	struct NopParameters {
 		float lowerNopLimit;
 		float upperNopLimit;
