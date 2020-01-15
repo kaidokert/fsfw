@@ -5,6 +5,14 @@
 #include "AbstractTemperatureSensor.h"
 #include <framework/monitoring/LimitMonitor.h>
 
+/**
+ * @brief 	This building block handles non-linear value conversion and
+ * 			range checks for analog temperature sensors.
+ * @details
+ *
+ *
+ */
+
 template<typename T>
 class TemperatureSensor: public AbstractTemperatureSensor {
 public:

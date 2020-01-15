@@ -11,6 +11,9 @@
 #include "RedundantHeater.h"
 class PowerSwitchIF;
 
+/**
+ * @brief Allows creation of different thermal control domains within a system.
+ */
 class ThermalModule: public ThermalModuleIF {
 	friend class ThermalController;
 public:
