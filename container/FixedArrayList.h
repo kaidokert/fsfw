@@ -14,6 +14,14 @@ public:
 			ArrayList<T, count_t>(data, MAX_SIZE) {
 	}
 
+	//We could create a constructor to initialize the fixed array list with data and the known size field
+	//so it can be used for serialization too (with SerialFixedArrrayListAdapter)
+	//is this feasible?
+//	FixedArrayList(T * data_, count_t count):
+//		ArrayList<T, count_t>(data, MAX_SIZE) {
+//		memcpy(data, data_, count);
+//	}
+
 	FixedArrayList(const FixedArrayList& other) :
 			ArrayList<T, count_t>(data, MAX_SIZE) {
 		memcpy(this->data, other.data, sizeof(this->data));
