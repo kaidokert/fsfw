@@ -16,8 +16,8 @@ template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIXED_MAP;
-	static const ReturnValue_t KEY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01); //!< P1: SID for HK packets
-	static const ReturnValue_t MAP_FULL = MAKE_RETURN_CODE(0x02); //!< P1: SID for HK packets
+	static const ReturnValue_t KEY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t MAP_FULL = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t KEY_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x03);
 
 private:

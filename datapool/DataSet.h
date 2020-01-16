@@ -129,9 +129,6 @@ public:
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 			bool bigEndian);
 
-	ReturnValue_t serializeRawFromIdBuffer(uint8_t ** buffer, uint32_t * size,
-			const uint32_t max_size, bool bigEndian, uint32_t * poolIdBuffer,
-			uint32_t poolIdSize);
 private:
 	/**
 	 * \brief	This array represents all pool variables registered in this set.

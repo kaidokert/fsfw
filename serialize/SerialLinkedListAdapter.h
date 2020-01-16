@@ -19,7 +19,7 @@
  * @details
  * An alternative to the AutoSerializeAdapter functions
  *   - All object members with a datatype are declared as SerializeElement<element_type>
- * 	   inside the class implementing this adapter.
+ * 	   members inside the class implementing this adapter.
  *   - The element type can also be a SerialBufferAdapter to de-/serialize buffers,
  *     with a known size, where the size can also be serialized
  *   - The element type can also be a SerialFixedArrayListAdapter to de-/serialize buffers
@@ -29,13 +29,12 @@
  * the setStart and setNext functions.
  *
  * - The serialization process is done by instantiating the class and
- *   calling the serialize after all SerializeElement entries have been set by
- *   using a constructor or setter functions. An additional size variable can be supplied
+ *   calling serializ after all SerializeElement entries have been set by
+ *   using the constructor or setter functions. An additional size variable can be supplied
  *   which is calculated/incremented automatically
  * - The deserialization process is done by instantiating the class and supplying
  *   a buffer with the data which is converted into an object. The size of
  *   data to serialize can be supplied and is decremented in the function
- *
  *
  * @ingroup serialize
  */

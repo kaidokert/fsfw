@@ -38,7 +38,7 @@ ReturnValue_t PoolRawAccess::read() {
 				result = READ_TYPE_TOO_LARGE;
 			}
 		} else {
-			info << "PoolRawAccess: Size: " << (int)read_out->getSize() << std::endl;
+			//debug << "PoolRawAccess: Size: " << (int)read_out->getSize() << std::endl;
 			result = READ_INDEX_TOO_LARGE;
 		}
 	} else {

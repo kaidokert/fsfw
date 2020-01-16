@@ -1,6 +1,6 @@
 #include <framework/serialize/SerialBufferAdapter.h>
-#include <cstring>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <cstring>
 
 template<typename T>
 SerialBufferAdapter<T>::SerialBufferAdapter(const uint8_t* buffer,

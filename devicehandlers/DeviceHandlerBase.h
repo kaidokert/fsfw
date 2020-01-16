@@ -170,8 +170,6 @@ protected:
 	static const DeviceCommandId_t NO_COMMAND_ID = -2;
 	static const MessageQueueId_t NO_COMMANDER = 0;
 
-
-
 	/**
 	 * Pointer to the raw packet that will be sent.
 	 */

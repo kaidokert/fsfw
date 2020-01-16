@@ -9,16 +9,15 @@
  *        buffers with a header containing the buffer length.
  * @details
  *
- * Can be used by SerialLinkedListAdapter by using this type in
- * SerializeElement<>.
- *
- * Buffers with a size header inside that class can be declared with
- * SerialFixedArrayListAdapter<BUFFER_TYPE, MAX_BUFFER_LENGTH, LENGTH_FIELD_TYPE>.
- * LENGTH_FIELD_TYPE specifies the data type of the buffer header containing the buffer size
- * (defaults to 1 byte length field) that follows and MAX_BUFFER_LENGTH specifies
- * the maximum allowed value for the buffer size.
- *
+ * Can be used by SerialLinkedListAdapter by declaring
+ * as a linked element with SerializeElement<SerialFixedArrayListAdapter<...>>.
  * The sequence of objects is defined in the constructor by using the setStart and setNext functions.
+ *
+ *  1. Buffers with a size header inside that class can be declared with
+ *     SerialFixedArrayListAdapter<BUFFER_TYPE, MAX_BUFFER_LENGTH, LENGTH_FIELD_TYPE>.
+ *  2. MAX_BUFFER_LENGTH specifies the maximum allowed value for the buffer size.
+ *  3. LENGTH_FIELD_TYPE specifies the data type of the buffer header containing the buffer size
+ *     (defaults to 1 byte length field) that follows
  *
  * @ingroup serialize
  */
