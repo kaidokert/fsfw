@@ -40,6 +40,10 @@ public:
 			bool bigEndian) {
 		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::deSerialize(this, buffer, size, bigEndian);
 	}
+
+	void swapArrayListEndianness() {
+		SerialArrayListAdapter<BUFFER_TYPE, count_t>::swapArrayListEndianness(this);
+	}
 };
 
 

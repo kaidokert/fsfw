@@ -78,6 +78,22 @@ public:
 		}
 		return result;
 	}
+
+	/**
+	 * Swap the endianness of the Array list (not the length field !)
+	 * Useful if the case the buffer type is large than uint8_t and the endianness
+	 * is inconsistent with other SerializeElements.
+	 * @param list
+	 */
+	static void swapArrayListEndianness(ArrayList<T, count_t>* list) {
+		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+		count_t i = 0;
+		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
+			T newEntry = EndianSwapper::swap(list->entries[i]);
+			list->entries[i] = newEntry;
+			++i;
+		}
+	}
 private:
 	ArrayList<T, count_t> *adaptee;
 };
