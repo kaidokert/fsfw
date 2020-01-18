@@ -14,33 +14,13 @@ PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 	}
 }
 
-PoolRawAccess::~PoolRawAccess() {
-
-}
+PoolRawAccess::~PoolRawAccess() {}
 
 ReturnValue_t PoolRawAccess::read() {
 	ReturnValue_t result = RETURN_FAILED;
 	PoolEntryIF* read_out = ::dataPool.getRawData(dataPoolId);
 	if (read_out != NULL) {
-		valid = read_out->getValid();
-		if (read_out->getSize() > arrayEntry) {
-			arraySize = read_out->getSize();
-			typeSize = read_out->getByteSize() / read_out->getSize();
-			type = read_out->getType();
-			if (typeSize <= sizeof(value)) {
-				uint16_t arrayPosition = arrayEntry * typeSize;
-				sizeTillEnd = read_out->getByteSize() - arrayPosition;
-				uint8_t* ptr =
-						&((uint8_t*) read_out->getRawData())[arrayPosition];
-				memcpy(value, ptr, typeSize);
-				return HasReturnvaluesIF::RETURN_OK;
-			} else {
-				result = READ_TYPE_TOO_LARGE;
-			}
-		} else {
-			//debug << "PoolRawAccess: Size: " << (int)read_out->getSize() << std::endl;
-			result = READ_INDEX_TOO_LARGE;
-		}
+		result = handleReadOut(read_out);
 	} else {
 		result = READ_ENTRY_NON_EXISTENT;
 	}
@@ -59,6 +39,29 @@ ReturnValue_t PoolRawAccess::read() {
 	typeSize = 0;
 	sizeTillEnd = 0;
 	memset(value, 0, sizeof(value));
+	return result;
+}
+
+ReturnValue_t PoolRawAccess::handleReadOut(PoolEntryIF* read_out) {
+	ReturnValue_t result = RETURN_FAILED;
+	valid = read_out->getValid();
+	if (read_out->getSize() > arrayEntry) {
+		arraySize = read_out->getSize();
+		typeSize = read_out->getByteSize() / read_out->getSize();
+		type = read_out->getType();
+		if (typeSize <= sizeof(value)) {
+			uint16_t arrayPosition = arrayEntry * typeSize;
+			sizeTillEnd = read_out->getByteSize() - arrayPosition;
+			uint8_t* ptr = &((uint8_t*) read_out->getRawData())[arrayPosition];
+			memcpy(value, ptr, typeSize);
+			return RETURN_OK;
+		} else {
+			result = READ_TYPE_TOO_LARGE;
+		}
+	} else {
+		//debug << "PoolRawAccess: Size: " << (int)read_out->getSize() << std::endl;
+		result = READ_INDEX_TOO_LARGE;
+	}
 	return result;
 }
 

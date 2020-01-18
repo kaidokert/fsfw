@@ -156,6 +156,7 @@ protected:
 	 */
 	ReturnValue_t commit();
 
+	ReturnValue_t handleReadOut(PoolEntryIF* read_out);
 private:
 	/**
 	 * \brief	To access the correct data pool entry on read and commit calls, the data pool id
