@@ -58,6 +58,11 @@ public:
 	virtual void setNext(LinkedElement* next) {
 		this->next = next;
 	}
+
+	void setEnd() {
+		this->next = NULL;
+	}
+
 	LinkedElement* begin() {
 		return this;
 	}

@@ -59,6 +59,7 @@ public:
 	uint8_t * getBuffer();
 	const uint8_t * getConstBuffer();
 	void setBuffer(uint8_t * buffer_, T bufferLength_);
+	void setBuffer(uint32_t * buffer_, T bufferLength_);
 private:
 
 	enum bufferType {

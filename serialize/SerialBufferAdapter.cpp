@@ -123,6 +123,11 @@ void SerialBufferAdapter<T>::setBuffer(uint8_t * buffer_, T bufferLength_) {
 	bufferLength = bufferLength_;
 }
 
+template<typename T>
+void SerialBufferAdapter<T>::setBuffer(uint32_t * buffer_, T bufferLength_) {
+	buffer = reinterpret_cast<uint8_t *>(buffer_);
+	bufferLength = 4 * bufferLength_;
+}
 
 //forward Template declaration for linker
 template class SerialBufferAdapter<uint8_t>;

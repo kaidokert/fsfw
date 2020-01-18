@@ -15,7 +15,7 @@
  *
  *  1. Buffers with a size header inside that class can be declared with
  *     SerialFixedArrayListAdapter<BUFFER_TYPE, MAX_BUFFER_LENGTH, LENGTH_FIELD_TYPE>.
- *  2. MAX_BUFFER_LENGTH specifies the maximum allowed value for the buffer size.
+ *  2. MAX_BUFFER_LENGTH specifies the maximum allowed number of elements in FixedArrayList
  *  3. LENGTH_FIELD_TYPE specifies the data type of the buffer header containing the buffer size
  *     (defaults to 1 byte length field) that follows
  *
