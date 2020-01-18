@@ -29,12 +29,18 @@ public:
 	 * @param bufferLength
 	 * @param serializeLength
 	 */
-	SerialBufferAdapter2(BUFFER_TYPE * buffer_, count_t bufferLength_, bool serializeLength_ = false):
-				buffer(buffer_),bufferLength(bufferLength_), serializeLength(serializeLength_) {
-		determineLengthMultiplier(sizeof(count_t));
-		if(std::is_const<BUFFER_TYPE>::value) {
-			isConst = true;
-		}
+	SerialBufferAdapter2(void * buffer_, count_t bufferLength_, bool serializeLength_ = false):
+				bufferLength(bufferLength_), serializeLength(serializeLength_) {
+		determineLengthInBytes(sizeof(BUFFER_TYPE));
+		buffer = reinterpret_cast<const uint8_t *>(buffer_);
+		constBuffer = NULL;
+	}
+
+	SerialBufferAdapter2(const void * buffer_, count_t bufferLength_, bool serializeLength_ = false):
+					bufferLength(bufferLength_), serializeLength(serializeLength_) {
+		determineLengthInBytes(sizeof(BUFFER_TYPE));
+		constBuffer = reinterpret_cast<const uint8_t *>(buffer_);
+		buffer = NULL;
 	}
 
 	ReturnValue_t serialize(uint8_t ** buffer, uint32_t* size,
@@ -69,9 +75,13 @@ public:
 	ReturnValue_t deSerialize(const uint8_t** buffer,
 			int32_t* size, bool bigEndian) {
 		//TODO Ignores Endian flag!
-		//UPDATE: Endian swapper introduced. Must be tested..
 		if (buffer != NULL) {
 			if(serializeLength){
+				// Suggestion (would require removing rest of the block inside this if clause !):
+				//ReturnValue_t result = AutoSerializeAdapter::deSerialize(&bufferLength,buffer,size,bigEndian);
+				//if (result != HasReturnvaluesIF::RETURN_OK) {
+				//	return result;
+				//}
 				count_t serializedSize = AutoSerializeAdapter::getSerializedSize(
 						&bufferLength);
 				if((*size - bufferLength - serializedSize) >= 0){
@@ -83,15 +93,8 @@ public:
 			}
 			//No Else If, go on with buffer
 			if (*size - bufferLength >= 0) {
-				uint8_t tmp [bufferLength];
-				uint8_t * pTmp = tmp;
-				if (bigEndian) {
-					EndianSwapper::swap<BUFFER_TYPE>(pTmp,*buffer, bufferLength);
-				} else {
-					pTmp = const_cast<uint8_t *>(*buffer);
-				}
 				*size -= bufferLength;
-				memcpy(const_cast<void *>(reinterpret_cast<const void*>(this->buffer)), pTmp, bufferLength);
+				memcpy(this->buffer, *buffer, bufferLength);
 				(*buffer) += bufferLength;
 				return HasReturnvaluesIF::RETURN_OK;
 			} else {
@@ -103,24 +106,30 @@ public:
 	}
 
 
-	uint8_t * getBuffer() {
-		return reinterpret_cast<uint8_t *>(buffer);
+	BUFFER_TYPE * getBuffer() {
+		return reinterpret_cast<BUFFER_TYPE *>(buffer);
 	}
 
-	void setBuffer(BUFFER_TYPE * buffer_, count_t bufferLength_, bool serializeLength_ = false) {
+	void setBuffer(void * buffer_, count_t bufferLength_, bool serializeLength_ = false) {
 		buffer = buffer_;
 		bufferLength = bufferLength_;
 		serializeLength = serializeLength_;
-		determineLengthMultiplier(sizeof(count_t));
+		determineLengthInBytes(sizeof(BUFFER_TYPE));
+	}
+
+	void setConstBuffer(const void * buffer_, count_t bufferLength_, bool serializeLength_ = false) {
+		constBuffer = buffer_;
+		bufferLength = bufferLength_;
+		serializeLength = serializeLength_;
+		determineLengthInBytes(sizeof(BUFFER_TYPE));
 	}
 private:
-	BUFFER_TYPE * buffer;
+	uint8_t * buffer;
+	const uint8_t * constBuffer;
 	count_t bufferLength;
 	bool serializeLength;
 
-	bool isConst = false;
-
-	void determineLengthMultiplier(uint8_t typeSize) {
+	void determineLengthInBytes(uint8_t typeSize) {
 		switch(typeSize) {
 		case(2):
 			bufferLength *= 2; break;
@@ -133,7 +142,5 @@ private:
 		}
 	}
 };
-
-
 
 #endif /* SERIALBUFFERADAPTER2_H_ */

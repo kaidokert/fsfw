@@ -71,6 +71,11 @@ ReturnValue_t SerialBufferAdapter<T>::deSerialize(const uint8_t** buffer,
 	//TODO Ignores Endian flag!
 	if (buffer != NULL) {
 		if(serializeLength){
+			// Suggestion (would require removing rest of the block inside this if clause !):
+			//ReturnValue_t result = AutoSerializeAdapter::deSerialize(&bufferLength,buffer,size,bigEndian);
+			//if (result != HasReturnvaluesIF::RETURN_OK) {
+			//	return result;
+			//}
 			T serializedSize = AutoSerializeAdapter::getSerializedSize(
 					&bufferLength);
 			if((*size - bufferLength - serializedSize) >= 0){
@@ -113,8 +118,9 @@ const uint8_t * SerialBufferAdapter<T>::getConstBuffer() {
 }
 
 template<typename T>
-void SerialBufferAdapter<T>::setBuffer(uint8_t * buffer_) {
+void SerialBufferAdapter<T>::setBuffer(uint8_t * buffer_, T bufferLength_) {
 	buffer = buffer_;
+	bufferLength = bufferLength_;
 }
 
 
