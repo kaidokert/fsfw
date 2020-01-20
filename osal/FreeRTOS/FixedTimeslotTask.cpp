@@ -19,8 +19,7 @@ FixedTimeslotTask::~FixedTimeslotTask() {
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
 
 	//The argument is re-interpreted as FixedTimeslotTask. The Task object is global, so it is found from any place.
-	FixedTimeslotTask *originalTask(
-			reinterpret_cast<FixedTimeslotTask*>(argument));
+	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
 	// Task should not start until explicitly requested
 	// in FreeRTOS, tasks start as soon as they are created if the scheduler is running
 	// but not if the scheduler is not running.
@@ -58,6 +57,11 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
+	if (!objectManager->get<ExecutableObjectIF>(componentId)) {
+		error << "Component " << std::hex << componentId << " not found, not adding it to pst" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	pst.addSlot(componentId, slotTimeMs, executionStep, this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
