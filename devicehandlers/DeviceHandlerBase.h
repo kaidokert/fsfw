@@ -39,18 +39,17 @@ class StorageManagerIF;
  * Documentation: Dissertation Baetz p.138,139, p.141-149
  *
  * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, communication with
- * physical devices, using the @link DeviceCommunicationIF, and communication with commanding objects.
- *
- * NOTE: RMAP is a standard which is used for FLP.
- * RMAP communication is not mandatory for projects implementing the FSFW.
- * However, the communication principles are similar to RMAP as there are two write and two send calls involved.
- *
+ * physical devices, using the @link DeviceCommunicationIF @endlink, and communication with commanding objects.
  * It inherits SystemObject and thus can be created by the ObjectManagerIF.
  *
  * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
- * For each step an RMAP action is selected and executed. If data has been received (GET_READ), the data will be interpreted.
+ * For each step an RMAP action is selected and executed.
+ * If data has been received (GET_READ), the data will be interpreted.
  * The action for each step can be defined by the child class but as most device handlers share a 4-call
  * (sendRead-getRead-sendWrite-getWrite) structure, a default implementation is provided.
+ * NOTE: RMAP is a standard which is used for FLP.
+ * RMAP communication is not mandatory for projects implementing the FSFW.
+ * However, the communication principles are similar to RMAP as there are two write and two send calls involved.
  *
  * Device handler instances should extend this class and implement the abstract functions.
  * Components and drivers can send so called cookies which are used for communication
@@ -64,8 +63,9 @@ class StorageManagerIF;
  *  6. fillCommandAndReplyMap()
  *  7. scanForReply()
  *  8. interpretDeviceReply()
+ *
  * Other important virtual methods with a default implementation
- * are the getTransitionDelay() function and the getSwitches() function
+ * are the getTransitionDelayMs() function and the getSwitches() function.
  *
  * @ingroup devices
  */
@@ -233,14 +233,26 @@ protected:
 	 * @details
 	 * This is used to let the base class know which replies are expected.
 	 * There are different scenarios regarding this:
-	 * - "Normal" commands. These are commands, that trigger a direct reply from the device. In this case, the id of the command should be added to the command map
-	 * with a commandData_t where maxDelayCycles is set to the maximum expected number of PST cycles the reply will take. Then, scanForReply returns the id of the command and the base class can handle time-out and missing replies.
-	 * - Periodic, unrequested replies. These are replies that, once enabled, are sent by the device on its own in a defined interval. In this case, the id of the reply or a placeholder id should be added to the deviceCommandMap
-	 * with a commandData_t where maxDelayCycles is set to the maximum expected number of PST cycles between two replies (also a tolerance should be added, as an FDIR message will be generated if it is missed).
-	 * As soon as the replies are enabled, DeviceCommandInfo.periodic must be set to 1, DeviceCommandInfo.delayCycles to DeviceCommandInfo.MaxDelayCycles. From then on, the base class handles the reception.
-	 * Then, scanForReply returns the id of the reply or the placeholder id and the base class will take care of checking that all replies are received and the interval is correct.
-	 * When the replies are disabled, DeviceCommandInfo.periodic must be set to 0, DeviceCommandInfo.delayCycles to 0;
-	 * - Aperiodic, unrequested replies. These are replies that are sent by the device without any preceding command and not in a defined interval. These are not entered in the deviceCommandMap but handled by returning @c APERIODIC_REPLY in scanForReply().
+	 *  - "Normal" commands. These are commands, that trigger a direct reply from the device.
+	 *    In this case, the id of the command should be added to the command map
+	 *    with a commandData_t where maxDelayCycles is set to the maximum expected
+	 *    number of PST cycles the reply will take. Then, scanForReply returns
+	 *    the id of the command and the base class can handle time-out and missing replies.
+	 *  - Periodic, unrequested replies. These are replies that, once enabled, are sent by the device
+	 *    on its own in a defined interval. In this case, the id of the reply
+	 *    or a placeholder id should be added to the deviceCommandMap with a commandData_t
+	 *    where maxDelayCycles is set to the maximum expected number of PST cycles between
+	 *    two replies (also a tolerance should be added, as an FDIR message will be generated if it is missed).
+	 *    As soon as the replies are enabled, DeviceCommandInfo.periodic must be set to 1,
+	 *    DeviceCommandInfo.delayCycles to DeviceCommandInfo.MaxDelayCycles.
+	 *    From then on, the base class handles the reception.
+	 *    Then, scanForReply returns the id of the reply or the placeholder id and the base class will
+	 *    take care of checking that all replies are received and the interval is correct.
+	 *    When the replies are disabled, DeviceCommandInfo.periodic must be set to 0,
+	 *    DeviceCommandInfo.delayCycles to 0;
+	 *  - Aperiodic, unrequested replies. These are replies that are sent
+	 *    by the device without any preceding command and not in a defined interval.
+	 *    These are not entered in the deviceCommandMap but handled by returning @c APERIODIC_REPLY in scanForReply().
 	 *
 	 */
 	virtual void fillCommandAndReplyMap() = 0;
@@ -306,10 +318,10 @@ protected:
 	 *
 	 * Used for the following transitions:
 	 * modeFrom -> modeTo:
-	 * MODE_ON -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
-	 * MODE_NORMAL -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
-	 * MODE_RAW -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
-	 * _MODE_START_UP -> MODE_ON (do not include time to set the switches, the base class got you covered)
+	 *  - MODE_ON -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
+	 *  - MODE_NORMAL -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
+	 *  - MODE_RAW -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
+	 *  - _MODE_START_UP -> MODE_ON (do not include time to set the switches, the base class got you covered)
 	 *
 	 * The default implementation returns 0 !
 	 * @param modeFrom

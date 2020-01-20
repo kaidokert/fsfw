@@ -104,6 +104,66 @@ public:
 	};
 
 protected:
+	/**
+	 * Check the target subservice
+	 * @param subservice
+	 * @return
+	 */
+	virtual ReturnValue_t isValidSubservice(uint8_t subservice) = 0;
+
+	/**
+	 * Once a TC Request is valid, the existence of the destination and its target interface is checked and retrieved.
+	 * The target message queue ID can then be acquired by using the target interface.
+	 * @param subservice
+	 * @param tcData Application Data of TC Packet
+	 * @param tcDataLen
+	 * @param id MessageQueue ID is stored here
+	 * @param objectId Object ID is extracted and stored here
+	 * @return - @c RETURN_OK on success
+	 *         - @c RETURN_FAILED
+	 *         - @c CSB or implementation specific return codes
+	 */
+	virtual ReturnValue_t getMessageQueueAndObject(uint8_t subservice,
+			const uint8_t *tcData, uint32_t tcDataLen, MessageQueueId_t *id,
+			object_id_t *objectId) = 0;
+
+	/**
+	 * After the Message Queue and Object ID are determined,
+	 * the command is prepared by using an implementation specific CommandMessage type
+	 * which is sent to the target object.
+	 * It contains all necessary information for the device to execute telecommands.
+	 * @param message
+	 * @param subservice
+	 * @param tcData
+	 * @param tcDataLen
+	 * @param state
+	 * @param objectId Target object ID
+	 * @return
+	 */
+	virtual ReturnValue_t prepareCommand(CommandMessage *message,
+			uint8_t subservice, const uint8_t *tcData, uint32_t tcDataLen,
+			uint32_t *state, object_id_t objectId) = 0;
+
+	/**
+	 * This function is responsible for the communication between the Command Service Base
+	 * and the respective PUS Commanding Service once the execution has started.
+	 * The PUS Commanding Service receives replies from the target device and forwards them by calling this function.
+	 * There are different translations of these replies to specify how the Command Service proceeds.
+	 * @param reply[out] Command Message which contains information about the command
+	 * @param previousCommand [out]
+	 * @param state
+	 * @param optionalNextCommand
+	 * @param objectId Source object ID
+	 * @param isStep Flag value to mark steps of command execution
+	 * @return - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to generate TC verification success
+	 *         - @c INVALID_REPLY can handle unrequested replies
+	 *         - Anything else triggers a TC verification failure
+	 */
+	virtual ReturnValue_t handleReply(const CommandMessage *reply,
+			Command_t previousCommand, uint32_t *state,
+			CommandMessage *optionalNextCommand, object_id_t objectId,
+			bool *isStep) = 0;
+
 	struct CommandInfo {
 		struct tcInfo {
 			uint8_t ackFlags;
@@ -180,67 +240,6 @@ protected:
 	 */
 	void sendTmPacket(uint8_t subservice, SerializeIF* content,
 			SerializeIF* header = NULL);
-
-	/**
-	 * Check the target subservice
-	 * @param subservice
-	 * @return
-	 */
-	virtual ReturnValue_t isValidSubservice(uint8_t subservice) = 0;
-
-	/**
-	 * Once a TC Request is valid, the existence of the destination and its target interface is checked and retrieved.
-	 * The target message queue ID can then be acquired by using the target interface.
-	 * @param subservice
-	 * @param tcData Application Data of TC Packet
-	 * @param tcDataLen
-	 * @param id MessageQueue ID is stored here
-	 * @param objectId Object ID is extracted and stored here
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED
-	 *         - @c CSB or implementation specific return codes
-	 */
-	virtual ReturnValue_t getMessageQueueAndObject(uint8_t subservice,
-			const uint8_t *tcData, uint32_t tcDataLen, MessageQueueId_t *id,
-			object_id_t *objectId) = 0;
-
-	/**
-	 * After the Message Queue and Object ID are determined,
-	 * the command is prepared by using an implementation specific CommandMessage type
-	 * which is sent to the target object.
-	 * It contains all necessary information for the device to execute telecommands.
-	 * @param message
-	 * @param subservice
-	 * @param tcData
-	 * @param tcDataLen
-	 * @param state
-	 * @param objectId Target object ID
-	 * @return
-	 */
-	virtual ReturnValue_t prepareCommand(CommandMessage *message,
-			uint8_t subservice, const uint8_t *tcData, uint32_t tcDataLen,
-			uint32_t *state, object_id_t objectId) = 0;
-
-	/**
-	 * This function is responsible for the communication between the Command Service Base
-	 * and the respective PUS Commanding Service once the execution has started.
-	 * The PUS Commanding Service receives replies from the target device and forwards them by calling this function.
-	 * There are different translations of these replies to specify how the Command Service proceeds.
-	 * @param reply[out] Command Message which contains information about the command
-	 * @param previousCommand [out]
-	 * @param state
-	 * @param optionalNextCommand
-	 * @param objectId Source object ID
-	 * @param isStep Flag value to mark steps of command execution
-	 * @return - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to generate TC verification success
-	 *         - @c INVALID_REPLY can handle unrequested replies
-	 *         - Anything else triggers a TC verification failure
-	 */
-	virtual ReturnValue_t handleReply(const CommandMessage *reply,
-			Command_t previousCommand, uint32_t *state,
-			CommandMessage *optionalNextCommand, object_id_t objectId,
-			bool *isStep) = 0;
-
 
 	virtual void handleUnrequestedReply(CommandMessage *reply);
 
