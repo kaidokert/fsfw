@@ -224,6 +224,34 @@ public:
 		return (maxSize_ - size);
 	}
 
+
+private:
+	/**
+	 * This is the copy constructor
+	 *
+	 * It is private, as copying is too ambigous in this case. (Allocate a new backend? Use the same?
+	 * What to do in an modifying call?)
+	 *
+	 * @param other
+	 */
+	ArrayList(const ArrayList& other) :
+			size(other.size), entries(other.entries), maxSize_(other.maxSize_),
+			allocated(false) {}
+protected:
+	/**
+	 * pointer to the array in which the entries are stored
+	 */
+	T *entries;
+	/**
+	 * remembering the maximum size
+	 */
+	uint32_t maxSize_;
+
+	/**
+	 * true if the array was allocated and needs to be deleted in the destructor.
+	 */
+	bool allocated;
+
 	/**
 	 * Swap the endianness of the Array list (not the length field !)
 	 * Useful if the case the buffer type is larger than uint8_t
@@ -242,33 +270,6 @@ public:
 			++i;
 		}
 	}
-private:
-	/**
-	 * This is the copy constructor
-	 *
-	 * It is private, as copying is too ambigous in this case. (Allocate a new backend? Use the same?
-	 * What to do in an modifying call?)
-	 *
-	 * @param other
-	 */
-	ArrayList(const ArrayList& other) :
-			size(other.size), entries(other.entries), maxSize_(other.maxSize_), allocated(
-					false) {
-	}
-protected:
-	/**
-	 * pointer to the array in which the entries are stored
-	 */
-	T *entries;
-	/**
-	 * remembering the maximum size
-	 */
-	uint32_t maxSize_;
-
-	/**
-	 * true if the array was allocated and needs to be deleted in the destructor.
-	 */
-	bool allocated;
 
 };
 #endif /* ARRAYLIST_H_ */
