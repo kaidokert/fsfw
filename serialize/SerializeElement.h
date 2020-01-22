@@ -19,6 +19,10 @@
 template<typename T>
 class SerializeElement : public SerializeIF, public LinkedElement<SerializeIF> {
 public:
+	/**
+	 * Arguments are forwarded to the element datatype constructor
+	 * @param args
+	 */
 	template<typename... Args>
 	SerializeElement(Args... args) : LinkedElement<SerializeIF>(this), entry(std::forward<Args>(args)...) {
 

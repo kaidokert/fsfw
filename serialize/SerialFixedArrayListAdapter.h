@@ -24,6 +24,10 @@
 template<typename BUFFER_TYPE, uint32_t MAX_SIZE, typename count_t = uint8_t>
 class SerialFixedArrayListAdapter : public FixedArrayList<BUFFER_TYPE, MAX_SIZE, count_t>, public SerializeIF {
 public:
+	/**
+	 * Constructor Arguments are forwarded to FixedArrayList constructor
+	 * @param args
+	 */
 	template<typename... Args>
 	SerialFixedArrayListAdapter(Args... args) : FixedArrayList<BUFFER_TYPE, MAX_SIZE, count_t>(std::forward<Args>(args)...) {
 	}

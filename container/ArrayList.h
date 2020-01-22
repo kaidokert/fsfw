@@ -223,6 +223,25 @@ public:
 	count_t remaining() {
 		return (maxSize_ - size);
 	}
+
+	/**
+	 * Swap the endianness of the Array list (not the length field !)
+	 * Useful if the case the buffer type is larger than uint8_t
+	 * @param list
+	 */
+	void swapArrayListEndianness() {
+		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+		count_t i = 0;
+		// uint8_t buffer does not require swapping of entries.
+		if(sizeof(T) == 1) {
+			return;
+		}
+		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < size)) {
+			T newEntry = EndianSwapper::swap(entries[i]);
+			entries[i] = newEntry;
+			++i;
+		}
+	}
 private:
 	/**
 	 * This is the copy constructor
