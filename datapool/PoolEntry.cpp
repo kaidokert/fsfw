@@ -2,12 +2,13 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 template <typename T>
-PoolEntry<T>::PoolEntry( T* initValue, uint8_t set_length, uint8_t set_valid ) : length(set_length), valid(set_valid) {
+PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t set_length, uint8_t set_valid ) : length(set_length), valid(set_valid) {
 	this->address = new T[this->length];
-	if (initValue != NULL) {
-		memcpy(this->address, initValue, this->getByteSize() );
-	} else {
-		memset(this->address, 0, this->getByteSize() );
+	if(initValue.size() == 0) {
+		memset(this->address, 0, this->getByteSize());
+	}
+	else {
+		memcpy(this->address, initValue.begin(), this->getByteSize());
 	}
 }
 

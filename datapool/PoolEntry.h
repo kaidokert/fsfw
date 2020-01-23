@@ -5,6 +5,7 @@
 #include <framework/datapool/PoolEntryIF.h>
 #include <stddef.h>
 #include <cstring>
+#include <initializer_list>
 /**
  * \brief		This is a small helper class that defines a single data pool entry.
  *
@@ -31,7 +32,7 @@ public:
 	 * \param set_length	Defines the array length of this entry.
 	 * \param set_valid		Sets the initialization flag. It is invalid (0) by default.
 	 */
-	PoolEntry( T* initValue = NULL, uint8_t set_length = 1, uint8_t set_valid = 0 );
+	PoolEntry( std::initializer_list<T> initValue = {}, uint8_t set_length = 1, uint8_t set_valid = 0 );
 	/**
 	 * \brief	The allocated memory for the variable is freed in the destructor.
 	 * \details	As the data pool is global, this dtor is only called on program exit.
