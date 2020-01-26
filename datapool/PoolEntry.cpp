@@ -12,6 +12,17 @@ PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t set_length, 
 	}
 }
 
+template <typename T>
+PoolEntry<T>::PoolEntry( T* initValue, uint8_t set_length, uint8_t set_valid ) : length(set_length), valid(set_valid) {
+	this->address = new T[this->length];
+	if (initValue != NULL) {
+		memcpy(this->address, initValue, this->getByteSize() );
+	} else {
+		memset(this->address, 0, this->getByteSize() );
+	}
+}
+
+
 //As the data pool is global, this dtor is only be called on program exit.
 //Warning! Never copy pool entries!
 template <typename T>
