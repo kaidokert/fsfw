@@ -21,24 +21,13 @@ ReturnValue_t PoolRawAccess::read() {
 	PoolEntryIF* read_out = ::dataPool.getRawData(dataPoolId);
 	if (read_out != NULL) {
 		result = handleReadOut(read_out);
+		if(result == RETURN_OK) {
+			return result;
+		}
 	} else {
 		result = READ_ENTRY_NON_EXISTENT;
 	}
-	error << "PoolRawAccess: read of DP Variable 0x" << std::hex << dataPoolId
-			<< std::dec << " failed, ";
-	if(result == READ_TYPE_TOO_LARGE) {
-		error << "type too large." << std::endl;
-	}
-	else if(result == READ_INDEX_TOO_LARGE) {
-		error << "index too large." << std::endl;
-	}
-	else {
-		error << "entry does not exist." << std::endl;
-	}
-	valid = INVALID;
-	typeSize = 0;
-	sizeTillEnd = 0;
-	memset(value, 0, sizeof(value));
+	handleReadError(result);
 	return result;
 }
 
@@ -63,6 +52,24 @@ ReturnValue_t PoolRawAccess::handleReadOut(PoolEntryIF* read_out) {
 		result = READ_INDEX_TOO_LARGE;
 	}
 	return result;
+}
+
+void PoolRawAccess::handleReadError(ReturnValue_t result) {
+	error << "PoolRawAccess: read of DP Variable 0x" << std::hex << dataPoolId
+			<< std::dec << " failed, ";
+	if(result == READ_TYPE_TOO_LARGE) {
+		error << "type too large." << std::endl;
+	}
+	else if(result == READ_INDEX_TOO_LARGE) {
+		error << "index too large." << std::endl;
+	}
+	else if(result == READ_ENTRY_NON_EXISTENT) {
+		error << "entry does not exist." << std::endl;
+	}
+	valid = INVALID;
+	typeSize = 0;
+	sizeTillEnd = 0;
+	memset(value, 0, sizeof(value));
 }
 
 ReturnValue_t PoolRawAccess::commit() {
