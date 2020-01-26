@@ -21,7 +21,7 @@ public:
 	//is this feasible?
 	FixedArrayList(T * data_, count_t count, bool swapArrayListEndianess = false):
 		ArrayList<T, count_t>(data, MAX_SIZE) {
-		memcpy(this->data, data_, count);
+		memcpy(this->data, data_, count * sizeof(T));
 		this->size = count;
 		if(swapArrayListEndianess) {
 			ArrayList<T, count_t>::swapArrayListEndianness();
