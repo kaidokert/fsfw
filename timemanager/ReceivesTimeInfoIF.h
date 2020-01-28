@@ -7,6 +7,7 @@
 
 #ifndef RECEIVESTIMEINFOIF_H_
 #define RECEIVESTIMEINFOIF_H_
+#include <framework/ipc/MessageQueueSenderIF.h>
 
 /**
  * This is a Interface for classes that receive timing information

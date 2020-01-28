@@ -154,6 +154,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	if (length < 19) {
 		return RETURN_FAILED;
 	}
+#ifdef AVR_STDIO
 	// In the size optimized nano library used by ATMEL, floating point conversion
 	// is not allowed. There is a linker flag to allow it apparently, but I
 	// could not manage to make it run (removing -specs=nano.specs in linker flags works though,
@@ -167,11 +168,8 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	int minute;
 	int second;
 	int usecond;
-	// try Code A (yyyy-mm-dd)
-	//int count = sscanf((char *) from, "%4hi-%2hi-%2hiT%2hi:%2hi:%fZ", &year,
-	//		&month, &day, &hour, &minute, &second);
 	int count = sscanf((char *) from, "%4d-%2d-%2dT%2d:%2d:%2d.%dZ", &year,
-				&month, &day, &hour, &minute, &second, &usecond);
+			&month, &day, &hour, &minute, &second, &usecond);
 	if (count == 7) {
 		to->year = year;
 		to->month = month;
@@ -202,6 +200,47 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 		to->usecond = usecond;
 		return RETURN_OK;
 	}
+#else
+	uint16_t year;
+	uint8_t month;
+	uint16_t day;
+	uint8_t hour;
+	uint8_t minute;
+	float second;
+	//try Code A (yyyy-mm-dd)
+	int count = sscanf((char *) from, "%4hi-%2hhi-%2hiT%2hhi:%2hhi:%fZ", &year,
+			&month, &day, &hour, &minute, &second);
+	if (count == 6) {
+		to->year = year;
+		to->month = month;
+		to->day = day;
+		to->hour = hour;
+		to->minute = minute;
+		to->second = second;
+		to->usecond = (second - floor(second)) * 1000000;
+		return RETURN_OK;
+	}
+
+	//try Code B (yyyy-ddd)
+	count = sscanf((char *) from, "%4hi-%3hiT%2hhi:%2hhi:%fZ", &year, &day,
+			&hour, &minute, &second);
+	if (count == 5) {
+		uint8_t tempDay;
+		ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year, &month,
+				&tempDay);
+		if (result != RETURN_OK) {
+			return RETURN_FAILED;
+		}
+		to->year = year;
+		to->month = month;
+		to->day = tempDay;
+		to->hour = hour;
+		to->minute = minute;
+		to->second = second;
+		to->usecond = (second - floor(second)) * 1000000;
+		return RETURN_OK;
+	}
+#endif
 
 	return UNSUPPORTED_TIME_FORMAT;
 }
