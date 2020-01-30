@@ -131,6 +131,7 @@ private:
 
 	void determineLengthInBytes(uint8_t typeSize) {
 		switch(typeSize) {
+		case(1): break;
 		case(2):
 			bufferLength *= 2; break;
 		case(4):
@@ -138,7 +139,8 @@ private:
 		case(8):
 			bufferLength *= 8; break;
 		default:
-			warning << "Invalid type size, assuming regular uint8_t." << std::endl;
+			error << "Serial Buffer Adapter 2: Invalid type size, assuming regular uint8_t." << std::endl;
+			error << "Detected type size: " << (int) typeSize << std::endl;
 		}
 	}
 };

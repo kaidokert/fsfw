@@ -155,8 +155,9 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	if (length < 19) {
 		return RETURN_FAILED;
 	}
-// Newlib can't parse uint8 (there is a configure option but I still need to figure out how to make it work..)
-#ifdef NEWLIB_NO_C99_IO
+// Newlib nano can't parse uint8, see SCNu8 documentation and https://sourceware.org/newlib/README
+// Suggestion: use uint16 all the time. This should work on all systems.
+#ifdef NEWLIB_NANO_NO_C99_IO
 	uint16_t year;
 	uint16_t month;
 	uint16_t day;
@@ -181,8 +182,8 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 			&hour, &minute, &second);
 	if (count == 5) {
 		uint8_t tempDay;
-		ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year,(uint8_t *) &month,
-				&tempDay);
+		ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year,
+				reinterpret_cast<uint8_t *>(&month), reinterpret_cast<uint8_t *>(&tempDay));
 		if (result != RETURN_OK) {
 			return RETURN_FAILED;
 		}
@@ -195,6 +196,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 		to->usecond = (second - floor(second)) * 1000000;
 		return RETURN_OK;
 	}
+// Warning: Compiler/Linker fails ambiguously if library does not implement C99 I/O
 #else
 	uint16_t year;
 	uint8_t month;

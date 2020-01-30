@@ -1,6 +1,7 @@
 #include <framework/timemanager/Clock.h>
 #include <framework/serviceinterface/ServiceInterfaceBuffer.h>
 #include <cstring>
+#include <inttypes.h>
 
 // to be implemented by bsp
 extern "C" void printChar(const char*);
@@ -21,18 +22,17 @@ int ServiceInterfaceBuffer::overflow(int c) {
 	return 0;
 }
 
-// custom stdio.c library for at91sam9g20 chip which does not support unsigned long
-// So I cast (unsigned int) on loggerTimes
 int ServiceInterfaceBuffer::sync(void) {
 	if (this->isActive) {
 		Clock::TimeOfDay_t loggerTime;
 		Clock::getDateAndTime(&loggerTime);
 		char preamble[96] = { 0 };
-		sprintf(preamble, "%s: | %u:%02u:%02u.%03u | ",
-				this->log_message.c_str(), (unsigned int) loggerTime.hour,
-				(unsigned int)  loggerTime.minute,
-				(unsigned int)  loggerTime.second,
-				(unsigned int)  loggerTime.usecond /1000);
+		sprintf(preamble, "%s: | %" PRIu32 ":%02" PRIu32 ":%02" PRIu32 ".%03" PRIu32 " | ",
+				this->log_message.c_str(),
+				loggerTime.hour,
+				loggerTime.minute,
+				loggerTime.second,
+				loggerTime.usecond /1000);
 		// Write log_message and time
 		this->putChars(preamble, preamble + sizeof(preamble));
 		// Handle output
