@@ -205,8 +205,8 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	uint8_t minute;
 	float second;
 	//try Code A (yyyy-mm-dd)
-	int count = sscanf((char *) from, "%4" SCNu16 "-%2" SCNu8 "-%2" SCNu16 "T%2" SCNu8 ":%2" SCNu8 ":%fZ", &year,
-			&month, &day, &hour, &minute, &second);
+	int count = sscanf((char *) from, "%4hi-%2hhi-%2hiT%2hhi:%2hhi:%fZ", &year,
+				&month, &day, &hour, &minute, &second);
 	if (count == 6) {
 		to->year = year;
 		to->month = month;
