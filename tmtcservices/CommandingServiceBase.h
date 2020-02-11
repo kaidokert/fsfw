@@ -106,8 +106,9 @@ public:
 protected:
 	/**
 	 * Check the target subservice
-	 * @param subservice
-	 * @return
+	 * @param subservice[in]
+	 * @return -@c RETURN_OK on success
+     *         -@c INVALID_SUBSERVICE if service is not known
 	 */
 	virtual ReturnValue_t isValidSubservice(uint8_t subservice) = 0;
 
@@ -132,13 +133,15 @@ protected:
 	 * the command is prepared by using an implementation specific CommandMessage type
 	 * which is sent to the target object.
 	 * It contains all necessary information for the device to execute telecommands.
-	 * @param message
-	 * @param subservice
-	 * @param tcData
-	 * @param tcDataLen
-	 * @param state
+	 * @param message[out] message to be sent to the object
+	 * @param subservice[in] Subservice of the current communication
+	 * @param tcData Additional data of the command
+	 * @param tcDataLen Length of the additional data
+	 * @param state[out] Setable state of the communication
 	 * @param objectId Target object ID
-	 * @return
+	 * @return - @c RETURN_OK on success
+     *         - @c EXECUTION_COMPLETE if exectuin is finished 
+     *         - any other return code will be part of (1,4) start failure
 	 */
 	virtual ReturnValue_t prepareCommand(CommandMessage *message,
 			uint8_t subservice, const uint8_t *tcData, uint32_t tcDataLen,
@@ -149,10 +152,10 @@ protected:
 	 * and the respective PUS Commanding Service once the execution has started.
 	 * The PUS Commanding Service receives replies from the target device and forwards them by calling this function.
 	 * There are different translations of these replies to specify how the Command Service proceeds.
-	 * @param reply[out] Command Message which contains information about the command
-	 * @param previousCommand [out]
-	 * @param state
-	 * @param optionalNextCommand
+	 * @param reply Command Message which contains information about the command
+	 * @param previousCommand Command_t of last command
+	 * @param state state of the communication
+	 * @param optionalNextCommand[out] An optional next command which can be set in this function
 	 * @param objectId Source object ID
 	 * @param isStep Flag value to mark steps of command execution
 	 * @return - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to generate TC verification success
