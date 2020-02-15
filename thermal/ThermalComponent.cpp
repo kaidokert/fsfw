@@ -12,12 +12,10 @@ ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
 		CoreComponent(reportingObjectId, domainId, temperaturePoolId,
 				targetStatePoolId, currentStatePoolId, requestPoolId, dataSet,
 				sensor, firstRedundantSensor, secondRedundantSensor,
-				thermalModule,
-				{ parameters.lowerOpLimit, parameters.upperOpLimit,
-						parameters.heaterOn, parameters.hysteresis,
-						parameters.heaterSwitchoff }, priority,
-				ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL), nopParameters(
-				{ parameters.lowerNopLimit, parameters.upperNopLimit }) {
+				thermalModule,{ parameters.lowerOpLimit, parameters.upperOpLimit,
+				parameters.heaterOn, parameters.hysteresis, parameters.heaterSwitchoff },
+				priority, ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL),
+		nopParameters({ parameters.lowerNopLimit, parameters.upperNopLimit }) {
 }
 
 ThermalComponent::~ThermalComponent() {

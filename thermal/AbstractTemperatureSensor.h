@@ -16,7 +16,8 @@
  */
 
 /**
- * @brief Base class for Temperature Sensor, implements all important interfaces
+ * @brief Base class for Temperature Sensor, implements all important interfaces.
+ *        Please use the TemperatureSensor class to implement the actual sensors.
  * @ingroup thermal
  */
 class AbstractTemperatureSensor: public HasHealthIF,

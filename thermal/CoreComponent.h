@@ -8,7 +8,7 @@
 #include <framework/thermal/ThermalModule.h>
 #include <framework/thermal/ThermalMonitor.h>
 
-// TODO: Documentaiton, how to use this? only use Thermal COmponent, which inherits core component?
+// TODO: Documentaiton, how to use this? only use Thermal Component, which inherits core component?
 class CoreComponent: public ThermalComponentIF {
 public:
 	struct Parameters {

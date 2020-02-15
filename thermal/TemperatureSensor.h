@@ -8,14 +8,17 @@
 /**
  * @brief 	This building block handles non-linear value conversion and
  * 			range checks for analog temperature sensors.
- * @details
- *
+ * @details HOW TO USE
  *
  */
 
 template<typename T>
 class TemperatureSensor: public AbstractTemperatureSensor {
 public:
+
+	/**
+	 * What are a,b and c?
+	 */
 	struct Parameters {
 		float a;
 		float b;
@@ -24,11 +27,37 @@ public:
 		T upperLimit;
 		float gradient;
 	};
+
+	/**
+	 * How to use me.
+	 * @param setObjectid
+	 * @param inputTemperature
+	 * @param poolVariable
+	 * @param vectorIndex
+	 * @param parameters
+	 * @param datapoolId
+	 * @param outputSet
+	 * @param thermalModule
+	 */
+	TemperatureSensor(object_id_t setObjectid,
+		T *inputTemperature, PoolVariableIF *poolVariable,
+		uint8_t vectorIndex, Parameters parameters, uint32_t datapoolId,
+		DataSet *outputSet, ThermalModuleIF *thermalModule) :
+
+		AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
+		inputTemperature(inputTemperature), poolVariable(poolVariable),
+		outputTemperature(datapoolId, outputSet, PoolVariableIF::VAR_WRITE),
+		sensorMonitor(setObjectid, DOMAIN_ID_SENSOR,
+			DataPool::poolIdAndPositionToPid(poolVariable->getDataPoolId(), vectorIndex),
+			DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit,parameters.upperLimit,
+			TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
+		oldTemperature(20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 }) {
+	}
+
 	struct UsedParameters {
 		UsedParameters(Parameters parameters) :
-				a(parameters.a), b(parameters.b), c(parameters.c), gradient(
-						parameters.gradient) {
-		}
+			a(parameters.a), b(parameters.b), c(parameters.c),
+			gradient(parameters.gradient) {}
 		float a;
 		float b;
 		float c;
@@ -118,23 +147,6 @@ protected:
 	}
 
 public:
-	TemperatureSensor(object_id_t setObjectid,
-			T *inputTemperature, PoolVariableIF *poolVariable,
-			uint8_t vectorIndex, Parameters parameters, uint32_t datapoolId,
-			DataSet *outputSet, ThermalModuleIF *thermalModule) :
-			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(
-					parameters), inputTemperature(inputTemperature), poolVariable(
-					poolVariable), outputTemperature(datapoolId, outputSet,
-					PoolVariableIF::VAR_WRITE), sensorMonitor(setObjectid,
-							DOMAIN_ID_SENSOR,
-					DataPool::poolIdAndPositionToPid(
-							poolVariable->getDataPoolId(), vectorIndex),
-					DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit,
-					parameters.upperLimit, TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH), oldTemperature(
-					20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 }) {
-
-	}
-
 	float getTemperature() {
 		return outputTemperature;
 	}
