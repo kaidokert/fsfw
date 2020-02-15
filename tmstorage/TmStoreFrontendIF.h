@@ -11,6 +11,14 @@ class TmStoreBackendIF;
 class TmStoreFrontendIF {
 public:
 	virtual TmStoreBackendIF* getBackend() const = 0;
+
+	/**
+	 * What do I need to implement here?
+	 * This is propably used by PUS Service 15 so we should propably check for messages..
+	 * Provide base implementation?
+	 * @param opCode
+	 * @return
+	 */
 	virtual ReturnValue_t performOperation(uint8_t opCode) = 0;
 	/**
 	 * Callback from the back-end to indicate a certain packet was received.

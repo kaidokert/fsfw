@@ -49,14 +49,33 @@ public:
 	static const Event AUTO_CATALOGS_SENDING_FAILED = MAKE_EVENT(15, SEVERITY::INFO);//!< Info that the a auto catalog report failed
 
 	virtual ~TmStoreBackendIF() {}
+
+	/**
+	 * What do I need to implement here ?
+	 * @param opCode
+	 * @return
+	 */
 	virtual ReturnValue_t performOperation(uint8_t opCode) = 0;
 	virtual ReturnValue_t initialize() = 0;
+
+	/**
+	 * Implement the storage of TM packets to mass memory
+	 * @param tmPacket
+	 * @return
+	 */
 	virtual ReturnValue_t storePacket(TmPacketMinimal* tmPacket) = 0;
 	virtual ReturnValue_t setFetchLimitTime(const timeval* loverLimit, const timeval* upperLimit) = 0;
 	virtual ReturnValue_t setFetchLimitBlocks(uint32_t startAddress, uint32_t endAddress) = 0;
 	virtual ReturnValue_t fetchPackets(bool fromBegin = false) = 0;
 	virtual ReturnValue_t initializeStore(object_id_t dumpTarget) = 0;
 	virtual ReturnValue_t dumpIndex(store_address_t* storeId) = 0;
+
+	/**
+	 * TODO: Adapt for file management system?
+	 * @param startAddress
+	 * @param endAddress
+	 * @return
+	 */
 	virtual ReturnValue_t deleteBlocks(uint32_t startAddress, uint32_t endAddress) = 0;
 	virtual ReturnValue_t deleteTime(const timeval* timeUntil,
 				uint32_t* deletedPackets) = 0;
