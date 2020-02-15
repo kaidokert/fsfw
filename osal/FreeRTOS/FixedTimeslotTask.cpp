@@ -57,13 +57,13 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	if (!objectManager->get<ExecutableObjectIF>(componentId)) {
-		error << "Component " << std::hex << componentId << " not found, not adding it to pst" << std::endl;
-		return HasReturnvaluesIF::RETURN_FAILED;
+	if (objectManager->get<ExecutableObjectIF>(componentId) != NULL) {
+		pst.addSlot(componentId, slotTimeMs, executionStep, this);
+		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	pst.addSlot(componentId, slotTimeMs, executionStep, this);
-	return HasReturnvaluesIF::RETURN_OK;
+	error << "Component " << std::hex << componentId << " not found, not adding it to pst" << std::endl;
+	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 uint32_t FixedTimeslotTask::getPeriodMs() const {
