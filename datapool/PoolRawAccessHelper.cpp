@@ -6,6 +6,9 @@
  */
 
 #include <framework/datapool/PoolRawAccessHelper.h>
+
+#include <cmath>
+
 #include <framework/datapool/DataSet.h>
 
 PoolRawAccessHelper::PoolRawAccessHelper(uint32_t * poolIdBuffer_,
@@ -41,7 +44,7 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer, 
 	ReturnValue_t result;
 	SerializationArgs argStruct = {buffer, size, max_size, bigEndian};
 	int32_t remainingParametersSize = numberOfParameters * 4;
-	uint8_t validityMaskSize = numberOfParameters/8;
+	uint8_t validityMaskSize = ceil((float)numberOfParameters/8.0);
 	uint8_t validityMask[validityMaskSize];
 	memset(validityMask,0, validityMaskSize);
 	for(uint8_t count = 0; count < numberOfParameters; count++) {
@@ -55,7 +58,8 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer, 
 		debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
 		result = RETURN_FAILED;
 	}
-	memcpy(*buffer + *size, validityMask, validityMaskSize);
+
+	memcpy(*argStruct.buffer, validityMask, validityMaskSize);
 	*size += validityMaskSize;
 	validBufferIndex = 1;
 	validBufferIndexBit = 0;
@@ -114,6 +118,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t current
 			if(currentPoolRawAccess.isValid()) {
 				handleMaskModification(validityMask);
 			}
+			validBufferIndexBit ++;
 		}
 
 		result = currentDataSet.serialize(argStruct.buffer, argStruct.size,
@@ -146,7 +151,6 @@ ReturnValue_t PoolRawAccessHelper::checkRemainingSize(PoolRawAccess * currentPoo
 void PoolRawAccessHelper::handleMaskModification(uint8_t * validityMask) {
 	validityMask[validBufferIndex] =
 			bitSetter(validityMask[validBufferIndex], validBufferIndexBit, true);
-	validBufferIndexBit ++;
 	if(validBufferIndexBit == 8) {
 		validBufferIndex ++;
 		validBufferIndexBit = 1;
@@ -159,6 +163,6 @@ uint8_t PoolRawAccessHelper::bitSetter(uint8_t byte, uint8_t position, bool valu
 		return byte;
 	}
 	uint8_t shiftNumber = position + (6 - 2 * (position - 1));
-	byte = (byte | value) <<  shiftNumber;
+	byte |= 1UL << shiftNumber;
 	return byte;
 }
