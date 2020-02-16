@@ -13,11 +13,12 @@
  *          The temperature is calculated from an input value with
  *			the calculateOutputTemperature() function. Range checking and
  *			limit monitoring is performed automatically.
- *
+ *			The inputType specifies the type of the raw input while the
+ *			limitType specifies the type of the upper and lower limit to check against.
  * @ingroup thermal
  */
 
-template<typename T>
+template<typename inputType, typename limitType = inputType>
 class TemperatureSensor: public AbstractTemperatureSensor {
 public:
 	/**
@@ -29,13 +30,15 @@ public:
 	 *
 	 * The parameters a,b and c are used in the calculateOutputTemperature() call.
 	 *
-	 * The lower and upper limits can be specified in °C or in the input value
-	 * format
+	 * The lower and upper limits can be specified in any type, for example float for C° values
+	 * or any other type for raw values.
 	 */
 	struct Parameters {
 		float a;
 		float b;
 		float c;
+		limitType lowerLimit;
+		limitType upperLimit;
 		float maxGradient;
 	};
 
@@ -64,39 +67,19 @@ public:
 	 * @param thermalModule respective thermal module, if it has one
 	 */
 	TemperatureSensor(object_id_t setObjectid,
-			T *inputValue, T lowerLimit, T upperLimit, PoolVariableIF *poolVariable,
-			uint8_t vectorIndex, uint32_t datapoolId, Parameters parameters = {0, 0, 0, 0},
+			inputType *inputValue, PoolVariableIF *poolVariable,
+			uint8_t vectorIndex, uint32_t datapoolId, Parameters parameters = {0, 0, 0, 0, 0, 0},
 			DataSet *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
 			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
 			inputValue(inputValue), poolVariable(poolVariable),
 			outputTemperature(datapoolId, outputSet, PoolVariableIF::VAR_WRITE),
-			oldTemperature(20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 })
-	{
-		sensorMonitorRaw = new LimitMonitor<T>(setObjectid, DOMAIN_ID_SENSOR,
+			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR,
 				DataPool::poolIdAndPositionToPid(poolVariable->getDataPoolId(), vectorIndex),
-				DEFAULT_CONFIRMATION_COUNT, lowerLimit, upperLimit,
-				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH);
-		delete sensorMonitor;
+				DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit, parameters.upperLimit,
+				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
+			oldTemperature(20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 }) {
 	}
 
-	/**
-	 * Constructor do check against °C values
-	 */
-	TemperatureSensor(object_id_t setObjectid,
-		T *inputValue, float lowerLimit, float upperLimit, PoolVariableIF *poolVariable,
-		uint8_t vectorIndex, uint32_t datapoolId, Parameters parameters = {0, 0, 0, 0},
-		DataSet *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
-		AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
-		inputValue(inputValue), poolVariable(poolVariable),
-		outputTemperature(datapoolId, outputSet, PoolVariableIF::VAR_WRITE),
-		oldTemperature(20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 })
-	{
-		sensorMonitor = new LimitMonitor<float>(setObjectid, DOMAIN_ID_SENSOR,
-				DataPool::poolIdAndPositionToPid(poolVariable->getDataPoolId(), vectorIndex),
-				DEFAULT_CONFIRMATION_COUNT, lowerLimit, upperLimit,
-				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH);
-		delete sensorMonitorRaw;
-	}
 
 protected:
 	/**
@@ -107,7 +90,7 @@ protected:
 	 * @param inputTemperature
 	 * @return
 	 */
-	virtual float calculateOutputTemperature(T inputValue) {
+	virtual float calculateOutputTemperature(inputType inputValue) {
 		return parameters.a * inputValue * inputValue
 				+ parameters.b * inputValue + parameters.c;
 	}
@@ -118,21 +101,20 @@ private:
 		outputTemperature = INVALID_TEMPERATURE;
 		outputTemperature.setValid(false);
 		uptimeOfOldTemperature.tv_sec = INVALID_UPTIME;
-		sensorMonitor->setToInvalid();
+		sensorMonitor.setToInvalid();
 	}
 protected:
 	static const int32_t INVALID_UPTIME = 0;
 
 	UsedParameters parameters;
 
-	T * inputValue;
+	inputType * inputValue;
 
 	PoolVariableIF *poolVariable;
 
 	PoolVariable<float> outputTemperature;
 
-	LimitMonitor<T> * sensorMonitorRaw;
-	LimitMonitor<float> * sensorMonitor;
+	LimitMonitor<limitType> sensorMonitor;
 
 	float oldTemperature;
 	timeval uptimeOfOldTemperature;
@@ -171,9 +153,9 @@ protected:
 		}
 
 		//Check is done against raw limits. SHOULDDO: Why? Using °C would be more easy to handle.
-		sensorMonitor->doCheck(outputTemperature.value);
+		sensorMonitor.doCheck(outputTemperature.value);
 
-		if (sensorMonitor->isOutOfLimits()) {
+		if (sensorMonitor.isOutOfLimits()) {
 			uptimeOfOldTemperature.tv_sec = INVALID_UPTIME;
 			outputTemperature.setValid(PoolVariableIF::INVALID);
 			outputTemperature = INVALID_TEMPERATURE;
@@ -204,7 +186,7 @@ public:
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 			ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex) {
-		ReturnValue_t result = sensorMonitor->getParameter(domainId, parameterId,
+		ReturnValue_t result = sensorMonitor.getParameter(domainId, parameterId,
 				parameterWrapper, newValues, startAtIndex);
 		if (result != INVALID_DOMAIN_ID) {
 			return result;
@@ -232,7 +214,7 @@ public:
 	}
 
 	virtual void resetOldState() {
-		sensorMonitor->setToUnchecked();
+		sensorMonitor.setToUnchecked();
 	}
 
 };
