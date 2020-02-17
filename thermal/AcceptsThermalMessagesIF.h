@@ -10,7 +10,11 @@
 
 class AcceptsThermalMessagesIF {
 public:
-	virtual ~AcceptsThermalMessagesIF();
+
+	/**
+	 * @brief	This is the empty virtual destructor as required for C++ interfaces.
+	 */
+	virtual ~AcceptsThermalMessagesIF() { }
 
 	virtual MessageQueueId_t getReceptionQueue() const = 0;
 };
