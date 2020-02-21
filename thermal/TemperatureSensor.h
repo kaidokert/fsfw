@@ -25,8 +25,7 @@ public:
 	 * This structure contains parameters required for range checking
 	 * and the conversion from the input value to the output temperature.
 	 * a, b and c can be any parameters required to calculate the output
-	 * temperature from the input value, for example parameters for the
-	 * Callendar-Van-Dusen equation(see datasheet of used sensor / ADC)
+	 * temperature from the input value, depending on the formula used.
 	 *
 	 * The parameters a,b and c are used in the calculateOutputTemperature() call.
 	 *
@@ -56,7 +55,7 @@ public:
 	};
 
 	/**
-	 * Constructor to check against raw input values
+	 * Instantiate Temperature Sensor Object.
 	 * @param setObjectid objectId of the sensor object
 	 * @param inputValue Input value which is converted to a temperature
 	 * @param poolVariable Pool Variable to store the temperature value
