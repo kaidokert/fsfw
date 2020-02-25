@@ -1,0 +1,14 @@
+/**
+ * @file BinarySempahore.h
+ *
+ * @date 25.02.2020
+ */
+
+#ifndef FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
+#define FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
+
+
+
+
+
+#endif /* FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_ */

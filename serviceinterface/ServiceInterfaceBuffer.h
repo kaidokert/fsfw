@@ -30,7 +30,7 @@ private:
 	typedef std::char_traits<char> Traits;
 
 	// Work in buffer mode. It is also possible to work without buffer.
-	static size_t const BUF_SIZE = 255;
+	static size_t const BUF_SIZE = 128;
 	char buf[BUF_SIZE];
 
 	// In this function, the characters are parsed.

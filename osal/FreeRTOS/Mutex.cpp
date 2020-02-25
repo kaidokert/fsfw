@@ -6,7 +6,9 @@ const uint32_t MutexIF::NO_TIMEOUT = 0;
 
 Mutex::Mutex() {
 	handle = xSemaphoreCreateMutex();
-	//TODO print error
+	if(handle == NULL) {
+		error << "Mutex creation failure" << std::endl;
+	}
 }
 
 Mutex::~Mutex() {
@@ -18,8 +20,7 @@ Mutex::~Mutex() {
 
 ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 	if (handle == 0) {
-		//TODO Does not exist
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MutexIF::MUTEX_NOT_FOUND;
 	}
 	TickType_t timeout = portMAX_DELAY;
 	if (timeoutMs != NO_TIMEOUT) {
@@ -30,8 +31,7 @@ ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		//TODO could not be acquired/timeout
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MutexIF::MUTEX_TIMEOUT;
 	}
 }
 
@@ -44,7 +44,6 @@ ReturnValue_t Mutex::unlockMutex() {
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		//TODO is not owner
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MutexIF::CURR_THREAD_DOES_NOT_OWN_MUTEX;
 	}
 }

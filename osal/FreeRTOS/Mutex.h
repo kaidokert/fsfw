@@ -7,8 +7,10 @@
 #include <FreeRTOS.h>
 #include "semphr.h"
 
-
-
+/**
+ *
+ * @ingroup osal
+ */
 class Mutex : public MutexIF {
 public:
 	Mutex();
