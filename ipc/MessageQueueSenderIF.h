@@ -26,8 +26,8 @@ public:
 	 * Must be implemented by a subclass.
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom =
-					MessageQueueSenderIF::NO_QUEUE, bool ignoreFault=false);
+			MessageQueueMessage* message, MessageQueueId_t sentFrom = MessageQueueSenderIF::NO_QUEUE,
+			bool ignoreFault=false);
 private:
 	MessageQueueSenderIF() {}
 };

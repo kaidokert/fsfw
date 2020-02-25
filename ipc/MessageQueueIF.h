@@ -3,12 +3,16 @@
 
 // COULDDO: We could support blocking calls
 
+/**
+ * @defgroup message_queue Message Queue
+ * @brief Message Queue related software components
+ */
+
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 class MessageQueueIF {
 public:
-
 	static const MessageQueueId_t NO_QUEUE = MessageQueueSenderIF::NO_QUEUE; //!< Ugly hack.
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::MESSAGE_QUEUE_IF;

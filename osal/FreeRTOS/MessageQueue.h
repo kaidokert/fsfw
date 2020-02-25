@@ -6,7 +6,8 @@
 #include <framework/ipc/MessageQueueMessage.h>
 
 #include <FreeRTOS.h>
-#include <queue.h>
+#include "queue.h"
+#include "portmacro.h"
 
 //TODO this class assumes that MessageQueueId_t is the same size as void* (the FreeRTOS handle type), compiler will catch this but it might be nice to have something checking or even an always working solution
 // https://scaryreasoner.wordpress.com/2009/02/28/checking-sizeof-at-compile-time/
@@ -21,11 +22,17 @@
  *				methods to send a message to a user-defined or a default destination. In addition
  *				it also provides a reply method to answer to the queue it received its last message
  *				from.
+ *
  *				The MessageQueue should be used as "post box" for a single owning object. So all
  *				message queue communication is "n-to-one".
  *				For creating the queue, as well as sending and receiving messages, the class makes
  *				use of the operating system calls provided.
- *	\ingroup message_queue
+ *
+ *				Please keep in mind that FreeRTOS offers
+ *				different calls for message queue operations if called from an ISR.
+ *				For now, the system context needs to be switched manually.
+ *	@ingroup osal
+ *	@ingroup message_queue
  */
 class MessageQueue : public MessageQueueIF {
 	friend class MessageQueueSenderIF;
@@ -43,11 +50,30 @@ public:
 	 * 							This should be left default.
 	 */
 	MessageQueue( size_t message_depth = 3, size_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE );
+
 	/**
 	 * @brief	The destructor deletes the formerly created message queue.
 	 * @details	This is accomplished by using the delete call provided by the operating system.
 	 */
 	virtual ~MessageQueue();
+
+	/*!
+	 * Used by calling function to tell the callbacks if they are being called from
+	 * within an ISR or from a regular task. This is required because FreeRTOS
+	 * has different functions for handling semaphores from within an ISR and task.
+	 */
+	typedef enum _SystemContext {
+		task_context = 0x00,//!< task_context
+		isr_context = 0xFF  //!< isr_context
+	} SystemContext;
+
+	/**
+	 * This function is used to specify whether a message queue operation is called
+	 * from within an ISR or a task. FreeRTOS offers different functions for this task.
+	 * @param callContext
+	 */
+	void switchSystemContext(SystemContext callContext);
+
 	/**
 	 * @brief	This operation sends a message to the given destination.
 	 * @details	It directly uses the sendMessage call of the MessageQueueSender parent, but passes its
@@ -73,6 +99,29 @@ public:
 	 * @param message	A pointer to a previously created message, which is sent.
 	 */
 	ReturnValue_t reply( MessageQueueMessage* message );
+
+	/**
+	 * \brief	With the sendMessage call, a queue message is sent to a receiving queue.
+	 * \details	This method takes the message provided, adds the sentFrom information and passes
+	 * 			it on to the destination provided with an operating system call. The OS's return
+	 * 			value is returned.
+	 * \param sendTo	This parameter specifies the message queue id to send the message to.
+	 * \param message	This is a pointer to a previously created message, which is sent.
+	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
+	 * 					This variable is set to zero by default.
+	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
+	 */
+	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message,
+			MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
+
+	/**
+	 * \brief	The sendToDefault method sends a queue message to the default destination.
+	 * \details	In all other aspects, it works identical to the sendMessage method.
+	 * \param message	This is a pointer to a previously created message, which is sent.
+	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
+	 * 					This variable is set to zero by default.
+	 */
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
 
 	/**
 	 * @brief	This function reads available messages from the message queue and returns the sender.
@@ -107,26 +156,7 @@ public:
 	 * @brief	This method returns the message queue id of this class's message queue.
 	 */
 	MessageQueueId_t getId() const;
-	/**
-	 * \brief	With the sendMessage call, a queue message is sent to a receiving queue.
-	 * \details	This method takes the message provided, adds the sentFrom information and passes
-	 * 			it on to the destination provided with an operating system call. The OS's return
-	 * 			value is returned.
-	 * \param sendTo	This parameter specifies the message queue id to send the message to.
-	 * \param message	This is a pointer to a previously created message, which is sent.
-	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
-	 * 					This variable is set to zero by default.
-	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
-	 */
-	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
-	/**
-	 * \brief	The sendToDefault method sends a queue message to the default destination.
-	 * \details	In all other aspects, it works identical to the sendMessage method.
-	 * \param message	This is a pointer to a previously created message, which is sent.
-	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
-	 * 					This variable is set to zero by default.
-	 */
-	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
+
 	/**
 	 * \brief	This method is a simple setter for the default destination.
 	 */
@@ -148,12 +178,26 @@ protected:
 	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
 	 * 					This variable is set to zero by default.
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
+	 * \param context
 	 */
-	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,bool ignoreFault=false);
+	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
+			MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,
+			bool ignoreFault=false, SystemContext callContex = SystemContext::task_context);
+
+	static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
+
+	/**
+	 * In this function, a function dependant on the portmacro.h header function calls
+	 * to request a context switch can be specified.
+	 * This can be used if sending to the queue from an ISR caused a task to unblock
+	 * and a context switch is required.
+	 */
+	static void requestContextSwitch(SystemContext callContext);
 private:
 	QueueHandle_t handle;
 	MessageQueueId_t defaultDestination;
 	MessageQueueId_t lastPartner;
+	SystemContext callContext; //!< Stores the current system context
 };
 
 #endif /* MESSAGEQUEUE_H_ */
