@@ -8,6 +8,7 @@
 #include <FreeRTOS.h>
 #include "queue.h"
 #include "portmacro.h"
+#include "task.h"
 
 //TODO this class assumes that MessageQueueId_t is the same size as void* (the FreeRTOS handle type), compiler will catch this but it might be nice to have something checking or even an always working solution
 // https://scaryreasoner.wordpress.com/2009/02/28/checking-sizeof-at-compile-time/

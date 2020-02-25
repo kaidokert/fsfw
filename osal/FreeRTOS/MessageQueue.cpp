@@ -1,5 +1,4 @@
 #include "MessageQueue.h"
-#include "task.h"
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
@@ -22,6 +21,12 @@ MessageQueue::~MessageQueue() {
 
 void MessageQueue::switchSystemContext(SystemContext callContext) {
 	this->callContext = callContext;
+}
+
+void MessageQueue::requestContextSwitch(SystemContext callContext) {
+	if(callContext == SystemContext::isr_context) {
+		portYIELD_FROM_ISR();
+	}
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
@@ -72,11 +77,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	return handleSendResult(result, ignoreFault);
 }
 
-void MessageQueue::requestContextSwitch(SystemContext callContext) {
-	if(callContext == SystemContext::isr_context) {
-		portYIELD_FROM_ISR();
-	}
-}
+
 
 ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
 	if (result != pdPASS) {

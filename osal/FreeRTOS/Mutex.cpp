@@ -37,8 +37,7 @@ ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 
 ReturnValue_t Mutex::unlockMutex() {
 	if (handle == 0) {
-		//TODO Does not exist
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MutexIF::MUTEX_NOT_FOUND;
 	}
 	BaseType_t returncode = xSemaphoreGive(handle);
 	if (returncode == pdPASS) {
