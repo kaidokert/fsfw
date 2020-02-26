@@ -4,11 +4,11 @@
 #include <framework/internalError/InternalErrorReporterIF.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/ipc/MessageQueueMessage.h>
+#include <framework/osal/FreeRTOS/TaskManagement.h>
 
 #include <FreeRTOS.h>
 #include "queue.h"
-#include "portmacro.h"
-#include "task.h"
+
 
 //TODO this class assumes that MessageQueueId_t is the same size as void* (the FreeRTOS handle type), compiler will catch this but it might be nice to have something checking or even an always working solution
 // https://scaryreasoner.wordpress.com/2009/02/28/checking-sizeof-at-compile-time/
@@ -57,16 +57,6 @@ public:
 	 * @details	This is accomplished by using the delete call provided by the operating system.
 	 */
 	virtual ~MessageQueue();
-
-	/*!
-	 * Used by calling function to tell the callbacks if they are being called from
-	 * within an ISR or from a regular task. This is required because FreeRTOS
-	 * has different functions for handling semaphores from within an ISR and task.
-	 */
-	typedef enum _SystemContext {
-		task_context = 0x00,//!< task_context
-		isr_context = 0xFF  //!< isr_context
-	} SystemContext;
 
 	/**
 	 * This function is used to specify whether a message queue operation is called
@@ -187,13 +177,7 @@ protected:
 
 	static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
-	/**
-	 * In this function, a function dependant on the portmacro.h header function calls
-	 * to request a context switch can be specified.
-	 * This can be used if sending to the queue from an ISR caused a task to unblock
-	 * and a context switch is required.
-	 */
-	static void requestContextSwitch(SystemContext callContext);
+
 private:
 	QueueHandle_t handle;
 	MessageQueueId_t defaultDestination;

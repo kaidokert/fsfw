@@ -23,12 +23,6 @@ void MessageQueue::switchSystemContext(SystemContext callContext) {
 	this->callContext = callContext;
 }
 
-void MessageQueue::requestContextSwitch(SystemContext callContext) {
-	if(callContext == SystemContext::isr_context) {
-		portYIELD_FROM_ISR();
-	}
-}
-
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
 		MessageQueueMessage* message, bool ignoreFault) {
 	return sendMessageFrom(sendTo, message, this->getId(), ignoreFault);
