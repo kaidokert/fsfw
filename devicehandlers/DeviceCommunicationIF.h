@@ -36,9 +36,7 @@ public:
 	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x06);
 	static const ReturnValue_t CANT_CHANGE_REPLY_LEN = MAKE_RETURN_CODE(0x07);
 
-	virtual ~DeviceCommunicationIF() {
-
-	}
+	virtual ~DeviceCommunicationIF() {}
 
 	virtual ReturnValue_t open(Cookie **cookie, uint32_t address,
 			uint32_t maxReplyLen) = 0;
@@ -93,8 +91,20 @@ public:
 
 	virtual uint32_t getAddress(Cookie *cookie) = 0;
 
+	/**
+	 * Can be used by DeviceHandlerBase getParameter() call to set DeviceComIF parameters
+	 * @param cookie
+	 * @param parameter
+	 * @return
+	 */
 	virtual ReturnValue_t setParameter(Cookie *cookie, uint32_t parameter) = 0;
 
+	/**
+	 * Can be used by DeviceHandlerBase getParameter() call to set DeviceComIF parameters
+	 * @param cookie
+	 * @param parameter
+	 * @return
+	 */
 	virtual uint32_t getParameter(Cookie *cookie) = 0;
 
 };

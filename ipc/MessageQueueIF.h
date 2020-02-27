@@ -58,6 +58,8 @@ public:
 	 * 			lastPartner attribute. Else, the lastPartner information remains untouched, the
 	 * 			message's content is cleared and the function returns immediately.
 	 * @param message	A pointer to a message in which the received data is stored.
+	 * @return -@c RETURN_OK on success
+	 *         -@c MessageQueueIF::EMPTY if queue is empty
 	 */
 	virtual ReturnValue_t receiveMessage(MessageQueueMessage* message) = 0;
 	/**
@@ -76,33 +78,38 @@ public:
 	virtual MessageQueueId_t getId() const = 0;
 
 	/**
-	 * \brief	With the sendMessage call, a queue message is sent to a receiving queue.
-	 * \details	This method takes the message provided, adds the sentFrom information and passes
+	 * @brief	With the sendMessage call, a queue message is sent to a receiving queue.
+	 * @details	This method takes the message provided, adds the sentFrom information and passes
 	 * 			it on to the destination provided with an operating system call. The OS's return
 	 * 			value is returned.
-	 * \param sendTo	This parameter specifies the message queue id to send the message to.
-	 * \param message	This is a pointer to a previously created message, which is sent.
-	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
+	 * @param sendTo	This parameter specifies the message queue id to send the message to.
+	 * @param message	This is a pointer to a previously created message, which is sent.
+	 * @param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
 	 * 					This variable is set to zero by default.
-	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full (if implemented).
+	 * @param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full (if implemented).
+	 * @return -@c RETURN_OK on success
+	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
 	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
+
 	/**
-		 * @brief	This operation sends a message to the given destination.
-		 * @details	It directly uses the sendMessage call of the MessageQueueSender parent, but passes its
-		 * 			queue id as "sentFrom" parameter.
-		 * @param sendTo	This parameter specifies the message queue id of the destination message queue.
-		 * @param message	A pointer to a previously created message, which is sent.
-		 * @param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
-		 */
+	 * @brief	This operation sends a message to the given destination.
+	 * @details	It directly uses the sendMessage call of the MessageQueueSender parent, but passes its
+	 * 			queue id as "sentFrom" parameter.
+	 * @param sendTo	This parameter specifies the message queue id of the destination message queue.
+	 * @param message	A pointer to a previously created message, which is sent.
+	 * @param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
+	 */
 	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo, MessageQueueMessage* message, bool ignoreFault = false ) = 0;
 
 	/**
-	 * \brief	The sendToDefaultFrom method sends a queue message to the default destination.
-	 * \details	In all other aspects, it works identical to the sendMessage method.
-	 * \param message	This is a pointer to a previously created message, which is sent.
-	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
+	 * @brief	The sendToDefaultFrom method sends a queue message to the default destination.
+	 * @details	In all other aspects, it works identical to the sendMessage method.
+	 * @param message	This is a pointer to a previously created message, which is sent.
+	 * @param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
 	 * 					This variable is set to zero by default.
+	 * @return -@c RETURN_OK on success
+	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
 	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
 	/**
@@ -110,6 +117,8 @@ public:
 	 * @details	As in the sendMessage method, this function uses the sendToDefault call of the
 	 * 			Implementation class and adds its queue id as "sentFrom" information.
 	 * @param message	A pointer to a previously created message, which is sent.
+	 * @return -@c RETURN_OK on success
+	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
 	virtual ReturnValue_t sendToDefault( MessageQueueMessage* message )  = 0;
 	/**
