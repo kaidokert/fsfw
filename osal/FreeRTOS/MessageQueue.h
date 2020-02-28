@@ -58,11 +58,6 @@ public:
 	 */
 	virtual ~MessageQueue();
 
-	/**
-	 * This function is used to specify whether a message queue operation is called
-	 * from within an ISR or a task. FreeRTOS offers different functions for this task.
-	 * @param callContext
-	 */
 	void switchSystemContext(SystemContext callContext);
 
 	/**

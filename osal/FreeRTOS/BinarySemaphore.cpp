@@ -4,6 +4,8 @@
  * @date 25.02.2020
  */
 #include <framework/osal/FreeRTOS/BinarySemaphore.h>
+#include <framework/osal/FreeRTOS/TaskManagement.h>
+
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include "portmacro.h"
 #include "task.h"
@@ -65,7 +67,7 @@ SemaphoreHandle_t BinarySemaphore::getSemaphore() {
 	return handle;
 }
 
-ReturnValue_t giveBinarySemaphore(SemaphoreHandle_t semaphore) {
+ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) {
 	if (semaphore == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -77,7 +79,7 @@ ReturnValue_t giveBinarySemaphore(SemaphoreHandle_t semaphore) {
 	}
 }
 
-ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
+ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 		BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
@@ -86,7 +88,7 @@ ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 	if (returncode == pdPASS) {
 		if(*higherPriorityTaskWoken == pdPASS) {
 			// Request context switch
-			portYIELD_FROM_ISR();
+			TaskManagement::requestContextSwitch(SystemContext::isr_context);
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
