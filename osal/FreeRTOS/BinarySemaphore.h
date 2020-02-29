@@ -68,27 +68,31 @@ public:
 	 * @return
 	 */
 	SemaphoreHandle_t getSemaphore();
+
+	 /**
+	 * Wrapper function to give back semaphore from handle
+	 * @param semaphore
+	 * @return -@c RETURN_OK on success
+	 *         -@c RETURN_FAILED on failure
+	 */
+	static ReturnValue_t giveBinarySemaphore(SemaphoreHandle_t semaphore);
+
+	/**
+	 * Wrapper function to give back semaphore from handle when called from an ISR
+	 * @param semaphore
+	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with a higher priority
+	 *        was unblocked
+	 * @return -@c RETURN_OK on success
+	 *         -@c RETURN_FAILED on failure
+	 */
+	static ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
+				BaseType_t * higherPriorityTaskWoken);
 private:
 	SemaphoreHandle_t handle;
 };
 
-/**
- * Wrapper function to give back semaphore from handle
- * @param semaphore
- * @return -@c RETURN_OK on success
- *         -@c RETURN_FAILED on failure
- */
-ReturnValue_t giveBinarySemaphore(SemaphoreHandle_t semaphore);
 
-/**
- * Wrapper function to give back semaphore from handle when called from an ISR
- * @param semaphore
- * @param higherPriorityTaskWoken This will be set to pdPASS if a task with a higher priority
- *        was unblocked
- * @return -@c RETURN_OK on success
- *         -@c RETURN_FAILED on failure
- */
-ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
-			BaseType_t * higherPriorityTaskWoken);
+
+
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_ */

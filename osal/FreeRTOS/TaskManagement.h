@@ -12,24 +12,26 @@
  * within an ISR or from a regular task. This is required because FreeRTOS
  * has different functions for handling semaphores and messages from within an ISR and task.
  */
-typedef enum _SystemContext {
+enum SystemContext {
 	task_context = 0x00,//!< task_context
 	isr_context = 0xFF  //!< isr_context
-} SystemContext;
+};
 
-/**
- * In this function, a function dependant on the portmacro.h header function calls
- * to request a context switch can be specified.
- * This can be used if sending to the queue from an ISR caused a task to unblock
- * and a context switch is required.
- */
-void requestContextSwitch(SystemContext callContext);
+class TaskManagement {
+public:
+	/**
+	 * In this function, a function dependant on the portmacro.h header function calls
+	 * to request a context switch can be specified.
+	 * This can be used if sending to the queue from an ISR caused a task to unblock
+	 * and a context switch is required.
+	 */
+	static void requestContextSwitch(SystemContext callContext);
 
-/**
- * If task preemption in FreeRTOS is disabled, a context switch
- * can be requested manually by calling this function.
- */
-void requestContextSwitch(void);
-
+	/**
+	 * If task preemption in FreeRTOS is disabled, a context switch
+	 * can be requested manually by calling this function.
+	 */
+	static void requestContextSwitchFromTask(void);
+};
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_ */

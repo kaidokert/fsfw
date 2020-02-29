@@ -15,11 +15,11 @@
  * 	     If not ISRs are used, or task preemption is enabled, some of this stuff might
  * 	     not be necessary anyway. Maybe there is a better solution?
  */
-void requestContextSwitchFromTask() {
+void TaskManagement::requestContextSwitchFromTask() {
 	vTaskDelay(0);
 }
 
-void requestContextSwitch(SystemContext callContext) {
+void TaskManagement::requestContextSwitch(SystemContext callContext = SystemContext::task_context) {
 	if(callContext == SystemContext::isr_context) {
 		// This function depends on the partmacro.h definition for the specific device
 		portYIELD_FROM_ISR();
@@ -27,4 +27,6 @@ void requestContextSwitch(SystemContext callContext) {
 		requestContextSwitchFromTask();
 	}
 }
+
+
 

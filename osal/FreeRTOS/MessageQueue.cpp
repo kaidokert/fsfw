@@ -65,7 +65,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		result = xQueueSendFromISR(reinterpret_cast<void*>(sendTo),
 				reinterpret_cast<const void*>(message->getBuffer()), &xHigherPriorityTaskWoken);
 		if(xHigherPriorityTaskWoken == pdTRUE) {
-			requestContextSwitch(callContext);
+			TaskManagement::requestContextSwitch(callContext);
 		}
 	}
 	return handleSendResult(result, ignoreFault);
