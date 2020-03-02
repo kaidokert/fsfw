@@ -88,7 +88,7 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t sema
 	if (returncode == pdPASS) {
 		if(*higherPriorityTaskWoken == pdPASS) {
 			// Request context switch
-			TaskManagement::requestContextSwitch(SystemContext::isr_context);
+			TaskManagement::requestContextSwitch(CallContext::isr);
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {

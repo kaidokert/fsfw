@@ -6,7 +6,7 @@
 // As a first step towards this, introduces system context variable which needs to be switched manually
 // Haven't found function to find system context.
 MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
-defaultDestination(0),lastPartner(0), callContext(SystemContext::task_context)  {
+defaultDestination(0),lastPartner(0), callContext(CallContext::task)  {
 	handle = xQueueCreate(message_depth, max_message_size);
 	if (handle == NULL) {
 		error << "MessageQueue creation failed" << std::endl;
@@ -19,7 +19,7 @@ MessageQueue::~MessageQueue() {
 	}
 }
 
-void MessageQueue::switchSystemContext(SystemContext callContext) {
+void MessageQueue::switchSystemContext(CallContext callContext) {
 	this->callContext = callContext;
 }
 
@@ -53,10 +53,10 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		MessageQueueMessage *message, MessageQueueId_t sentFrom,
-		bool ignoreFault, SystemContext callContext) {
+		bool ignoreFault, CallContext callContext) {
 	message->setSender(sentFrom);
 	BaseType_t result;
-	if(callContext == SystemContext::task_context) {
+	if(callContext == CallContext::task) {
 		result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),
 				reinterpret_cast<const void*>(message->getBuffer()), 0);
 	}

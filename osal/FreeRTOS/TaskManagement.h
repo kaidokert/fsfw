@@ -12,9 +12,10 @@
  * within an ISR or from a regular task. This is required because FreeRTOS
  * has different functions for handling semaphores and messages from within an ISR and task.
  */
-enum SystemContext {
-	task_context = 0x00,//!< task_context
-	isr_context = 0xFF  //!< isr_context
+
+enum CallContext {
+	task = 0x00,//!< task_context
+	isr = 0xFF  //!< isr_context
 };
 
 class TaskManagement {
@@ -25,7 +26,7 @@ public:
 	 * This can be used if sending to the queue from an ISR caused a task to unblock
 	 * and a context switch is required.
 	 */
-	static void requestContextSwitch(SystemContext callContext);
+	static void requestContextSwitch(CallContext callContext);
 
 	/**
 	 * If task preemption in FreeRTOS is disabled, a context switch

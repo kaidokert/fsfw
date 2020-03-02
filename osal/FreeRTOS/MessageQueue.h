@@ -58,7 +58,7 @@ public:
 	 */
 	virtual ~MessageQueue();
 
-	void switchSystemContext(SystemContext callContext);
+	void switchSystemContext(CallContext callContext);
 
 	/**
 	 * @brief	This operation sends a message to the given destination.
@@ -168,7 +168,7 @@ protected:
 	 */
 	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,
-			bool ignoreFault=false, SystemContext callContex = SystemContext::task_context);
+			bool ignoreFault=false, CallContext callContex = CallContext::task);
 
 	static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
@@ -177,7 +177,7 @@ private:
 	QueueHandle_t handle;
 	MessageQueueId_t defaultDestination;
 	MessageQueueId_t lastPartner;
-	SystemContext callContext; //!< Stores the current system context
+	CallContext callContext; //!< Stores the current system context
 };
 
 #endif /* MESSAGEQUEUE_H_ */
