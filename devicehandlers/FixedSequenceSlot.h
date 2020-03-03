@@ -31,7 +31,7 @@ public:
 	 * \brief	This attribute defines when a device handler object is executed.
 	 *
 	 * \details	The pollingTime attribute identifies the time the handler is executed in ms. It must be
-	 * 			smaller than the period length of the polling sequence, what is ensured by automated calculation
+	 * 			smaller than the period length of the polling sequence, which is ensured by automated calculation
 	 * 			from a database.
 	 */
 	uint32_t	pollingTimeMs;

@@ -6,6 +6,8 @@
 
 #ifndef FRAMEWORK_DEVICEHANDLERS_COMMUNICATIONMESSAGE_H_
 #define FRAMEWORK_DEVICEHANDLERS_COMMUNICATIONMESSAGE_H_
+#include <framework/devicehandlers/CommunicationMessage.h>
+
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 
@@ -23,9 +25,13 @@
  */
 class CommunicationMessage: public MessageQueueMessage {
 public:
-	enum communicationStatus {
-		SEND_DATA,
-		PROCESS_DATA,
+	enum messageType {
+		SEND_DATA_FROM_POINTER,
+		SEND_DATA_FROM_IPC_STORE,
+		SEND_DATA_RAW,
+		REPLY_DATA_FROM_POINTER,
+		REPLY_DATA_IPC_STORE,
+		REPLY_DATA_RAW,
 		FAULTY,
 	};
 
@@ -36,34 +42,60 @@ public:
 
 	/**
 	 * Send requests with pointer to the data to be sent and send data length
-	 * @param address Target Address
-	 * @param sendData
-	 * @param length
+	 * @param address Target Address, first four bytes
+	 * @param dataLen Length of data to send, next four bytes
+	 * @param data Pointer to data to send
+	 *
 	 */
-	void setSendRequest(uint32_t address, const uint8_t * sendData, uint32_t length);
+	void setSendRequestFromPointer(uint32_t address, uint32_t dataLen, const uint8_t * data);
+
+	/**
+	 * Send requests with a store ID, using the IPC store
+	 * @param address Target Address, first four bytes
+	 * @param storeId Store ID in the IPC store
+	 *
+	 */
+	void setSendRequestFromIpcStore(uint32_t address, store_address_t storeId);
+
+	/**
+	 * Send requests with data length and data in message (max. 4 bytes)
+	 * @param address Target Address, first four bytes
+	 * @param dataLen Length of data to send, next four bytes
+	 * @param data Pointer to data to send
+	 *
+	 */
+	void setSendRequestRaw(uint32_t address);
 
 	/**
 	 * Data message with data stored in IPC store
-	 * @param address
+	 * @param address Target Address, first four bytes
 	 * @param length
 	 * @param storeId
 	 */
-	void setDataMessage(uint32_t address, uint32_t length, store_address_t * storeId);
+	void setDataReplyFromIpcStore(uint32_t address, store_address_t storeId);
+
+	/**
+	 * Data reply with data stored in buffer, passing the pointer to
+	 * the buffer and the data size
+	 * @param address Target Address, first four bytes
+	 * @param dataLen Length of data to send, next four bytes
+	 * @param data Pointer to the data
+	 */
+	void setDataReplyFromPointer(uint32_t address, uint32_t dataLen, uint8_t * data);
 
 	/**
 	 * Data message with data stored in actual message.
 	 * 4 byte datafield is intialized with 0.
-	 * Set data with specific setter functions.
+	 * Set data with specific setter functions below.
+	 * Can also be used to supply information at which position the raw data should be stored
+	 * in a receive buffer.
 	 */
-	void setDataMessage(uint32_t address, uint32_t length);
+	void setDataReplyRaw(uint32_t address, uint32_t length, uint16_t receiveBufferPosition = 0);
 
-private:
-	void setCommunicationStatus(communicationStatus status);
-	void setAddress(uint32_t address);
-	void setSendData(const uint8_t * sendData);
-	void setDataLen(uint32_t length);
-
-	/** For low size data, maximum of 4 bytes can be sent */
+	/*
+	 * The following functions can be used to
+	 * set the data field (4 bytes possible);
+	 */
 	void setDataByte1(uint8_t byte1);
 	void setDataByte2(uint8_t byte2);
 	void setDataByte3(uint8_t byte3);
@@ -74,9 +106,42 @@ private:
 
 	void setData(uint32_t data);
 
+private:
+	/**
+	 * Message Type is stored as the fifth byte of the message data
+	 * @param status
+	 */
+	void setMessageType(messageType status);
+
+	/**
+	 * First four bytes of message data
+	 * @param address
+	 */
+	void setAddress(uint32_t address);
+
+	/**
+	 * Stored in Bytes 13-16 of message data
+	 * @param length
+	 */
+	void setDataLen(uint32_t length);
+
+	/**
+	 * Stored in last four bytes (Bytes 17-20) of message data
+	 * @param sendData
+	 */
+	void setDataPointer(const uint8_t * sendData);
+
+	/**
+	 * Buffer Position is stored as the seventh and eigth byte of
+	 * the message, so the receive buffer can't be larger than sizeof(uint16_t) for now
+	 * @param bufferPosition
+	 */
+	void setReceiveBufferPosition(uint16_t bufferPosition);
+	void setStoreId(store_address_t storeId);
+
 	virtual ~CommunicationMessage();
+
+	bool uninitialized;
 };
-
-
 
 #endif /* FRAMEWORK_DEVICEHANDLERS_COMMUNICATIONMESSAGE_H_ */

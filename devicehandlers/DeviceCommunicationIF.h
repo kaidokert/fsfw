@@ -22,7 +22,8 @@
  *   4. Read received data
  *
  *  To identify different connection over a single interface can return so-called cookies to components.
- *
+ *  The CommunicationMessage message type can be used to extend the functionality of the
+ *  ComIF if a separate polling task is required.
  */
 class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
