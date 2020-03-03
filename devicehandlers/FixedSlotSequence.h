@@ -104,7 +104,7 @@ protected:
 	 * \brief	This list contains all OPUSPollingSlot objects, defining order and execution time of the
 	 * 			device handler objects.
 	 *
-	 * \details	The slot list is a std:list object that contains all created OPUSPollingSlot instances.
+	 * @details	The slot list is a std:list object that contains all created PollingSlot instances.
 	 * 			They are NOT ordered automatically, so by adding entries, the correct order needs to be ensured.
 	 * 			By iterating through this list the polling sequence is executed. Two entries with identical
 	 * 			polling times are executed immediately one after another.

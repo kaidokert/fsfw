@@ -39,6 +39,7 @@ public:
 	static const uint8_t COMMUNICATION_MESSAGE_SIZE = HEADER_SIZE + 4 * sizeof(uint32_t);
 
 	CommunicationMessage();
+	virtual ~CommunicationMessage();
 
 	/**
 	 * Send requests with pointer to the data to be sent and send data length
@@ -64,7 +65,7 @@ public:
 	 * @param data Pointer to data to send
 	 *
 	 */
-	void setSendRequestRaw(uint32_t address);
+	void setSendRequestRaw(uint32_t address, uint32_t length);
 
 	/**
 	 * Data message with data stored in IPC store
@@ -92,6 +93,22 @@ public:
 	 */
 	void setDataReplyRaw(uint32_t address, uint32_t length, uint16_t receiveBufferPosition = 0);
 
+	/**
+	 * First four bytes of message data
+	 * @param address
+	 */
+	void setAddress(uint32_t address);
+
+	/**
+	 * Message Type is stored as the fifth byte of the message data
+	 * @param status
+	 */
+	void setMessageType(messageType status);
+	messageType getMessageType();
+
+	void setMessageId(uint8_t messageId);
+	messageType getMessageId();
+
 	/*
 	 * The following functions can be used to
 	 * set the data field (4 bytes possible);
@@ -106,19 +123,6 @@ public:
 
 	void setData(uint32_t data);
 
-private:
-	/**
-	 * Message Type is stored as the fifth byte of the message data
-	 * @param status
-	 */
-	void setMessageType(messageType status);
-
-	/**
-	 * First four bytes of message data
-	 * @param address
-	 */
-	void setAddress(uint32_t address);
-
 	/**
 	 * Stored in Bytes 13-16 of message data
 	 * @param length
@@ -129,19 +133,23 @@ private:
 	 * Stored in last four bytes (Bytes 17-20) of message data
 	 * @param sendData
 	 */
-	void setDataPointer(const uint8_t * sendData);
+	void setDataPointer(const void * data);
 
 	/**
 	 * Buffer Position is stored as the seventh and eigth byte of
-	 * the message, so the receive buffer can't be larger than sizeof(uint16_t) for now
+	 * the message, so the receive buffer can't be larger than sizeof(uint16_t) for now.
 	 * @param bufferPosition
 	 */
 	void setReceiveBufferPosition(uint16_t bufferPosition);
 	void setStoreId(store_address_t storeId);
 
-	virtual ~CommunicationMessage();
+	/**
+	 * Clear the message
+	 */
+	void clearCommunicationMessage();
+private:
 
-	bool uninitialized;
+	bool uninitialized; //!< Could be used to warn if data has not been set.
 };
 
 #endif /* FRAMEWORK_DEVICEHANDLERS_COMMUNICATIONMESSAGE_H_ */

@@ -34,6 +34,11 @@ class StorageManagerIF;
  */
 
 /**
+ * Physical address type
+ */
+typedef uint32_t address_t;
+
+/**
  * @brief This is the abstract base class for device handlers.
  * @details
  * Documentation: Dissertation Baetz p.138,139, p.141-149
@@ -91,7 +96,7 @@ public:
 	 * @param fdirInstance
 	 * @param cmdQueueSize
 	 */
-	DeviceHandlerBase(uint32_t logicalAddress, object_id_t setObjectId,
+	DeviceHandlerBase(address_t logicalAddress, object_id_t setObjectId,
 			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
 			object_id_t deviceCommunication,
 			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
