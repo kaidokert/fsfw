@@ -5,6 +5,7 @@
  */
 
 #include <framework/devicehandlers/CommunicationMessage.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <cstring>
 
 CommunicationMessage::CommunicationMessage(): uninitialized(true) {
@@ -23,19 +24,23 @@ void CommunicationMessage::setSendRequestFromPointer(uint32_t address,
 void CommunicationMessage::setSendRequestFromIpcStore(uint32_t address, store_address_t storeId) {
 	setMessageType(SEND_DATA_FROM_IPC_STORE);
 	setAddress(address);
-	setStoreId(storeId);
+	setStoreId(storeId.raw);
 }
 
-void CommunicationMessage::setSendRequestRaw(uint32_t address, uint32_t length) {
+void CommunicationMessage::setSendRequestRaw(uint32_t address, uint32_t length,
+		uint16_t sendBufferPosition) {
 	setMessageType(SEND_DATA_RAW);
 	setAddress(address);
 	setDataLen(length);
+	if(sendBufferPosition != 0) {
+		setBufferPosition(sendBufferPosition);
+	}
 }
 
 void CommunicationMessage::setDataReplyFromIpcStore(uint32_t address, store_address_t storeId) {
 	setMessageType(REPLY_DATA_IPC_STORE);
 	setAddress(address);
-	setStoreId(storeId);
+	setStoreId(storeId.raw);
 }
 void CommunicationMessage::setDataReplyFromPointer(uint32_t address,
 		uint32_t dataLen, uint8_t *data) {
@@ -51,7 +56,7 @@ void CommunicationMessage::setDataReplyRaw(uint32_t address,
 	setAddress(address);
 	setDataLen(length);
 	if(receiveBufferPosition != 0) {
-		setReceiveBufferPosition(receiveBufferPosition);
+		setBufferPosition(receiveBufferPosition);
 	}
 }
 
@@ -60,13 +65,26 @@ void CommunicationMessage::setMessageType(messageType status) {
 	memcpy(getData() + sizeof(uint32_t), &status_uint8, sizeof(status_uint8));
 }
 
-void CommunicationMessage::setAddress(uint32_t address) {
+void CommunicationMessage::setAddress(address_t address) {
 	memcpy(getData(),&address,sizeof(address));
 }
 
-void CommunicationMessage::setReceiveBufferPosition(uint16_t bufferPosition) {
-	memcpy(getData() + sizeof(uint32_t) + sizeof(uint8_t),
+address_t CommunicationMessage::getAddress() const {
+	address_t address;
+	memcpy(&address,getData(),sizeof(address));
+	return address;
+}
+
+void CommunicationMessage::setBufferPosition(uint16_t bufferPosition) {
+	memcpy(getData() + sizeof(uint32_t) + sizeof(uint16_t),
 			&bufferPosition, sizeof(bufferPosition));
+}
+
+uint16_t CommunicationMessage::getBufferPosition() const {
+	uint16_t bufferPosition;
+	memcpy(&bufferPosition,
+			getData() + sizeof(uint32_t) + sizeof(uint16_t), sizeof(bufferPosition));
+	return bufferPosition;
 }
 
 void CommunicationMessage::setDataPointer(const void * data) {
@@ -74,47 +92,110 @@ void CommunicationMessage::setDataPointer(const void * data) {
 }
 
 void CommunicationMessage::setStoreId(store_address_t storeId) {
-	memcpy(getData() + 2 * sizeof(uint32_t), &storeId, sizeof(store_address_t));
+	memcpy(getData() + 2 * sizeof(uint32_t), &storeId.raw, sizeof(uint32_t));
+}
+
+store_address_t CommunicationMessage::getStoreId() const{
+	store_address_t temp;
+	memcpy(&temp.raw,getData() + 2 * sizeof(uint32_t), sizeof(uint32_t));
+	return temp;
 }
 
 void CommunicationMessage::setDataLen(uint32_t length) {
 	memcpy(getData() + 2 * sizeof(uint32_t), &length, sizeof(length));
 }
 
-void CommunicationMessage::setData(uint32_t data) {
+uint32_t CommunicationMessage::getDataLen() const {
+	uint32_t len;
+	memcpy(&len, getData() + 2 * sizeof(uint32_t), sizeof(len));
+	return len;
+}
+
+void CommunicationMessage::setUint32Data(uint32_t data) {
 	memcpy(getData() + 3 * sizeof(uint32_t), &data, sizeof(data));
 }
 
-void CommunicationMessage::setDataByte1(uint8_t byte1) {
-	memcpy(getData() + 3 * sizeof(uint32_t), &byte1, sizeof(byte1));
+uint32_t CommunicationMessage::getUint32Data() const{
+	uint32_t data;
+	memcpy(&data,getData() + 3 * sizeof(uint32_t),  sizeof(data));
+	return data;
 }
 
-void CommunicationMessage::setDataByte2(uint8_t byte2) {
-	memcpy(getData() + 3 * sizeof(uint32_t) + sizeof(uint8_t), &byte2, sizeof(byte2));
+void CommunicationMessage::setDataByte(uint8_t byte, uint8_t position) {
+	if(0 <= position && position <= 3) {
+		memcpy(getData() + 3 * sizeof(uint32_t) + position * sizeof(uint8_t), &byte, sizeof(byte));
+	}
+	else {
+		error << "Comm Message: Invalid byte position" << std::endl;
+	}
 }
 
-void CommunicationMessage::setDataByte3(uint8_t byte3) {
-	memcpy(getData() + 3 * sizeof(uint32_t) + 2* sizeof(uint8_t), &byte3, sizeof(byte3));
+uint8_t CommunicationMessage::getDataByte(uint8_t position) const {
+	if(0 <= position && position <= 3) {
+		uint8_t byte;
+		memcpy(&byte, getData() + 3 * sizeof(uint32_t) + position * sizeof(uint8_t), sizeof(byte));
+		return byte;
+	}
+	else {
+		return 0;
+		error << "Comm Message: Invalid byte position" << std::endl;
+	}
 }
 
-void CommunicationMessage::setDataByte4(uint8_t byte4) {
-	memcpy(getData() + 3 * sizeof(uint32_t) + 3* sizeof(uint8_t), &byte4, sizeof(byte4));
+void CommunicationMessage::setDataUint16(uint16_t data, uint8_t position) {
+	if(position == 0 || position == 1) {
+		memcpy(getData() + 3 * sizeof(uint32_t) + position * sizeof(uint16_t), &data, sizeof(data));
+	}
+	else {
+		error << "Comm Message: Invalid byte position" << std::endl;
+	}
+
 }
 
-void CommunicationMessage::setDataUINT16_1(uint16_t data1) {
-	memcpy(getData() + 3 * sizeof(uint32_t), &data1, sizeof(data1));
+uint16_t CommunicationMessage::getDataUint16(uint8_t position) const{
+	if(position == 0 || position == 1) {
+		uint16_t data;
+		memcpy(&data, getData() + 3 * sizeof(uint32_t) + position * sizeof(uint16_t), sizeof(data));
+		return data;
+	}
+	else {
+		return 0;
+		error << "Comm Message: Invalid byte position" << std::endl;
+	}
 }
 
-void CommunicationMessage::setDataUINT16_2(uint16_t data2) {
-	memcpy(getData() + 3 * sizeof(uint32_t) + sizeof(uint16_t), &data2, sizeof(data2));
-}
-
-CommunicationMessage::messageType CommunicationMessage::getMessageType() {
+CommunicationMessage::messageType CommunicationMessage::getMessageType() const{
 	messageType messageType;
 	memcpy(&messageType, getData() + sizeof(uint32_t),sizeof(uint8_t));
 	return messageType;
 }
 
+void CommunicationMessage::setMessageId(uint8_t messageId) {
+	memcpy(getData() + sizeof(uint32_t) + sizeof(uint8_t), &messageId, sizeof(messageId));
+}
+
+uint8_t CommunicationMessage::getMessageId() const {
+	uint8_t messageId;
+	memcpy(&messageId, getData() + sizeof(uint32_t) + sizeof(uint8_t), sizeof(messageId));
+	return messageId;
+}
+
 void CommunicationMessage::clearCommunicationMessage() {
 	messageType messageType = getMessageType();
+	switch(messageType) {
+	case(messageType::REPLY_DATA_IPC_STORE):
+	case(messageType::SEND_DATA_FROM_IPC_STORE): {
+		store_address_t storeId = getStoreId();
+		StorageManagerIF *ipcStore = objectManager->
+				get<StorageManagerIF>(objects::IPC_STORE);
+		if (ipcStore != NULL) {
+			ipcStore->deleteData(storeId);
+		}
+	}
+	/* NO BREAK falls through*/
+	default:
+		memset(getData(),0,4*sizeof(uint32_t));
+		break;
+	}
 }
+

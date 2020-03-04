@@ -73,10 +73,15 @@ public:
 
 	virtual ReturnValue_t getSendSuccess(Cookie *cookie) = 0;
 
+	/**
+	 * Called by DHB in the SEND_WRITE doSendRead().
+	 * @param cookie
+	 * @return
+	 */
 	virtual ReturnValue_t requestReceiveMessage(Cookie *cookie) = 0;
 
 	/**
-	 * Called by DHB in the GET_WIRTE doGetRead().
+	 * Called by DHB in the GET_WRITE doGetRead().
 	 * This function is used to receive data from the physical device
 	 * by implementing and calling related drivers or wrapper functions.
 	 * @param cookie
