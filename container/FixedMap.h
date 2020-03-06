@@ -9,7 +9,7 @@
  * @brief 	Map implementation for maps with a pre-defined size.
  * @details Can be initialized with desired maximum size.
  * 	        Iterator is used to access <key,value> pair and
- * 	        iterate through map entries.
+ * 	        iterate through map entries. Complexity O(n).
  * @ingroup container
  */
 template<typename key_t, typename T>

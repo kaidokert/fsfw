@@ -18,9 +18,9 @@
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
 #include <framework/datapool/HkSwitchHelper.h>
 #include <framework/serialize/SerialFixedArrayListAdapter.h>
-#include <map>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/tasks/PeriodicTaskIF.h>
+#include <map>
 
 namespace Factory{
 void setStaticFrameworkObjectIds();
@@ -88,7 +88,7 @@ public:
 	 * The constructor passes the objectId to the SystemObject().
 	 *
 	 * @param setObjectId the ObjectId to pass to the SystemObject() Constructor
-	 * @param maxDeviceReplyLen the length the RMAP getRead call will be sent with
+	 * @param maxDeviceReplyLen the largest allowed reply size
 	 * @param setDeviceSwitch the switch the device is connected to, for devices using two switches, overwrite getSwitches()
 	 * @param deviceCommuncation Communcation Interface object which is used to implement communication functions
 	 * @param thermalStatePoolId
@@ -348,6 +348,12 @@ protected:
 	 */
 	virtual ReturnValue_t getSwitches(const uint8_t **switches,
 			uint8_t *numberOfSwitches);
+
+	/**
+	 * Can be used to perform device specific periodic operations.
+	 * This is called on the SEND_READ step of the performOperation() call
+	 */
+	virtual void performOperationHook();
 
 public:
 	/**
@@ -935,6 +941,19 @@ private:
 	const uint32_t logicalAddress;
 
 	/**
+	 * Polling Frequency which specifies how often the communication functions
+	 * and functionalities are called.
+	 *
+	 * This is not a time value. The time value depends on the
+	 * respective period time of the polling sequence table.
+	 * The actual time frequency can be calculated by multiplying that period
+	 * with the polling frequency value. Defaults to 1 (communication operations called
+	 * in each performOperation()).
+	 */
+	uint32_t pollingFrequency;
+	uint32_t pollingCounter;
+
+	/**
 	 * Used for timing out mode transitions.
 	 *
 	 * Set when setMode() is called.
@@ -981,6 +1000,8 @@ private:
 	 * - checks whether commanded mode transitions are required and calls handleCommandedModeTransition()
 	 * - does the necessary action for the current mode or calls doChildStateMachine in modes @c MODE_TO_ON and @c MODE_TO_OFF
 	 * - actions that happen in transitions (eg setting a timeout) are handled in setMode()
+	 * - Maybe export this into own class to increase modularity of software
+	 *   and reduce the massive class size ?
 	 */
 	void doStateMachine(void);
 

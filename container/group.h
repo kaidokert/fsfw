@@ -4,11 +4,9 @@
 /**
  * @defgroup container Container
  *
- * General Purpose Container to store various elements.
- *
- * Also contains Adapter classes to print elements to a
- * bytestream and to read them from a bytestream, as well
- * as an Adapter to swap the endianness.
+ * General Purpose Containers to store various elements.
+ * As opposed to the STL library implementation, these implementations
+ * don't  allocate memory dynamically.
  */
 
 

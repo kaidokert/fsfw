@@ -32,8 +32,9 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t logicalAddress_,
 		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
 		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
 		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), logicalAddress(logicalAddress_),
-		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
-		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch)
+		pollingFrequency(1), pollingCounter(1), timeoutStart(0), childTransitionDelay(5000),
+		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(SUBMODE_NONE),
+		deviceSwitch(setDeviceSwitch)
 {
 	commandQueue = QueueFactory::instance()->
 			createMessageQueue(cmdQueueSize, CommandMessage::MAX_MESSAGE_SIZE);
@@ -63,10 +64,20 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		decrementDeviceReplyMap();
 		fdirInstance->checkForFailures();
 		hkSwitcher.performOperation();
+		performOperationHook();
 	}
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
 	}
+
+	if (pollingCounter != pollingFrequency) {
+		pollingCounter ++;
+		return RETURN_OK;
+	}
+	else {
+		pollingCounter = 1;
+	}
+
 	switch (getRmapAction()) {
 	case SEND_WRITE:
 		if ((cookieInfo.state == COOKIE_UNUSED)) {
@@ -87,6 +98,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	default:
 		break;
 	}
+
 	return RETURN_OK;
 }
 
@@ -166,7 +178,6 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	mySet.commit(PoolVariableIF::VALID);
 
 	return RETURN_OK;
-
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
@@ -1277,4 +1288,7 @@ void DeviceHandlerBase::debugInterface(uint8_t positionTracker, object_id_t obje
 
 uint32_t DeviceHandlerBase::getLogicalAddress() {
 	return logicalAddress;
+}
+
+void DeviceHandlerBase::performOperationHook() {
 }
