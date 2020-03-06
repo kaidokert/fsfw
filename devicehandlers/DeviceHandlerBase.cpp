@@ -32,9 +32,8 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t logicalAddress_,
 		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
 		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
 		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), logicalAddress(logicalAddress_),
-		pollingFrequency(1), pollingCounter(1), timeoutStart(0), childTransitionDelay(5000),
-		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(SUBMODE_NONE),
-		deviceSwitch(setDeviceSwitch)
+		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
+		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch)
 {
 	commandQueue = QueueFactory::instance()->
 			createMessageQueue(cmdQueueSize, CommandMessage::MAX_MESSAGE_SIZE);
@@ -68,14 +67,6 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	}
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
-	}
-
-	if (pollingCounter != pollingFrequency) {
-		pollingCounter ++;
-		return RETURN_OK;
-	}
-	else {
-		pollingCounter = 1;
 	}
 
 	switch (getRmapAction()) {

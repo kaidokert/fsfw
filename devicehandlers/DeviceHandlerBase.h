@@ -668,6 +668,8 @@ protected:
 	 * @param maxDelayCycles The maximum number of delay cycles the command waits until it times out.
 	 * @param periodic	Indicates if the command is periodic (i.e. it is sent by the device repeatedly without request) or not.
 	 *		 			Default is aperiodic (0)
+	 * @param hasDifferentReplyId
+	 * @param replyId
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
@@ -939,19 +941,6 @@ private:
 	* cached from ctor for initialize()
 	*/
 	const uint32_t logicalAddress;
-
-	/**
-	 * Polling Frequency which specifies how often the communication functions
-	 * and functionalities are called.
-	 *
-	 * This is not a time value. The time value depends on the
-	 * respective period time of the polling sequence table.
-	 * The actual time frequency can be calculated by multiplying that period
-	 * with the polling frequency value. Defaults to 1 (communication operations called
-	 * in each performOperation()).
-	 */
-	uint32_t pollingFrequency;
-	uint32_t pollingCounter;
 
 	/**
 	 * Used for timing out mode transitions.
