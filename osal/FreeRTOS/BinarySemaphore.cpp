@@ -79,6 +79,11 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 	}
 }
 
+void BinarySemaphore::resetSemaphore() {
+	vSemaphoreDelete(handle);
+	vSemaphoreCreateBinary(handle);
+}
+
 ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 		BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == NULL) {

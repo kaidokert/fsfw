@@ -69,6 +69,11 @@ public:
 	 */
 	SemaphoreHandle_t getSemaphore();
 
+	/**
+	 * Reset the semaphore.
+	 */
+	void resetSemaphore();
+
 	 /**
 	 * Wrapper function to give back semaphore from handle
 	 * @param semaphore
