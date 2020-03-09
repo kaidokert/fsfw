@@ -67,20 +67,20 @@ public:
 	static const ReturnValue_t NON_OP_TEMPERATURE = MAKE_RETURN_CODE(0xA9);
 	static const ReturnValue_t COMMAND_NOT_IMPLEMENTED = MAKE_RETURN_CODE(0xAA);
 
-	//standard codes used in scan for reply
-	//	static const ReturnValue_t TOO_SHORT = MAKE_RETURN_CODE(0xB1);
+	// Standard codes used in scan for reply
+	//static const ReturnValue_t TOO_SHORT = MAKE_RETURN_CODE(0xB1);
 	static const ReturnValue_t CHECKSUM_ERROR = MAKE_RETURN_CODE(0xB2);
 	static const ReturnValue_t LENGTH_MISSMATCH = MAKE_RETURN_CODE(0xB3);
 	static const ReturnValue_t INVALID_DATA = MAKE_RETURN_CODE(0xB4);
 	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0xB5);
 
-	//standard codes used in  interpret device reply
+	// Standard codes used in  interpret device reply
 	static const ReturnValue_t DEVICE_DID_NOT_EXECUTE = MAKE_RETURN_CODE(0xC1); //the device reported, that it did not execute the command
 	static const ReturnValue_t DEVICE_REPORTED_ERROR = MAKE_RETURN_CODE(0xC2);
 	static const ReturnValue_t UNKNOW_DEVICE_REPLY = MAKE_RETURN_CODE(0xC3); //the deviceCommandId reported by scanforReply is unknown
 	static const ReturnValue_t DEVICE_REPLY_INVALID = MAKE_RETURN_CODE(0xC4); //syntax etc is correct but still not ok, eg parameters where none are expected
 
-	//Standard codes used in buildCommandFromCommand
+	// Standard codes used in buildCommandFromCommand
 	static const ReturnValue_t INVALID_COMMAND_PARAMETER = MAKE_RETURN_CODE(
 			0xD0);
 	static const ReturnValue_t INVALID_NUMBER_OR_LENGTH_OF_PARAMETERS =

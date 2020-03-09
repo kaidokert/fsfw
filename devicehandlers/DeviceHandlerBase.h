@@ -307,6 +307,14 @@ protected:
 			const uint8_t *packet) = 0;
 
 	/**
+	 * set all datapool variables that are update periodically in normal mode invalid
+	 *
+	 * Child classes should provide an implementation which sets all those variables invalid
+	 * which are set periodically during any normal mode.
+	 */
+	virtual void setNormalDatapoolEntriesInvalid() = 0;
+
+	/**
 	 * @brief   Can be implemented by child handler to
 	 *          perform debugging
 	 * @details Example: Calling this in performOperation
@@ -666,7 +674,7 @@ protected:
 	 * This is a helper method to facilitate inserting entries in the command map.
 	 * @param deviceCommand	Identifier of the command to add.
 	 * @param maxDelayCycles The maximum number of delay cycles the command waits until it times out.
-	 * @param periodic	Indicates if the command is periodic (i.e. it is sent by the device repeatedly without request) or not.
+	 * @param periodic	Indicates if the reply is periodic (i.e. it is sent by the device repeatedly without request) or not.
 	 *		 			Default is aperiodic (0)
 	 * @param hasDifferentReplyId
 	 * @param replyId
@@ -781,14 +789,6 @@ protected:
 	 *     - @c PowerSwitchIF::RETURN_FAILED if an error occured
 	 */
 	ReturnValue_t getStateOfSwitches(void);
-
-	/**
-	 * set all datapool variables that are update periodically in normal mode invalid
-	 *
-	 * Child classes should provide an implementation which sets all those variables invalid
-	 * which are set periodically during any normal mode.
-	 */
-	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
 	/**
 	 * build a list of sids and pass it to the #hkSwitcher
