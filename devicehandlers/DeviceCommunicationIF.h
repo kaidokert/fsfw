@@ -9,6 +9,11 @@
  */
 
 /**
+ * Physical address type
+ */
+typedef uint32_t address_t;
+
+/**
  * @brief This is an interface to decouple device communication from
  * the device handler to allow reuse of these components.
  * @details
@@ -39,23 +44,36 @@ public:
 
 	virtual ~DeviceCommunicationIF() {}
 
-	virtual ReturnValue_t open(Cookie **cookie, uint32_t address,
+	/**
+	 * Open a connection. Define a communication specific cookie which can
+	 * be used to store information about the communication.
+	 *
+	 * @param cookie [in/out] This data class stores information about the communication.
+	 * @param address Logical device address
+	 * @param maxReplyLen Maximum length of expected reply
+	 * @return
+	 */
+	virtual ReturnValue_t open(Cookie **cookie, address_t address,
 			uint32_t maxReplyLen) = 0;
 
 	/**
 	 * Use an existing cookie to open a connection to a new DeviceCommunication.
 	 * The previous connection must not be closed.
-	 * If the returnvalue is not RETURN_OK, the cookie is unchanged and
-	 * can be used with the previous connection.
 	 *
 	 * @param cookie
 	 * @param address
 	 * @param maxReplyLen
-	 * @return
+	 * @return -@c RETURN_OK New communication set up successfully
+	 *         - Everything else: Cookie is unchanged and can be used with
+	 *           previous connection
 	 */
-	virtual ReturnValue_t reOpen(Cookie *cookie, uint32_t address,
+	virtual ReturnValue_t reOpen(Cookie *cookie, address_t address,
 			uint32_t maxReplyLen) = 0;
 
+	/**
+	 * Closing call of connection. Don't forget to free memory of cookie.
+	 * @param cookie
+	 */
 	virtual void close(Cookie *cookie) = 0;
 
 	/**
@@ -65,16 +83,18 @@ public:
 	 * @param cookie
 	 * @param data
 	 * @param len
-	 * @return @c RETURN_OK for successfull send
-	 *         Everything else triggers sending failed event with returnvalue as parameter 1
+	 * @return -@c RETURN_OK for successfull send
+	 *         -Everything else triggers sending failed event with
+	 *          returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t sendMessage(Cookie *cookie,const uint8_t *data,
+	virtual ReturnValue_t sendMessage(Cookie *cookie, const uint8_t *data,
 			uint32_t len) = 0;
 
 	virtual ReturnValue_t getSendSuccess(Cookie *cookie) = 0;
 
 	/**
 	 * Called by DHB in the SEND_WRITE doSendRead().
+	 * Instructs the Communication Interface to prepare
 	 * @param cookie
 	 * @return
 	 */
@@ -93,9 +113,9 @@ public:
 	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
 			uint32_t *size) = 0;
 
-	virtual ReturnValue_t setAddress(Cookie *cookie, uint32_t address) = 0;
+	virtual ReturnValue_t setAddress(Cookie *cookie, address_t address) = 0;
 
-	virtual uint32_t getAddress(Cookie *cookie) = 0;
+	virtual address_t getAddress(Cookie *cookie) = 0;
 
 	/**
 	 * Can be used by DeviceHandlerBase getParameter() call to set DeviceComIF parameters
@@ -112,7 +132,6 @@ public:
 	 * @return
 	 */
 	virtual uint32_t getParameter(Cookie *cookie) = 0;
-
 };
 
 #endif /* DEVICECOMMUNICATIONIF_H_ */

@@ -34,27 +34,24 @@ class StorageManagerIF;
  */
 
 /**
- * Physical address type
- */
-typedef uint32_t address_t;
-
-/**
  * @brief This is the abstract base class for device handlers.
  * @details
  * Documentation: Dissertation Baetz p.138,139, p.141-149
  *
- * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, communication with
- * physical devices, using the @link DeviceCommunicationIF @endlink, and communication with commanding objects.
+ * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink,
+ * communication with physical devices, using the @link DeviceCommunicationIF @endlink,
+ * and communication with commanding objects.
  * It inherits SystemObject and thus can be created by the ObjectManagerIF.
  *
  * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
  * For each step an RMAP action is selected and executed.
  * If data has been received (GET_READ), the data will be interpreted.
- * The action for each step can be defined by the child class but as most device handlers share a 4-call
- * (sendRead-getRead-sendWrite-getWrite) structure, a default implementation is provided.
- * NOTE: RMAP is a standard which is used for FLP.
+ * The action for each step can be defined by the child class but as most
+ * device handlers share a 4-call (sendRead-getRead-sendWrite-getWrite) structure,
+ * a default implementation is provided. NOTE: RMAP is a standard which is used for FLP.
  * RMAP communication is not mandatory for projects implementing the FSFW.
- * However, the communication principles are similar to RMAP as there are two write and two send calls involved.
+ * However, the communication principles are similar to RMAP as there are
+ * two write and two send calls involved.
  *
  * Device handler instances should extend this class and implement the abstract functions.
  * Components and drivers can send so called cookies which are used for communication
@@ -495,7 +492,8 @@ protected:
 	DeviceCommunicationIF *communicationInterface;
 
 	/**
-	 * Cookie used for communication
+	 * Cookie used for communication. This is passed to the communication
+	 * interface.
 	 */
 	Cookie *cookie;
 
@@ -910,7 +908,7 @@ private:
 	/**
 	 * State a cookie is in.
 	 *
-	 * Used to keep track of the state of the RMAP communication.
+	 * Used to keep track of the state of the communication.
 	 */
 	enum CookieState_t {
 		COOKIE_UNUSED,    //!< The Cookie is unused

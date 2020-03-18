@@ -4,7 +4,8 @@
 #include <framework/devicehandlers/DeviceCommunicationIF.h>
 
 /**
- * @brief	This class is a implementation of a DeviceCommunicationIF for RMAP calls. It expects RMAPCookies or a derived class of RMAPCookies
+ * @brief	This class is a implementation of a DeviceCommunicationIF for RMAP calls.
+ *          It expects RMAPCookies or a derived class of RMAPCookies
  *
  * @details	The open, close and reOpen calls are mission specific
  * 			The open call might return any child of RMAPCookies
@@ -44,7 +45,8 @@ public:
 
 
 	/**
-	 * Closing call of connection and memory free of cookie. Mission dependent call
+	 * Closing call of connection and free memory of cookie.
+	 * Mission dependent call
 	 * @param cookie
 	 */
 	virtual void close(Cookie *cookie) = 0;
