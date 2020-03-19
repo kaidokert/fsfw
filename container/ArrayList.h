@@ -223,7 +223,6 @@ public:
 		return (maxSize_ - size);
 	}
 
-
 private:
 	/**
 	 * This is the copy constructor
@@ -236,6 +235,7 @@ private:
 	ArrayList(const ArrayList& other) :
 			size(other.size), entries(other.entries), maxSize_(other.maxSize_),
 			allocated(false) {}
+
 protected:
 	/**
 	 * pointer to the array in which the entries are stored
@@ -269,6 +269,6 @@ protected:
 			++i;
 		}
 	}
-
 };
+
 #endif /* ARRAYLIST_H_ */
