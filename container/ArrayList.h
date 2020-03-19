@@ -6,10 +6,9 @@
 #include <framework/serialize/SerializeIF.h>
 
 /**
- * A List that stores its values in an array.
- *
- * The backend is an array that can be allocated by the class itself or supplied via ctor.
- *
+ * @brief 	A List that stores its values in an array.
+ * @details The backend is an array that can be allocated
+ * 			by the class itself or supplied via ctor.
  *
  * @ingroup container
  */

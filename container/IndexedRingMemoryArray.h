@@ -8,20 +8,27 @@
 #include <framework/globalfunctions/crc_ccitt.h>
 #include <cmath>
 
+/**
+ * Index is the Type used for the list of indices.
+ *
+ * @tparam T Type which destribes the index. Needs to be a child of SerializeIF
+ * 			 to be able to make it persistent
+ */
 template<typename T>
 class Index: public SerializeIF{
 	/**
-	 * Index is the Type used for the list of indices. The template parameter is the type which describes the index, it needs to be a child of SerializeIF to be able to make it persistent
+	 *
 	 */
-	static_assert(std::is_base_of<SerializeIF,T>::value,"Wrong Type for Index, Type must implement SerializeIF");
+	static_assert(std::is_base_of<SerializeIF,T>::value,
+			"Wrong Type for Index, Type must implement SerializeIF");
 public:
 	Index():blockStartAddress(0),size(0),storedPackets(0){}
 
-	Index(uint32_t startAddress):blockStartAddress(startAddress),size(0),storedPackets(0){
-
+	Index(uint32_t startAddress):blockStartAddress(startAddress),
+			size(0),storedPackets(0) {
 	}
 
-	void setBlockStartAddress(uint32_t newAddress){
+	void setBlockStartAddress(uint32_t newAddress) {
 		this->blockStartAddress = newAddress;
 	}
 
@@ -33,7 +40,7 @@ public:
 		return &indexType;
 	}
 
-	T* modifyIndexType(){
+	T* modifyIndexType() {
 		return &indexType;
 	}
 	/**
@@ -128,26 +135,35 @@ private:
 };
 
 
-
+/**
+ * @brief Indexed Ring Memory Array is a class for a ring memory with indices.
+ * @details
+ * It assumes that the newest data comes in last
+ * It uses the currentWriteBlock as pointer to the current writing position
+ * The currentReadBlock must be set manually
+ * @tparam T
+ */
 template<typename T>
 class IndexedRingMemoryArray: public SerializeIF, public ArrayList<Index<T>, uint32_t>{
 	/**
-	 * Indexed Ring Memory Array is a class for a ring memory with indices. It assumes that the newest data comes in last
-	 * It uses the currentWriteBlock as pointer to the current writing position
-	 * The currentReadBlock must be set manually
+	 *
 	 */
 public:
-	IndexedRingMemoryArray(uint32_t startAddress, uint32_t size, uint32_t bytesPerBlock, SerializeIF* additionalInfo,
-			bool overwriteOld) :ArrayList<Index<T>,uint32_t>(NULL,(uint32_t)10,(uint32_t)0),totalSize(size),indexAddress(startAddress),currentReadSize(0),currentReadBlockSizeCached(0),lastBlockToReadSize(0), additionalInfo(additionalInfo),overwriteOld(overwriteOld){
-
+	IndexedRingMemoryArray(uint32_t startAddress, uint32_t size, uint32_t bytesPerBlock,
+			SerializeIF* additionalInfo, bool overwriteOld):
+			ArrayList<Index<T>,uint32_t>(NULL,(uint32_t)10,(uint32_t)0),totalSize(size),
+			indexAddress(startAddress),currentReadSize(0),currentReadBlockSizeCached(0),
+			lastBlockToReadSize(0), additionalInfo(additionalInfo),overwriteOld(overwriteOld)
+	{
 		//Calculate the maximum number of indices needed for this blocksize
 		uint32_t maxNrOfIndices = floor(static_cast<double>(size)/static_cast<double>(bytesPerBlock));
 
 		//Calculate the Size needeed for the index itself
 		uint32_t serializedSize = 0;
-		if(additionalInfo!=NULL){
+		if(additionalInfo!=NULL) {
 			serializedSize += additionalInfo->getSerializedSize();
 		}
+
 		//Size of current iterator type
 		Index<T> tempIndex;
 		serializedSize += tempIndex.getSerializedSize();
@@ -162,6 +178,7 @@ public:
 			error << "IndexedRingMemory: Store is too small for index" << std::endl;
 		}
 		uint32_t useableSize = totalSize - serializedSize;
+
 		//Update the totalSize for calculations
 		totalSize = useableSize;
 
@@ -178,11 +195,9 @@ public:
 		this->allocated = true;
 
 		//Check trueNumberOfBlocks
-		if(trueNumberOfBlocks<1){
+		if(trueNumberOfBlocks<1) {
 			error << "IndexedRingMemory: Invalid Number of Blocks: " << trueNumberOfBlocks;
 		}
-
-
 
 		//Fill address into index
 		uint32_t address = trueStartAddress;
@@ -192,7 +207,6 @@ public:
 			it->setStoredPackets(0);
 			address += bytesPerBlock;
 		}
-
 
 		//Initialize iterators
 		currentWriteBlock = this->begin();
@@ -232,10 +246,10 @@ public:
 		(*typeResetFnc)(it->modifyIndexType());
 	}
 
-	/*
+	/**
 	 * Reading
+	 * @param it
 	 */
-
 	void setCurrentReadBlock(typename IndexedRingMemoryArray<T>::Iterator it){
 		currentReadBlock = it;
 		currentReadBlockSizeCached = it->getSize();
@@ -248,6 +262,7 @@ public:
 		lastBlockToRead = currentWriteBlock;
 		lastBlockToReadSize = currentWriteBlock->getSize();
 	}
+
 	/**
 	 * Sets the last block to read to this iterator.
 	 * Can be used to dump until block x
@@ -292,33 +307,39 @@ public:
 	uint32_t getCurrentReadAddress() const {
 		return getAddressOfCurrentReadBlock() + currentReadSize;
 	}
+
 	/**
-	 * Adds readSize to the current size and checks if the read has no more data left and advances the read block
+	 * Adds readSize to the current size and checks if the read has no more data
+	 * left and advances the read block.
 	 * @param readSize The size that was read
 	 * @return Returns true if the read can go on
 	 */
 	bool addReadSize(uint32_t readSize) {
-		if(currentReadBlock == lastBlockToRead){
+		if(currentReadBlock == lastBlockToRead) {
 			//The current read block is the last to read
-			if((currentReadSize+readSize)<lastBlockToReadSize){
+			if((currentReadSize+readSize)<lastBlockToReadSize) {
 				//the block has more data -> return true
 				currentReadSize += readSize;
 				return true;
-			}else{
+			}
+			else {
 				//Reached end of read -> return false
 				currentReadSize = lastBlockToReadSize;
 				return false;
 			}
-		}else{
+		}
+		else {
 			//We are not in the last Block
-			if((currentReadSize + readSize)<currentReadBlockSizeCached){
+			if((currentReadSize + readSize)<currentReadBlockSizeCached) {
 				//The current Block has more data
 				currentReadSize += readSize;
 				return true;
-			}else{
+			}
+			// TODO: Maybe some logic blocks should be extracted
+			else {
 				//The current block is written completely
 				readNext();
-				if(currentReadBlockSizeCached==0){
+				if(currentReadBlockSizeCached==0) {
 					//Next block is empty
 					typename IndexedRingMemoryArray<T>::Iterator it(currentReadBlock);
 					//Search if any block between this and the last block is not empty
@@ -421,12 +442,12 @@ public:
 	T* modifyCurrentWriteBlockIndexType(){
 		return currentWriteBlock->modifyIndexType();
 	}
+
 	void updatePreviousWriteSize(uint32_t size, uint32_t storedPackets){
 		typename IndexedRingMemoryArray<T>::Iterator it = getPreviousBlock(currentWriteBlock);
 		it->addSize(size);
 		it->addStoredPackets(storedPackets);
 	}
-
 
 	/**
 	 * Checks if the block has enough space for sizeToWrite
@@ -436,7 +457,10 @@ public:
 	bool hasCurrentWriteBlockEnoughSpace(uint32_t sizeToWrite){
 		typename IndexedRingMemoryArray<T>::Iterator next = getNextWrite();
 		uint32_t addressOfNextBlock = next->getBlockStartAddress();
-		uint32_t availableSize = ((addressOfNextBlock+totalSize) - (getAddressOfCurrentWriteBlock()+getSizeOfCurrentWriteBlock()))%totalSize;
+		uint32_t availableSize =
+				( ( addressOfNextBlock + totalSize ) -
+				(getAddressOfCurrentWriteBlock() + getSizeOfCurrentWriteBlock()))
+				% totalSize;
 		return (sizeToWrite < availableSize);
 	}
 
@@ -693,8 +717,5 @@ private:
 	const bool overwriteOld;
 
 };
-
-
-
 
 #endif /* FRAMEWORK_CONTAINER_INDEXEDRINGMEMORY_H_ */
