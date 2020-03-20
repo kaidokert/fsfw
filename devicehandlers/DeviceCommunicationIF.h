@@ -54,7 +54,7 @@ public:
 	 * @return
 	 */
 	virtual ReturnValue_t open(Cookie **cookie, address_t address,
-			uint32_t maxReplyLen) = 0;
+			uint32_t maxReplyLen, uint32_t comParameter = 0) = 0;
 
 	/**
 	 * Use an existing cookie to open a connection to a new DeviceCommunication.
@@ -68,7 +68,7 @@ public:
 	 *           previous connection
 	 */
 	virtual ReturnValue_t reOpen(Cookie *cookie, address_t address,
-			uint32_t maxReplyLen) = 0;
+			uint32_t maxReplyLen, uint32_t comParameter = 0) = 0;
 
 	/**
 	 * Closing call of connection. Don't forget to free memory of cookie.
