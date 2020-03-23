@@ -18,9 +18,9 @@
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
 #include <framework/datapool/HkSwitchHelper.h>
 #include <framework/serialize/SerialFixedArrayListAdapter.h>
-#include <map>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/tasks/PeriodicTaskIF.h>
+#include <map>
 
 namespace Factory{
 void setStaticFrameworkObjectIds();
@@ -29,7 +29,7 @@ void setStaticFrameworkObjectIds();
 class StorageManagerIF;
 
 /**
- * \defgroup devices Devices
+ * @defgroup devices Devices
  * Contains all devices and the DeviceHandlerBase class.
  */
 
@@ -38,18 +38,20 @@ class StorageManagerIF;
  * @details
  * Documentation: Dissertation Baetz p.138,139, p.141-149
  *
- * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, communication with
- * physical devices, using the @link DeviceCommunicationIF @endlink, and communication with commanding objects.
+ * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink,
+ * communication with physical devices, using the @link DeviceCommunicationIF @endlink,
+ * and communication with commanding objects.
  * It inherits SystemObject and thus can be created by the ObjectManagerIF.
  *
  * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
  * For each step an RMAP action is selected and executed.
  * If data has been received (GET_READ), the data will be interpreted.
- * The action for each step can be defined by the child class but as most device handlers share a 4-call
- * (sendRead-getRead-sendWrite-getWrite) structure, a default implementation is provided.
- * NOTE: RMAP is a standard which is used for FLP.
+ * The action for each step can be defined by the child class but as most
+ * device handlers share a 4-call (sendRead-getRead-sendWrite-getWrite) structure,
+ * a default implementation is provided. NOTE: RMAP is a standard which is used for FLP.
  * RMAP communication is not mandatory for projects implementing the FSFW.
- * However, the communication principles are similar to RMAP as there are two write and two send calls involved.
+ * However, the communication principles are similar to RMAP as there are
+ * two write and two send calls involved.
  *
  * Device handler instances should extend this class and implement the abstract functions.
  * Components and drivers can send so called cookies which are used for communication
@@ -83,7 +85,7 @@ public:
 	 * The constructor passes the objectId to the SystemObject().
 	 *
 	 * @param setObjectId the ObjectId to pass to the SystemObject() Constructor
-	 * @param maxDeviceReplyLen the length the RMAP getRead call will be sent with
+	 * @param maxDeviceReplyLen the largest allowed reply size
 	 * @param setDeviceSwitch the switch the device is connected to, for devices using two switches, overwrite getSwitches()
 	 * @param deviceCommuncation Communcation Interface object which is used to implement communication functions
 	 * @param thermalStatePoolId
@@ -91,12 +93,11 @@ public:
 	 * @param fdirInstance
 	 * @param cmdQueueSize
 	 */
-	DeviceHandlerBase(uint32_t logicalAddress, object_id_t setObjectId,
-			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
-			object_id_t deviceCommunication,
-			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
+	DeviceHandlerBase(object_id_t setObjectId, address_t logicalAddress_,
+			object_id_t deviceCommunication, Cookie* cookie_, size_t maxReplyLen,
+			uint8_t setDeviceSwitch, uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
-			FailureIsolationBase* fdirInstance = NULL, uint32_t cmdQueueSize = 20);
+			FailureIsolationBase* fdirInstance = nullptr, size_t cmdQueueSize = 20);
 
 	/**
 	 * @brief This function is the device handler base core component and is called periodically.
@@ -281,8 +282,8 @@ protected:
 	 *     - @c DeviceHandlerIF::IGNORE_FULL_PACKET Ignore the packet
 	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been requested by a command, but should be handled anyway (@see also fillCommandAndCookieMap() )
 	 */
-	virtual ReturnValue_t scanForReply(const uint8_t *start, uint32_t len,
-			DeviceCommandId_t *foundId, uint32_t *foundLen) = 0;
+	virtual ReturnValue_t scanForReply(const uint8_t *start, size_t len,
+			DeviceCommandId_t *foundId, size_t *foundLen) = 0;
 
 	/**
 	 * @brief Interpret a reply from the device.
@@ -300,6 +301,14 @@ protected:
 	 */
 	virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id,
 			const uint8_t *packet) = 0;
+
+	/**
+	 * set all datapool variables that are update periodically in normal mode invalid
+	 *
+	 * Child classes should provide an implementation which sets all those variables invalid
+	 * which are set periodically during any normal mode.
+	 */
+	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
 	/**
 	 * @brief   Can be implemented by child handler to
@@ -343,6 +352,12 @@ protected:
 	 */
 	virtual ReturnValue_t getSwitches(const uint8_t **switches,
 			uint8_t *numberOfSwitches);
+
+	/**
+	 * Can be used to perform device specific periodic operations.
+	 * This is called on the SEND_READ step of the performOperation() call
+	 */
+	virtual void performOperationHook();
 
 public:
 	/**
@@ -396,11 +411,32 @@ protected:
 	/**
 	 * Pointer to the raw packet that will be sent.
 	 */
-	uint8_t *rawPacket;
+	uint8_t *rawPacket = nullptr;
 	/**
 	 * Size of the #rawPacket.
 	 */
-	uint32_t rawPacketLen;
+	size_t rawPacketLen = 0;
+
+	/**
+	 * Size of data to request.
+	 */
+	size_t requestLen = 0;
+
+//	/**
+//	 * This union (or std::variant) type can be used to set comParameters which
+//	 * are passed in the open() and reOpen() calls to the communication
+//	 * interface
+//	 * TODO: I don't know if we should use C++17 features but if we do we propably
+//	 *		 should also write a function to get either a storeId handle
+//	 *		 or an array handle so these values can be set conveniently.
+//	 * The good think is that if there are many parameters, they can
+//	 * be stored in the IPC pool. But maybe two uint32_t parameters are enough.
+//	 * Simple = Good. It is downwards compatible and one can still store
+//	 * 4 bytes of parameters AND a store ID.
+//	 */
+//	comParameters_t comParameters;
+	// uint32_t comParameter1 = 0;
+	// uint32_t comParameter2 = 0;
 
 	/**
 	 * The mode the device handler is currently in.
@@ -419,12 +455,12 @@ protected:
 	/**
 	 * This is the counter value from performOperation().
 	 */
-	uint8_t pstStep;
+	uint8_t pstStep = 0;
 
 	/**
 	 * This will be used in the RMAP getRead command as expected length, is set by the constructor, can be modiefied at will.
 	 */
-	const uint32_t maxDeviceReplyLen;
+	const uint32_t maxDeviceReplyLen = 0;
 
 	/**
 	 * wiretapping flag:
@@ -442,7 +478,7 @@ protected:
 	 * Statically initialized in initialize() to a configurable object. Used when there is no method
 	 * of finding a recipient, ie raw mode and reporting erreonous replies
 	 */
-	MessageQueueId_t defaultRawReceiver;
+	MessageQueueId_t defaultRawReceiver = 0;
 
 	store_address_t storedRawData;
 
@@ -451,19 +487,19 @@ protected:
 	 *
 	 * if #isWiretappingActive all raw communication from and to the device will be sent to this queue
 	 */
-	MessageQueueId_t requestedRawTraffic;
+	MessageQueueId_t requestedRawTraffic = 0;
 
 	/**
 	 * the object used to set power switches
 	 */
-	PowerSwitchIF *powerSwitcher;
+	PowerSwitchIF *powerSwitcher = nullptr;
 
 	/**
 	 * Pointer to the IPCStore.
 	 *
 	 * This caches the pointer received from the objectManager in the constructor.
 	 */
-	StorageManagerIF *IPCStore;
+	StorageManagerIF *IPCStore = nullptr;
 
 	/**
 	 * cached for init
@@ -473,17 +509,18 @@ protected:
 	/**
 	 * Communication object used for device communication
 	 */
-	DeviceCommunicationIF *communicationInterface;
+	DeviceCommunicationIF *communicationInterface = nullptr;
 
 	/**
-	 * Cookie used for communication
+	 * Cookie used for communication. This is passed to the communication
+	 * interface.
 	 */
 	Cookie *cookie;
 
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
 	 */
-	MessageQueueIF* commandQueue;
+	MessageQueueIF* commandQueue = nullptr;
 
 	/**
 	 * this is the datapool variable with the thermal state of the device
@@ -512,9 +549,9 @@ protected:
 	 * Optional Error code
 	 * Can be set in doStartUp(), doShutDown() and doTransition() to signal cause for Transition failure.
 	 */
-	ReturnValue_t childTransitionFailure;
+	ReturnValue_t childTransitionFailure = RETURN_OK;
 
-	uint32_t ignoreMissedRepliesCount; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
+	uint32_t ignoreMissedRepliesCount = 0; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
 
 	FailureIsolationBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
 
@@ -531,6 +568,28 @@ protected:
 	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
 
 	static object_id_t defaultFDIRParentId; //!< Object which may be the root cause of an identified fault.
+
+	/**
+	 * Set the device handler mode
+	 *
+	 * Sets #timeoutStart with every call.
+	 *
+	 * Sets #transitionTargetMode if necessary so transitional states can be entered from everywhere without breaking the state machine
+	 * (which relies on a correct #transitionTargetMode).
+	 *
+	 * The submode is left unchanged.
+	 *
+	 *
+	 * @param newMode
+	 */
+	void setMode(Mode_t newMode);
+
+	/**
+	 * @overload
+	 * @param submode
+	 */
+	void setMode(Mode_t newMode, Submode_t submode);
+
 	/**
 	 * Helper function to report a missed reply
 	 *
@@ -558,27 +617,6 @@ protected:
 	 * @param parameter
 	 */
 	void replyToCommand(ReturnValue_t status, uint32_t parameter = 0);
-
-	/**
-	 * Set the device handler mode
-	 *
-	 * Sets #timeoutStart with every call.
-	 *
-	 * Sets #transitionTargetMode if necessary so transitional states can be entered from everywhere without breaking the state machine
-	 * (which relies on a correct #transitionTargetMode).
-	 *
-	 * The submode is left unchanged.
-	 *
-	 *
-	 * @param newMode
-	 */
-	void setMode(Mode_t newMode);
-
-	/**
-	 * @overload
-	 * @param submode
-	 */
-	void setMode(Mode_t newMode, Submode_t submode);
 
 	/**
 	 * Do the transition to the main modes (MODE_ON, MODE_NORMAL and MODE_RAW).
@@ -628,7 +666,7 @@ protected:
 	 *
 	 * @return The Rmap action to execute in this step
 	 */
-	virtual RmapAction_t getRmapAction();
+	virtual CommunicationAction_t getRmapAction();
 
 	/**
 	 * Build the device command to send for raw mode.
@@ -655,8 +693,10 @@ protected:
 	 * This is a helper method to facilitate inserting entries in the command map.
 	 * @param deviceCommand	Identifier of the command to add.
 	 * @param maxDelayCycles The maximum number of delay cycles the command waits until it times out.
-	 * @param periodic	Indicates if the command is periodic (i.e. it is sent by the device repeatedly without request) or not.
+	 * @param periodic	Indicates if the reply is periodic (i.e. it is sent by the device repeatedly without request) or not.
 	 *		 			Default is aperiodic (0)
+	 * @param hasDifferentReplyId
+	 * @param replyId
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
@@ -768,14 +808,6 @@ protected:
 	 *     - @c PowerSwitchIF::RETURN_FAILED if an error occured
 	 */
 	ReturnValue_t getStateOfSwitches(void);
-
-	/**
-	 * set all datapool variables that are update periodically in normal mode invalid
-	 *
-	 * Child classes should provide an implementation which sets all those variables invalid
-	 * which are set periodically during any normal mode.
-	 */
-	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
 	/**
 	 * build a list of sids and pass it to the #hkSwitcher
@@ -897,7 +929,7 @@ private:
 	/**
 	 * State a cookie is in.
 	 *
-	 * Used to keep track of the state of the RMAP communication.
+	 * Used to keep track of the state of the communication.
 	 */
 	enum CookieState_t {
 		COOKIE_UNUSED,    //!< The Cookie is unused
@@ -934,7 +966,7 @@ private:
 	 *
 	 * Set when setMode() is called.
 	 */
-	uint32_t timeoutStart;
+	uint32_t timeoutStart = 0;
 
 	/**
 	 * Delay for the current mode transition, used for time out
@@ -976,6 +1008,8 @@ private:
 	 * - checks whether commanded mode transitions are required and calls handleCommandedModeTransition()
 	 * - does the necessary action for the current mode or calls doChildStateMachine in modes @c MODE_TO_ON and @c MODE_TO_OFF
 	 * - actions that happen in transitions (eg setting a timeout) are handled in setMode()
+	 * - Maybe export this into own class to increase modularity of software
+	 *   and reduce the massive class size ?
 	 */
 	void doStateMachine(void);
 
@@ -1054,8 +1088,8 @@ private:
 	 *   - @c RETURN_FAILED IPCStore is NULL
 	 *   - the return value from the IPCStore if it was not @c RETURN_OK
 	 */
-	ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data,
-			uint32_t *len);
+	ReturnValue_t getStorageData(store_address_t storageAddress,
+			uint8_t ** data, size_t * len);
 
 	/**
 	 * set all switches returned by getSwitches()
@@ -1084,7 +1118,7 @@ private:
 	 *     - @c RETURN_FAILED when cookies could not be changed, eg because the newChannel is not enabled
 	 *     - @c returnvalues of RMAPChannelIF::isActive()
 	 */
-	ReturnValue_t switchCookieChannel(object_id_t newChannelId);
+	//ReturnValue_t switchCookieChannel(object_id_t newChannelId);
 
 	/**
 	 * Handle device handler messages (e.g. commands sent by PUS Service 2)
