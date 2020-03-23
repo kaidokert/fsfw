@@ -666,7 +666,7 @@ protected:
 	 *
 	 * @return The Rmap action to execute in this step
 	 */
-	virtual CommunicationAction_t getRmapAction();
+	virtual CommunicationAction_t getComAction();
 
 	/**
 	 * Build the device command to send for raw mode.

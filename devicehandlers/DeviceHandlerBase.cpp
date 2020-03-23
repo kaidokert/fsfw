@@ -688,7 +688,7 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 
 //Default child implementations
 
-DeviceHandlerBase::CommunicationAction_t DeviceHandlerBase::getRmapAction() {
+DeviceHandlerBase::CommunicationAction_t DeviceHandlerBase::getComAction() {
 	switch (pstStep) {
 	case 0:
 		return SEND_WRITE;
