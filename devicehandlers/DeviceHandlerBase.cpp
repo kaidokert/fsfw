@@ -106,7 +106,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	}
 
 	result = communicationInterface->open(&cookie, logicalAddress,
-			maxDeviceReplyLen);
+			maxDeviceReplyLen, comParameter1, comParameter2);
 	if (result != RETURN_OK) {
 		return result;
 	}
@@ -691,7 +691,7 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 
 //Default child implementations
 
-DeviceHandlerBase::RmapAction_t DeviceHandlerBase::getRmapAction() {
+DeviceHandlerBase::CommunicationAction_t DeviceHandlerBase::getRmapAction() {
 	switch (pstStep) {
 	case 0:
 		return SEND_WRITE;
@@ -757,7 +757,7 @@ ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
 
 	if (newCommunication != NULL) {
 		ReturnValue_t result = newCommunication->reOpen(cookie, logicalAddress,
-				maxDeviceReplyLen);
+				maxDeviceReplyLen, comParameter1, comParameter2);
 		if (result != RETURN_OK) {
 			return result;
 		}

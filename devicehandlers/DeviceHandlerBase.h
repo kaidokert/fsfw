@@ -418,6 +418,22 @@ protected:
 	 */
 	uint32_t rawPacketLen;
 
+//	/**
+//	 * This union (or std::variant) type can be used to set comParameters which
+//	 * are passed in the open() and reOpen() calls to the communication
+//	 * interface
+//	 * TODO: I don't know if we should use C++17 features but if we do we propably
+//	 *		 should also write a function to get either a storeId handle
+//	 *		 or an array handle so these values can be set conveniently.
+//	 * The good think is that if there are many parameters, they can
+//	 * be stored in the IPC pool. But maybe two uint32_t parameters are enough.
+//	 * Simple = Good. It is downwards compatible and one can still store
+//	 * 4 bytes of parameters AND a store ID.
+//	 */
+//	comParameters_t comParameters;
+	uint32_t comParameter1 = 0;
+	uint32_t comParameter2 = 0;
+
 	/**
 	 * The mode the device handler is currently in.
 	 *
@@ -548,6 +564,28 @@ protected:
 	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
 
 	static object_id_t defaultFDIRParentId; //!< Object which may be the root cause of an identified fault.
+
+	/**
+	 * Set the device handler mode
+	 *
+	 * Sets #timeoutStart with every call.
+	 *
+	 * Sets #transitionTargetMode if necessary so transitional states can be entered from everywhere without breaking the state machine
+	 * (which relies on a correct #transitionTargetMode).
+	 *
+	 * The submode is left unchanged.
+	 *
+	 *
+	 * @param newMode
+	 */
+	void setMode(Mode_t newMode);
+
+	/**
+	 * @overload
+	 * @param submode
+	 */
+	void setMode(Mode_t newMode, Submode_t submode);
+
 	/**
 	 * Helper function to report a missed reply
 	 *
@@ -575,27 +613,6 @@ protected:
 	 * @param parameter
 	 */
 	void replyToCommand(ReturnValue_t status, uint32_t parameter = 0);
-
-	/**
-	 * Set the device handler mode
-	 *
-	 * Sets #timeoutStart with every call.
-	 *
-	 * Sets #transitionTargetMode if necessary so transitional states can be entered from everywhere without breaking the state machine
-	 * (which relies on a correct #transitionTargetMode).
-	 *
-	 * The submode is left unchanged.
-	 *
-	 *
-	 * @param newMode
-	 */
-	void setMode(Mode_t newMode);
-
-	/**
-	 * @overload
-	 * @param submode
-	 */
-	void setMode(Mode_t newMode, Submode_t submode);
 
 	/**
 	 * Do the transition to the main modes (MODE_ON, MODE_NORMAL and MODE_RAW).
@@ -645,7 +662,7 @@ protected:
 	 *
 	 * @return The Rmap action to execute in this step
 	 */
-	virtual RmapAction_t getRmapAction();
+	virtual CommunicationAction_t getRmapAction();
 
 	/**
 	 * Build the device command to send for raw mode.

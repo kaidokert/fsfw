@@ -7,6 +7,33 @@
 #include <framework/modes/HasModesIF.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
 
+#if __cplusplus >= 201703L
+#include <array>
+#include <variant>
+#endif
+
+/**
+ * Physical address type
+ */
+typedef uint32_t address_t;
+
+///**
+// * This type safe union cold be used if C++17 or newer is used to transfer
+// * comIF settings to the communication interface object.
+// */
+//
+//#if __cplusplus >= 201703L
+//using comParameterArray_t = std::array<uint8_t, 4>;
+//using comParameters_t = std::variant<store_address_t, comParameterArray_t>;
+//#else
+//using comParameters_t = union comParameters {
+//		comParameters() = default;
+//		comParameters(uint32_t initValue): storeIdRaw(initValue) {}
+//		uint32_t storeIdRaw;
+//		uint8_t comParameter[4];
+//	};
+//#endif
+
 /**
  * This is the Interface used to communicate with a device handler.
  *
@@ -87,17 +114,18 @@ public:
 			MAKE_RETURN_CODE(0xD1);
 
 	/**
-	 * RMAP Action that will be executed.
+	 * Communication action that will be executed.
 	 *
 	 * This is used by the child class to tell the base class what to do.
 	 */
-	enum RmapAction_t {
+	enum CommunicationAction_t: uint8_t {
 		SEND_WRITE,//!< RMAP send write
 		GET_WRITE, //!< RMAP get write
 		SEND_READ, //!< RMAP send read
 		GET_READ,  //!< RMAP get read
 		NOTHING    //!< Do nothing.
 	};
+
 	/**
 	 * Default Destructor
 	 */

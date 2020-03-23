@@ -2,16 +2,12 @@
 #define DEVICECOMMUNICATIONIF_H_
 
 #include <framework/devicehandlers/Cookie.h>
+#include <framework/devicehandlers/DeviceHandlerIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 /**
  * @defgroup interfaces Interfaces
  * @brief Communication interfaces for flight software objects
  */
-
-/**
- * Physical address type
- */
-typedef uint32_t address_t;
 
 /**
  * @brief This is an interface to decouple device communication from
@@ -47,14 +43,20 @@ public:
 	/**
 	 * Open a connection. Define a communication specific cookie which can
 	 * be used to store information about the communication.
+	 * The two optional parameter provide additional flexibility to
+	 * set up the communication interface as desired. If there are a lot of
+	 * variables to set, a store ID to the parameters stored in the IPC store
+	 * can also be passed.
 	 *
-	 * @param cookie [in/out] This data class stores information about the communication.
+	 * @param cookie [out] This data class stores information about the communication.
 	 * @param address Logical device address
 	 * @param maxReplyLen Maximum length of expected reply
+	 * @param comParameter1 Arbitrary parameter which can be used to set up the cookie or comIF.
+	 * @param comParameter2 Arbitrary parameter which can be used to set up the cookie or comIF.
 	 * @return
 	 */
 	virtual ReturnValue_t open(Cookie **cookie, address_t address,
-			uint32_t maxReplyLen, uint32_t comParameter = 0) = 0;
+			uint32_t maxReplyLen, uint32_t comParameter1, uint32_t comParameter2) = 0;
 
 	/**
 	 * Use an existing cookie to open a connection to a new DeviceCommunication.
@@ -68,7 +70,7 @@ public:
 	 *           previous connection
 	 */
 	virtual ReturnValue_t reOpen(Cookie *cookie, address_t address,
-			uint32_t maxReplyLen, uint32_t comParameter = 0) = 0;
+			uint32_t maxReplyLen, uint32_t comParameter1, uint32_t comParameter2) = 0;
 
 	/**
 	 * Closing call of connection. Don't forget to free memory of cookie.
