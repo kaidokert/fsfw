@@ -66,7 +66,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		return RETURN_OK;
 	}
 
-	switch (getRmapAction()) {
+	switch (getComAction()) {
 	case SEND_WRITE:
 		if ((cookieInfo.state == COOKIE_UNUSED)) {
 			buildInternalCommand();
@@ -1050,6 +1050,7 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 			replyReturnvalueToCommand(WRONG_MODE_FOR_COMMAND);
 		} else {
 			// rework in progress
+			result = RETURN_OK;
 			//result = switchCookieChannel(
 			//		DeviceHandlerMessage::getIoBoardObjectId(message));
 			if (result == RETURN_OK) {
