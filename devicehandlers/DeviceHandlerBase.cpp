@@ -67,7 +67,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
 	}
-	switch (getRmapAction()) {
+	switch (getCommandQueue()) {
 	case SEND_WRITE:
 		if ((cookieInfo.state == COOKIE_UNUSED)) {
 			buildInternalCommand();
@@ -689,8 +689,7 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 }
 
 //Default child implementations
-
-DeviceHandlerBase::RmapAction_t DeviceHandlerBase::getRmapAction() {
+DeviceHandlerIF::CommunicationAction_t DeviceHandlerBase::getComAction() {
 	switch (pstStep) {
 	case 0:
 		return SEND_WRITE;

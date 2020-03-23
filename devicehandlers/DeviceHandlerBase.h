@@ -3,11 +3,11 @@
 
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/tasks/ExecutableObjectIF.h>
+#include <framework/devicehandlers/DeviceHandlerIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/action/HasActionsIF.h>
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/devicehandlers/DeviceCommunicationIF.h>
-#include <framework/devicehandlers/DeviceHandlerIF.h>
 #include <framework/modes/HasModesIF.h>
 #include <framework/power/PowerSwitchIF.h>
 #include <framework/ipc/MessageQueueIF.h>
@@ -698,7 +698,8 @@ protected:
 	 *
 	 * @return The Rmap action to execute in this step
 	 */
-	virtual RmapAction_t getRmapAction();
+
+	virtual CommunicationAction_t getComAction();
 
 	/**
 	 * Build the device command to send for raw mode.
