@@ -17,6 +17,7 @@
 #include <framework/tasks/ExecutableObjectIF.h>
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
 #include <framework/datapool/HkSwitchHelper.h>
+#include <framework/devicehandlers/CookieIF.h>
 #include <framework/serialize/SerialFixedArrayListAdapter.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/tasks/PeriodicTaskIF.h>
@@ -93,9 +94,9 @@ public:
 	 * @param fdirInstance
 	 * @param cmdQueueSize
 	 */
-	DeviceHandlerBase(object_id_t setObjectId, address_t logicalAddress_,
-			object_id_t deviceCommunication, Cookie* cookie_, size_t maxReplyLen,
-			uint8_t setDeviceSwitch, uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
+	DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
+			CookieIF * comCookie_, size_t maxReplyLen, uint8_t setDeviceSwitch,
+			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
 			FailureIsolationBase* fdirInstance = nullptr, size_t cmdQueueSize = 20);
 
@@ -422,22 +423,6 @@ protected:
 	 */
 	size_t requestLen = 0;
 
-//	/**
-//	 * This union (or std::variant) type can be used to set comParameters which
-//	 * are passed in the open() and reOpen() calls to the communication
-//	 * interface
-//	 * TODO: I don't know if we should use C++17 features but if we do we propably
-//	 *		 should also write a function to get either a storeId handle
-//	 *		 or an array handle so these values can be set conveniently.
-//	 * The good think is that if there are many parameters, they can
-//	 * be stored in the IPC pool. But maybe two uint32_t parameters are enough.
-//	 * Simple = Good. It is downwards compatible and one can still store
-//	 * 4 bytes of parameters AND a store ID.
-//	 */
-//	comParameters_t comParameters;
-	// uint32_t comParameter1 = 0;
-	// uint32_t comParameter2 = 0;
-
 	/**
 	 * The mode the device handler is currently in.
 	 *
@@ -515,7 +500,7 @@ protected:
 	 * Cookie used for communication. This is passed to the communication
 	 * interface.
 	 */
-	Cookie *cookie;
+	CookieIF *comCookie;
 
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
@@ -666,7 +651,7 @@ protected:
 	 *
 	 * @return The Rmap action to execute in this step
 	 */
-	virtual CommunicationAction_t getRmapAction();
+	virtual CommunicationAction_t getComAction();
 
 	/**
 	 * Build the device command to send for raw mode.
@@ -959,7 +944,7 @@ private:
 	/**
 	* cached from ctor for initialize()
 	*/
-	const uint32_t logicalAddress;
+	//const uint32_t logicalAddress = 0;
 
 	/**
 	 * Used for timing out mode transitions.
