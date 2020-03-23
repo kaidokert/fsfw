@@ -57,7 +57,7 @@ public:
 	 *         - Everything else triggers sending failed event with
 	 *           returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t sendMessage(Cookie *cookie, const uint8_t * sendData,
+	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
 			size_t sendLen) = 0;
 
 	/**
@@ -68,7 +68,7 @@ public:
 	 * 		   - Everything else triggers sending failed event with
 	 *           returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t getSendSuccess(Cookie *cookie) = 0;
+	virtual ReturnValue_t getSendSuccess(CookieIF *cookie) = 0;
 
 	/**
 	 * Called by DHB in the SEND_WRITE doSendRead().
@@ -76,7 +76,7 @@ public:
 	 * @param cookie
 	 * @return
 	 */
-	virtual ReturnValue_t requestReceiveMessage(Cookie *cookie, size_t requestLen) = 0;
+	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie, size_t requestLen) = 0;
 
 	/**
 	 * Called by DHB in the GET_WRITE doGetRead().
@@ -89,7 +89,7 @@ public:
 	 *         - Everything else triggers receiving failed with
 	 *           returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
+	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
 			size_t *size) = 0;
 };
 

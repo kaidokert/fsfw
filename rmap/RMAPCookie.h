@@ -6,7 +6,7 @@
 
 class RMAPChannelIF;
 
-class RMAPCookie : public Cookie{
+class RMAPCookie : public Cookie {
 public:
 	//To Uli: Sorry, I need an empty ctor to initialize an array of cookies.
 	RMAPCookie();
@@ -28,7 +28,7 @@ public:
 	void setCommandMask(uint8_t commandMask);
 	uint8_t getCommandMask();
 
-	uint32_t getMaxReplyLen() const;
+	//size_t getMaxReplyLen() const;
 	void setMaxReplyLen(uint32_t maxReplyLen);
 
 	uint16_t getTransactionIdentifier() const;

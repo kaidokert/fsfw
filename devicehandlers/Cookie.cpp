@@ -5,12 +5,12 @@
  */
 #include <framework/devicehandlers/Cookie.h>
 
-//Cookie::Cookie(address_t logicalAddress_, size_t maxReplyLen_):
-//	logicalAddress(logicalAddress_), maxReplyLen(maxReplyLen_){}
-
 Cookie::Cookie(address_t logicalAddress_): logicalAddress(logicalAddress_) {
 }
 
+void Cookie::setAddress(address_t logicalAddress_) {
+	logicalAddress = logicalAddress_;
+}
 void Cookie::setMaxReplyLen(size_t maxReplyLen_) {
 	maxReplyLen = maxReplyLen_;
 }
@@ -22,3 +22,5 @@ address_t Cookie::getAddress() const {
 size_t Cookie::getMaxReplyLen() const {
 	return maxReplyLen;
 }
+
+

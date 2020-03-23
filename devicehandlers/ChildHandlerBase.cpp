@@ -2,12 +2,12 @@
 #include <framework/devicehandlers/ChildHandlerBase.h>
 #include <framework/subsystem/SubsystemBase.h>
 
-ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId, address_t logicalAddress,
-		object_id_t deviceCommunication, Cookie * cookie,
+ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
+		object_id_t deviceCommunication, CookieIF * cookie,
 		uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		uint32_t parent, FailureIsolationBase* customFdir, size_t cmdQueueSize) :
-		DeviceHandlerBase(setObjectId, logicalAddress, deviceCommunication, cookie,
+		DeviceHandlerBase(setObjectId, deviceCommunication, cookie,
 			maxDeviceReplyLen, setDeviceSwitch,  thermalStatePoolId,
 			thermalRequestPoolId, (customFdir == NULL? &childHandlerFdir : customFdir),
 			cmdQueueSize),
