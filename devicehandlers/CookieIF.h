@@ -1,7 +1,7 @@
 /**
  * @file CookieIF.h
  *
- * @date 23 Mar 2020
+ * @date 23.03.2020
  */
 
 #ifndef FRAMEWORK_DEVICEHANDLERS_COOKIEIF_H_
