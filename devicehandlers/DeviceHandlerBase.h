@@ -69,6 +69,12 @@ class StorageManagerIF;
  *
  * Other important virtual methods with a default implementation
  * are the getTransitionDelayMs() function and the getSwitches() function.
+ * Please ensure that getSwitches() returns DeviceHandlerIF::NO_SWITCHES if
+ * power switches are not implemented yet. Otherwise, the device handler will
+ * not transition to MODE_ON, even if setMode(MODE_ON) is called.
+ * If a transition to MODE_ON is desired without commanding, override the
+ * intialize() function and call setMode(_MODE_START_UP) before calling
+ * DeviceHandlerBase::initialize().
  *
  * @ingroup devices
  */
@@ -349,7 +355,7 @@ protected:
 	 * @param[out] numberOfSwitches length of returned array
 	 * @return
 	 *      - @c RETURN_OK if the parameters were set
-	 *      - @c RETURN_FAILED if no switches exist
+	 *      - @c NO_SWITCH or any other returnvalue if no switches exist
 	 */
 	virtual ReturnValue_t getSwitches(const uint8_t **switches,
 			uint8_t *numberOfSwitches);
