@@ -29,7 +29,7 @@ void setStaticFrameworkObjectIds();
 class StorageManagerIF;
 
 /**
- * \defgroup devices Devices
+ * @defgroup devices Devices
  * Contains all devices and the DeviceHandlerBase class.
  */
 
@@ -93,12 +93,11 @@ public:
 	 * @param fdirInstance
 	 * @param cmdQueueSize
 	 */
-	DeviceHandlerBase(address_t logicalAddress, object_id_t setObjectId,
-			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
-			object_id_t deviceCommunication,
-			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
+	DeviceHandlerBase(object_id_t setObjectId, address_t logicalAddress_,
+			object_id_t deviceCommunication, Cookie* cookie_, size_t maxReplyLen,
+			uint8_t setDeviceSwitch, uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
-			FailureIsolationBase* fdirInstance = NULL, uint32_t cmdQueueSize = 20);
+			FailureIsolationBase* fdirInstance = nullptr, size_t cmdQueueSize = 20);
 
 	/**
 	 * @brief This function is the device handler base core component and is called periodically.
@@ -283,8 +282,8 @@ protected:
 	 *     - @c DeviceHandlerIF::IGNORE_FULL_PACKET Ignore the packet
 	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been requested by a command, but should be handled anyway (@see also fillCommandAndCookieMap() )
 	 */
-	virtual ReturnValue_t scanForReply(const uint8_t *start, uint32_t len,
-			DeviceCommandId_t *foundId, uint32_t *foundLen) = 0;
+	virtual ReturnValue_t scanForReply(const uint8_t *start, size_t len,
+			DeviceCommandId_t *foundId, size_t *foundLen) = 0;
 
 	/**
 	 * @brief Interpret a reply from the device.
@@ -412,11 +411,16 @@ protected:
 	/**
 	 * Pointer to the raw packet that will be sent.
 	 */
-	uint8_t *rawPacket;
+	uint8_t *rawPacket = nullptr;
 	/**
 	 * Size of the #rawPacket.
 	 */
-	uint32_t rawPacketLen;
+	size_t rawPacketLen = 0;
+
+	/**
+	 * Size of data to request.
+	 */
+	size_t requestLen = 0;
 
 //	/**
 //	 * This union (or std::variant) type can be used to set comParameters which
@@ -431,8 +435,8 @@ protected:
 //	 * 4 bytes of parameters AND a store ID.
 //	 */
 //	comParameters_t comParameters;
-	uint32_t comParameter1 = 0;
-	uint32_t comParameter2 = 0;
+	// uint32_t comParameter1 = 0;
+	// uint32_t comParameter2 = 0;
 
 	/**
 	 * The mode the device handler is currently in.
@@ -451,12 +455,12 @@ protected:
 	/**
 	 * This is the counter value from performOperation().
 	 */
-	uint8_t pstStep;
+	uint8_t pstStep = 0;
 
 	/**
 	 * This will be used in the RMAP getRead command as expected length, is set by the constructor, can be modiefied at will.
 	 */
-	const uint32_t maxDeviceReplyLen;
+	const uint32_t maxDeviceReplyLen = 0;
 
 	/**
 	 * wiretapping flag:
@@ -474,7 +478,7 @@ protected:
 	 * Statically initialized in initialize() to a configurable object. Used when there is no method
 	 * of finding a recipient, ie raw mode and reporting erreonous replies
 	 */
-	MessageQueueId_t defaultRawReceiver;
+	MessageQueueId_t defaultRawReceiver = 0;
 
 	store_address_t storedRawData;
 
@@ -483,19 +487,19 @@ protected:
 	 *
 	 * if #isWiretappingActive all raw communication from and to the device will be sent to this queue
 	 */
-	MessageQueueId_t requestedRawTraffic;
+	MessageQueueId_t requestedRawTraffic = 0;
 
 	/**
 	 * the object used to set power switches
 	 */
-	PowerSwitchIF *powerSwitcher;
+	PowerSwitchIF *powerSwitcher = nullptr;
 
 	/**
 	 * Pointer to the IPCStore.
 	 *
 	 * This caches the pointer received from the objectManager in the constructor.
 	 */
-	StorageManagerIF *IPCStore;
+	StorageManagerIF *IPCStore = nullptr;
 
 	/**
 	 * cached for init
@@ -505,7 +509,7 @@ protected:
 	/**
 	 * Communication object used for device communication
 	 */
-	DeviceCommunicationIF *communicationInterface;
+	DeviceCommunicationIF *communicationInterface = nullptr;
 
 	/**
 	 * Cookie used for communication. This is passed to the communication
@@ -516,7 +520,7 @@ protected:
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
 	 */
-	MessageQueueIF* commandQueue;
+	MessageQueueIF* commandQueue = nullptr;
 
 	/**
 	 * this is the datapool variable with the thermal state of the device
@@ -545,9 +549,9 @@ protected:
 	 * Optional Error code
 	 * Can be set in doStartUp(), doShutDown() and doTransition() to signal cause for Transition failure.
 	 */
-	ReturnValue_t childTransitionFailure;
+	ReturnValue_t childTransitionFailure = RETURN_OK;
 
-	uint32_t ignoreMissedRepliesCount; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
+	uint32_t ignoreMissedRepliesCount = 0; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
 
 	FailureIsolationBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
 
@@ -962,7 +966,7 @@ private:
 	 *
 	 * Set when setMode() is called.
 	 */
-	uint32_t timeoutStart;
+	uint32_t timeoutStart = 0;
 
 	/**
 	 * Delay for the current mode transition, used for time out
@@ -1084,8 +1088,8 @@ private:
 	 *   - @c RETURN_FAILED IPCStore is NULL
 	 *   - the return value from the IPCStore if it was not @c RETURN_OK
 	 */
-	ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data,
-			uint32_t *len);
+	ReturnValue_t getStorageData(store_address_t storageAddress,
+			uint8_t ** data, size_t * len);
 
 	/**
 	 * set all switches returned by getSwitches()
@@ -1114,7 +1118,7 @@ private:
 	 *     - @c RETURN_FAILED when cookies could not be changed, eg because the newChannel is not enabled
 	 *     - @c returnvalues of RMAPChannelIF::isActive()
 	 */
-	ReturnValue_t switchCookieChannel(object_id_t newChannelId);
+	//ReturnValue_t switchCookieChannel(object_id_t newChannelId);
 
 	/**
 	 * Handle device handler messages (e.g. commands sent by PUS Service 2)

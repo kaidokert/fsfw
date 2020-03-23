@@ -11,7 +11,7 @@
 #include "task.h"
 
 BinarySemaphore::BinarySemaphore() {
-	vSemaphoreCreateBinary(handle);
+	xSemaphoreCreateBinary(handle); // @suppress("Function cannot be resolved")
 	if(handle == NULL) {
 		error << "Binary semaphore creation failure" << std::endl;
 	}
@@ -81,7 +81,7 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 
 void BinarySemaphore::resetSemaphore() {
 	vSemaphoreDelete(handle);
-	vSemaphoreCreateBinary(handle);
+	xSemaphoreCreateBinary(handle);
 }
 
 ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,

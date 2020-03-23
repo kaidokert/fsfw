@@ -28,7 +28,7 @@ public:
 	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::DEVICE_HANDLER_COMMAND;
 	static const Command_t CMD_RAW = MAKE_COMMAND_ID( 1 ); //!< Sends a raw command, setParameter is a ::store_id_t containing the raw packet to send
 //	static const Command_t CMD_DIRECT = MAKE_COMMAND_ID( 2 ); //!< Sends a direct command, setParameter is a ::DeviceCommandId_t, setParameter2 is a ::store_id_t containing the data needed for the command
-	static const Command_t CMD_SWITCH_IOBOARD = MAKE_COMMAND_ID( 3 ); //!< Requests a IO-Board switch, setParameter() is the IO-Board identifier
+	static const Command_t CMD_SWITCH_ADDRESS = MAKE_COMMAND_ID( 3 ); //!< Requests a IO-Board switch, setParameter() is the IO-Board identifier
 	static const Command_t CMD_WIRETAPPING = MAKE_COMMAND_ID( 4 ); //!< (De)Activates the monitoring of all raw traffic in DeviceHandlers, setParameter is 0 to deactivate, 1 to activate
 
 	/*static const Command_t REPLY_SWITCHED_IOBOARD = MAKE_COMMAND_ID(1 );//!< Reply to a @c CMD_SWITCH_IOBOARD, indicates switch was successful, getParameter() contains the board switched to (0: nominal, 1: redundant)

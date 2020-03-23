@@ -37,7 +37,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 				ParameterMessage::getParameterId(message));
 
 		const uint8_t *storedStream;
-		uint32_t storedStreamSize;
+		size_t storedStreamSize;
 		result = storage->getData(
 				ParameterMessage::getStoreId(message), &storedStream,
 				&storedStreamSize);

@@ -16,37 +16,34 @@ object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
-DeviceHandlerBase::DeviceHandlerBase(uint32_t logicalAddress_,
-		object_id_t setObjectId, uint32_t maxDeviceReplyLen,
-		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
-		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
-		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
-		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
-		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
-		requestedRawTraffic(0), powerSwitcher(NULL), IPCStore(NULL),
-		deviceCommunicationId(deviceCommunication), communicationInterface(NULL),
-		cookie(NULL), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId),
-		deviceThermalRequestPoolId(thermalRequestPoolId), healthHelper(this, setObjectId),
-		modeHelper(this), parameterHelper(this), childTransitionFailure(RETURN_OK),
-		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
-		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
-		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), logicalAddress(logicalAddress_),
-		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
-		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch)
+DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, address_t logicalAddress_,
+		object_id_t deviceCommunication, Cookie * cookie_, size_t maxReplyLen,
+		uint8_t setDeviceSwitch, uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
+		FailureIsolationBase* fdirInstance, size_t cmdQueueSize) :
+		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
+		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
+	    deviceCommunicationId(deviceCommunication), cookie(cookie_),
+		deviceThermalStatePoolId(thermalStatePoolId), deviceThermalRequestPoolId(thermalRequestPoolId),
+		healthHelper(this, setObjectId), modeHelper(this), parameterHelper(this),
+		fdirInstance(fdirInstance), hkSwitcher(this),
+		defaultFDIRUsed(fdirInstance == nullptr), switchOffWasReported(false),
+		executingTask(nullptr), actionHelper(this, nullptr), cookieInfo(),
+		logicalAddress(logicalAddress_), childTransitionDelay(5000),
+		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(SUBMODE_NONE),
+		deviceSwitch(setDeviceSwitch)
 {
+	this->cookie->setMaxReplyLen(maxReplyLen);
 	commandQueue = QueueFactory::instance()->
 			createMessageQueue(cmdQueueSize, CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);
-	if (this->fdirInstance == NULL) {
+	if (this->fdirInstance == nullptr) {
 		this->fdirInstance =
 				new DeviceHandlerFailureIsolation(setObjectId, defaultFDIRParentId);
 	}
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
-	communicationInterface->close(cookie);
 	if (defaultFDIRUsed) {
 		delete fdirInstance;
 	}
@@ -105,11 +102,11 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return RETURN_FAILED;
 	}
 
-	result = communicationInterface->open(&cookie, logicalAddress,
-			maxDeviceReplyLen, comParameter1, comParameter2);
-	if (result != RETURN_OK) {
-		return result;
-	}
+//	result = communicationInterface->open(&cookie, logicalAddress,
+//			maxDeviceReplyLen, comParameter1, comParameter2);
+//	if (result != RETURN_OK) {
+//		return result;
+//	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (IPCStore == NULL) {
@@ -551,7 +548,7 @@ void DeviceHandlerBase::doGetWrite() {
 
 void DeviceHandlerBase::doSendRead() {
 	ReturnValue_t result;
-	result = communicationInterface->requestReceiveMessage(cookie);
+	result = communicationInterface->requestReceiveMessage(cookie, requestLen);
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
 	} else {
@@ -565,10 +562,10 @@ void DeviceHandlerBase::doSendRead() {
 }
 
 void DeviceHandlerBase::doGetRead() {
-	uint32_t receivedDataLen;
+	size_t receivedDataLen;
 	uint8_t *receivedData;
 	DeviceCommandId_t foundId = 0xFFFFFFFF;
-	uint32_t foundLen = 0;
+	size_t foundLen = 0;
 	ReturnValue_t result;
 
 	if (cookieInfo.state != COOKIE_READ_SENT) {
@@ -639,8 +636,8 @@ void DeviceHandlerBase::doGetRead() {
 }
 
 ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
-		uint8_t * *data, uint32_t * len) {
-	uint32_t lenTmp;
+		uint8_t ** data, size_t * len) {
+	size_t lenTmp;
 
 	if (IPCStore == NULL) {
 		*data = NULL;
@@ -751,20 +748,20 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
-	DeviceCommunicationIF *newCommunication = objectManager->get<
-			DeviceCommunicationIF>(newChannelId);
-
-	if (newCommunication != NULL) {
-		ReturnValue_t result = newCommunication->reOpen(cookie, logicalAddress,
-				maxDeviceReplyLen, comParameter1, comParameter2);
-		if (result != RETURN_OK) {
-			return result;
-		}
-		return RETURN_OK;
-	}
-	return RETURN_FAILED;
-}
+//ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
+//	DeviceCommunicationIF *newCommunication = objectManager->get<
+//			DeviceCommunicationIF>(newChannelId);
+//
+//	if (newCommunication != NULL) {
+//		ReturnValue_t result = newCommunication->reOpen(cookie, logicalAddress,
+//				maxDeviceReplyLen, comParameter1, comParameter2);
+//		if (result != RETURN_OK) {
+//			return result;
+//		}
+//		return RETURN_OK;
+//	}
+//	return RETURN_FAILED;
+//}
 
 void DeviceHandlerBase::buildRawDeviceCommand(CommandMessage* commandMessage) {
 	storedRawData = DeviceHandlerMessage::getStoreAddress(commandMessage);
@@ -1048,12 +1045,13 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 		}
 		replyReturnvalueToCommand(RETURN_OK);
 		return RETURN_OK;
-	case DeviceHandlerMessage::CMD_SWITCH_IOBOARD:
+	case DeviceHandlerMessage::CMD_SWITCH_ADDRESS:
 		if (mode != MODE_OFF) {
 			replyReturnvalueToCommand(WRONG_MODE_FOR_COMMAND);
 		} else {
-			result = switchCookieChannel(
-					DeviceHandlerMessage::getIoBoardObjectId(message));
+			// rework in progress
+			//result = switchCookieChannel(
+			//		DeviceHandlerMessage::getIoBoardObjectId(message));
 			if (result == RETURN_OK) {
 				replyReturnvalueToCommand(RETURN_OK);
 			} else {

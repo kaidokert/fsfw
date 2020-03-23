@@ -47,7 +47,7 @@ void DeviceHandlerMessage::setDeviceHandlerWiretappingMessage(
 
 void DeviceHandlerMessage::setDeviceHandlerSwitchIoBoardMessage(
 		CommandMessage* message, uint32_t ioBoardIdentifier) {
-	message->setCommand(CMD_SWITCH_IOBOARD);
+	message->setCommand(CMD_SWITCH_ADDRESS);
 	message->setParameter(ioBoardIdentifier);
 }
 
@@ -90,7 +90,7 @@ void DeviceHandlerMessage::clear(CommandMessage* message) {
 		}
 	}
 		/* NO BREAK falls through*/
-	case CMD_SWITCH_IOBOARD:
+	case CMD_SWITCH_ADDRESS:
 	case CMD_WIRETAPPING:
 		message->setCommand(CommandMessage::CMD_NONE);
 		message->setParameter(0);

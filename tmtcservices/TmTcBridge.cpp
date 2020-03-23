@@ -76,7 +76,7 @@ ReturnValue_t TmTcBridge::handleTm() {
 ReturnValue_t TmTcBridge::readTmQueue() {
 	TmTcMessage message;
 	const uint8_t* data = NULL;
-	uint32_t size = 0;
+	size_t size = 0;
 	for (ReturnValue_t result = TmTcReceptionQueue->receiveMessage(&message);
 		 result == RETURN_OK; result = TmTcReceptionQueue->receiveMessage(&message))
 	{
@@ -127,7 +127,7 @@ ReturnValue_t TmTcBridge::sendStoredTm() {
 				<< (int) fifo.size() << " left to send" << std::endl;
 		store_address_t storeId;
 		const uint8_t* data = NULL;
-		uint32_t size = 0;
+		size_t size = 0;
 		fifo.retrieve(&storeId);
 		result = tmStore->getData(storeId, &data, &size);
 		sendTm(data,size);

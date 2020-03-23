@@ -100,7 +100,7 @@ public:
 	 * @return @c RETURN_OK if data retrieval was successfull
 	 */
 	ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
-			uint32_t* size);
+			size_t * size);
 
 	/**
 	 * Modify data by supplying a packet pointer and using that packet pointer
@@ -111,7 +111,7 @@ public:
 	 * @return
 	 */
 	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
-			uint32_t* size);
+			size_t * size);
 	virtual ReturnValue_t deleteData(store_address_t);
 	virtual ReturnValue_t deleteData(uint8_t* ptr, uint32_t size,
 			store_address_t* storeId = NULL);
@@ -348,7 +348,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getFreeElement(
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
-		store_address_t packet_id, const uint8_t** packet_ptr, uint32_t* size) {
+		store_address_t packet_id, const uint8_t** packet_ptr, size_t * size) {
 	uint8_t* tempData = NULL;
 	ReturnValue_t status = modifyData(packet_id, &tempData, size);
 	*packet_ptr = tempData;
@@ -357,7 +357,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(store_address_t packet_id,
-		uint8_t** packet_ptr, uint32_t* size) {
+		uint8_t** packet_ptr, size_t * size) {
 	ReturnValue_t status = RETURN_FAILED;
 	if (packet_id.pool_index >= NUMBER_OF_POOLS) {
 		return ILLEGAL_STORAGE_ID;
