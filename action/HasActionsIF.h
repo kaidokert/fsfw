@@ -44,10 +44,11 @@ public:
 	/**
 	 * Execute or initialize the execution of a certain function.
 	 * Returning #EXECUTION_FINISHED or a failure code, nothing else needs to be done.
-	 * When needing more steps, return RETURN_OK and issue steps and completion manually. One "step failed" or completion report must
-	 * be issued!
+	 * When needing more steps, return RETURN_OK and issue steps and completion manually.
+	 * One "step failed" or completion report must be issued!
 	 */
-	virtual ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) = 0;
+	virtual ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
+			const uint8_t* data, size_t size) = 0;
 };
 
 

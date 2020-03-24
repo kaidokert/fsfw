@@ -26,7 +26,7 @@ MessageQueueId_t DataPoolAdmin::getCommandQueue() const {
 }
 
 ReturnValue_t DataPoolAdmin::executeAction(ActionId_t actionId,
-		MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) {
+		MessageQueueId_t commandedBy, const uint8_t* data, size_t size) {
 	if (actionId != SET_VALIDITY) {
 		return INVALID_ACTION_ID;
 	}
