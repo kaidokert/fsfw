@@ -102,11 +102,10 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return RETURN_FAILED;
 	}
 
-//	result = communicationInterface->open(&cookie, logicalAddress,
-//			maxDeviceReplyLen, comParameter1, comParameter2);
-//	if (result != RETURN_OK) {
-//		return result;
-//	}
+	result = communicationInterface->initializeInterface(comCookie);
+	if (result != RETURN_OK) {
+		return result;
+	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (IPCStore == NULL) {
@@ -811,9 +810,9 @@ ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(
 		iter = deviceReplyMap.find(command->first);
 	}
 	if (iter != deviceReplyMap.end()) {
-		DeviceReplyInfo *info = &(iter->second);
-		info->delayCycles = info->maxDelayCycles;
-		info->command = command;
+		DeviceReplyInfo & info = iter->second;
+		info.delayCycles = info.maxDelayCycles;
+		info.command = command;
 		command->second.expectedReplies = expectedReplies;
 		return RETURN_OK;
 	} else {
@@ -1056,7 +1055,7 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 			if (result == RETURN_OK) {
 				replyReturnvalueToCommand(RETURN_OK);
 			} else {
-				replyReturnvalueToCommand(CANT_SWITCH_IOBOARD);
+				replyReturnvalueToCommand(CANT_SWITCH_ADDRESS);
 			}
 		}
 		return RETURN_OK;
@@ -1138,11 +1137,15 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 }
 
 ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId,
-		MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) {
+		MessageQueueId_t commandedBy, const uint8_t* data, size_t size) {
 	ReturnValue_t result = acceptExternalDeviceCommands();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
+	if(size == 0) {
+		return NO_COMMAND_DATA;
+	}
+
 	DeviceCommandMap::iterator iter = deviceCommandMap.find(actionId);
 	if (iter == deviceCommandMap.end()) {
 		result = COMMAND_NOT_SUPPORTED;
@@ -1161,7 +1164,7 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId,
 }
 
 void DeviceHandlerBase::buildInternalCommand(void) {
-//Neither Raw nor Direct could build a command
+	// Neither Raw nor Direct could build a command
 	ReturnValue_t result = NOTHING_TO_SEND;
 	DeviceCommandId_t deviceCommandId = NO_COMMAND_ID;
 	if (mode == MODE_NORMAL) {
@@ -1179,12 +1182,13 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 	} else {
 		return;
 	}
+
 	if (result == NOTHING_TO_SEND) {
 		return;
 	}
 	if (result == RETURN_OK) {
-		DeviceCommandMap::iterator iter = deviceCommandMap.find(
-				deviceCommandId);
+		DeviceCommandMap::iterator iter =
+				deviceCommandMap.find(deviceCommandId);
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
@@ -1199,6 +1203,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 			cookieInfo.state = COOKIE_WRITE_READY;
 		}
 	}
+
 	if (result != RETURN_OK) {
 		triggerEvent(DEVICE_BUILDING_COMMAND_FAILED, result, deviceCommandId);
 	}

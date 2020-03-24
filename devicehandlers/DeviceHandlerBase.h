@@ -69,6 +69,12 @@ class StorageManagerIF;
  *
  * Other important virtual methods with a default implementation
  * are the getTransitionDelayMs() function and the getSwitches() function.
+ * Please ensure that getSwitches() returns DeviceHandlerIF::NO_SWITCHES if
+ * power switches are not implemented yet. Otherwise, the device handler will
+ * not transition to MODE_ON, even if setMode(MODE_ON) is called.
+ * If a transition to MODE_ON is desired without commanding, override the
+ * intialize() function and call setMode(_MODE_START_UP) before calling
+ * DeviceHandlerBase::initialize().
  *
  * @ingroup devices
  */
@@ -191,8 +197,9 @@ protected:
 	 *
 	 * @param[out] id the device command id that has been built
 	 * @return
-	 *    - @c RETURN_OK when a command is to be sent
-	 *    - not @c RETURN_OK when no command is to be sent
+	 *    - @c RETURN_OK to send command after setting #rawPacket and #rawPacketLen.
+	 *    - @c NOTHING_TO_SEND when no command is to be sent.
+	 *    - Anything else triggers an even with the returnvalue as a parameter.
 	 */
 	virtual ReturnValue_t buildNormalDeviceCommand(DeviceCommandId_t * id) = 0;
 
@@ -210,21 +217,25 @@ protected:
 	 * @param[out] id the device command id built
 	 * @return
 	 *    - @c RETURN_OK when a command is to be sent
-	 *    - not @c RETURN_OK when no command is to be sent
+	 *    - @c NOTHING_TO_SEND when no command is to be sent
+	 *    - Anything else triggers an even with the returnvalue as a parameter
 	 */
 	virtual ReturnValue_t buildTransitionDeviceCommand(DeviceCommandId_t * id) = 0;
 
 	/**
-	 * Build a device command packet from data supplied by a direct command.
+	 * @brief Build a device command packet from data supplied by a direct command.
 	 *
+	 * @details
 	 * #rawPacket and #rawPacketLen should be set by this method to the packet to be sent.
+	 * The existence of the command in the command map and the command size check
+	 * against 0 are done by the base class.
 	 *
 	 * @param deviceCommand the command to build, already checked against deviceCommandMap
 	 * @param commandData pointer to the data from the direct command
 	 * @param commandDataLen length of commandData
 	 * @return
-	 *     - @c RETURN_OK when #rawPacket is valid
-	 *     - @c RETURN_FAILED when #rawPacket is invalid and no data should be sent
+	 *     - @c RETURN_OK to send command after #rawPacket and #rawPacketLen have been set.
+	 *     - Anything else triggers an event with the returnvalue as a parameter
 	 */
 	virtual ReturnValue_t buildCommandFromCommand(DeviceCommandId_t deviceCommand,
 			const uint8_t * commandData, size_t commandDataLen) = 0;
@@ -349,7 +360,7 @@ protected:
 	 * @param[out] numberOfSwitches length of returned array
 	 * @return
 	 *      - @c RETURN_OK if the parameters were set
-	 *      - @c RETURN_FAILED if no switches exist
+	 *      - @c NO_SWITCH or any other returnvalue if no switches exist
 	 */
 	virtual ReturnValue_t getSwitches(const uint8_t **switches,
 			uint8_t *numberOfSwitches);
@@ -360,14 +371,29 @@ protected:
 	 */
 	virtual void performOperationHook();
 
+	/**
+	 * The Returnvalues id of this class, required by HasReturnvaluesIF
+	 */
+	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
+
 public:
 	/**
 	 * @param parentQueueId
 	 */
 	virtual void setParentQueue(MessageQueueId_t parentQueueId);
 
+	/**
+	 * This function call handles the execution of external commands as required
+	 * by the HasActionIF.
+	 * @param actionId
+	 * @param commandedBy
+	 * @param data
+	 * @param size
+	 * @return
+	 */
 	ReturnValue_t executeAction(ActionId_t actionId,
-			MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size);
+			MessageQueueId_t commandedBy, const uint8_t* data, size_t size);
+
 	Mode_t getTransitionSourceMode() const;
 	Submode_t getTransitionSourceSubMode() const;
 	virtual void getMode(Mode_t *mode, Submode_t *submode);
@@ -386,21 +412,6 @@ public:
 	virtual MessageQueueId_t getCommandQueue(void) const;
 
 protected:
-	/**
-	 * The Returnvalues id of this class, required by HasReturnvaluesIF
-	 */
-	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
-
-	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(4);
-	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5); //!< This is used to specify for replies from a device which are not replies to requests
-	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(6); //!< Ignore parts of the received packet
-	static const ReturnValue_t IGNORE_FULL_PACKET = MAKE_RETURN_CODE(7); //!< Ignore full received packet
-//	static const ReturnValue_t ONE_SWITCH = MAKE_RETURN_CODE(8);
-//	static const ReturnValue_t TWO_SWITCHES = MAKE_RETURN_CODE(9);
-	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(10);
-	static const ReturnValue_t COMMAND_MAP_ERROR = MAKE_RETURN_CODE(11);
-	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(12);
-
 	//Mode handling error Codes
 	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE1);
 	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE2);
@@ -453,7 +464,7 @@ protected:
 	 * indicates either that all raw messages to and from the device should be sent to #theOneWhoWantsToReadRawTraffic
 	 * or that all device TM should be downlinked to #theOneWhoWantsToReadRawTraffic
 	 */
-	enum WiretappingMode {
+	enum WiretappingMode: uint8_t {
 		OFF = 0, RAW = 1, TM = 2
 	} wiretappingMode;
 
