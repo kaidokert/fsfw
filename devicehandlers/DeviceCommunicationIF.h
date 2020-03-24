@@ -47,6 +47,18 @@ public:
 	virtual ~DeviceCommunicationIF() {}
 
 	/**
+	 * @brief Device specific initialization, using the cookie.
+	 * @details
+	 * The cookie is already prepared in the factory. If the communication
+	 * interface needs to be set up in some way and requires cookie information,
+	 * this can be performed in this function, which is called on device handler
+	 * initialization.
+	 * @param cookie
+	 * @return
+	 */
+	virtual ReturnValue_t initializeInterface(CookieIF * cookie) = 0;
+
+	/**
 	 * Called by DHB in the SEND_WRITE doSendWrite().
 	 * This function is used to send data to the physical device
 	 * by implementing and calling related drivers or wrapper functions.

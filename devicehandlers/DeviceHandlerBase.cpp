@@ -102,11 +102,10 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return RETURN_FAILED;
 	}
 
-//	result = communicationInterface->open(&cookie, logicalAddress,
-//			maxDeviceReplyLen, comParameter1, comParameter2);
-//	if (result != RETURN_OK) {
-//		return result;
-//	}
+	result = communicationInterface->initializeInterface(comCookie);
+	if (result != RETURN_OK) {
+		return result;
+	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (IPCStore == NULL) {

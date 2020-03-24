@@ -464,7 +464,7 @@ protected:
 	 * indicates either that all raw messages to and from the device should be sent to #theOneWhoWantsToReadRawTraffic
 	 * or that all device TM should be downlinked to #theOneWhoWantsToReadRawTraffic
 	 */
-	enum WiretappingMode {
+	enum WiretappingMode: uint8_t {
 		OFF = 0, RAW = 1, TM = 2
 	} wiretappingMode;
 
