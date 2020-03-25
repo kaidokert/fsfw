@@ -275,26 +275,33 @@ protected:
 	 * @details
 	 * This is used by the base class to check the data received for valid packets.
 	 * It only checks if a valid packet starts at @c start.
-	 * It also only checks the structural validy of the packet, eg checksums lengths and protocol data.
+	 * It also only checks the structural validy of the packet,
+	 * e.g. checksums lengths and protocol data.
 	 * No information check is done, e.g. range checks etc.
 	 *
-	 * Errors should be reported directly, the base class does NOT report any errors based on the return
-	 * value of this function.
+	 * Errors should be reported directly,  the base class does NOT report
+	 * any errors based on the returnvalue of this function.
 	 *
 	 * @param start start of remaining buffer to be scanned
 	 * @param len length of remaining buffer to be scanned
 	 * @param[out] foundId the id of the data found in the buffer.
-	 * @param[out] foundLen length of the data found. Is to be set in function, buffer is scanned at previous position + foundLen.
+	 * @param[out] foundLen length of the data found. Is to be set in function,
+	 * 						buffer is scanned at previous position + foundLen.
 	 * @return
 	 *     - @c RETURN_OK a valid packet was found at @c start, @c foundLen is valid
-	 *     - @c RETURN_FAILED no reply could be found starting at @c start, implies @c foundLen is not valid, base class will call scanForReply() again with ++start
-	 *     - @c DeviceHandlerIF::INVALID_DATA a packet was found but it is invalid, eg checksum error, implies @c foundLen is valid, can be used to skip some bytes
+	 *     - @c RETURN_FAILED no reply could be found starting at @c start,
+	 *             implies @c foundLen is not valid,
+	 *             base class will call scanForReply() again with ++start
+	 *     - @c DeviceHandlerIF::INVALID_DATA a packet was found but it is invalid,
+	 *             e.g. checksum error, implies @c foundLen is valid, can be used to skip some bytes
 	 *     - @c DeviceHandlerIF::LENGTH_MISSMATCH @c len is invalid
 	 *     - @c DeviceHandlerIF::IGNORE_REPLY_DATA Ignore this specific part of the packet
 	 *     - @c DeviceHandlerIF::IGNORE_FULL_PACKET Ignore the packet
-	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been requested by a command, but should be handled anyway (@see also fillCommandAndCookieMap() )
+	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been
+	 *             requested by a command, but should be handled anyway
+	 *             (@see also fillCommandAndCookieMap() )
 	 */
-	virtual ReturnValue_t scanForReply(const uint8_t *start, size_t len,
+	virtual ReturnValue_t scanForReply(const uint8_t *start, size_t remainingSize,
 			DeviceCommandId_t *foundId, size_t *foundLen) = 0;
 
 	/**
@@ -513,6 +520,30 @@ protected:
 	 */
 	CookieIF *comCookie;
 
+	struct DeviceCommandInfo {
+		bool isExecuting; //!< Indicates if the command is already executing.
+		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected. Inititated with 0.
+		uint8_t expectedRepliesWhenEnablingReplyMap; //!< Constant value which specifies expected replies when enabling reply map. Inititated in insertInCommandAndReplyMap()
+		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
+	};
+	typedef std::map<DeviceCommandId_t, DeviceCommandInfo> DeviceCommandMap;
+
+	/**
+	 * @brief Information about expected replies
+	 *
+	 * This is used to keep track of pending replies
+	 */
+	struct DeviceReplyInfo {
+		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
+		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
+		size_t replyLen = 0; //!< Expected size of the reply.
+		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
+		DeviceCommandMap::iterator command; //!< The command that expects this reply.
+	};
+
+	typedef std::map<DeviceCommandId_t, DeviceReplyInfo> DeviceReplyMap;
+	typedef DeviceReplyMap::iterator DeviceReplyIter;
+
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
 	 */
@@ -696,7 +727,7 @@ protected:
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, uint8_t periodic = 0,
+			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 	/**
 	 * This is a helper method to insert replies in the reply map.
@@ -707,7 +738,7 @@ protected:
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, uint8_t periodic = 0);
+			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0);
 	/**
 	 * A simple command to add a command to the commandList.
 	 * @param deviceCommand The command to add
@@ -762,14 +793,6 @@ protected:
 	 */
 	virtual void modeChanged(void);
 
-	struct DeviceCommandInfo {
-		bool isExecuting; //!< Indicates if the command is already executing.
-		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected. Inititated with 0.
-		uint8_t expectedRepliesWhenEnablingReplyMap; //!< Constant value which specifies expected replies when enabling reply map. Inititated in insertInCommandAndReplyMap()
-		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
-	};
-
-	typedef std::map<DeviceCommandId_t, DeviceCommandInfo> DeviceCommandMap;
 	/**
 	 * Enable the reply checking for a command
 	 *
@@ -780,16 +803,16 @@ protected:
 	 * When found, copies maxDelayCycles to delayCycles in the reply information and sets the command to
 	 * expect one reply.
 	 *
-	 * Can be overwritten by the child, if a command activates multiple replies or replyId differs from
-	 * commandId.
+	 * Can be overwritten by the child, if a command activates multiple replies
+	 * or replyId differs from commandId.
 	 * Notes for child implementations:
 	 * 	- If the command was not found in the reply map, NO_REPLY_EXPECTED MUST be returned.
 	 * 	- A failure code may be returned if something went fundamentally wrong.
 	 *
 	 * @param deviceCommand
 	 * @return 	- RETURN_OK if a reply was activated.
-	 * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an error case as many commands
-	 * 				do not expect a reply.
+	 * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an
+	 * 			  error case as many commands do not expect a reply.
 	 */
 	virtual ReturnValue_t enableReplyInReplyMap(DeviceCommandMap::iterator cmd,
 			uint8_t expectedReplies = 1, bool useAlternateId = false,
@@ -884,22 +907,6 @@ protected:
 
 	bool commandIsExecuting(DeviceCommandId_t commandId);
 
-	/**
-	 * Information about expected replies
-	 *
-	 * This is used to keep track of pending replies
-	 */
-	struct DeviceReplyInfo {
-		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
-		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
-		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
-		DeviceCommandMap::iterator command; //!< The command that expects this reply.
-	};
-
-	/**
-	 * Definition for the important reply Map.
-	 */
-	typedef std::map<DeviceCommandId_t, DeviceReplyInfo> DeviceReplyMap;
 	/**
 	 * This map is used to check and track correct reception of all replies.
 	 *

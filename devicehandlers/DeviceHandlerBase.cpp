@@ -332,37 +332,35 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
-		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
-		uint8_t periodic, bool hasDifferentReplyId, DeviceCommandId_t replyId) {
-//No need to check, as we may try to insert multiple times.
+ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
+		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic,
+		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
+	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
 	if (hasDifferentReplyId) {
-		return insertInReplyMap(replyId, maxDelayCycles, periodic);
+		return insertInReplyMap(replyId, maxDelayCycles, replyLen, periodic);
 	} else {
-		return insertInReplyMap(deviceCommand, maxDelayCycles, periodic);
+		return insertInReplyMap(deviceCommand, maxDelayCycles, replyLen, periodic);
 	}
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, uint8_t periodic) {
+		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
 	info.periodic = periodic;
 	info.delayCycles = 0;
+	info.replyLen = replyLen;
 	info.command = deviceCommandMap.end();
-	std::pair<std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator, bool> returnValue;
-	returnValue = deviceReplyMap.insert(
-			std::pair<DeviceCommandId_t, DeviceReplyInfo>(replyId, info));
-	if (returnValue.second) {
+	std::pair<DeviceReplyIter, bool> result = deviceReplyMap.emplace(replyId, info);
+	if (result.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandMap(
-		DeviceCommandId_t deviceCommand) {
+ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceCommand) {
 	DeviceCommandInfo info;
 	info.expectedReplies = 0;
 	info.isExecuting = false;
@@ -378,9 +376,8 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(
-		DeviceCommandId_t deviceReply, uint16_t delayCycles,
-		uint16_t maxDelayCycles, uint8_t periodic) {
+ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
+		uint16_t delayCycles, uint16_t maxDelayCycles, uint8_t periodic) {
 	std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
 			deviceReplyMap.find(deviceReply);
 	if (iter == deviceReplyMap.end()) {
@@ -547,6 +544,15 @@ void DeviceHandlerBase::doGetWrite() {
 
 void DeviceHandlerBase::doSendRead() {
 	ReturnValue_t result;
+
+	DeviceReplyIter iter = deviceReplyMap.find(cookieInfo.pendingCommand->first);
+	if(iter != deviceReplyMap.end()) {
+		requestLen = iter->second.replyLen;
+	}
+	else {
+		requestLen = 0;
+	}
+
 	result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
