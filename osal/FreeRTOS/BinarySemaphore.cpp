@@ -11,8 +11,8 @@
 #include "task.h"
 
 BinarySemaphore::BinarySemaphore() {
-	xSemaphoreCreateBinary(handle); // @suppress("Function cannot be resolved")
-	if(handle == NULL) {
+	xSemaphoreCreateBinary(handle);
+	if(handle == nullptr) {
 		error << "Binary semaphore creation failure" << std::endl;
 	}
 }
@@ -22,7 +22,7 @@ BinarySemaphore::~BinarySemaphore() {
 }
 
 ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
-	if(handle == NULL) {
+	if(handle == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	TickType_t timeout = portMAX_DELAY;
@@ -39,7 +39,7 @@ ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
 }
 
 ReturnValue_t BinarySemaphore::takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks) {
-	if(handle == NULL) {
+	if(handle == nullptr) {
 		return SEMAPHORE_NOT_FOUND;
 	}
 
@@ -52,7 +52,7 @@ ReturnValue_t BinarySemaphore::takeBinarySemaphoreTickTimeout(TickType_t timeout
 }
 
 ReturnValue_t BinarySemaphore::giveBinarySemaphore() {
-	if (handle == NULL) {
+	if (handle == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	BaseType_t returncode = xSemaphoreGive(handle);
@@ -68,7 +68,7 @@ SemaphoreHandle_t BinarySemaphore::getSemaphore() {
 }
 
 ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) {
-	if (semaphore == NULL) {
+	if (semaphore == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	BaseType_t returncode = xSemaphoreGive(semaphore);
@@ -80,13 +80,15 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 }
 
 void BinarySemaphore::resetSemaphore() {
-	vSemaphoreDelete(handle);
-	xSemaphoreCreateBinary(handle);
+	if(handle != nullptr) {
+		vSemaphoreDelete(handle);
+		xSemaphoreCreateBinary(handle);
+	}
 }
 
 ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 		BaseType_t * higherPriorityTaskWoken) {
-	if (semaphore == NULL) {
+	if (semaphore == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	BaseType_t returncode = xSemaphoreGiveFromISR(semaphore, higherPriorityTaskWoken);

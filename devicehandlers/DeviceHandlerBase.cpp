@@ -554,7 +554,7 @@ void DeviceHandlerBase::doSendRead() {
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
 	}
-	else if(result == NO_READ_REQUEST) {
+	else if(result == DeviceCommunicationIF::NO_READ_REQUEST) {
 		return;
 	}
 	else {
@@ -777,8 +777,8 @@ void DeviceHandlerBase::buildRawDeviceCommand(CommandMessage* commandMessage) {
 		replyReturnvalueToCommand(result, RAW_COMMAND_ID);
 		storedRawData.raw = StorageManagerIF::INVALID_ADDRESS;
 	} else {
-		cookieInfo.pendingCommand = deviceCommandMap.find(
-				(DeviceCommandId_t) RAW_COMMAND_ID);
+		cookieInfo.pendingCommand = deviceCommandMap.
+				find((DeviceCommandId_t) RAW_COMMAND_ID);
 		cookieInfo.pendingCommand->second.isExecuting = true;
 		cookieInfo.state = COOKIE_WRITE_READY;
 	}
