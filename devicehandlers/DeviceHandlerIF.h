@@ -8,11 +8,6 @@
 #include <framework/ipc/MessageQueueSenderIF.h>
 
 /**
- * @brief Physical address type
- */
-typedef uint32_t address_t;
-
-/**
  * @brief 	This is the Interface used to communicate with a device handler.
  * @details Includes all expected return values, events and modes.
  *
@@ -95,6 +90,8 @@ public:
 	// Standard codes used in buildCommandFromCommand
 	static const ReturnValue_t INVALID_COMMAND_PARAMETER = MAKE_RETURN_CODE(0xD0);
 	static const ReturnValue_t INVALID_NUMBER_OR_LENGTH_OF_PARAMETERS = MAKE_RETURN_CODE(0xD1);
+	// Standard codes used in buildNomalDeviceCommand
+	static const ReturnValue_t NO_READ_REQUEST = MAKE_RETURN_CODE(0xD2);
 
 	// Standard codes used in getSwitches
 	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(0xE1); //!< Return in getSwitches() to specify there are no switches

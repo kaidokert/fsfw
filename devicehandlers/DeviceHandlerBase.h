@@ -194,6 +194,9 @@ protected:
 	 * different commands can built returned depending on the submode.
 	 *
 	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 * If variable command frequence is required, a counter can be used and
+	 * the frequency in the reply map has to be set manually
+	 * by calling updateReplyMap().
 	 *
 	 * @param[out] id the device command id that has been built
 	 * @return
@@ -527,6 +530,7 @@ protected:
 		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
 	};
 	typedef std::map<DeviceCommandId_t, DeviceCommandInfo> DeviceCommandMap;
+	typedef DeviceCommandMap::iterator DeviceCommandIter;
 
 	/**
 	 * @brief Information about expected replies
@@ -675,48 +679,6 @@ protected:
 	virtual void doTransition(Mode_t modeFrom, Submode_t subModeFrom);
 
 	/**
-	 * Is the combination of mode and submode valid?
-	 *
-	 * @param mode
-	 * @param submode
-	 * @return
-	 *    - @c RETURN_OK if valid
-	 *    - @c RETURN_FAILED if invalid
-	 */
-	virtual ReturnValue_t isModeCombinationValid(Mode_t mode,
-			Submode_t submode);
-
-	/**
-	 * Get the Rmap action for the current step.
-	 *
-	 * The step number can be read from #pstStep.
-	 *
-	 * @return The Rmap action to execute in this step
-	 */
-	virtual CommunicationAction_t getComAction();
-
-	/**
-	 * Build the device command to send for raw mode.
-	 *
-	 * This is only called in @c MODE_RAW. It is for the rare case that in raw mode packets
-	 * are to be sent by the handler itself. It is NOT needed for the raw commanding service.
-	 * Its only current use is in the STR handler which gets its raw packets from a different
-	 * source.
-	 * Also it can be used for transitional commands, to get the device ready for @c MODE_RAW
-	 *
-	 * As it is almost never used, there is a default implementation returning @c NOTHING_TO_SEND.
-	 *
-	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
-	 *
-	 * @param[out] id the device command id built
-	 * @return
-	 *    - @c RETURN_OK when a command is to be sent
-	 *    - not @c NOTHING_TO_SEND when no command is to be sent
-	 */
-	virtual ReturnValue_t buildChildRawCommand();
-
-
-	/**
 	 * This is a helper method to facilitate inserting entries in the command map.
 	 * @param deviceCommand	Identifier of the command to add.
 	 * @param maxDelayCycles The maximum number of delay cycles the command waits until it times out.
@@ -764,6 +726,47 @@ protected:
 	 * @return	The current delay count. If the command does not exist (should never happen) it returns 0.
 	 */
 	uint8_t getReplyDelayCycles(DeviceCommandId_t deviceCommand);
+
+	/**
+	 * Is the combination of mode and submode valid?
+	 *
+	 * @param mode
+	 * @param submode
+	 * @return
+	 *    - @c RETURN_OK if valid
+	 *    - @c RETURN_FAILED if invalid
+	 */
+	virtual ReturnValue_t isModeCombinationValid(Mode_t mode,
+			Submode_t submode);
+
+	/**
+	 * Get the Rmap action for the current step.
+	 *
+	 * The step number can be read from #pstStep.
+	 *
+	 * @return The Rmap action to execute in this step
+	 */
+	virtual CommunicationAction_t getComAction();
+
+	/**
+	 * Build the device command to send for raw mode.
+	 *
+	 * This is only called in @c MODE_RAW. It is for the rare case that in raw mode packets
+	 * are to be sent by the handler itself. It is NOT needed for the raw commanding service.
+	 * Its only current use is in the STR handler which gets its raw packets from a different
+	 * source.
+	 * Also it can be used for transitional commands, to get the device ready for @c MODE_RAW
+	 *
+	 * As it is almost never used, there is a default implementation returning @c NOTHING_TO_SEND.
+	 *
+	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 *
+	 * @param[out] id the device command id built
+	 * @return
+	 *    - @c RETURN_OK when a command is to be sent
+	 *    - not @c NOTHING_TO_SEND when no command is to be sent
+	 */
+	virtual ReturnValue_t buildChildRawCommand();
 
 	/**
 	 * Construct a command reply containing a raw reply.

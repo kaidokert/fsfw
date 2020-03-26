@@ -8,6 +8,11 @@
 #define FRAMEWORK_DEVICEHANDLERS_COOKIEIF_H_
 #include <framework/devicehandlers/DeviceHandlerIF.h>
 
+/**
+ * @brief Physical address type
+ */
+typedef uint32_t address_t;
+
 class CookieIF {
 public:
 	/**

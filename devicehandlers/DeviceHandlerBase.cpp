@@ -365,11 +365,8 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
 	info.expectedReplies = 0;
 	info.isExecuting = false;
 	info.sendReplyTo = NO_COMMANDER;
-	std::pair<std::map<DeviceCommandId_t, DeviceCommandInfo>::iterator, bool> returnValue;
-	returnValue = deviceCommandMap.insert(
-			std::pair<DeviceCommandId_t, DeviceCommandInfo>(deviceCommand,
-					info));
-	if (returnValue.second) {
+	std::pair<DeviceCommandIter, bool> result = deviceCommandMap.emplace(deviceCommand,info);
+	if (result.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
@@ -489,7 +486,7 @@ void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
 		return;
 	}
 //Check if more replies are expected. If so, do nothing.
-	DeviceCommandInfo* info = &(iter->second.command->second);
+	DeviceCommandInfo * info = &(iter->second.command->second);
 	if (--info->expectedReplies == 0) {
 		//Check if it was transition or internal command. Don't send any replies in that case.
 		if (info->sendReplyTo != NO_COMMANDER) {
@@ -550,13 +547,17 @@ void DeviceHandlerBase::doSendRead() {
 		requestLen = iter->second.replyLen;
 	}
 	else {
-		requestLen = 0;
+		requestLen = comCookie->getMaxReplyLen();
 	}
 
 	result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
-	} else {
+	}
+	else if(result == NO_READ_REQUEST) {
+		return;
+	}
+	else {
 		triggerEvent(DEVICE_REQUESTING_REPLY_FAILED, result);
 		//We can't inform anyone, because we don't know which command was sent last.
 		//So, we need to wait for a timeout.
@@ -816,9 +817,9 @@ ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(
 		iter = deviceReplyMap.find(command->first);
 	}
 	if (iter != deviceReplyMap.end()) {
-		DeviceReplyInfo & info = iter->second;
-		info.delayCycles = info.maxDelayCycles;
-		info.command = command;
+		DeviceReplyInfo * info = &(iter->second);
+		info->delayCycles = info->maxDelayCycles;
+		info->command = command;
 		command->second.expectedReplies = expectedReplies;
 		return RETURN_OK;
 	} else {
