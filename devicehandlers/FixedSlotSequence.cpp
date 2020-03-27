@@ -104,11 +104,14 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 			count++;
 		} else {
 			// All ok, print slot.
-			// (*slotIt)->print();
+			//info << "Current slot polling time: " << std::endl;
+			//info << std::dec << slotIt->pollingTimeMs << std::endl;
 		}
 		time = slotIt->pollingTimeMs;
 		slotIt++;
 	}
+	//info << "Number of elements in slot list: "
+	//	   << slotList.size() << std::endl;
 	if (count > 0) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}

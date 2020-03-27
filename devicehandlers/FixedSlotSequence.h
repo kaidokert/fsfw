@@ -6,8 +6,8 @@
 #include <list>
 #include <set>
 
-using SlotList = std::set<FixedSequenceSlot>;
-using SlotListIter = std::set<FixedSequenceSlot>::iterator;
+using SlotList = std::multiset<FixedSequenceSlot>;
+using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 
 /**
  * @brief	This class is the representation of a Polling Sequence Table in software.
@@ -69,11 +69,14 @@ public:
 	/**
 	 * \brief	This method returns the time until the next software component is invoked.
 	 *
-	 * \details	This method is vitally important for the operation of the PST. By fetching the polling time
-	 * 			of the current slot and that of the next one (or the first one, if the list end is reached)
-	 * 			it calculates and returns the interval in milliseconds within which the handler execution
-	 * 			shall take place. If the next slot has the same time as the current one, it is ignored until
-	 * 			a slot with different time or the end of the PST is found.
+	 * \details
+	 * This method is vitally important for the operation of the PST.
+	 * By fetching the polling time of the current slot and that of the
+	 * next one (or the first one, if the list end is reached)
+	 * it calculates and returns the interval in milliseconds within
+	 * which the handler execution shall take place.
+	 * If the next slot has the same time as the current one, it is ignored
+	 * until a slot with different time or the end of the PST is found.
 	 */
 	uint32_t getIntervalToNextSlotMs();
 

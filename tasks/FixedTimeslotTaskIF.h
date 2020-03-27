@@ -12,7 +12,8 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
 public:
 	virtual ~FixedTimeslotTaskIF() {}
 
-	virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs, int8_t executionStep) = 0;
+	virtual ReturnValue_t addSlot(object_id_t componentId,
+			uint32_t slotTimeMs, int8_t executionStep) = 0;
 	virtual ReturnValue_t checkSequence() const = 0;
 };
 
