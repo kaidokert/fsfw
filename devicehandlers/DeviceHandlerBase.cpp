@@ -332,55 +332,49 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
-		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
-		uint8_t periodic, bool hasDifferentReplyId, DeviceCommandId_t replyId) {
-//No need to check, as we may try to insert multiple times.
+ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
+		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic,
+		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
+	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
 	if (hasDifferentReplyId) {
-		return insertInReplyMap(replyId, maxDelayCycles, periodic);
+		return insertInReplyMap(replyId, maxDelayCycles, replyLen, periodic);
 	} else {
-		return insertInReplyMap(deviceCommand, maxDelayCycles, periodic);
+		return insertInReplyMap(deviceCommand, maxDelayCycles, replyLen, periodic);
 	}
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, uint8_t periodic) {
+		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
 	info.periodic = periodic;
 	info.delayCycles = 0;
+	info.replyLen = replyLen;
 	info.command = deviceCommandMap.end();
-	std::pair<std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator, bool> returnValue;
-	returnValue = deviceReplyMap.insert(
-			std::pair<DeviceCommandId_t, DeviceReplyInfo>(replyId, info));
-	if (returnValue.second) {
+	std::pair<DeviceReplyIter, bool> result = deviceReplyMap.emplace(replyId, info);
+	if (result.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandMap(
-		DeviceCommandId_t deviceCommand) {
+ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceCommand) {
 	DeviceCommandInfo info;
 	info.expectedReplies = 0;
 	info.isExecuting = false;
 	info.sendReplyTo = NO_COMMANDER;
-	std::pair<std::map<DeviceCommandId_t, DeviceCommandInfo>::iterator, bool> returnValue;
-	returnValue = deviceCommandMap.insert(
-			std::pair<DeviceCommandId_t, DeviceCommandInfo>(deviceCommand,
-					info));
-	if (returnValue.second) {
+	std::pair<DeviceCommandIter, bool> result = deviceCommandMap.emplace(deviceCommand,info);
+	if (result.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(
-		DeviceCommandId_t deviceReply, uint16_t delayCycles,
-		uint16_t maxDelayCycles, uint8_t periodic) {
+ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
+		uint16_t delayCycles, uint16_t maxDelayCycles, uint8_t periodic) {
 	std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
 			deviceReplyMap.find(deviceReply);
 	if (iter == deviceReplyMap.end()) {
@@ -492,7 +486,7 @@ void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
 		return;
 	}
 //Check if more replies are expected. If so, do nothing.
-	DeviceCommandInfo* info = &(iter->second.command->second);
+	DeviceCommandInfo * info = &(iter->second.command->second);
 	if (--info->expectedReplies == 0) {
 		//Check if it was transition or internal command. Don't send any replies in that case.
 		if (info->sendReplyTo != NO_COMMANDER) {
@@ -547,10 +541,23 @@ void DeviceHandlerBase::doGetWrite() {
 
 void DeviceHandlerBase::doSendRead() {
 	ReturnValue_t result;
+
+	DeviceReplyIter iter = deviceReplyMap.find(cookieInfo.pendingCommand->first);
+	if(iter != deviceReplyMap.end()) {
+		requestLen = iter->second.replyLen;
+	}
+	else {
+		requestLen = comCookie->getMaxReplyLen();
+	}
+
 	result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
-	} else {
+	}
+	else if(result == DeviceCommunicationIF::NO_READ_REQUEST) {
+		return;
+	}
+	else {
 		triggerEvent(DEVICE_REQUESTING_REPLY_FAILED, result);
 		//We can't inform anyone, because we don't know which command was sent last.
 		//So, we need to wait for a timeout.
@@ -770,8 +777,8 @@ void DeviceHandlerBase::buildRawDeviceCommand(CommandMessage* commandMessage) {
 		replyReturnvalueToCommand(result, RAW_COMMAND_ID);
 		storedRawData.raw = StorageManagerIF::INVALID_ADDRESS;
 	} else {
-		cookieInfo.pendingCommand = deviceCommandMap.find(
-				(DeviceCommandId_t) RAW_COMMAND_ID);
+		cookieInfo.pendingCommand = deviceCommandMap.
+				find((DeviceCommandId_t) RAW_COMMAND_ID);
 		cookieInfo.pendingCommand->second.isExecuting = true;
 		cookieInfo.state = COOKIE_WRITE_READY;
 	}
@@ -810,9 +817,9 @@ ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(
 		iter = deviceReplyMap.find(command->first);
 	}
 	if (iter != deviceReplyMap.end()) {
-		DeviceReplyInfo & info = iter->second;
-		info.delayCycles = info.maxDelayCycles;
-		info.command = command;
+		DeviceReplyInfo * info = &(iter->second);
+		info->delayCycles = info->maxDelayCycles;
+		info->command = command;
 		command->second.expectedReplies = expectedReplies;
 		return RETURN_OK;
 	} else {

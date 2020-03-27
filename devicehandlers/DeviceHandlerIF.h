@@ -8,11 +8,6 @@
 #include <framework/ipc/MessageQueueSenderIF.h>
 
 /**
- * @brief Physical address type
- */
-typedef uint32_t address_t;
-
-/**
  * @brief 	This is the Interface used to communicate with a device handler.
  * @details Includes all expected return values, events and modes.
  *
