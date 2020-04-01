@@ -17,7 +17,7 @@ object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
-		CookieIF * comCookie_, size_t maxReplyLen, uint8_t setDeviceSwitch,
+		CookieIF * comCookie_, uint8_t setDeviceSwitch,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		FailureIsolationBase* fdirInstance, size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
@@ -31,7 +31,6 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t device
 		childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
 		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch)
 {
-	this->comCookie->setMaxReplyLen(maxReplyLen);
 	commandQueue = QueueFactory::instance()->
 			createMessageQueue(cmdQueueSize, CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
@@ -540,23 +539,27 @@ void DeviceHandlerBase::doGetWrite() {
 }
 
 void DeviceHandlerBase::doSendRead() {
-	ReturnValue_t result;
-
-	DeviceReplyIter iter = deviceReplyMap.find(cookieInfo.pendingCommand->first);
-	if(iter != deviceReplyMap.end()) {
-		requestLen = iter->second.replyLen;
-	}
-	else {
-		requestLen = comCookie->getMaxReplyLen();
+	ReturnValue_t result = RETURN_FAILED;
+	size_t requestLen = 0;
+	// If the device handler can only request replies after a command
+	// has been sent, there should be only one reply enabled and the
+	// correct reply length will be mapped.
+	for(DeviceReplyIter iter = deviceReplyMap.begin();
+			iter != deviceReplyMap.end();iter++)
+	{
+		if(iter->second.delayCycles != 0) {
+			requestLen = iter->second.replyLen;
+			break;
+		}
 	}
 
 	result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
 	}
-	else if(result == DeviceCommunicationIF::NO_READ_REQUEST) {
+/*	else if(result == DeviceCommunicationIF::NO_READ_REQUEST) {
 		return;
-	}
+	}*/
 	else {
 		triggerEvent(DEVICE_REQUESTING_REPLY_FAILED, result);
 		//We can't inform anyone, because we don't know which command was sent last.
@@ -1286,10 +1289,6 @@ void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 }
 
 void DeviceHandlerBase::debugInterface(uint8_t positionTracker, object_id_t objectId, uint32_t parameter) {
-}
-
-uint32_t DeviceHandlerBase::getLogicalAddress() {
-	return this->comCookie->getAddress();
 }
 
 void DeviceHandlerBase::performOperationHook() {

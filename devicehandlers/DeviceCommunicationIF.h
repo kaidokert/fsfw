@@ -1,7 +1,7 @@
 #ifndef DEVICECOMMUNICATIONIF_H_
 #define DEVICECOMMUNICATIONIF_H_
 
-#include <framework/devicehandlers/Cookie.h>
+#include <framework/devicehandlers/CookieIF.h>
 #include <framework/devicehandlers/DeviceHandlerIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 /**
@@ -10,7 +10,7 @@
  */
 
 /**
- * @defgroup communication comm
+ * @defgroup comm Communication
  * @brief Communication software components.
  */
 
@@ -18,7 +18,7 @@
  * @brief This is an interface to decouple device communication from
  * the device handler to allow reuse of these components.
  * @details
- * Documentation: Dissertation Baetz p.138
+ * Documentation: Dissertation Baetz p.138.
  * It works with the assumption that received data
  * is polled by a component. There are four generic steps of device communication:
  *
@@ -38,11 +38,16 @@ class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
 
-	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x01);
-	static const ReturnValue_t NOT_ACTIVE = MAKE_RETURN_CODE(0x02);
-	static const ReturnValue_t TOO_MUCH_DATA = MAKE_RETURN_CODE(0x03);
-	static const ReturnValue_t NULLPOINTER = MAKE_RETURN_CODE(0x04);
-	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x05);
+	//!< This is used if no read request is to be made by the device handler.
+	static const ReturnValue_t NO_READ_REQUEST = MAKE_RETURN_CODE(0x01);
+	//! General protocol error. Define more concrete errors in child handler
+	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x02);
+	//! If cookie is a null pointer
+	static const ReturnValue_t NULLPOINTER = MAKE_RETURN_CODE(0x03);
+	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x04);
+	// is this needed if there is no open/close call?
+	static const ReturnValue_t NOT_ACTIVE = MAKE_RETURN_CODE(0x05);
+	static const ReturnValue_t TOO_MUCH_DATA = MAKE_RETURN_CODE(0x06);
 
 	virtual ~DeviceCommunicationIF() {}
 
@@ -54,7 +59,8 @@ public:
 	 * this can be performed in this function, which is called on device handler
 	 * initialization.
 	 * @param cookie
-	 * @return
+	 * @return -@c RETURN_OK if initialization was successfull
+	 * 		   - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t initializeInterface(CookieIF * cookie) = 0;
 
@@ -66,8 +72,7 @@ public:
 	 * @param data
 	 * @param len
 	 * @return -@c RETURN_OK for successfull send
-	 *         - Everything else triggers sending failed event with
-	 *           returnvalue as parameter 1
+	 *         - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
 			size_t sendLen) = 0;
@@ -77,16 +82,21 @@ public:
 	 * Get send confirmation that the data in sendMessage() was sent successfully.
 	 * @param cookie
 	 * @return -@c RETURN_OK if data was sent successfull
-	 * 		   - Everything else triggers sending failed event with
-	 *           returnvalue as parameter 1
+	 * 		   - Everything else triggers falure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t getSendSuccess(CookieIF *cookie) = 0;
 
 	/**
 	 * Called by DHB in the SEND_WRITE doSendRead().
-	 * Request a reply.
+	 * It is assumed that it is always possible to request a reply
+	 * from a device. If a requestLen of 0 is supplied, no reply was enabled
+	 * and communication specific action should be taken (e.g. read nothing
+	 * or read everything).
+	 *
 	 * @param cookie
-	 * @return
+	 * @param requestLen Size of data to read
+	 * @return -@c RETURN_OK to confirm the request for data has been sent.
+	 *         - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie, size_t requestLen) = 0;
 
@@ -98,8 +108,7 @@ public:
 	 * @param data
 	 * @param len
 	 * @return @c RETURN_OK for successfull receive
-	 *         - Everything else triggers receiving failed with
-	 *           returnvalue as parameter 1
+	 *         - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
 			size_t *size) = 0;

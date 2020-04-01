@@ -101,7 +101,7 @@ public:
 	 * @param cmdQueueSize
 	 */
 	DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
-			CookieIF * comCookie_, size_t maxReplyLen, uint8_t setDeviceSwitch,
+			CookieIF * comCookie_, uint8_t setDeviceSwitch,
 			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
 			FailureIsolationBase* fdirInstance = nullptr, size_t cmdQueueSize = 20);
@@ -440,11 +440,6 @@ protected:
 	size_t rawPacketLen = 0;
 
 	/**
-	 * Size of data to request.
-	 */
-	size_t requestLen = 0;
-
-	/**
 	 * The mode the device handler is currently in.
 	 *
 	 * This should never be changed directly but only with setMode()
@@ -462,11 +457,6 @@ protected:
 	 * This is the counter value from performOperation().
 	 */
 	uint8_t pstStep = 0;
-
-	/**
-	 * This will be used in the RMAP getRead command as expected length, is set by the constructor, can be modiefied at will.
-	 */
-	const uint32_t maxDeviceReplyLen = 0;
 
 	/**
 	 * wiretapping flag:
@@ -526,7 +516,6 @@ protected:
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.
 		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected. Inititated with 0.
-		uint8_t expectedRepliesWhenEnablingReplyMap; //!< Constant value which specifies expected replies when enabling reply map. Inititated in insertInCommandAndReplyMap()
 		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
 	};
 	typedef std::map<DeviceCommandId_t, DeviceCommandInfo> DeviceCommandMap;
@@ -847,11 +836,6 @@ protected:
 	 */
 	virtual bool dontCheckQueue();
 
-	/**
-	 * Used to retrieve logical address
-	 * @return logicalAddress
-	 */
-	virtual uint32_t getLogicalAddress();
 	Mode_t getBaseMode(Mode_t transitionMode);
 
 	bool isAwaitingReply();
@@ -961,11 +945,6 @@ private:
 	 * Used to track the state of the communication
 	 */
 	CookieInfo cookieInfo;
-
-	/**
-	* cached from ctor for initialize()
-	*/
-	//const uint32_t logicalAddress = 0;
 
 	/**
 	 * Used for timing out mode transitions.
