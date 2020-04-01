@@ -9,8 +9,8 @@
 typedef uint32_t address_t;
 
 /**
- * @brief This datatype is used to identify different connection over a single interface
- *        (like RMAP or I2C)
+ * @brief 	This datatype is used to identify different connection over a
+ * 			single interface (like RMAP or I2C)
  * @details
  * To use this class, implement a communication specific child cookie which
  * inherits Cookie. Cookie instances are created in config/ Factory.cpp by calling
