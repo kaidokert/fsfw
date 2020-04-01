@@ -58,10 +58,6 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
 	if (objectManager->get<ExecutableObjectIF>(componentId) != NULL) {
-		if(slotTimeMs == 0) {
-			// FreeRTOS throws errors for zero values
-			slotTimeMs = 1;
-		}
 		pst.addSlot(componentId, slotTimeMs, executionStep, this);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
