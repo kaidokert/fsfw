@@ -1,7 +1,7 @@
 #ifndef DEVICECOMMUNICATIONIF_H_
 #define DEVICECOMMUNICATIONIF_H_
 
-#include <framework/devicehandlers/Cookie.h>
+#include <framework/devicehandlers/CookieIF.h>
 #include <framework/devicehandlers/DeviceHandlerIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 /**
@@ -88,11 +88,14 @@ public:
 
 	/**
 	 * Called by DHB in the SEND_WRITE doSendRead().
-	 * Request a reply.
+	 * It is assumed that it is always possible to request a reply
+	 * from a device. If a requestLen of 0 is supplied, no reply was enabled
+	 * and communication specific action should be taken (e.g. read nothing
+	 * or read everything).
+	 *
 	 * @param cookie
+	 * @param requestLen Size of data to read
 	 * @return -@c RETURN_OK to confirm the request for data has been sent.
-	 *         -@c NO_READ_REQUEST if no request shall be made. readReceivedMessage()
-	 *         	   will not be called in the respective communication cycle.
 	 *         - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie, size_t requestLen) = 0;

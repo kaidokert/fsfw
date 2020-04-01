@@ -8,7 +8,7 @@ ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		uint32_t parent, FailureIsolationBase* customFdir, size_t cmdQueueSize) :
 		DeviceHandlerBase(setObjectId, deviceCommunication, cookie,
-			maxDeviceReplyLen, setDeviceSwitch,  thermalStatePoolId,
+			setDeviceSwitch,  thermalStatePoolId,
 			thermalRequestPoolId, (customFdir == NULL? &childHandlerFdir : customFdir),
 			cmdQueueSize),
 		parentId(parent), childHandlerFdir(setObjectId) {

@@ -3,6 +3,7 @@
 
 #include <framework/rmap/RMAPCookie.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <cstddef>
 
 class RMAPChannelIF {
 public:
@@ -73,7 +74,7 @@ public:
 	 *      - @c NOT_SUPPORTED						if you dont feel like implementing something...
 	 */
 	virtual ReturnValue_t sendCommand(RMAPCookie *cookie, uint8_t instruction,
-			uint8_t *data, uint32_t datalen)=0;
+			const uint8_t *data, size_t datalen)=0;
 
 	/**
 	 * get the reply to an rmap command
@@ -92,7 +93,7 @@ public:
 	 *      - all RMAP standard replies
 	 */
 	virtual ReturnValue_t getReply(RMAPCookie *cookie, uint8_t **databuffer,
-			uint32_t *len)=0;
+			size_t *len)=0;
 
 	/**
 	 *

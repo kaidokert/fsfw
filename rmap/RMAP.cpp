@@ -12,8 +12,8 @@ RMAP::RMAP(){
 
 }
 
-ReturnValue_t RMAP::sendWriteCommand(RMAPCookie *cookie, uint8_t* buffer,
-		uint32_t length) {
+ReturnValue_t RMAP::sendWriteCommand(RMAPCookie *cookie, const uint8_t* buffer,
+		size_t length) {
 	uint8_t instruction;
 
 	if ((buffer == NULL) && (length != 0)) {
@@ -61,7 +61,7 @@ ReturnValue_t RMAP::sendReadCommand(RMAPCookie *cookie, uint32_t expLength) {
 }
 
 ReturnValue_t RMAP::getReadReply(RMAPCookie *cookie, uint8_t **buffer,
-		uint32_t *size) {
+		size_t *size) {
 	if (cookie->getChannel() == NULL) {
 		return COMMAND_NO_CHANNEL;
 	}
