@@ -29,8 +29,8 @@
  *
  *  To identify different connection over a single interface can return
  *  so-called cookies to components.
- *  The CommunicationMessage message type can be used to extend the functionality of the
- *  ComIF if a separate polling task is required.
+ *  The CommunicationMessage message type can be used to extend the
+ *  functionality of the ComIF if a separate polling task is required.
  *  @ingroup interfaces
  *  @ingroup comm
  */
@@ -38,8 +38,9 @@ class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
 
-	//!< This is used if no read request is to be made by the device handler.
-	static const ReturnValue_t NO_READ_REQUEST = MAKE_RETURN_CODE(0x01);
+	//! This is returned in readReceivedMessage() if no reply was reived.
+	static const ReturnValue_t NO_REPLY_RECEIVED = MAKE_RETURN_CODE(0x01);
+
 	//! General protocol error. Define more concrete errors in child handler
 	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x02);
 	//! If cookie is a null pointer
@@ -60,7 +61,8 @@ public:
 	 * initialization.
 	 * @param cookie
 	 * @return -@c RETURN_OK if initialization was successfull
-	 * 		   - Everything else triggers failure event with returnvalue as parameter 1
+	 * 		   - Everything else triggers failure event with
+	 * 		   returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t initializeInterface(CookieIF * cookie) = 0;
 
@@ -72,7 +74,8 @@ public:
 	 * @param data
 	 * @param len
 	 * @return -@c RETURN_OK for successfull send
-	 *         - Everything else triggers failure event with returnvalue as parameter 1
+	 *         - Everything else triggers failure event with
+	 *         returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
 			size_t sendLen) = 0;
@@ -82,7 +85,8 @@ public:
 	 * Get send confirmation that the data in sendMessage() was sent successfully.
 	 * @param cookie
 	 * @return -@c RETURN_OK if data was sent successfull
-	 * 		   - Everything else triggers falure event with returnvalue as parameter 1
+	 * 		   - Everything else triggers falure event with
+	 * 		   returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t getSendSuccess(CookieIF *cookie) = 0;
 
@@ -96,7 +100,8 @@ public:
 	 * @param cookie
 	 * @param requestLen Size of data to read
 	 * @return -@c RETURN_OK to confirm the request for data has been sent.
-	 *         - Everything else triggers failure event with returnvalue as parameter 1
+	 *         - Everything else triggers failure event with
+	 *         returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie, size_t requestLen) = 0;
 
@@ -105,10 +110,14 @@ public:
 	 * This function is used to receive data from the physical device
 	 * by implementing and calling related drivers or wrapper functions.
 	 * @param cookie
-	 * @param data
-	 * @param len
-	 * @return @c RETURN_OK for successfull receive
-	 *         - Everything else triggers failure event with returnvalue as parameter 1
+	 * @param buffer [out] Set reply here (by using *buffer = ...)
+	 * @param size [out] size pointer to set (by using *size = ...).
+	 * 	           Set to 0 if no reply was received
+	 * @return -@c RETURN_OK for successfull receive
+	 * 		   -@c NO_REPLY_RECEIVED if not reply was received. Setting size to
+	 * 		   	   0 has the same effect
+	 *         - Everything else triggers failure event with
+	 *           returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
 			size_t *size) = 0;
