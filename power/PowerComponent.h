@@ -24,7 +24,7 @@ public:
 
 	size_t getSerializedSize() const;
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian);
 
 	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,

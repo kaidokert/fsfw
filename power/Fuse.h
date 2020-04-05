@@ -52,8 +52,8 @@ public:
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
 			const size_t max_size, bool bigEndian) const;
 	uint32_t getSerializedSize() const;
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+				bool bigEndian);
 	void setAllMonitorsToUnchecked();
 	ReturnValue_t performOperation(uint8_t opCode);
 	MessageQueueId_t getCommandQueue() const;

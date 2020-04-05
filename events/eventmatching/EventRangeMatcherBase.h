@@ -18,7 +18,7 @@ public:
 	size_t getSerializedSize() const {
 		return rangeMatcher.getSerializedSize();
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		return rangeMatcher.deSerialize(buffer, size, bigEndian);
 	}

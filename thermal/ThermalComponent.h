@@ -53,7 +53,7 @@ public:
 
 	ReturnValue_t setTargetState(int8_t newState);
 
-	virtual ReturnValue_t setLimits( const uint8_t* data, uint32_t size);
+	virtual ReturnValue_t setLimits( const uint8_t* data, ssize_t size);
 
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 				ParameterWrapper *parameterWrapper,

@@ -201,7 +201,7 @@ public:
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		ReturnValue_t result = SerializeAdapter<uint32_t>::deSerialize(&this->_size,
 				buffer, size, bigEndian);

@@ -40,9 +40,10 @@ public:
 	size_t getSerializedSize() const {
 		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::getSerializedSize(this);
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
-		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::deSerialize(this, buffer, size, bigEndian);
+		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::deSerialize(this,
+				buffer, size, bigEndian);
 	}
 
 	void swapArrayListEndianness() {

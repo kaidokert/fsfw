@@ -88,7 +88,7 @@ public:
 	 * @param bigEndian Specify endianness
 	 * @return
 	 */
-	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		T tmp;
 		*size -= sizeof(T);
@@ -127,7 +127,7 @@ public:
 		return object->getSerializedSize();
 	}
 
-	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		return object->deSerialize(buffer, size, bigEndian);
 	}
@@ -147,7 +147,7 @@ public:
 	}
 
 	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
-			int32_t* size, bool bigEndian) {
+			ssize_t* size, bool bigEndian) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.deSerialize(object, buffer, size, bigEndian);
 	}
@@ -169,7 +169,7 @@ public:
 	}
 	template<typename T>
 	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
-			int32_t* size, bool bigEndian) {
+			ssize_t* size, bool bigEndian) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.deSerialize(object, buffer, size, bigEndian);
 	}

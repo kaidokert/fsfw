@@ -1,4 +1,3 @@
-#include <framework/serialize/SerializeAdapter.h>
 #include <framework/globalfunctions/Type.h>
 #include <framework/serialize/SerializeAdapter.h>
 
@@ -86,7 +85,7 @@ size_t Type::getSerializedSize() const {
 	return 2 * SerializeAdapter<uint8_t>::getSerializedSize(&dontcare);
 }
 
-ReturnValue_t Type::deSerialize(const uint8_t** buffer, int32_t* size,
+ReturnValue_t Type::deSerialize(const uint8_t** buffer, ssize_t* size,
 		bool bigEndian) {
 	uint8_t ptc;
 	uint8_t pfc;

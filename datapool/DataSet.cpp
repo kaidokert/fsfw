@@ -136,7 +136,7 @@ void DataSet::setValid(uint8_t valid) {
 	}
 }
 
-ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, int32_t* size,
+ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, ssize_t* size,
 		bool bigEndian) {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint16_t count = 0; count < fill_count; count++) {

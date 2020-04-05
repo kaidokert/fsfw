@@ -53,7 +53,7 @@ public:
 		return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 	bool bigEndian) {
 		ReturnValue_t result;
 

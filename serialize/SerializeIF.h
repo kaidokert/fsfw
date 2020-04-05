@@ -3,7 +3,9 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <cstddef>
+#include <type_traits>
 
+typedef std::make_signed<std::size_t>::type ssize_t;
 /**
  * @defgroup serialize Serialization
  * Contains serialisation services.
@@ -42,7 +44,7 @@ public:
 
 	virtual size_t getSerializedSize() const = 0;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) = 0;
 
 };

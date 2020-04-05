@@ -80,7 +80,7 @@ size_t DataPoolParameterWrapper::getSerializedSize() const {
 }
 
 ReturnValue_t DataPoolParameterWrapper::deSerialize(const uint8_t** buffer,
-		int32_t* size, bool bigEndian) {
+		ssize_t* size, bool bigEndian) {
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 

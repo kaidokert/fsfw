@@ -63,7 +63,7 @@ size_t SerialBufferAdapter<count_t>::getSerializedSize() const {
 }
 template<typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
-		int32_t* size, bool bigEndian) {
+		ssize_t* size, bool bigEndian) {
 	//TODO Ignores Endian flag!
 	if (buffer != NULL) {
 		if(m_serialize_length){

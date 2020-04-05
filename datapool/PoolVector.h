@@ -215,7 +215,7 @@ public:
 		return vector_size * SerializeAdapter<T>::getSerializedSize(value);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		uint16_t i;
 		ReturnValue_t result;

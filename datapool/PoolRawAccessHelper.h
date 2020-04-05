@@ -85,10 +85,12 @@ private:
 	 * @return
 	 */
 	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(SerializationArgs argStruct,
-				int32_t * remainingParameters, bool withValidMask = false, uint8_t * validityMask = NULL);
+				ssize_t * remainingParameters, bool withValidMask = false,
+				uint8_t * validityMask = nullptr);
 
-	ReturnValue_t handlePoolEntrySerialization(uint32_t currentPoolId,SerializationArgs argStruct,
-				bool withValidMask = false, uint8_t * validityMask = NULL);
+	ReturnValue_t handlePoolEntrySerialization(uint32_t currentPoolId,
+			SerializationArgs argStruct, bool withValidMask = false,
+			uint8_t * validityMask = nullptr);
 
 	ReturnValue_t checkRemainingSize(PoolRawAccess * currentPoolRawAccess,
 			bool * isSerialized, uint8_t * arrayPosition);

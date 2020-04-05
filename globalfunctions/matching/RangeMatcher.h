@@ -44,7 +44,7 @@ public:
 		return sizeof(lowerBound) + sizeof(upperBound) + sizeof(bool);
 	}
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		ReturnValue_t result = SerializeAdapter<T>::deSerialize(&lowerBound, buffer, size, bigEndian);
 		if (result != HasReturnvaluesIF::RETURN_OK) {

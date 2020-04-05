@@ -197,7 +197,7 @@ size_t PoolRawAccess::getSerializedSize() const {
 	return typeSize;
 }
 
-ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, int32_t* size,
+ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, ssize_t* size,
 		bool bigEndian) {
 	*size -= typeSize;
 	if (*size >= 0) {

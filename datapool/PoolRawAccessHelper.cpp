@@ -25,7 +25,7 @@ ReturnValue_t PoolRawAccessHelper::serialize(uint8_t **buffer, size_t *size,
 		const size_t max_size, bool bigEndian) {
 	SerializationArgs serializationArgs = {buffer, size, max_size, bigEndian};
 	ReturnValue_t result;
-	int32_t remainingParametersSize = numberOfParameters * 4;
+	ssize_t remainingParametersSize = numberOfParameters * 4;
 	for(uint8_t count=0; count < numberOfParameters; count++) {
 		result = serializeCurrentPoolEntryIntoBuffer(serializationArgs,
 				&remainingParametersSize, false);
@@ -44,7 +44,7 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer,
 		size_t * size, const size_t max_size, bool bigEndian) {
 	ReturnValue_t result;
 	SerializationArgs argStruct = {buffer, size, max_size, bigEndian};
-	int32_t remainingParametersSize = numberOfParameters * 4;
+	ssize_t remainingParametersSize = numberOfParameters * 4;
 	uint8_t validityMaskSize = ceil((float)numberOfParameters/8.0);
 	uint8_t validityMask[validityMaskSize];
 	memset(validityMask,0, validityMaskSize);
@@ -68,7 +68,7 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer,
 }
 
 ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(SerializationArgs argStruct,
-		int32_t * remainingParameters, bool withValidMask, uint8_t * validityMask) {
+		ssize_t * remainingParameters, bool withValidMask, uint8_t * validityMask) {
 	uint32_t currentPoolId;
 	// Deserialize current pool ID from pool ID buffer
 	ReturnValue_t result = AutoSerializeAdapter::deSerialize(&currentPoolId,

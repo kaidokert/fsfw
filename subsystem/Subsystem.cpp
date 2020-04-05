@@ -168,7 +168,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 				&sizeRead);
 		if (result == RETURN_OK) {
 			Mode_t fallbackId;
-			int32_t size = sizeRead;
+			ssize_t size = sizeRead;
 			result = SerializeAdapter<Mode_t>::deSerialize(&fallbackId,
 					&pointer, &size, true);
 			if (result == RETURN_OK) {
@@ -193,7 +193,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
 		if (result == RETURN_OK) {
-			int32_t size = sizeRead;
+			ssize_t size = sizeRead;
 			result = SerialArrayListAdapter<ModeListEntry>::deSerialize(&table,
 					&pointer, &size, true);
 			if (result == RETURN_OK) {

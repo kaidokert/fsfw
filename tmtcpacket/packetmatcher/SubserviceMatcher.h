@@ -28,7 +28,7 @@ public:
 	size_t getSerializedSize() const {
 		return SerializeAdapter<uint8_t>::getSerializedSize(&subService);
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		return SerializeAdapter<uint8_t>::deSerialize(&subService, buffer, size, bigEndian);
 	}

@@ -112,13 +112,13 @@ public:
 	 * @param bigEndian Specify endianness
 	 * @return
 	 */
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		return deSerialize(SinglyLinkedList<T>::start, buffer, size, bigEndian);
 	}
 
 	static ReturnValue_t deSerialize(LinkedElement<T>* element,
-			const uint8_t** buffer, int32_t* size, bool bigEndian) {
+			const uint8_t** buffer, ssize_t* size, bool bigEndian) {
 		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (element != NULL)) {
 			result = element->value->deSerialize(buffer, size, bigEndian);
