@@ -5,7 +5,10 @@
 #include <cstddef>
 #include <type_traits>
 
+#ifndef ssize_t
 typedef std::make_signed<std::size_t>::type ssize_t;
+#endif
+
 /**
  * @defgroup serialize Serialization
  * Contains serialisation services.

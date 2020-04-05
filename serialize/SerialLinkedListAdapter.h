@@ -41,6 +41,16 @@
 template<typename T, typename count_t = uint8_t>
 class SerialLinkedListAdapter: public SinglyLinkedList<T>, public SerializeIF {
 public:
+	/**
+	 * Copying is forbidden by deleting the copy constructor and the copy
+	 * assignment operator because of the pointers to the linked list members.
+	 * Unless the child class implements an own copy constructor or
+	 * copy assignment operator, these operation will throw a compiler error.
+	 * @param
+	 */
+	SerialLinkedListAdapter(const SerialLinkedListAdapter &) = delete;
+	SerialLinkedListAdapter& operator=(const SerialLinkedListAdapter&) = delete;
+
 	SerialLinkedListAdapter(typename LinkedElement<T>::Iterator start,
 			bool printCount = false) :
 			SinglyLinkedList<T>(start), printCount(printCount) {
