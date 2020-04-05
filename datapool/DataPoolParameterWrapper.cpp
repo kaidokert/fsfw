@@ -36,7 +36,7 @@ ReturnValue_t DataPoolParameterWrapper::set(uint8_t domainId,
 }
 
 ReturnValue_t DataPoolParameterWrapper::serialize(uint8_t** buffer,
-		uint32_t* size, const uint32_t max_size, bool bigEndian) const {
+		size_t* size, const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result;
 
 	result = SerializeAdapter<Type>::serialize(&type, buffer, size, max_size,

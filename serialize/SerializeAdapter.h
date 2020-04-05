@@ -59,8 +59,8 @@ template<typename T, int>
 class SerializeAdapter_ {
 public:
 	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
-			uint32_t* size, const uint32_t max_size, bool bigEndian) {
-		uint32_t ignoredSize = 0;
+			size_t* size, const size_t max_size, bool bigEndian) {
+		size_t ignoredSize = 0;
 		if (size == NULL) {
 			size = &ignoredSize;
 		}
@@ -115,9 +115,9 @@ public:
 template<typename T>
 class SerializeAdapter_<T, 1> {
 public:
-	ReturnValue_t serialize(const T* object, uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		uint32_t ignoredSize = 0;
+	ReturnValue_t serialize(const T* object, uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
+		size_t ignoredSize = 0;
 		if (size == NULL) {
 			size = &ignoredSize;
 		}
@@ -137,7 +137,7 @@ template<typename T>
 class SerializeAdapter {
 public:
 	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
-			uint32_t* size, const uint32_t max_size, bool bigEndian) {
+			size_t* size, const size_t max_size, bool bigEndian) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.serialize(object, buffer, size, max_size, bigEndian);
 	}
@@ -158,7 +158,7 @@ class AutoSerializeAdapter {
 public:
 	template<typename T>
 	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
-			uint32_t* size, const uint32_t max_size, bool bigEndian) {
+			size_t* size, const size_t max_size, bool bigEndian) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.serialize(object, buffer, size, max_size, bigEndian);
 	}

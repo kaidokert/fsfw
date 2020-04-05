@@ -81,8 +81,8 @@ public:
 	 * @return - @c RETURN_OK if serialization was successfull
 	 *         - @c SerializeIF::BUFFER_TOO_SHORT if range check failed
 	 */
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const;
 
 	/**
 	 * With this method, the content can be set from a big endian buffer safely.

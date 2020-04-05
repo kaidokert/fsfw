@@ -106,8 +106,8 @@ uint8_t DataSet::lockDataPool() {
 	return ::dataPool.lockDataPool();
 }
 
-ReturnValue_t DataSet::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t DataSet::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint16_t count = 0; count < fill_count; count++) {
 		result = registeredVariables[count]->serialize(buffer, size, max_size,

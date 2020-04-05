@@ -21,13 +21,14 @@ public:
 	SerialArrayListAdapter(ArrayList<T, count_t> *adaptee) : adaptee(adaptee) {
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		return serialize(adaptee, buffer, size, max_size, bigEndian);
 	}
 
-	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) {
+	static ReturnValue_t serialize(const ArrayList<T, count_t>* list,
+			uint8_t** buffer, size_t* size, const size_t max_size,
+			bool bigEndian) {
 		// Serialize length field first
 		ReturnValue_t result = SerializeAdapter<count_t>::serialize(&list->size,
 				buffer, size, max_size, bigEndian);

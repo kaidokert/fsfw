@@ -197,8 +197,8 @@ public:
 		return *this;
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		uint16_t i;
 		ReturnValue_t result;
 		for (i = 0; i < vector_size; i++) {

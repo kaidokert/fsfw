@@ -32,8 +32,8 @@ public:
 	SerialFixedArrayListAdapter(Args... args) : FixedArrayList<BUFFER_TYPE, MAX_SIZE, count_t>(std::forward<Args>(args)...) {
 	}
 
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::serialize(this, buffer, size, max_size, bigEndian);
 	}
 

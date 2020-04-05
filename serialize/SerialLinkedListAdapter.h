@@ -63,8 +63,8 @@ public:
 	 * @param bigEndian Specify endianness
 	 * @return
 	 */
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		if (printCount) {
 			count_t mySize = SinglyLinkedList<T>::getSize();
 			ReturnValue_t result = SerializeAdapter<count_t>::serialize(&mySize,
@@ -78,7 +78,7 @@ public:
 	}
 
 	static ReturnValue_t serialize(const LinkedElement<T>* element,
-			uint8_t** buffer, uint32_t* size, const uint32_t max_size,
+			uint8_t** buffer, size_t* size, const size_t max_size,
 			bool bigEndian) {
 		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (element != NULL)) {

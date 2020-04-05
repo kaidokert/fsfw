@@ -26,8 +26,8 @@ SerialBufferAdapter<count_t>::~SerialBufferAdapter() {
 }
 
 template<typename count_t>
-ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	uint32_t serializedLength = m_buffer_length;
 	if (m_serialize_length) {
 		serializedLength += AutoSerializeAdapter::getSerializedSize(

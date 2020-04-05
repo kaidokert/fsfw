@@ -59,8 +59,8 @@ uint8_t Type::getSize() const {
 	}
 }
 
-ReturnValue_t Type::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t Type::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	uint8_t ptc;
 	uint8_t pfc;
 	ReturnValue_t result = getPtcPfc(&ptc, &pfc);

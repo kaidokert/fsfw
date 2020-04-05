@@ -86,8 +86,8 @@ ReturnValue_t Fuse::check() {
 	return result;
 }
 
-ReturnValue_t Fuse::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t Fuse::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result = RETURN_FAILED;
 	for (DeviceList::const_iterator iter = devices.begin();
 			iter != devices.end(); iter++) {

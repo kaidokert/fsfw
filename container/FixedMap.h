@@ -173,8 +173,8 @@ public:
 		}
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		ReturnValue_t result = SerializeAdapter<uint32_t>::serialize(&this->_size,
 				buffer, size, max_size, bigEndian);
 		uint32_t i = 0;

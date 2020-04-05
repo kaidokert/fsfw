@@ -2,6 +2,7 @@
 #define SERIALIZEIF_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <cstddef>
 
 /**
  * @defgroup serialize Serialization
@@ -36,8 +37,8 @@ public:
 	virtual ~SerializeIF() {
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const = 0;
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const = 0;
 
 	virtual uint32_t getSerializedSize() const = 0;
 

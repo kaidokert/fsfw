@@ -20,9 +20,10 @@ public:
 			return false;
 		}
 	}
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return SerializeAdapter<uint8_t>::serialize(&subService, buffer, size, max_size, bigEndian);
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
+		return SerializeAdapter<uint8_t>::serialize(&subService, buffer, size,
+				max_size, bigEndian);
 	}
 	uint32_t getSerializedSize() const {
 		return SerializeAdapter<uint8_t>::getSerializedSize(&subService);

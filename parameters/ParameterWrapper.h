@@ -25,8 +25,8 @@ public:
 			const void *data);
 	virtual ~ParameterWrapper();
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const;
 
 	virtual uint32_t getSerializedSize() const;
 
@@ -128,8 +128,8 @@ private:
 	const void *readonlyData;
 
 	template<typename T>
-	ReturnValue_t serializeData(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	ReturnValue_t serializeData(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const;
 
 	template<typename T>
 	ReturnValue_t deSerializeData(uint8_t startingRow, uint8_t startingColumn,

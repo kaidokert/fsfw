@@ -94,7 +94,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	uint32_t storeElementSize = 0;
+	size_t storeElementSize = 0;
 
 	result = description->serialize(&storeElement, &storeElementSize,
 			serializedSize, true);

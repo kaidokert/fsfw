@@ -67,7 +67,8 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
 	}
 }
 
-ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t replyId, SerializeIF* data, bool hideSender) {
+ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
+		ActionId_t replyId, SerializeIF* data, bool hideSender) {
 	CommandMessage reply;
 	store_address_t storeAddress;
 	uint8_t *dataPtr;
@@ -76,7 +77,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
 		//No error, there's simply nothing to report.
 		return HasReturnvaluesIF::RETURN_OK;
 	}
-	uint32_t size = 0;
+	size_t size = 0;
 	ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, maxSize,
 			&dataPtr);
 	if (result != HasReturnvaluesIF::RETURN_OK) {

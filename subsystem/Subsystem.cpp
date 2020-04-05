@@ -607,7 +607,7 @@ void Subsystem::sendSerializablesAsCommandMessage(Command_t command,
 	}
 	uint8_t *storeBuffer;
 	store_address_t address;
-	uint32_t size = 0;
+	size_t size = 0;
 
 	result = IPCStore->getFreeElement(&address, maxSize, &storeBuffer);
 	if (result != HasReturnvaluesIF::RETURN_OK) {

@@ -45,8 +45,8 @@ public:
 		return matchSubtree(iter, number);
 	}
 
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		iterator iter = this->begin();
 		uint8_t count = this->countRight(iter);
 		ReturnValue_t result = SerializeAdapter<uint8_t>::serialize(&count,

@@ -26,7 +26,7 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	uint32_t size = 0;
+	size_t size = 0;
 	result = data->serialize(&storePointer, &size, maxSize, true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;

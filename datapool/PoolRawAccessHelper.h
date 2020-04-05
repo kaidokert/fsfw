@@ -41,8 +41,8 @@ public:
 	 * @return 	@c RETURN_OK On success
 	 * 			@c RETURN_FAILED on failure
 	 */
-	ReturnValue_t serialize(uint8_t ** buffer, uint32_t * size,
-			const uint32_t max_size, bool bigEndian);
+	ReturnValue_t serialize(uint8_t ** buffer, size_t * size,
+			const size_t max_size, bool bigEndian);
 
 	/**
 	 * Serializes data pool entries into provided buffer with the validity mask buffer
@@ -54,8 +54,8 @@ public:
 	 * @return 	@c RETURN_OK On success
 	 * 			@c RETURN_FAILED on failure
 	 */
-	ReturnValue_t serializeWithValidityMask(uint8_t ** buffer, uint32_t * size,
-			const uint32_t max_size, bool bigEndian);
+	ReturnValue_t serializeWithValidityMask(uint8_t ** buffer, size_t * size,
+			const size_t max_size, bool bigEndian);
 
 
 private:
@@ -68,7 +68,7 @@ private:
 
 	struct SerializationArgs {
 		uint8_t ** buffer;
-		uint32_t * size;
+		size_t * size;
 		const uint32_t max_size;
 		bool bigEndian;
 	};

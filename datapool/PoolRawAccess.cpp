@@ -111,8 +111,8 @@ ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 }
 
 
-ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	if (typeSize + *size <= max_size) {
 		if (bigEndian) {
 #ifndef BYTE_ORDER_SYSTEM

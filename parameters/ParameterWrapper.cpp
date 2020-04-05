@@ -20,8 +20,8 @@ ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
 ParameterWrapper::~ParameterWrapper() {
 }
 
-ReturnValue_t ParameterWrapper::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t ParameterWrapper::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result;
 
 	result = SerializeAdapter<Type>::serialize(&type, buffer, size, max_size,
@@ -88,8 +88,8 @@ uint32_t ParameterWrapper::getSerializedSize() const {
 }
 
 template<typename T>
-ReturnValue_t ParameterWrapper::serializeData(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t ParameterWrapper::serializeData(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	const T *element = (const T*) readonlyData;
 	ReturnValue_t result;
 	uint16_t dataSize = columns * rows;

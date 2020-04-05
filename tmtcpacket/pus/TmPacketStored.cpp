@@ -58,7 +58,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 	setData(p_data);
 	initializeTmPacket(apid, service, subservice, packetSubcounter);
 	uint8_t* putDataHere = getSourceData();
-	uint32_t size = 0;
+	size_t size = 0;
 	if (header != NULL) {
 		header->serialize(&putDataHere, &size, sourceDataSize, true);
 	}
