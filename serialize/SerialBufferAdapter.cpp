@@ -40,9 +40,9 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, uint32_t
 			AutoSerializeAdapter::serialize(&m_buffer_length, buffer, size,
 					max_size, bigEndian);
 		}
-		if (this->m_const_buffer != nullptr) {
+		if (m_const_buffer != nullptr) {
 			memcpy(*buffer, m_const_buffer, m_buffer_length);
-		} else if (this->m_buffer != nullptr) {
+		} else if (m_buffer != nullptr) {
 			memcpy(*buffer, m_buffer, m_buffer_length);
 		} else {
 			return HasReturnvaluesIF::RETURN_FAILED;
