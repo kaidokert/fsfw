@@ -211,7 +211,7 @@ public:
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return vector_size * SerializeAdapter<T>::getSerializedSize(value);
 	}
 

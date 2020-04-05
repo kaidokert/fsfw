@@ -37,7 +37,7 @@ public:
 		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::serialize(this, buffer, size, max_size, bigEndian);
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::getSerializedSize(this);
 	}
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,

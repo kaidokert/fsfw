@@ -100,7 +100,7 @@ ReturnValue_t Fuse::serialize(uint8_t** buffer, size_t* size,
 }
 
 uint32_t Fuse::getSerializedSize() const {
-	uint32_t size = 0;
+	size_t size = 0;
 	for (DeviceList::const_iterator iter = devices.begin();
 			iter != devices.end(); iter++) {
 		size += (*iter)->getSerializedSize();

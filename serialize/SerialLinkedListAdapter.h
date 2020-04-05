@@ -88,7 +88,7 @@ public:
 		}
 		return result;
 	}
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		if (printCount) {
 			return SerialLinkedListAdapter<T>::getSerializedSize()
 					+ sizeof(count_t);

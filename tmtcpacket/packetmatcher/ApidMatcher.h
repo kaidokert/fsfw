@@ -27,7 +27,7 @@ public:
 		return SerializeAdapter<uint16_t>::serialize(&apid, buffer,
 				size, max_size, bigEndian);
 	}
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return SerializeAdapter<uint16_t>::getSerializedSize(&apid);
 	}
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,

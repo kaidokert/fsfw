@@ -49,7 +49,7 @@ public:
 
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
 	}
 

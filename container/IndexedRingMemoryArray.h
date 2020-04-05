@@ -159,7 +159,7 @@ public:
 		uint32_t maxNrOfIndices = floor(static_cast<double>(size)/static_cast<double>(bytesPerBlock));
 
 		//Calculate the Size needeed for the index itself
-		uint32_t serializedSize = 0;
+		size_t serializedSize = 0;
 		if(additionalInfo!=NULL) {
 			serializedSize += additionalInfo->getSerializedSize();
 		}
@@ -548,9 +548,9 @@ public:
 	 * Get the serialized Size of the index
 	 * @return The serialized size of the index
 	 */
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 
-		uint32_t size = 0;
+		size_t size = 0;
 		if(additionalInfo!=NULL){
 			size += additionalInfo->getSerializedSize();
 		}

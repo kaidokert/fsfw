@@ -37,7 +37,7 @@ public:
 		return SerializeAdapter<T>::serialize(&entry, buffer, size, max_size, bigEndian);
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return SerializeAdapter<T>::getSerializedSize(&entry);
 	}
 

@@ -72,7 +72,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
 	CommandMessage reply;
 	store_address_t storeAddress;
 	uint8_t *dataPtr;
-	uint32_t maxSize = data->getSerializedSize();
+	size_t maxSize = data->getSerializedSize();
 	if (maxSize == 0) {
 		//No error, there's simply nothing to report.
 		return HasReturnvaluesIF::RETURN_OK;

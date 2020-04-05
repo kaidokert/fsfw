@@ -42,7 +42,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 	if (!checkAndSetStore()) {
 		return;
 	}
-	uint32_t sourceDataSize = 0;
+	size_t sourceDataSize = 0;
 	if (content != NULL) {
 		sourceDataSize += content->getSerializedSize();
 	}

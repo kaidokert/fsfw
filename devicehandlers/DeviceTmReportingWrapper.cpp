@@ -26,7 +26,7 @@ ReturnValue_t DeviceTmReportingWrapper::serialize(uint8_t** buffer,
 	return data->serialize(buffer, size, max_size, bigEndian);
 }
 
-uint32_t DeviceTmReportingWrapper::getSerializedSize() const {
+size_t DeviceTmReportingWrapper::getSerializedSize() const {
 	return sizeof(objectId) + sizeof(ActionId_t) + data->getSerializedSize();
 }
 

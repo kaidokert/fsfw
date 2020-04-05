@@ -81,7 +81,7 @@ ReturnValue_t Type::serialize(uint8_t** buffer, size_t* size,
 
 }
 
-uint32_t Type::getSerializedSize() const {
+size_t Type::getSerializedSize() const {
 	uint8_t dontcare = 0;
 	return 2 * SerializeAdapter<uint8_t>::getSerializedSize(&dontcare);
 }

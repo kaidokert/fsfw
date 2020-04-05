@@ -86,7 +86,7 @@ public:
 		return result;
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		//Analogous to serialize!
 		uint32_t size = 1; //One for count
 		iterator iter = this->begin();

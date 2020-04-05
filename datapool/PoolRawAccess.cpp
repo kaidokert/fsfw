@@ -193,7 +193,7 @@ uint16_t PoolRawAccess::getSizeTillEnd() const {
 }
 
 
-uint32_t PoolRawAccess::getSerializedSize() const {
+size_t PoolRawAccess::getSerializedSize() const {
 	return typeSize;
 }
 

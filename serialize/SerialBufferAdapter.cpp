@@ -54,7 +54,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, size_t* 
 }
 
 template<typename count_t>
-uint32_t SerialBufferAdapter<count_t>::getSerializedSize() const {
+size_t SerialBufferAdapter<count_t>::getSerializedSize() const {
 	if (m_serialize_length) {
 		return m_buffer_length + AutoSerializeAdapter::getSerializedSize(&m_buffer_length);
 	} else {

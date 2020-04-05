@@ -15,7 +15,7 @@ public:
 			const size_t max_size, bool bigEndian) const {
 		return rangeMatcher.serialize(buffer, size, max_size, bigEndian);
 	}
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return rangeMatcher.getSerializedSize();
 	}
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,

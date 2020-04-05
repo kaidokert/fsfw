@@ -77,7 +77,7 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t** buffer, size_t* size,
 	return result;
 }
 
-uint32_t ParameterWrapper::getSerializedSize() const {
+size_t ParameterWrapper::getSerializedSize() const {
 	uint32_t serializedSize = 0;
 	serializedSize += type.getSerializedSize();
 	serializedSize += sizeof(rows);

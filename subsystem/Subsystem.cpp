@@ -601,7 +601,7 @@ void Subsystem::transitionFailed(ReturnValue_t failureCode,
 void Subsystem::sendSerializablesAsCommandMessage(Command_t command,
 		SerializeIF** elements, uint8_t count) {
 	ReturnValue_t result;
-	uint32_t maxSize = 0;
+	size_t maxSize = 0;
 	for (uint8_t i = 0; i < count; i++) {
 		maxSize += elements[i]->getSerializedSize();
 	}

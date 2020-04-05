@@ -125,7 +125,7 @@ public:
 	 */
 	uint16_t getSizeTillEnd() const;
 
-	uint32_t getSerializedSize() const;
+	size_t getSerializedSize() const;
 
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 			bool bigEndian);

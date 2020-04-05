@@ -69,7 +69,7 @@ ReturnValue_t DataPoolParameterWrapper::serialize(uint8_t** buffer,
 }
 
 //same as ParameterWrapper
-uint32_t DataPoolParameterWrapper::getSerializedSize() const {
+size_t DataPoolParameterWrapper::getSerializedSize() const {
 	uint32_t serializedSize = 0;
 	serializedSize += type.getSerializedSize();
 	serializedSize += sizeof(rows);

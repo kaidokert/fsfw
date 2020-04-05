@@ -132,7 +132,7 @@ public:
 				bigEndian);
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return SerializeAdapter<T>::getSerializedSize(&value);
 	}
 

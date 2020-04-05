@@ -20,7 +20,7 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
 	}
 	store_address_t storeId;
 	uint8_t* storePointer;
-	uint32_t maxSize = data->getSerializedSize();
+	size_t maxSize = data->getSerializedSize();
 	ReturnValue_t result = ipcStore->getFreeElement(&storeId, maxSize,
 			&storePointer);
 	if (result != HasReturnvaluesIF::RETURN_OK) {

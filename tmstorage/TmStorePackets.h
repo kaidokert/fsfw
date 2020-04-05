@@ -44,7 +44,7 @@ public:
 
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return sizeof(apid) + sizeof(ssc);
 	}
 
@@ -244,7 +244,7 @@ public:
 		return adapter.serialize(buffer,size,max_size,bigEndian);
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		uint32_t size = 0;
 		size += AutoSerializeAdapter::getSerializedSize(&apid);
 		size += AutoSerializeAdapter::getSerializedSize(&sourceSequenceCount);

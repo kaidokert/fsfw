@@ -17,7 +17,7 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 	}
 	store_address_t storeId;
 	uint8_t* dataTarget = NULL;
-	uint32_t maxSize = data->getSerializedSize();
+	size_t maxSize = data->getSerializedSize();
 	if (maxSize > MonitoringIF::VIOLATION_REPORT_MAX_SIZE) {
 		return MonitoringIF::INVALID_SIZE;
 	}

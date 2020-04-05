@@ -188,7 +188,7 @@ public:
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		uint32_t printSize = sizeof(_size);
 		uint32_t i = 0;
 

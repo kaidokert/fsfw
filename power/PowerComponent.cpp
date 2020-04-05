@@ -28,7 +28,7 @@ ReturnValue_t PowerComponent::serialize(uint8_t** buffer, size_t* size,
 			bigEndian);
 }
 
-uint32_t PowerComponent::getSerializedSize() const {
+size_t PowerComponent::getSerializedSize() const {
 	return sizeof(min) + sizeof(max);
 }
 

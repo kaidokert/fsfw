@@ -40,7 +40,7 @@ public:
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
 			const size_t max_size, bool bigEndian) const = 0;
 
-	virtual uint32_t getSerializedSize() const = 0;
+	virtual size_t getSerializedSize() const = 0;
 
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 			bool bigEndian) = 0;

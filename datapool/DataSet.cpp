@@ -119,8 +119,8 @@ ReturnValue_t DataSet::serialize(uint8_t** buffer, size_t* size,
 	return result;
 }
 
-uint32_t DataSet::getSerializedSize() const {
-	uint32_t size = 0;
+size_t DataSet::getSerializedSize() const {
+	size_t size = 0;
 	for (uint16_t count = 0; count < fill_count; count++) {
 		size += registeredVariables[count]->getSerializedSize();
 	}

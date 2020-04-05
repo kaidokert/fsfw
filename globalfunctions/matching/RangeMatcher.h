@@ -40,7 +40,7 @@ public:
 		return SerializeAdapter<bool>::serialize(&inverted, buffer, size, max_size, bigEndian);
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return sizeof(lowerBound) + sizeof(upperBound) + sizeof(bool);
 	}
 
