@@ -16,9 +16,10 @@
  *
  * \ingroup serialize
  */
-template<typename T>
+template<typename count_t>
 class SerialBufferAdapter: public SerializeIF {
 public:
+
 	/**
 	 * Constructor for constant uint8_t buffer. Length field can be serialized optionally.
 	 * Type of length can be supplied as template type.
@@ -26,7 +27,7 @@ public:
 	 * @param bufferLength
 	 * @param serializeLength
 	 */
-	SerialBufferAdapter(const uint8_t * buffer, T bufferLength, bool serializeLength = false);
+	SerialBufferAdapter(const void* buffer, count_t bufferLength, bool serializeLength = false);
 
 	/**
 	 * Constructor for non-constant uint8_t buffer. Length field can be serialized optionally.
@@ -35,16 +36,7 @@ public:
 	 * @param bufferLength
 	 * @param serializeLength
 	 */
-	SerialBufferAdapter(uint8_t* buffer, T bufferLength, bool serializeLength = false);
-
-	/**
-	 * Constructoor for non-constant uint32_t buffer. Length field can be serialized optionally.
-	 * Type of length can be supplied as template type.
-	 * @param buffer
-	 * @param bufferLength
-	 * @param serializeLength
-	 */
-	SerialBufferAdapter(uint32_t* buffer,T bufferLength, bool serializeLength = false);
+	SerialBufferAdapter(void* buffer, count_t bufferLength, bool serializeLength = false);
 
 	virtual ~SerialBufferAdapter();
 
@@ -58,20 +50,12 @@ public:
 
 	uint8_t * getBuffer();
 	const uint8_t * getConstBuffer();
-	void setBuffer(uint8_t * buffer_, T bufferLength_);
-	void setBuffer(uint32_t * buffer_, T bufferLength_);
+	void setBuffer(void* buffer_, count_t bufferLength_);
 private:
-
-	enum bufferType {
-		NORMAL,
-		CONST
-	};
-	bufferType currentBufferType;
-
-	bool serializeLength;
-	const uint8_t *constBuffer;
-	uint8_t *buffer;
-	T bufferLength;
+	bool m_serialize_length = false;
+	const uint8_t *m_const_buffer = nullptr;
+	uint8_t *m_buffer = nullptr;
+	count_t m_buffer_length = 0;
 };
 
 
