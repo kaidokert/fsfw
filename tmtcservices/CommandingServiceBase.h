@@ -124,7 +124,7 @@ protected:
 	 *         - @c CSB or implementation specific return codes
 	 */
 	virtual ReturnValue_t getMessageQueueAndObject(uint8_t subservice,
-			const uint8_t *tcData, uint32_t tcDataLen, MessageQueueId_t *id,
+			const uint8_t *tcData, size_t tcDataLen, MessageQueueId_t *id,
 			object_id_t *objectId) = 0;
 
 	/**
@@ -141,7 +141,7 @@ protected:
 	 * @return
 	 */
 	virtual ReturnValue_t prepareCommand(CommandMessage *message,
-			uint8_t subservice, const uint8_t *tcData, uint32_t tcDataLen,
+			uint8_t subservice, const uint8_t *tcData, size_t tcDataLen,
 			uint32_t *state, object_id_t objectId) = 0;
 
 	/**
@@ -219,8 +219,8 @@ protected:
 	 * @param headerData HeaderData will be placed before data
 	 * @param headerSize Size of HeaderData
 	 */
-	void sendTmPacket(uint8_t subservice, const uint8_t *data, uint32_t dataLen,
-			const uint8_t* headerData = NULL, uint32_t headerSize = 0);
+	void sendTmPacket(uint8_t subservice, const uint8_t *data, size_t dataLen,
+			const uint8_t* headerData = nullptr,size_t headerSize = 0);
 
 	/**
 	 * To send TM packets of objects that still need to be serialized and consist of an object ID with appended data
@@ -230,7 +230,7 @@ protected:
 	 * @param dataLen Length of Data
 	 */
 	void sendTmPacket(uint8_t subservice, object_id_t objectId,
-			const uint8_t *data, uint32_t dataLen);
+			const uint8_t *data, size_t dataLen);
 
 	/**
 	 * To send packets has data which is in form of a SerializeIF or Adapters implementing it
@@ -239,7 +239,7 @@ protected:
 	 * @param header Serialize IF header which will be placed before content
 	 */
 	void sendTmPacket(uint8_t subservice, SerializeIF* content,
-			SerializeIF* header = NULL);
+			SerializeIF* header = nullptr);
 
 	virtual void handleUnrequestedReply(CommandMessage *reply);
 
