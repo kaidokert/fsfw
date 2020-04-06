@@ -6,7 +6,7 @@
  */
 
 #include <framework/datalinklayer/TcTransferFrameLocal.h>
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <string.h>
 
@@ -25,7 +25,7 @@ TcTransferFrameLocal::TcTransferFrameLocal(bool bypass, bool controlCommand, uin
 			uint16_t totalSize = sizeof(TcTransferFramePrimaryHeader) + dataSize + FRAME_CRC_SIZE -1;
 			frame->header.vcidAndLength_h |= (totalSize & 0x0300) >> 8;
 			frame->header.length_l = (totalSize & 0x00FF);
-			uint16_t crc = ::Calculate_CRC(getFullFrame(), getFullSize() -2);
+			uint16_t crc = CRC::crc16ccitt(getFullFrame(), getFullSize() -2);
 			this->getFullFrame()[getFullSize()-2] = (crc & 0xFF00) >> 8;
 			this->getFullFrame()[getFullSize()-1] = (crc & 0x00FF);
 		} else if (dataSize <= 1016) {
@@ -33,7 +33,7 @@ TcTransferFrameLocal::TcTransferFrameLocal(bool bypass, bool controlCommand, uin
 			uint16_t dataCrcSize = sizeof(TcTransferFramePrimaryHeader) + 1 + dataSize + FRAME_CRC_SIZE -1;
 			frame->header.vcidAndLength_h |= (dataCrcSize & 0x0300) >> 8;
 			frame->header.length_l = (dataCrcSize & 0x00FF);
-			uint16_t crc = ::Calculate_CRC(getFullFrame(), getFullSize() -2);
+			uint16_t crc = CRC::crc16ccitt(getFullFrame(), getFullSize() -2);
 			this->getFullFrame()[getFullSize()-2] = (crc & 0xFF00) >> 8;
 			this->getFullFrame()[getFullSize()-1] = (crc & 0x00FF);
 		} else {

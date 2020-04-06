@@ -1,7 +1,7 @@
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <math.h>
 
-static const uint16_t crc_table[256] = {
+const uint16_t CRC::crc16ccitt_table[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
     0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
     0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6,
@@ -38,14 +38,14 @@ static const uint16_t crc_table[256] = {
 
 
 // CRC implementation
-uint16_t Calculate_CRC(uint8_t const input[], uint32_t length, uint16_t startingCrc)
+uint16_t CRC::crc16ccitt(uint8_t const input[], uint32_t length, uint16_t startingCrc)
 {
 	uint8_t *data = (uint8_t *)input;
 	unsigned int tbl_idx;
 
     while (length--) {
         tbl_idx = ((startingCrc >> 8) ^ *data) & 0xff;
-        startingCrc = (crc_table[tbl_idx] ^ (startingCrc << 8)) & 0xffff;
+        startingCrc = (crc16ccitt_table[tbl_idx] ^ (startingCrc << 8)) & 0xffff;
 
         data++;
     }
