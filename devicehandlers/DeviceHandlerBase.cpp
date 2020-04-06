@@ -1149,9 +1149,6 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId,
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	if(size == 0) {
-		return NO_COMMAND_DATA;
-	}
 
 	DeviceCommandMap::iterator iter = deviceCommandMap.find(actionId);
 	if (iter == deviceCommandMap.end()) {
