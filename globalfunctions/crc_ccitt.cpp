@@ -38,19 +38,18 @@ static const uint16_t crc_table[256] = {
 
 
 // CRC implementation
-uint16_t Calculate_CRC(uint8_t const input[], uint32_t length)
+uint16_t Calculate_CRC(uint8_t const input[], uint32_t length, uint16_t startingCrc)
 {
-	uint16_t crc = 0xFFFF;
 	uint8_t *data = (uint8_t *)input;
 	unsigned int tbl_idx;
 
     while (length--) {
-        tbl_idx = ((crc >> 8) ^ *data) & 0xff;
-        crc = (crc_table[tbl_idx] ^ (crc << 8)) & 0xffff;
+        tbl_idx = ((startingCrc >> 8) ^ *data) & 0xff;
+        startingCrc = (crc_table[tbl_idx] ^ (startingCrc << 8)) & 0xffff;
 
         data++;
     }
-    return crc & 0xffff;
+    return startingCrc & 0xffff;
 
     //The part below is not used!
 //	bool temr[16];
