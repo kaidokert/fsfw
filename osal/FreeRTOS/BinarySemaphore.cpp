@@ -86,6 +86,7 @@ void BinarySemaphore::resetSemaphore() {
 	}
 }
 
+// Be careful with the stack size here. This is called from an ISR!
 ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 		BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == nullptr) {
@@ -95,6 +96,10 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t sema
 	if (returncode == pdPASS) {
 		if(*higherPriorityTaskWoken == pdPASS) {
 			// Request context switch
+		    // TODO: I don't know if this will ever happen but if it does,
+		    // I want to to know in case this causes issues. If it doesn't
+		    // we should remove this.
+		    TRACE_INFO("Binary Semaphore: Higher priority task unblocked!");
 			TaskManagement::requestContextSwitch(CallContext::isr);
 		}
 		return HasReturnvaluesIF::RETURN_OK;
