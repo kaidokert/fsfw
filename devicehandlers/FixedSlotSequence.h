@@ -4,11 +4,15 @@
 #include <framework/devicehandlers/FixedSequenceSlot.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <list>
+#include <set>
+
+using SlotList = std::multiset<FixedSequenceSlot>;
+using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 
 /**
- * \brief	This class is the representation of a Polling Sequence Table in software.
+ * @brief	This class is the representation of a Polling Sequence Table in software.
  *
- * \details	The FixedSlotSequence object maintains the dynamic execution of device handler objects.
+ * @details	The FixedSlotSequence object maintains the dynamic execution of device handler objects.
  * 			The main idea is to create a list of device handlers, to announce all handlers to the
  * 			polling sequence and to maintain a list of polling slot objects. This slot list represents the
  * 			Polling Sequence Table in software. Each polling slot contains information to indicate when and
@@ -19,29 +23,37 @@
 class FixedSlotSequence {
 public:
 
+
 	/**
-	 * \brief	The constructor of the FixedSlotSequence object.
+	 * @brief	The constructor of the FixedSlotSequence object.
 	 *
-	 * \details	The constructor takes two arguments, the period length and the init function.
+	 * @details	The constructor takes two arguments, the period length and the init function.
 	 *
-	 * \param	setLength	The period length, expressed in ms.
+	 * @param	setLength	The period length, expressed in ms.
 	 */
 	FixedSlotSequence(uint32_t setLengthMs);
 
 	/**
-	 * \brief	The destructor of the FixedSlotSequence object.
+	 * @brief	The destructor of the FixedSlotSequence object.
 	 *
-	 * \details	The destructor frees all allocated memory by iterating through the slotList
+	 * @details	The destructor frees all allocated memory by iterating through the slotList
 	 *  		and deleting all allocated resources.
 	 */
 	virtual ~FixedSlotSequence();
 
 	/**
-	 * \brief	This is a method to add an PollingSlot object to slotList.
+	 * @brief	This is a method to add an PollingSlot object to slotList.
 	 *
-	 * \details	Here, a polling slot object is added to the slot list. It is appended
+	 * @details	Here, a polling slot object is added to the slot list. It is appended
 	 * 			to the end of the list. The list is currently NOT reordered.
 	 * 			Afterwards, the iterator current is set to the beginning of the list.
+	 * 	@param Object ID of the object to add
+	 * 	@param setTime Value between (0 to 1) * slotLengthMs, when a FixedTimeslotTask
+	 * 				   will be called inside the slot period.
+	 * 	@param setSequenceId ID which can be used to distinguish
+	 * 	                     different task operations
+	 * 	@param
+	 * 	@param
 	 */
 	void addSlot(object_id_t handlerId, uint32_t setTime, int8_t setSequenceId,
 			PeriodicTaskIF* executingTask);
@@ -57,11 +69,14 @@ public:
 	/**
 	 * \brief	This method returns the time until the next software component is invoked.
 	 *
-	 * \details	This method is vitally important for the operation of the PST. By fetching the polling time
-	 * 			of the current slot and that of the next one (or the first one, if the list end is reached)
-	 * 			it calculates and returns the interval in milliseconds within which the handler execution
-	 * 			shall take place. If the next slot has the same time as the current one, it is ignored until
-	 * 			a slot with different time or the end of the PST is found.
+	 * \details
+	 * This method is vitally important for the operation of the PST.
+	 * By fetching the polling time of the current slot and that of the
+	 * next one (or the first one, if the list end is reached)
+	 * it calculates and returns the interval in milliseconds within
+	 * which the handler execution shall take place.
+	 * If the next slot has the same time as the current one, it is ignored
+	 * until a slot with different time or the end of the PST is found.
 	 */
 	uint32_t getIntervalToNextSlotMs();
 
@@ -75,12 +90,12 @@ public:
 	uint32_t getIntervalToPreviousSlotMs();
 
 	/**
-	 * \brief	This method returns the length of this FixedSlotSequence instance.
+	 * @brief	This method returns the length of this FixedSlotSequence instance.
 	 */
 	uint32_t getLengthMs() const;
 
 	/**
-	 * \brief	The method to execute the device handler entered in the current OPUSPollingSlot object.
+	 * \brief	The method to execute the device handler entered in the current PollingSlot object.
 	 *
 	 * \details	Within this method the device handler object to be executed is chosen by looking up the
 	 * 			handler address of the current slot in the handlerMap. Either the device handler's
@@ -91,27 +106,27 @@ public:
 	void executeAndAdvance();
 
 	/**
-	 * \brief	An iterator that indicates the current polling slot to execute.
+	 * @brief	An iterator that indicates the current polling slot to execute.
 	 *
-	 * \details	This is an iterator for slotList and always points to the polling slot which is executed next.
+	 * @details	This is an iterator for slotList and always points to the polling slot which is executed next.
 	 */
-	std::list<FixedSequenceSlot*>::iterator current;
+	SlotListIter current;
 
-	ReturnValue_t checkSequence() const;
+	virtual ReturnValue_t checkSequence() const;
 protected:
 
 	/**
-	 * \brief	This list contains all OPUSPollingSlot objects, defining order and execution time of the
+	 * @brief	This list contains all PollingSlot objects, defining order and execution time of the
 	 * 			device handler objects.
 	 *
-	 * \details	The slot list is a std:list object that contains all created OPUSPollingSlot instances.
+	 * @details	The slot list is a std:list object that contains all created PollingSlot instances.
 	 * 			They are NOT ordered automatically, so by adding entries, the correct order needs to be ensured.
 	 * 			By iterating through this list the polling sequence is executed. Two entries with identical
 	 * 			polling times are executed immediately one after another.
 	 */
-	std::list<FixedSequenceSlot*> slotList;
+	SlotList slotList;
 
-	uint32_t lengthMs;
+	uint32_t slotLengthMs;
 };
 
 #endif /* FIXEDSLOTSEQUENCE_H_ */

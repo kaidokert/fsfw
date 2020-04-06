@@ -19,29 +19,34 @@ class PeriodicTaskIF;
  */
 class FixedSequenceSlot {
 public:
-			FixedSequenceSlot( object_id_t handlerId, uint32_t setTimeMs, int8_t setSequenceId, PeriodicTaskIF* executingTask );
+	FixedSequenceSlot( object_id_t handlerId, uint32_t setTimeMs,
+			int8_t setSequenceId, PeriodicTaskIF* executingTask );
 	virtual ~FixedSequenceSlot();
 
 	/**
-	 * \brief	\c handler identifies which device handler object is executed in this slot.
+	 * @brief	Handler identifies which device handler object is executed in this slot.
 	 */
 	ExecutableObjectIF*	handler;
 
 	/**
-	 * \brief	This attribute defines when a device handler object is executed.
+	 * @brief	This attribute defines when a device handler object is executed.
 	 *
-	 * \details	The pollingTime attribute identifies the time the handler is executed in ms. It must be
-	 * 			smaller than the period length of the polling sequence, what is ensured by automated calculation
-	 * 			from a database.
+	 * @details	The pollingTime attribute identifies the time the handler is executed in ms.
+	 * 			It must be smaller than the period length of the polling sequence.
 	 */
 	uint32_t	pollingTimeMs;
 
 	/**
 	 * \brief	This value defines the type of device communication.
 	 *
-	 * \details	The state of this value decides what communication routine is called in the PST executable or the device handler object.
+	 * \details	The state of this value decides what communication routine is
+	 * 			called in the PST executable or the device handler object.
 	 */
 	uint8_t			opcode;
+
+	bool operator <(const FixedSequenceSlot & fixedSequenceSlot) const {
+		return pollingTimeMs < fixedSequenceSlot.pollingTimeMs;
+	}
 };
 
 
