@@ -29,7 +29,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 			this->currentPacket.setStoreAddress(message.getStorageId());
 			//	info << "Service " << (uint16_t) this->serviceId << ": new packet!" << std::endl;
 
-			ReturnValue_t return_code = this->handleRequest();
+			ReturnValue_t return_code = this->handleRequest(currentPacket.getSubService());
 			// debug << "Service " << (uint16_t)this->serviceId << ": handleRequest returned: " << (int)return_code << std::endl;
 			if (return_code == RETURN_OK) {
 				this->verifyReporter.sendSuccessReport(

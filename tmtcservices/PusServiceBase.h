@@ -30,7 +30,10 @@ void setStaticFrameworkObjectIds();
  * All PUS Services are System Objects, so an Object ID needs to be specified on construction.
  * \ingroup pus_services
  */
-class PusServiceBase : public ExecutableObjectIF, public AcceptsTelecommandsIF, public SystemObject, public HasReturnvaluesIF {
+class PusServiceBase : public ExecutableObjectIF,
+        public AcceptsTelecommandsIF,
+        public SystemObject,
+        public HasReturnvaluesIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
@@ -63,7 +66,7 @@ public:
 	 * @return	The returned status_code is directly taken as main error code in the Verification Report.
 	 * 			On success, RETURN_OK shall be returned.
 	 */
-	virtual ReturnValue_t handleRequest() = 0;
+	virtual ReturnValue_t handleRequest(uint8_t subservice) = 0;
 	/**
 	 * In performService, implementations can handle periodic, non-TC-triggered activities.
 	 * The performService method is always called.
