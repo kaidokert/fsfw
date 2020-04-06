@@ -6,11 +6,7 @@
 #include <utility>
 
 /**
- * @brief 	Map implementation for maps with a pre-defined size.
- * @details Can be initialized with desired maximum size.
- * 	        Iterator is used to access <key,value> pair and
- * 	        iterate through map entries. Complexity O(n).
- * @ingroup container
+ * \ingroup container
  */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
@@ -56,23 +52,11 @@ public:
 			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
 		}
 
-		// -> operator overloaded, can be used to access value
 		T *operator->() {
 			return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
 		}
 
-		// Can be used to access the key of the iterator
-		key_t first() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->first;
-		}
-
-		// Alternative to access value, similar to std::map implementation
-		T second() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
 	};
-
-
 
 	Iterator begin() const {
 		return Iterator(&theMap[0]);
@@ -88,10 +72,10 @@ public:
 
 	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = NULL) {
 		if (exists(key) == HasReturnvaluesIF::RETURN_OK) {
-			return FixedMap::KEY_ALREADY_EXISTS;
+			return KEY_ALREADY_EXISTS;
 		}
 		if (_size == theMap.maxSize()) {
-			return FixedMap::MAP_FULL;
+			return MAP_FULL;
 		}
 		theMap[_size].first = key;
 		theMap[_size].second = value;
@@ -103,7 +87,7 @@ public:
 	}
 
 	ReturnValue_t insert(std::pair<key_t, T> pair) {
-		return insert(pair.first, pair.second);
+		return insert(pair.fist, pair.second);
 	}
 
 	ReturnValue_t exists(key_t key) const {
@@ -164,17 +148,8 @@ public:
 		return theMap.maxSize();
 	}
 
-	bool full() {
-		if(_size == theMap.maxSize()) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
+			const uint32_t max_size, bool bigEndian) const {
 		ReturnValue_t result = SerializeAdapter<uint32_t>::serialize(&this->_size,
 				buffer, size, max_size, bigEndian);
 		uint32_t i = 0;
@@ -188,7 +163,7 @@ public:
 		return result;
 	}
 
-	virtual size_t getSerializedSize() const {
+	virtual uint32_t getSerializedSize() const {
 		uint32_t printSize = sizeof(_size);
 		uint32_t i = 0;
 
@@ -201,7 +176,7 @@ public:
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 			bool bigEndian) {
 		ReturnValue_t result = SerializeAdapter<uint32_t>::deSerialize(&this->_size,
 				buffer, size, bigEndian);
