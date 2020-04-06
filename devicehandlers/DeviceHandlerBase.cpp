@@ -557,9 +557,6 @@ void DeviceHandlerBase::doSendRead() {
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
 	}
-/*	else if(result == DeviceCommunicationIF::NO_READ_REQUEST) {
-		return;
-	}*/
 	else {
 		triggerEvent(DEVICE_REQUESTING_REPLY_FAILED, result);
 		//We can't inform anyone, because we don't know which command was sent last.
@@ -594,7 +591,7 @@ void DeviceHandlerBase::doGetRead() {
 		return;
 	}
 
-	if (receivedDataLen == 0)
+	if (receivedDataLen == 0 or result == DeviceCommunicationIF::NO_REPLY_RECEIVED)
 		return;
 
 	if (wiretappingMode == RAW) {
@@ -1151,9 +1148,6 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId,
 	ReturnValue_t result = acceptExternalDeviceCommands();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
-	}
-	if(size == 0) {
-		return NO_COMMAND_DATA;
 	}
 
 	DeviceCommandMap::iterator iter = deviceCommandMap.find(actionId);
