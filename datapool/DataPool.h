@@ -42,7 +42,8 @@ private:
 	/**
 	 * \brief	This is the actual data pool itself.
 	 * \details	It is represented by a map
-	 * 			with the data pool id as index and a pointer to a single PoolEntry as value.
+	 * 			with the data pool id as index and a pointer to a single
+	 * 			PoolEntry as value.
 	 */
 	std::map<uint32_t, PoolEntryIF*> data_pool;
 public:
