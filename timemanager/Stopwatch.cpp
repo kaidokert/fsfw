@@ -9,8 +9,8 @@
 #include <iomanip>
 
 Stopwatch::Stopwatch(bool displayOnDestruction,
-        StopwatchDisplayMode displayMode, uint8_t precision):
-        displayOnDestruction(displayOnDestruction), outputPrecision(precision) {
+        StopwatchDisplayMode displayMode):
+        displayOnDestruction(displayOnDestruction) {
     // Measures start time on initialization.
     Clock::getUptime(&startTime);
 }
@@ -19,29 +19,27 @@ void Stopwatch::start() {
     startTime = Clock::getUptime();
 }
 
-ms_normal_t Stopwatch::stop() {
+millis_t Stopwatch::stop() {
     stopInternal();
     return elapsedTime.tv_sec * 1000 + elapsedTime.tv_usec / 1000;
 }
 
-ms_double_t Stopwatch::stopPrecise() {
+seconds_t Stopwatch::stopSeconds() {
     stopInternal();
-    return elapsedTimeMsDouble;
+    return timevalOperations::toDouble(elapsedTime);
 }
 
-
 void Stopwatch::display() {
-    if(displayMode == StopwatchDisplayMode::MS_DOUBLE) {
-        info << "Stopwatch: Operation took "
-             << std::setprecision(outputPrecision) << elapsedTimeMsDouble
-             << " milliseconds" << std::endl;
-    }
-    else {
+    if(displayMode == StopwatchDisplayMode::MILLIS) {
         info << "Stopwatch: Operation took " << elapsedTime.tv_sec * 1000 +
                 elapsedTime.tv_usec * 1000 << " milliseconds";
     }
+    else if(displayMode == StopwatchDisplayMode::SECONDS) {
+        info <<"Stopwatch: Operation took "  << std::setprecision(4)
+             << std::fixed << timevalOperations::toDouble(elapsedTime)
+             << " seconds";
+    }
 }
-
 
 Stopwatch::~Stopwatch() {
     if(displayOnDestruction) {
@@ -58,9 +56,6 @@ StopwatchDisplayMode Stopwatch::getDisplayMode() const {
     return displayMode;
 }
 
-
-
 void Stopwatch::stopInternal() {
     elapsedTime = Clock::getUptime() - startTime;
-    elapsedTimeMsDouble = timevalOperations::toDouble(elapsedTime) * 1000.0;
 }

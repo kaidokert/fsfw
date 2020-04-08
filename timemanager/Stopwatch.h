@@ -9,8 +9,8 @@
 #include <framework/timemanager/Clock.h>
 
 enum class StopwatchDisplayMode {
-    MS_DOUBLE,
-    MS
+    MILLIS,
+    SECONDS
 };
 
 /**
@@ -32,9 +32,8 @@ public:
      *        format
      * @param outputPrecision If using double format, specify precision here.
      */
-    Stopwatch(bool displayOnDestruction = true,
-            StopwatchDisplayMode displayMode = StopwatchDisplayMode::MS_DOUBLE,
-            uint8_t outputPrecision = 4);
+    Stopwatch(bool displayOnDestruction = true, StopwatchDisplayMode displayMode
+              = StopwatchDisplayMode::MILLIS);
     virtual~ Stopwatch();
 
     /**
@@ -46,13 +45,8 @@ public:
      * Calculates the elapsed time since start and returns it
      * @return elapsed time in milliseconds (rounded)
      */
-    ms_normal_t stop();
-
-    /**
-     * Calculates the elapsed time since start and returns it
-     * @return elapsed time in milliseconds (doulbe precision)
-     */
-    ms_double_t stopPrecise();
+    millis_t stop();
+    seconds_t stopSeconds();
 
     /**
      * Displays the elapsed times on the osstream, depending on internal display
@@ -65,11 +59,9 @@ public:
 private:
     timeval startTime {0, 0};
     timeval elapsedTime {0, 0};
-    double elapsedTimeMsDouble {0.0};
 
     bool displayOnDestruction = true;
-    uint8_t outputPrecision = 4;
-    StopwatchDisplayMode displayMode = StopwatchDisplayMode::MS_DOUBLE;
+    StopwatchDisplayMode displayMode = StopwatchDisplayMode::MILLIS;
 
     void stopInternal();
 };
