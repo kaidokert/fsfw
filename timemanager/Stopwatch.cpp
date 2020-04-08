@@ -10,7 +10,6 @@
 Stopwatch::Stopwatch(bool displayOnDestruction, DisplayMode displayMode):
         displayOnDestruction(displayOnDestruction) {
     Clock::getUptime(&startTime);
-    stopwatchState = StopwatchState::STARTED;
 }
 
 void Stopwatch::start() {
@@ -18,31 +17,22 @@ void Stopwatch::start() {
 }
 
 ms_normal_t Stopwatch::stop() {
-    elapsedTime = Clock::getUptime() - startTime;
-    int32_t elapsedTimeMs = elapsedTime.tv_sec * 1000 +
-            elapsedTime.tv_usec/1000;
-    if(elapsedTimeMs < 0) {
-        error << "Stopwatch: Measured time negative!";
-        return INVALID_TIME;
-    }
-    else {
-        return static_cast<ms_normal_t>(elapsedTimeMs);
-    }
+    stopInternal();
+    return elapsedTime.tv_sec * 1000 + elapsedTime.tv_usec / 1000;
 }
 
 ms_double_t Stopwatch::stopPrecise() {
-    elapsedTime = Clock::getUptime() - startTime;
-    return timevalOperations::toDouble(elapsedTime) * 1000.0;
+    stopInternal();
+    return elapsedTimeMsDouble;
 }
 
 
 void Stopwatch::display() {
-    if(displayMode == DisplayMode::MS_FLOAT) {
+    if(displayMode == DisplayMode::MS_DOUBLE) {
         info << "Stopwatch: Operation took " <<
-                elapsedTimeMs << " milliseconds" << std::endl;
+                elapsedTimeMsDouble << " milliseconds" << std::endl;
     }
     else {
-        timeval elapsedTime = stopTime - startTime;
         info << "Stopwatch: Operation took " << elapsedTime.tv_sec * 1000 +
                 elapsedTime.tv_usec * 1000 << " milliseconds";
     }
@@ -56,7 +46,8 @@ Stopwatch::~Stopwatch() {
     }
 }
 
+
 void Stopwatch::stopInternal() {
     elapsedTime = Clock::getUptime() - startTime;
-    elapsedTimeMs = timevalOperations::toDouble(elapsedTime) * 1000.0;
+    elapsedTimeMsDouble = timevalOperations::toDouble(elapsedTime) * 1000.0;
 }

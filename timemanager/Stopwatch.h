@@ -8,14 +8,23 @@
 #define FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
 #include <framework/timemanager/Clock.h>
 
+/**
+ * @brief Simple Stopwatch implementation to measure elapsed time
+ * @details
+ * This class can be used to measure elapsed times. It also displays elapsed
+ * times automatically on destruction if not explicitely deactivated in the
+ * constructor. The default time format is the elapsed time in miliseconds
+ * as a float.
+ * This class caches the value
+ */
 class Stopwatch {
     enum class DisplayMode {
-        MS_FLOAT,
+        MS_DOUBLE,
         MS
     };
 
     Stopwatch(bool displayOnDestruction = true, DisplayMode displayMode =
-            DisplayMode::MS_FLOAT);
+            DisplayMode::MS_DOUBLE);
     virtual~ Stopwatch();
 
     void start();
@@ -25,23 +34,13 @@ class Stopwatch {
 
     void display();
 private:
-    static const ms_normal_t INVALID_TIME = 0xFFFFFFFF;
 
     timeval startTime {0, 0};
-    timeval stopTime {0, 0};
     timeval elapsedTime {0, 0};
-    double elapsedTimeMs = 0;
-    //ms_normal_t elapsedTimeMs {0};
+    double elapsedTimeMsDouble = 0;
 
     bool displayOnDestruction = true;
-
-    enum class StopwatchState {
-        IDLE,
-        STARTED,
-    };
-
-    StopwatchState stopwatchState = StopwatchState::IDLE;
-    DisplayMode displayMode = DisplayMode::MS_FLOAT;
+    DisplayMode displayMode = DisplayMode::MS_DOUBLE;
 
     void stopInternal();
 };
