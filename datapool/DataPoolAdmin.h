@@ -33,8 +33,8 @@ public:
 	ReturnValue_t handleMemoryDump(uint32_t address, uint32_t size,
 			uint8_t** dataPointer, uint8_t* copyHere);
 
-	ReturnValue_t executeAction(ActionId_t actionId,
-			MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size);
+	virtual ReturnValue_t executeAction(ActionId_t actionId,
+			MessageQueueId_t commandedBy, const uint8_t* data, size_t size);
 
 	//not implemented as ParameterHelper is no used
 	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,

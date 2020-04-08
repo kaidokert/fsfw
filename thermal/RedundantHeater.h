@@ -10,15 +10,14 @@ public:
 		Parameters(uint32_t objectIdHeater0, uint32_t objectIdHeater1,
 				uint8_t switch0Heater0, uint8_t switch1Heater0,
 				uint8_t switch0Heater1, uint8_t switch1Heater1) :
-				objectIdHeater0(objectIdHeater0), objectIdHeater1(
-						objectIdHeater1), switch0Heater0(switch0Heater0), switch1Heater0(
-						switch1Heater0), switch0Heater1(switch0Heater1), switch1Heater1(
-						switch1Heater1) {
+				objectIdHeater0(objectIdHeater0), objectIdHeater1(objectIdHeater1),
+				switch0Heater0(switch0Heater0),switch1Heater0(switch1Heater0),
+				switch0Heater1(switch0Heater1), switch1Heater1(switch1Heater1) {
 		}
 
 		Parameters() :
-				objectIdHeater0(0), objectIdHeater1(0), switch0Heater0(0), switch1Heater0(
-						0), switch0Heater1(0), switch1Heater1(0) {
+				objectIdHeater0(0), objectIdHeater1(0), switch0Heater0(0),
+				switch1Heater0(0), switch0Heater1(0), switch1Heater1(0) {
 		}
 
 		uint32_t objectIdHeater0;

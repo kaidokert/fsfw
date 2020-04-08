@@ -20,13 +20,13 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
 	}
 	store_address_t storeId;
 	uint8_t* storePointer;
-	uint32_t maxSize = data->getSerializedSize();
+	size_t maxSize = data->getSerializedSize();
 	ReturnValue_t result = ipcStore->getFreeElement(&storeId, maxSize,
 			&storePointer);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	uint32_t size = 0;
+	size_t size = 0;
 	result = data->serialize(&storePointer, &size, maxSize, true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -113,7 +113,7 @@ uint8_t CommandActionHelper::getCommandCount() const {
 
 void CommandActionHelper::extractDataForOwner(ActionId_t actionId, store_address_t storeId) {
 	const uint8_t * data = NULL;
-	uint32_t size = 0;
+	size_t size = 0;
 	ReturnValue_t result = ipcStore->getData(storeId, &data, &size);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return;

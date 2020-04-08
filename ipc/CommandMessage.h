@@ -17,6 +17,9 @@
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef ReturnValue_t Command_t;
 
+/**
+ * @brief Used to pass command messages between tasks
+ */
 class CommandMessage : public MessageQueueMessage {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;

@@ -67,7 +67,7 @@ public:
 	}
 
 	bool operator==(HybridIterator other) {
-		return value == other->value;
+		return value == other.value;
 	}
 
 	bool operator!=(HybridIterator other) {

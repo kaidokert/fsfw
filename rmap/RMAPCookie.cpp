@@ -93,11 +93,11 @@ RMAPCookie::~RMAPCookie() {
 
 }
 
-uint32_t RMAPCookie::getMaxReplyLen() const {
+size_t RMAPCookie::getMaxReplyLen() const {
 	return maxReplyLen;
 }
 
-void RMAPCookie::setMaxReplyLen(uint32_t maxReplyLen) {
+void RMAPCookie::setMaxReplyLen(size_t maxReplyLen) {
 	this->maxReplyLen = maxReplyLen;
 }
 

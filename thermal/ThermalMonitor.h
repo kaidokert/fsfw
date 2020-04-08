@@ -4,6 +4,9 @@
 #include <framework/monitoring/MonitorReporter.h>
 #include <framework/thermal/ThermalComponentIF.h>
 
+/**
+ * What does it do. How to use it.
+ */
 class ThermalMonitor: public MonitorReporter<float> {
 public:
 	template<typename ... Args>

@@ -1,5 +1,5 @@
-#ifndef MULTIOBJECTTASK_H_
-#define MULTIOBJECTTASK_H_
+#ifndef PERIODICTASK_H_
+#define PERIODICTASK_H_
 
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/tasks/PeriodicTaskIF.h>
@@ -107,4 +107,4 @@ protected:
 	void taskFunctionality(void);
 };
 
-#endif /* MULTIOBJECTTASK_H_ */
+#endif /* PERIODICTASK_H_ */

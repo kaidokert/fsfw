@@ -22,6 +22,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 			(TmPacketBase::TM_PACKET_MIN_SIZE + size + headerSize), &pData);
 
 	if (returnValue != store->RETURN_OK) {
+		debug << "TM Packet Stored: Issue getting free storage" << std::endl;
 		checkAndReportLostTm();
 		return;
 	}
@@ -41,7 +42,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 	if (!checkAndSetStore()) {
 		return;
 	}
-	uint32_t sourceDataSize = 0;
+	size_t sourceDataSize = 0;
 	if (content != NULL) {
 		sourceDataSize += content->getSerializedSize();
 	}
@@ -57,7 +58,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 	setData(p_data);
 	initializeTmPacket(apid, service, subservice, packetSubcounter);
 	uint8_t* putDataHere = getSourceData();
-	uint32_t size = 0;
+	size_t size = 0;
 	if (header != NULL) {
 		header->serialize(&putDataHere, &size, sourceDataSize, true);
 	}
@@ -81,7 +82,7 @@ void TmPacketStored::deletePacket() {
 void TmPacketStored::setStoreAddress(store_address_t setAddress) {
 	storeAddress = setAddress;
 	const uint8_t* temp_data = NULL;
-	uint32_t temp_size;
+	size_t temp_size;
 	if (!checkAndSetStore()) {
 		return;
 	}

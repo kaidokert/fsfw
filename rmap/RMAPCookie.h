@@ -1,12 +1,13 @@
 #ifndef RMAPCOOKIE_H_
 #define RMAPCOOKIE_H_
 
-#include <framework/devicehandlers/Cookie.h>
+#include <framework/devicehandlers/CookieIF.h>
 #include <framework/rmap/rmapStructs.h>
+#include <cstddef>
 
 class RMAPChannelIF;
 
-class RMAPCookie : public Cookie{
+class RMAPCookie : public CookieIF {
 public:
 	//To Uli: Sorry, I need an empty ctor to initialize an array of cookies.
 	RMAPCookie();
@@ -28,8 +29,8 @@ public:
 	void setCommandMask(uint8_t commandMask);
 	uint8_t getCommandMask();
 
-	uint32_t getMaxReplyLen() const;
-	void setMaxReplyLen(uint32_t maxReplyLen);
+	size_t getMaxReplyLen() const;
+	void setMaxReplyLen(size_t maxReplyLen);
 
 	uint16_t getTransactionIdentifier() const;
 	void setTransactionIdentifier(uint16_t id_);

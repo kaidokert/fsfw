@@ -5,6 +5,10 @@
 #include <cstring>
 #include <iostream>
 
+/**
+ * @brief Can be used to swap endianness of data
+ *        into big endian
+ */
 class EndianSwapper {
 private:
 	EndianSwapper() {
@@ -39,6 +43,32 @@ public:
 		return;
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 		memcpy(out, in, size);
+		return;
+#endif
+	}
+
+	/**
+	 * Swap endianness of buffer entries
+	 * Template argument specifies buffer type
+	 * @param out
+	 * @param in
+	 * @param size
+	 */
+	template<typename T>
+	static void swap(T * out, const T * in, uint32_t size) {
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
+		const uint8_t * in_buffer = reinterpret_cast<const uint8_t *>(in);
+		uint8_t * out_buffer = reinterpret_cast<uint8_t *>(out);
+		for (uint8_t count = 0; count < size; count++) {
+			for(uint8_t i = 0; i < sizeof(T);i++) {
+				out_buffer[sizeof(T)* (count + 1) - i - 1] = in_buffer[count * sizeof(T) + i];
+			}
+		}
+		return;
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
+		memcpy(out, in, size*sizeof(T));
 		return;
 #endif
 	}

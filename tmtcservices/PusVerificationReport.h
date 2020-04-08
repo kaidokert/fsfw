@@ -49,7 +49,7 @@ class PusSuccessReport {
 private:
 	static const uint16_t MAX_SIZE = 7;
 	uint8_t reportBuffer[MAX_SIZE];
-	uint32_t reportSize;
+	size_t reportSize;
 	uint8_t * pBuffer;
 public:
 	PusSuccessReport(uint16_t setPacketId, uint16_t setSequenceControl,
@@ -63,7 +63,7 @@ class PusFailureReport {
 private:
 	static const uint16_t MAX_SIZE = 16;
 	uint8_t reportBuffer[MAX_SIZE];
-	uint32_t reportSize;
+	size_t reportSize;
 	uint8_t * pBuffer;
 public:
 	PusFailureReport(uint16_t setPacketId, uint16_t setSequenceControl,

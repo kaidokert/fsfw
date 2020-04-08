@@ -18,8 +18,8 @@ public:
 	uint8_t value3;
 	uint8_t value4;
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 
 		ReturnValue_t result;
 
@@ -49,11 +49,11 @@ public:
 
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 	bool bigEndian) {
 		ReturnValue_t result;
 

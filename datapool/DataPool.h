@@ -29,7 +29,7 @@
  *	\brief		This class represents the OBSW global data-pool.
  *
  *	\details	All variables are registered and space is allocated in an initialization
- *				function, which is passed do the constructor.
+ *				function, which is passed to the constructor.
  *				Space for the variables is allocated on the heap (with a new call).
  *				The data is found by a data pool id, which uniquely represents a variable.
  *				Data pool variables should be used with a blackboard logic in mind,

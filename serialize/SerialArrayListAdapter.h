@@ -12,6 +12,7 @@
 #include <utility>
 
 /**
+ * Also serializes length field !
  * \ingroup serialize
  */
 template<typename T, typename count_t = uint8_t>
@@ -20,13 +21,15 @@ public:
 	SerialArrayListAdapter(ArrayList<T, count_t> *adaptee) : adaptee(adaptee) {
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		return serialize(adaptee, buffer, size, max_size, bigEndian);
 	}
 
-	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) {
+	static ReturnValue_t serialize(const ArrayList<T, count_t>* list,
+			uint8_t** buffer, size_t* size, const size_t max_size,
+			bool bigEndian) {
+		// Serialize length field first
 		ReturnValue_t result = SerializeAdapter<count_t>::serialize(&list->size,
 				buffer, size, max_size, bigEndian);
 		count_t i = 0;
@@ -38,7 +41,7 @@ public:
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return getSerializedSize(adaptee);
 	}
 
@@ -53,13 +56,13 @@ public:
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		return deSerialize(adaptee, buffer, size, bigEndian);
 	}
 
-	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list, const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
+	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list,
+			const uint8_t** buffer, ssize_t* size, bool bigEndian) {
 		count_t tempSize = 0;
 		ReturnValue_t result = SerializeAdapter<count_t>::deSerialize(&tempSize,
 				buffer, size, bigEndian);
@@ -75,6 +78,11 @@ public:
 			++i;
 		}
 		return result;
+	}
+
+
+	static void swapArrayListEndianness(ArrayList<T, count_t>* list) {
+		list->swapArrayListEndianness();
 	}
 private:
 	ArrayList<T, count_t> *adaptee;

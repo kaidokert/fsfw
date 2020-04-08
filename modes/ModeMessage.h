@@ -24,6 +24,7 @@ public:
 	static const Command_t REPLY_MODE_INFO = MAKE_COMMAND_ID(0x03);	//!> Unrequested info about the current mode (used for composites to inform their container of a changed mode)
 	static const Command_t REPLY_CANT_REACH_MODE = MAKE_COMMAND_ID(0x04); //!> Reply in case a mode command can't be executed. Par1: returnCode, Par2: 0
 	//SHOULDDO is there a way we can transmit a returnvalue when responding that the mode is wrong, so we can give a nice failure code when commanded by PUS?
+	// shouldn't that possible with parameter 2 when submode only takes 1 byte?
 	static const Command_t REPLY_WRONG_MODE_REPLY = MAKE_COMMAND_ID(0x05);//!> Reply to a CMD_MODE_COMMAND, indicating that a mode was commanded and a transition started but was aborted; the parameters contain the mode that was reached
 	static const Command_t CMD_MODE_READ = MAKE_COMMAND_ID(0x06);//!> Command to read the current mode and reply with a REPLY_MODE_REPLY
 	static const Command_t CMD_MODE_ANNOUNCE = MAKE_COMMAND_ID(0x07);//!> Command to trigger an ModeInfo Event. This command does NOT have a reply.
@@ -34,6 +35,7 @@ public:
 	static ReturnValue_t setModeMessage(CommandMessage* message,
 			Command_t command, Mode_t mode, Submode_t submode);
 	static void cantReachMode(CommandMessage* message, ReturnValue_t reason);
+	static ReturnValue_t getCantReachModeReason(const CommandMessage* message);
 	static void clear(CommandMessage* message);
 };
 

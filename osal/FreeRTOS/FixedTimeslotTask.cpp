@@ -19,8 +19,7 @@ FixedTimeslotTask::~FixedTimeslotTask() {
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
 
 	//The argument is re-interpreted as FixedTimeslotTask. The Task object is global, so it is found from any place.
-	FixedTimeslotTask *originalTask(
-			reinterpret_cast<FixedTimeslotTask*>(argument));
+	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
 	// Task should not start until explicitly requested
 	// in FreeRTOS, tasks start as soon as they are created if the scheduler is running
 	// but not if the scheduler is not running.
@@ -58,8 +57,19 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	pst.addSlot(componentId, slotTimeMs, executionStep, this);
-	return HasReturnvaluesIF::RETURN_OK;
+	if (objectManager->get<ExecutableObjectIF>(componentId) != NULL) {
+		if(slotTimeMs == 0) {
+			// TODO: FreeRTOS throws errors for zero values.
+			// maybe there is a better solution than this.
+			slotTimeMs = 1;
+		}
+		pst.addSlot(componentId, slotTimeMs, executionStep, this);
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+	error << "Component " << std::hex << componentId
+		  << " not found, not adding it to pst" << std::endl;
+	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 uint32_t FixedTimeslotTask::getPeriodMs() const {
@@ -72,10 +82,10 @@ ReturnValue_t FixedTimeslotTask::checkSequence() const {
 
 void FixedTimeslotTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
-	std::list<FixedSequenceSlot*>::iterator it = pst.current;
+	SlotListIter slotListIter = pst.current;
 
 	//The start time for the first entry is read.
-	uint32_t intervalMs = (*it)->pollingTimeMs;
+	uint32_t intervalMs = slotListIter->pollingTimeMs;
 	TickType_t interval = pdMS_TO_TICKS(intervalMs);
 
 	TickType_t xLastWakeTime;
@@ -110,4 +120,3 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 	vTaskDelay(pdMS_TO_TICKS(ms));
 	return HasReturnvaluesIF::RETURN_OK;
 }
-

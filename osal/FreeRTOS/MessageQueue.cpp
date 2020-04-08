@@ -3,9 +3,10 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 // TODO I guess we should have a way of checking if we are in an ISR and then use the "fromISR" versions of all calls
-
+// As a first step towards this, introduces system context variable which needs to be switched manually
+// Haven't found function to find system context.
 MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
-defaultDestination(0),lastPartner(0)  {
+defaultDestination(0),lastPartner(0), callContext(CallContext::task)  {
 	handle = xQueueCreate(message_depth, max_message_size);
 	if (handle == NULL) {
 		error << "MessageQueue creation failed" << std::endl;
@@ -18,6 +19,10 @@ MessageQueue::~MessageQueue() {
 	}
 }
 
+void MessageQueue::switchSystemContext(CallContext callContext) {
+	this->callContext = callContext;
+}
+
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
 		MessageQueueMessage* message, bool ignoreFault) {
 	return sendMessageFrom(sendTo, message, this->getId(), ignoreFault);
@@ -25,6 +30,11 @@ ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
 
 ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessage* message) {
 	return sendToDefaultFrom(message, this->getId());
+}
+
+ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
+		MessageQueueId_t sentFrom, bool ignoreFault) {
+	return sendMessageFrom(defaultDestination,message,sentFrom,ignoreFault);
 }
 
 ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
@@ -35,10 +45,54 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 	}
 }
 
+ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
+		MessageQueueMessage* message, MessageQueueId_t sentFrom,
+		bool ignoreFault) {
+	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault, callContext);
+}
+
+ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
+		MessageQueueMessage *message, MessageQueueId_t sentFrom,
+		bool ignoreFault, CallContext callContext) {
+	message->setSender(sentFrom);
+	BaseType_t result;
+	if(callContext == CallContext::task) {
+		result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),
+				reinterpret_cast<const void*>(message->getBuffer()), 0);
+	}
+	else {
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		result = xQueueSendFromISR(reinterpret_cast<void*>(sendTo),
+				reinterpret_cast<const void*>(message->getBuffer()), &xHigherPriorityTaskWoken);
+		if(xHigherPriorityTaskWoken == pdTRUE) {
+			TaskManagement::requestContextSwitch(callContext);
+		}
+	}
+	return handleSendResult(result, ignoreFault);
+}
+
+
+
+ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
+	if (result != pdPASS) {
+		if (!ignoreFault) {
+			InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+					objects::INTERNAL_ERROR_REPORTER);
+			if (internalErrorReporter != NULL) {
+				internalErrorReporter->queueMessageNotSent();
+			}
+		}
+		return MessageQueueIF::FULL;
+	}
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 		MessageQueueId_t* receivedFrom) {
 	ReturnValue_t status = this->receiveMessage(message);
-	*receivedFrom = this->lastPartner;
+	if(status == HasReturnvaluesIF::RETURN_OK) {
+		*receivedFrom = this->lastPartner;
+	}
 	return status;
 }
 
@@ -71,17 +125,6 @@ void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
 	this->defaultDestination = defaultDestination;
 }
 
-ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, MessageQueueId_t sentFrom,
-		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault);
-}
-
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
-		MessageQueueId_t sentFrom, bool ignoreFault) {
-	return sendMessageFrom(defaultDestination,message,sentFrom,ignoreFault);
-}
-
 MessageQueueId_t MessageQueue::getDefaultDestination() const {
 	return defaultDestination;
 }
@@ -89,23 +132,6 @@ MessageQueueId_t MessageQueue::getDefaultDestination() const {
 bool MessageQueue::isDefaultDestinationSet() const {
 	return 0;
 }
-ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-		MessageQueueMessage *message, MessageQueueId_t sentFrom,
-		bool ignoreFault) {
-	message->setSender(sentFrom);
 
-		BaseType_t result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),reinterpret_cast<const void*>(message->getBuffer()), 0);
-		if (result != pdPASS) {
-			if (!ignoreFault) {
-				InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
-							objects::INTERNAL_ERROR_REPORTER);
-				if (internalErrorReporter != NULL) {
-					internalErrorReporter->queueMessageNotSent();
-				}
-			}
-			return MessageQueueIF::FULL;
-		}
-		return HasReturnvaluesIF::RETURN_OK;
 
-}
 

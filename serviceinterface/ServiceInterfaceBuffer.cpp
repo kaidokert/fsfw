@@ -1,9 +1,12 @@
 #include <framework/timemanager/Clock.h>
 #include <framework/serviceinterface/ServiceInterfaceBuffer.h>
 #include <cstring>
+#include <inttypes.h>
 
 // to be implemented by bsp
 extern "C" void printChar(const char*);
+
+
 
 int ServiceInterfaceBuffer::overflow(int c) {
 	// Handle output
@@ -24,11 +27,12 @@ int ServiceInterfaceBuffer::sync(void) {
 		Clock::TimeOfDay_t loggerTime;
 		Clock::getDateAndTime(&loggerTime);
 		char preamble[96] = { 0 };
-		sprintf(preamble, "%s: | %lu:%02lu:%02lu.%03lu | ",
-				this->log_message.c_str(), (unsigned long) loggerTime.hour,
-				(unsigned long) loggerTime.minute,
-				(unsigned long) loggerTime.second,
-				(unsigned long) loggerTime.usecond /1000);
+		sprintf(preamble, "%s: | %" PRIu32 ":%02" PRIu32 ":%02" PRIu32 ".%03" PRIu32 " | ",
+				this->log_message.c_str(),
+				loggerTime.hour,
+				loggerTime.minute,
+				loggerTime.second,
+				loggerTime.usecond /1000);
 		// Write log_message and time
 		this->putChars(preamble, preamble + sizeof(preamble));
 		// Handle output

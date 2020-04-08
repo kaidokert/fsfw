@@ -1,6 +1,10 @@
 #ifndef FRAMEWORK_OSAL_ENDINESS_H_
 #define FRAMEWORK_OSAL_ENDINESS_H_
 
+/**
+ * @defgroup osal Operating System Abstraction Layer
+ * @brief Provides clean interfaces to use OS functionalities
+ */
 
 /*
  * BSD-style endian declaration

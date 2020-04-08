@@ -20,8 +20,8 @@ ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
 ParameterWrapper::~ParameterWrapper() {
 }
 
-ReturnValue_t ParameterWrapper::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t ParameterWrapper::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result;
 
 	result = SerializeAdapter<Type>::serialize(&type, buffer, size, max_size,
@@ -77,7 +77,7 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t** buffer, uint32_t* size,
 	return result;
 }
 
-uint32_t ParameterWrapper::getSerializedSize() const {
+size_t ParameterWrapper::getSerializedSize() const {
 	uint32_t serializedSize = 0;
 	serializedSize += type.getSerializedSize();
 	serializedSize += sizeof(rows);
@@ -88,8 +88,8 @@ uint32_t ParameterWrapper::getSerializedSize() const {
 }
 
 template<typename T>
-ReturnValue_t ParameterWrapper::serializeData(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t ParameterWrapper::serializeData(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	const T *element = (const T*) readonlyData;
 	ReturnValue_t result;
 	uint16_t dataSize = columns * rows;
@@ -112,7 +112,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 
 	//treat from as a continuous Stream as we copy all of it
 	const uint8_t *fromAsStream = (const uint8_t *) from;
-	int32_t streamSize = fromRows * fromColumns * sizeof(T);
+	ssize_t streamSize = fromRows * fromColumns * sizeof(T);
 
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 
@@ -137,12 +137,12 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 }
 
 ReturnValue_t ParameterWrapper::deSerialize(const uint8_t** buffer,
-		int32_t* size, bool bigEndian) {
+		ssize_t* size, bool bigEndian) {
 	return deSerialize(buffer, size, bigEndian, 0);
 }
 
 ReturnValue_t ParameterWrapper::deSerialize(const uint8_t** buffer,
-		int32_t* size, bool bigEndian, uint16_t startWritingAtIndex) {
+		ssize_t* size, bool bigEndian, uint16_t startWritingAtIndex) {
 	ParameterWrapper streamDescription;
 
 	ReturnValue_t result = streamDescription.set(*buffer, *size, buffer, size);
@@ -153,8 +153,8 @@ ReturnValue_t ParameterWrapper::deSerialize(const uint8_t** buffer,
 	return copyFrom(&streamDescription, startWritingAtIndex);
 }
 
-ReturnValue_t ParameterWrapper::set(const uint8_t* stream, int32_t streamSize,
-		const uint8_t **remainingStream, int32_t *remainingSize) {
+ReturnValue_t ParameterWrapper::set(const uint8_t* stream, ssize_t streamSize,
+		const uint8_t **remainingStream, ssize_t *remainingSize) {
 	ReturnValue_t result = SerializeAdapter<Type>::deSerialize(&type, &stream,
 			&streamSize, true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {

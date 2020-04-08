@@ -8,10 +8,9 @@
 
 InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId,
 		uint32_t queuePoolId, uint32_t tmPoolId, uint32_t storePoolId) :
-		SystemObject(setObjectId), mutex(NULL), queuePoolId(queuePoolId), tmPoolId(
-				tmPoolId), storePoolId(
-				storePoolId), queueHits(0), tmHits(0), storeHits(
-				0) {
+		SystemObject(setObjectId), mutex(NULL), queuePoolId(queuePoolId),
+		tmPoolId(tmPoolId),storePoolId(storePoolId), queueHits(0), tmHits(0),
+		storeHits(0) {
 	mutex = MutexFactory::instance()->createMutex();
 }
 

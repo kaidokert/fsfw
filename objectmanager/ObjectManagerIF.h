@@ -78,6 +78,8 @@ public:
 	virtual void printList() = 0;
 };
 
+
+/*Documentation can be found in the class method declaration above.*/
 template <typename T>
 T* ObjectManagerIF::get( object_id_t id ) {
 	SystemObjectIF* temp = this->getSystemObject(id);

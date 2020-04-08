@@ -15,9 +15,8 @@ public:
 	/**
 	 * Default empty virtual destructor.
 	 */
-	virtual ~AcceptsDeviceResponsesIF() {
-}
-virtual MessageQueueId_t getDeviceQueue() = 0;
+	virtual ~AcceptsDeviceResponsesIF() {}
+	virtual MessageQueueId_t getDeviceQueue() = 0;
 };
 
 #endif /* ACCEPTSDEVICERESPONSESIF_H_ */

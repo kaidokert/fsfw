@@ -112,8 +112,7 @@ public:
 	 * 					corresponds to.
 	 * \param dataSet	The data set in which the variable shall register itself. If NULL,
 	 * 					the variable is not registered.
-	 * \param setWritable If this flag is set to true, changes in the value attribute can be
-	 * 					written back to the data pool, otherwise not.
+	 * \param setReadWriteMode
 	 */
 	PoolVariable(uint32_t set_id, DataSetIF* dataSet,
 			ReadWriteMode_t setReadWriteMode) :
@@ -194,17 +193,17 @@ public:
 		return *this;
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		return SerializeAdapter<T>::serialize(&value, buffer, size, max_size,
 				bigEndian);
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return SerializeAdapter<T>::getSerializedSize(&value);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		return SerializeAdapter<T>::deSerialize(&value, buffer, size, bigEndian);
 	}

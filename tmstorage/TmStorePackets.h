@@ -32,8 +32,8 @@ public:
 	}
 	uint16_t apid;
 	uint16_t ssc;
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		ReturnValue_t result = SerializeAdapter<uint16_t>::serialize(&apid,
 				buffer, size, max_size, bigEndian);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -44,11 +44,11 @@ public:
 
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return sizeof(apid) + sizeof(ssc);
 	}
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 	bool bigEndian) {
 		ReturnValue_t result = SerializeAdapter<uint16_t>::deSerialize(&apid,
 				buffer, size, bigEndian);
@@ -218,8 +218,8 @@ public:
 	}
 
 
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		ReturnValue_t result = AutoSerializeAdapter::serialize(&apid,buffer,size,max_size,bigEndian);
 		if(result!=HasReturnvaluesIF::RETURN_OK){
 			return result;
@@ -244,7 +244,7 @@ public:
 		return adapter.serialize(buffer,size,max_size,bigEndian);
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		uint32_t size = 0;
 		size += AutoSerializeAdapter::getSerializedSize(&apid);
 		size += AutoSerializeAdapter::getSerializedSize(&sourceSequenceCount);
@@ -257,7 +257,7 @@ public:
 
 	};
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 	bool bigEndian) {
 		ReturnValue_t result = AutoSerializeAdapter::deSerialize(&apid, buffer,
 				size, bigEndian);

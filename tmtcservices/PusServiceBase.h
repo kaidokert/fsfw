@@ -30,7 +30,10 @@ void setStaticFrameworkObjectIds();
  * All PUS Services are System Objects, so an Object ID needs to be specified on construction.
  * \ingroup pus_services
  */
-class PusServiceBase : public ExecutableObjectIF, public AcceptsTelecommandsIF, public SystemObject, public HasReturnvaluesIF {
+class PusServiceBase : public ExecutableObjectIF,
+        public AcceptsTelecommandsIF,
+        public SystemObject,
+        public HasReturnvaluesIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
@@ -46,17 +49,24 @@ public:
 	 */
 	virtual ~PusServiceBase();
 	/**
-	 * The handleRequest method shall handle any kind of Telecommand Request immediately.
+	 * @brief The handleRequest method shall handle any kind of Telecommand Request immediately.
+	 * @details
 	 * Implemetations can take the Telecommand in currentPacket and perform any kind of operation.
 	 * They may send additional "Start Success (1,3)" messages with the verifyReporter, but Completion
 	 * Success or Failure Reports are generated automatically after execution of this method.
-	 * If a Telecommand can not be executed within one call cycle, this Base class is not the right parent.
-	 * The child class may add additional error information in #errorParameters which are attached to the generated
-	 * verification message.
+	 *
+	 * If a Telecommand can not be executed within one call cycle,
+	 * this Base class is not the right parent.
+	 *
+	 * The child class may add additional error information by setting #errorParameters which are
+	 * attached to the generated verification message.
+	 *
+	 * Subservice checking should be implemented in this method.
+	 *
 	 * @return	The returned status_code is directly taken as main error code in the Verification Report.
 	 * 			On success, RETURN_OK shall be returned.
 	 */
-	virtual ReturnValue_t handleRequest() = 0;
+	virtual ReturnValue_t handleRequest(uint8_t subservice) = 0;
 	/**
 	 * In performService, implementations can handle periodic, non-TC-triggered activities.
 	 * The performService method is always called.
@@ -68,8 +78,8 @@ public:
 	 * It checks for new requests, and, if found, calls handleRequest, sends completion verification messages and deletes
 	 * the TC requests afterwards.
 	 * performService is always executed afterwards.
-	 * @return	- \c RETURN_OK if the periodic performService was successful.
-	 * 			- \c RETURN_FAILED else.
+	 * @return	\c RETURN_OK if the periodic performService was successful.
+	 * 			\c RETURN_FAILED else.
 	 */
 	ReturnValue_t performOperation(uint8_t opCode);
 	virtual uint16_t getIdentifier();
@@ -91,7 +101,8 @@ protected:
 	/**
 	 * One of two error parameters for additional error information.
 	 */
-	uint8_t errorParameter2;
+	// shouldn't this be uint32_t ? The PUS Verification Message structure param2 has the size 4
+	uint32_t errorParameter2;
 	/**
 	 * This is a complete instance of the Telecommand reception queue of the class.
 	 * It is initialized on construction of the class.

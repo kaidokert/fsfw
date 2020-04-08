@@ -86,8 +86,8 @@ ReturnValue_t Fuse::check() {
 	return result;
 }
 
-ReturnValue_t Fuse::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t Fuse::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result = RETURN_FAILED;
 	for (DeviceList::const_iterator iter = devices.begin();
 			iter != devices.end(); iter++) {
@@ -100,7 +100,7 @@ ReturnValue_t Fuse::serialize(uint8_t** buffer, uint32_t* size,
 }
 
 uint32_t Fuse::getSerializedSize() const {
-	uint32_t size = 0;
+	size_t size = 0;
 	for (DeviceList::const_iterator iter = devices.begin();
 			iter != devices.end(); iter++) {
 		size += (*iter)->getSerializedSize();
@@ -108,7 +108,7 @@ uint32_t Fuse::getSerializedSize() const {
 	return size;
 }
 
-ReturnValue_t Fuse::deSerialize(const uint8_t** buffer, int32_t* size,
+ReturnValue_t Fuse::deSerialize(const uint8_t** buffer, ssize_t* size,
 bool bigEndian) {
 	ReturnValue_t result = RETURN_FAILED;
 	for (DeviceList::iterator iter = devices.begin(); iter != devices.end();

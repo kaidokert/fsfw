@@ -1,40 +1,100 @@
 #ifndef TEMPERATURESENSOR_H_
 #define TEMPERATURESENSOR_H_
 
+#include <framework/thermal/AbstractTemperatureSensor.h>
 #include <framework/datapool/DataSet.h>
-#include "AbstractTemperatureSensor.h"
 #include <framework/monitoring/LimitMonitor.h>
 
-template<typename T>
+/**
+ * @brief 	This building block handles non-linear value conversion and
+ * 			range checks for analog temperature sensors.
+ * @details This class can be used to perform all necessary tasks for temperature sensors.
+ *          A sensor can be instantiated by calling the constructor.
+ *          The temperature is calculated from an input value with
+ *			the calculateOutputTemperature() function. Range checking and
+ *			limit monitoring is performed automatically.
+ *			The inputType specifies the type of the raw input while the
+ *			limitType specifies the type of the upper and lower limit to check against.
+ * @ingroup thermal
+ */
+
+template<typename inputType, typename limitType = inputType>
 class TemperatureSensor: public AbstractTemperatureSensor {
 public:
+	/**
+	 * This structure contains parameters required for range checking
+	 * and the conversion from the input value to the output temperature.
+	 * a, b and c can be any parameters required to calculate the output
+	 * temperature from the input value, depending on the formula used.
+	 *
+	 * The parameters a,b and c are used in the calculateOutputTemperature() call.
+	 *
+	 * The lower and upper limits can be specified in any type, for example float for C° values
+	 * or any other type for raw values.
+	 */
 	struct Parameters {
 		float a;
 		float b;
 		float c;
-		T lowerLimit;
-		T upperLimit;
-		float gradient;
+		limitType lowerLimit;
+		limitType upperLimit;
+		float maxGradient;
 	};
+
+	/**
+	 * Forward declaration for explicit instantiation of used parameters.
+	 */
 	struct UsedParameters {
 		UsedParameters(Parameters parameters) :
-				a(parameters.a), b(parameters.b), c(parameters.c), gradient(
-						parameters.gradient) {
-		}
+			a(parameters.a), b(parameters.b), c(parameters.c),
+			gradient(parameters.maxGradient) {}
 		float a;
 		float b;
 		float c;
 		float gradient;
 	};
 
-	static const uint16_t ADDRESS_A = 0;
-	static const uint16_t ADDRESS_B = 1;
-	static const uint16_t ADDRESS_C = 2;
-	static const uint16_t ADDRESS_GRADIENT = 3;
+	/**
+	 * Instantiate Temperature Sensor Object.
+	 * @param setObjectid objectId of the sensor object
+	 * @param inputValue Input value which is converted to a temperature
+	 * @param poolVariable Pool Variable to store the temperature value
+	 * @param vectorIndex Vector Index for the sensor monitor
+	 * @param parameters Calculation parameters, temperature limits, gradient limit
+	 * @param datapoolId Datapool ID of the output temperature
+	 * @param outputSet Output dataset for the output temperature to fetch it with read()
+	 * @param thermalModule respective thermal module, if it has one
+	 */
+	TemperatureSensor(object_id_t setObjectid,
+			inputType *inputValue, PoolVariableIF *poolVariable,
+			uint8_t vectorIndex, uint32_t datapoolId, Parameters parameters = {0, 0, 0, 0, 0, 0},
+			DataSet *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
+			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
+			inputValue(inputValue), poolVariable(poolVariable),
+			outputTemperature(datapoolId, outputSet, PoolVariableIF::VAR_WRITE),
+			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR,
+				DataPool::poolIdAndPositionToPid(poolVariable->getDataPoolId(), vectorIndex),
+				DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit, parameters.upperLimit,
+				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
+			oldTemperature(20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 }) {
+	}
 
-	static const uint16_t DEFAULT_CONFIRMATION_COUNT = 1; //!< Changed due to issue with later temperature checking even tough the sensor monitor was confirming already (Was 10 before with comment = Correlates to a 10s confirmation time. Chosen rather large, should not be so bad for components and helps survive glitches.)
 
-	static const uint8_t DOMAIN_ID_SENSOR = 1;
+protected:
+	/**
+	 * This formula is used to calculate the temperature from an input value
+	 * with an arbitrary type.
+	 * A default implementation is provided but can be replaced depending
+	 * on the required calculation.
+	 * @param inputTemperature
+	 * @return
+	 */
+	virtual float calculateOutputTemperature(inputType inputValue) {
+		return parameters.a * inputValue * inputValue
+				+ parameters.b * inputValue + parameters.c;
+	}
+
+
 private:
 	void setInvalid() {
 		outputTemperature = INVALID_TEMPERATURE;
@@ -47,21 +107,16 @@ protected:
 
 	UsedParameters parameters;
 
-	T *inputTemperature;
+	inputType * inputValue;
 
 	PoolVariableIF *poolVariable;
 
 	PoolVariable<float> outputTemperature;
 
-	LimitMonitor<T> sensorMonitor;
+	LimitMonitor<limitType> sensorMonitor;
 
 	float oldTemperature;
 	timeval uptimeOfOldTemperature;
-
-	virtual float calculateOutputTemperature(T inputTemperature) {
-		return parameters.a * inputTemperature * inputTemperature
-				+ parameters.b * inputTemperature + parameters.c;
-	}
 
 	void doChildOperation() {
 		if (!poolVariable->isValid()
@@ -70,7 +125,7 @@ protected:
 			return;
 		}
 
-		outputTemperature = calculateOutputTemperature(*inputTemperature);
+		outputTemperature = calculateOutputTemperature(*inputValue);
 		outputTemperature.setValid(PoolVariableIF::VALID);
 
 		timeval uptime;
@@ -78,7 +133,7 @@ protected:
 
 		if (uptimeOfOldTemperature.tv_sec != INVALID_UPTIME) {
 			//In theory, we could use an AbsValueMonitor to monitor the gradient.
-			//But this would require storing the gradient in DP and quite some overhead.
+			//But this would require storing the maxGradient in DP and quite some overhead.
 			//The concept of delta limits is a bit strange anyway.
 			float deltaTime;
 			float deltaTemp;
@@ -96,8 +151,8 @@ protected:
 			}
 		}
 
-		//Check is done against raw limits. SHOULDDO: Why? Using Â°C would be more easy to handle.
-		sensorMonitor.doCheck(*inputTemperature);
+		//Check is done against raw limits. SHOULDDO: Why? Using °C would be more easy to handle.
+		sensorMonitor.doCheck(outputTemperature.value);
 
 		if (sensorMonitor.isOutOfLimits()) {
 			uptimeOfOldTemperature.tv_sec = INVALID_UPTIME;
@@ -110,23 +165,6 @@ protected:
 	}
 
 public:
-	TemperatureSensor(object_id_t setObjectid,
-			T *inputTemperature, PoolVariableIF *poolVariable,
-			uint8_t vectorIndex, Parameters parameters, uint32_t datapoolId,
-			DataSet *outputSet, ThermalModuleIF *thermalModule) :
-			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(
-					parameters), inputTemperature(inputTemperature), poolVariable(
-					poolVariable), outputTemperature(datapoolId, outputSet,
-					PoolVariableIF::VAR_WRITE), sensorMonitor(setObjectid,
-							DOMAIN_ID_SENSOR,
-					DataPool::poolIdAndPositionToPid(
-							poolVariable->getDataPoolId(), vectorIndex),
-					DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit,
-					parameters.upperLimit, TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH), oldTemperature(
-					20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 }) {
-
-	}
-
 	float getTemperature() {
 		return outputTemperature;
 	}
@@ -134,6 +172,15 @@ public:
 	bool isValid() {
 		return outputTemperature.isValid();
 	}
+
+	static const uint16_t ADDRESS_A = 0;
+	static const uint16_t ADDRESS_B = 1;
+	static const uint16_t ADDRESS_C = 2;
+	static const uint16_t ADDRESS_GRADIENT = 3;
+
+	static const uint16_t DEFAULT_CONFIRMATION_COUNT = 1; //!< Changed due to issue with later temperature checking even tough the sensor monitor was confirming already (Was 10 before with comment = Correlates to a 10s confirmation time. Chosen rather large, should not be so bad for components and helps survive glitches.)
+
+	static const uint8_t DOMAIN_ID_SENSOR = 1;
 
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 			ParameterWrapper *parameterWrapper,

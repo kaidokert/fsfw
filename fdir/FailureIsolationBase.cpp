@@ -5,9 +5,10 @@
 #include <framework/ipc/QueueFactory.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 
-FailureIsolationBase::FailureIsolationBase(object_id_t owner, object_id_t parent, uint8_t messageDepth, uint8_t parameterDomainBase) :
-		eventQueue(NULL), ownerId(
-				owner), owner(NULL), faultTreeParent(parent), parameterDomainBase(parameterDomainBase) {
+FailureIsolationBase::FailureIsolationBase(object_id_t owner,
+		object_id_t parent, uint8_t messageDepth, uint8_t parameterDomainBase) :
+		eventQueue(NULL), ownerId(owner), owner(NULL),
+		faultTreeParent(parent), parameterDomainBase(parameterDomainBase) {
 	eventQueue = QueueFactory::instance()->createMessageQueue(messageDepth, EventMessage::EVENT_MESSAGE_SIZE);
 }
 

@@ -11,14 +11,14 @@ class EventRangeMatcherBase: public SerializeableMatcherIF<EventMessage*> {
 public:
 	EventRangeMatcherBase(T from, T till, bool inverted) : rangeMatcher(from, till, inverted) {	}
 	virtual ~EventRangeMatcherBase() { }
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const {
 		return rangeMatcher.serialize(buffer, size, max_size, bigEndian);
 	}
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return rangeMatcher.getSerializedSize();
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
 			bool bigEndian) {
 		return rangeMatcher.deSerialize(buffer, size, bigEndian);
 	}

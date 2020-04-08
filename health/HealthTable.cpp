@@ -65,7 +65,7 @@ bool HealthTable::hasHealth(object_id_t object) {
 
 void HealthTable::printAll(uint8_t* pointer, uint32_t maxSize) {
 	mutex->lockMutex(MutexIF::NO_TIMEOUT);
-	uint32_t size = 0;
+	size_t size = 0;
 	uint16_t count = healthMap.size();
 	ReturnValue_t result = SerializeAdapter<uint16_t>::serialize(&count,
 			&pointer, &size, maxSize, true);

@@ -39,7 +39,95 @@ public:
 	 * @brief	This definition generally sets the number of different sized pools.
 	 * @details This must be less than the maximum number of pools (currently 0xff).
 	 */
-//	static const uint32_t NUMBER_OF_POOLS;
+	//	static const uint32_t NUMBER_OF_POOLS;
+	/**
+	 * @brief	This is the default constructor for a pool manager instance.
+	 * @details	By passing two arrays of size NUMBER_OF_POOLS, the constructor
+	 * 			allocates memory (with \c new) for store and size_list. These
+	 * 			regions are all set to zero on start up.
+	 * @param setObjectId	The object identifier to be set. This allows for
+	 * 						multiple instances of LocalPool in the system.
+	 * @param element_sizes	An array of size NUMBER_OF_POOLS in which the size
+	 * 						of a single element in each pool is determined.
+	 * 						<b>The sizes must be provided in ascending order.
+	 * 						</b>
+	 * @param n_elements	An array of size NUMBER_OF_POOLS in which the
+	 * 						number of elements for each pool is determined.
+	 * 						The position of these values correspond to those in
+	 * 						element_sizes.
+	 * @param registered	Register the pool in object manager or not. Default is false (local pool).
+	 * @param spillsToHigherPools
+	 * 						A variable to determine whether higher n pools are used if the store is full.
+	 */
+	LocalPool(object_id_t setObjectId,
+			const uint16_t element_sizes[NUMBER_OF_POOLS],
+			const uint16_t n_elements[NUMBER_OF_POOLS],
+			bool registered = false,
+			bool spillsToHigherPools = false);
+	/**
+	 * @brief	In the LocalPool's destructor all allocated memory is freed.
+	 */
+	virtual ~LocalPool(void);
+
+	/**
+	 * Add data to local data pool, performs range check
+	 * @param storageId [out] Store ID in which the data will be stored
+	 * @param data
+	 * @param size
+	 * @param ignoreFault
+	 * @return @c RETURN_OK if write was successful
+	 */
+	ReturnValue_t addData(store_address_t* storageId, const uint8_t * data,
+			uint32_t size, bool ignoreFault = false);
+
+	/**
+	 * With this helper method, a free element of \c size is reserved.
+	 * @param storageId [out] storeID of the free element
+	 * @param size	The minimum packet size that shall be reserved.
+	 * @param p_data [out] pointer to the pointer of free element
+	 * @param ignoreFault
+	 * @return	Returns the storage identifier within the storage or
+	 * 			StorageManagerIF::INVALID_ADDRESS (in raw).
+	 */
+	ReturnValue_t getFreeElement(store_address_t* storageId,
+			const uint32_t size, uint8_t** p_data, bool ignoreFault = false);
+
+	/**
+	 * Retrieve data from local pool
+	 * @param packet_id
+	 * @param packet_ptr
+	 * @param size [out] Size of retrieved data
+	 * @return @c RETURN_OK if data retrieval was successfull
+	 */
+	ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
+			size_t * size);
+
+	/**
+	 * Modify data by supplying a packet pointer and using that packet pointer
+	 * to access and modify the pool entry (via *pointer call)
+	 * @param packet_id Store ID of data to modify
+	 * @param packet_ptr [out] pointer to the pool entry to modify
+	 * @param size [out] size of pool entry
+	 * @return
+	 */
+	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
+			size_t * size);
+	virtual ReturnValue_t deleteData(store_address_t);
+	virtual ReturnValue_t deleteData(uint8_t* ptr, uint32_t size,
+			store_address_t* storeId = NULL);
+	void clearStore();
+	ReturnValue_t initialize();
+protected:
+	/**
+	 * With this helper method, a free element of \c size is reserved.
+	 * @param size	The minimum packet size that shall be reserved.
+	 * @param[out] address Storage ID of the reserved data.
+	 * @return	- #RETURN_OK on success,
+	 * 			- the return codes of #getPoolIndex or #findEmpty otherwise.
+	 */
+	virtual ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address, bool ignoreFault);
+
+	InternalErrorReporterIF *internalErrorReporter;
 private:
 	/**
 	 * Indicates that this element is free.
@@ -121,65 +209,6 @@ private:
 	 * 			- #DATA_STORAGE_FULL if the store is full
 	 */
 	ReturnValue_t findEmpty(uint16_t pool_index, uint16_t* element);
-protected:
-	/**
-	 * With this helper method, a free element of \c size is reserved.
-	 * @param size	The minimum packet size that shall be reserved.
-	 * @param[out] address Storage ID of the reserved data.
-	 * @return	- #RETURN_OK on success,
-	 * 			- the return codes of #getPoolIndex or #findEmpty otherwise.
-	 */
-	virtual ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address, bool ignoreFault);
-
-	InternalErrorReporterIF *internalErrorReporter;
-public:
-	/**
-	 * @brief	This is the default constructor for a pool manager instance.
-	 * @details	By passing two arrays of size NUMBER_OF_POOLS, the constructor
-	 * 			allocates memory (with \c new) for store and size_list. These
-	 * 			regions are all set to zero on start up.
-	 * @param setObjectId	The object identifier to be set. This allows for
-	 * 						multiple instances of LocalPool in the system.
-	 * @param element_sizes	An array of size NUMBER_OF_POOLS in which the size
-	 * 						of a single element in each pool is determined.
-	 * 						<b>The sizes must be provided in ascending order.
-	 * 						</b>
-	 * @param n_elements	An array of size NUMBER_OF_POOLS in which the
-	 * 						number of elements for each pool is determined.
-	 * 						The position of these values correspond to those in
-	 * 						element_sizes.
-	 * @param registered	Register the pool in object manager or not. Default is false (local pool).
-	 */
-	LocalPool(object_id_t setObjectId,
-			const uint16_t element_sizes[NUMBER_OF_POOLS],
-			const uint16_t n_elements[NUMBER_OF_POOLS],
-			bool registered = false,
-			bool spillsToHigherPools = false);
-	/**
-	 * @brief	In the LocalPool's destructor all allocated memory is freed.
-	 */
-	virtual ~LocalPool(void);
-	ReturnValue_t addData(store_address_t* storageId, const uint8_t * data,
-			uint32_t size, bool ignoreFault = false);
-
-	/**
-	 * With this helper method, a free element of \c size is reserved.
-	 *
-	 * @param size	The minimum packet size that shall be reserved.
-	 * @return	Returns the storage identifier within the storage or
-	 * 			StorageManagerIF::INVALID_ADDRESS (in raw).
-	 */
-	ReturnValue_t getFreeElement(store_address_t* storageId,
-			const uint32_t size, uint8_t** p_data, bool ignoreFault = false);
-	ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
-			uint32_t* size);
-	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
-			uint32_t* size);
-	virtual ReturnValue_t deleteData(store_address_t);
-	virtual ReturnValue_t deleteData(uint8_t* ptr, uint32_t size,
-			store_address_t* storeId = NULL);
-	void clearStore();
-	ReturnValue_t initialize();
 };
 
 template<uint8_t NUMBER_OF_POOLS>
@@ -266,8 +295,8 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::reserveSpace(
 		if (!ignoreFault) {
 			internalErrorReporter->storeFull();
 		}
-//		error << "LocalPool( " << std::hex << getObjectId() << std::dec
-//				<< " )::reserveSpace: Packet store is full." << std::endl;
+		error << "LocalPool( " << std::hex << getObjectId() << std::dec
+				<< " )::reserveSpace: Packet store is full." << std::endl;
 	}
 	return status;
 }
@@ -276,7 +305,7 @@ template<uint8_t NUMBER_OF_POOLS>
 inline LocalPool<NUMBER_OF_POOLS>::LocalPool(object_id_t setObjectId,
 		const uint16_t element_sizes[NUMBER_OF_POOLS],
 		const uint16_t n_elements[NUMBER_OF_POOLS], bool registered, bool spillsToHigherPools) :
-		SystemObject(setObjectId, registered), spillsToHigherPools(spillsToHigherPools), internalErrorReporter(NULL) {
+		SystemObject(setObjectId, registered), internalErrorReporter(NULL), spillsToHigherPools(spillsToHigherPools){
 	for (uint16_t n = 0; n < NUMBER_OF_POOLS; n++) {
 		this->element_sizes[n] = element_sizes[n];
 		this->n_elements[n] = n_elements[n];
@@ -319,7 +348,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getFreeElement(
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
-		store_address_t packet_id, const uint8_t** packet_ptr, uint32_t* size) {
+		store_address_t packet_id, const uint8_t** packet_ptr, size_t * size) {
 	uint8_t* tempData = NULL;
 	ReturnValue_t status = modifyData(packet_id, &tempData, size);
 	*packet_ptr = tempData;
@@ -328,7 +357,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
 
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(store_address_t packet_id,
-		uint8_t** packet_ptr, uint32_t* size) {
+		uint8_t** packet_ptr, size_t * size) {
 	ReturnValue_t status = RETURN_FAILED;
 	if (packet_id.pool_index >= NUMBER_OF_POOLS) {
 		return ILLEGAL_STORAGE_ID;

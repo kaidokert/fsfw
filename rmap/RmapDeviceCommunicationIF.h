@@ -4,7 +4,8 @@
 #include <framework/devicehandlers/DeviceCommunicationIF.h>
 
 /**
- * @brief	This class is a implementation of a DeviceCommunicationIF for RMAP calls. It expects RMAPCookies or a derived class of RMAPCookies
+ * @brief	This class is a implementation of a DeviceCommunicationIF for RMAP calls.
+ *          It expects RMAPCookies or a derived class of RMAPCookies
  *
  * @details	The open, close and reOpen calls are mission specific
  * 			The open call might return any child of RMAPCookies
@@ -16,65 +17,73 @@ class RmapDeviceCommunicationIF: public DeviceCommunicationIF {
 public:
 	virtual ~RmapDeviceCommunicationIF();
 
-
 	/**
-	 * This method is mission specific as the open call will return a mission specific cookie
-	 *
-	 * @param cookie A cookie, can be mission specific subclass of RMAP Cookie
-	 * @param address The address of the RMAP Cookie
-	 * @param maxReplyLen Maximum length of expected reply
-	 * @return
+	 * @brief Device specific initialization, using the cookie.
+	 * @details
+	 * The cookie is already prepared in the factory. If the communication
+	 * interface needs to be set up in some way and requires cookie information,
+	 * this can be performed in this function, which is called on device handler
+	 * initialization.
+	 * @param cookie
+	 * @return -@c RETURN_OK if initialization was successfull
+	 * 		   - Everything else triggers failure event with returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t open(Cookie **cookie, uint32_t address,
-			uint32_t maxReplyLen) = 0;
+	virtual ReturnValue_t initializeInterface(CookieIF * cookie) = 0;
 
 	/**
-	 * Use an existing cookie to open a connection to a new DeviceCommunication.
-	 * The previous connection must not be closed.
-	 * If the returnvalue is not RETURN_OK, the cookie is unchanged and
-	 * can be used with the previous connection.
+	 * Called by DHB in the SEND_WRITE doSendWrite().
+	 * This function is used to send data to the physical device
+	 * by implementing and calling related drivers or wrapper functions.
+	 * @param cookie
+	 * @param data
+	 * @param len
+	 * @return -@c RETURN_OK for successfull send
+	 *         - Everything else triggers failure event with returnvalue as parameter 1
+	 */
+	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
+			size_t sendLen);
+
+	/**
+	 * Called by DHB in the GET_WRITE doGetWrite().
+	 * Get send confirmation that the data in sendMessage() was sent successfully.
+	 * @param cookie
+	 * @return -@c RETURN_OK if data was sent successfull
+	 * 		   - Everything else triggers falure event with returnvalue as parameter 1
+	 */
+	virtual ReturnValue_t getSendSuccess(CookieIF *cookie);
+
+	/**
+	 * Called by DHB in the SEND_WRITE doSendRead().
+	 * It is assumed that it is always possible to request a reply
+	 * from a device.
 	 *
 	 * @param cookie
-	 * @param address
-	 * @param maxReplyLen
-	 * @return
+	 * @return -@c RETURN_OK to confirm the request for data has been sent.
+	 *         -@c NO_READ_REQUEST if no request shall be made. readReceivedMessage()
+	 *         	   will not be called in the respective communication cycle.
+	 *         - Everything else triggers failure event with returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t reOpen(Cookie *cookie, uint32_t address,
-			uint32_t maxReplyLen) = 0;
-
+	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie, size_t requestLen);
 
 	/**
-	 * Closing call of connection and memory free of cookie. Mission dependent call
+	 * Called by DHB in the GET_WRITE doGetRead().
+	 * This function is used to receive data from the physical device
+	 * by implementing and calling related drivers or wrapper functions.
 	 * @param cookie
+	 * @param data
+	 * @param len
+	 * @return @c RETURN_OK for successfull receive
+	 *         - Everything else triggers failure event with returnvalue as parameter 1
 	 */
-	virtual void close(Cookie *cookie) = 0;
+	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
+			size_t *size);
 
-	//SHOULDDO can data be const?
-	/**
-	 *
-	 *
-	 * @param cookie Expects an RMAPCookie or derived from RMAPCookie Class
-	 * @param data Data to be send
-	 * @param len Length of the data to be send
-	 * @return - Return codes of RMAP::sendWriteCommand()
-	 */
-	virtual ReturnValue_t sendMessage(Cookie *cookie, uint8_t *data,
-			uint32_t len);
-
-	virtual ReturnValue_t getSendSuccess(Cookie *cookie);
-
-	virtual ReturnValue_t requestReceiveMessage(Cookie *cookie);
-
-	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
-			uint32_t *size);
-
-	virtual ReturnValue_t setAddress(Cookie *cookie, uint32_t address);
-
-	virtual uint32_t getAddress(Cookie *cookie);
-
-	virtual ReturnValue_t setParameter(Cookie *cookie, uint32_t parameter);
-
-	virtual uint32_t getParameter(Cookie *cookie);
+	ReturnValue_t setAddress(CookieIF* cookie,
+			uint32_t address);
+	uint32_t getAddress(CookieIF* cookie);
+	ReturnValue_t setParameter(CookieIF* cookie,
+			uint32_t parameter);
+	uint32_t getParameter(CookieIF* cookie);
 };
 
 #endif /* MISSION_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_ */

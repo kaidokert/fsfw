@@ -12,7 +12,7 @@ DeviceTmReportingWrapper::~DeviceTmReportingWrapper() {
 }
 
 ReturnValue_t DeviceTmReportingWrapper::serialize(uint8_t** buffer,
-		uint32_t* size, const uint32_t max_size, bool bigEndian) const {
+		size_t* size, const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result = SerializeAdapter<object_id_t>::serialize(&objectId,
 			buffer, size, max_size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -26,12 +26,12 @@ ReturnValue_t DeviceTmReportingWrapper::serialize(uint8_t** buffer,
 	return data->serialize(buffer, size, max_size, bigEndian);
 }
 
-uint32_t DeviceTmReportingWrapper::getSerializedSize() const {
+size_t DeviceTmReportingWrapper::getSerializedSize() const {
 	return sizeof(objectId) + sizeof(ActionId_t) + data->getSerializedSize();
 }
 
 ReturnValue_t DeviceTmReportingWrapper::deSerialize(const uint8_t** buffer,
-		int32_t* size, bool bigEndian) {
+		ssize_t* size, bool bigEndian) {
 	ReturnValue_t result = SerializeAdapter<object_id_t>::deSerialize(&objectId,
 			buffer, size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {

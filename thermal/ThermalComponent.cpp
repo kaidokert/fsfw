@@ -12,12 +12,10 @@ ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
 		CoreComponent(reportingObjectId, domainId, temperaturePoolId,
 				targetStatePoolId, currentStatePoolId, requestPoolId, dataSet,
 				sensor, firstRedundantSensor, secondRedundantSensor,
-				thermalModule,
-				{ parameters.lowerOpLimit, parameters.upperOpLimit,
-						parameters.heaterOn, parameters.hysteresis,
-						parameters.heaterSwitchoff }, priority,
-				ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL), nopParameters(
-				{ parameters.lowerNopLimit, parameters.upperNopLimit }) {
+				thermalModule,{ parameters.lowerOpLimit, parameters.upperOpLimit,
+				parameters.heaterOn, parameters.hysteresis, parameters.heaterSwitchoff },
+				priority, ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL),
+		nopParameters({ parameters.lowerNopLimit, parameters.upperNopLimit }) {
 }
 
 ThermalComponent::~ThermalComponent() {
@@ -42,11 +40,11 @@ ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
 	}
 }
 
-ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, uint32_t size) {
+ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, ssize_t size) {
 	if (size != 4 * sizeof(parameters.lowerOpLimit)) {
 		return MonitoringIF::INVALID_SIZE;
 	}
-	int32_t readSize = size;
+	ssize_t readSize = size;
 	SerializeAdapter<float>::deSerialize(&nopParameters.lowerNopLimit, &data,
 			&readSize, true);
 	SerializeAdapter<float>::deSerialize(&parameters.lowerOpLimit, &data,

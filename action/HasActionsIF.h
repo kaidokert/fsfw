@@ -7,8 +7,10 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/ipc/MessageQueueIF.h>
 /**
- * \brief Interface for component which uses actions
+ * @brief
+ * Interface for component which uses actions
  *
+ * @details
  * This interface is used to execute actions in the component. Actions, in the sense of this interface, are activities with a well-defined beginning and
  * end in time. They may adjust sub-states of components, but are not supposed to change
  * the main mode of operation, which is handled with the HasModesIF described below.
@@ -23,6 +25,8 @@
  * parameters and immediately start execution of the action. It is, however, not required to
  * immediately finish execution. Instead, this may be deferred to a later point in time, at
  * which the component needs to inform the caller about finished or failed execution.
+ *
+ * \ingroup interfaces
  */
 class HasActionsIF {
 public:
@@ -40,10 +44,11 @@ public:
 	/**
 	 * Execute or initialize the execution of a certain function.
 	 * Returning #EXECUTION_FINISHED or a failure code, nothing else needs to be done.
-	 * When needing more steps, return RETURN_OK and issue steps and completion manually. One "step failed" or completion report must
-	 * be issued!
+	 * When needing more steps, return RETURN_OK and issue steps and completion manually.
+	 * One "step failed" or completion report must be issued!
 	 */
-	virtual ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) = 0;
+	virtual ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
+			const uint8_t* data, size_t size) = 0;
 };
 
 

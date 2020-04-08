@@ -3,7 +3,7 @@
 #include <framework/parameters/ParameterMessage.h>
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner) :
-		owner(owner), storage(NULL) {
+		owner(owner), ownerQueueId(0), storage(NULL){
 
 }
 
@@ -37,7 +37,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 				ParameterMessage::getParameterId(message));
 
 		const uint8_t *storedStream;
-		uint32_t storedStreamSize;
+		size_t storedStreamSize;
 		result = storage->getData(
 				ParameterMessage::getStoreId(message), &storedStream,
 				&storedStreamSize);
@@ -94,7 +94,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	uint32_t storeElementSize = 0;
+	size_t storeElementSize = 0;
 
 	result = description->serialize(&storeElement, &storeElementSize,
 			serializedSize, true);

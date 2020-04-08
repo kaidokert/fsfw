@@ -6,10 +6,9 @@
 #include <framework/serialize/SerializeIF.h>
 
 /**
- * A List that stores its values in an array.
- *
- * The backend is an array that can be allocated by the class itself or supplied via ctor.
- *
+ * @brief 	A List that stores its values in an array.
+ * @details The backend is an array that can be allocated
+ * 			by the class itself or supplied via ctor.
  *
  * @ingroup container
  */
@@ -223,6 +222,7 @@ public:
 	count_t remaining() {
 		return (maxSize_ - size);
 	}
+
 private:
 	/**
 	 * This is the copy constructor
@@ -233,9 +233,9 @@ private:
 	 * @param other
 	 */
 	ArrayList(const ArrayList& other) :
-			size(other.size), entries(other.entries), maxSize_(other.maxSize_), allocated(
-					false) {
-	}
+			size(other.size), entries(other.entries), maxSize_(other.maxSize_),
+			allocated(false) {}
+
 protected:
 	/**
 	 * pointer to the array in which the entries are stored
@@ -251,5 +251,24 @@ protected:
 	 */
 	bool allocated;
 
+	/**
+	 * Swap the endianness of the Array list (not the length field !)
+	 * Useful if the case the buffer type is larger than uint8_t
+	 * @param list
+	 */
+	void swapArrayListEndianness() {
+		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+		count_t i = 0;
+		// uint8_t buffer does not require swapping of entries.
+		if(sizeof(T) == 1) {
+			return;
+		}
+		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < size)) {
+			T newEntry = EndianSwapper::swap(entries[i]);
+			entries[i] = newEntry;
+			++i;
+		}
+	}
 };
+
 #endif /* ARRAYLIST_H_ */

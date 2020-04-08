@@ -125,12 +125,12 @@ public:
 	 * 				(e.g. an illegal packet_id was passed).
 	 */
 	virtual ReturnValue_t getData(store_address_t packet_id,
-			const uint8_t** packet_ptr, uint32_t* size) = 0;
+			const uint8_t** packet_ptr, size_t * size) = 0;
 	/**
 	 * Same as above, but not const and therefore modifiable.
 	 */
 	virtual ReturnValue_t modifyData(store_address_t packet_id,
-			uint8_t** packet_ptr, uint32_t* size) = 0;
+			uint8_t** packet_ptr, size_t * size) = 0;
 	/**
 	 * This method reserves an element of \c size.
 	 *

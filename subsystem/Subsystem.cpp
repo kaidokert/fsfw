@@ -162,13 +162,13 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 	case ModeSequenceMessage::ADD_SEQUENCE: {
 		FixedArrayList<ModeListEntry, MAX_LENGTH_OF_TABLE_OR_SEQUENCE> sequence;
 		const uint8_t *pointer;
-		uint32_t sizeRead;
+		size_t sizeRead;
 		result = IPCStore->getData(
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
 		if (result == RETURN_OK) {
 			Mode_t fallbackId;
-			int32_t size = sizeRead;
+			ssize_t size = sizeRead;
 			result = SerializeAdapter<Mode_t>::deSerialize(&fallbackId,
 					&pointer, &size, true);
 			if (result == RETURN_OK) {
@@ -188,12 +188,12 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 	case ModeSequenceMessage::ADD_TABLE: {
 		FixedArrayList<ModeListEntry, MAX_LENGTH_OF_TABLE_OR_SEQUENCE> table;
 		const uint8_t *pointer;
-		uint32_t sizeRead;
+		size_t sizeRead;
 		result = IPCStore->getData(
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
 		if (result == RETURN_OK) {
-			int32_t size = sizeRead;
+			ssize_t size = sizeRead;
 			result = SerialArrayListAdapter<ModeListEntry>::deSerialize(&table,
 					&pointer, &size, true);
 			if (result == RETURN_OK) {
@@ -601,13 +601,13 @@ void Subsystem::transitionFailed(ReturnValue_t failureCode,
 void Subsystem::sendSerializablesAsCommandMessage(Command_t command,
 		SerializeIF** elements, uint8_t count) {
 	ReturnValue_t result;
-	uint32_t maxSize = 0;
+	size_t maxSize = 0;
 	for (uint8_t i = 0; i < count; i++) {
 		maxSize += elements[i]->getSerializedSize();
 	}
 	uint8_t *storeBuffer;
 	store_address_t address;
-	uint32_t size = 0;
+	size_t size = 0;
 
 	result = IPCStore->getFreeElement(&address, maxSize, &storeBuffer);
 	if (result != HasReturnvaluesIF::RETURN_OK) {

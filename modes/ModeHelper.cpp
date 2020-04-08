@@ -1,6 +1,7 @@
 #include <framework/modes/HasModesIF.h>
 #include <framework/modes/ModeHelper.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 ModeHelper::ModeHelper(HasModesIF *owner) :
 		theOneWhoCommandedAMode(0), commandedMode(HasModesIF::MODE_OFF), commandedSubmode(
@@ -42,7 +43,6 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
 		}
 
 		countdown.setTimeout(timeout);
-
 		owner->startTransition(mode, submode);
 	}
 		break;

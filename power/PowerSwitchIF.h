@@ -11,8 +11,13 @@
 #include <framework/events/Event.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 /**
- * This interface defines a connection to a device that is capable of turning on and off
- * switches of devices identified by a switch ID.
+ *
+ * @brief   This interface defines a connection to a device that is capable of turning on and off
+ *          switches of devices identified by a switch ID.
+ * @details The virtual functions of this interface do not allow to make any assignments
+ *          because they can be called asynchronosuly (const ending).
+ *
+ * @ingroup interfaces
  */
 class PowerSwitchIF : public HasReturnvaluesIF {
 public:

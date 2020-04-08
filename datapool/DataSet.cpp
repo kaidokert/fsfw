@@ -106,8 +106,8 @@ uint8_t DataSet::lockDataPool() {
 	return ::dataPool.lockDataPool();
 }
 
-ReturnValue_t DataSet::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t DataSet::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint16_t count = 0; count < fill_count; count++) {
 		result = registeredVariables[count]->serialize(buffer, size, max_size,
@@ -119,8 +119,8 @@ ReturnValue_t DataSet::serialize(uint8_t** buffer, uint32_t* size,
 	return result;
 }
 
-uint32_t DataSet::getSerializedSize() const {
-	uint32_t size = 0;
+size_t DataSet::getSerializedSize() const {
+	size_t size = 0;
 	for (uint16_t count = 0; count < fill_count; count++) {
 		size += registeredVariables[count]->getSerializedSize();
 	}
@@ -136,7 +136,7 @@ void DataSet::setValid(uint8_t valid) {
 	}
 }
 
-ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, int32_t* size,
+ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, ssize_t* size,
 		bool bigEndian) {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint16_t count = 0; count < fill_count; count++) {

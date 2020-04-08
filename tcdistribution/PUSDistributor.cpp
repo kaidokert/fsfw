@@ -31,7 +31,7 @@ iterator_t PUSDistributor::selectDestination() {
 	}
 
 	if (tcStatus != RETURN_OK) {
-		debug << "PUSDistributor::handlePacket: error with " << (int) tcStatus
+		debug << "PUSDistributor::handlePacket: error with 0x" << std::hex << (int) tcStatus
 				<< std::endl;
 		return this->queueMap.end();
 	} else {
@@ -48,6 +48,7 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 	ReturnValue_t returnValue = RETURN_OK;
 	bool errorCode = true;
 	uint16_t serviceId = service->getIdentifier();
+	//info << "Service ID: " << (int)serviceId << std::endl;
 	MessageQueueId_t queue = service->getRequestQueue();
 	errorCode = this->queueMap.insert(
 			std::pair<uint32_t, MessageQueueId_t>(serviceId, queue)).second;

@@ -26,7 +26,7 @@ MessageQueueId_t DataPoolAdmin::getCommandQueue() const {
 }
 
 ReturnValue_t DataPoolAdmin::executeAction(ActionId_t actionId,
-		MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) {
+		MessageQueueId_t commandedBy, const uint8_t* data, size_t size) {
 	if (actionId != SET_VALIDITY) {
 		return INVALID_ACTION_ID;
 	}
@@ -215,7 +215,7 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 				ParameterMessage::getParameterId(command));
 
 		const uint8_t *storedStream;
-		uint32_t storedStreamSize;
+		size_t storedStreamSize;
 		result = storage->getData(ParameterMessage::getStoreId(command),
 				&storedStream, &storedStreamSize);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -272,7 +272,7 @@ ReturnValue_t DataPoolAdmin::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	uint32_t storeElementSize = 0;
+	size_t storeElementSize = 0;
 
 	result = wrapper->serialize(&storeElement, &storeElementSize,
 			serializedSize, true);

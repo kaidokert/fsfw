@@ -4,7 +4,9 @@
 #include <stddef.h>
 #include <stdint.h>
 /**
- * \ingroup container
+ * @brief	Linked list data structure,
+ * 			each entry has a pointer to the next entry (singly)
+ * @ingroup container
  */
 template<typename T>
 class LinkedElement {
@@ -58,6 +60,11 @@ public:
 	virtual void setNext(LinkedElement* next) {
 		this->next = next;
 	}
+
+	void setEnd() {
+		this->next = NULL;
+	}
+
 	LinkedElement* begin() {
 		return this;
 	}
