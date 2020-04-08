@@ -196,7 +196,8 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 		to->usecond = (second - floor(second)) * 1000000;
 		return RETURN_OK;
 	}
-// Warning: Compiler/Linker fails ambiguously if library does not implement C99 I/O
+// Warning: Compiler/Linker fails ambiguously if library does not implement
+// C99 I/O
 #else
 	uint16_t year;
 	uint8_t month;

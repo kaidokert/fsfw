@@ -7,7 +7,8 @@
 #include <sstream>
 #include <cstdio>
 
-//Unfortunately, there must be a forward declaration of log_fe (MUST be defined in main), to let the system know where to write to.
+//Unfortunately, there must be a forward declaration of log_fe
+// (MUST be defined in main), to let the system know where to write to.
 extern std::ostream debug;
 extern std::ostream info;
 extern std::ostream warning;

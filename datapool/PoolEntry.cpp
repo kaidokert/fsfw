@@ -60,7 +60,8 @@ uint8_t PoolEntry<T>::getValid() {
 template <typename T>
 void PoolEntry<T>::print() {
 	for (uint8_t size = 0; size < this->length; size++ ) {
-		debug << "| " << std::hex << (double)this->address[size] << (this->valid? " (valid) " : " (invalid) ");
+		debug << "| " << std::hex << (double)this->address[size]
+		      << (this->valid? " (valid) " : " (invalid) ");
 	}
 	debug << std::dec << std::endl;
 }

@@ -7,7 +7,8 @@
 #include <framework/ipc/MutexFactory.h>
 #include <framework/globalfunctions/timevalOperations.h>
 
-
+typedef uint32_t ms_normal_t;
+typedef double ms_double_t;
 
 class Clock {
 public:

@@ -89,8 +89,7 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* message) {
 	}
 	if (MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
 			owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
-		debug
-				<< "HealthHelper::handleHealthCommand: sending health reply failed."
-				<< std::endl;
+		debug << "HealthHelper::handleHealthCommand: sending health "
+		        "reply failed." << std::endl;
 	}
 }
