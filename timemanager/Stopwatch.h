@@ -60,9 +60,8 @@ private:
     timeval startTime {0, 0};
     timeval elapsedTime {0, 0};
 
-    bool displayOnDestruction = true;
     StopwatchDisplayMode displayMode = StopwatchDisplayMode::MILLIS;
-
+    bool displayOnDestruction = true;
     void stopInternal();
 };
 

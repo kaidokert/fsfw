@@ -9,7 +9,7 @@
 #include <iomanip>
 
 Stopwatch::Stopwatch(bool displayOnDestruction,
-        StopwatchDisplayMode displayMode):
+        StopwatchDisplayMode displayMode): displayMode(displayMode),
         displayOnDestruction(displayOnDestruction) {
     // Measures start time on initialization.
     Clock::getUptime(&startTime);
@@ -32,12 +32,12 @@ seconds_t Stopwatch::stopSeconds() {
 void Stopwatch::display() {
     if(displayMode == StopwatchDisplayMode::MILLIS) {
         info << "Stopwatch: Operation took " << elapsedTime.tv_sec * 1000 +
-                elapsedTime.tv_usec * 1000 << " milliseconds";
+                elapsedTime.tv_usec * 1000 << " milliseconds" << std::endl;
     }
     else if(displayMode == StopwatchDisplayMode::SECONDS) {
-        info <<"Stopwatch: Operation took "  << std::setprecision(4)
+        info <<"Stopwatch: Operation took "  << std::setprecision(3)
              << std::fixed << timevalOperations::toDouble(elapsedTime)
-             << " seconds";
+             << " seconds" << std::endl;
     }
 }
 
