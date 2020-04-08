@@ -20,12 +20,20 @@ class BinarySemaphore: public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 
-	/** Semaphore object not found */
-	static const ReturnValue_t SEMAPHORE_NOT_FOUND = MAKE_RETURN_CODE(1);
-	/** Semaphore timeout */
-	static const ReturnValue_t SEMAPHORE_TIMEOUT = MAKE_RETURN_CODE(2);
+	//! No block time, poll the semaphore. Can also be used as tick type.
+	//! Can be passed as tick type and ms value.
+	static constexpr uint32_t NO_BLOCK_TIMEOUT = 0;
+	static constexpr TickType_t NO_BLOCK_TICKS = 0;
+	//! No block time, poll the semaphore.
+	//! Can be passed as tick type and ms value.
+	static constexpr TickType_t BLOCK_TIMEOUT_TICKS = portMAX_DELAY;
+	static constexpr uint32_t BLOCK_TIMEOUT = portMAX_DELAY;
+
+	//! Semaphore timeout
+	static constexpr ReturnValue_t SEMAPHORE_TIMEOUT = MAKE_RETURN_CODE(1);
 	/** The current semaphore can not be given, because it is not owned */
-	static const ReturnValue_t SEMAPHORE_NOT_OWNED = MAKE_RETURN_CODE(3);
+	static constexpr ReturnValue_t SEMAPHORE_NOT_OWNED = MAKE_RETURN_CODE(2);
+	static constexpr ReturnValue_t SEMAPHORE_NULLPOINTER = MAKE_RETURN_CODE(3);
 
 	/**
 	 * Create a binary semaphore
@@ -33,9 +41,30 @@ public:
 	BinarySemaphore();
 
 	/**
+	 * Copy ctor
+	 * @param
+	 */
+	BinarySemaphore(const BinarySemaphore&);
+
+	/**
+	 * Copy assignment
+	 */
+	BinarySemaphore& operator=(const BinarySemaphore&);
+
+	/**
+	 * Move constructor
+	 */
+	BinarySemaphore (BinarySemaphore &&);
+
+	/**
+	 * Move assignment
+	 */
+	BinarySemaphore & operator=(BinarySemaphore &&);
+
+	/**
 	 * Delete the binary semaphore to prevent a memory leak
 	 */
-	~BinarySemaphore();
+	virtual ~BinarySemaphore();
 
 	/**
 	 * Take the binary semaphore.
@@ -46,7 +75,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c RETURN_FAILED on failure
 	 */
-	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs);
+	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs =
+	        BinarySemaphore::NO_BLOCK_TIMEOUT);
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
@@ -54,7 +84,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c RETURN_FAILED on failure
 	 */
-	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks);
+	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
+	        BinarySemaphore::NO_BLOCK_TICKS);
 
 	/**
 	 * Give back the binary semaphore
@@ -95,9 +126,5 @@ public:
 private:
 	SemaphoreHandle_t handle;
 };
-
-
-
-
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_ */

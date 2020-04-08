@@ -52,10 +52,10 @@ public:
 	const uint8_t * getConstBuffer();
 	void setBuffer(void* buffer_, count_t bufferLength_);
 private:
-	bool m_serialize_length = false;
-	const uint8_t *m_const_buffer = nullptr;
+	bool serializeLength = false;
+	const uint8_t *constBuffer = nullptr;
 	uint8_t *m_buffer = nullptr;
-	count_t m_buffer_length = 0;
+	count_t bufferLength = 0;
 };
 
 
