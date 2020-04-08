@@ -6,10 +6,11 @@
 
 #include <framework/timemanager/Stopwatch.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <iomanip>
 
 Stopwatch::Stopwatch(bool displayOnDestruction,
-        StopwatchDisplayMode displayMode):
-        displayOnDestruction(displayOnDestruction) {
+        StopwatchDisplayMode displayMode, uint8_t precision):
+        displayOnDestruction(displayOnDestruction), outputPrecision(precision) {
     // Measures start time on initialization.
     Clock::getUptime(&startTime);
 }
@@ -31,8 +32,9 @@ ms_double_t Stopwatch::stopPrecise() {
 
 void Stopwatch::display() {
     if(displayMode == StopwatchDisplayMode::MS_DOUBLE) {
-        info << "Stopwatch: Operation took " <<
-                elapsedTimeMsDouble << " milliseconds" << std::endl;
+        info << "Stopwatch: Operation took "
+             << std::setprecision(outputPrecision) << elapsedTimeMsDouble
+             << " milliseconds" << std::endl;
     }
     else {
         info << "Stopwatch: Operation took " << elapsedTime.tv_sec * 1000 +
@@ -55,6 +57,8 @@ void Stopwatch::setDisplayMode(StopwatchDisplayMode displayMode) {
 StopwatchDisplayMode Stopwatch::getDisplayMode() const {
     return displayMode;
 }
+
+
 
 void Stopwatch::stopInternal() {
     elapsedTime = Clock::getUptime() - startTime;

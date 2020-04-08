@@ -22,9 +22,19 @@ enum class StopwatchDisplayMode {
  * as a float.
  */
 class Stopwatch {
-
+public:
+    /**
+     * Default constructor. Call "Stopwatch stopwatch" without brackets if
+     * no parameters are required!
+     * @param displayOnDestruction If set to true, displays measured time on
+     *        object destruction
+     * @param displayMode Display format is either MS rounded or MS as double
+     *        format
+     * @param outputPrecision If using double format, specify precision here.
+     */
     Stopwatch(bool displayOnDestruction = true,
-            StopwatchDisplayMode displayMode = StopwatchDisplayMode::MS_DOUBLE);
+            StopwatchDisplayMode displayMode = StopwatchDisplayMode::MS_DOUBLE,
+            uint8_t outputPrecision = 4);
     virtual~ Stopwatch();
 
     /**
@@ -53,12 +63,12 @@ class Stopwatch {
     StopwatchDisplayMode getDisplayMode() const;
     void setDisplayMode(StopwatchDisplayMode displayMode);
 private:
-
     timeval startTime {0, 0};
     timeval elapsedTime {0, 0};
-    double elapsedTimeMsDouble = 0;
+    double elapsedTimeMsDouble {0.0};
 
     bool displayOnDestruction = true;
+    uint8_t outputPrecision = 4;
     StopwatchDisplayMode displayMode = StopwatchDisplayMode::MS_DOUBLE;
 
     void stopInternal();
