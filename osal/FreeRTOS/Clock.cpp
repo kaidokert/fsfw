@@ -3,8 +3,11 @@
 #include <stdlib.h>
 #include "Timekeeper.h"
 
+extern "C" {
 #include <FreeRTOS.h>
 #include <task.h>
+}
+
 
 //TODO sanitize input?
 //TODO much of this code can be reused for tick-only systems
@@ -56,7 +59,6 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
 
 timeval Clock::getUptime() {
 	TickType_t ticksSinceStart = xTaskGetTickCount();
-
 	return Timekeeper::ticksToTimeval(ticksSinceStart);
 }
 
