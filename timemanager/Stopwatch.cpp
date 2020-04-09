@@ -12,7 +12,7 @@ Stopwatch::Stopwatch(bool displayOnDestruction,
         StopwatchDisplayMode displayMode): displayMode(displayMode),
         displayOnDestruction(displayOnDestruction) {
     // Measures start time on initialization.
-    Clock::getUptime(&startTime);
+    startTime = Clock::getUptime();
 }
 
 void Stopwatch::start() {
@@ -31,8 +31,8 @@ seconds_t Stopwatch::stopSeconds() {
 
 void Stopwatch::display() {
     if(displayMode == StopwatchDisplayMode::MILLIS) {
-        info << "Stopwatch: Operation took " << elapsedTime.tv_sec * 1000 +
-                elapsedTime.tv_usec * 1000 << " milliseconds" << std::endl;
+        info << "Stopwatch: Operation took " << (elapsedTime.tv_sec * 1000 +
+                elapsedTime.tv_usec / 1000) << " milliseconds" << std::endl;
     }
     else if(displayMode == StopwatchDisplayMode::SECONDS) {
         info <<"Stopwatch: Operation took "  << std::setprecision(3)
