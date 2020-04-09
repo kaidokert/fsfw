@@ -13,8 +13,9 @@ typedef uint32_t address_t;
  * 			single interface (like RMAP or I2C)
  * @details
  * To use this class, implement a communication specific child cookie which
- * inherits Cookie. Cookie instances are created in config/ Factory.cpp by calling
- * CookieIF* childCookie = new ChildCookie(...).
+ * inherits Cookie. Cookie instances are created in config/Factory.cpp by
+ * calling @code{.cpp} CookieIF* childCookie = new ChildCookie(...)
+ * @endcode .
  *
  * This cookie is then passed to the child device handlers, which stores the
  * pointer and passes it to the communication interface functions.

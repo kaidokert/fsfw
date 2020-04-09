@@ -31,7 +31,7 @@ seconds_t Stopwatch::stopSeconds() {
 
 void Stopwatch::display() {
     if(displayMode == StopwatchDisplayMode::MILLIS) {
-        info << "Stopwatch: Operation took " << elapsedTime.tv_sec * 1000 +
+        info << "Stopwatch: Operation took " << elapsedTime.tv_sec / 1000 +
                 elapsedTime.tv_usec * 1000 << " milliseconds" << std::endl;
     }
     else if(displayMode == StopwatchDisplayMode::SECONDS) {
