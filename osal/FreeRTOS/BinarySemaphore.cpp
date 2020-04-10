@@ -138,10 +138,8 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t sema
 	BaseType_t returncode = xSemaphoreGiveFromISR(semaphore, higherPriorityTaskWoken);
 	if (returncode == pdPASS) {
 		if(*higherPriorityTaskWoken == pdPASS) {
-			// Request context switch
-		    // TODO: I don't know if this will ever happen but if it does,
-		    // I want to to know in case this causes issues. If it doesn't
-		    // we should remove this.
+			// Request context switch because unblocking the semaphore
+		    // caused a high priority task unblock.
 			TaskManagement::requestContextSwitch(CallContext::isr);
 		}
 		return HasReturnvaluesIF::RETURN_OK;

@@ -104,7 +104,7 @@ ReturnValue_t TmTcBridge::readTmQueue() {
 
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	info << "TMTC Bridge: Comm Link down. "
-			"Saving packet ID to be sent later " << std::endl;
+			"Saving packet ID to be sent later\r\n" << std::flush;
 	store_address_t storeId;
 
 	if(fifo.full()) {
@@ -124,7 +124,7 @@ ReturnValue_t TmTcBridge::sendStoredTm() {
 	ReturnValue_t result = RETURN_OK;
 	while(!fifo.empty() && counter < MAX_STORED_DATA_SENT_PER_CYCLE) {
 		info << "UDP Server: Sending stored TM data. There are "
-				<< (int) fifo.size() << " left to send" << std::endl;
+				<< (int) fifo.size() << " left to send\r\n" << std::flush;
 		store_address_t storeId;
 		const uint8_t* data = NULL;
 		size_t size = 0;

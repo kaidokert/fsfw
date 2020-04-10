@@ -14,14 +14,14 @@ extern std::ostream info;
 extern std::ostream warning;
 extern std::ostream error;
 
-class ServiceInterfaceStream : public std::basic_ostream< char, std::char_traits< char > > {
+class ServiceInterfaceStream :
+        public std::basic_ostream<char, std::char_traits<char>> {
 protected:
     ServiceInterfaceBuffer buf;
 public:
     ServiceInterfaceStream( std::string set_message, uint16_t port = 1234 );
 	void setActive( bool );
 };
-
 
 
 #endif /* FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_ */

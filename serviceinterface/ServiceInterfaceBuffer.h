@@ -7,8 +7,8 @@
 #include <cstdio>
 
 #ifndef UT699
-class ServiceInterfaceBuffer: public std::basic_streambuf<char,
-		std::char_traits<char> > {
+class ServiceInterfaceBuffer:
+        public std::basic_streambuf<char,std::char_traits<char>> {
 	friend class ServiceInterfaceStream;
 public:
 	ServiceInterfaceBuffer(std::string set_message, uint16_t port);
@@ -17,11 +17,11 @@ protected:
 	// This is called when buffer becomes full. If
 	// buffer is not used, then this is called every
 	// time when characters are put to stream.
-	virtual int overflow(int c = Traits::eof());
+	int overflow(int c = Traits::eof()) override;
 
 	// This function is called when stream is flushed,
 	// for example when std::endl is put to stream.
-	virtual int sync(void);
+	int sync(void) override;
 
 private:
 	// For additional message information
@@ -30,7 +30,7 @@ private:
 	typedef std::char_traits<char> Traits;
 
 	// Work in buffer mode. It is also possible to work without buffer.
-	static size_t const BUF_SIZE = 128;
+	static size_t const BUF_SIZE = 150;
 	char buf[BUF_SIZE];
 
 	// In this function, the characters are parsed.

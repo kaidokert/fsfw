@@ -27,8 +27,8 @@ int ServiceInterfaceBuffer::sync(void) {
 		Clock::TimeOfDay_t loggerTime;
 		Clock::getDateAndTime(&loggerTime);
 		char preamble[96] = { 0 };
-		sprintf(preamble, "%s: | %" PRIu32 ":%02" PRIu32 ":%02" PRIu32 ".%03" PRIu32 " | ",
-				this->log_message.c_str(),
+		sprintf(preamble, "\r%s: | %" PRIu32 ":%02" PRIu32 ":%02" PRIu32
+		        ".%03" PRIu32 " | ", this->log_message.c_str(),
 				loggerTime.hour,
 				loggerTime.minute,
 				loggerTime.second,
@@ -45,7 +45,8 @@ int ServiceInterfaceBuffer::sync(void) {
 
 #ifndef UT699
 
-ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message, uint16_t port) {
+ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message,
+        uint16_t port) {
 	this->log_message = set_message;
 	this->isActive = true;
 	setp( buf, buf + BUF_SIZE );
@@ -59,7 +60,7 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 	}
 	memcpy(array, begin, length);
 
-	for( ; begin != end; begin++){
+	for(; begin != end; begin++){
 		printChar(begin);
 	}
 

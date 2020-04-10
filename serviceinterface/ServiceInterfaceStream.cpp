@@ -6,6 +6,6 @@ void ServiceInterfaceStream::setActive( bool myActive) {
 
 ServiceInterfaceStream::ServiceInterfaceStream(std::string set_message,
 		uint16_t port) :
-		std::basic_ostream<char, std::char_traits<char> >(&buf), buf(
-				set_message, port) {
+		std::basic_ostream<char, std::char_traits<char>>(&buf),
+		buf(set_message, port) {
 }
