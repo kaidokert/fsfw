@@ -9,7 +9,9 @@
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = PTHREAD_STACK_MIN;
 
-FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, uint32_t periodMs_):PosixThread(name_,priority_,stackSize_),pst(periodMs_),started(false) {
+FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_,
+		size_t stackSize_, uint32_t periodMs_):
+		PosixThread(name_,priority_,stackSize_),pst(periodMs_),started(false) {
 }
 
 FixedTimeslotTask::~FixedTimeslotTask() {

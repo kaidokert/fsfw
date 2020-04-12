@@ -69,7 +69,7 @@ private:
 	struct SerializationArgs {
 		uint8_t ** buffer;
 		size_t * size;
-		const uint32_t max_size;
+		const size_t max_size;
 		bool bigEndian;
 	};
 	/**

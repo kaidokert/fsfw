@@ -7,7 +7,7 @@
 #include <sstream>
 #include <cstdio>
 
-//Unfortunately, there must be a forward declaration of log_fe
+// Unfortunately, there must be a forward declaration of log_fe
 // (MUST be defined in main), to let the system know where to write to.
 extern std::ostream debug;
 extern std::ostream info;
@@ -19,7 +19,8 @@ class ServiceInterfaceStream :
 protected:
     ServiceInterfaceBuffer buf;
 public:
-    ServiceInterfaceStream( std::string set_message, uint16_t port = 1234 );
+    ServiceInterfaceStream( std::string set_message,
+    		bool addCrToPreamble = false, uint16_t port = 1234);
 	void setActive( bool );
 };
 
