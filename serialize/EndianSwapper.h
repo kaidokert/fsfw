@@ -11,9 +11,7 @@
  */
 class EndianSwapper {
 private:
-	EndianSwapper() {
-	}
-	;
+	EndianSwapper() {};
 public:
 	template<typename T>
 	static T swap(T in) {

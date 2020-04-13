@@ -9,18 +9,21 @@
 
  /**
  * @brief This adapter provides an interface to use the SerializeIF functions
- * 		  with arbitrary template objects to facilitate and simplify the serialization of classes
- * 		  with different multiple different data types into buffers and vice-versa.
+ * 		  with arbitrary template objects to facilitate and simplify the
+ * 		  serialization of classes with different multiple different data types
+ * 		  into buffers and vice-versa.
  * @details
  * Examples:
- * A report class is converted into a TM buffer. The report class implements a serialize functions and calls
- * the AutoSerializeAdapter::serialize function repeatedly on all object data fields.
- * The getSerializedSize function is implemented by calling the
- * AutoSerializeAdapter::getSerializedSize function repeatedly on all data fields.
+ * A report class is converted into a TM buffer. The report class implements a
+ * serialize functions and calls the AutoSerializeAdapter::serialize function
+ * repeatedly on all object data fields. The getSerializedSize function is
+ * implemented by calling the AutoSerializeAdapter::getSerializedSize function
+ * repeatedly on all data fields.
  *
- * The AutoSerializeAdapter functions can also be used as an alternative to memcpy
- * to retrieve data out of a buffer directly into a class variable with data type T while being able to specify endianness.
- * The boolean bigEndian specifies whether an endian swap is performed on the data before
+ * The AutoSerializeAdapter functions can also be used as an alternative to
+ * memcpy to retrieve data out of a buffer directly into a class variable
+ * with data type T while being able to specify endianness. The boolean
+ * bigEndian specifies whether an endian swap is performed on the data before
  * serialization or deserialization.
  *
  * If the target architecture is little endian (ARM), any data types created might
@@ -50,8 +53,8 @@
  *   	memcpy(&data,buffer + positionOfTargetByte1,sizeof(data));
  *   	data = EndianSwapper::swap(data);
  *
- * When serializing for downlink, the packets are generally serialized assuming big endian data format
- * like seen in TmPacketStored.cpp for example.
+ * When serializing for downlink, the packets are generally serialized assuming
+ * big endian data format like seen in TmPacketStored.cpp for example.
  *
  * @ingroup serialize
  */
@@ -83,8 +86,10 @@ public:
 	/**
 	 * Deserialize buffer into object
 	 * @param object [out] Object to be deserialized with buffer data
-	 * @param buffer buffer containing the data. Non-Const pointer to non-const pointer to const buffer.
-	 * @param size int32_t type to allow value to be values smaller than 0, needed for range/size checking
+	 * @param buffer buffer containing the data. Non-Const pointer to non-const
+	 * 						pointer to const buffer.
+	 * @param size int32_t type to allow value to be values smaller than 0,
+	 * 						needed for range/size checking
 	 * @param bigEndian Specify endianness
 	 * @return
 	 */
@@ -106,7 +111,7 @@ public:
 		}
 	}
 
-	uint32_t getSerializedSize(const T * object) {
+	size_t getSerializedSize(const T * object) {
 		return sizeof(T);
 	}
 
@@ -123,7 +128,7 @@ public:
 		}
 		return object->serialize(buffer, size, max_size, bigEndian);
 	}
-	uint32_t getSerializedSize(const T* object) const {
+	size_t getSerializedSize(const T* object) const {
 		return object->getSerializedSize();
 	}
 
@@ -163,7 +168,7 @@ public:
 		return adapter.serialize(object, buffer, size, max_size, bigEndian);
 	}
 	template<typename T>
-	static uint32_t getSerializedSize(const T* object) {
+	static size_t getSerializedSize(const T* object) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.getSerializedSize(object);
 	}
