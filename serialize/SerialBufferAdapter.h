@@ -8,11 +8,13 @@
  * This adapter provides an interface for SerializeIF to serialize or deserialize
  * buffers with no length header but a known size.
  *
- * Additionally, the buffer length can be serialized too and will be put in front of the serialized buffer.
+ * Additionally, the buffer length can be serialized too and will be put in
+ * front of the serialized buffer.
  *
  * Can be used with SerialLinkedListAdapter by declaring a SerializeElement with
- * SerialElement<SerialBufferAdapter<bufferLengthType(will be uint8_t mostly)>> serialBufferElement.
- * Right now, the SerialBufferAdapter must always be initialized with the buffer and size !
+ * SerialElement<SerialBufferAdapter<bufferLengthType(will be uint8_t mostly)>>.
+ * Right now, the SerialBufferAdapter must always
+ * be initialized with the buffer and size !
  *
  * \ingroup serialize
  */
@@ -27,14 +29,16 @@ public:
 	 * @param bufferLength
 	 * @param serializeLength
 	 */
-	SerialBufferAdapter(const void* buffer, count_t bufferLength, bool serializeLength = false);
+	SerialBufferAdapter(const void* buffer, count_t bufferLength,
+			bool serializeLength = false);
 
 	/**
-	 * Constructor for non-constant uint8_t buffer. Length field can be serialized optionally.
+	 * Constructor for non-constant uint8_t buffer.
+	 * Length field can be serialized optionally.
 	 * Type of length can be supplied as template type.
 	 * @param buffer
 	 * @param bufferLength
-	 * @param serializeLength
+	 * @param serializeLength Length field will be serialized with size count_t
 	 */
 	SerialBufferAdapter(void* buffer, count_t bufferLength, bool serializeLength = false);
 
@@ -57,7 +61,5 @@ private:
 	uint8_t *m_buffer = nullptr;
 	count_t bufferLength = 0;
 };
-
-
 
 #endif /* SERIALBUFFERADAPTER_H_ */

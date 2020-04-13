@@ -12,8 +12,8 @@ SerialBufferAdapter<count_t>::SerialBufferAdapter(const void* buffer,
 }
 
 template<typename count_t>
-SerialBufferAdapter<count_t>::SerialBufferAdapter(void* buffer, count_t bufferLength,
-		bool serializeLength) :
+SerialBufferAdapter<count_t>::SerialBufferAdapter(void* buffer,
+		count_t bufferLength, bool serializeLength) :
 		serializeLength(serializeLength), bufferLength(bufferLength) {
 	uint8_t * member_buffer = static_cast<uint8_t *>(buffer);
 	m_buffer = member_buffer;
@@ -26,8 +26,8 @@ SerialBufferAdapter<count_t>::~SerialBufferAdapter() {
 }
 
 template<typename count_t>
-ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, bool bigEndian) const {
+ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer,
+		size_t* size, const size_t max_size, bool bigEndian) const {
 	uint32_t serializedLength = bufferLength;
 	if (serializeLength) {
 		serializedLength += AutoSerializeAdapter::getSerializedSize(
@@ -98,7 +98,8 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
 template<typename count_t>
 uint8_t * SerialBufferAdapter<count_t>::getBuffer() {
 	if(m_buffer == nullptr) {
-		error << "Wrong access function for stored type ! Use getConstBuffer()" << std::endl;
+		error << "Wrong access function for stored type !"
+				 " Use getConstBuffer()" << std::endl;
 		return nullptr;
 	}
 	return m_buffer;
@@ -107,14 +108,16 @@ uint8_t * SerialBufferAdapter<count_t>::getBuffer() {
 template<typename count_t>
 const uint8_t * SerialBufferAdapter<count_t>::getConstBuffer() {
 	if(constBuffer == nullptr) {
-		error << "Wrong access function for stored type ! Use getBuffer()" << std::endl;
+		error << "Wrong access function for stored type !"
+				 " Use getBuffer()" << std::endl;
 		return nullptr;
 	}
 	return constBuffer;
 }
 
 template<typename count_t>
-void SerialBufferAdapter<count_t>::setBuffer(void * buffer, count_t buffer_length) {
+void SerialBufferAdapter<count_t>::setBuffer(void * buffer,
+		count_t buffer_length) {
 	m_buffer = static_cast<uint8_t *>(buffer);
 	bufferLength = buffer_length;
 }
