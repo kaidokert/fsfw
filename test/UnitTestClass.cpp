@@ -17,7 +17,7 @@ UnitTestClass::UnitTestClass() {
 UnitTestClass::~UnitTestClass() {
 }
 
-ReturnValue_t UnitTestClass::performTests() {
+ReturnValue_t UnitTestClass::perform_tests() {
 	ReturnValue_t result = test_serialization();
 	if(result != RETURN_OK) {
 		return result;
@@ -28,7 +28,11 @@ ReturnValue_t UnitTestClass::performTests() {
 
 ReturnValue_t UnitTestClass::test_serialization() {
 	// Here, we test all serialization tools. First test basic cases.
-	ReturnValue_t result = test_autoserialization();
+	ReturnValue_t result = test_endianness_tools();
+	if(result != RETURN_OK) {
+		return result;
+	}
+	result = test_autoserialization();
 	if(result != RETURN_OK) {
 		return result;
 	}
@@ -36,6 +40,47 @@ ReturnValue_t UnitTestClass::test_serialization() {
 	if(result != RETURN_OK) {
 		return result;
 	}
+	return RETURN_OK;
+}
+
+ReturnValue_t UnitTestClass::test_endianness_tools() {
+	test_array[0] = 0;
+	test_array[1] = 0;
+	uint16_t two_byte_value = 1;
+	size_t size = 0;
+	uint8_t* p_array = test_array.data();
+	AutoSerializeAdapter::serialize(&two_byte_value, &p_array, &size, 2, false);
+	// Little endian: Value one on first byte
+	if(test_array[0] != 1 and test_array[1] != 0) {
+		return put_error(TestIds::ENDIANNESS_TOOLS);
+
+	}
+	p_array = test_array.data();
+	size = 0;
+	AutoSerializeAdapter::serialize(&two_byte_value, &p_array, &size, 2, true);
+	// Big endian: Value one on second byte
+	if(test_array[0] != 0 and test_array[1] != 1) {
+		return put_error(TestIds::ENDIANNESS_TOOLS);
+	}
+
+	// Endianness paameter will be changed later.
+//	p_array = test_array.data();
+//	ssize_t ssize = size;
+//	// Resulting parameter should be big endian
+//	AutoSerializeAdapter::deSerialize(&two_byte_value,
+//			const_cast<const uint8_t **>(&p_array), &ssize, true);
+//	if(two_byte_value != 1) {
+//		return put_error(TestIds::ENDIANNESS_TOOLS);
+//	}
+//
+//	ssize = size;
+//	p_array = test_array.data();
+//	// Resulting parameter should be little endian
+//	AutoSerializeAdapter::deSerialize(&two_byte_value,
+//			const_cast<const uint8_t **>(&p_array), &ssize, false);
+//	if(two_byte_value != 256) {
+//		return put_error(TestIds::ENDIANNESS_TOOLS);
+//	}
 	return RETURN_OK;
 }
 
@@ -142,15 +187,21 @@ ReturnValue_t UnitTestClass::test_autoserialization() {
 	//	double tv_sdouble {-2.2421e19};
 	if(test_value_bool != true or tv_uint8 != 5 or tv_uint16 != 283 or
 			tv_uint32 != 929221 or tv_uint64 != 2929329429 or tv_int8 != -16 or
-			tv_int16 != -829 or tv_int32 != -2312 or tv_float != 8.214921 or
-			tv_double != 9.2132142141e8 or tv_sfloat != -922.2321321 or
-			tv_sdouble != -2.2421e19)
+			tv_int16 != -829 or tv_int32 != -2312)
 	{
+		return put_error(current_id);
+	}
+
+	if(abs(tv_float - 8.214921) > 0.0001 or
+			abs(tv_double - 9.2132142141e8) > 0.01 or
+			abs(tv_sfloat - (-922.2321321)) > 0.0001 or
+			abs(tv_sdouble - (-2.2421e19)) > 0.01) {
 		return put_error(current_id);
 	}
 	return RETURN_OK;
 }
 
+// TODO: Also test for constant buffers.
 ReturnValue_t UnitTestClass::test_serial_buffer_adapter() {
 	current_id = TestIds::SERIALIZATION_BUFFER_ADAPTER;
 
@@ -203,6 +254,31 @@ ReturnValue_t UnitTestClass::test_serial_buffer_adapter() {
 	{
 		return put_error(current_id);
 	}
+	memcpy(&tv_uint16, test_array.data() + 7, sizeof(tv_uint16));
+	if(tv_uint16 != 16) {
+		return put_error(current_id);
+	}
+
+	// Serialize with size field
+	SerialBufferAdapter<uint8_t> tv_serial_buffer_adapter3 =
+			SerialBufferAdapter<uint8_t>(
+			const_cast<const uint8_t*>(test_serial_buffer.data()),
+			test_serial_buffer.size(), false);
+	serialized_size = 0;
+	p_array = test_array.data();
+	AutoSerializeAdapter::serialize(&test_value_bool, &p_array,&serialized_size,
+			test_array.size(), false);
+	AutoSerializeAdapter::serialize(&tv_serial_buffer_adapter3, &p_array,
+			&serialized_size, test_array.size(), false);
+	AutoSerializeAdapter::serialize(&tv_uint16, &p_array, &serialized_size,
+			test_array.size(), false);
+
+	if(serialized_size != 8 or test_array[0] != true or test_array[1] != 5
+			or test_array[2] != 4 or test_array[3] != 3 or test_array[4] != 2
+			or test_array[5] != 1)
+	{
+		return put_error(current_id);
+	}
 	memcpy(&tv_uint16, test_array.data() + 6, sizeof(tv_uint16));
 	if(tv_uint16 != 16) {
 		return put_error(current_id);
@@ -215,3 +291,4 @@ ReturnValue_t UnitTestClass::put_error(TestIds current_id) {
 			<< static_cast<uint32_t>(current_id) << "\r\n" << std::flush;
 	return RETURN_FAILED;
 }
+

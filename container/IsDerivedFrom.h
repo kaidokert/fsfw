@@ -1,6 +1,13 @@
 #ifndef ISDERIVEDFROM_H_
 #define ISDERIVEDFROM_H_
 
+/**
+ * These template type checks are based on SFINAE
+ * (https://en.cppreference.com/w/cpp/language/sfinae)
+ *
+ * @tparam D Derived Type
+ * @tparam B Base Type
+ */
 template<typename D, typename B>
 class IsDerivedFrom {
 	class No {
@@ -9,7 +16,9 @@ class IsDerivedFrom {
 		No no[3];
 	};
 
+	// This will be chosen if B is the base type
 	static Yes Test(B*); // declared, but not defined
+	// This will be chosen for anything else
 	static No Test(... ); // declared, but not defined
 
 public:

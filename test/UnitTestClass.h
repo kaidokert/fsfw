@@ -19,6 +19,8 @@
  *  1. TMTC Services
  *  2. Serialization tools
  *  3. Framework internal algorithms
+ *
+ *  TODO: Maybe use specialized framework.
  */
 
 class UnitTestClass: public HasReturnvaluesIF {
@@ -27,12 +29,13 @@ public:
 	virtual~ UnitTestClass();
 
 	enum class TestIds {
-		AUTO_SERIALIZATION_SIZE = 0,
-		AUTO_SERIALIZATION_SERIALIZE = 1,
-		AUTO_SERIALIZATION_DESERIALIZE = 2,
-		SERIALIZATION_BUFFER_ADAPTER = 3,
-		SERIALIZATION_FIXED_ARRAY_LIST_ADAPTER = 4,
-		SERIALIZATION_COMBINATION = 5,
+		ENDIANNESS_TOOLS,
+		AUTO_SERIALIZATION_SIZE,
+		AUTO_SERIALIZATION_SERIALIZE,
+		AUTO_SERIALIZATION_DESERIALIZE ,
+		SERIALIZATION_BUFFER_ADAPTER,
+		SERIALIZATION_FIXED_ARRAY_LIST_ADAPTER,
+		SERIALIZATION_COMBINATION,
 		TMTC_SERVICES ,
 		MISC
 	};
@@ -41,11 +44,12 @@ public:
 	 * Some function which calls all other tests
 	 * @return
 	 */
-	ReturnValue_t performTests();
+	ReturnValue_t perform_tests();
 
 	ReturnValue_t test_serialization();
 	ReturnValue_t test_autoserialization();
 	ReturnValue_t test_serial_buffer_adapter();
+	ReturnValue_t test_endianness_tools();
 private:
 	uint32_t errorCounter = 0;
 	TestIds current_id = TestIds::MISC;
