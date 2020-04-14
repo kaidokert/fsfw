@@ -11,11 +11,9 @@
 
 #include <cstdlib>
 
-UnitTestClass::UnitTestClass() {
-}
+UnitTestClass::UnitTestClass() {}
 
-UnitTestClass::~UnitTestClass() {
-}
+UnitTestClass::~UnitTestClass() {}
 
 ReturnValue_t UnitTestClass::perform_tests() {
 	ReturnValue_t result = test_serialization();
@@ -175,16 +173,6 @@ ReturnValue_t UnitTestClass::test_autoserialization() {
 	AutoSerializeAdapter::deSerialize(&tv_sdouble,
 			const_cast<const uint8_t**>(&p_array), &remaining_size, false);
 
-	//	uint16_t tv_uint16 {283};
-	//	uint32_t tv_uint32 {929221};
-	//	uint64_t tv_uint64 {2929329429};
-	//	int8_t tv_int8 {-16};
-	//	int16_t tv_int16 {-829};
-	//	int32_t tv_int32 {-2312};
-	//	float tv_float {8.2149214};
-	//	float tv_sfloat = {-922.2321321};
-	//	double tv_double {9.2132142141e8};
-	//	double tv_sdouble {-2.2421e19};
 	if(test_value_bool != true or tv_uint8 != 5 or tv_uint16 != 283 or
 			tv_uint32 != 929221 or tv_uint64 != 2929329429 or tv_int8 != -16 or
 			tv_int16 != -829 or tv_int32 != -2312)
