@@ -9,6 +9,7 @@
 #define FRAMEWORK_TEST_UNITTESTCLASS_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+
 #include <map>
 #include <vector>
 

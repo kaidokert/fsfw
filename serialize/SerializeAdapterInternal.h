@@ -12,7 +12,8 @@
 #include <framework/serialize/EndianSwapper.h>
 
 /**
- * This template specialization will be chosen for fundamental types.
+ * This template specialization will be chosen for fundamental types,
+ * based on partial template specialization
  * @tparam T
  * @tparam
  */
@@ -30,6 +31,9 @@ public:
 	 */
 	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
 			size_t* size, const size_t max_size, bool bigEndian) {
+	    // function eventuelly serializes structs here.
+	    // does this work on every architecture?
+	    //static_assert(std::is_fundamental<T>::value);
 		size_t ignoredSize = 0;
 		if (size == nullptr) {
 			size = &ignoredSize;
@@ -85,7 +89,7 @@ public:
 
 /**
  * This template specialization will be chosen for class derived from
- * SerializeIF.
+ * SerializeIF, based on partial template specialization.
  * @tparam T
  * @tparam
  */

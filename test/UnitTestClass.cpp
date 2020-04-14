@@ -11,6 +11,15 @@
 
 #include <cstdlib>
 
+#if defined(UNIT_TEST)
+#include "catch.hpp"
+#define CATCH_CONFIG_MAIN
+
+TEST_CASE( "Serialization Size tests", "[single-file]") {
+   //REQUIRE(UnitTestClass::test_serialization == RETURN_OK );
+}
+#endif
+
 UnitTestClass::UnitTestClass() {}
 
 UnitTestClass::~UnitTestClass() {}
@@ -53,6 +62,7 @@ ReturnValue_t UnitTestClass::test_endianness_tools() {
 		return put_error(TestIds::ENDIANNESS_TOOLS);
 
 	}
+
 	p_array = test_array.data();
 	size = 0;
 	AutoSerializeAdapter::serialize(&two_byte_value, &p_array, &size, 2, true);
@@ -180,6 +190,7 @@ ReturnValue_t UnitTestClass::test_autoserialization() {
 		return put_error(current_id);
 	}
 
+	// These epsilon values were just guessed.. It appears to work though.
 	if(abs(tv_float - 8.214921) > 0.0001 or
 			abs(tv_double - 9.2132142141e8) > 0.01 or
 			abs(tv_sfloat - (-922.2321321)) > 0.0001 or
