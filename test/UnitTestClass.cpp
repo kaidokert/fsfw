@@ -17,7 +17,7 @@ UnitTestClass::UnitTestClass() {
 UnitTestClass::~UnitTestClass() {
 }
 
-ReturnValue_t UnitTestClass::performTests() {
+ReturnValue_t UnitTestClass::perform_tests() {
 	ReturnValue_t result = test_serialization();
 	if(result != RETURN_OK) {
 		return result;

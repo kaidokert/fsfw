@@ -41,7 +41,7 @@ public:
 	 * Some function which calls all other tests
 	 * @return
 	 */
-	ReturnValue_t performTests();
+	ReturnValue_t perform_tests();
 
 	ReturnValue_t test_serialization();
 	ReturnValue_t test_autoserialization();
