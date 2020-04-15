@@ -16,10 +16,11 @@ object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
-DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
-		CookieIF * comCookie_, uint8_t setDeviceSwitch,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
-		FailureIsolationBase* fdirInstance, size_t cmdQueueSize) :
+DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
+		object_id_t deviceCommunication, CookieIF * comCookie_,
+		uint8_t setDeviceSwitch, uint32_t thermalStatePoolId,
+		uint32_t thermalRequestPoolId, FailureIsolationBase* fdirInstance,
+		size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 	    deviceCommunicationId(deviceCommunication), comCookie(comCookie_),
@@ -37,7 +38,8 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t device
 	insertInCommandMap(RAW_COMMAND_ID);
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance =
-				new DeviceHandlerFailureIsolation(setObjectId, defaultFDIRParentId);
+				new DeviceHandlerFailureIsolation(setObjectId,
+						defaultFDIRParentId);
 	}
 }
 

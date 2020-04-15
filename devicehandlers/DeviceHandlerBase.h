@@ -93,8 +93,10 @@ public:
 	 *
 	 * @param setObjectId the ObjectId to pass to the SystemObject() Constructor
 	 * @param maxDeviceReplyLen the largest allowed reply size
-	 * @param setDeviceSwitch the switch the device is connected to, for devices using two switches, overwrite getSwitches()
-	 * @param deviceCommuncation Communcation Interface object which is used to implement communication functions
+	 * @param setDeviceSwitch the switch the device is connected to,
+	 *    for devices using two switches, overwrite getSwitches()
+	 * @param deviceCommuncation Communcation Interface object which is
+	 *    used to implement communication functions
 	 * @param thermalStatePoolId
 	 * @param thermalRequestPoolId
 	 * @param fdirInstance
@@ -107,31 +109,35 @@ public:
 			FailureIsolationBase* fdirInstance = nullptr, size_t cmdQueueSize = 20);
 
 	/**
-	 * @brief This function is the device handler base core component and is called periodically.
+	 * @brief 	This function is the device handler base core component and is
+	 * 			called periodically.
 	 * @details
 	 * General sequence, showing where abstract virtual functions are called:
 	 * If the State is SEND_WRITE:
 	 *   1. Set the cookie state to COOKIE_UNUSED and read the command queue
 	 *   2. Handles Device State Modes by calling doStateMachine().
-	 *      This function calls callChildStatemachine() which calls the abstract functions
-	 *      doStartUp() and doShutDown()
+	 *      This function calls callChildStatemachine() which calls the
+	 *      abstract functions doStartUp() and doShutDown()
 	 *   3. Check switch states by calling checkSwitchStates()
-	 *   4. Decrements counter for timeout of replies by calling decrementDeviceReplyMap()
+	 *   4. Decrements counter for timeout of replies by calling
+	 *      decrementDeviceReplyMap()
 	 *   5. Performs FDIR check for failures
 	 *   6. Calls hkSwitcher.performOperation()
-	 *   7. If the device mode is MODE_OFF, return RETURN_OK. Otherwise, perform the Action property
-	 *   	and performs depending on value specified
-	 *      by input value counter. The child class tells base class what to do by setting this value.
-	 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite() which calls
-	 *       sendMessage function of #communicationInterface
+	 *   7. If the device mode is MODE_OFF, return RETURN_OK.
+     *      Otherwise, perform the Action property and performs depending
+     *      on value specified by input value counter (incremented in PST).
+     *      The child class tells base class what to do by setting this value.
+	 *     - SEND_WRITE: Send data or commands to device by calling
+	 *       doSendWrite() which calls sendMessage function
+	 *       of #communicationInterface
 	 *     	 and calls buildInternalCommand if the cookie state is COOKIE_UNUSED
-	 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite() which calls
-	 *       getSendSuccess of #communicationInterface.
+	 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite()
+	 *       which calls getSendSuccess of #communicationInterface.
 	 *       Calls abstract functions scanForReply() and interpretDeviceReply().
-	 *     - SEND_READ: Request reading data from device by calling doSendRead() which calls
-	 *       requestReceiveMessage of #communcationInterface
-	 *     - GET_READ: Access requested reading data by calling doGetRead() which calls
-	 *       readReceivedMessage of #communicationInterface
+	 *     - SEND_READ: Request reading data from device by calling doSendRead()
+	 *       which calls requestReceiveMessage of #communcationInterface
+	 *     - GET_READ: Access requested reading data by calling doGetRead()
+	 *       which calls readReceivedMessage of #communicationInterface
 	 * @param counter Specifies which Action to perform
 	 * @return RETURN_OK for successful execution
 	 */
@@ -153,37 +159,54 @@ public:
 	virtual ~DeviceHandlerBase();
 protected:
 	/**
-	 * This is used to let the child class handle the transition from mode @c _MODE_START_UP to @c MODE_ON
-	 *
-	 * It is only called when the device handler is in mode @c _MODE_START_UP. That means, the device switch(es) are already set to on.
-	 * Device handler commands are read and can be handled by the child class. If the child class handles a command, it should also send
+	 * @brief 	This is used to let the child class handle the transition from
+	 * 			mode @c _MODE_START_UP to @c MODE_ON
+	 * @details
+	 * It is only called when the device handler is in mode @c _MODE_START_UP.
+	 * That means, the device switch(es) are already set to on.
+	 * Device handler commands are read and can be handled by the child class.
+	 * If the child class handles a command, it should also send
 	 * an reply accordingly.
-	 * If an Command is not handled (ie #DeviceHandlerCommand is not @c CMD_NONE, the base class handles rejecting the command and sends a reply.
+	 * If an Command is not handled (ie #DeviceHandlerCommand is not @c CMD_NONE,
+	 * the base class handles rejecting the command and sends a reply.
 	 * The replies for mode transitions are handled by the base class.
 	 *
-	 * If the device is started and ready for operation, the mode should be set to MODE_ON. It is possible to set the mode to _MODE_TO_ON to
-	 * use the to on transition if available.
-	 * If the power-up fails, the mode should be set to _MODE_POWER_DOWN which will lead to the device being powered off.
-	 * If the device does not change the mode, the mode will be changed to _MODE_POWER_DOWN, after the timeout (from getTransitionDelay()) has passed.
+	 *  - If the device is started and ready for operation, the mode should be
+	 *    set to MODE_ON. It is possible to set the mode to _MODE_TO_ON to
+	 *    use the to on transition if available.
+	 *  - If the power-up fails, the mode should be set to _MODE_POWER_DOWN
+	 *    which will lead to the device being powered off.
+	 *  - If the device does not change the mode, the mode will be changed
+	 *    to _MODE_POWER_DOWN, after the timeout (from getTransitionDelay())
+	 *    has passed.
 	 *
-	 * #transitionFailure can be set to a failure code indicating the reason for a failed transition
+	 * #transitionFailure can be set to a failure code indicating the reason
+	 * for a failed transition
 	 */
 	virtual void doStartUp() = 0;
 
 	/**
-	 * This is used to let the child class handle the transition from mode @c _MODE_SHUT_DOWN to @c _MODE_POWER_DOWN
-	 *
+	 * @brief 	This is used to let the child class handle the transition
+	 * 			from mode @c _MODE_SHUT_DOWN to @c _MODE_POWER_DOWN
+	 * @details
 	 * It is only called when the device handler is in mode @c _MODE_SHUT_DOWN.
-	 * Device handler commands are read and can be handled by the child class. If the child class handles a command, it should also send
-	 * an reply accordingly.
-	 * If an Command is not handled (ie #DeviceHandlerCommand is not @c CMD_NONE, the base class handles rejecting the command and sends a reply.
-	 * The replies for mode transitions are handled by the base class.
+	 * Device handler commands are read and can be handled by the child class.
+	 * If the child class handles a command, it should also send an reply
+	 * accordingly.
+	 * If an Command is not handled (ie #DeviceHandlerCommand is not
+	 * @c CMD_NONE, the base class handles rejecting the command and sends a
+	 * reply. The replies for mode transitions are handled by the base class.
 	 *
-	 * If the device ready to be switched off, the mode should be set to _MODE_POWER_DOWN.
-	 * If the device should not be switched off, the mode can be changed to _MODE_TO_ON (or MODE_ON if no transition is needed).
-	 * If the device does not change the mode, the mode will be changed to _MODE_POWER_DOWN, when the timeout (from getTransitionDelay()) has passed.
+	 *  - If the device ready to be switched off,
+	 *    the mode should be set to _MODE_POWER_DOWN.
+	 *  - If the device should not be switched off, the mode can be changed to
+	 *     _MODE_TO_ON (or MODE_ON if no transition is needed).
+	 *  - If the device does not change the mode, the mode will be changed to
+	 *    _MODE_POWER_DOWN, when the timeout (from getTransitionDelay())
+	 *    has passed.
 	 *
-	 * #transitionFailure can be set to a failure code indicating the reason for a failed transition
+	 * #transitionFailure can be set to a failure code indicating the reason
+	 * for a failed transition
 	 */
 	virtual void doShutDown() = 0;
 
@@ -249,27 +272,42 @@ protected:
 	 * @details
 	 * This is used to let the base class know which replies are expected.
 	 * There are different scenarios regarding this:
-	 *  - "Normal" commands. These are commands, that trigger a direct reply from the device.
-	 *    In this case, the id of the command should be added to the command map
-	 *    with a commandData_t where maxDelayCycles is set to the maximum expected
-	 *    number of PST cycles the reply will take. Then, scanForReply returns
-	 *    the id of the command and the base class can handle time-out and missing replies.
-	 *  - Periodic, unrequested replies. These are replies that, once enabled, are sent by the device
-	 *    on its own in a defined interval. In this case, the id of the reply
-	 *    or a placeholder id should be added to the deviceCommandMap with a commandData_t
-	 *    where maxDelayCycles is set to the maximum expected number of PST cycles between
-	 *    two replies (also a tolerance should be added, as an FDIR message will be generated if it is missed).
-	 *    As soon as the replies are enabled, DeviceCommandInfo.periodic must be set to 1,
-	 *    DeviceCommandInfo.delayCycles to DeviceCommandInfo.MaxDelayCycles.
-	 *    From then on, the base class handles the reception.
-	 *    Then, scanForReply returns the id of the reply or the placeholder id and the base class will
-	 *    take care of checking that all replies are received and the interval is correct.
-	 *    When the replies are disabled, DeviceCommandInfo.periodic must be set to 0,
-	 *    DeviceCommandInfo.delayCycles to 0;
-	 *  - Aperiodic, unrequested replies. These are replies that are sent
-	 *    by the device without any preceding command and not in a defined interval.
-	 *    These are not entered in the deviceCommandMap but handled by returning @c APERIODIC_REPLY in scanForReply().
 	 *
+	 *  - "Normal" commands. These are commands, that trigger a direct reply
+	 *    from the device. In this case, the id of the command should be added
+	 *    to the command map with a commandData_t where maxDelayCycles is set
+	 *    to the maximum expected number of PST cycles the reply will take.
+	 *    Then, scanForReply returns the id of the command and the base class
+	 *    can handle time-out and missing replies.
+	 *
+	 *  - Periodic, unrequested replies. These are replies that, once enabled,
+	 *    are sent by the device on its own in a defined interval.
+	 *    In this case, the id of the reply or a placeholder id should be added
+	 *    to the deviceCommandMap with a commandData_t where maxDelayCycles is
+	 *    set to the maximum expected number of PST cycles between two replies
+	 *    (also a tolerance should be added, as an FDIR message will be
+	 *    generated if it is missed).
+	 *
+	 *    (Robin) This part confuses me. "must do as soon as" implies that
+	 *    the developer must do something somewhere else in the code. Is
+	 *    that really the case? If I understood correctly, DHB performs
+	 *    almost everything (e.g. in erirm function) as long as the commands
+	 *    are inserted correctly.
+	 *
+	 *    As soon as the replies are enabled, DeviceCommandInfo.periodic must
+	 *    be set to true, DeviceCommandInfo.delayCycles to
+	 *    DeviceCommandInfo.maxDelayCycles.
+	 *    From then on, the base class handles the reception.
+	 *    Then, scanForReply returns the id of the reply or the placeholder id
+	 *    and the base class will take care of checking that all replies are
+	 *    received and the interval is correct.
+	 *    When the replies are disabled, DeviceCommandInfo.periodic must be set
+	 *    to 0, DeviceCommandInfo.delayCycles to 0;
+	 *
+	 *  - Aperiodic, unrequested replies. These are replies that are sent
+	 *    by the device without any preceding command and not in a defined
+	 *    interval. These are not entered in the deviceCommandMap but
+	 *    handled by returning @c APERIODIC_REPLY in scanForReply().
 	 */
 	virtual void fillCommandAndReplyMap() = 0;
 
@@ -530,6 +568,9 @@ protected:
 		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
 		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
 		size_t replyLen = 0; //!< Expected size of the reply.
+		//(Robin): This is a flag, isnt it? could we declare it bool? uint8_t always
+		// gives away the impression that this variable is more than a simple flag
+		// and true/false are also more explicit.
 		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
 		DeviceCommandMap::iterator command; //!< The command that expects this reply.
 	};
