@@ -12,8 +12,9 @@
 #include <framework/serialize/EndianSwapper.h>
 
 /**
- * This template specialization will be chosen for fundamental types,
- * based on partial template specialization
+ * This template specialization will be chosen for fundamental types or
+ * anything else not implementing SerializeIF, based on partial
+ * template specialization.
  * @tparam T
  * @tparam
  */
