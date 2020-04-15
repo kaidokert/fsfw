@@ -49,7 +49,19 @@ public:
 
 	virtual size_t getSerializedSize() const;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	/**
+	 * @brief This function deserializes a buffer into the member buffer.
+	 * @details
+	 * If a length field is present, it is ignored, as the size should have
+	 * been set in the constructor. If the size is not known beforehand,
+	 * consider using SerialFixedArrayListAdapter instead.
+	 * @param buffer [out] Resulting buffer
+	 * @param size remaining size to deserialize, should be larger than buffer
+	 *        + size field size
+	 * @param bigEndian
+	 * @return
+	 */
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian);
 
 	uint8_t * getBuffer();

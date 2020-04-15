@@ -112,7 +112,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 
 	//treat from as a continuous Stream as we copy all of it
 	const uint8_t *fromAsStream = (const uint8_t *) from;
-	ssize_t streamSize = fromRows * fromColumns * sizeof(T);
+	size_t streamSize = fromRows * fromColumns * sizeof(T);
 
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 
@@ -137,12 +137,12 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 }
 
 ReturnValue_t ParameterWrapper::deSerialize(const uint8_t** buffer,
-		ssize_t* size, bool bigEndian) {
+		size_t* size, bool bigEndian) {
 	return deSerialize(buffer, size, bigEndian, 0);
 }
 
 ReturnValue_t ParameterWrapper::deSerialize(const uint8_t** buffer,
-		ssize_t* size, bool bigEndian, uint16_t startWritingAtIndex) {
+		size_t* size, bool bigEndian, uint16_t startWritingAtIndex) {
 	ParameterWrapper streamDescription;
 
 	ReturnValue_t result = streamDescription.set(*buffer, *size, buffer, size);
@@ -153,8 +153,10 @@ ReturnValue_t ParameterWrapper::deSerialize(const uint8_t** buffer,
 	return copyFrom(&streamDescription, startWritingAtIndex);
 }
 
-ReturnValue_t ParameterWrapper::set(const uint8_t* stream, ssize_t streamSize,
-		const uint8_t **remainingStream, ssize_t *remainingSize) {
+ReturnValue_t ParameterWrapper::set(const uint8_t* stream, size_t streamSize,
+		const uint8_t **remainingStream, size_t *remainingSize) {
+	// TODO: Replaced ssize_t for remainingSize and streamSize
+	// is the logic here correct?
 	ReturnValue_t result = SerializeAdapter<Type>::deSerialize(&type, &stream,
 			&streamSize, true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -172,22 +174,22 @@ ReturnValue_t ParameterWrapper::set(const uint8_t* stream, ssize_t streamSize,
 		return result;
 	}
 
-	int32_t dataSize = type.getSize() * rows * columns;
+	size_t dataSize = type.getSize() * rows * columns;
 
 	if (streamSize < dataSize) {
 		return SerializeIF::STREAM_TOO_SHORT;
 	}
 
-	data = NULL;
+	data = nullptr;
 	readonlyData = stream;
 	pointsToStream = true;
 
 	stream += dataSize;
-	if (remainingStream != NULL) {
+	if (remainingStream !=  nullptr) {
 		*remainingStream = stream;
 	}
 	streamSize -= dataSize;
-	if (remainingSize != NULL) {
+	if (remainingSize != nullptr) {
 		*remainingSize = streamSize;
 	}
 

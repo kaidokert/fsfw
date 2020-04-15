@@ -197,11 +197,11 @@ size_t PoolRawAccess::getSerializedSize() const {
 	return typeSize;
 }
 
-ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, ssize_t* size,
+ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, size_t* size,
 		bool bigEndian) {
-	*size -= typeSize;
-	if (*size >= 0) {
-
+	// TODO: Needs to be tested!!!
+	if (*size >= typeSize) {
+		*size -= typeSize;
 		if (bigEndian) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
@@ -212,12 +212,14 @@ ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, ssize_t* size,
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 			memcpy(value, *buffer, typeSize);
 #endif
-		} else {
+		}
+		else {
 			memcpy(value, *buffer, typeSize);
 		}
 		*buffer += typeSize;
 		return HasReturnvaluesIF::RETURN_OK;
-	} else {
+	}
+	else {
 		return SerializeIF::STREAM_TOO_SHORT;
 	}
 }

@@ -56,16 +56,19 @@ public:
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian) {
 		return deSerialize(adaptee, buffer, size, bigEndian);
 	}
 
 	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list,
-			const uint8_t** buffer, ssize_t* size, bool bigEndian) {
+			const uint8_t** buffer, size_t* size, bool bigEndian) {
 		count_t tempSize = 0;
 		ReturnValue_t result = SerializeAdapter<count_t>::deSerialize(&tempSize,
 				buffer, size, bigEndian);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}

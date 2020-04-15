@@ -30,10 +30,10 @@ public:
 
 	virtual size_t getSerializedSize() const;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian);
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian, uint16_t startWritingAtIndex = 0);
 
 	template<typename T>
@@ -111,8 +111,8 @@ public:
 	void setMatrix(const T& member) {
 		this->set(member[0], sizeof(member)/sizeof(member[0]), sizeof(member[0])/sizeof(member[0][0]));
 	}
-	ReturnValue_t set(const uint8_t *stream, ssize_t streamSize,
-			const uint8_t **remainingStream = NULL, ssize_t *remainingSize =
+	ReturnValue_t set(const uint8_t *stream, size_t streamSize,
+			const uint8_t **remainingStream = NULL, size_t *remainingSize =
 					NULL);
 
 	ReturnValue_t copyFrom(const ParameterWrapper *from,

@@ -48,7 +48,7 @@ public:
 		return sizeof(apid) + sizeof(ssc);
 	}
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 	bool bigEndian) {
 		ReturnValue_t result = SerializeAdapter<uint16_t>::deSerialize(&apid,
 				buffer, size, bigEndian);
@@ -257,7 +257,7 @@ public:
 
 	};
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 	bool bigEndian) {
 		ReturnValue_t result = AutoSerializeAdapter::deSerialize(&apid, buffer,
 				size, bigEndian);

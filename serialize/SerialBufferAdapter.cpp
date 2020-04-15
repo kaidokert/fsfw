@@ -61,36 +61,38 @@ size_t SerialBufferAdapter<count_t>::getSerializedSize() const {
 		return bufferLength;
 	}
 }
+
 template<typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
-		ssize_t* size, bool bigEndian) {
+		size_t* size, bool bigEndian) {
 	//TODO Ignores Endian flag!
-	if (buffer != NULL) {
-		if(serializeLength){
-			// Suggestion (would require removing rest of the block inside this if clause !):
-			//ReturnValue_t result = AutoSerializeAdapter::deSerialize(&bufferLength,buffer,size,bigEndian);
-			//if (result != HasReturnvaluesIF::RETURN_OK) {
-			//	return result;
-			//}
+	// (Robin) the one of the buffer? wouldn't that be an issue for serialize
+	// as well? SerialFixedArrayListAdapter implements swapping of buffer
+	// fields (if buffer type is not uint8_t)
+	if (buffer != nullptr) {
+		if(serializeLength) {
 			count_t serializedSize = AutoSerializeAdapter::getSerializedSize(
 					&bufferLength);
-			if((*size - bufferLength - serializedSize) >= 0){
+			if(bufferLength + serializedSize >= *size) {
 				*buffer +=  serializedSize;
 				*size -= serializedSize;
-			}else{
+			}
+			else {
 				return STREAM_TOO_SHORT;
 			}
 		}
 		//No Else If, go on with buffer
-		if (*size - bufferLength >= 0) {
+		if (bufferLength >= *size) {
 			*size -= bufferLength;
 			memcpy(m_buffer, *buffer, bufferLength);
 			(*buffer) += bufferLength;
 			return HasReturnvaluesIF::RETURN_OK;
-		} else {
+		}
+		else {
 			return STREAM_TOO_SHORT;
 		}
-	} else {
+	}
+	else {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 }

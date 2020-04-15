@@ -203,7 +203,7 @@ public:
 		return SerializeAdapter<T>::getSerializedSize(&value);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian) {
 		return SerializeAdapter<T>::deSerialize(&value, buffer, size, bigEndian);
 	}

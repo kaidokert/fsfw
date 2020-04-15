@@ -157,7 +157,7 @@ ReturnValue_t UnitTestClass::test_autoserialization() {
 	// Unit Test AutoSerializeAdapter serialize
 	current_id = TestIds::AUTO_SERIALIZATION_DESERIALIZE;
 	p_array = test_array.data();
-	ssize_t remaining_size = serialized_size;
+	size_t remaining_size = serialized_size;
 	AutoSerializeAdapter::deSerialize(&test_value_bool,
 			const_cast<const uint8_t**>(&p_array), &remaining_size, false);
 	AutoSerializeAdapter::deSerialize(&tv_uint8,
@@ -197,6 +197,8 @@ ReturnValue_t UnitTestClass::test_autoserialization() {
 			abs(tv_sdouble - (-2.2421e19)) > 0.01) {
 		return put_error(current_id);
 	}
+
+	// Check overflow
 	return RETURN_OK;
 }
 
@@ -285,9 +287,16 @@ ReturnValue_t UnitTestClass::test_serial_buffer_adapter() {
 	return RETURN_OK;
 }
 
-ReturnValue_t UnitTestClass::put_error(TestIds current_id) {
+ReturnValue_t UnitTestClass::put_error(TestIds currentId) {
+	auto errorIter = testResultMap.find(currentId);
+	if(errorIter != testResultMap.end()) {
+		testResultMap.emplace(currentId, 1);
+	}
+	else {
+		errorIter->second ++;
+	}
 	error << "Unit Tester failed at test ID "
-			<< static_cast<uint32_t>(current_id) << "\r\n" << std::flush;
+			<< static_cast<uint32_t>(currentId) << "\r\n" << std::flush;
 	return RETURN_FAILED;
 }
 

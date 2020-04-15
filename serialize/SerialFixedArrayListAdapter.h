@@ -22,32 +22,38 @@
  * @ingroup serialize
  */
 template<typename BUFFER_TYPE, uint32_t MAX_SIZE, typename count_t = uint8_t>
-class SerialFixedArrayListAdapter : public FixedArrayList<BUFFER_TYPE, MAX_SIZE, count_t>, public SerializeIF {
+class SerialFixedArrayListAdapter :
+		public FixedArrayList<BUFFER_TYPE, MAX_SIZE, count_t>,
+		public SerializeIF {
 public:
 	/**
 	 * Constructor Arguments are forwarded to FixedArrayList constructor
 	 * @param args
 	 */
 	template<typename... Args>
-	SerialFixedArrayListAdapter(Args... args) : FixedArrayList<BUFFER_TYPE, MAX_SIZE, count_t>(std::forward<Args>(args)...) {
-	}
+	SerialFixedArrayListAdapter(Args... args) :
+	FixedArrayList<BUFFER_TYPE, MAX_SIZE, count_t>(std::forward<Args>(args)...)
+	{}
 
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
 			const size_t max_size, bool bigEndian) const {
-		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::serialize(this, buffer, size, max_size, bigEndian);
+		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::serialize(this,
+				buffer, size, max_size, bigEndian);
 	}
 
 	size_t getSerializedSize() const {
-		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::getSerializedSize(this);
+		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::
+				getSerializedSize(this);
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian) {
 		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::deSerialize(this,
 				buffer, size, bigEndian);
 	}
 
 	void swapArrayListEndianness() {
-		SerialArrayListAdapter<BUFFER_TYPE, count_t>::swapArrayListEndianness(this);
+		SerialArrayListAdapter<BUFFER_TYPE, count_t>::
+				swapArrayListEndianness(this);
 	}
 };
 

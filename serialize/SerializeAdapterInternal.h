@@ -33,7 +33,7 @@ public:
 			size_t* size, const size_t max_size, bool bigEndian) {
 	    // function eventuelly serializes structs here.
 	    // does this work on every architecture?
-	    //static_assert(std::is_fundamental<T>::value);
+	    // static_assert(std::is_fundamental<T>::value);
 		size_t ignoredSize = 0;
 		if (size == nullptr) {
 			size = &ignoredSize;
@@ -57,18 +57,17 @@ public:
 	/**
 	 * Deserialize buffer into object
 	 * @param object [out] Object to be deserialized with buffer data
-	 * @param buffer buffer containing the data. Non-Const pointer to non-const
-	 * 						pointer to const buffer.
-	 * @param size int32_t type to allow value to be values smaller than 0,
-	 * 						needed for range/size checking
+	 * @param buffer contains the data. Non-Const pointer to non-const
+	 * 				 pointer to const data.
+	 * @param size Size to deSerialize. wil be decremented by sizeof(T)
 	 * @param bigEndian Specify endianness
 	 * @return
 	 */
-	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, ssize_t* size,
+	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, size_t* size,
 			bool bigEndian) {
 		T tmp;
-		*size -= sizeof(T);
-		if (*size >= 0) {
+		if (*size >= sizeof(T)) {
+			*size -= sizeof(T);
 			memcpy(&tmp, *buffer, sizeof(T));
 			if (bigEndian) {
 				*object = EndianSwapper::swap<T>(tmp);
@@ -109,7 +108,7 @@ public:
 		return object->getSerializedSize();
 	}
 
-	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, ssize_t* size,
+	ReturnValue_t deSerialize(T* object, const uint8_t** buffer, size_t* size,
 			bool bigEndian) {
 		return object->deSerialize(buffer, size, bigEndian);
 	}

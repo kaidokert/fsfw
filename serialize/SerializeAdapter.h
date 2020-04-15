@@ -78,7 +78,7 @@ public:
 	}
 	template<typename T>
 	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
-			ssize_t* size, bool bigEndian) {
+			size_t* size, bool bigEndian) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.deSerialize(object, buffer, size, bigEndian);
 	}
@@ -98,7 +98,7 @@ public:
 	}
 
 	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
-			ssize_t* size, bool bigEndian) {
+			size_t* size, bool bigEndian) {
 		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.deSerialize(object, buffer, size, bigEndian);
 	}

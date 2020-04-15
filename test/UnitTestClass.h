@@ -56,7 +56,8 @@ private:
 	TestIds current_id = TestIds::MISC;
 	std::array<uint8_t, 512> test_array;
 
-	using TestResultMap = std::map<uint32_t, ReturnValue_t>;
+	using error_count_t =  uint8_t;
+	using TestResultMap = std::map<TestIds, error_count_t>;
 	using TestBuffer = std::vector<uint8_t>;
 	TestResultMap testResultMap;
 
