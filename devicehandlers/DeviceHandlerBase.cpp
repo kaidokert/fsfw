@@ -4,7 +4,7 @@
 #include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
 #include <framework/devicehandlers/DeviceHandlerBase.h>
 #include <framework/devicehandlers/DeviceTmReportingWrapper.h>
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/objectmanager/ObjectManager.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/subsystem/SubsystemBase.h>
