@@ -12,14 +12,26 @@ class FixedArrayList: public ArrayList<T, count_t> {
 private:
 	T data[MAX_SIZE];
 public:
+	/**
+	 * (Robin) Maybe we should also implement move assignment and move ctor.
+	 * Or at least delete them.
+	 */
 	FixedArrayList() :
 			ArrayList<T, count_t>(data, MAX_SIZE) {
 	}
 
-	//We could create a constructor to initialize the fixed array list with data and the known size field
-	//so it can be used for serialization too (with SerialFixedArrrayListAdapter)
-	//is this feasible?
-	FixedArrayList(T * data_, count_t count, bool swapArrayListEndianess = false):
+	// (Robin): We could create a constructor to initialize the fixed array list with data and the known size field
+	// so it can be used for serialization too (with SerialFixedArrrayListAdapter)
+	// is this feasible?
+	/**
+	 * Initialize a fixed array list with data and number of data fields.
+	 * Endianness of entries can be swapped optionally.
+	 * @param data_
+	 * @param count
+	 * @param swapArrayListEndianess
+	 */
+	FixedArrayList(T * data_, count_t count,
+			bool swapArrayListEndianess = false):
 		ArrayList<T, count_t>(data, MAX_SIZE) {
 		memcpy(this->data, data_, count * sizeof(T));
 		this->size = count;

@@ -3,11 +3,6 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <cstddef>
-#include <type_traits>
-
-#ifndef ssize_t
-typedef std::make_signed<std::size_t>::type ssize_t;
-#endif
 
 /**
  * @defgroup serialize Serialization
@@ -18,17 +13,21 @@ typedef std::make_signed<std::size_t>::type ssize_t;
  * @brief An interface for alle classes which require
  *        translation of objects data into data streams and vice-versa.
  * @details
- * If the target architecture is little endian (e.g. ARM), any data types created might
- * have the wrong endiness if they are to be used for the FSFW.
- * There are three ways to retrieve data out of a buffer to be used in the FSFW to use
- * regular aligned (big endian) data. This can also be applied to uint32_t and uint64_t:
+ * If the target architecture is little endian (e.g. ARM), any data types
+ * created might  have the wrong endianess if they are to be used for the FSFW.
+ * Depending on the system architecture, endian correctness must be assured,
+ * This is important for incoming and outgoing data. The internal handling
+ * of data should be performed in the native system endianness.
+ * There are three ways to copy data (with different options to ensure
+ * endian correctness):
  *
- *   1. Use the @c AutoSerializeAdapter::deSerialize function with @c bigEndian = true
- *   2. Perform a bitshift operation
- *   3. @c memcpy can be used when data is in little-endian format. Otherwise, @c EndianSwapper has to be used in conjuction.
+ *   1. Use the @c AutoSerializeAdapter::deSerialize function (with
+ *      the endian flag)
+ *   2. Perform a bitshift operation (with correct order)
+ *   3. @c memcpy (with @c EndianSwapper if necessary)
  *
- * When serializing for downlink, the packets are generally serialized assuming big endian data format
- * like seen in TmPacketStored.cpp for example.
+ * When serializing for downlink, the packets are generally serialized
+ * assuming big endian data format like seen in TmPacketStored.cpp for example.
  *
  * @ingroup serialize
  */

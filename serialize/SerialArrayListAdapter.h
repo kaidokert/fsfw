@@ -13,7 +13,7 @@
 
 /**
  * Also serializes length field !
- * \ingroup serialize
+ * @ingroup serialize
  */
 template<typename T, typename count_t = uint8_t>
 class SerialArrayListAdapter : public SerializeIF {
@@ -22,7 +22,7 @@ public:
 	}
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const {
+			const size_t max_size, bool bigEndian) const  override {
 		return serialize(adaptee, buffer, size, max_size, bigEndian);
 	}
 
@@ -41,7 +41,7 @@ public:
 		return result;
 	}
 
-	virtual size_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const override {
 		return getSerializedSize(adaptee);
 	}
 
@@ -57,7 +57,7 @@ public:
 	}
 
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) {
+			bool bigEndian) override {
 		return deSerialize(adaptee, buffer, size, bigEndian);
 	}
 
