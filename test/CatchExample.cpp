@@ -1,5 +1,7 @@
 // Catch Example.
 // Does not work yet. Problems with linker without main and config folder.
+// propably because global object manager and some config files are not supplied
+// but mandatory for full compilation of the framework.
 // Let Catch provide main():
 
 #if defined(UNIT_TEST)
