@@ -116,7 +116,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
 			AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
-	if (rawReceiver == NULL) {
+	if (rawReceiver == nullptr) {
 		return RETURN_FAILED;
 	}
 

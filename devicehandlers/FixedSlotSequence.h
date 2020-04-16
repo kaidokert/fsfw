@@ -3,6 +3,7 @@
 
 #include <framework/devicehandlers/FixedSequenceSlot.h>
 #include <framework/objectmanager/SystemObject.h>
+#include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <list>
 #include <set>
 
@@ -22,7 +23,6 @@ using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
  */
 class FixedSlotSequence {
 public:
-
 
 	/**
 	 * @brief	The constructor of the FixedSlotSequence object.
@@ -127,6 +127,8 @@ protected:
 	SlotList slotList;
 
 	uint32_t slotLengthMs;
+
+	bool isEmpty = false;
 };
 
 #endif /* FIXEDSLOTSEQUENCE_H_ */
