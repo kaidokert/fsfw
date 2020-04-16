@@ -112,7 +112,6 @@ void FixedTimeslotTask::taskFunctionality() {
 			vTaskDelayUntil(&xLastWakeTime, interval);
 			//TODO deadline missed check
 		}
-
 	}
 }
 

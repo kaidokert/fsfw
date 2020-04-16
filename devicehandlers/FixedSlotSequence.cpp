@@ -1,5 +1,6 @@
 #include <framework/devicehandlers/FixedSlotSequence.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <cstdlib>
 
 FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
 		slotLengthMs(setLengthMs) {
@@ -87,7 +88,15 @@ uint32_t FixedSlotSequence::getLengthMs() const {
 }
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
-	// Iterate through slotList and check successful creation.
+	if(slotList.empty()) {
+	    error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
+	    // does check sequence have to be const?
+	    // if I want to check a class, I need the ability to set
+	    // internal class states.
+	    //isEmpty = true;
+	    std::exit(0);
+	}
+    // Iterate through slotList and check successful creation.
 	// Checks if timing is ok (must be ascending) and if all handlers were found.
 	auto slotIt = slotList.begin();
 	uint32_t count = 0;
