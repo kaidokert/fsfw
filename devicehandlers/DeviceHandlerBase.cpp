@@ -690,7 +690,8 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 
 	if (result != RETURN_OK) {
 		IPCStore->deleteData(address);
-		//Silently discard data, this indicates heavy TM traffic which should not be increased by additional events.
+		// Silently discard data, this indicates heavy TM traffic which should
+		// not be increased by additional events.
 	}
 }
 
