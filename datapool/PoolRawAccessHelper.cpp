@@ -25,7 +25,7 @@ ReturnValue_t PoolRawAccessHelper::serialize(uint8_t **buffer, size_t *size,
 		const size_t max_size, bool bigEndian) {
 	SerializationArgs serializationArgs = {buffer, size, max_size, bigEndian};
 	ReturnValue_t result;
-	ssize_t remainingParametersSize = numberOfParameters * 4;
+	size_t remainingParametersSize = numberOfParameters * 4;
 	for(uint8_t count=0; count < numberOfParameters; count++) {
 		result = serializeCurrentPoolEntryIntoBuffer(serializationArgs,
 				&remainingParametersSize, false);
@@ -44,7 +44,7 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer,
 		size_t * size, const size_t max_size, bool bigEndian) {
 	ReturnValue_t result;
 	SerializationArgs argStruct = {buffer, size, max_size, bigEndian};
-	ssize_t remainingParametersSize = numberOfParameters * 4;
+	size_t remainingParametersSize = numberOfParameters * 4;
 	uint8_t validityMaskSize = ceil((float)numberOfParameters/8.0);
 	uint8_t validityMask[validityMaskSize];
 	memset(validityMask,0, validityMaskSize);
@@ -67,49 +67,60 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer,
 	return result;
 }
 
-ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(SerializationArgs argStruct,
-		ssize_t * remainingParameters, bool withValidMask, uint8_t * validityMask) {
+ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(
+		SerializationArgs argStruct, size_t * remainingParameters,
+		bool withValidMask, uint8_t * validityMask) {
 	uint32_t currentPoolId;
 	// Deserialize current pool ID from pool ID buffer
 	ReturnValue_t result = AutoSerializeAdapter::deSerialize(&currentPoolId,
 			&poolIdBuffer,remainingParameters,true);
 	if(result != RETURN_OK) {
-		debug << std::hex << "Pool Raw Access Helper: Error deSeralizing pool IDs" << std::dec << std::endl;
+		debug << std::hex << "Pool Raw Access Helper: Error deSeralizing "
+				"pool IDs" << std::dec << std::endl;
 		return result;
 	}
-	result = handlePoolEntrySerialization(currentPoolId, argStruct, withValidMask, validityMask);
+	result = handlePoolEntrySerialization(currentPoolId, argStruct,
+			withValidMask, validityMask);
 	return result;
 }
 
-ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t currentPoolId,SerializationArgs argStruct,
-		bool withValidMask, uint8_t * validityMask) {
+ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
+		uint32_t currentPoolId,SerializationArgs argStruct, bool withValidMask,
+		uint8_t * validityMask) {
 	ReturnValue_t result = RETURN_FAILED;
 	uint8_t arrayPosition = 0;
 	uint8_t counter = 0;
 	bool poolEntrySerialized = false;
-	//debug << "Pool Raw Access Helper: Handling Pool ID: " << std::hex <<  currentPoolId << std::endl;
+	//debug << "Pool Raw Access Helper: Handling Pool ID: "
+	//      << std::hex <<  currentPoolId << std::endl;
 	while(not poolEntrySerialized) {
 
 		if(counter > DataSet::DATA_SET_MAX_SIZE) {
-			error << "Pool Raw Access Helper: Config error, max. number of possible data set variables exceeded" << std::endl;
+			error << "Pool Raw Access Helper: Config error, "
+					 "max. number of possible data set variables exceeded"
+				  << std::endl;
 			return result;
 		}
 		counter ++;
 
 		DataSet currentDataSet = DataSet();
 		//debug << "Current array position: " << (int)arrayPosition << std::endl;
-		PoolRawAccess currentPoolRawAccess(currentPoolId,arrayPosition,&currentDataSet,PoolVariableIF::VAR_READ);
+		PoolRawAccess currentPoolRawAccess(currentPoolId,arrayPosition,
+				&currentDataSet,PoolVariableIF::VAR_READ);
 
 		result = currentDataSet.read();
 		if (result != RETURN_OK) {
-			debug << std::hex << "Pool Raw Access Helper: Error reading raw dataset with returncode 0x"
+			debug << std::hex << "Pool Raw Access Helper: Error reading raw "
+					"dataset with returncode 0x"
 				  << result << std::dec << std::endl;
 			return result;
 		}
 
-		result = checkRemainingSize(&currentPoolRawAccess, &poolEntrySerialized, &arrayPosition);
+		result = checkRemainingSize(&currentPoolRawAccess, &poolEntrySerialized,
+				&arrayPosition);
 		if(result != RETURN_OK) {
-			error << "Pool Raw Access Helper: Configuration Error at pool ID " << std::hex << currentPoolId
+			error << "Pool Raw Access Helper: Configuration Error at pool ID "
+				  << std::hex << currentPoolId
 				  << ". Size till end smaller than 0" << std::dec << std::endl;
 			return result;
 		}
@@ -125,8 +136,9 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t current
 		result = currentDataSet.serialize(argStruct.buffer, argStruct.size,
 				argStruct.max_size, argStruct.bigEndian);
 		if (result != RETURN_OK) {
-			debug << "Pool Raw Access Helper: Error serializing pool data with ID 0x" << std::hex <<
-					currentPoolId << " into send buffer with return code " << result << std::dec << std::endl;
+			debug << "Pool Raw Access Helper: Error serializing pool data with "
+					 "ID 0x" << std::hex << currentPoolId << " into send buffer "
+					 "with return code " << result << std::dec << std::endl;
 			return result;
 		}
 
@@ -134,9 +146,10 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(uint32_t current
 	return result;
 }
 
-ReturnValue_t PoolRawAccessHelper::checkRemainingSize(PoolRawAccess * currentPoolRawAccess,
-		bool * isSerialized, uint8_t * arrayPosition) {
-	int8_t remainingSize = currentPoolRawAccess->getSizeTillEnd() - currentPoolRawAccess->getSizeOfType();
+ReturnValue_t PoolRawAccessHelper::checkRemainingSize(PoolRawAccess*
+		currentPoolRawAccess, bool * isSerialized, uint8_t * arrayPosition) {
+	int8_t remainingSize = currentPoolRawAccess->getSizeTillEnd() -
+			currentPoolRawAccess->getSizeOfType();
 	if(remainingSize == 0) {
 		*isSerialized = true;
 	}
@@ -158,7 +171,8 @@ void PoolRawAccessHelper::handleMaskModification(uint8_t * validityMask) {
 	}
 }
 
-uint8_t PoolRawAccessHelper::bitSetter(uint8_t byte, uint8_t position, bool value) {
+uint8_t PoolRawAccessHelper::bitSetter(uint8_t byte, uint8_t position,
+		bool value) {
 	if(position < 1 or position > 8) {
 		debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
 		return byte;

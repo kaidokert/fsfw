@@ -35,24 +35,20 @@ public:
 	static constexpr ReturnValue_t SEMAPHORE_NOT_OWNED = MAKE_RETURN_CODE(2);
 	static constexpr ReturnValue_t SEMAPHORE_NULLPOINTER = MAKE_RETURN_CODE(3);
 
-	/**
-	 * Create a binary semaphore
-	 */
 	BinarySemaphore();
 
 	/**
-	 * Copy ctor
-	 * @param
+	 * @brief Copy ctor
 	 */
 	BinarySemaphore(const BinarySemaphore&);
 
 	/**
-	 * Copy assignment
+	 * @brief Copy assignment
 	 */
 	BinarySemaphore& operator=(const BinarySemaphore&);
 
 	/**
-	 * Move constructor
+	 * @brief Move constructor
 	 */
 	BinarySemaphore (BinarySemaphore &&);
 
@@ -81,16 +77,16 @@ public:
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
 	 * @param timeoutTicks
-	 * @return -@c RETURN_OK on success
-	 *         -@c RETURN_FAILED on failure
+	 * @return - @c RETURN_OK on success
+	 *         - @c RETURN_FAILED on failure
 	 */
 	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
 	        BinarySemaphore::NO_BLOCK_TICKS);
 
 	/**
 	 * Give back the binary semaphore
-	 * @return -@c RETURN_OK on success
-	 *         -@c RETURN_FAILED on failure
+	 * @return - @c RETURN_OK on success
+	 *         - @c RETURN_FAILED on failure
 	 */
 	ReturnValue_t giveBinarySemaphore();
 
@@ -108,8 +104,8 @@ public:
 	 /**
 	 * Wrapper function to give back semaphore from handle
 	 * @param semaphore
-	 * @return -@c RETURN_OK on success
-	 *         -@c RETURN_FAILED on failure
+	 * @return - @c RETURN_OK on success
+	 *         - @c RETURN_FAILED on failure
 	 */
 	static ReturnValue_t giveBinarySemaphore(SemaphoreHandle_t semaphore);
 
@@ -118,8 +114,8 @@ public:
 	 * @param semaphore
 	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with a higher priority
 	 *        was unblocked
-	 * @return -@c RETURN_OK on success
-	 *         -@c RETURN_FAILED on failure
+	 * @return - @c RETURN_OK on success
+	 *         - @c RETURN_FAILED on failure
 	 */
 	static ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 				BaseType_t * higherPriorityTaskWoken);

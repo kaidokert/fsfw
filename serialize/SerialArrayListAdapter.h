@@ -13,7 +13,7 @@
 
 /**
  * Also serializes length field !
- * \ingroup serialize
+ * @ingroup serialize
  */
 template<typename T, typename count_t = uint8_t>
 class SerialArrayListAdapter : public SerializeIF {
@@ -22,7 +22,7 @@ public:
 	}
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const {
+			const size_t max_size, bool bigEndian) const  override {
 		return serialize(adaptee, buffer, size, max_size, bigEndian);
 	}
 
@@ -41,7 +41,7 @@ public:
 		return result;
 	}
 
-	virtual size_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const override {
 		return getSerializedSize(adaptee);
 	}
 
@@ -56,16 +56,19 @@ public:
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
-			bool bigEndian) {
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			bool bigEndian) override {
 		return deSerialize(adaptee, buffer, size, bigEndian);
 	}
 
 	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list,
-			const uint8_t** buffer, ssize_t* size, bool bigEndian) {
+			const uint8_t** buffer, size_t* size, bool bigEndian) {
 		count_t tempSize = 0;
 		ReturnValue_t result = SerializeAdapter<count_t>::deSerialize(&tempSize,
 				buffer, size, bigEndian);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}

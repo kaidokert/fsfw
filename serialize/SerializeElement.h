@@ -24,25 +24,26 @@ public:
 	 * @param args
 	 */
 	template<typename... Args>
-	SerializeElement(Args... args) : LinkedElement<SerializeIF>(this), entry(std::forward<Args>(args)...) {
+	SerializeElement(Args... args):
+			LinkedElement<SerializeIF>(this),
+			entry(std::forward<Args>(args)...) {}
 
-	}
-	SerializeElement() : LinkedElement<SerializeIF>(this) {
-	}
+	SerializeElement() : LinkedElement<SerializeIF>(this) {}
 
 	T entry;
 
-	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const {
-		return SerializeAdapter<T>::serialize(&entry, buffer, size, max_size, bigEndian);
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			const size_t max_size, bool bigEndian) const override {
+		return SerializeAdapter<T>::serialize(&entry, buffer, size,
+				max_size, bigEndian);
 	}
 
 	size_t getSerializedSize() const {
 		return SerializeAdapter<T>::getSerializedSize(&entry);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
-			bool bigEndian) {
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			bool bigEndian) override {
 		return SerializeAdapter<T>::deSerialize(&entry, buffer, size, bigEndian);
 	}
 

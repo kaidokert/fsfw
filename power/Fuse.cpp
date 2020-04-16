@@ -108,7 +108,7 @@ uint32_t Fuse::getSerializedSize() const {
 	return size;
 }
 
-ReturnValue_t Fuse::deSerialize(const uint8_t** buffer, ssize_t* size,
+ReturnValue_t Fuse::deSerialize(const uint8_t** buffer, size_t* size,
 bool bigEndian) {
 	ReturnValue_t result = RETURN_FAILED;
 	for (DeviceList::iterator iter = devices.begin(); iter != devices.end();

@@ -69,7 +69,7 @@ private:
 	struct SerializationArgs {
 		uint8_t ** buffer;
 		size_t * size;
-		const uint32_t max_size;
+		const size_t max_size;
 		bool bigEndian;
 	};
 	/**
@@ -80,13 +80,15 @@ private:
 	 * @param hkDataSize
 	 * @param max_size
 	 * @param bigEndian
-	 * @param withValidMask Can be set optionally to set a provided validity mask
-	 * @param validityMask Can be supplied and will be set if @c withValidMask is set to true
+	 * @param withValidMask Can be set optionally to set a
+	 *        provided validity mask
+	 * @param validityMask Can be supplied and will be set if
+	 *  	  @c withValidMask is set to true
 	 * @return
 	 */
-	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(SerializationArgs argStruct,
-				ssize_t * remainingParameters, bool withValidMask = false,
-				uint8_t * validityMask = nullptr);
+	ReturnValue_t serializeCurrentPoolEntryIntoBuffer(
+			SerializationArgs argStruct, size_t * remainingParameters,
+			bool withValidMask = false, uint8_t * validityMask = nullptr);
 
 	ReturnValue_t handlePoolEntrySerialization(uint32_t currentPoolId,
 			SerializationArgs argStruct, bool withValidMask = false,

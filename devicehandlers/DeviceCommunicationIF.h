@@ -60,9 +60,9 @@ public:
 	 * this can be performed in this function, which is called on device handler
 	 * initialization.
 	 * @param cookie
-	 * @return -@c RETURN_OK if initialization was successfull
-	 * 		   - Everything else triggers failure event with
-	 * 		   returnvalue as parameter 1
+	 * @return
+	 *  - @c RETURN_OK if initialization was successfull
+	 *  - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t initializeInterface(CookieIF * cookie) = 0;
 
@@ -73,9 +73,9 @@ public:
 	 * @param cookie
 	 * @param data
 	 * @param len
-	 * @return -@c RETURN_OK for successfull send
-	 *         - Everything else triggers failure event with
-	 *         returnvalue as parameter 1
+	 * @return
+	 *  - @c RETURN_OK for successfull send
+	 *  - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
 			size_t sendLen) = 0;
@@ -84,9 +84,9 @@ public:
 	 * Called by DHB in the GET_WRITE doGetWrite().
 	 * Get send confirmation that the data in sendMessage() was sent successfully.
 	 * @param cookie
-	 * @return -@c RETURN_OK if data was sent successfull
+	 * @return - @c RETURN_OK if data was sent successfull
 	 * 		   - Everything else triggers falure event with
-	 * 		   returnvalue as parameter 1
+	 * 		     returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t getSendSuccess(CookieIF *cookie) = 0;
 
@@ -99,9 +99,9 @@ public:
 	 *
 	 * @param cookie
 	 * @param requestLen Size of data to read
-	 * @return -@c RETURN_OK to confirm the request for data has been sent.
+	 * @return - @c RETURN_OK to confirm the request for data has been sent.
 	 *         - Everything else triggers failure event with
-	 *         returnvalue as parameter 1
+	 *           returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie, size_t requestLen) = 0;
 
@@ -113,8 +113,8 @@ public:
 	 * @param buffer [out] Set reply here (by using *buffer = ...)
 	 * @param size [out] size pointer to set (by using *size = ...).
 	 * 	           Set to 0 if no reply was received
-	 * @return -@c RETURN_OK for successfull receive
-	 * 		   -@c NO_REPLY_RECEIVED if not reply was received. Setting size to
+	 * @return - @c RETURN_OK for successfull receive
+	 * 		   - @c NO_REPLY_RECEIVED if not reply was received. Setting size to
 	 * 		   	   0 has the same effect
 	 *         - Everything else triggers failure event with
 	 *           returnvalue as parameter 1

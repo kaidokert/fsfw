@@ -56,7 +56,7 @@ float PowerComponent::getMax() {
 	return max;
 }
 
-ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, ssize_t* size,
+ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian) {
 	ReturnValue_t result = SerializeAdapter<float>::deSerialize(&min, buffer,
 			size, bigEndian);

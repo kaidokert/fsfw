@@ -144,7 +144,8 @@ public:
 	 * 					@li	RETURN_FAILED if data could not be added.
 	 * 						storageId is unchanged then.
 	 */
-	virtual ReturnValue_t getFreeElement(store_address_t* storageId, const uint32_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
+	virtual ReturnValue_t getFreeElement(store_address_t* storageId,
+			const uint32_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
 	/**
 	 * Clears the whole store.
 	 * Use with care!

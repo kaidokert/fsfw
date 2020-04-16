@@ -126,7 +126,7 @@ public:
 
 	virtual size_t getSerializedSize() const;
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, ssize_t* size,
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian);
 
 private:

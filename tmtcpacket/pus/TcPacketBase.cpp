@@ -28,7 +28,7 @@ const uint8_t* TcPacketBase::getApplicationData() const {
 	return &tcData->data;
 }
 
-uint16_t TcPacketBase::getApplicationDataSize() {
+size_t TcPacketBase::getApplicationDataSize() {
 	return getPacketDataLength() - sizeof(tcData->data_field) - CRC_SIZE + 1;
 }
 
