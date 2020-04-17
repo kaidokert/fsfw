@@ -115,7 +115,7 @@ protected:
 private:
 	static const uint8_t TMTC_RECEPTION_QUEUE_DEPTH = 20;
 	static const uint8_t MAX_STORED_DATA_SENT_PER_CYCLE = 10;
-	static const uint8_t MAX_DOWNLINK_PACKETS_STORED = 20;
+	static const uint8_t MAX_DOWNLINK_PACKETS_STORED = 15;
 
 	FIFO<store_address_t, MAX_DOWNLINK_PACKETS_STORED> fifo;
 	uint8_t * recvBuffer;
