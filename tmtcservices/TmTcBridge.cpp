@@ -103,12 +103,13 @@ ReturnValue_t TmTcBridge::readTmQueue() {
 }
 
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
-	info << "UDP Server: Client address not bound yet. Packet can not be sent. "
-			"Saving packet to be sent later " << std::endl;
+	info << "TMTC Bridge: Comm Link down. "
+			"Saving packet ID to be sent later " << std::endl;
 	store_address_t storeId;
 
 	if(fifo.full()) {
-		info << "UDP Server: TM downlink store is full. Overwriting old data" << std::endl;
+		info << "TMTC Bridge: TM downlink max. number of stored packet IDs reached."
+				" Overwriting old data" << std::endl;
 		fifo.retrieve(&storeId);
 	}
 	storeId = message->getStorageId();
