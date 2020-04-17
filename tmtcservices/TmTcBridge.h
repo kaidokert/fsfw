@@ -62,9 +62,11 @@ protected:
 	/**
 	 * Implemented by child class. Perform receiving of Telecommand, for example by implementing
 	 * specific drivers or wrappers, e.g. UART Communication or lwIP stack
+	 * @param recvBuffer [out] Received data
+	 * @param size [out] Size of received data
 	 * @return
 	 */
-	virtual ReturnValue_t receiveTc() = 0;
+	virtual ReturnValue_t receiveTc(uint8_t ** recvBuffer, uint32_t * size) = 0;
 
 	/**
 	 * Handle Telemetry. Default implementation provided.
@@ -117,6 +119,8 @@ private:
 	static const uint8_t MAX_DOWNLINK_PACKETS_STORED = 20;
 
 	FIFO<store_address_t, MAX_DOWNLINK_PACKETS_STORED> fifo;
+	uint8_t * recvBuffer;
+	uint32_t size;
 };
 
 
