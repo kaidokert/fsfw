@@ -2,6 +2,7 @@
  * @file TmTcBridge.cpp
  *
  * @date 26.12.2019
+ * @author R. Mueller
  */
 
 #include <framework/tmtcservices/TmTcBridge.h>
@@ -144,8 +145,8 @@ ReturnValue_t TmTcBridge::sendStoredTm() {
 }
 
 void TmTcBridge::registerCommConnect() {
-	info << "TMTC Bridge: Registered Comm Link Connect" << std::endl;
-	if(not communicationLinkUp) {
+	if(!communicationLinkUp) {
+		info << "TMTC Bridge: Registered Comm Link Connect" << std::endl;
 		communicationLinkUp = true;
 	}
 }
