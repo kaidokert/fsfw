@@ -111,6 +111,7 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 		info << "TMTC Bridge: TM downlink max. number of stored packet IDs reached."
 				" Overwriting old data" << std::endl;
 		fifo.retrieve(&storeId);
+		tmStore->deleteData(storeId);
 	}
 	storeId = message->getStorageId();
 	fifo.insert(storeId);
