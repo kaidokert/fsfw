@@ -5,7 +5,7 @@
 /**
  * @brief Physical address type
  */
-typedef uint32_t address_t;
+typedef std::uint32_t address_t;
 
 /**
  * @brief 	This datatype is used to identify different connection over a
