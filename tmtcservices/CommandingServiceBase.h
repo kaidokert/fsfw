@@ -106,8 +106,9 @@ public:
 protected:
 	/**
 	 * Check the target subservice
-	 * @param subservice
-	 * @return
+	 * @param subservice[in]
+	 * @return -@c RETURN_OK on success
+     *         -@c INVALID_SUBSERVICE if service is not known
 	 */
 	virtual ReturnValue_t isValidSubservice(uint8_t subservice) = 0;
 

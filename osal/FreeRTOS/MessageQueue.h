@@ -168,7 +168,7 @@ protected:
 	 */
 	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,
-			bool ignoreFault=false, CallContext callContex = CallContext::task);
+			bool ignoreFault=false, CallContext callContext = CallContext::task);
 
 	static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 

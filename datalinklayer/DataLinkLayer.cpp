@@ -1,5 +1,5 @@
 #include <framework/datalinklayer/DataLinkLayer.h>
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 DataLinkLayer::DataLinkLayer(uint8_t* set_frame_buffer, ClcwIF* setClcw,
@@ -60,7 +60,7 @@ ReturnValue_t DataLinkLayer::frameValidationCheck() {
 }
 
 ReturnValue_t DataLinkLayer::frameCheckCRC() {
-	uint16_t checkValue = ::Calculate_CRC(this->currentFrame.getFullFrame(),
+	uint16_t checkValue = CRC::crc16ccitt(this->currentFrame.getFullFrame(),
 			this->currentFrame.getFullSize());
 	if (checkValue == 0) {
 		return RETURN_OK;

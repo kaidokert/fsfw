@@ -1,4 +1,4 @@
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/tcdistribution/TcPacketCheck.h>
@@ -8,7 +8,7 @@ TcPacketCheck::TcPacketCheck( uint16_t set_apid ) : apid(set_apid) {
 }
 
 ReturnValue_t TcPacketCheck::checkPacket( TcPacketStored* current_packet ) {
-	uint16_t calculated_crc = ::Calculate_CRC ( current_packet->getWholeData(), current_packet->getFullSize() );
+	uint16_t calculated_crc = CRC::crc16ccitt( current_packet->getWholeData(), current_packet->getFullSize() );
 	if ( calculated_crc != 0 ) {
 		return INCORRECT_CHECKSUM;
 	}

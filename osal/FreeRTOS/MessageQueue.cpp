@@ -51,27 +51,6 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault, callContext);
 }
 
-ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-		MessageQueueMessage *message, MessageQueueId_t sentFrom,
-		bool ignoreFault, CallContext callContext) {
-	message->setSender(sentFrom);
-	BaseType_t result;
-	if(callContext == CallContext::task) {
-		result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),
-				reinterpret_cast<const void*>(message->getBuffer()), 0);
-	}
-	else {
-		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-		result = xQueueSendFromISR(reinterpret_cast<void*>(sendTo),
-				reinterpret_cast<const void*>(message->getBuffer()), &xHigherPriorityTaskWoken);
-		if(xHigherPriorityTaskWoken == pdTRUE) {
-			TaskManagement::requestContextSwitch(callContext);
-		}
-	}
-	return handleSendResult(result, ignoreFault);
-}
-
-
 
 ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
 	if (result != pdPASS) {
@@ -134,4 +113,24 @@ bool MessageQueue::isDefaultDestinationSet() const {
 }
 
 
-
+// static core function to send messages.
+ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
+        MessageQueueMessage *message, MessageQueueId_t sentFrom,
+        bool ignoreFault, CallContext callContext) {
+    message->setSender(sentFrom);
+    BaseType_t result;
+    if(callContext == CallContext::task) {
+        result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),
+                reinterpret_cast<const void*>(message->getBuffer()), 0);
+    }
+    else {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        result = xQueueSendFromISR(reinterpret_cast<void*>(sendTo),
+                reinterpret_cast<const void*>(message->getBuffer()),
+                &xHigherPriorityTaskWoken);
+        if(xHigherPriorityTaskWoken == pdTRUE) {
+            TaskManagement::requestContextSwitch(callContext);
+        }
+    }
+    return handleSendResult(result, ignoreFault);
+}

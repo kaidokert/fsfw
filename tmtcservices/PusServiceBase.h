@@ -101,7 +101,6 @@ protected:
 	/**
 	 * One of two error parameters for additional error information.
 	 */
-	// shouldn't this be uint32_t ? The PUS Verification Message structure param2 has the size 4
 	uint32_t errorParameter2;
 	/**
 	 * This is a complete instance of the Telecommand reception queue of the class.
