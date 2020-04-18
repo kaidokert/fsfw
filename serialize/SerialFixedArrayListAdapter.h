@@ -13,16 +13,17 @@
  * The sequence of objects is defined in the constructor by
  * using the setStart and setNext functions.
  *
- *  1. Buffers with a size header inside that class can be declared with
- *     @code
- *     SerialFixedArrayListAdapter<BUFFER_TYPE,
- *     		MAX_BUFFER_LENGTH, LENGTH_FIELD_TYPE> mySerialFixedArrayList(...).
- *     @endcode
- *  2. MAX_BUFFER_LENGTH specifies the maximum allowed number of elements
- *     in FixedArrayList.
- *  3. LENGTH_FIELD_TYPE specifies the data type of the buffer header
- *     containing the buffer size (defaults to 1 byte length field)
- *     that follows.
+ *  - Buffers with a size header inside that class can be declared with
+ *    @code
+ *    SerialFixedArrayListAdapter<BUFFER_TYPE,
+ *          MAX_SIZE, count_t> mySerialFixedArrayList(...).
+ *    @endcode
+ *
+ *  - MAX_SIZE: specifies the maximum allowed number of elements
+ *    in FixedArrayList.
+ *  - BUFFER_TYPE: specifies the data type of the buffer
+ *  - count_t: specifies the type/size of the length field
+ *    which defaults to one byte.
  *
  * @ingroup serialize
  */
