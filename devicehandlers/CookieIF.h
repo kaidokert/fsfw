@@ -1,7 +1,6 @@
 #ifndef COOKIE_H_
 #define COOKIE_H_
-#include <framework/devicehandlers/CookieIF.h>
-#include <stdint.h>
+#include <cstdint>
 
 /**
  * @brief Physical address type
