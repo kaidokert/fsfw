@@ -121,8 +121,8 @@ ReturnValue_t TmTcBridge::sendStoredTm() {
 	uint8_t counter = 0;
 	ReturnValue_t result = RETURN_OK;
 	while(!fifo.empty() && counter < MAX_STORED_DATA_SENT_PER_CYCLE) {
-		info << "UDP Server: Sending stored TM data. There are "
-				<< (int) fifo.size() << " left to send\r\n" << std::flush;
+		info << "TMTC Bridge: Sending stored TM data. There are "
+		     << (int) fifo.size() << " left to send\r\n" << std::flush;
 		store_address_t storeId;
 		const uint8_t* data = NULL;
 		uint32_t size = 0;
@@ -130,7 +130,8 @@ ReturnValue_t TmTcBridge::sendStoredTm() {
 		result = tmStore->getData(storeId, &data, &size);
 		sendTm(data,size);
 		if(result != RETURN_OK) {
-			error << "UDP Server: Could not send stored downlink data" << std::endl;
+			error << "TMTC Bridge: Could not send stored downlink data"
+			      << std::endl;
 			result = RETURN_FAILED;
 		}
 		counter ++;
