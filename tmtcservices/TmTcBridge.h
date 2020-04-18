@@ -48,12 +48,15 @@ public:
 	void registerCommConnect();
 	void registerCommDisconnect();
 protected:
-	MessageQueueIF* TmTcReceptionQueue; //!< Used to send and receive TMTC messages. TmTcMessage is used to transport messages between tasks.
-	StorageManagerIF* tcStore;
-	StorageManagerIF* tmStore;
-	object_id_t ccsdsPacketDistributor;
-	bool communicationLinkUp; //!< Used to specify whether communication link is up
-	bool tmStored;
+	//! Used to send and receive TMTC messages.
+	//! TmTcMessage is used to transport messages between tasks.
+	MessageQueueIF* TmTcReceptionQueue = nullptr;
+	StorageManagerIF* tcStore = nullptr;
+	StorageManagerIF* tmStore = nullptr;
+	object_id_t ccsdsPacketDistributor = 0;
+	//! Used to specify whether communication link is up
+	bool communicationLinkUp = false;
+	bool tmStored = false;
 
 	/**
 	 * Handle TC reception. Default implementation provided
@@ -113,13 +116,13 @@ protected:
 	void printData(uint8_t * data, uint32_t dataLen);
 
 private:
-	static const uint8_t TMTC_RECEPTION_QUEUE_DEPTH = 20;
-	static const uint8_t MAX_STORED_DATA_SENT_PER_CYCLE = 10;
-	static const uint8_t MAX_DOWNLINK_PACKETS_STORED = 15;
+	static constexpr uint8_t TMTC_RECEPTION_QUEUE_DEPTH = 20;
+	static constexpr uint8_t MAX_STORED_DATA_SENT_PER_CYCLE = 10;
+	static constexpr uint8_t MAX_DOWNLINK_PACKETS_STORED = 15;
 
 	FIFO<store_address_t, MAX_DOWNLINK_PACKETS_STORED> fifo;
-	uint8_t * recvBuffer;
-	uint32_t size;
+	uint8_t * recvBuffer = nullptr;
+	uint32_t size = 0;
 };
 
 
