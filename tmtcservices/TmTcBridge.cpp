@@ -11,17 +11,15 @@
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-TmTcBridge::TmTcBridge(object_id_t objectId_, object_id_t ccsdsPacketDistributor_):
-	SystemObject(objectId_),tcStore(NULL), tmStore(NULL),
-	ccsdsPacketDistributor(ccsdsPacketDistributor_), communicationLinkUp(false),
-	tmStored(false),recvBuffer(NULL), size(0) {
-	TmTcReceptionQueue = QueueFactory::instance()->
+TmTcBridge::TmTcBridge(object_id_t objectId_,
+        object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
+        ccsdsPacketDistributor(ccsdsPacketDistributor_)
+{
+	    TmTcReceptionQueue = QueueFactory::instance()->
 			createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
-
 }
 
-TmTcBridge::~TmTcBridge() {
-}
+TmTcBridge::~TmTcBridge() {}
 
 ReturnValue_t TmTcBridge::initialize() {
 	tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
@@ -75,7 +73,7 @@ ReturnValue_t TmTcBridge::handleTm() {
 
 ReturnValue_t TmTcBridge::readTmQueue() {
 	TmTcMessage message;
-	const uint8_t* data = NULL;
+	const uint8_t* data = nullptr;
 	uint32_t size = 0;
 	for (ReturnValue_t result = TmTcReceptionQueue->receiveMessage(&message);
 		 result == RETURN_OK; result = TmTcReceptionQueue->receiveMessage(&message))
@@ -105,7 +103,7 @@ ReturnValue_t TmTcBridge::readTmQueue() {
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	info << "TMTC Bridge: Comm Link down. "
 			"Saving packet ID to be sent later\r\n" << std::flush;
-	store_address_t storeId;
+	store_address_t storeId = 0;
 
 	if(fifo.full()) {
 		info << "TMTC Bridge: TM downlink max. number of stored packet IDs reached."
