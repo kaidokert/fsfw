@@ -17,6 +17,7 @@ typedef uint32_t address_t;
  * calling @code{.cpp} CookieIF* childCookie = new ChildCookie(...)
  * @endcode .
  *
+ * [not implemented yet]
  * This cookie is then passed to the child device handlers, which stores the
  * pointer and passes it to the communication interface functions.
  *

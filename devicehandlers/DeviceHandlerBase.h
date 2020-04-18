@@ -244,7 +244,7 @@ protected:
 	/**
 	 * Cookie used for communication
 	 */
-	Cookie *cookie;
+	CookieIF *cookie;
 
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
