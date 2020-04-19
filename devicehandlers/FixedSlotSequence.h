@@ -126,7 +126,7 @@ protected:
 	 */
 	SlotList slotList;
 
-	uint32_t slotLengthMs;
+	uint32_t lengthMs;
 
 	bool isEmpty = false;
 };
