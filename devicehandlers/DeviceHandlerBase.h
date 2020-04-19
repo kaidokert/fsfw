@@ -473,11 +473,11 @@ protected:
 	/**
 	 * Pointer to the raw packet that will be sent.
 	 */
-	uint8_t *rawPacket;
+	uint8_t *rawPacket = nullptr;
 	/**
 	 * Size of the #rawPacket.
 	 */
-	uint32_t rawPacketLen;
+	uint32_t rawPacketLen = 0;
 
 	/**
 	 * The mode the device handler is currently in.
@@ -496,7 +496,7 @@ protected:
 	/**
 	 * This is the counter value from performOperation().
 	 */
-	uint8_t pstStep;
+	uint8_t pstStep = 0;
 
 	/**
 	 * This will be used in the RMAP getRead command as expected length, is set by the constructor, can be modiefied at will.
@@ -519,7 +519,7 @@ protected:
 	 * Statically initialized in initialize() to a configurable object. Used when there is no method
 	 * of finding a recipient, ie raw mode and reporting erreonous replies
 	 */
-	MessageQueueId_t defaultRawReceiver;
+	MessageQueueId_t defaultRawReceiver = 0;
 
 	store_address_t storedRawData;
 
@@ -528,19 +528,19 @@ protected:
 	 *
 	 * if #isWiretappingActive all raw communication from and to the device will be sent to this queue
 	 */
-	MessageQueueId_t requestedRawTraffic;
+	MessageQueueId_t requestedRawTraffic = 0;
 
 	/**
 	 * the object used to set power switches
 	 */
-	PowerSwitchIF *powerSwitcher;
+	PowerSwitchIF *powerSwitcher = nullptr;
 
 	/**
 	 * Pointer to the IPCStore.
 	 *
 	 * This caches the pointer received from the objectManager in the constructor.
 	 */
-	StorageManagerIF *IPCStore;
+	StorageManagerIF *IPCStore = nullptr;
 
 	/**
 	 * cached for init
@@ -550,12 +550,12 @@ protected:
 	/**
 	 * Communication object used for device communication
 	 */
-	DeviceCommunicationIF *communicationInterface;
+	DeviceCommunicationIF *communicationInterface = nullptr;
 
 	/**
 	 * Cookie used for communication
 	 */
-	CookieIF * comCookie;
+	CookieIF * comCookie = nullptr;
 
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.
@@ -583,7 +583,7 @@ protected:
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
 	 */
-	MessageQueueIF* commandQueue;
+	MessageQueueIF* commandQueue = nullptr;
 
 	/**
 	 * this is the datapool variable with the thermal state of the device
@@ -614,7 +614,7 @@ protected:
 	 */
 	ReturnValue_t childTransitionFailure;
 
-	uint32_t ignoreMissedRepliesCount; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
+	uint32_t ignoreMissedRepliesCount = 0; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
 
 	FailureIsolationBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
 
@@ -624,7 +624,7 @@ protected:
 
 	bool switchOffWasReported; //!< Indicates if SWITCH_WENT_OFF was already thrown.
 
-	PeriodicTaskIF* executingTask;//!< Pointer to the task which executes this component, is invalid before setTaskIF was called.
+	PeriodicTaskIF* executingTask = nullptr;//!< Pointer to the task which executes this component, is invalid before setTaskIF was called.
 
 	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
 
@@ -1004,7 +1004,7 @@ private:
 	 *
 	 * Set when setMode() is called.
 	 */
-	uint32_t timeoutStart;
+	uint32_t timeoutStart = 0;
 
 	/**
 	 * Delay for the current mode transition, used for time out
