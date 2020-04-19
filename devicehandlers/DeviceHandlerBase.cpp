@@ -55,7 +55,7 @@ DeviceHandlerBase::~DeviceHandlerBase() {
 ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	this->pstStep = counter;
 
-	if (counter == 0) {
+	if (getComAction() == SEND_WRITE) {
 		cookieInfo.state = COOKIE_UNUSED;
 		readCommandQueue();
 		doStateMachine();
@@ -67,7 +67,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
 	}
-	switch (getCommandQueue()) {
+	switch (getComAction()) {
 	case SEND_WRITE:
 		if ((cookieInfo.state == COOKIE_UNUSED)) {
 			buildInternalCommand();
