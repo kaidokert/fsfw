@@ -22,15 +22,14 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		uint32_t thermalRequestPoolId, FailureIsolationBase* fdirInstance,
 		size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
-		maxDeviceReplyLen(maxDeviceReplyLen), wiretappingMode(OFF),
-		storedRawData(StorageManagerIF::INVALID_ADDRESS), deviceCommunicationId(
-	    deviceCommunication), deviceThermalStatePoolId(thermalStatePoolId),
-		deviceThermalRequestPoolId(thermalRequestPoolId), healthHelper(this,
-		setObjectId), modeHelper(this), parameterHelper(this),
+		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
+		deviceCommunicationId(deviceCommunication), deviceThermalStatePoolId(
+		thermalStatePoolId),deviceThermalRequestPoolId(thermalRequestPoolId),
+		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
 		switchOffWasReported(false), actionHelper(this, nullptr), cookieInfo(),
-		ioBoardAddress(ioBoardAddress), childTransitionDelay(5000),
+		childTransitionDelay(5000),
 		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
 		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
