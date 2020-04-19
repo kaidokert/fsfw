@@ -21,24 +21,23 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
 		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
-		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
-		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
-		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
-		requestedRawTraffic(0), powerSwitcher(NULL), IPCStore(NULL),
-		deviceCommunicationId(deviceCommunication), communicationInterface(NULL),
-		cookie(NULL), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId),
-		deviceThermalRequestPoolId(thermalRequestPoolId), healthHelper(this, setObjectId),
-		modeHelper(this), parameterHelper(this), childTransitionFailure(RETURN_OK),
-		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
-		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
-		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), ioBoardAddress(ioBoardAddress),
-		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
-		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
+		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
+		maxDeviceReplyLen(maxDeviceReplyLen), wiretappingMode(OFF),
+		storedRawData(StorageManagerIF::INVALID_ADDRESS), deviceCommunicationId(
+	    deviceCommunication), deviceThermalStatePoolId(thermalStatePoolId),
+		deviceThermalRequestPoolId(thermalRequestPoolId), healthHelper(this,
+		setObjectId), modeHelper(this), parameterHelper(this),
+		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
+		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
+		switchOffWasReported(false), actionHelper(this, nullptr), cookieInfo(),
+		ioBoardAddress(ioBoardAddress), childTransitionDelay(5000),
+		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
+		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);
-	if (this->fdirInstance == NULL) {
+	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
 				defaultFDIRParentId);
 	}
@@ -55,7 +54,7 @@ DeviceHandlerBase::~DeviceHandlerBase() {
 ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	this->pstStep = counter;
 
-	if (counter == 0) {
+	if (getComAction() == SEND_WRITE) {
 		cookieInfo.state = COOKIE_UNUSED;
 		readCommandQueue();
 		doStateMachine();
@@ -67,7 +66,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
 	}
-	switch (getCommandQueue()) {
+	switch (getComAction()) {
 	case SEND_WRITE:
 		if ((cookieInfo.state == COOKIE_UNUSED)) {
 			buildInternalCommand();
