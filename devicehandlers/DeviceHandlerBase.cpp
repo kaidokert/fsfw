@@ -1027,7 +1027,6 @@ void DeviceHandlerBase::replyRawReplyIfnotWiretapped(const uint8_t* data,
 
 ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 		CommandMessage * message) {
-	ReturnValue_t result;
 	switch (message->getCommand()) {
 	case DeviceHandlerMessage::CMD_WIRETAPPING:
 		switch (DeviceHandlerMessage::getWiretappingMode(message)) {
@@ -1050,17 +1049,17 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 		replyReturnvalueToCommand(RETURN_OK);
 		return RETURN_OK;
 	case DeviceHandlerMessage::CMD_SWITCH_IOBOARD:
-		if (mode != MODE_OFF) {
-			replyReturnvalueToCommand(WRONG_MODE_FOR_COMMAND);
-		} else {
-			result = switchCookieChannel(
-					DeviceHandlerMessage::getIoBoardObjectId(message));
-			if (result == RETURN_OK) {
-				replyReturnvalueToCommand(RETURN_OK);
-			} else {
-				replyReturnvalueToCommand(CANT_SWITCH_IO_ADDRESS);
-			}
-		}
+//		if (mode != MODE_OFF) {
+//			replyReturnvalueToCommand(WRONG_MODE_FOR_COMMAND);
+//		} else {
+////			result = switchCookieChannel(
+////					DeviceHandlerMessage::getIoBoardObjectId(message));
+//			if (result == RETURN_OK) {
+//				replyReturnvalueToCommand(RETURN_OK);
+//			} else {
+//				replyReturnvalueToCommand(CANT_SWITCH_IO_ADDRESS);
+//			}
+//		}
 		return RETURN_OK;
 	case DeviceHandlerMessage::CMD_RAW:
 		if ((mode != MODE_RAW)) {
@@ -1275,3 +1274,7 @@ void DeviceHandlerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
 void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 			executingTask = task_;
 }
+
+// Default implementation empty.
+void DeviceHandlerBase::debugInterface(uint8_t positionTracker,
+		object_id_t objectId, uint32_t parameter) {}
