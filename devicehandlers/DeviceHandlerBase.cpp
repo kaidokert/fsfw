@@ -588,7 +588,7 @@ void DeviceHandlerBase::doGetRead() {
 		return;
 	}
 
-	if (receivedDataLen == 0)
+	if (receivedDataLen == 0 or result == DeviceCommunicationIF::NO_REPLY_RECEIVED)
 		return;
 
 	if (wiretappingMode == RAW) {

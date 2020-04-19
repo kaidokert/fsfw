@@ -8,6 +8,7 @@ class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
 
+	// Standard error codes
 	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t NOT_ACTIVE = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t INVALID_ADDRESS = MAKE_RETURN_CODE(0x03);
@@ -16,9 +17,10 @@ public:
 	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x06);
 	static const ReturnValue_t CANT_CHANGE_REPLY_LEN = MAKE_RETURN_CODE(0x07);
 
-	virtual ~DeviceCommunicationIF() {
+	// Can be used in readReceivedMessage()
+	static const ReturnValue_t NO_REPLY_RECEIVED = MAKE_RETURN_CODE(0xA1);
 
-	}
+	virtual ~DeviceCommunicationIF() {}
 
 	virtual ReturnValue_t open(Cookie **cookie, uint32_t address,
 			uint32_t maxReplyLen) = 0;
