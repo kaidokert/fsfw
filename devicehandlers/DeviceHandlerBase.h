@@ -269,51 +269,6 @@ protected:
 			const uint8_t * commandData, size_t commandDataLen) = 0;
 
 	/**
-	 * @brief fill the #deviceCommandMap
-	 *	 	  called by the initialize() of the base class
-	 * @details
-	 * This is used to let the base class know which replies are expected.
-	 * There are different scenarios regarding this:
-	 *
-	 *  - "Normal" commands. These are commands, that trigger a direct reply
-	 *    from the device. In this case, the id of the command should be added
-	 *    to the command map with a commandData_t where maxDelayCycles is set
-	 *    to the maximum expected number of PST cycles the reply will take.
-	 *    Then, scanForReply returns the id of the command and the base class
-	 *    can handle time-out and missing replies.
-	 *
-	 *  - Periodic, unrequested replies. These are replies that, once enabled,
-	 *    are sent by the device on its own in a defined interval.
-	 *    In this case, the id of the reply or a placeholder id should be added
-	 *    to the deviceCommandMap with a commandData_t where maxDelayCycles is
-	 *    set to the maximum expected number of PST cycles between two replies
-	 *    (also a tolerance should be added, as an FDIR message will be
-	 *    generated if it is missed).
-	 *
-	 *    (Robin) This part confuses me. "must do as soon as" implies that
-	 *    the developer must do something somewhere else in the code. Is
-	 *    that really the case? If I understood correctly, DHB performs
-	 *    almost everything (e.g. in erirm function) as long as the commands
-	 *    are inserted correctly.
-	 *
-	 *    As soon as the replies are enabled, DeviceCommandInfo.periodic must
-	 *    be set to true, DeviceCommandInfo.delayCycles to
-	 *    DeviceCommandInfo.maxDelayCycles.
-	 *    From then on, the base class handles the reception.
-	 *    Then, scanForReply returns the id of the reply or the placeholder id
-	 *    and the base class will take care of checking that all replies are
-	 *    received and the interval is correct.
-	 *    When the replies are disabled, DeviceCommandInfo.periodic must be set
-	 *    to 0, DeviceCommandInfo.delayCycles to 0;
-	 *
-	 *  - Aperiodic, unrequested replies. These are replies that are sent
-	 *    by the device without any preceding command and not in a defined
-	 *    interval. These are not entered in the deviceCommandMap but
-	 *    handled by returning @c APERIODIC_REPLY in scanForReply().
-	 */
-	virtual void fillCommandAndReplyMap() = 0;
-
-	/**
 	 * @brief Scans a buffer for a valid reply.
 	 * @details
 	 * This is used by the base class to check the data received for valid packets.
@@ -371,13 +326,113 @@ protected:
 			const uint8_t *packet) = 0;
 
 	/**
+	 * @brief fill the #deviceCommandMap
+	 *	 	  called by the initialize() of the base class
+	 * @details
+	 * This is used to let the base class know which replies are expected.
+	 * There are different scenarios regarding this:
+	 *
+	 *  - "Normal" commands. These are commands, that trigger a direct reply
+	 *    from the device. In this case, the id of the command should be added
+	 *    to the command map with a commandData_t where maxDelayCycles is set
+	 *    to the maximum expected number of PST cycles the reply will take.
+	 *    Then, scanForReply returns the id of the command and the base class
+	 *    can handle time-out and missing replies.
+	 *
+	 *  - Periodic, unrequested replies. These are replies that, once enabled,
+	 *    are sent by the device on its own in a defined interval.
+	 *    In this case, the id of the reply or a placeholder id should be added
+	 *    to the deviceCommandMap with a commandData_t where maxDelayCycles is
+	 *    set to the maximum expected number of PST cycles between two replies
+	 *    (also a tolerance should be added, as an FDIR message will be
+	 *    generated if it is missed).
+	 *
+	 *    (Robin) This part confuses me. "must do as soon as" implies that
+	 *    the developer must do something somewhere else in the code. Is
+	 *    that really the case? If I understood correctly, DHB performs
+	 *    almost everything (e.g. in erirm function) as long as the commands
+	 *    are inserted correctly.
+	 *
+	 *    As soon as the replies are enabled, DeviceCommandInfo.periodic must
+	 *    be set to true, DeviceCommandInfo.delayCycles to
+	 *    DeviceCommandInfo.maxDelayCycles.
+	 *    From then on, the base class handles the reception.
+	 *    Then, scanForReply returns the id of the reply or the placeholder id
+	 *    and the base class will take care of checking that all replies are
+	 *    received and the interval is correct.
+	 *    When the replies are disabled, DeviceCommandInfo.periodic must be set
+	 *    to 0, DeviceCommandInfo.delayCycles to 0;
+	 *
+	 *  - Aperiodic, unrequested replies. These are replies that are sent
+	 *    by the device without any preceding command and not in a defined
+	 *    interval. These are not entered in the deviceCommandMap but
+	 *    handled by returning @c APERIODIC_REPLY in scanForReply().
+	 */
+	virtual void fillCommandAndReplyMap() = 0;
+
+	/**
+	 * This is a helper method to facilitate inserting entries in the command map.
+	 * @param deviceCommand	Identifier of the command to add.
+	 * @param maxDelayCycles The maximum number of delay cycles the command
+	 * waits until it times out.
+	 * @param periodic	Indicates if the command is periodic (i.e. it is sent
+	 * by the device repeatedly without request) or not. Default is aperiodic (0)
+	 * @return	- @c RETURN_OK when the command was successfully inserted,
+	 *          - @c RETURN_FAILED else.
+	 */
+	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
+			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0,
+			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
+
+	/**
+	 * @brief 	This is a helper method to insert replies in the reply map.
+	 * @param deviceCommand	Identifier of the reply to add.
+	 * @param maxDelayCycles The maximum number of delay cycles the reply waits
+	 * until it times out.
+	 * @param periodic	Indicates if the command is periodic (i.e. it is sent
+	 * by the device repeatedly without request) or not. Default is aperiodic (0)
+	 * @return	- @c RETURN_OK when the command was successfully inserted,
+	 *          - @c RETURN_FAILED else.
+	 */
+	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
+			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0);
+
+	/**
+	 * @brief 	A simple command to add a command to the commandList.
+	 * @param deviceCommand The command to add
+	 * @return - @c RETURN_OK when the command was successfully inserted,
+	 *         - @c RETURN_FAILED else.
+	 */
+	ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand);
+	/**
+	 * @brief 	This is a helper method to facilitate updating entries
+	 *        	in the reply map.
+	 * @param deviceCommand	Identifier of the reply to update.
+	 * @param delayCycles The current number of delay cycles to wait.
+	 * As stated in #fillCommandAndCookieMap, to disable periodic commands,
+	 * this is set to zero.
+	 * @param maxDelayCycles The maximum number of delay cycles the reply waits
+	 * until it times out. By passing 0 the entry remains untouched.
+	 * @param periodic Indicates if the command is periodic (i.e. it is sent
+	 * by the device repeatedly without request) or not.Default is aperiodic (0).
+	 * Warning: The setting always overrides the value that was entered in the map.
+	 * @return - @c RETURN_OK when the command was successfully inserted,
+	 *         - @c RETURN_FAILED else.
+	 */
+	ReturnValue_t updateReplyMapEntry(DeviceCommandId_t deviceReply,
+			uint16_t delayCycles, uint16_t maxDelayCycles,
+			uint8_t periodic = 0);
+
+	/**
 	 * @brief   Can be implemented by child handler to
 	 *          perform debugging
 	 * @details Example: Calling this in performOperation
 	 *          to track values like mode.
-	 * @param 	positionTracker Provide the child handler a way to know where the debugInterface was called
-	 * @param 	objectId Provide the child handler object Id to specify actions for spefic devices
-	 * @param 	parameter Supply a parameter of interest
+	 * @param positionTracker Provide the child handler a way to know
+	 * where the debugInterface was called
+	 * @param objectId Provide the child handler object Id to
+	 * specify actions for spefic devices
+	 * @param parameter Supply a parameter of interest
 	 * Please delete all debugInterface calls in DHB after debugging is finished !
 	 */
 	virtual void debugInterface(uint8_t positionTracker = 0,
@@ -391,7 +446,8 @@ protected:
 	 * MODE_ON -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
 	 * MODE_NORMAL -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
 	 * MODE_RAW -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
-	 * _MODE_START_UP -> MODE_ON (do not include time to set the switches, the base class got you covered)
+	 * _MODE_START_UP -> MODE_ON (do not include time to set the switches,
+	 * the base class got you covered)
 	 *
 	 * The default implementation returns 0 !
 	 * @param modeFrom
@@ -413,7 +469,6 @@ protected:
 	 */
 	virtual ReturnValue_t getSwitches(const uint8_t **switches,
 			uint8_t *numberOfSwitches);
-
 public:
 	/**
 	 * @param parentQueueId
@@ -646,11 +701,6 @@ protected:
 	void replyReturnvalueToCommand(ReturnValue_t status,
 			uint32_t parameter = 0);
 
-	/**
-	 *
-
-	 * @param parameter2 additional parameter
-	 */
 	void replyToCommand(ReturnValue_t status, uint32_t parameter = 0);
 
 	/**
@@ -658,7 +708,8 @@ protected:
 	 *
 	 * Sets #timeoutStart with every call.
 	 *
-	 * Sets #transitionTargetMode if necessary so transitional states can be entered from everywhere without breaking the state machine
+	 * Sets #transitionTargetMode if necessary so transitional states can be
+	 * entered from everywhere without breaking the state machine
 	 * (which relies on a correct #transitionTargetMode).
 	 *
 	 * The submode is left unchanged.
@@ -745,45 +796,6 @@ protected:
 	 */
 	virtual ReturnValue_t buildChildRawCommand();
 
-	/**
-	 * This is a helper method to facilitate inserting entries in the command map.
-	 * @param deviceCommand	Identifier of the command to add.
-	 * @param maxDelayCycles The maximum number of delay cycles the command waits until it times out.
-	 * @param periodic	Indicates if the command is periodic (i.e. it is sent by the device repeatedly without request) or not.
-	 *		 			Default is aperiodic (0)
-	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
-	 */
-	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0,
-			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
-	/**
-	 * This is a helper method to insert replies in the reply map.
-	 * @param deviceCommand	Identifier of the reply to add.
-	 * @param maxDelayCycles The maximum number of delay cycles the reply waits until it times out.
-	 * @param periodic	Indicates if the command is periodic (i.e. it is sent by the device repeatedly without request) or not.
-	 *		 			Default is aperiodic (0)
-	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
-	 */
-	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0);
-	/**
-	 * A simple command to add a command to the commandList.
-	 * @param deviceCommand The command to add
-	 * @return RETURN_OK if the command was successfully inserted, RETURN_FAILED else.
-	 */
-	ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand);
-	/**
-	 * This is a helper method to facilitate updating entries in the reply map.
-	 * @param deviceCommand		Identifier of the reply to update.
-	 * @param delayCycles		The current number of delay cycles to wait. As stated in #fillCommandAndCookieMap, to disable periodic commands, this is set to zero.
-	 * @param maxDelayCycles	The maximum number of delay cycles the reply waits until it times out. By passing 0 the entry remains untouched.
-	 * @param periodic			Indicates if the command is periodic (i.e. it is sent by the device repeatedly without request) or not.
-	 *		 					Default is aperiodic (0). Warning: The setting always overrides the value that was entered in the map.
-	 * @return	RETURN_OK when the reply was successfully updated, COMMAND_MAP_ERROR else.
-	 */
-	ReturnValue_t updateReplyMapEntry(DeviceCommandId_t deviceReply,
-			uint16_t delayCycles, uint16_t maxDelayCycles,
-			uint8_t periodic = 0);
 	/**
 	 * Returns the delay cycle count of a reply.
 	 * A count != 0 indicates that the command is already executed.
