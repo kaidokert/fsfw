@@ -1054,7 +1054,7 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 			if (result == RETURN_OK) {
 				replyReturnvalueToCommand(RETURN_OK);
 			} else {
-				replyReturnvalueToCommand(CANT_SWITCH_IOBOARD);
+				replyReturnvalueToCommand(CANT_SWITCH_IO_ADDRESS);
 			}
 		}
 		return RETURN_OK;

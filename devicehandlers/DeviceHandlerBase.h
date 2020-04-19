@@ -445,7 +445,13 @@ protected:
 	 */
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
 
+	/**
+	 * These returnvalues can be returned from abstract functions
+	 * to alter the behaviour of DHB.For error values, refer to
+	 * DeviceHandlerIF.h returnvalues.
+	 */
 	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(4);
+	// Returnvalues for scanForReply()
 	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5); //!< This is used to specify for replies from a device which are not replies to requests
 	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(6); //!< Ignore parts of the received packet
 	static const ReturnValue_t IGNORE_FULL_PACKET = MAKE_RETURN_CODE(7); //!< Ignore full received packet
