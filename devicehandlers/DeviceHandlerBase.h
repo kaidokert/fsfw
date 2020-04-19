@@ -27,7 +27,7 @@ void setStaticFrameworkObjectIds();
 class StorageManagerIF;
 
 /**
- * \defgroup devices Devices
+ * @defgroup devices Devices
  * Contains all devices and the DeviceHandlerBase class.
  */
 
@@ -99,12 +99,12 @@ public:
 	 * @param fdirInstance
 	 * @param cmdQueueSize
 	 */
-	DeviceHandlerBase(uint32_t ioBoardAddress, object_id_t setObjectId,
-			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
-			object_id_t deviceCommunication,
+	DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
+			CookieIF * comCookie, uint8_t setDeviceSwitch,
 			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
-			FailureIsolationBase* fdirInstance = NULL, uint32_t cmdQueueSize = 20);
+			FailureIsolationBase* fdirInstance = nullptr,
+			size_t cmdQueueSize = 20);
 
 	/**
 	 * @brief 	This function is the device handler base core component and is
@@ -555,7 +555,7 @@ protected:
 	/**
 	 * Cookie used for communication
 	 */
-	CookieIF *cookie;
+	CookieIF * comCookie;
 
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.

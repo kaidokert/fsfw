@@ -16,17 +16,17 @@ object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
-DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
-		object_id_t setObjectId, uint32_t maxDeviceReplyLen,
-		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
-		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
+DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
+		object_id_t deviceCommunication, CookieIF * comCookie,
+		uint8_t setDeviceSwitch, uint32_t thermalStatePoolId,
+		uint32_t thermalRequestPoolId, FailureIsolationBase* fdirInstance,
+		size_t cmdQueueSize) :
 		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
 		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
 		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		requestedRawTraffic(0), powerSwitcher(NULL), IPCStore(NULL),
 		deviceCommunicationId(deviceCommunication), communicationInterface(NULL),
-		cookie(NULL), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId),
+		comCookie(comCookie), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId),
 		deviceThermalRequestPoolId(thermalRequestPoolId), healthHelper(this, setObjectId),
 		modeHelper(this), parameterHelper(this), childTransitionFailure(RETURN_OK),
 		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
@@ -102,7 +102,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return RETURN_FAILED;
 	}
 
-	result = communicationInterface->initializeInterface(cookie);
+	result = communicationInterface->initializeInterface(comCookie);
 	if (result != RETURN_OK) {
 		return result;
 	}
@@ -503,7 +503,7 @@ void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
 void DeviceHandlerBase::doSendWrite() {
 	if (cookieInfo.state == COOKIE_WRITE_READY) {
 
-		ReturnValue_t result = communicationInterface->sendMessage(cookie,
+		ReturnValue_t result = communicationInterface->sendMessage(comCookie,
 				rawPacket, rawPacketLen);
 
 		if (result == RETURN_OK) {
@@ -524,7 +524,7 @@ void DeviceHandlerBase::doGetWrite() {
 		return;
 	}
 	cookieInfo.state = COOKIE_UNUSED;
-	ReturnValue_t result = communicationInterface->getSendSuccess(cookie);
+	ReturnValue_t result = communicationInterface->getSendSuccess(comCookie);
 	if (result == RETURN_OK) {
 		if (wiretappingMode == RAW) {
 			replyRawData(rawPacket, rawPacketLen, requestedRawTraffic, true);
@@ -556,7 +556,7 @@ void DeviceHandlerBase::doSendRead() {
 		requestLen = 0;
 	}
 
-	result = communicationInterface->requestReceiveMessage(cookie, requestLen);
+	result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
 
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
@@ -584,8 +584,8 @@ void DeviceHandlerBase::doGetRead() {
 
 	cookieInfo.state = COOKIE_UNUSED;
 
-	result = communicationInterface->readReceivedMessage(cookie, &receivedData,
-			&receivedDataLen);
+	result = communicationInterface->readReceivedMessage(comCookie,
+			&receivedData, &receivedDataLen);
 
 	if (result != RETURN_OK) {
 		triggerEvent(DEVICE_REQUESTING_REPLY_FAILED, result);
