@@ -17,11 +17,10 @@
 #include <framework/tasks/ExecutableObjectIF.h>
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
 #include <framework/datapool/HkSwitchHelper.h>
-#include <framework/devicehandlers/CookieIF.h>
 #include <framework/serialize/SerialFixedArrayListAdapter.h>
+#include <map>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/tasks/PeriodicTaskIF.h>
-#include <map>
 
 namespace Factory{
 void setStaticFrameworkObjectIds();
@@ -30,53 +29,29 @@ void setStaticFrameworkObjectIds();
 class StorageManagerIF;
 
 /**
- * @defgroup devices Devices
+ * \defgroup devices Devices
  * Contains all devices and the DeviceHandlerBase class.
  */
 
 /**
- * @brief This is the abstract base class for device handlers.
- * @details
- * Documentation: Dissertation Baetz p.138,139, p.141-149
+ * \brief This is the abstract base class for device handlers.
  *
- * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink,
- * communication with physical devices, using the @link DeviceCommunicationIF @endlink,
- * and communication with commanding objects.
+ * Documentation: Dissertation Baetz p.138,139, p.141-149
+ * SpaceWire Remote Memory Access Protocol (RMAP)
+ *
+ * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink, the RMAP communication and the
+ * communication with commanding objects.
  * It inherits SystemObject and thus can be created by the ObjectManagerIF.
  *
  * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
- * For each step an RMAP action is selected and executed.
- * If data has been received (GET_READ), the data will be interpreted.
- * The action for each step can be defined by the child class but as most
- * device handlers share a 4-call (sendRead-getRead-sendWrite-getWrite) structure,
- * a default implementation is provided. NOTE: RMAP is a standard which is used for FLP.
- * RMAP communication is not mandatory for projects implementing the FSFW.
- * However, the communication principles are similar to RMAP as there are
- * two write and two send calls involved.
+ * For each step an RMAP action is selected and executed. If data has been received (eg in case of an RMAP Read), the data will be interpreted.
+ * The action for each step can be defined by the child class but as most device handlers share a 4-call (Read-getRead-write-getWrite) structure,
+ * a default implementation is provided.
  *
  * Device handler instances should extend this class and implement the abstract functions.
  * Components and drivers can send so called cookies which are used for communication
- * and contain information about the communcation (e.g. slave address for I2C or RMAP structs).
- * The following abstract methods must be implemented by a device handler:
- *  1. doStartUp()
- *  2. doShutDown()
- *  3. buildTransitionDeviceCommand()
- *  4. buildNormalDeviceCommand()
- *  5. buildCommandFromCommand()
- *  6. fillCommandAndReplyMap()
- *  7. scanForReply()
- *  8. interpretDeviceReply()
  *
- * Other important virtual methods with a default implementation
- * are the getTransitionDelayMs() function and the getSwitches() function.
- * Please ensure that getSwitches() returns DeviceHandlerIF::NO_SWITCHES if
- * power switches are not implemented yet. Otherwise, the device handler will
- * not transition to MODE_ON, even if setMode(MODE_ON) is called.
- * If a transition to MODE_ON is desired without commanding, override the
- * intialize() function and call setMode(_MODE_START_UP) before calling
- * DeviceHandlerBase::initialize().
- *
- * @ingroup devices
+ * \ingroup devices
  */
 class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasReturnvaluesIF,
@@ -92,66 +67,284 @@ public:
 	 * The constructor passes the objectId to the SystemObject().
 	 *
 	 * @param setObjectId the ObjectId to pass to the SystemObject() Constructor
-	 * @param maxDeviceReplyLen the largest allowed reply size
+	 * @param maxDeviceReplyLen the length the RMAP getRead call will be sent with
 	 * @param setDeviceSwitch the switch the device is connected to, for devices using two switches, overwrite getSwitches()
-	 * @param deviceCommuncation Communcation Interface object which is used to implement communication functions
-	 * @param thermalStatePoolId
-	 * @param thermalRequestPoolId
-	 * @param fdirInstance
-	 * @param cmdQueueSize
 	 */
-	DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
-			CookieIF * comCookie_, uint8_t setDeviceSwitch,
-			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
+	DeviceHandlerBase(uint32_t ioBoardAddress, object_id_t setObjectId,
+			uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
+			object_id_t deviceCommunication, uint32_t thermalStatePoolId =
+					PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
-			FailureIsolationBase* fdirInstance = nullptr, size_t cmdQueueSize = 20);
+			FailureIsolationBase* fdirInstance = NULL, uint32_t cmdQueueSize = 20);
+
+	virtual MessageQueueId_t getCommandQueue(void) const;
+
 
 	/**
-	 * @brief This function is the device handler base core component and is called periodically.
-	 * @details
-	 * General sequence, showing where abstract virtual functions are called:
-	 * If the State is SEND_WRITE:
-	 *   1. Set the cookie state to COOKIE_UNUSED and read the command queue
-	 *   2. Handles Device State Modes by calling doStateMachine().
-	 *      This function calls callChildStatemachine() which calls the abstract functions
-	 *      doStartUp() and doShutDown()
-	 *   3. Check switch states by calling checkSwitchStates()
-	 *   4. Decrements counter for timeout of replies by calling decrementDeviceReplyMap()
-	 *   5. Performs FDIR check for failures
-	 *   6. Calls hkSwitcher.performOperation()
-	 *   7. If the device mode is MODE_OFF, return RETURN_OK. Otherwise, perform the Action property
-	 *   	and performs depending on value specified
-	 *      by input value counter. The child class tells base class what to do by setting this value.
-	 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite() which calls
-	 *       sendMessage function of #communicationInterface
-	 *     	 and calls buildInternalCommand if the cookie state is COOKIE_UNUSED
-	 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite() which calls
-	 *       getSendSuccess of #communicationInterface.
-	 *       Calls abstract functions scanForReply() and interpretDeviceReply().
-	 *     - SEND_READ: Request reading data from device by calling doSendRead() which calls
-	 *       requestReceiveMessage of #communcationInterface
-	 *     - GET_READ: Access requested reading data by calling doGetRead() which calls
-	 *       readReceivedMessage of #communicationInterface
-	 * @param counter Specifies which Action to perform
-	 * @return RETURN_OK for successful execution
-	 */
+		 * This function is a core component and is called periodically.
+		 * General sequence:
+		 * If the State is SEND_WRITE:
+		 *   1. Set the cookie state to COOKIE_UNUSED and read the command queue
+		 *   2. Handles Device State Modes by calling doStateMachine().
+		 *      This function calls callChildStatemachine() which calls the abstract functions
+		 *      doStartUp() and doShutDown()
+		 *   3. Check switch states by calling checkSwitchStates()
+		 *   4. Decrements counter for timeout of replies by calling decrementDeviceReplyMap()
+		 *   5. Performs FDIR check for failures
+		 *   6. Calls hkSwitcher.performOperation()
+		 *   7. If the device mode is MODE_OFF, return RETURN_OK. Otherwise, perform the Action property
+		 *   	and performs depending on value specified
+		 *      by input value counter. The child class tells base class what to do by setting this value.
+		 *     - SEND_WRITE: Send data or commands to device by calling doSendWrite()
+		 *     	 Calls abstract funtions buildNomalDeviceCommand()
+		 *     	 or buildTransitionDeviceCommand()
+		 *     - GET_WRITE: Get ackknowledgement for sending by calling doGetWrite().
+		 *       Calls abstract functions scanForReply() and interpretDeviceReply().
+		 *     - SEND_READ: Request reading data from device by calling doSendRead()
+		 *     - GET_READ: Access requested reading data by calling doGetRead()
+		 * @param counter Specifies which Action to perform
+		 * @return RETURN_OK for successful execution
+		 */
 	virtual ReturnValue_t performOperation(uint8_t counter);
 
-	/**
-	 * @brief  Initializes the device handler
-	 * @details
-	 * Initialize Device Handler as system object and
-	 * initializes all important helper classes.
-	 * Calls fillCommandAndReplyMap().
-	 * @return
-	 */
 	virtual ReturnValue_t initialize();
 
+	/**
+	 *
+	 * @param parentQueueId
+	 */
+	virtual void setParentQueue(MessageQueueId_t parentQueueId);
 	/**
 	 * Destructor.
 	 */
 	virtual ~DeviceHandlerBase();
+
+	ReturnValue_t executeAction(ActionId_t actionId,
+			MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size);
+	Mode_t getTransitionSourceMode() const;
+	Submode_t getTransitionSourceSubMode() const;
+	virtual void getMode(Mode_t *mode, Submode_t *submode);
+	HealthState getHealth();
+	ReturnValue_t setHealth(HealthState health);
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
+			ParameterWrapper *parameterWrapper,
+			const ParameterWrapper *newValues, uint16_t startAtIndex);
+	/**
+	 * Implementation of ExecutableObjectIF function
+	 *
+	 * Used to setup the reference of the task, that executes this component
+	 * @param task_ Pointer to the taskIF of this task
+	 */
+	virtual  void setTaskIF(PeriodicTaskIF* task_);
 protected:
+	/**
+	 * The Returnvalues id of this class, required by HasReturnvaluesIF
+	 */
+	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
+
+	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(4);
+	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5);
+	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(6);
+//	static const ReturnValue_t ONE_SWITCH = MAKE_RETURN_CODE(8);
+//	static const ReturnValue_t TWO_SWITCHES = MAKE_RETURN_CODE(9);
+	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(10);
+	static const ReturnValue_t COMMAND_MAP_ERROR = MAKE_RETURN_CODE(11);
+	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(12);
+
+	//Mode handling error Codes
+	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE1);
+	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE2);
+
+	static const DeviceCommandId_t RAW_COMMAND_ID = -1;
+	static const DeviceCommandId_t NO_COMMAND_ID = -2;
+	static const MessageQueueId_t NO_COMMANDER = 0;
+
+	/**
+	 * Pointer to the raw packet that will be sent.
+	 */
+	uint8_t *rawPacket;
+	/**
+	 * Size of the #rawPacket.
+	 */
+	uint32_t rawPacketLen;
+
+	/**
+	 * The mode the device handler is currently in.
+	 *
+	 * This should never be changed directly but only with setMode()
+	 */
+	Mode_t mode;
+
+	/**
+	 * The submode the device handler is currently in.
+	 *
+	 * This should never be changed directly but only with setMode()
+	 */
+	Submode_t submode;
+
+	/**
+	 * This is the counter value from performOperation().
+	 */
+	uint8_t pstStep;
+
+	/**
+	 * This will be used in the RMAP getRead command as expected length, is set by the constructor, can be modiefied at will.
+	 */
+	const uint32_t maxDeviceReplyLen;
+
+	/**
+	 * wiretapping flag:
+	 *
+	 * indicates either that all raw messages to and from the device should be sent to #theOneWhoWantsToReadRawTraffic
+	 * or that all device TM should be downlinked to #theOneWhoWantsToReadRawTraffic
+	 */
+	enum WiretappingMode {
+		OFF = 0, RAW = 1, TM = 2
+	} wiretappingMode;
+
+	/**
+	 * A message queue that accepts raw replies
+	 *
+	 * Statically initialized in initialize() to a configurable object. Used when there is no method
+	 * of finding a recipient, ie raw mode and reporting erreonous replies
+	 */
+	MessageQueueId_t defaultRawReceiver;
+
+	store_address_t storedRawData;
+
+	/**
+	 * the message queue which wants to read all raw traffic
+	 *
+	 * if #isWiretappingActive all raw communication from and to the device will be sent to this queue
+	 */
+	MessageQueueId_t requestedRawTraffic;
+
+	/**
+	 * the object used to set power switches
+	 */
+	PowerSwitchIF *powerSwitcher;
+
+	/**
+	 * Pointer to the IPCStore.
+	 *
+	 * This caches the pointer received from the objectManager in the constructor.
+	 */
+	StorageManagerIF *IPCStore;
+
+	/**
+	 * cached for init
+	 */
+	object_id_t deviceCommunicationId;
+
+	/**
+	 * Communication object used for device communication
+	 */
+	DeviceCommunicationIF *communicationInterface;
+
+	/**
+	 * Cookie used for communication
+	 */
+	Cookie *cookie;
+
+	/**
+	 * The MessageQueue used to receive device handler commands and to send replies.
+	 */
+	MessageQueueIF* commandQueue;
+
+	/**
+	 * this is the datapool variable with the thermal state of the device
+	 *
+	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
+	 */
+	uint32_t deviceThermalStatePoolId;
+
+	/**
+	 * this is the datapool variable with the thermal request of the device
+	 *
+	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
+	 */
+	uint32_t deviceThermalRequestPoolId;
+
+	/**
+	 * Taking care of the health
+	 */
+	HealthHelper healthHelper;
+
+	ModeHelper modeHelper;
+
+	ParameterHelper parameterHelper;
+
+	/**
+	 * Optional Error code
+	 * Can be set in doStartUp(), doShutDown() and doTransition() to signal cause for Transition failure.
+	 */
+	ReturnValue_t childTransitionFailure;
+
+	uint32_t ignoreMissedRepliesCount; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
+
+	FailureIsolationBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
+
+	HkSwitchHelper hkSwitcher;
+
+	bool defaultFDIRUsed; //!< To correctly delete the default instance.
+
+	bool switchOffWasReported; //!< Indicates if SWITCH_WENT_OFF was already thrown.
+
+	PeriodicTaskIF* executingTask;//!< Pointer to the task which executes this component, is invalid before setTaskIF was called.
+
+	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
+
+	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
+
+	static object_id_t defaultFDIRParentId; //!< Object which may be the root cause of an identified fault.
+	/**
+	 * Helper function to report a missed reply
+	 *
+	 * Can be overwritten by children to act on missed replies or to fake reporting Id.
+	 *
+	 * @param id of the missed reply
+	 */
+	virtual void missedReply(DeviceCommandId_t id);
+
+	/**
+	 * Send a reply to a received device handler command.
+	 *
+	 * This also resets #DeviceHandlerCommand to 0.
+	 *
+	 * @param reply the reply type
+	 * @param parameter parameter for the reply
+	 */
+	void replyReturnvalueToCommand(ReturnValue_t status,
+			uint32_t parameter = 0);
+
+	/**
+	 *
+
+	 * @param parameter2 additional parameter
+	 */
+	void replyToCommand(ReturnValue_t status, uint32_t parameter = 0);
+
+	/**
+	 * Set the device handler mode
+	 *
+	 * Sets #timeoutStart with every call.
+	 *
+	 * Sets #transitionTargetMode if necessary so transitional states can be entered from everywhere without breaking the state machine
+	 * (which relies on a correct #transitionTargetMode).
+	 *
+	 * The submode is left unchanged.
+	 *
+	 *
+	 * @param newMode
+	 */
+	void setMode(Mode_t newMode);
+
+	/**
+	 * @overload
+	 * @param submode
+	 */
+	void setMode(Mode_t newMode, Submode_t submode);
+
 	/**
 	 * This is used to let the child class handle the transition from mode @c _MODE_START_UP to @c MODE_ON
 	 *
@@ -188,457 +381,6 @@ protected:
 	virtual void doShutDown() = 0;
 
 	/**
-	 * Build the device command to send for normal mode.
-	 *
-	 * This is only called in @c MODE_NORMAL. If multiple submodes for @c MODE_NORMAL are supported,
-	 * different commands can built returned depending on the submode.
-	 *
-	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
-	 * If variable command frequence is required, a counter can be used and
-	 * the frequency in the reply map has to be set manually
-	 * by calling updateReplyMap().
-	 *
-	 * @param[out] id the device command id that has been built
-	 * @return
-	 *    - @c RETURN_OK to send command after setting #rawPacket and #rawPacketLen.
-	 *    - @c NOTHING_TO_SEND when no command is to be sent.
-	 *    - Anything else triggers an even with the returnvalue as a parameter.
-	 */
-	virtual ReturnValue_t buildNormalDeviceCommand(DeviceCommandId_t * id) = 0;
-
-	/**
-	 * Build the device command to send for a transitional mode.
-	 *
-	 * This is only called in @c _MODE_TO_NORMAL, @c _MODE_TO_ON, @c _MODE_TO_RAW,
-	 * @c _MODE_START_UP and @c _MODE_TO_POWER_DOWN. So it is used by doStartUp() and doShutDown() as well as doTransition()
-	 *
-	 * A good idea is to implement a flag indicating a command has to be built and a variable containing the command number to be built
-	 * and filling them in doStartUp(), doShutDown() and doTransition() so no modes have to be checked here.
-	 *
-	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
-	 *
-	 * @param[out] id the device command id built
-	 * @return
-	 *    - @c RETURN_OK when a command is to be sent
-	 *    - @c NOTHING_TO_SEND when no command is to be sent
-	 *    - Anything else triggers an even with the returnvalue as a parameter
-	 */
-	virtual ReturnValue_t buildTransitionDeviceCommand(DeviceCommandId_t * id) = 0;
-
-	/**
-	 * @brief Build a device command packet from data supplied by a direct command.
-	 *
-	 * @details
-	 * #rawPacket and #rawPacketLen should be set by this method to the packet to be sent.
-	 * The existence of the command in the command map and the command size check
-	 * against 0 are done by the base class.
-	 *
-	 * @param deviceCommand the command to build, already checked against deviceCommandMap
-	 * @param commandData pointer to the data from the direct command
-	 * @param commandDataLen length of commandData
-	 * @return
-	 *     - @c RETURN_OK to send command after #rawPacket and #rawPacketLen have been set.
-	 *     - Anything else triggers an event with the returnvalue as a parameter
-	 */
-	virtual ReturnValue_t buildCommandFromCommand(DeviceCommandId_t deviceCommand,
-			const uint8_t * commandData, size_t commandDataLen) = 0;
-
-	/**
-	 * @brief fill the #deviceCommandMap
-	 *	 	  called by the initialize() of the base class
-	 * @details
-	 * This is used to let the base class know which replies are expected.
-	 * There are different scenarios regarding this:
-	 *  - "Normal" commands. These are commands, that trigger a direct reply from the device.
-	 *    In this case, the id of the command should be added to the command map
-	 *    with a commandData_t where maxDelayCycles is set to the maximum expected
-	 *    number of PST cycles the reply will take. Then, scanForReply returns
-	 *    the id of the command and the base class can handle time-out and missing replies.
-	 *  - Periodic, unrequested replies. These are replies that, once enabled, are sent by the device
-	 *    on its own in a defined interval. In this case, the id of the reply
-	 *    or a placeholder id should be added to the deviceCommandMap with a commandData_t
-	 *    where maxDelayCycles is set to the maximum expected number of PST cycles between
-	 *    two replies (also a tolerance should be added, as an FDIR message will be generated if it is missed).
-	 *    As soon as the replies are enabled, DeviceCommandInfo.periodic must be set to 1,
-	 *    DeviceCommandInfo.delayCycles to DeviceCommandInfo.MaxDelayCycles.
-	 *    From then on, the base class handles the reception.
-	 *    Then, scanForReply returns the id of the reply or the placeholder id and the base class will
-	 *    take care of checking that all replies are received and the interval is correct.
-	 *    When the replies are disabled, DeviceCommandInfo.periodic must be set to 0,
-	 *    DeviceCommandInfo.delayCycles to 0;
-	 *  - Aperiodic, unrequested replies. These are replies that are sent
-	 *    by the device without any preceding command and not in a defined interval.
-	 *    These are not entered in the deviceCommandMap but handled by returning @c APERIODIC_REPLY in scanForReply().
-	 *
-	 */
-	virtual void fillCommandAndReplyMap() = 0;
-
-	/**
-	 * @brief Scans a buffer for a valid reply.
-	 * @details
-	 * This is used by the base class to check the data received for valid packets.
-	 * It only checks if a valid packet starts at @c start.
-	 * It also only checks the structural validy of the packet,
-	 * e.g. checksums lengths and protocol data.
-	 * No information check is done, e.g. range checks etc.
-	 *
-	 * Errors should be reported directly,  the base class does NOT report
-	 * any errors based on the returnvalue of this function.
-	 *
-	 * @param start start of remaining buffer to be scanned
-	 * @param len length of remaining buffer to be scanned
-	 * @param[out] foundId the id of the data found in the buffer.
-	 * @param[out] foundLen length of the data found. Is to be set in function,
-	 * 						buffer is scanned at previous position + foundLen.
-	 * @return
-	 *     - @c RETURN_OK a valid packet was found at @c start, @c foundLen is valid
-	 *     - @c RETURN_FAILED no reply could be found starting at @c start,
-	 *             implies @c foundLen is not valid,
-	 *             base class will call scanForReply() again with ++start
-	 *     - @c DeviceHandlerIF::INVALID_DATA a packet was found but it is invalid,
-	 *             e.g. checksum error, implies @c foundLen is valid, can be used to skip some bytes
-	 *     - @c DeviceHandlerIF::LENGTH_MISSMATCH @c len is invalid
-	 *     - @c DeviceHandlerIF::IGNORE_REPLY_DATA Ignore this specific part of the packet
-	 *     - @c DeviceHandlerIF::IGNORE_FULL_PACKET Ignore the packet
-	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been
-	 *             requested by a command, but should be handled anyway
-	 *             (@see also fillCommandAndCookieMap() )
-	 */
-	virtual ReturnValue_t scanForReply(const uint8_t *start, size_t remainingSize,
-			DeviceCommandId_t *foundId, size_t *foundLen) = 0;
-
-	/**
-	 * @brief Interpret a reply from the device.
-	 * @details
-	 * This is called after scanForReply() found a valid packet, it can be assumed that the length and structure is valid.
-	 * This routine extracts the data from the packet into a DataSet and then calls handleDeviceTM(), which either sends
-	 * a TM packet or stores the data in the DataPool depending on whether the it was an external command.
-	 * No packet length is given, as it should be defined implicitly by the id.
-	 *
-	 * @param id the id found by scanForReply()
-	 * @param packet
-	 * @return
-	 *     - @c RETURN_OK when the reply was interpreted.
-	 *     - @c RETURN_FAILED when the reply could not be interpreted, eg. logical errors or range violations occurred
-	 */
-	virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id,
-			const uint8_t *packet) = 0;
-
-	/**
-	 * set all datapool variables that are update periodically in normal mode invalid
-	 *
-	 * Child classes should provide an implementation which sets all those variables invalid
-	 * which are set periodically during any normal mode.
-	 */
-	virtual void setNormalDatapoolEntriesInvalid() = 0;
-
-	/**
-	 * @brief   Can be implemented by child handler to
-	 *          perform debugging
-	 * @details Example: Calling this in performOperation
-	 *          to track values like mode.
-	 * @param 	positionTracker Provide the child handler a way to know where the debugInterface was called
-	 * @param 	objectId Provide the child handler object Id to specify actions for spefic devices
-	 * @param 	parameter Supply a parameter of interest
-	 * Please delete all debugInterface calls in DHB after debugging is finished !
-	 */
-	virtual void debugInterface(uint8_t positionTracker = 0, object_id_t objectId = 0, uint32_t parameter = 0);
-
-	/**
-	 * Get the time needed to transit from modeFrom to modeTo.
-	 *
-	 * Used for the following transitions:
-	 * modeFrom -> modeTo:
-	 *  - MODE_ON -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
-	 *  - MODE_NORMAL -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
-	 *  - MODE_RAW -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
-	 *  - _MODE_START_UP -> MODE_ON (do not include time to set the switches, the base class got you covered)
-	 *
-	 * The default implementation returns 0 !
-	 * @param modeFrom
-	 * @param modeTo
-	 * @return time in ms
-	 */
-	virtual uint32_t getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo);
-
-	/**
-	 * Return the switches connected to the device.
-	 *
-	 * The default implementation returns one switch set in the ctor.
-	 *
-	 * @param[out] switches pointer to an array of switches
-	 * @param[out] numberOfSwitches length of returned array
-	 * @return
-	 *      - @c RETURN_OK if the parameters were set
-	 *      - @c NO_SWITCH or any other returnvalue if no switches exist
-	 */
-	virtual ReturnValue_t getSwitches(const uint8_t **switches,
-			uint8_t *numberOfSwitches);
-
-	/**
-	 * Can be used to perform device specific periodic operations.
-	 * This is called on the SEND_READ step of the performOperation() call
-	 */
-	virtual void performOperationHook();
-
-	/**
-	 * The Returnvalues id of this class, required by HasReturnvaluesIF
-	 */
-	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
-
-public:
-	/**
-	 * @param parentQueueId
-	 */
-	virtual void setParentQueue(MessageQueueId_t parentQueueId);
-
-	/**
-	 * This function call handles the execution of external commands as required
-	 * by the HasActionIF.
-	 * @param actionId
-	 * @param commandedBy
-	 * @param data
-	 * @param size
-	 * @return
-	 */
-	ReturnValue_t executeAction(ActionId_t actionId,
-			MessageQueueId_t commandedBy, const uint8_t* data, size_t size);
-
-	Mode_t getTransitionSourceMode() const;
-	Submode_t getTransitionSourceSubMode() const;
-	virtual void getMode(Mode_t *mode, Submode_t *submode);
-	HealthState getHealth();
-	ReturnValue_t setHealth(HealthState health);
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex);
-	/**
-	 * Implementation of ExecutableObjectIF function
-	 *
-	 * Used to setup the reference of the task, that executes this component
-	 * @param task_ Pointer to the taskIF of this task
-	 */
-	virtual  void setTaskIF(PeriodicTaskIF* task_);
-	virtual MessageQueueId_t getCommandQueue(void) const;
-
-protected:
-	//Mode handling error Codes
-	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE1);
-	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE2);
-
-	static const DeviceCommandId_t RAW_COMMAND_ID = -1;
-	static const DeviceCommandId_t NO_COMMAND_ID = -2;
-	static const MessageQueueId_t NO_COMMANDER = 0;
-
-	/**
-	 * Pointer to the raw packet that will be sent.
-	 */
-	uint8_t *rawPacket = nullptr;
-	/**
-	 * Size of the #rawPacket.
-	 */
-	size_t rawPacketLen = 0;
-
-	/**
-	 * The mode the device handler is currently in.
-	 *
-	 * This should never be changed directly but only with setMode()
-	 */
-	Mode_t mode;
-
-	/**
-	 * The submode the device handler is currently in.
-	 *
-	 * This should never be changed directly but only with setMode()
-	 */
-	Submode_t submode;
-
-	/**
-	 * This is the counter value from performOperation().
-	 */
-	uint8_t pstStep = 0;
-
-	/**
-	 * wiretapping flag:
-	 *
-	 * indicates either that all raw messages to and from the device should be sent to #theOneWhoWantsToReadRawTraffic
-	 * or that all device TM should be downlinked to #theOneWhoWantsToReadRawTraffic
-	 */
-	enum WiretappingMode: uint8_t {
-		OFF = 0, RAW = 1, TM = 2
-	} wiretappingMode;
-
-	/**
-	 * A message queue that accepts raw replies
-	 *
-	 * Statically initialized in initialize() to a configurable object. Used when there is no method
-	 * of finding a recipient, ie raw mode and reporting erreonous replies
-	 */
-	MessageQueueId_t defaultRawReceiver = 0;
-
-	store_address_t storedRawData;
-
-	/**
-	 * the message queue which wants to read all raw traffic
-	 *
-	 * if #isWiretappingActive all raw communication from and to the device will be sent to this queue
-	 */
-	MessageQueueId_t requestedRawTraffic = 0;
-
-	/**
-	 * the object used to set power switches
-	 */
-	PowerSwitchIF *powerSwitcher = nullptr;
-
-	/**
-	 * Pointer to the IPCStore.
-	 *
-	 * This caches the pointer received from the objectManager in the constructor.
-	 */
-	StorageManagerIF *IPCStore = nullptr;
-
-	/**
-	 * cached for init
-	 */
-	object_id_t deviceCommunicationId;
-
-	/**
-	 * Communication object used for device communication
-	 */
-	DeviceCommunicationIF *communicationInterface = nullptr;
-
-	/**
-	 * Cookie used for communication. This is passed to the communication
-	 * interface.
-	 */
-	CookieIF *comCookie;
-
-	struct DeviceCommandInfo {
-		bool isExecuting; //!< Indicates if the command is already executing.
-		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected. Inititated with 0.
-		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
-	};
-	typedef std::map<DeviceCommandId_t, DeviceCommandInfo> DeviceCommandMap;
-	typedef DeviceCommandMap::iterator DeviceCommandIter;
-
-	/**
-	 * @brief Information about expected replies
-	 *
-	 * This is used to keep track of pending replies
-	 */
-	struct DeviceReplyInfo {
-		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
-		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
-		size_t replyLen = 0; //!< Expected size of the reply.
-		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
-		DeviceCommandMap::iterator command; //!< The command that expects this reply.
-	};
-
-	typedef std::map<DeviceCommandId_t, DeviceReplyInfo> DeviceReplyMap;
-	typedef DeviceReplyMap::iterator DeviceReplyIter;
-
-	/**
-	 * The MessageQueue used to receive device handler commands and to send replies.
-	 */
-	MessageQueueIF* commandQueue = nullptr;
-
-	/**
-	 * this is the datapool variable with the thermal state of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	uint32_t deviceThermalStatePoolId;
-
-	/**
-	 * this is the datapool variable with the thermal request of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	uint32_t deviceThermalRequestPoolId;
-
-	/**
-	 * Taking care of the health
-	 */
-	HealthHelper healthHelper;
-
-	ModeHelper modeHelper;
-
-	ParameterHelper parameterHelper;
-
-	/**
-	 * Optional Error code
-	 * Can be set in doStartUp(), doShutDown() and doTransition() to signal cause for Transition failure.
-	 */
-	ReturnValue_t childTransitionFailure = RETURN_OK;
-
-	uint32_t ignoreMissedRepliesCount = 0; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
-
-	FailureIsolationBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
-
-	HkSwitchHelper hkSwitcher;
-
-	bool defaultFDIRUsed; //!< To correctly delete the default instance.
-
-	bool switchOffWasReported; //!< Indicates if SWITCH_WENT_OFF was already thrown.
-
-	PeriodicTaskIF* executingTask;//!< Pointer to the task which executes this component, is invalid before setTaskIF was called.
-
-	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
-
-	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
-
-	static object_id_t defaultFDIRParentId; //!< Object which may be the root cause of an identified fault.
-
-	/**
-	 * Set the device handler mode
-	 *
-	 * Sets #timeoutStart with every call.
-	 *
-	 * Sets #transitionTargetMode if necessary so transitional states can be entered from everywhere without breaking the state machine
-	 * (which relies on a correct #transitionTargetMode).
-	 *
-	 * The submode is left unchanged.
-	 *
-	 *
-	 * @param newMode
-	 */
-	void setMode(Mode_t newMode);
-
-	/**
-	 * @overload
-	 * @param submode
-	 */
-	void setMode(Mode_t newMode, Submode_t submode);
-
-	/**
-	 * Helper function to report a missed reply
-	 *
-	 * Can be overwritten by children to act on missed replies or to fake reporting Id.
-	 *
-	 * @param id of the missed reply
-	 */
-	virtual void missedReply(DeviceCommandId_t id);
-
-	/**
-	 * Send a reply to a received device handler command.
-	 *
-	 * This also resets #DeviceHandlerCommand to 0.
-	 *
-	 * @param reply the reply type
-	 * @param parameter parameter for the reply
-	 */
-	void replyReturnvalueToCommand(ReturnValue_t status,
-			uint32_t parameter = 0);
-
-	/**
-	 * Send reply to a command, differentiate between raw command
-	 * and normal command.
-	 * @param status
-	 * @param parameter
-	 */
-	void replyToCommand(ReturnValue_t status, uint32_t parameter = 0);
-
-	/**
 	 * Do the transition to the main modes (MODE_ON, MODE_NORMAL and MODE_RAW).
 	 *
 	 * If the transition is complete, the mode should be set to the target mode, which can be deduced from the current mode which is
@@ -668,17 +410,143 @@ protected:
 	virtual void doTransition(Mode_t modeFrom, Submode_t subModeFrom);
 
 	/**
+	 * Get the time needed to transit from modeFrom to modeTo.
+	 *
+	 * Used for the following transitions:
+	 * modeFrom -> modeTo:
+	 * MODE_ON -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
+	 * MODE_NORMAL -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
+	 * MODE_RAW -> [MODE_ON, MODE_NORMAL, MODE_RAW, _MODE_POWER_DOWN]
+	 * _MODE_START_UP -> MODE_ON (do not include time to set the switches, the base class got you covered)
+	 *
+	 * The default implementation returns 0;
+	 *
+	 * @param modeFrom
+	 * @param modeTo
+	 * @return time in ms
+	 */
+	virtual uint32_t getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo);
+
+	/**
+	 * Is the combination of mode and submode valid?
+	 *
+	 * @param mode
+	 * @param submode
+	 * @return
+	 *    - @c RETURN_OK if valid
+	 *    - @c RETURN_FAILED if invalid
+	 */
+	virtual ReturnValue_t isModeCombinationValid(Mode_t mode,
+			Submode_t submode);
+
+	/**
+	 * Get the Rmap action for the current step.
+	 *
+	 * The step number can be read from #pstStep.
+	 *
+	 * @return The Rmap action to execute in this step
+	 */
+	virtual RmapAction_t getRmapAction();
+
+	/**
+	 * Build the device command to send for normal mode.
+	 *
+	 * This is only called in @c MODE_NORMAL. If multiple submodes for @c MODE_NORMAL are supported,
+	 * different commands can built returned depending on the submode.
+	 *
+	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 *
+	 * @param[out] id the device command id that has been built
+	 * @return
+	 *    - @c RETURN_OK when a command is to be sent
+	 *    - not @c RETURN_OK when no command is to be sent
+	 */
+	virtual ReturnValue_t buildNormalDeviceCommand(DeviceCommandId_t * id) = 0;
+
+	/**
+	 * Build the device command to send for a transitional mode.
+	 *
+	 * This is only called in @c _MODE_TO_NORMAL, @c _MODE_TO_ON, @c _MODE_TO_RAW,
+	 * @c _MODE_START_UP and @c _MODE_TO_POWER_DOWN. So it is used by doStartUp() and doShutDown() as well as doTransition()
+	 *
+	 * A good idea is to implement a flag indicating a command has to be built and a variable containing the command number to be built
+	 * and filling them in doStartUp(), doShutDown() and doTransition() so no modes have to be checked here.
+	 *
+	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 *
+	 * @param[out] id the device command id built
+	 * @return
+	 *    - @c RETURN_OK when a command is to be sent
+	 *    - not @c RETURN_OK when no command is to be sent
+	 */
+	virtual ReturnValue_t buildTransitionDeviceCommand(
+			DeviceCommandId_t * id) = 0;
+
+	/**
+	 * Build the device command to send for raw mode.
+	 *
+	 * This is only called in @c MODE_RAW. It is for the rare case that in raw mode packets
+	 * are to be sent by the handler itself. It is NOT needed for the raw commanding service.
+	 * Its only current use is in the STR handler which gets its raw packets from a different
+	 * source.
+	 * Also it can be used for transitional commands, to get the device ready for @c MODE_RAW
+	 *
+	 * As it is almost never used, there is a default implementation returning @c NOTHING_TO_SEND.
+	 *
+	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 *
+	 * @param[out] id the device command id built
+	 * @return
+	 *    - @c RETURN_OK when a command is to be sent
+	 *    - not @c NOTHING_TO_SEND when no command is to be sent
+	 */
+	virtual ReturnValue_t buildChildRawCommand();
+
+	/**
+	 * Build a device command packet from data supplied by a direct command.
+	 *
+	 * #rawPacket and #rawPacketLen should be set by this method to the packet to be sent.
+	 *
+	 * @param deviceCommand the command to build, already checked against deviceCommandMap
+	 * @param commandData pointer to the data from the direct command
+	 * @param commandDataLen length of commandData
+	 * @return
+	 *     - @c RETURN_OK when #rawPacket is valid
+	 *     - @c RETURN_FAILED when #rawPacket is invalid and no data should be sent
+	 */
+	virtual ReturnValue_t buildCommandFromCommand(
+			DeviceCommandId_t deviceCommand, const uint8_t * commandData,
+			size_t commandDataLen) = 0;
+
+	/**
+	 * fill the #deviceCommandMap
+	 *
+	 * called by the initialize() of the base class
+	 *
+	 * This is used to let the base class know which replies are expected.
+	 * There are different scenarios regarding this:
+	 * - "Normal" commands. These are commands, that trigger a direct reply from the device. In this case, the id of the command should be added to the command map
+	 * with a commandData_t where maxDelayCycles is set to the maximum expected number of PST cycles the reply will take. Then, scanForReply returns the id of the command and the base class can handle time-out and missing replies.
+	 * - Periodic, unrequested replies. These are replies that, once enabled, are sent by the device on its own in a defined interval. In this case, the id of the reply or a placeholder id should be added to the deviceCommandMap
+	 * with a commandData_t where maxDelayCycles is set to the maximum expected number of PST cycles between two replies (also a tolerance should be added, as an FDIR message will be generated if it is missed).
+	 * As soon as the replies are enabled, DeviceCommandInfo.periodic must be set to 1, DeviceCommandInfo.delayCycles to DeviceCommandInfo.MaxDelayCycles. From then on, the base class handles the reception.
+	 * Then, scanForReply returns the id of the reply or the placeholder id and the base class will take care of checking that all replies are received and the interval is correct.
+	 * When the replies are disabled, DeviceCommandInfo.periodic must be set to 0, DeviceCommandInfo.delayCycles to 0;
+	 * - Aperiodic, unrequested replies. These are replies that are sent by the device without any preceding command and not in a defined interval. These are not entered in the deviceCommandMap but handled by returning @c APERIODIC_REPLY in scanForReply().
+	 *
+	 */
+	virtual void fillCommandAndReplyMap() = 0;
+
+	/**
 	 * This is a helper method to facilitate inserting entries in the command map.
 	 * @param deviceCommand	Identifier of the command to add.
 	 * @param maxDelayCycles The maximum number of delay cycles the command waits until it times out.
-	 * @param periodic	Indicates if the reply is periodic (i.e. it is sent by the device repeatedly without request) or not.
+	 * @param periodic	Indicates if the command is periodic (i.e. it is sent by the device repeatedly without request) or not.
 	 *		 			Default is aperiodic (0)
-	 * @param hasDifferentReplyId
-	 * @param replyId
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0,
+			uint16_t maxDelayCycles, uint8_t periodic = 0,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 	/**
 	 * This is a helper method to insert replies in the reply map.
@@ -689,7 +557,7 @@ protected:
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0);
+			uint16_t maxDelayCycles, uint8_t periodic = 0);
 	/**
 	 * A simple command to add a command to the commandList.
 	 * @param deviceCommand The command to add
@@ -715,47 +583,48 @@ protected:
 	 * @return	The current delay count. If the command does not exist (should never happen) it returns 0.
 	 */
 	uint8_t getReplyDelayCycles(DeviceCommandId_t deviceCommand);
-
 	/**
-	 * Is the combination of mode and submode valid?
+	 * Scans a buffer for a valid reply.
 	 *
-	 * @param mode
-	 * @param submode
+	 * This is used by the base class to check the data received from the RMAP stack for valid packets.
+	 * It only checks if a valid packet starts at @c start.
+	 * It also only checks the structural validy of the packet, eg checksums lengths and protocol data. No
+	 * information check is done, eg range checks etc.
+	 *
+	 * Errors should be reported directly, the base class does NOT report any errors based on the return
+	 * value of this function.
+	 *
+	 * @param start start of data
+	 * @param len length of data
+	 * @param[out] foundId the id of the packet starting at @c start
+	 * @param[out] foundLen length of the packet found
 	 * @return
-	 *    - @c RETURN_OK if valid
-	 *    - @c RETURN_FAILED if invalid
+	 *     - @c RETURN_OK a valid packet was found at @c start, @c foundLen is valid
+	 *     - @c NO_VALID_REPLY no reply could be found starting at @c start, implies @c foundLen is not valid, base class will call scanForReply() again with ++start
+	 *     - @c INVALID_REPLY a packet was found but it is invalid, eg checksum error, implies @c foundLen is valid, can be used to skip some bytes
+	 *     - @c TOO_SHORT @c len is too short for any valid packet
+	 *     - @c APERIODIC_REPLY if a valid reply is received that has not been requested by a command, but should be handled anyway (@see also fillCommandAndCookieMap() )
 	 */
-	virtual ReturnValue_t isModeCombinationValid(Mode_t mode,
-			Submode_t submode);
+	virtual ReturnValue_t scanForReply(const uint8_t *start, uint32_t len,
+			DeviceCommandId_t *foundId, uint32_t *foundLen) = 0;
 
 	/**
-	 * Get the Rmap action for the current step.
+	 * Interpret a reply from the device.
 	 *
-	 * The step number can be read from #pstStep.
+	 * This is called after scanForReply() found a valid packet, it can be assumed that the length and structure is valid.
+	 * This routine extracts the data from the packet into a DataSet and then calls handleDeviceTM(), which either sends
+	 * a TM packet or stores the data in the DataPool depending on whether the it was an external command.
+	 * No packet length is given, as it should be defined implicitly by the id.
 	 *
-	 * @return The Rmap action to execute in this step
-	 */
-	virtual CommunicationAction_t getComAction();
-
-	/**
-	 * Build the device command to send for raw mode.
-	 *
-	 * This is only called in @c MODE_RAW. It is for the rare case that in raw mode packets
-	 * are to be sent by the handler itself. It is NOT needed for the raw commanding service.
-	 * Its only current use is in the STR handler which gets its raw packets from a different
-	 * source.
-	 * Also it can be used for transitional commands, to get the device ready for @c MODE_RAW
-	 *
-	 * As it is almost never used, there is a default implementation returning @c NOTHING_TO_SEND.
-	 *
-	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
-	 *
-	 * @param[out] id the device command id built
+	 * @param id the id found by scanForReply()
+	 * @param packet
+	 * @param commander the one who initiated the command, is 0 if not external commanded
 	 * @return
-	 *    - @c RETURN_OK when a command is to be sent
-	 *    - not @c NOTHING_TO_SEND when no command is to be sent
+	 *     - @c RETURN_OK when the reply was interpreted.
+	 *     - @c RETURN_FAILED when the reply could not be interpreted, eg. logical errors or range violations occurred
 	 */
-	virtual ReturnValue_t buildChildRawCommand();
+	virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id,
+			const uint8_t *packet) = 0;
 
 	/**
 	 * Construct a command reply containing a raw reply.
@@ -781,10 +650,32 @@ protected:
 	void replyRawReplyIfnotWiretapped(const uint8_t *data, size_t len);
 
 	/**
+	 * Return the switches connected to the device.
+	 *
+	 * The default implementation returns one switch set in the ctor.
+	 *
+	 *
+	 * @param[out] switches pointer to an array of switches
+	 * @param[out] numberOfSwitches length of returned array
+	 * @return
+	 *      - @c RETURN_OK if the parameters were set
+	 *      - @c RETURN_FAILED if no switches exist
+	 */
+	virtual ReturnValue_t getSwitches(const uint8_t **switches,
+			uint8_t *numberOfSwitches);
+
+	/**
 	 * notify child about mode change
 	 */
 	virtual void modeChanged(void);
 
+	struct DeviceCommandInfo {
+		bool isExecuting; //!< Indicates if the command is already executing.
+		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected.
+		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
+	};
+
+	typedef std::map<DeviceCommandId_t, DeviceCommandInfo> DeviceCommandMap;
 	/**
 	 * Enable the reply checking for a command
 	 *
@@ -795,16 +686,16 @@ protected:
 	 * When found, copies maxDelayCycles to delayCycles in the reply information and sets the command to
 	 * expect one reply.
 	 *
-	 * Can be overwritten by the child, if a command activates multiple replies
-	 * or replyId differs from commandId.
+	 * Can be overwritten by the child, if a command activates multiple replies or replyId differs from
+	 * commandId.
 	 * Notes for child implementations:
 	 * 	- If the command was not found in the reply map, NO_REPLY_EXPECTED MUST be returned.
 	 * 	- A failure code may be returned if something went fundamentally wrong.
 	 *
 	 * @param deviceCommand
 	 * @return 	- RETURN_OK if a reply was activated.
-	 * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an
-	 * 			  error case as many commands do not expect a reply.
+	 * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an error case as many commands
+	 * 				do not expect a reply.
 	 */
 	virtual ReturnValue_t enableReplyInReplyMap(DeviceCommandMap::iterator cmd,
 			uint8_t expectedReplies = 1, bool useAlternateId = false,
@@ -819,6 +710,14 @@ protected:
 	 *     - @c PowerSwitchIF::RETURN_FAILED if an error occured
 	 */
 	ReturnValue_t getStateOfSwitches(void);
+
+	/**
+	 * set all datapool variables that are update periodically in normal mode invalid
+	 *
+	 * Child classes should provide an implementation which sets all those variables invalid
+	 * which are set periodically during any normal mode.
+	 */
+	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
 	/**
 	 * build a list of sids and pass it to the #hkSwitcher
@@ -848,6 +747,7 @@ protected:
 	virtual void startTransition(Mode_t mode, Submode_t submode);
 	virtual void setToExternalControl();
 	virtual void announceMode(bool recursive);
+
 	virtual ReturnValue_t letChildHandleMessage(CommandMessage *message);
 
 	/**
@@ -895,6 +795,22 @@ protected:
 	bool commandIsExecuting(DeviceCommandId_t commandId);
 
 	/**
+	 * Information about expected replies
+	 *
+	 * This is used to keep track of pending replies
+	 */
+	struct DeviceReplyInfo {
+		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
+		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
+		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
+		DeviceCommandMap::iterator command; //!< The command that expects this reply.
+	};
+
+	/**
+	 * Definition for the important reply Map.
+	 */
+	typedef std::map<DeviceCommandId_t, DeviceReplyInfo> DeviceReplyMap;
+	/**
 	 * This map is used to check and track correct reception of all replies.
 	 *
 	 * It has multiple use:
@@ -913,13 +829,12 @@ protected:
 	DeviceCommandMap deviceCommandMap;
 
 	ActionHelper actionHelper;
-
 private:
 
 	/**
 	 * State a cookie is in.
 	 *
-	 * Used to keep track of the state of the communication.
+	 * Used to keep track of the state of the RMAP communication.
 	 */
 	enum CookieState_t {
 		COOKIE_UNUSED,    //!< The Cookie is unused
@@ -947,11 +862,16 @@ private:
 	CookieInfo cookieInfo;
 
 	/**
+	 * cached from ctor for initialize()
+	 */
+	const uint32_t ioBoardAddress;
+
+	/**
 	 * Used for timing out mode transitions.
 	 *
 	 * Set when setMode() is called.
 	 */
-	uint32_t timeoutStart = 0;
+	uint32_t timeoutStart;
 
 	/**
 	 * Delay for the current mode transition, used for time out
@@ -993,20 +913,22 @@ private:
 	 * - checks whether commanded mode transitions are required and calls handleCommandedModeTransition()
 	 * - does the necessary action for the current mode or calls doChildStateMachine in modes @c MODE_TO_ON and @c MODE_TO_OFF
 	 * - actions that happen in transitions (eg setting a timeout) are handled in setMode()
-	 * - Maybe export this into own class to increase modularity of software
-	 *   and reduce the massive class size ?
 	 */
 	void doStateMachine(void);
 
 	void buildRawDeviceCommand(CommandMessage* message);
 	void buildInternalCommand(void);
 
+//	/**
+//	 * Send a reply with the current mode and submode.
+//	 */
+//	void announceMode(void);
+
 	/**
 	 * Decrement the counter for the timout of replies.
 	 *
 	 * This is called at the beginning of each cycle. It checks whether a reply has timed out (that means a reply was expected
 	 * but not received).
-	 * In case the reply is periodic, the counter is simply set back to a specified value.
 	 */
 	void decrementDeviceReplyMap(void);
 
@@ -1073,8 +995,8 @@ private:
 	 *   - @c RETURN_FAILED IPCStore is NULL
 	 *   - the return value from the IPCStore if it was not @c RETURN_OK
 	 */
-	ReturnValue_t getStorageData(store_address_t storageAddress,
-			uint8_t ** data, size_t * len);
+	ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data,
+			uint32_t *len);
 
 	/**
 	 * set all switches returned by getSwitches()
@@ -1103,16 +1025,9 @@ private:
 	 *     - @c RETURN_FAILED when cookies could not be changed, eg because the newChannel is not enabled
 	 *     - @c returnvalues of RMAPChannelIF::isActive()
 	 */
-	//ReturnValue_t switchCookieChannel(object_id_t newChannelId);
+	ReturnValue_t switchCookieChannel(object_id_t newChannelId);
 
-	/**
-	 * Handle device handler messages (e.g. commands sent by PUS Service 2)
-	 * @param message
-	 * @return
-	 */
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
-
-
 };
 
 #endif /* DEVICEHANDLERBASE_H_ */
