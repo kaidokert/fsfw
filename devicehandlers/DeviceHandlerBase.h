@@ -499,11 +499,6 @@ protected:
 	uint8_t pstStep;
 
 	/**
-	 * This will be used in the RMAP getRead command as expected length, is set by the constructor, can be modiefied at will.
-	 */
-	const uint32_t maxDeviceReplyLen;
-
-	/**
 	 * wiretapping flag:
 	 *
 	 * indicates either that all raw messages to and from the device should be sent to #theOneWhoWantsToReadRawTraffic
@@ -993,11 +988,6 @@ private:
 	 * Used to track the state of the communication
 	 */
 	CookieInfo cookieInfo;
-
-	/**
-	 * cached from ctor for initialize()
-	 */
-	const uint32_t ioBoardAddress;
 
 	/**
 	 * Used for timing out mode transitions.
