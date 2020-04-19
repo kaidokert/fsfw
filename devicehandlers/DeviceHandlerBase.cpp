@@ -538,6 +538,8 @@ void DeviceHandlerBase::doGetRead() {
 				break;
 			case IGNORE_REPLY_DATA:
 				break;
+			case IGNORE_FULL_PACKET:
+				return;
 			default:
 				//We need to wait for timeout.. don't know what command failed and who sent it.
 				replyRawReplyIfnotWiretapped(receivedData, foundLen);

@@ -39,14 +39,35 @@ public:
 
 	virtual void close(Cookie *cookie) = 0;
 
-	//SHOULDDO can data be const?
-	virtual ReturnValue_t sendMessage(Cookie *cookie, uint8_t *data,
+	/**
+	 * Called by DHB in the SEND_WRITE doSendWrite().
+	 * This function is used to send data to the physical device
+	 * by implementing and calling related drivers or wrapper functions.
+	 * @param cookie
+	 * @param data
+	 * @param len
+	 * @return - @c RETURN_OK for successfull send
+	 *         - Everything else triggers sending failed event with
+	 *         returnvalue as parameter 1
+	 */
+	virtual ReturnValue_t sendMessage(Cookie *cookie,const uint8_t *data,
 			uint32_t len) = 0;
 
 	virtual ReturnValue_t getSendSuccess(Cookie *cookie) = 0;
 
 	virtual ReturnValue_t requestReceiveMessage(Cookie *cookie) = 0;
 
+	/**
+	 * Called by DHB in the GET_WIRTE doGetRead().
+	 * This function is used to receive data from the physical device
+	 * by implementing and calling related drivers or wrapper functions.
+	 * @param cookie
+	 * @param data
+	 * @param len
+	 * @return - @c RETURN_OK for successfull receive
+	 *         - Everything else triggers receiving failed with returnvalue
+	 *         as parameter 1
+	 */
 	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
 			uint32_t *size) = 0;
 
