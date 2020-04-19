@@ -1,6 +1,6 @@
 #include <framework/ipc/QueueFactory.h>
 
-#include "../FreeRTOS/MessageQueue.h"
+#include <framework/osal/FreeRTOS/MessageQueue.h>
 
 
 QueueFactory* QueueFactory::factoryInstance = NULL;

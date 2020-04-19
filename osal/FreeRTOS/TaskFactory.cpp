@@ -15,6 +15,7 @@ TaskFactory* TaskFactory::instance() {
 }
 /***
  * Keep in Mind that you need to call before this vTaskStartScheduler()!
+ * High taskPriority_ number means high priority.
  */
 PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,
 		TaskPriority taskPriority_, TaskStackSize stackSize_,
