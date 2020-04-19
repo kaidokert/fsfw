@@ -557,6 +557,29 @@ protected:
 	 */
 	Cookie *cookie;
 
+	struct DeviceCommandInfo {
+		bool isExecuting; //!< Indicates if the command is already executing.
+		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected. Inititated with 0.
+		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
+	};
+	using DeviceCommandMap = std::map<DeviceCommandId_t, DeviceCommandInfo> ;
+
+	/**
+	 * @brief Information about expected replies
+	 *
+	 * This is used to keep track of pending replies
+	 */
+	struct DeviceReplyInfo {
+		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
+		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
+		size_t replyLen = 0; //!< Expected size of the reply.
+		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
+		DeviceCommandMap::iterator command; //!< The command that expects this reply.
+	};
+
+	using DeviceReplyMap = std::map<DeviceCommandId_t, DeviceReplyInfo> ;
+	using DeviceReplyIter = DeviceReplyMap::iterator;
+
 	/**
 	 * The MessageQueue used to receive device handler commands and to send replies.
 	 */
@@ -736,7 +759,7 @@ protected:
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, uint8_t periodic = 0,
+			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 	/**
 	 * This is a helper method to insert replies in the reply map.
@@ -747,7 +770,7 @@ protected:
 	 * @return	RETURN_OK when the command was successfully inserted, COMMAND_MAP_ERROR else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, uint8_t periodic = 0);
+			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0);
 	/**
 	 * A simple command to add a command to the commandList.
 	 * @param deviceCommand The command to add
@@ -802,13 +825,6 @@ protected:
 	 */
 	virtual void modeChanged(void);
 
-	struct DeviceCommandInfo {
-		bool isExecuting; //!< Indicates if the command is already executing.
-		uint8_t expectedReplies; //!< Dynamic value to indicate how many replies are expected.
-		MessageQueueId_t sendReplyTo; //!< if this is != NO_COMMANDER, DHB was commanded externally and shall report everything to commander.
-	};
-
-	typedef std::map<DeviceCommandId_t, DeviceCommandInfo> DeviceCommandMap;
 	/**
 	 * Enable the reply checking for a command
 	 *
@@ -819,16 +835,16 @@ protected:
 	 * When found, copies maxDelayCycles to delayCycles in the reply information and sets the command to
 	 * expect one reply.
 	 *
-	 * Can be overwritten by the child, if a command activates multiple replies or replyId differs from
-	 * commandId.
+	 * Can be overwritten by the child, if a command activates multiple replies
+	 * or replyId differs from commandId.
 	 * Notes for child implementations:
 	 * 	- If the command was not found in the reply map, NO_REPLY_EXPECTED MUST be returned.
 	 * 	- A failure code may be returned if something went fundamentally wrong.
 	 *
 	 * @param deviceCommand
 	 * @return 	- RETURN_OK if a reply was activated.
-	 * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an error case as many commands
-	 * 				do not expect a reply.
+	 * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an
+	 * 			  error case as many commands do not expect a reply.
 	 */
 	virtual ReturnValue_t enableReplyInReplyMap(DeviceCommandMap::iterator cmd,
 			uint8_t expectedReplies = 1, bool useAlternateId = false,
@@ -927,22 +943,6 @@ protected:
 
 	bool commandIsExecuting(DeviceCommandId_t commandId);
 
-	/**
-	 * Information about expected replies
-	 *
-	 * This is used to keep track of pending replies
-	 */
-	struct DeviceReplyInfo {
-		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
-		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
-		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
-		DeviceCommandMap::iterator command; //!< The command that expects this reply.
-	};
-
-	/**
-	 * Definition for the important reply Map.
-	 */
-	typedef std::map<DeviceCommandId_t, DeviceReplyInfo> DeviceReplyMap;
 	/**
 	 * This map is used to check and track correct reception of all replies.
 	 *
