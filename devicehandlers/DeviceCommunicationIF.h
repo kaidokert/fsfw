@@ -37,19 +37,23 @@ class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
 
-	//! This is returned in readReceivedMessage() if no reply was reived.
-	static const ReturnValue_t NO_REPLY_RECEIVED = MAKE_RETURN_CODE(0x01);
-
+	//! Standard Error Codes
 	//! General protocol error. Define more concrete errors in child handler
-	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x01);
 	//! If cookie is a null pointer
-	static const ReturnValue_t NULLPOINTER = MAKE_RETURN_CODE(0x03);
-	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x04);
+	static const ReturnValue_t NULLPOINTER = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x03);
 	// is this needed if there is no open/close call?
 	static const ReturnValue_t NOT_ACTIVE = MAKE_RETURN_CODE(0x05);
-	static const ReturnValue_t TOO_MUCH_DATA = MAKE_RETURN_CODE(0x06);
+	static const ReturnValue_t INVALID_ADDRESS = MAKE_RETURN_CODE(0x06);
+	static const ReturnValue_t TOO_MUCH_DATA = MAKE_RETURN_CODE(0x07);
+	static const ReturnValue_t CANT_CHANGE_REPLY_LEN = MAKE_RETURN_CODE(0x08);
+
+	//! Can be used in readReceivedMessage() if no reply was received.
+	static const ReturnValue_t NO_REPLY_RECEIVED = MAKE_RETURN_CODE(0xA1);
 
 	virtual ~DeviceCommunicationIF() {}
+
 
 	/**
 	 * @brief Device specific initialization, using the cookie.

@@ -1,14 +1,14 @@
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
-#include <framework/datapool/PoolVector.h>
-#include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
 #include <framework/devicehandlers/DeviceHandlerBase.h>
-#include <framework/devicehandlers/DeviceTmReportingWrapper.h>
-#include <framework/globalfunctions/CRC.h>
 #include <framework/objectmanager/ObjectManager.h>
 #include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/subsystem/SubsystemBase.h>
 #include <framework/thermal/ThermalComponentIF.h>
+#include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
+
+#include <framework/datapool/DataSet.h>
+#include <framework/datapool/PoolVariable.h>
+#include <framework/devicehandlers/DeviceTmReportingWrapper.h>
+#include <framework/globalfunctions/CRC.h>
+#include <framework/subsystem/SubsystemBase.h>
 #include <framework/ipc/QueueFactory.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
@@ -21,20 +21,19 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
 		uint8_t setDeviceSwitch, object_id_t deviceCommunication,
 		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		FailureIsolationBase* fdirInstance, uint32_t cmdQueueSize) :
-		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(
-				MODE_OFF), submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(
-				maxDeviceReplyLen), wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(
-				StorageManagerIF::INVALID_ADDRESS), requestedRawTraffic(0), powerSwitcher(
-		NULL), IPCStore(NULL), deviceCommunicationId(deviceCommunication), communicationInterface(
-		NULL), cookie(
-		NULL), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId), deviceThermalRequestPoolId(
-				thermalRequestPoolId), healthHelper(this, setObjectId), modeHelper(
-				this), parameterHelper(this), childTransitionFailure(RETURN_OK), ignoreMissedRepliesCount(
-				0), fdirInstance(fdirInstance), hkSwitcher(this), defaultFDIRUsed(
-				fdirInstance == NULL), switchOffWasReported(false),executingTask(NULL), actionHelper(this, NULL), cookieInfo(), ioBoardAddress(
-				ioBoardAddress), timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(
-				_MODE_POWER_DOWN), transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(
-				setDeviceSwitch) {
+		SystemObject(setObjectId), rawPacket(0), rawPacketLen(0), mode(MODE_OFF),
+		submode(SUBMODE_NONE), pstStep(0), maxDeviceReplyLen(maxDeviceReplyLen),
+		wiretappingMode(OFF), defaultRawReceiver(0), storedRawData(StorageManagerIF::INVALID_ADDRESS),
+		requestedRawTraffic(0), powerSwitcher(NULL), IPCStore(NULL),
+		deviceCommunicationId(deviceCommunication), communicationInterface(NULL),
+		cookie(NULL), commandQueue(NULL), deviceThermalStatePoolId(thermalStatePoolId),
+		deviceThermalRequestPoolId(thermalRequestPoolId), healthHelper(this, setObjectId),
+		modeHelper(this), parameterHelper(this), childTransitionFailure(RETURN_OK),
+		ignoreMissedRepliesCount(0), fdirInstance(fdirInstance), hkSwitcher(this),
+		defaultFDIRUsed(fdirInstance == NULL), switchOffWasReported(false),
+		executingTask(NULL), actionHelper(this, NULL), cookieInfo(), ioBoardAddress(ioBoardAddress),
+		timeoutStart(0), childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
+		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
@@ -46,7 +45,7 @@ DeviceHandlerBase::DeviceHandlerBase(uint32_t ioBoardAddress,
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
-	communicationInterface->close(cookie);
+	//communicationInterface->close(cookie);
 	if (defaultFDIRUsed) {
 		delete fdirInstance;
 	}
@@ -56,7 +55,7 @@ DeviceHandlerBase::~DeviceHandlerBase() {
 ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	this->pstStep = counter;
 
-	if (counter == 0) {
+	if (getComAction() == SEND_WRITE) {
 		cookieInfo.state = COOKIE_UNUSED;
 		readCommandQueue();
 		doStateMachine();
@@ -68,7 +67,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
 	}
-	switch (getRmapAction()) {
+	switch (getComAction()) {
 	case SEND_WRITE:
 		if ((cookieInfo.state == COOKIE_UNUSED)) {
 			buildInternalCommand();
@@ -89,6 +88,84 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		break;
 	}
 	return RETURN_OK;
+}
+
+ReturnValue_t DeviceHandlerBase::initialize() {
+	ReturnValue_t result = SystemObject::initialize();
+	if (result != RETURN_OK) {
+		return result;
+	}
+
+	communicationInterface = objectManager->get<DeviceCommunicationIF>(
+			deviceCommunicationId);
+	if (communicationInterface == NULL) {
+		return RETURN_FAILED;
+	}
+
+	result = communicationInterface->initializeInterface(cookie);
+	if (result != RETURN_OK) {
+		return result;
+	}
+
+	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+	if (IPCStore == NULL) {
+		return RETURN_FAILED;
+	}
+
+	AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
+			AcceptsDeviceResponsesIF>(rawDataReceiverId);
+
+	if (rawReceiver == NULL) {
+		return RETURN_FAILED;
+	}
+
+	defaultRawReceiver = rawReceiver->getDeviceQueue();
+
+	powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
+	if (powerSwitcher == NULL) {
+		return RETURN_FAILED;
+	}
+
+	result = healthHelper.initialize();
+	if (result != RETURN_OK) {
+		return result;
+	}
+
+	result = modeHelper.initialize();
+	if (result != RETURN_OK) {
+		return result;
+	}
+	result = actionHelper.initialize(commandQueue);
+	if (result != RETURN_OK) {
+		return result;
+	}
+	result = fdirInstance->initialize();
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+
+	result = parameterHelper.initialize();
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+
+	result = hkSwitcher.initialize();
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+
+	fillCommandAndReplyMap();
+
+	//Set temperature target state to NON_OP.
+	DataSet mySet;
+	PoolVariable<int8_t> thermalRequest(deviceThermalRequestPoolId, &mySet,
+			PoolVariableIF::VAR_WRITE);
+	mySet.read();
+	thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
+	mySet.commit(PoolVariableIF::VALID);
+
+	return RETURN_OK;
+
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
@@ -256,37 +333,35 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
-		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
-		uint8_t periodic, bool hasDifferentReplyId, DeviceCommandId_t replyId) {
-//No need to check, as we may try to insert multiple times.
+ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
+		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic,
+		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
+	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
 	if (hasDifferentReplyId) {
-		return insertInReplyMap(replyId, maxDelayCycles, periodic);
+		return insertInReplyMap(replyId, maxDelayCycles, replyLen, periodic);
 	} else {
-		return insertInReplyMap(deviceCommand, maxDelayCycles, periodic);
+		return insertInReplyMap(deviceCommand, maxDelayCycles, replyLen, periodic);
 	}
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, uint8_t periodic) {
+		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
 	info.periodic = periodic;
 	info.delayCycles = 0;
+	info.replyLen = replyLen;
 	info.command = deviceCommandMap.end();
-	std::pair<std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator, bool> returnValue;
-	returnValue = deviceReplyMap.insert(
-			std::pair<DeviceCommandId_t, DeviceReplyInfo>(replyId, info));
-	if (returnValue.second) {
+	std::pair<DeviceReplyIter, bool> result = deviceReplyMap.emplace(replyId, info);
+	if (result.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandMap(
-		DeviceCommandId_t deviceCommand) {
+ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceCommand) {
 	DeviceCommandInfo info;
 	info.expectedReplies = 0;
 	info.isExecuting = false;
@@ -302,9 +377,8 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(
-		DeviceCommandId_t deviceReply, uint16_t delayCycles,
-		uint16_t maxDelayCycles, uint8_t periodic) {
+ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
+		uint16_t delayCycles, uint16_t maxDelayCycles, uint8_t periodic) {
 	std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
 			deviceReplyMap.find(deviceReply);
 	if (iter == deviceReplyMap.end()) {
@@ -455,7 +529,9 @@ void DeviceHandlerBase::doGetWrite() {
 		if (wiretappingMode == RAW) {
 			replyRawData(rawPacket, rawPacketLen, requestedRawTraffic, true);
 		}
-		//We need to distinguish here, because a raw command never expects a reply. (Could be done in eRIRM, but then child implementations need to be careful.
+
+		//We need to distinguish here, because a raw command never expects a reply.
+		//(Could be done in eRIRM, but then child implementations need to be careful.
 		result = enableReplyInReplyMap(cookieInfo.pendingCommand);
 	} else {
 		//always generate a failure event, so that FDIR knows what's up
@@ -471,7 +547,17 @@ void DeviceHandlerBase::doGetWrite() {
 void DeviceHandlerBase::doSendRead() {
 	ReturnValue_t result;
 
-	result = communicationInterface->requestReceiveMessage(cookie);
+	size_t requestLen = 0;
+	DeviceReplyIter iter = deviceReplyMap.find(cookieInfo.pendingCommand->first);
+	if(iter != deviceReplyMap.end()) {
+		requestLen = iter->second.replyLen;
+	}
+	else {
+		requestLen = 0;
+	}
+
+	result = communicationInterface->requestReceiveMessage(cookie, requestLen);
+
 	if (result == RETURN_OK) {
 		cookieInfo.state = COOKIE_READ_SENT;
 	} else {
@@ -508,7 +594,7 @@ void DeviceHandlerBase::doGetRead() {
 		return;
 	}
 
-	if (receivedDataLen == 0)
+	if (receivedDataLen == 0 or result == DeviceCommunicationIF::NO_REPLY_RECEIVED)
 		return;
 
 	if (wiretappingMode == RAW) {
@@ -539,6 +625,8 @@ void DeviceHandlerBase::doGetRead() {
 				break;
 			case IGNORE_REPLY_DATA:
 				break;
+			case IGNORE_FULL_PACKET:
+				return;
 			default:
 				//We need to wait for timeout.. don't know what command failed and who sent it.
 				replyRawReplyIfnotWiretapped(receivedData, foundLen);
@@ -576,86 +664,6 @@ ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 		*len = 0;
 		return result;
 	}
-
-}
-
-ReturnValue_t DeviceHandlerBase::initialize() {
-	ReturnValue_t result = SystemObject::initialize();
-	if (result != RETURN_OK) {
-		return result;
-	}
-
-	communicationInterface = objectManager->get<DeviceCommunicationIF>(
-			deviceCommunicationId);
-	if (communicationInterface == NULL) {
-		return RETURN_FAILED;
-	}
-
-	result = communicationInterface->open(&cookie, ioBoardAddress,
-			maxDeviceReplyLen);
-	if (result != RETURN_OK) {
-		return result;
-	}
-
-	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (IPCStore == NULL) {
-		return RETURN_FAILED;
-	}
-
-	AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
-			AcceptsDeviceResponsesIF>(rawDataReceiverId);
-
-	if (rawReceiver == NULL) {
-		return RETURN_FAILED;
-	}
-
-	defaultRawReceiver = rawReceiver->getDeviceQueue();
-
-	powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
-	if (powerSwitcher == NULL) {
-		return RETURN_FAILED;
-	}
-
-	result = healthHelper.initialize();
-	if (result != RETURN_OK) {
-		return result;
-	}
-
-	result = modeHelper.initialize();
-	if (result != RETURN_OK) {
-		return result;
-	}
-	result = actionHelper.initialize(commandQueue);
-	if (result != RETURN_OK) {
-		return result;
-	}
-	result = fdirInstance->initialize();
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
-
-	result = parameterHelper.initialize();
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
-
-	result = hkSwitcher.initialize();
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
-
-	fillCommandAndReplyMap();
-
-	//Set temperature target state to NON_OP.
-	DataSet mySet;
-	PoolVariable<int8_t> thermalRequest(deviceThermalRequestPoolId, &mySet,
-			PoolVariableIF::VAR_WRITE);
-	mySet.read();
-	thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
-	mySet.commit(PoolVariableIF::VALID);
-
-	return RETURN_OK;
-
 }
 
 void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
@@ -687,8 +695,7 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 }
 
 //Default child implementations
-
-DeviceHandlerBase::RmapAction_t DeviceHandlerBase::getRmapAction() {
+DeviceHandlerIF::CommunicationAction_t DeviceHandlerBase::getComAction() {
 	switch (pstStep) {
 	case 0:
 		return SEND_WRITE;
@@ -748,20 +755,20 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
-	DeviceCommunicationIF *newCommunication = objectManager->get<
-			DeviceCommunicationIF>(newChannelId);
-
-	if (newCommunication != NULL) {
-		ReturnValue_t result = newCommunication->reOpen(cookie, ioBoardAddress,
-				maxDeviceReplyLen);
-		if (result != RETURN_OK) {
-			return result;
-		}
-		return RETURN_OK;
-	}
-	return RETURN_FAILED;
-}
+//ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
+//	DeviceCommunicationIF *newCommunication = objectManager->get<
+//			DeviceCommunicationIF>(newChannelId);
+//
+//	if (newCommunication != NULL) {
+//		ReturnValue_t result = newCommunication->reOpen(cookie, ioBoardAddress,
+//				maxDeviceReplyLen);
+//		if (result != RETURN_OK) {
+//			return result;
+//		}
+//		return RETURN_OK;
+//	}
+//	return RETURN_FAILED;
+//}
 
 void DeviceHandlerBase::buildRawDeviceCommand(CommandMessage* commandMessage) {
 	storedRawData = DeviceHandlerMessage::getStoreAddress(commandMessage);
@@ -1053,7 +1060,7 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 			if (result == RETURN_OK) {
 				replyReturnvalueToCommand(RETURN_OK);
 			} else {
-				replyReturnvalueToCommand(CANT_SWITCH_IOBOARD);
+				replyReturnvalueToCommand(CANT_SWITCH_IO_ADDRESS);
 			}
 		}
 		return RETURN_OK;
