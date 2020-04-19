@@ -61,6 +61,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		decrementDeviceReplyMap();
 		fdirInstance->checkForFailures();
 		hkSwitcher.performOperation();
+		performOperationHook();
 	}
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
@@ -1275,6 +1276,8 @@ void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 			executingTask = task_;
 }
 
-// Default implementation empty.
+// Default implementations empty.
 void DeviceHandlerBase::debugInterface(uint8_t positionTracker,
 		object_id_t objectId, uint32_t parameter) {}
+
+void DeviceHandlerBase::performOperationHook() {}

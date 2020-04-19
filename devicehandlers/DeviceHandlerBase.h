@@ -469,6 +469,12 @@ protected:
 	 */
 	virtual ReturnValue_t getSwitches(const uint8_t **switches,
 			uint8_t *numberOfSwitches);
+
+	/**
+	 * @brief 	Hook function for child handlers which is called once per
+	 * 			performOperation(). Default implementation is empty.
+	 */
+	virtual void performOperationHook();
 public:
 	/**
 	 * @param parentQueueId
