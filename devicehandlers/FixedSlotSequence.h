@@ -23,7 +23,6 @@ using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 class FixedSlotSequence {
 public:
 
-
 	/**
 	 * @brief	The constructor of the FixedSlotSequence object.
 	 *
@@ -126,7 +125,7 @@ protected:
 	 */
 	SlotList slotList;
 
-	uint32_t slotLengthMs;
+	uint32_t lengthMs;
 };
 
 #endif /* FIXEDSLOTSEQUENCE_H_ */

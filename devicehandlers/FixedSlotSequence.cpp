@@ -2,7 +2,7 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
-		slotLengthMs(setLengthMs) {
+		lengthMs(setLengthMs) {
 	current = slotList.begin();
 }
 
@@ -49,7 +49,7 @@ uint32_t FixedSlotSequence::getIntervalToNextSlotMs() {
 	// the interval is calculated by subtracting the remaining time of the PST
 	// and adding the start time of the first handler in the list.
 	slotListIter = slotList.begin();
-	return slotLengthMs - oldTime + slotListIter->pollingTimeMs;
+	return lengthMs - oldTime + slotListIter->pollingTimeMs;
 }
 
 uint32_t FixedSlotSequence::getIntervalToPreviousSlotMs() {
@@ -60,7 +60,7 @@ uint32_t FixedSlotSequence::getIntervalToPreviousSlotMs() {
 
 	//if it is the first slot, calculate difference to last slot
 	if (slotListIter == slotList.begin()){
-		return slotLengthMs - (--slotList.end())->pollingTimeMs + currentTime;
+		return lengthMs - (--slotList.end())->pollingTimeMs + currentTime;
 	}
 	// get previous slot
 	slotListIter--;
@@ -83,7 +83,7 @@ bool FixedSlotSequence::slotFollowsImmediately() {
 }
 
 uint32_t FixedSlotSequence::getLengthMs() const {
-	return this->slotLengthMs;
+	return this->lengthMs;
 }
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
