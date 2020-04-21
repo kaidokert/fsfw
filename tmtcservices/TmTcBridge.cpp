@@ -1,25 +1,37 @@
-/**
- * @file TmTcBridge.cpp
- *
- * @date 26.12.2019
- * @author R. Mueller
- */
-
 #include <framework/tmtcservices/TmTcBridge.h>
 
 #include <framework/ipc/QueueFactory.h>
+#include <framework/objectmanager/ObjectManagerIF.h>
+#include <framework/osal/FreeRTOS/PeriodicTask.h>
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/tasks/PeriodicTaskIF.h>
 
 TmTcBridge::TmTcBridge(object_id_t objectId_,
         object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
-        ccsdsPacketDistributor(ccsdsPacketDistributor_)
+        ccsdsPacketDistributor(ccsdsPacketDistributor_),
+		sentPacketsPerCycle(5), delayBetweenSentPacketsMs(0)
 {
 	    TmTcReceptionQueue = QueueFactory::instance()->
 			createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
 }
 
 TmTcBridge::~TmTcBridge() {}
+
+void TmTcBridge::setDelayBetweenSentPackets(uint32_t delayBetweenSentPackets) {
+	this->delayBetweenSentPacketsMs = delayBetweenSentPackets;
+}
+
+ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
+		uint8_t sentPacketsPerCycle) {
+	if(sentPacketsPerCycle <= MAX_STORED_DATA_SENT_PER_CYCLE) {
+		this->sentPacketsPerCycle = sentPacketsPerCycle;
+		return RETURN_OK;
+	}
+	else {
+		return RETURN_FAILED;
+	}
+}
 
 ReturnValue_t TmTcBridge::initialize() {
 	tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
@@ -53,7 +65,21 @@ ReturnValue_t TmTcBridge::performOperation(uint8_t operationCode) {
 }
 
 ReturnValue_t TmTcBridge::handleTc() {
-	ReturnValue_t result = receiveTc(&recvBuffer, &size);
+	uint8_t * recvBuffer = nullptr;
+	size_t recvLen = 0;
+	ReturnValue_t result = receiveTc(&recvBuffer, &recvLen);
+	if(result == RETURN_OK and recvLen > 0 and recvBuffer != nullptr) {
+		store_address_t storeId = 0;
+		ReturnValue_t result = tcStore->addData(&storeId,
+				recvBuffer, (uint32_t)recvLen);
+		if(result != RETURN_OK) {
+			return result;
+		}
+		TmTcMessage message(storeId);
+		if (TmTcReceptionQueue->sendToDefault(&message) != RETURN_OK) {
+			tcStore->deleteData(storeId);
+		}
+	}
 	return result;
 }
 
@@ -106,8 +132,8 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	store_address_t storeId = 0;
 
 	if(fifo.full()) {
-		info << "TMTC Bridge: TM downlink max. number of stored packet IDs reached."
-				" Overwriting old data" << std::endl;
+		error << "TMTC Bridge: TM downlink max. number of stored packet IDs "
+				 "reached! Overwriting old data" << std::endl;
 		fifo.retrieve(&storeId);
 		tmStore->deleteData(storeId);
 	}
@@ -120,14 +146,16 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 ReturnValue_t TmTcBridge::sendStoredTm() {
 	uint8_t counter = 0;
 	ReturnValue_t result = RETURN_OK;
-	while(!fifo.empty() && counter < MAX_STORED_DATA_SENT_PER_CYCLE) {
-		info << "TMTC Bridge: Sending stored TM data. There are "
-		     << (int) fifo.size() << " left to send\r\n" << std::flush;
+	while(!fifo.empty() && counter < sentPacketsPerCycle) {
+		//info << "TMTC Bridge: Sending stored TM data. There are "
+		//     << (int) fifo.size() << " left to send\r\n" << std::flush;
 		store_address_t storeId;
 		const uint8_t* data = NULL;
 		uint32_t size = 0;
 		fifo.retrieve(&storeId);
 		result = tmStore->getData(storeId, &data, &size);
+		// This does not work yet: is not static function
+		//PeriodicTaskIF::sleepFor(delayBetweenSentPacketsMs);
 		sendTm(data,size);
 		if(result != RETURN_OK) {
 			error << "TMTC Bridge: Could not send stored downlink data"
@@ -162,7 +190,7 @@ MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
 	return TmTcReceptionQueue->getId();
 }
 
-void TmTcBridge::printData(uint8_t * data, uint32_t dataLen) {
+void TmTcBridge::printData(uint8_t * data, size_t dataLen) {
 	info << "TMTC Bridge: Printing data: [";
 	for(uint32_t i=0;i<dataLen;i++) {
 		info << std::hex << (int)data[i];
