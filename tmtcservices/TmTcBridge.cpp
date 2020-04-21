@@ -127,8 +127,8 @@ ReturnValue_t TmTcBridge::readTmQueue() {
 }
 
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
-	info << "TMTC Bridge: Comm Link down. "
-			"Saving packet ID to be sent later\r\n" << std::flush;
+	//debug << "TMTC Bridge: Comm Link down. "
+	//		 "Saving packet ID to be sent later\r\n" << std::flush;
 	store_address_t storeId = 0;
 
 	if(fifo.full()) {
