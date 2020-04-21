@@ -155,6 +155,51 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	if (length < 19) {
 		return RETURN_FAILED;
 	}
+	// Newlib nano can't parse uint8, see SCNu8 documentation and https://sourceware.org/newlib/README
+	// Suggestion: use uint16 all the time. This should work on all systems.
+#ifdef NEWLIB_NANO_NO_C99_IO
+	uint16_t year;
+	uint16_t month;
+	uint16_t day;
+	uint16_t hour;
+	uint16_t minute;
+	float second;
+	int count = sscanf((char *) from, "%4" SCNu16 "-%2" SCNu16 "-%2"
+			SCNu16 "T%2" SCNu16 ":%2" SCNu16 ":%fZ", &year, &month, &day, &hour,
+			&minute, &second);
+	if (count == 6) {
+		to->year = year;
+		to->month = month;
+		to->day = day;
+		to->hour = hour;
+		to->minute = minute;
+		to->second = second;
+		to->usecond = (second - floor(second)) * 1000000;
+		return RETURN_OK;
+	}
+
+	// try Code B (yyyy-ddd)
+	count = sscanf((char *) from, "%4" SCNu16 "-%3" SCNu16 "T%2" SCNu16 ":%2"
+			SCNu16 ":%fZ", &year, &day, &hour, &minute, &second);
+	if (count == 5) {
+		uint8_t tempDay;
+		ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year,
+				reinterpret_cast<uint8_t *>(&month), reinterpret_cast<uint8_t *>(&tempDay));
+		if (result != RETURN_OK) {
+			return RETURN_FAILED;
+		}
+		to->year = year;
+		to->month = month;
+		to->day = tempDay;
+		to->hour = hour;
+		to->minute = minute;
+		to->second = second;
+		to->usecond = (second - floor(second)) * 1000000;
+		return RETURN_OK;
+	}
+	// Warning: Compiler/Linker fails ambiguously if library does not implement
+	// C99 I/O
+#else
 	uint16_t year;
 	uint8_t month;
 	uint16_t day;
@@ -195,6 +240,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 		to->usecond = (second - floor(second)) * 1000000;
 		return RETURN_OK;
 	}
+#endif
 	return UNSUPPORTED_TIME_FORMAT;
 }
 
