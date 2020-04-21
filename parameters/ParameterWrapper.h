@@ -54,7 +54,7 @@ public:
 			const uint8_t *streamWithtype = (const uint8_t *) readonlyData;
 			streamWithtype += (row * columns + column) * type.getSize();
 			int32_t size = type.getSize();
-			return SerializeAdapter<T>::deSerialize(value, &streamWithtype,
+			return SerializeAdapter::deSerialize(value, &streamWithtype,
 					&size, true);
 		} else {
 			const T *dataWithType = (const T *) readonlyData;

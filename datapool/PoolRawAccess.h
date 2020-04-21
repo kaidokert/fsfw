@@ -70,7 +70,7 @@ public:
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
 	uint8_t value[RAW_MAX_SIZE];
 	PoolRawAccess(uint32_t data_pool_id, uint8_t arrayEntry,
-			DataSetIF* data_set, ReadWriteMode_t setReadWriteMode =
+			DataSetIF *data_set, ReadWriteMode_t setReadWriteMode =
 					PoolVariableIF::VAR_READ);
 	/**
 	 * \brief	The classes destructor is empty. If commit() was not called, the local value is
@@ -97,7 +97,7 @@ public:
 	 * \return	- \c RETURN_OK if entry could be acquired
 	 * 			- \c RETURN_FAILED else.
 	 */
-	ReturnValue_t getEntryEndianSafe(uint8_t* buffer, uint32_t* size,
+	ReturnValue_t getEntryEndianSafe(uint8_t *buffer, uint32_t *size,
 			uint32_t max_size);
 	/**
 	 * With this method, the content can be set from a big endian buffer safely.
@@ -106,7 +106,7 @@ public:
 	 * @return	- \c RETURN_OK on success
 	 * 			- \c RETURN_FAILED on failure
 	 */
-	ReturnValue_t setEntryFromBigEndian(const uint8_t* buffer,
+	ReturnValue_t setEntryFromBigEndian(const uint8_t *buffer,
 			uint32_t setSize);
 	/**
 	 *  \brief This operation returns the type of the entry currently stored.
@@ -140,13 +140,13 @@ public:
 	 */
 	uint16_t getSizeTillEnd() const;
 
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+			 Endianness streamEndianness) const override;
 
-	uint32_t getSerializedSize() const;
+	size_t getSerializedSize() const override;
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian);
+	ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+			 Endianness streamEndianness) override;
 };
 
 #endif /* POOLRAWACCESS_H_ */

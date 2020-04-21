@@ -70,7 +70,7 @@ public:
 
 	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
 				const uint32_t max_size, bool bigEndian) const {
-		ReturnValue_t result = AutoSerializeAdapter::serialize(&blockStartAddress,buffer,size,max_size,bigEndian);
+		ReturnValue_t result = SerializeAdapter::serialize(&blockStartAddress,buffer,size,max_size,bigEndian);
 		if(result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
@@ -78,17 +78,17 @@ public:
 		if(result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::serialize(&this->size,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&this->size,buffer,size,max_size,bigEndian);
 		if(result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::serialize(&this->storedPackets,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&this->storedPackets,buffer,size,max_size,bigEndian);
 		return result;
 	}
 
 	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 				bool bigEndian){
-		ReturnValue_t result = AutoSerializeAdapter::deSerialize(&blockStartAddress,buffer,size,bigEndian);
+		ReturnValue_t result = SerializeAdapter::deSerialize(&blockStartAddress,buffer,size,bigEndian);
 		if(result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
@@ -96,11 +96,11 @@ public:
 		if(result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::deSerialize(&this->size,buffer,size,bigEndian);
+		result = SerializeAdapter::deSerialize(&this->size,buffer,size,bigEndian);
 		if(result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::deSerialize(&this->storedPackets,buffer,size,bigEndian);
+		result = SerializeAdapter::deSerialize(&this->storedPackets,buffer,size,bigEndian);
 		if(result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
@@ -108,10 +108,10 @@ public:
 	}
 
 	uint32_t getSerializedSize() const {
-		uint32_t size = AutoSerializeAdapter::getSerializedSize(&blockStartAddress);
+		uint32_t size = SerializeAdapter::getSerializedSize(&blockStartAddress);
 		size += indexType.getSerializedSize();
-		size += AutoSerializeAdapter::getSerializedSize(&this->size);
-		size += AutoSerializeAdapter::getSerializedSize(&this->storedPackets);
+		size += SerializeAdapter::getSerializedSize(&this->size);
+		size += SerializeAdapter::getSerializedSize(&this->storedPackets);
 		return size;
 	}
 
@@ -500,14 +500,14 @@ public:
 		if(result != HasReturnvaluesIF::RETURN_OK){
 					return result;
 		}
-		result = AutoSerializeAdapter::serialize(&this->size,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&this->size,buffer,size,max_size,bigEndian);
 		if(result != HasReturnvaluesIF::RETURN_OK){
 					return result;
 		}
 
 		uint32_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->size)) {
-			result = SerializeAdapter<Index<T> >::serialize(&this->entries[i], buffer, size,
+			result = SerializeAdapter::serialize(&this->entries[i], buffer, size,
 					max_size, bigEndian);
 			++i;
 		}
@@ -515,7 +515,7 @@ public:
 			return result;
 		}
 		uint16_t crc = Calculate_CRC(crcBuffer,(*size-oldSize));
-		result = AutoSerializeAdapter::serialize(&crc,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&crc,buffer,size,max_size,bigEndian);
 		return result;
 	}
 
@@ -531,10 +531,10 @@ public:
 			size += additionalInfo->getSerializedSize();
 		}
 		size += currentWriteBlock->getSerializedSize();
-		size += AutoSerializeAdapter::getSerializedSize(&this->size);
+		size += SerializeAdapter::getSerializedSize(&this->size);
 		size += (this->entries[0].getSerializedSize()) * this->size;
 		uint16_t crc = 0;
-		size += AutoSerializeAdapter::getSerializedSize(&crc);
+		size += SerializeAdapter::getSerializedSize(&crc);
 		return size;
 	}
 	/**
@@ -563,7 +563,7 @@ public:
 					return result;
 		}
 		uint32_t tempSize = 0;
-		result = AutoSerializeAdapter::deSerialize(&tempSize,buffer,size,bigEndian);
+		result = SerializeAdapter::deSerialize(&tempSize,buffer,size,bigEndian);
 		if(result != HasReturnvaluesIF::RETURN_OK){
 					return result;
 		}
@@ -572,7 +572,7 @@ public:
 		}
 		uint32_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->size)) {
-			result = SerializeAdapter<Index<T> >::deSerialize(
+			result = SerializeAdapter::deSerialize(
 					&this->entries[i], buffer, size,
 					bigEndian);
 			++i;

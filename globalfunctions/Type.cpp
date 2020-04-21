@@ -68,13 +68,13 @@ ReturnValue_t Type::serialize(uint8_t** buffer, uint32_t* size,
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::serialize(&ptc, buffer, size, max_size,
+	result = SerializeAdapter::serialize(&ptc, buffer, size, max_size,
 			bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::serialize(&pfc, buffer, size, max_size,
+	result = SerializeAdapter::serialize(&pfc, buffer, size, max_size,
 			bigEndian);
 
 	return result;
@@ -83,20 +83,20 @@ ReturnValue_t Type::serialize(uint8_t** buffer, uint32_t* size,
 
 uint32_t Type::getSerializedSize() const {
 	uint8_t dontcare = 0;
-	return 2 * SerializeAdapter<uint8_t>::getSerializedSize(&dontcare);
+	return 2 * SerializeAdapter::getSerializedSize(&dontcare);
 }
 
 ReturnValue_t Type::deSerialize(const uint8_t** buffer, int32_t* size,
 		bool bigEndian) {
 	uint8_t ptc;
 	uint8_t pfc;
-	ReturnValue_t result = SerializeAdapter<uint8_t>::deSerialize(&ptc, buffer,
+	ReturnValue_t result = SerializeAdapter::deSerialize(&ptc, buffer,
 			size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::deSerialize(&pfc, buffer, size,
+	result = SerializeAdapter::deSerialize(&pfc, buffer, size,
 			bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;

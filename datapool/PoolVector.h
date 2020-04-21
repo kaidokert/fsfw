@@ -202,7 +202,7 @@ public:
 		uint16_t i;
 		ReturnValue_t result;
 		for (i = 0; i < vector_size; i++) {
-			result = SerializeAdapter<T>::serialize(&(value[i]), buffer, size,
+			result = SerializeAdapter::serialize(&(value[i]), buffer, size,
 					max_size, bigEndian);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
@@ -212,7 +212,7 @@ public:
 	}
 
 	virtual uint32_t getSerializedSize() const {
-		return vector_size * SerializeAdapter<T>::getSerializedSize(value);
+		return vector_size * SerializeAdapter::getSerializedSize(value);
 	}
 
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
@@ -220,7 +220,7 @@ public:
 		uint16_t i;
 		ReturnValue_t result;
 		for (i = 0; i < vector_size; i++) {
-			result = SerializeAdapter<T>::deSerialize(&(value[i]), buffer, size,
+			result = SerializeAdapter::deSerialize(&(value[i]), buffer, size,
 					bigEndian);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;

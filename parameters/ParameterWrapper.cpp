@@ -24,18 +24,18 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t** buffer, uint32_t* size,
 		const uint32_t max_size, bool bigEndian) const {
 	ReturnValue_t result;
 
-	result = SerializeAdapter<Type>::serialize(&type, buffer, size, max_size,
+	result = SerializeAdapter::serialize(&type, buffer, size, max_size,
 			bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::serialize(&columns, buffer, size,
+	result = SerializeAdapter::serialize(&columns, buffer, size,
 			max_size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<uint8_t>::serialize(&rows, buffer, size, max_size,
+	result = SerializeAdapter::serialize(&rows, buffer, size, max_size,
 			bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -94,7 +94,7 @@ ReturnValue_t ParameterWrapper::serializeData(uint8_t** buffer, uint32_t* size,
 	ReturnValue_t result;
 	uint16_t dataSize = columns * rows;
 	while (dataSize != 0) {
-		result = SerializeAdapter<T>::serialize(element, buffer, size, max_size,
+		result = SerializeAdapter::serialize(element, buffer, size, max_size,
 				bigEndian);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
@@ -123,7 +123,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 				+ (((startingRow + fromRow) * columns) + startingColumn);
 
 		for (uint8_t fromColumn = 0; fromColumn < fromColumns; fromColumn++) {
-			result = SerializeAdapter<T>::deSerialize(
+			result = SerializeAdapter::deSerialize(
 					dataWithDataType + fromColumn, &fromAsStream, &streamSize,
 					true);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -155,18 +155,18 @@ ReturnValue_t ParameterWrapper::deSerialize(const uint8_t** buffer,
 
 ReturnValue_t ParameterWrapper::set(const uint8_t* stream, int32_t streamSize,
 		const uint8_t **remainingStream, int32_t *remainingSize) {
-	ReturnValue_t result = SerializeAdapter<Type>::deSerialize(&type, &stream,
+	ReturnValue_t result = SerializeAdapter::deSerialize(&type, &stream,
 			&streamSize, true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::deSerialize(&columns, &stream,
+	result = SerializeAdapter::deSerialize(&columns, &stream,
 			&streamSize, true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<uint8_t>::deSerialize(&rows, &stream, &streamSize,
+	result = SerializeAdapter::deSerialize(&rows, &stream, &streamSize,
 			true);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;

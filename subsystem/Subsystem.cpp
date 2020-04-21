@@ -169,7 +169,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 		if (result == RETURN_OK) {
 			Mode_t fallbackId;
 			int32_t size = sizeRead;
-			result = SerializeAdapter<Mode_t>::deSerialize(&fallbackId,
+			result = SerializeAdapter::deSerialize(&fallbackId,
 					&pointer, &size, true);
 			if (result == RETURN_OK) {
 				result = SerialArrayListAdapter<ModeListEntry>::deSerialize(
