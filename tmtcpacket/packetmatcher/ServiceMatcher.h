@@ -22,16 +22,16 @@ public:
 			return false;
 		}
 	}
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return SerializeAdapter::serialize(&service, buffer, size, max_size, bigEndian);
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		return SerializeAdapter::serialize(&service, buffer, size, maxSize, streamEndianness);
 	}
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return SerializeAdapter::getSerializedSize(&service);
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return SerializeAdapter::deSerialize(&service, buffer, size, bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
+		return SerializeAdapter::deSerialize(&service, buffer, size, streamEndianness);
 	}
 };
 

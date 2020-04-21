@@ -46,15 +46,15 @@ ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, uint32_t size) {
 	if (size != 4 * sizeof(parameters.lowerOpLimit)) {
 		return MonitoringIF::INVALID_SIZE;
 	}
-	int32_t readSize = size;
+	size_t readSize = size;
 	SerializeAdapter::deSerialize(&nopParameters.lowerNopLimit, &data,
-			&readSize, true);
+			&readSize, SerializeIF::Endianness::BIG);
 	SerializeAdapter::deSerialize(&parameters.lowerOpLimit, &data,
-			&readSize, true);
+			&readSize, SerializeIF::Endianness::BIG);
 	SerializeAdapter::deSerialize(&parameters.upperOpLimit, &data,
-			&readSize, true);
+			&readSize, SerializeIF::Endianness::BIG);
 	SerializeAdapter::deSerialize(&nopParameters.upperNopLimit, &data,
-			&readSize, true);
+			&readSize, SerializeIF::Endianness::BIG);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

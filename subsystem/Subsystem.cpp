@@ -13,7 +13,7 @@ Subsystem::Subsystem(object_id_t setObjectId, object_id_t parent,
 				false), uptimeStartTable(0), currentTargetTable(), targetMode(
 				0), targetSubmode(SUBMODE_NONE), initialMode(0), currentSequenceIterator(), modeTables(
 				maxNumberOfTables), modeSequences(maxNumberOfSequences), IPCStore(
-				NULL)
+		NULL)
 #ifdef USE_MODESTORE
 ,modeStore(NULL)
 #endif
@@ -75,7 +75,8 @@ void Subsystem::performChildOperation() {
 	if (isInTransition) {
 		if (commandsOutstanding <= 0) { //all children of the current table were commanded and replied
 			if (currentSequenceIterator.value == NULL) { //we're through with this sequence
-				if (checkStateAgainstTable(currentTargetTable, targetSubmode) == RETURN_OK) {
+				if (checkStateAgainstTable(currentTargetTable, targetSubmode)
+						== RETURN_OK) {
 					setMode(targetMode, targetSubmode);
 					isInTransition = false;
 					return;
@@ -86,7 +87,8 @@ void Subsystem::performChildOperation() {
 				}
 			}
 			if (currentSequenceIterator->checkSuccess()) {
-				if (checkStateAgainstTable(getCurrentTable(), targetSubmode) != RETURN_OK) {
+				if (checkStateAgainstTable(getCurrentTable(), targetSubmode)
+						!= RETURN_OK) {
 					transitionFailed(TABLE_CHECK_FAILED,
 							currentSequenceIterator->getTableId());
 					return;
@@ -117,7 +119,8 @@ void Subsystem::performChildOperation() {
 			childrenChangedHealth = false;
 			startTransition(mode, submode);
 		} else if (childrenChangedMode) {
-			if (checkStateAgainstTable(currentTargetTable, submode) != RETURN_OK) {
+			if (checkStateAgainstTable(currentTargetTable, submode)
+					!= RETURN_OK) {
 				triggerEvent(CANT_KEEP_MODE, mode, submode);
 				cantKeepMode();
 			}
@@ -147,7 +150,7 @@ HybridIterator<ModeListEntry> Subsystem::getTable(Mode_t id) {
 	}
 }
 
-ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
+ReturnValue_t Subsystem::handleCommandMessage(CommandMessage *message) {
 	ReturnValue_t result;
 	switch (message->getCommand()) {
 	case HealthMessage::HEALTH_INFO: {
@@ -168,12 +171,13 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 				&sizeRead);
 		if (result == RETURN_OK) {
 			Mode_t fallbackId;
-			int32_t size = sizeRead;
-			result = SerializeAdapter::deSerialize(&fallbackId,
-					&pointer, &size, true);
+			size_t size = sizeRead;
+			result = SerializeAdapter::deSerialize(&fallbackId, &pointer, &size,
+					SerializeIF::Endianness::BIG);
 			if (result == RETURN_OK) {
 				result = SerialArrayListAdapter<ModeListEntry>::deSerialize(
-						&sequence, &pointer, &size, true);
+						&sequence, &pointer, &size,
+						SerializeIF::Endianness::BIG);
 				if (result == RETURN_OK) {
 					result = addSequence(&sequence,
 							ModeSequenceMessage::getSequenceId(message),
@@ -193,9 +197,9 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
 		if (result == RETURN_OK) {
-			int32_t size = sizeRead;
+			size_t size = sizeRead;
 			result = SerialArrayListAdapter<ModeListEntry>::deSerialize(&table,
-					&pointer, &size, true);
+					&pointer, &size, SerializeIF::Endianness::BIG);
 			if (result == RETURN_OK) {
 				result = addTable(&table,
 						ModeSequenceMessage::getSequenceId(message));
@@ -339,7 +343,7 @@ void Subsystem::replyToCommand(ReturnValue_t status, uint32_t parameter) {
 	}
 }
 
-ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry>* sequence,
+ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry> *sequence,
 		Mode_t id, Mode_t fallbackSequence, bool inStore, bool preInit) {
 
 	ReturnValue_t result;
@@ -507,7 +511,7 @@ MessageQueueId_t Subsystem::getSequenceCommandQueue() const {
 }
 
 ReturnValue_t Subsystem::checkModeCommand(Mode_t mode, Submode_t submode,
-		uint32_t* msToReachTheMode) {
+		uint32_t *msToReachTheMode) {
 	//Need to accept all submodes to be able to inherit submodes
 //	if (submode != SUBMODE_NONE) {
 //		return INVALID_SUBMODE;
@@ -599,15 +603,15 @@ void Subsystem::transitionFailed(ReturnValue_t failureCode,
 }
 
 void Subsystem::sendSerializablesAsCommandMessage(Command_t command,
-		SerializeIF** elements, uint8_t count) {
+		SerializeIF **elements, uint8_t count) {
 	ReturnValue_t result;
-	uint32_t maxSize = 0;
+	size_t maxSize = 0;
 	for (uint8_t i = 0; i < count; i++) {
 		maxSize += elements[i]->getSerializedSize();
 	}
 	uint8_t *storeBuffer;
 	store_address_t address;
-	uint32_t size = 0;
+	size_t size = 0;
 
 	result = IPCStore->getFreeElement(&address, maxSize, &storeBuffer);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -615,7 +619,8 @@ void Subsystem::sendSerializablesAsCommandMessage(Command_t command,
 		return;
 	}
 	for (uint8_t i = 0; i < count; i++) {
-		elements[i]->serialize(&storeBuffer, &size, maxSize, true);
+		elements[i]->serialize(&storeBuffer, &size, maxSize,
+				SerializeIF::Endianness::BIG);
 	}
 	CommandMessage reply;
 	ModeSequenceMessage::setModeSequenceMessage(&reply, command, address);

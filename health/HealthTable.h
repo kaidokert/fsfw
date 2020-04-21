@@ -21,7 +21,7 @@ public:
 	virtual HasHealthIF::HealthState getHealth(object_id_t);
 
 	virtual uint32_t getPrintSize();
-	virtual void printAll(uint8_t *pointer, uint32_t maxSize);
+	virtual void printAll(uint8_t *pointer, size_t maxSize);
 
 protected:
 	MutexIF* mutex;

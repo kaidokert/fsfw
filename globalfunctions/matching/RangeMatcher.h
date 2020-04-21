@@ -26,23 +26,23 @@ public:
 		}
 	}
 
-	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t max_size,
+	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
 			SerializeIF::Endianness streamEndianness) const override {
 		ReturnValue_t result = SerializeAdapter::serialize(&lowerBound, buffer,
-				size, max_size, streamEndianness);
+				size, maxSize, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		result = SerializeAdapter::serialize(&upperBound, buffer, size,
-				max_size, streamEndianness);
+				maxSize, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		return SerializeAdapter::serialize(&inverted, buffer, size, max_size,
+		return SerializeAdapter::serialize(&inverted, buffer, size, maxSize,
 				streamEndianness);
 	}
 
-	uint32_t getSerializedSize() const override {
+	size_t getSerializedSize() const override {
 		return sizeof(lowerBound) + sizeof(upperBound) + sizeof(bool);
 	}
 

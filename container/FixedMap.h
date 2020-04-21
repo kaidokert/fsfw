@@ -148,22 +148,22 @@ public:
 		return theMap.maxSize();
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
 		ReturnValue_t result = SerializeAdapter::serialize(&this->_size,
-				buffer, size, max_size, bigEndian);
+				buffer, size, maxSize, streamEndianness);
 		uint32_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->_size)) {
 			result = SerializeAdapter::serialize(&theMap[i].first, buffer,
-					size, max_size, bigEndian);
+					size, maxSize, streamEndianness);
 			result = SerializeAdapter::serialize(&theMap[i].second, buffer, size,
-					max_size, bigEndian);
+					maxSize, streamEndianness);
 			++i;
 		}
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		uint32_t printSize = sizeof(_size);
 		uint32_t i = 0;
 
@@ -176,19 +176,19 @@ public:
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
 		ReturnValue_t result = SerializeAdapter::deSerialize(&this->_size,
-				buffer, size, bigEndian);
+				buffer, size, streamEndianness);
 		if (this->_size > theMap.maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
 		uint32_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->_size)) {
 			result = SerializeAdapter::deSerialize(&theMap[i].first, buffer,
-					size, bigEndian);
+					size, streamEndianness);
 			result = SerializeAdapter::deSerialize(&theMap[i].second, buffer, size,
-					bigEndian);
+					streamEndianness);
 			++i;
 		}
 		return result;

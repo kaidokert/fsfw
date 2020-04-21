@@ -20,25 +20,25 @@ public:
 	SerialArrayListAdapter(ArrayList<T, count_t> *adaptee) : adaptee(adaptee) {
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return serialize(adaptee, buffer, size, max_size, bigEndian);
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		return serialize(adaptee, buffer, size, maxSize, streamEndianness);
 	}
 
-	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) {
+	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) {
 		ReturnValue_t result = SerializeAdapter::serialize(&list->size,
-				buffer, size, max_size, bigEndian);
+				buffer, size, maxSize, streamEndianness);
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
 			result = SerializeAdapter::serialize(&list->entries[i], buffer, size,
-					max_size, bigEndian);
+					maxSize, streamEndianness);
 			++i;
 		}
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return getSerializedSize(adaptee);
 	}
 
@@ -53,16 +53,16 @@ public:
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return deSerialize(adaptee, buffer, size, bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
+		return deSerialize(adaptee, buffer, size, streamEndianness);
 	}
 
-	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list, const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
+	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list, const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
 		count_t tempSize = 0;
 		ReturnValue_t result = SerializeAdapter::deSerialize(&tempSize,
-				buffer, size, bigEndian);
+				buffer, size, streamEndianness);
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
@@ -71,7 +71,7 @@ public:
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
 			result = SerializeAdapter::deSerialize(
 					&list->front()[i], buffer, size,
-					bigEndian);
+					streamEndianness);
 			++i;
 		}
 		return result;

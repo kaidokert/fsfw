@@ -261,7 +261,7 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 //identical to ParameterHelper::sendParameter()
 ReturnValue_t DataPoolAdmin::sendParameter(MessageQueueId_t to, uint32_t id,
 		const DataPoolParameterWrapper* wrapper) {
-	uint32_t serializedSize = wrapper->getSerializedSize();
+	size_t serializedSize = wrapper->getSerializedSize();
 
 	uint8_t *storeElement;
 	store_address_t address;
@@ -272,10 +272,10 @@ ReturnValue_t DataPoolAdmin::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	uint32_t storeElementSize = 0;
+	size_t storeElementSize = 0;
 
 	result = wrapper->serialize(&storeElement, &storeElementSize,
-			serializedSize, true);
+			serializedSize, SerializeIF::Endianness::BIG);
 
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		storage->deleteData(address);

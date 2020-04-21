@@ -71,18 +71,18 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
 	CommandMessage reply;
 	store_address_t storeAddress;
 	uint8_t *dataPtr;
-	uint32_t maxSize = data->getSerializedSize();
+	size_t maxSize = data->getSerializedSize();
 	if (maxSize == 0) {
 		//No error, there's simply nothing to report.
 		return HasReturnvaluesIF::RETURN_OK;
 	}
-	uint32_t size = 0;
+	size_t size = 0;
 	ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, maxSize,
 			&dataPtr);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = data->serialize(&dataPtr, &size, maxSize, true);
+	result = data->serialize(&dataPtr, &size, maxSize, SerializeIF::Endianness::BIG);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		ipcStore->deleteData(storeAddress);
 		return result;

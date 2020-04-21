@@ -90,15 +90,15 @@ public:
 	 * \details	It makes use of the getEntry call of this function, but additionally flips the
 	 * 			bytes to big endian, which is the default for external communication (as House-
 	 * 			keeping telemetry). To achieve this, the data is copied directly to the passed
-	 * 			buffer, if it fits in the given max_size.
+	 * 			buffer, if it fits in the given maxSize.
 	 * \param buffer	A pointer to a buffer to write to
 	 * \param writtenBytes	The number of bytes written is returned with this value.
-	 * \param max_size	The maximum size that the function may write to buffer.
+	 * \param maxSize	The maximum size that the function may write to buffer.
 	 * \return	- \c RETURN_OK if entry could be acquired
 	 * 			- \c RETURN_FAILED else.
 	 */
 	ReturnValue_t getEntryEndianSafe(uint8_t *buffer, uint32_t *size,
-			uint32_t max_size);
+			uint32_t maxSize);
 	/**
 	 * With this method, the content can be set from a big endian buffer safely.
 	 * @param buffer	Pointer to the data to set

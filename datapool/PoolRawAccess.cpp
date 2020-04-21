@@ -69,12 +69,12 @@ uint8_t* PoolRawAccess::getEntry() {
 }
 
 ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
-		uint32_t* writtenBytes, uint32_t max_size) {
+		uint32_t* writtenBytes, uint32_t maxSize) {
 	uint8_t* data_ptr = getEntry();
 //	debug << "PoolRawAccess::getEntry: Array position: " << index * size_of_type << " Size of T: " << (int)size_of_type << " ByteSize: " << byte_size << " Position: " << *size << std::endl;
 	if (typeSize == 0)
 		return DATA_POOL_ACCESS_FAILED;
-	if (typeSize > max_size)
+	if (typeSize > maxSize)
 		return INCORRECT_SIZE;
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
@@ -149,7 +149,7 @@ ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, size_t* size,
 		size_t maxSize, Endianness streamEndianness) const {
 	//TODO integer overflow
 	if (typeSize + *size <= maxSize) {
-#error use endian swapper
+#warning use endian swapper
 		if (1) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
