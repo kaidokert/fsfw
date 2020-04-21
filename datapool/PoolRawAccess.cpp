@@ -145,10 +145,12 @@ uint16_t PoolRawAccess::getSizeTillEnd() const {
 	return sizeTillEnd;
 }
 
-ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
-	if (typeSize + *size <= max_size) {
-		if (bigEndian) {
+ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, size_t* size,
+		size_t maxSize, Endianness streamEndianness) const {
+	//TODO integer overflow
+	if (typeSize + *size <= maxSize) {
+#error use endian swapper
+		if (1) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
@@ -169,16 +171,16 @@ ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, uint32_t* size,
 	}
 }
 
-uint32_t PoolRawAccess::getSerializedSize() const {
+size_t PoolRawAccess::getSerializedSize() const {
 	return typeSize;
 }
 
-ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, int32_t* size,
-		bool bigEndian) {
-	*size -= typeSize;
-	if (*size >= 0) {
+ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, size_t* size,
+		Endianness streamEndianness) {
 
-		if (bigEndian) {
+	if (*size >= typeSize) {
+		*size -= typeSize;
+		if (1) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN

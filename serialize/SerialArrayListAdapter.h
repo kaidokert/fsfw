@@ -27,11 +27,11 @@ public:
 
 	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) {
-		ReturnValue_t result = SerializeAdapter<count_t>::serialize(&list->size,
+		ReturnValue_t result = SerializeAdapter::serialize(&list->size,
 				buffer, size, max_size, bigEndian);
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
-			result = SerializeAdapter<T>::serialize(&list->entries[i], buffer, size,
+			result = SerializeAdapter::serialize(&list->entries[i], buffer, size,
 					max_size, bigEndian);
 			++i;
 		}
@@ -47,7 +47,7 @@ public:
 		count_t i = 0;
 
 		for (i = 0; i < list->size; ++i) {
-			printSize += SerializeAdapter<T>::getSerializedSize(&list->entries[i]);
+			printSize += SerializeAdapter::getSerializedSize(&list->entries[i]);
 		}
 
 		return printSize;
@@ -61,7 +61,7 @@ public:
 	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list, const uint8_t** buffer, int32_t* size,
 			bool bigEndian) {
 		count_t tempSize = 0;
-		ReturnValue_t result = SerializeAdapter<count_t>::deSerialize(&tempSize,
+		ReturnValue_t result = SerializeAdapter::deSerialize(&tempSize,
 				buffer, size, bigEndian);
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
@@ -69,7 +69,7 @@ public:
 		list->size = tempSize;
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
-			result = SerializeAdapter<T>::deSerialize(
+			result = SerializeAdapter::deSerialize(
 					&list->front()[i], buffer, size,
 					bigEndian);
 			++i;

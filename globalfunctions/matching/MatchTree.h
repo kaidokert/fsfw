@@ -49,7 +49,7 @@ public:
 			const uint32_t max_size, bool bigEndian) const {
 		iterator iter = this->begin();
 		uint8_t count = this->countRight(iter);
-		ReturnValue_t result = SerializeAdapter<uint8_t>::serialize(&count,
+		ReturnValue_t result = SerializeAdapter::serialize(&count,
 				buffer, size, max_size, bigEndian);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;

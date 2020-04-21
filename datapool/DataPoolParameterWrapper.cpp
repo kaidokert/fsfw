@@ -39,18 +39,18 @@ ReturnValue_t DataPoolParameterWrapper::serialize(uint8_t** buffer,
 		uint32_t* size, const uint32_t max_size, bool bigEndian) const {
 	ReturnValue_t result;
 
-	result = SerializeAdapter<Type>::serialize(&type, buffer, size, max_size,
+	result = SerializeAdapter::serialize(&type, buffer, size, max_size,
 			bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::serialize(&columns, buffer, size,
+	result = SerializeAdapter::serialize(&columns, buffer, size,
 			max_size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<uint8_t>::serialize(&rows, buffer, size, max_size,
+	result = SerializeAdapter::serialize(&rows, buffer, size, max_size,
 			bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;

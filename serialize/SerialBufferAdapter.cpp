@@ -26,14 +26,14 @@ ReturnValue_t SerialBufferAdapter<T>::serialize(uint8_t** buffer, uint32_t* size
 		const uint32_t max_size, bool bigEndian) const {
 	uint32_t serializedLength = bufferLength;
 	if (serializeLength) {
-		serializedLength += AutoSerializeAdapter::getSerializedSize(
+		serializedLength += SerializeAdapter::getSerializedSize(
 				&bufferLength);
 	}
 	if (*size + serializedLength > max_size) {
 		return BUFFER_TOO_SHORT;
 	} else {
 		if (serializeLength) {
-			AutoSerializeAdapter::serialize(&bufferLength, buffer, size,
+			SerializeAdapter::serialize(&bufferLength, buffer, size,
 					max_size, bigEndian);
 		}
 		if (this->constBuffer != NULL) {
@@ -52,7 +52,7 @@ ReturnValue_t SerialBufferAdapter<T>::serialize(uint8_t** buffer, uint32_t* size
 template<typename T>
 uint32_t SerialBufferAdapter<T>::getSerializedSize() const {
 	if (serializeLength) {
-		return bufferLength + AutoSerializeAdapter::getSerializedSize(&bufferLength);
+		return bufferLength + SerializeAdapter::getSerializedSize(&bufferLength);
 	} else {
 		return bufferLength;
 	}
@@ -63,7 +63,7 @@ ReturnValue_t SerialBufferAdapter<T>::deSerialize(const uint8_t** buffer,
 	//TODO Ignores Endian flag!
 	if (buffer != NULL) {
 		if(serializeLength){
-			T serializedSize = AutoSerializeAdapter::getSerializedSize(
+			T serializedSize = SerializeAdapter::getSerializedSize(
 					&bufferLength);
 			if((*size - bufferLength - serializedSize) >= 0){
 				*buffer +=  serializedSize;

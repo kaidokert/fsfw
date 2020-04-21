@@ -150,13 +150,13 @@ public:
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
 			const uint32_t max_size, bool bigEndian) const {
-		ReturnValue_t result = SerializeAdapter<uint32_t>::serialize(&this->_size,
+		ReturnValue_t result = SerializeAdapter::serialize(&this->_size,
 				buffer, size, max_size, bigEndian);
 		uint32_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->_size)) {
-			result = SerializeAdapter<key_t>::serialize(&theMap[i].first, buffer,
+			result = SerializeAdapter::serialize(&theMap[i].first, buffer,
 					size, max_size, bigEndian);
-			result = SerializeAdapter<T>::serialize(&theMap[i].second, buffer, size,
+			result = SerializeAdapter::serialize(&theMap[i].second, buffer, size,
 					max_size, bigEndian);
 			++i;
 		}
@@ -168,9 +168,9 @@ public:
 		uint32_t i = 0;
 
 		for (i = 0; i < _size; ++i) {
-			printSize += SerializeAdapter<key_t>::getSerializedSize(
+			printSize += SerializeAdapter::getSerializedSize(
 					&theMap[i].first);
-			printSize += SerializeAdapter<T>::getSerializedSize(&theMap[i].second);
+			printSize += SerializeAdapter::getSerializedSize(&theMap[i].second);
 		}
 
 		return printSize;
@@ -178,16 +178,16 @@ public:
 
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
 			bool bigEndian) {
-		ReturnValue_t result = SerializeAdapter<uint32_t>::deSerialize(&this->_size,
+		ReturnValue_t result = SerializeAdapter::deSerialize(&this->_size,
 				buffer, size, bigEndian);
 		if (this->_size > theMap.maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
 		uint32_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->_size)) {
-			result = SerializeAdapter<key_t>::deSerialize(&theMap[i].first, buffer,
+			result = SerializeAdapter::deSerialize(&theMap[i].first, buffer,
 					size, bigEndian);
-			result = SerializeAdapter<T>::deSerialize(&theMap[i].second, buffer, size,
+			result = SerializeAdapter::deSerialize(&theMap[i].second, buffer, size,
 					bigEndian);
 			++i;
 		}

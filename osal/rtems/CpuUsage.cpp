@@ -91,7 +91,7 @@ void CpuUsage::clear() {
 
 ReturnValue_t CpuUsage::serialize(uint8_t** buffer, uint32_t* size,
 		const uint32_t max_size, bool bigEndian) const {
-	ReturnValue_t result = SerializeAdapter<float>::serialize(
+	ReturnValue_t result = SerializeAdapter::serialize(
 			&timeSinceLastReset, buffer, size, max_size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -111,7 +111,7 @@ uint32_t CpuUsage::getSerializedSize() const {
 
 ReturnValue_t CpuUsage::deSerialize(const uint8_t** buffer, int32_t* size,
 		bool bigEndian) {
-	ReturnValue_t result = SerializeAdapter<float>::deSerialize(
+	ReturnValue_t result = SerializeAdapter::deSerialize(
 			&timeSinceLastReset, buffer, size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -122,7 +122,7 @@ ReturnValue_t CpuUsage::deSerialize(const uint8_t** buffer, int32_t* size,
 
 ReturnValue_t CpuUsage::ThreadData::serialize(uint8_t** buffer, uint32_t* size,
 		const uint32_t max_size, bool bigEndian) const {
-	ReturnValue_t result = SerializeAdapter<uint32_t>::serialize(&id, buffer,
+	ReturnValue_t result = SerializeAdapter::serialize(&id, buffer,
 			size, max_size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -133,12 +133,12 @@ ReturnValue_t CpuUsage::ThreadData::serialize(uint8_t** buffer, uint32_t* size,
 	memcpy(*buffer, name, MAX_LENGTH_OF_THREAD_NAME);
 	*size += MAX_LENGTH_OF_THREAD_NAME;
 	*buffer += MAX_LENGTH_OF_THREAD_NAME;
-	result = SerializeAdapter<float>::serialize(&timeRunning,
+	result = SerializeAdapter::serialize(&timeRunning,
 			buffer, size, max_size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<float>::serialize(&percentUsage,
+	result = SerializeAdapter::serialize(&percentUsage,
 			buffer, size, max_size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -159,7 +159,7 @@ uint32_t CpuUsage::ThreadData::getSerializedSize() const {
 
 ReturnValue_t CpuUsage::ThreadData::deSerialize(const uint8_t** buffer,
 		int32_t* size, bool bigEndian) {
-	ReturnValue_t result = SerializeAdapter<uint32_t>::deSerialize(&id, buffer,
+	ReturnValue_t result = SerializeAdapter::deSerialize(&id, buffer,
 			size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -169,12 +169,12 @@ ReturnValue_t CpuUsage::ThreadData::deSerialize(const uint8_t** buffer,
 	}
 	memcpy(name, *buffer, MAX_LENGTH_OF_THREAD_NAME);
 	*buffer -= MAX_LENGTH_OF_THREAD_NAME;
-	result = SerializeAdapter<float>::deSerialize(&timeRunning,
+	result = SerializeAdapter::deSerialize(&timeRunning,
 			buffer, size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<float>::deSerialize(&percentUsage,
+	result = SerializeAdapter::deSerialize(&percentUsage,
 			buffer, size, bigEndian);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;

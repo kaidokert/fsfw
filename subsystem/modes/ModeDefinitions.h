@@ -23,26 +23,26 @@ public:
 
 		ReturnValue_t result;
 
-		result = SerializeAdapter<uint32_t>::serialize(&value1, buffer, size,
+		result = SerializeAdapter::serialize(&value1, buffer, size,
 				max_size, bigEndian);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint32_t>::serialize(&value2, buffer, size,
+		result = SerializeAdapter::serialize(&value2, buffer, size,
 				max_size, bigEndian);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint8_t>::serialize(&value3, buffer, size,
+		result = SerializeAdapter::serialize(&value3, buffer, size,
 				max_size, bigEndian);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 
-		result = SerializeAdapter<uint8_t>::serialize(&value4, buffer, size,
+		result = SerializeAdapter::serialize(&value4, buffer, size,
 				max_size, bigEndian);
 
 		return result;
@@ -57,25 +57,25 @@ public:
 	bool bigEndian) {
 		ReturnValue_t result;
 
-		result = SerializeAdapter<uint32_t>::deSerialize(&value1, buffer, size,
+		result = SerializeAdapter::deSerialize(&value1, buffer, size,
 				bigEndian);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint32_t>::deSerialize(&value2, buffer, size,
+		result = SerializeAdapter::deSerialize(&value2, buffer, size,
 				bigEndian);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint8_t>::deSerialize(&value3, buffer, size,
+		result = SerializeAdapter::deSerialize(&value3, buffer, size,
 				bigEndian);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint8_t>::deSerialize(&value4, buffer, size,
+		result = SerializeAdapter::deSerialize(&value4, buffer, size,
 				bigEndian);
 
 		return result;

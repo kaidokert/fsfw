@@ -53,7 +53,7 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 		memcpy(copyHere, dataToCopy, size);
 		break;
 	case HasMemoryIF::POINTS_TO_VARIABLE:
-		EndianSwapper::swap(copyHere, dataToCopy, size);
+		EndianConverter::convertBigEndian(copyHere, dataToCopy, size);
 		break;
 	case HasMemoryIF::ACTIVITY_COMPLETED:
 	case RETURN_OK:
@@ -86,7 +86,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 	case HasMemoryIF::POINTS_TO_VARIABLE:
 		//"data" must be valid pointer!
 		if (errorCode == HasMemoryIF::POINTS_TO_VARIABLE) {
-			EndianSwapper::swap(reservedSpaceInIPC, dataToCopy, size);
+			EndianConverter::convertBigEndian(reservedSpaceInIPC, dataToCopy, size);
 		} else {
 			memcpy(reservedSpaceInIPC, dataToCopy, size);
 		}
@@ -136,7 +136,7 @@ void MemoryHelper::swapMatrixCopy(uint8_t* out, const uint8_t *in,
 	}
 
 	while (totalSize > 0){
-		EndianSwapper::swap(out,in,datatypeSize);
+		EndianConverter::convertBigEndian(out,in,datatypeSize);
 		out += datatypeSize;
 		in += datatypeSize;
 		totalSize -= datatypeSize;

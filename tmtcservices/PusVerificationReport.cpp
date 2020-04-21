@@ -108,12 +108,12 @@ PusSuccessReport::PusSuccessReport(uint16_t setPacketId,
 		uint16_t setSequenceControl, uint8_t setStep) :
 		reportSize(0), pBuffer(reportBuffer) {
 	//Serialization won't fail, because we know the necessary max-size of the buffer.
-	SerializeAdapter<uint16_t>::serialize(&setPacketId, &pBuffer, &reportSize,
+	SerializeAdapter::serialize(&setPacketId, &pBuffer, &reportSize,
 			sizeof(reportBuffer), true);
-	SerializeAdapter<uint16_t>::serialize(&setSequenceControl, &pBuffer,
+	SerializeAdapter::serialize(&setSequenceControl, &pBuffer,
 			&reportSize, sizeof(reportBuffer), true);
 	if (setStep != 0) {
-		SerializeAdapter<uint8_t>::serialize(&setStep, &pBuffer, &reportSize,
+		SerializeAdapter::serialize(&setStep, &pBuffer, &reportSize,
 				sizeof(reportBuffer), true);
 	}
 }
@@ -135,19 +135,19 @@ PusFailureReport::PusFailureReport(uint16_t setPacketId,
 		uint8_t setStep, uint32_t parameter1, uint32_t parameter2) :
 		reportSize(0), pBuffer(reportBuffer) {
 	//Serialization won't fail, because we know the necessary max-size of the buffer.
-	SerializeAdapter<uint16_t>::serialize(&setPacketId, &pBuffer, &reportSize,
+	SerializeAdapter::serialize(&setPacketId, &pBuffer, &reportSize,
 			sizeof(reportBuffer), true);
-	SerializeAdapter<uint16_t>::serialize(&setSequenceControl, &pBuffer,
+	SerializeAdapter::serialize(&setSequenceControl, &pBuffer,
 			&reportSize, sizeof(reportBuffer), true);
 	if (setStep != 0) {
-		SerializeAdapter<uint8_t>::serialize(&setStep, &pBuffer, &reportSize,
+		SerializeAdapter::serialize(&setStep, &pBuffer, &reportSize,
 				sizeof(reportBuffer), true);
 	}
-	SerializeAdapter<ReturnValue_t>::serialize(&setErrorCode, &pBuffer,
+	SerializeAdapter::serialize(&setErrorCode, &pBuffer,
 			&reportSize, sizeof(reportBuffer), true);
-	SerializeAdapter<uint32_t>::serialize(&parameter1, &pBuffer, &reportSize,
+	SerializeAdapter::serialize(&parameter1, &pBuffer, &reportSize,
 			sizeof(reportBuffer), true);
-	SerializeAdapter<uint32_t>::serialize(&parameter2, &pBuffer, &reportSize,
+	SerializeAdapter::serialize(&parameter2, &pBuffer, &reportSize,
 			sizeof(reportBuffer), true);
 }
 
