@@ -68,18 +68,6 @@ ReturnValue_t TmTcBridge::handleTc() {
 	uint8_t * recvBuffer = nullptr;
 	size_t recvLen = 0;
 	ReturnValue_t result = receiveTc(&recvBuffer, &recvLen);
-	if(result == RETURN_OK and recvLen > 0 and recvBuffer != nullptr) {
-		store_address_t storeId = 0;
-		ReturnValue_t result = tcStore->addData(&storeId,
-				recvBuffer, (uint32_t)recvLen);
-		if(result != RETURN_OK) {
-			return result;
-		}
-		TmTcMessage message(storeId);
-		if (TmTcReceptionQueue->sendToDefault(&message) != RETURN_OK) {
-			tcStore->deleteData(storeId);
-		}
-	}
 	return result;
 }
 

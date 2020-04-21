@@ -65,7 +65,12 @@ protected:
 	bool tmStored = false;
 
 	/**
-	 * Handle TC reception. Default implementation provided
+	 * @brief 	Handle TC reception
+	 * @details
+	 * Default implementation provided, but is empty.
+	 * Child handler should override this in most cases orsend TC to the
+	 * TC distributor directly with the address of the reception queue by
+	 * calling getReportRecptionQueue()
 	 * @return
 	 */
 	virtual ReturnValue_t handleTc();
