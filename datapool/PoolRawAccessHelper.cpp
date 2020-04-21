@@ -24,7 +24,7 @@ PoolRawAccessHelper::~PoolRawAccessHelper() {
 ReturnValue_t PoolRawAccessHelper::serialize(uint8_t **buffer, size_t *size,
 		const size_t max_size, bool bigEndian) {
 	SerializationArgs serializationArgs = {buffer, size, max_size, bigEndian};
-	ReturnValue_t result;
+	ReturnValue_t result = RETURN_OK;
 	size_t remainingParametersSize = numberOfParameters * 4;
 	for(uint8_t count=0; count < numberOfParameters; count++) {
 		result = serializeCurrentPoolEntryIntoBuffer(serializationArgs,
@@ -42,7 +42,7 @@ ReturnValue_t PoolRawAccessHelper::serialize(uint8_t **buffer, size_t *size,
 
 ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer,
 		size_t * size, const size_t max_size, bool bigEndian) {
-	ReturnValue_t result;
+	ReturnValue_t result = RETURN_OK;
 	SerializationArgs argStruct = {buffer, size, max_size, bigEndian};
 	size_t remainingParametersSize = numberOfParameters * 4;
 	uint8_t validityMaskSize = ceil((float)numberOfParameters/8.0);
