@@ -197,13 +197,13 @@ public:
 		return *this;
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
 		uint16_t i;
 		ReturnValue_t result;
 		for (i = 0; i < vector_size; i++) {
 			result = SerializeAdapter::serialize(&(value[i]), buffer, size,
-					max_size, bigEndian);
+					maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
 			}
@@ -211,17 +211,17 @@ public:
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return vector_size * SerializeAdapter::getSerializedSize(value);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
 		uint16_t i;
 		ReturnValue_t result;
 		for (i = 0; i < vector_size; i++) {
 			result = SerializeAdapter::deSerialize(&(value[i]), buffer, size,
-					bigEndian);
+					streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
 			}

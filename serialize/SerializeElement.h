@@ -26,7 +26,7 @@ public:
 				streamEndianness);
 	}
 
-	uint32_t getSerializedSize() const override {
+	size_t getSerializedSize() const override {
 		return SerializeAdapter::getSerializedSize(&entry);
 	}
 

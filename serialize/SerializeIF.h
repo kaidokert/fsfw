@@ -28,7 +28,7 @@ public:
 	}
 
 	virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
-			size_t max_size, Endianness streamEndianness) const = 0;
+			size_t maxSize, Endianness streamEndianness) const = 0;
 
 	virtual size_t getSerializedSize() const = 0;
 

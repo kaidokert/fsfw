@@ -235,9 +235,9 @@ void CommandingServiceBase::sendTmPacket(uint8_t subservice,
 		object_id_t objectId, const uint8_t *data, uint32_t dataLen) {
 	uint8_t buffer[sizeof(object_id_t)];
 	uint8_t* pBuffer = buffer;
-	uint32_t size = 0;
+	size_t size = 0;
 	SerializeAdapter::serialize(&objectId, &pBuffer, &size,
-			sizeof(object_id_t), true);
+			sizeof(object_id_t), SerializeIF::Endianness::BIG);
 	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
 			this->tmPacketCounter, data, dataLen, buffer, size);
 	ReturnValue_t result = tmPacketStored.sendPacket(

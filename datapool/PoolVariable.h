@@ -195,12 +195,12 @@ public:
 	}
 
 	virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
-			size_t max_size, Endianness streamEndianness) const override {
-		return SerializeAdapter::serialize<T>(&value, buffer, size, max_size,
+			size_t maxSize, Endianness streamEndianness) const override {
+		return SerializeAdapter::serialize<T>(&value, buffer, size, maxSize,
 				streamEndianness);
 	}
 
-	virtual uint32_t getSerializedSize() const override {
+	virtual size_t getSerializedSize() const override {
 		return SerializeAdapter::getSerializedSize(&value);
 	}
 

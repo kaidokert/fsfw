@@ -18,65 +18,65 @@ public:
 	uint8_t value3;
 	uint8_t value4;
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
 
 		ReturnValue_t result;
 
 		result = SerializeAdapter::serialize(&value1, buffer, size,
-				max_size, bigEndian);
+				maxSize, streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		result = SerializeAdapter::serialize(&value2, buffer, size,
-				max_size, bigEndian);
+				maxSize, streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		result = SerializeAdapter::serialize(&value3, buffer, size,
-				max_size, bigEndian);
+				maxSize, streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 
 		result = SerializeAdapter::serialize(&value4, buffer, size,
-				max_size, bigEndian);
+				maxSize, streamEndianness);
 
 		return result;
 
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian) {
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+	Endianness streamEndianness) {
 		ReturnValue_t result;
 
 		result = SerializeAdapter::deSerialize(&value1, buffer, size,
-				bigEndian);
+				streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		result = SerializeAdapter::deSerialize(&value2, buffer, size,
-				bigEndian);
+				streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		result = SerializeAdapter::deSerialize(&value3, buffer, size,
-				bigEndian);
+				streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		result = SerializeAdapter::deSerialize(&value4, buffer, size,
-				bigEndian);
+				streamEndianness);
 
 		return result;
 	}
