@@ -7,8 +7,11 @@
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+
+extern "C" {
 #include "portmacro.h"
 #include "task.h"
+}
 
 BinarySemaphore::BinarySemaphore() {
 	xSemaphoreCreateBinary(handle);

@@ -7,8 +7,12 @@
 #define FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <FreeRTOS.h>
+
+extern "C" {
+#include "FreeRTOS.h"
 #include "semphr.h"
+}
+
 
 /**
  * @brief OS Tool to achieve synchronization of between tasks or between task and ISR
