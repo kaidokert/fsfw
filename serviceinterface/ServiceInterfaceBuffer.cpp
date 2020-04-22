@@ -68,10 +68,7 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 }
 #endif
 
-/**
- * TODO: This is architecture specific. Maybe there is a better solution
- * to move this into the Bsp folder..
- */
+
 #ifdef UT699
 #include <framework/osal/rtems/Interrupt.h>
 
