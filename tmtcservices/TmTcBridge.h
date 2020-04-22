@@ -112,7 +112,7 @@ protected:
 	 * @param message
 	 * @return
 	 */
-	ReturnValue_t storeDownlinkData(TmTcMessage * message);
+	virtual ReturnValue_t storeDownlinkData(TmTcMessage * message);
 
 	/**
 	 * Send stored data if communication link is active
@@ -130,7 +130,6 @@ protected:
 private:
 	FIFO<store_address_t, MAX_DOWNLINK_PACKETS_STORED> fifo;
 	uint8_t sentPacketsPerCycle = 10;
-	uint32_t delayBetweenSentPacketsMs = 0;
 };
 
 

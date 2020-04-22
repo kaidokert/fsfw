@@ -8,17 +8,12 @@
 TmTcBridge::TmTcBridge(object_id_t objectId_,
         object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
         ccsdsPacketDistributor(ccsdsPacketDistributor_),
-		sentPacketsPerCycle(5), delayBetweenSentPacketsMs(0)
-{
+		sentPacketsPerCycle(5) {
 	    TmTcReceptionQueue = QueueFactory::instance()->
 			createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
 }
 
 TmTcBridge::~TmTcBridge() {}
-
-void TmTcBridge::setDelayBetweenSentPackets(uint32_t delayBetweenSentPackets) {
-	this->delayBetweenSentPacketsMs = delayBetweenSentPackets;
-}
 
 ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
 		uint8_t sentPacketsPerCycle) {
