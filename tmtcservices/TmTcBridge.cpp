@@ -2,10 +2,8 @@
 
 #include <framework/ipc/QueueFactory.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/osal/FreeRTOS/PeriodicTask.h>
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tasks/PeriodicTaskIF.h>
 
 TmTcBridge::TmTcBridge(object_id_t objectId_,
         object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
