@@ -5,15 +5,17 @@
  *
  */
 #include <framework/osal/FreeRTOS/TaskManagement.h>
-#include <FreeRTOS.h>
+
+extern "C" {
+#include "FreeRTOS.h"
 #include "portmacro.h"
 #include "task.h"
+}
 
 /**
  * TODO: This stuff is hardware and architecture and mission dependant...
- * 	     Some FreeRTOS implementations might be able to determine their own task context for example.
- * 	     If not ISRs are used, or task preemption is enabled, some of this stuff might
- * 	     not be necessary anyway. Maybe there is a better solution?
+ * 	     Maybe there is a better solution? The request ContextSwitch function
+ * 	     could be declared external for example.
  */
 void TaskManagement::requestContextSwitchFromTask() {
 	vTaskDelay(0);
