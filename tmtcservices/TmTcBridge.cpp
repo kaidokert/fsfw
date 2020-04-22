@@ -135,9 +135,9 @@ ReturnValue_t TmTcBridge::sendStoredTm() {
 		uint32_t size = 0;
 		fifo.retrieve(&storeId);
 		result = tmStore->getData(storeId, &data, &size);
-		// This does not work yet: is not static function
-		//PeriodicTaskIF::sleepFor(delayBetweenSentPacketsMs);
+
 		sendTm(data,size);
+
 		if(result != RETURN_OK) {
 			error << "TMTC Bridge: Could not send stored downlink data"
 			      << std::endl;
