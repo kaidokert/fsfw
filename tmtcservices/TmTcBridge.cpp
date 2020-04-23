@@ -6,8 +6,7 @@
 
 TmTcBridge::TmTcBridge(object_id_t objectId_,
         object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
-        ccsdsPacketDistributor(ccsdsPacketDistributor_),
-		sentPacketsPerCycle(5)
+        ccsdsPacketDistributor(ccsdsPacketDistributor_)
 {
     TmTcReceptionQueue = QueueFactory::instance()->
             createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
@@ -17,13 +16,28 @@ TmTcBridge::~TmTcBridge() {}
 
 ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
 		uint8_t sentPacketsPerCycle) {
-	if(sentPacketsPerCycle <= MAX_STORED_DATA_SENT_PER_CYCLE) {
+	if(sentPacketsPerCycle <= LIMIT_STORED_DATA_SENT_PER_CYCLE) {
 		this->sentPacketsPerCycle = sentPacketsPerCycle;
 		return RETURN_OK;
 	}
 	else {
+	    warning << "TmTcBridge: Number of packets sent per cycle "
+	               "exceeds limits" << std::endl;
 		return RETURN_FAILED;
 	}
+}
+
+ReturnValue_t TmTcBridge::setMaxNumberOfPacketsStored(
+        uint8_t maxNumberOfPacketsStored) {
+    if(maxNumberOfPacketsStored <= LIMIT_DOWNLINK_PACKETS_STORED) {
+        this->maxNumberOfPacketsStored = maxNumberOfPacketsStored;
+        return RETURN_OK;
+    }
+    else {
+        warning << "TmTcBridge: Number of packets stored "
+                   "exceeds limits" << std::endl;
+        return RETURN_FAILED;
+    }
 }
 
 ReturnValue_t TmTcBridge::initialize() {
@@ -72,7 +86,7 @@ ReturnValue_t TmTcBridge::handleTm() {
 	}
 
 	if(tmStored && communicationLinkUp) {
-		result = sendStoredTm();
+		result = handleStoredTm();
 	}
 	return result;
 
@@ -124,7 +138,7 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	return RETURN_OK;
 }
 
-ReturnValue_t TmTcBridge::sendStoredTm() {
+ReturnValue_t TmTcBridge::handleStoredTm() {
 	uint8_t counter = 0;
 	ReturnValue_t result = RETURN_OK;
 	while(!fifo.empty() && counter < sentPacketsPerCycle) {
@@ -170,6 +184,8 @@ void TmTcBridge::registerCommDisconnect() {
 MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
 	return TmTcReceptionQueue->getId();
 }
+
+
 
 void TmTcBridge::printData(uint8_t * data, size_t dataLen) {
 	info << "TMTC Bridge: Printing data: [";
