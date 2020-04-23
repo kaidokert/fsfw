@@ -70,7 +70,7 @@ protected:
 
 		} else {
 			memset(this->value, 0, vector_size * sizeof(T));
-			error << "PoolVector: read of DP Variable 0x" << std::hex
+			sif::error << "PoolVector: read of DP Variable 0x" << std::hex
 					<< dataPoolId << std::dec << " failed." << std::endl;
 			this->valid = INVALID;
 			return HasReturnvaluesIF::RETURN_FAILED;

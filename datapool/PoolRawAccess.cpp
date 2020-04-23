@@ -55,17 +55,18 @@ ReturnValue_t PoolRawAccess::handleReadOut(PoolEntryIF* read_out) {
 }
 
 void PoolRawAccess::handleReadError(ReturnValue_t result) {
-	error << "PoolRawAccess: read of DP Variable 0x" << std::hex << dataPoolId
+	sif::error << "PoolRawAccess: read of DP Variable 0x" << std::hex << dataPoolId
 			<< std::dec << " failed, ";
 	if(result == READ_TYPE_TOO_LARGE) {
-		error << "type too large." << std::endl;
+		sif::error << "type too large." << std::endl;
 	}
 	else if(result == READ_INDEX_TOO_LARGE) {
-		error << "index too large." << std::endl;
+		sif::error << "index too large." << std::endl;
 	}
 	else if(result == READ_ENTRY_NON_EXISTENT) {
-		error << "entry does not exist." << std::endl;
+		sif::error << "entry does not exist." << std::endl;
 	}
+
 	valid = INVALID;
 	typeSize = 0;
 	sizeTillEnd = 0;
@@ -170,7 +171,7 @@ ReturnValue_t PoolRawAccess::setEntryFromBigEndian(const uint8_t* buffer,
 #endif
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		error << "PoolRawAccess::setEntryFromBigEndian: Illegal sizes: Internal"
+		sif::error << "PoolRawAccess::setEntryFromBigEndian: Illegal sizes: Internal"
 				<< (uint32_t) typeSize << ", Requested: " << setSize
 				<< std::endl;
 		return INCORRECT_SIZE;

@@ -55,7 +55,7 @@ PoolEntryIF* DataPool::getRawData( uint32_t data_pool_id ) {
 ReturnValue_t DataPool::freeDataPoolLock() {
 	ReturnValue_t status = mutex->unlockMutex();
 	if ( status != RETURN_OK ) {
-		error << "DataPool::DataPool: unlock of mutex failed with error code: " << status << std::endl;
+		sif::error << "DataPool::DataPool: unlock of mutex failed with error code: " << status << std::endl;
 	}
 	return status;
 }
@@ -63,17 +63,17 @@ ReturnValue_t DataPool::freeDataPoolLock() {
 ReturnValue_t DataPool::lockDataPool() {
 	ReturnValue_t status = mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	if ( status != RETURN_OK ) {
-		error << "DataPool::DataPool: lock of mutex failed with error code: " << status << std::endl;
+		sif::error << "DataPool::DataPool: lock of mutex failed with error code: " << status << std::endl;
 	}
 	return status;
 }
 
 void DataPool::print() {
-	debug << "DataPool contains: " << std::endl;
+	sif::debug << "DataPool contains: " << std::endl;
 	std::map<uint32_t, PoolEntryIF*>::iterator	dataPoolIt;
 	dataPoolIt = this->data_pool.begin();
 	while( dataPoolIt != this->data_pool.end() ) {
-		debug << std::hex << dataPoolIt->first << std::dec << " |";
+		sif::debug << std::hex << dataPoolIt->first << std::dec << " |";
 		dataPoolIt->second->print();
 		dataPoolIt++;
 	}

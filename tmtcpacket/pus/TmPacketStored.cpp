@@ -99,7 +99,7 @@ bool TmPacketStored::checkAndSetStore() {
 	if (store == NULL) {
 		store = objectManager->get<StorageManagerIF>(objects::TM_STORE);
 		if (store == NULL) {
-			error << "TmPacketStored::TmPacketStored: TM Store not found!"
+			sif::error << "TmPacketStored::TmPacketStored: TM Store not found!"
 					<< std::endl;
 			return false;
 		}

@@ -17,10 +17,12 @@ ObjectManager::~ObjectManager() {
 ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 	bool insert_return = this->objectList.insert( std::pair< object_id_t, SystemObjectIF* >( id, object ) ).second;
 	if (insert_return == true) {
-//		debug << "ObjectManager::insert: Object " << std::hex << (int)id << std::dec << " inserted." << std::endl;
+	    // sif::debug << "ObjectManager::insert: Object " << std::hex
+	    //            << (int)id << std::dec << " inserted." << std::endl;
 		return this->RETURN_OK;
 	} else {
-		error << "ObjectManager::insert: Object id " << std::hex << (int)id << std::dec << " is already in use!" << std::endl;
+		sif::error << "ObjectManager::insert: Object id " << std::hex
+		           << (int)id << std::dec << " is already in use!" << std::endl;
 		exit(0); //This is very severe and difficult to handle in other places.
 		return this->INSERTION_FAILED;
 	}
@@ -29,10 +31,12 @@ ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 ReturnValue_t ObjectManager::remove( object_id_t id ) {
 	if ( this->getSystemObject(id) != NULL ) {
 		this->objectList.erase( id );
-		debug << "ObjectManager::removeObject: Object " << std::hex << (int)id << std::dec << " removed." << std::endl;
+		sif::debug << "ObjectManager::removeObject: Object " << std::hex
+		           << (int)id << std::dec << " removed." << std::endl;
 		return RETURN_OK;
 	} else {
-		error << "ObjectManager::removeObject: Requested object "<< std::hex << (int)id << std::dec << " not found." << std::endl;
+		sif::error << "ObjectManager::removeObject: Requested object "
+		        << std::hex << (int)id << std::dec << " not found." << std::endl;
 		return NOT_FOUND;
 	}
 }
@@ -63,32 +67,38 @@ void ObjectManager::initialize() {
 		return_value = it->second->initialize();
 		if ( return_value != RETURN_OK ) {
 			object_id_t var = it->first;
-			error << "Object " << std::hex <<  (int) var << " failed to initialize with code 0x" << return_value << std::dec << std::endl;
+			sif::error << "Object " << std::hex <<  (int) var
+			        << " failed to initialize with code 0x" << return_value
+			        << std::dec << std::endl;
 			error_count++;
 		}
 	}
 	if (error_count > 0) {
-		error << "ObjectManager::ObjectManager: Counted " << error_count << " failed initializations." << std::endl;
+		sif::error << "ObjectManager::ObjectManager: Counted " << error_count
+		           << " failed initializations." << std::endl;
 	}
 	//Init was successful. Now check successful interconnections.
 	error_count = 0;
 	for (std::map<object_id_t, SystemObjectIF*>::iterator it = this->objectList.begin(); it != objectList.end(); it++ ) {
 		return_value = it->second->checkObjectConnections();
 		if ( return_value != RETURN_OK ) {
-			error << "Object " << std::hex <<  (int) it->first << " connection check failed with code 0x" << return_value << std::dec << std::endl;
+			sif::error << "Object " << std::hex <<  (int) it->first
+			        << " connection check failed with code 0x" << return_value
+			        << std::dec << std::endl;
 			error_count++;
 		}
 	}
 	if (error_count > 0) {
-		error << "ObjectManager::ObjectManager: Counted " << error_count << " failed connection checks." << std::endl;
+		sif::error << "ObjectManager::ObjectManager: Counted " << error_count
+		           << " failed connection checks." << std::endl;
 	}
 
 }
 
 void ObjectManager::printList() {
 	std::map<object_id_t, SystemObjectIF*>::iterator it;
-	debug << "ObjectManager: Object List contains:" << std::endl;
+	sif::debug << "ObjectManager: Object List contains:" << std::endl;
 	for (it = this->objectList.begin(); it != this->objectList.end(); it++) {
-		debug << std::hex << it->first << " | " << it->second << std::endl;
+		sif::debug << std::hex << it->first << " | " << it->second << std::endl;
 	}
 }

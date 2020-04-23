@@ -26,7 +26,7 @@ protected:
 		} else {
 			value = 0;
 			valid = false;
-			error << "PIDReader: read of PID 0x" << std::hex << parameterId
+			sif::error << "PIDReader: read of PID 0x" << std::hex << parameterId
 					<< std::dec << " failed." << std::endl;
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}

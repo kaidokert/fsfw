@@ -31,7 +31,7 @@ ReturnValue_t DataSet::read() {
 		state = DATA_SET_WAS_READ;
 		freeDataPoolLock();
 	} else {
-		error << "DataSet::read(): Call made in wrong position." << std::endl;
+		sif::error << "DataSet::read(): Call made in wrong position." << std::endl;
 		result = SET_WAS_ALREADY_READ;
 	}
 	return result;
@@ -68,9 +68,9 @@ ReturnValue_t DataSet::commit() {
 			} else if (registeredVariables[count]->getDataPoolId()
 					!= PoolVariableIF::NO_PARAMETER) {
 				if (result != COMMITING_WITHOUT_READING) {
-					error
-							<< "DataSet::commit(): commit-without-read call made with non write-only variable."
-							<< std::endl;
+					sif::error <<
+					        "DataSet::commit(): commit-without-read "
+					        "call made with non write-only variable." << std::endl;
 					result = COMMITING_WITHOUT_READING;
 				}
 			}
@@ -92,7 +92,7 @@ void DataSet::registerVariable(PoolVariableIF* variable) {
 			}
 		}
 	}
-	error
+	sif::error
 			<< "DataSet::registerVariable: failed. Either NULL, or set is full, or call made in wrong position."
 			<< std::endl;
 	return;

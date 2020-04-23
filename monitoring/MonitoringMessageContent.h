@@ -63,7 +63,8 @@ private:
 		if (timeStamper == NULL) {
 			timeStamper = objectManager->get<TimeStamperIF>( timeStamperId );
 			if ( timeStamper == NULL ) {
-				error << "MonitoringReportContent::checkAndSetStamper: Stamper not found!" << std::endl;
+				sif::error << "MonitoringReportContent::checkAndSetStamper: "
+				        "Stamper not found!" << std::endl;
 				return false;
 			}
 		}
