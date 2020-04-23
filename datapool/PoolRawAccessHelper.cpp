@@ -34,7 +34,7 @@ ReturnValue_t PoolRawAccessHelper::serialize(uint8_t **buffer, size_t *size,
 		}
 	}
 	if(remainingParametersSize != 0) {
-		debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
+		sif::debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
 		result = RETURN_FAILED;
 	}
 	return result;
@@ -56,7 +56,7 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer,
 		}
 	}
 	if(remainingParametersSize != 0) {
-		debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
+		sif::debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
 		result = RETURN_FAILED;
 	}
 
@@ -75,7 +75,7 @@ ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(
 	ReturnValue_t result = AutoSerializeAdapter::deSerialize(&currentPoolId,
 			&poolIdBuffer,remainingParameters,true);
 	if(result != RETURN_OK) {
-		debug << std::hex << "Pool Raw Access Helper: Error deSeralizing "
+		sif::debug << std::hex << "Pool Raw Access Helper: Error deSeralizing "
 				"pool IDs" << std::dec << std::endl;
 		return result;
 	}
@@ -96,7 +96,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 	while(not poolEntrySerialized) {
 
 		if(counter > DataSet::DATA_SET_MAX_SIZE) {
-			error << "Pool Raw Access Helper: Config error, "
+			sif::error << "Pool Raw Access Helper: Config error, "
 					 "max. number of possible data set variables exceeded"
 				  << std::endl;
 			return result;
@@ -110,7 +110,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 
 		result = currentDataSet.read();
 		if (result != RETURN_OK) {
-			debug << std::hex << "Pool Raw Access Helper: Error reading raw "
+			sif::debug << std::hex << "Pool Raw Access Helper: Error reading raw "
 					"dataset with returncode 0x"
 				  << result << std::dec << std::endl;
 			return result;
@@ -119,7 +119,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 		result = checkRemainingSize(&currentPoolRawAccess, &poolEntrySerialized,
 				&arrayPosition);
 		if(result != RETURN_OK) {
-			error << "Pool Raw Access Helper: Configuration Error at pool ID "
+			sif::error << "Pool Raw Access Helper: Configuration Error at pool ID "
 				  << std::hex << currentPoolId
 				  << ". Size till end smaller than 0" << std::dec << std::endl;
 			return result;
@@ -136,7 +136,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 		result = currentDataSet.serialize(argStruct.buffer, argStruct.size,
 				argStruct.max_size, argStruct.bigEndian);
 		if (result != RETURN_OK) {
-			debug << "Pool Raw Access Helper: Error serializing pool data with "
+			sif::debug << "Pool Raw Access Helper: Error serializing pool data with "
 					 "ID 0x" << std::hex << currentPoolId << " into send buffer "
 					 "with return code " << result << std::dec << std::endl;
 			return result;
@@ -174,7 +174,7 @@ void PoolRawAccessHelper::handleMaskModification(uint8_t * validityMask) {
 uint8_t PoolRawAccessHelper::bitSetter(uint8_t byte, uint8_t position,
 		bool value) {
 	if(position < 1 or position > 8) {
-		debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
+		sif::debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
 		return byte;
 	}
 	uint8_t shiftNumber = position + (6 - 2 * (position - 1));

@@ -126,7 +126,7 @@ void CommunicationMessage::setDataByte(uint8_t byte, uint8_t position) {
 		memcpy(getData() + 3 * sizeof(uint32_t) + position * sizeof(uint8_t), &byte, sizeof(byte));
 	}
 	else {
-		error << "Comm Message: Invalid byte position" << std::endl;
+		sif::error << "Comm Message: Invalid byte position" << std::endl;
 	}
 }
 
@@ -138,7 +138,7 @@ uint8_t CommunicationMessage::getDataByte(uint8_t position) const {
 	}
 	else {
 		return 0;
-		error << "Comm Message: Invalid byte position" << std::endl;
+		sif::error << "Comm Message: Invalid byte position" << std::endl;
 	}
 }
 
@@ -147,7 +147,7 @@ void CommunicationMessage::setDataUint16(uint16_t data, uint8_t position) {
 		memcpy(getData() + 3 * sizeof(uint32_t) + position * sizeof(uint16_t), &data, sizeof(data));
 	}
 	else {
-		error << "Comm Message: Invalid byte position" << std::endl;
+		sif::error << "Comm Message: Invalid byte position" << std::endl;
 	}
 
 }
@@ -160,7 +160,7 @@ uint16_t CommunicationMessage::getDataUint16(uint8_t position) const{
 	}
 	else {
 		return 0;
-		error << "Comm Message: Invalid byte position" << std::endl;
+		sif::error << "Comm Message: Invalid byte position" << std::endl;
 	}
 }
 
