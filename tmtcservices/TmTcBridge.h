@@ -52,12 +52,12 @@ public:
 	 * Initializes necessary FSFW components for the TMTC Bridge
 	 * @return
 	 */
-	ReturnValue_t initialize() override;
+	virtual ReturnValue_t initialize() override;
 
 	/**
 	 * @brief	Handles TMTC reception
 	 */
-	ReturnValue_t performOperation(uint8_t operationCode = 0) override;
+	virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
 
 	/**
 	 * Return TMTC Reception Queue
