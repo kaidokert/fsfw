@@ -18,6 +18,10 @@ extern "C" {
  * @brief OS Tool to achieve synchronization of between tasks or between task and ISR
  * @details
  * Documentation: https://www.freertos.org/Embedded-RTOS-Binary-Semaphores.html
+ *
+ * SHOULDDO: check freeRTOS version and use new task notifications,
+ * if non-ancient freeRTOS version is used.
+ *
  * @ingroup osal
  */
 class BinarySemaphore: public HasReturnvaluesIF {
@@ -68,8 +72,8 @@ public:
 
 	/**
 	 * Take the binary semaphore.
-	 * If the semaphore has already been taken, the task will be blocked for a maximum
-	 * of #timeoutMs or until the semaphore is given back,
+	 * If the semaphore has already been taken, the task will be blocked
+	 * for a maximum of #timeoutMs or until the semaphore is given back,
 	 * for example by an ISR or another task.
 	 * @param timeoutMs
 	 * @return -@c RETURN_OK on success

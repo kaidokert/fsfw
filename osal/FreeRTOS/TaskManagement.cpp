@@ -5,16 +5,12 @@
  *
  */
 #include <framework/osal/FreeRTOS/TaskManagement.h>
-#include <FreeRTOS.h>
-#include "portmacro.h"
-#include "task.h"
 
-/**
- * TODO: This stuff is hardware and architecture and mission dependant...
- * 	     Some FreeRTOS implementations might be able to determine their own task context for example.
- * 	     If not ISRs are used, or task preemption is enabled, some of this stuff might
- * 	     not be necessary anyway. Maybe there is a better solution?
- */
+extern "C" {
+#include "FreeRTOS.h"
+#include "task.h"
+}
+
 void TaskManagement::requestContextSwitchFromTask() {
 	vTaskDelay(0);
 }
@@ -22,7 +18,7 @@ void TaskManagement::requestContextSwitchFromTask() {
 void TaskManagement::requestContextSwitch(CallContext callContext = CallContext::task) {
 	if(callContext == CallContext::isr) {
 		// This function depends on the partmacro.h definition for the specific device
-		portYIELD_FROM_ISR();
+		requestContextSwitchFromISR();
 	} else {
 		requestContextSwitchFromTask();
 	}

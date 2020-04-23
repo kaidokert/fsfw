@@ -8,16 +8,13 @@
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-extern "C" {
-#include "portmacro.h"
-#include "task.h"
-}
-
 BinarySemaphore::BinarySemaphore() {
-	xSemaphoreCreateBinary(handle);
+	handle = xSemaphoreCreateBinary();
 	if(handle == nullptr) {
+
 		error << "Binary semaphore creation failure" << std::endl;
 	}
+	xSemaphoreGive(handle);
 }
 
 BinarySemaphore::~BinarySemaphore() {
@@ -27,36 +24,40 @@ BinarySemaphore::~BinarySemaphore() {
 // This copy ctor is important as it prevents the assignment to a ressource
 // (other.handle) variable which is later deleted!
 BinarySemaphore::BinarySemaphore(const BinarySemaphore& other) {
-    xSemaphoreCreateBinary(handle);
+    handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
         error << "Binary semaphore creation failure" << std::endl;
     }
+    xSemaphoreGive(handle);
 }
 
 BinarySemaphore& BinarySemaphore::operator =(const BinarySemaphore& s) {
     if(this != &s) {
-        xSemaphoreCreateBinary(handle);
+        handle = xSemaphoreCreateBinary();
         if(handle == nullptr) {
             error << "Binary semaphore creation failure" << std::endl;
         }
+        xSemaphoreGive(handle);
     }
     return *this;
 }
 
 BinarySemaphore::BinarySemaphore(BinarySemaphore&& s) {
-    xSemaphoreCreateBinary(handle);
+    handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
         error << "Binary semaphore creation failure" << std::endl;
     }
+    xSemaphoreGive(handle);
 }
 
 BinarySemaphore& BinarySemaphore::operator =(
         BinarySemaphore&& s) {
     if(&s != this) {
-        xSemaphoreCreateBinary(handle);
+        handle = xSemaphoreCreateBinary();
         if(handle == nullptr) {
             error << "Binary semaphore creation failure" << std::endl;
         }
+        xSemaphoreGive(handle);
     }
     return *this;
 }
@@ -127,7 +128,8 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 void BinarySemaphore::resetSemaphore() {
 	if(handle != nullptr) {
 		vSemaphoreDelete(handle);
-		xSemaphoreCreateBinary(handle);
+		handle = xSemaphoreCreateBinary();
+		xSemaphoreGive(handle);
 	}
 }
 
