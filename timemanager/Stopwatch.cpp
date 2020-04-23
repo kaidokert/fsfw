@@ -9,8 +9,8 @@
 #include <iomanip>
 
 Stopwatch::Stopwatch(bool displayOnDestruction,
-        StopwatchDisplayMode displayMode): displayMode(displayMode),
-        displayOnDestruction(displayOnDestruction) {
+        StopwatchDisplayMode displayMode): displayOnDestruction(
+        displayOnDestruction), displayMode(displayMode) {
     // Measures start time on initialization.
     startTime = Clock::getUptime();
 }
