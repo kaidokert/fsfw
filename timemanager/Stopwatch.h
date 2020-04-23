@@ -56,12 +56,13 @@ public:
 
     StopwatchDisplayMode getDisplayMode() const;
     void setDisplayMode(StopwatchDisplayMode displayMode);
+    bool displayOnDestruction = true;
 private:
     timeval startTime {0, 0};
     timeval elapsedTime {0, 0};
 
     StopwatchDisplayMode displayMode = StopwatchDisplayMode::MILLIS;
-    bool displayOnDestruction = true;
+
     void stopInternal();
 };
 

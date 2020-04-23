@@ -59,6 +59,26 @@ public:
 			return HasReturnvaluesIF::RETURN_OK;
 		}
 	}
+
+	ReturnValue_t peek(T * value) {
+	    if(empty()) {
+	        return EMPTY;
+	    } else {
+	       *value = data[readIndex];
+	       return HasReturnvaluesIF::RETURN_OK;
+	    }
+	}
+
+	ReturnValue_t pop() {
+	    if(empty()) {
+	        return EMPTY;
+	    } else {
+	        readIndex = next(readIndex);
+	        --currentSize;
+	        return HasReturnvaluesIF::RETURN_OK;
+	    }
+	}
+
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIFO_CLASS;
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t EMPTY = MAKE_RETURN_CODE(2);
