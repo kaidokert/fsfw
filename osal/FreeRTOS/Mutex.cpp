@@ -7,7 +7,7 @@ const uint32_t MutexIF::NO_TIMEOUT = 0;
 Mutex::Mutex() {
 	handle = xSemaphoreCreateMutex();
 	if(handle == NULL) {
-		error << "Mutex creation failure" << std::endl;
+		sif::error << "Mutex creation failure" << std::endl;
 	}
 }
 
