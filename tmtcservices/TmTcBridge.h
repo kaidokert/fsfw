@@ -108,7 +108,7 @@ protected:
 	 * Read the TM Queue and send TM if necessary. Default implementation provided
 	 * @return
 	 */
-	virtual ReturnValue_t readTmQueue();
+	virtual ReturnValue_t handleTmQueue();
 
 	/**
 	 * Send stored data if communication link is active

@@ -80,7 +80,7 @@ ReturnValue_t TmTcBridge::handleTc() {
 }
 
 ReturnValue_t TmTcBridge::handleTm() {
-	ReturnValue_t result = readTmQueue();
+	ReturnValue_t result = handleTmQueue();
 	if(result != RETURN_OK) {
 		error << "TMTC Bridge: Reading TM Queue failed" << std::endl;
 		return RETURN_FAILED;
@@ -93,7 +93,7 @@ ReturnValue_t TmTcBridge::handleTm() {
 
 }
 
-ReturnValue_t TmTcBridge::readTmQueue() {
+ReturnValue_t TmTcBridge::handleTmQueue() {
 	TmTcMessage message;
 	const uint8_t* data = nullptr;
 	uint32_t size = 0;
