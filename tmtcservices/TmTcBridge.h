@@ -16,8 +16,11 @@ class TmTcBridge : public AcceptsTelemetryIF,
 		public SystemObject {
 public:
 	static constexpr uint8_t TMTC_RECEPTION_QUEUE_DEPTH = 20;
-	static constexpr uint8_t MAX_STORED_DATA_SENT_PER_CYCLE = 10;
-	static constexpr uint8_t MAX_DOWNLINK_PACKETS_STORED = 15;
+	static constexpr uint8_t LIMIT_STORED_DATA_SENT_PER_CYCLE = 15;
+	static constexpr uint8_t LIMIT_DOWNLINK_PACKETS_STORED = 20;
+
+	static constexpr uint8_t DEFAULT_STORED_DATA_SENT_PER_CYCLE = 5;
+	static constexpr uint8_t DEFAULT_DOWNLINK_PACKETS_STORED = 10;
 
 	TmTcBridge(object_id_t objectId_, object_id_t ccsdsPacketDistributor_);
 	virtual ~TmTcBridge();
@@ -32,6 +35,15 @@ public:
 	 * 		   -@c RETURN_FAILED otherwise, stored value stays the same
 	 */
 	ReturnValue_t setNumberOfSentPacketsPerCycle(uint8_t sentPacketsPerCycle);
+
+	/**
+	 * Set number of packets sent per performOperation().Please note that this
+	 * value must be smaller than MAX_DOWNLINK_PACKETS_STORED
+	 * @param sentPacketsPerCycle
+	 * @return -@c RETURN_OK if value was set successfully
+	 *         -@c RETURN_FAILED otherwise, stored value stays the same
+	 */
+	ReturnValue_t setMaxNumberOfPacketsStored(uint8_t maxNumberOfPacketsStored);
 
 	void registerCommConnect();
 	void registerCommDisconnect();
@@ -99,6 +111,12 @@ protected:
 	virtual ReturnValue_t readTmQueue();
 
 	/**
+	 * Send stored data if communication link is active
+	 * @return
+	 */
+	virtual ReturnValue_t handleStoredTm();
+
+	/**
 	 * Implemented by child class. Perform sending of Telemetry by implementing
 	 * communication drivers or wrappers, e.g. UART communication or lwIP stack.
 	 * @param data
@@ -114,11 +132,6 @@ protected:
 	 */
 	virtual ReturnValue_t storeDownlinkData(TmTcMessage * message);
 
-	/**
-	 * Send stored data if communication link is active
-	 * @return
-	 */
-	ReturnValue_t sendStoredTm();
 
 	/**
 	 * Print data as hexidecimal array
@@ -128,8 +141,9 @@ protected:
 	void printData(uint8_t * data, size_t dataLen);
 
 private:
-	FIFO<store_address_t, MAX_DOWNLINK_PACKETS_STORED> fifo;
-	uint8_t sentPacketsPerCycle = 10;
+	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> fifo;
+	uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
+	uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
 };
 
 
