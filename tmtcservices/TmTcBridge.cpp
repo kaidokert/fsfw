@@ -170,13 +170,13 @@ ReturnValue_t TmTcBridge::handleStoredTm() {
 
 void TmTcBridge::registerCommConnect() {
 	if(!communicationLinkUp) {
-		info << "TMTC Bridge: Registered Comm Link Connect" << std::endl;
+		//info << "TMTC Bridge: Registered Comm Link Connect" << std::endl;
 		communicationLinkUp = true;
 	}
 }
 
 void TmTcBridge::registerCommDisconnect() {
-	info << "TMTC Bridge: Registered Comm Link Disconnect" << std::endl;
+	//info << "TMTC Bridge: Registered Comm Link Disconnect" << std::endl;
 	if(communicationLinkUp) {
 		communicationLinkUp = false;
 	}
