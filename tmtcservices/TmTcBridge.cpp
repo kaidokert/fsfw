@@ -22,7 +22,7 @@ ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
 	}
 	else {
 	    warning << "TmTcBridge: Number of packets sent per cycle "
-	               "exceeds limits" << std::endl;
+	               "exceeds limits. Keeping default value." << std::endl;
 		return RETURN_FAILED;
 	}
 }
@@ -35,7 +35,7 @@ ReturnValue_t TmTcBridge::setMaxNumberOfPacketsStored(
     }
     else {
         warning << "TmTcBridge: Number of packets stored "
-                   "exceeds limits" << std::endl;
+                   "exceeds limits. Keeping default value." << std::endl;
         return RETURN_FAILED;
     }
 }
@@ -141,7 +141,7 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 ReturnValue_t TmTcBridge::handleStoredTm() {
 	uint8_t counter = 0;
 	ReturnValue_t result = RETURN_OK;
-	while(!fifo.empty() && counter < sentPacketsPerCycle) {
+	while(not fifo.empty() && counter < sentPacketsPerCycle) {
 		//info << "TMTC Bridge: Sending stored TM data. There are "
 		//     << (int) fifo.size() << " left to send\r\n" << std::flush;
 		store_address_t storeId;
@@ -168,7 +168,7 @@ ReturnValue_t TmTcBridge::handleStoredTm() {
 }
 
 void TmTcBridge::registerCommConnect() {
-	if(!communicationLinkUp) {
+	if(not communicationLinkUp) {
 		//info << "TMTC Bridge: Registered Comm Link Connect" << std::endl;
 		communicationLinkUp = true;
 	}
@@ -189,7 +189,7 @@ MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
 
 void TmTcBridge::printData(uint8_t * data, size_t dataLen) {
 	info << "TMTC Bridge: Printing data: [";
-	for(uint32_t i=0;i<dataLen;i++) {
+	for(uint32_t i = 0; i < dataLen; i++) {
 		info << std::hex << (int)data[i];
 		if(i < dataLen-1){
 			info << " , ";
