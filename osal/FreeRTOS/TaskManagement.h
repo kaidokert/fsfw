@@ -7,6 +7,12 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 #define FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 
+/**
+ * Architecture dependant portmacro.h function call.
+ * Should be implemented in bsp.
+ */
+extern "C" void requestContextSwitchFromISR();
+
 /*!
  * Used by functions to tell if they are being called from
  * within an ISR or from a regular task. This is required because FreeRTOS
@@ -17,6 +23,7 @@ enum CallContext {
 	task = 0x00,//!< task_context
 	isr = 0xFF  //!< isr_context
 };
+
 
 class TaskManagement {
 public:
