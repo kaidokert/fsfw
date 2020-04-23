@@ -126,14 +126,14 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	//		 "Saving packet ID to be sent later\r\n" << std::flush;
 	store_address_t storeId = 0;
 
-	if(fifo.full()) {
+	if(tmFifo.full()) {
 		error << "TMTC Bridge: TM downlink max. number of stored packet IDs "
 				 "reached! Overwriting old data" << std::endl;
-		fifo.retrieve(&storeId);
+		tmFifo.retrieve(&storeId);
 		tmStore->deleteData(storeId);
 	}
 	storeId = message->getStorageId();
-	fifo.insert(storeId);
+	tmFifo.insert(storeId);
 	tmStored = true;
 	return RETURN_OK;
 }
@@ -141,13 +141,13 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 ReturnValue_t TmTcBridge::handleStoredTm() {
 	uint8_t counter = 0;
 	ReturnValue_t result = RETURN_OK;
-	while(not fifo.empty() && counter < sentPacketsPerCycle) {
+	while(not tmFifo.empty() && counter < sentPacketsPerCycle) {
 		//info << "TMTC Bridge: Sending stored TM data. There are "
 		//     << (int) fifo.size() << " left to send\r\n" << std::flush;
 		store_address_t storeId;
 		const uint8_t* data = NULL;
 		size_t size = 0;
-		fifo.retrieve(&storeId);
+		tmFifo.retrieve(&storeId);
 		result = tmStore->getData(storeId, &data, &size);
 
 		sendTm(data,size);
@@ -159,7 +159,7 @@ ReturnValue_t TmTcBridge::handleStoredTm() {
 		}
 		counter ++;
 
-		if(fifo.empty()) {
+		if(tmFifo.empty()) {
 			tmStored = false;
 		}
 		tmStore->deleteData(storeId);

@@ -138,10 +138,13 @@ protected:
 	 */
 	void printData(uint8_t * data, size_t dataLen);
 
-private:
-	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> fifo;
-	uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
-	uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
+	/**
+	 * This fifo can be used to store downlink data
+	 * which can not be sent at the moment.
+	 */
+	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> tmFifo;
+    uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
+    uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
 };
 
 
