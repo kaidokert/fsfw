@@ -33,14 +33,14 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
 	}
 
 	originalTask->taskFunctionality();
-	debug << "Polling task " << originalTask->handle
+	sif::debug << "Polling task " << originalTask->handle
 			<< " returned from taskFunctionality." << std::endl;
 }
 
 void FixedTimeslotTask::missedDeadlineCounter() {
 	FixedTimeslotTask::deadlineMissedCount++;
 	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-		error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
+		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
 				<< " deadlines." << std::endl;
 	}
 }

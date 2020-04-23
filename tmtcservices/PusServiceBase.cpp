@@ -48,7 +48,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 			break;
 		} else {
 
-			error << "PusServiceBase::performOperation: Service "
+			sif::error << "PusServiceBase::performOperation: Service "
 					<< (uint16_t) this->serviceId
 					<< ": Error receiving packet. Code: " << std::hex << status
 					<< std::dec << std::endl;
@@ -59,7 +59,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 		return RETURN_OK;
 	} else {
 
-		error << "PusService " << (uint16_t) this->serviceId
+		sif::error << "PusService " << (uint16_t) this->serviceId
 				<< ": performService returned with " << (int16_t) return_code
 				<< std::endl;
 		return RETURN_FAILED;
@@ -89,7 +89,7 @@ ReturnValue_t PusServiceBase::initialize() {
 		distributor->registerService(this);
 		return RETURN_OK;
 	} else {
-		error << "PusServiceBase::PusServiceBase: Service "
+		sif::error << "PusServiceBase::PusServiceBase: Service "
 				<< (uint32_t) this->serviceId << ": Configuration error."
 				<< " Make sure packetSource and packetDestination are defined correctly" << std::endl;
 		return RETURN_FAILED;

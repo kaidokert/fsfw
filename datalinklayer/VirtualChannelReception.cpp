@@ -102,7 +102,7 @@ uint8_t VirtualChannelReception::getChannelId() const {
 ReturnValue_t VirtualChannelReception::initialize() {
 	ReturnValue_t returnValue = RETURN_FAILED;
 	if ((slidingWindowWidth > 254) || (slidingWindowWidth % 2 != 0)) {
-		error << "VirtualChannelReception::initialize: Illegal sliding window width: "
+		sif::error << "VirtualChannelReception::initialize: Illegal sliding window width: "
 				<< (int) slidingWindowWidth << std::endl;
 		return RETURN_FAILED;
 	}

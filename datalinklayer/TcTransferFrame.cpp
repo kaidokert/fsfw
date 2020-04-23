@@ -87,11 +87,11 @@ uint8_t* TcTransferFrame::getFullDataField() {
 }
 
 void TcTransferFrame::print() {
-	debug << "Raw Frame: " << std::hex << std::endl;
+	sif::debug << "Raw Frame: " << std::hex << std::endl;
 	for (uint16_t count = 0; count < this->getFullSize(); count++ ) {
-		debug << (uint16_t)this->getFullFrame()[count] << " ";
+		sif::debug << (uint16_t)this->getFullFrame()[count] << " ";
 	}
-	debug << std::dec << std::endl;
+	sif::debug << std::dec << std::endl;
 //	debug << "Frame Header:" << std::endl;
 //	debug << "Version Number: " << std::hex << (uint16_t)this->current_frame.getVersionNumber() << std::endl;
 //	debug << "Bypass Flag set?| Ctrl Cmd Flag set?: " << (uint16_t)this->current_frame.bypassFlagSet() << " | " << (uint16_t)this->current_frame.controlCommandFlagSet()  << std::endl;
