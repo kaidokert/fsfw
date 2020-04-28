@@ -29,7 +29,7 @@ public:
 	 *
 	 * The parameters a,b and c are used in the calculateOutputTemperature() call.
 	 *
-	 * The lower and upper limits can be specified in any type, for example float for C° values
+	 * The lower and upper limits can be specified in any type, for example float for C values
 	 * or any other type for raw values.
 	 */
 	struct Parameters {
@@ -151,7 +151,7 @@ protected:
 			}
 		}
 
-		//Check is done against raw limits. SHOULDDO: Why? Using °C would be more easy to handle.
+		//Check is done against raw limits. SHOULDDO: Why? Using ï¿½C would be more easy to handle.
 		sensorMonitor.doCheck(outputTemperature.value);
 
 		if (sensorMonitor.isOutOfLimits()) {
