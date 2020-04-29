@@ -43,7 +43,8 @@ uint32_t FixedTimeslotTask::getPeriodMs() const {
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
 	if (!objectManager->get<ExecutableObjectIF>(componentId)) {
-		error << "Component " << std::hex << componentId << " not found, not adding it to pst" << std::endl;
+		sif::error << "Component " << std::hex << componentId
+				   << " not found, not adding it to pst" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -87,7 +88,7 @@ void FixedTimeslotTask::taskFunctionality() {
 void FixedTimeslotTask::missedDeadlineCounter() {
 	FixedTimeslotTask::deadlineMissedCount++;
 	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-		error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
-				<< " deadlines." << std::endl;
+		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
+				   << " deadlines." << std::endl;
 	}
 }
