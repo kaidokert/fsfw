@@ -22,7 +22,8 @@ ReturnValue_t PosixThread::sleep(uint64_t ns) {
 			//The nanosleep() function was interrupted by a signal.
 			return HasReturnvaluesIF::RETURN_FAILED;
 		case EINVAL:
-			//The rqtp argument specified a nanosecond value less than zero or greater than or equal to 1000 million.
+			//The rqtp argument specified a nanosecond value less than zero or
+			// greater than or equal to 1000 million.
 			return HasReturnvaluesIF::RETURN_FAILED;
 		default:
 			return HasReturnvaluesIF::RETURN_FAILED;
@@ -40,8 +41,8 @@ void PosixThread::suspend() {
 	sigaddset(&waitSignal, SIGUSR1);
 	sigwait(&waitSignal, &caughtSig);
 	if (caughtSig != SIGUSR1) {
-		error << "FixedTimeslotTask: Unknown Signal received: " << caughtSig
-				<< std::endl;
+		sif::error << "FixedTimeslotTask: Unknown Signal received: " <<
+				caughtSig << std::endl;
 	}
 }
 
@@ -112,14 +113,15 @@ uint64_t PosixThread::getCurrentMonotonicTimeMs(){
 	return currentTime_ms;
 }
 
-PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):thread(0),priority(priority_),stackSize(stackSize_) {
+PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
+		thread(0),priority(priority_),stackSize(stackSize_) {
 	strcpy(name,name_);
 }
 
 
 
 void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
-	debug << "PosixThread::createTask" << std::endl;
+	//sif::debug << "PosixThread::createTask" << std::endl;
 	/*
 	 * The attr argument points to a pthread_attr_t structure whose contents
        are used at thread creation time to determine attributes for the new
@@ -130,35 +132,41 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	pthread_attr_t attributes;
 	int status = pthread_attr_init(&attributes);
 	if(status != 0){
-			error << "Posix Thread attribute init failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread attribute init failed with: " <<
+				strerror(status) << std::endl;
 	}
 	void* sp;
 	status = posix_memalign(&sp, sysconf(_SC_PAGESIZE), stackSize);
 	if(status != 0){
-			error << "Posix Thread stack init failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread stack init failed with: " <<
+				strerror(status) << std::endl;
 	}
 
 	status = pthread_attr_setstack(&attributes, sp, stackSize);
 	if(status != 0){
-			error << "Posix Thread attribute setStack failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread attribute setStack failed with: " <<
+				strerror(status) << std::endl;
 	}
 
 	status = pthread_attr_setinheritsched(&attributes, PTHREAD_EXPLICIT_SCHED);
 	if(status != 0){
-			error << "Posix Thread attribute setinheritsched failed with: " << strerror(status) << std::endl;
+			sif::error << "Posix Thread attribute setinheritsched failed with: " <<
+					strerror(status) << std::endl;
 	}
 
 //TODO FIFO -> This needs root privileges for the process
 	status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
 	if(status != 0){
-		error << "Posix Thread attribute schedule policy failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread attribute schedule policy failed with: " <<
+				strerror(status) << std::endl;
 	}
 
 	sched_param scheduleParams;
 	scheduleParams.__sched_priority = priority;
 	status = pthread_attr_setschedparam(&attributes, &scheduleParams);
 	if(status != 0){
-			error << "Posix Thread attribute schedule params failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread attribute schedule params failed with: " <<
+				strerror(status) << std::endl;
 	}
 
 	//Set Signal Mask for suspend until startTask is called
@@ -167,22 +175,26 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	sigaddset(&waitSignal, SIGUSR1);
 	status = pthread_sigmask(SIG_BLOCK, &waitSignal, NULL);
 	if(status != 0){
-			error << "Posix Thread sigmask failed failed with: " << strerror(status) << " errno: " << strerror(errno) << std::endl;
+		sif::error << "Posix Thread sigmask failed failed with: " <<
+				strerror(status) << " errno: " << strerror(errno) << std::endl;
 	}
 
 
 	status = pthread_create(&thread,&attributes,fnc_,arg_);
 	if(status != 0){
-		error << "Posix Thread create failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread create failed with: " <<
+				strerror(status) << std::endl;
 	}
 
 	status = pthread_setname_np(thread,name);
 	if(status != 0){
-		error << "Posix Thread setname failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread setname failed with: " <<
+				strerror(status) << std::endl;
 	}
 
 	status = pthread_attr_destroy(&attributes);
 	if(status!=0){
-		error << "Posix Thread attribute destroy failed with: " << strerror(status) << std::endl;
+		sif::error << "Posix Thread attribute destroy failed with: " <<
+				strerror(status) << std::endl;
 	}
 }

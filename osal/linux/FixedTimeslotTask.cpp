@@ -9,7 +9,9 @@
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = PTHREAD_STACK_MIN;
 
-FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, uint32_t periodMs_):PosixThread(name_,priority_,stackSize_),pst(periodMs_),started(false) {
+FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_,
+		size_t stackSize_, uint32_t periodMs_):
+		PosixThread(name_,priority_,stackSize_),pst(periodMs_),started(false) {
 }
 
 FixedTimeslotTask::~FixedTimeslotTask() {
@@ -40,6 +42,12 @@ uint32_t FixedTimeslotTask::getPeriodMs() const {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
+	if (!objectManager->get<ExecutableObjectIF>(componentId)) {
+		sif::error << "Component " << std::hex << componentId
+				   << " not found, not adding it to pst" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	pst.addSlot(componentId, slotTimeMs, executionStep, this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -80,7 +88,7 @@ void FixedTimeslotTask::taskFunctionality() {
 void FixedTimeslotTask::missedDeadlineCounter() {
 	FixedTimeslotTask::deadlineMissedCount++;
 	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-		error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
-				<< " deadlines." << std::endl;
+		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
+				   << " deadlines." << std::endl;
 	}
 }
