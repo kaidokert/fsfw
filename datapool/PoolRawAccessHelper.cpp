@@ -73,7 +73,7 @@ ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(
 	uint32_t currentPoolId;
 	// Deserialize current pool ID from pool ID buffer
 	ReturnValue_t result = AutoSerializeAdapter::deSerialize(&currentPoolId,
-			&poolIdBuffer,remainingParameters,true);
+			&poolIdBuffer,remainingParameters, false);
 	if(result != RETURN_OK) {
 		sif::debug << std::hex << "Pool Raw Access Helper: Error deSeralizing "
 				"pool IDs" << std::dec << std::endl;
