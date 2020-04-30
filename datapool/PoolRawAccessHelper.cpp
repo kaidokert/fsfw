@@ -34,7 +34,8 @@ ReturnValue_t PoolRawAccessHelper::serialize(uint8_t **buffer, size_t *size,
 		}
 	}
 	if(remainingParametersSize != 0) {
-		sif::debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
+		sif::debug << "PoolRawAccessHelper: "
+				"Remaining parameters size not 0 !" << std::endl;
 		result = RETURN_FAILED;
 	}
 	return result;
@@ -56,7 +57,8 @@ ReturnValue_t PoolRawAccessHelper::serializeWithValidityMask(uint8_t ** buffer,
 		}
 	}
 	if(remainingParametersSize != 0) {
-		sif::debug << "Pool Raw Access: Remaining parameters size not 0 !" << std::endl;
+		sif::debug << "PoolRawAccessHelper: Remaining "
+				"parameters size not 0 !" << std::endl;
 		result = RETURN_FAILED;
 	}
 
@@ -75,7 +77,7 @@ ReturnValue_t PoolRawAccessHelper::serializeCurrentPoolEntryIntoBuffer(
 	ReturnValue_t result = AutoSerializeAdapter::deSerialize(&currentPoolId,
 			&poolIdBuffer,remainingParameters, false);
 	if(result != RETURN_OK) {
-		sif::debug << std::hex << "Pool Raw Access Helper: Error deSeralizing "
+		sif::debug << std::hex << "PoolRawAccessHelper: Error deSeralizing "
 				"pool IDs" << std::dec << std::endl;
 		return result;
 	}
@@ -96,7 +98,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 	while(not poolEntrySerialized) {
 
 		if(counter > DataSet::DATA_SET_MAX_SIZE) {
-			sif::error << "Pool Raw Access Helper: Config error, "
+			sif::error << "PoolRawAccessHelper: Config error, "
 					 "max. number of possible data set variables exceeded"
 				  << std::endl;
 			return result;
@@ -110,9 +112,8 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 
 		result = currentDataSet.read();
 		if (result != RETURN_OK) {
-			sif::debug << std::hex << "Pool Raw Access Helper: Error reading raw "
-					"dataset with returncode 0x"
-				  << result << std::dec << std::endl;
+			sif::debug << std::hex << "PoolRawAccessHelper: Error reading raw "
+					"dataset with returncode 0x" << result << std::dec << std::endl;
 			return result;
 		}
 

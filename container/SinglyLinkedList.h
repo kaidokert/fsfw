@@ -62,7 +62,7 @@ public:
 	}
 
 	void setEnd() {
-		this->next = NULL;
+		this->next = nullptr;
 	}
 
 	LinkedElement* begin() {
