@@ -44,10 +44,6 @@ ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
 	}
 }
 
-ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
-	vTaskDelay(pdMS_TO_TICKS(delayMs));
-	return HasReturnvaluesIF::RETURN_OK;
-}
 
 TaskFactory::TaskFactory() {
 }

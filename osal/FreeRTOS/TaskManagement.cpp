@@ -1,10 +1,5 @@
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 
-extern "C" {
-#include "FreeRTOS.h"
-#include "task.h"
-}
-
 void TaskManagement::requestContextSwitchFromTask() {
 	vTaskDelay(0);
 }
@@ -18,5 +13,16 @@ void TaskManagement::requestContextSwitch(CallContext callContext = CallContext:
 	}
 }
 
+TaskHandle_t TaskManagement::getCurrentTaskHandle() {
+	return xTaskGetCurrentTaskHandle();
+}
 
+configSTACK_DEPTH_TYPE TaskManagement::getTaskStackHighWatermark() {
+	return uxTaskGetStackHighWaterMark(TaskManagement::getCurrentTaskHandle());
+}
+
+ReturnValue_t TaskManagement::delayTask(uint32_t delayMs) {
+	vTaskDelay(pdMS_TO_TICKS(delayMs));
+	return HasReturnvaluesIF::RETURN_OK;
+}
 

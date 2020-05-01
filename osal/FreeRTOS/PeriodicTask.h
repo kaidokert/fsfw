@@ -13,11 +13,9 @@
 class ExecutableObjectIF;
 
 /**
- * @brief This class represents a specialized task for periodic activities of multiple objects.
- *
- * @details MultiObjectTask is an extension to ObjectTask in the way that it is able to execute
- * 			multiple objects that implement the ExecutableObjectIF interface. The objects must be
- * 			added prior to starting the task.
+ * @brief 	This class represents a specialized task for
+ * 			periodic activities of multiple objects.
+ * @details
  *
  * @ingroup task_handling
  */
@@ -25,21 +23,22 @@ class PeriodicTask: public PeriodicTaskIF {
 public:
 	/**
 	 * @brief	Standard constructor of the class.
-	 * @details	The class is initialized without allocated objects. These need to be added
-	 * 			with #addObject.
-	 * 			In the underlying TaskBase class, a new operating system task is created.
-	 * 			In addition to the TaskBase parameters, the period, the pointer to the
-	 * 			aforementioned initialization function and an optional "deadline-missed"
-	 * 			function pointer is passed.
-	 * @param priority		Sets the priority of a task. Values range from a low 0 to a high 99.
+	 * @details
+	 * The class is initialized without allocated objects. These need to be added
+	 * with #addComponent. In the underlying TaskBase class, a new operating
+	 * system task is created. In addition to the TaskBase parameters,
+	 * the period, the pointer to the aforementioned initialization function and
+	 * an optional "deadline-missed" function pointer is passed.
+	 * @param priority		Sets the priority of a task. Values depend on
+	 * freeRTOS configuration, high number means high priority.
 	 * @param stack_size	The stack size reserved by the operating system for the task.
-	 * @param setPeriod 	The length of the period with which the task's functionality will be
-	 * 						executed. It is expressed in clock ticks.
-	 * @param setDeadlineMissedFunc	The function pointer to the deadline missed function
-	 * 								that shall be assigned.
+	 * @param setPeriod The length of the period with which the task's
+	 * functionality will be executed. It is expressed in clock ticks.
+	 * @param setDeadlineMissedFunc
+	 * The function pointer to the deadline missed function that shall be assigned.
 	 */
-	PeriodicTask(const char *name, TaskPriority setPriority, TaskStackSize setStack, TaskPeriod setPeriod,
-			void (*setDeadlineMissedFunc)());
+	PeriodicTask(const char *name, TaskPriority setPriority, TaskStackSize setStack,
+			TaskPeriod setPeriod,void (*setDeadlineMissedFunc)());
 	/**
 	 * @brief	Currently, the executed object's lifetime is not coupled with the task object's
 	 * 			lifetime, so the destructor is empty.
