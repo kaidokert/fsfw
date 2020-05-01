@@ -1,12 +1,7 @@
-/**
- * @file TaskManagement.h
- *
- * @date 26.02.2020
- */
-
 #ifndef FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 #define FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 
+// maybe this can be part of the TaskFactory.cpp
 /**
  * Architecture dependant portmacro.h function call.
  * Should be implemented in bsp.

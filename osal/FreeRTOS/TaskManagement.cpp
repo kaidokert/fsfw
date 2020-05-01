@@ -1,9 +1,3 @@
-/**
- * @file TaskManagement.cpp
- *
- * @date 26.02.2020
- *
- */
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 
 extern "C" {

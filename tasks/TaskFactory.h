@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TASKS_TASKFACTORY_H_
 #define FRAMEWORK_TASKS_TASKFACTORY_H_
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <framework/tasks/FixedTimeslotTaskIF.h>
 #include <framework/tasks/Typedef.h>
 
@@ -19,13 +19,16 @@ public:
 	static TaskFactory* instance();
 
 	/**
-	 * Creates a new periodic task and returns the interface pointer.
-	 * @param name_ Name of the task
-	 * @param taskPriority_ Priority of the task
-	 * @param stackSize_ Stack Size of the task
-	 * @param period_ Period of the task
-	 * @param deadLineMissedFunction_ Function to be called if a deadline was missed
-	 * @return PeriodicTaskIF* Pointer to the newly created Task
+	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
+	 * A lot of task parameters are set in "FreeRTOSConfig.h".
+	 * @param name_ Name of the task, lenght limited by configMAX_TASK_NAME_LEN
+	 * @param taskPriority_ Number of priorities specified by
+	 * configMAX_PRIORITIES. High taskPriority_ number means high priority.
+	 * @param stackSize_ 	Stack size in words (not bytes!).
+	 * Lower limit specified by configMINIMAL_STACK_SIZE
+	 * @param period_		Period in seconds.
+	 * @param deadLineMissedFunction_ Callback if a deadline was missed.
+	 * @return Pointer to the newly created task.
 	 */
 	PeriodicTaskIF* createPeriodicTask(TaskName name_,
 			TaskPriority taskPriority_, TaskStackSize stackSize_,
@@ -33,13 +36,16 @@ public:
 			TaskDeadlineMissedFunction deadLineMissedFunction_);
 
 	/**
-	 *
-	 * @param name_ Name of the task
-	 * @param taskPriority_ Priority of the task
-	 * @param stackSize_ Stack Size of the task
-	 * @param period_ Period of the task
-	 * @param deadLineMissedFunction_ Function to be called if a deadline was missed
-	 * @return FixedTimeslotTaskIF* Pointer to the newly created Task
+	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
+	 * A lot of task parameters are set in "FreeRTOSConfig.h".
+	 * @param name_ Name of the task, lenght limited by configMAX_TASK_NAME_LEN
+	 * @param taskPriority_ Number of priorities specified by
+	 * configMAX_PRIORITIES. High taskPriority_ number means high priority.
+	 * @param stackSize_ 	Stack size in words (not bytes!).
+	 * Lower limit specified by configMINIMAL_STACK_SIZE
+	 * @param period_		Period in seconds.
+	 * @param deadLineMissedFunction_ Callback if a deadline was missed.
+	 * @return Pointer to the newly created task.
 	 */
 	FixedTimeslotTaskIF* createFixedTimeslotTask(TaskName name_,
 			TaskPriority taskPriority_, TaskStackSize stackSize_,
@@ -48,7 +54,8 @@ public:
 
 	/**
 	 * Function to be called to delete a task
-	 * @param task The pointer to the task that shall be deleted, NULL specifies current Task
+	 * @param task The pointer to the task that shall be deleted,
+	 * 				NULL specifies current Task
 	 * @return Success of deletion
 	 */
 	static ReturnValue_t deleteTask(PeriodicTaskIF* task = NULL);
