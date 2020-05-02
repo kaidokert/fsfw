@@ -60,13 +60,18 @@ public:
 	 */
 	static ReturnValue_t deleteTask(PeriodicTaskIF* task = NULL);
 
+	/**
+	 * Function to be called to delay current task
+	 * @param delay The delay in milliseconds
+	 * @return Success of deletion
+	 */
+	static ReturnValue_t delayTask(uint32_t delayMs);
 private:
 	/**
 	 * External instantiation is not allowed.
 	 */
 	TaskFactory();
 	static TaskFactory* factoryInstance;
-
 };
 
 #endif /* FRAMEWORK_TASKS_TASKFACTORY_H_ */

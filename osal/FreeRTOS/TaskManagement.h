@@ -58,13 +58,6 @@ public:
 	 * 		   words.
 	 */
 	static configSTACK_DEPTH_TYPE getTaskStackHighWatermark();
-
-	/**
-	 * Function to be called to delay current task
-	 * @param delay The delay in milliseconds
-	 * @return Success of deletion
-	 */
-	static ReturnValue_t delayTask(uint32_t delayMs);
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_ */

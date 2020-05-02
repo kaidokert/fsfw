@@ -21,8 +21,4 @@ configSTACK_DEPTH_TYPE TaskManagement::getTaskStackHighWatermark() {
 	return uxTaskGetStackHighWaterMark(TaskManagement::getCurrentTaskHandle());
 }
 
-ReturnValue_t TaskManagement::delayTask(uint32_t delayMs) {
-	vTaskDelay(pdMS_TO_TICKS(delayMs));
-	return HasReturnvaluesIF::RETURN_OK;
-}
 
