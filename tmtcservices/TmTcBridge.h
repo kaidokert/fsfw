@@ -75,6 +75,7 @@ protected:
 	//! Used to specify whether communication link is up
 	bool communicationLinkUp = false;
 	bool tmStored = false;
+	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> fifo;
 
 	/**
 	 * @brief 	Handle TC reception
@@ -141,7 +142,6 @@ protected:
 	void printData(uint8_t * data, size_t dataLen);
 
 private:
-	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> fifo;
 	uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
 	uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
 };
