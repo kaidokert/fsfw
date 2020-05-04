@@ -6,9 +6,9 @@
 #include <stddef.h>
 
 /**
- * This union defines the type that identifies where a data packet is stored in the store.
- * It comprises of a raw part to read it as raw value and a structured part to use it in
- * pool-like stores.
+ * This union defines the type that identifies where a data packet is
+ * stored in the store. It comprises of a raw part to read it as raw value and
+ * a structured part to use it in pool-like stores.
  */
 union store_address_t {
 	/**
@@ -94,7 +94,8 @@ public:
 	 * 					@li	RETURN_FAILED if data could not be added.
 	 * 						storageId is unchanged then.
 	 */
-	virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t * data, uint32_t size, bool ignoreFault = false) = 0;
+	virtual ReturnValue_t addData(store_address_t* storageId,
+			const uint8_t * data, size_t size, bool ignoreFault = false) = 0;
 	/**
 	 * @brief	With deleteData, the storageManager frees the memory region
 	 * 			identified by packet_id.
@@ -105,14 +106,16 @@ public:
 	 */
 	virtual ReturnValue_t deleteData(store_address_t packet_id) = 0;
 	/**
-	 * @brief	Another deleteData which uses the pointer and size of the stored data to delete the content.
+	 * @brief	Another deleteData which uses the pointer and size of the
+	 * 			stored data to delete the content.
 	 * @param buffer	Pointer to the data.
 	 * @param size		Size of data to be stored.
 	 * @param storeId	Store id of the deleted element (optional)
 	 * @return	@li RETURN_OK on success.
 	 * 			@li	failure code if deletion did not work
 	 */
-	virtual ReturnValue_t deleteData(uint8_t* buffer, uint32_t size, store_address_t* storeId = NULL) = 0;
+	virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
+			store_address_t* storeId = nullptr) = 0;
 	/**
 	 * @brief	getData returns an address to data and the size of the data
 	 * 			for a given packet_id.
@@ -125,12 +128,12 @@ public:
 	 * 				(e.g. an illegal packet_id was passed).
 	 */
 	virtual ReturnValue_t getData(store_address_t packet_id,
-			const uint8_t** packet_ptr, uint32_t* size) = 0;
+			const uint8_t** packet_ptr, size_t* size) = 0;
 	/**
 	 * Same as above, but not const and therefore modifiable.
 	 */
 	virtual ReturnValue_t modifyData(store_address_t packet_id,
-			uint8_t** packet_ptr, uint32_t* size) = 0;
+			uint8_t** packet_ptr, size_t* size) = 0;
 	/**
 	 * This method reserves an element of \c size.
 	 *
@@ -144,7 +147,8 @@ public:
 	 * 					@li	RETURN_FAILED if data could not be added.
 	 * 						storageId is unchanged then.
 	 */
-	virtual ReturnValue_t getFreeElement(store_address_t* storageId, const uint32_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
+	virtual ReturnValue_t getFreeElement(store_address_t* storageId,
+			const size_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
 	/**
 	 * Clears the whole store.
 	 * Use with care!
