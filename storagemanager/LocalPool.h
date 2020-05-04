@@ -125,7 +125,8 @@ protected:
 	 * @return	- #RETURN_OK on success,
 	 * 			- the return codes of #getPoolIndex or #findEmpty otherwise.
 	 */
-	virtual ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address, bool ignoreFault);
+	virtual ReturnValue_t reserveSpace(const uint32_t size,
+			store_address_t* address, bool ignoreFault);
 
 	InternalErrorReporterIF *internalErrorReporter;
 private:
@@ -292,7 +293,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::reserveSpace(
 
 		size_list[address->pool_index][address->packet_index] = size;
 	} else {
-		if (!ignoreFault) {
+		if (!ignoreFault and internalErrorReporter != nullptr) {
 			internalErrorReporter->storeFull();
 		}
 		sif::error << "LocalPool( " << std::hex << getObjectId() << std::dec

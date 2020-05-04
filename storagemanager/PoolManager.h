@@ -57,7 +57,8 @@ inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::reserveSpace(const uint32_t s
 template<uint8_t NUMBER_OF_POOLS>
 inline PoolManager<NUMBER_OF_POOLS>::PoolManager(object_id_t setObjectId,
 		const uint16_t element_sizes[NUMBER_OF_POOLS],
-		const uint16_t n_elements[NUMBER_OF_POOLS]) : LocalPool<NUMBER_OF_POOLS>(setObjectId, element_sizes, n_elements, true) {
+		const uint16_t n_elements[NUMBER_OF_POOLS]) :
+		LocalPool<NUMBER_OF_POOLS>(setObjectId, element_sizes, n_elements, true) {
 	mutex = MutexFactory::instance()->createMutex();
 }
 
