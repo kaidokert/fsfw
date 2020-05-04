@@ -152,7 +152,7 @@ void MemoryHelper::handleMemoryLoad(CommandMessage* message) {
 	ipcAddress = MemoryMessage::getStoreID(message);
 	const uint8_t* p_data = NULL;
 	uint8_t* dataPointer = NULL;
-	uint32_t size = 0;
+	size_t size = 0;
 	ReturnValue_t returnCode = ipcStore->getData(ipcAddress, &p_data, &size);
 	if (returnCode == RETURN_OK) {
 		returnCode = workOnThis->handleMemoryLoad(address, p_data, size,

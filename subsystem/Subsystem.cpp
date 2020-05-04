@@ -162,7 +162,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 	case ModeSequenceMessage::ADD_SEQUENCE: {
 		FixedArrayList<ModeListEntry, MAX_LENGTH_OF_TABLE_OR_SEQUENCE> sequence;
 		const uint8_t *pointer;
-		uint32_t sizeRead;
+		size_t sizeRead;
 		result = IPCStore->getData(
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
@@ -188,7 +188,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 	case ModeSequenceMessage::ADD_TABLE: {
 		FixedArrayList<ModeListEntry, MAX_LENGTH_OF_TABLE_OR_SEQUENCE> table;
 		const uint8_t *pointer;
-		uint32_t sizeRead;
+		size_t sizeRead;
 		result = IPCStore->getData(
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
