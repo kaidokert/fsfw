@@ -77,6 +77,7 @@ ReturnValue_t PollingTask::addSlot(object_id_t componentId,
 			" not found, not adding it to pst" << std::endl;
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
+
 uint32_t PollingTask::getPeriodMs() const {
 	return pst.getLengthMs();
 }
