@@ -1,4 +1,4 @@
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/memory/MemoryHelper.h>
 #include <framework/memory/MemoryMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
@@ -98,7 +98,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 			break;
 		}
 		case MemoryMessage::CMD_MEMORY_CHECK: {
-			uint16_t crc = ::Calculate_CRC(reservedSpaceInIPC, size);
+			uint16_t crc = CRC::crc16ccitt(reservedSpaceInIPC, size);
 			//Delete data immediately, was temporary.
 			ipcStore->deleteData(ipcAddress);
 			MemoryMessage::setMemoryCheckReply(&reply, crc);
