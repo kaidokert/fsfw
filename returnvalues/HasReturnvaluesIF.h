@@ -18,4 +18,6 @@ public:
 
 };
 
+using ResultIF = HasReturnvaluesIF;
+
 #endif /* HASRETURNVALUESIF_H_ */
