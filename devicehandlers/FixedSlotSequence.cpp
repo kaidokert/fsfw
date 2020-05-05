@@ -90,10 +90,6 @@ uint32_t FixedSlotSequence::getLengthMs() const {
 ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
 	    sif::error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
-	    // does check sequence have to be const?
-	    // if I want to check a class, I need the ability to set
-	    // internal class states.
-	    //isEmpty = true;
 	    std::exit(0);
 	}
     // Iterate through slotList and check successful creation.
