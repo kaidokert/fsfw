@@ -57,7 +57,7 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	if (objectManager->get<ExecutableObjectIF>(componentId) != NULL) {
+	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
 		if(slotTimeMs == 0) {
 			// TODO: FreeRTOS throws errors for zero values.
 			// maybe there is a better solution than this.
