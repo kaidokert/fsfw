@@ -89,7 +89,6 @@ uint32_t FixedSlotSequence::getLengthMs() const {
 }
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
-	//Iterate through slotList and check successful creation. Checks if timing is ok (must be ascending) and if all handlers were found.
 	auto slotIt = slotList.begin();
 	uint32_t count = 0;
 	uint32_t time = 0;

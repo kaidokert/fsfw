@@ -97,6 +97,11 @@ public:
 	 */
 	std::list<FixedSequenceSlot*>::iterator current;
 
+	/**
+	 * Iterate through slotList and check successful creation.
+	 * Checks if timing is ok (must be ascending) and if all handlers were found.
+	 * @return
+	 */
 	ReturnValue_t checkSequence() const;
 protected:
 
