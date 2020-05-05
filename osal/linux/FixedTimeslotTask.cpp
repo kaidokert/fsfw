@@ -42,25 +42,14 @@ uint32_t FixedTimeslotTask::getPeriodMs() const {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-<<<<<<< HEAD
-	if (!objectManager->get<ExecutableObjectIF>(componentId)) {
-		sif::error << "Component " << std::hex << componentId
-				   << " not found, not adding it to pst" << std::endl;
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-
-	pst.addSlot(componentId, slotTimeMs, executionStep, this);
-	return HasReturnvaluesIF::RETURN_OK;
-=======
 	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
 		pst.addSlot(componentId, slotTimeMs, executionStep, this);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	error << "Component " << std::hex << componentId <<
+	sif::error << "Component " << std::hex << componentId <<
 			" not found, not adding it to pst" << std::endl;
 	return HasReturnvaluesIF::RETURN_FAILED;
->>>>>>> luz_FixedTimeslotTask_ExistenceCheck
 }
 
 ReturnValue_t FixedTimeslotTask::checkSequence() const {
