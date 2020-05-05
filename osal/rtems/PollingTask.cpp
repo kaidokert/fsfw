@@ -66,7 +66,7 @@ ReturnValue_t PollingTask::startTask() {
 	}
 }
 
-ReturnValue_t Polling::addSlot(object_id_t componentId,
+ReturnValue_t PollingTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
 	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
 		pst.addSlot(componentId, slotTimeMs, executionStep, this);
