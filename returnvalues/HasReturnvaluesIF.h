@@ -13,11 +13,7 @@ class HasReturnvaluesIF {
 public:
 	static const ReturnValue_t RETURN_OK = 0;
 	static const ReturnValue_t RETURN_FAILED = 0xFFFF;
-	virtual ~HasReturnvaluesIF() {
-	}
-
+	virtual ~HasReturnvaluesIF() {}
 };
-
-using ResultIF = HasReturnvaluesIF;
 
 #endif /* HASRETURNVALUESIF_H_ */
