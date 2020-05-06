@@ -1,9 +1,9 @@
 #include <framework/action/ActionHelper.h>
 #include <framework/action/HasActionsIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
+
 ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue) :
-		owner(setOwner), queueToUse(useThisQueue), ipcStore(
-				NULL) {
+		owner(setOwner), queueToUse(useThisQueue), ipcStore(nullptr) {
 }
 
 ActionHelper::~ActionHelper() {
@@ -22,10 +22,12 @@ ReturnValue_t ActionHelper::handleActionMessage(CommandMessage* command) {
 
 ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
 	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (ipcStore == NULL) {
+	if (ipcStore == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	setQueueToUse(queueToUse_);
+	if(queueToUse_ != nullptr) {
+		setQueueToUse(queueToUse_);
+	}
 
 	return HasReturnvaluesIF::RETURN_OK;
 }
