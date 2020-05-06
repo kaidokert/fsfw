@@ -89,17 +89,9 @@ uint32_t FixedSlotSequence::getLengthMs() const {
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
-<<<<<<< HEAD
 	    sif::error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	}
-    // Iterate through slotList and check successful creation.
-	// Checks if timing is ok (must be ascending) and if all handlers were found.
-=======
-		error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
->>>>>>> master
 	auto slotIt = slotList.begin();
 	uint32_t count = 0;
 	uint32_t time = 0;

@@ -71,6 +71,7 @@ public:
 	static const ReturnValue_t ILLEGAL_STORAGE_ID = MAKE_RETURN_CODE(3); //!< This return code indicates that data was requested with an illegal storage ID.
 	static const ReturnValue_t DATA_DOES_NOT_EXIST = MAKE_RETURN_CODE(4); //!< This return code indicates that the requested ID was valid, but no data is stored there.
 	static const ReturnValue_t ILLEGAL_ADDRESS = MAKE_RETURN_CODE(5);
+	static const ReturnValue_t POOL_TOO_LARGE = MAKE_RETURN_CODE(6); //!< Pool size too large on initialization.
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::OBSW;
 	static const Event GET_DATA_FAILED = MAKE_EVENT(0, SEVERITY::LOW);

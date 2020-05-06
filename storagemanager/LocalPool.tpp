@@ -242,8 +242,8 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::initialize() {
 	}
 	internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
 			objects::INTERNAL_ERROR_REPORTER);
-	if (internalErrorReporter == NULL){
-		return RETURN_FAILED;
+	if (internalErrorReporter == nullptr){
+		return ObjectManagerIF::INTERNAL_ERR_REPORTER_UNINIT;
 	}
 
 	//Check if any pool size is large than the maximum allowed.
@@ -251,7 +251,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::initialize() {
 		if (element_sizes[count] >= STORAGE_FREE) {
 			sif::error << "LocalPool::initialize: Pool is too large! "
 					"Max. allowed size is: " << (STORAGE_FREE - 1) << std::endl;
-			return RETURN_FAILED;
+			return StorageManagerIF::POOL_TOO_LARGE;
 		}
 	}
 	return RETURN_OK;
