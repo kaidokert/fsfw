@@ -6,8 +6,9 @@
 #include <stddef.h>
 
 /**
- * This union defines the type that identifies where a data packet is
- * stored in the store. It comprises of a raw part to read it as raw value and
+ * @brief 	This union defines the type that identifies where a data packet is
+ * 			stored in the store.
+ * It consists of a raw part to read it as raw value and
  * a structured part to use it in pool-like stores.
  */
 union store_address_t {
@@ -15,9 +16,9 @@ union store_address_t {
 	 * Default Constructor, initializing to INVALID_ADDRESS
 	 */
 	store_address_t():raw(0xFFFFFFFF){}
+
 	/**
 	 * Constructor to create an address object using the raw address
-	 *
 	 * @param rawAddress
 	 */
 	store_address_t(uint32_t rawAddress):raw(rawAddress){}
@@ -30,7 +31,8 @@ union store_address_t {
 	 * @param packetIndex
 	 */
 	store_address_t(uint16_t poolIndex, uint16_t packetIndex):
-		pool_index(poolIndex),packet_index(packetIndex){}
+			pool_index(poolIndex),packet_index(packetIndex) {}
+
 	/**
 	 * A structure with two elements to access the store address pool-like.
 	 */
@@ -154,7 +156,6 @@ public:
 	 * Use with care!
 	 */
 	virtual void clearStore() = 0;
-
 };
 
 #endif /* STORAGEMANAGERIF_H_ */

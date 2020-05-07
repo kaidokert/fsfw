@@ -15,17 +15,17 @@
 template <uint8_t NUMBER_OF_POOLS = 5>
 class PoolManager : public LocalPool<NUMBER_OF_POOLS> {
 public:
-	PoolManager( object_id_t setObjectId, const uint16_t element_sizes[NUMBER_OF_POOLS],
-			const uint16_t n_elements[NUMBER_OF_POOLS] );
-	/**
-	 * @brief	In the PoolManager's destructor all allocated memory is freed.
-	 */
+	PoolManager(object_id_t setObjectId,
+			const uint16_t element_sizes[NUMBER_OF_POOLS],
+			const uint16_t n_elements[NUMBER_OF_POOLS]);
+
+	//! @brief	In the PoolManager's destructor all allocated memory is freed.
 	virtual ~PoolManager();
 
+	//! @brief LocalPool overrides for thread-safety.
 	ReturnValue_t deleteData(store_address_t) override;
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = NULL) override;
-
 	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
 				size_t* size) override;
 protected:

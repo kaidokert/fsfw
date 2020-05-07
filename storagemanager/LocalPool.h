@@ -1,14 +1,11 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
-#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
-
 /**
  *	@file	LocalPool
- *
  *  @date	02.02.2012
  *	@author	Bastian Baetz
- *
  *	@brief	This file contains the definition of the LocalPool class.
  */
+#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
+#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
 
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
@@ -20,7 +17,7 @@
 /**
  * @brief	The LocalPool class provides an intermediate data storage with
  * 			a fixed pool size policy.
- * \details	The class implements the StorageManagerIF interface. While the
+ * @details	The class implements the StorageManagerIF interface. While the
  * 			total number of pools is fixed, the element sizes in one pool and
  * 			the number of pool elements per pool are set on construction.
  * 			The full amount of memory is allocated on construction.
@@ -31,7 +28,6 @@
  * 			It is possible to store empty packets in the pool.
  * 			The local pool is NOT thread-safe.
  */
-
 template<uint8_t NUMBER_OF_POOLS = 5>
 class LocalPool: public SystemObject, public StorageManagerIF {
 public:
@@ -55,9 +51,10 @@ public:
 	 * 						number of elements for each pool is determined.
 	 * 						The position of these values correspond to those in
 	 * 						element_sizes.
-	 * @param registered	Register the pool in object manager or not. Default is false (local pool).
-	 * @param spillsToHigherPools
-	 * 						A variable to determine whether higher n pools are used if the store is full.
+	 * @param registered	Register the pool in object manager or not.
+	 * Default is false (local pool).
+	 * @param spillsToHigherPools A variable to determine whether
+	 * higher n pools are used if the store is full.
 	 */
 	LocalPool(object_id_t setObjectId,
 			const uint16_t element_sizes[NUMBER_OF_POOLS],
@@ -117,7 +114,7 @@ private:
 	/**
 	 * @brief	store represents the actual memory pool.
 	 * @details	It is an array of pointers to memory, which was allocated with
-	 * 			a \c new call on construction.
+	 * 			a @c new call on construction.
 	 */
 	uint8_t* store[NUMBER_OF_POOLS];
 	/**
