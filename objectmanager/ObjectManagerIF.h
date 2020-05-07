@@ -9,7 +9,6 @@
 #define OBJECTMANAGERIF_H_
 
 #include <framework/objectmanager/frameworkObjects.h>
-#include <config/objects/systemObjectList.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
