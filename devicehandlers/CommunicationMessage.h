@@ -13,15 +13,11 @@
 #include <framework/devicehandlers/DeviceHandlerBase.h>
 
 /**
- * @brief Used to pass communication information between tasks
+ * @brief Message type to send larger messages
  *
  * @details
  * Can be used to pass information like data pointers and
- * data sizes between communication tasks
- * like the Device Handler Comm Interfaces and Polling Tasks.
- *
- * Can also be used to exchange actual data if its not too large
- * (e.g. Sensor values).
+ * data sizes between communication tasks.
  *
  */
 class CommunicationMessage: public MessageQueueMessage {

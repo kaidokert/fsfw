@@ -25,9 +25,6 @@ public:
 	ReturnValue_t deleteData(store_address_t) override;
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = NULL) override;
-
-	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
-				size_t* size) override;
 protected:
 	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
 			bool ignoreFault) override;

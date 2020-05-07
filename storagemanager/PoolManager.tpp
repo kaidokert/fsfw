@@ -40,11 +40,3 @@ inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(uint8_t* buffer,
 	return status;
 }
 
-template<uint8_t NUMBER_OF_POOLS>
-inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::modifyData(
-		store_address_t packet_id, uint8_t** packet_ptr, size_t* size) {
-	MutexHelper mutexHelper(mutex,MutexIF::NO_TIMEOUT);
-	ReturnValue_t status = LocalPool<NUMBER_OF_POOLS>::modifyData(packet_id,
-				packet_ptr, size);
-	return status;
-}
