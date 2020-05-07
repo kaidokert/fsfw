@@ -1,9 +1,3 @@
-/**
- * @file Stopwatch.h
- *
- * @date 08.04.2020
- */
-
 #ifndef FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
 #define FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
 #include <framework/timemanager/Clock.h>
@@ -18,8 +12,7 @@ enum class StopwatchDisplayMode {
  * @details
  * This class can be used to measure elapsed times. It also displays elapsed
  * times automatically on destruction if not explicitely deactivated in the
- * constructor. The default time format is the elapsed time in miliseconds
- * as a float.
+ * constructor. The default time format is the elapsed time in miliseconds.
  */
 class Stopwatch {
 public:
@@ -28,8 +21,8 @@ public:
      * no parameters are required!
      * @param displayOnDestruction If set to true, displays measured time on
      *        object destruction
-     * @param displayMode Display format is either MS rounded or MS as double
-     *        format
+     * @param displayMode Display format is either MS rounded or seconds as
+     * 		  double format
      * @param outputPrecision If using double format, specify precision here.
      */
     Stopwatch(bool displayOnDestruction = true, StopwatchDisplayMode displayMode

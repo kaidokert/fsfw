@@ -1,9 +1,3 @@
-/**
- * @file Stopwatch.cpp
- *
- * @date 08.04.2020
- */
-
 #include <framework/timemanager/Stopwatch.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <iomanip>
