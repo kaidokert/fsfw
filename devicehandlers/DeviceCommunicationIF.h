@@ -81,7 +81,7 @@ public:
 	 *  - Everything else triggers failure event with returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
-			uint32_t sendLen) = 0;
+			size_t sendLen) = 0;
 
 	/**
 	 * Called by DHB in the GET_WRITE doGetWrite().
@@ -107,7 +107,7 @@ public:
 	 *           returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie,
-			uint32_t requestLen) = 0;
+			size_t requestLen) = 0;
 
 	/**
 	 * Called by DHB in the GET_WRITE doGetRead().
@@ -124,7 +124,7 @@ public:
 	 *           returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
-			uint32_t *size) = 0;
+			size_t *size) = 0;
 };
 
 #endif /* DEVICECOMMUNICATIONIF_H_ */
