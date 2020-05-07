@@ -1,4 +1,4 @@
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/pus/TmPacketBase.h>
@@ -39,7 +39,7 @@ uint16_t TmPacketBase::getErrorControl() {
 
 void TmPacketBase::setErrorControl() {
 	uint32_t full_size = getFullSize();
-	uint16_t crc = ::Calculate_CRC(getWholeData(), full_size - CRC_SIZE);
+	uint16_t crc = CRC::crc16ccitt(getWholeData(), full_size - CRC_SIZE);
 	uint32_t size = getSourceDataSize();
 	getSourceData()[size] = (crc & 0XFF00) >> 8;	// CRCH
 	getSourceData()[size + 1] = (crc) & 0X00FF; 		// CRCL

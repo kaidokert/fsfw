@@ -2,10 +2,10 @@
 #define FRAMEWORK_CONTAINER_INDEXEDRINGMEMORY_H_
 
 #include <framework/container/ArrayList.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serialize/SerialArrayListAdapter.h>
-#include <framework/globalfunctions/crc_ccitt.h>
 #include <cmath>
 
 template<typename T>
