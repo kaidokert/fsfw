@@ -301,8 +301,8 @@ protected:
 	 *    requested by a command, but should be handled anyway
 	 *    (@see also fillCommandAndCookieMap() )
 	 */
-	virtual ReturnValue_t scanForReply(const uint8_t *start, uint32_t len,
-			DeviceCommandId_t *foundId, uint32_t *foundLen) = 0;
+	virtual ReturnValue_t scanForReply(const uint8_t *start, size_t len,
+			DeviceCommandId_t *foundId, size_t *foundLen) = 0;
 
 	/**
 	 * @brief Interpret a reply from the device.

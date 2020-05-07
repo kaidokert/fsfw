@@ -570,10 +570,10 @@ void DeviceHandlerBase::doSendRead() {
 }
 
 void DeviceHandlerBase::doGetRead() {
-	uint32_t receivedDataLen;
+	size_t receivedDataLen;
 	uint8_t *receivedData;
 	DeviceCommandId_t foundId = 0xFFFFFFFF;
-	uint32_t foundLen = 0;
+	size_t foundLen = 0;
 	ReturnValue_t result;
 
 	if (cookieInfo.state != COOKIE_READ_SENT) {

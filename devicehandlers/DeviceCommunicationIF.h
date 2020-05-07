@@ -3,6 +3,7 @@
 
 #include <framework/devicehandlers/CookieIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <cstddef>
 /**
  * @defgroup interfaces Interfaces
  * @brief Interfaces for flight software objects
