@@ -57,18 +57,19 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	if (objectManager->get<ExecutableObjectIF>(componentId) != NULL) {
+
+	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
 		if(slotTimeMs == 0) {
-			// TODO: FreeRTOS throws errors for zero values.
-			// maybe there is a better solution than this.
+			// FreeRTOS throws a sanity error for zero values, so we set
+			// the time to one millisecond.
 			slotTimeMs = 1;
 		}
 		pst.addSlot(componentId, slotTimeMs, executionStep, this);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	error << "Component " << std::hex << componentId
-		  << " not found, not adding it to pst" << std::endl;
+	error << "Component " << std::hex << componentId <<
+			" not found, not adding it to pst" << std::endl;
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
