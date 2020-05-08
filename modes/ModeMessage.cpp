@@ -16,6 +16,10 @@ ReturnValue_t ModeMessage::setModeMessage(CommandMessage* message, Command_t com
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
+ReturnValue_t ModeMessage::getCantReachModeReason(const CommandMessage* message) {
+	return message->getParameter();
+}
+
 void ModeMessage::clear(CommandMessage* message) {
 	message->setCommand(CommandMessage::CMD_NONE);
 }
