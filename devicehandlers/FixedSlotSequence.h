@@ -13,13 +13,19 @@ using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 /**
  * @brief	This class is the representation of a Polling Sequence Table in software.
  *
- * @details	The FixedSlotSequence object maintains the dynamic execution of device handler objects.
- * 			The main idea is to create a list of device handlers, to announce all handlers to the
- * 			polling sequence and to maintain a list of polling slot objects. This slot list represents the
- * 			Polling Sequence Table in software. Each polling slot contains information to indicate when and
- * 			which device handler shall be executed within a given polling period.
- * 			The sequence is then executed by iterating through this slot list.
- * 			Handlers are invoking by calling a certain function stored in the handler list.
+ * @details
+ * The FixedSlotSequence object maintains the dynamic execution of
+ * device handler objects.
+ *
+ * The main idea is to create a list of device handlers, to announce all
+ * handlers to thepolling sequence and to maintain a list of
+ * polling slot objects. This slot list represents the Polling Sequence Table
+ * in software.
+ *
+ * Each polling slot contains information to indicate when and
+ * which device handler shall be executed within a given polling period.
+ * The sequence is then executed by iterating through this slot list.
+ * Handlers are invoking by calling a certain function stored in the handler list.
  */
 class FixedSlotSequence {
 public:
@@ -112,7 +118,12 @@ public:
 	 */
 	SlotListIter current;
 
-	virtual ReturnValue_t checkSequence() const;
+	/**
+	 * Iterate through slotList and check successful creation.
+	 * Checks if timing is ok (must be ascending) and if all handlers were found.
+	 * @return
+	 */
+	ReturnValue_t checkSequence() const;
 protected:
 
 	/**
