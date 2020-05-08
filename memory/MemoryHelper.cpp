@@ -15,7 +15,7 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
 	lastSender = message->getSender();
 	lastCommand = message->getCommand();
 	if (busy) {
-		debug << "MemHelper: Busy!" << std::endl;
+		sif::debug << "MemHelper: Busy!" << std::endl;
 	}
 	switch (lastCommand) {
 	case MemoryMessage::CMD_MEMORY_DUMP:

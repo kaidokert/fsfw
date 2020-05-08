@@ -90,7 +90,7 @@ uint32_t FixedSlotSequence::getLengthMs() const {
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
-		error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
+		sif::error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	auto slotIt = slotList.begin();
@@ -98,11 +98,11 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 	uint32_t time = 0;
 	while (slotIt != slotList.end()) {
 		if ((*slotIt)->handler == NULL) {
-			error << "FixedSlotSequene::initialize: ObjectId does not exist!"
+			sif::error << "FixedSlotSequene::initialize: ObjectId does not exist!"
 					<< std::endl;
 			count++;
 		} else if ((*slotIt)->pollingTimeMs < time) {
-			error << "FixedSlotSequence::initialize: Time: "
+			sif::error << "FixedSlotSequence::initialize: Time: "
 					<< (*slotIt)->pollingTimeMs
 					<< " is smaller than previous with " << time << std::endl;
 			count++;
