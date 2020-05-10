@@ -212,6 +212,8 @@ protected:
 	 */
 	PeriodicTaskIF* executingTask;
 
+	// todo: why do these functions not have returnvalues? the caller should be
+	// able to check whether the send operations actually work.
 	/**
 	 * Send TM data from pointer to data. If a header is supplied it is added before data
 	 * @param subservice Number of subservice
