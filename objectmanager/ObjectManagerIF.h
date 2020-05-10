@@ -9,9 +9,9 @@
 #define OBJECTMANAGERIF_H_
 
 #include <framework/objectmanager/frameworkObjects.h>
-#include <config/objects/systemObjectList.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 /**
  * @brief	This class provides an interface to the global object manager.
@@ -24,9 +24,12 @@
  */
 class ObjectManagerIF : public HasReturnvaluesIF {
 public:
-	static const uint8_t INTERFACE_ID = CLASS_ID::OBJECT_MANAGER_IF;
-	static const ReturnValue_t INSERTION_FAILED = MAKE_RETURN_CODE( 1 );
-	static const ReturnValue_t NOT_FOUND = MAKE_RETURN_CODE( 2 );
+	static constexpr uint8_t INTERFACE_ID = CLASS_ID::OBJECT_MANAGER_IF;
+	static constexpr ReturnValue_t INSERTION_FAILED = MAKE_RETURN_CODE( 1 );
+	static constexpr ReturnValue_t NOT_FOUND = MAKE_RETURN_CODE( 2 );
+	static constexpr ReturnValue_t CHILD_INIT_FAILED = MAKE_RETURN_CODE( 3 );
+	static constexpr ReturnValue_t INTERNAL_ERR_REPORTER_UNINIT = MAKE_RETURN_CODE( 4 );
+
 protected:
 	/**
 	 * @brief	This method is used to hide the template-based get call from
@@ -79,16 +82,21 @@ public:
 };
 
 
-/*Documentation can be found in the class method declaration above.*/
-template <typename T>
-T* ObjectManagerIF::get( object_id_t id ) {
-	SystemObjectIF* temp = this->getSystemObject(id);
-	return dynamic_cast<T*>(temp);
-}
-
 /**
  * @brief	This is the forward declaration of the global objectManager instance.
  */
 extern ObjectManagerIF *objectManager;
+
+/*Documentation can be found in the class method declaration above.*/
+template <typename T>
+T* ObjectManagerIF::get( object_id_t id ) {
+	if(objectManager == nullptr) {
+		sif::error << "ObjectManagerIF: Global object manager has not "
+				"been initialized yet!" << std::endl;
+		std::exit(0);
+	}
+	SystemObjectIF* temp = this->getSystemObject(id);
+	return dynamic_cast<T*>(temp);
+}
 
 #endif /* OBJECTMANAGERIF_H_ */
