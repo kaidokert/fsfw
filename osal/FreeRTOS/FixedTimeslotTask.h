@@ -51,7 +51,6 @@ public:
 	ReturnValue_t checkSequence() const;
 
 	ReturnValue_t sleepFor(uint32_t ms);
-
 protected:
 	bool started;
 	TaskHandle_t handle;
