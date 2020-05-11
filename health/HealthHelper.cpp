@@ -70,7 +70,7 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
 			health, oldHealth);
 	if (MessageQueueSenderIF::sendMessage(parentQueue, &message,
 			owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
-		debug << "HealthHelper::informParent: sending health reply failed."
+		sif::debug << "HealthHelper::informParent: sending health reply failed."
 				<< std::endl;
 	}
 }
@@ -89,7 +89,7 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* message) {
 	}
 	if (MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
 			owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
-		debug
+		sif::debug
 				<< "HealthHelper::handleHealthCommand: sending health reply failed."
 				<< std::endl;
 	}

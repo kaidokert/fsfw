@@ -9,7 +9,8 @@
 
 class PeriodicPosixTask: public PosixThread, public PeriodicTaskIF {
 public:
-	PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, uint32_t period_, void(*deadlineMissedFunc_)());
+	PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_,
+			uint32_t period_, void(*deadlineMissedFunc_)());
 	virtual ~PeriodicPosixTask();
 	/**
 	 * @brief	The method to start the task.

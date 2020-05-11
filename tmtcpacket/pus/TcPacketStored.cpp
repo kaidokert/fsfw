@@ -48,7 +48,7 @@ bool TcPacketStored::checkAndSetStore() {
 	if (this->store == NULL) {
 		this->store = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 		if (this->store == NULL) {
-			error << "TcPacketStored::TcPacketStored: TC Store not found!"
+			sif::error << "TcPacketStored::TcPacketStored: TC Store not found!"
 					<< std::endl;
 			return false;
 		}
