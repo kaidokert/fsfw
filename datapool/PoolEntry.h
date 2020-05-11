@@ -2,10 +2,10 @@
 #define POOLENTRY_H_
 
 #include <framework/datapool/PoolEntryIF.h>
-#include <stddef.h>
+#include <cstddef>
 #include <cstring>
 #include <initializer_list>
-
+#include <type_traits>
 /**
  * @brief	This is a small helper class that defines a single data pool entry.
  * @details
@@ -24,6 +24,9 @@
 template <typename T>
 class PoolEntry : public PoolEntryIF {
 public:
+	static_assert(not std::is_same<T, bool>::value,
+				"Do not use boolean for the PoolEntry type, use uint8_t instead!"
+				"Warum? Darum :-)");
 	/**
 	 * @brief	In the classe's constructor, space is allocated on the heap and
 	 * 			potential init values are copied to that space.
