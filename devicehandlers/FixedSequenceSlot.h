@@ -45,6 +45,12 @@ public:
 	 */
 	uint8_t			opcode;
 
+	/**
+	 * @brief 	Operator overload for the comparison operator to
+	 * 			allow sorting by polling time.
+	 * @param fixedSequenceSlot
+	 * @return
+	 */
 	bool operator <(const FixedSequenceSlot & fixedSequenceSlot) const {
 		return pollingTimeMs < fixedSequenceSlot.pollingTimeMs;
 	}
