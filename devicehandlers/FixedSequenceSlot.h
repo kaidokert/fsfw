@@ -13,9 +13,10 @@
 class PeriodicTaskIF;
 
 /**
- * \brief	This class is the representation of a single polling sequence table entry.
+ * @brief	This class is the representation of a single polling sequence table entry.
  *
- * \details	The PollingSlot class is the representation of a single polling sequence table entry.
+ * @details	The PollingSlot class is the representation of a single polling
+ * 			sequence table entry.
  */
 class FixedSequenceSlot {
 public:
@@ -37,9 +38,9 @@ public:
 	uint32_t	pollingTimeMs;
 
 	/**
-	 * \brief	This value defines the type of device communication.
+	 * @brief	This value defines the type of device communication.
 	 *
-	 * \details	The state of this value decides what communication routine is
+	 * @details	The state of this value decides what communication routine is
 	 * 			called in the PST executable or the device handler object.
 	 */
 	uint8_t			opcode;
