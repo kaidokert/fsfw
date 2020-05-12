@@ -124,6 +124,27 @@ public:
 	 */
 	virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) = 0;
+
+	/**
+	 * @brief 	Access the data by supplying a store ID.
+	 * @details
+	 * A pair consisting of the retrieval result and an instance of a
+	 * ConstStorageAccessor class is returned
+	 * @param storeId
+	 * @return Pair of return value and a ConstStorageAccessor instance
+	 */
+	virtual ConstAccessorPair getData(store_address_t storeId) = 0;
+
+	/**
+	 * @brief 	Access the data by supplying a store ID and a helper
+	 * 			instance
+	 * @param storeId
+	 * @param constAccessor Wrapper function to access store data.
+	 * @return
+	 */
+	virtual ReturnValue_t getData(store_address_t storeId,
+			ConstStorageAccessor& constAccessor) = 0;
+
 	/**
 	 * @brief	getData returns an address to data and the size of the data
 	 * 			for a given packet_id.
@@ -137,8 +158,30 @@ public:
 	 */
 	virtual ReturnValue_t getData(store_address_t packet_id,
 			const uint8_t** packet_ptr, size_t* size) = 0;
+
+
 	/**
-	 * Same as above, but not const and therefore modifiable.
+	 * Modify data by supplying a store ID
+	 * @param storeId
+	 * @return Pair of return value and StorageAccessor helper
+	 */
+	virtual AccessorPair modifyData(store_address_t storeId) = 0;
+
+	/**
+	 * Modify data by supplying a store ID and a StorageAccessor helper instance.
+	 * @param storeId
+	 * @param accessor Helper class to access the modifiable data.
+	 * @return
+	 */
+	virtual ReturnValue_t modifyData(store_address_t storeId,
+				StorageAccessor& accessor) = 0;
+
+	/**
+	 * Get pointer and size of modifiable data by supplying the storeId
+	 * @param packet_id
+	 * @param packet_ptr [out] Pointer to pointer of data to set
+	 * @param size [out] Pointer to size to set
+	 * @return
 	 */
 	virtual ReturnValue_t modifyData(store_address_t packet_id,
 			uint8_t** packet_ptr, size_t* size) = 0;
@@ -158,19 +201,11 @@ public:
 	virtual ReturnValue_t getFreeElement(store_address_t* storageId,
 			const size_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
 
-	virtual AccessorPair modifyData(store_address_t storeId) = 0;
-	virtual ConstAccessorPair getData(store_address_t storeId) = 0;
-	virtual ReturnValue_t modifyData(store_address_t storeId,
-			StorageAccessor&) = 0;
-	virtual ReturnValue_t getData(store_address_t storeId,
-			ConstStorageAccessor&) = 0;
-
 	/**
 	 * Clears the whole store.
 	 * Use with care!
 	 */
 	virtual void clearStore() = 0;
-
 };
 
 #endif /* STORAGEMANAGERIF_H_ */
