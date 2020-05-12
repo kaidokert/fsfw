@@ -3,6 +3,12 @@
 ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId):
 		storeId(storeId) {}
 
+ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId,
+		StorageManagerIF* store):
+		storeId(storeId), store(store) {
+	internalState = AccessState::ASSIGNED;
+}
+
 ConstStorageAccessor::~ConstStorageAccessor() {
 	if(deleteData and store != nullptr) {
 		sif::debug << "deleting store data" << std::endl;
@@ -25,6 +31,11 @@ ConstStorageAccessor& ConstStorageAccessor::operator=(
 
 StorageAccessor::StorageAccessor(store_address_t storeId):
 		ConstStorageAccessor(storeId) {
+}
+
+StorageAccessor::StorageAccessor(store_address_t storeId,
+		StorageManagerIF* store):
+		ConstStorageAccessor(storeId, store) {
 }
 
 StorageAccessor& StorageAccessor::operator =(
@@ -97,7 +108,7 @@ void ConstStorageAccessor::print() const {
 }
 
 void ConstStorageAccessor::assignStore(StorageManagerIF* store) {
-	internalState = AccessState::READ;
+	internalState = AccessState::ASSIGNED;
 	this->store = store;
 }
 

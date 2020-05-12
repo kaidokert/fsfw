@@ -31,23 +31,7 @@ public:
 	 * @param storeId
 	 */
 	ConstStorageAccessor(store_address_t storeId);
-
-	/**
-	 * @brief	Move ctor and move assignment allow returning accessors as
-	 * 			a returnvalue. They prevent resource being free prematurely.
-	 * Refer to: https://github.com/MicrosoftDocs/cpp-docs/blob/master/docs/cpp/
-	 * move-constructors-and-move-assignment-operators-cpp.md
-	 * @param
-	 * @return
-	 */
-	ConstStorageAccessor& operator= (ConstStorageAccessor&&);
-	ConstStorageAccessor (ConstStorageAccessor&&);
-
-	//! The copy ctor and copy assignemnt should be deleted implicitely
-	//! according to https://foonathan.net/2019/02/special-member-functions/
-	//! but I still deleted them to make it more explicit. (remember rule of 5).
-	ConstStorageAccessor& operator= (ConstStorageAccessor&) = delete;
-	ConstStorageAccessor (ConstStorageAccessor&) = delete;
+	ConstStorageAccessor(store_address_t storeId, StorageManagerIF* store);
 
 	/**
 	 * @brief 	The destructor in default configuration takes care of
@@ -86,6 +70,23 @@ public:
 	store_address_t getId() const;
 
 	void print() const;
+
+	/**
+	 * @brief	Move ctor and move assignment allow returning accessors as
+	 * 			a returnvalue. They prevent resource being free prematurely.
+	 * Refer to: https://github.com/MicrosoftDocs/cpp-docs/blob/master/docs/cpp/
+	 * move-constructors-and-move-assignment-operators-cpp.md
+	 * @param
+	 * @return
+	 */
+	ConstStorageAccessor& operator= (ConstStorageAccessor&&);
+	ConstStorageAccessor (ConstStorageAccessor&&);
+
+	//! The copy ctor and copy assignemnt should be deleted implicitely
+	//! according to https://foonathan.net/2019/02/special-member-functions/
+	//! but I still deleted them to make it more explicit. (remember rule of 5).
+	ConstStorageAccessor& operator= (ConstStorageAccessor&) = delete;
+	ConstStorageAccessor (ConstStorageAccessor&) = delete;
 protected:
 	const uint8_t* constDataPointer = nullptr;
 	store_address_t storeId;
@@ -96,7 +97,7 @@ protected:
 
 	enum class AccessState {
 		UNINIT,
-		READ
+		ASSIGNED
 	};
 	//! Internal state for safety reasons.
 	AccessState internalState = AccessState::UNINIT;
@@ -109,7 +110,6 @@ protected:
 	 * @param
 	 */
 	void assignStore(StorageManagerIF*);
-
 };
 
 
@@ -124,6 +124,7 @@ class StorageAccessor: public ConstStorageAccessor {
 	friend class LocalPool;
 public:
 	StorageAccessor(store_address_t storeId);
+	StorageAccessor(store_address_t storeId, StorageManagerIF* store);
 	/**
 	 * @brief	Move ctor and move assignment allow returning accessors as
 	 * 			a returnvalue. They prevent resource being free prematurely.

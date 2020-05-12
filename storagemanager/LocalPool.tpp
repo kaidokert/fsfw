@@ -148,7 +148,7 @@ template<uint8_t NUMBER_OF_POOLS>
 inline ConstAccessorPair LocalPool<NUMBER_OF_POOLS>::getData(
 		store_address_t storeId) {
 	uint8_t* tempData = nullptr;
-	ConstStorageAccessor constAccessor(storeId);
+	ConstStorageAccessor constAccessor(storeId, this);
 	ReturnValue_t status = modifyData(storeId, &tempData, &constAccessor.size_);
 	constAccessor.constDataPointer = tempData;
 	return ConstAccessorPair(status, std::move(constAccessor));
@@ -159,6 +159,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(store_address_t storeId
 		ConstStorageAccessor& storeAccessor) {
 	uint8_t* tempData = nullptr;
 	ReturnValue_t status = modifyData(storeId, &tempData, &storeAccessor.size_);
+	storeAccessor.assignStore(this);
 	storeAccessor.constDataPointer = tempData;
 	return status;
 }
@@ -176,7 +177,7 @@ template<uint8_t NUMBER_OF_POOLS>
 inline AccessorPair LocalPool<NUMBER_OF_POOLS>::modifyData(
 		store_address_t storeId) {
 	uint8_t* tempData = nullptr;
-	StorageAccessor accessor(storeId);
+	StorageAccessor accessor(storeId, this);
 	ReturnValue_t status = modifyData(storeId, &tempData, &accessor.size_);
 	accessor.constDataPointer = tempData;
 	accessor.assignConstPointer();
@@ -188,6 +189,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(
 		store_address_t storeId, StorageAccessor& storeAccessor) {
 	ReturnValue_t status = modifyData(storeId, &storeAccessor.dataPointer,
 			&storeAccessor.size_);
+	storeAccessor.assignStore(this);
 	storeAccessor.assignConstPointer();
 	return status;
 }
