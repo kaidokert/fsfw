@@ -121,8 +121,8 @@ inline LocalPool<NUMBER_OF_POOLS>::~LocalPool(void) {
 	}
 }
 
-template<uint8_t NUMBER_OF_POOLS>
-inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(store_address_t* storageId,
+template<uint8_t NUMBER_OF_POOLS> inline
+ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(store_address_t* storageId,
 		const uint8_t* data, size_t size, bool ignoreFault) {
 	ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
 	if (status == RETURN_OK) {
@@ -145,11 +145,50 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getFreeElement(
 }
 
 template<uint8_t NUMBER_OF_POOLS>
+inline ConstAccessorPair LocalPool<NUMBER_OF_POOLS>::getData(
+		store_address_t storeId) {
+	uint8_t* tempData = nullptr;
+	ConstStorageAccessor constAccessor(storeId);
+	ReturnValue_t status = modifyData(storeId, &tempData, &constAccessor.size_);
+	constAccessor.constDataPointer = tempData;
+	return ConstAccessorPair(status, std::move(constAccessor));
+}
+
+template<uint8_t NUMBER_OF_POOLS>
+inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(store_address_t storeId,
+		ConstStorageAccessor& storeAccessor) {
+	uint8_t* tempData = nullptr;
+	ReturnValue_t status = modifyData(storeId, &tempData, &storeAccessor.size_);
+	storeAccessor.constDataPointer = tempData;
+	return status;
+}
+
+template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
 		store_address_t packet_id, const uint8_t** packet_ptr, size_t* size) {
 	uint8_t* tempData = NULL;
 	ReturnValue_t status = modifyData(packet_id, &tempData, size);
 	*packet_ptr = tempData;
+	return status;
+}
+
+template<uint8_t NUMBER_OF_POOLS>
+inline AccessorPair LocalPool<NUMBER_OF_POOLS>::modifyData(
+		store_address_t storeId) {
+	uint8_t* tempData = nullptr;
+	StorageAccessor accessor(storeId);
+	ReturnValue_t status = modifyData(storeId, &tempData, &accessor.size_);
+	accessor.constDataPointer = tempData;
+	accessor.assignConstPointer();
+	return AccessorPair(status, std::move(accessor));
+}
+
+template<uint8_t NUMBER_OF_POOLS>
+inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(
+		store_address_t storeId, StorageAccessor& storeAccessor) {
+	ReturnValue_t status = modifyData(storeId, &storeAccessor.dataPointer,
+			&storeAccessor.size_);
+	storeAccessor.assignConstPointer();
 	return status;
 }
 

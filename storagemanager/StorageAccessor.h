@@ -4,8 +4,7 @@
  * @details	These helper can be used together with the
  * 			StorageManager classes to manage access to a storage.
  * 			It can take care of thread-safety while also providing
- * 			mechanisms to automatically clear storage data and unlocking the
- * 			pool.
+ * 			mechanisms to automatically clear storage data.
  */
 #ifndef TEST_PROTOTYPES_STORAGEACCESSOR_H_
 #define TEST_PROTOTYPES_STORAGEACCESSOR_H_
@@ -13,7 +12,6 @@
 #include <framework/ipc/MutexHelper.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <memory>
-
 
 /**
  * @brief   Accessor class which can be returned by pool managers

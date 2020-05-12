@@ -3,7 +3,14 @@
 
 #include <framework/events/Event.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <stddef.h>
+#include <cstddef>
+#include <utility>
+
+class StorageAccessor;
+class ConstStorageAccessor;
+
+using AccessorPair = std::pair<ReturnValue_t, StorageAccessor>;
+using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
 
 /**
  * This union defines the type that identifies where a data packet is
@@ -150,6 +157,14 @@ public:
 	 */
 	virtual ReturnValue_t getFreeElement(store_address_t* storageId,
 			const size_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
+
+	virtual AccessorPair modifyData(store_address_t storeId) = 0;
+	virtual ConstAccessorPair getData(store_address_t storeId) = 0;
+	virtual ReturnValue_t modifyData(store_address_t storeId,
+			StorageAccessor&) = 0;
+	virtual ReturnValue_t getData(store_address_t storeId,
+			ConstStorageAccessor&) = 0;
+
 	/**
 	 * Clears the whole store.
 	 * Use with care!

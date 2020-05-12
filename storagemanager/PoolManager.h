@@ -1,9 +1,9 @@
 #ifndef POOLMANAGER_H_
 #define POOLMANAGER_H_
 
-
 #include <framework/storagemanager/LocalPool.h>
 #include <framework/ipc/MutexHelper.h>
+#include <framework/storagemanager/StorageAccessor.h>
 
 /**
  * @brief	The PoolManager class provides an intermediate data storage with
@@ -11,20 +11,21 @@
  * @details	Uses local pool calls but is thread safe by protecting the call
  * 			with a lock.
  */
-
-template <uint8_t NUMBER_OF_POOLS = 5>
+template <uint8_t NUMBER_OF_POOLS>
 class PoolManager : public LocalPool<NUMBER_OF_POOLS> {
 public:
-	PoolManager( object_id_t setObjectId, const uint16_t element_sizes[NUMBER_OF_POOLS],
-			const uint16_t n_elements[NUMBER_OF_POOLS] );
-	/**
-	 * @brief	In the PoolManager's destructor all allocated memory is freed.
-	 */
+	PoolManager(object_id_t setObjectId,
+			const uint16_t element_sizes[NUMBER_OF_POOLS],
+			const uint16_t n_elements[NUMBER_OF_POOLS]);
+
+	//! @brief	In the PoolManager's destructor all allocated memory is freed.
 	virtual ~PoolManager();
 
+	//! @brief LocalPool overrides for thread-safety. Decorator function which
+	//! 	   wraps LocalPool calls with a mutex protection.
 	ReturnValue_t deleteData(store_address_t) override;
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
-			store_address_t* storeId = NULL) override;
+			store_address_t* storeId = nullptr) override;
 protected:
 	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
 			bool ignoreFault) override;

@@ -6,7 +6,8 @@
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/internalError/InternalErrorReporterIF.h>
-#include <string.h>
+#include <framework/storagemanager/StorageAccessor.h>
+#include <cstring>
 
 /**
  * @brief	The LocalPool class provides an intermediate data storage with
@@ -67,10 +68,17 @@ public:
 			size_t size, bool ignoreFault = false) override;
 	ReturnValue_t getFreeElement(store_address_t* storageId,const size_t size,
 			uint8_t** p_data, bool ignoreFault = false) override;
+
+	ConstAccessorPair getData(store_address_t packet_id) override;
+	ReturnValue_t getData(store_address_t packet_id, ConstStorageAccessor&) override;
 	ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
 			size_t * size) override;
+
+	AccessorPair modifyData(store_address_t packet_id) override;
+	ReturnValue_t modifyData(store_address_t packet_id, StorageAccessor&) override;
 	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
 			size_t * size) override;
+
 	virtual ReturnValue_t deleteData(store_address_t) override;
 	virtual ReturnValue_t deleteData(uint8_t* ptr, size_t size,
 			store_address_t* storeId = NULL) override;
