@@ -176,10 +176,9 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
 template<uint8_t NUMBER_OF_POOLS>
 inline AccessorPair LocalPool<NUMBER_OF_POOLS>::modifyData(
 		store_address_t storeId) {
-	uint8_t* tempData = nullptr;
 	StorageAccessor accessor(storeId, this);
-	ReturnValue_t status = modifyData(storeId, &tempData, &accessor.size_);
-	accessor.constDataPointer = tempData;
+	ReturnValue_t status = modifyData(storeId, &accessor.dataPointer,
+			&accessor.size_);
 	accessor.assignConstPointer();
 	return AccessorPair(status, std::move(accessor));
 }
@@ -187,9 +186,9 @@ inline AccessorPair LocalPool<NUMBER_OF_POOLS>::modifyData(
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(
 		store_address_t storeId, StorageAccessor& storeAccessor) {
+	storeAccessor.assignStore(this);
 	ReturnValue_t status = modifyData(storeId, &storeAccessor.dataPointer,
 			&storeAccessor.size_);
-	storeAccessor.assignStore(this);
 	storeAccessor.assignConstPointer();
 	return status;
 }

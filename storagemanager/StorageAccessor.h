@@ -49,7 +49,7 @@ public:
 	 * @brief	Copies the read-only data to the supplied pointer
 	 * @param pointer
 	 */
-	ReturnValue_t getDataCopy(uint8_t *pointer, size_t maxSize);
+	virtual ReturnValue_t getDataCopy(uint8_t *pointer, size_t maxSize);
 
 	/**
 	 * @brief   Calling this will prevent the Accessor from deleting the data
@@ -137,8 +137,9 @@ public:
 	StorageAccessor (StorageAccessor&&);
 
 	ReturnValue_t write(uint8_t *data, size_t size,
-		uint16_t offset);
+		uint16_t offset = 0);
 	uint8_t* data();
+	ReturnValue_t getDataCopy(uint8_t *pointer, size_t maxSize) override;
 
 private:
 	//! Non-const pointer for modifyable data.

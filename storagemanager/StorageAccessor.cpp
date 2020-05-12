@@ -16,6 +16,14 @@ ConstStorageAccessor::~ConstStorageAccessor() {
 	}
 }
 
+ConstStorageAccessor::ConstStorageAccessor(ConstStorageAccessor&& other):
+		constDataPointer(other.constDataPointer), storeId(other.storeId),
+		size_(other.size_), store(other.store), deleteData(other.deleteData),
+		internalState(other.internalState) {
+	// This prevent premature deletion
+	other.store = nullptr;
+}
+
 ConstStorageAccessor& ConstStorageAccessor::operator=(
 		ConstStorageAccessor&& other) {
 	constDataPointer = other.constDataPointer;
@@ -27,36 +35,6 @@ ConstStorageAccessor& ConstStorageAccessor::operator=(
 	// This prevents premature deletion
 	other.store = nullptr;
 	return *this;
-}
-
-StorageAccessor::StorageAccessor(store_address_t storeId):
-		ConstStorageAccessor(storeId) {
-}
-
-StorageAccessor::StorageAccessor(store_address_t storeId,
-		StorageManagerIF* store):
-		ConstStorageAccessor(storeId, store) {
-}
-
-StorageAccessor& StorageAccessor::operator =(
-		StorageAccessor&& other) {
-	// Call the parent move assignment and also assign own member.
-	dataPointer = other.dataPointer;
-	StorageAccessor::operator=(std::move(other));
-	return * this;
-}
-
-// Call the parent move ctor and also transfer own member.
-StorageAccessor::StorageAccessor(StorageAccessor&& other):
-		ConstStorageAccessor(std::move(other)), dataPointer(other.dataPointer) {
-}
-
-ConstStorageAccessor::ConstStorageAccessor(ConstStorageAccessor&& other):
-		constDataPointer(other.constDataPointer), storeId(other.storeId),
-		size_(other.size_), store(other.store), deleteData(other.deleteData),
-		internalState(other.internalState) {
-	// This prevent premature deletion
-	other.store = nullptr;
 }
 
 const uint8_t* ConstStorageAccessor::data() const {
@@ -113,6 +91,41 @@ void ConstStorageAccessor::assignStore(StorageManagerIF* store) {
 }
 
 
+StorageAccessor::StorageAccessor(store_address_t storeId):
+		ConstStorageAccessor(storeId) {
+}
+
+StorageAccessor::StorageAccessor(store_address_t storeId,
+		StorageManagerIF* store):
+		ConstStorageAccessor(storeId, store) {
+}
+
+StorageAccessor& StorageAccessor::operator =(
+		StorageAccessor&& other) {
+	// Call the parent move assignment and also assign own member.
+	dataPointer = other.dataPointer;
+	StorageAccessor::operator=(std::move(other));
+	return * this;
+}
+
+// Call the parent move ctor and also transfer own member.
+StorageAccessor::StorageAccessor(StorageAccessor&& other):
+		ConstStorageAccessor(std::move(other)), dataPointer(other.dataPointer) {
+}
+
+ReturnValue_t StorageAccessor::getDataCopy(uint8_t *pointer, size_t maxSize) {
+	if(internalState == AccessState::UNINIT) {
+		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	if(size_ > maxSize) {
+		sif::error << "StorageAccessor: Supplied buffer not large enough" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	std::copy(dataPointer, dataPointer + size_, pointer);
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
 uint8_t* StorageAccessor::data() {
 	if(internalState == AccessState::UNINIT) {
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
@@ -130,7 +143,7 @@ ReturnValue_t StorageAccessor::write(uint8_t *data, size_t size,
 		sif::error << "StorageAccessor: Data too large for pool entry!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	std::copy(data, data + size, dataPointer);
+	std::copy(data, data + size, dataPointer + offset);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
