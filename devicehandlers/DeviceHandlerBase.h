@@ -327,7 +327,7 @@ protected:
 	 * @param len length of remaining buffer to be scanned
 	 * @param[out] foundId the id of the data found in the buffer.
 	 * @param[out] foundLen length of the data found. Is to be set in function,
-	 * 						buffer is scanned at previous position + foundLen.
+	 * buffer is scanned at previous position + foundLen.
 	 * @return
 	 *     - @c RETURN_OK a valid packet was found at @c start, @c foundLen is valid
 	 *     - @c RETURN_FAILED no reply could be found starting at @c start,
