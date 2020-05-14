@@ -7,8 +7,8 @@
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 
 extern "C" {
-#include "FreeRTOS.h"
-#include "freertos/queue.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
 }
 
 
