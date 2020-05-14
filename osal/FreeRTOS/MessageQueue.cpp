@@ -120,7 +120,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     message->setSender(sentFrom);
     BaseType_t result;
     if(callContext == CallContext::task) {
-        result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),
+        result = xQueueSendToBack(reinterpret_cast<QueueHandle_t>(sendTo),
                 reinterpret_cast<const void*>(message->getBuffer()), 0);
     }
     else {
@@ -128,7 +128,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         // request a context switch if a higher priority task
         // was blocked by the interrupt.
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        result = xQueueSendFromISR(reinterpret_cast<void*>(sendTo),
+        result = xQueueSendFromISR(reinterpret_cast<QueueHandle_t>(sendTo),
                 reinterpret_cast<const void*>(message->getBuffer()),
                 &xHigherPriorityTaskWoken);
         if(xHigherPriorityTaskWoken == pdTRUE) {
