@@ -2,6 +2,7 @@
 #define TCPACKETBASE_H_
 
 #include <framework/tmtcpacket/SpacePacketBase.h>
+#include <cstddef>
 
 /**
  * This struct defines a byte-wise structured PUS TC Data Field Header.
@@ -175,7 +176,13 @@ public:
 	 *
 	 * @param p_data	A pointer to another PUS Telecommand Packet.
 	 */
-	void setData( const uint8_t* p_data );
+	void setData( const uint8_t* pData );
+	/**
+	 * Set application data and corresponding length field.
+	 * @param pData
+	 * @param dataLen
+	 */
+	void setApplicationData(const uint8_t * pData, size_t dataLen);
 	/**
 	 * This is a debugging helper method that prints the whole packet content
 	 * to the screen.

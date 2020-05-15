@@ -46,9 +46,16 @@ void TcPacketBase::setErrorControl() {
 	(&tcData->data)[size + 1] = (crc) & 0X00FF; 		// CRCL
 }
 
-void TcPacketBase::setData(const uint8_t* p_Data) {
-	SpacePacketBase::setData(p_Data);
-	tcData = (TcPacketPointer*) p_Data;
+void TcPacketBase::setData(const uint8_t* pData) {
+	SpacePacketBase::setData(pData);
+	tcData = (TcPacketPointer*) pData;
+}
+
+void TcPacketBase::setApplicationData(const uint8_t * pData, size_t dataLen) {
+	SpacePacketBase::setData(pData);
+	tcData = (TcPacketPointer*) pData;
+	SpacePacketBase::setPacketDataLength(dataLen +
+			sizeof(PUSTcDataFieldHeader) + TcPacketBase::CRC_SIZE-1);
 }
 
 uint8_t TcPacketBase::getSecondaryHeaderFlag() {
