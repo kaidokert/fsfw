@@ -20,15 +20,17 @@ void printer::printHex(uint8_t *data, size_t size) {
 		}
 	}
 	sif::info << std::dec;
-	sif::info << " ] " << std::endl;
+	sif::info << "]" << std::endl;
 }
 
 void printer::printDec(uint8_t *data, size_t size) {
+	sif::info << std::dec;
 	for(size_t i = 0; i < size; i++) {
 		sif::info << "0x" << static_cast<int>(data[i]);
 		if(i < size - 1){
 			sif::info << " , ";
 		}
 	}
+	sif::info << "]" << std::endl;
 }
 
