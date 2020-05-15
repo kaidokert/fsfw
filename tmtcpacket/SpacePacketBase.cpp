@@ -82,7 +82,7 @@ void SpacePacketBase::setPacketDataLength( uint16_t new_length) {
 	this->data->header.packet_length_l = ( new_length & 0x00FF );
 }
 
-uint32_t SpacePacketBase::getFullSize() {
+size_t SpacePacketBase::getFullSize() {
 	//+1 is done because size in packet data length field is: size of data field -1
 	return this->getPacketDataLength() + sizeof(this->data->header) + 1;
 }
