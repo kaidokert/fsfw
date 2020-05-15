@@ -4,9 +4,15 @@
 #include <cstddef>
 
 namespace printer {
-void print(uint8_t *data, size_t size);
+
+enum class OutputType {
+	DEC,
+	HEX
+};
+
+void print(uint8_t* data, size_t size, OutputType type = OutputType::HEX);
+void printHex(uint8_t* data, size_t size);
+void printDec(uint8_t* data, size_t size);
 }
-
-
 
 #endif /* FRAMEWORK_GLOBALFUNCTIONS_PRINTER_H_ */

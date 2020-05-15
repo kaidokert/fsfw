@@ -79,7 +79,7 @@ void TcPacketBase::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
 		uint8_t ack, uint8_t service, uint8_t subservice) {
 	initSpacePacketHeader(true, true, apid, sequenceCount);
 	memset(&tcData->data_field, 0, sizeof(tcData->data_field));
-	setPacketDataLength(sizeof(tcData->data_field) + CRC_SIZE);
+	setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
 	//Data Field Header:
 	//Set CCSDS_secondary_header_flag to 0, version number to 001 and ack to 0000
 	tcData->data_field.version_type_ack = 0b00010000;
