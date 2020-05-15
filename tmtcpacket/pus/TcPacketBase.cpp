@@ -28,7 +28,7 @@ const uint8_t* TcPacketBase::getApplicationData() const {
 	return &tcData->data;
 }
 
-uint16_t TcPacketBase::getApplicationDataSize() {
+size_t TcPacketBase::getApplicationDataSize() {
 	return getPacketDataLength() - sizeof(tcData->data_field) - CRC_SIZE + 1;
 }
 
@@ -46,9 +46,16 @@ void TcPacketBase::setErrorControl() {
 	(&tcData->data)[size + 1] = (crc) & 0X00FF; 		// CRCL
 }
 
-void TcPacketBase::setData(const uint8_t* p_Data) {
-	SpacePacketBase::setData(p_Data);
-	tcData = (TcPacketPointer*) p_Data;
+void TcPacketBase::setData(const uint8_t* pData) {
+	SpacePacketBase::setData(pData);
+	tcData = (TcPacketPointer*) pData;
+}
+
+void TcPacketBase::setApplicationData(const uint8_t * pData, size_t dataLen) {
+	SpacePacketBase::setData(pData);
+	tcData = (TcPacketPointer*) pData;
+	SpacePacketBase::setPacketDataLength(dataLen +
+			sizeof(PUSTcDataFieldHeader) + TcPacketBase::CRC_SIZE-1);
 }
 
 uint8_t TcPacketBase::getSecondaryHeaderFlag() {
@@ -72,11 +79,16 @@ void TcPacketBase::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
 		uint8_t ack, uint8_t service, uint8_t subservice) {
 	initSpacePacketHeader(true, true, apid, sequenceCount);
 	memset(&tcData->data_field, 0, sizeof(tcData->data_field));
-	setPacketDataLength(sizeof(tcData->data_field) + CRC_SIZE);
+	setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
 	//Data Field Header:
 	//Set CCSDS_secondary_header_flag to 0, version number to 001 and ack to 0000
 	tcData->data_field.version_type_ack = 0b00010000;
 	tcData->data_field.version_type_ack |= (ack & 0x0F);
 	tcData->data_field.service_type = service;
 	tcData->data_field.service_subtype = subservice;
+}
+
+size_t TcPacketBase::calculateFullPacketLength(size_t appDataLen) {
+	return sizeof(CCSDSPrimaryHeader) + sizeof(PUSTcDataFieldHeader) +
+			appDataLen + TcPacketBase::CRC_SIZE;
 }

@@ -14,7 +14,8 @@ uint8_t SpacePacketBase::getPacketVersionNumber( void ) {
 	return (this->data->header.packet_id_h & 0b11100000) >> 5;
 }
 
-void SpacePacketBase::initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader, uint16_t apid, uint16_t sequenceCount) {
+void SpacePacketBase::initSpacePacketHeader(bool isTelecommand,
+		bool hasSecondaryHeader, uint16_t apid, uint16_t sequenceCount) {
 	//reset header to zero:
 	memset(data,0, sizeof(this->data->header) );
 	//Set TC/TM bit.
