@@ -2,7 +2,7 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 void printer::print(uint8_t *data, size_t size, OutputType type) {
-	sif::info << "StorageAccessor: Printing data with size " << size << ": [";
+	sif::info << "Printing data with size " << size << ": [";
 	if(type == OutputType::HEX) {
 		printer::printHex(data, size);
 	}
