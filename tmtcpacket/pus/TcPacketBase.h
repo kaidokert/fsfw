@@ -100,7 +100,8 @@ public:
 	 * @param service	PUS Service
 	 * @param subservice PUS Subservice
 	 */
-	void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack, uint8_t service, uint8_t subservice);
+	void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack,
+			uint8_t service, uint8_t subservice);
 	/**
 	 * This command returns the CCSDS Secondary Header Flag.
 	 * It shall always be zero for PUS Packets. This is the
@@ -188,6 +189,12 @@ public:
 	 * to the screen.
 	 */
 	void print();
+	/**
+	 * Calculate full packet length from application data length.
+	 * @param appDataLen
+	 * @return
+	 */
+	static size_t calculateFullPacketLength(size_t appDataLen);
 };
 
 

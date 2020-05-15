@@ -87,3 +87,8 @@ void TcPacketBase::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
 	tcData->data_field.service_type = service;
 	tcData->data_field.service_subtype = subservice;
 }
+
+size_t TcPacketBase::calculateFullPacketLength(size_t appDataLen) {
+	return sizeof(CCSDSPrimaryHeader) + sizeof(PUSTcDataFieldHeader) +
+			appDataLen + TcPacketBase::CRC_SIZE;
+}
