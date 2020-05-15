@@ -53,8 +53,9 @@ void TcPacketBase::setData(const uint8_t* pData) {
 
 void TcPacketBase::setApplicationData(const uint8_t * pData, uint16_t dataLen) {
 	setData(pData);
+	// packet data length is actual size of data field minus 1
 	SpacePacketBase::setPacketDataLength(dataLen +
-			sizeof(PUSTcDataFieldHeader) + TcPacketBase::CRC_SIZE-1);
+			sizeof(PUSTcDataFieldHeader) + TcPacketBase::CRC_SIZE - 1);
 }
 
 uint8_t TcPacketBase::getSecondaryHeaderFlag() {
