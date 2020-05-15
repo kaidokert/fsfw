@@ -153,7 +153,7 @@ public:
 	 * @return	The size of the PUS Application Data (without Error Control
 	 * 		field)
 	 */
-	size_t getApplicationDataSize();
+	uint16_t getApplicationDataSize();
 	/**
 	 * This getter returns the Error Control Field of the packet.
 	 *
