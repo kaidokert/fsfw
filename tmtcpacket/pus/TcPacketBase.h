@@ -183,7 +183,7 @@ public:
 	 * @param pData
 	 * @param dataLen
 	 */
-	void setApplicationData(const uint8_t * pData, size_t dataLen);
+	void setApplicationData(const uint8_t * pData, uint16_t dataLen);
 	/**
 	 * This is a debugging helper method that prints the whole packet content
 	 * to the screen.
