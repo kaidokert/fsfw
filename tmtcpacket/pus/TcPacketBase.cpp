@@ -52,8 +52,7 @@ void TcPacketBase::setData(const uint8_t* pData) {
 }
 
 void TcPacketBase::setApplicationData(const uint8_t * pData, uint16_t dataLen) {
-	SpacePacketBase::setData(pData);
-	tcData = (TcPacketPointer*) pData;
+	setData(pData);
 	SpacePacketBase::setPacketDataLength(dataLen +
 			sizeof(PUSTcDataFieldHeader) + TcPacketBase::CRC_SIZE-1);
 }
