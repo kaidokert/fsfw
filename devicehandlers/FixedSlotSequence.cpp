@@ -8,14 +8,8 @@ FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
 }
 
 FixedSlotSequence::~FixedSlotSequence() {
-	// This should call the destructor on each list entry.
+	// Call the destructor on each list entry.
 	slotList.clear();
-//	SlotListIter slotListIter = this->slotList.begin();
-//	//Iterate through slotList and delete all entries.
-//	while (slotListIter != this->slotList.end()) {
-//		delete (*slotIt);
-//		slotIt++;
-//	}
 }
 
 void FixedSlotSequence::executeAndAdvance() {
@@ -92,11 +86,12 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 		sif::error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+
 	auto slotIt = slotList.begin();
 	uint32_t count = 0;
 	uint32_t time = 0;
 	while (slotIt != slotList.end()) {
-		if (slotIt->handler == NULL) {
+		if (slotIt->handler == nullptr) {
 			sif::error << "FixedSlotSequene::initialize: ObjectId does not exist!"
 					<< std::endl;
 			count++;

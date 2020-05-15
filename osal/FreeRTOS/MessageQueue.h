@@ -6,8 +6,11 @@
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 
-#include <FreeRTOS.h>
-#include "queue.h"
+extern "C" {
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+}
+
 
 
 //TODO this class assumes that MessageQueueId_t is the same size as void* (the FreeRTOS handle type), compiler will catch this but it might be nice to have something checking or even an always working solution

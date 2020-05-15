@@ -2,6 +2,7 @@
 #define TCPACKETBASE_H_
 
 #include <framework/tmtcpacket/SpacePacketBase.h>
+#include <cstddef>
 
 /**
  * This struct defines a byte-wise structured PUS TC Data Field Header.
@@ -99,7 +100,8 @@ public:
 	 * @param service	PUS Service
 	 * @param subservice PUS Subservice
 	 */
-	void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack, uint8_t service, uint8_t subservice);
+	void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack,
+			uint8_t service, uint8_t subservice);
 	/**
 	 * This command returns the CCSDS Secondary Header Flag.
 	 * It shall always be zero for PUS Packets. This is the
@@ -151,7 +153,7 @@ public:
 	 * @return	The size of the PUS Application Data (without Error Control
 	 * 		field)
 	 */
-	size_t getApplicationDataSize();
+	uint16_t getApplicationDataSize();
 	/**
 	 * This getter returns the Error Control Field of the packet.
 	 *
@@ -175,12 +177,24 @@ public:
 	 *
 	 * @param p_data	A pointer to another PUS Telecommand Packet.
 	 */
-	void setData( const uint8_t* p_data );
+	void setData( const uint8_t* pData );
+	/**
+	 * Set application data and corresponding length field.
+	 * @param pData
+	 * @param dataLen
+	 */
+	void setApplicationData(const uint8_t * pData, uint16_t dataLen);
 	/**
 	 * This is a debugging helper method that prints the whole packet content
 	 * to the screen.
 	 */
 	void print();
+	/**
+	 * Calculate full packet length from application data length.
+	 * @param appDataLen
+	 * @return
+	 */
+	static size_t calculateFullPacketLength(size_t appDataLen);
 };
 
 

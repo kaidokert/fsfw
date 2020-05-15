@@ -24,7 +24,7 @@ public:
 	static ReturnValue_t getErrorCode( const CommandMessage* message );
 	static ReturnValue_t setMemoryDumpCommand( CommandMessage* message, uint32_t address, uint32_t length );
 	static ReturnValue_t setMemoryDumpReply( CommandMessage* message, store_address_t storageID );
-	static ReturnValue_t setMemoryLoadCommand( CommandMessage* message, uint32_t address, store_address_t storageID );
+	static void setMemoryLoadCommand( CommandMessage* message, uint32_t address, store_address_t storageID );
 	static ReturnValue_t setMemoryCheckCommand( CommandMessage* message, uint32_t address, uint32_t length );
 	static ReturnValue_t setMemoryCheckReply(  CommandMessage* message, uint16_t crc );
 	static ReturnValue_t setMemoryReplyFailed(  CommandMessage* message, ReturnValue_t errorCode, Command_t initialCommand );

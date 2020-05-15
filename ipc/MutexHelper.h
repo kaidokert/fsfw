@@ -10,10 +10,10 @@ public:
 			internalMutex(mutex) {
 		ReturnValue_t status = mutex->lockMutex(timeoutMs);
 		if(status != HasReturnvaluesIF::RETURN_OK){
-			sif::error << "MutexHelper: Lock of Mutex failed " << status << std::endl;
+			sif::error << "MutexHelper: Lock of Mutex failed " <<
+					status << std::endl;
 		}
 	}
-
 
 	~MutexHelper() {
 		internalMutex->unlockMutex();

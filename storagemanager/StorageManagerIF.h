@@ -3,12 +3,19 @@
 
 #include <framework/events/Event.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <stddef.h>
+#include <cstddef>
+#include <utility>
+
+class StorageAccessor;
+class ConstStorageAccessor;
+
+using AccessorPair = std::pair<ReturnValue_t, StorageAccessor>;
+using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
 
 /**
- * This union defines the type that identifies where a data packet is stored in the store.
- * It comprises of a raw part to read it as raw value and a structured part to use it in
- * pool-like stores.
+ * This union defines the type that identifies where a data packet is
+ * stored in the store. It comprises of a raw part to read it as raw value and
+ * a structured part to use it in pool-like stores.
  */
 union store_address_t {
 	/**
@@ -48,6 +55,10 @@ union store_address_t {
 	 * Alternative access to the raw value.
 	 */
 	uint32_t raw;
+
+	bool operator==(const store_address_t& other) const {
+		return raw == other.raw;
+	}
 };
 
 /**
@@ -71,6 +82,7 @@ public:
 	static const ReturnValue_t ILLEGAL_STORAGE_ID = MAKE_RETURN_CODE(3); //!< This return code indicates that data was requested with an illegal storage ID.
 	static const ReturnValue_t DATA_DOES_NOT_EXIST = MAKE_RETURN_CODE(4); //!< This return code indicates that the requested ID was valid, but no data is stored there.
 	static const ReturnValue_t ILLEGAL_ADDRESS = MAKE_RETURN_CODE(5);
+	static const ReturnValue_t POOL_TOO_LARGE = MAKE_RETURN_CODE(6); //!< Pool size too large on initialization.
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::OBSW;
 	static const Event GET_DATA_FAILED = MAKE_EVENT(0, SEVERITY::LOW);
@@ -94,7 +106,8 @@ public:
 	 * 					@li	RETURN_FAILED if data could not be added.
 	 * 						storageId is unchanged then.
 	 */
-	virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t * data, uint32_t size, bool ignoreFault = false) = 0;
+	virtual ReturnValue_t addData(store_address_t* storageId,
+			const uint8_t * data, size_t size, bool ignoreFault = false) = 0;
 	/**
 	 * @brief	With deleteData, the storageManager frees the memory region
 	 * 			identified by packet_id.
@@ -105,14 +118,37 @@ public:
 	 */
 	virtual ReturnValue_t deleteData(store_address_t packet_id) = 0;
 	/**
-	 * @brief	Another deleteData which uses the pointer and size of the stored data to delete the content.
+	 * @brief	Another deleteData which uses the pointer and size of the
+	 * 			stored data to delete the content.
 	 * @param buffer	Pointer to the data.
 	 * @param size		Size of data to be stored.
 	 * @param storeId	Store id of the deleted element (optional)
 	 * @return	@li RETURN_OK on success.
 	 * 			@li	failure code if deletion did not work
 	 */
-	virtual ReturnValue_t deleteData(uint8_t* buffer, uint32_t size, store_address_t* storeId = NULL) = 0;
+	virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
+			store_address_t* storeId = nullptr) = 0;
+
+	/**
+	 * @brief 	Access the data by supplying a store ID.
+	 * @details
+	 * A pair consisting of the retrieval result and an instance of a
+	 * ConstStorageAccessor class is returned
+	 * @param storeId
+	 * @return Pair of return value and a ConstStorageAccessor instance
+	 */
+	virtual ConstAccessorPair getData(store_address_t storeId) = 0;
+
+	/**
+	 * @brief 	Access the data by supplying a store ID and a helper
+	 * 			instance
+	 * @param storeId
+	 * @param constAccessor Wrapper function to access store data.
+	 * @return
+	 */
+	virtual ReturnValue_t getData(store_address_t storeId,
+			ConstStorageAccessor& constAccessor) = 0;
+
 	/**
 	 * @brief	getData returns an address to data and the size of the data
 	 * 			for a given packet_id.
@@ -125,12 +161,34 @@ public:
 	 * 				(e.g. an illegal packet_id was passed).
 	 */
 	virtual ReturnValue_t getData(store_address_t packet_id,
-			const uint8_t** packet_ptr, size_t * size) = 0;
+			const uint8_t** packet_ptr, size_t* size) = 0;
+
+
 	/**
-	 * Same as above, but not const and therefore modifiable.
+	 * Modify data by supplying a store ID
+	 * @param storeId
+	 * @return Pair of return value and StorageAccessor helper
+	 */
+	virtual AccessorPair modifyData(store_address_t storeId) = 0;
+
+	/**
+	 * Modify data by supplying a store ID and a StorageAccessor helper instance.
+	 * @param storeId
+	 * @param accessor Helper class to access the modifiable data.
+	 * @return
+	 */
+	virtual ReturnValue_t modifyData(store_address_t storeId,
+				StorageAccessor& accessor) = 0;
+
+	/**
+	 * Get pointer and size of modifiable data by supplying the storeId
+	 * @param packet_id
+	 * @param packet_ptr [out] Pointer to pointer of data to set
+	 * @param size [out] Pointer to size to set
+	 * @return
 	 */
 	virtual ReturnValue_t modifyData(store_address_t packet_id,
-			uint8_t** packet_ptr, size_t * size) = 0;
+			uint8_t** packet_ptr, size_t* size) = 0;
 	/**
 	 * This method reserves an element of \c size.
 	 *
@@ -145,13 +203,13 @@ public:
 	 * 						storageId is unchanged then.
 	 */
 	virtual ReturnValue_t getFreeElement(store_address_t* storageId,
-			const uint32_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
+			const size_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
+
 	/**
 	 * Clears the whole store.
 	 * Use with care!
 	 */
 	virtual void clearStore() = 0;
-
 };
 
 #endif /* STORAGEMANAGERIF_H_ */

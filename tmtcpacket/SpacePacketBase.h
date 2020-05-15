@@ -2,9 +2,10 @@
 #define SPACEPACKETBASE_H_
 
 #include <framework/tmtcpacket/ccsds_header.h>
+#include <cstddef>
 
 /**
- * \defgroup tmtcpackets Space Packets
+ * @defgroup tmtcpackets Space Packets
  * This is the group, where all classes associated with Telecommand and
  * Telemetry packets belong to.
  * The class hierarchy resembles the dependency between the different standards
@@ -167,7 +168,7 @@ public:
 	 * This method returns the full raw packet size.
 	 * @return	The full size of the packet in bytes.
 	 */
-	uint32_t getFullSize();
+	size_t getFullSize();
 
 	uint32_t getApidAndSequenceCount() const;
 

@@ -70,13 +70,8 @@ public:
 	}
 
 	ReturnValue_t pop() {
-	    if(empty()) {
-	        return EMPTY;
-	    } else {
-	        readIndex = next(readIndex);
-	        --currentSize;
-	        return HasReturnvaluesIF::RETURN_OK;
-	    }
+		T value;
+		return this->retrieve(&value);
 	}
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIFO_CLASS;

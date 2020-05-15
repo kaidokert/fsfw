@@ -31,12 +31,11 @@ ReturnValue_t MemoryMessage::setMemoryDumpReply(CommandMessage* message, store_a
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MemoryMessage::setMemoryLoadCommand(CommandMessage* message,
+void MemoryMessage::setMemoryLoadCommand(CommandMessage* message,
 		uint32_t address, store_address_t storageID) {
 	message->setCommand(CMD_MEMORY_LOAD);
 	message->setParameter( address );
 	message->setParameter2( storageID.raw );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t MemoryMessage::getErrorCode(const CommandMessage* message) {

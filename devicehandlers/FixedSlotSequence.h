@@ -3,8 +3,7 @@
 
 #include <framework/devicehandlers/FixedSequenceSlot.h>
 #include <framework/objectmanager/SystemObject.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <list>
+
 #include <set>
 
 using SlotList = std::multiset<FixedSequenceSlot>;
@@ -12,7 +11,6 @@ using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 
 /**
  * @brief	This class is the representation of a Polling Sequence Table in software.
- *
  * @details
  * The FixedSlotSequence object maintains the dynamic execution of
  * device handler objects.
@@ -73,9 +71,10 @@ public:
 	bool slotFollowsImmediately();
 
 	/**
-	 * \brief	This method returns the time until the next software component is invoked.
+	 * @brief	This method returns the time until the next software
+	 * 			component is invoked.
 	 *
-	 * \details
+	 * @details
 	 * This method is vitally important for the operation of the PST.
 	 * By fetching the polling time of the current slot and that of the
 	 * next one (or the first one, if the list end is reached)
@@ -87,11 +86,15 @@ public:
 	uint32_t getIntervalToNextSlotMs();
 
 	/**
-	 * \brief	This method returns the time difference between the current slot and the previous slot
+	 * @brief	This method returns the time difference between the current
+	 * 			slot and the previous slot
 	 *
-	 * \details	This method is vitally important for the operation of the PST. By fetching the polling time
-	 * 			of the current slot and that of the prevous one (or the last one, if the slot is the first one)
-	 * 			it calculates and returns the interval in milliseconds that the handler execution shall be delayed.
+	 * @details
+	 * This method is vitally important for the operation of the PST.
+	 * By fetching the polling time of the current slot and that of the previous
+	 * one (or the last one, if the slot is the first one) it calculates and
+	 * returns the interval in milliseconds that the handler execution shall
+	 * be delayed.
 	 */
 	uint32_t getIntervalToPreviousSlotMs();
 
@@ -101,20 +104,24 @@ public:
 	uint32_t getLengthMs() const;
 
 	/**
-	 * \brief	The method to execute the device handler entered in the current PollingSlot object.
+	 * @brief	The method to execute the device handler entered in the current
+	 * 			PollingSlot object.
 	 *
-	 * \details	Within this method the device handler object to be executed is chosen by looking up the
-	 * 			handler address of the current slot in the handlerMap. Either the device handler's
-	 * 			talkToInterface or its listenToInterface method is invoked, depending on the isTalking flag
-	 * 			of the polling slot. After execution the iterator current is increased or, by reaching the
-	 * 			end of slotList, reset to the beginning.
+	 * @details
+	 * Within this method the device handler object to be executed is chosen by
+	 * looking up the handler address of the current slot in the handlerMap.
+	 * Either the device handler's talkToInterface or its listenToInterface
+	 * method is invoked, depending on the isTalking flag of the polling slot.
+	 * After execution the iterator current is increased or, by reaching the
+	 * end of slotList, reset to the beginning.
 	 */
 	void executeAndAdvance();
 
 	/**
 	 * @brief	An iterator that indicates the current polling slot to execute.
 	 *
-	 * @details	This is an iterator for slotList and always points to the polling slot which is executed next.
+	 * @details	This is an iterator for slotList and always points to the
+	 * 			polling slot which is executed next.
 	 */
 	SlotListIter current;
 
@@ -124,16 +131,19 @@ public:
 	 * @return
 	 */
 	ReturnValue_t checkSequence() const;
+
 protected:
 
 	/**
-	 * @brief	This list contains all PollingSlot objects, defining order and execution time of the
-	 * 			device handler objects.
+	 * @brief	This list contains all PollingSlot objects, defining order and
+	 * 			execution time of the device handler objects.
 	 *
-	 * @details	The slot list is a std:list object that contains all created PollingSlot instances.
-	 * 			They are NOT ordered automatically, so by adding entries, the correct order needs to be ensured.
-	 * 			By iterating through this list the polling sequence is executed. Two entries with identical
-	 * 			polling times are executed immediately one after another.
+	 * @details
+	 * The slot list is a std:list object that contains all created
+	 * PollingSlot instances. They are NOT ordered automatically, so by
+	 * adding entries, the correct order needs to be ensured. By iterating
+	 * through this list the polling sequence is executed. Two entries with
+	 * identical polling times are executed immediately one after another.
 	 */
 	SlotList slotList;
 
