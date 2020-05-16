@@ -1,9 +1,9 @@
 #ifndef CONTROLLERSET_H_
 #define CONTROLLERSET_H_
 
-#include <framework/datapool/DataSet.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
 
-class ControllerSet :public DataSet {
+class ControllerSet :public GlobDataSet {
 public:
 	ControllerSet();
 	virtual ~ControllerSet();

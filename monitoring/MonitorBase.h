@@ -1,7 +1,7 @@
 #ifndef MONITORBASE_H_
 #define MONITORBASE_H_
 
-#include <framework/datapool/DataSet.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapool/PIDReader.h>
 #include <framework/monitoring/LimitViolationReporter.h>
 #include <framework/monitoring/MonitoringIF.h>
@@ -48,7 +48,7 @@ public:
 
 protected:
 	virtual ReturnValue_t fetchSample(T* sample) {
-		DataSet mySet;
+		GlobDataSet mySet;
 		PIDReader<T> parameter(this->parameterId, &mySet);
 		mySet.read();
 		if (!parameter.isValid()) {

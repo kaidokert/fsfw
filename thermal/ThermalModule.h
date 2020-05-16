@@ -1,7 +1,7 @@
 #ifndef THERMALMODULE_H_
 #define THERMALMODULE_H_
 
-#include <framework/datapool/DataSet.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapool/PoolVariable.h>
 #include <framework/devicehandlers/HealthDevice.h>
 #include <framework/events/EventReportingProxyIF.h>
@@ -23,10 +23,10 @@ public:
 	};
 
 	ThermalModule(uint32_t moduleTemperaturePoolId, uint32_t currentStatePoolId,
-			uint32_t targetStatePoolId, DataSet *dataSet, Parameters parameters,
+			uint32_t targetStatePoolId, GlobDataSet *dataSet, Parameters parameters,
 			RedundantHeater::Parameters heaterParameters);
 
-	ThermalModule(uint32_t moduleTemperaturePoolId, DataSet *dataSet);
+	ThermalModule(uint32_t moduleTemperaturePoolId, GlobDataSet *dataSet);
 
 	virtual ~ThermalModule();
 

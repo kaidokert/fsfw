@@ -1,6 +1,6 @@
 #include "InternalErrorReporter.h"
 
-#include <framework/datapool/DataSet.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapool/PoolVariable.h>
 #include <framework/ipc/MutexFactory.h>
 
@@ -20,13 +20,13 @@ InternalErrorReporter::~InternalErrorReporter() {
 
 ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 
-	DataSet mySet;
-	PoolVariable<uint32_t> queueHitsInPool(queuePoolId, &mySet,
+	GlobDataSet mySet;
+	gp_uint32_t queueHitsInPool(queuePoolId, &mySet,
 			PoolVariableIF::VAR_READ_WRITE);
-	PoolVariable<uint32_t> tmHitsInPool(tmPoolId, &mySet,
+	gp_uint32_t tmHitsInPool(tmPoolId, &mySet,
 			PoolVariableIF::VAR_READ_WRITE);
 
-	PoolVariable<uint32_t> storeHitsInPool(storePoolId, &mySet,
+	gp_uint32_t storeHitsInPool(storePoolId, &mySet,
 			PoolVariableIF::VAR_READ_WRITE);
 	mySet.read();
 

@@ -1,5 +1,4 @@
 #include <framework/datapool/HkSwitchHelper.h>
-//#include <mission/tmtcservices/HKService_03.h>
 #include <framework/ipc/QueueFactory.h>
 
 HkSwitchHelper::HkSwitchHelper(EventReportingProxyIF* eventProxy) :
