@@ -7,15 +7,15 @@
 #include <framework/osal/linux/MessageQueue.h>
 
 
-MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize) :
 		id(0), lastPartner(0), defaultDestination(NO_QUEUE) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
 	this->id = 0;
 	//Set attributes
 	attributes.mq_curmsgs = 0;
-	attributes.mq_maxmsg = message_depth;
-	attributes.mq_msgsize = max_message_size;
+	attributes.mq_maxmsg = messageDepth;
+	attributes.mq_msgsize = maxMessageSize;
 	attributes.mq_flags = 0; //Flags are ignored on Linux during mq_open
 	//Set the name of the queue
 	sprintf(name, "/Q%u\n", queueCounter++);
@@ -265,7 +265,11 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			           << strerror(errno) << " in mq_send" << std::endl;
 			/*NO BREAK*/
 		case EMSGSIZE:
-			//The msg_len is greater than the msgsize associated with the specified queue.
+			// The msg_len is greater than the msgsize associated with
+			//the specified queue.
+			sif::error << "MessageQueue::sendMessage: Size error [" <<
+					strerror(errno) << "] in mq_send" << std::endl;
+			/*NO BREAK*/
 		default:
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}

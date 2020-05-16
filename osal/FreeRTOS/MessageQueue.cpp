@@ -2,12 +2,14 @@
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-// TODO I guess we should have a way of checking if we are in an ISR and then use the "fromISR" versions of all calls
-// As a first step towards this, introduces system context variable which needs to be switched manually
+// TODO I guess we should have a way of checking if we are in an ISR and then
+// use the "fromISR" versions of all calls
+// As a first step towards this, introduces system context variable which needs
+// to be switched manually
 // Haven't found function to find system context.
-MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize) :
 defaultDestination(0),lastPartner(0), callContext(CallContext::task)  {
-	handle = xQueueCreate(message_depth, max_message_size);
+	handle = xQueueCreate(messageDepth, maxMessageSize);
 	if (handle == NULL) {
 		sif::error << "MessageQueue creation failed" << std::endl;
 	}
