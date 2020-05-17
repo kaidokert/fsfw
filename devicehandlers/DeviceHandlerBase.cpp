@@ -1169,7 +1169,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 	if (mode == MODE_NORMAL) {
 		result = buildNormalDeviceCommand(&deviceCommandId);
 		if (result == BUSY) {
-			debug << std::hex << getObjectId()
+			sif::debug << std::hex << getObjectId()
 					<< ": DHB::buildInternalCommand busy" << std::endl; //so we can track misconfigurations
 			result = NOTHING_TO_SEND; //no need to report this
 		}
@@ -1190,7 +1190,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
-			debug << std::hex << getObjectId()
+			sif::debug << std::hex << getObjectId()
 					<< ": DHB::buildInternalCommand: Command "
 					<< deviceCommandId << " isExecuting" << std::endl; //so we can track misconfigurations
 			return; //this is an internal command, no need to report a failure here, missed reply will track if a reply is too late, otherwise, it's ok

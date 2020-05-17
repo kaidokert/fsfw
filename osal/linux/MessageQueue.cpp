@@ -17,11 +17,11 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 	attributes.mq_maxmsg = message_depth;
 	attributes.mq_msgsize = max_message_size;
 	attributes.mq_flags = 0; //Flags are ignored on Linux during mq_open
-
 	//Set the name of the queue
 	sprintf(name, "/Q%u\n", queueCounter++);
 
-	//Create a nonblocking queue if the name is available (the queue is Read and writable for the owner as well as the group)
+	//Create a nonblocking queue if the name is available (the queue is Read and
+	// writable for the owner as well as the group)
 	mqd_t tempId = mq_open(name, O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
 	S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH, &attributes);
 	if (tempId == -1) {
@@ -32,8 +32,8 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 			//We unlink the other queue
 			int status = mq_unlink(name);
 			if (status != 0) {
-				error << "mq_unlink Failed with status: " << strerror(errno)
-						<< std::endl;
+				sif::error << "mq_unlink Failed with status: " << strerror(errno)
+						   << std::endl;
 			} else {
 				//Successful unlinking, try to open again
 				mqd_t tempId = mq_open(name,
@@ -47,7 +47,7 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 			}
 		}
 		//Failed either the first time or the second time
-		error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
+		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
 				<< name << std::dec << " failed with status: "
 				<< strerror(errno) << std::endl;
 	} else {
@@ -59,11 +59,13 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 MessageQueue::~MessageQueue() {
 	int status = mq_close(this->id);
 	if(status != 0){
-		error << "MessageQueue::Destructor: mq_close Failed with status: " << strerror(errno) <<std::endl;
+		sif::error << "MessageQueue::Destructor: mq_close Failed with status: "
+				   << strerror(errno) <<std::endl;
 	}
 	status = mq_unlink(name);
 	if(status != 0){
-		error << "MessageQueue::Destructor: mq_unlink Failed with status: " << strerror(errno) <<std::endl;
+		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
+				   << strerror(errno) <<std::endl;
 	}
 }
 
@@ -93,7 +95,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 	unsigned int messagePriority = 0;
-	int status = mq_receive(id,reinterpret_cast<char*>(message->getBuffer()),message->MAX_MESSAGE_SIZE,&messagePriority);
+	int status = mq_receive(id,reinterpret_cast<char*>(message->getBuffer()),
+			message->MAX_MESSAGE_SIZE,&messagePriority);
 	if (status > 0) {
 		this->lastPartner = message->getSender();
 		//Check size of incoming message.
@@ -114,7 +117,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 			return MessageQueueIF::EMPTY;
 		case EBADF:
 			//mqdes doesn't represent a valid queue open for reading.
-			error << "MessageQueue::receive: configuration error " << strerror(errno)  << std::endl;
+			sif::error << "MessageQueue::receive: configuration error "
+			           << strerror(errno)  << std::endl;
 			/*NO BREAK*/
 		case EINVAL:
 			/*
@@ -123,7 +127,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 			 * * The number of bytes requested, msg_len is less than zero.
 			 * * msg_len is anything other than the mq_msgsize of the specified queue, and the QNX extended option MQ_READBUF_DYNAMIC hasn't been set in the queue's mq_flags.
 			 */
-			error << "MessageQueue::receive: configuration error " << strerror(errno)  << std::endl;
+			sif::error << "MessageQueue::receive: configuration error "
+					   << strerror(errno)  << std::endl;
 			/*NO BREAK*/
 		case EMSGSIZE:
 			/*
@@ -131,7 +136,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 			 * * the QNX extended option MQ_READBUF_DYNAMIC hasn't been set, and the given msg_len is shorter than the mq_msgsize for the given queue.
 			 * * the extended option MQ_READBUF_DYNAMIC has been set, but the given msg_len is too short for the message that would have been received.
 			 */
-			error << "MessageQueue::receive: configuration error " << strerror(errno)  << std::endl;
+			sif::error << "MessageQueue::receive: configuration error "
+			           << strerror(errno)  << std::endl;
 			/*NO BREAK*/
 		case EINTR:
 			//The operation was interrupted by a signal.
@@ -154,7 +160,8 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 		switch(errno){
 		case EBADF:
 			//mqdes doesn't represent a valid message queue.
-			error << "MessageQueue::flush configuration error, called flush with an invalid queue ID" << std::endl;
+			sif::error << "MessageQueue::flush configuration error, "
+					"called flush with an invalid queue ID" << std::endl;
 			/*NO BREAK*/
 		case EINVAL:
 			//mq_attr is NULL
@@ -169,7 +176,8 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 		switch(errno){
 		case EBADF:
 			//mqdes doesn't represent a valid message queue.
-			error << "MessageQueue::flush configuration error, called flush with an invalid queue ID" << std::endl;
+			sif::error << "MessageQueue::flush configuration error, "
+					"called flush with an invalid queue ID" << std::endl;
 			/*NO BREAK*/
 		case EINVAL:
 			/*
@@ -237,7 +245,9 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			return MessageQueueIF::FULL;
 		case EBADF:
 			//mq_des doesn't represent a valid message queue descriptor, or mq_des wasn't opened for writing.
-			error << "MessageQueue::sendMessage: Configuration error " << strerror(errno) << " in mq_send mqSendTo: " << sendTo << " sent from " << sentFrom << std::endl;
+			sif::error << "MessageQueue::sendMessage: Configuration error "
+			           << strerror(errno) << " in mq_send mqSendTo: " << sendTo
+					   << " sent from " << sentFrom << std::endl;
 			/*NO BREAK*/
 		case EINTR:
 			//The call was interrupted by a signal.
@@ -248,9 +258,11 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			 * * msg_len is negative.
 			 * * msg_prio is greater than MQ_PRIO_MAX.
 			 * * msg_prio is less than 0.
-			 * * MQ_PRIO_RESTRICT is set in the mq_attr of mq_des, and msg_prio is greater than the priority of the calling process.
+			 * * MQ_PRIO_RESTRICT is set in the mq_attr of mq_des,
+			 *   and msg_prio is greater than the priority of the calling process.
 			 * */
-			error << "MessageQueue::sendMessage: Configuration error " << strerror(errno) << " in mq_send" << std::endl;
+			sif::error << "MessageQueue::sendMessage: Configuration error "
+			           << strerror(errno) << " in mq_send" << std::endl;
 			/*NO BREAK*/
 		case EMSGSIZE:
 			//The msg_len is greater than the msgsize associated with the specified queue.
