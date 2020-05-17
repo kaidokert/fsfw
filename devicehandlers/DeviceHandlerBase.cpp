@@ -653,8 +653,8 @@ ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 		uint8_t * *data, uint32_t * len) {
 	uint32_t lenTmp;
 
-	if (IPCStore == NULL) {
-		*data = NULL;
+	if (IPCStore == nullptr) {
+		*data = nullptr;
 		*len = 0;
 		return RETURN_FAILED;
 	}
@@ -665,7 +665,7 @@ ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 	} else {
 		triggerEvent(StorageManagerIF::GET_DATA_FAILED, result,
 				storageAddress.raw);
-		*data = NULL;
+		*data = nullptr;
 		*len = 0;
 		return result;
 	}
