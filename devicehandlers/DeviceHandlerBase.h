@@ -614,11 +614,7 @@ protected:
 	/**
 	 * Cookie used for communication
 	 */
-<<<<<<< HEAD
-	CookieIF * comCookie = nullptr;
-=======
 	CookieIF * comCookie;
->>>>>>> mueller_framework
 
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.
