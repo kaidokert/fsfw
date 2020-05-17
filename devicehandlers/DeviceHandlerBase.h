@@ -481,9 +481,11 @@ public:
 	 */
 	virtual void setParentQueue(MessageQueueId_t parentQueueId);
 
+	/** @brief 	Implementation required for HasActionIF */
 	ReturnValue_t executeAction(ActionId_t actionId,
 			MessageQueueId_t commandedBy, const uint8_t* data,
 			size_t size) override;
+
 	Mode_t getTransitionSourceMode() const;
 	Submode_t getTransitionSourceSubMode() const;
 	virtual void getMode(Mode_t *mode, Submode_t *submode);
@@ -607,12 +609,16 @@ protected:
 	/**
 	 * Communication object used for device communication
 	 */
-	DeviceCommunicationIF *communicationInterface = nullptr;
+	DeviceCommunicationIF * communicationInterface = nullptr;
 
 	/**
 	 * Cookie used for communication
 	 */
+<<<<<<< HEAD
 	CookieIF * comCookie = nullptr;
+=======
+	CookieIF * comCookie;
+>>>>>>> mueller_framework
 
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.

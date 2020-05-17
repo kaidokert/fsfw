@@ -12,6 +12,8 @@
 #include <framework/ipc/QueueFactory.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
+#include <iomanip>
+
 object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
@@ -37,6 +39,12 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 			CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);
+	if (comCookie == nullptr) {
+		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex <<
+				std::setw(8) << std::setfill('0') << this->getObjectId() <<
+				std::dec << ": Do not pass nullptr as a cookie, consider "
+				"passing a dummy cookie instead!" << std::endl;
+	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
 				defaultFDIRParentId);
@@ -353,8 +361,8 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
 	info.delayCycles = 0;
 	info.replyLen = replyLen;
 	info.command = deviceCommandMap.end();
-	std::pair<DeviceReplyIter, bool> result = deviceReplyMap.emplace(replyId, info);
-	if (result.second) {
+	auto resultPair = deviceReplyMap.emplace(replyId, info);
+	if (resultPair.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
@@ -366,11 +374,8 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
 	info.expectedReplies = 0;
 	info.isExecuting = false;
 	info.sendReplyTo = NO_COMMANDER;
-	std::pair<std::map<DeviceCommandId_t, DeviceCommandInfo>::iterator, bool> returnValue;
-	returnValue = deviceCommandMap.insert(
-			std::pair<DeviceCommandId_t, DeviceCommandInfo>(deviceCommand,
-					info));
-	if (returnValue.second) {
+	auto resultPair = deviceCommandMap.emplace(deviceCommand, info);
+	if (resultPair.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
@@ -648,8 +653,8 @@ ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 		uint8_t * *data, uint32_t * len) {
 	size_t lenTmp;
 
-	if (IPCStore == NULL) {
-		*data = NULL;
+	if (IPCStore == nullptr) {
+		*data = nullptr;
 		*len = 0;
 		return RETURN_FAILED;
 	}
@@ -660,7 +665,7 @@ ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 	} else {
 		triggerEvent(StorageManagerIF::GET_DATA_FAILED, result,
 				storageAddress.raw);
-		*data = NULL;
+		*data = nullptr;
 		*len = 0;
 		return result;
 	}
@@ -1054,8 +1059,8 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 //		if (mode != MODE_OFF) {
 //			replyReturnvalueToCommand(WRONG_MODE_FOR_COMMAND);
 //		} else {
-////			result = switchCookieChannel(
-////					DeviceHandlerMessage::getIoBoardObjectId(message));
+//			result = switchCookieChannel(
+//					DeviceHandlerMessage::getIoBoardObjectId(message));
 //			if (result == RETURN_OK) {
 //				replyReturnvalueToCommand(RETURN_OK);
 //			} else {
