@@ -606,12 +606,12 @@ protected:
 	/**
 	 * Communication object used for device communication
 	 */
-	DeviceCommunicationIF *communicationInterface = nullptr;
+	DeviceCommunicationIF * communicationInterface = nullptr;
 
 	/**
 	 * Cookie used for communication
 	 */
-	CookieIF * comCookie = nullptr;
+	CookieIF * comCookie;
 
 	struct DeviceCommandInfo {
 		bool isExecuting; //!< Indicates if the command is already executing.
