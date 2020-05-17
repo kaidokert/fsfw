@@ -5,7 +5,7 @@
 #include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
 
 #include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapool/PoolVariable.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/devicehandlers/DeviceTmReportingWrapper.h>
 #include <framework/globalfunctions/CRC.h>
 #include <framework/subsystem/SubsystemBase.h>

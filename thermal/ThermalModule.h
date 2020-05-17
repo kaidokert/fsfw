@@ -2,7 +2,7 @@
 #define THERMALMODULE_H_
 
 #include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapool/PoolVariable.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/devicehandlers/HealthDevice.h>
 #include <framework/events/EventReportingProxyIF.h>
 #include "ThermalModuleIF.h"

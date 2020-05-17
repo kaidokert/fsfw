@@ -1,5 +1,5 @@
-#ifndef POOLVARIABLE_H_
-#define POOLVARIABLE_H_
+#ifndef GLOBALPOOLVARIABLE_H_
+#define GLOBALPOOLVARIABLE_H_
 
 #include <framework/datapool/DataSetIF.h>
 #include <framework/datapool/PoolVariableIF.h>

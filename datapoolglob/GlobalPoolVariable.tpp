@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GLOBALPOOLVARIABLE_TPP_
+#define GLOBALPOOLVARIABLE_TPP_
 
 template <class T>
 inline GlobPoolVar<T>::GlobPoolVar(uint32_t set_id,
@@ -82,3 +83,5 @@ template <class T>
 inline void GlobPoolVar<T>::setValid(uint8_t valid) {
 	this->valid = valid;
 }
+
+#endif

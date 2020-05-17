@@ -2,7 +2,7 @@
 #define MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 
 #include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapool/PoolVariable.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/thermal/AbstractTemperatureSensor.h>
 #include <framework/thermal/ThermalModule.h>
