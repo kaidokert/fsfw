@@ -37,6 +37,12 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 			CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);
+	if (comCookie == nullptr) {
+		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex <<
+				this->getObjectId() << std::dec << ": Do not pass nullptr as a"
+				" cookie, consider passing a dummy cookie instead!" <<
+				std::endl;
+	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
 				defaultFDIRParentId);
