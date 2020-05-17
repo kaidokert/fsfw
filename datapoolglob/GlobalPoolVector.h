@@ -220,4 +220,7 @@ public:
 	}
 };
 
+template<typename T, uint16_t vectorSize>
+using gp_vec_t = GlobPoolVector<T, vectorSize>;
+
 #endif /* POOLVECTOR_H_ */
