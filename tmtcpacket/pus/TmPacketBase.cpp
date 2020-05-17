@@ -63,7 +63,7 @@ bool TmPacketBase::checkAndSetStamper() {
 	if (timeStamper == NULL) {
 		timeStamper = objectManager->get<TimeStamperIF>(timeStamperId);
 		if (timeStamper == NULL) {
-			error << "TmPacketBase::checkAndSetStamper: Stamper not found!"
+			sif::error << "TmPacketBase::checkAndSetStamper: Stamper not found!"
 					<< std::endl;
 			return false;
 		}

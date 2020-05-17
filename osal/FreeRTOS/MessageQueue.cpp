@@ -8,7 +8,7 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 defaultDestination(0),lastPartner(0)  {
 	handle = xQueueCreate(message_depth, max_message_size);
 	if (handle == NULL) {
-		error << "MessageQueue creation failed" << std::endl;
+		sif::error << "MessageQueue creation failed" << std::endl;
 	}
 }
 
