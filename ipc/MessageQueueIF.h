@@ -36,8 +36,8 @@ public:
 	 * 			lastParnter information as destination. If there was no message received yet
 	 * 			(i.e. lastPartner is zero), an error code is returned.
 	 * @param message	A pointer to a previously created message, which is sent.
-	 * \return RETURN_OK if ok
-	 * \return NO_REPLY_PARTNER Should return NO_REPLY_PARTNER if partner was found
+	 * @return RETURN_OK if ok
+	 * @return NO_REPLY_PARTNER Should return NO_REPLY_PARTNER if partner was found
 	 */
 	virtual ReturnValue_t reply( MessageQueueMessage* message ) = 0;
 
@@ -53,10 +53,12 @@ public:
 
 	/**
 	 * @brief	This function reads available messages from the message queue.
-	 * @details	If data is available it is stored in the passed message pointer. The message's
-	 * 			original content is overwritten and the sendFrom information is stored in the
-	 * 			lastPartner attribute. Else, the lastPartner information remains untouched, the
-	 * 			message's content is cleared and the function returns immediately.
+	 * @details
+	 * If data is available it is stored in the passed message pointer.
+	 * The message's original content is overwritten and the sendFrom
+	 * information is stored in theblastPartner attribute. Else, the lastPartner
+	 * information remains untouched, the message's content is cleared and the
+	 * function returns immediately.
 	 * @param message	A pointer to a message in which the received data is stored.
 	 * @return -@c RETURN_OK on success
 	 *         -@c MessageQueueIF::EMPTY if queue is empty
@@ -90,7 +92,9 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
-	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
+	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo,
+			MessageQueueMessage* message, MessageQueueId_t sentFrom,
+			bool ignoreFault = false ) = 0;
 
 	/**
 	 * @brief	This operation sends a message to the given destination.
@@ -100,7 +104,8 @@ public:
 	 * @param message	A pointer to a previously created message, which is sent.
 	 * @param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
-	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo, MessageQueueMessage* message, bool ignoreFault = false ) = 0;
+	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo,
+			MessageQueueMessage* message, bool ignoreFault = false ) = 0;
 
 	/**
 	 * @brief	The sendToDefaultFrom method sends a queue message to the default destination.
@@ -111,7 +116,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
-	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message,
+			MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
 	/**
 	 * @brief	This operation sends a message to the default destination.
 	 * @details	As in the sendMessage method, this function uses the sendToDefault call of the

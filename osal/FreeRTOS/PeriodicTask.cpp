@@ -1,6 +1,7 @@
+#include "PeriodicTask.h"
+
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tasks/ExecutableObjectIF.h>
-#include "PeriodicTask.h"
 
 PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod setPeriod,
@@ -31,7 +32,7 @@ void PeriodicTask::taskEntryPoint(void* argument) {
 	// if it is not set and we get here, the scheduler was started before #startTask() was called and we need to suspend
 	// if it is set, the scheduler was not running before #startTask() was called and we can continue
 
-	if (!originalTask->started) {
+	if (not originalTask->started) {
 		vTaskSuspend(NULL);
 	}
 
@@ -70,8 +71,19 @@ void PeriodicTask::taskFunctionality() {
 				it != objectList.end(); ++it) {
 			(*it)->performOperation();
 		}
-		//TODO deadline missed check
+
+		/* If all operations are finished and the difference of the
+		 * current time minus the last wake time is larger than the
+		 * wait period, a deadline was missed. */
+		if(xTaskGetTickCount() - xLastWakeTime >= xPeriod) {
+			sif::warning << "PeriodicTask: " << pcTaskGetName(NULL) <<
+					" missed deadline!\n" << std::flush;
+			if(deadlineMissedFunc != nullptr) {
+				this->deadlineMissedFunc();
+			}
+		}
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
 	}
 }
 

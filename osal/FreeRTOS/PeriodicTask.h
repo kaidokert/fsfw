@@ -5,8 +5,10 @@
 #include <framework/tasks/PeriodicTaskIF.h>
 #include <framework/tasks/Typedef.h>
 
-#include <FreeRTOS.h>
-#include "task.h"
+extern "C" {
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+}
 
 #include <vector>
 
