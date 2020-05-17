@@ -12,6 +12,8 @@
 #include <framework/ipc/QueueFactory.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
+#include <iomanip>
+
 object_id_t DeviceHandlerBase::powerSwitcherId = 0;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
@@ -39,9 +41,9 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 	insertInCommandMap(RAW_COMMAND_ID);
 	if (comCookie == nullptr) {
 		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex <<
-				this->getObjectId() << std::dec << ": Do not pass nullptr as a"
-				" cookie, consider passing a dummy cookie instead!" <<
-				std::endl;
+				std::setw(8) << std::setfill('0') << this->getObjectId() <<
+				std::dec << ": Do not pass nullptr as a cookie, consider "
+				"passing a dummy cookie instead!" << std::endl;
 	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
