@@ -1,54 +1,76 @@
 #include <framework/datapoolglob/GlobalDataPool.h>
-#include <framework/datapool/PoolEntryIF.h>
 #include <framework/datapool/PoolRawAccess.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/Endiness.h>
 
 PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
-		DataSetIF* data_set, ReadWriteMode_t setReadWriteMode) :
-		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false), type(Type::UNKNOWN_TYPE), typeSize(
-				0), arraySize(0), sizeTillEnd(0), readWriteMode(setReadWriteMode) {
+		DataSetIF* dataSet, ReadWriteMode_t setReadWriteMode) :
+		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false),
+		type(Type::UNKNOWN_TYPE), typeSize(0), arraySize(0), sizeTillEnd(0),
+		readWriteMode(setReadWriteMode) {
 	memset(value, 0, sizeof(value));
-	if (data_set != NULL) {
-		data_set->registerVariable(this);
+	if (dataSet != nullptr) {
+		dataSet->registerVariable(this);
 	}
 }
 
-PoolRawAccess::~PoolRawAccess() {
-
-}
+PoolRawAccess::~PoolRawAccess() {}
 
 ReturnValue_t PoolRawAccess::read() {
-	PoolEntryIF* read_out = glob::dataPool.getRawData(dataPoolId);
-	if (read_out != NULL) {
-		valid = read_out->getValid();
-		if (read_out->getSize() > arrayEntry) {
-			arraySize = read_out->getSize();
-			typeSize = read_out->getByteSize() / read_out->getSize();
-			type = read_out->getType();
-			if (typeSize <= sizeof(value)) {
-				uint16_t arrayPosition = arrayEntry * typeSize;
-				sizeTillEnd = read_out->getByteSize() - arrayPosition;
-				uint8_t* ptr =
-						&((uint8_t*) read_out->getRawData())[arrayPosition];
-				memcpy(value, ptr, typeSize);
-				return HasReturnvaluesIF::RETURN_OK;
-			} else {
-				//Error value type too large.
-			}
-		} else {
-			//Error index requested too large
+	ReturnValue_t result = RETURN_FAILED;
+	PoolEntryIF* readOut = glob::dataPool.getRawData(dataPoolId);
+	if (readOut != nullptr) {
+		result = handleReadOut(readOut);
+		if(result == RETURN_OK) {
+			return result;
 		}
 	} else {
-		//Error entry does not exist.
+		result = READ_ENTRY_NON_EXISTENT;
 	}
+	handleReadError(result);
+	return result;
+}
+
+ReturnValue_t PoolRawAccess::handleReadOut(PoolEntryIF* readOut) {
+	ReturnValue_t result = RETURN_FAILED;
+	valid = readOut->getValid();
+	if (readOut->getSize() > arrayEntry) {
+		arraySize = readOut->getSize();
+		typeSize = readOut->getByteSize() / readOut->getSize();
+		type = readOut->getType();
+		if (typeSize <= sizeof(value)) {
+			uint16_t arrayPosition = arrayEntry * typeSize;
+			sizeTillEnd = readOut->getByteSize() - arrayPosition;
+			uint8_t* ptr = &((uint8_t*) readOut->getRawData())[arrayPosition];
+			memcpy(value, ptr, typeSize);
+			return RETURN_OK;
+		} else {
+			result = READ_TYPE_TOO_LARGE;
+		}
+	} else {
+		//debug << "PoolRawAccess: Size: " << (int)read_out->getSize() << std::endl;
+		result = READ_INDEX_TOO_LARGE;
+	}
+	return result;
+}
+
+void PoolRawAccess::handleReadError(ReturnValue_t result) {
 	sif::error << "PoolRawAccess: read of DP Variable 0x" << std::hex << dataPoolId
-			<< std::dec << " failed." << std::endl;
+			<< std::dec << " failed, ";
+	if(result == READ_TYPE_TOO_LARGE) {
+		sif::error << "type too large." << std::endl;
+	}
+	else if(result == READ_INDEX_TOO_LARGE) {
+		sif::error << "index too large." << std::endl;
+	}
+	else if(result == READ_ENTRY_NON_EXISTENT) {
+		sif::error << "entry does not exist." << std::endl;
+	}
+
 	valid = INVALID;
 	typeSize = 0;
 	sizeTillEnd = 0;
 	memset(value, 0, sizeof(value));
-	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 ReturnValue_t PoolRawAccess::commit() {
@@ -71,7 +93,9 @@ uint8_t* PoolRawAccess::getEntry() {
 ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 		uint32_t* writtenBytes, uint32_t max_size) {
 	uint8_t* data_ptr = getEntry();
-//	debug << "PoolRawAccess::getEntry: Array position: " << index * size_of_type << " Size of T: " << (int)size_of_type << " ByteSize: " << byte_size << " Position: " << *size << std::endl;
+	// debug << "PoolRawAccess::getEntry: Array position: " <<
+	// 	      index * size_of_type << " Size of T: " << (int)size_of_type <<
+	//		  " ByteSize: " << byte_size << " Position: " << *size << std::endl;
 	if (typeSize == 0)
 		return DATA_POOL_ACCESS_FAILED;
 	if (typeSize > max_size)
@@ -88,6 +112,32 @@ ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 	*writtenBytes = typeSize;
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
+
+ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, size_t* size,
+		const size_t max_size, bool bigEndian) const {
+	if (typeSize + *size <= max_size) {
+		if (bigEndian) {
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
+			for (uint8_t count = 0; count < typeSize; count++) {
+				(*buffer)[count] = value[typeSize - count - 1];
+			}
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
+			memcpy(*buffer, value, typeSize);
+#endif
+		} else {
+			memcpy(*buffer, value, typeSize);
+		}
+		*size += typeSize;
+		(*buffer) += typeSize;
+		return HasReturnvaluesIF::RETURN_OK;
+	} else {
+		return SerializeIF::BUFFER_TOO_SHORT;
+	}
+}
+
 
 Type PoolRawAccess::getType() {
 	return type;
@@ -145,29 +195,6 @@ uint16_t PoolRawAccess::getSizeTillEnd() const {
 	return sizeTillEnd;
 }
 
-ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, bool bigEndian) const {
-	if (typeSize + *size <= max_size) {
-		if (bigEndian) {
-#ifndef BYTE_ORDER_SYSTEM
-#error BYTE_ORDER_SYSTEM not defined
-#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-			for (uint8_t count = 0; count < typeSize; count++) {
-				(*buffer)[count] = value[typeSize - count - 1];
-			}
-#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			memcpy(*buffer, value, typeSize);
-#endif
-		} else {
-			memcpy(*buffer, value, typeSize);
-		}
-		*size += typeSize;
-		(*buffer) += typeSize;
-		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return SerializeIF::BUFFER_TOO_SHORT;
-	}
-}
 
 size_t PoolRawAccess::getSerializedSize() const {
 	return typeSize;
@@ -175,8 +202,9 @@ size_t PoolRawAccess::getSerializedSize() const {
 
 ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, size_t* size,
 		bool bigEndian) {
+	// TODO: Needs to be tested!!!
 	if (*size >= typeSize) {
-
+		*size -= typeSize;
 		if (bigEndian) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
@@ -187,12 +215,14 @@ ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, size_t* size,
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
 			memcpy(value, *buffer, typeSize);
 #endif
-		} else {
+		}
+		else {
 			memcpy(value, *buffer, typeSize);
 		}
 		*buffer += typeSize;
 		return HasReturnvaluesIF::RETURN_OK;
-	} else {
+	}
+	else {
 		return SerializeIF::STREAM_TOO_SHORT;
 	}
 }
