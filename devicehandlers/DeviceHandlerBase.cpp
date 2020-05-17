@@ -354,8 +354,8 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
 	info.delayCycles = 0;
 	info.replyLen = replyLen;
 	info.command = deviceCommandMap.end();
-	std::pair<DeviceReplyIter, bool> result = deviceReplyMap.emplace(replyId, info);
-	if (result.second) {
+	auto resultPair = deviceReplyMap.emplace(replyId, info);
+	if (resultPair.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
@@ -367,11 +367,8 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
 	info.expectedReplies = 0;
 	info.isExecuting = false;
 	info.sendReplyTo = NO_COMMANDER;
-	std::pair<std::map<DeviceCommandId_t, DeviceCommandInfo>::iterator, bool> returnValue;
-	returnValue = deviceCommandMap.insert(
-			std::pair<DeviceCommandId_t, DeviceCommandInfo>(deviceCommand,
-					info));
-	if (returnValue.second) {
+	auto resultPair = deviceCommandMap.emplace(deviceCommand, info);
+	if (resultPair.second) {
 		return RETURN_OK;
 	} else {
 		return RETURN_FAILED;
