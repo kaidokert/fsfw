@@ -44,6 +44,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
+	//communicationInterface->close(cookie);
 	delete comCookie;
 	if (defaultFDIRUsed) {
 		delete fdirInstance;
@@ -355,9 +356,9 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
 	info.command = deviceCommandMap.end();
 	auto resultPair = deviceReplyMap.emplace(replyId, info);
 	if (resultPair.second) {
-		return HasReturnvaluesIF::RETURN_OK;
+		return RETURN_OK;
 	} else {
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return RETURN_FAILED;
 	}
 }
 
@@ -368,9 +369,9 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
 	info.sendReplyTo = NO_COMMANDER;
 	auto resultPair = deviceCommandMap.emplace(deviceCommand, info);
 	if (resultPair.second) {
-		return HasReturnvaluesIF::RETURN_OK;
+		return RETURN_OK;
 	} else {
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return RETURN_FAILED;
 	}
 }
 

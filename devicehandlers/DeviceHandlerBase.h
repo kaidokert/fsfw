@@ -481,9 +481,11 @@ public:
 	 */
 	virtual void setParentQueue(MessageQueueId_t parentQueueId);
 
+	/** @brief 	Implementation required for HasActionIF */
 	ReturnValue_t executeAction(ActionId_t actionId,
 			MessageQueueId_t commandedBy, const uint8_t* data,
 			size_t size) override;
+
 	Mode_t getTransitionSourceMode() const;
 	Submode_t getTransitionSourceSubMode() const;
 	virtual void getMode(Mode_t *mode, Submode_t *submode);
@@ -669,7 +671,7 @@ protected:
 	 * Optional Error code
 	 * Can be set in doStartUp(), doShutDown() and doTransition() to signal cause for Transition failure.
 	 */
-	ReturnValue_t childTransitionFailure = HasReturnvaluesIF::RETURN_OK;
+	ReturnValue_t childTransitionFailure;
 
 	uint32_t ignoreMissedRepliesCount = 0; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
 
