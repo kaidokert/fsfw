@@ -44,7 +44,6 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
-	//communicationInterface->close(cookie);
 	delete comCookie;
 	if (defaultFDIRUsed) {
 		delete fdirInstance;
