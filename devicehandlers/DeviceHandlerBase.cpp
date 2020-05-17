@@ -23,8 +23,9 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
-		deviceCommunicationId(deviceCommunication), deviceThermalStatePoolId(
-		thermalStatePoolId),deviceThermalRequestPoolId(thermalRequestPoolId),
+		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
+		deviceThermalStatePoolId(thermalStatePoolId),
+		deviceThermalRequestPoolId(thermalRequestPoolId),
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
