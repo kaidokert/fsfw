@@ -1049,19 +1049,19 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 		}
 		replyReturnvalueToCommand(RETURN_OK);
 		return RETURN_OK;
-	case DeviceHandlerMessage::CMD_SWITCH_IOBOARD:
+//	case DeviceHandlerMessage::CMD_SWITCH_IOBOARD:
 //		if (mode != MODE_OFF) {
 //			replyReturnvalueToCommand(WRONG_MODE_FOR_COMMAND);
 //		} else {
-////			result = switchCookieChannel(
-////					DeviceHandlerMessage::getIoBoardObjectId(message));
+//			result = switchCookieChannel(
+//					DeviceHandlerMessage::getIoBoardObjectId(message));
 //			if (result == RETURN_OK) {
 //				replyReturnvalueToCommand(RETURN_OK);
 //			} else {
 //				replyReturnvalueToCommand(CANT_SWITCH_IO_ADDRESS);
 //			}
 //		}
-		return RETURN_OK;
+//		return RETURN_OK;
 	case DeviceHandlerMessage::CMD_RAW:
 		if ((mode != MODE_RAW)) {
 			DeviceHandlerMessage::clear(message);
