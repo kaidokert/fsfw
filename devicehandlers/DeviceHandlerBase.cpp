@@ -1,10 +1,10 @@
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/devicehandlers/DeviceHandlerBase.h>
 #include <framework/objectmanager/ObjectManager.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
 
-#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/devicehandlers/DeviceTmReportingWrapper.h>
 #include <framework/globalfunctions/CRC.h>

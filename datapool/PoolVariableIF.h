@@ -18,6 +18,7 @@
  * @ingroup data_pool
  */
 class PoolVariableIF : public SerializeIF {
+	friend class DataSetBase;
 	friend class GlobDataSet;
 	friend class LocalDataSet;
 protected:

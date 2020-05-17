@@ -1,6 +1,6 @@
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include "InternalErrorReporter.h"
 
-#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/ipc/MutexFactory.h>
 

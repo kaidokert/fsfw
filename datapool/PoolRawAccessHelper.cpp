@@ -6,10 +6,12 @@
  */
 
 #include <framework/datapool/PoolRawAccessHelper.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/serialize/SerializeAdapter.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 #include <cmath>
-
-#include <framework/datapoolglob/GlobalDataSet.h>
+#include <cstring>
 
 PoolRawAccessHelper::PoolRawAccessHelper(uint32_t * poolIdBuffer_,
 		uint8_t  numberOfParameters_):

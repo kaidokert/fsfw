@@ -3,6 +3,7 @@
 
 #include <framework/thermal/AbstractTemperatureSensor.h>
 #include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/monitoring/LimitMonitor.h>
 
 /**

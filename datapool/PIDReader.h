@@ -1,9 +1,9 @@
 #ifndef PIDREADER_H_
 #define PIDREADER_H_
 #include <framework/datapool/DataSetIF.h>
+#include <framework/datapoolglob/GlobalDataPool.h>
 #include <framework/datapool/PoolEntry.h>
 #include <framework/datapool/PoolVariableIF.h>
-#include <framework/datapoolglob/GlobalDataPool.h>
 #include <framework/serialize/SerializeAdapter.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 

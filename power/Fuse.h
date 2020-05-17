@@ -2,6 +2,7 @@
 #define FUSE_H_
 
 #include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/datapool/PIDReader.h>
 #include <framework/devicehandlers/HealthDevice.h>
 #include <framework/monitoring/AbsLimitMonitor.h>

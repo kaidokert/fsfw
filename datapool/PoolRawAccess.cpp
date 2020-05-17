@@ -1,6 +1,6 @@
+#include <framework/datapoolglob/GlobalDataPool.h>
 #include <framework/datapool/PoolEntryIF.h>
 #include <framework/datapool/PoolRawAccess.h>
-#include <framework/datapoolglob/GlobalDataPool.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/Endiness.h>
 

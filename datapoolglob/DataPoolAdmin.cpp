@@ -1,5 +1,7 @@
-#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapoolglob/DataPoolAdmin.h>
+#include <framework/datapool/PoolRawAccess.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/GlobalDataPool.h>
 #include <framework/ipc/CommandMessage.h>
 #include <framework/ipc/QueueFactory.h>
 #include <framework/parameters/ParameterMessage.h>
