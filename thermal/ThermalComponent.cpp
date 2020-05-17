@@ -3,7 +3,7 @@
 ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
 		uint8_t domainId, uint32_t temperaturePoolId,
 		uint32_t targetStatePoolId, uint32_t currentStatePoolId,
-		uint32_t requestPoolId, DataSet* dataSet,
+		uint32_t requestPoolId, GlobDataSet* dataSet,
 		AbstractTemperatureSensor* sensor,
 		AbstractTemperatureSensor* firstRedundantSensor,
 		AbstractTemperatureSensor* secondRedundantSensor,
@@ -22,8 +22,8 @@ ThermalComponent::~ThermalComponent() {
 }
 
 ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
-	DataSet mySet;
-	PoolVariable<int8_t> writableTargetState(targetState.getDataPoolId(),
+	GlobDataSet mySet;
+	gp_int8_t writableTargetState(targetState.getDataPoolId(),
 			&mySet, PoolVariableIF::VAR_READ_WRITE);
 	mySet.read();
 	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)

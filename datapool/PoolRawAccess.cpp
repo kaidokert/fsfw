@@ -19,7 +19,7 @@ PoolRawAccess::~PoolRawAccess() {
 }
 
 ReturnValue_t PoolRawAccess::read() {
-	PoolEntryIF* read_out = ::dataPool.getRawData(dataPoolId);
+	PoolEntryIF* read_out = glob::dataPool.getRawData(dataPoolId);
 	if (read_out != NULL) {
 		valid = read_out->getValid();
 		if (read_out->getSize() > arrayEntry) {
@@ -52,7 +52,7 @@ ReturnValue_t PoolRawAccess::read() {
 }
 
 ReturnValue_t PoolRawAccess::commit() {
-	PoolEntryIF* write_back = ::dataPool.getRawData(dataPoolId);
+	PoolEntryIF* write_back = glob::dataPool.getRawData(dataPoolId);
 	if ((write_back != NULL) && (readWriteMode != VAR_READ)) {
 		write_back->setValid(valid);
 		uint8_t array_position = arrayEntry * typeSize;

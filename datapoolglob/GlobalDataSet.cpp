@@ -111,11 +111,11 @@ ReturnValue_t GlobDataSet::handleUnreadDatasetCommit() {
 }
 
 ReturnValue_t GlobDataSet::unlockDataPool() {
-	return ::dataPool.freeDataPoolLock();
+	return glob::dataPool.freeDataPoolLock();
 }
 
 ReturnValue_t GlobDataSet::lockDataPool() {
-	return ::dataPool.lockDataPool();
+	return glob::dataPool.lockDataPool();
 }
 
 ReturnValue_t GlobDataSet::serialize(uint8_t** buffer, size_t* size,

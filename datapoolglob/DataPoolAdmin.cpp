@@ -38,7 +38,7 @@ ReturnValue_t DataPoolAdmin::executeAction(ActionId_t actionId,
 
 	uint8_t valid = data[4];
 
-	uint32_t poolId = ::dataPool.PIDToDataPoolId(address);
+	uint32_t poolId = glob::dataPool.PIDToDataPoolId(address);
 
 	GlobDataSet mySet;
 	PoolRawAccess variable(poolId, 0, &mySet, PoolVariableIF::VAR_READ_WRITE);
@@ -90,8 +90,8 @@ void DataPoolAdmin::handleCommand() {
 
 ReturnValue_t DataPoolAdmin::handleMemoryLoad(uint32_t address,
 		const uint8_t* data, uint32_t size, uint8_t** dataPointer) {
-	uint32_t poolId = ::dataPool.PIDToDataPoolId(address);
-	uint8_t arrayIndex = ::dataPool.PIDToArrayIndex(address);
+	uint32_t poolId = glob::dataPool.PIDToDataPoolId(address);
+	uint8_t arrayIndex = glob::dataPool.PIDToArrayIndex(address);
 	GlobDataSet testSet;
 	PoolRawAccess varToGetSize(poolId, arrayIndex, &testSet,
 			PoolVariableIF::VAR_READ);
@@ -129,8 +129,8 @@ ReturnValue_t DataPoolAdmin::handleMemoryLoad(uint32_t address,
 
 ReturnValue_t DataPoolAdmin::handleMemoryDump(uint32_t address, uint32_t size,
 		uint8_t** dataPointer, uint8_t* copyHere) {
-	uint32_t poolId = ::dataPool.PIDToDataPoolId(address);
-	uint8_t arrayIndex = ::dataPool.PIDToArrayIndex(address);
+	uint32_t poolId = glob::dataPool.PIDToDataPoolId(address);
+	uint8_t arrayIndex = glob::dataPool.PIDToArrayIndex(address);
 	GlobDataSet testSet;
 	PoolRawAccess varToGetSize(poolId, arrayIndex, &testSet,
 			PoolVariableIF::VAR_READ);

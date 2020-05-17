@@ -13,7 +13,7 @@ inline GlobPoolVar<T>::GlobPoolVar(uint32_t set_id,
 
 template <class T>
 inline ReturnValue_t GlobPoolVar<T>::read() {
-	PoolEntry<T>* read_out = ::dataPool.getData<T>(dataPoolId, 1);
+	PoolEntry<T>* read_out = glob::dataPool.getData<T>(dataPoolId, 1);
 	if (read_out != NULL) {
 		valid = read_out->valid;
 		value = *(read_out->address);
@@ -29,7 +29,7 @@ inline ReturnValue_t GlobPoolVar<T>::read() {
 
 template <class T>
 inline ReturnValue_t GlobPoolVar<T>::commit() {
-	PoolEntry<T>* write_back = ::dataPool.getData<T>(dataPoolId, 1);
+	PoolEntry<T>* write_back = glob::dataPool.getData<T>(dataPoolId, 1);
 	if ((write_back != NULL) && (readWriteMode != VAR_READ)) {
 		write_back->valid = valid;
 		*(write_back->address) = value;

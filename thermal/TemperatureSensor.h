@@ -2,7 +2,7 @@
 #define TEMPERATURESENSOR_H_
 
 #include <framework/thermal/AbstractTemperatureSensor.h>
-#include <framework/datapool/DataSet.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/monitoring/LimitMonitor.h>
 
 /**
@@ -68,12 +68,12 @@ public:
 	TemperatureSensor(object_id_t setObjectid,
 			inputType *inputValue, PoolVariableIF *poolVariable,
 			uint8_t vectorIndex, uint32_t datapoolId, Parameters parameters = {0, 0, 0, 0, 0, 0},
-			DataSet *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
+			GlobDataSet *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
 			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
 			inputValue(inputValue), poolVariable(poolVariable),
 			outputTemperature(datapoolId, outputSet, PoolVariableIF::VAR_WRITE),
 			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR,
-				DataPool::poolIdAndPositionToPid(poolVariable->getDataPoolId(), vectorIndex),
+				GlobalDataPool::poolIdAndPositionToPid(poolVariable->getDataPoolId(), vectorIndex),
 				DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit, parameters.upperLimit,
 				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
 			oldTemperature(20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 }) {
@@ -111,7 +111,7 @@ protected:
 
 	PoolVariableIF *poolVariable;
 
-	PoolVariable<float> outputTemperature;
+	gp_float_t outputTemperature;
 
 	LimitMonitor<limitType> sensorMonitor;
 

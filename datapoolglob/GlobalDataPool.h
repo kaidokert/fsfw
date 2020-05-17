@@ -142,5 +142,8 @@ public:
 };
 
 //We assume someone globally instantiates a DataPool.
+namespace glob {
 extern GlobalDataPool dataPool;
+}
+
 #endif /* DATAPOOL_H_ */

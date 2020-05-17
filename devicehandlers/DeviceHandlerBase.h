@@ -482,7 +482,8 @@ public:
 	virtual void setParentQueue(MessageQueueId_t parentQueueId);
 
 	ReturnValue_t executeAction(ActionId_t actionId,
-			MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size);
+			MessageQueueId_t commandedBy, const uint8_t* data,
+			size_t size) override;
 	Mode_t getTransitionSourceMode() const;
 	Submode_t getTransitionSourceSubMode() const;
 	virtual void getMode(Mode_t *mode, Submode_t *submode);

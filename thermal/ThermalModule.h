@@ -70,12 +70,12 @@ protected:
 
 	Parameters parameters;
 
-	db_float_t moduleTemperature;
+	gp_float_t moduleTemperature;
 
 	RedundantHeater *heater;
 
-	db_int8_t currentState;
-	db_int8_t targetState;
+	gp_int8_t currentState;
+	gp_int8_t targetState;
 
 	std::list<AbstractTemperatureSensor *> sensors;
 	std::list<ComponentData> components;

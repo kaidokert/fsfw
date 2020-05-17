@@ -6,7 +6,7 @@
 
 ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId,
 		uint32_t currentStatePoolId, uint32_t targetStatePoolId,
-		DataSet *dataSet, Parameters parameters,
+		GlobDataSet *dataSet, Parameters parameters,
 		RedundantHeater::Parameters heaterParameters) :
 		oldStrategy(ACTIVE_SINGLE), survivalTargetTemp(0), targetTemp(0), heating(
 				false), parameters(parameters), moduleTemperature(
@@ -16,7 +16,7 @@ ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId,
 	heater = new RedundantHeater(heaterParameters);
 }
 
-ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId, DataSet* dataSet) :
+ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId, GlobDataSet* dataSet) :
 		oldStrategy(ACTIVE_SINGLE), survivalTargetTemp(0), targetTemp(0), heating(
 				false), parameters( { 0, 0 }), moduleTemperature(
 				moduleTemperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE), heater(
@@ -250,8 +250,8 @@ bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 }
 
 void ThermalModule::setHeating(bool on) {
-	DataSet mySet;
-	PoolVariable<int8_t> writableTargetState(targetState.getDataPoolId(),
+	GlobDataSet mySet;
+	gp_int8_t writableTargetState(targetState.getDataPoolId(),
 			&mySet, PoolVariableIF::VAR_WRITE);
 	if (on) {
 		writableTargetState = STATE_REQUEST_HEATING;

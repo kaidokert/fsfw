@@ -50,7 +50,7 @@ protected:
 	 * 			The operation does NOT provide any mutual exclusive protection by itself.
 	 */
 	ReturnValue_t read() {
-		PoolEntry<T>* read_out = ::dataPool.getData<T>(this->dataPoolId,
+		PoolEntry<T>* read_out = glob::dataPool.getData<T>(this->dataPoolId,
 				vector_size);
 		if (read_out != NULL) {
 			this->valid = read_out->valid;
@@ -74,7 +74,7 @@ protected:
 	 *
 	 */
 	ReturnValue_t commit() {
-		PoolEntry<T>* write_back = ::dataPool.getData<T>(this->dataPoolId,
+		PoolEntry<T>* write_back = glob::dataPool.getData<T>(this->dataPoolId,
 				vector_size);
 		if ((write_back != NULL) && (this->readWriteMode != VAR_READ)) {
 			write_back->valid = valid;

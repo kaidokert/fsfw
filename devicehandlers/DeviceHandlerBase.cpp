@@ -1141,7 +1141,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 }
 
 ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId,
-		MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) {
+		MessageQueueId_t commandedBy, const uint8_t* data, size_t size) {
 	ReturnValue_t result = acceptExternalDeviceCommands();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;

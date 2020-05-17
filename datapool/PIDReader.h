@@ -17,7 +17,7 @@ protected:
 	uint8_t valid;
 	ReturnValue_t read() {
 		uint8_t arrayIndex = GlobalDataPool::PIDToArrayIndex(parameterId);
-		PoolEntry<T>* read_out = ::dataPool.getData<T>(
+		PoolEntry<T>* read_out = glob::dataPool.getData<T>(
 				GlobalDataPool::PIDToDataPoolId(parameterId), arrayIndex);
 		if (read_out != NULL) {
 			valid = read_out->valid;
