@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/datapool/DataSetIF.h>
@@ -100,4 +101,4 @@ using lp_int64_t = LocalPoolVar<int64_t>;
 using lp_float_t = LocalPoolVar<float>;
 using lp_double_t = LocalPoolVar<double>;
 
-
+#endif

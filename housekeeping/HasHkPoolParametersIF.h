@@ -13,8 +13,7 @@ using LocalDataPoolMap =  std::map<lp_id_t, PoolEntryIF*>;
 using LocalDataPoolMapIter = LocalDataPoolMap::iterator;
 
 /**
- * @brief 	Interface for the local housekeeping managers used by the device
- * 			handler.
+ * @brief
  */
 class HasHkPoolParametersIF {
 public:
@@ -26,7 +25,5 @@ public:
 	virtual float setMinimalHkSamplingFrequency() = 0;
 	virtual HousekeepingManager* getHkManagerHandle() = 0;
 };
-
-
 
 #endif /* FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_ */

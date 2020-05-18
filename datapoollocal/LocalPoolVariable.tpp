@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
+#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
 
 #include <framework/housekeeping/HasHkPoolParametersIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
@@ -107,3 +108,5 @@ inline ReturnValue_t LocalPoolVar<T>::deSerialize(const uint8_t** buffer,
 		size_t* size, bool bigEndian) {
 	return AutoSerializeAdapter::deSerialize(&value, buffer, size, bigEndian);
 }
+
+#endif

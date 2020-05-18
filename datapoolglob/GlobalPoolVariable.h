@@ -32,7 +32,7 @@ class GlobPoolVar: public PoolVariableIF {
 	template<typename U, uint8_t n_var> friend class PoolVarList;
 	static_assert(not std::is_same<T, bool>::value,
 			"Do not use boolean for the PoolEntry type, use uint8_t instead!"
-			"Warum? Darum :-)");
+			"There is no boolean type in CCSDS.");
 public:
 	/**
 	 * @brief	In the constructor, the variable can register itself in a
