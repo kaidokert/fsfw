@@ -6,7 +6,16 @@
 
 /**
  * @brief 	Generic interface for semaphores, which can be used to achieve
- * 			task synchronization.
+ * 			task synchronization. This is a generic interface which can be
+ * 			used for both binary semaphores and counting semaphores.
+ * @details
+ * A semaphore is a synchronization primitive.
+ * See: https://en.wikipedia.org/wiki/Semaphore_(programming)
+ * A semaphore can be used to achieve task synchonization and track the
+ * availability of resources.
+ *
+ * If mutual exlcusion of a resource is desired, a mutex should be used,
+ * which is a special form of a semaphore and has an own interface.
  */
 class SemaphoreIF {
 public:
