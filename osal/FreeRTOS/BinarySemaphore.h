@@ -23,7 +23,7 @@ extern "C" {
  * @author 	R. Mueller
  * @ingroup osal
  */
-class Semaphore: public SemaphoreIF,
+class BinarySemaphore: public SemaphoreIF,
 		public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
@@ -44,20 +44,20 @@ public:
 	static constexpr ReturnValue_t SEMAPHORE_NULLPOINTER = MAKE_RETURN_CODE(3);
 
 	//! @brief Default ctor
-	Semaphore();
+	BinarySemaphore();
 	//! @brief Copy ctor
-	Semaphore(const Semaphore&);
+	BinarySemaphore(const BinarySemaphore&);
 	//! @brief Copy assignment
-	Semaphore& operator=(const Semaphore&);
+	BinarySemaphore& operator=(const BinarySemaphore&);
 	//! @brief Move ctor
-	Semaphore (Semaphore &&);
+	BinarySemaphore (BinarySemaphore &&);
 	//! @brief Move assignment
-	Semaphore & operator=(Semaphore &&);
+	BinarySemaphore & operator=(BinarySemaphore &&);
 	//! @brief Destructor
-	virtual ~Semaphore();
+	virtual ~BinarySemaphore();
 
 	ReturnValue_t acquire(uint32_t timeoutMs =
-	        Semaphore::NO_BLOCK_TIMEOUT) override;
+	        BinarySemaphore::NO_BLOCK_TIMEOUT) override;
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() override;
 
@@ -71,7 +71,7 @@ public:
 	 *         -@c RETURN_FAILED on failure
 	 */
 	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs =
-	        Semaphore::NO_BLOCK_TIMEOUT);
+	        BinarySemaphore::NO_BLOCK_TIMEOUT);
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
@@ -80,7 +80,7 @@ public:
 	 *         - @c RETURN_FAILED on failure
 	 */
 	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
-	        Semaphore::NO_BLOCK_TICKS);
+	        BinarySemaphore::NO_BLOCK_TICKS);
 
 	/**
 	 * Give back the binary semaphore

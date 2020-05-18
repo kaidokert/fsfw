@@ -20,7 +20,7 @@ SemaphoreFactory* SemaphoreFactory::instance() {
 }
 
 SemaphoreIF* SemaphoreFactory::createBinarySemaphore() {
-	return new Semaphore();
+	return new BinarySemaphore();
 }
 
 SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t count,

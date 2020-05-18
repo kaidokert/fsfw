@@ -2,7 +2,15 @@
 #define FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHORE_H_
 #include <framework/osal/FreeRTOS/BinarySemaphore.h>
 
-class CountingSemaphore: public Semaphore {
+/**
+ * @brief 	Counting semaphores, which can be acquire more than once.
+ * @details
+ * See: https://www.freertos.org/CreateCounting.html
+ * API of counting semaphores is almost identical to binary semaphores,
+ * so we just inherit from binary semaphore and provide the respective
+ * constructors.
+ */
+class CountingSemaphore: public BinarySemaphore {
 public:
 	CountingSemaphore(uint8_t count, uint8_t initCount);
 	//! @brief Copy ctor, disabled

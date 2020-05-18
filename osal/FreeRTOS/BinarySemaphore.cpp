@@ -3,7 +3,7 @@
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-Semaphore::Semaphore() {
+BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();
 	if(handle == nullptr) {
 		sif::error << "Semaphore: Binary semaph creation failure" << std::endl;
@@ -11,13 +11,13 @@ Semaphore::Semaphore() {
 	xSemaphoreGive(handle);
 }
 
-Semaphore::~Semaphore() {
+BinarySemaphore::~BinarySemaphore() {
 	vSemaphoreDelete(handle);
 }
 
 // This copy ctor is important as it prevents the assignment to a ressource
 // (other.handle) variable which is later deleted!
-Semaphore::Semaphore(const Semaphore& other) {
+BinarySemaphore::BinarySemaphore(const BinarySemaphore& other) {
     handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
         sif::error << "Binary semaphore creation failure" << std::endl;
@@ -25,7 +25,7 @@ Semaphore::Semaphore(const Semaphore& other) {
     xSemaphoreGive(handle);
 }
 
-Semaphore& Semaphore::operator =(const Semaphore& s) {
+BinarySemaphore& BinarySemaphore::operator =(const BinarySemaphore& s) {
     if(this != &s) {
         handle = xSemaphoreCreateBinary();
         if(handle == nullptr) {
@@ -36,7 +36,7 @@ Semaphore& Semaphore::operator =(const Semaphore& s) {
     return *this;
 }
 
-Semaphore::Semaphore(Semaphore&& s) {
+BinarySemaphore::BinarySemaphore(BinarySemaphore&& s) {
     handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
         sif::error << "Binary semaphore creation failure" << std::endl;
@@ -44,8 +44,8 @@ Semaphore::Semaphore(Semaphore&& s) {
     xSemaphoreGive(handle);
 }
 
-Semaphore& Semaphore::operator =(
-        Semaphore&& s) {
+BinarySemaphore& BinarySemaphore::operator =(
+        BinarySemaphore&& s) {
     if(&s != this) {
         handle = xSemaphoreCreateBinary();
         if(handle == nullptr) {
@@ -56,15 +56,15 @@ Semaphore& Semaphore::operator =(
     return *this;
 }
 
-ReturnValue_t Semaphore::takeBinarySemaphore(uint32_t timeoutMs) {
+ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
 	if(handle == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
 	}
-	TickType_t timeout = Semaphore::NO_BLOCK_TICKS;
-	if(timeoutMs == Semaphore::BLOCK_TIMEOUT) {
-	    timeout = Semaphore::BLOCK_TIMEOUT_TICKS;
+	TickType_t timeout = BinarySemaphore::NO_BLOCK_TICKS;
+	if(timeoutMs == BinarySemaphore::BLOCK_TIMEOUT) {
+	    timeout = BinarySemaphore::BLOCK_TIMEOUT_TICKS;
 	}
-	else if(timeoutMs > Semaphore::NO_BLOCK_TIMEOUT){
+	else if(timeoutMs > BinarySemaphore::NO_BLOCK_TIMEOUT){
 	    timeout = pdMS_TO_TICKS(timeoutMs);
 	}
 
@@ -77,7 +77,7 @@ ReturnValue_t Semaphore::takeBinarySemaphore(uint32_t timeoutMs) {
 	}
 }
 
-ReturnValue_t Semaphore::takeBinarySemaphoreTickTimeout(
+ReturnValue_t BinarySemaphore::takeBinarySemaphoreTickTimeout(
         TickType_t timeoutTicks) {
 	if(handle == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
@@ -91,7 +91,7 @@ ReturnValue_t Semaphore::takeBinarySemaphoreTickTimeout(
 	}
 }
 
-ReturnValue_t Semaphore::giveBinarySemaphore() {
+ReturnValue_t BinarySemaphore::giveBinarySemaphore() {
 	if (handle == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
 	}
@@ -103,11 +103,11 @@ ReturnValue_t Semaphore::giveBinarySemaphore() {
 	}
 }
 
-SemaphoreHandle_t Semaphore::getSemaphore() {
+SemaphoreHandle_t BinarySemaphore::getSemaphore() {
 	return handle;
 }
 
-ReturnValue_t Semaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) {
+ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) {
 	if (semaphore == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
 	}
@@ -119,7 +119,7 @@ ReturnValue_t Semaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) {
 	}
 }
 
-void Semaphore::resetSemaphore() {
+void BinarySemaphore::resetSemaphore() {
 	if(handle != nullptr) {
 		vSemaphoreDelete(handle);
 		handle = xSemaphoreCreateBinary();
@@ -127,20 +127,20 @@ void Semaphore::resetSemaphore() {
 	}
 }
 
-ReturnValue_t Semaphore::acquire(uint32_t timeoutMs) {
+ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	return takeBinarySemaphore(timeoutMs);
 }
 
-ReturnValue_t Semaphore::release() {
+ReturnValue_t BinarySemaphore::release() {
 	return giveBinarySemaphore();
 }
 
-uint8_t Semaphore::getSemaphoreCounter() {
+uint8_t BinarySemaphore::getSemaphoreCounter() {
 	return uxSemaphoreGetCount(handle);
 }
 
 // Be careful with the stack size here. This is called from an ISR!
-ReturnValue_t Semaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
+ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 		BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
