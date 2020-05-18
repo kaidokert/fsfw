@@ -11,8 +11,7 @@
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();
 	if(handle == nullptr) {
-
-		error << "Binary semaphore creation failure" << std::endl;
+		sif::error << "Binary semaphore creation failure" << std::endl;
 	}
 	xSemaphoreGive(handle);
 }
@@ -26,7 +25,7 @@ BinarySemaphore::~BinarySemaphore() {
 BinarySemaphore::BinarySemaphore(const BinarySemaphore& other) {
     handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
-        error << "Binary semaphore creation failure" << std::endl;
+        sif::error << "Binary semaphore creation failure" << std::endl;
     }
     xSemaphoreGive(handle);
 }
@@ -35,7 +34,7 @@ BinarySemaphore& BinarySemaphore::operator =(const BinarySemaphore& s) {
     if(this != &s) {
         handle = xSemaphoreCreateBinary();
         if(handle == nullptr) {
-            error << "Binary semaphore creation failure" << std::endl;
+            sif::error << "Binary semaphore creation failure" << std::endl;
         }
         xSemaphoreGive(handle);
     }
@@ -45,7 +44,7 @@ BinarySemaphore& BinarySemaphore::operator =(const BinarySemaphore& s) {
 BinarySemaphore::BinarySemaphore(BinarySemaphore&& s) {
     handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
-        error << "Binary semaphore creation failure" << std::endl;
+        sif::error << "Binary semaphore creation failure" << std::endl;
     }
     xSemaphoreGive(handle);
 }
@@ -55,7 +54,7 @@ BinarySemaphore& BinarySemaphore::operator =(
     if(&s != this) {
         handle = xSemaphoreCreateBinary();
         if(handle == nullptr) {
-            error << "Binary semaphore creation failure" << std::endl;
+            sif::error << "Binary semaphore creation failure" << std::endl;
         }
         xSemaphoreGive(handle);
     }
