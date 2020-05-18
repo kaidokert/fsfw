@@ -71,7 +71,6 @@ public:
 	ReturnValue_t acquire(uint32_t timeoutMs =
 	        BinarySemaphore::NO_BLOCK_TIMEOUT) override;
 	ReturnValue_t release() override;
-
 	uint8_t getSemaphoreCounter() override;
 
 	/**

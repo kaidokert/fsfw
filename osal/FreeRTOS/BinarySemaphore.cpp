@@ -1,8 +1,3 @@
-/**
- * @file BinarySemaphore.cpp
- *
- * @date 25.02.2020
- */
 #include <framework/osal/FreeRTOS/BinarySemaphore.h>
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 
