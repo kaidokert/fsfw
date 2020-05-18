@@ -50,14 +50,16 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessage* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault, callContext);
+	return sendMessageFromMessageQueue(sendTo, message, sentFrom,
+			ignoreFault, callContext);
 }
 
 
 ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
 	if (result != pdPASS) {
 		if (!ignoreFault) {
-			InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+			InternalErrorReporterIF* internalErrorReporter =
+					objectManager->get<InternalErrorReporterIF>(
 					objects::INTERNAL_ERROR_REPORTER);
 			if (internalErrorReporter != NULL) {
 				internalErrorReporter->queueMessageNotSent();
@@ -78,7 +80,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 }
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
-	BaseType_t result = xQueueReceive(handle,reinterpret_cast<void*>(message->getBuffer()), 0);
+	BaseType_t result = xQueueReceive(handle,reinterpret_cast<void*>(
+			message->getBuffer()), 0);
 	if (result == pdPASS){
 		this->lastPartner = message->getSender();
 		return HasReturnvaluesIF::RETURN_OK;
