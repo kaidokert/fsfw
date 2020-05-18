@@ -70,6 +70,11 @@ public:
 	 */
 	virtual ~MessageQueue();
 
+	/**
+	 * This function is used to switch the call context. This has to be called
+	 * if a message is sent or received from an ISR!
+	 * @param callContext
+	 */
 	void switchSystemContext(CallContext callContext);
 
 	/**
