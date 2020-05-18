@@ -2,7 +2,7 @@
 #define FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
-
+#include <framework/tasks/SemaphoreIF.h>
 extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
@@ -21,7 +21,8 @@ extern "C" {
  * @author 	R. Mueller
  * @ingroup osal
  */
-class BinarySemaphore: public HasReturnvaluesIF {
+class BinarySemaphore: public SemaphoreIF,
+		public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 
@@ -66,6 +67,12 @@ public:
 	 * Delete the binary semaphore to prevent a memory leak
 	 */
 	virtual ~BinarySemaphore();
+
+	ReturnValue_t acquire(uint32_t timeoutMs =
+	        BinarySemaphore::NO_BLOCK_TIMEOUT) override;
+	ReturnValue_t release() override;
+
+	uint8_t getSemaphoreCounter() override;
 
 	/**
 	 * Take the binary semaphore.

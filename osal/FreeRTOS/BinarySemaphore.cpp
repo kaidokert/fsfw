@@ -132,6 +132,17 @@ void BinarySemaphore::resetSemaphore() {
 	}
 }
 
+ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
+	return takeBinarySemaphore(timeoutMs);
+}
+
+ReturnValue_t BinarySemaphore::release() {
+	return giveBinarySemaphore();
+}
+
+uint8_t BinarySemaphore::getSemaphoreCounter() {
+	return uxSemaphoreGetCount(handle);
+}
 
 // Be careful with the stack size here. This is called from an ISR!
 ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
