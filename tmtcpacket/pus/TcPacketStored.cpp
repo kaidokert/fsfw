@@ -1,22 +1,22 @@
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/pus/TcPacketStored.h>
-#include <string.h>
+#include <cstring>
 
 TcPacketStored::TcPacketStored(store_address_t setAddress) :
-		TcPacketBase(NULL), storeAddress(setAddress) {
+		TcPacketBase(nullptr), storeAddress(setAddress) {
 	this->setStoreAddress(this->storeAddress);
 }
 
 TcPacketStored::TcPacketStored(uint16_t apid, uint8_t ack, uint8_t service,
 		uint8_t subservice, uint8_t sequence_count, const uint8_t* data,
-		uint32_t size) :
-		TcPacketBase(NULL) {
+		size_t size) :
+		TcPacketBase(nullptr) {
 	this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (!this->checkAndSetStore()) {
 		return;
 	}
-	uint8_t* p_data = NULL;
+	uint8_t* p_data = nullptr;
 	ReturnValue_t returnValue = this->store->getFreeElement(&this->storeAddress,
 			(TC_PACKET_MIN_SIZE + size), &p_data);
 	if (returnValue != this->store->RETURN_OK) {
