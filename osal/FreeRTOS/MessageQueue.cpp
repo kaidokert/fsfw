@@ -7,11 +7,10 @@
 // As a first step towards this, introduces system context variable which needs
 // to be switched manually
 // Haven't found function to find system context.
-MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize) :
-defaultDestination(0),lastPartner(0), callContext(CallContext::task)  {
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize) {
 	handle = xQueueCreate(messageDepth, maxMessageSize);
 	if (handle == NULL) {
-		sif::error << "MessageQueue creation failed" << std::endl;
+		sif::error << "MessageQueue: Creation failed" << std::endl;
 	}
 }
 
@@ -57,11 +56,11 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 
 ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
 	if (result != pdPASS) {
-		if (!ignoreFault) {
+		if (not ignoreFault) {
 			InternalErrorReporterIF* internalErrorReporter =
 					objectManager->get<InternalErrorReporterIF>(
 					objects::INTERNAL_ERROR_REPORTER);
-			if (internalErrorReporter != NULL) {
+			if (internalErrorReporter != nullptr) {
 				internalErrorReporter->queueMessageNotSent();
 			}
 		}
@@ -106,6 +105,7 @@ MessageQueueId_t MessageQueue::getId() const {
 }
 
 void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
+	defaultDestinationSet = true;
 	this->defaultDestination = defaultDestination;
 }
 
@@ -114,7 +114,7 @@ MessageQueueId_t MessageQueue::getDefaultDestination() const {
 }
 
 bool MessageQueue::isDefaultDestinationSet() const {
-	return 0;
+	return defaultDestinationSet;
 }
 
 
@@ -129,9 +129,9 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
                 static_cast<const void*>(message->getBuffer()), 0);
     }
     else {
-        // If the call context is from an interrupt,
-        // request a context switch if a higher priority task
-        // was blocked by the interrupt.
+        /* If the call context is from an interrupt,
+         * request a context switch if a higher priority task
+         * was blocked by the interrupt. */
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         result = xQueueSendFromISR(reinterpret_cast<QueueHandle_t>(sendTo),
                 static_cast<const void*>(message->getBuffer()),

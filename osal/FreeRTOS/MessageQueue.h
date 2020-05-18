@@ -56,8 +56,12 @@ public:
 	 * With this parameter, the maximum message size can be adjusted.
 	 * This should be left default.
 	 */
-	MessageQueue( size_t message_depth = 3,
-			size_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE );
+	MessageQueue( size_t messageDepth = 3,
+			size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE );
+
+	/** Copying message queues forbidden */
+	MessageQueue(const MessageQueue&) = delete;
+	MessageQueue& operator=(const MessageQueue&) = delete;
 
 	/**
 	 * @brief	The destructor deletes the formerly created message queue.
@@ -189,10 +193,12 @@ protected:
 	static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
 private:
+	bool defaultDestinationSet = false;
 	QueueHandle_t handle;
-	MessageQueueId_t defaultDestination;
-	MessageQueueId_t lastPartner;
-	CallContext callContext; //!< Stores the current system context
+	MessageQueueId_t defaultDestination = 0;
+	MessageQueueId_t lastPartner = 0;
+	//!< Stores the current system context
+	CallContext callContext =  CallContext::task;
 };
 
 #endif /* MESSAGEQUEUE_H_ */
