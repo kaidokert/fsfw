@@ -8,9 +8,9 @@ TcPacketStored::TcPacketStored(store_address_t setAddress) :
 	this->setStoreAddress(this->storeAddress);
 }
 
-TcPacketStored::TcPacketStored(uint16_t apid, uint8_t ack, uint8_t service,
-		uint8_t subservice, uint8_t sequence_count, const uint8_t* data,
-		size_t size) :
+TcPacketStored::TcPacketStored(uint8_t service, uint8_t subservice,
+		uint16_t apid, uint8_t sequence_count, const uint8_t* data,
+		size_t size, uint8_t ack ) :
 		TcPacketBase(nullptr) {
 	this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (!this->checkAndSetStore()) {
