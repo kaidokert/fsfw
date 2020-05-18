@@ -14,14 +14,16 @@ extern "C" {
 // 		 and switch between the classes with #ifdefs.
 //		 Task Notifications require FreeRTOS V8.2 something..
 /**
- * @brief OS Tool to achieve synchronization of between tasks or between task and ISR
+ * @brief 	OS Tool to achieve synchronization of between tasks or between
+ * 			task and ISR. The default semaphore implementation creates a
+ * 			binary semaphore, which can only be taken once.
  * @details
  * Documentation: https://www.freertos.org/Embedded-RTOS-Binary-Semaphores.html
  *
  * @author 	R. Mueller
  * @ingroup osal
  */
-class BinarySemaphore: public SemaphoreIF,
+class Semaphore: public SemaphoreIF,
 		public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
@@ -41,35 +43,21 @@ public:
 	static constexpr ReturnValue_t SEMAPHORE_NOT_OWNED = MAKE_RETURN_CODE(2);
 	static constexpr ReturnValue_t SEMAPHORE_NULLPOINTER = MAKE_RETURN_CODE(3);
 
-	BinarySemaphore();
-
-	/**
-	 * @brief Copy ctor
-	 */
-	BinarySemaphore(const BinarySemaphore&);
-
-	/**
-	 * @brief Copy assignment
-	 */
-	BinarySemaphore& operator=(const BinarySemaphore&);
-
-	/**
-	 * @brief Move constructor
-	 */
-	BinarySemaphore (BinarySemaphore &&);
-
-	/**
-	 * Move assignment
-	 */
-	BinarySemaphore & operator=(BinarySemaphore &&);
-
-	/**
-	 * Delete the binary semaphore to prevent a memory leak
-	 */
-	virtual ~BinarySemaphore();
+	//! @brief Default ctor
+	Semaphore();
+	//! @brief Copy ctor
+	Semaphore(const Semaphore&);
+	//! @brief Copy assignment
+	Semaphore& operator=(const Semaphore&);
+	//! @brief Move ctor
+	Semaphore (Semaphore &&);
+	//! @brief Move assignment
+	Semaphore & operator=(Semaphore &&);
+	//! @brief Destructor
+	virtual ~Semaphore();
 
 	ReturnValue_t acquire(uint32_t timeoutMs =
-	        BinarySemaphore::NO_BLOCK_TIMEOUT) override;
+	        Semaphore::NO_BLOCK_TIMEOUT) override;
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() override;
 
@@ -83,7 +71,7 @@ public:
 	 *         -@c RETURN_FAILED on failure
 	 */
 	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs =
-	        BinarySemaphore::NO_BLOCK_TIMEOUT);
+	        Semaphore::NO_BLOCK_TIMEOUT);
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
@@ -92,7 +80,7 @@ public:
 	 *         - @c RETURN_FAILED on failure
 	 */
 	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
-	        BinarySemaphore::NO_BLOCK_TICKS);
+	        Semaphore::NO_BLOCK_TICKS);
 
 	/**
 	 * Give back the binary semaphore
@@ -130,7 +118,7 @@ public:
 	 */
 	static ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
 				BaseType_t * higherPriorityTaskWoken);
-private:
+protected:
 	SemaphoreHandle_t handle;
 };
 

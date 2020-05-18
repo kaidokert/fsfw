@@ -3,10 +3,10 @@
 
 #include <framework/ipc/MutexIF.h>
 
-
-#include <FreeRTOS.h>
-#include "semphr.h"
-
+extern "C" {
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+}
 
 
 class Mutex : public MutexIF {
