@@ -1,27 +1,24 @@
-/**
- * @file BinarySempahore.h
- *
- * @date 25.02.2020
- */
 #ifndef FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 #define FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
 extern "C" {
-#include "FreeRTOS.h"
-#include "semphr.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
 }
 
-
+// TODO: Counting semaphores and implement the new (better)
+//		 task notifications. However, those use task notifications require
+//		 the task handle. Maybe it would be better to make a separate class
+// 		 and switch between the classes with #ifdefs.
+//		 Task Notifications require FreeRTOS V8.2 something..
 /**
  * @brief OS Tool to achieve synchronization of between tasks or between task and ISR
  * @details
  * Documentation: https://www.freertos.org/Embedded-RTOS-Binary-Semaphores.html
  *
- * SHOULDDO: check freeRTOS version and use new task notifications,
- * if non-ancient freeRTOS version is used.
- *
+ * @author 	R. Mueller
  * @ingroup osal
  */
 class BinarySemaphore: public HasReturnvaluesIF {
