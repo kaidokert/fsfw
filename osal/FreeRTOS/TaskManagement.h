@@ -18,7 +18,8 @@ extern "C" void requestContextSwitchFromISR();
 /*!
  * Used by functions to tell if they are being called from
  * within an ISR or from a regular task. This is required because FreeRTOS
- * has different functions for handling semaphores and messages from within an ISR and task.
+ * has different functions for handling semaphores and messages from within
+ * an ISR and task.
  */
 
 enum CallContext {
@@ -30,10 +31,10 @@ enum CallContext {
 class TaskManagement {
 public:
 	/**
-	 * In this function, a function dependant on the portmacro.h header function calls
-	 * to request a context switch can be specified.
-	 * This can be used if sending to the queue from an ISR caused a task to unblock
-	 * and a context switch is required.
+	 * @brief	In this function, a function dependant on the portmacro.h header
+	 * 			function calls to request a context switch can be specified.
+	 * This can be used if sending to the queue from an ISR caused a task
+	 * to unblock and a context switch is required.
 	 */
 	static void requestContextSwitch(CallContext callContext);
 
