@@ -1,22 +1,22 @@
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/pus/TcPacketStored.h>
-#include <string.h>
+#include <cstring>
 
 TcPacketStored::TcPacketStored(store_address_t setAddress) :
-		TcPacketBase(NULL), storeAddress(setAddress) {
+		TcPacketBase(nullptr), storeAddress(setAddress) {
 	this->setStoreAddress(this->storeAddress);
 }
 
-TcPacketStored::TcPacketStored(uint16_t apid, uint8_t ack, uint8_t service,
-		uint8_t subservice, uint8_t sequence_count, const uint8_t* data,
-		uint32_t size) :
-		TcPacketBase(NULL) {
+TcPacketStored::TcPacketStored(uint8_t service, uint8_t subservice,
+		uint16_t apid, uint8_t sequence_count, const uint8_t* data,
+		size_t size, uint8_t ack ) :
+		TcPacketBase(nullptr) {
 	this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (!this->checkAndSetStore()) {
 		return;
 	}
-	uint8_t* p_data = NULL;
+	uint8_t* p_data = nullptr;
 	ReturnValue_t returnValue = this->store->getFreeElement(&this->storeAddress,
 			(TC_PACKET_MIN_SIZE + size), &p_data);
 	if (returnValue != this->store->RETURN_OK) {
@@ -59,7 +59,7 @@ bool TcPacketStored::checkAndSetStore() {
 void TcPacketStored::setStoreAddress(store_address_t setAddress) {
 	this->storeAddress = setAddress;
 	const uint8_t* temp_data = NULL;
-	uint32_t temp_size;
+	size_t temp_size;
 	ReturnValue_t status = StorageManagerIF::RETURN_FAILED;
 	if (this->checkAndSetStore()) {
 		status = this->store->getData(this->storeAddress, &temp_data,
@@ -79,7 +79,7 @@ store_address_t TcPacketStored::getStoreAddress() {
 
 bool TcPacketStored::isSizeCorrect() {
 	const uint8_t* temp_data = NULL;
-	uint32_t temp_size;
+	size_t temp_size;
 	ReturnValue_t status = this->store->getData(this->storeAddress, &temp_data,
 			&temp_size);
 	if (status == StorageManagerIF::RETURN_OK) {
