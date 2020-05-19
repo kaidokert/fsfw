@@ -127,7 +127,7 @@ public:
 	void setErrorControl();
 	/**
 	 * This sets the source data. It copies the provided data to
-	 * the internal TmPacketPointer.
+	 * the internal TmPacketPointer source data location.
 	 * @param sourceData
 	 * @param sourceSize
 	 */
