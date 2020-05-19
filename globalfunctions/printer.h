@@ -10,9 +10,10 @@ enum class OutputType {
 	HEX
 };
 
-void print(uint8_t* data, size_t size, OutputType type = OutputType::HEX);
-void printHex(uint8_t* data, size_t size);
-void printDec(uint8_t* data, size_t size);
+void print(uint8_t* data, size_t size, OutputType type = OutputType::HEX,
+		bool printInfo = true, size_t maxCharPerLine = 12);
+void printHex(uint8_t* data, size_t size, size_t maxCharPerLine = 12);
+void printDec(uint8_t* data, size_t size, size_t maxCharPerLine = 12);
 }
 
 #endif /* FRAMEWORK_GLOBALFUNCTIONS_PRINTER_H_ */
