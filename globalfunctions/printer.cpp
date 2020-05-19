@@ -15,7 +15,8 @@ void printer::print(const uint8_t *data, size_t size, OutputType type,
 	}
 }
 
-void printer::printHex(const uint8_t *data, size_t size, size_t maxCharPerLine) {
+void printer::printHex(const uint8_t *data, size_t size,
+		size_t maxCharPerLine) {
 	sif::info << std::hex;
 	for(size_t i = 0; i < size; i++) {
 		sif::info << "0x" << static_cast<int>(data[i]);
@@ -31,7 +32,8 @@ void printer::printHex(const uint8_t *data, size_t size, size_t maxCharPerLine) 
 	sif::info << "]" << std::endl;
 }
 
-void printer::printDec(const uint8_t *data, size_t size, size_t maxCharPerLine) {
+void printer::printDec(const uint8_t *data, size_t size,
+		size_t maxCharPerLine) {
 	sif::info << std::dec;
 	for(size_t i = 0; i < size; i++) {
 		sif::info << static_cast<int>(data[i]);
