@@ -1,8 +1,8 @@
 #include <framework/globalfunctions/printer.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-void printer::print(uint8_t *data, size_t size, OutputType type, bool printInfo,
-		size_t maxCharPerLine) {
+void printer::print(const uint8_t *data, size_t size, OutputType type,
+		bool printInfo, size_t maxCharPerLine) {
 	if(printInfo) {
 		sif::info << "Printing data with size " << size << ": ";
 	}
@@ -15,7 +15,7 @@ void printer::print(uint8_t *data, size_t size, OutputType type, bool printInfo,
 	}
 }
 
-void printer::printHex(uint8_t *data, size_t size, size_t maxCharPerLine) {
+void printer::printHex(const uint8_t *data, size_t size, size_t maxCharPerLine) {
 	sif::info << std::hex;
 	for(size_t i = 0; i < size; i++) {
 		sif::info << "0x" << static_cast<int>(data[i]);
@@ -31,10 +31,10 @@ void printer::printHex(uint8_t *data, size_t size, size_t maxCharPerLine) {
 	sif::info << "]" << std::endl;
 }
 
-void printer::printDec(uint8_t *data, size_t size, size_t maxCharPerLine) {
+void printer::printDec(const uint8_t *data, size_t size, size_t maxCharPerLine) {
 	sif::info << std::dec;
 	for(size_t i = 0; i < size; i++) {
-		sif::info << "0x" << static_cast<int>(data[i]);
+		sif::info << static_cast<int>(data[i]);
 		if(i < size - 1){
 			sif::info << " , ";
 			if(i > 0 and i % maxCharPerLine == 0) {

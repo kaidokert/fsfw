@@ -74,6 +74,9 @@ public:
 	 * @param Size size of the packet.
 	 */
 	TcPacketStored( const uint8_t* data, uint32_t size);
+
+	ReturnValue_t getData(const uint8_t ** dataPtr,
+			size_t* dataSize);
 	/**
 	 * This is a getter for the current store address of the packet.
 	 * @return	The current store address. The (raw) value is \c StorageManagerIF::INVALID_ADDRESS if
