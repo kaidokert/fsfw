@@ -1,5 +1,6 @@
 #include <framework/globalfunctions/printer.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <bitset>
 
 void printer::print(const uint8_t *data, size_t size, OutputType type,
 		bool printInfo, size_t maxCharPerLine) {
@@ -10,8 +11,11 @@ void printer::print(const uint8_t *data, size_t size, OutputType type,
 	if(type == OutputType::HEX) {
 		printer::printHex(data, size, maxCharPerLine);
 	}
-	else {
+	else if (type == OutputType::DEC) {
 		printer::printDec(data, size, maxCharPerLine);
+	}
+	else if(type == OutputType::BIN) {
+	    printer::printBin(data, size);
 	}
 }
 
@@ -45,4 +49,13 @@ void printer::printDec(const uint8_t *data, size_t size,
 		}
 	}
 	sif::info << "]" << std::endl;
+}
+
+void printer::printBin(const uint8_t *data, size_t size) {
+    sif::info << "\n" << std::flush;
+    for(size_t i = 0; i < size; i++) {
+        sif::info << "Byte " << i + 1 << ": 0b"<<
+                std::bitset<8>(data[i]) << ",\n" << std::flush;
+    }
+    sif::info << "]" << std::endl;
 }
