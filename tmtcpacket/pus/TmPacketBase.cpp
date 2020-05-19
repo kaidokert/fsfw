@@ -102,6 +102,11 @@ void TmPacketBase::initializeTmPacket(uint16_t apid, uint8_t service, uint8_t su
 	}
 }
 
+void TmPacketBase::setSourceData(uint8_t* sourceData, size_t sourceSize) {
+	memcpy(getSourceData(), sourceData, sourceSize);
+	setSourceDataSize(sourceSize);
+}
+
 void TmPacketBase::setSourceDataSize(uint16_t size) {
 	setPacketDataLength(size + sizeof(PUSTmDataFieldHeader) + CRC_SIZE - 1);
 }

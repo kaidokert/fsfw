@@ -168,6 +168,14 @@ public:
 	 * current content of the packet.
 	 */
 	void setErrorControl();
+
+	/**
+	 * Copies the supplied data to the internal TC application data field.
+	 * @param pData
+	 * @param dataLen
+	 */
+	void setAppData(uint8_t * appData, uint16_t dataLen);
+
 	/**
 	 * With this method, the packet data pointer can be redirected to another
 	 * location.
@@ -178,12 +186,7 @@ public:
 	 * @param p_data	A pointer to another PUS Telecommand Packet.
 	 */
 	void setData( const uint8_t* pData );
-	/**
-	 * Set application data and corresponding length field.
-	 * @param pData
-	 * @param dataLen
-	 */
-	void setApplicationData(const uint8_t * pData, uint16_t dataLen);
+
 	/**
 	 * This is a debugging helper method that prints the whole packet content
 	 * to the screen.
