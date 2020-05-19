@@ -24,7 +24,7 @@ TcPacketStored::TcPacketStored(uint8_t service, uint8_t subservice,
 	}
 	this->setData(p_data);
 	initializeTcPacket(apid, sequence_count, ack, service, subservice);
-	memcpy(&tcData->data, data, size);
+	memcpy(&tcData->appData, data, size);
 	this->setPacketDataLength(
 			size + sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
 	this->setErrorControl();

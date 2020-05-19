@@ -24,8 +24,8 @@ struct PUSTcDataFieldHeader {
  */
 struct TcPacketPointer {
 	CCSDSPrimaryHeader primary;
-	PUSTcDataFieldHeader data_field;
-	uint8_t data;
+	PUSTcDataFieldHeader dataField;
+	uint8_t appData;
 };
 
 /**
