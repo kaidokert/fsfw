@@ -1,6 +1,7 @@
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/pus/TcPacketStored.h>
+
 #include <cstring>
 
 TcPacketStored::TcPacketStored(store_address_t setAddress) :
@@ -20,6 +21,8 @@ TcPacketStored::TcPacketStored(uint8_t service, uint8_t subservice,
 	ReturnValue_t returnValue = this->store->getFreeElement(&this->storeAddress,
 			(TC_PACKET_MIN_SIZE + size), &p_data);
 	if (returnValue != this->store->RETURN_OK) {
+		sif::warning << "TcPacketStored: Could not get free element from store!"
+				<< std::endl;
 		return;
 	}
 	this->setData(p_data);
@@ -28,6 +31,15 @@ TcPacketStored::TcPacketStored(uint8_t service, uint8_t subservice,
 	this->setPacketDataLength(
 			size + sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
 	this->setErrorControl();
+}
+
+ReturnValue_t TcPacketStored::getData(const uint8_t ** dataPtr,
+		size_t* dataSize) {
+	auto result = this->store->getData(storeAddress, dataPtr, dataSize);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		sif::warning << "TcPacketStored: Could not get data!" << std::endl;
+	}
+	return result;
 }
 
 TcPacketStored::TcPacketStored() :

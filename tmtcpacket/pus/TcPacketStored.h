@@ -74,10 +74,19 @@ public:
 	 * @param Size size of the packet.
 	 */
 	TcPacketStored( const uint8_t* data, uint32_t size);
+
+	/**
+	 * Getter function for the raw data.
+	 * @param dataPtr [out] Pointer to the data pointer to set
+	 * @param dataSize [out] Address of size to set.
+	 * @return -@c RETURN_OK if data was retrieved successfully.
+	 */
+	ReturnValue_t getData(const uint8_t ** dataPtr,
+			size_t* dataSize);
 	/**
 	 * This is a getter for the current store address of the packet.
-	 * @return	The current store address. The (raw) value is \c StorageManagerIF::INVALID_ADDRESS if
-	 * 			the packet is not linked.
+	 * @return	The current store address. The (raw) value is
+	 * 			@c StorageManagerIF::INVALID_ADDRESS if the packet is not linked.
 	 */
 	store_address_t getStoreAddress();
 	/**
