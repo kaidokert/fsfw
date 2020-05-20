@@ -66,7 +66,7 @@ protected:
 		} else {
 			value = 0;
 			valid = false;
-			error << "PoolVariable: read of DP Variable 0x" << std::hex
+			sif::error << "PoolVariable: read of DP Variable 0x" << std::hex
 					<< dataPoolId << std::dec << " failed." << std::endl;
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}

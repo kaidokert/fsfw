@@ -91,7 +91,7 @@ template<typename T>
 ReturnValue_t ParameterWrapper::serializeData(uint8_t** buffer, uint32_t* size,
 		const uint32_t max_size, bool bigEndian) const {
 	const T *element = (const T*) readonlyData;
-	ReturnValue_t result;
+	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	uint16_t dataSize = columns * rows;
 	while (dataSize != 0) {
 		result = SerializeAdapter<T>::serialize(element, buffer, size, max_size,

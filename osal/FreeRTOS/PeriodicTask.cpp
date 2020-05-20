@@ -10,7 +10,8 @@ PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 
 	BaseType_t status = xTaskCreate(taskEntryPoint, name, setStack, this, setPriority, &handle);
 	if(status != pdPASS){
-		debug << "PeriodicTask Insufficient heap memory remaining. Status: " << status << std::endl;
+		sif::debug << "PeriodicTask Insufficient heap memory remaining. Status: "
+		           << status << std::endl;
 	}
 
 }
@@ -34,7 +35,7 @@ void PeriodicTask::taskEntryPoint(void* argument) {
 	}
 
 	originalTask->taskFunctionality();
-	debug << "Polling task " << originalTask->handle
+	sif::debug << "Polling task " << originalTask->handle
 			<< " returned from taskFunctionality." << std::endl;
 }
 

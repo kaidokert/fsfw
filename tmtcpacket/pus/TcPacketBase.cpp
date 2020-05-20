@@ -61,11 +61,11 @@ uint8_t TcPacketBase::getPusVersionNumber() {
 
 void TcPacketBase::print() {
 	uint8_t * wholeData = getWholeData();
-	debug << "TcPacket contains: " << std::endl;
+	sif::debug << "TcPacket contains: " << std::endl;
 	for (uint8_t count = 0; count < getFullSize(); ++count) {
-		debug << std::hex << (uint16_t) wholeData[count] << " ";
+		sif::debug << std::hex << (uint16_t) wholeData[count] << " ";
 	}
-	debug << std::dec << std::endl;
+	sif::debug << std::dec << std::endl;
 }
 
 void TcPacketBase::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
