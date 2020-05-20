@@ -1,3 +1,6 @@
+#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
+#define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
+
 template<uint8_t NUMBER_OF_POOLS>
 inline PoolManager<NUMBER_OF_POOLS>::PoolManager(object_id_t setObjectId,
 		const uint16_t element_sizes[NUMBER_OF_POOLS],
@@ -48,3 +51,5 @@ inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::modifyData(
 				packet_ptr, size);
 	return status;
 }
+
+#endif
