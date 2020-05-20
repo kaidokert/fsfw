@@ -39,10 +39,10 @@ public:
 
 	//! @brief Default ctor
 	BinarySemaphore();
-	//! @brief Copy ctor
-	BinarySemaphore(const BinarySemaphore&);
-	//! @brief Copy assignment
-	BinarySemaphore& operator=(const BinarySemaphore&);
+	//! @brief Copy ctor, deleted explicitely.
+	BinarySemaphore(const BinarySemaphore&) = delete;
+	//! @brief Copy assignment, deleted explicitely.
+	BinarySemaphore& operator=(const BinarySemaphore&) = delete;
 	//! @brief Move ctor
 	BinarySemaphore (BinarySemaphore &&);
 	//! @brief Move assignment

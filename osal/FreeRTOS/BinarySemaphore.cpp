@@ -15,27 +15,6 @@ BinarySemaphore::~BinarySemaphore() {
 	vSemaphoreDelete(handle);
 }
 
-// This copy ctor is important as it prevents the assignment to a ressource
-// (other.handle) variable which is later deleted!
-BinarySemaphore::BinarySemaphore(const BinarySemaphore& other) {
-    handle = xSemaphoreCreateBinary();
-    if(handle == nullptr) {
-        sif::error << "Binary semaphore creation failure" << std::endl;
-    }
-    xSemaphoreGive(handle);
-}
-
-BinarySemaphore& BinarySemaphore::operator =(const BinarySemaphore& s) {
-    if(this != &s) {
-        handle = xSemaphoreCreateBinary();
-        if(handle == nullptr) {
-            sif::error << "Binary semaphore creation failure" << std::endl;
-        }
-        xSemaphoreGive(handle);
-    }
-    return *this;
-}
-
 BinarySemaphore::BinarySemaphore(BinarySemaphore&& s) {
     handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
