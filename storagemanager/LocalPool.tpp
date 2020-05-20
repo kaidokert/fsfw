@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
-#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
+#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
+#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
 
 template<uint8_t NUMBER_OF_POOLS>
 inline LocalPool<NUMBER_OF_POOLS>::LocalPool(object_id_t setObjectId,
@@ -83,7 +83,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::reserveSpace(
 		const uint32_t size, store_address_t* address, bool ignoreFault) {
 	ReturnValue_t status = getPoolIndex(size, &address->pool_index);
 	if (status != RETURN_OK) {
-		error << "LocalPool( " << std::hex << getObjectId() << std::dec
+		sif::error << "LocalPool( " << std::hex << getObjectId() << std::dec
 				<< " )::reserveSpace: Packet too large." << std::endl;
 		return status;
 	}
@@ -193,7 +193,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::deleteData(
 		size_list[packet_id.pool_index][packet_id.packet_index] = STORAGE_FREE;
 	} else {
 		//pool_index or packet_index is too large
-		error << "LocalPool:deleteData failed." << std::endl;
+		sif::error << "LocalPool:deleteData failed." << std::endl;
 		status = ILLEGAL_STORAGE_ID;
 	}
 	return status;
@@ -249,7 +249,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::initialize() {
 	//Check if any pool size is large than the maximum allowed.
 	for (uint8_t count = 0; count < NUMBER_OF_POOLS; count++) {
 		if (element_sizes[count] >= STORAGE_FREE) {
-			error << "LocalPool::initialize: Pool is too large! "
+			sif::error << "LocalPool::initialize: Pool is too large! "
 					"Max. allowed size is: " << (STORAGE_FREE - 1) << std::endl;
 			return RETURN_FAILED;
 		}
