@@ -2,7 +2,9 @@
 #define FRAMEWORK_STORAGEMANAGER_STORAGEACCESSOR_H_
 
 #include <framework/ipc/MutexHelper.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include <framework/storagemanager/storeAddress.h>
+
+class StorageManagerIF;
 
 /**
  * @brief 	Helper classes to facilitate safe access to storages which is also
