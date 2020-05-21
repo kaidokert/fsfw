@@ -1,5 +1,5 @@
-#ifndef LOCALPOOL_TPP
-#define LOCALPOOL_TPP
+#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
+#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
 
 template<uint8_t NUMBER_OF_POOLS>
 inline LocalPool<NUMBER_OF_POOLS>::LocalPool(object_id_t setObjectId,

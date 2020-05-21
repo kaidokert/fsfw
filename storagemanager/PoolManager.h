@@ -1,5 +1,5 @@
-#ifndef POOLMANAGER_H_
-#define POOLMANAGER_H_
+#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
+#define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
 
 #include <framework/storagemanager/LocalPool.h>
 #include <framework/ipc/MutexHelper.h>
