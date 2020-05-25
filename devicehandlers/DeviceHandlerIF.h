@@ -28,7 +28,7 @@ public:
 
 	// MODE_ON = 0, //!< The device is powered and ready to perform operations. In this mode, no commands are sent by the device handler itself, but direct commands van be commanded and will be interpreted
 	// MODE_OFF = 1, //!< The device is powered off. The only command accepted in this mode is a mode change to on.
-	//!< The device is powered on and the device handler periodically sends
+	//! The device is powered on and the device handler periodically sends
 	//! commands. The commands to be sent are selected by the handler
 	//! according to the submode.
 	static const Mode_t MODE_NORMAL = 2;
