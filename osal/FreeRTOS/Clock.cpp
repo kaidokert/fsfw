@@ -4,8 +4,7 @@
 #include "Timekeeper.h"
 
 extern "C" {
-#include <FreeRTOS.h>
-#include <task.h>
+#include <freertos/FreeRTOS.h>
 }
 
 
