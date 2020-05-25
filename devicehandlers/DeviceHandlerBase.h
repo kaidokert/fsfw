@@ -740,28 +740,40 @@ protected:
 	/**
 	 * Do the transition to the main modes (MODE_ON, MODE_NORMAL and MODE_RAW).
 	 *
-	 * If the transition is complete, the mode should be set to the target mode, which can be deduced from the current mode which is
+	 * If the transition is complete, the mode should be set to the target mode,
+	 * which can be deduced from the current mode which is
 	 * [_MODE_TO_ON, _MODE_TO_NORMAL, _MODE_TO_RAW]
 	 *
-	 * The intended target submode is already set. The origin submode can be read in subModeFrom.
+	 * The intended target submode is already set.
+	 * The origin submode can be read in subModeFrom.
 	 *
-	 * If the transition can not be completed, the child class can try to reach an working mode by setting the mode either directly
-	 * or setting the mode to an transitional mode (TO_ON, TO_NORMAL, TO_RAW) if the device needs to be reconfigured.
+	 * If the transition can not be completed, the child class can try to reach
+	 * an working mode by setting the mode either directly
+	 * or setting the mode to an transitional mode (TO_ON, TO_NORMAL, TO_RAW)
+	 * if the device needs to be reconfigured.
 	 *
-	 * If nothing works, the child class can wait for the timeout and the base class will reset the mode to the mode where the transition
+	 * If nothing works, the child class can wait for the timeout and the base
+	 * class will reset the mode to the mode where the transition
 	 * originated from (the child should report the reason for the failed transition).
 	 *
-	 * The intended way to send commands is to set a flag (enum) indicating which command is to be sent here
-	 * and then to check in buildTransitionCommand() for the flag. This flag can also be used by doStartUp() and
-	 * doShutDown() to get a nice and clean implementation of buildTransitionCommand() without switching through modes.
+	 * The intended way to send commands is to set a flag (enum) indicating
+	 * which command is to be sent here and then to check in
+	 * buildTransitionCommand() for the flag. This flag can also be used by
+	 * doStartUp() and doShutDown() to get a nice and clean implementation of
+	 * buildTransitionCommand() without switching through modes.
 	 *
-	 * When the the condition for the completion of the transition is met, the mode can be set, for example in the parseReply() function.
+	 * When the the condition for the completion of the transition is met, the
+	 * mode can be set, for example in the scanForReply() function.
 	 *
-	 * The default implementation goes into the target mode;
+	 * The default implementation goes into the target mode directly.
 	 *
-	 * #transitionFailure can be set to a failure code indicating the reason for a failed transition
+	 * #transitionFailure can be set to a failure code indicating the reason
+	 * for a failed transition
 	 *
-	 * @param modeFrom the mode the transition originated from: [MODE_ON, MODE_NORMAL, MODE_RAW and _MODE_POWER_DOWN (if the mode changed from _MODE_START_UP to _MODE_TO_ON)]
+	 * @param modeFrom
+	 * The mode the transition originated from:
+	 * [MODE_ON, MODE_NORMAL, MODE_RAW and _MODE_POWER_DOWN (if the mode changed
+	 * from _MODE_START_UP to _MODE_TO_ON)]
 	 * @param subModeFrom the subMode of modeFrom
 	 */
 	virtual void doTransition(Mode_t modeFrom, Submode_t subModeFrom);

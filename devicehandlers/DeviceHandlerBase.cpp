@@ -417,7 +417,7 @@ void DeviceHandlerBase::setTransition(Mode_t modeTo, Submode_t submodeTo) {
 	transitionSourceSubMode = submode;
 	childTransitionFailure = CHILD_TIMEOUT;
 
-//transitionTargetMode is set by setMode
+	// transitionTargetMode is set by setMode
 	setMode((modeTo | TRANSITION_MODE_CHILD_ACTION_MASK), submodeTo);
 }
 
