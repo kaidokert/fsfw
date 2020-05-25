@@ -12,7 +12,7 @@
 /**
  * @brief	The LocalPool class provides an intermediate data storage with
  * 			a fixed pool size policy.
- * \details	The class implements the StorageManagerIF interface. While the
+ * @details	The class implements the StorageManagerIF interface. While the
  * 			total number of pools is fixed, the element sizes in one pool and
  * 			the number of pool elements per pool are set on construction.
  * 			The full amount of memory is allocated on construction.

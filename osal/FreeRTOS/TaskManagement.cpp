@@ -4,7 +4,8 @@ void TaskManagement::requestContextSwitchFromTask() {
 	vTaskDelay(0);
 }
 
-void TaskManagement::requestContextSwitch(CallContext callContext = CallContext::task) {
+void TaskManagement::requestContextSwitch(
+		CallContext callContext = CallContext::task) {
 	if(callContext == CallContext::isr) {
 		// This function depends on the partmacro.h definition for the specific device
 		requestContextSwitchFromISR();
@@ -20,5 +21,3 @@ TaskHandle_t TaskManagement::getCurrentTaskHandle() {
 configSTACK_DEPTH_TYPE TaskManagement::getTaskStackHighWatermark() {
 	return uxTaskGetStackHighWaterMark(TaskManagement::getCurrentTaskHandle());
 }
-
-

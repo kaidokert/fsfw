@@ -1,33 +1,45 @@
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/pus/TcPacketStored.h>
-#include <string.h>
+
+#include <cstring>
 
 TcPacketStored::TcPacketStored(store_address_t setAddress) :
-		TcPacketBase(NULL), storeAddress(setAddress) {
+		TcPacketBase(nullptr), storeAddress(setAddress) {
 	this->setStoreAddress(this->storeAddress);
 }
 
-TcPacketStored::TcPacketStored(uint16_t apid, uint8_t ack, uint8_t service,
-		uint8_t subservice, uint8_t sequence_count, const uint8_t* data,
-		uint32_t size) :
-		TcPacketBase(NULL) {
+TcPacketStored::TcPacketStored(uint8_t service, uint8_t subservice,
+		uint16_t apid, uint8_t sequence_count, const uint8_t* data,
+		size_t size, uint8_t ack ) :
+		TcPacketBase(nullptr) {
 	this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (!this->checkAndSetStore()) {
 		return;
 	}
-	uint8_t* p_data = NULL;
+	uint8_t* p_data = nullptr;
 	ReturnValue_t returnValue = this->store->getFreeElement(&this->storeAddress,
 			(TC_PACKET_MIN_SIZE + size), &p_data);
 	if (returnValue != this->store->RETURN_OK) {
+		sif::warning << "TcPacketStored: Could not get free element from store!"
+				<< std::endl;
 		return;
 	}
 	this->setData(p_data);
 	initializeTcPacket(apid, sequence_count, ack, service, subservice);
-	memcpy(&tcData->data, data, size);
+	memcpy(&tcData->appData, data, size);
 	this->setPacketDataLength(
 			size + sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
 	this->setErrorControl();
+}
+
+ReturnValue_t TcPacketStored::getData(const uint8_t ** dataPtr,
+		size_t* dataSize) {
+	auto result = this->store->getData(storeAddress, dataPtr, dataSize);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		sif::warning << "TcPacketStored: Could not get data!" << std::endl;
+	}
+	return result;
 }
 
 TcPacketStored::TcPacketStored() :

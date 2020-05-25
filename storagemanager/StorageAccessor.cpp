@@ -1,4 +1,5 @@
 #include <framework/storagemanager/StorageAccessor.h>
+#include <framework/storagemanager/StorageManagerIF.h>
 
 ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId):
 		storeId(storeId) {}

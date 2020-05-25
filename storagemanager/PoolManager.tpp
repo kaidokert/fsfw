@@ -1,5 +1,5 @@
-#ifndef POOLMANAGER_TPP_
-#define POOLMANAGER_TPP_
+#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
+#define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
 
 template<uint8_t NUMBER_OF_POOLS>
 inline PoolManager<NUMBER_OF_POOLS>::PoolManager(object_id_t setObjectId,

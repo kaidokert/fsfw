@@ -126,6 +126,13 @@ public:
 	 */
 	void setErrorControl();
 	/**
+	 * This sets the source data. It copies the provided data to
+	 * the internal TmPacketPointer source data location.
+	 * @param sourceData
+	 * @param sourceSize
+	 */
+	void setSourceData(uint8_t* sourceData, size_t sourceSize);
+	/**
 	 * With this method, the packet data pointer can be redirected to another
 	 * location.
 	 *

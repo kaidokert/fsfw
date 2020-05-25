@@ -1,22 +1,21 @@
+#ifndef FRAMEWORK_STORAGEMANAGER_STORAGEACCESSOR_H_
+#define FRAMEWORK_STORAGEMANAGER_STORAGEACCESSOR_H_
+
+#include <framework/ipc/MutexHelper.h>
+#include <framework/storagemanager/storeAddress.h>
+
+class StorageManagerIF;
+
 /**
  * @brief 	Helper classes to facilitate safe access to storages which is also
  * 			conforming to RAII principles
- * @details	These helper can be used together with the
- * 			StorageManager classes to manage access to a storage.
- * 			It can take care of thread-safety while also providing
- * 			mechanisms to automatically clear storage data.
- */
-#ifndef TEST_PROTOTYPES_STORAGEACCESSOR_H_
-#define TEST_PROTOTYPES_STORAGEACCESSOR_H_
-
-#include <framework/ipc/MutexHelper.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <memory>
-
-/**
- * @brief   Accessor class which can be returned by pool managers
- *          or passed and set by pool managers to have safe access to the pool
- *          resources.
+ * @details
+ * Accessor class which can be returned by pool manager or passed and set by
+ * pool managers to have safe access to the pool resources.
+ *
+ * These helper can be used together with the StorageManager classes to manage
+ * access to a storage. It can take care of thread-safety while also providing
+ * mechanisms to automatically clear storage data.
  */
 class ConstStorageAccessor {
 	//! StorageManager classes have exclusive access to private variables.
