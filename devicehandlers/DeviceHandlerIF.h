@@ -97,7 +97,6 @@ public:
 
 	// Standard codes used when building commands.
 	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(0xA0); //!< Return this if no command sending in required
-	// Mostly used for internal handling.
 	static const ReturnValue_t NO_COMMAND_DATA = MAKE_RETURN_CODE(0xA2); //!< If the command size is 0. Checked in DHB
 	static const ReturnValue_t NO_REPLY_EXPECTED = MAKE_RETURN_CODE(0xA3); //!< Used to indicate that this is a command-only command.
 	static const ReturnValue_t COMMAND_NOT_SUPPORTED = MAKE_RETURN_CODE(0xA4); //!< Command ID not in commandMap. Checked in DHB
