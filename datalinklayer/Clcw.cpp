@@ -55,7 +55,7 @@ void Clcw::setBitLock(bool bitLock) {
 }
 
 void Clcw::print() {
-	debug << "Clcw::print: Clcw is: " << std::hex << getAsWhole() << std::dec << std::endl;
+	sif::debug << "Clcw::print: Clcw is: " << std::hex << getAsWhole() << std::dec << std::endl;
 }
 
 void Clcw::setWhole(uint32_t rawClcw) {
