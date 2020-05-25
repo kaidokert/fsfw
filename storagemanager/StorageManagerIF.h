@@ -11,6 +11,7 @@
 using AccessorPair = std::pair<ReturnValue_t, StorageAccessor>;
 using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
 
+
 /**
  * @brief	This class provides an interface for intermediate data storage.
  * @details	The Storage manager classes shall be used to store larger chunks of
