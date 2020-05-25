@@ -7,9 +7,9 @@
 #ifndef FRAMEWORK_DATAPOOL_POOLRAWACCESSHELPER_H_
 #define FRAMEWORK_DATAPOOL_POOLRAWACCESSHELPER_H_
 
-#include <framework/datapool/PoolRawAccess.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/PoolRawAccess.h>
 
 /**
  * @brief 	This helper function simplifies accessing data pool entries

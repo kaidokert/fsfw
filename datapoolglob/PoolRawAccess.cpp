@@ -1,5 +1,5 @@
 #include <framework/datapoolglob/GlobalDataPool.h>
-#include <framework/datapool/PoolRawAccess.h>
+#include <framework/datapoolglob/PoolRawAccess.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/Endiness.h>
 

@@ -2,8 +2,8 @@
 #define POWERSENSOR_H_
 
 #include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapool/PIDReader.h>
 #include <framework/datapoolglob/GlobalPoolVariable.h>
+#include <framework/datapoolglob/PIDReader.h>
 #include <framework/devicehandlers/HealthDevice.h>
 #include <framework/monitoring/LimitMonitor.h>
 #include <framework/parameters/ParameterHelper.h>

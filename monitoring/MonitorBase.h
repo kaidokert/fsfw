@@ -2,7 +2,7 @@
 #define MONITORBASE_H_
 
 #include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapool/PIDReader.h>
+#include <framework/datapoolglob/PIDReader.h>
 #include <framework/monitoring/LimitViolationReporter.h>
 #include <framework/monitoring/MonitoringIF.h>
 #include <framework/monitoring/MonitoringMessageContent.h>

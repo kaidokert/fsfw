@@ -1,6 +1,6 @@
 #include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapoolglob/DataPoolParameterWrapper.h>
-#include <framework/datapool/PoolRawAccess.h>
+#include <framework/datapoolglob/PoolRawAccess.h>
 #include <framework/parameters/HasParametersIF.h>
 
 
