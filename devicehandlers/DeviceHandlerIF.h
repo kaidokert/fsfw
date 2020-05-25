@@ -28,19 +28,57 @@ public:
 
 	// MODE_ON = 0, //!< The device is powered and ready to perform operations. In this mode, no commands are sent by the device handler itself, but direct commands van be commanded and will be interpreted
 	// MODE_OFF = 1, //!< The device is powered off. The only command accepted in this mode is a mode change to on.
-	static const Mode_t MODE_NORMAL = 2; //!< The device is powered on and the device handler periodically sends commands. The commands to be sent are selected by the handler according to the submode.
-	static const Mode_t MODE_RAW = 3; //!< The device is powered on and ready to perform operations. In this mode, raw commands can be sent. The device handler will send all replies received from the command back to the commanding object.
-	static const Mode_t MODE_ERROR_ON = 4; //!4< The device is shut down but the switch could not be turned off, so the device still is powered. In this mode, only a mode change to @c MODE_OFF can be commanded, which tries to switch off the device again.
-	static const Mode_t _MODE_START_UP = TRANSITION_MODE_CHILD_ACTION_MASK | 5; //!< This is a transitional state which can not be commanded. The device handler performs all commands to get the device in a state ready to perform commands. When this is completed, the mode changes to @c MODE_ON.
-	static const Mode_t _MODE_SHUT_DOWN = TRANSITION_MODE_CHILD_ACTION_MASK | 6; //!< This is a transitional state which can not be commanded. The device handler performs all actions and commands to get the device shut down. When the device is off, the mode changes to @c MODE_OFF.
-	static const Mode_t _MODE_TO_ON = TRANSITION_MODE_CHILD_ACTION_MASK | HasModesIF::MODE_ON; //!< It is possible to set the mode to _MODE_TO_ON to use the to on transition if available.
+	//!< The device is powered on and the device handler periodically sends
+	//! commands. The commands to be sent are selected by the handler
+	//! according to the submode.
+	static const Mode_t MODE_NORMAL = 2;
+	//! The device is powered on and ready to perform operations. In this mode,
+	//! raw commands can be sent. The device handler will send all replies
+	//! received from the command back to the commanding object.
+	static const Mode_t MODE_RAW = 3;
+	//! The device is shut down but the switch could not be turned off, so the
+	//! device still is powered. In this mode, only a mode change to @c MODE_OFF
+	//! can be commanded, which tries to switch off the device again.
+	static const Mode_t MODE_ERROR_ON = 4;
+	//! This is a transitional state which can not be commanded. The device
+	//! handler performs all commands to get the device in a state ready to
+	//! perform commands. When this is completed, the mode changes to @c MODE_ON.
+	static const Mode_t _MODE_START_UP = TRANSITION_MODE_CHILD_ACTION_MASK | 5;
+	//! This is a transitional state which can not be commanded.
+	//! The device handler performs all actions and commands to get the device
+	//! shut down. When the device is off, the mode changes to @c MODE_OFF.
+	static const Mode_t _MODE_SHUT_DOWN = TRANSITION_MODE_CHILD_ACTION_MASK | 6;
+	//! It is possible to set the mode to _MODE_TO_ON to use the to on
+	//! transition if available.
+	static const Mode_t _MODE_TO_ON = TRANSITION_MODE_CHILD_ACTION_MASK | HasModesIF::MODE_ON;
+	//! It is possible to set the mode to _MODE_TO_RAW to use the to raw
+	//! transition if available.
 	static const Mode_t _MODE_TO_RAW = TRANSITION_MODE_CHILD_ACTION_MASK | MODE_RAW;
+	//! It is possible to set the mode to _MODE_TO_NORMAL to use the to normal
+	//! transition if available.
 	static const Mode_t _MODE_TO_NORMAL = TRANSITION_MODE_CHILD_ACTION_MASK | MODE_NORMAL;
-	static const Mode_t _MODE_POWER_DOWN = TRANSITION_MODE_BASE_ACTION_MASK | 1; //!< This is a transitional state which can not be commanded. The device is shut down and ready to be switched off. After the command to set the switch off has been sent, the mode changes to @c MODE_WAIT_OFF
-	static const Mode_t _MODE_POWER_ON = TRANSITION_MODE_BASE_ACTION_MASK | 2; //!< This is a transitional state which can not be commanded. The device will be switched on in this state. After the command to set the switch on has been sent, the mode changes to @c MODE_WAIT_ON
-	static const Mode_t _MODE_WAIT_OFF = TRANSITION_MODE_BASE_ACTION_MASK | 3; //!< This is a transitional state which can not be commanded. The switch has been commanded off and the handler waits for it to be off. When the switch is off, the mode changes to @c MODE_OFF.
-	static const Mode_t _MODE_WAIT_ON = TRANSITION_MODE_BASE_ACTION_MASK | 4; //!< This is a transitional state which can not be commanded. The switch has been commanded on and the handler waits for it to be on. When the switch is on, the mode changes to @c MODE_TO_ON.
-	static const Mode_t _MODE_SWITCH_IS_OFF = TRANSITION_MODE_BASE_ACTION_MASK | 5; //!< This is a transitional state which can not be commanded. The switch has been commanded off and is off now. This state is only to do an RMAP cycle once more where the doSendRead() function will set the mode to MODE_OFF. The reason to do this is to get rid of stuck packets in the IO Board
+	//! This is a transitional state which can not be commanded.
+	//! The device is shut down and ready to be switched off.
+	//! After the command to set the switch off has been sent,
+	//! the mode changes to @c MODE_WAIT_OFF
+	static const Mode_t _MODE_POWER_DOWN = TRANSITION_MODE_BASE_ACTION_MASK | 1;
+	//! This is a transitional state which can not be commanded. The device
+	//! will be switched on in this state. After the command to set the switch
+	//! on has been sent, the mode changes to @c MODE_WAIT_ON.
+	static const Mode_t _MODE_POWER_ON = TRANSITION_MODE_BASE_ACTION_MASK | 2;
+	//! This is a transitional state which can not be commanded. The switch has
+	//! been commanded off and the handler waits for it to be off.
+	//! When the switch is off, the mode changes to @c MODE_OFF.
+	static const Mode_t _MODE_WAIT_OFF = TRANSITION_MODE_BASE_ACTION_MASK | 3;
+	//! This is a transitional state which can not be commanded. The switch
+	//! has been commanded on and the handler waits for it to be on.
+	//! When the switch is on, the mode changes to @c MODE_TO_ON.
+	static const Mode_t _MODE_WAIT_ON = TRANSITION_MODE_BASE_ACTION_MASK | 4;
+	//! This is a transitional state which can not be commanded. The switch has
+	//! been commanded off and is off now. This state is only to do an RMAP
+	//! cycle once more where the doSendRead() function will set the mode to
+	//! MODE_OFF. The reason to do this is to get rid of stuck packets in the IO Board.
+	static const Mode_t _MODE_SWITCH_IS_OFF = TRANSITION_MODE_BASE_ACTION_MASK | 5;
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::CDH;
 	static const Event DEVICE_BUILDING_COMMAND_FAILED = MAKE_EVENT(0, SEVERITY::LOW);
