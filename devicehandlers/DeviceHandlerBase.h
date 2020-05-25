@@ -522,15 +522,16 @@ protected:
 
 	// Returnvalues for command building
 	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(0xC0); //!< Return this if no command sending in required
-	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(0xC1);
 	// (Robin): Maybe this would be better in DeviceHandlerIF?
 	static const ReturnValue_t COMMAND_MAP_ERROR = MAKE_RETURN_CODE(0xC2);
-	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(0xC3);
+
+	// Returnvalues for getSwitches()
+	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(0xD0);
 
 	// (Robin): Maybe this would be better in DeviceHandlerIF?
 	// Mode handling error Codes
-	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xD0);
-	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xD1);
+	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE0);
+	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE1);
 
 	static const DeviceCommandId_t RAW_COMMAND_ID = -1;
 	static const DeviceCommandId_t NO_COMMAND_ID = -2;
