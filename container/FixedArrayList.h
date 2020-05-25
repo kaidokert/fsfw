@@ -20,7 +20,8 @@ public:
 			ArrayList<T, count_t>(data, MAX_SIZE) {
 	}
 
-	// (Robin): We could create a constructor to initialize the fixed array list with data and the known size field
+	// (Robin): We could create a constructor to initialize the fixed array list
+	// with data and the known size field
 	// so it can be used for serialization too (with SerialFixedArrrayListAdapter)
 	// is this feasible?
 	/**
@@ -30,14 +31,10 @@ public:
 	 * @param count
 	 * @param swapArrayListEndianess
 	 */
-	FixedArrayList(T * data_, count_t count,
-			bool swapArrayListEndianess = false):
+	FixedArrayList(T * data_, count_t count):
 		ArrayList<T, count_t>(data, MAX_SIZE) {
 		memcpy(this->data, data_, count * sizeof(T));
 		this->size = count;
-		if(swapArrayListEndianess) {
-			ArrayList<T, count_t>::swapArrayListEndianness();
-		}
 	}
 
 	FixedArrayList(const FixedArrayList& other) :
