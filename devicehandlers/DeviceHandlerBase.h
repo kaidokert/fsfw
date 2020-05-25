@@ -509,26 +509,28 @@ protected:
 	 */
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
 
-	/**
-	 * These returnvalues can be returned from abstract functions
+	/* These returnvalues can be returned from abstract functions
 	 * to alter the behaviour of DHB.For error values, refer to
-	 * DeviceHandlerIF.h returnvalues.
-	 */
-	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(4);
+	 * DeviceHandlerIF.h returnvalues. */
+	// (Robin): maybe this would be better in DeviceHandlerIF?
+	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(0xA0);
+
 	// Returnvalues for scanForReply()
-	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(5); //!< This is used to specify for replies from a device which are not replies to requests
-	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(6); //!< Ignore parts of the received packet
-	static const ReturnValue_t IGNORE_FULL_PACKET = MAKE_RETURN_CODE(7); //!< Ignore full received packet
+	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(0xB0); //!< This is used to specify for replies from a device which are not replies to requests
+	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(0xB1); //!< Ignore parts of the received packet
+	static const ReturnValue_t IGNORE_FULL_PACKET = MAKE_RETURN_CODE(0xB2); //!< Ignore full received packet
 
-//	static const ReturnValue_t ONE_SWITCH = MAKE_RETURN_CODE(8);
-//	static const ReturnValue_t TWO_SWITCHES = MAKE_RETURN_CODE(9);
-	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(10);
-	static const ReturnValue_t COMMAND_MAP_ERROR = MAKE_RETURN_CODE(11);
-	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(12);
+	// Returnvalues for command building
+	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(0xC0); //!< Return this if no command sending in required
+	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(0xC1);
+	// (Robin): Maybe this would be better in DeviceHandlerIF?
+	static const ReturnValue_t COMMAND_MAP_ERROR = MAKE_RETURN_CODE(0xC2);
+	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(0xC3);
 
-	//Mode handling error Codes
-	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE1);
-	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE2);
+	// (Robin): Maybe this would be better in DeviceHandlerIF?
+	// Mode handling error Codes
+	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xD0);
+	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xD1);
 
 	static const DeviceCommandId_t RAW_COMMAND_ID = -1;
 	static const DeviceCommandId_t NO_COMMAND_ID = -2;
