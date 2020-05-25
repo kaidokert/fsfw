@@ -109,16 +109,16 @@ public:
 	static const ReturnValue_t COMMAND_NOT_IMPLEMENTED = MAKE_RETURN_CODE(0xAA);
 
 	// Standard codes used in scanForReply
-	static const ReturnValue_t CHECKSUM_ERROR = MAKE_RETURN_CODE(0xB2);
-	static const ReturnValue_t LENGTH_MISSMATCH = MAKE_RETURN_CODE(0xB3);
-	static const ReturnValue_t INVALID_DATA = MAKE_RETURN_CODE(0xB4);
-	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0xB5);
+	static const ReturnValue_t CHECKSUM_ERROR = MAKE_RETURN_CODE(0xB0);
+	static const ReturnValue_t LENGTH_MISSMATCH = MAKE_RETURN_CODE(0xB1);
+	static const ReturnValue_t INVALID_DATA = MAKE_RETURN_CODE(0xB2);
+	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0xB3);
 
 	// Standard codes used in  interpretDeviceReply
-	static const ReturnValue_t DEVICE_DID_NOT_EXECUTE = MAKE_RETURN_CODE(0xC1); //the device reported, that it did not execute the command
-	static const ReturnValue_t DEVICE_REPORTED_ERROR = MAKE_RETURN_CODE(0xC2);
-	static const ReturnValue_t UNKNOW_DEVICE_REPLY = MAKE_RETURN_CODE(0xC3); //the deviceCommandId reported by scanforReply is unknown
-	static const ReturnValue_t DEVICE_REPLY_INVALID = MAKE_RETURN_CODE(0xC4); //syntax etc is correct but still not ok, eg parameters where none are expected
+	static const ReturnValue_t DEVICE_DID_NOT_EXECUTE = MAKE_RETURN_CODE(0xC0); //the device reported, that it did not execute the command
+	static const ReturnValue_t DEVICE_REPORTED_ERROR = MAKE_RETURN_CODE(0xC1);
+	static const ReturnValue_t UNKNOW_DEVICE_REPLY = MAKE_RETURN_CODE(0xC2); //the deviceCommandId reported by scanforReply is unknown
+	static const ReturnValue_t DEVICE_REPLY_INVALID = MAKE_RETURN_CODE(0xC3); //syntax etc is correct but still not ok, eg parameters where none are expected
 
 	// Standard codes used in buildCommandFromCommand
 	static const ReturnValue_t INVALID_COMMAND_PARAMETER = MAKE_RETURN_CODE(0xD0);
