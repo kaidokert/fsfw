@@ -232,8 +232,9 @@ protected:
 	 * Build the device command to send for a transitional mode.
 	 *
 	 * This is only called in @c _MODE_TO_NORMAL, @c _MODE_TO_ON, @c _MODE_TO_RAW,
-	 * @c _MODE_START_UP and @c _MODE_TO_POWER_DOWN. So it is used by doStartUp()
-	 * and doShutDown() as well as doTransition()
+	 * @c _MODE_START_UP and @c _MODE_SHUT_DOWN. So it is used by doStartUp()
+	 * and doShutDown() as well as doTransition(), by setting those
+	 * modes in the respective functions.
 	 *
 	 * A good idea is to implement a flag indicating a command has to be built
 	 * and a variable containing the command number to be built
