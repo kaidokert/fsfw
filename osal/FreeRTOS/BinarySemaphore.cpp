@@ -3,6 +3,8 @@
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
+const uint32_t SemaphoreIF::NO_TIMEOUT = 0;
+
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();
 	if(handle == nullptr) {
