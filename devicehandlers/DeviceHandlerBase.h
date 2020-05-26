@@ -494,7 +494,7 @@ public:
 	ReturnValue_t setHealth(HealthState health);
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex);
+			const ParameterWrapper *newValues, uint16_t startAtIndex) override;
 	/**
 	 * Implementation of ExecutableObjectIF function
 	 *
