@@ -25,7 +25,9 @@ Mutex::Mutex() {
 		sif::error << "Mutex: creation with name, id " << mutex.__data.__count
 				<< ", " << " failed with " << strerror(status) << std::endl;
 	}
-	//After a mutex attributes object has been used to initialize one or more mutexes, any function affecting the attributes object (including destruction) shall not affect any previously initialized mutexes.
+	// After a mutex attributes object has been used to initialize one or more
+	// mutexes, any function affecting the attributes object
+	// (including destruction) shall not affect any previously initialized mutexes.
 	status = pthread_mutexattr_destroy(&mutexAttr);
 	if (status != 0) {
 		sif::error << "Mutex: Attribute destroy failed with " << strerror(status) << std::endl;

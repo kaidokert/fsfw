@@ -2,7 +2,11 @@
 #define OS_RTEMS_MUTEX_H_
 
 #include <framework/ipc/MutexIF.h>
+
+extern "C" {
 #include <pthread.h>
+}
+
 
 class Mutex : public MutexIF {
 public:
