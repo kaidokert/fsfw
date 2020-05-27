@@ -1,8 +1,8 @@
 #ifndef THERMALMODULE_H_
 #define THERMALMODULE_H_
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/devicehandlers/HealthDevice.h>
 #include <framework/events/EventReportingProxyIF.h>
 #include "ThermalModuleIF.h"
@@ -23,10 +23,10 @@ public:
 	};
 
 	ThermalModule(uint32_t moduleTemperaturePoolId, uint32_t currentStatePoolId,
-			uint32_t targetStatePoolId, DataSet *dataSet, Parameters parameters,
+			uint32_t targetStatePoolId, GlobDataSet *dataSet, Parameters parameters,
 			RedundantHeater::Parameters heaterParameters);
 
-	ThermalModule(uint32_t moduleTemperaturePoolId, DataSet *dataSet);
+	ThermalModule(uint32_t moduleTemperaturePoolId, GlobDataSet *dataSet);
 
 	virtual ~ThermalModule();
 
@@ -70,12 +70,12 @@ protected:
 
 	Parameters parameters;
 
-	db_float_t moduleTemperature;
+	gp_float_t moduleTemperature;
 
 	RedundantHeater *heater;
 
-	db_int8_t currentState;
-	db_int8_t targetState;
+	gp_int8_t currentState;
+	gp_int8_t targetState;
 
 	std::list<AbstractTemperatureSensor *> sensors;
 	std::list<ComponentData> components;

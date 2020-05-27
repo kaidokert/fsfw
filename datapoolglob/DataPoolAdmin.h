@@ -1,15 +1,16 @@
 #ifndef DATAPOOLADMIN_H_
 #define DATAPOOLADMIN_H_
 
-#include <framework/memory/MemoryHelper.h>
-#include <framework/action/HasActionsIF.h>
-#include <framework/action/SimpleActionHelper.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/parameters/ReceivesParameterMessagesIF.h>
-#include <framework/datapool/DataPoolParameterWrapper.h>
+#include <framework/action/HasActionsIF.h>
 #include <framework/ipc/MessageQueueIF.h>
+#include <framework/parameters/ReceivesParameterMessagesIF.h>
+
+#include <framework/memory/MemoryHelper.h>
+#include <framework/action/SimpleActionHelper.h>
+#include <framework/datapoolglob/DataPoolParameterWrapper.h>
 
 class DataPoolAdmin: public HasActionsIF,
 		public ExecutableObjectIF,
@@ -33,8 +34,8 @@ public:
 	ReturnValue_t handleMemoryDump(uint32_t address, uint32_t size,
 			uint8_t** dataPointer, uint8_t* copyHere);
 
-	virtual ReturnValue_t executeAction(ActionId_t actionId,
-			MessageQueueId_t commandedBy, const uint8_t* data, size_t size);
+	ReturnValue_t executeAction(ActionId_t actionId,
+			MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size);
 
 	//not implemented as ParameterHelper is no used
 	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,

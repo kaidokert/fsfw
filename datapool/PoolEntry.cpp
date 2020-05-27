@@ -71,7 +71,6 @@ Type PoolEntry<T>::getType() {
 	return PodTypeConversion<T>::type;
 }
 
-template class PoolEntry<bool>;
 template class PoolEntry<uint8_t>;
 template class PoolEntry<uint16_t>;
 template class PoolEntry<uint32_t>;

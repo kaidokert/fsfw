@@ -1,16 +1,16 @@
-#include <framework/datapool/DataPool.h>
-#include <framework/datapool/PoolEntryIF.h>
-#include <framework/datapool/PoolRawAccess.h>
+#include <framework/datapoolglob/GlobalDataPool.h>
+#include <framework/datapoolglob/PoolRawAccess.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/Endiness.h>
 
 PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
-		DataSetIF* data_set, ReadWriteMode_t setReadWriteMode) :
-		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false), type(Type::UNKNOWN_TYPE), typeSize(
-				0), arraySize(0), sizeTillEnd(0), readWriteMode(setReadWriteMode) {
+		DataSetIF* dataSet, ReadWriteMode_t setReadWriteMode) :
+		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false),
+		type(Type::UNKNOWN_TYPE), typeSize(0), arraySize(0), sizeTillEnd(0),
+		readWriteMode(setReadWriteMode) {
 	memset(value, 0, sizeof(value));
-	if (data_set != NULL) {
-		data_set->registerVariable(this);
+	if (dataSet != nullptr) {
+		dataSet->registerVariable(this);
 	}
 }
 
@@ -18,9 +18,9 @@ PoolRawAccess::~PoolRawAccess() {}
 
 ReturnValue_t PoolRawAccess::read() {
 	ReturnValue_t result = RETURN_FAILED;
-	PoolEntryIF* read_out = ::dataPool.getRawData(dataPoolId);
-	if (read_out != NULL) {
-		result = handleReadOut(read_out);
+	PoolEntryIF* readOut = glob::dataPool.getRawData(dataPoolId);
+	if (readOut != nullptr) {
+		result = handleReadOut(readOut);
 		if(result == RETURN_OK) {
 			return result;
 		}
@@ -31,17 +31,17 @@ ReturnValue_t PoolRawAccess::read() {
 	return result;
 }
 
-ReturnValue_t PoolRawAccess::handleReadOut(PoolEntryIF* read_out) {
+ReturnValue_t PoolRawAccess::handleReadOut(PoolEntryIF* readOut) {
 	ReturnValue_t result = RETURN_FAILED;
-	valid = read_out->getValid();
-	if (read_out->getSize() > arrayEntry) {
-		arraySize = read_out->getSize();
-		typeSize = read_out->getByteSize() / read_out->getSize();
-		type = read_out->getType();
+	valid = readOut->getValid();
+	if (readOut->getSize() > arrayEntry) {
+		arraySize = readOut->getSize();
+		typeSize = readOut->getByteSize() / readOut->getSize();
+		type = readOut->getType();
 		if (typeSize <= sizeof(value)) {
 			uint16_t arrayPosition = arrayEntry * typeSize;
-			sizeTillEnd = read_out->getByteSize() - arrayPosition;
-			uint8_t* ptr = &((uint8_t*) read_out->getRawData())[arrayPosition];
+			sizeTillEnd = readOut->getByteSize() - arrayPosition;
+			uint8_t* ptr = &((uint8_t*) readOut->getRawData())[arrayPosition];
 			memcpy(value, ptr, typeSize);
 			return RETURN_OK;
 		} else {
@@ -74,7 +74,7 @@ void PoolRawAccess::handleReadError(ReturnValue_t result) {
 }
 
 ReturnValue_t PoolRawAccess::commit() {
-	PoolEntryIF* write_back = ::dataPool.getRawData(dataPoolId);
+	PoolEntryIF* write_back = glob::dataPool.getRawData(dataPoolId);
 	if ((write_back != NULL) && (readWriteMode != VAR_READ)) {
 		write_back->setValid(valid);
 		uint8_t array_position = arrayEntry * typeSize;
@@ -93,7 +93,9 @@ uint8_t* PoolRawAccess::getEntry() {
 ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 		uint32_t* writtenBytes, uint32_t max_size) {
 	uint8_t* data_ptr = getEntry();
-//	debug << "PoolRawAccess::getEntry: Array position: " << index * size_of_type << " Size of T: " << (int)size_of_type << " ByteSize: " << byte_size << " Position: " << *size << std::endl;
+	// debug << "PoolRawAccess::getEntry: Array position: " <<
+	// 	      index * size_of_type << " Size of T: " << (int)size_of_type <<
+	//		  " ByteSize: " << byte_size << " Position: " << *size << std::endl;
 	if (typeSize == 0)
 		return DATA_POOL_ACCESS_FAILED;
 	if (typeSize > max_size)

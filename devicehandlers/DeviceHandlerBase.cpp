@@ -1,11 +1,11 @@
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/devicehandlers/DeviceHandlerBase.h>
 #include <framework/objectmanager/ObjectManager.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/devicehandlers/DeviceTmReportingWrapper.h>
 #include <framework/globalfunctions/CRC.h>
 #include <framework/subsystem/SubsystemBase.h>
@@ -52,7 +52,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
-	delete comCookie;
+	//communicationInterface->close(cookie);
 	if (defaultFDIRUsed) {
 		delete fdirInstance;
 	}
@@ -165,8 +165,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	fillCommandAndReplyMap();
 
 	//Set temperature target state to NON_OP.
-	DataSet mySet;
-	PoolVariable<int8_t> thermalRequest(deviceThermalRequestPoolId, &mySet,
+	GlobDataSet mySet;
+	gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
 			PoolVariableIF::VAR_WRITE);
 	mySet.read();
 	thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
@@ -434,8 +434,8 @@ void DeviceHandlerBase::setMode(Mode_t newMode, uint8_t newSubmode) {
 	Clock::getUptime(&timeoutStart);
 
 	if (mode == MODE_OFF) {
-		DataSet mySet;
-		PoolVariable<int8_t> thermalRequest(deviceThermalRequestPoolId, &mySet,
+		GlobDataSet mySet;
+		gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
 				PoolVariableIF::VAR_READ_WRITE);
 		mySet.read();
 		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
@@ -892,10 +892,10 @@ ReturnValue_t DeviceHandlerBase::checkModeCommand(Mode_t commandedMode,
 
 	if ((commandedMode == MODE_ON) && (mode == MODE_OFF)
 			&& (deviceThermalStatePoolId != PoolVariableIF::NO_PARAMETER)) {
-		DataSet mySet;
-		PoolVariable<int8_t> thermalState(deviceThermalStatePoolId, &mySet,
+		GlobDataSet mySet;
+		gp_uint8_t thermalState(deviceThermalStatePoolId, &mySet,
 				PoolVariableIF::VAR_READ);
-		PoolVariable<int8_t> thermalRequest(deviceThermalRequestPoolId, &mySet,
+		gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
 				PoolVariableIF::VAR_READ);
 		mySet.read();
 		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
@@ -922,8 +922,8 @@ void DeviceHandlerBase::startTransition(Mode_t commandedMode,
 			childTransitionDelay = getTransitionDelayMs(_MODE_START_UP,
 					MODE_ON);
 			triggerEvent(CHANGING_MODE, commandedMode, commandedSubmode);
-			DataSet mySet;
-			PoolVariable<int8_t> thermalRequest(deviceThermalRequestPoolId,
+			GlobDataSet mySet;
+			gp_int8_t thermalRequest(deviceThermalRequestPoolId,
 					&mySet, PoolVariableIF::VAR_READ_WRITE);
 			mySet.read();
 			if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
@@ -1137,9 +1137,9 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 			true);
 		}
 	}
-//Try to cast to DataSet and commit data.
+//Try to cast to GlobDataSet and commit data.
 	if (!neverInDataPool) {
-		DataSet* dataSet = dynamic_cast<DataSet*>(data);
+		GlobDataSet* dataSet = dynamic_cast<GlobDataSet*>(data);
 		if (dataSet != NULL) {
 			dataSet->commit(PoolVariableIF::VALID);
 		}

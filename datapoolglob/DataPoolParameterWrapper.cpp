@@ -1,10 +1,8 @@
-#include "DataPoolParameterWrapper.h"
-
-//for returncodes
+#include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/DataPoolParameterWrapper.h>
+#include <framework/datapoolglob/PoolRawAccess.h>
 #include <framework/parameters/HasParametersIF.h>
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolRawAccess.h>
 
 DataPoolParameterWrapper::DataPoolParameterWrapper() :
 		type(Type::UNKNOWN_TYPE), rows(0), columns(0), poolId(
@@ -20,7 +18,7 @@ ReturnValue_t DataPoolParameterWrapper::set(uint8_t domainId,
 		uint16_t parameterId) {
 	poolId = (domainId << 16) + parameterId;
 
-	DataSet mySet;
+	GlobDataSet mySet;
 	PoolRawAccess raw(poolId, 0, &mySet, PoolVariableIF::VAR_READ);
 	ReturnValue_t status = mySet.read();
 	if (status != HasReturnvaluesIF::RETURN_OK) {
@@ -57,7 +55,7 @@ ReturnValue_t DataPoolParameterWrapper::serialize(uint8_t** buffer,
 	}
 
 	for (uint8_t index = 0; index < rows; index++){
-		DataSet mySet;
+		GlobDataSet mySet;
 		PoolRawAccess raw(poolId, index, &mySet,PoolVariableIF::VAR_READ);
 		mySet.read();
 		result = raw.serialize(buffer,size,max_size,bigEndian);
@@ -94,7 +92,7 @@ ReturnValue_t DataPoolParameterWrapper::deSerializeData(uint8_t startingRow,
 
 	for (uint8_t fromRow = 0; fromRow < fromRows; fromRow++) {
 
-		DataSet mySet;
+		GlobDataSet mySet;
 		PoolRawAccess raw(poolId, startingRow + fromRow, &mySet,
 				PoolVariableIF::VAR_READ_WRITE);
 		mySet.read();

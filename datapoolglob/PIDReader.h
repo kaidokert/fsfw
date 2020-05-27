@@ -1,7 +1,7 @@
 #ifndef PIDREADER_H_
 #define PIDREADER_H_
-#include <framework/datapool/DataPool.h>
 #include <framework/datapool/DataSetIF.h>
+#include <framework/datapoolglob/GlobalDataPool.h>
 #include <framework/datapool/PoolEntry.h>
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/serialize/SerializeAdapter.h>
@@ -16,9 +16,9 @@ protected:
 	uint32_t parameterId;
 	uint8_t valid;
 	ReturnValue_t read() {
-		uint8_t arrayIndex = DataPool::PIDToArrayIndex(parameterId);
-		PoolEntry<T>* read_out = ::dataPool.getData<T>(
-				DataPool::PIDToDataPoolId(parameterId), arrayIndex);
+		uint8_t arrayIndex = GlobalDataPool::PIDToArrayIndex(parameterId);
+		PoolEntry<T>* read_out = glob::dataPool.getData<T>(
+				GlobalDataPool::PIDToDataPoolId(parameterId), arrayIndex);
 		if (read_out != NULL) {
 			valid = read_out->valid;
 			value = read_out->address[arrayIndex];
@@ -88,7 +88,7 @@ public:
 	 * \brief	This operation returns the data pool id of the variable.
 	 */
 	uint32_t getDataPoolId() const {
-		return DataPool::PIDToDataPoolId(parameterId);
+		return GlobalDataPool::PIDToDataPoolId(parameterId);
 	}
 	uint32_t getParameterId() const {
 		return parameterId;

@@ -6,10 +6,12 @@
  */
 
 #include <framework/datapool/PoolRawAccessHelper.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/serialize/SerializeAdapter.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 #include <cmath>
-
-#include <framework/datapool/DataSet.h>
+#include <cstring>
 
 PoolRawAccessHelper::PoolRawAccessHelper(uint32_t * poolIdBuffer_,
 		uint8_t  numberOfParameters_):
@@ -97,7 +99,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 	//      << std::hex <<  currentPoolId << std::endl;
 	while(not poolEntrySerialized) {
 
-		if(counter > DataSet::DATA_SET_MAX_SIZE) {
+		if(counter > GlobDataSet::DATA_SET_MAX_SIZE) {
 			sif::error << "PoolRawAccessHelper: Config error, "
 					 "max. number of possible data set variables exceeded"
 				  << std::endl;
@@ -105,7 +107,7 @@ ReturnValue_t PoolRawAccessHelper::handlePoolEntrySerialization(
 		}
 		counter ++;
 
-		DataSet currentDataSet = DataSet();
+		GlobDataSet currentDataSet;
 		//debug << "Current array position: " << (int)arrayPosition << std::endl;
 		PoolRawAccess currentPoolRawAccess(currentPoolId,arrayPosition,
 				&currentDataSet,PoolVariableIF::VAR_READ);
