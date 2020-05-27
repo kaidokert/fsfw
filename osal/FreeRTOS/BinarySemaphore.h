@@ -3,13 +3,14 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/tasks/SemaphoreIF.h>
+
 extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 }
 
-// TODO: Counting semaphores and implement the new (better)
-//		 task notifications. However, those use task notifications require
+// TODO: Implement the new (better) task notifications.
+//		 However, those task notifications require
 //		 the task handle. Maybe it would be better to make a separate class
 // 		 and switch between the classes with #ifdefs.
 //		 Task Notifications require FreeRTOS V8.2 something..
@@ -28,15 +29,6 @@ class BinarySemaphore: public SemaphoreIF,
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 
-	//! No block time, poll the semaphore. Can also be used as tick type.
-	//! Can be passed as tick type and ms value.
-	static constexpr uint32_t NO_BLOCK_TIMEOUT = 0;
-	static constexpr TickType_t NO_BLOCK_TICKS = 0;
-	//! No block time, poll the semaphore.
-	//! Can be passed as tick type and ms value.
-	static constexpr TickType_t BLOCK_TIMEOUT_TICKS = portMAX_DELAY;
-	static constexpr uint32_t BLOCK_TIMEOUT = portMAX_DELAY;
-
 	//! @brief Default ctor
 	BinarySemaphore();
 	//! @brief Copy ctor, deleted explicitely.
@@ -51,7 +43,7 @@ public:
 	virtual ~BinarySemaphore();
 
 	ReturnValue_t acquire(uint32_t timeoutMs =
-	        BinarySemaphore::NO_BLOCK_TIMEOUT) override;
+	        SemaphoreIF::NO_TIMEOUT) override;
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() override;
 
@@ -65,7 +57,7 @@ public:
 	 *         -@c RETURN_FAILED on failure
 	 */
 	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs =
-	        BinarySemaphore::NO_BLOCK_TIMEOUT);
+	       	   SemaphoreIF::NO_TIMEOUT);
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
@@ -74,7 +66,7 @@ public:
 	 *         - @c RETURN_FAILED on failure
 	 */
 	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
-	        BinarySemaphore::NO_BLOCK_TICKS);
+	        BinarySemaphore::NO_TIMEOUT);
 
 	/**
 	 * Give back the binary semaphore

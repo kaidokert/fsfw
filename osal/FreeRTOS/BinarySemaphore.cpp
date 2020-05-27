@@ -1,6 +1,5 @@
 #include <framework/osal/FreeRTOS/BinarySemaphore.h>
 #include <framework/osal/FreeRTOS/TaskManagement.h>
-
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 BinarySemaphore::BinarySemaphore() {
@@ -39,11 +38,11 @@ ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
 	if(handle == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
 	}
-	TickType_t timeout = BinarySemaphore::NO_BLOCK_TICKS;
-	if(timeoutMs == BinarySemaphore::BLOCK_TIMEOUT) {
-	    timeout = BinarySemaphore::BLOCK_TIMEOUT_TICKS;
+	TickType_t timeout = SemaphoreIF::NO_TIMEOUT;
+	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
+	    timeout = SemaphoreIF::MAX_TIMEOUT;
 	}
-	else if(timeoutMs > BinarySemaphore::NO_BLOCK_TIMEOUT){
+	else if(timeoutMs > BinarySemaphore::NO_TIMEOUT){
 	    timeout = pdMS_TO_TICKS(timeoutMs);
 	}
 
