@@ -2,6 +2,8 @@
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
+#if ( configUSE_OLD_SEMAPHORES == 1 )
+
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();
 	if(handle == nullptr) {
@@ -51,7 +53,7 @@ ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
-	    return SEMAPHORE_TIMEOUT;
+	    return SemaphoreIF::SEMAPHORE_TIMEOUT;
 	}
 }
 
@@ -97,14 +99,6 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 	}
 }
 
-void BinarySemaphore::resetSemaphore() {
-	if(handle != nullptr) {
-		vSemaphoreDelete(handle);
-		handle = xSemaphoreCreateBinary();
-		xSemaphoreGive(handle);
-	}
-}
-
 ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	return takeBinarySemaphore(timeoutMs);
 }
@@ -135,3 +129,60 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t sema
 		return SEMAPHORE_NOT_OWNED;
 	}
 }
+
+
+#else
+
+BinarySemaphore::BinarySemaphore() {
+	handle = TaskManagement::getCurrentTaskHandle();
+}
+
+ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
+	return takeBinarySemaphore(timeoutMs);
+}
+
+ReturnValue_t BinarySemaphore::release() {
+	return giveBinarySemaphore();
+}
+
+ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
+	TickType_t timeout = SemaphoreIF::NO_TIMEOUT;
+	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
+	    timeout = SemaphoreIF::MAX_TIMEOUT;
+	}
+	else if(timeoutMs > BinarySemaphore::NO_TIMEOUT){
+	    timeout = pdMS_TO_TICKS(timeoutMs);
+	}
+
+	BaseType_t returncode = ulTaskNotifyTake(pdTRUE, timeout);
+	if (returncode == pdPASS) {
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+	else {
+	    return SemaphoreIF::SEMAPHORE_TIMEOUT;
+	}
+}
+
+ReturnValue_t BinarySemaphore::takeBinarySemaphoreTickTimeout(
+        TickType_t timeoutTicks) {
+	BaseType_t returncode = ulTaskNotifyTake(pdTRUE, timeoutTicks);
+	if (returncode == pdPASS) {
+		return HasReturnvaluesIF::RETURN_OK;
+	} else {
+		return SEMAPHORE_TIMEOUT;
+	}
+}
+
+ReturnValue_t BinarySemaphore::giveBinarySemaphore() {
+	if (handle == nullptr) {
+		return SEMAPHORE_NULLPOINTER;
+	}
+	BaseType_t returncode = xTaskNotifyGive(handle);
+	if (returncode == pdPASS) {
+		return HasReturnvaluesIF::RETURN_OK;
+	} else {
+		return SEMAPHORE_NOT_OWNED;
+	}
+}
+
+#endif
