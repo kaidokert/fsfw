@@ -12,7 +12,7 @@ Fuse::Fuse(object_id_t fuseObjectId, uint8_t fuseId, VariableIds ids,
 		SystemObject(fuseObjectId), oldFuseState(0), fuseId(fuseId), powerIF(
 		NULL), currentLimit(fuseObjectId, 1, ids.pidCurrent, confirmationCount,
 				maxCurrent, FUSE_CURRENT_HIGH), powerMonitor(fuseObjectId, 2,
-				DataPool::poolIdAndPositionToPid(ids.poolIdPower, 0),
+				GlobalDataPool::poolIdAndPositionToPid(ids.poolIdPower, 0),
 				confirmationCount), set(), voltage(ids.pidVoltage, &set), current(
 				ids.pidCurrent, &set), state(ids.pidState, &set), power(
 				ids.poolIdPower, &set, PoolVariableIF::VAR_READ_WRITE), commandQueue(

@@ -1,8 +1,8 @@
 #ifndef MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 #define MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/thermal/AbstractTemperatureSensor.h>
 #include <framework/thermal/ThermalModule.h>
@@ -23,7 +23,7 @@ public:
 
 	CoreComponent(object_id_t reportingObjectId, uint8_t domainId, uint32_t temperaturePoolId,
 			uint32_t targetStatePoolId, uint32_t currentStatePoolId,
-			uint32_t requestPoolId, DataSet *dataSet,
+			uint32_t requestPoolId, GlobDataSet *dataSet,
 			AbstractTemperatureSensor *sensor,
 			AbstractTemperatureSensor *firstRedundantSensor,
 			AbstractTemperatureSensor *secondRedundantSensor,
@@ -58,10 +58,10 @@ protected:
 	AbstractTemperatureSensor *secondRedundantSensor;
 	ThermalModuleIF *thermalModule;
 
-	db_float_t temperature;
-	db_int8_t targetState;
-	db_int8_t currentState;
-	db_uint8_t heaterRequest;
+	gp_float_t temperature;
+	gp_int8_t targetState;
+	gp_int8_t currentState;
+	gp_uint8_t heaterRequest;
 
 	bool isHeating;
 

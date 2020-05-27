@@ -4,6 +4,9 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serialize/SerializeIF.h>
 
+/**
+ * @brief 	Type definition for CCSDS or ECSS.
+ */
 class Type: public SerializeIF {
 public:
 	enum ActualType_t {

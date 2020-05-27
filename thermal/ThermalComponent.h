@@ -44,7 +44,7 @@ public:
 	 */
 	ThermalComponent(object_id_t reportingObjectId, uint8_t domainId, uint32_t temperaturePoolId,
 			uint32_t targetStatePoolId, uint32_t currentStatePoolId, uint32_t requestPoolId,
-			DataSet *dataSet, AbstractTemperatureSensor *sensor,
+			GlobDataSet *dataSet, AbstractTemperatureSensor *sensor,
 			AbstractTemperatureSensor *firstRedundantSensor,
 			AbstractTemperatureSensor *secondRedundantSensor,
 			ThermalModuleIF *thermalModule, Parameters parameters,

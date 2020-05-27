@@ -1,8 +1,9 @@
 #ifndef FUSE_H_
 #define FUSE_H_
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PIDReader.h>
+#include <framework/datapoolglob/GlobalDataSet.h>
+#include <framework/datapoolglob/GlobalPoolVariable.h>
+#include <framework/datapoolglob/PIDReader.h>
 #include <framework/devicehandlers/HealthDevice.h>
 #include <framework/monitoring/AbsLimitMonitor.h>
 #include <framework/power/PowerComponentIF.h>
@@ -83,11 +84,11 @@ private:
 
 	};
 	PowerMonitor powerMonitor;
-	DataSet set;
+	GlobDataSet set;
 	PIDReader<float> voltage;
 	PIDReader<float> current;
 	PIDReader<uint8_t> state;
-	db_float_t power;
+	gp_float_t power;
 	MessageQueueIF* commandQueue;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
