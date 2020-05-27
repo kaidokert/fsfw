@@ -20,8 +20,10 @@
 class SemaphoreIF {
 public:
 	virtual~ SemaphoreIF() {};
-	//!< Needs to be defined in implementation.
+	//! Needs to be defined in implementation. No blocking time
 	static const uint32_t NO_TIMEOUT;
+	//! Needs to be defined in implementation. Blocks indefinitely.
+	static const uint32_t MAX_TIMEOUT;
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 	//! Semaphore timeout
 	static constexpr ReturnValue_t SEMAPHORE_TIMEOUT = MAKE_RETURN_CODE(1);

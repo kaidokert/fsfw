@@ -2,6 +2,7 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 const uint32_t SemaphoreIF::NO_TIMEOUT = 0;
+const uint32_t SemaphoreIF::MAX_TIMEOUT = 0xFFFFFFFF;
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
 
