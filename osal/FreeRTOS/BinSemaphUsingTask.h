@@ -9,6 +9,12 @@ extern "C" {
 #include <freertos/task.h>
 }
 
+/**
+ * @brief 	Binary Semaphore implementation using Task Notifications
+ * @details
+ * Additional information: https://www.freertos.org/RTOS-task-notifications.html
+ * and general semaphore documentation.
+ */
 class BinarySemaphoreUsingTask: public SemaphoreIF,
 		public HasReturnvaluesIF {
 public:

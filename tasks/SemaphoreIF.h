@@ -12,7 +12,8 @@
  * A semaphore is a synchronization primitive.
  * See: https://en.wikipedia.org/wiki/Semaphore_(programming)
  * A semaphore can be used to achieve task synchonization and track the
- * availability of resources.
+ * availability of resources by using either the binary or the counting
+ * semaphore types.
  *
  * If mutual exlcusion of a resource is desired, a mutex should be used,
  * which is a special form of a semaphore and has an own interface.

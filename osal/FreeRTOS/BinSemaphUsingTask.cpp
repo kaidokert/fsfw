@@ -19,7 +19,7 @@ ReturnValue_t BinarySemaphoreUsingTask::takeBinarySemaphore(uint32_t timeoutMs) 
 	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
 	    timeout = SemaphoreIF::MAX_TIMEOUT;
 	}
-	else if(timeoutMs > BinarySemaphoreUsingTask::NO_TIMEOUT){
+	else if(timeoutMs > SemaphoreIF::NO_TIMEOUT){
 	    timeout = pdMS_TO_TICKS(timeoutMs);
 	}
 
