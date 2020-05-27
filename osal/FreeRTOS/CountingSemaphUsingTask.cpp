@@ -12,19 +12,19 @@ CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 
 	handle = TaskManagement::getCurrentTaskHandle();
 	if(handle == nullptr) {
-		sif::error << "Could not retrieve task handle. Please ensure the"
-				"constructor was called inside a task." << std::endl;
+		sif::error << "CountingSemaphoreUsingTask: Could not retrieve task "
+				"handle. Please ensure the constructor was called inside a "
+				"task." << std::endl;
 	}
 
 	uint32_t oldNotificationValue;
 	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite,
 			&oldNotificationValue);
 	if(oldNotificationValue != 0) {
-		sif::warning << "Semaphore initiated but current notification value"
-				" is not 0. Please ensure the notification value is not used"
-				"for other purposes!" << std::endl;
+		sif::warning << "CountinSemaphoreUsingTask: Semaphore initiated but "
+				"current notification value is not 0. Please ensure the "
+				"notification value is not used for other purposes!" << std::endl;
 	}
-
 	while(currentCount != initCount) {
 		xTaskNotifyGive(handle);
 		currentCount++;
