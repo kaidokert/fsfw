@@ -37,7 +37,7 @@ BinarySemaphore& BinarySemaphore::operator =(
 
 ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	if(handle == nullptr) {
-		return SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
 	}
 	TickType_t timeout = SemaphoreIF::NO_TIMEOUT;
 	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
@@ -59,14 +59,14 @@ ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 ReturnValue_t BinarySemaphore::acquireWithTickTimeout(
         TickType_t timeoutTicks) {
 	if(handle == nullptr) {
-		return SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
 	}
 
 	BaseType_t returncode = xSemaphoreTake(handle, timeoutTicks);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		return SEMAPHORE_TIMEOUT;
+		return SemaphoreIF::SEMAPHORE_TIMEOUT;
 	}
 }
 
@@ -82,13 +82,17 @@ ReturnValue_t BinarySemaphore::release() {
 	}
 }
 
+uint8_t BinarySemaphore::getSemaphoreCounter() {
+	return uxSemaphoreGetCount(handle);
+}
+
 SemaphoreHandle_t BinarySemaphore::getSemaphore() {
 	return handle;
 }
 
 ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) {
 	if (semaphore == nullptr) {
-		return SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
 	}
 	BaseType_t returncode = xSemaphoreGive(semaphore);
 	if (returncode == pdPASS) {
@@ -98,15 +102,11 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 	}
 }
 
-uint8_t BinarySemaphore::getSemaphoreCounter() {
-	return uxSemaphoreGetCount(handle);
-}
-
 // Be careful with the stack size here. This is called from an ISR!
 ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(
 		SemaphoreHandle_t semaphore, BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == nullptr) {
-		return SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
 	}
 	BaseType_t returncode = xSemaphoreGiveFromISR(semaphore,
 			higherPriorityTaskWoken);
@@ -117,7 +117,8 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(
 			TaskManagement::requestContextSwitch(CallContext::isr);
 		}
 		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return SEMAPHORE_NOT_OWNED;
+	}
+	else {
+		return SemaphoreIF::SEMAPHORE_NOT_OWNED;
 	}
 }
