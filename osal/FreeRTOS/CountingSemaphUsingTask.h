@@ -15,7 +15,7 @@ public:
 
 	ReturnValue_t acquire(uint32_t timeoutMs) override;
 	ReturnValue_t release() override;
-	uint8_t getSemaphoreCounter() override;
+	uint8_t getSemaphoreCounter() const override;
 
 private:
 	TaskHandle_t handle;

@@ -43,7 +43,7 @@ public:
 	//! @brief Destructor
 	virtual ~BinarySemaphore();
 
-	uint8_t getSemaphoreCounter() override;
+	uint8_t getSemaphoreCounter() const override;
 
 	/**
 	 * Take the binary semaphore.

@@ -16,8 +16,7 @@ CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(uint8_t maxCount,
 	}
 }
 
-ReturnValue_t CountingSemaphoreUsingTask::acquire(
-		uint32_t timeoutMs) {
+ReturnValue_t CountingSemaphoreUsingTask::acquire(uint32_t timeoutMs) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -25,6 +24,6 @@ ReturnValue_t CountingSemaphoreUsingTask::release() {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-uint8_t CountingSemaphoreUsingTask::getSemaphoreCounter() {
+uint8_t CountingSemaphoreUsingTask::getSemaphoreCounter() const {
 	return 0;
 }

@@ -63,7 +63,7 @@ TaskHandle_t BinarySemaphoreUsingTask::getTaskHandle() {
 	return handle;
 }
 
-uint8_t BinarySemaphoreUsingTask::getSemaphoreCounter() {
+uint8_t BinarySemaphoreUsingTask::getSemaphoreCounter() const {
 	uint32_t notificationValue;
 	xTaskNotifyAndQuery(handle, 0, eNoAction, &notificationValue);
 	return notificationValue;

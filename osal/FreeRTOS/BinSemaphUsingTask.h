@@ -26,7 +26,7 @@ public:
 	ReturnValue_t acquire(uint32_t timeoutMs =
 	        SemaphoreIF::NO_TIMEOUT) override;
 	ReturnValue_t release() override;
-	uint8_t getSemaphoreCounter() override;
+	uint8_t getSemaphoreCounter() const override;
 
 	/**
 	 * Take the binary semaphore.

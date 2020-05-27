@@ -55,7 +55,7 @@ public:
 	 * is returned if the semaphore is available, and 0 is returned if the
 	 * semaphore is not available.
 	 */
-	virtual uint8_t getSemaphoreCounter() = 0;
+	virtual uint8_t getSemaphoreCounter() const = 0;
 };
 
 #endif /* FRAMEWORK_TASKS_SEMAPHOREIF_H_ */

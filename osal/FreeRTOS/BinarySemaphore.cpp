@@ -82,7 +82,7 @@ ReturnValue_t BinarySemaphore::release() {
 	}
 }
 
-uint8_t BinarySemaphore::getSemaphoreCounter() {
+uint8_t BinarySemaphore::getSemaphoreCounter() const {
 	return uxSemaphoreGetCount(handle);
 }
 
