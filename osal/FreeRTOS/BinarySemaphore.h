@@ -6,7 +6,7 @@
 
 extern "C" {
 #include <freertos/FreeRTOS.h>
-#if ( configUSE_OLD_SEMAPHORES == 1 )
+#if ( configUSE_TASK_NOTIFICATIONS == 0 )
 #include <freertos/semphr.h>
 #else
 #include <freertos/task.h>
@@ -28,7 +28,7 @@ extern "C" {
  * @author 	R. Mueller
  * @ingroup osal
  */
-#if ( configUSE_OLD_SEMAPHORES == 1 )
+#if ( configUSE_TASK_NOTIFICATIONS == 0 )
 
 class BinarySemaphore: public SemaphoreIF,
 		public HasReturnvaluesIF {
@@ -155,7 +155,7 @@ public:
 	ReturnValue_t giveBinarySemaphore();
 
 	/**
-	 * Get Handle to the semaphore.
+	 * Get handle to the task related to the semaphore.
 	 * @return
 	 */
 	TaskHandle_t getTaskHandle();
@@ -178,6 +178,8 @@ public:
 	 */
 	static ReturnValue_t giveBinarySemaphoreFromISR(TaskHandle_t taskToNotify,
 				BaseType_t * higherPriorityTaskWoken);
+
+	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t taskHandle);
 
 protected:
 	TaskHandle_t handle;

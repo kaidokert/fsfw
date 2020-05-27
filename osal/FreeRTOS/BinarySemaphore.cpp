@@ -2,7 +2,7 @@
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-#if ( configUSE_OLD_SEMAPHORES == 1 )
+#if ( configUSE_TASK_NOTIFICATIONS == 0 )
 
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();
@@ -174,15 +174,55 @@ ReturnValue_t BinarySemaphore::takeBinarySemaphoreTickTimeout(
 }
 
 ReturnValue_t BinarySemaphore::giveBinarySemaphore() {
-	if (handle == nullptr) {
-		return SEMAPHORE_NULLPOINTER;
-	}
 	BaseType_t returncode = xTaskNotifyGive(handle);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
 		return SEMAPHORE_NOT_OWNED;
 	}
+}
+
+TaskHandle_t BinarySemaphore::getTaskHandle() {
+	return handle;
+}
+
+uint8_t BinarySemaphore::getSemaphoreCounter() {
+	uint32_t notificationValue;
+	xTaskNotifyAndQuery(handle, 0, eNoAction, &notificationValue);
+	return notificationValue;
+}
+
+uint8_t BinarySemaphore::getSemaphoreCounterFromISR(TaskHandle_t taskHandle) {
+	uint32_t notificationValue;
+	BaseType_t higherPriorityTaskWoken;
+	xTaskNotifyAndQueryFromISR(taskHandle, 0, eNoAction, &notificationValue,
+			&higherPriorityTaskWoken);
+	if(higherPriorityTaskWoken) {
+		TaskManagement::requestContextSwitch(CallContext::isr);
+	}
+	return notificationValue;
+}
+
+
+ReturnValue_t BinarySemaphore::giveBinarySemaphore(TaskHandle_t taskHandle) {
+	BaseType_t returncode = xTaskNotifyGive(taskHandle);
+	if (returncode == pdPASS) {
+		return HasReturnvaluesIF::RETURN_OK;
+	} else {
+		return SEMAPHORE_NOT_OWNED;
+	}
+}
+
+// Be careful with the stack size here. This is called from an ISR!
+ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(
+		TaskHandle_t taskHandle, BaseType_t * higherPriorityTaskWoken) {
+	vTaskNotifyGiveFromISR(taskHandle, higherPriorityTaskWoken);
+	if(*higherPriorityTaskWoken == pdPASS) {
+		// Request context switch because unblocking the semaphore
+		// caused a high priority task unblock.
+		TaskManagement::requestContextSwitch(CallContext::isr);
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 #endif

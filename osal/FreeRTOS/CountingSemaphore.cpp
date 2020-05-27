@@ -1,6 +1,10 @@
 #include <framework/osal/FreeRTOS/CountingSemaphore.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
+extern "C" {
+#include <freertos/semphr.h>
+}
+
 // Make sure #define configUSE_COUNTING_SEMAPHORES 1 is set in
 // free FreeRTOSConfig.h file.
 CountingSemaphore::CountingSemaphore(uint8_t count, uint8_t initCount):
