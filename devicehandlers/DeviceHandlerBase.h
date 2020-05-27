@@ -232,8 +232,9 @@ protected:
 	 * Build the device command to send for a transitional mode.
 	 *
 	 * This is only called in @c _MODE_TO_NORMAL, @c _MODE_TO_ON, @c _MODE_TO_RAW,
-	 * @c _MODE_START_UP and @c _MODE_TO_POWER_DOWN. So it is used by doStartUp()
-	 * and doShutDown() as well as doTransition()
+	 * @c _MODE_START_UP and @c _MODE_SHUT_DOWN. So it is used by doStartUp()
+	 * and doShutDown() as well as doTransition(), by setting those
+	 * modes in the respective functions.
 	 *
 	 * A good idea is to implement a flag indicating a command has to be built
 	 * and a variable containing the command number to be built
@@ -493,7 +494,7 @@ public:
 	ReturnValue_t setHealth(HealthState health);
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex);
+			const ParameterWrapper *newValues, uint16_t startAtIndex) override;
 	/**
 	 * Implementation of ExecutableObjectIF function
 	 *
@@ -509,26 +510,16 @@ protected:
 	 */
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
 
-	/* These returnvalues can be returned from abstract functions
-	 * to alter the behaviour of DHB.For error values, refer to
-	 * DeviceHandlerIF.h returnvalues. */
-	// (Robin): maybe this would be better in DeviceHandlerIF?
 	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(0xA0);
-
 	// Returnvalues for scanForReply()
 	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(0xB0); //!< This is used to specify for replies from a device which are not replies to requests
 	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(0xB1); //!< Ignore parts of the received packet
 	static const ReturnValue_t IGNORE_FULL_PACKET = MAKE_RETURN_CODE(0xB2); //!< Ignore full received packet
-
 	// Returnvalues for command building
 	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(0xC0); //!< Return this if no command sending in required
-	// (Robin): Maybe this would be better in DeviceHandlerIF?
 	static const ReturnValue_t COMMAND_MAP_ERROR = MAKE_RETURN_CODE(0xC2);
-
 	// Returnvalues for getSwitches()
 	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(0xD0);
-
-	// (Robin): Maybe this would be better in DeviceHandlerIF?
 	// Mode handling error Codes
 	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE0);
 	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE1);
@@ -740,28 +731,40 @@ protected:
 	/**
 	 * Do the transition to the main modes (MODE_ON, MODE_NORMAL and MODE_RAW).
 	 *
-	 * If the transition is complete, the mode should be set to the target mode, which can be deduced from the current mode which is
+	 * If the transition is complete, the mode should be set to the target mode,
+	 * which can be deduced from the current mode which is
 	 * [_MODE_TO_ON, _MODE_TO_NORMAL, _MODE_TO_RAW]
 	 *
-	 * The intended target submode is already set. The origin submode can be read in subModeFrom.
+	 * The intended target submode is already set.
+	 * The origin submode can be read in subModeFrom.
 	 *
-	 * If the transition can not be completed, the child class can try to reach an working mode by setting the mode either directly
-	 * or setting the mode to an transitional mode (TO_ON, TO_NORMAL, TO_RAW) if the device needs to be reconfigured.
+	 * If the transition can not be completed, the child class can try to reach
+	 * an working mode by setting the mode either directly
+	 * or setting the mode to an transitional mode (TO_ON, TO_NORMAL, TO_RAW)
+	 * if the device needs to be reconfigured.
 	 *
-	 * If nothing works, the child class can wait for the timeout and the base class will reset the mode to the mode where the transition
+	 * If nothing works, the child class can wait for the timeout and the base
+	 * class will reset the mode to the mode where the transition
 	 * originated from (the child should report the reason for the failed transition).
 	 *
-	 * The intended way to send commands is to set a flag (enum) indicating which command is to be sent here
-	 * and then to check in buildTransitionCommand() for the flag. This flag can also be used by doStartUp() and
-	 * doShutDown() to get a nice and clean implementation of buildTransitionCommand() without switching through modes.
+	 * The intended way to send commands is to set a flag (enum) indicating
+	 * which command is to be sent here and then to check in
+	 * buildTransitionCommand() for the flag. This flag can also be used by
+	 * doStartUp() and doShutDown() to get a nice and clean implementation of
+	 * buildTransitionCommand() without switching through modes.
 	 *
-	 * When the the condition for the completion of the transition is met, the mode can be set, for example in the parseReply() function.
+	 * When the the condition for the completion of the transition is met, the
+	 * mode can be set, for example in the scanForReply() function.
 	 *
-	 * The default implementation goes into the target mode;
+	 * The default implementation goes into the target mode directly.
 	 *
-	 * #transitionFailure can be set to a failure code indicating the reason for a failed transition
+	 * #transitionFailure can be set to a failure code indicating the reason
+	 * for a failed transition
 	 *
-	 * @param modeFrom the mode the transition originated from: [MODE_ON, MODE_NORMAL, MODE_RAW and _MODE_POWER_DOWN (if the mode changed from _MODE_START_UP to _MODE_TO_ON)]
+	 * @param modeFrom
+	 * The mode the transition originated from:
+	 * [MODE_ON, MODE_NORMAL, MODE_RAW and _MODE_POWER_DOWN (if the mode changed
+	 * from _MODE_START_UP to _MODE_TO_ON)]
 	 * @param subModeFrom the subMode of modeFrom
 	 */
 	virtual void doTransition(Mode_t modeFrom, Submode_t subModeFrom);

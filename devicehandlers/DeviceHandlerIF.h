@@ -47,6 +47,8 @@ public:
 	//! This is a transitional state which can not be commanded.
 	//! The device handler performs all actions and commands to get the device
 	//! shut down. When the device is off, the mode changes to @c MODE_OFF.
+	//! It is possible to set the mode to _MODE_SHUT_DOWN to use the to off
+	//! transition if available.
 	static const Mode_t _MODE_SHUT_DOWN = TRANSITION_MODE_CHILD_ACTION_MASK | 6;
 	//! It is possible to set the mode to _MODE_TO_ON to use the to on
 	//! transition if available.
