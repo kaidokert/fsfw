@@ -20,19 +20,23 @@ public:
 	/**
 	 * Create a binary semaphore.
 	 * Creator function for a binary semaphore which may only be acquired once
+	 * @param argument Can be used to pass implementation specific information.
 	 * @return Pointer to newly created semaphore class instance.
 	 */
-	SemaphoreIF* createBinarySemaphore();
+	SemaphoreIF* createBinarySemaphore(uint32_t argument = 0);
 	/**
 	 * Create a counting semaphore.
 	 * Creator functons for a counting semaphore which may be acquired multiple
 	 * times.
 	 * @param count Semaphore can be taken count times.
 	 * @param initCount Initial count value.
+	 * @param argument Can be used to pass implementation specific information.
 	 * @return
 	 */
-	SemaphoreIF* createCountingSemaphore(uint8_t count, uint8_t initCount);
-	void deleteMutex(SemaphoreIF* mutex);
+	SemaphoreIF* createCountingSemaphore(uint8_t count, uint8_t initCount,
+			uint32_t argument = 0);
+
+	void deleteSemaphore(SemaphoreIF* mutex);
 
 private:
 	/**

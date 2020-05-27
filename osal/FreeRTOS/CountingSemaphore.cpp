@@ -1,5 +1,6 @@
 #include <framework/osal/FreeRTOS/CountingSemaphore.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/osal/FreeRTOS/TaskManagement.h>
 
 extern "C" {
 #include <freertos/semphr.h>
@@ -30,3 +31,4 @@ CountingSemaphore& CountingSemaphore::operator =(
 	}
 	return * this;
 }
+

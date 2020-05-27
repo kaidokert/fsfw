@@ -21,15 +21,15 @@ SemaphoreFactory* SemaphoreFactory::instance() {
 	return SemaphoreFactory::factoryInstance;
 }
 
-SemaphoreIF* SemaphoreFactory::createBinarySemaphore() {
+SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t argument) {
 	return new BinarySemaphore();
 }
 
 SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t count,
-		uint8_t initCount) {
+		uint8_t initCount, uint32_t argument) {
 	return new CountingSemaphore(count, initCount);
 }
 
-void SemaphoreFactory::deleteMutex(SemaphoreIF* semaphore) {
+void SemaphoreFactory::deleteSemaphore(SemaphoreIF* semaphore) {
 	delete semaphore;
 }
