@@ -21,6 +21,10 @@ public:
 	CountingSemaphore (CountingSemaphore &&);
 	//! @brief Move assignment
 	CountingSemaphore & operator=(CountingSemaphore &&);
+
+	/* Same API as binary semaphore otherwise. acquire() can be called
+	 * until there are not semaphores left and release() can be called
+	 * until maxCount is reached. */
 private:
 	const uint8_t maxCount;
 	uint8_t initCount = 0;

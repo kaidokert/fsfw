@@ -52,7 +52,7 @@ public:
 	 * for example by an ISR or another task.
 	 * @param timeoutMs
 	 * @return -@c RETURN_OK on success
-	 *         -@c RETURN_FAILED on failure
+	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
 	ReturnValue_t acquire(uint32_t timeoutMs =
 	       	   SemaphoreIF::NO_TIMEOUT) override;
@@ -60,16 +60,17 @@ public:
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
 	 * @param timeoutTicks
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
 	ReturnValue_t  acquireWithTickTimeout(TickType_t timeoutTicks =
 	        BinarySemaphore::NO_TIMEOUT);
 
 	/**
-	 * Give back the binary semaphore
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * Release the binary semaphore.
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
+	 *         	already available.
 	 */
 	ReturnValue_t release() override;
 
@@ -82,20 +83,22 @@ public:
 	 /**
 	 * Wrapper function to give back semaphore from handle
 	 * @param semaphore
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
+	 *         	already available.
 	 */
-	static ReturnValue_t giveBinarySemaphore(SemaphoreHandle_t semaphore);
+	static ReturnValue_t release(SemaphoreHandle_t semaphore);
 
 	/**
 	 * Wrapper function to give back semaphore from handle when called from an ISR
 	 * @param semaphore
 	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with a higher priority
 	 *        was unblocked
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
+	 *         	already available.
 	 */
-	static ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
+	static ReturnValue_t releaseFromISR(SemaphoreHandle_t semaphore,
 				BaseType_t * higherPriorityTaskWoken);
 
 protected:

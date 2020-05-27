@@ -12,7 +12,7 @@ extern "C" {
 /**
  * @brief 	Couting Semaphore implementation which uses the notification value
  * 			of the task. The notification value should therefore not be used
- * 			for other purposes
+ * 			for other purposes.
  * @details
  *  Additional information: https://www.freertos.org/RTOS-task-notifications.html
  *  and general semaphore documentation.
@@ -22,17 +22,37 @@ public:
 	CountingSemaphoreUsingTask(const uint8_t maxCount, uint8_t initCount);
 	virtual ~CountingSemaphoreUsingTask();
 
+	/**
+	 * Acquire the counting semaphore.
+	 * If no semaphores are available, the task will be blocked
+	 * for a maximum of #timeoutMs or until one is given back,
+	 * for example by an ISR or another task.
+	 * @param timeoutMs
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
+	 */
 	ReturnValue_t acquire(uint32_t timeoutMs = SemaphoreIF::NO_TIMEOUT) override;
+
+	/**
+	 * Release a semaphore, increasing the number of available counting
+	 * semaphores up to the #maxCount value.
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if #maxCount semaphores are
+	 *         	already available.
+	 */
 	ReturnValue_t release() override;
+
 	uint8_t getSemaphoreCounter() const override;
 	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t task);
+
 	/**
-	 * Acquire, using a timeout value in ticks
+	 * Acquire with a timeout value in ticks
 	 * @param timeoutTicks
-	 * @return
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
 	ReturnValue_t acquireWithTickTimeout(
-			TickType_t timeoutTicks= SemaphoreIF::NO_TIMEOUT);
+			TickType_t timeoutTicks = SemaphoreIF::NO_TIMEOUT);
 
 	/**
 	 * Get handle to the task related to the semaphore.
@@ -43,13 +63,17 @@ public:
 	/**
 	 * Release semaphore of task by supplying task handle
 	 * @param taskToNotify
-	 * @return
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if #maxCount semaphores are
+	 *         	already available.
 	 */
 	static ReturnValue_t release(TaskHandle_t taskToNotify);
 	/**
 	 * Release seamphore of a task from an ISR.
 	 * @param taskToNotify
-	 * @return
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if #maxCount semaphores are
+	 *         	already available.
 	 */
 	static ReturnValue_t releaseFromISR(TaskHandle_t taskToNotify,
 			BaseType_t* higherPriorityTaskWoken);

@@ -84,7 +84,7 @@ SemaphoreHandle_t BinarySemaphore::getSemaphore() {
 	return handle;
 }
 
-ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) {
+ReturnValue_t BinarySemaphore::release(SemaphoreHandle_t semaphore) {
 	if (semaphore == nullptr) {
 		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
 	}
@@ -97,7 +97,7 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 }
 
 // Be careful with the stack size here. This is called from an ISR!
-ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(
+ReturnValue_t BinarySemaphore::releaseFromISR(
 		SemaphoreHandle_t semaphore, BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == nullptr) {
 		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
