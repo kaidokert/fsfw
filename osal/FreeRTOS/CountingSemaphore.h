@@ -12,7 +12,7 @@
  */
 class CountingSemaphore: public BinarySemaphore {
 public:
-	CountingSemaphore(uint8_t count, uint8_t initCount);
+	CountingSemaphore(const uint8_t maxCount, uint8_t initCount);
 	//! @brief Copy ctor, disabled
 	CountingSemaphore(const CountingSemaphore&) = delete;
 	//! @brief Copy assignment, disabled
@@ -22,7 +22,7 @@ public:
 	//! @brief Move assignment
 	CountingSemaphore & operator=(CountingSemaphore &&);
 private:
-	uint8_t count = 0;
+	const uint8_t maxCount;
 	uint8_t initCount = 0;
 };
 

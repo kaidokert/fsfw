@@ -27,34 +27,16 @@ public:
 	        SemaphoreIF::NO_TIMEOUT) override;
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() const override;
+	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t taskHandle);
 
 	/**
-	 * Take the binary semaphore.
-	 * If the semaphore has already been taken, the task will be blocked
-	 * for a maximum of #timeoutMs or until the semaphore is given back,
-	 * for example by an ISR or another task.
-	 * @param timeoutMs
-	 * @return -@c RETURN_OK on success
-	 *         -@c RETURN_FAILED on failure
-	 */
-	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs =
-	       	   SemaphoreIF::NO_TIMEOUT);
-
-	/**
-	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
+	 * Same as acquire() with timeout in FreeRTOS ticks.
 	 * @param timeoutTicks
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED on failure
 	 */
-	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
+	ReturnValue_t acquireWithTickTimeout(TickType_t timeoutTicks =
 	        SemaphoreIF::NO_TIMEOUT);
-
-	/**
-	 * Give back the binary semaphore
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
-	 */
-	ReturnValue_t giveBinarySemaphore();
 
 	/**
 	 * Get handle to the task related to the semaphore.
@@ -68,7 +50,7 @@ public:
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED on failure
 	 */
-	static ReturnValue_t giveBinarySemaphore(TaskHandle_t taskToNotify);
+	static ReturnValue_t release(TaskHandle_t taskToNotify);
 
 	/**
 	 * Wrapper function to give back semaphore from handle when called from an ISR
@@ -78,10 +60,8 @@ public:
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED on failure
 	 */
-	static ReturnValue_t giveBinarySemaphoreFromISR(TaskHandle_t taskToNotify,
+	static ReturnValue_t releaseFromISR(TaskHandle_t taskToNotify,
 				BaseType_t * higherPriorityTaskWoken);
-
-	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t taskHandle);
 
 protected:
 	TaskHandle_t handle;
@@ -89,7 +69,5 @@ protected:
 	// or unlocked.
 	bool locked;
 };
-
-
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_ */

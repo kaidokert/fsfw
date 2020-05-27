@@ -43,21 +43,13 @@ ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
 	    timeout = SemaphoreIF::MAX_TIMEOUT;
 	}
-	else if(timeoutMs > BinarySemaphore::NO_TIMEOUT){
+	else if(timeoutMs > SemaphoreIF::NO_TIMEOUT){
 	    timeout = pdMS_TO_TICKS(timeoutMs);
 	}
-
-	BaseType_t returncode = xSemaphoreTake(handle, timeout);
-	if (returncode == pdPASS) {
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-	else {
-	    return SemaphoreIF::SEMAPHORE_TIMEOUT;
-	}
+	return acquireWithTickTimeout(timeout);
 }
 
-ReturnValue_t BinarySemaphore::acquireWithTickTimeout(
-        TickType_t timeoutTicks) {
+ReturnValue_t BinarySemaphore::acquireWithTickTimeout(TickType_t timeoutTicks) {
 	if(handle == nullptr) {
 		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
 	}
@@ -65,20 +57,22 @@ ReturnValue_t BinarySemaphore::acquireWithTickTimeout(
 	BaseType_t returncode = xSemaphoreTake(handle, timeoutTicks);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
-	} else {
+	}
+	else {
 		return SemaphoreIF::SEMAPHORE_TIMEOUT;
 	}
 }
 
 ReturnValue_t BinarySemaphore::release() {
 	if (handle == nullptr) {
-		return SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
 	}
 	BaseType_t returncode = xSemaphoreGive(handle);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return SEMAPHORE_NOT_OWNED;
+	}
+	else {
+		return SemaphoreIF::SEMAPHORE_NOT_OWNED;
 	}
 }
 

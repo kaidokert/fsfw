@@ -2,7 +2,7 @@
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(uint8_t maxCount,
+CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 		uint8_t initCount): maxCount(maxCount) {
 	if(initCount > maxCount) {
 		sif::error << "CountingSemaphoreUsingTask: Max count bigger than "
@@ -17,13 +17,93 @@ CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(uint8_t maxCount,
 }
 
 ReturnValue_t CountingSemaphoreUsingTask::acquire(uint32_t timeoutMs) {
-	return HasReturnvaluesIF::RETURN_OK;
+	TickType_t timeout = SemaphoreIF::NO_TIMEOUT;
+	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
+		timeout = SemaphoreIF::MAX_TIMEOUT;
+	}
+	else if(timeoutMs > SemaphoreIF::NO_TIMEOUT){
+		timeout = pdMS_TO_TICKS(timeoutMs);
+	}
+
+	BaseType_t returncode = ulTaskNotifyTake(pdFALSE, timeout);
+	if (returncode == pdPASS) {
+		currentCount--;
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+	else {
+		return SemaphoreIF::SEMAPHORE_TIMEOUT;
+	}
+}
+
+ReturnValue_t CountingSemaphoreUsingTask::acquireWithTickTimeout(
+		TickType_t timeoutTicks) {
+	BaseType_t returncode = ulTaskNotifyTake(pdFALSE, timeoutTicks);
+	if (returncode == pdPASS) {
+		currentCount--;
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+	else {
+		return SemaphoreIF::SEMAPHORE_TIMEOUT;
+	}
 }
 
 ReturnValue_t CountingSemaphoreUsingTask::release() {
-	return HasReturnvaluesIF::RETURN_OK;
+	if(currentCount == maxCount) {
+		return SemaphoreIF::SEMAPHORE_NOT_OWNED;
+	}
+	BaseType_t returncode = xTaskNotifyGive(handle);
+	if (returncode == pdPASS) {
+		currentCount++;
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+	else {
+		// This should never happen
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
 }
 
 uint8_t CountingSemaphoreUsingTask::getSemaphoreCounter() const {
-	return 0;
+	uint32_t notificationValue;
+	xTaskNotifyAndQuery(handle, 0, eNoAction, &notificationValue);
+	return notificationValue;
+}
+
+TaskHandle_t CountingSemaphoreUsingTask::getTaskHandle() {
+	return handle;
+}
+
+
+uint8_t CountingSemaphoreUsingTask::getSemaphoreCounterFromISR(
+		TaskHandle_t task) {
+	uint32_t notificationValue;
+	BaseType_t higherPriorityTaskWoken = 0;
+	xTaskNotifyAndQueryFromISR(task, 0, eNoAction, &notificationValue,
+			&higherPriorityTaskWoken);
+	if(higherPriorityTaskWoken == pdTRUE) {
+		TaskManagement::requestContextSwitch(CallContext::isr);
+	}
+	return notificationValue;
+}
+
+ReturnValue_t CountingSemaphoreUsingTask::release(
+		TaskHandle_t taskToNotify) {
+	BaseType_t returncode = xTaskNotifyGive(taskToNotify);
+	if (returncode == pdPASS) {
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+	else {
+		// This should never happen.
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+}
+
+ReturnValue_t CountingSemaphoreUsingTask::releaseFromISR(
+		TaskHandle_t taskToNotify, BaseType_t* higherPriorityTaskWoken) {
+	vTaskNotifyGiveFromISR(taskToNotify, higherPriorityTaskWoken);
+	if(*higherPriorityTaskWoken == pdPASS) {
+		// Request context switch because unblocking the semaphore
+		// caused a high priority task unblock.
+		TaskManagement::requestContextSwitch(CallContext::isr);
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 }

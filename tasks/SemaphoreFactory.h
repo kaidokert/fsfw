@@ -23,7 +23,7 @@ public:
 	 * @param argument Can be used to pass implementation specific information.
 	 * @return Pointer to newly created semaphore class instance.
 	 */
-	SemaphoreIF* createBinarySemaphore(uint32_t argument = 0);
+	SemaphoreIF* createBinarySemaphore(uint32_t arguments = 0);
 	/**
 	 * Create a counting semaphore.
 	 * Creator functons for a counting semaphore which may be acquired multiple
@@ -33,8 +33,8 @@ public:
 	 * @param argument Can be used to pass implementation specific information.
 	 * @return
 	 */
-	SemaphoreIF* createCountingSemaphore(uint8_t maxCount, uint8_t initCount,
-			uint32_t argument = 0);
+	SemaphoreIF* createCountingSemaphore(const uint8_t maxCount,
+			uint8_t initCount, uint32_t arguments = 0);
 
 	void deleteSemaphore(SemaphoreIF* mutex);
 
