@@ -11,7 +11,7 @@ extern "C" {
 
 class CountingSemaphoreUsingTask: public SemaphoreIF {
 public:
-	CountingSemaphoreUsingTask(uint8_t count, uint8_t initCount);
+	CountingSemaphoreUsingTask(uint8_t maxCount, uint8_t initCount);
 
 	ReturnValue_t acquire(uint32_t timeoutMs) override;
 	ReturnValue_t release() override;
@@ -19,8 +19,8 @@ public:
 
 private:
 	TaskHandle_t handle;
-	uint8_t count = 0;
-	uint8_t initCount = 0;
+	const uint8_t maxCount;
+	uint8_t currentCount = 0;
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_ */

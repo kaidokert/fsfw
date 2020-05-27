@@ -43,9 +43,6 @@ public:
 	//! @brief Destructor
 	virtual ~BinarySemaphore();
 
-	ReturnValue_t acquire(uint32_t timeoutMs =
-	        SemaphoreIF::NO_TIMEOUT) override;
-	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() override;
 
 	/**
@@ -57,8 +54,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c RETURN_FAILED on failure
 	 */
-	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs =
-	       	   SemaphoreIF::NO_TIMEOUT);
+	ReturnValue_t acquire(uint32_t timeoutMs =
+	       	   SemaphoreIF::NO_TIMEOUT) override;
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
@@ -66,7 +63,7 @@ public:
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED on failure
 	 */
-	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
+	ReturnValue_t  acquireWithTickTimeout(TickType_t timeoutTicks =
 	        BinarySemaphore::NO_TIMEOUT);
 
 	/**
@@ -74,7 +71,7 @@ public:
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED on failure
 	 */
-	ReturnValue_t giveBinarySemaphore();
+	ReturnValue_t release() override;
 
 	/**
 	 * Get Handle to the semaphore.

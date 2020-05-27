@@ -40,18 +40,18 @@ SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t argument) {
 	}
 }
 
-SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t count,
+SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t maxCount,
 		uint8_t initCount, uint32_t argument) {
 	if(argument == USE_REGULAR_SEMAPHORES) {
-		return new CountingSemaphore(count, initCount);
+		return new CountingSemaphore(maxCount, initCount);
 	}
 	else if(argument == USE_TASK_NOTIFICATIONS) {
-		return new CountingSemaphoreUsingTask(count, initCount);
+		return new CountingSemaphoreUsingTask(maxCount, initCount);
 	}
 	else {
 		sif::warning << "SemaphoreFactory: Invalid argument, return regular"
 						"binary semaphore" << std::endl;
-		return new CountingSemaphore(count, initCount);
+		return new CountingSemaphore(maxCount, initCount);
 	}
 
 }

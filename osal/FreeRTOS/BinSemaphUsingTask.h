@@ -85,6 +85,9 @@ public:
 
 protected:
 	TaskHandle_t handle;
+	// This boolean is required to track whether the semaphore is locked
+	// or unlocked.
+	bool locked;
 };
 
 

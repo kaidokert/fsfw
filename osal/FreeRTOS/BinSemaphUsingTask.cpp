@@ -4,6 +4,8 @@
 
 BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 	handle = TaskManagement::getCurrentTaskHandle();
+	xTaskNotifyGive(handle);
+	locked = false;
 }
 
 ReturnValue_t BinarySemaphoreUsingTask::acquire(uint32_t timeoutMs) {
@@ -25,6 +27,7 @@ ReturnValue_t BinarySemaphoreUsingTask::takeBinarySemaphore(uint32_t timeoutMs) 
 
 	BaseType_t returncode = ulTaskNotifyTake(pdTRUE, timeout);
 	if (returncode == pdPASS) {
+		locked = true;
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
@@ -36,6 +39,7 @@ ReturnValue_t BinarySemaphoreUsingTask::takeBinarySemaphoreTickTimeout(
         TickType_t timeoutTicks) {
 	BaseType_t returncode = ulTaskNotifyTake(pdTRUE, timeoutTicks);
 	if (returncode == pdPASS) {
+		locked = true;
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
 		return SEMAPHORE_TIMEOUT;
@@ -43,11 +47,15 @@ ReturnValue_t BinarySemaphoreUsingTask::takeBinarySemaphoreTickTimeout(
 }
 
 ReturnValue_t BinarySemaphoreUsingTask::giveBinarySemaphore() {
+	if(not locked) {
+		return SemaphoreIF::SEMAPHORE_NOT_OWNED;
+	}
 	BaseType_t returncode = xTaskNotifyGive(handle);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		return SEMAPHORE_NOT_OWNED;
+		// This should never happen
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 }
 
@@ -77,8 +85,10 @@ ReturnValue_t BinarySemaphoreUsingTask::giveBinarySemaphore(TaskHandle_t taskHan
 	BaseType_t returncode = xTaskNotifyGive(taskHandle);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return SEMAPHORE_NOT_OWNED;
+	}
+	else {
+		// This should never happen.
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 }
 

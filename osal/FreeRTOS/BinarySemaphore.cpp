@@ -7,6 +7,7 @@ BinarySemaphore::BinarySemaphore() {
 	if(handle == nullptr) {
 		sif::error << "Semaphore: Binary semaph creation failure" << std::endl;
 	}
+	// Initiated semaphore must be given before it can be taken.
 	xSemaphoreGive(handle);
 }
 
@@ -34,7 +35,7 @@ BinarySemaphore& BinarySemaphore::operator =(
     return *this;
 }
 
-ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
+ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	if(handle == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
 	}
@@ -55,7 +56,7 @@ ReturnValue_t BinarySemaphore::takeBinarySemaphore(uint32_t timeoutMs) {
 	}
 }
 
-ReturnValue_t BinarySemaphore::takeBinarySemaphoreTickTimeout(
+ReturnValue_t BinarySemaphore::acquireWithTickTimeout(
         TickType_t timeoutTicks) {
 	if(handle == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
@@ -69,7 +70,7 @@ ReturnValue_t BinarySemaphore::takeBinarySemaphoreTickTimeout(
 	}
 }
 
-ReturnValue_t BinarySemaphore::giveBinarySemaphore() {
+ReturnValue_t BinarySemaphore::release() {
 	if (handle == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
 	}
@@ -97,25 +98,18 @@ ReturnValue_t BinarySemaphore::giveBinarySemaphore(SemaphoreHandle_t semaphore) 
 	}
 }
 
-ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
-	return takeBinarySemaphore(timeoutMs);
-}
-
-ReturnValue_t BinarySemaphore::release() {
-	return giveBinarySemaphore();
-}
-
 uint8_t BinarySemaphore::getSemaphoreCounter() {
 	return uxSemaphoreGetCount(handle);
 }
 
 // Be careful with the stack size here. This is called from an ISR!
-ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
-		BaseType_t * higherPriorityTaskWoken) {
+ReturnValue_t BinarySemaphore::giveBinarySemaphoreFromISR(
+		SemaphoreHandle_t semaphore, BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == nullptr) {
 		return SEMAPHORE_NULLPOINTER;
 	}
-	BaseType_t returncode = xSemaphoreGiveFromISR(semaphore, higherPriorityTaskWoken);
+	BaseType_t returncode = xSemaphoreGiveFromISR(semaphore,
+			higherPriorityTaskWoken);
 	if (returncode == pdPASS) {
 		if(*higherPriorityTaskWoken == pdPASS) {
 			// Request context switch because unblocking the semaphore

@@ -33,7 +33,7 @@ public:
 	 * @param argument Can be used to pass implementation specific information.
 	 * @return
 	 */
-	SemaphoreIF* createCountingSemaphore(uint8_t count, uint8_t initCount,
+	SemaphoreIF* createCountingSemaphore(uint8_t maxCount, uint8_t initCount,
 			uint32_t argument = 0);
 
 	void deleteSemaphore(SemaphoreIF* mutex);
