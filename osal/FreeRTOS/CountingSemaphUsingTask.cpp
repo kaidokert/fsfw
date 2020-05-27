@@ -9,11 +9,33 @@ CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 				"intial cout. Setting initial count to max count." << std::endl;
 		initCount = maxCount;
 	}
+
 	handle = TaskManagement::getCurrentTaskHandle();
+	if(handle == nullptr) {
+		sif::error << "Could not retrieve task handle. Please ensure the"
+				"constructor was called inside a task." << std::endl;
+	}
+
+	uint32_t oldNotificationValue;
+	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite,
+			&oldNotificationValue);
+	if(oldNotificationValue != 0) {
+		sif::warning << "Semaphore initiated but current notification value"
+				" is not 0. Please ensure the notification value is not used"
+				"for other purposes!" << std::endl;
+	}
+
 	while(currentCount != initCount) {
 		xTaskNotifyGive(handle);
 		currentCount++;
 	}
+}
+
+CountingSemaphoreUsingTask::~CountingSemaphoreUsingTask() {
+	// Clear notification value on destruction.
+	// If this is not desired, don't call the destructor
+	// (or implement a boolea which disables the reset)
+	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite, nullptr);
 }
 
 ReturnValue_t CountingSemaphoreUsingTask::acquire(uint32_t timeoutMs) {
@@ -24,22 +46,16 @@ ReturnValue_t CountingSemaphoreUsingTask::acquire(uint32_t timeoutMs) {
 	else if(timeoutMs > SemaphoreIF::NO_TIMEOUT){
 		timeout = pdMS_TO_TICKS(timeoutMs);
 	}
+	return acquireWithTickTimeout(timeout);
 
-	BaseType_t returncode = ulTaskNotifyTake(pdFALSE, timeout);
-	if (returncode == pdPASS) {
-		currentCount--;
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-	else {
-		return SemaphoreIF::SEMAPHORE_TIMEOUT;
-	}
 }
 
 ReturnValue_t CountingSemaphoreUsingTask::acquireWithTickTimeout(
 		TickType_t timeoutTicks) {
-	BaseType_t returncode = ulTaskNotifyTake(pdFALSE, timeoutTicks);
-	if (returncode == pdPASS) {
-		currentCount--;
+	// Decrement notfication value without resetting it.
+	BaseType_t oldCount = ulTaskNotifyTake(pdFALSE, timeoutTicks);
+	if (getSemaphoreCounter() == oldCount - 1) {
+		currentCount --;
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
@@ -63,7 +79,7 @@ ReturnValue_t CountingSemaphoreUsingTask::release() {
 }
 
 uint8_t CountingSemaphoreUsingTask::getSemaphoreCounter() const {
-	uint32_t notificationValue;
+	uint32_t notificationValue = 0;
 	xTaskNotifyAndQuery(handle, 0, eNoAction, &notificationValue);
 	return notificationValue;
 }

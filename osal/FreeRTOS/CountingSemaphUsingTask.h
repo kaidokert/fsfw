@@ -9,9 +9,18 @@ extern "C" {
 #include <freertos/task.h>
 }
 
+/**
+ * @brief 	Couting Semaphore implementation which uses the notification value
+ * 			of the task. The notification value should therefore not be used
+ * 			for other purposes
+ * @details
+ *  Additional information: https://www.freertos.org/RTOS-task-notifications.html
+ *  and general semaphore documentation.
+ */
 class CountingSemaphoreUsingTask: public SemaphoreIF {
 public:
 	CountingSemaphoreUsingTask(const uint8_t maxCount, uint8_t initCount);
+	virtual ~CountingSemaphoreUsingTask();
 
 	ReturnValue_t acquire(uint32_t timeoutMs = SemaphoreIF::NO_TIMEOUT) override;
 	ReturnValue_t release() override;

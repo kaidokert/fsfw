@@ -10,7 +10,9 @@ extern "C" {
 }
 
 /**
- * @brief 	Binary Semaphore implementation using Task Notifications
+ * @brief 	Binary Semaphore implementation using the task notification value.
+ * 			The notification value should therefore not be used
+ * 			for other purposes.
  * @details
  * Additional information: https://www.freertos.org/RTOS-task-notifications.html
  * and general semaphore documentation.
@@ -22,6 +24,8 @@ public:
 
 	//! @brief Default ctor
 	BinarySemaphoreUsingTask();
+	//! @brief Default dtor
+	virtual~ BinarySemaphoreUsingTask();
 
 	ReturnValue_t acquire(uint32_t timeoutMs =
 	        SemaphoreIF::NO_TIMEOUT) override;

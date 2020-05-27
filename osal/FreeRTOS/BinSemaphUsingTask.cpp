@@ -1,10 +1,20 @@
 #include <framework/osal/FreeRTOS/BinSemaphUsingTask.h>
 #include <framework/osal/FreeRTOS/TaskManagement.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 	handle = TaskManagement::getCurrentTaskHandle();
+	if(handle == nullptr) {
+		sif::error << "Could not retrieve task handle. Please ensure the"
+				"constructor was called inside a task." << std::endl;
+	}
 	xTaskNotifyGive(handle);
 	locked = false;
+}
+
+BinarySemaphoreUsingTask::~BinarySemaphoreUsingTask() {
+	// Clear notification value on destruction.
+	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite, nullptr);
 }
 
 ReturnValue_t BinarySemaphoreUsingTask::acquire(uint32_t timeoutMs) {
