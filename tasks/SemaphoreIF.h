@@ -30,7 +30,7 @@ public:
 	static constexpr ReturnValue_t SEMAPHORE_TIMEOUT = MAKE_RETURN_CODE(1);
 	//! The current semaphore can not be given, because it is not owned
 	static constexpr ReturnValue_t SEMAPHORE_NOT_OWNED = MAKE_RETURN_CODE(2);
-	static constexpr ReturnValue_t SEMAPHORE_NULLPOINTER = MAKE_RETURN_CODE(3);
+	static constexpr ReturnValue_t SEMAPHORE_INVALID = MAKE_RETURN_CODE(3);
 
 	/**
 	 * Generic call to acquire a semaphore.

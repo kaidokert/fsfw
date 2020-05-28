@@ -36,7 +36,7 @@ public:
 	SemaphoreIF* createCountingSemaphore(const uint8_t maxCount,
 			uint8_t initCount, uint32_t arguments = 0);
 
-	void deleteSemaphore(SemaphoreIF* mutex);
+	void deleteSemaphore(SemaphoreIF* semaphore);
 
 private:
 	/**

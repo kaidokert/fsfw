@@ -20,18 +20,18 @@ SemaphoreFactory* SemaphoreFactory::instance() {
 	return SemaphoreFactory::factoryInstance;
 }
 
-SemaphoreIF* SemaphoreFactory::createBinarySemaphore() {
+SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t arguments) {
 	sif::error << "Semaphore not implemented for Linux yet" << std::endl;
 	return nullptr;
 }
 
 SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t count,
-		uint8_t initCount) {
+		uint8_t initCount, uint32_t arguments) {
 	sif::error << "Counting Semaphore not implemented for "
 			"Linux yet" << std::endl;
 	return nullptr;
 }
 
-void SemaphoreFactory::deleteMutex(SemaphoreIF* semaphore) {
+void SemaphoreFactory::deleteSemaphore(SemaphoreIF* semaphore) {
 	delete semaphore;
 }
