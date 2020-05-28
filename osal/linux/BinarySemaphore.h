@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
-#define FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
+#ifndef FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
+#define FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/tasks/SemaphoreIF.h>
@@ -35,10 +35,11 @@ public:
 	//! @brief Destructor
 	virtual ~BinarySemaphore();
 
-	void initSemaphore();
+	void initSemaphore(uint8_t initCount = 1);
 
 	uint8_t getSemaphoreCounter() const override;
 	static uint8_t getSemaphoreCounter(sem_t* handle);
+
 	/**
 	 * Take the binary semaphore.
 	 * If the semaphore has already been taken, the task will be blocked
@@ -57,10 +58,22 @@ public:
 	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
 	 *         	already available.
 	 */
-	ReturnValue_t release() override;
-
+	virtual ReturnValue_t release() override;
+	/**
+	 * This static function can be used to release a semaphore  by providing
+	 * its handle.
+	 * @param handle
+	 * @return
+	 */
 	static ReturnValue_t release(sem_t* handle);
 
+	/** Checks the validity of the semaphore count against a specified
+	 * known maxCount
+	 * @param handle
+	 * @param maxCount
+	 * @return
+	 */
+	static ReturnValue_t checkCount(sem_t* handle, uint8_t maxCount);
 protected:
 	sem_t handle;
 };

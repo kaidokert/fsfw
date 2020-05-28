@@ -10,6 +10,12 @@ extern "C" {
 // free FreeRTOSConfig.h file.
 CountingSemaphore::CountingSemaphore(const uint8_t maxCount, uint8_t initCount):
 		maxCount(maxCount), initCount(initCount) {
+	if(initCount > maxCount) {
+		sif::error << "CountingSemaphoreUsingTask: Max count bigger than "
+				"intial cout. Setting initial count to max count." << std::endl;
+		initCount = maxCount;
+	}
+
 	handle = xSemaphoreCreateCounting(maxCount, initCount);
 	if(handle == nullptr) {
 		sif::error << "CountingSemaphore: Creation failure" << std::endl;
@@ -33,3 +39,7 @@ CountingSemaphore& CountingSemaphore::operator =(
 	return * this;
 }
 
+
+uint8_t CountingSemaphore::getMaxCount() const {
+	return maxCount;
+}

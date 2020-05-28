@@ -30,7 +30,7 @@ ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	if(timeoutMs == SemaphoreIF::NO_TIMEOUT) {
 		result = sem_trywait(&handle);
 	}
-	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
+	else if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
 	    result = sem_wait(&handle);
 	}
 	else if(timeoutMs > SemaphoreIF::NO_TIMEOUT){
@@ -50,7 +50,7 @@ ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	switch(result) {
+	switch(errno) {
 	case(EAGAIN):
 		// Operation could not be performed without blocking (for sem_trywait)
 	case(ETIMEDOUT):
@@ -61,8 +61,8 @@ ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 		return SemaphoreIF::SEMAPHORE_INVALID;
 	case(EINTR):
 		// Call was interrupted by signal handler
-		sif::debug << "BinarySemaphore::acquire: Signal handler interrupted"
-				<< std::endl;
+		sif::debug << "BinarySemaphore::acquire: Signal handler interrupted."
+				"Code " << strerror(errno) << std::endl;
 		/* No break */
 	default:
 		return HasReturnvaluesIF::RETURN_FAILED;
@@ -70,10 +70,15 @@ ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 }
 
 ReturnValue_t BinarySemaphore::release() {
-	return release(&this->handle);
+	return BinarySemaphore::release(&this->handle);
 }
 
 ReturnValue_t BinarySemaphore::release(sem_t *handle) {
+	ReturnValue_t countResult = checkCount(handle, 1);
+	if(countResult != HasReturnvaluesIF::RETURN_OK) {
+		return countResult;
+	}
+
 	int result = sem_post(handle);
 	if(result == 0) {
 		return HasReturnvaluesIF::RETURN_OK;
@@ -102,8 +107,8 @@ uint8_t BinarySemaphore::getSemaphoreCounter(sem_t *handle) {
 		return value;
 	}
 	else if(result != 0 and errno == EINVAL) {
-		sif::debug << "BInarySemaphore::getSemaphoreCounter: Invalid"
-				" Semaphore." << std::endl;
+		// Could be called from interrupt, use lightweight printf
+		printf("BinarySemaphore::getSemaphoreCounter: Invalid semaphore\n");
 		return 0;
 	}
 	else {
@@ -112,16 +117,32 @@ uint8_t BinarySemaphore::getSemaphoreCounter(sem_t *handle) {
 	}
 }
 
-void BinarySemaphore::initSemaphore() {
-	auto result = sem_init(&handle, true, 1);
+void BinarySemaphore::initSemaphore(uint8_t initCount) {
+	auto result = sem_init(&handle, true, initCount);
 	if(result == -1) {
 		switch(errno) {
 		case(EINVAL):
-						// Value excees SEM_VALUE_MAX
+			// Value exceeds SEM_VALUE_MAX
 		case(ENOSYS):
 		// System does not support process-shared semaphores
 		sif::error << "BinarySemaphore: Init failed with" << strerror(errno)
-		<< std::endl;
+				<< std::endl;
 		}
 	}
+}
+
+ReturnValue_t BinarySemaphore::checkCount(sem_t* handle, uint8_t maxCount) {
+	int value = getSemaphoreCounter(handle);
+	if(value >= maxCount) {
+		if(maxCount == 1 and value > 1) {
+			// Binary Semaphore special case.
+			// This is a config error use lightweight printf is this is called
+			// from an interrupt
+			printf("BinarySemaphore::release: Value of binary semaphore greater"
+					" than 1!\n");
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
+		return SemaphoreIF::SEMAPHORE_NOT_OWNED;
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 }
