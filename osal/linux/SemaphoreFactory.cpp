@@ -1,4 +1,5 @@
 #include <framework/tasks/SemaphoreFactory.h>
+#include <framework/osal/linux/BinarySemaphore.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 const uint32_t SemaphoreIF::NO_TIMEOUT = 0;
@@ -21,8 +22,7 @@ SemaphoreFactory* SemaphoreFactory::instance() {
 }
 
 SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t arguments) {
-	sif::error << "Semaphore not implemented for Linux yet" << std::endl;
-	return nullptr;
+	return new BinarySemaphore();
 }
 
 SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t count,
