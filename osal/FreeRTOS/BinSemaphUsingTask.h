@@ -31,6 +31,7 @@ public:
 	        SemaphoreIF::NO_TIMEOUT) override;
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() const override;
+	static uint8_t getSemaphoreCounter(TaskHandle_t taskHandle);
 	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t taskHandle);
 
 	/**
@@ -59,8 +60,9 @@ public:
 	/**
 	 * Wrapper function to give back semaphore from handle when called from an ISR
 	 * @param semaphore
-	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with a higher priority
-	 *        was unblocked
+	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with
+	 * a higher priority was unblocked. A context switch should be requested
+	 * from an ISR if this is the case (see TaskManagement functions)
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED on failure
 	 */
@@ -69,9 +71,6 @@ public:
 
 protected:
 	TaskHandle_t handle;
-	// This boolean is required to track whether the semaphore is locked
-	// or unlocked.
-	bool locked;
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_ */

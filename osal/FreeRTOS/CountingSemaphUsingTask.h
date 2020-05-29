@@ -43,7 +43,16 @@ public:
 	ReturnValue_t release() override;
 
 	uint8_t getSemaphoreCounter() const override;
-	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t task);
+	/**
+	 * Get the semaphore counter from an ISR.
+	 * @param task
+	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with
+	 * a higher priority was unblocked. A context switch should be requested
+	 * from an ISR if this is the case (see TaskManagement functions)
+	 * @return
+	 */
+	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t task,
+			BaseType_t* higherPriorityTaskWoken);
 
 	/**
 	 * Acquire with a timeout value in ticks
@@ -71,6 +80,9 @@ public:
 	/**
 	 * Release seamphore of a task from an ISR.
 	 * @param taskToNotify
+	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with
+	 * a higher priority was unblocked. A context switch should be requested
+	 * from an ISR if this is the case (see TaskManagement functions)
 	 * @return -@c RETURN_OK on success
 	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if #maxCount semaphores are
 	 *         	already available.
@@ -78,10 +90,11 @@ public:
 	static ReturnValue_t releaseFromISR(TaskHandle_t taskToNotify,
 			BaseType_t* higherPriorityTaskWoken);
 
+	uint8_t getMaxCount() const;
+
 private:
 	TaskHandle_t handle;
 	const uint8_t maxCount;
-	uint8_t currentCount = 0;
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_ */

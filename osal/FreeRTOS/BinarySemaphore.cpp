@@ -37,7 +37,7 @@ BinarySemaphore& BinarySemaphore::operator =(
 
 ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	if(handle == nullptr) {
-		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_INVALID;
 	}
 	TickType_t timeout = SemaphoreIF::NO_TIMEOUT;
 	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
@@ -51,7 +51,7 @@ ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 
 ReturnValue_t BinarySemaphore::acquireWithTickTimeout(TickType_t timeoutTicks) {
 	if(handle == nullptr) {
-		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_INVALID;
 	}
 
 	BaseType_t returncode = xSemaphoreTake(handle, timeoutTicks);
@@ -64,10 +64,14 @@ ReturnValue_t BinarySemaphore::acquireWithTickTimeout(TickType_t timeoutTicks) {
 }
 
 ReturnValue_t BinarySemaphore::release() {
-	if (handle == nullptr) {
-		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
+	return release(handle);
+}
+
+ReturnValue_t BinarySemaphore::release(SemaphoreHandle_t semaphore) {
+	if (semaphore == nullptr) {
+		return SemaphoreIF::SEMAPHORE_INVALID;
 	}
-	BaseType_t returncode = xSemaphoreGive(handle);
+	BaseType_t returncode = xSemaphoreGive(semaphore);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	}
@@ -84,32 +88,22 @@ SemaphoreHandle_t BinarySemaphore::getSemaphore() {
 	return handle;
 }
 
-ReturnValue_t BinarySemaphore::release(SemaphoreHandle_t semaphore) {
-	if (semaphore == nullptr) {
-		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
-	}
-	BaseType_t returncode = xSemaphoreGive(semaphore);
-	if (returncode == pdPASS) {
-		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-}
 
 // Be careful with the stack size here. This is called from an ISR!
 ReturnValue_t BinarySemaphore::releaseFromISR(
 		SemaphoreHandle_t semaphore, BaseType_t * higherPriorityTaskWoken) {
 	if (semaphore == nullptr) {
-		return SemaphoreIF::SEMAPHORE_NULLPOINTER;
+		return SemaphoreIF::SEMAPHORE_INVALID;
 	}
 	BaseType_t returncode = xSemaphoreGiveFromISR(semaphore,
 			higherPriorityTaskWoken);
+	// This should propably be called at the end of the (calling) ISR
+	//if(*higherPriorityTaskWoken == pdPASS) {
+		// Request context switch because unblocking the semaphore
+		// caused a high priority task unblock.
+		//TaskManagement::requestContextSwitch(CallContext::isr);
+	//}
 	if (returncode == pdPASS) {
-		if(*higherPriorityTaskWoken == pdPASS) {
-			// Request context switch because unblocking the semaphore
-		    // caused a high priority task unblock.
-			TaskManagement::requestContextSwitch(CallContext::isr);
-		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
