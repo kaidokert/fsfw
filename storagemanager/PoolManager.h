@@ -12,7 +12,7 @@
  * 			with a lock.
  * @author 	Bastian Baetz
  */
-template <uint8_t NUMBER_OF_POOLS>
+template <uint8_t NUMBER_OF_POOLS = 5>
 class PoolManager : public LocalPool<NUMBER_OF_POOLS> {
 public:
 	PoolManager(object_id_t setObjectId,
