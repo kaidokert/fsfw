@@ -7,7 +7,7 @@
 #include <framework/osal/linux/MessageQueue.h>
 
 
-MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize) :
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		id(0), lastPartner(0), defaultDestination(NO_QUEUE) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;

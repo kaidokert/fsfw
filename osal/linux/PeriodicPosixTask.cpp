@@ -57,9 +57,11 @@ void PeriodicPosixTask::taskFunctionality(void){
 			char name[20] = {0};
 			int status = pthread_getname_np(pthread_self(),name,sizeof(name));
 			if(status==0){
-				sif::error << "ObjectTask: " << name << " Deadline missed." << std::endl;
+				sif::error << "PeriodicPosixTask " << name << ": Deadline "
+						"missed." << std::endl;
 			}else{
-				sif::error << "ObjectTask: X Deadline missed. " << status << std::endl;
+				sif::error << "PeriodicPosixTask X: Deadline missed. " <<
+						status << std::endl;
 			}
 			if (this->deadlineMissedFunc != NULL) {
 				this->deadlineMissedFunc();

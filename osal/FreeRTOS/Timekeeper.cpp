@@ -1,17 +1,12 @@
-/**
- * @file Timekeeper.cpp
- * @date
- */
-
 #include <framework/osal/FreeRTOS/Timekeeper.h>
 
-extern "C" {
-#include <task.h>
-}
+#include "FreeRTOSConfig.h"
 
 Timekeeper * Timekeeper::myinstance = nullptr;
 
-Timekeeper::Timekeeper() : offset( { 0, 0 }) {}
+Timekeeper::Timekeeper() : offset( { 0, 0 } ) {}
+
+Timekeeper::~Timekeeper() {}
 
 const timeval& Timekeeper::getOffset() const {
 	return offset;
@@ -27,8 +22,6 @@ Timekeeper* Timekeeper::instance() {
 void Timekeeper::setOffset(const timeval& offset) {
 	this->offset = offset;
 }
-
-Timekeeper::~Timekeeper() {}
 
 timeval Timekeeper::ticksToTimeval(TickType_t ticks) {
 	timeval uptime;

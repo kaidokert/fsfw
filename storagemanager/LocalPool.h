@@ -22,6 +22,7 @@
  * 			0xFFFF-1 bytes.
  * 			It is possible to store empty packets in the pool.
  * 			The local pool is NOT thread-safe.
+ * @author 	Bastian Baetz
  */
 
 template<uint8_t NUMBER_OF_POOLS = 5>

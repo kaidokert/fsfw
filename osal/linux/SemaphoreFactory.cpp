@@ -1,4 +1,6 @@
 #include <framework/tasks/SemaphoreFactory.h>
+#include <framework/osal/linux/BinarySemaphore.h>
+#include <framework/osal/linux/CountingSemaphore.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 const uint32_t SemaphoreIF::NO_TIMEOUT = 0;
@@ -20,18 +22,15 @@ SemaphoreFactory* SemaphoreFactory::instance() {
 	return SemaphoreFactory::factoryInstance;
 }
 
-SemaphoreIF* SemaphoreFactory::createBinarySemaphore() {
-	sif::error << "Semaphore not implemented for Linux yet" << std::endl;
-	return nullptr;
+SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t arguments) {
+	return new BinarySemaphore();
 }
 
-SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t count,
-		uint8_t initCount) {
-	sif::error << "Counting Semaphore not implemented for "
-			"Linux yet" << std::endl;
-	return nullptr;
+SemaphoreIF* SemaphoreFactory::createCountingSemaphore(const uint8_t maxCount,
+		uint8_t initCount, uint32_t arguments) {
+	return new CountingSemaphore(maxCount, initCount);
 }
 
-void SemaphoreFactory::deleteMutex(SemaphoreIF* semaphore) {
+void SemaphoreFactory::deleteSemaphore(SemaphoreIF* semaphore) {
 	delete semaphore;
 }

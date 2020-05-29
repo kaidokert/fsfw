@@ -12,7 +12,8 @@
  * A semaphore is a synchronization primitive.
  * See: https://en.wikipedia.org/wiki/Semaphore_(programming)
  * A semaphore can be used to achieve task synchonization and track the
- * availability of resources.
+ * availability of resources by using either the binary or the counting
+ * semaphore types.
  *
  * If mutual exlcusion of a resource is desired, a mutex should be used,
  * which is a special form of a semaphore and has an own interface.
@@ -29,7 +30,7 @@ public:
 	static constexpr ReturnValue_t SEMAPHORE_TIMEOUT = MAKE_RETURN_CODE(1);
 	//! The current semaphore can not be given, because it is not owned
 	static constexpr ReturnValue_t SEMAPHORE_NOT_OWNED = MAKE_RETURN_CODE(2);
-	static constexpr ReturnValue_t SEMAPHORE_NULLPOINTER = MAKE_RETURN_CODE(3);
+	static constexpr ReturnValue_t SEMAPHORE_INVALID = MAKE_RETURN_CODE(3);
 
 	/**
 	 * Generic call to acquire a semaphore.
@@ -54,7 +55,7 @@ public:
 	 * is returned if the semaphore is available, and 0 is returned if the
 	 * semaphore is not available.
 	 */
-	virtual uint8_t getSemaphoreCounter() = 0;
+	virtual uint8_t getSemaphoreCounter() const = 0;
 };
 
 #endif /* FRAMEWORK_TASKS_SEMAPHOREIF_H_ */

@@ -3,22 +3,22 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/tasks/SemaphoreIF.h>
-extern "C" {
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
-}
 
-// TODO: Counting semaphores and implement the new (better)
-//		 task notifications. However, those use task notifications require
-//		 the task handle. Maybe it would be better to make a separate class
-// 		 and switch between the classes with #ifdefs.
-//		 Task Notifications require FreeRTOS V8.2 something..
 /**
  * @brief 	OS Tool to achieve synchronization of between tasks or between
  * 			task and ISR. The default semaphore implementation creates a
  * 			binary semaphore, which can only be taken once.
  * @details
  * Documentation: https://www.freertos.org/Embedded-RTOS-Binary-Semaphores.html
+ *
+ * Please note that if the semaphore implementation is only related to
+ * the synchronization of one task, the new task notifications can be used,
+ * also see the BinSemaphUsingTask and CountingSemaphUsingTask classes.
+ * These use the task notification value instead of a queue and are
+ * faster and more efficient.
  *
  * @author 	R. Mueller
  * @ingroup osal
@@ -27,15 +27,6 @@ class BinarySemaphore: public SemaphoreIF,
 		public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
-
-	//! No block time, poll the semaphore. Can also be used as tick type.
-	//! Can be passed as tick type and ms value.
-	static constexpr uint32_t NO_BLOCK_TIMEOUT = 0;
-	static constexpr TickType_t NO_BLOCK_TICKS = 0;
-	//! No block time, poll the semaphore.
-	//! Can be passed as tick type and ms value.
-	static constexpr TickType_t BLOCK_TIMEOUT_TICKS = portMAX_DELAY;
-	static constexpr uint32_t BLOCK_TIMEOUT = portMAX_DELAY;
 
 	//! @brief Default ctor
 	BinarySemaphore();
@@ -50,10 +41,7 @@ public:
 	//! @brief Destructor
 	virtual ~BinarySemaphore();
 
-	ReturnValue_t acquire(uint32_t timeoutMs =
-	        BinarySemaphore::NO_BLOCK_TIMEOUT) override;
-	ReturnValue_t release() override;
-	uint8_t getSemaphoreCounter() override;
+	uint8_t getSemaphoreCounter() const override;
 
 	/**
 	 * Take the binary semaphore.
@@ -62,26 +50,27 @@ public:
 	 * for example by an ISR or another task.
 	 * @param timeoutMs
 	 * @return -@c RETURN_OK on success
-	 *         -@c RETURN_FAILED on failure
+	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
-	ReturnValue_t takeBinarySemaphore(uint32_t timeoutMs =
-	        BinarySemaphore::NO_BLOCK_TIMEOUT);
+	ReturnValue_t acquire(uint32_t timeoutMs =
+	       	   SemaphoreIF::NO_TIMEOUT) override;
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
 	 * @param timeoutTicks
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
-	ReturnValue_t takeBinarySemaphoreTickTimeout(TickType_t timeoutTicks =
-	        BinarySemaphore::NO_BLOCK_TICKS);
+	ReturnValue_t  acquireWithTickTimeout(TickType_t timeoutTicks =
+	        BinarySemaphore::NO_TIMEOUT);
 
 	/**
-	 * Give back the binary semaphore
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * Release the binary semaphore.
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
+	 *         	already available.
 	 */
-	ReturnValue_t giveBinarySemaphore();
+	ReturnValue_t release() override;
 
 	/**
 	 * Get Handle to the semaphore.
@@ -89,28 +78,26 @@ public:
 	 */
 	SemaphoreHandle_t getSemaphore();
 
-	/**
-	 * Reset the semaphore.
-	 */
-	void resetSemaphore();
-
 	 /**
 	 * Wrapper function to give back semaphore from handle
 	 * @param semaphore
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
+	 *         	already available.
 	 */
-	static ReturnValue_t giveBinarySemaphore(SemaphoreHandle_t semaphore);
+	static ReturnValue_t release(SemaphoreHandle_t semaphore);
 
 	/**
 	 * Wrapper function to give back semaphore from handle when called from an ISR
 	 * @param semaphore
-	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with a higher priority
-	 *        was unblocked
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED on failure
+	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with
+	 * a higher priority was unblocked. A context switch from an ISR should
+	 * then be requested (see TaskManagement functions)
+	 * @return -@c RETURN_OK on success
+	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
+	 *         	already available.
 	 */
-	static ReturnValue_t giveBinarySemaphoreFromISR(SemaphoreHandle_t semaphore,
+	static ReturnValue_t releaseFromISR(SemaphoreHandle_t semaphore,
 				BaseType_t * higherPriorityTaskWoken);
 
 protected:

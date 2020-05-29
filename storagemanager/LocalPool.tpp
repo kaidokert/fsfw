@@ -1,6 +1,10 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
 #define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
 
+#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
+#error Include LocalPool.h before LocalPool.tpp!
+#endif
+
 template<uint8_t NUMBER_OF_POOLS>
 inline LocalPool<NUMBER_OF_POOLS>::LocalPool(object_id_t setObjectId,
 		const uint16_t element_sizes[NUMBER_OF_POOLS],

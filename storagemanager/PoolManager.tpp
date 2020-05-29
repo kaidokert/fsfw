@@ -1,6 +1,10 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
 #define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
 
+#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
+#error Include PoolManager.h before PoolManager.tpp!
+#endif
+
 template<uint8_t NUMBER_OF_POOLS>
 inline PoolManager<NUMBER_OF_POOLS>::PoolManager(object_id_t setObjectId,
 		const uint16_t element_sizes[NUMBER_OF_POOLS],

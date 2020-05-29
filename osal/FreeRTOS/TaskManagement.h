@@ -21,9 +21,9 @@ extern "C" void requestContextSwitchFromISR();
  * has different functions for handling semaphores and messages from within
  * an ISR and task.
  */
-enum CallContext {
-	task = 0x00,//!< task_context
-	isr = 0xFF  //!< isr_context
+enum class CallContext {
+	TASK = 0x00,//!< task_context
+	ISR = 0xFF  //!< isr_context
 };
 
 

@@ -1,9 +1,3 @@
-/**
- * @file Stopwatch.cpp
- *
- * @date 08.04.2020
- */
-
 #include <framework/timemanager/Stopwatch.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <iomanip>
@@ -12,11 +6,11 @@ Stopwatch::Stopwatch(bool displayOnDestruction,
         StopwatchDisplayMode displayMode): displayOnDestruction(
         displayOnDestruction), displayMode(displayMode) {
     // Measures start time on initialization.
-    startTime = Clock::getUptime();
+    Clock::getClock_timeval(&startTime);
 }
 
 void Stopwatch::start() {
-    startTime = Clock::getUptime();
+    Clock::getClock_timeval(&startTime);
 }
 
 millis_t Stopwatch::stop() {
@@ -57,5 +51,7 @@ StopwatchDisplayMode Stopwatch::getDisplayMode() const {
 }
 
 void Stopwatch::stopInternal() {
-    elapsedTime = Clock::getUptime() - startTime;
+	timeval endTime;
+	Clock::getClock_timeval(&endTime);
+    elapsedTime = endTime - startTime;
 }

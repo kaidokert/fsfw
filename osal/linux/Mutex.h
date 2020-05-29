@@ -1,5 +1,5 @@
-#ifndef OS_RTEMS_MUTEX_H_
-#define OS_RTEMS_MUTEX_H_
+#ifndef OS_LINUX_MUTEX_H_
+#define OS_LINUX_MUTEX_H_
 
 #include <framework/ipc/MutexIF.h>
 
