@@ -2,10 +2,11 @@
 #define FRAMEWORK_TIMEMANAGER_CLOCK_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <stdint.h>
-#include <sys/time.h>
 #include <framework/ipc/MutexFactory.h>
 #include <framework/globalfunctions/timevalOperations.h>
+
+#include <cstdint>
+#include <sys/time.h>
 
 typedef uint32_t millis_t;
 typedef float seconds_t;
@@ -22,7 +23,7 @@ public:
 	  uint32_t usecond; //!< Microseconds, 0 .. 999999
 	}   TimeOfDay_t;
 
-	/**static Clock* TimeOfDay_t();
+	/**
 	 * This method returns the number of clock ticks per second.
 	 * In RTEMS, this is typically 1000.
 	 * @return	The number of ticks.
@@ -34,22 +35,23 @@ public:
 	 * This system call sets the system time.
 	 * To set the time, it uses a TimeOfDay_t struct.
 	 * @param time The struct with the time settings to set.
-	 * @return	\c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return	-@c RETURN_OK on success. Otherwise, the OS failure code
+	 * 				is returned.
 	 */
 	static ReturnValue_t setClock(const TimeOfDay_t* time);
 	/**
 	 * This system call sets the system time.
 	 * To set the time, it uses a timeval struct.
 	 * @param time The struct with the time settings to set.
-	 * @return	\c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return	-@c RETURN_OK on success. Otherwise, the OS failure code is returned.
 	 */
 	static ReturnValue_t setClock(const timeval* time);
 	/**
 	 * This system call returns the current system clock in timeval format.
-	 * The timval format has the fields \c tv_sec with seconds and \c tv_usec with
+	 * The timval format has the fields @c tv_sec with seconds and @c tv_usec with
 	 * microseconds since an OS-defined epoch.
 	 * @param time	A pointer to a timeval struct where the current time is stored.
-	 * @return \c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return @c RETURN_OK on success. Otherwise, the OS failure code is returned.
 	 */
 	static ReturnValue_t getClock_timeval(timeval* time);
 
@@ -57,7 +59,7 @@ public:
 	 * Get the time since boot in a timeval struct
 	 *
 	 * @param[out] time A pointer to a timeval struct where the uptime is stored.
-	 * @return\c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return @c RETURN_OK on success. Otherwise, the OS failure code is returned.
 	 *
 	 * @deprecated, I do not think this should be able to fail, use timeval getUptime()
 	 */
