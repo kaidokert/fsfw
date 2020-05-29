@@ -9,7 +9,7 @@
 #include <sys/time.h>
 
 typedef uint32_t millis_t;
-typedef float seconds_t;
+typedef double seconds_t;
 
 class Clock {
 public:
