@@ -2,7 +2,7 @@
 #define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
 
 #ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
-#error Include LocalPool.h instead of LocalPool.tpp!.
+#error Include LocalPool.h instead of LocalPool.tpp!
 #endif
 
 template<uint8_t NUMBER_OF_POOLS>
