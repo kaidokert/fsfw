@@ -10,6 +10,7 @@
  * 			a fixed pool size policy for inter-process communication.
  * @details	Uses local pool calls but is thread safe by protecting the call
  * 			with a lock.
+ * @author 	Bastian Baetz
  */
 template <uint8_t NUMBER_OF_POOLS>
 class PoolManager : public LocalPool<NUMBER_OF_POOLS> {
