@@ -1,13 +1,11 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/timemanager/Clock.h>
 
-extern "C" {
 #include <sys/time.h>
 #include <sys/sysinfo.h>
 #include <linux/sysinfo.h>
 #include <time.h>
 #include <unistd.h>
-}
 
 //#include <fstream>
 uint16_t Clock::leapSeconds = 0;
