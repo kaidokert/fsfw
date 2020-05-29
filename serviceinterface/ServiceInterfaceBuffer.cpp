@@ -23,14 +23,16 @@ int ServiceInterfaceBuffer::sync(void) {
 	if (this->isActive) {
 		Clock::TimeOfDay_t loggerTime;
 		Clock::getDateAndTime(&loggerTime);
-		char preamble[96] = { 0 };
-		sprintf(preamble, "%s: | %lu:%02lu:%02lu.%03lu | ",
-				this->log_message.c_str(), (unsigned long) loggerTime.hour,
-				(unsigned long) loggerTime.minute,
-				(unsigned long) loggerTime.second,
-				(unsigned long) loggerTime.usecond /1000);
+		std::string preamble;
+		if(addCrToPreamble) {
+			preamble += "\r";
+		}
+		preamble += log_message + ": | " + zero_padded(loggerTime.hour, 2)
+				+ ":" + zero_padded(loggerTime.minute, 2) + ":"
+				+ zero_padded(loggerTime.second, 2) + "."
+				+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
 		// Write log_message and time
-		this->putChars(preamble, preamble + sizeof(preamble));
+		this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
 		// Handle output
 		this->putChars(pbase(), pptr());
 	}
@@ -39,9 +41,13 @@ int ServiceInterfaceBuffer::sync(void) {
 	return 0;
 }
 
+
+
 #ifndef UT699
 
-ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message, uint16_t port) {
+ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message,
+        uint16_t port, bool addCrToPreamble) {
+	this->addCrToPreamble = addCrToPreamble;
 	this->log_message = set_message;
 	this->isActive = true;
 	setp( buf, buf + BUF_SIZE );
@@ -55,17 +61,19 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 	}
 	memcpy(array, begin, length);
 
-	for( ; begin != end; begin++){
+	for(; begin != end; begin++){
 		printChar(begin);
 	}
 
 }
 #endif
 
+
 #ifdef UT699
 #include <framework/osal/rtems/Interrupt.h>
 
-ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message, uint16_t port) {
+ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message,
+		uint16_t port) {
 	this->log_message = set_message;
 	this->isActive = true;
 	setp( buf, buf + BUF_SIZE );

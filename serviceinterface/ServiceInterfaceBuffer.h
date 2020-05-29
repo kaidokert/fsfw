@@ -2,32 +2,36 @@
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
 #include <iostream>
-#include <iosfwd>
 #include <sstream>
 #include <cstdio>
+#include <iomanip>
 
 #ifndef UT699
-class ServiceInterfaceBuffer: public std::basic_streambuf<char,
-		std::char_traits<char> > {
+class ServiceInterfaceBuffer:
+        public std::basic_streambuf<char,std::char_traits<char>> {
 	friend class ServiceInterfaceStream;
 public:
-	ServiceInterfaceBuffer(std::string set_message, uint16_t port);
+	ServiceInterfaceBuffer(std::string set_message, uint16_t port,
+			bool addCrToPreamble);
 protected:
 	bool isActive;
 	// This is called when buffer becomes full. If
 	// buffer is not used, then this is called every
 	// time when characters are put to stream.
-	virtual int overflow(int c = Traits::eof());
+	int overflow(int c = Traits::eof()) override;
 
 	// This function is called when stream is flushed,
 	// for example when std::endl is put to stream.
-	virtual int sync(void);
+	int sync(void) override;
 
 private:
 	// For additional message information
 	std::string log_message;
 	// For EOF detection
 	typedef std::char_traits<char> Traits;
+	// This is useful for some terminal programs which do not have
+	// implicit carriage return with newline characters.
+	bool addCrToPreamble;
 
 	// Work in buffer mode. It is also possible to work without buffer.
 	static size_t const BUF_SIZE = 128;
@@ -35,6 +39,18 @@ private:
 
 	// In this function, the characters are parsed.
 	void putChars(char const* begin, char const* end);
+
+	template<typename T>
+	std::string zero_padded(const T& num, uint8_t width) {
+	    std::ostringstream string_to_pad;
+	    string_to_pad << std::setw(width) << std::setfill('0') << num;
+	    std::string result = string_to_pad.str();
+	    if (result.length() > width)
+	    {
+	        result.erase(0, result.length() - width);
+	    }
+	    return result;
+	}
 };
 #endif
 
