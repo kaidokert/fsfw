@@ -11,7 +11,6 @@
 using AccessorPair = std::pair<ReturnValue_t, StorageAccessor>;
 using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
 
-
 /**
  * @brief	This class provides an interface for intermediate data storage.
  * @details	The Storage manager classes shall be used to store larger chunks of
@@ -80,6 +79,7 @@ public:
 	virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) = 0;
 
+
 	/**
 	 * @brief 	Access the data by supplying a store ID.
 	 * @details
@@ -99,6 +99,7 @@ public:
 	 */
 	virtual ReturnValue_t getData(store_address_t storeId,
 			ConstStorageAccessor& constAccessor) = 0;
+
 
 	/**
 	 * @brief	getData returns an address to data and the size of the data
