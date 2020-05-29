@@ -3,7 +3,8 @@
 
 #include <framework/timemanager/Clock.h>
 extern "C" {
-#include <FreeRTOS.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 }
 
 

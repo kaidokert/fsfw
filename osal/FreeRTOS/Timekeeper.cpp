@@ -1,13 +1,6 @@
-/**
- * @file Timekeeper.cpp
- * @date
- */
-
 #include <framework/osal/FreeRTOS/Timekeeper.h>
 
-extern "C" {
-#include <task.h>
-}
+#include "FreeRTOSConfig.h"
 
 Timekeeper * Timekeeper::myinstance = nullptr;
 

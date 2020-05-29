@@ -1,13 +1,14 @@
 #include <framework/timemanager/Clock.h>
 #include <framework/globalfunctions/timevalOperations.h>
-#include <stdlib.h>
-#include "Timekeeper.h"
+#include <framework/osal/FreeRTOS/Timekeeper.h>
 
 extern "C" {
-#include <FreeRTOS.h>
-#include <task.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 }
 
+#include <stdlib.h>
+#include <time.h>
 
 //TODO sanitize input?
 //TODO much of this code can be reused for tick-only systems
