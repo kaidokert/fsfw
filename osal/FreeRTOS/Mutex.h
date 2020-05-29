@@ -3,11 +3,8 @@
 
 #include <framework/ipc/MutexIF.h>
 
-extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
-}
-
 
 /**
  * @brief OS component to implement MUTual EXclusion

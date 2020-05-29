@@ -1,4 +1,4 @@
-#include "Mutex.h"
+#include <framework/osal/FreeRTOS/Mutex.h>
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 

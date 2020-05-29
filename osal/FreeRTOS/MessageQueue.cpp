@@ -1,4 +1,4 @@
-#include "MessageQueue.h"
+#include <framework/osal/FreeRTOS/MessageQueue.h>
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 

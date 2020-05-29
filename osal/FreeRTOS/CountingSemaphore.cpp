@@ -2,9 +2,7 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/FreeRTOS/TaskManagement.h>
 
-extern "C" {
 #include <freertos/semphr.h>
-}
 
 // Make sure #define configUSE_COUNTING_SEMAPHORES 1 is set in
 // free FreeRTOSConfig.h file.

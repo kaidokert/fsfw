@@ -4,10 +4,8 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/tasks/SemaphoreIF.h>
 
-extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
-}
 
 /**
  * @brief 	OS Tool to achieve synchronization of between tasks or between

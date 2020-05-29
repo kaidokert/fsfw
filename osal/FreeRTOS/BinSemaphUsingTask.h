@@ -4,10 +4,8 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/tasks/SemaphoreIF.h>
 
-extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-}
 
 /**
  * @brief 	Binary Semaphore implementation using the task notification value.
