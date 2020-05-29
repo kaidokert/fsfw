@@ -8,6 +8,7 @@
 #ifndef OBJECTMANAGERIF_H_
 #define OBJECTMANAGERIF_H_
 
+#include "systemObjectList.h"
 #include <framework/objectmanager/frameworkObjects.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
