@@ -13,7 +13,7 @@ enum class StopwatchDisplayMode {
  * This class can be used to measure elapsed times. It also displays elapsed
  * times automatically on destruction if not explicitely deactivated in the
  * constructor. The default time format is the elapsed time in miliseconds
- * as a float.
+ * in seconds as a double.
  * @author 	R. Mueller
  */
 class Stopwatch {
@@ -41,6 +41,10 @@ public:
      * @return elapsed time in milliseconds (rounded)
      */
     millis_t stop();
+    /**
+     * Calculates the elapsed time since start and returns it
+     * @return elapsed time in seconds (double precision)
+     */
     seconds_t stopSeconds();
 
     /**
