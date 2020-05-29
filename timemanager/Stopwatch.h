@@ -8,11 +8,13 @@ enum class StopwatchDisplayMode {
 };
 
 /**
- * @brief Simple Stopwatch implementation to measure elapsed time
+ * @brief 	Simple Stopwatch implementation to measure elapsed time
  * @details
  * This class can be used to measure elapsed times. It also displays elapsed
  * times automatically on destruction if not explicitely deactivated in the
- * constructor. The default time format is the elapsed time in miliseconds.
+ * constructor. The default time format is the elapsed time in miliseconds
+ * in seconds as a double.
+ * @author 	R. Mueller
  */
 class Stopwatch {
 public:
@@ -21,8 +23,8 @@ public:
      * no parameters are required!
      * @param displayOnDestruction If set to true, displays measured time on
      *        object destruction
-     * @param displayMode Display format is either MS rounded or seconds as
-     * 		  double format
+     * @param displayMode Display format is either MS rounded or MS as double
+     *        format
      * @param outputPrecision If using double format, specify precision here.
      */
     Stopwatch(bool displayOnDestruction = true, StopwatchDisplayMode displayMode
@@ -39,6 +41,10 @@ public:
      * @return elapsed time in milliseconds (rounded)
      */
     millis_t stop();
+    /**
+     * Calculates the elapsed time since start and returns it
+     * @return elapsed time in seconds (double precision)
+     */
     seconds_t stopSeconds();
 
     /**
@@ -49,12 +55,13 @@ public:
 
     StopwatchDisplayMode getDisplayMode() const;
     void setDisplayMode(StopwatchDisplayMode displayMode);
+    bool displayOnDestruction = true;
 private:
     timeval startTime {0, 0};
     timeval elapsedTime {0, 0};
 
     StopwatchDisplayMode displayMode = StopwatchDisplayMode::MILLIS;
-    bool displayOnDestruction = true;
+
     void stopInternal();
 };
 

@@ -3,14 +3,14 @@
 #include <iomanip>
 
 Stopwatch::Stopwatch(bool displayOnDestruction,
-        StopwatchDisplayMode displayMode): displayMode(displayMode),
-        displayOnDestruction(displayOnDestruction) {
+        StopwatchDisplayMode displayMode): displayOnDestruction(
+        displayOnDestruction), displayMode(displayMode) {
     // Measures start time on initialization.
-    startTime = Clock::getUptime();
+    Clock::getClock_timeval(&startTime);
 }
 
 void Stopwatch::start() {
-    startTime = Clock::getUptime();
+    Clock::getClock_timeval(&startTime);
 }
 
 millis_t Stopwatch::stop() {
@@ -51,5 +51,7 @@ StopwatchDisplayMode Stopwatch::getDisplayMode() const {
 }
 
 void Stopwatch::stopInternal() {
-    elapsedTime = Clock::getUptime() - startTime;
+	timeval endTime;
+	Clock::getClock_timeval(&endTime);
+    elapsedTime = endTime - startTime;
 }
