@@ -5,8 +5,8 @@ void TaskManagement::requestContextSwitchFromTask() {
 }
 
 void TaskManagement::requestContextSwitch(
-		CallContext callContext = CallContext::task) {
-	if(callContext == CallContext::isr) {
+		CallContext callContext = CallContext::TASK) {
+	if(callContext == CallContext::ISR) {
 		// This function depends on the partmacro.h definition for the specific device
 		requestContextSwitchFromISR();
 	} else {

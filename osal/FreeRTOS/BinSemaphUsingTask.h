@@ -32,7 +32,8 @@ public:
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() const override;
 	static uint8_t getSemaphoreCounter(TaskHandle_t taskHandle);
-	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t taskHandle);
+	static uint8_t getSemaphoreCounterFromISR(TaskHandle_t taskHandle,
+			BaseType_t* higherPriorityTaskWoken);
 
 	/**
 	 * Same as acquire() with timeout in FreeRTOS ticks.

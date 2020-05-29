@@ -36,9 +36,6 @@ BinarySemaphore& BinarySemaphore::operator =(
 }
 
 ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
-	if(handle == nullptr) {
-		return SemaphoreIF::SEMAPHORE_INVALID;
-	}
 	TickType_t timeout = SemaphoreIF::NO_TIMEOUT;
 	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
 	    timeout = SemaphoreIF::MAX_TIMEOUT;
@@ -97,12 +94,6 @@ ReturnValue_t BinarySemaphore::releaseFromISR(
 	}
 	BaseType_t returncode = xSemaphoreGiveFromISR(semaphore,
 			higherPriorityTaskWoken);
-	// This should propably be called at the end of the (calling) ISR
-	//if(*higherPriorityTaskWoken == pdPASS) {
-		// Request context switch because unblocking the semaphore
-		// caused a high priority task unblock.
-		//TaskManagement::requestContextSwitch(CallContext::isr);
-	//}
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	}

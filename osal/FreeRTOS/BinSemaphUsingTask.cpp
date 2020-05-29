@@ -75,7 +75,7 @@ uint8_t BinarySemaphoreUsingTask::getSemaphoreCounter(
 // Be careful with the stack size here. This is called from an ISR!
 ReturnValue_t BinarySemaphoreUsingTask::releaseFromISR(
 		TaskHandle_t taskHandle, BaseType_t * higherPriorityTaskWoken) {
-	if(getSemaphoreCounterFromISR(taskHandle) == 1) {
+	if(getSemaphoreCounterFromISR(taskHandle, higherPriorityTaskWoken) == 1) {
 		return SemaphoreIF::SEMAPHORE_NOT_OWNED;
 	}
 	vTaskNotifyGiveFromISR(taskHandle, higherPriorityTaskWoken);
@@ -83,10 +83,9 @@ ReturnValue_t BinarySemaphoreUsingTask::releaseFromISR(
 }
 
 uint8_t BinarySemaphoreUsingTask::getSemaphoreCounterFromISR(
-		TaskHandle_t taskHandle) {
-	uint32_t notificationValue;
-	BaseType_t higherPriorityTaskWoken;
+		TaskHandle_t taskHandle, BaseType_t* higherPriorityTaskWoken) {
+	uint32_t notificationValue = 0;
 	xTaskNotifyAndQueryFromISR(taskHandle, 0, eNoAction, &notificationValue,
-			&higherPriorityTaskWoken);
+			higherPriorityTaskWoken);
 	return notificationValue;
 }

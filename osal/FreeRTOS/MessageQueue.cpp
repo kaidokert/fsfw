@@ -124,7 +124,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         bool ignoreFault, CallContext callContext) {
     message->setSender(sentFrom);
     BaseType_t result;
-    if(callContext == CallContext::task) {
+    if(callContext == CallContext::TASK) {
         result = xQueueSendToBack(reinterpret_cast<QueueHandle_t>(sendTo),
                 static_cast<const void*>(message->getBuffer()), 0);
     }

@@ -92,8 +92,9 @@ public:
 	/**
 	 * Wrapper function to give back semaphore from handle when called from an ISR
 	 * @param semaphore
-	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with a higher priority
-	 *        was unblocked
+	 * @param higherPriorityTaskWoken This will be set to pdPASS if a task with
+	 * a higher priority was unblocked. A context switch from an ISR should
+	 * then be requested (see TaskManagement functions)
 	 * @return -@c RETURN_OK on success
 	 *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
 	 *         	already available.

@@ -199,7 +199,7 @@ protected:
 	 */
 	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,
-			bool ignoreFault=false, CallContext callContext = CallContext::task);
+			bool ignoreFault=false, CallContext callContext = CallContext::TASK);
 
 	static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
@@ -209,7 +209,7 @@ private:
 	MessageQueueId_t defaultDestination = 0;
 	MessageQueueId_t lastPartner = 0;
 	//!< Stores the current system context
-	CallContext callContext =  CallContext::task;
+	CallContext callContext =  CallContext::TASK;
 };
 
 #endif /* MESSAGEQUEUE_H_ */
