@@ -19,16 +19,14 @@ public:
 	static TaskFactory* instance();
 
 	/**
-	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
-	 * A lot of task parameters are set in "FreeRTOSConfig.h".
-	 * @param name_ Name of the task, lenght limited by configMAX_TASK_NAME_LEN
-	 * @param taskPriority_ Number of priorities specified by
-	 * configMAX_PRIORITIES. High taskPriority_ number means high priority.
-	 * @param stackSize_ 	Stack size in words (not bytes!).
-	 * Lower limit specified by configMINIMAL_STACK_SIZE
-	 * @param period_		Period in seconds.
-	 * @param deadLineMissedFunction_ Callback if a deadline was missed.
-	 * @return Pointer to the newly created task.
+	 * Generic interface to create a periodic task
+	 * @param name_ Name of the task
+	 * @param taskPriority_ Priority of the task
+	 * @param stackSize_ Stack size if the task
+	 * @param periodInSeconds_ Period in seconds
+	 * @param deadLineMissedFunction_ This function is called if a deadline was
+	 * missed
+	 * @return Pointer to the created periodic task class
 	 */
 	PeriodicTaskIF* createPeriodicTask(TaskName name_,
 			TaskPriority taskPriority_, TaskStackSize stackSize_,
@@ -36,16 +34,14 @@ public:
 			TaskDeadlineMissedFunction deadLineMissedFunction_);
 
 	/**
-	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
-	 * A lot of task parameters are set in "FreeRTOSConfig.h".
-	 * @param name_ Name of the task, lenght limited by configMAX_TASK_NAME_LEN
-	 * @param taskPriority_ Number of priorities specified by
-	 * configMAX_PRIORITIES. High taskPriority_ number means high priority.
-	 * @param stackSize_ 	Stack size in words (not bytes!).
-	 * Lower limit specified by configMINIMAL_STACK_SIZE
-	 * @param period_		Period in seconds.
-	 * @param deadLineMissedFunction_ Callback if a deadline was missed.
-	 * @return Pointer to the newly created task.
+	 * Generic interface to create a fixed timeslot task
+	 * @param name_ Name of the task
+	 * @param taskPriority_ Priority of the task
+	 * @param stackSize_ Stack size if the task
+	 * @param periodInSeconds_ Period in seconds
+	 * @param deadLineMissedFunction_ This function is called if a deadline was
+	 * missed
+	 * @return Pointer to the created periodic task class
 	 */
 	FixedTimeslotTaskIF* createFixedTimeslotTask(TaskName name_,
 			TaskPriority taskPriority_, TaskStackSize stackSize_,
