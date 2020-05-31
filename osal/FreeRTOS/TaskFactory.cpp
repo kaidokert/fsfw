@@ -34,9 +34,9 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,
 }
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
-	if (task == NULL) {
+	if (task == nullptr) {
 		//delete self
-		vTaskDelete(NULL);
+		vTaskDelete(nullptr);
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
 		//TODO not implemented
