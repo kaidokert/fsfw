@@ -3,8 +3,8 @@
 #include <framework/osal/linux/CountingSemaphore.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-const uint32_t SemaphoreIF::NO_TIMEOUT = 0;
-const uint32_t SemaphoreIF::MAX_TIMEOUT = 0xFFFFFFFF;
+const uint32_t SemaphoreIF::POLLING = 0;
+const uint32_t SemaphoreIF::BLOCKING = 0xffffffff;
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
 

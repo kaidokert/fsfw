@@ -27,13 +27,13 @@ BinarySemaphore& BinarySemaphore::operator =(
 
 ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
 	int result = 0;
-	if(timeoutMs == SemaphoreIF::NO_TIMEOUT) {
+	if(timeoutMs == SemaphoreIF::POLLING) {
 		result = sem_trywait(&handle);
 	}
-	else if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
+	else if(timeoutMs == SemaphoreIF::BLOCKING) {
 	    result = sem_wait(&handle);
 	}
-	else if(timeoutMs > SemaphoreIF::NO_TIMEOUT){
+	else if(timeoutMs > SemaphoreIF::POLLING){
 		timespec timeOut;
 		clock_gettime(CLOCK_REALTIME, &timeOut);
 		uint64_t nseconds = timeOut.tv_sec * 1000000000 + timeOut.tv_nsec;

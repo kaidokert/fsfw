@@ -2,7 +2,8 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/timemanager/Clock.h>
 
-const uint32_t MutexIF::NO_TIMEOUT = 0;
+const uint32_t MutexIF::BLOCKING = 0xffffffff;
+const uint32_t MutexIF::POLLING = 0;
 uint8_t Mutex::count = 0;
 
 
@@ -41,7 +42,7 @@ Mutex::~Mutex() {
 
 ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 	int status = 0;
-	if (timeoutMs != MutexIF::NO_TIMEOUT) {
+	if (timeoutMs != MutexIF::BLOCKING) {
 		timespec timeOut;
 		clock_gettime(CLOCK_REALTIME, &timeOut);
 		uint64_t nseconds = timeOut.tv_sec * 1000000000 + timeOut.tv_nsec;
