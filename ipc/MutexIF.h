@@ -12,8 +12,21 @@
  */
 class MutexIF {
 public:
-	static const uint32_t NO_TIMEOUT; //!< Needs to be defined in implementation.
-	static const uint32_t MAX_TIMEOUT;
+	/**
+	 * @brief 	Timeout value used for polling lock attempt.
+	 * @details
+	 * If the lock is not successfull, MUTEX_TIMEOUT will be returned
+	 * immediately. Value needs to be defined in implementation.
+	 */
+	static const uint32_t POLLING;
+	/**
+	 * @brief 	Timeout value used for permanent blocking lock attempt.
+	 * @details
+	 * The task will be blocked (indefinitely) until the mutex is unlocked.
+	 * Value needs to be defined in implementation.
+	 */
+	static const uint32_t BLOCKING;
+
 	static const uint8_t INTERFACE_ID = CLASS_ID::MUTEX_IF;
 	/**
 	 * The system lacked the necessary resources (other than memory) to initialize another mutex.
