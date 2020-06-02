@@ -10,15 +10,18 @@
 
 class FixedTimeslotTask: public FixedTimeslotTaskIF {
 public:
+
 	/**
-	 * @brief	The standard constructor of the class.
-	 *
-	 * @details	This is the general constructor of the class. In addition to the TaskBase parameters,
-	 * 			the following variables are passed:
-	 *
-	 * @param	(*setDeadlineMissedFunc)() The function pointer to the deadline missed function that shall be assigned.
-	 *
-	 * @param	getPst The object id of the completely initialized polling sequence.
+	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
+	 * A lot of task parameters are set in "FreeRTOSConfig.h".
+	 * @param name Name of the task, lenght limited by configMAX_TASK_NAME_LEN
+	 * @param setPriority Number of priorities specified by
+	 * configMAX_PRIORITIES. High taskPriority_ number means high priority.
+	 * @param setStack	Stack size in words (not bytes!).
+	 * Lower limit specified by configMINIMAL_STACK_SIZE
+	 * @param overallPeriod		Period in seconds.
+	 * @param setDeadlineMissedFunc Callback if a deadline was missed.
+	 * @return Pointer to the newly created task.
 	 */
 	FixedTimeslotTask(const char *name, TaskPriority setPriority,
 			TaskStackSize setStack, TaskPeriod overallPeriod,

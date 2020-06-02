@@ -50,7 +50,7 @@ public:
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
 	ReturnValue_t acquire(uint32_t timeoutMs =
-	       	   SemaphoreIF::NO_TIMEOUT) override;
+	       	   SemaphoreIF::BLOCKING) override;
 
 	/**
 	 * Release the binary semaphore.

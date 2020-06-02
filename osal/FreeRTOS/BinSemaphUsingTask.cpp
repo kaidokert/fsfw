@@ -17,11 +17,11 @@ BinarySemaphoreUsingTask::~BinarySemaphoreUsingTask() {
 }
 
 ReturnValue_t BinarySemaphoreUsingTask::acquire(uint32_t timeoutMs) {
-	TickType_t timeout = SemaphoreIF::NO_TIMEOUT;
-	if(timeoutMs == SemaphoreIF::MAX_TIMEOUT) {
-		timeout = SemaphoreIF::MAX_TIMEOUT;
+	TickType_t timeout = SemaphoreIF::POLLING;
+	if(timeoutMs == SemaphoreIF::BLOCKING) {
+		timeout = SemaphoreIF::BLOCKING;
 	}
-	else if(timeoutMs > SemaphoreIF::NO_TIMEOUT){
+	else if(timeoutMs > SemaphoreIF::POLLING){
 		timeout = pdMS_TO_TICKS(timeoutMs);
 	}
 	return acquireWithTickTimeout(timeout);
