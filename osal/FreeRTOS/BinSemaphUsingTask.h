@@ -26,7 +26,7 @@ public:
 	virtual~ BinarySemaphoreUsingTask();
 
 	ReturnValue_t acquire(uint32_t timeoutMs =
-	        SemaphoreIF::NO_TIMEOUT) override;
+	        SemaphoreIF::BLOCKING) override;
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() const override;
 	static uint8_t getSemaphoreCounter(TaskHandle_t taskHandle);
@@ -40,7 +40,7 @@ public:
 	 *         - @c RETURN_FAILED on failure
 	 */
 	ReturnValue_t acquireWithTickTimeout(TickType_t timeoutTicks =
-	        SemaphoreIF::NO_TIMEOUT);
+	        SemaphoreIF::BLOCKING);
 
 	/**
 	 * Get handle to the task related to the semaphore.

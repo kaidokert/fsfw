@@ -53,7 +53,7 @@ public:
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
 	ReturnValue_t acquire(uint32_t timeoutMs =
-	       	   SemaphoreIF::NO_TIMEOUT) override;
+			SemaphoreIF::BLOCKING) override;
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
@@ -62,7 +62,7 @@ public:
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
 	ReturnValue_t  acquireWithTickTimeout(TickType_t timeoutTicks =
-	        BinarySemaphore::NO_TIMEOUT);
+			SemaphoreIF::BLOCKING);
 
 	/**
 	 * Release the binary semaphore.
