@@ -5,11 +5,11 @@
 #include <iostream>
 #include <cstdio>
 
-// Unfortunately, there must be a forward declaration of the log front end
-// (MUST be defined in main), to let the system know where to write to.
-// The ServiceInterfaceStream instances (declared below and instantiated in main)
-// can be passed to these front ends by passing their underlying buffers
-// with .rdbuf()
+/* Unfortunately, there must be a forward declaration of the log front end
+ * (MUST be defined in main), to let the system know where to write to.
+ * The ServiceInterfaceStream instances, which are declared below and
+ * can instantaited somewhere else can be passed to these front ends by passing
+ * their underlying buffers with .rdbuf() */
 namespace sif {
 extern std::ostream debug;
 extern std::ostream info;
