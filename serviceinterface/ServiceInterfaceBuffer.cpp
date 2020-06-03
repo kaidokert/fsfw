@@ -33,7 +33,7 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 #endif
 
 int ServiceInterfaceBuffer::overflow(int c) {
-	if(errStream) {
+	if(errStream and this->isActive) {
 		if (c != Traits::eof()) {
 			printChar(reinterpret_cast<const char*>(&c), true);
 		}
@@ -53,17 +53,18 @@ int ServiceInterfaceBuffer::overflow(int c) {
 }
 
 int ServiceInterfaceBuffer::sync(void) {
-	if(errStream) {
+	if(not this->isActive or errStream) {
+		if(not errStream) {
+			setp(buf, buf + BUF_SIZE - 1);
+		}
 		return 0;
 	}
 
-	if (this->isActive) {
-		auto preamble = getPreamble();
-		// Write logMessage and time
-		this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
-		// Handle output
-		this->putChars(pbase(), pptr());
-	}
+	auto preamble = getPreamble();
+	// Write logMessage and time
+	this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
+	// Handle output
+	this->putChars(pbase(), pptr());
 	// This tells that buffer is empty again
 	setp(buf, buf + BUF_SIZE - 1);
 	return 0;
