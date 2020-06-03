@@ -8,10 +8,11 @@ extern "C" void printChar(const char*, bool errStream);
 #ifndef UT699
 
 ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
-        bool errStream, bool addCrToPreamble, uint16_t port):
+		bool addCrToPreamble, bool buffered , bool errStream, uint16_t port):
 		isActive(true), logMessage(setMessage),
-		addCrToPreamble(addCrToPreamble), errStream(errStream) {
-	if(not errStream) {
+		addCrToPreamble(addCrToPreamble), buffered(buffered),
+		errStream(errStream) {
+	if(buffered) {
 		// Set pointers if the stream is buffered.
 		setp( buf, buf + BUF_SIZE );
 	}
@@ -26,16 +27,27 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 	memcpy(array, begin, length);
 
 	for(; begin != end; begin++){
-		printChar(begin, false);
+		if(errStream) {
+			printChar(begin, true);
+		}
+		else {
+			printChar(begin, false);
+		}
+
 	}
 }
 
 #endif
 
 int ServiceInterfaceBuffer::overflow(int c) {
-	if(errStream and this->isActive) {
+	if(not buffered and this->isActive) {
 		if (c != Traits::eof()) {
-			printChar(reinterpret_cast<const char*>(&c), true);
+			if(errStream) {
+				printChar(reinterpret_cast<const char*>(&c), true);
+			}
+			else {
+				printChar(reinterpret_cast<const char*>(&c), false);
+			}
 		}
 		return 0;
 	}
@@ -53,8 +65,8 @@ int ServiceInterfaceBuffer::overflow(int c) {
 }
 
 int ServiceInterfaceBuffer::sync(void) {
-	if(not this->isActive or errStream) {
-		if(not errStream) {
+	if(not this->isActive) {
+		if(not buffered) {
 			setp(buf, buf + BUF_SIZE - 1);
 		}
 		return 0;
