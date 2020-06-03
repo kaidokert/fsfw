@@ -44,5 +44,13 @@ public:
 	std::string getPreamble();
 };
 
+// Forward declaration of interface streams. These are needed so the public
+// functions can be used by including this header
+namespace sif {
+extern ServiceInterfaceStream debugStream;
+extern ServiceInterfaceStream infoStream;
+extern ServiceInterfaceStream warningStream;
+extern ServiceInterfaceStream errorStream;
+}
 
 #endif /* FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_ */
