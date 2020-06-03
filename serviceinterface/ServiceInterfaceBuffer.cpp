@@ -3,9 +3,42 @@
 #include <cstring>
 
 // to be implemented by bsp
-extern "C" void printChar(const char*);
+extern "C" void printChar(const char*, bool errStream);
+
+#ifndef UT699
+
+ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
+        bool errStream, bool addCrToPreamble, uint16_t port):
+		isActive(true), logMessage(setMessage),
+		addCrToPreamble(addCrToPreamble), errStream(errStream) {
+	if(not errStream) {
+		// Set pointers if the stream is buffered.
+		setp( buf, buf + BUF_SIZE );
+	}
+}
+
+void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
+	char array[BUF_SIZE];
+	uint32_t length = end - begin;
+	if (length > sizeof(array)) {
+		length = sizeof(array);
+	}
+	memcpy(array, begin, length);
+
+	for(; begin != end; begin++){
+		printChar(begin, false);
+	}
+}
+
+#endif
 
 int ServiceInterfaceBuffer::overflow(int c) {
+	if(errStream and this->isActive) {
+		if (c != Traits::eof()) {
+			printChar(reinterpret_cast<const char*>(&c), true);
+		}
+		return 0;
+	}
 	// Handle output
 	putChars(pbase(), pptr());
 	if (c != Traits::eof()) {
@@ -20,53 +53,38 @@ int ServiceInterfaceBuffer::overflow(int c) {
 }
 
 int ServiceInterfaceBuffer::sync(void) {
-	if (this->isActive) {
-		Clock::TimeOfDay_t loggerTime;
-		Clock::getDateAndTime(&loggerTime);
-		std::string preamble;
-		if(addCrToPreamble) {
-			preamble += "\r";
+	if(not this->isActive or errStream) {
+		if(not errStream) {
+			setp(buf, buf + BUF_SIZE - 1);
 		}
-		preamble += log_message + ": | " + zero_padded(loggerTime.hour, 2)
-				+ ":" + zero_padded(loggerTime.minute, 2) + ":"
-				+ zero_padded(loggerTime.second, 2) + "."
-				+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
-		// Write log_message and time
-		this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
-		// Handle output
-		this->putChars(pbase(), pptr());
+		return 0;
 	}
+
+	auto preamble = getPreamble();
+	// Write logMessage and time
+	this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
+	// Handle output
+	this->putChars(pbase(), pptr());
 	// This tells that buffer is empty again
 	setp(buf, buf + BUF_SIZE - 1);
 	return 0;
 }
 
 
-
-#ifndef UT699
-
-ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message,
-        uint16_t port, bool addCrToPreamble) {
-	this->addCrToPreamble = addCrToPreamble;
-	this->log_message = set_message;
-	this->isActive = true;
-	setp( buf, buf + BUF_SIZE );
+std::string ServiceInterfaceBuffer::getPreamble() {
+	Clock::TimeOfDay_t loggerTime;
+	Clock::getDateAndTime(&loggerTime);
+	std::string preamble;
+	if(addCrToPreamble) {
+		preamble += "\r";
+	}
+	preamble += logMessage + ": | " + zero_padded(loggerTime.hour, 2)
+							+ ":" + zero_padded(loggerTime.minute, 2) + ":"
+							+ zero_padded(loggerTime.second, 2) + "."
+							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
+	return preamble;
 }
 
-void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
-	char array[BUF_SIZE];
-	uint32_t length = end - begin;
-	if (length > sizeof(array)) {
-		length = sizeof(array);
-	}
-	memcpy(array, begin, length);
-
-	for(; begin != end; begin++){
-		printChar(begin);
-	}
-
-}
-#endif
 
 
 #ifdef UT699
