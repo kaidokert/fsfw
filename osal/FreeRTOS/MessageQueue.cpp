@@ -97,7 +97,8 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		bool ignoreFault) {
 	message->setSender(sentFrom);
 
-	BaseType_t result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),reinterpret_cast<const void*>(message->getBuffer()), 0);
+	BaseType_t result = xQueueSendToBack(reinterpret_cast<QueueHandle_t>(sendTo),
+			reinterpret_cast<const void*>(message->getBuffer()), 0);
 	if (result != pdPASS) {
 		if (!ignoreFault) {
 			InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(

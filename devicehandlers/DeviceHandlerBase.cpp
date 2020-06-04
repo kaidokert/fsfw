@@ -558,7 +558,7 @@ void DeviceHandlerBase::doGetRead() {
 
 ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 		uint8_t * *data, uint32_t * len) {
-	uint32_t lenTmp;
+	size_t lenTmp;
 
 	if (IPCStore == NULL) {
 		*data = NULL;

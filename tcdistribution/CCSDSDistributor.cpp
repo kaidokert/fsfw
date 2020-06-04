@@ -13,7 +13,7 @@ CCSDSDistributor::~CCSDSDistributor() {
 iterator_t CCSDSDistributor::selectDestination() {
 //	debug << "CCSDSDistributor::selectDestination received: " << this->currentMessage.getStorageId().pool_index << ", " << this->currentMessage.getStorageId().packet_index << std::endl;
 	const uint8_t* p_packet = NULL;
-	uint32_t size = 0;
+	size_t size = 0;
 	//TODO check returncode?
 	this->tcStore->getData( this->currentMessage.getStorageId(), &p_packet, &size );
 	SpacePacketBase current_packet( p_packet );
