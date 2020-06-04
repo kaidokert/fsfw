@@ -87,7 +87,7 @@ T* ObjectManagerIF::get( object_id_t id ) {
 	if(objectManager == nullptr) {
 		sif::error << "ObjectManagerIF: Global object manager has not "
 				"been initialized yet!" << std::endl;
-		std::exit(0);
+		std::exit(1);
 	}
 	SystemObjectIF* temp = this->getSystemObject(id);
 	return dynamic_cast<T*>(temp);
