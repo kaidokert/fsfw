@@ -1,6 +1,7 @@
 #include <framework/timemanager/Clock.h>
 #include <framework/serviceinterface/ServiceInterfaceBuffer.h>
 #include <cstring>
+#include <inttypes.h>
 
 // to be implemented by bsp
 extern "C" void printChar(const char*, bool errStream);
@@ -16,6 +17,8 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 		// Set pointers if the stream is buffered.
 		setp( buf, buf + BUF_SIZE );
 	}
+	preamble.reserve(96);
+	preamble.resize(96);
 }
 
 void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
@@ -65,16 +68,22 @@ int ServiceInterfaceBuffer::overflow(int c) {
 }
 
 int ServiceInterfaceBuffer::sync(void) {
-	if(not this->isActive) {
+	if(not this->isActive and not buffered) {
 		if(not buffered) {
 			setp(buf, buf + BUF_SIZE - 1);
 		}
 		return 0;
 	}
+	if(not buffered) {
+		return 0;
+	}
 
-	auto preamble = getPreamble();
+	size_t preambleSize  = 0;
+	auto preamble = getPreamble(&preambleSize);
+	uint8_t debugArray[96];
+	memcpy(debugArray, preamble.data(), preambleSize);
 	// Write logMessage and time
-	this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
+	this->putChars(preamble.data(), preamble.data() + preambleSize);
 	// Handle output
 	this->putChars(pbase(), pptr());
 	// This tells that buffer is empty again
@@ -82,18 +91,35 @@ int ServiceInterfaceBuffer::sync(void) {
 	return 0;
 }
 
+bool ServiceInterfaceBuffer::isBuffered() const {
+	return buffered;
+}
 
-std::string ServiceInterfaceBuffer::getPreamble() {
+std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 	Clock::TimeOfDay_t loggerTime;
 	Clock::getDateAndTime(&loggerTime);
-	std::string preamble;
+	std::string preamble (96, 0);
+	size_t currentSize = 0;
+	char* parsePosition = &preamble[0];
 	if(addCrToPreamble) {
-		preamble += "\r";
+		preamble[0] = '\r';
+		currentSize += 1;
+		parsePosition += 1;
 	}
-	preamble += logMessage + ": | " + zero_padded(loggerTime.hour, 2)
-							+ ":" + zero_padded(loggerTime.minute, 2) + ":"
-							+ zero_padded(loggerTime.second, 2) + "."
-							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
+	int32_t charCount = sprintf(parsePosition,
+			"%s: | %02" SCNu32 ":%02" SCNu32 ":%02" SCNu32 ".%03" SCNu32 " | ",
+					this->logMessage.c_str(), loggerTime.hour,
+					loggerTime.minute,
+					loggerTime.second,
+					loggerTime.usecond /1000);
+	if(charCount < 0) {
+		printf("ServiceInterfaceBuffer: Failure parsing preamble");
+		return "";
+	}
+	currentSize += charCount;
+	if(preambleSize != nullptr) {
+		*preambleSize = currentSize;
+	}
 	return preamble;
 }
 
