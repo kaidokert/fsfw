@@ -44,7 +44,7 @@ void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy,
 		queueToUse->sendMessage(commandedBy, &reply);
 	}
 	const uint8_t* dataPtr = NULL;
-	uint32_t size = 0;
+	size_t size = 0;
 	ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		ActionMessage::setStepReply(&reply, actionId, 0, result);
