@@ -23,8 +23,8 @@ ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 	} else {
 		sif::error << "ObjectManager::insert: Object id " << std::hex
 		           << (int)id << std::dec << " is already in use!" << std::endl;
-		exit(0); //This is very severe and difficult to handle in other places.
-		return this->INSERTION_FAILED;
+		//This is very severe and difficult to handle in other places.
+		std::exit(INSERTION_FAILED);
 	}
 }
 
@@ -67,9 +67,9 @@ void ObjectManager::initialize() {
 		return_value = it->second->initialize();
 		if ( return_value != RETURN_OK ) {
 			object_id_t var = it->first;
-			sif::error << "Object " << std::hex <<  (int) var
-			        << " failed to initialize with code 0x" << return_value
-			        << std::dec << std::endl;
+			sif::error << "Object 0x" << std::hex <<  std::setw(8) <<
+					std::setfill('0')<< var << " failed to initialize " <<
+					"with code 0x" << return_value << std::dec << std::endl;
 			error_count++;
 		}
 	}
