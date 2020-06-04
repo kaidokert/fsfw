@@ -1,6 +1,7 @@
 #include <framework/timemanager/Clock.h>
 #include <framework/serviceinterface/ServiceInterfaceBuffer.h>
 #include <cstring>
+#include <inttypes.h>
 
 // to be implemented by bsp
 extern "C" void printChar(const char*, bool errStream);
@@ -17,6 +18,7 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 		setp( buf, buf + BUF_SIZE );
 	}
 	preamble.reserve(96);
+	preamble.resize(96);
 }
 
 void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
@@ -78,7 +80,7 @@ int ServiceInterfaceBuffer::sync(void) {
 	uint8_t debugArray[96];
 	memcpy(debugArray, preamble.data(), preambleSize);
 	// Write logMessage and time
-	this->putChars(preamble.c_str(), preamble.c_str() + preambleSize);
+	this->putChars(preamble.data(), preamble.data() + preambleSize);
 	// Handle output
 	this->putChars(pbase(), pptr());
 	// This tells that buffer is empty again
@@ -90,47 +92,29 @@ int ServiceInterfaceBuffer::sync(void) {
 std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 	Clock::TimeOfDay_t loggerTime;
 	Clock::getDateAndTime(&loggerTime);
-	//preamble.clear();
-	//std::string preamble;
+	std::string preamble (96, 0);
 	size_t currentSize = 0;
+	char* parsePosition = &preamble[0];
 	if(addCrToPreamble) {
 		preamble[0] = '\r';
 		currentSize += 1;
+		parsePosition += 1;
 	}
-	int32_t charCount = sprintf(preamble.data() + currentSize,
-			"%s: | %lu:%02lu:%02lu.%03lu | ",
-					this->logMessage.c_str(), (unsigned long) loggerTime.hour,
-					(unsigned long) loggerTime.minute,
-					(unsigned long) loggerTime.second,
-					(unsigned long) loggerTime.usecond /1000);
+	int32_t charCount = sprintf(parsePosition,
+			"%s: | %02" SCNu32 ":%02" SCNu32 ":%02" SCNu32 ".%03" SCNu32 " | ",
+					this->logMessage.c_str(), loggerTime.hour,
+					loggerTime.minute,
+					loggerTime.second,
+					loggerTime.usecond /1000);
 	if(charCount < 0) {
 		printf("ServiceInterfaceBuffer: Failure parsing preamble");
 		return "";
 	}
 	currentSize += charCount;
-//	size_t currentSize = 0;
-//	if(addCrToPreamble) {
-//		preamble[0] = '\r';
-//		currentSize += 1;
-//	}
-//	logMessage.copy(preamble.data() + 1, logMessage.size());
-//	currentSize += logMessage.size();
-//	preamble[++currentSize] = ':';
-//	preamble[++currentSize] = ' ';
-//	preamble[++currentSize] = '|';
-//	zero_padded(loggerTime.hour, 2).copy(preamble.data() + )
-//	//preamble.c_str() + 1 = logMessage;
-////
-////			+ ": | " + zero_padded(loggerTime.hour, 2)
-////							+ ":" + zero_padded(loggerTime.minute, 2) + ":"
-////							+ zero_padded(loggerTime.second, 2) + "."
-////							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
-//	currentSize += logMessage.size(); //+ 4 +2 +1 +2 +1 +2 +1 + 3 + 3;
-	preamble[++currentSize] = '\0';
-	uint8_t debugArray[96];
-	memcpy(debugArray, preamble.data(), currentSize);
-	*preambleSize = currentSize;
-	return std::move(preamble);
+	if(preambleSize != nullptr) {
+		*preambleSize = currentSize;
+	}
+	return preamble;
 }
 
 

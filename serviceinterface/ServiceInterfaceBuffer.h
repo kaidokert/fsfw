@@ -76,27 +76,11 @@ private:
 			stringToFill[i] = '0';
 		}
 		numString.copy(stringToFill.data() + i, numString.size());
-//		std::streambuf streambuf;
-//	    std::ostringstream string_to_pad;
-//	    string_to_pad << std::setw(width) << std::setfill('0') << num;
-//	    std::string result = string_to_pad.str();
-//	    if (result.length() > width)
-//	    {
-//	        result.erase(0, result.length() - width);
-//	    }
-//	    return result;
-	    //std::string dest = std::string( number_of_zeros, '0').append( original_string);
+		return HasReturnvaluesIF::RETURN_OK;
 	}
 };
 
 #endif
-
-
-
-
-
-
-
 
 
 #ifdef UT699
