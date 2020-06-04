@@ -2,21 +2,19 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <cstdlib>
 
-ObjectManager::ObjectManager( void (*setProducer)() ) : produceObjects(setProducer) {
+ObjectManager::ObjectManager( void (*setProducer)() ):
+		produceObjects(setProducer) {
 	//There's nothing special to do in the constructor.
 }
 
 
 ObjectManager::~ObjectManager() {
-	std::map<object_id_t, SystemObjectIF*>::iterator it;
-	for (it = this->objectList.begin(); it != this->objectList.end(); it++) {
-		delete it->second;
-	}
+	// Map is STL object and deletes its own pointers.
 }
 
 ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
-	bool insert_return = this->objectList.insert( std::pair< object_id_t, SystemObjectIF* >( id, object ) ).second;
-	if (insert_return == true) {
+	auto returnPair = objectList.emplace(id, object);
+	if (returnPair.second) {
 	    // sif::debug << "ObjectManager::insert: Object " << std::hex
 	    //            << (int)id << std::dec << " inserted." << std::endl;
 		return this->RETURN_OK;
@@ -44,18 +42,15 @@ ReturnValue_t ObjectManager::remove( object_id_t id ) {
 
 
 SystemObjectIF* ObjectManager::getSystemObject( object_id_t id ) {
-	std::map<object_id_t, SystemObjectIF*>::iterator it = this->objectList.find( id );
-	if (it == this->objectList.end() ) {
-		//Changed for testing different method.
-//		SystemObjectIF* object = this->produceObjects( id );
-//		return object;
-		return NULL;
+	auto listIter = this->objectList.find( id );
+	if (listIter == this->objectList.end() ) {
+		return nullptr;
 	} else {
-		return it->second;
+		return listIter->second;
 	}
 }
 
-ObjectManager::ObjectManager( ) : produceObjects(NULL) {
+ObjectManager::ObjectManager() : produceObjects(nullptr) {
 
 }
 
@@ -63,7 +58,7 @@ void ObjectManager::initialize() {
 	this->produceObjects();
 	ReturnValue_t return_value = RETURN_FAILED;
 	uint32_t error_count = 0;
-	for (std::map<object_id_t, SystemObjectIF*>::iterator it = this->objectList.begin(); it != objectList.end(); it++ ) {
+	for (auto it = this->objectList.begin(); it != objectList.end(); it++ ) {
 		return_value = it->second->initialize();
 		if ( return_value != RETURN_OK ) {
 			object_id_t var = it->first;
@@ -79,10 +74,11 @@ void ObjectManager::initialize() {
 	}
 	//Init was successful. Now check successful interconnections.
 	error_count = 0;
-	for (std::map<object_id_t, SystemObjectIF*>::iterator it = this->objectList.begin(); it != objectList.end(); it++ ) {
-		return_value = it->second->checkObjectConnections();
+	for (auto listIter = this->objectList.begin();
+			listIter != objectList.end(); listIter++ ) {
+		return_value = listIter->second->checkObjectConnections();
 		if ( return_value != RETURN_OK ) {
-			sif::error << "Object " << std::hex <<  (int) it->first
+			sif::error << "Object " << std::hex <<  (int) listIter->first
 			        << " connection check failed with code 0x" << return_value
 			        << std::dec << std::endl;
 			error_count++;
