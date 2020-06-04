@@ -8,8 +8,9 @@
 #include <cstdint>
 #include <sys/time.h>
 
-typedef uint32_t millis_t;
-typedef double seconds_t;
+//! Don't use these for time points, type is not large enough for UNIX epoch.
+typedef uint32_t dur_millis_t;
+typedef double dur_seconds_t;
 
 class Clock {
 public:
