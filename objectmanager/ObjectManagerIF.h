@@ -1,14 +1,6 @@
-/**
- * @file	ObjectManagerIF.h
- * @brief	This file contains the implementation of the ObjectManagerIF interface
- * @date	19.09.2012
- * @author	Bastian Baetz
- */
+#ifndef FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
+#define FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
-#ifndef OBJECTMANAGERIF_H_
-#define OBJECTMANAGERIF_H_
-
-#include "systemObjectList.h"
 #include <framework/objectmanager/frameworkObjects.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
@@ -21,7 +13,8 @@
  * 			inserted, removed and retrieved from the list. On getting the
  * 			object, the call checks if the object implements the requested
  * 			interface.
- * \ingroup system_objects
+ * @author	Bastian Baetz
+ * @ingroup system_objects
  */
 class ObjectManagerIF : public HasReturnvaluesIF {
 public:
