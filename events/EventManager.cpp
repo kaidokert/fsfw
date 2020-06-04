@@ -147,7 +147,7 @@ void EventManager::printEvent(EventMessage* message) {
 #endif
 
 void EventManager::lockMutex() {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 }
 
 void EventManager::unlockMutex() {

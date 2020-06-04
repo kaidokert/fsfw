@@ -61,7 +61,7 @@ ReturnValue_t DataPool::freeDataPoolLock() {
 }
 
 ReturnValue_t DataPool::lockDataPool() {
-	ReturnValue_t status = mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	ReturnValue_t status = mutex->lockMutex(MutexIF::BLOCKING);
 	if ( status != RETURN_OK ) {
 		sif::error << "DataPool::DataPool: lock of mutex failed with error code: " << status << std::endl;
 	}
