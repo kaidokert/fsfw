@@ -18,7 +18,7 @@ public:
 	 */
 	static QueueFactory* instance();
 
-	MessageQueueIF* createMessageQueue(size_t messageDepth = 3,
+	MessageQueueIF* createMessageQueue(uint32_t messageDepth = 3,
 			size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE);
 
 	void deleteMessageQueue(MessageQueueIF* queue);

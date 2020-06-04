@@ -1,11 +1,58 @@
 #include <framework/timemanager/Clock.h>
 #include <framework/serviceinterface/ServiceInterfaceBuffer.h>
 #include <cstring>
+#include <inttypes.h>
 
 // to be implemented by bsp
-extern "C" void printChar(const char*);
+extern "C" void printChar(const char*, bool errStream);
+
+#ifndef UT699
+
+ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
+		bool addCrToPreamble, bool buffered , bool errStream, uint16_t port):
+		isActive(true), logMessage(setMessage),
+		addCrToPreamble(addCrToPreamble), buffered(buffered),
+		errStream(errStream) {
+	if(buffered) {
+		// Set pointers if the stream is buffered.
+		setp( buf, buf + BUF_SIZE );
+	}
+	preamble.reserve(MAX_PREAMBLE_SIZE);
+	preamble.resize(MAX_PREAMBLE_SIZE);
+}
+
+void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
+	char array[BUF_SIZE];
+	uint32_t length = end - begin;
+	if (length > sizeof(array)) {
+		length = sizeof(array);
+	}
+	memcpy(array, begin, length);
+
+	for(; begin != end; begin++){
+		if(errStream) {
+			printChar(begin, true);
+		}
+		else {
+			printChar(begin, false);
+		}
+	}
+}
+
+#endif
 
 int ServiceInterfaceBuffer::overflow(int c) {
+	if(not buffered and this->isActive) {
+		if (c != Traits::eof()) {
+			if(errStream) {
+				printChar(reinterpret_cast<const char*>(&c), true);
+			}
+			else {
+				printChar(reinterpret_cast<const char*>(&c), false);
+			}
+		}
+		return 0;
+	}
 	// Handle output
 	putChars(pbase(), pptr());
 	if (c != Traits::eof()) {
@@ -20,53 +67,63 @@ int ServiceInterfaceBuffer::overflow(int c) {
 }
 
 int ServiceInterfaceBuffer::sync(void) {
-	if (this->isActive) {
-		Clock::TimeOfDay_t loggerTime;
-		Clock::getDateAndTime(&loggerTime);
-		std::string preamble;
-		if(addCrToPreamble) {
-			preamble += "\r";
+	if(not this->isActive and not buffered) {
+		if(not buffered) {
+			setp(buf, buf + BUF_SIZE - 1);
 		}
-		preamble += log_message + ": | " + zero_padded(loggerTime.hour, 2)
-				+ ":" + zero_padded(loggerTime.minute, 2) + ":"
-				+ zero_padded(loggerTime.second, 2) + "."
-				+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
-		// Write log_message and time
-		this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
-		// Handle output
-		this->putChars(pbase(), pptr());
+		return 0;
 	}
+	if(not buffered) {
+		return 0;
+	}
+
+	size_t preambleSize  = 0;
+	auto preamble = getPreamble(&preambleSize);
+	// Write logMessage and time
+	this->putChars(preamble.data(), preamble.data() + preambleSize);
+	// Handle output
+	this->putChars(pbase(), pptr());
 	// This tells that buffer is empty again
 	setp(buf, buf + BUF_SIZE - 1);
 	return 0;
 }
 
-
-
-#ifndef UT699
-
-ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message,
-        uint16_t port, bool addCrToPreamble) {
-	this->addCrToPreamble = addCrToPreamble;
-	this->log_message = set_message;
-	this->isActive = true;
-	setp( buf, buf + BUF_SIZE );
+bool ServiceInterfaceBuffer::isBuffered() const {
+	return buffered;
 }
 
-void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
-	char array[BUF_SIZE];
-	uint32_t length = end - begin;
-	if (length > sizeof(array)) {
-		length = sizeof(array);
+std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
+	Clock::TimeOfDay_t loggerTime;
+	Clock::getDateAndTime(&loggerTime);
+	size_t currentSize = 0;
+	char* parsePosition = &preamble[0];
+	if(addCrToPreamble) {
+		preamble[0] = '\r';
+		currentSize += 1;
+		parsePosition += 1;
 	}
-	memcpy(array, begin, length);
-
-	for(; begin != end; begin++){
-		printChar(begin);
+	int32_t charCount = sprintf(parsePosition,
+			"%s: | %02" SCNu32 ":%02" SCNu32 ":%02" SCNu32 ".%03" SCNu32 " | ",
+					this->logMessage.c_str(), loggerTime.hour,
+					loggerTime.minute,
+					loggerTime.second,
+					loggerTime.usecond /1000);
+	if(charCount < 0) {
+		printf("ServiceInterfaceBuffer: Failure parsing preamble\r\n");
+		return "";
 	}
-
+	if(charCount > MAX_PREAMBLE_SIZE) {
+		printf("ServiceInterfaceBuffer: Char count too large for maximum "
+				"preamble size");
+		return "";
+	}
+	currentSize += charCount;
+	if(preambleSize != nullptr) {
+		*preambleSize = currentSize;
+	}
+	return preamble;
 }
-#endif
+
 
 
 #ifdef UT699
