@@ -65,10 +65,10 @@ void ObjectManager::initialize() {
 	this->produceObjects();
 	ReturnValue_t return_value = RETURN_FAILED;
 	uint32_t error_count = 0;
-	for (auto it = this->objectList.begin(); it != objectList.end(); it++ ) {
-		return_value = it->second->initialize();
+	for (auto const& it : objectList) {
+		return_value = it.second->initialize();
 		if ( return_value != RETURN_OK ) {
-			object_id_t var = it->first;
+			object_id_t var = it.first;
 			sif::error << "Object 0x" << std::hex <<  std::setw(8) <<
 					std::setfill('0')<< var << " failed to initialize " <<
 					"with code 0x" << return_value << std::dec << std::endl;
@@ -81,11 +81,10 @@ void ObjectManager::initialize() {
 	}
 	//Init was successful. Now check successful interconnections.
 	error_count = 0;
-	for (auto listIter = this->objectList.begin();
-			listIter != objectList.end(); listIter++ ) {
-		return_value = listIter->second->checkObjectConnections();
+	for (auto const& it : objectList) {
+		return_value = it.second->checkObjectConnections();
 		if ( return_value != RETURN_OK ) {
-			sif::error << "Object " << std::hex <<  (int) listIter->first
+			sif::error << "Object " << std::hex <<  (int) it.first
 			        << " connection check failed with code 0x" << return_value
 			        << std::dec << std::endl;
 			error_count++;
