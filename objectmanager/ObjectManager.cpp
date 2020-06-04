@@ -9,7 +9,9 @@ ObjectManager::ObjectManager( void (*setProducer)() ):
 
 
 ObjectManager::~ObjectManager() {
-	// Map is STL object and deletes its own pointers.
+	for (auto const& iter : objectList) {
+		delete iter.second;
+	}
 }
 
 ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
@@ -99,7 +101,7 @@ void ObjectManager::initialize() {
 void ObjectManager::printList() {
 	std::map<object_id_t, SystemObjectIF*>::iterator it;
 	sif::debug << "ObjectManager: Object List contains:" << std::endl;
-	for (it = this->objectList.begin(); it != this->objectList.end(); it++) {
-		sif::debug << std::hex << it->first << " | " << it->second << std::endl;
+	for (auto const& it : objectList) {
+		sif::debug << std::hex << it.first << " | " << it.second << std::endl;
 	}
 }
