@@ -50,6 +50,10 @@ union store_address_t {
 	 * Alternative access to the raw value.
 	 */
 	uint32_t raw;
+
+	bool operator==(const store_address_t& other) const {
+		return raw == other.raw;
+	}
 };
 
 /**

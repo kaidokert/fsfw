@@ -24,7 +24,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 			current_packet->getPacketSequenceControl(), 0, set_step);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		error
+		sif::error
 				<< "VerificationReporter::sendSuccessReport: Error writing to queue. Code: "
 				<< (uint16_t) status << std::endl;
 	}
@@ -40,7 +40,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 			tcSequenceControl, 0, set_step);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		error
+		sif::error
 				<< "VerificationReporter::sendSuccessReport: Error writing to queue. Code: "
 				<< (uint16_t) status << std::endl;
 	}
@@ -59,7 +59,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 			parameter1, parameter2);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		error
+		sif::error
 				<< "VerificationReporter::sendFailureReport Error writing to queue. Code: "
 				<< (uint16_t) status << std::endl;
 	}
@@ -76,7 +76,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 			tcSequenceControl, error_code, step, parameter1, parameter2);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		error
+		sif::error
 				<< "VerificationReporter::sendFailureReport Error writing to queue. Code: "
 				<< (uint16_t) status << std::endl;
 	}
@@ -88,7 +88,7 @@ void VerificationReporter::initialize() {
 	if (temp != NULL) {
 		this->acknowledgeQueue = temp->getVerificationQueue();
 	} else {
-		error
+		sif::error
 				<< "VerificationReporter::VerificationReporter: Configuration error."
 				<< std::endl;
 	}
