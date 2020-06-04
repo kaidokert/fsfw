@@ -21,7 +21,7 @@ extern std::ostream error;
 class ServiceInterfaceStream :
         public std::ostream {
 protected:
-    ServiceInterfaceBuffer buf;
+    ServiceInterfaceBuffer streambuf;
 public:
     /**
      * This constructor is used by specifying the preamble message.
