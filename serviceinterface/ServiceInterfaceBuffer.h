@@ -20,6 +20,8 @@ class ServiceInterfaceBuffer:
         public std::streambuf {
 	friend class ServiceInterfaceStream;
 public:
+	static constexpr uint8_t MAX_PREAMBLE_SIZE = 40;
+
 	ServiceInterfaceBuffer(std::string setMessage, bool addCrToPreamble,
 			bool buffered, bool errStream, uint16_t port);
 
@@ -41,14 +43,17 @@ private:
 	std::string preamble;
 	// For EOF detection
 	typedef std::char_traits<char> Traits;
+
 	//! This is useful for some terminal programs which do not have
 	//! implicit carriage return with newline characters.
 	bool addCrToPreamble;
 
+	//! Specifies whether the stream operates in buffered or unbuffered mode.
+	bool buffered;
 	//! This specifies to print to stderr and work in unbuffered mode.
 	bool errStream;
-	bool buffered;
-	// Work in buffer mode. It is also possible to work without buffer.
+
+	//! Needed for buffered mode.
 	static size_t const BUF_SIZE = 128;
 	char buf[BUF_SIZE];
 

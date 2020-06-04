@@ -17,8 +17,8 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 		// Set pointers if the stream is buffered.
 		setp( buf, buf + BUF_SIZE );
 	}
-	preamble.reserve(96);
-	preamble.resize(96);
+	preamble.reserve(MAX_PREAMBLE_SIZE);
+	preamble.resize(MAX_PREAMBLE_SIZE);
 }
 
 void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
@@ -36,7 +36,6 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 		else {
 			printChar(begin, false);
 		}
-
 	}
 }
 
@@ -80,8 +79,6 @@ int ServiceInterfaceBuffer::sync(void) {
 
 	size_t preambleSize  = 0;
 	auto preamble = getPreamble(&preambleSize);
-	uint8_t debugArray[96];
-	memcpy(debugArray, preamble.data(), preambleSize);
 	// Write logMessage and time
 	this->putChars(preamble.data(), preamble.data() + preambleSize);
 	// Handle output
@@ -98,7 +95,6 @@ bool ServiceInterfaceBuffer::isBuffered() const {
 std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 	Clock::TimeOfDay_t loggerTime;
 	Clock::getDateAndTime(&loggerTime);
-	std::string preamble (96, 0);
 	size_t currentSize = 0;
 	char* parsePosition = &preamble[0];
 	if(addCrToPreamble) {
@@ -113,7 +109,12 @@ std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 					loggerTime.second,
 					loggerTime.usecond /1000);
 	if(charCount < 0) {
-		printf("ServiceInterfaceBuffer: Failure parsing preamble");
+		printf("ServiceInterfaceBuffer: Failure parsing preamble\r\n");
+		return "";
+	}
+	if(charCount > MAX_PREAMBLE_SIZE) {
+		printf("ServiceInterfaceBuffer: Char count too large for maximum "
+				"preamble size");
 		return "";
 	}
 	currentSize += charCount;
