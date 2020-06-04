@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-=======
-/**
- *	@file	LocalPool
- *  @date	02.02.2012
- *	@author	Bastian Baetz
- *	@brief	This file contains the definition of the LocalPool class.
- */
->>>>>>> upstream/master
 #ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
 #define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
 
@@ -44,7 +35,7 @@ public:
 	/**
 	 * @brief	This is the default constructor for a pool manager instance.
 	 * @details	By passing two arrays of size NUMBER_OF_POOLS, the constructor
-	 * 			allocates memory (with \c new) for store and size_list. These
+	 * 			allocates memory (with @c new) for store and size_list. These
 	 * 			regions are all set to zero on start up.
 	 * @param setObjectId	The object identifier to be set. This allows for
 	 * 						multiple instances of LocalPool in the system.
@@ -96,7 +87,7 @@ public:
 	ReturnValue_t initialize() override;
 protected:
 	/**
-	 * With this helper method, a free element of \c size is reserved.
+	 * With this helper method, a free element of @c size is reserved.
 	 * @param size	The minimum packet size that shall be reserved.
 	 * @param[out] address Storage ID of the reserved data.
 	 * @return	- #RETURN_OK on success,
@@ -109,7 +100,8 @@ protected:
 private:
 	/**
 	 * Indicates that this element is free.
-	 * This value limits the maximum size of a pool. Change to larger data type if increase is required.
+	 * This value limits the maximum size of a pool. Change to larger data type
+	 * if increase is required.
 	 */
 	static const uint32_t STORAGE_FREE = 0xFFFFFFFF;
 	/**
@@ -135,7 +127,9 @@ private:
 	 * 			is also dynamically allocated there.
 	 */
 	uint32_t* size_list[NUMBER_OF_POOLS];
-	bool spillsToHigherPools; //!< A variable to determine whether higher n pools are used if the store is full.
+	//! A variable to determine whether higher n pools are used if
+	//! the store is full.
+	bool spillsToHigherPools;
 	/**
 	 * @brief	This method safely stores the given data in the given packet_id.
 	 * @details	It also sets the size in size_list. The method does not perform
