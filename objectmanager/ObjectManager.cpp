@@ -55,6 +55,11 @@ ObjectManager::ObjectManager() : produceObjects(nullptr) {
 }
 
 void ObjectManager::initialize() {
+	if(produceObjects == nullptr) {
+		sif::error << "ObjectManager: Passed produceObjects functions is"
+				"nullptr!" << std::endl;
+		return;
+	}
 	this->produceObjects();
 	ReturnValue_t return_value = RETURN_FAILED;
 	uint32_t error_count = 0;
