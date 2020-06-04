@@ -8,13 +8,15 @@ extern "C" void printChar(const char*, bool errStream);
 #ifndef UT699
 
 ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
-        bool errStream, bool addCrToPreamble, uint16_t port):
+		bool addCrToPreamble, bool buffered , bool errStream, uint16_t port):
 		isActive(true), logMessage(setMessage),
-		addCrToPreamble(addCrToPreamble), errStream(errStream) {
-	if(not errStream) {
+		addCrToPreamble(addCrToPreamble), buffered(buffered),
+		errStream(errStream) {
+	if(buffered) {
 		// Set pointers if the stream is buffered.
 		setp( buf, buf + BUF_SIZE );
 	}
+	preamble.reserve(96);
 }
 
 void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
@@ -26,16 +28,27 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
 	memcpy(array, begin, length);
 
 	for(; begin != end; begin++){
-		printChar(begin, false);
+		if(errStream) {
+			printChar(begin, true);
+		}
+		else {
+			printChar(begin, false);
+		}
+
 	}
 }
 
 #endif
 
 int ServiceInterfaceBuffer::overflow(int c) {
-	if(errStream and this->isActive) {
+	if(not buffered and this->isActive) {
 		if (c != Traits::eof()) {
-			printChar(reinterpret_cast<const char*>(&c), true);
+			if(errStream) {
+				printChar(reinterpret_cast<const char*>(&c), true);
+			}
+			else {
+				printChar(reinterpret_cast<const char*>(&c), false);
+			}
 		}
 		return 0;
 	}
@@ -53,16 +66,17 @@ int ServiceInterfaceBuffer::overflow(int c) {
 }
 
 int ServiceInterfaceBuffer::sync(void) {
-	if(not this->isActive or errStream) {
-		if(not errStream) {
+	if(not this->isActive) {
+		if(not buffered) {
 			setp(buf, buf + BUF_SIZE - 1);
 		}
 		return 0;
 	}
 
-	auto preamble = getPreamble();
+	size_t preambleSize  = 0;
+	auto preamble = getPreamble(&preambleSize);
 	// Write logMessage and time
-	this->putChars(preamble.c_str(), preamble.c_str() + preamble.size());
+	this->putChars(preamble.c_str(), preamble.c_str() + preambleSize);
 	// Handle output
 	this->putChars(pbase(), pptr());
 	// This tells that buffer is empty again
@@ -71,17 +85,34 @@ int ServiceInterfaceBuffer::sync(void) {
 }
 
 
-std::string ServiceInterfaceBuffer::getPreamble() {
+std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 	Clock::TimeOfDay_t loggerTime;
 	Clock::getDateAndTime(&loggerTime);
-	std::string preamble;
+	//preamble.clear();
+	//std::string preamble;
+	size_t currentSize = 0;
 	if(addCrToPreamble) {
-		preamble += "\r";
+		preamble[0] = '\r';
+		currentSize += 1;
 	}
-	preamble += logMessage + ": | " + zero_padded(loggerTime.hour, 2)
-							+ ":" + zero_padded(loggerTime.minute, 2) + ":"
-							+ zero_padded(loggerTime.second, 2) + "."
-							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
+	logMessage.copy(preamble.data() + 1, logMessage.size());
+	currentSize += logMessage.size();
+	preamble[++currentSize] = ':';
+	preamble[++currentSize] = ' ';
+	preamble[++currentSize] = '|';
+	zero_padded(loggerTime.hour, 2).copy(preamble.data() + )
+	//preamble.c_str() + 1 = logMessage;
+//
+//			+ ": | " + zero_padded(loggerTime.hour, 2)
+//							+ ":" + zero_padded(loggerTime.minute, 2) + ":"
+//							+ zero_padded(loggerTime.second, 2) + "."
+//							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
+	currentSize += logMessage.size(); //+ 4 +2 +1 +2 +1 +2 +1 + 3 + 3;
+	preamble[currentSize] = '\0';
+	printf("%s", preamble.c_str());
+	uint8_t debugArray[96];
+	memcpy(debugArray, preamble.data(), currentSize);
+	*preambleSize = currentSize;
 	return preamble;
 }
 

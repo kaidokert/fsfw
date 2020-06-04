@@ -19,8 +19,8 @@ class ServiceInterfaceBuffer:
         public std::streambuf {
 	friend class ServiceInterfaceStream;
 public:
-	ServiceInterfaceBuffer(std::string setMessage, bool errStream,
-			bool addCrToPreamble, uint16_t port);
+	ServiceInterfaceBuffer(std::string setMessage, bool addCrToPreamble,
+			bool buffered, bool errStream, uint16_t port);
 
 protected:
 	bool isActive;
@@ -36,11 +36,13 @@ protected:
 private:
 	//! For additional message information
 	std::string logMessage;
+	std::string preamble;
 	// For EOF detection
 	typedef std::char_traits<char> Traits;
 	//! This is useful for some terminal programs which do not have
 	//! implicit carriage return with newline characters.
 	bool addCrToPreamble;
+	bool buffered;
 	//! This specifies to print to stderr and work in unbuffered mode.
 	bool errStream;
 
@@ -51,7 +53,7 @@ private:
 	//! In this function, the characters are parsed.
 	void putChars(char const* begin, char const* end);
 
-	std::string getPreamble();
+	std::string getPreamble(size_t * preambleSize = nullptr);
 
 	/**
 	 * This helper function returns the zero padded string version of a number.
