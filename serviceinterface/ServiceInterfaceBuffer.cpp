@@ -95,24 +95,40 @@ std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 		preamble[0] = '\r';
 		currentSize += 1;
 	}
-	logMessage.copy(preamble.data() + 1, logMessage.size());
-	currentSize += logMessage.size();
-	preamble[++currentSize] = ':';
-	preamble[++currentSize] = ' ';
-	preamble[++currentSize] = '|';
-	zero_padded(loggerTime.hour, 2).copy(preamble.data() + )
-	//preamble.c_str() + 1 = logMessage;
-//
-//			+ ": | " + zero_padded(loggerTime.hour, 2)
-//							+ ":" + zero_padded(loggerTime.minute, 2) + ":"
-//							+ zero_padded(loggerTime.second, 2) + "."
-//							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
-	currentSize += logMessage.size(); //+ 4 +2 +1 +2 +1 +2 +1 + 3 + 3;
-	preamble[currentSize] = '\0';
-	printf("%s", preamble.c_str());
-	uint8_t debugArray[96];
-	memcpy(debugArray, preamble.data(), currentSize);
-	*preambleSize = currentSize;
+	int32_t charCount = sprintf(preamble.data() + currentSize,
+			"%s: | %lu:%02lu:%02lu.%03lu | ",
+					this->logMessage.c_str(), (unsigned long) loggerTime.hour,
+					(unsigned long) loggerTime.minute,
+					(unsigned long) loggerTime.second,
+					(unsigned long) loggerTime.usecond /1000);
+	if(charCount < 0) {
+		printf("ServiceInterfaceBuffer: Failure parsing preamble");
+		return "";
+	}
+	currentSize += charCount;
+//	size_t currentSize = 0;
+//	if(addCrToPreamble) {
+//		preamble[0] = '\r';
+//		currentSize += 1;
+//	}
+//	logMessage.copy(preamble.data() + 1, logMessage.size());
+//	currentSize += logMessage.size();
+//	preamble[++currentSize] = ':';
+//	preamble[++currentSize] = ' ';
+//	preamble[++currentSize] = '|';
+//	zero_padded(loggerTime.hour, 2).copy(preamble.data() + )
+//	//preamble.c_str() + 1 = logMessage;
+////
+////			+ ": | " + zero_padded(loggerTime.hour, 2)
+////							+ ":" + zero_padded(loggerTime.minute, 2) + ":"
+////							+ zero_padded(loggerTime.second, 2) + "."
+////							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
+//	currentSize += logMessage.size(); //+ 4 +2 +1 +2 +1 +2 +1 + 3 + 3;
+//	preamble[currentSize] = '\0';
+//	printf("%s", preamble.c_str());
+//	uint8_t debugArray[96];
+//	memcpy(debugArray, preamble.data(), currentSize);
+//	*preambleSize = currentSize;
 	return preamble;
 }
 
