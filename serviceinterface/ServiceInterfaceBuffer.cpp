@@ -75,6 +75,8 @@ int ServiceInterfaceBuffer::sync(void) {
 
 	size_t preambleSize  = 0;
 	auto preamble = getPreamble(&preambleSize);
+	uint8_t debugArray[96];
+	memcpy(debugArray, preamble.data(), preambleSize);
 	// Write logMessage and time
 	this->putChars(preamble.c_str(), preamble.c_str() + preambleSize);
 	// Handle output
@@ -124,12 +126,11 @@ std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 ////							+ zero_padded(loggerTime.second, 2) + "."
 ////							+ zero_padded(loggerTime.usecond/1000, 3) + " | ";
 //	currentSize += logMessage.size(); //+ 4 +2 +1 +2 +1 +2 +1 + 3 + 3;
-//	preamble[currentSize] = '\0';
-//	printf("%s", preamble.c_str());
-//	uint8_t debugArray[96];
-//	memcpy(debugArray, preamble.data(), currentSize);
-//	*preambleSize = currentSize;
-	return preamble;
+	preamble[++currentSize] = '\0';
+	uint8_t debugArray[96];
+	memcpy(debugArray, preamble.data(), currentSize);
+	*preambleSize = currentSize;
+	return std::move(preamble);
 }
 
 
