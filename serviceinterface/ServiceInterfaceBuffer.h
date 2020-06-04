@@ -34,6 +34,7 @@ protected:
 	//! for example when std::endl is put to stream.
 	int sync(void) override;
 
+	bool isBuffered() const;
 private:
 	//! For additional message information
 	std::string logMessage;
@@ -43,10 +44,10 @@ private:
 	//! This is useful for some terminal programs which do not have
 	//! implicit carriage return with newline characters.
 	bool addCrToPreamble;
-	bool buffered;
+
 	//! This specifies to print to stderr and work in unbuffered mode.
 	bool errStream;
-
+	bool buffered;
 	// Work in buffer mode. It is also possible to work without buffer.
 	static size_t const BUF_SIZE = 128;
 	char buf[BUF_SIZE];
@@ -55,29 +56,6 @@ private:
 	void putChars(char const* begin, char const* end);
 
 	std::string getPreamble(size_t * preambleSize = nullptr);
-
-	/**
-	 * This helper function returns the zero padded string version of a number.
-	 * The type is deduced automatically.
-	 * TODO: This uses dynamic memory allocation, so we should provide
-	 * a custom streambuf class to use it (which takes maxSize as argument)
-	 * Then we would propably
-	 * @tparam T
-	 * @param num
-	 * @param width
-	 * @return
-	 */
-	template<typename T>
-	ReturnValue_t zeroPadded(std::string stringToFill, const T& num,
-			uint8_t width) {
-		auto numString = std::to_string(num);
-		uint8_t i = 0;
-		for(i = 0; i < width; i++) {
-			stringToFill[i] = '0';
-		}
-		numString.copy(stringToFill.data() + i, numString.size());
-		return HasReturnvaluesIF::RETURN_OK;
-	}
 };
 
 #endif

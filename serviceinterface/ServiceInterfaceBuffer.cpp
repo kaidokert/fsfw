@@ -68,10 +68,13 @@ int ServiceInterfaceBuffer::overflow(int c) {
 }
 
 int ServiceInterfaceBuffer::sync(void) {
-	if(not this->isActive) {
+	if(not this->isActive and not buffered) {
 		if(not buffered) {
 			setp(buf, buf + BUF_SIZE - 1);
 		}
+		return 0;
+	}
+	if(not buffered) {
 		return 0;
 	}
 
@@ -88,6 +91,9 @@ int ServiceInterfaceBuffer::sync(void) {
 	return 0;
 }
 
+bool ServiceInterfaceBuffer::isBuffered() const {
+	return buffered;
+}
 
 std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 	Clock::TimeOfDay_t loggerTime;

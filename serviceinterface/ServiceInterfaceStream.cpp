@@ -2,21 +2,20 @@
 
 ServiceInterfaceStream::ServiceInterfaceStream(std::string setMessage,
 		bool addCrToPreamble, bool buffered, bool errStream, uint16_t port) :
-		std::ostream(&buf),
-		buf(setMessage, addCrToPreamble, buffered, errStream,  port) {
-}
+		std::ostream(&streambuf),
+		streambuf(setMessage, addCrToPreamble, buffered, errStream, port) {}
 
 void ServiceInterfaceStream::setActive( bool myActive) {
-	this->buf.isActive = myActive;
+	this->streambuf.isActive = myActive;
 }
 
 std::string ServiceInterfaceStream::getPreamble() {
-	return buf.getPreamble();
+	return streambuf.getPreamble();
 }
 
 void ServiceInterfaceStream::print(std::string error,
 		bool withPreamble, bool withNewline, bool flush) {
-	if(not buffered and withPreamble) {
+	if(not streambuf.isBuffered() and withPreamble) {
 		*this << getPreamble() << error;
 	}
 	else {
@@ -27,7 +26,7 @@ void ServiceInterfaceStream::print(std::string error,
 		*this << "\n";
 	}
 	// if mode is non-buffered, no need to flush.
-	if(flush and buffered) {
+	if(flush and streambuf.isBuffered()) {
 		this->flush();
 	}
 }
