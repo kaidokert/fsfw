@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
+#include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -58,21 +59,33 @@ private:
 	/**
 	 * This helper function returns the zero padded string version of a number.
 	 * The type is deduced automatically.
+	 * TODO: This uses dynamic memory allocation, so we should provide
+	 * a custom streambuf class to use it (which takes maxSize as argument)
+	 * Then we would propably
 	 * @tparam T
 	 * @param num
 	 * @param width
 	 * @return
 	 */
 	template<typename T>
-	std::string zero_padded(const T& num, uint8_t width) {
-	    std::ostringstream string_to_pad;
-	    string_to_pad << std::setw(width) << std::setfill('0') << num;
-	    std::string result = string_to_pad.str();
-	    if (result.length() > width)
-	    {
-	        result.erase(0, result.length() - width);
-	    }
-	    return result;
+	ReturnValue_t zeroPadded(std::string stringToFill, const T& num,
+			uint8_t width) {
+		auto numString = std::to_string(num);
+		uint8_t i = 0;
+		for(i = 0; i < width; i++) {
+			stringToFill[i] = '0';
+		}
+		numString.copy(stringToFill.data() + i, numString.size());
+//		std::streambuf streambuf;
+//	    std::ostringstream string_to_pad;
+//	    string_to_pad << std::setw(width) << std::setfill('0') << num;
+//	    std::string result = string_to_pad.str();
+//	    if (result.length() > width)
+//	    {
+//	        result.erase(0, result.length() - width);
+//	    }
+//	    return result;
+	    //std::string dest = std::string( number_of_zeros, '0').append( original_string);
 	}
 };
 
