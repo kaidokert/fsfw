@@ -24,7 +24,6 @@
  * 			The local pool is NOT thread-safe.
  * @author 	Bastian Baetz
  */
-
 template<uint8_t NUMBER_OF_POOLS = 5>
 class LocalPool: public SystemObject, public StorageManagerIF {
 public:
@@ -48,9 +47,10 @@ public:
 	 * 						number of elements for each pool is determined.
 	 * 						The position of these values correspond to those in
 	 * 						element_sizes.
-	 * @param registered	Register the pool in object manager or not. Default is false (local pool).
-	 * @param spillsToHigherPools
-	 * 						A variable to determine whether higher n pools are used if the store is full.
+	 * @param registered	Register the pool in object manager or not.
+	 * Default is false (local pool).
+	 * @param spillsToHigherPools A variable to determine whether
+	 * higher n pools are used if the store is full.
 	 */
 	LocalPool(object_id_t setObjectId,
 			const uint16_t element_sizes[NUMBER_OF_POOLS],
@@ -117,7 +117,7 @@ private:
 	/**
 	 * @brief	store represents the actual memory pool.
 	 * @details	It is an array of pointers to memory, which was allocated with
-	 * 			a \c new call on construction.
+	 * 			a @c new call on construction.
 	 */
 	uint8_t* store[NUMBER_OF_POOLS];
 	/**

@@ -12,7 +12,7 @@
  * 			with a lock.
  * @author 	Bastian Baetz
  */
-template <uint8_t NUMBER_OF_POOLS>
+template <uint8_t NUMBER_OF_POOLS = 5>
 class PoolManager : public LocalPool<NUMBER_OF_POOLS> {
 public:
 	PoolManager(object_id_t setObjectId,
@@ -27,6 +27,7 @@ public:
 	ReturnValue_t deleteData(store_address_t) override;
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) override;
+
 protected:
 	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
 			bool ignoreFault) override;

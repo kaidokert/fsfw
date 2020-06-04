@@ -48,4 +48,3 @@ inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(uint8_t* buffer,
 }
 
 #endif
-
