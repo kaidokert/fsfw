@@ -3,7 +3,7 @@
 #include <framework/timemanager/Clock.h>
 
 const uint32_t MutexIF::POLLING = 0;
-const uint32_t MutexIF::NO_TIMEOUT = 0xffffffff;
+const uint32_t MutexIF::BLOCKING = 0xffffffff;
 uint8_t Mutex::count = 0;
 
 
@@ -43,7 +43,10 @@ ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 	if(timeoutMs == MutexIF::POLLING) {
 		status = pthread_mutex_trylock(&mutex);
 	}
-	else if (timeoutMs != MutexIF::BLOCKING) {
+	else if (timeoutMs == MutexIF::BLOCKING) {
+		status = pthread_mutex_lock(&mutex);
+	}
+	else {
 		timespec timeOut;
 		clock_gettime(CLOCK_REALTIME, &timeOut);
 		uint64_t nseconds = timeOut.tv_sec * 1000000000 + timeOut.tv_nsec;
@@ -51,9 +54,8 @@ ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 		timeOut.tv_sec = nseconds / 1000000000;
 		timeOut.tv_nsec = nseconds - timeOut.tv_sec * 1000000000;
 		status = pthread_mutex_timedlock(&mutex, &timeOut);
-	} else {
-		status = pthread_mutex_lock(&mutex);
 	}
+
 	switch (status) {
 	case EINVAL:
 		//The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex's current priority ceiling.
