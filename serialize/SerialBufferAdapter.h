@@ -29,7 +29,7 @@ public:
 	 * @param bufferLength
 	 * @param serializeLength
 	 */
-	SerialBufferAdapter(const void* buffer, count_t bufferLength,
+	SerialBufferAdapter(const uint8_t* buffer, count_t bufferLength,
 			bool serializeLength = false);
 
 	/**
@@ -40,7 +40,8 @@ public:
 	 * @param bufferLength
 	 * @param serializeLength Length field will be serialized with size count_t
 	 */
-	SerialBufferAdapter(void* buffer, count_t bufferLength, bool serializeLength = false);
+	SerialBufferAdapter(uint8_t* buffer, count_t bufferLength,
+			bool serializeLength = false);
 
 	virtual ~SerialBufferAdapter();
 
@@ -66,11 +67,11 @@ public:
 
 	uint8_t * getBuffer();
 	const uint8_t * getConstBuffer();
-	void setBuffer(void* buffer_, count_t bufferLength_);
+	void setBuffer(uint8_t* buffer_, count_t bufferLength_);
 private:
 	bool serializeLength = false;
 	const uint8_t *constBuffer = nullptr;
-	uint8_t *m_buffer = nullptr;
+	uint8_t *buffer = nullptr;
 	count_t bufferLength = 0;
 };
 

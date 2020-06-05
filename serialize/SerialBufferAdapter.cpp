@@ -3,22 +3,17 @@
 #include <cstring>
 
 template<typename count_t>
-SerialBufferAdapter<count_t>::SerialBufferAdapter(const void* buffer,
+SerialBufferAdapter<count_t>::SerialBufferAdapter(const uint8_t* buffer,
 		count_t bufferLength, bool serializeLength) :
 		serializeLength(serializeLength),
-		constBuffer(static_cast<const uint8_t *>(buffer)), m_buffer(nullptr),
-		bufferLength(bufferLength) {
-
-}
+		constBuffer(buffer), buffer(nullptr),
+		bufferLength(bufferLength) {}
 
 template<typename count_t>
-SerialBufferAdapter<count_t>::SerialBufferAdapter(void* buffer,
+SerialBufferAdapter<count_t>::SerialBufferAdapter(uint8_t* buffer,
 		count_t bufferLength, bool serializeLength) :
-		serializeLength(serializeLength), bufferLength(bufferLength) {
-	uint8_t * member_buffer = static_cast<uint8_t *>(buffer);
-	m_buffer = member_buffer;
-	constBuffer = member_buffer;
-}
+		serializeLength(serializeLength), buffer(buffer), constBuffer(buffer),
+		bufferLength(bufferLength) {}
 
 
 template<typename count_t>
@@ -42,8 +37,8 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer,
 		}
 		if (constBuffer != nullptr) {
 			memcpy(*buffer, constBuffer, bufferLength);
-		} else if (m_buffer != nullptr) {
-			memcpy(*buffer, m_buffer, bufferLength);
+		} else if (buffer != nullptr) {
+			memcpy(*buffer, buffer, bufferLength);
 		} else {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
@@ -66,14 +61,11 @@ template<typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
 		size_t* size, bool bigEndian) {
 	//TODO Ignores Endian flag!
-	// (Robin) the one of the buffer? wouldn't that be an issue for serialize
-	// as well? SerialFixedArrayListAdapter implements swapping of buffer
-	// fields (if buffer type is not uint8_t)
 	if (buffer != nullptr) {
 		if(serializeLength) {
 			count_t serializedSize = AutoSerializeAdapter::getSerializedSize(
 					&bufferLength);
-			if(bufferLength + serializedSize >= *size) {
+			if(bufferLength + serializedSize <= *size) {
 				*buffer +=  serializedSize;
 				*size -= serializedSize;
 			}
@@ -84,7 +76,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
 		//No Else If, go on with buffer
 		if (bufferLength <= *size) {
 			*size -= bufferLength;
-			memcpy(m_buffer, *buffer, bufferLength);
+			memcpy(buffer, *buffer, bufferLength);
 			(*buffer) += bufferLength;
 			return HasReturnvaluesIF::RETURN_OK;
 		}
@@ -99,28 +91,27 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
 
 template<typename count_t>
 uint8_t * SerialBufferAdapter<count_t>::getBuffer() {
-	if(m_buffer == nullptr) {
+	if(buffer == nullptr) {
 		sif::error << "Wrong access function for stored type !"
 				 " Use getConstBuffer()" << std::endl;
 		return nullptr;
 	}
-	return m_buffer;
+	return buffer;
 }
 
 template<typename count_t>
 const uint8_t * SerialBufferAdapter<count_t>::getConstBuffer() {
 	if(constBuffer == nullptr) {
-		sif::error << "Wrong access function for stored type !"
-				 " Use getBuffer()" << std::endl;
+		sif::error << "SerialBufferAdapter: Buffers are unitialized!" << std::endl;
 		return nullptr;
 	}
 	return constBuffer;
 }
 
 template<typename count_t>
-void SerialBufferAdapter<count_t>::setBuffer(void * buffer,
+void SerialBufferAdapter<count_t>::setBuffer(uint8_t* buffer,
 		count_t buffer_length) {
-	m_buffer = static_cast<uint8_t *>(buffer);
+	this->buffer = buffer;
 	bufferLength = buffer_length;
 }
 
