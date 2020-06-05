@@ -76,7 +76,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
 		//No Else If, go on with buffer
 		if (bufferLength <= *size) {
 			*size -= bufferLength;
-			memcpy(buffer, *buffer, bufferLength);
+			memcpy(this->buffer, *buffer, bufferLength);
 			(*buffer) += bufferLength;
 			return HasReturnvaluesIF::RETURN_OK;
 		}
