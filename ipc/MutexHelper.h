@@ -9,8 +9,12 @@ public:
 	MutexHelper(MutexIF* mutex, uint32_t timeoutMs) :
 			internalMutex(mutex) {
 		ReturnValue_t status = mutex->lockMutex(timeoutMs);
-		if(status != HasReturnvaluesIF::RETURN_OK){
-			sif::error << "MutexHelper: Lock of Mutex failed " <<
+		if(status == MutexIF::MUTEX_TIMEOUT) {
+			sif::error << "MutexHelper: Lock of mutex failed with timeout of"
+					<< timeoutMs << " milliseconds!" << std::endl;
+		}
+		else if(status != HasReturnvaluesIF::RETURN_OK){
+			sif::error << "MutexHelper: Lock of Mutex failed with code " <<
 					status << std::endl;
 		}
 	}
