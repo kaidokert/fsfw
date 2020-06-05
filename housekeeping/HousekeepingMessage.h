@@ -4,20 +4,15 @@
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <limits>
 
-/**
- * the sid consists of the target object ID and... something else I forgot.
- * Propably a special HK id to distinguish multiple hk pool packages
- * inside a handler or controller
- */
-typedef uint32_t set_t;
-
 union sid_t {
 	static constexpr uint64_t INVALID_ADDRESS = std::numeric_limits<uint64_t>::max();
 	sid_t(): raw(INVALID_ADDRESS) {}
 
 	struct {
 		object_id_t objectId ;
-		set_t hkId;
+		// A generic 32 bit ID to identify unique HK packets for a single object.
+		// For example, the DeviceCommandId_t is used for DeviceHandlers
+		uint32_t ownerSetId;
 	};
 	/**
 	 * Alternative access to the raw value.
@@ -79,8 +74,8 @@ public:
 	static constexpr Command_t MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL =
 			MAKE_COMMAND_ID(32);
 
-	static void setAddHkReportStructMessage(CommandMessage* message,
-			set_t setId, store_address_t packet);
+//	static void setAddHkReportStructMessage(CommandMessage* message,
+//			DevisetId, store_address_t packet);
 };
 
 
