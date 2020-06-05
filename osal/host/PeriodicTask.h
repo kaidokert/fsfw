@@ -64,6 +64,7 @@ public:
 	ReturnValue_t sleepFor(uint32_t ms);
 
 protected:
+	using chron_ms = std::chrono::milliseconds;
 	bool started;
 	//!< Typedef for the List of objects.
 	typedef std::vector<ExecutableObjectIF*> ObjectList;
@@ -115,8 +116,8 @@ protected:
 	 */
 	void taskFunctionality(void);
 
-	bool delayUntil(std::chrono::milliseconds * previousWakeTimeMs,
-	        const std::chrono::milliseconds interval);
+	bool delayForInterval(chron_ms * previousWakeTimeMs,
+	        const chron_ms interval);
 };
 
 #endif /* PERIODICTASK_H_ */

@@ -1,3 +1,4 @@
+#include <framework/osal/host/FixedTimeslotTask.h>
 #include <framework/osal/host/PeriodicTask.h>
 #include <framework/tasks/TaskFactory.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
@@ -36,9 +37,8 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,
 		TaskDeadlineMissedFunction deadLineMissedFunction_) {
 	// This is going to be interesting. Time now learn the C++ threading library
 	// :-)
-	sif::warning << "TaskFactory::createFixedTimeslotTask: Not implemented "
-			"yet" << std::endl;
-	return nullptr;
+	return new FixedTimeslotTask(name_, taskPriority_, stackSize_,
+	        periodInSeconds_, deadLineMissedFunction_);
 }
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {

@@ -105,7 +105,7 @@ void PeriodicTask::taskFunctionality() {
 				it != objectList.end(); ++it) {
 			(*it)->performOperation();
 		}
-		if(not delayUntil(&currentStartTime, periodChrono)) {
+		if(not delayForInterval(&currentStartTime, periodChrono)) {
 			sif::warning << "PeriodicTask: " << taskName <<
 					" missed deadline!\n" << std::flush;
 			if(deadlineMissedFunc != nullptr) {
@@ -129,8 +129,8 @@ uint32_t PeriodicTask::getPeriodMs() const {
 	return period * 1000;
 }
 
-bool PeriodicTask::delayUntil(std::chrono::milliseconds * previousWakeTimeMs,
-        const std::chrono::milliseconds interval) {
+bool PeriodicTask::delayForInterval(chron_ms* previousWakeTimeMs,
+        const chron_ms interval) {
     bool shouldDelay = false;
     //Get current wakeup time
     auto currentStartTime =
