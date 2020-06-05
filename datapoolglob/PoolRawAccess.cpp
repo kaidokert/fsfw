@@ -3,6 +3,8 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/Endiness.h>
 
+#include <cstring>
+
 PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 		DataSetIF* dataSet, ReadWriteMode_t setReadWriteMode) :
 		dataPoolId(set_id), arrayEntry(setArrayEntry), valid(false),

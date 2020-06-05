@@ -1,12 +1,5 @@
-/**
- * @file	ObjectManagerIF.h
- * @brief	This file contains the implementation of the ObjectManagerIF interface
- * @date	19.09.2012
- * @author	Bastian Baetz
- */
-
-#ifndef OBJECTMANAGERIF_H_
-#define OBJECTMANAGERIF_H_
+#ifndef FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
+#define FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
 #include <framework/objectmanager/frameworkObjects.h>
 #include <framework/objectmanager/SystemObjectIF.h>
@@ -20,7 +13,8 @@
  * 			inserted, removed and retrieved from the list. On getting the
  * 			object, the call checks if the object implements the requested
  * 			interface.
- * \ingroup system_objects
+ * @author	Bastian Baetz
+ * @ingroup system_objects
  */
 class ObjectManagerIF : public HasReturnvaluesIF {
 public:
@@ -93,7 +87,6 @@ T* ObjectManagerIF::get( object_id_t id ) {
 	if(objectManager == nullptr) {
 		sif::error << "ObjectManagerIF: Global object manager has not "
 				"been initialized yet!" << std::endl;
-		std::exit(0);
 	}
 	SystemObjectIF* temp = this->getSystemObject(id);
 	return dynamic_cast<T*>(temp);
