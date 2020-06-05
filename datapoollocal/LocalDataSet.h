@@ -1,7 +1,11 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
+#include <framework/datapool/DataSetBase.h>
 #include <framework/datapool/DataSetIF.h>
+#include <framework/housekeeping/HasHkPoolParametersIF.h>
 #include <framework/serialize/SerializeIF.h>
+
+class HousekeepingManager;
 
 /**
  * @brief	The LocalDataSet class manages a set of locally checked out variables
@@ -24,32 +28,22 @@
  *
  * @ingroup data_pool
  */
-class LocalDataSet:
-		public DataSetIF,
-		public HasReturnvaluesIF,
-		public SerializeIF {
+class LocalDataSet: public DataSetBase {
 public:
-	static constexpr uint8_t INTERFACE_ID = CLASS_ID::DATA_SET_CLASS;
-	static constexpr ReturnValue_t INVALID_PARAMETER_DEFINITION =
-			MAKE_RETURN_CODE( 0x01 );
-	static constexpr ReturnValue_t SET_WAS_ALREADY_READ = MAKE_RETURN_CODE( 0x02 );
-	static constexpr ReturnValue_t COMMITING_WITHOUT_READING =
-			MAKE_RETURN_CODE(0x03);
-
-	static constexpr ReturnValue_t DATA_SET_UNINITIALIZED = MAKE_RETURN_CODE( 0x04 );
-	static constexpr ReturnValue_t DATA_SET_FULL = MAKE_RETURN_CODE( 0x05 );
-	static constexpr ReturnValue_t POOL_VAR_NULL = MAKE_RETURN_CODE( 0x06 );
 	/**
-	 * @brief	The constructor simply sets the fill_count to zero and sets
+	 * @brief	Constructor for the creator of local pool data.
+	 * 			The constructor simply sets the fill_count to zero and sets
 	 *  		the state to "uninitialized".
 	 */
-	LocalDataSet();
+	LocalDataSet(HasHkPoolParametersIF* hkOwner);
 
 	/**
-	 * @brief	This operation is used to register the local variables in the set.
-	 * @details	It stores the pool variable pointer in a variable list.
+	 * @brief	Constructor for users of local pool data. The passed pool
+	 * 			owner should implement the HasHkPoolParametersIF.
+	 * 			The constructor simply sets the fill_count to zero and sets
+	 *  		the state to "uninitialized".
 	 */
-	ReturnValue_t registerVariable(PoolVariableIF* variable) override;
+	LocalDataSet(object_id_t ownerId);
 
 	/**
 	 * @brief	The destructor automatically manages writing the valid
@@ -61,127 +55,30 @@ public:
 	 */
 	~LocalDataSet();
 
-	/**
-	 * @brief	The read call initializes reading out all registered variables.
-	 * @details
-	 * It iterates through the list of registered variables and calls all read()
-	 * functions of the registered pool variables (which read out their values
-	 * from the data pool) which are not write-only.
-	 * In case of an error (e.g. a wrong data type, or an invalid data pool id),
-	 * the operation is aborted and @c INVALID_PARAMETER_DEFINITION returned.
-	 *
-	 * The data pool is locked during the whole read operation and
-	 * freed afterwards.The state changes to "was written" after this operation.
-	 * @return	- @c RETURN_OK if all variables were read successfully.
-	 * 			- @c INVALID_PARAMETER_DEFINITION if PID, size or type of the
-	 * 					requested variable is invalid.
-	 * 			- @c SET_WAS_ALREADY_READ if read() is called twice without
-	 * 				 	calling commit() in between
-	 */
-	ReturnValue_t read();
-
-	/**
-	 * @brief	The commit call initializes writing back the registered variables.
-	 * @details
-	 * It iterates through the list of registered variables and calls the
-	 * commit() method of the remaining registered variables (which write back
-	 * their values to the pool).
-	 *
-	 * The data pool is locked during the whole commit operation and
-	 * freed afterwards. The state changes to "was committed" after this operation.
-	 *
-	 * If the set does contain at least one variable which is not write-only commit()
-	 * can only be called after read(). If the set only contains variables which are
-	 * write only, commit() can be called without a preceding read() call.
-	 * @return	- @c RETURN_OK if all variables were read successfully.
-	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
-	 * 			  contains non write-only variables
-	 */
-	ReturnValue_t commit(void);
-
-	/**
-	 * Variant of method above which sets validity of all elements of the set.
-	 * @param valid Validity information from PoolVariableIF.
-	 * @return	- @c RETURN_OK if all variables were read successfully.
-	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
-	 * 			     contains non write-only variables
-	 */
-	ReturnValue_t commit(bool valid);
-
-	/**
-	 * Set all entries
-	 * @param valid
-	 */
-	void setSetValid(bool valid);
-
-	/**
-	 * Set the valid information of all variables contained in the set which
-	 * are not read-only
-	 *
-	 * @param valid Validity information from PoolVariableIF.
-	 */
-	void setEntriesValid(bool valid);
-
-	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const override;
-
-	size_t getSerializedSize() const override;
-
-	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) override;
+protected:
 private:
-	// SHOULDDO we could use a linked list of datapool variables
-	//! This definition sets the maximum number of variables
-	//! to register in one DataSet.
-	static const uint8_t DATA_SET_MAX_SIZE = 63;
-	/**
-	 * @brief	This array represents all pool variables registered in this set.
-	 */
-	PoolVariableIF* registeredVariables[DATA_SET_MAX_SIZE];
-	/**
-	 * @brief	The fill_count attribute ensures that the variables register in
-	 * 			the correct array position and that the maximum number of
-	 * 			variables is not exceeded.
-	 */
-	uint16_t fill_count;
-
-	/**
-	 * States of the seet.
-	 */
-	enum States {
-		DATA_SET_UNINITIALISED, //!< DATA_SET_UNINITIALISED
-		DATA_SET_WAS_READ     //!< DATA_SET_WAS_READ
-	};
-
-	/**
-	 * @brief	state manages the internal state of the data set,
-	 *          which is important e.g. for the behavior on destruction.
-	 */
-	States state;
-
 	/**
 	 * If the valid state of a dataset is always relevant to the whole
 	 * data set we can use this flag.
 	 */
 	bool valid = false;
+
 	/**
 	 * @brief	This is a small helper function to facilitate locking
-	 * 			the underlying data data pool structure
+	 * 			the global data pool.
 	 * @details
 	 * It makes use of the lockDataPool method offered by the DataPool class.
 	 */
-	ReturnValue_t lockDataPool() override;
-
+	ReturnValue_t lockDataPool(uint32_t timeoutMs) override;
 	/**
 	 * @brief	This is a small helper function to facilitate
-	 * 			unlocking the underlying data data pool structure
+	 * 			unlocking the global data pool
 	 * @details
 	 * It makes use of the freeDataPoolLock method offered by the DataPool class.
 	 */
 	ReturnValue_t unlockDataPool() override;
 
-	void handleAlreadyReadDatasetCommit();
-	ReturnValue_t handleUnreadDatasetCommit();
+	HousekeepingManager* hkManager;
 };
 
 #endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_ */

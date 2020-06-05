@@ -1,16 +1,24 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
 
-#include <framework/housekeeping/HasHkPoolParametersIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-
-#include <framework/serialize/SerializeAdapter.h>
+#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#error Include LocalPoolVariable.h before LocalPoolVariable.tpp!
+#endif
 
 template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
 		HasHkPoolParametersIF* hkOwner, pool_rwm_t setReadWriteMode,
 		DataSetIF* dataSet):
 		localPoolId(poolId),readWriteMode(setReadWriteMode) {
+	if(poolId == PoolVariableIF::NO_PARAMETER) {
+		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
+				"NO_PARAMETER value!" << std::endl;
+	}
+	if(hkOwner == nullptr) {
+		sif::error << "LocalPoolVariable: The supplied pool owner is a nullptr!"
+				<< std::endl;
+		return;
+	}
 	hkManager = hkOwner->getHkManagerHandle();
 	if(dataSet != nullptr) {
 		dataSet->registerVariable(this);
@@ -21,12 +29,15 @@ template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
 		pool_rwm_t setReadWriteMode, DataSetIF *dataSet):
 		readWriteMode(readWriteMode) {
+	if(poolId == PoolVariableIF::NO_PARAMETER) {
+		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
+				"NO_PARAMETER value!" << std::endl;
+	}
 	HasHkPoolParametersIF* hkOwner =
 			objectManager->get<HasHkPoolParametersIF>(poolOwner);
 	if(hkOwner == nullptr) {
 		sif::error << "LocalPoolVariable: The supplied pool owner did not implement"
 				"the correct interface HasHkPoolParametersIF!" << std::endl;
-		objectValid = false;
 		return;
 	}
 	hkManager = hkOwner->getHkManagerHandle();
@@ -36,38 +47,59 @@ inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
 }
 
 template<typename T>
-inline ReturnValue_t LocalPoolVar<T>::read() {
+inline ReturnValue_t LocalPoolVar<T>::read(millis_t lockTimeout) {
+	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
+	return readWithoutLock();
+}
+
+template<typename T>
+inline ReturnValue_t LocalPoolVar<T>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
 		sif::debug << "LocalPoolVar: Invalid read write "
 				"mode for read() call." << std::endl;
-		// TODO: special return value
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::NO_TIMEOUT);
+
 	PoolEntry<T>* poolEntry = nullptr;
-	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, poolEntry);
-	if(result != RETURN_OK) {
+	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
+	if(result != RETURN_OK and poolEntry != nullptr) {
+		sif::error << "PoolVector: Read of local pool variable of object "
+				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
+				hkManager->getOwner() << " and lp ID 0x" << localPoolId <<
+				std::dec << " failed.\n" << std::flush;
 		return result;
 	}
 	this->value = *(poolEntry->address);
+	this->valid = poolEntry->valid;
 	return RETURN_OK;
 }
 
 template<typename T>
-inline ReturnValue_t LocalPoolVar<T>::commit() {
+inline ReturnValue_t LocalPoolVar<T>::commit(millis_t lockTimeout) {
+	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
+	return commitWithoutLock();
+}
+
+template<typename T>
+inline ReturnValue_t LocalPoolVar<T>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
 		sif::debug << "LocalPoolVar: Invalid read write "
 				 "mode for commit() call." << std::endl;
-		// TODO: special return value
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::NO_TIMEOUT);
+	// Wait maximum of 50 milliseconds.
+	MutexHelper(hkManager->getMutexHandle(), 50);
 	PoolEntry<T>* poolEntry = nullptr;
-	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, poolEntry);
+	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
+		sif::error << "PoolVector: Read of local pool variable of object "
+				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
+				hkManager->getOwner() << " and lp ID 0x" << localPoolId <<
+				std::dec << " failed.\n" << std::flush;
 		return result;
 	}
 	*(poolEntry->address) = this->value;
+	poolEntry->valid = this->valid;
 	return RETURN_OK;
 }
 
@@ -82,13 +114,23 @@ inline lp_id_t LocalPoolVar<T>::getDataPoolId() const {
 }
 
 template<typename T>
+inline void LocalPoolVar<T>::setDataPoolId(lp_id_t poolId) {
+	this->localPoolId = poolId;
+}
+
+template<typename T>
 inline bool LocalPoolVar<T>::isValid() const {
 	return valid;
 }
 
 template<typename T>
-inline void LocalPoolVar<T>::setValid(uint8_t validity) {
+inline void LocalPoolVar<T>::setValid(bool validity) {
 	this->valid = validity;
+}
+
+template<typename T>
+inline uint8_t LocalPoolVar<T>::getValid() const {
+	return valid;
 }
 
 template<typename T>
@@ -108,5 +150,12 @@ inline ReturnValue_t LocalPoolVar<T>::deSerialize(const uint8_t** buffer,
 		size_t* size, bool bigEndian) {
 	return AutoSerializeAdapter::deSerialize(&value, buffer, size, bigEndian);
 }
+
+//template<typename T>
+//inline friend std::ostream& LocalPoolVar<T>::operator<< (std::ostream &out,
+//		const LocalPoolVar &var) {
+//	out << static_cast<int>(out);
+//}
+
 
 #endif

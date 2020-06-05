@@ -1,31 +1,37 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
+#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 
-#include <framework/datapool/PoolVariableIF.h>
 #include <framework/datapool/DataSetIF.h>
-#include <framework/housekeeping/HasHkPoolParametersIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-
+#include <framework/datapool/PoolEntry.h>
+#include <framework/datapool/PoolVariableIF.h>
 #include <framework/serialize/SerializeAdapter.h>
-#include <framework/housekeeping/HousekeepingManager.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
+
 
 /**
- * @brief 	Local Pool Variable class which is used to access the local pools.
+ * @brief	This is the access class for array-type data pool entries.
  * @details
- * This class is not stored in the map. Instead, it is used to access
- * the pool entries by using a pointer to the map storing the pool
- * entries. It can also be used to organize these pool entries into data sets.
+ * To ensure safe usage of the data pool, operation is not done directly on the
+ * data pool entries, but on local copies. This class provides simple type-
+ * and length-safe access to vector-style data pool entries (i.e. entries with
+ * length > 1). The class can be instantiated as read-write and read only.
  *
- * @tparam T The template parameter sets the type of the variable. Currently,
- * all plain data types are supported, but in principle  any type is possible.
+ * It provides a commit-and-roll-back semantic, which means that no array
+ * entry in the data pool is changed until the commit call is executed.
+ * There are two template parameters:
+ * @tparam	T
+ * This template parameter specifies the data type of an array entry. Currently,
+ * all plain data types are supported, but in principle any type is possible.
+ * @tparam  vector_size
+ * This template parameter specifies the vector size of this entry. Using a
+ * template parameter for this is not perfect, but avoids
+ * dynamic memory allocation.
  * @ingroup data_pool
  */
-template<typename T>
-class LocalPoolVar: public PoolVariableIF, HasReturnvaluesIF {
+template<typename T, uint16_t vectorSize>
+class LocalPoolVector: public PoolVariableIF, public HasReturnvaluesIF {
 public:
-	//! Default ctor is forbidden.
-	LocalPoolVar() = delete;
-
+	LocalPoolVector() = delete;
 	/**
 	 * This constructor is used by the data creators to have pool variable
 	 * instances which can also be stored in datasets.
@@ -39,7 +45,7 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVar(lp_id_t poolId, HasHkPoolParametersIF* hkOwner,
+	LocalPoolVector(lp_id_t poolId, HasHkPoolParametersIF* hkOwner,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
 			DataSetIF* dataSet = nullptr);
 
@@ -57,29 +63,55 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
+	LocalPoolVector(lp_id_t poolId, object_id_t poolOwner,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
 			DataSetIF* dataSet = nullptr);
-
-	virtual~ LocalPoolVar() {};
 
 	/**
 	 * @brief	This is the local copy of the data pool entry.
 	 * @details	The user can work on this attribute
-	 * 			just like he would on a simple local variable.
+	 * 			just like he would on a local array of this type.
 	 */
-	T value = 0;
+	T value[vectorSize];
+	/**
+	 * @brief	The classes destructor is empty.
+	 * @details	If commit() was not called, the local value is
+	 * 			discarded and not written back to the data pool.
+	 */
+	~LocalPoolVector() {};
+	/**
+	 * @brief	The operation returns the number of array entries
+	 * 			in this variable.
+	 */
+	uint8_t getSize() {
+		return vectorSize;
+	}
 
-	pool_rwm_t getReadWriteMode() const override;
+	uint32_t getDataPoolId() const override;
+	/**
+	 * @brief This operation sets the data pool ID of the variable.
+	 * @details
+	 * The method is necessary to set id's of data pool member variables
+	 * with bad initialization.
+	 */
+	void setDataPoolId(uint32_t poolId);
 
-	lp_id_t getDataPoolId() const override;
-	void setDataPoolId(lp_id_t poolId);
+	/**
+	 * This method returns if the variable is write-only, read-write or read-only.
+	 */
+	pool_rwm_t getReadWriteMode() const;
 
+	/**
+	 * @brief	With this call, the valid information of the variable is returned.
+	 */
 	bool isValid() const override;
-	void setValid(bool validity) override;
+	void setValid(bool valid) override;
 	uint8_t getValid() const;
 
-	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+	T &operator [](int i);
+	const T &operator [](int i) const;
+
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
 			const size_t max_size, bool bigEndian) const override;
 	virtual size_t getSerializedSize() const override;
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
@@ -97,7 +129,6 @@ public:
 	 * The read call is protected with a lock.
 	 * It is recommended to use DataSets to read and commit multiple variables
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
-	 *
 	 */
 	ReturnValue_t read(uint32_t lockTimeout = MutexIF::BLOCKING) override;
 	/**
@@ -130,40 +161,29 @@ protected:
 	 */
 	ReturnValue_t commitWithoutLock() override;
 
-	// std::ostream is the type for object std::cout
-//	friend std::ostream& operator<< (std::ostream &out,
-//			const LocalPoolVar &var) {
-//		out << static_cast<int>(value);
-//		return out;
-//	}
-
 private:
-	//! @brief 	Pool ID of pool entry inside the used local pool.
-	lp_id_t localPoolId = PoolVariableIF::NO_PARAMETER;
-	//! @brief 	Read-write mode of the pool variable
-	pool_rwm_t readWriteMode = pool_rwm_t::VAR_READ_WRITE;
-	//! @brief 	Specifies whether the entry is valid or invalid.
-	bool valid = false;
-
-	//! Pointer to the class which manages the HK pool.
+	/**
+	 * @brief	To access the correct data pool entry on read and commit calls,
+	 * 			the data pool id is stored.
+	 */
+	uint32_t localPoolId;
+	/**
+	 * @brief	The valid information as it was stored in the data pool
+	 * 			is copied to this attribute.
+	 */
+	bool valid;
+	/**
+	 * @brief	The information whether the class is read-write or
+	 * 			read-only is stored here.
+	 */
+	ReadWriteMode_t readWriteMode;
+	//! @brief	Pointer to the class which manages the HK pool.
 	HousekeepingManager* hkManager;
 };
 
-#include <framework/datapoollocal/LocalPoolVariable.tpp>
+#include <framework/datapoollocal/LocalPoolVector.tpp>
 
-template<class T>
-using lp_var_t = LocalPoolVar<T>;
+template<typename T, uint16_t vectorSize>
+using lp_vec_t = LocalPoolVector<T, vectorSize>;
 
-using lp_bool_t = LocalPoolVar<uint8_t>;
-using lp_uint8_t = LocalPoolVar<uint8_t>;
-using lp_uint16_t = LocalPoolVar<uint16_t>;
-using lp_uint32_t = LocalPoolVar<uint32_t>;
-using lp_uint64_t = LocalPoolVar<uint64_t>;
-using lp_int8_t = LocalPoolVar<int8_t>;
-using lp_int16_t = LocalPoolVar<int16_t>;
-using lp_int32_t = LocalPoolVar<int32_t>;
-using lp_int64_t = LocalPoolVar<int64_t>;
-using lp_float_t = LocalPoolVar<float>;
-using lp_double_t = LocalPoolVar<double>;
-
-#endif
+#endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_ */
