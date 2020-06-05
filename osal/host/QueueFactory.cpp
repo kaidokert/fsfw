@@ -27,7 +27,7 @@ QueueFactory::QueueFactory() {
 QueueFactory::~QueueFactory() {
 }
 
-MessageQueueIF* QueueFactory::createMessageQueue(size_t messageDepth,
+MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth,
 		size_t maxMessageSize) {
 	// A thread-safe queue can be implemented  by using a combination
 	// of std::queue and std::mutex. This uses dynamic memory allocation
