@@ -12,7 +12,7 @@ SerialBufferAdapter<count_t>::SerialBufferAdapter(const uint8_t* buffer,
 template<typename count_t>
 SerialBufferAdapter<count_t>::SerialBufferAdapter(uint8_t* buffer,
 		count_t bufferLength, bool serializeLength) :
-		serializeLength(serializeLength), buffer(buffer), constBuffer(buffer),
+		serializeLength(serializeLength), constBuffer(buffer), buffer(buffer),
 		bufferLength(bufferLength) {}
 
 
