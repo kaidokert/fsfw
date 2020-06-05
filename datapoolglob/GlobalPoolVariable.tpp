@@ -12,8 +12,38 @@ inline GlobPoolVar<T>::GlobPoolVar(uint32_t set_id,
 	}
 }
 
+template<typename T>
+inline ReturnValue_t GlobPoolVar<T>::read(uint32_t lockTimeout) {
+	ReturnValue_t result = glob::dataPool.lockDataPool(lockTimeout);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+	result = readWithoutLock();
+	ReturnValue_t unlockResult = glob::dataPool.unlockDataPool();
+	if(unlockResult != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "GlobPoolVar::read: Could not unlock global data pool"
+				<< std::endl;
+	}
+	return result;
+}
+
+template<typename T>
+inline ReturnValue_t GlobPoolVar<T>::commit(uint32_t lockTimeout) {
+	ReturnValue_t result = glob::dataPool.lockDataPool(lockTimeout);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+	result = commitWithoutLock();
+	ReturnValue_t unlockResult = glob::dataPool.unlockDataPool();
+	if(unlockResult != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "GlobPoolVar::read: Could not unlock global data pool"
+				<< std::endl;
+	}
+	return result;
+}
+
 template <class T>
-inline ReturnValue_t GlobPoolVar<T>::read() {
+inline ReturnValue_t GlobPoolVar<T>::readWithoutLock() {
 	PoolEntry<T>* read_out = glob::dataPool.getData<T>(dataPoolId, 1);
 	if (read_out != NULL) {
 		valid = read_out->valid;
@@ -29,7 +59,7 @@ inline ReturnValue_t GlobPoolVar<T>::read() {
 }
 
 template <class T>
-inline ReturnValue_t GlobPoolVar<T>::commit() {
+inline ReturnValue_t GlobPoolVar<T>::commitWithoutLock() {
 	PoolEntry<T>* write_back = glob::dataPool.getData<T>(dataPoolId, 1);
 	if ((write_back != NULL) && (readWriteMode != VAR_READ)) {
 		write_back->valid = valid;
@@ -80,7 +110,7 @@ inline uint8_t GlobPoolVar<T>::getValid() {
 }
 
 template <class T>
-inline void GlobPoolVar<T>::setValid(uint8_t valid) {
+inline void GlobPoolVar<T>::setValid(bool valid) {
 	this->valid = valid;
 }
 

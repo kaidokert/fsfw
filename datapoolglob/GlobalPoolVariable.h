@@ -72,7 +72,49 @@ public:
 	 */
 	~GlobPoolVar() {}
 
+	/**
+	 * @brief	This is a call to read the value from the global data pool.
+	 * @details
+	 * When executed, this operation tries to fetch the pool entry with matching
+	 * data pool id from the global data pool and copies the value and the valid
+	 * information to its local attributes. In case of a failure (wrong type or
+	 * pool id not found), the variable is set to zero and invalid.
+	 * The read call is protected with a lock.
+	 * It is recommended to use DataSets to read and commit multiple variables
+	 * at once to avoid the overhead of unnecessary lock und unlock operations.
+	 */
+	ReturnValue_t read(uint32_t lockTimeout) override;
+	/**
+	 * @brief	The commit call writes back the variable's value to the data pool.
+	 * @details
+	 * It checks type and size, as well as if the variable is writable. If so,
+	 * the value is copied and the valid flag is automatically set to "valid".
+	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * The commit call is protected with a lock.
+	 * It is recommended to use DataSets to read and commit multiple variables
+	 * at once to avoid the overhead of unnecessary lock und unlock operations.
+	 */
+	ReturnValue_t commit(uint32_t lockTimeout) override;
+
 protected:
+	/**
+	 * @brief	Like #read, but without a lock protection of the global pool.
+	 * @details
+	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * This can be used if the lock is handled externally to avoid the overhead
+	 * of consecutive lock und unlock operations.
+	 * Declared protected to discourage free public usage.
+	 */
+	ReturnValue_t readWithoutLock() override;
+	/**
+	 * @brief	Like #commit, but without a lock protection of the global pool.
+	 * @details
+	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * This can be used if the lock is handled externally to avoid the overhead
+	 * of consecutive lock und unlock operations.
+	 * Declared protected to discourage free public usage.
+	 */
+	ReturnValue_t commitWithoutLock() override;
 	/**
 	 * @brief	To access the correct data pool entry on read and commit calls,
 	 * 			the data pool is stored.
@@ -90,26 +132,6 @@ protected:
 	 * 			is stored here.
 	 */
 	pool_rwm_t readWriteMode;
-
-	/**
-	 * @brief	This is a call to read the value from the global data pool.
-	 * @details
-	 * When executed, this operation tries to fetch the pool entry with matching
-	 * data pool id from the global data pool and copies the value and the valid
-	 * information to its local attributes. In case of a failure (wrong type or
-	 * pool id not found), the variable is set to zero and invalid.
-	 * The operation does NOT provide any mutual exclusive protection by itself.
-	 */
-	ReturnValue_t read() override;
-
-	/**
-	 * @brief	The commit call writes back the variable's value to the data pool.
-	 * @details	It checks type and size, as well as if the variable is writable. If so,
-	 * 			the value is copied and the valid flag is automatically set to "valid".
-	 * 			The operation does NOT provide any mutual exclusive protection by itself.
-	 *
-	 */
-	ReturnValue_t commit() override;
 
 	/**
 	 * Empty ctor for List initialization
@@ -138,7 +160,7 @@ public:
 
 	uint8_t getValid();
 
-	void setValid(uint8_t valid);
+	void setValid(bool valid) override;
 
 	operator T() {
 		return value;

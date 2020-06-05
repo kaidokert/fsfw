@@ -15,7 +15,8 @@ class PIDReader: public PoolVariableIF {
 protected:
 	uint32_t parameterId;
 	uint8_t valid;
-	ReturnValue_t read() {
+
+	ReturnValue_t readWithoutLock() {
 		uint8_t arrayIndex = GlobalDataPool::PIDToArrayIndex(parameterId);
 		PoolEntry<T>* read_out = glob::dataPool.getData<T>(
 				GlobalDataPool::PIDToDataPoolId(parameterId), arrayIndex);
@@ -36,9 +37,13 @@ protected:
 	 * Reason is the possibility to access a single DP vector element, but if we commit,
 	 * we set validity of the whole vector.
 	 */
-	ReturnValue_t commit() {
+	ReturnValue_t commit(uint32_t lockTimeout) override {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+	ReturnValue_t commitWithoutLock() override {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	/**
 	 * Empty ctor for List initialization
 	 */
@@ -71,6 +76,19 @@ public:
 		}
 	}
 
+	ReturnValue_t read(uint32_t lockTimeout) override {
+		ReturnValue_t result = glob::dataPool.lockDataPool();
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+		result = readWithoutLock();
+		ReturnValue_t unlockResult = glob::dataPool.unlockDataPool();
+		if(unlockResult != HasReturnvaluesIF::RETURN_OK) {
+			sif::error << "PIDReader::read: Could not unlock data pool!"
+					<< std::endl;
+		}
+		return result;
+	}
 	/**
 	 * Copy ctor to copy classes containing Pool Variables.
 	 */
@@ -113,7 +131,7 @@ public:
 		return valid;
 	}
 
-	void setValid(uint8_t valid) {
+	void setValid(bool valid) {
 		this->valid = valid;
 	}
 

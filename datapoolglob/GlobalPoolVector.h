@@ -102,7 +102,7 @@ public:
 		else
 			return false;
 	}
-	void setValid(uint8_t valid) {this->valid = valid;}
+	void setValid(bool valid) {this->valid = valid;}
 	uint8_t getValid() {return valid;}
 
 	T &operator [](int i) {return value[i];}
@@ -113,7 +113,7 @@ public:
 	virtual size_t getSerializedSize() const override;
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian) override;
-protected:
+
 	/**
 	 * @brief	This is a call to read the array's values
 	 * 			from the global data pool.
@@ -122,19 +122,43 @@ protected:
 	 * data pool id from the global data pool and copies all array values
 	 * and the valid information to its local attributes.
 	 * In case of a failure (wrong type, size or pool id not found), the
-	 * variable is set to zero and invalid. The operation does NOT provide
-	 * any mutual exclusive protection by itself.
+	 * variable is set to zero and invalid.
+	 * The read call is protected by a lock of the global data pool.
+	 * It is recommended to use DataSets to read and commit multiple variables
+	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 */
-	ReturnValue_t read();
-
+	ReturnValue_t read(uint32_t lockTimeout = MutexIF::BLOCKING) override;
 	/**
 	 * @brief	The commit call copies the array values back to the data pool.
 	 * @details
 	 * It checks type and size, as well as if the variable is writable. If so,
 	 * the value is copied and the valid flag is automatically set to "valid".
-	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * The commit call is protected by a lock of the global data pool.
+	 * It is recommended to use DataSets to read and commit multiple variables
+	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 */
-	ReturnValue_t commit();
+	ReturnValue_t commit(uint32_t lockTimeout = MutexIF::BLOCKING) override;
+
+protected:
+	/**
+	 * @brief	Like #read, but without a lock protection of the global pool.
+	 * @details
+	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * This can be used if the lock is handled externally to avoid the overhead
+	 * of consecutive lock und unlock operations.
+	 * Declared protected to discourage free public usage.
+	 */
+	ReturnValue_t readWithoutLock() override;
+	/**
+	 * @brief	Like #commit, but without a lock protection of the global pool.
+	 * @details
+	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * This can be used if the lock is handled externally to avoid the overhead
+	 * of consecutive lock und unlock operations.
+	 * Declared protected to discourage free public usage.
+	 */
+	ReturnValue_t commitWithoutLock() override;
+
 private:
 	/**
 	 * @brief	To access the correct data pool entry on read and commit calls,

@@ -18,7 +18,21 @@ PoolRawAccess::PoolRawAccess(uint32_t set_id, uint8_t setArrayEntry,
 
 PoolRawAccess::~PoolRawAccess() {}
 
-ReturnValue_t PoolRawAccess::read() {
+ReturnValue_t PoolRawAccess::read(uint32_t lockTimeout) {
+	ReturnValue_t result = glob::dataPool.lockDataPool(lockTimeout);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+	result = readWithoutLock();
+	ReturnValue_t unlockResult = glob::dataPool.unlockDataPool();
+	if(unlockResult != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "GlobPoolVar::read: Could not unlock global data pool"
+				<< std::endl;
+	}
+	return result;
+}
+
+ReturnValue_t PoolRawAccess::readWithoutLock() {
 	ReturnValue_t result = RETURN_FAILED;
 	PoolEntryIF* readOut = glob::dataPool.getRawData(dataPoolId);
 	if (readOut != nullptr) {
@@ -75,7 +89,21 @@ void PoolRawAccess::handleReadError(ReturnValue_t result) {
 	memset(value, 0, sizeof(value));
 }
 
-ReturnValue_t PoolRawAccess::commit() {
+ReturnValue_t PoolRawAccess::commit(uint32_t lockTimeout) {
+	ReturnValue_t result = glob::dataPool.lockDataPool(lockTimeout);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+	result = commitWithoutLock();
+	ReturnValue_t unlockResult = glob::dataPool.unlockDataPool();
+	if(unlockResult != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "GlobPoolVar::read: Could not unlock global data pool"
+				<< std::endl;
+	}
+	return result;
+}
+
+ReturnValue_t PoolRawAccess::commitWithoutLock() {
 	PoolEntryIF* write_back = glob::dataPool.getRawData(dataPoolId);
 	if ((write_back != NULL) && (readWriteMode != VAR_READ)) {
 		write_back->setValid(valid);
@@ -189,7 +217,7 @@ bool PoolRawAccess::isValid() const {
 		return false;
 }
 
-void PoolRawAccess::setValid(uint8_t valid) {
+void PoolRawAccess::setValid(bool valid) {
 	this->valid = valid;
 }
 

@@ -44,8 +44,8 @@ public:
 	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
 	 * 			     contains non write-only variables
 	 */
-	ReturnValue_t commit(bool valid);
-	ReturnValue_t commit() override;
+	ReturnValue_t commit(bool valid, uint32_t lockTimeout = MutexIF::BLOCKING);
+	ReturnValue_t commit(uint32_t lockTimeout = MutexIF::BLOCKING) override;
 
 	/**
 	 * Set all entries
@@ -74,8 +74,7 @@ private:
 	 * @details
 	 * It makes use of the lockDataPool method offered by the DataPool class.
 	 */
-	ReturnValue_t lockDataPool() override;
-
+	ReturnValue_t lockDataPool(uint32_t timeoutMs) override;
 	/**
 	 * @brief	This is a small helper function to facilitate
 	 * 			unlocking the global data pool

@@ -44,18 +44,18 @@ PoolEntryIF* GlobalDataPool::getRawData( uint32_t data_pool_id ) {
 	}
 }
 
-ReturnValue_t GlobalDataPool::freeDataPoolLock() {
+ReturnValue_t GlobalDataPool::unlockDataPool() {
 	ReturnValue_t status = mutex->unlockMutex();
-	if ( status != RETURN_OK ) {
+	if(status != RETURN_OK) {
 		sif::error << "DataPool::DataPool: unlock of mutex failed with"
 				" error code: " << status << std::endl;
 	}
 	return status;
 }
 
-ReturnValue_t GlobalDataPool::lockDataPool() {
-	ReturnValue_t status = mutex->lockMutex(MutexIF::BLOCKING);
-	if ( status != RETURN_OK ) {
+ReturnValue_t GlobalDataPool::lockDataPool(uint32_t timeoutMs) {
+	ReturnValue_t status = mutex->lockMutex(timeoutMs);
+	if(status != RETURN_OK) {
 		sif::error << "DataPool::DataPool: lock of mutex failed "
 				"with error code: " << status << std::endl;
 	}

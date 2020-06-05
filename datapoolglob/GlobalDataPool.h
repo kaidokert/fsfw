@@ -95,12 +95,12 @@ public:
 	 * @brief	This is a small helper function to facilitate locking the global data pool.
 	 * @details	It fetches the pool's mutex id and tries to acquire the mutex.
 	 */
-	ReturnValue_t lockDataPool();
+	ReturnValue_t lockDataPool(uint32_t timeoutMs = MutexIF::BLOCKING);
 	/**
 	 * @brief	This is a small helper function to facilitate unlocking the global data pool.
 	 * @details	It fetches the pool's mutex id and tries to free the mutex.
 	 */
-	ReturnValue_t freeDataPoolLock();
+	ReturnValue_t unlockDataPool();
 	/**
 	 * @brief	The print call is a simple debug method.
 	 * @details	It prints the current content of the data pool.

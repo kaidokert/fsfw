@@ -8,22 +8,22 @@ GlobDataSet::GlobDataSet(): DataSetBase() {}
 // (Destructor is already called)
 GlobDataSet::~GlobDataSet() {}
 
-ReturnValue_t GlobDataSet::commit(bool valid) {
+ReturnValue_t GlobDataSet::commit(bool valid, uint32_t lockTimeout) {
 	setEntriesValid(valid);
 	setSetValid(valid);
-	return commit();
+	return commit(lockTimeout);
 }
 
-ReturnValue_t GlobDataSet::commit() {
-	return DataSetBase::commit();
+ReturnValue_t GlobDataSet::commit(uint32_t lockTimeout) {
+	return DataSetBase::commit(lockTimeout);
 }
 
 ReturnValue_t GlobDataSet::unlockDataPool() {
-	return glob::dataPool.freeDataPoolLock();
+	return glob::dataPool.unlockDataPool();
 }
 
-ReturnValue_t GlobDataSet::lockDataPool() {
-	return glob::dataPool.lockDataPool();
+ReturnValue_t GlobDataSet::lockDataPool(uint32_t timeoutMs) {
+	return glob::dataPool.lockDataPool(timeoutMs);
 }
 
 void GlobDataSet::setEntriesValid(bool valid) {

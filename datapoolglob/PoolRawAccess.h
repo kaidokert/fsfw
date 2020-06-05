@@ -124,7 +124,7 @@ public:
 	 */
 	bool isValid() const;
 
-	void setValid(uint8_t valid);
+	void setValid(bool valid);
 	/**
 	 * Getter for the remaining size.
 	 */
@@ -135,31 +135,49 @@ public:
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian);
 
-protected:
 	/**
 	 * @brief	This is a call to read the value from the global data pool.
-	 * @details	When executed, this operation tries to fetch the pool entry with matching
-	 * 			data pool id from the global data pool and copies the value and the valid
-	 * 			information to its local attributes. In case of a failure (wrong type or
-	 * 			pool id not found), the variable is set to zero and invalid.
-	 * 			The operation does NOT provide any mutual exclusive protection by itself !
-	 * 			If reading from the data pool without information about the type is desired,
-	 * 			initialize the raw pool access by supplying a data set and using the data set
-	 * 			read function, which calls this read function.
+	 * @details
+	 * When executed, this operation tries to fetch the pool entry with matching
+	 * data pool id from the global data pool and copies the value and the valid
+	 * information to its local attributes. In case of a failure (wrong type or
+	 * pool id not found), the variable is set to zero and invalid.
+	 * The call is protected by a lock of the global data pool.
 	 * @return -@c RETURN_OK Read successfull
 	 * 		   -@c READ_TYPE_TOO_LARGE
 	 * 		   -@c READ_INDEX_TOO_LARGE
 	 * 		   -@c READ_ENTRY_NON_EXISTENT
 	 */
-	ReturnValue_t read();
+	ReturnValue_t read(uint32_t lockTimeout = MutexIF::BLOCKING) override;
 	/**
 	 * @brief	The commit call writes back the variable's value to the data pool.
-	 * @details	It checks type and size, as well as if the variable is writable. If so,
-	 * 			the value is copied and the valid flag is automatically set to "valid".
-	 * 			The operation does NOT provide any mutual exclusive protection by itself.
+	 * @details
+	 * It checks type and size, as well as if the variable is writable. If so,
+	 * the value is copied and the valid flag is automatically set to "valid".
+	 * The call is protected by a lock of the global data pool.
 	 *
 	 */
-	ReturnValue_t commit();
+	ReturnValue_t commit(uint32_t lockTimeout = MutexIF::BLOCKING) override;
+
+protected:
+	/**
+	 * @brief	Like #read, but without a lock protection of the global pool.
+	 * @details
+	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * This can be used if the lock is handled externally to avoid the overhead
+	 * of consecutive lock und unlock operations.
+	 * Declared protected to discourage free public usage.
+	 */
+	ReturnValue_t readWithoutLock() override;
+	/**
+	 * @brief	Like #commit, but without a lock protection of the global pool.
+	 * @details
+	 * The operation does NOT provide any mutual exclusive protection by itself.
+	 * This can be used if the lock is handled externally to avoid the overhead
+	 * of consecutive lock und unlock operations.
+	 * Declared protected to discourage free public usage.
+	 */
+	ReturnValue_t commitWithoutLock() override;
 
 	ReturnValue_t handleReadOut(PoolEntryIF* read_out);
 	void handleReadError(ReturnValue_t result);
