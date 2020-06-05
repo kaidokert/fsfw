@@ -14,7 +14,7 @@
 
 #include <iomanip>
 
-object_id_t DeviceHandlerBase::powerSwitcherId = 0;
+object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
@@ -26,12 +26,13 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
+		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
+		actionHelper(this, nullptr), hkManager(this),
 		deviceThermalStatePoolId(thermalStatePoolId),
 		deviceThermalRequestPoolId(thermalRequestPoolId),
-		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
-		switchOffWasReported(false), actionHelper(this, nullptr), cookieInfo(),
+		switchOffWasReported(false), cookieInfo(),
 		childTransitionDelay(5000),
 		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
 		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
@@ -52,7 +53,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
-	//communicationInterface->close(cookie);
+	delete comCookie;
 	if (defaultFDIRUsed) {
 		delete fdirInstance;
 	}
@@ -129,9 +130,11 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	defaultRawReceiver = rawReceiver->getDeviceQueue();
 
-	powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
-	if (powerSwitcher == NULL) {
-		return RETURN_FAILED;
+	if(powerSwitcherId != objects::NO_OBJECT) {
+		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
+		if (powerSwitcher == NULL) {
+			return RETURN_FAILED;
+		}
 	}
 
 	result = healthHelper.initialize();
@@ -158,6 +161,11 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	}
 
 	result = hkSwitcher.initialize();
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
+
+	result = hkManager.initializeHousekeepingPoolEntriesOnce();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -271,7 +279,8 @@ void DeviceHandlerBase::doStateMachine() {
 	case _MODE_WAIT_ON: {
 		uint32_t currentUptime;
 		Clock::getUptime(&currentUptime);
-		if (currentUptime - timeoutStart >= powerSwitcher->getSwitchDelayMs()) {
+		if (powerSwitcher != nullptr and currentUptime - timeoutStart >=
+				powerSwitcher->getSwitchDelayMs()) {
 			triggerEvent(MODE_TRANSITION_FAILED, PowerSwitchIF::SWITCH_TIMEOUT,
 					0);
 			setMode(_MODE_POWER_DOWN);
@@ -341,9 +350,10 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic,
-		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
+ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
+		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
+		size_t replyLen, bool periodic, bool hasDifferentReplyId,
+		DeviceCommandId_t replyId) {
 	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
 	if (hasDifferentReplyId) {
@@ -354,7 +364,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(DeviceCommandId_t de
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic) {
+		uint16_t maxDelayCycles, size_t replyLen, bool periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
 	info.periodic = periodic;
@@ -369,7 +379,8 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
 	}
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceCommand) {
+ReturnValue_t DeviceHandlerBase::insertInCommandMap(
+		DeviceCommandId_t deviceCommand) {
 	DeviceCommandInfo info;
 	info.expectedReplies = 0;
 	info.isExecuting = false;
@@ -383,7 +394,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
 }
 
 ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
-		uint16_t delayCycles, uint16_t maxDelayCycles, uint8_t periodic) {
+		uint16_t delayCycles, uint16_t maxDelayCycles, bool periodic) {
 	std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
 			deviceReplyMap.find(deviceReply);
 	if (iter == deviceReplyMap.end()) {
@@ -576,11 +587,8 @@ void DeviceHandlerBase::doSendRead() {
 }
 
 void DeviceHandlerBase::doGetRead() {
-	size_t receivedDataLen;
-	uint8_t *receivedData;
-	DeviceCommandId_t foundId = 0xFFFFFFFF;
-	size_t foundLen = 0;
-	ReturnValue_t result;
+	size_t receivedDataLen = 0;
+	uint8_t *receivedData = nullptr;
 
 	if (cookieInfo.state != COOKIE_READ_SENT) {
 		cookieInfo.state = COOKIE_UNUSED;
@@ -589,8 +597,8 @@ void DeviceHandlerBase::doGetRead() {
 
 	cookieInfo.state = COOKIE_UNUSED;
 
-	result = communicationInterface->readReceivedMessage(comCookie,
-			&receivedData, &receivedDataLen);
+	ReturnValue_t result = communicationInterface->readReceivedMessage(
+			comCookie, &receivedData, &receivedDataLen);
 
 	if (result != RETURN_OK) {
 		triggerEvent(DEVICE_REQUESTING_REPLY_FAILED, result);
@@ -608,44 +616,90 @@ void DeviceHandlerBase::doGetRead() {
 
 	if (mode == MODE_RAW) {
 		replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
-	} else {
-		//The loop may not execute more often than the number of received bytes (worst case).
-		//This approach avoids infinite loops due to buggy scanForReply routines (seen in bug 1077).
-		uint32_t remainingLength = receivedDataLen;
-		for (uint32_t count = 0; count < receivedDataLen; count++) {
-			result = scanForReply(receivedData, remainingLength, &foundId,
-					&foundLen);
-			switch (result) {
-			case RETURN_OK:
-				handleReply(receivedData, foundId, foundLen);
-				break;
-			case APERIODIC_REPLY: {
-				result = interpretDeviceReply(foundId, receivedData);
-				if (result != RETURN_OK) {
-					replyRawReplyIfnotWiretapped(receivedData, foundLen);
-					triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result,
-							foundId);
-				}
-			}
-				break;
-			case IGNORE_REPLY_DATA:
-				break;
-			case IGNORE_FULL_PACKET:
-				return;
-			default:
-				//We need to wait for timeout.. don't know what command failed and who sent it.
+	}
+	else {
+		parseReply(receivedData, receivedDataLen);
+	}
+}
+
+void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
+		size_t receivedDataLen) {
+	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+	DeviceCommandId_t foundId = 0xFFFFFFFF;
+	size_t foundLen = 0;
+	// The loop may not execute more often than the number of received bytes
+	// (worst case). This approach avoids infinite loops due to buggy
+	// scanForReply routines.
+	uint32_t remainingLength = receivedDataLen;
+	for (uint32_t count = 0; count < receivedDataLen; count++) {
+		result = scanForReply(receivedData, remainingLength, &foundId,
+				&foundLen);
+		switch (result) {
+		case RETURN_OK:
+			handleReply(receivedData, foundId, foundLen);
+			break;
+		case APERIODIC_REPLY: {
+			result = interpretDeviceReply(foundId, receivedData);
+			if (result != RETURN_OK) {
 				replyRawReplyIfnotWiretapped(receivedData, foundLen);
-				triggerEvent(DEVICE_READING_REPLY_FAILED, result, foundLen);
-				break;
-			}
-			receivedData += foundLen;
-			if (remainingLength > foundLen) {
-				remainingLength -= foundLen;
-			} else {
-				return;
+				triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result,
+						foundId);
 			}
 		}
+		break;
+		case IGNORE_REPLY_DATA:
+			break;
+		case IGNORE_FULL_PACKET:
+			return;
+		default:
+			//We need to wait for timeout.. don't know what command failed and who sent it.
+			replyRawReplyIfnotWiretapped(receivedData, foundLen);
+			triggerEvent(DEVICE_READING_REPLY_FAILED, result, foundLen);
+			break;
+		}
+		receivedData += foundLen;
+		if (remainingLength > foundLen) {
+			remainingLength -= foundLen;
+		} else {
+			return;
+		}
+	}
+}
 
+void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
+		DeviceCommandId_t foundId, uint32_t foundLen) {
+	ReturnValue_t result;
+	DeviceReplyMap::iterator iter = deviceReplyMap.find(foundId);
+
+	if (iter == deviceReplyMap.end()) {
+		replyRawReplyIfnotWiretapped(receivedData, foundLen);
+		triggerEvent(DEVICE_UNKNOWN_REPLY, foundId);
+		return;
+	}
+
+	DeviceReplyInfo *info = &(iter->second);
+
+	if (info->delayCycles != 0) {
+
+		if (info->periodic != 0) {
+			info->delayCycles = info->maxDelayCycles;
+		} else {
+			info->delayCycles = 0;
+		}
+		result = interpretDeviceReply(foundId, receivedData);
+		if (result != RETURN_OK) {
+			// Report failed interpretation to FDIR.
+			replyRawReplyIfnotWiretapped(receivedData, foundLen);
+			triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result, foundId);
+		}
+		replyToReply(iter, result);
+	} else {
+		// Other completion failure messages are created by timeout.
+		// Powering down the device might take some time during which periodic
+		// replies may still come in.
+		if (mode != _MODE_WAIT_OFF) {
+			triggerEvent(DEVICE_UNREQUESTED_REPLY, foundId);
+		}
 	}
 }
 
@@ -724,42 +778,6 @@ MessageQueueId_t DeviceHandlerBase::getCommandQueue() const {
 	return commandQueue->getId();
 }
 
-void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
-		DeviceCommandId_t foundId, uint32_t foundLen) {
-	ReturnValue_t result;
-	DeviceReplyMap::iterator iter = deviceReplyMap.find(foundId);
-
-	if (iter == deviceReplyMap.end()) {
-		replyRawReplyIfnotWiretapped(receivedData, foundLen);
-		triggerEvent(DEVICE_UNKNOWN_REPLY, foundId);
-		return;
-	}
-
-	DeviceReplyInfo *info = &(iter->second);
-
-	if (info->delayCycles != 0) {
-
-		if (info->periodic != 0) {
-			info->delayCycles = info->maxDelayCycles;
-		} else {
-			info->delayCycles = 0;
-		}
-		result = interpretDeviceReply(foundId, receivedData);
-		if (result != RETURN_OK) {
-			//Report failed interpretation to FDIR.
-			replyRawReplyIfnotWiretapped(receivedData, foundLen);
-			triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result, foundId);
-		}
-		replyToReply(iter, result);
-	} else {
-		//Other completion failure messages are created by timeout.
-		//Powering down the device might take some time during which periodic replies may still come in.
-		if (mode != _MODE_WAIT_OFF) {
-			triggerEvent(DEVICE_UNREQUESTED_REPLY, foundId);
-		}
-	}
-}
-
 //ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
 //	DeviceCommunicationIF *newCommunication = objectManager->get<
 //			DeviceCommunicationIF>(newChannelId);
@@ -791,6 +809,9 @@ void DeviceHandlerBase::buildRawDeviceCommand(CommandMessage* commandMessage) {
 }
 
 void DeviceHandlerBase::commandSwitch(ReturnValue_t onOff) {
+	if(powerSwitcher == nullptr) {
+		return;
+	}
 	const uint8_t *switches;
 	uint8_t numberOfSwitches = 0;
 	ReturnValue_t result = getSwitches(&switches, &numberOfSwitches);
@@ -805,9 +826,7 @@ void DeviceHandlerBase::commandSwitch(ReturnValue_t onOff) {
 
 ReturnValue_t DeviceHandlerBase::getSwitches(const uint8_t **switches,
 		uint8_t *numberOfSwitches) {
-	*switches = &deviceSwitch;
-	*numberOfSwitches = 1;
-	return RETURN_OK;
+	return DeviceHandlerBase::NO_SWITCH;
 }
 
 void DeviceHandlerBase::modeChanged(void) {
@@ -843,6 +862,9 @@ uint32_t DeviceHandlerBase::getTransitionDelayMs(Mode_t modeFrom,
 }
 
 ReturnValue_t DeviceHandlerBase::getStateOfSwitches(void) {
+	if(powerSwitcher == nullptr) {
+		return NO_SWITCH;
+	}
 	uint8_t numberOfSwitches = 0;
 	const uint8_t *switches;
 
@@ -1286,4 +1308,24 @@ void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
 void DeviceHandlerBase::debugInterface(uint8_t positionTracker,
 		object_id_t objectId, uint32_t parameter) {}
 
-void DeviceHandlerBase::performOperationHook() {}
+void DeviceHandlerBase::performOperationHook() {
+}
+
+ReturnValue_t DeviceHandlerBase::initializeHousekeepingPoolEntries(
+		LocalDataPoolMap &localDataPoolMap) {
+	return RETURN_OK;
+}
+
+HousekeepingManager* DeviceHandlerBase::getHkManagerHandle() {
+	return &hkManager;
+}
+
+DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
+	auto iter = deviceReplyMap.find(sid.ownerSetId);
+	if(iter != deviceReplyMap.end()) {
+		return iter->second.dataSet;
+	}
+	else {
+		return nullptr;
+	}
+}

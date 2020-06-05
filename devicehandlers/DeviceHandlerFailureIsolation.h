@@ -28,6 +28,7 @@ protected:
 		NONE, RECOVERY_ONGOING, DEVICE_MIGHT_BE_OFF, AWAIT_SHUTDOWN
 	};
 	FDIRState fdirState;
+	bool hasPowerConfirmation = false;
 	MessageQueueId_t powerConfirmation;
 	static object_id_t powerConfirmationId;
 	static const uint32_t MAX_REBOOT = 1;
