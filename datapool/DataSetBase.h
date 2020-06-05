@@ -2,6 +2,7 @@
 #define FRAMEWORK_DATAPOOL_DATASETBASE_H_
 #include <framework/datapool/DataSetIF.h>
 #include <framework/datapool/PoolVariableIF.h>
+#include <framework/ipc/MutexIF.h>
 
 /**
  * @brief	The DataSetBase class manages a set of locally checked out variables.
@@ -21,7 +22,8 @@
  * of the set, the DataSet class automatically sets the valid flag in the
  * data pool to invalid (without) changing the variable's value.
  *
- * The base class lockDataPo
+ * The base class lockDataPool und unlockDataPool implementation are empty
+ * and should be implemented to protect the underlying pool type.
  * @author	Bastian Baetz
  * @ingroup data_pool
  */
@@ -49,14 +51,15 @@ public:
 	 *
 	 * The data pool is locked during the whole read operation and
 	 * freed afterwards.The state changes to "was written" after this operation.
-	 * @return	- @c RETURN_OK if all variables were read successfully.
-	 * 			- @c INVALID_PARAMETER_DEFINITION if PID, size or type of the
-	 * 					requested variable is invalid.
-	 * 			- @c SET_WAS_ALREADY_READ if read() is called twice without calling
-	 * 					commit() in between
+	 * @return
+	 * - @c RETURN_OK if all variables were read successfully.
+	 * - @c INVALID_PARAMETER_DEFINITION if PID, size or type of the
+	 * requested variable is invalid.
+	 * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
+	 * commit() in between
 	 */
-	virtual ReturnValue_t read();
-
+	virtual ReturnValue_t read(uint32_t lockTimeout =
+			MutexIF::BLOCKING) override;
 	/**
 	 * @brief	The commit call initializes writing back the registered variables.
 	 * @details
@@ -67,23 +70,30 @@ public:
 	 * The data pool is locked during the whole commit operation and
 	 * freed afterwards. The state changes to "was committed" after this operation.
 	 *
-	 * If the set does contain at least one variable which is not write-only commit()
-	 * can only be called after read(). If the set only contains variables which are
-	 * write only, commit() can be called without a preceding read() call.
+	 * If the set does contain at least one variable which is not write-only
+	 * commit() can only be called after read(). If the set only contains
+	 * variables which are write only, commit() can be called without a
+	 * preceding read() call.
 	 * @return	- @c RETURN_OK if all variables were read successfully.
 	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
 	 * 			  contains non write-only variables
 	 */
-	virtual ReturnValue_t commit();
+	virtual ReturnValue_t commit(uint32_t lockTimeout =
+			MutexIF::BLOCKING) override;
 
-	/* DataSetIF implementation */
+	/**
+	 * Register the passed pool variable instance into the data set.
+	 * @param variable
+	 * @return
+	 */
 	virtual ReturnValue_t registerVariable( PoolVariableIF* variable) override;
 	/**
 	 * Provides the means to lock the underlying data structure to ensure
 	 * thread-safety. Default implementation is empty
 	 * @return Always returns -@c RETURN_OK
 	 */
-	virtual ReturnValue_t lockDataPool() override;
+	virtual ReturnValue_t lockDataPool(uint32_t timeoutMs =
+			MutexIF::BLOCKING) override;
 	/**
 	 * Provides the means to unlock the underlying data structure to ensure
 	 * thread-safety. Default implementation is empty
@@ -98,12 +108,12 @@ public:
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			bool bigEndian) override;
 
-	//SHOULDDO we could use a linked list of datapool variables
+	// SHOULDDO we could use a linked list of datapool variables
 	//!< This definition sets the maximum number of variables to
 	//! register in one DataSet.
 	static const uint8_t DATA_SET_MAX_SIZE = 63;
-protected:
 
+protected:
 	/**
 	 * @brief	The fill_count attribute ensures that the variables
 	 * 			register in the correct array position and that the maximum
@@ -128,8 +138,10 @@ protected:
 	 */
 	PoolVariableIF* registeredVariables[DATA_SET_MAX_SIZE] = { };
 
-	void handleAlreadyReadDatasetCommit();
-	ReturnValue_t handleUnreadDatasetCommit();
+private:
+	ReturnValue_t readVariable(uint16_t count);
+	void handleAlreadyReadDatasetCommit(uint32_t lockTimeout);
+	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
 };
 
 #endif /* FRAMEWORK_DATAPOOL_DATASETBASE_H_ */

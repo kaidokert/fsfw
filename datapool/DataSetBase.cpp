@@ -31,20 +31,14 @@ ReturnValue_t DataSetBase::registerVariable(
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t DataSetBase::read() {
+ReturnValue_t DataSetBase::read(uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	if (state == States::DATA_SET_UNINITIALISED) {
-		lockDataPool();
+		lockDataPool(lockTimeout);
 		for (uint16_t count = 0; count < fillCount; count++) {
-			if (registeredVariables[count]->getReadWriteMode()
-					!= PoolVariableIF::VAR_WRITE
-					&& registeredVariables[count]->getDataPoolId()
-					!= PoolVariableIF::NO_PARAMETER) {
-				ReturnValue_t status = registeredVariables[count]->read();
-				if (status !=  HasReturnvaluesIF::RETURN_OK) {
-					result = INVALID_PARAMETER_DEFINITION;
-					break;
-				}
+			ReturnValue_t result = readVariable(count);
+			if(result != RETURN_OK) {
+				break;
 			}
 		}
 		state = States::DATA_SET_WAS_READ;
@@ -58,47 +52,53 @@ ReturnValue_t DataSetBase::read() {
 	return result;
 }
 
-ReturnValue_t DataSetBase::commit() {
+ReturnValue_t DataSetBase::readVariable(uint16_t count) {
+	ReturnValue_t result = DataSetIF::INVALID_PARAMETER_DEFINITION;
+	// These checks are often performed by the respective
+	// variable implementation too, but I guess a double check does not hurt.
+	if (registeredVariables[count]->getReadWriteMode() !=
+				PoolVariableIF::VAR_WRITE and
+		registeredVariables[count]->getDataPoolId()
+				!= PoolVariableIF::NO_PARAMETER)
+	{
+		result = registeredVariables[count]->readWithoutLock();
+	}
+	return result;
+}
+
+ReturnValue_t DataSetBase::commit(uint32_t lockTimeout) {
 	if (state == States::DATA_SET_WAS_READ) {
-		handleAlreadyReadDatasetCommit();
+		handleAlreadyReadDatasetCommit(lockTimeout);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
-		return handleUnreadDatasetCommit();
+		return handleUnreadDatasetCommit(lockTimeout);
 	}
 }
 
-ReturnValue_t DataSetBase::lockDataPool() {
-	return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t DataSetBase::unlockDataPool() {
-	return HasReturnvaluesIF::RETURN_FAILED;
-}
-
-void DataSetBase::handleAlreadyReadDatasetCommit() {
-	lockDataPool();
+void DataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
+	lockDataPool(lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				!= PoolVariableIF::VAR_READ
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
-			registeredVariables[count]->commit();
+			registeredVariables[count]->commitWithoutLock();
 		}
 	}
 	state = States::DATA_SET_UNINITIALISED;
 	unlockDataPool();
 }
 
-ReturnValue_t DataSetBase::handleUnreadDatasetCommit() {
+ReturnValue_t DataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	lockDataPool();
+	lockDataPool(lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				== PoolVariableIF::VAR_WRITE
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
-			registeredVariables[count]->commit();
+			registeredVariables[count]->commitWithoutLock();
 		} else if (registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if (result != COMMITING_WITHOUT_READING) {
@@ -111,6 +111,15 @@ ReturnValue_t DataSetBase::handleUnreadDatasetCommit() {
 	state = States::DATA_SET_UNINITIALISED;
 	unlockDataPool();
 	return result;
+}
+
+
+ReturnValue_t DataSetBase::lockDataPool(uint32_t timeoutMs) {
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t DataSetBase::unlockDataPool() {
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t DataSetBase::serialize(uint8_t** buffer, size_t* size,
