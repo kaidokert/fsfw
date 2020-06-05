@@ -1,5 +1,5 @@
-# This file needs FRAMEWORK_PATH and API set correctly
-# Valid API settings: rtems, linux, freeRTOS
+# This file needs FRAMEWORK_PATH and OS_FSFW set correctly by another Makefile.
+# Valid API settings: rtems, linux, freeRTOS, host
 
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/action/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/container/*.cpp)

@@ -1,5 +1,5 @@
-#ifndef DEVICEHANDLERS_DEVICEHANDLERBASE_H_
-#define DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+#ifndef FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+#define FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
 
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/tasks/ExecutableObjectIF.h>

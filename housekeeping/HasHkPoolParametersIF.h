@@ -40,7 +40,6 @@ public:
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 	virtual ReturnValue_t initializeHousekeepingPoolEntries(
 			LocalDataPoolMap& localDataPoolMap) = 0;
-	//virtual float setMinimalHkSamplingFrequency() = 0;
 	virtual HousekeepingManager* getHkManagerHandle() = 0;
 	virtual DataSetIF* getDataSetHandle(sid_t sid) = 0;
 };
