@@ -38,7 +38,8 @@ ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
 
 ReturnValue_t PeriodicPosixTask::startTask(void){
 	started = true;
-	createTask(&taskEntryPoint,this);
+	//sif::info << stackSize << std::endl;
+	PosixThread::createTask(&taskEntryPoint,this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

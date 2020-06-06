@@ -128,6 +128,9 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
        default attributes.
 	 */
 	pthread_attr_t attributes;
+	//PeriodicPosixTask* task = reinterpret_cast<PeriodicPosixTask*>(arg_);
+	//sif::info << task->stackSize << std::endl;
+	sif::info << stackSize << std::endl;
 	int status = pthread_attr_init(&attributes);
 	if(status != 0){
 		sif::error << "Posix Thread attribute init failed with: " <<

@@ -54,14 +54,17 @@ protected:
 	pthread_t thread;
 
 	/**
-	 * @brief Function that has to be called by derived class because the derived class pointer has to be valid as argument
-	 * @details This function creates a pthread with the given parameters. As the function requires a pointer to the derived object
-	 * 			it has to be called after the this pointer of the derived object is valid. Sets the taskEntryPoint as
-	 * 			function to be called by new a thread.
-	 * @param name_ Name of the task
-	 * @param priority_ Priority of the task according to POSIX
-	 * @param stackSize_ Size of the stack attached to that task
-	 * @param arg_ argument of the taskEntryPoint function, needs to be this pointer of derived class
+	 * @brief 	Function that has to be called by derived class because the
+	 *  		derived class pointer has to be valid as argument
+	 * @details
+	 * This function creates a pthread with the given parameters. As the
+	 * function requires a pointer to the derived object it has to be called
+	 * after the this pointer of the derived object is valid.
+	 * Sets the taskEntryPoint as function to be called by new a thread.
+	 * @param fnc_ Function which will be executed by the thread.
+	 * @param arg_
+	 * argument of the taskEntryPoint function, needs to be this pointer
+	 * of derived class
 	 */
 	void createTask(void* (*fnc_)(void*),void* arg_);
 
