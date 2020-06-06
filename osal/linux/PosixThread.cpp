@@ -1,11 +1,11 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/osal/linux/PosixThread.h>
 #include <cstring>
 #include <errno.h>
-#include <framework/osal/linux/PosixThread.h>
 
 PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
 		thread(0),priority(priority_),stackSize(stackSize_) {
-	strcpy(name,name_);
+	strncpy(name,name_,16);
 }
 
 PosixThread::~PosixThread() {
@@ -128,9 +128,6 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
        default attributes.
 	 */
 	pthread_attr_t attributes;
-	//PeriodicPosixTask* task = reinterpret_cast<PeriodicPosixTask*>(arg_);
-	//sif::info << task->stackSize << std::endl;
-	sif::info << stackSize << std::endl;
 	int status = pthread_attr_init(&attributes);
 	if(status != 0){
 		sif::error << "Posix Thread attribute init failed with: " <<
@@ -142,7 +139,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 		sif::error << "PosixThread::createTask: Stack init failed with: " <<
 				strerror(status) << std::endl;
 		if(errno == ENOMEM) {
-			double stackMb = (double)((double)stackSize/(double)10e6);
+			uint64_t stackMb = stackSize/10e6;
 			sif::error << "PosixThread::createTask: Insufficient memory for"
 					" the requested " << stackMb << " MB" << std::endl;
 		}
@@ -199,8 +196,19 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_setname_np(thread,name);
 	if(status != 0){
-		sif::error << "Posix Thread setname failed with: " <<
+		sif::error << "PosixThread::createTask: setname failed with: " <<
 				strerror(status) << std::endl;
+		if(status == ERANGE) {
+			sif::error << "PosixThread::createTask: Task name length longer"
+					" than 16 chars. Truncating.." << std::endl;
+			name[15] = '\0';
+			status = pthread_setname_np(thread,name);
+			if(status != 0){
+				sif::error << "PosixThread::createTask: Setting name"
+						" did not work.." << std::endl;
+			}
+		}
+
 	}
 
 	status = pthread_attr_destroy(&attributes);

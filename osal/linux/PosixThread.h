@@ -69,7 +69,7 @@ protected:
 	void createTask(void* (*fnc_)(void*),void* arg_);
 
 private:
-	char name[10];
+	char name[16];
 	int priority;
 	size_t stackSize = 0;
 };

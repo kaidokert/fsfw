@@ -8,7 +8,8 @@
 
 class FixedTimeslotTask: public FixedTimeslotTaskIF, public PosixThread {
 public:
-	FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, uint32_t periodMs_);
+	FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_,
+			uint32_t periodMs_);
 	virtual ~FixedTimeslotTask();
 
 	virtual ReturnValue_t startTask();
@@ -17,7 +18,9 @@ public:
 
 	virtual uint32_t getPeriodMs() const;
 
-	virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs, int8_t executionStep);
+	virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
+			int8_t executionStep);
+
 	virtual ReturnValue_t checkSequence() const;
 
 	/**
@@ -34,11 +37,10 @@ public:
 protected:
 	/**
 	 * @brief	This function holds the main functionality of the thread.
-	 *
-	 *
-	 * @details	Holding the main functionality of the task, this method is most important.
-	 * 			It links the functionalities provided by FixedSlotSequence with the OS's System Calls
-	 * 			to keep the timing of the periods.
+	 * @details
+	 * Holding the main functionality of the task, this method is most important.
+	 * It links the functionalities provided by FixedSlotSequence with the
+	 * OS's System Calls to keep the timing of the periods.
 	 */
 	virtual void taskFunctionality();
 
@@ -46,8 +48,10 @@ private:
 	/**
 	 * @brief	This is the entry point in a new thread.
 	 *
-	 * @details	This method, that is the entry point in the new thread and calls taskFunctionality of the child class.
-	 * 			Needs a valid pointer to the derived class.
+	 * @details
+	 * This method, that is the entry point in the new thread and calls
+	 * taskFunctionality of the child class. Needs a valid pointer to the
+	 * derived class.
 	 */
 	static void* taskEntryPoint(void* arg);
 	FixedSlotSequence pst;
