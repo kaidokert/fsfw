@@ -60,10 +60,6 @@ void PosixThread::resume(){
 	pthread_kill(thread,SIGUSR1);
 }
 
-
-
-
-
 bool PosixThread::delayUntil(uint64_t* const prevoiusWakeTime_ms,
 		const uint64_t delayTime_ms) {
 	uint64_t nextTimeToWake_ms;
@@ -163,7 +159,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 					strerror(status) << std::endl;
 	}
 
-//TODO FIFO -> This needs root privileges for the process
+	// TODO FIFO -> This needs root privileges for the process
 	status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
 	if(status != 0){
 		sif::error << "Posix Thread attribute schedule policy failed with: " <<
@@ -209,7 +205,6 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 						" did not work.." << std::endl;
 			}
 		}
-
 	}
 
 	status = pthread_attr_destroy(&attributes);
