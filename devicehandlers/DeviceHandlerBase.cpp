@@ -31,19 +31,21 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
-		switchOffWasReported(false), actionHelper(this, nullptr), cookieInfo(),
+		switchOffWasReported(false), actionHelper(this, nullptr),
 		childTransitionDelay(5000),
 		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
 		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			CommandMessage::MAX_MESSAGE_SIZE);
-	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);
+	cookieInfo.state = COOKIE_UNUSED;
+	cookieInfo.pendingCommand = deviceCommandMap.end();
 	if (comCookie == nullptr) {
 		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex <<
 				std::setw(8) << std::setfill('0') << this->getObjectId() <<
 				std::dec << ": Do not pass nullptr as a cookie, consider "
-				"passing a dummy cookie instead!" << std::endl;
+				<< std::setfill(' ') << "passing a dummy cookie instead!" <<
+				std::endl;
 	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
@@ -553,12 +555,12 @@ void DeviceHandlerBase::doSendRead() {
 	ReturnValue_t result;
 
 	size_t requestLen = 0;
-	DeviceReplyIter iter = deviceReplyMap.find(cookieInfo.pendingCommand->first);
-	if(iter != deviceReplyMap.end()) {
-		requestLen = iter->second.replyLen;
-	}
-	else {
-		requestLen = 0;
+	if(cookieInfo.pendingCommand != deviceCommandMap.end()) {
+		DeviceReplyIter iter = deviceReplyMap.find(
+				cookieInfo.pendingCommand->first);
+		if(iter != deviceReplyMap.end()) {
+			requestLen = iter->second.replyLen;
+		}
 	}
 
 	result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
