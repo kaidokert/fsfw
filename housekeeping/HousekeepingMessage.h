@@ -19,7 +19,6 @@ union sid_t {
 	 */
 	uint64_t raw;
 };
-
 class HousekeepingMessage {
 public:
 	/**
