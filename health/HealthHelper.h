@@ -1,11 +1,12 @@
-#ifndef HEALTHHELPER_H_
-#define HEALTHHELPER_H_
+#ifndef FRAMEWORK_HEALTH_HEALTHHELPER_H_
+#define FRAMEWORK_HEALTH_HEALTHHELPER_H_
 
 #include <framework/events/EventManagerIF.h>
 #include <framework/events/EventReportingProxyIF.h>
 #include <framework/health/HasHealthIF.h>
 #include <framework/health/HealthMessage.h>
 #include <framework/health/HealthTableIF.h>
+#include <framework/ipc/MessageQueueIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
@@ -39,12 +40,12 @@ public:
 	 *
 	 * only valid after initialize() has been called
 	 */
-	HealthTableIF *healthTable;
+	HealthTableIF *healthTable = nullptr;
 
 	/**
 	 * Proxy to forward events.
 	 */
-	EventReportingProxyIF* eventSender;
+	EventReportingProxyIF* eventSender = nullptr;
 
 	/**
 	 * Try to handle the message.
@@ -100,7 +101,7 @@ private:
 	/**
 	 * The Queue of the parent
 	 */
-	MessageQueueId_t parentQueue;
+	MessageQueueId_t parentQueue = MessageQueueIF::NO_QUEUE;
 
 	/**
 	 * The one using the healthHelper.

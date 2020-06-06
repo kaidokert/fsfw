@@ -1,5 +1,5 @@
-#ifndef MEMORYHELPER_H_
-#define MEMORYHELPER_H_
+#ifndef FRAMEWORK_MEMORY_MEMORYHELPER_H_
+#define FRAMEWORK_MEMORY_MEMORYHELPER_H_
 #include <framework/ipc/CommandMessage.h>
 #include <framework/memory/AcceptsMemoryMessagesIF.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
@@ -16,11 +16,11 @@ public:
 private:
 	HasMemoryIF* workOnThis;
 	MessageQueueIF* queueToUse;
-	StorageManagerIF* ipcStore;
+	StorageManagerIF* ipcStore = nullptr;
 	store_address_t ipcAddress;
 	Command_t lastCommand;
-	MessageQueueId_t lastSender;
-	uint8_t* reservedSpaceInIPC;
+	MessageQueueId_t lastSender = MessageQueueIF::NO_QUEUE;
+	uint8_t* reservedSpaceInIPC = nullptr;
 	bool busy;
 	void handleMemoryLoad(CommandMessage* message);
 	void handleMemoryCheckOrDump(CommandMessage* message);

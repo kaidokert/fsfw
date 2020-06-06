@@ -5,10 +5,10 @@
 #include <framework/serialize/EndianSwapper.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue) :
-		workOnThis(workOnThis), queueToUse(useThisQueue), ipcStore(NULL), ipcAddress(), lastCommand(
-				CommandMessage::CMD_NONE), lastSender(0), reservedSpaceInIPC(
-				NULL), busy(false) {
+MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis,
+		MessageQueueIF* useThisQueue):
+		workOnThis(workOnThis), queueToUse(useThisQueue), ipcStore(nullptr),
+		ipcAddress(), lastCommand(CommandMessage::CMD_NONE), busy(false) {
 }
 
 ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {

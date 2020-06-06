@@ -1,6 +1,7 @@
-#ifndef PARAMETERHELPER_H_
-#define PARAMETERHELPER_H_
+#ifndef FRAMEWORK_PARAMETERS_PARAMETERHELPER_H_
+#define FRAMEWORK_PARAMETERS_PARAMETERHELPER_H_
 
+#include <framework/ipc/MessageQueueIF.h>
 #include <framework/parameters/ParameterMessage.h>
 #include <framework/parameters/ReceivesParameterMessagesIF.h>
 
@@ -15,9 +16,9 @@ public:
 private:
 	ReceivesParameterMessagesIF *owner;
 
-	MessageQueueId_t ownerQueueId;
+	MessageQueueId_t ownerQueueId = MessageQueueIF::NO_QUEUE;
 
-	StorageManagerIF *storage;
+	StorageManagerIF *storage = nullptr;
 
 	ReturnValue_t sendParameter(MessageQueueId_t to, uint32_t id, const ParameterWrapper *description);
 
