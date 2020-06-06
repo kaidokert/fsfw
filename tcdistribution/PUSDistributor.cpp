@@ -4,15 +4,13 @@
 #include <framework/tmtcpacket/pus/TcPacketStored.h>
 #include <framework/tmtcservices/PusVerificationReport.h>
 
-PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId, object_id_t setPacketSource) :
-		TcDistributor(setObjectId), checker(setApid), verifyChannel(), currentPacket(), tcStatus(
-				RETURN_FAILED), packetSource(setPacketSource) {
+PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
+		object_id_t setPacketSource) :
+		TcDistributor(setObjectId), checker(setApid), verifyChannel(),
+		currentPacket(), tcStatus(RETURN_FAILED),
+		packetSource(setPacketSource) {}
 
-}
-
-PUSDistributor::~PUSDistributor() {
-
-}
+PUSDistributor::~PUSDistributor() {}
 
 iterator_t PUSDistributor::selectDestination() {
 //	debug << "PUSDistributor::handlePacket received: " << this->current_packet_id.store_index << ", " << this->current_packet_id.packet_index << std::endl;
@@ -45,18 +43,17 @@ iterator_t PUSDistributor::selectDestination() {
 //}
 
 ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
-	ReturnValue_t returnValue = RETURN_OK;
-	bool errorCode = true;
 	uint16_t serviceId = service->getIdentifier();
 	//info << "Service ID: " << (int)serviceId << std::endl;
 	MessageQueueId_t queue = service->getRequestQueue();
-	errorCode = this->queueMap.insert(
-			std::pair<uint32_t, MessageQueueId_t>(serviceId, queue)).second;
-	if (errorCode == false) {
+	auto returnPair = queueMap.emplace(serviceId, queue);
+	if (not returnPair.second) {
 		//TODO Return Code
-		returnValue = MessageQueueIF::NO_QUEUE;
+		sif::error << "PUSDistributor::registerService: Service ID already"
+				"exists in map." << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	return returnValue;
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 MessageQueueId_t PUSDistributor::getRequestQueue() {

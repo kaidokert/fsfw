@@ -2,6 +2,8 @@
 #define FRAMEWORK_IPC_MESSAGEQUEUEIF_H_
 
 // COULDDO: We could support blocking calls
+// semaphores are being implemented, which makes this idea even more iteresting.
+
 
 /**
  * @defgroup message_queue Message Queue

@@ -33,15 +33,6 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
 	}
 }
 
-ReturnValue_t MemoryHelper::initialize() {
-	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (ipcStore != NULL) {
-		return RETURN_OK;
-	} else {
-		return RETURN_FAILED;
-	}
-}
-
 void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 		const uint8_t* dataToCopy, const uint32_t size, uint8_t* copyHere) {
 	busy = false;
@@ -185,11 +176,18 @@ void MemoryHelper::handleMemoryCheckOrDump(CommandMessage* message) {
 }
 
 ReturnValue_t MemoryHelper::initialize(MessageQueueIF* queueToUse_) {
-	if(queueToUse_!=NULL){
-		this->queueToUse = queueToUse_;
-	}else{
-		return MessageQueueIF::NO_QUEUE;
+	if(queueToUse_ == nullptr) {
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-
+	this->queueToUse = queueToUse_;
 	return initialize();
+}
+
+ReturnValue_t MemoryHelper::initialize() {
+	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+	if (ipcStore != nullptr) {
+		return RETURN_OK;
+	} else {
+		return RETURN_FAILED;
+	}
 }

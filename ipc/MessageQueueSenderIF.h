@@ -16,7 +16,7 @@ typedef uint32_t MessageQueueId_t;
 
 class MessageQueueSenderIF {
 public:
-	static const MessageQueueId_t NO_QUEUE = 0;
+	static const MessageQueueId_t NO_QUEUE = 0xffffffff;
 
 	virtual ~MessageQueueSenderIF() {}
 
