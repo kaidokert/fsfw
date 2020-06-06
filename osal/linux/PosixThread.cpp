@@ -1,8 +1,12 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/osal/linux/PosixThread.h>
 #include <cstring>
 #include <errno.h>
-#include <framework/osal/linux/PosixThread.h>
 
+PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
+		thread(0),priority(priority_),stackSize(stackSize_) {
+	strncpy(name,name_,16);
+}
 
 PosixThread::~PosixThread() {
 	//No deletion and no free of Stack Pointer
@@ -113,12 +117,6 @@ uint64_t PosixThread::getCurrentMonotonicTimeMs(){
 	return currentTime_ms;
 }
 
-PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
-		thread(0),priority(priority_),stackSize(stackSize_) {
-	strcpy(name,name_);
-}
-
-
 
 void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	//sif::debug << "PosixThread::createTask" << std::endl;
@@ -135,14 +133,24 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 		sif::error << "Posix Thread attribute init failed with: " <<
 				strerror(status) << std::endl;
 	}
-	void* sp;
-	status = posix_memalign(&sp, sysconf(_SC_PAGESIZE), stackSize);
+	void* stackPointer;
+	status = posix_memalign(&stackPointer, sysconf(_SC_PAGESIZE), stackSize);
 	if(status != 0){
-		sif::error << "Posix Thread stack init failed with: " <<
+		sif::error << "PosixThread::createTask: Stack init failed with: " <<
 				strerror(status) << std::endl;
+		if(errno == ENOMEM) {
+			uint64_t stackMb = stackSize/10e6;
+			sif::error << "PosixThread::createTask: Insufficient memory for"
+					" the requested " << stackMb << " MB" << std::endl;
+		}
+		else if(errno == EINVAL) {
+			sif::error << "PosixThread::createTask: Wrong alignment argument!"
+					<< std::endl;
+		}
+		return;
 	}
 
-	status = pthread_attr_setstack(&attributes, sp, stackSize);
+	status = pthread_attr_setstack(&attributes, stackPointer, stackSize);
 	if(status != 0){
 		sif::error << "Posix Thread attribute setStack failed with: " <<
 				strerror(status) << std::endl;
@@ -188,8 +196,19 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_setname_np(thread,name);
 	if(status != 0){
-		sif::error << "Posix Thread setname failed with: " <<
+		sif::error << "PosixThread::createTask: setname failed with: " <<
 				strerror(status) << std::endl;
+		if(status == ERANGE) {
+			sif::error << "PosixThread::createTask: Task name length longer"
+					" than 16 chars. Truncating.." << std::endl;
+			name[15] = '\0';
+			status = pthread_setname_np(thread,name);
+			if(status != 0){
+				sif::error << "PosixThread::createTask: Setting name"
+						" did not work.." << std::endl;
+			}
+		}
+
 	}
 
 	status = pthread_attr_destroy(&attributes);

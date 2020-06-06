@@ -1,56 +1,36 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <fcntl.h>           /* For O_* constants */
-#include <sys/stat.h>        /* For mode constants */
-#include <mqueue.h>
-#include <cstring>
-#include <errno.h>
 #include <framework/osal/linux/MessageQueue.h>
 
+#include <fstream>
 
-MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
-		id(0), lastPartner(0), defaultDestination(NO_QUEUE) {
+#include <fcntl.h>           /* For O_* constants */
+#include <sys/stat.h>        /* For mode constants */
+#include <cstring>
+#include <errno.h>
+
+
+MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize): id(0),
+		lastPartner(0), defaultDestination(NO_QUEUE) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
 	this->id = 0;
 	//Set attributes
 	attributes.mq_curmsgs = 0;
-	attributes.mq_maxmsg = message_depth;
-	attributes.mq_msgsize = max_message_size;
+	attributes.mq_maxmsg = messageDepth;
+	attributes.mq_msgsize = maxMessageSize;
 	attributes.mq_flags = 0; //Flags are ignored on Linux during mq_open
-	//Set the name of the queue
-	sprintf(name, "/Q%u\n", queueCounter++);
+	//Set the name of the queue. The slash is mandatory!
+	sprintf(name, "/FSFW_MQ%u\n", queueCounter++);
 
-	//Create a nonblocking queue if the name is available (the queue is Read and
-	// writable for the owner as well as the group)
-	mqd_t tempId = mq_open(name, O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
-	S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH, &attributes);
+	// Create a nonblocking queue if the name is available (the queue is read
+	// and writable for the owner as well as the group)
+	int oflag = O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL;
+	mode_t mode = S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH;
+	mqd_t tempId = mq_open(name, oflag, mode, &attributes);
 	if (tempId == -1) {
-		//An error occured during open
-		//We need to distinguish if it is caused by an already created queue
-		if (errno == EEXIST) {
-			//There's another queue with the same name
-			//We unlink the other queue
-			int status = mq_unlink(name);
-			if (status != 0) {
-				sif::error << "mq_unlink Failed with status: " << strerror(errno)
-						   << std::endl;
-			} else {
-				//Successful unlinking, try to open again
-				mqd_t tempId = mq_open(name,
-				O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
-				S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, &attributes);
-				if (tempId != -1) {
-					//Successful mq_open
-					this->id = tempId;
-					return;
-				}
-			}
-		}
-		//Failed either the first time or the second time
-		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
-				<< name << std::dec << " failed with status: "
-				<< strerror(errno) << std::endl;
-	} else {
+		handleError(&attributes, messageDepth);
+	}
+	else {
 		//Successful mq_open call
 		this->id = tempId;
 	}
@@ -67,6 +47,68 @@ MessageQueue::~MessageQueue() {
 		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
 				   << strerror(errno) <<std::endl;
 	}
+}
+
+ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
+		uint32_t messageDepth) {
+	switch(errno) {
+	case(EINVAL): {
+		sif::error << "MessageQueue::MessageQueue: Invalid name or attributes"
+				" for message size" << std::endl;
+		size_t defaultMqMaxMsg = 0;
+		if(std::ifstream("/proc/sys/fs/mqueue/msg_max",std::ios::in) >>
+				defaultMqMaxMsg and defaultMqMaxMsg < messageDepth) {
+			// See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
+			// This happens if the msg_max value is not large enough
+			// It is ignored if the executable is run in privileged mode.
+			// Run the unlockRealtime script or grant the mode manully by using:
+			// sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
+
+			// Permanent solution (EventManager has mq depth of 80):
+			// echo msg_max | sudo tee /proc/sys/fs/mqueue/msg_max
+			sif::error << "MessageQueue::MessageQueue: Default MQ size "
+					<< defaultMqMaxMsg << " is too small for requested size "
+					<< messageDepth << std::endl;
+		}
+		break;
+	}
+	case(EEXIST): {
+		// An error occured during open
+		// We need to distinguish if it is caused by an already created queue
+		if (errno == EEXIST) {
+			//There's another queue with the same name
+			//We unlink the other queue
+			int status = mq_unlink(name);
+			if (status != 0) {
+				sif::error << "mq_unlink Failed with status: " << strerror(errno)
+											<< std::endl;
+			}
+			else {
+				// Successful unlinking, try to open again
+				mqd_t tempId = mq_open(name,
+						O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
+						S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, attributes);
+				if (tempId != -1) {
+					//Successful mq_open
+					this->id = tempId;
+					return HasReturnvaluesIF::RETURN_OK;
+				}
+			}
+		}
+		break;
+	}
+
+	default:
+		// Failed either the first time or the second time
+		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
+		<< name << std::dec << " failed with status: "
+		<< strerror(errno) << std::endl;
+
+	}
+	return HasReturnvaluesIF::RETURN_FAILED;
+
+
+
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
@@ -265,7 +307,11 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			           << strerror(errno) << " in mq_send" << std::endl;
 			/*NO BREAK*/
 		case EMSGSIZE:
-			//The msg_len is greater than the msgsize associated with the specified queue.
+			// The msg_len is greater than the msgsize associated with
+			//the specified queue.
+			sif::error << "MessageQueue::sendMessage: Size error [" <<
+					strerror(errno) << "] in mq_send" << std::endl;
+			/*NO BREAK*/
 		default:
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
