@@ -4,7 +4,9 @@
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 
-QueueMapManager::QueueMapManager() {}
+QueueMapManager::QueueMapManager() {
+    mapLock = MutexFactory::instance()->createMutex();
+}
 
 QueueMapManager* QueueMapManager::instance() {
 	if (mqManagerInstance == nullptr){
