@@ -58,44 +58,43 @@ ObjectManager::ObjectManager() : produceObjects(nullptr) {
 
 void ObjectManager::initialize() {
 	if(produceObjects == nullptr) {
-		sif::error << "ObjectManager: Passed produceObjects functions is"
-				"nullptr!" << std::endl;
+		sif::error << "ObjectManager::initialize: Passed produceObjects "
+				"functions is nullptr!" << std::endl;
 		return;
 	}
 	this->produceObjects();
-	ReturnValue_t return_value = RETURN_FAILED;
-	uint32_t error_count = 0;
+	ReturnValue_t result = RETURN_FAILED;
+	uint32_t errorCount = 0;
 	for (auto const& it : objectList) {
-		return_value = it.second->initialize();
-		if ( return_value != RETURN_OK ) {
+		result = it.second->initialize();
+		if ( result != RETURN_OK ) {
 			object_id_t var = it.first;
-			sif::error << "Object 0x" << std::hex <<  std::setw(8) <<
-					std::setfill('0') << var << " failed to initialize " <<
-					"with code 0x" << return_value << std::dec <<
-					std::setfill('') << std::endl;
-			error_count++;
+			sif::error << "ObjectManager::initialize: Object 0x" << std::hex <<
+					std::setw(8) << std::setfill('0')<< var << " failed to "
+					"initialize with code 0x" << result << std::dec <<
+					std::setfill(' ') << std::endl;
+			errorCount++;
 		}
 	}
-	if (error_count > 0) {
-		sif::error << "ObjectManager::ObjectManager: Counted " << error_count
+	if (errorCount > 0) {
+		sif::error << "ObjectManager::ObjectManager: Counted " << errorCount
 		           << " failed initializations." << std::endl;
 	}
 	//Init was successful. Now check successful interconnections.
-	error_count = 0;
+	errorCount = 0;
 	for (auto const& it : objectList) {
-		return_value = it.second->checkObjectConnections();
-		if ( return_value != RETURN_OK ) {
-			sif::error << "Object " << std::hex <<  (int) it.first
-			        << " connection check failed with code 0x" << return_value
-			        << std::dec << std::endl;
-			error_count++;
+		result = it.second->checkObjectConnections();
+		if ( result != RETURN_OK ) {
+			sif::error << "ObjectManager::ObjectManager: Object " << std::hex <<
+					(int) it.first  << " connection check failed with code 0x"
+					<< result << std::dec << std::endl;
+			errorCount++;
 		}
 	}
-	if (error_count > 0) {
-		sif::error << "ObjectManager::ObjectManager: Counted " << error_count
+	if (errorCount > 0) {
+		sif::error << "ObjectManager::ObjectManager: Counted " << errorCount
 		           << " failed connection checks." << std::endl;
 	}
-
 }
 
 void ObjectManager::printList() {
