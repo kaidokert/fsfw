@@ -40,6 +40,7 @@ void HealthHelper::setParentQeueue(MessageQueueId_t parentQueue) {
 ReturnValue_t HealthHelper::initialize() {
 	healthTable = objectManager->get<HealthTableIF>(objects::HEALTH_TABLE);
 	eventSender = objectManager->get<EventReportingProxyIF>(objectId);
+	// TODO: Better returnvalues
 	if ((healthTable == NULL) || eventSender == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}

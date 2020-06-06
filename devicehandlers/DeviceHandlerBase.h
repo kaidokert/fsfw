@@ -577,7 +577,7 @@ protected:
 	 * Used when there is no method of finding a recipient, ie raw mode and
 	 * reporting erroneous replies
 	 */
-	MessageQueueId_t defaultRawReceiver = 0;
+	MessageQueueId_t defaultRawReceiver = MessageQueueIF::NO_QUEUE;
 	store_address_t storedRawData;
 
 	/**

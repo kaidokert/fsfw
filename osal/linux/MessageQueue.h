@@ -40,7 +40,7 @@ public:
 	 * @param max_message_size	With this parameter, the maximum message size can be adjusted.
 	 * 							This should be left default.
 	 */
-	MessageQueue(size_t messageDepth = 3,
+	MessageQueue(uint32_t messageDepth = 3,
 			size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE );
 	/**
 	 * @brief	The destructor deletes the formerly created message queue.

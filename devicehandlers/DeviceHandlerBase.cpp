@@ -15,7 +15,7 @@
 #include <iomanip>
 
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
-object_id_t DeviceHandlerBase::rawDataReceiverId = 0;
+object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
@@ -36,7 +36,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		childTransitionDelay(5000),
 		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
 		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
-	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
+	commandQueue = QueueFactory::instance()->createMessageQueue(1,
 			CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);
@@ -121,14 +121,15 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return RETURN_FAILED;
 	}
 
-	AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
-			AcceptsDeviceResponsesIF>(rawDataReceiverId);
+	if(rawDataReceiverId != objects::NO_OBJECT) {
+		AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
+				AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
-	if (rawReceiver == NULL) {
-		return RETURN_FAILED;
+		if (rawReceiver == NULL) {
+			return RETURN_FAILED;
+		}
+		defaultRawReceiver = rawReceiver->getDeviceQueue();
 	}
-
-	defaultRawReceiver = rawReceiver->getDeviceQueue();
 
 	if(powerSwitcherId != objects::NO_OBJECT) {
 		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
@@ -139,6 +140,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	result = healthHelper.initialize();
 	if (result != RETURN_OK) {
+		sif::error << "DeviceHandlerBase::initialize: Health Helper "
+				"initialization failure" << std::endl;
 		return result;
 	}
 
@@ -614,7 +617,7 @@ void DeviceHandlerBase::doGetRead() {
 		replyRawData(receivedData, receivedDataLen, requestedRawTraffic);
 	}
 
-	if (mode == MODE_RAW) {
+	if (mode == MODE_RAW and defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
 		replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
 	}
 	else {
@@ -727,7 +730,7 @@ ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 
 void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 		MessageQueueId_t sendTo, bool isCommand) {
-	if (IPCStore == NULL || len == 0) {
+	if (IPCStore == NULL || len == 0 || sendTo == MessageQueueIF::NO_QUEUE) {
 		return;
 	}
 	store_address_t address;
@@ -1131,35 +1134,47 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 		return;
 	}
 	DeviceTmReportingWrapper wrapper(getObjectId(), replyId, data);
-	if (iter->second.command != deviceCommandMap.end()) {//replies to a command
+	//replies to a command
+	if (iter->second.command != deviceCommandMap.end())
+	{
 		MessageQueueId_t queueId = iter->second.command->second.sendReplyTo;
 
 		if (queueId != NO_COMMANDER) {
 			//This may fail, but we'll ignore the fault.
 			actionHelper.reportData(queueId, replyId, data);
 		}
+
 		//This check should make sure we get any TM but don't get anything doubled.
 		if (wiretappingMode == TM && (requestedRawTraffic != queueId)) {
 			actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
-		} else if (forceDirectTm && (defaultRawReceiver != queueId)) {
-
-			// hiding of sender needed so the service will handle it as unexpected Data, no matter what state
-			//(progress or completed) it is in
-			actionHelper.reportData(defaultRawReceiver, replyId, &wrapper,
-			true);
-
 		}
-	} else { //unrequested/aperiodic replies
-		if (wiretappingMode == TM) {
-			actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
-		} else if (forceDirectTm) {
-			// hiding of sender needed so the service will handle it as unexpected Data, no matter what state
-			//(progress or completed) it is in
+		else if (forceDirectTm and (defaultRawReceiver != queueId) and
+					(defaultRawReceiver != MessageQueueIF::NO_QUEUE))
+		{
+			// hiding of sender needed so the service will handle it as
+			// unexpected Data, no matter what state (progress or completed)
+			// it is in
 			actionHelper.reportData(defaultRawReceiver, replyId, &wrapper,
-			true);
+					true);
 		}
 	}
-//Try to cast to GlobDataSet and commit data.
+	//unrequested/aperiodic replies
+	else
+	{
+		if (wiretappingMode == TM) {
+			actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
+		}
+		else if (forceDirectTm and defaultRawReceiver !=
+				MessageQueueIF::NO_QUEUE)
+		{
+			// hiding of sender needed so the service will handle it as
+			// unexpected Data, no matter what state (progress or completed)
+			// it is in
+			actionHelper.reportData(defaultRawReceiver, replyId, &wrapper,
+					true);
+		}
+	}
+	//Try to cast to GlobDataSet and commit data.
 	if (!neverInDataPool) {
 		GlobDataSet* dataSet = dynamic_cast<GlobDataSet*>(data);
 		if (dataSet != NULL) {

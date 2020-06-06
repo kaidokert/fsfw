@@ -7,7 +7,7 @@
 
 
 
-MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize): id(0),
+MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize): id(0),
 		lastPartner(0), defaultDestination(NO_QUEUE) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
@@ -25,7 +25,7 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize): id(0),
 	mqd_t tempId = mq_open(name, O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
 	S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH, &attributes);
 	if (tempId == -1) {
-		ReturnValue_t result = handleError(&attributes);
+		handleError(&attributes);
 	}
 	else {
 		//Successful mq_open call
@@ -47,33 +47,47 @@ MessageQueue::~MessageQueue() {
 }
 
 ReturnValue_t MessageQueue::handleError(mq_attr* attributes) {
-	// An error occured during open
-	// We need to distinguish if it is caused by an already created queue
-	if (errno == EEXIST) {
-		//There's another queue with the same name
-		//We unlink the other queue
-		int status = mq_unlink(name);
-		if (status != 0) {
-			sif::error << "mq_unlink Failed with status: " << strerror(errno)
-					<< std::endl;
-		}
-		else {
-			// Successful unlinking, try to open again
-			mqd_t tempId = mq_open(name,
-					O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
-					S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, attributes);
-			if (tempId != -1) {
-				//Successful mq_open
-				this->id = tempId;
-				return HasReturnvaluesIF::RETURN_OK;
+	switch(errno) {
+	case(EINVAL): {
+		sif::error << "MessageQueue::MessageQueue: Invalid Name " << std::endl;
+		break;
+	}
+	case(EEXIST): {
+		// An error occured during open
+		// We need to distinguish if it is caused by an already created queue
+		if (errno == EEXIST) {
+			//There's another queue with the same name
+			//We unlink the other queue
+			int status = mq_unlink(name);
+			if (status != 0) {
+				sif::error << "mq_unlink Failed with status: " << strerror(errno)
+											<< std::endl;
+			}
+			else {
+				// Successful unlinking, try to open again
+				mqd_t tempId = mq_open(name,
+						O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
+						S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, attributes);
+				if (tempId != -1) {
+					//Successful mq_open
+					this->id = tempId;
+					return HasReturnvaluesIF::RETURN_OK;
+				}
 			}
 		}
+		break;
+	}
+
+	default:
 		// Failed either the first time or the second time
 		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
-				<< name << std::dec << " failed with status: "
-				<< strerror(errno) << std::endl;
-		return HasReturnvaluesIF::RETURN_FAILED;
+		<< name << std::dec << " failed with status: "
+		<< strerror(errno) << std::endl;
+
 	}
+	return HasReturnvaluesIF::RETURN_FAILED;
+
+
 
 }
 
