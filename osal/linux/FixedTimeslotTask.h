@@ -64,6 +64,9 @@ private:
 	 * This method, that is the entry point in the new thread and calls
 	 * taskFunctionality of the child class. Needs a valid pointer to the
 	 * derived class.
+	 *
+	 * The void* returnvalue is not used yet but could be used to return
+	 * arbitrary data.
 	 */
 	static void* taskEntryPoint(void* arg);
 	FixedSlotSequence pst;
