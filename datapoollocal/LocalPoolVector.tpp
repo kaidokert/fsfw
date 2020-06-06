@@ -15,6 +15,7 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
 				"NO_PARAMETER value!" << std::endl;
 	}
 	memset(this->value, 0, vectorSize * sizeof(T));
+	hkManager = hkOwner->getHkManagerHandle();
 	if (dataSet != nullptr) {
 		dataSet->registerVariable(this);
 	}
@@ -180,6 +181,20 @@ inline uint8_t LocalPoolVector<T, vectorSize>::getValid() const {
 template<typename T, uint16_t vectorSize>
 inline bool LocalPoolVector<T, vectorSize>::isValid() const {
 	return valid;
+}
+
+template<typename T, uint16_t vectorSize>
+inline std::ostream& operator<< (std::ostream &out,
+        const LocalPoolVector<T, vectorSize> &var) {
+    out << "Vector: [";
+    for(int i = 0;i < vectorSize; i++) {
+        out << var.value[i];
+        if(i < vectorSize - 1) {
+            out << ", ";
+        }
+    }
+    out << "]";
+    return out;
 }
 
 #endif

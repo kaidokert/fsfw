@@ -5,6 +5,7 @@
 #include <framework/datapool/PoolEntry.h>
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/serialize/SerializeAdapter.h>
+#include <framework/housekeeping/HousekeepingManager.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 
@@ -179,6 +180,11 @@ private:
 	ReadWriteMode_t readWriteMode;
 	//! @brief	Pointer to the class which manages the HK pool.
 	HousekeepingManager* hkManager;
+
+	// std::ostream is the type for object std::cout
+	template <typename U, uint16_t otherSize>
+	friend std::ostream& operator<< (std::ostream &out,
+	        const LocalPoolVector<U, otherSize> &var);
 };
 
 #include <framework/datapoollocal/LocalPoolVector.tpp>

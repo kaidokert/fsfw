@@ -151,11 +151,11 @@ inline ReturnValue_t LocalPoolVar<T>::deSerialize(const uint8_t** buffer,
 	return AutoSerializeAdapter::deSerialize(&value, buffer, size, bigEndian);
 }
 
-//template<typename T>
-//inline friend std::ostream& LocalPoolVar<T>::operator<< (std::ostream &out,
-//		const LocalPoolVar &var) {
-//	out << static_cast<int>(out);
-//}
-
+template<typename T>
+inline std::ostream& operator<< (std::ostream &out,
+		const LocalPoolVar<T> &var) {
+    out << var.value;
+    return out;
+}
 
 #endif

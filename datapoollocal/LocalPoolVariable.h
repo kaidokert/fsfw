@@ -131,11 +131,9 @@ protected:
 	ReturnValue_t commitWithoutLock() override;
 
 	// std::ostream is the type for object std::cout
-//	friend std::ostream& operator<< (std::ostream &out,
-//			const LocalPoolVar &var) {
-//		out << static_cast<int>(value);
-//		return out;
-//	}
+	template <typename U>
+	friend std::ostream& operator<< (std::ostream &out,
+			const LocalPoolVar<U> &var);
 
 private:
 	//! @brief 	Pool ID of pool entry inside the used local pool.
