@@ -20,9 +20,11 @@ private:
 
 	StorageManagerIF *storage = nullptr;
 
-	ReturnValue_t sendParameter(MessageQueueId_t to, uint32_t id, const ParameterWrapper *description);
+	ReturnValue_t sendParameter(MessageQueueId_t to, uint32_t id,
+			const ParameterWrapper *description);
 
-	void rejectCommand(MessageQueueId_t to, ReturnValue_t reason, Command_t initialCommand);
+	void rejectCommand(MessageQueueId_t to, ReturnValue_t reason,
+			Command_t initialCommand);
 };
 
 #endif /* PARAMETERHELPER_H_ */
