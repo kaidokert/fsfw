@@ -4,6 +4,8 @@
 #include <framework/internalError/InternalErrorReporterIF.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/ipc/MessageQueueMessage.h>
+
+#include <mqueue.h>
 /**
  * @brief		This class manages sending and receiving of message queue messages.
  *
@@ -172,6 +174,8 @@ private:
 	char name[5];
 
 	static uint16_t queueCounter;
+
+	ReturnValue_t handleError(mq_attr* attributes);
 };
 
 #endif /* MESSAGEQUEUE_H_ */

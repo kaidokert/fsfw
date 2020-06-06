@@ -1,14 +1,14 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/osal/linux/MessageQueue.h>
 #include <fcntl.h>           /* For O_* constants */
 #include <sys/stat.h>        /* For mode constants */
-#include <mqueue.h>
 #include <cstring>
 #include <errno.h>
-#include <framework/osal/linux/MessageQueue.h>
 
 
-MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
-		id(0), lastPartner(0), defaultDestination(NO_QUEUE) {
+
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize): id(0),
+		lastPartner(0), defaultDestination(NO_QUEUE) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
 	this->id = 0;
@@ -17,40 +17,17 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 	attributes.mq_maxmsg = messageDepth;
 	attributes.mq_msgsize = maxMessageSize;
 	attributes.mq_flags = 0; //Flags are ignored on Linux during mq_open
-	//Set the name of the queue
+	//Set the name of the queue. The slash is mandatory!
 	sprintf(name, "/Q%u\n", queueCounter++);
 
-	//Create a nonblocking queue if the name is available (the queue is Read and
-	// writable for the owner as well as the group)
+	// Create a nonblocking queue if the name is available (the queue is read
+	// and writable for the owner as well as the group)
 	mqd_t tempId = mq_open(name, O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
 	S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH, &attributes);
 	if (tempId == -1) {
-		//An error occured during open
-		//We need to distinguish if it is caused by an already created queue
-		if (errno == EEXIST) {
-			//There's another queue with the same name
-			//We unlink the other queue
-			int status = mq_unlink(name);
-			if (status != 0) {
-				sif::error << "mq_unlink Failed with status: " << strerror(errno)
-						   << std::endl;
-			} else {
-				//Successful unlinking, try to open again
-				mqd_t tempId = mq_open(name,
-				O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
-				S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, &attributes);
-				if (tempId != -1) {
-					//Successful mq_open
-					this->id = tempId;
-					return;
-				}
-			}
-		}
-		//Failed either the first time or the second time
-		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
-				<< name << std::dec << " failed with status: "
-				<< strerror(errno) << std::endl;
-	} else {
+		ReturnValue_t result = handleError(&attributes);
+	}
+	else {
 		//Successful mq_open call
 		this->id = tempId;
 	}
@@ -67,6 +44,37 @@ MessageQueue::~MessageQueue() {
 		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
 				   << strerror(errno) <<std::endl;
 	}
+}
+
+ReturnValue_t MessageQueue::handleError(mq_attr* attributes) {
+	// An error occured during open
+	// We need to distinguish if it is caused by an already created queue
+	if (errno == EEXIST) {
+		//There's another queue with the same name
+		//We unlink the other queue
+		int status = mq_unlink(name);
+		if (status != 0) {
+			sif::error << "mq_unlink Failed with status: " << strerror(errno)
+					<< std::endl;
+		}
+		else {
+			// Successful unlinking, try to open again
+			mqd_t tempId = mq_open(name,
+					O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
+					S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, attributes);
+			if (tempId != -1) {
+				//Successful mq_open
+				this->id = tempId;
+				return HasReturnvaluesIF::RETURN_OK;
+			}
+		}
+		// Failed either the first time or the second time
+		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
+				<< name << std::dec << " failed with status: "
+				<< strerror(errno) << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
