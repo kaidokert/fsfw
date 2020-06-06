@@ -9,6 +9,7 @@
 
 class PosixThread {
 public:
+	static constexpr uint8_t PTHREAD_MAX_NAMELEN = 16;
 	PosixThread(const char* name_, int priority_, size_t stackSize_);
 	virtual ~PosixThread();
 	/**
@@ -54,7 +55,7 @@ protected:
 
 	/**
 	 * @brief 	Function that has to be called by derived class because the
-	 *  		derived class pointer has to be valid as argument
+	 *  		derived class pointer has to be valid as argument.
 	 * @details
 	 * This function creates a pthread with the given parameters. As the
 	 * function requires a pointer to the derived object it has to be called
@@ -68,7 +69,7 @@ protected:
 	void createTask(void* (*fnc_)(void*),void* arg_);
 
 private:
-	char name[16];
+	char name[PTHREAD_MAX_NAMELEN];
 	int priority;
 	size_t stackSize = 0;
 };
