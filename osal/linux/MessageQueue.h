@@ -175,7 +175,7 @@ private:
 
 	static uint16_t queueCounter;
 
-	ReturnValue_t handleError(mq_attr* attributes);
+	ReturnValue_t handleError(mq_attr* attributes, uint32_t messageDepth);
 };
 
 #endif /* MESSAGEQUEUE_H_ */

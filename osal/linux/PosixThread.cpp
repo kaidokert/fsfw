@@ -138,7 +138,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	void* sp;
 	status = posix_memalign(&sp, sysconf(_SC_PAGESIZE), stackSize);
 	if(status != 0){
-		sif::error << "Posix Thread stack init failed with: " <<
+		sif::error << "PosixThread::createTask: Stack init failed with: " <<
 				strerror(status) << std::endl;
 	}
 

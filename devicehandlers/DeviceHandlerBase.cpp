@@ -36,7 +36,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		childTransitionDelay(5000),
 		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
 		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
-	commandQueue = QueueFactory::instance()->createMessageQueue(1,
+	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			CommandMessage::MAX_MESSAGE_SIZE);
 	cookieInfo.state = COOKIE_UNUSED;
 	insertInCommandMap(RAW_COMMAND_ID);

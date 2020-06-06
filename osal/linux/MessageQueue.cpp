@@ -1,10 +1,12 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/osal/linux/MessageQueue.h>
+
+#include <fstream>
+
 #include <fcntl.h>           /* For O_* constants */
 #include <sys/stat.h>        /* For mode constants */
 #include <cstring>
 #include <errno.h>
-
 
 
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize): id(0),
@@ -22,10 +24,11 @@ MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize): id(0),
 
 	// Create a nonblocking queue if the name is available (the queue is read
 	// and writable for the owner as well as the group)
-	mqd_t tempId = mq_open(name, O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
-	S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH, &attributes);
+	int oflag = O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL;
+	mode_t mode = S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH;
+	mqd_t tempId = mq_open(name, oflag, mode, &attributes);
 	if (tempId == -1) {
-		handleError(&attributes);
+		handleError(&attributes, messageDepth);
 	}
 	else {
 		//Successful mq_open call
@@ -46,10 +49,27 @@ MessageQueue::~MessageQueue() {
 	}
 }
 
-ReturnValue_t MessageQueue::handleError(mq_attr* attributes) {
+ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
+		uint32_t messageDepth) {
 	switch(errno) {
 	case(EINVAL): {
-		sif::error << "MessageQueue::MessageQueue: Invalid Name " << std::endl;
+		sif::error << "MessageQueue::MessageQueue: Invalid Name or attributes"
+				" for message size" << std::endl;
+		size_t defaultMqMaxMsg;
+		if(std::ifstream("/proc/sys/fs/mqueue/msg_max",std::ios::in) >>
+				defaultMqMaxMsg and defaultMqMaxMsg < messageDepth) {
+			// See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
+			// This happens if the msg_max value is not large enough
+			// It is ignored if the executable is run in privileged mode.
+			// Run the unlockRealtime script or grant the mode manully by using:
+			// sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
+
+			// Permanent solution:
+			// echo msg_max | sudo tee /proc/sys/fs/mqueue/msg_max
+			sif::error << "MessageQueue::MessageQueue: Default MQ size "
+					<< defaultMqMaxMsg << " is too small for requested size "
+					<< messageDepth << std::endl;
+		}
 		break;
 	}
 	case(EEXIST): {
