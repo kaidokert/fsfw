@@ -5,7 +5,8 @@
 
 PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
 		thread(0),priority(priority_),stackSize(stackSize_) {
-	strncpy(name, name_, PTHREAD_MAX_NAMELEN);
+    name[0] = '\0';
+    strncat(name, name_, PTHREAD_MAX_NAMELE - 1);
 }
 
 PosixThread::~PosixThread() {
