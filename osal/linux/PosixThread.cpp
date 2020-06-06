@@ -5,7 +5,8 @@
 
 PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
 		thread(0),priority(priority_),stackSize(stackSize_) {
-	strncpy(name, name_, PTHREAD_MAX_NAMELEN);
+    name[0] = '\0';
+    std::strncat(name, name_, PTHREAD_MAX_NAMELEN - 1);
 }
 
 PosixThread::~PosixThread() {
@@ -58,10 +59,6 @@ void PosixThread::resume(){
 	*/
 	pthread_kill(thread,SIGUSR1);
 }
-
-
-
-
 
 bool PosixThread::delayUntil(uint64_t* const prevoiusWakeTime_ms,
 		const uint64_t delayTime_ms) {
@@ -162,7 +159,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 					strerror(status) << std::endl;
 	}
 
-//TODO FIFO -> This needs root privileges for the process
+	// TODO FIFO -> This needs root privileges for the process
 	status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
 	if(status != 0){
 		sif::error << "Posix Thread attribute schedule policy failed with: " <<
@@ -208,7 +205,6 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 						" did not work.." << std::endl;
 			}
 		}
-
 	}
 
 	status = pthread_attr_destroy(&attributes);
