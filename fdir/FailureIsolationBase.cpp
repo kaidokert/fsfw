@@ -19,7 +19,9 @@ FailureIsolationBase::~FailureIsolationBase() {
 ReturnValue_t FailureIsolationBase::initialize() {
 	EventManagerIF* manager = objectManager->get<EventManagerIF>(
 			objects::EVENT_MANAGER);
-	if (manager == NULL) {
+	if (manager == nullptr) {
+		sif::error << "FailureIsolationBase::initialize: Event Manager has not"
+				" been initialized!" << std::endl;
 		return RETURN_FAILED;
 	}
 	ReturnValue_t result = manager->registerListener(eventQueue->getId());

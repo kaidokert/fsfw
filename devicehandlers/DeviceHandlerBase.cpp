@@ -139,10 +139,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	}
 
 	result = healthHelper.initialize();
-	if (result != RETURN_OK) {
-		sif::error << "DeviceHandlerBase::initialize: Health Helper "
-				"initialization failure" << std::endl;
-		return result;
+	if (result == RETURN_OK) {
+		healthHelperActive = true;
+	}
+	else {
+		sif::warning << "DeviceHandlerBase::initialize: Health Helper "
+				"initialization failure." << std::endl;
 	}
 
 	result = modeHelper.initialize();
@@ -215,9 +217,11 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	result = healthHelper.handleHealthCommand(&message);
-	if (result == RETURN_OK) {
-		return;
+	if(healthHelperActive) {
+		result = healthHelper.handleHealthCommand(&message);
+		if (result == RETURN_OK) {
+			return;
+		}
 	}
 
 	result = modeHelper.handleModeCommand(&message);
@@ -996,7 +1000,9 @@ void DeviceHandlerBase::getMode(Mode_t* mode, Submode_t* submode) {
 }
 
 void DeviceHandlerBase::setToExternalControl() {
-	healthHelper.setHealth(EXTERNAL_CONTROL);
+	if(healthHelperActive) {
+		healthHelper.setHealth(EXTERNAL_CONTROL);
+	}
 }
 
 void DeviceHandlerBase::announceMode(bool recursive) {
@@ -1016,11 +1022,24 @@ void DeviceHandlerBase::missedReply(DeviceCommandId_t id) {
 }
 
 HasHealthIF::HealthState DeviceHandlerBase::getHealth() {
-	return healthHelper.getHealth();
+	if(healthHelperActive) {
+		return healthHelper.getHealth();
+	}
+	else {
+		sif::warning << "DeviceHandlerBase::getHealth: Health helper not active"
+				<< std::endl;
+		return HasHealthIF::HEALTHY;
+	}
 }
 
 ReturnValue_t DeviceHandlerBase::setHealth(HealthState health) {
-	healthHelper.setHealth(health);
+	if(healthHelperActive) {
+		healthHelper.setHealth(health);
+	}
+	else {
+		sif::warning << "DeviceHandlerBase::getHealth: Health helper not active"
+				<< std::endl;
+	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

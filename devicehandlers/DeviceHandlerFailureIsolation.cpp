@@ -163,6 +163,8 @@ void DeviceHandlerFailureIsolation::clearFaultCounters() {
 ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
 	ReturnValue_t result = FailureIsolationBase::initialize();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "DeviceHandlerFailureIsolation::initialize: Could not"
+				" initialize FailureIsolationBase." << std::endl;
 		return result;
 	}
 	ConfirmsFailuresIF* power = objectManager->get<ConfirmsFailuresIF>(

@@ -69,9 +69,10 @@ void ObjectManager::initialize() {
 		return_value = it.second->initialize();
 		if ( return_value != RETURN_OK ) {
 			object_id_t var = it.first;
-			sif::error << "Object 0x" << std::hex <<  std::setw(8) <<
-					std::setfill('0')<< var << " failed to initialize " <<
-					"with code 0x" << return_value << std::dec << std::endl;
+			sif::error << "ObjectManager::initialize: Object 0x" << std::hex <<
+					std::setw(8) << std::setfill('0')<< var << " failed to "
+					"initialize with code 0x" << return_value << std::dec <<
+					std::endl;
 			error_count++;
 		}
 	}
