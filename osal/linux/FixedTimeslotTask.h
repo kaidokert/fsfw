@@ -8,6 +8,18 @@
 
 class FixedTimeslotTask: public FixedTimeslotTaskIF, public PosixThread {
 public:
+	/**
+	 * Create a generic periodic task.
+	 * @param name_
+	 * Name, maximum allowed size of linux is 16 chars, everything else will
+	 * be truncated.
+	 * @param priority_
+	 * Real-time priority, ranges from 1 to 99 for Linux.
+	 * See: https://man7.org/linux/man-pages/man7/sched.7.html
+	 * @param stackSize_
+	 * @param period_
+	 * @param deadlineMissedFunc_
+	 */
 	FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_,
 			uint32_t periodMs_);
 	virtual ~FixedTimeslotTask();
