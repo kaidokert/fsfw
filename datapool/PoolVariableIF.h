@@ -27,7 +27,7 @@ public:
 
 	static constexpr bool VALID = 1;
 	static constexpr bool INVALID = 0;
-	static constexpr uint32_t NO_PARAMETER = 0;
+	static constexpr uint32_t NO_PARAMETER = 0xffffffff;
 
 	enum ReadWriteMode_t {
 		VAR_READ, VAR_WRITE, VAR_READ_WRITE
