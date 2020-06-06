@@ -182,7 +182,7 @@ public:
 
 	bool isDefaultDestinationSet() const override;
 
-	ReturnValue_t lockQueue(millis_t lockTimeout);
+	ReturnValue_t lockQueue(dur_millis_t lockTimeout);
 	ReturnValue_t unlockQueue();
 protected:
 	/**

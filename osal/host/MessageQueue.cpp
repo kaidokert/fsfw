@@ -135,7 +135,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MessageQueue::lockQueue(millis_t lockTimeout) {
+ReturnValue_t MessageQueue::lockQueue(dur_millis_t lockTimeout) {
 	return queueLock->lockMutex(lockTimeout);
 }
 
