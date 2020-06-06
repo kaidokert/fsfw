@@ -20,7 +20,7 @@ MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize): id(0),
 	attributes.mq_msgsize = maxMessageSize;
 	attributes.mq_flags = 0; //Flags are ignored on Linux during mq_open
 	//Set the name of the queue. The slash is mandatory!
-	sprintf(name, "/Q%u\n", queueCounter++);
+	sprintf(name, "/FSFW_MQ%u\n", queueCounter++);
 
 	// Create a nonblocking queue if the name is available (the queue is read
 	// and writable for the owner as well as the group)
@@ -53,9 +53,9 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		uint32_t messageDepth) {
 	switch(errno) {
 	case(EINVAL): {
-		sif::error << "MessageQueue::MessageQueue: Invalid Name or attributes"
+		sif::error << "MessageQueue::MessageQueue: Invalid name or attributes"
 				" for message size" << std::endl;
-		size_t defaultMqMaxMsg;
+		size_t defaultMqMaxMsg = 0;
 		if(std::ifstream("/proc/sys/fs/mqueue/msg_max",std::ios::in) >>
 				defaultMqMaxMsg and defaultMqMaxMsg < messageDepth) {
 			// See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
