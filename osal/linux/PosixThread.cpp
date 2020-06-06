@@ -3,6 +3,10 @@
 #include <errno.h>
 #include <framework/osal/linux/PosixThread.h>
 
+PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
+		thread(0),priority(priority_),stackSize(stackSize_) {
+	strcpy(name,name_);
+}
 
 PosixThread::~PosixThread() {
 	//No deletion and no free of Stack Pointer
@@ -113,12 +117,6 @@ uint64_t PosixThread::getCurrentMonotonicTimeMs(){
 	return currentTime_ms;
 }
 
-PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
-		thread(0),priority(priority_),stackSize(stackSize_) {
-	strcpy(name,name_);
-}
-
-
 
 void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	//sif::debug << "PosixThread::createTask" << std::endl;
@@ -135,14 +133,24 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 		sif::error << "Posix Thread attribute init failed with: " <<
 				strerror(status) << std::endl;
 	}
-	void* sp;
-	status = posix_memalign(&sp, sysconf(_SC_PAGESIZE), stackSize);
+	void* stackPointer;
+	status = posix_memalign(&stackPointer, sysconf(_SC_PAGESIZE), stackSize);
 	if(status != 0){
 		sif::error << "PosixThread::createTask: Stack init failed with: " <<
 				strerror(status) << std::endl;
+		if(errno == ENOMEM) {
+			double stackMb = (double)((double)stackSize/(double)10e6);
+			sif::error << "PosixThread::createTask: Insufficient memory for"
+					" the requested " << stackMb << " MB" << std::endl;
+		}
+		else if(errno == EINVAL) {
+			sif::error << "PosixThread::createTask: Wrong alignment argument!"
+					<< std::endl;
+		}
+		return;
 	}
 
-	status = pthread_attr_setstack(&attributes, sp, stackSize);
+	status = pthread_attr_setstack(&attributes, stackPointer, stackSize);
 	if(status != 0){
 		sif::error << "Posix Thread attribute setStack failed with: " <<
 				strerror(status) << std::endl;

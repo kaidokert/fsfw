@@ -64,7 +64,7 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 			// Run the unlockRealtime script or grant the mode manully by using:
 			// sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
 
-			// Permanent solution:
+			// Permanent solution (EventManager has mq depth of 80):
 			// echo msg_max | sudo tee /proc/sys/fs/mqueue/msg_max
 			sif::error << "MessageQueue::MessageQueue: Default MQ size "
 					<< defaultMqMaxMsg << " is too small for requested size "

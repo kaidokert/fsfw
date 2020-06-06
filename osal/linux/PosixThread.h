@@ -68,7 +68,7 @@ protected:
 private:
 	char name[10];
 	int priority;
-	size_t stackSize;
+	size_t stackSize = 0;
 };
 
 #endif /* FRAMEWORK_OSAL_LINUX_POSIXTHREAD_H_ */
