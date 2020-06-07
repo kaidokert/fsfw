@@ -61,6 +61,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 	}
 	// not sure this will work..
 	//*message = std::move(messageQueue.front());
+	MutexHelper mutexLock(queueLock, 20);
 	MessageQueueMessage* currentMessage = &messageQueue.front();
 	std::copy(currentMessage->getBuffer(),
 			currentMessage->getBuffer() + messageSize, message->getBuffer());
