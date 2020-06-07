@@ -2,10 +2,10 @@
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
 #include <framework/datapool/DataSetBase.h>
 #include <framework/datapool/DataSetIF.h>
-#include <framework/housekeeping/HasHkPoolParametersIF.h>
+#include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
 #include <framework/serialize/SerializeIF.h>
 
-class HousekeepingManager;
+class LocalDataPoolManager;
 
 /**
  * @brief	The LocalDataSet class manages a set of locally checked out variables
@@ -35,7 +35,7 @@ public:
 	 * 			The constructor simply sets the fill_count to zero and sets
 	 *  		the state to "uninitialized".
 	 */
-	LocalDataSet(HasHkPoolParametersIF* hkOwner);
+	LocalDataSet(OwnsLocalDataPoolIF* hkOwner);
 
 	/**
 	 * @brief	Constructor for users of local pool data. The passed pool
@@ -78,7 +78,7 @@ private:
 	 */
 	ReturnValue_t unlockDataPool() override;
 
-	HousekeepingManager* hkManager;
+	LocalDataPoolManager* hkManager;
 };
 
 #endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_ */

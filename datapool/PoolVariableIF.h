@@ -1,12 +1,12 @@
-#ifndef POOLVARIABLEIF_H_
-#define POOLVARIABLEIF_H_
+#ifndef FRAMEWORK_DATAPOOL_POOLVARIABLEIF_H_
+#define FRAMEWORK_DATAPOOL_POOLVARIABLEIF_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serialize/SerializeIF.h>
 
-
 /**
- * @brief	This interface is used to control data pool variable representations.
+ * @brief	This interface is used to control data pool
+ * 			variable representations.
  * @details
  * To securely handle data pool variables, all pool entries are locally
  * managed by data pool variable access classes, which are called pool
@@ -39,7 +39,8 @@ public:
 	 */
 	virtual ~PoolVariableIF() {}
 	/**
-	 * @brief	This method returns if the variable is write-only, read-write or read-only.
+	 * @brief	This method returns if the variable is write-only,
+	 * 			read-write or read-only.
 	 */
 	virtual ReadWriteMode_t getReadWriteMode() const = 0;
 	/**
@@ -47,7 +48,8 @@ public:
 	 */
 	virtual uint32_t getDataPoolId() const = 0;
 	/**
-	 * @brief	With this call, the valid information of the variable is returned.
+	 * @brief	With this call, the valid information of the
+	 * 			variable is returned.
 	 */
 	virtual bool isValid() const = 0;
 	/**

@@ -4,8 +4,8 @@
 #include <framework/datapool/DataSetIF.h>
 #include <framework/datapool/PoolEntry.h>
 #include <framework/datapool/PoolVariableIF.h>
+#include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/serialize/SerializeAdapter.h>
-#include <framework/housekeeping/HousekeepingManager.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 
@@ -46,7 +46,7 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVector(lp_id_t poolId, HasHkPoolParametersIF* hkOwner,
+	LocalPoolVector(lp_id_t poolId, OwnsLocalDataPoolIF* hkOwner,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
 			DataSetIF* dataSet = nullptr);
 
@@ -179,7 +179,7 @@ private:
 	 */
 	ReadWriteMode_t readWriteMode;
 	//! @brief	Pointer to the class which manages the HK pool.
-	HousekeepingManager* hkManager;
+	LocalDataPoolManager* hkManager;
 
 	// std::ostream is the type for object std::cout
 	template <typename U, uint16_t otherSize>

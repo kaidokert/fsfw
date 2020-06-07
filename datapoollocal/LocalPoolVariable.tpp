@@ -7,7 +7,7 @@
 
 template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
-		HasHkPoolParametersIF* hkOwner, pool_rwm_t setReadWriteMode,
+		OwnsLocalDataPoolIF* hkOwner, pool_rwm_t setReadWriteMode,
 		DataSetIF* dataSet):
 		localPoolId(poolId),readWriteMode(setReadWriteMode) {
 	if(poolId == PoolVariableIF::NO_PARAMETER) {
@@ -33,8 +33,8 @@ inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
 		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
 				"NO_PARAMETER value!" << std::endl;
 	}
-	HasHkPoolParametersIF* hkOwner =
-			objectManager->get<HasHkPoolParametersIF>(poolOwner);
+	OwnsLocalDataPoolIF* hkOwner =
+			objectManager->get<OwnsLocalDataPoolIF>(poolOwner);
 	if(hkOwner == nullptr) {
 		sif::error << "LocalPoolVariable: The supplied pool owner did not implement"
 				"the correct interface HasHkPoolParametersIF!" << std::endl;
@@ -47,7 +47,7 @@ inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
 }
 
 template<typename T>
-inline ReturnValue_t LocalPoolVar<T>::read(millis_t lockTimeout) {
+inline ReturnValue_t LocalPoolVar<T>::read(dur_millis_t lockTimeout) {
 	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
 	return readWithoutLock();
 }
@@ -75,7 +75,7 @@ inline ReturnValue_t LocalPoolVar<T>::readWithoutLock() {
 }
 
 template<typename T>
-inline ReturnValue_t LocalPoolVar<T>::commit(millis_t lockTimeout) {
+inline ReturnValue_t LocalPoolVar<T>::commit(dur_millis_t lockTimeout) {
 	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
 	return commitWithoutLock();
 }

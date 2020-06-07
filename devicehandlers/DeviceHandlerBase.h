@@ -11,15 +11,13 @@
 #include <framework/modes/HasModesIF.h>
 #include <framework/power/PowerSwitchIF.h>
 #include <framework/ipc/MessageQueueIF.h>
-#include <framework/housekeeping/HasHkPoolParametersIF.h>
-
 #include <framework/action/ActionHelper.h>
 #include <framework/health/HealthHelper.h>
 #include <framework/parameters/ParameterHelper.h>
 #include <framework/datapool/HkSwitchHelper.h>
+#include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
-#include <framework/housekeeping/HousekeepingManager.h>
-
+#include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
 #include <map>
 
 namespace Factory{
@@ -87,7 +85,7 @@ class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasHealthIF,
 		public HasActionsIF,
 		public ReceivesParameterMessagesIF,
-		public HasHkPoolParametersIF {
+		public OwnsLocalDataPoolIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
@@ -480,10 +478,10 @@ protected:
 	 * @return
 	 */
 	virtual ReturnValue_t initializeHousekeepingPoolEntries(
-				LocalDataPoolMap& localDataPoolMap) override;
+				LocalDataPool& localDataPoolMap) override;
 
 	/** Get the HK manager object handle */
-	virtual HousekeepingManager* getHkManagerHandle() override;
+	virtual LocalDataPoolManager* getHkManagerHandle() override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per
@@ -609,7 +607,7 @@ protected:
 	/** Action helper for HasActionsIF */
 	ActionHelper actionHelper;
 	/** Housekeeping Manager */
-	HousekeepingManager hkManager;
+	LocalDataPoolManager hkManager;
 
 	/**
 	 *  @brief Information about commands

@@ -5,33 +5,40 @@
 #include <framework/housekeeping/HousekeepingMessage.h>
 #include <map>
 
-class HousekeepingManager;
+class LocalDataPoolManager;
 class DataSetIF;
 /**
  * @brief	Type definition for local pool entries.
  */
 using lp_id_t = uint32_t;
-using LocalDataPoolMap =  std::map<lp_id_t, PoolEntryIF*>;
-using LocalDataPoolMapIter = LocalDataPoolMap::iterator;
+using LocalDataPool =  std::map<lp_id_t, PoolEntryIF*>;
+using LocalDataPoolMapIter = LocalDataPool::iterator;
 
 /**
  * @brief 		This interface is implemented by classes which posses a local
- * 				data pool (not the managing class)
+ * 				data pool (not the managing class). It defines the relationship
+ * 				between the local data pool owner and the LocalDataPoolManager.
  * @details
- * Any class implementing this interface shall also have a HousekeepingManager
- * member class which handles the retrieval of the local pool data.
+ * Any class implementing this interface shall also have a LocalDataPoolManager
+ * member class which contains the actual pool data structure
+ * and exposes the public interface for it.
  * This is required because the pool entries are templates, which makes
- * specifying an interface rather difficult.
+ * specifying an interface rather difficult. The local data pool can be
+ * accessed by using the LocalPoolVariable, LocalPoolVector or LocalDataSet
+ * classes.
  *
- * This could be circumvented by using a wrapper/accessor function, but
+ * Architectural Note:
+ * This could be circumvented by using a wrapper/accessor function or
+ * implementing the templated function in this interface..
+ * The first solution sounds better than the second but
  * the LocalPoolVariable classes are templates as well, so this just shifts
  * the problem somewhere else. Interfaces are nice, but the most
  * pragmatic solution I found was to offer the client the full interface
- * of the housekeeping manager.
+ * of the LocalDataPoolManager.
  */
-class HasHkPoolParametersIF {
+class OwnsLocalDataPoolIF {
 public:
-	virtual~ HasHkPoolParametersIF() {};
+	virtual~ OwnsLocalDataPoolIF() {};
 
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING;
 	static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0XA0);
@@ -39,9 +46,9 @@ public:
 
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 	virtual ReturnValue_t initializeHousekeepingPoolEntries(
-			LocalDataPoolMap& localDataPoolMap) = 0;
+			LocalDataPool& localDataPoolMap) = 0;
 	//virtual float setMinimalHkSamplingFrequency() = 0;
-	virtual HousekeepingManager* getHkManagerHandle() = 0;
+	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
 	virtual DataSetIF* getDataSetHandle(sid_t sid) = 0;
 };
 

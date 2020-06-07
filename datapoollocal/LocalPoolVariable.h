@@ -3,11 +3,11 @@
 
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/datapool/DataSetIF.h>
-#include <framework/housekeeping/HasHkPoolParametersIF.h>
+#include <framework/datapoollocal/LocalDataPoolManager.h>
+#include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 
 #include <framework/serialize/SerializeAdapter.h>
-#include <framework/housekeeping/HousekeepingManager.h>
 
 /**
  * @brief 	Local Pool Variable class which is used to access the local pools.
@@ -29,9 +29,12 @@ public:
 	/**
 	 * This constructor is used by the data creators to have pool variable
 	 * instances which can also be stored in datasets.
-	 * It does not fetch the current value from the data pool. This is performed
-	 * by the read() operation (which is not thread-safe).
-	 * Datasets can be used to access local pool entires in a thread-safe way.
+	 *
+	 * It does not fetch the current value from the data pool, which
+	 * has to be done by calling the read() operation.
+	 * Datasets can be used to access multiple local pool entries in an
+	 * efficient way. A pointer to a dataset can be passed to register
+	 * the pool variable in that dataset directly.
 	 * @param poolId ID of the local pool entry.
 	 * @param hkOwner Pointer of the owner. This will generally be the calling
 	 * class itself which passes "this".
@@ -39,7 +42,7 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVar(lp_id_t poolId, HasHkPoolParametersIF* hkOwner,
+	LocalPoolVar(lp_id_t poolId, OwnsLocalDataPoolIF* hkOwner,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
 			DataSetIF* dataSet = nullptr);
 
@@ -47,12 +50,14 @@ public:
 	 * This constructor is used by data users like controllers to have
 	 * access to the local pool variables of data creators by supplying
 	 * the respective creator object ID.
-	 * It does not fetch the current value from the data pool. This is performed
-	 * by the read() operation (which is not thread-safe).
-	 * Datasets can be used to access local pool entires in a thread-safe way.
+	 *
+	 * It does not fetch the current value from the data pool, which
+	 * has to be done by calling the read() operation.
+	 * Datasets can be used to access multiple local pool entries in an
+	 * efficient way. A pointer to a dataset can be passed to register
+	 * the pool variable in that dataset directly.
 	 * @param poolId ID of the local pool entry.
-	 * @param hkOwner Pointer of the owner. This will generally be the calling
-	 * class itself which passes "this".
+	 * @param hkOwner object ID of the pool owner.
 	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
@@ -99,7 +104,7 @@ public:
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 *
 	 */
-	ReturnValue_t read(uint32_t lockTimeout = MutexIF::BLOCKING) override;
+	ReturnValue_t read(dur_millis_t lockTimeout = MutexIF::BLOCKING) override;
 	/**
 	 * @brief	The commit call copies the array values back to the data pool.
 	 * @details
@@ -109,7 +114,8 @@ public:
 	 * It is recommended to use DataSets to read and commit multiple variables
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 */
-	ReturnValue_t commit(uint32_t lockTimeout = MutexIF::BLOCKING) override;
+	ReturnValue_t commit(dur_millis_t lockTimeout = MutexIF::BLOCKING) override;
+
 protected:
 	/**
 	 * @brief	Like #read, but without a lock protection of the global pool.
@@ -144,7 +150,7 @@ private:
 	bool valid = false;
 
 	//! Pointer to the class which manages the HK pool.
-	HousekeepingManager* hkManager;
+	LocalDataPoolManager* hkManager;
 };
 
 #include <framework/datapoollocal/LocalPoolVariable.tpp>

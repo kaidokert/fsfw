@@ -1347,11 +1347,11 @@ void DeviceHandlerBase::performOperationHook() {
 }
 
 ReturnValue_t DeviceHandlerBase::initializeHousekeepingPoolEntries(
-		LocalDataPoolMap &localDataPoolMap) {
+		LocalDataPool &localDataPoolMap) {
 	return RETURN_OK;
 }
 
-HousekeepingManager* DeviceHandlerBase::getHkManagerHandle() {
+LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
 	return &hkManager;
 }
 

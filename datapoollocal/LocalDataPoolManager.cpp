@@ -1,12 +1,12 @@
+#include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/datapoollocal/LocalDataSet.h>
-#include <framework/housekeeping/HousekeepingManager.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/ipc/MutexFactory.h>
 #include <framework/ipc/MutexHelper.h>
 
 #include <array>
 
-HousekeepingManager::HousekeepingManager(HasHkPoolParametersIF* owner) {
+LocalDataPoolManager::LocalDataPoolManager(OwnsLocalDataPoolIF* owner) {
 	if(owner == nullptr) {
 		sif::error << "HkManager: Invalid supplied owner!" << std::endl;
 		std::exit(0);
@@ -16,11 +16,12 @@ HousekeepingManager::HousekeepingManager(HasHkPoolParametersIF* owner) {
 	//owner->setMinimalHkSamplingFrequency();
 }
 
-HousekeepingManager::~HousekeepingManager() {}
+LocalDataPoolManager::~LocalDataPoolManager() {}
 
-ReturnValue_t HousekeepingManager::initializeHousekeepingPoolEntriesOnce() {
+ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 	if(not mapInitialized) {
-		ReturnValue_t result = owner->initializeHousekeepingPoolEntries(localDpMap);
+		ReturnValue_t result =
+				owner->initializeHousekeepingPoolEntries(localDpMap);
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			mapInitialized = true;
 		}
@@ -30,24 +31,24 @@ ReturnValue_t HousekeepingManager::initializeHousekeepingPoolEntriesOnce() {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t HousekeepingManager::handleHousekeepingMessage(
+ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 		CommandMessage *message) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t HousekeepingManager::printPoolEntry(
+ReturnValue_t LocalDataPoolManager::printPoolEntry(
 		lp_id_t localPoolId) {
 	auto poolIter = localDpMap.find(localPoolId);
 	if (poolIter == localDpMap.end()) {
 		sif::debug << "HousekeepingManager::fechPoolEntry:"
 				" Pool entry not found." << std::endl;
-		return HasHkPoolParametersIF::POOL_ENTRY_NOT_FOUND;
+		return OwnsLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
 	}
 	poolIter->second->print();
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-MutexIF* HousekeepingManager::getMutexHandle() {
+MutexIF* LocalDataPoolManager::getMutexHandle() {
 	return mutex;
 }
 
@@ -56,7 +57,7 @@ MutexIF* HousekeepingManager::getMutexHandle() {
 //
 //}
 
-void HousekeepingManager::generateHousekeepingPacket(sid_t sid) {
+void LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
 	LocalDataSet* dataSetToSerialize = dynamic_cast<LocalDataSet*>(
 			owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
@@ -73,10 +74,10 @@ void HousekeepingManager::generateHousekeepingPacket(sid_t sid) {
 
 }
 
-void HousekeepingManager::setHkPacketQueue(MessageQueueIF *msgQueue) {
+void LocalDataPoolManager::setHkPacketQueue(MessageQueueIF *msgQueue) {
 	this->hkPacketQueue = msgQueue;
 }
 
-const HasHkPoolParametersIF* HousekeepingManager::getOwner() const {
+const OwnsLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 	return owner;
 }

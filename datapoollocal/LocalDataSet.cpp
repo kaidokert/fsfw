@@ -1,7 +1,7 @@
+#include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/datapoollocal/LocalDataSet.h>
-#include <framework/housekeeping/HousekeepingManager.h>
 
-LocalDataSet::LocalDataSet(HasHkPoolParametersIF *hkOwner): DataSetBase() {
+LocalDataSet::LocalDataSet(OwnsLocalDataPoolIF *hkOwner): DataSetBase() {
 	if(hkOwner != nullptr) {
 		hkManager = hkOwner->getHkManagerHandle();
 	}
@@ -11,7 +11,7 @@ LocalDataSet::LocalDataSet(HasHkPoolParametersIF *hkOwner): DataSetBase() {
 }
 
 LocalDataSet::LocalDataSet(object_id_t ownerId): DataSetBase()  {
-	HasHkPoolParametersIF* hkOwner = objectManager->get<HasHkPoolParametersIF>(
+	OwnsLocalDataPoolIF* hkOwner = objectManager->get<OwnsLocalDataPoolIF>(
 			ownerId);
 	if(hkOwner == nullptr) {
 		// config error, error output here.
