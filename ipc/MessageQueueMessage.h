@@ -1,6 +1,7 @@
 #ifndef MESSAGEQUEUEMESSAGE_H_
 #define MESSAGEQUEUEMESSAGE_H_
 
+#include <framework/ipc/MessageQueueMessageIF.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
 #include <stddef.h>
 
@@ -23,7 +24,7 @@
  *	receive messages from other tasks.
  *	@ingroup message_queue
  */
-class MessageQueueMessage {
+class MessageQueueMessage: public MessageQueueMessageIF {
 public:
 	/**
 	 * @brief	The class is initialized empty with this constructor.
@@ -43,6 +44,7 @@ public:
 	 * 				MAX_MESSAGE_SIZE and larger than MIN_MESSAGE_SIZE.
 	 */
 	MessageQueueMessage(uint8_t* data, size_t size);
+
 	/**
 	 * @brief	The size information of each message is stored in this attribute.
 	 * @details

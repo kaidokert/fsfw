@@ -46,7 +46,7 @@ public:
 	LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
 
 	ReturnValue_t generateHousekeepingPacket(sid_t sid);
-	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
+	ReturnValue_t handleHousekeepingMessage(MessageQueueMessage* message);
 
 	/**
 	 * This function is used to fill the local data pool map with pool

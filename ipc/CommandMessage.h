@@ -28,7 +28,8 @@ public:
 	static const Command_t REPLY_REJECTED = MAKE_COMMAND_ID( 0xD1 );
 
 	/**
-	 * This is the size of a message as it is seen by the MessageQueue
+	 * This is the size of a message as it is seen by the MessageQueue.
+	 * 14 of the 24 available MessageQueueMessage bytes are used.
 	 */
 	static const size_t COMMAND_MESSAGE_SIZE = HEADER_SIZE
 			+ sizeof(Command_t) + 2 * sizeof(uint32_t);

@@ -5,12 +5,14 @@
 #include <limits>
 
 union sid_t {
-	static constexpr uint64_t INVALID_ADDRESS = std::numeric_limits<uint64_t>::max();
+	static constexpr uint64_t INVALID_ADDRESS =
+			std::numeric_limits<uint64_t>::max();
 	sid_t(): raw(INVALID_ADDRESS) {}
 
 	struct {
 		object_id_t objectId ;
-		// A generic 32 bit ID to identify unique HK packets for a single object.
+		// A generic 32 bit ID to identify unique HK packets for a single
+		// object.
 		// For example, the DeviceCommandId_t is used for DeviceHandlers
 		uint32_t ownerSetId;
 	};
@@ -19,15 +21,17 @@ union sid_t {
 	 */
 	uint64_t raw;
 };
-class HousekeepingMessage {
+
+
+class HousekeepingMessage: public MessageQueueMessage {
 public:
 	/**
 	 * No instances of a message shall be created, instead
 	 * a CommandMessage instance is manipulated.
 	 */
-	HousekeepingMessage() = delete;
-	HousekeepingMessage(const HousekeepingMessage&) = delete;
-	HousekeepingMessage operator=(const HousekeepingMessage &) = delete;
+	HousekeepingMessage();
+//	HousekeepingMessage(const HousekeepingMessage&) = delete;
+//	HousekeepingMessage operator=(const HousekeepingMessage &) = delete;
 
 	static constexpr uint8_t MESSAGE_ID = MESSAGE_TYPE::HOUSEKEEPING;
 	static constexpr Command_t ADD_HK_REPORT_STRUCT =
@@ -76,6 +80,7 @@ public:
 
 //	static void setAddHkReportStructMessage(CommandMessage* message,
 //			DevisetId, store_address_t packet);
+	static void setHkReportMessage();
 };
 
 

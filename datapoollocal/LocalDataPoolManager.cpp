@@ -41,7 +41,7 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 }
 
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
-		CommandMessage *message) {
+		MessageQueueMessage *message) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
