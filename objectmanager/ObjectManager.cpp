@@ -23,6 +23,7 @@ ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 	} else {
 		sif::error << "ObjectManager::insert: Object id " << std::hex
 		           << (int)id << std::dec << " is already in use!" << std::endl;
+		sif::error << "Terminating program." << std::endl;
 		//This is very severe and difficult to handle in other places.
 		std::exit(INSERTION_FAILED);
 	}
@@ -31,8 +32,8 @@ ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 ReturnValue_t ObjectManager::remove( object_id_t id ) {
 	if ( this->getSystemObject(id) != NULL ) {
 		this->objectList.erase( id );
-		sif::debug << "ObjectManager::removeObject: Object " << std::hex
-		           << (int)id << std::dec << " removed." << std::endl;
+		//sif::debug << "ObjectManager::removeObject: Object " << std::hex
+		//           << (int)id << std::dec << " removed." << std::endl;
 		return RETURN_OK;
 	} else {
 		sif::error << "ObjectManager::removeObject: Requested object "
