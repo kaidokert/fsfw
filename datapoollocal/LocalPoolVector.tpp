@@ -85,8 +85,6 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 				"mode for commit() call." << std::endl;
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
-	// Wait maximum of 50 milliseconds.
-	MutexHelper(hkManager->getMutexHandle(), 50);
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
@@ -106,8 +104,11 @@ inline T& LocalPoolVector<T, vectorSize>::operator [](int i) {
 	if(i <= vectorSize) {
 		return value[i];
 	}
-	sif::warning << "LocalPoolVector: Invalid index" << std::endl;
-	return 0;
+	// If this happens, I have to set some value. I consider this
+	// a configuration error, but I wont exit here.
+	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
+			" last value!" << std::endl;
+	return value[i];
 }
 
 template<typename T, uint16_t vectorSize>
@@ -115,8 +116,11 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](int i) const {
 	if(i <= vectorSize) {
 		return value[i];
 	}
-	sif::warning << "LocalPoolVector: Invalid index" << std::endl;
-	return 0;
+	// If this happens, I have to set some value. I consider this
+	// a configuration error, but I wont exit here.
+	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
+			" last value!" << std::endl;
+	return value[i];
 }
 
 template<typename T, uint16_t vectorSize>

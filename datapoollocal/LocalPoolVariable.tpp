@@ -87,8 +87,6 @@ inline ReturnValue_t LocalPoolVar<T>::commitWithoutLock() {
 				 "mode for commit() call." << std::endl;
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
-	// Wait maximum of 50 milliseconds.
-	MutexHelper(hkManager->getMutexHandle(), 50);
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {

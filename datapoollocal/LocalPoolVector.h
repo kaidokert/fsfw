@@ -70,8 +70,9 @@ public:
 
 	/**
 	 * @brief	This is the local copy of the data pool entry.
-	 * @details	The user can work on this attribute
-	 * 			just like he would on a local array of this type.
+	 * @details
+	 * The user can work on this attribute just like he would on a local
+	 * array of this type.
 	 */
 	T value[vectorSize];
 	/**
@@ -109,7 +110,7 @@ public:
 	void setValid(bool valid) override;
 	uint8_t getValid() const;
 
-	T &operator [](int i);
+	T& operator [](int i);
 	const T &operator [](int i) const;
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
@@ -142,6 +143,7 @@ public:
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 */
 	ReturnValue_t commit(uint32_t lockTimeout = MutexIF::BLOCKING) override;
+
 protected:
 	/**
 	 * @brief	Like #read, but without a lock protection of the global pool.
@@ -185,6 +187,8 @@ private:
 	template <typename U, uint16_t otherSize>
 	friend std::ostream& operator<< (std::ostream &out,
 	        const LocalPoolVector<U, otherSize> &var);
+
+
 };
 
 #include <framework/datapoollocal/LocalPoolVector.tpp>
