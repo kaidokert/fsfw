@@ -218,7 +218,7 @@ void CommandingServiceBase::handleRequestQueue() {
 }
 
 
-void CommandingServiceBase::sendTmPacket(uint8_t subservice,
+ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 		const uint8_t* data, size_t dataLen, const uint8_t* headerData,
 		size_t headerSize) {
 	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
@@ -228,36 +228,38 @@ void CommandingServiceBase::sendTmPacket(uint8_t subservice,
 	if (result == HasReturnvaluesIF::RETURN_OK) {
 		this->tmPacketCounter++;
 	}
+	return result;
 }
 
 
-void CommandingServiceBase::sendTmPacket(uint8_t subservice,
-		object_id_t objectId, const uint8_t *data, size_t dataLen) {
-	uint8_t buffer[sizeof(object_id_t)];
-	uint8_t* pBuffer = buffer;
-	size_t size = 0;
-	SerializeAdapter<object_id_t>::serialize(&objectId, &pBuffer, &size,
-			sizeof(object_id_t), true);
-	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
-			this->tmPacketCounter, data, dataLen, buffer, size);
-	ReturnValue_t result = tmPacketStored.sendPacket(
-			requestQueue->getDefaultDestination(), requestQueue->getId());
-	if (result == HasReturnvaluesIF::RETURN_OK) {
-		this->tmPacketCounter++;
-	}
-
+ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
+        object_id_t objectId, const uint8_t *data, size_t dataLen) {
+    uint8_t buffer[sizeof(object_id_t)];
+    uint8_t* pBuffer = buffer;
+    size_t size = 0;
+    SerializeAdapter<object_id_t>::serialize(&objectId, &pBuffer, &size,
+            sizeof(object_id_t), true);
+    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, data, dataLen, buffer, size);
+    ReturnValue_t result = tmPacketStored.sendPacket(
+            requestQueue->getDefaultDestination(), requestQueue->getId());
+    if (result == HasReturnvaluesIF::RETURN_OK) {
+        this->tmPacketCounter++;
+    }
+    return result;
 }
 
 
-void CommandingServiceBase::sendTmPacket(uint8_t subservice,
-		SerializeIF* content, SerializeIF* header) {
-	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
-			this->tmPacketCounter, content, header);
-	ReturnValue_t result = tmPacketStored.sendPacket(
-			requestQueue->getDefaultDestination(), requestQueue->getId());
-	if (result == HasReturnvaluesIF::RETURN_OK) {
-		this->tmPacketCounter++;
-	}
+ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
+        SerializeIF* content, SerializeIF* header) {
+    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, content, header);
+    ReturnValue_t result = tmPacketStored.sendPacket(
+            requestQueue->getDefaultDestination(), requestQueue->getId());
+    if (result == HasReturnvaluesIF::RETURN_OK) {
+        this->tmPacketCounter++;
+    }
+    return result;
 }
 
 

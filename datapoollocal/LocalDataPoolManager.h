@@ -37,14 +37,15 @@ class LocalDataPoolManager {
 	friend class LocalPoolVector;
 	friend class LocalDataSet;
 public:
-	static constexpr float MINIMAL_SAMPLING_FREQUENCY = 0.2;
 
 	LocalDataPoolManager(OwnsLocalDataPoolIF* owner);
 	virtual~ LocalDataPoolManager();
 
+	/* Copying forbidden */
+	LocalDataPoolManager(const LocalDataPoolManager &) = delete;
+	LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
 
-	// propably will just call respective local data set functions.
-	void generateHousekeepingPacket(sid_t sid);
+	ReturnValue_t generateHousekeepingPacket(sid_t sid);
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
 	/**
@@ -55,7 +56,12 @@ public:
 	 */
 	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
+	//! Set the queue for HK packets, which are sent unrequested.
 	void setHkPacketQueue(MessageQueueIF* msgQueue);
+	//! Set the queue for replies. This can be set manually or by the owner
+	//! class if the manager if message are relayed by it.
+	void setHkReplyQueue(MessageQueueIF* replyQueue);
+
 	const OwnsLocalDataPoolIF* getOwner() const;
 
 	ReturnValue_t printPoolEntry(lp_id_t localPoolId);
@@ -81,6 +87,8 @@ private:
 	//! Maybe this will just be the TM funnel.
 	MessageQueueIF* hkPacketQueue = nullptr;
 
+	//! Global IPC store is used to store all packets.
+	StorageManagerIF* ipcStore = nullptr;
 	/**
 	 * Get the pointer to the mutex. Can be used to lock the data pool
 	 * eternally. Use with care and don't forget to unlock locked mutexes!
