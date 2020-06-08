@@ -1,5 +1,3 @@
-#include "MissionMessageTypes.h"
-
 #include <framework/devicehandlers/DeviceHandlerMessage.h>
 #include <framework/health/HealthMessage.h>
 #include <framework/ipc/CommandMessage.h>
