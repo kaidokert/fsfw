@@ -1,5 +1,5 @@
-#ifndef OS_RTEMS_MUTEX_H_
-#define OS_RTEMS_MUTEX_H_
+#ifndef FRAMEWORK_OSAL_RTEMS_MUTEX_H_
+#define FRAMEWORK_OSAL_RTEMS_MUTEX_H_
 
 #include <framework/ipc/MutexIF.h>
 #include "RtemsBasic.h"

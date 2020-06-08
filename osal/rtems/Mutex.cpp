@@ -1,7 +1,8 @@
 #include "Mutex.h"
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-const uint32_t MutexIF::NO_TIMEOUT = RTEMS_NO_TIMEOUT;
+const uint32_t MutexIF::BLOCKING = RTEMS_NO_TIMEOUT;
+const uint32_t MutexIF::POLLING = RTEMS_NO_WAIT;
 uint8_t Mutex::count = 0;
 
 Mutex::Mutex() :
