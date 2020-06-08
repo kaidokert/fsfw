@@ -84,8 +84,8 @@ public:
 	//! The copy ctor and copy assignemnt should be deleted implicitely
 	//! according to https://foonathan.net/2019/02/special-member-functions/
 	//! but I still deleted them to make it more explicit. (remember rule of 5).
-	ConstStorageAccessor& operator= (ConstStorageAccessor&) = delete;
-	ConstStorageAccessor (ConstStorageAccessor&) = delete;
+	ConstStorageAccessor& operator= (const ConstStorageAccessor&) = delete;
+	ConstStorageAccessor (const ConstStorageAccessor&) = delete;
 protected:
 	const uint8_t* constDataPointer = nullptr;
 	store_address_t storeId;
