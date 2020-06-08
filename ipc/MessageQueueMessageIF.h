@@ -17,24 +17,29 @@ public:
 	 * 			(till messageSize) to the debug output.
 	 */
 	virtual void print() = 0;
+
+	/**
+	 * @brief	Get read-only pointer to the raw buffer.
+	 * @return
+	 */
 	virtual const uint8_t* getBuffer() const = 0;
+
 	/**
 	 * @brief	This method is used to get the complete data of the message.
 	 */
 	virtual uint8_t* getBuffer() = 0;
+
 	/**
 	 * @brief	This method is used to set the sender's message queue id
 	 * 			information prior to sending the message.
-	 * @param setId	The message queue id that identifies the sending message queue.
+	 * @param setId
+	 * The message queue id that identifies the sending message queue.
 	 */
 	virtual void setSender(MessageQueueId_t setId) = 0;
+
 	/**
 	 * @brief	This helper function is used by the MessageQueue class to
 	 * 			check the size of an incoming message.
-	 * @details
-	 * The method must be overwritten by child classes if size checks shall
-	 * be more strict.
-	 * @return	The default implementation returns HEADER_SIZE.
 	 */
 	virtual size_t getMinimumMessageSize() = 0;
 };

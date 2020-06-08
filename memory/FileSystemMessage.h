@@ -16,7 +16,7 @@ class FileSystemMessage {
 private:
 	FileSystemMessage(); //A private ctor inhibits instantiation
 public:
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::FILE_SYSTEM_MESSAGE;
+	static const uint8_t MESSAGE_ID = messagetypes::FILE_SYSTEM_MESSAGE;
 	static const Command_t CREATE_FILE = MAKE_COMMAND_ID( 0x01 );
 	static const Command_t DELETE_FILE = MAKE_COMMAND_ID( 0x02 );
 	static const Command_t WRITE_TO_FILE = MAKE_COMMAND_ID( 0x80 );

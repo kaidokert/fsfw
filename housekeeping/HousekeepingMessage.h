@@ -33,7 +33,7 @@ public:
 //	HousekeepingMessage(const HousekeepingMessage&) = delete;
 //	HousekeepingMessage operator=(const HousekeepingMessage &) = delete;
 
-	static constexpr uint8_t MESSAGE_ID = MESSAGE_TYPE::HOUSEKEEPING;
+	static constexpr uint8_t MESSAGE_ID = messagetypes::HOUSEKEEPING;
 	static constexpr Command_t ADD_HK_REPORT_STRUCT =
 			MAKE_COMMAND_ID(1);
 	static constexpr Command_t ADD_DIAGNOSTICS_REPORT_STRUCT =

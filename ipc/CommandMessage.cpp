@@ -1,9 +1,4 @@
-/**
- * @file	CommandMessage.cpp
- * @brief	This file defines the CommandMessage class.
- * @date	20.06.2013
- * @author	baetz
- */
+#include "MissionMessageTypes.h"
 
 #include <framework/devicehandlers/DeviceHandlerMessage.h>
 #include <framework/health/HealthMessage.h>
@@ -15,7 +10,8 @@
 #include <framework/tmstorage/TmStoreMessage.h>
 #include <framework/parameters/ParameterMessage.h>
 
-namespace MESSAGE_TYPE {
+namespace messagetypes {
+// Implemented in config.
 void clearMissionMessage(CommandMessage* message);
 }
 
@@ -37,6 +33,10 @@ Command_t CommandMessage::getCommand() const {
 	Command_t command;
 	memcpy(&command, getData(), sizeof(Command_t));
 	return command;
+}
+
+uint8_t CommandMessage::getMessageType() const {
+	return getCommand() >> 8 & 0xff;
 }
 
 void CommandMessage::setCommand(Command_t command) {
@@ -66,36 +66,36 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
 }
 
 void CommandMessage::clearCommandMessage() {
-	switch((getCommand()>>8) & 0xff){
-	case  MESSAGE_TYPE::MODE_COMMAND:
+	switch(getMessageType()){
+	case messagetypes::MODE_COMMAND:
 		ModeMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::HEALTH_COMMAND:
+	case messagetypes::HEALTH_COMMAND:
 		HealthMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MODE_SEQUENCE:
+	case messagetypes::MODE_SEQUENCE:
 		ModeSequenceMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::ACTION:
+	case messagetypes::ACTION:
 		ActionMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::DEVICE_HANDLER_COMMAND:
+	case messagetypes::DEVICE_HANDLER_COMMAND:
 		DeviceHandlerMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MEMORY:
+	case messagetypes::MEMORY:
 		MemoryMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MONITORING:
+	case messagetypes::MONITORING:
 		MonitoringMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::TM_STORE:
+	case messagetypes::TM_STORE:
 		TmStoreMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::PARAMETER:
+	case messagetypes::PARAMETER:
 		ParameterMessage::clear(this);
 		break;
 	default:
-		MESSAGE_TYPE::clearMissionMessage(this);
+		messagetypes::clearMissionMessage(this);
 		break;
 	}
 }

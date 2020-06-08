@@ -19,7 +19,7 @@ public:
 	static const ReturnValue_t UNKNOW_COMMAND = MAKE_RETURN_CODE(0x01);
 
 
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::COMMAND;
+	static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
 	//! Used internally, will be ignored
 	static const Command_t CMD_NONE = MAKE_COMMAND_ID( 0 );
 	static const Command_t REPLY_COMMAND_OK = MAKE_COMMAND_ID( 3 );
@@ -66,6 +66,7 @@ public:
 	 */
 	Command_t getCommand() const;
 
+	uint8_t getMessageType() const;
 	/**
 	 * Set the DeviceHandlerCOmmand_t of the message
 	 *
