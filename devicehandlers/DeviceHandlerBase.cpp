@@ -8,6 +8,8 @@
 #include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/devicehandlers/DeviceTmReportingWrapper.h>
 #include <framework/globalfunctions/CRC.h>
+#include <framework/housekeeping/HousekeepingMessage.h>
+#include <framework/ipc/MessageQueueMessage.h>
 #include <framework/subsystem/SubsystemBase.h>
 #include <framework/ipc/QueueFactory.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
@@ -36,7 +38,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
 		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
-			CommandMessage::MAX_MESSAGE_SIZE);
+			MessageQueueMessage::MAX_MESSAGE_SIZE);
 	insertInCommandMap(RAW_COMMAND_ID);
 	cookieInfo.state = COOKIE_UNUSED;
 	cookieInfo.pendingCommand = deviceCommandMap.end();
@@ -212,40 +214,59 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	CommandMessage message;
-	ReturnValue_t result = commandQueue->receiveMessage(&message);
+	// This is not ideal. What if it is not a command message? (e.g. another
+	// message with 3 parameters). The full buffer is filled anyway
+	// and I could just copy the content into the other message but
+	// all I need are few additional functions the other message type offers.
+	CommandMessage cmdMessage;
+	ReturnValue_t result = commandQueue->receiveMessage(&cmdMessage);
 	if (result != RETURN_OK) {
 		return;
 	}
 
+	// This is really annoying. I can't cast a parent object to a child.
+	// But I want to use another message format..
+//	CommandMessage* cmdMessage = dynamic_cast<CommandMessage*>(msgPtr);
+//	if(cmdMessage == nullptr) {
+//		sif::error << "DeviceHandlerBase::readCommandQueue: Could not cast"
+//				" message to CommandMessage!" << std::endl;
+//		return;
+//	}
+
 	if(healthHelperActive) {
-		result = healthHelper.handleHealthCommand(&message);
+		result = healthHelper.handleHealthCommand(&cmdMessage);
 		if (result == RETURN_OK) {
 			return;
 		}
 	}
 
-	result = modeHelper.handleModeCommand(&message);
+	result = modeHelper.handleModeCommand(&cmdMessage);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	result = actionHelper.handleActionMessage(&message);
+	result = actionHelper.handleActionMessage(&cmdMessage);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	result = parameterHelper.handleParameterMessage(&message);
+	result = parameterHelper.handleParameterMessage(&cmdMessage);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	result = handleDeviceHandlerMessage(&message);
+//	HousekeepingMessage* hkMessage = dynamic_cast<HousekeepingMessage*>(msgPtr);
+//	result = hkManager.handleHousekeepingMessage(hkMessage);
+//	if (result == RETURN_OK) {
+//		return;
+//	}
+
+	result = handleDeviceHandlerMessage(&cmdMessage);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	result = letChildHandleMessage(&message);
+	result = letChildHandleMessage(&cmdMessage);
 	if (result == RETURN_OK) {
 		return;
 	}

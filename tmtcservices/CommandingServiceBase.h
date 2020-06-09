@@ -212,36 +212,38 @@ protected:
 	 */
 	PeriodicTaskIF* executingTask;
 
-	// todo: why do these functions not have returnvalues? the caller should be
-	// able to check whether the send operations actually work.
 	/**
-	 * Send TM data from pointer to data. If a header is supplied it is added before data
+	 * @brief   Send TM data from pointer to data.
+	 *          If a header is supplied it is added before data
 	 * @param subservice Number of subservice
 	 * @param data Pointer to the data in the Packet
 	 * @param dataLen Lenght of data in the Packet
 	 * @param headerData HeaderData will be placed before data
 	 * @param headerSize Size of HeaderData
 	 */
-	void sendTmPacket(uint8_t subservice, const uint8_t *data, size_t dataLen,
-			const uint8_t* headerData = nullptr,size_t headerSize = 0);
+	ReturnValue_t sendTmPacket(uint8_t subservice, const uint8_t *data,
+	        size_t dataLen, const uint8_t* headerData = nullptr,
+	        size_t headerSize = 0);
 
 	/**
-	 * To send TM packets of objects that still need to be serialized and consist of an object ID with appended data
+	 * @brief   To send TM packets of objects that still need to be serialized
+	 *          and consist of an object ID with appended data.
 	 * @param subservice Number of subservice
 	 * @param objectId ObjectId is placed before data
 	 * @param data Data to append to the packet
 	 * @param dataLen Length of Data
 	 */
-	void sendTmPacket(uint8_t subservice, object_id_t objectId,
+	ReturnValue_t sendTmPacket(uint8_t subservice, object_id_t objectId,
 			const uint8_t *data, size_t dataLen);
 
 	/**
-	 * To send packets has data which is in form of a SerializeIF or Adapters implementing it
+	 * @brief   To send packets which are contained inside a class implementing
+	 *          SerializeIF.
 	 * @param subservice Number of subservice
 	 * @param content This is a pointer to the serialized packet
 	 * @param header Serialize IF header which will be placed before content
 	 */
-	void sendTmPacket(uint8_t subservice, SerializeIF* content,
+	ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF* content,
 			SerializeIF* header = nullptr);
 
 	virtual void handleUnrequestedReply(CommandMessage *reply);

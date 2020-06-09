@@ -1,13 +1,5 @@
-/**
- * @file	CommandMessage.h
- * @brief	This file defines the CommandMessage class.
- * @date	20.06.2013
- * @author	baetz
- */
-
-#ifndef COMMANDMESSAGE_H_
-#define COMMANDMESSAGE_H_
-
+#ifndef FRAMEWORK_IPC_COMMANDMESSAGE_H_
+#define FRAMEWORK_IPC_COMMANDMESSAGE_H_
 
 #include <framework/ipc/FwMessageTypes.h>
 #include <config/ipc/MissionMessageTypes.h>
@@ -15,10 +7,11 @@
 #include <framework/ipc/MessageQueueMessage.h>
 
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
-typedef ReturnValue_t Command_t;
+typedef uint16_t Command_t;
 
 /**
- * @brief Used to pass command messages between tasks
+ * @brief 	Used to pass command messages between tasks
+ * @author	Bastian Baetz
  */
 class CommandMessage : public MessageQueueMessage {
 public:
@@ -26,13 +19,17 @@ public:
 	static const ReturnValue_t UNKNOW_COMMAND = MAKE_RETURN_CODE(0x01);
 
 
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::COMMAND;
-	static const Command_t CMD_NONE = MAKE_COMMAND_ID( 0 );//!< Used internally, will be ignored
+	static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
+	//! Used internally, will be ignored
+	static const Command_t CMD_NONE = MAKE_COMMAND_ID( 0 );
 	static const Command_t REPLY_COMMAND_OK = MAKE_COMMAND_ID( 3 );
-	static const Command_t REPLY_REJECTED = MAKE_COMMAND_ID( 0xD1 );//!< Reply indicating that the current command was rejected, par1 should contain the error code
+	//! Reply indicating that the current command was rejected,
+	//! par1 should contain the error code
+	static const Command_t REPLY_REJECTED = MAKE_COMMAND_ID( 0xD1 );
 
 	/**
-	 * This is the size of a message as it is seen by the MessageQueue
+	 * This is the size of a message as it is seen by the MessageQueue.
+	 * 14 of the 24 available MessageQueueMessage bytes are used.
 	 */
 	static const size_t COMMAND_MESSAGE_SIZE = HEADER_SIZE
 			+ sizeof(Command_t) + 2 * sizeof(uint32_t);
@@ -40,11 +37,13 @@ public:
 	/**
 	 * Default Constructor, does not initialize anything.
 	 *
-	 * This constructor should be used when receiving a Message, as the content is filled by the MessageQueue.
+	 * This constructor should be used when receiving a Message, as the
+	 * content is filled by the MessageQueue.
 	 */
 	CommandMessage();
 	/**
-	 * This constructor creates a new message with all message content initialized
+	 * This constructor creates a new message with all message content
+	 * initialized
 	 *
 	 * @param command	The DeviceHandlerCommand_t that will be sent
 	 * @param parameter1	The first parameter
@@ -60,12 +59,14 @@ public:
 	}
 
 	/**
-	 * Read the DeviceHandlerCommand_t that is stored in the message, usually used after receiving
+	 * Read the DeviceHandlerCommand_t that is stored in the message,
+	 * usually used after receiving.
 	 *
 	 * @return the Command stored in the Message
 	 */
 	Command_t getCommand() const;
 
+	uint8_t getMessageType() const;
 	/**
 	 * Set the DeviceHandlerCOmmand_t of the message
 	 *
@@ -126,7 +127,8 @@ public:
 	 * Is needed quite often, so we better code it once only.
 	 */
 	void setToUnknownCommand();
-	void setReplyRejected(ReturnValue_t reason, Command_t initialCommand = CMD_NONE);
+	void setReplyRejected(ReturnValue_t reason,
+			Command_t initialCommand = CMD_NONE);
 	size_t getMinimumMessageSize() const;
 };
 

@@ -1,6 +1,7 @@
 #include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/datapoollocal/LocalDataSet.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <framework/objectmanager/frameworkObjects.h>
 #include <framework/ipc/MutexFactory.h>
 #include <framework/ipc/MutexHelper.h>
 
@@ -13,7 +14,15 @@ LocalDataPoolManager::LocalDataPoolManager(OwnsLocalDataPoolIF* owner) {
 	}
 	this->owner = owner;
 	mutex = MutexFactory::instance()->createMutex();
-	//owner->setMinimalHkSamplingFrequency();
+	if(mutex == nullptr) {
+	    sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
+	            "Could not create mutex." << std::endl;
+	}
+	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+	if(ipcStore == nullptr) {
+	    sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
+	            "Could not set IPC store." << std::endl;
+	}
 }
 
 LocalDataPoolManager::~LocalDataPoolManager() {}
@@ -32,7 +41,7 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 }
 
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
-		CommandMessage *message) {
+		MessageQueueMessage *message) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -52,30 +61,35 @@ MutexIF* LocalDataPoolManager::getMutexHandle() {
 	return mutex;
 }
 
-//void HousekeepingManager::setMinimalSamplingFrequency(float frequencySeconds) {
-//	this->samplingFrequency = frequencySeconds;
-//
-//}
-
-void LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
+ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
 	LocalDataSet* dataSetToSerialize = dynamic_cast<LocalDataSet*>(
 			owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
 				" Set ID not found" << std::endl;
-		return;
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	std::array<uint8_t, 256> testBuffer = {};
-	uint8_t* dataPtr = testBuffer.data();
+	store_address_t storeId;
+	size_t hkSize = dataSetToSerialize->getSerializedSize();
+	uint8_t* storePtr = nullptr;
+	ReturnValue_t result = ipcStore->getFreeElement(&storeId, hkSize,&storePtr);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+	    sif::warning << "HousekeepingManager::generateHousekeepingPacket: "
+	            "Could not get free element from IPC store." << std::endl;
+	    return result;
+	}
 	size_t size = 0;
-	dataSetToSerialize->serialize(&dataPtr, &size, testBuffer.size(),
-			false);
-	// and now we send it to the TM funnel or somewhere else
-
+	dataSetToSerialize->serialize(&storePtr, &size, hkSize, false);
+	// and now we have to set a HK message and send it the queue.
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 void LocalDataPoolManager::setHkPacketQueue(MessageQueueIF *msgQueue) {
 	this->hkPacketQueue = msgQueue;
+}
+
+void LocalDataPoolManager::setHkReplyQueue(MessageQueueIF *replyQueue) {
+    this->hkReplyQueue = replyQueue;
 }
 
 const OwnsLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
