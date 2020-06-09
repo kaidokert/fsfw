@@ -1,16 +1,25 @@
 #ifndef FRAMEWORK_IPC_COMMANDMESSAGE_H_
 #define FRAMEWORK_IPC_COMMANDMESSAGE_H_
 
+#include <framework/ipc/MessageQueueMessage.h>
 #include <framework/ipc/FwMessageTypes.h>
 #include <config/ipc/MissionMessageTypes.h>
 
-#include <framework/ipc/MessageQueueMessage.h>
+
 
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef uint16_t Command_t;
 
 /**
- * @brief 	Used to pass command messages between tasks
+ * @brief 	Used to pass command messages between tasks. Primary message type
+ * 			for IPC. Contains sender, 2-byte command field, and 2 4-byte
+ * 			parameters.
+ * @details
+ * It operates on an external memory which is contained inside a
+ * MessageQueueMessage by taking its address.
+ * This allows for a more flexible designs of message implementations.
+ * The pointer can be passed to different message implementations without
+ * the need of unnecessary copying.
  * @author	Bastian Baetz
  */
 class CommandMessage: public MessageQueueMessageIF {
@@ -53,13 +62,10 @@ public:
 			uint32_t parameter1, uint32_t parameter2);
 
 	/**
-	 * Default Destructor
+	 * @brief 	Default Destructor
 	 */
-	virtual ~CommandMessage() {
-	}
+	virtual ~CommandMessage() {}
 
-	uint8_t * getBuffer() override;
-	const uint8_t * getBuffer() const override;
 	/**
 	 * Read the DeviceHandlerCommand_t that is stored in the message,
 	 * usually used after receiving.
@@ -68,53 +74,54 @@ public:
 	 */
 	Command_t getCommand() const;
 
-	/**
-	 * @brief	This method is used to set the sender's message queue id
-	 * 			information prior to sending the message.
-	 * @param setId
-	 * The message queue id that identifies the sending message queue.
+	/*
+	 * MessageQueueMessageIF functions, which generally just call the
+	 * respective functions of the internal message
 	 */
+	uint8_t * getBuffer() override;
+	const uint8_t * getBuffer() const override;
 	void setSender(MessageQueueId_t setId) override;
-
 	MessageQueueId_t getSender() const override;
+	uint8_t * getData() override;
+	const uint8_t* getData() const override;
+	size_t getMinimumMessageSize() const override;
 
+	/**
+	 * Extract message ID, which is the first byte of the command ID.
+	 * @return
+	 */
 	uint8_t getMessageType() const;
 	/**
-	 * Set the DeviceHandlerCOmmand_t of the message
-	 *
+	 * Set the command type of the message
 	 * @param the Command to be sent
 	 */
 	void setCommand(Command_t command);
 
 	/**
 	 * Get the first parameter of the message
-	 *
 	 * @return the first Parameter of the message
 	 */
 	uint32_t getParameter() const;
 
 	/**
 	 * Set the first parameter of the message
-	 *
 	 * @param the first parameter of the message
 	 */
 	void setParameter(uint32_t parameter1);
 
 	/**
 	 * Get the second parameter of the message
-	 *
 	 * @return the second Parameter of the message
 	 */
 	uint32_t getParameter2() const;
 
 	/**
 	 * Set the second parameter of the message
-	 *
 	 * @param the second parameter of the message
 	 */
 	void setParameter2(uint32_t parameter2);
 
-	void clear() override;
+
 	/**
 	 * Set the command to CMD_NONE and try to find
 	 * the correct class to handle a more detailed
@@ -126,6 +133,7 @@ public:
 	 *
 	 */
 	void clearCommandMessage();
+	void clear() override;
 
 	/**
 	 * check if a message was cleared
@@ -134,7 +142,6 @@ public:
 	 */
 	bool isClearedCommandMessage();
 
-
 	/**
 	 * Sets the command to REPLY_REJECTED with parameter UNKNOWN_COMMAND.
 	 * Is needed quite often, so we better code it once only.
@@ -142,9 +149,14 @@ public:
 	void setToUnknownCommand();
 	void setReplyRejected(ReturnValue_t reason,
 			Command_t initialCommand = CMD_NONE);
-	size_t getMinimumMessageSize() const override;
 
 private:
+	/**
+	 * @brief 	Pointer to the message containing the data.
+	 * @details
+	 * The command message does not actually own the memory containing a
+	 * message, it just oprates on it via a pointer to a message queue message.
+	 */
 	MessageQueueMessage* internalMessage;
 };
 

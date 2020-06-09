@@ -152,3 +152,11 @@ void CommandMessage::setSender(MessageQueueId_t setId) {
 const uint8_t* CommandMessage::getBuffer() const {
 	return internalMessage->getBuffer();
 }
+
+uint8_t* CommandMessage::getData() {
+	return internalMessage->getData();
+}
+
+const uint8_t* CommandMessage::getData() const {
+	return internalMessage->getData();
+}
