@@ -77,7 +77,10 @@ ReturnValue_t CommandingServiceBase::initialize() {
 }
 
 void CommandingServiceBase::handleCommandQueue() {
-	CommandMessage reply, nextCommand;
+	MessageQueueMessage replyMessage;
+	CommandMessage reply(&replyMessage);
+	MessageQueueMessage nextCommandMessage;
+	CommandMessage nextCommand(&nextCommandMessage);
 	ReturnValue_t result, sendResult = RETURN_OK;
 	bool isStep = false;
 	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
@@ -268,16 +271,17 @@ void CommandingServiceBase::startExecution(
 		typename FixedMap<MessageQueueId_t,
 				CommandingServiceBase::CommandInfo>::Iterator *iter) {
 	ReturnValue_t result, sendResult = RETURN_OK;
-	CommandMessage message;
+	MessageQueueMessage message;
+	CommandMessage command(&message);
 	(*iter)->subservice = storedPacket->getSubService();
-	result = prepareCommand(&message, (*iter)->subservice,
+	result = prepareCommand(&command, (*iter)->subservice,
 			storedPacket->getApplicationData(),
 			storedPacket->getApplicationDataSize(), &(*iter)->state,
 			(*iter)->objectId);
 
 	switch (result) {
 	case RETURN_OK:
-		if (message.getCommand() != CommandMessage::CMD_NONE) {
+		if (command.getCommand() != CommandMessage::CMD_NONE) {
 			sendResult = commandQueue->sendMessage((*iter).value->first,
 					&message);
 		}
@@ -286,20 +290,20 @@ void CommandingServiceBase::startExecution(
 			(*iter)->step = 0;
 //			(*iter)->state = 0;
 			(*iter)->subservice = storedPacket->getSubService();
-			(*iter)->command = message.getCommand();
+			(*iter)->command = command.getCommand();
 			(*iter)->tcInfo.ackFlags = storedPacket->getAcknowledgeFlags();
 			(*iter)->tcInfo.tcPacketId = storedPacket->getPacketId();
 			(*iter)->tcInfo.tcSequenceControl =
 					storedPacket->getPacketSequenceControl();
 			acceptPacket(TC_VERIFY::START_SUCCESS, storedPacket);
 		} else {
-			message.clearCommandMessage();
+			command.clearCommandMessage();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
 		break;
 	case EXECUTION_COMPLETE:
-		if (message.getCommand() != CommandMessage::CMD_NONE) {
+		if (command.getCommand() != CommandMessage::CMD_NONE) {
 			//Fire-and-forget command.
 			sendResult = commandQueue->sendMessage((*iter).value->first,
 					&message);
@@ -310,7 +314,7 @@ void CommandingServiceBase::startExecution(
 			acceptPacket(TC_VERIFY::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
-			message.clearCommandMessage();
+			command.clearCommandMessage();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}

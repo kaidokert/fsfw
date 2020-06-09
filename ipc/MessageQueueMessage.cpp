@@ -51,7 +51,7 @@ void MessageQueueMessage::setSender(MessageQueueId_t setId) {
 	memcpy(this->internalBuffer, &setId, sizeof(MessageQueueId_t));
 }
 
-size_t MessageQueueMessage::getMinimumMessageSize() {
+size_t MessageQueueMessage::getMinimumMessageSize() const {
 	return this->HEADER_SIZE;
 }
 

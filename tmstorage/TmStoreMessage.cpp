@@ -74,7 +74,7 @@ void TmStoreMessage::clear(CommandMessage* cmd) {
 	case DELETE_STORE_CONTENT_BLOCKS:
 	case DOWNLINK_STORE_CONTENT_BLOCKS:
 	case REPORT_INDEX_REQUEST:
-		cmd->setCommand(UNKNOW_COMMAND);
+		cmd->setCommand(CommandMessage::UNKNOWN_COMMAND);
 		cmd->setParameter(0);
 		cmd->setParameter2(0);
 		break;

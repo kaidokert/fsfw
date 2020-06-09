@@ -132,7 +132,7 @@ public:
 	 * @details	The method must be overwritten by child classes if size checks shall be more strict.
 	 * @return	The default implementation returns HEADER_SIZE.
 	 */
-	virtual size_t getMinimumMessageSize();
+	virtual size_t getMinimumMessageSize() const;
 };
 
 #endif /* MESSAGEQUEUEMESSAGE_H_ */

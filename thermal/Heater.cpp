@@ -279,14 +279,15 @@ ReturnValue_t Heater::initialize() {
 }
 
 void Heater::handleQueue() {
-	CommandMessage message;
-	ReturnValue_t result = commandQueue->receiveMessage(&message);
+	MessageQueueMessage message;
+	CommandMessage command(&message);
+	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result == HasReturnvaluesIF::RETURN_OK) {
-		result = healthHelper.handleHealthCommand(&message);
+		result = healthHelper.handleHealthCommand(&command);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
 			return;
 		}
-		parameterHelper.handleParameterMessage(&message);
+		parameterHelper.handleParameterMessage(&command);
 	}
 }
 

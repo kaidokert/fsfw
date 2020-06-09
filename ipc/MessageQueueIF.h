@@ -15,7 +15,7 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 class MessageQueueIF {
 public:
-	static const MessageQueueId_t NO_QUEUE = MessageQueueSenderIF::NO_QUEUE; //!< Ugly hack.
+	static const MessageQueueId_t NO_QUEUE = MessageQueueMessageIF::NO_QUEUE; //!< Ugly hack.
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::MESSAGE_QUEUE_IF;
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @return RETURN_OK if ok
 	 * @return NO_REPLY_PARTNER Should return NO_REPLY_PARTNER if partner was found
 	 */
-	virtual ReturnValue_t reply( MessageQueueMessage* message ) = 0;
+	virtual ReturnValue_t reply( MessageQueueMessageIF* message ) = 0;
 
 	/**
 	 * @brief	This function reads available messages from the message queue and returns the sender.
@@ -50,7 +50,7 @@ public:
 	 * @param message	A pointer to a message in which the received data is stored.
 	 * @param receivedFrom	A pointer to a queue id in which the sender's id is stored.
 	 */
-	virtual ReturnValue_t receiveMessage(MessageQueueMessage* message,
+	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
 			MessageQueueId_t *receivedFrom) = 0;
 
 	/**
@@ -65,7 +65,7 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c MessageQueueIF::EMPTY if queue is empty
 	 */
-	virtual ReturnValue_t receiveMessage(MessageQueueMessage* message) = 0;
+	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) = 0;
 	/**
 	 * Deletes all pending messages in the queue.
 	 * @param count The number of flushed messages.
@@ -95,7 +95,7 @@ public:
 	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
 	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 			bool ignoreFault = false ) = 0;
 
 	/**
@@ -107,7 +107,7 @@ public:
 	 * @param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
 	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo,
-			MessageQueueMessage* message, bool ignoreFault = false ) = 0;
+			MessageQueueMessageIF* message, bool ignoreFault = false ) = 0;
 
 	/**
 	 * @brief	The sendToDefaultFrom method sends a queue message to the default destination.
@@ -118,7 +118,7 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
-	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message,
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessageIF* message,
 			MessageQueueId_t sentFrom, bool ignoreFault = false ) = 0;
 	/**
 	 * @brief	This operation sends a message to the default destination.
@@ -128,7 +128,7 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c MessageQueueIF::FULL if queue is full
 	 */
-	virtual ReturnValue_t sendToDefault( MessageQueueMessage* message )  = 0;
+	virtual ReturnValue_t sendToDefault( MessageQueueMessageIF* message )  = 0;
 	/**
 	 * \brief	This method is a simple setter for the default destination.
 	 */

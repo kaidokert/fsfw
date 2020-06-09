@@ -56,26 +56,27 @@ MessageQueueId_t ControllerBase::getCommandQueue() const {
 }
 
 void ControllerBase::handleQueue() {
-	CommandMessage message;
+	MessageQueueMessage message;
+	CommandMessage command(&message);
 	ReturnValue_t result;
-	for (result = commandQueue->receiveMessage(&message); result == RETURN_OK;
-			result = commandQueue->receiveMessage(&message)) {
+	for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+			result = commandQueue->receiveMessage(&command)) {
 
-		result = modeHelper.handleModeCommand(&message);
+		result = modeHelper.handleModeCommand(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
 
-		result = healthHelper.handleHealthCommand(&message);
+		result = healthHelper.handleHealthCommand(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
-		result = handleCommandMessage(&message);
+		result = handleCommandMessage(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
-		message.setToUnknownCommand();
-		commandQueue->reply(&message);
+		command.setToUnknownCommand();
+		commandQueue->reply(&command);
 	}
 
 }

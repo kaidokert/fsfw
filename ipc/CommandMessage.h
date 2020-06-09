@@ -13,10 +13,10 @@ typedef uint16_t Command_t;
  * @brief 	Used to pass command messages between tasks
  * @author	Bastian Baetz
  */
-class CommandMessage : public MessageQueueMessage {
+class CommandMessage: public MessageQueueMessageIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
-	static const ReturnValue_t UNKNOW_COMMAND = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
 
 
 	static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
@@ -31,7 +31,7 @@ public:
 	 * This is the size of a message as it is seen by the MessageQueue.
 	 * 14 of the 24 available MessageQueueMessage bytes are used.
 	 */
-	static const size_t COMMAND_MESSAGE_SIZE = HEADER_SIZE
+	static const size_t COMMAND_MESSAGE_SIZE = MessageQueueMessage::HEADER_SIZE
 			+ sizeof(Command_t) + 2 * sizeof(uint32_t);
 
 	/**
@@ -40,7 +40,7 @@ public:
 	 * This constructor should be used when receiving a Message, as the
 	 * content is filled by the MessageQueue.
 	 */
-	CommandMessage();
+	CommandMessage(MessageQueueMessage* receiverMessage);
 	/**
 	 * This constructor creates a new message with all message content
 	 * initialized
@@ -49,7 +49,7 @@ public:
 	 * @param parameter1	The first parameter
 	 * @param parameter2	The second parameter
 	 */
-	CommandMessage(Command_t command,
+	CommandMessage(MessageQueueMessage* messageToSet, Command_t command,
 			uint32_t parameter1, uint32_t parameter2);
 
 	/**
@@ -58,6 +58,8 @@ public:
 	virtual ~CommandMessage() {
 	}
 
+	uint8_t * getBuffer() override;
+	const uint8_t * getBuffer() const override;
 	/**
 	 * Read the DeviceHandlerCommand_t that is stored in the message,
 	 * usually used after receiving.
@@ -65,6 +67,16 @@ public:
 	 * @return the Command stored in the Message
 	 */
 	Command_t getCommand() const;
+
+	/**
+	 * @brief	This method is used to set the sender's message queue id
+	 * 			information prior to sending the message.
+	 * @param setId
+	 * The message queue id that identifies the sending message queue.
+	 */
+	void setSender(MessageQueueId_t setId) override;
+
+	MessageQueueId_t getSender() const override;
 
 	uint8_t getMessageType() const;
 	/**
@@ -102,6 +114,7 @@ public:
 	 */
 	void setParameter2(uint32_t parameter2);
 
+	void clear() override;
 	/**
 	 * Set the command to CMD_NONE and try to find
 	 * the correct class to handle a more detailed
@@ -129,7 +142,10 @@ public:
 	void setToUnknownCommand();
 	void setReplyRejected(ReturnValue_t reason,
 			Command_t initialCommand = CMD_NONE);
-	size_t getMinimumMessageSize() const;
+	size_t getMinimumMessageSize() const override;
+
+private:
+	MessageQueueMessage* internalMessage;
 };
 
 

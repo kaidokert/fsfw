@@ -309,7 +309,8 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 		break;
 	case ModeSequenceMessage::READ_FREE_SEQUENCE_SLOTS: {
 		uint32_t freeSlots = modeSequences.maxSize() - modeSequences.size();
-		CommandMessage reply;
+		MessageQueueMessage message;
+		CommandMessage reply(&message);
 		ModeSequenceMessage::setModeSequenceMessage(&reply,
 				ModeSequenceMessage::FREE_SEQUENCE_SLOTS, freeSlots);
 		commandQueue->reply(&reply);
@@ -317,7 +318,8 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 		break;
 	case ModeSequenceMessage::READ_FREE_TABLE_SLOTS: {
 		uint32_t free = modeTables.maxSize() - modeTables.size();
-		CommandMessage reply;
+		MessageQueueMessage message;
+		CommandMessage reply(&message);
 		ModeSequenceMessage::setModeSequenceMessage(&reply,
 				ModeSequenceMessage::FREE_TABLE_SLOTS, free);
 		commandQueue->reply(&reply);
@@ -330,11 +332,12 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage* message) {
 }
 
 void Subsystem::replyToCommand(ReturnValue_t status, uint32_t parameter) {
+	MessageQueueMessage message;
 	if (status == RETURN_OK) {
-		CommandMessage reply(CommandMessage::REPLY_COMMAND_OK, 0, 0);
+		CommandMessage reply(&message, CommandMessage::REPLY_COMMAND_OK, 0, 0);
 		commandQueue->reply(&reply);
 	} else {
-		CommandMessage reply(CommandMessage::REPLY_REJECTED, status, 0);
+		CommandMessage reply(&message, CommandMessage::REPLY_REJECTED, status, 0);
 		commandQueue->reply(&reply);
 	}
 }
@@ -617,7 +620,8 @@ void Subsystem::sendSerializablesAsCommandMessage(Command_t command,
 	for (uint8_t i = 0; i < count; i++) {
 		elements[i]->serialize(&storeBuffer, &size, maxSize, true);
 	}
-	CommandMessage reply;
+	MessageQueueMessage message;
+	CommandMessage reply(&message);
 	ModeSequenceMessage::setModeSequenceMessage(&reply, command, address);
 	if (commandQueue->reply(&reply) != RETURN_OK) {
 		IPCStore->deleteData(address);

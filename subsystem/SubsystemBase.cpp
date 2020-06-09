@@ -9,7 +9,7 @@ SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		false), commandsOutstanding(0), commandQueue(NULL), healthHelper(this,
 				setObjectId), modeHelper(this), parentId(parent) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth,
-			CommandMessage::MAX_MESSAGE_SIZE);
+			MessageQueueMessage::MAX_MESSAGE_SIZE);
 }
 
 SubsystemBase::~SubsystemBase() {
@@ -77,8 +77,8 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(
 }
 
 void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
-
-	CommandMessage message;
+	MessageQueueMessage message;
+	CommandMessage command(&message);
 
 	std::map<object_id_t, ChildInfo>::iterator iter;
 
@@ -100,17 +100,17 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submod
 
 		if (healthHelper.healthTable->hasHealth(object)) {
 			if (healthHelper.healthTable->isFaulty(object)) {
-				ModeMessage::setModeMessage(&message,
+				ModeMessage::setModeMessage(&command,
 						ModeMessage::CMD_MODE_COMMAND, HasModesIF::MODE_OFF,
 						SUBMODE_NONE);
 			} else {
 				if (modeHelper.isForced()) {
-					ModeMessage::setModeMessage(&message,
+					ModeMessage::setModeMessage(&command,
 							ModeMessage::CMD_MODE_COMMAND_FORCED,
 							tableIter.value->getMode(), submodeToCommand);
 				} else {
 					if (healthHelper.healthTable->isCommandable(object)) {
-						ModeMessage::setModeMessage(&message,
+						ModeMessage::setModeMessage(&command,
 								ModeMessage::CMD_MODE_COMMAND,
 								tableIter.value->getMode(), submodeToCommand);
 					} else {
@@ -119,12 +119,12 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submod
 				}
 			}
 		} else {
-			ModeMessage::setModeMessage(&message, ModeMessage::CMD_MODE_COMMAND,
+			ModeMessage::setModeMessage(&command, ModeMessage::CMD_MODE_COMMAND,
 					tableIter.value->getMode(), submodeToCommand);
 		}
 
-		if ((iter->second.mode == ModeMessage::getMode(&message))
-				&& (iter->second.submode == ModeMessage::getSubmode(&message))
+		if ((iter->second.mode == ModeMessage::getMode(&command))
+				&& (iter->second.submode == ModeMessage::getSubmode(&command))
 				&& !modeHelper.isForced()) {
 			continue; //don't send redundant mode commands (produces event spam), but still command if mode is forced to reach lower levels
 		}
@@ -297,7 +297,8 @@ void SubsystemBase::setToExternalControl() {
 void SubsystemBase::announceMode(bool recursive) {
 	triggerEvent(MODE_INFO, mode, submode);
 	if (recursive) {
-		CommandMessage command;
+		MessageQueueMessage message;
+		CommandMessage command(&message);
 		ModeMessage::setModeMessage(&command,
 				ModeMessage::CMD_MODE_ANNOUNCE_RECURSIVELY, 0, 0);
 		commandAllChildren(&command);
@@ -306,31 +307,33 @@ void SubsystemBase::announceMode(bool recursive) {
 
 void SubsystemBase::checkCommandQueue() {
 	ReturnValue_t result;
-	CommandMessage message;
+	MessageQueueMessage message;
+	CommandMessage command(&message);
 
-	for (result = commandQueue->receiveMessage(&message); result == RETURN_OK;
-			result = commandQueue->receiveMessage(&message)) {
+	for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+			result = commandQueue->receiveMessage(&command)) {
 
-		result = healthHelper.handleHealthCommand(&message);
+		result = healthHelper.handleHealthCommand(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
 
-		result = modeHelper.handleModeCommand(&message);
+		result = modeHelper.handleModeCommand(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
 
-		result = handleModeReply(&message);
+		result = handleModeReply(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
 
-		result = handleCommandMessage(&message);
+		result = handleCommandMessage(&command);
 		if (result != RETURN_OK) {
-			CommandMessage reply;
-			reply.setReplyRejected(CommandMessage::UNKNOW_COMMAND,
-					message.getCommand());
+			MessageQueueMessage message;
+			CommandMessage reply(&message);
+			reply.setReplyRejected(CommandMessage::UNKNOWN_COMMAND,
+					command.getCommand());
 			replyToCommand(&reply);
 		}
 	}

@@ -14,14 +14,26 @@ void clearMissionMessage(CommandMessage* message);
 }
 
 
-CommandMessage::CommandMessage() {
-	this->messageSize = COMMAND_MESSAGE_SIZE;
+CommandMessage::CommandMessage(MessageQueueMessage* receiverMessage):
+			internalMessage(receiverMessage) {
+	if(receiverMessage == nullptr) {
+		sif::error << "CommandMessage::CommandMessage: Don't pass a nullptr"
+				" as the message queue message, pass the address of an actual"
+				" message!" << std::endl;
+	}
+	internalMessage->messageSize = COMMAND_MESSAGE_SIZE;
 	setCommand(CMD_NONE);
 }
 
-CommandMessage::CommandMessage(Command_t command, uint32_t parameter1,
-		uint32_t parameter2) {
-	this->messageSize = COMMAND_MESSAGE_SIZE;
+CommandMessage::CommandMessage(MessageQueueMessage* messageToSet,
+		Command_t command, uint32_t parameter1, uint32_t parameter2):
+				internalMessage(messageToSet) {
+	if(messageToSet == nullptr) {
+		sif::error << "CommandMessage::CommandMessage: Don't pass a nullptr"
+				" as the message queue message, pass the address of an actual"
+				" message!" << std::endl;
+	}
+	internalMessage->messageSize = COMMAND_MESSAGE_SIZE;
 	setCommand(command);
 	setParameter(parameter1);
 	setParameter2(parameter2);
@@ -29,7 +41,7 @@ CommandMessage::CommandMessage(Command_t command, uint32_t parameter1,
 
 Command_t CommandMessage::getCommand() const {
 	Command_t command;
-	memcpy(&command, getData(), sizeof(Command_t));
+	memcpy(&command, internalMessage->getData(), sizeof(Command_t));
 	return command;
 }
 
@@ -38,29 +50,35 @@ uint8_t CommandMessage::getMessageType() const {
 }
 
 void CommandMessage::setCommand(Command_t command) {
-	memcpy(getData(), &command, sizeof(command));
+	memcpy(internalMessage->getData(), &command, sizeof(command));
 }
 
 uint32_t CommandMessage::getParameter() const {
 	uint32_t parameter1;
-	memcpy(&parameter1, getData() + sizeof(Command_t), sizeof(parameter1));
+	memcpy(&parameter1, internalMessage->getData() + sizeof(Command_t),
+			sizeof(parameter1));
 	return parameter1;
 }
 
 void CommandMessage::setParameter(uint32_t parameter1) {
-	memcpy(getData() + sizeof(Command_t), &parameter1, sizeof(parameter1));
+	memcpy(internalMessage->getData() + sizeof(Command_t),
+			&parameter1, sizeof(parameter1));
 }
 
 uint32_t CommandMessage::getParameter2() const {
 	uint32_t parameter2;
-	memcpy(&parameter2, getData() + sizeof(Command_t) + sizeof(uint32_t),
-			sizeof(parameter2));
+	memcpy(&parameter2, internalMessage->getData() + sizeof(Command_t)
+			+ sizeof(uint32_t), sizeof(parameter2));
 	return parameter2;
 }
 
 void CommandMessage::setParameter2(uint32_t parameter2) {
-	memcpy(getData() + sizeof(Command_t) + sizeof(uint32_t), &parameter2,
-			sizeof(parameter2));
+	memcpy(internalMessage-> getData() + sizeof(Command_t) + sizeof(uint32_t),
+			&parameter2, sizeof(parameter2));
+}
+
+void CommandMessage::clear() {
+	clearCommandMessage();
 }
 
 void CommandMessage::clearCommandMessage() {
@@ -109,7 +127,7 @@ size_t CommandMessage::getMinimumMessageSize() const {
 void CommandMessage::setToUnknownCommand() {
 	Command_t initialCommand = getCommand();
 	clearCommandMessage();
-	setReplyRejected(UNKNOW_COMMAND, initialCommand);
+	setReplyRejected(UNKNOWN_COMMAND, initialCommand);
 }
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,
@@ -117,4 +135,20 @@ void CommandMessage::setReplyRejected(ReturnValue_t reason,
 	setCommand(REPLY_REJECTED);
 	setParameter(reason);
 	setParameter2(initialCommand);
+}
+
+MessageQueueId_t CommandMessage::getSender() const {
+	return internalMessage->getSender();
+}
+
+uint8_t* CommandMessage::getBuffer() {
+	return internalMessage->getBuffer();
+}
+
+void CommandMessage::setSender(MessageQueueId_t setId) {
+	internalMessage->setSender(setId);
+}
+
+const uint8_t* CommandMessage::getBuffer() const {
+	return internalMessage->getBuffer();
 }

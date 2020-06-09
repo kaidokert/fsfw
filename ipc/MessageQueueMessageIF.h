@@ -1,10 +1,23 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUEMESSAGEIF_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUEMESSAGEIF_H_
-#include <framework/ipc/MessageQueueSenderIF.h>
 #include <cstddef>
+#include <cstdint>
+
+/*
+ * TODO: Actually, the definition of this ID to be a uint32_t is not  ideal and
+ * breaks layering. However, it is difficult to keep layering, as the ID is
+ * stored in many places and sent around in MessageQueueMessage.
+ * Ideally, one would use the (current) object_id_t only, however, doing a
+ * lookup of queueIDs for every call does not sound ideal.
+ * In a first step, I'll circumvent the issue by not touching it,
+ * maybe in a second step. This also influences Interface design
+ * (getCommandQueue) and some other issues.. */
+typedef uint32_t MessageQueueId_t;
 
 class MessageQueueMessageIF {
 public:
+	static const MessageQueueId_t NO_QUEUE = 0xffffffff;
+
 	virtual ~MessageQueueMessageIF() {};
 
 	/**
@@ -12,11 +25,11 @@ public:
 	 * 			size is set to zero.
 	 */
 	virtual void clear() = 0;
-	/**
-	 * @brief	This is a debug method that prints the content
-	 * 			(till messageSize) to the debug output.
-	 */
-	virtual void print() = 0;
+//	/**
+//	 * @brief	This is a debug method that prints the content
+//	 * 			(till messageSize) to the debug output.
+//	 */
+//	virtual void print() = 0;
 
 	/**
 	 * @brief	Get read-only pointer to the raw buffer.
@@ -37,11 +50,13 @@ public:
 	 */
 	virtual void setSender(MessageQueueId_t setId) = 0;
 
+	virtual MessageQueueId_t getSender() const = 0;
+
 	/**
 	 * @brief	This helper function is used by the MessageQueue class to
 	 * 			check the size of an incoming message.
 	 */
-	virtual size_t getMinimumMessageSize() = 0;
+	virtual size_t getMinimumMessageSize() const = 0;
 };
 
 
