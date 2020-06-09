@@ -9,8 +9,9 @@
 #include <errno.h>
 
 
-MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize): id(0),
-		lastPartner(0), defaultDestination(NO_QUEUE) {
+MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
+		id(MessageQueueIF::NO_QUEUE),lastPartner(MessageQueueIF::NO_QUEUE),
+		defaultDestination(MessageQueueIF::NO_QUEUE) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
 	this->id = 0;
