@@ -1,7 +1,7 @@
 #include "Mutex.h"
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-const uint32_t MutexIF::BLOCKING = RTEMS_NO_TIMEOUT;
+const uint32_t MutexIF::BLOCKING = RTEMS_WAIT;
 const uint32_t MutexIF::POLLING = RTEMS_NO_WAIT;
 uint8_t Mutex::count = 0;
 
@@ -26,7 +26,20 @@ Mutex::~Mutex() {
 }
 
 ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
-	rtems_status_code status = rtems_semaphore_obtain(mutexId, RTEMS_WAIT, timeoutMs);
+	if(timeoutMs == MutexIF::BLOCKING) {
+		rtems_status_code status = rtems_semaphore_obtain(mutexId,
+				RTEMS_WAIT, timeoutMs);
+	}
+	else if(timeoutMs == MutexIF::POLLING) {
+		timeoutMs = RTEMS_NO_TIMEOUT;
+		rtems_status_code status = rtems_semaphore_obtain(mutexId,
+				RTEMS_NO_WAIT, timeoutMs);
+	}
+	else {
+		rtems_status_code status = rtems_semaphore_obtain(mutexId,
+				RTEMS_NO_WAIT, timeoutMs);
+	}
+
 	switch(status){
 	case RTEMS_SUCCESSFUL:
 		//semaphore obtained successfully
