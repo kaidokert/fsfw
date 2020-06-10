@@ -125,7 +125,7 @@ protected:
 	 *         - @c CSB or implementation specific return codes
 	 */
 	virtual ReturnValue_t getMessageQueueAndObject(uint8_t subservice,
-			const uint8_t *tcData, uint32_t tcDataLen, MessageQueueId_t *id,
+			const uint8_t *tcData, size_t tcDataLen, MessageQueueId_t *id,
 			object_id_t *objectId) = 0;
 
 	/**
@@ -133,18 +133,16 @@ protected:
 	 * the command is prepared by using an implementation specific CommandMessage type
 	 * which is sent to the target object.
 	 * It contains all necessary information for the device to execute telecommands.
-	 * @param message[out] message to be sent to the object
-	 * @param subservice[in] Subservice of the current communication
-	 * @param tcData Additional data of the command
-	 * @param tcDataLen Length of the additional data
-	 * @param state[out] Setable state of the communication
+	 * @param message
+	 * @param subservice
+	 * @param tcData
+	 * @param tcDataLen
+	 * @param state
 	 * @param objectId Target object ID
-	 * @return - @c RETURN_OK on success
-     *         - @c EXECUTION_COMPLETE if exectuin is finished 
-     *         - any other return code will be part of (1,4) start failure
+	 * @return
 	 */
 	virtual ReturnValue_t prepareCommand(CommandMessage *message,
-			uint8_t subservice, const uint8_t *tcData, uint32_t tcDataLen,
+			uint8_t subservice, const uint8_t *tcData, size_t tcDataLen,
 			uint32_t *state, object_id_t objectId) = 0;
 
 	/**
@@ -152,10 +150,10 @@ protected:
 	 * and the respective PUS Commanding Service once the execution has started.
 	 * The PUS Commanding Service receives replies from the target device and forwards them by calling this function.
 	 * There are different translations of these replies to specify how the Command Service proceeds.
-	 * @param reply Command Message which contains information about the command
-	 * @param previousCommand Command_t of last command
-	 * @param state state of the communication
-	 * @param optionalNextCommand[out] An optional next command which can be set in this function
+	 * @param reply[out] Command Message which contains information about the command
+	 * @param previousCommand [out]
+	 * @param state
+	 * @param optionalNextCommand
 	 * @param objectId Source object ID
 	 * @param isStep Flag value to mark steps of command execution
 	 * @return - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to generate TC verification success
@@ -215,34 +213,38 @@ protected:
 	PeriodicTaskIF* executingTask;
 
 	/**
-	 * Send TM data from pointer to data. If a header is supplied it is added before data
+	 * @brief   Send TM data from pointer to data.
+	 *          If a header is supplied it is added before data
 	 * @param subservice Number of subservice
 	 * @param data Pointer to the data in the Packet
 	 * @param dataLen Lenght of data in the Packet
 	 * @param headerData HeaderData will be placed before data
 	 * @param headerSize Size of HeaderData
 	 */
-	void sendTmPacket(uint8_t subservice, const uint8_t *data, uint32_t dataLen,
-			const uint8_t* headerData = NULL, uint32_t headerSize = 0);
+	ReturnValue_t sendTmPacket(uint8_t subservice, const uint8_t *data,
+	        size_t dataLen, const uint8_t* headerData = nullptr,
+	        size_t headerSize = 0);
 
 	/**
-	 * To send TM packets of objects that still need to be serialized and consist of an object ID with appended data
+	 * @brief   To send TM packets of objects that still need to be serialized
+	 *          and consist of an object ID with appended data.
 	 * @param subservice Number of subservice
 	 * @param objectId ObjectId is placed before data
 	 * @param data Data to append to the packet
 	 * @param dataLen Length of Data
 	 */
-	void sendTmPacket(uint8_t subservice, object_id_t objectId,
-			const uint8_t *data, uint32_t dataLen);
+	ReturnValue_t sendTmPacket(uint8_t subservice, object_id_t objectId,
+			const uint8_t *data, size_t dataLen);
 
 	/**
-	 * To send packets has data which is in form of a SerializeIF or Adapters implementing it
+	 * @brief   To send packets which are contained inside a class implementing
+	 *          SerializeIF.
 	 * @param subservice Number of subservice
 	 * @param content This is a pointer to the serialized packet
 	 * @param header Serialize IF header which will be placed before content
 	 */
-	void sendTmPacket(uint8_t subservice, SerializeIF* content,
-			SerializeIF* header = NULL);
+	ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF* content,
+			SerializeIF* header = nullptr);
 
 	virtual void handleUnrequestedReply(CommandMessage *reply);
 
