@@ -1,22 +1,21 @@
-/*
- * CommandingServiceBase.cpp
- *
- *  Created on: 28.08.2019
- *      Author: gaisser
- */
+#include <framework/tcdistribution/PUSDistributorIF.h>
+#include <framework/tmtcservices/AcceptsTelemetryIF.h>
+#include <framework/objectmanager/ObjectManagerIF.h>
 
 #include <framework/tmtcservices/CommandingServiceBase.h>
+#include <framework/tmtcservices/TmTcMessage.h>
+#include <framework/ipc/QueueFactory.h>
+#include <framework/tmtcpacket/pus/TcPacketStored.h>
+#include <framework/tmtcpacket/pus/TmPacketStored.h>
 
 CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId,
 		uint16_t apid, uint8_t service, uint8_t numberOfParallelCommands,
-		uint16_t commandTimeout_seconds, object_id_t setPacketSource,
+		uint16_t commandTimeoutSeconds, object_id_t setPacketSource,
 		object_id_t setPacketDestination, size_t queueDepth) :
-		SystemObject(setObjectId), apid(apid), service(service), timeout_seconds(
-				commandTimeout_seconds), tmPacketCounter(0), IPCStore(NULL), TCStore(
-		NULL), commandQueue(NULL), requestQueue(NULL), commandMap(
-				numberOfParallelCommands), failureParameter1(0), failureParameter2(
-				0), packetSource(setPacketSource), packetDestination(
-				setPacketDestination),executingTask(NULL) {
+		SystemObject(setObjectId), apid(apid), service(service),
+		timeoutSeconds(commandTimeoutSeconds),
+		commandMap(numberOfParallelCommands), packetSource(setPacketSource),
+		packetDestination(setPacketDestination) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
 	requestQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
 }
@@ -369,7 +368,7 @@ void CommandingServiceBase::checkTimeout() {
 	typename FixedMap<MessageQueueId_t,
 			CommandingServiceBase::CommandInfo>::Iterator iter;
 	for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {
-		if ((iter->uptimeOfStart + (timeout_seconds * 1000)) < uptime) {
+		if ((iter->uptimeOfStart + (timeoutSeconds * 1000)) < uptime) {
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE, iter->tcInfo.ackFlags,
 					iter->tcInfo.tcPacketId, iter->tcInfo.tcSequenceControl,
