@@ -132,11 +132,12 @@ protected:
 	 * prepared by using an implementation specific CommandMessage type
 	 * which is sent to the target object. It contains all necessary information
 	 * for the device to execute telecommands.
-	 * @param message
-	 * @param subservice
-	 * @param tcData
-	 * @param tcDataLen
-	 * @param state
+	 * @param message [out] message which can be set and is sent to the object
+	 * @param subservice Subservice of the current communication
+	 * @param tcData Application data of command
+	 * @param tcDataLen Application data length
+	 * @param state [out/in] Setable state of the communication.
+	 * communication
 	 * @param objectId Target object ID
 	 * @return
 	 */
