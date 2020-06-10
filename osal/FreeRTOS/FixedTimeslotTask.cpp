@@ -19,8 +19,7 @@ FixedTimeslotTask::~FixedTimeslotTask() {
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
 
 	//The argument is re-interpreted as FixedTimeslotTask. The Task object is global, so it is found from any place.
-	FixedTimeslotTask *originalTask(
-			reinterpret_cast<FixedTimeslotTask*>(argument));
+	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
 	// Task should not start until explicitly requested
 	// in FreeRTOS, tasks start as soon as they are created if the scheduler is running
 	// but not if the scheduler is not running.
@@ -33,14 +32,14 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
 	}
 
 	originalTask->taskFunctionality();
-	debug << "Polling task " << originalTask->handle
+	sif::debug << "Polling task " << originalTask->handle
 			<< " returned from taskFunctionality." << std::endl;
 }
 
 void FixedTimeslotTask::missedDeadlineCounter() {
 	FixedTimeslotTask::deadlineMissedCount++;
 	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-		error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
+		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
 				<< " deadlines." << std::endl;
 	}
 }
@@ -58,8 +57,19 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	pst.addSlot(componentId, slotTimeMs, executionStep, this);
-	return HasReturnvaluesIF::RETURN_OK;
+	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
+		if(slotTimeMs == 0) {
+			// FreeRTOS throws a sanity error for zero values, so we set
+			// the time to one millisecond.
+			slotTimeMs = 1;
+		}
+		pst.addSlot(componentId, slotTimeMs, executionStep, this);
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+	sif::error << "Component " << std::hex << componentId <<
+			" not found, not adding it to pst" << std::endl;
+	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 uint32_t FixedTimeslotTask::getPeriodMs() const {

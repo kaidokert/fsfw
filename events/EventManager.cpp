@@ -117,26 +117,26 @@ void EventManager::printEvent(EventMessage* message) {
 	switch (message->getSeverity()) {
 	case SEVERITY::INFO:
 //		string = translateObject(message->getReporter());
-//		info << "EVENT: ";
+//		sif::info << "EVENT: ";
 //		if (string != 0) {
-//			info << string;
+//			sif::info << string;
 //		} else {
-//			info << "0x" << std::hex << message->getReporter() << std::dec;
+//			sif::info << "0x" << std::hex << message->getReporter() << std::dec;
 //		}
-//		info << " reported " << translateEvents(message->getEvent()) << " ("
+//		sif::info << " reported " << translateEvents(message->getEvent()) << " ("
 //				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
 //				<< message->getParameter1() << " P2: 0x"
 //				<< message->getParameter2() << std::dec << std::endl;
 		break;
 	default:
 		string = translateObject(message->getReporter());
-		error << "EVENT: ";
+		sif::error << "EVENT: ";
 		if (string != 0) {
-			error << string;
+			sif::error << string;
 		} else {
-			error << "0x" << std::hex << message->getReporter() << std::dec;
+			sif::error << "0x" << std::hex << message->getReporter() << std::dec;
 		}
-		error << " reported " << translateEvents(message->getEvent()) << " ("
+		sif::error << " reported " << translateEvents(message->getEvent()) << " ("
 				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
 				<< message->getParameter1() << " P2: 0x"
 				<< message->getParameter2() << std::dec << std::endl;
