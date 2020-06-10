@@ -97,16 +97,16 @@ protected:
 	/**
 	 * One of two error parameters for additional error information.
 	 */
-	uint32_t errorParameter1;
+	uint32_t errorParameter1 = 0;
 	/**
 	 * One of two error parameters for additional error information.
 	 */
-	uint32_t errorParameter2;
+	uint32_t errorParameter2 = 0;
 	/**
 	 * This is a complete instance of the Telecommand reception queue of the class.
 	 * It is initialized on construction of the class.
 	 */
-	MessageQueueIF* requestQueue;
+	MessageQueueIF* requestQueue = nullptr;
 	/**
 	 * An instance of the VerificationReporter class, that simplifies sending any kind of
 	 * Verification Message to the TC Verification Service.
@@ -127,6 +127,8 @@ private:
 	 * Remember that one packet must be completely handled in one #handleRequest call.
 	 */
 	static const uint8_t PUS_SERVICE_MAX_RECEPTION = 10;
+
+	void handleRequestQueue();
 };
 
 #endif /* PUSSERVICEBASE_H_ */

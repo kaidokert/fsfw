@@ -9,10 +9,11 @@
 object_id_t PusServiceBase::packetSource = 0;
 object_id_t PusServiceBase::packetDestination = 0;
 
-PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId) :
-		SystemObject(setObjectId), apid(setApid), serviceId(setServiceId), errorParameter1(
-				0), errorParameter2(0), requestQueue(NULL) {
-	requestQueue = QueueFactory::instance()->createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
+PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid,
+		uint8_t setServiceId) :
+		SystemObject(setObjectId), apid(setApid), serviceId(setServiceId) {
+	requestQueue = QueueFactory::instance()->
+			createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
 }
 
 PusServiceBase::~PusServiceBase() {
@@ -20,50 +21,59 @@ PusServiceBase::~PusServiceBase() {
 }
 
 ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
+	handleRequestQueue();
+	ReturnValue_t result = this->performService();
+	if (result != RETURN_OK) {
+		sif::error << "PusService " << (uint16_t) this->serviceId
+				<< ": performService returned with " << (int16_t) result
+				<< std::endl;
+		return RETURN_FAILED;
+	}
+	return RETURN_OK;
+}
+
+void PusServiceBase::handleRequestQueue() {
 	TmTcMessage message;
+	ReturnValue_t result = RETURN_FAILED;
 	for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
 		ReturnValue_t status = this->requestQueue->receiveMessage(&message);
-		//	debug << "PusServiceBase::performOperation: Receiving from MQ ID: " << std::hex << this->requestQueue.getId()
-		// << std::dec << " returned: " << status << std::endl;
+		//	debug << "PusServiceBase::performOperation: Receiving from MQ ID: "
+		//      << std::hex << this->requestQueue.getId()
+		//      << std::dec << " returned: " << status << std::endl;
 		if (status == RETURN_OK) {
 			this->currentPacket.setStoreAddress(message.getStorageId());
-			//	info << "Service " << (uint16_t) this->serviceId << ": new packet!" << std::endl;
+			//info << "Service " << (uint16_t) this->serviceId <<
+			//     ": new packet!" << std::endl;
 
-			ReturnValue_t return_code = this->handleRequest(currentPacket.getSubService());
+			result = this->handleRequest(currentPacket.getSubService());
 
-			// debug << "Service " << (uint16_t)this->serviceId << ": handleRequest returned: " << (int)return_code << std::endl;
-			if (return_code == RETURN_OK) {
+			// debug << "Service " << (uint16_t)this->serviceId <<
+			//    ": handleRequest returned: " << (int)return_code << std::endl;
+			if (result == RETURN_OK) {
 				this->verifyReporter.sendSuccessReport(
 						TC_VERIFY::COMPLETION_SUCCESS, &this->currentPacket);
-			} else {
+			}
+			else {
 				this->verifyReporter.sendFailureReport(
 						TC_VERIFY::COMPLETION_FAILURE, &this->currentPacket,
-						return_code, 0, errorParameter1, errorParameter2);
+						result, 0, errorParameter1, errorParameter2);
 			}
 			this->currentPacket.deletePacket();
 			errorParameter1 = 0;
 			errorParameter2 = 0;
-		} else if (status == MessageQueueIF::EMPTY) {
+		}
+		else if (status == MessageQueueIF::EMPTY) {
 			status = RETURN_OK;
-			// debug << "PusService " << (uint16_t)this->serviceId << ": no new packet." << std::endl;
+			// debug << "PusService " << (uint16_t)this->serviceId <<
+			//      ": no new packet." << std::endl;
 			break;
-		} else {
-
+		}
+		else {
 			sif::error << "PusServiceBase::performOperation: Service "
 					<< (uint16_t) this->serviceId
 					<< ": Error receiving packet. Code: " << std::hex << status
 					<< std::dec << std::endl;
 		}
-	}
-	ReturnValue_t return_code = this->performService();
-	if (return_code == RETURN_OK) {
-		return RETURN_OK;
-	} else {
-
-		sif::error << "PusService " << (uint16_t) this->serviceId
-				<< ": performService returned with " << (int16_t) return_code
-				<< std::endl;
-		return RETURN_FAILED;
 	}
 }
 
@@ -80,19 +90,21 @@ ReturnValue_t PusServiceBase::initialize() {
 	if (result != RETURN_OK) {
 		return result;
 	}
-	AcceptsTelemetryIF* dest_service = objectManager->get<AcceptsTelemetryIF>(
+	AcceptsTelemetryIF* destService = objectManager->get<AcceptsTelemetryIF>(
 			packetDestination);
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
-	if ((dest_service != NULL) && (distributor != NULL)) {
+	if ((destService != nullptr) && (distributor != nullptr)) {
 		this->requestQueue->setDefaultDestination(
-				dest_service->getReportReceptionQueue());
+				destService->getReportReceptionQueue());
 		distributor->registerService(this);
 		return RETURN_OK;
-	} else {
+	}
+	else {
 		sif::error << "PusServiceBase::PusServiceBase: Service "
 				<< (uint32_t) this->serviceId << ": Configuration error."
-				<< " Make sure packetSource and packetDestination are defined correctly" << std::endl;
+				<< " Make sure packetSource and packetDestination are defined "
+			       "correctly" << std::endl;
 		return RETURN_FAILED;
 	}
 }
