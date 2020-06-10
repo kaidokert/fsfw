@@ -267,6 +267,9 @@ protected:
 			typename FixedMap<MessageQueueId_t, CommandInfo>::Iterator *iter);
 
 private:
+	using CommandMapIter = FixedMap<MessageQueueId_t,
+			CommandingServiceBase::CommandInfo>::Iterator;
+
 	/**
 	 * This method handles internal execution of a command,
 	 * once it has been started by @sa{startExecution()} in the Request Queue handler.
@@ -297,6 +300,10 @@ private:
 
 	void startExecution(TcPacketStored *storedPacket,
 			typename FixedMap<MessageQueueId_t, CommandInfo>::Iterator *iter);
+
+	void handleCommandMessage(CommandMessage& reply);
+	void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,
+			CommandMessage& nextCommand,CommandMessage& reply, bool& isStep);
 
 	void checkTimeout();
 };

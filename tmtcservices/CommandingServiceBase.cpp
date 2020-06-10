@@ -56,7 +56,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
 			objectManager->get<AcceptsTelemetryIF>(packetDestination);
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
-	if ((packetForwarding == NULL) && (distributor == NULL)) {
+	if (packetForwarding == nullptr or distributor == nullptr) {
 		return RETURN_FAILED;
 	}
 
@@ -67,7 +67,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 
-	if ((IPCStore == NULL) || (TCStore == NULL)) {
+	if (IPCStore == nullptr or TCStore == nullptr) {
 		return RETURN_FAILED;
 	}
 
@@ -76,96 +76,115 @@ ReturnValue_t CommandingServiceBase::initialize() {
 }
 
 void CommandingServiceBase::handleCommandQueue() {
-	CommandMessage reply, nextCommand;
-	ReturnValue_t result, sendResult = RETURN_OK;
-	bool isStep = false;
+	CommandMessage reply;
+	ReturnValue_t result = RETURN_FAILED;
 	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
 			result = commandQueue->receiveMessage(&reply)) {
-		isStep = false;
-		typename FixedMap<MessageQueueId_t,
-				CommandingServiceBase::CommandInfo>::Iterator iter;
-		if (reply.getSender() == MessageQueueIF::NO_QUEUE) {
-			handleUnrequestedReply(&reply);
-			continue;
-		}
-		if ((iter = commandMap.find(reply.getSender())) == commandMap.end()) {
-			handleUnrequestedReply(&reply);
-			continue;
-		}
-		nextCommand.setCommand(CommandMessage::CMD_NONE);
-		result = handleReply(&reply, iter->command, &iter->state, &nextCommand,
-				iter->objectId, &isStep);
-		switch (result) {
-		case EXECUTION_COMPLETE:
-		case RETURN_OK:
-		case NO_STEP_MESSAGE:
-			iter->command = nextCommand.getCommand();
-			if (nextCommand.getCommand() != CommandMessage::CMD_NONE) {
-				sendResult = commandQueue->sendMessage(reply.getSender(),
-						&nextCommand);
-			}
-			if (sendResult == RETURN_OK) {
-				if (isStep) {
-					if (result != NO_STEP_MESSAGE) {
-						verificationReporter.sendSuccessReport(
-								TC_VERIFY::PROGRESS_SUCCESS,
-								iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
-								iter->tcInfo.tcSequenceControl, ++iter->step);
-					}
-				} else {
-					verificationReporter.sendSuccessReport(
-							TC_VERIFY::COMPLETION_SUCCESS,
-							iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
-							iter->tcInfo.tcSequenceControl, 0);
-					checkAndExecuteFifo(&iter);
-				}
-			} else {
-				if (isStep) {
-					nextCommand.clearCommandMessage();
-					verificationReporter.sendFailureReport(
-							TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
-							iter->tcInfo.tcPacketId,
-							iter->tcInfo.tcSequenceControl, sendResult,
-							++iter->step, failureParameter1, failureParameter2);
-				} else {
-					nextCommand.clearCommandMessage();
-					verificationReporter.sendFailureReport(
-							TC_VERIFY::COMPLETION_FAILURE,
-							iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
-							iter->tcInfo.tcSequenceControl, sendResult, 0,
-							failureParameter1, failureParameter2);
-				}
-				failureParameter1 = 0;
-				failureParameter2 = 0;
-				checkAndExecuteFifo(&iter);
-			}
-			break;
-		case INVALID_REPLY:
-			//might be just an unrequested reply at a bad moment
-			handleUnrequestedReply(&reply);
-			break;
-		default:
-			if (isStep) {
-				verificationReporter.sendFailureReport(
-						TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
-						iter->tcInfo.tcPacketId, iter->tcInfo.tcSequenceControl,
-						result, ++iter->step, failureParameter1,
-						failureParameter2);
-			} else {
-				verificationReporter.sendFailureReport(
-						TC_VERIFY::COMPLETION_FAILURE, iter->tcInfo.ackFlags,
-						iter->tcInfo.tcPacketId, iter->tcInfo.tcSequenceControl,
-						result, 0, failureParameter1, failureParameter2);
-			}
-			failureParameter1 = 0;
-			failureParameter2 = 0;
-			checkAndExecuteFifo(&iter);
-			break;
-		}
-
+		handleCommandMessage(reply);
 	}
 }
 
+
+void CommandingServiceBase::handleCommandMessage(CommandMessage& reply) {
+	bool isStep = false;
+	CommandMessage nextCommand;
+	CommandMapIter iter;
+	if (reply.getSender() == MessageQueueIF::NO_QUEUE) {
+		handleUnrequestedReply(&reply);
+		return;
+	}
+	if ((iter = commandMap.find(reply.getSender())) == commandMap.end()) {
+		handleUnrequestedReply(&reply);
+		return;
+	}
+	nextCommand.setCommand(CommandMessage::CMD_NONE);
+
+	// Implemented by child class, specifies what to do with reply.
+	ReturnValue_t result = handleReply(&reply, iter->command, &iter->state,
+			&nextCommand, iter->objectId, &isStep);
+
+	switch (result) {
+	case EXECUTION_COMPLETE:
+	case RETURN_OK:
+	case NO_STEP_MESSAGE:
+		// handle result of reply handler implemented by developer.
+		handleReplyHandlerResult(result, iter, nextCommand, reply, isStep);
+		break;
+	case INVALID_REPLY:
+		//might be just an unrequested reply at a bad moment
+		handleUnrequestedReply(&reply);
+		break;
+	default:
+		if (isStep) {
+			verificationReporter.sendFailureReport(
+					TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
+					iter->tcInfo.tcPacketId, iter->tcInfo.tcSequenceControl,
+					result, ++iter->step, failureParameter1,
+					failureParameter2);
+		} else {
+			verificationReporter.sendFailureReport(
+					TC_VERIFY::COMPLETION_FAILURE, iter->tcInfo.ackFlags,
+					iter->tcInfo.tcPacketId, iter->tcInfo.tcSequenceControl,
+					result, 0, failureParameter1, failureParameter2);
+		}
+		failureParameter1 = 0;
+		failureParameter2 = 0;
+		checkAndExecuteFifo(&iter);
+		break;
+	}
+
+}
+
+void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
+		CommandMapIter iter, CommandMessage& nextCommand, CommandMessage& reply,
+		bool& isStep) {
+	iter->command = nextCommand.getCommand();
+
+	// In case a new command is to be sent immediately, this is performed here.
+	// If no new command is sent, only analyse reply result by initializing
+	// sendResult as RETURN_OK
+	ReturnValue_t sendResult = RETURN_OK;
+	if (nextCommand.getCommand() != CommandMessage::CMD_NONE) {
+		sendResult = commandQueue->sendMessage(reply.getSender(),
+				&nextCommand);
+	}
+
+	if (sendResult == RETURN_OK) {
+		if (isStep and result != NO_STEP_MESSAGE) {
+			verificationReporter.sendSuccessReport(
+					TC_VERIFY::PROGRESS_SUCCESS,
+					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
+					iter->tcInfo.tcSequenceControl, ++iter->step);
+		}
+		else {
+			verificationReporter.sendSuccessReport(
+					TC_VERIFY::COMPLETION_SUCCESS,
+					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
+					iter->tcInfo.tcSequenceControl, 0);
+			checkAndExecuteFifo(&iter);
+		}
+	}
+	else {
+		if (isStep) {
+			nextCommand.clearCommandMessage();
+			verificationReporter.sendFailureReport(
+					TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
+					iter->tcInfo.tcPacketId,
+					iter->tcInfo.tcSequenceControl, sendResult,
+					++iter->step, failureParameter1, failureParameter2);
+		} else {
+			nextCommand.clearCommandMessage();
+			verificationReporter.sendFailureReport(
+					TC_VERIFY::COMPLETION_FAILURE,
+					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
+					iter->tcInfo.tcSequenceControl, sendResult, 0,
+					failureParameter1, failureParameter2);
+		}
+		failureParameter1 = 0;
+		failureParameter2 = 0;
+		checkAndExecuteFifo(&iter);
+	}
+}
 
 void CommandingServiceBase::handleRequestQueue() {
 	TmTcMessage message;
