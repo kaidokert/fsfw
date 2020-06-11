@@ -18,20 +18,20 @@ MessageQueue::~MessageQueue() {
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, bool ignoreFault) {
+		MessageQueueMessageIF* message, bool ignoreFault) {
 	return sendMessageFrom(sendTo, message, this->getId(), ignoreFault);
 }
 
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessageIF* message) {
 	return sendToDefaultFrom(message, this->getId());
 }
 
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 		MessageQueueId_t sentFrom, bool ignoreFault) {
 	return sendMessageFrom(defaultDestination,message,sentFrom,ignoreFault);
 }
 
-ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
 	if (this->lastPartner != 0) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
@@ -40,13 +40,13 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 }
 
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, MessageQueueId_t sentFrom,
+		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	return sendMessageFromMessageQueue(sendTo, message, sentFrom,
 			ignoreFault);
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 		MessageQueueId_t* receivedFrom) {
 	ReturnValue_t status = this->receiveMessage(message);
 	if(status == HasReturnvaluesIF::RETURN_OK) {
@@ -55,7 +55,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 	return status;
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	if(messageQueue.empty()) {
 		return MessageQueueIF::EMPTY;
 	}
@@ -102,9 +102,9 @@ bool MessageQueue::isDefaultDestinationSet() const {
 
 // static core function to send messages.
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-        MessageQueueMessage *message, MessageQueueId_t sentFrom,
+        MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault) {
-	if(message->messageSize > MessageQueueMessage::MAX_DATA_SIZE) {
+	if(message->getMessageSize() > message->getMaximumMessageSize()) {
 		// Actually, this should never happen or an error will be emitted
 		// in MessageQueueMessage.
 		// But I will still return a failure here.
@@ -127,7 +127,17 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
 		MutexHelper mutexLock(targetQueue->queueLock, 20);
-		targetQueue->messageQueue.push(*message);
+		// not ideal, works for now though.
+		MessageQueueMessage* mqmMessage =
+				dynamic_cast<MessageQueueMessage*>(message);
+		if(message != nullptr) {
+			targetQueue->messageQueue.push(*mqmMessage);
+		}
+		else {
+			sif::error << "MessageQueue::sendMessageFromMessageQueue: Message"
+					"is not MessageQueueMessage!" << std::endl;
+		}
+
 	}
 	else {
 		return MessageQueueIF::FULL;

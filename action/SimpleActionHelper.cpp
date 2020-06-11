@@ -36,7 +36,8 @@ void SimpleActionHelper::resetHelper() {
 
 void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy,
 		ActionId_t actionId, store_address_t dataAddress) {
-	CommandMessage reply;
+	MessageQueueMessage message;
+	CommandMessage reply(&message);
 	if (isExecuting) {
 		ipcStore->deleteData(dataAddress);
 		ActionMessage::setStepReply(&reply, actionId, 0,

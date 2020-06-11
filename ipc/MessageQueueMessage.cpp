@@ -51,7 +51,7 @@ void MessageQueueMessage::setSender(MessageQueueId_t setId) {
 	memcpy(this->internalBuffer, &setId, sizeof(MessageQueueId_t));
 }
 
-size_t MessageQueueMessage::getMinimumMessageSize() {
+size_t MessageQueueMessage::getMinimumMessageSize() const {
 	return this->HEADER_SIZE;
 }
 
@@ -66,4 +66,12 @@ void MessageQueueMessage::print() {
 
 void MessageQueueMessage::clear() {
 	memset(this->getBuffer(), 0, this->MAX_MESSAGE_SIZE);
+}
+
+size_t MessageQueueMessage::getMessageSize() const {
+	return this->messageSize;
+}
+
+size_t MessageQueueMessage::getMaximumMessageSize() const {
+	return this->MAX_MESSAGE_SIZE;
 }

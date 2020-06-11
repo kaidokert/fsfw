@@ -218,8 +218,9 @@ void DeviceHandlerBase::readCommandQueue() {
 	// message with 3 parameters). The full buffer is filled anyway
 	// and I could just copy the content into the other message but
 	// all I need are few additional functions the other message type offers.
-	CommandMessage cmdMessage;
-	ReturnValue_t result = commandQueue->receiveMessage(&cmdMessage);
+	MessageQueueMessage message;
+	CommandMessage command(&message);
+	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result != RETURN_OK) {
 		return;
 	}
@@ -234,23 +235,23 @@ void DeviceHandlerBase::readCommandQueue() {
 //	}
 
 	if(healthHelperActive) {
-		result = healthHelper.handleHealthCommand(&cmdMessage);
+		result = healthHelper.handleHealthCommand(&command);
 		if (result == RETURN_OK) {
 			return;
 		}
 	}
 
-	result = modeHelper.handleModeCommand(&cmdMessage);
+	result = modeHelper.handleModeCommand(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	result = actionHelper.handleActionMessage(&cmdMessage);
+	result = actionHelper.handleActionMessage(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	result = parameterHelper.handleParameterMessage(&cmdMessage);
+	result = parameterHelper.handleParameterMessage(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
@@ -261,17 +262,17 @@ void DeviceHandlerBase::readCommandQueue() {
 //		return;
 //	}
 
-	result = handleDeviceHandlerMessage(&cmdMessage);
+	result = handleDeviceHandlerMessage(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	result = letChildHandleMessage(&cmdMessage);
+	result = letChildHandleMessage(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
 
-	replyReturnvalueToCommand(CommandMessage::UNKNOW_COMMAND);
+	replyReturnvalueToCommand(CommandMessage::UNKNOWN_COMMAND);
 
 }
 
@@ -492,12 +493,13 @@ void DeviceHandlerBase::setMode(Mode_t newMode) {
 
 void DeviceHandlerBase::replyReturnvalueToCommand(ReturnValue_t status,
 		uint32_t parameter) {
+	MessageQueueMessage message;
 	//This is actually the reply protocol for raw and misc DH commands.
 	if (status == RETURN_OK) {
-		CommandMessage reply(CommandMessage::REPLY_COMMAND_OK, 0, parameter);
+		CommandMessage reply(&message, CommandMessage::REPLY_COMMAND_OK, 0, parameter);
 		commandQueue->reply(&reply);
 	} else {
-		CommandMessage reply(CommandMessage::REPLY_REJECTED, status, parameter);
+		CommandMessage reply(&message, CommandMessage::REPLY_REJECTED, status, parameter);
 		commandQueue->reply(&reply);
 	}
 }
@@ -767,9 +769,10 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 		return;
 	}
 
-	CommandMessage message;
+	MessageQueueMessage message;
+	CommandMessage command(&message);
 
-	DeviceHandlerMessage::setDeviceHandlerRawReplyMessage(&message,
+	DeviceHandlerMessage::setDeviceHandlerRawReplyMessage(&command,
 			getObjectId(), address, isCommand);
 
 //	this->DeviceHandlerCommand = CommandMessage::CMD_NONE;

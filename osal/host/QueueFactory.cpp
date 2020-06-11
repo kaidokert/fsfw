@@ -7,7 +7,7 @@ QueueFactory* QueueFactory::factoryInstance = nullptr;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 			bool ignoreFault) {
 	return MessageQueue::sendMessageFromMessageQueue(sendTo,message,
 			sentFrom,ignoreFault);

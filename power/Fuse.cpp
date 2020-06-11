@@ -163,7 +163,8 @@ void Fuse::setAllMonitorsToUnchecked() {
 }
 
 void Fuse::checkCommandQueue() {
-	CommandMessage command;
+	MessageQueueMessage message;
+	CommandMessage command(&message);
 	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return;

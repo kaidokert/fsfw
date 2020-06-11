@@ -1,5 +1,5 @@
-#ifndef MESSAGEQUEUEMESSAGE_H_
-#define MESSAGEQUEUEMESSAGE_H_
+#ifndef FRAMEWORK_IPC_MESSAGEQUEUEMESSAGE_H_
+#define FRAMEWORK_IPC_MESSAGEQUEUEMESSAGE_H_
 
 #include <framework/ipc/MessageQueueMessageIF.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
@@ -8,7 +8,6 @@
 /**
  *	@brief		This class is the representation and data organizer
  *				for interprocess messages.
- *
  *	@details
  *	To facilitate and standardize interprocess communication, this class was
  *	created to handle a lightweight "interprocess message protocol".
@@ -28,12 +27,14 @@ class MessageQueueMessage: public MessageQueueMessageIF {
 public:
 	/**
 	 * @brief	The class is initialized empty with this constructor.
-	 * @details	The messageSize attribute is set to the header's size and the
-	 * 			whole content is set to zero.
+	 * @details
+	 * The messageSize attribute is set to the header's size and the whole
+	 * content is set to zero.
 	 */
 	MessageQueueMessage();
 	/**
-	 * @brief	With this constructor the class is initialized with the given content.
+	 * @brief	With this constructor the class is initialized with
+	 * 			the given content.
 	 * @details
 	 * If the passed message size fits into the buffer, the passed data is
 	 * copied to the internal buffer and the messageSize information is set.
@@ -46,7 +47,14 @@ public:
 	MessageQueueMessage(uint8_t* data, size_t size);
 
 	/**
-	 * @brief	The size information of each message is stored in this attribute.
+	 * @brief	As no memory is allocated in this class,
+	 * 		    the destructor is empty.
+	 */
+	virtual ~MessageQueueMessage();
+
+	/**
+	 * @brief	The size information of each message is stored in
+	 *  			this attribute.
 	 * @details
 	 * It is public to simplify usage and to allow for passing the size
 	 * address as a pointer. Care must be taken when inheriting from this class,
@@ -59,19 +67,26 @@ public:
 	 */
 	size_t messageSize;
 	/**
-	 * @brief	This constant defines the maximum size of the data content, excluding the header.
-	 * @details	It may be changed if necessary, but in general should be kept as small as possible.
+	 * @brief	This constant defines the maximum size of the data content,
+	 * 			excluding the header.
+	 * @details
+	 * It may be changed if necessary, but in general should be kept
+	 * as small as possible.
 	 */
 	static const size_t MAX_DATA_SIZE = 24;
 	/**
-	 * @brief	This constants defines the size of the header, which is added to every message.
+	 * @brief	This constants defines the size of the header,
+	 * 			which is added to every message.
 	 */
 	static const size_t HEADER_SIZE = sizeof(MessageQueueId_t);
 	/**
-	 * @brief	This constant defines the maximum total size in bytes of a sent message.
-	 * @details	It is the sum of the maximum data and the header size. Be aware that this constant
-	 * 			is used to define the buffer sizes for every message queue in the system. So, a change
-	 * 			here may have significant impact on the required resources.
+	 * @brief	This constant defines the maximum total size in bytes
+	 * 			of a sent message.
+	 * @details
+	 * It is the sum of the maximum data and the header size. Be aware that
+	 * this constant is used to define the buffer sizes for every message
+	 * queue in the system. So, a change here may have significant impact on
+	 * the required resources.
 	 */
 	static const size_t MAX_MESSAGE_SIZE = MAX_DATA_SIZE + HEADER_SIZE;
 	/**
@@ -81,58 +96,68 @@ public:
 	static const size_t MIN_MESSAGE_SIZE = HEADER_SIZE;
 private:
 	/**
-	 * @brief	This is the internal buffer that contains the actual message data.
+	 * @brief	This is the internal buffer that contains the
+	 * 			actual message data.
 	 */
 	uint8_t internalBuffer[MAX_MESSAGE_SIZE];
 public:
 	/**
-	 * @brief	As no memory is allocated in this class, the destructor is empty.
+	 * @brief	This method is used to get the complete data of the message.
 	 */
-	virtual ~MessageQueueMessage();
+	const uint8_t* getBuffer() const override;
 	/**
 	 * @brief	This method is used to get the complete data of the message.
 	 */
-	const uint8_t* getBuffer() const;
-	/**
-	 * @brief	This method is used to get the complete data of the message.
-	 */
-	uint8_t* getBuffer();
+	uint8_t* getBuffer() override;
 	/**
 	 * @brief	This method is used to fetch the data content of the message.
-	 * @details It shall be used by child classes to add data at the right position.
+	 * @details
+	 * It shall be used by child classes to add data at the right position.
 	 */
-	const uint8_t* getData() const;
+	const uint8_t* getData() const override;
 	/**
 	 * @brief	This method is used to fetch the data content of the message.
-	 * @details It shall be used by child classes to add data at the right position.
+	 * @details
+	 * It shall be used by child classes to add data at the right position.
 	 */
-	uint8_t* getData();
+	uint8_t* getData() override;
 	/**
-	 * @brief	This method is used to extract the sender's message queue id information from a
-	 * 			received message.
+	 * @brief	This method is used to extract the sender's message
+	 * 			queue id information from a received message.
 	 */
-	MessageQueueId_t getSender() const;
+	MessageQueueId_t getSender() const override;
 	/**
-	 * @brief	With this method, the whole content and the message size is set to zero.
+	 * @brief	With this method, the whole content
+	 * 			and the message size is set to zero.
 	 */
-	void clear();
+	void clear() override;
+
 	/**
-	 * @brief	This is a debug method that prints the content (till messageSize) to the debug output.
+	 * @brief	This method is used to set the sender's message queue id
+	 * 			information prior to ing the message.
+	 * @param setId
+	 * The message queue id that identifies the sending message queue.
 	 */
-	void print();
+	void setSender(MessageQueueId_t setId) override;
 	/**
-	 * @brief	This method is used to set the sender's message queue id information prior to
-	 * 			sending the message.
-	 * @param setId	The message queue id that identifies the sending message queue.
-	 */
-	void setSender(MessageQueueId_t setId);
-	/**
-	 * @brief	This helper function is used by the MessageQueue class to check the size of an
-	 * 			incoming message.
-	 * @details	The method must be overwritten by child classes if size checks shall be more strict.
+	 * @brief	This helper function is used by the MessageQueue class to check
+	 * 			the size of an incoming message.
+	 * @details
+	 * The method must be overwritten by child classes if size
+	 * checks shall be more strict.
 	 * @return	The default implementation returns HEADER_SIZE.
 	 */
-	virtual size_t getMinimumMessageSize();
+	virtual size_t getMinimumMessageSize() const override;
+
+	virtual size_t getMessageSize() const override;
+
+	virtual size_t getMaximumMessageSize() const override;
+
+	/**
+	 * @brief	This is a debug method that prints the content
+	 * 			(till messageSize) to the debug output.
+	 */
+	void print();
 };
 
 #endif /* MESSAGEQUEUEMESSAGE_H_ */

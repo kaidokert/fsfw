@@ -36,7 +36,7 @@ ReturnValue_t DataSetBase::read(uint32_t lockTimeout) {
 	if (state == States::DATA_SET_UNINITIALISED) {
 		lockDataPool(lockTimeout);
 		for (uint16_t count = 0; count < fillCount; count++) {
-			ReturnValue_t result = readVariable(count);
+			result = readVariable(count);
 			if(result != RETURN_OK) {
 				break;
 			}
@@ -46,14 +46,15 @@ ReturnValue_t DataSetBase::read(uint32_t lockTimeout) {
 	}
 	else {
 		sif::error << "DataSet::read(): "
-				"Call made in wrong position." << std::endl;
+				"Call made in wrong position. Don't forget to commit"
+				" member datasets!" << std::endl;
 		result = SET_WAS_ALREADY_READ;
 	}
 	return result;
 }
 
 ReturnValue_t DataSetBase::readVariable(uint16_t count) {
-	ReturnValue_t result = DataSetIF::INVALID_PARAMETER_DEFINITION;
+	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	// These checks are often performed by the respective
 	// variable implementation too, but I guess a double check does not hurt.
 	if (registeredVariables[count]->getReadWriteMode() !=
@@ -62,6 +63,9 @@ ReturnValue_t DataSetBase::readVariable(uint16_t count) {
 				!= PoolVariableIF::NO_PARAMETER)
 	{
 		result = registeredVariables[count]->readWithoutLock();
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			result = INVALID_PARAMETER_DEFINITION;
+		}
 	}
 	return result;
 }

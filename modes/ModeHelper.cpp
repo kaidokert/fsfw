@@ -11,31 +11,32 @@ ModeHelper::~ModeHelper() {
 
 }
 
-ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
-	CommandMessage reply;
+ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
+	MessageQueueMessage message;
+	CommandMessage reply(&message);
 	Mode_t mode;
 	Submode_t submode;
-	switch (message->getCommand()) {
+	switch (command->getCommand()) {
 	case ModeMessage::CMD_MODE_COMMAND_FORCED:
 		forced = true;
 		/* NO BREAK falls through*/
 	case ModeMessage::CMD_MODE_COMMAND: {
-		mode = ModeMessage::getMode(message);
-		submode = ModeMessage::getSubmode(message);
+		mode = ModeMessage::getMode(command);
+		submode = ModeMessage::getSubmode(command);
 		uint32_t timeout;
 		ReturnValue_t result = owner->checkModeCommand(mode, submode, &timeout);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			ModeMessage::cantReachMode(&reply, result);
-			MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
+			MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
 					owner->getCommandQueue());
 			break;
 		}
 		//Free to start transition
-		theOneWhoCommandedAMode = message->getSender();
+		theOneWhoCommandedAMode = command->getSender();
 		commandedMode = mode;
 		commandedSubmode = submode;
 
-		if ((parentQueueId != MessageQueueSenderIF::NO_QUEUE)
+		if ((parentQueueId != MessageQueueMessageIF::NO_QUEUE)
 				&& (theOneWhoCommandedAMode != parentQueueId)) {
 			owner->setToExternalControl();
 		}
@@ -48,7 +49,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
 		owner->getMode(&mode, &submode);
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_REPLY, mode,
 				submode);
-		MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
+		MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
 				owner->getCommandQueue());
 	}
 		break;
@@ -73,13 +74,14 @@ void ModeHelper::modeChanged(Mode_t ownerMode, Submode_t ownerSubmode) {
 	forced = false;
 	sendModeReplyMessage(ownerMode, ownerSubmode);
 	sendModeInfoMessage(ownerMode, ownerSubmode);
-	theOneWhoCommandedAMode = MessageQueueSenderIF::NO_QUEUE;
+	theOneWhoCommandedAMode = MessageQueueMessageIF::NO_QUEUE;
 }
 
 void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
-	CommandMessage reply;
-	if (theOneWhoCommandedAMode != MessageQueueSenderIF::NO_QUEUE)
+	MessageQueueMessage message;
+	CommandMessage reply(&message);
+	if (theOneWhoCommandedAMode != MessageQueueMessageIF::NO_QUEUE)
 	{
 		if (ownerMode != commandedMode or ownerSubmode != commandedSubmode)
 		{
@@ -99,9 +101,10 @@ void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 
 void ModeHelper::sendModeInfoMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
-	CommandMessage reply;
+	MessageQueueMessage message;
+	CommandMessage reply(&message);
 	if (theOneWhoCommandedAMode != parentQueueId
-			and parentQueueId != MessageQueueSenderIF::NO_QUEUE)
+			and parentQueueId != MessageQueueMessageIF::NO_QUEUE)
 	{
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_INFO,
 				ownerMode, ownerSubmode);

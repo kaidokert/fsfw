@@ -21,29 +21,29 @@ SerialBufferAdapter<count_t>::~SerialBufferAdapter() {
 }
 
 template<typename count_t>
-ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer,
-		size_t* size, const size_t max_size, bool bigEndian) const {
+ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer_,
+		size_t* size_, const size_t max_size, bool bigEndian) const {
 	uint32_t serializedLength = bufferLength;
 	if (serializeLength) {
 		serializedLength += AutoSerializeAdapter::getSerializedSize(
 				&bufferLength);
 	}
-	if (*size + serializedLength > max_size) {
+	if (*size_ + serializedLength > max_size) {
 		return BUFFER_TOO_SHORT;
 	} else {
 		if (serializeLength) {
-			AutoSerializeAdapter::serialize(&bufferLength, buffer, size,
+			AutoSerializeAdapter::serialize(&bufferLength, buffer_, size_,
 					max_size, bigEndian);
 		}
 		if (constBuffer != nullptr) {
-			memcpy(*buffer, constBuffer, bufferLength);
+			memcpy(*buffer_, this->constBuffer, bufferLength);
 		} else if (buffer != nullptr) {
-			memcpy(*buffer, buffer, bufferLength);
+			memcpy(*buffer_, this->buffer, bufferLength);
 		} else {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
-		*size += bufferLength;
-		(*buffer) += bufferLength;
+		*size_ += bufferLength;
+		(*buffer_) += bufferLength;
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 }

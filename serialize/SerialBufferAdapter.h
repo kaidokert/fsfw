@@ -45,7 +45,7 @@ public:
 
 	virtual ~SerialBufferAdapter();
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+	virtual ReturnValue_t serialize(uint8_t** buffer_, size_t* size,
 			const size_t max_size, bool bigEndian) const override;
 
 	virtual size_t getSerializedSize() const;

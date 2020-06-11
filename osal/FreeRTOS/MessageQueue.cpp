@@ -25,21 +25,21 @@ void MessageQueue::switchSystemContext(CallContext callContext) {
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, bool ignoreFault) {
+		MessageQueueMessageIF* message, bool ignoreFault) {
 	return sendMessageFrom(sendTo, message, this->getId(), ignoreFault);
 }
 
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessageIF* message) {
 	return sendToDefaultFrom(message, this->getId());
 }
 
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 		MessageQueueId_t sentFrom, bool ignoreFault) {
 	return sendMessageFrom(defaultDestination,message,sentFrom,ignoreFault);
 }
 
-ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
-	if (this->lastPartner != 0) {
+ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
+	if (this->lastPartner != MessageQueueMessageIF::NO_QUEUE) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
 		return NO_REPLY_PARTNER;
@@ -47,7 +47,7 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 }
 
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, MessageQueueId_t sentFrom,
+		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	return sendMessageFromMessageQueue(sendTo, message, sentFrom,
 			ignoreFault, callContext);
@@ -69,7 +69,7 @@ ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 		MessageQueueId_t* receivedFrom) {
 	ReturnValue_t status = this->receiveMessage(message);
 	if(status == HasReturnvaluesIF::RETURN_OK) {
@@ -78,7 +78,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 	return status;
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	BaseType_t result = xQueueReceive(handle,reinterpret_cast<void*>(
 			message->getBuffer()), 0);
 	if (result == pdPASS){
@@ -120,7 +120,7 @@ bool MessageQueue::isDefaultDestinationSet() const {
 
 // static core function to send messages.
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-        MessageQueueMessage *message, MessageQueueId_t sentFrom,
+        MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
         bool ignoreFault, CallContext callContext) {
     message->setSender(sentFrom);
     BaseType_t result;

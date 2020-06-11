@@ -5,7 +5,7 @@
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/tmstorage/TmStorePackets.h>
 #include <framework/objectmanager/SystemObjectIF.h>
-class TmStoreMessage: public CommandMessage {
+class TmStoreMessage  {
 public:
 	static ReturnValue_t setEnableStoringMessage(CommandMessage* cmd,
 			bool setEnabled);

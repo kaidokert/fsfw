@@ -56,14 +56,14 @@ public:
 	 * @param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
 	virtual ReturnValue_t sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, bool ignoreFault = false );
+			MessageQueueMessageIF* message, bool ignoreFault = false );
 	/**
 	 * @brief	This operation sends a message to the default destination.
 	 * @details	As in the sendMessage method, this function uses the sendToDefault call of the
 	 * 			MessageQueueSender parent class and adds its queue id as "sentFrom" information.
 	 * @param message	A pointer to a previously created message, which is sent.
 	 */
-	virtual ReturnValue_t sendToDefault( MessageQueueMessage* message );
+	virtual ReturnValue_t sendToDefault( MessageQueueMessageIF* message );
 	/**
 	 * @brief	This operation sends a message to the last communication partner.
 	 * @details	This operation simplifies answering an incoming message by using the stored
@@ -71,7 +71,7 @@ public:
 	 * 			(i.e. lastPartner is zero), an error code is returned.
 	 * @param message	A pointer to a previously created message, which is sent.
 	 */
-	ReturnValue_t reply( MessageQueueMessage* message );
+	ReturnValue_t reply( MessageQueueMessageIF* message );
 
 	/**
 	 * @brief	This function reads available messages from the message queue and returns the sender.
@@ -80,7 +80,7 @@ public:
 	 * @param message	A pointer to a message in which the received data is stored.
 	 * @param receivedFrom	A pointer to a queue id in which the sender's id is stored.
 	 */
-	ReturnValue_t receiveMessage(MessageQueueMessage* message,
+	ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
 			MessageQueueId_t *receivedFrom);
 
 	/**
@@ -91,7 +91,7 @@ public:
 	 * 			message's content is cleared and the function returns immediately.
 	 * @param message	A pointer to a message in which the received data is stored.
 	 */
-	ReturnValue_t receiveMessage(MessageQueueMessage* message);
+	ReturnValue_t receiveMessage(MessageQueueMessageIF* message);
 	/**
 	 * Deletes all pending messages in the queue.
 	 * @param count The number of flushed messages.
@@ -114,7 +114,9 @@ public:
 	 * 					This variable is set to zero by default.
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
-	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo, MessageQueueMessage* message, MessageQueueId_t sentFrom, bool ignoreFault = false );
+	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
+			bool ignoreFault = false );
 	/**
 	 * \brief	The sendToDefault method sends a queue message to the default destination.
 	 * \details	In all other aspects, it works identical to the sendMessage method.
@@ -122,7 +124,8 @@ public:
 	 * \param sentFrom	The sentFrom information can be set to inject the sender's queue id into the message.
 	 * 					This variable is set to zero by default.
 	 */
-	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessageIF* message,
+			MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault = false );
 	/**
 	 * \brief	This method is a simple setter for the default destination.
 	 */
@@ -145,7 +148,9 @@ protected:
 	 * 					This variable is set to zero by default.
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
-	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,bool ignoreFault=false);
+	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom = NO_QUEUE,
+			bool ignoreFault=false);
 private:
 	/**
 	 * @brief	The class stores the queue id it got assigned from the operating system in this attribute.
