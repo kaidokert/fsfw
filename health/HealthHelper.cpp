@@ -62,7 +62,7 @@ void HealthHelper::setHealth(HasHealthIF::HealthState health) {
 
 void HealthHelper::informParent(HasHealthIF::HealthState health,
 		HasHealthIF::HealthState oldHealth) {
-	if (parentQueue == 0) {
+	if (parentQueue == MessageQueueMessageIF::NO_QUEUE) {
 		return;
 	}
 	MessageQueueMessage message;
