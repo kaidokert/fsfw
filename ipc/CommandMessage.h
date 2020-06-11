@@ -85,6 +85,8 @@ public:
 	uint8_t * getData() override;
 	const uint8_t* getData() const override;
 	size_t getMinimumMessageSize() const override;
+	size_t getMessageSize() const override;
+	size_t getMaximumMessageSize() const override;
 
 	/**
 	 * Extract message ID, which is the first byte of the command ID.

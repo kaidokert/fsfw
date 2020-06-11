@@ -77,7 +77,7 @@ public:
 	 * is not incremented if queue is full.
 	 */
 	ReturnValue_t sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, bool ignoreFault = false) override;
+			MessageQueueMessageIF* message, bool ignoreFault = false) override;
 	/**
 	 * @brief	This operation sends a message to the default destination.
 	 * @details	As in the sendMessage method, this function uses the
@@ -85,7 +85,7 @@ public:
 	 * queue id as "sentFrom" information.
 	 * @param message	A pointer to a previously created message, which is sent.
 	 */
-	ReturnValue_t sendToDefault(MessageQueueMessage* message) override;
+	ReturnValue_t sendToDefault(MessageQueueMessageIF* message) override;
 	/**
 	 * @brief	This operation sends a message to the last communication partner.
 	 * @details	This operation simplifies answering an incoming message by using
@@ -93,7 +93,7 @@ public:
 	 * message received yet (i.e. lastPartner is zero), an error code is returned.
 	 * @param message	A pointer to a previously created message, which is sent.
 	 */
-	ReturnValue_t reply(MessageQueueMessage* message) override;
+	ReturnValue_t reply(MessageQueueMessageIF* message) override;
 
 	/**
 	 * @brief	With the sendMessage call, a queue message is sent to a
@@ -113,7 +113,7 @@ public:
 	 * is not incremented if queue is full.
 	 */
 	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom = NO_QUEUE,
 			bool ignoreFault = false) override;
 
 	/**
@@ -127,7 +127,7 @@ public:
 	 * sender's queue id into the message. This variable is set to zero by
 	 * default.
 	 */
-	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessage* message,
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessageIF* message,
 			MessageQueueId_t sentFrom = NO_QUEUE,
 			bool ignoreFault = false) override;
 
@@ -140,7 +140,7 @@ public:
 	 * @param message	A pointer to a message in which the received data is stored.
 	 * @param receivedFrom	A pointer to a queue id in which the sender's id is stored.
 	 */
-	ReturnValue_t receiveMessage(MessageQueueMessage* message,
+	ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
 			MessageQueueId_t *receivedFrom) override;
 
 	/**
@@ -153,7 +153,7 @@ public:
 	 * function returns immediately.
 	 * @param message	A pointer to a message in which the received data is stored.
 	 */
-	ReturnValue_t receiveMessage(MessageQueueMessage* message) override;
+	ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
 	/**
 	 * Deletes all pending messages in the queue.
 	 * @param count The number of flushed messages.
@@ -205,7 +205,7 @@ protected:
 	 * @param context Specify whether call is made from task or from an ISR.
 	 */
 	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom = NO_QUEUE,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom = NO_QUEUE,
 			bool ignoreFault=false);
 
 	//static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);

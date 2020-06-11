@@ -71,6 +71,18 @@ public:
 	 * 			check the size of an incoming message.
 	 */
 	virtual size_t getMinimumMessageSize() const = 0;
+
+	/**
+	 * Get message size of current message implementation.
+	 * @return
+	 */
+	virtual size_t getMessageSize() const = 0;
+
+	/**
+	 * Get maximum allowed size of current message implementation.
+	 * @return
+	 */
+	virtual size_t getMaximumMessageSize() const = 0;
 };
 
 

@@ -149,6 +149,10 @@ public:
 	 */
 	virtual size_t getMinimumMessageSize() const override;
 
+	virtual size_t getMessageSize() const override;
+
+	virtual size_t getMaximumMessageSize() const override;
+
 	/**
 	 * @brief	This is a debug method that prints the content
 	 * 			(till messageSize) to the debug output.

@@ -118,15 +118,15 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, bool ignoreFault) {
+		MessageQueueMessageIF* message, bool ignoreFault) {
 	return sendMessageFrom(sendTo, message, this->getId(), false);
 }
 
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessageIF* message) {
 	return sendToDefaultFrom(message, this->getId());
 }
 
-ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
 	if (this->lastPartner != 0) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
@@ -134,21 +134,21 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 	}
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 		MessageQueueId_t* receivedFrom) {
 	ReturnValue_t status = this->receiveMessage(message);
 	*receivedFrom = this->lastPartner;
 	return status;
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	unsigned int messagePriority = 0;
 	int status = mq_receive(id,reinterpret_cast<char*>(message->getBuffer()),
-			message->MAX_MESSAGE_SIZE,&messagePriority);
+			message->getMaximumMessageSize(),&messagePriority);
 	if (status > 0) {
 		this->lastPartner = message->getSender();
 		//Check size of incoming message.
-		if (message->messageSize < message->getMinimumMessageSize()) {
+		if (message->getMessageSize() < message->getMinimumMessageSize()) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
@@ -158,7 +158,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 	} else {
 		//No message was received. Keep lastPartner anyway, I might send
 		//something later. But still, delete packet content.
-		memset(message->getData(), 0, message->MAX_DATA_SIZE);
+		memset(message->getData(), 0, message->getMaximumMessageSize());
 		switch(errno){
 		case EAGAIN:
 			//O_NONBLOCK or MQ_NONBLOCK was set and there are no messages
@@ -259,13 +259,13 @@ void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
 }
 
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, MessageQueueId_t sentFrom,
+		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault);
 
 }
 
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 		MessageQueueId_t sentFrom, bool ignoreFault) {
 	return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
 }
@@ -281,11 +281,12 @@ bool MessageQueue::isDefaultDestinationSet() const {
 uint16_t MessageQueue::queueCounter = 0;
 
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-		MessageQueueMessage *message, MessageQueueId_t sentFrom,
+		MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	message->setSender(sentFrom);
 	int result = mq_send(sendTo,
-			reinterpret_cast<const char*>(message->getBuffer()), message->messageSize,0);
+			reinterpret_cast<const char*>(message->getBuffer()),
+			message->getMessageSize(),0);
 
 	//TODO: Check if we're in ISR.
 	if (result != 0) {

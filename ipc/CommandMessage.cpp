@@ -160,3 +160,11 @@ uint8_t* CommandMessage::getData() {
 const uint8_t* CommandMessage::getData() const {
 	return internalMessage->getData();
 }
+
+size_t CommandMessage::getMessageSize() const {
+	return COMMAND_MESSAGE_SIZE;
+}
+
+size_t CommandMessage::getMaximumMessageSize() const {
+	return MessageQueueMessage::MAX_MESSAGE_SIZE;
+}
