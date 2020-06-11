@@ -37,9 +37,13 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer_,
 		}
 		if (constBuffer != nullptr) {
 			memcpy(*buffer_, this->constBuffer, bufferLength);
-		} else if (buffer != nullptr) {
+		}
+		else if (buffer != nullptr) {
+			// This will propably be never reached, constBuffer should always be
+			// set if non-const buffer is set.
 			memcpy(*buffer_, this->buffer, bufferLength);
-		} else {
+		}
+		else {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 		*size_ += bufferLength;
@@ -93,7 +97,7 @@ template<typename count_t>
 uint8_t * SerialBufferAdapter<count_t>::getBuffer() {
 	if(buffer == nullptr) {
 		sif::error << "Wrong access function for stored type !"
-				 " Use getConstBuffer()" << std::endl;
+				 " Use getConstBuffer()." << std::endl;
 		return nullptr;
 	}
 	return buffer;
@@ -110,9 +114,10 @@ const uint8_t * SerialBufferAdapter<count_t>::getConstBuffer() {
 
 template<typename count_t>
 void SerialBufferAdapter<count_t>::setBuffer(uint8_t* buffer,
-		count_t buffer_length) {
+		count_t bufferLength) {
 	this->buffer = buffer;
-	bufferLength = buffer_length;
+	this->constBuffer = buffer;
+	this->bufferLength = bufferLength;
 }
 
 
