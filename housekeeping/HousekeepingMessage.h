@@ -1,6 +1,8 @@
 #ifndef FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
 #define FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
-#include <framework/ipc/CommandMessage.h>
+#include <framework/ipc/CommandMessageBase.h>
+#include <framework/ipc/FwMessageTypes.h>
+#include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <limits>
 
@@ -23,15 +25,14 @@ union sid_t {
 };
 
 
-class HousekeepingMessage: public MessageQueueMessage {
+class HousekeepingMessage : public CommandMessageBase {
 public:
 	/**
 	 * No instances of a message shall be created, instead
 	 * a CommandMessage instance is manipulated.
 	 */
-	HousekeepingMessage();
-//	HousekeepingMessage(const HousekeepingMessage&) = delete;
-//	HousekeepingMessage operator=(const HousekeepingMessage &) = delete;
+	HousekeepingMessage(MessageQueueMessage* message);
+	virtual ~HousekeepingMessage();
 
 	static constexpr uint8_t MESSAGE_ID = messagetypes::HOUSEKEEPING;
 	static constexpr Command_t ADD_HK_REPORT_STRUCT =
@@ -78,8 +79,6 @@ public:
 	static constexpr Command_t MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL =
 			MAKE_COMMAND_ID(32);
 
-//	static void setAddHkReportStructMessage(CommandMessage* message,
-//			DevisetId, store_address_t packet);
 	static void setHkReportMessage();
 };
 

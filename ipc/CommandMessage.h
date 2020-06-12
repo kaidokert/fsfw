@@ -1,32 +1,34 @@
 #ifndef FRAMEWORK_IPC_COMMANDMESSAGE_H_
 #define FRAMEWORK_IPC_COMMANDMESSAGE_H_
 
+#include <framework/ipc/CommandMessageBase.h>
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/ipc/FwMessageTypes.h>
-#include <config/ipc/MissionMessageTypes.h>
 
-
-
-#define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
-typedef uint16_t Command_t;
+namespace messagetypes {
+// Implemented in config.
+void clearMissionMessage(CommandMessageIF* message);
+}
 
 /**
- * @brief 	Used to pass command messages between tasks. Primary message type
- * 			for IPC. Contains sender, 2-byte command field, and 2 4-byte
- * 			parameters.
+ * @brief 	Default command message used to pass command messages between tasks.
+ * 			Primary message type for IPC. Contains sender, 2-byte command ID
+ * 			field, and 2 4-byte parameters.
  * @details
  * It operates on an external memory which is contained inside a
- * MessageQueueMessage by taking its address.
+ * class implementing MessageQueueMessageIF by taking its address.
  * This allows for a more flexible designs of message implementations.
  * The pointer can be passed to different message implementations without
  * the need of unnecessary copying.
+ *
+ * The command message is based of the generic MessageQueueMessage which
+ * currently has an internal message size of 28 bytes.
  * @author	Bastian Baetz
  */
-class CommandMessage: public MessageQueueMessageIF {
+class CommandMessage: public CommandMessageBase {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
 	static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
-
 
 	static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
 	//! Used internally, will be ignored
@@ -66,38 +68,10 @@ public:
 	 */
 	virtual ~CommandMessage() {}
 
-	/**
-	 * Read the DeviceHandlerCommand_t that is stored in the message,
-	 * usually used after receiving.
-	 *
-	 * @return the Command stored in the Message
-	 */
-	Command_t getCommand() const;
-
-	/*
-	 * MessageQueueMessageIF functions, which generally just call the
-	 * respective functions of the internal message
-	 */
-	uint8_t * getBuffer() override;
-	const uint8_t * getBuffer() const override;
-	void setSender(MessageQueueId_t setId) override;
-	MessageQueueId_t getSender() const override;
-	uint8_t * getData() override;
-	const uint8_t* getData() const override;
+	/** MessageQueueMessageIF functions used for minimum size check. */
 	size_t getMinimumMessageSize() const override;
-	size_t getMessageSize() const override;
+	/** MessageQueueMessageIF functions used for maximum size check. */
 	size_t getMaximumMessageSize() const override;
-
-	/**
-	 * Extract message ID, which is the first byte of the command ID.
-	 * @return
-	 */
-	uint8_t getMessageType() const;
-	/**
-	 * Set the command type of the message
-	 * @param the Command to be sent
-	 */
-	void setCommand(Command_t command);
 
 	/**
 	 * Get the first parameter of the message
@@ -123,19 +97,17 @@ public:
 	 */
 	void setParameter2(uint32_t parameter2);
 
+	void clear() override;
 
 	/**
-	 * Set the command to CMD_NONE and try to find
-	 * the correct class to handle a more detailed
-	 * clear.
-	 * Also, calls a mission-specific clearMissionMessage
-	 * function to separate between framework and mission
-	 * messages. Not optimal, may be replaced by totally
-	 * different auto-delete solution (e.g. smart pointers).
+	 * Set the command to CMD_NONE and try to find the correct class to handle
+	 * a more detailed clear.
+	 * Also, calls a mission-specific clearMissionMessage function to separate
+	 * between framework and mission messages. Not optimal, may be replaced by
+	 * totally different auto-delete solution (e.g. smart pointers).
 	 *
 	 */
 	void clearCommandMessage();
-	void clear() override;
 
 	/**
 	 * check if a message was cleared
@@ -151,15 +123,6 @@ public:
 	void setToUnknownCommand();
 	void setReplyRejected(ReturnValue_t reason,
 			Command_t initialCommand = CMD_NONE);
-
-private:
-	/**
-	 * @brief 	Pointer to the message containing the data.
-	 * @details
-	 * The command message does not actually own the memory containing a
-	 * message, it just oprates on it via a pointer to a message queue message.
-	 */
-	MessageQueueMessage* internalMessage;
 };
 
 

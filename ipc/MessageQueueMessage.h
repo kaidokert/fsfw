@@ -3,7 +3,7 @@
 
 #include <framework/ipc/MessageQueueMessageIF.h>
 #include <framework/ipc/MessageQueueSenderIF.h>
-#include <stddef.h>
+#include <cstddef>
 
 /**
  *	@brief		This class is the representation and data organizer
@@ -150,6 +150,7 @@ public:
 	virtual size_t getMinimumMessageSize() const override;
 
 	virtual size_t getMessageSize() const override;
+	virtual void setMessageSize(size_t messageSize) override;
 
 	virtual size_t getMaximumMessageSize() const override;
 

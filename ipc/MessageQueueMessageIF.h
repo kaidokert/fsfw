@@ -24,7 +24,8 @@ public:
 
 	/**
 	 * @brief	With this method, the whole content and the message
-	 * 			size is set to zero.
+	 * 			size is set to zero. Implementations should also take care
+	 * 			to clear data which is stored indirectly (e.g. storage data).
 	 */
 	virtual void clear() = 0;
 
@@ -77,6 +78,7 @@ public:
 	 * @return
 	 */
 	virtual size_t getMessageSize() const = 0;
+	virtual void setMessageSize(size_t messageSize) = 0;
 
 	/**
 	 * Get maximum allowed size of current message implementation.
