@@ -6,6 +6,12 @@
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef uint16_t Command_t;
 
+// TODO: actually, this interface propably does not have to implement
+// MQM IF, because there is a getter function for the internal message..
+// But it is also convenient to have the full access to all MQM IF functions.
+// That way, I can just pass CommandMessages to functions expecting a MQM IF.
+// The command message implementations just forwards the calls. Maybe
+// we should just leave it like that.
 class CommandMessageIF: public MessageQueueMessageIF {
 public:
 	virtual ~CommandMessageIF() {};
@@ -20,6 +26,16 @@ public:
 	 * @return
 	 */
 	virtual uint8_t getMessageType() const = 0;
+
+	/**
+	 * This function is used to get a pointer to the internal message, as
+	 * the command message implementations always operate on the memory
+	 * contained in the message queue message implementation.
+	 * This pointer can be used to set the internal message of different
+	 * command message implementations.
+	 * @return
+	 */
+	virtual MessageQueueMessageIF* getInternalMessage() const = 0;
 };
 
 #endif /* FRAMEWORK_IPC_COMMANDMESSAGEIF_H_ */

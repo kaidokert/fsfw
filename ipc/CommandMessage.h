@@ -42,8 +42,9 @@ public:
 	 * This is the size of a message as it is seen by the MessageQueue.
 	 * 14 of the 24 available MessageQueueMessage bytes are used.
 	 */
-	static const size_t COMMAND_MESSAGE_SIZE = MessageQueueMessage::HEADER_SIZE
-			+ sizeof(Command_t) + 2 * sizeof(uint32_t);
+	static const size_t MINIMUM_COMMAND_MESSAGE_SIZE =
+			MessageQueueMessage::HEADER_SIZE + sizeof(Command_t) +
+			2 * sizeof(uint32_t);
 
 	/**
 	 * Default Constructor, does not initialize anything.
@@ -51,7 +52,7 @@ public:
 	 * This constructor should be used when receiving a Message, as the
 	 * content is filled by the MessageQueue.
 	 */
-	CommandMessage(MessageQueueMessage* receiverMessage);
+	CommandMessage(MessageQueueMessageIF* receiverMessage);
 	/**
 	 * This constructor creates a new message with all message content
 	 * initialized
@@ -60,7 +61,7 @@ public:
 	 * @param parameter1	The first parameter
 	 * @param parameter2	The second parameter
 	 */
-	CommandMessage(MessageQueueMessage* messageToSet, Command_t command,
+	CommandMessage(MessageQueueMessageIF* messageToSet, Command_t command,
 			uint32_t parameter1, uint32_t parameter2);
 
 	/**
@@ -121,8 +122,11 @@ public:
 	 * Is needed quite often, so we better code it once only.
 	 */
 	void setToUnknownCommand();
+
 	void setReplyRejected(ReturnValue_t reason,
 			Command_t initialCommand = CMD_NONE);
+	ReturnValue_t getRejectedReplyReason(
+			Command_t* initialCommand = nullptr) const;
 };
 
 

@@ -22,6 +22,9 @@
  */
 class CommandMessageBase: public CommandMessageIF {
 public:
+	static constexpr size_t HEADER_SIZE = sizeof(MessageQueueId_t) +
+			sizeof(Command_t);
+
 	CommandMessageBase(MessageQueueMessageIF* message);
 
 	/**
@@ -58,6 +61,7 @@ public:
 	virtual void setMessageSize(size_t messageSize) override;
 	virtual size_t getMessageSize() const override;
 
+	virtual MessageQueueMessageIF* getInternalMessage() const override;
 protected:
 	/**
 	 * @brief 	Pointer to the message containing the data.
@@ -65,7 +69,7 @@ protected:
 	 * The command message does not actually own the memory containing a
 	 * message, it just oprates on it via a pointer to a message queue message.
 	 */
-	MessageQueueMessageIF* internalMessage;
+	MessageQueueMessageIF* internalMessage = nullptr;
 };
 
 

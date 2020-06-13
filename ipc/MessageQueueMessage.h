@@ -88,12 +88,12 @@ public:
 	 * queue in the system. So, a change here may have significant impact on
 	 * the required resources.
 	 */
-	static const size_t MAX_MESSAGE_SIZE = MAX_DATA_SIZE + HEADER_SIZE;
+	static constexpr size_t MAX_MESSAGE_SIZE = MAX_DATA_SIZE + HEADER_SIZE;
 	/**
 	 * @brief Defines the minimum size of a message where only the
 	 * 		  header is included
 	 */
-	static const size_t MIN_MESSAGE_SIZE = HEADER_SIZE;
+	static constexpr size_t MIN_MESSAGE_SIZE = HEADER_SIZE;
 private:
 	/**
 	 * @brief	This is the internal buffer that contains the

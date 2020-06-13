@@ -147,9 +147,11 @@ protected:
 
 	/**
 	 * This function is implemented by child services to specify how replies
-	 * to a command from another software component are handled
+	 * to a command from another software component are handled.
 	 * @param reply
-	 * This is the reply in form of a command message.
+	 * This is the reply which can be accessed via the command message
+	 * interface. The internal message pointer can be passed to different
+	 * command message implementations (see CommandMessageIF)
 	 * @param previousCommand
 	 * Command_t of related command
 	 * @param state [out/in]
@@ -163,9 +165,12 @@ protected:
 	 * - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
 	 *   generate TC verification success
 	 * - @c INVALID_REPLY calls handleUnrequestedReply
-	 * - Anything else triggers a TC verification failure
+	 * - Anything else triggers a TC verification failure. If RETURN_FAILED
+	 *   is returned and the command ID is CommandMessage::REPLY_REJECTED,
+	 *   a failure verification message with the reason as the error parameter
+	 *   and the initial command as failure parameter 1.
 	 */
-	virtual ReturnValue_t handleReply(const CommandMessage *reply,
+	virtual ReturnValue_t handleReply(const CommandMessageIF *reply,
 			Command_t previousCommand, uint32_t *state,
 			CommandMessage *optionalNextCommand, object_id_t objectId,
 			bool *isStep) = 0;
@@ -173,9 +178,13 @@ protected:
 	/**
 	 * This function can be overidden to handle unrequested reply,
 	 * when the reply sender ID is unknown or is not found is the command map.
+	 * The default implementation will clear the command message and all
+	 * its contents.
 	 * @param reply
+	 * Reply which is non-const so the default implementation can clear the
+	 * message.
 	 */
-	virtual void handleUnrequestedReply(CommandMessage *reply);
+	virtual void handleUnrequestedReply(CommandMessageIF *reply);
 
 	virtual void doPeriodicOperation();
 
@@ -303,9 +312,9 @@ private:
 
 	void startExecution(TcPacketStored *storedPacket, CommandMapIter iter);
 
-	void handleCommandMessage(CommandMessage& reply);
+	void handleCommandMessage(CommandMessage* reply);
 	void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,
-			CommandMessage& nextCommand,CommandMessage& reply, bool& isStep);
+			CommandMessage* nextCommand,CommandMessage* reply, bool& isStep);
 
 	void checkTimeout();
 };

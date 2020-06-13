@@ -12,7 +12,7 @@ Command_t CommandMessageBase::getCommand() const {
 }
 
 void CommandMessageBase::setCommand(Command_t command) {
-	std::memcpy(internalMessage->getData(), &command, sizeof(command));
+	std::memcpy(internalMessage->getData(), &command, sizeof(Command_t));
 }
 
 uint8_t CommandMessageBase::getMessageType() const {
@@ -52,4 +52,8 @@ void CommandMessageBase::setMessageSize(size_t messageSize) {
 
 size_t CommandMessageBase::getMessageSize() const {
 	return internalMessage->getMessageSize();
+}
+
+MessageQueueMessageIF* CommandMessageBase::getInternalMessage() const {
+	return internalMessage;
 }

@@ -9,18 +9,25 @@
 #include <framework/tmstorage/TmStoreMessage.h>
 #include <framework/parameters/ParameterMessage.h>
 
-CommandMessage::CommandMessage(MessageQueueMessage* receiverMessage):
+CommandMessage::CommandMessage(MessageQueueMessageIF* receiverMessage):
 			CommandMessageBase(receiverMessage) {
 	if(receiverMessage == nullptr) {
 		sif::error << "CommandMessage::CommandMessage: Don't pass a nullptr"
 				" as the message queue message, pass the address of an actual"
 				" message!" << std::endl;
+		return;
 	}
-	internalMessage->setMessageSize(COMMAND_MESSAGE_SIZE);
-	setCommand(CMD_NONE);
+	if(receiverMessage->getMaximumMessageSize() <
+			MINIMUM_COMMAND_MESSAGE_SIZE) {
+		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
+				" can not hold minimum "<< MINIMUM_COMMAND_MESSAGE_SIZE
+				<< " bytes!" << std::endl;
+		return;
+	}
+	internalMessage->setMessageSize(MINIMUM_COMMAND_MESSAGE_SIZE);
 }
 
-CommandMessage::CommandMessage(MessageQueueMessage* messageToSet,
+CommandMessage::CommandMessage(MessageQueueMessageIF* messageToSet,
 		Command_t command, uint32_t parameter1, uint32_t parameter2):
 				CommandMessageBase(messageToSet) {
 	if(messageToSet == nullptr) {
@@ -28,7 +35,14 @@ CommandMessage::CommandMessage(MessageQueueMessage* messageToSet,
 				" as the message queue message, pass the address of an actual"
 				" message!" << std::endl;
 	}
-	internalMessage->setMessageSize(COMMAND_MESSAGE_SIZE);
+	if(messageToSet->getMaximumMessageSize() <
+			MINIMUM_COMMAND_MESSAGE_SIZE) {
+		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
+				" can not hold minimum "<< MINIMUM_COMMAND_MESSAGE_SIZE
+				<< " bytes!" << std::endl;
+		return;
+	}
+	internalMessage->setMessageSize(MINIMUM_COMMAND_MESSAGE_SIZE);
 	setCommand(command);
 	setParameter(parameter1);
 	setParameter2(parameter2);
@@ -57,7 +71,7 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
 }
 
 size_t CommandMessage::getMinimumMessageSize() const {
-	return COMMAND_MESSAGE_SIZE;
+	return MINIMUM_COMMAND_MESSAGE_SIZE;
 }
 
 size_t CommandMessage::getMaximumMessageSize() const {
@@ -81,6 +95,13 @@ void CommandMessage::setReplyRejected(ReturnValue_t reason,
 	setParameter2(initialCommand);
 }
 
+ReturnValue_t CommandMessage::getRejectedReplyReason(
+		Command_t* initialCommand) const {
+	if(initialCommand != nullptr) {
+		*initialCommand  = getParameter2();
+	}
+	return getParameter();
+}
 
 void CommandMessage::clear() {
 	clearCommandMessage();

@@ -81,40 +81,58 @@ void CommandingServiceBase::handleCommandQueue() {
 	ReturnValue_t result = RETURN_FAILED;
 	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
 			result = commandQueue->receiveMessage(&reply)) {
-		handleCommandMessage(reply);
+		if(reply.getInternalMessage() == nullptr) {
+			// This should never happen unless the passed message maximum size
+			// is too small!
+			sif::error << "CommandingServiceBase::handleCommandMessage: Reply"
+					"does not satisfy minimum requirements for a command "
+					"message!" << std::endl;
+			continue;
+		}
+		handleCommandMessage(&reply);
 	}
 }
 
 
-void CommandingServiceBase::handleCommandMessage(CommandMessage& reply) {
+void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	bool isStep = false;
 	MessageQueueMessage message;
 	CommandMessage nextCommand(&message);
-	CommandMapIter iter;
-	if (reply.getSender() == MessageQueueIF::NO_QUEUE) {
-		handleUnrequestedReply(&reply);
-		return;
-	}
-	if ((iter = commandMap.find(reply.getSender())) == commandMap.end()) {
-		handleUnrequestedReply(&reply);
+	CommandMapIter iter = commandMap.find(reply->getSender());
+
+	// handle unrequested reply first
+	if (reply->getSender() == MessageQueueIF::NO_QUEUE or
+			iter == commandMap.end()) {
+		handleUnrequestedReply(reply);
 		return;
 	}
 	nextCommand.setCommand(CommandMessage::CMD_NONE);
 
+
 	// Implemented by child class, specifies what to do with reply.
-	ReturnValue_t result = handleReply(&reply, iter->command, &iter->state,
+	ReturnValue_t result = handleReply(reply, iter->command, &iter->state,
 			&nextCommand, iter->objectId, &isStep);
+
+	/* If the child implementation does not implement special handling for
+	 * rejected replies (RETURN_FAILED is returned), a failure verification
+	 * will be generated with the reason as the return code and the initial
+	 * command as failure parameter 1 */
+	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
+			result == RETURN_FAILED) {
+		result = reply->getRejectedReplyReason(
+				reinterpret_cast<Command_t*>(&failureParameter1));
+	}
 
 	switch (result) {
 	case EXECUTION_COMPLETE:
 	case RETURN_OK:
 	case NO_STEP_MESSAGE:
 		// handle result of reply handler implemented by developer.
-		handleReplyHandlerResult(result, iter, nextCommand, reply, isStep);
+		handleReplyHandlerResult(result, iter, &nextCommand, reply, isStep);
 		break;
 	case INVALID_REPLY:
 		//might be just an unrequested reply at a bad moment
-		handleUnrequestedReply(&reply);
+		handleUnrequestedReply(reply);
 		break;
 	default:
 		if (isStep) {
@@ -138,17 +156,17 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage& reply) {
 }
 
 void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
-		CommandMapIter iter, CommandMessage& nextCommand, CommandMessage& reply,
+		CommandMapIter iter, CommandMessage* nextCommand, CommandMessage* reply,
 		bool& isStep) {
-	iter->command = nextCommand.getCommand();
+	iter->command = nextCommand->getCommand();
 
 	// In case a new command is to be sent immediately, this is performed here.
 	// If no new command is sent, only analyse reply result by initializing
 	// sendResult as RETURN_OK
 	ReturnValue_t sendResult = RETURN_OK;
-	if (nextCommand.getCommand() != CommandMessage::CMD_NONE) {
-		sendResult = commandQueue->sendMessage(reply.getSender(),
-				&nextCommand);
+	if (nextCommand->getCommand() != CommandMessage::CMD_NONE) {
+		sendResult = commandQueue->sendMessage(reply->getSender(),
+				nextCommand);
 	}
 
 	if (sendResult == RETURN_OK) {
@@ -168,14 +186,14 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 	}
 	else {
 		if (isStep) {
-			nextCommand.clearCommandMessage();
+			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
 					iter->tcInfo.tcPacketId,
 					iter->tcInfo.tcSequenceControl, sendResult,
 					++iter->step, failureParameter1, failureParameter2);
 		} else {
-			nextCommand.clearCommandMessage();
+			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE,
 					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
@@ -366,9 +384,9 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter iter) {
 }
 
 
-void CommandingServiceBase::handleUnrequestedReply(
-		CommandMessage* reply) {
-	reply->clearCommandMessage();
+void CommandingServiceBase::handleUnrequestedReply(CommandMessageIF* reply) {
+	CommandMessage commandReply(reply->getInternalMessage());
+	commandReply.clear();
 }
 
 
