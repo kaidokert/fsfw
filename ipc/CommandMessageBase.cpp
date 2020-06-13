@@ -1,4 +1,5 @@
 #include <framework/ipc/CommandMessageBase.h>
+#include <framework/ipc/CommandMessageCleaner.h>
 #include <cstring>
 
 CommandMessageBase::CommandMessageBase(MessageQueueMessageIF *message):
@@ -56,4 +57,26 @@ size_t CommandMessageBase::getMessageSize() const {
 
 MessageQueueMessageIF* CommandMessageBase::getInternalMessage() const {
 	return internalMessage;
+}
+
+void CommandMessageBase::setReplyRejected(ReturnValue_t reason,
+		Command_t initialCommand) {
+	std::memcpy(getData(), &reason, sizeof(reason));
+	std::memcpy(getData() + sizeof(reason), &initialCommand,
+			sizeof(initialCommand));
+}
+
+ReturnValue_t CommandMessageBase::getReplyRejectedReason(
+		Command_t *initialCommand) const {
+	ReturnValue_t reason = HasReturnvaluesIF::RETURN_FAILED;
+	std::memcpy(&reason, getData(), sizeof(reason));
+	if(initialCommand != nullptr) {
+		std::memcpy(initialCommand, getData() + sizeof(reason),
+				sizeof(Command_t));
+	}
+	return reason;
+}
+
+void CommandMessageBase::clear() {
+	CommandMessageCleaner::clearCommandMessage(this);
 }

@@ -5,11 +5,6 @@
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/ipc/FwMessageTypes.h>
 
-namespace messagetypes {
-// Implemented in config.
-void clearMissionMessage(CommandMessageIF* message);
-}
-
 /**
  * @brief 	Default command message used to pass command messages between tasks.
  * 			Primary message type for IPC. Contains sender, 2-byte command ID
@@ -27,17 +22,6 @@ void clearMissionMessage(CommandMessageIF* message);
  */
 class CommandMessage: public CommandMessageBase {
 public:
-	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
-	static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
-
-	static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
-	//! Used internally, will be ignored
-	static const Command_t CMD_NONE = MAKE_COMMAND_ID( 0 );
-	static const Command_t REPLY_COMMAND_OK = MAKE_COMMAND_ID( 3 );
-	//! Reply indicating that the current command was rejected,
-	//! par1 should contain the error code
-	static const Command_t REPLY_REJECTED = MAKE_COMMAND_ID( 0xD1 );
-
 	/**
 	 * This is the size of a message as it is seen by the MessageQueue.
 	 * 14 of the 24 available MessageQueueMessage bytes are used.
@@ -98,18 +82,6 @@ public:
 	 */
 	void setParameter2(uint32_t parameter2);
 
-	void clear() override;
-
-	/**
-	 * Set the command to CMD_NONE and try to find the correct class to handle
-	 * a more detailed clear.
-	 * Also, calls a mission-specific clearMissionMessage function to separate
-	 * between framework and mission messages. Not optimal, may be replaced by
-	 * totally different auto-delete solution (e.g. smart pointers).
-	 *
-	 */
-	void clearCommandMessage();
-
 	/**
 	 * check if a message was cleared
 	 *
@@ -122,11 +94,6 @@ public:
 	 * Is needed quite often, so we better code it once only.
 	 */
 	void setToUnknownCommand();
-
-	void setReplyRejected(ReturnValue_t reason,
-			Command_t initialCommand = CMD_NONE);
-	ReturnValue_t getRejectedReplyReason(
-			Command_t* initialCommand = nullptr) const;
 };
 
 

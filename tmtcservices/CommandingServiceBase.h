@@ -141,7 +141,7 @@ protected:
 	 * @param objectId Target object ID
 	 * @return
 	 */
-	virtual ReturnValue_t prepareCommand(CommandMessage *message,
+	virtual ReturnValue_t prepareCommand(CommandMessageIF *message,
 			uint8_t subservice, const uint8_t *tcData, size_t tcDataLen,
 			uint32_t *state, object_id_t objectId) = 0;
 
@@ -172,7 +172,7 @@ protected:
 	 */
 	virtual ReturnValue_t handleReply(const CommandMessageIF *reply,
 			Command_t previousCommand, uint32_t *state,
-			CommandMessage *optionalNextCommand, object_id_t objectId,
+			CommandMessageIF *optionalNextCommand, object_id_t objectId,
 			bool *isStep) = 0;
 
 	/**
@@ -312,9 +312,9 @@ private:
 
 	void startExecution(TcPacketStored *storedPacket, CommandMapIter iter);
 
-	void handleCommandMessage(CommandMessage* reply);
+	void handleCommandMessage(CommandMessageIF* reply);
 	void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,
-			CommandMessage* nextCommand,CommandMessage* reply, bool& isStep);
+			CommandMessageIF* nextCommand,CommandMessageIF* reply, bool& isStep);
 
 	void checkTimeout();
 };

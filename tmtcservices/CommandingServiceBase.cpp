@@ -94,7 +94,7 @@ void CommandingServiceBase::handleCommandQueue() {
 }
 
 
-void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
+void CommandingServiceBase::handleCommandMessage(CommandMessageIF* reply) {
 	bool isStep = false;
 	MessageQueueMessage message;
 	CommandMessage nextCommand(&message);
@@ -119,7 +119,7 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	 * command as failure parameter 1 */
 	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
 			result == RETURN_FAILED) {
-		result = reply->getRejectedReplyReason(
+		result = reply->getReplyRejectedReason(
 				reinterpret_cast<Command_t*>(&failureParameter1));
 	}
 
@@ -156,8 +156,8 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 }
 
 void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
-		CommandMapIter iter, CommandMessage* nextCommand, CommandMessage* reply,
-		bool& isStep) {
+		CommandMapIter iter, CommandMessageIF* nextCommand,
+		CommandMessageIF* reply, bool& isStep) {
 	iter->command = nextCommand->getCommand();
 
 	// In case a new command is to be sent immediately, this is performed here.
@@ -186,14 +186,14 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 	}
 	else {
 		if (isStep) {
-			nextCommand->clearCommandMessage();
+			nextCommand->clear();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
 					iter->tcInfo.tcPacketId,
 					iter->tcInfo.tcSequenceControl, sendResult,
 					++iter->step, failureParameter1, failureParameter2);
 		} else {
-			nextCommand->clearCommandMessage();
+			nextCommand->clear();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE,
 					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
@@ -329,7 +329,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 					storedPacket->getPacketSequenceControl();
 			acceptPacket(TC_VERIFY::START_SUCCESS, storedPacket);
 		} else {
-			command.clearCommandMessage();
+			command.clear();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
@@ -346,7 +346,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 			acceptPacket(TC_VERIFY::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
-			command.clearCommandMessage();
+			command.clear();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}

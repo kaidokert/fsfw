@@ -22,9 +22,6 @@
  */
 class CommandMessageBase: public CommandMessageIF {
 public:
-	static constexpr size_t HEADER_SIZE = sizeof(MessageQueueId_t) +
-			sizeof(Command_t);
-
 	CommandMessageBase(MessageQueueMessageIF* message);
 
 	/**
@@ -61,7 +58,25 @@ public:
 	virtual void setMessageSize(size_t messageSize) override;
 	virtual size_t getMessageSize() const override;
 
+	/**
+	 * A command message can be rejected and needs to offer a function
+	 * to set a rejected reply
+	 * @param reason
+	 * @param initialCommand
+	 */
+	void setReplyRejected(ReturnValue_t reason,
+			Command_t initialCommand) override;
+	/**
+	 * Corrensonding getter function.
+	 * @param initialCommand
+	 * @return
+	 */
+	ReturnValue_t getReplyRejectedReason(
+			Command_t* initialCommand = nullptr) const override;
+
 	virtual MessageQueueMessageIF* getInternalMessage() const override;
+
+	virtual void clear() override;
 protected:
 	/**
 	 * @brief 	Pointer to the message containing the data.

@@ -1,13 +1,5 @@
 #include <framework/ipc/CommandMessage.h>
-
-#include <framework/devicehandlers/DeviceHandlerMessage.h>
-#include <framework/health/HealthMessage.h>
-#include <framework/memory/MemoryMessage.h>
-#include <framework/modes/ModeMessage.h>
-#include <framework/monitoring/MonitoringMessage.h>
-#include <framework/subsystem/modes/ModeSequenceMessage.h>
-#include <framework/tmstorage/TmStoreMessage.h>
-#include <framework/parameters/ParameterMessage.h>
+#include <cstring>
 
 CommandMessage::CommandMessage(MessageQueueMessageIF* receiverMessage):
 			CommandMessageBase(receiverMessage) {
@@ -50,23 +42,23 @@ CommandMessage::CommandMessage(MessageQueueMessageIF* messageToSet,
 
 uint32_t CommandMessage::getParameter() const {
 	uint32_t parameter1;
-	memcpy(&parameter1, CommandMessageBase::getData(), sizeof(parameter1));
+	std::memcpy(&parameter1, CommandMessageBase::getData(), sizeof(parameter1));
 	return parameter1;
 }
 
 void CommandMessage::setParameter(uint32_t parameter1) {
-	memcpy(CommandMessageBase::getData(), &parameter1, sizeof(parameter1));
+	std::memcpy(CommandMessageBase::getData(), &parameter1, sizeof(parameter1));
 }
 
 uint32_t CommandMessage::getParameter2() const {
 	uint32_t parameter2;
-	memcpy(&parameter2, CommandMessageBase::getData() + sizeof(uint32_t),
+	std::memcpy(&parameter2, CommandMessageBase::getData() + sizeof(uint32_t),
 			sizeof(parameter2));
 	return parameter2;
 }
 
 void CommandMessage::setParameter2(uint32_t parameter2) {
-	memcpy(CommandMessageBase::getData()  + sizeof(uint32_t), &parameter2,
+	std::memcpy(CommandMessageBase::getData()  + sizeof(uint32_t), &parameter2,
 			sizeof(parameter2));
 }
 
@@ -84,60 +76,6 @@ bool CommandMessage::isClearedCommandMessage() {
 
 void CommandMessage::setToUnknownCommand() {
 	Command_t initialCommand = getCommand();
-	clearCommandMessage();
+	this->clear();
 	setReplyRejected(UNKNOWN_COMMAND, initialCommand);
-}
-
-void CommandMessage::setReplyRejected(ReturnValue_t reason,
-		Command_t initialCommand) {
-	setCommand(REPLY_REJECTED);
-	setParameter(reason);
-	setParameter2(initialCommand);
-}
-
-ReturnValue_t CommandMessage::getRejectedReplyReason(
-		Command_t* initialCommand) const {
-	if(initialCommand != nullptr) {
-		*initialCommand  = getParameter2();
-	}
-	return getParameter();
-}
-
-void CommandMessage::clear() {
-	clearCommandMessage();
-}
-
-void CommandMessage::clearCommandMessage() {
-	switch(this->getMessageType()){
-	case  messagetypes::MODE_COMMAND:
-		ModeMessage::clear(this);
-		break;
-	case messagetypes::HEALTH_COMMAND:
-		HealthMessage::clear(this);
-		break;
-	case messagetypes::MODE_SEQUENCE:
-		ModeSequenceMessage::clear(this);
-		break;
-	case messagetypes::ACTION:
-		ActionMessage::clear(this);
-		break;
-	case messagetypes::DEVICE_HANDLER_COMMAND:
-		DeviceHandlerMessage::clear(this);
-		break;
-	case messagetypes::MEMORY:
-		MemoryMessage::clear(this);
-		break;
-	case messagetypes::MONITORING:
-		MonitoringMessage::clear(this);
-		break;
-	case messagetypes::TM_STORE:
-		TmStoreMessage::clear(this);
-		break;
-	case messagetypes::PARAMETER:
-		ParameterMessage::clear(this);
-		break;
-	default:
-		messagetypes::clearMissionMessage(this);
-		break;
-	}
 }
