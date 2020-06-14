@@ -119,7 +119,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 		break;
 	}
 	if (queueToUse->sendMessage(lastSender, &reply) != RETURN_OK) {
-		reply.clearCommandMessage();
+		reply.clear();
 	}
 }
 

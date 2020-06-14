@@ -101,7 +101,7 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 }
 
 MessageQueueId_t MessageQueue::getId() const {
-	return (MessageQueueId_t) handle;
+	return reinterpret_cast<MessageQueueId_t>(handle);
 }
 
 void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {

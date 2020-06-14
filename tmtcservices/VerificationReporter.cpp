@@ -24,9 +24,8 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 			current_packet->getPacketSequenceControl(), 0, set_step);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		sif::error
-				<< "VerificationReporter::sendSuccessReport: Error writing to queue. Code: "
-				<< (uint16_t) status << std::endl;
+		sif::error << "VerificationReporter::sendSuccessReport: Error writing "
+				"to queue. Code: " << std::hex << (uint16_t) status << std::endl;
 	}
 }
 
@@ -40,9 +39,8 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 			tcSequenceControl, 0, set_step);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		sif::error
-				<< "VerificationReporter::sendSuccessReport: Error writing to queue. Code: "
-				<< (uint16_t) status << std::endl;
+		sif::error << "VerificationReporter::sendSuccessReport: Error writing "
+				"to queue. Code: " << std::hex << (uint16_t) status << std::endl;
 	}
 }
 

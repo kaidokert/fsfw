@@ -75,3 +75,7 @@ size_t MessageQueueMessage::getMessageSize() const {
 size_t MessageQueueMessage::getMaximumMessageSize() const {
 	return this->MAX_MESSAGE_SIZE;
 }
+
+void MessageQueueMessage::setMessageSize(size_t messageSize) {
+	this->messageSize = messageSize;
+}

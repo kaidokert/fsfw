@@ -41,8 +41,8 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 }
 
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
-		MessageQueueMessage *message) {
-	return HasReturnvaluesIF::RETURN_OK;
+		HousekeepingMessage& message) {
+	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 ReturnValue_t LocalDataPoolManager::printPoolEntry(

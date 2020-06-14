@@ -225,15 +225,6 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	// This is really annoying. I can't cast a parent object to a child.
-	// But I want to use another message format..
-//	CommandMessage* cmdMessage = dynamic_cast<CommandMessage*>(msgPtr);
-//	if(cmdMessage == nullptr) {
-//		sif::error << "DeviceHandlerBase::readCommandQueue: Could not cast"
-//				" message to CommandMessage!" << std::endl;
-//		return;
-//	}
-
 	if(healthHelperActive) {
 		result = healthHelper.handleHealthCommand(&command);
 		if (result == RETURN_OK) {
@@ -256,11 +247,11 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-//	HousekeepingMessage* hkMessage = dynamic_cast<HousekeepingMessage*>(msgPtr);
-//	result = hkManager.handleHousekeepingMessage(hkMessage);
-//	if (result == RETURN_OK) {
-//		return;
-//	}
+	HousekeepingMessage hkMessage(&message);
+	result = hkManager.handleHousekeepingMessage(hkMessage);
+	if (result == RETURN_OK) {
+		return;
+	}
 
 	result = handleDeviceHandlerMessage(&command);
 	if (result == RETURN_OK) {
@@ -758,7 +749,7 @@ ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
 
 void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 		MessageQueueId_t sendTo, bool isCommand) {
-	if (IPCStore == NULL || len == 0 || sendTo == MessageQueueIF::NO_QUEUE) {
+	if (IPCStore == nullptr or len == 0 or sendTo == MessageQueueIF::NO_QUEUE) {
 		return;
 	}
 	store_address_t address;
@@ -775,13 +766,12 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 	DeviceHandlerMessage::setDeviceHandlerRawReplyMessage(&command,
 			getObjectId(), address, isCommand);
 
-//	this->DeviceHandlerCommand = CommandMessage::CMD_NONE;
-
-	result = commandQueue->sendMessage(sendTo, &message);
+	result = commandQueue->sendMessage(sendTo, &command);
 
 	if (result != RETURN_OK) {
 		IPCStore->deleteData(address);
-		//Silently discard data, this indicates heavy TM traffic which should not be increased by additional events.
+		// Silently discard data, this indicates heavy TM traffic which
+		// should not be increased by additional events.
 	}
 }
 

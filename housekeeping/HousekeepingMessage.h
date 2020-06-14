@@ -1,6 +1,8 @@
 #ifndef FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
 #define FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
-#include <framework/ipc/CommandMessage.h>
+#include <framework/ipc/CommandMessageBase.h>
+#include <framework/ipc/FwMessageTypes.h>
+#include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <limits>
 
@@ -11,29 +13,34 @@ union sid_t {
 
 	struct {
 		object_id_t objectId ;
-		// A generic 32 bit ID to identify unique HK packets for a single
-		// object.
-		// For example, the DeviceCommandId_t is used for DeviceHandlers
+		/**
+		 * A generic 32 bit ID to identify unique HK packets for a single
+		 * object. For example, the DeviceCommandId_t is used for
+		 * DeviceHandlers
+		 */
 		uint32_t ownerSetId;
 	};
 	/**
-	 * Alternative access to the raw value.
+	 * Alternative access to the raw value. This is also the size of the type.
 	 */
 	uint64_t raw;
 };
 
 
-class HousekeepingMessage: public MessageQueueMessage {
+class HousekeepingMessage : public CommandMessageBase {
 public:
+
+	static constexpr size_t HK_MESSAGE_SIZE = sizeof(MessageQueueId_t)
+			+ sizeof(Command_t) + sizeof(sid_t) * sizeof(uint32_t);
 	/**
 	 * No instances of a message shall be created, instead
 	 * a CommandMessage instance is manipulated.
 	 */
-	HousekeepingMessage();
-//	HousekeepingMessage(const HousekeepingMessage&) = delete;
-//	HousekeepingMessage operator=(const HousekeepingMessage &) = delete;
+	HousekeepingMessage(MessageQueueMessageIF* message);
+	virtual ~HousekeepingMessage();
 
 	static constexpr uint8_t MESSAGE_ID = messagetypes::HOUSEKEEPING;
+
 	static constexpr Command_t ADD_HK_REPORT_STRUCT =
 			MAKE_COMMAND_ID(1);
 	static constexpr Command_t ADD_DIAGNOSTICS_REPORT_STRUCT =
@@ -78,9 +85,18 @@ public:
 	static constexpr Command_t MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL =
 			MAKE_COMMAND_ID(32);
 
-//	static void setAddHkReportStructMessage(CommandMessage* message,
-//			DevisetId, store_address_t packet);
-	static void setHkReportMessage();
+	void setHkReportMessage(sid_t sid, store_address_t storeId);
+
+	void setParameter(uint32_t parameter);
+
+	virtual void clear() override;
+	virtual size_t getMinimumMessageSize() const override;
+	virtual size_t getMaximumMessageSize() const override;
+
+	virtual uint8_t* getData() override;
+private:
+	sid_t getSid() const;
+	void setSid(sid_t sid);
 };
 
 

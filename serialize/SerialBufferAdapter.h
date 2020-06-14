@@ -67,7 +67,7 @@ public:
 
 	uint8_t * getBuffer();
 	const uint8_t * getConstBuffer();
-	void setBuffer(uint8_t* buffer_, count_t bufferLength_);
+	void setBuffer(uint8_t* buffer, count_t bufferLength);
 private:
 	bool serializeLength = false;
 	const uint8_t *constBuffer = nullptr;
