@@ -66,10 +66,6 @@ size_t CommandMessage::getMinimumMessageSize() const {
 	return MINIMUM_COMMAND_MESSAGE_SIZE;
 }
 
-size_t CommandMessage::getMaximumMessageSize() const {
-	return MessageQueueMessage::MAX_MESSAGE_SIZE;
-}
-
 bool CommandMessage::isClearedCommandMessage() {
 	return getCommand() == CMD_NONE;
 }

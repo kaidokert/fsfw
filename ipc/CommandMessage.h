@@ -24,11 +24,11 @@ class CommandMessage: public CommandMessageBase {
 public:
 	/**
 	 * This is the size of a message as it is seen by the MessageQueue.
+	 * It can hold the CommandMessage header plus 2 4-byte parameters.
 	 * 14 of the 24 available MessageQueueMessage bytes are used.
 	 */
 	static const size_t MINIMUM_COMMAND_MESSAGE_SIZE =
-			MessageQueueMessage::HEADER_SIZE + sizeof(Command_t) +
-			2 * sizeof(uint32_t);
+			CommandMessageIF::HEADER_SIZE + 2 * sizeof(uint32_t);
 
 	/**
 	 * Default Constructor, does not initialize anything.
@@ -55,8 +55,6 @@ public:
 
 	/** MessageQueueMessageIF functions used for minimum size check. */
 	size_t getMinimumMessageSize() const override;
-	/** MessageQueueMessageIF functions used for maximum size check. */
-	size_t getMaximumMessageSize() const override;
 
 	/**
 	 * Get the first parameter of the message

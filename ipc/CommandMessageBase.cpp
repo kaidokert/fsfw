@@ -55,8 +55,16 @@ size_t CommandMessageBase::getMessageSize() const {
 	return internalMessage->getMessageSize();
 }
 
+size_t CommandMessageBase::getMaximumMessageSize() const {
+	return internalMessage->getMaximumMessageSize();
+}
+
 MessageQueueMessageIF* CommandMessageBase::getInternalMessage() const {
 	return internalMessage;
+}
+
+size_t CommandMessageBase::getMinimumMessageSize() const {
+	return MINIMUM_COMMAND_MESSAGE_BASE_SIZE;
 }
 
 void CommandMessageBase::setReplyRejected(ReturnValue_t reason,
