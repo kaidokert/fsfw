@@ -1,5 +1,5 @@
-#ifndef DEVICECOMMUNICATIONIF_H_
-#define DEVICECOMMUNICATIONIF_H_
+#ifndef FRAMEWORK_DEVICES_DEVICECOMMUNICATIONIF_H_
+#define FRAMEWORK_DEVICES_DEVICECOMMUNICATIONIF_H_
 
 #include <framework/devicehandlers/CookieIF.h>
 #include <framework/devicehandlers/DeviceHandlerIF.h>
@@ -19,8 +19,8 @@
  * the device handler to allow reuse of these components.
  * @details
  * Documentation: Dissertation Baetz p.138.
- * It works with the assumption that received data
- * is polled by a component. There are four generic steps of device communication:
+ * It works with the assumption that received data  is polled by a component.
+ * There are four generic steps of device communication:
  *
  *   1. Send data to a device
  *   2. Get acknowledgement for sending
@@ -77,8 +77,8 @@ public:
 	 *  - @c RETURN_OK for successfull send
 	 *  - Everything else triggers failure event with returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
-			size_t sendLen) = 0;
+	virtual ReturnValue_t sendMessage(CookieIF *cookie,
+	        const uint8_t * sendData, size_t sendLen) = 0;
 
 	/**
 	 * Called by DHB in the GET_WRITE doGetWrite().
@@ -103,7 +103,8 @@ public:
 	 *         - Everything else triggers failure event with
 	 *           returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie, size_t requestLen) = 0;
+	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie,
+	        size_t requestLen) = 0;
 
 	/**
 	 * Called by DHB in the GET_WRITE doGetRead().
@@ -119,8 +120,8 @@ public:
 	 *         - Everything else triggers failure event with
 	 *           returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
-			size_t *size) = 0;
+	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie,
+	        uint8_t **buffer, size_t *size) = 0;
 };
 
 #endif /* DEVICECOMMUNICATIONIF_H_ */

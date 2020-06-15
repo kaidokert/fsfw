@@ -15,13 +15,21 @@
  * size checks:
  *
  *  1. getMinimumMessageSize()
- *  2. getMaximumMessageSize()
  *
+ * The maximum message size generally depends on the buffer size of the passed
+ * internal message.
  * Don't forget to set the message size of the passed message in the concrete
  * commandmessage implementation!
  */
 class CommandMessageBase: public CommandMessageIF {
 public:
+	//! This minimum size is derived from the interface requirement to be able
+	//! to set a rejected reply, which contains a returnvalue and the initial
+	//! command.
+	static constexpr size_t MINIMUM_COMMAND_MESSAGE_BASE_SIZE =
+			CommandMessageIF::HEADER_SIZE + sizeof(ReturnValue_t) +
+			sizeof(Command_t);
+
 	CommandMessageBase(MessageQueueMessageIF* message);
 
 	/**
@@ -57,6 +65,12 @@ public:
 	virtual const uint8_t* getData() const override;
 	virtual void setMessageSize(size_t messageSize) override;
 	virtual size_t getMessageSize() const override;
+
+	//! This depends on the maximum message size of the passed internal message.
+	virtual size_t getMaximumMessageSize() const override;
+
+	//! Return the constant minimum message size.
+	virtual size_t getMinimumMessageSize() const override;
 
 	/**
 	 * A command message can be rejected and needs to offer a function

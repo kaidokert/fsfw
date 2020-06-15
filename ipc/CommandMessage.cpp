@@ -10,31 +10,18 @@ CommandMessage::CommandMessage(MessageQueueMessageIF* receiverMessage):
 		return;
 	}
 	if(receiverMessage->getMaximumMessageSize() <
-			MINIMUM_COMMAND_MESSAGE_SIZE) {
+			getMinimumMessageSize()) {
 		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
 				" can not hold minimum "<< MINIMUM_COMMAND_MESSAGE_SIZE
 				<< " bytes!" << std::endl;
 		return;
 	}
-	internalMessage->setMessageSize(MINIMUM_COMMAND_MESSAGE_SIZE);
+	internalMessage->setMessageSize(getMinimumMessageSize());
 }
 
 CommandMessage::CommandMessage(MessageQueueMessageIF* messageToSet,
 		Command_t command, uint32_t parameter1, uint32_t parameter2):
-				CommandMessageBase(messageToSet) {
-	if(messageToSet == nullptr) {
-		sif::error << "CommandMessage::CommandMessage: Don't pass a nullptr"
-				" as the message queue message, pass the address of an actual"
-				" message!" << std::endl;
-	}
-	if(messageToSet->getMaximumMessageSize() <
-			MINIMUM_COMMAND_MESSAGE_SIZE) {
-		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
-				" can not hold minimum "<< MINIMUM_COMMAND_MESSAGE_SIZE
-				<< " bytes!" << std::endl;
-		return;
-	}
-	internalMessage->setMessageSize(MINIMUM_COMMAND_MESSAGE_SIZE);
+		CommandMessage(messageToSet) {
 	setCommand(command);
 	setParameter(parameter1);
 	setParameter2(parameter2);
@@ -64,10 +51,6 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
 
 size_t CommandMessage::getMinimumMessageSize() const {
 	return MINIMUM_COMMAND_MESSAGE_SIZE;
-}
-
-size_t CommandMessage::getMaximumMessageSize() const {
-	return MessageQueueMessage::MAX_MESSAGE_SIZE;
 }
 
 bool CommandMessage::isClearedCommandMessage() {

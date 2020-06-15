@@ -27,14 +27,22 @@ union sid_t {
 };
 
 
+/**
+ * @brief	Special command message type for housekeeping messages
+ * @details
+ * This message is slightly larger than regular command messages to accomodate
+ * the uint64_t structure ID (SID).
+ */
 class HousekeepingMessage : public CommandMessageBase {
 public:
 
 	static constexpr size_t HK_MESSAGE_SIZE = sizeof(MessageQueueId_t)
 			+ sizeof(Command_t) + sizeof(sid_t) * sizeof(uint32_t);
+
 	/**
-	 * No instances of a message shall be created, instead
-	 * a CommandMessage instance is manipulated.
+	 * The HK message is initialized with a pointer to a message which holds
+	 * the message data, see CommandMessageIF and getInternalMessage().
+	 * @param message
 	 */
 	HousekeepingMessage(MessageQueueMessageIF* message);
 	virtual ~HousekeepingMessage();
@@ -85,18 +93,24 @@ public:
 	static constexpr Command_t MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL =
 			MAKE_COMMAND_ID(32);
 
-	void setHkReportMessage(sid_t sid, store_address_t storeId);
 
 	void setParameter(uint32_t parameter);
+	uint32_t getParameter() const;
 
-	virtual void clear() override;
+	void setHkReportMessage(sid_t sid, store_address_t storeId);
+	void setHkDiagnosticsMessage(sid_t sid, store_address_t storeId);
+	//! Get the respective SID and store ID. Command ID can be used beforehand
+	//! to distinguish between diagnostics and regular HK packets
+	sid_t getHkReportMessage(store_address_t * storeIdToSet) const;
+
 	virtual size_t getMinimumMessageSize() const override;
-	virtual size_t getMaximumMessageSize() const override;
-
-	virtual uint8_t* getData() override;
+	virtual void clear() override;
 private:
 	sid_t getSid() const;
 	void setSid(sid_t sid);
+
+	virtual uint8_t* getData() override;
+	virtual const uint8_t* getData() const override;
 };
 
 
