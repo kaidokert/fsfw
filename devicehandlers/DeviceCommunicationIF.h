@@ -72,7 +72,7 @@ public:
 	 * by implementing and calling related drivers or wrapper functions.
 	 * @param cookie
 	 * @param data
-	 * @param len
+	 * @param len If this is 0, nothing shall be sent.
 	 * @return
 	 *  - @c RETURN_OK for successfull send
 	 *  - Everything else triggers failure event with returnvalue as parameter 1
