@@ -10,7 +10,7 @@ class ActionMessage {
 private:
 	ActionMessage();
 public:
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::ACTION;
+	static const uint8_t MESSAGE_ID = messagetypes::ACTION;
 	static const Command_t EXECUTE_ACTION = MAKE_COMMAND_ID(1);
 	static const Command_t STEP_SUCCESS = MAKE_COMMAND_ID(2);
 	static const Command_t STEP_FAILED = MAKE_COMMAND_ID(3);
