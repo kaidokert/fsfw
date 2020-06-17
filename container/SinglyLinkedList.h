@@ -61,8 +61,8 @@ public:
 		this->next = next;
 	}
 
-	void setEnd() {
-		this->next = nullptr;
+	virtual void setEnd() {
+	    this->next = nullptr;
 	}
 
 	LinkedElement* begin() {
@@ -107,6 +107,11 @@ public:
 	void setStart(LinkedElement<T>* setStart) {
 		start = setStart;
 	}
+
+    void setEnd(LinkedElement<T>* setEnd) {
+        setEnd->setEnd();
+    }
+
 protected:
 	LinkedElement<T> *start = nullptr;
 };
