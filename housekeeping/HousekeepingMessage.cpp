@@ -4,8 +4,8 @@
 HousekeepingMessage::HousekeepingMessage(MessageQueueMessageIF* message):
 		CommandMessageBase(message) {
 	if(message->getMaximumMessageSize() < HK_MESSAGE_SIZE) {
-		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
-				" can not hold minimum "<< HK_MESSAGE_SIZE
+		sif::error << "HousekeepingMessage::HousekeepingMessage: Passed "
+		        "message buffer can not hold minimum " << HK_MESSAGE_SIZE
 				<< " bytes!" << std::endl;
 		return;
 	}

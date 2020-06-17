@@ -36,8 +36,8 @@ union sid_t {
 class HousekeepingMessage : public CommandMessageBase {
 public:
 
-	static constexpr size_t HK_MESSAGE_SIZE = sizeof(MessageQueueId_t)
-			+ sizeof(Command_t) + sizeof(sid_t) * sizeof(uint32_t);
+	static constexpr size_t HK_MESSAGE_SIZE = CommandMessageIF::HEADER_SIZE +
+	        sizeof(sid_t) + sizeof(uint32_t);
 
 	/**
 	 * The HK message is initialized with a pointer to a message which holds

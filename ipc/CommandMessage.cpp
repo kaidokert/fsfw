@@ -12,7 +12,7 @@ CommandMessage::CommandMessage(MessageQueueMessageIF* receiverMessage):
 	if(receiverMessage->getMaximumMessageSize() <
 			getMinimumMessageSize()) {
 		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
-				" can not hold minimum "<< MINIMUM_COMMAND_MESSAGE_SIZE
+				" can not hold minimum "<< getMinimumMessageSize()
 				<< " bytes!" << std::endl;
 		return;
 	}
