@@ -15,11 +15,8 @@ public:
 	T *value;
 	class Iterator {
 	public:
-		LinkedElement<T> *value;
-		Iterator() :
-				value(NULL) {
-
-		}
+		LinkedElement<T> *value = nullptr;
+		Iterator() {}
 
 		Iterator(LinkedElement<T> *element) :
 				value(element) {
