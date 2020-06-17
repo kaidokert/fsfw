@@ -8,13 +8,11 @@ template<typename T, typename count_t = uint8_t>
 class HybridIterator: public LinkedElement<T>::Iterator,
 		public ArrayList<T, count_t>::Iterator {
 public:
-	HybridIterator() :
-			value(NULL), linked(NULL), end(NULL) {
-	}
+	HybridIterator() {}
 
 	HybridIterator(typename LinkedElement<T>::Iterator *iter) :
-		LinkedElement<T>::Iterator(*iter), value(
-					iter->value), linked(true), end(NULL) {
+		LinkedElement<T>::Iterator(*iter), value(iter->value),
+		linked(true) {
 
 	}
 
@@ -66,11 +64,11 @@ public:
 		return tmp;
 	}
 
-	bool operator==(HybridIterator other) {
+	bool operator==(const HybridIterator& other) {
 		return value == other.value;
 	}
 
-	bool operator!=(HybridIterator other) {
+	bool operator!=(const HybridIterator& other) {
 		return !(*this == other);
 	}
 
@@ -82,11 +80,11 @@ public:
 		return value;
 	}
 
-	T* value;
+	T* value = nullptr;
 
 private:
-	bool linked;
-	T *end;
+	bool linked = false;
+	T *end = nullptr;
 };
 
 #endif /* HYBRIDITERATOR_H_ */
