@@ -2,12 +2,14 @@
 #define FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <cstddef>
 
 template<uint8_t N_READ_PTRS = 1>
 class RingBufferBase {
 public:
-	RingBufferBase(uint32_t startAddress, uint32_t size, bool overwriteOld) :
-			start(startAddress), write(startAddress), size(size), overwriteOld(overwriteOld) {
+	RingBufferBase(uint32_t startAddress, const size_t size, bool overwriteOld) :
+			start(startAddress), write(startAddress), size(size),
+			overwriteOld(overwriteOld) {
 		for (uint8_t count = 0; count < N_READ_PTRS; count++) {
 			read[count] = startAddress;
 		}
@@ -83,7 +85,7 @@ protected:
 	const uint32_t start;
 	uint32_t write;
 	uint32_t read[N_READ_PTRS];
-	const uint32_t size;
+	const size_t size;
 	const bool overwriteOld;
 	void incrementWrite(uint32_t amount) {
 		write = ((write + amount - start) % size) + start;

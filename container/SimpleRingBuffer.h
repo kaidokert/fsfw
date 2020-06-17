@@ -5,13 +5,29 @@
 #include <stddef.h>
 
 /**
- * @brief 	Circular buffer implementation, useful for buffering into data streams.
- * @details Note that the deleteData() has to be called to increment the read pointer
+ * @brief 	Circular buffer implementation, useful for buffering
+ *          into data streams.
+ * @details
+ * Note that the deleteData() has to be called to increment the read pointer.
+ * This class allocated dynamically, so
  * @ingroup containers
  */
 class SimpleRingBuffer: public RingBufferBase<> {
 public:
-	SimpleRingBuffer(uint32_t size, bool overwriteOld);
+    /**
+     * This constructor allocates a new internal buffer with the supplied size.
+     * @param size
+     * @param overwriteOld
+     */
+	SimpleRingBuffer(const size_t size, bool overwriteOld);
+	/**
+	 * This constructor takes an external buffer with the specified size.
+	 * @param buffer
+	 * @param size
+	 * @param overwriteOld
+	 */
+	SimpleRingBuffer(uint8_t* buffer, const size_t size, bool overwriteOld);
+
 	virtual ~SimpleRingBuffer();
 
 	/**
@@ -30,7 +46,8 @@ public:
 	 * @param trueAmount
 	 * @return
 	 */
-	ReturnValue_t readData(uint8_t* data, uint32_t amount, bool readRemaining = false, uint32_t* trueAmount = NULL);
+	ReturnValue_t readData(uint8_t* data, uint32_t amount,
+	        bool readRemaining = false, uint32_t* trueAmount = nullptr);
 
 	/**
 	 * Delete data starting by incrementing read pointer
@@ -39,11 +56,12 @@ public:
 	 * @param trueAmount
 	 * @return
 	 */
-	ReturnValue_t deleteData(uint32_t amount, bool deleteRemaining = false, uint32_t* trueAmount = NULL);
+	ReturnValue_t deleteData(uint32_t amount, bool deleteRemaining = false,
+	        uint32_t* trueAmount = nullptr);
 private:
 //	static const uint8_t TEMP_READ_PTR = 1;
 	static const uint8_t READ_PTR = 0;
-	uint8_t* buffer;
+	uint8_t* buffer = nullptr;
 };
 
 #endif /* FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_ */
