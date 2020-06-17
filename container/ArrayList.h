@@ -1,5 +1,5 @@
-#ifndef ARRAYLIST_H_
-#define ARRAYLIST_H_
+#ifndef FRAMEWORK_CONTAINER_ARRAYLIST_H_
+#define FRAMEWORK_CONTAINER_ARRAYLIST_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/serialize/SerializeAdapter.h>
@@ -7,8 +7,9 @@
 
 /**
  * @brief 	A List that stores its values in an array.
- * @details The backend is an array that can be allocated
- * 			by the class itself or supplied via ctor.
+ * @details
+ * The underlying storage is an array that can be allocated by the class
+ * itself or supplied via ctor.
  *
  * @ingroup container
  */
@@ -19,81 +20,13 @@ public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::ARRAY_LIST;
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(0x01);
 
-	/**
-	 * An Iterator to go trough an ArrayList
-	 *
-	 * It stores a pointer to an element and increments the
-	 * pointer when incremented itself.
-	 */
-	class Iterator {
-	public:
-		/**
-		 * Empty ctor, points to NULL
-		 */
-		Iterator() :
-				value(0) {
-
-		}
-
-		/**
-		 * Initializes the Iterator to point to an element
-		 *
-		 * @param initialize
-		 */
-		Iterator(T *initialize) {
-			value = initialize;
-		}
-
-		/**
-		 * The current element the iterator points to
-		 */
-		T *value;
-
-		Iterator& operator++() {
-			value++;
-			return *this;
-		}
-
-		Iterator operator++(int) {
-			Iterator tmp(*this);
-			operator++();
-			return tmp;
-		}
-
-		Iterator& operator--() {
-			value--;
-			return *this;
-		}
-
-		Iterator operator--(int) {
-			Iterator tmp(*this);
-			operator--();
-			return tmp;
-		}
-
-		T operator*() {
-			return *value;
-		}
-
-		T *operator->() {
-			return value;
-		}
-
-		const T *operator->() const{
-			return value;
-		}
-
-		//SHOULDDO this should be implemented as non-member
-		bool operator==(const typename ArrayList<T, count_t>::Iterator& other) const{
-			return (value == other.value);
-		}
-
-		//SHOULDDO this should be implemented as non-member
-		bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) const {
-			return !(*this == other);
-		}
-	}
-	;
+    /**
+     * Copying is forbiden by declaring copy ctor and copy assignment deleted
+     * It is too ambigous in this case.
+     * (Allocate a new backend? Use the same? What to do in an modifying call?)
+     */
+	ArrayList(const ArrayList& other) = delete;
+	const ArrayList& operator=(const ArrayList& other) = delete;
 
 	/**
 	 * Number of Elements stored in this List
@@ -133,6 +66,78 @@ public:
 			delete[] entries;
 		}
 	}
+
+    /**
+     * An Iterator to go trough an ArrayList
+     *
+     * It stores a pointer to an element and increments the
+     * pointer when incremented itself.
+     */
+    class Iterator {
+    public:
+        /**
+         * Empty ctor, points to NULL
+         */
+        Iterator(): value(0) {}
+
+        /**
+         * Initializes the Iterator to point to an element
+         *
+         * @param initialize
+         */
+        Iterator(T *initialize) {
+            value = initialize;
+        }
+
+        /**
+         * The current element the iterator points to
+         */
+        T *value;
+
+        Iterator& operator++() {
+            value++;
+            return *this;
+        }
+
+        Iterator operator++(int) {
+            Iterator tmp(*this);
+            operator++();
+            return tmp;
+        }
+
+        Iterator& operator--() {
+            value--;
+            return *this;
+        }
+
+        Iterator operator--(int) {
+            Iterator tmp(*this);
+            operator--();
+            return tmp;
+        }
+
+        T operator*() {
+            return *value;
+        }
+
+        T *operator->() {
+            return value;
+        }
+
+        const T *operator->() const{
+            return value;
+        }
+
+        //SHOULDDO this should be implemented as non-member
+        bool operator==(const typename ArrayList<T, count_t>::Iterator& other) const{
+            return (value == other.value);
+        }
+
+        //SHOULDDO this should be implemented as non-member
+        bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) const {
+            return !(*this == other);
+        }
+    };
 
 	/**
 	 * Iterator pointing to the first stored elmement
@@ -222,19 +227,6 @@ public:
 	count_t remaining() {
 		return (maxSize_ - size);
 	}
-
-private:
-	/**
-	 * This is the copy constructor
-	 *
-	 * It is private, as copying is too ambigous in this case. (Allocate a new backend? Use the same?
-	 * What to do in an modifying call?)
-	 *
-	 * @param other
-	 */
-	ArrayList(const ArrayList& other) :
-			size(other.size), entries(other.entries), maxSize_(other.maxSize_),
-			allocated(false) {}
 
 protected:
 	/**
