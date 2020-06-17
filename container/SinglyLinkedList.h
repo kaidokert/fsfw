@@ -112,6 +112,8 @@ public:
         setEnd->setEnd();
     }
 
+    // SHOULDDO: Insertion operation ?
+
 protected:
 	LinkedElement<T> *start = nullptr;
 };
