@@ -1,10 +1,13 @@
-#ifndef SINGLYLINKEDLIST_H_
-#define SINGLYLINKEDLIST_H_
+#ifndef FRAMEWORK_CONTAINER_SINGLYLINKEDLIST_H_
+#define FRAMEWORK_CONTAINER_SINGLYLINKEDLIST_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
+
 /**
- * \ingroup container
+ * @brief	Linked list data structure,
+ * 			each entry has a pointer to the next entry (singly)
+ * @ingroup container
  */
 template<typename T>
 class LinkedElement {
@@ -12,11 +15,8 @@ public:
 	T *value;
 	class Iterator {
 	public:
-		LinkedElement<T> *value;
-		Iterator() :
-				value(NULL) {
-
-		}
+		LinkedElement<T> *value = nullptr;
+		Iterator() {}
 
 		Iterator(LinkedElement<T> *element) :
 				value(element) {
@@ -45,12 +45,11 @@ public:
 		}
 	};
 
-	LinkedElement(T* setElement, LinkedElement<T>* setNext = NULL) : value(setElement),
-		next(setNext) {
-	}
-	virtual ~LinkedElement(){
+	LinkedElement(T* setElement, LinkedElement<T>* setNext = nullptr):
+	       value(setElement), next(setNext) {}
 
-	}
+	virtual ~LinkedElement(){}
+
 	virtual LinkedElement* getNext() const {
 		return next;
 	}
@@ -58,11 +57,16 @@ public:
 	virtual void setNext(LinkedElement* next) {
 		this->next = next;
 	}
+
+	virtual void setEnd() {
+	    this->next = nullptr;
+	}
+
 	LinkedElement* begin() {
 		return this;
 	}
 	LinkedElement* end() {
-		return NULL;
+		return nullptr;
 	}
 private:
 	LinkedElement *next;
@@ -71,21 +75,21 @@ private:
 template<typename T>
 class SinglyLinkedList {
 public:
-	SinglyLinkedList() :
-			start(NULL) {
-	}
+    using ElementIterator = typename LinkedElement<T>::Iterator;
 
-	SinglyLinkedList(typename LinkedElement<T>::Iterator start) :
-			start(start.value) {
-	}
+	SinglyLinkedList() {}
+
+	SinglyLinkedList(ElementIterator start) :
+			start(start.value) {}
+
 	SinglyLinkedList(LinkedElement<T>* startElement) :
-				start(startElement) {
-		}
-	typename LinkedElement<T>::Iterator begin() const {
-		return LinkedElement<T>::Iterator::Iterator(start);
+			start(startElement) {}
+
+	ElementIterator begin() const {
+		return ElementIterator::Iterator(start);
 	}
-	typename LinkedElement<T>::Iterator::Iterator end() const {
-		return LinkedElement<T>::Iterator::Iterator();
+	typename ElementIterator::Iterator end() const {
+		return ElementIterator::Iterator();
 	}
 
 	uint32_t getSize() const {
@@ -100,8 +104,15 @@ public:
 	void setStart(LinkedElement<T>* setStart) {
 		start = setStart;
 	}
+
+    void setEnd(LinkedElement<T>* setEnd) {
+        setEnd->setEnd();
+    }
+
+    // SHOULDDO: Insertion operation ?
+
 protected:
-	LinkedElement<T> *start;
+	LinkedElement<T> *start = nullptr;
 };
 
 #endif /* SINGLYLINKEDLIST_H_ */
