@@ -381,7 +381,7 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0,
+			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = false,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 
 	/**
@@ -395,7 +395,7 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, uint8_t periodic = 0);
+			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = false);
 
 	/**
 	 * @brief 	A simple command to add a command to the commandList.
@@ -421,7 +421,7 @@ protected:
 	 */
 	ReturnValue_t updateReplyMapEntry(DeviceCommandId_t deviceReply,
 			uint16_t delayCycles, uint16_t maxDelayCycles,
-			uint8_t periodic = 0);
+			bool periodic = false);
 
 	/**
 	 * @brief   Can be implemented by child handler to
@@ -625,7 +625,7 @@ protected:
 		uint16_t maxDelayCycles; //!< The maximum number of cycles the handler should wait for a reply to this command.
 		uint16_t delayCycles; //!< The currently remaining cycles the handler should wait for a reply, 0 means there is no reply expected
 		size_t replyLen = 0; //!< Expected size of the reply.
-		uint8_t periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
+		bool periodic; //!< if this is !=0, the delayCycles will not be reset to 0 but to maxDelayCycles
 		DeviceCommandMap::iterator command; //!< The command that expects this reply.
 	};
 

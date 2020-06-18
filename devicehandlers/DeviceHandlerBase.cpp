@@ -184,7 +184,7 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
 		if (iter->second.delayCycles != 0) {
 			iter->second.delayCycles--;
 			if (iter->second.delayCycles == 0) {
-				if (iter->second.periodic != 0) {
+				if (iter->second.periodic) {
 					iter->second.delayCycles = iter->second.maxDelayCycles;
 				}
 				replyToReply(iter, TIMEOUT);
@@ -344,7 +344,7 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 }
 
 ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic,
+		uint16_t maxDelayCycles, size_t replyLen, bool periodic,
 		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
 	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
@@ -356,7 +356,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(DeviceCommandId_t de
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, size_t replyLen, uint8_t periodic) {
+		uint16_t maxDelayCycles, size_t replyLen, bool periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
 	info.periodic = periodic;
@@ -385,7 +385,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
 }
 
 ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
-		uint16_t delayCycles, uint16_t maxDelayCycles, uint8_t periodic) {
+		uint16_t delayCycles, uint16_t maxDelayCycles, bool periodic) {
 	std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
 			deviceReplyMap.find(deviceReply);
 	if (iter == deviceReplyMap.end()) {
@@ -741,7 +741,7 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 
 	if (info->delayCycles != 0) {
 
-		if (info->periodic != 0) {
+		if (info->periodic) {
 			info->delayCycles = info->maxDelayCycles;
 		} else {
 			info->delayCycles = 0;
