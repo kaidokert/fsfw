@@ -59,7 +59,7 @@ bool TcPacketStored::checkAndSetStore() {
 void TcPacketStored::setStoreAddress(store_address_t setAddress) {
 	this->storeAddress = setAddress;
 	const uint8_t* temp_data = NULL;
-	uint32_t temp_size;
+	size_t temp_size;
 	ReturnValue_t status = StorageManagerIF::RETURN_FAILED;
 	if (this->checkAndSetStore()) {
 		status = this->store->getData(this->storeAddress, &temp_data,
@@ -79,7 +79,7 @@ store_address_t TcPacketStored::getStoreAddress() {
 
 bool TcPacketStored::isSizeCorrect() {
 	const uint8_t* temp_data = NULL;
-	uint32_t temp_size;
+	size_t temp_size;
 	ReturnValue_t status = this->store->getData(this->storeAddress, &temp_data,
 			&temp_size);
 	if (status == StorageManagerIF::RETURN_OK) {
