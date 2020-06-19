@@ -1,5 +1,6 @@
 #include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/datapoollocal/LocalDataSet.h>
+#include <framework/serialize/SerializeAdapter.h>
 
 #include <cmath>
 #include <cstring>
@@ -65,6 +66,21 @@ ReturnValue_t LocalDataSet::serializeWithValidityBuffer(uint8_t **buffer,
 ReturnValue_t LocalDataSet::unlockDataPool() {
 	MutexIF* mutex = hkManager->getMutexHandle();
 	return mutex->unlockMutex();
+}
+
+ReturnValue_t LocalDataSet::serializeLocalPoolIds(uint8_t** buffer,
+        size_t* size, const size_t maxSize, bool bigEndian) const {
+    for (uint16_t count = 0; count < fillCount; count++) {
+        lp_id_t currentPoolId = registeredVariables[count]->getDataPoolId();
+        auto result = AutoSerializeAdapter::serialize(&currentPoolId, buffer,
+                size, maxSize, bigEndian);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            sif::warning << "LocalDataSet::serializeLocalPoolIds: Serialization"
+                    " error!" << std::endl;
+            return result;
+        }
+    }
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void LocalDataSet::bitSetter(uint8_t* byte, uint8_t position,

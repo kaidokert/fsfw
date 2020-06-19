@@ -53,6 +53,10 @@ ReturnValue_t DataSetBase::read(uint32_t lockTimeout) {
 	return result;
 }
 
+uint16_t DataSetBase::getFillCount() const {
+    return fillCount;
+}
+
 ReturnValue_t DataSetBase::readVariable(uint16_t count) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	// These checks are often performed by the respective

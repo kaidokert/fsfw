@@ -33,7 +33,7 @@ LocalDataPoolManager::~LocalDataPoolManager() {}
 ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 	if(not mapInitialized) {
 		ReturnValue_t result =
-				owner->initializeHousekeepingPoolEntries(localDpMap);
+				owner->initializePoolEntries(localDpMap);
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			mapInitialized = true;
 		}
@@ -48,6 +48,14 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 		HousekeepingMessage& message) {
     Command_t command = message.getCommand();
     switch(command) {
+    // I think those are the only commands which can be handled here..
+    case(HousekeepingMessage::ADD_HK_REPORT_STRUCT):
+    case(HousekeepingMessage::ADD_DIAGNOSTICS_REPORT_STRUCT):
+        // We should use OwnsLocalPoolDataIF to specify those functions..
+        return HasReturnvaluesIF::RETURN_OK;
+    case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
+    case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
+        return generateSetStructurePacket(message.getSid());
     case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
     case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT):
         return generateHousekeepingPacket(message.getSid());
@@ -114,13 +122,41 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
 	return result;
 }
 
+ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid) {
+    LocalDataSet* dataSet = dynamic_cast<LocalDataSet*>(
+            owner->getDataSetHandle(sid));
+    if(dataSet == nullptr) {
+        sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
+                " Set ID not found" << std::endl;
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+    size_t expectedSize = dataSet->getFillCount() * sizeof(lp_id_t);
+    uint8_t* storePtr = nullptr;
+    store_address_t storeId;
+    ReturnValue_t result = ipcStore->getFreeElement(&storeId,
+            expectedSize,&storePtr);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        sif::error << "HousekeepingManager::generateHousekeepingPacket: "
+                "Could not get free element from IPC store." << std::endl;
+        return result;
+    }
+    size_t size = 0;
+    result = dataSet->serializeLocalPoolIds(&storePtr, &size,
+            expectedSize, false);
+    if(expectedSize != size) {
+        sif::error << "HousekeepingManager::generateSetStructurePacket: "
+                "Expected size is not equal to serialized size" << std::endl;
+    }
+    return result;
+}
+
 ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
         store_address_t *storeId, LocalDataSet* dataSet) {
     size_t hkSize = dataSet->getSerializedSize();
     uint8_t* storePtr = nullptr;
     ReturnValue_t result = ipcStore->getFreeElement(storeId, hkSize,&storePtr);
     if(result != HasReturnvaluesIF::RETURN_OK) {
-        sif::warning << "HousekeepingManager::generateHousekeepingPacket: "
+        sif::error << "HousekeepingManager::generateHousekeepingPacket: "
                 "Could not get free element from IPC store." << std::endl;
         return result;
     }

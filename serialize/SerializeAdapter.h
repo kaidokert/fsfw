@@ -65,6 +65,21 @@
 // No type specification necessary here.
 class AutoSerializeAdapter {
 public:
+    /**
+     * Serialize object into buffer.
+     * @tparam T Type of object.
+     * @param object Object to serialize
+     * @param buffer
+     * Serialize into this buffer, pointer to pointer has to be passed,
+     * *buffer will be incremented automatically.
+     * @param size [out]
+     * Update passed size value, will be incremented by serialized size
+     * @param max_size
+     * Maximum size for range checking
+     * @param bigEndian
+     * Set to true if host-to-network conversion or vice-versa is needed
+     * @return
+     */
 	template<typename T>
 	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
 			size_t* size, const size_t max_size, bool bigEndian) {

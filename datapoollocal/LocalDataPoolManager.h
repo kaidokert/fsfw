@@ -56,6 +56,8 @@ public:
 	LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
 
 	ReturnValue_t generateHousekeepingPacket(sid_t sid);
+	ReturnValue_t generateSetStructurePacket(sid_t sid);
+
 	ReturnValue_t handleHousekeepingMessage(HousekeepingMessage& message);
 
 	/**

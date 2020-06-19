@@ -101,6 +101,8 @@ public:
 	 */
 	virtual ReturnValue_t unlockDataPool() override;
 
+	virtual uint16_t getFillCount() const;
+
 	/* SerializeIF implementations */
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
 				const size_t maxSize, bool bigEndian) const override;

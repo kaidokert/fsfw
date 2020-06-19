@@ -97,9 +97,7 @@ public:
 	 * Used to setup the reference of the task, that executes this component
 	 * @param task_ Pointer to the taskIF of this task
 	 */
-	virtual void setTaskIF(PeriodicTaskIF* task_){
-		executingTask = task_;
-	};
+	virtual void setTaskIF(PeriodicTaskIF* task_);
 
 protected:
 	/**

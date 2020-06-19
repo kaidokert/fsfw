@@ -8,13 +8,16 @@
 const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
 		sizeof(EventMatchTree::Node), sizeof(EventIdRangeMatcher),
 		sizeof(ReporterRangeMatcher) };
-//If one checks registerListener calls, there are around 40 (to max 50) objects registering for certain events.
-//Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher. So a good guess is 75 to a max of 100 pools required for each, which fits well.
+// If one checks registerListener calls, there are around 40 (to max 50)
+// objects registering for certain events.
+// Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
+// So a good guess is 75 to a max of 100 pools required for each, which fits well.
+// SHOULDDO: Shouldn't this be in the config folder and passed via ctor?
 const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
 
 EventManager::EventManager(object_id_t setObjectId) :
-		SystemObject(setObjectId), eventReportQueue(NULL), mutex(NULL), factoryBackend(
-				0, POOL_SIZES, N_ELEMENTS, false, true) {
+		SystemObject(setObjectId),
+		factoryBackend(0, POOL_SIZES, N_ELEMENTS, false, true) {
 	mutex = MutexFactory::instance()->createMutex();
 	eventReportQueue = QueueFactory::instance()->createMessageQueue(
 			MAX_EVENTS_PER_CYCLE, EventMessage::EVENT_MESSAGE_SIZE);

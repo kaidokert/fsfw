@@ -43,6 +43,7 @@ public:
 	 */
 	virtual ReturnValue_t registerVariable(PoolVariableIF* variable) = 0;
 
+	virtual uint16_t getFillCount() const = 0;
 private:
 	/**
 	 * @brief 	Most underlying data structures will have a pool like structure

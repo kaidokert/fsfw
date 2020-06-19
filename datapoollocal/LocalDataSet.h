@@ -68,7 +68,10 @@ public:
 	 * @return
 	 */
 	ReturnValue_t serializeWithValidityBuffer(uint8_t** buffer,
-	        size_t* size, const size_t maxSize, bool bigEndian) const ;
+	        size_t* size, const size_t maxSize, bool bigEndian) const;
+
+	ReturnValue_t serializeLocalPoolIds(uint8_t** buffer,
+            size_t* size, const size_t maxSize, bool bigEndian) const;
 protected:
 private:
 	/**

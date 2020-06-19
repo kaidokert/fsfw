@@ -477,11 +477,16 @@ protected:
 	 * @param localDataPoolMap
 	 * @return
 	 */
-	virtual ReturnValue_t initializeHousekeepingPoolEntries(
+	virtual ReturnValue_t initializePoolEntries(
 				LocalDataPool& localDataPoolMap) override;
 
 	/** Get the HK manager object handle */
 	virtual LocalDataPoolManager* getHkManagerHandle() override;
+
+	virtual ReturnValue_t addDataSet(sid_t sid) override;
+	virtual ReturnValue_t removeDataSet(sid_t sid) override;
+	virtual ReturnValue_t changeCollectionInterval(sid_t sid,
+	        dur_seconds_t newInterval) override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per
@@ -703,7 +708,9 @@ protected:
 
 	bool switchOffWasReported; //!< Indicates if SWITCH_WENT_OFF was already thrown.
 
-	PeriodicTaskIF* executingTask = nullptr;//!< Pointer to the task which executes this component, is invalid before setTaskIF was called.
+	//! Pointer to the task which executes this component, is invalid
+	//! before setTaskIF was called.
+	PeriodicTaskIF* executingTask = nullptr;
 
 	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
 
