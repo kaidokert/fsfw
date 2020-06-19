@@ -40,9 +40,7 @@ class OwnsLocalDataPoolIF {
 public:
 	virtual~ OwnsLocalDataPoolIF() {};
 
-	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING;
-	static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0XA0);
-	static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0xA1);
+	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
 
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 	virtual ReturnValue_t initializeHousekeepingPoolEntries(

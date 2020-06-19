@@ -1,22 +1,25 @@
 #include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/datapoollocal/LocalDataSet.h>
 
+#include <cmath>
+#include <cstring>
+
 LocalDataSet::LocalDataSet(OwnsLocalDataPoolIF *hkOwner): DataSetBase() {
-	if(hkOwner != nullptr) {
-		hkManager = hkOwner->getHkManagerHandle();
-	}
-	else {
-		// config error, error output here.
-	}
+    if(hkOwner == nullptr) {
+        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
+                << std::endl;
+    }
+    hkManager = hkOwner->getHkManagerHandle();
 }
 
 LocalDataSet::LocalDataSet(object_id_t ownerId): DataSetBase()  {
-	OwnsLocalDataPoolIF* hkOwner = objectManager->get<OwnsLocalDataPoolIF>(
-			ownerId);
-	if(hkOwner == nullptr) {
-		// config error, error output here.
-	}
-	hkManager = hkOwner->getHkManagerHandle();
+    OwnsLocalDataPoolIF* hkOwner = objectManager->get<OwnsLocalDataPoolIF>(
+            ownerId);
+    if(hkOwner == nullptr) {
+        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
+                << std::endl;
+    }
+    hkManager = hkOwner->getHkManagerHandle();
 }
 
 LocalDataSet::~LocalDataSet() {
@@ -27,9 +30,50 @@ ReturnValue_t LocalDataSet::lockDataPool(uint32_t timeoutMs) {
 	return mutex->lockMutex(timeoutMs);
 }
 
+ReturnValue_t LocalDataSet::serializeWithValidityBuffer(uint8_t **buffer,
+        size_t *size, const size_t maxSize, bool bigEndian) const {
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+    uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
+    uint8_t validityMask[validityMaskSize];
+    uint8_t validBufferIndex = 0;
+    uint8_t validBufferIndexBit = 0;
+    for (uint16_t count = 0; count < fillCount; count++) {
+        if(registeredVariables[count]->isValid()) {
+            // set validity buffer here.
+            this->bitSetter(validityMask + validBufferIndex,
+                    validBufferIndexBit, true);
+            if(validBufferIndexBit == 7) {
+                validBufferIndex ++;
+                validBufferIndexBit = 0;
+            }
+            else {
+                validBufferIndexBit ++;
+            }
+        }
+        result = registeredVariables[count]->serialize(buffer, size, maxSize,
+                bigEndian);
+        if (result != HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
+    }
+    // copy validity buffer to end
+    std::memcpy(*buffer, validityMask, validityMaskSize);
+    *size += validityMaskSize;
+    return result;
+}
+
 ReturnValue_t LocalDataSet::unlockDataPool() {
 	MutexIF* mutex = hkManager->getMutexHandle();
 	return mutex->unlockMutex();
 }
 
+void LocalDataSet::bitSetter(uint8_t* byte, uint8_t position,
+        bool value) const {
+    if(position > 7) {
+        sif::debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
+        return;
+    }
+    uint8_t shiftNumber = position + (7 - 2 * position);
+    *byte |= 1UL << shiftNumber;
+}
 

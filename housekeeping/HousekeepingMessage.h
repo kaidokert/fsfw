@@ -96,6 +96,7 @@ public:
 
 	void setParameter(uint32_t parameter);
 	uint32_t getParameter() const;
+	sid_t getSid() const;
 
 	void setHkReportMessage(sid_t sid, store_address_t storeId);
 	void setHkDiagnosticsMessage(sid_t sid, store_address_t storeId);
@@ -106,7 +107,7 @@ public:
 	virtual size_t getMinimumMessageSize() const override;
 	virtual void clear() override;
 private:
-	sid_t getSid() const;
+
 	void setSid(sid_t sid);
 
 	virtual uint8_t* getData() override;

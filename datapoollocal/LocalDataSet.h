@@ -55,6 +55,20 @@ public:
 	 */
 	~LocalDataSet();
 
+	/**
+	 * Special version of the serilization function which appends a
+	 * validity buffer at the end. Each bit of this validity buffer
+	 * denotes whether the container data set entries are valid from left
+	 * to right, MSB first.
+	 * @param buffer
+	 * @param size
+	 * @param maxSize
+	 * @param bigEndian
+	 * @param withValidityBuffer
+	 * @return
+	 */
+	ReturnValue_t serializeWithValidityBuffer(uint8_t** buffer,
+	        size_t* size, const size_t maxSize, bool bigEndian) const ;
 protected:
 private:
 	/**
@@ -79,6 +93,16 @@ private:
 	ReturnValue_t unlockDataPool() override;
 
 	LocalDataPoolManager* hkManager;
+
+	/**
+	 * Sets the bit at the bit-position of a byte provided by its address
+	 * to the specified value (zero or one).
+	 * @param byte Pointer to byte to bitset.
+	 * @param position MSB first, 0 to 7 possible.
+	 * @param value Value to set.
+	 * @return
+	 */
+	void bitSetter(uint8_t* byte, uint8_t position, bool value) const;
 };
 
 #endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_ */

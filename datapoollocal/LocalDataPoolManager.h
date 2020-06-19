@@ -13,6 +13,8 @@
 
 #include <map>
 
+class LocalDataSet;
+
 /**
  * @brief 	This class is the managing instance for local data pool.
  * @details
@@ -37,8 +39,16 @@ class LocalDataPoolManager {
 	friend class LocalPoolVector;
 	friend class LocalDataSet;
 public:
+	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
-	LocalDataPoolManager(OwnsLocalDataPoolIF* owner);
+    static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x0);
+    static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x1);
+
+    static constexpr ReturnValue_t QUEUE_NOT_SET = MAKE_RETURN_CODE(0x2);
+    //static constexpr ReturnValue_t SET_NOT_FOUND = MAKE_RETURN_CODE(0x3);
+
+	LocalDataPoolManager(OwnsLocalDataPoolIF* owner,
+	        uint32_t replyQueueDepth = 20, bool appendValidityBuffer = true);
 	virtual~ LocalDataPoolManager();
 
 	/* Copying forbidden */
@@ -57,10 +67,7 @@ public:
 	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
 	//! Set the queue for HK packets, which are sent unrequested.
-	void setHkPacketQueue(MessageQueueIF* msgQueue);
-	//! Set the queue for replies. This can be set manually or by the owner
-	//! class if the manager if message are relayed by it.
-	void setHkReplyQueue(MessageQueueIF* replyQueue);
+	void setHkPacketDestination(MessageQueueId_t destinationQueueId);
 
 	const OwnsLocalDataPoolIF* getOwner() const;
 
@@ -70,6 +77,10 @@ private:
 	//! This is the map holding the actual data. Should only be initialized
 	//! once !
 	bool mapInitialized = false;
+	//! This specifies whether a validity buffer is appended at the end
+	//! of generated housekeeping packets.
+	bool appendValidityBuffer = true;
+
 	LocalDataPool localDpMap;
 
 	//! Every housekeeping data manager has a mutex to protect access
@@ -79,13 +90,14 @@ private:
 	//! The class which actually owns the manager (and its datapool).
 	OwnsLocalDataPoolIF* owner = nullptr;
 
-	//! Used for replies.
-	//! (maybe we dont need this, the sender can be retrieved from command
-	//! message..)
-	MessageQueueIF* hkReplyQueue = nullptr;
-	//! Used for HK packets, which are generated without requests.
-	//! Maybe this will just be the TM funnel.
-	MessageQueueIF* hkPacketQueue = nullptr;
+	//! Queue used for communication, for example commands.
+	//! Is also used to send messages.
+	MessageQueueIF* hkQueue = nullptr;
+
+	//! HK replies will always be a reply to the commander, but HK packet
+	//! can be sent to another destination by specifying this message queue
+	//! ID, for example to a dedicated housekeeping service implementation.
+	MessageQueueId_t currentHkPacketDestination = MessageQueueIF::NO_QUEUE;
 
 	//! Global IPC store is used to store all packets.
 	StorageManagerIF* ipcStore = nullptr;
@@ -113,6 +125,8 @@ private:
 			PoolEntry<T> **poolEntry);
 
 	void setMinimalSamplingFrequency(float frequencySeconds);
+	ReturnValue_t serializeHkPacketIntoStore(store_address_t* storeId,
+	        LocalDataSet* dataSet);
 };
 
 
@@ -123,14 +137,14 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 	if (poolIter == localDpMap.end()) {
 		sif::debug << "HousekeepingManager::fechPoolEntry:"
 				" Pool entry not found." << std::endl;
-		return OwnsLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
+		return POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
 		sif::debug << "HousekeepingManager::fetchPoolEntry:"
 				" Pool entry not found." << std::endl;
-		return OwnsLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
+		return POOL_ENTRY_TYPE_CONFLICT;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
