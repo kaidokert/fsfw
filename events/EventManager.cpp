@@ -133,20 +133,23 @@ void EventManager::printEvent(EventMessage* message) {
 		break;
 	default:
 		string = translateObject(message->getReporter());
-		sif::error << "EventManager: ";
+		sif::debug << "EventManager: ";
 		if (string != 0) {
-			sif::error << string;
-		} else {
-			sif::error << "0x" << std::hex << message->getReporter() << std::dec;
+			sif::debug << string;
 		}
-		sif::error << " reported " << translateEvents(message->getEvent()) << " ("
-				<< std::dec << message->getEventId() << ") " << std::endl;
+		else {
+			sif::debug << "0x" << std::hex << message->getReporter() << std::dec;
+		}
+		sif::debug << " reported " << translateEvents(message->getEvent())
+				<< " (" << std::dec << message->getEventId() << ") "
+				<< std::endl;
 
-		sif::error << std::hex << "P1 Hex: 0x" << message->getParameter1() << ", P1 Dec: "
-		        << std::dec << message->getParameter1() << std::endl;
-		sif::error << std::hex << "P2 Hex: 0x" << message->getParameter2() << ", P2 Dec: "
-		        <<  std::dec << message->getParameter2() << std::endl;
-
+		sif::debug << std::hex << "P1 Hex: 0x" << message->getParameter1()
+				<< ", P1 Dec: " << std::dec << message->getParameter1()
+				<< std::endl;
+		sif::debug << std::hex << "P2 Hex: 0x" << message->getParameter2()
+				<< ", P2 Dec: " <<  std::dec << message->getParameter2()
+				<< std::endl;
 		break;
 	}
 
