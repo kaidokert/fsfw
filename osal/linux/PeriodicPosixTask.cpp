@@ -1,12 +1,13 @@
 #include <framework/tasks/ExecutableObjectIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <errno.h>
 #include <framework/osal/linux/PeriodicPosixTask.h>
+
+#include <errno.h>
 
 PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_,
 		size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):
-		PosixThread(name_,priority_,stackSize_),objectList(),started(false),
-		periodMs(period_),deadlineMissedFunc(deadlineMissedFunc_) {
+		PosixThread(name_, priority_, stackSize_), objectList(), started(false),
+		periodMs(period_), deadlineMissedFunc(deadlineMissedFunc_) {
 }
 
 PeriodicPosixTask::~PeriodicPosixTask() {
