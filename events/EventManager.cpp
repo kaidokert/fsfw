@@ -133,7 +133,7 @@ void EventManager::printEvent(EventMessage* message) {
 		break;
 	default:
 		string = translateObject(message->getReporter());
-		sif::error << "EVENT: ";
+		sif::error << "EventManager: ";
 		if (string != 0) {
 			sif::error << string;
 		} else {
