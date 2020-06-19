@@ -1,5 +1,6 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include "FixedTimeslotTask.h"
+
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;
@@ -18,16 +19,19 @@ FixedTimeslotTask::~FixedTimeslotTask() {
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
 
-	//The argument is re-interpreted as FixedTimeslotTask. The Task object is global, so it is found from any place.
+	// The argument is re-interpreted as FixedTimeslotTask. The Task object is
+    // global, so it is found from any place.
 	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
-	// Task should not start until explicitly requested
-	// in FreeRTOS, tasks start as soon as they are created if the scheduler is running
-	// but not if the scheduler is not running.
-	// to be able to accommodate both cases we check a member which is set in #startTask()
-	// if it is not set and we get here, the scheduler was started before #startTask() was called and we need to suspend
-	// if it is set, the scheduler was not running before #startTask() was called and we can continue
+	/* Task should not start until explicitly requested,
+	 * but in FreeRTOS, tasks start as soon as they are created if the scheduler
+	 * is running but not if the scheduler is not running.
+	 * To be able to accommodate both cases we check a member which is set in
+	 * #startTask(). If it is not set and we get here, the scheduler was started
+	 * before #startTask() was called and we need to suspend if it is set,
+	 * the scheduler was not running before #startTask() was called and we
+	 * can continue */
 
-	if (!originalTask->started) {
+	if (not originalTask->started) {
 		vTaskSuspend(NULL);
 	}
 
@@ -58,11 +62,6 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
 	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
-		if(slotTimeMs == 0) {
-			// FreeRTOS throws a sanity error for zero values, so we set
-			// the time to one millisecond.
-			slotTimeMs = 1;
-		}
 		pst.addSlot(componentId, slotTimeMs, executionStep, this);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
@@ -81,7 +80,8 @@ ReturnValue_t FixedTimeslotTask::checkSequence() const {
 }
 
 void FixedTimeslotTask::taskFunctionality() {
-	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
+	// A local iterator for the Polling Sequence Table is created to find the
+    // start time for the first entry.
 	SlotListIter slotListIter = pst.current;
 
 	//The start time for the first entry is read.
@@ -96,22 +96,37 @@ void FixedTimeslotTask::taskFunctionality() {
 	xLastWakeTime = xTaskGetTickCount();
 
 	// wait for first entry's start time
-	vTaskDelayUntil(&xLastWakeTime, interval);
+	if(interval > 0) {
+	    vTaskDelayUntil(&xLastWakeTime, interval);
+	}
 
 	/* Enter the loop that defines the task behavior. */
 	for (;;) {
 		//The component for this slot is executed and the next one is chosen.
-		this->pst.executeAndAdvance();
-		if (pst.slotFollowsImmediately()) {
-			//Do nothing
-		} else {
-			// we need to wait before executing the current slot
-			//this gives us the time to wait:
-			intervalMs = this->pst.getIntervalToPreviousSlotMs();
-			interval = pdMS_TO_TICKS(intervalMs);
-			vTaskDelayUntil(&xLastWakeTime, interval);
-			//TODO deadline missed check
-		}
+	    this->pst.executeAndAdvance();
+	    if (not pst.slotFollowsImmediately()) {
+	        /* If all operations are finished and the difference of the
+	         * current time minus the last wake time is larger than the
+	         * expected wait period, a deadline was missed. */
+	        if(xTaskGetTickCount() - xLastWakeTime >=
+	                pdMS_TO_TICKS(this->pst.getIntervalToPreviousSlotMs())) {
+#ifdef DEBUG
+	            sif::warning << "FixedTimeslotTask: " << pcTaskGetName(NULL) <<
+	                    " missed deadline!\n" << std::flush;
+#endif
+	            if(deadlineMissedFunc != nullptr) {
+	                this->deadlineMissedFunc();
+	            }
+	            // Continue immediately, no need to wait.
+	            break;
+	        }
+
+	        // we need to wait before executing the current slot
+	        //this gives us the time to wait:
+	        intervalMs = this->pst.getIntervalToPreviousSlotMs();
+	        interval = pdMS_TO_TICKS(intervalMs);
+	        vTaskDelayUntil(&xLastWakeTime, interval);
+	    }
 	}
 }
 
@@ -119,3 +134,4 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 	vTaskDelay(pdMS_TO_TICKS(ms));
 	return HasReturnvaluesIF::RETURN_OK;
 }
+

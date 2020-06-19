@@ -1,12 +1,13 @@
 #include <framework/tasks/ExecutableObjectIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <errno.h>
 #include <framework/osal/linux/PeriodicPosixTask.h>
+
+#include <errno.h>
 
 PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_,
 		size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):
-		PosixThread(name_,priority_,stackSize_),objectList(),started(false),
-		periodMs(period_),deadlineMissedFunc(deadlineMissedFunc_) {
+		PosixThread(name_, priority_, stackSize_), objectList(), started(false),
+		periodMs(period_), deadlineMissedFunc(deadlineMissedFunc_) {
 }
 
 PeriodicPosixTask::~PeriodicPosixTask() {
@@ -21,11 +22,17 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
 	return NULL;
 }
 
-ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
+ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object,
+		bool setTaskIF) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
-	if (newObject == NULL) {
+	if (newObject == nullptr) {
+	    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
+	            "it implements ExecutableObjectIF" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	if(setTaskIF) {
+	    newObject->setTaskIF(this);
 	}
 	objectList.push_back(newObject);
 	return HasReturnvaluesIF::RETURN_OK;

@@ -1,10 +1,15 @@
 #include <framework/container/SimpleRingBuffer.h>
-#include <string.h>
+#include <cstring>
 
-SimpleRingBuffer::SimpleRingBuffer(uint32_t size, bool overwriteOld) :
-		RingBufferBase<>(0, size, overwriteOld), buffer(NULL) {
+SimpleRingBuffer::SimpleRingBuffer(const size_t size, bool overwriteOld) :
+		RingBufferBase<>(0, size, overwriteOld) {
 	buffer = new uint8_t[size];
 }
+
+SimpleRingBuffer::SimpleRingBuffer(uint8_t *buffer, const size_t size,
+        bool overwriteOld):
+        RingBufferBase<>(0, size, overwriteOld), buffer(buffer) {}
+
 
 SimpleRingBuffer::~SimpleRingBuffer() {
 	delete[] buffer;
@@ -66,3 +71,4 @@ ReturnValue_t SimpleRingBuffer::deleteData(uint32_t amount,
 	incrementRead(amount, READ_PTR);
 	return HasReturnvaluesIF::RETURN_OK;
 }
+

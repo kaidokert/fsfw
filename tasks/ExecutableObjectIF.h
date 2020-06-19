@@ -37,8 +37,10 @@ public:
 
 	/**
 	 * @brief Function called during setup assignment of object to task
-	 * @details Has to be called from the function that assigns the object to a task and
-	 * 			enables the object implementation to overwrite this function and get a reference to the executing task
+	 * @details
+	 * Has to be called from the function that assigns the object to a task and
+	 * enables the object implementation to overwrite this function and get
+	 * a reference to the executing task
 	 * @param task_ Pointer to the taskIF of this task
 	 */
 	virtual void setTaskIF(PeriodicTaskIF* task_) {

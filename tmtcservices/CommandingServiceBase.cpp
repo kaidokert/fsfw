@@ -412,5 +412,6 @@ void CommandingServiceBase::checkTimeout() {
 	}
 }
 
-
-
+void CommandingServiceBase::setTaskIF(PeriodicTaskIF* task_) {
+    executingTask = task_;
+}

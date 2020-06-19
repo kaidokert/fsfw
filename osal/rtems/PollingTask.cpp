@@ -1,4 +1,4 @@
-#include <framework/devicehandlers/FixedSequenceSlot.h>
+#include <framework/tasks/FixedSequenceSlot.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/osal/rtems/PollingTask.h>
 #include <framework/osal/rtems/RtemsBasic.h>

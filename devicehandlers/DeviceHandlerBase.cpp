@@ -1350,7 +1350,7 @@ void DeviceHandlerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
 }
 
 void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
-			executingTask = task_;
+	executingTask = task_;
 }
 
 // Default implementations empty.
@@ -1360,13 +1360,26 @@ void DeviceHandlerBase::debugInterface(uint8_t positionTracker,
 void DeviceHandlerBase::performOperationHook() {
 }
 
-ReturnValue_t DeviceHandlerBase::initializeHousekeepingPoolEntries(
+ReturnValue_t DeviceHandlerBase::initializePoolEntries(
 		LocalDataPool &localDataPoolMap) {
 	return RETURN_OK;
 }
 
 LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
 	return &hkManager;
+}
+
+ReturnValue_t DeviceHandlerBase::addDataSet(sid_t sid) {
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t DeviceHandlerBase::removeDataSet(sid_t sid) {
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t DeviceHandlerBase::changeCollectionInterval(sid_t sid,
+        dur_seconds_t newInterval) {
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
