@@ -22,6 +22,7 @@ public:
 	/**
 	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
 	 * A lot of task parameters are set in "FreeRTOSConfig.h".
+	 * TODO: why does this need to be called before vTaskStartScheduler?
 	 * @details
 	 * The class is initialized without allocated objects.
 	 * These need to be added with #addComponent.

@@ -114,7 +114,7 @@ void FixedTimeslotTask::taskFunctionality() {
 	        if(xTaskGetTickCount() - xLastWakeTime >=
 	                pdMS_TO_TICKS(this->pst.getIntervalToPreviousSlotMs())) {
 #ifdef DEBUG
-	            sif::warning << "PeriodicTask: " << pcTaskGetName(NULL) <<
+	            sif::warning << "FixedTimeslotTask: " << pcTaskGetName(NULL) <<
 	                    " missed deadline!\n" << std::flush;
 #endif
 	            if(deadlineMissedFunc != nullptr) {
