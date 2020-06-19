@@ -2,7 +2,7 @@
 #define FRAMEWORK_OSAL_LINUX_FIXEDTIMESLOTTASK_H_
 
 #include <framework/tasks/FixedTimeslotTaskIF.h>
-#include <framework/devicehandlers/FixedSlotSequence.h>
+#include <framework/tasks/FixedSlotSequence.h>
 #include <framework/osal/linux/PosixThread.h>
 #include <pthread.h>
 
