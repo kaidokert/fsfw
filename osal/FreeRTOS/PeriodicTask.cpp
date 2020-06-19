@@ -70,9 +70,8 @@ void PeriodicTask::taskFunctionality() {
 	xLastWakeTime = xTaskGetTickCount();
 	/* Enter the loop that defines the task behavior. */
 	for (;;) {
-		for (ObjectList::iterator it = objectList.begin();
-				it != objectList.end(); ++it) {
-			(*it)->performOperation();
+		for (auto const& object: objectList) {
+			object->performOperation();
 		}
 
 		/* If all operations are finished and the difference of the
@@ -93,11 +92,16 @@ void PeriodicTask::taskFunctionality() {
 	}
 }
 
-ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
+ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
-	if (newObject == NULL) {
+	if (newObject == nullptr) {
+	    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
+	            "it implement ExecutableObjectIF" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	if(setTaskIF) {
+	    newObject->setTaskIF(this);
 	}
 	objectList.push_back(newObject);
 	return HasReturnvaluesIF::RETURN_OK;

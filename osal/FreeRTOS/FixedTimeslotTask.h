@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 
-#include <framework/devicehandlers/FixedSlotSequence.h>
+#include <framework/tasks/FixedSlotSequence.h>
 #include <framework/tasks/FixedTimeslotTaskIF.h>
 #include <framework/tasks/Typedef.h>
 
@@ -49,13 +49,13 @@ public:
 	static uint32_t deadlineMissedCount;
 
 	ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
-			int8_t executionStep);
+			int8_t executionStep) override;
 
-	uint32_t getPeriodMs() const;
+	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t checkSequence() const;
+	ReturnValue_t checkSequence() const override;
 
-	ReturnValue_t sleepFor(uint32_t ms);
+	ReturnValue_t sleepFor(uint32_t ms) override;
 
 protected:
 	bool started;

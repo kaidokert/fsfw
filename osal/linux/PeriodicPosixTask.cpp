@@ -24,8 +24,13 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
 ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
-	if (newObject == NULL) {
+	if (newObject == nullptr) {
+	    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
+	            "it implements ExecutableObjectIF" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	if(setTaskIF) {
+	    newObject->setTaskIF(this);
 	}
 	objectList.push_back(newObject);
 	return HasReturnvaluesIF::RETURN_OK;

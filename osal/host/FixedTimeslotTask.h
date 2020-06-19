@@ -2,7 +2,7 @@
 #define FRAMEWORK_OSAL_HOST_FIXEDTIMESLOTTASK_H_
 
 #include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/devicehandlers/FixedSlotSequence.h>
+#include <framework/tasks/FixedSlotSequence.h>
 #include <framework/tasks/FixedTimeslotTaskIF.h>
 #include <framework/tasks/Typedef.h>
 

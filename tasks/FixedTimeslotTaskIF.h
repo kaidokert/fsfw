@@ -12,11 +12,18 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
 public:
 	virtual ~FixedTimeslotTaskIF() {}
 
+	/**
+	 * Add an object with a slot time and the execution step to the task.
+	 * The execution step shall be passed to the object.
+	 * @param componentId
+	 * @param slotTimeMs
+	 * @param executionStep
+	 * @return
+	 */
 	virtual ReturnValue_t addSlot(object_id_t componentId,
 			uint32_t slotTimeMs, int8_t executionStep) = 0;
+	/** Check whether the sequence is valid */
 	virtual ReturnValue_t checkSequence() const = 0;
 };
-
-
 
 #endif /* FRAMEWORK_TASKS_FIXEDTIMESLOTTASKIF_H_ */

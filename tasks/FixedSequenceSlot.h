@@ -1,22 +1,17 @@
-/**
- * @file	FixedSequenceSlot.h
- * @brief	This file defines the PollingSlot class.
- * @date	19.12.2012
- * @author	baetz
- */
-
-#ifndef FIXEDSEQUENCESLOT_H_
-#define FIXEDSEQUENCESLOT_H_
+#ifndef FRAMEWORK_TASKS_FIXEDSEQUENCESLOT_H_
+#define FRAMEWORK_TASKS_FIXEDSEQUENCESLOT_H_
 
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/tasks/ExecutableObjectIF.h>
 class PeriodicTaskIF;
 
 /**
- * @brief	This class is the representation of a single polling sequence table entry.
- *
- * @details	The PollingSlot class is the representation of a single polling
- * 			sequence table entry.
+ * @brief	This class is the representation of a single polling sequence
+ *          table entry.
+ * @details
+ * The PollingSlot class is the representation of a single polling
+ * sequence table entry.
+ * @author  baetz
  */
 class FixedSequenceSlot {
 public:
@@ -27,7 +22,7 @@ public:
 	/**
 	 * @brief	Handler identifies which device handler object is executed in this slot.
 	 */
-	ExecutableObjectIF*	handler;
+	ExecutableObjectIF*	handler = nullptr;
 
 	/**
 	 * @brief	This attribute defines when a device handler object is executed.
@@ -43,7 +38,7 @@ public:
 	 * @details	The state of this value decides what communication routine is
 	 * 			called in the PST executable or the device handler object.
 	 */
-	uint8_t			opcode;
+	uint8_t	opcode;
 
 	/**
 	 * @brief 	Operator overload for the comparison operator to
