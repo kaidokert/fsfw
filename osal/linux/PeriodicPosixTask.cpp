@@ -22,7 +22,8 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
 	return NULL;
 }
 
-ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
+ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object,
+		bool setTaskIF) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
