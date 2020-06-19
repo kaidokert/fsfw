@@ -1,5 +1,5 @@
-# This file needs FRAMEWORK_PATH and API set correctly
-# Valid API settings: rtems, linux, freeRTOS
+# This file needs FRAMEWORK_PATH and OS_FSFW set correctly by another Makefile.
+# Valid API settings: rtems, linux, freeRTOS, host
 
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/action/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/container/*.cpp)
@@ -8,11 +8,13 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/controller/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/coordinates/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/datalinklayer/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/datapool/*.cpp)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/datapoolglob/*.cpp)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/datapoollocal/*.cpp)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/housekeeping/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/devicehandlers/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/events/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/events/eventmatching/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/fdir/*.cpp)
-CXXSRC += $(wildcard $(FRAMEWORK_PATH)/framework.mk/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/globalfunctions/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/globalfunctions/matching/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/globalfunctions/math/*.cpp)
@@ -26,14 +28,16 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/objectmanager/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/*.cpp)
 
 # select the OS
-ifeq ($(OS),rtems)
+ifeq ($(OS_FSFW),rtems)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/rtems/*.cpp)
-else ifeq ($(OS),linux)
+else ifeq ($(OS_FSFW),linux)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/linux/*.cpp)
-else ifeq ($(OS),freeRTOS)
+else ifeq ($(OS_FSFW),freeRTOS)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/FreeRTOS/*.cpp)
+else ifeq ($(OS_FSFW),host)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/host/*.cpp)
 else
-$(error invalid OS specified, valid OS are rtems, linux, freeRTOS)
+$(error invalid OS specified, valid OS are rtems, linux, freeRTOS, host)
 endif
 
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/parameters/*.cpp)
@@ -54,3 +58,4 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/packetmatcher/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/pus/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcservices/*.cpp)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/test/*.cpp)
