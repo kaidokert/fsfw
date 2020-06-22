@@ -90,9 +90,9 @@ void FixedTimeslotTask::taskFunctionality() {
 
 	TickType_t xLastWakeTime;
 	/* The xLastWakeTime variable needs to be initialized with the current tick
-	 count. Note that this is the only time the variable is written to explicitly.
-	 After this assignment, xLastWakeTime is updated automatically internally within
-	 vTaskDelayUntil(). */
+	 count. Note that this is the only time the variable is written to
+	 explicitly. After this assignment, xLastWakeTime is updated automatically
+	 internally within vTaskDelayUntil(). */
 	xLastWakeTime = xTaskGetTickCount();
 
 	// wait for first entry's start time
