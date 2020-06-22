@@ -204,6 +204,7 @@ private:
 	QueueHandle_t handle;
 	MessageQueueId_t defaultDestination = 0;
 	MessageQueueId_t lastPartner = 0;
+	const size_t maxMessageSize;
 	//!< Stores the current system context
 	CallContext callContext =  CallContext::TASK;
 };
