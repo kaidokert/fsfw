@@ -12,7 +12,7 @@ class FixedTimeslotTask: public FixedTimeslotTaskIF {
 public:
 
 	/**
-	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
+	 * Keep in mind that you need to call before vTaskStartScheduler()!
 	 * A lot of task parameters are set in "FreeRTOSConfig.h".
 	 * @param name Name of the task, lenght limited by configMAX_TASK_NAME_LEN
 	 * @param setPriority Number of priorities specified by
@@ -49,13 +49,13 @@ public:
 	static uint32_t deadlineMissedCount;
 
 	ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
-			int8_t executionStep);
+			int8_t executionStep) override;
 
-	uint32_t getPeriodMs() const;
+	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t checkSequence() const;
+	ReturnValue_t checkSequence() const override;
 
-	ReturnValue_t sleepFor(uint32_t ms);
+	ReturnValue_t sleepFor(uint32_t ms) override;
 
 protected:
 	bool started;
