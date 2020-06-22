@@ -111,8 +111,15 @@ void FixedTimeslotTask::taskFunctionality() {
 
 	        /* If all operations are finished and the difference of the
 	         * current time minus the last wake time is larger than the
-	         * expected wait period, a deadline was missed. */
-	        if(xTaskGetTickCount() - xLastWakeTime >= interval) {
+	         * expected wait period, a deadline was missed.
+	         * We also check whether an overflow has occured first.
+	         * In this special case, we will ignore missed deadlines for now. */
+	        const TickType_t constTickCount = xTaskGetTickCount();
+	        if(constTickCount < xLastWakeTime or
+	                constTickCount + interval < xLastWakeTime) {
+	            // don't do anything for now.
+	        }
+	        else if(xTaskGetTickCount() - xLastWakeTime >= interval) {
 #ifdef DEBUG
 	            sif::warning << "FixedTimeslotTask: " << pcTaskGetName(NULL) <<
 	                    " missed deadline!\n" << std::flush;
