@@ -89,6 +89,10 @@ protected:
 	 * OS's System Calls to keep the timing of the periods.
 	 */
 	void taskFunctionality(void);
+
+	void checkMissedDeadline(const TickType_t xLastWakeTime,
+	        const TickType_t interval);
+	void handleMissedDeadline();
 };
 
 #endif /* POLLINGTASK_H_ */
