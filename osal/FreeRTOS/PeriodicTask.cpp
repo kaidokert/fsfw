@@ -89,10 +89,11 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
 	            "it implement ExecutableObjectIF" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	if(setTaskIF) {
-	    newObject->setTaskIF(this);
-	}
 	objectList.push_back(newObject);
+
+	if(setTaskIF) {
+	     newObject->setTaskIF(this);
+	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
