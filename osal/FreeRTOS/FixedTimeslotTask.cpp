@@ -105,11 +105,14 @@ void FixedTimeslotTask::taskFunctionality() {
 		//The component for this slot is executed and the next one is chosen.
 	    this->pst.executeAndAdvance();
 	    if (not pst.slotFollowsImmediately()) {
+	        // Get the interval till execution of the next slot.
+	        intervalMs = this->pst.getIntervalToPreviousSlotMs();
+	        interval = pdMS_TO_TICKS(intervalMs);
+
 	        /* If all operations are finished and the difference of the
 	         * current time minus the last wake time is larger than the
 	         * expected wait period, a deadline was missed. */
-	        if(xTaskGetTickCount() - xLastWakeTime >=
-	                pdMS_TO_TICKS(this->pst.getIntervalToPreviousSlotMs())) {
+	        if(xTaskGetTickCount() - xLastWakeTime >= interval) {
 #ifdef DEBUG
 	            sif::warning << "FixedTimeslotTask: " << pcTaskGetName(NULL) <<
 	                    " missed deadline!\n" << std::flush;
@@ -117,14 +120,9 @@ void FixedTimeslotTask::taskFunctionality() {
 	            if(deadlineMissedFunc != nullptr) {
 	                this->deadlineMissedFunc();
 	            }
-	            // Continue immediately, no need to wait.
-	            continue;
 	        }
-
-	        // we need to wait before executing the current slot
-	        //this gives us the time to wait:
-	        intervalMs = this->pst.getIntervalToPreviousSlotMs();
-	        interval = pdMS_TO_TICKS(intervalMs);
+	        // Wait for the interval. This exits immediately if a deadline was
+	        // missed while also updating the last wake time.
 	        vTaskDelayUntil(&xLastWakeTime, interval);
 	    }
 	}

@@ -28,7 +28,8 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			ModeMessage::cantReachMode(&reply, result);
 			MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
-					owner->getCommandQueue());
+			        MessageQueueMessage::MAX_MESSAGE_SIZE,
+			        owner->getCommandQueue());
 			break;
 		}
 		//Free to start transition
@@ -50,7 +51,8 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_REPLY, mode,
 				submode);
 		MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
-				owner->getCommandQueue());
+		        MessageQueueMessage::MAX_MESSAGE_SIZE,
+		       owner->getCommandQueue());
 	}
 		break;
 	case ModeMessage::CMD_MODE_ANNOUNCE:
@@ -95,7 +97,7 @@ void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 					ownerMode, ownerSubmode);
 		}
 		MessageQueueSenderIF::sendMessage(theOneWhoCommandedAMode, &reply,
-				owner->getCommandQueue());
+		        MessageQueueMessage::MAX_MESSAGE_SIZE, owner->getCommandQueue());
 	}
 }
 
@@ -109,7 +111,8 @@ void ModeHelper::sendModeInfoMessage(Mode_t ownerMode,
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_INFO,
 				ownerMode, ownerSubmode);
 		MessageQueueSenderIF::sendMessage(parentQueueId, &reply,
-				owner->getCommandQueue());
+		        MessageQueueMessage::MAX_MESSAGE_SIZE,
+		        owner->getCommandQueue());
 	}
 }
 

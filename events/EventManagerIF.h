@@ -44,7 +44,8 @@ public:
 				eventmanagerQueue = eventmanager->getEventReportQueue();
 			}
 		}
-		MessageQueueSenderIF::sendMessage(eventmanagerQueue, message, sentFrom);
+		MessageQueueSenderIF::sendMessage(eventmanagerQueue, message,
+		        MessageQueueMessage::MAX_MESSAGE_SIZE, sentFrom);
 	}
 
 };

@@ -117,7 +117,8 @@ ReturnValue_t TmPacketStored::sendPacket(MessageQueueId_t destination,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	TmTcMessage tmMessage(getStoreAddress());
-	ReturnValue_t result = MessageQueueSenderIF::sendMessage(destination, &tmMessage, sentFrom);
+	ReturnValue_t result = MessageQueueSenderIF::sendMessage(destination,
+	        &tmMessage, MessageQueueMessage::MAX_MESSAGE_SIZE, sentFrom);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		deletePacket();
 		if (doErrorReporting) {
