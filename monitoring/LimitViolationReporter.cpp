@@ -34,7 +34,8 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 	MessageQueueMessage message;
 	CommandMessage report(&message);
 	MonitoringMessage::setLimitViolationReport(&report, storeId);
-	return MessageQueueSenderIF::sendMessage(reportQueue, &report);
+	return MessageQueueSenderIF::sendMessage(reportQueue, &report,
+	        MessageQueueMessage::MAX_MESSAGE_SIZE);
 }
 
 ReturnValue_t LimitViolationReporter::checkClassLoaded() {

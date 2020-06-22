@@ -50,7 +50,7 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo, message, sentFrom,
+	return sendMessageFromMessageQueue(sendTo, message, maxMessageSize, sentFrom,
 			ignoreFault, callContext);
 }
 
@@ -121,11 +121,11 @@ bool MessageQueue::isDefaultDestinationSet() const {
 
 // static core function to send messages.
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-        MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
-        bool ignoreFault, CallContext callContext) {
+        MessageQueueMessageIF* message, size_t maxSize,
+        MessageQueueId_t sentFrom, bool ignoreFault, CallContext callContext) {
     message->setSender(sentFrom);
     BaseType_t result;
-    if(message->getMaximumMessageSize() > maxMessageSize) {
+    if(message->getMaximumMessageSize() > maxSize) {
     	sif::error << "MessageQueue::sendMessageFromMessageQueue: Message size"
     			"too large for queue!" << std::endl;
     	return HasReturnvaluesIF::RETURN_FAILED;

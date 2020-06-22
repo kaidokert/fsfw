@@ -15,7 +15,7 @@ public:
 	 * Must be implemented by a subclass.
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessageIF* message,
+			MessageQueueMessageIF* message, size_t maxMessageSize,
 			MessageQueueId_t sentFrom = MessageQueueMessageIF::NO_QUEUE,
 			bool ignoreFault=false);
 private:
