@@ -149,7 +149,8 @@ protected:
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
 	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-			MessageQueueMessageIF* message, MessageQueueId_t sentFrom = NO_QUEUE,
+			MessageQueueMessageIF* message, size_t maxSize,
+			MessageQueueId_t sentFrom = NO_QUEUE,
 			bool ignoreFault=false);
 private:
 	/**
@@ -176,9 +177,10 @@ private:
 	/**
 	 * The name of the message queue, stored for unlinking
 	 */
-	char name[5];
+	char name[16];
 
 	static uint16_t queueCounter;
+	const size_t maxMessageSize;
 
 	ReturnValue_t handleError(mq_attr* attributes, uint32_t messageDepth);
 };

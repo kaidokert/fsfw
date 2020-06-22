@@ -9,10 +9,10 @@ QueueFactory* QueueFactory::factoryInstance = nullptr;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
-			bool ignoreFault) {
+			MessageQueueMessageIF* message, size_t maxSize,
+			MessageQueueId_t sentFrom, bool ignoreFault) {
 	return MessageQueue::sendMessageFromMessageQueue(sendTo,message,
-			sentFrom,ignoreFault);
+			maxSize, sentFrom,ignoreFault);
 }
 
 QueueFactory* QueueFactory::instance() {

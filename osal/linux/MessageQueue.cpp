@@ -11,7 +11,8 @@
 
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
 		id(MessageQueueIF::NO_QUEUE),lastPartner(MessageQueueIF::NO_QUEUE),
-		defaultDestination(MessageQueueIF::NO_QUEUE) {
+		defaultDestination(MessageQueueIF::NO_QUEUE),
+		maxMessageSize(maxMessageSize) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
 	this->id = 0;
@@ -142,6 +143,19 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 }
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
+	if(message == nullptr) {
+		sif::error << "MessageQueue::receiveMessage: Message is "
+				"nullptr!" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
+	if(message->getMaximumMessageSize() < maxMessageSize) {
+	        sif::error << "MessageQueue::receiveMessage: Message size "
+	                << message->getMaximumMessageSize() <<
+	                " too small to receive data!" << std::endl;
+	        return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	unsigned int messagePriority = 0;
 	int status = mq_receive(id,reinterpret_cast<char*>(message->getBuffer()),
 			message->getMaximumMessageSize(),&messagePriority);
@@ -258,16 +272,18 @@ void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
 	this->defaultDestination = defaultDestination;
 }
 
-ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
-		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
-		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault);
-
-}
-
 ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 		MessageQueueId_t sentFrom, bool ignoreFault) {
 	return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
+}
+
+
+ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
+		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
+		bool ignoreFault) {
+	return sendMessageFromMessageQueue(sendTo,message, maxMessageSize,
+			sentFrom,ignoreFault);
+
 }
 
 MessageQueueId_t MessageQueue::getDefaultDestination() const {
@@ -281,8 +297,22 @@ bool MessageQueue::isDefaultDestinationSet() const {
 uint16_t MessageQueue::queueCounter = 0;
 
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-		MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
-		bool ignoreFault) {
+		MessageQueueMessageIF *message, size_t maxSize,
+		MessageQueueId_t sentFrom, bool ignoreFault) {
+	if(message == nullptr) {
+		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
+				"nullptr!" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
+	if(message->getMaximumMessageSize() > maxSize) {
+		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message size "
+				<< message->getMaximumMessageSize() << " too large for queue"
+				" with max. message size " << maxSize << "!"
+				<< std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	message->setSender(sentFrom);
 	int result = mq_send(sendTo,
 			reinterpret_cast<const char*>(message->getBuffer()),
