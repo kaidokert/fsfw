@@ -70,39 +70,67 @@ void PeriodicTask::taskFunctionality() {
 	xLastWakeTime = xTaskGetTickCount();
 	/* Enter the loop that defines the task behavior. */
 	for (;;) {
-		for (ObjectList::iterator it = objectList.begin();
-				it != objectList.end(); ++it) {
-			(*it)->performOperation();
+		for (auto const& object: objectList) {
+			object->performOperation();
 		}
 
-		/* If all operations are finished and the difference of the
-		 * current time minus the last wake time is larger than the
-		 * wait period, a deadline was missed. */
-		if(xTaskGetTickCount() - xLastWakeTime >= xPeriod) {
-#ifdef DEBUG
-			sif::warning << "PeriodicTask: " << pcTaskGetName(NULL) <<
-					" missed deadline!\n" << std::flush;
-#endif
-			if(deadlineMissedFunc != nullptr) {
-				this->deadlineMissedFunc();
-			}
-		}
+		checkMissedDeadline(xLastWakeTime, xPeriod);
 
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
 	}
 }
 
-ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
+ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
-	if (newObject == NULL) {
+	if (newObject == nullptr) {
+	    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
+	            "it implement ExecutableObjectIF" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+
+	if(setTaskIF) {
+	     newObject->setTaskIF(this);
+	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 uint32_t PeriodicTask::getPeriodMs() const {
 	return period * 1000;
+}
+
+void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
+        const TickType_t interval) {
+    /* Check whether deadline was missed while also taking overflows
+     * into account. Drawing this on paper with a timeline helps to understand
+     * it. */
+    TickType_t currentTickCount = xTaskGetTickCount();
+    TickType_t timeToWake = xLastWakeTime + interval;
+    // Tick count has overflown
+    if(currentTickCount < xLastWakeTime) {
+        // Time to wake has overflown as well. If the tick count
+        // is larger than the time to wake, a deadline was missed.
+        if(timeToWake < xLastWakeTime and
+                currentTickCount > timeToWake) {
+            handleMissedDeadline();
+        }
+    }
+    // No tick count overflow. If the timeToWake has not overflown
+    // and the current tick count is larger than the time to wake,
+    // a deadline was missed.
+    else if(timeToWake > xLastWakeTime and currentTickCount > timeToWake) {
+        handleMissedDeadline();
+    }
+}
+
+void PeriodicTask::handleMissedDeadline() {
+#ifdef DEBUG
+    sif::warning << "PeriodicTask: " << pcTaskGetName(NULL) <<
+            " missed deadline!\n" << std::flush;
+#endif
+    if(deadlineMissedFunc != nullptr) {
+        this->deadlineMissedFunc();
+    }
 }

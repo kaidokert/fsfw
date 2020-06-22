@@ -26,11 +26,12 @@ public:
 	 * @param object Id of the object to add.
 	 * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
 	 */
-	ReturnValue_t addComponent(object_id_t object);
+	ReturnValue_t addComponent(object_id_t object,
+	        bool addTaskIF = true) override;
 
-	uint32_t getPeriodMs() const;
+	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t sleepFor(uint32_t ms);
+	ReturnValue_t sleepFor(uint32_t ms) override;
 
 private:
 	typedef std::vector<ExecutableObjectIF*> ObjectList;	//!< Typedef for the List of objects.
