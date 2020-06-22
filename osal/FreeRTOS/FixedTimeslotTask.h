@@ -12,7 +12,7 @@ class FixedTimeslotTask: public FixedTimeslotTaskIF {
 public:
 
 	/**
-	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
+	 * Keep in Mind that you need to call before vTaskStartScheduler()!
 	 * A lot of task parameters are set in "FreeRTOSConfig.h".
 	 * @param name Name of the task, lenght limited by configMAX_TASK_NAME_LEN
 	 * @param setPriority Number of priorities specified by
@@ -89,6 +89,10 @@ protected:
 	 * OS's System Calls to keep the timing of the periods.
 	 */
 	void taskFunctionality(void);
+
+	void checkMissedDeadline(const TickType_t xLastWakeTime,
+	        const TickType_t interval);
+	void handleMissedDeadline();
 };
 
 #endif /* POLLINGTASK_H_ */
