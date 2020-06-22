@@ -12,7 +12,7 @@ class FixedTimeslotTask: public FixedTimeslotTaskIF {
 public:
 
 	/**
-	 * Keep in Mind that you need to call before vTaskStartScheduler()!
+	 * Keep in mind that you need to call before vTaskStartScheduler()!
 	 * A lot of task parameters are set in "FreeRTOSConfig.h".
 	 * @param name Name of the task, lenght limited by configMAX_TASK_NAME_LEN
 	 * @param setPriority Number of priorities specified by
