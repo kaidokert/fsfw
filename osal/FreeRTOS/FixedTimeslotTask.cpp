@@ -118,7 +118,7 @@ void FixedTimeslotTask::taskFunctionality() {
 	                this->deadlineMissedFunc();
 	            }
 	            // Continue immediately, no need to wait.
-	            break;
+	            continue;
 	        }
 
 	        // we need to wait before executing the current slot
