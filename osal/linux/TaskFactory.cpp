@@ -13,12 +13,20 @@ TaskFactory* TaskFactory::instance() {
 	return TaskFactory::factoryInstance;
 }
 
-PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,TaskPriority taskPriority_,TaskStackSize stackSize_,TaskPeriod periodInSeconds_,TaskDeadlineMissedFunction deadLineMissedFunction_) {
-	return static_cast<PeriodicTaskIF*>(new PeriodicPosixTask(name_, taskPriority_,stackSize_,periodInSeconds_ * 1000,deadLineMissedFunction_));
+PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,
+		TaskPriority taskPriority_,TaskStackSize stackSize_,
+		TaskPeriod periodInSeconds_,
+		TaskDeadlineMissedFunction deadLineMissedFunction_) {
+	return new PeriodicPosixTask(name_, taskPriority_,stackSize_,
+			periodInSeconds_ * 1000, deadLineMissedFunction_);
 }
 
-FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,TaskPriority taskPriority_,TaskStackSize stackSize_,TaskPeriod periodInSeconds_,TaskDeadlineMissedFunction deadLineMissedFunction_) {
-	return static_cast<FixedTimeslotTaskIF*>(new FixedTimeslotTask(name_, taskPriority_,stackSize_,periodInSeconds_*1000));
+FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,
+		TaskPriority taskPriority_,TaskStackSize stackSize_,
+		TaskPeriod periodInSeconds_,
+		TaskDeadlineMissedFunction deadLineMissedFunction_) {
+	return new FixedTimeslotTask(name_, taskPriority_,stackSize_,
+			periodInSeconds_*1000);
 }
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
