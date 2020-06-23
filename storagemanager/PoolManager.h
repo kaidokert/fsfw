@@ -29,6 +29,9 @@ public:
 			store_address_t* storeId = nullptr) override;
 
 protected:
+	//! Default mutex timeout value to prevent permanent blocking.
+	static constexpr uint32_t mutexTimeout = 50;
+
 	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
 			bool ignoreFault) override;
 
