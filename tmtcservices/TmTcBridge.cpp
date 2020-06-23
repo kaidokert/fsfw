@@ -1,9 +1,9 @@
 #include <framework/tmtcservices/TmTcBridge.h>
 
 #include <framework/ipc/QueueFactory.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/globalfunctions/arrayprinter.h>
 
 TmTcBridge::TmTcBridge(object_id_t objectId_,
         object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
@@ -22,7 +22,7 @@ ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
 		return RETURN_OK;
 	}
 	else {
-	    warning << "TmTcBridge: Number of packets sent per cycle "
+	    sif::warning << "TmTcBridge: Number of packets sent per cycle "
 	               "exceeds limits. Keeping default value." << std::endl;
 		return RETURN_FAILED;
 	}
@@ -35,7 +35,7 @@ ReturnValue_t TmTcBridge::setMaxNumberOfPacketsStored(
         return RETURN_OK;
     }
     else {
-        warning << "TmTcBridge: Number of packets stored "
+        sif::warning << "TmTcBridge: Number of packets stored "
                    "exceeds limits. Keeping default value." << std::endl;
         return RETURN_FAILED;
     }
@@ -63,11 +63,11 @@ ReturnValue_t TmTcBridge::performOperation(uint8_t operationCode) {
 	ReturnValue_t result;
 	result = handleTc();
 	if(result != RETURN_OK) {
-		error << "TMTC Bridge: Error handling TCs" << std::endl;
+		sif::error << "TMTC Bridge: Error handling TCs" << std::endl;
 	}
 	result = handleTm();
 	if (result != RETURN_OK) {
-		error << "TMTC Bridge: Error handling TMs" << std::endl;
+		sif::error << "TMTC Bridge: Error handling TMs" << std::endl;
 	}
 	return result;
 }
@@ -82,11 +82,11 @@ ReturnValue_t TmTcBridge::handleTc() {
 ReturnValue_t TmTcBridge::handleTm() {
 	ReturnValue_t result = handleTmQueue();
 	if(result != RETURN_OK) {
-		error << "TMTC Bridge: Reading TM Queue failed" << std::endl;
+		sif::error << "TMTC Bridge: Reading TM Queue failed" << std::endl;
 		return RETURN_FAILED;
 	}
 
-	if(tmStored && communicationLinkUp) {
+	if(tmStored and communicationLinkUp) {
 		result = handleStoredTm();
 	}
 	return result;
@@ -96,7 +96,7 @@ ReturnValue_t TmTcBridge::handleTm() {
 ReturnValue_t TmTcBridge::handleTmQueue() {
 	TmTcMessage message;
 	const uint8_t* data = nullptr;
-	uint32_t size = 0;
+	size_t size = 0;
 	for (ReturnValue_t result = TmTcReceptionQueue->receiveMessage(&message);
 		 result == RETURN_OK; result = TmTcReceptionQueue->receiveMessage(&message))
 	{
@@ -112,7 +112,7 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 
 		result = sendTm(data, size);
 		if (result != RETURN_OK) {
-			error << "TMTC Bridge: Could not send TM packet"<< std::endl;
+			sif::error << "TMTC Bridge: Could not send TM packet"<< std::endl;
 			tmStore->deleteData(message.getStorageId());
 			return result;
 
@@ -127,14 +127,14 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	//		 "Saving packet ID to be sent later\r\n" << std::flush;
 	store_address_t storeId = 0;
 
-	if(fifo.full()) {
-		error << "TMTC Bridge: TM downlink max. number of stored packet IDs "
+	if(tmFifo.full()) {
+		sif::error << "TMTC Bridge: TM downlink max. number of stored packet IDs "
 				 "reached! Overwriting old data" << std::endl;
-		fifo.retrieve(&storeId);
+		tmFifo.retrieve(&storeId);
 		tmStore->deleteData(storeId);
 	}
 	storeId = message->getStorageId();
-	fifo.insert(storeId);
+	tmFifo.insert(storeId);
 	tmStored = true;
 	return RETURN_OK;
 }
@@ -142,25 +142,25 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 ReturnValue_t TmTcBridge::handleStoredTm() {
 	uint8_t counter = 0;
 	ReturnValue_t result = RETURN_OK;
-	while(not fifo.empty() && counter < sentPacketsPerCycle) {
+	while(not tmFifo.empty() and counter < sentPacketsPerCycle) {
 		//info << "TMTC Bridge: Sending stored TM data. There are "
 		//     << (int) fifo.size() << " left to send\r\n" << std::flush;
 		store_address_t storeId;
-		const uint8_t* data = NULL;
-		uint32_t size = 0;
-		fifo.retrieve(&storeId);
+		const uint8_t* data = nullptr;
+		size_t size = 0;
+		tmFifo.retrieve(&storeId);
 		result = tmStore->getData(storeId, &data, &size);
 
 		sendTm(data,size);
 
 		if(result != RETURN_OK) {
-			error << "TMTC Bridge: Could not send stored downlink data"
+			sif::error << "TMTC Bridge: Could not send stored downlink data"
 			      << std::endl;
 			result = RETURN_FAILED;
 		}
 		counter ++;
 
-		if(fifo.empty()) {
+		if(tmFifo.empty()) {
 			tmStored = false;
 		}
 		tmStore->deleteData(storeId);
@@ -187,14 +187,6 @@ MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
 }
 
 
-
 void TmTcBridge::printData(uint8_t * data, size_t dataLen) {
-	info << "TMTC Bridge: Printing data: [";
-	for(uint32_t i = 0; i < dataLen; i++) {
-		info << std::hex << (int)data[i];
-		if(i < dataLen-1){
-			info << " , ";
-		}
-	}
-	info << " ] " << std::endl;
+	arrayprinter::print(data, dataLen);
 }

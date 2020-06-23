@@ -25,8 +25,6 @@ public:
 	TmTcBridge(object_id_t objectId_, object_id_t ccsdsPacketDistributor_);
 	virtual ~TmTcBridge();
 
-	void setDelayBetweenSentPackets(uint32_t delayBetweenSentPackets);
-
 	/**
 	 * Set number of packets sent per performOperation().Please note that this
 	 * value must be smaller than MAX_STORED_DATA_SENT_PER_CYCLE
@@ -45,8 +43,8 @@ public:
 	 */
 	ReturnValue_t setMaxNumberOfPacketsStored(uint8_t maxNumberOfPacketsStored);
 
-	void registerCommConnect();
-	void registerCommDisconnect();
+	virtual void registerCommConnect();
+	virtual void registerCommDisconnect();
 
 	/**
 	 * Initializes necessary FSFW components for the TMTC Bridge
@@ -64,7 +62,8 @@ public:
 	 * @param virtualChannel
 	 * @return
 	 */
-	MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) override;
+	MessageQueueId_t getReportReceptionQueue(
+			uint8_t virtualChannel = 0) override;
 protected:
 	//! Used to send and receive TMTC messages.
 	//! TmTcMessage is used to transport messages between tasks.
@@ -75,7 +74,6 @@ protected:
 	//! Used to specify whether communication link is up
 	bool communicationLinkUp = false;
 	bool tmStored = false;
-	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> fifo;
 
 	/**
 	 * @brief 	Handle TC reception
@@ -141,9 +139,13 @@ protected:
 	 */
 	void printData(uint8_t * data, size_t dataLen);
 
-private:
-	uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
-	uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
+	/**
+	 * This fifo can be used to store downlink data
+	 * which can not be sent at the moment.
+	 */
+	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> tmFifo;
+    uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
+    uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
 };
 
 
