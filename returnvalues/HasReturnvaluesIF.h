@@ -15,6 +15,10 @@ public:
 	//! This will be the all-ones value irrespective of used unsigned datatype.
 	static const ReturnValue_t RETURN_FAILED = -1;
 	virtual ~HasReturnvaluesIF() {}
+
+	static ReturnValue_t makeReturnCode(uint8_t interfaceId, uint8_t number) {
+	    return (interfaceId << 8) + number;
+	}
 };
 
 #endif /* HASRETURNVALUESIF_H_ */
