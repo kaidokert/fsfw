@@ -146,8 +146,8 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 }
 
 void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
-		CommandMapIter iter, CommandMessageIF* nextCommand,
-		CommandMessageIF* reply, bool& isStep) {
+		CommandMapIter iter, CommandMessage* nextCommand,
+		CommandMessage* reply, bool& isStep) {
 	iter->command = nextCommand->getCommand();
 
 	// In case a new command is to be sent immediately, this is performed here.

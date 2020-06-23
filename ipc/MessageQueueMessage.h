@@ -23,7 +23,7 @@
  *	receive messages from other tasks.
  *	@ingroup message_queue
  */
-class MessageQueueMessage: virtual public MessageQueueMessageIF {
+class MessageQueueMessage: public MessageQueueMessageIF {
 public:
 	/**
 	 * @brief	The class is initialized empty with this constructor.

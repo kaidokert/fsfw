@@ -8,7 +8,7 @@
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef uint16_t Command_t;
 
-class CommandMessageIF: virtual public MessageQueueMessageIF {
+class CommandMessageIF {
 public:
     /**
      * Header consists of sender ID and command ID.

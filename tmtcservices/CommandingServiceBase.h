@@ -312,7 +312,7 @@ private:
 
 	void handleCommandMessage(CommandMessage* reply);
 	void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,
-			CommandMessageIF* nextCommand,CommandMessageIF* reply, bool& isStep);
+			CommandMessage* nextCommand, CommandMessage* reply, bool& isStep);
 
 	void checkTimeout();
 };
