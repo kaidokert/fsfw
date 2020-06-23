@@ -1,6 +1,7 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/storagemanager/ConstStorageAccessor.h>
 #include <framework/storagemanager/StorageManagerIF.h>
+#include <framework/globalfunctions/arrayprinter.h>
 
 ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId):
 		storeId(storeId) {}
@@ -73,18 +74,11 @@ store_address_t ConstStorageAccessor::getId() const {
 }
 
 void ConstStorageAccessor::print() const {
-	if(internalState == AccessState::UNINIT) {
+	if(internalState == AccessState::UNINIT or constDataPointer == nullptr) {
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 		return;
 	}
-	sif::info << "StorageAccessor: Printing data: [";
-	for(uint16_t iPool = 0; iPool < size_; iPool++) {
-		sif::info << std::hex << (int)constDataPointer[iPool];
-		if(iPool < size_ - 1){
-			sif::info << " , ";
-		}
-	}
-	sif::info << " ] " << std::endl;
+	arrayprinter::print(constDataPointer, size_);
 }
 
 void ConstStorageAccessor::assignStore(StorageManagerIF* store) {
