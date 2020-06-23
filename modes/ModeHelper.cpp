@@ -12,8 +12,7 @@ ModeHelper::~ModeHelper() {
 }
 
 ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	Mode_t mode;
 	Submode_t submode;
 	switch (command->getCommand()) {
@@ -79,8 +78,7 @@ void ModeHelper::modeChanged(Mode_t ownerMode, Submode_t ownerSubmode) {
 
 void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	if (theOneWhoCommandedAMode != MessageQueueMessageIF::NO_QUEUE)
 	{
 		if (ownerMode != commandedMode or ownerSubmode != commandedSubmode)
@@ -101,8 +99,7 @@ void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 
 void ModeHelper::sendModeInfoMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	if (theOneWhoCommandedAMode != parentQueueId
 			and parentQueueId != MessageQueueMessageIF::NO_QUEUE)
 	{

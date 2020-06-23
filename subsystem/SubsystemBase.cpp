@@ -77,8 +77,7 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(
 }
 
 void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 
 	std::map<object_id_t, ChildInfo>::iterator iter;
 
@@ -129,7 +128,7 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submod
 			continue; //don't send redundant mode commands (produces event spam), but still command if mode is forced to reach lower levels
 		}
 		ReturnValue_t result = commandQueue->sendMessage(
-				iter->second.commandQueue, &message);
+				iter->second.commandQueue, &command);
 		if (result == RETURN_OK) {
 			++commandsOutstanding;
 		}
@@ -297,8 +296,7 @@ void SubsystemBase::setToExternalControl() {
 void SubsystemBase::announceMode(bool recursive) {
 	triggerEvent(MODE_INFO, mode, submode);
 	if (recursive) {
-		MessageQueueMessage message;
-		CommandMessage command(&message);
+		CommandMessage command;
 		ModeMessage::setModeMessage(&command,
 				ModeMessage::CMD_MODE_ANNOUNCE_RECURSIVELY, 0, 0);
 		commandAllChildren(&command);
@@ -307,8 +305,7 @@ void SubsystemBase::announceMode(bool recursive) {
 
 void SubsystemBase::checkCommandQueue() {
 	ReturnValue_t result;
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 
 	for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
 			result = commandQueue->receiveMessage(&command)) {
@@ -330,8 +327,7 @@ void SubsystemBase::checkCommandQueue() {
 
 		result = handleCommandMessage(&command);
 		if (result != RETURN_OK) {
-			MessageQueueMessage message;
-			CommandMessage reply(&message);
+			CommandMessage reply;
 			reply.setReplyRejected(CommandMessage::UNKNOWN_COMMAND,
 					command.getCommand());
 			replyToCommand(&reply);

@@ -18,7 +18,12 @@ typedef uint32_t MessageQueueId_t;
 
 class MessageQueueMessageIF {
 public:
-	static const MessageQueueId_t NO_QUEUE = 0xffffffff;
+	static const MessageQueueId_t NO_QUEUE = -1;
+    /**
+     * @brief   This constants defines the size of the header,
+     *          which is added to every message.
+     */
+    static const size_t HEADER_SIZE = sizeof(MessageQueueId_t);
 
 	virtual ~MessageQueueMessageIF() {};
 
@@ -72,6 +77,10 @@ public:
 	 * @return
 	 */
 	virtual size_t getMessageSize() const = 0;
+
+    virtual void setMessageSize(size_t messageSize) = 0;
+    virtual size_t getMinimumMessageSize() const = 0;
+    virtual size_t getMaximumMessageSize() const = 0;
 
 };
 

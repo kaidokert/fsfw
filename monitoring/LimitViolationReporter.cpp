@@ -31,8 +31,7 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	MessageQueueMessage message;
-	CommandMessage report(&message);
+	CommandMessage report;
 	MonitoringMessage::setLimitViolationReport(&report, storeId);
 	return MessageQueueSenderIF::sendMessage(reportQueue, &report);
 }

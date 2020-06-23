@@ -45,8 +45,8 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 }
 
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
-		HousekeepingMessage& message) {
-    Command_t command = message.getCommand();
+		CommandMessage* message) {
+    Command_t command = message->getCommand();
     switch(command) {
     // I think those are the only commands which can be handled here..
     case(HousekeepingMessage::ADD_HK_REPORT_STRUCT):
@@ -55,10 +55,10 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
         return HasReturnvaluesIF::RETURN_OK;
     case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
     case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
-        return generateSetStructurePacket(message.getSid());
+        //return generateSetStructurePacket(message->getSid());
     case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
     case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT):
-        return generateHousekeepingPacket(message.getSid());
+        //return generateHousekeepingPacket(message->getSid());
     default:
         return CommandMessageIF::UNKNOWN_COMMAND;
     }
@@ -105,19 +105,18 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
 	}
 
 	// and now we set a HK message and send it the HK packet destination.
-	MessageQueueMessage message;
-	HousekeepingMessage hkMessage(&message);
-	hkMessage.setHkReportMessage(sid, storeId);
-	if(hkQueue == nullptr) {
-	    return QUEUE_NOT_SET;
-	}
-
-	if(currentHkPacketDestination != MessageQueueIF::NO_QUEUE) {
-	    result = hkQueue->sendMessage(currentHkPacketDestination, &hkMessage);
-	}
-	else {
-	    result = hkQueue->sendToDefault(&hkMessage);
-	}
+	//HousekeepingMessage hkMessage;
+//	hkMessage.setHkReportMessage(sid, storeId);
+//	if(hkQueue == nullptr) {
+//	    return QUEUE_NOT_SET;
+//	}
+//
+//	if(currentHkPacketDestination != MessageQueueIF::NO_QUEUE) {
+//	    result = hkQueue->sendMessage(currentHkPacketDestination, &hkMessage);
+//	}
+//	else {
+//	    result = hkQueue->sendToDefault(&hkMessage);
+//	}
 
 	return result;
 }

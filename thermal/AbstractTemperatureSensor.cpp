@@ -44,8 +44,7 @@ ReturnValue_t AbstractTemperatureSensor::performHealthOp() {
 }
 
 void AbstractTemperatureSensor::handleCommandQueue() {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result == HasReturnvaluesIF::RETURN_OK) {
 		result = healthHelper.handleHealthCommand(&command);
@@ -57,7 +56,7 @@ void AbstractTemperatureSensor::handleCommandQueue() {
 			return;
 		}
 		command.setToUnknownCommand();
-		commandQueue->reply(&message);
+		commandQueue->reply(&command);
 	}
 }
 

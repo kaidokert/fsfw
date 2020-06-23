@@ -56,8 +56,7 @@ MessageQueueId_t ControllerBase::getCommandQueue() const {
 }
 
 void ControllerBase::handleQueue() {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	ReturnValue_t result;
 	for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
 			result = commandQueue->receiveMessage(&command)) {

@@ -66,8 +66,7 @@ ReturnValue_t DataPoolAdmin::getParameter(uint8_t domainId,
 }
 
 void DataPoolAdmin::handleCommand() {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result != RETURN_OK) {
 		return;
@@ -283,8 +282,7 @@ ReturnValue_t DataPoolAdmin::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 
 	ParameterMessage::setParameterDumpReply(&reply, id, address);
 
@@ -296,8 +294,7 @@ ReturnValue_t DataPoolAdmin::sendParameter(MessageQueueId_t to, uint32_t id,
 //identical to ParameterHelper::rejectCommand()
 void DataPoolAdmin::rejectCommand(MessageQueueId_t to, ReturnValue_t reason,
 		Command_t initialCommand) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	reply.setReplyRejected(reason, initialCommand);
 	commandQueue->sendMessage(to, &reply);
 }

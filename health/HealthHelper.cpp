@@ -65,8 +65,7 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
 	if (parentQueue == MessageQueueMessageIF::NO_QUEUE) {
 		return;
 	}
-	MessageQueueMessage message;
-	CommandMessage information(&message);
+	CommandMessage information;
 	HealthMessage::setHealthMessage(&information, HealthMessage::HEALTH_INFO,
 			health, oldHealth);
 	if (MessageQueueSenderIF::sendMessage(parentQueue, &information,
@@ -81,8 +80,7 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* command) {
 	if (command->getSender() == MessageQueueMessageIF::NO_QUEUE) {
 		return;
 	}
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	if (result == HasReturnvaluesIF::RETURN_OK) {
 		HealthMessage::setHealthMessage(&reply,
 				HealthMessage::REPLY_HEALTH_SET);

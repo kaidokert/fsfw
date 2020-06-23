@@ -139,7 +139,7 @@ protected:
 	 * @param objectId Target object ID
 	 * @return
 	 */
-	virtual ReturnValue_t prepareCommand(CommandMessageIF *message,
+	virtual ReturnValue_t prepareCommand(CommandMessage* message,
 			uint8_t subservice, const uint8_t *tcData, size_t tcDataLen,
 			uint32_t *state, object_id_t objectId) = 0;
 
@@ -168,9 +168,9 @@ protected:
 	 *   a failure verification message with the reason as the error parameter
 	 *   and the initial command as failure parameter 1.
 	 */
-	virtual ReturnValue_t handleReply(const CommandMessageIF *reply,
+	virtual ReturnValue_t handleReply(const CommandMessage* reply,
 			Command_t previousCommand, uint32_t *state,
-			CommandMessageIF *optionalNextCommand, object_id_t objectId,
+			CommandMessage* optionalNextCommand, object_id_t objectId,
 			bool *isStep) = 0;
 
 	/**
@@ -182,7 +182,7 @@ protected:
 	 * Reply which is non-const so the default implementation can clear the
 	 * message.
 	 */
-	virtual void handleUnrequestedReply(CommandMessageIF *reply);
+	virtual void handleUnrequestedReply(CommandMessage* reply);
 
 	virtual void doPeriodicOperation();
 
@@ -310,7 +310,7 @@ private:
 
 	void startExecution(TcPacketStored *storedPacket, CommandMapIter iter);
 
-	void handleCommandMessage(CommandMessageIF* reply);
+	void handleCommandMessage(CommandMessage* reply);
 	void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,
 			CommandMessageIF* nextCommand,CommandMessageIF* reply, bool& isStep);
 

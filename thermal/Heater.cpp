@@ -279,8 +279,7 @@ ReturnValue_t Heater::initialize() {
 }
 
 void Heater::handleQueue() {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result == HasReturnvaluesIF::RETURN_OK) {
 		result = healthHelper.handleHealthCommand(&command);

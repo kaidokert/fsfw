@@ -23,7 +23,7 @@
  *	receive messages from other tasks.
  *	@ingroup message_queue
  */
-class MessageQueueMessage: public MessageQueueMessageIF {
+class MessageQueueMessage: virtual public MessageQueueMessageIF {
 public:
 	/**
 	 * @brief	The class is initialized empty with this constructor.
@@ -74,11 +74,7 @@ public:
 	 * as small as possible.
 	 */
 	static const size_t MAX_DATA_SIZE = 24;
-	/**
-	 * @brief	This constants defines the size of the header,
-	 * 			which is added to every message.
-	 */
-	static const size_t HEADER_SIZE = sizeof(MessageQueueId_t);
+
 	/**
 	 * @brief	This constant defines the maximum total size in bytes
 	 * 			of a sent message.
@@ -141,12 +137,14 @@ public:
 	void setSender(MessageQueueId_t setId) override;
 
 	virtual size_t getMessageSize() const override;
+	virtual void setMessageSize(size_t messageSize) override;
+	virtual size_t getMinimumMessageSize() const override;
+	virtual size_t getMaximumMessageSize() const override;
 
 	/**
-	 * @brief	This is a debug method that prints the content
-	 * 			(till messageSize) to the debug output.
+	 * @brief	This is a debug method that prints the content.
 	 */
-	void print();
+	void print(bool printWholeMessage);
 };
 
 #endif /* MESSAGEQUEUEMESSAGE_H_ */

@@ -33,15 +33,13 @@ ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
 }
 
 void ActionHelper::step(uint8_t step, MessageQueueId_t reportTo, ActionId_t commandId, ReturnValue_t result) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	ActionMessage::setStepReply(&reply, commandId, step + STEP_OFFSET, result);
 	queueToUse->sendMessage(reportTo, &reply);
 }
 
 void ActionHelper::finish(MessageQueueId_t reportTo, ActionId_t commandId, ReturnValue_t result) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	ActionMessage::setCompletionReply(&reply, commandId, result);
 	queueToUse->sendMessage(reportTo, &reply);
 }
@@ -56,8 +54,7 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
 	size_t size = 0;
 	ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
-		MessageQueueMessage message;
-		CommandMessage reply(&message);
+		CommandMessage reply;
 		ActionMessage::setStepReply(&reply, actionId, 0, result);
 		queueToUse->sendMessage(commandedBy, &reply);
 		return;
@@ -65,8 +62,7 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
 	result = owner->executeAction(actionId, commandedBy, dataPtr, size);
 	ipcStore->deleteData(dataAddress);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
-		MessageQueueMessage message;
-		CommandMessage reply(&message);
+		CommandMessage reply;
 		ActionMessage::setStepReply(&reply, actionId, 0, result);
 		queueToUse->sendMessage(commandedBy, &reply);
 		return;
@@ -75,8 +71,7 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
 
 ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
 		ActionId_t replyId, SerializeIF* data, bool hideSender) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	store_address_t storeAddress;
 	uint8_t *dataPtr;
 	size_t maxSize = data->getSerializedSize();
