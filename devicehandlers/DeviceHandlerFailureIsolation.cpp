@@ -137,7 +137,7 @@ void DeviceHandlerFailureIsolation::decrementFaultCounters() {
 
 void DeviceHandlerFailureIsolation::handleRecovery(Event reason) {
 	clearFaultCounters();
-	if (!recoveryCounter.incrementAndCheck()) {
+	if (not recoveryCounter.incrementAndCheck()) {
 		startRecovery(reason);
 	} else {
 		setFaulty(reason);

@@ -31,6 +31,7 @@ protected:
 	bool hasPowerConfirmation = false;
 	MessageQueueId_t powerConfirmation;
 	static object_id_t powerConfirmationId;
+	// TODO: Are those hardcoded value? How can they be changed.
 	static const uint32_t MAX_REBOOT = 1;
 	static const uint32_t REBOOT_TIME_MS = 180000;
 	static const uint32_t MAX_STRANGE_REPLIES = 10;

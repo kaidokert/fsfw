@@ -1,5 +1,5 @@
-#ifndef HASRETURNVALUESIF_H_
-#define HASRETURNVALUESIF_H_
+#ifndef FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_
+#define FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_
 
 #include <framework/returnvalues/FwClassIds.h>
 #include <config/returnvalues/classIds.h>

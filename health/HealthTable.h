@@ -1,5 +1,5 @@
-#ifndef HEALTHTABLE_H_
-#define HEALTHTABLE_H_
+#ifndef FRAMEWORK_HEALTH_HEALTHTABLE_H_
+#define FRAMEWORK_HEALTH_HEALTHTABLE_H_
 
 #include <framework/health/HealthTableIF.h>
 #include <framework/objectmanager/SystemObject.h>

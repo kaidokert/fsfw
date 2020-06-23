@@ -12,7 +12,6 @@ public:
 	/**
 	 * Allows sending messages without actually "owing" a message queue.
 	 * Not sure whether this is actually a good idea.
-	 * Must be implemented by a subclass.
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
 			MessageQueueMessageIF* message, size_t maxMessageSize,
