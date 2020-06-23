@@ -1,25 +1,25 @@
-#include <framework/globalfunctions/printer.h>
+#include <framework/globalfunctions/arrayprinter.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <bitset>
 
-void printer::print(const uint8_t *data, size_t size, OutputType type,
+void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
 		bool printInfo, size_t maxCharPerLine) {
 	if(printInfo) {
 		sif::info << "Printing data with size " << size << ": ";
 	}
 	sif::info << "[";
 	if(type == OutputType::HEX) {
-		printer::printHex(data, size, maxCharPerLine);
+		arrayprinter::printHex(data, size, maxCharPerLine);
 	}
 	else if (type == OutputType::DEC) {
-		printer::printDec(data, size, maxCharPerLine);
+		arrayprinter::printDec(data, size, maxCharPerLine);
 	}
 	else if(type == OutputType::BIN) {
-	    printer::printBin(data, size);
+	    arrayprinter::printBin(data, size);
 	}
 }
 
-void printer::printHex(const uint8_t *data, size_t size,
+void arrayprinter::printHex(const uint8_t *data, size_t size,
 		size_t maxCharPerLine) {
 	sif::info << std::hex;
 	for(size_t i = 0; i < size; i++) {
@@ -36,7 +36,7 @@ void printer::printHex(const uint8_t *data, size_t size,
 	sif::info << "]" << std::endl;
 }
 
-void printer::printDec(const uint8_t *data, size_t size,
+void arrayprinter::printDec(const uint8_t *data, size_t size,
 		size_t maxCharPerLine) {
 	sif::info << std::dec;
 	for(size_t i = 0; i < size; i++) {
@@ -51,7 +51,7 @@ void printer::printDec(const uint8_t *data, size_t size,
 	sif::info << "]" << std::endl;
 }
 
-void printer::printBin(const uint8_t *data, size_t size) {
+void arrayprinter::printBin(const uint8_t *data, size_t size) {
     sif::info << "\n" << std::flush;
     for(size_t i = 0; i < size; i++) {
         sif::info << "Byte " << i + 1 << ": 0b"<<
