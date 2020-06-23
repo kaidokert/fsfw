@@ -148,8 +148,7 @@ void AssemblyBase::handleModeTransitionFailed(ReturnValue_t result) {
 
 void AssemblyBase::sendHealthCommand(MessageQueueId_t sendTo,
 		HealthState health) {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	HealthMessage::setHealthMessage(&command, HealthMessage::HEALTH_SET,
 			health);
 	if (commandQueue->sendMessage(sendTo, &command) == RETURN_OK) {

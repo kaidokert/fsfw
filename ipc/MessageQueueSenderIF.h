@@ -10,18 +10,16 @@ public:
 	virtual ~MessageQueueSenderIF() {}
 
 	/**
-	 * Allows sending messages without actually "owing" a message queue.
+	 * Allows sending messages without actually "owning" a message queue.
 	 * Not sure whether this is actually a good idea.
-	 * Must be implemented by a subclass.
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
 			MessageQueueMessageIF* message,
 			MessageQueueId_t sentFrom = MessageQueueMessageIF::NO_QUEUE,
-			bool ignoreFault=false);
+			bool ignoreFault = false);
 private:
 	MessageQueueSenderIF() {}
 };
-
 
 
 #endif /* FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_ */

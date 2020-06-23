@@ -58,7 +58,7 @@ public:
 	ReturnValue_t generateHousekeepingPacket(sid_t sid);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
-	ReturnValue_t handleHousekeepingMessage(HousekeepingMessage& message);
+	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
 	/**
 	 * This function is used to fill the local data pool map with pool

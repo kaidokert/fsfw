@@ -53,8 +53,7 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
 
 ReturnValue_t CommandActionHelper::sendCommand(MessageQueueId_t queueId,
 		ActionId_t actionId, store_address_t storeId) {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	ActionMessage::setCommand(&command, actionId, storeId);
 	ReturnValue_t result = queueToUse->sendMessage(queueId, &command);
 	if (result != HasReturnvaluesIF::RETURN_OK) {

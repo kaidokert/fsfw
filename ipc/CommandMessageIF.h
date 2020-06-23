@@ -5,20 +5,24 @@
 #include <framework/ipc/FwMessageTypes.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
-
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef uint16_t Command_t;
 
-// TODO: actually, this interface propably does not have to implement
-// MQM IF, because there is a getter function for the internal message..
-// But it is also convenient to have the full access to all MQM IF functions.
-// That way, I can just pass CommandMessages to functions expecting a MQM IF.
-// The command message implementations just forwards the calls. Maybe
-// we should just leave it like that.
-class CommandMessageIF: public MessageQueueMessageIF {
+class CommandMessageIF {
 public:
-	static constexpr size_t HEADER_SIZE = sizeof(MessageQueueId_t) +
+    /**
+     * Header consists of sender ID and command ID.
+     */
+	static constexpr size_t HEADER_SIZE = MessageQueueMessageIF::HEADER_SIZE +
 			sizeof(Command_t);
+	/**
+	 * This minimum size is derived from the interface requirement to be able
+     * to set a rejected reply, which contains a returnvalue and the initial
+     * command.
+	 */
+	static constexpr size_t MINIMUM_COMMAND_MESSAGE_SIZE =
+	        CommandMessageIF::HEADER_SIZE + sizeof(ReturnValue_t) +
+	        sizeof(Command_t);
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
 	static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
@@ -60,15 +64,9 @@ public:
 	virtual ReturnValue_t getReplyRejectedReason(
 			Command_t* initialCommand = nullptr) const  = 0;
 
-	/**
-	 * This function is used to get a pointer to the internal message, as
-	 * the command message implementations always operate on the memory
-	 * contained in the message queue message implementation.
-	 * This pointer can be used to set the internal message of different
-	 * command message implementations.
-	 * @return
-	 */
-	virtual MessageQueueMessageIF* getInternalMessage() const = 0;
+	virtual void setToUnknownCommand() = 0;
+
+	virtual void clear() = 0;
 
 };
 

@@ -13,8 +13,7 @@ HealthDevice::~HealthDevice() {
 }
 
 ReturnValue_t HealthDevice::performOperation(uint8_t opCode) {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result == HasReturnvaluesIF::RETURN_OK) {
 		healthHelper.handleHealthCommand(&command);

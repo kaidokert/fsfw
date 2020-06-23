@@ -43,26 +43,27 @@ public:
 	 */
 	ReturnValue_t setMaxNumberOfPacketsStored(uint8_t maxNumberOfPacketsStored);
 
-	void registerCommConnect();
-	void registerCommDisconnect();
+	virtual void registerCommConnect();
+	virtual void registerCommDisconnect();
 
 	/**
 	 * Initializes necessary FSFW components for the TMTC Bridge
 	 * @return
 	 */
-	ReturnValue_t initialize() override;
+	virtual ReturnValue_t initialize() override;
 
 	/**
 	 * @brief	Handles TMTC reception
 	 */
-	ReturnValue_t performOperation(uint8_t operationCode = 0) override;
+	virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
 
 	/**
 	 * Return TMTC Reception Queue
 	 * @param virtualChannel
 	 * @return
 	 */
-	MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) override;
+	MessageQueueId_t getReportReceptionQueue(
+			uint8_t virtualChannel = 0) override;
 protected:
 	//! Used to send and receive TMTC messages.
 	//! TmTcMessage is used to transport messages between tasks.

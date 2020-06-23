@@ -116,6 +116,10 @@ protected:
 	 * On missing the deadline, the deadlineMissedFunction is executed.
 	 */
 	void taskFunctionality(void);
+
+	void checkMissedDeadline(const TickType_t xLastWakeTime,
+	        const TickType_t interval);
+	void handleMissedDeadline();
 };
 
 #endif /* PERIODICTASK_H_ */

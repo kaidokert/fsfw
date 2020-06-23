@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_COMMANDMESSAGE_H_
 #define FRAMEWORK_IPC_COMMANDMESSAGE_H_
 
-#include <framework/ipc/CommandMessageBase.h>
+#include <framework/ipc/CommandMessageIF.h>
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/ipc/FwMessageTypes.h>
 
@@ -20,23 +20,21 @@
  * currently has an internal message size of 28 bytes.
  * @author	Bastian Baetz
  */
-class CommandMessage: public CommandMessageBase {
+class CommandMessage: public MessageQueueMessage, public CommandMessageIF {
 public:
-	/**
-	 * This is the size of a message as it is seen by the MessageQueue.
-	 * It can hold the CommandMessage header plus 2 4-byte parameters.
-	 * 14 of the 24 available MessageQueueMessage bytes are used.
-	 */
-	static const size_t MINIMUM_COMMAND_MESSAGE_SIZE =
-			CommandMessageIF::HEADER_SIZE + 2 * sizeof(uint32_t);
+    /**
+     * Default size can accomodate 2 4-byte parameters.
+     */
+    static constexpr size_t DEFAULT_COMMAND_MESSAGE_SIZE =
+            CommandMessageIF::MINIMUM_COMMAND_MESSAGE_SIZE + sizeof(uint32_t);
 
 	/**
-	 * Default Constructor, does not initialize anything.
-	 *
+	 * @brief   Default Constructor, does not initialize anything.
+	 * @details
 	 * This constructor should be used when receiving a Message, as the
 	 * content is filled by the MessageQueue.
 	 */
-	CommandMessage(MessageQueueMessageIF* receiverMessage);
+	CommandMessage();
 	/**
 	 * This constructor creates a new message with all message content
 	 * initialized
@@ -45,17 +43,29 @@ public:
 	 * @param parameter1	The first parameter
 	 * @param parameter2	The second parameter
 	 */
-	CommandMessage(MessageQueueMessageIF* messageToSet, Command_t command,
-			uint32_t parameter1, uint32_t parameter2);
+	CommandMessage(Command_t command, uint32_t parameter1, uint32_t parameter2);
 
 	/**
 	 * @brief 	Default Destructor
 	 */
 	virtual ~CommandMessage() {}
 
-	/** MessageQueueMessageIF functions used for minimum size check. */
-	size_t getMinimumMessageSize() const override;
+    /**
+     * Read the DeviceHandlerCommand_t that is stored in the message,
+     * usually used after receiving.
+     *
+     * @return the Command stored in the Message
+     */
+    virtual Command_t getCommand() const override;
+    /**
+     * Set the command type of the message. Default implementation also
+     * sets the message type, which will be the first byte of the command ID.
+     * @param the Command to be sent
+     */
+    virtual void setCommand(Command_t command);
 
+    virtual uint8_t* getData() override;
+    virtual const uint8_t* getData() const override;
 	/**
 	 * Get the first parameter of the message
 	 * @return the first Parameter of the message
@@ -91,8 +101,35 @@ public:
 	 * Sets the command to REPLY_REJECTED with parameter UNKNOWN_COMMAND.
 	 * Is needed quite often, so we better code it once only.
 	 */
-	void setToUnknownCommand();
-};
+	void setToUnknownCommand() override;
 
+    /**
+     * A command message can be rejected and needs to offer a function
+     * to set a rejected reply
+     * @param reason
+     * @param initialCommand
+     */
+    void setReplyRejected(ReturnValue_t reason,
+            Command_t initialCommand) override;
+    /**
+     * Corrensonding getter function.
+     * @param initialCommand
+     * @return
+     */
+    ReturnValue_t getReplyRejectedReason(
+            Command_t* initialCommand = nullptr) const override;
+
+    virtual void clear() override;
+
+    /**
+     * Extract message ID, which is the first byte of the command ID for the
+     * default implementation.
+     * @return
+     */
+    virtual uint8_t getMessageType() const override;
+
+    /** MessageQueueMessageIF functions used for minimum size check. */
+    size_t getMinimumMessageSize() const override;
+};
 
 #endif /* COMMANDMESSAGE_H_ */

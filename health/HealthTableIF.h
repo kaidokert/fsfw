@@ -1,5 +1,5 @@
-#ifndef HEALTHTABLEIF_H_
-#define HEALTHTABLEIF_H_
+#ifndef FRAMEWORK_HEALTH_HEALTHTABLEIF_H_
+#define FRAMEWORK_HEALTH_HEALTHTABLEIF_H_
 
 #include <framework/health/ManagesHealthIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
@@ -8,6 +8,8 @@
 
 
 class HealthTableIF: public ManagesHealthIF {
+	// TODO: This is in the mission folder and not in the framework folder.
+	// delete it?
 	friend class HealthCommandingService;
 public:
 	virtual ~HealthTableIF() {
@@ -23,4 +25,4 @@ protected:
 	virtual ReturnValue_t iterate(std::pair<object_id_t,HasHealthIF::HealthState> *value, bool reset = false) = 0;
 };
 
-#endif /* HEALTHTABLEIF_H_ */
+#endif /* FRAMEWORK_HEALTH_HEALTHTABLEIF_H_ */

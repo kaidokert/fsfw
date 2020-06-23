@@ -76,28 +76,18 @@ ReturnValue_t CommandingServiceBase::initialize() {
 }
 
 void CommandingServiceBase::handleCommandQueue() {
-    MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	ReturnValue_t result = RETURN_FAILED;
 	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
 			result = commandQueue->receiveMessage(&reply)) {
-		if(reply.getInternalMessage() == nullptr) {
-			// This should never happen unless the passed message maximum size
-			// is too small!
-			sif::error << "CommandingServiceBase::handleCommandMessage: Reply"
-					"does not satisfy minimum requirements for a command "
-					"message!" << std::endl;
-			continue;
-		}
 		handleCommandMessage(&reply);
 	}
 }
 
 
-void CommandingServiceBase::handleCommandMessage(CommandMessageIF* reply) {
+void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	bool isStep = false;
-	MessageQueueMessage message;
-	CommandMessage nextCommand(&message);
+	CommandMessage nextCommand;
 	CommandMapIter iter = commandMap.find(reply->getSender());
 
 	// handle unrequested reply first
@@ -156,8 +146,8 @@ void CommandingServiceBase::handleCommandMessage(CommandMessageIF* reply) {
 }
 
 void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
-		CommandMapIter iter, CommandMessageIF* nextCommand,
-		CommandMessageIF* reply, bool& isStep) {
+		CommandMapIter iter, CommandMessage* nextCommand,
+		CommandMessage* reply, bool& isStep) {
 	iter->command = nextCommand->getCommand();
 
 	// In case a new command is to be sent immediately, this is performed here.
@@ -303,8 +293,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
         CommandMapIter iter) {
     ReturnValue_t result = RETURN_OK;
-    MessageQueueMessage message;
-    CommandMessage command(&message);
+    CommandMessage command;
     iter->subservice = storedPacket->getSubService();
     result = prepareCommand(&command, iter->subservice,
             storedPacket->getApplicationData(),
@@ -316,7 +305,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 	case RETURN_OK:
 		if (command.getCommand() != CommandMessage::CMD_NONE) {
 			sendResult = commandQueue->sendMessage(iter.value->first,
-					&message);
+					&command);
 		}
 		if (sendResult == RETURN_OK) {
 			Clock::getUptime(&iter->uptimeOfStart);
@@ -338,7 +327,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 		if (command.getCommand() != CommandMessage::CMD_NONE) {
 			//Fire-and-forget command.
 			sendResult = commandQueue->sendMessage(iter.value->first,
-					&message);
+					&command);
 		}
 		if (sendResult == RETURN_OK) {
 			verificationReporter.sendSuccessReport(TC_VERIFY::START_SUCCESS,
@@ -384,9 +373,8 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter iter) {
 }
 
 
-void CommandingServiceBase::handleUnrequestedReply(CommandMessageIF* reply) {
-	CommandMessage commandReply(reply->getInternalMessage());
-	commandReply.clear();
+void CommandingServiceBase::handleUnrequestedReply(CommandMessage* reply) {
+	reply->clear();
 }
 
 

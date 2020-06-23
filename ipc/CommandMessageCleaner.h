@@ -1,15 +1,15 @@
 #ifndef FRAMEWORK_IPC_COMMANDMESSAGECLEANER_H_
 #define FRAMEWORK_IPC_COMMANDMESSAGECLEANER_H_
-#include <framework/ipc/CommandMessageIF.h>
+#include <framework/ipc/CommandMessage.h>
 
 namespace messagetypes {
 // Implemented in config.
-void clearMissionMessage(CommandMessageIF* message);
+void clearMissionMessage(CommandMessage* message);
 }
 
 class CommandMessageCleaner {
 public:
-	static void clearCommandMessage(CommandMessageIF* message);
+	static void clearCommandMessage(CommandMessage* message);
 };
 
 

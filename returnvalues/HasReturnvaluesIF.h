@@ -1,5 +1,5 @@
-#ifndef HASRETURNVALUESIF_H_
-#define HASRETURNVALUESIF_H_
+#ifndef FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_
+#define FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_
 
 #include <framework/returnvalues/FwClassIds.h>
 #include <config/returnvalues/classIds.h>
@@ -12,8 +12,13 @@ typedef uint16_t ReturnValue_t;
 class HasReturnvaluesIF {
 public:
 	static const ReturnValue_t RETURN_OK = 0;
-	static const ReturnValue_t RETURN_FAILED = 0xFFFF;
+	//! This will be the all-ones value irrespective of used unsigned datatype.
+	static const ReturnValue_t RETURN_FAILED = -1;
 	virtual ~HasReturnvaluesIF() {}
+
+	static ReturnValue_t makeReturnCode(uint8_t interfaceId, uint8_t number) {
+	    return (interfaceId << 8) + number;
+	}
 };
 
 #endif /* HASRETURNVALUESIF_H_ */

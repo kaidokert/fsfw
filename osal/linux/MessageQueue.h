@@ -176,9 +176,10 @@ private:
 	/**
 	 * The name of the message queue, stored for unlinking
 	 */
-	char name[5];
+	char name[16];
 
 	static uint16_t queueCounter;
+	const size_t maxMessageSize;
 
 	ReturnValue_t handleError(mq_attr* attributes, uint32_t messageDepth);
 };

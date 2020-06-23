@@ -102,8 +102,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 
 	ParameterMessage::setParameterDumpReply(&reply, id, address);
 
@@ -126,8 +125,7 @@ ReturnValue_t ParameterHelper::initialize() {
 
 void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason,
 		Command_t initialCommand) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	reply.setReplyRejected(reason, initialCommand);
 	MessageQueueSenderIF::sendMessage(to, &reply, ownerQueueId);
 }

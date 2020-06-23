@@ -12,8 +12,7 @@ ModeHelper::~ModeHelper() {
 }
 
 ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	Mode_t mode;
 	Submode_t submode;
 	switch (command->getCommand()) {
@@ -28,7 +27,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			ModeMessage::cantReachMode(&reply, result);
 			MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
-					owner->getCommandQueue());
+			        owner->getCommandQueue());
 			break;
 		}
 		//Free to start transition
@@ -50,7 +49,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_REPLY, mode,
 				submode);
 		MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
-				owner->getCommandQueue());
+		       owner->getCommandQueue());
 	}
 		break;
 	case ModeMessage::CMD_MODE_ANNOUNCE:
@@ -79,8 +78,7 @@ void ModeHelper::modeChanged(Mode_t ownerMode, Submode_t ownerSubmode) {
 
 void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	if (theOneWhoCommandedAMode != MessageQueueMessageIF::NO_QUEUE)
 	{
 		if (ownerMode != commandedMode or ownerSubmode != commandedSubmode)
@@ -95,21 +93,20 @@ void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 					ownerMode, ownerSubmode);
 		}
 		MessageQueueSenderIF::sendMessage(theOneWhoCommandedAMode, &reply,
-				owner->getCommandQueue());
+		        owner->getCommandQueue());
 	}
 }
 
 void ModeHelper::sendModeInfoMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	if (theOneWhoCommandedAMode != parentQueueId
 			and parentQueueId != MessageQueueMessageIF::NO_QUEUE)
 	{
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_INFO,
 				ownerMode, ownerSubmode);
 		MessageQueueSenderIF::sendMessage(parentQueueId, &reply,
-				owner->getCommandQueue());
+		        owner->getCommandQueue());
 	}
 }
 

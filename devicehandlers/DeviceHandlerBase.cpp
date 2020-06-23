@@ -214,12 +214,7 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	// This is not ideal. What if it is not a command message? (e.g. another
-	// message with 3 parameters). The full buffer is filled anyway
-	// and I could just copy the content into the other message but
-	// all I need are few additional functions the other message type offers.
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result != RETURN_OK) {
 		return;
@@ -247,8 +242,7 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	HousekeepingMessage hkMessage(&message);
-	result = hkManager.handleHousekeepingMessage(hkMessage);
+	result = hkManager.handleHousekeepingMessage(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
@@ -484,13 +478,12 @@ void DeviceHandlerBase::setMode(Mode_t newMode) {
 
 void DeviceHandlerBase::replyReturnvalueToCommand(ReturnValue_t status,
 		uint32_t parameter) {
-	MessageQueueMessage message;
 	//This is actually the reply protocol for raw and misc DH commands.
 	if (status == RETURN_OK) {
-		CommandMessage reply(&message, CommandMessage::REPLY_COMMAND_OK, 0, parameter);
+		CommandMessage reply(CommandMessage::REPLY_COMMAND_OK, 0, parameter);
 		commandQueue->reply(&reply);
 	} else {
-		CommandMessage reply(&message, CommandMessage::REPLY_REJECTED, status, parameter);
+		CommandMessage reply(CommandMessage::REPLY_REJECTED, status, parameter);
 		commandQueue->reply(&reply);
 	}
 }
@@ -760,8 +753,7 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 		return;
 	}
 
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 
 	DeviceHandlerMessage::setDeviceHandlerRawReplyMessage(&command,
 			getObjectId(), address, isCommand);

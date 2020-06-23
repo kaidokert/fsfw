@@ -21,8 +21,7 @@ ReturnValue_t HkSwitchHelper::initialize() {
 }
 
 ReturnValue_t HkSwitchHelper::performOperation(uint8_t operationCode) {
-	MessageQueueMessage message;
-	CommandMessage command(&message);
+	CommandMessage command;
 	while (actionQueue->receiveMessage(&command) == HasReturnvaluesIF::RETURN_OK) {
 		ReturnValue_t result = commandActionHelper.handleReply(&command);
 		if (result == HasReturnvaluesIF::RETURN_OK) {

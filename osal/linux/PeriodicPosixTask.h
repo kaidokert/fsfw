@@ -32,7 +32,7 @@ public:
 	 * 			The address of the task object is passed as an argument
 	 * 			to the system call.
 	 */
-	ReturnValue_t startTask(void);
+	ReturnValue_t startTask(void) override;
 	/**
 	 * Adds an object to the list of objects to be executed.
 	 * The objects are executed in the order added.
@@ -42,9 +42,9 @@ public:
 	ReturnValue_t addComponent(object_id_t object,
 	        bool setTaskIF = true) override;
 
-	uint32_t getPeriodMs() const;
+	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t sleepFor(uint32_t ms);
+	ReturnValue_t sleepFor(uint32_t ms) override;
 
 private:
 	typedef std::vector<ExecutableObjectIF*> ObjectList;	//!< Typedef for the List of objects.

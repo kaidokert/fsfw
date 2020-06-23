@@ -7,7 +7,8 @@
 // As a first step towards this, introduces system context variable which needs
 // to be switched manually
 // Haven't found function to find system context.
-MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize) {
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
+		maxMessageSize(maxMessageSize) {
 	handle = xQueueCreate(messageDepth, maxMessageSize);
 	if (handle == NULL) {
 		sif::error << "MessageQueue: Creation failed" << std::endl;
@@ -49,8 +50,8 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo, message, sentFrom,
-			ignoreFault, callContext);
+	return sendMessageFromMessageQueue(sendTo, message, sentFrom, ignoreFault,
+	        callContext);
 }
 
 
@@ -120,10 +121,11 @@ bool MessageQueue::isDefaultDestinationSet() const {
 
 // static core function to send messages.
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-        MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
+        MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault, CallContext callContext) {
     message->setSender(sentFrom);
     BaseType_t result;
+
     if(callContext == CallContext::TASK) {
         result = xQueueSendToBack(reinterpret_cast<QueueHandle_t>(sendTo),
                 static_cast<const void*>(message->getBuffer()), 0);

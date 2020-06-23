@@ -1,10 +1,10 @@
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-
-#include <string.h>
+#include <framework/globalfunctions/arrayprinter.h>
+#include <cstring>
 
 MessageQueueMessage::MessageQueueMessage() :
-		messageSize(this->HEADER_SIZE) {
+		messageSize(getMinimumMessageSize()) {
 	memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
 }
 
@@ -51,17 +51,15 @@ void MessageQueueMessage::setSender(MessageQueueId_t setId) {
 	memcpy(this->internalBuffer, &setId, sizeof(MessageQueueId_t));
 }
 
-size_t MessageQueueMessage::getMinimumMessageSize() const {
-	return this->HEADER_SIZE;
-}
-
-void MessageQueueMessage::print() {
-	sif::debug << "MessageQueueMessage has size: " << this->messageSize <<
-			std::hex << std::endl;
-	for (uint8_t count = 0; count < this->messageSize; count++) {
-		sif::debug << (uint32_t) this->internalBuffer[count] << ":";
+void MessageQueueMessage::print(bool printWholeMessage) {
+	sif::debug << "MessageQueueMessage content: " << std::endl;
+	if(printWholeMessage) {
+	    arrayprinter::print(getData(), getMaximumMessageSize());
 	}
-	sif::debug << std::dec << std::endl;
+	else {
+	    arrayprinter::print(getData(), getMessageSize());
+	}
+
 }
 
 void MessageQueueMessage::clear() {
@@ -72,10 +70,15 @@ size_t MessageQueueMessage::getMessageSize() const {
 	return this->messageSize;
 }
 
-size_t MessageQueueMessage::getMaximumMessageSize() const {
-	return this->MAX_MESSAGE_SIZE;
-}
-
 void MessageQueueMessage::setMessageSize(size_t messageSize) {
 	this->messageSize = messageSize;
 }
+
+size_t MessageQueueMessage::getMinimumMessageSize() const {
+    return this->MIN_MESSAGE_SIZE;
+}
+
+size_t MessageQueueMessage::getMaximumMessageSize() const {
+    return this->MAX_MESSAGE_SIZE;
+}
+

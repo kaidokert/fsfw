@@ -51,16 +51,14 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 		break;
 	default:
 		ipcStore->deleteData(ipcAddress);
-		MessageQueueMessage message;
-		CommandMessage reply(&message);
+		CommandMessage reply;
 		MemoryMessage::setMemoryReplyFailed(&reply, errorCode,
 				MemoryMessage::CMD_MEMORY_LOAD);
 		queueToUse->sendMessage(lastSender, &reply);
 		return;
 	}
 	//Only reached on success
-	MessageQueueMessage message;
-	CommandMessage reply(&message, CommandMessage::REPLY_COMMAND_OK, 0, 0);
+	CommandMessage reply( CommandMessage::REPLY_COMMAND_OK, 0, 0);
 	queueToUse->sendMessage(lastSender, &reply);
 	ipcStore->deleteData(ipcAddress);
 }
@@ -68,8 +66,7 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 void MemoryHelper::completeDump(ReturnValue_t errorCode,
 		const uint8_t* dataToCopy, const uint32_t size) {
 	busy = false;
-	MessageQueueMessage message;
-	CommandMessage reply(&message);
+	CommandMessage reply;
 	MemoryMessage::setMemoryReplyFailed(&reply, errorCode, lastCommand);
 	switch (errorCode) {
 	case HasMemoryIF::DO_IT_MYSELF:
@@ -154,8 +151,7 @@ void MemoryHelper::handleMemoryLoad(CommandMessage* message) {
 		completeLoad(returnCode, p_data, size, dataPointer);
 	} else {
 		//At least inform sender.
-		MessageQueueMessage message;
-		CommandMessage reply(&message);
+		CommandMessage reply;
 		MemoryMessage::setMemoryReplyFailed(&reply, returnCode,
 				MemoryMessage::CMD_MEMORY_LOAD);
 		queueToUse->sendMessage(lastSender, &reply);
@@ -173,8 +169,7 @@ void MemoryHelper::handleMemoryCheckOrDump(CommandMessage* message) {
 				reservedSpaceInIPC);
 		completeDump(returnCode, dataPointer, size);
 	} else {
-		MessageQueueMessage message;
-		CommandMessage reply(&message);
+		CommandMessage reply;
 		MemoryMessage::setMemoryReplyFailed(&reply, returnCode, lastCommand);
 		queueToUse->sendMessage(lastSender, &reply);
 	}

@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
 #define FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
-#include <framework/ipc/CommandMessageBase.h>
+
+#include <framework/ipc/CommandMessage.h>
 #include <framework/ipc/FwMessageTypes.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
@@ -33,7 +34,7 @@ union sid_t {
  * This message is slightly larger than regular command messages to accomodate
  * the uint64_t structure ID (SID).
  */
-class HousekeepingMessage : public CommandMessageBase {
+class HousekeepingMessage : public CommandMessage {
 public:
 
 	static constexpr size_t HK_MESSAGE_SIZE = CommandMessageIF::HEADER_SIZE +
@@ -44,7 +45,7 @@ public:
 	 * the message data, see CommandMessageIF and getInternalMessage().
 	 * @param message
 	 */
-	HousekeepingMessage(MessageQueueMessageIF* message);
+	HousekeepingMessage();
 	virtual ~HousekeepingMessage();
 
 	static constexpr uint8_t MESSAGE_ID = messagetypes::HOUSEKEEPING;
@@ -104,7 +105,7 @@ public:
 	//! to distinguish between diagnostics and regular HK packets
 	sid_t getHkReportMessage(store_address_t * storeIdToSet) const;
 
-	virtual size_t getMinimumMessageSize() const override;
+	//virtual size_t getMinimumMessageSize() const override;
 	virtual void clear() override;
 private:
 
