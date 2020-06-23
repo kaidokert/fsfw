@@ -50,6 +50,22 @@ public:
 	 */
 	virtual ~CommandMessage() {}
 
+    /**
+     * Read the DeviceHandlerCommand_t that is stored in the message,
+     * usually used after receiving.
+     *
+     * @return the Command stored in the Message
+     */
+    virtual Command_t getCommand() const override;
+    /**
+     * Set the command type of the message. Default implementation also
+     * sets the message type, which will be the first byte of the command ID.
+     * @param the Command to be sent
+     */
+    virtual void setCommand(Command_t command);
+
+    virtual uint8_t* getData() override;
+    virtual const uint8_t* getData() const override;
 	/**
 	 * Get the first parameter of the message
 	 * @return the first Parameter of the message
@@ -104,20 +120,6 @@ public:
             Command_t* initialCommand = nullptr) const override;
 
     virtual void clear() override;
-
-    /**
-     * Read the DeviceHandlerCommand_t that is stored in the message,
-     * usually used after receiving.
-     *
-     * @return the Command stored in the Message
-     */
-    virtual Command_t getCommand() const override;
-    /**
-     * Set the command type of the message. Default implementation also
-     * sets the message type, which will be the first byte of the command ID.
-     * @param the Command to be sent
-     */
-    virtual void setCommand(Command_t command);
 
     /**
      * Extract message ID, which is the first byte of the command ID for the

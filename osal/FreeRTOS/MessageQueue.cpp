@@ -80,12 +80,6 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 }
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
-    if(message->getMessageSize() < maxMessageSize) {
-        sif::error << "MessageQueue::receiveMessage: Message size "
-                << message->getMessageSize() <<
-                " too small to receive data!" << std::endl;
-        return HasReturnvaluesIF::RETURN_FAILED;
-    }
 	BaseType_t result = xQueueReceive(handle,reinterpret_cast<void*>(
 			message->getBuffer()), 0);
 	if (result == pdPASS){
