@@ -281,8 +281,7 @@ ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo,message, maxMessageSize,
-			sentFrom,ignoreFault);
+	return sendMessageFromMessageQueue(sendTo,message, sentFrom,ignoreFault);
 
 }
 
@@ -297,19 +296,11 @@ bool MessageQueue::isDefaultDestinationSet() const {
 uint16_t MessageQueue::queueCounter = 0;
 
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-		MessageQueueMessageIF *message, size_t maxSize,
-		MessageQueueId_t sentFrom, bool ignoreFault) {
+		MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
+		bool ignoreFault) {
 	if(message == nullptr) {
 		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
 				"nullptr!" << std::endl;
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-
-	if(message->getMaximumMessageSize() > maxSize) {
-		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message size "
-				<< message->getMaximumMessageSize() << " too large for queue"
-				" with max. message size " << maxSize << "!"
-				<< std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 

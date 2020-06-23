@@ -149,8 +149,7 @@ protected:
 	 * \param ignoreFault If set to true, the internal software fault counter is not incremented if queue is full.
 	 */
 	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-			MessageQueueMessageIF* message, size_t maxSize,
-			MessageQueueId_t sentFrom = NO_QUEUE,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom = NO_QUEUE,
 			bool ignoreFault=false);
 private:
 	/**
