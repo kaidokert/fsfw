@@ -12,7 +12,8 @@ typedef uint16_t ReturnValue_t;
 class HasReturnvaluesIF {
 public:
 	static const ReturnValue_t RETURN_OK = 0;
-	static const ReturnValue_t RETURN_FAILED = 0xFFFF;
+	//! This will be the alll-ones value irrespective of used unsigned datatype.
+	static const ReturnValue_t RETURN_FAILED = -1;
 	virtual ~HasReturnvaluesIF() {}
 };
 
