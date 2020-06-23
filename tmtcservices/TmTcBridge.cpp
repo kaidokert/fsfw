@@ -3,6 +3,7 @@
 #include <framework/ipc/QueueFactory.h>
 #include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <framework/globalfunctions/arrayprinter.h>
 
 TmTcBridge::TmTcBridge(object_id_t objectId_,
         object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
@@ -85,7 +86,7 @@ ReturnValue_t TmTcBridge::handleTm() {
 		return RETURN_FAILED;
 	}
 
-	if(tmStored && communicationLinkUp) {
+	if(tmStored and communicationLinkUp) {
 		result = handleStoredTm();
 	}
 	return result;
@@ -141,11 +142,11 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 ReturnValue_t TmTcBridge::handleStoredTm() {
 	uint8_t counter = 0;
 	ReturnValue_t result = RETURN_OK;
-	while(not tmFifo.empty() && counter < sentPacketsPerCycle) {
+	while(not tmFifo.empty() and counter < sentPacketsPerCycle) {
 		//info << "TMTC Bridge: Sending stored TM data. There are "
 		//     << (int) fifo.size() << " left to send\r\n" << std::flush;
 		store_address_t storeId;
-		const uint8_t* data = NULL;
+		const uint8_t* data = nullptr;
 		size_t size = 0;
 		tmFifo.retrieve(&storeId);
 		result = tmStore->getData(storeId, &data, &size);
@@ -186,14 +187,6 @@ MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
 }
 
 
-
 void TmTcBridge::printData(uint8_t * data, size_t dataLen) {
-	sif::info << "TMTC Bridge: Printing data: [";
-	for(uint32_t i = 0; i < dataLen; i++) {
-		sif::info << std::hex << (int)data[i];
-		if(i < dataLen-1){
-			sif::info << " , ";
-		}
-	}
-	sif::info << " ] " << std::endl;
+	arrayprinter::print(data, dataLen);
 }
