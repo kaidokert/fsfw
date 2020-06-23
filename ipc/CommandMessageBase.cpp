@@ -47,25 +47,21 @@ const uint8_t* CommandMessageBase::getData() const {
 	return internalMessage->getData() + sizeof(Command_t);
 }
 
-void CommandMessageBase::setMessageSize(size_t messageSize) {
-	internalMessage->setMessageSize(messageSize);
-}
+//void CommandMessageBase::setMessageSize(size_t messageSize) {
+//	//internalMessage->setMessageSize(messageSize);
+//}
 
 size_t CommandMessageBase::getMessageSize() const {
 	return internalMessage->getMessageSize();
-}
-
-size_t CommandMessageBase::getMaximumMessageSize() const {
-	return internalMessage->getMaximumMessageSize();
 }
 
 MessageQueueMessageIF* CommandMessageBase::getInternalMessage() const {
 	return internalMessage;
 }
 
-size_t CommandMessageBase::getMinimumMessageSize() const {
-	return MINIMUM_COMMAND_MESSAGE_BASE_SIZE;
-}
+//size_t CommandMessageBase::getMinimumMessageSize() const {
+//	return MINIMUM_COMMAND_MESSAGE_BASE_SIZE;
+//}
 
 void CommandMessageBase::setReplyRejected(ReturnValue_t reason,
 		Command_t initialCommand) {

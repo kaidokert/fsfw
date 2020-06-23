@@ -63,14 +63,7 @@ public:
 	virtual MessageQueueId_t getSender() const override;
 	virtual uint8_t * getData() override;
 	virtual const uint8_t* getData() const override;
-	virtual void setMessageSize(size_t messageSize) override;
 	virtual size_t getMessageSize() const override;
-
-	//! This depends on the maximum message size of the passed internal message.
-	virtual size_t getMaximumMessageSize() const override;
-
-	//! Return the constant minimum message size.
-	virtual size_t getMinimumMessageSize() const override;
 
 	/**
 	 * A command message can be rejected and needs to offer a function

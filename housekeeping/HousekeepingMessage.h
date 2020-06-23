@@ -104,7 +104,7 @@ public:
 	//! to distinguish between diagnostics and regular HK packets
 	sid_t getHkReportMessage(store_address_t * storeIdToSet) const;
 
-	virtual size_t getMinimumMessageSize() const override;
+	//virtual size_t getMinimumMessageSize() const override;
 	virtual void clear() override;
 private:
 

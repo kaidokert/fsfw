@@ -9,14 +9,14 @@ CommandMessage::CommandMessage(MessageQueueMessageIF* receiverMessage):
 				" message!" << std::endl;
 		return;
 	}
-	if(receiverMessage->getMaximumMessageSize() <
-			getMinimumMessageSize()) {
-		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
-				" can not hold minimum "<< getMinimumMessageSize()
-				<< " bytes!" << std::endl;
-		return;
-	}
-	internalMessage->setMessageSize(getMinimumMessageSize());
+//	if(receiverMessage->getMessageSize() <
+//			getMinimumMessageSize()) {
+//		sif::error << "CommandMessage::ComandMessage: Passed message buffer"
+//				" can not hold minimum "<< getMinimumMessageSize()
+//				<< " bytes!" << std::endl;
+//		return;
+//	}
+//	internalMessage->setMessageSize(getMinimumMessageSize());
 }
 
 CommandMessage::CommandMessage(MessageQueueMessageIF* messageToSet,
@@ -49,9 +49,9 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
 			sizeof(parameter2));
 }
 
-size_t CommandMessage::getMinimumMessageSize() const {
-	return MINIMUM_COMMAND_MESSAGE_SIZE;
-}
+//size_t CommandMessage::getMinimumMessageSize() const {
+//	return MINIMUM_COMMAND_MESSAGE_SIZE;
+//}
 
 bool CommandMessage::isClearedCommandMessage() {
 	return getCommand() == CMD_NONE;

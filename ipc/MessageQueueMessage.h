@@ -139,20 +139,8 @@ public:
 	 * The message queue id that identifies the sending message queue.
 	 */
 	void setSender(MessageQueueId_t setId) override;
-	/**
-	 * @brief	This helper function is used by the MessageQueue class to check
-	 * 			the size of an incoming message.
-	 * @details
-	 * The method must be overwritten by child classes if size
-	 * checks shall be more strict.
-	 * @return	The default implementation returns HEADER_SIZE.
-	 */
-	virtual size_t getMinimumMessageSize() const override;
 
 	virtual size_t getMessageSize() const override;
-	virtual void setMessageSize(size_t messageSize) override;
-
-	virtual size_t getMaximumMessageSize() const override;
 
 	/**
 	 * @brief	This is a debug method that prints the content

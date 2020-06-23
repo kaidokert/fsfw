@@ -107,8 +107,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 
 	ParameterMessage::setParameterDumpReply(&reply, id, address);
 
-	MessageQueueSenderIF::sendMessage(to, &reply,
-	        MessageQueueMessage::MAX_MESSAGE_SIZE, ownerQueueId);
+	MessageQueueSenderIF::sendMessage(to, &reply, ownerQueueId);
 
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -130,6 +129,5 @@ void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason,
 	MessageQueueMessage message;
 	CommandMessage reply(&message);
 	reply.setReplyRejected(reason, initialCommand);
-	MessageQueueSenderIF::sendMessage(to, &reply,
-	        MessageQueueMessage::MAX_MESSAGE_SIZE, ownerQueueId);
+	MessageQueueSenderIF::sendMessage(to, &reply, ownerQueueId);
 }

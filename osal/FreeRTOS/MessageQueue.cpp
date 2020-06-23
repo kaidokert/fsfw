@@ -50,8 +50,8 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo, message, maxMessageSize, sentFrom,
-			ignoreFault, callContext);
+	return sendMessageFromMessageQueue(sendTo, message, sentFrom, ignoreFault,
+	        callContext);
 }
 
 
@@ -80,9 +80,9 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 }
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
-    if(message->getMaximumMessageSize() < maxMessageSize) {
+    if(message->getMessageSize() < maxMessageSize) {
         sif::error << "MessageQueue::receiveMessage: Message size "
-                << message->getMaximumMessageSize() <<
+                << message->getMessageSize() <<
                 " too small to receive data!" << std::endl;
         return HasReturnvaluesIF::RETURN_FAILED;
     }
@@ -127,17 +127,10 @@ bool MessageQueue::isDefaultDestinationSet() const {
 
 // static core function to send messages.
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-        MessageQueueMessageIF* message, size_t maxSize,
-        MessageQueueId_t sentFrom, bool ignoreFault, CallContext callContext) {
+        MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
+        bool ignoreFault, CallContext callContext) {
     message->setSender(sentFrom);
     BaseType_t result;
-    if(message->getMaximumMessageSize() > maxSize) {
-    	sif::error << "MessageQueue::sendMessageFromMessageQueue: Message size "
-    			 << message->getMaximumMessageSize() << " too large for queue"
-    			  " with max. message size " << maxSize << "!"
-    			 << std::endl;
-    	return HasReturnvaluesIF::RETURN_FAILED;
-    }
 
     if(callContext == CallContext::TASK) {
         result = xQueueSendToBack(reinterpret_cast<QueueHandle_t>(sendTo),

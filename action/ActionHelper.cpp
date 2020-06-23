@@ -101,8 +101,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
 
 	//TODO Service Implementation sucks at the moment
 	if (hideSender){
-		result = MessageQueueSenderIF::sendMessage(reportTo, &reply,
-		        MessageQueueMessage::MAX_MESSAGE_SIZE);
+		result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
 	} else {
 		result = queueToUse->sendMessage(reportTo, &reply);
 	}

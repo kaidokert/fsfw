@@ -117,8 +117,7 @@ ReturnValue_t MapPacketExtraction::sendCompletePacket(uint8_t* data,
 	ReturnValue_t status = this->packetStore->addData(&store_id, data, size);
 	if (status == RETURN_OK) {
 		TmTcMessage message(store_id);
-		status = MessageQueueSenderIF::sendMessage(tcQueueId,&message,
-		        MessageQueueMessage::MAX_MESSAGE_SIZE);
+		status = MessageQueueSenderIF::sendMessage(tcQueueId,&message);
 	}
 	return status;
 }

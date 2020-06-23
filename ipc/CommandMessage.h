@@ -54,7 +54,7 @@ public:
 	virtual ~CommandMessage() {}
 
 	/** MessageQueueMessageIF functions used for minimum size check. */
-	size_t getMinimumMessageSize() const override;
+	//size_t getMinimumMessageSize() const override;
 
 	/**
 	 * Get the first parameter of the message

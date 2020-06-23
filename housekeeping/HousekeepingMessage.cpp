@@ -3,13 +3,13 @@
 
 HousekeepingMessage::HousekeepingMessage(MessageQueueMessageIF* message):
 		CommandMessageBase(message) {
-	if(message->getMaximumMessageSize() < HK_MESSAGE_SIZE) {
+	if(message->getMessageSize() < HK_MESSAGE_SIZE) {
 		sif::error << "HousekeepingMessage::HousekeepingMessage: Passed "
 		        "message buffer can not hold minimum " << HK_MESSAGE_SIZE
 				<< " bytes!" << std::endl;
 		return;
 	}
-	message->setMessageSize(HK_MESSAGE_SIZE);
+	//message->setMessageSize(HK_MESSAGE_SIZE);
 }
 
 HousekeepingMessage::~HousekeepingMessage() {}
@@ -38,9 +38,9 @@ void HousekeepingMessage::setHkDiagnosticsMessage(sid_t sid,
 	setParameter(storeId.raw);
 }
 
-size_t HousekeepingMessage::getMinimumMessageSize() const {
-	return HK_MESSAGE_SIZE;
-}
+//size_t HousekeepingMessage::getMinimumMessageSize() const {
+//	return HK_MESSAGE_SIZE;
+//}
 
 sid_t HousekeepingMessage::getSid() const {
 	sid_t sid;

@@ -52,7 +52,6 @@ void EventManager::notifyListeners(EventMessage* message) {
 	for (auto iter = listenerList.begin(); iter != listenerList.end(); ++iter) {
 		if (iter->second.match(message)) {
 			MessageQueueSenderIF::sendMessage(iter->first, message,
-			        MessageQueueMessage::MAX_MESSAGE_SIZE,
 			        message->getSender());
 		}
 	}

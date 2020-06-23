@@ -51,9 +51,9 @@ void MessageQueueMessage::setSender(MessageQueueId_t setId) {
 	memcpy(this->internalBuffer, &setId, sizeof(MessageQueueId_t));
 }
 
-size_t MessageQueueMessage::getMinimumMessageSize() const {
-	return this->HEADER_SIZE;
-}
+//size_t MessageQueueMessage::getMinimumMessageSize() const {
+//	return this->HEADER_SIZE;
+//}
 
 void MessageQueueMessage::print() {
 	sif::debug << "MessageQueueMessage has size: " << this->messageSize <<
@@ -69,13 +69,9 @@ void MessageQueueMessage::clear() {
 }
 
 size_t MessageQueueMessage::getMessageSize() const {
-	return this->messageSize;
-}
-
-size_t MessageQueueMessage::getMaximumMessageSize() const {
 	return this->MAX_MESSAGE_SIZE;
 }
 
-void MessageQueueMessage::setMessageSize(size_t messageSize) {
-	this->messageSize = messageSize;
-}
+//void MessageQueueMessage::setMessageSize(size_t messageSize) {
+//	this->messageSize = messageSize;
+//}

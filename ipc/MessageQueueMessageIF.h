@@ -68,23 +68,11 @@ public:
 	virtual uint8_t* getData() = 0;
 
 	/**
-	 * @brief	This helper function is used by the MessageQueue class to
-	 * 			check the size of an incoming message.
-	 */
-	virtual size_t getMinimumMessageSize() const = 0;
-
-	/**
-	 * Get message size of current message implementation.
+	 * Get constant message size of current message implementation.
 	 * @return
 	 */
 	virtual size_t getMessageSize() const = 0;
-	virtual void setMessageSize(size_t messageSize) = 0;
 
-	/**
-	 * Get maximum allowed size of current message implementation.
-	 * @return
-	 */
-	virtual size_t getMaximumMessageSize() const = 0;
 };
 
 

@@ -23,7 +23,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 			current_packet->getPacketId(),
 			current_packet->getPacketSequenceControl(), 0, set_step);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
-	        &message, MessageQueueMessage::MAX_MESSAGE_SIZE);
+	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
 		sif::error << "VerificationReporter::sendSuccessReport: Error writing "
 				"to queue. Code: " << std::hex << (uint16_t) status << std::endl;
@@ -39,7 +39,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 	PusVerificationMessage message(set_report_id, ackFlags, tcPacketId,
 			tcSequenceControl, 0, set_step);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
-	        &message, MessageQueueMessage::MAX_MESSAGE_SIZE);
+	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
 		sif::error << "VerificationReporter::sendSuccessReport: Error writing "
 				"to queue. Code: " << std::hex << (uint16_t) status << std::endl;
@@ -58,7 +58,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 			current_packet->getPacketSequenceControl(), error_code, step,
 			parameter1, parameter2);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
-	        &message, MessageQueueMessage::MAX_MESSAGE_SIZE);
+	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
 		sif::error
 				<< "VerificationReporter::sendFailureReport Error writing to queue. Code: "
@@ -76,7 +76,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 	PusVerificationMessage message(report_id, ackFlags, tcPacketId,
 			tcSequenceControl, error_code, step, parameter1, parameter2);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
-	        &message, MessageQueueMessage::MAX_MESSAGE_SIZE);
+	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
 		sif::error
 				<< "VerificationReporter::sendFailureReport Error writing to queue. Code: "

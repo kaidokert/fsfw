@@ -194,9 +194,8 @@ protected:
 	 * @param context Specify whether call is made from task or from an ISR.
 	 */
 	static ReturnValue_t sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-			MessageQueueMessageIF* message, size_t maxSize,
-			MessageQueueId_t sentFrom = NO_QUEUE, bool ignoreFault=false,
-			CallContext callContext = CallContext::TASK);
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom = NO_QUEUE,
+			bool ignoreFault=false, CallContext callContext = CallContext::TASK);
 
 	static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
