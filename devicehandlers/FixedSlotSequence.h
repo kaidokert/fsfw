@@ -1,12 +1,9 @@
-#ifndef FIXEDSLOTSEQUENCE_H_
-#define FIXEDSLOTSEQUENCE_H_
+#ifndef FRAMEWORK_DEVICEHANDLERS_FIXEDSLOTSEQUENCE_H_
+#define FRAMEWORK_DEVICEHANDLERS_FIXEDSLOTSEQUENCE_H_
 
 #include <framework/devicehandlers/FixedSequenceSlot.h>
 #include <framework/objectmanager/SystemObject.h>
 #include <set>
-
-using SlotList = std::multiset<FixedSequenceSlot>;
-using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 
 /**
  * @brief	This class is the representation of a Polling Sequence Table in software.
@@ -27,6 +24,8 @@ using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
  */
 class FixedSlotSequence {
 public:
+	using SlotList = std::multiset<FixedSequenceSlot>;
+	using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 
 	/**
 	 * @brief	The constructor of the FixedSlotSequence object.
