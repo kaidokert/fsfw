@@ -57,7 +57,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
 	if (packetForwarding == nullptr or distributor == nullptr) {
-		return RETURN_FAILED;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	distributor->registerService(this);
@@ -68,7 +68,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 
 	if (IPCStore == nullptr or TCStore == nullptr) {
-		return RETURN_FAILED;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	return RETURN_OK;
