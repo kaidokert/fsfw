@@ -86,7 +86,7 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
 			object);
 	if (newObject == nullptr) {
 	    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
-	            "it implement ExecutableObjectIF" << std::endl;
+	            "it implements ExecutableObjectIF!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
