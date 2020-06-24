@@ -17,8 +17,8 @@ public:
 	}
 
 	HybridIterator(LinkedElement<T> *start) :
-		LinkedElement<T>::Iterator(start), value(
-					start->value), linked(true), end(NULL) {
+		LinkedElement<T>::Iterator(start), value(start->value),
+		linked(true) {
 
 	}
 
@@ -64,11 +64,11 @@ public:
 		return tmp;
 	}
 
-	bool operator==(const HybridIterator& other) {
+	bool operator==(const HybridIterator& other) const {
 		return value == other.value;
 	}
 
-	bool operator!=(const HybridIterator& other) {
+	bool operator!=(const HybridIterator& other) const {
 		return !(*this == other);
 	}
 
