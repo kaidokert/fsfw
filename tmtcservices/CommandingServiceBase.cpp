@@ -80,39 +80,49 @@ void CommandingServiceBase::handleCommandQueue() {
 	ReturnValue_t result = RETURN_FAILED;
 	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
 			result = commandQueue->receiveMessage(&reply)) {
-		handleCommandMessage(reply);
+		handleCommandMessage(&reply);
 	}
 }
 
 
-void CommandingServiceBase::handleCommandMessage(CommandMessage& reply) {
+void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	bool isStep = false;
 	CommandMessage nextCommand;
-	CommandMapIter iter;
-	if (reply.getSender() == MessageQueueIF::NO_QUEUE) {
-		handleUnrequestedReply(&reply);
-		return;
-	}
-	if ((iter = commandMap.find(reply.getSender())) == commandMap.end()) {
-		handleUnrequestedReply(&reply);
+	CommandMapIter iter = commandMap.find(reply->getSender());
+
+	// handle unrequested reply first
+	if (reply->getSender() == MessageQueueIF::NO_QUEUE or
+			iter == commandMap.end()) {
+		handleUnrequestedReply(reply);
 		return;
 	}
 	nextCommand.setCommand(CommandMessage::CMD_NONE);
 
+
 	// Implemented by child class, specifies what to do with reply.
-	ReturnValue_t result = handleReply(&reply, iter->command, &iter->state,
+	ReturnValue_t result = handleReply(reply, iter->command, &iter->state,
 			&nextCommand, iter->objectId, &isStep);
+
+	/* If the child implementation does not implement special handling for
+	 * rejected replies (RETURN_FAILED is returned), a failure verification
+	 * will be generated with the reason as the return code and the initial
+	 * command as failure parameter 1 */
+	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
+			result == RETURN_FAILED) {
+		result = reply->getReplyRejectedReason(
+				reinterpret_cast<Command_t*>(&failureParameter1));
+	}
 
 	switch (result) {
 	case EXECUTION_COMPLETE:
 	case RETURN_OK:
 	case NO_STEP_MESSAGE:
 		// handle result of reply handler implemented by developer.
-		handleReplyHandlerResult(result, iter, nextCommand, reply, isStep);
+		handleReplyHandlerResult(result, iter, &nextCommand, reply, isStep);
 		break;
 	case INVALID_REPLY:
 		//might be just an unrequested reply at a bad moment
-		handleUnrequestedReply(&reply);
+		handleUnrequestedReply(reply);
 		break;
 	default:
 		if (isStep) {
@@ -129,24 +139,24 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage& reply) {
 		}
 		failureParameter1 = 0;
 		failureParameter2 = 0;
-		checkAndExecuteFifo(&iter);
+		checkAndExecuteFifo(iter);
 		break;
 	}
 
 }
 
 void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
-		CommandMapIter iter, CommandMessage& nextCommand, CommandMessage& reply,
-		bool& isStep) {
-	iter->command = nextCommand.getCommand();
+		CommandMapIter iter, CommandMessage* nextCommand,
+		CommandMessage* reply, bool& isStep) {
+	iter->command = nextCommand->getCommand();
 
 	// In case a new command is to be sent immediately, this is performed here.
 	// If no new command is sent, only analyse reply result by initializing
 	// sendResult as RETURN_OK
 	ReturnValue_t sendResult = RETURN_OK;
-	if (nextCommand.getCommand() != CommandMessage::CMD_NONE) {
-		sendResult = commandQueue->sendMessage(reply.getSender(),
-				&nextCommand);
+	if (nextCommand->getCommand() != CommandMessage::CMD_NONE) {
+		sendResult = commandQueue->sendMessage(reply->getSender(),
+				nextCommand);
 	}
 
 	if (sendResult == RETURN_OK) {
@@ -161,19 +171,19 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 					TC_VERIFY::COMPLETION_SUCCESS,
 					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
 					iter->tcInfo.tcSequenceControl, 0);
-			checkAndExecuteFifo(&iter);
+			checkAndExecuteFifo(iter);
 		}
 	}
 	else {
 		if (isStep) {
-			nextCommand.clearCommandMessage();
+			nextCommand->clear();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
 					iter->tcInfo.tcPacketId,
 					iter->tcInfo.tcSequenceControl, sendResult,
 					++iter->step, failureParameter1, failureParameter2);
 		} else {
-			nextCommand.clearCommandMessage();
+			nextCommand->clear();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE,
 					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
@@ -182,7 +192,7 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 		}
 		failureParameter1 = 0;
 		failureParameter2 = 0;
-		checkAndExecuteFifo(&iter);
+		checkAndExecuteFifo(iter);
 	}
 }
 
@@ -198,8 +208,8 @@ void CommandingServiceBase::handleRequestQueue() {
 		address = message.getStorageId();
 		packet.setStoreAddress(address);
 
-		if ((packet.getSubService() == 0)
-				|| (isValidSubservice(packet.getSubService()) != RETURN_OK)) {
+		if (packet.getSubService() == 0
+				or isValidSubservice(packet.getSubService()) != RETURN_OK) {
 			rejectPacket(TC_VERIFY::START_FAILURE, &packet, INVALID_SUBSERVICE);
 			continue;
 		}
@@ -212,8 +222,7 @@ void CommandingServiceBase::handleRequestQueue() {
 		}
 
 		//Is a command already active for the target object?
-		typename FixedMap<MessageQueueId_t,
-				CommandingServiceBase::CommandInfo>::Iterator iter;
+		CommandMapIter iter;
 		iter = commandMap.find(queue);
 
 		if (iter != commandMap.end()) {
@@ -228,7 +237,7 @@ void CommandingServiceBase::handleRequestQueue() {
 			if (result != RETURN_OK) {
 				rejectPacket(TC_VERIFY::START_FAILURE, &packet, BUSY);
 			} else {
-				startExecution(&packet, &iter);
+				startExecution(&packet, iter);
 			}
 		}
 
@@ -281,46 +290,44 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 }
 
 
-void CommandingServiceBase::startExecution(
-		TcPacketStored *storedPacket,
-		typename FixedMap<MessageQueueId_t,
-				CommandingServiceBase::CommandInfo>::Iterator *iter) {
-	ReturnValue_t result, sendResult = RETURN_OK;
-	CommandMessage message;
-	(*iter)->subservice = storedPacket->getSubService();
-	result = prepareCommand(&message, (*iter)->subservice,
-			storedPacket->getApplicationData(),
-			storedPacket->getApplicationDataSize(), &(*iter)->state,
-			(*iter)->objectId);
+void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
+        CommandMapIter iter) {
+    ReturnValue_t result = RETURN_OK;
+    CommandMessage command;
+    iter->subservice = storedPacket->getSubService();
+    result = prepareCommand(&command, iter->subservice,
+            storedPacket->getApplicationData(),
+            storedPacket->getApplicationDataSize(), &iter->state,
+            iter->objectId);
 
+    ReturnValue_t sendResult = RETURN_OK;
 	switch (result) {
 	case RETURN_OK:
-		if (message.getCommand() != CommandMessage::CMD_NONE) {
-			sendResult = commandQueue->sendMessage((*iter).value->first,
-					&message);
+		if (command.getCommand() != CommandMessage::CMD_NONE) {
+			sendResult = commandQueue->sendMessage(iter.value->first,
+					&command);
 		}
 		if (sendResult == RETURN_OK) {
-			Clock::getUptime(&(*iter)->uptimeOfStart);
-			(*iter)->step = 0;
-//			(*iter)->state = 0;
-			(*iter)->subservice = storedPacket->getSubService();
-			(*iter)->command = message.getCommand();
-			(*iter)->tcInfo.ackFlags = storedPacket->getAcknowledgeFlags();
-			(*iter)->tcInfo.tcPacketId = storedPacket->getPacketId();
-			(*iter)->tcInfo.tcSequenceControl =
+			Clock::getUptime(&iter->uptimeOfStart);
+			iter->step = 0;
+			iter->subservice = storedPacket->getSubService();
+			iter->command = command.getCommand();
+			iter->tcInfo.ackFlags = storedPacket->getAcknowledgeFlags();
+			iter->tcInfo.tcPacketId = storedPacket->getPacketId();
+			iter->tcInfo.tcSequenceControl =
 					storedPacket->getPacketSequenceControl();
 			acceptPacket(TC_VERIFY::START_SUCCESS, storedPacket);
 		} else {
-			message.clearCommandMessage();
+			command.clear();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
 		break;
 	case EXECUTION_COMPLETE:
-		if (message.getCommand() != CommandMessage::CMD_NONE) {
+		if (command.getCommand() != CommandMessage::CMD_NONE) {
 			//Fire-and-forget command.
-			sendResult = commandQueue->sendMessage((*iter).value->first,
-					&message);
+			sendResult = commandQueue->sendMessage(iter.value->first,
+					&command);
 		}
 		if (sendResult == RETURN_OK) {
 			verificationReporter.sendSuccessReport(TC_VERIFY::START_SUCCESS,
@@ -328,7 +335,7 @@ void CommandingServiceBase::startExecution(
 			acceptPacket(TC_VERIFY::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
-			message.clearCommandMessage();
+			command.clear();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
@@ -355,12 +362,10 @@ void CommandingServiceBase::acceptPacket(uint8_t reportId,
 }
 
 
-void CommandingServiceBase::checkAndExecuteFifo(
-		typename FixedMap<MessageQueueId_t,
-				CommandingServiceBase::CommandInfo>::Iterator *iter) {
+void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter iter) {
 	store_address_t address;
-	if ((*iter)->fifo.retrieve(&address) != RETURN_OK) {
-		commandMap.erase(iter);
+	if (iter->fifo.retrieve(&address) != RETURN_OK) {
+		commandMap.erase(&iter);
 	} else {
 		TcPacketStored newPacket(address);
 		startExecution(&newPacket, iter);
@@ -368,9 +373,8 @@ void CommandingServiceBase::checkAndExecuteFifo(
 }
 
 
-void CommandingServiceBase::handleUnrequestedReply(
-		CommandMessage* reply) {
-	reply->clearCommandMessage();
+void CommandingServiceBase::handleUnrequestedReply(CommandMessage* reply) {
+	reply->clear();
 }
 
 
@@ -384,18 +388,18 @@ MessageQueueId_t CommandingServiceBase::getCommandQueue() {
 void CommandingServiceBase::checkTimeout() {
 	uint32_t uptime;
 	Clock::getUptime(&uptime);
-	typename FixedMap<MessageQueueId_t,
-			CommandingServiceBase::CommandInfo>::Iterator iter;
+	CommandMapIter iter;
 	for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {
 		if ((iter->uptimeOfStart + (timeoutSeconds * 1000)) < uptime) {
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE, iter->tcInfo.ackFlags,
 					iter->tcInfo.tcPacketId, iter->tcInfo.tcSequenceControl,
 					TIMEOUT);
-			checkAndExecuteFifo(&iter);
+			checkAndExecuteFifo(iter);
 		}
 	}
 }
 
-
-
+void CommandingServiceBase::setTaskIF(PeriodicTaskIF* task_) {
+    executingTask = task_;
+}
