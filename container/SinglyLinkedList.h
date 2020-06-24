@@ -88,14 +88,15 @@ public:
 	ElementIterator begin() const {
 		return ElementIterator::Iterator(start);
 	}
-	typename ElementIterator::Iterator end() const {
+
+	ElementIterator end() const {
 		return ElementIterator::Iterator();
 	}
 
-	uint32_t getSize() const {
-		uint32_t size = 0;
+	size_t getSize() const {
+		size_t size = 0;
 		LinkedElement<T> *element = start;
-		while (element != NULL) {
+		while (element != nullptr) {
 			size++;
 			element = element->getNext();
 		}
