@@ -57,6 +57,8 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
 	if (packetForwarding == nullptr or distributor == nullptr) {
+	    sif::error << "CommandingServiceBase::intialize: Packet source or "
+	            "packet destination invalid!" << std::endl;
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
@@ -68,6 +70,8 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 
 	if (IPCStore == nullptr or TCStore == nullptr) {
+	    sif::error << "CommandingServiceBase::intialize: IPC store or TC store "
+	                    "not initialized yet!" << std::endl;
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
