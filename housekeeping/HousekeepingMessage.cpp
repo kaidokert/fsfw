@@ -8,21 +8,16 @@ void HousekeepingMessage::setHkReportMessage(CommandMessage* message, sid_t sid,
 	message->setCommand(HK_REPORT);
 	message->setMessageSize(HK_MESSAGE_SIZE);
 	setSid(message, sid);
-	message->setParameter(storeId.raw);
+	setParameter(message, storeId.raw);
 }
 
 void HousekeepingMessage::setHkDiagnosticsMessage(CommandMessage* message,
 		sid_t sid, store_address_t storeId) {
 	message->setCommand(DIAGNOSTICS_REPORT);
+	message->setMessageSize(HK_MESSAGE_SIZE);
 	setSid(message, sid);
 	setParameter(message, storeId.raw);
 }
-sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
-	sid_t sid;
-	std::memcpy(&sid.raw, message->getData(), sizeof(sid.raw));
-	return sid;
-}
-
 
 sid_t HousekeepingMessage::getHkReportMessage(const CommandMessage *message,
 		store_address_t *storeIdToSet) {
@@ -30,6 +25,12 @@ sid_t HousekeepingMessage::getHkReportMessage(const CommandMessage *message,
 		*storeIdToSet = getParameter(message);
 	}
 	return getSid(message);
+}
+
+sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
+	sid_t sid;
+	std::memcpy(&sid.raw, message->getData(), sizeof(sid.raw));
+	return sid;
 }
 
 void HousekeepingMessage::setSid(CommandMessage *message, sid_t sid) {
