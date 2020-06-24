@@ -6,9 +6,6 @@
 
 #include <set>
 
-using SlotList = std::multiset<FixedSequenceSlot>;
-using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
-
 /**
  * @brief	This class is the representation of a Polling Sequence Table in software.
  * @details
@@ -27,6 +24,8 @@ using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
  */
 class FixedSlotSequence {
 public:
+	using SlotList = std::multiset<FixedSequenceSlot>;
+	using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
 
 	/**
 	 * @brief	The constructor of the FixedSlotSequence object.
