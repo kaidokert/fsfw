@@ -52,6 +52,18 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
             sizeof(parameter2));
 }
 
+uint32_t CommandMessage::getParameter3() const {
+    uint32_t parameter3;
+    std::memcpy(&parameter3, this->getData() + 2 * sizeof(uint32_t),
+            sizeof(parameter3));
+    return parameter3;
+}
+
+void CommandMessage::setParameter3(uint32_t parameter3) {
+    std::memcpy(this->getData()  + 2 * sizeof(uint32_t), &parameter3,
+            sizeof(parameter3));
+}
+
 size_t CommandMessage::getMinimumMessageSize() const {
     return MINIMUM_COMMAND_MESSAGE_SIZE;
 }

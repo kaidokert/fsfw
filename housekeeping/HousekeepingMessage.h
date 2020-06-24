@@ -34,7 +34,7 @@ union sid_t {
  * This message is slightly larger than regular command messages to accomodate
  * the uint64_t structure ID (SID).
  */
-class HousekeepingMessage : public CommandMessage {
+class HousekeepingMessage {
 public:
 
 	static constexpr size_t HK_MESSAGE_SIZE = CommandMessageIF::HEADER_SIZE +
@@ -45,7 +45,7 @@ public:
 	 * the message data, see CommandMessageIF and getInternalMessage().
 	 * @param message
 	 */
-	HousekeepingMessage();
+	HousekeepingMessage() = delete;
 	virtual ~HousekeepingMessage();
 
 	static constexpr uint8_t MESSAGE_ID = messagetypes::HOUSEKEEPING;
@@ -94,25 +94,22 @@ public:
 	static constexpr Command_t MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL =
 			MAKE_COMMAND_ID(32);
 
+	static sid_t getSid(const CommandMessage* message);
 
-	void setParameter(uint32_t parameter);
-	uint32_t getParameter() const;
-	sid_t getSid() const;
+	static void setHkReportMessage(CommandMessage* message, sid_t sid,
+			store_address_t storeId);
+	static void setHkDiagnosticsMessage(CommandMessage* message, sid_t sid,
+			store_address_t storeId);
 
-	void setHkReportMessage(sid_t sid, store_address_t storeId);
-	void setHkDiagnosticsMessage(sid_t sid, store_address_t storeId);
 	//! Get the respective SID and store ID. Command ID can be used beforehand
 	//! to distinguish between diagnostics and regular HK packets
-	sid_t getHkReportMessage(store_address_t * storeIdToSet) const;
+	static sid_t getHkReportMessage(const CommandMessage* message,
+			store_address_t * storeIdToSet);
 
-	//virtual size_t getMinimumMessageSize() const override;
-	virtual void clear() override;
 private:
-
-	void setSid(sid_t sid);
-
-	virtual uint8_t* getData() override;
-	virtual const uint8_t* getData() const override;
+	static void setSid(CommandMessage* message, sid_t sid);
+	static void setParameter(CommandMessage* message, uint32_t parameter);
+	static uint32_t getParameter(const CommandMessage* message);
 };
 
 

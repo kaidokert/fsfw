@@ -1,67 +1,47 @@
 #include <framework/housekeeping/HousekeepingMessage.h>
 #include <cstring>
 
-HousekeepingMessage::HousekeepingMessage(): CommandMessage() {
-}
-
 HousekeepingMessage::~HousekeepingMessage() {}
 
-void HousekeepingMessage::setParameter(uint32_t parameter) {
-	std::memcpy(getData(), &parameter, sizeof(parameter));
-}
-
-uint32_t HousekeepingMessage::getParameter() const {
-	uint32_t parameter;
-	std::memcpy(&parameter, getData(), sizeof(parameter));
-	return parameter;
-}
-
-void HousekeepingMessage::setHkReportMessage(sid_t sid,
+void HousekeepingMessage::setHkReportMessage(CommandMessage* message, sid_t sid,
 		store_address_t storeId) {
-	CommandMessage::setCommand(HK_REPORT);
-	setSid(sid);
-	setParameter(storeId.raw);
+	message->setCommand(HK_REPORT);
+	message->setMessageSize(HK_MESSAGE_SIZE);
+	setSid(message, sid);
+	message->setParameter(storeId.raw);
 }
 
-void HousekeepingMessage::setHkDiagnosticsMessage(sid_t sid,
-		store_address_t storeId) {
-	CommandMessage::setCommand(DIAGNOSTICS_REPORT);
-	setSid(sid);
-	setParameter(storeId.raw);
+void HousekeepingMessage::setHkDiagnosticsMessage(CommandMessage* message,
+		sid_t sid, store_address_t storeId) {
+	message->setCommand(DIAGNOSTICS_REPORT);
+	setSid(message, sid);
+	setParameter(message, storeId.raw);
 }
-
-//size_t HousekeepingMessage::getMinimumMessageSize() const {
-//	return HK_MESSAGE_SIZE;
-//}
-
-sid_t HousekeepingMessage::getSid() const {
+sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
 	sid_t sid;
-	std::memcpy(&sid.raw, CommandMessage::getData(), sizeof(sid.raw));
+	std::memcpy(&sid.raw, message->getData(), sizeof(sid.raw));
 	return sid;
 }
 
 
-sid_t HousekeepingMessage::getHkReportMessage(
-		store_address_t *storeIdToSet) const {
+sid_t HousekeepingMessage::getHkReportMessage(const CommandMessage *message,
+		store_address_t *storeIdToSet) {
 	if(storeIdToSet != nullptr) {
-		*storeIdToSet = getParameter();
+		*storeIdToSet = getParameter(message);
 	}
-	return getSid();
+	return getSid(message);
 }
 
-void HousekeepingMessage::setSid(sid_t sid) {
-	std::memcpy(CommandMessage::getData(), &sid.raw, sizeof(sid.raw));
+void HousekeepingMessage::setSid(CommandMessage *message, sid_t sid) {
+	std::memcpy(message->getData(), &sid.raw, sizeof(sid.raw));
 }
 
 
-uint8_t* HousekeepingMessage::getData() {
-	return CommandMessage::getData() + sizeof(sid_t);
+void HousekeepingMessage::setParameter(CommandMessage *message,
+		uint32_t parameter) {
+	message->setParameter3(parameter);
 }
 
-const uint8_t* HousekeepingMessage::getData() const {
-	return CommandMessage::getData() + sizeof(sid_t);
-}
-
-void HousekeepingMessage::clear() {
-	// clear IPC store where it is needed.
+uint32_t HousekeepingMessage::getParameter(const CommandMessage *message) {
+	return message->getParameter3();
 }
