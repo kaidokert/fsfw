@@ -123,11 +123,9 @@ void CommandMessage::setReplyRejected(ReturnValue_t reason,
 
 ReturnValue_t CommandMessage::getReplyRejectedReason(
         Command_t *initialCommand) const {
-    ReturnValue_t reason = HasReturnvaluesIF::RETURN_FAILED;
-    std::memcpy(&reason, getData(), sizeof(reason));
+    ReturnValue_t reason = getParameter();
     if(initialCommand != nullptr) {
-        std::memcpy(initialCommand, getData() + sizeof(reason),
-                sizeof(Command_t));
+        *initialCommand = getParameter2();
     }
     return reason;
 }
