@@ -180,14 +180,14 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 	}
 	else {
 		if (isStep) {
-			nextCommand->clear();
+			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
 					iter->tcInfo.tcPacketId,
 					iter->tcInfo.tcSequenceControl, sendResult,
 					++iter->step, failureParameter1, failureParameter2);
 		} else {
-			nextCommand->clear();
+			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE,
 					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
@@ -267,7 +267,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
         object_id_t objectId, const uint8_t *data, size_t dataLen) {
     uint8_t buffer[sizeof(object_id_t)];
     uint8_t* pBuffer = buffer;
-    size_t size = 0;
+    uint32_t size = 0;
     SerializeAdapter<object_id_t>::serialize(&objectId, &pBuffer, &size,
             sizeof(object_id_t), true);
     TmPacketStored tmPacketStored(this->apid, this->service, subservice,
@@ -322,7 +322,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 					storedPacket->getPacketSequenceControl();
 			acceptPacket(TC_VERIFY::START_SUCCESS, storedPacket);
 		} else {
-			command.clear();
+			command.clearCommandMessage();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
@@ -339,7 +339,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 			acceptPacket(TC_VERIFY::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
-			command.clear();
+			command.clearCommandMessage();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
@@ -378,7 +378,7 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter iter) {
 
 
 void CommandingServiceBase::handleUnrequestedReply(CommandMessage* reply) {
-	reply->clear();
+	reply->clearCommandMessage();
 }
 
 
