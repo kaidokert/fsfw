@@ -38,7 +38,7 @@ MessageQueueId_t HealthDevice::getCommandQueue() const {
 }
 
 void HealthDevice::setParentQueue(MessageQueueId_t parentQueue) {
-	healthHelper.setParentQeueue(parentQueue);
+	healthHelper.setParentQueue(parentQueue);
 }
 
 bool HealthDevice::hasHealthChanged() {

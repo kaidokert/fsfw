@@ -28,11 +28,11 @@ HasHealthIF::HealthState HealthHelper::getHealth() {
 }
 
 ReturnValue_t HealthHelper::initialize(MessageQueueId_t parentQueue) {
-	setParentQeueue(parentQueue);
+	setParentQueue(parentQueue);
 	return initialize();
 }
 
-void HealthHelper::setParentQeueue(MessageQueueId_t parentQueue) {
+void HealthHelper::setParentQueue(MessageQueueId_t parentQueue) {
 	this->parentQueue = parentQueue;
 }
 
