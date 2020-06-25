@@ -58,7 +58,7 @@ public:
 		this->next = next;
 	}
 
-	virtual void setEnd() {
+	virtual void setLast() {
 	    this->next = nullptr;
 	}
 
@@ -89,8 +89,21 @@ public:
 		return ElementIterator::Iterator(start);
 	}
 
+	/** Returns iterator to nulltr */
 	ElementIterator end() const {
 		return ElementIterator::Iterator();
+	}
+
+	/**
+	 * Returns last element in singly linked list.
+	 * @return
+	 */
+	ElementIterator back() const {
+	    LinkedElement<T> *element = start;
+	    while (element != nullptr) {
+	        element = element->getNext();
+	    }
+	    return ElementIterator::Iterator(element);
 	}
 
 	size_t getSize() const {
@@ -102,15 +115,37 @@ public:
 		}
 		return size;
 	}
-	void setStart(LinkedElement<T>* setStart) {
-		start = setStart;
+	void setStart(LinkedElement<T>* firstElement) {
+		start = firstElement;
 	}
 
-    void setEnd(LinkedElement<T>* setEnd) {
-        setEnd->setEnd();
+	void setNext(LinkedElement<T>* currentElement,
+	        LinkedElement<T>* nextElement) {
+	    currentElement->setNext(nextElement);
+	}
+
+    void setEnd(LinkedElement<T>* lastElement) {
+        lastElement->setLast();
     }
 
-    // SHOULDDO: Insertion operation ?
+    void insertElement(LinkedElement<T>* element, size_t position) {
+        LinkedElement<T> *currentElement = start;
+        for(size_t count = 0; count < position; count++) {
+            if(currentElement == nullptr) {
+                return;
+            }
+            currentElement = currentElement->getNext();
+        }
+        LinkedElement<T>* elementAfterCurrent = currentElement->next;
+        currentElement->setNext(element);
+        if(elementAfterCurrent != nullptr) {
+            element->setNext(elementAfterCurrent);
+        }
+    }
+
+    void insertBack(LinkedElement<T>* lastElement) {
+        back().value->setNext(lastElement);
+    }
 
 protected:
 	LinkedElement<T> *start = nullptr;
