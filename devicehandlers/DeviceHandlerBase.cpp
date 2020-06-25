@@ -1134,7 +1134,7 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 
 void DeviceHandlerBase::setParentQueue(MessageQueueId_t parentQueueId) {
 	modeHelper.setParentQueue(parentQueueId);
-	healthHelper.setParentQeueue(parentQueueId);
+	healthHelper.setParentQueue(parentQueueId);
 }
 
 bool DeviceHandlerBase::isAwaitingReply() {
