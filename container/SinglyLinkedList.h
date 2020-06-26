@@ -16,8 +16,13 @@ public:
 	class Iterator {
 	public:
 		LinkedElement<T> *value = nullptr;
+		//! Creates an uninitialized iterator which points to nullptr.
 		Iterator() {}
 
+		/**
+		 * Initialize iterator at specified linked element.
+		 * @param element
+		 */
 		Iterator(LinkedElement<T> *element) :
 				value(element) {
 		}
@@ -72,6 +77,11 @@ private:
 	LinkedElement *next;
 };
 
+/**
+ * @brief 	SinglyLinkedList data structure which keeps a pointer to its
+ * 			first element to perform all operations.
+ * @tparam T
+ */
 template<typename T>
 class SinglyLinkedList {
 public:
@@ -88,14 +98,19 @@ public:
 	ElementIterator begin() const {
 		return ElementIterator::Iterator(start);
 	}
-	typename ElementIterator::Iterator end() const {
-		return ElementIterator::Iterator();
+
+	ElementIterator end() const {
+		LinkedElement<T> *element = start;
+		while (element != nullptr) {
+			element = element->getNext();
+		}
+		return ElementIterator::Iterator(element);
 	}
 
-	uint32_t getSize() const {
-		uint32_t size = 0;
+	size_t getSize() const {
+		size_t size = 0;
 		LinkedElement<T> *element = start;
-		while (element != NULL) {
+		while (element != nullptr) {
 			size++;
 			element = element->getNext();
 		}

@@ -66,29 +66,21 @@ public:
 
     virtual uint8_t* getData() override;
     virtual const uint8_t* getData() const override;
+
 	/**
 	 * Get the first parameter of the message
 	 * @return the first Parameter of the message
 	 */
 	uint32_t getParameter() const;
-
 	/**
 	 * Set the first parameter of the message
 	 * @param the first parameter of the message
 	 */
 	void setParameter(uint32_t parameter1);
-
-	/**
-	 * Get the second parameter of the message
-	 * @return the second Parameter of the message
-	 */
 	uint32_t getParameter2() const;
-
-	/**
-	 * Set the second parameter of the message
-	 * @param the second parameter of the message
-	 */
 	void setParameter2(uint32_t parameter2);
+	uint32_t getParameter3() const;
+	void setParameter3(uint32_t parameter3);
 
 	/**
 	 * check if a message was cleared
