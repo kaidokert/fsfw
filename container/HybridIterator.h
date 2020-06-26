@@ -87,4 +87,4 @@ private:
 	T *end = nullptr;
 };
 
-#endif /* HYBRIDITERATOR_H_ */
+#endif /* FRAMEWORK_CONTAINER_HYBRIDITERATOR_H_ */
