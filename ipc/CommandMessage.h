@@ -111,7 +111,9 @@ public:
     ReturnValue_t getReplyRejectedReason(
             Command_t* initialCommand = nullptr) const override;
 
+
     virtual void clear() override;
+    void clearCommandMessage();
 
     /**
      * Extract message ID, which is the first byte of the command ID for the

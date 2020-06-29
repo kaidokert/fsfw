@@ -68,6 +68,10 @@ size_t CommandMessage::getMinimumMessageSize() const {
     return MINIMUM_COMMAND_MESSAGE_SIZE;
 }
 
+void CommandMessage::clearCommandMessage() {
+    clear();
+}
+
 void CommandMessage::clear() {
     CommandMessageCleaner::clearCommandMessage(this);
 }
