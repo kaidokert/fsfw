@@ -1375,8 +1375,8 @@ ReturnValue_t DeviceHandlerBase::changeCollectionInterval(sid_t sid,
 }
 
 ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
-    // In this function, the task handle should be valid in any case.
-    // We still check to be 1000 % sure :-)
+    // In this function, the task handle should be valid if the task
+    // was implemented correctly. We still check to be 1000 % sure :-)
     if(executingTask != nullptr) {
         pstIntervalMs = executingTask->getPeriodMs();
     }
