@@ -36,7 +36,9 @@ ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object,
 	if(setTaskIF) {
 	    newObject->setTaskIF(this);
 	}
-	return HasReturnvaluesIF::RETURN_OK;
+
+	ReturnValue_t result = newObject->initializeAfterTaskCreation();
+	return result;
 }
 
 ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {

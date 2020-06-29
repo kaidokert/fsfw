@@ -1,15 +1,5 @@
-/**
- * @file	ExecutableObjectIF.h
- *
- * @brief	This file contains the definition for the ExecutableObjectIF interface.
- *
- * @author	Bastian Baetz
- *
- * @date	12.03.2012
- */
-
-#ifndef EXECUTABLEOBJECTIF_H_
-#define EXECUTABLEOBJECTIF_H_
+#ifndef FRAMEWORK_TASKS_EXECUTABLEOBJECTIF_H_
+#define FRAMEWORK_TASKS_EXECUTABLEOBJECTIF_H_
 
 class PeriodicTaskIF;
 
@@ -20,6 +10,7 @@ class PeriodicTaskIF;
  * @brief	The interface provides a method to execute objects within a task.
  * @details	The performOperation method, that is required by the interface is
  * 			executed cyclically within a task context.
+ * @author  Bastian Baetz
  */
 class ExecutableObjectIF {
 public:
@@ -46,15 +37,17 @@ public:
 	virtual void setTaskIF(PeriodicTaskIF* task_) {};
 
 	/**
-	 * This function will be called after the object was assigned to a specific
-	 * task.
+	 * This function should be called after the object was assigned to a
+	 * specific task.
 	 *
 	 * Example: Can be used to get task execution frequency.
 	 * The task is created after initialize() and the object ctors have been
 	 * called so the execution frequency can't be cached in initialize()
 	 * @return
 	 */
-	//virtual ReturnValue_t initializeAfterTaskCreation() = 0;
+	virtual ReturnValue_t initializeAfterTaskCreation() {
+	    return HasReturnvaluesIF::RETURN_OK;
+	}
 };
 
-#endif /* EXECUTABLEOBJECTIF_H_ */
+#endif /* FRAMEWORK_TASKS_EXECUTABLEOBJECTIF_H_ */
