@@ -98,14 +98,10 @@ private:
 	LocalDataPoolManager* hkManager;
 
 	/**
-	 * Sets the bit at the bit-position of a byte provided by its address
-	 * to the specified value (zero or one).
-	 * @param byte Pointer to byte to bitset.
-	 * @param position MSB first, 0 to 7 possible.
-	 * @param value Value to set.
-	 * @return
+	 * Set n-th bit of a byte, with n being the position from 0
+	 * (most significant bit) to 7 (least significant bit)
 	 */
-	void bitSetter(uint8_t* byte, uint8_t position, bool value) const;
+	void bitSetter(uint8_t* byte, uint8_t position) const;
 };
 
 #endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_ */
