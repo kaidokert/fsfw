@@ -43,9 +43,18 @@ public:
 	 * a reference to the executing task
 	 * @param task_ Pointer to the taskIF of this task
 	 */
-	virtual void setTaskIF(PeriodicTaskIF* task_) {
+	virtual void setTaskIF(PeriodicTaskIF* task_) {};
 
-	}
+	/**
+	 * This function will be called after the object was assigned to a specific
+	 * task.
+	 *
+	 * Example: Can be used to get task execution frequency.
+	 * The task is created after initialize() and the object ctors have been
+	 * called so the execution frequency can't be cached in initialize()
+	 * @return
+	 */
+	//virtual ReturnValue_t initializeAfterTaskCreation() = 0;
 };
 
 #endif /* EXECUTABLEOBJECTIF_H_ */

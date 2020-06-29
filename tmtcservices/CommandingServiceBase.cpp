@@ -109,8 +109,8 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	 * command as failure parameter 1 */
 	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
 			result == RETURN_FAILED) {
-		result = reply->getReplyRejectedReason(
-				reinterpret_cast<Command_t*>(&failureParameter1));
+		result = reply->getReplyRejectedReason();
+		failureParameter1 = iter->command;
 	}
 
 	switch (result) {

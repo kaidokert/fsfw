@@ -92,7 +92,7 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 void FixedTimeslotTask::taskFunctionality() {
     // A local iterator for the Polling Sequence Table is created to
     // find the start time for the first entry.
-    SlotListIter slotListIter = pollingSeqTable.current;
+    FixedSlotSequence::SlotListIter slotListIter = pollingSeqTable.current;
     // Get start time for first entry.
     chron_ms interval(slotListIter->pollingTimeMs);
     auto currentStartTime {

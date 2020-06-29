@@ -36,7 +36,7 @@ public:
 private:
 	//! External instantiation is forbidden.
 	QueueMapManager();
-	std::atomic<uint32_t> queueCounter = MessageQueueIF::NO_QUEUE + 1;
+	std::atomic<uint32_t> queueCounter = 1;
 	MutexIF* mapLock;
 	QueueMap queueMap;
 	static QueueMapManager* mqManagerInstance;

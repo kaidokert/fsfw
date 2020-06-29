@@ -84,9 +84,8 @@ void CommandMessage::setToUnknownCommand() {
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,
         Command_t initialCommand) {
-    std::memcpy(getData(), &reason, sizeof(reason));
-    std::memcpy(getData() + sizeof(reason), &initialCommand,
-            sizeof(initialCommand));
+    setParameter(reason);
+    setParameter2(initialCommand);
 }
 
 ReturnValue_t CommandMessage::getReplyRejectedReason(
