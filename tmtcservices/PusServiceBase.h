@@ -96,11 +96,20 @@ public:
 	 * @return	@c RETURN_OK if the periodic performService was successful.
 	 * 			@c RETURN_FAILED else.
 	 */
-	ReturnValue_t performOperation(uint8_t opCode);
-	virtual uint16_t getIdentifier();
-	MessageQueueId_t getRequestQueue();
-	virtual ReturnValue_t initialize();
+	ReturnValue_t performOperation(uint8_t opCode) override;
+	virtual uint16_t getIdentifier() override;
+	MessageQueueId_t getRequestQueue() override;
+	virtual ReturnValue_t initialize() override;
+
+	virtual void setTaskIF(PeriodicTaskIF* taskHandle) override;
+	virtual ReturnValue_t initializeAfterTaskCreation() override;
 protected:
+	/**
+	 * @brief   Handle to the underlying task
+	 * @details
+	 * Will be set by setTaskIF(), which is called on task creation.
+	 */
+	PeriodicTaskIF* taskHandle = nullptr;
 	/**
 	 * The APID of this instance of the Service.
 	 */

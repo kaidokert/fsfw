@@ -32,6 +32,10 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 	return RETURN_OK;
 }
 
+void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle) {
+    this->taskHandle = taskHandle;
+}
+
 void PusServiceBase::handleRequestQueue() {
 	TmTcMessage message;
 	ReturnValue_t result = RETURN_FAILED;
@@ -107,4 +111,11 @@ ReturnValue_t PusServiceBase::initialize() {
 			       "correctly" << std::endl;
 		return RETURN_FAILED;
 	}
+}
+
+ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
+    // If task parameters, for example task frequency are required, this
+    // function should be overriden and the system object task IF can
+    // be used to get those parameters.
+    return HasReturnvaluesIF::RETURN_OK;
 }
