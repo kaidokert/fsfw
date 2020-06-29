@@ -57,7 +57,9 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
 	if (packetForwarding == nullptr or distributor == nullptr) {
-		return RETURN_FAILED;
+	    sif::error << "CommandingServiceBase::intialize: Packet source or "
+	            "packet destination invalid!" << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	distributor->registerService(this);
@@ -68,7 +70,9 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 
 	if (IPCStore == nullptr or TCStore == nullptr) {
-		return RETURN_FAILED;
+	    sif::error << "CommandingServiceBase::intialize: IPC store or TC store "
+	                    "not initialized yet!" << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	return RETURN_OK;
@@ -109,8 +113,8 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	 * command as failure parameter 1 */
 	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
 			result == RETURN_FAILED) {
-		result = reply->getReplyRejectedReason();
-		failureParameter1 = iter->command;
+	    result = reply->getReplyRejectedReason();
+	    failureParameter1 = iter->command;
 	}
 
 	switch (result) {
@@ -176,14 +180,14 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 	}
 	else {
 		if (isStep) {
-			nextCommand->clear();
+			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::PROGRESS_FAILURE, iter->tcInfo.ackFlags,
 					iter->tcInfo.tcPacketId,
 					iter->tcInfo.tcSequenceControl, sendResult,
 					++iter->step, failureParameter1, failureParameter2);
 		} else {
-			nextCommand->clear();
+			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE,
 					iter->tcInfo.ackFlags, iter->tcInfo.tcPacketId,
@@ -318,7 +322,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 					storedPacket->getPacketSequenceControl();
 			acceptPacket(TC_VERIFY::START_SUCCESS, storedPacket);
 		} else {
-			command.clear();
+			command.clearCommandMessage();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
@@ -335,7 +339,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 			acceptPacket(TC_VERIFY::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
-			command.clear();
+			command.clearCommandMessage();
 			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
@@ -374,7 +378,7 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter iter) {
 
 
 void CommandingServiceBase::handleUnrequestedReply(CommandMessage* reply) {
-	reply->clear();
+	reply->clearCommandMessage();
 }
 
 
