@@ -68,6 +68,10 @@ size_t CommandMessage::getMinimumMessageSize() const {
     return MINIMUM_COMMAND_MESSAGE_SIZE;
 }
 
+void CommandMessage::clearCommandMessage() {
+    clear();
+}
+
 void CommandMessage::clear() {
     CommandMessageCleaner::clearCommandMessage(this);
 }
@@ -84,18 +88,15 @@ void CommandMessage::setToUnknownCommand() {
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,
         Command_t initialCommand) {
-    std::memcpy(getData(), &reason, sizeof(reason));
-    std::memcpy(getData() + sizeof(reason), &initialCommand,
-            sizeof(initialCommand));
+    setParameter(reason);
+    setParameter2(initialCommand);
 }
 
 ReturnValue_t CommandMessage::getReplyRejectedReason(
         Command_t *initialCommand) const {
-    ReturnValue_t reason = HasReturnvaluesIF::RETURN_FAILED;
-    std::memcpy(&reason, getData(), sizeof(reason));
+    ReturnValue_t reason = getParameter();
     if(initialCommand != nullptr) {
-        std::memcpy(initialCommand, getData() + sizeof(reason),
-                sizeof(Command_t));
+        *initialCommand = getParameter2();
     }
     return reason;
 }

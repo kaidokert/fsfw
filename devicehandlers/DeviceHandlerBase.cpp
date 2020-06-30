@@ -1374,6 +1374,15 @@ ReturnValue_t DeviceHandlerBase::changeCollectionInterval(sid_t sid,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
+ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
+    // In this function, the task handle should be valid if the task
+    // was implemented correctly. We still check to be 1000 % sure :-)
+    if(executingTask != nullptr) {
+        pstIntervalMs = executingTask->getPeriodMs();
+    }
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
 DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
 	auto iter = deviceReplyMap.find(sid.ownerSetId);
 	if(iter != deviceReplyMap.end()) {

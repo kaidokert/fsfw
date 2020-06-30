@@ -42,7 +42,7 @@ ReturnValue_t LocalDataSet::serializeWithValidityBuffer(uint8_t **buffer,
         if(registeredVariables[count]->isValid()) {
             // set validity buffer here.
             this->bitSetter(validityMask + validBufferIndex,
-                    validBufferIndexBit, true);
+                    validBufferIndexBit);
             if(validBufferIndexBit == 7) {
                 validBufferIndex ++;
                 validBufferIndexBit = 0;
@@ -83,13 +83,12 @@ ReturnValue_t LocalDataSet::serializeLocalPoolIds(uint8_t** buffer,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void LocalDataSet::bitSetter(uint8_t* byte, uint8_t position,
-        bool value) const {
+void LocalDataSet::bitSetter(uint8_t* byte, uint8_t position) const {
     if(position > 7) {
         sif::debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
         return;
     }
     uint8_t shiftNumber = position + (7 - 2 * position);
-    *byte |= 1UL << shiftNumber;
+    *byte |= 1 << shiftNumber;
 }
 

@@ -11,6 +11,8 @@
 #include <framework/modes/HasModesIF.h>
 #include <framework/power/PowerSwitchIF.h>
 #include <framework/ipc/MessageQueueIF.h>
+#include <framework/tasks/PeriodicTaskIF.h>
+
 #include <framework/action/ActionHelper.h>
 #include <framework/health/HealthHelper.h>
 #include <framework/parameters/ParameterHelper.h>
@@ -18,6 +20,7 @@
 #include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
 #include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
+
 #include <map>
 
 namespace Factory{
@@ -563,6 +566,8 @@ protected:
 
 	/** This is the counter value from performOperation(). */
 	uint8_t pstStep = 0;
+	uint32_t pstIntervalMs = 0;
+
 	/**
 	 * Wiretapping flag:
 	 *
@@ -1196,9 +1201,11 @@ private:
 
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
 
-	void parseReply(const uint8_t* receivedData,
-			size_t receivedDataLen);
+	virtual ReturnValue_t initializeAfterTaskCreation() override;
 	DataSetIF* getDataSetHandle(sid_t sid) override;
+
+	void parseReply(const uint8_t* receivedData,
+	            size_t receivedDataLen);
 };
 
 #endif /* DEVICEHANDLERBASE_H_ */

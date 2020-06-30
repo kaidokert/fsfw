@@ -276,7 +276,6 @@ protected:
 	void checkAndExecuteFifo(CommandMapIter iter);
 
 private:
-
 	/**
 	 * This method handles internal execution of a command,
 	 * once it has been started by @sa{startExecution()} in the request
@@ -296,10 +295,13 @@ private:
 	void handleCommandQueue();
 
 	/**
+	 * @brief       Handler function for request queue
+	 * @details
 	 * Sequence of request queue handling:
 	 * isValidSubservice -> getMessageQueueAndObject -> startExecution
-	 * Generates Start Success Reports TM[1,3] in subfunction @sa{startExecution()}
-	 * or Start Failure Report TM[1,4] by using the TC Verification Service
+	 * Generates a Start Success Reports TM[1,3] in subfunction
+	 * @sa{startExecution()} or  a Start Failure Report TM[1,4] by using the
+	 * TC Verification Service.
 	 */
 	void handleRequestQueue();
 

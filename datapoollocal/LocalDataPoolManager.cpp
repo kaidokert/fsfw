@@ -105,18 +105,18 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
 	}
 
 	// and now we set a HK message and send it the HK packet destination.
-	//HousekeepingMessage hkMessage;
-//	hkMessage.setHkReportMessage(sid, storeId);
-//	if(hkQueue == nullptr) {
-//	    return QUEUE_NOT_SET;
-//	}
-//
-//	if(currentHkPacketDestination != MessageQueueIF::NO_QUEUE) {
-//	    result = hkQueue->sendMessage(currentHkPacketDestination, &hkMessage);
-//	}
-//	else {
-//	    result = hkQueue->sendToDefault(&hkMessage);
-//	}
+	CommandMessage hkMessage;
+	HousekeepingMessage::setHkReportMessage(&hkMessage, sid, storeId);
+	if(hkQueue == nullptr) {
+	    return QUEUE_NOT_SET;
+	}
+
+	if(currentHkPacketDestination != MessageQueueIF::NO_QUEUE) {
+	    result = hkQueue->sendMessage(currentHkPacketDestination, &hkMessage);
+	}
+	else {
+	    result = hkQueue->sendToDefault(&hkMessage);
+	}
 
 	return result;
 }

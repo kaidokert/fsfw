@@ -9,6 +9,7 @@ FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,
 	if(executingTask != nullptr) {
 	    handler->setTaskIF(executingTask);
 	}
+	handler->initializeAfterTaskCreation();
 }
 
 FixedSequenceSlot::~FixedSequenceSlot() {}
