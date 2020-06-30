@@ -89,7 +89,7 @@ public:
 	 */
 	virtual MessageQueueId_t getCommandQueue();
 
-	virtual ReturnValue_t initialize();
+	virtual ReturnValue_t initialize() override;
 
 	/**
 	 * Implementation of ExecutableObjectIF function

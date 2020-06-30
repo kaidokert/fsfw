@@ -107,6 +107,7 @@ public:
 	 */
 	DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
 			CookieIF * comCookie, uint8_t setDeviceSwitch,
+			object_id_t hkDestination = objects::NO_OBJECT,
 			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
 			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
 			FailureIsolationBase* fdirInstance = nullptr,
@@ -652,11 +653,13 @@ protected:
 		size_t replyLen = 0; //!< Expected size of the reply.
 		//! if this is !=0, the delayCycles will not be reset to 0 but to
 		//! maxDelayCycles
-		bool periodic;
+		bool periodic = false;
 		//! The dataset used to access housekeeping data related to the
 		//! respective device reply. Will point to a dataset held by
 		//! the child handler (if one is specified)
-		DataSetIF* dataSet;
+		DataSetIF* dataSet = nullptr;
+		float collectionInterval = 0.0;
+		uint32_t intervalCounter = 0;
 		//! The command that expects this reply.
 		DeviceCommandMap::iterator command;
 	};
@@ -1035,18 +1038,19 @@ private:
 	};
 
 	/**
-	 * Info about the #cookie
-	 *
+	 * @brief   Info about the #cookie
 	 * Used to track the state of the communication
 	 */
 	CookieInfo cookieInfo;
 
-	/** the object used to set power switches*/
+	/** the object used to set power switches */
 	PowerSwitchIF *powerSwitcher = nullptr;
 
+	/** Cached for initialize() */
+	object_id_t hkDestination = objects::NO_OBJECT;
+
 	/**
-	 * Used for timing out mode transitions.
-	 *
+	 * @brief   Used for timing out mode transitions.
 	 * Set when setMode() is called.
 	 */
 	uint32_t timeoutStart = 0;
@@ -1057,11 +1061,12 @@ private:
 	uint32_t childTransitionDelay;
 
 	/**
-	 * The mode the current transition originated from
+	 * @brief   The mode the current transition originated from
 	 *
 	 * This is private so the child can not change it and fuck up the timeouts
 	 *
-	 * IMPORTANT: This is not valid during _MODE_SHUT_DOWN and _MODE_START_UP!! (it is _MODE_POWER_DOWN during this modes)
+	 * IMPORTANT: This is not valid during _MODE_SHUT_DOWN and _MODE_START_UP!!
+	 * (it is _MODE_POWER_DOWN during this modes)
 	 *
 	 * is element of [MODE_ON, MODE_NORMAL, MODE_RAW]
 	 */

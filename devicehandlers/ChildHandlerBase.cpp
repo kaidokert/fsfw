@@ -5,10 +5,11 @@
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * cookie,
 		uint32_t maxDeviceReplyLen, uint8_t setDeviceSwitch,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
-		uint32_t parent, FailureIsolationBase* customFdir, size_t cmdQueueSize) :
+		object_id_t hkDestination, uint32_t thermalStatePoolId,
+		uint32_t thermalRequestPoolId, uint32_t parent,
+		FailureIsolationBase* customFdir, size_t cmdQueueSize) :
 		DeviceHandlerBase(setObjectId, deviceCommunication, cookie,
-			setDeviceSwitch,  thermalStatePoolId,
+		    hkDestination, setDeviceSwitch,  thermalStatePoolId,
 			thermalRequestPoolId, (customFdir == NULL? &childHandlerFdir : customFdir),
 			cmdQueueSize),
 		parentId(parent), childHandlerFdir(setObjectId) {
