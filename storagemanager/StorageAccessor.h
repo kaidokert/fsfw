@@ -26,7 +26,7 @@ public:
 	 * @return
 	 */
 	StorageAccessor& operator= (StorageAccessor&&);
-	StorageAccessor (StorageAccessor&&);
+	StorageAccessor(StorageAccessor&&);
 
 	ReturnValue_t write(uint8_t *data, size_t size,
 		uint16_t offset = 0);
