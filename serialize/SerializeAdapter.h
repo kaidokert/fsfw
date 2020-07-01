@@ -62,61 +62,113 @@
  * @ingroup serialize
  */
 
-// No type specification necessary here.
-class AutoSerializeAdapter {
-public:
-    /**
-     * Serialize object into buffer.
-     * @tparam T Type of object.
-     * @param object Object to serialize
-     * @param buffer
-     * Serialize into this buffer, pointer to pointer has to be passed,
-     * *buffer will be incremented automatically.
-     * @param size [out]
-     * Update passed size value, will be incremented by serialized size
-     * @param max_size
-     * Maximum size for range checking
-     * @param bigEndian
-     * Set to true if host-to-network conversion or vice-versa is needed
-     * @return
-     */
-	template<typename T>
-	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
-			size_t* size, const size_t max_size, bool bigEndian) {
-		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
-		return adapter.serialize(object, buffer, size, max_size, bigEndian);
-	}
-	template<typename T>
-	static size_t getSerializedSize(const T* object) {
-		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
-		return adapter.getSerializedSize(object);
-	}
-	template<typename T>
-	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
-			size_t* size, bool bigEndian) {
-		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
-		return adapter.deSerialize(object, buffer, size, bigEndian);
-	}
-};
-
-template<typename T>
 class SerializeAdapter {
 public:
-	static ReturnValue_t serialize(const T* object, uint8_t** buffer,
-			size_t* size, const size_t max_size, bool bigEndian) {
-		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
-		return adapter.serialize(object, buffer, size, max_size, bigEndian);
+	template<typename T>
+	static ReturnValue_t serialize(const T *object, uint8_t **buffer,
+			size_t *size, size_t maxSize, SerializeIF::Endianness streamEndianness) {
+		InternalSerializeAdapter<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+		return adapter.serialize(object, buffer, size, maxSize,
+				streamEndianness);
 	}
-	static uint32_t getSerializedSize(const T* object) {
-		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+	template<typename T>
+	static uint32_t getSerializedSize(const T *object) {
+		InternalSerializeAdapter<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
 		return adapter.getSerializedSize(object);
 	}
-
-	static ReturnValue_t deSerialize(T* object, const uint8_t** buffer,
-			size_t* size, bool bigEndian) {
-		SerializeAdapter_<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
-		return adapter.deSerialize(object, buffer, size, bigEndian);
+	template<typename T>
+	static ReturnValue_t deSerialize(T *object, const uint8_t **buffer,
+			size_t *size, SerializeIF::Endianness streamEndianness) {
+		InternalSerializeAdapter<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+		return adapter.deSerialize(object, buffer, size, streamEndianness);
 	}
+private:
+	template<typename T, int>
+	class InternalSerializeAdapter {
+	public:
+		static ReturnValue_t serialize(const T *object, uint8_t **buffer,
+				size_t *size, size_t max_size, SerializeIF::Endianness streamEndianness) {
+			size_t ignoredSize = 0;
+			if (size == NULL) {
+				size = &ignoredSize;
+			}
+			//TODO check integer overflow of *size
+			if (sizeof(T) + *size <= max_size) {
+				T tmp;
+				switch (streamEndianness) {
+				case SerializeIF::Endianness::BIG:
+					tmp = EndianConverter::convertBigEndian<T>(*object);
+					break;
+				case SerializeIF::Endianness::LITTLE:
+					tmp = EndianConverter::convertLittleEndian<T>(*object);
+					break;
+				default:
+				case SerializeIF::Endianness::MACHINE:
+					tmp = *object;
+					break;
+				}
+				memcpy(*buffer, &tmp, sizeof(T));
+				*size += sizeof(T);
+				(*buffer) += sizeof(T);
+				return HasReturnvaluesIF::RETURN_OK;
+			} else {
+				return SerializeIF::BUFFER_TOO_SHORT;
+			}
+		}
+
+		ReturnValue_t deSerialize(T *object, const uint8_t **buffer,
+				size_t *size, SerializeIF::Endianness streamEndianness) {
+			T tmp;
+			if (*size >= sizeof(T)) {
+				*size -= sizeof(T);
+				memcpy(&tmp, *buffer, sizeof(T));
+				switch (streamEndianness) {
+				case SerializeIF::Endianness::BIG:
+					*object = EndianConverter::convertBigEndian<T>(tmp);
+					break;
+				case SerializeIF::Endianness::LITTLE:
+					*object = EndianConverter::convertLittleEndian<T>(tmp);
+					break;
+				default:
+				case SerializeIF::Endianness::MACHINE:
+					*object = tmp;
+					break;
+				}
+
+				*buffer += sizeof(T);
+				return HasReturnvaluesIF::RETURN_OK;
+			} else {
+				return SerializeIF::STREAM_TOO_SHORT;
+			}
+		}
+
+		uint32_t getSerializedSize(const T *object) {
+			return sizeof(T);
+		}
+
+	};
+
+	template<typename T>
+	class InternalSerializeAdapter<T, 1> {
+	public:
+		ReturnValue_t serialize(const T *object, uint8_t **buffer,
+				size_t *size, size_t max_size,
+				SerializeIF::Endianness streamEndianness) const {
+			size_t ignoredSize = 0;
+			if (size == NULL) {
+				size = &ignoredSize;
+			}
+			return object->serialize(buffer, size, max_size, streamEndianness);
+		}
+		uint32_t getSerializedSize(const T *object) const {
+			return object->getSerializedSize();
+		}
+
+		ReturnValue_t deSerialize(T *object, const uint8_t **buffer,
+				size_t *size, SerializeIF::Endianness streamEndianness) {
+			return object->deSerialize(buffer, size, streamEndianness);
+		}
+	};
 };
 
 #endif /* SERIALIZEADAPTER_H_ */

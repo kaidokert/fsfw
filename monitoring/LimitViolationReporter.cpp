@@ -27,7 +27,7 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 		return result;
 	}
 	size_t size = 0;
-	result = data->serialize(&dataTarget, &size, maxSize, true);
+	result = data->serialize(&dataTarget, &size, maxSize, SerializeIF::Endianness::BIG);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}

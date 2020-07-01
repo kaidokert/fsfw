@@ -15,11 +15,10 @@ class PIDReader: public PoolVariableIF {
 protected:
 	uint32_t parameterId;
 	uint8_t valid;
-
 	ReturnValue_t readWithoutLock() {
-		uint8_t arrayIndex = GlobalDataPool::PIDToArrayIndex(parameterId);
-		PoolEntry<T>* read_out = glob::dataPool.getData<T>(
-				GlobalDataPool::PIDToDataPoolId(parameterId), arrayIndex);
+		uint8_t arrayIndex = DataPool::PIDToArrayIndex(parameterId);
+		PoolEntry<T> *read_out = ::dataPool.getData<T>(
+				DataPool::PIDToDataPoolId(parameterId), arrayIndex);
 		if (read_out != NULL) {
 			valid = read_out->valid;
 			value = read_out->address[arrayIndex];
@@ -48,7 +47,8 @@ protected:
 	 * Empty ctor for List initialization
 	 */
 	PIDReader() :
-		parameterId(PoolVariableIF::NO_PARAMETER), valid(PoolVariableIF::INVALID), value(0) {
+			parameterId(PoolVariableIF::NO_PARAMETER), valid(
+					PoolVariableIF::INVALID), value(0) {
 
 	}
 public:
@@ -68,9 +68,9 @@ public:
 	 * \param setWritable If this flag is set to true, changes in the value attribute can be
 	 * 					written back to the data pool, otherwise not.
 	 */
-	PIDReader(uint32_t setParameterId, DataSetIF* dataSet) :
-			parameterId(setParameterId), valid(
-					PoolVariableIF::INVALID), value(0) {
+	PIDReader(uint32_t setParameterId, DataSetIF *dataSet) :
+			parameterId(setParameterId), valid(PoolVariableIF::INVALID), value(
+					0) {
 		if (dataSet != NULL) {
 			dataSet->registerVariable(this);
 		}
@@ -92,7 +92,7 @@ public:
 	/**
 	 * Copy ctor to copy classes containing Pool Variables.
 	 */
-	PIDReader(const PIDReader& rhs) :
+	PIDReader(const PIDReader &rhs) :
 			parameterId(rhs.parameterId), valid(rhs.valid), value(rhs.value) {
 	}
 
@@ -139,24 +139,25 @@ public:
 		return value;
 	}
 
-	PIDReader<T> &operator=(T newValue) {
+	PIDReader<T>& operator=(T newValue) {
 		value = newValue;
 		return *this;
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const {
-		return SerializeAdapter<T>::serialize(&value, buffer, size, max_size,
-				bigEndian);
+	virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+			size_t maxSize, Endianness streamEndianness) const override {
+		return SerializeAdapter::serialize(&value, buffer, size, maxSize,
+				streamEndianness);
 	}
 
-	virtual size_t getSerializedSize() const {
-		return SerializeAdapter<T>::getSerializedSize(&value);
+	virtual size_t getSerializedSize() const override {
+		return SerializeAdapter::getSerializedSize(&value);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-	bool bigEndian) {
-		return SerializeAdapter<T>::deSerialize(&value, buffer, size, bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+			Endianness streamEndianness) override {
+		return SerializeAdapter::deSerialize(&value, buffer, size,
+				streamEndianness);
 	}
 };
 

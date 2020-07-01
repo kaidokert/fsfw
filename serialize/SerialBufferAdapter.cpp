@@ -20,20 +20,20 @@ template<typename count_t>
 SerialBufferAdapter<count_t>::~SerialBufferAdapter() {
 }
 
-template<typename count_t>
-ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer_,
-		size_t* size_, const size_t max_size, bool bigEndian) const {
+template<typename T>
+ReturnValue_t SerialBufferAdapter<T>::serialize(uint8_t** buffer, size_t* size,
+		size_t maxSize, Endianness streamEndianness) const {
 	uint32_t serializedLength = bufferLength;
 	if (serializeLength) {
-		serializedLength += AutoSerializeAdapter::getSerializedSize(
+		serializedLength += SerializeAdapter::getSerializedSize(
 				&bufferLength);
 	}
-	if (*size_ + serializedLength > max_size) {
+	if (*size + serializedLength > maxSize) {
 		return BUFFER_TOO_SHORT;
 	} else {
 		if (serializeLength) {
-			AutoSerializeAdapter::serialize(&bufferLength, buffer_, size_,
-					max_size, bigEndian);
+			SerializeAdapter::serialize(&bufferLength, buffer, size,
+					maxSize, streamEndianness);
 		}
 		if (constBuffer != nullptr) {
 			memcpy(*buffer_, this->constBuffer, bufferLength);
@@ -52,22 +52,22 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer_,
 	}
 }
 
-template<typename count_t>
-size_t SerialBufferAdapter<count_t>::getSerializedSize() const {
+template<typename T>
+size_t SerialBufferAdapter<T>::getSerializedSize() const {
 	if (serializeLength) {
-		return bufferLength + AutoSerializeAdapter::getSerializedSize(&bufferLength);
+		return bufferLength + SerializeAdapter::getSerializedSize(&bufferLength);
 	} else {
 		return bufferLength;
 	}
 }
 
-template<typename count_t>
-ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
-		size_t* size, bool bigEndian) {
+template<typename T>
+ReturnValue_t SerialBufferAdapter<T>::deSerialize(const uint8_t** buffer,
+		size_t* size, Endianness streamEndianness) {
 	//TODO Ignores Endian flag!
-	if (buffer != nullptr) {
-		if(serializeLength) {
-			count_t serializedSize = AutoSerializeAdapter::getSerializedSize(
+	if (buffer != NULL) {
+		if(serializeLength){
+			T serializedSize = SerializeAdapter::getSerializedSize(
 					&bufferLength);
 			if(bufferLength + serializedSize <= *size) {
 				*buffer +=  serializedSize;

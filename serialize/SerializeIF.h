@@ -33,6 +33,10 @@
  */
 class SerializeIF {
 public:
+	enum class Endianness : uint8_t {
+		BIG, LITTLE, MACHINE
+	};
+
 	static const uint8_t INTERFACE_ID = CLASS_ID::SERIALIZE_IF;
 	static const ReturnValue_t BUFFER_TOO_SHORT = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t STREAM_TOO_SHORT = MAKE_RETURN_CODE(2);
@@ -41,13 +45,13 @@ public:
 	virtual ~SerializeIF() {
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const = 0;
+	virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+			size_t maxSize, Endianness streamEndianness) const = 0;
 
 	virtual size_t getSerializedSize() const = 0;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) = 0;
+	virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+			Endianness streamEndianness) = 0;
 
 };
 

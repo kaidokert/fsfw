@@ -34,22 +34,22 @@ ReturnValue_t DataPoolParameterWrapper::set(uint8_t domainId,
 }
 
 ReturnValue_t DataPoolParameterWrapper::serialize(uint8_t** buffer,
-		size_t* size, const size_t max_size, bool bigEndian) const {
+		size_t* size, size_t maxSize, Endianness streamEndianness) const {
 	ReturnValue_t result;
 
-	result = SerializeAdapter<Type>::serialize(&type, buffer, size, max_size,
-			bigEndian);
+	result = SerializeAdapter::serialize(&type, buffer, size, maxSize,
+			streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::serialize(&columns, buffer, size,
-			max_size, bigEndian);
+	result = SerializeAdapter::serialize(&columns, buffer, size,
+			maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<uint8_t>::serialize(&rows, buffer, size, max_size,
-			bigEndian);
+	result = SerializeAdapter::serialize(&rows, buffer, size, maxSize,
+			streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -58,7 +58,7 @@ ReturnValue_t DataPoolParameterWrapper::serialize(uint8_t** buffer,
 		GlobDataSet mySet;
 		PoolRawAccess raw(poolId, index, &mySet,PoolVariableIF::VAR_READ);
 		mySet.read();
-		result = raw.serialize(buffer,size,max_size,bigEndian);
+		result = raw.serialize(buffer,size,maxSize,streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
@@ -68,7 +68,7 @@ ReturnValue_t DataPoolParameterWrapper::serialize(uint8_t** buffer,
 
 //same as ParameterWrapper
 size_t DataPoolParameterWrapper::getSerializedSize() const {
-	uint32_t serializedSize = 0;
+	size_t serializedSize = 0;
 	serializedSize += type.getSerializedSize();
 	serializedSize += sizeof(rows);
 	serializedSize += sizeof(columns);
@@ -78,7 +78,7 @@ size_t DataPoolParameterWrapper::getSerializedSize() const {
 }
 
 ReturnValue_t DataPoolParameterWrapper::deSerialize(const uint8_t** buffer,
-		size_t* size, bool bigEndian) {
+		size_t* size, Endianness streamEndianness) {
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 

@@ -85,7 +85,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = data->serialize(&dataPtr, &size, maxSize, true);
+	result = data->serialize(&dataPtr, &size, maxSize, SerializeIF::Endianness::BIG);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		ipcStore->deleteData(storeAddress);
 		return result;

@@ -87,11 +87,11 @@ ReturnValue_t Fuse::check() {
 }
 
 ReturnValue_t Fuse::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, bool bigEndian) const {
+		size_t maxSize, Endianness streamEndianness) const {
 	ReturnValue_t result = RETURN_FAILED;
 	for (DeviceList::const_iterator iter = devices.begin();
 			iter != devices.end(); iter++) {
-		result = (*iter)->serialize(buffer, size, max_size, bigEndian);
+		result = (*iter)->serialize(buffer, size, maxSize, streamEndianness);
 		if (result != RETURN_OK) {
 			return result;
 		}
@@ -99,8 +99,8 @@ ReturnValue_t Fuse::serialize(uint8_t** buffer, size_t* size,
 	return RETURN_OK;
 }
 
-uint32_t Fuse::getSerializedSize() const {
-	size_t size = 0;
+size_t Fuse::getSerializedSize() const {
+	uint32_t size = 0;
 	for (DeviceList::const_iterator iter = devices.begin();
 			iter != devices.end(); iter++) {
 		size += (*iter)->getSerializedSize();
@@ -109,11 +109,11 @@ uint32_t Fuse::getSerializedSize() const {
 }
 
 ReturnValue_t Fuse::deSerialize(const uint8_t** buffer, size_t* size,
-bool bigEndian) {
+        Endianness streamEndianness) {
 	ReturnValue_t result = RETURN_FAILED;
 	for (DeviceList::iterator iter = devices.begin(); iter != devices.end();
 			iter++) {
-		result = (*iter)->deSerialize(buffer, size, bigEndian);
+		result = (*iter)->deSerialize(buffer, size, streamEndianness);
 		if (result != RETURN_OK) {
 			return result;
 		}

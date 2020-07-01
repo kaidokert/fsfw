@@ -48,20 +48,18 @@ public:
 				buffer, size, max_size, bigEndian);
 	}
 
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		return SerialArrayListAdapter<T, count_t>::serialize(this, buffer, size, maxSize, streamEndianness);
+	}
+
 	size_t getSerializedSize() const {
-		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::
-				getSerializedSize(this);
+		return SerialArrayListAdapter<T, count_t>::getSerializedSize(this);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) override {
-		return SerialArrayListAdapter<BUFFER_TYPE, count_t>::deSerialize(this,
-				buffer, size, bigEndian);
-	}
-
-	void swapArrayListEndianness() {
-		SerialArrayListAdapter<BUFFER_TYPE, count_t>::
-				swapArrayListEndianness(this);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
+		return SerialArrayListAdapter<T, count_t>::deSerialize(this, buffer, size, streamEndianness);
 	}
 };
 

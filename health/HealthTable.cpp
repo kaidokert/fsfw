@@ -63,21 +63,21 @@ bool HealthTable::hasHealth(object_id_t object) {
 	return exits;
 }
 
-void HealthTable::printAll(uint8_t* pointer, uint32_t maxSize) {
+void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
 	mutex->lockMutex(MutexIF::BLOCKING);
 	size_t size = 0;
 	uint16_t count = healthMap.size();
-	ReturnValue_t result = SerializeAdapter<uint16_t>::serialize(&count,
-			&pointer, &size, maxSize, true);
+	ReturnValue_t result = SerializeAdapter::serialize(&count,
+			&pointer, &size, maxSize, SerializeIF::Endianness::BIG);
 	HealthMap::iterator iter;
 	for (iter = healthMap.begin();
 			iter != healthMap.end() && result == HasReturnvaluesIF::RETURN_OK;
 			++iter) {
-		result = SerializeAdapter<object_id_t>::serialize(&iter->first,
-				&pointer, &size, maxSize, true);
+		result = SerializeAdapter::serialize(&iter->first,
+				&pointer, &size, maxSize, SerializeIF::Endianness::BIG);
 		uint8_t health = iter->second;
-		result = SerializeAdapter<uint8_t>::serialize(&health, &pointer, &size,
-				maxSize, true);
+		result = SerializeAdapter::serialize(&health, &pointer, &size,
+				maxSize, SerializeIF::Endianness::BIG);
 	}
 	mutex->unlockMutex();
 }
