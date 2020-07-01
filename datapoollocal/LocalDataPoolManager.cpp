@@ -47,8 +47,9 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse,
     }
     else {
         sif::warning << "LocalDataPoolManager::initialize: Could not retrieve"
-                " queue ID from HK destination object ID. Make sure it exists"
-                " and the object impements AcceptsHkPacketsIF!" << std::endl;
+                " queue ID from HK destination object ID. " << std::flush;
+        sif::warning << "Make sure it exists and the object impements "
+                "AcceptsHkPacketsIF!" << std::endl;
     }
     return initializeHousekeepingPoolEntriesOnce();
 }
