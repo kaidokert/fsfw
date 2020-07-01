@@ -181,18 +181,20 @@ public:
 	}
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const override {
-		return SerializeAdapter<T>::serialize(&value, buffer, size, max_size,
-				bigEndian);
+			const size_t max_size,
+			SerializeIF::Endianness streamEndianness) const override {
+		return SerializeAdapter::serialize(&value, buffer, size, max_size,
+				streamEndianness);
 	}
 
 	virtual size_t getSerializedSize() const {
-		return SerializeAdapter<T>::getSerializedSize(&value);
+		return SerializeAdapter::getSerializedSize(&value);
 	}
 
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) {
-		return SerializeAdapter<T>::deSerialize(&value, buffer, size, bigEndian);
+	        SerializeIF::Endianness streamEndianness) {
+		return SerializeAdapter::deSerialize(&value, buffer, size,
+		        streamEndianness);
 	}
 };
 

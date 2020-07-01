@@ -20,21 +20,12 @@ public:
 	float getMax();
 
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-<<<<<<< HEAD
-			const size_t max_size, bool bigEndian) const;
-
-	size_t getSerializedSize() const;
-
-	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian);
-=======
 			size_t maxSize, Endianness streamEndianness) const override;
 
 	size_t getSerializedSize() const override;
 
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			Endianness streamEndianness) override;
->>>>>>> upstream/mohr_serialize
 
 	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 				ParameterWrapper *parameterWrapper,

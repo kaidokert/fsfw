@@ -36,18 +36,18 @@ ReturnValue_t SerialBufferAdapter<T>::serialize(uint8_t** buffer, size_t* size,
 					maxSize, streamEndianness);
 		}
 		if (constBuffer != nullptr) {
-			memcpy(*buffer_, this->constBuffer, bufferLength);
+			memcpy(*buffer, this->constBuffer, bufferLength);
 		}
 		else if (buffer != nullptr) {
 			// This will propably be never reached, constBuffer should always be
 			// set if non-const buffer is set.
-			memcpy(*buffer_, this->buffer, bufferLength);
+			memcpy(*buffer, this->buffer, bufferLength);
 		}
 		else {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
-		*size_ += bufferLength;
-		(*buffer_) += bufferLength;
+		*size += bufferLength;
+		(*buffer) += bufferLength;
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 }

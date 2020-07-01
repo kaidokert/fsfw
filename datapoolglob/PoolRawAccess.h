@@ -69,8 +69,13 @@ public:
 	 * @return - @c RETURN_OK if serialization was successfull
 	 *         - @c SerializeIF::BUFFER_TOO_SHORT if range check failed
 	 */
-	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const;
+	ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+	        size_t maxSize, Endianness streamEndianness) const override;
+
+    size_t getSerializedSize() const override;
+
+    ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+            Endianness streamEndianness) override;
 
 	/**
 	 * With this method, the content can be set from a big endian buffer safely.
@@ -129,11 +134,6 @@ public:
 	 * Getter for the remaining size.
 	 */
 	uint16_t getSizeTillEnd() const;
-
-	size_t getSerializedSize() const;
-
-	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian);
 
 	/**
 	 * @brief	This is a call to read the value from the global data pool.

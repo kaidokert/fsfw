@@ -19,7 +19,7 @@ public:
 			HasHealthIF::HealthState initilialState = HasHealthIF::HEALTHY) = 0;
 
 	virtual uint32_t getPrintSize() = 0;
-	virtual void printAll(uint8_t *pointer, uint32_t maxSize) = 0;
+	virtual void printAll(uint8_t *pointer, size_t maxSize) = 0;
 
 protected:
 	virtual ReturnValue_t iterate(std::pair<object_id_t,HasHealthIF::HealthState> *value, bool reset = false) = 0;

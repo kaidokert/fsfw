@@ -133,20 +133,20 @@ inline uint8_t LocalPoolVar<T>::getValid() const {
 
 template<typename T>
 inline ReturnValue_t LocalPoolVar<T>::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, bool bigEndian) const {
-	return AutoSerializeAdapter::serialize(&value,
-			buffer, size ,max_size, bigEndian);
+		const size_t max_size, SerializeIF::Endianness streamEndianness) const {
+	return SerializeAdapter::serialize(&value,
+			buffer, size ,max_size, streamEndianness);
 }
 
 template<typename T>
 inline size_t LocalPoolVar<T>::getSerializedSize() const {
-	return AutoSerializeAdapter::getSerializedSize(&value);
+	return SerializeAdapter::getSerializedSize(&value);
 }
 
 template<typename T>
 inline ReturnValue_t LocalPoolVar<T>::deSerialize(const uint8_t** buffer,
-		size_t* size, bool bigEndian) {
-	return AutoSerializeAdapter::deSerialize(&value, buffer, size, bigEndian);
+		size_t* size, SerializeIF::Endianness streamEndianness) {
+	return SerializeAdapter::deSerialize(&value, buffer, size, streamEndianness);
 }
 
 template<typename T>

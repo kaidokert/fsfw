@@ -173,7 +173,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid) {
     }
     size_t size = 0;
     result = dataSet->serializeLocalPoolIds(&storePtr, &size,
-            expectedSize, false);
+            expectedSize, SerializeIF::Endianness::BIG);
     if(expectedSize != size) {
         sif::error << "HousekeepingManager::generateSetStructurePacket: "
                 "Expected size is not equal to serialized size" << std::endl;
@@ -198,10 +198,11 @@ ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
 
     if(appendValidityBuffer) {
         result = dataSet->serializeWithValidityBuffer(&storePtr,
-                &size, hkSize, false);
+                &size, hkSize, SerializeIF::Endianness::MACHINE);
     }
     else {
-        result = dataSet->serialize(&storePtr, &size, hkSize, false);
+        result = dataSet->serialize(&storePtr, &size, hkSize,
+                SerializeIF::Endianness::MACHINE);
     }
 
     if(result != HasReturnvaluesIF::RETURN_OK) {

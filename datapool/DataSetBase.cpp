@@ -131,11 +131,11 @@ ReturnValue_t DataSetBase::unlockDataPool() {
 }
 
 ReturnValue_t DataSetBase::serialize(uint8_t** buffer, size_t* size,
-		const size_t maxSize, bool bigEndian) const {
+		const size_t maxSize, SerializeIF::Endianness streamEndianness) const {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	for (uint16_t count = 0; count < fillCount; count++) {
 		result = registeredVariables[count]->serialize(buffer, size, maxSize,
-				bigEndian);
+		        streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
@@ -144,11 +144,11 @@ ReturnValue_t DataSetBase::serialize(uint8_t** buffer, size_t* size,
 }
 
 ReturnValue_t DataSetBase::deSerialize(const uint8_t** buffer, size_t* size,
-		bool bigEndian) {
+        SerializeIF::Endianness streamEndianness) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	for (uint16_t count = 0; count < fillCount; count++) {
 		result = registeredVariables[count]->deSerialize(buffer, size,
-				bigEndian);
+				streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}

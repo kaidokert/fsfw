@@ -105,10 +105,11 @@ public:
 
 	/* SerializeIF implementations */
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-				const size_t maxSize, bool bigEndian) const override;
+				const size_t maxSize,
+				SerializeIF::Endianness streamEndianness) const override;
 	virtual size_t getSerializedSize() const override;
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) override;
+	        SerializeIF::Endianness streamEndianness) override;
 
 	// SHOULDDO we could use a linked list of datapool variables
 	//!< This definition sets the maximum number of variables to

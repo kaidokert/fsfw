@@ -2,8 +2,9 @@
 #define SERIALIZEADAPTER_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
+#include <framework/serialize/EndianSwapper.h>
+#include <framework/container/IsDerivedFrom.h>
 #include <framework/serialize/SerializeIF.h>
-#include <framework/serialize/SerializeAdapterInternal.h>
 #include <type_traits>
 
  /**

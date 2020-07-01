@@ -125,11 +125,12 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](int i) const {
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::serialize(uint8_t** buffer,
-		size_t* size, const size_t max_size, bool bigEndian) const {
+		size_t* size, size_t maxSize,
+		SerializeIF::Endianness streamEndianness) const {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	for (uint16_t i = 0; i < vectorSize; i++) {
-		result = SerializeAdapter<T>::serialize(&(value[i]), buffer, size,
-				max_size, bigEndian);
+		result = SerializeAdapter::serialize(&(value[i]), buffer, size,
+				maxSize, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			break;
 		}
@@ -139,16 +140,17 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::serialize(uint8_t** buffer,
 
 template<typename T, uint16_t vectorSize>
 inline size_t LocalPoolVector<T, vectorSize>::getSerializedSize() const {
-	return vectorSize * SerializeAdapter<T>::getSerializedSize(value);
+	return vectorSize * SerializeAdapter::getSerializedSize(value);
 }
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::deSerialize(
-		const uint8_t** buffer, size_t* size, bool bigEndian) {
+		const uint8_t** buffer, size_t* size,
+		SerializeIF::Endianness streamEndianness) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	for (uint16_t i = 0; i < vectorSize; i++) {
-		result = SerializeAdapter<T>::deSerialize(&(value[i]), buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&(value[i]), buffer, size,
+				streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			break;
 		}

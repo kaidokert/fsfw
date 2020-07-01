@@ -84,7 +84,7 @@ void TmPacketStored::deletePacket() {
 void TmPacketStored::setStoreAddress(store_address_t setAddress) {
 	storeAddress = setAddress;
 	const uint8_t *temp_data = NULL;
-	uint32_t temp_size;
+	size_t temp_size;
 	if (!checkAndSetStore()) {
 		return;
 	}

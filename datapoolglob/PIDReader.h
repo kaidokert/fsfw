@@ -16,9 +16,9 @@ protected:
 	uint32_t parameterId;
 	uint8_t valid;
 	ReturnValue_t readWithoutLock() {
-		uint8_t arrayIndex = DataPool::PIDToArrayIndex(parameterId);
-		PoolEntry<T> *read_out = ::dataPool.getData<T>(
-				DataPool::PIDToDataPoolId(parameterId), arrayIndex);
+		uint8_t arrayIndex = GlobalDataPool::PIDToArrayIndex(parameterId);
+		PoolEntry<T> *read_out = glob::dataPool.getData<T>(
+				GlobalDataPool::PIDToDataPoolId(parameterId), arrayIndex);
 		if (read_out != NULL) {
 			valid = read_out->valid;
 			value = read_out->address[arrayIndex];

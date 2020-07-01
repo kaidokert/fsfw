@@ -145,27 +145,29 @@ ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 
 
 ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, bool bigEndian) const {
-	if (typeSize + *size <= max_size) {
-		if (bigEndian) {
+        size_t maxSize, Endianness streamEndianness) const {
+    //TODO integer overflow
+    if (typeSize + *size <= maxSize) {
+#warning use endian swapper
+        if (1) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-			for (uint8_t count = 0; count < typeSize; count++) {
-				(*buffer)[count] = value[typeSize - count - 1];
-			}
+            for (uint8_t count = 0; count < typeSize; count++) {
+                (*buffer)[count] = value[typeSize - count - 1];
+            }
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			memcpy(*buffer, value, typeSize);
+            memcpy(*buffer, value, typeSize);
 #endif
-		} else {
-			memcpy(*buffer, value, typeSize);
-		}
-		*size += typeSize;
-		(*buffer) += typeSize;
-		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return SerializeIF::BUFFER_TOO_SHORT;
-	}
+        } else {
+            memcpy(*buffer, value, typeSize);
+        }
+        *size += typeSize;
+        (*buffer) += typeSize;
+        return HasReturnvaluesIF::RETURN_OK;
+    } else {
+        return SerializeIF::BUFFER_TOO_SHORT;
+    }
 }
 
 
@@ -231,28 +233,26 @@ size_t PoolRawAccess::getSerializedSize() const {
 }
 
 ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, size_t* size,
-		bool bigEndian) {
-	// TODO: Needs to be tested!!!
-	if (*size >= typeSize) {
-		*size -= typeSize;
-		if (bigEndian) {
+        Endianness streamEndianness) {
+
+    if (*size >= typeSize) {
+        *size -= typeSize;
+        if (1) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-			for (uint8_t count = 0; count < typeSize; count++) {
-				value[count] = (*buffer)[typeSize - count - 1];
-			}
+            for (uint8_t count = 0; count < typeSize; count++) {
+                value[count] = (*buffer)[typeSize - count - 1];
+            }
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			memcpy(value, *buffer, typeSize);
+            memcpy(value, *buffer, typeSize);
 #endif
-		}
-		else {
-			memcpy(value, *buffer, typeSize);
-		}
-		*buffer += typeSize;
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-	else {
-		return SerializeIF::STREAM_TOO_SHORT;
-	}
+        } else {
+            memcpy(value, *buffer, typeSize);
+        }
+        *buffer += typeSize;
+        return HasReturnvaluesIF::RETURN_OK;
+    } else {
+        return SerializeIF::STREAM_TOO_SHORT;
+    }
 }

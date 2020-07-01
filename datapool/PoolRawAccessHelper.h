@@ -43,7 +43,7 @@ public:
 	 * 			@c RETURN_FAILED on failure
 	 */
 	ReturnValue_t serialize(uint8_t ** buffer, size_t * size,
-			const size_t max_size, bool bigEndian);
+			const size_t max_size, SerializeIF::Endianness streamEndianness);
 
 	/**
 	 * Serializes data pool entries into provided buffer with the validity mask buffer
@@ -56,7 +56,7 @@ public:
 	 * 			@c RETURN_FAILED on failure
 	 */
 	ReturnValue_t serializeWithValidityMask(uint8_t ** buffer, size_t * size,
-			const size_t max_size, bool bigEndian);
+			const size_t max_size, SerializeIF::Endianness streamEndianness);
 
 
 private:
@@ -71,7 +71,7 @@ private:
 		uint8_t ** buffer;
 		size_t * size;
 		const size_t max_size;
-		bool bigEndian;
+		SerializeIF::Endianness streamEndianness;
 	};
 	/**
 	 * Helper function to serialize single pool entries
