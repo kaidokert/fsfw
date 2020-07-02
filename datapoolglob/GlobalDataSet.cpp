@@ -2,7 +2,9 @@
 #include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-GlobDataSet::GlobDataSet(): DataSetBase() {}
+GlobDataSet::GlobDataSet(): DataSetBase(
+        reinterpret_cast<PoolVariableIF**>(&registeredVariables),
+        DATA_SET_MAX_SIZE) {}
 
 // Don't do anything with your variables, they are dead already!
 // (Destructor is already called)
