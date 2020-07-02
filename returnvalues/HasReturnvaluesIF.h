@@ -20,4 +20,4 @@ public:
 	}
 };
 
-#endif /* HASRETURNVALUESIF_H_ */
+#endif /* FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_ */
