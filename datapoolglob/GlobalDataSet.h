@@ -1,7 +1,7 @@
 #ifndef DATASET_H_
 #define DATASET_H_
 
-#include <framework/datapool/StaticDataSetBase.h>
+#include <framework/datapool/DataSetBase.h>
 
 /**
  * @brief	The DataSet class manages a set of locally checked out variables

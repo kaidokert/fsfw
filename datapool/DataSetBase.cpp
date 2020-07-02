@@ -1,4 +1,4 @@
-#include <framework/datapool/StaticDataSetBase.h>
+#include <framework/datapool/DataSetBase.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 DataSetBase::DataSetBase() {

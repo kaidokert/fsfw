@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_DATAPOOL_STATICDATASETBASE_H_
-#define FRAMEWORK_DATAPOOL_STATICDATASETBASE_H_
+#ifndef FRAMEWORK_DATAPOOL_DATASETBASE_H_
+#define FRAMEWORK_DATAPOOL_DATASETBASE_H_
 #include <framework/datapool/DataSetIF.h>
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/ipc/MutexIF.h>
@@ -146,4 +146,4 @@ private:
 	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
 };
 
-#endif /* FRAMEWORK_DATAPOOL_STATICDATASETBASE_H_ */
+#endif /* FRAMEWORK_DATAPOOL_DATASETBASE_H_ */
