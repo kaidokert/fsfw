@@ -12,8 +12,7 @@ typedef uint16_t ReturnValue_t;
 class HasReturnvaluesIF {
 public:
 	static const ReturnValue_t RETURN_OK = 0;
-	//! This will be the all-ones value irrespective of used unsigned datatype.
-	static const ReturnValue_t RETURN_FAILED = -1;
+	static const ReturnValue_t RETURN_FAILED = 1;
 	virtual ~HasReturnvaluesIF() {}
 
 	static ReturnValue_t makeReturnCode(uint8_t interfaceId, uint8_t number) {
@@ -21,4 +20,4 @@ public:
 	}
 };
 
-#endif /* HASRETURNVALUESIF_H_ */
+#endif /* FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_ */

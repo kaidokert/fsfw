@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
-#include <framework/datapool/DataSetBase.h>
 #include <framework/datapool/DataSetIF.h>
+#include <framework/datapool/StaticDataSetBase.h>
 #include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
 #include <framework/serialize/SerializeIF.h>
 
