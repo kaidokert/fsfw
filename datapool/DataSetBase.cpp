@@ -1,8 +1,11 @@
 #include <framework/datapool/DataSetBase.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-DataSetBase::DataSetBase() {
-	for (uint8_t count = 0; count < DATA_SET_MAX_SIZE; count++) {
+DataSetBase::DataSetBase(PoolVariableIF** registeredVariablesArray,
+        const size_t maxFillCount):
+        registeredVariables(registeredVariablesArray),
+        maxFillCount(maxFillCount) {
+	for (uint8_t count = 0; count < maxFillCount; count++) {
 		registeredVariables[count] = nullptr;
 	}
 }
@@ -21,7 +24,7 @@ ReturnValue_t DataSetBase::registerVariable(
 				"Pool variable is nullptr." << std::endl;
 		return DataSetIF::POOL_VAR_NULL;
 	}
-	if (fillCount >= DATA_SET_MAX_SIZE) {
+	if (fillCount >= maxFillCount) {
 		sif::error << "DataSet::registerVariable: "
 				"DataSet is full." << std::endl;
 		return DataSetIF::DATA_SET_FULL;

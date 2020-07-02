@@ -5,20 +5,30 @@
 #include <cmath>
 #include <cstring>
 
-LocalDataSet::LocalDataSet(OwnsLocalDataPoolIF *hkOwner): DataSetBase() {
+LocalDataSet::LocalDataSet(OwnsLocalDataPoolIF *hkOwner,
+        const size_t maxNumberOfVariables):
+        DataSetBase(poolVarList.data(), maxNumberOfVariables) {
+    poolVarList.reserve(maxNumberOfVariables);
+    poolVarList.resize(maxNumberOfVariables);
     if(hkOwner == nullptr) {
         sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
                 << std::endl;
+        return;
     }
     hkManager = hkOwner->getHkManagerHandle();
 }
 
-LocalDataSet::LocalDataSet(object_id_t ownerId): DataSetBase()  {
+LocalDataSet::LocalDataSet(object_id_t ownerId,
+        const size_t maxNumberOfVariables):
+        DataSetBase(poolVarList.data(), maxNumberOfVariables)  {
+    poolVarList.reserve(maxNumberOfVariables);
+    poolVarList.resize(maxNumberOfVariables);
     OwnsLocalDataPoolIF* hkOwner = objectManager->get<OwnsLocalDataPoolIF>(
             ownerId);
     if(hkOwner == nullptr) {
         sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
                 << std::endl;
+        return;
     }
     hkManager = hkOwner->getHkManagerHandle();
 }

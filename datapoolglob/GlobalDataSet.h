@@ -61,6 +61,10 @@ public:
 	 */
 	void setEntriesValid(bool valid);
 
+	//!< This definition sets the maximum number of variables to
+	//! register in one DataSet.
+	static const uint8_t DATA_SET_MAX_SIZE = 63;
+
 private:
 	/**
 	 * If the valid state of a dataset is always relevant to the whole
@@ -85,6 +89,8 @@ private:
 
 	void handleAlreadyReadDatasetCommit();
 	ReturnValue_t handleUnreadDatasetCommit();
+
+	PoolVariableIF* registeredVariables[DATA_SET_MAX_SIZE];
 };
 
 #endif /* DATASET_H_ */

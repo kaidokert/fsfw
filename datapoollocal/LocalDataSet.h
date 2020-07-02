@@ -5,6 +5,8 @@
 #include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
 #include <framework/serialize/SerializeIF.h>
 
+#include <vector>
+
 class LocalDataPoolManager;
 
 /**
@@ -35,7 +37,8 @@ public:
 	 * 			The constructor simply sets the fill_count to zero and sets
 	 *  		the state to "uninitialized".
 	 */
-	LocalDataSet(OwnsLocalDataPoolIF* hkOwner);
+	LocalDataSet(OwnsLocalDataPoolIF *hkOwner,
+	        const size_t maxNumberOfVariables);
 
 	/**
 	 * @brief	Constructor for users of local pool data. The passed pool
@@ -43,7 +46,8 @@ public:
 	 * 			The constructor simply sets the fill_count to zero and sets
 	 *  		the state to "uninitialized".
 	 */
-	LocalDataSet(object_id_t ownerId);
+	LocalDataSet(object_id_t ownerId,
+	        const size_t maxNumberOfVariables);
 
 	/**
 	 * @brief	The destructor automatically manages writing the valid
@@ -104,6 +108,8 @@ private:
 	 * (most significant bit) to 7 (least significant bit)
 	 */
 	void bitSetter(uint8_t* byte, uint8_t position) const;
+
+	std::vector<PoolVariableIF*> poolVarList;
 };
 
 #endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_ */

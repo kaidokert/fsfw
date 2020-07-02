@@ -37,7 +37,8 @@ public:
 	 * 			supply a pointer to this dataset to PoolVariable
 	 * 			initializations to register pool variables.
 	 */
-	DataSetBase();
+	DataSetBase(PoolVariableIF** registeredVariablesArray,
+	        const size_t maxFillCount);
 	virtual~ DataSetBase();
 
 	/**
@@ -111,11 +112,6 @@ public:
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 	        SerializeIF::Endianness streamEndianness) override;
 
-	// SHOULDDO we could use a linked list of datapool variables
-	//!< This definition sets the maximum number of variables to
-	//! register in one DataSet.
-	static const uint8_t DATA_SET_MAX_SIZE = 63;
-
 protected:
 	/**
 	 * @brief	The fill_count attribute ensures that the variables
@@ -138,8 +134,11 @@ protected:
 
 	/**
 	 * @brief	This array represents all pool variables registered in this set.
+	 * Child classes can use a static or dynamic container to create
+	 * an array of registered variables and assign the first entry here.
 	 */
-	PoolVariableIF* registeredVariables[DATA_SET_MAX_SIZE] = { };
+	PoolVariableIF** registeredVariables = nullptr;
+	const size_t maxFillCount = 0;
 
 private:
 	ReturnValue_t readVariable(uint16_t count);
