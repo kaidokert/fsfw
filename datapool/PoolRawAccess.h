@@ -32,15 +32,15 @@ private:
 	/**
 	 * \brief	This value contains the size of the data pool entry in bytes.
 	 */
-	uint8_t typeSize;
+	size_t typeSize;
 	/**
 	 * The size of the DP array (single values return 1)
 	 */
-	uint8_t arraySize;
+	size_t arraySize;
 	/**
 	 * The size (in bytes) from the selected entry till the end of this DataPool variable.
 	 */
-	uint16_t sizeTillEnd;
+	size_t sizeTillEnd;
 	/**
 	 * \brief	The information whether the class is read-write or read-only is stored here.
 	 */
@@ -97,8 +97,8 @@ public:
 	 * \return	- \c RETURN_OK if entry could be acquired
 	 * 			- \c RETURN_FAILED else.
 	 */
-	ReturnValue_t getEntryEndianSafe(uint8_t *buffer, uint32_t *size,
-			uint32_t maxSize);
+	ReturnValue_t getEntryEndianSafe(uint8_t *buffer, size_t *size,
+			size_t maxSize);
 	/**
 	 * With this method, the content can be set from a big endian buffer safely.
 	 * @param buffer	Pointer to the data to set
@@ -107,7 +107,7 @@ public:
 	 * 			- \c RETURN_FAILED on failure
 	 */
 	ReturnValue_t setEntryFromBigEndian(const uint8_t *buffer,
-			uint32_t setSize);
+			size_t setSize);
 	/**
 	 *  \brief This operation returns the type of the entry currently stored.
 	 */
@@ -115,12 +115,12 @@ public:
 	/**
 	 *  \brief This operation returns the size of the entry currently stored.
 	 */
-	uint8_t getSizeOfType();
+	size_t getSizeOfType();
 	/**
 	 *
 	 * @return the size of the datapool array
 	 */
-	uint8_t getArraySize();
+	size_t getArraySize();
 	/**
 	 * \brief	This operation returns the data pool id of the variable.
 	 */
@@ -138,7 +138,7 @@ public:
 	/**
 	 * Getter for the remaining size.
 	 */
-	uint16_t getSizeTillEnd() const;
+	size_t getSizeTillEnd() const;
 
 	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
 			 Endianness streamEndianness) const override;
