@@ -9,8 +9,22 @@
 
 class PeriodicPosixTask: public PosixThread, public PeriodicTaskIF {
 public:
-	PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, uint32_t period_, void(*deadlineMissedFunc_)());
+	/**
+	 * Create a generic periodic task.
+	 * @param name_
+	 * Name, maximum allowed size of linux is 16 chars, everything else will
+	 * be truncated.
+	 * @param priority_
+	 * Real-time priority, ranges from 1 to 99 for Linux.
+	 * See: https://man7.org/linux/man-pages/man7/sched.7.html
+	 * @param stackSize_
+	 * @param period_
+	 * @param deadlineMissedFunc_
+	 */
+	PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_,
+			uint32_t period_, void(*deadlineMissedFunc_)());
 	virtual ~PeriodicPosixTask();
+
 	/**
 	 * @brief	The method to start the task.
 	 * @details	The method starts the task with the respective system call.

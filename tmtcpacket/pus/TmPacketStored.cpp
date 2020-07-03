@@ -82,8 +82,8 @@ void TmPacketStored::deletePacket() {
 
 void TmPacketStored::setStoreAddress(store_address_t setAddress) {
 	storeAddress = setAddress;
-	const uint8_t *temp_data = NULL;
-	uint32_t temp_size;
+	const uint8_t* temp_data = NULL;
+	size_t temp_size;
 	if (!checkAndSetStore()) {
 		return;
 	}
@@ -100,7 +100,7 @@ bool TmPacketStored::checkAndSetStore() {
 	if (store == NULL) {
 		store = objectManager->get<StorageManagerIF>(objects::TM_STORE);
 		if (store == NULL) {
-			error << "TmPacketStored::TmPacketStored: TM Store not found!"
+			sif::error << "TmPacketStored::TmPacketStored: TM Store not found!"
 					<< std::endl;
 			return false;
 		}

@@ -115,10 +115,9 @@ uint8_t CommandActionHelper::getCommandCount() const {
 	return commandCount;
 }
 
-void CommandActionHelper::extractDataForOwner(ActionId_t actionId,
-		store_address_t storeId) {
-	const uint8_t *data = NULL;
-	uint32_t size = 0;
+void CommandActionHelper::extractDataForOwner(ActionId_t actionId, store_address_t storeId) {
+	const uint8_t * data = NULL;
+	size_t size = 0;
 	ReturnValue_t result = ipcStore->getData(storeId, &data, &size);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return;

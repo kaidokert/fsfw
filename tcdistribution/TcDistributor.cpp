@@ -39,14 +39,14 @@ ReturnValue_t TcDistributor::handlePacket() {
 }
 
 void TcDistributor::print() {
-	debug << "Distributor content is: " << std::endl << "ID\t| message queue id"
+	sif::debug << "Distributor content is: " << std::endl << "ID\t| message queue id"
 			<< std::endl;
 	for (iterator_t it = this->queueMap.begin(); it != this->queueMap.end();
 			it++) {
-		debug << it->first << "\t| 0x" << std::hex << it->second << std::dec
+		sif::debug << it->first << "\t| 0x" << std::hex << it->second << std::dec
 				<< std::endl;
 	}
-	debug << std::dec;
+	sif::debug << std::dec;
 
 }
 

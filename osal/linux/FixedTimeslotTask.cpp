@@ -1,15 +1,14 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <unistd.h>
-#include <limits.h>
-#include <signal.h>
-#include <errno.h>
 #include <framework/osal/linux/FixedTimeslotTask.h>
 
+#include <limits.h>
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = PTHREAD_STACK_MIN;
 
-FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, uint32_t periodMs_):PosixThread(name_,priority_,stackSize_),pst(periodMs_),started(false) {
+FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_,
+		size_t stackSize_, uint32_t periodMs_):
+		PosixThread(name_,priority_,stackSize_),pst(periodMs_),started(false) {
 }
 
 FixedTimeslotTask::~FixedTimeslotTask() {
@@ -21,7 +20,7 @@ void* FixedTimeslotTask::taskEntryPoint(void* arg) {
 	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(arg));
 	//The task's functionality is called.
 	originalTask->taskFunctionality();
-	return NULL;
+	return nullptr;
 }
 
 ReturnValue_t FixedTimeslotTask::startTask() {
@@ -40,8 +39,14 @@ uint32_t FixedTimeslotTask::getPeriodMs() const {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	pst.addSlot(componentId, slotTimeMs, executionStep, this);
-	return HasReturnvaluesIF::RETURN_OK;
+	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
+		pst.addSlot(componentId, slotTimeMs, executionStep, this);
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+	sif::error << "Component " << std::hex << componentId <<
+			" not found, not adding it to pst" << std::endl;
+	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 ReturnValue_t FixedTimeslotTask::checkSequence() const {
@@ -80,7 +85,7 @@ void FixedTimeslotTask::taskFunctionality() {
 void FixedTimeslotTask::missedDeadlineCounter() {
 	FixedTimeslotTask::deadlineMissedCount++;
 	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-		error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
-				<< " deadlines." << std::endl;
+		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
+				   << " deadlines." << std::endl;
 	}
 }

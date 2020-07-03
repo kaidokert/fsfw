@@ -52,12 +52,12 @@ size_t MessageQueueMessage::getMinimumMessageSize() {
 }
 
 void MessageQueueMessage::print() {
-	debug << "MessageQueueMessage has size: " << this->messageSize << std::hex
+	sif::debug << "MessageQueueMessage has size: " << this->messageSize << std::hex
 			<< std::endl;
 	for (uint8_t count = 0; count < this->messageSize; count++) {
-		debug << (uint32_t) this->internalBuffer[count] << ":";
+		sif::debug << (uint32_t) this->internalBuffer[count] << ":";
 	}
-	debug << std::dec << std::endl;
+	sif::debug << std::dec << std::endl;
 }
 
 void MessageQueueMessage::clear() {

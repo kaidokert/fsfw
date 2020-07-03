@@ -3,9 +3,10 @@
 #include <errno.h>
 #include <framework/osal/linux/PeriodicPosixTask.h>
 
-PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):PosixThread(name_,priority_,stackSize_),objectList(),started(false),periodMs(period_),deadlineMissedFunc(
-		deadlineMissedFunc_) {
-
+PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_,
+		size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):
+		PosixThread(name_,priority_,stackSize_),objectList(),started(false),
+		periodMs(period_),deadlineMissedFunc(deadlineMissedFunc_) {
 }
 
 PeriodicPosixTask::~PeriodicPosixTask() {
@@ -37,7 +38,8 @@ ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
 
 ReturnValue_t PeriodicPosixTask::startTask(void){
 	started = true;
-	createTask(&taskEntryPoint,this);
+	//sif::info << stackSize << std::endl;
+	PosixThread::createTask(&taskEntryPoint,this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -56,9 +58,11 @@ void PeriodicPosixTask::taskFunctionality(void){
 			char name[20] = {0};
 			int status = pthread_getname_np(pthread_self(),name,sizeof(name));
 			if(status==0){
-				error << "ObjectTask: " << name << " Deadline missed." << std::endl;
+				sif::error << "PeriodicPosixTask " << name << ": Deadline "
+						"missed." << std::endl;
 			}else{
-				error << "ObjectTask: X Deadline missed. " << status << std::endl;
+				sif::error << "PeriodicPosixTask X: Deadline missed. " <<
+						status << std::endl;
 			}
 			if (this->deadlineMissedFunc != NULL) {
 				this->deadlineMissedFunc();

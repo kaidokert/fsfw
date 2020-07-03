@@ -215,7 +215,7 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 				ParameterMessage::getParameterId(command));
 
 		const uint8_t *storedStream;
-		uint32_t storedStreamSize;
+		size_t storedStreamSize;
 		result = storage->getData(ParameterMessage::getStoreId(command),
 				&storedStream, &storedStreamSize);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
