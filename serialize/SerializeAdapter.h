@@ -3,7 +3,7 @@
 
 #include <framework/container/IsDerivedFrom.h>
 #include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/EndianSwapper.h>
+#include <framework/serialize/EndianConverter.h>
 #include <framework/serialize/SerializeIF.h>
 #include <string.h>
 

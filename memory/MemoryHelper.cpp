@@ -2,7 +2,7 @@
 #include <framework/memory/MemoryHelper.h>
 #include <framework/memory/MemoryMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/EndianSwapper.h>
+#include <framework/serialize/EndianConverter.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue) :
