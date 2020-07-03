@@ -22,7 +22,7 @@ public:
 	static constexpr uint8_t DEFAULT_STORED_DATA_SENT_PER_CYCLE = 5;
 	static constexpr uint8_t DEFAULT_DOWNLINK_PACKETS_STORED = 10;
 
-	TmTcBridge(object_id_t objectId_, object_id_t ccsdsPacketDistributor_);
+	TmTcBridge(object_id_t objectId, object_id_t ccsdsPacketDistributor);
 	virtual ~TmTcBridge();
 
 	/**

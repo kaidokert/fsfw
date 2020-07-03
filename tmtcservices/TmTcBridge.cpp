@@ -5,9 +5,9 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/globalfunctions/arrayprinter.h>
 
-TmTcBridge::TmTcBridge(object_id_t objectId_,
-        object_id_t ccsdsPacketDistributor_): SystemObject(objectId_),
-        ccsdsPacketDistributor(ccsdsPacketDistributor_)
+TmTcBridge::TmTcBridge(object_id_t objectId,
+        object_id_t ccsdsPacketDistributor): SystemObject(objectId),
+        ccsdsPacketDistributor(ccsdsPacketDistributor)
 {
     TmTcReceptionQueue = QueueFactory::instance()->
             createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
