@@ -121,7 +121,7 @@ uint8_t* PoolRawAccess::getEntry() {
 }
 
 ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
-		uint32_t* writtenBytes, uint32_t max_size) {
+		size_t* writtenBytes, size_t max_size) {
 	uint8_t* data_ptr = getEntry();
 	// debug << "PoolRawAccess::getEntry: Array position: " <<
 	// 	      index * size_of_type << " Size of T: " << (int)size_of_type <<

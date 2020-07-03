@@ -57,8 +57,8 @@ public:
 	 * @return	- @c RETURN_OK if entry could be acquired
 	 * 			- @c RETURN_FAILED else.
 	 */
-	ReturnValue_t getEntryEndianSafe(uint8_t* buffer, uint32_t* size,
-			uint32_t max_size);
+	ReturnValue_t getEntryEndianSafe(uint8_t *buffer, size_t *size,
+			size_t maxSize);
 
 	/**
 	 * @brief 	Serialize raw pool entry into provided buffer directly
