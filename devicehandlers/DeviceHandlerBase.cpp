@@ -128,8 +128,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
 				AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
-		if (rawReceiver == NULL) {
-			return RETURN_FAILED;
+		if (rawReceiver == nullptr) {
+			sif::error << "DeviceHandlerBase::initialize: Raw receiver object "
+					"ID set but no valid object found." << std::endl;
+			sif::error << "Make sure the raw receiver object is set up properly"
+					" and implements AcceptsDeviceResponsesIF" << std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 		defaultRawReceiver = rawReceiver->getDeviceQueue();
 	}
