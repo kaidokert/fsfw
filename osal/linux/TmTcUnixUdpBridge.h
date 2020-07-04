@@ -8,14 +8,18 @@
 
 class TmTcUnixUdpBridge: public TmTcBridge {
 public:
-	static constexpr int UDP_SERVER_PORT = 7;
-	static constexpr int UDP_CLIENT_PORT = 2008;
+	static constexpr int DEFAULT_UDP_SERVER_PORT = 7;
+	static constexpr int DEFAULT_UDP_CLIENT_PORT = 2008;
 
-	TmTcUnixUdpBridge(object_id_t objectId, object_id_t ccsdsPacketDistributor);
+	TmTcUnixUdpBridge(object_id_t objectId, object_id_t ccsdsPacketDistributor,
+			 uint16_t serverPort = 0xFFFF,uint16_t clientPort = 0xFFFF);
 	virtual~ TmTcUnixUdpBridge();
 
 protected:
-
+	virtual ReturnValue_t handleTc() override;
+	virtual ReturnValue_t receiveTc(uint8_t ** recvBuffer,
+			size_t * size) override;
+	virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
 private:
 	int serverSocket = 0;
 	const int serverSocketOptions = 0;
