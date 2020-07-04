@@ -32,7 +32,7 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 	int result = bind(serverSocket,
 			reinterpret_cast<struct sockaddr*>(&serverAddress),
 			sizeof(serverAddress));
-	if(result== -1) {
+	if(result == -1) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
 				"local port " << setServerPort << " to server socket!"
 				<< std::endl;
