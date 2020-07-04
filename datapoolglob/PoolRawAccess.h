@@ -85,7 +85,7 @@ public:
 	 * 			- @c RETURN_FAILED on failure
 	 */
 	ReturnValue_t setEntryFromBigEndian(const uint8_t* buffer,
-			uint32_t setSize);
+			size_t setSize);
 	/**
 	 *  @brief This operation returns the type of the entry currently stored.
 	 */
@@ -93,12 +93,12 @@ public:
 	/**
 	 *  @brief This operation returns the size of the entry currently stored.
 	 */
-	uint8_t getSizeOfType();
+	size_t getSizeOfType();
 	/**
 	 *
 	 * @return the size of the datapool array
 	 */
-	uint8_t getArraySize();
+	size_t getArraySize();
 	/**
 	 * @brief	This operation returns the data pool id of the variable.
 	 */
