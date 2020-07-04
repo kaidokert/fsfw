@@ -204,7 +204,7 @@ void PoolRawAccess::setValid(bool valid) {
 	this->valid = valid;
 }
 
-uint16_t PoolRawAccess::getSizeTillEnd() const {
+size_t PoolRawAccess::getSizeTillEnd() const {
 	return sizeTillEnd;
 }
 
@@ -232,5 +232,8 @@ ReturnValue_t PoolRawAccess::deSerialize(const uint8_t **buffer, size_t *size,
     	*size -= typeSize;
         *buffer += typeSize;
         return HasReturnvaluesIF::RETURN_OK;
+    }
+    else {
+    	return SerializeIF::STREAM_TOO_SHORT;
     }
 }

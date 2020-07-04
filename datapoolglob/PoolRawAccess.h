@@ -133,7 +133,7 @@ public:
 	/**
 	 * Getter for the remaining size.
 	 */
-	uint16_t getSizeTillEnd() const;
+	size_t getSizeTillEnd() const;
 
 	/**
 	 * @brief	This is a call to read the value from the global data pool.
@@ -202,15 +202,15 @@ private:
 	/**
 	 * @brief	This value contains the size of the data pool entry type in bytes.
 	 */
-	uint8_t typeSize;
+	size_t typeSize;
 	/**
 	 * The size of the DP array (single values return 1)
 	 */
-	uint8_t arraySize;
+	size_t arraySize;
 	/**
 	 * The size (in bytes) from the selected entry till the end of this DataPool variable.
 	 */
-	uint16_t sizeTillEnd;
+	size_t sizeTillEnd;
 	/**
 	 * @brief	The information whether the class is read-write or read-only is stored here.
 	 */
