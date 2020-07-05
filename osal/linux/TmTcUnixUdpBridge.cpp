@@ -47,15 +47,15 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
 }
 
-ReturnValue_t TmTcUnixUdpBridge::handleTc() {
-	return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t TmTcUnixUdpBridge::receiveTc(uint8_t **recvBuffer, size_t *size) {
-	return HasReturnvaluesIF::RETURN_OK;
-}
-
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
+	int flags = 0;
+	ssize_t result = send(serverSocket, data, dataLen, flags);
+	if(result < 0) {
+		//handle error
+		sif::error << "TmTcUnixUdpBridge::sendTm: Send operation failed "
+				"with error " << strerror(errno) << std::endl;
+	}
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -114,5 +114,10 @@ void TmTcUnixUdpBridge::handleBindError() {
 						<< std::endl;
 		break;
 	}
+}
 
+
+ReturnValue_t TmTcUnixUdpBridge::receiveTc(uint8_t **recvBuffer, size_t *size) {
+	// TC reception handled by separate polling task because it is blocking.
+	return HasReturnvaluesIF::RETURN_OK;
 }

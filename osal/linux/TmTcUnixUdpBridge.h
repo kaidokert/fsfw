@@ -18,7 +18,6 @@ public:
 	virtual~ TmTcUnixUdpBridge();
 
 protected:
-	virtual ReturnValue_t handleTc() override;
 	virtual ReturnValue_t receiveTc(uint8_t ** recvBuffer,
 			size_t * size) override;
 	virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
