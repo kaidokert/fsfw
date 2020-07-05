@@ -47,7 +47,7 @@ MessageQueue::~MessageQueue() {
 	status = mq_unlink(name);
 	if(status != 0){
 		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
-				   << strerror(errno) <<std::endl;
+				   << strerror(errno) << std::endl;
 	}
 }
 

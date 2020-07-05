@@ -149,8 +149,10 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_attr_setstack(&attributes, stackPointer, stackSize);
 	if(status != 0){
-		sif::error << "Posix Thread attribute setStack failed with: " <<
-				strerror(status) << std::endl;
+		sif::error << "PosixThread::createTask: pthread_attr_setstack "
+				" failed with: " << strerror(status) <<  std::endl;
+		sif::error << "Make sure the specified stack size is valid and is "
+				"larger than the minimum allowed stack size." << std::endl;
 	}
 
 	status = pthread_attr_setinheritsched(&attributes, PTHREAD_EXPLICIT_SCHED);

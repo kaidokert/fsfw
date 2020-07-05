@@ -1,5 +1,6 @@
 #include <framework/osal/linux/TmTcUnixUdpBridge.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include <errno.h>
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		object_id_t ccsdsPacketDistributor, uint16_t serverPort,
@@ -20,6 +21,7 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
 				" UDP socket!" << std::endl;
 		// check errno here.
+		handleSocketError();
 		return;
 	}
 
@@ -39,9 +41,6 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		// check errno here.
 		return;
 	}
-
-
-
 }
 
 TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
@@ -57,4 +56,20 @@ ReturnValue_t TmTcUnixUdpBridge::receiveTc(uint8_t **recvBuffer, size_t *size) {
 
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	return HasReturnvaluesIF::RETURN_OK;
+}
+
+void TmTcUnixUdpBridge::handleSocketError() {
+	// See: https://man7.org/linux/man-pages/man2/socket.2.html
+	switch(errno) {
+	case(EACCES):
+	case(EINVAL):
+	case(EMFILE):
+	case(ENFILE):
+	case(EAFNOSUPPORT):
+	case(ENOBUFS):
+	case(ENOMEM):
+	case(EPROTONOSUPPORT):
+		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Socket creation failed"
+				<< " with " << strerror(errno) << std::endl;
+	}
 }

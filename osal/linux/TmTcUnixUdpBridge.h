@@ -25,6 +25,8 @@ private:
 	const int serverSocketOptions = 0;
 	struct sockaddr_in clientAddress;
 	struct sockaddr_in serverAddress;
+
+	void handleSocketError();
 };
 
 
