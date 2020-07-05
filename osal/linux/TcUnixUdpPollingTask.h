@@ -2,6 +2,7 @@
 #define FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/tasks/ExecutableObjectIF.h>
+#include <sys/socket.h>
 
 /**
  * @brief 	This class can be used to implement the polling of a Unix socket,
@@ -14,6 +15,7 @@
  */
 class TcSocketPollingTask: public SystemObject,
 		public ExecutableObjectIF {
+	friend class TmTcUnixUdpBridge;
 public:
 	TcSocketPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge);
 	virtual~ TcSocketPollingTask();
@@ -21,6 +23,8 @@ public:
 	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 	virtual ReturnValue_t initialize() override;
 private:
+	//! Sender Address is cached here.
+	const struct sockaddr senderAddress;
 };
 
 
