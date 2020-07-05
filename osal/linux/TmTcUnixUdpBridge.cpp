@@ -1,11 +1,14 @@
 #include <framework/osal/linux/TmTcUnixUdpBridge.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <errno.h>
+#include <framework/ipc/MutexHelper.h>
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		object_id_t ccsdsPacketDistributor, uint16_t serverPort,
 		uint16_t clientPort):
 		TmTcBridge(objectId, ccsdsPacketDistributor) {
+	mutex = MutexFactory::instance()->createMutex();
+
 	uint16_t setServerPort = DEFAULT_UDP_SERVER_PORT;
 	if(serverPort != 0xFFFF) {
 		setServerPort = serverPort;
@@ -16,6 +19,7 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		setClientPort = clientPort;
 	}
 
+	// Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
 	serverSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if(socket < 0) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
@@ -26,14 +30,16 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 	}
 
 	serverAddress.sin_family = AF_INET;
+	// Accept packets from any interface.
 	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	serverAddress.sin_port = htons(setServerPort);
 	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &serverSocketOptions,
 			sizeof(serverSocketOptions));
 
+	serverSocketLen = sizeof(serverAddress);
 	int result = bind(serverSocket,
 			reinterpret_cast<struct sockaddr*>(&serverAddress),
-			sizeof(serverAddress));
+			serverSocketLen);
 	if(result == -1) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
 				"local port " << setServerPort << " to server socket!"
@@ -78,6 +84,17 @@ void TmTcUnixUdpBridge::handleSocketError() {
 		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
 				<< std::endl;
 		break;
+	}
+}
+
+void TmTcUnixUdpBridge::setTimeout(float timeoutSeconds) {
+}
+
+void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
+	MutexHelper lock(mutex, 10);
+	// Set new IP address if it has changed.
+	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
+		clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
 	}
 }
 

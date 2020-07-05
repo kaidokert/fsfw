@@ -8,7 +8,7 @@
 #include <framework/objectmanager/SystemObject.h>
 
 #include <framework/tmtcservices/TmTcMessage.h>
-#include <framework/container/FIFO.h>
+#include <framework/container/StaticFIFO.h>
 
 class TmTcBridge : public AcceptsTelemetryIF,
 		public ExecutableObjectIF,
@@ -143,7 +143,7 @@ protected:
 	 * This fifo can be used to store downlink data
 	 * which can not be sent at the moment.
 	 */
-	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> tmFifo;
+	StaticFIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> tmFifo;
     uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
     uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
 };

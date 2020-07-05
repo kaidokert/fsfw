@@ -10,7 +10,7 @@
 #include <framework/tmtcservices/VerificationReporter.h>
 #include <framework/ipc/CommandMessage.h>
 #include <framework/container/FixedMap.h>
-#include <framework/container/FIFO.h>
+#include <framework/container/StaticFIFO.h>
 #include <framework/serialize/SerializeIF.h>
 
 class TcPacketStored;
@@ -199,7 +199,7 @@ protected:
 		uint32_t state;
 		Command_t command;
 		object_id_t objectId;
-		FIFO<store_address_t, 3> fifo;
+		StaticFIFO<store_address_t, 3> fifo;
 	};
 
 	using CommandMapIter = FixedMap<MessageQueueId_t,
