@@ -8,8 +8,10 @@
 
 class TmTcUnixUdpBridge: public TmTcBridge {
 public:
-	static constexpr int DEFAULT_UDP_SERVER_PORT = 7;
-	static constexpr int DEFAULT_UDP_CLIENT_PORT = 2008;
+	// The ports chosen here should not be used by any other process.
+	// List of used ports on Linux: /etc/services
+	static constexpr int DEFAULT_UDP_SERVER_PORT = 7301;
+	static constexpr int DEFAULT_UDP_CLIENT_PORT = 7302;
 
 	TmTcUnixUdpBridge(object_id_t objectId, object_id_t ccsdsPacketDistributor,
 			 uint16_t serverPort = 0xFFFF,uint16_t clientPort = 0xFFFF);
@@ -27,6 +29,7 @@ private:
 	struct sockaddr_in serverAddress;
 
 	void handleSocketError();
+	void handleBindError();
 };
 
 

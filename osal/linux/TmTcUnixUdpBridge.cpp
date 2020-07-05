@@ -39,6 +39,7 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 				"local port " << setServerPort << " to server socket!"
 				<< std::endl;
 		// check errno here.
+		handleBindError();
 		return;
 	}
 }
@@ -59,6 +60,7 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcUnixUdpBridge::handleSocketError() {
+
 	// See: https://man7.org/linux/man-pages/man2/socket.2.html
 	switch(errno) {
 	case(EACCES):
@@ -71,5 +73,46 @@ void TmTcUnixUdpBridge::handleSocketError() {
 	case(EPROTONOSUPPORT):
 		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Socket creation failed"
 				<< " with " << strerror(errno) << std::endl;
+		break;
+	default:
+		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
+				<< std::endl;
+		break;
 	}
+}
+
+void TmTcUnixUdpBridge::handleBindError() {
+	// See: https://man7.org/linux/man-pages/man2/bind.2.html
+	switch(errno) {
+	case(EACCES):
+		/*
+		 Ephermeral ports can be shown with following command:
+		 sysctl -A | grep ip_local_port_range
+		 */
+		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Port access issue."
+				"Ports 1-1024 are reserved on UNIX systems and require root "
+				"rights while ephermeral ports should not be used as well."
+				<< std::endl;
+		break;
+	case(EADDRINUSE):
+	case(EBADF):
+	case(EINVAL):
+	case(ENOTSOCK):
+	case(EADDRNOTAVAIL):
+	case(EFAULT):
+	case(ELOOP):
+	case(ENAMETOOLONG):
+	case(ENOENT):
+	case(ENOMEM):
+	case(ENOTDIR):
+	case(EROFS):
+		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Socket creation failed"
+					<< " with " << strerror(errno) << std::endl;
+		break;
+	default:
+		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
+						<< std::endl;
+		break;
+	}
+
 }
