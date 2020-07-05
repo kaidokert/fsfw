@@ -49,6 +49,6 @@ private:
 
 	ReturnValue_t handleSuccessfullTcRead();
 
-
+};
 
 #endif /* FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_ */

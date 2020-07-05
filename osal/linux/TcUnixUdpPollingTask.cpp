@@ -75,6 +75,5 @@ ReturnValue_t TcSocketPollingTask::initialize() {
 }
 
 ReturnValue_t TcSocketPollingTask::handleSuccessfullTcRead() {
-
 	return HasReturnvaluesIF::RETURN_OK;
 }
