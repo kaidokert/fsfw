@@ -95,4 +95,4 @@ protected:
 	void handleMissedDeadline();
 };
 
-#endif /* POLLINGTASK_H_ */
+#endif /* FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_ */

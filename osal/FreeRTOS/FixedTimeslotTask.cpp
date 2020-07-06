@@ -156,4 +156,3 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 	vTaskDelay(pdMS_TO_TICKS(ms));
 	return HasReturnvaluesIF::RETURN_OK;
 }
-
