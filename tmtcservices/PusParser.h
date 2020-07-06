@@ -23,6 +23,9 @@
  */
 class PusParser {
 public:
+	static constexpr uint8_t INTERFACE_ID = CLASS_ID::PUS_PARSER;
+	static constexpr ReturnValue_t NO_PACKET_FOUND = MAKE_RETURN_CODE(0x00);
+
 	/**
 	 * Parser constructor.
 	 * @param maxExpectedPusPackets
@@ -34,6 +37,12 @@ public:
 	 */
 	PusParser(uint16_t maxExpectedPusPackets, bool storeSplitPackets);
 
+	/**
+	 * Parse a given frame for PUS packets
+	 * @param frame
+	 * @param frameSize
+	 * @return -@c NO_PACKET_FOUND if no packet was found.
+	 */
 	ReturnValue_t parsePusPackets(const uint8_t* frame, size_t frameSize);
 private:
 	//! The first entry is the index inside the buffer while the second index
@@ -45,6 +54,8 @@ private:
 	fsfw::FIFO<indexSizePair> indexSizePairFIFO;
 
 	bool storeSplitPackets = false;
+
+	ReturnValue_t readMultiplePackets(size_t frameSize);
 };
 
 
