@@ -82,10 +82,10 @@ ReturnValue_t FixedTimeslotTask::checkSequence() const {
 
 void FixedTimeslotTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
-	std::list<FixedSequenceSlot*>::iterator it = pst.current;
+	auto slotListIter = pst.current;
 
 	//The start time for the first entry is read.
-	uint32_t intervalMs = (*it)->pollingTimeMs;
+	uint32_t intervalMs = slotListIter->pollingTimeMs;
 	TickType_t interval = pdMS_TO_TICKS(intervalMs);
 
 	TickType_t xLastWakeTime;
@@ -120,4 +120,3 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 	vTaskDelay(pdMS_TO_TICKS(ms));
 	return HasReturnvaluesIF::RETURN_OK;
 }
-

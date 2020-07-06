@@ -49,7 +49,7 @@ void ActionHelper::setQueueToUse(MessageQueueIF* queue) {
 void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId,
 		store_address_t dataAddress) {
 	const uint8_t* dataPtr = NULL;
-	uint32_t size = 0;
+	size_t size = 0;
 	ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		CommandMessage reply;

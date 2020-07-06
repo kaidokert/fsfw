@@ -25,7 +25,7 @@ public:
 	 * @param maxReplyLen Maximum length of expected reply
 	 * @return
 	 */
-	virtual ReturnValue_t open(Cookie **cookie, uint32_t address,
+	virtual ReturnValue_t open(CookieIF **cookie, uint32_t address,
 			uint32_t maxReplyLen) = 0;
 
 	/**
@@ -39,7 +39,7 @@ public:
 	 * @param maxReplyLen
 	 * @return
 	 */
-	virtual ReturnValue_t reOpen(Cookie *cookie, uint32_t address,
+	virtual ReturnValue_t reOpen(CookieIF *cookie, uint32_t address,
 			uint32_t maxReplyLen) = 0;
 
 
@@ -47,7 +47,7 @@ public:
 	 * Closing call of connection and memory free of cookie. Mission dependent call
 	 * @param cookie
 	 */
-	virtual void close(Cookie *cookie) = 0;
+	virtual void close(CookieIF *cookie) = 0;
 
 	//SHOULDDO can data be const?
 	/**
@@ -58,23 +58,23 @@ public:
 	 * @param len Length of the data to be send
 	 * @return - Return codes of RMAP::sendWriteCommand()
 	 */
-	virtual ReturnValue_t sendMessage(Cookie *cookie, uint8_t *data,
+	virtual ReturnValue_t sendMessage(CookieIF *cookie, uint8_t *data,
 			uint32_t len);
 
-	virtual ReturnValue_t getSendSuccess(Cookie *cookie);
+	virtual ReturnValue_t getSendSuccess(CookieIF *cookie);
 
-	virtual ReturnValue_t requestReceiveMessage(Cookie *cookie);
+	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie);
 
-	virtual ReturnValue_t readReceivedMessage(Cookie *cookie, uint8_t **buffer,
+	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
 			uint32_t *size);
 
-	virtual ReturnValue_t setAddress(Cookie *cookie, uint32_t address);
+	virtual ReturnValue_t setAddress(CookieIF *cookie, uint32_t address);
 
-	virtual uint32_t getAddress(Cookie *cookie);
+	virtual uint32_t getAddress(CookieIF *cookie);
 
-	virtual ReturnValue_t setParameter(Cookie *cookie, uint32_t parameter);
+	virtual ReturnValue_t setParameter(CookieIF *cookie, uint32_t parameter);
 
-	virtual uint32_t getParameter(Cookie *cookie);
+	virtual uint32_t getParameter(CookieIF *cookie);
 };
 
 #endif /* MISSION_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_ */
