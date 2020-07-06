@@ -4,6 +4,8 @@
 #include <framework/container/FIFOBase.h>
 #include <vector>
 
+namespace fifo {
+
 /**
  * @brief 	Simple First-In-First-Out data structure. The maximum size
  * 			can be set in the constructor. THe public interface of
@@ -22,5 +24,7 @@ public:
 private:
 	std::vector<T> values;
 };
+
+}
 
 #endif /* FRAMEWORK_CONTAINER_FIFO_H_ */
