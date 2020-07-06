@@ -18,7 +18,6 @@ ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
-
 	size_t lengthField = frame[4] << 8 | frame[5];
 
 	if(lengthField == 0) {
@@ -26,31 +25,31 @@ ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 	}
 
 	size_t packetSize = lengthField + 7;
-	if(lengthField > 0) {
-		// Size of a pus packet is the value in the packet length field plus 7.
-		if(packetSize > frameSize)
+	// Size of a pus packet is the value in the packet length field plus 7.
+	if(packetSize > frameSize)
+	{
+		if(storeSplitPackets)
 		{
-			if(storeSplitPackets)
-			{
-				indexSizePairFIFO.insert(indexSizePair(0, frameSize));
-			}
-			else
-			{
-				sif::debug << "TcSerialPollingTask::readNextPacket: Next packet "
-						"larger than remaining frame," << std::endl;
-				sif::debug << "Throwing away packet. Detected packet size: "
-						<< packetSize << std::endl;
-			}
-			return SPLIT_PACKET;
+			indexSizePairFIFO.insert(indexSizePair(0, frameSize));
 		}
 		else
 		{
-			indexSizePairFIFO.insert(indexSizePair(0, packetSize));
-			if(packetSize == frameSize) {
-				return HasReturnvaluesIF::RETURN_OK;
-			}
+			sif::debug << "TcSerialPollingTask::readNextPacket: Next packet "
+					"larger than remaining frame," << std::endl;
+			sif::debug << "Throwing away packet. Detected packet size: "
+					<< packetSize << std::endl;
+		}
+		return SPLIT_PACKET;
+	}
+	else
+	{
+		indexSizePairFIFO.insert(indexSizePair(0, packetSize));
+		if(packetSize == frameSize) {
+			sif::info << "test2" << std::endl;
+			return HasReturnvaluesIF::RETURN_OK;
 		}
 	}
+
 
 	// packet size is smaller than frame size, parse for more packets.
 	return readMultiplePackets(frame, frameSize, packetSize);
@@ -59,6 +58,7 @@ ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 ReturnValue_t PusParser::readMultiplePackets(const uint8_t *frame,
 		size_t frameSize, size_t startIndex) {
 	while (startIndex < frameSize) {
+		sif::info << "test" << std::endl;
 		ReturnValue_t result = readNextPacket(frame, frameSize, startIndex);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
