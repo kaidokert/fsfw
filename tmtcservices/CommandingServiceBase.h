@@ -199,7 +199,7 @@ protected:
 		uint32_t state;
 		Command_t command;
 		object_id_t objectId;
-		StaticFIFO<store_address_t, 3> fifo;
+		fsfw::StaticFIFO<store_address_t, 3> fifo;
 	};
 
 	using CommandMapIter = FixedMap<MessageQueueId_t,

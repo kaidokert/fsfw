@@ -42,7 +42,7 @@ private:
 	//! A FIFO is used to store information about multiple PUS packets
 	//! inside the receive buffer. The maximum number of entries is defined
 	//! by the first constructor argument.
-	FIFO<indexSizePair> indexSizePairFIFO;
+	fsfw::FIFO<indexSizePair> indexSizePairFIFO;
 
 	bool storeSplitPackets = false;
 };
