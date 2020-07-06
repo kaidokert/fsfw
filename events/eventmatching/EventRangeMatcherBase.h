@@ -12,15 +12,15 @@ public:
 	EventRangeMatcherBase(T from, T till, bool inverted) : rangeMatcher(from, till, inverted) {	}
 	virtual ~EventRangeMatcherBase() { }
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const {
-		return rangeMatcher.serialize(buffer, size, max_size, bigEndian);
+			size_t maxSize, Endianness streamEndianness) const {
+		return rangeMatcher.serialize(buffer, size, maxSize, streamEndianness);
 	}
 	size_t getSerializedSize() const {
 		return rangeMatcher.getSerializedSize();
 	}
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) {
-		return rangeMatcher.deSerialize(buffer, size, bigEndian);
+			Endianness streamEndianness) {
+		return rangeMatcher.deSerialize(buffer, size, streamEndianness);
 	}
 protected:
 	RangeMatcher<T> rangeMatcher;

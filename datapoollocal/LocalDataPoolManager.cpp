@@ -1,5 +1,6 @@
 #include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/datapoollocal/LocalDataSet.h>
+#include <framework/housekeeping/AcceptsHkPacketsIF.h>
 #include <framework/ipc/MutexFactory.h>
 #include <framework/ipc/MutexHelper.h>
 #include <framework/ipc/QueueFactory.h>
@@ -7,7 +8,7 @@
 #include <array>
 
 LocalDataPoolManager::LocalDataPoolManager(OwnsLocalDataPoolIF* owner,
-        uint32_t replyQueueDepth, bool appendValidityBuffer):
+        MessageQueueIF* queueToUse, bool appendValidityBuffer):
         appendValidityBuffer(appendValidityBuffer) {
 	if(owner == nullptr) {
 		sif::error << "HkManager: Invalid supplied owner!" << std::endl;
@@ -24,16 +25,45 @@ LocalDataPoolManager::LocalDataPoolManager(OwnsLocalDataPoolIF* owner,
 	    sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
 	            "Could not set IPC store." << std::endl;
 	}
-	hkQueue = QueueFactory::instance()->createMessageQueue(replyQueueDepth,
-	        HousekeepingMessage::HK_MESSAGE_SIZE);
+	hkQueue = queueToUse;
+}
+
+ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse,
+        object_id_t hkDestination) {
+    if(queueToUse == nullptr) {
+        sif::error << "LocalDataPoolManager::initialize: Supplied queue "
+                "invalid!" << std::endl;
+    }
+    hkQueue = queueToUse;
+
+    if(hkDestination == objects::NO_OBJECT) {
+        return initializeHousekeepingPoolEntriesOnce();
+    }
+
+    AcceptsHkPacketsIF* hkReceiver =
+            objectManager->get<AcceptsHkPacketsIF>(hkDestination);
+    if(hkReceiver != nullptr) {
+        setHkPacketDestination(hkReceiver->getHkQueue());
+    }
+    else {
+        sif::warning << "LocalDataPoolManager::initialize: Could not retrieve"
+                " queue ID from HK destination object ID. " << std::flush;
+        sif::warning << "Make sure it exists and the object impements "
+                "AcceptsHkPacketsIF!" << std::endl;
+    }
+    return initializeHousekeepingPoolEntriesOnce();
+}
+
+void LocalDataPoolManager::setHkPacketDestination(
+        MessageQueueId_t hkDestination) {
+    this->hkDestination = hkDestination;
 }
 
 LocalDataPoolManager::~LocalDataPoolManager() {}
 
 ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 	if(not mapInitialized) {
-		ReturnValue_t result =
-				owner->initializePoolEntries(localDpMap);
+		ReturnValue_t result = owner->initializePoolEntries(localDpMap);
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			mapInitialized = true;
 		}
@@ -80,16 +110,12 @@ MutexIF* LocalDataPoolManager::getMutexHandle() {
 	return mutex;
 }
 
-void LocalDataPoolManager::setHkPacketDestination(
-        MessageQueueId_t destinationQueueId) {
-    this->currentHkPacketDestination = destinationQueueId;
-}
-
 const OwnsLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
     return owner;
 }
 
-ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
+ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
+        MessageQueueId_t sendTo) {
 	LocalDataSet* dataSetToSerialize = dynamic_cast<LocalDataSet*>(
 			owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
@@ -108,14 +134,21 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid) {
 	CommandMessage hkMessage;
 	HousekeepingMessage::setHkReportMessage(&hkMessage, sid, storeId);
 	if(hkQueue == nullptr) {
-	    return QUEUE_NOT_SET;
+	    return QUEUE_OR_DESTINATION_NOT_SET;
 	}
 
-	if(currentHkPacketDestination != MessageQueueIF::NO_QUEUE) {
-	    result = hkQueue->sendMessage(currentHkPacketDestination, &hkMessage);
+	if(sendTo != MessageQueueIF::NO_QUEUE) {
+	    result = hkQueue->sendMessage(sendTo, &hkMessage);
 	}
 	else {
-	    result = hkQueue->sendToDefault(&hkMessage);
+	    if(hkDestination == MessageQueueIF::NO_QUEUE) {
+	        sif::warning << "LocalDataPoolManager::generateHousekeepingPacket:"
+	                " Destination is not set properly!" << std::endl;
+	        return QUEUE_OR_DESTINATION_NOT_SET;
+	    }
+	    else {
+	        result = hkQueue->sendMessage(hkDestination, &hkMessage);
+	    }
 	}
 
 	return result;
@@ -141,12 +174,15 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid) {
     }
     size_t size = 0;
     result = dataSet->serializeLocalPoolIds(&storePtr, &size,
-            expectedSize, false);
+            expectedSize, SerializeIF::Endianness::BIG);
     if(expectedSize != size) {
         sif::error << "HousekeepingManager::generateSetStructurePacket: "
                 "Expected size is not equal to serialized size" << std::endl;
     }
     return result;
+}
+
+void LocalDataPoolManager::setMinimalSamplingFrequency(float frequencySeconds) {
 }
 
 ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
@@ -163,10 +199,11 @@ ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
 
     if(appendValidityBuffer) {
         result = dataSet->serializeWithValidityBuffer(&storePtr,
-                &size, hkSize, false);
+                &size, hkSize, SerializeIF::Endianness::MACHINE);
     }
     else {
-        result = dataSet->serialize(&storePtr, &size, hkSize, false);
+        result = dataSet->serialize(&storePtr, &size, hkSize,
+                SerializeIF::Endianness::MACHINE);
     }
 
     if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -175,6 +212,5 @@ ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
     }
     return result;
 }
-
 
 

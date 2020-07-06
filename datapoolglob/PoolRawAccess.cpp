@@ -1,7 +1,7 @@
 #include <framework/datapoolglob/GlobalDataPool.h>
 #include <framework/datapoolglob/PoolRawAccess.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/osal/Endiness.h>
+#include <framework/serialize/EndianConverter.h>
 
 #include <cstring>
 
@@ -121,7 +121,7 @@ uint8_t* PoolRawAccess::getEntry() {
 }
 
 ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
-		uint32_t* writtenBytes, uint32_t max_size) {
+		size_t* writtenBytes, size_t max_size) {
 	uint8_t* data_ptr = getEntry();
 	// debug << "PoolRawAccess::getEntry: Array position: " <<
 	// 	      index * size_of_type << " Size of T: " << (int)size_of_type <<
@@ -130,42 +130,33 @@ ReturnValue_t PoolRawAccess::getEntryEndianSafe(uint8_t* buffer,
 		return DATA_POOL_ACCESS_FAILED;
 	if (typeSize > max_size)
 		return INCORRECT_SIZE;
-#ifndef BYTE_ORDER_SYSTEM
-#error BYTE_ORDER_SYSTEM not defined
-#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-	for (uint8_t count = 0; count < typeSize; count++) {
-		buffer[count] = data_ptr[typeSize - count - 1];
-	}
-#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-	memcpy(buffer, data_ptr, typeSize);
-#endif
+	EndianConverter::convertBigEndian(buffer, data_ptr, typeSize);
 	*writtenBytes = typeSize;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 
 ReturnValue_t PoolRawAccess::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, bool bigEndian) const {
-	if (typeSize + *size <= max_size) {
-		if (bigEndian) {
-#ifndef BYTE_ORDER_SYSTEM
-#error BYTE_ORDER_SYSTEM not defined
-#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-			for (uint8_t count = 0; count < typeSize; count++) {
-				(*buffer)[count] = value[typeSize - count - 1];
-			}
-#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			memcpy(*buffer, value, typeSize);
-#endif
-		} else {
-			memcpy(*buffer, value, typeSize);
-		}
-		*size += typeSize;
-		(*buffer) += typeSize;
-		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return SerializeIF::BUFFER_TOO_SHORT;
-	}
+        size_t maxSize, Endianness streamEndianness) const {
+    if (typeSize + *size <= maxSize) {
+    	switch(streamEndianness) {
+    	case(Endianness::BIG):
+    		EndianConverter::convertBigEndian(*buffer, value, typeSize);
+    		break;
+    	case(Endianness::LITTLE):
+			EndianConverter::convertLittleEndian(*buffer, value, typeSize);
+    		break;
+    	case(Endianness::MACHINE):
+    	default:
+            memcpy(*buffer, value, typeSize);
+            break;
+        }
+        *size += typeSize;
+        (*buffer) += typeSize;
+        return HasReturnvaluesIF::RETURN_OK;
+    } else {
+        return SerializeIF::BUFFER_TOO_SHORT;
+    }
 }
 
 
@@ -173,11 +164,11 @@ Type PoolRawAccess::getType() {
 	return type;
 }
 
-uint8_t PoolRawAccess::getSizeOfType() {
+size_t PoolRawAccess::getSizeOfType() {
 	return typeSize;
 }
 
-uint8_t PoolRawAccess::getArraySize(){
+size_t PoolRawAccess::getArraySize(){
 	return arraySize;
 }
 
@@ -189,22 +180,14 @@ PoolVariableIF::ReadWriteMode_t PoolRawAccess::getReadWriteMode() const {
 	return readWriteMode;
 }
 
-ReturnValue_t PoolRawAccess::setEntryFromBigEndian(const uint8_t* buffer,
-		uint32_t setSize) {
+ReturnValue_t PoolRawAccess::setEntryFromBigEndian(const uint8_t *buffer,
+		size_t setSize) {
 	if (typeSize == setSize) {
-#ifndef BYTE_ORDER_SYSTEM
-#error BYTE_ORDER_SYSTEM not defined
-#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-		for (uint8_t count = 0; count < typeSize; count++) {
-			value[count] = buffer[typeSize - count - 1];
-		}
-#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-		memcpy(value, buffer, typeSize);
-#endif
+		EndianConverter::convertBigEndian(value, buffer, typeSize);
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		sif::error << "PoolRawAccess::setEntryFromBigEndian: Illegal sizes: Internal"
-				<< (uint32_t) typeSize << ", Requested: " << setSize
+		sif::error << "PoolRawAccess::setEntryFromBigEndian: Illegal sizes: "
+				"Internal" << (uint32_t) typeSize << ", Requested: " << setSize
 				<< std::endl;
 		return INCORRECT_SIZE;
 	}
@@ -221,7 +204,7 @@ void PoolRawAccess::setValid(bool valid) {
 	this->valid = valid;
 }
 
-uint16_t PoolRawAccess::getSizeTillEnd() const {
+size_t PoolRawAccess::getSizeTillEnd() const {
 	return sizeTillEnd;
 }
 
@@ -230,29 +213,27 @@ size_t PoolRawAccess::getSerializedSize() const {
 	return typeSize;
 }
 
-ReturnValue_t PoolRawAccess::deSerialize(const uint8_t** buffer, size_t* size,
-		bool bigEndian) {
-	// TODO: Needs to be tested!!!
-	if (*size >= typeSize) {
-		*size -= typeSize;
-		if (bigEndian) {
-#ifndef BYTE_ORDER_SYSTEM
-#error BYTE_ORDER_SYSTEM not defined
-#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-			for (uint8_t count = 0; count < typeSize; count++) {
-				value[count] = (*buffer)[typeSize - count - 1];
-			}
-#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			memcpy(value, *buffer, typeSize);
-#endif
-		}
-		else {
-			memcpy(value, *buffer, typeSize);
-		}
-		*buffer += typeSize;
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-	else {
-		return SerializeIF::STREAM_TOO_SHORT;
-	}
+ReturnValue_t PoolRawAccess::deSerialize(const uint8_t **buffer, size_t *size,
+        Endianness streamEndianness) {
+
+    if (*size >= typeSize) {
+        switch(streamEndianness) {
+        case(Endianness::BIG):
+			EndianConverter::convertBigEndian(value, *buffer, typeSize);
+		    break;
+        case(Endianness::LITTLE):
+			EndianConverter::convertLittleEndian(value, *buffer, typeSize);
+		   	break;
+        case(Endianness::MACHINE):
+        default:
+            memcpy(value, *buffer, typeSize);
+            break;
+        }
+    	*size -= typeSize;
+        *buffer += typeSize;
+        return HasReturnvaluesIF::RETURN_OK;
+    }
+    else {
+    	return SerializeIF::STREAM_TOO_SHORT;
+    }
 }

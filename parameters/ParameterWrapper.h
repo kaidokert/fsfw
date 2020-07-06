@@ -26,15 +26,15 @@ public:
 	virtual ~ParameterWrapper();
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const;
+			size_t maxSize, Endianness streamEndianness) const override;
 
-	virtual size_t getSerializedSize() const;
-
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian);
+	virtual size_t getSerializedSize() const override;
 
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian, uint16_t startWritingAtIndex = 0);
+			Endianness streamEndianness) override;
+
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness, uint16_t startWritingAtIndex = 0);
 
 	template<typename T>
 	ReturnValue_t getElement(T *value, uint8_t row = 0, uint8_t column = 0) const {
@@ -54,7 +54,7 @@ public:
 			const uint8_t *streamWithtype = (const uint8_t *) readonlyData;
 			streamWithtype += (row * columns + column) * type.getSize();
 			int32_t size = type.getSize();
-			return SerializeAdapter<T>::deSerialize(value, &streamWithtype,
+			return SerializeAdapter::deSerialize(value, &streamWithtype,
 					&size, true);
 		} else {
 			const T *dataWithType = (const T *) readonlyData;
@@ -129,7 +129,7 @@ private:
 
 	template<typename T>
 	ReturnValue_t serializeData(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const;
+			size_t maxSize, Endianness streamEndianness) const;
 
 	template<typename T>
 	ReturnValue_t deSerializeData(uint8_t startingRow, uint8_t startingColumn,

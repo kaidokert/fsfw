@@ -10,7 +10,7 @@
 #include <framework/tmtcservices/VerificationReporter.h>
 #include <framework/ipc/CommandMessage.h>
 #include <framework/container/FixedMap.h>
-#include <framework/container/FIFO.h>
+#include <framework/container/StaticFIFO.h>
 #include <framework/serialize/SerializeIF.h>
 
 class TcPacketStored;
@@ -89,7 +89,7 @@ public:
 	 */
 	virtual MessageQueueId_t getCommandQueue();
 
-	virtual ReturnValue_t initialize();
+	virtual ReturnValue_t initialize() override;
 
 	/**
 	 * Implementation of ExecutableObjectIF function
@@ -199,7 +199,7 @@ protected:
 		uint32_t state;
 		Command_t command;
 		object_id_t objectId;
-		FIFO<store_address_t, 3> fifo;
+		fsfw::StaticFIFO<store_address_t, 3> fifo;
 	};
 
 	using CommandMapIter = FixedMap<MessageQueueId_t,

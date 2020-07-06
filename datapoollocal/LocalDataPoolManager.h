@@ -44,18 +44,45 @@ public:
     static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x0);
     static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x1);
 
-    static constexpr ReturnValue_t QUEUE_NOT_SET = MAKE_RETURN_CODE(0x2);
+    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x2);
     //static constexpr ReturnValue_t SET_NOT_FOUND = MAKE_RETURN_CODE(0x3);
 
-	LocalDataPoolManager(OwnsLocalDataPoolIF* owner,
-	        uint32_t replyQueueDepth = 20, bool appendValidityBuffer = true);
+    /**
+     * This constructor is used by a class which wants to implement
+     * a personal local data pool. The queueToUse can be supplied if it
+     * is already known.
+     *
+     * initialize() has to be called in any case before using the object!
+     * @param owner
+     * @param queueToUse
+     * @param appendValidityBuffer
+     */
+	LocalDataPoolManager(OwnsLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
+	        bool appendValidityBuffer = true);
+	/**
+	 * Initializes the map by calling the map initialization function of the
+	 * owner abd assigns the queue to use.
+	 * @param queueToUse
+	 * @return
+	 */
+	ReturnValue_t initialize(MessageQueueIF* queueToUse,
+	        object_id_t hkDestination);
+	/**
+	 * This function is used to set the default HK packet destination.
+	 * This destination will usually only be set once.
+	 * @param hkDestination
+	 */
+	void setHkPacketDestination(MessageQueueId_t hkDestination);
+
 	virtual~ LocalDataPoolManager();
 
-	/* Copying forbidden */
-	LocalDataPoolManager(const LocalDataPoolManager &) = delete;
-	LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
-
-	ReturnValue_t generateHousekeepingPacket(sid_t sid);
+	/**
+	 * Generate a housekeeping packet with a given SID.
+	 * @param sid
+	 * @return
+	 */
+	ReturnValue_t generateHousekeepingPacket(sid_t sid, MessageQueueId_t sendTo
+	        = MessageQueueIF::NO_QUEUE);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
@@ -68,40 +95,43 @@ public:
 	 */
 	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
-	//! Set the queue for HK packets, which are sent unrequested.
-	void setHkPacketDestination(MessageQueueId_t destinationQueueId);
-
 	const OwnsLocalDataPoolIF* getOwner() const;
 
 	ReturnValue_t printPoolEntry(lp_id_t localPoolId);
 
+    /* Copying forbidden */
+    LocalDataPoolManager(const LocalDataPoolManager &) = delete;
+    LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
 private:
-	//! This is the map holding the actual data. Should only be initialized
-	//! once !
+	/** This is the map holding the actual data. Should only be initialized
+	 * once ! */
 	bool mapInitialized = false;
-	//! This specifies whether a validity buffer is appended at the end
-	//! of generated housekeeping packets.
+	/** This specifies whether a validity buffer is appended at the end
+	 * of generated housekeeping packets. */
 	bool appendValidityBuffer = true;
 
 	LocalDataPool localDpMap;
 
-	//! Every housekeeping data manager has a mutex to protect access
-	//! to it's data pool.
+	/** Every housekeeping data manager has a mutex to protect access
+	 * to it's data pool. */
 	MutexIF * mutex = nullptr;
-
-	//! The class which actually owns the manager (and its datapool).
+	/** The class which actually owns the manager (and its datapool). */
 	OwnsLocalDataPoolIF* owner = nullptr;
-
-	//! Queue used for communication, for example commands.
-	//! Is also used to send messages.
+	/**
+	 * @brief Queue used for communication, for example commands.
+	 * Is also used to send messages. Can be set either in the constructor
+     * or in the initialize() function.
+	 */
 	MessageQueueIF* hkQueue = nullptr;
 
-	//! HK replies will always be a reply to the commander, but HK packet
-	//! can be sent to another destination by specifying this message queue
-	//! ID, for example to a dedicated housekeeping service implementation.
-	MessageQueueId_t currentHkPacketDestination = MessageQueueIF::NO_QUEUE;
+	/**
+	 * HK replies will always be a reply to the commander, but HK packet
+	 * can be sent to another destination by specifying this message queue
+	 * ID, for example to a dedicated housekeeping service implementation.
+	 */
+	MessageQueueId_t hkDestination = MessageQueueIF::NO_QUEUE;
 
-	//! Global IPC store is used to store all packets.
+	/** Global IPC store is used to store all packets. */
 	StorageManagerIF* ipcStore = nullptr;
 	/**
 	 * Get the pointer to the mutex. Can be used to lock the data pool

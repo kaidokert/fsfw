@@ -35,8 +35,10 @@ ReturnValue_t FailureIsolationBase::initialize() {
 			return result;
 		}
 		owner = objectManager->get<HasHealthIF>(ownerId);
-		if (owner == NULL) {
-			return RETURN_FAILED;
+		if (owner == nullptr) {
+			sif::error << "FailureIsolationBase::intialize: Owner object "
+					"invalid. Make sure it implements HasHealthIF" << std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 	}
 	if (faultTreeParent != 0) {

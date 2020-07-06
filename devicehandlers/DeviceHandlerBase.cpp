@@ -22,21 +22,21 @@ object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * comCookie,
-		uint8_t setDeviceSwitch, uint32_t thermalStatePoolId,
-		uint32_t thermalRequestPoolId, FailureIsolationBase* fdirInstance,
-		size_t cmdQueueSize) :
+		uint8_t setDeviceSwitch, object_id_t hkDestination,
+		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
+		FailureIsolationBase* fdirInstance, size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
-		actionHelper(this, nullptr), hkManager(this),
+		actionHelper(this, nullptr), hkManager(this, nullptr),
 		deviceThermalStatePoolId(thermalStatePoolId),
 		deviceThermalRequestPoolId(thermalRequestPoolId),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
-		switchOffWasReported(false), childTransitionDelay(5000),
-		transitionSourceMode(_MODE_POWER_DOWN), transitionSourceSubMode(
-		SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
+		switchOffWasReported(false), hkDestination(hkDestination),
+		childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
+		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			MessageQueueMessage::MAX_MESSAGE_SIZE);
 	insertInCommandMap(RAW_COMMAND_ID);
@@ -128,8 +128,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
 				AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
-		if (rawReceiver == NULL) {
-			return RETURN_FAILED;
+		if (rawReceiver == nullptr) {
+			sif::error << "DeviceHandlerBase::initialize: Raw receiver object "
+					"ID set but no valid object found." << std::endl;
+			sif::error << "Make sure the raw receiver object is set up properly"
+					" and implements AcceptsDeviceResponsesIF" << std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 		defaultRawReceiver = rawReceiver->getDeviceQueue();
 	}
@@ -173,7 +177,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
-	result = hkManager.initializeHousekeepingPoolEntriesOnce();
+	result = hkManager.initialize(commandQueue, hkDestination);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -315,6 +319,12 @@ void DeviceHandlerBase::doStateMachine() {
 	case _MODE_WAIT_OFF: {
 		uint32_t currentUptime;
 		Clock::getUptime(&currentUptime);
+
+		if(powerSwitcher == nullptr) {
+		    setMode(MODE_OFF);
+		    return;
+		}
+
 		if (currentUptime - timeoutStart >= powerSwitcher->getSwitchDelayMs()) {
 			triggerEvent(MODE_TRANSITION_FAILED, PowerSwitchIF::SWITCH_TIMEOUT,
 					0);
@@ -696,19 +706,23 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 
 	if (info->delayCycles != 0) {
 
-		if (info->periodic != 0) {
+		if (info->periodic != false) {
 			info->delayCycles = info->maxDelayCycles;
-		} else {
+		}
+		else {
 			info->delayCycles = 0;
 		}
+
 		result = interpretDeviceReply(foundId, receivedData);
+
 		if (result != RETURN_OK) {
 			// Report failed interpretation to FDIR.
 			replyRawReplyIfnotWiretapped(receivedData, foundLen);
 			triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result, foundId);
 		}
 		replyToReply(iter, result);
-	} else {
+	}
+	else {
 		// Other completion failure messages are created by timeout.
 		// Powering down the device might take some time during which periodic
 		// replies may still come in.
@@ -719,7 +733,7 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 }
 
 ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress,
-		uint8_t * *data, uint32_t * len) {
+		uint8_t** data, uint32_t * len) {
 	size_t lenTmp;
 
 	if (IPCStore == nullptr) {

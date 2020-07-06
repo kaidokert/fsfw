@@ -114,10 +114,11 @@ public:
 	const T &operator [](int i) const;
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const override;
+			const size_t maxSize,
+			SerializeIF::Endianness streamEndiannes) const override;
 	virtual size_t getSerializedSize() const override;
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) override;
+	        SerializeIF::Endianness streamEndianness) override;
 
 	/**
 	 * @brief	This is a call to read the array's values

@@ -20,12 +20,12 @@ public:
 	float getMax();
 
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const;
+			size_t maxSize, Endianness streamEndianness) const override;
 
-	size_t getSerializedSize() const;
+	size_t getSerializedSize() const override;
 
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian);
+			Endianness streamEndianness) override;
 
 	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 				ParameterWrapper *parameterWrapper,

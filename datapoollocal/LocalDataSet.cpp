@@ -5,20 +5,30 @@
 #include <cmath>
 #include <cstring>
 
-LocalDataSet::LocalDataSet(OwnsLocalDataPoolIF *hkOwner): DataSetBase() {
+LocalDataSet::LocalDataSet(OwnsLocalDataPoolIF *hkOwner,
+        const size_t maxNumberOfVariables):
+        DataSetBase(poolVarList.data(), maxNumberOfVariables) {
+    poolVarList.reserve(maxNumberOfVariables);
+    poolVarList.resize(maxNumberOfVariables);
     if(hkOwner == nullptr) {
         sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
                 << std::endl;
+        return;
     }
     hkManager = hkOwner->getHkManagerHandle();
 }
 
-LocalDataSet::LocalDataSet(object_id_t ownerId): DataSetBase()  {
+LocalDataSet::LocalDataSet(object_id_t ownerId,
+        const size_t maxNumberOfVariables):
+        DataSetBase(poolVarList.data(), maxNumberOfVariables)  {
+    poolVarList.reserve(maxNumberOfVariables);
+    poolVarList.resize(maxNumberOfVariables);
     OwnsLocalDataPoolIF* hkOwner = objectManager->get<OwnsLocalDataPoolIF>(
             ownerId);
     if(hkOwner == nullptr) {
         sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
                 << std::endl;
+        return;
     }
     hkManager = hkOwner->getHkManagerHandle();
 }
@@ -32,7 +42,8 @@ ReturnValue_t LocalDataSet::lockDataPool(uint32_t timeoutMs) {
 }
 
 ReturnValue_t LocalDataSet::serializeWithValidityBuffer(uint8_t **buffer,
-        size_t *size, const size_t maxSize, bool bigEndian) const {
+        size_t *size, size_t maxSize,
+        SerializeIF::Endianness streamEndianness) const {
     ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
     uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
     uint8_t validityMask[validityMaskSize];
@@ -52,7 +63,7 @@ ReturnValue_t LocalDataSet::serializeWithValidityBuffer(uint8_t **buffer,
             }
         }
         result = registeredVariables[count]->serialize(buffer, size, maxSize,
-                bigEndian);
+                streamEndianness);
         if (result != HasReturnvaluesIF::RETURN_OK) {
             return result;
         }
@@ -69,11 +80,12 @@ ReturnValue_t LocalDataSet::unlockDataPool() {
 }
 
 ReturnValue_t LocalDataSet::serializeLocalPoolIds(uint8_t** buffer,
-        size_t* size, const size_t maxSize, bool bigEndian) const {
+        size_t* size, size_t maxSize,
+        SerializeIF::Endianness streamEndianness) const {
     for (uint16_t count = 0; count < fillCount; count++) {
         lp_id_t currentPoolId = registeredVariables[count]->getDataPoolId();
-        auto result = AutoSerializeAdapter::serialize(&currentPoolId, buffer,
-                size, maxSize, bigEndian);
+        auto result = SerializeAdapter::serialize(&currentPoolId, buffer,
+                size, maxSize, streamEndianness);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             sif::warning << "LocalDataSet::serializeLocalPoolIds: Serialization"
                     " error!" << std::endl;

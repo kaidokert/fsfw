@@ -47,7 +47,7 @@ MessageQueue::~MessageQueue() {
 	status = mq_unlink(name);
 	if(status != 0){
 		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
-				   << strerror(errno) <<std::endl;
+				   << strerror(errno) << std::endl;
 	}
 }
 
@@ -62,22 +62,27 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		// Just an additional helpful printout :-)
 		if(std::ifstream("/proc/sys/fs/mqueue/msg_max",std::ios::in) >>
 				defaultMqMaxMsg and defaultMqMaxMsg < messageDepth) {
-			// See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
-			// This happens if the msg_max value is not large enough
-			// It is ignored if the executable is run in privileged mode.
-			// Run the unlockRealtime script or grant the mode manually by using:
-			// sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
+			/*
+			See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
+			This happens if the msg_max value is not large enough
+			It is ignored if the executable is run in privileged mode.
+		    Run the unlockRealtime script or grant the mode manually by using:
+			sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
 
-			// Persistent solution for session:
-			// echo <newMsgMax> | sudo tee /proc/sys/fs/mqueue/msg_max
+			Persistent solution for session:
+			echo <newMsgMax> | sudo tee /proc/sys/fs/mqueue/msg_max
 
-			// Permanent solution:
-			// sudo nano /etc/sysctl.conf
-			// Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
-			// Apply changes with: sudo sysctl -p
+			Permanent solution:
+			sudo nano /etc/sysctl.conf
+			Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
+			Apply changes with: sudo sysctl -p
+			*/
 			sif::error << "MessageQueue::MessageQueue: Default MQ size "
 					<< defaultMqMaxMsg << " is too small for requested size "
 					<< messageDepth << std::endl;
+			sif::error << "This error can be fixed by setting the maximum "
+					"allowed message size higher!" << std::endl;
+
 		}
 		break;
 	}

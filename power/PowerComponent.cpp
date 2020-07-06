@@ -18,14 +18,14 @@ PowerComponent::PowerComponent(object_id_t setId, uint8_t moduleId, float min, f
 }
 
 ReturnValue_t PowerComponent::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, bool bigEndian) const {
-	ReturnValue_t result = SerializeAdapter<float>::serialize(&min, buffer,
-			size, max_size, bigEndian);
+		size_t maxSize, Endianness streamEndianness) const {
+	ReturnValue_t result = SerializeAdapter::serialize(&min, buffer,
+			size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter<float>::serialize(&max, buffer, size, max_size,
-			bigEndian);
+	return SerializeAdapter::serialize(&max, buffer, size, maxSize,
+			streamEndianness);
 }
 
 size_t PowerComponent::getSerializedSize() const {
@@ -57,13 +57,13 @@ float PowerComponent::getMax() {
 }
 
 ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) {
-	ReturnValue_t result = SerializeAdapter<float>::deSerialize(&min, buffer,
-			size, bigEndian);
+        Endianness streamEndianness) {
+	ReturnValue_t result = SerializeAdapter::deSerialize(&min, buffer,
+			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter<float>::deSerialize(&max, buffer, size, bigEndian);
+	return SerializeAdapter::deSerialize(&max, buffer, size, streamEndianness);
 }
 
 ReturnValue_t PowerComponent::getParameter(uint8_t domainId,

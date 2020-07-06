@@ -79,12 +79,13 @@ inline ReturnValue_t GlobPoolVector<T, vectorSize>::commitWithoutLock() {
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t GlobPoolVector<T, vectorSize>::serialize(uint8_t** buffer,
-		size_t* size, const size_t max_size, bool bigEndian) const {
+		size_t* size, size_t max_size,
+		SerializeIF::Endianness streamEndianness) const {
 	uint16_t i;
 	ReturnValue_t result;
 	for (i = 0; i < vectorSize; i++) {
-		result = SerializeAdapter<T>::serialize(&(value[i]), buffer, size,
-				max_size, bigEndian);
+		result = SerializeAdapter::serialize(&(value[i]), buffer, size,
+				max_size, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
@@ -94,17 +95,18 @@ inline ReturnValue_t GlobPoolVector<T, vectorSize>::serialize(uint8_t** buffer,
 
 template<typename T, uint16_t vectorSize>
 inline size_t GlobPoolVector<T, vectorSize>::getSerializedSize() const {
-	return vectorSize * SerializeAdapter<T>::getSerializedSize(value);
+	return vectorSize * SerializeAdapter::getSerializedSize(value);
 }
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t GlobPoolVector<T, vectorSize>::deSerialize(
-		const uint8_t** buffer, size_t* size, bool bigEndian) {
+		const uint8_t** buffer, size_t* size,
+		SerializeIF::Endianness streamEndianness) {
 	uint16_t i;
 	ReturnValue_t result;
 	for (i = 0; i < vectorSize; i++) {
-		result = SerializeAdapter<T>::deSerialize(&(value[i]), buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&(value[i]), buffer, size,
+		        streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}

@@ -70,7 +70,7 @@ public:
 			ReturnValue_t setErrorCode, uint8_t setStep = 0,
 			uint32_t parameter1 = 0, uint32_t parameter2 = 0);
 	~PusFailureReport();
-	uint32_t getSize();
+	size_t getSize();
 	uint8_t* getReport();
 };
 

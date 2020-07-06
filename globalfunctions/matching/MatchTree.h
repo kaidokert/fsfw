@@ -46,37 +46,37 @@ public:
 	}
 
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			const size_t max_size, bool bigEndian) const {
+			size_t maxSize, SerializeIF::Endianness streamEndianness) const override {
 		iterator iter = this->begin();
 		uint8_t count = this->countRight(iter);
-		ReturnValue_t result = SerializeAdapter<uint8_t>::serialize(&count,
-				buffer, size, max_size, bigEndian);
+		ReturnValue_t result = SerializeAdapter::serialize(&count,
+				buffer, size, maxSize, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		if (iter == this->end()) {
 			return HasReturnvaluesIF::RETURN_OK;
 		}
-		result = iter->serialize(buffer, size, max_size, bigEndian);
+		result = iter->serialize(buffer, size, maxSize, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		if (maxDepth > 0) {
 			MatchTree<T> temp(iter.left(), maxDepth - 1);
-			result = temp.serialize(buffer, size, max_size, bigEndian);
+			result = temp.serialize(buffer, size, maxSize, streamEndianness);
 		}
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		iter = iter.right();
 		while (iter != this->end()) {
-			result = iter->serialize(buffer, size, max_size, bigEndian);
+			result = iter->serialize(buffer, size, maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
 			}
 			if (maxDepth > 0) {
 				MatchTree<T> temp(iter.left(), maxDepth - 1);
-				result = temp.serialize(buffer, size, max_size, bigEndian);
+				result = temp.serialize(buffer, size, maxSize, streamEndianness);
 			}
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
@@ -86,7 +86,7 @@ public:
 		return result;
 	}
 
-	size_t getSerializedSize() const {
+	size_t getSerializedSize() const override {
 		//Analogous to serialize!
 		uint32_t size = 1; //One for count
 		iterator iter = this->begin();
@@ -116,7 +116,7 @@ public:
 	}
 
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			bool bigEndian) {
+			SerializeIF::Endianness streamEndianness) override {
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
