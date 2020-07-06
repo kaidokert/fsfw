@@ -45,9 +45,11 @@ public:
 	bool full();
 	size_t size();
 
+	size_t getMaxCapacity() const;
+
 private:
 	T* values;
-	size_t maxCapacity;
+	size_t maxCapacity = 0;
 
 	size_t readIndex = 0;
 	size_t writeIndex = 0;

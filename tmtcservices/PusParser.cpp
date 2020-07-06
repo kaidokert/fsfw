@@ -45,11 +45,9 @@ ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 	{
 		indexSizePairFIFO.insert(indexSizePair(0, packetSize));
 		if(packetSize == frameSize) {
-			sif::info << "test2" << std::endl;
 			return HasReturnvaluesIF::RETURN_OK;
 		}
 	}
-
 
 	// packet size is smaller than frame size, parse for more packets.
 	return readMultiplePackets(frame, frameSize, packetSize);
@@ -58,7 +56,6 @@ ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 ReturnValue_t PusParser::readMultiplePackets(const uint8_t *frame,
 		size_t frameSize, size_t startIndex) {
 	while (startIndex < frameSize) {
-		sif::info << "test" << std::endl;
 		ReturnValue_t result = readNextPacket(frame, frameSize, startIndex);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
