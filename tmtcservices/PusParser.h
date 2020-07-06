@@ -23,9 +23,13 @@
  */
 class PusParser {
 public:
+	//! The first entry is the index inside the buffer while the second index
+	//! is the size of the PUS packet starting at that index.
+	using indexSizePair = std::pair<size_t, size_t>;
+
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::PUS_PARSER;
 	static constexpr ReturnValue_t NO_PACKET_FOUND = MAKE_RETURN_CODE(0x00);
-
+	static constexpr ReturnValue_t SPLIT_PACKET = MAKE_RETURN_CODE(0x01);
 	/**
 	 * Parser constructor.
 	 * @param maxExpectedPusPackets
@@ -44,10 +48,24 @@ public:
 	 * @return -@c NO_PACKET_FOUND if no packet was found.
 	 */
 	ReturnValue_t parsePusPackets(const uint8_t* frame, size_t frameSize);
+
+	/**
+	 * Accessor function to get a reference to the internal FIFO which
+	 * stores pairs of indexi and packet sizes. This FIFO is filled
+	 * by the parsePusPackets() function.
+	 * @return
+	 */
+	fsfw::FIFO<indexSizePair>* fifo();
+
+	/**
+	 * Retrieve the next index and packet size pair from the FIFO.
+	 * This also removed it from the FIFO. Please note that if the FIFO
+	 * is empty, an empty pair will be returned.
+	 * @return
+	 */
+	indexSizePair getNextFifoPair();
 private:
-	//! The first entry is the index inside the buffer while the second index
-	//! is the size of the PUS packet starting at that index.
-	using indexSizePair = std::pair<size_t, size_t>;
+
 	//! A FIFO is used to store information about multiple PUS packets
 	//! inside the receive buffer. The maximum number of entries is defined
 	//! by the first constructor argument.
@@ -55,8 +73,10 @@ private:
 
 	bool storeSplitPackets = false;
 
-	ReturnValue_t readMultiplePackets(size_t frameSize);
+	ReturnValue_t readMultiplePackets(const uint8_t *frame, size_t frameSize,
+			size_t startIndex);
+	ReturnValue_t readNextPacket(const uint8_t *frame,
+			size_t frameSize, size_t& startIndex);
 };
-
 
 #endif /* FRAMEWORK_TMTCSERVICES_PUSPARSER_H_ */
