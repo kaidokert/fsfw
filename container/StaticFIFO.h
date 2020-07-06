@@ -3,6 +3,7 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/container/FIFOBase.h>
+#include <array>
 
 /**
  * @brief 	Simple First-In-First-Out data structure with size fixed at

@@ -2,7 +2,7 @@
 #define COMMANDINGSERVICEBASE_H_
 
 #include <framework/container/FixedMap.h>
-#include <framework/container/FIFO.h>
+#include <framework/container/StaticFIFO.h>
 #include <framework/ipc/CommandMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/objectmanager/SystemObject.h>
@@ -179,7 +179,7 @@ protected:
 		uint32_t state;
 		Command_t command;
 		object_id_t objectId;
-		FIFO<store_address_t, 3> fifo;
+		StaticFIFO<store_address_t, 3> fifo;
 	};
 
 	const uint16_t apid;
