@@ -73,4 +73,9 @@ inline size_t FIFOBase<T>::next(size_t current) {
 	return current;
 }
 
+template<typename T>
+inline size_t FIFOBase<T>::getMaxCapacity() const {
+	return maxCapacity;
+}
+
 #endif

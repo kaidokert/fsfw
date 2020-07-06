@@ -19,10 +19,8 @@ namespace fsfw {
 template<typename T>
 class FIFO: public FIFOBase<T> {
 public:
-	FIFO(size_t maxCapacity): FIFOBase<T>(values.data(), maxCapacity) {
-		values.reserve(maxCapacity);
-		values.resize(maxCapacity);
-	};
+	FIFO(size_t maxCapacity): FIFOBase<T>(values.data(), maxCapacity),
+			values(maxCapacity) {};
 
 private:
 	std::vector<T> values;
