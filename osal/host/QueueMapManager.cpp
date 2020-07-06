@@ -17,6 +17,10 @@ QueueMapManager* QueueMapManager::instance() {
 
 ReturnValue_t QueueMapManager::addMessageQueue(
 		MessageQueueIF* queueToInsert, MessageQueueId_t* id) {
+	// Not thread-safe, but it is assumed all message queues are created
+	// at software initialization now. If this is to be made thread-safe in
+	// the future, it propably would be sufficient to lock the increment
+	// operation here
 	uint32_t currentId = queueCounter++;
 	auto returnPair = queueMap.emplace(currentId, queueToInsert);
 	if(not returnPair.second) {
@@ -28,7 +32,6 @@ ReturnValue_t QueueMapManager::addMessageQueue(
 	if (id != nullptr) {
 		*id = currentId;
 	}
-	mapLock = MutexFactory::instance()->createMutex();
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
