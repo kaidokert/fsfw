@@ -4,6 +4,8 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <cstddef>
 
+namespace fsfw {
+
 template <typename T>
 class FIFOBase {
 public:
@@ -11,8 +13,8 @@ public:
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t EMPTY = MAKE_RETURN_CODE(2);
 
-
-	/** Default ctor, no input arguments required. */
+	/** Default ctor, takes pointer to first entry of underlying container
+	 *  and maximum capacity */
 	FIFOBase(T* values, const size_t maxCapacity);
 
 	/**
@@ -55,5 +57,7 @@ private:
 };
 
 #include <framework/container/FIFOBase.tpp>
+
+}
 
 #endif /* FRAMEWORK_CONTAINER_FIFOBASE_H_ */

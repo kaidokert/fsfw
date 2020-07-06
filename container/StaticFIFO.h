@@ -3,11 +3,16 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/container/FIFOBase.h>
+#include <array>
+
+namespace fsfw {
 
 /**
  * @brief 	Simple First-In-First-Out data structure with size fixed at
- * 			compile time. The public interface of FIFOBase exposes
- * 			the user interface for the FIFO.
+ * 			compile time
+ * @details
+ * Performs no dynamic memory allocation.
+ * The public interface of FIFOBase exposes the user interface for the FIFO.
  * @tparam T Entry Type
  * @tparam capacity Maximum capacity
  */
@@ -19,5 +24,7 @@ public:
 private:
 	std::array<T, capacity> values;
 };
+
+}
 
 #endif /* FRAMEWORK_CONTAINERS_STATICFIFO_H_ */
