@@ -14,12 +14,12 @@
  * This service provides the capability to communicate with devices in their
  * native protocols with raw commands through the DeviceHandlerIF.
  *
- * This is a gateway service. It relays device commands using the software bus.
- * This service is very closely tied to the Commanding Service Base
- * template class. There is constant interaction between this Service Base und
- * a Subclass like this service
+ * This is a gateway service. It relays device commands to the software bus.
+ * This service is very closely tied to the CommandingServiceBase
+ * template class.
+ *
  * There are 4 adaption points for component implementation through the
- * Commanding Service Base.
+ * CommandingServiceBase.
  *
  * This service employs custom subservices exclusively.  This includes a
  * wiretapping subservice to monitor all traffic between target devices and
@@ -37,11 +37,10 @@ class Service2DeviceAccess : public CommandingServiceBase,
 public:
 	Service2DeviceAccess(object_id_t objectId, uint16_t apid,
 	        uint8_t serviceId, object_id_t tcSource,
-	        object_id_t tmDestination);
+	        object_id_t tmDestination, uint8_t numberOfParallelCommands = 4,
+	        uint16_t commandTimeoutSeconds = 60);
 	virtual ~Service2DeviceAccess();
 
-	static constexpr uint8_t NUM_OF_PARALLEL_COMMANDS = 4;
-	static constexpr uint16_t COMMAND_TIMEOUT_SECONDS = 60;
 protected:
 	//! CommandingServiceBase (CSB) abstract functions. See CSB documentation.
 	ReturnValue_t isValidSubservice(uint8_t subservice) override;
