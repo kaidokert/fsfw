@@ -34,27 +34,15 @@ ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
 ReturnValue_t Service2DeviceAccess::getMessageQueueAndObject(
 		uint8_t subservice, const uint8_t* tcData, size_t tcDataLen,
 		MessageQueueId_t* id, object_id_t* objectId) {
-	ReturnValue_t result = checkAndAcquireTargetID(objectId,tcData,tcDataLen);
-	if(result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
+    if(tcDataLen < sizeof(object_id_t)) {
+        return CommandingServiceBase::INVALID_TC;
+    }
+    SerializeAdapter::deSerialize(objectId, &tcData,
+                &tcDataLen, SerializeIF::Endianness::BIG);
 
-	result = checkInterfaceAndAcquireMessageQueue(id,objectId);
+	ReturnValue_t result = checkInterfaceAndAcquireMessageQueue(id,objectId);
 	return result;
 
-}
-
-ReturnValue_t Service2DeviceAccess::checkAndAcquireTargetID(
-		object_id_t* objectIdToSet, const uint8_t* tcData, size_t tcDataLen) {
-	if(SerializeAdapter::deSerialize(objectIdToSet, &tcData,
-	        &tcDataLen, SerializeIF::Endianness::BIG) != RETURN_OK) {
-		sif::error << "Service 2: Target ID not found. ID: " <<
-				std::hex << objectIdToSet ;
-		return CommandingServiceBase::INVALID_TC;
-	}
-	else {
-		return HasReturnvaluesIF::RETURN_OK;
-	}
 }
 
 ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
