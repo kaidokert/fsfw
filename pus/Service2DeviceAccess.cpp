@@ -144,7 +144,7 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage *reply,
 	store_address_t storeAddress = DeviceHandlerMessage::getStoreAddress(reply);
 	const uint8_t* data = nullptr;
 	size_t size = 0;
-	ReturnValue_t result = IPCStore->getData(storeAddress,&data,&size);
+	ReturnValue_t result = IPCStore->getData(storeAddress, &data, &size);
 	if(result != HasReturnvaluesIF::RETURN_OK){
 		sif::error << "Service2DeviceAccess::sendWiretappingTm: Data Lost in "
 		        "handleUnrequestedReply with failure ID "<< result
@@ -157,8 +157,8 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage *reply,
 	WiretappingPacket TmPacket(DeviceHandlerMessage::getDeviceObjectId(reply),
 	        data);
 	TmPacket.objectId = EndianConverter::convertBigEndian(TmPacket.objectId);
-	sendTmPacket(subservice,TmPacket.data,size,reinterpret_cast<uint8_t*>(
-			&TmPacket.objectId),sizeof(TmPacket.objectId));
+	sendTmPacket(subservice, TmPacket.data,size, reinterpret_cast<uint8_t*>(
+			&TmPacket.objectId), sizeof(TmPacket.objectId));
 }
 
 MessageQueueId_t Service2DeviceAccess::getDeviceQueue() {
