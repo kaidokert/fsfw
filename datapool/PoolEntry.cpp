@@ -1,6 +1,6 @@
 #include <framework/datapool/PoolEntry.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/globalfunctions/printer.h>
+#include <framework/globalfunctions/arrayprinter.h>
 #include <cstring>
 
 template <typename T>
@@ -68,7 +68,7 @@ template <typename T>
 void PoolEntry<T>::print() {
 	 sif::debug << "Pool Entry Validity: " <<
 			 (this->valid? " (valid) " : " (invalid) ") << std::endl;
-	printer::print(reinterpret_cast<uint8_t*>(address), length);
+	arrayprinter::print(reinterpret_cast<uint8_t*>(address), length);
 	sif::debug << std::dec << std::endl;
 }
 
