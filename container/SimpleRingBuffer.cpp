@@ -1,10 +1,15 @@
 #include <framework/container/SimpleRingBuffer.h>
-#include <string.h>
+#include <cstring>
 
-SimpleRingBuffer::SimpleRingBuffer(uint32_t size, bool overwriteOld) :
-		RingBufferBase<>(0, size, overwriteOld), buffer(NULL) {
+SimpleRingBuffer::SimpleRingBuffer(const size_t size, bool overwriteOld) :
+		RingBufferBase<>(0, size, overwriteOld) {
 	buffer = new uint8_t[size];
 }
+
+SimpleRingBuffer::SimpleRingBuffer(uint8_t *buffer, const size_t size,
+        bool overwriteOld):
+        RingBufferBase<>(0, size, overwriteOld), buffer(buffer) {}
+
 
 SimpleRingBuffer::~SimpleRingBuffer() {
 	delete[] buffer;
@@ -12,7 +17,7 @@ SimpleRingBuffer::~SimpleRingBuffer() {
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
 		uint32_t amount) {
-	if (availableWriteSpace() >= amount || overwriteOld) {
+	if (availableWriteSpace() >= amount or overwriteOld) {
 		uint32_t amountTillWrap = writeTillWrap();
 		if (amountTillWrap >= amount) {
 			memcpy(&buffer[write], data, amount);
@@ -38,7 +43,7 @@ ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, uint32_t amount,
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}
-	if (trueAmount != NULL) {
+	if (trueAmount != nullptr) {
 		*trueAmount = amount;
 	}
 	if (amountTillWrap >= amount) {
@@ -60,9 +65,10 @@ ReturnValue_t SimpleRingBuffer::deleteData(uint32_t amount,
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}
-	if (trueAmount != NULL) {
+	if (trueAmount != nullptr) {
 		*trueAmount = amount;
 	}
 	incrementRead(amount, READ_PTR);
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
