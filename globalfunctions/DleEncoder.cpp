@@ -1,18 +1,16 @@
 #include <framework/globalfunctions/DleEncoder.h>
 
-DleEncoder::DleEncoder() {
-}
+DleEncoder::DleEncoder() {}
 
-DleEncoder::~DleEncoder() {
-}
+DleEncoder::~DleEncoder() {}
 
 ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
-		uint32_t sourceStreamLen, uint32_t *readLen, uint8_t *destStream,
-		uint32_t maxDestStreamlen, uint32_t *decodedLen) {
-	uint32_t encodedIndex = 0, decodedIndex = 0;
+		size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
+		size_t maxDestStreamlen, size_t *decodedLen) {
+	size_t encodedIndex = 0, decodedIndex = 0;
 	uint8_t nextByte;
 	if (*sourceStream != STX) {
-		return RETURN_FAILED;
+		return DECODING_ERROR;
 	}
 	++encodedIndex;
 	while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)
@@ -20,14 +18,18 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 			&& (sourceStream[encodedIndex] != STX)) {
 		if (sourceStream[encodedIndex] == DLE) {
 			nextByte = sourceStream[encodedIndex + 1];
-			if (nextByte == 0x10) {
+			// The next byte is a DLE character that was escaped by another
+			// DLE character, so we can write it to the destination stream.
+			if (nextByte == DLE) {
 				destStream[decodedIndex] = nextByte;
 			} else {
+			    // The next byte is a STX, DTX or 0x0D character which
+			    // was escaped by a DLE character
 				if ((nextByte == 0x42) || (nextByte == 0x43)
 						|| (nextByte == 0x4D)) {
 					destStream[decodedIndex] = nextByte - 0x40;
 				} else {
-					return RETURN_FAILED;
+				    return DECODING_ERROR;
 				}
 			}
 			++encodedIndex;
@@ -38,7 +40,7 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 		++decodedIndex;
 	}
 	if (sourceStream[encodedIndex] != ETX) {
-		return RETURN_FAILED;
+		return DECODING_ERROR;
 	} else {
 		*readLen = ++encodedIndex;
 		*decodedLen = decodedIndex;
@@ -47,12 +49,12 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 }
 
 ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
-		uint32_t sourceLen, uint8_t* destStream, uint32_t maxDestLen,
-		uint32_t* encodedLen, bool addStxEtx) {
+		size_t sourceLen, uint8_t* destStream, size_t maxDestLen,
+		size_t* encodedLen, bool addStxEtx) {
 	if (maxDestLen < 2) {
-		return RETURN_FAILED;
+		return STREAM_TOO_SHORT;
 	}
-	uint32_t encodedIndex = 0, sourceIndex = 0;
+	size_t encodedIndex = 0, sourceIndex = 0;
 	uint8_t nextByte;
 	if (addStxEtx) {
 		destStream[0] = STX;
@@ -62,15 +64,16 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 		nextByte = sourceStream[sourceIndex];
 		if ((nextByte == STX) || (nextByte == ETX) || (nextByte == 0x0D)) {
 			if (encodedIndex + 1 >= maxDestLen) {
-				return RETURN_FAILED;
+				return STREAM_TOO_SHORT;
 			} else {
 				destStream[encodedIndex] = DLE;
 				++encodedIndex;
+				// Escaped byte will be actual byte + 0x40.
 				destStream[encodedIndex] = nextByte + 0x40;
 			}
 		} else if (nextByte == DLE) {
 			if (encodedIndex + 1 >= maxDestLen) {
-				return RETURN_FAILED;
+			    return STREAM_TOO_SHORT;
 			} else {
 				destStream[encodedIndex] = DLE;
 				++encodedIndex;
@@ -90,6 +93,6 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 		*encodedLen = encodedIndex;
 		return RETURN_OK;
 	} else {
-		return RETURN_FAILED;
+		return STREAM_TOO_SHORT;
 	}
 }
