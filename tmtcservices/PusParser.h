@@ -1,8 +1,7 @@
 #ifndef FRAMEWORK_TMTCSERVICES_PUSPARSER_H_
 #define FRAMEWORK_TMTCSERVICES_PUSPARSER_H_
 
-#include <framework/container/FIFO.h>
-
+#include <framework/container/DynamicFIFO.h>
 #include <utility>
 #include <cstdint>
 
@@ -55,7 +54,7 @@ public:
 	 * by the parsePusPackets() function.
 	 * @return
 	 */
-	fsfw::FIFO<indexSizePair>* fifo();
+	DynamicFIFO<indexSizePair>* fifo();
 
 	/**
 	 * Retrieve the next index and packet size pair from the FIFO.
@@ -69,7 +68,7 @@ private:
 	//! A FIFO is used to store information about multiple PUS packets
 	//! inside the receive buffer. The maximum number of entries is defined
 	//! by the first constructor argument.
-	fsfw::FIFO<indexSizePair> indexSizePairFIFO;
+	DynamicFIFO<indexSizePair> indexSizePairFIFO;
 
 	bool storeSplitPackets = false;
 

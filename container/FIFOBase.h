@@ -4,8 +4,6 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <cstddef>
 
-namespace fsfw {
-
 template <typename T>
 class FIFOBase {
 public:
@@ -59,7 +57,5 @@ private:
 };
 
 #include <framework/container/FIFOBase.tpp>
-
-}
 
 #endif /* FRAMEWORK_CONTAINER_FIFOBASE_H_ */
