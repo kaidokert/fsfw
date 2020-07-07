@@ -1,8 +1,8 @@
-#ifndef COMMANDINGSERVICEBASE_H_
-#define COMMANDINGSERVICEBASE_H_
+#ifndef FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
+#define FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
 #include <framework/container/FixedMap.h>
-#include <framework/container/StaticFIFO.h>
+#include <framework/container/FIFO.h>
 #include <framework/ipc/CommandMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/objectmanager/SystemObject.h>
@@ -179,7 +179,7 @@ protected:
 		uint32_t state;
 		Command_t command;
 		object_id_t objectId;
-		fsfw::StaticFIFO<store_address_t, 3> fifo;
+		FIFO<store_address_t, 3> fifo;
 	};
 
 	const uint16_t apid;
@@ -286,4 +286,4 @@ private:
 	void checkTimeout();
 };
 
-#endif /* COMMANDINGSERVICEBASE_H_ */
+#endif /* FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_ */
