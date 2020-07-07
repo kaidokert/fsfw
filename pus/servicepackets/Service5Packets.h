@@ -1,17 +1,3 @@
-/**
- * \file Service5Packets.h
- *
- * Structure of Event Report.
- * It consists of:
- * 		1. Report ID(RID). This is the Event ID in the FSFW
- *		2. Object ID of the reporter (e.g. subsystem)
- *		2. Parameter 1
- *		3. Parameter 2
- *
- * Created on: 21.05.2019
- * Author: R. Mueller, J. Meier
- */
-
 #ifndef MISSION_PUS_SERVICEPACKETS_SERVICE5PACKETS_H_
 #define MISSION_PUS_SERVICEPACKETS_SERVICE5PACKETS_H_
 
@@ -20,8 +6,15 @@
 
 
 /**
- * \brief Subservice 1, 2, 3, 4
- * \ingroup spacepackets
+ * @brief Subservice 1, 2, 3, 4
+ * Structure of Event Report.
+ * It consists of:
+ *      1. Report ID(RID). This is the Event ID in the FSFW
+ *      2. Object ID of the reporter (e.g. subsystem)
+ *      2. Parameter 1
+ *      3. Parameter 2
+ *
+ * @ingroup spacepackets
  */
 class EventReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 1, 2, 3, 4
 public:
