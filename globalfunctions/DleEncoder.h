@@ -46,7 +46,8 @@ public:
     /**
      * Encodes the give data stream by preceding it with the STX marker
      * and ending it with an ETX marker. STX, ETX and DLE characters inside
-     * the stream are escaped by DLE characters.
+     * the stream are escaped by DLE characters and also replaced by adding
+     * 0x40 (which is reverted in the decoing process).
      * @param sourceStream
      * @param sourceLen
      * @param destStream
