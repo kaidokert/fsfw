@@ -36,9 +36,9 @@ using LocalDataPoolMapIter = LocalDataPool::iterator;
  * pragmatic solution I found was to offer the client the full interface
  * of the LocalDataPoolManager.
  */
-class OwnsLocalDataPoolIF {
+class HasLocalDataPoolIF {
 public:
-	virtual~ OwnsLocalDataPoolIF() {};
+	virtual~ HasLocalDataPoolIF() {};
 
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
 

@@ -1,12 +1,13 @@
-#ifndef FRAMEWORK_HK_HOUSEKEEPINGHELPER_H_
-#define FRAMEWORK_HK_HOUSEKEEPINGHELPER_H_
+#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
+#define FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
+
 #include <framework/datapool/DataSetIF.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/ipc/MutexIF.h>
 
 #include <framework/housekeeping/HousekeepingMessage.h>
 #include <framework/datapool/PoolEntry.h>
-#include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
+#include <framework/datapoollocal/HasLocalDataPoolIF.h>
 #include <framework/ipc/CommandMessage.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/ipc/MutexHelper.h>
@@ -20,7 +21,7 @@ class LocalDataSet;
  * @details
  * The actual data pool structure is a member of this class. Any class which
  * has a local data pool shall have this class as a member and implement
- * the OwnsLocalDataPoolIF.
+ * the HasLocalDataPoolIF.
  *
  * Users of the data pool use the helper classes LocalDataSet,
  * LocalPoolVariable and LocalPoolVector to access pool entries in
@@ -57,24 +58,30 @@ public:
      * @param queueToUse
      * @param appendValidityBuffer
      */
-	LocalDataPoolManager(OwnsLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
+	LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
 	        bool appendValidityBuffer = true);
+	virtual~ LocalDataPoolManager();
+
 	/**
 	 * Initializes the map by calling the map initialization function of the
-	 * owner abd assigns the queue to use.
+	 * owner and assigns the queue to use.
 	 * @param queueToUse
 	 * @return
 	 */
 	ReturnValue_t initialize(MessageQueueIF* queueToUse,
 	        object_id_t hkDestination);
 	/**
+	 * This should be called in the periodic handler of the owner.
+	 * It performs all the periodic functionalities of the data pool manager.
+	 * @return
+	 */
+	ReturnValue_t performHkOperation();
+	/**
 	 * This function is used to set the default HK packet destination.
 	 * This destination will usually only be set once.
 	 * @param hkDestination
 	 */
 	void setHkPacketDestination(MessageQueueId_t hkDestination);
-
-	virtual~ LocalDataPoolManager();
 
 	/**
 	 * Generate a housekeeping packet with a given SID.
@@ -95,28 +102,64 @@ public:
 	 */
 	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
-	const OwnsLocalDataPoolIF* getOwner() const;
+	const HasLocalDataPoolIF* getOwner() const;
 
 	ReturnValue_t printPoolEntry(lp_id_t localPoolId);
+
+    /**
+     * Different types of housekeeping reporting are possible.
+     *  1. PERIODIC: HK packets are generated in fixed intervals
+     *  2. UPDATED: HK packets are generated if a value was updated
+     *  3. REQUESTED: HK packets are only generated if explicitely requested
+     */
+    enum class ReportingType: uint8_t {
+        PERIODIC,
+        ON_UPDATE,
+        REQUESTED
+    };
 
     /* Copying forbidden */
     LocalDataPoolManager(const LocalDataPoolManager &) = delete;
     LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
+
 private:
-	/** This is the map holding the actual data. Should only be initialized
-	 * once ! */
-	bool mapInitialized = false;
-	/** This specifies whether a validity buffer is appended at the end
-	 * of generated housekeeping packets. */
-	bool appendValidityBuffer = true;
+    LocalDataPool localPoolMap;
+    /** Every housekeeping data manager has a mutex to protect access
+     * to it's data pool. */
+    MutexIF* mutex = nullptr;
+    /** The class which actually owns the manager (and its datapool). */
+    HasLocalDataPoolIF* owner = nullptr;
 
-	LocalDataPool localDpMap;
+    /**
+     * The data pool manager will keep an internal map of HK receivers.
+     */
+    struct HkReceiver {
+        LocalDataSet* dataSet = nullptr;
+        MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
+        ReportingType reportingType = ReportingType::PERIODIC;
+        bool reportingStatus = true;
+        /** Different members of this union will be used depending on reporting
+         * type */
+        union hkParameter {
+            /** This parameter will be used for the PERIODIC type */
+            dur_seconds_t collectionInterval = 0;
+            /** This parameter will be used for the ON_UPDATE type */
+            bool hkDataChanged;
+        };
+    };
 
-	/** Every housekeeping data manager has a mutex to protect access
-	 * to it's data pool. */
-	MutexIF * mutex = nullptr;
-	/** The class which actually owns the manager (and its datapool). */
-	OwnsLocalDataPoolIF* owner = nullptr;
+    /** Using a multimap as the same object might request multiple datasets */
+    using HkReceiversMap = std::multimap<object_id_t, struct HkReceiver>;
+
+    HkReceiversMap hkReceiversMap;
+
+    /** This is the map holding the actual data. Should only be initialized
+     * once ! */
+    bool mapInitialized = false;
+    /** This specifies whether a validity buffer is appended at the end
+     * of generated housekeeping packets. */
+    bool appendValidityBuffer = true;
+
 	/**
 	 * @brief Queue used for communication, for example commands.
 	 * Is also used to send messages. Can be set either in the constructor
@@ -165,10 +208,10 @@ private:
 template<class T> inline
 ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 		PoolEntry<T> **poolEntry) {
-	auto poolIter = localDpMap.find(localPoolId);
-	if (poolIter == localDpMap.end()) {
-		sif::debug << "HousekeepingManager::fechPoolEntry:"
-				" Pool entry not found." << std::endl;
+	auto poolIter = localPoolMap.find(localPoolId);
+	if (poolIter == localPoolMap.end()) {
+		sif::warning << "HousekeepingManager::fechPoolEntry: Pool entry "
+		        "not found." << std::endl;
 		return POOL_ENTRY_NOT_FOUND;
 	}
 
@@ -182,4 +225,4 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 }
 
 
-#endif /* FRAMEWORK_HK_HOUSEKEEPINGHELPER_H_ */
+#endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_ */

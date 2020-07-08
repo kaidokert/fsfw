@@ -3,8 +3,8 @@
 
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/datapool/DataSetIF.h>
+#include <framework/datapoollocal/HasLocalDataPoolIF.h>
 #include <framework/datapoollocal/LocalDataPoolManager.h>
-#include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 
 #include <framework/serialize/SerializeAdapter.h>
@@ -42,7 +42,7 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVar(lp_id_t poolId, OwnsLocalDataPoolIF* hkOwner,
+	LocalPoolVar(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
 			DataSetIF* dataSet = nullptr);
 

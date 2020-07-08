@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cstring>
 
-LocalDataSet::LocalDataSet(OwnsLocalDataPoolIF *hkOwner,
+LocalDataSet::LocalDataSet(HasLocalDataPoolIF *hkOwner,
         const size_t maxNumberOfVariables):
         DataSetBase(poolVarList.data(), maxNumberOfVariables) {
     poolVarList.reserve(maxNumberOfVariables);
@@ -23,7 +23,7 @@ LocalDataSet::LocalDataSet(object_id_t ownerId,
         DataSetBase(poolVarList.data(), maxNumberOfVariables)  {
     poolVarList.reserve(maxNumberOfVariables);
     poolVarList.resize(maxNumberOfVariables);
-    OwnsLocalDataPoolIF* hkOwner = objectManager->get<OwnsLocalDataPoolIF>(
+    HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
             ownerId);
     if(hkOwner == nullptr) {
         sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"

@@ -17,10 +17,9 @@
 #include <framework/health/HealthHelper.h>
 #include <framework/parameters/ParameterHelper.h>
 #include <framework/datapool/HkSwitchHelper.h>
+#include <framework/datapoollocal/HasLocalDataPoolIF.h>
 #include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
-#include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
-
 #include <map>
 
 namespace Factory{
@@ -88,7 +87,7 @@ class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasHealthIF,
 		public HasActionsIF,
 		public ReceivesParameterMessagesIF,
-		public OwnsLocalDataPoolIF {
+		public HasLocalDataPoolIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
