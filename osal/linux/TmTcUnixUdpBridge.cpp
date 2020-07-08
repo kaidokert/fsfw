@@ -3,11 +3,12 @@
 #include <framework/ipc/MutexHelper.h>
 
 #include <errno.h>
+#include <arpa/inet.h>
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
-		object_id_t ccsdsPacketDistributor, uint16_t serverPort,
-		uint16_t clientPort):
-		TmTcBridge(objectId, ccsdsPacketDistributor) {
+		object_id_t tcDestination, object_id_t tmStoreId, object_id_t tcStoreId,
+		uint16_t serverPort, uint16_t clientPort):
+		TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
 	mutex = MutexFactory::instance()->createMutex();
 
 	uint16_t setServerPort = DEFAULT_UDP_SERVER_PORT;
@@ -15,13 +16,14 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		setServerPort = serverPort;
 	}
 
-//	uint16_t setClientPort = DEFAULT_UDP_CLIENT_PORT;
-//	if(clientPort != 0xFFFF) {
-//		setClientPort = clientPort;
-//	}
+	uint16_t setClientPort = DEFAULT_UDP_CLIENT_PORT;
+	if(clientPort != 0xFFFF) {
+		setClientPort = clientPort;
+	}
 
 	// Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
-	serverSocket = socket(AF_INET, SOCK_DGRAM, 0);
+	//clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
+	serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if(socket < 0) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
 				" UDP socket!" << std::endl;
@@ -36,10 +38,14 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &serverSocketOptions,
 			sizeof(serverSocketOptions));
 
-	serverSocketLen = sizeof(serverAddress);
+	clientAddress.sin_family = AF_INET;
+	clientAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+	clientAddress.sin_port = htons(setClientPort);
+
+	serverAddressLen = sizeof(serverAddress);
 	int result = bind(serverSocket,
 			reinterpret_cast<struct sockaddr*>(&serverAddress),
-			serverSocketLen);
+			serverAddressLen);
 	if(result == -1) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
 				"local port " << setServerPort << " to server socket!"
@@ -54,20 +60,35 @@ TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
 
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	int flags = 0;
-	ssize_t result = send(serverSocket, data, dataLen, flags);
-	if(result < 0) {
+	sif::debug << "Client Port: "<<ntohs(clientAddress.sin_port) << std::endl;
+	ssize_t bytesSent = sendto(serverSocket, data, dataLen, flags,
+			reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
+	if(bytesSent < 0) {
 		// todo: handle errors
-		sif::error << "TmTcUnixUdpBridge::sendTm: Send operation failed "
-				"with error " << strerror(errno) << std::endl;
+		sif::error << "TmTcUnixUdpBridge::sendTm: Send operation failed."
+				<< std::endl;
+		sif::error << "Error: " << strerror(errno) << std::endl;
+		handleSendError();
 	}
+	sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
+			" sent." << std::endl;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
 	MutexHelper lock(mutex, 10);
+
+	char ipAddress [15];
+	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+			&newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+
+	sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
+			&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 	// Set new IP address if it has changed.
 	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
+		sif::info << "setting new address" << std::endl;
 		clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
+		clientAddressLen = sizeof(clientAddress);
 	}
 }
 
@@ -128,5 +149,10 @@ void TmTcUnixUdpBridge::handleBindError() {
 				<< std::endl;
 		break;
 	}
+}
+
+void TmTcUnixUdpBridge::handleSendError() {
+
+
 }
 

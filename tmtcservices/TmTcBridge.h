@@ -24,7 +24,8 @@ public:
 	static constexpr uint8_t DEFAULT_STORED_DATA_SENT_PER_CYCLE = 5;
 	static constexpr uint8_t DEFAULT_DOWNLINK_PACKETS_STORED = 10;
 
-	TmTcBridge(object_id_t objectId, object_id_t ccsdsPacketDistributor);
+	TmTcBridge(object_id_t objectId, object_id_t tcDestination,
+			object_id_t tmStoreId, object_id_t tcStoreId);
 	virtual ~TmTcBridge();
 
 	/**
@@ -69,14 +70,20 @@ public:
 	virtual MessageQueueId_t getRequestQueue() override;
 
 protected:
+	//! Cached for initialize function.
+	object_id_t tmStoreId = objects::NO_OBJECT;
+	object_id_t tcStoreId = objects::NO_OBJECT;
+	object_id_t tcDestination = objects::NO_OBJECT;
+
 	//! Used to send and receive TMTC messages.
 	//! TmTcMessage is used to transport messages between tasks.
 	MessageQueueIF* tmTcReceptionQueue = nullptr;
-	StorageManagerIF* tcStore = nullptr;
+
 	StorageManagerIF* tmStore = nullptr;
-	object_id_t ccsdsPacketDistributor = 0;
-	//! Used to specify whether communication link is up
-	bool communicationLinkUp = false;
+	StorageManagerIF* tcStore = nullptr;
+
+	//! Used to specify whether communication link is up by default.
+	bool communicationLinkUp = true;
 	bool tmStored = false;
 
 	/**

@@ -103,19 +103,17 @@ ReturnValue_t PusServiceBase::initialize() {
 			packetDestination);
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
-	if ((destService != nullptr) && (distributor != nullptr)) {
-		this->requestQueue->setDefaultDestination(
-				destService->getReportReceptionQueue());
-		distributor->registerService(this);
-		return RETURN_OK;
-	}
-	else {
+	if (destService == nullptr or distributor == nullptr) {
 		sif::error << "PusServiceBase::PusServiceBase: Service "
-				<< (uint32_t) this->serviceId << ": Configuration error."
-				<< " Make sure packetSource and packetDestination are defined "
-			       "correctly" << std::endl;
-		return RETURN_FAILED;
+				<< this->serviceId << ": Configuration error. Make sure "
+				<<	"packetSource and packetDestination are defined correctly"
+				<< std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
+	this->requestQueue->setDefaultDestination(
+			destService->getReportReceptionQueue());
+	distributor->registerService(this);
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {

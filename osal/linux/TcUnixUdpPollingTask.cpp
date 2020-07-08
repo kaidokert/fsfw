@@ -53,6 +53,7 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 		if(result != HasReturnvaluesIF::RETURN_FAILED) {
 
 		}
+		tmtcBridge->registerCommConnect();
 		tmtcBridge->checkAndSetClientAddress(senderAddress);
 	}
 	return HasReturnvaluesIF::RETURN_OK;

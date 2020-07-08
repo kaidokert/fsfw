@@ -16,7 +16,7 @@ VerificationReporter::~VerificationReporter() {}
 
 void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 		TcPacketBase* current_packet, uint8_t set_step) {
-	if (this->acknowledgeQueue == 0) {
+	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
 		this->initialize();
 	}
 	PusVerificationMessage message(set_report_id,
@@ -35,7 +35,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 		uint8_t ackFlags, uint16_t tcPacketId, uint16_t tcSequenceControl,
 		uint8_t set_step) {
-	if (this->acknowledgeQueue == 0) {
+	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE)  {
 		this->initialize();
 	}
 	PusVerificationMessage message(set_report_id, ackFlags, tcPacketId,
@@ -52,7 +52,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 void VerificationReporter::sendFailureReport(uint8_t report_id,
 		TcPacketBase* current_packet, ReturnValue_t error_code, uint8_t step,
 		uint32_t parameter1, uint32_t parameter2) {
-	if (this->acknowledgeQueue == 0) {
+	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
 		this->initialize();
 	}
 	PusVerificationMessage message(report_id,
@@ -73,7 +73,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 		uint8_t ackFlags, uint16_t tcPacketId, uint16_t tcSequenceControl,
 		ReturnValue_t error_code, uint8_t step, uint32_t parameter1,
 		uint32_t parameter2) {
-	if (this->acknowledgeQueue == 0) {
+	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
 		this->initialize();
 	}
 	PusVerificationMessage message(report_id, ackFlags, tcPacketId,
