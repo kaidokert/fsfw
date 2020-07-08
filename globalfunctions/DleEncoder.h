@@ -14,9 +14,15 @@
  * This encoder can be used to achieve a basic transport layer when using
  * char based transmission systems.
  * The passed source strean is converted into a encoded stream by adding
- * a STX marker at the startr of the stream and an ETX marker at the end of
- * the stream. Any STX, ETX and DLE occurences in the source stream are escaped
- * by a DLE character.
+ * a STX marker at the start of the stream and an ETX marker at the end of
+ * the stream. Any STX, ETX, DLE and CR occurences in the source stream are
+ * escaped by a DLE character. The encoder also replaces escaped control chars
+ * by another char, so STX, ETX and CR should not appear anywhere in the actual
+ * encoded data stream.
+ *
+ * When using a strictly char based reception of packets enoded with DLE,
+ * STX can be used to notify a reader that actual data will start to arrive
+ * while ETX can be used to notify the reader that the data has ended.
  */
 class DleEncoder: public HasReturnvaluesIF {
 private:
@@ -29,12 +35,13 @@ public:
 	static constexpr ReturnValue_t DECODING_ERROR = MAKE_RETURN_CODE(0x02);
 
 	//! Start Of Text character. First character is encoded stream
-	static const uint8_t STX = 0x02;
+	static constexpr uint8_t STX = 0x02;
 	//! End Of Text character. Last character in encoded stream
-	static const uint8_t ETX = 0x03;
+	static constexpr uint8_t ETX = 0x03;
 	//! Data Link Escape character. Used to escape STX, ETX and DLE occurences
 	//! in the source stream.
-	static const uint8_t DLE = 0x10;
+	static constexpr uint8_t DLE = 0x10;
+	static constexpr uint8_t CARRIAGE_RETURN = 0x0D;
 
     /**
      * Encodes the give data stream by preceding it with the STX marker
@@ -54,7 +61,7 @@ public:
             bool addStxEtx = true);
 
     /**
-     * Converts an encoded stream back
+     * Converts an encoded stream back.
      * @param sourceStream
      * @param sourceStreamLen
      * @param readLen
