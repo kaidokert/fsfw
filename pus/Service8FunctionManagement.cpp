@@ -67,7 +67,7 @@ ReturnValue_t Service8FunctionManagement::prepareDirectCommand(
 	// Create direct command instance by extracting data from Telecommand
 	DirectCommand command(tcData,tcDataLen);
 
-	// store additional parameters into the Inter Process Communication Store
+	// store additional parameters into the IPC Store
 	store_address_t parameterAddress;
 	ReturnValue_t result = IPCStore->addData(&parameterAddress,
 			command.getParameters(),command.getParametersSize());
