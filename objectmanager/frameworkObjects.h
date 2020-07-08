@@ -3,6 +3,9 @@
 
 namespace objects {
 enum framework_objects {
+	// Default verification reporter.
+	PUS_SERVICE_1 = 0x53000000,
+
 	//Generic IDs for IPC, modes, health, events
 	HEALTH_TABLE = 0x53010000,
 //	MODE_STORE = 0x53010100,
@@ -12,6 +15,7 @@ enum framework_objects {
 	//IDs for PUS Packet Communication
 	TC_STORE = 0x534f0100,
 	TM_STORE = 0x534f0200,
+
 	NO_OBJECT = 0xFFFFFFFF
 };
 }

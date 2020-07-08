@@ -330,13 +330,16 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			//MQ_NONBLOCK flag was set in its attributes, and the
 			//specified queue is full.
 			return MessageQueueIF::FULL;
-		case EBADF:
+		case EBADF: {
 			//mq_des doesn't represent a valid message queue descriptor,
 			//or mq_des wasn't opened for writing.
-			sif::error << "MessageQueue::sendMessage: Configuration error "
-			           << strerror(errno) << " in mq_send mqSendTo: " << sendTo
-					   << " sent from " << sentFrom << std::endl;
-			/*NO BREAK*/
+			sif::error << "MessageQueue::sendMessage: Configuration error, MQ"
+					<< " destination invalid."  << std::endl;
+			sif::error << strerror(errno) << " in "
+					<<"mq_send to: " << sendTo << " sent from "
+					<< sentFrom << std::endl;
+			return DESTINVATION_INVALID;
+		}
 		case EINTR:
 			//The call was interrupted by a signal.
 		case EINVAL:
