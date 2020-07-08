@@ -13,12 +13,12 @@ PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
 PUSDistributor::~PUSDistributor() {}
 
 TcDistributor::TcMqMapIter PUSDistributor::selectDestination() {
-//	debug << "PUSDistributor::handlePacket received: " << this->current_packet_id.store_index << ", " << this->current_packet_id.packet_index << std::endl;
 	TcMqMapIter queueMapIt = this->queueMap.end();
 	this->currentPacket.setStoreAddress(this->currentMessage.getStorageId());
 	if (currentPacket.getWholeData() != NULL) {
 		tcStatus = checker.checkPacket(&currentPacket);
-//		info << "PUSDistributor::handlePacket: packetCheck returned with " << (int)tc_status << std::endl;
+//		sif::debug << "PUSDistributor::handlePacket: packetCheck returned with "
+//				<< (int)tcStatus << std::endl;
 		uint32_t queue_id = currentPacket.getService();
 		queueMapIt = this->queueMap.find(queue_id);
 	} else {
@@ -29,8 +29,8 @@ TcDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 	}
 
 	if (tcStatus != RETURN_OK) {
-		sif::debug << "PUSDistributor::handlePacket: error with " << (int) tcStatus
-				<< ", 0x"<< std::hex << (int) tcStatus << std::endl;
+		sif::debug << "PUSDistributor::handlePacket: Error with " << tcStatus
+				<< ", 0x"<< std::hex << tcStatus << std::dec << std::endl;
 		return this->queueMap.end();
 	} else {
 		return queueMapIt;

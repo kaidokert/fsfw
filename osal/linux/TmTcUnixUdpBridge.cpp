@@ -32,17 +32,20 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 	}
 
 	serverAddress.sin_family = AF_INET;
+
 	// Accept packets from any interface.
+	//serverAddress.sin_addr.s_addr = inet_addr("127.73.73.0");
 	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	serverAddress.sin_port = htons(setServerPort);
+	serverAddressLen = sizeof(serverAddress);
 	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &serverSocketOptions,
 			sizeof(serverSocketOptions));
 
 	clientAddress.sin_family = AF_INET;
 	clientAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	clientAddress.sin_port = htons(setClientPort);
+	clientAddressLen = sizeof(clientAddress);
 
-	serverAddressLen = sizeof(serverAddress);
 	int result = bind(serverSocket,
 			reinterpret_cast<struct sockaddr*>(&serverAddress),
 			serverAddressLen);
@@ -60,33 +63,38 @@ TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
 
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	int flags = 0;
-	sif::debug << "Client Port: "<<ntohs(clientAddress.sin_port) << std::endl;
+
+	clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
+	//clientAddress.sin_addr.s_addr = inet_addr("127.73.73.1");
+	clientAddressLen = sizeof(serverAddress);
+
+//	char ipAddress [15];
+//	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+//					&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+
 	ssize_t bytesSent = sendto(serverSocket, data, dataLen, flags,
 			reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
 	if(bytesSent < 0) {
-		// todo: handle errors
 		sif::error << "TmTcUnixUdpBridge::sendTm: Send operation failed."
 				<< std::endl;
-		sif::error << "Error: " << strerror(errno) << std::endl;
 		handleSendError();
 	}
-	sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
-			" sent." << std::endl;
+//	sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
+//			" sent." << std::endl;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
 	MutexHelper lock(mutex, 10);
 
-	char ipAddress [15];
-	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-			&newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+//	char ipAddress [15];
+//	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+//			&newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+//	sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
+//			&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 
-	sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
-			&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 	// Set new IP address if it has changed.
 	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
-		sif::info << "setting new address" << std::endl;
 		clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
 		clientAddressLen = sizeof(clientAddress);
 	}
@@ -104,11 +112,11 @@ void TmTcUnixUdpBridge::handleSocketError() {
 	case(ENOBUFS):
 	case(ENOMEM):
 	case(EPROTONOSUPPORT):
-		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Socket creation failed"
+		sif::error << "TmTcUnixBridge::handleSocketError: Socket creation failed"
 				<< " with " << strerror(errno) << std::endl;
 		break;
 	default:
-		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
+		sif::error << "TmTcUnixBridge::handleSocketError: Unknown error"
 				<< std::endl;
 		break;
 	}
@@ -122,7 +130,7 @@ void TmTcUnixUdpBridge::handleBindError() {
 		 Ephermeral ports can be shown with following command:
 		 sysctl -A | grep ip_local_port_range
 		 */
-		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Port access issue."
+		sif::error << "TmTcUnixBridge::handleBindError: Port access issue."
 				"Ports 1-1024 are reserved on UNIX systems and require root "
 				"rights while ephermeral ports should not be used as well."
 				<< std::endl;
@@ -140,19 +148,21 @@ void TmTcUnixUdpBridge::handleBindError() {
 	case(ENOMEM):
 	case(ENOTDIR):
 	case(EROFS): {
-		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Socket creation failed"
+		sif::error << "TmTcUnixBridge::handleBindError: Socket creation failed"
 				<< " with " << strerror(errno) << std::endl;
 		break;
 	}
 	default:
-		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
+		sif::error << "TmTcUnixBridge::handleBindError: Unknown error"
 				<< std::endl;
 		break;
 	}
 }
 
 void TmTcUnixUdpBridge::handleSendError() {
-
-
+	switch(errno) {
+	default:
+		sif::error << "Error: " << strerror(errno) << std::endl;
+	}
 }
 

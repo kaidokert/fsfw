@@ -15,6 +15,10 @@
 
 class TcPacketStored;
 
+namespace Factory{
+void setStaticFrameworkObjectIds();
+}
+
 /**
  * @brief 	This class is the basis for all PUS Services, which have to
  * 			relay Telecommands to software bus.
@@ -33,6 +37,7 @@ class CommandingServiceBase: public SystemObject,
 		public AcceptsTelecommandsIF,
 		public ExecutableObjectIF,
 		public HasReturnvaluesIF {
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_SERVICE_BASE;
 	static const ReturnValue_t EXECUTION_COMPLETE = MAKE_RETURN_CODE(1);
@@ -57,9 +62,23 @@ public:
 	 */
 	CommandingServiceBase(object_id_t setObjectId, uint16_t apid,
 			uint8_t service, uint8_t numberOfParallelCommands,
-			uint16_t commandTimeoutSeconds, object_id_t setPacketSource,
-			object_id_t setPacketDestination, size_t queueDepth = 20);
+			uint16_t commandTimeoutSeconds, size_t queueDepth = 20);
 	virtual ~CommandingServiceBase();
+
+	/**
+	 * This setter can be used to set the packet source individually instead
+	 * of using the default static framework ID set in the factory.
+	 * This should be called at object initialization and not during run-time!
+	 * @param packetSource
+	 */
+	void setPacketSource(object_id_t packetSource);
+	/**
+	 * This setter can be used to set the packet destination individually
+	 * instead of using the default static framework ID set in the factory.
+	 * This should be called at object initialization and not during run-time!
+	 * @param packetDestination
+	 */
+	void setPacketDestination(object_id_t packetDestination);
 
 	/***
 	 * This is the periodically called function.
@@ -229,9 +248,8 @@ protected:
 	uint32_t failureParameter1 = 0;
 	uint32_t failureParameter2 = 0;
 
-	object_id_t packetSource;
-
-	object_id_t packetDestination;
+	static object_id_t packetSource;
+	static object_id_t packetDestination;
 
 	/**
 	 * Pointer to the task which executes this component,

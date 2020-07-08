@@ -61,7 +61,7 @@ private:
 	timeval receptionTimeout;
 
 	ReturnValue_t handleSuccessfullTcRead(size_t bytesRead);
-
+	void handleReadError();
 };
 
 #endif /* FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_ */

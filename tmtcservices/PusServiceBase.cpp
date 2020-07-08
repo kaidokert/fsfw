@@ -79,9 +79,8 @@ void PusServiceBase::handleRequestQueue() {
 		}
 		else {
 			sif::error << "PusServiceBase::performOperation: Service "
-					<< (uint16_t) this->serviceId
-					<< ": Error receiving packet. Code: " << std::hex << status
-					<< std::dec << std::endl;
+					<< this->serviceId << ": Error receiving packet. Code: "
+					<< std::hex << status << std::dec << std::endl;
 		}
 	}
 }

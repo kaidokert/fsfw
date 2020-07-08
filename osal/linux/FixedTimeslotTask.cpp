@@ -45,7 +45,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 	}
 
 	sif::error << "Component " << std::hex << componentId <<
-			" not found, not adding it to pst" << std::endl;
+			" not found, not adding it to pst" << std::dec << std::endl;
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 

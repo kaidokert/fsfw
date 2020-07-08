@@ -39,15 +39,14 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 				reinterpret_cast<sockaddr*>(&senderAddress), &senderSockLen);
 		if(bytesReceived < 0) {
 			// handle error
-			sif::error << "TcSocketPollingTask::performOperation: recvfrom "
-					"failed with " << strerror(errno) << std::endl;
-			if(errno == EAGAIN or errno == EWOULDBLOCK) {
-				sif::info << "timeout" << std::endl;
-			}
+			sif::error << "TcSocketPollingTask::performOperation: Reception"
+					"error." << std::endl;
+			handleReadError();
+
 			continue;
 		}
-		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
-				<< " bytes received" << std::endl;
+//		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
+//				<< " bytes received" << std::endl;
 
 		ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
 		if(result != HasReturnvaluesIF::RETURN_FAILED) {
@@ -61,14 +60,14 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 
 
 ReturnValue_t TcUnixUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
-	store_address_t storeId = 0;
+	store_address_t storeId;
 	ReturnValue_t result = tcStore->addData(&storeId,
 			receptionBuffer.data(), bytesRead);
 	// arrayprinter::print(receptionBuffer.data(), bytesRead);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
-		sif::debug << "TcSerialPollingTask::transferPusToSoftwareBus: Data "
+		sif::error << "TcSerialPollingTask::transferPusToSoftwareBus: Data "
 				"storage failed" << std::endl;
-		sif::debug << "Packet size: " << bytesRead << std::endl;
+		sif::error << "Packet size: " << bytesRead << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -121,4 +120,18 @@ void TcUnixUdpPollingTask::setTimeout(double timeoutSeconds) {
 	}
 }
 
-
+void TcUnixUdpPollingTask::handleReadError() {
+	switch(errno) {
+	case(EAGAIN): {
+		// todo: When working in timeout mode, this will occur more often
+		// and is not an error.
+		sif::error << "TcUnixUdpPollingTask::handleReadError: Timeout."
+				<< std::endl;
+		break;
+	}
+	default: {
+		sif::error << "TcUnixUdpPollingTask::handleReadError: "
+				<< strerror(errno) << std::endl;
+	}
+	}
+}
