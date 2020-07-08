@@ -8,16 +8,26 @@
 #include <framework/tmtcpacket/pus/TcPacketStored.h>
 #include <framework/tmtcpacket/pus/TmPacketStored.h>
 
+object_id_t CommandingServiceBase::packetSource = objects::NO_OBJECT;
+object_id_t CommandingServiceBase::packetDestination = objects::NO_OBJECT;
+
 CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId,
 		uint16_t apid, uint8_t service, uint8_t numberOfParallelCommands,
-		uint16_t commandTimeoutSeconds, object_id_t setPacketSource,
-		object_id_t setPacketDestination, size_t queueDepth) :
+		uint16_t commandTimeoutSeconds, size_t queueDepth) :
 		SystemObject(setObjectId), apid(apid), service(service),
 		timeoutSeconds(commandTimeoutSeconds),
-		commandMap(numberOfParallelCommands), packetSource(setPacketSource),
-		packetDestination(setPacketDestination) {
+		commandMap(numberOfParallelCommands) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
 	requestQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
+}
+
+void CommandingServiceBase::setPacketSource(object_id_t packetSource) {
+	this->packetSource = packetSource;
+}
+
+void CommandingServiceBase::setPacketDestination(
+		object_id_t packetDestination) {
+	this->packetDestination = packetDestination;
 }
 
 

@@ -2,7 +2,7 @@
 #define FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_
 
 #include <framework/container/RingBufferBase.h>
-#include <stddef.h>
+#include <cstddef>
 
 /**
  * @brief 	Circular buffer implementation, useful for buffering

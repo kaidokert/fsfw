@@ -1,16 +1,18 @@
 #ifndef FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 #define FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 
+#include <framework/objectmanager/SystemObject.h>
 #include <framework/tmtcservices/AcceptsTelemetryIF.h>
 #include <framework/tasks/ExecutableObjectIF.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/objectmanager/SystemObject.h>
+#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 
+#include <framework/container/FIFO.h>
 #include <framework/tmtcservices/TmTcMessage.h>
-#include <framework/container/StaticFIFO.h>
 
 class TmTcBridge : public AcceptsTelemetryIF,
+		public AcceptsTelecommandsIF,
 		public ExecutableObjectIF,
 		public HasReturnvaluesIF,
 		public SystemObject {
@@ -22,7 +24,8 @@ public:
 	static constexpr uint8_t DEFAULT_STORED_DATA_SENT_PER_CYCLE = 5;
 	static constexpr uint8_t DEFAULT_DOWNLINK_PACKETS_STORED = 10;
 
-	TmTcBridge(object_id_t objectId, object_id_t ccsdsPacketDistributor);
+	TmTcBridge(object_id_t objectId, object_id_t tcDestination,
+			object_id_t tmStoreId, object_id_t tcStoreId);
 	virtual ~TmTcBridge();
 
 	/**
@@ -57,44 +60,40 @@ public:
 	 */
 	virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
 
-	/**
-	 * Return TMTC Reception Queue
-	 * @param virtualChannel
-	 * @return
-	 */
-	MessageQueueId_t getReportReceptionQueue(
+
+	/** AcceptsTelemetryIF override */
+	virtual MessageQueueId_t getReportReceptionQueue(
 			uint8_t virtualChannel = 0) override;
+
+	/** AcceptsTelecommandsIF override */
+	virtual uint16_t getIdentifier() override;
+	virtual MessageQueueId_t getRequestQueue() override;
+
 protected:
+	//! Cached for initialize function.
+	object_id_t tmStoreId = objects::NO_OBJECT;
+	object_id_t tcStoreId = objects::NO_OBJECT;
+	object_id_t tcDestination = objects::NO_OBJECT;
+
 	//! Used to send and receive TMTC messages.
 	//! TmTcMessage is used to transport messages between tasks.
-	MessageQueueIF* TmTcReceptionQueue = nullptr;
-	StorageManagerIF* tcStore = nullptr;
+	MessageQueueIF* tmTcReceptionQueue = nullptr;
+
 	StorageManagerIF* tmStore = nullptr;
-	object_id_t ccsdsPacketDistributor = 0;
-	//! Used to specify whether communication link is up
-	bool communicationLinkUp = false;
+	StorageManagerIF* tcStore = nullptr;
+
+	//! Used to specify whether communication link is up by default.
+	bool communicationLinkUp = true;
 	bool tmStored = false;
 
 	/**
 	 * @brief 	Handle TC reception
 	 * @details
 	 * Default implementation provided, but is empty.
-	 * Child handler should override this in most cases orsend TC to the
-	 * TC distributor directly with the address of the reception queue by
-	 * calling getReportRecptionQueue()
+	 * In most cases, TC reception will be handled in a separate task anyway.
 	 * @return
 	 */
 	virtual ReturnValue_t handleTc();
-
-	/**
-	 * Implemented by child class. Perform receiving of Telecommand,
-	 * for example by implementing specific drivers or wrappers,
-	 * e.g. UART Communication or an ethernet stack
-	 * @param recvBuffer [out] Received data
-	 * @param size [out] Size of received data
-	 * @return
-	 */
-	virtual ReturnValue_t receiveTc(uint8_t ** recvBuffer, size_t * size) = 0;
 
 	/**
 	 * Handle Telemetry. Default implementation provided.
@@ -143,7 +142,7 @@ protected:
 	 * This fifo can be used to store downlink data
 	 * which can not be sent at the moment.
 	 */
-	fsfw::StaticFIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> tmFifo;
+	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> tmFifo;
     uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
     uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
 };

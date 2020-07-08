@@ -17,7 +17,7 @@ SimpleRingBuffer::~SimpleRingBuffer() {
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
 		uint32_t amount) {
-	if (availableWriteSpace() >= amount || overwriteOld) {
+	if (availableWriteSpace() >= amount or overwriteOld) {
 		uint32_t amountTillWrap = writeTillWrap();
 		if (amountTillWrap >= amount) {
 			memcpy(&buffer[write], data, amount);
@@ -43,7 +43,7 @@ ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, uint32_t amount,
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}
-	if (trueAmount != NULL) {
+	if (trueAmount != nullptr) {
 		*trueAmount = amount;
 	}
 	if (amountTillWrap >= amount) {
@@ -65,7 +65,7 @@ ReturnValue_t SimpleRingBuffer::deleteData(uint32_t amount,
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}
-	if (trueAmount != NULL) {
+	if (trueAmount != nullptr) {
 		*trueAmount = amount;
 	}
 	incrementRead(amount, READ_PTR);

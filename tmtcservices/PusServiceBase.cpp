@@ -41,9 +41,14 @@ void PusServiceBase::handleRequestQueue() {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
 		ReturnValue_t status = this->requestQueue->receiveMessage(&message);
-		//	debug << "PusServiceBase::performOperation: Receiving from MQ ID: "
-		//      << std::hex << this->requestQueue.getId()
-		//      << std::dec << " returned: " << status << std::endl;
+//		if(status != MessageQueueIF::EMPTY) {
+//			sif::debug << "PusServiceBase::performOperation: Receiving from "
+//					<< "MQ ID: " << std::hex << "0x" << std::setw(8)
+//					<< std::setfill('0') << this->requestQueue->getId()
+//					<< std::dec << " returned: " << status << std::setfill(' ')
+//					<<  std::endl;
+//		}
+
 		if (status == RETURN_OK) {
 			this->currentPacket.setStoreAddress(message.getStorageId());
 			//info << "Service " << (uint16_t) this->serviceId <<
@@ -74,9 +79,8 @@ void PusServiceBase::handleRequestQueue() {
 		}
 		else {
 			sif::error << "PusServiceBase::performOperation: Service "
-					<< (uint16_t) this->serviceId
-					<< ": Error receiving packet. Code: " << std::hex << status
-					<< std::dec << std::endl;
+					<< this->serviceId << ": Error receiving packet. Code: "
+					<< std::hex << status << std::dec << std::endl;
 		}
 	}
 }
@@ -98,19 +102,17 @@ ReturnValue_t PusServiceBase::initialize() {
 			packetDestination);
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
-	if ((destService != nullptr) && (distributor != nullptr)) {
-		this->requestQueue->setDefaultDestination(
-				destService->getReportReceptionQueue());
-		distributor->registerService(this);
-		return RETURN_OK;
-	}
-	else {
+	if (destService == nullptr or distributor == nullptr) {
 		sif::error << "PusServiceBase::PusServiceBase: Service "
-				<< (uint32_t) this->serviceId << ": Configuration error."
-				<< " Make sure packetSource and packetDestination are defined "
-			       "correctly" << std::endl;
-		return RETURN_FAILED;
+				<< this->serviceId << ": Configuration error. Make sure "
+				<<	"packetSource and packetDestination are defined correctly"
+				<< std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
+	this->requestQueue->setDefaultDestination(
+			destService->getReportReceptionQueue());
+	distributor->registerService(this);
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {

@@ -64,7 +64,7 @@ ReturnValue_t PusParser::readMultiplePackets(const uint8_t *frame,
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-fsfw::FIFO<PusParser::indexSizePair>* PusParser::fifo(){
+DynamicFIFO<PusParser::indexSizePair>* PusParser::fifo(){
 	return &indexSizePairFIFO;
 }
 
