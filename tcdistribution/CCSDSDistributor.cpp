@@ -2,30 +2,37 @@
 #include <framework/tcdistribution/CCSDSDistributor.h>
 #include <framework/tmtcpacket/SpacePacketBase.h>
 
-CCSDSDistributor::CCSDSDistributor( uint16_t setDefaultApid, object_id_t setObjectId ) :
-		TcDistributor( setObjectId ), default_apid( setDefaultApid ), tcStore(NULL) {
+CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid,
+		object_id_t setObjectId):
+		TcDistributor(setObjectId), defaultApid( setDefaultApid ) {
 }
 
-CCSDSDistributor::~CCSDSDistributor() {
+CCSDSDistributor::~CCSDSDistributor() {}
 
-}
-
-iterator_t CCSDSDistributor::selectDestination() {
-//	debug << "CCSDSDistributor::selectDestination received: " << this->currentMessage.getStorageId().pool_index << ", " << this->currentMessage.getStorageId().packet_index << std::endl;
-	const uint8_t* p_packet = NULL;
+TcDistributor::TcMessageQueueMapIter CCSDSDistributor::selectDestination() {
+//	sif::debug << "CCSDSDistributor::selectDestination received: " <<
+//			this->currentMessage.getStorageId().pool_index << ", " <<
+//			this->currentMessage.getStorageId().packet_index << std::endl;
+	const uint8_t* packet = nullptr;
 	size_t size = 0;
-	//TODO check returncode?
-	this->tcStore->getData( this->currentMessage.getStorageId(), &p_packet, &size );
-	SpacePacketBase current_packet( p_packet );
-//	info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex << current_packet.getAPID() << std::dec << std::endl;
-	iterator_t position = this->queueMap.find( current_packet.getAPID() );
+	ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(),
+			&packet, &size );
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "CCSDSDistributor::selectDestination: Getting data from"
+				"store failed!" << std::endl;
+	}
+	SpacePacketBase currentPacket(packet);
+
+//	sif:: info << "CCSDSDistributor::selectDestination has packet with APID "
+//			<< std::hex << currentPacket.getAPID() << std::dec << std::endl;
+	TcMessageQueueMapIter position = this->queueMap.find(currentPacket.getAPID());
 	if ( position != this->queueMap.end() ) {
 		return position;
 	} else {
-		//The APID was not found. Forward packet to main SW-APID anyway to create acceptance failure report.
-		return this->queueMap.find( this->default_apid );
+		//The APID was not found. Forward packet to main SW-APID anyway to
+		// create acceptance failure report.
+		return this->queueMap.find( this->defaultApid );
 	}
-
 }
 
 MessageQueueId_t CCSDSDistributor::getRequestQueue() {

@@ -101,7 +101,7 @@ void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
 void TmTcUnixUdpBridge::handleBindError() {
 	// See: https://man7.org/linux/man-pages/man2/bind.2.html
 	switch(errno) {
-	case(EACCES):
+	case(EACCES): {
 		/*
 		 Ephermeral ports can be shown with following command:
 		 sysctl -A | grep ip_local_port_range
@@ -110,7 +110,8 @@ void TmTcUnixUdpBridge::handleBindError() {
 				"Ports 1-1024 are reserved on UNIX systems and require root "
 				"rights while ephermeral ports should not be used as well."
 				<< std::endl;
-		break;
+	}
+	break;
 	case(EADDRINUSE):
 	case(EBADF):
 	case(EINVAL):
@@ -122,14 +123,16 @@ void TmTcUnixUdpBridge::handleBindError() {
 	case(ENOENT):
 	case(ENOMEM):
 	case(ENOTDIR):
-	case(EROFS):
+	case(EROFS): {
 		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Socket creation failed"
-					<< " with " << strerror(errno) << std::endl;
+				<< " with " << strerror(errno) << std::endl;
 		break;
-	default:
+	}
+	default: {
 		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
-						<< std::endl;
+				<< std::endl;
 		break;
+	}
 	}
 }
 

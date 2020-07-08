@@ -7,7 +7,7 @@
 #include <netinet/udp.h>
 
 class TmTcUnixUdpBridge: public TmTcBridge {
-	friend class TcSocketPollingTask;
+	friend class TcUnixUdpPollingTask;
 public:
 	// The ports chosen here should not be used by any other process.
 	// List of used ports on Linux: /etc/services

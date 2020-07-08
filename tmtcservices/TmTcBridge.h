@@ -62,7 +62,7 @@ public:
 	 * @param virtualChannel
 	 * @return
 	 */
-	MessageQueueId_t getReportReceptionQueue(
+	virtual MessageQueueId_t getReportReceptionQueue(
 			uint8_t virtualChannel = 0) override;
 protected:
 	//! Used to send and receive TMTC messages.
