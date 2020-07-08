@@ -11,13 +11,13 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 Service2DeviceAccess::Service2DeviceAccess(object_id_t objectId,
-        uint16_t apid, uint8_t serviceId, object_id_t tcSource,
-        object_id_t tmDestination, uint8_t numberOfParallelCommands,
+        uint16_t apid, uint8_t serviceId, uint8_t numberOfParallelCommands,
         uint16_t commandTimeoutSeconds):
         CommandingServiceBase(objectId, apid, serviceId,
 	        numberOfParallelCommands, commandTimeoutSeconds) {}
 
 Service2DeviceAccess::~Service2DeviceAccess() {}
+
 
 ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
 	switch(static_cast<Subservice>(subservice)){
@@ -41,7 +41,6 @@ ReturnValue_t Service2DeviceAccess::getMessageQueueAndObject(
 
 	ReturnValue_t result = checkInterfaceAndAcquireMessageQueue(id,objectId);
 	return result;
-
 }
 
 ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
@@ -54,6 +53,7 @@ ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
 	*messageQueueToSet = possibleTarget->getCommandQueue();
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
 
 ReturnValue_t Service2DeviceAccess::prepareCommand(CommandMessage* message,
 		uint8_t subservice, const uint8_t* tcData, size_t tcDataLen,
@@ -99,6 +99,7 @@ ReturnValue_t Service2DeviceAccess::prepareWiretappingCommand(
 			command.getWiretappingMode());
 	return result;
 }
+
 
 ReturnValue_t Service2DeviceAccess::handleReply(const CommandMessage* reply,
 		Command_t previousCommand, uint32_t* state,

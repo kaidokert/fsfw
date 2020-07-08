@@ -36,8 +36,7 @@ class Service2DeviceAccess : public CommandingServiceBase,
 {
 public:
 	Service2DeviceAccess(object_id_t objectId, uint16_t apid,
-	        uint8_t serviceId, object_id_t tcSource,
-	        object_id_t tmDestination, uint8_t numberOfParallelCommands = 4,
+	        uint8_t serviceId, uint8_t numberOfParallelCommands = 4,
 	        uint16_t commandTimeoutSeconds = 60);
 	virtual ~Service2DeviceAccess();
 
