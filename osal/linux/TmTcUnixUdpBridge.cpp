@@ -1,7 +1,8 @@
 #include <framework/osal/linux/TmTcUnixUdpBridge.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <errno.h>
 #include <framework/ipc/MutexHelper.h>
+
+#include <errno.h>
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		object_id_t ccsdsPacketDistributor, uint16_t serverPort,
@@ -14,17 +15,16 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		setServerPort = serverPort;
 	}
 
-	uint16_t setClientPort = DEFAULT_UDP_CLIENT_PORT;
-	if(clientPort != 0xFFFF) {
-		setClientPort = clientPort;
-	}
+//	uint16_t setClientPort = DEFAULT_UDP_CLIENT_PORT;
+//	if(clientPort != 0xFFFF) {
+//		setClientPort = clientPort;
+//	}
 
 	// Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
 	serverSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if(socket < 0) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
 				" UDP socket!" << std::endl;
-		// check errno here.
 		handleSocketError();
 		return;
 	}
@@ -44,7 +44,6 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
 				"local port " << setServerPort << " to server socket!"
 				<< std::endl;
-		// check errno here.
 		handleBindError();
 		return;
 	}
@@ -57,12 +56,19 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	int flags = 0;
 	ssize_t result = send(serverSocket, data, dataLen, flags);
 	if(result < 0) {
-		//handle error
+		// todo: handle errors
 		sif::error << "TmTcUnixUdpBridge::sendTm: Send operation failed "
 				"with error " << strerror(errno) << std::endl;
 	}
-
 	return HasReturnvaluesIF::RETURN_OK;
+}
+
+void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
+	MutexHelper lock(mutex, 10);
+	// Set new IP address if it has changed.
+	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
+		clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
+	}
 }
 
 void TmTcUnixUdpBridge::handleSocketError() {
@@ -84,17 +90,6 @@ void TmTcUnixUdpBridge::handleSocketError() {
 		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
 				<< std::endl;
 		break;
-	}
-}
-
-void TmTcUnixUdpBridge::setTimeout(float timeoutSeconds) {
-}
-
-void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
-	MutexHelper lock(mutex, 10);
-	// Set new IP address if it has changed.
-	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
-		clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
 	}
 }
 
@@ -128,16 +123,10 @@ void TmTcUnixUdpBridge::handleBindError() {
 				<< " with " << strerror(errno) << std::endl;
 		break;
 	}
-	default: {
+	default:
 		sif::error << "TmTcUnixBridge::TmTcUnixBridge: Unknown error"
 				<< std::endl;
 		break;
 	}
-	}
 }
 
-
-ReturnValue_t TmTcUnixUdpBridge::receiveTc(uint8_t **recvBuffer, size_t *size) {
-	// TC reception handled by separate polling task because it is blocking.
-	return HasReturnvaluesIF::RETURN_OK;
-}

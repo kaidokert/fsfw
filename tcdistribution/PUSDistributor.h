@@ -66,7 +66,7 @@ protected:
 	 * @return Iterator to map entry of found service id
 	 * or iterator to @c map.end().
 	 */
-	TcMessageQueueMapIter selectDestination();
+	TcMqMapIter selectDestination() override;
 	/**
 	 * The callback here handles the generation of acceptance
 	 * success/failure messages.

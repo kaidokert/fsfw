@@ -26,8 +26,7 @@ TcUnixUdpPollingTask::TcUnixUdpPollingTask(object_id_t objectId,
 	}
 }
 
-TcUnixUdpPollingTask::~TcUnixUdpPollingTask() {
-}
+TcUnixUdpPollingTask::~TcUnixUdpPollingTask() {}
 
 ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 	// Poll for new UDP datagrams in permanent loop.
@@ -59,6 +58,30 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
+
+ReturnValue_t TcUnixUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
+	store_address_t storeId = 0;
+	ReturnValue_t result = tcStore->addData(&storeId,
+			receptionBuffer.data(), bytesRead);
+	// arrayprinter::print(receptionBuffer.data(), bytesRead);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		sif::debug << "TcSerialPollingTask::transferPusToSoftwareBus: Data "
+				"storage failed" << std::endl;
+		sif::debug << "Packet size: " << bytesRead << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
+	TmTcMessage message(storeId);
+
+	result  = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "Serial Polling: Sending message to queue failed"
+				<< std::endl;
+		tcStore->deleteData(storeId);
+	}
+	return result;
+}
+
 ReturnValue_t TcUnixUdpPollingTask::initialize() {
 	tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 	if (tcStore == nullptr) {
@@ -74,41 +97,27 @@ ReturnValue_t TcUnixUdpPollingTask::initialize() {
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
-	targetTcDestination = tmtcBridge->getReportReceptionQueue();
-
 	serverUdpSocket = tmtcBridge->serverSocket;
 
-	// Set receive timeout.
-//	int result = setsockopt(serverUdpSocket, SOL_SOCKET, SO_RCVTIMEO,
-//			&receptionTimeout, sizeof(receptionTimeout));
-//	if(result == -1) {
-//		sif::error << "TcSocketPollingTask::TcSocketPollingTask: Setting "
-//				"receive timeout failed with " << strerror(errno) << std::endl;
-//		return ObjectManagerIF::CHILD_INIT_FAILED;
-//	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t TcUnixUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
-	store_address_t storeId = 0;
-	ReturnValue_t result = tcStore->addData(&storeId,
-			receptionBuffer.data(), bytesRead);
-	// arrayprinter::print(receptionBuffer.data(), bytesRead);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		sif::debug << "TcSerialPollingTask::transferPusToSoftwareBus: Data "
-				"storage failed" << std::endl;
-		sif::debug << "Packet size: " << bytesRead << std::endl;
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
+ReturnValue_t TcUnixUdpPollingTask::initializeAfterTaskCreation() {
+	// Initialize the destination after task creation. This ensures
+	// that the destination will be set in the TMTC bridge.
+	targetTcDestination = tmtcBridge->getRequestQueue();
+	return HasReturnvaluesIF::RETURN_OK;
+}
 
-	TmTcMessage message(storeId);
-	result  = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		sif::error << "Serial Polling: Sending message to queue failed"
-				<< std::endl;
-		tcStore->deleteData(storeId);
+void TcUnixUdpPollingTask::setTimeout(double timeoutSeconds) {
+	timeval tval;
+	tval = timevalOperations::toTimeval(timeoutSeconds);
+	int result = setsockopt(serverUdpSocket, SOL_SOCKET, SO_RCVTIMEO,
+			&tval, sizeof(receptionTimeout));
+	if(result == -1) {
+		sif::error << "TcSocketPollingTask::TcSocketPollingTask: Setting "
+				"receive timeout failed with " << strerror(errno) << std::endl;
 	}
-	return result;
 }
 
 

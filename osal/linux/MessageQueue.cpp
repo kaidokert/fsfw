@@ -155,10 +155,10 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	}
 
 	if(message->getMaximumMessageSize() < maxMessageSize) {
-	        sif::error << "MessageQueue::receiveMessage: Message size "
-	                << message->getMaximumMessageSize() <<
-	                " too small to receive data!" << std::endl;
-	        return HasReturnvaluesIF::RETURN_FAILED;
+		sif::error << "MessageQueue::receiveMessage: Message size "
+				<< message->getMaximumMessageSize()
+				<< " too small to receive data!" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
 	unsigned int messagePriority = 0;

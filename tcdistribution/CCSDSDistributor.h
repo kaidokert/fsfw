@@ -24,14 +24,14 @@ public:
 	 * 			TcDistributor ctor with a certain object id.
 	 * @details
 	 * @c tcStore is set in the @c initialize method.
-	 * @param set_default_apid The default APID, where packets with unknown
+	 * @param setDefaultApid The default APID, where packets with unknown
 	 * destination are sent to.
 	 */
-	CCSDSDistributor( uint16_t setDefaultApid, object_id_t setObjectId );
+	CCSDSDistributor(uint16_t setDefaultApid, object_id_t setObjectId);
 	/**
 	 * The destructor is empty.
 	 */
-	~CCSDSDistributor();
+	virtual ~CCSDSDistributor();
 
 	MessageQueueId_t getRequestQueue() override;
 	ReturnValue_t registerApplication( uint16_t apid,
@@ -49,7 +49,7 @@ protected:
 	 * where a Acceptance Failure message should be generated.
 	 * @return Iterator to map entry of found APID or iterator to default APID.
 	 */
-	TcMessageQueueMapIter selectDestination();
+	TcMqMapIter selectDestination() override;
 	/**
 	 * The default APID, where packets with unknown APID are sent to.
 	 */

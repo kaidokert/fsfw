@@ -32,7 +32,7 @@ class TcDistributor : public SystemObject,
 		public HasReturnvaluesIF {
 public:
 	using TcMessageQueueMap = std::map<uint32_t, MessageQueueId_t>;
-	using TcMessageQueueMapIter = std::map<uint32_t, MessageQueueId_t>::iterator;
+	using TcMqMapIter = std::map<uint32_t, MessageQueueId_t>::iterator;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::PACKET_DISTRIBUTION;
 	static const ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE( 1 );
@@ -90,7 +90,7 @@ protected:
 	 * packet and select the map entry which represents the packet's target.
 	 * @return	An iterator to the map element to forward to or queuMap.end().
 	 */
-	virtual TcMessageQueueMapIter selectDestination() = 0;
+	virtual TcMqMapIter selectDestination() = 0;
 	/**
 	 * The handlePacket method calls the child class's selectDestination method
 	 * and forwards the packet to its destination, if found.

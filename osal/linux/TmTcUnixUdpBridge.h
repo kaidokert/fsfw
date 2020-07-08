@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_OSAL_LINUX_TMTCUNIXUDPBRIDGE_H_
 #define FRAMEWORK_OSAL_LINUX_TMTCUNIXUDPBRIDGE_H_
 
+#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
 #include <framework/tmtcservices/TmTcBridge.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -18,13 +19,11 @@ public:
 			 uint16_t serverPort = 0xFFFF,uint16_t clientPort = 0xFFFF);
 	virtual~ TmTcUnixUdpBridge();
 
-	void setTimeout(float timeoutSeconds);
 	void checkAndSetClientAddress(sockaddr_in clientAddress);
 
 protected:
-	virtual ReturnValue_t receiveTc(uint8_t ** recvBuffer,
-			size_t * size) override;
 	virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
+
 private:
 	int serverSocket = 0;
 	const int serverSocketOptions = 0;
@@ -42,7 +41,5 @@ private:
 	void handleSocketError();
 	void handleBindError();
 };
-
-
 
 #endif /* FRAMEWORK_OSAL_LINUX_TMTCUNIXUDPBRIDGE_H_ */

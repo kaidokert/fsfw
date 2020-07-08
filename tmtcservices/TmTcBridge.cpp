@@ -9,7 +9,7 @@ TmTcBridge::TmTcBridge(object_id_t objectId,
         object_id_t ccsdsPacketDistributor): SystemObject(objectId),
         ccsdsPacketDistributor(ccsdsPacketDistributor)
 {
-    TmTcReceptionQueue = QueueFactory::instance()->
+    tmTcReceptionQueue = QueueFactory::instance()->
             createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
 }
 
@@ -55,7 +55,8 @@ ReturnValue_t TmTcBridge::initialize() {
 	if (tcDistributor == NULL) {
 		return RETURN_FAILED;
 	}
-	TmTcReceptionQueue->setDefaultDestination(tcDistributor->getRequestQueue());
+
+	tmTcReceptionQueue->setDefaultDestination(tcDistributor->getRequestQueue());
 	return RETURN_OK;
 }
 
@@ -73,10 +74,7 @@ ReturnValue_t TmTcBridge::performOperation(uint8_t operationCode) {
 }
 
 ReturnValue_t TmTcBridge::handleTc() {
-	uint8_t * recvBuffer = nullptr;
-	size_t recvLen = 0;
-	ReturnValue_t result = receiveTc(&recvBuffer, &recvLen);
-	return result;
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t TmTcBridge::handleTm() {
@@ -97,8 +95,8 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 	TmTcMessage message;
 	const uint8_t* data = nullptr;
 	size_t size = 0;
-	for (ReturnValue_t result = TmTcReceptionQueue->receiveMessage(&message);
-		 result == RETURN_OK; result = TmTcReceptionQueue->receiveMessage(&message))
+	for (ReturnValue_t result = tmTcReceptionQueue->receiveMessage(&message);
+		 result == RETURN_OK; result = tmTcReceptionQueue->receiveMessage(&message))
 	{
 		if(communicationLinkUp == false) {
 			result = storeDownlinkData(&message);
@@ -183,10 +181,20 @@ void TmTcBridge::registerCommDisconnect() {
 }
 
 MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
-	return TmTcReceptionQueue->getId();
+	return tmTcReceptionQueue->getId();
 }
 
 
 void TmTcBridge::printData(uint8_t * data, size_t dataLen) {
 	arrayprinter::print(data, dataLen);
+}
+
+uint16_t TmTcBridge::getIdentifier() {
+	// This is no PUS service, so we just return 0
+	return 0;
+}
+
+MessageQueueId_t TmTcBridge::getRequestQueue() {
+	// Default implementation: Relay TC messages to TC distributor directly.
+	return tmTcReceptionQueue->getDefaultDestination();
 }

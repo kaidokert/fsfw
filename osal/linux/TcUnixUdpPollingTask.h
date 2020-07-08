@@ -29,8 +29,16 @@ public:
 			size_t frameSize = 0, double timeoutSeconds = -1);
 	virtual~ TcUnixUdpPollingTask();
 
+	/**
+	 * Turn on optional timeout for UDP polling. In the default mode,
+	 * the receive function will block until a packet is received.
+	 * @param timeoutSeconds
+	 */
+	void setTimeout(double timeoutSeconds);
+
 	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 	virtual ReturnValue_t initialize() override;
+	virtual ReturnValue_t initializeAfterTaskCreation() override;
 
 protected:
 	StorageManagerIF* tcStore = nullptr;

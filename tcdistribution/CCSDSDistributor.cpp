@@ -9,7 +9,7 @@ CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid,
 
 CCSDSDistributor::~CCSDSDistributor() {}
 
-TcDistributor::TcMessageQueueMapIter CCSDSDistributor::selectDestination() {
+TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 //	sif::debug << "CCSDSDistributor::selectDestination received: " <<
 //			this->currentMessage.getStorageId().pool_index << ", " <<
 //			this->currentMessage.getStorageId().packet_index << std::endl;
@@ -25,7 +25,7 @@ TcDistributor::TcMessageQueueMapIter CCSDSDistributor::selectDestination() {
 
 //	sif:: info << "CCSDSDistributor::selectDestination has packet with APID "
 //			<< std::hex << currentPacket.getAPID() << std::dec << std::endl;
-	TcMessageQueueMapIter position = this->queueMap.find(currentPacket.getAPID());
+	TcMqMapIter position = this->queueMap.find(currentPacket.getAPID());
 	if ( position != this->queueMap.end() ) {
 		return position;
 	} else {

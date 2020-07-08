@@ -28,7 +28,7 @@ ReturnValue_t TcDistributor::performOperation(uint8_t opCode) {
 
 ReturnValue_t TcDistributor::handlePacket() {
 
-	TcMessageQueueMapIter queueMapIt = this->selectDestination();
+	TcMqMapIter queueMapIt = this->selectDestination();
 	ReturnValue_t returnValue = RETURN_FAILED;
 	if (queueMapIt != this->queueMap.end()) {
 		returnValue = this->tcQueue->sendMessage(queueMapIt->second,
@@ -40,7 +40,7 @@ ReturnValue_t TcDistributor::handlePacket() {
 void TcDistributor::print() {
 	sif::debug << "Distributor content is: " << std::endl << "ID\t| message queue id"
 			<< std::endl;
-	for (TcMessageQueueMapIter it = this->queueMap.begin(); it != this->queueMap.end();
+	for (TcMqMapIter it = this->queueMap.begin(); it != this->queueMap.end();
 			it++) {
 		sif::debug << it->first << "\t| 0x" << std::hex << it->second << std::dec
 				<< std::endl;

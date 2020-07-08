@@ -12,9 +12,9 @@ PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
 
 PUSDistributor::~PUSDistributor() {}
 
-TcDistributor::TcMessageQueueMapIter PUSDistributor::selectDestination() {
+TcDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 //	debug << "PUSDistributor::handlePacket received: " << this->current_packet_id.store_index << ", " << this->current_packet_id.packet_index << std::endl;
-	TcMessageQueueMapIter queueMapIt = this->queueMap.end();
+	TcMqMapIter queueMapIt = this->queueMap.end();
 	this->currentPacket.setStoreAddress(this->currentMessage.getStorageId());
 	if (currentPacket.getWholeData() != NULL) {
 		tcStatus = checker.checkPacket(&currentPacket);
