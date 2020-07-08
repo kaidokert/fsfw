@@ -17,7 +17,8 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 		++encodedIndex;
 	}
 
-	while (encodedIndex < maxDestLen and sourceIndex < sourceLen) {
+	while (encodedIndex < maxDestLen and sourceIndex < sourceLen)
+	{
 		nextByte = sourceStream[sourceIndex];
 		// STX, ETX and CR characters in the stream need to be escaped with DLE
 		if (nextByte == STX or nextByte == ETX or nextByte == CARRIAGE_RETURN) {
@@ -80,7 +81,8 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 
 	while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)
 			&& (sourceStream[encodedIndex] != ETX)
-			&& (sourceStream[encodedIndex] != STX)) {
+			&& (sourceStream[encodedIndex] != STX))
+	{
 		if (sourceStream[encodedIndex] == DLE) {
 			nextByte = sourceStream[encodedIndex + 1];
 			// The next byte is a DLE character that was escaped by another
@@ -95,7 +97,8 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 				 * in the stream at all, so we convert it back. */
 				if (nextByte == 0x42 or nextByte == 0x43 or nextByte == 0x4D) {
 					destStream[decodedIndex] = nextByte - 0x40;
-				} else {
+				}
+				else {
 				    return DECODING_ERROR;
 				}
 			}
@@ -104,6 +107,7 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 		else {
 			destStream[decodedIndex] = sourceStream[encodedIndex];
 		}
+
 		++encodedIndex;
 		++decodedIndex;
 	}
