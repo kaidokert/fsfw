@@ -8,8 +8,8 @@
 #include <framework/tmtcpacket/pus/TcPacketStored.h>
 #include <framework/tmtcpacket/pus/TmPacketStored.h>
 
-object_id_t CommandingServiceBase::packetSource = objects::NO_OBJECT;
-object_id_t CommandingServiceBase::packetDestination = objects::NO_OBJECT;
+object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
+object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
 
 CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId,
 		uint16_t apid, uint8_t service, uint8_t numberOfParallelCommands,
@@ -62,10 +62,18 @@ ReturnValue_t CommandingServiceBase::initialize() {
 		return result;
 	}
 
+	if(packetDestination == objects::NO_OBJECT) {
+	    packetDestination = defaultPacketDestination;
+	}
 	AcceptsTelemetryIF* packetForwarding =
 			objectManager->get<AcceptsTelemetryIF>(packetDestination);
+
+	if(packetSource == objects::NO_OBJECT) {
+	    packetSource = defaultPacketSource;
+	}
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
+
 	if (packetForwarding == nullptr or distributor == nullptr) {
 	    sif::error << "CommandingServiceBase::intialize: Packet source or "
 	            "packet destination invalid!" << std::endl;

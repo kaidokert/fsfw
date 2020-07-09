@@ -248,8 +248,10 @@ protected:
 	uint32_t failureParameter1 = 0;
 	uint32_t failureParameter2 = 0;
 
-	static object_id_t packetSource;
-	static object_id_t packetDestination;
+	static object_id_t defaultPacketSource;
+	object_id_t packetSource = objects::NO_OBJECT;
+	static object_id_t defaultPacketDestination;
+	object_id_t packetDestination = objects::NO_OBJECT;
 
 	/**
 	 * Pointer to the task which executes this component,

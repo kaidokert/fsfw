@@ -1048,6 +1048,7 @@ private:
 
 	/** Cached for initialize() */
 	static object_id_t defaultHkDestination;
+	/** HK destination can also be set individually */
 	object_id_t hkDestination = objects::NO_OBJECT;
 
 	/**
