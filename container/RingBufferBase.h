@@ -24,30 +24,20 @@ public:
 		return (availableReadData(n) == 0);
 	}
 
-	uint32_t availableReadData(uint8_t n = 0) const {
+	size_t availableReadData(uint8_t n = 0) const {
 		return ((write + size) - read[n]) % size;
 	}
-	uint32_t availableWriteSpace(uint8_t n = 0) const  {
+	size_t availableWriteSpace(uint8_t n = 0) const  {
 		//One less to avoid ambiguous full/empty problem.
 		return (((read[n] + size) - write - 1) % size);
 	}
 
-	uint32_t getRead(uint8_t n = 0) const {
-		return read[n];
+	bool overwritesOld() const {
+		return overwriteOld;
 	}
 
-	void setRead(uint32_t read, uint8_t n = 0) {
-		if (read >= start && read < (start+size)) {
-			this->read[n] = read;
-		}
-	}
-
-	uint32_t getWrite() const {
-		return write;
-	}
-
-	void setWrite(uint32_t write) {
-		this->write = write;
+	size_t maxSize() const {
+		return size - 1;
 	}
 
 	void clear() {
@@ -69,13 +59,6 @@ public:
 		return start;
 	}
 
-	bool overwritesOld() const {
-		return overwriteOld;
-	}
-
-	size_t maxSize() const {
-		return size - 1;
-	}
 protected:
 	const size_t start;
 	size_t write;
@@ -105,6 +88,25 @@ protected:
 		} else {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
+	}
+
+
+	size_t getRead(uint8_t n = 0) const {
+		return read[n];
+	}
+
+	void setRead(uint32_t read, uint8_t n = 0) {
+		if (read >= start && read < (start+size)) {
+			this->read[n] = read;
+		}
+	}
+
+	uint32_t getWrite() const {
+		return write;
+	}
+
+	void setWrite(uint32_t write) {
+		this->write = write;
 	}
 };
 

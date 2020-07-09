@@ -2,9 +2,11 @@
 #define FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_
 #include <framework/container/SimpleRingBuffer.h>
 #include <framework/ipc/MutexIF.h>
+#include <framework/objectmanager/SystemObject.h>
 #include <framework/timemanager/Clock.h>
 
-class SharedRingBuffer: public SimpleRingBuffer {
+class SharedRingBuffer: public SystemObject,
+		public SimpleRingBuffer {
 public:
 	/**
 	 * This constructor allocates a new internal buffer with the supplied size.
@@ -13,7 +15,8 @@ public:
 	 * If the ring buffer is overflowing at a write operartion, the oldest data
 	 * will be overwritten.
 	 */
-	SharedRingBuffer(const size_t size, bool overwriteOld);
+	SharedRingBuffer(object_id_t objectId, const size_t size,
+			bool overwriteOld, dur_millis_t mutexTimeout = 10);
 
 	/**
 	 * This constructor takes an external buffer with the specified size.
@@ -23,17 +26,26 @@ public:
 	 * If the ring buffer is overflowing at a write operartion, the oldest data
 	 * will be overwritten.
 	 */
-	SharedRingBuffer(uint8_t* buffer, const size_t size, bool overwriteOld);
+	SharedRingBuffer(object_id_t objectId, uint8_t* buffer, const size_t size,
+			bool overwriteOld, dur_millis_t mutexTimeout = 10);
 
-	ReturnValue_t writeDataProtected(const uint8_t* data, size_t amount,
-			dur_millis_t timeout = 10);
+	void setMutexTimeout(dur_millis_t newTimeout);
+
+	/** Performs mutex protected SimpleRingBuffer::writeData call */
+	ReturnValue_t writeDataProtected(const uint8_t* data, size_t amount);
+
+	/** Performs mutex protected SimpleRingBuffer::readData call */
 	ReturnValue_t readDataProtected(uint8_t *data, size_t amount,
-			dur_millis_t timeout = 10, bool incrementReadPtr = false,
+			bool incrementReadPtr = false,
 			bool readRemaining = false, size_t *trueAmount = nullptr);
+
+	/** Performs mutex protected SimpleRingBuffer::deleteData call */
 	ReturnValue_t deleteDataProtected(size_t amount,
-			bool deleteRemaining = false, size_t* trueAmount = nullptr,
-			dur_millis_t timeout = 10);
+			bool deleteRemaining = false, size_t* trueAmount = nullptr);
+
+	size_t getAvailableReadDataProtected (uint8_t n = 0) const;
 private:
+	dur_millis_t mutexTimeout;
 	MutexIF* mutex = nullptr;
 };
 
