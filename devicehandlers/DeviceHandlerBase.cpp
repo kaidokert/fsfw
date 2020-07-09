@@ -199,14 +199,14 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
-//	if(hkDestination == objects::NO_OBJECT) {
-//		hkDestination = defaultHkDestination;
-//	}
-//
-//	result = hkManager.initialize(commandQueue, hkDestination);
-//	if (result != HasReturnvaluesIF::RETURN_OK) {
-//		return result;
-//	}
+	if(hkDestination == objects::NO_OBJECT) {
+		hkDestination = defaultHkDestination;
+	}
+
+	result = hkManager.initialize(commandQueue, hkDestination);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+		return result;
+	}
 
 	fillCommandAndReplyMap();
 
