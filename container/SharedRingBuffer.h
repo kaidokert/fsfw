@@ -1,5 +1,6 @@
 #ifndef FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_
 #define FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_
+
 #include <framework/container/SimpleRingBuffer.h>
 #include <framework/ipc/MutexIF.h>
 #include <framework/objectmanager/SystemObject.h>
