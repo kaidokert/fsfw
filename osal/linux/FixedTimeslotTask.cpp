@@ -1,10 +1,7 @@
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <unistd.h>
-#include <limits.h>
-#include <signal.h>
-#include <errno.h>
 #include <framework/osal/linux/FixedTimeslotTask.h>
 
+#include <limits.h>
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = PTHREAD_STACK_MIN;
@@ -23,7 +20,7 @@ void* FixedTimeslotTask::taskEntryPoint(void* arg) {
 	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(arg));
 	//The task's functionality is called.
 	originalTask->taskFunctionality();
-	return NULL;
+	return nullptr;
 }
 
 ReturnValue_t FixedTimeslotTask::startTask() {
