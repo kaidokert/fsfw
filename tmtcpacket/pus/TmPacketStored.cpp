@@ -34,6 +34,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 			size + headerSize + sizeof(PUSTmDataFieldHeader) + CRC_SIZE - 1);
 }
 
+// todo: Endianness flags as optional parameter?
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 		uint8_t subservice, uint8_t packetSubcounter, SerializeIF *content,
 		SerializeIF *header) :
