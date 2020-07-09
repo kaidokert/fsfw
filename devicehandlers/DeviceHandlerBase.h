@@ -106,12 +106,13 @@ public:
 	 * @param cmdQueueSize
 	 */
 	DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
-			CookieIF * comCookie, uint8_t setDeviceSwitch,
-			object_id_t hkDestination = objects::NO_OBJECT,
-			uint32_t thermalStatePoolId = PoolVariableIF::NO_PARAMETER,
-			uint32_t thermalRequestPoolId = PoolVariableIF::NO_PARAMETER,
-			FailureIsolationBase* fdirInstance = nullptr,
+			CookieIF * comCookie, FailureIsolationBase* fdirInstance = nullptr,
 			size_t cmdQueueSize = 20);
+
+	void setDeviceSwitch(uint8_t deviceSwitch);
+	void setHkDestination(object_id_t hkDestination);
+	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
+			uint32_t thermalRequestPoolId);
 
 	/**
 	 * @brief 	This function is the device handler base core component and is
@@ -691,14 +692,14 @@ protected:
 	 *
 	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
 	 */
-	uint32_t deviceThermalStatePoolId;
+	uint32_t deviceThermalStatePoolId = PoolVariableIF::NO_PARAMETER;
 
 	/**
 	 * this is the datapool variable with the thermal request of the device
 	 *
 	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
 	 */
-	uint32_t deviceThermalRequestPoolId;
+	uint32_t deviceThermalRequestPoolId = PoolVariableIF::NO_PARAMETER;
 
 	/**
 	 * Optional Error code
@@ -724,7 +725,7 @@ protected:
 
 	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
 
-	static object_id_t defaultFDIRParentId; //!< Object which may be the root cause of an identified fault.
+	static object_id_t defaultFdirParentId; //!< Object which may be the root cause of an identified fault.
 	/**
 	 * Helper function to report a missed reply
 	 *
@@ -1082,7 +1083,7 @@ private:
 	 *
 	 * for devices using two switches override getSwitches()
 	 */
-	const uint8_t deviceSwitch;
+	uint8_t deviceSwitch;
 
 	/**
 	 * read the command queue

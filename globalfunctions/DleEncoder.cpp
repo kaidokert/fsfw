@@ -81,8 +81,7 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 
 	while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)
 			&& (sourceStream[encodedIndex] != ETX)
-			&& (sourceStream[encodedIndex] != STX))
-	{
+			&& (sourceStream[encodedIndex] != STX)) {
 		if (sourceStream[encodedIndex] == DLE) {
 			nextByte = sourceStream[encodedIndex + 1];
 			// The next byte is a DLE character that was escaped by another

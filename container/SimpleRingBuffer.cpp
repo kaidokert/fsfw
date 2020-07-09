@@ -16,12 +16,14 @@ SimpleRingBuffer::~SimpleRingBuffer() {
 }
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
-		uint32_t amount) {
+		size_t amount) {
 	if (availableWriteSpace() >= amount or overwriteOld) {
-		uint32_t amountTillWrap = writeTillWrap();
+		size_t amountTillWrap = writeTillWrap();
 		if (amountTillWrap >= amount) {
+			// remaining size in buffer is sufficient to fit full amount.
 			memcpy(&buffer[write], data, amount);
-		} else {
+		}
+		else {
 			memcpy(&buffer[write], data, amountTillWrap);
 			memcpy(buffer, data + amountTillWrap, amount - amountTillWrap);
 		}
@@ -32,12 +34,13 @@ ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
 	}
 }
 
-ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, uint32_t amount,
-		bool readRemaining, uint32_t* trueAmount) {
-	uint32_t availableData = availableReadData(READ_PTR);
-	uint32_t amountTillWrap = readTillWrap(READ_PTR);
+ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, size_t amount,
+		bool incrementReadPtr, bool readRemaining, size_t* trueAmount) {
+	size_t availableData = availableReadData(READ_PTR);
+	size_t amountTillWrap = readTillWrap(READ_PTR);
 	if (availableData < amount) {
 		if (readRemaining) {
+			// more data available than amount specified.
 			amount = availableData;
 		} else {
 			return HasReturnvaluesIF::RETURN_FAILED;
@@ -52,12 +55,16 @@ ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, uint32_t amount,
 		memcpy(data, &buffer[read[READ_PTR]], amountTillWrap);
 		memcpy(data + amountTillWrap, buffer, amount - amountTillWrap);
 	}
+
+	if(incrementReadPtr) {
+		deleteData(amount, readRemaining);
+	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t SimpleRingBuffer::deleteData(uint32_t amount,
-		bool deleteRemaining, uint32_t* trueAmount) {
-	uint32_t availableData = availableReadData(READ_PTR);
+ReturnValue_t SimpleRingBuffer::deleteData(size_t amount,
+		bool deleteRemaining, size_t* trueAmount) {
+	size_t availableData = availableReadData(READ_PTR);
 	if (availableData < amount) {
 		if (deleteRemaining) {
 			amount = availableData;

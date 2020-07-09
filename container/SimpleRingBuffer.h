@@ -18,6 +18,8 @@ public:
      * This constructor allocates a new internal buffer with the supplied size.
      * @param size
      * @param overwriteOld
+     * If the ring buffer is overflowing at a write operartion, the oldest data
+     * will be overwritten.
      */
 	SimpleRingBuffer(const size_t size, bool overwriteOld);
 	/**
@@ -25,41 +27,59 @@ public:
 	 * @param buffer
 	 * @param size
 	 * @param overwriteOld
+	 * If the ring buffer is overflowing at a write operartion, the oldest data
+     * will be overwritten.
 	 */
 	SimpleRingBuffer(uint8_t* buffer, const size_t size, bool overwriteOld);
 
 	virtual ~SimpleRingBuffer();
 
 	/**
-	 * Write to circular buffer and increment write pointer by amount
+	 * Write to circular buffer and increment write pointer by amount.
 	 * @param data
 	 * @param amount
-	 * @return
+	 * @return -@c RETURN_OK if write operation was successfull
+	 * -@c RETURN_FAILED if
 	 */
-	ReturnValue_t writeData(const uint8_t* data, uint32_t amount);
+	ReturnValue_t writeData(const uint8_t* data, size_t amount);
 
 	/**
-	 * Read from circular buffer at read pointer
+	 * Read from circular buffer at read pointer.
 	 * @param data
 	 * @param amount
+	 * @param incrementReadPtr
+	 * If this is set to true, the read pointer will be incremented.
+	 * If readRemaining is set to true, the read pointer will be incremented
+	 * accordingly.
 	 * @param readRemaining
-	 * @param trueAmount
+	 * If this is set to true, the data will be read even if the amount
+	 * specified exceeds the read data available.
+	 * @param trueAmount [out]
+	 * If readRemaining was set to true, the true amount read will be assigned
+	 * to the passed value.
 	 * @return
+	 * - @c RETURN_OK if data was read successfully
+	 * - @c RETURN_FAILED if not enough data was available and readRemaining
+	 *      was set to false.
 	 */
-	ReturnValue_t readData(uint8_t* data, uint32_t amount,
-	        bool readRemaining = false, uint32_t* trueAmount = nullptr);
+	ReturnValue_t readData(uint8_t* data, size_t amount,
+			bool incrementReadPtr = false, bool readRemaining = false,
+			size_t* trueAmount = nullptr);
 
 	/**
-	 * Delete data starting by incrementing read pointer
+	 * Delete data by incrementing read pointer.
 	 * @param amount
 	 * @param deleteRemaining
-	 * @param trueAmount
+	 * If the amount specified is larger than the remaing size to read and this
+	 * is set to true, the remaining amount will be deleted as well
+	 * @param trueAmount [out]
+	 * If deleteRemaining was set to true, the amount deleted will be assigned
+	 * to the passed value.
 	 * @return
 	 */
-	ReturnValue_t deleteData(uint32_t amount, bool deleteRemaining = false,
-	        uint32_t* trueAmount = nullptr);
+	ReturnValue_t deleteData(size_t amount, bool deleteRemaining = false,
+	        size_t* trueAmount = nullptr);
 private:
-//	static const uint8_t TEMP_READ_PTR = 1;
 	static const uint8_t READ_PTR = 0;
 	uint8_t* buffer = nullptr;
 };

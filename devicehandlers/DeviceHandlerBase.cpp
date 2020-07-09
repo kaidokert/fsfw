@@ -18,41 +18,53 @@
 
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
-object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
+object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * comCookie,
-		uint8_t setDeviceSwitch, object_id_t hkDestination,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
-		FailureIsolationBase* fdirInstance, size_t cmdQueueSize) :
+		FailureIsolationBase* fdirInstance,
+		size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
 		actionHelper(this, nullptr), hkManager(this, nullptr),
-		deviceThermalStatePoolId(thermalStatePoolId),
-		deviceThermalRequestPoolId(thermalRequestPoolId),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
 		switchOffWasReported(false), hkDestination(hkDestination),
 		childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
-		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
+		transitionSourceSubMode(SUBMODE_NONE) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			MessageQueueMessage::MAX_MESSAGE_SIZE);
 	insertInCommandMap(RAW_COMMAND_ID);
 	cookieInfo.state = COOKIE_UNUSED;
 	cookieInfo.pendingCommand = deviceCommandMap.end();
 	if (comCookie == nullptr) {
-		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex <<
-				std::setw(8) << std::setfill('0') << this->getObjectId() <<
-				std::dec << ": Do not pass nullptr as a cookie, consider "
-				<< std::setfill(' ') << "passing a dummy cookie instead!" <<
-				std::endl;
+		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex
+				<< std::setw(8) << std::setfill('0') << this->getObjectId()
+				<< std::dec << ": Do not pass nullptr as a cookie, consider "
+				<< std::setfill(' ') << "passing a dummy cookie instead!"
+				<< std::endl;
 	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
-				defaultFDIRParentId);
+				defaultFdirParentId);
 	}
+}
+
+void DeviceHandlerBase::setHkDestination(object_id_t hkDestination) {
+	this->hkDestination = hkDestination;
+}
+
+void DeviceHandlerBase::setThermalStateRequestPoolIds(
+		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId) {
+	this->deviceThermalRequestPoolId = thermalStatePoolId;
+	this->deviceThermalRequestPoolId = thermalRequestPoolId;
+}
+
+
+void DeviceHandlerBase::setDeviceSwitch(uint8_t deviceSwitch) {
+	this->deviceSwitch = deviceSwitch;
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
