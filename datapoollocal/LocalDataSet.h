@@ -2,7 +2,7 @@
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
 #include <framework/datapool/DataSetBase.h>
 #include <framework/datapool/DataSetIF.h>
-#include <framework/datapoollocal/OwnsLocalDataPoolIF.h>
+#include <framework/datapoollocal/HasLocalDataPoolIF.h>
 #include <framework/serialize/SerializeIF.h>
 
 #include <vector>
@@ -37,7 +37,7 @@ public:
 	 * 			The constructor simply sets the fill_count to zero and sets
 	 *  		the state to "uninitialized".
 	 */
-	LocalDataSet(OwnsLocalDataPoolIF *hkOwner,
+	LocalDataSet(HasLocalDataPoolIF *hkOwner,
 	        const size_t maxNumberOfVariables);
 
 	/**
