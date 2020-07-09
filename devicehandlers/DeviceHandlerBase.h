@@ -386,7 +386,7 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = 0,
+			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = false,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 
 	/**
@@ -400,7 +400,7 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = 0);
+			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = false);
 
 	/**
 	 * @brief 	A simple command to add a command to the commandList.
@@ -426,7 +426,7 @@ protected:
 	 */
 	ReturnValue_t updateReplyMapEntry(DeviceCommandId_t deviceReply,
 			uint16_t delayCycles, uint16_t maxDelayCycles,
-			bool periodic = 0);
+			bool periodic = false);
 
 	/**
 	 * @brief   Can be implemented by child handler to
@@ -1214,5 +1214,5 @@ private:
 	            size_t receivedDataLen);
 };
 
-#endif /* DEVICEHANDLERBASE_H_ */
+#endif /* FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */
 
