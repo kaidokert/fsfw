@@ -124,7 +124,8 @@ public:
 	 */
 	void setToUnknownCommand();
 	void setReplyRejected(ReturnValue_t reason, Command_t initialCommand = CMD_NONE);
-	ReturnValue_t getReplyRejectedReason(Command_t *initialCommand) const;
+	ReturnValue_t getReplyRejectedReason(
+	        Command_t *initialCommand = nullptr) const;
 
 	size_t getMinimumMessageSize() const;
 };
