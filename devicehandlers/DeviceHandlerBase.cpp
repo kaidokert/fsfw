@@ -19,11 +19,11 @@
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
+object_id_t DeviceHandlerBase::defaultHkDestination = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * comCookie,
-		FailureIsolationBase* fdirInstance,
-		size_t cmdQueueSize) :
+		FailureIsolationBase* fdirInstance, size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
@@ -31,8 +31,8 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		actionHelper(this, nullptr), hkManager(this, nullptr),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
-		switchOffWasReported(false), hkDestination(hkDestination),
-		childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
+		switchOffWasReported(false), childTransitionDelay(5000),
+		transitionSourceMode(_MODE_POWER_DOWN),
 		transitionSourceSubMode(SUBMODE_NONE) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			MessageQueueMessage::MAX_MESSAGE_SIZE);
@@ -187,6 +187,10 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	result = hkSwitcher.initialize();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
+	}
+
+	if(hkDestination == objects::NO_OBJECT) {
+		hkDestination = defaultHkDestination;
 	}
 
 	result = hkManager.initialize(commandQueue, hkDestination);

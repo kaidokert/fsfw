@@ -1048,6 +1048,7 @@ private:
 	PowerSwitchIF *powerSwitcher = nullptr;
 
 	/** Cached for initialize() */
+	static object_id_t defaultHkDestination;
 	object_id_t hkDestination = objects::NO_OBJECT;
 
 	/**

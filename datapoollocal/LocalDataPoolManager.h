@@ -67,6 +67,7 @@ public:
 	 */
 	ReturnValue_t initialize(MessageQueueIF* queueToUse,
 	        object_id_t hkDestination);
+
 	/**
 	 * This function is used to set the default HK packet destination.
 	 * This destination will usually only be set once.

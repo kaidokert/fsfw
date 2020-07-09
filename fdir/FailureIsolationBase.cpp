@@ -29,7 +29,7 @@ ReturnValue_t FailureIsolationBase::initialize() {
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	if (ownerId != 0) {
+	if (faultTreeParent != objects::NO_OBJECT) {
 		result = manager->subscribeToAllEventsFrom(eventQueue->getId(), ownerId);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
@@ -41,10 +41,15 @@ ReturnValue_t FailureIsolationBase::initialize() {
 			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 	}
-	if (faultTreeParent != 0) {
+	if (faultTreeParent != objects::NO_OBJECT) {
 		ConfirmsFailuresIF* parentIF = objectManager->get<ConfirmsFailuresIF>(
 				faultTreeParent);
-		if (parentIF == NULL) {
+		if (parentIF == nullptr) {
+			sif::error << "FailureIsolationBase::intialize: Parent object"
+					<< "invalid." << std::endl;
+			sif::error << "Make sure it implements ConfirmsFailuresIF."
+					<< std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 			return RETURN_FAILED;
 		}
 		eventQueue->setDefaultDestination(parentIF->getEventReceptionQueue());
