@@ -228,7 +228,7 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
 		if (iter->second.delayCycles != 0) {
 			iter->second.delayCycles--;
 			if (iter->second.delayCycles == 0) {
-				if (iter->second.periodic != 0) {
+				if (iter->second.periodic) {
 					iter->second.delayCycles = iter->second.maxDelayCycles;
 				}
 				replyToReply(iter, TIMEOUT);
