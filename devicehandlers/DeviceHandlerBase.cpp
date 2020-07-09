@@ -122,8 +122,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	communicationInterface = objectManager->get<DeviceCommunicationIF>(
 			deviceCommunicationId);
-	if (communicationInterface == NULL) {
-		return RETURN_FAILED;
+	if (communicationInterface == nullptr) {
+		sif::error << "DeviceHandlerBase::initialize: Communication interface "
+				"invalid." << std::endl;
+		sif::error << "Make sure it is set up properly and implements"
+				" DeviceCommunicationIF" << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	result = communicationInterface->initializeInterface(comCookie);
@@ -132,8 +136,10 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (IPCStore == NULL) {
-		return RETURN_FAILED;
+	if (IPCStore == nullptr) {
+		sif::error << "DeviceHandlerBase::initialize: IPC store not set up in "
+				"factory." << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	if(rawDataReceiverId != objects::NO_OBJECT) {
@@ -152,8 +158,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	if(powerSwitcherId != objects::NO_OBJECT) {
 		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
-		if (powerSwitcher == NULL) {
-			return RETURN_FAILED;
+		if (powerSwitcher == nullptr) {
+			sif::error << "DeviceHandlerBase::initialize: Power switcher "
+					<< "object ID set but no valid object found." << std::endl;
+			sif::error << "Make sure the raw receiver object is set up properly"
+					<< " and implements PowerSwitchIF" << std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 	}
 
@@ -189,14 +199,14 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
-	if(hkDestination == objects::NO_OBJECT) {
-		hkDestination = defaultHkDestination;
-	}
-
-	result = hkManager.initialize(commandQueue, hkDestination);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
+//	if(hkDestination == objects::NO_OBJECT) {
+//		hkDestination = defaultHkDestination;
+//	}
+//
+//	result = hkManager.initialize(commandQueue, hkDestination);
+//	if (result != HasReturnvaluesIF::RETURN_OK) {
+//		return result;
+//	}
 
 	fillCommandAndReplyMap();
 
