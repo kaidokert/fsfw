@@ -76,13 +76,14 @@ protected:
 	object_id_t tcDestination = objects::NO_OBJECT;
 
 	//! Used to send and receive TMTC messages.
-	//! TmTcMessage is used to transport messages between tasks.
+	//! The TmTcMessage class is used to transport messages between tasks.
 	MessageQueueIF* tmTcReceptionQueue = nullptr;
 
 	StorageManagerIF* tmStore = nullptr;
 	StorageManagerIF* tcStore = nullptr;
 
-	//! Used to specify whether communication link is up by default.
+	//! Used to specify whether communication link is up. Will be true
+	//! by default, so telemetry will be handled immediately.
 	bool communicationLinkUp = true;
 	bool tmStored = false;
 
@@ -103,7 +104,8 @@ protected:
 	virtual ReturnValue_t handleTm();
 
 	/**
-	 * Read the TM Queue and send TM if necessary. Default implementation provided
+	 * Read the TM Queue and send TM if necessary.
+	 * Default implementation provided
 	 * @return
 	 */
 	virtual ReturnValue_t handleTmQueue();
@@ -116,7 +118,8 @@ protected:
 
 	/**
 	 * Implemented by child class. Perform sending of Telemetry by implementing
-	 * communication drivers or wrappers, e.g. UART communication or lwIP stack.
+	 * communication drivers or wrappers, e.g. serial communication or a socket
+	 * call.
 	 * @param data
 	 * @param dataLen
 	 * @return
