@@ -348,7 +348,7 @@ void DeviceHandlerBase::doStateMachine() {
 
 		if(powerSwitcher == nullptr) {
 		    setMode(MODE_OFF);
-		    return;
+		    break;
 		}
 
 		if (currentUptime - timeoutStart >= powerSwitcher->getSwitchDelayMs()) {
@@ -831,21 +831,6 @@ DeviceHandlerIF::CommunicationAction_t DeviceHandlerBase::getComAction() {
 MessageQueueId_t DeviceHandlerBase::getCommandQueue() const {
 	return commandQueue->getId();
 }
-
-//ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
-//	DeviceCommunicationIF *newCommunication = objectManager->get<
-//			DeviceCommunicationIF>(newChannelId);
-//
-//	if (newCommunication != NULL) {
-//		ReturnValue_t result = newCommunication->reOpen(cookie, ioBoardAddress,
-//				maxDeviceReplyLen);
-//		if (result != RETURN_OK) {
-//			return result;
-//		}
-//		return RETURN_OK;
-//	}
-//	return RETURN_FAILED;
-//}
 
 void DeviceHandlerBase::buildRawDeviceCommand(CommandMessage* commandMessage) {
 	storedRawData = DeviceHandlerMessage::getStoreAddress(commandMessage);
