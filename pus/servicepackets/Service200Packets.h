@@ -11,6 +11,7 @@
  */
 class ModePacket : public SerialLinkedListAdapter<SerializeIF> { //!< [EXPORT] : [SUBSERVICE] 1, 2, 6
 public:
+
 	ModePacket() {
 		setLinks();
 	}
@@ -28,9 +29,11 @@ public:
 		return submode.entry;
 	}
 
+	// Forbid copying, pointers are used.
+	ModePacket(const ModePacket&) = delete;
+	ModePacket& operator=(const ModePacket&) = delete;
 private:
-	// Forbid copying because of next pointer to member
-	ModePacket(const ModePacket &command);
+
 	void setLinks() {
 		setStart(&objectId);
 		objectId.setNext(&mode);
@@ -41,6 +44,10 @@ private:
 	SerializeElement<Submode_t> submode; //!< [EXPORT] : [COMMENT] Usually 0, device specific submode possible
 };
 
+/**
+ * @brief Subservice 7
+ * @ingroup spacepackets
+ */
 class CantReachModePacket: public SerialLinkedListAdapter<SerializeIF> { //!< [EXPORT] : [SUBSERVICE] 7
 public:
     CantReachModePacket(object_id_t objectId, ReturnValue_t reason):
