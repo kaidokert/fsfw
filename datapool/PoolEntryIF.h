@@ -1,62 +1,57 @@
-/**
- * \file	PoolEntryIF.h
- *
- * \brief	This file holds the class that defines the Interface for Pool Entry elements.
- *
- * \date	10/18/2012
- *
- * \author	Bastian Baetz
- */
-
-#ifndef POOLENTRYIF_H_
-#define POOLENTRYIF_H_
+#ifndef FRAMEWORK_DATAPOOL_POOLENTRYIF_H_
+#define FRAMEWORK_DATAPOOL_POOLENTRYIF_H_
 
 #include <framework/globalfunctions/Type.h>
-#include <stdint.h>
-
-
+#include <cstdint>
 
 /**
- * \brief	This interface defines the access possibilities to a single data pool entry.
+ * @brief	This interface defines the access possibilities to a
+ * 			single data pool entry.
+ * @details
+ * The interface provides methods to determine the size and the validity
+ * information of a value. It also defines a method to receive a pointer to the
+ * raw data content. It is mainly used by DataPool itself, but also as a
+ * return pointer.
  *
- * \details	The interface provides methods to determine the size and the validity information of a value.
- * 			It also defines a method to receive a pointer to the raw data content.
- * 			It is mainly used by DataPool itself, but also as a return pointer.
- *
- *	\ingroup data_pool
+ * @author	Bastian Baetz
+ * @ingroup data_pool
  *
  */
 class PoolEntryIF {
 public:
 	/**
-	 * \brief	This is an empty virtual destructor, as it is proposed for C++ interfaces.
+	 * @brief	This is an empty virtual destructor,
+	 * 			as it is required for C++ interfaces.
 	 */
 	virtual ~PoolEntryIF() {
 	}
 	/**
-	 * \brief	getSize returns the array size of the entry. A single variable parameter has size 1.
+	 * @brief	getSize returns the array size of the entry.
+	 * 			A single variable parameter has size 1.
 	 */
 	virtual uint8_t getSize() = 0;
 	/**
-	 * \brief	This operation returns the size in bytes, which is calculated by
+	 * @brief	This operation returns the size in bytes, which is calculated by
 	 * 			sizeof(type) * array_size.
 	 */
 	virtual uint16_t getByteSize() = 0;
 	/**
-	 * \brief	This operation returns a the address pointer casted to void*.
+	 * @brief	This operation returns a the address pointer casted to void*.
 	 */
 	virtual void* getRawData() = 0;
 	/**
-	 * \brief	This method allows to set the valid information of the pool entry.
+	 * @brief	This method allows to set the valid information of the pool entry.
 	 */
-	virtual void setValid(uint8_t isValid) = 0;
+	virtual void setValid(bool isValid) = 0;
 	/**
-	 * \brief	This method allows to set the valid information of the pool entry.
+	 * @brief	This method allows to set the valid information of the pool entry.
 	 */
-	virtual uint8_t getValid() = 0;
+	virtual bool getValid() = 0;
 	/**
-	 * \brief	This is a debug method that prints all values and the valid information to the screen.
-	 * 			It prints all array entries in a row.
+	 * @brief	This is a debug method that prints all values and the valid
+	 * 			information to the screen. It prints all array entries in a row.
+	 * @details
+	 * Also displays whether the pool entry is valid or invalid.
 	 */
 	virtual void print() = 0;
 	/**
