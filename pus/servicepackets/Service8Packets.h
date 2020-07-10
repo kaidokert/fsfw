@@ -8,10 +8,7 @@
  *   3. Return Code
  *   4. Optional step number for step replies
  *
- * Data reply (subservice 132) consists of
- *   1. Target Object ID
- *   2. Action ID
- *   3. Data
+
  *
  *  \date 01.07.2019
  *  \author R. Mueller
@@ -29,23 +26,21 @@
 
 
 /**
- * \brief Subservice 128
- * \ingroup spacepackets
+ * @brief Subservice 128
+ * @ingroup spacepackets
  */
 class DirectCommand: public SerialLinkedListAdapter<SerializeIF> { //!< [EXPORT] : [SUBSERVICE] 128
 public:
-	//typedef uint16_t typeOfMaxData;
-	//static const typeOfMaxData MAX_DATA = 256;
-	DirectCommand(const uint8_t* dataBuffer_, uint32_t size_) {
-		size_t size = sizeof(objectId);
-		SerializeAdapter::deSerialize(&objectId,&dataBuffer_,&size,
+
+	DirectCommand(const uint8_t* tcData, size_t size) {
+		SerializeAdapter::deSerialize(&objectId, &tcData, &size,
 		        SerializeIF::Endianness::BIG);
-		size = sizeof(actionId);
-		SerializeAdapter::deSerialize(&actionId,&dataBuffer_,&size,
+		SerializeAdapter::deSerialize(&actionId, &tcData, &size,
 		        SerializeIF::Endianness::BIG);
-		parameterBuffer = dataBuffer_;
-		parametersSize = size_ - sizeof(objectId) - sizeof(actionId);
+		parameterBuffer = tcData;
+		parametersSize = size;
 	}
+
 	ActionId_t getActionId() const {
 		return actionId;
 	}
@@ -73,8 +68,12 @@ private:
 
 
 /**
- * \brief Subservice 130
- * \ingroup spacepackets
+ * @brief Subservice 130
+ * Data reply (subservice 130) consists of
+ *   1. Target Object ID
+ *   2. Action ID
+ *   3. Data
+ * @ingroup spacepackets
  */
 class DataReply: public SerialLinkedListAdapter<SerializeIF> { //!< [EXPORT] : [SUBSERVICE] 130
 public:
@@ -100,8 +99,10 @@ private:
 
 
 /**
- * \brief Subservice 132
- * \ingroup spacepackets
+ * @brief Subservice 132
+ * @details
+ * Not used yet. Telecommand Verification takes care of this.
+ * @ingroup spacepackets
  */
 class DirectReply: public SerialLinkedListAdapter<SerializeIF> { //!< [EXPORT] : [SUBSERVICE] 132
 public:
@@ -124,7 +125,7 @@ private:
 			returnCode.setNext(&step);
 		}
 	}
-	bool isDataReply; //!< [EXPORT] : [IGNORE]
+
 	bool isStep; //!< [EXPORT] : [IGNORE]
 	SerializeElement<object_id_t> objectId; //!< [EXPORT] : [IGNORE]
 	SerializeElement<ActionId_t> actionId; //!< [EXPORT] : [IGNORE]

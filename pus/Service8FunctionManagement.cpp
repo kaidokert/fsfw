@@ -59,8 +59,15 @@ ReturnValue_t Service8FunctionManagement::prepareCommand(
 
 ReturnValue_t Service8FunctionManagement::prepareDirectCommand(
 		CommandMessage *message, const uint8_t *tcData, size_t tcDataLen) {
+    if(tcDataLen < sizeof(object_id_t) + sizeof(ActionId_t)) {
+        sif::debug << "Service8FunctionManagement::prepareDirectCommand:"
+                << " TC size smaller thant minimum size of direct command."
+                << std::endl;
+        return CommandingServiceBase::INVALID_TC;
+    }
+
 	// Create direct command instance by extracting data from Telecommand
-	DirectCommand command(tcData,tcDataLen);
+	DirectCommand command(tcData, tcDataLen);
 
 	// store additional parameters into the IPC Store
 	store_address_t parameterAddress;
