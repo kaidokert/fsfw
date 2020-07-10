@@ -17,8 +17,11 @@ public:
 	static const Event FDIR_CHANGED_STATE = MAKE_EVENT(1, SEVERITY::INFO); //!< FDIR has an internal state, which changed from par2 (oldState) to par1 (newState).
 	static const Event FDIR_STARTS_RECOVERY = MAKE_EVENT(2, SEVERITY::MEDIUM); //!< FDIR tries to restart device. Par1: event that caused recovery.
 	static const Event FDIR_TURNS_OFF_DEVICE = MAKE_EVENT(3, SEVERITY::MEDIUM); //!< FDIR turns off device. Par1: event that caused recovery.
-	FailureIsolationBase(object_id_t owner, object_id_t parent = 0,
+
+	FailureIsolationBase(object_id_t owner,
+			object_id_t parent = objects::NO_OBJECT,
 			uint8_t messageDepth = 10, uint8_t parameterDomainBase = 0xF0);
+
 	virtual ~FailureIsolationBase();
 	virtual ReturnValue_t initialize();
 
@@ -26,7 +29,7 @@ public:
 	 * This is called by the DHB in performOperation()
 	 */
 	void checkForFailures();
-	MessageQueueId_t getEventReceptionQueue();
+	MessageQueueId_t getEventReceptionQueue() override;
 	virtual void triggerEvent(Event event, uint32_t parameter1 = 0,
 			uint32_t parameter2 = 0);
 protected:

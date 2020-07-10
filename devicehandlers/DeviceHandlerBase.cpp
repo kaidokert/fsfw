@@ -1,10 +1,10 @@
-#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/devicehandlers/DeviceHandlerBase.h>
 #include <framework/objectmanager/ObjectManager.h>
 #include <framework/storagemanager/StorageManagerIF.h>
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
 
+#include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/datapoolglob/GlobalPoolVariable.h>
 #include <framework/devicehandlers/DeviceTmReportingWrapper.h>
 #include <framework/globalfunctions/CRC.h>
@@ -18,41 +18,53 @@
 
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
-object_id_t DeviceHandlerBase::defaultFDIRParentId = 0;
+object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
+object_id_t DeviceHandlerBase::defaultHkDestination = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * comCookie,
-		uint8_t setDeviceSwitch, object_id_t hkDestination,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 		FailureIsolationBase* fdirInstance, size_t cmdQueueSize) :
 		SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
 		actionHelper(this, nullptr), hkManager(this, nullptr),
-		deviceThermalStatePoolId(thermalStatePoolId),
-		deviceThermalRequestPoolId(thermalRequestPoolId),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
-		switchOffWasReported(false), hkDestination(hkDestination),
-		childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
-		transitionSourceSubMode(SUBMODE_NONE), deviceSwitch(setDeviceSwitch) {
+		switchOffWasReported(false), childTransitionDelay(5000),
+		transitionSourceMode(_MODE_POWER_DOWN),
+		transitionSourceSubMode(SUBMODE_NONE) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			MessageQueueMessage::MAX_MESSAGE_SIZE);
 	insertInCommandMap(RAW_COMMAND_ID);
 	cookieInfo.state = COOKIE_UNUSED;
 	cookieInfo.pendingCommand = deviceCommandMap.end();
 	if (comCookie == nullptr) {
-		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex <<
-				std::setw(8) << std::setfill('0') << this->getObjectId() <<
-				std::dec << ": Do not pass nullptr as a cookie, consider "
-				<< std::setfill(' ') << "passing a dummy cookie instead!" <<
-				std::endl;
+		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex
+				<< std::setw(8) << std::setfill('0') << this->getObjectId()
+				<< std::dec << ": Do not pass nullptr as a cookie, consider "
+				<< std::setfill(' ') << "passing a dummy cookie instead!"
+				<< std::endl;
 	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
-				defaultFDIRParentId);
+				defaultFdirParentId);
 	}
+}
+
+void DeviceHandlerBase::setHkDestination(object_id_t hkDestination) {
+	this->hkDestination = hkDestination;
+}
+
+void DeviceHandlerBase::setThermalStateRequestPoolIds(
+		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId) {
+	this->deviceThermalRequestPoolId = thermalStatePoolId;
+	this->deviceThermalRequestPoolId = thermalRequestPoolId;
+}
+
+
+void DeviceHandlerBase::setDeviceSwitch(uint8_t deviceSwitch) {
+	this->deviceSwitch = deviceSwitch;
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
@@ -110,8 +122,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	communicationInterface = objectManager->get<DeviceCommunicationIF>(
 			deviceCommunicationId);
-	if (communicationInterface == NULL) {
-		return RETURN_FAILED;
+	if (communicationInterface == nullptr) {
+		sif::error << "DeviceHandlerBase::initialize: Communication interface "
+				"invalid." << std::endl;
+		sif::error << "Make sure it is set up properly and implements"
+				" DeviceCommunicationIF" << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	result = communicationInterface->initializeInterface(comCookie);
@@ -120,8 +136,10 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (IPCStore == NULL) {
-		return RETURN_FAILED;
+	if (IPCStore == nullptr) {
+		sif::error << "DeviceHandlerBase::initialize: IPC store not set up in "
+				"factory." << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	if(rawDataReceiverId != objects::NO_OBJECT) {
@@ -140,8 +158,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	if(powerSwitcherId != objects::NO_OBJECT) {
 		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
-		if (powerSwitcher == NULL) {
-			return RETURN_FAILED;
+		if (powerSwitcher == nullptr) {
+			sif::error << "DeviceHandlerBase::initialize: Power switcher "
+					<< "object ID set but no valid object found." << std::endl;
+			sif::error << "Make sure the raw receiver object is set up properly"
+					<< " and implements PowerSwitchIF" << std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 	}
 
@@ -177,6 +199,10 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
+	if(hkDestination == objects::NO_OBJECT) {
+		hkDestination = defaultHkDestination;
+	}
+
 	result = hkManager.initialize(commandQueue, hkDestination);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
@@ -202,7 +228,7 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
 		if (iter->second.delayCycles != 0) {
 			iter->second.delayCycles--;
 			if (iter->second.delayCycles == 0) {
-				if (iter->second.periodic != 0) {
+				if (iter->second.periodic) {
 					iter->second.delayCycles = iter->second.maxDelayCycles;
 				}
 				replyToReply(iter, TIMEOUT);
@@ -322,7 +348,7 @@ void DeviceHandlerBase::doStateMachine() {
 
 		if(powerSwitcher == nullptr) {
 		    setMode(MODE_OFF);
-		    return;
+		    break;
 		}
 
 		if (currentUptime - timeoutStart >= powerSwitcher->getSwitchDelayMs()) {
@@ -805,21 +831,6 @@ DeviceHandlerIF::CommunicationAction_t DeviceHandlerBase::getComAction() {
 MessageQueueId_t DeviceHandlerBase::getCommandQueue() const {
 	return commandQueue->getId();
 }
-
-//ReturnValue_t DeviceHandlerBase::switchCookieChannel(object_id_t newChannelId) {
-//	DeviceCommunicationIF *newCommunication = objectManager->get<
-//			DeviceCommunicationIF>(newChannelId);
-//
-//	if (newCommunication != NULL) {
-//		ReturnValue_t result = newCommunication->reOpen(cookie, ioBoardAddress,
-//				maxDeviceReplyLen);
-//		if (result != RETURN_OK) {
-//			return result;
-//		}
-//		return RETURN_OK;
-//	}
-//	return RETURN_FAILED;
-//}
 
 void DeviceHandlerBase::buildRawDeviceCommand(CommandMessage* commandMessage) {
 	storedRawData = DeviceHandlerMessage::getStoreAddress(commandMessage);

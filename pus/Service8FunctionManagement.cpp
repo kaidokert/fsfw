@@ -1,7 +1,6 @@
 #include <framework/pus/Service8FunctionManagement.h>
 #include <framework/pus/servicepackets/Service8Packets.h>
 
-#include <framework/action/ActionMessage.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <framework/action/HasActionsIF.h>
 #include <framework/devicehandlers/DeviceHandlerIF.h>
@@ -54,12 +53,8 @@ ReturnValue_t Service8FunctionManagement::checkInterfaceAndAcquireMessageQueue(
 ReturnValue_t Service8FunctionManagement::prepareCommand(
 		CommandMessage* message, uint8_t subservice, const uint8_t* tcData,
 		size_t tcDataLen, uint32_t* state, object_id_t objectId) {
-	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
-	if(subservice == static_cast<uint8_t>(Subservice::DIRECT_COMMANDING)) {
-		result = prepareDirectCommand(dynamic_cast<CommandMessage*>(message),
+	return prepareDirectCommand(dynamic_cast<CommandMessage*>(message),
 				tcData, tcDataLen);
-	}
-	return result;
 }
 
 ReturnValue_t Service8FunctionManagement::prepareDirectCommand(
@@ -100,18 +95,7 @@ ReturnValue_t Service8FunctionManagement::handleReply(
 		break;
 	}
 	case ActionMessage::DATA_REPLY: {
-		store_address_t storeId = ActionMessage::getStoreId(reply);
-		size_t size = 0;
-		const uint8_t * buffer = nullptr;
-		result = IPCStore->getData(storeId, &buffer, &size);
-		if(result != RETURN_OK) {
-			sif::error << "Service 8: Could not retrieve data for data reply";
-			return result;
-		}
-		DataReply dataReply(objectId,actionId,buffer,size);
-		sendTmPacket(static_cast<uint8_t>(
-				Subservice::DIRECT_COMMANDING_DATA_REPLY), &dataReply);
-		result = IPCStore ->deleteData(storeId);
+	    result = handleDataReply(reply, objectId, actionId);
 		break;
 	}
 	case ActionMessage::STEP_FAILED:
@@ -126,4 +110,26 @@ ReturnValue_t Service8FunctionManagement::handleReply(
 	return result;
 }
 
+ReturnValue_t Service8FunctionManagement::handleDataReply(
+        const CommandMessage* reply, object_id_t objectId,
+        ActionId_t actionId) {
+    store_address_t storeId = ActionMessage::getStoreId(reply);
+    size_t size = 0;
+    const uint8_t * buffer = nullptr;
+    ReturnValue_t result = IPCStore->getData(storeId, &buffer, &size);
+    if(result != RETURN_OK) {
+        sif::error << "Service 8: Could not retrieve data for data reply"
+                << std::endl;
+        return result;
+    }
+    DataReply dataReply(objectId, actionId, buffer, size);
+    result = sendTmPacket(static_cast<uint8_t>(
+            Subservice::DIRECT_COMMANDING_DATA_REPLY), &dataReply);
 
+    auto deletionResult = IPCStore->deleteData(storeId);
+    if(deletionResult != HasReturnvaluesIF::RETURN_OK) {
+        sif::warning << "Service8FunctionManagement::handleReply: Deletion"
+                << " of data in pool failed." << std::endl;
+    }
+    return result;
+}

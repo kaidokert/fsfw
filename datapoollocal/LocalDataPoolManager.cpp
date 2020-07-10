@@ -7,7 +7,7 @@
 
 #include <array>
 
-LocalDataPoolManager::LocalDataPoolManager(OwnsLocalDataPoolIF* owner,
+LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
         appendValidityBuffer(appendValidityBuffer) {
 	if(owner == nullptr) {
@@ -63,7 +63,7 @@ LocalDataPoolManager::~LocalDataPoolManager() {}
 
 ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 	if(not mapInitialized) {
-		ReturnValue_t result = owner->initializePoolEntries(localDpMap);
+		ReturnValue_t result = owner->initializePoolEntries(localPoolMap);
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			mapInitialized = true;
 		}
@@ -96,8 +96,8 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 
 ReturnValue_t LocalDataPoolManager::printPoolEntry(
 		lp_id_t localPoolId) {
-	auto poolIter = localDpMap.find(localPoolId);
-	if (poolIter == localDpMap.end()) {
+	auto poolIter = localPoolMap.find(localPoolId);
+	if (poolIter == localPoolMap.end()) {
 		sif::debug << "HousekeepingManager::fechPoolEntry:"
 				" Pool entry not found." << std::endl;
 		return POOL_ENTRY_NOT_FOUND;
@@ -110,7 +110,7 @@ MutexIF* LocalDataPoolManager::getMutexHandle() {
 	return mutex;
 }
 
-const OwnsLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
+const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
     return owner;
 }
 
@@ -213,4 +213,6 @@ ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
     return result;
 }
 
-
+ReturnValue_t LocalDataPoolManager::performHkOperation() {
+    return HasReturnvaluesIF::RETURN_OK;
+}

@@ -7,7 +7,7 @@
 
 template<typename T, uint16_t vectorSize>
 inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
-		OwnsLocalDataPoolIF* hkOwner, pool_rwm_t setReadWriteMode,
+		HasLocalDataPoolIF* hkOwner, pool_rwm_t setReadWriteMode,
 		DataSetIF* dataSet) :
 		localPoolId(poolId), valid(false), readWriteMode(setReadWriteMode) {
 	if(poolId == PoolVariableIF::NO_PARAMETER) {
@@ -29,8 +29,8 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
 		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
 				"NO_PARAMETER value!" << std::endl;
 	}
-	OwnsLocalDataPoolIF* hkOwner =
-			objectManager->get<OwnsLocalDataPoolIF>(poolOwner);
+	HasLocalDataPoolIF* hkOwner =
+			objectManager->get<HasLocalDataPoolIF>(poolOwner);
 	if(hkOwner == nullptr) {
 		sif::error << "LocalPoolVariable: The supplied pool owner did not implement"
 				"the correct interface HasHkPoolParametersIF!" << std::endl;

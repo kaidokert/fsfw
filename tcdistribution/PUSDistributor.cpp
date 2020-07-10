@@ -50,7 +50,7 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 	if (not returnPair.second) {
 		//TODO Return Code
 		sif::error << "PUSDistributor::registerService: Service ID already"
-				"exists in map." << std::endl;
+				" exists in map." << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	return HasReturnvaluesIF::RETURN_OK;

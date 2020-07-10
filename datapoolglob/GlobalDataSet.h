@@ -1,5 +1,5 @@
-#ifndef DATASET_H_
-#define DATASET_H_
+#ifndef FRAMEWORK_DATAPOOLGLOB_DATASET_H_
+#define FRAMEWORK_DATAPOOLGLOB_DATASET_H_
 
 #include <framework/datapool/DataSetBase.h>
 
@@ -93,4 +93,4 @@ private:
 	PoolVariableIF* registeredVariables[DATA_SET_MAX_SIZE];
 };
 
-#endif /* DATASET_H_ */
+#endif /* FRAMEWORK_DATAPOOLGLOB_DATASET_H_ */

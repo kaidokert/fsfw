@@ -17,15 +17,16 @@ class StorageAccessor: public ConstStorageAccessor {
 public:
 	StorageAccessor(store_address_t storeId);
 	StorageAccessor(store_address_t storeId, StorageManagerIF* store);
+
 	/**
 	 * @brief	Move ctor and move assignment allow returning accessors as
-	 * 			a returnvalue. They prevent resource being free prematurely.
-	 * Refer to: https://github.com/MicrosoftDocs/cpp-docs/blob/master/docs/cpp/
-	 * 			 move-constructors-and-move-assignment-operators-cpp.md
+	 * 			a returnvalue. They prevent resource being freed prematurely.
+	 * See: https://github.com/MicrosoftDocs/cpp-docs/blob/master/docs/cpp/
+	 * 		move-constructors-and-move-assignment-operators-cpp.md
 	 * @param
 	 * @return
 	 */
-	StorageAccessor& operator= (StorageAccessor&&);
+	StorageAccessor& operator=(StorageAccessor&&);
 	StorageAccessor(StorageAccessor&&);
 
 	ReturnValue_t write(uint8_t *data, size_t size,
