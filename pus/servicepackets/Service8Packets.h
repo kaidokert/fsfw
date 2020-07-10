@@ -1,19 +1,3 @@
-/**
- * \file Service8Packets.h
- *
- * \brief Structure of a Direct Command.
- * Normal reply (subservice 130) consists of
- *   1. Target object ID
- *   2. Action ID (taget device has specified functions with action IDs)
- *   3. Return Code
- *   4. Optional step number for step replies
- *
-
- *
- *  \date 01.07.2019
- *  \author R. Mueller
- */
-
 #ifndef FRAMEWORK_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_
 #define FRAMEWORK_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_
 
