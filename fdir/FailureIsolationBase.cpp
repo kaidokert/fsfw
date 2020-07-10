@@ -29,7 +29,7 @@ ReturnValue_t FailureIsolationBase::initialize() {
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	if (faultTreeParent != objects::NO_OBJECT) {
+	if (ownerId != objects::NO_OBJECT) {
 		result = manager->subscribeToAllEventsFrom(eventQueue->getId(), ownerId);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
