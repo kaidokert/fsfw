@@ -27,36 +27,26 @@ ReturnValue_t CService200ModeCommanding::isValidSubservice(uint8_t subservice) {
 
 ReturnValue_t CService200ModeCommanding::getMessageQueueAndObject(
 		uint8_t subservice, const uint8_t *tcData, size_t tcDataLen,
-		MessageQueueId_t *id, object_id_t *objectId)
-{
-	ReturnValue_t result = checkAndAcquireTargetID(objectId,tcData,tcDataLen);
-	if (result != RETURN_OK) {
-		return result;
-	}
-	result = checkInterfaceAndAcquireMessageQueue(id,objectId);
-	return result;
-}
+		MessageQueueId_t *id, object_id_t *objectId) {
+    if(tcDataLen < sizeof(object_id_t)) {
+        return CommandingServiceBase::INVALID_TC;
+    }
+    SerializeAdapter::deSerialize(objectId, &tcData, &tcDataLen,
+            SerializeIF::Endianness::BIG);
 
-ReturnValue_t CService200ModeCommanding::checkAndAcquireTargetID(
-		object_id_t* objectIdToSet, const uint8_t* tcData, uint32_t tcDataLen) {
-	size_t size = tcDataLen;
-	if (SerializeAdapter::deSerialize(objectIdToSet, &tcData, &size,
-	        SerializeIF::Endianness::BIG)
-			!= HasReturnvaluesIF::RETURN_OK)
-		return CommandingServiceBase::INVALID_TC;
-	else
-		return HasReturnvaluesIF::RETURN_OK;
+	return checkInterfaceAndAcquireMessageQueue(id,objectId);
 }
 
 ReturnValue_t CService200ModeCommanding::checkInterfaceAndAcquireMessageQueue(
-		MessageQueueId_t* MessageQueueToSet, object_id_t* objectId) {
-	HasModesIF * possibleTarget = objectManager->get<HasModesIF>(*objectId);
-	if(possibleTarget!=NULL){
-		*MessageQueueToSet = possibleTarget->getCommandQueue();
-		return HasReturnvaluesIF::RETURN_OK;
-	} else {
-		return CommandingServiceBase::INVALID_OBJECT;
-	}
+        MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
+    HasModesIF * destination = objectManager->get<HasModesIF>(*objectId);
+    if(destination == nullptr) {
+        return CommandingServiceBase::INVALID_OBJECT;
+
+    }
+
+    *messageQueueToSet = destination->getCommandQueue();
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 
@@ -69,12 +59,11 @@ ReturnValue_t CService200ModeCommanding::prepareCommand(
 	if (result != RETURN_OK) {
 		return result;
 	}
-	else {
-		ModeMessage::setModeMessage(dynamic_cast<CommandMessage*>(message),
-				ModeMessage::CMD_MODE_COMMAND, modeCommandPacket.getMode(),
-				modeCommandPacket.getSubmode());
-		return result;
-	}
+
+	ModeMessage::setModeMessage(dynamic_cast<CommandMessage*>(message),
+	        ModeMessage::CMD_MODE_COMMAND, modeCommandPacket.getMode(),
+	        modeCommandPacket.getSubmode());
+	return result;
 }
 
 
@@ -128,6 +117,3 @@ ReturnValue_t CService200ModeCommanding::prepareCantReachModeReply(
 	return sendTmPacket(Subservice::REPLY_CANT_REACH_MODE,
 	        &cantReachModePacket);
 }
-
-
-

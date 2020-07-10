@@ -25,8 +25,13 @@ public:
 	 * @param
 	 * @return
 	 */
+<<<<<<< Updated upstream
 	StorageAccessor& operator= (StorageAccessor&&);
 	StorageAccessor (StorageAccessor&&);
+=======
+	StorageAccessor& operator=(StorageAccessor&&);
+	StorageAccessor(StorageAccessor&&);
+>>>>>>> Stashed changes
 
 	ReturnValue_t write(uint8_t *data, size_t size,
 		uint16_t offset = 0);
