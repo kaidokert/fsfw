@@ -18,7 +18,7 @@ template<typename T>
 class DynamicFIFO: public FIFOBase<T> {
 public:
 	DynamicFIFO(size_t maxCapacity): FIFOBase<T>(values.data(), maxCapacity),
-			values(maxCapacity) {};
+			values(maxCapacity)  {};
 
 private:
 	std::vector<T> values;

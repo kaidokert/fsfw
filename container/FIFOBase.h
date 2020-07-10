@@ -3,6 +3,7 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <cstddef>
+#include <cstring>
 
 template <typename T>
 class FIFOBase {
@@ -42,6 +43,23 @@ public:
 	bool empty();
 	bool full();
 	size_t size();
+
+	FIFOBase(const FIFOBase& other): readIndex(other.readIndex),
+			writeIndex(other.writeIndex), currentSize(other.currentSize),
+			maxCapacity(other.maxCapacity) {
+		std::memcpy(values, other.values, sizeof(T) * currentSize);
+	}
+
+	FIFOBase& operator=(const FIFOBase& other) {
+		if(&other == this)
+			return *this;
+		maxCapacity = other.maxCapacity;
+		readIndex = other.readIndex;
+		writeIndex = other.writeIndex;
+		currentSize = other.currentSize;
+		std::memcpy(values, other.values, sizeof(T) * currentSize);
+		return *this;
+	}
 
 	size_t getMaxCapacity() const;
 
