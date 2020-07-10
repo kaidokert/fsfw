@@ -89,15 +89,15 @@ void CpuUsage::clear() {
 	threadData.clear();
 }
 
-ReturnValue_t CpuUsage::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
-	ReturnValue_t result = SerializeAdapter<float>::serialize(
-			&timeSinceLastReset, buffer, size, max_size, bigEndian);
+ReturnValue_t CpuUsage::serialize(uint8_t** buffer, size_t* size,
+		size_t maxSize, Endianness streamEndianness) const {
+	ReturnValue_t result = SerializeAdapter::serialize(
+			&timeSinceLastReset, buffer, size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 	return SerialArrayListAdapter<ThreadData>::serialize(&threadData, buffer,
-			size, max_size, bigEndian);
+			size, maxSize, streamEndianness);
 }
 
 uint32_t CpuUsage::getSerializedSize() const {
@@ -109,37 +109,37 @@ uint32_t CpuUsage::getSerializedSize() const {
 	return size;
 }
 
-ReturnValue_t CpuUsage::deSerialize(const uint8_t** buffer, int32_t* size,
-		bool bigEndian) {
-	ReturnValue_t result = SerializeAdapter<float>::deSerialize(
-			&timeSinceLastReset, buffer, size, bigEndian);
+ReturnValue_t CpuUsage::deSerialize(const uint8_t** buffer, size_t* size,
+		Endianness streamEndianness) {
+	ReturnValue_t result = SerializeAdapter::deSerialize(
+			&timeSinceLastReset, buffer, size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 	return SerialArrayListAdapter<ThreadData>::deSerialize(&threadData, buffer,
-			size, bigEndian);
+			size, streamEndianness);
 }
 
-ReturnValue_t CpuUsage::ThreadData::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
-	ReturnValue_t result = SerializeAdapter<uint32_t>::serialize(&id, buffer,
-			size, max_size, bigEndian);
+ReturnValue_t CpuUsage::ThreadData::serialize(uint8_t** buffer, size_t* size,
+		size_t maxSize, Endianness streamEndianness) const {
+	ReturnValue_t result = SerializeAdapter::serialize(&id, buffer,
+			size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	if (*size + MAX_LENGTH_OF_THREAD_NAME > max_size) {
+	if (*size + MAX_LENGTH_OF_THREAD_NAME > maxSize) {
 		return BUFFER_TOO_SHORT;
 	}
 	memcpy(*buffer, name, MAX_LENGTH_OF_THREAD_NAME);
 	*size += MAX_LENGTH_OF_THREAD_NAME;
 	*buffer += MAX_LENGTH_OF_THREAD_NAME;
-	result = SerializeAdapter<float>::serialize(&timeRunning,
-			buffer, size, max_size, bigEndian);
+	result = SerializeAdapter::serialize(&timeRunning,
+			buffer, size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<float>::serialize(&percentUsage,
-			buffer, size, max_size, bigEndian);
+	result = SerializeAdapter::serialize(&percentUsage,
+			buffer, size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -158,9 +158,9 @@ uint32_t CpuUsage::ThreadData::getSerializedSize() const {
 }
 
 ReturnValue_t CpuUsage::ThreadData::deSerialize(const uint8_t** buffer,
-		int32_t* size, bool bigEndian) {
-	ReturnValue_t result = SerializeAdapter<uint32_t>::deSerialize(&id, buffer,
-			size, bigEndian);
+		int32_t* size, Endianness streamEndianness) {
+	ReturnValue_t result = SerializeAdapter::deSerialize(&id, buffer,
+			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -169,13 +169,13 @@ ReturnValue_t CpuUsage::ThreadData::deSerialize(const uint8_t** buffer,
 	}
 	memcpy(name, *buffer, MAX_LENGTH_OF_THREAD_NAME);
 	*buffer -= MAX_LENGTH_OF_THREAD_NAME;
-	result = SerializeAdapter<float>::deSerialize(&timeRunning,
-			buffer, size, bigEndian);
+	result = SerializeAdapter::deSerialize(&timeRunning,
+			buffer, size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<float>::deSerialize(&percentUsage,
-			buffer, size, bigEndian);
+	result = SerializeAdapter::deSerialize(&percentUsage,
+			buffer, size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}

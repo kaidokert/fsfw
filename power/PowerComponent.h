@@ -19,13 +19,13 @@ public:
 	float getMin();
 	float getMax();
 
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const override;
 
-	uint32_t getSerializedSize() const;
+	size_t getSerializedSize() const override;
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) override;
 
 	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 				ParameterWrapper *parameterWrapper,
