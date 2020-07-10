@@ -59,8 +59,7 @@ ReturnValue_t Service5EventReporting::generateEventReport(
 }
 
 ReturnValue_t Service5EventReporting::handleRequest(uint8_t subservice) {
-	switch(subservice)
-	{
+	switch(subservice) {
 	case Subservice::ENABLE: {
 		enableEventReport = true;
 		return HasReturnvaluesIF::RETURN_OK;

@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
 #define FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
 
+#include <framework/action/ActionMessage.h>
 #include <framework/tmtcservices/CommandingServiceBase.h>
 
 /**
@@ -59,6 +60,8 @@ private:
 	        MessageQueueId_t* messageQueueToSet, object_id_t* objectId);
 	ReturnValue_t prepareDirectCommand(CommandMessage* message,
 			const uint8_t* tcData, size_t tcDataLen);
+	ReturnValue_t handleDataReply(const CommandMessage* reply,
+	        object_id_t objectId, ActionId_t actionId);
 };
 
 #endif /* FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_ */
