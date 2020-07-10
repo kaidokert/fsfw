@@ -126,6 +126,10 @@ void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
     }
 }
 
+TaskHandle_t PeriodicTask::getTaskHandle() const {
+    return handle;
+}
+
 void PeriodicTask::handleMissedDeadline() {
 #ifdef DEBUG
     sif::warning << "PeriodicTask: " << pcTaskGetName(NULL) <<

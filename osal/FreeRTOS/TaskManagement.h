@@ -57,7 +57,8 @@ public:
 	 * @return Smallest value of stack remaining since the task was started in
 	 * 		   words.
 	 */
-	static configSTACK_DEPTH_TYPE getTaskStackHighWatermark();
+	static configSTACK_DEPTH_TYPE getTaskStackHighWatermark(
+	        TaskHandle_t task = nullptr);
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_ */

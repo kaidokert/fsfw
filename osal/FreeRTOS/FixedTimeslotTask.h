@@ -57,6 +57,8 @@ public:
 
 	ReturnValue_t sleepFor(uint32_t ms) override;
 
+	TaskHandle_t getTaskHandle() const;
+
 protected:
 	bool started;
 	TaskHandle_t handle;

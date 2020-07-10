@@ -18,6 +18,7 @@ TaskHandle_t TaskManagement::getCurrentTaskHandle() {
 	return xTaskGetCurrentTaskHandle();
 }
 
-configSTACK_DEPTH_TYPE TaskManagement::getTaskStackHighWatermark() {
-	return uxTaskGetStackHighWaterMark(TaskManagement::getCurrentTaskHandle());
+configSTACK_DEPTH_TYPE TaskManagement::getTaskStackHighWatermark(
+        TaskHandle_t task) {
+	return uxTaskGetStackHighWaterMark(task);
 }
