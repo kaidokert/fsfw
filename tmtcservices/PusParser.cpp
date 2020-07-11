@@ -7,9 +7,8 @@ PusParser::PusParser(uint16_t maxExpectedPusPackets,
 
 ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 		size_t frameSize) {
-	if(frame == nullptr) {
-		sif::error << "PusParser::parsePusPackets: Frame pointers in invalid!"
-				<< std::endl;
+	if(frame == nullptr or frameSize < 5) {
+		sif::error << "PusParser::parsePusPackets: Frame invalid!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -25,15 +24,13 @@ ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 	}
 
 	size_t packetSize = lengthField + 7;
+	// sif::debug << frameSize << std::endl;
 	// Size of a pus packet is the value in the packet length field plus 7.
-	if(packetSize > frameSize)
-	{
-		if(storeSplitPackets)
-		{
+	if(packetSize > frameSize) {
+		if(storeSplitPackets) {
 			indexSizePairFIFO.insert(indexSizePair(0, frameSize));
 		}
-		else
-		{
+		else {
 			sif::debug << "TcSerialPollingTask::readNextPacket: Next packet "
 					"larger than remaining frame," << std::endl;
 			sif::debug << "Throwing away packet. Detected packet size: "
@@ -41,8 +38,7 @@ ReturnValue_t PusParser::parsePusPackets(const uint8_t *frame,
 		}
 		return SPLIT_PACKET;
 	}
-	else
-	{
+	else {
 		indexSizePairFIFO.insert(indexSizePair(0, packetSize));
 		if(packetSize == frameSize) {
 			return HasReturnvaluesIF::RETURN_OK;
@@ -77,6 +73,11 @@ PusParser::indexSizePair PusParser::getNextFifoPair() {
 ReturnValue_t PusParser::readNextPacket(const uint8_t *frame,
 		size_t frameSize, size_t& currentIndex) {
 	// sif::debug << startIndex << std::endl;
+    if(currentIndex + 5 > frameSize) {
+        currentIndex = frameSize;
+        return HasReturnvaluesIF::RETURN_OK;
+    }
+
 	uint16_t lengthField = frame[currentIndex + 4] << 8 |
 			frame[currentIndex + 5];
 	if(lengthField == 0) {
@@ -88,12 +89,10 @@ ReturnValue_t PusParser::readNextPacket(const uint8_t *frame,
 	size_t remainingSize = frameSize - currentIndex;
 	if(nextPacketSize > remainingSize)
 	{
-		if(storeSplitPackets)
-		{
+		if(storeSplitPackets) {
 			indexSizePairFIFO.insert(indexSizePair(currentIndex, remainingSize));
 		}
-		else
-		{
+		else {
 			sif::debug << "TcSerialPollingTask::readNextPacket: Next packet "
 					"larger than remaining frame," << std::endl;
 			sif::debug << "Throwing away packet. Detected packet size: "

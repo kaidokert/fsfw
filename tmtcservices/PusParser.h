@@ -63,11 +63,12 @@ public:
 	 * @return
 	 */
 	indexSizePair getNextFifoPair();
-private:
 
-	//! A FIFO is used to store information about multiple PUS packets
-	//! inside the receive buffer. The maximum number of entries is defined
-	//! by the first constructor argument.
+private:
+	/** A FIFO is used to store information about multiple PUS packets
+	 * inside the receive buffer. The maximum number of entries is defined
+	 * by the first constructor argument.
+	 */
 	DynamicFIFO<indexSizePair> indexSizePairFIFO;
 
 	bool storeSplitPackets = false;

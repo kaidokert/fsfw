@@ -60,13 +60,11 @@ ReturnValue_t Service2DeviceAccess::prepareCommand(CommandMessage* message,
 		uint32_t* state, object_id_t objectId) {
 	switch(static_cast<Subservice>(subservice)){
 	case Subservice::RAW_COMMANDING: {
-		return prepareRawCommand(dynamic_cast<CommandMessage*>(message),
-				tcData, tcDataLen);
+		return prepareRawCommand(message, tcData, tcDataLen);
 	}
 	break;
 	case Subservice::TOGGLE_WIRETAPPING: {
-		return prepareWiretappingCommand(dynamic_cast<CommandMessage*>(message),
-				tcData, tcDataLen);
+		return prepareWiretappingCommand(message, tcData, tcDataLen);
 	}
 	break;
 	default:

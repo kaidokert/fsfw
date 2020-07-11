@@ -157,3 +157,6 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
+TaskHandle_t FixedTimeslotTask::getTaskHandle() const {
+    return handle;
+}
