@@ -44,28 +44,14 @@ public:
 	bool full();
 	size_t size();
 
-	FIFOBase(const FIFOBase& other): readIndex(other.readIndex),
-			writeIndex(other.writeIndex), currentSize(other.currentSize),
-			maxCapacity(other.maxCapacity) {
-		std::memcpy(values, other.values, sizeof(T) * currentSize);
-	}
-
-	FIFOBase& operator=(const FIFOBase& other) {
-		if(&other == this)
-			return *this;
-		maxCapacity = other.maxCapacity;
-		readIndex = other.readIndex;
-		writeIndex = other.writeIndex;
-		currentSize = other.currentSize;
-		std::memcpy(values, other.values, sizeof(T) * currentSize);
-		return *this;
-	}
 
 	size_t getMaxCapacity() const;
 
-private:
-	T* values;
+protected:
+	void setData(T* data);
 	size_t maxCapacity = 0;
+
+	T* values;
 
 	size_t readIndex = 0;
 	size_t writeIndex = 0;
