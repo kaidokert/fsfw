@@ -1,10 +1,10 @@
-#ifndef EVENTOBJECT_EVENT_H_
-#define EVENTOBJECT_EVENT_H_
+#ifndef FRAMEWORK_EVENTS_EVENT_H_
+#define FRAMEWORK_EVENTS_EVENT_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <framework/events/fwSubsystemIdRanges.h>
 //could be move to more suitable location
-#include <config/tmtc/subsystemIdRanges.h>
+#include <subsystemIdRanges.h>
 
 typedef uint16_t EventId_t;
 typedef uint8_t EventSeverity_t;
@@ -21,6 +21,7 @@ EventSeverity_t getSeverity(Event event);
 Event makeEvent(EventId_t eventId, EventSeverity_t eventSeverity);
 
 }
+
 namespace SEVERITY {
 	static const EventSeverity_t INFO = 1;
 	static const EventSeverity_t LOW = 2;
@@ -41,4 +42,4 @@ namespace SEVERITY {
 //	static const EventSeverity_t HIGH = 4;
 //};
 
-#endif /* EVENTOBJECT_EVENT_H_ */
+#endif /* FRAMEWORK_EVENTS_EVENT_H_ */
