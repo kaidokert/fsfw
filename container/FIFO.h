@@ -17,10 +17,18 @@
 template<typename T, size_t capacity>
 class FIFO: public FIFOBase<T> {
 public:
-	FIFO(): FIFOBase<T>(values.data(), capacity) {};
+	FIFO(): FIFOBase<T>(fifoArray.data(), capacity) {};
+
+	/**
+	 * @brief 	Custom copy constructor to set pointer correctly.
+	 * @param other
+	 */
+	FIFO(const FIFO& other): FIFOBase<T>(other) {
+		this->setData(fifoArray.data());
+	}
 
 private:
-	std::array<T, capacity> values;
+	std::array<T, capacity> fifoArray;
 };
 
 #endif /* FRAMEWORK_CONTAINERS_STATICFIFO_H_ */
