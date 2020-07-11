@@ -13,7 +13,7 @@ extern "C" {
  * Architecture dependant portmacro.h function call.
  * Should be implemented in bsp.
  */
-extern "C" void requestContextSwitchFromISR();
+extern "C" void vRequestContextSwitchFromISR();
 
 /*!
  * Used by functions to tell if they are being called from
@@ -41,7 +41,7 @@ public:
 	 * If task preemption in FreeRTOS is disabled, a context switch
 	 * can be requested manually by calling this function.
 	 */
-	static void requestContextSwitchFromTask(void);
+	static void vRequestContextSwitchFromTask(void);
 
 	/**
 	 * @return The current task handle
