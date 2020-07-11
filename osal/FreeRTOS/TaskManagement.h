@@ -57,7 +57,7 @@ public:
 	 * @return Smallest value of stack remaining since the task was started in
 	 * 		   words.
 	 */
-	static configSTACK_DEPTH_TYPE getTaskStackHighWatermark(
+	static size_t getTaskStackHighWatermark(
 	        TaskHandle_t task = nullptr);
 };
 
