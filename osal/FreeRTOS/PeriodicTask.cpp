@@ -126,7 +126,7 @@ void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
     }
 }
 
-TaskHandle_t PeriodicTask::getTaskHandle() const {
+TaskHandle_t PeriodicTask::getTaskHandle() {
     return handle;
 }
 
