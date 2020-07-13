@@ -4,30 +4,31 @@
 #include <framework/action/HasActionsIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 
-CommandActionHelper::CommandActionHelper(CommandsActionsIF* setOwner) :
+CommandActionHelper::CommandActionHelper(CommandsActionsIF *setOwner) :
 		owner(setOwner), queueToUse(NULL), ipcStore(
-				NULL), commandCount(0), lastTarget(0) {
+		NULL), commandCount(0), lastTarget(0) {
 }
 
 CommandActionHelper::~CommandActionHelper() {
 }
 
 ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
-		ActionId_t actionId, SerializeIF* data) {
-	HasActionsIF* receiver = objectManager->get<HasActionsIF>(commandTo);
+		ActionId_t actionId, SerializeIF *data) {
+	HasActionsIF *receiver = objectManager->get<HasActionsIF>(commandTo);
 	if (receiver == NULL) {
 		return CommandsActionsIF::OBJECT_HAS_NO_FUNCTIONS;
 	}
 	store_address_t storeId;
-	uint8_t* storePointer;
-	uint32_t maxSize = data->getSerializedSize();
+	uint8_t *storePointer;
+	size_t maxSize = data->getSerializedSize();
 	ReturnValue_t result = ipcStore->getFreeElement(&storeId, maxSize,
 			&storePointer);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	uint32_t size = 0;
-	result = data->serialize(&storePointer, &size, maxSize, true);
+	size_t size = 0;
+	result = data->serialize(&storePointer, &size, maxSize,
+			SerializeIF::Endianness::BIG);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -35,11 +36,11 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
 }
 
 ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
-		ActionId_t actionId, const uint8_t* data, uint32_t size) {
+		ActionId_t actionId, const uint8_t *data, uint32_t size) {
 //	if (commandCount != 0) {
 //		return CommandsFunctionsIF::ALREADY_COMMANDING;
 //	}
-	HasActionsIF* receiver = objectManager->get<HasActionsIF>(commandTo);
+	HasActionsIF *receiver = objectManager->get<HasActionsIF>(commandTo);
 	if (receiver == NULL) {
 		return CommandsActionsIF::OBJECT_HAS_NO_FUNCTIONS;
 	}
@@ -71,13 +72,13 @@ ReturnValue_t CommandActionHelper::initialize() {
 	}
 
 	queueToUse = owner->getCommandQueuePtr();
-	if(queueToUse == NULL){
+	if (queueToUse == NULL) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t CommandActionHelper::handleReply(CommandMessage* reply) {
+ReturnValue_t CommandActionHelper::handleReply(CommandMessage *reply) {
 	if (reply->getSender() != lastTarget) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -88,7 +89,8 @@ ReturnValue_t CommandActionHelper::handleReply(CommandMessage* reply) {
 		return HasReturnvaluesIF::RETURN_OK;
 	case ActionMessage::COMPLETION_FAILED:
 		commandCount--;
-		owner->completionFailedReceived(ActionMessage::getActionId(reply), ActionMessage::getReturnCode(reply));
+		owner->completionFailedReceived(ActionMessage::getActionId(reply),
+				ActionMessage::getReturnCode(reply));
 		return HasReturnvaluesIF::RETURN_OK;
 	case ActionMessage::STEP_SUCCESS:
 		owner->stepSuccessfulReceived(ActionMessage::getActionId(reply),
@@ -96,11 +98,13 @@ ReturnValue_t CommandActionHelper::handleReply(CommandMessage* reply) {
 		return HasReturnvaluesIF::RETURN_OK;
 	case ActionMessage::STEP_FAILED:
 		commandCount--;
-		owner->stepFailedReceived(ActionMessage::getActionId(reply), ActionMessage::getStep(reply),
+		owner->stepFailedReceived(ActionMessage::getActionId(reply),
+				ActionMessage::getStep(reply),
 				ActionMessage::getReturnCode(reply));
 		return HasReturnvaluesIF::RETURN_OK;
 	case ActionMessage::DATA_REPLY:
-		extractDataForOwner(ActionMessage::getActionId(reply), ActionMessage::getStoreId(reply));
+		extractDataForOwner(ActionMessage::getActionId(reply),
+				ActionMessage::getStoreId(reply));
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
 		return HasReturnvaluesIF::RETURN_FAILED;

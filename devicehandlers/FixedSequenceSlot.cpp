@@ -16,6 +16,5 @@ FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,
 	handler->setTaskIF(executingTask);
 }
 
-FixedSequenceSlot::~FixedSequenceSlot() {
-}
+FixedSequenceSlot::~FixedSequenceSlot() {}
 

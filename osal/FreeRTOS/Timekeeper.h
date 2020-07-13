@@ -3,7 +3,9 @@
 
 #include <framework/timemanager/Clock.h>
 
-#include <FreeRTOS.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
 
 /**
  * A Class to basically store the time difference between uptime and UTC
@@ -25,6 +27,11 @@ public:
 	virtual ~Timekeeper();
 
 	static timeval ticksToTimeval(TickType_t ticks);
+    /**
+     * Get elapsed time in system ticks.
+     * @return
+     */
+    static TickType_t getTicks();
 
 	const timeval& getOffset() const;
 	void setOffset(const timeval& offset);

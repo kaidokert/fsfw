@@ -32,15 +32,15 @@ private:
 	/**
 	 * \brief	This value contains the size of the data pool entry in bytes.
 	 */
-	uint8_t typeSize;
+	size_t typeSize;
 	/**
 	 * The size of the DP array (single values return 1)
 	 */
-	uint8_t arraySize;
+	size_t arraySize;
 	/**
 	 * The size (in bytes) from the selected entry till the end of this DataPool variable.
 	 */
-	uint16_t sizeTillEnd;
+	size_t sizeTillEnd;
 	/**
 	 * \brief	The information whether the class is read-write or read-only is stored here.
 	 */
@@ -70,7 +70,7 @@ public:
 	static const ReturnValue_t DATA_POOL_ACCESS_FAILED = MAKE_RETURN_CODE(0x02);
 	uint8_t value[RAW_MAX_SIZE];
 	PoolRawAccess(uint32_t data_pool_id, uint8_t arrayEntry,
-			DataSetIF* data_set, ReadWriteMode_t setReadWriteMode =
+			DataSetIF *data_set, ReadWriteMode_t setReadWriteMode =
 					PoolVariableIF::VAR_READ);
 	/**
 	 * \brief	The classes destructor is empty. If commit() was not called, the local value is
@@ -90,15 +90,15 @@ public:
 	 * \details	It makes use of the getEntry call of this function, but additionally flips the
 	 * 			bytes to big endian, which is the default for external communication (as House-
 	 * 			keeping telemetry). To achieve this, the data is copied directly to the passed
-	 * 			buffer, if it fits in the given max_size.
+	 * 			buffer, if it fits in the given maxSize.
 	 * \param buffer	A pointer to a buffer to write to
 	 * \param writtenBytes	The number of bytes written is returned with this value.
-	 * \param max_size	The maximum size that the function may write to buffer.
+	 * \param maxSize	The maximum size that the function may write to buffer.
 	 * \return	- \c RETURN_OK if entry could be acquired
 	 * 			- \c RETURN_FAILED else.
 	 */
-	ReturnValue_t getEntryEndianSafe(uint8_t* buffer, uint32_t* size,
-			uint32_t max_size);
+	ReturnValue_t getEntryEndianSafe(uint8_t *buffer, size_t *size,
+			size_t maxSize);
 	/**
 	 * With this method, the content can be set from a big endian buffer safely.
 	 * @param buffer	Pointer to the data to set
@@ -106,8 +106,8 @@ public:
 	 * @return	- \c RETURN_OK on success
 	 * 			- \c RETURN_FAILED on failure
 	 */
-	ReturnValue_t setEntryFromBigEndian(const uint8_t* buffer,
-			uint32_t setSize);
+	ReturnValue_t setEntryFromBigEndian(const uint8_t *buffer,
+			size_t setSize);
 	/**
 	 *  \brief This operation returns the type of the entry currently stored.
 	 */
@@ -115,12 +115,12 @@ public:
 	/**
 	 *  \brief This operation returns the size of the entry currently stored.
 	 */
-	uint8_t getSizeOfType();
+	size_t getSizeOfType();
 	/**
 	 *
 	 * @return the size of the datapool array
 	 */
-	uint8_t getArraySize();
+	size_t getArraySize();
 	/**
 	 * \brief	This operation returns the data pool id of the variable.
 	 */
@@ -138,15 +138,15 @@ public:
 	/**
 	 * Getter for the remaining size.
 	 */
-	uint16_t getSizeTillEnd() const;
+	size_t getSizeTillEnd() const;
 
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+			 Endianness streamEndianness) const override;
 
-	uint32_t getSerializedSize() const;
+	size_t getSerializedSize() const override;
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian);
+	ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+			 Endianness streamEndianness) override;
 };
 
 #endif /* POOLRAWACCESS_H_ */
