@@ -13,22 +13,22 @@ Mutex::Mutex() {
 	pthread_mutexattr_t mutexAttr;
 	int status = pthread_mutexattr_init(&mutexAttr);
 	if (status != 0) {
-		error << "Mutex: Attribute init failed with: " << strerror(status) << std::endl;
+		sif::error << "Mutex: Attribute init failed with: " << strerror(status) << std::endl;
 	}
 	status = pthread_mutexattr_setprotocol(&mutexAttr, PTHREAD_PRIO_INHERIT);
 	if (status != 0) {
-		error << "Mutex: Attribute set PRIO_INHERIT failed with: " << strerror(status)
+		sif::error << "Mutex: Attribute set PRIO_INHERIT failed with: " << strerror(status)
 				<< std::endl;
 	}
 	status = pthread_mutex_init(&mutex, &mutexAttr);
 	if (status != 0) {
-		error << "Mutex: creation with name, id " << mutex.__data.__count
+		sif::error << "Mutex: creation with name, id " << mutex.__data.__count
 				<< ", " << " failed with " << strerror(status) << std::endl;
 	}
 	//After a mutex attributes object has been used to initialize one or more mutexes, any function affecting the attributes object (including destruction) shall not affect any previously initialized mutexes.
 	status = pthread_mutexattr_destroy(&mutexAttr);
 	if (status != 0) {
-		error << "Mutex: Attribute destroy failed with " << strerror(status) << std::endl;
+		sif::error << "Mutex: Attribute destroy failed with " << strerror(status) << std::endl;
 	}
 }
 

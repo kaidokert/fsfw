@@ -26,7 +26,7 @@ MessageQueueId_t DataPoolAdmin::getCommandQueue() const {
 }
 
 ReturnValue_t DataPoolAdmin::executeAction(ActionId_t actionId,
-		MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) {
+		MessageQueueId_t commandedBy, const uint8_t* data, size_t size) {
 	if (actionId != SET_VALIDITY) {
 		return INVALID_ACTION_ID;
 	}
@@ -91,7 +91,7 @@ void DataPoolAdmin::handleCommand() {
 }
 
 ReturnValue_t DataPoolAdmin::handleMemoryLoad(uint32_t address,
-		const uint8_t* data, uint32_t size, uint8_t** dataPointer) {
+		const uint8_t* data, size_t size, uint8_t** dataPointer) {
 	uint32_t poolId = ::dataPool.PIDToDataPoolId(address);
 	uint8_t arrayIndex = ::dataPool.PIDToArrayIndex(address);
 	DataSet testSet;
@@ -129,7 +129,7 @@ ReturnValue_t DataPoolAdmin::handleMemoryLoad(uint32_t address,
 	return ACTIVITY_COMPLETED;
 }
 
-ReturnValue_t DataPoolAdmin::handleMemoryDump(uint32_t address, uint32_t size,
+ReturnValue_t DataPoolAdmin::handleMemoryDump(uint32_t address, size_t size,
 		uint8_t** dataPointer, uint8_t* copyHere) {
 	uint32_t poolId = ::dataPool.PIDToDataPoolId(address);
 	uint8_t arrayIndex = ::dataPool.PIDToArrayIndex(address);
@@ -151,7 +151,7 @@ ReturnValue_t DataPoolAdmin::handleMemoryDump(uint32_t address, uint32_t size,
 				PoolVariableIF::VAR_READ);
 		status = rawSet.read();
 		if (status == RETURN_OK) {
-			uint32_t temp = 0;
+			size_t temp = 0;
 			status = variable.getEntryEndianSafe(ptrToCopy, &temp, size);
 			if (status != RETURN_OK) {
 				return RETURN_FAILED;
@@ -215,7 +215,7 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 				ParameterMessage::getParameterId(command));
 
 		const uint8_t *storedStream;
-		uint32_t storedStreamSize;
+		size_t storedStreamSize;
 		result = storage->getData(ParameterMessage::getStoreId(command),
 				&storedStream, &storedStreamSize);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -261,7 +261,7 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 //identical to ParameterHelper::sendParameter()
 ReturnValue_t DataPoolAdmin::sendParameter(MessageQueueId_t to, uint32_t id,
 		const DataPoolParameterWrapper* wrapper) {
-	uint32_t serializedSize = wrapper->getSerializedSize();
+	size_t serializedSize = wrapper->getSerializedSize();
 
 	uint8_t *storeElement;
 	store_address_t address;
@@ -272,10 +272,10 @@ ReturnValue_t DataPoolAdmin::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	uint32_t storeElementSize = 0;
+	size_t storeElementSize = 0;
 
 	result = wrapper->serialize(&storeElement, &storeElementSize,
-			serializedSize, true);
+			serializedSize, SerializeIF::Endianness::BIG);
 
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		storage->deleteData(address);

@@ -31,7 +31,7 @@ ReturnValue_t DataSet::read() {
 		state = DATA_SET_WAS_READ;
 		freeDataPoolLock();
 	} else {
-		error << "DataSet::read(): Call made in wrong position." << std::endl;
+		sif::error << "DataSet::read(): Call made in wrong position." << std::endl;
 		result = SET_WAS_ALREADY_READ;
 	}
 	return result;
@@ -68,9 +68,9 @@ ReturnValue_t DataSet::commit() {
 			} else if (registeredVariables[count]->getDataPoolId()
 					!= PoolVariableIF::NO_PARAMETER) {
 				if (result != COMMITING_WITHOUT_READING) {
-					error
-							<< "DataSet::commit(): commit-without-read call made with non write-only variable."
-							<< std::endl;
+					sif::error <<
+					        "DataSet::commit(): commit-without-read "
+					        "call made with non write-only variable." << std::endl;
 					result = COMMITING_WITHOUT_READING;
 				}
 			}
@@ -92,7 +92,7 @@ void DataSet::registerVariable(PoolVariableIF* variable) {
 			}
 		}
 	}
-	error
+	sif::error
 			<< "DataSet::registerVariable: failed. Either NULL, or set is full, or call made in wrong position."
 			<< std::endl;
 	return;
@@ -106,12 +106,12 @@ uint8_t DataSet::lockDataPool() {
 	return ::dataPool.lockDataPool();
 }
 
-ReturnValue_t DataSet::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t DataSet::serialize(uint8_t** buffer, size_t* size,
+		size_t maxSize, Endianness streamEndianness) const {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint16_t count = 0; count < fill_count; count++) {
-		result = registeredVariables[count]->serialize(buffer, size, max_size,
-				bigEndian);
+		result = registeredVariables[count]->serialize(buffer, size, maxSize,
+				streamEndianness);
 		if (result != RETURN_OK) {
 			return result;
 		}
@@ -119,8 +119,8 @@ ReturnValue_t DataSet::serialize(uint8_t** buffer, uint32_t* size,
 	return result;
 }
 
-uint32_t DataSet::getSerializedSize() const {
-	uint32_t size = 0;
+size_t DataSet::getSerializedSize() const {
+	size_t size = 0;
 	for (uint16_t count = 0; count < fill_count; count++) {
 		size += registeredVariables[count]->getSerializedSize();
 	}
@@ -136,12 +136,12 @@ void DataSet::setValid(uint8_t valid) {
 	}
 }
 
-ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, int32_t* size,
-		bool bigEndian) {
+ReturnValue_t DataSet::deSerialize(const uint8_t** buffer, size_t* size,
+		Endianness streamEndianness) {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint16_t count = 0; count < fill_count; count++) {
 		result = registeredVariables[count]->deSerialize(buffer, size,
-				bigEndian);
+				streamEndianness);
 		if (result != RETURN_OK) {
 			return result;
 		}

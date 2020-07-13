@@ -39,10 +39,10 @@ PoolEntryIF* DataPool::getRawData( uint32_t data_pool_id ) {
 	}
 }
 
-//uint8_t DataPool::getRawData( uint32_t data_pool_id, uint8_t* address, uint16_t* size, uint32_t max_size ) {
+//uint8_t DataPool::getRawData( uint32_t data_pool_id, uint8_t* address, uint16_t* size, uint32_t maxSize ) {
 //	std::map<uint32_t, PoolEntryIF*>::iterator it = this->data_pool.find( data_pool_id );
 //	if ( it != this->data_pool.end() ) {
-//		if ( it->second->getByteSize() <= max_size ) {
+//		if ( it->second->getByteSize() <= maxSize ) {
 //			*size = it->second->getByteSize();
 //			memcpy( address, it->second->getRawData(), *size );
 //			return DP_SUCCESSFUL;
@@ -55,7 +55,7 @@ PoolEntryIF* DataPool::getRawData( uint32_t data_pool_id ) {
 ReturnValue_t DataPool::freeDataPoolLock() {
 	ReturnValue_t status = mutex->unlockMutex();
 	if ( status != RETURN_OK ) {
-		error << "DataPool::DataPool: unlock of mutex failed with error code: " << status << std::endl;
+		sif::error << "DataPool::DataPool: unlock of mutex failed with error code: " << status << std::endl;
 	}
 	return status;
 }
@@ -63,17 +63,17 @@ ReturnValue_t DataPool::freeDataPoolLock() {
 ReturnValue_t DataPool::lockDataPool() {
 	ReturnValue_t status = mutex->lockMutex(MutexIF::NO_TIMEOUT);
 	if ( status != RETURN_OK ) {
-		error << "DataPool::DataPool: lock of mutex failed with error code: " << status << std::endl;
+		sif::error << "DataPool::DataPool: lock of mutex failed with error code: " << status << std::endl;
 	}
 	return status;
 }
 
 void DataPool::print() {
-	debug << "DataPool contains: " << std::endl;
+	sif::debug << "DataPool contains: " << std::endl;
 	std::map<uint32_t, PoolEntryIF*>::iterator	dataPoolIt;
 	dataPoolIt = this->data_pool.begin();
 	while( dataPoolIt != this->data_pool.end() ) {
-		debug << std::hex << dataPoolIt->first << std::dec << " |";
+		sif::debug << std::hex << dataPoolIt->first << std::dec << " |";
 		dataPoolIt->second->print();
 		dataPoolIt++;
 	}

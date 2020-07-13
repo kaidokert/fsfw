@@ -1,20 +1,19 @@
-#include "Timekeeper.h"
-#include <FreeRTOSConfig.h>
+#include <framework/osal/FreeRTOS/Timekeeper.h>
 
-Timekeeper::Timekeeper() :
-		offset( { 0, 0 }) {
-	// TODO Auto-generated constructor stub
+#include "FreeRTOSConfig.h"
 
-}
+Timekeeper * Timekeeper::myinstance = nullptr;
 
-Timekeeper * Timekeeper::myinstance = NULL;
+Timekeeper::Timekeeper() : offset( { 0, 0 } ) {}
+
+Timekeeper::~Timekeeper() {}
 
 const timeval& Timekeeper::getOffset() const {
 	return offset;
 }
 
 Timekeeper* Timekeeper::instance() {
-	if (myinstance == NULL) {
+	if (myinstance == nullptr) {
 		myinstance = new Timekeeper();
 	}
 	return myinstance;
@@ -22,10 +21,6 @@ Timekeeper* Timekeeper::instance() {
 
 void Timekeeper::setOffset(const timeval& offset) {
 	this->offset = offset;
-}
-
-Timekeeper::~Timekeeper() {
-	// TODO Auto-generated destructor stub
 }
 
 timeval Timekeeper::ticksToTimeval(TickType_t ticks) {
@@ -39,4 +34,8 @@ timeval Timekeeper::ticksToTimeval(TickType_t ticks) {
 	uptime.tv_usec = usecondTicks / configTICK_RATE_HZ;
 
 	return uptime;
+}
+
+TickType_t Timekeeper::getTicks() {
+    return xTaskGetTickCount();
 }

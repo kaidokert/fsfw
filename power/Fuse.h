@@ -11,14 +11,15 @@
 #include <framework/parameters/ParameterHelper.h>
 #include <list>
 
-namespace Factory{
+namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
 class Fuse: public SystemObject,
 		public HasHealthIF,
 		public HasReturnvaluesIF,
-		public ReceivesParameterMessagesIF {
+		public ReceivesParameterMessagesIF,
+		public SerializeIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 private:
 	static constexpr float RESIDUAL_POWER = 0.005 * 28.5; //!< This is the upper limit of residual power lost by fuses and switches. Worst case is Fuse and one of two switches on. See PCDU ICD 1.9 p29 bottom
@@ -40,7 +41,7 @@ public:
 	Fuse(object_id_t fuseObjectId, uint8_t fuseId, VariableIds ids,
 			float maxCurrent, uint16_t confirmationCount = 2);
 	virtual ~Fuse();
-	void addDevice(PowerComponentIF* set);
+	void addDevice(PowerComponentIF *set);
 	float getPower();
 
 	bool isPowerValid();
@@ -49,11 +50,11 @@ public:
 	uint8_t getFuseId() const;
 	ReturnValue_t initialize();
 	DeviceList devices;
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
-	uint32_t getSerializedSize() const;
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian);
+	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+			SerializeIF::Endianness streamEndianness) const override;
+	size_t getSerializedSize() const override;
+	ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+			SerializeIF::Endianness streamEndianness) override;
 	void setAllMonitorsToUnchecked();
 	ReturnValue_t performOperation(uint8_t opCode);
 	MessageQueueId_t getCommandQueue() const;
@@ -62,13 +63,13 @@ public:
 	HasHealthIF::HealthState getHealth();
 
 	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-				ParameterWrapper *parameterWrapper,
-				const ParameterWrapper *newValues, uint16_t startAtIndex);
+			ParameterWrapper *parameterWrapper,
+			const ParameterWrapper *newValues, uint16_t startAtIndex);
 
 private:
 	uint8_t oldFuseState;
 	uint8_t fuseId;
-	PowerSwitchIF* powerIF; //could be static in our case.
+	PowerSwitchIF *powerIF; //could be static in our case.
 	AbsLimitMonitor<float> currentLimit;
 	class PowerMonitor: public MonitorReporter<float> {
 	public:
@@ -88,11 +89,11 @@ private:
 	PIDReader<float> current;
 	PIDReader<uint8_t> state;
 	db_float_t power;
-	MessageQueueIF* commandQueue;
+	MessageQueueIF *commandQueue;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
 	static object_id_t powerSwitchId;
-	void calculatePowerLimits(float* low, float* high);
+	void calculatePowerLimits(float *low, float *high);
 	void calculateFusePower();
 	void checkFuseState();
 	void reportEvents(Event event);

@@ -23,14 +23,14 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 	TmTcMessage message;
 	for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
 		ReturnValue_t status = this->requestQueue->receiveMessage(&message);
-		//	debug << "PusServiceBase::performOperation: Receiving from MQ ID: " << std::hex << this->requestQueue.getId() << std::dec << " returned: " << status << std::endl;
+		//	debug << "PusServiceBase::performOperation: Receiving from MQ ID: " << std::hex << this->requestQueue.getId()
+		// << std::dec << " returned: " << status << std::endl;
 		if (status == RETURN_OK) {
 			this->currentPacket.setStoreAddress(message.getStorageId());
-//			info << "Service " << (uint16_t) this->serviceId << ": new packet!"
-//					<< std::endl;
+			//	info << "Service " << (uint16_t) this->serviceId << ": new packet!" << std::endl;
 
 			ReturnValue_t return_code = this->handleRequest();
-			//		debug << "Service " << (uint16_t)this->serviceId << ": handleRequest returned: " << (int)return_code << std::endl;
+			// debug << "Service " << (uint16_t)this->serviceId << ": handleRequest returned: " << (int)return_code << std::endl;
 			if (return_code == RETURN_OK) {
 				this->verifyReporter.sendSuccessReport(
 						TC_VERIFY::COMPLETION_SUCCESS, &this->currentPacket);
@@ -44,11 +44,11 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 			errorParameter2 = 0;
 		} else if (status == MessageQueueIF::EMPTY) {
 			status = RETURN_OK;
-			//		debug << "PusService " << (uint16_t)this->serviceId << ": no new packet." << std::endl;
+			// debug << "PusService " << (uint16_t)this->serviceId << ": no new packet." << std::endl;
 			break;
 		} else {
 
-			error << "PusServiceBase::performOperation: Service "
+			sif::error << "PusServiceBase::performOperation: Service "
 					<< (uint16_t) this->serviceId
 					<< ": Error receiving packet. Code: " << std::hex << status
 					<< std::dec << std::endl;
@@ -59,7 +59,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 		return RETURN_OK;
 	} else {
 
-		error << "PusService " << (uint16_t) this->serviceId
+		sif::error << "PusService " << (uint16_t) this->serviceId
 				<< ": performService returned with " << (int16_t) return_code
 				<< std::endl;
 		return RETURN_FAILED;
@@ -89,7 +89,7 @@ ReturnValue_t PusServiceBase::initialize() {
 		distributor->registerService(this);
 		return RETURN_OK;
 	} else {
-		error << "PusServiceBase::PusServiceBase: Service "
+		sif::error << "PusServiceBase::PusServiceBase: Service "
 				<< (uint32_t) this->serviceId << ": Configuration error."
 				<< " Make sure packetSource and packetDestination are defined correctly" << std::endl;
 		return RETURN_FAILED;

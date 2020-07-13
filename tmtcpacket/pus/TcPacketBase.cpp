@@ -1,4 +1,4 @@
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/tmtcpacket/pus/TcPacketBase.h>
 #include <string.h>
@@ -40,7 +40,7 @@ uint16_t TcPacketBase::getErrorControl() {
 
 void TcPacketBase::setErrorControl() {
 	uint32_t full_size = getFullSize();
-	uint16_t crc = ::Calculate_CRC(getWholeData(), full_size - CRC_SIZE);
+	uint16_t crc = CRC::crc16ccitt(getWholeData(), full_size - CRC_SIZE);
 	uint32_t size = getApplicationDataSize();
 	(&tcData->data)[size] = (crc & 0XFF00) >> 8;	// CRCH
 	(&tcData->data)[size + 1] = (crc) & 0X00FF; 		// CRCL
@@ -61,11 +61,11 @@ uint8_t TcPacketBase::getPusVersionNumber() {
 
 void TcPacketBase::print() {
 	uint8_t * wholeData = getWholeData();
-	debug << "TcPacket contains: " << std::endl;
+	sif::debug << "TcPacket contains: " << std::endl;
 	for (uint8_t count = 0; count < getFullSize(); ++count) {
-		debug << std::hex << (uint16_t) wholeData[count] << " ";
+		sif::debug << std::hex << (uint16_t) wholeData[count] << " ";
 	}
-	debug << std::dec << std::endl;
+	sif::debug << std::dec << std::endl;
 }
 
 void TcPacketBase::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,

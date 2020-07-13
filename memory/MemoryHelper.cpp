@@ -1,8 +1,8 @@
-#include <framework/globalfunctions/crc_ccitt.h>
+#include <framework/globalfunctions/CRC.h>
 #include <framework/memory/MemoryHelper.h>
 #include <framework/memory/MemoryMessage.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/EndianSwapper.h>
+#include <framework/serialize/EndianConverter.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
 MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue) :
@@ -15,7 +15,7 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
 	lastSender = message->getSender();
 	lastCommand = message->getCommand();
 	if (busy) {
-		debug << "MemHelper: Busy!" << std::endl;
+		sif::debug << "MemHelper: Busy!" << std::endl;
 	}
 	switch (lastCommand) {
 	case MemoryMessage::CMD_MEMORY_DUMP:
@@ -53,7 +53,7 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 		memcpy(copyHere, dataToCopy, size);
 		break;
 	case HasMemoryIF::POINTS_TO_VARIABLE:
-		EndianSwapper::swap(copyHere, dataToCopy, size);
+		EndianConverter::convertBigEndian(copyHere, dataToCopy, size);
 		break;
 	case HasMemoryIF::ACTIVITY_COMPLETED:
 	case RETURN_OK:
@@ -86,7 +86,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 	case HasMemoryIF::POINTS_TO_VARIABLE:
 		//"data" must be valid pointer!
 		if (errorCode == HasMemoryIF::POINTS_TO_VARIABLE) {
-			EndianSwapper::swap(reservedSpaceInIPC, dataToCopy, size);
+			EndianConverter::convertBigEndian(reservedSpaceInIPC, dataToCopy, size);
 		} else {
 			memcpy(reservedSpaceInIPC, dataToCopy, size);
 		}
@@ -98,7 +98,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 			break;
 		}
 		case MemoryMessage::CMD_MEMORY_CHECK: {
-			uint16_t crc = ::Calculate_CRC(reservedSpaceInIPC, size);
+			uint16_t crc = CRC::crc16ccitt(reservedSpaceInIPC, size);
 			//Delete data immediately, was temporary.
 			ipcStore->deleteData(ipcAddress);
 			MemoryMessage::setMemoryCheckReply(&reply, crc);
@@ -136,7 +136,7 @@ void MemoryHelper::swapMatrixCopy(uint8_t* out, const uint8_t *in,
 	}
 
 	while (totalSize > 0){
-		EndianSwapper::swap(out,in,datatypeSize);
+		EndianConverter::convertBigEndian(out,in,datatypeSize);
 		out += datatypeSize;
 		in += datatypeSize;
 		totalSize -= datatypeSize;
@@ -152,7 +152,7 @@ void MemoryHelper::handleMemoryLoad(CommandMessage* message) {
 	ipcAddress = MemoryMessage::getStoreID(message);
 	const uint8_t* p_data = NULL;
 	uint8_t* dataPointer = NULL;
-	uint32_t size = 0;
+	size_t size = 0;
 	ReturnValue_t returnCode = ipcStore->getData(ipcAddress, &p_data, &size);
 	if (returnCode == RETURN_OK) {
 		returnCode = workOnThis->handleMemoryLoad(address, p_data, size,

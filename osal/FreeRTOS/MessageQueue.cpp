@@ -8,7 +8,7 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 defaultDestination(0),lastPartner(0)  {
 	handle = xQueueCreate(message_depth, max_message_size);
 	if (handle == NULL) {
-		error << "MessageQueue creation failed" << std::endl;
+		sif::error << "MessageQueue creation failed" << std::endl;
 	}
 }
 
@@ -38,7 +38,9 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
 		MessageQueueId_t* receivedFrom) {
 	ReturnValue_t status = this->receiveMessage(message);
-	*receivedFrom = this->lastPartner;
+	if(status == HasReturnvaluesIF::RETURN_OK) {
+		*receivedFrom = this->lastPartner;
+	}
 	return status;
 }
 
@@ -89,23 +91,25 @@ MessageQueueId_t MessageQueue::getDefaultDestination() const {
 bool MessageQueue::isDefaultDestinationSet() const {
 	return 0;
 }
+
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		MessageQueueMessage *message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	message->setSender(sentFrom);
 
-		BaseType_t result = xQueueSendToBack(reinterpret_cast<void*>(sendTo),reinterpret_cast<const void*>(message->getBuffer()), 0);
-		if (result != pdPASS) {
-			if (!ignoreFault) {
-				InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
-							objects::INTERNAL_ERROR_REPORTER);
-				if (internalErrorReporter != NULL) {
-					internalErrorReporter->queueMessageNotSent();
-				}
+	BaseType_t result = xQueueSendToBack(reinterpret_cast<QueueHandle_t>(sendTo),
+			reinterpret_cast<const void*>(message->getBuffer()), 0);
+	if (result != pdPASS) {
+		if (!ignoreFault) {
+			InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+					objects::INTERNAL_ERROR_REPORTER);
+			if (internalErrorReporter != NULL) {
+				internalErrorReporter->queueMessageNotSent();
 			}
-			return MessageQueueIF::FULL;
 		}
-		return HasReturnvaluesIF::RETURN_OK;
+		return MessageQueueIF::FULL;
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 
 }
 

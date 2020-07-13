@@ -37,7 +37,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 				ParameterMessage::getParameterId(message));
 
 		const uint8_t *storedStream;
-		uint32_t storedStreamSize;
+		size_t storedStreamSize;
 		result = storage->getData(
 				ParameterMessage::getStoreId(message), &storedStream,
 				&storedStreamSize);
@@ -83,7 +83,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 
 ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 		const ParameterWrapper* description) {
-	uint32_t serializedSize = description->getSerializedSize();
+	size_t serializedSize = description->getSerializedSize();
 
 	uint8_t *storeElement;
 	store_address_t address;
@@ -94,10 +94,10 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 		return result;
 	}
 
-	uint32_t storeElementSize = 0;
+	size_t storeElementSize = 0;
 
 	result = description->serialize(&storeElement, &storeElementSize,
-			serializedSize, true);
+			serializedSize, SerializeIF::Endianness::BIG);
 
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		storage->deleteData(address);

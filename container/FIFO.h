@@ -3,6 +3,11 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 
+/**
+ * @brief Simple First-In-First-Out data structure
+ * @tparam T Entry Type
+ * @tparam capacity Maximum capacity
+ */
 template<typename T, uint8_t capacity>
 class FIFO {
 private:
@@ -21,7 +26,7 @@ public:
 			readIndex(0), writeIndex(0), currentSize(0) {
 	}
 
-	bool emtpy() {
+	bool empty() {
 		return (currentSize == 0);
 	}
 
@@ -45,7 +50,7 @@ public:
 	}
 
 	ReturnValue_t retrieve(T *value) {
-		if (emtpy()) {
+		if (empty()) {
 			return EMPTY;
 		} else {
 			*value = data[readIndex];
@@ -54,6 +59,21 @@ public:
 			return HasReturnvaluesIF::RETURN_OK;
 		}
 	}
+
+	ReturnValue_t peek(T * value) {
+	    if(empty()) {
+	        return EMPTY;
+	    } else {
+	       *value = data[readIndex];
+	       return HasReturnvaluesIF::RETURN_OK;
+	    }
+	}
+
+	ReturnValue_t pop() {
+		T value;
+		return this->retrieve(&value);
+	}
+
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIFO_CLASS;
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t EMPTY = MAKE_RETURN_CODE(2);

@@ -5,8 +5,10 @@
 #include <framework/tasks/FixedTimeslotTaskIF.h>
 #include <framework/tasks/Typedef.h>
 
-#include <FreeRTOS.h>
+extern "C" {
+#include "FreeRTOS.h"
 #include "task.h"
+}
 
 class FixedTimeslotTask: public FixedTimeslotTaskIF {
 public:

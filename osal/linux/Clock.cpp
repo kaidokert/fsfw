@@ -1,10 +1,10 @@
-#include <sys/time.h>
-#include <time.h>
+#include <framework/serviceinterface/ServiceInterfaceStream.h>
 #include <framework/timemanager/Clock.h>
 
-
+#include <sys/time.h>
 #include <sys/sysinfo.h>
 #include <linux/sysinfo.h>
+#include <time.h>
 #include <unistd.h>
 
 //#include <fstream>
@@ -63,6 +63,15 @@ ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 	*time = (uint64_t)timeVal.tv_sec*1e6 + timeVal.tv_usec;
 
 	return HasReturnvaluesIF::RETURN_OK;
+}
+
+timeval Clock::getUptime() {
+	timeval uptime;
+	auto result = getUptime(&uptime);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "Clock::getUptime: Error getting uptime" << std::endl;
+	}
+	return uptime;
 }
 
 ReturnValue_t Clock::getUptime(timeval* uptime) {
