@@ -1264,18 +1264,23 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 	if (mode == MODE_NORMAL) {
 		result = buildNormalDeviceCommand(&deviceCommandId);
 		if (result == BUSY) {
+		    //so we can track misconfigurations
 			sif::debug << std::hex << getObjectId()
-					<< ": DHB::buildInternalCommand busy" << std::endl; //so we can track misconfigurations
+					<< ": DHB::buildInternalCommand: Busy" << std::endl;
 			result = NOTHING_TO_SEND; //no need to report this
 		}
-	} else if (mode == MODE_RAW) {
+	}
+	else if (mode == MODE_RAW) {
 		result = buildChildRawCommand();
 		deviceCommandId = RAW_COMMAND_ID;
-	} else if (mode & TRANSITION_MODE_CHILD_ACTION_MASK) {
+	}
+	else if (mode & TRANSITION_MODE_CHILD_ACTION_MASK) {
 		result = buildTransitionDeviceCommand(&deviceCommandId);
-	} else {
+	}
+	else {
 		return;
 	}
+
 	if (result == NOTHING_TO_SEND) {
 		return;
 	}
