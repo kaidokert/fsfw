@@ -1,5 +1,6 @@
 #include <framework/timemanager/CCSDSTime.h>
 #include <stdio.h>
+#include <inttypes.h>
 #include <math.h>
 
 CCSDSTime::CCSDSTime() {
@@ -154,41 +155,76 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	if (length < 19) {
 		return RETURN_FAILED;
 	}
-	// In the size optimized nano library used by ATMEL, floating point conversion
-	// is not allowed. There is a linker flag to allow it apparently, but I
-	// could not manage to make it run (removing -specs=nano.specs in linker flags works though,
-	// but we propably should include this). Using floats with sscanf is also expensive.
-	// Furthermore, the stdio.c library by ATMEL can't resolve the %hhi specifiers
-	// Therefore, I adapted this function.
-	int year;
-	int month;
-	int day;
-	int hour;
-	int minute;
-	int second;
-	int usecond;
-	// try Code A (yyyy-mm-dd)
-	//int count = sscanf((char *) from, "%4hi-%2hi-%2hiT%2hi:%2hi:%fZ", &year,
-	//		&month, &day, &hour, &minute, &second);
-	int count = sscanf((char *) from, "%4d-%2d-%2dT%2d:%2d:%2d.%dZ", &year,
-				&month, &day, &hour, &minute, &second, &usecond);
-	if (count == 7) {
+// Newlib nano can't parse uint8, see SCNu8 documentation and https://sourceware.org/newlib/README
+// Suggestion: use uint16 all the time. This should work on all systems.
+#ifdef NEWLIB_NANO_NO_C99_IO
+	uint16_t year;
+	uint16_t month;
+	uint16_t day;
+	uint16_t hour;
+	uint16_t minute;
+	float second;
+	int count = sscanf((char *) from, "%4" SCNu16 "-%2" SCNu16 "-%2" SCNu16 "T%2" SCNu16 ":%2" SCNu16 ":%fZ", &year,
+				&month, &day, &hour, &minute, &second);
+	if (count == 6) {
 		to->year = year;
 		to->month = month;
 		to->day = day;
 		to->hour = hour;
 		to->minute = minute;
 		to->second = second;
-		to->usecond = usecond;//(second - floor(second)) * 1000000;
+		to->usecond = (second - floor(second)) * 1000000;
 		return RETURN_OK;
 	}
 
 	// try Code B (yyyy-ddd)
-	count = sscanf((char *) from, "%4i-%3iT%2i:%2i:%2i.%iZ", &year, &day,
-			&hour, &minute, &second, &usecond);
-	if (count == 6) {
+	count = sscanf((char *) from, "%4" SCNu16 "-%3" SCNu16 "T%2" SCNu16 ":%2" SCNu16 ":%fZ", &year, &day,
+			&hour, &minute, &second);
+	if (count == 5) {
 		uint8_t tempDay;
-		ReturnValue_t result = CCSDSTime::convertDaysOfYear((uint16_t)day,(uint16_t) year,(uint8_t *) &month,
+		ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year,
+				reinterpret_cast<uint8_t *>(&month), reinterpret_cast<uint8_t *>(&tempDay));
+		if (result != RETURN_OK) {
+			return RETURN_FAILED;
+		}
+		to->year = year;
+		to->month = month;
+		to->day = tempDay;
+		to->hour = hour;
+		to->minute = minute;
+		to->second = second;
+		to->usecond = (second - floor(second)) * 1000000;
+		return RETURN_OK;
+	}
+// Warning: Compiler/Linker fails ambiguously if library does not implement
+// C99 I/O
+#else
+	uint16_t year;
+	uint8_t month;
+	uint16_t day;
+	uint8_t hour;
+	uint8_t minute;
+	float second;
+	//try Code A (yyyy-mm-dd)
+	int count = sscanf((char *) from, "%4hi-%2hhi-%2hiT%2hhi:%2hhi:%fZ", &year,
+				&month, &day, &hour, &minute, &second);
+	if (count == 6) {
+		to->year = year;
+		to->month = month;
+		to->day = day;
+		to->hour = hour;
+		to->minute = minute;
+		to->second = second;
+		to->usecond = (second - floor(second)) * 1000000;
+		return RETURN_OK;
+	}
+
+	//try Code B (yyyy-ddd)
+	count = sscanf((char *) from, "%4hi-%3hiT%2hhi:%2hhi:%fZ", &year, &day,
+			&hour, &minute, &second);
+	if (count == 5) {
+		uint8_t tempDay;
+		ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year, &month,
 				&tempDay);
 		if (result != RETURN_OK) {
 			return RETURN_FAILED;
@@ -199,9 +235,10 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 		to->hour = hour;
 		to->minute = minute;
 		to->second = second;
-		to->usecond = usecond;
+		to->usecond = (second - floor(second)) * 1000000;
 		return RETURN_OK;
 	}
+#endif
 
 	return UNSUPPORTED_TIME_FORMAT;
 }
