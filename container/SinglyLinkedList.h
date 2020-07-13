@@ -58,7 +58,7 @@ public:
 		this->next = next;
 	}
 
-	virtual void setLast() {
+	virtual void setEnd() {
 	    this->next = nullptr;
 	}
 
@@ -124,8 +124,8 @@ public:
 	    currentElement->setNext(nextElement);
 	}
 
-    void setEnd(LinkedElement<T>* lastElement) {
-        lastElement->setLast();
+    void setLast(LinkedElement<T>* lastElement) {
+        lastElement->setEnd();
     }
 
     void insertElement(LinkedElement<T>* element, size_t position) {
