@@ -4,21 +4,26 @@
 #include <framework/internalError/InternalErrorReporterIF.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/ipc/MessageQueueMessage.h>
+
+#include <mqueue.h>
 /**
- *	@brief		This class manages sending and receiving of message queue messages.
+ * @brief		This class manages sending and receiving of message queue messages.
  *
- *	@details	Message queues are used to pass asynchronous messages between processes.
- *				They work like post boxes, where all incoming messages are stored in FIFO
- *				order. This class creates a new receiving queue and provides methods to fetch
- *				received messages. Being a child of MessageQueueSender, this class also provides
- *				methods to send a message to a user-defined or a default destination. In addition
- *				it also provides a reply method to answer to the queue it received its last message
- *				from.
- *				The MessageQueue should be used as "post box" for a single owning object. So all
- *				message queue communication is "n-to-one".
- *				For creating the queue, as well as sending and receiving messages, the class makes
- *				use of the operating system calls provided.
- *	\ingroup message_queue
+ * @details
+ * Message queues are used to pass asynchronous messages between processes.
+ * They work like post boxes, where all incoming messages are stored in FIFO
+ * order. This class creates a new receiving queue and provides methods to fetch
+ * received messages. Being a child of MessageQueueSender, this class also
+ * provides methods to send a message to a user-defined or a default destination.
+ * In addition it also provides a reply method to answer to the queue it
+ * received its last message from.
+ *
+ * The MessageQueue should be used as "post box" for a single owning object.
+ * So all message queue communication is "n-to-one".
+ *
+ * The creation of message queues, as well as sending and receiving messages,
+ * makes use of the operating system calls provided.
+ *	@ingroup message_queue
  */
 class MessageQueue : public MessageQueueIF {
 	friend class MessageQueueSenderIF;
@@ -35,7 +40,8 @@ public:
 	 * @param max_message_size	With this parameter, the maximum message size can be adjusted.
 	 * 							This should be left default.
 	 */
-	MessageQueue( size_t message_depth = 3, size_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE );
+	MessageQueue(uint32_t messageDepth = 3,
+			size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE );
 	/**
 	 * @brief	The destructor deletes the formerly created message queue.
 	 * @details	This is accomplished by using the delete call provided by the operating system.
@@ -168,6 +174,8 @@ private:
 	char name[5];
 
 	static uint16_t queueCounter;
+
+	ReturnValue_t handleError(mq_attr* attributes, uint32_t messageDepth);
 };
 
 #endif /* MESSAGEQUEUE_H_ */

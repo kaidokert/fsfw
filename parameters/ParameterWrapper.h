@@ -25,16 +25,16 @@ public:
 			const void *data);
 	virtual ~ParameterWrapper();
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const override;
 
-	virtual uint32_t getSerializedSize() const;
+	virtual size_t getSerializedSize() const override;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) override;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian, uint16_t startWritingAtIndex = 0);
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness, uint16_t startWritingAtIndex = 0);
 
 	template<typename T>
 	ReturnValue_t getElement(T *value, uint8_t row = 0, uint8_t column = 0) const {
@@ -54,7 +54,7 @@ public:
 			const uint8_t *streamWithtype = (const uint8_t *) readonlyData;
 			streamWithtype += (row * columns + column) * type.getSize();
 			int32_t size = type.getSize();
-			return SerializeAdapter<T>::deSerialize(value, &streamWithtype,
+			return SerializeAdapter::deSerialize(value, &streamWithtype,
 					&size, true);
 		} else {
 			const T *dataWithType = (const T *) readonlyData;
@@ -111,8 +111,8 @@ public:
 	void setMatrix(const T& member) {
 		this->set(member[0], sizeof(member)/sizeof(member[0]), sizeof(member[0])/sizeof(member[0][0]));
 	}
-	ReturnValue_t set(const uint8_t *stream, int32_t streamSize,
-			const uint8_t **remainingStream = NULL, int32_t *remainingSize =
+	ReturnValue_t set(const uint8_t *stream, size_t streamSize,
+			const uint8_t **remainingStream = NULL, size_t *remainingSize =
 					NULL);
 
 	ReturnValue_t copyFrom(const ParameterWrapper *from,
@@ -128,8 +128,8 @@ private:
 	const void *readonlyData;
 
 	template<typename T>
-	ReturnValue_t serializeData(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	ReturnValue_t serializeData(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const;
 
 	template<typename T>
 	ReturnValue_t deSerializeData(uint8_t startingRow, uint8_t startingColumn,

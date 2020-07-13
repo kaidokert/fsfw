@@ -39,10 +39,10 @@ PoolEntryIF* DataPool::getRawData( uint32_t data_pool_id ) {
 	}
 }
 
-//uint8_t DataPool::getRawData( uint32_t data_pool_id, uint8_t* address, uint16_t* size, uint32_t max_size ) {
+//uint8_t DataPool::getRawData( uint32_t data_pool_id, uint8_t* address, uint16_t* size, uint32_t maxSize ) {
 //	std::map<uint32_t, PoolEntryIF*>::iterator it = this->data_pool.find( data_pool_id );
 //	if ( it != this->data_pool.end() ) {
-//		if ( it->second->getByteSize() <= max_size ) {
+//		if ( it->second->getByteSize() <= maxSize ) {
 //			*size = it->second->getByteSize();
 //			memcpy( address, it->second->getRawData(), *size );
 //			return DP_SUCCESSFUL;

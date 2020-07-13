@@ -22,7 +22,7 @@ public:
 
 	Type(ActualType_t actualType);
 
-	Type(const Type& type);
+	Type(const Type &type);
 
 	Type& operator=(Type rhs);
 
@@ -30,8 +30,8 @@ public:
 
 	operator ActualType_t() const;
 
-	bool operator==(const Type& rhs);
-	bool operator!=(const Type& rhs);
+	bool operator==(const Type &rhs);
+	bool operator!=(const Type &rhs);
 
 	uint8_t getSize() const;
 
@@ -39,13 +39,13 @@ public:
 
 	static ActualType_t getActualType(uint8_t ptc, uint8_t pfc);
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+			size_t maxSize, Endianness streamEndianness) const override;
 
-	virtual uint32_t getSerializedSize() const;
+	virtual size_t getSerializedSize() const override;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+			Endianness streamEndianness) override;
 
 private:
 	ActualType_t actualType;
