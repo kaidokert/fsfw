@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_DATAPOOLGLOB_DATASET_H_
 #define FRAMEWORK_DATAPOOLGLOB_DATASET_H_
 
-#include <framework/datapool/DataSetBase.h>
+#include <framework/datapool/PoolDataSetBase.h>
 
 /**
  * @brief	The DataSet class manages a set of locally checked out variables
@@ -17,7 +17,7 @@
  * @author	Bastian Baetz
  * @ingroup data_pool
  */
-class GlobDataSet: public DataSetBase {
+class GlobDataSet: public PoolDataSetBase {
 public:
 
 	/**
@@ -52,6 +52,8 @@ public:
 	 * @param valid
 	 */
 	void setSetValid(bool valid);
+
+	bool isValid() const override;
 
 	/**
 	 * Set the valid information of all variables contained in the set which

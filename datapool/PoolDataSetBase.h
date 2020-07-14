@@ -1,6 +1,7 @@
-#ifndef FRAMEWORK_DATAPOOL_DATASETBASE_H_
-#define FRAMEWORK_DATAPOOL_DATASETBASE_H_
+#ifndef FRAMEWORK_DATAPOOL_POOLPOOLDATASETBASE_H_
+#define FRAMEWORK_DATAPOOL_POOLPOOLDATASETBASE_H_
 #include <framework/datapool/DataSetIF.h>
+#include <framework/datapool/PoolDataSetIF.h>
 #include <framework/datapool/PoolVariableIF.h>
 #include <framework/ipc/MutexIF.h>
 
@@ -27,7 +28,7 @@
  * @author	Bastian Baetz
  * @ingroup data_pool
  */
-class DataSetBase: public DataSetIF,
+class PoolDataSetBase: public PoolDataSetIF,
 		public SerializeIF,
 		public HasReturnvaluesIF {
 public:
@@ -37,9 +38,9 @@ public:
 	 * 			supply a pointer to this dataset to PoolVariable
 	 * 			initializations to register pool variables.
 	 */
-	DataSetBase(PoolVariableIF** registeredVariablesArray,
+	PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
 	        const size_t maxFillCount);
-	virtual~ DataSetBase();
+	virtual~ PoolDataSetBase();
 
 	/**
 	 * @brief	The read call initializes reading out all registered variables.
@@ -140,10 +141,12 @@ protected:
 	PoolVariableIF** registeredVariables = nullptr;
 	const size_t maxFillCount = 0;
 
+	void setContainer(PoolVariableIF** variablesContainer);
+
 private:
 	ReturnValue_t readVariable(uint16_t count);
 	void handleAlreadyReadDatasetCommit(uint32_t lockTimeout);
 	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
 };
 
-#endif /* FRAMEWORK_DATAPOOL_DATASETBASE_H_ */
+#endif /* FRAMEWORK_DATAPOOL_POOLPOOLDATASETBASE_H_ */

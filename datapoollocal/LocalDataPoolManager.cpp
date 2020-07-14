@@ -1,5 +1,5 @@
 #include <framework/datapoollocal/LocalDataPoolManager.h>
-#include <framework/datapoollocal/LocalDataSet.h>
+#include <framework/datapoollocal/LocalPoolDataSetBase.h>
 #include <framework/housekeeping/AcceptsHkPacketsIF.h>
 #include <framework/ipc/MutexFactory.h>
 #include <framework/ipc/MutexHelper.h>
@@ -116,7 +116,7 @@ const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 
 ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
         MessageQueueId_t sendTo) {
-	LocalDataSet* dataSetToSerialize = dynamic_cast<LocalDataSet*>(
+	LocalDataSetBase* dataSetToSerialize = dynamic_cast<LocalDataSetBase*>(
 			owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
@@ -155,7 +155,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 }
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid) {
-    LocalDataSet* dataSet = dynamic_cast<LocalDataSet*>(
+    LocalDataSetBase* dataSet = dynamic_cast<LocalDataSetBase*>(
             owner->getDataSetHandle(sid));
     if(dataSet == nullptr) {
         sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
@@ -186,7 +186,7 @@ void LocalDataPoolManager::setMinimalSamplingFrequency(float frequencySeconds) {
 }
 
 ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
-        store_address_t *storeId, LocalDataSet* dataSet) {
+        store_address_t *storeId, LocalDataSetBase* dataSet) {
     size_t hkSize = dataSet->getSerializedSize();
     uint8_t* storePtr = nullptr;
     ReturnValue_t result = ipcStore->getFreeElement(storeId, hkSize,&storePtr);

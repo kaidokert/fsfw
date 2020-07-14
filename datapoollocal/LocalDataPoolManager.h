@@ -14,7 +14,7 @@
 
 #include <map>
 
-class LocalDataSet;
+class LocalDataSetBase;
 
 /**
  * @brief 	This class is the managing instance for local data pool.
@@ -38,7 +38,7 @@ class LocalDataPoolManager {
 	friend class LocalPoolVar;
 	template<typename T, uint16_t vecSize>
 	friend class LocalPoolVector;
-	friend class LocalDataSet;
+	friend class LocalDataSetBase;
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
@@ -135,7 +135,7 @@ private:
      * The data pool manager will keep an internal map of HK receivers.
      */
     struct HkReceiver {
-        LocalDataSet* dataSet = nullptr;
+        LocalDataSetBase* dataSet = nullptr;
         MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         ReportingType reportingType = ReportingType::PERIODIC;
         bool reportingStatus = true;
@@ -202,7 +202,7 @@ private:
 
 	void setMinimalSamplingFrequency(float frequencySeconds);
 	ReturnValue_t serializeHkPacketIntoStore(store_address_t* storeId,
-	        LocalDataSet* dataSet);
+	        LocalDataSetBase* dataSet);
 };
 
 

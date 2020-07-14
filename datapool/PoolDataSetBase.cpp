@@ -1,7 +1,7 @@
-#include <framework/datapool/DataSetBase.h>
+#include <framework/datapool/PoolDataSetBase.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-DataSetBase::DataSetBase(PoolVariableIF** registeredVariablesArray,
+PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
         const size_t maxFillCount):
         registeredVariables(registeredVariablesArray),
         maxFillCount(maxFillCount) {
@@ -10,9 +10,9 @@ DataSetBase::DataSetBase(PoolVariableIF** registeredVariablesArray,
 	}
 }
 
-DataSetBase::~DataSetBase() {}
+PoolDataSetBase::~PoolDataSetBase() {}
 
-ReturnValue_t DataSetBase::registerVariable(
+ReturnValue_t PoolDataSetBase::registerVariable(
 		PoolVariableIF *variable) {
 	if (state != States::DATA_SET_UNINITIALISED) {
 		sif::error << "DataSet::registerVariable: "
@@ -34,7 +34,7 @@ ReturnValue_t DataSetBase::registerVariable(
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t DataSetBase::read(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	if (state == States::DATA_SET_UNINITIALISED) {
 		lockDataPool(lockTimeout);
@@ -56,11 +56,11 @@ ReturnValue_t DataSetBase::read(uint32_t lockTimeout) {
 	return result;
 }
 
-uint16_t DataSetBase::getFillCount() const {
+uint16_t PoolDataSetBase::getFillCount() const {
     return fillCount;
 }
 
-ReturnValue_t DataSetBase::readVariable(uint16_t count) {
+ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	// These checks are often performed by the respective
 	// variable implementation too, but I guess a double check does not hurt.
@@ -77,7 +77,7 @@ ReturnValue_t DataSetBase::readVariable(uint16_t count) {
 	return result;
 }
 
-ReturnValue_t DataSetBase::commit(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::commit(uint32_t lockTimeout) {
 	if (state == States::DATA_SET_WAS_READ) {
 		handleAlreadyReadDatasetCommit(lockTimeout);
 		return HasReturnvaluesIF::RETURN_OK;
@@ -87,7 +87,7 @@ ReturnValue_t DataSetBase::commit(uint32_t lockTimeout) {
 	}
 }
 
-void DataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
+void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
 	lockDataPool(lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
@@ -101,7 +101,7 @@ void DataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
 	unlockDataPool();
 }
 
-ReturnValue_t DataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	lockDataPool(lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
@@ -125,15 +125,15 @@ ReturnValue_t DataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 }
 
 
-ReturnValue_t DataSetBase::lockDataPool(uint32_t timeoutMs) {
+ReturnValue_t PoolDataSetBase::lockDataPool(uint32_t timeoutMs) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t DataSetBase::unlockDataPool() {
+ReturnValue_t PoolDataSetBase::unlockDataPool() {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t DataSetBase::serialize(uint8_t** buffer, size_t* size,
+ReturnValue_t PoolDataSetBase::serialize(uint8_t** buffer, size_t* size,
 		const size_t maxSize, SerializeIF::Endianness streamEndianness) const {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	for (uint16_t count = 0; count < fillCount; count++) {
@@ -146,7 +146,7 @@ ReturnValue_t DataSetBase::serialize(uint8_t** buffer, size_t* size,
 	return result;
 }
 
-ReturnValue_t DataSetBase::deSerialize(const uint8_t** buffer, size_t* size,
+ReturnValue_t PoolDataSetBase::deSerialize(const uint8_t** buffer, size_t* size,
         SerializeIF::Endianness streamEndianness) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	for (uint16_t count = 0; count < fillCount; count++) {
@@ -159,10 +159,14 @@ ReturnValue_t DataSetBase::deSerialize(const uint8_t** buffer, size_t* size,
 	return result;
 }
 
-size_t DataSetBase::getSerializedSize() const {
+size_t PoolDataSetBase::getSerializedSize() const {
 	uint32_t size = 0;
 	for (uint16_t count = 0; count < fillCount; count++) {
 		size += registeredVariables[count]->getSerializedSize();
 	}
 	return size;
+}
+
+void PoolDataSetBase::setContainer(PoolVariableIF **variablesContainer) {
+    this->registeredVariables = variablesContainer;
 }

@@ -2,7 +2,7 @@
 #include <framework/datapoolglob/GlobalDataSet.h>
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-GlobDataSet::GlobDataSet(): DataSetBase(
+GlobDataSet::GlobDataSet(): PoolDataSetBase(
         reinterpret_cast<PoolVariableIF**>(&registeredVariables),
         DATA_SET_MAX_SIZE) {}
 
@@ -17,7 +17,11 @@ ReturnValue_t GlobDataSet::commit(bool valid, uint32_t lockTimeout) {
 }
 
 ReturnValue_t GlobDataSet::commit(uint32_t lockTimeout) {
-	return DataSetBase::commit(lockTimeout);
+	return PoolDataSetBase::commit(lockTimeout);
+}
+
+bool GlobDataSet::isValid() const {
+    return this->valid;
 }
 
 ReturnValue_t GlobDataSet::unlockDataPool() {

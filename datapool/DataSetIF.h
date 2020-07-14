@@ -1,5 +1,5 @@
-#ifndef DATASETIF_H_
-#define DATASETIF_H_
+#ifndef FRAMEWORK_DATAPOOL_DATASETIF_H_
+#define FRAMEWORK_DATAPOOL_DATASETIF_H_
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <framework/timemanager/Clock.h>
@@ -34,8 +34,7 @@ public:
 	 */
 	virtual ~DataSetIF() {}
 
-	virtual ReturnValue_t read(uint32_t lockTimeout) = 0;
-	virtual ReturnValue_t commit(uint32_t lockTimeout) = 0;
+
 	/**
 	 * @brief	This operation provides a method to register local data pool
 	 * 			variables to register in a data set by passing itself
@@ -44,19 +43,6 @@ public:
 	virtual ReturnValue_t registerVariable(PoolVariableIF* variable) = 0;
 
 	virtual uint16_t getFillCount() const = 0;
-private:
-	/**
-	 * @brief 	Most underlying data structures will have a pool like structure
-	 * 			and will require a lock and unlock mechanism to ensure
-	 * 			thread-safety
-	 * @return Lock operation result
-	 */
-	virtual ReturnValue_t lockDataPool(uint32_t timeoutMs) = 0;
-	/**
-	 * @brief   Unlock call corresponding to the lock call.
-	 * @return Unlock operation result
-	 */
-	virtual ReturnValue_t unlockDataPool() = 0;
 };
 
-#endif /* DATASETIF_H_ */
+#endif /* FRAMEWORK_DATAPOOL_DATASETIF_H_ */
