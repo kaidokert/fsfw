@@ -7,9 +7,9 @@
 class ChildHandlerBase: public DeviceHandlerBase {
 public:
 	ChildHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
-			CookieIF * cookie, uint8_t setDeviceSwitch,
-			object_id_t hkDestination, uint32_t thermalStatePoolId,
-			uint32_t thermalRequestPoolId, object_id_t parent = objects::NO_OBJECT,
+			CookieIF * cookie, object_id_t hkDestination,
+			uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
+			object_id_t parent = objects::NO_OBJECT,
 			FailureIsolationBase* customFdir = nullptr, size_t cmdQueueSize = 20);
 	virtual ~ChildHandlerBase();
 

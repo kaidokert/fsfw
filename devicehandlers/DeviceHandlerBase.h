@@ -108,7 +108,6 @@ public:
 			CookieIF * comCookie, FailureIsolationBase* fdirInstance = nullptr,
 			size_t cmdQueueSize = 20);
 
-	void setDeviceSwitch(uint8_t deviceSwitch);
 	void setHkDestination(object_id_t hkDestination);
 	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
 			uint32_t thermalRequestPoolId);
@@ -1078,13 +1077,6 @@ private:
 	 * the submode of the source mode during a transition
 	 */
 	Submode_t transitionSourceSubMode;
-
-	/**
-	 * the switch of the device
-	 *
-	 * for devices using two switches override getSwitches()
-	 */
-	uint8_t deviceSwitch;
 
 	/**
 	 * read the command queue

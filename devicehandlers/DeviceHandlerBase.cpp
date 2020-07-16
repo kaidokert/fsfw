@@ -63,10 +63,6 @@ void DeviceHandlerBase::setThermalStateRequestPoolIds(
 }
 
 
-void DeviceHandlerBase::setDeviceSwitch(uint8_t deviceSwitch) {
-	this->deviceSwitch = deviceSwitch;
-}
-
 DeviceHandlerBase::~DeviceHandlerBase() {
 	delete comCookie;
 	if (defaultFDIRUsed) {
