@@ -109,13 +109,32 @@ public:
 
     /**
      * Different types of housekeeping reporting are possible.
-     *  1. PERIODIC: HK packets are generated in fixed intervals
-     *  2. UPDATED: HK packets are generated if a value was updated
-     *  3. REQUESTED: HK packets are only generated if explicitely requested
+     *  1. PERIODIC: HK packets are generated in fixed intervals and sent to
+     *     destination. Fromat will be raw.
+     *  2. UPDATED: Notification will be sent out if HK data has changed.
+     *     Question: Send Raw data directly or just the message?
+     *  3. REQUESTED: HK packets are only generated if explicitely requested.
+     *     Propably not necessary, just use multiple local data sets or
+     *     shared datasets.
+     *
+     *  TODO: This is a big architecture question. Use raw data or shared
+     *  datasets? dumb thing about shared datasets: It propably would be better
+     *  if each task who uses the data has their own copy of the pool
+     *  variables. Then the LPIDs should be hardcoded in the dataset implementations
+     *  so the users don't have to worry about it anymore.
+     *
+     *  Notifications should also be possible for single variables instead of
+     *  full dataset updates.
      */
     enum class ReportingType: uint8_t {
+        // Periodic generation of HK packets.
         PERIODIC,
+        // Notification will be sent out as message.
+        // Data is accessed via shared data set or multiple local data sets.
         ON_UPDATE,
+        // actually, requested is propably unnecessary. If another component
+        // needs data on request, they can just use  the new SharedDataSet
+        // which is thread-safe to also have full access to the interface..
         REQUESTED
     };
 
@@ -136,6 +155,7 @@ private:
      */
     struct HkReceiver {
         LocalDataSetBase* dataSet = nullptr;
+        lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
         MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         ReportingType reportingType = ReportingType::PERIODIC;
         bool reportingStatus = true;

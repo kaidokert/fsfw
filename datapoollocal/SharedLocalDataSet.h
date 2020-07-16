@@ -5,6 +5,13 @@
 #include <framework/objectmanager/SystemObject.h>
 #include <vector>
 
+/**
+ * Baseline question: If this dataset is shared, is there once instance
+ * shared among many objects or multiple instances? Maybe be flexible
+ * and provide both ways? Sharing one instance requires a mutex lock.
+ * If there are multiple instances, it is not shared anymore, to be fair..
+ * Then a regular local data set is sufficient.
+ */
 class SharedLocalDataSet: public SystemObject,
         public LocalDataSetBase,
         public SharedDataSetIF {
@@ -14,7 +21,6 @@ public:
     ReturnValue_t lockDataset(dur_millis_t mutexTimeout) override;
     ReturnValue_t unlockDataset() override;
 private:
-
 
     MutexIF* datasetLock = nullptr;
     std::vector<PoolVariableIF*> poolVarVector;

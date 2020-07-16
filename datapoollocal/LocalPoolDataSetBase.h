@@ -46,6 +46,8 @@ public:
 	 * 			owner should implement the HasHkPoolParametersIF.
 	 * 			The constructor simply sets the fill_count to zero and sets
 	 *  		the state to "uninitialized".
+	 * @details
+	 *
 	 */
 	LocalDataSetBase(object_id_t ownerId,
 	        PoolVariableIF** registeredVariablesArray,

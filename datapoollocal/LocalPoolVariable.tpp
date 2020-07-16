@@ -28,7 +28,7 @@ inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
 template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
 		pool_rwm_t setReadWriteMode, DataSetIF *dataSet):
-		readWriteMode(readWriteMode) {
+		readWriteMode(setReadWriteMode) {
 	if(poolId == PoolVariableIF::NO_PARAMETER) {
 		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
 				"NO_PARAMETER value!" << std::endl;

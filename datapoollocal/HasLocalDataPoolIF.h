@@ -41,6 +41,7 @@ public:
 	virtual~ HasLocalDataPoolIF() {};
 
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
+	static constexpr lp_id_t NO_POOL_ID = 0xffffffff;
 
 	/** Command queue for housekeeping messages. */
 	virtual MessageQueueId_t getCommandQueue() const = 0;
