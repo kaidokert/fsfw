@@ -38,7 +38,7 @@ public:
 	 * @param queueToUse_ Pointer to the messageQueue to be used
 	 * @return Returns RETURN_OK if successful
 	 */
-	ReturnValue_t initialize(MessageQueueIF* queueToUse_);
+	ReturnValue_t initialize(MessageQueueIF* queueToUse_ = nullptr);
 	/**
 	 * Function to be called from the owner to send a step message. Success or failure will be determined by the result value.
 	 *
