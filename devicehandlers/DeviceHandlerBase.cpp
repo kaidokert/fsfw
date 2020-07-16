@@ -1366,18 +1366,6 @@ LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
 	return &hkManager;
 }
 
-ReturnValue_t DeviceHandlerBase::addDataSet(sid_t sid) {
-    return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t DeviceHandlerBase::removeDataSet(sid_t sid) {
-    return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t DeviceHandlerBase::changeCollectionInterval(sid_t sid,
-        dur_seconds_t newInterval) {
-    return HasReturnvaluesIF::RETURN_OK;
-}
 
 ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     // In this function, the task handle should be valid if the task

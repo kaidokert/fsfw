@@ -486,11 +486,6 @@ protected:
 	/** Get the HK manager object handle */
 	virtual LocalDataPoolManager* getHkManagerHandle() override;
 
-	virtual ReturnValue_t addDataSet(sid_t sid) override;
-	virtual ReturnValue_t removeDataSet(sid_t sid) override;
-	virtual ReturnValue_t changeCollectionInterval(sid_t sid,
-	        dur_seconds_t newInterval) override;
-
 	/**
 	 * @brief 	Hook function for child handlers which is called once per
 	 * 			performOperation(). Default implementation is empty.
