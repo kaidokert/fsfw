@@ -191,14 +191,14 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
-	if(hkDestination == objects::NO_OBJECT) {
-		hkDestination = defaultHkDestination;
-	}
-
-	result = hkManager.initialize(commandQueue, hkDestination);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
+//	if(hkDestination == objects::NO_OBJECT) {
+//		hkDestination = defaultHkDestination;
+//	}
+//
+//	result = hkManager.initialize(commandQueue, hkDestination);
+//	if (result != HasReturnvaluesIF::RETURN_OK) {
+//		return result;
+//	}
 
 	fillCommandAndReplyMap();
 
@@ -262,10 +262,10 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	result = hkManager.handleHousekeepingMessage(&command);
-	if (result == RETURN_OK) {
-		return;
-	}
+//	result = hkManager.handleHousekeepingMessage(&command);
+//	if (result == RETURN_OK) {
+//		return;
+//	}
 
 	result = handleDeviceHandlerMessage(&command);
 	if (result == RETURN_OK) {

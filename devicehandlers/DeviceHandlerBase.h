@@ -17,8 +17,8 @@
 #include <framework/health/HealthHelper.h>
 #include <framework/parameters/ParameterHelper.h>
 #include <framework/datapool/HkSwitchHelper.h>
-#include <framework/datapoollocal/HasLocalDataPoolIF.h>
-#include <framework/datapoollocal/LocalDataPoolManager.h>
+//#include <framework/datapoollocal/HasLocalDataPoolIF.h>
+//#include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
 #include <map>
 
@@ -86,8 +86,8 @@ class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasModesIF,
 		public HasHealthIF,
 		public HasActionsIF,
-		public ReceivesParameterMessagesIF,
-		public HasLocalDataPoolIF {
+		public ReceivesParameterMessagesIF
+		/* public HasLocalDataPoolIF */ {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
@@ -480,11 +480,11 @@ protected:
 	 * @param localDataPoolMap
 	 * @return
 	 */
-	virtual ReturnValue_t initializePoolEntries(
-				LocalDataPool& localDataPoolMap) override;
+	//virtual ReturnValue_t initializePoolEntries(
+	//			LocalDataPool& localDataPoolMap) override;
 
 	/** Get the HK manager object handle */
-	virtual LocalDataPoolManager* getHkManagerHandle() override;
+	//virtual LocalDataPoolManager* getHkManagerHandle() override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per
@@ -611,7 +611,7 @@ protected:
 	/** Action helper for HasActionsIF */
 	ActionHelper actionHelper;
 	/** Housekeeping Manager */
-	LocalDataPoolManager hkManager;
+	//LocalDataPoolManager hkManager;
 
 	/**
 	 *  @brief Information about commands
