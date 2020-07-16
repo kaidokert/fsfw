@@ -609,7 +609,6 @@ protected:
 
 	/** Health helper for HasHealthIF */
 	HealthHelper healthHelper;
-	bool healthHelperActive = false;
 	/** Mode helper for HasModesIF */
 	ModeHelper modeHelper;
 	/** Parameter helper for ReceivesParameterMessagesIF */

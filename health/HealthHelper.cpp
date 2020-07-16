@@ -39,10 +39,19 @@ void HealthHelper::setParentQeueue(MessageQueueId_t parentQueue) {
 ReturnValue_t HealthHelper::initialize() {
 	healthTable = objectManager->get<HealthTableIF>(objects::HEALTH_TABLE);
 	eventSender = objectManager->get<EventReportingProxyIF>(objectId);
-	// TODO: Better returnvalues
-	if ((healthTable == NULL) || eventSender == NULL) {
-		return HasReturnvaluesIF::RETURN_FAILED;
+
+	if (healthTable == nullptr) {
+	    sif::error << "HealthHelper::initialize: Health table object needs"
+	            "to be created in factory." << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
+
+	if(eventSender == nullptr) {
+	    sif::error << "HealthHelper::initialize: Owner has to implement "
+	            "ReportingProxyIF." << std::endl;
+	    return ObjectManagerIF::CHILD_INIT_FAILED;
+	}
+
 	ReturnValue_t result = healthTable->registerObject(objectId,
 			HasHealthIF::HEALTHY);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
