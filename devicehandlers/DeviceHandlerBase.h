@@ -650,9 +650,7 @@ protected:
 		//! The dataset used to access housekeeping data related to the
 		//! respective device reply. Will point to a dataset held by
 		//! the child handler (if one is specified)
-		DataSetIF* dataSet = nullptr;
-		float collectionInterval = 0.0;
-		uint32_t intervalCounter = 0;
+		// DataSetIF* dataSet = nullptr;
 		//! The command that expects this reply.
 		DeviceCommandMap::iterator command;
 	};
@@ -1195,7 +1193,8 @@ private:
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
 
 	virtual ReturnValue_t initializeAfterTaskCreation() override;
-	DataSetIF* getDataSetHandle(sid_t sid) override;
+
+    //DataSetIF* getDataSetHandle(sid_t sid) override;
 
 	void parseReply(const uint8_t* receivedData,
 	            size_t receivedDataLen);
