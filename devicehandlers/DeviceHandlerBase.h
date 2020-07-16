@@ -108,7 +108,6 @@ public:
 			CookieIF * comCookie, FailureIsolationBase* fdirInstance = nullptr,
 			size_t cmdQueueSize = 20);
 
-	void setDeviceSwitch(uint8_t deviceSwitch);
 	void setHkDestination(object_id_t hkDestination);
 	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
 			uint32_t thermalRequestPoolId);
@@ -487,11 +486,6 @@ protected:
 	/** Get the HK manager object handle */
 	virtual LocalDataPoolManager* getHkManagerHandle() override;
 
-	virtual ReturnValue_t addDataSet(sid_t sid) override;
-	virtual ReturnValue_t removeDataSet(sid_t sid) override;
-	virtual ReturnValue_t changeCollectionInterval(sid_t sid,
-	        dur_seconds_t newInterval) override;
-
 	/**
 	 * @brief 	Hook function for child handlers which is called once per
 	 * 			performOperation(). Default implementation is empty.
@@ -610,7 +604,6 @@ protected:
 
 	/** Health helper for HasHealthIF */
 	HealthHelper healthHelper;
-	bool healthHelperActive = false;
 	/** Mode helper for HasModesIF */
 	ModeHelper modeHelper;
 	/** Parameter helper for ReceivesParameterMessagesIF */
@@ -1078,13 +1071,6 @@ private:
 	 * the submode of the source mode during a transition
 	 */
 	Submode_t transitionSourceSubMode;
-
-	/**
-	 * the switch of the device
-	 *
-	 * for devices using two switches override getSwitches()
-	 */
-	uint8_t deviceSwitch;
 
 	/**
 	 * read the command queue
