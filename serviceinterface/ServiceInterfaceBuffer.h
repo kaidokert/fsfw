@@ -60,7 +60,7 @@ private:
 	//! In this function, the characters are parsed.
 	void putChars(char const* begin, char const* end);
 
-	std::string getPreamble(size_t * preambleSize = nullptr);
+	std::string* getPreamble(size_t * preambleSize = nullptr);
 };
 
 #endif
