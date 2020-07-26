@@ -20,6 +20,7 @@ public:
 	~Mutex();
 	ReturnValue_t lockMutex(uint32_t timeoutMs = MutexIF::BLOCKING) override;
 	ReturnValue_t unlockMutex() override;
+
 private:
 	SemaphoreHandle_t handle;
 };
