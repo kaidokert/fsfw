@@ -120,3 +120,12 @@ void CommandMessage::setReplyRejected(ReturnValue_t reason,
 	setParameter(reason);
 	setParameter2(initialCommand);
 }
+
+ReturnValue_t CommandMessage::getReplyRejectedReason(
+        Command_t *initialCommand) const {
+    ReturnValue_t reason = getParameter();
+    if(initialCommand != nullptr) {
+        *initialCommand = getParameter2();
+    }
+    return reason;
+}

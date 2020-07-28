@@ -9,7 +9,7 @@ void ServiceInterfaceStream::setActive( bool myActive) {
 	this->streambuf.isActive = myActive;
 }
 
-std::string ServiceInterfaceStream::getPreamble() {
+std::string* ServiceInterfaceStream::getPreamble() {
 	return streambuf.getPreamble();
 }
 
