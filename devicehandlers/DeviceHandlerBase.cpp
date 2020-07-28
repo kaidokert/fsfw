@@ -128,7 +128,9 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	result = communicationInterface->initializeInterface(comCookie);
 	if (result != RETURN_OK) {
-		return result;
+	    sif::error << "DeviceHandlerBase::initialize: Initializing "
+	            "communication interface failed!" << std::endl;
+	    return result;
 	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
