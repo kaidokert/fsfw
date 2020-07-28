@@ -63,6 +63,9 @@ public:
 		count_t tempSize = 0;
 		ReturnValue_t result = SerializeAdapter::deSerialize(&tempSize,
 				buffer, size, streamEndianness);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+		    return result;
+		}
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
