@@ -1,18 +1,13 @@
-/**
- * @file	SerialArrayListAdapter.h
- * @brief	This file defines the SerialArrayListAdapter class.
- * @date	22.07.2014
- * @author	baetz
- */
-#ifndef SERIALARRAYLISTADAPTER_H_
-#define SERIALARRAYLISTADAPTER_H_
+#ifndef FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
+#define FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
 
 #include <framework/container/ArrayList.h>
 #include <framework/serialize/SerializeIF.h>
 #include <utility>
 
 /**
- * \ingroup serialize
+ * @ingroup serialize
+ * @author  baetz
  */
 template<typename T, typename count_t = uint8_t>
 class SerialArrayListAdapter : public SerializeIF {
@@ -25,14 +20,15 @@ public:
 		return serialize(adaptee, buffer, size, maxSize, streamEndianness);
 	}
 
-	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, size_t* size,
-			size_t maxSize, Endianness streamEndianness) {
+	static ReturnValue_t serialize(const ArrayList<T, count_t>* list,
+	        uint8_t** buffer, size_t* size, size_t maxSize,
+	        Endianness streamEndianness) {
 		ReturnValue_t result = SerializeAdapter::serialize(&list->size,
 				buffer, size, maxSize, streamEndianness);
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
-			result = SerializeAdapter::serialize(&list->entries[i], buffer, size,
-					maxSize, streamEndianness);
+			result = SerializeAdapter::serialize(&list->entries[i], buffer,
+			        size, maxSize, streamEndianness);
 			++i;
 		}
 		return result;
@@ -58,11 +54,15 @@ public:
 		return deSerialize(adaptee, buffer, size, streamEndianness);
 	}
 
-	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list, const uint8_t** buffer, size_t* size,
+	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list,
+	        const uint8_t** buffer, size_t* size,
 			Endianness streamEndianness) {
 		count_t tempSize = 0;
 		ReturnValue_t result = SerializeAdapter::deSerialize(&tempSize,
 				buffer, size, streamEndianness);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+		    return result;
+		}
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
@@ -82,4 +82,4 @@ private:
 
 
 
-#endif /* SERIALARRAYLISTADAPTER_H_ */
+#endif /* FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_ */
