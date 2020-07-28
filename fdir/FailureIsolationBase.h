@@ -45,7 +45,7 @@ protected:
 	virtual ReturnValue_t confirmFault(EventMessage* event);
 	virtual void decrementFaultCounters() = 0;
 	ReturnValue_t sendConfirmationRequest(EventMessage* event,
-			MessageQueueId_t destination = 0);
+			MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
 	void throwFdirEvent(Event event, uint32_t parameter1 = 0,
 			uint32_t parameter2 = 0);
 private:
