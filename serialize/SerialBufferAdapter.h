@@ -16,13 +16,13 @@ public:
 
 	virtual ~SerialBufferAdapter();
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const override;
 
-	virtual uint32_t getSerializedSize() const;
+	virtual size_t getSerializedSize() const override;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) override;
 private:
 	bool serializeLength;
 	const uint8_t *constBuffer;
