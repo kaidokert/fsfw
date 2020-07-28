@@ -1,16 +1,18 @@
 #include <framework/timemanager/Clock.h>
 #include <framework/globalfunctions/timevalOperations.h>
-#include <stdlib.h>
-#include "Timekeeper.h"
+#include <framework/osal/FreeRTOS/Timekeeper.h>
 
-#include <FreeRTOS.h>
-#include <task.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+#include <stdlib.h>
+#include <time.h>
 
 //TODO sanitize input?
 //TODO much of this code can be reused for tick-only systems
 
 uint16_t Clock::leapSeconds = 0;
-MutexIF* Clock::timeMutex = NULL;
+MutexIF* Clock::timeMutex = nullptr;
 
 uint32_t Clock::getTicksPerSecond(void) {
 	return 1000;
@@ -56,7 +58,6 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
 
 timeval Clock::getUptime() {
 	TickType_t ticksSinceStart = xTaskGetTickCount();
-
 	return Timekeeper::ticksToTimeval(ticksSinceStart);
 }
 
@@ -128,7 +129,7 @@ ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
 
 ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval* tt) {
 	//SHOULDDO: works not for dates in the past (might have less leap seconds)
-	if (timeMutex == NULL) {
+	if (timeMutex == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
