@@ -104,9 +104,9 @@ MessageQueueId_t FailureIsolationBase::getEventReceptionQueue() {
 ReturnValue_t FailureIsolationBase::sendConfirmationRequest(EventMessage* event,
 		MessageQueueId_t destination) {
 	event->setMessageId(EventMessage::CONFIRMATION_REQUEST);
-	if (destination != 0) {
+	if (destination != MessageQueueIF::NO_QUEUE) {
 		return eventQueue->sendMessage(destination, event);
-	} else if (faultTreeParent != 0) {
+	} else if (faultTreeParent != objects::NO_OBJECT) {
 		return eventQueue->sendToDefault(event);
 	}
 	return RETURN_FAILED;
