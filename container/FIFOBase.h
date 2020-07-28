@@ -3,6 +3,7 @@
 
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <cstddef>
+#include <cstring>
 
 template <typename T>
 class FIFOBase {
@@ -43,11 +44,14 @@ public:
 	bool full();
 	size_t size();
 
+
 	size_t getMaxCapacity() const;
 
-private:
-	T* values;
+protected:
+	void setData(T* data);
 	size_t maxCapacity = 0;
+
+	T* values;
 
 	size_t readIndex = 0;
 	size_t writeIndex = 0;

@@ -7,7 +7,7 @@
 
 template<typename T>
 inline FIFOBase<T>::FIFOBase(T* values, const size_t maxCapacity):
-		values(values), maxCapacity(maxCapacity) {};
+		maxCapacity(maxCapacity), values(values){};
 
 template<typename T>
 inline ReturnValue_t FIFOBase<T>::insert(T value) {
@@ -76,6 +76,12 @@ inline size_t FIFOBase<T>::next(size_t current) {
 template<typename T>
 inline size_t FIFOBase<T>::getMaxCapacity() const {
 	return maxCapacity;
+}
+
+
+template<typename T>
+inline void FIFOBase<T>::setData(T *data) {
+	this->values = data;
 }
 
 #endif
