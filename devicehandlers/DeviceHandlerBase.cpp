@@ -680,16 +680,24 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		switch (result) {
 		case RETURN_OK:
 			handleReply(receivedData, foundId, foundLen);
+			if(foundLen == 0) {
+			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
+			            " Packet parsing will be stuck." << std::endl;
+			}
 			break;
 		case APERIODIC_REPLY: {
 			result = interpretDeviceReply(foundId, receivedData);
 			if (result != RETURN_OK) {
-				replyRawReplyIfnotWiretapped(receivedData, foundLen);
-				triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result,
-						foundId);
+			    replyRawReplyIfnotWiretapped(receivedData, foundLen);
+			    triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result,
+			            foundId);
 			}
+			if(foundLen == 0) {
+			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
+			            " Packet parsing will be stuck." << std::endl;
+			}
+			break;
 		}
-		break;
 		case IGNORE_REPLY_DATA:
 			break;
 		case IGNORE_FULL_PACKET:
