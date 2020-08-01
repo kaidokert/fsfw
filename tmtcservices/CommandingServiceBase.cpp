@@ -230,8 +230,8 @@ void CommandingServiceBase::handleRequestQueue() {
 		address = message.getStorageId();
 		packet.setStoreAddress(address);
 
-		if (packet.getSubService() == 0
-				or isValidSubservice(packet.getSubService()) != RETURN_OK) {
+		if ((packet.getSubService() == 0)
+				or (isValidSubservice(packet.getSubService()) != RETURN_OK)) {
 			rejectPacket(TC_VERIFY::START_FAILURE, &packet, INVALID_SUBSERVICE);
 			continue;
 		}

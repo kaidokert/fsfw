@@ -116,7 +116,7 @@ public:
 	 * Used to setup the reference of the task, that executes this component
 	 * @param task Pointer to the taskIF of this task
 	 */
-	virtual void setTaskIF(PeriodicTaskIF* task);
+	virtual void setTaskIF(PeriodicTaskIF* task) override;
 
 protected:
 	/**
@@ -173,9 +173,7 @@ protected:
 	 * This function is implemented by child services to specify how replies
 	 * to a command from another software component are handled.
 	 * @param reply
-	 * This is the reply which can be accessed via the command message
-	 * interface. The internal message pointer can be passed to different
-	 * command message implementations (see CommandMessageIF)
+	 * This is the reply in form of a generic read-only command message.
 	 * @param previousCommand
 	 * Command_t of related command
 	 * @param state [out/in]
@@ -188,11 +186,12 @@ protected:
 	 * @return
 	 * - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
 	 *   generate TC verification success
-	 * - @c INVALID_REPLY Calls handleUnrequestedReply
-	 * - Anything else triggers a TC verification failure. If RETURN_FAILED
-	 *   is returned and the command ID is CommandMessage::REPLY_REJECTED,
-	 *   a failure verification message with the reason as the error parameter
-	 *   and the initial command as failure parameter 1.
+	 * - @c INVALID_REPLY calls handleUnrequestedReply
+	 * - Anything else triggers a TC verification failure. If RETURN_FAILED or
+	 *   INVALID_REPLY is returned and the command ID is
+	 *   CommandMessage::REPLY_REJECTED, a failure verification message
+	 *   with the reason as the error parameter and the initial command as
+	 *   failure parameter 1 is generated.
 	 */
 	virtual ReturnValue_t handleReply(const CommandMessage* reply,
 			Command_t previousCommand, uint32_t *state,
@@ -255,6 +254,7 @@ protected:
 	uint32_t failureParameter1 = 0;
 	uint32_t failureParameter2 = 0;
 
+	object_id_t packetSource;
 	static object_id_t defaultPacketSource;
 	object_id_t packetSource = objects::NO_OBJECT;
 	static object_id_t defaultPacketDestination;
@@ -303,6 +303,7 @@ protected:
 	void checkAndExecuteFifo(CommandMapIter iter);
 
 private:
+
 	/**
 	 * This method handles internal execution of a command,
 	 * once it has been started by @sa{startExecution()} in the request
