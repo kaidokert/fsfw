@@ -5,8 +5,23 @@
 #include <framework/returnvalues/HasReturnvaluesIF.h>
 #include <stdint.h>
 
+/** Each parameter is identified with a unique parameter ID */
 typedef uint32_t ParameterId_t;
 
+/**
+ * @brief	This interface is used by components which have modifiable
+ * 			parameters, e.g. atittude controllers
+ * @details
+ * Each parameter has a unique parameter ID. The first byte of the parameter
+ * ID is the domain ID which can be used to identify unqiue spacecraft domains
+ * (e.g. control and sensor domain in the AOCS controller).
+ *
+ * The second and third byte represent the matrix ID, which can represent
+ * a 8-bit row and column number and the last byte...
+ *
+ * Yeah, it it matrix ID oder parameter ID now and is index a 16 bit number
+ * of a 8 bit number now?
+ */
 class HasParametersIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::HAS_PARAMETERS_IF;
@@ -32,12 +47,10 @@ public:
 		return (domainId << 24) + (parameterId << 8) + index;
 	}
 
-	virtual ~HasParametersIF() {
-	}
+	virtual ~HasParametersIF() {}
 
 	/**
 	 * Always set parameter before checking newValues!
-	 *
 	 *
 	 * @param domainId
 	 * @param parameterId

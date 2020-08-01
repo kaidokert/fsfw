@@ -1,20 +1,19 @@
 #include <framework/parameters/ParameterWrapper.h>
 
 ParameterWrapper::ParameterWrapper() :
-		pointsToStream(false), type(Type::UNKNOWN_TYPE), rows(0), columns(0), data(
-		NULL), readonlyData(NULL) {
+		pointsToStream(false), type(Type::UNKNOWN_TYPE) {
 }
 
 ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
 		void *data) :
-		pointsToStream(false), type(type), rows(rows), columns(columns), data(
-				data), readonlyData(data) {
+		pointsToStream(false), type(type), rows(rows), columns(columns),
+		data(data), readonlyData(data) {
 }
 
 ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
 		const void *data) :
-		pointsToStream(false), type(type), rows(rows), columns(columns), data(
-		NULL), readonlyData(data) {
+		pointsToStream(false), type(type), rows(rows), columns(columns),
+		data(nullptr), readonlyData(data) {
 }
 
 ParameterWrapper::~ParameterWrapper() {
@@ -266,15 +265,14 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 			result = UNKNOW_DATATYPE;
 			break;
 		}
-	} else {
+	}
+	else {
 		//need a type to do arithmetic
-		uint8_t *toDataWithType = (uint8_t*) data;
+		uint8_t* typedData = static_cast<uint8_t*>(data);
 		for (uint8_t fromRow = 0; fromRow < from->rows; fromRow++) {
-			memcpy(
-					toDataWithType
-							+ (((startingRow + fromRow) * columns)
-									+ startingColumn) * typeSize,
-					from->readonlyData, typeSize * from->columns);
+			uint8_t offset = (((startingRow + fromRow) * columns) + startingColumn) * typeSize;
+			std::memcpy(typedData +  offset, from->readonlyData,
+					typeSize * from->columns);
 		}
 	}
 
