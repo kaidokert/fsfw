@@ -129,7 +129,7 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	 * rejected replies (RETURN_FAILED or INVALID_REPLY is returned), a
 	 * failure verification will be generated with the reason as the
 	 * return code and the initial command as failure parameter 1 */
-	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
+	if((reply->getCommand() == CommandMessage::REPLY_REJECTED) and
 			(result == RETURN_FAILED or result == INVALID_REPLY)) {
 	    result = reply->getReplyRejectedReason();
 	    failureParameter1 = iter->command;
@@ -230,8 +230,8 @@ void CommandingServiceBase::handleRequestQueue() {
 		address = message.getStorageId();
 		packet.setStoreAddress(address);
 
-		if (packet.getSubService() == 0
-				or isValidSubservice(packet.getSubService()) != RETURN_OK) {
+		if ((packet.getSubService() == 0)
+				or (isValidSubservice(packet.getSubService()) != RETURN_OK)) {
 			rejectPacket(TC_VERIFY::START_FAILURE, &packet, INVALID_SUBSERVICE);
 			continue;
 		}
