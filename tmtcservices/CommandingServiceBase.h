@@ -87,7 +87,7 @@ public:
 	 * @param opCode is unused here at the moment
 	 * @return RETURN_OK
 	 */
-	virtual ReturnValue_t performOperation(uint8_t opCode);
+	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
 	virtual uint16_t getIdentifier();
 
@@ -186,12 +186,11 @@ protected:
 	 * @return
 	 * - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
 	 *   generate TC verification success
-	 * - @c INVALID_REPLY calls handleUnrequestedReply
-	 * - Anything else triggers a TC verification failure. If RETURN_FAILED or
-	 *   INVALID_REPLY is returned and the command ID is
-	 *   CommandMessage::REPLY_REJECTED, a failure verification message
-	 *   with the reason as the error parameter and the initial command as
-	 *   failure parameter 1 is generated.
+	 * - @c INVALID_REPLY Calls handleUnrequestedReply
+	 * - Anything else triggers a TC verification failure. If RETURN_FAILED is
+	 *   returned and the command ID is CommandMessage::REPLY_REJECTED,
+     *   a failure verification message with the reason as the error parameter
+     *   and the initial command as failure parameter 1
 	 */
 	virtual ReturnValue_t handleReply(const CommandMessage* reply,
 			Command_t previousCommand, uint32_t *state,
@@ -254,7 +253,6 @@ protected:
 	uint32_t failureParameter1 = 0;
 	uint32_t failureParameter2 = 0;
 
-	object_id_t packetSource;
 	static object_id_t defaultPacketSource;
 	object_id_t packetSource = objects::NO_OBJECT;
 	static object_id_t defaultPacketDestination;
@@ -303,7 +301,6 @@ protected:
 	void checkAndExecuteFifo(CommandMapIter iter);
 
 private:
-
 	/**
 	 * This method handles internal execution of a command,
 	 * once it has been started by @sa{startExecution()} in the request
