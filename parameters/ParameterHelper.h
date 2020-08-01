@@ -5,6 +5,12 @@
 #include <framework/parameters/ParameterMessage.h>
 #include <framework/parameters/ReceivesParameterMessagesIF.h>
 
+/**
+ * @brief	Helper class to handle parameter messages
+ * @details
+ * This class simplfiies handling of parameter messages, which are sent
+ * to a class which implements ReceivesParameterMessagesIF.
+ */
 class ParameterHelper {
 public:
 	ParameterHelper(ReceivesParameterMessagesIF *owner);
