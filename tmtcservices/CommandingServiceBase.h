@@ -187,10 +187,11 @@ protected:
 	 * - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
 	 *   generate TC verification success
 	 * - @c INVALID_REPLY Calls handleUnrequestedReply
-	 * - Anything else triggers a TC verification failure. If RETURN_FAILED is
-	 *   returned and the command ID is CommandMessage::REPLY_REJECTED,
-     *   a failure verification message with the reason as the error parameter
-     *   and the initial command as failure parameter 1
+	 * - Anything else triggers a TC verification failure. If RETURN_FAILED or
+	 * 	 INVALID_REPLY is returned and the command ID is
+	 * 	 CommandMessage::REPLY_REJECTED, a failure verification message with
+	 * 	 the reason as the error parameter and the initial command as
+	 * 	 failure parameter 1 is generated.
 	 */
 	virtual ReturnValue_t handleReply(const CommandMessage* reply,
 			Command_t previousCommand, uint32_t *state,
