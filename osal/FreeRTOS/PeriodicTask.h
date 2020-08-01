@@ -1,9 +1,11 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
 
+#include <framework/osal/FreeRTOS/FreeRTOSTaskIF.h>
 #include <framework/objectmanager/ObjectManagerIF.h>
 #include <framework/tasks/PeriodicTaskIF.h>
 #include <framework/tasks/Typedef.h>
+
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -17,7 +19,7 @@ class ExecutableObjectIF;
  * 			periodic activities of multiple objects.
  * @ingroup task_handling
  */
-class PeriodicTask: public PeriodicTaskIF {
+class PeriodicTask: public PeriodicTaskIF, public FreeRTOSTaskIF {
 public:
 	/**
 	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
@@ -70,7 +72,7 @@ public:
 
 	ReturnValue_t sleepFor(uint32_t ms) override;
 
-	TaskHandle_t getTaskHandle() const;
+	TaskHandle_t getTaskHandle() override;
 protected:
 	bool started;
 	TaskHandle_t handle;

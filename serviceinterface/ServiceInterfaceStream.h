@@ -33,7 +33,7 @@ public:
 	 * the unbuffered mode.
 	 * @return Preamle consisting of log message and timestamp.
 	 */
-	std::string getPreamble();
+	std::string* getPreamble();
 
 	/**
 	 * This prints an error with a preamble. Useful if using the unbuffered

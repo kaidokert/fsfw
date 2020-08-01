@@ -16,13 +16,8 @@ public:
 	class Iterator {
 	public:
 		LinkedElement<T> *value = nullptr;
-		//! Creates an uninitialized iterator which points to nullptr.
 		Iterator() {}
 
-		/**
-		 * Initialize iterator at specified linked element.
-		 * @param element
-		 */
 		Iterator(LinkedElement<T> *element) :
 				value(element) {
 		}
@@ -77,11 +72,6 @@ private:
 	LinkedElement *next;
 };
 
-/**
- * @brief 	SinglyLinkedList data structure which keeps a pointer to its
- * 			first element to perform all operations.
- * @tparam T
- */
 template<typename T>
 class SinglyLinkedList {
 public:
@@ -99,12 +89,21 @@ public:
 		return ElementIterator::Iterator(start);
 	}
 
+	/** Returns iterator to nulltr */
 	ElementIterator end() const {
-		LinkedElement<T> *element = start;
-		while (element != nullptr) {
-			element = element->getNext();
-		}
-		return ElementIterator::Iterator(element);
+		return ElementIterator::Iterator();
+	}
+
+	/**
+	 * Returns last element in singly linked list.
+	 * @return
+	 */
+	ElementIterator back() const {
+	    LinkedElement<T> *element = start;
+	    while (element != nullptr) {
+	        element = element->getNext();
+	    }
+	    return ElementIterator::Iterator(element);
 	}
 
 	size_t getSize() const {
@@ -116,15 +115,37 @@ public:
 		}
 		return size;
 	}
-	void setStart(LinkedElement<T>* setStart) {
-		start = setStart;
+	void setStart(LinkedElement<T>* firstElement) {
+		start = firstElement;
 	}
 
-    void setEnd(LinkedElement<T>* setEnd) {
-        setEnd->setEnd();
+	void setNext(LinkedElement<T>* currentElement,
+	        LinkedElement<T>* nextElement) {
+	    currentElement->setNext(nextElement);
+	}
+
+    void setLast(LinkedElement<T>* lastElement) {
+        lastElement->setEnd();
     }
 
-    // SHOULDDO: Insertion operation ?
+    void insertElement(LinkedElement<T>* element, size_t position) {
+        LinkedElement<T> *currentElement = start;
+        for(size_t count = 0; count < position; count++) {
+            if(currentElement == nullptr) {
+                return;
+            }
+            currentElement = currentElement->getNext();
+        }
+        LinkedElement<T>* elementAfterCurrent = currentElement->next;
+        currentElement->setNext(element);
+        if(elementAfterCurrent != nullptr) {
+            element->setNext(elementAfterCurrent);
+        }
+    }
+
+    void insertBack(LinkedElement<T>* lastElement) {
+        back().value->setNext(lastElement);
+    }
 
 protected:
 	LinkedElement<T> *start = nullptr;

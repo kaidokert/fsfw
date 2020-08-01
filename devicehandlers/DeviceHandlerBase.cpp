@@ -63,10 +63,6 @@ void DeviceHandlerBase::setThermalStateRequestPoolIds(
 }
 
 
-void DeviceHandlerBase::setDeviceSwitch(uint8_t deviceSwitch) {
-	this->deviceSwitch = deviceSwitch;
-}
-
 DeviceHandlerBase::~DeviceHandlerBase() {
 	delete comCookie;
 	if (defaultFDIRUsed) {
@@ -132,7 +128,9 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	result = communicationInterface->initializeInterface(comCookie);
 	if (result != RETURN_OK) {
-		return result;
+	    sif::error << "DeviceHandlerBase::initialize: Initializing "
+	            "communication interface failed!" << std::endl;
+	    return result;
 	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
@@ -168,12 +166,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	}
 
 	result = healthHelper.initialize();
-	if (result == RETURN_OK) {
-		healthHelperActive = true;
-	}
-	else {
-		sif::warning << "DeviceHandlerBase::initialize: Health Helper "
-				"initialization failure." << std::endl;
+	if (result != RETURN_OK) {
+	    return result;
 	}
 
 	result = modeHelper.initialize();
@@ -250,11 +244,9 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	if(healthHelperActive) {
-		result = healthHelper.handleHealthCommand(&command);
-		if (result == RETURN_OK) {
-			return;
-		}
+	result = healthHelper.handleHealthCommand(&command);
+	if (result == RETURN_OK) {
+	    return;
 	}
 
 	result = modeHelper.handleModeCommand(&command);
@@ -688,16 +680,24 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		switch (result) {
 		case RETURN_OK:
 			handleReply(receivedData, foundId, foundLen);
+			if(foundLen == 0) {
+			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
+			            " Packet parsing will be stuck." << std::endl;
+			}
 			break;
 		case APERIODIC_REPLY: {
 			result = interpretDeviceReply(foundId, receivedData);
 			if (result != RETURN_OK) {
-				replyRawReplyIfnotWiretapped(receivedData, foundLen);
-				triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result,
-						foundId);
+			    replyRawReplyIfnotWiretapped(receivedData, foundLen);
+			    triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result,
+			            foundId);
 			}
+			if(foundLen == 0) {
+			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
+			            " Packet parsing will be stuck." << std::endl;
+			}
+			break;
 		}
-		break;
 		case IGNORE_REPLY_DATA:
 			break;
 		case IGNORE_FULL_PACKET:
@@ -1032,9 +1032,7 @@ void DeviceHandlerBase::getMode(Mode_t* mode, Submode_t* submode) {
 }
 
 void DeviceHandlerBase::setToExternalControl() {
-	if(healthHelperActive) {
-		healthHelper.setHealth(EXTERNAL_CONTROL);
-	}
+	healthHelper.setHealth(EXTERNAL_CONTROL);
 }
 
 void DeviceHandlerBase::announceMode(bool recursive) {
@@ -1054,25 +1052,12 @@ void DeviceHandlerBase::missedReply(DeviceCommandId_t id) {
 }
 
 HasHealthIF::HealthState DeviceHandlerBase::getHealth() {
-	if(healthHelperActive) {
-		return healthHelper.getHealth();
-	}
-	else {
-		sif::warning << "DeviceHandlerBase::getHealth: Health helper not active"
-				<< std::endl;
-		return HasHealthIF::HEALTHY;
-	}
+	return healthHelper.getHealth();
 }
 
 ReturnValue_t DeviceHandlerBase::setHealth(HealthState health) {
-	if(healthHelperActive) {
-		healthHelper.setHealth(health);
-	}
-	else {
-		sif::warning << "DeviceHandlerBase::getHealth: Health helper not active"
-				<< std::endl;
-	}
-	return HasReturnvaluesIF::RETURN_OK;
+    healthHelper.setHealth(health);
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void DeviceHandlerBase::checkSwitchState() {
@@ -1159,7 +1144,7 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 
 void DeviceHandlerBase::setParentQueue(MessageQueueId_t parentQueueId) {
 	modeHelper.setParentQueue(parentQueueId);
-	healthHelper.setParentQeueue(parentQueueId);
+	healthHelper.setParentQueue(parentQueueId);
 }
 
 bool DeviceHandlerBase::isAwaitingReply() {
@@ -1264,18 +1249,23 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 	if (mode == MODE_NORMAL) {
 		result = buildNormalDeviceCommand(&deviceCommandId);
 		if (result == BUSY) {
+		    //so we can track misconfigurations
 			sif::debug << std::hex << getObjectId()
-					<< ": DHB::buildInternalCommand busy" << std::endl; //so we can track misconfigurations
+					<< ": DHB::buildInternalCommand: Busy" << std::endl;
 			result = NOTHING_TO_SEND; //no need to report this
 		}
-	} else if (mode == MODE_RAW) {
+	}
+	else if (mode == MODE_RAW) {
 		result = buildChildRawCommand();
 		deviceCommandId = RAW_COMMAND_ID;
-	} else if (mode & TRANSITION_MODE_CHILD_ACTION_MASK) {
+	}
+	else if (mode & TRANSITION_MODE_CHILD_ACTION_MASK) {
 		result = buildTransitionDeviceCommand(&deviceCommandId);
-	} else {
+	}
+	else {
 		return;
 	}
+
 	if (result == NOTHING_TO_SEND) {
 		return;
 	}
@@ -1386,18 +1376,6 @@ LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
 	return &hkManager;
 }
 
-ReturnValue_t DeviceHandlerBase::addDataSet(sid_t sid) {
-    return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t DeviceHandlerBase::removeDataSet(sid_t sid) {
-    return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t DeviceHandlerBase::changeCollectionInterval(sid_t sid,
-        dur_seconds_t newInterval) {
-    return HasReturnvaluesIF::RETURN_OK;
-}
 
 ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     // In this function, the task handle should be valid if the task

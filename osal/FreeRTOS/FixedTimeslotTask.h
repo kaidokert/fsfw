@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 
+#include <framework/osal/FreeRTOS/FreeRTOSTaskIF.h>
 #include <framework/tasks/FixedSlotSequence.h>
 #include <framework/tasks/FixedTimeslotTaskIF.h>
 #include <framework/tasks/Typedef.h>
@@ -8,7 +9,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-class FixedTimeslotTask: public FixedTimeslotTaskIF {
+class FixedTimeslotTask: public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
 public:
 
 	/**
@@ -57,7 +58,7 @@ public:
 
 	ReturnValue_t sleepFor(uint32_t ms) override;
 
-	TaskHandle_t getTaskHandle() const;
+	TaskHandle_t getTaskHandle() override;
 
 protected:
 	bool started;

@@ -79,7 +79,7 @@ public:
 	/**
 	 * @param parentQueue the Queue id of the parent object. Set to 0 if no parent present
 	 */
-	void setParentQeueue(MessageQueueId_t parentQueue);
+	void setParentQueue(MessageQueueId_t parentQueue);
 
 	/**
 	 *

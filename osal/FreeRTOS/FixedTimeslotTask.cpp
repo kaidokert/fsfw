@@ -125,19 +125,18 @@ void FixedTimeslotTask::checkMissedDeadline(const TickType_t xLastWakeTime,
      * it. */
     TickType_t currentTickCount = xTaskGetTickCount();
     TickType_t timeToWake = xLastWakeTime + interval;
-    // Tick count has overflown
-    if(currentTickCount < xLastWakeTime) {
-        // Time to wake has overflown as well. If the tick count
-        // is larger than the time to wake, a deadline was missed.
-        if(timeToWake < xLastWakeTime and
-                currentTickCount > timeToWake) {
+    // Time to wake has not overflown.
+    if(timeToWake > xLastWakeTime) {
+        /* If the current time has overflown exclusively or the current
+         * tick count is simply larger than the time to wake, a deadline was
+         * missed */
+        if((currentTickCount < xLastWakeTime) or (currentTickCount > timeToWake)) {
             handleMissedDeadline();
         }
     }
-    // No tick count overflow. If the timeToWake has not overflown
-    // and the current tick count is larger than the time to wake,
-    // a deadline was missed.
-    else if(timeToWake > xLastWakeTime and currentTickCount > timeToWake) {
+    /* Time to wake has overflown. A deadline was missed if the current time
+     * is larger than the time to wake */
+    else if((timeToWake < xLastWakeTime) and (currentTickCount > timeToWake)) {
         handleMissedDeadline();
     }
 }
@@ -157,6 +156,6 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-TaskHandle_t FixedTimeslotTask::getTaskHandle() const {
+TaskHandle_t FixedTimeslotTask::getTaskHandle() {
     return handle;
 }

@@ -8,7 +8,7 @@ const uint32_t MutexIF::BLOCKING = portMAX_DELAY;
 Mutex::Mutex() {
 	handle = xSemaphoreCreateMutex();
 	if(handle == nullptr) {
-		sif::error << "Mutex: Creation failure" << std::endl;
+		sif::error << "Mutex::Mutex(FreeRTOS): Creation failure" << std::endl;
 	}
 }
 

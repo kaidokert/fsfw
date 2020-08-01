@@ -4,15 +4,14 @@
 
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * cookie,
-		uint8_t setDeviceSwitch, object_id_t hkDestination,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
+		object_id_t hkDestination, uint32_t thermalStatePoolId,
+		uint32_t thermalRequestPoolId,
 		object_id_t parent,
 		FailureIsolationBase* customFdir, size_t cmdQueueSize) :
 		DeviceHandlerBase(setObjectId, deviceCommunication, cookie,
 			(customFdir == nullptr? &childHandlerFdir : customFdir),
 			cmdQueueSize),
 		parentId(parent), childHandlerFdir(setObjectId) {
-	this->setDeviceSwitch(setDeviceSwitch);
 	this->setHkDestination(hkDestination);
 	this->setThermalStateRequestPoolIds(thermalStatePoolId,
 			thermalRequestPoolId);
@@ -40,7 +39,7 @@ ReturnValue_t ChildHandlerBase::initialize() {
 		parent->registerChild(getObjectId());
 	}
 
-	healthHelper.setParentQeueue(parentQueue);
+	healthHelper.setParentQueue(parentQueue);
 
 	modeHelper.setParentQueue(parentQueue);
 
