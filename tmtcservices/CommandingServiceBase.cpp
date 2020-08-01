@@ -126,11 +126,11 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 			&nextCommand, iter->objectId, &isStep);
 
 	/* If the child implementation does not implement special handling for
-	 * rejected replies (RETURN_FAILED is returned), a failure verification
-	 * will be generated with the reason as the return code and the initial
-	 * command as failure parameter 1 */
+	 * rejected replies (RETURN_FAILED or INVALID_REPLY is returned), a
+	 * failure verification will be generated with the reason as the
+	 * return code and the initial command as failure parameter 1 */
 	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
-			result == RETURN_FAILED) {
+			(result == RETURN_FAILED or result == INVALID_REPLY)) {
 	    result = reply->getReplyRejectedReason();
 	    failureParameter1 = iter->command;
 	}
