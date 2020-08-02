@@ -35,7 +35,7 @@ ReturnValue_t ChildHandlerBase::initialize() {
 		parent->registerChild(getObjectId());
 	}
 
-	healthHelper.setParentQeueue(parentQueue);
+	healthHelper.setParentQueue(parentQueue);
 
 	modeHelper.setParentQueue(parentQueue);
 
