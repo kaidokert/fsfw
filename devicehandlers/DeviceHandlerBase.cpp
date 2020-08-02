@@ -204,7 +204,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	//Set temperature target state to NON_OP.
 	DataSet mySet;
-	dp_int8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
+	db_int8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
 			PoolVariableIF::VAR_WRITE);
 	mySet.read();
 	thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
