@@ -4,11 +4,11 @@
 #include <framework/thermal/ThermalComponentIF.h>
 #include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
 
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapoolglob/GlobalPoolVariable.h>
+#include <framework/datapool/DataSet.h>
+#include <framework/datapool/PoolVariable.h>
 #include <framework/devicehandlers/DeviceTmReportingWrapper.h>
 #include <framework/globalfunctions/CRC.h>
-#include <framework/housekeeping/HousekeepingMessage.h>
+//#include <framework/housekeeping/HousekeepingMessage.h>
 #include <framework/ipc/MessageQueueMessage.h>
 #include <framework/subsystem/SubsystemBase.h>
 #include <framework/ipc/QueueFactory.h>
@@ -203,8 +203,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	fillCommandAndReplyMap();
 
 	//Set temperature target state to NON_OP.
-	GlobDataSet mySet;
-	gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
+	DataSet mySet;
+	dp_int8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
 			PoolVariableIF::VAR_WRITE);
 	mySet.read();
 	thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
@@ -486,8 +486,8 @@ void DeviceHandlerBase::setMode(Mode_t newMode, uint8_t newSubmode) {
 	Clock::getUptime(&timeoutStart);
 
 	if (mode == MODE_OFF) {
-		GlobDataSet mySet;
-		gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
+		DataSet mySet;
+		db_int8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
 				PoolVariableIF::VAR_READ_WRITE);
 		mySet.read();
 		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
@@ -943,10 +943,10 @@ ReturnValue_t DeviceHandlerBase::checkModeCommand(Mode_t commandedMode,
 
 	if ((commandedMode == MODE_ON) && (mode == MODE_OFF)
 			&& (deviceThermalStatePoolId != PoolVariableIF::NO_PARAMETER)) {
-		GlobDataSet mySet;
-		gp_uint8_t thermalState(deviceThermalStatePoolId, &mySet,
+		DataSet mySet;
+		db_int8_t thermalState(deviceThermalStatePoolId, &mySet,
 				PoolVariableIF::VAR_READ);
-		gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
+		db_int8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
 				PoolVariableIF::VAR_READ);
 		mySet.read();
 		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
@@ -973,8 +973,8 @@ void DeviceHandlerBase::startTransition(Mode_t commandedMode,
 			childTransitionDelay = getTransitionDelayMs(_MODE_START_UP,
 					MODE_ON);
 			triggerEvent(CHANGING_MODE, commandedMode, commandedSubmode);
-			GlobDataSet mySet;
-			gp_int8_t thermalRequest(deviceThermalRequestPoolId,
+			DataSet mySet;
+			db_int8_t thermalRequest(deviceThermalRequestPoolId,
 					&mySet, PoolVariableIF::VAR_READ_WRITE);
 			mySet.read();
 			if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
