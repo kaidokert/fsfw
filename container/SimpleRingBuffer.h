@@ -16,12 +16,17 @@ class SimpleRingBuffer: public RingBufferBase<> {
 public:
     /**
      * This constructor allocates a new internal buffer with the supplied size.
+     *
      * @param size
-     * @param overwriteOld
-     * If the ring buffer is overflowing at a write operartion, the oldest data
-     * will be overwritten.
+     * @param overwriteOld If the ring buffer is overflowing at a write
+     * operation, the oldest data will be overwritten.
+     * @param maxExcessBytes These additional bytes will be allocated in addtion
+     * to the specified size to accomodate contiguous write operations
+     * with getFreeElement.
+     *
      */
-	SimpleRingBuffer(const size_t size, bool overwriteOld);
+	SimpleRingBuffer(const size_t size, bool overwriteOld,
+	        size_t maxExcessBytes = 0);
 	/**
 	 * This constructor takes an external buffer with the specified size.
 	 * @param buffer
@@ -29,8 +34,13 @@ public:
 	 * @param overwriteOld
 	 * If the ring buffer is overflowing at a write operartion, the oldest data
      * will be overwritten.
+	 * @param maxExcessBytes
+	 * If the buffer can accomodate additional bytes for contigous write
+	 * operations with getFreeElement, this is the maximum allowed additional
+	 * size
 	 */
-	SimpleRingBuffer(uint8_t* buffer, const size_t size, bool overwriteOld);
+	SimpleRingBuffer(uint8_t* buffer, const size_t size, bool overwriteOld,
+	        size_t maxExcessBytes = 0);
 
 	virtual ~SimpleRingBuffer();
 
@@ -42,6 +52,17 @@ public:
 	 * -@c RETURN_FAILED if
 	 */
 	ReturnValue_t writeData(const uint8_t* data, size_t amount);
+
+	/**
+	 * Returns a pointer to a free element. If the remaining buffer is
+	 * not large enough, the data will be written past the actual size
+	 * and the amount of excess bytes will be cached.
+	 * @param writePointer Pointer to a pointer which can be used to write
+	 * contiguous blocks into the ring buffer
+	 * @param amount
+	 * @return
+	 */
+	ReturnValue_t getFreeElement(uint8_t** writePointer, size_t amount);
 
 	/**
 	 * Read from circular buffer at read pointer.
@@ -82,6 +103,8 @@ public:
 private:
 	static const uint8_t READ_PTR = 0;
 	uint8_t* buffer = nullptr;
+	const size_t maxExcessBytes;
+	size_t excessBytes = 0;
 };
 
 #endif /* FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_ */
