@@ -64,6 +64,14 @@ public:
 	 */
 	ReturnValue_t getFreeElement(uint8_t** writePointer, size_t amount);
 
+	size_t getExcessBytes() const;
+	/**
+	 * Helper functions which moves any excess bytes to the start
+	 * of the ring buffer.
+	 * @return
+	 */
+	void moveExcessBytesToStart();
+
 	/**
 	 * Read from circular buffer at read pointer.
 	 * @param data
