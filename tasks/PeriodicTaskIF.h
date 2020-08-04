@@ -36,8 +36,7 @@ public:
 	 * to the component.
 	 * @return
 	 */
-	virtual ReturnValue_t addComponent(object_id_t object,
-	        bool setTaskIF = true) {
+	virtual ReturnValue_t addComponent(object_id_t object) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 
