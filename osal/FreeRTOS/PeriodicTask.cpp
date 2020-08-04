@@ -81,7 +81,7 @@ void PeriodicTask::taskFunctionality() {
 	}
 }
 
-ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
+ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
