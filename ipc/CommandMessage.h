@@ -20,7 +20,7 @@ typedef ReturnValue_t Command_t;
 class CommandMessage : public MessageQueueMessage {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
-	static const ReturnValue_t UNKNOW_COMMAND = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
 
 
 	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::COMMAND;
