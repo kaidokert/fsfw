@@ -16,7 +16,7 @@
  * @brief 	Subservice 1, 3, 5, 7
  * @ingroup spacepackets
  */
-class FailureReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 1, 3, 5, 7
+class FailureReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 2, 4, 6, 8
 public:
 	FailureReport(uint8_t failureSubtype_, uint16_t packetId_,
 			uint16_t packetSequenceControl_, uint8_t stepNumber_,
@@ -111,7 +111,7 @@ private:
  * @brief       Subservices 2, 4, 6, 8
  * @ingroup     spacepackets
  */
-class SuccessReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 2, 4, 6, 8
+class SuccessReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 1, 3, 5, 7
 public:
 	SuccessReport(uint8_t subtype_, uint16_t packetId_,
 			uint16_t packetSequenceControl_,uint8_t stepNumber_) :
