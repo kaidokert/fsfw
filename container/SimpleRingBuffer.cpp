@@ -2,16 +2,28 @@
 #include <cstring>
 
 SimpleRingBuffer::SimpleRingBuffer(const size_t size, bool overwriteOld,
-        size_t maxExcessBytes) :
+		size_t maxExcessBytes) :
 		RingBufferBase<>(0, size, overwriteOld),
 		maxExcessBytes(maxExcessBytes) {
+	if(maxExcessBytes > size) {
+		this->maxExcessBytes = size;
+	}
+	else {
+		this->maxExcessBytes = maxExcessBytes;
+	}
 	buffer = new uint8_t[size + maxExcessBytes];
 }
 
 SimpleRingBuffer::SimpleRingBuffer(uint8_t *buffer, const size_t size,
-        bool overwriteOld, size_t maxExcessBytes):
-        RingBufferBase<>(0, size, overwriteOld), buffer(buffer),
-        maxExcessBytes(maxExcessBytes) {}
+		bool overwriteOld, size_t maxExcessBytes):
+        RingBufferBase<>(0, size, overwriteOld), buffer(buffer) {
+	if(maxExcessBytes > size) {
+		this->maxExcessBytes = size;
+	}
+	else {
+		this->maxExcessBytes = maxExcessBytes;
+	}
+}
 
 
 SimpleRingBuffer::~SimpleRingBuffer() {

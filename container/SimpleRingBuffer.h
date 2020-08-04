@@ -111,7 +111,7 @@ public:
 private:
 	static const uint8_t READ_PTR = 0;
 	uint8_t* buffer = nullptr;
-	const size_t maxExcessBytes;
+	size_t maxExcessBytes;
 	size_t excessBytes = 0;
 };
 
