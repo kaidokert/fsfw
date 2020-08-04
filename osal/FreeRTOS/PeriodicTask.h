@@ -65,8 +65,7 @@ public:
 	 * -@c RETURN_OK on success
 	 * -@c RETURN_FAILED if the object could not be added.
 	 */
-	ReturnValue_t addComponent(object_id_t object,
-	        bool setTaskIF = true) override;
+	ReturnValue_t addComponent(object_id_t object) override;
 
 	uint32_t getPeriodMs() const override;
 

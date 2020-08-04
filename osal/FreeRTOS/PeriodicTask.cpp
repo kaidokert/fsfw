@@ -90,12 +90,9 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+	newObject->setTaskIF(this);
 
-	if(setTaskIF) {
-	     newObject->setTaskIF(this);
-	}
-	ReturnValue_t result = newObject->initializeAfterTaskCreation();
-	return result;
+	return newObject->initializeAfterTaskCreation();
 }
 
 uint32_t PeriodicTask::getPeriodMs() const {
