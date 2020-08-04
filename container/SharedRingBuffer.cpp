@@ -3,17 +3,24 @@
 #include <framework/ipc/MutexHelper.h>
 
 SharedRingBuffer::SharedRingBuffer(object_id_t objectId, const size_t size,
-		bool overwriteOld, dur_millis_t mutexTimeout):
-		SystemObject(objectId), SimpleRingBuffer(size, overwriteOld),
-		mutexTimeout(mutexTimeout) {
+		bool overwriteOld, size_t maxExcessBytes, dur_millis_t mutexTimeout):
+		SystemObject(objectId), SimpleRingBuffer(size, overwriteOld,
+		maxExcessBytes), mutexTimeout(mutexTimeout) {
 	mutex = MutexFactory::instance()->createMutex();
 }
 
 SharedRingBuffer::SharedRingBuffer(object_id_t objectId, uint8_t *buffer,
-		const size_t size, bool overwriteOld, dur_millis_t mutexTimeout):
-		SystemObject(objectId), SimpleRingBuffer(buffer, size, overwriteOld),
-		mutexTimeout(mutexTimeout) {
+		const size_t size, bool overwriteOld, size_t maxExcessBytes,
+		dur_millis_t mutexTimeout):
+		SystemObject(objectId), SimpleRingBuffer(buffer, size, overwriteOld,
+		maxExcessBytes), mutexTimeout(mutexTimeout) {
 	mutex = MutexFactory::instance()->createMutex();
+}
+
+ReturnValue_t SharedRingBuffer::getFreeElementProtected(uint8_t** writePtr,
+		size_t amount) {
+	MutexHelper(mutex, mutexTimeout);
+	return SimpleRingBuffer::getFreeElement(writePtr,amount);
 }
 
 ReturnValue_t SharedRingBuffer::writeDataProtected(const uint8_t *data,
