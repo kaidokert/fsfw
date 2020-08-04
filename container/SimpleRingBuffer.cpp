@@ -39,7 +39,7 @@ ReturnValue_t SimpleRingBuffer::getFreeElement(uint8_t **writePointer,
             if((amount - amountTillWrap + excessBytes) > maxExcessBytes) {
                 return HasReturnvaluesIF::RETURN_FAILED;
             }
-            excessBytes += amount - amountTillWrap;
+            excessBytes = amount - amountTillWrap;
         }
         *writePointer = &buffer[write];
         incrementWrite(amount);

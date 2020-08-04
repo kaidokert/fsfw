@@ -34,6 +34,14 @@ public:
 
 	void setMutexTimeout(dur_millis_t newTimeout);
 
+	virtual size_t getExcessBytes() const override;
+	/**
+	 * Helper functions which moves any excess bytes to the start
+	 * of the ring buffer.
+	 * @return
+	 */
+	virtual void moveExcessBytesToStart() override;
+
 	/** Performs mutex protected SimpleRingBuffer::getFreeElement call */
 	ReturnValue_t getFreeElementProtected(uint8_t** writePtr, size_t amount);
 

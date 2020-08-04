@@ -43,6 +43,16 @@ ReturnValue_t SharedRingBuffer::deleteDataProtected(size_t amount,
 	return SimpleRingBuffer::deleteData(amount, deleteRemaining, trueAmount);
 }
 
+size_t SharedRingBuffer::getExcessBytes() const {
+	MutexHelper(mutex, mutexTimeout);
+	return SimpleRingBuffer::getExcessBytes();
+}
+
+void SharedRingBuffer::moveExcessBytesToStart() {
+	MutexHelper(mutex, mutexTimeout);
+	return SimpleRingBuffer::moveExcessBytesToStart();
+}
+
 size_t SharedRingBuffer::getAvailableReadDataProtected(uint8_t n) const {
 	MutexHelper(mutex, mutexTimeout);
 	return ((write + size) - read[n]) % size;
