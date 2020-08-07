@@ -5,7 +5,6 @@
 
 /**
  * @brief Common interface for OS Mutex objects which provide MUTual EXclusion.
- *
  * @details https://en.wikipedia.org/wiki/Lock_(computer_science)
  * @ingroup osal
  * @ingroup interface
