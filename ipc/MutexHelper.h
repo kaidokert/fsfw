@@ -6,9 +6,10 @@
 
 class MutexHelper {
 public:
-	MutexHelper(MutexIF* mutex, uint32_t timeoutMs) :
+	MutexHelper(MutexIF* mutex, MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::BLOCKING, uint32_t timeoutMs = 0) :
 			internalMutex(mutex) {
-		ReturnValue_t status = mutex->lockMutex(MutexIF::TimeoutType::WAITING,
+		ReturnValue_t status = mutex->lockMutex(timeoutType,
 		        timeoutMs);
 		if(status == MutexIF::MUTEX_TIMEOUT) {
 			sif::error << "MutexHelper: Lock of mutex failed with timeout of "
