@@ -329,7 +329,7 @@ void SubsystemBase::checkCommandQueue() {
 		result = handleCommandMessage(&message);
 		if (result != RETURN_OK) {
 			CommandMessage reply;
-			reply.setReplyRejected(CommandMessage::UNKNOW_COMMAND,
+			reply.setReplyRejected(CommandMessage::UNKNOWN_COMMAND,
 					message.getCommand());
 			replyToCommand(&reply);
 		}

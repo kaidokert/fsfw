@@ -111,7 +111,7 @@ size_t CommandMessage::getMinimumMessageSize() const {
 void CommandMessage::setToUnknownCommand() {
 	Command_t initialCommand = getCommand();
 	clearCommandMessage();
-	setReplyRejected(UNKNOW_COMMAND, initialCommand);
+	setReplyRejected(UNKNOWN_COMMAND, initialCommand);
 }
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,
