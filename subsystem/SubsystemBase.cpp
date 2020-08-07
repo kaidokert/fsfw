@@ -76,14 +76,15 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(
 	return RETURN_OK;
 }
 
-void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
+void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter,
+        Submode_t targetSubmode) {
 	CommandMessage command;
 
 	std::map<object_id_t, ChildInfo>::iterator iter;
 
 	commandsOutstanding = 0;
 
-	for (; tableIter.value != NULL; ++tableIter) {
+	for (; tableIter.value != nullptr; ++tableIter) {
 		object_id_t object = tableIter.value->getObject();
 		if ((iter = childrenMap.find(object)) == childrenMap.end()) {
 			//illegal table entry, should only happen due to misconfigured mode table

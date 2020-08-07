@@ -2,9 +2,6 @@
 
 #include <framework/serviceinterface/ServiceInterfaceStream.h>
 
-const uint32_t MutexIF::POLLING = 0;
-const uint32_t MutexIF::BLOCKING = portMAX_DELAY;
-
 Mutex::Mutex() {
 	handle = xSemaphoreCreateMutex();
 	if(handle == nullptr) {
@@ -19,15 +16,17 @@ Mutex::~Mutex() {
 
 }
 
-ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
+ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType,
+        uint32_t timeoutMs) {
 	if (handle == nullptr) {
 		return MutexIF::MUTEX_NOT_FOUND;
 	}
-	TickType_t timeout = MutexIF::POLLING;
-	if(timeoutMs == MutexIF::BLOCKING) {
-		timeout = MutexIF::BLOCKING;
+	// If the timeout type is BLOCKING, this will be the correct value.
+	uint32_t timeout = portMAX_DELAY;
+	if(timeoutType == TimeoutType::POLLING) {
+		timeout = 0;
 	}
-	else if(timeoutMs > MutexIF::POLLING){
+	else if(timeoutType == TimeoutType::WAITING){
 		timeout = pdMS_TO_TICKS(timeoutMs);
 	}
 

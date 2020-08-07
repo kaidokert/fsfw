@@ -40,9 +40,13 @@ Mutex::~Mutex() {
 	pthread_mutex_destroy(&mutex);
 }
 
-ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
+ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
 	int status = 0;
-	if (timeoutMs != MutexIF::BLOCKING) {
+
+	if(timeoutType == TimeoutType::POLLING) {
+	    status = pthread_mutex_trylock(&mutex);
+	}
+	else if (timeoutType == TimeoutType::WAITING) {
 		timespec timeOut;
 		clock_gettime(CLOCK_REALTIME, &timeOut);
 		uint64_t nseconds = timeOut.tv_sec * 1000000000 + timeOut.tv_nsec;
@@ -50,9 +54,11 @@ ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 		timeOut.tv_sec = nseconds / 1000000000;
 		timeOut.tv_nsec = nseconds - timeOut.tv_sec * 1000000000;
 		status = pthread_mutex_timedlock(&mutex, &timeOut);
-	} else {
+	}
+	else if(timeoutType == TimeoutType::BLOCKING) {
 		status = pthread_mutex_lock(&mutex);
 	}
+
 	switch (status) {
 	case EINVAL:
 		//The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex's current priority ceiling.

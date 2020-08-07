@@ -54,7 +54,8 @@ ReturnValue_t GlobalDataPool::unlockDataPool() {
 }
 
 ReturnValue_t GlobalDataPool::lockDataPool(uint32_t timeoutMs) {
-	ReturnValue_t status = mutex->lockMutex(timeoutMs);
+	ReturnValue_t status = mutex->lockMutex(MutexIF::TimeoutType::WAITING,
+	        timeoutMs);
 	if(status != RETURN_OK) {
 		sif::error << "DataPool::DataPool: lock of mutex failed "
 				"with error code: " << status << std::endl;

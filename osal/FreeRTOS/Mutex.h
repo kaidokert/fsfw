@@ -18,7 +18,8 @@ class Mutex : public MutexIF {
 public:
 	Mutex();
 	~Mutex();
-	ReturnValue_t lockMutex(uint32_t timeoutMs = MutexIF::BLOCKING) override;
+	ReturnValue_t lockMutex(TimeoutType timeoutType,
+	        uint32_t timeoutMs) override;
 	ReturnValue_t unlockMutex() override;
 
 private:
