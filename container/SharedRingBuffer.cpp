@@ -19,41 +19,41 @@ SharedRingBuffer::SharedRingBuffer(object_id_t objectId, uint8_t *buffer,
 
 ReturnValue_t SharedRingBuffer::getFreeElementProtected(uint8_t** writePtr,
 		size_t amount) {
-	MutexHelper(mutex, mutexTimeout);
+	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
 	return SimpleRingBuffer::getFreeElement(writePtr,amount);
 }
 
 ReturnValue_t SharedRingBuffer::writeDataProtected(const uint8_t *data,
 		size_t amount) {
-	MutexHelper(mutex, mutexTimeout);
+	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
 	return SimpleRingBuffer::writeData(data,amount);
 }
 
 ReturnValue_t SharedRingBuffer::readDataProtected(uint8_t *data, size_t amount,
 		bool incrementReadPtr, bool readRemaining,
 		size_t *trueAmount) {
-	MutexHelper(mutex, mutexTimeout);
+	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
 	return SimpleRingBuffer::readData(data,amount, incrementReadPtr,
 			readRemaining, trueAmount);
 }
 
 ReturnValue_t SharedRingBuffer::deleteDataProtected(size_t amount,
 		bool deleteRemaining, size_t *trueAmount) {
-	MutexHelper(mutex, mutexTimeout);
+	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
 	return SimpleRingBuffer::deleteData(amount, deleteRemaining, trueAmount);
 }
 
 size_t SharedRingBuffer::getExcessBytes() const {
-	MutexHelper(mutex, mutexTimeout);
+	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
 	return SimpleRingBuffer::getExcessBytes();
 }
 
 void SharedRingBuffer::moveExcessBytesToStart() {
-	MutexHelper(mutex, mutexTimeout);
+	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
 	return SimpleRingBuffer::moveExcessBytesToStart();
 }
 
 size_t SharedRingBuffer::getAvailableReadDataProtected(uint8_t n) const {
-	MutexHelper(mutex, mutexTimeout);
+	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
 	return ((write + size) - read[n]) % size;
 }

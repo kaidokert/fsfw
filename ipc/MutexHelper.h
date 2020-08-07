@@ -7,7 +7,7 @@
 class MutexHelper {
 public:
 	MutexHelper(MutexIF* mutex, MutexIF::TimeoutType timeoutType =
-			MutexIF::TimeoutType::BLOCKING, uint32_t timeoutMs) :
+			MutexIF::TimeoutType::BLOCKING, uint32_t timeoutMs = 0) :
 			internalMutex(mutex) {
 		ReturnValue_t status = mutex->lockMutex(timeoutType,
 		        timeoutMs);

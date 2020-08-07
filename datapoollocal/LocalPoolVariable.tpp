@@ -48,7 +48,8 @@ inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
 
 template<typename T>
 inline ReturnValue_t LocalPoolVar<T>::read(dur_millis_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
+	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
+			lockTimeout);
 	return readWithoutLock();
 }
 
@@ -76,7 +77,8 @@ inline ReturnValue_t LocalPoolVar<T>::readWithoutLock() {
 
 template<typename T>
 inline ReturnValue_t LocalPoolVar<T>::commit(dur_millis_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
+	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
+			lockTimeout);
 	return commitWithoutLock();
 }
 
