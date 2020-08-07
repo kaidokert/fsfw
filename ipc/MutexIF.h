@@ -21,10 +21,10 @@ public:
     };
 
     /**
-     * Lock the mutex.
+     * Lock the mutex. The timeout value will only be used for
+     * TimeoutType::WAITING
      * @param timeoutType
      * @param timeoutMs
-     * This value will only be used for TimeoutType::WAIT
      * @return
      */
     virtual ReturnValue_t lockMutex(TimeoutType timeoutType =
