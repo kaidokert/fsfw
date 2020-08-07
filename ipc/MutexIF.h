@@ -5,27 +5,31 @@
 
 /**
  * @brief Common interface for OS Mutex objects which provide MUTual EXclusion.
- *
  * @details https://en.wikipedia.org/wiki/Lock_(computer_science)
  * @ingroup osal
  * @ingroup interface
  */
 class MutexIF {
 public:
-	/**
-	 * @brief 	Timeout value used for polling lock attempt.
-	 * @details
-	 * If the lock is not successfull, MUTEX_TIMEOUT will be returned
-	 * immediately. Value needs to be defined in implementation.
-	 */
-	static const uint32_t POLLING;
-	/**
-	 * @brief 	Timeout value used for permanent blocking lock attempt.
-	 * @details
-	 * The task will be blocked (indefinitely) until the mutex is unlocked.
-	 * Value needs to be defined in implementation.
-	 */
-	static const uint32_t BLOCKING;
+    /**
+     * Different types of timeout for the mutex lock.
+     */
+    enum TimeoutType {
+        POLLING, //!< If mutex is not available, return immediately
+        WAITING, //!< Wait a specified time for the mutex to become available
+        BLOCKING //!< Block indefinitely until the mutex becomes available.
+    };
+
+    /**
+     * Lock the mutex. The timeout value will only be used for
+     * TimeoutType::WAITING
+     * @param timeoutType
+     * @param timeoutMs
+     * @return
+     */
+    virtual ReturnValue_t lockMutex(TimeoutType timeoutType =
+            TimeoutType::BLOCKING, uint32_t timeoutMs = 0) = 0;
+    virtual ReturnValue_t unlockMutex() = 0;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::MUTEX_IF;
 	/**
@@ -77,9 +81,7 @@ public:
 	 */
 	static const ReturnValue_t MUTEX_DESTROYED_WHILE_WAITING = MAKE_RETURN_CODE(12);
 
-	virtual ~MutexIF() {}
-	virtual ReturnValue_t lockMutex(uint32_t timeoutMs) = 0;
-	virtual ReturnValue_t unlockMutex() = 0;
+    virtual ~MutexIF() {}
 };
 
 
