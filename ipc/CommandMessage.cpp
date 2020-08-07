@@ -111,7 +111,7 @@ size_t CommandMessage::getMinimumMessageSize() const {
 void CommandMessage::setToUnknownCommand() {
 	Command_t initialCommand = getCommand();
 	clearCommandMessage();
-	setReplyRejected(UNKNOW_COMMAND, initialCommand);
+	setReplyRejected(UNKNOWN_COMMAND, initialCommand);
 }
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,
@@ -119,4 +119,13 @@ void CommandMessage::setReplyRejected(ReturnValue_t reason,
 	setCommand(REPLY_REJECTED);
 	setParameter(reason);
 	setParameter2(initialCommand);
+}
+
+ReturnValue_t CommandMessage::getReplyRejectedReason(
+        Command_t *initialCommand) const {
+    ReturnValue_t reason = getParameter();
+    if(initialCommand != nullptr) {
+        *initialCommand = getParameter2();
+    }
+    return reason;
 }

@@ -484,7 +484,7 @@ public:
 	/** @brief 	Implementation required for HasActionIF */
 	ReturnValue_t executeAction(ActionId_t actionId,
 			MessageQueueId_t commandedBy, const uint8_t* data,
-			uint32_t size) override;
+			size_t size) override;
 
 	Mode_t getTransitionSourceMode() const;
 	Submode_t getTransitionSourceSubMode() const;
