@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cstring>
 
-LocalDataSetBase::LocalDataSetBase(HasLocalDataPoolIF *hkOwner,
+LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
         PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
@@ -17,7 +17,7 @@ LocalDataSetBase::LocalDataSetBase(HasLocalDataPoolIF *hkOwner,
     hkManager = hkOwner->getHkManagerHandle();
 }
 
-LocalDataSetBase::LocalDataSetBase(object_id_t ownerId,
+LocalPoolDataSetBase::LocalPoolDataSetBase(object_id_t ownerId,
         PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
@@ -31,15 +31,15 @@ LocalDataSetBase::LocalDataSetBase(object_id_t ownerId,
     hkManager = hkOwner->getHkManagerHandle();
 }
 
-LocalDataSetBase::~LocalDataSetBase() {
+LocalPoolDataSetBase::~LocalPoolDataSetBase() {
 }
 
-ReturnValue_t LocalDataSetBase::lockDataPool(uint32_t timeoutMs) {
+ReturnValue_t LocalPoolDataSetBase::lockDataPool(uint32_t timeoutMs) {
 	MutexIF* mutex = hkManager->getMutexHandle();
 	return mutex->lockMutex(MutexIF::TimeoutType::WAITING, timeoutMs);
 }
 
-ReturnValue_t LocalDataSetBase::serializeWithValidityBuffer(uint8_t **buffer,
+ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer,
         size_t *size, size_t maxSize,
         SerializeIF::Endianness streamEndianness) const {
     ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
@@ -72,12 +72,12 @@ ReturnValue_t LocalDataSetBase::serializeWithValidityBuffer(uint8_t **buffer,
     return result;
 }
 
-ReturnValue_t LocalDataSetBase::unlockDataPool() {
+ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
 	MutexIF* mutex = hkManager->getMutexHandle();
 	return mutex->unlockMutex();
 }
 
-ReturnValue_t LocalDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
+ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
         size_t* size, size_t maxSize,
         SerializeIF::Endianness streamEndianness) const {
     for (uint16_t count = 0; count < fillCount; count++) {
@@ -93,7 +93,7 @@ ReturnValue_t LocalDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void LocalDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
+void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     if(position > 7) {
         sif::debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
         return;
@@ -102,6 +102,6 @@ void LocalDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     *byte |= 1 << shiftNumber;
 }
 
-bool LocalDataSetBase::isValid() const {
+bool LocalPoolDataSetBase::isValid() const {
     return this->valid;
 }

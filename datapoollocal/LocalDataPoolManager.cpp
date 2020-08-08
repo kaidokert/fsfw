@@ -116,7 +116,7 @@ const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 
 ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
         MessageQueueId_t sendTo) {
-	LocalDataSetBase* dataSetToSerialize = dynamic_cast<LocalDataSetBase*>(
+	LocalPoolDataSetBase* dataSetToSerialize = dynamic_cast<LocalPoolDataSetBase*>(
 			owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
@@ -155,7 +155,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 }
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid) {
-    LocalDataSetBase* dataSet = dynamic_cast<LocalDataSetBase*>(
+    LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
             owner->getDataSetHandle(sid));
     if(dataSet == nullptr) {
         sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
@@ -186,7 +186,7 @@ void LocalDataPoolManager::setMinimalSamplingFrequency(float frequencySeconds) {
 }
 
 ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
-        store_address_t *storeId, LocalDataSetBase* dataSet) {
+        store_address_t *storeId, LocalPoolDataSetBase* dataSet) {
     size_t hkSize = dataSet->getSerializedSize();
     uint8_t* storePtr = nullptr;
     ReturnValue_t result = ipcStore->getFreeElement(storeId, hkSize,&storePtr);

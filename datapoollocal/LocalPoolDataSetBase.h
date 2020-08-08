@@ -30,14 +30,14 @@ class LocalDataPoolManager;
  *
  * @ingroup data_pool
  */
-class LocalDataSetBase: public PoolDataSetBase {
+class LocalPoolDataSetBase: public PoolDataSetBase {
 public:
 	/**
 	 * @brief	Constructor for the creator of local pool data.
 	 * 			The constructor simply sets the fill_count to zero and sets
 	 *  		the state to "uninitialized".
 	 */
-	LocalDataSetBase(HasLocalDataPoolIF *hkOwner,
+	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 	        PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables);
 
@@ -49,7 +49,7 @@ public:
 	 * @details
 	 *
 	 */
-	LocalDataSetBase(object_id_t ownerId,
+	LocalPoolDataSetBase(object_id_t ownerId,
 	        PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables);
 
@@ -61,7 +61,7 @@ public:
 	 * the destructor parses all variables that are still registered to the set.
 	 * For each, the valid flag in the data pool is set to "invalid".
 	 */
-	~LocalDataSetBase();
+	~LocalPoolDataSetBase();
 
 	/**
 	 * Special version of the serilization function which appends a

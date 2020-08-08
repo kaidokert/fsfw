@@ -14,13 +14,12 @@
  * @tparam capacity
  */
 template <uint8_t NUM_VARIABLES>
-class StaticLocalDataSet: public LocalDataSetBase {
+class StaticLocalDataSet: public LocalPoolDataSetBase {
 public:
     StaticLocalDataSet(object_id_t owner):
-        LocalDataSetBase(owner, poolVarList.data(), NUM_VARIABLES) {
+        LocalPoolDataSetBase(owner, poolVarList.data(), NUM_VARIABLES) {
     }
 
-    virtual~ StaticLocalDataSet() {};
 private:
     std::array<PoolVariableIF*, NUM_VARIABLES> poolVarList;
 };

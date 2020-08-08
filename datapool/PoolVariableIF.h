@@ -20,7 +20,7 @@
 class PoolVariableIF : public SerializeIF {
 	friend class PoolDataSetBase;
 	friend class GlobDataSet;
-	friend class LocalDataSetBase;
+	friend class LocalPoolDataSetBase;
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::POOL_VARIABLE_IF;
 	static constexpr ReturnValue_t INVALID_READ_WRITE_MODE = MAKE_RETURN_CODE(0xA0);

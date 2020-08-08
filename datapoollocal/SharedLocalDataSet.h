@@ -13,7 +13,7 @@
  * Then a regular local data set is sufficient.
  */
 class SharedLocalDataSet: public SystemObject,
-        public LocalDataSetBase,
+        public LocalPoolDataSetBase,
         public SharedDataSetIF {
 public:
     SharedLocalDataSet(object_id_t objectId, object_id_t owner,

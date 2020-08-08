@@ -3,7 +3,7 @@
 #include <framework/datapoollocal/LocalPoolDataSetBase.h>
 #include <vector>
 
-class LocalDataSet: public LocalDataSetBase {
+class LocalDataSet: public LocalPoolDataSetBase {
 public:
     LocalDataSet(HasLocalDataPoolIF* hkOwner, const size_t maxSize);
     LocalDataSet(object_id_t owner, const size_t maxSize);
