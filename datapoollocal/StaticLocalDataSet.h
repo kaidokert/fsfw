@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_STATICLOCALDATASET_H_
 #define FRAMEWORK_DATAPOOLLOCAL_STATICLOCALDATASET_H_
-#include <framework/datapool/PoolDataSetBase.h>
+#include <framework/datapoollocal/LocalPoolDataSetBase.h>
 #include <framework/objectmanager/SystemObjectIF.h>
 #include <array>
 
@@ -20,7 +20,7 @@ public:
         LocalDataSetBase(owner, poolVarList.data(), NUM_VARIABLES) {
     }
 
-    virtual~ StaticLocalDataSet();
+    virtual~ StaticLocalDataSet() {};
 private:
     std::array<PoolVariableIF*, NUM_VARIABLES> poolVarList;
 };

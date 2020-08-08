@@ -8,7 +8,7 @@ SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, object_id_t owner,
 }
 
 ReturnValue_t SharedLocalDataSet::lockDataset(dur_millis_t mutexTimeout) {
-    return datasetLock->lockMutex(mutexTimeout);
+    return datasetLock->lockMutex(MutexIF::TimeoutType::WAITING, mutexTimeout);
 }
 
 ReturnValue_t SharedLocalDataSet::unlockDataset() {

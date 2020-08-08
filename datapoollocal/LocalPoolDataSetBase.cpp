@@ -36,7 +36,7 @@ LocalDataSetBase::~LocalDataSetBase() {
 
 ReturnValue_t LocalDataSetBase::lockDataPool(uint32_t timeoutMs) {
 	MutexIF* mutex = hkManager->getMutexHandle();
-	return mutex->lockMutex(timeoutMs);
+	return mutex->lockMutex(MutexIF::TimeoutType::WAITING, timeoutMs);
 }
 
 ReturnValue_t LocalDataSetBase::serializeWithValidityBuffer(uint8_t **buffer,

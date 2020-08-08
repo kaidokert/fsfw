@@ -7,7 +7,7 @@ class LocalDataSet: public LocalDataSetBase {
 public:
     LocalDataSet(HasLocalDataPoolIF* hkOwner, const size_t maxSize);
     LocalDataSet(object_id_t owner, const size_t maxSize);
-    virtual~ LocalDataSet() {};
+    virtual~ LocalDataSet();
 
     //! Copying forbidden for now.
     LocalDataSet(const LocalDataSet&) = delete;
