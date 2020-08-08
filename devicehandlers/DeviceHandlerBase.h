@@ -493,7 +493,11 @@ protected:
 	 * 			performOperation(). Default implementation is empty.
 	 */
 	virtual void performOperationHook();
+
 public:
+	/** Explicit interface implementation of getObjectId */
+	virtual object_id_t getObjectId() const override;
+
 	/**
 	 * @param parentQueueId
 	 */
@@ -653,8 +657,6 @@ protected:
 		//! respective device reply. Will point to a dataset held by
 		//! the child handler (if one is specified)
 		DataSetIF* dataSet = nullptr;
-		float collectionInterval = 0.0;
-		uint32_t intervalCounter = 0;
 		//! The command that expects this reply.
 		DeviceCommandMap::iterator command;
 	};
@@ -1201,6 +1203,8 @@ private:
 
 	void parseReply(const uint8_t* receivedData,
 	            size_t receivedDataLen);
+
+    virtual dur_millis_t getPeriodicOperationFrequency() const override;
 };
 
 #endif /* FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */

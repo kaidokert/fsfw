@@ -51,8 +51,8 @@ public:
 	 * @brief	On destruction, the object removes itself from the list.
 	 */
 	virtual ~SystemObject();
-	object_id_t getObjectId() const;
-	virtual ReturnValue_t initialize();
+	object_id_t getObjectId() const override;
+	virtual ReturnValue_t initialize() override;
 	virtual ReturnValue_t checkObjectConnections();
 
 	virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const;

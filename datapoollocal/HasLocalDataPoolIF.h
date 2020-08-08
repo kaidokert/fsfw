@@ -43,6 +43,8 @@ public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
 	static constexpr lp_id_t NO_POOL_ID = 0xffffffff;
 
+	virtual object_id_t getObjectId() const = 0;
+
 	/** Command queue for housekeeping messages. */
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 
@@ -52,6 +54,13 @@ public:
 
 	/** Can be used to get a handle to the local data pool manager. */
 	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
+
+	/**
+	 * Returns the minimum sampling frequency, which will usually be the
+	 * period the pool owner performs its periodic operation-
+	 * @return
+	 */
+	virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
 
 	/**
 	 * This function is used by the pool manager to get a valid dataset

@@ -66,10 +66,22 @@ public:
 	 * Initializes the map by calling the map initialization function of the
 	 * owner and assigns the queue to use.
 	 * @param queueToUse
+	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
 	 * @return
 	 */
 	ReturnValue_t initialize(MessageQueueIF* queueToUse,
-	        object_id_t hkDestination);
+	        object_id_t hkDestination, uint8_t nonDiagInvlFactor = 5);
+
+	/**
+	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
+	 * than diagnostic packets.
+	 * A factor can be specified to determine the minimum sampling frequency
+	 * for non-diagnostic packets. The minimum sampling frequency of the
+	 * diagnostics packets,which is usually jusst the period of the
+	 * performOperation calls, is multiplied with that factor.
+	 * @param factor
+	 */
+	void setNonDiagnosticIntervalFactor(uint8_t nonDiagInvlFactor);
 
 	/**
 	 * This should be called in the periodic handler of the owner.
@@ -144,29 +156,36 @@ public:
 
 private:
     LocalDataPool localPoolMap;
-    /** Every housekeeping data manager has a mutex to protect access
-     * to it's data pool. */
+    //! Every housekeeping data manager has a mutex to protect access
+    //! to it's data pool.
     MutexIF* mutex = nullptr;
     /** The class which actually owns the manager (and its datapool). */
     HasLocalDataPoolIF* owner = nullptr;
 
-    /**
-     * The data pool manager will keep an internal map of HK receivers.
-     */
+    uint8_t nonDiagnosticIntervalFactor = 0;
+    dur_millis_t regularMinimumInterval = 0;
+    dur_millis_t diagnosticMinimumInterval = 0;
+
+    /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
-        LocalPoolDataSetBase* dataSet = nullptr;
+        sid_t dataSetSid;
+        //LocalPoolDataSetBase* dataSet = nullptr;
         lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
         MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         ReportingType reportingType = ReportingType::PERIODIC;
-        bool reportingStatus = true;
+        bool reportingEnabled = true;
         /** Different members of this union will be used depending on reporting
          * type */
-        union hkParameter {
+        union HkParameter {
             /** This parameter will be used for the PERIODIC type */
             dur_seconds_t collectionInterval = 0;
             /** This parameter will be used for the ON_UPDATE type */
             bool hkDataChanged;
         };
+        HkParameter hkParameter;
+        bool isDiagnostics;
+        //! General purpose counter which is used for periodic generation.
+        uint32_t intervalCounter;
     };
 
     /** Using a multimap as the same object might request multiple datasets */
@@ -223,6 +242,13 @@ private:
 	void setMinimalSamplingFrequency(float frequencySeconds);
 	ReturnValue_t serializeHkPacketIntoStore(store_address_t* storeId,
 	        LocalPoolDataSetBase* dataSet);
+
+	uint32_t intervalSecondsToInterval(bool isDiagnostics,
+	        float collectionIntervalSeconds);
+	float intervalToIntervalSeconds(bool isDiagnostics,
+	        uint32_t collectionInterval);
+
+	void performPeriodicHkGeneration(HkReceiver* hkReceiver);
 };
 
 

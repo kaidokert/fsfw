@@ -82,6 +82,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		decrementDeviceReplyMap();
 		fdirInstance->checkForFailures();
 		hkSwitcher.performOperation();
+		hkManager.performHkOperation();
 		performOperationHook();
 	}
 	if (mode == MODE_OFF) {
@@ -1394,4 +1395,12 @@ DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
 	else {
 		return nullptr;
 	}
+}
+
+object_id_t DeviceHandlerBase::getObjectId() const {
+    return SystemObject::getObjectId();
+}
+
+dur_millis_t DeviceHandlerBase::getPeriodicOperationFrequency() const {
+    return pstIntervalMs;
 }

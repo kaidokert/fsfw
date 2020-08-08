@@ -6,6 +6,7 @@
 #include <framework/ipc/QueueFactory.h>
 
 #include <array>
+#include <cmath>
 
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
@@ -25,11 +26,12 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
 	    sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
 	            "Could not set IPC store." << std::endl;
 	}
+
 	hkQueue = queueToUse;
 }
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse,
-        object_id_t hkDestination) {
+        object_id_t hkDestination, uint8_t nonDiagInvlFactor) {
     if(queueToUse == nullptr) {
         sif::error << "LocalDataPoolManager::initialize: Supplied queue "
                 "invalid!" << std::endl;
@@ -51,6 +53,10 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse,
         sif::warning << "Make sure it exists and the object impements "
                 "AcceptsHkPacketsIF!" << std::endl;
     }
+
+    setNonDiagnosticIntervalFactor(nonDiagInvlFactor);
+    diagnosticMinimumInterval = owner->getPeriodicOperationFrequency();
+    regularMinimumInterval = diagnosticMinimumInterval * nonDiagnosticIntervalFactor;
     return initializeHousekeepingPoolEntriesOnce();
 }
 
@@ -182,7 +188,9 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid) {
     return result;
 }
 
-void LocalDataPoolManager::setMinimalSamplingFrequency(float frequencySeconds) {
+void LocalDataPoolManager::setNonDiagnosticIntervalFactor(
+        uint8_t nonDiagInvlFactor) {
+    this->nonDiagnosticIntervalFactor = nonDiagInvlFactor;
 }
 
 ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
@@ -214,5 +222,63 @@ ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
 }
 
 ReturnValue_t LocalDataPoolManager::performHkOperation() {
+    for(auto& hkReceiversIter: hkReceiversMap) {
+        HkReceiver* receiver = &hkReceiversIter.second;
+        switch(receiver->reportingType) {
+        case(ReportingType::PERIODIC): {
+            performPeriodicHkGeneration(receiver);
+            break;
+        }
+        case(ReportingType::ON_UPDATE): {
+            // check whether data has changed and send messages in case it has.
+            break;
+        }
+        default:
+            // This should never happen.
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+    }
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
+    if(receiver->reportingEnabled) {
+        if(receiver->intervalCounter >= intervalSecondsToInterval(
+                receiver->isDiagnostics,
+                receiver->hkParameter.collectionInterval)) {
+            ReturnValue_t result = generateHousekeepingPacket(
+                    receiver->dataSetSid, receiver->destinationQueue);
+            if(result != HasReturnvaluesIF::RETURN_OK) {
+                // configuration error
+                sif::debug << "LocalDataPoolManager::performHkOperation:"
+                        << "0x" << std::setfill('0') << std::setw(8)
+                << owner->getObjectId() << " Error generating "
+                << "HK packet" << std::setfill(' ') << std::endl;
+            }
+            receiver->intervalCounter = 1;
+        }
+        else if(receiver->reportingEnabled){
+            receiver->intervalCounter++;
+        }
+    }
+}
+
+uint32_t LocalDataPoolManager::intervalSecondsToInterval(bool isDiagnostics,
+        float collectionIntervalSeconds) {
+    if(isDiagnostics) {
+        return  std::ceil(collectionIntervalSeconds/diagnosticMinimumInterval);
+    }
+    else {
+        return std::ceil(collectionIntervalSeconds/regularMinimumInterval);
+    }
+}
+
+float LocalDataPoolManager::intervalToIntervalSeconds(bool isDiagnostics,
+        uint32_t collectionInterval) {
+    if(isDiagnostics) {
+        return  static_cast<float>(collectionInterval * diagnosticMinimumInterval);
+    }
+    else {
+        return static_cast<float>(collectionInterval * regularMinimumInterval);
+    }
 }
