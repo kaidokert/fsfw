@@ -7,7 +7,7 @@
 
 LocalDataSet::LocalDataSet(HasLocalDataPoolIF *hkOwner,
         const size_t maxNumberOfVariables):
-        DataSetBase(poolVarList.data(), maxNumberOfVariables) {
+        LocalDataSetBase(hkOwner,poolVarList.data(), maxNumberOfVariables) {
     poolVarList.reserve(maxNumberOfVariables);
     poolVarList.resize(maxNumberOfVariables);
     if(hkOwner == nullptr) {
@@ -20,7 +20,7 @@ LocalDataSet::LocalDataSet(HasLocalDataPoolIF *hkOwner,
 
 LocalDataSet::LocalDataSet(object_id_t ownerId,
         const size_t maxNumberOfVariables):
-        DataSetBase(poolVarList.data(), maxNumberOfVariables)  {
+        LocalDataSetBase(ownerId, poolVarList.data(), maxNumberOfVariables)  {
     poolVarList.reserve(maxNumberOfVariables);
     poolVarList.resize(maxNumberOfVariables);
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
