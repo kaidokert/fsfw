@@ -123,11 +123,20 @@ bool MessageQueue::isDefaultDestinationSet() const {
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault, CallContext callContext) {
+	BaseType_t result = pdFALSE;
+	QueueHandle_t destination = nullptr;
+
+	if(sendTo == MessageQueueIF::NO_QUEUE) {
+		return MessageQueueIF::DESTINVATION_INVALID;
+	}
+	else  {
+		destination = reinterpret_cast<QueueHandle_t>(sendTo);
+	}
     message->setSender(sentFrom);
-    BaseType_t result;
+
 
     if(callContext == CallContext::TASK) {
-        result = xQueueSendToBack(reinterpret_cast<QueueHandle_t>(sendTo),
+        result = xQueueSendToBack(destination,
                 static_cast<const void*>(message->getBuffer()), 0);
     }
     else {
