@@ -98,7 +98,7 @@ public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_IF;
 
 	// Standard codes used when building commands.
-	static const ReturnValue_t NO_COMMAND_DATA = MAKE_RETURN_CODE(0xA0); //!< If the command size is 0. Checked in DHB
+	static const ReturnValue_t NO_COMMAND_DATA = MAKE_RETURN_CODE(0xA0); //!< If no command data was given when expected.
 	static const ReturnValue_t COMMAND_NOT_SUPPORTED = MAKE_RETURN_CODE(0xA1); //!< Command ID not in commandMap. Checked in DHB
 	static const ReturnValue_t COMMAND_ALREADY_SENT = MAKE_RETURN_CODE(0xA2); //!< Command was already executed. Checked in DHB
 	static const ReturnValue_t COMMAND_WAS_NOT_SENT = MAKE_RETURN_CODE(0xA3);

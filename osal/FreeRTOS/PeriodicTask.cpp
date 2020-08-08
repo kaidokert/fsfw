@@ -5,12 +5,13 @@
 
 PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod setPeriod,
-		void (*setDeadlineMissedFunc)()) :
+		TaskDeadlineMissedFunction deadlineMissedFunc) :
 		started(false), handle(NULL), period(setPeriod), deadlineMissedFunc(
-		setDeadlineMissedFunc)
+		deadlineMissedFunc)
 {
+	configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
 	BaseType_t status = xTaskCreate(taskEntryPoint, name,
-			setStack, this, setPriority, &handle);
+			stackSize, this, setPriority, &handle);
 	if(status != pdPASS){
 		sif::debug << "PeriodicTask Insufficient heap memory remaining. "
 		        "Status: " << status << std::endl;
@@ -81,7 +82,7 @@ void PeriodicTask::taskFunctionality() {
 	}
 }
 
-ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
+ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
@@ -90,12 +91,9 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+	newObject->setTaskIF(this);
 
-	if(setTaskIF) {
-	     newObject->setTaskIF(this);
-	}
-	ReturnValue_t result = newObject->initializeAfterTaskCreation();
-	return result;
+	return newObject->initializeAfterTaskCreation();
 }
 
 uint32_t PeriodicTask::getPeriodMs() const {
@@ -109,19 +107,18 @@ void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
      * it. */
     TickType_t currentTickCount = xTaskGetTickCount();
     TickType_t timeToWake = xLastWakeTime + interval;
-    // Tick count has overflown
-    if(currentTickCount < xLastWakeTime) {
-        // Time to wake has overflown as well. If the tick count
-        // is larger than the time to wake, a deadline was missed.
-        if(timeToWake < xLastWakeTime and
-                currentTickCount > timeToWake) {
+    // Time to wake has not overflown.
+    if(timeToWake > xLastWakeTime) {
+        /* If the current time has overflown exclusively or the current
+         * tick count is simply larger than the time to wake, a deadline was
+         * missed */
+        if((currentTickCount < xLastWakeTime) or (currentTickCount > timeToWake)) {
             handleMissedDeadline();
         }
     }
-    // No tick count overflow. If the timeToWake has not overflown
-    // and the current tick count is larger than the time to wake,
-    // a deadline was missed.
-    else if(timeToWake > xLastWakeTime and currentTickCount > timeToWake) {
+    /* Time to wake has overflown. A deadline was missed if the current time
+     * is larger than the time to wake */
+    else if((timeToWake < xLastWakeTime) and (currentTickCount > timeToWake)) {
         handleMissedDeadline();
     }
 }

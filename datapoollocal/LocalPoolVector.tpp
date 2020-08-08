@@ -44,7 +44,8 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(uint32_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
+	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
+			lockTimeout);
 	return readWithoutLock();
 }
 template<typename T, uint16_t vectorSize>
@@ -74,7 +75,8 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
 		uint32_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), lockTimeout);
+	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
+			lockTimeout);
 	return commitWithoutLock();
 }
 

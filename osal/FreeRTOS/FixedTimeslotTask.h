@@ -24,7 +24,7 @@ public:
 	 * @param setDeadlineMissedFunc Callback if a deadline was missed.
 	 * @return Pointer to the newly created task.
 	 */
-	FixedTimeslotTask(const char *name, TaskPriority setPriority,
+	FixedTimeslotTask(TaskName name, TaskPriority setPriority,
 			TaskStackSize setStack, TaskPeriod overallPeriod,
 			void (*setDeadlineMissedFunc)());
 

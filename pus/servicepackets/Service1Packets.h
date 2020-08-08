@@ -1,10 +1,3 @@
-/**
- * @defgroup spacepackets PUS Packet Definitions
- *  This group contains all implemented TM or TM packages that are sent to
- *  or sent by the OBC.They are exported later to display
- *  packet structures in Mission Information Base (MIB).
- */
-
 #ifndef MISSION_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
 #define MISSION_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
 
@@ -12,11 +5,18 @@
 #include <framework/tmtcservices/VerificationCodes.h>
 
 /**
+ * @defgroup spacepackets PUS Packet Definitions
+ *  This group contains all implemented TM or TM packages that are sent to
+ *  or sent by the OBC.They are exported later to display
+ *  packet structures in Mission Information Base (MIB).
+ */
+
+/**
  * @brief 	FailureReport class to serialize a failure report
  * @brief 	Subservice 1, 3, 5, 7
  * @ingroup spacepackets
  */
-class FailureReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 1, 3, 5, 7
+class FailureReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 2, 4, 6, 8
 public:
 	FailureReport(uint8_t failureSubtype_, uint16_t packetId_,
 			uint16_t packetSequenceControl_, uint8_t stepNumber_,
@@ -111,7 +111,7 @@ private:
  * @brief       Subservices 2, 4, 6, 8
  * @ingroup     spacepackets
  */
-class SuccessReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 2, 4, 6, 8
+class SuccessReport: public SerializeIF { //!< [EXPORT] : [SUBSERVICE] 1, 3, 5, 7
 public:
 	SuccessReport(uint8_t subtype_, uint16_t packetId_,
 			uint16_t packetSequenceControl_,uint8_t stepNumber_) :

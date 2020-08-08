@@ -17,7 +17,8 @@ public:
 	 * will be overwritten.
 	 */
 	SharedRingBuffer(object_id_t objectId, const size_t size,
-			bool overwriteOld, dur_millis_t mutexTimeout = 10);
+			bool overwriteOld, size_t maxExcessBytes,
+			dur_millis_t mutexTimeout = 10);
 
 	/**
 	 * This constructor takes an external buffer with the specified size.
@@ -28,9 +29,21 @@ public:
 	 * will be overwritten.
 	 */
 	SharedRingBuffer(object_id_t objectId, uint8_t* buffer, const size_t size,
-			bool overwriteOld, dur_millis_t mutexTimeout = 10);
+			bool overwriteOld, size_t maxExcessBytes,
+			dur_millis_t mutexTimeout = 10);
 
 	void setMutexTimeout(dur_millis_t newTimeout);
+
+	virtual size_t getExcessBytes() const override;
+	/**
+	 * Helper functions which moves any excess bytes to the start
+	 * of the ring buffer.
+	 * @return
+	 */
+	virtual void moveExcessBytesToStart() override;
+
+	/** Performs mutex protected SimpleRingBuffer::getFreeElement call */
+	ReturnValue_t getFreeElementProtected(uint8_t** writePtr, size_t amount);
 
 	/** Performs mutex protected SimpleRingBuffer::writeData call */
 	ReturnValue_t writeDataProtected(const uint8_t* data, size_t amount);

@@ -5,9 +5,9 @@
 
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		Mode_t initialMode, uint16_t commandQueueDepth) :
-		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE), childrenChangedMode(
-		false), commandsOutstanding(0), commandQueue(NULL), healthHelper(this,
-				setObjectId), modeHelper(this), parentId(parent) {
+		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE),
+		childrenChangedMode(false), commandsOutstanding(0), commandQueue(NULL),
+		healthHelper(this, setObjectId), modeHelper(this), parentId(parent) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth,
 			MessageQueueMessage::MAX_MESSAGE_SIZE);
 }
@@ -23,8 +23,8 @@ ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
 	HasModesIF *child = objectManager->get<HasModesIF>(objectId);
 	//This is a rather ugly hack to have the changedHealth info for all children available. (needed for FOGs).
 	HasHealthIF* healthChild = objectManager->get<HasHealthIF>(objectId);
-	if (child == NULL) {
-		if (healthChild == NULL) {
+	if (child == nullptr) {
+		if (healthChild == nullptr) {
 			return CHILD_DOESNT_HAVE_MODES;
 		} else {
 			info.commandQueue = healthChild->getCommandQueue();
@@ -76,14 +76,15 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(
 	return RETURN_OK;
 }
 
-void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
+void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter,
+        Submode_t targetSubmode) {
 	CommandMessage command;
 
 	std::map<object_id_t, ChildInfo>::iterator iter;
 
 	commandsOutstanding = 0;
 
-	for (; tableIter.value != NULL; ++tableIter) {
+	for (; tableIter.value != nullptr; ++tableIter) {
 		object_id_t object = tableIter.value->getObject();
 		if ((iter = childrenMap.find(object)) == childrenMap.end()) {
 			//illegal table entry, should only happen due to misconfigured mode table

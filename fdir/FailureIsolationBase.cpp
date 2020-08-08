@@ -7,8 +7,8 @@
 
 FailureIsolationBase::FailureIsolationBase(object_id_t owner,
 		object_id_t parent, uint8_t messageDepth, uint8_t parameterDomainBase) :
-		eventQueue(NULL), ownerId(owner), owner(NULL),
-		faultTreeParent(parent), parameterDomainBase(parameterDomainBase) {
+		ownerId(owner), faultTreeParent(parent),
+		parameterDomainBase(parameterDomainBase) {
 	eventQueue = QueueFactory::instance()->createMessageQueue(messageDepth,
 			EventMessage::EVENT_MESSAGE_SIZE);
 }
@@ -104,9 +104,9 @@ MessageQueueId_t FailureIsolationBase::getEventReceptionQueue() {
 ReturnValue_t FailureIsolationBase::sendConfirmationRequest(EventMessage* event,
 		MessageQueueId_t destination) {
 	event->setMessageId(EventMessage::CONFIRMATION_REQUEST);
-	if (destination != 0) {
+	if (destination != MessageQueueIF::NO_QUEUE) {
 		return eventQueue->sendMessage(destination, event);
-	} else if (faultTreeParent != 0) {
+	} else if (faultTreeParent != objects::NO_OBJECT) {
 		return eventQueue->sendToDefault(event);
 	}
 	return RETURN_FAILED;

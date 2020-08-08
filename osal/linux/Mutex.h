@@ -12,7 +12,7 @@ class Mutex : public MutexIF {
 public:
 	Mutex();
 	virtual ~Mutex();
-	virtual ReturnValue_t lockMutex(uint32_t timeoutMs);
+	virtual ReturnValue_t lockMutex(TimeoutType timeoutType, uint32_t timeoutMs);
 	virtual ReturnValue_t unlockMutex();
 private:
 	pthread_mutex_t mutex;

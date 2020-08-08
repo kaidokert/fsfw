@@ -88,6 +88,7 @@ void CommandMessage::setToUnknownCommand() {
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,
         Command_t initialCommand) {
+	setCommand(REPLY_REJECTED);
     setParameter(reason);
     setParameter2(initialCommand);
 }

@@ -1,10 +1,30 @@
-#ifndef ASSEMBLYBASE_H_
-#define ASSEMBLYBASE_H_
+#ifndef FRAMEWORK_DEVICEHANDLERS_ASSEMBLYBASE_H_
+#define FRAMEWORK_DEVICEHANDLERS_ASSEMBLYBASE_H_
 
 #include <framework/container/FixedArrayList.h>
 #include <framework/devicehandlers/DeviceHandlerBase.h>
 #include <framework/subsystem/SubsystemBase.h>
 
+/**
+ * @brief   Base class to implement reconfiguration and failure handling for
+ *          redundant devices by monitoring their modes health states.
+ * @details
+ * Documentation: Dissertation Baetz p.156, 157.
+ *
+ * This class reduces the complexity of controller components which would
+ * otherwise be needed for the handling of redundant devices.
+ *
+ * The template class monitors mode and health state of its children
+ * and checks availability of devices on every detected change.
+ * AssemblyBase does not implement any redundancy logic by itself, but provides
+ * adaptation points for implementations to do so. Since most monitoring
+ * activities rely on mode and health state only and are therefore
+ * generic, it is sufficient for subclasses to provide:
+ *
+ * 1. check logic when active-> checkChildrenStateOn
+ * 2. transition logic to change the mode -> commandChildren
+ *
+ */
 class AssemblyBase: public SubsystemBase {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::ASSEMBLY_BASE;
@@ -16,10 +36,41 @@ public:
 	static const ReturnValue_t NOT_ENOUGH_CHILDREN_IN_CORRECT_STATE =
 			MAKE_RETURN_CODE(0xa1);
 
-	AssemblyBase(object_id_t objectId, object_id_t parentId, uint16_t commandQueueDepth = 8);
+	AssemblyBase(object_id_t objectId, object_id_t parentId,
+	        uint16_t commandQueueDepth = 8);
 	virtual ~AssemblyBase();
 
 protected:
+
+    // SHOULDDO: Change that OVERWRITE_HEALTH may be returned
+    // (or return internalState directly?)
+    /**
+     * Command children to reach [mode,submode] combination
+     * Can be done by setting #commandsOutstanding correctly,
+     * or using executeTable()
+     * @param mode
+     * @param submode
+     * @return
+     *    - @c RETURN_OK if ok
+     *    - @c NEED_SECOND_STEP if children need to be commanded again
+     */
+    virtual ReturnValue_t commandChildren(Mode_t mode, Submode_t submode) = 0;
+
+    /**
+     * Check whether desired assembly mode was achieved by checking the modes
+     * or/and health states of child device handlers.
+     * The assembly template class will also call this function if a health
+     * or mode change of a child device handler was detected.
+     * @param wantedMode
+     * @param wantedSubmode
+     * @return
+     */
+    virtual ReturnValue_t checkChildrenStateOn(Mode_t wantedMode,
+            Submode_t wantedSubmode) = 0;
+
+    virtual ReturnValue_t isModeCombinationValid(Mode_t mode,
+            Submode_t submode) = 0;
+
 	enum InternalState {
 		STATE_NONE,
 		STATE_OVERWRITE_HEALTH,
@@ -36,6 +87,7 @@ protected:
 		RECOVERY_WAIT
 	} recoveryState; //!< Indicates if one of the children requested a recovery.
 	ChildrenMap::iterator recoveringDevice;
+
 	/**
 	 * the mode the current transition is trying to achieve.
 	 * Can be different from the modehelper.commandedMode!
@@ -61,8 +113,8 @@ protected:
 	bool handleChildrenChanged();
 
 	/**
-	 * This method is called if the children changed its mode in a way that the current
-	 * mode can't be kept.
+	 * This method is called if the children changed its mode in a way that
+	 * the current mode can't be kept.
 	 * Default behavior is to go to MODE_OFF.
 	 * @param result The failure code which was returned by checkChildrenState.
 	 */
@@ -75,9 +127,6 @@ protected:
 	ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
 			uint32_t *msToReachTheMode);
 
-	virtual ReturnValue_t isModeCombinationValid(Mode_t mode,
-			Submode_t submode) = 0;
-
 	virtual void startTransition(Mode_t mode, Submode_t submode);
 
 	virtual void doStartTransition(Mode_t mode, Submode_t submode);
@@ -89,24 +138,6 @@ protected:
 	virtual void handleModeTransitionFailed(ReturnValue_t result);
 
 	void sendHealthCommand(MessageQueueId_t sendTo, HealthState health);
-
-	//SHOULDDO: Change that OVERWRITE_HEALTH may be returned (or return internalState directly?)
-	/**
-	 * command children to reach mode,submode
-	 *
-	 * set #commandsOutstanding correctly, or use executeTable()
-	 *
-	 * @param mode
-	 * @param submode
-	 * @return
-	 *    - @c RETURN_OK if ok
-	 *    - @c NEED_SECOND_STEP if children need to be commanded again
-	 */
-	virtual ReturnValue_t commandChildren(Mode_t mode, Submode_t submode) = 0;
-
-	//SHOULDDO: Remove wantedMode, wantedSubmode, as targetMode/submode is available?
-	virtual ReturnValue_t checkChildrenStateOn(Mode_t wantedMode,
-			Submode_t wantedSubmode) = 0;
 
 	virtual ReturnValue_t checkChildrenStateOff();
 
@@ -129,4 +160,4 @@ protected:
 
 };
 
-#endif /* ASSEMBLYBASE_H_ */
+#endif /* FRAMEWORK_DEVICEHANDLERS_ASSEMBLYBASE_H_ */

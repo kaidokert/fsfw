@@ -165,9 +165,8 @@ ReturnValue_t AssemblyBase::checkChildrenState() {
 }
 
 ReturnValue_t AssemblyBase::checkChildrenStateOff() {
-	for (std::map<object_id_t, ChildInfo>::iterator iter = childrenMap.begin();
-			iter != childrenMap.end(); iter++) {
-		if (checkChildOff(iter->first) != RETURN_OK) {
+	for (const auto& childIter: childrenMap) {
+		if (checkChildOff(childIter.first) != RETURN_OK) {
 			return NOT_ENOUGH_CHILDREN_IN_CORRECT_STATE;
 		}
 	}

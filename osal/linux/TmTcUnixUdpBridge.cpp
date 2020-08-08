@@ -85,7 +85,7 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
-	MutexHelper lock(mutex, 10);
+	MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 //	char ipAddress [15];
 //	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,

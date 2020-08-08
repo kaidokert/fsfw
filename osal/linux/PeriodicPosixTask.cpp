@@ -22,8 +22,7 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
 	return NULL;
 }
 
-ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object,
-		bool setTaskIF) {
+ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
@@ -32,13 +31,9 @@ ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+	newObject->setTaskIF(this);
 
-	if(setTaskIF) {
-	    newObject->setTaskIF(this);
-	}
-
-	ReturnValue_t result = newObject->initializeAfterTaskCreation();
-	return result;
+	return newObject->initializeAfterTaskCreation();
 }
 
 ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
