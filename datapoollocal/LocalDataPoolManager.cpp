@@ -129,6 +129,12 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 				" Set ID not found" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+
+	// do we generate hk packets for invalid datasets?
+//	if(not dataSetToSerialize->isValid()) {
+//	    return HasReturnvaluesIF::RETURN_OK;
+//	}
+
 	store_address_t storeId;
 	ReturnValue_t result = serializeHkPacketIntoStore(&storeId,
 	        dataSetToSerialize);
@@ -224,8 +230,16 @@ ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
 ReturnValue_t LocalDataPoolManager::performHkOperation() {
     for(auto& hkReceiversIter: hkReceiversMap) {
         HkReceiver* receiver = &hkReceiversIter.second;
+        if(not receiver->reportingEnabled) {
+            return HasReturnvaluesIF::RETURN_OK;
+        }
+
         switch(receiver->reportingType) {
         case(ReportingType::PERIODIC): {
+            if(receiver->dataId.dataSetSid == sid_t::INVALID_ADDRESS) {
+                // Periodic packets shall only be generated from datasets.
+                continue;
+            }
             performPeriodicHkGeneration(receiver);
             break;
         }
@@ -242,24 +256,22 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
 }
 
 void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
-    if(receiver->reportingEnabled) {
-        if(receiver->intervalCounter >= intervalSecondsToInterval(
-                receiver->isDiagnostics,
-                receiver->hkParameter.collectionInterval)) {
-            ReturnValue_t result = generateHousekeepingPacket(
-                    receiver->dataSetSid, receiver->destinationQueue);
-            if(result != HasReturnvaluesIF::RETURN_OK) {
-                // configuration error
-                sif::debug << "LocalDataPoolManager::performHkOperation:"
-                        << "0x" << std::setfill('0') << std::setw(8)
-                << owner->getObjectId() << " Error generating "
-                << "HK packet" << std::setfill(' ') << std::endl;
-            }
-            receiver->intervalCounter = 1;
+    if(receiver->intervalCounter >= intervalSecondsToInterval(
+            receiver->isDiagnostics,
+            receiver->hkParameter.collectionInterval)) {
+        ReturnValue_t result = generateHousekeepingPacket(
+                receiver->dataId.dataSetSid, receiver->destinationQueue);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            // configuration error
+            sif::debug << "LocalDataPoolManager::performHkOperation:"
+                    << "0x" << std::setfill('0') << std::setw(8)
+            << owner->getObjectId() << " Error generating "
+            << "HK packet" << std::setfill(' ') << std::endl;
         }
-        else if(receiver->reportingEnabled){
-            receiver->intervalCounter++;
-        }
+        receiver->intervalCounter = 1;
+    }
+    else {
+        receiver->intervalCounter++;
     }
 }
 

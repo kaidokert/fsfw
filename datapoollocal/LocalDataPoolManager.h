@@ -31,7 +31,7 @@ class LocalPoolDataSetBase;
  * value is stored. The helper classes offer a read() and commit() interface
  * through the PoolVariableIF which is used to read and update values.
  * Each pool entry has a valid state too.
- *
+ * @author R. Mueller
  */
 class LocalDataPoolManager {
 	template<typename T>
@@ -129,12 +129,6 @@ public:
      *     Propably not necessary, just use multiple local data sets or
      *     shared datasets.
      *
-     *  TODO: This is a big architecture question. Use raw data or shared
-     *  datasets? dumb thing about shared datasets: It propably would be better
-     *  if each task who uses the data has their own copy of the pool
-     *  variables. Then the LPIDs should be hardcoded in the dataset implementations
-     *  so the users don't have to worry about it anymore.
-     *
      *  Notifications should also be possible for single variables instead of
      *  full dataset updates.
      */
@@ -144,10 +138,6 @@ public:
         // Notification will be sent out as message.
         // Data is accessed via shared data set or multiple local data sets.
         ON_UPDATE,
-        // actually, requested is propably unnecessary. If another component
-        // needs data on request, they can just use  the new SharedDataSet
-        // which is thread-safe to also have full access to the interface..
-        REQUESTED
     };
 
     /* Copying forbidden */
@@ -168,14 +158,21 @@ private:
 
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
-        sid_t dataSetSid;
-        //LocalPoolDataSetBase* dataSet = nullptr;
-        lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
+        /** Different member of this union will be used depending on the
+        type of data the receiver is interested in (full datasets or
+        single data variables. */
+        union DataId {
+            /** Will be initialized to INVALID_ADDRESS */
+            sid_t dataSetSid;
+            lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
+        };
+        DataId dataId;
+
         MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         ReportingType reportingType = ReportingType::PERIODIC;
         bool reportingEnabled = true;
         /** Different members of this union will be used depending on reporting
-         * type */
+        type */
         union HkParameter {
             /** This parameter will be used for the PERIODIC type */
             dur_seconds_t collectionInterval = 0;
@@ -184,7 +181,7 @@ private:
         };
         HkParameter hkParameter;
         bool isDiagnostics;
-        //! General purpose counter which is used for periodic generation.
+        /** General purpose counter which is used for periodic generation. */
         uint32_t intervalCounter;
     };
 
