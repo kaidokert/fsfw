@@ -53,6 +53,11 @@ public:
 	 */
 	virtual ReturnValue_t unlockRingBufferMutex();
 
+	/**
+	 * The mutex handle can be accessed directly, for example to perform
+	 * the lock with the #MutexHelper for a RAII compliant lock operation.
+	 * @return
+	 */
 	MutexIF* getMutexHandle() const;
 private:
 	MutexIF* mutex = nullptr;
