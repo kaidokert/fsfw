@@ -24,8 +24,7 @@ public:
 	 * will be overwritten.
 	 */
 	SharedRingBuffer(object_id_t objectId, const size_t size,
-			bool overwriteOld, size_t maxExcessBytes,
-			dur_millis_t mutexTimeout = 10);
+			bool overwriteOld, size_t maxExcessBytes);
 
 	/**
 	 * This constructor takes an external buffer with the specified size.
@@ -36,8 +35,7 @@ public:
 	 * will be overwritten.
 	 */
 	SharedRingBuffer(object_id_t objectId, uint8_t* buffer, const size_t size,
-			bool overwriteOld, size_t maxExcessBytes,
-			dur_millis_t mutexTimeout = 10);
+			bool overwriteOld, size_t maxExcessBytes);
 
 	/**
 	 * Unless a read-only constant value is read, all operations on the
