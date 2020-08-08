@@ -7,13 +7,15 @@
 
 object_id_t DeviceHandlerFailureIsolation::powerConfirmationId = 0;
 
-DeviceHandlerFailureIsolation::DeviceHandlerFailureIsolation(object_id_t owner, object_id_t parent) :
-		FailureIsolationBase(owner, parent), strangeReplyCount(MAX_STRANGE_REPLIES,
-				STRANGE_REPLIES_TIME_MS, parameterDomainBase++), missedReplyCount(
-				MAX_MISSED_REPLY_COUNT, MISSED_REPLY_TIME_MS,
-				parameterDomainBase++), recoveryCounter(MAX_REBOOT,
-				REBOOT_TIME_MS, parameterDomainBase++), fdirState(NONE), powerConfirmation(
-				0) {
+DeviceHandlerFailureIsolation::DeviceHandlerFailureIsolation(object_id_t owner,
+		object_id_t parent) :
+		FailureIsolationBase(owner, parent),
+		strangeReplyCount(MAX_STRANGE_REPLIES, STRANGE_REPLIES_TIME_MS,
+				parameterDomainBase++),
+		missedReplyCount( MAX_MISSED_REPLY_COUNT, MISSED_REPLY_TIME_MS,
+				parameterDomainBase++),
+		recoveryCounter(MAX_REBOOT, REBOOT_TIME_MS, parameterDomainBase++),
+		fdirState(NONE), powerConfirmation(0) {
 }
 
 DeviceHandlerFailureIsolation::~DeviceHandlerFailureIsolation() {
@@ -68,9 +70,11 @@ ReturnValue_t DeviceHandlerFailureIsolation::eventReceived(EventMessage* event) 
 		break;
 		//****Power*****
 	case PowerSwitchIF::SWITCH_WENT_OFF:
-		result = sendConfirmationRequest(event, powerConfirmation);
-		if (result == RETURN_OK) {
-			setFdirState(DEVICE_MIGHT_BE_OFF);
+		if(hasPowerConfirmation) {
+			result = sendConfirmationRequest(event, powerConfirmation);
+			if (result == RETURN_OK) {
+				setFdirState(DEVICE_MIGHT_BE_OFF);
+			}
 		}
 		break;
 	case Fuse::FUSE_WENT_OFF:
@@ -133,7 +137,7 @@ void DeviceHandlerFailureIsolation::decrementFaultCounters() {
 
 void DeviceHandlerFailureIsolation::handleRecovery(Event reason) {
 	clearFaultCounters();
-	if (!recoveryCounter.incrementAndCheck()) {
+	if (not recoveryCounter.incrementAndCheck()) {
 		startRecovery(reason);
 	} else {
 		setFaulty(reason);
@@ -142,7 +146,8 @@ void DeviceHandlerFailureIsolation::handleRecovery(Event reason) {
 
 void DeviceHandlerFailureIsolation::wasParentsFault(EventMessage* event) {
 	//We'll better ignore the SWITCH_WENT_OFF event and await a system-wide reset.
-	//This means, no fault message will come through until a MODE_ or HEALTH_INFO message comes through -> Is that ok?
+	//This means, no fault message will come through until a MODE_ or
+	//HEALTH_INFO message comes through -> Is that ok?
 	//Same issue in TxFailureIsolation!
 //	if ((event->getEvent() == PowerSwitchIF::SWITCH_WENT_OFF)
 //			&& (fdirState != RECOVERY_ONGOING)) {
@@ -158,14 +163,17 @@ void DeviceHandlerFailureIsolation::clearFaultCounters() {
 ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
 	ReturnValue_t result = FailureIsolationBase::initialize();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
+		sif::error << "DeviceHandlerFailureIsolation::initialize: Could not"
+				" initialize FailureIsolationBase." << std::endl;
 		return result;
 	}
 	ConfirmsFailuresIF* power = objectManager->get<ConfirmsFailuresIF>(
 			powerConfirmationId);
-	if (power == NULL) {
-		return RETURN_FAILED;
+	if (power != nullptr) {
+		powerConfirmation = power->getEventReceptionQueue();
+		hasPowerConfirmation = true;
 	}
-	powerConfirmation = power->getEventReceptionQueue();
+
 	return RETURN_OK;
 }
 
