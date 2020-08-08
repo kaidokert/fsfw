@@ -116,6 +116,8 @@ public:
 	 */
 	ReturnValue_t commit(dur_millis_t lockTimeout = MutexIF::BLOCKING) override;
 
+
+	LocalPoolVar<T> &operator=(T newValue);
 protected:
 	/**
 	 * @brief	Like #read, but without a lock protection of the global pool.
@@ -169,5 +171,6 @@ using lp_int32_t = LocalPoolVar<int32_t>;
 using lp_int64_t = LocalPoolVar<int64_t>;
 using lp_float_t = LocalPoolVar<float>;
 using lp_double_t = LocalPoolVar<double>;
+
 
 #endif

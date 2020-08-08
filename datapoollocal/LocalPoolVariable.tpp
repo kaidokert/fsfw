@@ -104,6 +104,13 @@ inline ReturnValue_t LocalPoolVar<T>::commitWithoutLock() {
 }
 
 template<typename T>
+inline LocalPoolVar<T> & LocalPoolVar<T>::operator =(T newValue) {
+    value = newValue;
+    return *this;
+}
+
+
+template<typename T>
 inline pool_rwm_t LocalPoolVar<T>::getReadWriteMode() const {
 	return readWriteMode;
 }
