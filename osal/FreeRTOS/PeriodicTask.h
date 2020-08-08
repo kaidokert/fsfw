@@ -40,9 +40,9 @@ public:
 	 * The function pointer to the deadline missed function that shall
 	 * be assigned.
 	 */
-	PeriodicTask(const char *name, TaskPriority setPriority,
+	PeriodicTask(TaskName name, TaskPriority setPriority,
 	        TaskStackSize setStack, TaskPeriod setPeriod,
-	        void (*setDeadlineMissedFunc)());
+	        TaskDeadlineMissedFunction deadlineMissedFunc);
 	/**
 	 * @brief	Currently, the executed object's lifetime is not coupled with
 	 * 			the task object's lifetime, so the destructor is empty.

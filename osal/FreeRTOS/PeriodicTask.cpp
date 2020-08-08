@@ -5,12 +5,13 @@
 
 PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod setPeriod,
-		void (*setDeadlineMissedFunc)()) :
+		TaskDeadlineMissedFunction deadlineMissedFunc) :
 		started(false), handle(NULL), period(setPeriod), deadlineMissedFunc(
-		setDeadlineMissedFunc)
+		deadlineMissedFunc)
 {
+	configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
 	BaseType_t status = xTaskCreate(taskEntryPoint, name,
-			setStack, this, setPriority, &handle);
+			stackSize, this, setPriority, &handle);
 	if(status != pdPASS){
 		sif::debug << "PeriodicTask Insufficient heap memory remaining. "
 		        "Status: " << status << std::endl;
