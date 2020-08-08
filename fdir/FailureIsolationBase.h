@@ -33,9 +33,9 @@ public:
 	virtual void triggerEvent(Event event, uint32_t parameter1 = 0,
 			uint32_t parameter2 = 0);
 protected:
-	MessageQueueIF* eventQueue;
+	MessageQueueIF* eventQueue = nullptr;
 	object_id_t ownerId;
-	HasHealthIF* owner;
+	HasHealthIF* owner = nullptr;
 	object_id_t faultTreeParent;
 	uint8_t parameterDomainBase;
 	void setOwnerHealth(HasHealthIF::HealthState health);
