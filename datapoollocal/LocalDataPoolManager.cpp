@@ -236,7 +236,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
 
         switch(receiver->reportingType) {
         case(ReportingType::PERIODIC): {
-            if(receiver->dataId.dataSetSid == sid_t::INVALID_ADDRESS) {
+            if(receiver->dataId.dataSetSid.notSet()) {
                 // Periodic packets shall only be generated from datasets.
                 continue;
             }

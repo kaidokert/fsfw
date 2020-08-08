@@ -30,6 +30,7 @@ class LocalDataPoolManager;
  *
  * @ingroup data_pool
  */
+// todo: make withValidityBuffer a member
 class LocalPoolDataSetBase: public PoolDataSetBase {
 public:
 	/**
@@ -63,6 +64,14 @@ public:
 	 */
 	~LocalPoolDataSetBase();
 
+	void setValidityBufferGeneration(bool withValidityBuffer);
+
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+	            SerializeIF::Endianness streamEndianness) const override;
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t *size,
+	        SerializeIF::Endianness streamEndianness) override;
+	size_t getSerializedSize() const override;
+
 	/**
 	 * Special version of the serilization function which appends a
 	 * validity buffer at the end. Each bit of this validity buffer
@@ -78,7 +87,8 @@ public:
 	ReturnValue_t serializeWithValidityBuffer(uint8_t** buffer,
 	        size_t* size, size_t maxSize,
 	        SerializeIF::Endianness streamEndianness) const;
-
+	ReturnValue_t deSerializeWithValidityBuffer(const uint8_t** buffer,
+	        size_t *size, SerializeIF::Endianness streamEndianness);
 	ReturnValue_t serializeLocalPoolIds(uint8_t** buffer,
 	        size_t* size, size_t maxSize,
 	        SerializeIF::Endianness streamEndianness) const;
@@ -91,6 +101,8 @@ protected:
 	 * data set we can use this flag.
 	 */
 	bool valid = false;
+
+	bool withValidityBuffer = true;
 
 	/**
 	 * @brief	This is a small helper function to facilitate locking
@@ -114,7 +126,7 @@ protected:
 	 * (most significant bit) to 7 (least significant bit)
 	 */
 	void bitSetter(uint8_t* byte, uint8_t position) const;
-
+	bool bitGetter(const uint8_t* byte, uint8_t position) const;
 private:
 
 

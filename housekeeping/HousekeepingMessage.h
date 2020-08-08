@@ -25,6 +25,10 @@ union sid_t {
 	 * Alternative access to the raw value. This is also the size of the type.
 	 */
 	uint64_t raw;
+
+	bool notSet() const {
+	    return raw == INVALID_ADDRESS;
+	}
 };
 
 
