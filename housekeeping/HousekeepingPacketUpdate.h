@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_HOUSEKEEPING_INTERNALHOUSEKEEPINGPACKET_H_
-#define FRAMEWORK_HOUSEKEEPING_INTERNALHOUSEKEEPINGPACKET_H_
+#ifndef FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
+#define FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
 
 #include <framework/serialize/SerialBufferAdapter.h>
 #include <framework/serialize/SerialLinkedListAdapter.h>
@@ -9,7 +9,7 @@
  * @brief   This helper class will be used to serialize and deserialize
  *          internal housekeeping packets into the store.
  */
-class InternalHousekeepingPacket: public SerializeIF {
+class HousekeepingPacketUpdate: public SerializeIF {
 public:
     /**
      * @param timeStamp
@@ -17,7 +17,7 @@ public:
      * @param hkData
      * @param hkDataSize
      */
-    InternalHousekeepingPacket(uint8_t* timeStamp, size_t timeStampSize,
+    HousekeepingPacketUpdate(uint8_t* timeStamp, size_t timeStampSize,
             LocalPoolDataSetBase* dataSetPtr):
             timeStamp(timeStamp), timeStampSize(timeStampSize),
             dataSetPtr(dataSetPtr) {};
@@ -70,4 +70,4 @@ private:
 
 
 
-#endif /* FRAMEWORK_HOUSEKEEPING_INTERNALHOUSEKEEPINGPACKET_H_ */
+#endif /* FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_ */
