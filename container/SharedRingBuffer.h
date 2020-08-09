@@ -6,6 +6,13 @@
 #include <framework/objectmanager/SystemObject.h>
 #include <framework/timemanager/Clock.h>
 
+/**
+ * @brief   Ring buffer which can be shared among multiple objects
+ * @details
+ * This class offers a mutex to perform thread-safe operation on the ring
+ * buffer. It is still up to the developer to actually perform the lock
+ * and unlock operations.
+ */
 class SharedRingBuffer: public SystemObject,
 		public SimpleRingBuffer {
 public:
@@ -17,8 +24,7 @@ public:
 	 * will be overwritten.
 	 */
 	SharedRingBuffer(object_id_t objectId, const size_t size,
-			bool overwriteOld, size_t maxExcessBytes,
-			dur_millis_t mutexTimeout = 10);
+			bool overwriteOld, size_t maxExcessBytes);
 
 	/**
 	 * This constructor takes an external buffer with the specified size.
@@ -29,37 +35,31 @@ public:
 	 * will be overwritten.
 	 */
 	SharedRingBuffer(object_id_t objectId, uint8_t* buffer, const size_t size,
-			bool overwriteOld, size_t maxExcessBytes,
-			dur_millis_t mutexTimeout = 10);
+			bool overwriteOld, size_t maxExcessBytes);
 
-	void setMutexTimeout(dur_millis_t newTimeout);
-
-	virtual size_t getExcessBytes() const override;
 	/**
-	 * Helper functions which moves any excess bytes to the start
-	 * of the ring buffer.
+	 * Unless a read-only constant value is read, all operations on the
+	 * shared ring buffer should be protected by calling this function.
+	 * @param timeoutType
+	 * @param timeout
 	 * @return
 	 */
-	virtual void moveExcessBytesToStart() override;
+	virtual ReturnValue_t lockRingBufferMutex(MutexIF::TimeoutType timeoutType,
+	        dur_millis_t timeout);
+	/**
+	 * Any locked mutex also has to be unlocked, otherwise, access to the
+	 * shared ring buffer will be blocked.
+	 * @return
+	 */
+	virtual ReturnValue_t unlockRingBufferMutex();
 
-	/** Performs mutex protected SimpleRingBuffer::getFreeElement call */
-	ReturnValue_t getFreeElementProtected(uint8_t** writePtr, size_t amount);
-
-	/** Performs mutex protected SimpleRingBuffer::writeData call */
-	ReturnValue_t writeDataProtected(const uint8_t* data, size_t amount);
-
-	/** Performs mutex protected SimpleRingBuffer::readData call */
-	ReturnValue_t readDataProtected(uint8_t *data, size_t amount,
-			bool incrementReadPtr = false,
-			bool readRemaining = false, size_t *trueAmount = nullptr);
-
-	/** Performs mutex protected SimpleRingBuffer::deleteData call */
-	ReturnValue_t deleteDataProtected(size_t amount,
-			bool deleteRemaining = false, size_t* trueAmount = nullptr);
-
-	size_t getAvailableReadDataProtected (uint8_t n = 0) const;
+	/**
+	 * The mutex handle can be accessed directly, for example to perform
+	 * the lock with the #MutexHelper for a RAII compliant lock operation.
+	 * @return
+	 */
+	MutexIF* getMutexHandle() const;
 private:
-	dur_millis_t mutexTimeout;
 	MutexIF* mutex = nullptr;
 };
 
