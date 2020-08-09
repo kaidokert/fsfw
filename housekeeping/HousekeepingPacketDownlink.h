@@ -1,5 +1,6 @@
 #ifndef FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
 #define FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
+
 #include <framework/datapoollocal/LocalPoolDataSetBase.h>
 #include <framework/housekeeping/HousekeepingMessage.h>
 #include <framework/serialize/SerialLinkedListAdapter.h>
@@ -18,40 +19,32 @@ public:
             numberOfParameters, LocalPoolDataSetBase* dataSetPtr):
             sourceId(sid.objectId), setId(sid.ownerSetId),
             collectionInterval(collectionInterval),
-            numberOfParameters(numberOfParameters), dataSetPtr(dataSetPtr),
-            hkData(dataSetPtr) {
+            numberOfParameters(numberOfParameters), hkData(dataSetPtr) {
         setLinks();
     }
 
-//    virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-//                size_t maxSize, Endianness streamEndianness) const override {
-//        ReturnValue_t result = SerialLinkedListAdapter::serialize(buffer, size,
-//                maxSize, streamEndianness);
-//        if(result != HasReturnvaluesIF::RETURN_OK) {
-//            return result;
-//        }
-//        return dataSetPtr->serialize(buffer, size, maxSize, streamEndianness);
-//   }
-//
-//   virtual size_t getSerializedSize() const override {
-//
-//   }
+    /**
+     * Helper functions which can be used to move HK data from the IPC store
+     * to the telemetry store.
+     * @param formerStore
+     * @param storeId
+     * @param newStore
+     * @param newStoreId [out]
+     * @return
+     */
+    virtual ReturnValue_t moveToOtherStore(StorageManagerIF* formerStore,
+            store_address_t storeId, StorageManagerIF* newStore,
+            store_address_t* newStoreId) {
+        const uint8_t* dataPtr = nullptr;
+        size_t hkDataSize = 0;
+        ReturnValue_t result = formerStore->getData(storeId, &dataPtr,
+                &hkDataSize);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
 
-   virtual ReturnValue_t moveToOtherStore(StorageManagerIF* formerStore,
-           store_address_t storeId, StorageManagerIF* otherStore,
-           store_address_t* newStoreId, uint8_t** buffer, size_t size) {
-       const uint8_t* dataPtr = nullptr;
-       size_t hkDataSize = 0;
-       ReturnValue_t result = formerStore->getData(storeId, &dataPtr, &hkDataSize);
-       if(result != HasReturnvaluesIF::RETURN_OK) {
-           return result;
-       }
-
-       otherStore->addData(newStoreId, dataPtrgetSerializedSize(),
-               buffer);
-       std::memcpy
-
-   }
+        return newStore->addData(newStoreId, dataPtr, hkDataSize);
+    }
 
 private:
     void setLinks() {
@@ -67,9 +60,22 @@ private:
     SerializeElement<float> collectionInterval;
     SerializeElement<uint8_t> numberOfParameters;
     LinkedElement<SerializeIF> hkData;
-    LocalPoolDataSetBase* dataSetPtr;
 };
 
-
-
 #endif /* FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_ */
+
+
+
+//    virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+//                size_t maxSize, Endianness streamEndianness) const override {
+//        ReturnValue_t result = SerialLinkedListAdapter::serialize(buffer, size,
+//                maxSize, streamEndianness);
+//        if(result != HasReturnvaluesIF::RETURN_OK) {
+//            return result;
+//        }
+//        return dataSetPtr->serialize(buffer, size, maxSize, streamEndianness);
+//   }
+//
+//   virtual size_t getSerializedSize() const override {
+//
+//   }

@@ -8,6 +8,7 @@
 #include <framework/housekeeping/HousekeepingMessage.h>
 #include <framework/datapool/PoolEntry.h>
 #include <framework/datapoollocal/HasLocalDataPoolIF.h>
+#include <framework/housekeeping/HousekeepingPacketDownlink.h>
 #include <framework/ipc/CommandMessage.h>
 #include <framework/ipc/MessageQueueIF.h>
 #include <framework/ipc/MutexHelper.h>
@@ -101,8 +102,8 @@ public:
 	 * @param sid
 	 * @return
 	 */
-	ReturnValue_t generateHousekeepingPacket(sid_t sid, MessageQueueId_t sendTo
-	        = MessageQueueIF::NO_QUEUE);
+	ReturnValue_t generateHousekeepingPacket(sid_t sid, float collectionInterval,
+	        MessageQueueId_t sendTo = MessageQueueIF::NO_QUEUE);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
@@ -237,8 +238,9 @@ private:
 			PoolEntry<T> **poolEntry);
 
 	void setMinimalSamplingFrequency(float frequencySeconds);
-	ReturnValue_t serializeHkPacketIntoStore(store_address_t* storeId,
-	        LocalPoolDataSetBase* dataSet);
+	ReturnValue_t serializeHkPacketIntoStore(
+	        HousekeepingPacketDownlink& hkPacket,
+	        store_address_t *storeId);
 
 	uint32_t intervalSecondsToInterval(bool isDiagnostics,
 	        float collectionIntervalSeconds);

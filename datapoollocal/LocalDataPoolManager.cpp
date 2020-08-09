@@ -1,6 +1,7 @@
 #include <framework/datapoollocal/LocalDataPoolManager.h>
 #include <framework/datapoollocal/LocalPoolDataSetBase.h>
 #include <framework/housekeeping/AcceptsHkPacketsIF.h>
+#include <framework/housekeeping/HousekeepingPacketDownlink.h>
 #include <framework/ipc/MutexFactory.h>
 #include <framework/ipc/MutexHelper.h>
 #include <framework/ipc/QueueFactory.h>
@@ -121,7 +122,7 @@ const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 }
 
 ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
-        MessageQueueId_t sendTo) {
+        float collectionInterval, MessageQueueId_t sendTo) {
 	LocalPoolDataSetBase* dataSetToSerialize = dynamic_cast<LocalPoolDataSetBase*>(
 			owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
@@ -136,8 +137,9 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 //	}
 
 	store_address_t storeId;
-	ReturnValue_t result = serializeHkPacketIntoStore(&storeId,
-	        dataSetToSerialize);
+	HousekeepingPacketDownlink hkPacket(sid, collectionInterval,
+	        dataSetToSerialize->getFillCount(), dataSetToSerialize);
+	ReturnValue_t result = serializeHkPacketIntoStore(hkPacket, &storeId);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 	    return result;
 	}
@@ -164,6 +166,22 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	}
 
 	return result;
+}
+
+ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
+        HousekeepingPacketDownlink& hkPacket,
+        store_address_t *storeId) {
+    uint8_t* dataPtr = nullptr;
+    size_t serializedSize = hkPacket.getSerializedSize();
+    const size_t maxSize = serializedSize;
+    ReturnValue_t  result = ipcStore->getFreeElement(storeId,
+            serializedSize, &dataPtr);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+
+    return hkPacket.serialize(&dataPtr, &serializedSize, maxSize,
+            SerializeIF::Endianness::MACHINE);
 }
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid) {
@@ -199,33 +217,6 @@ void LocalDataPoolManager::setNonDiagnosticIntervalFactor(
     this->nonDiagnosticIntervalFactor = nonDiagInvlFactor;
 }
 
-ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
-        store_address_t *storeId, LocalPoolDataSetBase* dataSet) {
-    size_t hkSize = dataSet->getSerializedSize();
-    uint8_t* storePtr = nullptr;
-    ReturnValue_t result = ipcStore->getFreeElement(storeId, hkSize,&storePtr);
-    if(result != HasReturnvaluesIF::RETURN_OK) {
-        sif::error << "HousekeepingManager::generateHousekeepingPacket: "
-                "Could not get free element from IPC store." << std::endl;
-        return result;
-    }
-    size_t size = 0;
-
-    if(appendValidityBuffer) {
-        result = dataSet->serializeWithValidityBuffer(&storePtr,
-                &size, hkSize, SerializeIF::Endianness::MACHINE);
-    }
-    else {
-        result = dataSet->serialize(&storePtr, &size, hkSize,
-                SerializeIF::Endianness::MACHINE);
-    }
-
-    if(result != HasReturnvaluesIF::RETURN_OK) {
-        sif::error << "HousekeepingManager::serializeHkPacketIntoStore: "
-                "Serialization proccess failed!" << std::endl;
-    }
-    return result;
-}
 
 ReturnValue_t LocalDataPoolManager::performHkOperation() {
     for(auto& hkReceiversIter: hkReceiversMap) {
