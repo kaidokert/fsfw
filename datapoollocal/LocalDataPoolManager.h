@@ -176,7 +176,7 @@ private:
         type */
         union HkParameter {
             /** This parameter will be used for the PERIODIC type */
-            dur_seconds_t collectionInterval = 0;
+            float collectionIntervalSeconds = 0;
             /** This parameter will be used for the ON_UPDATE type */
             bool hkDataChanged;
         };

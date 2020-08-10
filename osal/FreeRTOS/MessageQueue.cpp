@@ -132,6 +132,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	else  {
 		destination = reinterpret_cast<QueueHandle_t>(sendTo);
 	}
+
     message->setSender(sentFrom);
 
 

@@ -131,11 +131,6 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
-	// do we generate hk packets for invalid datasets?
-//	if(not dataSetToSerialize->isValid()) {
-//	    return HasReturnvaluesIF::RETURN_OK;
-//	}
-
 	store_address_t storeId;
 	HousekeepingPacketDownlink hkPacket(sid, collectionInterval,
 	        dataSetToSerialize->getFillCount(), dataSetToSerialize);
@@ -249,7 +244,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
 void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
     if(receiver->intervalCounter >= intervalSecondsToInterval(
             receiver->isDiagnostics,
-            receiver->hkParameter.collectionInterval)) {
+            receiver->hkParameter.collectionIntervalSeconds)) {
         ReturnValue_t result = generateHousekeepingPacket(
                 receiver->dataId.dataSetSid, receiver->destinationQueue);
         if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -279,7 +274,7 @@ uint32_t LocalDataPoolManager::intervalSecondsToInterval(bool isDiagnostics,
 float LocalDataPoolManager::intervalToIntervalSeconds(bool isDiagnostics,
         uint32_t collectionInterval) {
     if(isDiagnostics) {
-        return  static_cast<float>(collectionInterval * diagnosticMinimumInterval);
+        return static_cast<float>(collectionInterval * diagnosticMinimumInterval);
     }
     else {
         return static_cast<float>(collectionInterval * regularMinimumInterval);

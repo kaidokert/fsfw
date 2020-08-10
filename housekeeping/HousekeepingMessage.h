@@ -112,8 +112,6 @@ public:
 
 private:
 	static void setSid(CommandMessage* message, sid_t sid);
-	static void setParameter(CommandMessage* message, uint32_t parameter);
-	static uint32_t getParameter(const CommandMessage* message);
 };
 
 
