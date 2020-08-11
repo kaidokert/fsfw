@@ -68,15 +68,6 @@ public:
 		Iterator(std::pair<key_t, T> *pair) :
 				ArrayList<std::pair<key_t, T>, uint32_t>::Iterator(pair) {
 		}
-
-		T operator*() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
-		T *operator->() {
-			return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
 	};
 
 	Iterator begin() const {
@@ -91,7 +82,7 @@ public:
 		return _size;
 	}
 
-	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = NULL) {
+	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr) {
 		if (_size == theMap.maxSize()) {
 			return MAP_FULL;
 		}
@@ -101,7 +92,7 @@ public:
 		theMap[position].first = key;
 		theMap[position].second = value;
 		++_size;
-		if (storedValue != NULL) {
+		if (storedValue != nullptr) {
 			*storedValue = Iterator(&theMap[position]);
 		}
 		return HasReturnvaluesIF::RETURN_OK;
