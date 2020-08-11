@@ -48,7 +48,7 @@ private:
 		if (_size <= position) {
 			return;
 		}
-		memmove(&theMap[position], &theMap[position + 1],
+		memmove(static_cast<void*>(&theMap[position]), static_cast<void*>(&theMap[position + 1]),
 				(_size - position - 1) * sizeof(std::pair<key_t,T>));
 		--_size;
 	}
@@ -87,7 +87,7 @@ public:
 			return MAP_FULL;
 		}
 		uint32_t position = findNicePlace(key);
-		memmove(&theMap[position + 1], &theMap[position],
+		memmove(static_cast<void*>(&theMap[position + 1]),static_cast<void*>(&theMap[position]),
 				(_size - position) * sizeof(std::pair<key_t,T>));
 		theMap[position].first = key;
 		theMap[position].second = value;
