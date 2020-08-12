@@ -15,6 +15,10 @@
 
 class TcPacketStored;
 
+namespace Factory{
+void setStaticFrameworkObjectIds();
+}
+
 /**
  * @brief 	This class is the basis for all PUS Services, which have to
  * 			relay Telecommands to software bus.
@@ -33,6 +37,7 @@ class CommandingServiceBase: public SystemObject,
 		public AcceptsTelecommandsIF,
 		public ExecutableObjectIF,
 		public HasReturnvaluesIF {
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_SERVICE_BASE;
 	static const ReturnValue_t EXECUTION_COMPLETE = MAKE_RETURN_CODE(1);
@@ -57,9 +62,23 @@ public:
 	 */
 	CommandingServiceBase(object_id_t setObjectId, uint16_t apid,
 			uint8_t service, uint8_t numberOfParallelCommands,
-			uint16_t commandTimeoutSeconds, object_id_t setPacketSource,
-			object_id_t setPacketDestination, size_t queueDepth = 20);
+			uint16_t commandTimeoutSeconds, size_t queueDepth = 20);
 	virtual ~CommandingServiceBase();
+
+	/**
+	 * This setter can be used to set the packet source individually instead
+	 * of using the default static framework ID set in the factory.
+	 * This should be called at object initialization and not during run-time!
+	 * @param packetSource
+	 */
+	void setPacketSource(object_id_t packetSource);
+	/**
+	 * This setter can be used to set the packet destination individually
+	 * instead of using the default static framework ID set in the factory.
+	 * This should be called at object initialization and not during run-time!
+	 * @param packetDestination
+	 */
+	void setPacketDestination(object_id_t packetDestination);
 
 	/***
 	 * This is the periodically called function.
@@ -68,7 +87,7 @@ public:
 	 * @param opCode is unused here at the moment
 	 * @return RETURN_OK
 	 */
-	virtual ReturnValue_t performOperation(uint8_t opCode);
+	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
 	virtual uint16_t getIdentifier();
 
@@ -89,22 +108,23 @@ public:
 	 */
 	virtual MessageQueueId_t getCommandQueue();
 
-	virtual ReturnValue_t initialize();
+	virtual ReturnValue_t initialize() override;
 
 	/**
 	 * Implementation of ExecutableObjectIF function
 	 *
 	 * Used to setup the reference of the task, that executes this component
-	 * @param task_ Pointer to the taskIF of this task
+	 * @param task Pointer to the taskIF of this task
 	 */
-	virtual void setTaskIF(PeriodicTaskIF* task_);
+	virtual void setTaskIF(PeriodicTaskIF* task) override;
 
 protected:
 	/**
 	 * Check the target subservice
 	 * @param subservice[in]
-	 * @return -@c RETURN_OK on success
-     *         -@c INVALID_SUBSERVICE if service is not known
+	 * @return
+	 * -@c RETURN_OK Subservice valid, continue message handling
+     * -@c INVALID_SUBSERVICE if service is not known, rejects packet.
 	 */
 	virtual ReturnValue_t isValidSubservice(uint8_t subservice) = 0;
 
@@ -117,9 +137,10 @@ protected:
 	 * @param tcDataLen
 	 * @param id MessageQueue ID is stored here
 	 * @param objectId Object ID is extracted and stored here
-	 * @return - @c RETURN_OK on success
-	 *         - @c RETURN_FAILED
-	 *         - @c CSB or implementation specific return codes
+	 * @return
+	 * - @c RETURN_OK Cotinue message handling
+	 * - @c RETURN_FAILED Reject the packet and generates a start failure
+	 *      verification
 	 */
 	virtual ReturnValue_t getMessageQueueAndObject(uint8_t subservice,
 			const uint8_t *tcData, size_t tcDataLen, MessageQueueId_t *id,
@@ -138,6 +159,11 @@ protected:
 	 * communication
 	 * @param objectId Target object ID
 	 * @return
+	 * - @c RETURN_OK to generate a verification start message
+	 * - @c EXECUTION_COMPELTE Fire-and-forget command. Generate a completion
+	 *      verification message.
+	 * - @c Anything else rejects the packets and generates a start failure
+	 *      verification.
 	 */
 	virtual ReturnValue_t prepareCommand(CommandMessage* message,
 			uint8_t subservice, const uint8_t *tcData, size_t tcDataLen,
@@ -160,11 +186,12 @@ protected:
 	 * @return
 	 * - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
 	 *   generate TC verification success
-	 * - @c INVALID_REPLY calls handleUnrequestedReply
-	 * - Anything else triggers a TC verification failure. If RETURN_FAILED
-	 *   is returned and the command ID is CommandMessage::REPLY_REJECTED,
-	 *   a failure verification message with the reason as the error parameter
-	 *   and the initial command as failure parameter 1.
+	 * - @c INVALID_REPLY Calls handleUnrequestedReply
+	 * - Anything else triggers a TC verification failure. If RETURN_FAILED or
+	 * 	 INVALID_REPLY is returned and the command ID is
+	 * 	 CommandMessage::REPLY_REJECTED, a failure verification message with
+	 * 	 the reason as the error parameter and the initial command as
+	 * 	 failure parameter 1 is generated.
 	 */
 	virtual ReturnValue_t handleReply(const CommandMessage* reply,
 			Command_t previousCommand, uint32_t *state,
@@ -227,9 +254,10 @@ protected:
 	uint32_t failureParameter1 = 0;
 	uint32_t failureParameter2 = 0;
 
-	object_id_t packetSource;
-
-	object_id_t packetDestination;
+	static object_id_t defaultPacketSource;
+	object_id_t packetSource = objects::NO_OBJECT;
+	static object_id_t defaultPacketDestination;
+	object_id_t packetDestination = objects::NO_OBJECT;
 
 	/**
 	 * Pointer to the task which executes this component,
@@ -274,7 +302,6 @@ protected:
 	void checkAndExecuteFifo(CommandMapIter iter);
 
 private:
-
 	/**
 	 * This method handles internal execution of a command,
 	 * once it has been started by @sa{startExecution()} in the request
@@ -294,10 +321,13 @@ private:
 	void handleCommandQueue();
 
 	/**
+	 * @brief       Handler function for request queue
+	 * @details
 	 * Sequence of request queue handling:
 	 * isValidSubservice -> getMessageQueueAndObject -> startExecution
-	 * Generates Start Success Reports TM[1,3] in subfunction @sa{startExecution()}
-	 * or Start Failure Report TM[1,4] by using the TC Verification Service
+	 * Generates a Start Success Reports TM[1,3] in subfunction
+	 * @sa{startExecution()} or  a Start Failure Report TM[1,4] by using the
+	 * TC Verification Service.
 	 */
 	void handleRequestQueue();
 
