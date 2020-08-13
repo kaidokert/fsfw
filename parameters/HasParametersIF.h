@@ -1,8 +1,8 @@
 #ifndef HASPARAMETERSIF_H_
 #define HASPARAMETERSIF_H_
 
-#include <framework/parameters/ParameterWrapper.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "ParameterWrapper.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <stdint.h>
 
 typedef uint32_t ParameterId_t;

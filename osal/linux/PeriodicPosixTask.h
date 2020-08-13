@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 #define FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 
-#include <framework/tasks/PeriodicTaskIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/osal/linux/PosixThread.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../tasks/PeriodicTaskIF.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "PosixThread.h"
+#include "../../tasks/ExecutableObjectIF.h"
 #include <vector>
 
 class PeriodicPosixTask: public PosixThread, public PeriodicTaskIF {

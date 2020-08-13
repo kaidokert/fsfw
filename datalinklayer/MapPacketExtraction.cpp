@@ -5,13 +5,13 @@
  * @author	baetz
  */
 
-#include <framework/datalinklayer/MapPacketExtraction.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tmtcpacket/SpacePacketBase.h>
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
-#include <framework/tmtcservices/TmTcMessage.h>
+#include "MapPacketExtraction.h"
+#include "../ipc/QueueFactory.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../tmtcpacket/SpacePacketBase.h"
+#include "../tmtcservices/AcceptsTelecommandsIF.h"
+#include "../tmtcservices/TmTcMessage.h"
 #include <string.h>
 
 MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,

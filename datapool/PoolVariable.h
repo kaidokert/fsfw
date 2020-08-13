@@ -11,11 +11,11 @@
 #ifndef POOLVARIABLE_H_
 #define POOLVARIABLE_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "DataSetIF.h"
+#include "PoolEntry.h"
+#include "PoolVariableIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 template<typename T, uint8_t n_var> class PoolVarList;
 
