@@ -4,7 +4,7 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../events/EventManagerIF.h"
 #include "../ipc/QueueFactory.h"
-#include "/tmtcpacketTmPacketStored.h"
+#include "../tmtcpacket/pus/TmPacketStored.h"
 
 
 Service5EventReporting::Service5EventReporting(object_id_t objectId,
