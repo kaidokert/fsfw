@@ -136,12 +136,6 @@ public:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	//This is potentially unsafe
-//	T *findValue(key_t key) const {
-//		return &theMap[findFirstIndex(key)].second;
-//	}
-
-
 	Iterator find(key_t key) const {
 		ReturnValue_t result = exists(key);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
