@@ -1,11 +1,11 @@
 #ifndef HEALTHDEVICE_H_
 #define HEALTHDEVICE_H_
 
-#include <framework/health/HasHealthIF.h>
-#include <framework/health/HealthHelper.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "../health/HasHealthIF.h"
+#include "../health/HealthHelper.h"
+#include "../objectmanager/SystemObject.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../ipc/MessageQueueIF.h"
 
 class HealthDevice: public SystemObject,
 		public ExecutableObjectIF,

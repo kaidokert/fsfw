@@ -1,13 +1,13 @@
 #ifndef FRAMEWORK_FDIR_FAILUREISOLATIONBASE_H_
 #define FRAMEWORK_FDIR_FAILUREISOLATIONBASE_H_
 
-#include <framework/events/EventMessage.h>
-#include <framework/fdir/ConfirmsFailuresIF.h>
-#include <framework/fdir/FaultCounter.h>
-#include <framework/health/HealthMessage.h>
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "../events/EventMessage.h"
+#include "../fdir/ConfirmsFailuresIF.h"
+#include "../fdir/FaultCounter.h"
+#include "../health/HealthMessage.h"
+#include "../parameters/HasParametersIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MessageQueueIF.h"
 
 class FailureIsolationBase: public HasReturnvaluesIF,
 		public ConfirmsFailuresIF,

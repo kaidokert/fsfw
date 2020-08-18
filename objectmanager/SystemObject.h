@@ -8,10 +8,10 @@
 #ifndef SYSTEMOBJECT_H_
 #define SYSTEMOBJECT_H_
 
-#include <framework/events/Event.h>
-#include <framework/events/EventReportingProxyIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/timemanager/Clock.h>
+#include "../events/Event.h"
+#include "../events/EventReportingProxyIF.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../timemanager/Clock.h"
 
 /**
  * @brief	This class automates insertion into the ObjectManager and

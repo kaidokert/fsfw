@@ -1,5 +1,5 @@
-#include <framework/devicehandlers/HealthDevice.h>
-#include <framework/ipc/QueueFactory.h>
+#include "../devicehandlers/HealthDevice.h"
+#include "../ipc/QueueFactory.h"
 
 HealthDevice::HealthDevice(object_id_t setObjectId,
 		MessageQueueId_t parentQueue) :

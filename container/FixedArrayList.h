@@ -1,7 +1,7 @@
 #ifndef FIXEDARRAYLIST_H_
 #define FIXEDARRAYLIST_H_
 
-#include <framework/container/ArrayList.h>
+#include "../container/ArrayList.h"
 
 /**
  * @brief 	Array List with a fixed maximum size

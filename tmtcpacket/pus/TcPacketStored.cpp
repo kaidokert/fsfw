@@ -1,6 +1,6 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/pus/TcPacketStored.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../tmtcpacket/pus/TcPacketStored.h"
 
 #include <cstring>
 

@@ -1,10 +1,10 @@
-#include <framework/tmtcservices/VerificationReporter.h>
+#include "../tmtcservices/VerificationReporter.h"
 
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/tmtcservices/AcceptsVerifyMessageIF.h>
-#include <framework/tmtcservices/PusVerificationReport.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/objectmanager/frameworkObjects.h>
+#include "../ipc/MessageQueueIF.h"
+#include "../tmtcservices/AcceptsVerifyMessageIF.h"
+#include "../tmtcservices/PusVerificationReport.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../objectmanager/frameworkObjects.h"
 
 object_id_t VerificationReporter::messageReceiver = objects::PUS_SERVICE_1;
 

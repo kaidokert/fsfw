@@ -10,9 +10,9 @@
  * @brief Message Queue related software components
  */
 
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../ipc/MessageQueueMessage.h"
+#include "../ipc/MessageQueueSenderIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 class MessageQueueIF {
 public:
 	static const MessageQueueId_t NO_QUEUE = MessageQueueMessageIF::NO_QUEUE; //!< Ugly hack.

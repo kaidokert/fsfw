@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_
 #define FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_
 
-#include <framework/container/RingBufferBase.h>
+#include "../container/RingBufferBase.h"
 #include <cstddef>
 
 /**

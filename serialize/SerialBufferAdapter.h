@@ -1,8 +1,8 @@
 #ifndef SERIALBUFFERADAPTER_H_
 #define SERIALBUFFERADAPTER_H_
 
-#include <framework/serialize/SerializeIF.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../serialize/SerializeIF.h"
+#include "../serialize/SerializeAdapter.h"
 
 /**
  * This adapter provides an interface for SerializeIF to serialize or deserialize

@@ -1,6 +1,6 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/power/PowerSwitcher.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../power/PowerSwitcher.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 PowerSwitcher::PowerSwitcher(uint8_t setSwitch1, uint8_t setSwitch2,
 		PowerSwitcher::State_t setStartState) :

@@ -1,4 +1,4 @@
-#include <framework/globalfunctions/DleEncoder.h>
+#include "../globalfunctions/DleEncoder.h"
 
 DleEncoder::DleEncoder() {}
 

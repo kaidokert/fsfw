@@ -1,6 +1,6 @@
-#include <framework/datapoolglob/GlobalDataPool.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/MutexFactory.h>
+#include "../datapoolglob/GlobalDataPool.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../ipc/MutexFactory.h"
 
 GlobalDataPool::GlobalDataPool(
 		void(*initFunction)(GlobPoolMap* pool_map)) {

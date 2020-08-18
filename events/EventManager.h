@@ -1,13 +1,13 @@
 #ifndef EVENTMANAGER_H_
 #define EVENTMANAGER_H_
 
-#include <framework/events/eventmatching/EventMatchTree.h>
-#include <framework/events/EventManagerIF.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/storagemanager/LocalPool.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/ipc/MutexIF.h>
+#include "../events/eventmatching/EventMatchTree.h"
+#include "../events/EventManagerIF.h"
+#include "../objectmanager/SystemObject.h"
+#include "../storagemanager/LocalPool.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../ipc/MessageQueueIF.h"
+#include "../ipc/MutexIF.h"
 #include <map>
 
 class EventManager: public EventManagerIF,

@@ -1,6 +1,6 @@
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/osal/linux/PeriodicPosixTask.h>
+#include "../../tasks/ExecutableObjectIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../osal/linux/PeriodicPosixTask.h"
 
 #include <errno.h>
 

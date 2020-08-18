@@ -1,6 +1,6 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/ccsds_header.h>
-#include <framework/tmtcpacket/SpacePacket.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../tmtcpacket/ccsds_header.h"
+#include "../tmtcpacket/SpacePacket.h"
 #include <string.h>
 
 SpacePacket::SpacePacket( uint16_t packetDataLength, bool isTelecommand, uint16_t apid, uint16_t sequenceCount ):

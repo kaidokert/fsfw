@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_TASKS_SEMAPHOREFACTORY_H_
 #define FRAMEWORK_TASKS_SEMAPHOREFACTORY_H_
-#include <framework/tasks/SemaphoreIF.h>
+#include "../tasks/SemaphoreIF.h"
 
 /**
  * Creates Semaphore.

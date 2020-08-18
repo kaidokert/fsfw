@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_PUS_SERVICE5EVENTREPORTING_H_
 #define FRAMEWORK_PUS_SERVICE5EVENTREPORTING_H_
 
-#include <framework/tmtcservices/PusServiceBase.h>
-#include <framework/events/EventMessage.h>
+#include "../tmtcservices/PusServiceBase.h"
+#include "../events/EventMessage.h"
 
 /**
  * @brief Report on-board events like information or errors

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_TASKS_FIXEDSEQUENCESLOT_H_
 #define FRAMEWORK_TASKS_FIXEDSEQUENCESLOT_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../tasks/ExecutableObjectIF.h"
 class PeriodicTaskIF;
 
 /**

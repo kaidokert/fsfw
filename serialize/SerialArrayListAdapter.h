@@ -7,8 +7,8 @@
 #ifndef SERIALARRAYLISTADAPTER_H_
 #define SERIALARRAYLISTADAPTER_H_
 
-#include <framework/container/ArrayList.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../container/ArrayList.h"
+#include "../serialize/SerializeIF.h"
 #include <utility>
 
 /**

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_GLOBALFUNCTIONS_DLEENCODER_H_
 #define FRAMEWORK_GLOBALFUNCTIONS_DLEENCODER_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
 /**

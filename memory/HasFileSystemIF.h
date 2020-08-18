@@ -8,7 +8,7 @@
 #ifndef FRAMEWORK_MEMORY_HASFILESYSTEMIF_H_
 #define FRAMEWORK_MEMORY_HASFILESYSTEMIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 class HasFileSystemIF {
 public:

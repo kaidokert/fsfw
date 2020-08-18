@@ -1,7 +1,7 @@
 #ifndef INTERNALERRORCODES_H_
 #define INTERNALERRORCODES_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 class InternalErrorCodes {
 public:

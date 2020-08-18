@@ -1,8 +1,8 @@
 #ifndef MEMORYMESSAGE_H_
 #define MEMORYMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/CommandMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
 
 
 class MemoryMessage {

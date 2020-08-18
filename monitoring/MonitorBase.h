@@ -1,12 +1,12 @@
 #ifndef MONITORBASE_H_
 #define MONITORBASE_H_
 
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapoolglob/PIDReader.h>
-#include <framework/monitoring/LimitViolationReporter.h>
-#include <framework/monitoring/MonitoringIF.h>
-#include <framework/monitoring/MonitoringMessageContent.h>
-#include <framework/monitoring/MonitorReporter.h>
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/PIDReader.h"
+#include "../monitoring/LimitViolationReporter.h"
+#include "../monitoring/MonitoringIF.h"
+#include "../monitoring/MonitoringMessageContent.h"
+#include "../monitoring/MonitorReporter.h"
 
 /**
  * Base class for monitoring of parameters.

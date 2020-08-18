@@ -1,5 +1,5 @@
-#include <framework/datapool/HkSwitchHelper.h>
-#include <framework/ipc/QueueFactory.h>
+#include "../datapool/HkSwitchHelper.h"
+#include "../ipc/QueueFactory.h"
 
 HkSwitchHelper::HkSwitchHelper(EventReportingProxyIF* eventProxy) :
 		commandActionHelper(this), eventProxy(eventProxy) {

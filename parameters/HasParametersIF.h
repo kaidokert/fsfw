@@ -1,8 +1,8 @@
 #ifndef HASPARAMETERSIF_H_
 #define HASPARAMETERSIF_H_
 
-#include <framework/parameters/ParameterWrapper.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../parameters/ParameterWrapper.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <stdint.h>
 
 /** Each parameter is identified with a unique parameter ID */

@@ -1,4 +1,4 @@
-#include <framework/osal/InternalErrorCodes.h>
+#include "../../osal/InternalErrorCodes.h"
 #include <rtems/score/interr.h>
 
 ReturnValue_t InternalErrorCodes::translate(uint8_t code) {

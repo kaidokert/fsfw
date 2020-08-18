@@ -1,8 +1,8 @@
 #ifndef POWERCOMPONENTIF_H_
 #define POWERCOMPONENTIF_H_
 
-#include <framework/serialize/SerializeIF.h>
-#include <framework/parameters/HasParametersIF.h>
+#include "../serialize/SerializeIF.h"
+#include "../parameters/HasParametersIF.h"
 
 class PowerComponentIF : public SerializeIF, public HasParametersIF {
 public:

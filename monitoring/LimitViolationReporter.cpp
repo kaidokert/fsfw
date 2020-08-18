@@ -4,11 +4,11 @@
  * @date	17.07.2014
  * @author	baetz
  */
-#include <framework/monitoring/LimitViolationReporter.h>
-#include <framework/monitoring/MonitoringIF.h>
-#include <framework/monitoring/ReceivesMonitoringReportsIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../monitoring/LimitViolationReporter.h"
+#include "../monitoring/MonitoringIF.h"
+#include "../monitoring/ReceivesMonitoringReportsIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../serialize/SerializeAdapter.h"
 
 ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF* data) {
 	ReturnValue_t result = checkClassLoaded();

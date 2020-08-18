@@ -1,13 +1,13 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapoollocal/HasLocalDataPoolIF.h>
-#include <framework/datapoollocal/LocalDataPoolManager.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../datapool/PoolVariableIF.h"
+#include "../datapool/DataSetIF.h"
+#include "../datapoollocal/HasLocalDataPoolIF.h"
+#include "../datapoollocal/LocalDataPoolManager.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
-#include <framework/serialize/SerializeAdapter.h>
+#include "../serialize/SerializeAdapter.h"
 
 /**
  * @brief 	Local Pool Variable class which is used to access the local pools.
@@ -153,7 +153,7 @@ private:
 	LocalDataPoolManager* hkManager;
 };
 
-#include <framework/datapoollocal/LocalPoolVariable.tpp>
+#include "../datapoollocal/LocalPoolVariable.tpp"
 
 template<class T>
 using lp_var_t = LocalPoolVar<T>;

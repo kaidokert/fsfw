@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
 #define FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
 template<uint8_t N_READ_PTRS = 1>

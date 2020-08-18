@@ -1,9 +1,9 @@
-#include <framework/monitoring/LimitViolationReporter.h>
-#include <framework/monitoring/MonitoringMessageContent.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/power/Fuse.h>
-#include <framework/serialize/SerialFixedArrayListAdapter.h>
-#include <framework/ipc/QueueFactory.h>
+#include "../monitoring/LimitViolationReporter.h"
+#include "../monitoring/MonitoringMessageContent.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../power/Fuse.h"
+#include "../serialize/SerialFixedArrayListAdapter.h"
+#include "../ipc/QueueFactory.h"
 
 object_id_t Fuse::powerSwitchId = 0;
 

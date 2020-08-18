@@ -1,15 +1,15 @@
 #ifndef MONITORINGMESSAGECONTENT_H_
 #define MONITORINGMESSAGECONTENT_H_
 
-#include <framework/monitoring/HasMonitorsIF.h>
-#include <framework/monitoring/MonitoringIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/SerialBufferAdapter.h>
-#include <framework/serialize/SerialFixedArrayListAdapter.h>
-#include <framework/serialize/SerializeElement.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/timemanager/TimeStamperIF.h>
+#include "../monitoring/HasMonitorsIF.h"
+#include "../monitoring/MonitoringIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../serialize/SerialBufferAdapter.h"
+#include "../serialize/SerialFixedArrayListAdapter.h"
+#include "../serialize/SerializeElement.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../timemanager/TimeStamperIF.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();

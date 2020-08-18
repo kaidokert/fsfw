@@ -1,4 +1,4 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "TaskBase.h"
 
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE=RTEMS_MINIMUM_STACK_SIZE;

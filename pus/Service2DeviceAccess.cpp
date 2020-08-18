@@ -1,14 +1,14 @@
-#include <framework/pus/Service2DeviceAccess.h>
-#include <framework/pus/servicepackets/Service2Packets.h>
+#include "../pus/Service2DeviceAccess.h"
+#include "../pus/servicepackets/Service2Packets.h"
 
-#include <framework/devicehandlers/DeviceHandlerIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/devicehandlers/DeviceHandlerMessage.h>
-#include <framework/serialize/EndianConverter.h>
-#include <framework/action/ActionMessage.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../devicehandlers/DeviceHandlerIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../devicehandlers/DeviceHandlerMessage.h"
+#include "../serialize/EndianConverter.h"
+#include "../action/ActionMessage.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 Service2DeviceAccess::Service2DeviceAccess(object_id_t objectId,
         uint16_t apid, uint8_t serviceId, uint8_t numberOfParallelCommands,

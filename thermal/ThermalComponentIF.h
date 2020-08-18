@@ -1,10 +1,10 @@
 #ifndef THERMALCOMPONENTIF_H_
 #define THERMALCOMPONENTIF_H_
 
-#include <framework/events/Event.h>
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
+#include "../events/Event.h"
+#include "../parameters/HasParametersIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../objectmanager/SystemObjectIF.h"
 
 class ThermalComponentIF : public HasParametersIF {
 public:

@@ -7,8 +7,8 @@
 
 
 
-#include <framework/datalinklayer/Clcw.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datalinklayer/Clcw.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 Clcw::Clcw() {
 	content.raw = 0;

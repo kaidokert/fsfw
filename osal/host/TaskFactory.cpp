@@ -1,8 +1,8 @@
-#include <framework/osal/host/FixedTimeslotTask.h>
-#include <framework/osal/host/PeriodicTask.h>
-#include <framework/tasks/TaskFactory.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tasks/PeriodicTaskIF.h>
+#include "../../osal/host/FixedTimeslotTask.h"
+#include "../../osal/host/PeriodicTask.h"
+#include "../../tasks/TaskFactory.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../tasks/PeriodicTaskIF.h"
 
 #include <chrono>
 

@@ -1,8 +1,8 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/subsystem/modes/ModeSequenceMessage.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../storagemanager/StorageManagerIF.h"
+#include "../../subsystem/modes/ModeSequenceMessage.h"
 
 void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
 		Command_t command, Mode_t sequence, store_address_t storeAddress) {

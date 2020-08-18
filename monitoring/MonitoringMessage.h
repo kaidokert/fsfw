@@ -1,8 +1,8 @@
 #ifndef MONITORINGMESSAGE_H_
 #define MONITORINGMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/CommandMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
 
 class MonitoringMessage: public CommandMessage {
 public:

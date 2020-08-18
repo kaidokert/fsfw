@@ -1,8 +1,8 @@
 #ifndef POWERSWITCHER_H_
 #define POWERSWITCHER_H_
-#include <framework/power/PowerSwitchIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/timemanager/Countdown.h>
+#include "../power/PowerSwitchIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../timemanager/Countdown.h"
 
 class PowerSwitcher : public HasReturnvaluesIF {
 public:

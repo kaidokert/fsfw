@@ -1,15 +1,15 @@
 #ifndef FUSE_H_
 #define FUSE_H_
 
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapoolglob/GlobalPoolVariable.h>
-#include <framework/datapoolglob/PIDReader.h>
-#include <framework/devicehandlers/HealthDevice.h>
-#include <framework/monitoring/AbsLimitMonitor.h>
-#include <framework/power/PowerComponentIF.h>
-#include <framework/power/PowerSwitchIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/parameters/ParameterHelper.h>
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../datapoolglob/PIDReader.h"
+#include "../devicehandlers/HealthDevice.h"
+#include "../monitoring/AbsLimitMonitor.h"
+#include "../power/PowerComponentIF.h"
+#include "../power/PowerSwitchIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../parameters/ParameterHelper.h"
 #include <list>
 
 namespace Factory {

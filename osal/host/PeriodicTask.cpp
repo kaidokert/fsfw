@@ -1,9 +1,9 @@
-#include <framework/ipc/MutexFactory.h>
-#include <framework/osal/host/Mutex.h>
-#include <framework/osal/host/PeriodicTask.h>
+#include "../../ipc/MutexFactory.h"
+#include "../../osal/host/Mutex.h"
+#include "../../osal/host/PeriodicTask.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../tasks/ExecutableObjectIF.h"
 
 #include <thread>
 #include <chrono>

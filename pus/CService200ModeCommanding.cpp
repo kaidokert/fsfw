@@ -1,10 +1,10 @@
-#include <framework/pus/CService200ModeCommanding.h>
-#include <framework/pus/servicepackets/Service200Packets.h>
+#include "../pus/CService200ModeCommanding.h"
+#include "../pus/servicepackets/Service200Packets.h"
 
-#include <framework/modes/HasModesIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/modes/ModeMessage.h>
+#include "../modes/HasModesIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "../modes/ModeMessage.h"
 
 CService200ModeCommanding::CService200ModeCommanding(object_id_t objectId,
         uint16_t apid, uint8_t serviceId):

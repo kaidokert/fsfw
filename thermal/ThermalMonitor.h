@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_THERMAL_THERMALMONITOR_H_
 #define FRAMEWORK_THERMAL_THERMALMONITOR_H_
 
-#include <framework/monitoring/MonitorReporter.h>
-#include <framework/thermal/ThermalComponentIF.h>
+#include "../monitoring/MonitorReporter.h"
+#include "../thermal/ThermalComponentIF.h"
 
 /**
  * What does it do. How to use it.

@@ -7,8 +7,8 @@
 
 
 
-#include <framework/datalinklayer/TcTransferFrame.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datalinklayer/TcTransferFrame.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 TcTransferFrame::TcTransferFrame() {
 	 frame = NULL;

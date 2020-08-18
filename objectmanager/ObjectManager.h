@@ -8,8 +8,8 @@
 #ifndef OBJECTMANAGER_H_
 #define OBJECTMANAGER_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/SystemObjectIF.h"
 #include <map>
 
 /**

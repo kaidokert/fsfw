@@ -1,8 +1,8 @@
 #ifndef DATASETIF_H_
 #define DATASETIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/timemanager/Clock.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../timemanager/Clock.h"
 class PoolVariableIF;
 
 /**

@@ -1,6 +1,6 @@
-#include <framework/health/HealthTable.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/ipc/MutexFactory.h>
+#include "../health/HealthTable.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../ipc/MutexFactory.h"
 
 HealthTable::HealthTable(object_id_t objectid) :
 		SystemObject(objectid) {

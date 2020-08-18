@@ -1,25 +1,25 @@
 #ifndef FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
 #define FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
 
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/devicehandlers/DeviceHandlerIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/action/HasActionsIF.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/devicehandlers/DeviceCommunicationIF.h>
-#include <framework/modes/HasModesIF.h>
-#include <framework/power/PowerSwitchIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/tasks/PeriodicTaskIF.h>
+#include "../objectmanager/SystemObject.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../devicehandlers/DeviceHandlerIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../action/HasActionsIF.h"
+#include "../datapool/PoolVariableIF.h"
+#include "../devicehandlers/DeviceCommunicationIF.h"
+#include "../modes/HasModesIF.h"
+#include "../power/PowerSwitchIF.h"
+#include "../ipc/MessageQueueIF.h"
+#include "../tasks/PeriodicTaskIF.h"
 
-#include <framework/action/ActionHelper.h>
-#include <framework/health/HealthHelper.h>
-#include <framework/parameters/ParameterHelper.h>
-#include <framework/datapool/HkSwitchHelper.h>
-#include <framework/datapoollocal/HasLocalDataPoolIF.h>
-#include <framework/datapoollocal/LocalDataPoolManager.h>
-#include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
+#include "../action/ActionHelper.h"
+#include "../health/HealthHelper.h"
+#include "../parameters/ParameterHelper.h"
+#include "../datapool/HkSwitchHelper.h"
+#include "../datapoollocal/HasLocalDataPoolIF.h"
+#include "../datapoollocal/LocalDataPoolManager.h"
+#include "../devicehandlers/DeviceHandlerFailureIsolation.h"
 #include <map>
 
 namespace Factory{

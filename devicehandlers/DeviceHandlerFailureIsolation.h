@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_
 #define FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_
 
-#include <framework/fdir/FaultCounter.h>
-#include <framework/fdir/FailureIsolationBase.h>
+#include "../fdir/FaultCounter.h"
+#include "../fdir/FailureIsolationBase.h"
 namespace Factory{
 void setStaticFrameworkObjectIds();
 }

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_OSAL_LINUX_TMTCUNIXUDPBRIDGE_H_
 #define FRAMEWORK_OSAL_LINUX_TMTCUNIXUDPBRIDGE_H_
 
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
-#include <framework/tmtcservices/TmTcBridge.h>
+#include "../../tmtcservices/AcceptsTelecommandsIF.h"
+#include "../../tmtcservices/TmTcBridge.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>

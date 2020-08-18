@@ -3,10 +3,10 @@
 
 #ifdef USE_MODESTORE
 
-#include <framework/container/ArrayList.h>
-#include <framework/container/SinglyLinkedList.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/subsystem/modes/ModeDefinitions.h>
+#include "../../container/ArrayList.h"
+#include "../../container/SinglyLinkedList.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../subsystem/modes/ModeDefinitions.h"
 
 class ModeStoreIF {
 public:

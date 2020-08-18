@@ -1,6 +1,6 @@
-#include <framework/osal/FreeRTOS/MessageQueue.h>
+#include "../../osal/FreeRTOS/MessageQueue.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 // TODO I guess we should have a way of checking if we are in an ISR and then
 // use the "fromISR" versions of all calls

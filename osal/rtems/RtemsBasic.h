@@ -1,7 +1,7 @@
 #ifndef OS_RTEMS_RTEMSBASIC_H_
 #define OS_RTEMS_RTEMSBASIC_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 #include <rtems.h>
 #include <rtems/libio.h>
 #include <rtems/error.h>

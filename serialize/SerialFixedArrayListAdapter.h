@@ -1,8 +1,8 @@
 #ifndef SERIALFIXEDARRAYLISTADAPTER_H_
 #define SERIALFIXEDARRAYLISTADAPTER_H_
 
-#include <framework/container/FixedArrayList.h>
-#include <framework/serialize/SerialArrayListAdapter.h>
+#include "../container/FixedArrayList.h"
+#include "../serialize/SerialArrayListAdapter.h"
 
 /**
  * @brief 	This adapter provides an interface for SerializeIF to serialize and

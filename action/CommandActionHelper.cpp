@@ -1,8 +1,8 @@
-#include <framework/action/ActionMessage.h>
-#include <framework/action/CommandActionHelper.h>
-#include <framework/action/CommandsActionsIF.h>
-#include <framework/action/HasActionsIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../action/ActionMessage.h"
+#include "../action/CommandActionHelper.h"
+#include "../action/CommandsActionsIF.h"
+#include "../action/HasActionsIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 CommandActionHelper::CommandActionHelper(CommandsActionsIF *setOwner) :
 		owner(setOwner), queueToUse(NULL), ipcStore(

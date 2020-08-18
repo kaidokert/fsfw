@@ -1,8 +1,8 @@
 #ifndef POLLINGTASK_H_
 #define POLLINGTASK_H_
 
-#include <framework/tasks/FixedSlotSequence.h>
-#include <framework/tasks/FixedTimeslotTaskIF.h>
+#include "../../tasks/FixedSlotSequence.h"
+#include "../../tasks/FixedTimeslotTaskIF.h"
 #include "TaskBase.h"
 
 class PollingTask: public TaskBase, public FixedTimeslotTaskIF {

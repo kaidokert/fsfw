@@ -8,7 +8,7 @@
 #ifndef FARM1STATEIF_H_
 #define FARM1STATEIF_H_
 
-#include <framework/datalinklayer/CCSDSReturnValuesIF.h>
+#include "../datalinklayer/CCSDSReturnValuesIF.h"
 class VirtualChannelReception;
 class TcTransferFrame;
 class ClcwIF;

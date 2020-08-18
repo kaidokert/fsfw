@@ -1,9 +1,9 @@
 #ifndef MONITORINGIF_H_
 #define MONITORINGIF_H_
 
-#include <framework/memory/HasMemoryIF.h>
-#include <framework/monitoring/MonitoringMessage.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../memory/HasMemoryIF.h"
+#include "../monitoring/MonitoringMessage.h"
+#include "../serialize/SerializeIF.h"
 
 class MonitoringIF : public SerializeIF {
 public:

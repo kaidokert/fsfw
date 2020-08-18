@@ -1,10 +1,10 @@
-#include <framework/health/HealthMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/SerialArrayListAdapter.h>
-#include <framework/serialize/SerialFixedArrayListAdapter.h>
-#include <framework/serialize/SerializeElement.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/subsystem/Subsystem.h>
+#include "../health/HealthMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../serialize/SerialArrayListAdapter.h"
+#include "../serialize/SerialFixedArrayListAdapter.h"
+#include "../serialize/SerializeElement.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "../subsystem/Subsystem.h"
 #include <string>
 
 Subsystem::Subsystem(object_id_t setObjectId, object_id_t parent,

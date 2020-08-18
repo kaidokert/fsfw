@@ -1,9 +1,9 @@
 #ifndef GLOBALDATAPOOL_H_
 #define GLOBALDATAPOOL_H_
 
-#include <framework/datapool/PoolEntry.h>
-#include <framework/globalfunctions/Type.h>
-#include <framework/ipc/MutexIF.h>
+#include "../datapool/PoolEntry.h"
+#include "../globalfunctions/Type.h"
+#include "../ipc/MutexIF.h"
 #include <map>
 
 /**

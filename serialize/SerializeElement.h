@@ -1,8 +1,8 @@
 #ifndef SERIALIZEELEMENT_H_
 #define SERIALIZEELEMENT_H_
 
-#include <framework/container/SinglyLinkedList.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../container/SinglyLinkedList.h"
+#include "../serialize/SerializeAdapter.h"
 #include <utility>
 
 /**

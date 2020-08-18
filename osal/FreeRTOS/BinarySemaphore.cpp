@@ -1,6 +1,6 @@
-#include <framework/osal/FreeRTOS/BinarySemaphore.h>
-#include <framework/osal/FreeRTOS/TaskManagement.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../osal/FreeRTOS/BinarySemaphore.h"
+#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();

@@ -6,11 +6,11 @@
 
 #ifndef FRAMEWORK_DEVICEHANDLERS_COMMUNICATIONMESSAGE_H_
 #define FRAMEWORK_DEVICEHANDLERS_COMMUNICATIONMESSAGE_H_
-#include <framework/devicehandlers/CommunicationMessage.h>
+#include "../devicehandlers/CommunicationMessage.h"
 
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/devicehandlers/DeviceHandlerBase.h>
+#include "../ipc/MessageQueueMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../devicehandlers/DeviceHandlerBase.h"
 
 /**
  * @brief Message type to send larger messages

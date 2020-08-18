@@ -1,12 +1,12 @@
-#include <framework/tcdistribution/PUSDistributorIF.h>
-#include <framework/tmtcservices/AcceptsTelemetryIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../tcdistribution/PUSDistributorIF.h"
+#include "../tmtcservices/AcceptsTelemetryIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
-#include <framework/tmtcservices/CommandingServiceBase.h>
-#include <framework/tmtcservices/TmTcMessage.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/tmtcpacket/pus/TcPacketStored.h>
-#include <framework/tmtcpacket/pus/TmPacketStored.h>
+#include "../tmtcservices/CommandingServiceBase.h"
+#include "../tmtcservices/TmTcMessage.h"
+#include "../ipc/QueueFactory.h"
+#include "../tmtcpacket/pus/TcPacketStored.h"
+#include "../tmtcpacket/pus/TmPacketStored.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
 object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;

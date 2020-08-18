@@ -1,7 +1,7 @@
-#include <framework/datapoolglob/GlobalDataPool.h>
-#include <framework/datapoolglob/PoolRawAccess.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/serialize/EndianConverter.h>
+#include "../datapoolglob/GlobalDataPool.h"
+#include "../datapoolglob/PoolRawAccess.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serialize/EndianConverter.h"
 
 #include <cstring>
 

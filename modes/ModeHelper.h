@@ -1,10 +1,10 @@
 #ifndef MODEHELPER_H_
 #define MODEHELPER_H_
 
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/modes/ModeMessage.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/timemanager/Countdown.h>
+#include "../ipc/MessageQueueIF.h"
+#include "../modes/ModeMessage.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../timemanager/Countdown.h"
 
 class HasModesIF;
 

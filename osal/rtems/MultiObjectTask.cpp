@@ -5,8 +5,8 @@
  * @author	baetz
  */
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../tasks/ExecutableObjectIF.h"
 #include "MultiObjectTask.h"
 
 MultiObjectTask::MultiObjectTask(const char *name, rtems_task_priority setPriority,

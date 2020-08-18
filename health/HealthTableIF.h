@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_HEALTH_HEALTHTABLEIF_H_
 #define FRAMEWORK_HEALTH_HEALTHTABLEIF_H_
 
-#include <framework/health/ManagesHealthIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../health/ManagesHealthIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <map>
 
 

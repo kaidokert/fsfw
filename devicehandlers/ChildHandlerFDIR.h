@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_DEVICEHANDLERS_CHILDHANDLERFDIR_H_
 #define FRAMEWORK_DEVICEHANDLERS_CHILDHANDLERFDIR_H_
 
-#include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
+#include "../devicehandlers/DeviceHandlerFailureIsolation.h"
 
 /**
  * Very simple extension to normal FDIR.

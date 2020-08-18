@@ -1,5 +1,5 @@
 #include "AbstractTemperatureSensor.h"
-#include <framework/ipc/QueueFactory.h>
+#include "../ipc/QueueFactory.h"
 
 AbstractTemperatureSensor::AbstractTemperatureSensor(object_id_t setObjectid,
 		ThermalModuleIF *thermalModule) :

@@ -1,9 +1,9 @@
-#include <framework/datapoollocal/LocalDataPoolManager.h>
-#include <framework/datapoollocal/LocalDataSet.h>
-#include <framework/housekeeping/AcceptsHkPacketsIF.h>
-#include <framework/ipc/MutexFactory.h>
-#include <framework/ipc/MutexHelper.h>
-#include <framework/ipc/QueueFactory.h>
+#include "../datapoollocal/LocalDataPoolManager.h"
+#include "../datapoollocal/LocalDataSet.h"
+#include "../housekeeping/AcceptsHkPacketsIF.h"
+#include "../ipc/MutexFactory.h"
+#include "../ipc/MutexHelper.h"
+#include "../ipc/QueueFactory.h"
 
 #include <array>
 

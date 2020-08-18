@@ -6,7 +6,7 @@
 
 #ifndef FRAMEWORK_THERMAL_ACCEPTSTHERMALMESSAGESIF_H_
 #define FRAMEWORK_THERMAL_ACCEPTSTHERMALMESSAGESIF_H_
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../ipc/MessageQueueSenderIF.h"
 
 class AcceptsThermalMessagesIF {
 public:

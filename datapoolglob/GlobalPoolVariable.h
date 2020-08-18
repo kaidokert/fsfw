@@ -1,12 +1,12 @@
 #ifndef GLOBALPOOLVARIABLE_H_
 #define GLOBALPOOLVARIABLE_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapoolglob/GlobalDataPool.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datapool/DataSetIF.h"
+#include "../datapoolglob/GlobalDataPool.h"
+#include "../datapool/PoolVariableIF.h"
+#include "../datapool/PoolEntry.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 template<typename T, uint8_t n_var> class PoolVarList;
 
@@ -198,7 +198,7 @@ public:
 	}
 };
 
-#include <framework/datapoolglob/GlobalPoolVariable.tpp>
+#include "../datapoolglob/GlobalPoolVariable.tpp"
 
 typedef GlobPoolVar<uint8_t> gp_bool_t;
 typedef GlobPoolVar<uint8_t> gp_uint8_t;

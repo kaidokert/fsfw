@@ -1,8 +1,8 @@
 #ifndef DATAPOOLPARAMETERWRAPPER_H_
 #define DATAPOOLPARAMETERWRAPPER_H_
 
-#include <framework/globalfunctions/Type.h>
-#include <framework/parameters/ParameterWrapper.h>
+#include "../globalfunctions/Type.h"
+#include "../parameters/ParameterWrapper.h"
 
 class DataPoolParameterWrapper: public SerializeIF {
 public:

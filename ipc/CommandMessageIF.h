@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_IPC_COMMANDMESSAGEIF_H_
 #define FRAMEWORK_IPC_COMMANDMESSAGEIF_H_
 
-#include <framework/ipc/MessageQueueMessageIF.h>
-#include <framework/ipc/FwMessageTypes.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../ipc/MessageQueueMessageIF.h"
+#include "../ipc/FwMessageTypes.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef uint16_t Command_t;

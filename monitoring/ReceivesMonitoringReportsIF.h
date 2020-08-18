@@ -1,7 +1,7 @@
 #ifndef RECEIVESMONITORINGREPORTSIF_H_
 #define RECEIVESMONITORINGREPORTSIF_H_
 
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../ipc/MessageQueueSenderIF.h"
 
 class ReceivesMonitoringReportsIF {
 public:

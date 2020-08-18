@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_IPC_COMMANDMESSAGECLEANER_H_
 #define FRAMEWORK_IPC_COMMANDMESSAGECLEANER_H_
-#include <framework/ipc/CommandMessage.h>
+#include "../ipc/CommandMessage.h"
 
 namespace messagetypes {
 // Implemented in config.

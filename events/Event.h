@@ -2,7 +2,7 @@
 #define FRAMEWORK_EVENTS_EVENT_H_
 
 #include <cstdint>
-#include <framework/events/fwSubsystemIdRanges.h>
+#include "../events/fwSubsystemIdRanges.h"
 //could be move to more suitable location
 #include <subsystemIdRanges.h>
 

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_IPC_MUTEXHELPER_H_
 #define FRAMEWORK_IPC_MUTEXHELPER_H_
 
-#include <framework/ipc/MutexFactory.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../ipc/MutexFactory.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 class MutexHelper {
 public:

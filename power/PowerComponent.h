@@ -1,8 +1,8 @@
 #ifndef POWERCOMPONENT_H_
 #define POWERCOMPONENT_H_
 
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/power/PowerComponentIF.h>
+#include "../objectmanager/SystemObjectIF.h"
+#include "../power/PowerComponentIF.h"
 
 class PowerComponent: public PowerComponentIF {
 public:

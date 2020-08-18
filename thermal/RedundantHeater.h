@@ -1,7 +1,7 @@
 #ifndef REDUNDANTHEATER_H_
 #define REDUNDANTHEATER_H_
 
-#include <framework/thermal/Heater.h>
+#include "../thermal/Heater.h"
 
 class RedundantHeater {
 public:

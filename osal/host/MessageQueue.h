@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_OSAL_HOST_MESSAGEQUEUE_H_
 #define FRAMEWORK_OSAL_HOST_MESSAGEQUEUE_H_
 
-#include <framework/internalError/InternalErrorReporterIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/ipc/MutexIF.h>
-#include <framework/timemanager/Clock.h>
+#include "../../internalError/InternalErrorReporterIF.h"
+#include "../../ipc/MessageQueueIF.h"
+#include "../../ipc/MessageQueueMessage.h"
+#include "../../ipc/MutexIF.h"
+#include "../../timemanager/Clock.h"
 
 #include <queue>
 #include <memory>

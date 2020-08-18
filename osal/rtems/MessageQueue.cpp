@@ -1,4 +1,4 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "MessageQueue.h"
 #include "RtemsBasic.h"
 #include <cstring>

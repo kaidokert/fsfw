@@ -5,7 +5,7 @@
  * @author	baetz
  */
 
-#include <framework/power/PowerComponent.h>
+#include "../power/PowerComponent.h"
 
 PowerComponent::PowerComponent() :
 		deviceObjectId(0), switchId1(0xFF), switchId2(0xFF), doIHaveTwoSwitches(

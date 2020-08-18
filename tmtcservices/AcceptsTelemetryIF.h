@@ -1,7 +1,7 @@
 #ifndef ACCEPTSTELEMETRYIF_H_
 #define ACCEPTSTELEMETRYIF_H_
 
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../ipc/MessageQueueSenderIF.h"
 /**
  * @brief 	This interface is implemented by classes that are sinks for
  * 			Telemetry.

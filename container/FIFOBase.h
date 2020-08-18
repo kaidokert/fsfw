@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_CONTAINER_FIFOBASE_H_
 #define FRAMEWORK_CONTAINER_FIFOBASE_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 #include <cstring>
 
@@ -60,6 +60,6 @@ protected:
 	size_t next(size_t current);
 };
 
-#include <framework/container/FIFOBase.tpp>
+#include "../container/FIFOBase.tpp"
 
 #endif /* FRAMEWORK_CONTAINER_FIFOBASE_H_ */

@@ -7,10 +7,10 @@
 #ifndef SERIALLINKEDLISTADAPTER_H_
 #define SERIALLINKEDLISTADAPTER_H_
 
-#include <framework/container/SinglyLinkedList.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serialize/SerializeElement.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../container/SinglyLinkedList.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serialize/SerializeElement.h"
+#include "../serialize/SerializeIF.h"
 //This is where we need the SerializeAdapter!
 
  /**

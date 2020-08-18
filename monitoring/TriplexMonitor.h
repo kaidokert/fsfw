@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_MONITORING_TRIPLEXMONITOR_H_
 #define FRAMEWORK_MONITORING_TRIPLEXMONITOR_H_
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PIDReaderList.h>
-#include <framework/health/HealthTableIF.h>
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../datapool/DataSet.h"
+#include "../datapool/PIDReaderList.h"
+#include "../health/HealthTableIF.h"
+#include "../parameters/HasParametersIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 
 //SHOULDDO: This is by far not perfect. Could be merged with new Monitor classes. But still, it's over-engineering.

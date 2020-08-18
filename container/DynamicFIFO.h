@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_CONTAINER_DYNAMICFIFO_H_
 #define FRAMEWORK_CONTAINER_DYNAMICFIFO_H_
 
-#include <framework/container/FIFOBase.h>
+#include "../container/FIFOBase.h"
 #include <vector>
 
 /**

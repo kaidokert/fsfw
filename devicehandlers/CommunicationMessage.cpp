@@ -4,8 +4,8 @@
  * @date 28.02.2020
  */
 
-#include <framework/devicehandlers/CommunicationMessage.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../devicehandlers/CommunicationMessage.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <cstring>
 
 CommunicationMessage::CommunicationMessage(): uninitialized(true) {

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_LINUX_POSIXTHREAD_H_
 #define FRAMEWORK_OSAL_LINUX_POSIXTHREAD_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 #include <pthread.h>
 #include <signal.h>
 #include <cstdlib>

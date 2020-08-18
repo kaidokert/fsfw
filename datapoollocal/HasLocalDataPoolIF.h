@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_
 #define FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_
-#include <framework/datapool/PoolEntryIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
-#include <framework/housekeeping/HousekeepingMessage.h>
+#include "../datapool/PoolEntryIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
+#include "../housekeeping/HousekeepingMessage.h"
 #include <map>
 
 class LocalDataPoolManager;

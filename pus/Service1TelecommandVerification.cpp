@@ -1,12 +1,12 @@
-#include <framework/pus/Service1TelecommandVerification.h>
-#include <framework/pus/servicepackets/Service1Packets.h>
+#include "../pus/Service1TelecommandVerification.h"
+#include "../pus/servicepackets/Service1Packets.h"
 
-#include <framework/ipc/QueueFactory.h>
-#include <framework/tmtcservices/PusVerificationReport.h>
-#include <framework/tmtcpacket/pus/TmPacketStored.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcservices/AcceptsTelemetryIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../ipc/QueueFactory.h"
+#include "../tmtcservices/PusVerificationReport.h"
+#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../tmtcservices/AcceptsTelemetryIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 
 Service1TelecommandVerification::Service1TelecommandVerification(

@@ -1,14 +1,14 @@
 #ifndef POWERSENSOR_H_
 #define POWERSENSOR_H_
 
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapoolglob/GlobalPoolVariable.h>
-#include <framework/datapoolglob/PIDReader.h>
-#include <framework/devicehandlers/HealthDevice.h>
-#include <framework/monitoring/LimitMonitor.h>
-#include <framework/parameters/ParameterHelper.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../datapoolglob/PIDReader.h"
+#include "../devicehandlers/HealthDevice.h"
+#include "../monitoring/LimitMonitor.h"
+#include "../parameters/ParameterHelper.h"
+#include "../objectmanager/SystemObject.h"
+#include "../ipc/MessageQueueIF.h"
 
 class PowerController;
 

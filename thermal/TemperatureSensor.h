@@ -1,10 +1,10 @@
 #ifndef TEMPERATURESENSOR_H_
 #define TEMPERATURESENSOR_H_
 
-#include <framework/thermal/AbstractTemperatureSensor.h>
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapoolglob/GlobalPoolVariable.h>
-#include <framework/monitoring/LimitMonitor.h>
+#include "../thermal/AbstractTemperatureSensor.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../monitoring/LimitMonitor.h"
 
 /**
  * @brief 	This building block handles non-linear value conversion and

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
 #define FRAMEWORK_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
 
-#include <framework/storagemanager/storeAddress.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../storagemanager/storeAddress.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
 class StorageManagerIF;

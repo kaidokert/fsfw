@@ -6,7 +6,7 @@
  */
 
 
-#include <framework/timemanager/Countdown.h>
+#include "../timemanager/Countdown.h"
 
 Countdown::Countdown(uint32_t initialTimeout) : startTime(0), timeout(initialTimeout) {
 }

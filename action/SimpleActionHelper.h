@@ -1,7 +1,7 @@
 #ifndef SIMPLEACTIONHELPER_H_
 #define SIMPLEACTIONHELPER_H_
 
-#include <framework/action/ActionHelper.h>
+#include "../action/ActionHelper.h"
 
 class SimpleActionHelper: public ActionHelper {
 public:

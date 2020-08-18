@@ -8,7 +8,7 @@
 #ifndef FARM1STATEOPEN_H_
 #define FARM1STATEOPEN_H_
 
-#include <framework/datalinklayer/Farm1StateIF.h>
+#include "../datalinklayer/Farm1StateIF.h"
 
 /**
  * This class represents the FARM-1 "Open" State.

@@ -7,8 +7,8 @@
 #ifndef MULTIOBJECTTASK_H_
 #define MULTIOBJECTTASK_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tasks/PeriodicTaskIF.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../tasks/PeriodicTaskIF.h"
 
 #include "TaskBase.h"
 #include <vector>

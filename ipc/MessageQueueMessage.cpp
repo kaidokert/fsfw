@@ -1,6 +1,6 @@
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/globalfunctions/arrayprinter.h>
+#include "../ipc/MessageQueueMessage.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../globalfunctions/arrayprinter.h"
 #include <cstring>
 
 MessageQueueMessage::MessageQueueMessage() :

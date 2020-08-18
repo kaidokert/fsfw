@@ -1,10 +1,10 @@
-#include <framework/datapoolglob/GlobalDataSet.h>
+#include "../datapoolglob/GlobalDataSet.h"
 #include "InternalErrorReporter.h"
 
-#include <framework/datapoolglob/GlobalPoolVariable.h>
-#include <framework/ipc/MutexFactory.h>
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../ipc/MutexFactory.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId,
 		uint32_t queuePoolId, uint32_t tmPoolId, uint32_t storePoolId) :

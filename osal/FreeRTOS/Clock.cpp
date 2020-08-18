@@ -1,6 +1,6 @@
-#include <framework/timemanager/Clock.h>
-#include <framework/globalfunctions/timevalOperations.h>
-#include <framework/osal/FreeRTOS/Timekeeper.h>
+#include "../../timemanager/Clock.h"
+#include "../../globalfunctions/timevalOperations.h"
+#include "../../osal/FreeRTOS/Timekeeper.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

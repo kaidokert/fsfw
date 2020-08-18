@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_DATAPOOL_POOLVARIABLEIF_H_
 #define FRAMEWORK_DATAPOOL_POOLVARIABLEIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serialize/SerializeIF.h"
 
 /**
  * @brief	This interface is used to control data pool

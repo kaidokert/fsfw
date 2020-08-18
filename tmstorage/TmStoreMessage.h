@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_TMSTORAGE_TMSTOREMESSAGE_H_
 #define FRAMEWORK_TMSTORAGE_TMSTOREMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tmstorage/TmStorePackets.h>
-#include <framework/objectmanager/SystemObjectIF.h>
+#include "../ipc/CommandMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../tmstorage/TmStorePackets.h"
+#include "../objectmanager/SystemObjectIF.h"
 class TmStoreMessage  {
 public:
 	static ReturnValue_t setEnableStoringMessage(CommandMessage* cmd,

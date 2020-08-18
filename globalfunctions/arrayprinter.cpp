@@ -1,5 +1,5 @@
-#include <framework/globalfunctions/arrayprinter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../globalfunctions/arrayprinter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <bitset>
 
 void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,

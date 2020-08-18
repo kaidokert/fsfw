@@ -1,6 +1,6 @@
-#include <framework/osal/linux/TmTcUnixUdpBridge.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/MutexHelper.h>
+#include "../../osal/linux/TmTcUnixUdpBridge.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../ipc/MutexHelper.h"
 
 #include <errno.h>
 #include <arpa/inet.h>

@@ -1,7 +1,7 @@
 #ifndef ENDIANSWAPPER_H_
 #define ENDIANSWAPPER_H_
 
-#include <framework/osal/Endiness.h>
+#include "../osal/Endiness.h"
 #include <cstring>
 #include <iostream>
 
