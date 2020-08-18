@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
 #define FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
-#include <framework/timemanager/Clock.h>
+#include "Clock.h"
 
 enum class StopwatchDisplayMode {
     MILLIS,

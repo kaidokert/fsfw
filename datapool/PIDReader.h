@@ -1,11 +1,11 @@
 #ifndef PIDREADER_H_
 #define PIDREADER_H_
-#include <framework/datapool/DataPool.h>
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "DataPool.h"
+#include "DataSetIF.h"
+#include "PoolEntry.h"
+#include "PoolVariableIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 template<typename U, uint8_t n_var> class PIDReaderList;
 

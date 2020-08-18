@@ -1,8 +1,8 @@
 #ifndef TYPE_H_
 #define TYPE_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serialize/SerializeIF.h"
 
 class Type: public SerializeIF {
 public:

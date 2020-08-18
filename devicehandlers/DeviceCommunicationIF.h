@@ -1,8 +1,8 @@
 #ifndef DEVICECOMMUNICATIONIF_H_
 #define DEVICECOMMUNICATIONIF_H_
 
-#include <framework/devicehandlers/CookieIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "CookieIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 /**
  * @defgroup interfaces Interfaces

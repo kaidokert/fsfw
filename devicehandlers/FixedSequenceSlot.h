@@ -8,8 +8,8 @@
 #ifndef FIXEDSEQUENCESLOT_H_
 #define FIXEDSEQUENCESLOT_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../tasks/ExecutableObjectIF.h"
 class PeriodicTaskIF;
 
 /**

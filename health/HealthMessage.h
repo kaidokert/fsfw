@@ -1,8 +1,8 @@
 #ifndef HEALTHMESSAGE_H_
 #define HEALTHMESSAGE_H_
 
-#include <framework/health/HasHealthIF.h>
-#include <framework/ipc/CommandMessage.h>
+#include "HasHealthIF.h"
+#include "../ipc/CommandMessage.h"
 
 class HealthMessage {
 public:

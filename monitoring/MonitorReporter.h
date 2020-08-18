@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_MONITORING_MONITORREPORTER_H_
 #define FRAMEWORK_MONITORING_MONITORREPORTER_H_
 
-#include <framework/events/EventManagerIF.h>
-#include <framework/monitoring/LimitViolationReporter.h>
-#include <framework/monitoring/MonitoringIF.h>
-#include <framework/monitoring/MonitoringMessageContent.h>
-#include <framework/parameters/HasParametersIF.h>
+#include "../events/EventManagerIF.h"
+#include "LimitViolationReporter.h"
+#include "MonitoringIF.h"
+#include "MonitoringMessageContent.h"
+#include "../parameters/HasParametersIF.h"
 
 template<typename T>
 class MonitorReporter: public HasParametersIF {
