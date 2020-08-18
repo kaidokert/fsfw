@@ -1,3 +1,4 @@
+# This submake file needs to be included by the primary Makefile.
 # This file needs FRAMEWORK_PATH and OS_FSFW set correctly by another Makefile.
 # Valid API settings: rtems, linux, freeRTOS, host
 
