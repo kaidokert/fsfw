@@ -34,7 +34,7 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/FreeRTOS/*.cpp)
 else ifeq ($(OS_FSFW),host)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/host/*.cpp)
 else
-$(error invalid OS specified, valid OS are rtems, linux, freeRTOS, host)
+$(error invalid OS_FSFW specified, valid OS_FSFW are rtems, linux, freeRTOS, host)
 endif
 
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/parameters/*.cpp)
@@ -55,3 +55,4 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/packetmatcher/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/pus/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcservices/*.cpp)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/pus/*.cpp)

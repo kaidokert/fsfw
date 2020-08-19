@@ -1,7 +1,7 @@
 #ifndef SERIALIZEIF_H_
 #define SERIALIZEIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <stddef.h>
 
 /**

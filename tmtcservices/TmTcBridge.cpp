@@ -1,9 +1,9 @@
-#include <framework/tmtcservices/TmTcBridge.h>
+#include "TmTcBridge.h"
 
-#include <framework/ipc/QueueFactory.h>
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/globalfunctions/arrayprinter.h>
+#include "../ipc/QueueFactory.h"
+#include "AcceptsTelecommandsIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../globalfunctions/arrayprinter.h"
 
 TmTcBridge::TmTcBridge(object_id_t objectId, object_id_t tcDestination,
 		object_id_t tmStoreId, object_id_t tcStoreId):

@@ -1,7 +1,7 @@
-#include <framework/tmtcpacket/packetmatcher/ApidMatcher.h>
-#include <framework/tmtcpacket/packetmatcher/PacketMatchTree.h>
-#include <framework/tmtcpacket/packetmatcher/ServiceMatcher.h>
-#include <framework/tmtcpacket/packetmatcher/SubserviceMatcher.h>
+#include "ApidMatcher.h"
+#include "PacketMatchTree.h"
+#include "ServiceMatcher.h"
+#include "SubserviceMatcher.h"
 
 PacketMatchTree::PacketMatchTree(Node* root) :
 		MatchTree<TmPacketMinimal*>(root, 2), factoryBackend(0, POOL_SIZES,

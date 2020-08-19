@@ -1,10 +1,10 @@
 #ifndef EVENTMANAGERIF_H_
 #define EVENTMANAGERIF_H_
 
-#include <framework/events/eventmatching/eventmatching.h>
-#include <framework/events/EventMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "eventmatching/eventmatching.h"
+#include "EventMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 class EventManagerIF {
 public:

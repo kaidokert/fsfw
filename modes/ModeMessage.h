@@ -8,7 +8,7 @@
 #ifndef MODEMESSAGE_H_
 #define MODEMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
+#include "../ipc/CommandMessage.h"
 
 typedef uint32_t Mode_t;
 typedef uint8_t Submode_t;

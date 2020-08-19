@@ -1,8 +1,8 @@
 #ifndef PARAMETERHELPER_H_
 #define PARAMETERHELPER_H_
 
-#include <framework/parameters/ParameterMessage.h>
-#include <framework/parameters/ReceivesParameterMessagesIF.h>
+#include "ParameterMessage.h"
+#include "ReceivesParameterMessagesIF.h"
 
 class ParameterHelper {
 public:

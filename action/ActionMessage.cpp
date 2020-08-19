@@ -1,6 +1,6 @@
-#include <framework/action/ActionMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "ActionMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../storagemanager/StorageManagerIF.h"
 
 ActionMessage::ActionMessage() {
 }

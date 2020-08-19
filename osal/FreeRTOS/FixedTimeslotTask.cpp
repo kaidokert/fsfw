@@ -1,6 +1,6 @@
 #include "FixedTimeslotTask.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;

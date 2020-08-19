@@ -1,7 +1,7 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 /**
  * @brief Simple First-In-First-Out data structure

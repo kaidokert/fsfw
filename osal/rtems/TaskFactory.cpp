@@ -1,9 +1,9 @@
-#include <framework/tasks/TaskFactory.h>
+#include "../../tasks/TaskFactory.h"
 #include "MultiObjectTask.h"
 #include "PollingTask.h"
 #include "InitTask.h"
 #include "RtemsBasic.h"
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();

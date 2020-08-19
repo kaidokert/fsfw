@@ -3,7 +3,7 @@
 
 #include <sys/time.h>
 #include "../contrib/sgp4/sgp4unit.h"
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 class Sgp4Propagator {
 public:

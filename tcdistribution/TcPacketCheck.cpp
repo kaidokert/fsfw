@@ -1,8 +1,8 @@
-#include <framework/globalfunctions/CRC.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tcdistribution/TcPacketCheck.h>
-#include <framework/tmtcservices/VerificationCodes.h>
+#include "../globalfunctions/CRC.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "TcPacketCheck.h"
+#include "../tmtcservices/VerificationCodes.h"
 
 TcPacketCheck::TcPacketCheck( uint16_t set_apid ) : apid(set_apid) {
 }

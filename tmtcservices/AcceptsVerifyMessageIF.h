@@ -1,7 +1,7 @@
 #ifndef ACCEPTSVERIFICATIONMESSAGEIF_H_
 #define ACCEPTSVERIFICATIONMESSAGEIF_H_
 
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../ipc/MessageQueueSenderIF.h"
 
 class AcceptsVerifyMessageIF {
 public:

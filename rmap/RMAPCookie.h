@@ -1,8 +1,8 @@
 #ifndef RMAPCOOKIE_H_
 #define RMAPCOOKIE_H_
 
-#include <framework/devicehandlers/CookieIF.h>
-#include <framework/rmap/rmapStructs.h>
+#include "../devicehandlers/CookieIF.h"
+#include "rmapStructs.h"
 
 class RMAPChannelIF;
 
