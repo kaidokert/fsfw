@@ -1,6 +1,6 @@
 #include "Mutex.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 const uint32_t MutexIF::NO_TIMEOUT = 0;
 

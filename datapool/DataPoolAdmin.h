@@ -1,15 +1,15 @@
 #ifndef DATAPOOLADMIN_H_
 #define DATAPOOLADMIN_H_
 
-#include <framework/memory/MemoryHelper.h>
-#include <framework/action/HasActionsIF.h>
-#include <framework/action/SimpleActionHelper.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/parameters/ReceivesParameterMessagesIF.h>
-#include <framework/datapool/DataPoolParameterWrapper.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "../memory/MemoryHelper.h"
+#include "../action/HasActionsIF.h"
+#include "../action/SimpleActionHelper.h"
+#include "../objectmanager/SystemObject.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../parameters/ReceivesParameterMessagesIF.h"
+#include "DataPoolParameterWrapper.h"
+#include "../ipc/MessageQueueIF.h"
 
 class DataPoolAdmin: public HasActionsIF,
 		public ExecutableObjectIF,

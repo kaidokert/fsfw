@@ -1,6 +1,6 @@
-#include <framework/thermal/ThermalMonitor.h>
-#include <framework/thermal/ThermalComponentIF.h>
-#include <framework/monitoring/MonitoringIF.h>
+#include "ThermalMonitor.h"
+#include "ThermalComponentIF.h"
+#include "../monitoring/MonitoringIF.h"
 ThermalMonitor::~ThermalMonitor() {
 }
 

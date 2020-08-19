@@ -1,7 +1,7 @@
 #ifndef TCPACKETBASE_H_
 #define TCPACKETBASE_H_
 
-#include <framework/tmtcpacket/SpacePacketBase.h>
+#include "../../tmtcpacket/SpacePacketBase.h"
 
 /**
  * This struct defines a byte-wise structured PUS TC Data Field Header.

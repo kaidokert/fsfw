@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_MUTEXIF_H_
 #define FRAMEWORK_IPC_MUTEXIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 class MutexIF {
 public:

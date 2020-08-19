@@ -1,9 +1,9 @@
 #ifndef MODEHELPER_H_
 #define MODEHELPER_H_
 
-#include <framework/modes/ModeMessage.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/timemanager/Countdown.h>
+#include "ModeMessage.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../timemanager/Countdown.h"
 
 class HasModesIF;
 

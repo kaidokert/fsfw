@@ -1,9 +1,9 @@
 #ifndef PARAMETERMESSAGE_H_
 #define PARAMETERMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/CommandMessage.h"
+#include "HasParametersIF.h"
+#include "../storagemanager/StorageManagerIF.h"
 
 class ParameterMessage {
 private:

@@ -1,10 +1,10 @@
 #ifndef MODEDEFINITIONS_H_
 #define MODEDEFINITIONS_H_
 
-#include <framework/modes/HasModesIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/serialize/SerializeIF.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
+#include "../../modes/HasModesIF.h"
+#include "../../objectmanager/SystemObjectIF.h"
+#include "../../serialize/SerializeIF.h"
+#include "../../serialize/SerialLinkedListAdapter.h"
 class ModeListEntry: public SerializeIF, public LinkedElement<ModeListEntry> {
 public:
 	ModeListEntry() :

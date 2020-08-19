@@ -1,15 +1,15 @@
 #ifndef FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 #define FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/tmtcservices/AcceptsTelemetryIF.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
+#include "../objectmanager/SystemObject.h"
+#include "AcceptsTelemetryIF.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../ipc/MessageQueueIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "AcceptsTelecommandsIF.h"
 
-#include <framework/container/FIFO.h>
-#include <framework/tmtcservices/TmTcMessage.h>
+#include "../container/FIFO.h"
+#include "TmTcMessage.h"
 
 class TmTcBridge : public AcceptsTelemetryIF,
 		public AcceptsTelecommandsIF,

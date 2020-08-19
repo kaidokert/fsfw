@@ -1,7 +1,7 @@
 #ifndef ASCIICONVERTER_H_
 #define ASCIICONVERTER_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 class AsciiConverter: public HasReturnvaluesIF {
 public:
