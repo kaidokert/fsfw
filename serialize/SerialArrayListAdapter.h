@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
 #define FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
 
-#include <framework/container/ArrayList.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../container/ArrayList.h"
+#include "SerializeIF.h"
 #include <utility>
 
 /**

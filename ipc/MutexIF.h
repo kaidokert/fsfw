@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_MUTEXIF_H_
 #define FRAMEWORK_IPC_MUTEXIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 /**
  * @brief Common interface for OS Mutex objects which provide MUTual EXclusion.

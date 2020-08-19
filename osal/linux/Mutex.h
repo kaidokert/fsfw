@@ -1,11 +1,8 @@
 #ifndef OS_LINUX_MUTEX_H_
 #define OS_LINUX_MUTEX_H_
 
-#include <framework/ipc/MutexIF.h>
-
-extern "C" {
+#include "../../ipc/MutexIF.h"
 #include <pthread.h>
-}
 
 
 class Mutex : public MutexIF {

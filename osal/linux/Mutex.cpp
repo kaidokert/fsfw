@@ -1,6 +1,6 @@
-#include <framework/osal/linux/Mutex.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/timemanager/Clock.h>
+#include "Mutex.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../timemanager/Clock.h"
 
 uint8_t Mutex::count = 0;
 

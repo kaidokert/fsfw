@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_DATAPOOL_POOLENTRYIF_H_
 #define FRAMEWORK_DATAPOOL_POOLENTRYIF_H_
 
-#include <framework/globalfunctions/Type.h>
+#include "../globalfunctions/Type.h"
 #include <cstdint>
 
 /**

@@ -1,5 +1,5 @@
-#include <framework/memory/MemoryMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "MemoryMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
 MemoryMessage::MemoryMessage() {
 }
 

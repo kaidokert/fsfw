@@ -1,7 +1,7 @@
 #ifndef BINARYMATCHER_H_
 #define BINARYMATCHER_H_
 
-#include <framework/globalfunctions/matching/MatcherIF.h>
+#include "MatcherIF.h"
 
 template<typename T>
 class BinaryMatcher: public MatcherIF<T> {

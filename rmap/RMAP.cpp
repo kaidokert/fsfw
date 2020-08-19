@@ -1,7 +1,7 @@
-#include <framework/devicehandlers/DeviceCommunicationIF.h>
-#include <framework/rmap/rmapStructs.h>
-#include <framework/rmap/RMAP.h>
-#include <framework/rmap/RMAPChannelIF.h>
+#include "../devicehandlers/DeviceCommunicationIF.h"
+#include "rmapStructs.h"
+#include "RMAP.h"
+#include "RMAPChannelIF.h"
 #include <stddef.h>
 
 ReturnValue_t RMAP::reset(RMAPCookie* cookie) {

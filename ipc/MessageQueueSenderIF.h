@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
 class MessageQueueMessage;
 
 

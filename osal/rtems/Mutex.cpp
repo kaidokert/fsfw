@@ -1,5 +1,5 @@
 #include "Mutex.h"
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 const uint32_t MutexIF::BLOCKING = RTEMS_WAIT;
 const uint32_t MutexIF::POLLING = RTEMS_NO_WAIT;

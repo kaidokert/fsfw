@@ -11,8 +11,8 @@
 #ifndef POOLVARIABLEIF_H_
 #define POOLVARIABLEIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serialize/SerializeIF.h"
 
 /**
  * \brief	This interface is used to control local data pool variable representations.

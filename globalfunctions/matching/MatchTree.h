@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_
 #define FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_
 
-#include <framework/container/BinaryTree.h>
-#include <framework/globalfunctions/matching/SerializeableMatcherIF.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../../container/BinaryTree.h"
+#include "SerializeableMatcherIF.h"
+#include "../../serialize/SerializeAdapter.h"
 
 template<typename T>
 class MatchTree: public SerializeableMatcherIF<T>, public BinaryTree<

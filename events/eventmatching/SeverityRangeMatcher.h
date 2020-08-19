@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_EVENTS_EVENTMATCHING_SEVERITYRANGEMATCHER_H_
 #define FRAMEWORK_EVENTS_EVENTMATCHING_SEVERITYRANGEMATCHER_H_
 
-#include <framework/events/eventmatching/EventRangeMatcherBase.h>
+#include "EventRangeMatcherBase.h"
 
 class SeverityRangeMatcher: public EventRangeMatcherBase<EventSeverity_t> {
 public:

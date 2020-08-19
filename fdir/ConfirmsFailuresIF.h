@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_FDIR_CONFIRMSFAILURESIF_H_
 #define FRAMEWORK_FDIR_CONFIRMSFAILURESIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 class ConfirmsFailuresIF {
 public:

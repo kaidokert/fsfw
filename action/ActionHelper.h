@@ -1,9 +1,9 @@
 #ifndef ACTIONHELPER_H_
 #define ACTIONHELPER_H_
 
-#include <framework/action/ActionMessage.h>
-#include <framework/serialize/SerializeIF.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "ActionMessage.h"
+#include "../serialize/SerializeIF.h"
+#include "../ipc/MessageQueueIF.h"
 /**
  * \brief Action Helper is a helper class which handles action messages
  *

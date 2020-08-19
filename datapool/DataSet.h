@@ -12,13 +12,13 @@
 #ifndef DATASET_H_
 #define DATASET_H_
 
-#include <framework/datapool/DataPool.h>
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolRawAccess.h>
-#include <framework/datapool/PoolVariable.h>
-#include <framework/datapool/PoolVarList.h>
-#include <framework/datapool/PoolVector.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "DataPool.h"
+#include "DataSetIF.h"
+#include "PoolRawAccess.h"
+#include "PoolVariable.h"
+#include "PoolVarList.h"
+#include "PoolVector.h"
+#include "../serialize/SerializeAdapter.h"
 /**
  * \brief	The DataSet class manages a set of locally checked out variables.
  *

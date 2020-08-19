@@ -1,5 +1,5 @@
-#include <framework/monitoring/MonitoringMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "MonitoringMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 MonitoringMessage::~MonitoringMessage() {
 }

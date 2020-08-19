@@ -1,6 +1,6 @@
-#include <framework/datapool/DataPool.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/MutexFactory.h>
+#include "DataPool.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../ipc/MutexFactory.h"
 
 DataPool::DataPool( void ( *initFunction )( std::map<uint32_t, PoolEntryIF*>* pool_map ) ) {
 	mutex = MutexFactory::instance()->createMutex();

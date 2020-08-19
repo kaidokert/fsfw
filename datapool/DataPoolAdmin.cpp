@@ -1,10 +1,10 @@
-#include <framework/datapool/DataPool.h>
-#include <framework/datapool/DataPoolAdmin.h>
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolRawAccess.h>
-#include <framework/ipc/CommandMessage.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/parameters/ParameterMessage.h>
+#include "DataPool.h"
+#include "DataPoolAdmin.h"
+#include "DataSet.h"
+#include "PoolRawAccess.h"
+#include "../ipc/CommandMessage.h"
+#include "../ipc/QueueFactory.h"
+#include "../parameters/ParameterMessage.h"
 
 DataPoolAdmin::DataPoolAdmin(object_id_t objectId) :
 		SystemObject(objectId), storage(NULL), commandQueue(NULL), memoryHelper(
