@@ -1,8 +1,8 @@
 #ifndef SERIALBUFFERADAPTER_H_
 #define SERIALBUFFERADAPTER_H_
 
-#include <framework/serialize/SerializeIF.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "SerializeIF.h"
+#include "SerializeAdapter.h"
 
 /**
  * \ingroup serialize

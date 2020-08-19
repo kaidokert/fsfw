@@ -9,10 +9,10 @@
 #define COMMANDMESSAGE_H_
 
 
-#include <framework/ipc/FwMessageTypes.h>
+#include "FwMessageTypes.h"
 #include <config/ipc/MissionMessageTypes.h>
 
-#include <framework/ipc/MessageQueueMessage.h>
+#include "MessageQueueMessage.h"
 
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef ReturnValue_t Command_t;

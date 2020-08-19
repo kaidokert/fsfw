@@ -1,6 +1,6 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <errno.h>
-#include <framework/osal/linux/Timer.h>
+#include "Timer.h"
 
 Timer::Timer() {
 	sigevent sigEvent;

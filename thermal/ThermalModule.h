@@ -1,10 +1,10 @@
 #ifndef THERMALMODULE_H_
 #define THERMALMODULE_H_
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
-#include <framework/devicehandlers/HealthDevice.h>
-#include <framework/events/EventReportingProxyIF.h>
+#include "../datapool/DataSet.h"
+#include "../datapool/PoolVariable.h"
+#include "../devicehandlers/HealthDevice.h"
+#include "../events/EventReportingProxyIF.h"
 #include "ThermalModuleIF.h"
 #include <list>
 #include "tcsDefinitions.h"

@@ -1,8 +1,8 @@
 #ifndef FIXEDMAP_H_
 #define FIXEDMAP_H_
 
-#include <framework/container/ArrayList.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "ArrayList.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <utility>
 
 /**

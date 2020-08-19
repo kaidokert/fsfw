@@ -1,7 +1,7 @@
 #ifndef OS_RTEMS_MUTEX_H_
 #define OS_RTEMS_MUTEX_H_
 
-#include <framework/ipc/MutexIF.h>
+#include "../../ipc/MutexIF.h"
 #include <pthread.h>
 
 class Mutex : public MutexIF {

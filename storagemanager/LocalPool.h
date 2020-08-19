@@ -7,11 +7,11 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
 #define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
 
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/internalError/InternalErrorReporterIF.h>
+#include "../objectmanager/SystemObject.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "StorageManagerIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../internalError/InternalErrorReporterIF.h"
 #include <string.h>
 
 /**
@@ -178,6 +178,6 @@ private:
 	ReturnValue_t findEmpty(uint16_t pool_index, uint16_t* element);
 };
 
-#include <framework/storagemanager/LocalPool.tpp>
+#include "LocalPool.tpp"
 
 #endif /* FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_ */

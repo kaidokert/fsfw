@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_OSAL_LINUX_FIXEDTIMESLOTTASK_H_
 #define FRAMEWORK_OSAL_LINUX_FIXEDTIMESLOTTASK_H_
 
-#include <framework/tasks/FixedTimeslotTaskIF.h>
-#include <framework/devicehandlers/FixedSlotSequence.h>
-#include <framework/osal/linux/PosixThread.h>
+#include "../../tasks/FixedTimeslotTaskIF.h"
+#include "../../devicehandlers/FixedSlotSequence.h"
+#include "PosixThread.h"
 #include <pthread.h>
 
 class FixedTimeslotTask: public FixedTimeslotTaskIF, public PosixThread {

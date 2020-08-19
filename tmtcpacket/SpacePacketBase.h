@@ -1,7 +1,7 @@
 #ifndef SPACEPACKETBASE_H_
 #define SPACEPACKETBASE_H_
 
-#include <framework/tmtcpacket/ccsds_header.h>
+#include "ccsds_header.h"
 
 /**
  * \defgroup tmtcpackets Space Packets

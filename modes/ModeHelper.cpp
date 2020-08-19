@@ -1,6 +1,6 @@
-#include <framework/modes/HasModesIF.h>
-#include <framework/modes/ModeHelper.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "HasModesIF.h"
+#include "ModeHelper.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 ModeHelper::ModeHelper(HasModesIF *owner) :
 		theOneWhoCommandedAMode(0), commandedMode(HasModesIF::MODE_OFF), commandedSubmode(
