@@ -71,7 +71,7 @@ ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
 
 ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, size_t amount,
 		bool incrementReadPtr, bool readRemaining, size_t* trueAmount) {
-	size_t availableData = availableReadData(READ_PTR);
+	size_t availableData = getAvailableReadData(READ_PTR);
 	size_t amountTillWrap = readTillWrap(READ_PTR);
 	if (availableData < amount) {
 		if (readRemaining) {
@@ -110,7 +110,7 @@ void SimpleRingBuffer::moveExcessBytesToStart() {
 
 ReturnValue_t SimpleRingBuffer::deleteData(size_t amount,
 		bool deleteRemaining, size_t* trueAmount) {
-	size_t availableData = availableReadData(READ_PTR);
+	size_t availableData = getAvailableReadData(READ_PTR);
 	if (availableData < amount) {
 		if (deleteRemaining) {
 			amount = availableData;

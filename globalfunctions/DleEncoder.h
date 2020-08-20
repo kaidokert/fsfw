@@ -35,12 +35,12 @@ public:
 	static constexpr ReturnValue_t DECODING_ERROR = MAKE_RETURN_CODE(0x02);
 
 	//! Start Of Text character. First character is encoded stream
-	static constexpr uint8_t STX = 0x02;
+	static constexpr uint8_t STX_CHAR = 0x02;
 	//! End Of Text character. Last character in encoded stream
-	static constexpr uint8_t ETX = 0x03;
+	static constexpr uint8_t ETX_CHAR = 0x03;
 	//! Data Link Escape character. Used to escape STX, ETX and DLE occurences
 	//! in the source stream.
-	static constexpr uint8_t DLE = 0x10;
+	static constexpr uint8_t DLE_CHAR = 0x10;
 	static constexpr uint8_t CARRIAGE_RETURN = 0x0D;
 
     /**
