@@ -112,6 +112,7 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 	}
 
 	if (sourceStream[encodedIndex] != ETX_CHAR) {
+		*readLen = ++encodedIndex;
 		return DECODING_ERROR;
 	}
 	else {
