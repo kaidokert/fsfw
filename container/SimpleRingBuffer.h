@@ -56,13 +56,22 @@ public:
 	/**
 	 * Returns a pointer to a free element. If the remaining buffer is
 	 * not large enough, the data will be written past the actual size
-	 * and the amount of excess bytes will be cached.
+	 * and the amount of excess bytes will be cached. This function
+	 * does not increment the write pointer!
 	 * @param writePointer Pointer to a pointer which can be used to write
 	 * contiguous blocks into the ring buffer
 	 * @param amount
 	 * @return
 	 */
 	ReturnValue_t getFreeElement(uint8_t** writePointer, size_t amount);
+
+	/**
+	 * This increments the write pointer and also copies the excess bytes
+	 * to the beginning. It should be called if the write operation
+	 * conducted after calling getFreeElement() was performed.
+	 * @return
+	 */
+	void confirmBytesWritten(size_t amount);
 
 	virtual size_t getExcessBytes() const;
 	/**

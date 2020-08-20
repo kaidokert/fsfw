@@ -42,12 +42,19 @@ ReturnValue_t SimpleRingBuffer::getFreeElement(uint8_t **writePointer,
             excessBytes = amount - amountTillWrap;
         }
         *writePointer = &buffer[write];
-        incrementWrite(amount);
         return HasReturnvaluesIF::RETURN_OK;
     }
     else {
         return HasReturnvaluesIF::RETURN_FAILED;
     }
+}
+
+void SimpleRingBuffer::confirmBytesWritten(size_t amount) {
+	if(getExcessBytes() > 0) {
+		moveExcessBytesToStart();
+	}
+	incrementWrite(amount);
+
 }
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
@@ -124,4 +131,5 @@ ReturnValue_t SimpleRingBuffer::deleteData(size_t amount,
 	incrementRead(amount, READ_PTR);
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
 

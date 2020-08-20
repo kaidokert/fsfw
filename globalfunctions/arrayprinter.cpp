@@ -27,7 +27,7 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
 		if(i < size - 1){
 			sif::info << " , ";
 			if(i > 0 and i % maxCharPerLine == 0) {
-				sif::info << std::endl;
+				printf("\n");
 			}
 		}
 
