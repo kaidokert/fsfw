@@ -107,31 +107,33 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 	TmTcMessage message;
 	const uint8_t* data = nullptr;
 	size_t size = 0;
+	ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
 	for (ReturnValue_t result = tmTcReceptionQueue->receiveMessage(&message);
 		 result == RETURN_OK; result = tmTcReceptionQueue->receiveMessage(&message))
 	{
 		if(communicationLinkUp == false) {
-			result = storeDownlinkData(&message);
-			return result;
+			storeDownlinkData(&message);
+			continue;
 		}
 
 		result = tmStore->getData(message.getStorageId(), &data, &size);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
+			sif::error << "TmTcBridge::handleTmQueue: Invalid store "
+					"ID!" << std::endl;
 			continue;
 		}
 
 		result = sendTm(data, size);
 		if (result != RETURN_OK) {
 			sif::warning << "TmTcBridge: Could not send TM packet" << std::endl;
-			tmStore->deleteData(message.getStorageId());
-			return result;
-
+			status = HasReturnvaluesIF::RETURN_FAILED;
 		}
 		tmStore->deleteData(message.getStorageId());
 	}
-	return RETURN_OK;
+	return status;
 }
 
+// todo: make it configurable whether old data is deleted.
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	store_address_t storeId = 0;
 
