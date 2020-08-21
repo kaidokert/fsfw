@@ -20,9 +20,9 @@ TcPacketStored::TcPacketStored(uint8_t service, uint8_t subservice,
 	uint8_t* p_data = nullptr;
 	ReturnValue_t returnValue = this->store->getFreeElement(&this->storeAddress,
 			(TC_PACKET_MIN_SIZE + size), &p_data);
-	if (returnValue != this->store->RETURN_OK) {
-		sif::warning << "TcPacketStored: Could not get free element from store!"
-				<< std::endl;
+	if (returnValue != HasReturnvaluesIF::RETURN_OK) {
+		sif::warning << "TcPacketStored::TcPacketStored: Could not get "
+				"free element from store!" << std::endl;
 		return;
 	}
 	this->setData(p_data);
@@ -57,9 +57,9 @@ ReturnValue_t TcPacketStored::deletePacket() {
 }
 
 bool TcPacketStored::checkAndSetStore() {
-	if (this->store == NULL) {
+	if (this->store == nullptr) {
 		this->store = objectManager->get<StorageManagerIF>(objects::TC_STORE);
-		if (this->store == NULL) {
+		if (this->store == nullptr) {
 			sif::error << "TcPacketStored::TcPacketStored: TC Store not found!"
 					<< std::endl;
 			return false;

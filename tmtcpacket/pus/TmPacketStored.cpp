@@ -21,8 +21,9 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
 			(TmPacketBase::TM_PACKET_MIN_SIZE + size + headerSize), &pData);
 
-	if (returnValue != store->RETURN_OK) {
-		sif::debug << "TM Packet Stored: Issue getting free storage" << std::endl;
+	if (returnValue != HasReturnvaluesIF::RETURN_OK) {
+		sif::debug << "TmPacketStored::TmPacketStored: "
+				"Issue getting free storage" << std::endl;
 		checkAndReportLostTm();
 		return;
 	}
