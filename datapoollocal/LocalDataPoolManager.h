@@ -53,7 +53,6 @@ public:
     static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x1);
 
     static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x2);
-    //static constexpr ReturnValue_t SET_NOT_FOUND = MAKE_RETURN_CODE(0x3);
 
     /**
      * This constructor is used by a class which wants to implement
@@ -80,6 +79,13 @@ public:
 			uint8_t nonDiagInvlFactor = 5);
 
 	/**
+	 * @return
+	 */
+	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
+			float collectionInterval, bool isDiagnostics,
+			object_id_t packetDestination = defaultHkDestination);
+
+	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
 	 * than diagnostic packets.
 	 * A factor can be specified to determine the minimum sampling frequency
@@ -96,20 +102,13 @@ public:
 	 * @return
 	 */
 	ReturnValue_t performHkOperation();
-	/**
-	 * This function is used to set the default HK packet destination.
-	 * This destination will usually only be set once.
-	 * @param hkDestination
-	 */
-	void setHkPacketDestination(MessageQueueId_t hkDestination);
 
 	/**
 	 * Generate a housekeeping packet with a given SID.
 	 * @param sid
 	 * @return
 	 */
-	ReturnValue_t generateHousekeepingPacket(sid_t sid, float collectionInterval,
-	        MessageQueueId_t sendTo = MessageQueueIF::NO_QUEUE);
+	ReturnValue_t generateHousekeepingPacket(sid_t sid);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
@@ -174,14 +173,15 @@ private:
         type of data the receiver is interested in (full datasets or
         single data variables. */
         union DataId {
+        	DataId(): dataSetSid() {}
             /** Will be initialized to INVALID_ADDRESS */
             sid_t dataSetSid;
             lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
         };
         DataId dataId;
 
-        MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         ReportingType reportingType = ReportingType::PERIODIC;
+        MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         bool reportingEnabled = true;
         /** Different members of this union will be used depending on reporting
         type */
@@ -215,13 +215,6 @@ private:
      * or in the initialize() function.
 	 */
 	MessageQueueIF* hkQueue = nullptr;
-
-	/**
-	 * HK replies will always be a reply to the commander, but HK packet
-	 * can be sent to another destination by specifying this message queue
-	 * ID, for example to a dedicated housekeeping service implementation.
-	 */
-	MessageQueueId_t hkDestination = MessageQueueIF::NO_QUEUE;
 
 	/** Global IPC store is used to store all packets. */
 	StorageManagerIF* ipcStore = nullptr;
