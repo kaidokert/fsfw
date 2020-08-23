@@ -1,10 +1,10 @@
 #ifndef MESSAGEQUEUE_H_
 #define MESSAGEQUEUE_H_
 
-#include <framework/internalError/InternalErrorReporterIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/ipc/MessageQueueMessageIF.h>
-#include <framework/osal/FreeRTOS/TaskManagement.h>
+#include "../../internalError/InternalErrorReporterIF.h"
+#include "../../ipc/MessageQueueIF.h"
+#include "../../ipc/MessageQueueMessageIF.h"
+#include "../../osal/FreeRTOS/TaskManagement.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>

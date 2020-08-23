@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
 #define FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/ipc/FwMessageTypes.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/CommandMessage.h"
+#include "../ipc/FwMessageTypes.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../storagemanager/StorageManagerIF.h"
 #include <limits>
 
 union sid_t {

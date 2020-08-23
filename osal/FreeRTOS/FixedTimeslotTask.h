@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 
-#include <framework/osal/FreeRTOS/FreeRTOSTaskIF.h>
-#include <framework/tasks/FixedSlotSequence.h>
-#include <framework/tasks/FixedTimeslotTaskIF.h>
-#include <framework/tasks/Typedef.h>
+#include "../../osal/FreeRTOS/FreeRTOSTaskIF.h"
+#include "../../tasks/FixedSlotSequence.h"
+#include "../../tasks/FixedTimeslotTaskIF.h"
+#include "../../tasks/Typedef.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

@@ -8,10 +8,10 @@
 #ifndef HASMODESIF_H_
 #define HASMODESIF_H_
 
-#include <framework/events/Event.h>
-#include <framework/modes/ModeHelper.h>
-#include <framework/modes/ModeMessage.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../events/Event.h"
+#include "../modes/ModeHelper.h"
+#include "../modes/ModeMessage.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <stdint.h>
 
 

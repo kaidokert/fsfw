@@ -1,11 +1,11 @@
 #ifndef GLOBALPOOLVECTOR_H_
 #define GLOBALPOOLVECTOR_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datapool/DataSetIF.h"
+#include "../datapool/PoolEntry.h"
+#include "../datapool/PoolVariableIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 /**
  * @brief	This is the access class for array-type data pool entries.
@@ -177,7 +177,7 @@ private:
 	ReadWriteMode_t readWriteMode;
 };
 
-#include <framework/datapoolglob/GlobalPoolVector.tpp>
+#include "../datapoolglob/GlobalPoolVector.tpp"
 
 template<typename T, uint16_t vectorSize>
 using gp_vec_t = GlobPoolVector<T, vectorSize>;

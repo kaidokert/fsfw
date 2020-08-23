@@ -7,10 +7,10 @@
 #ifndef LIMITVIOLATIONREPORTER_H_
 #define LIMITVIOLATIONREPORTER_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/SerializeIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serialize/SerializeIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();

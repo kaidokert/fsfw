@@ -1,6 +1,6 @@
-#include <framework/osal/FreeRTOS/Mutex.h>
+#include "../../osal/FreeRTOS/Mutex.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 Mutex::Mutex() {
 	handle = xSemaphoreCreateMutex();

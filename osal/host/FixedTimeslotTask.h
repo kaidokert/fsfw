@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_OSAL_HOST_FIXEDTIMESLOTTASK_H_
 #define FRAMEWORK_OSAL_HOST_FIXEDTIMESLOTTASK_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tasks/FixedSlotSequence.h>
-#include <framework/tasks/FixedTimeslotTaskIF.h>
-#include <framework/tasks/Typedef.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../tasks/FixedSlotSequence.h"
+#include "../../tasks/FixedTimeslotTaskIF.h"
+#include "../../tasks/Typedef.h"
 
 #include <vector>
 #include <thread>

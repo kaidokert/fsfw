@@ -8,9 +8,9 @@
 #ifndef FRAMEWORK_MEMORY_FILESYSTEMMESSAGE_H_
 #define FRAMEWORK_MEMORY_FILESYSTEMMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/objectmanager/SystemObject.h>
+#include "../ipc/CommandMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../objectmanager/SystemObject.h"
 
 class FileSystemMessage {
 private:

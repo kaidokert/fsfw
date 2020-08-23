@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_DEVICES_DEVICECOMMUNICATIONIF_H_
 #define FRAMEWORK_DEVICES_DEVICECOMMUNICATIONIF_H_
 
-#include <framework/devicehandlers/CookieIF.h>
-#include <framework/devicehandlers/DeviceHandlerIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../devicehandlers/CookieIF.h"
+#include "../devicehandlers/DeviceHandlerIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 /**
  * @defgroup interfaces Interfaces
  * @brief Interfaces for flight software objects

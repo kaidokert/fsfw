@@ -1,10 +1,10 @@
 #ifndef STORAGEMANAGERIF_H_H
 #define STORAGEMANAGERIF_H_H
 
-#include <framework/events/Event.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/storagemanager/StorageAccessor.h>
-#include <framework/storagemanager/storeAddress.h>
+#include "../events/Event.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../storagemanager/StorageAccessor.h"
+#include "../storagemanager/storeAddress.h"
 #include <utility>
 #include <cstddef>
 

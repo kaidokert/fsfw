@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_ACTION_HASACTIONSIF_H_
 #define FRAMEWORK_ACTION_HASACTIONSIF_H_
 
-#include <framework/action/ActionHelper.h>
-#include <framework/action/ActionMessage.h>
-#include <framework/action/SimpleActionHelper.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "../action/ActionHelper.h"
+#include "../action/ActionMessage.h"
+#include "../action/SimpleActionHelper.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MessageQueueIF.h"
 /**
  * @brief
  * Interface for component which uses actions

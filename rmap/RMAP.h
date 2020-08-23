@@ -1,8 +1,8 @@
 #ifndef RMAPpp_H_
 #define RMAPpp_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/rmap/RMAPCookie.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../rmap/RMAPCookie.h"
 
 //SHOULDTODO: clean up includes for RMAP, should be enough to include RMAP.h but right now it's quite chaotic...
 

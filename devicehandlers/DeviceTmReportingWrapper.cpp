@@ -1,6 +1,6 @@
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/devicehandlers/DeviceTmReportingWrapper.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../serialize/SerializeAdapter.h"
+#include "../devicehandlers/DeviceTmReportingWrapper.h"
+#include "../serialize/SerializeAdapter.h"
 
 DeviceTmReportingWrapper::DeviceTmReportingWrapper(object_id_t objectId,
 		ActionId_t actionId, SerializeIF* data) :

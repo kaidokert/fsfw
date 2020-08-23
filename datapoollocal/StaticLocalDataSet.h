@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_STATICLOCALDATASET_H_
 #define FRAMEWORK_DATAPOOLLOCAL_STATICLOCALDATASET_H_
-#include <framework/datapoollocal/LocalPoolDataSetBase.h>
-#include <framework/objectmanager/SystemObjectIF.h>
+#include "LocalPoolDataSetBase.h"
+#include "../objectmanager/SystemObjectIF.h"
 #include <array>
 
 /**

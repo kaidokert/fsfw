@@ -8,7 +8,7 @@
 #ifndef TCTRANSFERFRAMELOCAL_H_
 #define TCTRANSFERFRAMELOCAL_H_
 
-#include <framework/datalinklayer/TcTransferFrame.h>
+#include "../datalinklayer/TcTransferFrame.h"
 
 /**
  * This is a helper class to locally create TC Transfer Frames.

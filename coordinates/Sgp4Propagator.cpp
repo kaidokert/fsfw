@@ -1,9 +1,9 @@
-#include <framework/coordinates/CoordinateTransformations.h>
-#include <framework/coordinates/Sgp4Propagator.h>
-#include <framework/globalfunctions/constants.h>
-#include <framework/globalfunctions/math/MatrixOperations.h>
-#include <framework/globalfunctions/math/VectorOperations.h>
-#include <framework/globalfunctions/timevalOperations.h>
+#include "../coordinates/CoordinateTransformations.h"
+#include "../coordinates/Sgp4Propagator.h"
+#include "../globalfunctions/constants.h"
+#include "../globalfunctions/math/MatrixOperations.h"
+#include "../globalfunctions/math/VectorOperations.h"
+#include "../globalfunctions/timevalOperations.h"
 #include <cstring>
 Sgp4Propagator::Sgp4Propagator() :
 		initialized(false), epoch({0, 0}), whichconst(wgs84) {

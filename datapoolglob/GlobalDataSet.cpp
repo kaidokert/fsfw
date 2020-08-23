@@ -1,6 +1,6 @@
-#include <framework/datapoolglob/GlobalDataPool.h>
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datapoolglob/GlobalDataPool.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 GlobDataSet::GlobDataSet(): PoolDataSetBase(
         reinterpret_cast<PoolVariableIF**>(&registeredVariables),

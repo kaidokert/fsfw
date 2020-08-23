@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_DATAPOOL_POOLDATASETIF_H_
 #define FRAMEWORK_DATAPOOL_POOLDATASETIF_H_
-#include <framework/datapool/DataSetIF.h>
+#include "DataSetIF.h"
 
 class PoolDataSetIF: public DataSetIF {
 public:

@@ -1,5 +1,5 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/osal/linux/MessageQueue.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../osal/linux/MessageQueue.h"
 
 #include <fstream>
 

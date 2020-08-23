@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>

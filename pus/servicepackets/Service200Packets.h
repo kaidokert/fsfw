@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_
 #define FRAMEWORK_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_
 
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/modes/ModeMessage.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../../serialize/SerialLinkedListAdapter.h"
+#include "../../modes/ModeMessage.h"
+#include "../../serialize/SerializeIF.h"
 
 /**
  * @brief Subservice 1, 2, 3, 4, 5

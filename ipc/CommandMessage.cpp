@@ -1,5 +1,5 @@
-#include <framework/ipc/CommandMessage.h>
-#include <framework/ipc/CommandMessageCleaner.h>
+#include "../ipc/CommandMessage.h"
+#include "../ipc/CommandMessageCleaner.h"
 #include <cstring>
 
 CommandMessage::CommandMessage() {

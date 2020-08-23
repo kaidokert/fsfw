@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
 #define FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
 
-#include <framework/action/ActionMessage.h>
-#include <framework/tmtcservices/CommandingServiceBase.h>
+#include "../action/ActionMessage.h"
+#include "../tmtcservices/CommandingServiceBase.h"
 
 /**
  * @brief Functional commanding.

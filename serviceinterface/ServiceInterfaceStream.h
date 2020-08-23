@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 
-#include <framework/serviceinterface/ServiceInterfaceBuffer.h>
+#include "../serviceinterface/ServiceInterfaceBuffer.h"
 #include <iostream>
 #include <cstdio>
 

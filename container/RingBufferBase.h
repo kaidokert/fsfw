@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
 #define FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
 template<uint8_t N_READ_PTRS = 1>
@@ -21,10 +21,10 @@ public:
 		return (availableWriteSpace(n) == 0);
 	}
 	bool isEmpty(uint8_t n = 0) {
-		return (availableReadData(n) == 0);
+		return (getAvailableReadData(n) == 0);
 	}
 
-	size_t availableReadData(uint8_t n = 0) const {
+	size_t getAvailableReadData(uint8_t n = 0) const {
 		return ((write + size) - read[n]) % size;
 	}
 	size_t availableWriteSpace(uint8_t n = 0) const  {
@@ -36,7 +36,7 @@ public:
 		return overwriteOld;
 	}
 
-	size_t maxSize() const {
+	size_t getMaxSize() const {
 		return size - 1;
 	}
 
@@ -73,7 +73,7 @@ protected:
 	}
 
 	ReturnValue_t readData(uint32_t amount, uint8_t n = 0) {
-		if (availableReadData(n) >= amount) {
+		if (getAvailableReadData(n) >= amount) {
 			incrementRead(amount, n);
 			return HasReturnvaluesIF::RETURN_OK;
 		} else {

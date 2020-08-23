@@ -1,9 +1,9 @@
 #ifndef PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_
 #define PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tmstorage/TmStorePackets.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../tmstorage/TmStorePackets.h"
+#include "../ipc/MessageQueueSenderIF.h"
 class TmPacketMinimal;
 class SpacePacketBase;
 class TmStoreBackendIF;

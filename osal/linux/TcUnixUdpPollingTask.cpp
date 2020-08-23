@@ -1,5 +1,5 @@
-#include <framework/osal/linux/TcUnixUdpPollingTask.h>
-#include <framework/globalfunctions/arrayprinter.h>
+#include "../../osal/linux/TcUnixUdpPollingTask.h"
+#include "../../globalfunctions/arrayprinter.h"
 
 TcUnixUdpPollingTask::TcUnixUdpPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,

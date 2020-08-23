@@ -1,4 +1,4 @@
-#include <framework/tmtcservices/TmTcMessage.h>
+#include "../tmtcservices/TmTcMessage.h"
 #include <string.h>
 
 

@@ -1,9 +1,9 @@
 #ifndef MODESEQUENCEMESSAGE_H_
 #define MODESEQUENCEMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/subsystem/modes/ModeDefinitions.h>
+#include "../../ipc/CommandMessage.h"
+#include "../../storagemanager/StorageManagerIF.h"
+#include "../../subsystem/modes/ModeDefinitions.h"
 
 class ModeSequenceMessage {
 public:

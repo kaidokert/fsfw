@@ -1,6 +1,6 @@
-#include <framework/action/ActionHelper.h>
-#include <framework/action/HasActionsIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../action/ActionHelper.h"
+#include "../action/HasActionsIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue) :
 		owner(setOwner), queueToUse(useThisQueue), ipcStore(nullptr) {

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUEMESSAGE_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUEMESSAGE_H_
 
-#include <framework/ipc/MessageQueueMessageIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../ipc/MessageQueueMessageIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 #include <cstddef>
 
 /**

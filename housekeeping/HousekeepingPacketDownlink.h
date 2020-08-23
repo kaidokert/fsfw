@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
 #define FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
 
-#include <framework/datapoollocal/LocalPoolDataSetBase.h>
-#include <framework/housekeeping/HousekeepingMessage.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../datapoollocal/LocalPoolDataSetBase.h"
+#include "../housekeeping/HousekeepingMessage.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "../storagemanager/StorageManagerIF.h"
 
 /**
  * @brief   This class will be used to serialize general housekeeping packets

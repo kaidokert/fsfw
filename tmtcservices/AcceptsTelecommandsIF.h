@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_
 #define FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_
 
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../ipc/MessageQueueSenderIF.h"
 
 /**
  * @brief 	This interface is implemented by classes that are sinks for

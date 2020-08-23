@@ -5,9 +5,9 @@
  * @author	baetz
  */
 
-#include <framework/datalinklayer/BCFrame.h>
-#include <framework/datalinklayer/VirtualChannelReception.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datalinklayer/BCFrame.h"
+#include "../datalinklayer/VirtualChannelReception.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 VirtualChannelReception::VirtualChannelReception(uint8_t setChannelId,
 		uint8_t setSlidingWindowWidth) :

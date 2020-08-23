@@ -1,13 +1,13 @@
-#include <framework/ipc/CommandMessageCleaner.h>
+#include "../ipc/CommandMessageCleaner.h"
 
-#include <framework/devicehandlers/DeviceHandlerMessage.h>
-#include <framework/health/HealthMessage.h>
-#include <framework/memory/MemoryMessage.h>
-#include <framework/modes/ModeMessage.h>
-#include <framework/monitoring/MonitoringMessage.h>
-#include <framework/subsystem/modes/ModeSequenceMessage.h>
-#include <framework/tmstorage/TmStoreMessage.h>
-#include <framework/parameters/ParameterMessage.h>
+#include "../devicehandlers/DeviceHandlerMessage.h"
+#include "../health/HealthMessage.h"
+#include "../memory/MemoryMessage.h"
+#include "../modes/ModeMessage.h"
+#include "../monitoring/MonitoringMessage.h"
+#include "../subsystem/modes/ModeSequenceMessage.h"
+#include "../tmstorage/TmStoreMessage.h"
+#include "../parameters/ParameterMessage.h"
 
 void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
 	switch(message->getMessageType()){

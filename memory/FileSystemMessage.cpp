@@ -6,7 +6,7 @@
  */
 
 #include "FileSystemMessage.h"
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
 
 ReturnValue_t FileSystemMessage::setWriteToFileCommand(CommandMessage* message,
 		MessageQueueId_t replyQueueId, store_address_t storageID) {

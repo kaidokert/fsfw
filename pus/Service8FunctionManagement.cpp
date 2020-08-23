@@ -1,11 +1,11 @@
-#include <framework/pus/Service8FunctionManagement.h>
-#include <framework/pus/servicepackets/Service8Packets.h>
+#include "../pus/Service8FunctionManagement.h"
+#include "../pus/servicepackets/Service8Packets.h"
 
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/action/HasActionsIF.h>
-#include <framework/devicehandlers/DeviceHandlerIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../objectmanager/SystemObjectIF.h"
+#include "../action/HasActionsIF.h"
+#include "../devicehandlers/DeviceHandlerIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 Service8FunctionManagement::Service8FunctionManagement(object_id_t object_id,
 		uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,

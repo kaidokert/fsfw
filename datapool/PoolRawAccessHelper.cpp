@@ -5,10 +5,10 @@
  * @author R. Mueller
  */
 
-#include <framework/datapool/PoolRawAccessHelper.h>
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datapool/PoolRawAccessHelper.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 #include <cmath>
 #include <cstring>

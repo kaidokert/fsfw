@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_MONITORING_TWOVALUELIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_TWOVALUELIMITMONITOR_H_
 
-#include <framework/monitoring/LimitMonitor.h>
+#include "../monitoring/LimitMonitor.h"
 
 template<typename T>
 class TwoValueLimitMonitor: public LimitMonitor<T> {

@@ -1,5 +1,5 @@
-#include <framework/serialize/SerialBufferAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../serialize/SerialBufferAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <cstring>
 
 template<typename count_t>

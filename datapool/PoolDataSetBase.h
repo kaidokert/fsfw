@@ -1,9 +1,8 @@
-#ifndef FRAMEWORK_DATAPOOL_POOLPOOLDATASETBASE_H_
-#define FRAMEWORK_DATAPOOL_POOLPOOLDATASETBASE_H_
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolDataSetIF.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/ipc/MutexIF.h>
+#ifndef FRAMEWORK_DATAPOOL_DATASETBASE_H_
+#define FRAMEWORK_DATAPOOL_DATASETBASE_H_
+#include "../datapool/PoolDataSetIF.h"
+#include "../datapool/PoolVariableIF.h"
+#include "../ipc/MutexIF.h"
 
 /**
  * @brief	The DataSetBase class manages a set of locally checked out variables.

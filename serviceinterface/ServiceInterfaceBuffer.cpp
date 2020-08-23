@@ -1,5 +1,5 @@
-#include <framework/timemanager/Clock.h>
-#include <framework/serviceinterface/ServiceInterfaceBuffer.h>
+#include "../timemanager/Clock.h"
+#include "../serviceinterface/ServiceInterfaceBuffer.h"
 #include <cstring>
 #include <inttypes.h>
 
@@ -127,7 +127,7 @@ std::string* ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 
 
 #ifdef UT699
-#include <framework/osal/rtems/Interrupt.h>
+#include "../osal/rtems/Interrupt.h"
 
 ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message,
 		uint16_t port) {

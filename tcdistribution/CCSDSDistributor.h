@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_
 #define FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tcdistribution/CCSDSDistributorIF.h>
-#include <framework/tcdistribution/TcDistributor.h>
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../tcdistribution/CCSDSDistributorIF.h"
+#include "../tcdistribution/TcDistributor.h"
+#include "../tmtcservices/AcceptsTelecommandsIF.h"
 
 /**
  * @brief 	An instantiation of the CCSDSDistributorIF.

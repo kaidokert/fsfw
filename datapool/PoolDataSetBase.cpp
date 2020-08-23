@@ -1,5 +1,5 @@
-#include <framework/datapool/PoolDataSetBase.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "PoolDataSetBase.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
         const size_t maxFillCount):

@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
-#include <framework/datapoollocal/LocalPoolDataSetBase.h>
+#include "../datapoollocal/LocalPoolDataSetBase.h"
 #include <vector>
 
 class LocalDataSet: public LocalPoolDataSetBase {

@@ -1,5 +1,5 @@
-#include <framework/timemanager/Stopwatch.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../timemanager/Stopwatch.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <iomanip>
 
 Stopwatch::Stopwatch(bool displayOnDestruction,

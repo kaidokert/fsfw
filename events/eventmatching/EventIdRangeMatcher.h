@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_EVENTS_EVENTMATCHING_EVENTIDRANGEMATCHER_H_
 #define FRAMEWORK_EVENTS_EVENTMATCHING_EVENTIDRANGEMATCHER_H_
 
-#include <framework/events/eventmatching/EventRangeMatcherBase.h>
+#include "../../events/eventmatching/EventRangeMatcherBase.h"
 
 class EventIdRangeMatcher: public EventRangeMatcherBase<EventId_t> {
 public:

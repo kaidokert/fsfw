@@ -1,7 +1,6 @@
 #ifndef FRAMEWORK_DATAPOOL_SHAREDDATASETIF_H_
 #define FRAMEWORK_DATAPOOL_SHAREDDATASETIF_H_
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolDataSetIF.h>
+#include "PoolDataSetIF.h"
 
 class SharedDataSetIF: public PoolDataSetIF {
 public:

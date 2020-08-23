@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolDataSetBase.h>
-#include <framework/datapoollocal/HasLocalDataPoolIF.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../datapool/DataSetIF.h"
+#include "../datapool/PoolDataSetBase.h"
+#include "../datapoollocal/HasLocalDataPoolIF.h"
+#include "../serialize/SerializeIF.h"
 
 #include <vector>
 

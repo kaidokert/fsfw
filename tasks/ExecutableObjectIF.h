@@ -3,7 +3,7 @@
 
 class PeriodicTaskIF;
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 #include <cstring>
 /**

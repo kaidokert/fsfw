@@ -1,8 +1,8 @@
-#include <framework/events/EventManager.h>
-#include <framework/events/EventMessage.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/ipc/MutexFactory.h>
+#include "../events/EventManager.h"
+#include "../events/EventMessage.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../ipc/QueueFactory.h"
+#include "../ipc/MutexFactory.h"
 
 
 const uint16_t EventManager::POOL_SIZES[N_POOLS] = {

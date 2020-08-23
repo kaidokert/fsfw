@@ -1,5 +1,5 @@
-#include <framework/globalfunctions/arrayprinter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../globalfunctions/arrayprinter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <bitset>
 
 void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
@@ -27,7 +27,7 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
 		if(i < size - 1){
 			sif::info << " , ";
 			if(i > 0 and i % maxCharPerLine == 0) {
-				sif::info << std::endl;
+				printf("\n");
 			}
 		}
 

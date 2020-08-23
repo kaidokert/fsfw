@@ -1,6 +1,6 @@
-#include <framework/modes/HasModesIF.h>
-#include <framework/modes/ModeHelper.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../modes/HasModesIF.h"
+#include "../modes/ModeHelper.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 ModeHelper::ModeHelper(HasModesIF *owner) :
 		commandedMode(HasModesIF::MODE_OFF),

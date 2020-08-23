@@ -1,5 +1,5 @@
-#include <framework/objectmanager/ObjectManager.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../objectmanager/ObjectManager.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <iomanip>
 #include <cstdlib>
 

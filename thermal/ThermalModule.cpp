@@ -1,5 +1,5 @@
-#include <framework/monitoring/LimitViolationReporter.h>
-#include <framework/monitoring/MonitoringMessageContent.h>
+#include "../monitoring/LimitViolationReporter.h"
+#include "../monitoring/MonitoringMessageContent.h"
 #include "ThermalModule.h"
 
 #include "AbstractTemperatureSensor.h"

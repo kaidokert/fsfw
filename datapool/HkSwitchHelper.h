@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_DATAPOOL_HKSWITCHHELPER_H_
 #define FRAMEWORK_DATAPOOL_HKSWITCHHELPER_H_
 
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/action/CommandsActionsIF.h>
-#include <framework/events/EventReportingProxyIF.h>
+#include "../tasks/ExecutableObjectIF.h"
+#include "../action/CommandsActionsIF.h"
+#include "../events/EventReportingProxyIF.h"
 
 //TODO this class violations separation between mission and framework
 //but it is only a transitional solution until the Datapool is

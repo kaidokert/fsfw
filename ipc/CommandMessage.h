@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_IPC_COMMANDMESSAGE_H_
 #define FRAMEWORK_IPC_COMMANDMESSAGE_H_
 
-#include <framework/ipc/CommandMessageIF.h>
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/ipc/FwMessageTypes.h>
+#include "../ipc/CommandMessageIF.h"
+#include "../ipc/MessageQueueMessage.h"
+#include "../ipc/FwMessageTypes.h"
 
 /**
  * @brief 	Default command message used to pass command messages between tasks.

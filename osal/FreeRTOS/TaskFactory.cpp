@@ -1,5 +1,5 @@
-#include <framework/tasks/TaskFactory.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../tasks/TaskFactory.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 #include "PeriodicTask.h"
 #include "FixedTimeslotTask.h"

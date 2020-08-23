@@ -1,12 +1,12 @@
 #ifndef MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 #define MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapoolglob/GlobalPoolVariable.h>
-#include <framework/thermal/ThermalComponentIF.h>
-#include <framework/thermal/AbstractTemperatureSensor.h>
-#include <framework/thermal/ThermalModule.h>
-#include <framework/thermal/ThermalMonitor.h>
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../thermal/ThermalComponentIF.h"
+#include "../thermal/AbstractTemperatureSensor.h"
+#include "../thermal/ThermalModule.h"
+#include "../thermal/ThermalMonitor.h"
 
 // TODO: Documentaiton, how to use this? only use Thermal Component, which inherits core component?
 class CoreComponent: public ThermalComponentIF {

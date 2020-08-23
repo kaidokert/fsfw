@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TASKS_SEMAPHOREIF_H_
 #define FRAMEWORK_TASKS_SEMAPHOREIF_H_
-#include <framework/returnvalues/FwClassIds.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/FwClassIds.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstdint>
 
 /**

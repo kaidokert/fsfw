@@ -1,8 +1,8 @@
-#include <framework/subsystem/SubsystemBase.h>
-#include <framework/controller/ControllerBase.h>
-#include <framework/subsystem/SubsystemBase.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/action/HasActionsIF.h>
+#include "../subsystem/SubsystemBase.h"
+#include "../controller/ControllerBase.h"
+#include "../subsystem/SubsystemBase.h"
+#include "../ipc/QueueFactory.h"
+#include "../action/HasActionsIF.h"
 
 ControllerBase::ControllerBase(uint32_t setObjectId, uint32_t parentId,
 		size_t commandQueueDepth) :

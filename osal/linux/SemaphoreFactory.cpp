@@ -1,7 +1,7 @@
-#include <framework/tasks/SemaphoreFactory.h>
-#include <framework/osal/linux/BinarySemaphore.h>
-#include <framework/osal/linux/CountingSemaphore.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../tasks/SemaphoreFactory.h"
+#include "../../osal/linux/BinarySemaphore.h"
+#include "../../osal/linux/CountingSemaphore.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 const uint32_t SemaphoreIF::POLLING = 0;
 const uint32_t SemaphoreIF::BLOCKING = 0xffffffff;

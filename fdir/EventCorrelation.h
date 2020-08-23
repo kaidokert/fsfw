@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_FDIR_EVENTCORRELATION_H_
 #define FRAMEWORK_FDIR_EVENTCORRELATION_H_
 
-#include <framework/timemanager/Countdown.h>
+#include "../timemanager/Countdown.h"
 
 class EventCorrelation {
 public:

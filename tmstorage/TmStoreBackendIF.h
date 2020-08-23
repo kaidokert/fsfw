@@ -1,11 +1,11 @@
 #ifndef PLATFORM_TMTCSERVICES_TMSTOREBACKENDIF_H_
 #define PLATFORM_TMTCSERVICES_TMSTOREBACKENDIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/timemanager/Clock.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../parameters/HasParametersIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../timemanager/Clock.h"
 class TmPacketInformation;
 class TmPacketMinimal;
 class SpacePacketBase;

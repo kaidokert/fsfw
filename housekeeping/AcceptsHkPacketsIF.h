@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_HOUSEKEEPING_ACCEPTSHKPACKETSIF_H_
 #define FRAMEWORK_HOUSEKEEPING_ACCEPTSHKPACKETSIF_H_
-#include <framework/ipc/MessageQueueMessageIF.h>
+#include "../ipc/MessageQueueMessageIF.h"
 
 class AcceptsHkPacketsIF {
 public:

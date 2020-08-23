@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_STORAGEACCESSOR_H_
 #define FRAMEWORK_STORAGEMANAGER_STORAGEACCESSOR_H_
 
-#include <framework/storagemanager/ConstStorageAccessor.h>
+#include "../storagemanager/ConstStorageAccessor.h"
 
 class StorageManagerIF;
 

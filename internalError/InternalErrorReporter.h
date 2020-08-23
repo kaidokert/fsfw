@@ -3,9 +3,9 @@
 
 #include "InternalErrorReporterIF.h"
 
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/ipc/MutexIF.h>
+#include "../tasks/ExecutableObjectIF.h"
+#include "../objectmanager/SystemObject.h"
+#include "../ipc/MutexIF.h"
 
 class InternalErrorReporter: public SystemObject,
 		public ExecutableObjectIF,

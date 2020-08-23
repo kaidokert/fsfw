@@ -8,9 +8,9 @@
 #ifndef VIRTUALCHANNELRECEPTIONIF_H_
 #define VIRTUALCHANNELRECEPTIONIF_H_
 
-#include <framework/datalinklayer/ClcwIF.h>
-#include <framework/datalinklayer/TcTransferFrame.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../datalinklayer/ClcwIF.h"
+#include "../datalinklayer/TcTransferFrame.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 /**
  * This is the interface for Virtual Channel reception classes.

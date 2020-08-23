@@ -1,7 +1,7 @@
 #ifndef CONTROLLERSET_H_
 #define CONTROLLERSET_H_
 
-#include <framework/datapoolglob/GlobalDataSet.h>
+#include "../datapoolglob/GlobalDataSet.h"
 
 class ControllerSet :public GlobDataSet {
 public:

@@ -1,11 +1,11 @@
-#include <framework/osal/host/FixedTimeslotTask.h>
+#include "../../osal/host/FixedTimeslotTask.h"
 
-#include <framework/ipc/MutexFactory.h>
-#include <framework/osal/host/Mutex.h>
-#include <framework/osal/host/FixedTimeslotTask.h>
+#include "../../ipc/MutexFactory.h"
+#include "../../osal/host/Mutex.h"
+#include "../../osal/host/FixedTimeslotTask.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../tasks/ExecutableObjectIF.h"
 
 #include <thread>
 #include <chrono>

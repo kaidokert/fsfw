@@ -1,11 +1,11 @@
 #ifndef TMPACKETSTORED_H_
 #define TMPACKETSTORED_H_
 
-#include <framework/serialize/SerializeIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tmtcpacket/pus/TmPacketBase.h>
-#include <framework/internalError/InternalErrorReporterIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../../serialize/SerializeIF.h"
+#include "../../storagemanager/StorageManagerIF.h"
+#include "../../tmtcpacket/pus/TmPacketBase.h"
+#include "../../internalError/InternalErrorReporterIF.h"
+#include "../../ipc/MessageQueueSenderIF.h"
 
 /**
  *	This class generates a ECSS PUS Telemetry packet within a given

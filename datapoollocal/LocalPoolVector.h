@@ -1,12 +1,12 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/datapoollocal/LocalDataPoolManager.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datapool/DataSetIF.h"
+#include "../datapool/PoolEntry.h"
+#include "../datapool/PoolVariableIF.h"
+#include "../datapoollocal/LocalDataPoolManager.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 
 /**
@@ -192,7 +192,7 @@ private:
 
 };
 
-#include <framework/datapoollocal/LocalPoolVector.tpp>
+#include "../datapoollocal/LocalPoolVector.tpp"
 
 template<typename T, uint16_t vectorSize>
 using lp_vec_t = LocalPoolVector<T, vectorSize>;

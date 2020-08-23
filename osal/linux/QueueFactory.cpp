@@ -1,8 +1,8 @@
-#include <framework/ipc/QueueFactory.h>
+#include "../../ipc/QueueFactory.h"
 #include <mqueue.h>
 #include <errno.h>
-#include <framework/osal/linux/MessageQueue.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../osal/linux/MessageQueue.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <cstring>
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;

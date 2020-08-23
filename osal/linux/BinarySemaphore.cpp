@@ -1,5 +1,5 @@
-#include <framework/osal/linux/BinarySemaphore.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../osal/linux/BinarySemaphore.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 extern "C" {
 #include <errno.h>

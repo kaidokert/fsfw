@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_DATAPOOLGLOB_DATASET_H_
 #define FRAMEWORK_DATAPOOLGLOB_DATASET_H_
 
-#include <framework/datapool/PoolDataSetBase.h>
+#include "../datapool/PoolDataSetBase.h"
 
 /**
  * @brief	The DataSet class manages a set of locally checked out variables

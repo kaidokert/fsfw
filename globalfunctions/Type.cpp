@@ -1,5 +1,5 @@
-#include <framework/globalfunctions/Type.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../globalfunctions/Type.h"
+#include "../serialize/SerializeAdapter.h"
 
 Type::Type() :
 		actualType(UNKNOWN_TYPE) {

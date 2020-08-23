@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TMTCPACKET_PUS_PACKETTIMESTAMPINTERPRETERIF_H_
 #define FRAMEWORK_TMTCPACKET_PUS_PACKETTIMESTAMPINTERPRETERIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 class TmPacketMinimal;
 
 class PacketTimestampInterpreterIF {

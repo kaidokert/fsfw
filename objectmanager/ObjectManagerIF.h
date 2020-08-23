@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
 #define FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
-#include <framework/objectmanager/frameworkObjects.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../objectmanager/frameworkObjects.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 /**
  * @brief	This class provides an interface to the global object manager.

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_TMTCSERVICES_VERIFICATIONREPORTER_H_
 #define FRAMEWORK_TMTCSERVICES_VERIFICATIONREPORTER_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tmtcservices/PusVerificationReport.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../tmtcservices/PusVerificationReport.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();

@@ -1,21 +1,21 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/ipc/MutexIF.h>
+#include "../housekeeping/HousekeepingPacketDownlink.h"
+#include "../datapool/DataSetIF.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../ipc/MutexIF.h"
 
-#include <framework/housekeeping/HousekeepingMessage.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapoollocal/HasLocalDataPoolIF.h>
-#include <framework/housekeeping/HousekeepingPacketDownlink.h>
-#include <framework/ipc/CommandMessage.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/ipc/MutexHelper.h>
+#include "../housekeeping/HousekeepingMessage.h"
+#include "../datapool/PoolEntry.h"
+#include "../datapoollocal/HasLocalDataPoolIF.h"
+#include "../ipc/CommandMessage.h"
+#include "../ipc/MessageQueueIF.h"
+#include "../ipc/MutexHelper.h"
 
 #include <map>
 
-class LocalPoolDataSetBase;
+class LocalDataSetBase;
 
 /**
  * @brief 	This class is the managing instance for local data pool.

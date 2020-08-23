@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_TASKS_FIXEDSLOTSEQUENCE_H_
 #define FRAMEWORK_TASKS_FIXEDSLOTSEQUENCE_H_
 
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/tasks/FixedSequenceSlot.h>
+#include "../objectmanager/SystemObject.h"
+#include "../tasks/FixedSequenceSlot.h"
 
 #include <set>
 

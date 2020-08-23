@@ -1,9 +1,9 @@
 #ifndef HASHEALTHIF_H_
 #define HASHEALTHIF_H_
 
-#include <framework/events/Event.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../events/Event.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 class HasHealthIF {
 public:

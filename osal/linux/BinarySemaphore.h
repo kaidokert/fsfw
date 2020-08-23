@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 #define FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tasks/SemaphoreIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../tasks/SemaphoreIF.h"
 
 extern "C" {
 #include <semaphore.h>

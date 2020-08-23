@@ -1,9 +1,9 @@
 #ifndef TCPACKETCHECK_H_
 #define TCPACKETCHECK_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tmtcpacket/pus/TcPacketStored.h>
-#include <framework/tmtcservices/PusVerificationReport.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../tmtcpacket/pus/TcPacketStored.h"
+#include "../tmtcservices/PusVerificationReport.h"
 /**
  * This class performs a formal packet check for incoming PUS Telecommand Packets.
  * Currently, it only checks if the APID and CRC are correct.

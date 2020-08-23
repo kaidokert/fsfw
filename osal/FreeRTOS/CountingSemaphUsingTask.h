@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_
 
-#include <framework/osal/FreeRTOS/CountingSemaphUsingTask.h>
-#include <framework/tasks/SemaphoreIF.h>
+#include "../../osal/FreeRTOS/CountingSemaphUsingTask.h"
+#include "../../tasks/SemaphoreIF.h"
 
 extern "C" {
 #include <freertos/FreeRTOS.h>

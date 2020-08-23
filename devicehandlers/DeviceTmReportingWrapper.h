@@ -1,9 +1,9 @@
 #ifndef DEVICETMREPORTINGWRAPPER_H_
 #define DEVICETMREPORTINGWRAPPER_H_
 
-#include <framework/action/HasActionsIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../action/HasActionsIF.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../serialize/SerializeIF.h"
 
 class DeviceTmReportingWrapper: public SerializeIF {
 public:

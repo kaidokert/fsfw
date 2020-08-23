@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_TIMEKEEPER_H_
 #define FRAMEWORK_OSAL_FREERTOS_TIMEKEEPER_H_
 
-#include <framework/timemanager/Clock.h>
+#include "../../timemanager/Clock.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

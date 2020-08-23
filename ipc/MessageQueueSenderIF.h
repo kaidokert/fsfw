@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
 
-#include <framework/ipc/MessageQueueMessageIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../ipc/MessageQueueMessageIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 class MessageQueueSenderIF {
 public:

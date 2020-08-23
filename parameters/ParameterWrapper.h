@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_PARAMETERS_PARAMETERWRAPPER_H_
 #define FRAMEWORK_PARAMETERS_PARAMETERWRAPPER_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serialize/SerializeIF.h"
 #include <stddef.h>
-#include <framework/globalfunctions/Type.h>
+#include "../globalfunctions/Type.h"
 
 /**
  * @brief

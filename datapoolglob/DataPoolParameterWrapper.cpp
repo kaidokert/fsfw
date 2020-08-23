@@ -1,7 +1,7 @@
-#include <framework/datapoolglob/GlobalDataSet.h>
-#include <framework/datapoolglob/DataPoolParameterWrapper.h>
-#include <framework/datapoolglob/PoolRawAccess.h>
-#include <framework/parameters/HasParametersIF.h>
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/DataPoolParameterWrapper.h"
+#include "../datapoolglob/PoolRawAccess.h"
+#include "../parameters/HasParametersIF.h"
 
 
 DataPoolParameterWrapper::DataPoolParameterWrapper() :

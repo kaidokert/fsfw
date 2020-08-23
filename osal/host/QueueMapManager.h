@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_OSAL_HOST_QUEUEMAP_H_
 #define FRAMEWORK_OSAL_HOST_QUEUEMAP_H_
 
-#include <framework/ipc/MessageQueueSenderIF.h>
-#include <framework/osal/host/MessageQueue.h>
+#include "../../ipc/MessageQueueSenderIF.h"
+#include "../../osal/host/MessageQueue.h"
 #include <unordered_map>
 #include <atomic>
 

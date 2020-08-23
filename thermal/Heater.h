@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_THERMAL_HEATER_H_
 #define FRAMEWORK_THERMAL_HEATER_H_
 
-#include <framework/devicehandlers/HealthDevice.h>
-#include <framework/parameters/ParameterHelper.h>
-#include <framework/power/PowerSwitchIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/timemanager/Countdown.h>
+#include "../devicehandlers/HealthDevice.h"
+#include "../parameters/ParameterHelper.h"
+#include "../power/PowerSwitchIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../timemanager/Countdown.h"
 #include <stdint.h>
 //class RedundantHeater;
 

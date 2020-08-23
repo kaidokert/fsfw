@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_MONITORING_ABSLIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_ABSLIMITMONITOR_H_
 
-#include <framework/monitoring/MonitorBase.h>
+#include "../monitoring/MonitorBase.h"
 #include <cmath>
 
 template<typename T>

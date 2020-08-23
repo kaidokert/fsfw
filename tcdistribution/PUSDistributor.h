@@ -1,12 +1,12 @@
 #ifndef FRAMEWORK_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
 #define FRAMEWORK_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tcdistribution/PUSDistributorIF.h>
-#include <framework/tcdistribution/TcDistributor.h>
-#include <framework/tcdistribution/TcPacketCheck.h>
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
-#include <framework/tmtcservices/VerificationReporter.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../tcdistribution/PUSDistributorIF.h"
+#include "../tcdistribution/TcDistributor.h"
+#include "../tcdistribution/TcPacketCheck.h"
+#include "../tmtcservices/AcceptsTelecommandsIF.h"
+#include "../tmtcservices/VerificationReporter.h"
 
 /**
  * This class accepts PUS Telecommands and forwards them to Application

@@ -1,6 +1,6 @@
-#include <framework/datapoollocal/LocalDataPoolManager.h>
-#include <framework/datapoollocal/LocalDataSet.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "LocalDataSet.h"
+#include "../datapoollocal/LocalDataPoolManager.h"
+#include "../serialize/SerializeAdapter.h"
 
 #include <cmath>
 #include <cstring>

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
 #define FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
 
-#include <framework/health/HasHealthIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../health/HasHealthIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 class ManagesHealthIF {
 public:
 	virtual ~ManagesHealthIF() {

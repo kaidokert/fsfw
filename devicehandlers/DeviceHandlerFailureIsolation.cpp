@@ -1,9 +1,9 @@
-#include <framework/devicehandlers/DeviceHandlerBase.h>
-#include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
-#include <framework/health/HealthTableIF.h>
-#include <framework/power/Fuse.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/thermal/ThermalComponentIF.h>
+#include "../devicehandlers/DeviceHandlerBase.h"
+#include "../devicehandlers/DeviceHandlerFailureIsolation.h"
+#include "../health/HealthTableIF.h"
+#include "../power/Fuse.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../thermal/ThermalComponentIF.h"
 
 object_id_t DeviceHandlerFailureIsolation::powerConfirmationId = 0;
 

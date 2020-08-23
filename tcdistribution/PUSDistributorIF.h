@@ -1,8 +1,8 @@
 #ifndef PUSDISTRIBUTORIF_H_
 #define PUSDISTRIBUTORIF_H_
 
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../tmtcservices/AcceptsTelecommandsIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 /**
  * This interface allows PUS Services to register themselves at a PUS Distributor.
  * \ingroup tc_distribution

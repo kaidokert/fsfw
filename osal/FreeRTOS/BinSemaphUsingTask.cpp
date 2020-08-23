@@ -1,6 +1,6 @@
-#include <framework/osal/FreeRTOS/BinSemaphUsingTask.h>
-#include <framework/osal/FreeRTOS/TaskManagement.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../osal/FreeRTOS/BinSemaphUsingTask.h"
+#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 	handle = TaskManagement::getCurrentTaskHandle();

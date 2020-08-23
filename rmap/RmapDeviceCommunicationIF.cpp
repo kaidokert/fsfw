@@ -1,5 +1,5 @@
-#include <framework/rmap/RmapDeviceCommunicationIF.h>
-#include <framework/rmap/RMAP.h>
+#include "../rmap/RmapDeviceCommunicationIF.h"
+#include "../rmap/RMAP.h"
 
 //TODO Cast here are all potential bugs
 RmapDeviceCommunicationIF::~RmapDeviceCommunicationIF() {

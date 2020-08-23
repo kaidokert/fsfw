@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_
 #define FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_
 
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/osal/linux/TmTcUnixUdpBridge.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../objectmanager/SystemObject.h"
+#include "../../osal/linux/TmTcUnixUdpBridge.h"
+#include "../../tasks/ExecutableObjectIF.h"
 
 #include <sys/socket.h>
 #include <vector>

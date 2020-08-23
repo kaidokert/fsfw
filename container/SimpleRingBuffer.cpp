@@ -1,4 +1,4 @@
-#include <framework/container/SimpleRingBuffer.h>
+#include "../container/SimpleRingBuffer.h"
 #include <cstring>
 
 SimpleRingBuffer::SimpleRingBuffer(const size_t size, bool overwriteOld,
@@ -42,12 +42,19 @@ ReturnValue_t SimpleRingBuffer::getFreeElement(uint8_t **writePointer,
             excessBytes = amount - amountTillWrap;
         }
         *writePointer = &buffer[write];
-        incrementWrite(amount);
         return HasReturnvaluesIF::RETURN_OK;
     }
     else {
         return HasReturnvaluesIF::RETURN_FAILED;
     }
+}
+
+void SimpleRingBuffer::confirmBytesWritten(size_t amount) {
+	if(getExcessBytes() > 0) {
+		moveExcessBytesToStart();
+	}
+	incrementWrite(amount);
+
 }
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
@@ -71,7 +78,7 @@ ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
 
 ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, size_t amount,
 		bool incrementReadPtr, bool readRemaining, size_t* trueAmount) {
-	size_t availableData = availableReadData(READ_PTR);
+	size_t availableData = getAvailableReadData(READ_PTR);
 	size_t amountTillWrap = readTillWrap(READ_PTR);
 	if (availableData < amount) {
 		if (readRemaining) {
@@ -110,7 +117,7 @@ void SimpleRingBuffer::moveExcessBytesToStart() {
 
 ReturnValue_t SimpleRingBuffer::deleteData(size_t amount,
 		bool deleteRemaining, size_t* trueAmount) {
-	size_t availableData = availableReadData(READ_PTR);
+	size_t availableData = getAvailableReadData(READ_PTR);
 	if (availableData < amount) {
 		if (deleteRemaining) {
 			amount = availableData;
@@ -124,4 +131,5 @@ ReturnValue_t SimpleRingBuffer::deleteData(size_t amount,
 	incrementRead(amount, READ_PTR);
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
 

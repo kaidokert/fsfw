@@ -1,6 +1,6 @@
 #include "CpuUsage.h"
-#include <framework/serialize/SerialArrayListAdapter.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../../serialize/SerialArrayListAdapter.h"
+#include "../../serialize/SerializeAdapter.h"
 #include <string.h>
 
 extern "C" {

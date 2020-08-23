@@ -1,7 +1,7 @@
 #ifndef OS_LINUX_MUTEX_H_
 #define OS_LINUX_MUTEX_H_
 
-#include <framework/ipc/MutexIF.h>
+#include "../../ipc/MutexIF.h"
 
 extern "C" {
 #include <pthread.h>

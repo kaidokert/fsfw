@@ -1,10 +1,10 @@
 #ifndef POOLRAWACCESS_H_
 #define POOLRAWACCESS_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntryIF.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/globalfunctions/Type.h>
+#include "../datapool/DataSetIF.h"
+#include "../datapool/PoolEntryIF.h"
+#include "../datapool/PoolVariableIF.h"
+#include "../globalfunctions/Type.h"
 
 /**
  * @brief This class allows accessing Data Pool variables as raw bytes.

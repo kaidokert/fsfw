@@ -1,5 +1,5 @@
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/tasks/FixedSequenceSlot.h>
+#include "../objectmanager/SystemObjectIF.h"
+#include "../tasks/FixedSequenceSlot.h"
 #include <cstddef>
 
 FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,

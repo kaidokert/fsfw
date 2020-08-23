@@ -1,14 +1,14 @@
 #ifndef FRAMEWORK_HEALTH_HEALTHHELPER_H_
 #define FRAMEWORK_HEALTH_HEALTHHELPER_H_
 
-#include <framework/events/EventManagerIF.h>
-#include <framework/events/EventReportingProxyIF.h>
-#include <framework/health/HasHealthIF.h>
-#include <framework/health/HealthMessage.h>
-#include <framework/health/HealthTableIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../events/EventManagerIF.h"
+#include "../events/EventReportingProxyIF.h"
+#include "../health/HasHealthIF.h"
+#include "../health/HealthMessage.h"
+#include "../health/HealthTableIF.h"
+#include "../ipc/MessageQueueIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 /**
  * Helper class for Objects that implement HasHealthIF

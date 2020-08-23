@@ -1,5 +1,5 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tmstorage/TmStoreMessage.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../tmstorage/TmStoreMessage.h"
 
 TmStoreMessage::~TmStoreMessage() {
 	

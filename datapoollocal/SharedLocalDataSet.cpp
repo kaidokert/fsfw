@@ -1,4 +1,4 @@
-#include <framework/datapoollocal/SharedLocalDataSet.h>
+#include "SharedLocalDataSet.h"
 
 SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, object_id_t owner,
         const size_t maxSize): SystemObject(objectId),

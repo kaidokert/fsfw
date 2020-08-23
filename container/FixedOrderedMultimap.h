@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 #define FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 
-#include <framework/container/ArrayList.h>
+#include "../container/ArrayList.h"
 #include <cstring>
 #include <set>
 
@@ -166,6 +166,6 @@ private:
 	}
 };
 
-#include <framework/container/FixedOrderedMultimap.tpp>
+#include "FixedOrderedMultimap.tpp"
 
 #endif /* FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_ */

@@ -1,5 +1,5 @@
-#include <framework/health/HealthHelper.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../health/HealthHelper.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId) :
 		objectId(objectId), owner(owner) {

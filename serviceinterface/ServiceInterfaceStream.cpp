@@ -1,4 +1,4 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 ServiceInterfaceStream::ServiceInterfaceStream(std::string setMessage,
 		bool addCrToPreamble, bool buffered, bool errStream, uint16_t port) :
