@@ -1043,8 +1043,6 @@ private:
 	/** the object used to set power switches */
 	PowerSwitchIF *powerSwitcher = nullptr;
 
-	/** Cached for initialize() */
-	static object_id_t defaultHkDestination;
 	/** HK destination can also be set individually */
 	object_id_t hkDestination = objects::NO_OBJECT;
 

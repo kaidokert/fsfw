@@ -8,6 +8,8 @@
 #include <array>
 #include <cmath>
 
+object_id_t LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
+
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
         appendValidityBuffer(appendValidityBuffer) {
@@ -31,28 +33,12 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
 }
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse,
-        object_id_t hkDestination, uint8_t nonDiagInvlFactor) {
+        uint8_t nonDiagInvlFactor) {
     if(queueToUse == nullptr) {
         sif::error << "LocalDataPoolManager::initialize: Supplied queue "
                 "invalid!" << std::endl;
     }
     hkQueue = queueToUse;
-
-    if(hkDestination == objects::NO_OBJECT) {
-        return initializeHousekeepingPoolEntriesOnce();
-    }
-
-    AcceptsHkPacketsIF* hkReceiver =
-            objectManager->get<AcceptsHkPacketsIF>(hkDestination);
-    if(hkReceiver != nullptr) {
-        setHkPacketDestination(hkReceiver->getHkQueue());
-    }
-    else {
-        sif::warning << "LocalDataPoolManager::initialize: Could not retrieve"
-                " queue ID from HK destination object ID. " << std::flush;
-        sif::warning << "Make sure it exists and the object impements "
-                "AcceptsHkPacketsIF!" << std::endl;
-    }
 
     setNonDiagnosticIntervalFactor(nonDiagInvlFactor);
     diagnosticMinimumInterval = owner->getPeriodicOperationFrequency();
@@ -228,7 +214,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
             performPeriodicHkGeneration(receiver);
             break;
         }
-        case(ReportingType::ON_UPDATE): {
+        case(ReportingType::UPDATE_SNAPSHOT): {
             // check whether data has changed and send messages in case it has.
             break;
         }

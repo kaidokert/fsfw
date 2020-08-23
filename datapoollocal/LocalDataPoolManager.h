@@ -15,7 +15,12 @@
 
 #include <map>
 
+namespace Factory {
+void setStaticFrameworkObjectIds();
+}
+
 class LocalDataSetBase;
+
 
 /**
  * @brief 	This class is the managing instance for local data pool.
@@ -40,6 +45,7 @@ class LocalDataPoolManager {
 	template<typename T, uint16_t vecSize>
 	friend class LocalPoolVector;
 	friend class LocalPoolDataSetBase;
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
@@ -71,7 +77,7 @@ public:
 	 * @return
 	 */
 	ReturnValue_t initialize(MessageQueueIF* queueToUse,
-	        object_id_t hkDestination, uint8_t nonDiagInvlFactor = 5);
+			uint8_t nonDiagInvlFactor = 5);
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
@@ -136,9 +142,10 @@ public:
     enum class ReportingType: uint8_t {
         // Periodic generation of HK packets.
         PERIODIC,
+		UPDATE_NOTIFICATION,
         // Notification will be sent out as message.
         // Data is accessed via shared data set or multiple local data sets.
-        ON_UPDATE,
+        UPDATE_SNAPSHOT,
     };
 
     /* Copying forbidden */
@@ -156,6 +163,9 @@ private:
     uint8_t nonDiagnosticIntervalFactor = 0;
     dur_millis_t regularMinimumInterval = 0;
     dur_millis_t diagnosticMinimumInterval = 0;
+
+	/** Default receiver for periodic HK packets */
+	static object_id_t defaultHkDestination;
 
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {

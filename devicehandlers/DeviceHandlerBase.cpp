@@ -19,7 +19,6 @@
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
-object_id_t DeviceHandlerBase::defaultHkDestination = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * comCookie,
@@ -194,11 +193,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
-	if(hkDestination == objects::NO_OBJECT) {
-		hkDestination = defaultHkDestination;
-	}
-
-	result = hkManager.initialize(commandQueue, hkDestination);
+	result = hkManager.initialize(commandQueue);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
