@@ -140,11 +140,12 @@ public:
      *  full dataset updates.
      */
     enum class ReportingType: uint8_t {
-        // Periodic generation of HK packets.
+        //! Periodic generation of HK packets.
         PERIODIC,
+		//! Update notification will be sent out as message.
 		UPDATE_NOTIFICATION,
-        // Notification will be sent out as message.
-        // Data is accessed via shared data set or multiple local data sets.
+        //! Notification will be sent out as message and a snapshot of the
+        //! current data will be generated.
         UPDATE_SNAPSHOT,
     };
 
