@@ -5,32 +5,16 @@
 #include <cmath>
 #include <cstring>
 
-LocalDataSet::LocalDataSet(HasLocalDataPoolIF *hkOwner,
-        const size_t maxNumberOfVariables):
-        LocalPoolDataSetBase(hkOwner,poolVarList.data(), maxNumberOfVariables) {
-    poolVarList.reserve(maxNumberOfVariables);
-    poolVarList.resize(maxNumberOfVariables);
-    if(hkOwner == nullptr) {
-        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
-                << std::endl;
-        return;
-    }
-    hkManager = hkOwner->getHkManagerHandle();
+LocalDataSet::LocalDataSet(HasLocalDataPoolIF *hkOwner, uint32_t setId,
+        const size_t maxNumberOfVariables): poolVarList(maxNumberOfVariables),
+        LocalPoolDataSetBase(hkOwner, setId, nullptr, maxNumberOfVariables) {
+	this->setContainer(poolVarList.data());
 }
 
-LocalDataSet::LocalDataSet(object_id_t ownerId,
-        const size_t maxNumberOfVariables):
-        LocalPoolDataSetBase(ownerId, poolVarList.data(), maxNumberOfVariables)  {
-    poolVarList.reserve(maxNumberOfVariables);
-    poolVarList.resize(maxNumberOfVariables);
-    HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
-            ownerId);
-    if(hkOwner == nullptr) {
-        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
-                << std::endl;
-        return;
-    }
-    hkManager = hkOwner->getHkManagerHandle();
+LocalDataSet::LocalDataSet(sid_t sid, const size_t maxNumberOfVariables):
+        LocalPoolDataSetBase(sid, nullptr, maxNumberOfVariables),
+		poolVarList(maxNumberOfVariables) {
+	this->setContainer(poolVarList.data());
 }
 
 LocalDataSet::~LocalDataSet() {}

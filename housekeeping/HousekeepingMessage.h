@@ -12,6 +12,10 @@ union sid_t {
 			std::numeric_limits<uint64_t>::max();
 	sid_t(): raw(INVALID_ADDRESS) {}
 
+	sid_t(object_id_t objectId, uint32_t setId):
+			objectId(objectId),
+			ownerSetId(setId) {}
+
 	struct {
 		object_id_t objectId ;
 		/**

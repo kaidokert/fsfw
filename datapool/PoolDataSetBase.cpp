@@ -5,9 +5,6 @@ PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
         const size_t maxFillCount):
         registeredVariables(registeredVariablesArray),
         maxFillCount(maxFillCount) {
-	for (uint8_t count = 0; count < maxFillCount; count++) {
-		registeredVariables[count] = nullptr;
-	}
 }
 
 PoolDataSetBase::~PoolDataSetBase() {}

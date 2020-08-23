@@ -30,28 +30,25 @@ class LocalDataPoolManager;
  *
  * @ingroup data_pool
  */
-// todo: make withValidityBuffer a member
 class LocalPoolDataSetBase: public PoolDataSetBase {
 public:
 	/**
 	 * @brief	Constructor for the creator of local pool data.
-	 * 			The constructor simply sets the fill_count to zero and sets
-	 *  		the state to "uninitialized".
 	 */
 	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
-	        PoolVariableIF** registeredVariablesArray,
+			uint32_t setId, PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables);
 
 	/**
 	 * @brief	Constructor for users of local pool data. The passed pool
 	 * 			owner should implement the HasHkPoolParametersIF.
-	 * 			The constructor simply sets the fill_count to zero and sets
-	 *  		the state to "uninitialized".
 	 * @details
-	 *
+	 * @param sid Unique identifier of dataset consisting of object ID and
+	 * set ID.
+	 * @param registeredVariablesArray
+	 * @param maxNumberOfVariables
 	 */
-	LocalPoolDataSetBase(object_id_t ownerId,
-	        PoolVariableIF** registeredVariablesArray,
+	LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables);
 
 	/**
@@ -96,6 +93,7 @@ public:
 	bool isValid() const override;
 
 protected:
+	sid_t sid;
 	/**
 	 * If the valid state of a dataset is always relevant to the whole
 	 * data set we can use this flag.
