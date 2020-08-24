@@ -30,15 +30,16 @@ ReturnValue_t SerialBufferAdapter<T>::serialize(uint8_t** buffer, size_t* size,
 	}
 	if (*size + serializedLength > maxSize) {
 		return BUFFER_TOO_SHORT;
-	} else {
+	} 
+	else {
 		if (serializeLength) {
 			SerializeAdapter::serialize(&bufferLength, buffer, size,
 					maxSize, streamEndianness);
 		}
-		if (constBuffer != nullptr) {
+		if (this->constBuffer != nullptr) {
 			memcpy(*buffer, this->constBuffer, bufferLength);
 		}
-		else if (buffer != nullptr) {
+		else if (this->buffer != nullptr) {
 			// This will propably be never reached, constBuffer should always be
 			// set if non-const buffer is set.
 			memcpy(*buffer, this->buffer, bufferLength);
