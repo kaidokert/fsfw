@@ -33,7 +33,7 @@ SimpleRingBuffer::~SimpleRingBuffer() {
 
 ReturnValue_t SimpleRingBuffer::getFreeElement(uint8_t **writePointer,
         size_t amount) {
-    if (availableWriteSpace() >= amount or overwriteOld) {
+    if ((availableWriteSpace() >= amount) or overwriteOld) {
         size_t amountTillWrap = writeTillWrap();
         if (amountTillWrap < amount) {
             if((amount - amountTillWrap + excessBytes) > maxExcessBytes) {
@@ -59,7 +59,7 @@ void SimpleRingBuffer::confirmBytesWritten(size_t amount) {
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data,
 		size_t amount) {
-	if (availableWriteSpace() >= amount or overwriteOld) {
+	if ((availableWriteSpace() >= amount) or overwriteOld) {
 		size_t amountTillWrap = writeTillWrap();
 		if (amountTillWrap >= amount) {
 			// remaining size in buffer is sufficient to fit full amount.
