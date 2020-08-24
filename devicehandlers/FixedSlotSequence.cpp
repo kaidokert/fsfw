@@ -1,5 +1,5 @@
-#include <framework/devicehandlers/FixedSlotSequence.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "FixedSlotSequence.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
 		lengthMs(setLengthMs) {

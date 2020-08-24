@@ -1,12 +1,12 @@
 #ifndef MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 #define MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
-#include <framework/thermal/ThermalComponentIF.h>
-#include <framework/thermal/AbstractTemperatureSensor.h>
-#include <framework/thermal/ThermalModule.h>
-#include <framework/thermal/ThermalMonitor.h>
+#include "../datapool/DataSet.h"
+#include "../datapool/PoolVariable.h"
+#include "ThermalComponentIF.h"
+#include "AbstractTemperatureSensor.h"
+#include "ThermalModule.h"
+#include "ThermalMonitor.h"
 
 class CoreComponent: public ThermalComponentIF {
 public:

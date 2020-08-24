@@ -11,9 +11,9 @@
 #ifndef DATAPOOL_H_
 #define DATAPOOL_H_
 
-#include <framework/datapool/PoolEntry.h>
-#include <framework/globalfunctions/Type.h>
-#include <framework/ipc/MutexIF.h>
+#include "PoolEntry.h"
+#include "../globalfunctions/Type.h"
+#include "../ipc/MutexIF.h"
 #include <map>
 
 /**

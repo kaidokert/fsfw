@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_TIMEMANAGER_CLOCK_H_
 #define FRAMEWORK_TIMEMANAGER_CLOCK_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/ipc/MutexFactory.h>
-#include <framework/globalfunctions/timevalOperations.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MutexFactory.h"
+#include "../globalfunctions/timevalOperations.h"
 
 #include <cstdint>
 #include <sys/time.h>

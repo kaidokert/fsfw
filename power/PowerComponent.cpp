@@ -5,7 +5,7 @@
  * @author	baetz
  */
 
-#include <framework/power/PowerComponent.h>
+#include "PowerComponent.h"
 
 PowerComponent::PowerComponent() :
 		deviceObjectId(0), switchId1(0xFF), switchId2(0xFF), doIHaveTwoSwitches(
@@ -17,18 +17,18 @@ PowerComponent::PowerComponent(object_id_t setId, uint8_t moduleId, float min, f
 				twoSwitches), min(min), max(max), moduleId(moduleId) {
 }
 
-ReturnValue_t PowerComponent::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
-	ReturnValue_t result = SerializeAdapter<float>::serialize(&min, buffer,
-			size, max_size, bigEndian);
+ReturnValue_t PowerComponent::serialize(uint8_t** buffer, size_t* size,
+		size_t maxSize, Endianness streamEndianness) const {
+	ReturnValue_t result = SerializeAdapter::serialize(&min, buffer,
+			size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter<float>::serialize(&max, buffer, size, max_size,
-			bigEndian);
+	return SerializeAdapter::serialize(&max, buffer, size, maxSize,
+			streamEndianness);
 }
 
-uint32_t PowerComponent::getSerializedSize() const {
+size_t PowerComponent::getSerializedSize() const {
 	return sizeof(min) + sizeof(max);
 }
 
@@ -56,14 +56,14 @@ float PowerComponent::getMax() {
 	return max;
 }
 
-ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, int32_t* size,
-bool bigEndian) {
-	ReturnValue_t result = SerializeAdapter<float>::deSerialize(&min, buffer,
-			size, bigEndian);
+ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, size_t* size,
+Endianness streamEndianness) {
+	ReturnValue_t result = SerializeAdapter::deSerialize(&min, buffer,
+			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter<float>::deSerialize(&max, buffer, size, bigEndian);
+	return SerializeAdapter::deSerialize(&max, buffer, size, streamEndianness);
 }
 
 ReturnValue_t PowerComponent::getParameter(uint8_t domainId,

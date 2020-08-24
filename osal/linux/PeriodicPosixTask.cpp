@@ -1,7 +1,7 @@
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../tasks/ExecutableObjectIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <errno.h>
-#include <framework/osal/linux/PeriodicPosixTask.h>
+#include "PeriodicPosixTask.h"
 
 PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_,
 		size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):
@@ -21,13 +21,16 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
 	return NULL;
 }
 
-ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
+ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object,
+        bool addTaskIF) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
-	if (newObject == NULL) {
+	if (newObject == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+	newObject->setTaskIF(this);
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

@@ -3,9 +3,9 @@
 
 // COULDDO: We could support blocking calls
 
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "MessageQueueMessage.h"
+#include "MessageQueueSenderIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 class MessageQueueIF {
 public:
 

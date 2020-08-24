@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_TMTCPACKET_PACKETMATCHER_SERVICEMATCHER_H_
 #define FRAMEWORK_TMTCPACKET_PACKETMATCHER_SERVICEMATCHER_H_
 
-#include <framework/globalfunctions/matching/SerializeableMatcherIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/tmtcpacket/pus/TmPacketMinimal.h>
+#include "../../globalfunctions/matching/SerializeableMatcherIF.h"
+#include "../../serialize/SerializeAdapter.h"
+#include "../../tmtcpacket/pus/TmPacketMinimal.h"
 
 class ServiceMatcher: public SerializeableMatcherIF<TmPacketMinimal*> {
 private:
@@ -22,16 +22,16 @@ public:
 			return false;
 		}
 	}
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return SerializeAdapter<uint8_t>::serialize(&service, buffer, size, max_size, bigEndian);
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		return SerializeAdapter::serialize(&service, buffer, size, maxSize, streamEndianness);
 	}
-	uint32_t getSerializedSize() const {
-		return SerializeAdapter<uint8_t>::getSerializedSize(&service);
+	size_t getSerializedSize() const {
+		return SerializeAdapter::getSerializedSize(&service);
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return SerializeAdapter<uint8_t>::deSerialize(&service, buffer, size, bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
+		return SerializeAdapter::deSerialize(&service, buffer, size, streamEndianness);
 	}
 };
 

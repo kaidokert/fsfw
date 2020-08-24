@@ -1,6 +1,6 @@
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/globalfunctions/Type.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../serialize/SerializeAdapter.h"
+#include "Type.h"
+#include "../serialize/SerializeAdapter.h"
 
 Type::Type() :
 		actualType(UNKNOWN_TYPE) {
@@ -59,8 +59,8 @@ uint8_t Type::getSize() const {
 	}
 }
 
-ReturnValue_t Type::serialize(uint8_t** buffer, uint32_t* size,
-		const uint32_t max_size, bool bigEndian) const {
+ReturnValue_t Type::serialize(uint8_t** buffer, size_t* size,
+		size_t maxSize, Endianness streamEndianness) const {
 	uint8_t ptc;
 	uint8_t pfc;
 	ReturnValue_t result = getPtcPfc(&ptc, &pfc);
@@ -68,36 +68,36 @@ ReturnValue_t Type::serialize(uint8_t** buffer, uint32_t* size,
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::serialize(&ptc, buffer, size, max_size,
-			bigEndian);
+	result = SerializeAdapter::serialize(&ptc, buffer, size, maxSize,
+			streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::serialize(&pfc, buffer, size, max_size,
-			bigEndian);
+	result = SerializeAdapter::serialize(&pfc, buffer, size, maxSize,
+			streamEndianness);
 
 	return result;
 
 }
 
-uint32_t Type::getSerializedSize() const {
+size_t Type::getSerializedSize() const {
 	uint8_t dontcare = 0;
-	return 2 * SerializeAdapter<uint8_t>::getSerializedSize(&dontcare);
+	return 2 * SerializeAdapter::getSerializedSize(&dontcare);
 }
 
-ReturnValue_t Type::deSerialize(const uint8_t** buffer, int32_t* size,
-		bool bigEndian) {
+ReturnValue_t Type::deSerialize(const uint8_t** buffer, size_t* size,
+		Endianness streamEndianness) {
 	uint8_t ptc;
 	uint8_t pfc;
-	ReturnValue_t result = SerializeAdapter<uint8_t>::deSerialize(&ptc, buffer,
-			size, bigEndian);
+	ReturnValue_t result = SerializeAdapter::deSerialize(&ptc, buffer,
+			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
 
-	result = SerializeAdapter<uint8_t>::deSerialize(&pfc, buffer, size,
-			bigEndian);
+	result = SerializeAdapter::deSerialize(&pfc, buffer, size,
+			streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}

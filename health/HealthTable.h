@@ -1,9 +1,9 @@
 #ifndef HEALTHTABLE_H_
 #define HEALTHTABLE_H_
 
-#include <framework/health/HealthTableIF.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/ipc/MutexIF.h>
+#include "HealthTableIF.h"
+#include "../objectmanager/SystemObject.h"
+#include "../ipc/MutexIF.h"
 #include <map>
 
 typedef std::map<object_id_t, HasHealthIF::HealthState> HealthMap;
@@ -21,7 +21,7 @@ public:
 	virtual HasHealthIF::HealthState getHealth(object_id_t);
 
 	virtual uint32_t getPrintSize();
-	virtual void printAll(uint8_t *pointer, uint32_t maxSize);
+	virtual void printAll(uint8_t *pointer, size_t maxSize);
 
 protected:
 	MutexIF* mutex;

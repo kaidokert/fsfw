@@ -8,8 +8,8 @@
 #ifndef TIMEMESSAGE_H_
 #define TIMEMESSAGE_H_
 
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/timemanager/Clock.h>
+#include "../ipc/MessageQueueMessage.h"
+#include "Clock.h"
 #include <cstring>
 
 class TimeMessage : public MessageQueueMessage {

@@ -1,5 +1,5 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/osal/linux/PosixThread.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "PosixThread.h"
 #include <cstring>
 #include <errno.h>
 

@@ -1,4 +1,4 @@
-#include <framework/subsystem/modes/ModeStore.h>
+#include "ModeStore.h"
 
 #ifdef USE_MODESTORE
 

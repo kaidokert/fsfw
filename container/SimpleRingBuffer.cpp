@@ -1,5 +1,5 @@
-#include <framework/container/SimpleRingBuffer.h>
-#include <cstring>
+#include "SimpleRingBuffer.h"
+#include <string.h>
 
 SimpleRingBuffer::SimpleRingBuffer(const size_t size, bool overwriteOld) :
 		RingBufferBase<>(0, size, overwriteOld) {

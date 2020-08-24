@@ -1,16 +1,18 @@
 #ifndef FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 #define FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 
-#include <framework/tmtcservices/AcceptsTelemetryIF.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/objectmanager/SystemObject.h>
+#include "../objectmanager/SystemObject.h"
+#include "AcceptsTelemetryIF.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../ipc/MessageQueueIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "AcceptsTelecommandsIF.h"
 
-#include <framework/tmtcservices/TmTcMessage.h>
-#include <framework/container/FIFO.h>
+#include "../container/FIFO.h"
+#include "TmTcMessage.h"
 
 class TmTcBridge : public AcceptsTelemetryIF,
+		public AcceptsTelecommandsIF,
 		public ExecutableObjectIF,
 		public HasReturnvaluesIF,
 		public SystemObject {
@@ -22,7 +24,8 @@ public:
 	static constexpr uint8_t DEFAULT_STORED_DATA_SENT_PER_CYCLE = 5;
 	static constexpr uint8_t DEFAULT_DOWNLINK_PACKETS_STORED = 10;
 
-	TmTcBridge(object_id_t objectId_, object_id_t ccsdsPacketDistributor_);
+	TmTcBridge(object_id_t objectId, object_id_t tcDestination,
+			object_id_t tmStoreId, object_id_t tcStoreId);
 	virtual ~TmTcBridge();
 
 	/**
@@ -57,44 +60,41 @@ public:
 	 */
 	virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
 
-	/**
-	 * Return TMTC Reception Queue
-	 * @param virtualChannel
-	 * @return
-	 */
-	MessageQueueId_t getReportReceptionQueue(
+
+	/** AcceptsTelemetryIF override */
+	virtual MessageQueueId_t getReportReceptionQueue(
 			uint8_t virtualChannel = 0) override;
+
+	/** AcceptsTelecommandsIF override */
+	virtual uint16_t getIdentifier() override;
+	virtual MessageQueueId_t getRequestQueue() override;
+
 protected:
+	//! Cached for initialize function.
+	object_id_t tmStoreId = objects::NO_OBJECT;
+	object_id_t tcStoreId = objects::NO_OBJECT;
+	object_id_t tcDestination = objects::NO_OBJECT;
+
 	//! Used to send and receive TMTC messages.
-	//! TmTcMessage is used to transport messages between tasks.
-	MessageQueueIF* TmTcReceptionQueue = nullptr;
-	StorageManagerIF* tcStore = nullptr;
+	//! The TmTcMessage class is used to transport messages between tasks.
+	MessageQueueIF* tmTcReceptionQueue = nullptr;
+
 	StorageManagerIF* tmStore = nullptr;
-	object_id_t ccsdsPacketDistributor = 0;
-	//! Used to specify whether communication link is up
-	bool communicationLinkUp = false;
+	StorageManagerIF* tcStore = nullptr;
+
+	//! Used to specify whether communication link is up. Will be true
+	//! by default, so telemetry will be handled immediately.
+	bool communicationLinkUp = true;
 	bool tmStored = false;
 
 	/**
 	 * @brief 	Handle TC reception
 	 * @details
 	 * Default implementation provided, but is empty.
-	 * Child handler should override this in most cases orsend TC to the
-	 * TC distributor directly with the address of the reception queue by
-	 * calling getReportRecptionQueue()
+	 * In most cases, TC reception will be handled in a separate task anyway.
 	 * @return
 	 */
 	virtual ReturnValue_t handleTc();
-
-	/**
-	 * Implemented by child class. Perform receiving of Telecommand,
-	 * for example by implementing specific drivers or wrappers,
-	 * e.g. UART Communication or an ethernet stack
-	 * @param recvBuffer [out] Received data
-	 * @param size [out] Size of received data
-	 * @return
-	 */
-	virtual ReturnValue_t receiveTc(uint8_t ** recvBuffer, size_t * size) = 0;
 
 	/**
 	 * Handle Telemetry. Default implementation provided.
@@ -104,7 +104,8 @@ protected:
 	virtual ReturnValue_t handleTm();
 
 	/**
-	 * Read the TM Queue and send TM if necessary. Default implementation provided
+	 * Read the TM Queue and send TM if necessary.
+	 * Default implementation provided
 	 * @return
 	 */
 	virtual ReturnValue_t handleTmQueue();
@@ -117,7 +118,8 @@ protected:
 
 	/**
 	 * Implemented by child class. Perform sending of Telemetry by implementing
-	 * communication drivers or wrappers, e.g. UART communication or lwIP stack.
+	 * communication drivers or wrappers, e.g. serial communication or a socket
+	 * call.
 	 * @param data
 	 * @param dataLen
 	 * @return

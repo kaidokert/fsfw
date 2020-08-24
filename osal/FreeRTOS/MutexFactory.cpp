@@ -1,4 +1,4 @@
-#include <framework/ipc/MutexFactory.h>
+#include "../../ipc/MutexFactory.h"
 
 #include "../FreeRTOS/Mutex.h"
 

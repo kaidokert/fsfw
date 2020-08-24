@@ -1,6 +1,6 @@
-#include <framework/datapool/PoolEntry.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/globalfunctions/arrayprinter.h>
+#include "PoolEntry.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../globalfunctions/arrayprinter.h"
 #include <cstring>
 
 template <typename T>

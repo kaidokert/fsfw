@@ -1,6 +1,6 @@
-#include <framework/subsystem/SubsystemBase.h>
-#include <framework/devicehandlers/ChildHandlerBase.h>
-#include <framework/subsystem/SubsystemBase.h>
+#include "../subsystem/SubsystemBase.h"
+#include "ChildHandlerBase.h"
+#include "../subsystem/SubsystemBase.h"
 
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * comCookie,
@@ -35,7 +35,7 @@ ReturnValue_t ChildHandlerBase::initialize() {
 		parent->registerChild(getObjectId());
 	}
 
-	healthHelper.setParentQeueue(parentQueue);
+	healthHelper.setParentQueue(parentQueue);
 
 	modeHelper.setParentQueue(parentQueue);
 
