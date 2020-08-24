@@ -59,7 +59,7 @@ public:
 	 * 	@param
 	 */
 	void addSlot(object_id_t handlerId, uint32_t setTime, int8_t setSequenceId,
-			PeriodicTaskIF* executingTask);
+			ExecutableObjectIF* executableObject, PeriodicTaskIF* executingTask);
 
 	/**
 	 * Checks if the current slot shall be executed immediately after the one before.
@@ -125,11 +125,14 @@ public:
 	SlotListIter current;
 
 	/**
-	 * Iterate through slotList and check successful creation.
+	 * @brief   Check and initialize slot list.
+	 * @details
 	 * Checks if timing is ok (must be ascending) and if all handlers were found.
+	 * Also calls any initialization steps which are required after task
+	 * creation.
 	 * @return
 	 */
-	ReturnValue_t checkSequence() const;
+	ReturnValue_t checkAndInitializeSequence() const;
 
 protected:
 

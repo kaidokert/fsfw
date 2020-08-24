@@ -387,7 +387,8 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = false,
+			uint16_t maxDelayCycles, PoolDataSetIF* replyDataSet = nullptr,
+			size_t replyLen = 0, bool periodic = false,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 
 	/**
@@ -401,7 +402,8 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, size_t replyLen = 0, bool periodic = false);
+			uint16_t maxDelayCycles, PoolDataSetIF* dataSet = nullptr,
+			size_t replyLen = 0, bool periodic = false);
 
 	/**
 	 * @brief 	A simple command to add a command to the commandList.
@@ -428,6 +430,9 @@ protected:
 	ReturnValue_t updateReplyMapEntry(DeviceCommandId_t deviceReply,
 			uint16_t delayCycles, uint16_t maxDelayCycles,
 			bool periodic = false);
+
+	ReturnValue_t setReplyDataset(DeviceCommandId_t replyId,
+	        PoolDataSetIF* dataset);
 
 	/**
 	 * @brief   Can be implemented by child handler to
@@ -482,8 +487,8 @@ protected:
 	 * @param localDataPoolMap
 	 * @return
 	 */
-	virtual ReturnValue_t initializePoolEntries(
-				LocalDataPool& localDataPoolMap) override;
+	virtual ReturnValue_t initializeLocalDataPool(LocalDataPool& localDataPoolMap,
+				LocalDataPoolManager& poolManager) override;
 
 	/** Get the HK manager object handle */
 	virtual LocalDataPoolManager* getHkManagerHandle() override;
@@ -656,7 +661,7 @@ protected:
 		//! The dataset used to access housekeeping data related to the
 		//! respective device reply. Will point to a dataset held by
 		//! the child handler (if one is specified)
-		DataSetIF* dataSet = nullptr;
+		PoolDataSetIF* dataSet = nullptr;
 		//! The command that expects this reply.
 		DeviceCommandMap::iterator command;
 	};
@@ -1197,7 +1202,7 @@ private:
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
 
 	virtual ReturnValue_t initializeAfterTaskCreation() override;
-	DataSetIF* getDataSetHandle(sid_t sid) override;
+	virtual DataSetIF* getDataSetHandle(sid_t sid) override;
 
 	void parseReply(const uint8_t* receivedData,
 	            size_t receivedDataLen);

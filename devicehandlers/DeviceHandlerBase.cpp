@@ -391,24 +391,28 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 
 ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
 		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
-		size_t replyLen, bool periodic, bool hasDifferentReplyId,
-		DeviceCommandId_t replyId) {
+		PoolDataSetIF* replyDataSet, size_t replyLen, bool periodic,
+		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
 	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
 	if (hasDifferentReplyId) {
-		return insertInReplyMap(replyId, maxDelayCycles, replyLen, periodic);
+		return insertInReplyMap(replyId, maxDelayCycles,
+		        replyDataSet, replyLen, periodic);
 	} else {
-		return insertInReplyMap(deviceCommand, maxDelayCycles, replyLen, periodic);
+		return insertInReplyMap(deviceCommand, maxDelayCycles,
+		        replyDataSet, replyLen, periodic);
 	}
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, size_t replyLen, bool periodic) {
+		uint16_t maxDelayCycles, PoolDataSetIF* dataSet,
+		size_t replyLen, bool periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
 	info.periodic = periodic;
 	info.delayCycles = 0;
 	info.replyLen = replyLen;
+	info.dataSet = dataSet;
 	info.command = deviceCommandMap.end();
 	auto resultPair = deviceReplyMap.emplace(replyId, info);
 	if (resultPair.second) {
@@ -434,13 +438,12 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(
 
 ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
 		uint16_t delayCycles, uint16_t maxDelayCycles, bool periodic) {
-	std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
-			deviceReplyMap.find(deviceReply);
-	if (iter == deviceReplyMap.end()) {
+	auto replyIter = deviceReplyMap.find(deviceReply);
+	if (replyIter == deviceReplyMap.end()) {
 		triggerEvent(INVALID_DEVICE_COMMAND, deviceReply);
 		return RETURN_FAILED;
 	} else {
-		DeviceReplyInfo *info = &(iter->second);
+		DeviceReplyInfo *info = &(replyIter->second);
 		if (maxDelayCycles != 0) {
 			info->maxDelayCycles = maxDelayCycles;
 		}
@@ -448,6 +451,17 @@ ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceRep
 		info->periodic = periodic;
 		return RETURN_OK;
 	}
+}
+
+
+ReturnValue_t DeviceHandlerBase::setReplyDataset(DeviceCommandId_t replyId,
+        PoolDataSetIF *dataSet) {
+    auto replyIter = deviceReplyMap.find(replyId);
+    if(replyIter == deviceReplyMap.end()) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+    replyIter->second.dataSet = dataSet;
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void DeviceHandlerBase::callChildStatemachine() {
@@ -1363,8 +1377,9 @@ void DeviceHandlerBase::debugInterface(uint8_t positionTracker,
 void DeviceHandlerBase::performOperationHook() {
 }
 
-ReturnValue_t DeviceHandlerBase::initializePoolEntries(
-		LocalDataPool &localDataPoolMap) {
+ReturnValue_t DeviceHandlerBase::initializeLocalDataPool(
+		LocalDataPool &localDataPoolMap,
+        LocalDataPoolManager& poolManager) {
 	return RETURN_OK;
 }
 
@@ -1379,6 +1394,7 @@ ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     if(executingTask != nullptr) {
         pstIntervalMs = executingTask->getPeriodMs();
     }
+    this->hkManager.initializeAfterTaskCreation();
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -1399,3 +1415,4 @@ object_id_t DeviceHandlerBase::getObjectId() const {
 dur_millis_t DeviceHandlerBase::getPeriodicOperationFrequency() const {
     return pstIntervalMs;
 }
+

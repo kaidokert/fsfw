@@ -16,21 +16,23 @@ class PeriodicTaskIF;
 class FixedSequenceSlot {
 public:
 	FixedSequenceSlot( object_id_t handlerId, uint32_t setTimeMs,
-			int8_t setSequenceId, PeriodicTaskIF* executingTask );
+			int8_t setSequenceId, ExecutableObjectIF* executableObject,
+			PeriodicTaskIF* executingTask);
 	virtual ~FixedSequenceSlot();
 
 	/**
-	 * @brief	Handler identifies which device handler object is executed in this slot.
+	 * @brief	Handler identifies which object is executed in this slot.
 	 */
-	ExecutableObjectIF*	handler = nullptr;
+	ExecutableObjectIF*	executableObject = nullptr;
 
 	/**
 	 * @brief	This attribute defines when a device handler object is executed.
-	 *
-	 * @details	The pollingTime attribute identifies the time the handler is executed in ms.
-	 * 			It must be smaller than the period length of the polling sequence.
+	 * @details
+	 * The pollingTime attribute identifies the time the handler is
+	 * executed in ms. It must be smaller than the period length of the
+	 * polling sequence.
 	 */
-	uint32_t	pollingTimeMs;
+	uint32_t pollingTimeMs;
 
 	/**
 	 * @brief	This value defines the type of device communication.

@@ -75,8 +75,9 @@ public:
 	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
 	 * @return
 	 */
-	ReturnValue_t initialize(MessageQueueIF* queueToUse,
-			uint8_t nonDiagInvlFactor = 5);
+	ReturnValue_t initialize(MessageQueueIF* queueToUse);
+
+	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
 
 	/**
 	 * @return
@@ -108,7 +109,9 @@ public:
 	 * @param sid
 	 * @return
 	 */
-	ReturnValue_t generateHousekeepingPacket(sid_t sid);
+	ReturnValue_t generateHousekeepingPacket(sid_t sid,
+	        float collectionInterval = 0,
+	        MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
@@ -166,6 +169,7 @@ private:
 
 	/** Default receiver for periodic HK packets */
 	static object_id_t defaultHkDestination;
+	MessageQueueId_t defaultHkDestinationId = MessageQueueIF::NO_QUEUE;
 
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
@@ -187,7 +191,7 @@ private:
         type */
         union HkParameter {
             /** This parameter will be used for the PERIODIC type */
-            float collectionIntervalSeconds = 0;
+            uint32_t collectionIntervalTicks = 0;
             /** This parameter will be used for the ON_UPDATE type */
             bool hkDataChanged;
         };

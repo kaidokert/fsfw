@@ -25,7 +25,7 @@ public:
 
     /**
      * Helper functions which can be used to move HK data from the IPC store
-     * to the telemetry store.
+     * to the telemetry store. TODO: maybe not needed.
      * @param formerStore
      * @param storeId
      * @param newStore
