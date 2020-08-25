@@ -2,8 +2,8 @@
 #define FRAMEWORK_TASKS_TASKFACTORY_H_
 
 #include <stdlib.h>
-#include <framework/tasks/FixedTimeslotTaskIF.h>
-#include <framework/tasks/Typedef.h>
+#include "FixedTimeslotTaskIF.h"
+#include "Typedef.h"
 
 /**
  * Singleton Class that produces Tasks.

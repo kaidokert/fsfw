@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 #define FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 
-#include <framework/tasks/PeriodicTaskIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/osal/linux/PosixThread.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../tasks/PeriodicTaskIF.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "PosixThread.h"
+#include "../../tasks/ExecutableObjectIF.h"
 #include <vector>
 
 class PeriodicPosixTask: public PosixThread, public PeriodicTaskIF {
@@ -39,8 +39,7 @@ public:
 	 * @param object Id of the object to add.
 	 * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
 	 */
-	ReturnValue_t addComponent(object_id_t object,
-	        bool addTaskIF = true) override;
+	ReturnValue_t addComponent(object_id_t object) override;
 
 	uint32_t getPeriodMs() const override;
 

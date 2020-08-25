@@ -1,10 +1,10 @@
 #include "DataPoolParameterWrapper.h"
 
 //for returncodes
-#include <framework/parameters/HasParametersIF.h>
+#include "../parameters/HasParametersIF.h"
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolRawAccess.h>
+#include "DataSet.h"
+#include "PoolRawAccess.h"
 
 DataPoolParameterWrapper::DataPoolParameterWrapper() :
 		type(Type::UNKNOWN_TYPE), rows(0), columns(0), poolId(

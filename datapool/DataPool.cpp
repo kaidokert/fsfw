@@ -1,6 +1,6 @@
-#include <framework/datapool/DataPool.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/MutexFactory.h>
+#include "DataPool.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../ipc/MutexFactory.h"
 
 DataPool::DataPool( void ( *initFunction )( std::map<uint32_t, PoolEntryIF*>* pool_map ) ) {
 	mutex = MutexFactory::instance()->createMutex();
@@ -61,7 +61,7 @@ ReturnValue_t DataPool::freeDataPoolLock() {
 }
 
 ReturnValue_t DataPool::lockDataPool() {
-	ReturnValue_t status = mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	ReturnValue_t status = mutex->lockMutex(MutexIF::BLOCKING);
 	if ( status != RETURN_OK ) {
 		sif::error << "DataPool::DataPool: lock of mutex failed with error code: " << status << std::endl;
 	}

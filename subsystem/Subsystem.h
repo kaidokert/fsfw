@@ -1,13 +1,13 @@
 #ifndef SUBSYSTEM_H_
 #define SUBSYSTEM_H_
 
-#include <framework/container/FixedArrayList.h>
-#include <framework/container/FixedMap.h>
-#include <framework/container/HybridIterator.h>
-#include <framework/container/SinglyLinkedList.h>
-#include <framework/serialize/SerialArrayListAdapter.h>
-#include <framework/subsystem/modes/ModeDefinitions.h>
-#include <framework/subsystem/SubsystemBase.h>
+#include "../container/FixedArrayList.h"
+#include "../container/FixedMap.h"
+#include "../container/HybridIterator.h"
+#include "../container/SinglyLinkedList.h"
+#include "../serialize/SerialArrayListAdapter.h"
+#include "modes/ModeDefinitions.h"
+#include "SubsystemBase.h"
 
 class Subsystem: public SubsystemBase, public HasModeSequenceIF {
 public:

@@ -1,9 +1,9 @@
 #ifndef ASSEMBLYBASE_H_
 #define ASSEMBLYBASE_H_
 
-#include <framework/container/FixedArrayList.h>
-#include <framework/devicehandlers/DeviceHandlerBase.h>
-#include <framework/subsystem/SubsystemBase.h>
+#include "../container/FixedArrayList.h"
+#include "DeviceHandlerBase.h"
+#include "../subsystem/SubsystemBase.h"
 
 class AssemblyBase: public SubsystemBase {
 public:

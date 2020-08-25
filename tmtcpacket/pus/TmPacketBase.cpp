@@ -1,8 +1,8 @@
-#include <framework/globalfunctions/CRC.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/pus/TmPacketBase.h>
-#include <framework/timemanager/CCSDSTime.h>
+#include "../../globalfunctions/CRC.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "TmPacketBase.h"
+#include "../../timemanager/CCSDSTime.h"
 #include <string.h>
 
 TmPacketBase::TmPacketBase(uint8_t* set_data) :

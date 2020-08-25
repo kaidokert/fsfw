@@ -1,14 +1,16 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 
-#include <framework/devicehandlers/FixedSlotSequence.h>
-#include <framework/tasks/FixedTimeslotTaskIF.h>
-#include <framework/tasks/Typedef.h>
+#include "FreeRTOSTaskIF.h"
+#include "../../devicehandlers/FixedSlotSequence.h"
+#include "../../tasks/FixedTimeslotTaskIF.h"
+#include "../../tasks/Typedef.h"
+
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-class FixedTimeslotTask: public FixedTimeslotTaskIF {
+class FixedTimeslotTask: public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
 public:
 
 	/**
@@ -23,7 +25,7 @@ public:
 	 * @param setDeadlineMissedFunc Callback if a deadline was missed.
 	 * @return Pointer to the newly created task.
 	 */
-	FixedTimeslotTask(const char *name, TaskPriority setPriority,
+	FixedTimeslotTask(TaskName name, TaskPriority setPriority,
 			TaskStackSize setStack, TaskPeriod overallPeriod,
 			void (*setDeadlineMissedFunc)());
 
@@ -56,6 +58,8 @@ public:
 	ReturnValue_t checkSequence() const override;
 
 	ReturnValue_t sleepFor(uint32_t ms) override;
+
+	TaskHandle_t getTaskHandle() override;
 
 protected:
 	bool started;

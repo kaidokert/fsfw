@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_EVENTS_EVENTMATCHING_REPORTERRANGEMATCHER_H_
 #define FRAMEWORK_EVENTS_EVENTMATCHING_REPORTERRANGEMATCHER_H_
 
-#include <framework/events/eventmatching/EventRangeMatcherBase.h>
+#include "EventRangeMatcherBase.h"
 
 class ReporterRangeMatcher: public EventRangeMatcherBase<object_id_t> {
 public:

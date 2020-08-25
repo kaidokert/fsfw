@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_TMSTORAGE_TMSTOREMESSAGE_H_
 #define FRAMEWORK_TMSTORAGE_TMSTOREMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tmstorage/TmStorePackets.h>
-#include <framework/objectmanager/SystemObjectIF.h>
+#include "../ipc/CommandMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "TmStorePackets.h"
+#include "../objectmanager/SystemObjectIF.h"
 class TmStoreMessage: public CommandMessage {
 public:
 	static ReturnValue_t setEnableStoringMessage(CommandMessage* cmd,
@@ -41,7 +41,7 @@ public:
 
 	static store_address_t getStoreId(const CommandMessage* cmd);
 	virtual ~TmStoreMessage();
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::TM_STORE;
+	static const uint8_t MESSAGE_ID = messagetypes::TM_STORE;
 	static const Command_t ENABLE_STORING = MAKE_COMMAND_ID(1);
 	static const Command_t DELETE_STORE_CONTENT = MAKE_COMMAND_ID(2);
 	static const Command_t DOWNLINK_STORE_CONTENT = MAKE_COMMAND_ID(3);

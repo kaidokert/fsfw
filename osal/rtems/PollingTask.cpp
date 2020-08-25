@@ -1,9 +1,9 @@
-#include <framework/devicehandlers/FixedSequenceSlot.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/osal/rtems/PollingTask.h>
-#include <framework/osal/rtems/RtemsBasic.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../devicehandlers/FixedSequenceSlot.h"
+#include "../../objectmanager/SystemObjectIF.h"
+#include "PollingTask.h"
+#include "RtemsBasic.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <rtems/bspIo.h>
 #include <rtems/rtems/ratemon.h>
 #include <rtems/rtems/status.h>

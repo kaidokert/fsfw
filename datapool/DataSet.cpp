@@ -1,5 +1,5 @@
-#include <framework/datapool/DataSet.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "DataSet.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 DataSet::DataSet() :
 		fill_count(0), state(DATA_SET_UNINITIALISED) {

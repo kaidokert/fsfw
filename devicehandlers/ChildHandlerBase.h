@@ -1,8 +1,8 @@
 #ifndef PAYLOADHANDLERBASE_H_
 #define PAYLOADHANDLERBASE_H_
 
-#include <framework/devicehandlers/ChildHandlerFDIR.h>
-#include <framework/devicehandlers/DeviceHandlerBase.h>
+#include "ChildHandlerFDIR.h"
+#include "DeviceHandlerBase.h"
 
 class ChildHandlerBase: public DeviceHandlerBase {
 public:

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_MUTEXFACTORY_H_
 #define FRAMEWORK_IPC_MUTEXFACTORY_H_
 
-#include <framework/ipc/MutexIF.h>
+#include "MutexIF.h"
 /**
  * Creates Mutex.
  * This class is a "singleton" interface, i.e. it provides an

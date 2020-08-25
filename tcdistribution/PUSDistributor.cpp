@@ -1,8 +1,8 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tcdistribution/CCSDSDistributorIF.h>
-#include <framework/tcdistribution/PUSDistributor.h>
-#include <framework/tmtcpacket/pus/TcPacketStored.h>
-#include <framework/tmtcservices/PusVerificationReport.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "CCSDSDistributorIF.h"
+#include "PUSDistributor.h"
+#include "../tmtcpacket/pus/TcPacketStored.h"
+#include "../tmtcservices/PusVerificationReport.h"
 
 PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId, object_id_t setPacketSource) :
 		TcDistributor(setObjectId), checker(setApid), verifyChannel(), currentPacket(), tcStatus(
