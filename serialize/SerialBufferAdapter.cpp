@@ -66,7 +66,7 @@ template<typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
 		size_t* size, Endianness streamEndianness) {
 	//TODO Ignores Endian flag!
-	if (buffer != nullptr) {
+	if (this->buffer != nullptr) {
 		if(serializeLength){
 			ReturnValue_t result = SerializeAdapter::deSerialize(&bufferLength,
 					buffer, size, streamEndianness);
@@ -77,7 +77,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer,
 		//No Else If, go on with buffer
 		if (bufferLength <= *size) {
 			*size -= bufferLength;
-			memcpy(this->buffer, *buffer, bufferLength);
+			std::memcpy(this->buffer, *buffer, bufferLength);
 			(*buffer) += bufferLength;
 			return HasReturnvaluesIF::RETURN_OK;
 		}
@@ -103,7 +103,8 @@ uint8_t * SerialBufferAdapter<count_t>::getBuffer() {
 template<typename count_t>
 const uint8_t * SerialBufferAdapter<count_t>::getConstBuffer() {
 	if(constBuffer == nullptr) {
-		sif::error << "SerialBufferAdapter: Buffers are unitialized!" << std::endl;
+		sif::error << "SerialBufferAdapter::getConstBuffer:"
+				" Buffers are unitialized!" << std::endl;
 		return nullptr;
 	}
 	return constBuffer;
