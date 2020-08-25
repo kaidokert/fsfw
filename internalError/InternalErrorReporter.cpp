@@ -54,7 +54,7 @@ void InternalErrorReporter::lostTm() {
 
 uint32_t InternalErrorReporter::getAndResetQueueHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	value = queueHits;
 	queueHits = 0;
 	mutex->unlockMutex();
@@ -63,21 +63,21 @@ uint32_t InternalErrorReporter::getAndResetQueueHits() {
 
 uint32_t InternalErrorReporter::getQueueHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	value = queueHits;
 	mutex->unlockMutex();
 	return value;
 }
 
 void InternalErrorReporter::incrementQueueHits() {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	queueHits++;
 	mutex->unlockMutex();
 }
 
 uint32_t InternalErrorReporter::getAndResetTmHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	value = tmHits;
 	tmHits = 0;
 	mutex->unlockMutex();
@@ -86,14 +86,14 @@ uint32_t InternalErrorReporter::getAndResetTmHits() {
 
 uint32_t InternalErrorReporter::getTmHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	value = tmHits;
 	mutex->unlockMutex();
 	return value;
 }
 
 void InternalErrorReporter::incrementTmHits() {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	tmHits++;
 	mutex->unlockMutex();
 }
@@ -104,7 +104,7 @@ void InternalErrorReporter::storeFull() {
 
 uint32_t InternalErrorReporter::getAndResetStoreHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	value = storeHits;
 	storeHits = 0;
 	mutex->unlockMutex();
@@ -113,14 +113,14 @@ uint32_t InternalErrorReporter::getAndResetStoreHits() {
 
 uint32_t InternalErrorReporter::getStoreHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	value = storeHits;
 	mutex->unlockMutex();
 	return value;
 }
 
 void InternalErrorReporter::incrementStoreHits() {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	storeHits++;
 	mutex->unlockMutex();
 }
