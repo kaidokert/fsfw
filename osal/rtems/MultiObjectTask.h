@@ -1,9 +1,3 @@
-/**
- * @file	MultiObjectTask.h
- * @brief	This file defines the MultiObjectTask class.
- * @date	30.01.2014
- * @author	baetz
- */
 #ifndef FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
 #define FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
 
@@ -21,7 +15,7 @@ class ExecutableObjectIF;
  * @details MultiObjectTask is an extension to ObjectTask in the way that it is able to execute
  * 			multiple objects that implement the ExecutableObjectIF interface. The objects must be
  * 			added prior to starting the task.
- *
+ * @author  baetz
  * @ingroup task_handling
  */
 class MultiObjectTask: public TaskBase, public PeriodicTaskIF {
