@@ -25,12 +25,13 @@ Mutex::~Mutex() {
 	}
 }
 
-ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
-	if(timeoutMs == MutexIF::BLOCKING) {
+ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType =
+        TimeoutType::BLOCKING, uint32_t timeoutMs) {
+	if(timeoutMs == MutexIF::TimeoutType::BLOCKING) {
 		rtems_status_code status = rtems_semaphore_obtain(mutexId,
 				RTEMS_WAIT, timeoutMs);
 	}
-	else if(timeoutMs == MutexIF::POLLING) {
+	else if(timeoutMs == MutexIF::TimeoutType::POLLING) {
 		timeoutMs = RTEMS_NO_TIMEOUT;
 		rtems_status_code status = rtems_semaphore_obtain(mutexId,
 				RTEMS_NO_WAIT, timeoutMs);
