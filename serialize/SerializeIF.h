@@ -21,8 +21,8 @@ public:
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::SERIALIZE_IF;
 	static const ReturnValue_t BUFFER_TOO_SHORT = MAKE_RETURN_CODE(1); // !< The given buffer in serialize is too short
-	static const ReturnValue_t STREAM_TOO_SHORT = MAKE_RETURN_CODE(2); // !< The input stream in deSerialize is too short
-	static const ReturnValue_t TOO_MANY_ELEMENTS = MAKE_RETURN_CODE(3);// !< There are too many elements to be deSerialized
+	static const ReturnValue_t STREAM_TOO_SHORT = MAKE_RETURN_CODE(2); // !< The input stream in deserialize is too short
+	static const ReturnValue_t TOO_MANY_ELEMENTS = MAKE_RETURN_CODE(3);// !< There are too many elements to be deserialized
 
 	virtual ~SerializeIF() {
 	}
@@ -53,7 +53,7 @@ public:
 	virtual size_t getSerializedSize() const = 0;
 
 	/**
-	 * DeSerializes a object from a given buffer of given size.
+	 * Deserializes a object from a given buffer of given size.
 	 *
 	 * Buffer must be moved to the current read location by the implementation
 	 * of this function. Size must be decreased by the implementation.
@@ -61,7 +61,7 @@ public:
 	 * Custom implementations might use additional return values.
 	 *
 	 * @param buffer Buffer to deSerialize from. Will be moved by the function.
-	 * @param size Remaining Size of the buffer to read from. Will be decreased by function.
+	 * @param size Remaining size of the buffer to read from. Will be decreased by function.
 	 * @param streamEndianness Endianness as in according to SerializeIF::Endianness
 	 * @return
 	 * 	- @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
