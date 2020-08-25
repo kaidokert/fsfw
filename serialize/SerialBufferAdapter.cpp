@@ -28,29 +28,34 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer,
 		serializedLength += SerializeAdapter::getSerializedSize(
 				&bufferLength);
 	}
+
 	if (*size + serializedLength > maxSize) {
 		return BUFFER_TOO_SHORT;
 	} 
-	else {
-		if (serializeLength) {
-			SerializeAdapter::serialize(&bufferLength, buffer, size,
-					maxSize, streamEndianness);
+
+	if (serializeLength) {
+		ReturnValue_t result = SerializeAdapter::serialize(&bufferLength,
+				buffer, size, maxSize, streamEndianness);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
 		}
-		if (this->constBuffer != nullptr) {
-			memcpy(*buffer, this->constBuffer, bufferLength);
-		}
-		else if (this->buffer != nullptr) {
-			// This will propably be never reached, constBuffer should always be
-			// set if non-const buffer is set.
-			memcpy(*buffer, this->buffer, bufferLength);
-		}
-		else {
-			return HasReturnvaluesIF::RETURN_FAILED;
-		}
-		*size += bufferLength;
-		(*buffer) += bufferLength;
-		return HasReturnvaluesIF::RETURN_OK;
 	}
+
+	if (this->constBuffer != nullptr) {
+		std::memcpy(*buffer, this->constBuffer, bufferLength);
+	}
+	else if (this->buffer != nullptr) {
+		// This will propably be never reached, constBuffer should always be
+		// set if non-const buffer is set.
+		std::memcpy(*buffer, this->buffer, bufferLength);
+	}
+	else {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	*size += bufferLength;
+	(*buffer) += bufferLength;
+	return HasReturnvaluesIF::RETURN_OK;
+
 }
 
 template<typename count_t>
