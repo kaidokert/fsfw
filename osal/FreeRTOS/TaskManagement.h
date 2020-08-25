@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 #define FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 extern "C" {
 #include <freertos/FreeRTOS.h>
