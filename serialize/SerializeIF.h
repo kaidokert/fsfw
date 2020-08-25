@@ -27,17 +27,21 @@ public:
 	virtual ~SerializeIF() {
 	}
 	/**
-	 * Function to serialize the object into a buffer with maxSize at the current size.
+	 * @brief
+	 * Function to serialize the object into a buffer with maxSize. Size represents the written amount.
+	 * If a part of the buffer has been used already, size must be set to the used amount of bytes.
 	 *
+	 * @details
 	 * Implementations of this function must increase the size variable and move the buffer pointer.
-	 *
+	 * MaxSize must be checked by implementations of this function
+	 * and BUFFER_TOO_SHORT has to be returned if size would be larger than maxSize.
 	 *
 	 * Custom implementations might use additional return values.
 	 *
-	 * @param buffer Buffer to serialize into, will be set to the current write location
-	 * @param size Size that has been used in the buffer already, will be increase by the function
-	 * @param maxSize Max size of the buffer.
-	 * @param streamEndianness Endianness of the serialized data according to SerializeIF::Endianness
+	 * @param[in/out] buffer Buffer to serialize into, will be set to the current write location
+	 * @param[in/out] size Size that has been used in the buffer already, will be increased by the function
+	 * @param[in] maxSize The size of the buffer that is allowed to be used for serialize.
+	 * @param[in] streamEndianness Endianness of the serialized data according to SerializeIF::Endianness
 	 * @return
 	 * 		- @¢ BUFFER_TOO_SHORT The given buffer in is too short
 	 * 		- @c RETURN_FAILED Generic error
@@ -47,22 +51,25 @@ public:
 			size_t maxSize, Endianness streamEndianness) const = 0;
 
 	/**
-	 * Gets the size of a object if it would be serialized in a buffer
+	 * Gets the size of a object if it would be serialized in a buffer.s
 	 * @return Size of serialized object
 	 */
 	virtual size_t getSerializedSize() const = 0;
 
 	/**
+	 * @brief
 	 * Deserializes a object from a given buffer of given size.
 	 *
+	 * @details
 	 * Buffer must be moved to the current read location by the implementation
 	 * of this function. Size must be decreased by the implementation.
+	 * Implementations are not allowed to alter the buffer as indicated by const pointer.
 	 *
 	 * Custom implementations might use additional return values.
 	 *
-	 * @param buffer Buffer to deSerialize from. Will be moved by the function.
-	 * @param size Remaining size of the buffer to read from. Will be decreased by function.
-	 * @param streamEndianness Endianness as in according to SerializeIF::Endianness
+	 * @param[in/out] buffer Buffer to deSerialize from. Will be moved by the function.
+	 * @param[in/out] size Remaining size of the buffer to read from. Will be decreased by function.
+	 * @param[in] streamEndianness Endianness as in according to SerializeIF::Endianness
 	 * @return
 	 * 	- @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
 	 * 	- @c TOO_MANY_ELEMENTS The buffer has more inputs than expected
