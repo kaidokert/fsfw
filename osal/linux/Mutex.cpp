@@ -2,7 +2,6 @@
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../timemanager/Clock.h"
 
-const uint32_t MutexIF::NO_TIMEOUT = 0;
 uint8_t Mutex::count = 0;
 
 
@@ -25,7 +24,9 @@ Mutex::Mutex() {
 		sif::error << "Mutex: creation with name, id " << mutex.__data.__count
 				<< ", " << " failed with " << strerror(status) << std::endl;
 	}
-	//After a mutex attributes object has been used to initialize one or more mutexes, any function affecting the attributes object (including destruction) shall not affect any previously initialized mutexes.
+	// After a mutex attributes object has been used to initialize one or more
+	// mutexes, any function affecting the attributes object
+	// (including destruction) shall not affect any previously initialized mutexes.
 	status = pthread_mutexattr_destroy(&mutexAttr);
 	if (status != 0) {
 		sif::error << "Mutex: Attribute destroy failed with " << strerror(status) << std::endl;
@@ -37,9 +38,13 @@ Mutex::~Mutex() {
 	pthread_mutex_destroy(&mutex);
 }
 
-ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
+ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
 	int status = 0;
-	if (timeoutMs != MutexIF::NO_TIMEOUT) {
+
+	if(timeoutType == TimeoutType::POLLING) {
+	    status = pthread_mutex_trylock(&mutex);
+	}
+	else if (timeoutType == TimeoutType::WAITING) {
 		timespec timeOut;
 		clock_gettime(CLOCK_REALTIME, &timeOut);
 		uint64_t nseconds = timeOut.tv_sec * 1000000000 + timeOut.tv_nsec;
@@ -47,27 +52,35 @@ ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 		timeOut.tv_sec = nseconds / 1000000000;
 		timeOut.tv_nsec = nseconds - timeOut.tv_sec * 1000000000;
 		status = pthread_mutex_timedlock(&mutex, &timeOut);
-	} else {
+	}
+	else if(timeoutType == TimeoutType::BLOCKING) {
 		status = pthread_mutex_lock(&mutex);
 	}
+
 	switch (status) {
 	case EINVAL:
-		//The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex's current priority ceiling.
+		// The mutex was created with the protocol attribute having the value
+		// PTHREAD_PRIO_PROTECT and the calling thread's priority is higher
+		// than the mutex's current priority ceiling.
 		return WRONG_ATTRIBUTE_SETTING;
-		//The process or thread would have blocked, and the abs_timeout parameter specified a nanoseconds field value less than zero or greater than or equal to 1000 million.
-		//The value specified by mutex does not refer to an initialized mutex object.
+		// The process or thread would have blocked, and the abs_timeout
+		// parameter specified a nanoseconds field value less than zero or
+		// greater than or equal to 1000 million.
+		// The value specified by mutex does not refer to an initialized mutex object.
 		//return MUTEX_NOT_FOUND;
 	case EBUSY:
-		//The mutex could not be acquired because it was already locked.
+		// The mutex could not be acquired because it was already locked.
 		return MUTEX_ALREADY_LOCKED;
 	case ETIMEDOUT:
-		//The mutex could not be locked before the specified timeout expired.
+		// The mutex could not be locked before the specified timeout expired.
 		return MUTEX_TIMEOUT;
 	case EAGAIN:
-		//The mutex could not be acquired because the maximum number of recursive locks for mutex has been exceeded.
+		// The mutex could not be acquired because the maximum number of
+		// recursive locks for mutex has been exceeded.
 		return MUTEX_MAX_LOCKS;
 	case EDEADLK:
-		//A deadlock condition was detected or the current thread already owns the mutex.
+		// A deadlock condition was detected or the current thread
+		// already owns the mutex.
 		return CURR_THREAD_ALREADY_OWNS_MUTEX;
 	case 0:
 		//Success
