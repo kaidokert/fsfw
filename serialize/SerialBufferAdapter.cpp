@@ -126,5 +126,4 @@ template class SerialBufferAdapter<uint8_t>;
 template class SerialBufferAdapter<uint16_t>;
 template class SerialBufferAdapter<uint32_t>;
 template class SerialBufferAdapter<uint64_t>;
-template class SerialBufferAdapter<size_t>;
 
