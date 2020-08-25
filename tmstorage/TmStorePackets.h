@@ -1,14 +1,14 @@
 #ifndef FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_
 #define FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_
 
-#include <framework/serialize/SerialFixedArrayListAdapter.h>
-#include <framework/serialize/SerializeElement.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/serialize/SerialBufferAdapter.h>
-#include <framework/tmtcpacket/pus/TmPacketMinimal.h>
-#include <framework/timemanager/TimeStamperIF.h>
-#include <framework/timemanager/CCSDSTime.h>
-#include <framework/globalfunctions/timevalOperations.h>
+#include "../serialize/SerialFixedArrayListAdapter.h"
+#include "../serialize/SerializeElement.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "../serialize/SerialBufferAdapter.h"
+#include "../tmtcpacket/pus/TmPacketMinimal.h"
+#include "../timemanager/TimeStamperIF.h"
+#include "../timemanager/CCSDSTime.h"
+#include "../globalfunctions/timevalOperations.h"
 
 class ServiceSubservice: public SerialLinkedListAdapter<SerializeIF> {
 public:
@@ -32,31 +32,31 @@ public:
 	}
 	uint16_t apid;
 	uint16_t ssc;
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		ReturnValue_t result = SerializeAdapter<uint16_t>::serialize(&apid,
-				buffer, size, max_size, bigEndian);
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		ReturnValue_t result = SerializeAdapter::serialize(&apid,
+				buffer, size, maxSize, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		return SerializeAdapter<uint16_t>::serialize(&ssc, buffer, size,
-				max_size, bigEndian);
+		return SerializeAdapter::serialize(&ssc, buffer, size,
+				maxSize, streamEndianness);
 
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return sizeof(apid) + sizeof(ssc);
 	}
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian) {
-		ReturnValue_t result = SerializeAdapter<uint16_t>::deSerialize(&apid,
-				buffer, size, bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+	Endianness streamEndianness) {
+		ReturnValue_t result = SerializeAdapter::deSerialize(&apid,
+				buffer, size, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		return SerializeAdapter<uint16_t>::deSerialize(&ssc, buffer, size,
-				bigEndian);
+		return SerializeAdapter::deSerialize(&ssc, buffer, size,
+				streamEndianness);
 	}
 };
 
@@ -218,74 +218,74 @@ public:
 	}
 
 
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		ReturnValue_t result = AutoSerializeAdapter::serialize(&apid,buffer,size,max_size,bigEndian);
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		ReturnValue_t result = SerializeAdapter::serialize(&apid,buffer,size,maxSize,streamEndianness);
 		if(result!=HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::serialize(&sourceSequenceCount,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&sourceSequenceCount,buffer,size,maxSize,streamEndianness);
 		if(result!=HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::serialize(&serviceType,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&serviceType,buffer,size,maxSize,streamEndianness);
 		if(result!=HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::serialize(&serviceSubtype,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&serviceSubtype,buffer,size,maxSize,streamEndianness);
 		if(result!=HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
-		result = AutoSerializeAdapter::serialize(&subCounter,buffer,size,max_size,bigEndian);
+		result = SerializeAdapter::serialize(&subCounter,buffer,size,maxSize,streamEndianness);
 		if(result!=HasReturnvaluesIF::RETURN_OK){
 			return result;
 		}
 		SerialBufferAdapter<uint8_t> adapter(rawTimestamp,sizeof(rawTimestamp));
-		return adapter.serialize(buffer,size,max_size,bigEndian);
+		return adapter.serialize(buffer,size,maxSize,streamEndianness);
 	}
 
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		uint32_t size = 0;
-		size += AutoSerializeAdapter::getSerializedSize(&apid);
-		size += AutoSerializeAdapter::getSerializedSize(&sourceSequenceCount);
-		size += AutoSerializeAdapter::getSerializedSize(&serviceType);
-		size += AutoSerializeAdapter::getSerializedSize(&serviceSubtype);
-		size += AutoSerializeAdapter::getSerializedSize(&subCounter);
+		size += SerializeAdapter::getSerializedSize(&apid);
+		size += SerializeAdapter::getSerializedSize(&sourceSequenceCount);
+		size += SerializeAdapter::getSerializedSize(&serviceType);
+		size += SerializeAdapter::getSerializedSize(&serviceSubtype);
+		size += SerializeAdapter::getSerializedSize(&subCounter);
 		SerialBufferAdapter<uint8_t> adapter(rawTimestamp,sizeof(rawTimestamp));
 		size += adapter.getSerializedSize();
 		return size;
 
 	};
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian) {
-		ReturnValue_t result = AutoSerializeAdapter::deSerialize(&apid, buffer,
-				size, bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+	Endianness streamEndianness) {
+		ReturnValue_t result = SerializeAdapter::deSerialize(&apid, buffer,
+				size, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = AutoSerializeAdapter::deSerialize(&sourceSequenceCount, buffer,
-				size, bigEndian);
+		result = SerializeAdapter::deSerialize(&sourceSequenceCount, buffer,
+				size, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = AutoSerializeAdapter::deSerialize(&serviceType, buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&serviceType, buffer, size,
+				streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = AutoSerializeAdapter::deSerialize(&serviceSubtype, buffer,
-				size, bigEndian);
+		result = SerializeAdapter::deSerialize(&serviceSubtype, buffer,
+				size, streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = AutoSerializeAdapter::deSerialize(&subCounter, buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&subCounter, buffer, size,
+				streamEndianness);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		SerialBufferAdapter<uint8_t> adapter(rawTimestamp,sizeof(rawTimestamp));
-		return adapter.deSerialize(buffer,size,bigEndian);
+		return adapter.deSerialize(buffer,size,streamEndianness);
 	}
 
 private:

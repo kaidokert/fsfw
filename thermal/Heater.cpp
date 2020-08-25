@@ -1,8 +1,8 @@
-#include <framework/devicehandlers/DeviceHandlerFailureIsolation.h>
+#include "../devicehandlers/DeviceHandlerFailureIsolation.h"
 #include "Heater.h"
 
-#include <framework/power/Fuse.h>
-#include <framework/ipc/QueueFactory.h>
+#include "../power/Fuse.h"
+#include "../ipc/QueueFactory.h"
 
 Heater::Heater(uint32_t objectId, uint8_t switch0, uint8_t switch1) :
 		HealthDevice(objectId, 0), internalState(STATE_OFF), powerSwitcher(

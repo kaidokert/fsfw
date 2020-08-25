@@ -1,6 +1,6 @@
-#include <framework/ipc/QueueFactory.h>
+#include "../../ipc/QueueFactory.h"
 
-#include <framework/osal/FreeRTOS/MessageQueue.h>
+#include "MessageQueue.h"
 
 
 QueueFactory* QueueFactory::factoryInstance = NULL;
@@ -25,8 +25,8 @@ QueueFactory::~QueueFactory() {
 }
 
 MessageQueueIF* QueueFactory::createMessageQueue(uint32_t message_depth,
-		uint32_t max_message_size) {
-	return new MessageQueue(message_depth, max_message_size);
+		size_t maxMessageSize) {
+	return new MessageQueue(message_depth, maxMessageSize);
 }
 
 void QueueFactory::deleteMessageQueue(MessageQueueIF* queue) {

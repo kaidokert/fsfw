@@ -1,8 +1,8 @@
 #ifndef SERIALFIXEDARRAYLISTADAPTER_H_
 #define SERIALFIXEDARRAYLISTADAPTER_H_
 
-#include <framework/container/FixedArrayList.h>
-#include <framework/serialize/SerialArrayListAdapter.h>
+#include "../container/FixedArrayList.h"
+#include "SerialArrayListAdapter.h"
 
 /**
  * \ingroup serialize
@@ -13,16 +13,16 @@ public:
 	template<typename... Args>
 	SerialFixedArrayListAdapter(Args... args) : FixedArrayList<T, MAX_SIZE, count_t>(std::forward<Args>(args)...) {
 	}
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return SerialArrayListAdapter<T, count_t>::serialize(this, buffer, size, max_size, bigEndian);
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		return SerialArrayListAdapter<T, count_t>::serialize(this, buffer, size, maxSize, streamEndianness);
 	}
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return SerialArrayListAdapter<T, count_t>::getSerializedSize(this);
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return SerialArrayListAdapter<T, count_t>::deSerialize(this, buffer, size, bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
+		return SerialArrayListAdapter<T, count_t>::deSerialize(this, buffer, size, streamEndianness);
 	}
 };
 

@@ -1,11 +1,12 @@
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../tasks/ExecutableObjectIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <errno.h>
-#include <framework/osal/linux/PeriodicPosixTask.h>
+#include "PeriodicPosixTask.h"
 
-PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):PosixThread(name_,priority_,stackSize_),objectList(),started(false),periodMs(period_),deadlineMissedFunc(
-		deadlineMissedFunc_) {
-
+PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_,
+		size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):
+		PosixThread(name_,priority_,stackSize_),objectList(),started(false),
+		periodMs(period_),deadlineMissedFunc(deadlineMissedFunc_) {
 }
 
 PeriodicPosixTask::~PeriodicPosixTask() {
@@ -23,10 +24,12 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
 ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
-	if (newObject == NULL) {
+	if (newObject == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+	newObject->setTaskIF(this);
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -37,7 +40,8 @@ ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
 
 ReturnValue_t PeriodicPosixTask::startTask(void){
 	started = true;
-	createTask(&taskEntryPoint,this);
+	//sif::info << stackSize << std::endl;
+	PosixThread::createTask(&taskEntryPoint,this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -56,9 +60,11 @@ void PeriodicPosixTask::taskFunctionality(void){
 			char name[20] = {0};
 			int status = pthread_getname_np(pthread_self(),name,sizeof(name));
 			if(status==0){
-				sif::error << "ObjectTask: " << name << " Deadline missed." << std::endl;
+				sif::error << "PeriodicPosixTask " << name << ": Deadline "
+						"missed." << std::endl;
 			}else{
-				sif::error << "ObjectTask: X Deadline missed. " << status << std::endl;
+				sif::error << "PeriodicPosixTask X: Deadline missed. " <<
+						status << std::endl;
 			}
 			if (this->deadlineMissedFunc != NULL) {
 				this->deadlineMissedFunc();

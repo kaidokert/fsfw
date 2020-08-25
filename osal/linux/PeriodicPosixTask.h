@@ -1,17 +1,30 @@
 #ifndef FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 #define FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 
-#include <framework/tasks/PeriodicTaskIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/osal/linux/PosixThread.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../tasks/PeriodicTaskIF.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "PosixThread.h"
+#include "../../tasks/ExecutableObjectIF.h"
 #include <vector>
 
 class PeriodicPosixTask: public PosixThread, public PeriodicTaskIF {
 public:
+	/**
+	 * Create a generic periodic task.
+	 * @param name_
+	 * Name, maximum allowed size of linux is 16 chars, everything else will
+	 * be truncated.
+	 * @param priority_
+	 * Real-time priority, ranges from 1 to 99 for Linux.
+	 * See: https://man7.org/linux/man-pages/man7/sched.7.html
+	 * @param stackSize_
+	 * @param period_
+	 * @param deadlineMissedFunc_
+	 */
 	PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_,
 			uint32_t period_, void(*deadlineMissedFunc_)());
 	virtual ~PeriodicPosixTask();
+
 	/**
 	 * @brief	The method to start the task.
 	 * @details	The method starts the task with the respective system call.
@@ -26,11 +39,11 @@ public:
 	 * @param object Id of the object to add.
 	 * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
 	 */
-	ReturnValue_t addComponent(object_id_t object);
+	ReturnValue_t addComponent(object_id_t object) override;
 
-	uint32_t getPeriodMs() const;
+	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t sleepFor(uint32_t ms);
+	ReturnValue_t sleepFor(uint32_t ms) override;
 
 private:
 	typedef std::vector<ExecutableObjectIF*> ObjectList;	//!< Typedef for the List of objects.

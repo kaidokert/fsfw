@@ -1,20 +1,22 @@
-#include <framework/ipc/QueueFactory.h>
+#include "../../ipc/QueueFactory.h"
 #include <mqueue.h>
 #include <errno.h>
-#include <framework/osal/linux/MessageQueue.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "MessageQueue.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <cstring>
 
-QueueFactory* QueueFactory::factoryInstance = NULL;
+QueueFactory* QueueFactory::factoryInstance = nullptr;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom,bool ignoreFault) {
-	return MessageQueue::sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault);
+			MessageQueueMessage* message, MessageQueueId_t sentFrom,
+			bool ignoreFault) {
+	return MessageQueue::sendMessageFromMessageQueue(sendTo,message,
+			sentFrom,ignoreFault);
 }
 
 QueueFactory* QueueFactory::instance() {
-	if (factoryInstance == NULL) {
+	if (factoryInstance == nullptr) {
 		factoryInstance = new QueueFactory;
 	}
 	return factoryInstance;
@@ -26,9 +28,9 @@ QueueFactory::QueueFactory() {
 QueueFactory::~QueueFactory() {
 }
 
-MessageQueueIF* QueueFactory::createMessageQueue(uint32_t message_depth,
-		uint32_t max_message_size) {
-	return new MessageQueue(message_depth, max_message_size);
+MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth,
+		size_t maxMessageSize) {
+	return new MessageQueue(messageDepth, maxMessageSize);
 }
 
 void QueueFactory::deleteMessageQueue(MessageQueueIF* queue) {

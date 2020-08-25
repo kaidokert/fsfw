@@ -1,10 +1,10 @@
 #ifndef MEMORYHELPER_H_
 #define MEMORYHELPER_H_
-#include <framework/ipc/CommandMessage.h>
-#include <framework/memory/AcceptsMemoryMessagesIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "../ipc/CommandMessage.h"
+#include "AcceptsMemoryMessagesIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../ipc/MessageQueueIF.h"
 
 class MemoryHelper : public HasReturnvaluesIF {
 public:

@@ -1,5 +1,5 @@
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/tmtcservices/PusVerificationReport.h>
+#include "../serialize/SerializeAdapter.h"
+#include "PusVerificationReport.h"
 
 PusVerificationMessage::PusVerificationMessage() {
 }
@@ -33,7 +33,7 @@ PusVerificationMessage::PusVerificationMessage(uint8_t set_report_id,
 		uint8_t ackFlags, uint16_t tcPacketId, uint16_t tcSequenceControl,
 		ReturnValue_t set_error_code, uint8_t set_step, uint32_t parameter1,
 		uint32_t parameter2) {
-	uint8_t* data = this->getBuffer();
+	uint8_t *data = this->getBuffer();
 	data[messageSize] = set_report_id;
 	messageSize += sizeof(set_report_id);
 	data[messageSize] = ackFlags;
@@ -108,13 +108,13 @@ PusSuccessReport::PusSuccessReport(uint16_t setPacketId,
 		uint16_t setSequenceControl, uint8_t setStep) :
 		reportSize(0), pBuffer(reportBuffer) {
 	//Serialization won't fail, because we know the necessary max-size of the buffer.
-	SerializeAdapter<uint16_t>::serialize(&setPacketId, &pBuffer, &reportSize,
-			sizeof(reportBuffer), true);
-	SerializeAdapter<uint16_t>::serialize(&setSequenceControl, &pBuffer,
-			&reportSize, sizeof(reportBuffer), true);
+	SerializeAdapter::serialize(&setPacketId, &pBuffer, &reportSize,
+			sizeof(reportBuffer), SerializeIF::Endianness::BIG);
+	SerializeAdapter::serialize(&setSequenceControl, &pBuffer, &reportSize,
+			sizeof(reportBuffer), SerializeIF::Endianness::BIG);
 	if (setStep != 0) {
-		SerializeAdapter<uint8_t>::serialize(&setStep, &pBuffer, &reportSize,
-				sizeof(reportBuffer), true);
+		SerializeAdapter::serialize(&setStep, &pBuffer, &reportSize,
+				sizeof(reportBuffer), SerializeIF::Endianness::BIG);
 	}
 }
 
@@ -135,26 +135,26 @@ PusFailureReport::PusFailureReport(uint16_t setPacketId,
 		uint8_t setStep, uint32_t parameter1, uint32_t parameter2) :
 		reportSize(0), pBuffer(reportBuffer) {
 	//Serialization won't fail, because we know the necessary max-size of the buffer.
-	SerializeAdapter<uint16_t>::serialize(&setPacketId, &pBuffer, &reportSize,
-			sizeof(reportBuffer), true);
-	SerializeAdapter<uint16_t>::serialize(&setSequenceControl, &pBuffer,
-			&reportSize, sizeof(reportBuffer), true);
+	SerializeAdapter::serialize(&setPacketId, &pBuffer, &reportSize,
+			sizeof(reportBuffer), SerializeIF::Endianness::BIG);
+	SerializeAdapter::serialize(&setSequenceControl, &pBuffer, &reportSize,
+			sizeof(reportBuffer), SerializeIF::Endianness::BIG);
 	if (setStep != 0) {
-		SerializeAdapter<uint8_t>::serialize(&setStep, &pBuffer, &reportSize,
-				sizeof(reportBuffer), true);
+		SerializeAdapter::serialize(&setStep, &pBuffer, &reportSize,
+				sizeof(reportBuffer), SerializeIF::Endianness::BIG);
 	}
-	SerializeAdapter<ReturnValue_t>::serialize(&setErrorCode, &pBuffer,
-			&reportSize, sizeof(reportBuffer), true);
-	SerializeAdapter<uint32_t>::serialize(&parameter1, &pBuffer, &reportSize,
-			sizeof(reportBuffer), true);
-	SerializeAdapter<uint32_t>::serialize(&parameter2, &pBuffer, &reportSize,
-			sizeof(reportBuffer), true);
+	SerializeAdapter::serialize(&setErrorCode, &pBuffer, &reportSize,
+			sizeof(reportBuffer), SerializeIF::Endianness::BIG);
+	SerializeAdapter::serialize(&parameter1, &pBuffer, &reportSize,
+			sizeof(reportBuffer), SerializeIF::Endianness::BIG);
+	SerializeAdapter::serialize(&parameter2, &pBuffer, &reportSize,
+			sizeof(reportBuffer), SerializeIF::Endianness::BIG);
 }
 
 PusFailureReport::~PusFailureReport() {
 }
 
-uint32_t PusFailureReport::getSize() {
+size_t PusFailureReport::getSize() {
 	return reportSize;
 }
 

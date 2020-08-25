@@ -1,4 +1,4 @@
-#include <framework/devicehandlers/AssemblyBase.h>
+#include "AssemblyBase.h"
 
 AssemblyBase::AssemblyBase(object_id_t objectId, object_id_t parentId,
 		uint16_t commandQueueDepth) :

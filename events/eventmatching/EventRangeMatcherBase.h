@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_EVENTS_EVENTMATCHING_EVENTRANGEMATCHERBASE_H_
 #define FRAMEWORK_EVENTS_EVENTMATCHING_EVENTRANGEMATCHERBASE_H_
 
-#include <framework/events/EventMessage.h>
-#include <framework/globalfunctions/matching/RangeMatcher.h>
-#include <framework/globalfunctions/matching/SerializeableMatcherIF.h>
+#include "../../events/EventMessage.h"
+#include "../../globalfunctions/matching/RangeMatcher.h"
+#include "../../globalfunctions/matching/SerializeableMatcherIF.h"
 
 template <typename T>
 class EventRangeMatcherBase: public SerializeableMatcherIF<EventMessage*> {
@@ -11,16 +11,16 @@ class EventRangeMatcherBase: public SerializeableMatcherIF<EventMessage*> {
 public:
 	EventRangeMatcherBase(T from, T till, bool inverted) : rangeMatcher(from, till, inverted) {	}
 	virtual ~EventRangeMatcherBase() { }
-	ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return rangeMatcher.serialize(buffer, size, max_size, bigEndian);
+	ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		return rangeMatcher.serialize(buffer, size, maxSize, streamEndianness);
 	}
-	uint32_t getSerializedSize() const {
+	size_t getSerializedSize() const {
 		return rangeMatcher.getSerializedSize();
 	}
-	ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return rangeMatcher.deSerialize(buffer, size, bigEndian);
+	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
+		return rangeMatcher.deSerialize(buffer, size, streamEndianness);
 	}
 protected:
 	RangeMatcher<T> rangeMatcher;

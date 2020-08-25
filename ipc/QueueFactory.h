@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_QUEUEFACTORY_H_
 #define FRAMEWORK_IPC_QUEUEFACTORY_H_
 
-#include <framework/ipc/MessageQueueIF.h>
+#include "MessageQueueIF.h"
 #include <stdint.h>
 /**
  * Creates message queues.
@@ -18,8 +18,8 @@ public:
 	 */
 	static QueueFactory* instance();
 
-	MessageQueueIF* createMessageQueue(uint32_t message_depth = 3,
-			uint32_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE);
+	MessageQueueIF* createMessageQueue(uint32_t messageDepth = 3,
+			size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE);
 
 	void deleteMessageQueue(MessageQueueIF* queue);
 private:

@@ -1,6 +1,6 @@
-#include <framework/storagemanager/StorageAccessor.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "StorageAccessor.h"
+#include "StorageManagerIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 StorageAccessor::StorageAccessor(store_address_t storeId):
 		ConstStorageAccessor(storeId) {

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TIMEMANAGER_TIMESTAMPERIF_H_
 #define FRAMEWORK_TIMEMANAGER_TIMESTAMPERIF_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 /**
  * A class implementing this IF provides facilities to add a time stamp to the

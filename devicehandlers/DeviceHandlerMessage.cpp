@@ -1,6 +1,6 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/devicehandlers/DeviceHandlerMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "DeviceHandlerMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 DeviceHandlerMessage::DeviceHandlerMessage() {
 }

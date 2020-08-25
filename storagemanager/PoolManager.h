@@ -1,9 +1,10 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
 #define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
 
-#include <framework/storagemanager/LocalPool.h>
-#include <framework/ipc/MutexHelper.h>
-#include <framework/storagemanager/StorageAccessor.h>
+#include "LocalPool.h"
+#include "../ipc/MutexHelper.h"
+#include "../storagemanager/StorageAccessor.h"
+
 
 /**
  * @brief	The PoolManager class provides an intermediate data storage with
