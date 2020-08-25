@@ -78,6 +78,8 @@ ReturnValue_t MultiObjectTask::addComponent(object_id_t object) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+	newObject->setTaskIF(this);
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
