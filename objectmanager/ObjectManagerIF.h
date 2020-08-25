@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
 #define FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
-#include <framework/objectmanager/frameworkObjects.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "frameworkObjects.h"
+#include "SystemObjectIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 /**
  * @brief	This class provides an interface to the global object manager.
@@ -21,7 +21,8 @@ public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::OBJECT_MANAGER_IF;
 	static constexpr ReturnValue_t INSERTION_FAILED = MAKE_RETURN_CODE( 1 );
 	static constexpr ReturnValue_t NOT_FOUND = MAKE_RETURN_CODE( 2 );
-	static constexpr ReturnValue_t CHILD_INIT_FAILED = MAKE_RETURN_CODE( 3 );
+
+	static constexpr ReturnValue_t CHILD_INIT_FAILED = MAKE_RETURN_CODE( 3 ); //!< Can be used if the initialization of a SystemObject failed.
 	static constexpr ReturnValue_t INTERNAL_ERR_REPORTER_UNINIT = MAKE_RETURN_CODE( 4 );
 
 protected:

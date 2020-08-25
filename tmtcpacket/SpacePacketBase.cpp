@@ -1,5 +1,5 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/SpacePacketBase.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "SpacePacketBase.h"
 #include <string.h>
 
 SpacePacketBase::SpacePacketBase( const uint8_t* set_address ) {

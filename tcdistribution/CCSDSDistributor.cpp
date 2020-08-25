@@ -1,6 +1,6 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tcdistribution/CCSDSDistributor.h>
-#include <framework/tmtcpacket/SpacePacketBase.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "CCSDSDistributor.h"
+#include "../tmtcpacket/SpacePacketBase.h"
 
 CCSDSDistributor::CCSDSDistributor( uint16_t setDefaultApid, object_id_t setObjectId ) :
 		TcDistributor( setObjectId ), default_apid( setDefaultApid ), tcStore(NULL) {

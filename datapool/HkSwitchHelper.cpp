@@ -1,6 +1,6 @@
-#include <framework/datapool/HkSwitchHelper.h>
+#include "HkSwitchHelper.h"
 //#include <mission/tmtcservices/HKService_03.h>
-#include <framework/ipc/QueueFactory.h>
+#include "../ipc/QueueFactory.h"
 
 HkSwitchHelper::HkSwitchHelper(EventReportingProxyIF* eventProxy) :
 		commandActionHelper(this), eventProxy(eventProxy) {

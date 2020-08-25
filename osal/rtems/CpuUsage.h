@@ -1,8 +1,8 @@
 #ifndef CPUUSAGE_H_
 #define CPUUSAGE_H_
 
-#include <framework/container/FixedArrayList.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../../container/FixedArrayList.h"
+#include "../../serialize/SerializeIF.h"
 #include <stdarg.h>
 
 class CpuUsage : public SerializeIF {
@@ -18,13 +18,13 @@ public:
 		float timeRunning;
 		float percentUsage;
 
-		virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-				const uint32_t max_size, bool bigEndian) const;
+		virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+				size_t maxSize, Endianness streamEndianness) const override;
 
-		virtual uint32_t getSerializedSize() const;
+		virtual size_t getSerializedSize() const override;
 
-		virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-				bool bigEndian);
+		virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+				Endianness streamEndianness) override;
 	};
 
 	CpuUsage();
@@ -41,13 +41,13 @@ public:
 
 	void clear();
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const;
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const override;
 
-	virtual uint32_t getSerializedSize() const;
+	virtual size_t getSerializedSize() const override;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) override;
 };
 
 #endif /* CPUUSAGE_H_ */

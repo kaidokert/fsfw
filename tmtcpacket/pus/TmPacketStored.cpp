@@ -1,7 +1,7 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/pus/TmPacketStored.h>
-#include <framework/tmtcservices/TmTcMessage.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "TmPacketStored.h"
+#include "../../tmtcservices/TmTcMessage.h"
 #include <string.h>
 
 TmPacketStored::TmPacketStored(store_address_t setAddress) :
@@ -10,14 +10,14 @@ TmPacketStored::TmPacketStored(store_address_t setAddress) :
 }
 
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
-		uint8_t subservice, uint8_t packetSubcounter, const uint8_t* data,
-		uint32_t size, const uint8_t* headerData, uint32_t headerSize) :
+		uint8_t subservice, uint8_t packetSubcounter, const uint8_t *data,
+		uint32_t size, const uint8_t *headerData, uint32_t headerSize) :
 		TmPacketBase(NULL) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (!checkAndSetStore()) {
 		return;
 	}
-	uint8_t* pData = NULL;
+	uint8_t *pData = NULL;
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
 			(TmPacketBase::TM_PACKET_MIN_SIZE + size + headerSize), &pData);
 
@@ -34,21 +34,21 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 }
 
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
-		uint8_t subservice, uint8_t packetSubcounter, SerializeIF* content,
-		SerializeIF* header) :
+		uint8_t subservice, uint8_t packetSubcounter, SerializeIF *content,
+		SerializeIF *header) :
 		TmPacketBase(NULL) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (!checkAndSetStore()) {
 		return;
 	}
-	uint32_t sourceDataSize = 0;
+	size_t sourceDataSize = 0;
 	if (content != NULL) {
 		sourceDataSize += content->getSerializedSize();
 	}
 	if (header != NULL) {
 		sourceDataSize += header->getSerializedSize();
 	}
-	uint8_t* p_data = NULL;
+	uint8_t *p_data = NULL;
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
 			(TmPacketBase::TM_PACKET_MIN_SIZE + sourceDataSize), &p_data);
 	if (returnValue != store->RETURN_OK) {
@@ -56,13 +56,15 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 	}
 	setData(p_data);
 	initializeTmPacket(apid, service, subservice, packetSubcounter);
-	uint8_t* putDataHere = getSourceData();
-	uint32_t size = 0;
+	uint8_t *putDataHere = getSourceData();
+	size_t size = 0;
 	if (header != NULL) {
-		header->serialize(&putDataHere, &size, sourceDataSize, true);
+		header->serialize(&putDataHere, &size, sourceDataSize,
+				SerializeIF::Endianness::BIG);
 	}
 	if (content != NULL) {
-		content->serialize(&putDataHere, &size, sourceDataSize, true);
+		content->serialize(&putDataHere, &size, sourceDataSize,
+				SerializeIF::Endianness::BIG);
 	}
 	setPacketDataLength(
 			sourceDataSize + sizeof(PUSTmDataFieldHeader) + CRC_SIZE - 1);
@@ -106,8 +108,8 @@ bool TmPacketStored::checkAndSetStore() {
 	return true;
 }
 
-StorageManagerIF* TmPacketStored::store = NULL;
-InternalErrorReporterIF* TmPacketStored::internalErrorReporter = NULL;
+StorageManagerIF *TmPacketStored::store = NULL;
+InternalErrorReporterIF *TmPacketStored::internalErrorReporter = NULL;
 
 ReturnValue_t TmPacketStored::sendPacket(MessageQueueId_t destination,
 		MessageQueueId_t sentFrom, bool doErrorReporting) {
@@ -116,7 +118,8 @@ ReturnValue_t TmPacketStored::sendPacket(MessageQueueId_t destination,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	TmTcMessage tmMessage(getStoreAddress());
-	ReturnValue_t result = MessageQueueSenderIF::sendMessage(destination, &tmMessage, sentFrom);
+	ReturnValue_t result = MessageQueueSenderIF::sendMessage(destination,
+			&tmMessage, sentFrom);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		deletePacket();
 		if (doErrorReporting) {

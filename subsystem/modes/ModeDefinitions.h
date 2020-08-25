@@ -1,10 +1,10 @@
 #ifndef MODEDEFINITIONS_H_
 #define MODEDEFINITIONS_H_
 
-#include <framework/modes/HasModesIF.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/serialize/SerializeIF.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
+#include "../../modes/HasModesIF.h"
+#include "../../objectmanager/SystemObjectIF.h"
+#include "../../serialize/SerializeIF.h"
+#include "../../serialize/SerialLinkedListAdapter.h"
 class ModeListEntry: public SerializeIF, public LinkedElement<ModeListEntry> {
 public:
 	ModeListEntry() :
@@ -18,65 +18,65 @@ public:
 	uint8_t value3;
 	uint8_t value4;
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
 
 		ReturnValue_t result;
 
-		result = SerializeAdapter<uint32_t>::serialize(&value1, buffer, size,
-				max_size, bigEndian);
+		result = SerializeAdapter::serialize(&value1, buffer, size,
+				maxSize, streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint32_t>::serialize(&value2, buffer, size,
-				max_size, bigEndian);
+		result = SerializeAdapter::serialize(&value2, buffer, size,
+				maxSize, streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint8_t>::serialize(&value3, buffer, size,
-				max_size, bigEndian);
+		result = SerializeAdapter::serialize(&value3, buffer, size,
+				maxSize, streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 
-		result = SerializeAdapter<uint8_t>::serialize(&value4, buffer, size,
-				max_size, bigEndian);
+		result = SerializeAdapter::serialize(&value4, buffer, size,
+				maxSize, streamEndianness);
 
 		return result;
 
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-	bool bigEndian) {
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+	Endianness streamEndianness) {
 		ReturnValue_t result;
 
-		result = SerializeAdapter<uint32_t>::deSerialize(&value1, buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&value1, buffer, size,
+				streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint32_t>::deSerialize(&value2, buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&value2, buffer, size,
+				streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint8_t>::deSerialize(&value3, buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&value3, buffer, size,
+				streamEndianness);
 
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		result = SerializeAdapter<uint8_t>::deSerialize(&value4, buffer, size,
-				bigEndian);
+		result = SerializeAdapter::deSerialize(&value4, buffer, size,
+				streamEndianness);
 
 		return result;
 	}

@@ -1,6 +1,6 @@
-#include <framework/health/HealthTable.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/ipc/MutexFactory.h>
+#include "HealthTable.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../ipc/MutexFactory.h"
 
 HealthTable::HealthTable(object_id_t objectid) :
 		SystemObject(objectid) {
@@ -26,7 +26,7 @@ ReturnValue_t HealthTable::registerObject(object_id_t object,
 
 void HealthTable::setHealth(object_id_t object,
 		HasHealthIF::HealthState newState) {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		iter->second = newState;
@@ -36,7 +36,7 @@ void HealthTable::setHealth(object_id_t object,
 
 HasHealthIF::HealthState HealthTable::getHealth(object_id_t object) {
 	HasHealthIF::HealthState state = HasHealthIF::HEALTHY;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		state = iter->second;
@@ -46,7 +46,7 @@ HasHealthIF::HealthState HealthTable::getHealth(object_id_t object) {
 }
 
 uint32_t HealthTable::getPrintSize() {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	uint32_t size = healthMap.size() * 5 + 2;
 	mutex->unlockMutex();
 	return size;
@@ -54,7 +54,7 @@ uint32_t HealthTable::getPrintSize() {
 
 bool HealthTable::hasHealth(object_id_t object) {
 	bool exits = false;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		exits = true;
@@ -63,21 +63,21 @@ bool HealthTable::hasHealth(object_id_t object) {
 	return exits;
 }
 
-void HealthTable::printAll(uint8_t* pointer, uint32_t maxSize) {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
-	uint32_t size = 0;
+void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
+	mutex->lockMutex(MutexIF::BLOCKING);
+	size_t size = 0;
 	uint16_t count = healthMap.size();
-	ReturnValue_t result = SerializeAdapter<uint16_t>::serialize(&count,
-			&pointer, &size, maxSize, true);
+	ReturnValue_t result = SerializeAdapter::serialize(&count,
+			&pointer, &size, maxSize, SerializeIF::Endianness::BIG);
 	HealthMap::iterator iter;
 	for (iter = healthMap.begin();
 			iter != healthMap.end() && result == HasReturnvaluesIF::RETURN_OK;
 			++iter) {
-		result = SerializeAdapter<object_id_t>::serialize(&iter->first,
-				&pointer, &size, maxSize, true);
+		result = SerializeAdapter::serialize(&iter->first,
+				&pointer, &size, maxSize, SerializeIF::Endianness::BIG);
 		uint8_t health = iter->second;
-		result = SerializeAdapter<uint8_t>::serialize(&health, &pointer, &size,
-				maxSize, true);
+		result = SerializeAdapter::serialize(&health, &pointer, &size,
+				maxSize, SerializeIF::Endianness::BIG);
 	}
 	mutex->unlockMutex();
 }
@@ -85,7 +85,7 @@ void HealthTable::printAll(uint8_t* pointer, uint32_t maxSize) {
 ReturnValue_t HealthTable::iterate(
 		std::pair<object_id_t, HasHealthIF::HealthState> *value, bool reset) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 	if (reset) {
 		mapIterator = healthMap.begin();
 	}

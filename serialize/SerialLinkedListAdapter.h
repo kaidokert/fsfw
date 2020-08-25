@@ -7,10 +7,10 @@
 #ifndef SERIALLINKEDLISTADAPTER_H_
 #define SERIALLINKEDLISTADAPTER_H_
 
-#include <framework/container/SinglyLinkedList.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serialize/SerializeElement.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../container/SinglyLinkedList.h"
+#include "SerializeAdapter.h"
+#include "SerializeElement.h"
+#include "SerializeIF.h"
 //This is where we need the SerializeAdapter!
 
 /**
@@ -31,32 +31,32 @@ public:
 			SinglyLinkedList<T>(), printCount(printCount) {
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const override {
 		if (printCount) {
 			count_t mySize = SinglyLinkedList<T>::getSize();
-			ReturnValue_t result = SerializeAdapter<count_t>::serialize(&mySize,
-					buffer, size, max_size, bigEndian);
+			ReturnValue_t result = SerializeAdapter::serialize(&mySize,
+					buffer, size, maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
 			}
 		}
-		return serialize(SinglyLinkedList<T>::start, buffer, size, max_size,
-				bigEndian);
+		return serialize(SinglyLinkedList<T>::start, buffer, size, maxSize,
+				streamEndianness);
 	}
 
 	static ReturnValue_t serialize(const LinkedElement<T>* element,
-			uint8_t** buffer, uint32_t* size, const uint32_t max_size,
-			bool bigEndian) {
+			uint8_t** buffer, size_t* size, size_t maxSize,
+			Endianness streamEndianness) {
 		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (element != NULL)) {
-			result = element->value->serialize(buffer, size, max_size,
-					bigEndian);
+			result = element->value->serialize(buffer, size, maxSize,
+					streamEndianness);
 			element = element->getNext();
 		}
 		return result;
 	}
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const override {
 		if (printCount) {
 			return SerialLinkedListAdapter<T>::getSerializedSize()
 					+ sizeof(count_t);
@@ -64,8 +64,8 @@ public:
 			return getSerializedSize(SinglyLinkedList<T>::start);
 		}
 	}
-	static uint32_t getSerializedSize(const LinkedElement<T> *element) {
-		uint32_t size = 0;
+	static size_t getSerializedSize(const LinkedElement<T> *element) {
+		size_t size = 0;
 		while (element != NULL) {
 			size += element->value->getSerializedSize();
 			element = element->getNext();
@@ -73,16 +73,16 @@ public:
 		return size;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return deSerialize(SinglyLinkedList<T>::start, buffer, size, bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) override {
+		return deSerialize(SinglyLinkedList<T>::start, buffer, size, streamEndianness);
 	}
 
 	static ReturnValue_t deSerialize(LinkedElement<T>* element,
-			const uint8_t** buffer, int32_t* size, bool bigEndian) {
+			const uint8_t** buffer, size_t* size, Endianness streamEndianness) {
 		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (element != NULL)) {
-			result = element->value->deSerialize(buffer, size, bigEndian);
+			result = element->value->deSerialize(buffer, size, streamEndianness);
 			element = element->getNext();
 		}
 		return result;

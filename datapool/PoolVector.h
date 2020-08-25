@@ -11,11 +11,11 @@
 #ifndef POOLVECTOR_H_
 #define POOLVECTOR_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "DataSetIF.h"
+#include "PoolEntry.h"
+#include "PoolVariableIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 /**
  * \brief	This is the access class for array-type data pool entries.
@@ -197,13 +197,13 @@ public:
 		return *this;
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
 		uint16_t i;
 		ReturnValue_t result;
 		for (i = 0; i < vector_size; i++) {
-			result = SerializeAdapter<T>::serialize(&(value[i]), buffer, size,
-					max_size, bigEndian);
+			result = SerializeAdapter::serialize(&(value[i]), buffer, size,
+					maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
 			}
@@ -211,17 +211,17 @@ public:
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
-		return vector_size * SerializeAdapter<T>::getSerializedSize(value);
+	virtual size_t getSerializedSize() const {
+		return vector_size * SerializeAdapter::getSerializedSize(value);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
 		uint16_t i;
 		ReturnValue_t result;
 		for (i = 0; i < vector_size; i++) {
-			result = SerializeAdapter<T>::deSerialize(&(value[i]), buffer, size,
-					bigEndian);
+			result = SerializeAdapter::deSerialize(&(value[i]), buffer, size,
+					streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
 				return result;
 			}

@@ -1,6 +1,6 @@
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/devicehandlers/DeviceTmReportingWrapper.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "../serialize/SerializeAdapter.h"
+#include "DeviceTmReportingWrapper.h"
+#include "../serialize/SerializeAdapter.h"
 
 DeviceTmReportingWrapper::DeviceTmReportingWrapper(object_id_t objectId,
 		ActionId_t actionId, SerializeIF* data) :
@@ -12,35 +12,35 @@ DeviceTmReportingWrapper::~DeviceTmReportingWrapper() {
 }
 
 ReturnValue_t DeviceTmReportingWrapper::serialize(uint8_t** buffer,
-		uint32_t* size, const uint32_t max_size, bool bigEndian) const {
-	ReturnValue_t result = SerializeAdapter<object_id_t>::serialize(&objectId,
-			buffer, size, max_size, bigEndian);
+		size_t* size, size_t maxSize, Endianness streamEndianness) const {
+	ReturnValue_t result = SerializeAdapter::serialize(&objectId,
+			buffer, size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<ActionId_t>::serialize(&actionId, buffer,
-			size, max_size, bigEndian);
+	result = SerializeAdapter::serialize(&actionId, buffer,
+			size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return data->serialize(buffer, size, max_size, bigEndian);
+	return data->serialize(buffer, size, maxSize, streamEndianness);
 }
 
-uint32_t DeviceTmReportingWrapper::getSerializedSize() const {
+size_t DeviceTmReportingWrapper::getSerializedSize() const {
 	return sizeof(objectId) + sizeof(ActionId_t) + data->getSerializedSize();
 }
 
 ReturnValue_t DeviceTmReportingWrapper::deSerialize(const uint8_t** buffer,
-		int32_t* size, bool bigEndian) {
-	ReturnValue_t result = SerializeAdapter<object_id_t>::deSerialize(&objectId,
-			buffer, size, bigEndian);
+		size_t* size, Endianness streamEndianness) {
+	ReturnValue_t result = SerializeAdapter::deSerialize(&objectId,
+			buffer, size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = SerializeAdapter<ActionId_t>::deSerialize(&actionId, buffer,
-			size, bigEndian);
+	result = SerializeAdapter::deSerialize(&actionId, buffer,
+			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return data->deSerialize(buffer, size, bigEndian);
+	return data->deSerialize(buffer, size, streamEndianness);
 }

@@ -1,28 +1,32 @@
-#include "Mutex.h"
+#include <framework/osal/FreeRTOS/Mutex.h>
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-
-const uint32_t MutexIF::NO_TIMEOUT = 0;
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 Mutex::Mutex() {
 	handle = xSemaphoreCreateMutex();
-	//TODO print error
+	if(handle == nullptr) {
+		sif::error << "Mutex::Mutex(FreeRTOS): Creation failure" << std::endl;
+	}
 }
 
 Mutex::~Mutex() {
-	if (handle != 0) {
+	if (handle != nullptr) {
 		vSemaphoreDelete(handle);
 	}
 
 }
 
-ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
-	if (handle == 0) {
-		//TODO Does not exist
-		return HasReturnvaluesIF::RETURN_FAILED;
+ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType,
+        uint32_t timeoutMs) {
+	if (handle == nullptr) {
+		return MutexIF::MUTEX_NOT_FOUND;
 	}
-	TickType_t timeout = portMAX_DELAY;
-	if (timeoutMs != NO_TIMEOUT) {
+	// If the timeout type is BLOCKING, this will be the correct value.
+	uint32_t timeout = portMAX_DELAY;
+	if(timeoutType == TimeoutType::POLLING) {
+		timeout = 0;
+	}
+	else if(timeoutType == TimeoutType::WAITING){
 		timeout = pdMS_TO_TICKS(timeoutMs);
 	}
 
@@ -30,21 +34,18 @@ ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		//TODO could not be acquired/timeout
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MutexIF::MUTEX_TIMEOUT;
 	}
 }
 
 ReturnValue_t Mutex::unlockMutex() {
-	if (handle == 0) {
-		//TODO Does not exist
-		return HasReturnvaluesIF::RETURN_FAILED;
+	if (handle == nullptr) {
+		return MutexIF::MUTEX_NOT_FOUND;
 	}
 	BaseType_t returncode = xSemaphoreGive(handle);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		//TODO is not owner
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MutexIF::CURR_THREAD_DOES_NOT_OWN_MUTEX;
 	}
 }
