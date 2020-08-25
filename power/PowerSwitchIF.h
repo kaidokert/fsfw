@@ -8,8 +8,8 @@
 #ifndef POWERSWITCHIF_H_
 #define POWERSWITCHIF_H_
 
-#include <framework/events/Event.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../events/Event.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 /**
  * This interface defines a connection to a device that is capable of turning on and off
  * switches of devices identified by a switch ID.

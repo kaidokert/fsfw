@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_TASK_PERIODICTASKIF_H_
 #define FRAMEWORK_TASK_PERIODICTASKIF_H_
 
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/timemanager/Clock.h>
+#include "../objectmanager/SystemObjectIF.h"
+#include "../timemanager/Clock.h"
 #include <cstddef>
 class ExecutableObjectIF;
 

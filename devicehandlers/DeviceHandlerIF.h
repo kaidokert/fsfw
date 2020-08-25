@@ -1,11 +1,11 @@
 #ifndef DEVICEHANDLERIF_H_
 #define DEVICEHANDLERIF_H_
 
-#include <framework/action/HasActionsIF.h>
-#include <framework/devicehandlers/DeviceHandlerMessage.h>
-#include <framework/events/Event.h>
-#include <framework/modes/HasModesIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../action/HasActionsIF.h"
+#include "DeviceHandlerMessage.h"
+#include "../events/Event.h"
+#include "../modes/HasModesIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 /**
  * @brief 	This is the Interface used to communicate with a device handler.

@@ -1,9 +1,9 @@
-#include <framework/globalfunctions/CRC.h>
-#include <framework/memory/MemoryHelper.h>
-#include <framework/memory/MemoryMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/EndianConverter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../globalfunctions/CRC.h"
+#include "MemoryHelper.h"
+#include "MemoryMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../serialize/EndianConverter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue) :
 		workOnThis(workOnThis), queueToUse(useThisQueue), ipcStore(NULL), ipcAddress(), lastCommand(

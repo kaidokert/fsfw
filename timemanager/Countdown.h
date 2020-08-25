@@ -8,7 +8,7 @@
 #ifndef COUNTDOWN_H_
 #define COUNTDOWN_H_
 
-#include <framework/timemanager/Clock.h>
+#include "Clock.h"
 
 class Countdown {
 private:

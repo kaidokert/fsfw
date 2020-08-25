@@ -1,9 +1,9 @@
 #ifndef PUSVERIFICATIONREPORT_H_
 #define PUSVERIFICATIONREPORT_H_
 
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/tmtcpacket/pus/TcPacketBase.h>
-#include <framework/tmtcservices/VerificationCodes.h>
+#include "../ipc/MessageQueueMessage.h"
+#include "../tmtcpacket/pus/TcPacketBase.h"
+#include "VerificationCodes.h"
 
 class PusVerificationMessage: public MessageQueueMessage {
 private:

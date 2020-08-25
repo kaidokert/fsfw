@@ -1,23 +1,33 @@
-#include <framework/tcdistribution/PUSDistributorIF.h>
-#include <framework/tmtcservices/AcceptsTelemetryIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../tcdistribution/PUSDistributorIF.h"
+#include "AcceptsTelemetryIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
-#include <framework/tmtcservices/CommandingServiceBase.h>
-#include <framework/tmtcservices/TmTcMessage.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/tmtcpacket/pus/TcPacketStored.h>
-#include <framework/tmtcpacket/pus/TmPacketStored.h>
+#include "CommandingServiceBase.h"
+#include "TmTcMessage.h"
+#include "../ipc/QueueFactory.h"
+#include "../tmtcpacket/pus/TcPacketStored.h"
+#include "../tmtcpacket/pus/TmPacketStored.h"
+
+object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
+object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
 
 CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId,
 		uint16_t apid, uint8_t service, uint8_t numberOfParallelCommands,
-		uint16_t commandTimeoutSeconds, object_id_t setPacketSource,
-		object_id_t setPacketDestination, size_t queueDepth) :
+		uint16_t commandTimeoutSeconds, size_t queueDepth) :
 		SystemObject(setObjectId), apid(apid), service(service),
 		timeoutSeconds(commandTimeoutSeconds),
-		commandMap(numberOfParallelCommands), packetSource(setPacketSource),
-		packetDestination(setPacketDestination) {
+		commandMap(numberOfParallelCommands) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
 	requestQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
+}
+
+void CommandingServiceBase::setPacketSource(object_id_t packetSource) {
+	this->packetSource = packetSource;
+}
+
+void CommandingServiceBase::setPacketDestination(
+		object_id_t packetDestination) {
+	this->packetDestination = packetDestination;
 }
 
 
@@ -52,10 +62,18 @@ ReturnValue_t CommandingServiceBase::initialize() {
 		return result;
 	}
 
+	if(packetDestination == objects::NO_OBJECT) {
+	    packetDestination = defaultPacketDestination;
+	}
 	AcceptsTelemetryIF* packetForwarding =
 			objectManager->get<AcceptsTelemetryIF>(packetDestination);
+
+	if(packetSource == objects::NO_OBJECT) {
+	    packetSource = defaultPacketSource;
+	}
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
+
 	if (packetForwarding == nullptr or distributor == nullptr) {
 	    sif::error << "CommandingServiceBase::intialize: Packet source or "
 	            "packet destination invalid!" << std::endl;
@@ -108,11 +126,11 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 			&nextCommand, iter->objectId, &isStep);
 
 	/* If the child implementation does not implement special handling for
-	 * rejected replies (RETURN_FAILED is returned), a failure verification
-	 * will be generated with the reason as the return code and the initial
-	 * command as failure parameter 1 */
-	if(reply->getCommand() == CommandMessage::REPLY_REJECTED and
-			result == RETURN_FAILED) {
+	 * rejected replies (RETURN_FAILED or INVALID_REPLY is returned), a
+	 * failure verification will be generated with the reason as the
+	 * return code and the initial command as failure parameter 1 */
+	if((reply->getCommand() == CommandMessage::REPLY_REJECTED) and
+			(result == RETURN_FAILED or result == INVALID_REPLY)) {
 	    result = reply->getReplyRejectedReason();
 	    failureParameter1 = iter->command;
 	}

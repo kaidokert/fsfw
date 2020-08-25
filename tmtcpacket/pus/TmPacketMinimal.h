@@ -2,8 +2,8 @@
 #define FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 
 
-#include <framework/tmtcpacket/SpacePacketBase.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../tmtcpacket/SpacePacketBase.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 struct timeval;
 class PacketTimestampInterpreterIF;

@@ -1,9 +1,9 @@
 #ifndef TEMPERATURESENSOR_H_
 #define TEMPERATURESENSOR_H_
 
-#include <framework/datapool/DataSet.h>
+#include "../datapool/DataSet.h"
 #include "AbstractTemperatureSensor.h"
-#include <framework/monitoring/LimitMonitor.h>
+#include "../monitoring/LimitMonitor.h"
 
 template<typename T>
 class TemperatureSensor: public AbstractTemperatureSensor {

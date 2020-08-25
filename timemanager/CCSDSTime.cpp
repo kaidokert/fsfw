@@ -1,4 +1,4 @@
-#include <framework/timemanager/CCSDSTime.h>
+#include "CCSDSTime.h"
 #include <stdio.h>
 #include <inttypes.h>
 #include <math.h>
