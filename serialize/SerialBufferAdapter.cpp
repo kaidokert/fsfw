@@ -23,22 +23,16 @@ SerialBufferAdapter<count_t>::~SerialBufferAdapter() {
 template<typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer,
 		size_t* size, size_t maxSize, Endianness streamEndianness) const {
-	count_t serializedLength = bufferLength;
-	if (serializeLength) {
-		serializedLength += SerializeAdapter::getSerializedSize(
-				&bufferLength);
-	}
-
-	if (*size + serializedLength > maxSize) {
-		return BUFFER_TOO_SHORT;
-	} 
-
 	if (serializeLength) {
 		ReturnValue_t result = SerializeAdapter::serialize(&bufferLength,
 				buffer, size, maxSize, streamEndianness);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
+	}
+
+	if (*size + bufferLength > maxSize) {
+		return BUFFER_TOO_SHORT;
 	}
 
 	if (this->constBuffer != nullptr) {
