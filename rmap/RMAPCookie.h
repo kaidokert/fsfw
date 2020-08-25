@@ -1,12 +1,12 @@
 #ifndef RMAPCOOKIE_H_
 #define RMAPCOOKIE_H_
 
-#include <framework/devicehandlers/Cookie.h>
-#include <framework/rmap/rmapStructs.h>
+#include "../devicehandlers/CookieIF.h"
+#include "rmapStructs.h"
 
 class RMAPChannelIF;
 
-class RMAPCookie : public Cookie{
+class RMAPCookie : public CookieIF {
 public:
 	//To Uli: Sorry, I need an empty ctor to initialize an array of cookies.
 	RMAPCookie();

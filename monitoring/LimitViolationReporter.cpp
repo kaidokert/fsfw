@@ -4,11 +4,11 @@
  * @date	17.07.2014
  * @author	baetz
  */
-#include <framework/monitoring/LimitViolationReporter.h>
-#include <framework/monitoring/MonitoringIF.h>
-#include <framework/monitoring/ReceivesMonitoringReportsIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "LimitViolationReporter.h"
+#include "MonitoringIF.h"
+#include "ReceivesMonitoringReportsIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../serialize/SerializeAdapter.h"
 
 ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF* data) {
 	ReturnValue_t result = checkClassLoaded();
@@ -17,7 +17,7 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 	}
 	store_address_t storeId;
 	uint8_t* dataTarget = NULL;
-	uint32_t maxSize = data->getSerializedSize();
+	size_t maxSize = data->getSerializedSize();
 	if (maxSize > MonitoringIF::VIOLATION_REPORT_MAX_SIZE) {
 		return MonitoringIF::INVALID_SIZE;
 	}
@@ -26,8 +26,8 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	uint32_t size = 0;
-	result = data->serialize(&dataTarget, &size, maxSize, true);
+	size_t size = 0;
+	result = data->serialize(&dataTarget, &size, maxSize, SerializeIF::Endianness::BIG);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}

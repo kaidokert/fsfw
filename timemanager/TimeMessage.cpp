@@ -5,7 +5,7 @@
  * @author	baetz
  */
 
-#include <framework/timemanager/TimeMessage.h>
+#include "TimeMessage.h"
 
 TimeMessage::TimeMessage() {
 	this->messageSize += sizeof(timeval) + sizeof(uint32_t);

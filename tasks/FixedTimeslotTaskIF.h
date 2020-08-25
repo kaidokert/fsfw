@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_TASKS_FIXEDTIMESLOTTASKIF_H_
 #define FRAMEWORK_TASKS_FIXEDTIMESLOTTASKIF_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tasks/PeriodicTaskIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "PeriodicTaskIF.h"
 
 /**
  * Following the same principle as the base class IF. This is the interface for a Fixed timeslot task

@@ -1,4 +1,4 @@
-#include <framework/ipc/QueueFactory.h>
+#include "../../ipc/QueueFactory.h"
 #include "MessageQueue.h"
 #include "RtemsBasic.h"
 
@@ -49,9 +49,9 @@ QueueFactory::QueueFactory() {
 QueueFactory::~QueueFactory() {
 }
 
-MessageQueueIF* QueueFactory::createMessageQueue(uint32_t message_depth,
-		uint32_t max_message_size) {
-	return new MessageQueue(message_depth, max_message_size);
+MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth,
+		size_t maxMessageSize) {
+	return new MessageQueue(messageDepth, maxMessageSize);
 }
 
 void QueueFactory::deleteMessageQueue(MessageQueueIF* queue) {

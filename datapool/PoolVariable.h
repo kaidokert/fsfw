@@ -11,11 +11,11 @@
 #ifndef POOLVARIABLE_H_
 #define POOLVARIABLE_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "DataSetIF.h"
+#include "PoolEntry.h"
+#include "PoolVariableIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 template<typename T, uint8_t n_var> class PoolVarList;
 
@@ -58,7 +58,7 @@ protected:
 	 * 			The operation does NOT provide any mutual exclusive protection by itself.
 	 */
 	ReturnValue_t read() {
-		PoolEntry<T>* read_out = ::dataPool.getData<T>(dataPoolId, 1);
+		PoolEntry<T> *read_out = ::dataPool.getData < T > (dataPoolId, 1);
 		if (read_out != NULL) {
 			valid = read_out->valid;
 			value = *(read_out->address);
@@ -79,7 +79,7 @@ protected:
 	 *
 	 */
 	ReturnValue_t commit() {
-		PoolEntry<T>* write_back = ::dataPool.getData<T>(dataPoolId, 1);
+		PoolEntry<T> *write_back = ::dataPool.getData < T > (dataPoolId, 1);
 		if ((write_back != NULL) && (readWriteMode != VAR_READ)) {
 			write_back->valid = valid;
 			*(write_back->address) = value;
@@ -115,7 +115,7 @@ public:
 	 * \param setWritable If this flag is set to true, changes in the value attribute can be
 	 * 					written back to the data pool, otherwise not.
 	 */
-	PoolVariable(uint32_t set_id, DataSetIF* dataSet,
+	PoolVariable(uint32_t set_id, DataSetIF *dataSet,
 			ReadWriteMode_t setReadWriteMode) :
 			dataPoolId(set_id), valid(PoolVariableIF::INVALID), readWriteMode(
 					setReadWriteMode), value(0) {
@@ -126,7 +126,7 @@ public:
 	/**
 	 * Copy ctor to copy classes containing Pool Variables.
 	 */
-	PoolVariable(const PoolVariable& rhs) :
+	PoolVariable(const PoolVariable &rhs) :
 			dataPoolId(rhs.dataPoolId), valid(rhs.valid), readWriteMode(
 					rhs.readWriteMode), value(rhs.value) {
 	}
@@ -184,29 +184,29 @@ public:
 		return value;
 	}
 
-	PoolVariable<T> &operator=(T newValue) {
+	PoolVariable<T>& operator=(T newValue) {
 		value = newValue;
 		return *this;
 	}
 
-	PoolVariable<T> &operator=(PoolVariable<T> newPoolVariable) {
+	PoolVariable<T>& operator=(PoolVariable<T> newPoolVariable) {
 		value = newPoolVariable.value;
 		return *this;
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return SerializeAdapter<T>::serialize(&value, buffer, size, max_size,
-				bigEndian);
+	virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+			size_t maxSize, Endianness streamEndianness) const override {
+		return SerializeAdapter::serialize<T>(&value, buffer, size, maxSize,
+				streamEndianness);
 	}
 
-	virtual uint32_t getSerializedSize() const {
-		return SerializeAdapter<T>::getSerializedSize(&value);
+	virtual size_t getSerializedSize() const override {
+		return SerializeAdapter::getSerializedSize(&value);
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return SerializeAdapter<T>::deSerialize(&value, buffer, size, bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+			Endianness streamEndianness) override {
+		return SerializeAdapter::deSerialize(&value, buffer, size, streamEndianness);
 	}
 };
 

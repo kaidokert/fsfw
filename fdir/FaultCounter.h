@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_FDIR_FAULTCOUNTER_H_
 #define FRAMEWORK_FDIR_FAULTCOUNTER_H_
 
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/timemanager/Countdown.h>
+#include "../parameters/HasParametersIF.h"
+#include "../timemanager/Countdown.h"
 
 class FaultCounter: public HasParametersIF {
 public:

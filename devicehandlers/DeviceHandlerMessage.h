@@ -1,10 +1,10 @@
 #ifndef DEVICEHANDLERMESSAGE_H_
 #define DEVICEHANDLERMESSAGE_H_
 
-#include <framework/action/ActionMessage.h>
-#include <framework/ipc/CommandMessage.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../action/ActionMessage.h"
+#include "../ipc/CommandMessage.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../storagemanager/StorageManagerIF.h"
 //SHOULDDO: rework the static constructors to name the type of command they are building, maybe even hide setting the commandID.
 
 /**

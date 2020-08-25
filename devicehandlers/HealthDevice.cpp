@@ -1,5 +1,5 @@
-#include <framework/devicehandlers/HealthDevice.h>
-#include <framework/ipc/QueueFactory.h>
+#include "HealthDevice.h"
+#include "../ipc/QueueFactory.h"
 
 HealthDevice::HealthDevice(object_id_t setObjectId,
 		MessageQueueId_t parentQueue) :
@@ -38,7 +38,7 @@ MessageQueueId_t HealthDevice::getCommandQueue() const {
 }
 
 void HealthDevice::setParentQueue(MessageQueueId_t parentQueue) {
-	healthHelper.setParentQeueue(parentQueue);
+	healthHelper.setParentQueue(parentQueue);
 }
 
 bool HealthDevice::hasHealthChanged() {

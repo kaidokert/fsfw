@@ -8,8 +8,8 @@
 #ifndef SYSTEMOBJECTIF_H_
 #define SYSTEMOBJECTIF_H_
 
-#include <framework/events/EventReportingProxyIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../events/EventReportingProxyIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <stdint.h>
 /**
  * \defgroup system_objects Software System Object Management

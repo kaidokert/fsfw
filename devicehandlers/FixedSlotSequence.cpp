@@ -1,5 +1,5 @@
-#include <framework/devicehandlers/FixedSlotSequence.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "FixedSlotSequence.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
 		lengthMs(setLengthMs) {
@@ -7,17 +7,12 @@ FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
 }
 
 FixedSlotSequence::~FixedSlotSequence() {
-	std::list<FixedSequenceSlot*>::iterator slotIt;
-	//Iterate through slotList and delete all entries.
-	slotIt = this->slotList.begin();
-	while (slotIt != this->slotList.end()) {
-		delete (*slotIt);
-		slotIt++;
-	}
+	// Call the destructor on each list entry.
+	slotList.clear();
 }
 
 void FixedSlotSequence::executeAndAdvance() {
-	(*this->current)->handler->performOperation((*this->current)->opcode);
+	current->handler->performOperation(current->opcode);
 //	if (returnValue != RETURN_OK) {
 //		this->sendErrorMessage( returnValue );
 //	}
@@ -31,53 +26,50 @@ void FixedSlotSequence::executeAndAdvance() {
 
 uint32_t FixedSlotSequence::getIntervalToNextSlotMs() {
 	uint32_t oldTime;
-	std::list<FixedSequenceSlot*>::iterator it;
-	it = current;
+	SlotListIter slotListIter = current;
 	// Get the pollingTimeMs of the current slot object.
-	oldTime = (*it)->pollingTimeMs;
+	oldTime = slotListIter->pollingTimeMs;
 	// Advance to the next object.
-	it++;
+	slotListIter++;
 	// Find the next interval which is not 0.
-	while (it != slotList.end()) {
-		if (oldTime != (*it)->pollingTimeMs) {
-			return (*it)->pollingTimeMs - oldTime;
+	while (slotListIter != slotList.end()) {
+		if (oldTime != slotListIter->pollingTimeMs) {
+			return slotListIter->pollingTimeMs - oldTime;
 		} else {
-			it++;
+			slotListIter++;
 		}
 	}
 	// If the list end is reached (this is definitely an interval != 0),
 	// the interval is calculated by subtracting the remaining time of the PST
 	// and adding the start time of the first handler in the list.
-	it = slotList.begin();
-	return lengthMs - oldTime + (*it)->pollingTimeMs;
+	slotListIter = slotList.begin();
+	return lengthMs - oldTime + slotListIter->pollingTimeMs;
 }
 
 uint32_t FixedSlotSequence::getIntervalToPreviousSlotMs() {
 	uint32_t currentTime;
-	std::list<FixedSequenceSlot*>::iterator it;
-	it = current;
+	SlotListIter slotListIter = current;
 	// Get the pollingTimeMs of the current slot object.
-	currentTime = (*it)->pollingTimeMs;
+	currentTime = slotListIter->pollingTimeMs;
 
 	//if it is the first slot, calculate difference to last slot
-	if (it == slotList.begin()){
-		return lengthMs - (*(--slotList.end()))->pollingTimeMs + currentTime;
+	if (slotListIter == slotList.begin()){
+		return lengthMs - (--slotList.end())->pollingTimeMs + currentTime;
 	}
 	// get previous slot
-	it--;
+	slotListIter--;
 
-	return currentTime - (*it)->pollingTimeMs;
+	return currentTime - slotListIter->pollingTimeMs;
 }
 
 bool FixedSlotSequence::slotFollowsImmediately() {
-	uint32_t currentTime = (*current)->pollingTimeMs;
-	std::list<FixedSequenceSlot*>::iterator it;
-	it = this->current;
+	uint32_t currentTime = current->pollingTimeMs;
+	SlotListIter fixedSequenceIter = this->current;
 	// Get the pollingTimeMs of the current slot object.
-	if (it == slotList.begin())
+	if (fixedSequenceIter == slotList.begin())
 		return false;
-	it--;
-	if ((*it)->pollingTimeMs == currentTime) {
+	fixedSequenceIter--;
+	if (fixedSequenceIter->pollingTimeMs == currentTime) {
 		return true;
 	} else {
 		return false;
@@ -93,26 +85,30 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 		sif::error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+
 	auto slotIt = slotList.begin();
 	uint32_t count = 0;
 	uint32_t time = 0;
 	while (slotIt != slotList.end()) {
-		if ((*slotIt)->handler == NULL) {
+		if (slotIt->handler == nullptr) {
 			sif::error << "FixedSlotSequene::initialize: ObjectId does not exist!"
 					<< std::endl;
 			count++;
-		} else if ((*slotIt)->pollingTimeMs < time) {
+		} else if (slotIt->pollingTimeMs < time) {
 			sif::error << "FixedSlotSequence::initialize: Time: "
-					<< (*slotIt)->pollingTimeMs
+					<< slotIt->pollingTimeMs
 					<< " is smaller than previous with " << time << std::endl;
 			count++;
 		} else {
-			//All ok, print slot.
-//			(*slotIt)->print();
+			// All ok, print slot.
+			//info << "Current slot polling time: " << std::endl;
+			//info << std::dec << slotIt->pollingTimeMs << std::endl;
 		}
-		time = (*slotIt)->pollingTimeMs;
+		time = slotIt->pollingTimeMs;
 		slotIt++;
 	}
+	//info << "Number of elements in slot list: "
+	//	   << slotList.size() << std::endl;
 	if (count > 0) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -121,8 +117,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 
 void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs,
 		int8_t executionStep, PeriodicTaskIF* executingTask) {
-	this->slotList.push_back(
-			new FixedSequenceSlot(componentId, slotTimeMs, executionStep,
-					executingTask));
+	this->slotList.insert(FixedSequenceSlot(componentId, slotTimeMs, executionStep,
+			executingTask));
 	this->current = slotList.begin();
 }

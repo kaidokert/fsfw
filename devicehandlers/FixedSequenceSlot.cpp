@@ -5,8 +5,8 @@
  * @author	baetz
  */
 
-#include <framework/devicehandlers/FixedSequenceSlot.h>
-#include <framework/objectmanager/SystemObjectIF.h>
+#include "FixedSequenceSlot.h"
+#include "../objectmanager/SystemObjectIF.h"
 #include <cstddef>
 
 FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,
@@ -16,6 +16,5 @@ FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,
 	handler->setTaskIF(executingTask);
 }
 
-FixedSequenceSlot::~FixedSequenceSlot() {
-}
+FixedSequenceSlot::~FixedSequenceSlot() {}
 

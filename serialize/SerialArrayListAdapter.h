@@ -1,18 +1,13 @@
-/**
- * @file	SerialArrayListAdapter.h
- * @brief	This file defines the SerialArrayListAdapter class.
- * @date	22.07.2014
- * @author	baetz
- */
-#ifndef SERIALARRAYLISTADAPTER_H_
-#define SERIALARRAYLISTADAPTER_H_
+#ifndef FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
+#define FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
 
-#include <framework/container/ArrayList.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../container/ArrayList.h"
+#include "SerializeIF.h"
 #include <utility>
 
 /**
- * \ingroup serialize
+ * @ingroup serialize
+ * @author  baetz
  */
 template<typename T, typename count_t = uint8_t>
 class SerialArrayListAdapter : public SerializeIF {
@@ -20,25 +15,26 @@ public:
 	SerialArrayListAdapter(ArrayList<T, count_t> *adaptee) : adaptee(adaptee) {
 	}
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) const {
-		return serialize(adaptee, buffer, size, max_size, bigEndian);
+	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
+			size_t maxSize, Endianness streamEndianness) const {
+		return serialize(adaptee, buffer, size, maxSize, streamEndianness);
 	}
 
-	static ReturnValue_t serialize(const ArrayList<T, count_t>* list, uint8_t** buffer, uint32_t* size,
-			const uint32_t max_size, bool bigEndian) {
-		ReturnValue_t result = SerializeAdapter<count_t>::serialize(&list->size,
-				buffer, size, max_size, bigEndian);
+	static ReturnValue_t serialize(const ArrayList<T, count_t>* list,
+	        uint8_t** buffer, size_t* size, size_t maxSize,
+	        Endianness streamEndianness) {
+		ReturnValue_t result = SerializeAdapter::serialize(&list->size,
+				buffer, size, maxSize, streamEndianness);
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
-			result = SerializeAdapter<T>::serialize(&list->entries[i], buffer, size,
-					max_size, bigEndian);
+			result = SerializeAdapter::serialize(&list->entries[i], buffer,
+			        size, maxSize, streamEndianness);
 			++i;
 		}
 		return result;
 	}
 
-	virtual uint32_t getSerializedSize() const {
+	virtual size_t getSerializedSize() const {
 		return getSerializedSize(adaptee);
 	}
 
@@ -47,31 +43,35 @@ public:
 		count_t i = 0;
 
 		for (i = 0; i < list->size; ++i) {
-			printSize += SerializeAdapter<T>::getSerializedSize(&list->entries[i]);
+			printSize += SerializeAdapter::getSerializedSize(&list->entries[i]);
 		}
 
 		return printSize;
 	}
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
-		return deSerialize(adaptee, buffer, size, bigEndian);
+	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
+		return deSerialize(adaptee, buffer, size, streamEndianness);
 	}
 
-	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list, const uint8_t** buffer, int32_t* size,
-			bool bigEndian) {
+	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list,
+	        const uint8_t** buffer, size_t* size,
+			Endianness streamEndianness) {
 		count_t tempSize = 0;
-		ReturnValue_t result = SerializeAdapter<count_t>::deSerialize(&tempSize,
-				buffer, size, bigEndian);
+		ReturnValue_t result = SerializeAdapter::deSerialize(&tempSize,
+				buffer, size, streamEndianness);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+		    return result;
+		}
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
 		list->size = tempSize;
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
-			result = SerializeAdapter<T>::deSerialize(
+			result = SerializeAdapter::deSerialize(
 					&list->front()[i], buffer, size,
-					bigEndian);
+					streamEndianness);
 			++i;
 		}
 		return result;
@@ -82,4 +82,4 @@ private:
 
 
 
-#endif /* SERIALARRAYLISTADAPTER_H_ */
+#endif /* FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_ */
