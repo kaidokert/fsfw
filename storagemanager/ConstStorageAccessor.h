@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
 #define FRAMEWORK_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
 
-#include "storeAddress.h"
+#include "../storagemanager/storeAddress.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
@@ -80,13 +80,13 @@ public:
 	 * @return
 	 */
 	ConstStorageAccessor& operator= (ConstStorageAccessor&&);
-	ConstStorageAccessor (ConstStorageAccessor&&);
+	ConstStorageAccessor(ConstStorageAccessor&&);
 
 	//! The copy ctor and copy assignemnt should be deleted implicitely
 	//! according to https://foonathan.net/2019/02/special-member-functions/
 	//! but I still deleted them to make it more explicit. (remember rule of 5).
-	ConstStorageAccessor& operator= (ConstStorageAccessor&) = delete;
-	ConstStorageAccessor (ConstStorageAccessor&) = delete;
+	ConstStorageAccessor& operator=(const ConstStorageAccessor&) = delete;
+	ConstStorageAccessor(const ConstStorageAccessor&) = delete;
 protected:
 	const uint8_t* constDataPointer = nullptr;
 	store_address_t storeId;

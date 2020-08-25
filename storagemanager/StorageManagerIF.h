@@ -1,7 +1,6 @@
 #ifndef STORAGEMANAGERIF_H_H
 #define STORAGEMANAGERIF_H_H
 
-
 #include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../storagemanager/StorageAccessor.h"
