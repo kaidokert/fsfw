@@ -1,8 +1,8 @@
-#include <framework/osal/host/MessageQueue.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/osal/host/QueueMapManager.h>
-#include <framework/ipc/MutexFactory.h>
-#include <framework/ipc/MutexHelper.h>
+#include "../../osal/host/MessageQueue.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../osal/host/QueueMapManager.h"
+#include "../../ipc/MutexFactory.h"
+#include "../../ipc/MutexHelper.h"
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		messageSize(maxMessageSize), messageDepth(messageDepth) {

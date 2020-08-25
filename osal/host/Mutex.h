@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_MUTEX_H_
 #define FRAMEWORK_OSAL_FREERTOS_MUTEX_H_
 
-#include <framework/ipc/MutexIF.h>
+#include "../../ipc/MutexIF.h"
 
 #include <mutex>
 

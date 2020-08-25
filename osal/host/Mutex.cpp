@@ -1,5 +1,5 @@
-#include <framework/osal/host/Mutex.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../osal/host/Mutex.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 const uint32_t MutexIF::POLLING = 0;
 const uint32_t MutexIF::BLOCKING = 0xffffffff;
