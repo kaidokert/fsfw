@@ -9,7 +9,7 @@ class MemoryMessage {
 private:
 	MemoryMessage(); //A private ctor inhibits instantiation
 public:
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::MEMORY;
+	static const uint8_t MESSAGE_ID = messagetypes::MEMORY;
 	static const Command_t CMD_MEMORY_LOAD = MAKE_COMMAND_ID( 0x01 );
 	static const Command_t CMD_MEMORY_DUMP = MAKE_COMMAND_ID( 0x02 );
 	static const Command_t CMD_MEMORY_CHECK = MAKE_COMMAND_ID( 0x03 );
