@@ -4,8 +4,8 @@
  * @date	30.01.2014
  * @author	baetz
  */
-#ifndef MULTIOBJECTTASK_H_
-#define MULTIOBJECTTASK_H_
+#ifndef FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
+#define FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
 
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
@@ -63,11 +63,11 @@ public:
 	 * @param object Id of the object to add.
 	 * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
 	 */
-	ReturnValue_t addComponent(object_id_t object);
+	ReturnValue_t addComponent(object_id_t object) override;
 
-	uint32_t getPeriodMs() const;
+	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t sleepFor(uint32_t ms);
+	ReturnValue_t sleepFor(uint32_t ms) override;
 protected:
 	typedef std::vector<ExecutableObjectIF*> ObjectList;	//!< Typedef for the List of objects.
 	/**
@@ -110,4 +110,4 @@ protected:
 	void taskFunctionality(void);
 };
 
-#endif /* MULTIOBJECTTASK_H_ */
+#endif /* FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_ */
