@@ -23,34 +23,33 @@ SerialBufferAdapter<count_t>::~SerialBufferAdapter() {
 template<typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer,
 		size_t* size, size_t maxSize, Endianness streamEndianness) const {
-	uint32_t serializedLength = bufferLength;
 	if (serializeLength) {
-		serializedLength += SerializeAdapter::getSerializedSize(
-				&bufferLength);
+		ReturnValue_t result = SerializeAdapter::serialize(&bufferLength,
+				buffer, size, maxSize, streamEndianness);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
 	}
-	if (*size + serializedLength > maxSize) {
+
+	if (*size + bufferLength > maxSize) {
 		return BUFFER_TOO_SHORT;
-	} 
-	else {
-		if (serializeLength) {
-			SerializeAdapter::serialize(&bufferLength, buffer, size,
-					maxSize, streamEndianness);
-		}
-		if (this->constBuffer != nullptr) {
-			memcpy(*buffer, this->constBuffer, bufferLength);
-		}
-		else if (this->buffer != nullptr) {
-			// This will propably be never reached, constBuffer should always be
-			// set if non-const buffer is set.
-			memcpy(*buffer, this->buffer, bufferLength);
-		}
-		else {
-			return HasReturnvaluesIF::RETURN_FAILED;
-		}
-		*size += bufferLength;
-		(*buffer) += bufferLength;
-		return HasReturnvaluesIF::RETURN_OK;
 	}
+
+	if (this->constBuffer != nullptr) {
+		std::memcpy(*buffer, this->constBuffer, bufferLength);
+	}
+	else if (this->buffer != nullptr) {
+		// This will propably be never reached, constBuffer should always be
+		// set if non-const buffer is set.
+		std::memcpy(*buffer, this->buffer, bufferLength);
+	}
+	else {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	*size += bufferLength;
+	(*buffer) += bufferLength;
+	return HasReturnvaluesIF::RETURN_OK;
+
 }
 
 template<typename count_t>
@@ -126,4 +125,6 @@ void SerialBufferAdapter<count_t>::setBuffer(uint8_t* buffer,
 template class SerialBufferAdapter<uint8_t>;
 template class SerialBufferAdapter<uint16_t>;
 template class SerialBufferAdapter<uint32_t>;
+template class SerialBufferAdapter<uint64_t>;
+template class SerialBufferAdapter<size_t>;
 
