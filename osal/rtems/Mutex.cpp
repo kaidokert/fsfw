@@ -27,16 +27,16 @@ ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType =
         TimeoutType::BLOCKING, uint32_t timeoutMs) {
 	if(timeoutMs == MutexIF::TimeoutType::BLOCKING) {
 		rtems_status_code status = rtems_semaphore_obtain(mutexId,
-				RTEMS_WAIT, timeoutMs);
+				RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 	}
 	else if(timeoutMs == MutexIF::TimeoutType::POLLING) {
 		timeoutMs = RTEMS_NO_TIMEOUT;
 		rtems_status_code status = rtems_semaphore_obtain(mutexId,
-				RTEMS_NO_WAIT, timeoutMs);
+				RTEMS_NO_WAIT, 0);
 	}
 	else {
 		rtems_status_code status = rtems_semaphore_obtain(mutexId,
-				RTEMS_NO_WAIT, timeoutMs);
+				RTEMS_WAIT, timeoutMs);
 	}
 
 	switch(status){
