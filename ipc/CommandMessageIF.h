@@ -1,8 +1,8 @@
-#ifndef FRAMEWORK_IPC_COMMANDMESSAGEIF_H_
-#define FRAMEWORK_IPC_COMMANDMESSAGEIF_H_
+#ifndef FSFW_IPC_COMMANDMESSAGEIF_H_
+#define FSFW_IPC_COMMANDMESSAGEIF_H_
 
-#include "../ipc/MessageQueueMessageIF.h"
-#include "../ipc/FwMessageTypes.h"
+#include "MessageQueueMessageIF.h"
+#include "FwMessageTypes.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
@@ -70,4 +70,4 @@ public:
 
 };
 
-#endif /* FRAMEWORK_IPC_COMMANDMESSAGEIF_H_ */
+#endif /* FSFW_IPC_COMMANDMESSAGEIF_H_ */

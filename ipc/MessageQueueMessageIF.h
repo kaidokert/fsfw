@@ -29,8 +29,10 @@ public:
 
 	/**
 	 * @brief	With this method, the whole content and the message
-	 * 			size is set to zero. Implementations should also take care
-	 * 			to clear data which is stored indirectly (e.g. storage data).
+	 * 			size is set to zero.
+	 * @details
+	 * Implementations should also take care to clear data which is stored
+	 * indirectly (e.g. storage data).
 	 */
 	virtual void clear() = 0;
 

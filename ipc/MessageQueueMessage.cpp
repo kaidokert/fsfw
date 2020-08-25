@@ -1,4 +1,4 @@
-#include "../ipc/MessageQueueMessage.h"
+#include "MessageQueueMessage.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../globalfunctions/arrayprinter.h"
 #include <cstring>

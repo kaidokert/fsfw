@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_MUTEXHELPER_H_
 #define FRAMEWORK_IPC_MUTEXHELPER_H_
 
-#include "../ipc/MutexFactory.h"
+#include "MutexFactory.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 class MutexHelper {
@@ -16,8 +16,8 @@ public:
 					<< timeoutMs << " milliseconds!" << std::endl;
 		}
 		else if(status != HasReturnvaluesIF::RETURN_OK){
-			sif::error << "MutexHelper: Lock of Mutex failed with code " <<
-					status << std::endl;
+			sif::error << "MutexHelper: Lock of Mutex failed with code "
+			        << status << std::endl;
 		}
 	}
 

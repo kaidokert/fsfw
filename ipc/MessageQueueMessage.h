@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_IPC_MESSAGEQUEUEMESSAGE_H_
-#define FRAMEWORK_IPC_MESSAGEQUEUEMESSAGE_H_
+#ifndef FSFW_IPC_MESSAGEQUEUEMESSAGE_H_
+#define FSFW_IPC_MESSAGEQUEUEMESSAGE_H_
 
 #include "../ipc/MessageQueueMessageIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
@@ -147,4 +147,4 @@ public:
 	void print(bool printWholeMessage);
 };
 
-#endif /* MESSAGEQUEUEMESSAGE_H_ */
+#endif /* FSFW_IPC_MESSAGEQUEUEMESSAGE_H_ */

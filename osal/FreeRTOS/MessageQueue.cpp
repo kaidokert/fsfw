@@ -1,4 +1,4 @@
-#include "../../osal/FreeRTOS/MessageQueue.h"
+#include "MessageQueue.h"
 
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
@@ -10,13 +10,13 @@
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		maxMessageSize(maxMessageSize) {
 	handle = xQueueCreate(messageDepth, maxMessageSize);
-	if (handle == NULL) {
-		sif::error << "MessageQueue: Creation failed" << std::endl;
+	if (handle == nullptr) {
+		sif::error << "MessageQueue::MessageQueue Creation failed" << std::endl;
 	}
 }
 
 MessageQueue::~MessageQueue() {
-	if (handle != NULL) {
+	if (handle != nullptr) {
 		vQueueDelete(handle);
 	}
 }
@@ -126,7 +126,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	BaseType_t result = pdFALSE;
 	QueueHandle_t destination = nullptr;
 
-	if(sendTo == MessageQueueIF::NO_QUEUE) {
+	if(sendTo == MessageQueueIF::NO_QUEUE or sendTo == 0x00) {
 		return MessageQueueIF::DESTINVATION_INVALID;
 	}
 	else  {

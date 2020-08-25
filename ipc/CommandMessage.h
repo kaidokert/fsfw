@@ -1,9 +1,9 @@
-#ifndef FRAMEWORK_IPC_COMMANDMESSAGE_H_
-#define FRAMEWORK_IPC_COMMANDMESSAGE_H_
+#ifndef FSFW_IPC_COMMANDMESSAGE_H_
+#define FSFW_IPC_COMMANDMESSAGE_H_
 
-#include "../ipc/CommandMessageIF.h"
-#include "../ipc/MessageQueueMessage.h"
-#include "../ipc/FwMessageTypes.h"
+#include "CommandMessageIF.h"
+#include "MessageQueueMessage.h"
+#include "FwMessageTypes.h"
 
 /**
  * @brief 	Default command message used to pass command messages between tasks.
@@ -126,4 +126,4 @@ public:
     size_t getMinimumMessageSize() const override;
 };
 
-#endif /* COMMANDMESSAGE_H_ */
+#endif /* FSFW_IPC_COMMANDMESSAGE_H_ */
