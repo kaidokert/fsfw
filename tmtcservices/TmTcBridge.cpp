@@ -122,6 +122,7 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 		 result == HasReturnvaluesIF::RETURN_OK;
 		 result = tmTcReceptionQueue->receiveMessage(&message))
 	{
+	    //sif::info << (int) packetSentCounter << std::endl;
 		if(communicationLinkUp == false or
 		        packetSentCounter >= sentPacketsPerCycle) {
 			storeDownlinkData(&message);
@@ -138,8 +139,10 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			status = result;
 		}
-		tmStore->deleteData(message.getStorageId());
-		packetSentCounter++;
+		else {
+		    tmStore->deleteData(message.getStorageId());
+		    packetSentCounter++;
+		}
 	}
 	return status;
 }
@@ -152,7 +155,7 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	                    << "of stored packet IDs reached! " << std::endl;
 	    if(overwriteOld) {
 	        tmFifo->retrieve(&storeId);
-	                tmStore->deleteData(storeId);
+	        tmStore->deleteData(storeId);
 	    }
 	    else {
 	        return HasReturnvaluesIF::RETURN_FAILED;
@@ -168,8 +171,9 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 ReturnValue_t TmTcBridge::handleStoredTm() {
     ReturnValue_t status = RETURN_OK;
 	while(not tmFifo->empty() and packetSentCounter < sentPacketsPerCycle) {
-		//info << "TMTC Bridge: Sending stored TM data. There are "
-		//     << (int) fifo.size() << " left to send\r\n" << std::flush;
+		//sif::info << "TMTC Bridge: Sending stored TM data. There are "
+		//     << (int) tmFifo->size() << " left to send\r\n" << std::flush;
+
 		store_address_t storeId;
 		const uint8_t* data = nullptr;
 		size_t size = 0;
