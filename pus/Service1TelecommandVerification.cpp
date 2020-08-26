@@ -53,7 +53,7 @@ ReturnValue_t Service1TelecommandVerification::sendVerificationReport(
 		result = generateSuccessReport(message);
 	}
 	if(result != HasReturnvaluesIF::RETURN_OK){
-		sif::error << "Service1TelecommandVerification::initialize: "
+		sif::error << "Service1TelecommandVerification::sendVerificationReport: "
 		        "Sending verification packet failed !" << std::endl;
 	}
 	return result;
