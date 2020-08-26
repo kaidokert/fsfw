@@ -1,14 +1,14 @@
 #ifndef FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 #define FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
 
+
 #include "../objectmanager/SystemObject.h"
 #include "../tmtcservices/AcceptsTelemetryIF.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
-
-#include "../container/FIFO.h"
+#include "../container/DynamicFIFO.h"
 #include "../tmtcservices/TmTcMessage.h"
 
 class TmTcBridge : public AcceptsTelemetryIF,
@@ -45,6 +45,12 @@ public:
 	 *         -@c RETURN_FAILED otherwise, stored value stays the same
 	 */
 	ReturnValue_t setMaxNumberOfPacketsStored(uint8_t maxNumberOfPacketsStored);
+
+	/**
+	 * This will set up the bridge to overwrite old data in the FIFO.
+	 * @param overwriteOld
+	 */
+	void setFifoToOverwriteOldData(bool overwriteOld);
 
 	virtual void registerCommConnect();
 	virtual void registerCommDisconnect();
@@ -86,6 +92,8 @@ protected:
 	//! by default, so telemetry will be handled immediately.
 	bool communicationLinkUp = true;
 	bool tmStored = false;
+	bool overwriteOld = true;
+	uint8_t packetSentCounter = 0;
 
 	/**
 	 * @brief 	Handle TC reception
@@ -145,7 +153,7 @@ protected:
 	 * This fifo can be used to store downlink data
 	 * which can not be sent at the moment.
 	 */
-	FIFO<store_address_t, LIMIT_DOWNLINK_PACKETS_STORED> tmFifo;
+	DynamicFIFO<store_address_t>* tmFifo = nullptr;
     uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;
     uint8_t maxNumberOfPacketsStored = DEFAULT_DOWNLINK_PACKETS_STORED;
 };
