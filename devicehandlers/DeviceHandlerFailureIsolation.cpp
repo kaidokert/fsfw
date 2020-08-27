@@ -5,7 +5,8 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../thermal/ThermalComponentIF.h"
 
-object_id_t DeviceHandlerFailureIsolation::powerConfirmationId = 0;
+object_id_t DeviceHandlerFailureIsolation::powerConfirmationId =
+        objects::NO_OBJECT;
 
 DeviceHandlerFailureIsolation::DeviceHandlerFailureIsolation(object_id_t owner,
 		object_id_t parent) :
@@ -70,7 +71,7 @@ ReturnValue_t DeviceHandlerFailureIsolation::eventReceived(EventMessage* event) 
 		break;
 		//****Power*****
 	case PowerSwitchIF::SWITCH_WENT_OFF:
-		if(hasPowerConfirmation) {
+		if(powerConfirmation != MessageQueueIF::NO_QUEUE) {
 			result = sendConfirmationRequest(event, powerConfirmation);
 			if (result == RETURN_OK) {
 				setFdirState(DEVICE_MIGHT_BE_OFF);
@@ -171,7 +172,6 @@ ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
 			powerConfirmationId);
 	if (power != nullptr) {
 		powerConfirmation = power->getEventReceptionQueue();
-		hasPowerConfirmation = true;
 	}
 
 	return RETURN_OK;
