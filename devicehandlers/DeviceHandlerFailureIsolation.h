@@ -3,10 +3,10 @@
 
 #include "../fdir/FaultCounter.h"
 #include "../fdir/FailureIsolationBase.h"
+
 namespace Factory{
 void setStaticFrameworkObjectIds();
 }
-
 
 class DeviceHandlerFailureIsolation: public FailureIsolationBase {
 	friend void (Factory::setStaticFrameworkObjectIds)();
@@ -28,8 +28,7 @@ protected:
 		NONE, RECOVERY_ONGOING, DEVICE_MIGHT_BE_OFF, AWAIT_SHUTDOWN
 	};
 	FDIRState fdirState;
-	bool hasPowerConfirmation = false;
-	MessageQueueId_t powerConfirmation;
+	MessageQueueId_t powerConfirmation = MessageQueueIF::NO_QUEUE;
 	static object_id_t powerConfirmationId;
 	// TODO: Are those hardcoded value? How can they be changed.
 	static const uint32_t MAX_REBOOT = 1;
