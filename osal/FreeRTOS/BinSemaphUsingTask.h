@@ -14,6 +14,9 @@
  * @details
  * Additional information: https://www.freertos.org/RTOS-task-notifications.html
  * and general semaphore documentation.
+ * This semaphore is bound to the task it is created in!
+ * Take care of calling this function with the correct executing task,
+ * (for example in the initializeAfterTaskCreation() function).
  */
 class BinarySemaphoreUsingTask: public SemaphoreIF,
 		public HasReturnvaluesIF {
