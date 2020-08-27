@@ -8,14 +8,14 @@
 #ifndef VIRTUALCHANNELRECEPTION_H_
 #define VIRTUALCHANNELRECEPTION_H_
 
-#include <framework/datalinklayer/CCSDSReturnValuesIF.h>
-#include <framework/datalinklayer/Clcw.h>
-#include <framework/datalinklayer/Farm1StateIF.h>
-#include <framework/datalinklayer/Farm1StateLockout.h>
-#include <framework/datalinklayer/Farm1StateOpen.h>
-#include <framework/datalinklayer/Farm1StateWait.h>
-#include <framework/datalinklayer/MapPacketExtractionIF.h>
-#include <framework/datalinklayer/VirtualChannelReceptionIF.h>
+#include "CCSDSReturnValuesIF.h"
+#include "Clcw.h"
+#include "Farm1StateIF.h"
+#include "Farm1StateLockout.h"
+#include "Farm1StateOpen.h"
+#include "Farm1StateWait.h"
+#include "MapPacketExtractionIF.h"
+#include "VirtualChannelReceptionIF.h"
 #include <map>
 /**
  * Implementation of a TC Virtual Channel.

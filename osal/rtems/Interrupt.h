@@ -1,7 +1,7 @@
 #ifndef OS_RTEMS_INTERRUPT_H_
 #define OS_RTEMS_INTERRUPT_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 #include <cstring>
 #include <rtems.h>
 

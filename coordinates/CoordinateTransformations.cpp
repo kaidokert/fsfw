@@ -1,7 +1,7 @@
-#include <framework/coordinates/CoordinateTransformations.h>
-#include <framework/globalfunctions/constants.h>
-#include <framework/globalfunctions/math/MatrixOperations.h>
-#include <framework/globalfunctions/math/VectorOperations.h>
+#include "CoordinateTransformations.h"
+#include "../globalfunctions/constants.h"
+#include "../globalfunctions/math/MatrixOperations.h"
+#include "../globalfunctions/math/VectorOperations.h"
 #include <stddef.h>
 #include <cmath>
 

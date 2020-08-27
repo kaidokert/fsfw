@@ -1,8 +1,8 @@
 #ifndef TMTCMESSAGE_H_
 #define TMTCMESSAGE_H_
 
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/MessageQueueMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
 /**
  * @brief	This message class is used to pass Telecommand and Telemetry
  * 			packets between tasks.

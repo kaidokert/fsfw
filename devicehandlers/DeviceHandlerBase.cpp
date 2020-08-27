@@ -1,18 +1,16 @@
-#include <framework/devicehandlers/DeviceHandlerBase.h>
-#include <framework/objectmanager/ObjectManager.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/thermal/ThermalComponentIF.h>
-#include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
+#include "DeviceHandlerBase.h"
+#include "AcceptsDeviceResponsesIF.h"
+#include "DeviceTmReportingWrapper.h"
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
-#include <framework/devicehandlers/DeviceTmReportingWrapper.h>
-#include <framework/globalfunctions/CRC.h>
-//#include <framework/housekeeping/HousekeepingMessage.h>
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/subsystem/SubsystemBase.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../objectmanager/ObjectManager.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../thermal/ThermalComponentIF.h"
+#include "../datapool/DataSet.h"
+#include "../datapool/PoolVariable.h"
+#include "../globalfunctions/CRC.h"
+#include "../subsystem/SubsystemBase.h"
+#include "../ipc/QueueFactory.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 #include <iomanip>
 
@@ -28,11 +26,10 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
-		actionHelper(this, nullptr), hkManager(this, nullptr),
-		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
-		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
-		switchOffWasReported(false), childTransitionDelay(5000),
-		transitionSourceMode(_MODE_POWER_DOWN),
+		actionHelper(this, nullptr), childTransitionFailure(RETURN_OK),
+		fdirInstance(fdirInstance), hkSwitcher(this),
+		defaultFDIRUsed(fdirInstance == nullptr), switchOffWasReported(false),
+		childTransitionDelay(5000), transitionSourceMode(_MODE_POWER_DOWN),
 		transitionSourceSubMode(SUBMODE_NONE) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
 			MessageQueueMessage::MAX_MESSAGE_SIZE);
@@ -1202,7 +1199,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 	}
 	//Try to cast to GlobDataSet and commit data.
 	if (!neverInDataPool) {
-		GlobDataSet* dataSet = dynamic_cast<GlobDataSet*>(data);
+		DataSet* dataSet = dynamic_cast<DataSet*>(data);
 		if (dataSet != NULL) {
 			dataSet->commit(PoolVariableIF::VALID);
 		}
@@ -1357,16 +1354,6 @@ void DeviceHandlerBase::debugInterface(uint8_t positionTracker,
 void DeviceHandlerBase::performOperationHook() {
 }
 
-ReturnValue_t DeviceHandlerBase::initializePoolEntries(
-		LocalDataPool &localDataPoolMap) {
-	return RETURN_OK;
-}
-
-LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
-	return &hkManager;
-}
-
-
 ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     // In this function, the task handle should be valid if the task
     // was implemented correctly. We still check to be 1000 % sure :-)
@@ -1376,12 +1363,3 @@ ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
-	auto iter = deviceReplyMap.find(sid.ownerSetId);
-	if(iter != deviceReplyMap.end()) {
-		return iter->second.dataSet;
-	}
-	else {
-		return nullptr;
-	}
-}

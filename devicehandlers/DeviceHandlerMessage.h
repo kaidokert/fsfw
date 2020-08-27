@@ -1,10 +1,10 @@
 #ifndef DEVICEHANDLERMESSAGE_H_
 #define DEVICEHANDLERMESSAGE_H_
 
-#include <framework/action/ActionMessage.h>
-#include <framework/ipc/CommandMessage.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../action/ActionMessage.h"
+#include "../ipc/CommandMessage.h"
+#include "../objectmanager/SystemObjectIF.h"
+#include "../storagemanager/StorageManagerIF.h"
 //SHOULDDO: rework the static constructors to name the type of command they are building, maybe even hide setting the commandID.
 
 /**
@@ -25,7 +25,7 @@ public:
 	/**
 	 * These are the commands that can be sent to a DeviceHandlerBase
 	 */
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::DEVICE_HANDLER_COMMAND;
+	static const uint8_t MESSAGE_ID = messagetypes::DEVICE_HANDLER_COMMAND;
 	static const Command_t CMD_RAW = MAKE_COMMAND_ID( 1 ); //!< Sends a raw command, setParameter is a ::store_id_t containing the raw packet to send
 //	static const Command_t CMD_DIRECT = MAKE_COMMAND_ID( 2 ); //!< Sends a direct command, setParameter is a ::DeviceCommandId_t, setParameter2 is a ::store_id_t containing the data needed for the command
 	static const Command_t CMD_SWITCH_IOBOARD = MAKE_COMMAND_ID( 3 ); //!< Requests a IO-Board switch, setParameter() is the IO-Board identifier

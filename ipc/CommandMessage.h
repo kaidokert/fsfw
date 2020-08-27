@@ -9,10 +9,10 @@
 #define COMMANDMESSAGE_H_
 
 
-#include <framework/ipc/FwMessageTypes.h>
+#include "FwMessageTypes.h"
 #include <config/ipc/MissionMessageTypes.h>
 
-#include <framework/ipc/MessageQueueMessage.h>
+#include "MessageQueueMessage.h"
 
 #define MAKE_COMMAND_ID( number )	((MESSAGE_ID << 8) + (number))
 typedef ReturnValue_t Command_t;
@@ -20,10 +20,10 @@ typedef ReturnValue_t Command_t;
 class CommandMessage : public MessageQueueMessage {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
-	static const ReturnValue_t UNKNOW_COMMAND = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
 
 
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::COMMAND;
+	static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
 	static const Command_t CMD_NONE = MAKE_COMMAND_ID( 0 );//!< Used internally, will be ignored
 	static const Command_t REPLY_COMMAND_OK = MAKE_COMMAND_ID( 3 );
 	static const Command_t REPLY_REJECTED = MAKE_COMMAND_ID( 0xD1 );//!< Reply indicating that the current command was rejected, par1 should contain the error code

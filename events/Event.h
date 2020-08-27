@@ -2,7 +2,7 @@
 #define EVENTOBJECT_EVENT_H_
 
 #include <stdint.h>
-#include <framework/events/fwSubsystemIdRanges.h>
+#include "fwSubsystemIdRanges.h"
 //could be move to more suitable location
 #include <config/tmtc/subsystemIdRanges.h>
 

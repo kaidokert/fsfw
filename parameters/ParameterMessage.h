@@ -1,15 +1,15 @@
 #ifndef PARAMETERMESSAGE_H_
 #define PARAMETERMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/CommandMessage.h"
+#include "HasParametersIF.h"
+#include "../storagemanager/StorageManagerIF.h"
 
 class ParameterMessage {
 private:
 	ParameterMessage();
 public:
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::PARAMETER;
+	static const uint8_t MESSAGE_ID = messagetypes::PARAMETER;
 	static const Command_t CMD_PARAMETER_LOAD = MAKE_COMMAND_ID( 0x01 );
 	static const Command_t CMD_PARAMETER_DUMP = MAKE_COMMAND_ID( 0x02 );
 	static const Command_t REPLY_PARAMETER_DUMP = MAKE_COMMAND_ID( 0x03 );

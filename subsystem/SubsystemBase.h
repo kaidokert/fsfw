@@ -1,15 +1,15 @@
 #ifndef SUBSYSTEMBASE_H_
 #define SUBSYSTEMBASE_H_
 
-#include <framework/container/HybridIterator.h>
-#include <framework/health/HasHealthIF.h>
-#include <framework/health/HealthHelper.h>
-#include <framework/modes/HasModesIF.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/subsystem/modes/HasModeSequenceIF.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "../container/HybridIterator.h"
+#include "../health/HasHealthIF.h"
+#include "../health/HealthHelper.h"
+#include "../modes/HasModesIF.h"
+#include "../objectmanager/SystemObject.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "modes/HasModeSequenceIF.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../ipc/MessageQueueIF.h"
 #include <map>
 
 class SubsystemBase: public SystemObject,

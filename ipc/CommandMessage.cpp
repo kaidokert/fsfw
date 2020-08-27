@@ -5,17 +5,17 @@
  * @author	baetz
  */
 
-#include <framework/devicehandlers/DeviceHandlerMessage.h>
-#include <framework/health/HealthMessage.h>
-#include <framework/ipc/CommandMessage.h>
-#include <framework/memory/MemoryMessage.h>
-#include <framework/modes/ModeMessage.h>
-#include <framework/monitoring/MonitoringMessage.h>
-#include <framework/subsystem/modes/ModeSequenceMessage.h>
-#include <framework/tmstorage/TmStoreMessage.h>
-#include <framework/parameters/ParameterMessage.h>
+#include "../devicehandlers/DeviceHandlerMessage.h"
+#include "../health/HealthMessage.h"
+#include "CommandMessage.h"
+#include "../memory/MemoryMessage.h"
+#include "../modes/ModeMessage.h"
+#include "../monitoring/MonitoringMessage.h"
+#include "../subsystem/modes/ModeSequenceMessage.h"
+#include "../tmstorage/TmStoreMessage.h"
+#include "../parameters/ParameterMessage.h"
 
-namespace MESSAGE_TYPE {
+namespace messagetypes {
 void clearMissionMessage(CommandMessage* message);
 }
 
@@ -67,35 +67,35 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
 
 void CommandMessage::clearCommandMessage() {
 	switch((getCommand()>>8) & 0xff){
-	case  MESSAGE_TYPE::MODE_COMMAND:
+	case  messagetypes::MODE_COMMAND:
 		ModeMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::HEALTH_COMMAND:
+	case messagetypes::HEALTH_COMMAND:
 		HealthMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MODE_SEQUENCE:
+	case messagetypes::MODE_SEQUENCE:
 		ModeSequenceMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::ACTION:
+	case messagetypes::ACTION:
 		ActionMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::DEVICE_HANDLER_COMMAND:
+	case messagetypes::DEVICE_HANDLER_COMMAND:
 		DeviceHandlerMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MEMORY:
+	case messagetypes::MEMORY:
 		MemoryMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MONITORING:
+	case messagetypes::MONITORING:
 		MonitoringMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::TM_STORE:
+	case messagetypes::TM_STORE:
 		TmStoreMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::PARAMETER:
+	case messagetypes::PARAMETER:
 		ParameterMessage::clear(this);
 		break;
 	default:
-		MESSAGE_TYPE::clearMissionMessage(this);
+		messagetypes::clearMissionMessage(this);
 		break;
 	}
 }
@@ -111,7 +111,7 @@ size_t CommandMessage::getMinimumMessageSize() const {
 void CommandMessage::setToUnknownCommand() {
 	Command_t initialCommand = getCommand();
 	clearCommandMessage();
-	setReplyRejected(UNKNOW_COMMAND, initialCommand);
+	setReplyRejected(UNKNOWN_COMMAND, initialCommand);
 }
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,

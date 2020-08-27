@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_EVENTS_EVENTMATCHING_EVENTMATCHTREE_H_
 #define FRAMEWORK_EVENTS_EVENTMATCHING_EVENTMATCHTREE_H_
 
-#include <framework/container/PlacementFactory.h>
-#include <framework/events/EventMessage.h>
-#include <framework/globalfunctions/matching/MatchTree.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../container/PlacementFactory.h"
+#include "../../events/EventMessage.h"
+#include "../../globalfunctions/matching/MatchTree.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
 class StorageManagerIF;
 
 class EventMatchTree: public MatchTree<EventMessage*>, public HasReturnvaluesIF {

@@ -1,8 +1,8 @@
 #ifndef RANGEMATCHER_H_
 #define RANGEMATCHER_H_
 
-#include <framework/globalfunctions/matching/SerializeableMatcherIF.h>
-#include <framework/serialize/SerializeAdapter.h>
+#include "SerializeableMatcherIF.h"
+#include "../../serialize/SerializeAdapter.h"
 
 template<typename T>
 class RangeMatcher: public SerializeableMatcherIF<T> {
