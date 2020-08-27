@@ -8,7 +8,7 @@ const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;
 FixedTimeslotTask::FixedTimeslotTask(TaskName name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod overallPeriod,
 		void (*setDeadlineMissedFunc)()) :
-		started(false), handle(NULL), pst(overallPeriod * 1000) {
+		started(false), handle(nullptr), pst(overallPeriod * 1000) {
 	configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
 	xTaskCreate(taskEntryPoint, name, stackSize, this, setPriority, &handle);
 	// All additional attributes are applied to the object.
@@ -62,8 +62,10 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
-		pst.addSlot(componentId, slotTimeMs, executionStep, this);
+    ExecutableObjectIF* handler =
+            objectManager->get<ExecutableObjectIF>(componentId);
+	if (handler != nullptr) {
+		pst.addSlot(componentId, slotTimeMs, executionStep, handler, this);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
@@ -84,6 +86,8 @@ void FixedTimeslotTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the
     // start time for the first entry.
 	auto slotListIter = pst.current;
+
+	pst.intializeSequenceAfterTaskCreation();
 
 	//The start time for the first entry is read.
 	uint32_t intervalMs = slotListIter->pollingTimeMs;
