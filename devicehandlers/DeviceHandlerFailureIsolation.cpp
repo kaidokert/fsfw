@@ -11,11 +11,11 @@ object_id_t DeviceHandlerFailureIsolation::powerConfirmationId =
 DeviceHandlerFailureIsolation::DeviceHandlerFailureIsolation(object_id_t owner,
 		object_id_t parent) :
 		FailureIsolationBase(owner, parent),
-		strangeReplyCount(MAX_STRANGE_REPLIES, STRANGE_REPLIES_TIME_MS,
+		strangeReplyCount(DEFAULT_MAX_STRANGE_REPLIES, DEFAULT_STRANGE_REPLIES_TIME_MS,
 				parameterDomainBase++),
-		missedReplyCount( MAX_MISSED_REPLY_COUNT, MISSED_REPLY_TIME_MS,
+		missedReplyCount( DEFAULT_MAX_MISSED_REPLY_COUNT, DEFAULT_MISSED_REPLY_TIME_MS,
 				parameterDomainBase++),
-		recoveryCounter(MAX_REBOOT, REBOOT_TIME_MS, parameterDomainBase++),
+		recoveryCounter(DEFAULT_MAX_REBOOT, DEFAULT_REBOOT_TIME_MS, parameterDomainBase++),
 		fdirState(NONE), powerConfirmation(0) {
 }
 
