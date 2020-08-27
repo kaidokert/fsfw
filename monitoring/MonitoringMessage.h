@@ -1,12 +1,12 @@
 #ifndef MONITORINGMESSAGE_H_
 #define MONITORINGMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/CommandMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
 
 class MonitoringMessage: public CommandMessage {
 public:
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::MONITORING;
+	static const uint8_t MESSAGE_ID = messagetypes::MONITORING;
 	//Object id could be useful, but we better manage that on service level (register potential reporters).
 	static const Command_t LIMIT_VIOLATION_REPORT = MAKE_COMMAND_ID(10);
 	virtual ~MonitoringMessage();

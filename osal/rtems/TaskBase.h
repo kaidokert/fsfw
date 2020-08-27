@@ -2,7 +2,7 @@
 #define TASKBASE_H_
 
 #include "RtemsBasic.h"
-#include <framework/tasks/PeriodicTaskIF.h>
+#include "../../tasks/PeriodicTaskIF.h"
 
 /**
  * @brief	This is the basic task handling class for rtems.

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_TASK_PERIODICTASKIF_H_
 #define FRAMEWORK_TASK_PERIODICTASKIF_H_
 
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/timemanager/Clock.h>
+#include "../objectmanager/SystemObjectIF.h"
+#include "../timemanager/Clock.h"
 #include <cstddef>
 class ExecutableObjectIF;
 
@@ -36,8 +36,7 @@ public:
 	 * to the component.
 	 * @return
 	 */
-	virtual ReturnValue_t addComponent(object_id_t object,
-	        bool setTaskIF = true) {
+	virtual ReturnValue_t addComponent(object_id_t object) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 

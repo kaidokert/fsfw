@@ -1,9 +1,9 @@
 #ifndef HEALTHTABLE_H_
 #define HEALTHTABLE_H_
 
-#include <framework/health/HealthTableIF.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/ipc/MutexIF.h>
+#include "HealthTableIF.h"
+#include "../objectmanager/SystemObject.h"
+#include "../ipc/MutexIF.h"
 #include <map>
 
 typedef std::map<object_id_t, HasHealthIF::HealthState> HealthMap;

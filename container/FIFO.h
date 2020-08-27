@@ -1,8 +1,7 @@
 #ifndef FRAMEWORK_CONTAINER_FIFO_H_
 #define FRAMEWORK_CONTAINER_FIFO_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/container/FIFOBase.h>
+#include "FIFOBase.h"
 #include <array>
 
 /**

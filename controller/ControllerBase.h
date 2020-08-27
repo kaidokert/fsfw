@@ -1,13 +1,13 @@
 #ifndef CONTROLLERBASE_H_
 #define CONTROLLERBASE_H_
 
-#include <framework/health/HasHealthIF.h>
-#include <framework/health/HealthHelper.h>
-#include <framework/modes/HasModesIF.h>
-#include <framework/modes/ModeHelper.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/datapool/HkSwitchHelper.h>
+#include "../health/HasHealthIF.h"
+#include "../health/HealthHelper.h"
+#include "../modes/HasModesIF.h"
+#include "../modes/ModeHelper.h"
+#include "../objectmanager/SystemObject.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../datapool/HkSwitchHelper.h"
 
 
 class ControllerBase: public HasModesIF,

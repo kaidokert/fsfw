@@ -1,16 +1,16 @@
-#include <framework/devicehandlers/DeviceHandlerBase.h>
-#include <framework/objectmanager/ObjectManager.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/thermal/ThermalComponentIF.h>
-#include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
+#include "DeviceHandlerBase.h"
+#include "../objectmanager/ObjectManager.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../thermal/ThermalComponentIF.h"
+#include "AcceptsDeviceResponsesIF.h"
 
-#include <framework/datapool/DataSet.h>
-#include <framework/datapool/PoolVariable.h>
-#include <framework/devicehandlers/DeviceTmReportingWrapper.h>
-#include <framework/globalfunctions/CRC.h>
-#include <framework/subsystem/SubsystemBase.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../datapool/DataSet.h"
+#include "../datapool/PoolVariable.h"
+#include "DeviceTmReportingWrapper.h"
+#include "../globalfunctions/CRC.h"
+#include "../subsystem/SubsystemBase.h"
+#include "../ipc/QueueFactory.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 #include <iomanip>
 
@@ -236,7 +236,7 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	replyReturnvalueToCommand(CommandMessage::UNKNOW_COMMAND);
+	replyReturnvalueToCommand(CommandMessage::UNKNOWN_COMMAND);
 
 }
 
@@ -1149,7 +1149,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 }
 
 ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId,
-		MessageQueueId_t commandedBy, const uint8_t* data, uint32_t size) {
+		MessageQueueId_t commandedBy, const uint8_t* data, size_t size) {
 	ReturnValue_t result = acceptExternalDeviceCommands();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;

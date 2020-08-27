@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_DATAPOOL_POOLENTRY_H_
 #define FRAMEWORK_DATAPOOL_POOLENTRY_H_
 
-#include <framework/datapool/PoolEntryIF.h>
+#include "PoolEntryIF.h"
 
 #include <initializer_list>
 #include <type_traits>

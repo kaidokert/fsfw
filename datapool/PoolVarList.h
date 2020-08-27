@@ -1,8 +1,8 @@
 #ifndef POOLVARLIST_H_
 #define POOLVARLIST_H_
 
-#include <framework/datapool/PoolVariable.h>
-#include <framework/datapool/PoolVariableIF.h>
+#include "PoolVariable.h"
+#include "PoolVariableIF.h"
 template <class T, uint8_t n_var>
 class PoolVarList {
 private:

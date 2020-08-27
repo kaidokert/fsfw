@@ -1,7 +1,7 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/pus/TmPacketStored.h>
-#include <framework/tmtcservices/TmTcMessage.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "TmPacketStored.h"
+#include "../../tmtcservices/TmTcMessage.h"
 #include <string.h>
 
 TmPacketStored::TmPacketStored(store_address_t setAddress) :

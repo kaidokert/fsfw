@@ -11,11 +11,11 @@
 #ifndef POOLVECTOR_H_
 #define POOLVECTOR_H_
 
-#include <framework/datapool/DataSetIF.h>
-#include <framework/datapool/PoolEntry.h>
-#include <framework/datapool/PoolVariableIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "DataSetIF.h"
+#include "PoolEntry.h"
+#include "PoolVariableIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 /**
  * \brief	This is the access class for array-type data pool entries.

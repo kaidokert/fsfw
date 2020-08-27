@@ -1,12 +1,12 @@
 #ifndef HEALTHMESSAGE_H_
 #define HEALTHMESSAGE_H_
 
-#include <framework/health/HasHealthIF.h>
-#include <framework/ipc/CommandMessage.h>
+#include "HasHealthIF.h"
+#include "../ipc/CommandMessage.h"
 
 class HealthMessage {
 public:
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::HEALTH_COMMAND;
+	static const uint8_t MESSAGE_ID = messagetypes::HEALTH_COMMAND;
 	static const Command_t HEALTH_SET = MAKE_COMMAND_ID(1);//REPLY_COMMAND_OK/REPLY_REJECTED
 	static const Command_t HEALTH_ANNOUNCE = MAKE_COMMAND_ID(3);	//NO REPLY!
 	static const Command_t HEALTH_INFO = MAKE_COMMAND_ID(5);

@@ -1,8 +1,8 @@
-#include <framework/datapool/DataPool.h>
-#include <framework/datapool/PoolEntryIF.h>
-#include <framework/datapool/PoolRawAccess.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/serialize/EndianConverter.h>
+#include "DataPool.h"
+#include "PoolEntryIF.h"
+#include "PoolRawAccess.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serialize/EndianConverter.h"
 
 #include <cstring>
 
