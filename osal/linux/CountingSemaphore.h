@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_OSAL_LINUX_COUNTINGSEMAPHORE_H_
 #define FRAMEWORK_OSAL_LINUX_COUNTINGSEMAPHORE_H_
-#include <framework/osal/linux/BinarySemaphore.h>
+#include "../../osal/linux/BinarySemaphore.h"
 
 /**
  * @brief 	Counting semaphores, which can be acquired more than once.

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 #define FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tasks/SemaphoreIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../tasks/SemaphoreIF.h"
 
 extern "C" {
 #include <semaphore.h>
@@ -49,8 +49,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
-	ReturnValue_t acquire(uint32_t timeoutMs =
-	       	   SemaphoreIF::BLOCKING) override;
+	ReturnValue_t acquire(TimeoutType timeoutType = TimeoutType::BLOCKING,
+			uint32_t timeoutMs = 0) override;
 
 	/**
 	 * Release the binary semaphore.

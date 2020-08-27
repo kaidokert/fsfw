@@ -1,5 +1,5 @@
-#include <framework/osal/linux/CountingSemaphore.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../osal/linux/CountingSemaphore.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 CountingSemaphore::CountingSemaphore(const uint8_t maxCount, uint8_t initCount):
 		maxCount(maxCount), initCount(initCount) {
