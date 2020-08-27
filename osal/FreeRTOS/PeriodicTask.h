@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
 
+#include "../../osal/FreeRTOS/FreeRTOSTaskIF.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
 #include "../../tasks/Typedef.h"
-#include "FreeRTOSTaskIF.h"
 
 
 #include <freertos/FreeRTOS.h>
