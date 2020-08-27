@@ -1,11 +1,10 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
-#define FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
+#ifndef FSFW_OSAL_FREERTOS_PERIODICTASK_H_
+#define FSFW_OSAL_FREERTOS_PERIODICTASK_H_
 
-#include "../../osal/FreeRTOS/FreeRTOSTaskIF.h"
+#include "FreeRTOSTaskIF.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
 #include "../../tasks/Typedef.h"
-
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -24,7 +23,6 @@ public:
 	/**
 	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
 	 * A lot of task parameters are set in "FreeRTOSConfig.h".
-	 * TODO: why does this need to be called before vTaskStartScheduler?
 	 * @details
 	 * The class is initialized without allocated objects.
 	 * These need to be added with #addComponent.
@@ -125,4 +123,4 @@ protected:
 	void handleMissedDeadline();
 };
 
-#endif /* PERIODICTASK_H_ */
+#endif /* FSFW_OSAL_FREERTOS_PERIODICTASK_H_ */
