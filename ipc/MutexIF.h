@@ -3,9 +3,33 @@
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 
+/**
+ * @brief Common interface for OS Mutex objects which provide MUTual EXclusion.
+ * @details https://en.wikipedia.org/wiki/Lock_(computer_science)
+ * @ingroup osal
+ * @ingroup interface
+ */
 class MutexIF {
 public:
-	static const uint32_t NO_TIMEOUT; //!< Needs to be defined in implementation.
+    /**
+     * Different types of timeout for the mutex lock.
+     */
+    enum TimeoutType {
+        POLLING, //!< If mutex is not available, return immediately
+        WAITING, //!< Wait a specified time for the mutex to become available
+        BLOCKING //!< Block indefinitely until the mutex becomes available.
+    };
+
+    /**
+     * Lock the mutex. The timeout value will only be used for
+     * TimeoutType::WAITING
+     * @param timeoutType
+     * @param timeoutMs
+     * @return
+     */
+    virtual ReturnValue_t lockMutex(TimeoutType timeoutType =
+            TimeoutType::BLOCKING, uint32_t timeoutMs = 0) = 0;
+    virtual ReturnValue_t unlockMutex() = 0;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::MUTEX_IF;
 	/**
@@ -57,9 +81,7 @@ public:
 	 */
 	static const ReturnValue_t MUTEX_DESTROYED_WHILE_WAITING = MAKE_RETURN_CODE(12);
 
-	virtual ~MutexIF() {}
-	virtual ReturnValue_t lockMutex(uint32_t timeoutMs) = 0;
-	virtual ReturnValue_t unlockMutex() = 0;
+    virtual ~MutexIF() {}
 };
 
 
