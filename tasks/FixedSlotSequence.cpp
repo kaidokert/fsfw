@@ -81,13 +81,20 @@ uint32_t FixedSlotSequence::getLengthMs() const {
 	return this->lengthMs;
 }
 
-ReturnValue_t FixedSlotSequence::checkAndInitializeSequence() const {
+void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs,
+        int8_t executionStep, ExecutableObjectIF* executableObject,
+        PeriodicTaskIF* executingTask) {
+    this->slotList.insert(FixedSequenceSlot(componentId, slotTimeMs,
+            executionStep, executableObject, executingTask));
+   this->current = slotList.begin();
+}
+
+ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
 		sif::error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
-	std::set<ExecutableObjectIF*> uniqueObjects;
 	uint32_t count = 0;
 	uint32_t time = 0;
 	for(const auto& slot: slotList) {
@@ -106,11 +113,7 @@ ReturnValue_t FixedSlotSequence::checkAndInitializeSequence() const {
 			//sif::info << std::dec << slotIt->pollingTimeMs << std::endl;
 		}
 		time = slot.pollingTimeMs;
-		// Ensure that each unique object is initialized once.
-		if(uniqueObjects.find(slot.executableObject) == uniqueObjects.end()) {
-		    slot.executableObject->initializeAfterTaskCreation();
-		    uniqueObjects.emplace(slot.executableObject);
-		}
+
 	}
 	//sif::info << "Number of elements in slot list: "
 	//	   << slotList.size() << std::endl;
@@ -120,10 +123,25 @@ ReturnValue_t FixedSlotSequence::checkAndInitializeSequence() const {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs,
-		int8_t executionStep, ExecutableObjectIF* executableObject,
-		PeriodicTaskIF* executingTask) {
-    this->slotList.insert(FixedSequenceSlot(componentId, slotTimeMs,
-            executionStep, executableObject, executingTask));
-   this->current = slotList.begin();
+
+ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
+    std::set<ExecutableObjectIF*> uniqueObjects;
+    uint32_t count = 0;
+    for(const auto& slot: slotList) {
+        // Ensure that each unique object is initialized once.
+        if(uniqueObjects.find(slot.executableObject) == uniqueObjects.end()) {
+            ReturnValue_t result =
+                    slot.executableObject->initializeAfterTaskCreation();
+            if(result != HasReturnvaluesIF::RETURN_OK) {
+                count++;
+            }
+            uniqueObjects.emplace(slot.executableObject);
+        }
+    }
+    if (count > 0) {
+        sif::error << "FixedSlotSequence::intializeSequenceAfterTaskCreation:"
+                "Counted " << count << " failed initializations!"  << std::endl;
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+    return HasReturnvaluesIF::RETURN_OK;
 }

@@ -33,7 +33,7 @@ public:
 	virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
 			int8_t executionStep);
 
-	virtual ReturnValue_t checkAndInitializeSequence() const;
+	virtual ReturnValue_t checkSequence() const;
 
 	/**
 	 * This static function can be used as #deadlineMissedFunc.

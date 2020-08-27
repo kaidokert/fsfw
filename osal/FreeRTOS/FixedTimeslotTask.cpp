@@ -78,14 +78,16 @@ uint32_t FixedTimeslotTask::getPeriodMs() const {
 	return pst.getLengthMs();
 }
 
-ReturnValue_t FixedTimeslotTask::checkAndInitializeSequence() const {
-	return pst.checkAndInitializeSequence();
+ReturnValue_t FixedTimeslotTask::checkSequence() const {
+	return pst.checkSequence();
 }
 
 void FixedTimeslotTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the
     // start time for the first entry.
 	auto slotListIter = pst.current;
+
+	pst.intializeSequenceAfterTaskCreation();
 
 	//The start time for the first entry is read.
 	uint32_t intervalMs = slotListIter->pollingTimeMs;

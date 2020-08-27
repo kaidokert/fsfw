@@ -132,7 +132,9 @@ public:
 	 * creation.
 	 * @return
 	 */
-	ReturnValue_t checkAndInitializeSequence() const;
+	ReturnValue_t checkSequence() const;
+
+	ReturnValue_t intializeSequenceAfterTaskCreation() const;
 
 protected:
 

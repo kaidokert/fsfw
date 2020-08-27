@@ -54,7 +54,7 @@ public:
 
 	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t checkAndInitializeSequence() const override;
+	ReturnValue_t checkSequence() const override;
 
 	ReturnValue_t sleepFor(uint32_t ms) override;
 

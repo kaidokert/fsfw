@@ -49,7 +49,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t FixedTimeslotTask::checkAndInitializeSequence() const {
+ReturnValue_t FixedTimeslotTask::checkSequence() const {
 	return pst.checkSequence();
 }
 
@@ -58,6 +58,8 @@ void FixedTimeslotTask::taskFunctionality() {
 	if (!started) {
 		suspend();
 	}
+
+	pst.intializeSequenceAfterTaskCreation();
 	//The start time for the first entry is read.
 	uint64_t lastWakeTime = getCurrentMonotonicTimeMs();
 	uint64_t interval = pst.getIntervalToNextSlotMs();

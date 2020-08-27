@@ -52,6 +52,7 @@ void PeriodicPosixTask::taskFunctionality(void) {
 	if(!started){
 		suspend();
 	}
+
 	uint64_t lastWakeTime = getCurrentMonotonicTimeMs();
 	//The task's "infinite" inner loop is entered.
 	while (1) {
