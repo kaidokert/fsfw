@@ -64,6 +64,11 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 void PeriodicTask::taskFunctionality() {
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(this->period * 1000.);
+
+	for (auto const& object: objectList) {
+	    object->initializeAfterTaskCreation();
+	}
+
 	/* The xLastWakeTime variable needs to be initialized with the current tick
 	 count. Note that this is the only time the variable is written to
 	 explicitly. After this assignment, xLastWakeTime is updated automatically
@@ -93,7 +98,7 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 	objectList.push_back(newObject);
 	newObject->setTaskIF(this);
 
-	return newObject->initializeAfterTaskCreation();
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 uint32_t PeriodicTask::getPeriodMs() const {

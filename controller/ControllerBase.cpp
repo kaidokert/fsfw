@@ -4,13 +4,12 @@
 #include "../ipc/QueueFactory.h"
 #include "../action/HasActionsIF.h"
 
-ControllerBase::ControllerBase(uint32_t setObjectId, uint32_t parentId,
+ControllerBase::ControllerBase(object_id_t setObjectId, object_id_t parentId,
 		size_t commandQueueDepth) :
-		SystemObject(setObjectId), parentId(parentId), mode(MODE_OFF), submode(
-				SUBMODE_NONE), commandQueue(NULL), modeHelper(
-				this), healthHelper(this, setObjectId),hkSwitcher(this),executingTask(NULL) {
+		SystemObject(setObjectId), parentId(parentId), mode(MODE_OFF),
+		submode(SUBMODE_NONE), modeHelper(this),
+		healthHelper(this, setObjectId), hkSwitcher(this) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth);
-
 }
 
 ControllerBase::~ControllerBase() {
@@ -24,7 +23,7 @@ ReturnValue_t ControllerBase::initialize() {
 	}
 
 	MessageQueueId_t parentQueue = 0;
-	if (parentId != 0) {
+	if (parentId != objects::NO_OBJECT) {
 		SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
 		if (parent == NULL) {
 			return RETURN_FAILED;
@@ -134,4 +133,8 @@ void ControllerBase::setTaskIF(PeriodicTaskIF* task_){
 }
 
 void ControllerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
+}
+
+ReturnValue_t ControllerBase::initializeAfterTaskCreation() {
+    return HasReturnvaluesIF::RETURN_OK;
 }

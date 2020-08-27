@@ -1,5 +1,5 @@
-#ifndef CONTROLLERBASE_H_
-#define CONTROLLERBASE_H_
+#ifndef FSFW_CONTROLLER_CONTROLLERBASE_H_
+#define FSFW_CONTROLLER_CONTROLLERBASE_H_
 
 #include "../health/HasHealthIF.h"
 #include "../health/HealthHelper.h"
@@ -9,29 +9,32 @@
 #include "../tasks/ExecutableObjectIF.h"
 #include "../datapool/HkSwitchHelper.h"
 
-
+/**
+ * @brief  Generic base class for controller classes
+ * @details
+ * Implements common interfaces for controllers.
+ */
 class ControllerBase: public HasModesIF,
 		public HasHealthIF,
 		public ExecutableObjectIF,
 		public SystemObject,
 		public HasReturnvaluesIF {
 public:
-
 	static const Mode_t MODE_NORMAL = 2;
 
-	ControllerBase(uint32_t setObjectId, uint32_t parentId,
+	ControllerBase(object_id_t setObjectId, object_id_t parentId,
 			size_t commandQueueDepth = 3);
 	virtual ~ControllerBase();
 
-	ReturnValue_t initialize();
+	virtual ReturnValue_t initialize() override;
 
-	virtual MessageQueueId_t getCommandQueue() const;
+	virtual MessageQueueId_t getCommandQueue() const override;
 
-	virtual ReturnValue_t performOperation(uint8_t opCode);
+	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
-	virtual ReturnValue_t setHealth(HealthState health);
+	virtual ReturnValue_t setHealth(HealthState health) override;
 
-	virtual HasHealthIF::HealthState getHealth();
+	virtual HasHealthIF::HealthState getHealth() override;
 
 	/**
 	 * Implementation of ExecutableObjectIF function
@@ -39,17 +42,32 @@ public:
 	 * Used to setup the reference of the task, that executes this component
 	 * @param task_ Pointer to the taskIF of this task
 	 */
-	virtual  void setTaskIF(PeriodicTaskIF* task_);
+	virtual  void setTaskIF(PeriodicTaskIF* task_) override;
 
+	virtual ReturnValue_t initializeAfterTaskCreation() override;
 
 protected:
-	const uint32_t parentId;
+
+	/**
+	 * Implemented by child class. Handle command messages which are not
+	 * mode or health messages.
+	 * @param message
+	 * @return
+	 */
+    virtual ReturnValue_t handleCommandMessage(CommandMessage *message) = 0;
+
+    virtual void performControlOperation() = 0;
+
+    virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
+            uint32_t *msToReachTheMode) = 0;
+
+	const object_id_t parentId;
 
 	Mode_t mode;
 
 	Submode_t submode;
 
-	MessageQueueIF* commandQueue;
+	MessageQueueIF* commandQueue = nullptr;
 
 	ModeHelper modeHelper;
 
@@ -58,16 +76,13 @@ protected:
 	HkSwitchHelper hkSwitcher;
 
 	/**
-	 * Pointer to the task which executes this component, is invalid before setTaskIF was called.
+	 * Pointer to the task which executes this component,
+	 * is invalid before setTaskIF was called.
 	 */
-	PeriodicTaskIF* executingTask;
+	PeriodicTaskIF* executingTask = nullptr;
 
 	void handleQueue();
 
-	virtual ReturnValue_t handleCommandMessage(CommandMessage *message) = 0;
-	virtual void performControlOperation() = 0;
-	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-			uint32_t *msToReachTheMode) = 0;
 	virtual void modeChanged(Mode_t mode, Submode_t submode);
 	virtual void startTransition(Mode_t mode, Submode_t submode);
 	virtual void getMode(Mode_t *mode, Submode_t *submode);
@@ -76,4 +91,4 @@ protected:
 	virtual void changeHK(Mode_t mode, Submode_t submode, bool enable);
 };
 
-#endif /* CONTROLLERBASE_H_ */
+#endif /* FSFW_CONTROLLER_CONTROLLERBASE_H_ */
