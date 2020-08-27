@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 #define FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 extern "C" {
 #include <freertos/FreeRTOS.h>
@@ -13,7 +13,7 @@ extern "C" {
  * Architecture dependant portmacro.h function call.
  * Should be implemented in bsp.
  */
-extern "C" void requestContextSwitchFromISR();
+extern void vRequestContextSwitchFromISR();
 
 /*!
  * Used by functions to tell if they are being called from
@@ -41,7 +41,7 @@ public:
 	 * If task preemption in FreeRTOS is disabled, a context switch
 	 * can be requested manually by calling this function.
 	 */
-	static void requestContextSwitchFromTask(void);
+	static void vRequestContextSwitchFromTask(void);
 
 	/**
 	 * @return The current task handle
@@ -57,7 +57,8 @@ public:
 	 * @return Smallest value of stack remaining since the task was started in
 	 * 		   words.
 	 */
-	static configSTACK_DEPTH_TYPE getTaskStackHighWatermark();
+	static size_t getTaskStackHighWatermark(
+	        TaskHandle_t task = nullptr);
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_ */
