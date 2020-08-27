@@ -152,8 +152,6 @@ protected:
 	SlotList slotList;
 
 	uint32_t lengthMs;
-
-	bool isEmpty = false;
 };
 
 #endif /* FIXEDSLOTSEQUENCE_H_ */
