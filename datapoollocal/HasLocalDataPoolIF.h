@@ -48,9 +48,14 @@ public:
 	/** Command queue for housekeeping messages. */
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 
-	/** Is used by pool owner to initialize the pool map once */
-	virtual ReturnValue_t initializePoolEntries(
-	        LocalDataPool& localDataPoolMap) = 0;
+	/**
+	 * Is used by pool owner to initialize the pool map once
+	 * The manager instance shall also be passed to this function.
+	 * It can be used to subscribe for periodic packets for for updates.
+	 */
+	virtual ReturnValue_t initializeLocalDataPool(
+	        LocalDataPool& localDataPoolMap,
+	        LocalDataPoolManager& poolManager) = 0;
 
 	/** Can be used to get a handle to the local data pool manager. */
 	virtual LocalDataPoolManager* getHkManagerHandle() = 0;

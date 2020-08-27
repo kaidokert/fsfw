@@ -3,13 +3,14 @@
 #include <cstddef>
 
 FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,
-		int8_t setSequenceId, PeriodicTaskIF* executingTask) :
+		int8_t setSequenceId, ExecutableObjectIF* executableObject,
+		PeriodicTaskIF* executingTask) :
 		pollingTimeMs(setTime), opcode(setSequenceId) {
-	handler = objectManager->get<ExecutableObjectIF>(handlerId);
-	if(executingTask != nullptr) {
-	    handler->setTaskIF(executingTask);
-	}
-	handler->initializeAfterTaskCreation();
+    if(executableObject == nullptr) {
+        return;
+    }
+    this->executableObject = executableObject;
+    this->executableObject->setTaskIF(executingTask);
 }
 
 FixedSequenceSlot::~FixedSequenceSlot() {}

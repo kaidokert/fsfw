@@ -82,7 +82,7 @@ uint32_t PollingTask::getPeriodMs() const {
 	return pst.getLengthMs();
 }
 
-ReturnValue_t PollingTask::checkSequence() const {
+ReturnValue_t PollingTask::checkAndInitializeSequence() const {
 	return pst.checkSequence();
 }
 

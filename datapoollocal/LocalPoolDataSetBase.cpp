@@ -6,7 +6,7 @@
 #include <cstring>
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
-        PoolVariableIF** registeredVariablesArray,
+		uint32_t setId, PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
     if(hkOwner == nullptr) {
@@ -15,20 +15,23 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
+    this->sid.objectId = hkOwner->getObjectId();
+    this->sid.ownerSetId = setId;
 }
 
-LocalPoolDataSetBase::LocalPoolDataSetBase(object_id_t ownerId,
+LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
         PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
-            ownerId);
+            sid.objectId);
     if(hkOwner == nullptr) {
         sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
                 << std::endl;
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
+    this->sid = sid;
 }
 
 LocalPoolDataSetBase::~LocalPoolDataSetBase() {
@@ -123,14 +126,6 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
-    if(position > 7) {
-        sif::debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
-        return;
-    }
-    uint8_t shiftNumber = position + (7 - 2 * position);
-    *byte |= 1 << shiftNumber;
-}
 
 size_t LocalPoolDataSetBase::getSerializedSize() const {
     if(withValidityBuffer) {
@@ -170,9 +165,21 @@ ReturnValue_t LocalPoolDataSetBase::serialize(uint8_t **buffer, size_t *size,
     }
 }
 
-bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte, uint8_t position) const {
+void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     if(position > 7) {
-        sif::debug << "Pool Raw Access: Bit setting invalid position" << std::endl;
+        sif::debug << "Pool Raw Access: Bit setting invalid position"
+        		<< std::endl;
+        return;
+    }
+    uint8_t shiftNumber = position + (7 - 2 * position);
+    *byte |= 1 << shiftNumber;
+}
+
+bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
+		uint8_t position) const {
+    if(position > 7) {
+        sif::debug << "Pool Raw Access: Bit setting invalid position"
+        		<< std::endl;
         return false;
     }
     uint8_t shiftNumber = position + (7 - 2 * position);

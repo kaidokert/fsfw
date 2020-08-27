@@ -16,7 +16,7 @@ class SharedLocalDataSet: public SystemObject,
         public LocalPoolDataSetBase,
         public SharedDataSetIF {
 public:
-    SharedLocalDataSet(object_id_t objectId, object_id_t owner,
+    SharedLocalDataSet(object_id_t objectId, sid_t sid,
             const size_t maxSize);
     ReturnValue_t lockDataset(dur_millis_t mutexTimeout) override;
     ReturnValue_t unlockDataset() override;

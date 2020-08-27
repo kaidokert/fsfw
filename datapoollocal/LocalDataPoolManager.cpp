@@ -8,6 +8,8 @@
 #include <array>
 #include <cmath>
 
+object_id_t LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
+
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
         appendValidityBuffer(appendValidityBuffer) {
@@ -28,48 +30,41 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
 	}
 
 	hkQueue = queueToUse;
+
+	if(defaultHkDestination != objects::NO_OBJECT) {
+	    AcceptsHkPacketsIF* hkPacketReceiver =
+	            objectManager->get<AcceptsHkPacketsIF>(defaultHkDestination);
+	    if(hkPacketReceiver != nullptr) {
+	        defaultHkDestinationId = hkPacketReceiver->getHkQueue();
+	    }
+	}
 }
 
-ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse,
-        object_id_t hkDestination, uint8_t nonDiagInvlFactor) {
+LocalDataPoolManager::~LocalDataPoolManager() {}
+
+ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
     if(queueToUse == nullptr) {
         sif::error << "LocalDataPoolManager::initialize: Supplied queue "
                 "invalid!" << std::endl;
     }
     hkQueue = queueToUse;
 
-    if(hkDestination == objects::NO_OBJECT) {
-        return initializeHousekeepingPoolEntriesOnce();
-    }
+    return HasReturnvaluesIF::RETURN_OK;
+}
 
-    AcceptsHkPacketsIF* hkReceiver =
-            objectManager->get<AcceptsHkPacketsIF>(hkDestination);
-    if(hkReceiver != nullptr) {
-        setHkPacketDestination(hkReceiver->getHkQueue());
-    }
-    else {
-        sif::warning << "LocalDataPoolManager::initialize: Could not retrieve"
-                " queue ID from HK destination object ID. " << std::flush;
-        sif::warning << "Make sure it exists and the object impements "
-                "AcceptsHkPacketsIF!" << std::endl;
-    }
-
+ReturnValue_t LocalDataPoolManager::initializeAfterTaskCreation(
+        uint8_t nonDiagInvlFactor) {
     setNonDiagnosticIntervalFactor(nonDiagInvlFactor);
     diagnosticMinimumInterval = owner->getPeriodicOperationFrequency();
-    regularMinimumInterval = diagnosticMinimumInterval * nonDiagnosticIntervalFactor;
+    regularMinimumInterval = diagnosticMinimumInterval *
+            nonDiagnosticIntervalFactor;
     return initializeHousekeepingPoolEntriesOnce();
 }
 
-void LocalDataPoolManager::setHkPacketDestination(
-        MessageQueueId_t hkDestination) {
-    this->hkDestination = hkDestination;
-}
-
-LocalDataPoolManager::~LocalDataPoolManager() {}
-
 ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 	if(not mapInitialized) {
-		ReturnValue_t result = owner->initializePoolEntries(localPoolMap);
+		ReturnValue_t result = owner->initializeLocalDataPool(localPoolMap,
+		        *this);
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			mapInitialized = true;
 		}
@@ -77,6 +72,67 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 	}
 	sif::warning << "HousekeepingManager: The map should only be initialized "
 	        "once!" << std::endl;
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::performHkOperation() {
+    for(auto& hkReceiversIter: hkReceiversMap) {
+        HkReceiver* receiver = &hkReceiversIter.second;
+        if(not receiver->reportingEnabled) {
+            return HasReturnvaluesIF::RETURN_OK;
+        }
+
+        switch(receiver->reportingType) {
+        case(ReportingType::PERIODIC): {
+            if(receiver->dataId.dataSetSid.notSet()) {
+                // Periodic packets shall only be generated from datasets.
+                continue;
+            }
+            performPeriodicHkGeneration(receiver);
+            break;
+        }
+        case(ReportingType::UPDATE_SNAPSHOT): {
+            // check whether data has changed and send messages in case it has.
+            break;
+        }
+        default:
+            // This should never happen.
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+    }
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
+		bool enableReporting, float collectionInterval, bool isDiagnostics,
+		object_id_t packetDestination) {
+	AcceptsHkPacketsIF* hkReceiverObject =
+			objectManager->get<AcceptsHkPacketsIF>(packetDestination);
+	if(hkReceiverObject == nullptr) {
+		sif::error << "LocalDataPoolManager::subscribeForPeriodicPacket:"
+				" Invalid receiver!"<< std::endl;
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+	struct HkReceiver hkReceiver;
+	hkReceiver.dataId.dataSetSid = sid;
+	hkReceiver.reportingType = ReportingType::PERIODIC;
+	hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
+	hkReceiver.reportingEnabled = enableReporting;
+	if(not isDiagnostics) {
+	    hkReceiver.hkParameter.collectionIntervalTicks =
+	            intervalSecondsToInterval(isDiagnostics, collectionInterval *
+	            nonDiagnosticIntervalFactor);
+	}
+	else {
+	    hkReceiver.hkParameter.collectionIntervalTicks =
+	            intervalSecondsToInterval(isDiagnostics, collectionInterval);
+	}
+
+	hkReceiver.isDiagnostics = isDiagnostics;
+	hkReceiver.intervalCounter = 1;
+
+	hkReceiversMap.emplace(packetDestination, hkReceiver);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -121,15 +177,15 @@ const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 }
 
 ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
-        float collectionInterval, MessageQueueId_t sendTo) {
-	LocalPoolDataSetBase* dataSetToSerialize = dynamic_cast<LocalPoolDataSetBase*>(
-			owner->getDataSetHandle(sid));
+        float collectionInterval, MessageQueueId_t destination) {
+	LocalPoolDataSetBase* dataSetToSerialize =
+			dynamic_cast<LocalPoolDataSetBase*>(owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
-				" Set ID not found" << std::endl;
+				" Set ID not found or dataset not assigned!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-
+	sif::info << "hk gen called" << std::endl;
 	store_address_t storeId;
 	HousekeepingPacketDownlink hkPacket(sid, collectionInterval,
 	        dataSetToSerialize->getFillCount(), dataSetToSerialize);
@@ -144,30 +200,23 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	if(hkQueue == nullptr) {
 	    return QUEUE_OR_DESTINATION_NOT_SET;
 	}
-
-	if(sendTo != MessageQueueIF::NO_QUEUE) {
-	    result = hkQueue->sendMessage(sendTo, &hkMessage);
-	}
-	else {
-	    if(hkDestination == MessageQueueIF::NO_QUEUE) {
-	        sif::warning << "LocalDataPoolManager::generateHousekeepingPacket:"
-	                " Destination is not set properly!" << std::endl;
-	        return QUEUE_OR_DESTINATION_NOT_SET;
+	if(destination == MessageQueueIF::NO_QUEUE) {
+	    if(defaultHkDestinationId == MessageQueueIF::NO_QUEUE) {
+	        // error, all destinations invalid
+	        return HasReturnvaluesIF::RETURN_FAILED;
 	    }
-	    else {
-	        result = hkQueue->sendMessage(hkDestination, &hkMessage);
-	    }
+	    destination = defaultHkDestinationId;
 	}
 
-	return result;
+	return hkQueue->sendMessage(destination, &hkMessage);
 }
 
 ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
         HousekeepingPacketDownlink& hkPacket,
         store_address_t *storeId) {
     uint8_t* dataPtr = nullptr;
-    size_t serializedSize = hkPacket.getSerializedSize();
-    const size_t maxSize = serializedSize;
+    size_t serializedSize = 0;
+    const size_t maxSize = hkPacket.getSerializedSize();
     ReturnValue_t  result = ipcStore->getFreeElement(storeId,
             serializedSize, &dataPtr);
     if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -212,46 +261,17 @@ void LocalDataPoolManager::setNonDiagnosticIntervalFactor(
 }
 
 
-ReturnValue_t LocalDataPoolManager::performHkOperation() {
-    for(auto& hkReceiversIter: hkReceiversMap) {
-        HkReceiver* receiver = &hkReceiversIter.second;
-        if(not receiver->reportingEnabled) {
-            return HasReturnvaluesIF::RETURN_OK;
-        }
-
-        switch(receiver->reportingType) {
-        case(ReportingType::PERIODIC): {
-            if(receiver->dataId.dataSetSid.notSet()) {
-                // Periodic packets shall only be generated from datasets.
-                continue;
-            }
-            performPeriodicHkGeneration(receiver);
-            break;
-        }
-        case(ReportingType::ON_UPDATE): {
-            // check whether data has changed and send messages in case it has.
-            break;
-        }
-        default:
-            // This should never happen.
-            return HasReturnvaluesIF::RETURN_FAILED;
-        }
-    }
-    return HasReturnvaluesIF::RETURN_OK;
-}
-
 void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
-    if(receiver->intervalCounter >= intervalSecondsToInterval(
-            receiver->isDiagnostics,
-            receiver->hkParameter.collectionIntervalSeconds)) {
+    if(receiver->intervalCounter >=
+            receiver->hkParameter.collectionIntervalTicks) {
         ReturnValue_t result = generateHousekeepingPacket(
-                receiver->dataId.dataSetSid, receiver->destinationQueue);
+                receiver->dataId.dataSetSid);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             // configuration error
             sif::debug << "LocalDataPoolManager::performHkOperation:"
                     << "0x" << std::setfill('0') << std::setw(8)
-            << owner->getObjectId() << " Error generating "
-            << "HK packet" << std::setfill(' ') << std::endl;
+                    << owner->getObjectId() << " Error generating "
+                    << "HK packet" << std::setfill(' ') << std::endl;
         }
         receiver->intervalCounter = 1;
     }
@@ -263,19 +283,23 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
 uint32_t LocalDataPoolManager::intervalSecondsToInterval(bool isDiagnostics,
         float collectionIntervalSeconds) {
     if(isDiagnostics) {
-        return std::ceil(collectionIntervalSeconds/diagnosticMinimumInterval);
+        return std::ceil(collectionIntervalSeconds * 1000
+                /diagnosticMinimumInterval);
     }
     else {
-        return std::ceil(collectionIntervalSeconds/regularMinimumInterval);
+        return std::ceil(collectionIntervalSeconds * 1000
+                /regularMinimumInterval);
     }
 }
 
 float LocalDataPoolManager::intervalToIntervalSeconds(bool isDiagnostics,
         uint32_t collectionInterval) {
     if(isDiagnostics) {
-        return static_cast<float>(collectionInterval * diagnosticMinimumInterval);
+        return static_cast<float>(collectionInterval *
+        		diagnosticMinimumInterval);
     }
     else {
-        return static_cast<float>(collectionInterval * regularMinimumInterval);
+        return static_cast<float>(collectionInterval *
+                regularMinimumInterval);
     }
 }

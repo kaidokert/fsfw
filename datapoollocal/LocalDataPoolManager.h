@@ -15,7 +15,12 @@
 
 #include <map>
 
+namespace Factory {
+void setStaticFrameworkObjectIds();
+}
+
 class LocalDataSetBase;
+
 
 /**
  * @brief 	This class is the managing instance for local data pool.
@@ -40,6 +45,7 @@ class LocalDataPoolManager {
 	template<typename T, uint16_t vecSize>
 	friend class LocalPoolVector;
 	friend class LocalPoolDataSetBase;
+	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
@@ -47,7 +53,6 @@ public:
     static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x1);
 
     static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x2);
-    //static constexpr ReturnValue_t SET_NOT_FOUND = MAKE_RETURN_CODE(0x3);
 
     /**
      * This constructor is used by a class which wants to implement
@@ -70,8 +75,16 @@ public:
 	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
 	 * @return
 	 */
-	ReturnValue_t initialize(MessageQueueIF* queueToUse,
-	        object_id_t hkDestination, uint8_t nonDiagInvlFactor = 5);
+	ReturnValue_t initialize(MessageQueueIF* queueToUse);
+
+	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
+
+	/**
+	 * @return
+	 */
+	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
+			float collectionInterval, bool isDiagnostics,
+			object_id_t packetDestination = defaultHkDestination);
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
@@ -90,20 +103,15 @@ public:
 	 * @return
 	 */
 	ReturnValue_t performHkOperation();
-	/**
-	 * This function is used to set the default HK packet destination.
-	 * This destination will usually only be set once.
-	 * @param hkDestination
-	 */
-	void setHkPacketDestination(MessageQueueId_t hkDestination);
 
 	/**
 	 * Generate a housekeeping packet with a given SID.
 	 * @param sid
 	 * @return
 	 */
-	ReturnValue_t generateHousekeepingPacket(sid_t sid, float collectionInterval,
-	        MessageQueueId_t sendTo = MessageQueueIF::NO_QUEUE);
+	ReturnValue_t generateHousekeepingPacket(sid_t sid,
+	        float collectionInterval = 0,
+	        MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
@@ -134,11 +142,13 @@ public:
      *  full dataset updates.
      */
     enum class ReportingType: uint8_t {
-        // Periodic generation of HK packets.
+        //! Periodic generation of HK packets.
         PERIODIC,
-        // Notification will be sent out as message.
-        // Data is accessed via shared data set or multiple local data sets.
-        ON_UPDATE,
+		//! Update notification will be sent out as message.
+		UPDATE_NOTIFICATION,
+        //! Notification will be sent out as message and a snapshot of the
+        //! current data will be generated.
+        UPDATE_SNAPSHOT,
     };
 
     /* Copying forbidden */
@@ -157,26 +167,31 @@ private:
     dur_millis_t regularMinimumInterval = 0;
     dur_millis_t diagnosticMinimumInterval = 0;
 
+	/** Default receiver for periodic HK packets */
+	static object_id_t defaultHkDestination;
+	MessageQueueId_t defaultHkDestinationId = MessageQueueIF::NO_QUEUE;
+
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
         /** Different member of this union will be used depending on the
         type of data the receiver is interested in (full datasets or
         single data variables. */
         union DataId {
+        	DataId(): dataSetSid() {}
             /** Will be initialized to INVALID_ADDRESS */
             sid_t dataSetSid;
             lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
         };
         DataId dataId;
 
-        MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         ReportingType reportingType = ReportingType::PERIODIC;
+        MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
         bool reportingEnabled = true;
         /** Different members of this union will be used depending on reporting
         type */
         union HkParameter {
             /** This parameter will be used for the PERIODIC type */
-            float collectionIntervalSeconds = 0;
+            uint32_t collectionIntervalTicks = 0;
             /** This parameter will be used for the ON_UPDATE type */
             bool hkDataChanged;
         };
@@ -204,13 +219,6 @@ private:
      * or in the initialize() function.
 	 */
 	MessageQueueIF* hkQueue = nullptr;
-
-	/**
-	 * HK replies will always be a reply to the commander, but HK packet
-	 * can be sent to another destination by specifying this message queue
-	 * ID, for example to a dedicated housekeeping service implementation.
-	 */
-	MessageQueueId_t hkDestination = MessageQueueIF::NO_QUEUE;
 
 	/** Global IPC store is used to store all packets. */
 	StorageManagerIF* ipcStore = nullptr;

@@ -1,8 +1,8 @@
 #include "SharedLocalDataSet.h"
 
-SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, object_id_t owner,
+SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, sid_t sid,
         const size_t maxSize): SystemObject(objectId),
-        LocalPoolDataSetBase(owner, nullptr, maxSize) {
+        LocalPoolDataSetBase(sid, nullptr, maxSize) {
     this->setContainer(poolVarVector.data());
     datasetLock = MutexFactory::instance()->createMutex();
 }

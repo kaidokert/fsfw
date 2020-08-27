@@ -5,8 +5,9 @@
 
 class LocalDataSet: public LocalPoolDataSetBase {
 public:
-    LocalDataSet(HasLocalDataPoolIF* hkOwner, const size_t maxSize);
-    LocalDataSet(object_id_t owner, const size_t maxSize);
+    LocalDataSet(HasLocalDataPoolIF* hkOwner, uint32_t setId,
+    		const size_t maxSize);
+    LocalDataSet(sid_t sid, const size_t maxSize);
     virtual~ LocalDataSet();
 
     //! Copying forbidden for now.

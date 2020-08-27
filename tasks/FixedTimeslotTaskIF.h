@@ -22,8 +22,12 @@ public:
 	 */
 	virtual ReturnValue_t addSlot(object_id_t componentId,
 			uint32_t slotTimeMs, int8_t executionStep) = 0;
-	/** Check whether the sequence is valid */
-	virtual ReturnValue_t checkSequence() const = 0;
+
+	/**
+	 * Check whether the sequence is valid and perform all other required
+	 * initialization steps which are needed after task creation
+	 */
+	virtual ReturnValue_t checkAndInitializeSequence() const = 0;
 };
 
 #endif /* FRAMEWORK_TASKS_FIXEDTIMESLOTTASKIF_H_ */

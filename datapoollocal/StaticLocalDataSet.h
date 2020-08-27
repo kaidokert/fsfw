@@ -16,8 +16,8 @@
 template <uint8_t NUM_VARIABLES>
 class StaticLocalDataSet: public LocalPoolDataSetBase {
 public:
-    StaticLocalDataSet(object_id_t owner):
-        LocalPoolDataSetBase(owner, poolVarList.data(), NUM_VARIABLES) {
+    StaticLocalDataSet(sid_t sid):
+        LocalPoolDataSetBase(sid, poolVarList.data(), NUM_VARIABLES) {
     }
 
 private:

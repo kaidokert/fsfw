@@ -49,7 +49,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t FixedTimeslotTask::checkSequence() const {
+ReturnValue_t FixedTimeslotTask::checkAndInitializeSequence() const {
 	return pst.checkSequence();
 }
 
