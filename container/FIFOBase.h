@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_CONTAINER_FIFOBASE_H_
-#define FRAMEWORK_CONTAINER_FIFOBASE_H_
+#ifndef FSFW_CONTAINER_FIFOBASE_H_
+#define FSFW_CONTAINER_FIFOBASE_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
@@ -62,4 +62,4 @@ protected:
 
 #include "FIFOBase.tpp"
 
-#endif /* FRAMEWORK_CONTAINER_FIFOBASE_H_ */
+#endif /* FSFW_CONTAINER_FIFOBASE_H_ */
