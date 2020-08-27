@@ -1,10 +1,13 @@
-#ifndef SINGLYLINKEDLIST_H_
-#define SINGLYLINKEDLIST_H_
+#ifndef FRAMEWORK_CONTAINER_SINGLYLINKEDLIST_H_
+#define FRAMEWORK_CONTAINER_SINGLYLINKEDLIST_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
+
 /**
- * \ingroup container
+ * @brief	Linked list data structure,
+ * 			each entry has a pointer to the next entry (singly)
+ * @ingroup container
  */
 template<typename T>
 class LinkedElement {
@@ -12,11 +15,8 @@ public:
 	T *value;
 	class Iterator {
 	public:
-		LinkedElement<T> *value;
-		Iterator() :
-				value(NULL) {
-
-		}
+		LinkedElement<T> *value = nullptr;
+		Iterator() {}
 
 		Iterator(LinkedElement<T> *element) :
 				value(element) {
@@ -45,12 +45,11 @@ public:
 		}
 	};
 
-	LinkedElement(T* setElement, LinkedElement<T>* setNext = NULL) : value(setElement),
-		next(setNext) {
-	}
-	virtual ~LinkedElement(){
+	LinkedElement(T* setElement, LinkedElement<T>* setNext = nullptr):
+	       value(setElement), next(setNext) {}
 
-	}
+	virtual ~LinkedElement(){}
+
 	virtual LinkedElement* getNext() const {
 		return next;
 	}
@@ -58,11 +57,16 @@ public:
 	virtual void setNext(LinkedElement* next) {
 		this->next = next;
 	}
+
+	virtual void setEnd() {
+	    this->next = nullptr;
+	}
+
 	LinkedElement* begin() {
 		return this;
 	}
 	LinkedElement* end() {
-		return NULL;
+		return nullptr;
 	}
 private:
 	LinkedElement *next;
@@ -71,37 +75,80 @@ private:
 template<typename T>
 class SinglyLinkedList {
 public:
-	SinglyLinkedList() :
-			start(NULL) {
-	}
+    using ElementIterator = typename LinkedElement<T>::Iterator;
 
-	SinglyLinkedList(typename LinkedElement<T>::Iterator start) :
-			start(start.value) {
-	}
+	SinglyLinkedList() {}
+
+	SinglyLinkedList(ElementIterator start) :
+			start(start.value) {}
+
 	SinglyLinkedList(LinkedElement<T>* startElement) :
-				start(startElement) {
-		}
-	typename LinkedElement<T>::Iterator begin() const {
-		return LinkedElement<T>::Iterator::Iterator(start);
-	}
-	typename LinkedElement<T>::Iterator::Iterator end() const {
-		return LinkedElement<T>::Iterator::Iterator();
+			start(startElement) {}
+
+	ElementIterator begin() const {
+		return ElementIterator::Iterator(start);
 	}
 
-	uint32_t getSize() const {
-		uint32_t size = 0;
+	/** Returns iterator to nulltr */
+	ElementIterator end() const {
+		return ElementIterator::Iterator();
+	}
+
+	/**
+	 * Returns last element in singly linked list.
+	 * @return
+	 */
+	ElementIterator back() const {
+	    LinkedElement<T> *element = start;
+	    while (element->getNext() != nullptr) {
+	        element = element->getNext();
+	    }
+	    return ElementIterator::Iterator(element);
+	}
+
+	size_t getSize() const {
+		size_t size = 0;
 		LinkedElement<T> *element = start;
-		while (element != NULL) {
+		while (element != nullptr) {
 			size++;
 			element = element->getNext();
 		}
 		return size;
 	}
-	void setStart(LinkedElement<T>* setStart) {
-		start = setStart;
+	void setStart(LinkedElement<T>* firstElement) {
+		start = firstElement;
 	}
+
+	void setNext(LinkedElement<T>* currentElement,
+	        LinkedElement<T>* nextElement) {
+	    currentElement->setNext(nextElement);
+	}
+
+    void setLast(LinkedElement<T>* lastElement) {
+        lastElement->setEnd();
+    }
+
+    void insertElement(LinkedElement<T>* element, size_t position) {
+        LinkedElement<T> *currentElement = start;
+        for(size_t count = 0; count < position; count++) {
+            if(currentElement == nullptr) {
+                return;
+            }
+            currentElement = currentElement->getNext();
+        }
+        LinkedElement<T>* elementAfterCurrent = currentElement->next;
+        currentElement->setNext(element);
+        if(elementAfterCurrent != nullptr) {
+            element->setNext(elementAfterCurrent);
+        }
+    }
+
+    void insertBack(LinkedElement<T>* lastElement) {
+        back().value->setNext(lastElement);
+    }
+
 protected:
-	LinkedElement<T> *start;
+	LinkedElement<T> *start = nullptr;
 };
 
 #endif /* SINGLYLINKEDLIST_H_ */

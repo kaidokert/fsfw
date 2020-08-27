@@ -1,7 +1,7 @@
 #ifndef DLEENCODER_H_
 #define DLEENCODER_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 class DleEncoder: public HasReturnvaluesIF {
 private:

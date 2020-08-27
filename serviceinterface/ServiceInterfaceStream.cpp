@@ -1,4 +1,4 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "ServiceInterfaceStream.h"
 
 ServiceInterfaceStream::ServiceInterfaceStream(std::string setMessage,
 		bool addCrToPreamble, bool buffered, bool errStream, uint16_t port) :
@@ -9,7 +9,7 @@ void ServiceInterfaceStream::setActive( bool myActive) {
 	this->streambuf.isActive = myActive;
 }
 
-std::string ServiceInterfaceStream::getPreamble() {
+std::string* ServiceInterfaceStream::getPreamble() {
 	return streambuf.getPreamble();
 }
 

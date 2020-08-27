@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 
-#include <framework/serviceinterface/ServiceInterfaceBuffer.h>
+#include "ServiceInterfaceBuffer.h"
 #include <iostream>
 #include <cstdio>
 
@@ -33,7 +33,7 @@ public:
 	 * the unbuffered mode.
 	 * @return Preamle consisting of log message and timestamp.
 	 */
-	std::string getPreamble();
+	std::string* getPreamble();
 
 	/**
 	 * This prints an error with a preamble. Useful if using the unbuffered

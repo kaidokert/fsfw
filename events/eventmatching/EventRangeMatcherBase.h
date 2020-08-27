@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_EVENTS_EVENTMATCHING_EVENTRANGEMATCHERBASE_H_
 #define FRAMEWORK_EVENTS_EVENTMATCHING_EVENTRANGEMATCHERBASE_H_
 
-#include <framework/events/EventMessage.h>
-#include <framework/globalfunctions/matching/RangeMatcher.h>
-#include <framework/globalfunctions/matching/SerializeableMatcherIF.h>
+#include "../../events/EventMessage.h"
+#include "../../globalfunctions/matching/RangeMatcher.h"
+#include "../../globalfunctions/matching/SerializeableMatcherIF.h"
 
 template <typename T>
 class EventRangeMatcherBase: public SerializeableMatcherIF<EventMessage*> {

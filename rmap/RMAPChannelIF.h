@@ -1,8 +1,8 @@
 #ifndef RMAPCHANNELIF_H_
 #define RMAPCHANNELIF_H_
 
-#include <framework/rmap/RMAPCookie.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "RMAPCookie.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 class RMAPChannelIF {
 public:

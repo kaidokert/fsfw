@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_TMTCPACKET_PACKETMATCHER_SERVICEMATCHER_H_
 #define FRAMEWORK_TMTCPACKET_PACKETMATCHER_SERVICEMATCHER_H_
 
-#include <framework/globalfunctions/matching/SerializeableMatcherIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/tmtcpacket/pus/TmPacketMinimal.h>
+#include "../../globalfunctions/matching/SerializeableMatcherIF.h"
+#include "../../serialize/SerializeAdapter.h"
+#include "../../tmtcpacket/pus/TmPacketMinimal.h"
 
 class ServiceMatcher: public SerializeableMatcherIF<TmPacketMinimal*> {
 private:

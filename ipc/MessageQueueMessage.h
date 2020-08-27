@@ -1,7 +1,7 @@
 #ifndef MESSAGEQUEUEMESSAGE_H_
 #define MESSAGEQUEUEMESSAGE_H_
 
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "MessageQueueSenderIF.h"
 #include <stddef.h>
 
 /**

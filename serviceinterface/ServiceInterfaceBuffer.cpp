@@ -1,5 +1,5 @@
-#include <framework/timemanager/Clock.h>
-#include <framework/serviceinterface/ServiceInterfaceBuffer.h>
+#include "../timemanager/Clock.h"
+#include "ServiceInterfaceBuffer.h"
 #include <cstring>
 #include <inttypes.h>
 
@@ -78,9 +78,9 @@ int ServiceInterfaceBuffer::sync(void) {
 	}
 
 	size_t preambleSize  = 0;
-	auto preamble = getPreamble(&preambleSize);
+	std::string* preamble = getPreamble(&preambleSize);
 	// Write logMessage and time
-	this->putChars(preamble.data(), preamble.data() + preambleSize);
+	this->putChars(preamble->data(), preamble->data() + preambleSize);
 	// Handle output
 	this->putChars(pbase(), pptr());
 	// This tells that buffer is empty again
@@ -92,7 +92,7 @@ bool ServiceInterfaceBuffer::isBuffered() const {
 	return buffered;
 }
 
-std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
+std::string* ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 	Clock::TimeOfDay_t loggerTime;
 	Clock::getDateAndTime(&loggerTime);
 	size_t currentSize = 0;
@@ -110,24 +110,24 @@ std::string ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 					loggerTime.usecond /1000);
 	if(charCount < 0) {
 		printf("ServiceInterfaceBuffer: Failure parsing preamble\r\n");
-		return "";
+		return &preamble;
 	}
 	if(charCount > MAX_PREAMBLE_SIZE) {
 		printf("ServiceInterfaceBuffer: Char count too large for maximum "
 				"preamble size");
-		return "";
+		return &preamble;
 	}
 	currentSize += charCount;
 	if(preambleSize != nullptr) {
 		*preambleSize = currentSize;
 	}
-	return preamble;
+	return &preamble;
 }
 
 
 
 #ifdef UT699
-#include <framework/osal/rtems/Interrupt.h>
+#include "../osal/rtems/Interrupt.h"
 
 ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string set_message,
 		uint16_t port) {

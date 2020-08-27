@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -60,7 +60,7 @@ private:
 	//! In this function, the characters are parsed.
 	void putChars(char const* begin, char const* end);
 
-	std::string getPreamble(size_t * preambleSize = nullptr);
+	std::string* getPreamble(size_t * preambleSize = nullptr);
 };
 
 #endif

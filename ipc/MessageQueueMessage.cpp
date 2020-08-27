@@ -1,5 +1,5 @@
-#include <framework/ipc/MessageQueueMessage.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "MessageQueueMessage.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 
 #include <string.h>
 
