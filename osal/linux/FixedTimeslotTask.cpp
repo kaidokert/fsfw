@@ -39,8 +39,11 @@ uint32_t FixedTimeslotTask::getPeriodMs() const {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
-		pst.addSlot(componentId, slotTimeMs, executionStep, this);
+	ExecutableObjectIF* executableObject =
+			objectManager->get<ExecutableObjectIF>(componentId);
+	if (executableObject != nullptr) {
+		pst.addSlot(componentId, slotTimeMs, executionStep,
+				executableObject,this);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 

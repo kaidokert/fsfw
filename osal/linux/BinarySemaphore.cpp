@@ -25,15 +25,16 @@ BinarySemaphore& BinarySemaphore::operator =(
 	return * this;
 }
 
-ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
+ReturnValue_t BinarySemaphore::acquire(TimeoutType timeoutType,
+		 uint32_t timeoutMs) {
 	int result = 0;
-	if(timeoutMs == SemaphoreIF::POLLING) {
+	if(timeoutType == TimeoutType::POLLING) {
 		result = sem_trywait(&handle);
 	}
-	else if(timeoutMs == SemaphoreIF::BLOCKING) {
+	else if(timeoutType == TimeoutType::BLOCKING) {
 	    result = sem_wait(&handle);
 	}
-	else if(timeoutMs > SemaphoreIF::POLLING){
+	else if(timeoutType == TimeoutType::WAITING){
 		timespec timeOut;
 		clock_gettime(CLOCK_REALTIME, &timeOut);
 		uint64_t nseconds = timeOut.tv_sec * 1000000000 + timeOut.tv_nsec;
