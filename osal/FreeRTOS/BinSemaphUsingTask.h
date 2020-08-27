@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tasks/SemaphoreIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../tasks/SemaphoreIF.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -25,8 +25,8 @@ public:
 	//! @brief Default dtor
 	virtual~ BinarySemaphoreUsingTask();
 
-	ReturnValue_t acquire(uint32_t timeoutMs =
-	        SemaphoreIF::BLOCKING) override;
+	ReturnValue_t acquire(TimeoutType timeoutType = TimeoutType::BLOCKING,
+	        uint32_t timeoutMs = portMAX_DELAY) override;
 	ReturnValue_t release() override;
 	uint8_t getSemaphoreCounter() const override;
 	static uint8_t getSemaphoreCounter(TaskHandle_t taskHandle);
@@ -39,8 +39,9 @@ public:
 	 * @return - @c RETURN_OK on success
 	 *         - @c RETURN_FAILED on failure
 	 */
-	ReturnValue_t acquireWithTickTimeout(TickType_t timeoutTicks =
-	        SemaphoreIF::BLOCKING);
+	ReturnValue_t acquireWithTickTimeout(
+	        TimeoutType timeoutType = TimeoutType::BLOCKING,
+	        TickType_t timeoutTicks = portMAX_DELAY);
 
 	/**
 	 * Get handle to the task related to the semaphore.

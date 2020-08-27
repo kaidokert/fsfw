@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 #define FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/tasks/SemaphoreIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../tasks/SemaphoreIF.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
@@ -52,8 +52,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
-	ReturnValue_t acquire(uint32_t timeoutMs =
-			SemaphoreIF::BLOCKING) override;
+	ReturnValue_t acquire(TimeoutType timeoutType =
+            TimeoutType::BLOCKING, uint32_t timeoutMs = portMAX_DELAY) override;
 
 	/**
 	 * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
@@ -61,8 +61,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
-	ReturnValue_t  acquireWithTickTimeout(TickType_t timeoutTicks =
-			SemaphoreIF::BLOCKING);
+	ReturnValue_t  acquireWithTickTimeout(TimeoutType timeoutType =
+            TimeoutType::BLOCKING, TickType_t timeoutTicks = portMAX_DELAY);
 
 	/**
 	 * Release the binary semaphore.

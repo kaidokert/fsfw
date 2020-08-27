@@ -1,6 +1,6 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHORE_H_
 #define FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHORE_H_
-#include <framework/osal/FreeRTOS/BinarySemaphore.h>
+#include "../../osal/FreeRTOS/BinarySemaphore.h"
 
 /**
  * @brief 	Counting semaphores, which can be acquire more than once.

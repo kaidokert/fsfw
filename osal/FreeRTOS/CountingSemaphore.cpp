@@ -1,6 +1,6 @@
-#include <framework/osal/FreeRTOS/CountingSemaphore.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/osal/FreeRTOS/TaskManagement.h>
+#include "../../osal/FreeRTOS/CountingSemaphore.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../osal/FreeRTOS/TaskManagement.h"
 
 #include <freertos/semphr.h>
 

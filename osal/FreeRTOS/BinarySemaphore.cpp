@@ -1,6 +1,6 @@
-#include <framework/osal/FreeRTOS/BinarySemaphore.h>
-#include <framework/osal/FreeRTOS/TaskManagement.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../osal/FreeRTOS/BinarySemaphore.h"
+#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();
@@ -35,18 +35,23 @@ BinarySemaphore& BinarySemaphore::operator =(
     return *this;
 }
 
-ReturnValue_t BinarySemaphore::acquire(uint32_t timeoutMs) {
-	TickType_t timeout = SemaphoreIF::POLLING;
-	if(timeoutMs == SemaphoreIF::BLOCKING) {
-	    timeout = SemaphoreIF::BLOCKING;
+ReturnValue_t BinarySemaphore::acquire(TimeoutType timeoutType,
+        uint32_t timeoutMs) {
+    TickType_t timeout = 0;
+	if(timeoutType == TimeoutType::POLLING) {
+	    timeout = 0;
 	}
-	else if(timeoutMs > SemaphoreIF::POLLING){
+	else if(timeoutType == TimeoutType::WAITING){
 	    timeout = pdMS_TO_TICKS(timeoutMs);
 	}
-	return acquireWithTickTimeout(timeout);
+	else {
+	    timeout = portMAX_DELAY;
+	}
+	return acquireWithTickTimeout(timeoutType, timeout);
 }
 
-ReturnValue_t BinarySemaphore::acquireWithTickTimeout(TickType_t timeoutTicks) {
+ReturnValue_t BinarySemaphore::acquireWithTickTimeout(TimeoutType timeoutType,
+        TickType_t timeoutTicks) {
 	if(handle == nullptr) {
 		return SemaphoreIF::SEMAPHORE_INVALID;
 	}
