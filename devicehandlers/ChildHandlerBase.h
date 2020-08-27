@@ -1,15 +1,17 @@
-#ifndef PAYLOADHANDLERBASE_H_
-#define PAYLOADHANDLERBASE_H_
+#ifndef FSFW_DEVICES_CHILDHANDLERBASE_H_
+#define FSFW_DEVICES_CHILDHANDLERBASE_H_
 
-#include "../devicehandlers/ChildHandlerFDIR.h"
-#include "../devicehandlers/DeviceHandlerBase.h"
+#include "ChildHandlerFDIR.h"
+#include "DeviceHandlerBase.h"
 
 class ChildHandlerBase: public DeviceHandlerBase {
 public:
 	ChildHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
 			CookieIF * cookie, uint32_t thermalStatePoolId,
-			uint32_t thermalRequestPoolId, object_id_t parent = objects::NO_OBJECT,
-			FailureIsolationBase* customFdir = nullptr, size_t cmdQueueSize = 20);
+			uint32_t thermalRequestPoolId,
+			object_id_t parent = objects::NO_OBJECT,
+			FailureIsolationBase* customFdir = nullptr,
+			size_t cmdQueueSize = 20);
 	virtual ~ChildHandlerBase();
 
 	virtual ReturnValue_t initialize();
@@ -20,4 +22,5 @@ protected:
 
 };
 
-#endif /* PAYLOADHANDLERBASE_H_ */
+#endif /* FSFW_DEVICES_CHILDHANDLERBASE_H_ */
+
