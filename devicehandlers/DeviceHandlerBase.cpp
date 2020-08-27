@@ -17,7 +17,6 @@
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
-object_id_t DeviceHandlerBase::defaultHkDestination = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * comCookie,
@@ -47,10 +46,6 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
 				defaultFdirParentId);
 	}
-}
-
-void DeviceHandlerBase::setHkDestination(object_id_t hkDestination) {
-	this->hkDestination = hkDestination;
 }
 
 void DeviceHandlerBase::setThermalStateRequestPoolIds(
@@ -187,15 +182,6 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-
-//	if(hkDestination == objects::NO_OBJECT) {
-//		hkDestination = defaultHkDestination;
-//	}
-//
-//	result = hkManager.initialize(commandQueue, hkDestination);
-//	if (result != HasReturnvaluesIF::RETURN_OK) {
-//		return result;
-//	}
 
 	fillCommandAndReplyMap();
 

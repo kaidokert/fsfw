@@ -85,8 +85,7 @@ class DeviceHandlerBase: public DeviceHandlerIF,
 		public HasModesIF,
 		public HasHealthIF,
 		public HasActionsIF,
-		public ReceivesParameterMessagesIF
-		/* public HasLocalDataPoolIF */ {
+		public ReceivesParameterMessagesIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	/**
@@ -107,7 +106,6 @@ public:
 			CookieIF * comCookie, FailureIsolationBase* fdirInstance = nullptr,
 			size_t cmdQueueSize = 20);
 
-	void setHkDestination(object_id_t hkDestination);
 	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
 			uint32_t thermalRequestPoolId);
 
@@ -1035,11 +1033,6 @@ private:
 
 	/** the object used to set power switches */
 	PowerSwitchIF *powerSwitcher = nullptr;
-
-	/** Cached for initialize() */
-	static object_id_t defaultHkDestination;
-	/** HK destination can also be set individually */
-	object_id_t hkDestination = objects::NO_OBJECT;
 
 	/**
 	 * @brief   Used for timing out mode transitions.
