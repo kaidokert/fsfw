@@ -16,19 +16,23 @@ BinarySemaphoreUsingTask::~BinarySemaphoreUsingTask() {
 	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite, nullptr);
 }
 
-ReturnValue_t BinarySemaphoreUsingTask::acquire(uint32_t timeoutMs) {
-	TickType_t timeout = SemaphoreIF::POLLING;
-	if(timeoutMs == SemaphoreIF::BLOCKING) {
-		timeout = SemaphoreIF::BLOCKING;
-	}
-	else if(timeoutMs > SemaphoreIF::POLLING){
-		timeout = pdMS_TO_TICKS(timeoutMs);
-	}
-	return acquireWithTickTimeout(timeout);
+ReturnValue_t BinarySemaphoreUsingTask::acquire(TimeoutType timeoutType,
+        uint32_t timeoutMs) {
+    TickType_t timeout = 0;
+    if(timeoutType == TimeoutType::POLLING) {
+        timeout = 0;
+    }
+    else if(timeoutType == TimeoutType::WAITING){
+        timeout = pdMS_TO_TICKS(timeoutMs);
+    }
+    else {
+        timeout = portMAX_DELAY;
+    }
+	return acquireWithTickTimeout(timeoutType, timeout);
 }
 
 ReturnValue_t BinarySemaphoreUsingTask::acquireWithTickTimeout(
-        TickType_t timeoutTicks) {
+        TimeoutType timeoutType, TickType_t timeoutTicks) {
 	BaseType_t returncode = ulTaskNotifyTake(pdTRUE, timeoutTicks);
 	if (returncode == pdPASS) {
 		return HasReturnvaluesIF::RETURN_OK;

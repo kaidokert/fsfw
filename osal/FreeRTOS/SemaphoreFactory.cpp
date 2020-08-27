@@ -6,8 +6,6 @@
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
-const uint32_t SemaphoreIF::POLLING = 0;
-const uint32_t SemaphoreIF::BLOCKING = portMAX_DELAY;
 
 static const uint32_t USE_REGULAR_SEMAPHORES = 0;
 static const uint32_t USE_TASK_NOTIFICATIONS = 1;

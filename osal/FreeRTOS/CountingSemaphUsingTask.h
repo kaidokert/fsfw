@@ -31,7 +31,8 @@ public:
 	 * @return -@c RETURN_OK on success
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
-	ReturnValue_t acquire(uint32_t timeoutMs = SemaphoreIF::BLOCKING) override;
+	ReturnValue_t acquire(TimeoutType timeoutType = TimeoutType::BLOCKING,
+	        uint32_t timeoutMs = portMAX_DELAY) override;
 
 	/**
 	 * Release a semaphore, increasing the number of available counting
@@ -61,7 +62,8 @@ public:
 	 *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
 	 */
 	ReturnValue_t acquireWithTickTimeout(
-			TickType_t timeoutTicks = SemaphoreIF::BLOCKING);
+	        TimeoutType timeoutType = TimeoutType::BLOCKING,
+			TickType_t timeoutTicks = portMAX_DELAY);
 
 	/**
 	 * Get handle to the task related to the semaphore.

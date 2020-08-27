@@ -20,21 +20,16 @@
  */
 class SemaphoreIF {
 public:
+    /**
+     * Different types of timeout for the mutex lock.
+     */
+    enum TimeoutType {
+        POLLING, //!< If mutex is not available, return immediately
+        WAITING, //!< Wait a specified time for the mutex to become available
+        BLOCKING //!< Block indefinitely until the mutex becomes available.
+    };
+
 	virtual~ SemaphoreIF() {};
-	/**
-	 * @brief 	Timeout value used for polling lock attempt.
-	 * @details
-	 * If the lock is not successfull, MUTEX_TIMEOUT will be returned
-	 * immediately. Value needs to be defined in implementation.
-	 */
-	static const uint32_t POLLING;
-	/**
-	 * @brief 	Timeout value used for permanent blocking lock attempt.
-	 * @details
-	 * The task will be blocked (indefinitely) until the mutex is unlocked.
-	 * Value needs to be defined in implementation.
-	 */
-	static const uint32_t BLOCKING;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 	//! Semaphore timeout
@@ -52,7 +47,8 @@ public:
 	 * @param timeoutMs
 	 * @return - c RETURN_OK for successfull acquisition
 	 */
-	virtual ReturnValue_t acquire(uint32_t timeoutMs) = 0;
+	virtual ReturnValue_t acquire(TimeoutType timeoutType =
+            TimeoutType::BLOCKING, uint32_t timeoutMs = 0) = 0;
 
 	/**
 	 * Corrensponding call to release a semaphore.
