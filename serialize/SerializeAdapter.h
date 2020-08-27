@@ -1,10 +1,10 @@
 #ifndef SERIALIZEADAPTER_H_
 #define SERIALIZEADAPTER_H_
 
-#include <framework/container/IsDerivedFrom.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/EndianConverter.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../container/IsDerivedFrom.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "EndianConverter.h"
+#include "SerializeIF.h"
 #include <string.h>
 
 /**

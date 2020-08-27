@@ -1,7 +1,7 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcservices/AcceptsVerifyMessageIF.h>
-#include <framework/tmtcservices/PusVerificationReport.h>
-#include <framework/tmtcservices/VerificationReporter.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "AcceptsVerifyMessageIF.h"
+#include "PusVerificationReport.h"
+#include "VerificationReporter.h"
 
 object_id_t VerificationReporter::messageReceiver = 0;
 

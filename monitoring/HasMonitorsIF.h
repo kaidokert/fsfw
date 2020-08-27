@@ -7,9 +7,9 @@
 #ifndef HASMONITORSIF_H_
 #define HASMONITORSIF_H_
 
-#include <framework/events/EventReportingProxyIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../events/EventReportingProxyIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 class HasMonitorsIF {
 public:

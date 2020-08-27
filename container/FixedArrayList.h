@@ -1,7 +1,7 @@
 #ifndef FIXEDARRAYLIST_H_
 #define FIXEDARRAYLIST_H_
 
-#include <framework/container/ArrayList.h>
+#include "ArrayList.h"
 /**
  * \ingroup container
  */

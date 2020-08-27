@@ -1,7 +1,7 @@
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/subsystem/SubsystemBase.h>
-#include <framework/ipc/QueueFactory.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "SubsystemBase.h"
+#include "../ipc/QueueFactory.h"
 
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		Mode_t initialMode, uint16_t commandQueueDepth) :
@@ -329,7 +329,7 @@ void SubsystemBase::checkCommandQueue() {
 		result = handleCommandMessage(&message);
 		if (result != RETURN_OK) {
 			CommandMessage reply;
-			reply.setReplyRejected(CommandMessage::UNKNOW_COMMAND,
+			reply.setReplyRejected(CommandMessage::UNKNOWN_COMMAND,
 					message.getCommand());
 			replyToCommand(&reply);
 		}

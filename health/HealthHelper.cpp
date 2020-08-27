@@ -1,6 +1,6 @@
-#include <framework/health/HealthHelper.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "HealthHelper.h"
+#include "../ipc/MessageQueueSenderIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId) :
 		healthTable(NULL), eventSender(NULL), objectId(objectId), parentQueue(
 				0), owner(owner) {
@@ -29,11 +29,11 @@ HasHealthIF::HealthState HealthHelper::getHealth() {
 }
 
 ReturnValue_t HealthHelper::initialize(MessageQueueId_t parentQueue) {
-	setParentQeueue(parentQueue);
+	setParentQueue(parentQueue);
 	return initialize();
 }
 
-void HealthHelper::setParentQeueue(MessageQueueId_t parentQueue) {
+void HealthHelper::setParentQueue(MessageQueueId_t parentQueue) {
 	this->parentQueue = parentQueue;
 }
 

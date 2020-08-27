@@ -1,9 +1,9 @@
 #ifndef COMMANDSACTIONSIF_H_
 #define COMMANDSACTIONSIF_H_
 
-#include <framework/action/CommandActionHelper.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/ipc/MessageQueueIF.h>
+#include "CommandActionHelper.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MessageQueueIF.h"
 
 /**
  * Interface to separate commanding actions of other objects.

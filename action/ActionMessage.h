@@ -1,9 +1,9 @@
 #ifndef ACTIONMESSAGE_H_
 #define ACTIONMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
+#include "../ipc/CommandMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../storagemanager/StorageManagerIF.h"
 typedef uint32_t ActionId_t;
 
 class ActionMessage {

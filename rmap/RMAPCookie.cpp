@@ -1,5 +1,5 @@
-#include <framework/rmap/RMAPChannelIF.h>
-#include <framework/rmap/RMAPCookie.h>
+#include "RMAPChannelIF.h"
+#include "RMAPCookie.h"
 #include <stddef.h>
 
 

@@ -1,8 +1,8 @@
 #ifndef CPUUSAGE_H_
 #define CPUUSAGE_H_
 
-#include <framework/container/FixedArrayList.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../../container/FixedArrayList.h"
+#include "../../serialize/SerializeIF.h"
 #include <stdarg.h>
 
 class CpuUsage : public SerializeIF {

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_QUEUEFACTORY_H_
 #define FRAMEWORK_IPC_QUEUEFACTORY_H_
 
-#include <framework/ipc/MessageQueueIF.h>
+#include "MessageQueueIF.h"
 #include <stdint.h>
 /**
  * Creates message queues.

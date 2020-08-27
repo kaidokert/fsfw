@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_MONITORING_LIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_LIMITMONITOR_H_
 
-#include <framework/monitoring/MonitorBase.h>
+#include "MonitorBase.h"
 
 /**
  * Variant of a limit checking class.

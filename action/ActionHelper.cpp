@@ -1,9 +1,9 @@
-#include <framework/action/ActionHelper.h>
-#include <framework/action/HasActionsIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "ActionHelper.h"
+#include "HasActionsIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+
 ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue) :
-		owner(setOwner), queueToUse(useThisQueue), ipcStore(
-				NULL) {
+		owner(setOwner), queueToUse(useThisQueue), ipcStore(nullptr) {
 }
 
 ActionHelper::~ActionHelper() {
@@ -16,16 +16,18 @@ ReturnValue_t ActionHelper::handleActionMessage(CommandMessage* command) {
 				ActionMessage::getStoreId(command));
 		return HasReturnvaluesIF::RETURN_OK;
 	} else {
-		return CommandMessage::UNKNOW_COMMAND;
+		return CommandMessage::UNKNOWN_COMMAND;
 	}
 }
 
 ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
 	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (ipcStore == NULL) {
+	if (ipcStore == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	setQueueToUse(queueToUse_);
+	if(queueToUse_ != nullptr) {
+		setQueueToUse(queueToUse_);
+	}
 
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -67,7 +69,8 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
 	}
 }
 
-ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t replyId, SerializeIF* data, bool hideSender) {
+ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
+		ActionId_t replyId, SerializeIF* data, bool hideSender) {
 	CommandMessage reply;
 	store_address_t storeAddress;
 	uint8_t *dataPtr;
