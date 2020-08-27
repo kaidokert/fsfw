@@ -1,6 +1,6 @@
 #include "../../tasks/SemaphoreFactory.h"
-#include "../../osal/linux/BinarySemaphore.h"
-#include "../../osal/linux/CountingSemaphore.h"
+#include "BinarySemaphore.h"
+#include "CountingSemaphore.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
