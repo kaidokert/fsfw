@@ -1,5 +1,6 @@
-#ifndef FRAMEWORK_TASKS_SEMAPHOREFACTORY_H_
-#define FRAMEWORK_TASKS_SEMAPHOREFACTORY_H_
+#ifndef FSFW_TASKS_SEMAPHOREFACTORY_H_
+#define FSFW_TASKS_SEMAPHOREFACTORY_H_
+
 #include "../tasks/SemaphoreIF.h"
 
 /**
@@ -46,4 +47,4 @@ private:
 	static SemaphoreFactory* factoryInstance;
 };
 
-#endif /* FRAMEWORK_TASKS_SEMAPHOREFACTORY_H_ */
+#endif /* FSFW_TASKS_SEMAPHOREFACTORY_H_ */
