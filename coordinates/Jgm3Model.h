@@ -2,7 +2,7 @@
 #define FRAMEWORK_COORDINATES_JGM3MODEL_H_
 
 #include <stdint.h>
-#include "../coordinates/CoordinateTransformations.h"
+#include "CoordinateTransformations.h"
 #include "../globalfunctions/math/VectorOperations.h"
 #include "../globalfunctions/timevalOperations.h"
 #include "../globalfunctions/constants.h"

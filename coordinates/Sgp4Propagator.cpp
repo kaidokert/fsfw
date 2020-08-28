@@ -1,5 +1,5 @@
-#include "../coordinates/CoordinateTransformations.h"
-#include "../coordinates/Sgp4Propagator.h"
+#include "CoordinateTransformations.h"
+#include "Sgp4Propagator.h"
 #include "../globalfunctions/constants.h"
 #include "../globalfunctions/math/MatrixOperations.h"
 #include "../globalfunctions/math/VectorOperations.h"
