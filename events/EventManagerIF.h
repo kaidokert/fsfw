@@ -1,8 +1,8 @@
 #ifndef EVENTMANAGERIF_H_
 #define EVENTMANAGERIF_H_
 
-#include "../events/eventmatching/eventmatching.h"
-#include "../events/EventMessage.h"
+#include "eventmatching/eventmatching.h"
+#include "EventMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 

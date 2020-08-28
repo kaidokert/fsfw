@@ -1,8 +1,8 @@
 #ifndef EVENTMANAGER_H_
 #define EVENTMANAGER_H_
 
-#include "../events/eventmatching/EventMatchTree.h"
-#include "../events/EventManagerIF.h"
+#include "eventmatching/EventMatchTree.h"
+#include "EventManagerIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/LocalPool.h"
 #include "../tasks/ExecutableObjectIF.h"
@@ -36,11 +36,11 @@ public:
 	ReturnValue_t performOperation(uint8_t opCode);
 protected:
 
-	MessageQueueIF* eventReportQueue = nullptr;
+	MessageQueueIF* eventReportQueue;
 
 	std::map<MessageQueueId_t, EventMatchTree> listenerList;
 
-	MutexIF* mutex = nullptr;
+	MutexIF* mutex;
 
 	static const uint8_t N_POOLS = 3;
 	LocalPool<N_POOLS> factoryBackend;

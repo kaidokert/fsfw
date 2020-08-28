@@ -1,7 +1,7 @@
 #ifndef EVENTMESSAGE_H_
 #define EVENTMESSAGE_H_
 
-#include "../events/Event.h"
+#include "Event.h"
 #include "../ipc/MessageQueueMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 

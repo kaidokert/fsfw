@@ -1,5 +1,5 @@
-#include "../events/EventManager.h"
-#include "../events/EventMessage.h"
+#include "EventManager.h"
+#include "EventMessage.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
@@ -8,16 +8,13 @@
 const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
 		sizeof(EventMatchTree::Node), sizeof(EventIdRangeMatcher),
 		sizeof(ReporterRangeMatcher) };
-// If one checks registerListener calls, there are around 40 (to max 50)
-// objects registering for certain events.
-// Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
-// So a good guess is 75 to a max of 100 pools required for each, which fits well.
-// SHOULDDO: Shouldn't this be in the config folder and passed via ctor?
+//If one checks registerListener calls, there are around 40 (to max 50) objects registering for certain events.
+//Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher. So a good guess is 75 to a max of 100 pools required for each, which fits well.
 const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
 
 EventManager::EventManager(object_id_t setObjectId) :
-		SystemObject(setObjectId),
-		factoryBackend(0, POOL_SIZES, N_ELEMENTS, false, true) {
+		SystemObject(setObjectId), eventReportQueue(NULL), mutex(NULL), factoryBackend(
+				0, POOL_SIZES, N_ELEMENTS, false, true) {
 	mutex = MutexFactory::instance()->createMutex();
 	eventReportQueue = QueueFactory::instance()->createMessageQueue(
 			MAX_EVENTS_PER_CYCLE, EventMessage::EVENT_MESSAGE_SIZE);
@@ -52,7 +49,7 @@ void EventManager::notifyListeners(EventMessage* message) {
 	for (auto iter = listenerList.begin(); iter != listenerList.end(); ++iter) {
 		if (iter->second.match(message)) {
 			MessageQueueSenderIF::sendMessage(iter->first, message,
-			        message->getSender());
+					message->getSender());
 		}
 	}
 	unlockMutex();
@@ -133,23 +130,16 @@ void EventManager::printEvent(EventMessage* message) {
 		break;
 	default:
 		string = translateObject(message->getReporter());
-		sif::debug << "EventManager: ";
+		sif::error << "EVENT: ";
 		if (string != 0) {
-			sif::debug << string;
+			sif::error << string;
+		} else {
+			sif::error << "0x" << std::hex << message->getReporter() << std::dec;
 		}
-		else {
-			sif::debug << "0x" << std::hex << message->getReporter() << std::dec;
-		}
-		sif::debug << " reported " << translateEvents(message->getEvent())
-				<< " (" << std::dec << message->getEventId() << ") "
-				<< std::endl;
-
-		sif::debug << std::hex << "P1 Hex: 0x" << message->getParameter1()
-				<< ", P1 Dec: " << std::dec << message->getParameter1()
-				<< std::endl;
-		sif::debug << std::hex << "P2 Hex: 0x" << message->getParameter2()
-				<< ", P2 Dec: " <<  std::dec << message->getParameter2()
-				<< std::endl;
+		sif::error << " reported " << translateEvents(message->getEvent()) << " ("
+				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
+				<< message->getParameter1() << " P2: 0x"
+				<< message->getParameter2() << std::dec << std::endl;
 		break;
 	}
 
