@@ -111,25 +111,27 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 
 #ifdef DEBUG
 
-//forward declaration, should be implemented by mission
-const char* translateObject(object_id_t object);
-const char * translateEvents(Event event);
+// forward declaration, should be implemented by mission
+extern const char* translateObject(object_id_t object);
+extern const char* translateEvents(Event event);
 
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
 	case SEVERITY::INFO:
-//		string = translateObject(message->getReporter());
-//		sif::info << "EVENT: ";
-//		if (string != 0) {
-//			sif::info << string;
-//		} else {
-//			sif::info << "0x" << std::hex << message->getReporter() << std::dec;
-//		}
-//		sif::info << " reported " << translateEvents(message->getEvent()) << " ("
-//				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
-//				<< message->getParameter1() << " P2: 0x"
-//				<< message->getParameter2() << std::dec << std::endl;
+#ifdef DEBUG_INFO_EVENT
+		string = translateObject(message->getReporter());
+		sif::info << "EVENT: ";
+		if (string != 0) {
+			sif::info << string;
+		} else {
+			sif::info << "0x" << std::hex << message->getReporter() << std::dec;
+		}
+		sif::info << " reported " << translateEvents(message->getEvent()) << " ("
+				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
+				<< message->getParameter1() << " P2: 0x"
+				<< message->getParameter2() << std::dec << std::endl;
+#endif
 		break;
 	default:
 		string = translateObject(message->getReporter());
@@ -152,7 +154,6 @@ void EventManager::printEvent(EventMessage* message) {
 				<< std::endl;
 		break;
 	}
-
 }
 #endif
 
