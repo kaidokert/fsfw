@@ -1,14 +1,20 @@
 #ifndef EVENTMANAGER_H_
 #define EVENTMANAGER_H_
 
-#include "../events/eventmatching/EventMatchTree.h"
-#include "../events/EventManagerIF.h"
+#include "eventmatching/EventMatchTree.h"
+#include "EventManagerIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/LocalPool.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexIF.h"
 #include <map>
+
+#ifdef DEBUG
+// forward declaration, should be implemented by mission
+extern const char* translateObject(object_id_t object);
+extern const char* translateEvents(Event event);
+#endif
 
 class EventManager: public EventManagerIF,
 		public ExecutableObjectIF,

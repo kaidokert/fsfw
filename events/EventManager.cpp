@@ -1,5 +1,5 @@
-#include "../events/EventManager.h"
-#include "../events/EventMessage.h"
+#include "EventManager.h"
+#include "EventMessage.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
@@ -52,7 +52,7 @@ void EventManager::notifyListeners(EventMessage* message) {
 	for (auto iter = listenerList.begin(); iter != listenerList.end(); ++iter) {
 		if (iter->second.match(message)) {
 			MessageQueueSenderIF::sendMessage(iter->first, message,
-			        message->getSender());
+					message->getSender());
 		}
 	}
 	unlockMutex();
@@ -110,10 +110,6 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 }
 
 #ifdef DEBUG
-
-// forward declaration, should be implemented by mission
-extern const char* translateObject(object_id_t object);
-extern const char* translateEvents(Event event);
 
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;

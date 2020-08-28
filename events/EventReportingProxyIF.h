@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_EVENTS_EVENTREPORTINGPROXYIF_H_
 #define FRAMEWORK_EVENTS_EVENTREPORTINGPROXYIF_H_
 
-#include "../events/Event.h"
+#include "Event.h"
 
 
 class EventReportingProxyIF {

@@ -1,4 +1,4 @@
-#include "../events/Event.h"
+#include "Event.h"
 namespace EVENT {
 EventId_t getEventId(Event event) {
 	return (event & 0xFFFF);

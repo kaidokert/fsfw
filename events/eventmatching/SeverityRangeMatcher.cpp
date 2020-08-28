@@ -1,4 +1,4 @@
-#include "../../events/eventmatching/SeverityRangeMatcher.h"
+#include "SeverityRangeMatcher.h"
 #include "../../events/EventMessage.h"
 #include "../../serialize/SerializeAdapter.h"
 
