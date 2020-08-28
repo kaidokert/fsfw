@@ -1,4 +1,4 @@
-#include <framework/modes/ModeMessage.h>
+#include "ModeMessage.h"
 
 Mode_t ModeMessage::getMode(const CommandMessage* message) {
 	return message->getParameter();

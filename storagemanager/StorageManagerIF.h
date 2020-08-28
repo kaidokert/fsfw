@@ -1,8 +1,8 @@
 #ifndef STORAGEMANAGERIF_H_H
 #define STORAGEMANAGERIF_H_H
 
-#include <framework/events/Event.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "../events/Event.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <stddef.h>
 
 /**

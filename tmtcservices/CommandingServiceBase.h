@@ -1,17 +1,17 @@
 #ifndef FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 #define FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tasks/ExecutableObjectIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
+#include "../objectmanager/SystemObject.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../tasks/ExecutableObjectIF.h"
+#include "../ipc/MessageQueueIF.h"
+#include "AcceptsTelecommandsIF.h"
 
-#include <framework/tmtcservices/VerificationReporter.h>
-#include <framework/ipc/CommandMessage.h>
-#include <framework/container/FixedMap.h>
-#include <framework/container/FIFO.h>
-#include <framework/serialize/SerializeIF.h>
+#include "VerificationReporter.h"
+#include "../ipc/CommandMessage.h"
+#include "../container/FixedMap.h"
+#include "../container/FIFO.h"
+#include "../serialize/SerializeIF.h"
 
 class TcPacketStored;
 

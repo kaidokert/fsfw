@@ -1,11 +1,11 @@
 #ifndef CCSDSDISTRIBUTOR_H_
 #define CCSDSDISTRIBUTOR_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/tcdistribution/CCSDSDistributorIF.h>
-#include <framework/tcdistribution/TcDistributor.h>
-#include <framework/tmtcservices/AcceptsTelecommandsIF.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "CCSDSDistributorIF.h"
+#include "TcDistributor.h"
+#include "../tmtcservices/AcceptsTelecommandsIF.h"
 /**
  * An instantiation of the CCSDSDistributorIF.
  * It receives Space Packets, and selects a destination depending on the APID of the telecommands.

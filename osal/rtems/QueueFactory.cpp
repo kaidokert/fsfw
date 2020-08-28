@@ -1,4 +1,4 @@
-#include <framework/ipc/QueueFactory.h>
+#include "../../ipc/QueueFactory.h"
 #include "MessageQueue.h"
 #include "RtemsBasic.h"
 

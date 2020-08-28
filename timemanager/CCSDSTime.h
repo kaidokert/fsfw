@@ -3,8 +3,8 @@
 
 // COULDDO: have calls in Clock.h which return time quality and use timespec accordingly
 
-#include <framework/timemanager/Clock.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
+#include "Clock.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <stdint.h>
 
 bool operator<(const timeval& lhs, const timeval& rhs);

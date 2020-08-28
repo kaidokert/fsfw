@@ -1,7 +1,7 @@
 #ifndef MISSION_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_
 #define MISSION_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_
 
-#include <framework/devicehandlers/DeviceCommunicationIF.h>
+#include "../devicehandlers/DeviceCommunicationIF.h"
 
 /**
  * @brief	This class is a implementation of a DeviceCommunicationIF for RMAP calls. It expects RMAPCookies or a derived class of RMAPCookies

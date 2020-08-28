@@ -1,9 +1,9 @@
-#include <framework/events/EventManagerIF.h>
-#include <framework/fdir/FailureIsolationBase.h>
-#include <framework/health/HasHealthIF.h>
-#include <framework/health/HealthMessage.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "../events/EventManagerIF.h"
+#include "FailureIsolationBase.h"
+#include "../health/HasHealthIF.h"
+#include "../health/HealthMessage.h"
+#include "../ipc/QueueFactory.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 FailureIsolationBase::FailureIsolationBase(object_id_t owner, object_id_t parent, uint8_t messageDepth, uint8_t parameterDomainBase) :
 		eventQueue(NULL), ownerId(
