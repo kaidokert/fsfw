@@ -1,5 +1,5 @@
-#ifndef HASPARAMETERSIF_H_
-#define HASPARAMETERSIF_H_
+#ifndef FSFW_PARAMETERS_HASPARAMETERSIF_H_
+#define FSFW_PARAMETERS_HASPARAMETERSIF_H_
 
 #include "../parameters/ParameterWrapper.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -64,4 +64,4 @@ public:
 			const ParameterWrapper *newValues, uint16_t startAtIndex) = 0;
 };
 
-#endif /* HASPARAMETERSIF_H_ */
+#endif /* FSFW_PARAMETERS_HASPARAMETERSIF_H_ */

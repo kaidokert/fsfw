@@ -1,4 +1,4 @@
-#include "../parameters/ParameterWrapper.h"
+#include "ParameterWrapper.h"
 
 ParameterWrapper::ParameterWrapper() :
 		pointsToStream(false), type(Type::UNKNOWN_TYPE) {

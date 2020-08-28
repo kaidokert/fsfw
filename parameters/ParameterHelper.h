@@ -1,9 +1,9 @@
-#ifndef FRAMEWORK_PARAMETERS_PARAMETERHELPER_H_
-#define FRAMEWORK_PARAMETERS_PARAMETERHELPER_H_
+#ifndef FSFW_PARAMETERS_PARAMETERHELPER_H_
+#define FSFW_PARAMETERS_PARAMETERHELPER_H_
 
+#include "ParameterMessage.h"
+#include "ReceivesParameterMessagesIF.h"
 #include "../ipc/MessageQueueIF.h"
-#include "../parameters/ParameterMessage.h"
-#include "../parameters/ReceivesParameterMessagesIF.h"
 
 /**
  * @brief	Helper class to handle parameter messages
@@ -33,4 +33,4 @@ private:
 			Command_t initialCommand);
 };
 
-#endif /* PARAMETERHELPER_H_ */
+#endif /* FSFW_PARAMETERS_PARAMETERHELPER_H_ */

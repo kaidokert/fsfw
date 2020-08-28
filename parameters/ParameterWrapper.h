@@ -1,11 +1,11 @@
-#ifndef FRAMEWORK_PARAMETERS_PARAMETERWRAPPER_H_
-#define FRAMEWORK_PARAMETERS_PARAMETERWRAPPER_H_
+#ifndef FSFW_PARAMETERS_PARAMETERWRAPPER_H_
+#define FSFW_PARAMETERS_PARAMETERWRAPPER_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeAdapter.h"
 #include "../serialize/SerializeIF.h"
-#include <stddef.h>
 #include "../globalfunctions/Type.h"
+#include <cstddef>
 
 /**
  * @brief
@@ -159,4 +159,4 @@ inline ReturnValue_t ParameterWrapper::getElement(T *value, uint8_t row,
 	}
 }
 
-#endif /* PARAMETERWRAPPER_H_ */
+#endif /* FSFW_PARAMETERS_PARAMETERWRAPPER_H_ */

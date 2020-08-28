@@ -1,8 +1,8 @@
-#ifndef RECEIVESPARAMETERMESSAGESIF_H_
-#define RECEIVESPARAMETERMESSAGESIF_H_
+#ifndef FSFW_PARAMETERS_RECEIVESPARAMETERMESSAGESIF_H_
+#define FSFW_PARAMETERS_RECEIVESPARAMETERMESSAGESIF_H_
 
 
-#include "../parameters/HasParametersIF.h"
+#include "HasParametersIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 
 class ReceivesParameterMessagesIF : public HasParametersIF {
@@ -16,4 +16,4 @@ public:
 };
 
 
-#endif /* RECEIVESPARAMETERMESSAGESIF_H_ */
+#endif /* FSFW_PARAMETERS_RECEIVESPARAMETERMESSAGESIF_H_ */
