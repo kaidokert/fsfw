@@ -4,6 +4,8 @@
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
 #include "../../tasks/Typedef.h"
+#include "FreeRTOSTaskIF.h"
+
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -17,7 +19,7 @@ class ExecutableObjectIF;
  * 			periodic activities of multiple objects.
  * @ingroup task_handling
  */
-class PeriodicTask: public PeriodicTaskIF {
+class PeriodicTask: public PeriodicTaskIF, public FreeRTOSTaskIF {
 public:
 	/**
 	 * Keep in Mind that you need to call before this vTaskStartScheduler()!
@@ -38,9 +40,9 @@ public:
 	 * The function pointer to the deadline missed function that shall
 	 * be assigned.
 	 */
-	PeriodicTask(const char *name, TaskPriority setPriority,
+	PeriodicTask(TaskName name, TaskPriority setPriority,
 	        TaskStackSize setStack, TaskPeriod setPeriod,
-	        void (*setDeadlineMissedFunc)());
+	        TaskDeadlineMissedFunction deadlineMissedFunc);
 	/**
 	 * @brief	Currently, the executed object's lifetime is not coupled with
 	 * 			the task object's lifetime, so the destructor is empty.
@@ -68,6 +70,8 @@ public:
 	uint32_t getPeriodMs() const override;
 
 	ReturnValue_t sleepFor(uint32_t ms) override;
+
+	TaskHandle_t getTaskHandle() override;
 protected:
 	bool started;
 	TaskHandle_t handle;

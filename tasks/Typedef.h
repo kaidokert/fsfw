@@ -1,7 +1,6 @@
 #ifndef FRAMEWORK_TASKS_TYPEDEF_H_
 #define FRAMEWORK_TASKS_TYPEDEF_H_
 
-//TODO more generic?
 typedef const char* TaskName;
 typedef uint8_t TaskPriority;
 typedef size_t TaskStackSize;
