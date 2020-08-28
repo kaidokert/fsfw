@@ -67,6 +67,7 @@ enum {
 	DLE_ENCODER, //DLEE 61
 	PUS_PARSER, //PUSP 62
 	SERIAL_ANALYZER, //SERA 63
+	PUS_SERVICE_9,
 	FW_CLASS_ID_COUNT //is actually count + 1 !
 
 };
