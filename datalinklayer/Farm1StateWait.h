@@ -8,7 +8,7 @@
 #ifndef FARM1STATEWAIT_H_
 #define FARM1STATEWAIT_H_
 
-#include <framework/datalinklayer/Farm1StateIF.h>
+#include "Farm1StateIF.h"
 
 /**
  * This class represents the FARM-1 "Wait" State.

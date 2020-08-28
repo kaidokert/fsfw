@@ -7,7 +7,7 @@
 
 #ifndef SOURCESEQUENCECOUNTER_H_
 #define SOURCESEQUENCECOUNTER_H_
-#include <framework/tmtcpacket/SpacePacketBase.h>
+#include "../tmtcpacket/SpacePacketBase.h"
 
 class SourceSequenceCounter {
 private:

@@ -10,9 +10,9 @@
 #ifndef MESSAGEQUEUE_H_
 #define MESSAGEQUEUE_H_
 
-#include <framework/internalError/InternalErrorReporterIF.h>
-#include <framework/ipc/MessageQueueIF.h>
-#include <framework/ipc/MessageQueueMessage.h>
+#include "../../internalError/InternalErrorReporterIF.h"
+#include "../../ipc/MessageQueueIF.h"
+#include "../../ipc/MessageQueueMessage.h"
 #include "RtemsBasic.h"
 
 /**

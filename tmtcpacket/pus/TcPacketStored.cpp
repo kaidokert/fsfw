@@ -1,6 +1,6 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/pus/TcPacketStored.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "TcPacketStored.h"
 #include <string.h>
 
 TcPacketStored::TcPacketStored(store_address_t setAddress) :

@@ -8,10 +8,10 @@
 #ifndef MAPPACKETEXTRACTION_H_
 #define MAPPACKETEXTRACTION_H_
 
-#include <framework/datalinklayer/MapPacketExtractionIF.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "MapPacketExtractionIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 class StorageManagerIF;
 

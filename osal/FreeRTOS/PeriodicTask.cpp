@@ -1,7 +1,7 @@
 #include "PeriodicTask.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../tasks/ExecutableObjectIF.h"
 
 PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod setPeriod,
@@ -81,7 +81,7 @@ void PeriodicTask::taskFunctionality() {
 	}
 }
 
-ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
+ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
@@ -91,9 +91,7 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object, bool setTaskIF) {
 	}
 	objectList.push_back(newObject);
 
-	if(setTaskIF) {
-	     newObject->setTaskIF(this);
-	}
+	newObject->setTaskIF(this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

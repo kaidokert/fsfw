@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_PUS_SERVICEPACKETS_SERVICE2PACKETS_H_
 #define FRAMEWORK_PUS_SERVICEPACKETS_SERVICE2PACKETS_H_
 
-#include <framework/action/ActionMessage.h>
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../action/ActionMessage.h"
+#include "../../objectmanager/SystemObjectIF.h"
+#include "../../serialize/SerialLinkedListAdapter.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 /**
  * @brief Subservice 128

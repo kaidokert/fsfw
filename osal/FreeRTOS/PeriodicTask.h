@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
 #define FRAMEWORK_OSAL_FREERTOS_PERIODICTASK_H_
 
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/tasks/PeriodicTaskIF.h>
-#include <framework/tasks/Typedef.h>
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../tasks/PeriodicTaskIF.h"
+#include "../../tasks/Typedef.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -63,8 +63,7 @@ public:
 	 * -@c RETURN_OK on success
 	 * -@c RETURN_FAILED if the object could not be added.
 	 */
-	ReturnValue_t addComponent(object_id_t object,
-	        bool setTaskIF = true) override;
+	ReturnValue_t addComponent(object_id_t object) override;
 
 	uint32_t getPeriodMs() const override;
 

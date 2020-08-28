@@ -1,4 +1,4 @@
-#include <framework/timemanager/Clock.h>
+#include "../../timemanager/Clock.h"
 #include "RtemsBasic.h"
 #include <rtems/score/todimpl.h>
 
