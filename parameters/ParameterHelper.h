@@ -6,9 +6,9 @@
 #include "../ipc/MessageQueueIF.h"
 
 /**
- * @brief	Helper class to handle parameter messages
+ * @brief	Helper class to handle parameter messages.
  * @details
- * This class simplfiies handling of parameter messages, which are sent
+ * This class simplfies handling of parameter messages, which are sent
  * to a class which implements ReceivesParameterMessagesIF.
  */
 class ParameterHelper {
