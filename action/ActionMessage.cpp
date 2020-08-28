@@ -1,4 +1,4 @@
-#include "../action/ActionMessage.h"
+#include "ActionMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../storagemanager/StorageManagerIF.h"
 
