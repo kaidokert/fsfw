@@ -1,7 +1,7 @@
 #ifndef COMMANDSACTIONSIF_H_
 #define COMMANDSACTIONSIF_H_
 
-#include "../action/CommandActionHelper.h"
+#include "CommandActionHelper.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MessageQueueIF.h"
 

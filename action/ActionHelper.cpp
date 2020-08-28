@@ -1,5 +1,5 @@
-#include "../action/ActionHelper.h"
-#include "../action/HasActionsIF.h"
+#include "ActionHelper.h"
+#include "HasActionsIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
 ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue) :

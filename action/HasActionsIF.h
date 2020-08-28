@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_ACTION_HASACTIONSIF_H_
 #define FRAMEWORK_ACTION_HASACTIONSIF_H_
 
-#include "../action/ActionHelper.h"
-#include "../action/ActionMessage.h"
-#include "../action/SimpleActionHelper.h"
+#include "ActionHelper.h"
+#include "ActionMessage.h"
+#include "SimpleActionHelper.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MessageQueueIF.h"
 /**

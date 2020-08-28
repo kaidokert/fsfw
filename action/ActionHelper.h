@@ -1,7 +1,7 @@
 #ifndef ACTIONHELPER_H_
 #define ACTIONHELPER_H_
 
-#include "../action/ActionMessage.h"
+#include "ActionMessage.h"
 #include "../serialize/SerializeIF.h"
 #include "../ipc/MessageQueueIF.h"
 /**
@@ -35,7 +35,7 @@ public:
 	ReturnValue_t handleActionMessage(CommandMessage* command);
 	/**
 	 * Helper initialize function. Must be called before use of any other helper function
-	 * @param queueToUse_ Pointer to the messageQueue to be used
+	 * @param queueToUse_ Pointer to the messageQueue to be used, optional if queue was set in constructor
 	 * @return Returns RETURN_OK if successful
 	 */
 	ReturnValue_t initialize(MessageQueueIF* queueToUse_ = nullptr);

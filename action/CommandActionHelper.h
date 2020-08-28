@@ -1,7 +1,7 @@
 #ifndef COMMANDACTIONHELPER_H_
 #define COMMANDACTIONHELPER_H_
 
-#include "../action/ActionMessage.h"
+#include "ActionMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"

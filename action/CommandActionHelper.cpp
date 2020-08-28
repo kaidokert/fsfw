@@ -1,7 +1,7 @@
-#include "../action/ActionMessage.h"
-#include "../action/CommandActionHelper.h"
-#include "../action/CommandsActionsIF.h"
-#include "../action/HasActionsIF.h"
+#include "ActionMessage.h"
+#include "CommandActionHelper.h"
+#include "CommandsActionsIF.h"
+#include "HasActionsIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
 CommandActionHelper::CommandActionHelper(CommandsActionsIF *setOwner) :
