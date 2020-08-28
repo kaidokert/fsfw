@@ -1,6 +1,6 @@
-#include <framework/osal/linux/TmTcUnixUdpBridge.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/MutexHelper.h>
+#include "TmTcUnixUdpBridge.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../ipc/MutexHelper.h"
 
 #include <errno.h>
 #include <arpa/inet.h>
@@ -85,7 +85,7 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
-	MutexHelper lock(mutex, 10);
+	MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 //	char ipAddress [15];
 //	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
