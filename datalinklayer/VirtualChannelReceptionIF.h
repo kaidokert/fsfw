@@ -8,8 +8,8 @@
 #ifndef VIRTUALCHANNELRECEPTIONIF_H_
 #define VIRTUALCHANNELRECEPTIONIF_H_
 
-#include "../datalinklayer/ClcwIF.h"
-#include "../datalinklayer/TcTransferFrame.h"
+#include "ClcwIF.h"
+#include "TcTransferFrame.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
 /**

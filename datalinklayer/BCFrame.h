@@ -8,7 +8,7 @@
 #ifndef BCFRAME_H_
 #define BCFRAME_H_
 
-#include "../datalinklayer/CCSDSReturnValuesIF.h"
+#include "CCSDSReturnValuesIF.h"
 
 /**
  * Small helper class to identify a BcFrame.

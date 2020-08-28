@@ -7,7 +7,7 @@
 
 
 
-#include "../datalinklayer/TcTransferFrame.h"
+#include "TcTransferFrame.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 TcTransferFrame::TcTransferFrame() {

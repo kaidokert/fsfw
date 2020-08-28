@@ -7,7 +7,7 @@
 
 
 
-#include "../datalinklayer/Clcw.h"
+#include "Clcw.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 Clcw::Clcw() {

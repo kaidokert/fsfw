@@ -8,8 +8,8 @@
 #ifndef MAPPACKETEXTRACTIONIF_H_
 #define MAPPACKETEXTRACTIONIF_H_
 
-#include "../datalinklayer/CCSDSReturnValuesIF.h"
-#include "../datalinklayer/TcTransferFrame.h"
+#include "CCSDSReturnValuesIF.h"
+#include "TcTransferFrame.h"
 
 /**
  * This is the interface for MAP Packet Extraction classes.

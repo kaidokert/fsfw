@@ -8,7 +8,7 @@
 #ifndef MAPPACKETEXTRACTION_H_
 #define MAPPACKETEXTRACTION_H_
 
-#include "../datalinklayer/MapPacketExtractionIF.h"
+#include "MapPacketExtractionIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"

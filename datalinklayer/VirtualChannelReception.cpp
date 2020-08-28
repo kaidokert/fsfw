@@ -5,8 +5,8 @@
  * @author	baetz
  */
 
-#include "../datalinklayer/BCFrame.h"
-#include "../datalinklayer/VirtualChannelReception.h"
+#include "BCFrame.h"
+#include "VirtualChannelReception.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 VirtualChannelReception::VirtualChannelReception(uint8_t setChannelId,

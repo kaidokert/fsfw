@@ -8,10 +8,10 @@
 
 
 
-#include "../datalinklayer/ClcwIF.h"
-#include "../datalinklayer/Farm1StateOpen.h"
-#include "../datalinklayer/TcTransferFrame.h"
-#include "../datalinklayer/VirtualChannelReception.h"
+#include "ClcwIF.h"
+#include "Farm1StateOpen.h"
+#include "TcTransferFrame.h"
+#include "VirtualChannelReception.h"
 
 Farm1StateOpen::Farm1StateOpen(VirtualChannelReception* setMyVC) : myVC(setMyVC) {
 }

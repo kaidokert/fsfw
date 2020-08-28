@@ -5,7 +5,7 @@
  * @author	baetz
  */
 
-#include "../datalinklayer/TcTransferFrameLocal.h"
+#include "TcTransferFrameLocal.h"
 #include "../globalfunctions/CRC.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include <string.h>

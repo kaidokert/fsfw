@@ -1,4 +1,4 @@
-#include "../datalinklayer/DataLinkLayer.h"
+#include "DataLinkLayer.h"
 #include "../globalfunctions/CRC.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 

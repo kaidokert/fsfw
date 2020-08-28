@@ -6,10 +6,10 @@
  */
 
 
-#include "../datalinklayer/ClcwIF.h"
-#include "../datalinklayer/Farm1StateWait.h"
-#include "../datalinklayer/TcTransferFrame.h"
-#include "../datalinklayer/VirtualChannelReception.h"
+#include "ClcwIF.h"
+#include "Farm1StateWait.h"
+#include "TcTransferFrame.h"
+#include "VirtualChannelReception.h"
 
 Farm1StateWait::Farm1StateWait(VirtualChannelReception* setMyVC) : myVC(setMyVC) {
 }

@@ -5,7 +5,7 @@
  * @author	baetz
  */
 
-#include "../datalinklayer/MapPacketExtraction.h"
+#include "MapPacketExtraction.h"
 #include "../ipc/QueueFactory.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../storagemanager/StorageManagerIF.h"
@@ -16,9 +16,9 @@
 
 MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,
 		object_id_t setPacketDestination) :
-		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0),
-		bufferPosition(packetBuffer), packetDestination(setPacketDestination),
-		packetStore(nullptr), tcQueueId(MessageQueueMessageIF::NO_QUEUE) {
+		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0), bufferPosition(
+				packetBuffer), packetDestination(setPacketDestination), packetStore(
+				NULL), tcQueueId(MessageQueueSenderIF::NO_QUEUE) {
 	memset(packetBuffer, 0, sizeof(packetBuffer));
 }
 
