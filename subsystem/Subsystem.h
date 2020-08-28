@@ -92,7 +92,7 @@ protected:
 
 	bool childrenChangedHealth;
 
-	uint32_t uptimeStartTable;
+	uint32_t uptimeStartTable = 0;
 
 	HybridIterator<ModeListEntry> currentTargetTable;
 
@@ -108,10 +108,10 @@ protected:
 
 	FixedMap<Mode_t, SequenceInfo> modeSequences;
 
-	StorageManagerIF *IPCStore;
+	StorageManagerIF *IPCStore = nullptr;
 
 #ifdef USE_MODESTORE
-	ModeStoreIF *modeStore;
+	ModeStoreIF *modeStore = nullptr;
 #endif
 
 	bool existsModeSequence(Mode_t id);
