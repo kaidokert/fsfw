@@ -147,13 +147,18 @@ void FixedTimeslotTask::checkMissedDeadline(const TickType_t xLastWakeTime,
 }
 
 void FixedTimeslotTask::handleMissedDeadline() {
-#ifdef DEBUG
-    sif::warning << "FixedTimeslotTask: " << pcTaskGetName(NULL) <<
-            " missed deadline!\n" << std::flush;
-#endif
     if(deadlineMissedFunc != nullptr) {
         this->deadlineMissedFunc();
     }
+
+#ifdef DEBUG
+    object_id_t handlerId = pst.current->handlerId;
+    sif::warning << "FixedTimeslotTask: " << pcTaskGetName(NULL) << " with"
+            << " object ID 0x" << std::setfill('0') << std::setw(8) << std::hex
+            << handlerId <<  " missed deadline!" << std::setfill(' ')
+            << std::dec << std::endl;
+#endif
+
 }
 
 ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
