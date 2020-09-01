@@ -1,17 +1,19 @@
 #include "../subsystem/SubsystemBase.h"
-#include "ChildHandlerBase.h"
+#include "../devicehandlers/ChildHandlerBase.h"
 #include "../subsystem/SubsystemBase.h"
 
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
-		object_id_t deviceCommunication, CookieIF * comCookie,
-		uint8_t setDeviceSwitch, uint32_t thermalStatePoolId,
-		uint32_t thermalRequestPoolId, uint32_t parent,
-		FailureIsolationBase* customFdir, size_t cmdQueueSize) :
-		DeviceHandlerBase(setObjectId, deviceCommunication, comCookie,
-				setDeviceSwitch, thermalStatePoolId,thermalRequestPoolId,
-				(customFdir == nullptr? &childHandlerFdir : customFdir),
-				cmdQueueSize),
+		object_id_t deviceCommunication, CookieIF * cookie,
+		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
+		object_id_t parent, FailureIsolationBase* customFdir,
+		size_t cmdQueueSize) :
+		DeviceHandlerBase(setObjectId, deviceCommunication, cookie,
+			(customFdir == nullptr? &childHandlerFdir : customFdir),
+			cmdQueueSize),
 		parentId(parent), childHandlerFdir(setObjectId) {
+	this->setThermalStateRequestPoolIds(thermalStatePoolId,
+			thermalRequestPoolId);
+
 }
 
 ChildHandlerBase::~ChildHandlerBase() {
@@ -25,7 +27,7 @@ ReturnValue_t ChildHandlerBase::initialize() {
 
 	MessageQueueId_t parentQueue = 0;
 
-	if (parentId != 0) {
+	if (parentId != objects::NO_OBJECT) {
 		SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
 		if (parent == NULL) {
 			return RETURN_FAILED;
