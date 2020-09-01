@@ -1,11 +1,11 @@
 #ifndef DATALINKLAYER_H_
 #define DATALINKLAYER_H_
 
-#include <framework/datalinklayer/CCSDSReturnValuesIF.h>
-#include <framework/datalinklayer/ClcwIF.h>
-#include <framework/datalinklayer/TcTransferFrame.h>
-#include <framework/datalinklayer/VirtualChannelReceptionIF.h>
-#include <framework/events/Event.h>
+#include "CCSDSReturnValuesIF.h"
+#include "ClcwIF.h"
+#include "TcTransferFrame.h"
+#include "VirtualChannelReceptionIF.h"
+#include "../events/Event.h"
 #include <map>
 
 

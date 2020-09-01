@@ -8,7 +8,7 @@
 #ifndef ACCEPTSDEVICERESPONSESIF_H_
 #define ACCEPTSDEVICERESPONSESIF_H_
 
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "../ipc/MessageQueueSenderIF.h"
 
 class AcceptsDeviceResponsesIF {
 public:

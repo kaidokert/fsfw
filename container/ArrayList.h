@@ -1,9 +1,9 @@
 #ifndef ARRAYLIST_H_
 #define ARRAYLIST_H_
 
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/serialize/SerializeIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serialize/SerializeAdapter.h"
+#include "../serialize/SerializeIF.h"
 
 /**
  * A List that stores its values in an array.

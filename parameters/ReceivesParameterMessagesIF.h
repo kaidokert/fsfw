@@ -2,8 +2,8 @@
 #define RECEIVESPARAMETERMESSAGESIF_H_
 
 
-#include <framework/parameters/HasParametersIF.h>
-#include <framework/ipc/MessageQueueSenderIF.h>
+#include "HasParametersIF.h"
+#include "../ipc/MessageQueueSenderIF.h"
 
 class ReceivesParameterMessagesIF : public HasParametersIF {
 public:

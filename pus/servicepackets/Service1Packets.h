@@ -8,8 +8,8 @@
 #ifndef MISSION_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
 #define MISSION_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
 
-#include <framework/serialize/SerializeAdapter.h>
-#include <framework/tmtcservices/VerificationCodes.h>
+#include "../../serialize/SerializeAdapter.h"
+#include "../../tmtcservices/VerificationCodes.h"
 
 /**
  * @brief 	FailureReport class to serialize a failure report

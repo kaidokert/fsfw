@@ -1,10 +1,10 @@
-#include <framework/health/HealthMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/serialize/SerialArrayListAdapter.h>
-#include <framework/serialize/SerialFixedArrayListAdapter.h>
-#include <framework/serialize/SerializeElement.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/subsystem/Subsystem.h>
+#include "../health/HealthMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
+#include "../serialize/SerialArrayListAdapter.h"
+#include "../serialize/SerialFixedArrayListAdapter.h"
+#include "../serialize/SerializeElement.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "Subsystem.h"
 #include <string>
 
 Subsystem::Subsystem(object_id_t setObjectId, object_id_t parent,
@@ -151,7 +151,6 @@ HybridIterator<ModeListEntry> Subsystem::getTable(Mode_t id) {
 }
 
 ReturnValue_t Subsystem::handleCommandMessage(CommandMessage *message) {
-	ReturnValue_t result;
 	switch (message->getCommand()) {
 	case HealthMessage::HEALTH_INFO: {
 		HealthState health = HealthMessage::getHealth(message);
@@ -166,7 +165,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage *message) {
 		FixedArrayList<ModeListEntry, MAX_LENGTH_OF_TABLE_OR_SEQUENCE> sequence;
 		const uint8_t *pointer;
 		size_t sizeRead;
-		result = IPCStore->getData(
+		ReturnValue_t result = IPCStore->getData(
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
 		if (result == RETURN_OK) {
@@ -193,7 +192,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage *message) {
 		FixedArrayList<ModeListEntry, MAX_LENGTH_OF_TABLE_OR_SEQUENCE> table;
 		const uint8_t *pointer;
 		size_t sizeRead;
-		result = IPCStore->getData(
+		ReturnValue_t result = IPCStore->getData(
 				ModeSequenceMessage::getStoreAddress(message), &pointer,
 				&sizeRead);
 		if (result == RETURN_OK) {
@@ -210,21 +209,23 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage *message) {
 
 	}
 		break;
-	case ModeSequenceMessage::DELETE_SEQUENCE:
+	case ModeSequenceMessage::DELETE_SEQUENCE:{
 		if (isInTransition) {
 			replyToCommand(IN_TRANSITION, 0);
 			break;
 		}
-		result = deleteSequence(ModeSequenceMessage::getSequenceId(message));
+		ReturnValue_t result = deleteSequence(ModeSequenceMessage::getSequenceId(message));
 		replyToCommand(result, 0);
+	}
 		break;
-	case ModeSequenceMessage::DELETE_TABLE:
+	case ModeSequenceMessage::DELETE_TABLE:{
 		if (isInTransition) {
 			replyToCommand(IN_TRANSITION, 0);
 			break;
 		}
-		result = deleteTable(ModeSequenceMessage::getTableId(message));
+		ReturnValue_t result = deleteTable(ModeSequenceMessage::getTableId(message));
 		replyToCommand(result, 0);
+	}
 		break;
 	case ModeSequenceMessage::LIST_SEQUENCES: {
 		SerialFixedArrayListAdapter<Mode_t, MAX_NUMBER_OF_TABLES_OR_SEQUENCES> sequences;

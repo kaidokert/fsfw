@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_PUS_SERVICE2DEVICEACCESS_H_
 #define FRAMEWORK_PUS_SERVICE2DEVICEACCESS_H_
 
-#include <framework/objectmanager/SystemObjectIF.h>
-#include <framework/devicehandlers/AcceptsDeviceResponsesIF.h>
-#include <framework/tmtcservices/CommandingServiceBase.h>
+#include "../objectmanager/SystemObjectIF.h"
+#include "../devicehandlers/AcceptsDeviceResponsesIF.h"
+#include "../tmtcservices/CommandingServiceBase.h"
 
 /**
  * @brief   Raw Commanding and Wiretapping of devices.

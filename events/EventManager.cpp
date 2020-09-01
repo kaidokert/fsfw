@@ -1,8 +1,8 @@
-#include <framework/events/EventManager.h>
-#include <framework/events/EventMessage.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/ipc/QueueFactory.h>
-#include <framework/ipc/MutexFactory.h>
+#include "EventManager.h"
+#include "EventMessage.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../ipc/QueueFactory.h"
+#include "../ipc/MutexFactory.h"
 
 
 const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
@@ -147,7 +147,7 @@ void EventManager::printEvent(EventMessage* message) {
 #endif
 
 void EventManager::lockMutex() {
-	mutex->lockMutex(MutexIF::NO_TIMEOUT);
+	mutex->lockMutex(MutexIF::BLOCKING);
 }
 
 void EventManager::unlockMutex() {

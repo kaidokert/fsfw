@@ -1,5 +1,5 @@
-#include <framework/objectmanager/ObjectManager.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "ObjectManager.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <iomanip>
 #include <cstdlib>
 
@@ -100,7 +100,6 @@ void ObjectManager::initialize() {
 }
 
 void ObjectManager::printList() {
-	std::map<object_id_t, SystemObjectIF*>::iterator it;
 	sif::debug << "ObjectManager: Object List contains:" << std::endl;
 	for (auto const& it : objectList) {
 		sif::debug << std::hex << it.first << " | " << it.second << std::endl;

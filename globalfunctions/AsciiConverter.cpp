@@ -1,4 +1,4 @@
-#include <framework/globalfunctions/AsciiConverter.h>
+#include "AsciiConverter.h"
 #include <limits>
 #include <cmath>
 

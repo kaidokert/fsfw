@@ -7,10 +7,10 @@
 
 
 
-#include <framework/datalinklayer/ClcwIF.h>
-#include <framework/datalinklayer/Farm1StateLockout.h>
-#include <framework/datalinklayer/TcTransferFrame.h>
-#include <framework/datalinklayer/VirtualChannelReception.h>
+#include "ClcwIF.h"
+#include "Farm1StateLockout.h"
+#include "TcTransferFrame.h"
+#include "VirtualChannelReception.h"
 Farm1StateLockout::Farm1StateLockout(VirtualChannelReception* setMyVC) : myVC(setMyVC) {
 }
 

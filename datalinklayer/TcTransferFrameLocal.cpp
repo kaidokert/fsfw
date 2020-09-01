@@ -5,9 +5,9 @@
  * @author	baetz
  */
 
-#include <framework/datalinklayer/TcTransferFrameLocal.h>
-#include <framework/globalfunctions/CRC.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "TcTransferFrameLocal.h"
+#include "../globalfunctions/CRC.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include <string.h>
 
 TcTransferFrameLocal::TcTransferFrameLocal(bool bypass, bool controlCommand, uint16_t scid,

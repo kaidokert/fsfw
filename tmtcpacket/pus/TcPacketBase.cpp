@@ -1,6 +1,6 @@
-#include <framework/globalfunctions/CRC.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tmtcpacket/pus/TcPacketBase.h>
+#include "../../globalfunctions/CRC.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "TcPacketBase.h"
 #include <string.h>
 
 TcPacketBase::TcPacketBase(const uint8_t* set_data) :

@@ -8,7 +8,7 @@
 #ifndef MODEMESSAGE_H_
 #define MODEMESSAGE_H_
 
-#include <framework/ipc/CommandMessage.h>
+#include "../ipc/CommandMessage.h"
 
 typedef uint32_t Mode_t;
 typedef uint8_t Submode_t;
@@ -17,7 +17,7 @@ class ModeMessage {
 private:
 	ModeMessage();
 public:
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::MODE_COMMAND;
+	static const uint8_t MESSAGE_ID = messagetypes::MODE_COMMAND;
 	static const Command_t CMD_MODE_COMMAND = MAKE_COMMAND_ID(0x01);//!> Command to set the specified Mode, replies are: REPLY_MODE_REPLY, REPLY_WRONG_MODE_REPLY, and REPLY_REJECTED; don't add any replies, as this will break the subsystem mode machine!!
 	static const Command_t CMD_MODE_COMMAND_FORCED = MAKE_COMMAND_ID(0xF1);//!> Command to set the specified Mode, regardless of external control flag, replies are: REPLY_MODE_REPLY, REPLY_WRONG_MODE_REPLY, and REPLY_REJECTED; don't add any replies, as this will break the subsystem mode machine!!
 	static const Command_t REPLY_MODE_REPLY = MAKE_COMMAND_ID(0x02);//!> Reply to a CMD_MODE_COMMAND or CMD_MODE_READ

@@ -1,11 +1,11 @@
 #ifndef FRAMEWORK_CONTAINER_INDEXEDRINGMEMORY_H_
 #define FRAMEWORK_CONTAINER_INDEXEDRINGMEMORY_H_
 
-#include <framework/container/ArrayList.h>
-#include <framework/globalfunctions/CRC.h>
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/returnvalues/HasReturnvaluesIF.h>
-#include <framework/serialize/SerialArrayListAdapter.h>
+#include "ArrayList.h"
+#include "../globalfunctions/CRC.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../serialize/SerialArrayListAdapter.h"
 #include <cmath>
 
 template<typename T>

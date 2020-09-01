@@ -5,8 +5,8 @@
  * @author	baetz
  */
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
-#include <framework/tasks/ExecutableObjectIF.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../tasks/ExecutableObjectIF.h"
 #include "MultiObjectTask.h"
 
 MultiObjectTask::MultiObjectTask(const char *name, rtems_task_priority setPriority,
@@ -78,6 +78,8 @@ ReturnValue_t MultiObjectTask::addComponent(object_id_t object) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
+	newObject->setTaskIF(this);
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

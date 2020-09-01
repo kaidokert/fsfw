@@ -3,10 +3,10 @@
 
 #ifdef USE_MODESTORE
 
-#include <framework/container/ArrayList.h>
-#include <framework/container/SinglyLinkedList.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/subsystem/modes/ModeStoreIF.h>
+#include "../../container/ArrayList.h"
+#include "../../container/SinglyLinkedList.h"
+#include "../../objectmanager/SystemObject.h"
+#include "ModeStoreIF.h"
 
 class ModeStore: public ModeStoreIF, public SystemObject {
 public:

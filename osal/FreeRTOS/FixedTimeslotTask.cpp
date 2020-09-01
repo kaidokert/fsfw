@@ -1,15 +1,16 @@
 #include "FixedTimeslotTask.h"
 
-#include <framework/serviceinterface/ServiceInterfaceStream.h>
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;
 
-FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
+FixedTimeslotTask::FixedTimeslotTask(TaskName name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod overallPeriod,
 		void (*setDeadlineMissedFunc)()) :
 		started(false), handle(NULL), pst(overallPeriod * 1000) {
-	xTaskCreate(taskEntryPoint, name, setStack, this, setPriority, &handle);
+	configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
+	xTaskCreate(taskEntryPoint, name, stackSize, this, setPriority, &handle);
 	// All additional attributes are applied to the object.
 	this->deadlineMissedFunc = setDeadlineMissedFunc;
 }
@@ -82,7 +83,7 @@ ReturnValue_t FixedTimeslotTask::checkSequence() const {
 void FixedTimeslotTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the
     // start time for the first entry.
-	FixedSlotSequence::SlotListIter slotListIter = pst.current;
+	auto slotListIter = pst.current;
 
 	//The start time for the first entry is read.
 	uint32_t intervalMs = slotListIter->pollingTimeMs;
@@ -154,4 +155,8 @@ void FixedTimeslotTask::handleMissedDeadline() {
 ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 	vTaskDelay(pdMS_TO_TICKS(ms));
 	return HasReturnvaluesIF::RETURN_OK;
+}
+
+TaskHandle_t FixedTimeslotTask::getTaskHandle() {
+    return handle;
 }

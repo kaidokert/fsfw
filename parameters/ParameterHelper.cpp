@@ -1,6 +1,6 @@
-#include <framework/objectmanager/ObjectManagerIF.h>
-#include <framework/parameters/ParameterHelper.h>
-#include <framework/parameters/ParameterMessage.h>
+#include "../objectmanager/ObjectManagerIF.h"
+#include "ParameterHelper.h"
+#include "ParameterMessage.h"
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner) :
 		owner(owner), storage(NULL) {
