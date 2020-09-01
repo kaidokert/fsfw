@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_CONTAINER_FIFO_H_
-#define FRAMEWORK_CONTAINER_FIFO_H_
+#ifndef FSFW_CONTAINER_FIFO_H_
+#define FSFW_CONTAINER_FIFO_H_
 
 #include "FIFOBase.h"
 #include <array>
@@ -16,18 +16,20 @@
 template<typename T, size_t capacity>
 class FIFO: public FIFOBase<T> {
 public:
-	FIFO(): FIFOBase<T>(fifoArray.data(), capacity) {};
+	FIFO(): FIFOBase<T>(nullptr, capacity) {
+		this->setContainer(fifoArray.data());
+	};
 
 	/**
 	 * @brief 	Custom copy constructor to set pointer correctly.
 	 * @param other
 	 */
 	FIFO(const FIFO& other): FIFOBase<T>(other) {
-		this->setData(fifoArray.data());
+		this->setContainer(fifoArray.data());
 	}
 
 private:
 	std::array<T, capacity> fifoArray;
 };
 
-#endif /* FRAMEWORK_CONTAINERS_STATICFIFO_H_ */
+#endif /* FSFW_CONTAINER_FIFO_H_ */

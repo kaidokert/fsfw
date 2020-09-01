@@ -80,7 +80,7 @@ inline size_t FIFOBase<T>::getMaxCapacity() const {
 
 
 template<typename T>
-inline void FIFOBase<T>::setData(T *data) {
+inline void FIFOBase<T>::setContainer(T *data) {
 	this->values = data;
 }
 
