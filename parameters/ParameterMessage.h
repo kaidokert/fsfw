@@ -1,8 +1,8 @@
-#ifndef PARAMETERMESSAGE_H_
-#define PARAMETERMESSAGE_H_
+#ifndef FSFW_PARAMETERS_PARAMETERMESSAGE_H_
+#define FSFW_PARAMETERS_PARAMETERMESSAGE_H_
 
-#include "../ipc/CommandMessage.h"
 #include "HasParametersIF.h"
+#include "../ipc/CommandMessage.h"
 #include "../storagemanager/StorageManagerIF.h"
 
 class ParameterMessage {
@@ -26,4 +26,4 @@ public:
 
 };
 
-#endif /* PARAMETERMESSAGE_H_ */
+#endif /* FSFW_PARAMETERS_PARAMETERMESSAGE_H_ */
