@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
-#define FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
+#ifndef FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
+#define FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/StorageManagerIF.h"
@@ -345,4 +345,4 @@ private:
 	void checkTimeout();
 };
 
-#endif /* COMMANDINGSERVICEBASE_H_ */
+#endif /* FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_ */

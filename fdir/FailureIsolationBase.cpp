@@ -5,10 +5,12 @@
 #include "../ipc/QueueFactory.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
-FailureIsolationBase::FailureIsolationBase(object_id_t owner, object_id_t parent, uint8_t messageDepth, uint8_t parameterDomainBase) :
-		eventQueue(NULL), ownerId(
-				owner), owner(NULL), faultTreeParent(parent), parameterDomainBase(parameterDomainBase) {
-	eventQueue = QueueFactory::instance()->createMessageQueue(messageDepth, EventMessage::EVENT_MESSAGE_SIZE);
+FailureIsolationBase::FailureIsolationBase(object_id_t owner,
+		object_id_t parent, uint8_t messageDepth, uint8_t parameterDomainBase) :
+		ownerId(owner), faultTreeParent(parent),
+		parameterDomainBase(parameterDomainBase) {
+	eventQueue = QueueFactory::instance()->createMessageQueue(messageDepth,
+			EventMessage::EVENT_MESSAGE_SIZE);
 }
 
 FailureIsolationBase::~FailureIsolationBase() {
@@ -18,27 +20,36 @@ FailureIsolationBase::~FailureIsolationBase() {
 ReturnValue_t FailureIsolationBase::initialize() {
 	EventManagerIF* manager = objectManager->get<EventManagerIF>(
 			objects::EVENT_MANAGER);
-	if (manager == NULL) {
+	if (manager == nullptr) {
+		sif::error << "FailureIsolationBase::initialize: Event Manager has not"
+				" been initialized!" << std::endl;
 		return RETURN_FAILED;
 	}
 	ReturnValue_t result = manager->registerListener(eventQueue->getId());
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	if (ownerId != 0) {
+	if (ownerId != objects::NO_OBJECT) {
 		result = manager->subscribeToAllEventsFrom(eventQueue->getId(), ownerId);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		owner = objectManager->get<HasHealthIF>(ownerId);
-		if (owner == NULL) {
-			return RETURN_FAILED;
+		if (owner == nullptr) {
+			sif::error << "FailureIsolationBase::intialize: Owner object "
+					"invalid. Make sure it implements HasHealthIF" << std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 	}
-	if (faultTreeParent != 0) {
+	if (faultTreeParent != objects::NO_OBJECT) {
 		ConfirmsFailuresIF* parentIF = objectManager->get<ConfirmsFailuresIF>(
 				faultTreeParent);
-		if (parentIF == NULL) {
+		if (parentIF == nullptr) {
+			sif::error << "FailureIsolationBase::intialize: Parent object"
+					<< "invalid." << std::endl;
+			sif::error << "Make sure it implements ConfirmsFailuresIF."
+					<< std::endl;
+			return ObjectManagerIF::CHILD_INIT_FAILED;
 			return RETURN_FAILED;
 		}
 		eventQueue->setDefaultDestination(parentIF->getEventReceptionQueue());
@@ -93,9 +104,9 @@ MessageQueueId_t FailureIsolationBase::getEventReceptionQueue() {
 ReturnValue_t FailureIsolationBase::sendConfirmationRequest(EventMessage* event,
 		MessageQueueId_t destination) {
 	event->setMessageId(EventMessage::CONFIRMATION_REQUEST);
-	if (destination != 0) {
+	if (destination != MessageQueueIF::NO_QUEUE) {
 		return eventQueue->sendMessage(destination, event);
-	} else if (faultTreeParent != 0) {
+	} else if (faultTreeParent != objects::NO_OBJECT) {
 		return eventQueue->sendToDefault(event);
 	}
 	return RETURN_FAILED;
