@@ -1,4 +1,4 @@
-#include "ParameterMessage.h"
+#include "../parameters/ParameterMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
 ParameterId_t ParameterMessage::getParameterId(const CommandMessage* message) {
