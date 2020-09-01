@@ -22,7 +22,7 @@ public:
 		// trying to pass the pointer of the uninitialized vector
 		// to the FIFOBase constructor directly lead to a super evil bug.
 		// So we do it like this now.
-		this->setData(fifoVector.data());
+		this->setContainer(fifoVector.data());
 	};
 
 	/**
@@ -31,7 +31,7 @@ public:
 	 */
 	DynamicFIFO(const DynamicFIFO& other): FIFOBase<T>(other),
 			fifoVector(other.maxCapacity) {
-		this->setData(fifoVector.data());
+		this->setContainer(fifoVector.data());
 	}
 
 

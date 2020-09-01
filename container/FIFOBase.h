@@ -48,7 +48,7 @@ public:
 	size_t getMaxCapacity() const;
 
 protected:
-	void setData(T* data);
+	void setContainer(T* data);
 	size_t maxCapacity = 0;
 
 	T* values;
