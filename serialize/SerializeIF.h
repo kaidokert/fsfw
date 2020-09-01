@@ -5,13 +5,13 @@
 #include <stddef.h>
 
 /**
- * \defgroup serialize Serialization
+ * @defgroup serialize Serialization
  * Contains serialization services.
  */
 
 /**
  * Translation of objects into data streams and from data streams.
- * \ingroup serialize
+ * @ingroup serialize
  */
 class SerializeIF {
 public:
@@ -51,7 +51,7 @@ public:
 			size_t maxSize, Endianness streamEndianness) const = 0;
 
 	/**
-	 * Gets the size of a object if it would be serialized in a buffer.s
+	 * Gets the size of a object if it would be serialized in a buffer
 	 * @return Size of serialized object
 	 */
 	virtual size_t getSerializedSize() const = 0;
