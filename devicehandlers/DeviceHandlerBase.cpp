@@ -72,8 +72,11 @@ DeviceHandlerBase::~DeviceHandlerBase() {
 
 ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	this->pstStep = counter;
+	if (getComAction() == CommunicationAction::NOTHING) {
+	    return HasReturnvaluesIF::RETURN_OK;
+	}
 
-	if (getComAction() == SEND_WRITE) {
+	if (getComAction() == CommunicationAction::PERFORM_OPERATION) {
 		cookieInfo.state = COOKIE_UNUSED;
 		readCommandQueue();
 		doStateMachine();
@@ -88,21 +91,21 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		return RETURN_OK;
 	}
 	switch (getComAction()) {
-	case SEND_WRITE:
-		if ((cookieInfo.state == COOKIE_UNUSED)) {
+	case CommunicationAction::SEND_WRITE:
+		if (cookieInfo.state == COOKIE_UNUSED) {
+		    // if no external command was specified, build internal command.
 			buildInternalCommand();
 		}
 		doSendWrite();
 		break;
-	case GET_WRITE:
+	case CommunicationAction::GET_WRITE:
 		doGetWrite();
 		break;
-	case SEND_READ:
+	case CommunicationAction::SEND_READ:
 		doSendRead();
 		break;
-	case GET_READ:
+	case CommunicationAction::GET_READ:
 		doGetRead();
-		cookieInfo.state = COOKIE_UNUSED;
 		break;
 	default:
 		break;
@@ -821,24 +824,27 @@ void DeviceHandlerBase::replyRawData(const uint8_t *data, size_t len,
 }
 
 //Default child implementations
-DeviceHandlerIF::CommunicationAction_t DeviceHandlerBase::getComAction() {
+DeviceHandlerIF::CommunicationAction DeviceHandlerBase::getComAction() {
 	switch (pstStep) {
 	case 0:
-		return SEND_WRITE;
+		return CommunicationAction::PERFORM_OPERATION;
 		break;
 	case 1:
-		return GET_WRITE;
-		break;
+	    return CommunicationAction::SEND_WRITE;
+	    break;
 	case 2:
-		return SEND_READ;
+		return CommunicationAction::GET_WRITE;
 		break;
 	case 3:
-		return GET_READ;
+		return CommunicationAction::SEND_READ;
+		break;
+	case 4:
+		return CommunicationAction::GET_READ;
 		break;
 	default:
 		break;
 	}
-	return NOTHING;
+	return CommunicationAction::NOTHING;
 }
 
 MessageQueueId_t DeviceHandlerBase::getCommandQueue() const {
@@ -1129,19 +1135,6 @@ ReturnValue_t DeviceHandlerBase::handleDeviceHandlerMessage(
 		}
 		replyReturnvalueToCommand(RETURN_OK);
 		return RETURN_OK;
-//	case DeviceHandlerMessage::CMD_SWITCH_IOBOARD:
-//		if (mode != MODE_OFF) {
-//			replyReturnvalueToCommand(WRONG_MODE_FOR_COMMAND);
-//		} else {
-//			result = switchCookieChannel(
-//					DeviceHandlerMessage::getIoBoardObjectId(message));
-//			if (result == RETURN_OK) {
-//				replyReturnvalueToCommand(RETURN_OK);
-//			} else {
-//				replyReturnvalueToCommand(CANT_SWITCH_IO_ADDRESS);
-//			}
-//		}
-//		return RETURN_OK;
 	case DeviceHandlerMessage::CMD_RAW:
 		if ((mode != MODE_RAW)) {
 			DeviceHandlerMessage::clear(message);

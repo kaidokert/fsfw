@@ -819,7 +819,7 @@ protected:
 	 * @return The Rmap action to execute in this step
 	 */
 
-	virtual CommunicationAction_t getComAction();
+	virtual CommunicationAction getComAction();
 
 	/**
 	 * Build the device command to send for raw mode.
