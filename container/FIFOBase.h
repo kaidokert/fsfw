@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_CONTAINER_FIFOBASE_H_
-#define FRAMEWORK_CONTAINER_FIFOBASE_H_
+#ifndef FSFW_CONTAINER_FIFOBASE_H_
+#define FSFW_CONTAINER_FIFOBASE_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
@@ -48,7 +48,7 @@ public:
 	size_t getMaxCapacity() const;
 
 protected:
-	void setData(T* data);
+	void setContainer(T* data);
 	size_t maxCapacity = 0;
 
 	T* values;
@@ -60,6 +60,6 @@ protected:
 	size_t next(size_t current);
 };
 
-#include "../container/FIFOBase.tpp"
+#include "FIFOBase.tpp"
 
-#endif /* FRAMEWORK_CONTAINER_FIFOBASE_H_ */
+#endif /* FSFW_CONTAINER_FIFOBASE_H_ */

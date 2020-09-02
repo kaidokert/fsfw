@@ -270,7 +270,8 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		//need a type to do arithmetic
 		uint8_t* typedData = static_cast<uint8_t*>(data);
 		for (uint8_t fromRow = 0; fromRow < from->rows; fromRow++) {
-			uint8_t offset = (((startingRow + fromRow) * columns) + startingColumn) * typeSize;
+			size_t offset = (((startingRow + fromRow) * columns) +
+					startingColumn) * typeSize;
 			std::memcpy(typedData +  offset, from->readonlyData,
 					typeSize * from->columns);
 		}

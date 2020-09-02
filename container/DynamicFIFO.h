@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_CONTAINER_DYNAMICFIFO_H_
-#define FRAMEWORK_CONTAINER_DYNAMICFIFO_H_
+#ifndef FSFW_CONTAINER_DYNAMICFIFO_H_
+#define FSFW_CONTAINER_DYNAMICFIFO_H_
 
-#include "../container/FIFOBase.h"
+#include "FIFOBase.h"
 #include <vector>
 
 /**
@@ -22,7 +22,7 @@ public:
 		// trying to pass the pointer of the uninitialized vector
 		// to the FIFOBase constructor directly lead to a super evil bug.
 		// So we do it like this now.
-		this->setData(fifoVector.data());
+		this->setContainer(fifoVector.data());
 	};
 
 	/**
@@ -31,7 +31,7 @@ public:
 	 */
 	DynamicFIFO(const DynamicFIFO& other): FIFOBase<T>(other),
 			fifoVector(other.maxCapacity) {
-		this->setData(fifoVector.data());
+		this->setContainer(fifoVector.data());
 	}
 
 
@@ -39,4 +39,4 @@ private:
 	std::vector<T> fifoVector;
 };
 
-#endif /* FRAMEWORK_CONTAINER_DYNAMICFIFO_H_ */
+#endif /* FSFW_CONTAINER_DYNAMICFIFO_H_ */

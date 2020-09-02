@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_CONTAINER_FIFOBASE_TPP_
-#define FRAMEWORK_CONTAINER_FIFOBASE_TPP_
+#ifndef FSFW_CONTAINER_FIFOBASE_TPP_
+#define FSFW_CONTAINER_FIFOBASE_TPP_
 
-#ifndef FRAMEWORK_CONTAINER_FIFOBASE_H_
+#ifndef FSFW_CONTAINER_FIFOBASE_H_
 #error Include FIFOBase.h before FIFOBase.tpp!
 #endif
 
@@ -80,7 +80,7 @@ inline size_t FIFOBase<T>::getMaxCapacity() const {
 
 
 template<typename T>
-inline void FIFOBase<T>::setData(T *data) {
+inline void FIFOBase<T>::setContainer(T *data) {
 	this->values = data;
 }
 
