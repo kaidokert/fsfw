@@ -44,12 +44,10 @@ class StorageManagerIF;
  * objects. It inherits SystemObject and thus can be created by the
  * ObjectManagerIF.
  *
- * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
- * For each step an RMAP action is selected and executed.
- * If data has been received (GET_READ), the data will be interpreted.
- * The action for each step can be defined by the child class but as most
- * device handlers share a 4-call (sendRead-getRead-sendWrite-getWrite) structure,
- * a default implementation is provided.
+ * This class uses the opcode of ExecutableObjectIF to perform a
+ * step-wise execution. For each step a different action is selected and
+ * executed. Currently, the device handler base performs a 4-step
+ * execution related to 4 communication steps (based on RMAP).
  * NOTE: RMAP is a standard which is used for Flying Laptop.
  * RMAP communication is not mandatory for projects implementing the FSFW.
  * However, the communication principles are similar to RMAP as there are
