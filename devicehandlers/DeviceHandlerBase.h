@@ -39,9 +39,10 @@ class StorageManagerIF;
  * Documentation: Dissertation Baetz p.138,139, p.141-149
  *
  * It features handling of @link DeviceHandlerIF::Mode_t Modes @endlink,
- * communication with physical devices, using the @link DeviceCommunicationIF @endlink,
- * and communication with commanding objects.
- * It inherits SystemObject and thus can be created by the ObjectManagerIF.
+ * communication with physical devices, using the
+ * @link DeviceCommunicationIF @endlink, and communication with commanding
+ * objects. It inherits SystemObject and thus can be created by the
+ * ObjectManagerIF.
  *
  * This class uses the opcode of ExecutableObjectIF to perform a step-wise execution.
  * For each step an RMAP action is selected and executed.
@@ -49,7 +50,7 @@ class StorageManagerIF;
  * The action for each step can be defined by the child class but as most
  * device handlers share a 4-call (sendRead-getRead-sendWrite-getWrite) structure,
  * a default implementation is provided.
- * NOTE: RMAP is a standard which is used for FLP.
+ * NOTE: RMAP is a standard which is used for Flying Laptop.
  * RMAP communication is not mandatory for projects implementing the FSFW.
  * However, the communication principles are similar to RMAP as there are
  * two write and two send calls involved.
@@ -70,9 +71,6 @@ class StorageManagerIF;
  *
  * Other important virtual methods with a default implementation
  * are the getTransitionDelayMs() function and the getSwitches() function.
- * Please ensure that getSwitches() returns DeviceHandlerIF::NO_SWITCHES if
- * power switches are not implemented yet. Otherwise, the device handler will
- * not transition to MODE_ON, even if setMode(MODE_ON) is called.
  * If a transition to MODE_ON is desired without commanding, override the
  * intialize() function and call setMode(_MODE_START_UP) before calling
  * DeviceHandlerBase::initialize().
@@ -94,13 +92,10 @@ public:
 	 * The constructor passes the objectId to the SystemObject().
 	 *
 	 * @param setObjectId the ObjectId to pass to the SystemObject() Constructor
-	 * @param maxDeviceReplyLen the length the RMAP getRead call will be sent with
-	 * @param setDeviceSwitch the switch the device is connected to,
-	 * for devices using two switches, overwrite getSwitches()
 	 * @param deviceCommuncation Communcation Interface object which is used
 	 * to implement communication functions
-	 * @param thermalStatePoolId
-	 * @param thermalRequestPoolId
+	 * @param comCookie This object will be passed to the communication inter-
+	 * face and can contain user-defined information about the communication.
 	 * @param fdirInstance
 	 * @param cmdQueueSize
 	 */
@@ -352,22 +347,10 @@ protected:
 	 *    set to the maximum expected number of PST cycles between two replies
 	 *    (also a tolerance should be added, as an FDIR message will be
 	 *    generated if it is missed).
-	 *
-	 *    (Robin) This part confuses me. "must do as soon as" implies that
-	 *    the developer must do something somewhere else in the code. Is
-	 *    that really the case? If I understood correctly, DHB performs
-	 *    almost everything (e.g. in erirm function) as long as the commands
-	 *    are inserted correctly.
-	 *
-	 *    As soon as the replies are enabled, DeviceCommandInfo.periodic must
-	 *    be set to true, DeviceCommandInfo.delayCycles to
-	 *    DeviceCommandInfo.maxDelayCycles.
 	 *    From then on, the base class handles the reception.
 	 *    Then, scanForReply returns the id of the reply or the placeholder id
 	 *    and the base class will take care of checking that all replies are
 	 *    received and the interval is correct.
-	 *    When the replies are disabled, DeviceCommandInfo.periodic must be set
-	 *    to 0, DeviceCommandInfo.delayCycles to 0;
 	 *
 	 *  - Aperiodic, unrequested replies. These are replies that are sent
 	 *    by the device without any preceding command and not in a defined
@@ -705,14 +688,18 @@ protected:
 	uint32_t deviceThermalRequestPoolId = PoolVariableIF::NO_PARAMETER;
 
 	/**
-	 * Optional Error code
-	 * Can be set in doStartUp(), doShutDown() and doTransition() to signal cause for Transition failure.
+	 * Optional Error code. Can be set in doStartUp(), doShutDown() and
+	 * doTransition() to signal cause for Transition failure.
 	 */
 	ReturnValue_t childTransitionFailure;
 
-	uint32_t ignoreMissedRepliesCount = 0; //!< Counts if communication channel lost a reply, so some missed replys can be ignored.
+	/** Counts if communication channel lost a reply, so some missed
+	 * replys can be ignored. */
+	uint32_t ignoreMissedRepliesCount = 0;
 
-	FailureIsolationBase* fdirInstance; //!< Pointer to the used FDIR instance. If not provided by child, default class is instantiated.
+	/** Pointer to the used FDIR instance. If not provided by child,
+	 * default class is instantiated. */
+	FailureIsolationBase* fdirInstance;
 
 	HkSwitchHelper hkSwitcher;
 
@@ -1099,11 +1086,6 @@ private:
 	void buildRawDeviceCommand(CommandMessage* message);
 	void buildInternalCommand(void);
 
-//	/**
-//	 * Send a reply with the current mode and submode.
-//	 */
-//	void announceMode(void);
-
 	/**
 	 * Decrement the counter for the timout of replies.
 	 *
@@ -1130,10 +1112,14 @@ private:
 	/**
 	 * Build and send a command to the device.
 	 *
-	 * This routine checks whether a raw or direct command has been received, checks the content of the received command and
-	 * calls buildCommandFromCommand() for direct commands or sets #rawpacket to the received raw packet.
-	 * If no external command is received or the received command is invalid and the current mode is @c MODE_NORMAL or a transitional mode,
-	 * it asks the child class to build a command (via getNormalDeviceCommand() or getTransitionalDeviceCommand() and buildCommand()) and
+	 * This routine checks whether a raw or direct command has been received,
+	 * checks the content of the received command and calls
+	 * buildCommandFromCommand() for direct commands or sets #rawpacket
+	 * to the received raw packet.
+	 * If no external command is received or the received command is invalid and
+	 * the current mode is @c MODE_NORMAL or a transitional mode, it asks the
+	 * child class to build a command (via getNormalDeviceCommand() or
+	 * getTransitionalDeviceCommand() and buildCommand()) and
 	 * sends the command via RMAP.
 	 */
 	void doSendWrite(void);
@@ -1196,7 +1182,8 @@ private:
 	 * @param newChannel the object Id of the channel to switch to
 	 * @return
 	 *     - @c RETURN_OK when cookie was changed
-	 *     - @c RETURN_FAILED when cookies could not be changed, eg because the newChannel is not enabled
+	 *     - @c RETURN_FAILED when cookies could not be changed,
+	 *          e.g. because the newChannel is not enabled
 	 *     - @c returnvalues of RMAPChannelIF::isActive()
 	 */
 	ReturnValue_t switchCookieChannel(object_id_t newChannelId);
