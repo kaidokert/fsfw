@@ -72,6 +72,8 @@ DeviceHandlerBase::~DeviceHandlerBase() {
 
 ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 	this->pstStep = counter;
+	this->lastStep = this->pstStep;
+
 	if (getComAction() == CommunicationAction::NOTHING) {
 	    return HasReturnvaluesIF::RETURN_OK;
 	}
@@ -86,10 +88,13 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		hkSwitcher.performOperation();
 		hkManager.performHkOperation();
 		performOperationHook();
+		return RETURN_OK;
 	}
+
 	if (mode == MODE_OFF) {
 		return RETURN_OK;
 	}
+
 	switch (getComAction()) {
 	case CommunicationAction::SEND_WRITE:
 		if (cookieInfo.state == COOKIE_UNUSED) {

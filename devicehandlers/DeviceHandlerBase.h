@@ -555,6 +555,7 @@ protected:
 
 	/** This is the counter value from performOperation(). */
 	uint8_t pstStep = 0;
+	uint8_t lastStep = 0;
 	uint32_t pstIntervalMs = 0;
 
 	/**
