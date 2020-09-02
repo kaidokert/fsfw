@@ -323,6 +323,8 @@ protected:
 	 * @param packet
 	 * @return
 	 *     - @c RETURN_OK when the reply was interpreted.
+	 *     - @c IGNORE_REPLY_DATA Ignore the reply and don't reset reply cycle
+	 *          counter.
 	 *     - @c RETURN_FAILED when the reply could not be interpreted,
 	 *     e.g. logical errors or range violations occurred
 	 */

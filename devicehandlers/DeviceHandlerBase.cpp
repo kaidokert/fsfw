@@ -678,7 +678,7 @@ void DeviceHandlerBase::doGetRead() {
 void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		size_t receivedDataLen) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
-	DeviceCommandId_t foundId = 0xFFFFFFFF;
+	DeviceCommandId_t foundId = 0xffffffff;
 	size_t foundLen = 0;
 	// The loop may not execute more often than the number of received bytes
 	// (worst case). This approach avoids infinite loops due to buggy
@@ -709,7 +709,7 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 			break;
 		}
 		case IGNORE_REPLY_DATA:
-			break;
+			continue;
 		case IGNORE_FULL_PACKET:
 			return;
 		default:
@@ -741,15 +741,18 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
 	DeviceReplyInfo *info = &(iter->second);
 
 	if (info->delayCycles != 0) {
+	    result = interpretDeviceReply(foundId, receivedData);
 
-		if (info->periodic != false) {
+	    if(result == IGNORE_REPLY_DATA) {
+	        return;
+	    }
+
+		if (info->periodic) {
 			info->delayCycles = info->maxDelayCycles;
 		}
 		else {
 			info->delayCycles = 0;
 		}
-
-		result = interpretDeviceReply(foundId, receivedData);
 
 		if (result != RETURN_OK) {
 			// Report failed interpretation to FDIR.
