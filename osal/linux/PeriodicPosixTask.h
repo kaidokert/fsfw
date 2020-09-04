@@ -3,7 +3,7 @@
 
 #include "../../tasks/PeriodicTaskIF.h"
 #include "../../objectmanager/ObjectManagerIF.h"
-#include "../../osal/linux/PosixThread.h"
+#include "PosixThread.h"
 #include "../../tasks/ExecutableObjectIF.h"
 #include <vector>
 
@@ -32,7 +32,7 @@ public:
 	 * 			The address of the task object is passed as an argument
 	 * 			to the system call.
 	 */
-	ReturnValue_t startTask(void) override;
+	ReturnValue_t startTask() override;
 	/**
 	 * Adds an object to the list of objects to be executed.
 	 * The objects are executed in the order added.
