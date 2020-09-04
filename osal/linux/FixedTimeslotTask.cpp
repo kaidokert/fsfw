@@ -1,5 +1,5 @@
+#include "FixedTimeslotTask.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../osal/linux/FixedTimeslotTask.h"
 
 #include <limits.h>
 
