@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_
-#define FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_
+#ifndef FSFW_CONTAINER_SHAREDRINGBUFFER_H_
+#define FSFW_CONTAINER_SHAREDRINGBUFFER_H_
 
-#include "../container/SimpleRingBuffer.h"
+#include "SimpleRingBuffer.h"
 #include "../ipc/MutexIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../timemanager/Clock.h"
@@ -65,4 +65,4 @@ private:
 
 
 
-#endif /* FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_ */
+#endif /* FSFW_CONTAINER_SHAREDRINGBUFFER_H_ */
