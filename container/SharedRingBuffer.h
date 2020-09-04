@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_
 #define FRAMEWORK_CONTAINER_SHAREDRINGBUFFER_H_
 
-#include <framework/container/SimpleRingBuffer.h>
-#include <framework/ipc/MutexIF.h>
-#include <framework/objectmanager/SystemObject.h>
-#include <framework/timemanager/Clock.h>
+#include "../container/SimpleRingBuffer.h"
+#include "../ipc/MutexIF.h"
+#include "../objectmanager/SystemObject.h"
+#include "../timemanager/Clock.h"
 
 /**
  * @brief   Ring buffer which can be shared among multiple objects
