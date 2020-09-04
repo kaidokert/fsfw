@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_CONTAINER_HYBRIDITERATOR_H_
 #define FRAMEWORK_CONTAINER_HYBRIDITERATOR_H_
 
-#include "../container/ArrayList.h"
-#include "../container/SinglyLinkedList.h"
+#include "ArrayList.h"
+#include "SinglyLinkedList.h"
 
 template<typename T, typename count_t = uint8_t>
 class HybridIterator: public LinkedElement<T>::Iterator,
