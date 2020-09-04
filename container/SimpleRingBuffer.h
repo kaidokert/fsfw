@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_
-#define FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_
+#ifndef FSFW_CONTAINER_SIMPLERINGBUFFER_H_
+#define FSFW_CONTAINER_SIMPLERINGBUFFER_H_
 
-#include "../container/RingBufferBase.h"
+#include "RingBufferBase.h"
 #include <cstddef>
 
 /**
@@ -124,5 +124,5 @@ private:
 	size_t excessBytes = 0;
 };
 
-#endif /* FRAMEWORK_CONTAINER_SIMPLERINGBUFFER_H_ */
+#endif /* FSFW_CONTAINER_SIMPLERINGBUFFER_H_ */
 

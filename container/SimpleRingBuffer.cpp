@@ -1,4 +1,4 @@
-#include "../container/SimpleRingBuffer.h"
+#include "SimpleRingBuffer.h"
 #include <cstring>
 
 SimpleRingBuffer::SimpleRingBuffer(const size_t size, bool overwriteOld,
