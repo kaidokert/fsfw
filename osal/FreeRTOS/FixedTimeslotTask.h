@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
-#define FRAMEWORK_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
+#ifndef FSFW_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
+#define FSFW_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 
-#include "../../osal/FreeRTOS/FreeRTOSTaskIF.h"
+#include "FreeRTOSTaskIF.h"
 #include "../../tasks/FixedSlotSequence.h"
 #include "../../tasks/FixedTimeslotTaskIF.h"
 #include "../../tasks/Typedef.h"
@@ -98,4 +98,4 @@ protected:
 	void handleMissedDeadline();
 };
 
-#endif /* POLLINGTASK_H_ */
+#endif /* FSFW_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_ */
