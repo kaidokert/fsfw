@@ -63,6 +63,7 @@ void FixedTimeslotTask::taskFunctionality() {
 	}
 
 	pst.intializeSequenceAfterTaskCreation();
+
 	//The start time for the first entry is read.
 	uint64_t lastWakeTime = getCurrentMonotonicTimeMs();
 	uint64_t interval = pst.getIntervalToNextSlotMs();
