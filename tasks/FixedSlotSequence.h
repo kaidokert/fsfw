@@ -139,6 +139,8 @@ public:
 	 */
 	ReturnValue_t checkSequence() const;
 
+	void addCustomCheck(ReturnValue_t (*customCheckFunction)(const SlotList &));
+
 	/**
 	 * @brief 	Perform any initialization steps required after the executing
 	 * 			task has been created. This function should be called from the
@@ -161,6 +163,8 @@ protected:
 	 * identical polling times are executed immediately one after another.
 	 */
 	SlotList slotList;
+
+	ReturnValue_t (*customCheckFunction)(const SlotList&) = nullptr;
 
 	uint32_t lengthMs;
 };
