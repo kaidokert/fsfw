@@ -1,8 +1,8 @@
-#ifndef SERIALFIXEDARRAYLISTADAPTER_H_
-#define SERIALFIXEDARRAYLISTADAPTER_H_
+#ifndef FSFW_SERIALIZE_SERIALFIXEDARRAYLISTADAPTER_H_
+#define FSFW_SERIALIZE_SERIALFIXEDARRAYLISTADAPTER_H_
 
+#include "SerialArrayListAdapter.h"
 #include "../container/FixedArrayList.h"
-#include "../serialize/SerialArrayListAdapter.h"
 
 /**
  * @brief 	This adapter provides an interface for SerializeIF to serialize and
@@ -13,18 +13,11 @@
  * The sequence of objects is defined in the constructor by
  * using the setStart and setNext functions.
  *
- *  - Buffers with a size header inside that class can be declared with
- *    @code
- *    SerialFixedArrayListAdapter<BUFFER_TYPE,
- *          MAX_SIZE, count_t> mySerialFixedArrayList(...).
- *    @endcode
- *
- *  - MAX_SIZE: specifies the maximum allowed number of elements
- *    in FixedArrayList.
- *  - BUFFER_TYPE: specifies the data type of the buffer
- *  - count_t: specifies the type/size of the length field
- *    which defaults to one byte.
- *
+ * @tparam BUFFER_TYPE: Specifies the data type of the buffer
+ * @tparam MAX_SIZE: Specifies the maximum allowed number of elements
+ * 					 (not bytes!)
+ * @tparam count_t: specifies the type/size of the length field which defaults
+ * 					to one byte.
  * @ingroup serialize
  */
 template<typename BUFFER_TYPE, uint32_t MAX_SIZE, typename count_t = uint8_t>
@@ -33,7 +26,7 @@ class SerialFixedArrayListAdapter :
 		public SerializeIF {
 public:
 	/**
-	 * Constructor Arguments are forwarded to FixedArrayList constructor.
+	 * Constructor arguments are forwarded to FixedArrayList constructor.
 	 * Refer to the fixed array list constructors for different options.
 	 * @param args
 	 */
@@ -49,7 +42,8 @@ public:
     }
 
     size_t getSerializedSize() const {
-        return SerialArrayListAdapter<BUFFER_TYPE, count_t>::getSerializedSize(this);
+        return SerialArrayListAdapter<BUFFER_TYPE, count_t>::
+        		getSerializedSize(this);
     }
 
     ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
@@ -60,4 +54,4 @@ public:
 
 };
 
-#endif /* SERIALFIXEDARRAYLISTADAPTER_H_ */
+#endif /* FSFW_SERIALIZE_SERIALFIXEDARRAYLISTADAPTER_H_ */
