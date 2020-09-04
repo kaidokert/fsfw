@@ -1,11 +1,12 @@
-#ifndef FRAMEWORK_HEALTH_HEALTHHELPER_H_
-#define FRAMEWORK_HEALTH_HEALTHHELPER_H_
+#ifndef FSFW_HEALTH_HEALTHHELPER_H_
+#define FSFW_HEALTH_HEALTHHELPER_H_
+
+#include "HasHealthIF.h"
+#include "HealthMessage.h"
+#include "HealthTableIF.h"
 
 #include "../events/EventManagerIF.h"
 #include "../events/EventReportingProxyIF.h"
-#include "../health/HasHealthIF.h"
-#include "../health/HealthMessage.h"
-#include "../health/HealthTableIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -118,4 +119,4 @@ private:
 	void handleSetHealthCommand(CommandMessage *message);
 };
 
-#endif /* HEALTHHELPER_H_ */
+#endif /* FSFW_HEALTH_HEALTHHELPER_H_ */

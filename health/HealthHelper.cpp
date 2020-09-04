@@ -1,4 +1,4 @@
-#include "../health/HealthHelper.h"
+#include "HealthHelper.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId) :
