@@ -1,11 +1,9 @@
-#include "../objectmanager/ObjectManagerIF.h"
 #include "ParameterHelper.h"
 #include "ParameterMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner) :
-		owner(owner), storage(NULL) {
-
-}
+		owner(owner) {}
 
 ParameterHelper::~ParameterHelper() {
 }
@@ -28,7 +26,6 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 	}
 		break;
 	case ParameterMessage::CMD_PARAMETER_LOAD: {
-
 		uint8_t domain = HasParametersIF::getDomain(
 				ParameterMessage::getParameterId(message));
 		uint16_t parameterId = HasParametersIF::getMatrixId(
@@ -36,12 +33,14 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 		uint8_t index = HasParametersIF::getIndex(
 				ParameterMessage::getParameterId(message));
 
-		const uint8_t *storedStream;
-		size_t storedStreamSize;
+		const uint8_t *storedStream = nullptr;
+		size_t storedStreamSize = 0;
 		result = storage->getData(
 				ParameterMessage::getStoreId(message), &storedStream,
 				&storedStreamSize);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
+			sif::error << "ParameterHelper::handleParameterMessage: Getting"
+					" store data failed for load command." << std::endl;
 			break;
 		}
 
@@ -125,7 +124,8 @@ ReturnValue_t ParameterHelper::initialize() {
 	}
 }
 
-void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason, Command_t initialCommand) {
+void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason,
+		Command_t initialCommand) {
 	CommandMessage reply;
 	reply.setReplyRejected(reason, initialCommand);
 	MessageQueueSenderIF::sendMessage(to, &reply, ownerQueueId);
