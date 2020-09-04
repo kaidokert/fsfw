@@ -1,16 +1,24 @@
-#ifndef SERIALIZEADAPTER_H_
-#define SERIALIZEADAPTER_H_
+#ifndef FSFW_SERIALIZE_SERIALIZEADAPTER_H_
+#define FSFW_SERIALIZE_SERIALIZEADAPTER_H_
+
+#include "EndianConverter.h"
+#include "SerializeIF.h"
 
 #include "../container/IsDerivedFrom.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "EndianConverter.h"
-#include "SerializeIF.h"
-#include <string.h>
+#include <cstring>
 
-/**
- * \ingroup serialize
+ /**
+ * @brief These adapters provides an interface to use the SerializeIF functions
+ * 		  with arbitrary template objects to facilitate and simplify the
+ * 		  serialization of classes with different multiple different data types
+ * 		  into buffers and vice-versa.
+ * @details
+ * The correct serialization or deserialization function is chosen at
+ * compile time with template type deduction.
+ *
+ * @ingroup serialize
  */
-
 class SerializeAdapter {
 public:
 	template<typename T>
@@ -36,9 +44,10 @@ private:
 	class InternalSerializeAdapter {
 	public:
 		static ReturnValue_t serialize(const T *object, uint8_t **buffer,
-				size_t *size, size_t max_size, SerializeIF::Endianness streamEndianness) {
+				size_t *size, size_t max_size,
+				SerializeIF::Endianness streamEndianness) {
 			size_t ignoredSize = 0;
-			if (size == NULL) {
+			if (size == nullptr) {
 				size = &ignoredSize;
 			}
 			//TODO check integer overflow of *size
@@ -56,7 +65,7 @@ private:
 					tmp = *object;
 					break;
 				}
-				memcpy(*buffer, &tmp, sizeof(T));
+				std::memcpy(*buffer, &tmp, sizeof(T));
 				*size += sizeof(T);
 				(*buffer) += sizeof(T);
 				return HasReturnvaluesIF::RETURN_OK;
@@ -70,7 +79,7 @@ private:
 			T tmp;
 			if (*size >= sizeof(T)) {
 				*size -= sizeof(T);
-				memcpy(&tmp, *buffer, sizeof(T));
+				std::memcpy(&tmp, *buffer, sizeof(T));
 				switch (streamEndianness) {
 				case SerializeIF::Endianness::BIG:
 					*object = EndianConverter::convertBigEndian<T>(tmp);
@@ -104,7 +113,7 @@ private:
 				size_t *size, size_t max_size,
 				SerializeIF::Endianness streamEndianness) const {
 			size_t ignoredSize = 0;
-			if (size == NULL) {
+			if (size == nullptr) {
 				size = &ignoredSize;
 			}
 			return object->serialize(buffer, size, max_size, streamEndianness);
