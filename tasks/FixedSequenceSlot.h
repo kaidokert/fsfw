@@ -20,6 +20,8 @@ public:
 			PeriodicTaskIF* executingTask);
 	virtual ~FixedSequenceSlot();
 
+	object_id_t handlerId;
+
 	/**
 	 * @brief	Handler identifies which object is executed in this slot.
 	 */

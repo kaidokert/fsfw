@@ -1,10 +1,10 @@
-#include "FixedSequenceSlot.h"
 #include "../objectmanager/SystemObjectIF.h"
+#include "../tasks/FixedSequenceSlot.h"
 #include <cstddef>
 
 FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,
 		int8_t setSequenceId, ExecutableObjectIF* executableObject,
-		PeriodicTaskIF* executingTask) :
+		PeriodicTaskIF* executingTask) : handlerId(handlerId),
 		pollingTimeMs(setTime), opcode(setSequenceId) {
     if(executableObject == nullptr) {
         return;

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_TASKS_FIXEDSLOTSEQUENCE_H_
 #define FRAMEWORK_TASKS_FIXEDSLOTSEQUENCE_H_
 
-#include "FixedSequenceSlot.h"
 #include "../objectmanager/SystemObject.h"
+#include "../tasks/FixedSequenceSlot.h"
 
 #include <set>
 
@@ -152,6 +152,8 @@ protected:
 	SlotList slotList;
 
 	uint32_t lengthMs;
+
+	bool isEmpty = false;
 };
 
 #endif /* FIXEDSLOTSEQUENCE_H_ */
