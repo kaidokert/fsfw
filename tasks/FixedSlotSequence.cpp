@@ -1,5 +1,5 @@
+#include "FixedSlotSequence.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../tasks/FixedSlotSequence.h"
 #include <cstdlib>
 
 FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
