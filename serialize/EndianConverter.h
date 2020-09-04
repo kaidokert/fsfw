@@ -1,5 +1,5 @@
-#ifndef ENDIANSWAPPER_H_
-#define ENDIANSWAPPER_H_
+#ifndef FSFW_SERIALIZE_ENDIANCONVERTER_H_
+#define FSFW_SERIALIZE_ENDIANCONVERTER_H_
 
 #include "../osal/Endiness.h"
 #include <cstring>
@@ -35,9 +35,7 @@
  */
 class EndianConverter {
 private:
-	EndianConverter() {
-	}
-	;
+	EndianConverter() {};
 public:
 	/**
 	 * Convert a typed variable between big endian and machine endian.
@@ -123,4 +121,4 @@ public:
 	}
 };
 
-#endif /* ENDIANSWAPPER_H_ */
+#endif /* FSFW_SERIALIZE_ENDIANCONVERTER_H_ */
