@@ -1,6 +1,7 @@
-#include "../../osal/host/MessageQueue.h"
+#include "MessageQueue.h"
+#include "QueueMapManager.h"
+
 #include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../osal/host/QueueMapManager.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexHelper.h"
 
@@ -9,7 +10,8 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 	queueLock = MutexFactory::instance()->createMutex();
 	auto result = QueueMapManager::instance()->addMessageQueue(this, &mqId);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
-		sif::error << "MessageQueue: Could not be created" << std::endl;
+		sif::error << "MessageQueue::MessageQueue:"
+		        << " Could not be created" << std::endl;
 	}
 }
 
