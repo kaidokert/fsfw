@@ -46,12 +46,12 @@ protected:
 			uint32_t *msToReachTheMode) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	virtual void startTransition(Mode_t mode, Submode_t submode) {
-	}
-	virtual void setToExternalControl() {
-	}
-	virtual void announceMode(bool recursive) {
-	}
+
+	virtual void startTransition(Mode_t mode, Submode_t submode) {}
+
+	virtual void setToExternalControl() {}
+
+	virtual void announceMode(bool recursive) {}
 };
 
 #endif /* HASMODESIF_H_ */

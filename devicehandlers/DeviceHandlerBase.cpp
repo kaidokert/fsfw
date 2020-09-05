@@ -1385,6 +1385,10 @@ ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
         pstIntervalMs = executingTask->getPeriodMs();
     }
     this->hkManager.initializeAfterTaskCreation();
+
+    if(setStartupImmediately) {
+        startTransition(MODE_ON, SUBMODE_NONE);
+    }
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -1400,6 +1404,10 @@ DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
 
 object_id_t DeviceHandlerBase::getObjectId() const {
     return SystemObject::getObjectId();
+}
+
+void DeviceHandlerBase::setStartUpImmediately() {
+    this->setStartupImmediately = true;
 }
 
 dur_millis_t DeviceHandlerBase::getPeriodicOperationFrequency() const {
