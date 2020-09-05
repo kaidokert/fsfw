@@ -1,7 +1,8 @@
-#ifndef FRAMEWORK_DATAPOOL_DATASETBASE_H_
-#define FRAMEWORK_DATAPOOL_DATASETBASE_H_
-#include "../datapool/PoolDataSetIF.h"
-#include "../datapool/PoolVariableIF.h"
+#ifndef FSFW_DATAPOOL_POOLDATASETBASE_H_
+#define FSFW_DATAPOOL_POOLDATASETBASE_H_
+
+#include "PoolDataSetIF.h"
+#include "PoolVariableIF.h"
 #include "../ipc/MutexIF.h"
 
 /**
@@ -148,4 +149,4 @@ private:
 	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
 };
 
-#endif /* FRAMEWORK_DATAPOOL_POOLPOOLDATASETBASE_H_ */
+#endif /* FSFW_DATAPOOL_POOLDATASETBASE_H_ */

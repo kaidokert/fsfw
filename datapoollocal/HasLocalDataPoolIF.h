@@ -1,5 +1,6 @@
-#ifndef FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_
-#define FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_
+#ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
+#define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
+
 #include "../datapool/PoolEntryIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
@@ -89,4 +90,4 @@ public:
 	};
 };
 
-#endif /* FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_ */

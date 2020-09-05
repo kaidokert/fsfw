@@ -1,11 +1,4 @@
-/**
- * @file PoolRawAccessHelper.cpp
- *
- * @date 22.12.2019
- * @author R. Mueller
- */
-
-#include "../datapool/PoolRawAccessHelper.h"
+#include "PoolRawAccessHelper.h"
 #include "../datapoolglob/GlobalDataSet.h"
 #include "../serialize/SerializeAdapter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"

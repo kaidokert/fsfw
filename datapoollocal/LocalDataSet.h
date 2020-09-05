@@ -1,6 +1,7 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_
-#include "../datapoollocal/LocalPoolDataSetBase.h"
+#ifndef FSFW_DATAPOOLLOCAL_LOCALDATASET_H_
+#define FSFW_DATAPOOLLOCAL_LOCALDATASET_H_
+
+#include "LocalPoolDataSetBase.h"
 #include <vector>
 
 class LocalDataSet: public LocalPoolDataSetBase {
@@ -17,4 +18,4 @@ private:
     std::vector<PoolVariableIF*> poolVarList;
 };
 
-#endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATASET_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_LOCALDATASET_H_ */

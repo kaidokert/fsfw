@@ -1,7 +1,8 @@
-#include "../datapoolglob/DataPoolAdmin.h"
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalDataPool.h"
-#include "../datapoolglob/PoolRawAccess.h"
+#include "DataPoolAdmin.h"
+#include "GlobalDataSet.h"
+#include "GlobalDataPool.h"
+#include "PoolRawAccess.h"
+
 #include "../ipc/CommandMessage.h"
 #include "../ipc/QueueFactory.h"
 #include "../parameters/ParameterMessage.h"

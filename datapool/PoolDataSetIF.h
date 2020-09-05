@@ -1,5 +1,6 @@
-#ifndef FRAMEWORK_DATAPOOL_POOLDATASETIF_H_
-#define FRAMEWORK_DATAPOOL_POOLDATASETIF_H_
+#ifndef FSFW_DATAPOOL_POOLDATASETIF_H_
+#define FSFW_DATAPOOL_POOLDATASETIF_H_
+
 #include "DataSetIF.h"
 
 class PoolDataSetIF: public DataSetIF {
@@ -25,4 +26,4 @@ public:
     virtual bool isValid() const = 0;
 };
 
-#endif /* FRAMEWORK_DATAPOOL_POOLDATASETIF_H_ */
+#endif /* FSFW_DATAPOOL_POOLDATASETIF_H_ */

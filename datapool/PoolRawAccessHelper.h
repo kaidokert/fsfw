@@ -1,11 +1,5 @@
-/**
- * @file PoolRawAccessHelper.h
- *
- * @date 22.12.2019
- */
-
-#ifndef FRAMEWORK_DATAPOOL_POOLRAWACCESSHELPER_H_
-#define FRAMEWORK_DATAPOOL_POOLRAWACCESSHELPER_H_
+#ifndef FSFW_DATAPOOL_POOLRAWACCESSHELPER_H_
+#define FSFW_DATAPOOL_POOLRAWACCESSHELPER_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../datapoolglob/GlobalDataSet.h"

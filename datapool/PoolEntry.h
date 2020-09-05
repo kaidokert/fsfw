@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_DATAPOOL_POOLENTRY_H_
-#define FRAMEWORK_DATAPOOL_POOLENTRY_H_
+#ifndef FSFW_DATAPOOL_POOLENTRY_H_
+#define FSFW_DATAPOOL_POOLENTRY_H_
 
-#include "../datapool/PoolEntryIF.h"
+#include "PoolEntryIF.h"
 
 #include <initializer_list>
 #include <type_traits>
@@ -127,4 +127,4 @@ public:
 	Type getType();
 };
 
-#endif /* POOLENTRY_H_ */
+#endif /* FSFW_DATAPOOL_POOLENTRY_H_ */
