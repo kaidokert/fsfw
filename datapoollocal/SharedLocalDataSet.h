@@ -1,7 +1,8 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_SHAREDLOCALDATASET_H_
-#define FRAMEWORK_DATAPOOLLOCAL_SHAREDLOCALDATASET_H_
+#ifndef FSFW_DATAPOOLLOCAL_SHAREDLOCALDATASET_H_
+#define FSFW_DATAPOOLLOCAL_SHAREDLOCALDATASET_H_
+
+#include "LocalPoolDataSetBase.h"
 #include "../datapool/SharedDataSetIF.h"
-#include "../datapoollocal/LocalPoolDataSetBase.h"
 #include "../objectmanager/SystemObject.h"
 #include <vector>
 
@@ -28,4 +29,4 @@ private:
 
 
 
-#endif /* FRAMEWORK_DATAPOOLLOCAL_SHAREDLOCALDATASET_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_SHAREDLOCALDATASET_H_ */

@@ -4,6 +4,8 @@
 #include "../datapool/PoolEntryIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
+#include "../timemanager/Clock.h"
+
 #include <map>
 
 class LocalDataPoolManager;
@@ -85,7 +87,7 @@ public:
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 	virtual ReturnValue_t changeCollectionInterval(sid_t sid,
-	        dur_seconds_t newInterval) {
+	        float newIntervalSeconds) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 };

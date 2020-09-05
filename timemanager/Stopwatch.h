@@ -45,7 +45,7 @@ public:
      * Calculates the elapsed time since start and returns it
      * @return elapsed time in seconds (double precision)
      */
-    dur_seconds_t stopSeconds();
+    double stopSeconds();
 
     /**
      * Displays the elapsed times on the osstream, depending on internal display

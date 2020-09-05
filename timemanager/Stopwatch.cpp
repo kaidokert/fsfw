@@ -18,7 +18,7 @@ dur_millis_t Stopwatch::stop() {
     return elapsedTime.tv_sec * 1000 + elapsedTime.tv_usec / 1000;
 }
 
-dur_seconds_t Stopwatch::stopSeconds() {
+double Stopwatch::stopSeconds() {
     stopInternal();
     return timevalOperations::toDouble(elapsedTime);
 }

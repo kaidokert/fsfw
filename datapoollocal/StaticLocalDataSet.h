@@ -1,5 +1,6 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_STATICLOCALDATASET_H_
-#define FRAMEWORK_DATAPOOLLOCAL_STATICLOCALDATASET_H_
+#ifndef FSFW_DATAPOOLLOCAL_STATICLOCALDATASET_H_
+#define FSFW_DATAPOOLLOCAL_STATICLOCALDATASET_H_
+
 #include "LocalPoolDataSetBase.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include <array>
@@ -16,12 +17,13 @@
 template <uint8_t NUM_VARIABLES>
 class StaticLocalDataSet: public LocalPoolDataSetBase {
 public:
-    StaticLocalDataSet(sid_t sid):
-        LocalPoolDataSetBase(sid, poolVarList.data(), NUM_VARIABLES) {
+    StaticLocalDataSet(sid_t sid): LocalPoolDataSetBase(sid, nullptr,
+            NUM_VARIABLES) {
+        this->setContainer(poolVarList.data());
     }
 
 private:
     std::array<PoolVariableIF*, NUM_VARIABLES> poolVarList;
 };
 
-#endif /* FRAMEWORK_DATAPOOLLOCAL_STATICLOCALDATASET_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_STATICLOCALDATASET_H_ */
