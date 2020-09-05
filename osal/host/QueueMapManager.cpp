@@ -1,6 +1,7 @@
+#include "QueueMapManager.h"
+
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexHelper.h"
-#include "../../osal/host/QueueMapManager.h"
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 
