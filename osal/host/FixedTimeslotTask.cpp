@@ -90,9 +90,12 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 }
 
 void FixedTimeslotTask::taskFunctionality() {
+    pollingSeqTable.intializeSequenceAfterTaskCreation();
+
     // A local iterator for the Polling Sequence Table is created to
     // find the start time for the first entry.
-    FixedSlotSequence::SlotListIter slotListIter = pollingSeqTable.current;
+    auto slotListIter = pollingSeqTable.current;
+
     // Get start time for first entry.
     chron_ms interval(slotListIter->pollingTimeMs);
     auto currentStartTime {
@@ -124,7 +127,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
         uint32_t slotTimeMs, int8_t executionStep) {
     ExecutableObjectIF* executableObject = objectManager->
             get<ExecutableObjectIF>(componentId);
-    if (executableObject!= nullptr) {
+    if (executableObject != nullptr) {
         pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep,
                 executableObject, this);
         return HasReturnvaluesIF::RETURN_OK;
@@ -135,7 +138,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
     return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t FixedTimeslotTask::checkAndInitializeSequence() const {
+ReturnValue_t FixedTimeslotTask::checkSequence() const {
     return pollingSeqTable.checkSequence();
 }
 

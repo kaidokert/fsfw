@@ -61,7 +61,7 @@ public:
     ReturnValue_t addSlot(object_id_t componentId,
                    uint32_t slotTimeMs, int8_t executionStep);
 
-    ReturnValue_t checkAndInitializeSequence() const;
+    ReturnValue_t checkSequence() const override;
 
     uint32_t getPeriodMs() const;
 

@@ -3,6 +3,10 @@
 #include <inttypes.h>
 #include <math.h>
 
+#ifndef SCNu8
+  #define SCNu8 "hhu"
+#endif
+
 CCSDSTime::CCSDSTime() {
 }
 

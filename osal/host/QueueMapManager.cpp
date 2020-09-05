@@ -37,7 +37,7 @@ ReturnValue_t QueueMapManager::addMessageQueue(
 
 MessageQueueIF* QueueMapManager::getMessageQueue(
 		MessageQueueId_t messageQueueId) const {
-	MutexHelper(MutexIF::TimeoutType::WAITING, mapLock, 50);
+	MutexHelper(mapLock, MutexIF::TimeoutType::WAITING, 50);
 	auto queueIter = queueMap.find(messageQueueId);
 	if(queueIter != queueMap.end()) {
 		return queueIter->second;
