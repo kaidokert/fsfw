@@ -61,7 +61,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	}
 	// not sure this will work..
 	//*message = std::move(messageQueue.front());
-	MutexHelper mutexLock(queueLock, 20);
+	MutexHelper mutexLock(queueLock, MutexIF::TimeoutType::WAITING, 20);
 	MessageQueueMessage* currentMessage = &messageQueue.front();
 	std::copy(currentMessage->getBuffer(),
 			currentMessage->getBuffer() + messageSize, message->getBuffer());
@@ -126,7 +126,8 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	}
 
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
-		MutexHelper mutexLock(targetQueue->queueLock, 20);
+		MutexHelper mutexLock(targetQueue->queueLock,
+		        MutexIF::TimeoutType::WAITING, 20);
 		// not ideal, works for now though.
 		MessageQueueMessage* mqmMessage =
 				dynamic_cast<MessageQueueMessage*>(message);
@@ -146,8 +147,9 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MessageQueue::lockQueue(dur_millis_t lockTimeout) {
-	return queueLock->lockMutex(lockTimeout);
+ReturnValue_t MessageQueue::lockQueue(MutexIF::TimeoutType timeoutType,
+        dur_millis_t lockTimeout) {
+	return queueLock->lockMutex(timeoutType, lockTimeout);
 }
 
 ReturnValue_t MessageQueue::unlockQueue() {

@@ -122,8 +122,11 @@ void FixedTimeslotTask::taskFunctionality() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
         uint32_t slotTimeMs, int8_t executionStep) {
-    if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
-        pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep, this);
+    ExecutableObjectIF* executableObject = objectManager->
+            get<ExecutableObjectIF>(componentId);
+    if (executableObject!= nullptr) {
+        pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep,
+                executableObject, this);
         return HasReturnvaluesIF::RETURN_OK;
     }
 

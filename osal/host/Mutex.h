@@ -15,8 +15,9 @@
  */
 class Mutex : public MutexIF {
 public:
-	Mutex() = default;
-	ReturnValue_t lockMutex(uint32_t timeoutMs = MutexIF::BLOCKING) override;
+	Mutex();
+	ReturnValue_t lockMutex(TimeoutType timeoutType =
+            TimeoutType::BLOCKING, uint32_t timeoutMs = 0) override;
 	ReturnValue_t unlockMutex() override;
 
 	std::timed_mutex* getMutexHandle();
