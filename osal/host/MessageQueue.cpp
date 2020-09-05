@@ -1,6 +1,7 @@
-#include "../../osal/host/MessageQueue.h"
+#include "MessageQueue.h"
+#include "QueueMapManager.h"
+
 #include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../osal/host/QueueMapManager.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexHelper.h"
 
@@ -9,7 +10,8 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 	queueLock = MutexFactory::instance()->createMutex();
 	auto result = QueueMapManager::instance()->addMessageQueue(this, &mqId);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
-		sif::error << "MessageQueue: Could not be created" << std::endl;
+		sif::error << "MessageQueue::MessageQueue:"
+		        << " Could not be created" << std::endl;
 	}
 }
 
@@ -61,7 +63,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	}
 	// not sure this will work..
 	//*message = std::move(messageQueue.front());
-	MutexHelper mutexLock(queueLock, 20);
+	MutexHelper mutexLock(queueLock, MutexIF::TimeoutType::WAITING, 20);
 	MessageQueueMessage* currentMessage = &messageQueue.front();
 	std::copy(currentMessage->getBuffer(),
 			currentMessage->getBuffer() + messageSize, message->getBuffer());
@@ -126,7 +128,8 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	}
 
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
-		MutexHelper mutexLock(targetQueue->queueLock, 20);
+		MutexHelper mutexLock(targetQueue->queueLock,
+		        MutexIF::TimeoutType::WAITING, 20);
 		// not ideal, works for now though.
 		MessageQueueMessage* mqmMessage =
 				dynamic_cast<MessageQueueMessage*>(message);
@@ -146,8 +149,9 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MessageQueue::lockQueue(dur_millis_t lockTimeout) {
-	return queueLock->lockMutex(lockTimeout);
+ReturnValue_t MessageQueue::lockQueue(MutexIF::TimeoutType timeoutType,
+        dur_millis_t lockTimeout) {
+	return queueLock->lockMutex(timeoutType, lockTimeout);
 }
 
 ReturnValue_t MessageQueue::unlockQueue() {

@@ -1,6 +1,7 @@
+#include "QueueMapManager.h"
+
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexHelper.h"
-#include "../../osal/host/QueueMapManager.h"
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 
@@ -37,7 +38,7 @@ ReturnValue_t QueueMapManager::addMessageQueue(
 
 MessageQueueIF* QueueMapManager::getMessageQueue(
 		MessageQueueId_t messageQueueId) const {
-	MutexHelper(mapLock, 50);
+	MutexHelper(mapLock, MutexIF::TimeoutType::WAITING, 50);
 	auto queueIter = queueMap.find(messageQueueId);
 	if(queueIter != queueMap.end()) {
 		return queueIter->second;

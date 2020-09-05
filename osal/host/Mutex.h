@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_MUTEX_H_
-#define FRAMEWORK_OSAL_FREERTOS_MUTEX_H_
+#ifndef FSFW_OSAL_HOSTED_MUTEX_H_
+#define FSFW_OSAL_HOSTED_MUTEX_H_
 
 #include "../../ipc/MutexIF.h"
 
@@ -15,8 +15,9 @@
  */
 class Mutex : public MutexIF {
 public:
-	Mutex() = default;
-	ReturnValue_t lockMutex(uint32_t timeoutMs = MutexIF::BLOCKING) override;
+	Mutex();
+	ReturnValue_t lockMutex(TimeoutType timeoutType =
+            TimeoutType::BLOCKING, uint32_t timeoutMs = 0) override;
 	ReturnValue_t unlockMutex() override;
 
 	std::timed_mutex* getMutexHandle();
@@ -25,4 +26,4 @@ private:
 	std::timed_mutex mutex;
 };
 
-#endif /* FRAMEWORK_FREERTOS_MUTEX_H_ */
+#endif /* FSFW_OSAL_HOSTED_MUTEX_H_ */

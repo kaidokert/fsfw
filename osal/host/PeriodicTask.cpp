@@ -1,7 +1,7 @@
-#include "../../ipc/MutexFactory.h"
-#include "../../osal/host/Mutex.h"
-#include "../../osal/host/PeriodicTask.h"
+#include "Mutex.h"
+#include "PeriodicTask.h"
 
+#include "../../ipc/MutexFactory.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../tasks/ExecutableObjectIF.h"
 

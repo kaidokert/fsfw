@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_OSAL_HOST_QUEUEMAP_H_
-#define FRAMEWORK_OSAL_HOST_QUEUEMAP_H_
+#ifndef FSFW_OSAL_HOST_QUEUEMAPMANAGER_H_
+#define FSFW_OSAL_HOST_QUEUEMAPMANAGER_H_
 
 #include "../../ipc/MessageQueueSenderIF.h"
 #include "../../osal/host/MessageQueue.h"
@@ -44,4 +44,4 @@ private:
 
 
 
-#endif /* FRAMEWORK_OSAL_HOST_QUEUEMAP_H_ */
+#endif /* FSFW_OSAL_HOST_QUEUEMAPMANAGER_H_ */
