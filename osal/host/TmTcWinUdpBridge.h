@@ -28,10 +28,10 @@ private:
     const int serverSocketOptions = 0;
 
     struct sockaddr_in clientAddress;
-    //socklen_t clientAddressLen = 0;
+    int clientAddressLen = 0;
 
     struct sockaddr_in serverAddress;
-    //socklen_t serverAddressLen = 0;
+    int serverAddressLen = 0;
 
     //! Access to the client address is mutex protected as it is set
     //! by another task.

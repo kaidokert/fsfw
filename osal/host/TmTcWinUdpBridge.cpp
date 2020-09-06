@@ -19,8 +19,8 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     // Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
     //clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
     serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if(socket < 0) {
-        sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
+    if(serverSocket != 0) {
+        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not open"
                 " UDP socket!" << std::endl;
         handleSocketError();
         return;
@@ -32,7 +32,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     //serverAddress.sin_addr.s_addr = inet_addr("127.73.73.0");
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddress.sin_port = htons(setServerPort);
-    //serverAddressLen = sizeof(serverAddress);
+    serverAddressLen = sizeof(serverAddress);
     setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR,
             reinterpret_cast<const char*>(&serverSocketOptions),
             sizeof(serverSocketOptions));
@@ -40,7 +40,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     clientAddress.sin_family = AF_INET;
     clientAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     clientAddress.sin_port = htons(setClientPort);
-    //clientAddressLen = sizeof(clientAddress);
+    clientAddressLen = sizeof(clientAddress);
 
     int result = bind(serverSocket,
             reinterpret_cast<struct sockaddr*>(&serverAddress),
@@ -54,4 +54,20 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     }
 }
 
+TmTcWinUdpBridge::~TmTcWinUdpBridge() {}
 
+void TmTcWinUdpBridge::handleSocketError() {
+}
+
+void TmTcWinUdpBridge::handleBindError() {
+}
+
+ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in clientAddress) {
+}
+
+void TmTcWinUdpBridge::handleSendError() {
+}
