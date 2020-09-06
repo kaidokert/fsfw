@@ -33,7 +33,7 @@ TcWinUdpPollingTask::~TcWinUdpPollingTask() {}
 
 ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 	// Poll for new UDP datagrams in permanent loop.
-	while(1) {
+	while(true) {
 		//! Sender Address is cached here.
 		struct sockaddr_in senderAddress;
 		int senderAddressSize = sizeof(senderAddress);
@@ -48,8 +48,8 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 			handleReadError();
 			continue;
 		}
-		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
-				<< " bytes received" << std::endl;
+		//sif::debug << "TcWinUdpPollingTask::performOperation: " << bytesReceived
+		//		<< " bytes received" << std::endl;
 
 		ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
 		if(result != HasReturnvaluesIF::RETURN_FAILED) {
@@ -135,7 +135,6 @@ void TcWinUdpPollingTask::handleReadError() {
     case(WSAEFAULT): {
         sif::info << "TmTcWinUdpBridge::handleReadError: WSADEFAULT: "
                 << "Bad address " << std::endl;
-        Sleep(2000);
         break;
     }
     default: {
@@ -144,4 +143,6 @@ void TcWinUdpPollingTask::handleReadError() {
         break;
     }
     }
+    // to prevent spam.
+    Sleep(1000);
 }

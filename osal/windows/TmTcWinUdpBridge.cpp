@@ -41,8 +41,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
 
     serverAddress.sin_family = AF_INET;
 
-    // Accept packets from any interface.
-    //serverAddress.sin_addr.s_addr = inet_addr("127.73.73.0");
+    // Accept packets from any interface. (potentially insecure).
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddress.sin_port = htons(setServerPort);
     serverAddressLen = sizeof(serverAddress);
