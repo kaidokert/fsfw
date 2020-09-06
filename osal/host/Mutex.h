@@ -1,5 +1,5 @@
-#ifndef FSFW_OSAL_HOSTED_MUTEX_H_
-#define FSFW_OSAL_HOSTED_MUTEX_H_
+#ifndef FSFW_OSAL_HOST_MUTEX_H_
+#define FSFW_OSAL_HOST_MUTEX_H_
 
 #include "../../ipc/MutexIF.h"
 
@@ -26,4 +26,4 @@ private:
 	std::timed_mutex mutex;
 };
 
-#endif /* FSFW_OSAL_HOSTED_MUTEX_H_ */
+#endif /* FSFW_OSAL_HOST_MUTEX_H_ */

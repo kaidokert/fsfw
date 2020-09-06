@@ -1,9 +1,7 @@
-#include "../../osal/host/FixedTimeslotTask.h"
+#include "FixedTimeslotTask.h"
+#include "Mutex.h"
 
 #include "../../ipc/MutexFactory.h"
-#include "../../osal/host/Mutex.h"
-#include "../../osal/host/FixedTimeslotTask.h"
-
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
@@ -35,15 +33,15 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             ABOVE_NORMAL_PRIORITY_CLASS);
     if(result != 0) {
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
+        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with "
+                << "code " << GetLastError() << std::endl;
     }
     result = SetThreadPriority(
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             THREAD_PRIORITY_NORMAL);
     if(result != 0) {
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
+        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with "
+                "code " << GetLastError() << std::endl;
     }
 #elif defined(LINUX)
     // we can just copy and paste the code from linux here.
@@ -60,7 +58,8 @@ FixedTimeslotTask::~FixedTimeslotTask(void) {
 }
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
-    FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
+    FixedTimeslotTask *originalTask(
+            reinterpret_cast<FixedTimeslotTask*>(argument));
 
     if (not originalTask->started) {
         // we have to suspend/block here until the task is started.

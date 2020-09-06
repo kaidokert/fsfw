@@ -24,7 +24,7 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 	// Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
 	//clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if(socket < 0) {
+	if(serverSocket < 0) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
 				" UDP socket!" << std::endl;
 		handleSocketError();
