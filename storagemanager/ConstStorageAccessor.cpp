@@ -14,7 +14,6 @@ ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId,
 
 ConstStorageAccessor::~ConstStorageAccessor() {
 	if(deleteData and store != nullptr) {
-		sif::debug << "deleting store data" << std::endl;
 		store->deleteData(storeId);
 	}
 }
