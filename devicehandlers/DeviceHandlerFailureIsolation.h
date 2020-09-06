@@ -1,12 +1,12 @@
-#ifndef FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_
-#define FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_
+#ifndef FSFW_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_
+#define FSFW_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_
 
 #include "../fdir/FaultCounter.h"
 #include "../fdir/FailureIsolationBase.h"
+
 namespace Factory{
 void setStaticFrameworkObjectIds();
 }
-
 
 class DeviceHandlerFailureIsolation: public FailureIsolationBase {
 	friend void (Factory::setStaticFrameworkObjectIds)();
@@ -20,22 +20,27 @@ public:
 	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
 			ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex);
+
 protected:
 	FaultCounter strangeReplyCount;
 	FaultCounter missedReplyCount;
 	FaultCounter recoveryCounter;
+
 	enum FDIRState {
 		NONE, RECOVERY_ONGOING, DEVICE_MIGHT_BE_OFF, AWAIT_SHUTDOWN
 	};
 	FDIRState fdirState;
-	MessageQueueId_t powerConfirmation;
+
+	MessageQueueId_t powerConfirmation = MessageQueueIF::NO_QUEUE;
 	static object_id_t powerConfirmationId;
-	static const uint32_t MAX_REBOOT = 1;
-	static const uint32_t REBOOT_TIME_MS = 180000;
-	static const uint32_t MAX_STRANGE_REPLIES = 10;
-	static const uint32_t STRANGE_REPLIES_TIME_MS = 10000;
-	static const uint32_t MAX_MISSED_REPLY_COUNT = 5;
-	static const uint32_t MISSED_REPLY_TIME_MS = 10000;
+
+	static const uint32_t DEFAULT_MAX_REBOOT = 1;
+	static const uint32_t DEFAULT_REBOOT_TIME_MS = 180000;
+	static const uint32_t DEFAULT_MAX_STRANGE_REPLIES = 10;
+	static const uint32_t DEFAULT_STRANGE_REPLIES_TIME_MS = 10000;
+	static const uint32_t DEFAULT_MAX_MISSED_REPLY_COUNT = 5;
+	static const uint32_t DEFAULT_MISSED_REPLY_TIME_MS = 10000;
+
 	virtual ReturnValue_t eventReceived(EventMessage* event);
 	virtual void eventConfirmed(EventMessage* event);
 	void wasParentsFault(EventMessage* event);
@@ -49,4 +54,4 @@ protected:
 	bool isFdirInActionOrAreWeFaulty(EventMessage* event);
 };
 
-#endif /* FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_ */
+#endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERFAILUREISOLATION_H_ */
