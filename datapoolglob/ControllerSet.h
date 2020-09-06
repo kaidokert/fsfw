@@ -1,5 +1,5 @@
-#ifndef CONTROLLERSET_H_
-#define CONTROLLERSET_H_
+#ifndef FSFW_DATAPOOLGLOB_CONTROLLERSET_H_
+#define FSFW_DATAPOOLGLOB_CONTROLLERSET_H_
 
 #include "../datapoolglob/GlobalDataSet.h"
 
@@ -12,4 +12,4 @@ public:
 	void setInvalid();
 };
 
-#endif /* CONTROLLERSET_H_ */
+#endif /*  FSFW_DATAPOOLGLOB_CONTROLLERSET_H_ */

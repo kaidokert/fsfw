@@ -1,14 +1,14 @@
 #ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 #define FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 
+#include "HasLocalDataPoolIF.h"
+
 #include "../housekeeping/HousekeepingPacketDownlink.h"
+#include "../housekeeping/HousekeepingMessage.h"
 #include "../datapool/DataSetIF.h"
+#include "../datapool/PoolEntry.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../ipc/MutexIF.h"
-
-#include "../housekeeping/HousekeepingMessage.h"
-#include "../datapool/PoolEntry.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
 #include "../ipc/CommandMessage.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexHelper.h"

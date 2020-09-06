@@ -1,7 +1,8 @@
-#ifndef FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
-#define FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
+#ifndef FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
+#define FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_
 
 #include "../datapoollocal/LocalPoolDataSetBase.h"
+
 #include "../housekeeping/HousekeepingMessage.h"
 #include "../serialize/SerialLinkedListAdapter.h"
 #include "../storagemanager/StorageManagerIF.h"

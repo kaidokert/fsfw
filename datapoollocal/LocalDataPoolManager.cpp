@@ -1,5 +1,5 @@
-#include "../datapoollocal/LocalDataPoolManager.h"
-#include "../datapoollocal/LocalDataSet.h"
+#include "LocalDataPoolManager.h"
+#include "LocalPoolDataSetBase.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 #include "../ipc/MutexFactory.h"
 #include "../ipc/MutexHelper.h"
@@ -185,7 +185,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 				" Set ID not found or dataset not assigned!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	sif::info << "hk gen called" << std::endl;
+
 	store_address_t storeId;
 	HousekeepingPacketDownlink hkPacket(sid, collectionInterval,
 	        dataSetToSerialize->getFillCount(), dataSetToSerialize);
