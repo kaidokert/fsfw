@@ -120,6 +120,7 @@ void TcUnixUdpPollingTask::setTimeout(double timeoutSeconds) {
 	}
 }
 
+// TODO: sleep after error detection to prevent spam
 void TcUnixUdpPollingTask::handleReadError() {
 	switch(errno) {
 	case(EAGAIN): {
