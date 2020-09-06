@@ -1,3 +1,4 @@
+#include <fsfw/ipc/MutexHelper.h>
 #include "TmTcWinUdpBridge.h"
 
 TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
@@ -70,10 +71,43 @@ TmTcWinUdpBridge::~TmTcWinUdpBridge() {
 }
 
 ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
+    int flags = 0;
+
+    //clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
+    //clientAddressLen = sizeof(serverAddress);
+
+//  char ipAddress [15];
+//  sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+//                  &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+
+    ssize_t bytesSent = sendto(serverSocket,
+            reinterpret_cast<const char*>(data), dataLen, flags,
+            reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
+    if(bytesSent == SOCKET_ERROR) {
+        sif::error << "TmTcWinUdpBridge::sendTm: Send operation failed."
+                << std::endl;
+        handleSendError();
+    }
+//  sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
+//          " sent." << std::endl;
+    return HasReturnvaluesIF::RETURN_OK;
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in clientAddress) {
+void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
+    MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
+
+//  char ipAddress [15];
+//  sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+//          &newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+//  sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
+//          &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+
+    // Set new IP address if it has changed.
+    if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
+        clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
+        clientAddressLen = sizeof(clientAddress);
+    }
 }
 
 void TmTcWinUdpBridge::handleSocketError() {
@@ -85,6 +119,10 @@ void TmTcWinUdpBridge::handleSocketError() {
         break;
     }
     default: {
+        /*
+        https://docs.microsoft.com/en-us/windows/win32/winsock/
+        windows-sockets-error-codes-2
+         */
         sif::info << "TmTcWinUdpBridge::handleSocketError: Error code: "
                 << errCode << std::endl;
         break;
@@ -101,6 +139,10 @@ void TmTcWinUdpBridge::handleBindError() {
         break;
     }
     default: {
+        /*
+        https://docs.microsoft.com/en-us/windows/win32/winsock/
+        windows-sockets-error-codes-2
+        */
         sif::info << "TmTcWinUdpBridge::handleBindError: Error code: "
                 << errCode << std::endl;
         break;
@@ -116,7 +158,16 @@ void TmTcWinUdpBridge::handleSendError() {
                 << "WSAStartup(...) call " << "necessary" << std::endl;
         break;
     }
+    case(WSAEADDRNOTAVAIL): {
+        sif::info << "TmTcWinUdpBridge::handleReadError: WSAEADDRNOTAVAIL: "
+                << "Check target address. " << std::endl;
+        break;
+    }
     default: {
+        /*
+        https://docs.microsoft.com/en-us/windows/win32/winsock/
+        windows-sockets-error-codes-2
+        */
         sif::info << "TmTcWinUdpBridge::handleSendError: Error code: "
                 << errCode << std::endl;
         break;
