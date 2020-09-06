@@ -37,6 +37,10 @@ else ifeq ($(OS_FSFW),freeRTOS)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/FreeRTOS/*.cpp)
 else ifeq ($(OS_FSFW),host)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/host/*.cpp)
+ifeq ($(OS),Windows_NT)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/windows/*.cpp)
+endif
+
 else
 $(error invalid OS_FSFW specified, valid OS_FSFW are rtems, linux, freeRTOS, host)
 endif

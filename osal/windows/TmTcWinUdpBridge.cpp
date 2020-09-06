@@ -31,7 +31,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     // Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
     //clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
     serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if(serverSocket != 0) {
+    if(serverSocket == INVALID_SOCKET) {
         sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not open"
                 " UDP socket!" << std::endl;
         handleSocketError();
@@ -62,7 +62,6 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
                 "local port " << setServerPort << " to server socket!"
                 << std::endl;
         handleBindError();
-        return;
     }
 }
 
@@ -125,4 +124,3 @@ void TmTcWinUdpBridge::handleSendError() {
     }
 }
 
-#endif

@@ -96,6 +96,10 @@ void PeriodicTask::taskFunctionality() {
 	};
 	auto nextStartTime{ currentStartTime };
 
+	for (const auto& object: objectList) {
+	    object->initializeAfterTaskCreation();
+	}
+
 	/* Enter the loop that defines the task behavior. */
 	for (;;) {
 		if(terminateThread.load()) {
