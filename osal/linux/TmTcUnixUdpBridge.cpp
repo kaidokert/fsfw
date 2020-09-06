@@ -1,9 +1,10 @@
-#include "../../osal/linux/TmTcUnixUdpBridge.h"
+#include "TmTcUnixUdpBridge.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../ipc/MutexHelper.h"
 
 #include <errno.h>
 #include <arpa/inet.h>
+
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		object_id_t tcDestination, object_id_t tmStoreId, object_id_t tcStoreId,

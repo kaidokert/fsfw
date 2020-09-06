@@ -6,6 +6,18 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
         TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
     mutex = MutexFactory::instance()->createMutex();
 
+    // Initiates Winsock DLL.
+    WSAData wsaData;
+    WORD wVersionRequested = MAKEWORD(2, 2);
+    int err = WSAStartup(wVersionRequested, &wsaData);
+    if (err != 0) {
+        /* Tell the user that we could not find a usable */
+        /* Winsock DLL.                                  */
+        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge:"
+                "WSAStartup failed with error: " << err << std::endl;
+        return;
+    }
+
     uint16_t setServerPort = DEFAULT_UDP_SERVER_PORT;
     if(serverPort != 0xFFFF) {
         setServerPort = serverPort;
@@ -45,8 +57,8 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     int result = bind(serverSocket,
             reinterpret_cast<struct sockaddr*>(&serverAddress),
             serverAddressLen);
-    if(result == -1) {
-        sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
+    if(result != 0) {
+        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not bind "
                 "local port " << setServerPort << " to server socket!"
                 << std::endl;
         handleBindError();
@@ -54,12 +66,8 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     }
 }
 
-TmTcWinUdpBridge::~TmTcWinUdpBridge() {}
-
-void TmTcWinUdpBridge::handleSocketError() {
-}
-
-void TmTcWinUdpBridge::handleBindError() {
+TmTcWinUdpBridge::~TmTcWinUdpBridge() {
+    WSACleanup();
 }
 
 ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
@@ -69,5 +77,52 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in clientAddress) {
 }
 
-void TmTcWinUdpBridge::handleSendError() {
+void TmTcWinUdpBridge::handleSocketError() {
+    int errCode = WSAGetLastError();
+    switch(errCode) {
+    case(WSANOTINITIALISED): {
+        sif::info << "TmTcWinUdpBridge::handleSocketError: WSANOTINITIALISED: "
+                << "WSAStartup(...) call " << "necessary" << std::endl;
+        break;
+    }
+    default: {
+        sif::info << "TmTcWinUdpBridge::handleSocketError: Error code: "
+                << errCode << std::endl;
+        break;
+    }
+    }
 }
+
+void TmTcWinUdpBridge::handleBindError() {
+    int errCode = WSAGetLastError();
+    switch(errCode) {
+    case(WSANOTINITIALISED): {
+        sif::info << "TmTcWinUdpBridge::handleBindError: WSANOTINITIALISED: "
+                << "WSAStartup(...) call " << "necessary" << std::endl;
+        break;
+    }
+    default: {
+        sif::info << "TmTcWinUdpBridge::handleBindError: Error code: "
+                << errCode << std::endl;
+        break;
+    }
+    }
+}
+
+void TmTcWinUdpBridge::handleSendError() {
+    int errCode = WSAGetLastError();
+    switch(errCode) {
+    case(WSANOTINITIALISED): {
+        sif::info << "TmTcWinUdpBridge::handleSendError: WSANOTINITIALISED: "
+                << "WSAStartup(...) call " << "necessary" << std::endl;
+        break;
+    }
+    default: {
+        sif::info << "TmTcWinUdpBridge::handleSendError: Error code: "
+                << errCode << std::endl;
+        break;
+    }
+    }
+}
+
+#endif

@@ -1,14 +1,15 @@
-#ifndef FSFW_OSAL_HOST_TMTCWINUDPBRIDGE_H_
-#define FSFW_OSAL_HOST_TMTCWINUDPBRIDGE_H_
+#ifndef FSFW_OSAL_WINDOWS_TMTCWINUDPBRIDGE_H_
+#define FSFW_OSAL_WINDOWS_TMTCWINUDPBRIDGE_H_
 
 #include "../../tmtcservices/TmTcBridge.h"
-#include <Winsock.h>
+
+#include <winsock2.h>
+#include <windows.h>
 
 class TmTcWinUdpBridge: public TmTcBridge {
     friend class TcWinUdpPollingTask;
 public:
     // The ports chosen here should not be used by any other process.
-    // List of used ports on Linux: /etc/services
     static constexpr uint16_t DEFAULT_UDP_SERVER_PORT = 7301;
     static constexpr uint16_t DEFAULT_UDP_CLIENT_PORT = 7302;
 
@@ -45,3 +46,4 @@ private:
 
 
 #endif /* FSFW_OSAL_HOST_TMTCWINUDPBRIDGE_H_ */
+
