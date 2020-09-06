@@ -1,12 +1,13 @@
 #ifndef FUSE_H_
 #define FUSE_H_
 
-#include "../datapool/DataSet.h"
-#include "../datapool/PIDReader.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../datapoolglob/PIDReader.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/AbsLimitMonitor.h"
-#include "PowerComponentIF.h"
-#include "PowerSwitchIF.h"
+#include "../power/PowerComponentIF.h"
+#include "../power/PowerSwitchIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../parameters/ParameterHelper.h"
 #include <list>
@@ -84,12 +85,12 @@ private:
 
 	};
 	PowerMonitor powerMonitor;
-	DataSet set;
+	GlobDataSet set;
 	PIDReader<float> voltage;
 	PIDReader<float> current;
 	PIDReader<uint8_t> state;
-	db_float_t power;
-	MessageQueueIF *commandQueue;
+	gp_float_t power;
+	MessageQueueIF* commandQueue;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
 	static object_id_t powerSwitchId;

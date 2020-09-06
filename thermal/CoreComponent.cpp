@@ -2,7 +2,7 @@
 
 CoreComponent::CoreComponent(object_id_t reportingObjectId, uint8_t domainId,
 		uint32_t temperaturePoolId, uint32_t targetStatePoolId,
-		uint32_t currentStatePoolId, uint32_t requestPoolId, DataSet* dataSet,
+		uint32_t currentStatePoolId, uint32_t requestPoolId, GlobDataSet* dataSet,
 		AbstractTemperatureSensor* sensor,
 		AbstractTemperatureSensor* firstRedundantSensor,
 		AbstractTemperatureSensor* secondRedundantSensor,
@@ -18,14 +18,14 @@ CoreComponent::CoreComponent(object_id_t reportingObjectId, uint8_t domainId,
 				AbstractTemperatureSensor::ZERO_KELVIN_C), parameters(
 				parameters), temperatureMonitor(reportingObjectId,
 				domainId + 1,
-				DataPool::poolIdAndPositionToPid(temperaturePoolId, 0),
+				GlobalDataPool::poolIdAndPositionToPid(temperaturePoolId, 0),
 				COMPONENT_TEMP_CONFIRMATION), domainId(domainId) {
 	if (thermalModule != NULL) {
 		thermalModule->registerComponent(this, priority);
 	}
 	//Set thermal state once, then leave to operator.
-	DataSet mySet;
-	PoolVariable<int8_t> writableTargetState(targetStatePoolId, &mySet,
+	GlobDataSet mySet;
+	gp_uint8_t writableTargetState(targetStatePoolId, &mySet,
 			PoolVariableIF::VAR_WRITE);
 	writableTargetState = initialTargetState;
 	mySet.commit(PoolVariableIF::VALID);
@@ -70,8 +70,8 @@ float CoreComponent::getLowerOpLimit() {
 }
 
 ReturnValue_t CoreComponent::setTargetState(int8_t newState) {
-	DataSet mySet;
-	PoolVariable<int8_t> writableTargetState(targetState.getDataPoolId(),
+	GlobDataSet mySet;
+	gp_uint8_t writableTargetState(targetState.getDataPoolId(),
 			&mySet, PoolVariableIF::VAR_READ_WRITE);
 	mySet.read();
 	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)

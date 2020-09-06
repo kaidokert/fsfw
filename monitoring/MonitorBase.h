@@ -1,12 +1,12 @@
 #ifndef MONITORBASE_H_
 #define MONITORBASE_H_
 
-#include "../datapool/DataSet.h"
-#include "../datapool/PIDReader.h"
-#include "LimitViolationReporter.h"
-#include "MonitoringIF.h"
-#include "MonitoringMessageContent.h"
-#include "MonitorReporter.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/PIDReader.h"
+#include "../monitoring/LimitViolationReporter.h"
+#include "../monitoring/MonitoringIF.h"
+#include "../monitoring/MonitoringMessageContent.h"
+#include "../monitoring/MonitorReporter.h"
 
 /**
  * Base class for monitoring of parameters.
@@ -48,7 +48,7 @@ public:
 
 protected:
 	virtual ReturnValue_t fetchSample(T* sample) {
-		DataSet mySet;
+		GlobDataSet mySet;
 		PIDReader<T> parameter(this->parameterId, &mySet);
 		mySet.read();
 		if (!parameter.isValid()) {
