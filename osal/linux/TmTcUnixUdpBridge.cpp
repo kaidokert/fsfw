@@ -101,8 +101,8 @@ void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
 	}
 }
 
-void TmTcUnixUdpBridge::handleSocketError() {
 
+void TmTcUnixUdpBridge::handleSocketError() {
 	// See: https://man7.org/linux/man-pages/man2/socket.2.html
 	switch(errno) {
 	case(EACCES):
@@ -163,7 +163,8 @@ void TmTcUnixUdpBridge::handleBindError() {
 void TmTcUnixUdpBridge::handleSendError() {
 	switch(errno) {
 	default:
-		sif::error << "Error: " << strerror(errno) << std::endl;
+		sif::error << "TmTcUnixBridge::handleSendError: "
+		        << strerror(errno) << std::endl;
 	}
 }
 
