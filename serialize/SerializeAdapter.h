@@ -1,11 +1,11 @@
 #ifndef SERIALIZEADAPTER_H_
 #define SERIALIZEADAPTER_H_
 
-#include "../container/IsDerivedFrom.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "EndianConverter.h"
 #include "SerializeIF.h"
 #include <string.h>
+#include <type_traits>
 
 /**
  * \ingroup serialize
@@ -15,34 +15,39 @@ class SerializeAdapter {
 public:
 	template<typename T>
 	static ReturnValue_t serialize(const T *object, uint8_t **buffer,
-			size_t *size, size_t maxSize, SerializeIF::Endianness streamEndianness) {
-		InternalSerializeAdapter<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+			size_t *size, size_t maxSize,
+			SerializeIF::Endianness streamEndianness) {
+		InternalSerializeAdapter<T, std::is_base_of<SerializeIF, T>::value> adapter;
 		return adapter.serialize(object, buffer, size, maxSize,
 				streamEndianness);
 	}
 	template<typename T>
 	static uint32_t getSerializedSize(const T *object) {
-		InternalSerializeAdapter<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+		InternalSerializeAdapter<T, std::is_base_of<SerializeIF, T>::value> adapter;
 		return adapter.getSerializedSize(object);
 	}
 	template<typename T>
 	static ReturnValue_t deSerialize(T *object, const uint8_t **buffer,
 			size_t *size, SerializeIF::Endianness streamEndianness) {
-		InternalSerializeAdapter<T, IsDerivedFrom<T, SerializeIF>::Is> adapter;
+		InternalSerializeAdapter<T, std::is_base_of<SerializeIF, T>::value> adapter;
 		return adapter.deSerialize(object, buffer, size, streamEndianness);
 	}
 private:
-	template<typename T, int>
-	class InternalSerializeAdapter {
+	template<typename T, bool> class InternalSerializeAdapter;
+
+	template<typename T>
+	class InternalSerializeAdapter<T, false> {
 	public:
 		static ReturnValue_t serialize(const T *object, uint8_t **buffer,
-				size_t *size, size_t max_size, SerializeIF::Endianness streamEndianness) {
+				size_t *size, size_t max_size,
+				SerializeIF::Endianness streamEndianness) {
 			size_t ignoredSize = 0;
 			if (size == NULL) {
 				size = &ignoredSize;
 			}
-			//TODO check integer overflow of *size
-			if (sizeof(T) + *size <= max_size) {
+			//Check remaining size is large enough and check integer overflow of *size
+			size_t newSize = sizeof(T) + *size;
+			if ((newSize <= max_size) and (newSize > *size)) {
 				T tmp;
 				switch (streamEndianness) {
 				case SerializeIF::Endianness::BIG:
@@ -94,14 +99,13 @@ private:
 		uint32_t getSerializedSize(const T *object) {
 			return sizeof(T);
 		}
-
 	};
 
 	template<typename T>
-	class InternalSerializeAdapter<T, 1> {
+	class InternalSerializeAdapter<T, true> {
 	public:
-		ReturnValue_t serialize(const T *object, uint8_t **buffer,
-				size_t *size, size_t max_size,
+		ReturnValue_t serialize(const T *object, uint8_t **buffer, size_t *size,
+				size_t max_size,
 				SerializeIF::Endianness streamEndianness) const {
 			size_t ignoredSize = 0;
 			if (size == NULL) {
