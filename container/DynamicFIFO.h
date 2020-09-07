@@ -27,14 +27,26 @@ public:
 
 	/**
 	 * @brief	Custom copy constructor which prevents setting the
-	 * 	        underlying pointer wrong.
+	 * 	        underlying pointer wrong. This function allocates memory!
+	 * @details This is a very heavy operation so try to avoid this!
+	 *
 	 */
 	DynamicFIFO(const DynamicFIFO& other): FIFOBase<T>(other),
 			fifoVector(other.maxCapacity) {
 		this->setContainer(fifoVector.data());
 	}
 
-
+	/**
+	 * @brief Custom assignment operator
+	 * @details This is a very heavy operation so try to avoid this!
+	 * @param other DyamicFIFO to copy from
+	 */
+	DynamicFIFO& operator=(const DynamicFIFO& other){
+		FIFOBase<T>::operator=(other);
+		this->fifoVector = other.fifoVector;
+		this->setContainer(fifoVector.data());
+		return *this;
+	}
 private:
 	std::vector<T> fifoVector;
 };
