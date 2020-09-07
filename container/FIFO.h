@@ -25,6 +25,7 @@ public:
 	 * @param other
 	 */
 	FIFO(const FIFO& other): FIFOBase<T>(other) {
+		this->fifoArray = other.fifoArray;
 		this->setContainer(fifoArray.data());
 	}
 
