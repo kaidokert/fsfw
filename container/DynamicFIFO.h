@@ -33,6 +33,7 @@ public:
 	 */
 	DynamicFIFO(const DynamicFIFO& other): FIFOBase<T>(other),
 			fifoVector(other.maxCapacity) {
+		this->fifoVector = other.fifoVector;
 		this->setContainer(fifoVector.data());
 	}
 
