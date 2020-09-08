@@ -90,3 +90,10 @@ double timevalOperations::toDouble(const timeval timeval) {
 	double result = timeval.tv_sec * 1000000. + timeval.tv_usec;
 	return result / 1000000.;
 }
+
+timeval timevalOperations::toTimeval(const double seconds) {
+	timeval tval;
+	tval.tv_sec = seconds;
+	tval.tv_usec = seconds *(double) 1e6 - (tval.tv_sec *1e6);
+	return tval;
+}

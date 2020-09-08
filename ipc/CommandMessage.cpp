@@ -15,7 +15,7 @@
 #include "../tmstorage/TmStoreMessage.h"
 #include "../parameters/ParameterMessage.h"
 
-namespace MESSAGE_TYPE {
+namespace messagetypes {
 void clearMissionMessage(CommandMessage* message);
 }
 
@@ -67,35 +67,35 @@ void CommandMessage::setParameter2(uint32_t parameter2) {
 
 void CommandMessage::clearCommandMessage() {
 	switch((getCommand()>>8) & 0xff){
-	case  MESSAGE_TYPE::MODE_COMMAND:
+	case  messagetypes::MODE_COMMAND:
 		ModeMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::HEALTH_COMMAND:
+	case messagetypes::HEALTH_COMMAND:
 		HealthMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MODE_SEQUENCE:
+	case messagetypes::MODE_SEQUENCE:
 		ModeSequenceMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::ACTION:
+	case messagetypes::ACTION:
 		ActionMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::DEVICE_HANDLER_COMMAND:
+	case messagetypes::DEVICE_HANDLER_COMMAND:
 		DeviceHandlerMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MEMORY:
+	case messagetypes::MEMORY:
 		MemoryMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::MONITORING:
+	case messagetypes::MONITORING:
 		MonitoringMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::TM_STORE:
+	case messagetypes::TM_STORE:
 		TmStoreMessage::clear(this);
 		break;
-	case MESSAGE_TYPE::PARAMETER:
+	case messagetypes::PARAMETER:
 		ParameterMessage::clear(this);
 		break;
 	default:
-		MESSAGE_TYPE::clearMissionMessage(this);
+		messagetypes::clearMissionMessage(this);
 		break;
 	}
 }
