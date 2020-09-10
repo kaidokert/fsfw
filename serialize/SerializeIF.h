@@ -2,7 +2,7 @@
 #define FSFW_SERIALIZE_SERIALIZEIF_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include <cstddef>
+#include <stddef.h>
 
 /**
  * @defgroup serialize Serialization
@@ -10,10 +10,7 @@
  */
 
 /**
- * @brief 	Translation of objects into data streams and from data streams.
- * @details
- * Also provides options to convert from/to data with different endianness.
- * variables.
+ * Translation of objects into data streams and from data streams.
  * @ingroup serialize
  */
 class SerializeIF {
@@ -46,7 +43,7 @@ public:
 	 * @param[in] maxSize The size of the buffer that is allowed to be used for serialize.
 	 * @param[in] streamEndianness Endianness of the serialized data according to SerializeIF::Endianness
 	 * @return
-	 * 		- @¢ BUFFER_TOO_SHORT The given buffer in is too short
+	 * 		- @c BUFFER_TOO_SHORT The given buffer in is too short
 	 * 		- @c RETURN_FAILED Generic error
 	 * 		- @c RETURN_OK Successful serialization
 	 */
