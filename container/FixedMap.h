@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_CONTAINER_FIXEDMAP_H_
-#define FRAMEWORK_CONTAINER_FIXEDMAP_H_
+#ifndef FSFW_CONTAINER_FIXEDMAP_H_
+#define FSFW_CONTAINER_FIXEDMAP_H_
 
 #include "ArrayList.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -7,11 +7,9 @@
 #include <type_traits>
 
 /**
- * \ingroup container
- *
- *
- *  \warning Iterators return a non-const key_t in the pair.
- *  \warning A User is not allowed to change the key, otherwise the map is corrupted.
+ * @warning Iterators return a non-const key_t in the pair.
+ * @warning A User is not allowed to change the key, otherwise the map is corrupted.
+ * @ingroup container
  */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
@@ -194,4 +192,4 @@ public:
 
 };
 
-#endif /* FIXEDMAP_H_ */
+#endif /* FSFW_CONTAINER_FIXEDMAP_H_ */
