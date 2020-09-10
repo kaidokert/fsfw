@@ -1,5 +1,5 @@
-#ifndef FIXEDMAP_H_
-#define FIXEDMAP_H_
+#ifndef FSFW_CONTAINER_FIXEDMAP_H_
+#define FSFW_CONTAINER_FIXEDMAP_H_
 
 #include "ArrayList.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -7,7 +7,9 @@
 #include <type_traits>
 
 /**
- * \ingroup container
+ * @warning Iterators return a non-const key_t in the pair.
+ * @warning A User is not allowed to change the key, otherwise the map is corrupted.
+ * @ingroup container
  */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
@@ -50,15 +52,6 @@ public:
 		Iterator(std::pair<key_t, T> *pair) :
 				ArrayList<std::pair<key_t, T>, uint32_t>::Iterator(pair) {
 		}
-
-		T operator*() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
-		T *operator->() {
-			return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
 	};
 
 	Iterator begin() const {
@@ -73,7 +66,7 @@ public:
 		return _size;
 	}
 
-	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = NULL) {
+	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr) {
 		if (exists(key) == HasReturnvaluesIF::RETURN_OK) {
 			return KEY_ALREADY_EXISTS;
 		}
@@ -82,7 +75,7 @@ public:
 		}
 		theMap[_size].first = key;
 		theMap[_size].second = value;
-		if (storedValue != NULL) {
+		if (storedValue != nullptr) {
 			*storedValue = Iterator(&theMap[_size]);
 		}
 		++_size;
@@ -90,7 +83,7 @@ public:
 	}
 
 	ReturnValue_t insert(std::pair<key_t, T> pair) {
-		return insert(pair.fist, pair.second);
+		return insert(pair.first, pair.second);
 	}
 
 	ReturnValue_t exists(key_t key) const {
@@ -199,4 +192,4 @@ public:
 
 };
 
-#endif /* FIXEDMAP_H_ */
+#endif /* FSFW_CONTAINER_FIXEDMAP_H_ */
