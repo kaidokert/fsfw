@@ -7,17 +7,26 @@
 #include <cstddef>
 #include <type_traits>
 
-/**
- * \ingroup serialize
+ /**
+ * @brief These adapters provides an interface to use the SerializeIF functions
+ * 		  with arbitrary template objects to facilitate and simplify the
+ * 		  serialization of classes with different multiple different data types
+ * 		  into buffers and vice-versa.
+ * @details
+ * The correct serialization or deserialization function is chosen at
+ * compile time with template type deduction.
+ *
+ * @ingroup serialize
  */
-
 class SerializeAdapter {
 public:
 	/***
-	 * This function can be used to serialize a trivial copy-able type or a child of SerializeIF.
+	 * This function can be used to serialize a trivial copy-able type or a
+	 * child of SerializeIF.
 	 * The right template to be called is determined in the function itself.
-	 * For objects of non trivial copy-able type this function is almost never called by the user directly.
-	 * Instead helpers for specific types like SerialArrayListAdapter or SerialLinkedListAdapter is the right choice here.
+	 * For objects of non trivial copy-able type this function is almost never
+	 * called by the user directly. Instead helpers for specific types like
+	 * SerialArrayListAdapter or SerialLinkedListAdapter is the right choice here.
 	 *
 	 * @param[in] object Object to serialize, the used type is deduced from this pointer
 	 * @param[in/out] buffer Buffer to serialize into. Will be moved by the function.
@@ -86,7 +95,8 @@ private:
 	template<typename T>
 	class InternalSerializeAdapter<T, false> {
 		static_assert (std::is_trivially_copyable<T>::value,
-				"If a type needs to be serialized it must be a child of SerializeIF or trivially copy-able");
+				"If a type needs to be serialized it must be a child of "
+				"SerializeIF or trivially copy-able");
 	public:
 		static ReturnValue_t serialize(const T *object, uint8_t **buffer,
 				size_t *size, size_t max_size,
@@ -95,7 +105,8 @@ private:
 			if (size == nullptr) {
 				size = &ignoredSize;
 			}
-			//Check remaining size is large enough and check integer overflow of *size
+			// Check remaining size is large enough and check integer
+			// overflow of *size
 			size_t newSize = sizeof(T) + *size;
 			if ((newSize <= max_size) and (newSize > *size)) {
 				T tmp;
@@ -111,7 +122,7 @@ private:
 					tmp = *object;
 					break;
 				}
-				memcpy(*buffer, &tmp, sizeof(T));
+				std::memcpy(*buffer, &tmp, sizeof(T));
 				*size += sizeof(T);
 				(*buffer) += sizeof(T);
 				return HasReturnvaluesIF::RETURN_OK;
@@ -125,7 +136,7 @@ private:
 			T tmp;
 			if (*size >= sizeof(T)) {
 				*size -= sizeof(T);
-				memcpy(&tmp, *buffer, sizeof(T));
+				std::memcpy(&tmp, *buffer, sizeof(T));
 				switch (streamEndianness) {
 				case SerializeIF::Endianness::BIG:
 					*object = EndianConverter::convertBigEndian<T>(tmp);
