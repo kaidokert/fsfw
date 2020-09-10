@@ -545,7 +545,7 @@ Mode_t Subsystem::getFallbackSequence(Mode_t sequence) {
 	for (FixedMap<Mode_t, SequenceInfo>::Iterator iter = modeSequences.begin();
 			iter != modeSequences.end(); ++iter) {
 		if (iter.value->first == sequence) {
-			return iter->fallbackSequence;
+			return iter->second.fallbackSequence;
 		}
 	}
 	return -1;
@@ -554,7 +554,7 @@ Mode_t Subsystem::getFallbackSequence(Mode_t sequence) {
 bool Subsystem::isFallbackSequence(Mode_t SequenceId) {
 	for (FixedMap<Mode_t, SequenceInfo>::Iterator iter = modeSequences.begin();
 			iter != modeSequences.end(); iter++) {
-		if (iter->fallbackSequence == SequenceId) {
+		if (iter->second.fallbackSequence == SequenceId) {
 			return true;
 		}
 	}
