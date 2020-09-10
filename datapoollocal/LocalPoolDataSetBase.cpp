@@ -190,4 +190,11 @@ bool LocalPoolDataSetBase::isValid() const {
     return this->valid;
 }
 
-
+void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
+	if(setEntriesRecursively) {
+		for(size_t idx = 0; idx < this->getFillCount(); idx++) {
+			registeredVariables[idx] -> setValid(valid);
+		}
+	}
+	this->valid = valid;
+}

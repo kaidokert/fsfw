@@ -91,6 +91,13 @@ public:
 	        size_t* size, size_t maxSize,
 	        SerializeIF::Endianness streamEndianness) const;
 
+	/**
+	 * Set the dataset valid or invalid
+	 * @param setEntriesRecursively
+	 * If this is true, all contained datasets will also be set recursively.
+	 */
+	void setValidity(bool valid, bool setEntriesRecursively);
+
 	bool isValid() const override;
 
 protected:
@@ -130,5 +137,6 @@ private:
 
 
 };
+
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_ */
