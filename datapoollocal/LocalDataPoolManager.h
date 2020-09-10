@@ -110,8 +110,7 @@ public:
 	 * @return
 	 */
 	ReturnValue_t generateHousekeepingPacket(sid_t sid,
-			bool forDownlink,
-	        /*float collectionInterval, bool reportingEnabled, */
+			bool isDiagnostics, bool forDownlink,
 	        MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 

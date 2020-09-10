@@ -177,8 +177,7 @@ const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 }
 
 ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
-        /*float collectionInterval, bool reportingEnabled, */
-		bool forDownlink, MessageQueueId_t destination) {
+        bool isDiagnostics, bool forDownlink, MessageQueueId_t destination) {
 	LocalPoolDataSetBase* dataSetToSerialize =
 			dynamic_cast<LocalPoolDataSetBase*>(owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
@@ -188,9 +187,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	}
 
 	store_address_t storeId;
-	HousekeepingPacketDownlink hkPacket(sid,/* reportingEnabled,
-			collectionInterval, dataSetToSerialize->getFillCount(), */
-			dataSetToSerialize);
+	HousekeepingPacketDownlink hkPacket(sid, dataSetToSerialize);
 	size_t serializedSize = 0;
 	ReturnValue_t result = serializeHkPacketIntoStore(hkPacket, storeId,
 			forDownlink, &serializedSize);
@@ -200,7 +197,13 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 
 	// and now we set a HK message and send it the HK packet destination.
 	CommandMessage hkMessage;
-	HousekeepingMessage::setHkReportMessage(&hkMessage, sid, storeId);
+	if(isDiagnostics) {
+		HousekeepingMessage::setHkDiagnosticsMessage(&hkMessage, sid, storeId);
+	}
+	else {
+		HousekeepingMessage::setHkReportMessage(&hkMessage, sid, storeId);
+	}
+
 	if(hkQueue == nullptr) {
 	    return QUEUE_OR_DESTINATION_NOT_SET;
 	}
@@ -273,9 +276,7 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
     if(receiver->intervalCounter >=
             receiver->hkParameter.collectionIntervalTicks) {
         ReturnValue_t result = generateHousekeepingPacket(
-                receiver->dataId.dataSetSid, true
-				/*intervalToIntervalSeconds(receiver->isDiagnostics,
-				receiver->hkParameter.collectionIntervalTicks), true */);
+                receiver->dataId.dataSetSid, receiver->isDiagnostics, true);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             // configuration error
             sif::debug << "LocalDataPoolManager::performHkOperation:"
