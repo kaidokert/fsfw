@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
-#define FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
+#ifndef FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
+#define FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 
 #include "../container/ArrayList.h"
 #include <cstring>
@@ -39,10 +39,6 @@ public:
         Iterator();
         /** Initializes iterator to given entry */
         Iterator(std::pair<key_t, T> *pair);
-        /** Dereference operator can be used to get value */
-        T operator*();
-        /** Arrow operator can be used to get pointer to value */
-        T *operator->();
     };
 
     /** Iterator to start of map */
@@ -160,7 +156,8 @@ private:
 		if (_size <= position) {
 			return;
 		}
-		memmove(&theMap[position], &theMap[position + 1],
+		std::memmove(static_cast<void*>(&theMap[position]),
+		        static_cast<void*>(&theMap[position + 1]),
 				(_size - position - 1) * sizeof(std::pair<key_t,T>));
 		--_size;
 	}
@@ -168,4 +165,4 @@ private:
 
 #include "FixedOrderedMultimap.tpp"
 
-#endif /* FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_ */
+#endif /* FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_ */

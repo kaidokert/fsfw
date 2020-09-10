@@ -11,11 +11,6 @@ inline FixedOrderedMultimap<key_t, T, KEY_COMPARE>::Iterator::Iterator(
         ArrayList<std::pair<key_t, T>, uint32_t>::Iterator(pair){}
 
 template<typename key_t, typename T, typename KEY_COMPARE>
-inline T FixedOrderedMultimap<key_t, T, KEY_COMPARE>::Iterator::operator*() {
-    return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-}
-
-template<typename key_t, typename T, typename KEY_COMPARE>
 inline typename FixedOrderedMultimap<key_t, T, KEY_COMPARE>::Iterator
 FixedOrderedMultimap<key_t, T, KEY_COMPARE>::begin() const {
     return Iterator(&theMap[0]);
@@ -34,11 +29,6 @@ inline size_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::size() const {
 }
 
 template<typename key_t, typename T, typename KEY_COMPARE>
-inline T* FixedOrderedMultimap<key_t, T, KEY_COMPARE>::Iterator::operator->() {
-    return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-}
-
-template<typename key_t, typename T, typename KEY_COMPARE>
 inline FixedOrderedMultimap<key_t, T, KEY_COMPARE>::FixedOrderedMultimap(
         size_t maxSize): theMap(maxSize), _size(0) {}
 
@@ -52,8 +42,9 @@ inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::insert(
     uint32_t position = findNicePlace(key);
     // Compiler might emitt warning because std::pair is not a POD type (yet..)
     // See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2342.htm#std::pair-example
-    // Should still work without issues.
-    std::memmove(&theMap[position + 1], &theMap[position],
+    // Circumvent warning by casting to void*
+    std::memmove(static_cast<void*>(&theMap[position + 1]),
+            static_cast<void*>(&theMap[position]),
             (_size - position) * sizeof(std::pair<key_t,T>));
     theMap[position].first = key;
     theMap[position].second = value;
