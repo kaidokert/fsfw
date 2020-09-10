@@ -25,7 +25,19 @@ public:
 	 * @param other
 	 */
 	FIFO(const FIFO& other): FIFOBase<T>(other) {
+		this->fifoArray = other.fifoArray;
 		this->setContainer(fifoArray.data());
+	}
+
+	/**
+	 * @brief Custom assignment operator
+	 * @param other
+	 */
+	FIFO& operator=(const FIFO& other){
+		FIFOBase<T>::operator=(other);
+		this->fifoArray = other.fifoArray;
+		this->setContainer(fifoArray.data());
+		return *this;
 	}
 
 private:
