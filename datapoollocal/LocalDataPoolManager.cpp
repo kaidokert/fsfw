@@ -177,7 +177,8 @@ const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 }
 
 ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
-        float collectionInterval, MessageQueueId_t destination) {
+        /*float collectionInterval, bool reportingEnabled, */
+		bool forDownlink, MessageQueueId_t destination) {
 	LocalPoolDataSetBase* dataSetToSerialize =
 			dynamic_cast<LocalPoolDataSetBase*>(owner->getDataSetHandle(sid));
 	if(dataSetToSerialize == nullptr) {
@@ -187,10 +188,13 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	}
 
 	store_address_t storeId;
-	HousekeepingPacketDownlink hkPacket(sid, collectionInterval,
-	        dataSetToSerialize->getFillCount(), dataSetToSerialize);
-	ReturnValue_t result = serializeHkPacketIntoStore(hkPacket, &storeId);
-	if(result != HasReturnvaluesIF::RETURN_OK) {
+	HousekeepingPacketDownlink hkPacket(sid,/* reportingEnabled,
+			collectionInterval, dataSetToSerialize->getFillCount(), */
+			dataSetToSerialize);
+	size_t serializedSize = 0;
+	ReturnValue_t result = serializeHkPacketIntoStore(hkPacket, storeId,
+			forDownlink, &serializedSize);
+	if(result != HasReturnvaluesIF::RETURN_OK or serializedSize == 0) {
 	    return result;
 	}
 
@@ -213,17 +217,21 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 
 ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(
         HousekeepingPacketDownlink& hkPacket,
-        store_address_t *storeId) {
+        store_address_t& storeId, bool forDownlink,
+		size_t* serializedSize) {
     uint8_t* dataPtr = nullptr;
-    size_t serializedSize = 0;
     const size_t maxSize = hkPacket.getSerializedSize();
-    ReturnValue_t  result = ipcStore->getFreeElement(storeId,
-            serializedSize, &dataPtr);
+    ReturnValue_t result = ipcStore->getFreeElement(&storeId,
+            maxSize, &dataPtr);
     if(result != HasReturnvaluesIF::RETURN_OK) {
         return result;
     }
 
-    return hkPacket.serialize(&dataPtr, &serializedSize, maxSize,
+    if(forDownlink) {
+    	return hkPacket.serialize(&dataPtr, serializedSize, maxSize,
+    	            SerializeIF::Endianness::BIG);
+    }
+    return hkPacket.serialize(&dataPtr, serializedSize, maxSize,
             SerializeIF::Endianness::MACHINE);
 }
 
@@ -265,7 +273,9 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
     if(receiver->intervalCounter >=
             receiver->hkParameter.collectionIntervalTicks) {
         ReturnValue_t result = generateHousekeepingPacket(
-                receiver->dataId.dataSetSid);
+                receiver->dataId.dataSetSid, true
+				/*intervalToIntervalSeconds(receiver->isDiagnostics,
+				receiver->hkParameter.collectionIntervalTicks), true */);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             // configuration error
             sif::debug << "LocalDataPoolManager::performHkOperation:"

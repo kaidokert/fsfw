@@ -110,7 +110,8 @@ public:
 	 * @return
 	 */
 	ReturnValue_t generateHousekeepingPacket(sid_t sid,
-	        float collectionInterval = 0,
+			bool forDownlink,
+	        /*float collectionInterval, bool reportingEnabled, */
 	        MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
 	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
@@ -248,7 +249,7 @@ private:
 	void setMinimalSamplingFrequency(float frequencySeconds);
 	ReturnValue_t serializeHkPacketIntoStore(
 	        HousekeepingPacketDownlink& hkPacket,
-	        store_address_t *storeId);
+	        store_address_t& storeId, bool forDownlink, size_t* serializedSize);
 
 	uint32_t intervalSecondsToInterval(bool isDiagnostics,
 	        float collectionIntervalSeconds);
