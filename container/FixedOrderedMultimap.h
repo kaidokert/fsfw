@@ -48,7 +48,7 @@ private:
 		if (_size <= position) {
 			return;
 		}
-		memmove(&theMap[position], &theMap[position + 1],
+		memmove(static_cast<void*>(&theMap[position]), static_cast<void*>(&theMap[position + 1]),
 				(_size - position - 1) * sizeof(std::pair<key_t,T>));
 		--_size;
 	}
@@ -68,15 +68,6 @@ public:
 		Iterator(std::pair<key_t, T> *pair) :
 				ArrayList<std::pair<key_t, T>, uint32_t>::Iterator(pair) {
 		}
-
-		T operator*() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
-		T *operator->() {
-			return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
 	};
 
 	Iterator begin() const {
@@ -91,17 +82,17 @@ public:
 		return _size;
 	}
 
-	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = NULL) {
+	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr) {
 		if (_size == theMap.maxSize()) {
 			return MAP_FULL;
 		}
 		uint32_t position = findNicePlace(key);
-		memmove(&theMap[position + 1], &theMap[position],
+		memmove(static_cast<void*>(&theMap[position + 1]),static_cast<void*>(&theMap[position]),
 				(_size - position) * sizeof(std::pair<key_t,T>));
 		theMap[position].first = key;
 		theMap[position].second = value;
 		++_size;
-		if (storedValue != NULL) {
+		if (storedValue != nullptr) {
 			*storedValue = Iterator(&theMap[position]);
 		}
 		return HasReturnvaluesIF::RETURN_OK;
@@ -144,12 +135,6 @@ public:
 		} while (i < _size);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
-
-	//This is potentially unsafe
-//	T *findValue(key_t key) const {
-//		return &theMap[findFirstIndex(key)].second;
-//	}
-
 
 	Iterator find(key_t key) const {
 		ReturnValue_t result = exists(key);
