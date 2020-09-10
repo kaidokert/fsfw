@@ -14,6 +14,10 @@
  */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
+    static_assert (std::is_trivially_copyable<T>::value or
+            std::is_base_of<SerializeIF, T>::value,
+            "Types used in FixedMap must either be trivial copy-able or a "
+            "derived class from SerializeIF to be serialize-able");
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIXED_MAP;
 	static const ReturnValue_t KEY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
