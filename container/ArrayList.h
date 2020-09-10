@@ -116,7 +116,11 @@ public:
             return tmp;
         }
 
-        T operator*() {
+        T& operator*() {
+            return *value;
+        }
+
+        const T& operator*() const {
             return *value;
         }
 
@@ -124,12 +128,13 @@ public:
             return value;
         }
 
-        const T *operator->() const{
+        const T *operator->() const {
             return value;
         }
 
+
         //SHOULDDO this should be implemented as non-member
-        bool operator==(const typename ArrayList<T, count_t>::Iterator& other) const{
+        bool operator==(const typename ArrayList<T, count_t>::Iterator& other) const {
             return (value == other.value);
         }
 
