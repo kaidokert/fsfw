@@ -27,6 +27,29 @@ sid_t HousekeepingMessage::getHkReportMessage(const CommandMessage *message,
 	return getSid(message);
 }
 
+void HousekeepingMessage::setToggleReportingMessage(CommandMessage *message,
+		sid_t sid, bool enableReporting, bool isDiagnostics) {
+	if(isDiagnostics) {
+		if(enableReporting) {
+			message->setCommand(ENABLE_PERIODIC_DIAGNOSTICS_GENERATION);
+		}
+		else {
+			message->setCommand(DISABLE_PERIODIC_DIAGNOSTICS_GENERATION);
+		}
+	}
+	else {
+		if(enableReporting) {
+			message->setCommand(ENABLE_PERIODIC_HK_GENERATION);
+		}
+		else {
+			message->setCommand(DISABLE_PERIODIC_HK_REPORT_GENERATION);
+		}
+	}
+
+	setSid(message, sid);
+}
+
+
 sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
 	sid_t sid;
 	std::memcpy(&sid.raw, message->getData(), sizeof(sid.raw));
@@ -36,4 +59,3 @@ sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
 void HousekeepingMessage::setSid(CommandMessage *message, sid_t sid) {
 	std::memcpy(message->getData(), &sid.raw, sizeof(sid.raw));
 }
-

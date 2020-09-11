@@ -58,15 +58,6 @@ public:
 
 	static constexpr uint8_t MESSAGE_ID = messagetypes::HOUSEKEEPING;
 
-	static constexpr Command_t ADD_HK_REPORT_STRUCT =
-			MAKE_COMMAND_ID(1);
-	static constexpr Command_t ADD_DIAGNOSTICS_REPORT_STRUCT =
-			MAKE_COMMAND_ID(2);
-
-	static constexpr Command_t DELETE_HK_REPORT_STRUCT = MAKE_COMMAND_ID(3);
-	static constexpr Command_t DELETE_DIAGNOSTICS_REPORT_STRUCT =
-			MAKE_COMMAND_ID(4);
-
 	static constexpr Command_t ENABLE_PERIODIC_HK_GENERATION =
 			MAKE_COMMAND_ID(5);
 	static constexpr Command_t DISABLE_PERIODIC_HK_REPORT_GENERATION =
@@ -76,6 +67,11 @@ public:
 			MAKE_COMMAND_ID(7);
 	static constexpr Command_t DISABLE_PERIODIC_DIAGNOSTICS_GENERATION =
 			MAKE_COMMAND_ID(8);
+
+	static constexpr Command_t REPORTING_TOGGLE_SUCCESS =
+			MAKE_COMMAND_ID(128);
+	static constexpr Command_t REPORTING_TOGGLE_FAILURE =
+			MAKE_COMMAND_ID(129);
 
 	static constexpr Command_t REPORT_HK_REPORT_STRUCTURES = MAKE_COMMAND_ID(9);
 	static constexpr Command_t REPORT_DIAGNOSTICS_REPORT_STRUCTURES =
@@ -104,6 +100,8 @@ public:
 
 	static sid_t getSid(const CommandMessage* message);
 
+	static void setToggleReportingMessage(CommandMessage* message, sid_t sid,
+			bool enableReporting, bool isDiagnostics);
 	static void setHkReportMessage(CommandMessage* message, sid_t sid,
 			store_address_t storeId);
 	static void setHkDiagnosticsMessage(CommandMessage* message, sid_t sid,

@@ -140,11 +140,6 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 		CommandMessage* message) {
     Command_t command = message->getCommand();
     switch(command) {
-    // I think those are the only commands which can be handled here..
-    case(HousekeepingMessage::ADD_HK_REPORT_STRUCT):
-    case(HousekeepingMessage::ADD_DIAGNOSTICS_REPORT_STRUCT):
-        // We should use OwnsLocalPoolDataIF to specify those functions..
-        return HasReturnvaluesIF::RETURN_OK;
     case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
     case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
         //return generateSetStructurePacket(message->getSid());
