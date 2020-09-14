@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
-#define FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_
+#ifndef FSFW_HOUSEKEEPING_HOUSEKEEPINGMESSAGE_H_
+#define FSFW_HOUSEKEEPING_HOUSEKEEPINGMESSAGE_H_
 
 #include "../ipc/CommandMessage.h"
 #include "../ipc/FwMessageTypes.h"
@@ -49,9 +49,8 @@ public:
 	        sizeof(sid_t) + sizeof(uint32_t);
 
 	/**
-	 * The HK message is initialized with a pointer to a message which holds
-	 * the message data, see CommandMessageIF and getInternalMessage().
-	 * @param message
+	 * Concrete instance is not used, instead this class operates on
+	 * command message instances.
 	 */
 	HousekeepingMessage() = delete;
 	virtual ~HousekeepingMessage();
@@ -68,11 +67,6 @@ public:
 	static constexpr Command_t DISABLE_PERIODIC_DIAGNOSTICS_GENERATION =
 			MAKE_COMMAND_ID(8);
 
-	static constexpr Command_t REPORTING_TOGGLE_SUCCESS =
-			MAKE_COMMAND_ID(128);
-	static constexpr Command_t REPORTING_TOGGLE_FAILURE =
-			MAKE_COMMAND_ID(129);
-
 	static constexpr Command_t REPORT_HK_REPORT_STRUCTURES = MAKE_COMMAND_ID(9);
 	static constexpr Command_t REPORT_DIAGNOSTICS_REPORT_STRUCTURES =
 			MAKE_COMMAND_ID(11);
@@ -88,33 +82,48 @@ public:
 	static constexpr Command_t GENERATE_ONE_DIAGNOSTICS_REPORT =
 			MAKE_COMMAND_ID(28);
 
-	static constexpr Command_t APPEND_PARAMETERS_TO_PARAMETER_REPORT_STRUCTURE =
-			MAKE_COMMAND_ID(29);
-	static constexpr Command_t APPEND_PARAMETERS_TO_DIAGNOSTICS_REPORT_STRUCTURE =
-			MAKE_COMMAND_ID(30);
-
 	static constexpr Command_t MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL =
 			MAKE_COMMAND_ID(31);
 	static constexpr Command_t MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL =
 			MAKE_COMMAND_ID(32);
 
+	static constexpr Command_t HK_REQUEST_SUCCESS =
+			MAKE_COMMAND_ID(128);
+	static constexpr Command_t HK_REQUEST_FAILURE =
+			MAKE_COMMAND_ID(129);
+
 	static sid_t getSid(const CommandMessage* message);
 
-	static void setToggleReportingMessage(CommandMessage* message, sid_t sid,
+	static void setToggleReportingCommand(CommandMessage* command, sid_t sid,
 			bool enableReporting, bool isDiagnostics);
-	static void setHkReportMessage(CommandMessage* message, sid_t sid,
+	static void setStructureReportingCommand(CommandMessage* command, sid_t sid,
+			bool isDiagnostics);
+	static void setOneShotReportCommand(CommandMessage* command, sid_t sid,
+			bool isDiagnostics);
+	static void setCollectionIntervalModificationCommand(
+			CommandMessage* command, sid_t sid, float collectionInterval,
+			bool isDiagnostics);
+
+	static void setHkReportReply(CommandMessage* reply, sid_t sid,
 			store_address_t storeId);
-	static void setHkDiagnosticsMessage(CommandMessage* message, sid_t sid,
+	static void setHkDiagnosticsReply(CommandMessage* reply, sid_t sid,
 			store_address_t storeId);
 
-	//! Get the respective SID and store ID. Command ID can be used beforehand
-	//! to distinguish between diagnostics and regular HK packets
-	static sid_t getHkReportMessage(const CommandMessage* message,
+	/**
+	 * @brief	Generic getter function for housekeeping data replies
+	 * @details
+	 * Command ID can be used beforehand to distinguish between diagnostics and
+	 * regular HK packets. This getter function should be used for the
+	 * command IDs 10, 12, 25 and 26.
+	 */
+	static sid_t getHkDataReply(const CommandMessage* message,
 			store_address_t * storeIdToSet);
+	static sid_t getCollectionIntervalModificationCommand(
+			const CommandMessage* command, float* newCollectionInterval);
 
 private:
 	static void setSid(CommandMessage* message, sid_t sid);
 };
 
 
-#endif /* FRAMEWORK_HK_HOUSEKEEPINGMESSAGE_H_ */
+#endif /* FSFW_HOUSEKEEPING_HOUSEKEEPINGMESSAGE_H_ */

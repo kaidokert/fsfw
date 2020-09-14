@@ -193,10 +193,10 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	// and now we set a HK message and send it the HK packet destination.
 	CommandMessage hkMessage;
 	if(isDiagnostics) {
-		HousekeepingMessage::setHkDiagnosticsMessage(&hkMessage, sid, storeId);
+		HousekeepingMessage::setHkDiagnosticsReply(&hkMessage, sid, storeId);
 	}
 	else {
-		HousekeepingMessage::setHkReportMessage(&hkMessage, sid, storeId);
+		HousekeepingMessage::setHkReportReply(&hkMessage, sid, storeId);
 	}
 
 	if(hkQueue == nullptr) {

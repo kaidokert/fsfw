@@ -3,7 +3,7 @@
 
 HousekeepingMessage::~HousekeepingMessage() {}
 
-void HousekeepingMessage::setHkReportMessage(CommandMessage* message, sid_t sid,
+void HousekeepingMessage::setHkReportReply(CommandMessage* message, sid_t sid,
 		store_address_t storeId) {
 	message->setCommand(HK_REPORT);
 	message->setMessageSize(HK_MESSAGE_SIZE);
@@ -11,7 +11,7 @@ void HousekeepingMessage::setHkReportMessage(CommandMessage* message, sid_t sid,
 	message->setParameter3(storeId.raw);
 }
 
-void HousekeepingMessage::setHkDiagnosticsMessage(CommandMessage* message,
+void HousekeepingMessage::setHkDiagnosticsReply(CommandMessage* message,
 		sid_t sid, store_address_t storeId) {
 	message->setCommand(DIAGNOSTICS_REPORT);
 	message->setMessageSize(HK_MESSAGE_SIZE);
@@ -19,7 +19,7 @@ void HousekeepingMessage::setHkDiagnosticsMessage(CommandMessage* message,
 	message->setParameter3(storeId.raw);
 }
 
-sid_t HousekeepingMessage::getHkReportMessage(const CommandMessage *message,
+sid_t HousekeepingMessage::getHkDataReply(const CommandMessage *message,
 		store_address_t *storeIdToSet) {
 	if(storeIdToSet != nullptr) {
 	    *storeIdToSet = message->getParameter3();
@@ -27,7 +27,7 @@ sid_t HousekeepingMessage::getHkReportMessage(const CommandMessage *message,
 	return getSid(message);
 }
 
-void HousekeepingMessage::setToggleReportingMessage(CommandMessage *message,
+void HousekeepingMessage::setToggleReportingCommand(CommandMessage *message,
 		sid_t sid, bool enableReporting, bool isDiagnostics) {
 	if(isDiagnostics) {
 		if(enableReporting) {
@@ -49,6 +49,52 @@ void HousekeepingMessage::setToggleReportingMessage(CommandMessage *message,
 	setSid(message, sid);
 }
 
+void HousekeepingMessage::setStructureReportingCommand(CommandMessage *command,
+		sid_t sid, bool isDiagnostics) {
+	if(isDiagnostics) {
+		command->setCommand(REPORT_DIAGNOSTICS_REPORT_STRUCTURES);
+	}
+	else {
+		command->setCommand(REPORT_HK_REPORT_STRUCTURES);
+	}
+
+	setSid(command, sid);
+}
+
+void HousekeepingMessage::setOneShotReportCommand(CommandMessage *command,
+		sid_t sid, bool isDiagnostics) {
+	if(isDiagnostics) {
+		command->setCommand(GENERATE_ONE_DIAGNOSTICS_REPORT);
+	}
+	else {
+		command->setCommand(GENERATE_ONE_PARAMETER_REPORT);
+	}
+
+	setSid(command, sid);
+}
+
+void HousekeepingMessage::setCollectionIntervalModificationCommand(
+		CommandMessage *command, sid_t sid, float collectionInterval,
+		bool isDiagnostics) {
+	if(isDiagnostics) {
+		command->setCommand(MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL);
+	}
+	else {
+		command->setCommand(MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL);
+	}
+	command->setParameter3(collectionInterval);
+
+	setSid(command, sid);
+}
+
+sid_t HousekeepingMessage::getCollectionIntervalModificationCommand(
+		const CommandMessage* command, float* newCollectionInterval) {
+	if(newCollectionInterval != nullptr) {
+		*newCollectionInterval = command->getParameter3();
+	}
+
+	return getSid(command);
+}
 
 sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
 	sid_t sid;
