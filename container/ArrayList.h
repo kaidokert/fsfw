@@ -72,11 +72,15 @@ public:
 			return tmp;
 		}
 
-		T operator*() {
+		T& operator*(){
 			return *value;
 		}
 
-		T *operator->() {
+		const T& operator*() const{
+			return *value;
+		}
+
+		T *operator->(){
 			return value;
 		}
 

@@ -5,12 +5,13 @@
 
 PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod setPeriod,
-		void (*setDeadlineMissedFunc)()) :
+		TaskDeadlineMissedFunction deadlineMissedFunc) :
 		started(false), handle(NULL), period(setPeriod), deadlineMissedFunc(
-		setDeadlineMissedFunc)
+		deadlineMissedFunc)
 {
+	configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
 	BaseType_t status = xTaskCreate(taskEntryPoint, name,
-			setStack, this, setPriority, &handle);
+			stackSize, this, setPriority, &handle);
 	if(status != pdPASS){
 		sif::debug << "PeriodicTask Insufficient heap memory remaining. "
 		        "Status: " << status << std::endl;
@@ -63,6 +64,11 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 void PeriodicTask::taskFunctionality() {
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(this->period * 1000.);
+	
+	for (auto const &object: objectList) {
+		object->initializeAfterTaskCreation();
+	}
+
 	/* The xLastWakeTime variable needs to be initialized with the current tick
 	 count. Note that this is the only time the variable is written to
 	 explicitly. After this assignment, xLastWakeTime is updated automatically
@@ -86,12 +92,12 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 			object);
 	if (newObject == nullptr) {
 	    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
-	            "it implements ExecutableObjectIF!" << std::endl;
+	            "it implement ExecutableObjectIF" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
-
 	newObject->setTaskIF(this);
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -120,6 +126,10 @@ void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
     else if((timeToWake < xLastWakeTime) and (currentTickCount > timeToWake)) {
         handleMissedDeadline();
     }
+}
+
+TaskHandle_t PeriodicTask::getTaskHandle() {
+    return handle;
 }
 
 void PeriodicTask::handleMissedDeadline() {

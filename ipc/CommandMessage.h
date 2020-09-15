@@ -22,7 +22,7 @@ public:
 	static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
 
 
-	static const uint8_t MESSAGE_ID = MESSAGE_TYPE::COMMAND;
+	static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
 	static const Command_t CMD_NONE = MAKE_COMMAND_ID( 0 );//!< Used internally, will be ignored
 	static const Command_t REPLY_COMMAND_OK = MAKE_COMMAND_ID( 3 );
 	static const Command_t REPLY_REJECTED = MAKE_COMMAND_ID( 0xD1 );//!< Reply indicating that the current command was rejected, par1 should contain the error code

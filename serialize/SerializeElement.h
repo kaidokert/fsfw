@@ -1,12 +1,20 @@
-#ifndef SERIALIZEELEMENT_H_
-#define SERIALIZEELEMENT_H_
+#ifndef FSFW_SERIALIZE_SERIALIZEELEMENT_H_
+#define FSFW_SERIALIZE_SERIALIZEELEMENT_H_
 
-#include "../container/SinglyLinkedList.h"
 #include "SerializeAdapter.h"
+#include "../container/SinglyLinkedList.h"
 #include <utility>
 
 /**
- * \ingroup serialize
+ * @brief This class is used to mark datatypes for serialization with the
+ *        SerialLinkedListAdapter
+ * @details
+ * Used by declaring any arbitrary datatype with SerializeElement<T> myVariable,
+ * inside a SerialLinkedListAdapter implementation and setting the sequence
+ * of objects with setNext() and setStart().
+ * Serialization and Deserialization is then performed automatically in
+ * specified sequence order.
+ * @ingroup serialize
  */
 template<typename T>
 class SerializeElement: public SerializeIF, public LinkedElement<SerializeIF> {
@@ -19,7 +27,7 @@ public:
 	SerializeElement() :
 			LinkedElement<SerializeIF>(this) {
 	}
-	T entry;
+
 	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
 			Endianness streamEndianness) const override {
 		return SerializeAdapter::serialize(&entry, buffer, size, maxSize,
@@ -35,6 +43,7 @@ public:
 		return SerializeAdapter::deSerialize(&entry, buffer, size,
 				streamEndianness);
 	}
+
 	operator T() {
 		return entry;
 	}
@@ -43,9 +52,12 @@ public:
 		entry = newValue;
 		return *this;
 	}
+
 	T* operator->() {
 		return &entry;
 	}
+
+	T entry;
 };
 
-#endif /* SERIALIZEELEMENT_H_ */
+#endif /* FSFW_SERIALIZE_SERIALIZEELEMENT_H_ */
