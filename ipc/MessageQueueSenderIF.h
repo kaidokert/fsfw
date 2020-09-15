@@ -1,5 +1,5 @@
 #ifndef FSFW_IPC_MESSAGEQUEUESENDERIF_H_
-#define FSFWw_IPC_MESSAGEQUEUESENDERIF_H_
+#define FSFW_IPC_MESSAGEQUEUESENDERIF_H_
 
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MessageQueueMessageIF.h"
