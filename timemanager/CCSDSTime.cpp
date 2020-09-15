@@ -1,7 +1,8 @@
-#include "CCSDSTime.h"
-#include <stdio.h>
-#include <inttypes.h>
-#include <math.h>
+#include "../timemanager/CCSDSTime.h"
+#include <cstdio>
+#include <cinttypes>
+#include <cmath>
+
 
 CCSDSTime::CCSDSTime() {
 }

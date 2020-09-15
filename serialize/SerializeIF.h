@@ -2,7 +2,7 @@
 #define FSFW_SERIALIZE_SERIALIZEIF_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include <stddef.h>
+#include <cstddef>
 
 /**
  * @defgroup serialize Serialization
@@ -10,7 +10,10 @@
  */
 
 /**
- * Translation of objects into data streams and from data streams.
+ * @brief 	Translation of objects into data streams and from data streams.
+ * @details
+ * Also provides options to convert from/to data with different endianness.
+ * variables.
  * @ingroup serialize
  */
 class SerializeIF {

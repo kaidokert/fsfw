@@ -1,13 +1,14 @@
-#ifndef FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
-#define FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_
+#ifndef FSFW_SERIALIZE_SERIALARRAYLISTADAPTER_H_
+#define FSFW_SERIALIZE_SERIALARRAYLISTADAPTER_H_
 
-#include "../container/ArrayList.h"
 #include "SerializeIF.h"
+#include "../container/ArrayList.h"
 #include <utility>
 
 /**
+ * Also serializes length field !
+ * @author 	baetz
  * @ingroup serialize
- * @author  baetz
  */
 template<typename T, typename count_t = uint8_t>
 class SerialArrayListAdapter : public SerializeIF {
@@ -21,14 +22,14 @@ public:
 	}
 
 	static ReturnValue_t serialize(const ArrayList<T, count_t>* list,
-	        uint8_t** buffer, size_t* size, size_t maxSize,
-	        Endianness streamEndianness) {
+			uint8_t** buffer, size_t* size, size_t maxSize,
+			Endianness streamEndianness) {
 		ReturnValue_t result = SerializeAdapter::serialize(&list->size,
 				buffer, size, maxSize, streamEndianness);
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
-			result = SerializeAdapter::serialize(&list->entries[i], buffer,
-			        size, maxSize, streamEndianness);
+			result = SerializeAdapter::serialize(&list->entries[i], buffer, size,
+					maxSize, streamEndianness);
 			++i;
 		}
 		return result;
@@ -55,17 +56,18 @@ public:
 	}
 
 	static ReturnValue_t deSerialize(ArrayList<T, count_t>* list,
-	        const uint8_t** buffer, size_t* size,
+			const uint8_t** buffer, size_t* size,
 			Endianness streamEndianness) {
 		count_t tempSize = 0;
 		ReturnValue_t result = SerializeAdapter::deSerialize(&tempSize,
 				buffer, size, streamEndianness);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
-		    return result;
+			return result;
 		}
 		if (tempSize > list->maxSize()) {
 			return SerializeIF::TOO_MANY_ELEMENTS;
 		}
+
 		list->size = tempSize;
 		count_t i = 0;
 		while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
@@ -76,10 +78,9 @@ public:
 		}
 		return result;
 	}
+
 private:
 	ArrayList<T, count_t> *adaptee;
 };
 
-
-
-#endif /* FRAMEWORK_SERIALIZE_SERIALARRAYLISTADAPTER_H_ */
+#endif /* FSFW_SERIALIZE_SERIALARRAYLISTADAPTER_H_ */
