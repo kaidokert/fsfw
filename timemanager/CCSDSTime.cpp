@@ -1,4 +1,5 @@
 #include "../timemanager/CCSDSTime.h"
+#include <FSFWConfig.h>
 #include <cstdio>
 #include <cinttypes>
 #include <cmath>
@@ -158,7 +159,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	}
 // Newlib nano can't parse uint8, see SCNu8 documentation and https://sourceware.org/newlib/README
 // Suggestion: use uint16 all the time. This should work on all systems.
-#ifdef NEWLIB_NANO_NO_C99_IO
+#if FSFW_NEWLIB_NANO_NO_C99_IO == 1
 	uint16_t year;
 	uint16_t month;
 	uint16_t day;
