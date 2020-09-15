@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUEMESSAGEIF_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUEMESSAGEIF_H_
 
-#include "messageQueueDefintions.h"
+#include <fsfw/ipc/messageQueueDefinitions.h>
 #include <cstddef>
 #include <cstdint>
 

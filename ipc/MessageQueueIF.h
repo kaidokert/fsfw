@@ -1,8 +1,8 @@
 #ifndef FSFW_IPC_MESSAGEQUEUEIF_H_
 #define FSFW_IPC_MESSAGEQUEUEIF_H_
 
+#include <fsfw/ipc/messageQueueDefinitions.h>
 #include "MessageQueueMessageIF.h"
-#include "messageQueueDefintions.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
 #include <cstdint>
