@@ -15,4 +15,5 @@
  */
 using MessageQueueId_t = uint32_t;
 
+
 #endif /* FSFW_IPC_MESSAGEQUEUEDEFINITIONS_H_ */

@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
-#define FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
+#ifndef FSFW_IPC_MESSAGEQUEUESENDERIF_H_
+#define FSFW_IPC_MESSAGEQUEUESENDERIF_H_
 
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MessageQueueMessageIF.h"
@@ -15,7 +15,7 @@ public:
 	 * Not sure whether this is actually a good idea.
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessageIF* message,
+			MessageQueueMessage* message,
 			MessageQueueId_t sentFrom = MessageQueueIF::NO_QUEUE,
 			bool ignoreFault = false);
 private:
@@ -23,4 +23,4 @@ private:
 };
 
 
-#endif /* FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_ */
+#endif /* FSFW_IPC_MESSAGEQUEUESENDERIF_H_ */
