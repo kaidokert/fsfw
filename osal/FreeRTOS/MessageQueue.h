@@ -8,6 +8,7 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
+#include <fsfw/ipc/MessageQueueMessage.h>
 
 // TODO: this class assumes that MessageQueueId_t is the same size as void*
 // (the FreeRTOS handle type), compiler will catch this but it might be nice
@@ -139,8 +140,8 @@ protected:
 private:
 	bool defaultDestinationSet = false;
 	QueueHandle_t handle;
-	MessageQueueId_t defaultDestination = 0;
-	MessageQueueId_t lastPartner = 0;
+	MessageQueueId_t defaultDestination = MessageQueueIF::NO_QUEUE;
+	MessageQueueId_t lastPartner = MessageQueueIF::NO_QUEUE;
 	const size_t maxMessageSize;
 	//! Stores the current system context
 	CallContext callContext =  CallContext::TASK;

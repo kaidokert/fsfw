@@ -1,21 +1,23 @@
 #ifndef FSFW_IPC_MESSAGEQUEUEIF_H_
 #define FSFW_IPC_MESSAGEQUEUEIF_H_
 
+#include "MessageQueueMessageIF.h"
+#include "messageQueueDefintions.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+
+#include <cstdint>
+
+
 // COULDDO: We could support blocking calls
 // semaphores are being implemented, which makes this idea even more iteresting.
-
 
 /**
  * @defgroup message_queue Message Queue
  * @brief Message Queue related software components
  */
-
-#include "../ipc/MessageQueueMessage.h"
-#include "../ipc/MessageQueueSenderIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
 class MessageQueueIF {
 public:
-	static const MessageQueueId_t NO_QUEUE = MessageQueueMessageIF::NO_QUEUE; //!< Ugly hack.
+	static const MessageQueueId_t NO_QUEUE = 0;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::MESSAGE_QUEUE_IF;
 	//! No new messages on the queue

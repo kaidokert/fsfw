@@ -1,3 +1,4 @@
+#include <fsfw/ipc/MessageQueueSenderIF.h>
 #include "ActionHelper.h"
 #include "HasActionsIF.h"
 #include "../objectmanager/ObjectManagerIF.h"

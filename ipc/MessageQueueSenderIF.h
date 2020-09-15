@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
 
+#include "../ipc/MessageQueueIF.h"
 #include "../ipc/MessageQueueMessageIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
@@ -15,7 +16,7 @@ public:
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
 			MessageQueueMessageIF* message,
-			MessageQueueId_t sentFrom = MessageQueueMessageIF::NO_QUEUE,
+			MessageQueueId_t sentFrom = MessageQueueIF::NO_QUEUE,
 			bool ignoreFault = false);
 private:
 	MessageQueueSenderIF() {}

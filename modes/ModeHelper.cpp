@@ -1,3 +1,4 @@
+#include "../ipc/MessageQueueSenderIF.h"
 #include "../modes/HasModesIF.h"
 #include "../modes/ModeHelper.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
@@ -35,7 +36,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
 		commandedMode = mode;
 		commandedSubmode = submode;
 
-		if ((parentQueueId != MessageQueueMessageIF::NO_QUEUE)
+		if ((parentQueueId != MessageQueueIF::NO_QUEUE)
 				&& (theOneWhoCommandedAMode != parentQueueId)) {
 			owner->setToExternalControl();
 		}
@@ -73,13 +74,13 @@ void ModeHelper::modeChanged(Mode_t ownerMode, Submode_t ownerSubmode) {
 	forced = false;
 	sendModeReplyMessage(ownerMode, ownerSubmode);
 	sendModeInfoMessage(ownerMode, ownerSubmode);
-	theOneWhoCommandedAMode = MessageQueueMessageIF::NO_QUEUE;
+	theOneWhoCommandedAMode = MessageQueueIF::NO_QUEUE;
 }
 
 void ModeHelper::sendModeReplyMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
 	CommandMessage reply;
-	if (theOneWhoCommandedAMode != MessageQueueMessageIF::NO_QUEUE)
+	if (theOneWhoCommandedAMode != MessageQueueIF::NO_QUEUE)
 	{
 		if (ownerMode != commandedMode or ownerSubmode != commandedSubmode)
 		{
@@ -101,7 +102,7 @@ void ModeHelper::sendModeInfoMessage(Mode_t ownerMode,
 		Submode_t ownerSubmode) {
 	CommandMessage reply;
 	if (theOneWhoCommandedAMode != parentQueueId
-			and parentQueueId != MessageQueueMessageIF::NO_QUEUE)
+			and parentQueueId != MessageQueueIF::NO_QUEUE)
 	{
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_INFO,
 				ownerMode, ownerSubmode);

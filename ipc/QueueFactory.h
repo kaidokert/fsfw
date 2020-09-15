@@ -2,7 +2,9 @@
 #define FRAMEWORK_IPC_QUEUEFACTORY_H_
 
 #include "MessageQueueIF.h"
+#include "MessageQueueMessage.h"
 #include <cstdint>
+
 /**
  * Creates message queues.
  * This class is a "singleton" interface, i.e. it provides an
