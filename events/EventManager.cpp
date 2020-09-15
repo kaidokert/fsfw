@@ -109,13 +109,13 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 	return result;
 }
 
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
 	case SEVERITY::INFO:
-#ifdef DEBUG_INFO_EVENT
+#if DEBUG_INFO_EVENT == 1
 		string = translateObject(message->getReporter());
 		sif::info << "EVENT: ";
 		if (string != 0) {
