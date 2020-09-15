@@ -1,11 +1,8 @@
 #include "../timemanager/CCSDSTime.h"
-#include <stdio.h>
-#include <inttypes.h>
-#include <math.h>
+#include <cstdio>
+#include <cinttypes>
+#include <cmath>
 
-#ifndef SCNu8
-  #define SCNu8 "hhu"
-#endif
 
 CCSDSTime::CCSDSTime() {
 }
