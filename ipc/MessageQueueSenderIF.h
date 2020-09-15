@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
-#define FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_
+#ifndef FSFW_IPC_MESSAGEQUEUESENDERIF_H_
+#define FSFWw_IPC_MESSAGEQUEUESENDERIF_H_
 
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MessageQueueMessageIF.h"
@@ -23,4 +23,4 @@ private:
 };
 
 
-#endif /* FRAMEWORK_IPC_MESSAGEQUEUESENDERIF_H_ */
+#endif /* FSFW_IPC_MESSAGEQUEUESENDERIF_H_ */
