@@ -3,9 +3,9 @@
 
 // COULDDO: have calls in Clock.h which return time quality and use timespec accordingly
 
-#include "../timemanager/Clock.h"
+#include "Clock.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include <stdint.h>
+#include <cstdint>
 
 bool operator<(const timeval& lhs, const timeval& rhs);
 bool operator<=(const timeval& lhs, const timeval& rhs);
