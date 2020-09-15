@@ -1,11 +1,13 @@
-#ifndef HEALTHHELPER_H_
-#define HEALTHHELPER_H_
+#ifndef FSFW_HEALTH_HEALTHHELPER_H_
+#define FSFW_HEALTH_HEALTHHELPER_H_
 
-#include "../events/EventManagerIF.h"
-#include "../events/EventReportingProxyIF.h"
 #include "HasHealthIF.h"
 #include "HealthMessage.h"
 #include "HealthTableIF.h"
+
+#include "../events/EventManagerIF.h"
+#include "../events/EventReportingProxyIF.h"
+#include "../ipc/MessageQueueIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
@@ -27,8 +29,8 @@ public:
 	/**
 	 * ctor
 	 *
+	 * @param owner
 	 * @param objectId the object Id to use when communication with the HealthTable
-	 * @param useAsFrom id to use as from id when sending replies, can be set to 0
 	 */
 	HealthHelper(HasHealthIF* owner, object_id_t objectId);
 
@@ -39,12 +41,12 @@ public:
 	 *
 	 * only valid after initialize() has been called
 	 */
-	HealthTableIF *healthTable;
+	HealthTableIF *healthTable = nullptr;
 
 	/**
 	 * Proxy to forward events.
 	 */
-	EventReportingProxyIF* eventSender;
+	EventReportingProxyIF* eventSender = nullptr;
 
 	/**
 	 * Try to handle the message.
@@ -100,7 +102,7 @@ private:
 	/**
 	 * The Queue of the parent
 	 */
-	MessageQueueId_t parentQueue;
+	MessageQueueId_t parentQueue = MessageQueueIF::NO_QUEUE;
 
 	/**
 	 * The one using the healthHelper.
@@ -117,4 +119,4 @@ private:
 	void handleSetHealthCommand(CommandMessage *message);
 };
 
-#endif /* HEALTHHELPER_H_ */
+#endif /* FSFW_HEALTH_HEALTHHELPER_H_ */
