@@ -8,7 +8,7 @@
 /**
  * @brief 	Default command message used to pass command messages between tasks.
  * 			Primary message type for IPC. Contains sender, 2-byte command ID
- * 			field, and 2 4-byte parameters.
+ * 			field, and 3 4-byte parameter
  * @details
  * It operates on an external memory which is contained inside a
  * class implementing MessageQueueMessageIF by taking its address.
@@ -23,10 +23,11 @@
 class CommandMessage: public MessageQueueMessage, public CommandMessageIF {
 public:
     /**
-     * Default size can accomodate 2 4-byte parameters.
+     * Default size can accomodate 3 4-byte parameters.
      */
     static constexpr size_t DEFAULT_COMMAND_MESSAGE_SIZE =
-            CommandMessageIF::MINIMUM_COMMAND_MESSAGE_SIZE + sizeof(uint32_t);
+            CommandMessageIF::MINIMUM_COMMAND_MESSAGE_SIZE +
+			3 * sizeof(uint32_t);
 
 	/**
 	 * @brief   Default Constructor, does not initialize anything.
