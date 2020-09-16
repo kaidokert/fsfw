@@ -1,9 +1,9 @@
 #ifndef FSFW_TIMEMANAGER_TIMESTAMPER_H_
 #define FSFW_TIMEMANAGER_TIMESTAMPER_H_
 
-#include <fsfw/timemanager/TimeStamperIF.h>
-#include <fsfw/timemanager/CCSDSTime.h>
-#include <fsfw/objectmanager/SystemObject.h>
+#include "TimeStamperIF.h"
+#include "CCSDSTime.h"
+#include "../objectmanager/SystemObject.h"
 
 /**
  * @brief   Time stamper which can be used to add any timestamp to a

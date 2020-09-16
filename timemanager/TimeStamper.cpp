@@ -1,5 +1,5 @@
-#include <fsfw/timemanager/Clock.h>
-#include <fsfw/timemanager/TimeStamper.h>
+#include "TimeStamper.h"
+#include "Clock.h"
 #include <cstring>
 
 TimeStamper::TimeStamper(object_id_t objectId): SystemObject(objectId) {}
@@ -18,6 +18,6 @@ ReturnValue_t TimeStamper::addTimeStamp(uint8_t* buffer,
 	if(result != HasReturnvaluesIF::RETURN_OK){
 		return result;
 	}
-	memcpy(buffer,&cds,sizeof(cds));
+	std::memcpy(buffer,&cds,sizeof(cds));
 	return result;
 }
