@@ -32,7 +32,7 @@ public:
 	 * 			The address of the task object is passed as an argument
 	 * 			to the system call.
 	 */
-	ReturnValue_t startTask(void);
+	ReturnValue_t startTask() override;
 	/**
 	 * Adds an object to the list of objects to be executed.
 	 * The objects are executed in the order added.

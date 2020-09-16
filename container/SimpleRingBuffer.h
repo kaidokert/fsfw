@@ -117,6 +117,7 @@ public:
 	 */
 	ReturnValue_t deleteData(size_t amount, bool deleteRemaining = false,
 	        size_t* trueAmount = nullptr);
+
 private:
 	static const uint8_t READ_PTR = 0;
 	uint8_t* buffer = nullptr;

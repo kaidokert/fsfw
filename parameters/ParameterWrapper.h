@@ -1,12 +1,16 @@
-#ifndef PARAMETERWRAPPER_H_
-#define PARAMETERWRAPPER_H_
+#ifndef FSFW_PARAMETERS_PARAMETERWRAPPER_H_
+#define FSFW_PARAMETERS_PARAMETERWRAPPER_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeAdapter.h"
 #include "../serialize/SerializeIF.h"
-#include <stddef.h>
 #include "../globalfunctions/Type.h"
+#include <cstddef>
 
+/**
+ * @brief
+ * @details
+ */
 class ParameterWrapper: public SerializeIF {
 	friend class DataPoolParameterWrapper;
 public:
@@ -36,32 +40,21 @@ public:
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			Endianness streamEndianness, uint16_t startWritingAtIndex = 0);
 
+	/**
+	 * Get a specific parameter value by supplying the row and the column.
+	 * @tparam T Type of target data
+	 * @param value [out] Pointer to storage location
+	 * @param row
+	 * @param column
+	 * @return
+	 * -@c RETURN_OK if element was retrieved successfully
+	 * -@c NOT_SET data has not been set yet
+	 * -@c DATATYPE_MISSMATCH Invalid supplied type
+	 * -@c OUT_OF_BOUNDS Invalid row and/or column.
+	 */
 	template<typename T>
-	ReturnValue_t getElement(T *value, uint8_t row = 0, uint8_t column = 0) const {
-		if (readonlyData == NULL){
-			return NOT_SET;
-		}
-
-		if (PodTypeConversion<T>::type != type) {
-			return DATATYPE_MISSMATCH;
-		}
-
-		if ((row >= rows) || (column >= columns)) {
-			return OUT_OF_BOUNDS;
-		}
-
-		if (pointsToStream) {
-			const uint8_t *streamWithtype = (const uint8_t *) readonlyData;
-			streamWithtype += (row * columns + column) * type.getSize();
-			int32_t size = type.getSize();
-			return SerializeAdapter::deSerialize(value, &streamWithtype,
-					&size, true);
-		} else {
-			const T *dataWithType = (const T *) readonlyData;
-			*value = dataWithType[row * columns + column];
-			return HasReturnvaluesIF::RETURN_OK;
-		}
-	}
+	ReturnValue_t getElement(T *value, uint8_t row = 0,
+			uint8_t column = 0) const;
 
 	template<typename T>
 	void set(T *data, uint8_t rows, uint8_t columns) {
@@ -111,21 +104,22 @@ public:
 	void setMatrix(const T& member) {
 		this->set(member[0], sizeof(member)/sizeof(member[0]), sizeof(member[0])/sizeof(member[0][0]));
 	}
+
 	ReturnValue_t set(const uint8_t *stream, size_t streamSize,
-			const uint8_t **remainingStream = NULL, size_t *remainingSize =
-					NULL);
+			const uint8_t **remainingStream = nullptr,
+			size_t *remainingSize = nullptr);
 
 	ReturnValue_t copyFrom(const ParameterWrapper *from,
 			uint16_t startWritingAtIndex);
 
 private:
-	bool pointsToStream;
+	bool pointsToStream = false;
 
 	Type type;
-	uint8_t rows;
-	uint8_t columns;
-	void *data;
-	const void *readonlyData;
+	uint8_t rows = 0;
+	uint8_t columns = 0;
+	void *data = nullptr;
+	const void *readonlyData = nullptr;
 
 	template<typename T>
 	ReturnValue_t serializeData(uint8_t** buffer, size_t* size,
@@ -136,4 +130,33 @@ private:
 			const void *from, uint8_t fromRows, uint8_t fromColumns);
 };
 
-#endif /* PARAMETERWRAPPER_H_ */
+template <typename T>
+inline ReturnValue_t ParameterWrapper::getElement(T *value, uint8_t row,
+		uint8_t column) const {
+	if (readonlyData == nullptr){
+		return NOT_SET;
+	}
+
+	if (PodTypeConversion<T>::type != type) {
+		return DATATYPE_MISSMATCH;
+	}
+
+	if ((row >= rows) or (column >= columns)) {
+		return OUT_OF_BOUNDS;
+	}
+
+	if (pointsToStream) {
+		const uint8_t *streamWithType = static_cast<const uint8_t*>(readonlyData);
+		streamWithType += (row * columns + column) * type.getSize();
+		int32_t size = type.getSize();
+		return SerializeAdapter::deSerialize(value, &streamWithType,
+				&size, true);
+	}
+	else {
+		const T *dataWithType = static_cast<const T*>(readonlyData);
+		*value = dataWithType[row * columns + column];
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+}
+
+#endif /* FSFW_PARAMETERS_PARAMETERWRAPPER_H_ */

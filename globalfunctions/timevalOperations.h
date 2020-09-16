@@ -41,6 +41,7 @@ namespace timevalOperations {
  * @return seconds
  */
 double toDouble(const timeval timeval);
+timeval toTimeval(const double seconds);
 }
 
 #endif /* TIMEVALOPERATIONS_H_ */

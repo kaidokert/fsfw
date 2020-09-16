@@ -1,7 +1,8 @@
-#include "CCSDSTime.h"
-#include <stdio.h>
-#include <inttypes.h>
-#include <math.h>
+#include "../timemanager/CCSDSTime.h"
+#include <cstdio>
+#include <cinttypes>
+#include <cmath>
+
 
 CCSDSTime::CCSDSTime() {
 }
@@ -119,7 +120,7 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
 
 	if (temp->pField & (1 << 3)) { //day of year variation
 		uint16_t tempDay = (temp->month << 8) + temp->day;
-		ReturnValue_t result = convertDaysOfYear(tempDay, to->year,
+		result = convertDaysOfYear(tempDay, to->year,
 				&(temp->month), &(temp->day));
 		if (result != RETURN_OK) {
 			return result;

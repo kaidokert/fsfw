@@ -10,6 +10,12 @@
 #include "../ipc/MutexIF.h"
 #include <map>
 
+#ifdef DEBUG
+// forward declaration, should be implemented by mission
+extern const char* translateObject(object_id_t object);
+extern const char* translateEvents(Event event);
+#endif
+
 class EventManager: public EventManagerIF,
 		public ExecutableObjectIF,
 		public SystemObject {
@@ -36,11 +42,11 @@ public:
 	ReturnValue_t performOperation(uint8_t opCode);
 protected:
 
-	MessageQueueIF* eventReportQueue;
+	MessageQueueIF* eventReportQueue = nullptr;
 
 	std::map<MessageQueueId_t, EventMatchTree> listenerList;
 
-	MutexIF* mutex;
+	MutexIF* mutex = nullptr;
 
 	static const uint8_t N_POOLS = 3;
 	LocalPool<N_POOLS> factoryBackend;

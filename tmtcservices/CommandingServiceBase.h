@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
-#define FRAMEWORK_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
+#ifndef FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
+#define FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/StorageManagerIF.h"
@@ -211,8 +211,7 @@ protected:
 
 	virtual void doPeriodicOperation();
 
-
-	struct CommandInfo {
+	struct CommandInfo: public SerializeIF{
 		struct tcInfo {
 			uint8_t ackFlags;
 			uint16_t tcPacketId;
@@ -225,6 +224,20 @@ protected:
 		Command_t command;
 		object_id_t objectId;
 		FIFO<store_address_t, 3> fifo;
+
+		virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+					size_t maxSize, Endianness streamEndianness) const override{
+			return HasReturnvaluesIF::RETURN_FAILED;
+		};
+
+		virtual size_t getSerializedSize() const override {
+			return 0;
+		};
+
+		virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+				Endianness streamEndianness) override{
+			return HasReturnvaluesIF::RETURN_FAILED;
+		};
 	};
 
 	using CommandMapIter = FixedMap<MessageQueueId_t,
@@ -345,4 +358,4 @@ private:
 	void checkTimeout();
 };
 
-#endif /* COMMANDINGSERVICEBASE_H_ */
+#endif /* FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_ */

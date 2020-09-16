@@ -25,11 +25,9 @@ SimpleRingBuffer::SimpleRingBuffer(uint8_t *buffer, const size_t size,
 	}
 }
 
-
 SimpleRingBuffer::~SimpleRingBuffer() {
 	delete[] buffer;
 }
-
 
 ReturnValue_t SimpleRingBuffer::getFreeElement(uint8_t **writePointer,
         size_t amount) {
@@ -131,5 +129,3 @@ ReturnValue_t SimpleRingBuffer::deleteData(size_t amount,
 	incrementRead(amount, READ_PTR);
 	return HasReturnvaluesIF::RETURN_OK;
 }
-
-
