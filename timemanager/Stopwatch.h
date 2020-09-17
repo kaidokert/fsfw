@@ -40,7 +40,7 @@ public:
      * Calculates the elapsed time since start and returns it
      * @return elapsed time in milliseconds (rounded)
      */
-    dur_millis_t stop();
+    dur_millis_t stop(bool display = false);
     /**
      * Calculates the elapsed time since start and returns it
      * @return elapsed time in seconds (double precision)

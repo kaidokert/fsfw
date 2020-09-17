@@ -6,15 +6,18 @@ Stopwatch::Stopwatch(bool displayOnDestruction,
         StopwatchDisplayMode displayMode): displayOnDestruction(
         displayOnDestruction), displayMode(displayMode) {
     // Measures start time on initialization.
-    Clock::getClock_timeval(&startTime);
+    Clock::getUptime(&startTime);
 }
 
 void Stopwatch::start() {
-    Clock::getClock_timeval(&startTime);
+    Clock::getUptime(&startTime);
 }
 
-dur_millis_t Stopwatch::stop() {
+dur_millis_t Stopwatch::stop(bool display) {
     stopInternal();
+    if(display) {
+        this->display();
+    }
     return elapsedTime.tv_sec * 1000 + elapsedTime.tv_usec / 1000;
 }
 
@@ -52,6 +55,6 @@ StopwatchDisplayMode Stopwatch::getDisplayMode() const {
 
 void Stopwatch::stopInternal() {
 	timeval endTime;
-	Clock::getClock_timeval(&endTime);
+	Clock::getUptime(&endTime);
     elapsedTime = endTime - startTime;
 }
