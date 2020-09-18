@@ -14,13 +14,8 @@
  */
 class HousekeepingPacketDownlink: public SerialLinkedListAdapter<SerializeIF> {
 public:
-    HousekeepingPacketDownlink(sid_t sid, /*bool reportingStatus,
-    		float collectionInterval, uint8_t numberOfParameters, */
-			LocalPoolDataSetBase* dataSetPtr):
-            sourceId(sid.objectId), setId(sid.ownerSetId),
-			/*reportingStatus(reportingStatus),
-			collectionInterval(collectionInterval),
-            numberOfParameters(numberOfParameters), */hkData(dataSetPtr) {
+    HousekeepingPacketDownlink(sid_t sid, LocalPoolDataSetBase* dataSetPtr):
+            sourceId(sid.objectId), setId(sid.ownerSetId), hkData(dataSetPtr) {
         setLinks();
     }
 
@@ -29,17 +24,10 @@ private:
         setStart(&sourceId);
         sourceId.setNext(&setId);
         setId.setNext(&hkData);
-        //setId.setNext(&reportingStatus);
-		//reportingStatus.setNext(&collectionInterval);
-        //collectionInterval.setNext(&numberOfParameters);
-        //numberOfParameters.setNext(&hkData);
     }
 
     SerializeElement<object_id_t> sourceId;
     SerializeElement<uint32_t> setId;
-    //SerializeElement<uint8_t> reportingStatus;
-    //SerializeElement<float> collectionInterval;
-    //SerializeElement<uint8_t> numberOfParameters;
     LinkedElement<SerializeIF> hkData;
 };
 

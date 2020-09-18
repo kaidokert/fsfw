@@ -33,6 +33,14 @@ union sid_t {
 	bool notSet() const {
 	    return raw == INVALID_ADDRESS;
 	}
+
+	bool operator==(const sid_t& other) const {
+		return raw == other.raw;
+	}
+
+	bool operator!=(const sid_t& other) const {
+		return not (raw == other.raw);
+	}
 };
 
 
@@ -57,7 +65,7 @@ public:
 
 	static constexpr uint8_t MESSAGE_ID = messagetypes::HOUSEKEEPING;
 
-	static constexpr Command_t ENABLE_PERIODIC_HK_GENERATION =
+	static constexpr Command_t ENABLE_PERIODIC_HK_REPORT_GENERATION =
 			MAKE_COMMAND_ID(5);
 	static constexpr Command_t DISABLE_PERIODIC_HK_REPORT_GENERATION =
 			MAKE_COMMAND_ID(6);

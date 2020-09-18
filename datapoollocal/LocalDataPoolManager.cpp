@@ -35,7 +35,7 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
 	    AcceptsHkPacketsIF* hkPacketReceiver =
 	            objectManager->get<AcceptsHkPacketsIF>(defaultHkDestination);
 	    if(hkPacketReceiver != nullptr) {
-	        defaultHkDestinationId = hkPacketReceiver->getHkQueue();
+	        hkDestinationId = hkPacketReceiver->getHkQueue();
 	    }
 	}
 }
@@ -78,9 +78,6 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 ReturnValue_t LocalDataPoolManager::performHkOperation() {
     for(auto& hkReceiversIter: hkReceiversMap) {
         HkReceiver* receiver = &hkReceiversIter.second;
-        if(not receiver->reportingEnabled) {
-            return HasReturnvaluesIF::RETURN_OK;
-        }
 
         switch(receiver->reportingType) {
         case(ReportingType::PERIODIC): {
@@ -118,7 +115,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 	hkReceiver.dataId.dataSetSid = sid;
 	hkReceiver.reportingType = ReportingType::PERIODIC;
 	hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
-	hkReceiver.reportingEnabled = enableReporting;
+
 	if(not isDiagnostics) {
 	    hkReceiver.hkParameter.collectionIntervalTicks =
 	            intervalSecondsToInterval(isDiagnostics, collectionInterval *
@@ -129,7 +126,13 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 	            intervalSecondsToInterval(isDiagnostics, collectionInterval);
 	}
 
-	hkReceiver.isDiagnostics = isDiagnostics;
+	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
+	            owner->getDataSetHandle(sid));
+	if(dataSet != nullptr) {
+		dataSet->setReportingEnabled(enableReporting);
+		dataSet->setIsDiagnostic(isDiagnostics);
+	}
+
 	hkReceiver.intervalCounter = 1;
 
 	hkReceiversMap.emplace(packetDestination, hkReceiver);
@@ -139,16 +142,51 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 		CommandMessage* message) {
     Command_t command = message->getCommand();
+    sid_t sid = HousekeepingMessage::getSid(message);
     switch(command) {
+    case(HousekeepingMessage::ENABLE_PERIODIC_DIAGNOSTICS_GENERATION):
+    	return togglePeriodicGeneration(sid, true, true);
+    case(HousekeepingMessage::DISABLE_PERIODIC_DIAGNOSTICS_GENERATION):
+		return togglePeriodicGeneration(sid, false, true);
+    case(HousekeepingMessage::ENABLE_PERIODIC_HK_REPORT_GENERATION):
+		return togglePeriodicGeneration(sid, true, false);
+    case(HousekeepingMessage::DISABLE_PERIODIC_HK_REPORT_GENERATION):
+		return togglePeriodicGeneration(sid, false, false);
+
     case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
     case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
-        //return generateSetStructurePacket(message->getSid());
+		return generateSetStructurePacket(sid);
+
+    case(HousekeepingMessage::MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL):
+    case(HousekeepingMessage::MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL): {
+    	float newCollIntvl = 0;
+    	HousekeepingMessage::getCollectionIntervalModificationCommand(message,
+    			&newCollIntvl);
+    	if(command == HousekeepingMessage::
+    			MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL) {
+    		return changeCollectionInterval(sid, newCollIntvl, true);
+    	}
+    	else {
+    		return changeCollectionInterval(sid, newCollIntvl, false);
+    	}
+    }
+
     case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
-		return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
-				false, true);
-    case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT):
-        return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
-        		true, true);
+    case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT): {
+    	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
+    			owner->getDataSetHandle(sid));
+    	if(command == HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT
+    			and dataSet->getIsDiagnostics()) {
+    		return WRONG_HK_PACKET_TYPE;
+    	}
+    	else if(command == HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT
+    			and not dataSet->getIsDiagnostics()) {
+    		return WRONG_HK_PACKET_TYPE;
+    	}
+    	return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
+    			dataSet, true);
+    }
+
     default:
         return CommandMessageIF::UNKNOWN_COMMAND;
     }
@@ -175,17 +213,17 @@ const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
 }
 
 ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
-        bool isDiagnostics, bool forDownlink, MessageQueueId_t destination) {
-	LocalPoolDataSetBase* dataSetToSerialize =
-			dynamic_cast<LocalPoolDataSetBase*>(owner->getDataSetHandle(sid));
-	if(dataSetToSerialize == nullptr) {
+		LocalPoolDataSetBase* dataSet, bool forDownlink,
+		MessageQueueId_t destination) {
+	if(dataSet == nullptr) {
+		// Configuration error.
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
 				" Set ID not found or dataset not assigned!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
 	store_address_t storeId;
-	HousekeepingPacketDownlink hkPacket(sid, dataSetToSerialize);
+	HousekeepingPacketDownlink hkPacket(sid, dataSet);
 	size_t serializedSize = 0;
 	ReturnValue_t result = serializeHkPacketIntoStore(hkPacket, storeId,
 			forDownlink, &serializedSize);
@@ -195,7 +233,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 
 	// and now we set a HK message and send it the HK packet destination.
 	CommandMessage hkMessage;
-	if(isDiagnostics) {
+	if(dataSet->getIsDiagnostics()) {
 		HousekeepingMessage::setHkDiagnosticsReply(&hkMessage, sid, storeId);
 	}
 	else {
@@ -206,11 +244,11 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	    return QUEUE_OR_DESTINATION_NOT_SET;
 	}
 	if(destination == MessageQueueIF::NO_QUEUE) {
-	    if(defaultHkDestinationId == MessageQueueIF::NO_QUEUE) {
+	    if(hkDestinationId == MessageQueueIF::NO_QUEUE) {
 	        // error, all destinations invalid
 	        return HasReturnvaluesIF::RETURN_FAILED;
 	    }
-	    destination = defaultHkDestinationId;
+	    destination = hkDestinationId;
 	}
 
 	return hkQueue->sendMessage(destination, &hkMessage);
@@ -273,8 +311,15 @@ void LocalDataPoolManager::setNonDiagnosticIntervalFactor(
 void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver* receiver) {
     if(receiver->intervalCounter >=
             receiver->hkParameter.collectionIntervalTicks) {
+    	sid_t sid = receiver->dataId.dataSetSid;
+    	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
+    			owner->getDataSetHandle(sid));
+    	if(not dataSet->getReportingEnabled()) {
+    		return;
+    	}
+
         ReturnValue_t result = generateHousekeepingPacket(
-                receiver->dataId.dataSetSid, receiver->isDiagnostics, true);
+                sid, dataSet, true);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             // configuration error
             sif::debug << "LocalDataPoolManager::performHkOperation:"
@@ -311,4 +356,44 @@ float LocalDataPoolManager::intervalToIntervalSeconds(bool isDiagnostics,
         return static_cast<float>(collectionInterval *
                 regularMinimumInterval);
     }
+}
+
+ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
+		bool enable, bool isDiagnostics) {
+	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
+			owner->getDataSetHandle(sid));
+	if((dataSet->getIsDiagnostics() and not isDiagnostics) or
+			(not dataSet->getIsDiagnostics() and isDiagnostics)) {
+		return WRONG_HK_PACKET_TYPE;
+	}
+
+	if((dataSet->getReportingEnabled() and enable) or
+			(not dataSet->getReportingEnabled() and not enable)) {
+		return REPORTING_STATUS_UNCHANGED;
+	}
+
+	dataSet->setReportingEnabled(enable);
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
+		float newCollectionInterval, bool isDiagnostics) {
+	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
+				owner->getDataSetHandle(sid));
+	bool targetIsDiagnostics = dataSet->getIsDiagnostics();
+	if((targetIsDiagnostics and not isDiagnostics) or
+			(not targetIsDiagnostics and isDiagnostics)) {
+		return WRONG_HK_PACKET_TYPE;
+	}
+
+	for(auto& receiver: hkReceiversMap) {
+		if(receiver.second.reportingType != ReportingType::PERIODIC) {
+			continue;
+		}
+
+		uint32_t newInterval = intervalSecondsToInterval(isDiagnostics,
+				newCollectionInterval);
+		receiver.second.hkParameter.collectionIntervalTicks = newInterval;
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 }

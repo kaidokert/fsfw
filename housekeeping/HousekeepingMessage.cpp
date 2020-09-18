@@ -39,7 +39,7 @@ void HousekeepingMessage::setToggleReportingCommand(CommandMessage *message,
 	}
 	else {
 		if(enableReporting) {
-			message->setCommand(ENABLE_PERIODIC_HK_GENERATION);
+			message->setCommand(ENABLE_PERIODIC_HK_REPORT_GENERATION);
 		}
 		else {
 			message->setCommand(DISABLE_PERIODIC_HK_REPORT_GENERATION);

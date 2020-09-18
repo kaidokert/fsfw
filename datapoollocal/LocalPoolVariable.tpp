@@ -7,8 +7,8 @@
 
 template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
-		HasLocalDataPoolIF* hkOwner, pool_rwm_t setReadWriteMode,
-		DataSetIF* dataSet):
+		HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
+		pool_rwm_t setReadWriteMode):
 		localPoolId(poolId),readWriteMode(setReadWriteMode) {
 	if(poolId == PoolVariableIF::NO_PARAMETER) {
 		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
@@ -27,7 +27,7 @@ inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
 
 template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
-		pool_rwm_t setReadWriteMode, DataSetIF *dataSet):
+		DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
 		readWriteMode(setReadWriteMode) {
 	if(poolId == PoolVariableIF::NO_PARAMETER) {
 		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "

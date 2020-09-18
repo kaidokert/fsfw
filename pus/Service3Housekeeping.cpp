@@ -116,7 +116,7 @@ ReturnValue_t Service3Housekeeping::prepareReportingTogglingCommand(
 		CommandMessage *command, object_id_t objectId,
 		bool enableReporting, bool isDiagnostics,
 		const uint8_t* tcData, size_t tcDataLen) {
-	if(tcDataLen < sizeof(object_id_t)) {
+	if(tcDataLen < sizeof(sid_t)) {
 		// TC data should consist of object ID and set ID.
 		return CommandingServiceBase::INVALID_TC;
 	}

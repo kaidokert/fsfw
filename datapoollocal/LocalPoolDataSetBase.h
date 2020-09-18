@@ -32,6 +32,7 @@ class LocalDataPoolManager;
  * @ingroup data_pool
  */
 class LocalPoolDataSetBase: public PoolDataSetBase {
+	friend class LocalDataPoolManager;
 public:
 	/**
 	 * @brief	Constructor for the creator of local pool data.
@@ -97,11 +98,23 @@ public:
 	 * If this is true, all contained datasets will also be set recursively.
 	 */
 	void setValidity(bool valid, bool setEntriesRecursively);
-
 	bool isValid() const override;
+
+	void setIsDiagnostic(bool diagnostics);
+	bool getIsDiagnostics() const;
 
 protected:
 	sid_t sid;
+
+	bool isDiagnostics = false;
+
+	void setReportingEnabled(bool enabled);
+	bool getReportingEnabled() const;
+	/**
+	 * Used for periodic generation.
+	 */
+    bool reportingEnabled = false;
+
 	/**
 	 * If the valid state of a dataset is always relevant to the whole
 	 * data set we can use this flag.

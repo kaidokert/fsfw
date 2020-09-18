@@ -175,6 +175,22 @@ void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     *byte |= 1 << shiftNumber;
 }
 
+void LocalPoolDataSetBase::setIsDiagnostic(bool isDiagnostics) {
+	this->isDiagnostics = isDiagnostics;
+}
+
+bool LocalPoolDataSetBase::getIsDiagnostics() const {
+	return isDiagnostics;
+}
+
+void LocalPoolDataSetBase::setReportingEnabled(bool reportingEnabled) {
+	this->reportingEnabled = reportingEnabled;
+}
+
+bool LocalPoolDataSetBase::getReportingEnabled() const {
+	return reportingEnabled;
+}
+
 bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
 		uint8_t position) const {
     if(position > 7) {
