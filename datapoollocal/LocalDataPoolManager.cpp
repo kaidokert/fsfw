@@ -144,8 +144,11 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
     case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
         //return generateSetStructurePacket(message->getSid());
     case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
+		return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
+				false, true);
     case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT):
-        //return generateHousekeepingPacket(message->getSid());
+        return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
+        		true, true);
     default:
         return CommandMessageIF::UNKNOWN_COMMAND;
     }

@@ -85,17 +85,21 @@ private:
 	ReturnValue_t generateHkReport(const CommandMessage* hkMessage,
 			uint8_t subserviceId);
 	ReturnValue_t prepareReportingTogglingCommand(CommandMessage* command,
-			bool enableReporting, bool isDiagnostics, const uint8_t* tcData,
-			size_t tcDataLen);
+			object_id_t objectId, bool enableReporting, bool isDiagnostics,
+			const uint8_t* tcData, size_t tcDataLen);
 	ReturnValue_t prepareStructureReportingCommand(CommandMessage* command,
-			bool isDiagnostics, const uint8_t* tcData, size_t tcDataLen);
-	ReturnValue_t prepareOneShotReportCommand(CommandMessage* command,
-			bool isDiagnostics, const uint8_t* tcData, size_t tcDataLen);
-	ReturnValue_t prepareCollectionIntervalModificationCommand(
-			CommandMessage* command, bool isDiagnostics, const uint8_t* tcData,
+			object_id_t objectId, bool isDiagnostics, const uint8_t* tcData,
 			size_t tcDataLen);
+	ReturnValue_t prepareOneShotReportCommand(CommandMessage* command,
+			object_id_t objectId, bool isDiagnostics, const uint8_t* tcData,
+			size_t tcDataLen);
+	ReturnValue_t prepareCollectionIntervalModificationCommand(
+			CommandMessage* command, object_id_t objectId, bool isDiagnostics,
+			const uint8_t* tcData, size_t tcDataLen);
 
 	void handleUnrequestedReply(CommandMessage* reply) override;
+	sid_t buildSid(object_id_t objectId, const uint8_t* tcData,
+			size_t tcDataLen);
 };
 
 #endif /* FSFW_PUS_SERVICE3HOUSEKEEPINGSERVICE_H_ */
