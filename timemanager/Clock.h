@@ -67,6 +67,8 @@ public:
 
 	static timeval getUptime();
 
+	static uint32_t getUptimeSeconds();
+
 	/**
 	 * Get the time since boot in milliseconds
 	 *

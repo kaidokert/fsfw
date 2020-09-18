@@ -1,3 +1,4 @@
+#include <fsfw/timemanager/Stopwatch.h>
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../timemanager/Clock.h"
 
@@ -76,14 +77,23 @@ timeval Clock::getUptime() {
 
 ReturnValue_t Clock::getUptime(timeval* uptime) {
     //TODO This is not posix compatible and delivers only seconds precision
-    // is the OS not called Linux?
-    //Linux specific file read but more precise
+    // Linux specific file read but more precise.
     double uptimeSeconds;
     if(std::ifstream("/proc/uptime",std::ios::in) >> uptimeSeconds){
         uptime->tv_sec = uptimeSeconds;
         uptime->tv_usec = uptimeSeconds *(double) 1e6 - (uptime->tv_sec *1e6);
     }
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+uint32_t Clock::getUptimeSeconds() {
+	//TODO This is not posix compatible and delivers only seconds precision
+	struct sysinfo sysInfo;
+	int result = sysinfo(&sysInfo);
+	if(result != 0){
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	return sysInfo.uptime;
 }
 
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
