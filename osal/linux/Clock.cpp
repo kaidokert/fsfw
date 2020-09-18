@@ -83,6 +83,16 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
         uptime->tv_sec = uptimeSeconds;
         uptime->tv_usec = uptimeSeconds *(double) 1e6 - (uptime->tv_sec *1e6);
     }
+
+	//TODO This is not posix compatible and delivers only seconds precision
+    // I suggest this is moved into another clock function which will
+    // deliver second precision later.
+//	struct sysinfo sysInfo;
+//	int result = sysinfo(&sysInfo);
+//	if(result != 0){
+//		return HasReturnvaluesIF::RETURN_FAILED;
+//	}
+//	return sysInfo.uptime;
     return HasReturnvaluesIF::RETURN_OK;
 }
 
