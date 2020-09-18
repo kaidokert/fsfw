@@ -13,6 +13,7 @@
  * 			class that is announced to ObjectManager. It automatically includes
  * 			itself (and therefore the inheriting class) in the object manager's
  * 			list.
+ * @author	Ulrich Mohr
  * @ingroup system_objects
  */
 class SystemObject: public SystemObjectIF {
