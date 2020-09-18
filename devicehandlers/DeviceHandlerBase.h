@@ -1,25 +1,26 @@
-#ifndef FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
-#define FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+#ifndef FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+#define FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+
+#include "DeviceHandlerIF.h"
+#include "DeviceCommunicationIF.h"
+#include "DeviceHandlerFailureIsolation.h"
 
 #include "../objectmanager/SystemObject.h"
 #include "../tasks/ExecutableObjectIF.h"
-#include "../devicehandlers/DeviceHandlerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../action/HasActionsIF.h"
 #include "../datapool/PoolVariableIF.h"
-#include "../devicehandlers/DeviceCommunicationIF.h"
 #include "../modes/HasModesIF.h"
 #include "../power/PowerSwitchIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../tasks/PeriodicTaskIF.h"
-
 #include "../action/ActionHelper.h"
 #include "../health/HealthHelper.h"
 #include "../parameters/ParameterHelper.h"
 #include "../datapool/HkSwitchHelper.h"
 #include "../datapoollocal/HasLocalDataPoolIF.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
-#include "../devicehandlers/DeviceHandlerFailureIsolation.h"
+
 #include <map>
 
 namespace Factory{
@@ -1205,4 +1206,4 @@ private:
                 size_t receivedDataLen);
 };
 
-#endif /* FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */
+#endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */

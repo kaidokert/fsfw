@@ -1,18 +1,18 @@
-#include "../devicehandlers/DeviceHandlerBase.h"
+#include "DeviceHandlerBase.h"
+#include "AcceptsDeviceResponsesIF.h"
+#include "DeviceTmReportingWrapper.h"
+
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../thermal/ThermalComponentIF.h"
-#include "../devicehandlers/AcceptsDeviceResponsesIF.h"
-
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
-#include "../devicehandlers/DeviceTmReportingWrapper.h"
 #include "../globalfunctions/CRC.h"
 #include "../housekeeping/HousekeepingMessage.h"
 #include "../ipc/MessageQueueMessage.h"
-#include "../subsystem/SubsystemBase.h"
 #include "../ipc/QueueFactory.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../subsystem/SubsystemBase.h"
 
 #include <iomanip>
 
