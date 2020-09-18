@@ -1,6 +1,7 @@
-#ifndef FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
-#define FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
-#include "../timemanager/Clock.h"
+#ifndef FSFW_TIMEMANAGER_STOPWATCH_H_
+#define FSFW_TIMEMANAGER_STOPWATCH_H_
+
+#include "Clock.h"
 
 enum class StopwatchDisplayMode {
     MILLIS,
@@ -66,6 +67,4 @@ private:
 };
 
 
-
-
-#endif /* FRAMEWORK_TIMEMANAGER_STOPWATCH_H_ */
+#endif /* FSFW_TIMEMANAGER_STOPWATCH_H_ */
