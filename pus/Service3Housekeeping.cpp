@@ -121,7 +121,7 @@ ReturnValue_t Service3Housekeeping::prepareReportingTogglingCommand(
 		return CommandingServiceBase::INVALID_TC;
 	}
 
-	sid_t targetSid = buildSid(objectId, tcData, tcDataLen);
+	sid_t targetSid = buildSid(objectId, &tcData, &tcDataLen);
 	HousekeepingMessage::setToggleReportingCommand(command, targetSid,
 			enableReporting, isDiagnostics);
 	return HasReturnvaluesIF::RETURN_OK;
@@ -135,7 +135,7 @@ ReturnValue_t Service3Housekeeping::prepareStructureReportingCommand(
 		return CommandingServiceBase::INVALID_TC;
 	}
 
-	sid_t targetSid = buildSid(objectId, tcData, tcDataLen);
+	sid_t targetSid = buildSid(objectId, &tcData, &tcDataLen);
 	HousekeepingMessage::setStructureReportingCommand(command, targetSid,
 			isDiagnostics);
 	return HasReturnvaluesIF::RETURN_OK;
@@ -149,7 +149,7 @@ ReturnValue_t Service3Housekeeping::prepareOneShotReportCommand(
 		return CommandingServiceBase::INVALID_TC;
 	}
 
-	sid_t targetSid = buildSid(objectId, tcData, tcDataLen);
+	sid_t targetSid = buildSid(objectId, &tcData, &tcDataLen);
 	HousekeepingMessage::setOneShotReportCommand(command, targetSid,
 			isDiagnostics);
 	return HasReturnvaluesIF::RETURN_OK;
@@ -163,7 +163,7 @@ ReturnValue_t Service3Housekeeping::prepareCollectionIntervalModificationCommand
 		return CommandingServiceBase::INVALID_TC;
 	}
 
-	sid_t targetSid = buildSid(objectId, tcData, tcDataLen);
+	sid_t targetSid = buildSid(objectId, &tcData, &tcDataLen);
 	float newCollectionInterval = 0;
 	SerializeAdapter::deSerialize(&newCollectionInterval, &tcData, &tcDataLen,
 			SerializeIF::Endianness::BIG);
@@ -270,14 +270,14 @@ ReturnValue_t Service3Housekeeping::generateHkReport(
 }
 
 sid_t Service3Housekeeping::buildSid(object_id_t objectId,
-		const uint8_t* tcData, size_t tcDataLen) {
+		const uint8_t** tcData, size_t* tcDataLen) {
 	sid_t targetSid;
 	targetSid.objectId = objectId;
 	// skip deserialization of object ID, was already done.
-	tcData += sizeof(object_id_t);
-	tcDataLen -= sizeof(object_id_t);
+	*tcData += sizeof(object_id_t);
+	*tcDataLen -= sizeof(object_id_t);
 	// size check is expected to be performed beforehand!
-	SerializeAdapter::deSerialize(&targetSid.ownerSetId, &tcData, &tcDataLen,
+	SerializeAdapter::deSerialize(&targetSid.ownerSetId, tcData, tcDataLen,
 			SerializeIF::Endianness::BIG);
 	return targetSid;
 }

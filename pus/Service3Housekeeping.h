@@ -98,8 +98,8 @@ private:
 			const uint8_t* tcData, size_t tcDataLen);
 
 	void handleUnrequestedReply(CommandMessage* reply) override;
-	sid_t buildSid(object_id_t objectId, const uint8_t* tcData,
-			size_t tcDataLen);
+	sid_t buildSid(object_id_t objectId, const uint8_t** tcData,
+			size_t* tcDataLen);
 };
 
 #endif /* FSFW_PUS_SERVICE3HOUSEKEEPINGSERVICE_H_ */
