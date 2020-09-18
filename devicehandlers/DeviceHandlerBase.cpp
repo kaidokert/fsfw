@@ -1275,10 +1275,14 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
+			//so we can track misconfigurations
 			sif::debug << std::hex << getObjectId()
 					<< ": DHB::buildInternalCommand: Command "
-					<< deviceCommandId << " isExecuting" << std::endl; //so we can track misconfigurations
-			return; //this is an internal command, no need to report a failure here, missed reply will track if a reply is too late, otherwise, it's ok
+					<< deviceCommandId << " isExecuting" << std::dec
+					<< std::endl;
+			// this is an internal command, no need to report a failure here,
+			// missed reply will track if a reply is too late, otherwise, it's ok
+			return;
 		} else {
 			iter->second.sendReplyTo = NO_COMMANDER;
 			iter->second.isExecuting = true;
