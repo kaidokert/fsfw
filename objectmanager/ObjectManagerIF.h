@@ -1,8 +1,8 @@
-#ifndef FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
-#define FRAMEWORK_OBJECTMANAGER_OBJECTMANAGERIF_H_
+#ifndef FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
+#define FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
-#include "../objectmanager/frameworkObjects.h"
-#include "../objectmanager/SystemObjectIF.h"
+#include "frameworkObjects.h"
+#include "SystemObjectIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
@@ -79,6 +79,7 @@ public:
 /**
  * @brief	This is the forward declaration of the global objectManager instance.
  */
+// maybe but this in the glob namespace to explicitely mark it global?
 extern ObjectManagerIF *objectManager;
 
 /*Documentation can be found in the class method declaration above.*/

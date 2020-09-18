@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_OBJECTMANAGER_SYSTEMOBJECTIF_H_
-#define FRAMEWORK_OBJECTMANAGER_SYSTEMOBJECTIF_H_
+#ifndef FSFW_OBJECTMANAGER_SYSTEMOBJECTIF_H_
+#define FSFW_OBJECTMANAGER_SYSTEMOBJECTIF_H_
 
 #include "../events/EventReportingProxyIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -59,4 +59,4 @@ public:
 	virtual ReturnValue_t checkObjectConnections() = 0;
 };
 
-#endif /* FRAMEWORK_OBJECTMANAGER_SYSTEMOBJECTIF_H_ */
+#endif /* #ifndef FSFW_OBJECTMANAGER_SYSTEMOBJECTIF_H_ */
