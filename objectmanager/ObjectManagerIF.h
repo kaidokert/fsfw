@@ -79,7 +79,7 @@ public:
 /**
  * @brief	This is the forward declaration of the global objectManager instance.
  */
-// maybe but this in the glob namespace to explicitely mark it global?
+// SHOULDDO: maybe put this in the glob namespace to explicitely mark it global?
 extern ObjectManagerIF *objectManager;
 
 /*Documentation can be found in the class method declaration above.*/
