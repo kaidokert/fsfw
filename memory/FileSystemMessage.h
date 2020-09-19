@@ -1,17 +1,13 @@
-/*
- * FileSystemMessage.h
- *
- *  Created on: 19.01.2020
- *      Author: Jakob Meier
+#ifndef FSFW_MEMORY_FILESYSTEMMESSAGE_H_
+#define FSFW_MEMORY_FILESYSTEMMESSAGE_H_
+
+#include "../ipc/CommandMessage.h"
+#include "../storagemanager/StorageManagerIF.h"
+#include "../objectmanager/SystemObject.h"
+
+/**
+ * @author  Jakob Meier
  */
-
-#ifndef FRAMEWORK_MEMORY_FILESYSTEMMESSAGE_H_
-#define FRAMEWORK_MEMORY_FILESYSTEMMESSAGE_H_
-
-#include <framework/ipc/CommandMessage.h>
-#include <framework/storagemanager/StorageManagerIF.h>
-#include <framework/objectmanager/SystemObject.h>
-
 class FileSystemMessage {
 private:
 	FileSystemMessage(); //A private ctor inhibits instantiation
@@ -37,4 +33,4 @@ public:
 	static void setCompletionReply(CommandMessage* message, Command_t completionStatus);
 };
 
-#endif /* FRAMEWORK_MEMORY_FILESYSTEMMESSAGE_H_ */
+#endif /* FSFW_MEMORY_FILESYSTEMMESSAGE_H_ */

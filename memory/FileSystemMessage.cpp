@@ -1,12 +1,5 @@
-/*
- * FileSystemMessage.cpp
- *
- *  Created on: 19.01.2020
- *      Author: Jakob Meier
- */
-
-#include <framework/memory/FileSystemMessage.h>
-#include <framework/objectmanager/ObjectManagerIF.h>
+#include "FileSystemMessage.h"
+#include "../objectmanager/ObjectManagerIF.h"
 
 
 ReturnValue_t FileSystemMessage::setDeleteFileCommand(

@@ -39,8 +39,7 @@ ReturnValue_t Service2DeviceAccess::getMessageQueueAndObject(
     SerializeAdapter::deSerialize(objectId, &tcData,
                 &tcDataLen, SerializeIF::Endianness::BIG);
 
-	ReturnValue_t result = checkInterfaceAndAcquireMessageQueue(id,objectId);
-	return result;
+    return checkInterfaceAndAcquireMessageQueue(id,objectId);
 }
 
 ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
