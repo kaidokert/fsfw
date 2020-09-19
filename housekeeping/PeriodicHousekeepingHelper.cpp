@@ -10,10 +10,11 @@ void PeriodicHousekeepingHelper::initialize(float collectionInterval,
 		dur_millis_t minimumPeriodicInterval, bool isDiagnostics,
 		uint8_t nonDiagIntervalFactor) {
 	this->minimumPeriodicInterval = minimumPeriodicInterval;
-	if(not owner->getIsDiagnostics()) {
+	if(isDiagnostics) {
 		this->minimumPeriodicInterval = this->minimumPeriodicInterval *
 				nonDiagIntervalFactor;
 	}
+	collectionIntervalTicks = intervalSecondsToInterval(collectionInterval);
 }
 
 float PeriodicHousekeepingHelper::getCollectionIntervalInSeconds() {

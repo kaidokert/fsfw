@@ -17,6 +17,24 @@
 template <uint8_t NUM_VARIABLES>
 class StaticLocalDataSet: public LocalPoolDataSetBase {
 public:
+	/**
+	 * Constructor used by data owner and creator like device handlers.
+	 * This constructor also initialized the components required for
+	 * periodic handling.
+	 * @param hkOwner
+	 * @param setId
+	 */
+    StaticLocalDataSet(HasLocalDataPoolIF* hkOwner,
+    		uint32_t setId): LocalPoolDataSetBase(hkOwner, setId, nullptr,
+            NUM_VARIABLES) {
+        this->setContainer(poolVarList.data());
+    }
+
+	/**
+	 * Constructor used by data users like controllers.
+	 * @param hkOwner
+	 * @param setId
+	 */
     StaticLocalDataSet(sid_t sid): LocalPoolDataSetBase(sid, nullptr,
             NUM_VARIABLES) {
         this->setContainer(poolVarList.data());

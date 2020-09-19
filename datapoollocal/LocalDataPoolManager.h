@@ -5,6 +5,7 @@
 
 #include "../housekeeping/HousekeepingPacketDownlink.h"
 #include "../housekeeping/HousekeepingMessage.h"
+#include "../housekeeping/PeriodicHousekeepingHelper.h"
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolEntry.h"
 #include "../objectmanager/SystemObjectIF.h"
@@ -131,16 +132,15 @@ public:
 
     /**
      * Different types of housekeeping reporting are possible.
-     *  1. PERIODIC: HK packets are generated in fixed intervals and sent to
+     *  1. PERIODIC:
+     *     HK packets are generated in fixed intervals and sent to
      *     destination. Fromat will be raw.
-     *  2. UPDATED: Notification will be sent out if HK data has changed.
-     *     Question: Send Raw data directly or just the message?
-     *  3. REQUESTED: HK packets are only generated if explicitely requested.
+     *  2. UPDATE_NOTIFICATION:
+     *     Notification will be sent out if HK data has changed.
+     *  3. UPDATE_SNAPSHOT:
+     *     HK packets are only generated if explicitely requested.
      *     Propably not necessary, just use multiple local data sets or
      *     shared datasets.
-     *
-     *  Notifications should also be possible for single variables instead of
-     *  full dataset updates.
      */
     enum class ReportingType: uint8_t {
         //! Periodic generation of HK packets.
@@ -150,6 +150,17 @@ public:
         //! Notification will be sent out as message and a snapshot of the
         //! current data will be generated.
         UPDATE_SNAPSHOT,
+    };
+
+    /**
+     * Different data types are possible in the HK receiver map.
+     * For example, updates can be requested for full datasets or
+     * for single pool variables. Periodic reporting is only possible for
+     * data sets.
+     */
+    enum class DataType: uint8_t {
+    	LOCAL_POOL_VARIABLE,
+		DATA_SET
     };
 
     /* Copying forbidden */
@@ -165,8 +176,6 @@ private:
     HasLocalDataPoolIF* owner = nullptr;
 
     uint8_t nonDiagnosticIntervalFactor = 0;
-    dur_millis_t regularMinimumInterval = 0;
-    dur_millis_t diagnosticMinimumInterval = 0;
 
 	/** Default receiver for periodic HK packets */
 	static object_id_t defaultHkDestination;
@@ -174,40 +183,25 @@ private:
 
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
-        /** Different member of this union will be used depending on the
-        type of data the receiver is interested in (full datasets or
-        single data variables. */
+		/** Object ID of receiver */
+		object_id_t objectId = objects::NO_OBJECT;
+
+		DataType dataType = DataType::DATA_SET;
         union DataId {
-        	DataId(): dataSetSid() {}
-            /** Will be initialized to INVALID_ADDRESS */
-            sid_t dataSetSid;
-            lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
+			DataId(): sid() {};
+            sid_t sid;
+            lp_id_t localPoolId;
         };
         DataId dataId;
 
         ReportingType reportingType = ReportingType::PERIODIC;
-        // SHOULDDO: it would be nice to also have the object ID instead of
-        // a queue (or in addition).. but the FSFW is not ready  for that yet.
-        // Also, an object can have multiple queues.
         MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
-
-        /** Different members of this union will be used depending on reporting
-        type */
-        union HkParameter {
-            /** This parameter will be used for the PERIODIC type */
-            uint32_t collectionIntervalTicks = 0;
-            /** This parameter will be used for the ON_UPDATE type */
-            bool hkDataChanged;
-        };
-        HkParameter hkParameter;
-        /** General purpose counter which is used for periodic generation. */
-        uint32_t intervalCounter;
     };
 
-    /** Using a multimap as the same object might request multiple datasets */
-    using HkReceiversMap = std::multimap<object_id_t, struct HkReceiver>;
+    /** This vector will contain the list of HK receivers. */
+    using HkReceivers = std::vector<struct HkReceiver>;
 
-    HkReceiversMap hkReceiversMap;
+    HkReceivers hkReceiversMap;
 
     /** This is the map holding the actual data. Should only be initialized
      * once ! */
@@ -252,18 +246,12 @@ private:
 	        HousekeepingPacketDownlink& hkPacket,
 	        store_address_t& storeId, bool forDownlink, size_t* serializedSize);
 
-	uint32_t intervalSecondsToInterval(bool isDiagnostics,
-	        float collectionIntervalSeconds);
-	float intervalToIntervalSeconds(bool isDiagnostics,
-	        uint32_t collectionInterval);
-
-	void performPeriodicHkGeneration(HkReceiver* hkReceiver);
+	void performPeriodicHkGeneration(HkReceiver& hkReceiver);
 	ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable,
 			bool isDiagnostics);
 	ReturnValue_t changeCollectionInterval(sid_t sid,
 			float newCollectionInterval, bool isDiagnostics);
-	ReturnValue_t generateSetStructurePacket(sid_t sid,
-			float collectionInterval, bool isDiagnostics);
+	ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
 };
 
 

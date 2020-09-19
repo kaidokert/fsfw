@@ -3,14 +3,15 @@
 
 #include "../ipc/CommandMessage.h"
 #include "../ipc/FwMessageTypes.h"
+#include "../objectmanager/frameworkObjects.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../storagemanager/StorageManagerIF.h"
-#include <limits>
 
 union sid_t {
-	static constexpr uint64_t INVALID_ADDRESS =
-			std::numeric_limits<uint64_t>::max();
-	sid_t(): raw(INVALID_ADDRESS) {}
+	static constexpr uint64_t INVALID_SID = -1;
+	static constexpr uint32_t INVALID_SET_ID = -1;
+	static constexpr uint32_t INVALID_OBJECT_ID = objects::NO_OBJECT;
+	sid_t(): raw(INVALID_SID) {}
 
 	sid_t(object_id_t objectId, uint32_t setId):
 			objectId(objectId),
@@ -31,7 +32,7 @@ union sid_t {
 	uint64_t raw;
 
 	bool notSet() const {
-	    return raw == INVALID_ADDRESS;
+	    return raw == INVALID_SID;
 	}
 
 	bool operator==(const sid_t& other) const {

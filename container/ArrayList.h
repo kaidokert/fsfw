@@ -140,7 +140,11 @@ public:
 
         //SHOULDDO this should be implemented as non-member
         bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) const {
-            return !(*this == other);
+        	// POSSIBLY BUGGY ! Also this is really confusing. Why does
+        	// the operator above use the value while this one
+        	// dereferences itself?
+        	//return not (value == other.value);
+        	return !(*this == other);
         }
     };
 

@@ -9,7 +9,8 @@
 #include <map>
 
 class LocalDataPoolManager;
-class DataSetIF;
+class LocalPoolDataSetBase;
+
 /**
  * @brief	Type definition for local pool entries.
  */
@@ -76,7 +77,7 @@ public:
 	 * @param sid Corresponding structure ID
 	 * @return
 	 */
-	virtual DataSetIF* getDataSetHandle(sid_t sid) = 0;
+	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
 
 	/* These function can be implemented by pool owner, as they are required
 	 * by the housekeeping message interface */

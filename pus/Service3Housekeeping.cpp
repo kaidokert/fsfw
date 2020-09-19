@@ -6,7 +6,7 @@
 Service3Housekeeping::Service3Housekeeping(object_id_t objectId, uint16_t apid,
 			uint8_t serviceId):
 		CommandingServiceBase(objectId, apid, serviceId,
-		NUM_OF_PARALLEL_COMMANDS, COMMAND_TIMEOUT_SECONDS) {}
+		NUM_OF_PARALLEL_COMMANDS, 5) {}
 
 Service3Housekeeping::~Service3Housekeeping() {}
 

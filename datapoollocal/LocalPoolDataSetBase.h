@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 
-#include <fsfw/housekeeping/PeriodicHousekeepingHelper.h>
+
 #include "HasLocalDataPoolIF.h"
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
@@ -10,6 +10,7 @@
 #include <vector>
 
 class LocalDataPoolManager;
+class PeriodicHousekeepingHelper;
 
 /**
  * @brief	The LocalDataSet class manages a set of locally checked out
@@ -38,14 +39,16 @@ class LocalPoolDataSetBase: public PoolDataSetBase {
 public:
 	/**
 	 * @brief	Constructor for the creator of local pool data.
+	 * @details
+	 * This constructor also initializes the components required for
+	 * periodic handling.
 	 */
 	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 			uint32_t setId, PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables);
 
 	/**
-	 * @brief	Constructor for users of local pool data. The passed pool
-	 * 			owner should implement the HasHkPoolParametersIF.
+	 * @brief	Constructor for users of local pool data.
 	 * @details
 	 * @param sid Unique identifier of dataset consisting of object ID and
 	 * set ID.
@@ -66,6 +69,8 @@ public:
 	~LocalPoolDataSetBase();
 
 	void setValidityBufferGeneration(bool withValidityBuffer);
+
+	sid_t getSid() const;
 
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
 	            SerializeIF::Endianness streamEndianness) const override;
@@ -102,12 +107,15 @@ public:
 	void setValidity(bool valid, bool setEntriesRecursively);
 	bool isValid() const override;
 
+	void setChanged(bool changed);
+	bool isChanged() const;
+
 protected:
 	sid_t sid;
 
-	bool isDiagnostics = false;
-	void setIsDiagnostic(bool diagnostics);
-	bool getIsDiagnostics() const;
+	bool diagnostic = false;
+	void setDiagnostic(bool diagnostics);
+	bool isDiagnostics() const;
 
 	/**
 	 * Used for periodic generation.
@@ -116,11 +124,21 @@ protected:
 	void setReportingEnabled(bool enabled);
 	bool getReportingEnabled() const;
 
+	void initializePeriodicHelper(float collectionInterval,
+			dur_millis_t minimumPeriodicInterval,
+			bool isDiagnostics, uint8_t nonDiagIntervalFactor = 5);
+
 	/**
 	 * If the valid state of a dataset is always relevant to the whole
 	 * data set we can use this flag.
 	 */
 	bool valid = false;
+
+	/**
+	 * Can be used to mark the dataset as changed, which is used
+	 * by the LocalDataPoolManager to send out update messages.
+	 */
+	bool changed = false;
 
 	bool withValidityBuffer = true;
 
@@ -147,7 +165,7 @@ protected:
 	 */
 	void bitSetter(uint8_t* byte, uint8_t position) const;
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
-private:
+
 	PeriodicHousekeepingHelper* periodicHelper = nullptr;
 
 };

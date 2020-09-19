@@ -20,7 +20,6 @@ public:
 private:
 	LocalPoolDataSetBase* owner = nullptr;
 
-
 	uint32_t intervalSecondsToInterval(float collectionIntervalSeconds);
 	float intervalToIntervalSeconds(uint32_t collectionInterval);
 
@@ -29,7 +28,5 @@ private:
 	uint32_t collectionIntervalTicks = 0;
 
 };
-
-
 
 #endif /* FSFW_HOUSEKEEPING_PERIODICHOUSEKEEPINGHELPER_H_ */

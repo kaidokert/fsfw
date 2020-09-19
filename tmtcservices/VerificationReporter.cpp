@@ -63,8 +63,8 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		sif::error << "VerificationReporter::sendFailureReport Error writing "
-				<< "to queue. Code: " << std::hex << status << std::dec
+		sif::error << "VerificationReporter::sendFailureReport: Error writing "
+				<< "to queue. Code: " << std::hex  << "0x" << status << std::dec
 				<< std::endl;
 	}
 }
@@ -81,8 +81,8 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-		sif::error << "VerificationReporter::sendFailureReport Error writing "
-				<< "to queue. Code: " << std::hex << status << std::dec
+		sif::error << "VerificationReporter::sendFailureReport: Error writing "
+				<< "to queue. Code: " << std::hex << "0x" << status << std::dec
 				<< std::endl;
 	}
 }

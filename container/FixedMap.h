@@ -143,6 +143,15 @@ public:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
+	bool empty() {
+		if(_size == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
     bool full() {
         if(_size >= theMap.maxSize()) {
             return true;

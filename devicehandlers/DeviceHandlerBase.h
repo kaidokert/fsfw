@@ -389,7 +389,8 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, PoolDataSetIF* replyDataSet = nullptr,
+			uint16_t maxDelayCycles,
+			LocalPoolDataSetBase* replyDataSet = nullptr,
 			size_t replyLen = 0, bool periodic = false,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 
@@ -404,7 +405,7 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, PoolDataSetIF* dataSet = nullptr,
+			uint16_t maxDelayCycles, LocalPoolDataSetBase* dataSet = nullptr,
 			size_t replyLen = 0, bool periodic = false);
 
 	/**
@@ -434,7 +435,7 @@ protected:
 			bool periodic = false);
 
 	ReturnValue_t setReplyDataset(DeviceCommandId_t replyId,
-	        PoolDataSetIF* dataset);
+	        LocalPoolDataSetBase* dataset);
 
 	/**
 	 * @brief   Can be implemented by child handler to
@@ -663,7 +664,7 @@ protected:
 		//! The dataset used to access housekeeping data related to the
 		//! respective device reply. Will point to a dataset held by
 		//! the child handler (if one is specified)
-		PoolDataSetIF* dataSet = nullptr;
+		LocalPoolDataSetBase* dataSet;
 		//! The command that expects this reply.
 		DeviceCommandMap::iterator command;
 	};
@@ -1198,7 +1199,7 @@ private:
 
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
 
-	virtual DataSetIF* getDataSetHandle(sid_t sid) override;
+	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
 
     virtual dur_millis_t getPeriodicOperationFrequency() const override;
 

@@ -1,5 +1,6 @@
 #include "LocalPoolDataSetBase.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
+#include "../housekeeping/PeriodicHousekeepingHelper.h"
 #include "../serialize/SerializeAdapter.h"
 
 #include <cmath>
@@ -7,13 +8,14 @@
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 		uint32_t setId, PoolVariableIF** registeredVariablesArray,
-        const size_t maxNumberOfVariables):
-        PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
-    if(hkOwner == nullptr) {
-        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
-                << std::endl;
-        return;
-    }
+		const size_t maxNumberOfVariables):
+		PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
+	if(hkOwner == nullptr) {
+		// Configuration error.
+		sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
+				<< "invalid!" << std::endl;
+		return;
+	}
     hkManager = hkOwner->getHkManagerHandle();
     this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
@@ -29,8 +31,9 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
             sid.objectId);
     if(hkOwner == nullptr) {
-        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
-                << std::endl;
+    	// Configuration error.
+        sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
+        		<< "invalid!" << std::endl;
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
@@ -178,12 +181,12 @@ void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     *byte |= 1 << shiftNumber;
 }
 
-void LocalPoolDataSetBase::setIsDiagnostic(bool isDiagnostics) {
-	this->isDiagnostics = isDiagnostics;
+void LocalPoolDataSetBase::setDiagnostic(bool isDiagnostics) {
+	this->diagnostic = isDiagnostics;
 }
 
-bool LocalPoolDataSetBase::getIsDiagnostics() const {
-	return isDiagnostics;
+bool LocalPoolDataSetBase::isDiagnostics() const {
+	return diagnostic;
 }
 
 void LocalPoolDataSetBase::setReportingEnabled(bool reportingEnabled) {
@@ -192,6 +195,25 @@ void LocalPoolDataSetBase::setReportingEnabled(bool reportingEnabled) {
 
 bool LocalPoolDataSetBase::getReportingEnabled() const {
 	return reportingEnabled;
+}
+
+void LocalPoolDataSetBase::initializePeriodicHelper(
+		float collectionInterval, dur_millis_t minimumPeriodicInterval,
+		bool isDiagnostics, uint8_t nonDiagIntervalFactor) {
+	periodicHelper->initialize(collectionInterval, minimumPeriodicInterval,
+			isDiagnostics, nonDiagIntervalFactor);
+}
+
+void LocalPoolDataSetBase::setChanged(bool changed) {
+	this->changed = changed;
+}
+
+bool LocalPoolDataSetBase::isChanged() const {
+	return changed;
+}
+
+sid_t LocalPoolDataSetBase::getSid() const {
+	return sid;
 }
 
 bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,

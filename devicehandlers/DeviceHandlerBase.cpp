@@ -391,7 +391,7 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 
 ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
 		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
-		PoolDataSetIF* replyDataSet, size_t replyLen, bool periodic,
+		LocalPoolDataSetBase* replyDataSet, size_t replyLen, bool periodic,
 		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
 	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
@@ -405,7 +405,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, PoolDataSetIF* dataSet,
+		uint16_t maxDelayCycles, LocalPoolDataSetBase* dataSet,
 		size_t replyLen, bool periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
@@ -455,7 +455,7 @@ ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceRep
 
 
 ReturnValue_t DeviceHandlerBase::setReplyDataset(DeviceCommandId_t replyId,
-        PoolDataSetIF *dataSet) {
+        LocalPoolDataSetBase *dataSet) {
     auto replyIter = deviceReplyMap.find(replyId);
     if(replyIter == deviceReplyMap.end()) {
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -1396,7 +1396,7 @@ ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
+LocalPoolDataSetBase* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
 	auto iter = deviceReplyMap.find(sid.ownerSetId);
 	if(iter != deviceReplyMap.end()) {
 		return iter->second.dataSet;
