@@ -1,6 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 
+#include <fsfw/housekeeping/PeriodicHousekeepingHelper.h>
 #include "HasLocalDataPoolIF.h"
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
@@ -33,6 +34,7 @@ class LocalDataPoolManager;
  */
 class LocalPoolDataSetBase: public PoolDataSetBase {
 	friend class LocalDataPoolManager;
+	friend class PeriodicHousekeepingHelper;
 public:
 	/**
 	 * @brief	Constructor for the creator of local pool data.
@@ -100,20 +102,19 @@ public:
 	void setValidity(bool valid, bool setEntriesRecursively);
 	bool isValid() const override;
 
-	void setIsDiagnostic(bool diagnostics);
-	bool getIsDiagnostics() const;
-
 protected:
 	sid_t sid;
 
 	bool isDiagnostics = false;
+	void setIsDiagnostic(bool diagnostics);
+	bool getIsDiagnostics() const;
 
-	void setReportingEnabled(bool enabled);
-	bool getReportingEnabled() const;
 	/**
 	 * Used for periodic generation.
 	 */
-    bool reportingEnabled = false;
+	bool reportingEnabled = false;
+	void setReportingEnabled(bool enabled);
+	bool getReportingEnabled() const;
 
 	/**
 	 * If the valid state of a dataset is always relevant to the whole
@@ -147,7 +148,7 @@ protected:
 	void bitSetter(uint8_t* byte, uint8_t position) const;
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
 private:
-
+	PeriodicHousekeepingHelper* periodicHelper = nullptr;
 
 };
 

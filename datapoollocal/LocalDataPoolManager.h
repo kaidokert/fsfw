@@ -114,7 +114,6 @@ public:
 	ReturnValue_t generateHousekeepingPacket(sid_t sid,
 			LocalPoolDataSetBase* dataSet, bool forDownlink,
 			MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
-	ReturnValue_t generateSetStructurePacket(sid_t sid);
 
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
@@ -263,6 +262,8 @@ private:
 			bool isDiagnostics);
 	ReturnValue_t changeCollectionInterval(sid_t sid,
 			float newCollectionInterval, bool isDiagnostics);
+	ReturnValue_t generateSetStructurePacket(sid_t sid,
+			float collectionInterval, bool isDiagnostics);
 };
 
 
