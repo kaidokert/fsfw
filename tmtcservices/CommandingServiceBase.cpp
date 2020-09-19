@@ -414,11 +414,10 @@ void CommandingServiceBase::checkTimeout() {
 	// TODO: BUG HERE! Problems with comparison operator of iterator.
 	for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {
 		if(commandMap.empty()) {
-			// intermediate solution.
+			// intermediate solution!
 			break;
 		}
 		if ((iter->second.uptimeOfStart + (timeoutSeconds * 1000)) < uptime) {
-			sif::info << "test" << std::endl;
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
 					iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl,

@@ -6,7 +6,7 @@
 Service3Housekeeping::Service3Housekeeping(object_id_t objectId, uint16_t apid,
 			uint8_t serviceId):
 		CommandingServiceBase(objectId, apid, serviceId,
-		NUM_OF_PARALLEL_COMMANDS, 5) {}
+		NUM_OF_PARALLEL_COMMANDS, COMMAND_TIMEOUT_SECONDS) {}
 
 Service3Housekeeping::~Service3Housekeeping() {}
 
@@ -204,9 +204,9 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
 
 	case(HousekeepingMessage::HK_REQUEST_FAILURE): {
 		failureParameter1 = objectId;
-		// also provide failure reason (returnvalue)
-		// will be most commonly invalid SID or the set already has the desired
-		// reporting status.
+		ReturnValue_t error = HasReturnvaluesIF::RETURN_FAILED;
+		HousekeepingMessage::getHkRequestFailureReply(reply,&error);
+		failureParameter2 = error;
 		return CommandingServiceBase::EXECUTION_COMPLETE;
 	}
 

@@ -96,6 +96,27 @@ sid_t HousekeepingMessage::getCollectionIntervalModificationCommand(
 	return getSid(command);
 }
 
+void HousekeepingMessage::setHkRequestSuccessReply(CommandMessage *reply,
+		sid_t sid) {
+	setSid(reply, sid);
+	reply->setCommand(HK_REQUEST_SUCCESS);
+}
+
+void HousekeepingMessage::setHkRequestFailureReply(CommandMessage *reply,
+		sid_t sid, ReturnValue_t error) {
+	setSid(reply, sid);
+	reply->setCommand(HK_REQUEST_FAILURE);
+	reply->setParameter3(error);
+}
+
+sid_t HousekeepingMessage::getHkRequestFailureReply(const CommandMessage *reply,
+		ReturnValue_t *error) {
+	if(error != nullptr) {
+		*error = reply->getParameter3();
+	}
+	return getSid(reply);
+}
+
 sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
 	sid_t sid;
 	std::memcpy(&sid.raw, message->getData(), sizeof(sid.raw));

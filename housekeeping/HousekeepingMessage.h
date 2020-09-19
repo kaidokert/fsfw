@@ -118,6 +118,12 @@ public:
 	static void setHkDiagnosticsReply(CommandMessage* reply, sid_t sid,
 			store_address_t storeId);
 
+	static void setHkRequestSuccessReply(CommandMessage* reply, sid_t sid);
+	static void setHkRequestFailureReply(CommandMessage* reply, sid_t sid,
+			ReturnValue_t error);
+	static sid_t getHkRequestFailureReply(const CommandMessage* reply,
+			ReturnValue_t* error);
+
 	/**
 	 * @brief	Generic getter function for housekeeping data replies
 	 * @details

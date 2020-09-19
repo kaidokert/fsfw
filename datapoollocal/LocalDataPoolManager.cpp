@@ -130,15 +130,28 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 		CommandMessage* message) {
     Command_t command = message->getCommand();
     sid_t sid = HousekeepingMessage::getSid(message);
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     switch(command) {
-    case(HousekeepingMessage::ENABLE_PERIODIC_DIAGNOSTICS_GENERATION):
-    	return togglePeriodicGeneration(sid, true, true);
-    case(HousekeepingMessage::DISABLE_PERIODIC_DIAGNOSTICS_GENERATION):
-		return togglePeriodicGeneration(sid, false, true);
-    case(HousekeepingMessage::ENABLE_PERIODIC_HK_REPORT_GENERATION):
-		return togglePeriodicGeneration(sid, true, false);
-    case(HousekeepingMessage::DISABLE_PERIODIC_HK_REPORT_GENERATION):
-		return togglePeriodicGeneration(sid, false, false);
+    case(HousekeepingMessage::ENABLE_PERIODIC_DIAGNOSTICS_GENERATION): {
+    	result = togglePeriodicGeneration(sid, true, true);
+    	break;
+    }
+
+    case(HousekeepingMessage::DISABLE_PERIODIC_DIAGNOSTICS_GENERATION): {
+    	result = togglePeriodicGeneration(sid, false, true);
+    	break;
+    }
+
+    case(HousekeepingMessage::ENABLE_PERIODIC_HK_REPORT_GENERATION): {
+    	result = togglePeriodicGeneration(sid, true, false);
+    	break;
+    }
+
+    case(HousekeepingMessage::DISABLE_PERIODIC_HK_REPORT_GENERATION): {
+    	result = togglePeriodicGeneration(sid, false, false);
+    	break;
+    }
+
     case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
     case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
 		//return generateSetStructurePacket(sid, );
@@ -175,6 +188,16 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
     default:
         return CommandMessageIF::UNKNOWN_COMMAND;
     }
+
+    CommandMessage reply;
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		HousekeepingMessage::setHkRequestFailureReply(&reply, sid, result);
+	}
+	else {
+		HousekeepingMessage::setHkRequestSuccessReply(&reply, sid);
+	}
+	hkQueue->sendMessage(hkDestinationId, &reply);
+	return result;
 }
 
 ReturnValue_t LocalDataPoolManager::printPoolEntry(
@@ -294,8 +317,7 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 
 ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
 		bool enable, bool isDiagnostics) {
-	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
-			owner->getDataSetHandle(sid));
+	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 	if((dataSet->isDiagnostics() and not isDiagnostics) or
 			(not dataSet->isDiagnostics() and isDiagnostics)) {
 		return WRONG_HK_PACKET_TYPE;
@@ -312,8 +334,7 @@ ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
 
 ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 		float newCollectionInterval, bool isDiagnostics) {
-	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
-				owner->getDataSetHandle(sid));
+	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 	bool targetIsDiagnostics = dataSet->isDiagnostics();
 	if((targetIsDiagnostics and not isDiagnostics) or
 			(not targetIsDiagnostics and isDiagnostics)) {
