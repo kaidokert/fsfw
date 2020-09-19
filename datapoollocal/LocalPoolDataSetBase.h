@@ -45,7 +45,7 @@ public:
 	 */
 	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 			uint32_t setId, PoolVariableIF** registeredVariablesArray,
-	        const size_t maxNumberOfVariables);
+	        const size_t maxNumberOfVariables, bool noPeriodicHandling = false);
 
 	/**
 	 * @brief	Constructor for users of local pool data.

@@ -8,7 +8,7 @@
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 		uint32_t setId, PoolVariableIF** registeredVariablesArray,
-		const size_t maxNumberOfVariables):
+		const size_t maxNumberOfVariables, bool noPeriodicHandling):
 		PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
 	if(hkOwner == nullptr) {
 		// Configuration error.
@@ -21,7 +21,9 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
     this->sid.ownerSetId = setId;
 
     // Data creators get a periodic helper for periodic HK data generation.
-    periodicHelper = new PeriodicHousekeepingHelper(this);
+    if(not noPeriodicHandling) {
+    	 periodicHelper = new PeriodicHousekeepingHelper(this);
+    }
 }
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
