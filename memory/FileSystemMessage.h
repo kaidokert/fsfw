@@ -30,7 +30,8 @@ public:
 	static ReturnValue_t setReadCommand(CommandMessage* message, store_address_t storageID);
 	static ReturnValue_t setReadReply(CommandMessage* message, store_address_t storageID);
 	static store_address_t getStoreId( const CommandMessage* message );
-	static void setCompletionReply(CommandMessage* message, Command_t completionStatus);
+	static void setSuccessReply(CommandMessage* message);
+	static void setFailureReply(CommandMessage* message, ReturnValue_t errorCode);
 };
 
 #endif /* FSFW_MEMORY_FILESYSTEMMESSAGE_H_ */

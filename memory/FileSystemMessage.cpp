@@ -50,8 +50,12 @@ store_address_t FileSystemMessage::getStoreId(const CommandMessage* message) {
 	return temp;
 }
 
-void FileSystemMessage::setCompletionReply(CommandMessage* message,
-		Command_t completionStatus) {
-	message->setCommand(completionStatus);
+void FileSystemMessage::setSuccessReply(CommandMessage *message) {
+    message->setCommand(COMPLETION_SUCCESS);
 }
 
+void FileSystemMessage::setFailureReply(CommandMessage *message,
+        ReturnValue_t errorCode) {
+    message->setCommand(COMPLETION_SUCCESS);
+    message->setParameter(errorCode);
+}
