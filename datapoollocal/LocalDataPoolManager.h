@@ -57,6 +57,7 @@ public:
 
     static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(0x03);
     static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(0x04);
+    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(0x05);
     /**
      * This constructor is used by a class which wants to implement
      * a personal local data pool. The queueToUse can be supplied if it

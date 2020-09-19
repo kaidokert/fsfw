@@ -163,11 +163,12 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
     			&newCollIntvl);
     	if(command == HousekeepingMessage::
     			MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL) {
-    		return changeCollectionInterval(sid, newCollIntvl, true);
+    		result = changeCollectionInterval(sid, newCollIntvl, true);
     	}
     	else {
-    		return changeCollectionInterval(sid, newCollIntvl, false);
+    		result = changeCollectionInterval(sid, newCollIntvl, false);
     	}
+    	break;
     }
 
     case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
@@ -343,7 +344,7 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 
 	if(dataSet->periodicHelper == nullptr) {
 		// config error
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return PERIODIC_HELPER_INVALID;
 	}
 
 	dataSet->periodicHelper->changeCollectionInterval(newCollectionInterval);
