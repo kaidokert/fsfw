@@ -14,7 +14,12 @@ ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId,
 
 ConstStorageAccessor::~ConstStorageAccessor() {
 	if(deleteData and store != nullptr) {
-		store->deleteData(storeId);
+		ReturnValue_t result = store->deleteData(storeId);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+		    // Configuration error.
+		    sif::error << "ConstStorageAccessor::~ConstStorageAccessor: "
+		            << "Could not delete entry!" << std::endl;
+		}
 	}
 }
 
