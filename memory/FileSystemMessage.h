@@ -32,6 +32,8 @@ public:
 	static store_address_t getStoreId( const CommandMessage* message );
 	static void setSuccessReply(CommandMessage* message);
 	static void setFailureReply(CommandMessage* message, ReturnValue_t errorCode);
+
+	static ReturnValue_t getFailureReply(const CommandMessage* message);
 };
 
 #endif /* FSFW_MEMORY_FILESYSTEMMESSAGE_H_ */

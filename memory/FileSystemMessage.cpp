@@ -59,3 +59,8 @@ void FileSystemMessage::setFailureReply(CommandMessage *message,
     message->setCommand(COMPLETION_SUCCESS);
     message->setParameter(errorCode);
 }
+
+ReturnValue_t FileSystemMessage::getFailureReply(
+		const CommandMessage *message) {
+	return message->getParameter();
+}
