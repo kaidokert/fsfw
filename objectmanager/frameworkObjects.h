@@ -8,6 +8,8 @@ enum framework_objects {
 	PUS_SERVICE_2 = 0x53000002,
 	PUS_SERVICE_5 = 0x53000005,
 	PUS_SERVICE_8 = 0x53000008,
+	PUS_SERVICE_9 = 0x53000009,
+	PUS_SERVICE_17 = 0x53000017,
 	PUS_SERVICE_200 = 0x53000200,
 
 	//Generic IDs for IPC, modes, health, events
