@@ -15,7 +15,7 @@ public:
 	 * Not sure whether this is actually a good idea.
 	 */
 	static ReturnValue_t sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message,
+			MessageQueueMessageIF* message,
 			MessageQueueId_t sentFrom = MessageQueueIF::NO_QUEUE,
 			bool ignoreFault = false);
 private:
