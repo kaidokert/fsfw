@@ -1,9 +1,8 @@
 #include "HealthHelper.h"
-#include "../ipc/MessageQueueSenderIF.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
+
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId) :
-		healthTable(NULL), eventSender(NULL), objectId(objectId), parentQueue(
-				0), owner(owner) {
+		objectId(objectId), owner(owner) {
 }
 
 HealthHelper::~HealthHelper() {
@@ -40,9 +39,19 @@ void HealthHelper::setParentQueue(MessageQueueId_t parentQueue) {
 ReturnValue_t HealthHelper::initialize() {
 	healthTable = objectManager->get<HealthTableIF>(objects::HEALTH_TABLE);
 	eventSender = objectManager->get<EventReportingProxyIF>(objectId);
-	if ((healthTable == NULL) || eventSender == NULL) {
-		return HasReturnvaluesIF::RETURN_FAILED;
+
+	if (healthTable == nullptr) {
+	    sif::error << "HealthHelper::initialize: Health table object needs"
+	            "to be created in factory." << std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
+
+	if(eventSender == nullptr) {
+	    sif::error << "HealthHelper::initialize: Owner has to implement "
+	            "ReportingProxyIF." << std::endl;
+	    return ObjectManagerIF::CHILD_INIT_FAILED;
+	}
+
 	ReturnValue_t result = healthTable->registerObject(objectId,
 			HasHealthIF::HEALTHY);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -62,22 +71,22 @@ void HealthHelper::setHealth(HasHealthIF::HealthState health) {
 
 void HealthHelper::informParent(HasHealthIF::HealthState health,
 		HasHealthIF::HealthState oldHealth) {
-	if (parentQueue == 0) {
+	if (parentQueue == MessageQueueIF::NO_QUEUE) {
 		return;
 	}
-	CommandMessage message;
-	HealthMessage::setHealthMessage(&message, HealthMessage::HEALTH_INFO,
+	CommandMessage information;
+	HealthMessage::setHealthMessage(&information, HealthMessage::HEALTH_INFO,
 			health, oldHealth);
-	if (MessageQueueSenderIF::sendMessage(parentQueue, &message,
-			owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
+	if (MessageQueueSenderIF::sendMessage(parentQueue, &information,
+	        owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
 		sif::debug << "HealthHelper::informParent: sending health reply failed."
 				<< std::endl;
 	}
 }
 
-void HealthHelper::handleSetHealthCommand(CommandMessage* message) {
-	ReturnValue_t result = owner->setHealth(HealthMessage::getHealth(message));
-	if (message->getSender() == 0) {
+void HealthHelper::handleSetHealthCommand(CommandMessage* command) {
+	ReturnValue_t result = owner->setHealth(HealthMessage::getHealth(command));
+	if (command->getSender() == MessageQueueIF::NO_QUEUE) {
 		return;
 	}
 	CommandMessage reply;
@@ -85,12 +94,12 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* message) {
 		HealthMessage::setHealthMessage(&reply,
 				HealthMessage::REPLY_HEALTH_SET);
 	} else {
-		reply.setReplyRejected(result, message->getCommand());
+		reply.setReplyRejected(result, command->getCommand());
 	}
-	if (MessageQueueSenderIF::sendMessage(message->getSender(), &reply,
-			owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
-		sif::debug
-				<< "HealthHelper::handleHealthCommand: sending health reply failed."
-				<< std::endl;
+	if (MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
+	        owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
+		sif::debug << "HealthHelper::handleHealthCommand: sending health "
+		        "reply failed." << std::endl;
+
 	}
 }

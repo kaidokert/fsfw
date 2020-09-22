@@ -6,8 +6,8 @@
 #include <linux/sysinfo.h>
 #include <time.h>
 #include <unistd.h>
+#include <fstream>
 
-//#include <fstream>
 uint16_t Clock::leapSeconds = 0;
 MutexIF* Clock::timeMutex = NULL;
 
@@ -75,24 +75,25 @@ timeval Clock::getUptime() {
 }
 
 ReturnValue_t Clock::getUptime(timeval* uptime) {
+    //TODO This is not posix compatible and delivers only seconds precision
+    // is the OS not called Linux?
+    //Linux specific file read but more precise
+    double uptimeSeconds;
+    if(std::ifstream("/proc/uptime",std::ios::in) >> uptimeSeconds){
+        uptime->tv_sec = uptimeSeconds;
+        uptime->tv_usec = uptimeSeconds *(double) 1e6 - (uptime->tv_sec *1e6);
+    }
+
 	//TODO This is not posix compatible and delivers only seconds precision
-	struct sysinfo sysInfo;
-	int result = sysinfo(&sysInfo);
-	if(result != 0){
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	uptime->tv_sec = sysInfo.uptime;
-	uptime->tv_usec = 0;
-
-
-	//Linux specific file read but more precise
-//	double uptimeSeconds;
-//	if(std::ifstream("/proc/uptime",std::ios::in) >> uptimeSeconds){
-//		uptime->tv_sec = uptimeSeconds;
-//		uptime->tv_usec = uptimeSeconds *(double) 1e6 - (uptime->tv_sec *1e6);
+    // I suggest this is moved into another clock function which will
+    // deliver second precision later.
+//	struct sysinfo sysInfo;
+//	int result = sysinfo(&sysInfo);
+//	if(result != 0){
+//		return HasReturnvaluesIF::RETURN_FAILED;
 //	}
-
-	return HasReturnvaluesIF::RETURN_OK;
+//	return sysInfo.uptime;
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {

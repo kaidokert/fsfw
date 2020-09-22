@@ -1,6 +1,6 @@
-#include "../events/EventManagerIF.h"
 #include "ObjectManager.h"
 #include "SystemObject.h"
+#include "../events/EventManagerIF.h"
 
 SystemObject::SystemObject(object_id_t setObjectId, bool doRegister) :
 		objectId(setObjectId), registered(doRegister) {
