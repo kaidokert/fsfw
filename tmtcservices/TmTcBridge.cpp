@@ -95,8 +95,9 @@ ReturnValue_t TmTcBridge::handleTm() {
     ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
 	ReturnValue_t result = handleTmQueue();
 	if(result != RETURN_OK) {
-		sif::error << "TmTcBridge::handleTm: Error handling TM queue!"
-		        << std::endl;
+		sif::error << "TmTcBridge::handleTm: Error handling TM queue with "
+		       << "error code 0x" << std::hex << result  << std::dec
+			   << "!" << std::endl;
 		status = result;
 	}
 
