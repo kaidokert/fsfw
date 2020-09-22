@@ -34,7 +34,6 @@ private:
 		SET_TIME = 128 //!< [EXPORT] : [COMMAND] Time command in ASCII, CUC or CDS format
 	};
 
-	void setIsisClock(Clock::TimeOfDay_t& timeOfDay);
 };
 
 
