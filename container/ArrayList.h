@@ -95,10 +95,9 @@ public:
 
 		//SHOULDDO this should be implemented as non-member
 		bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) const {
-			return !(*this == other);
+			return !(*this ==other);
 		}
-	}
-	;
+	};
 
 	/**
 	 * Number of Elements stored in this List
