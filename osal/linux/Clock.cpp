@@ -6,8 +6,8 @@
 #include <linux/sysinfo.h>
 #include <time.h>
 #include <unistd.h>
+#include <fstream>
 
-//#include <fstream>
 uint16_t Clock::leapSeconds = 0;
 MutexIF* Clock::timeMutex = NULL;
 
