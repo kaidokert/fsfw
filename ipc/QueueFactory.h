@@ -1,7 +1,9 @@
-#ifndef FRAMEWORK_IPC_QUEUEFACTORY_H_
-#define FRAMEWORK_IPC_QUEUEFACTORY_H_
+#ifndef FSFW_IPC_QUEUEFACTORY_H_
+#define FSFW_IPC_QUEUEFACTORY_H_
+
 
 #include "MessageQueueIF.h"
+#include "../ipc/MessageQueueMessage.h"
 #include <stdint.h>
 /**
  * Creates message queues.
@@ -30,4 +32,4 @@ private:
 	static QueueFactory* factoryInstance;
 };
 
-#endif /* FRAMEWORK_IPC_QUEUEFACTORY_H_ */
+#endif /* FSFW_IPC_QUEUEFACTORY_H_ */
