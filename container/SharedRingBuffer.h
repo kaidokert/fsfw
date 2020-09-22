@@ -1,8 +1,8 @@
 #ifndef FSFW_CONTAINER_SHAREDRINGBUFFER_H_
 #define FSFW_CONTAINER_SHAREDRINGBUFFER_H_
 
-#include <fsfw/container/DynamicFIFO.h>
 #include "SimpleRingBuffer.h"
+#include "DynamicFIFO.h"
 #include "../ipc/MutexIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../timemanager/Clock.h"
