@@ -384,7 +384,7 @@ void CommandingServiceBase::acceptPacket(uint8_t reportId,
 }
 
 
-void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter iter) {
+void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
 	store_address_t address;
 	if (iter->second.fifo.retrieve(&address) != RETURN_OK) {
 		commandMap.erase(&iter);
