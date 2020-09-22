@@ -1,18 +1,13 @@
+#ifndef FSFW_TIMEMANAGER_COUNTDOWN_H_
+#define FSFW_TIMEMANAGER_COUNTDOWN_H_
+
+#include "Clock.h"
+
 /**
- * @file	Countdown.h
  * @brief	This file defines the Countdown class.
- * @date	21.03.2013
  * @author	baetz
  */
-
-#ifndef COUNTDOWN_H_
-#define COUNTDOWN_H_
-
-#include "../timemanager/Clock.h"
-
 class Countdown {
-private:
-	uint32_t startTime;
 public:
 	uint32_t timeout;
 	Countdown(uint32_t initialTimeout = 0);
@@ -23,9 +18,14 @@ public:
 
 	bool isBusy() const;
 
-	ReturnValue_t resetTimer(); //!< Use last set timeout value and restart timer.
+	//!< Use last set timeout value and restart timer.
+	ReturnValue_t resetTimer();
 
-	void timeOut(); //!< Make hasTimedOut() return true
+	//!< Make hasTimedOut() return true
+	void timeOut();
+
+private:
+	uint32_t startTime = 0;
 };
 
-#endif /* COUNTDOWN_H_ */
+#endif /* FSFW_TIMEMANAGER_COUNTDOWN_H_ */
