@@ -39,7 +39,11 @@ class CommandingServiceBase: public SystemObject,
 		public HasReturnvaluesIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
+	// We could make this configurable via preprocessor and the FSFWConfig file.
+	static constexpr uint8_t COMMAND_INFO_FIFO_DEPTH = 3;
+
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_SERVICE_BASE;
+
 	static const ReturnValue_t EXECUTION_COMPLETE = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t NO_STEP_MESSAGE = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t OBJECT_BUSY = MAKE_RETURN_CODE(3);
@@ -211,8 +215,7 @@ protected:
 
 	virtual void doPeriodicOperation();
 
-
-	struct CommandInfo {
+	struct CommandInfo: public SerializeIF{
 		struct tcInfo {
 			uint8_t ackFlags;
 			uint16_t tcPacketId;
@@ -224,7 +227,21 @@ protected:
 		uint32_t state;
 		Command_t command;
 		object_id_t objectId;
-		FIFO<store_address_t, 3> fifo;
+		FIFO<store_address_t, COMMAND_INFO_FIFO_DEPTH> fifo;
+
+		virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+					size_t maxSize, Endianness streamEndianness) const override{
+			return HasReturnvaluesIF::RETURN_FAILED;
+		};
+
+		virtual size_t getSerializedSize() const override {
+			return 0;
+		};
+
+		virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+				Endianness streamEndianness) override {
+			return HasReturnvaluesIF::RETURN_FAILED;
+		};
 	};
 
 	using CommandMapIter = FixedMap<MessageQueueId_t,
@@ -299,7 +316,7 @@ protected:
 	ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF* content,
 			SerializeIF* header = nullptr);
 
-	void checkAndExecuteFifo(CommandMapIter iter);
+	void checkAndExecuteFifo(CommandMapIter& iter);
 
 private:
 	/**
