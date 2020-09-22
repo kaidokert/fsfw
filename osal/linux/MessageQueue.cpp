@@ -1,5 +1,6 @@
-#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "MessageQueue.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManagerIF.h"
 
 #include <fstream>
 
@@ -9,9 +10,11 @@
 #include <errno.h>
 
 
+
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
 		id(MessageQueueIF::NO_QUEUE),lastPartner(MessageQueueIF::NO_QUEUE),
-		defaultDestination(MessageQueueIF::NO_QUEUE) {
+		defaultDestination(MessageQueueIF::NO_QUEUE),
+		maxMessageSize(maxMessageSize) {
 	//debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
 	mq_attr attributes;
 	this->id = 0;
@@ -46,7 +49,7 @@ MessageQueue::~MessageQueue() {
 	status = mq_unlink(name);
 	if(status != 0){
 		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
-				   << strerror(errno) <<std::endl;
+				   << strerror(errno) << std::endl;
 	}
 }
 
@@ -61,22 +64,27 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		// Just an additional helpful printout :-)
 		if(std::ifstream("/proc/sys/fs/mqueue/msg_max",std::ios::in) >>
 				defaultMqMaxMsg and defaultMqMaxMsg < messageDepth) {
-			// See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
-			// This happens if the msg_max value is not large enough
-			// It is ignored if the executable is run in privileged mode.
-			// Run the unlockRealtime script or grant the mode manually by using:
-			// sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
+			/*
+			See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
+			This happens if the msg_max value is not large enough
+			It is ignored if the executable is run in privileged mode.
+		    Run the unlockRealtime script or grant the mode manually by using:
+			sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
 
-			// Persistent solution for session:
-			// echo <newMsgMax> | sudo tee /proc/sys/fs/mqueue/msg_max
+			Persistent solution for session:
+			echo <newMsgMax> | sudo tee /proc/sys/fs/mqueue/msg_max
 
-			// Permanent solution:
-			// sudo nano /etc/sysctl.conf
-			// Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
-			// Apply changes with: sudo sysctl -p
+			Permanent solution:
+			sudo nano /etc/sysctl.conf
+			Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
+			Apply changes with: sudo sysctl -p
+			*/
 			sif::error << "MessageQueue::MessageQueue: Default MQ size "
 					<< defaultMqMaxMsg << " is too small for requested size "
 					<< messageDepth << std::endl;
+			sif::error << "This error can be fixed by setting the maximum "
+					"allowed message size higher!" << std::endl;
+
 		}
 		break;
 	}
@@ -118,15 +126,15 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, bool ignoreFault) {
+		MessageQueueMessageIF* message, bool ignoreFault) {
 	return sendMessageFrom(sendTo, message, this->getId(), false);
 }
 
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessageIF* message) {
 	return sendToDefaultFrom(message, this->getId());
 }
 
-ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
 	if (this->lastPartner != 0) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
@@ -134,21 +142,34 @@ ReturnValue_t MessageQueue::reply(MessageQueueMessage* message) {
 	}
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 		MessageQueueId_t* receivedFrom) {
 	ReturnValue_t status = this->receiveMessage(message);
 	*receivedFrom = this->lastPartner;
 	return status;
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
+ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
+	if(message == nullptr) {
+		sif::error << "MessageQueue::receiveMessage: Message is "
+				"nullptr!" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
+	if(message->getMaximumMessageSize() < maxMessageSize) {
+		sif::error << "MessageQueue::receiveMessage: Message size "
+				<< message->getMaximumMessageSize()
+				<< " too small to receive data!" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	unsigned int messagePriority = 0;
 	int status = mq_receive(id,reinterpret_cast<char*>(message->getBuffer()),
-			message->MAX_MESSAGE_SIZE,&messagePriority);
+			message->getMaximumMessageSize(),&messagePriority);
 	if (status > 0) {
 		this->lastPartner = message->getSender();
 		//Check size of incoming message.
-		if (message->messageSize < message->getMinimumMessageSize()) {
+		if (message->getMessageSize() < message->getMinimumMessageSize()) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
@@ -158,7 +179,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessage* message) {
 	} else {
 		//No message was received. Keep lastPartner anyway, I might send
 		//something later. But still, delete packet content.
-		memset(message->getData(), 0, message->MAX_DATA_SIZE);
+		memset(message->getData(), 0, message->getMaximumMessageSize());
 		switch(errno){
 		case EAGAIN:
 			//O_NONBLOCK or MQ_NONBLOCK was set and there are no messages
@@ -258,16 +279,17 @@ void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
 	this->defaultDestination = defaultDestination;
 }
 
-ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
-		MessageQueueMessage* message, MessageQueueId_t sentFrom,
-		bool ignoreFault) {
-	return sendMessageFromMessageQueue(sendTo,message,sentFrom,ignoreFault);
-
-}
-
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessage* message,
+ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 		MessageQueueId_t sentFrom, bool ignoreFault) {
 	return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
+}
+
+
+ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
+		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
+		bool ignoreFault) {
+	return sendMessageFromMessageQueue(sendTo,message, sentFrom,ignoreFault);
+
 }
 
 MessageQueueId_t MessageQueue::getDefaultDestination() const {
@@ -281,11 +303,18 @@ bool MessageQueue::isDefaultDestinationSet() const {
 uint16_t MessageQueue::queueCounter = 0;
 
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
-		MessageQueueMessage *message, MessageQueueId_t sentFrom,
+		MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
+	if(message == nullptr) {
+		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
+				"nullptr!" << std::endl;
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	message->setSender(sentFrom);
 	int result = mq_send(sendTo,
-			reinterpret_cast<const char*>(message->getBuffer()), message->messageSize,0);
+			reinterpret_cast<const char*>(message->getBuffer()),
+			message->getMessageSize(),0);
 
 	//TODO: Check if we're in ISR.
 	if (result != 0) {
@@ -303,13 +332,16 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			//MQ_NONBLOCK flag was set in its attributes, and the
 			//specified queue is full.
 			return MessageQueueIF::FULL;
-		case EBADF:
+		case EBADF: {
 			//mq_des doesn't represent a valid message queue descriptor,
 			//or mq_des wasn't opened for writing.
-			sif::error << "MessageQueue::sendMessage: Configuration error "
-			           << strerror(errno) << " in mq_send mqSendTo: " << sendTo
-					   << " sent from " << sentFrom << std::endl;
-			/*NO BREAK*/
+			sif::error << "MessageQueue::sendMessage: Configuration error, MQ"
+					<< " destination invalid."  << std::endl;
+			sif::error << strerror(errno) << " in "
+					<<"mq_send to: " << sendTo << " sent from "
+					<< sentFrom << std::endl;
+			return DESTINVATION_INVALID;
+		}
 		case EINTR:
 			//The call was interrupted by a signal.
 		case EINVAL:
