@@ -384,10 +384,10 @@ void CommandingServiceBase::acceptPacket(uint8_t reportId,
 }
 
 
-void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter iter) {
+void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
 	store_address_t address;
 	if (iter->second.fifo.retrieve(&address) != RETURN_OK) {
-		commandMap.erase(iter->first);
+		commandMap.erase(&iter);
 	} else {
 		TcPacketStored newPacket(address);
 		startExecution(&newPacket, iter);
@@ -411,12 +411,7 @@ void CommandingServiceBase::checkTimeout() {
 	uint32_t uptime;
 	Clock::getUptime(&uptime);
 	CommandMapIter iter;
-	// TODO: BUG HERE! Problems with comparison operator of iterator.
 	for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {
-		if(commandMap.empty()) {
-			// intermediate solution!
-			break;
-		}
 		if ((iter->second.uptimeOfStart + (timeoutSeconds * 1000)) < uptime) {
 			verificationReporter.sendFailureReport(
 					TC_VERIFY::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
