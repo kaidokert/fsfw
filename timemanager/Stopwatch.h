@@ -1,5 +1,6 @@
-#ifndef FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
-#define FRAMEWORK_TIMEMANAGER_STOPWATCH_H_
+#ifndef FSFW_TIMEMANAGER_STOPWATCH_H_
+#define FSFW_TIMEMANAGER_STOPWATCH_H_
+
 #include "Clock.h"
 
 enum class StopwatchDisplayMode {
@@ -40,12 +41,12 @@ public:
      * Calculates the elapsed time since start and returns it
      * @return elapsed time in milliseconds (rounded)
      */
-    dur_millis_t stop();
+    dur_millis_t stop(bool display = false);
     /**
      * Calculates the elapsed time since start and returns it
      * @return elapsed time in seconds (double precision)
      */
-    dur_seconds_t stopSeconds();
+    double stopSeconds();
 
     /**
      * Displays the elapsed times on the osstream, depending on internal display
@@ -66,6 +67,4 @@ private:
 };
 
 
-
-
-#endif /* FRAMEWORK_TIMEMANAGER_STOPWATCH_H_ */
+#endif /* FSFW_TIMEMANAGER_STOPWATCH_H_ */
