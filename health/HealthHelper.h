@@ -114,7 +114,8 @@ private:
 	 * @param health the health is passed as parameter so that the number of calls to the health table can be minimized
 	 * @param oldHealth information of the previous health state.
 	 */
-	void informParent(HasHealthIF::HealthState health, HasHealthIF::HealthState oldHealth);
+	void informParent(HasHealthIF::HealthState health,
+	        HasHealthIF::HealthState oldHealth);
 
 	void handleSetHealthCommand(CommandMessage *message);
 };

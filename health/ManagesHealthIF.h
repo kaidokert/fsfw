@@ -1,8 +1,9 @@
-#ifndef FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
-#define FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_
+#ifndef FSFW_HEALTH_MANAGESHEALTHIF_H_
+#define FSFW_HEALTH_MANAGESHEALTHIF_H_
 
-#include "../health/HasHealthIF.h"
+#include "HasHealthIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
+
 class ManagesHealthIF {
 public:
 	virtual ~ManagesHealthIF() {
@@ -49,4 +50,4 @@ public:
 	}
 };
 
-#endif /* FRAMEWORK_HEALTH_MANAGESHEALTHIF_H_ */
+#endif /* FSFW_HEALTH_MANAGESHEALTHIF_H_ */
