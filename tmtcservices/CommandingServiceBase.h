@@ -316,7 +316,7 @@ protected:
 	ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF* content,
 			SerializeIF* header = nullptr);
 
-	void checkAndExecuteFifo(CommandMapIter iter);
+	void checkAndExecuteFifo(CommandMapIter& iter);
 
 private:
 	/**
