@@ -1,7 +1,6 @@
 #include "Countdown.h"
 
-Countdown::Countdown(uint32_t initialTimeout): startTime(0),
-		timeout(initialTimeout) {
+Countdown::Countdown(uint32_t initialTimeout): timeout(initialTimeout) {
 }
 
 Countdown::~Countdown() {
