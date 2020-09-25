@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
-#define FRAMEWORK_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
+#ifndef FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
+#define FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
 
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../tasks/SemaphoreIF.h"
@@ -7,16 +7,20 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+// todo: does not work for older FreeRTOS version, so we should
+// actually check whether tskKERNEL_VERSION_MAJOR is larger than.. 7 or 8 ?
+
 /**
  * @brief 	Binary Semaphore implementation using the task notification value.
  * 			The notification value should therefore not be used
- * 			for other purposes.
+ * 			for other purposes!
  * @details
  * Additional information: https://www.freertos.org/RTOS-task-notifications.html
  * and general semaphore documentation.
  * This semaphore is bound to the task it is created in!
- * Take care of calling this function with the correct executing task,
- * (for example in the initializeAfterTaskCreation() function).
+ * Take care of building this class with the correct executing task,
+ * (for example in the initializeAfterTaskCreation() function) or
+ * by calling refreshTaskHandle() with the correct executing task.
  */
 class BinarySemaphoreUsingTask: public SemaphoreIF,
 		public HasReturnvaluesIF {
@@ -27,6 +31,16 @@ public:
 	BinarySemaphoreUsingTask();
 	//! @brief Default dtor
 	virtual~ BinarySemaphoreUsingTask();
+
+	/**
+	 * This function can be used to get the correct task handle from the
+	 * currently executing task.
+	 *
+	 * This is required because the task notification value will be used
+	 * as a binary semaphore, and the semaphore might be created by another
+	 * task.
+	 */
+	void refreshTaskHandle();
 
 	ReturnValue_t acquire(TimeoutType timeoutType = TimeoutType::BLOCKING,
 	        uint32_t timeoutMs = portMAX_DELAY) override;
@@ -70,10 +84,10 @@ public:
 	 *         - @c RETURN_FAILED on failure
 	 */
 	static ReturnValue_t releaseFromISR(TaskHandle_t taskToNotify,
-				BaseType_t * higherPriorityTaskWoken);
+				BaseType_t* higherPriorityTaskWoken);
 
 protected:
 	TaskHandle_t handle;
 };
 
-#endif /* FRAMEWORK_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_ */
+#endif /* FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_ */
