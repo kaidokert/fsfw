@@ -154,9 +154,9 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
     }
 
     case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
+        return generateSetStructurePacket(sid, true);
     case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
-		//return generateSetStructurePacket(sid, );
-		return HasReturnvaluesIF::RETURN_OK;
+        return generateSetStructurePacket(sid, false);
     case(HousekeepingMessage::MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL):
     case(HousekeepingMessage::MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL): {
     	float newCollIntvl = 0;
@@ -354,6 +354,7 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 		bool isDiagnostics) {
+    // Get and check dataset first.
 	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
 			owner->getDataSetHandle(sid));
 	if(dataSet == nullptr) {
@@ -373,6 +374,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 	float collectionInterval =
 			dataSet->periodicHelper->getCollectionIntervalInSeconds();
 
+	// Generate set packet which can be serialized.
 	HousekeepingSetPacket setPacket = HousekeepingSetPacket(sid,
 			reportingEnabled, valid, collectionInterval, dataSet);
 	size_t expectedSize = setPacket.getSerializedSize();
@@ -386,6 +388,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 		return result;
 	}
 
+	// Serialize set packet into store.
 	size_t size = 0;
 	result = setPacket.serialize(&storePtr, &size, expectedSize,
 			SerializeIF::Endianness::BIG);
@@ -394,6 +397,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 				"Expected size is not equal to serialized size" << std::endl;
 	}
 
+	// Send structure reporting reply.
 	CommandMessage reply;
 	if(isDiagnostics) {
 	    HousekeepingMessage::setDiagnosticsStuctureReportReply(&reply,
