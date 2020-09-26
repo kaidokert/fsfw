@@ -1,12 +1,5 @@
-/**
- * @file	ModeMessage.h
- * @brief	This file defines the ModeMessage class.
- * @date	17.07.2013
- * @author	baetz
- */
-
-#ifndef MODEMESSAGE_H_
-#define MODEMESSAGE_H_
+#ifndef FSFW_MODES_MODEMESSAGE_H_
+#define FSFW_MODES_MODEMESSAGE_H_
 
 #include "../ipc/CommandMessage.h"
 
@@ -30,11 +23,12 @@ public:
 
 	static Mode_t getMode(const CommandMessage* message);
 	static Submode_t getSubmode(const CommandMessage* message);
-	static ReturnValue_t setModeMessage(CommandMessage* message,
+    static ReturnValue_t getCantReachModeReason(const CommandMessage* message);
+
+	static void setModeMessage(CommandMessage* message,
 			Command_t command, Mode_t mode, Submode_t submode);
-	static void cantReachMode(CommandMessage* message, ReturnValue_t reason);
-	static ReturnValue_t getCantReachModeReason(const CommandMessage* message);
+	static void setCantReachMode(CommandMessage* message, ReturnValue_t reason);
 	static void clear(CommandMessage* message);
 };
 
-#endif /* MODEMESSAGE_H_ */
+#endif /* FSFW_MODES_MODEMESSAGE_H_ */
