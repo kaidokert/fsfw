@@ -121,6 +121,12 @@ public:
 	static void setHkRequestSuccessReply(CommandMessage* reply, sid_t sid);
 	static void setHkRequestFailureReply(CommandMessage* reply, sid_t sid,
 			ReturnValue_t error);
+
+	static void setHkStuctureReportReply(CommandMessage* reply,
+	        sid_t sid, store_address_t storeId);
+	static void setDiagnosticsStuctureReportReply(CommandMessage* reply,
+	            sid_t sid, store_address_t storeId);
+
 	static sid_t getHkRequestFailureReply(const CommandMessage* reply,
 			ReturnValue_t* error);
 

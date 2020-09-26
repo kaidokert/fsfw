@@ -126,3 +126,17 @@ sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
 void HousekeepingMessage::setSid(CommandMessage *message, sid_t sid) {
 	std::memcpy(message->getData(), &sid.raw, sizeof(sid.raw));
 }
+
+void HousekeepingMessage::setHkStuctureReportReply(CommandMessage *reply,
+        sid_t sid, store_address_t storeId) {
+    reply->setCommand(HK_DEFINITIONS_REPORT);
+    setSid(reply, sid);
+    reply->setParameter3(storeId.raw);
+}
+
+void HousekeepingMessage::setDiagnosticsStuctureReportReply(
+        CommandMessage *reply, sid_t sid, store_address_t storeId) {
+    reply->setCommand(DIAGNOSTICS_DEFINITION_REPORT);
+    setSid(reply, sid);
+    reply->setParameter3(storeId.raw);
+}

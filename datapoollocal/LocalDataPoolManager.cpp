@@ -392,5 +392,17 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 		sif::error << "HousekeepingManager::generateSetStructurePacket: "
 				"Expected size is not equal to serialized size" << std::endl;
 	}
+
+	CommandMessage reply;
+	if(isDiagnostics) {
+	    HousekeepingMessage::setDiagnosticsStuctureReportReply(&reply,
+	            sid, storeId);
+	}
+	else {
+	    HousekeepingMessage::setHkStuctureReportReply(&reply,
+	                    sid, storeId);
+	}
+
+	hkQueue->reply(&reply);
 	return result;
 }

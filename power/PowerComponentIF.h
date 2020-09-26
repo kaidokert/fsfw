@@ -3,12 +3,11 @@
 
 #include "../serialize/SerializeIF.h"
 #include "../parameters/HasParametersIF.h"
+#include "../objectmanager/SystemObjectIF.h"
 
 class PowerComponentIF : public SerializeIF, public HasParametersIF {
 public:
-	virtual ~PowerComponentIF() {
-
-	}
+	virtual ~PowerComponentIF() {}
 
 	virtual object_id_t getDeviceObjectId() = 0;
 

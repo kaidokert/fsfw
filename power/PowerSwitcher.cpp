@@ -23,7 +23,7 @@ ReturnValue_t PowerSwitcher::getStateOfSwitches() {
 	switch (result) {
 	case ONE_SWITCH:
 		return power->getSwitchState(firstSwitch);
-	case TWO_SWITCHES:
+	case TWO_SWITCHES: {
 	    ReturnValue_t firstSwitchState = power->getSwitchState(firstSwitch);
 	    ReturnValue_t secondSwitchState = power->getSwitchState(firstSwitch);
 		if ((firstSwitchState == PowerSwitchIF::SWITCH_ON)
@@ -37,6 +37,7 @@ ReturnValue_t PowerSwitcher::getStateOfSwitches() {
 		else {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
+	}
 	default:
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
