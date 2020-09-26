@@ -37,15 +37,15 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 	        sif::debug << "InternalErrorReporter::performOperation: Errors "
 	                << "occured!" << std::endl;
 	        sif::debug << "Queue errors: " << newQueueHits << std::endl;
-	        sif::debug << "TM errors: " << newQueueHits << std::endl;
-	        sif::debug << "Store errors: " << newQueueHits << std::endl;
+	        sif::debug << "TM errors: " << newTmHits << std::endl;
+	        sif::debug << "Store errors: " << newStoreHits << std::endl;
 	    }
 	}
 #endif
 
 	internalErrorDataset.queueHits.value += newQueueHits;
-	internalErrorDataset.storeHits.value += newTmHits;
-	internalErrorDataset.tmHits.value += newStoreHits;
+	internalErrorDataset.storeHits.value += newStoreHits;
+	internalErrorDataset.tmHits.value += newTmHits;
 
 	internalErrorDataset.commit(INTERNAL_ERROR_MUTEX_TIMEOUT);
 
