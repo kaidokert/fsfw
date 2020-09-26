@@ -33,13 +33,13 @@ public:
 	        store_address_t storageID);
 	static void setMemoryLoadCommand(CommandMessage* message,
 	        uint32_t address, store_address_t storageID );
-	static ReturnValue_t setMemoryCheckCommand(CommandMessage* message,
+	static void setMemoryCheckCommand(CommandMessage* message,
 	        uint32_t address, uint32_t length);
-	static ReturnValue_t setMemoryCheckReply(CommandMessage* message,
+	static void setMemoryCheckReply(CommandMessage* message,
 	        uint16_t crc);
-	static ReturnValue_t setMemoryReplyFailed(CommandMessage* message,
+	static void setMemoryReplyFailed(CommandMessage* message,
 	        ReturnValue_t errorCode, Command_t initialCommand);
-	static ReturnValue_t setMemoryCopyEnd(CommandMessage* message);
+	static void setMemoryCopyEnd(CommandMessage* message);
 	static void setCrcReturnValue(CommandMessage*, ReturnValue_t returnValue);
 
 	static void clear(CommandMessage* message);
