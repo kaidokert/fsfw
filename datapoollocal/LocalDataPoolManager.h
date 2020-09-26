@@ -173,6 +173,7 @@ private:
     //! Every housekeeping data manager has a mutex to protect access
     //! to it's data pool.
     MutexIF* mutex = nullptr;
+
     /** The class which actually owns the manager (and its datapool). */
     HasLocalDataPoolIF* owner = nullptr;
 

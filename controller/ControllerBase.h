@@ -7,6 +7,7 @@
 #include "../modes/ModeHelper.h"
 #include "../objectmanager/SystemObject.h"
 #include "../tasks/ExecutableObjectIF.h"
+#include "../tasks/PeriodicTaskIF.h"
 #include "../datapool/HkSwitchHelper.h"
 
 /**
