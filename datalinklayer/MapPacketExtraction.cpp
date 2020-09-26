@@ -18,7 +18,7 @@ MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,
 		object_id_t setPacketDestination) :
 		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0), bufferPosition(
 				packetBuffer), packetDestination(setPacketDestination), packetStore(
-				NULL), tcQueueId(MessageQueueSenderIF::NO_QUEUE) {
+				NULL), tcQueueId(MessageQueueIF::NO_QUEUE) {
 	memset(packetBuffer, 0, sizeof(packetBuffer));
 }
 
