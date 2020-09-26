@@ -1,6 +1,7 @@
-#include <fsfw/housekeeping/HousekeepingSetPacket.h>
 #include "LocalDataPoolManager.h"
 #include "LocalPoolDataSetBase.h"
+
+#include "../housekeeping/HousekeepingSetPacket.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 #include "../ipc/MutexFactory.h"
 #include "../ipc/MutexHelper.h"
