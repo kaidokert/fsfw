@@ -146,6 +146,8 @@ public:
     enum class ReportingType: uint8_t {
         //! Periodic generation of HK packets.
         PERIODIC,
+        //! Housekeeping packet will be generated if values have changed.
+        UPDATE_HK,
 		//! Update notification will be sent out as message.
 		UPDATE_NOTIFICATION,
         //! Notification will be sent out as message and a snapshot of the

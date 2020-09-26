@@ -60,6 +60,7 @@ protected:
 
 	PeriodicTaskIF* executingTask = nullptr;
 	MutexIF* mutex = nullptr;
+	sid_t internalErrorSid;
 	InternalErrorDataset internalErrorDataset;
 
 	bool diagnosticPrintout = true;

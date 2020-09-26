@@ -12,6 +12,7 @@ InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId,
 		commandQueue(QueueFactory::instance()->
 		        createMessageQueue(messageQueueDepth)),
 		poolManager(this, commandQueue),
+		internalErrorSid(setObjectId, InternalErrorDataset::ERROR_SET_ID),
 		internalErrorDataset(this) {
 	mutex = MutexFactory::instance()->createMutex();
 }
@@ -154,6 +155,10 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
             new PoolEntry<uint32_t>());
     localDataPoolMap.emplace(errorPoolIds::STORE_HITS,
             new PoolEntry<uint32_t>());
+    // todo: Only send HK if values have changed, will be supported by
+    // pool manager soon.
+    poolManager.subscribeForPeriodicPacket(internalErrorSid, false,
+            getPeriodicOperationFrequency(), false);
     return HasReturnvaluesIF::RETURN_OK;
 }
 
