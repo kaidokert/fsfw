@@ -1,5 +1,5 @@
-#include "../subsystem/SubsystemBase.h"
-#include "../controller/ControllerBase.h"
+#include "ControllerBase.h"
+
 #include "../subsystem/SubsystemBase.h"
 #include "../ipc/QueueFactory.h"
 #include "../action/HasActionsIF.h"
@@ -25,7 +25,7 @@ ReturnValue_t ControllerBase::initialize() {
 	MessageQueueId_t parentQueue = 0;
 	if (parentId != objects::NO_OBJECT) {
 		SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
-		if (parent == NULL) {
+		if (parent == nullptr) {
 			return RETURN_FAILED;
 		}
 		parentQueue = parent->getCommandQueue();
