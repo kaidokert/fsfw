@@ -2,12 +2,24 @@
 #define FSFW_MEMORY_HASFILESYSTEMIF_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/FwClassIds.h"
+#include "../ipc/messageQueueDefinitions.h"
+
+#include <cstddef>
 
 /**
  * @author  Jakob Meier
  */
 class HasFileSystemIF {
 public:
+    static constexpr uint8_t INTERFACE_ID = CLASS_ID::FILE_SYSTEM;
+
+    static constexpr ReturnValue_t FILE_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x00);
+    static constexpr ReturnValue_t FILE_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
+
+    static constexpr ReturnValue_t DIRECTORY_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x02);
+    static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x03);
+    static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(0x04);
 
 	virtual ~HasFileSystemIF() {}
 	/**
@@ -29,7 +41,8 @@ public:
 	virtual ReturnValue_t writeToFile(const char* dirname, const char* filename,
 	        const uint8_t* data, size_t size, uint16_t packetNumber) = 0;
 	virtual ReturnValue_t createFile(const char* dirname, const char* filename,
-	        const uint8_t* data, size_t size) = 0;
+	        const uint8_t* data = nullptr, size_t size = 0,
+	        size_t* bytesWritten = nullptr) = 0;
 	virtual ReturnValue_t deleteFile(const char* dirname,
 	        const char* filename) = 0;
 };
