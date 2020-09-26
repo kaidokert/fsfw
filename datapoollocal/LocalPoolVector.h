@@ -194,7 +194,7 @@ private:
 
 };
 
-#include "../datapoollocal/LocalPoolVector.tpp"
+#include "LocalPoolVector.tpp"
 
 template<typename T, uint16_t vectorSize>
 using lp_vec_t = LocalPoolVector<T, vectorSize>;
