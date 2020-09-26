@@ -1,7 +1,8 @@
+#include "Fuse.h"
+
 #include "../monitoring/LimitViolationReporter.h"
 #include "../monitoring/MonitoringMessageContent.h"
 #include "../objectmanager/ObjectManagerIF.h"
-#include "../power/Fuse.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../ipc/QueueFactory.h"
 
@@ -10,13 +11,16 @@ object_id_t Fuse::powerSwitchId = 0;
 Fuse::Fuse(object_id_t fuseObjectId, uint8_t fuseId, VariableIds ids,
 		float maxCurrent, uint16_t confirmationCount) :
 		SystemObject(fuseObjectId), oldFuseState(0), fuseId(fuseId), powerIF(
-		NULL), currentLimit(fuseObjectId, 1, ids.pidCurrent, confirmationCount,
-				maxCurrent, FUSE_CURRENT_HIGH), powerMonitor(fuseObjectId, 2,
-				GlobalDataPool::poolIdAndPositionToPid(ids.poolIdPower, 0),
-				confirmationCount), set(), voltage(ids.pidVoltage, &set), current(
-				ids.pidCurrent, &set), state(ids.pidState, &set), power(
-				ids.poolIdPower, &set, PoolVariableIF::VAR_READ_WRITE), commandQueue(
-				NULL), parameterHelper(this), healthHelper(this, fuseObjectId) {
+		NULL),
+		currentLimit(fuseObjectId, 1, ids.pidCurrent, confirmationCount,
+				maxCurrent, FUSE_CURRENT_HIGH),
+		powerMonitor(fuseObjectId, 2,
+		        GlobalDataPool::poolIdAndPositionToPid(ids.poolIdPower, 0),
+				confirmationCount),
+		set(), voltage(ids.pidVoltage, &set), current(ids.pidCurrent, &set),
+		state(ids.pidState, &set),
+		power(ids.poolIdPower, &set, PoolVariableIF::VAR_READ_WRITE),
+		parameterHelper(this), healthHelper(this, fuseObjectId) {
 	commandQueue = QueueFactory::instance()->createMessageQueue();
 }
 

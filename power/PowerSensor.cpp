@@ -1,14 +1,16 @@
-#include "../power/PowerSensor.h"
+#include "PowerSensor.h"
+
 #include "../ipc/QueueFactory.h"
 
 PowerSensor::PowerSensor(object_id_t setId, VariableIds ids,
 		DefaultLimits limits, SensorEvents events, uint16_t confirmationCount) :
-		SystemObject(setId), commandQueue(NULL), parameterHelper(this), healthHelper(this, setId), set(), current(
-				ids.pidCurrent, &set), voltage(ids.pidVoltage, &set), power(
-				ids.poolIdPower, &set, PoolVariableIF::VAR_WRITE), currentLimit(
-				setId, MODULE_ID_CURRENT, ids.pidCurrent, confirmationCount,
+		SystemObject(setId), parameterHelper(this), healthHelper(this, setId),
+		set(), current(ids.pidCurrent, &set), voltage(ids.pidVoltage, &set),
+		power(ids.poolIdPower, &set, PoolVariableIF::VAR_WRITE),
+		currentLimit(setId, MODULE_ID_CURRENT, ids.pidCurrent, confirmationCount,
 				limits.currentMin, limits.currentMax, events.currentLow,
-				events.currentHigh), voltageLimit(setId, MODULE_ID_VOLTAGE,
+				events.currentHigh),
+		voltageLimit(setId, MODULE_ID_VOLTAGE,
 				ids.pidVoltage, confirmationCount, limits.voltageMin,
 				limits.voltageMax, events.voltageLow, events.voltageHigh) {
 		commandQueue = QueueFactory::instance()->createMessageQueue();

@@ -1,13 +1,14 @@
-#ifndef FUSE_H_
-#define FUSE_H_
+#ifndef FSFW_POWER_FUSE_H_
+#define FSFW_POWER_FUSE_H_
+
+#include "PowerComponentIF.h"
+#include "PowerSwitchIF.h"
 
 #include "../datapoolglob/GlobalDataSet.h"
 #include "../datapoolglob/GlobalPoolVariable.h"
 #include "../datapoolglob/PIDReader.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/AbsLimitMonitor.h"
-#include "../power/PowerComponentIF.h"
-#include "../power/PowerSwitchIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../parameters/ParameterHelper.h"
 #include <list>
@@ -90,7 +91,7 @@ private:
 	PIDReader<float> current;
 	PIDReader<uint8_t> state;
 	gp_float_t power;
-	MessageQueueIF* commandQueue;
+	MessageQueueIF* commandQueue = nullptr;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
 	static object_id_t powerSwitchId;
@@ -103,4 +104,4 @@ private:
 	bool areSwitchesOfComponentOn(DeviceList::iterator iter);
 };
 
-#endif /* FUSE_H_ */
+#endif /* FSFW_POWER_FUSE_H_ */
