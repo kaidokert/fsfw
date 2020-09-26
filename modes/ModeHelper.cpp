@@ -1,6 +1,7 @@
+#include "HasModesIF.h"
+#include "ModeHelper.h"
+
 #include "../ipc/MessageQueueSenderIF.h"
-#include "../modes/HasModesIF.h"
-#include "../modes/ModeHelper.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 ModeHelper::ModeHelper(HasModesIF *owner) :
@@ -26,7 +27,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
 		uint32_t timeout;
 		ReturnValue_t result = owner->checkModeCommand(mode, submode, &timeout);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
-			ModeMessage::cantReachMode(&reply, result);
+			ModeMessage::setCantReachMode(&reply, result);
 			MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
 			        owner->getCommandQueue());
 			break;
