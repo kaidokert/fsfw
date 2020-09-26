@@ -1,124 +1,96 @@
-/**
- * @file	CommandMessage.cpp
- * @brief	This file defines the CommandMessage class.
- * @date	20.06.2013
- * @author	baetz
- */
-
-#include "../devicehandlers/DeviceHandlerMessage.h"
-#include "../health/HealthMessage.h"
 #include "CommandMessage.h"
-#include "../memory/MemoryMessage.h"
-#include "../modes/ModeMessage.h"
-#include "../monitoring/MonitoringMessage.h"
-#include "../subsystem/modes/ModeSequenceMessage.h"
-#include "../tmstorage/TmStoreMessage.h"
-#include "../parameters/ParameterMessage.h"
-
-namespace messagetypes {
-void clearMissionMessage(CommandMessage* message);
-}
-
+#include "CommandMessageCleaner.h"
+#include <cstring>
 
 CommandMessage::CommandMessage() {
-	this->messageSize = COMMAND_MESSAGE_SIZE;
-	setCommand(CMD_NONE);
+    MessageQueueMessage::setMessageSize(DEFAULT_COMMAND_MESSAGE_SIZE);
+    setCommand(CMD_NONE);
 }
 
 CommandMessage::CommandMessage(Command_t command, uint32_t parameter1,
-		uint32_t parameter2) {
-	this->messageSize = COMMAND_MESSAGE_SIZE;
-	setCommand(command);
-	setParameter(parameter1);
-	setParameter2(parameter2);
+        uint32_t parameter2) {
+    MessageQueueMessage::setMessageSize(DEFAULT_COMMAND_MESSAGE_SIZE);
+    setCommand(command);
+    setParameter(parameter1);
+    setParameter2(parameter2);
 }
 
 Command_t CommandMessage::getCommand() const {
-	Command_t command;
-	memcpy(&command, getData(), sizeof(Command_t));
-	return command;
+    Command_t command;
+    std::memcpy(&command, MessageQueueMessage::getData(), sizeof(Command_t));
+    return command;
 }
 
 void CommandMessage::setCommand(Command_t command) {
-	memcpy(getData(), &command, sizeof(command));
+    std::memcpy(MessageQueueMessage::getData(), &command, sizeof(Command_t));
+}
+
+uint8_t CommandMessage::getMessageType() const {
+    // first byte of command ID.
+    return getCommand() >> 8 & 0xff;
 }
 
 uint32_t CommandMessage::getParameter() const {
-	uint32_t parameter1;
-	memcpy(&parameter1, getData() + sizeof(Command_t), sizeof(parameter1));
-	return parameter1;
+    uint32_t parameter1;
+    std::memcpy(&parameter1, this->getData(), sizeof(parameter1));
+    return parameter1;
 }
 
 void CommandMessage::setParameter(uint32_t parameter1) {
-	memcpy(getData() + sizeof(Command_t), &parameter1, sizeof(parameter1));
+    std::memcpy(this->getData(), &parameter1, sizeof(parameter1));
 }
 
 uint32_t CommandMessage::getParameter2() const {
-	uint32_t parameter2;
-	memcpy(&parameter2, getData() + sizeof(Command_t) + sizeof(uint32_t),
-			sizeof(parameter2));
-	return parameter2;
+    uint32_t parameter2;
+    std::memcpy(&parameter2, this->getData() + sizeof(uint32_t),
+            sizeof(parameter2));
+    return parameter2;
 }
 
 void CommandMessage::setParameter2(uint32_t parameter2) {
-	memcpy(getData() + sizeof(Command_t) + sizeof(uint32_t), &parameter2,
-			sizeof(parameter2));
+    std::memcpy(this->getData()  + sizeof(uint32_t), &parameter2,
+            sizeof(parameter2));
 }
 
-void CommandMessage::clearCommandMessage() {
-	switch((getCommand()>>8) & 0xff){
-	case  messagetypes::MODE_COMMAND:
-		ModeMessage::clear(this);
-		break;
-	case messagetypes::HEALTH_COMMAND:
-		HealthMessage::clear(this);
-		break;
-	case messagetypes::MODE_SEQUENCE:
-		ModeSequenceMessage::clear(this);
-		break;
-	case messagetypes::ACTION:
-		ActionMessage::clear(this);
-		break;
-	case messagetypes::DEVICE_HANDLER_COMMAND:
-		DeviceHandlerMessage::clear(this);
-		break;
-	case messagetypes::MEMORY:
-		MemoryMessage::clear(this);
-		break;
-	case messagetypes::MONITORING:
-		MonitoringMessage::clear(this);
-		break;
-	case messagetypes::TM_STORE:
-		TmStoreMessage::clear(this);
-		break;
-	case messagetypes::PARAMETER:
-		ParameterMessage::clear(this);
-		break;
-	default:
-		messagetypes::clearMissionMessage(this);
-		break;
-	}
+uint32_t CommandMessage::getParameter3() const {
+    uint32_t parameter3;
+    std::memcpy(&parameter3, this->getData() + 2 * sizeof(uint32_t),
+            sizeof(parameter3));
+    return parameter3;
 }
 
-bool CommandMessage::isClearedCommandMessage() {
-	return getCommand() == CMD_NONE;
+void CommandMessage::setParameter3(uint32_t parameter3) {
+    std::memcpy(this->getData()  + 2 * sizeof(uint32_t), &parameter3,
+            sizeof(parameter3));
 }
 
 size_t CommandMessage::getMinimumMessageSize() const {
-	return COMMAND_MESSAGE_SIZE;
+    return MINIMUM_COMMAND_MESSAGE_SIZE;
+}
+
+void CommandMessage::clearCommandMessage() {
+    clear();
+}
+
+void CommandMessage::clear() {
+    CommandMessageCleaner::clearCommandMessage(this);
+}
+
+bool CommandMessage::isClearedCommandMessage() {
+    return getCommand() == CMD_NONE;
 }
 
 void CommandMessage::setToUnknownCommand() {
-	Command_t initialCommand = getCommand();
-	clearCommandMessage();
-	setReplyRejected(UNKNOWN_COMMAND, initialCommand);
+    Command_t initialCommand = getCommand();
+    this->clear();
+    setReplyRejected(UNKNOWN_COMMAND, initialCommand);
 }
 
 void CommandMessage::setReplyRejected(ReturnValue_t reason,
-		Command_t initialCommand) {
+        Command_t initialCommand) {
 	setCommand(REPLY_REJECTED);
-	setParameter(reason);
-	setParameter2(initialCommand);
+    setParameter(reason);
+    setParameter2(initialCommand);
 }
 
 ReturnValue_t CommandMessage::getReplyRejectedReason(
@@ -128,4 +100,12 @@ ReturnValue_t CommandMessage::getReplyRejectedReason(
         *initialCommand = getParameter2();
     }
     return reason;
+}
+
+uint8_t* CommandMessage::getData() {
+    return MessageQueueMessage::getData() + sizeof(Command_t);
+}
+
+const uint8_t* CommandMessage::getData() const {
+    return MessageQueueMessage::getData() + sizeof(Command_t);
 }

@@ -1,11 +1,25 @@
 #include "MessageQueueMessage.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
-
-#include <string.h>
+#include "../globalfunctions/arrayprinter.h"
+#include <cstring>
 
 MessageQueueMessage::MessageQueueMessage() :
-		messageSize(this->HEADER_SIZE) {
+		messageSize(getMinimumMessageSize()) {
 	memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
+}
+
+MessageQueueMessage::MessageQueueMessage(uint8_t* data, size_t size) :
+		messageSize(this->HEADER_SIZE + size) {
+	if (size <= this->MAX_DATA_SIZE) {
+		memcpy(this->getData(), data, size);
+		this->messageSize = this->HEADER_SIZE + size;
+	}
+	else {
+		sif::warning << "MessageQueueMessage: Passed size larger than maximum"
+				"allowed size! Setting content to 0" << std::endl;
+		memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
+		this->messageSize = this->HEADER_SIZE;
+	}
 }
 
 MessageQueueMessage::~MessageQueueMessage() {
@@ -37,29 +51,34 @@ void MessageQueueMessage::setSender(MessageQueueId_t setId) {
 	memcpy(this->internalBuffer, &setId, sizeof(MessageQueueId_t));
 }
 
-MessageQueueMessage::MessageQueueMessage(uint8_t* data, uint32_t size) :
-		messageSize(this->HEADER_SIZE + size) {
-	if (size <= this->MAX_DATA_SIZE) {
-		memcpy(this->getData(), data, size);
-	} else {
-		memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
-		this->messageSize = this->HEADER_SIZE;
+void MessageQueueMessage::print(bool printWholeMessage) {
+	sif::debug << "MessageQueueMessage content: " << std::endl;
+	if(printWholeMessage) {
+	    arrayprinter::print(getData(), getMaximumMessageSize());
 	}
-}
-
-size_t MessageQueueMessage::getMinimumMessageSize() {
-	return this->HEADER_SIZE;
-}
-
-void MessageQueueMessage::print() {
-	sif::debug << "MessageQueueMessage has size: " << this->messageSize << std::hex
-			<< std::endl;
-	for (uint8_t count = 0; count < this->messageSize; count++) {
-		sif::debug << (uint32_t) this->internalBuffer[count] << ":";
+	else {
+	    arrayprinter::print(getData(), getMessageSize());
 	}
-	sif::debug << std::dec << std::endl;
+
 }
 
 void MessageQueueMessage::clear() {
 	memset(this->getBuffer(), 0, this->MAX_MESSAGE_SIZE);
 }
+
+size_t MessageQueueMessage::getMessageSize() const {
+	return this->messageSize;
+}
+
+void MessageQueueMessage::setMessageSize(size_t messageSize) {
+	this->messageSize = messageSize;
+}
+
+size_t MessageQueueMessage::getMinimumMessageSize() const {
+    return this->MIN_MESSAGE_SIZE;
+}
+
+size_t MessageQueueMessage::getMaximumMessageSize() const {
+    return this->MAX_MESSAGE_SIZE;
+}
+
