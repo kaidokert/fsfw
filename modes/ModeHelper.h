@@ -1,7 +1,8 @@
 #ifndef MODEHELPER_H_
 #define MODEHELPER_H_
 
-#include "ModeMessage.h"
+#include "../ipc/MessageQueueIF.h"
+#include "../modes/ModeMessage.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../timemanager/Countdown.h"
 
@@ -9,7 +10,7 @@ class HasModesIF;
 
 class ModeHelper {
 public:
-	MessageQueueId_t theOneWhoCommandedAMode;
+	MessageQueueId_t theOneWhoCommandedAMode = MessageQueueIF::NO_QUEUE;
 	Mode_t commandedMode;
 	Submode_t commandedSubmode;
 
@@ -39,11 +40,14 @@ public:
 	void setForced(bool forced);
 protected:
 	HasModesIF *owner;
-	MessageQueueId_t parentQueueId;
+	MessageQueueId_t parentQueueId = MessageQueueIF::NO_QUEUE;
 
 	Countdown countdown;
 
 	bool forced;
+private:
+	void sendModeReplyMessage(Mode_t ownerMode, Submode_t ownerSubmode);
+	void sendModeInfoMessage(Mode_t ownerMode, Submode_t ownerSubmode);
 };
 
 #endif /* MODEHELPER_H_ */

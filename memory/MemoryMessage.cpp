@@ -1,7 +1,6 @@
 #include "MemoryMessage.h"
+
 #include "../objectmanager/ObjectManagerIF.h"
-MemoryMessage::MemoryMessage() {
-}
 
 uint32_t MemoryMessage::getAddress(const CommandMessage* message) {
 	return message->getParameter();
@@ -17,26 +16,24 @@ uint32_t MemoryMessage::getLength(const CommandMessage* message) {
 	return message->getParameter2();
 }
 
-ReturnValue_t MemoryMessage::setMemoryDumpCommand(CommandMessage* message,
+void MemoryMessage::setMemoryDumpCommand(CommandMessage* message,
 		uint32_t address, uint32_t length) {
 	message->setCommand(CMD_MEMORY_DUMP);
 	message->setParameter( address );
 	message->setParameter2( length );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MemoryMessage::setMemoryDumpReply(CommandMessage* message, store_address_t storageID) {
+void MemoryMessage::setMemoryDumpReply(CommandMessage* message,
+        store_address_t storageID) {
 	message->setCommand(REPLY_MEMORY_DUMP);
 	message->setParameter2( storageID.raw );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MemoryMessage::setMemoryLoadCommand(CommandMessage* message,
+void MemoryMessage::setMemoryLoadCommand(CommandMessage* message,
 		uint32_t address, store_address_t storageID) {
 	message->setCommand(CMD_MEMORY_LOAD);
 	message->setParameter( address );
 	message->setParameter2( storageID.raw );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t MemoryMessage::getErrorCode(const CommandMessage* message) {

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_MEMORY_MEMORYPROXYIF_H_
 #define FRAMEWORK_MEMORY_MEMORYPROXYIF_H_
 
-#include "AcceptsMemoryMessagesIF.h"
+#include "../memory/AcceptsMemoryMessagesIF.h"
 
 /**
  * This was a nice idea to transparently forward incoming messages to another object.
