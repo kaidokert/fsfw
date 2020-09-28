@@ -81,7 +81,7 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 		return result;
 	}
 	sif::warning << "HousekeepingManager: The map should only be initialized "
-	        "once!" << std::endl;
+	        << "once!" << std::endl;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -117,7 +117,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 			objectManager->get<AcceptsHkPacketsIF>(packetDestination);
 	if(hkReceiverObject == nullptr) {
 		sif::error << "LocalDataPoolManager::subscribeForPeriodicPacket:"
-				" Invalid receiver!"<< std::endl;
+				<< " Invalid receiver!"<< std::endl;
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
@@ -218,7 +218,7 @@ ReturnValue_t LocalDataPoolManager::printPoolEntry(
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
 		sif::debug << "HousekeepingManager::fechPoolEntry:"
-				" Pool entry not found." << std::endl;
+				<< " Pool entry not found." << std::endl;
 		return POOL_ENTRY_NOT_FOUND;
 	}
 	poolIter->second->print();
@@ -239,7 +239,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	if(dataSet == nullptr) {
 		// Configuration error.
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
-				" Set ID not found or dataset not assigned!" << std::endl;
+				<< " Set ID not found or dataset not assigned!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -321,9 +321,9 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 		// configuration error
 		sif::debug << "LocalDataPoolManager::performHkOperation:"
-				<< "0x" << std::setfill('0') << std::setw(8)
-		<< owner->getObjectId() << " Error generating "
-		<< "HK packet" << std::setfill(' ') << std::endl;
+				<< "0x" << std::hex << std::setfill('0') << std::setw(8)
+				<< owner->getObjectId() << " Error generating "
+				<< "HK packet" << std::setfill(' ') << std::dec << std::endl;
 	}
 }
 
@@ -370,7 +370,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 			owner->getDataSetHandle(sid));
 	if(dataSet == nullptr) {
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
-				" Set ID not found" << std::endl;
+				<< " Set ID not found" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -396,7 +396,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 			expectedSize,&storePtr);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 		sif::error << "HousekeepingManager::generateHousekeepingPacket: "
-				"Could not get free element from IPC store." << std::endl;
+				<< "Could not get free element from IPC store." << std::endl;
 		return result;
 	}
 
@@ -406,7 +406,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 			SerializeIF::Endianness::BIG);
 	if(expectedSize != size) {
 		sif::error << "HousekeepingManager::generateSetStructurePacket: "
-				"Expected size is not equal to serialized size" << std::endl;
+				<< "Expected size is not equal to serialized size" << std::endl;
 	}
 
 	// Send structure reporting reply.
