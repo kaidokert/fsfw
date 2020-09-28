@@ -101,6 +101,9 @@ public:
 	static constexpr Command_t HK_REQUEST_FAILURE =
 			MAKE_COMMAND_ID(129);
 
+	static constexpr Command_t UPDATE_NOTIFICATION = MAKE_COMMAND_ID(130);
+	static constexpr Command_t UPDATE_SNAPSHOT = MAKE_COMMAND_ID(131);
+
 	static sid_t getSid(const CommandMessage* message);
 
 	static void setToggleReportingCommand(CommandMessage* command, sid_t sid,
