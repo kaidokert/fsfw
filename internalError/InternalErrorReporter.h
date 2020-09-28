@@ -46,6 +46,7 @@ public:
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
 
     virtual ReturnValue_t initialize() override;
+    virtual ReturnValue_t initializeAfterTaskCreation() override;
 	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
 	virtual void queueMessageNotSent();

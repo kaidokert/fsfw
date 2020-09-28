@@ -58,6 +58,7 @@ public:
     static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(0x03);
     static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(0x04);
     static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(0x05);
+
     /**
      * This constructor is used by a class which wants to implement
      * a personal local data pool. The queueToUse can be supplied if it
@@ -73,14 +74,20 @@ public:
 	virtual~ LocalDataPoolManager();
 
 	/**
-	 * Initializes the map by calling the map initialization function of the
-	 * owner and assigns the queue to use.
+	 * Assigns the queue to use.
 	 * @param queueToUse
 	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
 	 * @return
 	 */
 	ReturnValue_t initialize(MessageQueueIF* queueToUse);
 
+	/**
+	 * Initializes the map by calling the map initialization function and
+	 * setting the periodic factor for non-diagnostic packets.
+	 * Don't forget to call this, otherwise the map will be invalid!
+	 * @param nonDiagInvlFactor
+	 * @return
+	 */
 	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
 
 	/**

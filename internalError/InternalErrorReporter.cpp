@@ -158,7 +158,7 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
     // todo: Only send HK if values have changed, will be supported by
     // pool manager soon.
     poolManager.subscribeForPeriodicPacket(internalErrorSid, false,
-            getPeriodicOperationFrequency(), false);
+            getPeriodicOperationFrequency(), true);
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -185,3 +185,8 @@ ReturnValue_t InternalErrorReporter::initialize() {
     }
     return SystemObject::initialize();
 }
+
+ReturnValue_t InternalErrorReporter::initializeAfterTaskCreation() {
+    return poolManager.initializeAfterTaskCreation();
+}
+
