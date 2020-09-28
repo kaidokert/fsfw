@@ -1,7 +1,6 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 
-
 #include "HasLocalDataPoolIF.h"
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
@@ -16,15 +15,22 @@ class PeriodicHousekeepingHelper;
  * @brief	The LocalDataSet class manages a set of locally checked out
  *          variables for local data pools
  * @details
+ * Extends the PoolDataSetBase class for local data pools by introducing
+ * a validity state, a flag to mark the set as changed, and various other
+ * functions to make it usable by the LocalDataPoolManager class.
+ *
  * This class manages a list, where a set of local variables (or pool variables)
  * are registered. They are checked-out (i.e. their values are looked
  * up and copied) with the read call. After the user finishes working with the
  * pool variables, he can write back all variable values to the pool with
- * the commit call. The data set manages locking and freeing the local data pools,
- * to ensure thread-safety.
+ * the commit call. The data set manages locking and freeing the local data
+ * pools, to ensure thread-safety.
+ *
+ * Pool variables can be added to the dataset by using the constructor
+ * argument of the pool variable or using the #registerVariable member function.
  *
  * An internal state manages usage of this class. Variables may only be
- * registered before the read call is made, and the commit call only
+ * registered before any read call is made, and the commit call can only happen
  * after the read call.
  *
  * If pool variables are writable and not committed until destruction
@@ -72,6 +78,7 @@ public:
 
 	sid_t getSid() const;
 
+	/** SerializeIF overrides */
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
 	            SerializeIF::Endianness streamEndianness) const override;
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t *size,
@@ -82,7 +89,7 @@ public:
 	 * Special version of the serilization function which appends a
 	 * validity buffer at the end. Each bit of this validity buffer
 	 * denotes whether the container data set entries are valid from left
-	 * to right, MSB first.
+	 * to right, MSB first. (length = ceil(N/8), N = number of pool variables)
 	 * @param buffer
 	 * @param size
 	 * @param maxSize
@@ -142,6 +149,13 @@ protected:
 	 */
 	bool changed = false;
 
+	/**
+	 * Specify whether the validity buffer is serialized too when serializing
+	 * or deserializing the packet. Each bit of the validity buffer will
+	 * contain the validity state of the pool variables from left to right.
+	 * The size of validity buffer thus will be ceil(N / 8) with N = number of
+	 * pool variables.
+	 */
 	bool withValidityBuffer = true;
 
 	/**

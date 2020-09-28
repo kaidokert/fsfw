@@ -8,11 +8,14 @@
 /**
  * @brief   This local dataset type is created on the stack.
  * @details
- * Size of data set specified as a constructor argument. It is recommended
- * to use the default LocalDataSet of the dataset is constructed on the heap
- * and the SharedLocalDataSet if it created on the heap and used by multiple
- * other software objects.
- * @tparam capacity
+ * This will is the primary data structure to organize pool variables into
+ * sets which can be accessed via the housekeeping service interface or
+ * which can be sent to other software objects.
+ *
+ * It is recommended to read the documentation of the LocalPoolDataSetBase
+ * class for more information on how this class works and how to use it.
+ * @tparam capacity Capacity of the static dataset, which is usually known
+ * beforehand.
  */
 template <uint8_t NUM_VARIABLES>
 class StaticLocalDataSet: public LocalPoolDataSetBase {

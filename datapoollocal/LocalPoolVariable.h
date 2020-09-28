@@ -1,12 +1,12 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+
+#include "HasLocalDataPoolIF.h"
+#include "LocalDataPoolManager.h"
 
 #include "../datapool/PoolVariableIF.h"
 #include "../datapool/DataSetIF.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
 #include "../objectmanager/ObjectManagerIF.h"
-
 #include "../serialize/SerializeAdapter.h"
 
 /**
@@ -41,7 +41,6 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
-
 	 */
 	LocalPoolVar(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
 			DataSetIF* dataSet = nullptr,
@@ -175,4 +174,4 @@ using lp_float_t = LocalPoolVar<float>;
 using lp_double_t = LocalPoolVar<double>;
 
 
-#endif
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_ */
