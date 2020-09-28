@@ -142,6 +142,7 @@ public:
 	static sid_t getCollectionIntervalModificationCommand(
 			const CommandMessage* command, float* newCollectionInterval);
 
+	static void clear(CommandMessage* message);
 private:
 	static void setSid(CommandMessage* message, sid_t sid);
 };

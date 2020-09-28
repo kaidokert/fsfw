@@ -1,4 +1,4 @@
-#include "../ipc/CommandMessageCleaner.h"
+#include "CommandMessageCleaner.h"
 
 #include "../devicehandlers/DeviceHandlerMessage.h"
 #include "../health/HealthMessage.h"
@@ -7,6 +7,7 @@
 #include "../monitoring/MonitoringMessage.h"
 #include "../subsystem/modes/ModeSequenceMessage.h"
 #include "../tmstorage/TmStoreMessage.h"
+#include "../housekeeping/HousekeepingMessage.h"
 #include "../parameters/ParameterMessage.h"
 
 void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
@@ -38,6 +39,9 @@ void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
 	case messagetypes::PARAMETER:
 		ParameterMessage::clear(message);
 		break;
+	case messagetypes::HOUSEKEEPING:
+	    HousekeepingMessage::clear(message);
+	    break;
 	default:
 		messagetypes::clearMissionMessage(message);
 		break;

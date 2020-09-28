@@ -1,3 +1,4 @@
+#include <fsfw/objectmanager/ObjectManagerIF.h>
 #include "HousekeepingMessage.h"
 #include <cstring>
 
@@ -139,4 +140,22 @@ void HousekeepingMessage::setDiagnosticsStuctureReportReply(
     reply->setCommand(DIAGNOSTICS_DEFINITION_REPORT);
     setSid(reply, sid);
     reply->setParameter3(storeId.raw);
+}
+
+void HousekeepingMessage::clear(CommandMessage* message) {
+    switch(message->getCommand()) {
+    case(HK_REPORT):
+    case(DIAGNOSTICS_REPORT):
+    case(HK_DEFINITIONS_REPORT):
+    case(DIAGNOSTICS_DEFINITION_REPORT): {
+        store_address_t storeId;
+        getHkDataReply(message, &storeId);
+        StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+                objects::IPC_STORE);
+        if (ipcStore != nullptr) {
+            ipcStore->deleteData(storeId);
+        }
+    }
+    }
+    message->setCommand(CommandMessage::CMD_NONE);
 }
