@@ -104,8 +104,11 @@ public:
 	static constexpr Command_t UPDATE_NOTIFICATION = MAKE_COMMAND_ID(130);
 	static constexpr Command_t UPDATE_SNAPSHOT = MAKE_COMMAND_ID(131);
 
+	static constexpr Command_t UPDATE_HK_REPORT = MAKE_COMMAND_ID(132);
+
 	static sid_t getSid(const CommandMessage* message);
 
+	/** Setter functions */
 	static void setToggleReportingCommand(CommandMessage* command, sid_t sid,
 			bool enableReporting, bool isDiagnostics);
 	static void setStructureReportingCommand(CommandMessage* command, sid_t sid,
