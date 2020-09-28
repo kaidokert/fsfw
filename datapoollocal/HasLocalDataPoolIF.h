@@ -4,7 +4,6 @@
 #include "../datapool/PoolEntryIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
-#include "../timemanager/Clock.h"
 
 #include <map>
 
@@ -65,11 +64,11 @@ public:
 	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
 
 	/**
-	 * Returns the minimum sampling frequency, which will usually be the
-	 * period the pool owner performs its periodic operation-
+	 * Returns the minimum sampling frequency in milliseconds, which will
+	 * usually be the period the pool owner performs its periodic operation.
 	 * @return
 	 */
-	virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
+	virtual uint32_t getPeriodicOperationFrequency() const = 0;
 
 	/**
 	 * This function is used by the pool manager to get a valid dataset
