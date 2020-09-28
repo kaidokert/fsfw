@@ -205,7 +205,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
     }
     case(HousekeepingMessage::DIAGNOSTICS_DEFINITION_REPORT): {
         return generateHkReply(reply, static_cast<uint8_t>(
-                Subservice::DIAGNOSTICS_REPORT));
+                Subservice::DIAGNOSTICS_DEFINITION_REPORT));
         break;
     }
 

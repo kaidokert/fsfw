@@ -159,6 +159,7 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
             new PoolEntry<uint32_t>());
     poolManager.subscribeForPeriodicPacket(internalErrorSid, false,
             getPeriodicOperationFrequency(), true);
+    internalErrorDataset.setValidity(true, true);
     return HasReturnvaluesIF::RETURN_OK;
 }
 
