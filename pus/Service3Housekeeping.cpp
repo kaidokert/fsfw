@@ -181,7 +181,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
 	switch(command) {
 
 	case(HousekeepingMessage::HK_REPORT): {
-		ReturnValue_t result = generateHkReport(reply,
+		ReturnValue_t result = generateHkReply(reply,
 				static_cast<uint8_t>(Subservice::HK_REPORT));
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
@@ -190,13 +190,24 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
 	}
 
 	case(HousekeepingMessage::DIAGNOSTICS_REPORT): {
-		ReturnValue_t result = generateHkReport(reply,
+		ReturnValue_t result = generateHkReply(reply,
 				static_cast<uint8_t>(Subservice::DIAGNOSTICS_REPORT));
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
 		return CommandingServiceBase::EXECUTION_COMPLETE;
 	}
+
+    case(HousekeepingMessage::HK_DEFINITIONS_REPORT): {
+        return generateHkReply(reply, static_cast<uint8_t>(
+                Subservice::HK_DEFINITIONS_REPORT));
+        break;
+    }
+    case(HousekeepingMessage::DIAGNOSTICS_DEFINITION_REPORT): {
+        return generateHkReply(reply, static_cast<uint8_t>(
+                Subservice::DIAGNOSTICS_REPORT));
+        break;
+    }
 
 	case(HousekeepingMessage::HK_REQUEST_SUCCESS): {
 		return CommandingServiceBase::EXECUTION_COMPLETE;
@@ -226,13 +237,13 @@ void Service3Housekeeping::handleUnrequestedReply(
 	switch(command) {
 
 	case(HousekeepingMessage::DIAGNOSTICS_REPORT): {
-		result = generateHkReport(reply,
+		result = generateHkReply(reply,
 				static_cast<uint8_t>(Subservice::DIAGNOSTICS_REPORT));
 		break;
 	}
 
 	case(HousekeepingMessage::HK_REPORT): {
-		result = generateHkReport(reply,
+		result = generateHkReply(reply,
 				static_cast<uint8_t>(Subservice::HK_REPORT));
 		break;
 	}
@@ -254,7 +265,7 @@ MessageQueueId_t Service3Housekeeping::getHkQueue() const {
 	return commandQueue->getId();
 }
 
-ReturnValue_t Service3Housekeeping::generateHkReport(
+ReturnValue_t Service3Housekeeping::generateHkReply(
 		const CommandMessage* hkMessage, uint8_t subserviceId) {
 	store_address_t storeId;
 

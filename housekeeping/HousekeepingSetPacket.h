@@ -12,6 +12,7 @@ public:
 			objectId(sid.objectId), setId(sid.ownerSetId),
 			reportingEnabled(reportingEnabled), valid(valid),
 			collectionIntervalSeconds(collectionInterval), dataSet(dataSetPtr) {
+	    setLinks();
 	}
 
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size,

@@ -15,41 +15,52 @@ object_id_t LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
         appendValidityBuffer(appendValidityBuffer) {
-	if(owner == nullptr) {
-		sif::error << "HkManager: Invalid supplied owner!" << std::endl;
-		return;
-	}
-	this->owner = owner;
-	mutex = MutexFactory::instance()->createMutex();
-	if(mutex == nullptr) {
-	    sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
-	            "Could not create mutex." << std::endl;
-	}
-	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if(ipcStore == nullptr) {
-	    sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
-	            "Could not set IPC store." << std::endl;
-	}
+    if(owner == nullptr) {
+        sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
+                << "Invalid supplied owner!" << std::endl;
+        return;
+    }
+    this->owner = owner;
+    mutex = MutexFactory::instance()->createMutex();
+    if(mutex == nullptr) {
+        sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
+                << "Could not create mutex." << std::endl;
+    }
 
-	hkQueue = queueToUse;
-
-	if(defaultHkDestination != objects::NO_OBJECT) {
-	    AcceptsHkPacketsIF* hkPacketReceiver =
-	            objectManager->get<AcceptsHkPacketsIF>(defaultHkDestination);
-	    if(hkPacketReceiver != nullptr) {
-	        hkDestinationId = hkPacketReceiver->getHkQueue();
-	    }
-	}
+    hkQueue = queueToUse;
 }
 
 LocalDataPoolManager::~LocalDataPoolManager() {}
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
     if(queueToUse == nullptr) {
-        sif::error << "LocalDataPoolManager::initialize: Supplied queue "
-                "invalid!" << std::endl;
+        sif::error << "LocalDataPoolManager::initialize: "
+                << std::hex << "0x" << owner->getObjectId() << ". Supplied "
+                << "queue invalid!" << std::dec << std::endl;
     }
     hkQueue = queueToUse;
+
+    ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    if(ipcStore == nullptr) {
+        sif::error << "LocalDataPoolManager::initialize: "
+                << std::hex << "0x" << owner->getObjectId() << ": Could not "
+                << "set IPC store." <<std::dec << std::endl;
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+
+
+    if(defaultHkDestination != objects::NO_OBJECT) {
+        AcceptsHkPacketsIF* hkPacketReceiver =
+                objectManager->get<AcceptsHkPacketsIF>(defaultHkDestination);
+        if(hkPacketReceiver != nullptr) {
+            hkDestinationId = hkPacketReceiver->getHkQueue();
+        }
+        else {
+            sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
+                   << "Default HK destination object is invalid!" << std::endl;
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+    }
 
     return HasReturnvaluesIF::RETURN_OK;
 }

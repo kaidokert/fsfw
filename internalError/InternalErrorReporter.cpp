@@ -177,3 +177,11 @@ LocalPoolDataSetBase* InternalErrorReporter::getDataSetHandle(sid_t sid) {
 void InternalErrorReporter::setTaskIF(PeriodicTaskIF *task) {
     this->executingTask = task;
 }
+
+ReturnValue_t InternalErrorReporter::initialize() {
+    ReturnValue_t result = poolManager.initialize(commandQueue);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+    return SystemObject::initialize();
+}

@@ -82,7 +82,7 @@ private:
 	ReturnValue_t checkInterfaceAndAcquireMessageQueue(
 			MessageQueueId_t* messageQueueToSet, object_id_t* objectId);
 
-	ReturnValue_t generateHkReport(const CommandMessage* hkMessage,
+	ReturnValue_t generateHkReply(const CommandMessage* hkMessage,
 			uint8_t subserviceId);
 	ReturnValue_t prepareReportingTogglingCommand(CommandMessage* command,
 			object_id_t objectId, bool enableReporting, bool isDiagnostics,

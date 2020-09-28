@@ -45,6 +45,7 @@ public:
     virtual dur_millis_t getPeriodicOperationFrequency() const override;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
 
+    virtual ReturnValue_t initialize() override;
 	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
 	virtual void queueMessageNotSent();
