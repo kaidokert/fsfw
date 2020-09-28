@@ -229,7 +229,7 @@ MutexIF* LocalDataPoolManager::getMutexHandle() {
 	return mutex;
 }
 
-const HasLocalDataPoolIF* LocalDataPoolManager::getOwner() const {
+HasLocalDataPoolIF* LocalDataPoolManager::getOwner() {
     return owner;
 }
 
@@ -373,6 +373,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 				" Set ID not found" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+
 
 	bool targetIsDiagnostics = dataSet->isDiagnostics();
 	if((targetIsDiagnostics and not isDiagnostics) or

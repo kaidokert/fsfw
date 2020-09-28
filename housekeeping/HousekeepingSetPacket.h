@@ -28,7 +28,7 @@ public:
 
 	size_t getSerializedSize() const override {
 		size_t linkedSize = SerialLinkedListAdapter::getSerializedSize();
-		linkedSize += dataSet->getFillCount() * sizeof(lp_id_t);
+		linkedSize += dataSet->getLocalPoolIdsSerializedSize();
 		return linkedSize;
 	}
 

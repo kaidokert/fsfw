@@ -127,7 +127,7 @@ public:
 	 */
 	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
-	const HasLocalDataPoolIF* getOwner() const;
+	HasLocalDataPoolIF* getOwner();
 
 	ReturnValue_t printPoolEntry(lp_id_t localPoolId);
 

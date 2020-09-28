@@ -119,8 +119,14 @@ ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
 }
 
 ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
-        size_t* size, size_t maxSize,
-        SerializeIF::Endianness streamEndianness) const {
+        size_t* size, size_t maxSize,SerializeIF::Endianness streamEndianness,
+        bool serializeFillCount) const {
+    // Serialize as uint8_t
+    uint8_t fillCount = this->fillCount;
+    if(serializeFillCount) {
+        SerializeAdapter::serialize(&fillCount, buffer, size, maxSize,
+                streamEndianness);
+    }
     for (uint16_t count = 0; count < fillCount; count++) {
         lp_id_t currentPoolId = registeredVariables[count]->getDataPoolId();
         auto result = SerializeAdapter::serialize(&currentPoolId, buffer,
@@ -134,6 +140,16 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
+
+uint8_t LocalPoolDataSetBase::getLocalPoolIdsSerializedSize(
+        bool serializeFillCount) const {
+    if(serializeFillCount) {
+        return fillCount * sizeof(lp_id_t) + sizeof(uint8_t);
+    }
+    else {
+        return fillCount * sizeof(lp_id_t);
+    }
+}
 
 size_t LocalPoolDataSetBase::getSerializedSize() const {
     if(withValidityBuffer) {

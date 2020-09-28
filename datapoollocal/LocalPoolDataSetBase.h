@@ -97,7 +97,9 @@ public:
 	        size_t *size, SerializeIF::Endianness streamEndianness);
 	ReturnValue_t serializeLocalPoolIds(uint8_t** buffer,
 	        size_t* size, size_t maxSize,
-	        SerializeIF::Endianness streamEndianness) const;
+	        SerializeIF::Endianness streamEndianness,
+	        bool serializeFillCount = true) const;
+	uint8_t getLocalPoolIdsSerializedSize(bool serializeFillCount = true) const;
 
 	/**
 	 * Set the dataset valid or invalid
