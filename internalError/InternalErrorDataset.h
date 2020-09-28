@@ -21,9 +21,12 @@ public:
     InternalErrorDataset(sid_t sid):
            StaticLocalDataSet(sid) {}
 
-    lp_var_t<uint32_t> tmHits = lp_var_t<uint32_t>(TM_HITS, sid.objectId, this);
-    lp_var_t<uint32_t> queueHits = lp_var_t<uint32_t>(QUEUE_HITS, sid.objectId, this);
-    lp_var_t<uint32_t> storeHits = lp_var_t<uint32_t>(STORE_HITS, sid.objectId, this);
+    lp_var_t<uint32_t> tmHits = lp_var_t<uint32_t>(TM_HITS,
+            hkManager->getOwner(), this);
+    lp_var_t<uint32_t> queueHits = lp_var_t<uint32_t>(QUEUE_HITS,
+            hkManager->getOwner(), this);
+    lp_var_t<uint32_t> storeHits = lp_var_t<uint32_t>(STORE_HITS,
+            hkManager->getOwner(), this);
 };
 
 

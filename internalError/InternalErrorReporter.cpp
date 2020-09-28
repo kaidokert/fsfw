@@ -50,6 +50,8 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 
 	internalErrorDataset.commit(INTERNAL_ERROR_MUTEX_TIMEOUT);
 
+	poolManager.performHkOperation();
+
 	CommandMessage message;
 	ReturnValue_t result = commandQueue->receiveMessage(&message);
 	if(result != MessageQueueIF::EMPTY) {
@@ -155,8 +157,6 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
             new PoolEntry<uint32_t>());
     localDataPoolMap.emplace(errorPoolIds::STORE_HITS,
             new PoolEntry<uint32_t>());
-    // todo: Only send HK if values have changed, will be supported by
-    // pool manager soon.
     poolManager.subscribeForPeriodicPacket(internalErrorSid, false,
             getPeriodicOperationFrequency(), true);
     return HasReturnvaluesIF::RETURN_OK;

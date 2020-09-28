@@ -90,6 +90,14 @@ public:
 	 */
 	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
 
+    /**
+     * This should be called in the periodic handler of the owner.
+     * It performs all the periodic functionalities of the data pool manager,
+     * for example generating periodic HK packets.
+     * @return
+     */
+    ReturnValue_t performHkOperation();
+
 	/**
 	 * @return
 	 */
@@ -108,12 +116,6 @@ public:
 	 */
 	void setNonDiagnosticIntervalFactor(uint8_t nonDiagInvlFactor);
 
-	/**
-	 * This should be called in the periodic handler of the owner.
-	 * It performs all the periodic functionalities of the data pool manager.
-	 * @return
-	 */
-	ReturnValue_t performHkOperation();
 
 	/**
 	 * Generate a housekeeping packet with a given SID.

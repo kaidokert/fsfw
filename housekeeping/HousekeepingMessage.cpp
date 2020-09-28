@@ -148,7 +148,7 @@ void HousekeepingMessage::clear(CommandMessage* message) {
     case(DIAGNOSTICS_REPORT):
     case(HK_DEFINITIONS_REPORT):
     case(DIAGNOSTICS_DEFINITION_REPORT):
-    case(UPDATE_SNAPSHOT):{
+    case(UPDATE_SNAPSHOT): {
         store_address_t storeId;
         getHkDataReply(message, &storeId);
         StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
