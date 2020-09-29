@@ -1,60 +1,17 @@
-#ifndef STORAGEMANAGERIF_H_H
-#define STORAGEMANAGERIF_H_H
+#ifndef FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_
+#define FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_
+
+#include "StorageAccessor.h"
+#include "storeAddress.h"
 
 #include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include <stddef.h>
 
-/**
- * @brief 	This union defines the type that identifies where a data packet is
- * 			stored in the store.
- * It consists of a raw part to read it as raw value and
- * a structured part to use it in pool-like stores.
- */
-union store_address_t {
-	/**
-	 * Default Constructor, initializing to INVALID_ADDRESS
-	 */
-	store_address_t():raw(0xFFFFFFFF){}
+#include <utility>
+#include <cstddef>
 
-	/**
-	 * Constructor to create an address object using the raw address
-	 * @param rawAddress
-	 */
-	store_address_t(uint32_t rawAddress):raw(rawAddress){}
-
-	/**
-	 * Constructor to create an address object using pool
-	 * and packet indices
-	 *
-	 * @param poolIndex
-	 * @param packetIndex
-	 */
-	store_address_t(uint16_t poolIndex, uint16_t packetIndex):
-			pool_index(poolIndex),packet_index(packetIndex) {}
-
-	/**
-	 * A structure with two elements to access the store address pool-like.
-	 */
-	struct {
-		/**
-		 * The index in which pool the packet lies.
-		 */
-		uint16_t pool_index;
-		/**
-		 * The position in the chosen pool.
-		 */
-		uint16_t packet_index;
-	};
-	/**
-	 * Alternative access to the raw value.
-	 */
-	uint32_t raw;
-
-	bool operator==(const store_address_t& other) const {
-		return raw == other.raw;
-	}
-};
+using AccessorPair = std::pair<ReturnValue_t, StorageAccessor>;
+using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
 
 /**
  * @brief	This class provides an interface for intermediate data storage.
@@ -77,6 +34,7 @@ public:
 	static const ReturnValue_t ILLEGAL_STORAGE_ID = MAKE_RETURN_CODE(3); //!< This return code indicates that data was requested with an illegal storage ID.
 	static const ReturnValue_t DATA_DOES_NOT_EXIST = MAKE_RETURN_CODE(4); //!< This return code indicates that the requested ID was valid, but no data is stored there.
 	static const ReturnValue_t ILLEGAL_ADDRESS = MAKE_RETURN_CODE(5);
+	static const ReturnValue_t POOL_TOO_LARGE = MAKE_RETURN_CODE(6); //!< Pool size too large on initialization.
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::OBSW;
 	static const Event GET_DATA_FAILED = MAKE_EVENT(0, SEVERITY::LOW);
@@ -122,6 +80,29 @@ public:
 	 */
 	virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) = 0;
+
+
+	/**
+	 * @brief 	Access the data by supplying a store ID.
+	 * @details
+	 * A pair consisting of the retrieval result and an instance of a
+	 * ConstStorageAccessor class is returned
+	 * @param storeId
+	 * @return Pair of return value and a ConstStorageAccessor instance
+	 */
+	virtual ConstAccessorPair getData(store_address_t storeId) = 0;
+
+	/**
+	 * @brief 	Access the data by supplying a store ID and a helper
+	 * 			instance
+	 * @param storeId
+	 * @param constAccessor Wrapper function to access store data.
+	 * @return
+	 */
+	virtual ReturnValue_t getData(store_address_t storeId,
+			ConstStorageAccessor& constAccessor) = 0;
+
+
 	/**
 	 * @brief	getData returns an address to data and the size of the data
 	 * 			for a given packet_id.
@@ -135,8 +116,30 @@ public:
 	 */
 	virtual ReturnValue_t getData(store_address_t packet_id,
 			const uint8_t** packet_ptr, size_t* size) = 0;
+
+
 	/**
-	 * Same as above, but not const and therefore modifiable.
+	 * Modify data by supplying a store ID
+	 * @param storeId
+	 * @return Pair of return value and StorageAccessor helper
+	 */
+	virtual AccessorPair modifyData(store_address_t storeId) = 0;
+
+	/**
+	 * Modify data by supplying a store ID and a StorageAccessor helper instance.
+	 * @param storeId
+	 * @param accessor Helper class to access the modifiable data.
+	 * @return
+	 */
+	virtual ReturnValue_t modifyData(store_address_t storeId,
+				StorageAccessor& accessor) = 0;
+
+	/**
+	 * Get pointer and size of modifiable data by supplying the storeId
+	 * @param packet_id
+	 * @param packet_ptr [out] Pointer to pointer of data to set
+	 * @param size [out] Pointer to size to set
+	 * @return
 	 */
 	virtual ReturnValue_t modifyData(store_address_t packet_id,
 			uint8_t** packet_ptr, size_t* size) = 0;
@@ -155,6 +158,7 @@ public:
 	 */
 	virtual ReturnValue_t getFreeElement(store_address_t* storageId,
 			const size_t size, uint8_t** p_data, bool ignoreFault = false ) = 0;
+
 	/**
 	 * Clears the whole store.
 	 * Use with care!
@@ -162,4 +166,4 @@ public:
 	virtual void clearStore() = 0;
 };
 
-#endif /* STORAGEMANAGERIF_H_ */
+#endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */

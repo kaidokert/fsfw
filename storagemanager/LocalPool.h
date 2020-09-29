@@ -1,18 +1,14 @@
-/**
- *	@file	LocalPool
- *  @date	02.02.2012
- *	@author	Bastian Baetz
- *	@brief	This file contains the definition of the LocalPool class.
- */
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
-#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
+#ifndef FSFW_STORAGEMANAGER_LOCALPOOL_H_
+#define FSFW_STORAGEMANAGER_LOCALPOOL_H_
 
-#include "../objectmanager/SystemObject.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "StorageManagerIF.h"
+#include "../objectmanager/SystemObject.h"
 #include "../objectmanager/ObjectManagerIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../internalError/InternalErrorReporterIF.h"
-#include <string.h>
+#include "../storagemanager/StorageAccessor.h"
+#include <cstring>
+
 
 /**
  * @brief	The LocalPool class provides an intermediate data storage with
@@ -27,6 +23,7 @@
  * 			0xFFFF-1 bytes.
  * 			It is possible to store empty packets in the pool.
  * 			The local pool is NOT thread-safe.
+ * @author 	Bastian Baetz
  */
 template<uint8_t NUMBER_OF_POOLS = 5>
 class LocalPool: public SystemObject, public StorageManagerIF {
@@ -39,7 +36,7 @@ public:
 	/**
 	 * @brief	This is the default constructor for a pool manager instance.
 	 * @details	By passing two arrays of size NUMBER_OF_POOLS, the constructor
-	 * 			allocates memory (with \c new) for store and size_list. These
+	 * 			allocates memory (with @c new) for store and size_list. These
 	 * 			regions are all set to zero on start up.
 	 * @param setObjectId	The object identifier to be set. This allows for
 	 * 						multiple instances of LocalPool in the system.
@@ -73,10 +70,17 @@ public:
 			size_t size, bool ignoreFault = false) override;
 	ReturnValue_t getFreeElement(store_address_t* storageId,const size_t size,
 			uint8_t** p_data, bool ignoreFault = false) override;
+
+	ConstAccessorPair getData(store_address_t packet_id) override;
+	ReturnValue_t getData(store_address_t packet_id, ConstStorageAccessor&) override;
 	ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
 			size_t * size) override;
+
+	AccessorPair modifyData(store_address_t packet_id) override;
+	ReturnValue_t modifyData(store_address_t packet_id, StorageAccessor&) override;
 	ReturnValue_t modifyData(store_address_t packet_id, uint8_t** packet_ptr,
 			size_t * size) override;
+
 	virtual ReturnValue_t deleteData(store_address_t) override;
 	virtual ReturnValue_t deleteData(uint8_t* ptr, size_t size,
 			store_address_t* storeId = NULL) override;
@@ -84,7 +88,7 @@ public:
 	ReturnValue_t initialize() override;
 protected:
 	/**
-	 * With this helper method, a free element of \c size is reserved.
+	 * With this helper method, a free element of @c size is reserved.
 	 * @param size	The minimum packet size that shall be reserved.
 	 * @param[out] address Storage ID of the reserved data.
 	 * @return	- #RETURN_OK on success,
@@ -97,7 +101,8 @@ protected:
 private:
 	/**
 	 * Indicates that this element is free.
-	 * This value limits the maximum size of a pool. Change to larger data type if increase is required.
+	 * This value limits the maximum size of a pool. Change to larger data type
+	 * if increase is required.
 	 */
 	static const uint32_t STORAGE_FREE = 0xFFFFFFFF;
 	/**
@@ -123,7 +128,9 @@ private:
 	 * 			is also dynamically allocated there.
 	 */
 	uint32_t* size_list[NUMBER_OF_POOLS];
-	bool spillsToHigherPools; //!< A variable to determine whether higher n pools are used if the store is full.
+	//! A variable to determine whether higher n pools are used if
+	//! the store is full.
+	bool spillsToHigherPools;
 	/**
 	 * @brief	This method safely stores the given data in the given packet_id.
 	 * @details	It also sets the size in size_list. The method does not perform
@@ -180,4 +187,4 @@ private:
 
 #include "LocalPool.tpp"
 
-#endif /* FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_ */
+#endif /* FSFW_STORAGEMANAGER_LOCALPOOL_H_ */
