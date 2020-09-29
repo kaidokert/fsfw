@@ -1,9 +1,10 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
-#define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
+#ifndef FSFW_STORAGEMANAGER_POOLMANAGER_H_
+#define FSFW_STORAGEMANAGER_POOLMANAGER_H_
 
-#include "../storagemanager/LocalPool.h"
+#include "LocalPool.h"
+#include "StorageAccessor.h"
 #include "../ipc/MutexHelper.h"
-#include "../storagemanager/StorageAccessor.h"
+
 
 /**
  * @brief	The PoolManager class provides an intermediate data storage with
@@ -19,18 +20,24 @@ public:
 			const uint16_t element_sizes[NUMBER_OF_POOLS],
 			const uint16_t n_elements[NUMBER_OF_POOLS]);
 
-	//! @brief	In the PoolManager's destructor all allocated memory is freed.
+	/**
+	 * @brief	In the PoolManager's destructor all allocated memory
+	 * 			is freed.
+	 */
 	virtual ~PoolManager();
 
-	//! @brief LocalPool overrides for thread-safety. Decorator function which
-	//! 	   wraps LocalPool calls with a mutex protection.
+	/**
+	 * @brief 	LocalPool overrides for thread-safety. Decorator function
+	 * 			which wraps LocalPool calls with a mutex protection.
+	 */
 	ReturnValue_t deleteData(store_address_t) override;
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) override;
 
+	void setMutexTimeout(uint32_t mutexTimeoutMs);
 protected:
 	//! Default mutex timeout value to prevent permanent blocking.
-	static constexpr uint32_t mutexTimeout = 50;
+	uint32_t mutexTimeoutMs = 20;
 
 	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
 			bool ignoreFault) override;
@@ -46,4 +53,4 @@ protected:
 
 #include "PoolManager.tpp"
 
-#endif /* POOLMANAGER_H_ */
+#endif /* FSFW_STORAGEMANAGER_POOLMANAGER_H_ */

@@ -1,6 +1,7 @@
+#include "ConstStorageAccessor.h"
+#include "StorageManagerIF.h"
+
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../storagemanager/ConstStorageAccessor.h"
-#include "../storagemanager/StorageManagerIF.h"
 #include "../globalfunctions/arrayprinter.h"
 
 ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId):
@@ -14,12 +15,7 @@ ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId,
 
 ConstStorageAccessor::~ConstStorageAccessor() {
 	if(deleteData and store != nullptr) {
-		ReturnValue_t result = store->deleteData(storeId);
-		if(result != HasReturnvaluesIF::RETURN_OK) {
-		    // Configuration error.
-		    sif::error << "ConstStorageAccessor::~ConstStorageAccessor: "
-		            << "Could not delete entry!" << std::endl;
-		}
+		store->deleteData(storeId);
 	}
 }
 
@@ -62,7 +58,8 @@ ReturnValue_t ConstStorageAccessor::getDataCopy(uint8_t *pointer,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(size_ > maxSize) {
-		sif::error << "StorageAccessor: Supplied buffer not large enough" << std::endl;
+		sif::error << "StorageAccessor: Supplied buffer not large enough"
+				<< std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	std::copy(constDataPointer, constDataPointer + size_, pointer);

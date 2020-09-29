@@ -1,13 +1,14 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
-#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
+#ifndef FSFW_STORAGEMANAGER_LOCALPOOL_H_
+#define FSFW_STORAGEMANAGER_LOCALPOOL_H_
 
+#include "StorageManagerIF.h"
 #include "../objectmanager/SystemObject.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../storagemanager/StorageManagerIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../internalError/InternalErrorReporterIF.h"
 #include "../storagemanager/StorageAccessor.h"
 #include <cstring>
+
 
 /**
  * @brief	The LocalPool class provides an intermediate data storage with
@@ -184,6 +185,6 @@ private:
 	ReturnValue_t findEmpty(uint16_t pool_index, uint16_t* element);
 };
 
-#include "../storagemanager/LocalPool.tpp"
+#include "LocalPool.tpp"
 
-#endif /* FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_ */
+#endif /* FSFW_STORAGEMANAGER_LOCALPOOL_H_ */

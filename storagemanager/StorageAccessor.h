@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_STORAGEACCESSOR_H_
-#define FRAMEWORK_STORAGEMANAGER_STORAGEACCESSOR_H_
+#ifndef FSFW_STORAGEMANAGER_STORAGEACCESSOR_H_
+#define FSFW_STORAGEMANAGER_STORAGEACCESSOR_H_
 
-#include "../storagemanager/ConstStorageAccessor.h"
+#include "ConstStorageAccessor.h"
 
 class StorageManagerIF;
 
@@ -42,4 +42,4 @@ private:
 	void assignConstPointer();
 };
 
-#endif /* TEST_PROTOTYPES_STORAGEACCESSOR_H_ */
+#endif /* FSFW_STORAGEMANAGER_STORAGEACCESSOR_H_ */

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
 #define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
 
-#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
+#ifndef FSFW_STORAGEMANAGER_POOLMANAGER_H_
 #error Include PoolManager.h before PoolManager.tpp!
 #endif
 
@@ -21,8 +21,7 @@ inline PoolManager<NUMBER_OF_POOLS>::~PoolManager(void) {
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::reserveSpace(
 		const uint32_t size, store_address_t* address, bool ignoreFault) {
-	MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
-			mutexTimeout);
+	MutexHelper mutexHelper(mutex,MutexIF::WAITING, mutexTimeoutMs);
 	ReturnValue_t status = LocalPool<NUMBER_OF_POOLS>::reserveSpace(size,
 			address,ignoreFault);
 	return status;
@@ -34,8 +33,7 @@ inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(
 	// debug << "PoolManager( " << translateObject(getObjectId()) <<
 	//       " )::deleteData from store " << packet_id.pool_index <<
 	//       ". id is "<< packet_id.packet_index << std::endl;
-	MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
-				mutexTimeout);
+	MutexHelper mutexHelper(mutex,MutexIF::WAITING, mutexTimeoutMs);
 	ReturnValue_t status = LocalPool<NUMBER_OF_POOLS>::deleteData(packet_id);
 	return status;
 }
@@ -43,11 +41,16 @@ inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(uint8_t* buffer,
 		size_t size, store_address_t* storeId) {
-	MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
-				mutexTimeout);
+	MutexHelper mutexHelper(mutex,MutexIF::WAITING, mutexTimeoutMs);
 	ReturnValue_t status = LocalPool<NUMBER_OF_POOLS>::deleteData(buffer,
 			size, storeId);
 	return status;
 }
 
-#endif
+template<uint8_t NUMBER_OF_POOLS>
+inline void PoolManager<NUMBER_OF_POOLS>::setMutexTimeout(
+		uint32_t mutexTimeoutMs) {
+	this->mutexTimeout = mutexTimeoutMs;
+}
+
+#endif /* FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_ */

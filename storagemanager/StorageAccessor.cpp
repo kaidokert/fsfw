@@ -1,5 +1,5 @@
-#include "../storagemanager/StorageAccessor.h"
-#include "../storagemanager/StorageManagerIF.h"
+#include "StorageAccessor.h"
+#include "StorageManagerIF.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 StorageAccessor::StorageAccessor(store_address_t storeId):
