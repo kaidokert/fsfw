@@ -7,8 +7,8 @@
 
 CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId,
         uint16_t apid, uint8_t serviceId):
-	CommandingServiceBase(objectId, apid, serviceId,
-			NUMBER_OF_PARALLEL_COMMANDS,COMMAND_TIMEOUT_SECONDS) {
+		CommandingServiceBase(objectId, apid, serviceId,
+		NUMBER_OF_PARALLEL_COMMANDS,COMMAND_TIMEOUT_SECONDS) {
 }
 
 CService201HealthCommanding::~CService201HealthCommanding() {
@@ -56,8 +56,8 @@ ReturnValue_t CService201HealthCommanding::prepareCommand
 	if (result != RETURN_OK) {
 		return result;
 	} else {
-		HealthMessage::setHealthMessage(dynamic_cast<CommandMessage*>(message),
-				HealthMessage::HEALTH_SET, healthCommand.getHealth());
+		HealthMessage::setHealthMessage(message, HealthMessage::HEALTH_SET,
+				healthCommand.getHealth());
 		return result;
 	}
 }
@@ -79,6 +79,6 @@ void CService201HealthCommanding::prepareHealthSetReply(
 	uint8_t health = static_cast<uint8_t>(HealthMessage::getHealth(reply));
 	uint8_t oldHealth = static_cast<uint8_t>(HealthMessage::getOldHealth(reply));
 	HealthSetReply healthSetReply(health, oldHealth);
-	sendTmPacket(Subservice::REPLY_HEALTH_SET,&healthSetReply);
+	sendTmPacket(Subservice::REPLY_HEALTH_SET, &healthSetReply);
 }
 
