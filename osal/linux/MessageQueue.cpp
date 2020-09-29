@@ -9,8 +9,6 @@
 #include <errno.h>
 
 
-
-
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
 		id(MessageQueueIF::NO_QUEUE),lastPartner(MessageQueueIF::NO_QUEUE),
 		defaultDestination(MessageQueueIF::NO_QUEUE) {
