@@ -1,18 +1,11 @@
-/**
- * @file	HasModesIF.h
- * @brief	This file defines the HasModesIF class.
- * @date	20.06.2013
- * @author	baetz
- */
+#ifndef FSFW_MODES_HASMODESIF_H_
+#define FSFW_MODES_HASMODESIF_H_
 
-#ifndef HASMODESIF_H_
-#define HASMODESIF_H_
-
-#include "../events/Event.h"
 #include "ModeHelper.h"
 #include "ModeMessage.h"
+#include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include <stdint.h>
+#include <cstdint>
 
 
 class HasModesIF {
@@ -37,21 +30,22 @@ public:
 	static const Mode_t MODE_ON = 1; //!< The device is powered and ready to perform operations. In this mode, no commands are sent by the device handler itself, but direct commands van be commanded and will be interpreted
 	static const Mode_t MODE_OFF = 0; //!< The device is powered off. The only command accepted in this mode is a mode change to on.
 	static const Submode_t SUBMODE_NONE = 0; //!< To avoid checks against magic number "0".
-	virtual ~HasModesIF() {
-	}
+
+	virtual ~HasModesIF() {}
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 	virtual void getMode(Mode_t *mode, Submode_t *submode) = 0;
+
 protected:
 	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
 			uint32_t *msToReachTheMode) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	virtual void startTransition(Mode_t mode, Submode_t submode) {
-	}
-	virtual void setToExternalControl() {
-	}
-	virtual void announceMode(bool recursive) {
-	}
+
+	virtual void startTransition(Mode_t mode, Submode_t submode) {}
+
+	virtual void setToExternalControl() {}
+
+	virtual void announceMode(bool recursive) {}
 };
 
-#endif /* HASMODESIF_H_ */
+#endif /*FSFW_MODES_HASMODESIF_H_ */
