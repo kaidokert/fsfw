@@ -171,7 +171,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(store_address_t storeId
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
 		store_address_t packet_id, const uint8_t** packet_ptr, size_t* size) {
-	uint8_t* tempData = NULL;
+	uint8_t* tempData = nullptr;
 	ReturnValue_t status = modifyData(packet_id, &tempData, size);
 	*packet_ptr = tempData;
 	return status;
