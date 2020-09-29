@@ -131,20 +131,17 @@ public:
 		const T *operator->() const {
 			return value;
 		}
-
-
-		//SHOULDDO this should be implemented as non-member
-		bool operator==(const typename
-				ArrayList<T, count_t>::Iterator& other) const {
-			return (value == other.value);
-		}
-
-		//SHOULDDO this should be implemented as non-member
-		bool operator!=(const typename
-				ArrayList<T, count_t>::Iterator& other) const {
-			return !(*this == other);
-		}
 	};
+
+	friend bool operator==(const ArrayList::Iterator& lhs,
+			const ArrayList::Iterator& rhs) {
+		return (lhs.value == rhs.value);
+	}
+
+	friend bool operator!=(const ArrayList::Iterator& lhs,
+			const ArrayList::Iterator& rhs) {
+		return not (lhs.value == rhs.value);
+	}
 
 	/**
 	 * Iterator pointing to the first stored elmement
@@ -250,5 +247,7 @@ protected:
 	 */
 	bool allocated;
 };
+
+
 
 #endif /* FSFW_CONTAINER_ARRAYLIST_H_ */
