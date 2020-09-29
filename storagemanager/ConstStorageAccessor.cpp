@@ -1,6 +1,7 @@
+#include "ConstStorageAccessor.h"
+#include "StorageManagerIF.h"
+
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../storagemanager/ConstStorageAccessor.h"
-#include "../storagemanager/StorageManagerIF.h"
 #include "../globalfunctions/arrayprinter.h"
 
 ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId):

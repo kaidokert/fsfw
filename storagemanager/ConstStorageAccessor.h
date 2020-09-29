@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
-#define FRAMEWORK_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
+#ifndef FSFW_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
+#define FSFW_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
 
-#include "../storagemanager/storeAddress.h"
+#include "storeAddress.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
@@ -113,4 +113,4 @@ protected:
 };
 
 
-#endif /* FRAMEWORK_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_ */
+#endif /* FSFW_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_ */

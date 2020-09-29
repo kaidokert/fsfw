@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
-#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
+#ifndef FSFW_STORAGEMANAGER_LOCALPOOL_H_
+#define FSFW_STORAGEMANAGER_LOCALPOOL_H_
 
 #include "StorageManagerIF.h"
 #include "../objectmanager/SystemObject.h"
@@ -187,4 +187,4 @@ private:
 
 #include "LocalPool.tpp"
 
-#endif /* FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_ */
+#endif /* FSFW_STORAGEMANAGER_LOCALPOOL_H_ */

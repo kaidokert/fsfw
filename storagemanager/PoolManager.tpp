@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
 #define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_
 
-#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
+#ifndef FSFW_STORAGEMANAGER_POOLMANAGER_H_
 #error Include PoolManager.h before PoolManager.tpp!
 #endif
 
@@ -48,4 +48,4 @@ inline ReturnValue_t PoolManager<NUMBER_OF_POOLS>::deleteData(uint8_t* buffer,
 }
 
 
-#endif
+#endif /* FRAMEWORK_STORAGEMANAGER_POOLMANAGER_TPP_ */

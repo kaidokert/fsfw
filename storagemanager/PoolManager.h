@@ -1,9 +1,9 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
-#define FRAMEWORK_STORAGEMANAGER_POOLMANAGER_H_
+#ifndef FSFW_STORAGEMANAGER_POOLMANAGER_H_
+#define FSFW_STORAGEMANAGER_POOLMANAGER_H_
 
 #include "LocalPool.h"
+#include "StorageAccessor.h"
 #include "../ipc/MutexHelper.h"
-#include "../storagemanager/StorageAccessor.h"
 
 
 /**
@@ -20,11 +20,16 @@ public:
 			const uint16_t element_sizes[NUMBER_OF_POOLS],
 			const uint16_t n_elements[NUMBER_OF_POOLS]);
 
-	//! @brief	In the PoolManager's destructor all allocated memory is freed.
+	/**
+	 * @brief	In the PoolManager's destructor all allocated memory
+	 * 			is freed.
+	 */
 	virtual ~PoolManager();
 
-	//! @brief LocalPool overrides for thread-safety. Decorator function which
-	//! 	   wraps LocalPool calls with a mutex protection.
+	/**
+	 * @brief 	LocalPool overrides for thread-safety. Decorator function
+	 * 			which wraps LocalPool calls with a mutex protection.
+	 */
 	ReturnValue_t deleteData(store_address_t) override;
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) override;
@@ -47,4 +52,4 @@ protected:
 
 #include "PoolManager.tpp"
 
-#endif /* POOLMANAGER_H_ */
+#endif /* FSFW_STORAGEMANAGER_POOLMANAGER_H_ */

@@ -1,10 +1,12 @@
-#ifndef STORAGEMANAGERIF_H_H
-#define STORAGEMANAGERIF_H_H
+#ifndef FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_
+#define FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_
+
+#include "StorageAccessor.h"
+#include "storeAddress.h"
 
 #include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../storagemanager/StorageAccessor.h"
-#include "../storagemanager/storeAddress.h"
+
 #include <utility>
 #include <cstddef>
 
@@ -164,4 +166,4 @@ public:
 	virtual void clearStore() = 0;
 };
 
-#endif /* STORAGEMANAGERIF_H_ */
+#endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */
