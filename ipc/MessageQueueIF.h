@@ -1,15 +1,15 @@
-#ifndef FRAMEWORK_IPC_MESSAGEQUEUEIF_H_
-#define FRAMEWORK_IPC_MESSAGEQUEUEIF_H_
+#ifndef FSFW_IPC_MESSAGEQUEUEIF_H_
+#define FSFW_IPC_MESSAGEQUEUEIF_H_
 
 // COULDDO: We could support blocking calls
 
+#include "messageQueueDefinitions.h"
 #include "MessageQueueMessage.h"
-#include "MessageQueueSenderIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
+
 class MessageQueueIF {
 public:
-
-	static const MessageQueueId_t NO_QUEUE = MessageQueueSenderIF::NO_QUEUE; //!< Ugly hack.
+	static const MessageQueueId_t NO_QUEUE = 0;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::MESSAGE_QUEUE_IF;
 	/**
