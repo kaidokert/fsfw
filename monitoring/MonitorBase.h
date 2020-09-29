@@ -1,8 +1,8 @@
 #ifndef MONITORBASE_H_
 #define MONITORBASE_H_
 
-#include "../datapool/DataSet.h"
-#include "../datapool/PIDReader.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/PIDReader.h"
 #include "LimitViolationReporter.h"
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"
