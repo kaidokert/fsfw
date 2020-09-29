@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_CONTAINER_ARRAYLIST_H_
-#define FRAMEWORK_CONTAINER_ARRAYLIST_H_
+#ifndef FSFW_CONTAINER_ARRAYLIST_H_
+#define FSFW_CONTAINER_ARRAYLIST_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeAdapter.h"
@@ -20,11 +20,35 @@ public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::ARRAY_LIST;
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(0x01);
 
-    /**
-     * Copying is forbiden by declaring copy ctor and copy assignment deleted
-     * It is too ambigous in this case.
-     * (Allocate a new backend? Use the same? What to do in an modifying call?)
-     */
+	/**
+	 * This is the allocating constructor.
+	 * It allocates an array of the specified size.
+	 * @param maxSize
+	 */
+	ArrayList(count_t maxSize) :
+		size(0), maxSize_(maxSize), allocated(true) {
+		entries = new T[maxSize];
+	}
+
+	/**
+	 * This is the non-allocating constructor
+	 *
+	 * It expects a pointer to an array of a certain size and initializes
+	 * itself to it.
+	 *
+	 * @param storage the array to use as backend
+	 * @param maxSize size of storage
+	 * @param size size of data already present in storage
+	 */
+	ArrayList(T *storage, count_t maxSize, count_t size = 0) :
+		size(size), entries(storage), maxSize_(maxSize), allocated(false) {
+	}
+
+	/**
+	 * Copying is forbiden by declaring copy ctor and copy assignment deleted
+	 * It is too ambigous in this case.
+	 * (Allocate a new backend? Use the same? What to do in an modifying call?)
+	 */
 	ArrayList(const ArrayList& other) = delete;
 	const ArrayList& operator=(const ArrayList& other) = delete;
 
@@ -33,30 +57,6 @@ public:
 	 */
 	count_t size;
 
-	/**
-	 * This is the allocating constructor;
-	 *
-	 * It allocates an array of the specified size.
-	 *
-	 * @param maxSize
-	 */
-	ArrayList(count_t maxSize) :
-			size(0), maxSize_(maxSize), allocated(true) {
-		entries = new T[maxSize];
-	}
-
-	/**
-	 * This is the non-allocating constructor
-	 *
-	 * It expects a pointer to an array of a certain size and initializes itself to it.
-	 *
-	 * @param storage the array to use as backend
-	 * @param maxSize size of storage
-	 * @param size size of data already present in storage
-	 */
-	ArrayList(T *storage, count_t maxSize, count_t size = 0) :
-			size(size), entries(storage), maxSize_(maxSize), allocated(false) {
-	}
 
 	/**
 	 * Destructor, if the allocating constructor was used, it deletes the array.
@@ -67,86 +67,84 @@ public:
 		}
 	}
 
-    /**
-     * An Iterator to go trough an ArrayList
-     *
-     * It stores a pointer to an element and increments the
-     * pointer when incremented itself.
-     */
-    class Iterator {
-    public:
-        /**
-         * Empty ctor, points to NULL
-         */
-        Iterator(): value(0) {}
+	/**
+	 * An Iterator to go trough an ArrayList
+	 *
+	 * It stores a pointer to an element and increments the
+	 * pointer when incremented itself.
+	 */
+	class Iterator {
+	public:
+		/**
+		 * Empty ctor, points to NULL
+		 */
+		Iterator(): value(0) {}
 
-        /**
-         * Initializes the Iterator to point to an element
-         *
-         * @param initialize
-         */
-        Iterator(T *initialize) {
-            value = initialize;
-        }
+		/**
+		 * Initializes the Iterator to point to an element
+		 *
+		 * @param initialize
+		 */
+		Iterator(T *initialize) {
+			value = initialize;
+		}
 
-        /**
-         * The current element the iterator points to
-         */
-        T *value;
+		/**
+		 * The current element the iterator points to
+		 */
+		T *value;
 
-        Iterator& operator++() {
-            value++;
-            return *this;
-        }
+		Iterator& operator++() {
+			value++;
+			return *this;
+		}
 
-        Iterator operator++(int) {
-            Iterator tmp(*this);
-            operator++();
-            return tmp;
-        }
+		Iterator operator++(int) {
+			Iterator tmp(*this);
+			operator++();
+			return tmp;
+		}
 
-        Iterator& operator--() {
-            value--;
-            return *this;
-        }
+		Iterator& operator--() {
+			value--;
+			return *this;
+		}
 
-        Iterator operator--(int) {
-            Iterator tmp(*this);
-            operator--();
-            return tmp;
-        }
+		Iterator operator--(int) {
+			Iterator tmp(*this);
+			operator--();
+			return tmp;
+		}
 
-        T& operator*() {
-            return *value;
-        }
+		T& operator*() {
+			return *value;
+		}
 
-        const T& operator*() const {
-            return *value;
-        }
+		const T& operator*() const {
+			return *value;
+		}
 
-        T *operator->() {
-            return value;
-        }
+		T *operator->() {
+			return value;
+		}
 
-        const T *operator->() const {
-            return value;
-        }
+		const T *operator->() const {
+			return value;
+		}
 
 
-        //SHOULDDO this should be implemented as non-member
-        bool operator==(const typename ArrayList<T, count_t>::Iterator& other) const {
-            return (value == other.value);
-        }
+		//SHOULDDO this should be implemented as non-member
+		bool operator==(const typename
+				ArrayList<T, count_t>::Iterator& other) const {
+			return (value == other.value);
+		}
 
-        //SHOULDDO this should be implemented as non-member
-        bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) const {
-        	// POSSIBLY BUGGY ! Also this is really confusing. Why does
-        	// the operator above use the value while this one
-        	// dereferences itself?
-        	//return not (value == other.value);
-        	return !(*this == other);
-        }
-    };
+		//SHOULDDO this should be implemented as non-member
+		bool operator!=(const typename
+				ArrayList<T, count_t>::Iterator& other) const {
+			return !(*this == other);
+		}
+	};
 
 	/**
 	 * Iterator pointing to the first stored elmement
@@ -201,7 +199,7 @@ public:
 	 *
 	 * @return maximum number of elements
 	 */
-	uint32_t maxSize() const {
+	size_t maxSize() const {
 		return this->maxSize_;
 	}
 
@@ -245,7 +243,7 @@ protected:
 	/**
 	 * remembering the maximum size
 	 */
-	uint32_t maxSize_;
+	size_t maxSize_;
 
 	/**
 	 * true if the array was allocated and needs to be deleted in the destructor.
@@ -253,4 +251,4 @@ protected:
 	bool allocated;
 };
 
-#endif /* ARRAYLIST_H_ */
+#endif /* FSFW_CONTAINER_ARRAYLIST_H_ */
