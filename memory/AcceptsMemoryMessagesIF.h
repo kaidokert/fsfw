@@ -1,12 +1,5 @@
-/**
- * @file	AcceptsMemoryMessagesIF.h
- * @brief	This file defines the AcceptsMemoryMessagesIF class.
- * @date	11.07.2013
- * @author	baetz
- */
-
-#ifndef ACCEPTSMEMORYMESSAGESIF_H_
-#define ACCEPTSMEMORYMESSAGESIF_H_
+#ifndef FSFW_MEMORY_ACCEPTSMEMORYMESSAGESIF_H_
+#define FSFW_MEMORY_ACCEPTSMEMORYMESSAGESIF_H_
 
 #include "HasMemoryIF.h"
 #include "MemoryMessage.h"
@@ -18,4 +11,4 @@ public:
 };
 
 
-#endif /* ACCEPTSMEMORYMESSAGESIF_H_ */
+#endif /* FSFW_MEMORY_ACCEPTSMEMORYMESSAGESIF_H_ */
