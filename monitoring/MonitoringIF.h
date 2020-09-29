@@ -2,7 +2,7 @@
 #define MONITORINGIF_H_
 
 #include "../memory/HasMemoryIF.h"
-#include "../monitoring/MonitoringMessage.h"
+#include "MonitoringMessage.h"
 #include "../serialize/SerializeIF.h"
 
 class MonitoringIF : public SerializeIF {

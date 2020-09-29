@@ -1,8 +1,8 @@
 #ifndef MONITORINGMESSAGECONTENT_H_
 #define MONITORINGMESSAGECONTENT_H_
 
-#include "../monitoring/HasMonitorsIF.h"
-#include "../monitoring/MonitoringIF.h"
+#include "HasMonitorsIF.h"
+#include "MonitoringIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerialBufferAdapter.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"

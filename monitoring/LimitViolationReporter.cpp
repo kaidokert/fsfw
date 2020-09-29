@@ -4,9 +4,9 @@
  * @date	17.07.2014
  * @author	baetz
  */
-#include "../monitoring/LimitViolationReporter.h"
-#include "../monitoring/MonitoringIF.h"
-#include "../monitoring/ReceivesMonitoringReportsIF.h"
+#include "LimitViolationReporter.h"
+#include "MonitoringIF.h"
+#include "ReceivesMonitoringReportsIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerializeAdapter.h"
 

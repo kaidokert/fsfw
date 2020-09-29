@@ -2,9 +2,9 @@
 #define FRAMEWORK_MONITORING_MONITORREPORTER_H_
 
 #include "../events/EventManagerIF.h"
-#include "../monitoring/LimitViolationReporter.h"
-#include "../monitoring/MonitoringIF.h"
-#include "../monitoring/MonitoringMessageContent.h"
+#include "LimitViolationReporter.h"
+#include "MonitoringIF.h"
+#include "MonitoringMessageContent.h"
 #include "../parameters/HasParametersIF.h"
 
 template<typename T>
