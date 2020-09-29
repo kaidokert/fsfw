@@ -1,5 +1,6 @@
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "MessageQueue.h"
+#include "../../objectmanager/ObjectManagerIF.h"
 
 #include <fstream>
 
