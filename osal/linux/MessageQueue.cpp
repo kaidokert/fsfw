@@ -1,12 +1,14 @@
-#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "MessageQueue.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManagerIF.h"
 
 #include <fstream>
-
 #include <fcntl.h>           /* For O_* constants */
 #include <sys/stat.h>        /* For mode constants */
 #include <cstring>
 #include <errno.h>
+
+
 
 
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
