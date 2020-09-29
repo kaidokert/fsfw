@@ -6,11 +6,13 @@
 #include "../ipc/MutexFactory.h"
 #include "../ipc/MutexHelper.h"
 #include "../ipc/QueueFactory.h"
+#include "../objectmanager/frameworkObjects.h"
 
 #include <array>
 #include <cmath>
 
-object_id_t LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
+object_id_t LocalDataPoolManager::defaultHkDestination =
+		objects::PUS_SERVICE_3_HOUSEKEEPING;
 
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
