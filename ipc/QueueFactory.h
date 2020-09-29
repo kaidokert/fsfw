@@ -1,10 +1,10 @@
 #ifndef FSFW_IPC_QUEUEFACTORY_H_
 #define FSFW_IPC_QUEUEFACTORY_H_
 
-
 #include "MessageQueueIF.h"
-#include "../ipc/MessageQueueMessage.h"
-#include <stdint.h>
+#include "MessageQueueMessage.h"
+#include <cstdint>
+
 /**
  * Creates message queues.
  * This class is a "singleton" interface, i.e. it provides an
