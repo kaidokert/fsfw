@@ -6,7 +6,7 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../objectmanager/frameworkObjects.h"
 
-object_id_t VerificationReporter::messageReceiver = objects::PUS_SERVICE_1;
+object_id_t VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
 
 VerificationReporter::VerificationReporter() :
 		acknowledgeQueue(MessageQueueIF::NO_QUEUE) {
