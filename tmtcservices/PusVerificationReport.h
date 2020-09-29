@@ -1,9 +1,13 @@
-#ifndef PUSVERIFICATIONREPORT_H_
-#define PUSVERIFICATIONREPORT_H_
+#ifndef FSFW_TMTCSERVICES_PUSVERIFICATIONREPORT_H_
+#define FSFW_TMTCSERVICES_PUSVERIFICATIONREPORT_H_
+
+#include "VerificationCodes.h"
 
 #include "../ipc/MessageQueueMessage.h"
 #include "../tmtcpacket/pus/TcPacketBase.h"
-#include "VerificationCodes.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
+
+#include <cstdint>
 
 class PusVerificationMessage: public MessageQueueMessage {
 private:
@@ -30,7 +34,7 @@ private:
 public:
 	static const uint8_t VERIFICATION_MIN_SIZE = 6;
 	PusVerificationMessage();
-//	PusVerificationMessage( uint8_t set_report_id, TcPacketBase* current_packet, ReturnValue_t set_error_code = 0, uint8_t set_step = 0, uint32_t parameter1 = 0, uint32_t parameter2 = 0 );
+
 	PusVerificationMessage(uint8_t set_report_id, uint8_t ackFlags,
 			uint16_t tcPacketId, uint16_t tcSequenceControl,
 			ReturnValue_t set_error_code = 0, uint8_t set_step = 0,
@@ -74,4 +78,4 @@ public:
 	uint8_t* getReport();
 };
 
-#endif /* PUSVERIFICATIONREPORT_H_ */
+#endif /* FSFW_TMTCSERVICES_PUSVERIFICATIONREPORT_H_ */
