@@ -136,8 +136,4 @@ void PeriodicTask::handleMissedDeadline() {
     if(deadlineMissedFunc != nullptr) {
         this->deadlineMissedFunc();
     }
-#ifdef DEBUG
-    sif::warning << "PeriodicTask::handleMissedDeadline " << pcTaskGetName(NULL)
-    		<< " missed deadline!\n" << std::flush;
-#endif
 }
