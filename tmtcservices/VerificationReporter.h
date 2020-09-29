@@ -1,8 +1,8 @@
-#ifndef FRAMEWORK_TMTCSERVICES_VERIFICATIONREPORTER_H_
-#define FRAMEWORK_TMTCSERVICES_VERIFICATIONREPORTER_H_
+#ifndef FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_
+#define FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_
 
+#include "PusVerificationReport.h"
 #include "../objectmanager/ObjectManagerIF.h"
-#include "../tmtcservices/PusVerificationReport.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();
@@ -47,4 +47,4 @@ private:
 	MessageQueueId_t acknowledgeQueue;
 };
 
-#endif /* FRAMEWORK_TMTCSERVICES_VERIFICATIONREPORTER_H_ */
+#endif /* FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_ */

@@ -1,12 +1,13 @@
-#include "../tmtcservices/VerificationReporter.h"
+#include "VerificationReporter.h"
+#include "AcceptsVerifyMessageIF.h"
+#include "PusVerificationReport.h"
 
 #include "../ipc/MessageQueueIF.h"
-#include "../tmtcservices/AcceptsVerifyMessageIF.h"
-#include "../tmtcservices/PusVerificationReport.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../objectmanager/frameworkObjects.h"
 
-object_id_t VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
+object_id_t VerificationReporter::messageReceiver =
+		objects::PUS_SERVICE_1_VERIFICATION;
 
 VerificationReporter::VerificationReporter() :
 		acknowledgeQueue(MessageQueueIF::NO_QUEUE) {
@@ -98,8 +99,8 @@ void VerificationReporter::initialize() {
 	if (temp == nullptr) {
 		sif::error << "VerificationReporter::initialize: Message "
 				<< "receiver invalid. Make sure it is set up properly and "
-				<<"implementsAcceptsVerifyMessageIF" << std::endl;
-
+				<< "implementsAcceptsVerifyMessageIF" << std::endl;
+		return;
 	}
 	this->acknowledgeQueue = temp->getVerificationQueue();
 }
