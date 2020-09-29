@@ -36,7 +36,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* message) {
 		commandedMode = mode;
 		commandedSubmode = submode;
 
-		if ((parentQueueId != MessageQueueSenderIF::NO_QUEUE)
+		if ((parentQueueId != MessageQueueIF::NO_QUEUE)
 				&& (theOneWhoCommandedAMode != parentQueueId)) {
 			owner->setToExternalControl();
 		}
@@ -74,7 +74,7 @@ ReturnValue_t ModeHelper::initialize(MessageQueueId_t parentQueueId) {
 void ModeHelper::modeChanged(Mode_t mode, Submode_t submode) {
 	forced = false;
 	CommandMessage reply;
-	if (theOneWhoCommandedAMode != MessageQueueSenderIF::NO_QUEUE) {
+	if (theOneWhoCommandedAMode != MessageQueueIF::NO_QUEUE) {
 		if ((mode != commandedMode) || (submode != commandedSubmode)) {
 			ModeMessage::setModeMessage(&reply,
 					ModeMessage::REPLY_WRONG_MODE_REPLY, mode, submode);
@@ -86,12 +86,12 @@ void ModeHelper::modeChanged(Mode_t mode, Submode_t submode) {
 				owner->getCommandQueue());
 	}
 	if (theOneWhoCommandedAMode != parentQueueId
-			&& parentQueueId != MessageQueueSenderIF::NO_QUEUE) {
+			&& parentQueueId != MessageQueueIF::NO_QUEUE) {
 		ModeMessage::setModeMessage(&reply, ModeMessage::REPLY_MODE_INFO, mode,
 				submode);
 		MessageQueueSenderIF::sendMessage(parentQueueId, &reply, owner->getCommandQueue());
 	}
-	theOneWhoCommandedAMode = MessageQueueSenderIF::NO_QUEUE;
+	theOneWhoCommandedAMode = MessageQueueIF::NO_QUEUE;
 }
 
 void ModeHelper::startTimer(uint32_t timeoutMs) {

@@ -1,16 +1,9 @@
-/**
- * @file	SystemObject.h
- * @brief	This file contains the definition of the SystemObject class.
- * @date	07.11.2012
- * @author	Ulrich Mohr
- */
+#ifndef FSFW_OBJECTMANAGER_SYSTEMOBJECT_H_
+#define FSFW_OBJECTMANAGER_SYSTEMOBJECT_H_
 
-#ifndef SYSTEMOBJECT_H_
-#define SYSTEMOBJECT_H_
-
+#include "SystemObjectIF.h"
 #include "../events/Event.h"
 #include "../events/EventReportingProxyIF.h"
-#include "SystemObjectIF.h"
 #include "../timemanager/Clock.h"
 
 /**
@@ -20,7 +13,8 @@
  * 			class that is announced to ObjectManager. It automatically includes
  * 			itself (and therefore the inheriting class) in the object manager's
  * 			list.
- * \ingroup system_objects
+ * @author	Ulrich Mohr
+ * @ingroup system_objects
  */
 class SystemObject: public SystemObjectIF {
 private:
@@ -37,25 +31,28 @@ public:
 	 * @param parameter1
 	 * @param parameter2
 	 */
-	virtual void triggerEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+	virtual void triggerEvent(Event event, uint32_t parameter1 = 0,
+			uint32_t parameter2 = 0);
 
 	/**
 	 * @brief	The class's constructor.
 	 * @details	In the constructor, the object id is set and the class is
 	 * 			inserted in the object manager.
 	 * @param setObjectId	The id the object shall have.
-	 * @param doRegister	Determines if the object is registered in the global object manager.
+	 * @param doRegister	Determines if the object is registered in
+	 * 						the global object manager.
 	 */
 	SystemObject(object_id_t setObjectId, bool doRegister = true);
 	/**
 	 * @brief	On destruction, the object removes itself from the list.
 	 */
 	virtual ~SystemObject();
-	object_id_t getObjectId() const;
-	virtual ReturnValue_t initialize();
+	object_id_t getObjectId() const override;
+	virtual ReturnValue_t initialize() override;
 	virtual ReturnValue_t checkObjectConnections();
 
-	virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const;
+	virtual void forwardEvent(Event event, uint32_t parameter1 = 0,
+			uint32_t parameter2 = 0) const;
 };
 
-#endif /* SYSTEMOBJECT_H_ */
+#endif /* FSFW_OBJECTMANAGER_SYSTEMOBJECT_H_ */
