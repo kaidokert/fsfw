@@ -1,5 +1,5 @@
-#include "../pus/Service8FunctionManagement.h"
-#include "../pus/servicepackets/Service8Packets.h"
+#include "Service8FunctionManagement.h"
+#include "servicepackets/Service8Packets.h"
 
 #include "../objectmanager/SystemObjectIF.h"
 #include "../action/HasActionsIF.h"
