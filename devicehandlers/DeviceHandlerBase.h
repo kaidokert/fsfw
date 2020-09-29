@@ -106,13 +106,15 @@ public:
 	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
 			uint32_t thermalRequestPoolId);
 	/**
-	 * @brief   Helper function to easy device handler development.
+	 * @brief   Helper function to ease device handler development.
 	 * This will instruct the transition to MODE_ON immediately
 	 * (leading to doStartUp() being called for the transition to the ON mode),
 	 * so external mode commanding is not necessary anymore.
 	 *
 	 * This has to be called before the task is started!
-	 * (e.g. in the task factory)
+	 * (e.g. in the task factory). This is only a helper function for
+	 * development. Regular mode commanding should be performed by commanding
+	 * the AssemblyBase or Subsystem objects resposible for the device handler.
 	 */
 	void setStartUpImmediately();
 

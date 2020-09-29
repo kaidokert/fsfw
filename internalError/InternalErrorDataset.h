@@ -18,8 +18,8 @@ public:
     InternalErrorDataset(HasLocalDataPoolIF* owner):
             StaticLocalDataSet(owner, ERROR_SET_ID) {}
 
-    InternalErrorDataset(sid_t sid):
-           StaticLocalDataSet(sid) {}
+    InternalErrorDataset(object_id_t objectId):
+           StaticLocalDataSet(sid_t(objectId , ERROR_SET_ID)) {}
 
     lp_var_t<uint32_t> tmHits = lp_var_t<uint32_t>(TM_HITS,
             hkManager->getOwner(), this);
