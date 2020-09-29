@@ -1,5 +1,6 @@
 #include "MessageQueue.h"
 
+#include "../../objectmanager/ObjectManagerIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 // TODO I guess we should have a way of checking if we are in an ISR and then use the "fromISR" versions of all calls
@@ -101,7 +102,8 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			reinterpret_cast<const void*>(message->getBuffer()), 0);
 	if (result != pdPASS) {
 		if (!ignoreFault) {
-			InternalErrorReporterIF* internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+			InternalErrorReporterIF* internalErrorReporter =
+					objectManager->get<InternalErrorReporterIF>(
 					objects::INTERNAL_ERROR_REPORTER);
 			if (internalErrorReporter != NULL) {
 				internalErrorReporter->queueMessageNotSent();

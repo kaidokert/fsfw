@@ -1,26 +1,30 @@
-#ifndef FRAMEWORK_DEVICEHANDLERS_FIXEDSLOTSEQUENCE_H_
-#define FRAMEWORK_DEVICEHANDLERS_FIXEDSLOTSEQUENCE_H_
+#ifndef FSFW_TASKS_FIXEDSLOTSEQUENCE_H_
+#define FSFW_TASKS_FIXEDSLOTSEQUENCE_H_
 
 #include "FixedSequenceSlot.h"
 #include "../objectmanager/SystemObject.h"
+
 #include <set>
 
 /**
- * @brief	This class is the representation of a Polling Sequence Table in software.
- *
+ * @brief	This class is the representation of a
+ * 			Polling Sequence Table in software.
  * @details
  * The FixedSlotSequence object maintains the dynamic execution of
- * device handler objects.
+ * objects with stricter timing requirements for the FixedTimeslotTask.
  *
- * The main idea is to create a list of device handlers, to announce all
- * handlers to thepolling sequence and to maintain a list of
- * polling slot objects. This slot list represents the Polling Sequence Table
- * in software.
+ * The main idea is to create a list of executable objects (for example
+ * device handlers), to announce all handlers to the polling sequence and to
+ * maintain a list of polling slot objects.
+ * This slot list represents the Polling Sequence Table in software.
  *
  * Each polling slot contains information to indicate when and
- * which device handler shall be executed within a given polling period.
- * The sequence is then executed by iterating through this slot list.
- * Handlers are invoking by calling a certain function stored in the handler list.
+ * which executable object shall be executed within a given polling period.
+ * When adding a slot, a pointer to the executing task, a pointer to the
+ * executable object and a step number can be passed. The step number will be
+ * passed to the periodic handler.
+ * The sequence is executed by iterating through the slot sequence and
+ * executing the executable object in the correct timeslot.
  */
 class FixedSlotSequence {
 public:
@@ -29,41 +33,44 @@ public:
 
 	/**
 	 * @brief	The constructor of the FixedSlotSequence object.
-	 *
-	 * @details	The constructor takes two arguments, the period length and the init function.
-	 *
 	 * @param	setLength	The period length, expressed in ms.
 	 */
 	FixedSlotSequence(uint32_t setLengthMs);
 
 	/**
 	 * @brief	The destructor of the FixedSlotSequence object.
-	 *
-	 * @details	The destructor frees all allocated memory by iterating through the slotList
-	 *  		and deleting all allocated resources.
+	 * @details
+	 * The destructor frees all allocated memory by iterating through the
+	 * slotList and deleting all allocated resources.
 	 */
 	virtual ~FixedSlotSequence();
 
 	/**
 	 * @brief	This is a method to add an PollingSlot object to slotList.
 	 *
-	 * @details	Here, a polling slot object is added to the slot list. It is appended
-	 * 			to the end of the list. The list is currently NOT reordered.
-	 * 			Afterwards, the iterator current is set to the beginning of the list.
-	 * 	@param Object ID of the object to add
-	 * 	@param setTime Value between (0 to 1) * slotLengthMs, when a FixedTimeslotTask
-	 * 				   will be called inside the slot period.
-	 * 	@param setSequenceId ID which can be used to distinguish
-	 * 	                     different task operations
+	 * @details
+	 * Here, a polling slot object is added to the slot list. It is appended
+	 * to the end of the list. The list is currently NOT reordered.
+	 * Afterwards, the iterator current is set to the beginning of the list.
+	 * 	@param handlerId ID of the object to add
+	 * 	@param setTime
+	 * 	Value between (0 to 1) * slotLengthMs, when a FixedTimeslotTask
+	 * 	will be called inside the slot period.
+	 * 	@param setSequenceId
+	 * 	ID which can be used to distinguish different task operations. This
+	 * 	value will be passed to the executable function.
 	 * 	@param
 	 * 	@param
 	 */
 	void addSlot(object_id_t handlerId, uint32_t setTime, int8_t setSequenceId,
+			ExecutableObjectIF* executableObject,
 			PeriodicTaskIF* executingTask);
 
 	/**
-	 * Checks if the current slot shall be executed immediately after the one before.
-	 * This allows to distinguish between grouped and not grouped handlers.
+	 * @brief	Checks if the current slot shall be executed immediately
+	 * 			after the one before.
+	 * @details
+	 * This allows to distinguish between grouped and separated handlers.
 	 * @return 	- @c true if the slot has the same polling time as the previous
 	 * 			- @c false else
 	 */
@@ -125,11 +132,31 @@ public:
 	SlotListIter current;
 
 	/**
-	 * Iterate through slotList and check successful creation.
+	 * @brief   Check and initialize slot list.
+	 * @details
 	 * Checks if timing is ok (must be ascending) and if all handlers were found.
 	 * @return
 	 */
 	ReturnValue_t checkSequence() const;
+
+	/**
+	 * @brief   A custom check can be injected for the respective slot list.
+	 * @details
+	 * This can be used by the developer to check the validity of a certain
+	 * sequence. The function will be run in the #checkSequence function.
+	 * The general check will be continued for now if the custom check function
+	 * fails but a diagnostic debug output will be given.
+	 * @param customCheckFunction
+	 */
+	void addCustomCheck(ReturnValue_t (*customCheckFunction)(const SlotList &));
+
+	/**
+	 * @brief 	Perform any initialization steps required after the executing
+	 * 			task has been created. This function should be called from the
+	 * 			executing task!
+	 * @return
+	 */
+	ReturnValue_t intializeSequenceAfterTaskCreation() const;
 
 protected:
 
@@ -146,7 +173,9 @@ protected:
 	 */
 	SlotList slotList;
 
+	ReturnValue_t (*customCheckFunction)(const SlotList&) = nullptr;
+
 	uint32_t lengthMs;
 };
 
-#endif /* FIXEDSLOTSEQUENCE_H_ */
+#endif /* FSFW_TASKS_FIXEDSLOTSEQUENCE_H_ */
