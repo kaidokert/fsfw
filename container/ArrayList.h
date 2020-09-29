@@ -97,8 +97,7 @@ public:
 		bool operator!=(const typename ArrayList<T, count_t>::Iterator& other) const {
 			return !(*this == other);
 		}
-	}
-	;
+	};
 
 	/**
 	 * Number of Elements stored in this List
