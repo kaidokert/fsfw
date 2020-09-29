@@ -34,9 +34,10 @@ public:
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) override;
 
+	void setMutexTimeout(uint32_t mutexTimeoutMs);
 protected:
 	//! Default mutex timeout value to prevent permanent blocking.
-	static constexpr uint32_t mutexTimeout = 50;
+	uint32_t mutexTimeoutMs = 20;
 
 	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
 			bool ignoreFault) override;

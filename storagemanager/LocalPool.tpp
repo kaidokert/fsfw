@@ -125,9 +125,10 @@ inline LocalPool<NUMBER_OF_POOLS>::~LocalPool(void) {
 	}
 }
 
-template<uint8_t NUMBER_OF_POOLS> inline
-ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(store_address_t* storageId,
-		const uint8_t* data, size_t size, bool ignoreFault) {
+template<uint8_t NUMBER_OF_POOLS>
+inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(
+		store_address_t* storageId, const uint8_t* data, size_t size,
+		bool ignoreFault) {
 	ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
 	if (status == RETURN_OK) {
 		write(*storageId, data, size);
