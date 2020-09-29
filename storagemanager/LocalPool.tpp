@@ -1,5 +1,9 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
-#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
+#ifndef FSFW_STORAGEMANAGER_LOCALPOOL_TPP_
+#define FSFW_STORAGEMANAGER_LOCALPOOL_TPP_
+
+#ifndef FSFW_STORAGEMANAGER_LOCALPOOL_H_
+#error Include LocalPool.h before LocalPool.tpp!
+#endif
 
 template<uint8_t NUMBER_OF_POOLS>
 inline LocalPool<NUMBER_OF_POOLS>::LocalPool(object_id_t setObjectId,
@@ -122,8 +126,9 @@ inline LocalPool<NUMBER_OF_POOLS>::~LocalPool(void) {
 }
 
 template<uint8_t NUMBER_OF_POOLS>
-inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(store_address_t* storageId,
-		const uint8_t* data, size_t size, bool ignoreFault) {
+inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(
+		store_address_t* storageId, const uint8_t* data, size_t size,
+		bool ignoreFault) {
 	ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
 	if (status == RETURN_OK) {
 		write(*storageId, data, size);
@@ -145,11 +150,51 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getFreeElement(
 }
 
 template<uint8_t NUMBER_OF_POOLS>
+inline ConstAccessorPair LocalPool<NUMBER_OF_POOLS>::getData(
+		store_address_t storeId) {
+	uint8_t* tempData = nullptr;
+	ConstStorageAccessor constAccessor(storeId, this);
+	ReturnValue_t status = modifyData(storeId, &tempData, &constAccessor.size_);
+	constAccessor.constDataPointer = tempData;
+	return ConstAccessorPair(status, std::move(constAccessor));
+}
+
+template<uint8_t NUMBER_OF_POOLS>
+inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(store_address_t storeId,
+		ConstStorageAccessor& storeAccessor) {
+	uint8_t* tempData = nullptr;
+	ReturnValue_t status = modifyData(storeId, &tempData, &storeAccessor.size_);
+	storeAccessor.assignStore(this);
+	storeAccessor.constDataPointer = tempData;
+	return status;
+}
+
+template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
 		store_address_t packet_id, const uint8_t** packet_ptr, size_t* size) {
-	uint8_t* tempData = NULL;
+	uint8_t* tempData = nullptr;
 	ReturnValue_t status = modifyData(packet_id, &tempData, size);
 	*packet_ptr = tempData;
+	return status;
+}
+
+template<uint8_t NUMBER_OF_POOLS>
+inline AccessorPair LocalPool<NUMBER_OF_POOLS>::modifyData(
+		store_address_t storeId) {
+	StorageAccessor accessor(storeId, this);
+	ReturnValue_t status = modifyData(storeId, &accessor.dataPointer,
+			&accessor.size_);
+	accessor.assignConstPointer();
+	return AccessorPair(status, std::move(accessor));
+}
+
+template<uint8_t NUMBER_OF_POOLS>
+inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::modifyData(
+		store_address_t storeId, StorageAccessor& storeAccessor) {
+	storeAccessor.assignStore(this);
+	ReturnValue_t status = modifyData(storeId, &storeAccessor.dataPointer,
+			&storeAccessor.size_);
+	storeAccessor.assignConstPointer();
 	return status;
 }
 
@@ -242,8 +287,8 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::initialize() {
 	}
 	internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
 			objects::INTERNAL_ERROR_REPORTER);
-	if (internalErrorReporter == NULL){
-		return RETURN_FAILED;
+	if (internalErrorReporter == nullptr){
+		return ObjectManagerIF::INTERNAL_ERR_REPORTER_UNINIT;
 	}
 
 	//Check if any pool size is large than the maximum allowed.
@@ -251,10 +296,10 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::initialize() {
 		if (element_sizes[count] >= STORAGE_FREE) {
 			sif::error << "LocalPool::initialize: Pool is too large! "
 					"Max. allowed size is: " << (STORAGE_FREE - 1) << std::endl;
-			return RETURN_FAILED;
+			return StorageManagerIF::POOL_TOO_LARGE;
 		}
 	}
 	return RETURN_OK;
 }
 
-#endif
+#endif /* FSFW_STORAGEMANAGER_LOCALPOOL_TPP_ */
