@@ -61,6 +61,16 @@ public:
 		}
 	};
 
+	friend bool operator==(const typename FixedMap::Iterator& lhs,
+			const typename FixedMap::Iterator& rhs) {
+		return (lhs.value == rhs.value);
+	}
+
+	friend bool operator!=(const typename FixedMap::Iterator& lhs,
+			const typename FixedMap::Iterator& rhs) {
+		return not (lhs.value == rhs.value);
+	}
+
 	Iterator begin() const {
 		return Iterator(&theMap[0]);
 	}
