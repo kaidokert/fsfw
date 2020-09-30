@@ -159,7 +159,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	}
 // Newlib nano can't parse uint8, see SCNu8 documentation and https://sourceware.org/newlib/README
 // Suggestion: use uint16 all the time. This should work on all systems.
-#if FSFW_NEWLIB_NANO_NO_C99_IO == 1
+#if FSFW_NO_C99_IO == 1
 	uint16_t year;
 	uint16_t month;
 	uint16_t day;
