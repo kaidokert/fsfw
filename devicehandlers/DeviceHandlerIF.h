@@ -9,17 +9,19 @@
 #include "../ipc/MessageQueueSenderIF.h"
 
 /**
+ * This is used to uniquely identify commands that are sent to a device
+ * The values are defined in the device-specific implementations
+ */
+using DeviceCommandId_t = uint32_t;
+
+/**
  * @brief 	This is the Interface used to communicate with a device handler.
  * @details Includes all expected return values, events and modes.
  *
  */
 class DeviceHandlerIF {
 public:
-    /**
-     * This is used to uniquely identify commands that are sent to a device
-     * The values are defined in the device-specific implementations
-     */
-    typedef uint32_t DeviceCommandId_t;
+
 
 	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
 	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
