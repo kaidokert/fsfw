@@ -98,7 +98,7 @@ public:
 	}
 
 	ReturnValue_t insert(std::pair<key_t, T> pair) {
-		return insert(pair.fist, pair.second);
+		return insert(pair.first, pair.second);
 	}
 
 	ReturnValue_t exists(key_t key) const {
