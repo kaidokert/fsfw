@@ -5,15 +5,15 @@
 #include <utility>
 /**
  * The Placement Factory is used to create objects at runtime in a specific pool.
- * In general this should be avoided and is should only be used if you know what you are doing.
+ * In general, this should be avoided and it should only be used if you know what you are doing.
  * You are not allowed to use this container with a type that allocates memory internally like ArrayList.
  *
- * You have to check the returned pointer against nullptr!
+ * Also, you have to check the returned pointer in generate against nullptr!
  *
  * A backend of Type StorageManagerIF must be given as a place to store the new objects.
+ * Therefore ThreadSafety is only provided by your StorageManager Implementation.
+ *
  * Objects must be destroyed by the user with "destroy"! Otherwise the pool will not be cleared.
- *
- *
  *
  * The concept is based on the placement new operator.
  *
