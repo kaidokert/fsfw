@@ -20,11 +20,13 @@ public:
 			ArrayList<T, count_t>(data, MAX_SIZE) {
 		memcpy(this->data, other.data, sizeof(this->data));
 		this->entries = data;
+		this->size = other.size;
 	}
 
 	FixedArrayList& operator=(FixedArrayList other) {
 		memcpy(this->data, other.data, sizeof(this->data));
 		this->entries = data;
+		this->size = other.size;
 		return *this;
 	}
 
