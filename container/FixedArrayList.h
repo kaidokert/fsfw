@@ -2,11 +2,13 @@
 #define FIXEDARRAYLIST_H_
 
 #include "ArrayList.h"
+#include <cmath>
 /**
  * \ingroup container
  */
-template<typename T, uint32_t MAX_SIZE, typename count_t = uint8_t>
+template<typename T, size_t MAX_SIZE, typename count_t = uint8_t>
 class FixedArrayList: public ArrayList<T, count_t> {
+	static_assert(MAX_SIZE <= (pow(2,sizeof(count_t)*8)-1), "count_t is not large enough to hold MAX_SIZE");
 private:
 	T data[MAX_SIZE];
 public:
