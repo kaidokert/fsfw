@@ -40,11 +40,25 @@ public:
 	 */
 	ReturnValue_t pop();
 
+	/***
+	 * Check if FIFO is empty
+	 * @return True if empty, False if not
+	 */
 	bool empty();
+	/***
+	 * Check if FIFO is Full
+	 * @return True if full, False if not
+	 */
 	bool full();
+	/***
+	 *  Current used size (elements) used
+	 * @return size_t in elements
+	 */
 	size_t size();
-
-
+	/***
+	 * Get maximal capacity of fifo
+	 * @return size_t with max capacity of this fifo
+	 */
 	size_t getMaxCapacity() const;
 
 protected:
