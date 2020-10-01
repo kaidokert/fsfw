@@ -107,13 +107,23 @@ ReturnValue_t CService200ModeCommanding::prepareWrongModeReply(
 		const CommandMessage *reply, object_id_t objectId) {
 	ModePacket wrongModeReply(objectId, ModeMessage::getMode(reply),
 			ModeMessage::getSubmode(reply));
-	return sendTmPacket(Subservice::REPLY_WRONG_MODE_REPLY, &wrongModeReply);
+	ReturnValue_t result = sendTmPacket(Subservice::REPLY_WRONG_MODE_REPLY, &wrongModeReply);
+	if(result == RETURN_OK){
+		// We want to produce an error here in any case because the mode was not correct
+		return RETURN_FAILED;
+	}
+	return result;
 }
 
 ReturnValue_t CService200ModeCommanding::prepareCantReachModeReply(
 		const CommandMessage *reply, object_id_t objectId) {
 	CantReachModePacket cantReachModePacket(objectId,
 	        ModeMessage::getCantReachModeReason(reply));
-	return sendTmPacket(Subservice::REPLY_CANT_REACH_MODE,
+	ReturnValue_t result = sendTmPacket(Subservice::REPLY_CANT_REACH_MODE,
 	        &cantReachModePacket);
+	if(result == RETURN_OK){
+		// We want to produce an error here in any case because the mode was not reached
+		return RETURN_FAILED;
+	}
+	return result;
 }

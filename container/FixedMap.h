@@ -7,14 +7,21 @@
 #include <type_traits>
 
 /**
+ * @brief    Map implementation for maps with a pre-defined size.
+ * @details
+ * Can be initialized with desired maximum size.
+ * Iterator is used to access <key,value> pair and iterate through map entries.
+ * Complexity O(n).
  * @warning Iterators return a non-const key_t in the pair.
  * @warning A User is not allowed to change the key, otherwise the map is corrupted.
  * @ingroup container
  */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
-	static_assert (std::is_trivially_copyable<T>::value or std::is_base_of<SerializeIF, T>::value,
-			"Types used in FixedMap must either be trivial copy-able or a derived Class from SerializeIF to be serialize-able");
+	static_assert (std::is_trivially_copyable<T>::value or
+	        std::is_base_of<SerializeIF, T>::value,
+			"Types used in FixedMap must either be trivial copy-able or a "
+			"derived class from SerializeIF to be serialize-able");
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIXED_MAP;
 	static const ReturnValue_t KEY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
@@ -53,6 +60,16 @@ public:
 				ArrayList<std::pair<key_t, T>, uint32_t>::Iterator(pair) {
 		}
 	};
+
+	friend bool operator==(const typename FixedMap::Iterator& lhs,
+			const typename FixedMap::Iterator& rhs) {
+		return (lhs.value == rhs.value);
+	}
+
+	friend bool operator!=(const typename FixedMap::Iterator& lhs,
+			const typename FixedMap::Iterator& rhs) {
+		return not (lhs.value == rhs.value);
+	}
 
 	Iterator begin() const {
 		return Iterator(&theMap[0]);
@@ -134,6 +151,24 @@ public:
 		}
 		*value = &theMap[findIndex(key)].second;
 		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+	bool empty() {
+	    if(_size == 0) {
+	        return true;
+	    }
+	    else {
+	        return false;
+	    }
+	}
+
+	bool full() {
+	    if(_size >= theMap.maxSize()) {
+	        return true;
+	    }
+	    else {
+	        return false;
+	    }
 	}
 
 	void clear() {
