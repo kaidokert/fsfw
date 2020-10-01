@@ -1,5 +1,9 @@
+#include "../objectmanager/ObjectManagerIF.h"
 #include "DeviceHandlerMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
+
+DeviceHandlerMessage::DeviceHandlerMessage() {
+}
 
 store_address_t DeviceHandlerMessage::getStoreAddress(
 		const CommandMessage* message) {
@@ -21,6 +25,14 @@ uint8_t DeviceHandlerMessage::getWiretappingMode(
 	return message->getParameter();
 }
 
+//void DeviceHandlerMessage::setDeviceHandlerDirectCommandMessage(
+//		CommandMessage* message, DeviceCommandId_t deviceCommand,
+//		store_address_t commandParametersStoreId) {
+//	message->setCommand(CMD_DIRECT);
+//	message->setParameter(deviceCommand);
+//	message->setParameter2(commandParametersStoreId.raw);
+//}
+
 void DeviceHandlerMessage::setDeviceHandlerRawCommandMessage(
 		CommandMessage* message, store_address_t rawPacketStoreId) {
 	message->setCommand(CMD_RAW);
@@ -35,7 +47,7 @@ void DeviceHandlerMessage::setDeviceHandlerWiretappingMessage(
 
 void DeviceHandlerMessage::setDeviceHandlerSwitchIoBoardMessage(
 		CommandMessage* message, uint32_t ioBoardIdentifier) {
-	message->setCommand(CMD_SWITCH_ADDRESS);
+	message->setCommand(CMD_SWITCH_IOBOARD);
 	message->setParameter(ioBoardIdentifier);
 }
 
@@ -67,17 +79,18 @@ void DeviceHandlerMessage::setDeviceHandlerDirectCommandReply(
 void DeviceHandlerMessage::clear(CommandMessage* message) {
 	switch (message->getCommand()) {
 	case CMD_RAW:
+//	case CMD_DIRECT:
 	case REPLY_RAW_COMMAND:
 	case REPLY_RAW_REPLY:
 	case REPLY_DIRECT_COMMAND_DATA: {
 		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
 				objects::IPC_STORE);
-		if (ipcStore != nullptr) {
+		if (ipcStore != NULL) {
 			ipcStore->deleteData(getStoreAddress(message));
 		}
 	}
 		/* NO BREAK falls through*/
-	case CMD_SWITCH_ADDRESS:
+	case CMD_SWITCH_IOBOARD:
 	case CMD_WIRETAPPING:
 		message->setCommand(CommandMessage::CMD_NONE);
 		message->setParameter(0);
