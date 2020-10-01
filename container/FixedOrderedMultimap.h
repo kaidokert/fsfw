@@ -1,16 +1,21 @@
-#ifndef FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
-#define FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
+#ifndef FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
+#define FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 
 #include "ArrayList.h"
 #include <cstring>
-#include <set>
+
 /**
  * @brief A "Map" which allows multiple entries of the same key.
  * @details
  * Same keys are ordered by KEY_COMPARE function which is std::less<key_t> > by default.
  *
  * It uses the ArrayList, so technically this is not a real map, it is an array of pairs
- * of type key_t, T. It is ordered by key_t as FixedMap but allows same keys.
+ * of type key_t, T. It is ordered by key_t as FixedMap but allows same keys. Thus it has a linear
+ * complexity O(n). As long as the number of entries remains low, this
+ * should not be an issue.
+ * The number of insertion and deletion operation should be minimized
+ * as those incur extensive memory move operations (the underlying container
+ * is not node based).
  *
  * Its of fixed size so no allocations are performed after the construction.
  *
@@ -40,9 +45,9 @@ public:
 	 * Allocates memory at construction
 	 * @param maxSize size_t of Maximum allowed size
 	 */
-	FixedOrderedMultimap(size_t maxSize) :
-		theMap(maxSize), _size(0) {
-	}
+    FixedOrderedMultimap(size_t maxSize):theMap(maxSize), _size(0){
+    }
+
 	/***
 	 * Virtual destructor frees Memory by deleting its member
 	 */
@@ -63,18 +68,8 @@ public:
 		}
 	};
 
-	friend bool operator==(const typename FixedOrderedMultimap::Iterator& lhs,
-			const typename FixedOrderedMultimap::Iterator& rhs) {
-		return (lhs.value == rhs.value);
-	}
-
-	friend bool operator!=(const typename FixedOrderedMultimap::Iterator& lhs,
-			const typename FixedOrderedMultimap::Iterator& rhs) {
-		return not (lhs.value == rhs.value);
-	}
-
 	/***
-	 * Returns an iterator on the first element
+	 * Returns an iterator pointing to the first element
 	 * @return Iterator pointing to first element
 	 */
 	Iterator begin() const {
@@ -93,8 +88,23 @@ public:
 	 * Returns the current size of the map (not maximum size!)
 	 * @return Current size
 	 */
-	size_t size() const {
+	size_t size() const{
 		return _size;
+	}
+
+	/**
+	 * Clears the map, does not deallocate any memory
+	 */
+	void clear(){
+		_size = 0;
+	}
+
+	/**
+	 * Returns the maximum size of the map
+	 * @return Maximum size of the map
+	 */
+	size_t maxSize() const{
+		return theMap.maxSize();
 	}
 
 	/***
@@ -105,21 +115,7 @@ public:
 	 * @param[in/out] (optional) storedValue On success this points to the new value, otherwise a nullptr
 	 * @return RETURN_OK if insert was successful, MAP_FULL if no space is available
 	 */
-	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr) {
-		if (_size == theMap.maxSize()) {
-			return MAP_FULL;
-		}
-		size_t position = findNicePlace(key);
-		memmove(static_cast<void*>(&theMap[position + 1]),static_cast<void*>(&theMap[position]),
-				(_size - position) * sizeof(std::pair<key_t,T>));
-		theMap[position].first = key;
-		theMap[position].second = value;
-		++_size;
-		if (storedValue != nullptr) {
-			*storedValue = Iterator(&theMap[position]);
-		}
-		return HasReturnvaluesIF::RETURN_OK;
-	}
+	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr);
 
 	/***
 	 * Used to insert new pair instead of single values
@@ -127,22 +123,14 @@ public:
 	 * @param pair Pair to be inserted
 	 * @return RETURN_OK if insert was successful, MAP_FULL if no space is available
 	 */
-	ReturnValue_t insert(std::pair<key_t, T> pair) {
-		return insert(pair.first, pair.second);
-	}
+	ReturnValue_t insert(std::pair<key_t, T> pair);
 
 	/***
 	 * Can be used to check if a certain key is in the map
 	 * @param key Key to be checked
 	 * @return RETURN_OK if the key exists KEY_DOES_NOT_EXIST otherwise
 	 */
-	ReturnValue_t exists(key_t key) const {
-		ReturnValue_t result = KEY_DOES_NOT_EXIST;
-		if (findFirstIndex(key) < _size) {
-			result = HasReturnvaluesIF::RETURN_OK;
-		}
-		return result;
-	}
+	ReturnValue_t exists(key_t key) const;
 
 	/***
 	 * Used to delete the element in the iterator
@@ -154,36 +142,14 @@ public:
 	 * @param[in/out] iter Pointer to iterator to the element that needs to be ereased
 	 * @return RETURN_OK if erased, KEY_DOES_NOT_EXIST if the there is no element like this
 	 */
-	ReturnValue_t erase(Iterator *iter) {
-		size_t i;
-		if ((i = findFirstIndex((*iter).value->first)) >= _size) {
-			return KEY_DOES_NOT_EXIST;
-		}
-		removeFromPosition(i);
-		if (*iter != begin()) {
-			(*iter)--;
-		} else {
-			*iter = begin();
-		}
-		return HasReturnvaluesIF::RETURN_OK;
-	}
+	ReturnValue_t erase(Iterator *iter);
 
 	/***
 	 * Used to erase by key
 	 * @param key Key to be erased
 	 * @return RETURN_OK if erased, KEY_DOES_NOT_EXIST if the there is no element like this
 	 */
-	ReturnValue_t erase(key_t key) {
-		size_t i;
-		if ((i = findFirstIndex(key)) >= _size) {
-			return KEY_DOES_NOT_EXIST;
-		}
-		do {
-			removeFromPosition(i);
-			i = findFirstIndex(key, i);
-		} while (i < _size);
-		return HasReturnvaluesIF::RETURN_OK;
-	}
+	ReturnValue_t erase(key_t key);
 
 	/***
 	 * Find returns the first appearance of the key
@@ -193,13 +159,7 @@ public:
 	 * @param key Key to search for
 	 * @return Iterator pointing to the first entry of key
 	 */
-	Iterator find(key_t key) const {
-		ReturnValue_t result = exists(key);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return end();
-		}
-		return Iterator(&theMap[findFirstIndex(key)]);
-	}
+	Iterator find(key_t key) const;
 
 	/***
 	 * Finds first entry of the given key and returns a
@@ -210,27 +170,16 @@ public:
 	 * @return RETURN_OK if it points to the value,
 	 * KEY_DOES_NOT_EXIST if the key is not in the map
 	 */
-	ReturnValue_t find(key_t key, T **value) const {
-		ReturnValue_t result = exists(key);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
-		*value = &theMap[findFirstIndex(key)].second;
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-	/**
-	 * Clears the map, does not deallocate any memory
-	 */
-	void clear() {
-		_size = 0;
+	ReturnValue_t find(key_t key, T **value) const;
+
+	friend bool operator==(const typename FixedOrderedMultimap::Iterator& lhs,
+			const typename FixedOrderedMultimap::Iterator& rhs) {
+		return (lhs.value == rhs.value);
 	}
 
-	/**
-	 * Returns the maximum size of the map
-	 * @return Maximum size of the map
-	 */
-	size_t maxSize() const {
-		return theMap.maxSize();
+	friend bool operator!=(const typename FixedOrderedMultimap::Iterator& lhs,
+			const typename FixedOrderedMultimap::Iterator& rhs) {
+		return not (lhs.value == rhs.value);
 	}
 
 private:
@@ -239,37 +188,13 @@ private:
 	ArrayList<std::pair<key_t, T>, size_t> theMap;
 	size_t _size;
 
-	size_t findFirstIndex(key_t key, size_t startAt = 0) const {
-		if (startAt >= _size) {
-			return startAt + 1;
-		}
-		size_t i = startAt;
-		for (i = startAt; i < _size; ++i) {
-			if (theMap[i].first == key) {
-				return i;
-			}
-		}
-		return i;
-	}
+	size_t findFirstIndex(key_t key, size_t startAt = 0) const;
 
-	size_t findNicePlace(key_t key) const {
-		size_t i = 0;
-		for (i = 0; i < _size; ++i) {
-			if (myComp(key, theMap[i].first)) {
-				return i;
-			}
-		}
-		return i;
-	}
+	size_t findNicePlace(key_t key) const;
 
-	void removeFromPosition(size_t position) {
-		if (_size <= position) {
-			return;
-		}
-		memmove(static_cast<void*>(&theMap[position]), static_cast<void*>(&theMap[position + 1]),
-				(_size - position - 1) * sizeof(std::pair<key_t,T>));
-		--_size;
-	}
+	void removeFromPosition(size_t position);
 };
 
-#endif /* FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_ */
+#include "FixedOrderedMultimap.tpp"
+
+#endif /* FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_ */
