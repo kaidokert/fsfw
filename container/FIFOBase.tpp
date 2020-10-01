@@ -26,6 +26,9 @@ inline ReturnValue_t FIFOBase<T>::retrieve(T* value) {
 	if (empty()) {
 		return EMPTY;
 	} else {
+		if (value == nullptr){
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
 		*value = values[readIndex];
 		readIndex = next(readIndex);
 		--currentSize;
@@ -38,6 +41,9 @@ inline ReturnValue_t FIFOBase<T>::peek(T* value) {
 	if(empty()) {
 		return EMPTY;
 	} else {
+		if (value == nullptr){
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
 		*value = values[readIndex];
 		return HasReturnvaluesIF::RETURN_OK;
 	}
