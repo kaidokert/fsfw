@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
-#define FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_
+#ifndef FSFW_CONTAINER_RINGBUFFERBASE_H_
+#define FSFW_CONTAINER_RINGBUFFERBASE_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
@@ -65,6 +65,7 @@ protected:
 	size_t read[N_READ_PTRS];
 	const size_t size;
 	const bool overwriteOld;
+
 	void incrementWrite(uint32_t amount) {
 		write = ((write + amount - start) % size) + start;
 	}
@@ -90,7 +91,6 @@ protected:
 		}
 	}
 
-
 	size_t getRead(uint8_t n = 0) const {
 		return read[n];
 	}
@@ -110,4 +110,4 @@ protected:
 	}
 };
 
-#endif /* FRAMEWORK_CONTAINER_RINGBUFFERBASE_H_ */
+#endif /* FSFW_CONTAINER_RINGBUFFERBASE_H_ */
