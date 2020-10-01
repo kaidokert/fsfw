@@ -19,32 +19,46 @@ public:
 	/**
 	 * Insert value into FIFO
 	 * @param value
-	 * @return
+	 * @return RETURN_OK on success, FULL if full
 	 */
 	ReturnValue_t insert(T value);
 	/**
 	 * Retrieve item from FIFO. This removes the item from the FIFO.
-	 * @param value
-	 * @return
+	 * @param value Must point to a valid T
+	 * @return RETURN_OK on success, EMPTY if empty and FAILED if nullptr check failed
 	 */
 	ReturnValue_t retrieve(T *value);
 	/**
 	 * Retrieve item from FIFO without removing it from FIFO.
-	 * @param value
-	 * @return
+	 * @param value Must point to a valid T
+	 * @return RETURN_OK on success, EMPTY if empty and FAILED if nullptr check failed
 	 */
 	ReturnValue_t peek(T * value);
 	/**
 	 * Remove item from FIFO.
-	 * @return
+	 * @return RETURN_OK on success, EMPTY if empty
 	 */
 	ReturnValue_t pop();
 
+	/***
+	 * Check if FIFO is empty
+	 * @return True if empty, False if not
+	 */
 	bool empty();
+	/***
+	 * Check if FIFO is Full
+	 * @return True if full, False if not
+	 */
 	bool full();
+	/***
+	 *  Current used size (elements) used
+	 * @return size_t in elements
+	 */
 	size_t size();
-
-
+	/***
+	 * Get maximal capacity of fifo
+	 * @return size_t with max capacity of this fifo
+	 */
 	size_t getMaxCapacity() const;
 
 protected:
