@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_TMTCSERVICES_TCDISTRIBUTOR_H_
-#define FRAMEWORK_TMTCSERVICES_TCDISTRIBUTOR_H_
+#ifndef FSFW_TMTCSERVICES_TCDISTRIBUTOR_H_
+#define FSFW_TMTCSERVICES_TCDISTRIBUTOR_H_
 
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../objectmanager/SystemObject.h"
@@ -34,9 +34,10 @@ public:
 	using TcMessageQueueMap = std::map<uint32_t, MessageQueueId_t>;
 	using TcMqMapIter = std::map<uint32_t, MessageQueueId_t>::iterator;
 
-	static const uint8_t INTERFACE_ID = CLASS_ID::PACKET_DISTRIBUTION;
-	static const ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE( 1 );
-	static const ReturnValue_t DESTINATION_NOT_FOUND = MAKE_RETURN_CODE( 2 );
+	static constexpr uint8_t INTERFACE_ID = CLASS_ID::PACKET_DISTRIBUTION;
+	static constexpr ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE( 1 );
+	static constexpr ReturnValue_t DESTINATION_NOT_FOUND = MAKE_RETURN_CODE( 2 );
+	static constexpr ReturnValue_t SERVICE_ID_ALREADY_EXISTS = MAKE_RETURN_CODE(3);
 	/**
 	 * Within the default constructor, the SystemObject id is set and the
 	 * message queue is initialized.
@@ -44,7 +45,7 @@ public:
 	 * @param set_object_id	This id is assigned to the distributor
 	 * 		implementation.
 	 */
-	TcDistributor( object_id_t set_object_id );
+	TcDistributor(object_id_t objectId);
 	/**
 	 * The destructor is empty, the message queues are not in the vicinity of
 	 * this class.
@@ -69,7 +70,7 @@ protected:
 	 * This is the receiving queue for incoming Telecommands.
 	 * The child classes must make its queue id public.
 	 */
-	MessageQueueIF* tcQueue;
+	MessageQueueIF* tcQueue = nullptr;
 	/**
 	 * The last received incoming packet information is stored in this
 	 * member.
@@ -94,18 +95,19 @@ protected:
 	/**
 	 * The handlePacket method calls the child class's selectDestination method
 	 * and forwards the packet to its destination, if found.
-	 * @return The message queue return value or \c RETURN_FAILED, in case no
+	 * @return The message queue return value or @c RETURN_FAILED, in case no
 	 * 		destination was found.
 	 */
 	ReturnValue_t handlePacket();
 	/**
-	 * This method gives the child class a chance to perform some kind of operation
-	 * after the parent tried to forward the message.
+	 * This method gives the child class a chance to perform some kind of
+	 * operation after the parent tried to forward the message.
 	 * A typically application would be sending success/failure messages.
-	 * The default implementation just returns \c RETURN_OK.
-	 * @param queueStatus	The status of the message queue after an attempt to send the TC.
-	 * @return	- \c RETURN_OK on success
-	 * 			- \c RETURN_FAILED on failure
+	 * The default implementation just returns @c RETURN_OK.
+	 * @param queueStatus	The status of the message queue after an attempt
+	 *                      to send the TC.
+	 * @return	- @c RETURN_OK on success
+	 * 			- @c RETURN_FAILED on failure
 	 */
 	virtual ReturnValue_t callbackAfterSending( ReturnValue_t queueStatus );
 
@@ -113,8 +115,8 @@ private:
 	/**
 	 * This constant sets the maximum number of packets distributed per call.
 	 */
-	static const uint8_t DISTRIBUTER_MAX_PACKETS = 128;
+	static constexpr uint8_t DISTRIBUTER_MAX_PACKETS = 128;
 };
 
 
-#endif /* TCDISTRIBUTOR_H_ */
+#endif /* FSFW_TMTCSERVICES_TCDISTRIBUTOR_H_ */

@@ -1,57 +1,66 @@
+#include "CCSDSDistributorIF.h"
+#include "PUSDistributor.h"
+
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../tcdistribution/CCSDSDistributorIF.h"
-#include "../tcdistribution/PUSDistributor.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcservices/PusVerificationReport.h"
 
 PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
 		object_id_t setPacketSource) :
 		TcDistributor(setObjectId), checker(setApid), verifyChannel(),
-		currentPacket(), tcStatus(RETURN_FAILED),
-		packetSource(setPacketSource) {}
+		tcStatus(RETURN_FAILED), packetSource(setPacketSource) {}
 
 PUSDistributor::~PUSDistributor() {}
 
-TcDistributor::TcMqMapIter PUSDistributor::selectDestination() {
-	TcMqMapIter queueMapIt = this->queueMap.end();
-	this->currentPacket.setStoreAddress(this->currentMessage.getStorageId());
-	if (currentPacket.getWholeData() != NULL) {
-		tcStatus = checker.checkPacket(&currentPacket);
-//		sif::debug << "PUSDistributor::handlePacket: packetCheck returned with "
-//				<< (int)tcStatus << std::endl;
-		uint32_t queue_id = currentPacket.getService();
-		queueMapIt = this->queueMap.find(queue_id);
-	} else {
-		tcStatus = PACKET_LOST;
-	}
-	if (queueMapIt == this->queueMap.end()) {
-		tcStatus = DESTINATION_NOT_FOUND;
-	}
+PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
+    // sif:: debug << "PUSDistributor::handlePacket received: "
+    //          << this->current_packet_id.store_index << ", "
+    //          << this->current_packet_id.packet_index << std::endl;
+    TcMqMapIter queueMapIt = this->queueMap.end();
+    this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
+    if (currentPacket->getWholeData() != NULL) {
+        tcStatus = checker.checkPacket(currentPacket);
+#ifdef DEBUG
+        if(tcStatus != HasReturnvaluesIF::RETURN_OK) {
+            sif::debug << "PUSDistributor::handlePacket: Packet format "
+                    << "invalid, code "<< static_cast<int>(tcStatus)
+                    << std::endl;
+        }
+#endif
+        uint32_t queue_id = currentPacket->getService();
+        queueMapIt = this->queueMap.find(queue_id);
+    }
+    else {
+        tcStatus = PACKET_LOST;
+    }
 
-	if (tcStatus != RETURN_OK) {
-		sif::debug << "PUSDistributor::handlePacket: Error with " << tcStatus
-				<< ", 0x"<< std::hex << tcStatus << std::dec << std::endl;
-		return this->queueMap.end();
-	} else {
-		return queueMapIt;
-	}
+    if (queueMapIt == this->queueMap.end()) {
+        tcStatus = DESTINATION_NOT_FOUND;
+#ifdef DEBUG
+        sif::debug << "PUSDistributor::handlePacket: Destination not found, "
+                << "code "<< static_cast<int>(tcStatus) << std::endl;
+#endif
+    }
+
+    if (tcStatus != RETURN_OK) {
+        return this->queueMap.end();
+    }
+    else {
+        return queueMapIt;
+    }
 
 }
 
-//uint16_t PUSDistributor::createDestination( uint8_t service_id, uint8_t subservice_id ) {
-//	return ( service_id << 8 ) + subservice_id;
-//}
 
 ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 	uint16_t serviceId = service->getIdentifier();
-	//info << "Service ID: " << (int)serviceId << std::endl;
+	// sif::info << "Service ID: " << (int)serviceId << std::endl;
 	MessageQueueId_t queue = service->getRequestQueue();
 	auto returnPair = queueMap.emplace(serviceId, queue);
 	if (not returnPair.second) {
-		//TODO Return Code
 		sif::error << "PUSDistributor::registerService: Service ID already"
 				" exists in map." << std::endl;
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return SERVICE_ID_ALREADY_EXISTS;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -66,13 +75,14 @@ ReturnValue_t PUSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
 	}
 	if (tcStatus != RETURN_OK) {
 		this->verifyChannel.sendFailureReport(TC_VERIFY::ACCEPTANCE_FAILURE,
-				&currentPacket, tcStatus);
-		//A failed packet is deleted immediately after reporting, otherwise it will block memory.
-		currentPacket.deletePacket();
+				currentPacket, tcStatus);
+		// A failed packet is deleted immediately after reporting,
+		// otherwise it will block memory.
+		currentPacket->deletePacket();
 		return RETURN_FAILED;
 	} else {
 		this->verifyChannel.sendSuccessReport(TC_VERIFY::ACCEPTANCE_SUCCESS,
-				&currentPacket);
+				currentPacket);
 		return RETURN_OK;
 	}
 }
@@ -84,9 +94,15 @@ uint16_t PUSDistributor::getIdentifier() {
 ReturnValue_t PUSDistributor::initialize() {
 	CCSDSDistributorIF* ccsdsDistributor =
 			objectManager->get<CCSDSDistributorIF>(packetSource);
-	if (ccsdsDistributor == NULL) {
-		return RETURN_FAILED;
-	} else {
+	if (ccsdsDistributor == nullptr) {
+		sif::error << "PUSDistributor::initialize: Packet source invalid."
+		        << " Make sure it exists and implements CCSDSDistributorIF!"
+		        << std::endl;
+	    return RETURN_FAILED;
+	}
+	else {
 		return ccsdsDistributor->registerApplication(this);
 	}
+
+	currentPacket = new TcPacketStored();
 }

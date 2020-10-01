@@ -1,10 +1,11 @@
-#ifndef FRAMEWORK_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
-#define FRAMEWORK_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
+#ifndef FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
+#define FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
+
+#include "PUSDistributorIF.h"
+#include "TcDistributor.h"
+#include "TcPacketCheck.h"
 
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../tcdistribution/PUSDistributorIF.h"
-#include "../tcdistribution/TcDistributor.h"
-#include "../tcdistribution/TcPacketCheck.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/VerificationReporter.h"
 
@@ -50,7 +51,7 @@ protected:
 	/**
 	 * The currently handled packet is stored here.
 	 */
-	TcPacketStored currentPacket;
+	TcPacketStored* currentPacket = nullptr;
 	/**
 	 * With this variable, the current check status is stored to generate
 	 * acceptance messages later.
@@ -58,6 +59,7 @@ protected:
 	ReturnValue_t tcStatus;
 
 	const object_id_t packetSource;
+
 	/**
 	 * This method reads the packet service, checks if such a service is
 	 * registered and forwards the packet to the destination.
@@ -71,7 +73,7 @@ protected:
 	 * The callback here handles the generation of acceptance
 	 * success/failure messages.
 	 */
-	ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus);
+	ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus) override;
 };
 
-#endif /* FRAMEWORK_TCDISTRIBUTION_PUSDISTRIBUTOR_H_ */
+#endif /* FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_ */

@@ -1,5 +1,6 @@
+#include "CCSDSDistributor.h"
+
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../tcdistribution/CCSDSDistributor.h"
 #include "../tmtcpacket/SpacePacketBase.h"
 
 CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid,
@@ -19,7 +20,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 			&packet, &size );
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 		sif::error << "CCSDSDistributor::selectDestination: Getting data from"
-				"store failed!" << std::endl;
+				" store failed!" << std::endl;
 	}
 	SpacePacketBase currentPacket(packet);
 
@@ -42,9 +43,9 @@ MessageQueueId_t CCSDSDistributor::getRequestQueue() {
 ReturnValue_t CCSDSDistributor::registerApplication(
 		AcceptsTelecommandsIF* application) {
 	ReturnValue_t returnValue = RETURN_OK;
-	bool errorCode = true;
-	errorCode = this->queueMap.insert( std::pair<uint32_t, MessageQueueId_t>( application->getIdentifier(), application->getRequestQueue() ) ).second;
-	if(  errorCode == false ) {
+	auto insertPair = this->queueMap.emplace(application->getIdentifier(),
+	        application->getRequestQueue());
+	if(not insertPair.second) {
 		returnValue = RETURN_FAILED;
 	}
 	return returnValue;
@@ -53,9 +54,8 @@ ReturnValue_t CCSDSDistributor::registerApplication(
 ReturnValue_t CCSDSDistributor::registerApplication(uint16_t apid,
 		MessageQueueId_t id) {
 	ReturnValue_t returnValue = RETURN_OK;
-	bool errorCode = true;
-	errorCode = this->queueMap.insert( std::pair<uint32_t, MessageQueueId_t>( apid, id ) ).second;
-	if(  errorCode == false ) {
+	auto insertPair = this->queueMap.emplace(apid, id);
+	if(not insertPair.second) {
 		returnValue = RETURN_FAILED;
 	}
 	return returnValue;
@@ -69,7 +69,11 @@ uint16_t CCSDSDistributor::getIdentifier() {
 ReturnValue_t CCSDSDistributor::initialize() {
 	ReturnValue_t status = this->TcDistributor::initialize();
 	this->tcStore = objectManager->get<StorageManagerIF>( objects::TC_STORE );
-	if (this->tcStore == NULL) status = RETURN_FAILED;
+	if (this->tcStore == nullptr) {
+	    sif::error << "CCSDSDistributor::initialize: Could not initialize"
+	            " TC store!" << std::endl;
+	    status = RETURN_FAILED;
+	}
 	return status;
 }
 
