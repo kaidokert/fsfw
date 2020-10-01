@@ -5,7 +5,7 @@
 #include <cstring>
 
 /**
- * @brief A "Map" which allows multiple entries of the same key.
+ * @brief  An associative container which allows multiple entries of the same key.
  * @details
  * Same keys are ordered by KEY_COMPARE function which is std::less<key_t> > by default.
  *
