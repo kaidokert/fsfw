@@ -2,7 +2,7 @@
 #define FRAMEWORK_GLOBALFUNCTIONS_MATCHING_MATCHTREE_H_
 
 #include "../../container/BinaryTree.h"
-#include "../../globalfunctions/matching/SerializeableMatcherIF.h"
+#include "SerializeableMatcherIF.h"
 #include "../../serialize/SerializeAdapter.h"
 
 template<typename T>

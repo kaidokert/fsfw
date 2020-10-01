@@ -92,7 +92,7 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 			else {
 			    /* The next byte is a STX, DTX or 0x0D character which
 			     * was escaped by a DLE character. The actual byte was
-				 * also encoded by adding + 0x40 to preven having control chars,
+				 * also encoded by adding + 0x40 to prevent having control chars,
 				 * in the stream at all, so we convert it back. */
 				if (nextByte == 0x42 or nextByte == 0x43 or nextByte == 0x4D) {
 					destStream[decodedIndex] = nextByte - 0x40;
