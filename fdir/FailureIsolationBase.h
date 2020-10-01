@@ -2,8 +2,8 @@
 #define FRAMEWORK_FDIR_FAILUREISOLATIONBASE_H_
 
 #include "../events/EventMessage.h"
-#include "../fdir/ConfirmsFailuresIF.h"
-#include "../fdir/FaultCounter.h"
+#include "ConfirmsFailuresIF.h"
+#include "FaultCounter.h"
 #include "../health/HealthMessage.h"
 #include "../parameters/HasParametersIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"

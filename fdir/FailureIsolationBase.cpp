@@ -1,5 +1,5 @@
 #include "../events/EventManagerIF.h"
-#include "../fdir/FailureIsolationBase.h"
+#include "FailureIsolationBase.h"
 #include "../health/HasHealthIF.h"
 #include "../health/HealthMessage.h"
 #include "../ipc/QueueFactory.h"
