@@ -154,22 +154,22 @@ public:
 	}
 
 	bool empty() {
-		if(_size == 0) {
-			return true;
-		}
-		else {
-			return false;
-		}
+	    if(_size == 0) {
+	        return true;
+	    }
+	    else {
+	        return false;
+	    }
 	}
 
-    bool full() {
-        if(_size >= theMap.maxSize()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+	bool full() {
+	    if(_size >= theMap.maxSize()) {
+	        return true;
+	    }
+	    else {
+	        return false;
+	    }
+	}
 
 	void clear() {
 		_size = 0;
