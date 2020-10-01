@@ -1,24 +1,91 @@
-#ifndef FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
-#define FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_
+#ifndef FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
+#define FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 
 #include "ArrayList.h"
 #include <cstring>
-#include <set>
+
 /**
- * \ingroup container
+ * @brief   Map implementation which allows entries with identical keys
+ * @details
+ * Performs no dynamic memory allocation except on initialization.
+ * Uses an ArrayList as the underlying container and thus has a linear
+ * complexity O(n). As long as the number of entries remains low, this
+ * should not be an issue.
+ * The number of insertion and deletion operation should be minimized
+ * as those incur exensive memory move operations (the underlying container
+ * is not node based).
+ * @ingroup container
  */
 template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
 class FixedOrderedMultimap {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIXED_MULTIMAP;
-	static const ReturnValue_t MAP_FULL = MAKE_RETURN_CODE(0x01);
-	static const ReturnValue_t KEY_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t KEY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t MAP_FULL = MAKE_RETURN_CODE(0x02);
+	static const ReturnValue_t KEY_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x03);
+
+	/**
+	 * Initializes the ordered multimap with a fixed maximum size.
+	 * @param maxSize
+	 */
+    FixedOrderedMultimap(size_t maxSize);
+
+    virtual ~FixedOrderedMultimap() {}
+
+    class Iterator: public ArrayList<std::pair<key_t, T>, uint32_t>::Iterator {
+    public:
+        /** Returns an iterator to nullptr */
+        Iterator();
+        /** Initializes iterator to given entry */
+        Iterator(std::pair<key_t, T> *pair);
+    };
+
+    /** Iterator to start of map */
+    Iterator begin() const;
+    /** Iterator to end of map */
+    Iterator end() const;
+    /** Current (variable) size of the map */
+    size_t size() const;
+
+    /**
+     * Insert a key/value pair inside the map. An iterator to the stored
+     * value might be returned optionally.
+     * @param key
+     * @param value
+     * @param storedValue
+     * @return
+     */
+    ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr);
+    /**
+     * Insert a given std::pair<key, value>
+     * @param pair
+     * @return
+     */
+    ReturnValue_t insert(std::pair<key_t, T> pair);
+    /**
+     * Checks existence of key in map.
+     * @param key
+     * @return
+     * - @c KEY_DOES_NOT_EXIST if key does not exists.
+     * - @c RETURN_OK otherwise.
+     */
+    ReturnValue_t exists(key_t key) const;
+
+    ReturnValue_t erase(Iterator *iter);
+    ReturnValue_t erase(key_t key);
+
+    Iterator find(key_t key) const;
+    ReturnValue_t find(key_t key, T **value) const;
+
+    void clear();
+
+    size_t maxSize() const;
 
 private:
 	typedef KEY_COMPARE compare;
 	compare myComp;
 	ArrayList<std::pair<key_t, T>, uint32_t> theMap;
-	uint32_t _size;
+	size_t _size;
 
 	uint32_t findFirstIndex(key_t key, uint32_t startAt = 0) const {
 		if (startAt >= _size) {
@@ -47,119 +114,13 @@ private:
 		if (_size <= position) {
 			return;
 		}
-		memmove(static_cast<void*>(&theMap[position]), static_cast<void*>(&theMap[position + 1]),
+		std::memmove(static_cast<void*>(&theMap[position]),
+		        static_cast<void*>(&theMap[position + 1]),
 				(_size - position - 1) * sizeof(std::pair<key_t,T>));
 		--_size;
 	}
-public:
-	FixedOrderedMultimap(uint32_t maxSize) :
-			theMap(maxSize), _size(0) {
-	}
-	virtual ~FixedOrderedMultimap() {
-	}
-
-	class Iterator: public ArrayList<std::pair<key_t, T>, uint32_t>::Iterator {
-	public:
-		Iterator() :
-				ArrayList<std::pair<key_t, T>, uint32_t>::Iterator() {
-		}
-
-		Iterator(std::pair<key_t, T> *pair) :
-				ArrayList<std::pair<key_t, T>, uint32_t>::Iterator(pair) {
-		}
-	};
-
-	Iterator begin() const {
-		return Iterator(&theMap[0]);
-	}
-
-	Iterator end() const {
-		return Iterator(&theMap[_size]);
-	}
-
-	uint32_t size() const {
-		return _size;
-	}
-
-	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr) {
-		if (_size == theMap.maxSize()) {
-			return MAP_FULL;
-		}
-		uint32_t position = findNicePlace(key);
-		memmove(static_cast<void*>(&theMap[position + 1]),static_cast<void*>(&theMap[position]),
-				(_size - position) * sizeof(std::pair<key_t,T>));
-		theMap[position].first = key;
-		theMap[position].second = value;
-		++_size;
-		if (storedValue != nullptr) {
-			*storedValue = Iterator(&theMap[position]);
-		}
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-
-	ReturnValue_t insert(std::pair<key_t, T> pair) {
-		return insert(pair.first, pair.second);
-	}
-
-	ReturnValue_t exists(key_t key) const {
-		ReturnValue_t result = KEY_DOES_NOT_EXIST;
-		if (findFirstIndex(key) < _size) {
-			result = HasReturnvaluesIF::RETURN_OK;
-		}
-		return result;
-	}
-
-	ReturnValue_t erase(Iterator *iter) {
-		uint32_t i;
-		if ((i = findFirstIndex((*iter).value->first)) >= _size) {
-			return KEY_DOES_NOT_EXIST;
-		}
-		removeFromPosition(i);
-		if (*iter != begin()) {
-			(*iter)--;
-		} else {
-			*iter = begin();
-		}
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-
-	ReturnValue_t erase(key_t key) {
-		uint32_t i;
-		if ((i = findFirstIndex(key)) >= _size) {
-			return KEY_DOES_NOT_EXIST;
-		}
-		do {
-			removeFromPosition(i);
-			i = findFirstIndex(key, i);
-		} while (i < _size);
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-
-	Iterator find(key_t key) const {
-		ReturnValue_t result = exists(key);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return end();
-		}
-		return Iterator(&theMap[findFirstIndex(key)]);
-	}
-
-	ReturnValue_t find(key_t key, T **value) const {
-		ReturnValue_t result = exists(key);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
-		*value = &theMap[findFirstIndex(key)].second;
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-
-	void clear() {
-		_size = 0;
-	}
-
-	uint32_t maxSize() const {
-		return theMap.maxSize();
-	}
-
 };
 
-#endif /* FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_H_ */
+#include "FixedOrderedMultimap.tpp"
+
+#endif /* FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_ */
