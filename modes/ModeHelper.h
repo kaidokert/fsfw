@@ -1,7 +1,8 @@
-#ifndef MODEHELPER_H_
-#define MODEHELPER_H_
+#ifndef FSFW_MODES_MODEHELPER_H_
+#define FSFW_MODES_MODEHELPER_H_
 
 #include "ModeMessage.h"
+#include "../ipc/MessageQueueIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../timemanager/Countdown.h"
 
@@ -9,7 +10,7 @@ class HasModesIF;
 
 class ModeHelper {
 public:
-	MessageQueueId_t theOneWhoCommandedAMode;
+	MessageQueueId_t theOneWhoCommandedAMode = MessageQueueIF::NO_QUEUE;
 	Mode_t commandedMode;
 	Submode_t commandedSubmode;
 
@@ -19,14 +20,14 @@ public:
 	ReturnValue_t handleModeCommand(CommandMessage *message);
 
 	/**
-	 *
-	 * @param parentQueue the Queue id of the parent object. Set to 0 if no parent present
+	 * @param parentQueue the Queue id of the parent object.
+	 * Set to 0 if no parent present
 	 */
 	void setParentQueue(MessageQueueId_t parentQueueId);
 
 	ReturnValue_t initialize(MessageQueueId_t parentQueueId);
 
-	ReturnValue_t initialize(void); //void is there to stop eclipse CODAN from falsely reporting an error
+	ReturnValue_t initialize(void);
 
 	void modeChanged(Mode_t mode, Submode_t submode);
 
@@ -39,11 +40,14 @@ public:
 	void setForced(bool forced);
 protected:
 	HasModesIF *owner;
-	MessageQueueId_t parentQueueId;
+	MessageQueueId_t parentQueueId = MessageQueueIF::NO_QUEUE;
 
 	Countdown countdown;
 
 	bool forced;
+private:
+	void sendModeReplyMessage(Mode_t ownerMode, Submode_t ownerSubmode);
+	void sendModeInfoMessage(Mode_t ownerMode, Submode_t ownerSubmode);
 };
 
-#endif /* MODEHELPER_H_ */
+#endif /* FSFW_MODES_MODEHELPER_H_ */
