@@ -1,9 +1,8 @@
 #ifndef FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 #define FSFW_CONTAINER_FIXEDORDEREDMULTIMAP_H_
 
-#include "../container/ArrayList.h"
+#include "ArrayList.h"
 #include <cstring>
-#include <set>
 
 /**
  * @brief   Map implementation which allows entries with identical keys
@@ -72,56 +71,15 @@ public:
      */
     ReturnValue_t exists(key_t key) const;
 
-    ReturnValue_t erase(Iterator *iter) {
-        uint32_t i;
-        if ((i = findFirstIndex((*iter).value->first)) >= _size) {
-            return KEY_DOES_NOT_EXIST;
-        }
-        removeFromPosition(i);
-        if (*iter != begin()) {
-            (*iter)--;
-        } else {
-            *iter = begin();
-        }
-        return HasReturnvaluesIF::RETURN_OK;
-    }
+    ReturnValue_t erase(Iterator *iter);
+    ReturnValue_t erase(key_t key);
 
-    ReturnValue_t erase(key_t key) {
-        uint32_t i;
-        if ((i = findFirstIndex(key)) >= _size) {
-            return KEY_DOES_NOT_EXIST;
-        }
-        do {
-            removeFromPosition(i);
-            i = findFirstIndex(key, i);
-        } while (i < _size);
-        return HasReturnvaluesIF::RETURN_OK;
-    }
+    Iterator find(key_t key) const;
+    ReturnValue_t find(key_t key, T **value) const;
 
-    Iterator find(key_t key) const {
-        ReturnValue_t result = exists(key);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
-            return end();
-        }
-        return Iterator(&theMap[findFirstIndex(key)]);
-    }
+    void clear();
 
-    ReturnValue_t find(key_t key, T **value) const {
-        ReturnValue_t result = exists(key);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
-            return result;
-        }
-        *value = &theMap[findFirstIndex(key)].second;
-        return HasReturnvaluesIF::RETURN_OK;
-    }
-
-    void clear() {
-        _size = 0;
-    }
-
-    size_t maxSize() const {
-        return theMap.maxSize();
-    }
+    size_t maxSize() const;
 
 private:
 	typedef KEY_COMPARE compare;

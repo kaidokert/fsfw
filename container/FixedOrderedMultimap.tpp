@@ -71,4 +71,73 @@ inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::exists(
     return result;
 }
 
+template<typename key_t, typename T, typename KEY_COMPARE>
+inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(
+        Iterator *iter)
+{
+    uint32_t i;
+    if ((i = findFirstIndex((*iter).value->first)) >= _size) {
+        return KEY_DOES_NOT_EXIST;
+    }
+    removeFromPosition(i);
+    if (*iter != begin()) {
+        (*iter)--;
+    } else {
+        *iter = begin();
+    }
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+template<typename key_t, typename T, typename KEY_COMPARE>
+inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(
+        key_t key)
+{
+    uint32_t i;
+    if ((i = findFirstIndex(key)) >= _size) {
+        return KEY_DOES_NOT_EXIST;
+    }
+    do {
+        removeFromPosition(i);
+        i = findFirstIndex(key, i);
+    } while (i < _size);
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+template<typename key_t, typename T, typename KEY_COMPARE>
+inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::find(
+        key_t key, T **value) const
+{
+    ReturnValue_t result = exists(key);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+    *value = &theMap[findFirstIndex(key)].second;
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+template<typename key_t, typename T, typename KEY_COMPARE>
+inline typename FixedOrderedMultimap<key_t, T, KEY_COMPARE>::Iterator
+FixedOrderedMultimap<key_t, T, KEY_COMPARE>::find(
+        key_t key) const
+{
+    ReturnValue_t result = exists(key);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+        return end();
+    }
+    return Iterator(&theMap[findFirstIndex(key)]);
+}
+
+template<typename key_t, typename T, typename KEY_COMPARE>
+inline void FixedOrderedMultimap<key_t, T, KEY_COMPARE>::clear()
+{
+    _size = 0;
+}
+
+template<typename key_t, typename T, typename KEY_COMPARE>
+inline size_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::maxSize() const
+{
+    return theMap.maxSize();
+}
+
+
 #endif /* FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_TPP_ */
