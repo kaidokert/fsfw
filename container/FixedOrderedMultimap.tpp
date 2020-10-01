@@ -2,8 +2,8 @@
 #define FRAMEWORK_CONTAINER_FIXEDORDEREDMULTIMAP_TPP_
 
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
-ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::insert(key_t key, T value, Iterator *storedValue = nullptr) {
+template<typename key_t, typename T, typename KEY_COMPARE>
+ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::insert(key_t key, T value, Iterator *storedValue) {
 	if (_size == theMap.maxSize()) {
 		return MAP_FULL;
 	}
@@ -18,12 +18,12 @@ ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::insert(key_t key, T v
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::insert(std::pair<key_t, T> pair) {
 	return insert(pair.first, pair.second);
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::exists(key_t key) const {
 	ReturnValue_t result = KEY_DOES_NOT_EXIST;
 	if (findFirstIndex(key) < _size) {
@@ -32,7 +32,7 @@ ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::exists(key_t key) con
 	return result;
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(Iterator *iter) {
 	size_t i;
 	if ((i = findFirstIndex((*iter).value->first)) >= _size) {
@@ -47,7 +47,7 @@ ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(Iterator *iter)
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(key_t key) {
 	size_t i;
 	if ((i = findFirstIndex(key)) >= _size) {
@@ -60,7 +60,7 @@ ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(key_t key) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 FixedOrderedMultimap<key_t, T, KEY_COMPARE>::Iterator FixedOrderedMultimap<key_t, T, KEY_COMPARE>::find(key_t key) const {
 	ReturnValue_t result = exists(key);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -69,7 +69,7 @@ FixedOrderedMultimap<key_t, T, KEY_COMPARE>::Iterator FixedOrderedMultimap<key_t
 	return Iterator(&theMap[findFirstIndex(key)]);
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::find(key_t key, T **value) const {
 	ReturnValue_t result = exists(key);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -79,8 +79,8 @@ ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::find(key_t key, T **v
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
-size_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::findFirstIndex(key_t key, size_t startAt = 0) const {
+template<typename key_t, typename T, typename KEY_COMPARE>
+size_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::findFirstIndex(key_t key, size_t startAt) const {
 	if (startAt >= _size) {
 		return startAt + 1;
 	}
@@ -93,7 +93,7 @@ size_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::findFirstIndex(key_t key, si
 	return i;
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 size_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::findNicePlace(key_t key) const {
 	size_t i = 0;
 	for (i = 0; i < _size; ++i) {
@@ -104,7 +104,7 @@ size_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::findNicePlace(key_t key) con
 	return i;
 }
 
-template<typename key_t, typename T, typename KEY_COMPARE = std::less<key_t>>
+template<typename key_t, typename T, typename KEY_COMPARE>
 void FixedOrderedMultimap<key_t, T, KEY_COMPARE>::removeFromPosition(size_t position) {
 	if (_size <= position) {
 		return;
