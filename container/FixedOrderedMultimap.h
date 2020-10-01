@@ -159,7 +159,13 @@ public:
 	 * @param key Key to search for
 	 * @return Iterator pointing to the first entry of key
 	 */
-	Iterator find(key_t key) const;
+	Iterator find(key_t key) const{
+		ReturnValue_t result = exists(key);
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return end();
+		}
+		return Iterator(&theMap[findFirstIndex(key)]);
+	};
 
 	/***
 	 * Finds first entry of the given key and returns a
