@@ -17,8 +17,11 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     //          << this->current_packet_id.store_index << ", "
     //          << this->current_packet_id.packet_index << std::endl;
     TcMqMapIter queueMapIt = this->queueMap.end();
+    if(this->currentPacket == nullptr) {
+        return queueMapIt;
+    }
     this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
-    if (currentPacket->getWholeData() != NULL) {
+    if (currentPacket->getWholeData() != nullptr) {
         tcStatus = checker.checkPacket(currentPacket);
 #ifdef DEBUG
         if(tcStatus != HasReturnvaluesIF::RETURN_OK) {
@@ -94,6 +97,7 @@ uint16_t PUSDistributor::getIdentifier() {
 ReturnValue_t PUSDistributor::initialize() {
 	CCSDSDistributorIF* ccsdsDistributor =
 			objectManager->get<CCSDSDistributorIF>(packetSource);
+	currentPacket = new TcPacketStored();
 	if (ccsdsDistributor == nullptr) {
 		sif::error << "PUSDistributor::initialize: Packet source invalid."
 		        << " Make sure it exists and implements CCSDSDistributorIF!"
@@ -103,6 +107,4 @@ ReturnValue_t PUSDistributor::initialize() {
 	else {
 		return ccsdsDistributor->registerApplication(this);
 	}
-
-	currentPacket = new TcPacketStored();
 }
