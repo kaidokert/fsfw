@@ -29,22 +29,44 @@ public:
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 
 	/**
-	 * Function to write to a file
+	 * Generic function to append to file.
 	 * @param dirname Directory of the file
 	 * @param filename The filename of the file
 	 * @param data The data to write to the file
 	 * @param size The size of the data to write
-	 * @param packetNumber Counts the number of packets.
+	 * @param packetNumber Current packet number. Can be used to verify that
+	 * there are no missing packets.
+	 * @param args Any other arguments which an implementation might require.
+	 * @param bytesWritten Actual bytes written to file
 	 * For large files the write procedure must be split in multiple calls
 	 * to writeToFile
 	 */
-	virtual ReturnValue_t writeToFile(const char* dirname, const char* filename,
-	        const uint8_t* data, size_t size, uint16_t packetNumber) = 0;
-	virtual ReturnValue_t createFile(const char* dirname, const char* filename,
-	        const uint8_t* data = nullptr, size_t size = 0,
-	        size_t* bytesWritten = nullptr) = 0;
-	virtual ReturnValue_t deleteFile(const char* dirname,
-	        const char* filename) = 0;
+	virtual ReturnValue_t appendToFile(const char* repositoryPath,
+	        const char* filename, const uint8_t* data, size_t size,
+	        uint16_t packetNumber, void* args = nullptr) = 0;
+
+	/**
+	 * Generic function to create a new file.
+	 * @param repositoryPath
+	 * @param filename
+	 * @param data
+	 * @param size
+	 * @param args Any other arguments which an implementation might require.
+	 * @return
+	 */
+	virtual ReturnValue_t createFile(const char* repositoryPath,
+	        const char* filename, const uint8_t* data = nullptr,
+	        size_t size = 0, void* args = nullptr) = 0;
+
+	/**
+	 * Generic function to delete a file.
+	 * @param repositoryPath
+	 * @param filename
+	 * @param args
+	 * @return
+	 */
+	virtual ReturnValue_t deleteFile(const char* repositoryPath,
+	        const char* filename, void* args = nullptr) = 0;
 };
 
 
