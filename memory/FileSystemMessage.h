@@ -9,9 +9,10 @@
  * @author  Jakob Meier
  */
 class FileSystemMessage {
-private:
-	FileSystemMessage(); //A private ctor inhibits instantiation
 public:
+    // Instantiation forbidden
+	FileSystemMessage() = delete;
+
 	static const uint8_t MESSAGE_ID = messagetypes::FILE_SYSTEM_MESSAGE;
 	static const Command_t CREATE_FILE = MAKE_COMMAND_ID(1);
 	static const Command_t DELETE_FILE = MAKE_COMMAND_ID(2);
