@@ -2,46 +2,40 @@
 #include "../objectmanager/ObjectManagerIF.h"
 
 
-ReturnValue_t FileSystemMessage::setDeleteFileCommand(
+void FileSystemMessage::setDeleteFileCommand(
 		CommandMessage* message, store_address_t storageID) {
 	message->setCommand(DELETE_FILE);
 	message->setParameter2(storageID.raw);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t FileSystemMessage::setCreateDirectoryCommand(
+void FileSystemMessage::setCreateDirectoryCommand(
 		CommandMessage* message, store_address_t storageID) {
 	message->setCommand(CREATE_DIRECTORY);
 	message->setParameter2(storageID.raw);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t FileSystemMessage::setDeleteDirectoryCommand(
+void FileSystemMessage::setDeleteDirectoryCommand(
 		CommandMessage* message, store_address_t storageID) {
 	message->setCommand(DELETE_DIRECTORY);
 	message->setParameter2(storageID.raw);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t FileSystemMessage::setWriteCommand(CommandMessage* message,
+void FileSystemMessage::setWriteCommand(CommandMessage* message,
 		store_address_t storageID) {
 	message->setCommand(WRITE);
 	message->setParameter2(storageID.raw);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t FileSystemMessage::setReadCommand(CommandMessage* message,
+void FileSystemMessage::setReadCommand(CommandMessage* message,
 		store_address_t storageID) {
 	message->setCommand(READ);
 	message->setParameter2(storageID.raw);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t FileSystemMessage::setReadReply(CommandMessage* message,
+void FileSystemMessage::setReadReply(CommandMessage* message,
 		store_address_t storageID) {
 	message->setCommand(READ_REPLY);
 	message->setParameter2(storageID.raw);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
 store_address_t FileSystemMessage::getStoreId(const CommandMessage* message) {
