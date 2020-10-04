@@ -22,13 +22,13 @@ void FileSystemMessage::setDeleteDirectoryCommand(
 
 void FileSystemMessage::setWriteCommand(CommandMessage* message,
 		store_address_t storageID) {
-	message->setCommand(WRITE);
+	message->setCommand(APPEND_TO_FILE);
 	message->setParameter2(storageID.raw);
 }
 
 void FileSystemMessage::setReadCommand(CommandMessage* message,
 		store_address_t storageID) {
-	message->setCommand(READ);
+	message->setCommand(READ_FROM_FILE);
 	message->setParameter2(storageID.raw);
 }
 
@@ -36,6 +36,12 @@ void FileSystemMessage::setReadReply(CommandMessage* message,
 		store_address_t storageID) {
 	message->setCommand(READ_REPLY);
 	message->setParameter2(storageID.raw);
+}
+
+void FileSystemMessage::setCreateFileCommand(CommandMessage *message,
+        store_address_t storeId) {
+    message->setCommand(CREATE_FILE);
+    message->setParameter2(storeId.raw);
 }
 
 store_address_t FileSystemMessage::getStoreId(const CommandMessage* message) {
@@ -58,3 +64,4 @@ ReturnValue_t FileSystemMessage::getFailureReply(
 		const CommandMessage *message) {
 	return message->getParameter();
 }
+
