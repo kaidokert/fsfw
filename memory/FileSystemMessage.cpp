@@ -55,7 +55,7 @@ void FileSystemMessage::setSuccessReply(CommandMessage *message) {
 
 void FileSystemMessage::setFailureReply(CommandMessage *message,
         ReturnValue_t errorCode) {
-    message->setCommand(COMPLETION_SUCCESS);
+    message->setCommand(COMPLETION_FAILED);
     message->setParameter(errorCode);
 }
 
