@@ -44,7 +44,8 @@ public:
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
 
 	Service1TelecommandVerification(object_id_t objectId,
-	        uint16_t apid, uint8_t serviceId, object_id_t targetDestination);
+	        uint16_t apid, uint8_t serviceId, object_id_t targetDestination,
+			uint16_t messageQueueDepth);
 	virtual ~Service1TelecommandVerification();
 
 	/**

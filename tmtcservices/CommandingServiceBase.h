@@ -13,6 +13,8 @@
 #include "../container/FIFO.h"
 #include "../serialize/SerializeIF.h"
 
+#include <FSFWConfig.h>
+
 class TcPacketStored;
 
 namespace Factory{
@@ -40,7 +42,7 @@ class CommandingServiceBase: public SystemObject,
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	// We could make this configurable via preprocessor and the FSFWConfig file.
-	static constexpr uint8_t COMMAND_INFO_FIFO_DEPTH = 3;
+	static constexpr uint8_t COMMAND_INFO_FIFO_DEPTH = FSFW_CSB_FIFO_DEPTH;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_SERVICE_BASE;
 
