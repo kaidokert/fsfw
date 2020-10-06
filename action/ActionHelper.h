@@ -94,7 +94,7 @@ protected:
 	//! setQueueToUse
 	MessageQueueIF* queueToUse;
 	//! Pointer to an IPC Store, initialized during construction or
-	StorageManagerIF* ipcStore;
+	StorageManagerIF* ipcStore = nullptr;
 
 	/**
 	 * Internal function called by handleActionMessage

@@ -7,10 +7,10 @@
 #include "../serialize/SerializeAdapter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
-Service8FunctionManagement::Service8FunctionManagement(object_id_t object_id,
+Service8FunctionManagement::Service8FunctionManagement(object_id_t objectId,
 		uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
 		uint16_t commandTimeoutSeconds):
-		CommandingServiceBase(object_id, apid, serviceId, numParallelCommands,
+		CommandingServiceBase(objectId, apid, serviceId, numParallelCommands,
 		commandTimeoutSeconds) {}
 
 Service8FunctionManagement::~Service8FunctionManagement() {}

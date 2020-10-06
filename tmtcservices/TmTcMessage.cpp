@@ -15,15 +15,15 @@ store_address_t TmTcMessage::getStorageId() {
 	return temp_id;
 }
 
-TmTcMessage::TmTcMessage(store_address_t store_id) {
+TmTcMessage::TmTcMessage(store_address_t storeId) {
 	this->messageSize += sizeof(store_address_t);
-	this->setStorageId(store_id);
+	this->setStorageId(storeId);
 }
 
 size_t TmTcMessage::getMinimumMessageSize() {
 	return this->HEADER_SIZE + sizeof(store_address_t);
 }
 
-void TmTcMessage::setStorageId(store_address_t store_id) {
-	memcpy(this->getData(), &store_id, sizeof(store_address_t) );
+void TmTcMessage::setStorageId(store_address_t storeId) {
+	memcpy(this->getData(), &storeId, sizeof(store_address_t) );
 }
