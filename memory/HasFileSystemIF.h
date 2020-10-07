@@ -21,6 +21,8 @@ public:
     static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x03);
     static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(0x04);
 
+    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING = MAKE_RETURN_CODE(0x05);
+
 	virtual ~HasFileSystemIF() {}
 	/**
 	 * Function to get the MessageQueueId_t of the implementing object
