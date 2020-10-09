@@ -389,7 +389,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 			dataSet->periodicHelper->getCollectionIntervalInSeconds();
 
 	// Generate set packet which can be serialized.
-	HousekeepingSetPacket setPacket = HousekeepingSetPacket(sid,
+	HousekeepingSetPacket setPacket(sid,
 			reportingEnabled, valid, collectionInterval, dataSet);
 	size_t expectedSize = setPacket.getSerializedSize();
 	uint8_t* storePtr = nullptr;
