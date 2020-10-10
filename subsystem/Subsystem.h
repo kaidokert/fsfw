@@ -1,13 +1,14 @@
-#ifndef SUBSYSTEM_H_
-#define SUBSYSTEM_H_
+#ifndef FSFW_SUBSYSTEM_SUBSYSTEM_H_
+#define FSFW_SUBSYSTEM_SUBSYSTEM_H_
+
+#include "SubsystemBase.h"
+#include "modes/ModeDefinitions.h"
 
 #include "../container/FixedArrayList.h"
 #include "../container/FixedMap.h"
 #include "../container/HybridIterator.h"
 #include "../container/SinglyLinkedList.h"
 #include "../serialize/SerialArrayListAdapter.h"
-#include "../subsystem/modes/ModeDefinitions.h"
-#include "../subsystem/SubsystemBase.h"
 
 class Subsystem: public SubsystemBase, public HasModeSequenceIF {
 public:
@@ -44,11 +45,11 @@ public:
 
 	void setInitialMode(Mode_t mode);
 
-	virtual ReturnValue_t initialize();
+	virtual ReturnValue_t initialize() override;
 
-	virtual ReturnValue_t checkObjectConnections();
+	virtual ReturnValue_t checkObjectConnections() override;
 
-	virtual MessageQueueId_t getSequenceCommandQueue() const;
+	virtual MessageQueueId_t getSequenceCommandQueue() const override;
 
 	/**
 	 *
@@ -96,11 +97,11 @@ protected:
 
 	HybridIterator<ModeListEntry> currentTargetTable;
 
-	Mode_t targetMode;
+	Mode_t targetMode = 0;
 
 	Submode_t targetSubmode;
 
-	Mode_t initialMode;
+	Mode_t initialMode = 0;
 
 	HybridIterator<ModeListEntry> currentSequenceIterator;
 
@@ -153,7 +154,8 @@ protected:
 
 	virtual void startTransition(Mode_t mode, Submode_t submode);
 
-	void sendSerializablesAsCommandMessage(Command_t command, SerializeIF **elements, uint8_t count);
+	void sendSerializablesAsCommandMessage(Command_t command,
+	        SerializeIF **elements, uint8_t count);
 
 	void transitionFailed(ReturnValue_t failureCode, uint32_t parameter);
 
@@ -161,4 +163,4 @@ protected:
 
 };
 
-#endif /* SUBSYSTEM_H_ */
+#endif /* FSFW_SUBSYSTEM_SUBSYSTEM_H_ */

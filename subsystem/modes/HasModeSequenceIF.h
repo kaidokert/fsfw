@@ -1,9 +1,9 @@
 #ifndef HASMODESEQUENCEIF_H_
 #define HASMODESEQUENCEIF_H_
 
-#include "../../subsystem/modes/ModeDefinitions.h"
-#include "../../subsystem/modes/ModeSequenceMessage.h"
-#include "../../subsystem/modes/ModeStoreIF.h"
+#include "ModeDefinitions.h"
+#include "ModeSequenceMessage.h"
+#include "ModeStoreIF.h"
 
 
 class HasModeSequenceIF {

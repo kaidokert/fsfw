@@ -6,10 +6,10 @@
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		Mode_t initialMode, uint16_t commandQueueDepth) :
 		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE),
-		childrenChangedMode(false), commandsOutstanding(0), commandQueue(NULL),
+		childrenChangedMode(false),
+		commandQueue(QueueFactory::instance()->createMessageQueue(
+		        commandQueueDepth, CommandMessage::MAX_MESSAGE_SIZE)),
 		healthHelper(this, setObjectId), modeHelper(this), parentId(parent) {
-	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth,
-			MessageQueueMessage::MAX_MESSAGE_SIZE);
 }
 
 SubsystemBase::~SubsystemBase() {
@@ -21,7 +21,8 @@ ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
 	ChildInfo info;
 
 	HasModesIF *child = objectManager->get<HasModesIF>(objectId);
-	//This is a rather ugly hack to have the changedHealth info for all children available. (needed for FOGs).
+	// This is a rather ugly hack to have the changedHealth info for all
+	// children available.
 	HasHealthIF* healthChild = objectManager->get<HasHealthIF>(objectId);
 	if (child == nullptr) {
 		if (healthChild == nullptr) {
@@ -38,14 +39,11 @@ ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
 	info.submode = SUBMODE_NONE;
 	info.healthChanged = false;
 
-	std::pair<std::map<object_id_t, ChildInfo>::iterator, bool> returnValue =
-			childrenMap.insert(
-					std::pair<object_id_t, ChildInfo>(objectId, info));
-	if (!(returnValue.second)) {
+	auto resultPair = childrenMap.emplace(objectId, info);
+	if (not resultPair.second) {
 		return COULD_NOT_INSERT_CHILD;
-	} else {
-		return RETURN_OK;
 	}
+	return RETURN_OK;
 }
 
 ReturnValue_t SubsystemBase::checkStateAgainstTable(
