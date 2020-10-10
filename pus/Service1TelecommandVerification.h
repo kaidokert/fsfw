@@ -1,5 +1,5 @@
-#ifndef MISSION_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
-#define MISSION_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
+#ifndef FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
+#define FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
 
 #include "../objectmanager/SystemObject.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -52,7 +52,7 @@ public:
 	 *
 	 * @return ID of Verification Queue
 	 */
-	virtual MessageQueueId_t getVerificationQueue();
+	virtual MessageQueueId_t getVerificationQueue() override;
 
 	/**
 	 * Performs the service periodically as specified in init_mission().
@@ -92,4 +92,4 @@ private:
 	};
 };
 
-#endif /* MISSION_PUS_SERVICE1TELECOMMANDVERIFICATION_H_ */
+#endif /* FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_ */
