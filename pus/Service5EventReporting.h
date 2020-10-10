@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_SERVICE5EVENTREPORTING_H_
-#define FRAMEWORK_PUS_SERVICE5EVENTREPORTING_H_
+#ifndef FSFW_PUS_SERVICE5EVENTREPORTING_H_
+#define FSFW_PUS_SERVICE5EVENTREPORTING_H_
 
 #include "../tmtcservices/PusServiceBase.h"
 #include "../events/EventMessage.h"
@@ -83,4 +83,4 @@ private:
 	ReturnValue_t generateEventReport(EventMessage message);
 };
 
-#endif /* MISSION_PUS_SERVICE5EVENTREPORTING_H_ */
+#endif /* FSFW_PUS_SERVICE5EVENTREPORTING_H_ */

@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_SERVICE2DEVICEACCESS_H_
-#define FRAMEWORK_PUS_SERVICE2DEVICEACCESS_H_
+#ifndef FSFW_PUS_SERVICE2DEVICEACCESS_H_
+#define FSFW_PUS_SERVICE2DEVICEACCESS_H_
 
 #include "../objectmanager/SystemObjectIF.h"
 #include "../devicehandlers/AcceptsDeviceResponsesIF.h"
@@ -89,4 +89,4 @@ private:
 };
 
 
-#endif /* MISSION_PUS_DEVICE2DEVICECOMMANDING_H_ */
+#endif /* FSFW_PUS_DEVICE2DEVICECOMMANDING_H_ */

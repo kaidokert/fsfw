@@ -1,5 +1,5 @@
-#include "../pus/Service5EventReporting.h"
-#include "../pus/servicepackets/Service5Packets.h"
+#include "Service5EventReporting.h"
+#include "servicepackets/Service5Packets.h"
 
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../events/EventManagerIF.h"

@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
-#define FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
+#ifndef FSFW_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
+#define FSFW_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
 
 #include "../action/ActionMessage.h"
 #include "../tmtcservices/CommandingServiceBase.h"
@@ -64,4 +64,4 @@ private:
 	        object_id_t objectId, ActionId_t actionId);
 };
 
-#endif /* FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_ */
+#endif /* FSFW_PUS_SERVICE8FUNCTIONMANAGEMENT_H_ */

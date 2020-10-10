@@ -1,5 +1,5 @@
-#include "../pus/Service2DeviceAccess.h"
-#include "../pus/servicepackets/Service2Packets.h"
+#include "Service2DeviceAccess.h"
+#include "servicepackets/Service2Packets.h"
 
 #include "../devicehandlers/DeviceHandlerIF.h"
 #include "../storagemanager/StorageManagerIF.h"
