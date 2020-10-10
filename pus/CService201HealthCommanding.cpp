@@ -6,9 +6,10 @@
 #include "servicepackets/Service201Packets.h"
 
 CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId,
-        uint16_t apid, uint8_t serviceId):
+        uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
+        uint16_t commandTimeoutSeconds):
 		CommandingServiceBase(objectId, apid, serviceId,
-		NUMBER_OF_PARALLEL_COMMANDS,COMMAND_TIMEOUT_SECONDS) {
+		        numParallelCommands, commandTimeoutSeconds) {
 }
 
 CService201HealthCommanding::~CService201HealthCommanding() {
@@ -17,6 +18,8 @@ CService201HealthCommanding::~CService201HealthCommanding() {
 ReturnValue_t CService201HealthCommanding::isValidSubservice(uint8_t subservice) {
 	switch(subservice) {
 	case(Subservice::COMMAND_SET_HEALTH):
+	case(Subservice::COMMAND_ANNOUNCE_HEALTH):
+	case(Subservice::COMMAND_ANNOUNCE_HEALTH_ALL):
 		return RETURN_OK;
 	default:
 		sif::error << "Invalid Subservice" << std::endl;
@@ -47,19 +50,34 @@ ReturnValue_t CService201HealthCommanding::checkInterfaceAndAcquireMessageQueue(
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t CService201HealthCommanding::prepareCommand
-		(CommandMessage* message, uint8_t subservice, const uint8_t *tcData,
+ReturnValue_t CService201HealthCommanding::prepareCommand(
+        CommandMessage* message, uint8_t subservice, const uint8_t *tcData,
 		size_t tcDataLen, uint32_t *state, object_id_t objectId) {
-	HealthCommand healthCommand;
-	ReturnValue_t result = healthCommand.deSerialize(&tcData, &tcDataLen,
-	        SerializeIF::Endianness::BIG);
-	if (result != RETURN_OK) {
-		return result;
-	} else {
-		HealthMessage::setHealthMessage(message, HealthMessage::HEALTH_SET,
-				healthCommand.getHealth());
-		return result;
-	}
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    switch(subservice) {
+    case(Subservice::COMMAND_SET_HEALTH): {
+        HealthSetCommand healthCommand;
+        result = healthCommand.deSerialize(&tcData, &tcDataLen,
+                SerializeIF::Endianness::BIG);
+        if (result != RETURN_OK) {
+            break;
+        }
+        HealthMessage::setHealthMessage(message, HealthMessage::HEALTH_SET,
+                healthCommand.getHealth());
+        break;
+    }
+    case(Subservice::COMMAND_ANNOUNCE_HEALTH): {
+        HealthMessage::setHealthMessage(message,
+                HealthMessage::HEALTH_ANNOUNCE);
+        break;
+    }
+    case(Subservice::COMMAND_ANNOUNCE_HEALTH_ALL): {
+        HealthMessage::setHealthMessage(message,
+                HealthMessage::HEALTH_ANNOUNCE_ALL);
+        break;
+    }
+    }
+    return result;
 }
 
 ReturnValue_t CService201HealthCommanding::handleReply
@@ -68,17 +86,17 @@ ReturnValue_t CService201HealthCommanding::handleReply
 		object_id_t objectId, bool *isStep) {
 	Command_t replyId = reply->getCommand();
 	if (replyId == HealthMessage::REPLY_HEALTH_SET) {
-		prepareHealthSetReply(reply);
+		return prepareHealthSetReply(reply);
 	}
-	return RETURN_OK;
+	return CommandingServiceBase::INVALID_REPLY;
 }
 
-void CService201HealthCommanding::prepareHealthSetReply(
+ReturnValue_t CService201HealthCommanding::prepareHealthSetReply(
         const CommandMessage* reply) {
 	prepareHealthSetReply(reply);
 	uint8_t health = static_cast<uint8_t>(HealthMessage::getHealth(reply));
 	uint8_t oldHealth = static_cast<uint8_t>(HealthMessage::getOldHealth(reply));
 	HealthSetReply healthSetReply(health, oldHealth);
-	sendTmPacket(Subservice::REPLY_HEALTH_SET, &healthSetReply);
+	return sendTmPacket(Subservice::REPLY_HEALTH_SET, &healthSetReply);
 }
 

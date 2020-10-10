@@ -15,11 +15,10 @@
  */
 class CService200ModeCommanding: public CommandingServiceBase {
 public:
-	static constexpr uint8_t NUMBER_OF_PARALLEL_COMMANDS = 4;
-	static constexpr uint16_t COMMAND_TIMEOUT_SECONDS = 60;
 
 	CService200ModeCommanding(object_id_t objectId,
-	        uint16_t apid, uint8_t serviceId);
+	        uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands = 4,
+            uint16_t commandTimeoutSeconds = 60);
 	virtual~ CService200ModeCommanding();
 
 protected:

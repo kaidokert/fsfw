@@ -19,11 +19,10 @@
  */
 class CService201HealthCommanding: public CommandingServiceBase {
 public:
-    static const uint8_t NUMBER_OF_PARALLEL_COMMANDS = 4;
-    static const uint16_t COMMAND_TIMEOUT_SECONDS = 60;
 
 	CService201HealthCommanding(object_id_t objectId, uint16_t apid,
-	        uint8_t serviceId);
+	        uint8_t serviceId, uint8_t numParallelCommands = 4,
+	        uint16_t commandTimeoutSeconds = 60);
 	virtual~ CService201HealthCommanding();
 protected:
 	/* CSB abstract function implementations */
@@ -47,11 +46,17 @@ private:
 	ReturnValue_t checkInterfaceAndAcquireMessageQueue(
 			MessageQueueId_t* MessageQueueToSet, object_id_t* objectId);
 
-	void prepareHealthSetReply(const CommandMessage *reply);
+	ReturnValue_t prepareHealthSetReply(const CommandMessage *reply);
 
 	enum Subservice {
-		COMMAND_SET_HEALTH = 1, //!< [EXPORT] : [TC] Set health of target object
-		REPLY_HEALTH_SET = 2 //!< [EXPORT] : [TM] Reply to health set command which also provides old health
+	    //! [EXPORT] : [TC] Set health of target object
+		COMMAND_SET_HEALTH = 1,
+		//! [EXPORT] : [TM] Reply to health set command which also provides old health
+		REPLY_HEALTH_SET = 2,
+		//! [EXPORT] : [TC] Commands object to announce their health as an event
+		COMMAND_ANNOUNCE_HEALTH = 3,
+		//! [EXPORT] : [TC] Commands all objects in the health map to announce their health
+		COMMAND_ANNOUNCE_HEALTH_ALL = 4
 	};
 };
 
