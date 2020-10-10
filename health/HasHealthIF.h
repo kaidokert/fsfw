@@ -35,18 +35,15 @@ public:
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 
 	/**
-	 * set the Health State
-	 *
+	 * @brief   Set the Health State
 	 * The parent will be informed, if the Health changes
-	 *
 	 * @param health
 	 */
 	virtual ReturnValue_t setHealth(HealthState health) = 0;
 
 	/**
-	 * get Health State
-	 *
-	 * @return Health State of the object
+	 * @brief   Get Health State
+	 * @return  Health State of the object
 	 */
 	virtual HasHealthIF::HealthState getHealth() = 0;
 };

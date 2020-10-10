@@ -6,8 +6,6 @@
 #include "../ipc/MutexIF.h"
 #include <map>
 
-typedef std::map<object_id_t, HasHealthIF::HealthState> HealthMap;
-using HealthEntry = std::pair<object_id_t, HasHealthIF::HealthState>;
 
 class HealthTable: public HealthTableIF, public SystemObject {
 public:
@@ -28,6 +26,9 @@ public:
 	virtual HasHealthIF::HealthState getHealth(object_id_t) override;
 
 protected:
+	using HealthMap = std::map<object_id_t, HasHealthIF::HealthState>;
+	using HealthEntry = std::pair<object_id_t, HasHealthIF::HealthState>;
+
 	MutexIF* mutex;
 	HealthMap healthMap;
 
