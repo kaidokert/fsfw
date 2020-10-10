@@ -3,8 +3,9 @@
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
-ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue) :
-		owner(setOwner), queueToUse(useThisQueue), ipcStore(nullptr) {
+ActionHelper::ActionHelper(HasActionsIF* setOwner,
+        MessageQueueIF* useThisQueue) :
+		owner(setOwner), queueToUse(useThisQueue) {
 }
 
 ActionHelper::~ActionHelper() {
@@ -33,13 +34,15 @@ ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-void ActionHelper::step(uint8_t step, MessageQueueId_t reportTo, ActionId_t commandId, ReturnValue_t result) {
+void ActionHelper::step(uint8_t step, MessageQueueId_t reportTo,
+        ActionId_t commandId, ReturnValue_t result) {
 	CommandMessage reply;
 	ActionMessage::setStepReply(&reply, commandId, step + STEP_OFFSET, result);
 	queueToUse->sendMessage(reportTo, &reply);
 }
 
-void ActionHelper::finish(MessageQueueId_t reportTo, ActionId_t commandId, ReturnValue_t result) {
+void ActionHelper::finish(MessageQueueId_t reportTo, ActionId_t commandId,
+        ReturnValue_t result) {
 	CommandMessage reply;
 	ActionMessage::setCompletionReply(&reply, commandId, result);
 	queueToUse->sendMessage(reportTo, &reply);
@@ -49,8 +52,8 @@ void ActionHelper::setQueueToUse(MessageQueueIF* queue) {
 	queueToUse = queue;
 }
 
-void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId,
-		store_address_t dataAddress) {
+void ActionHelper::prepareExecution(MessageQueueId_t commandedBy,
+        ActionId_t actionId, store_address_t dataAddress) {
 	const uint8_t* dataPtr = NULL;
 	size_t size = 0;
 	ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
