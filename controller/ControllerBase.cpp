@@ -9,7 +9,8 @@ ControllerBase::ControllerBase(object_id_t setObjectId, object_id_t parentId,
 		SystemObject(setObjectId), parentId(parentId), mode(MODE_OFF),
 		submode(SUBMODE_NONE), modeHelper(this),
 		healthHelper(this, setObjectId), hkSwitcher(this) {
-	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth);
+	commandQueue = QueueFactory::instance()->createMessageQueue(
+	        commandQueueDepth);
 }
 
 ControllerBase::~ControllerBase() {
@@ -56,8 +57,9 @@ MessageQueueId_t ControllerBase::getCommandQueue() const {
 
 void ControllerBase::handleQueue() {
 	CommandMessage command;
-	ReturnValue_t result;
-	for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+	for (result = commandQueue->receiveMessage(&command);
+	        result == RETURN_OK;
 			result = commandQueue->receiveMessage(&command)) {
 
 		result = modeHelper.handleModeCommand(&command);
