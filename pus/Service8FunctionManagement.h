@@ -52,8 +52,10 @@ protected:
 
 private:
 	enum class Subservice {
-		DIRECT_COMMANDING = 128, //!< [EXPORT] : [COMMAND] Functional commanding
-		DIRECT_COMMANDING_DATA_REPLY = 130, //!< [EXPORT] : [REPLY] Data reply
+	    //!< [EXPORT] : [COMMAND] Functional commanding
+		COMMAND_DIRECT_COMMANDING = 128,
+		//!< [EXPORT] : [REPLY] Data reply
+		REPLY_DIRECT_COMMANDING_DATA = 130,
 	};
 
 	ReturnValue_t checkInterfaceAndAcquireMessageQueue(

@@ -81,10 +81,14 @@ private:
 	        const uint8_t* tcData, size_t tcDataLen);
 
 	enum class Subservice {
-		RAW_COMMANDING = 128, //!< [EXPORT] : [COMMAND] Command in device native protocol
-		TOGGLE_WIRETAPPING = 129, //!< [EXPORT] : [COMMAND] Toggle wiretapping of raw communication
-		RAW_REPLY = 130, //!< [EXPORT] : [REPLY] Includes wiretapping TM and normal TM raw replies from device
-		WIRETAPPING_RAW_TC = 131 //!< [EXPORT] : [REPLY] Wiretapping packets of commands built by device handler
+	    //!< [EXPORT] : [COMMAND] Command in device native protocol
+		COMMAND_RAW_COMMANDING = 128,
+		//!< [EXPORT] : [COMMAND] Toggle wiretapping of raw communication
+		COMMAND_TOGGLE_WIRETAPPING = 129,
+		//!< [EXPORT] : [REPLY] Includes wiretapping TM and normal TM raw replies from device
+		REPLY_RAW = 130,
+		//!< [EXPORT] : [REPLY] Wiretapping packets of commands built by device handler
+		REPLY_WIRETAPPING_RAW_TC = 131
 	};
 };
 
