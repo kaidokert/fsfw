@@ -26,6 +26,8 @@ public:
     /** SystemObjectIF overrides */
     virtual ReturnValue_t initialize() override;
 
+    virtual MessageQueueId_t getCommandQueue() const override;
+
     /** ExecutableObjectIF overrides */
     virtual ReturnValue_t performOperation(uint8_t opCode) override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;

@@ -103,6 +103,10 @@ ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
     return RETURN_OK;
 }
 
+MessageQueueId_t ExtendedControllerBase::getCommandQueue() const {
+    return commandQueue->getId();
+}
+
 LocalPoolDataSetBase* ExtendedControllerBase::getDataSetHandle(sid_t sid) {
     sif::warning << "ExtendedControllerBase::getDataSetHandle: No child "
             << " implementation provided, returning nullptr!" << std::endl;
