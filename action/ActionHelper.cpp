@@ -101,8 +101,8 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
 	// another dedicated message.
 	ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
-	//TODO Service Implementation sucks at the moment
-	// why does it suck and why would someone need to hide the sender?
+	// TODO: Service Implementation sucks at the moment
+	// TODO: why does it suck and why would someone need to hide the sender?
 	if (hideSender) {
 		result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
 	}
@@ -124,8 +124,6 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
         bool hideSender) {
     CommandMessage reply;
     store_address_t storeAddress;
-    uint8_t *dataPtr = nullptr;
-    size_t size = 0;
     ReturnValue_t result = ipcStore->addData(&storeAddress, data, dataSize);
     if (result != HasReturnvaluesIF::RETURN_OK) {
         return result;
@@ -142,8 +140,8 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
     // another dedicated message.
     ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
-    //TODO Service Implementation sucks at the moment
-    // why does it suck and why would someone need to hide the sender?
+    // TODO: Service Implementation sucks at the moment
+    // TODO: why does it suck and why would someone need to hide the sender?
     if (hideSender) {
         result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
     }
