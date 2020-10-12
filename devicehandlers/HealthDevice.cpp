@@ -5,8 +5,7 @@ HealthDevice::HealthDevice(object_id_t setObjectId,
 		MessageQueueId_t parentQueue) :
 		SystemObject(setObjectId), lastHealth(HEALTHY), parentQueue(
 				parentQueue), commandQueue(), healthHelper(this, setObjectId) {
-	commandQueue = QueueFactory::instance()->createMessageQueue(3,
-	        CommandMessage::MINIMUM_COMMAND_MESSAGE_SIZE);
+	commandQueue = QueueFactory::instance()->createMessageQueue(3);
 }
 
 HealthDevice::~HealthDevice() {
