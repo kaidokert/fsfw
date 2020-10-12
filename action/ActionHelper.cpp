@@ -89,26 +89,70 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	result = data->serialize(&dataPtr, &size, maxSize, SerializeIF::Endianness::BIG);
+	result = data->serialize(&dataPtr, &size, maxSize,
+	        SerializeIF::Endianness::BIG);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		ipcStore->deleteData(storeAddress);
 		return result;
 	}
-	//We don't need to report the objectId, as we receive REQUESTED data before the completion success message.
-	//True aperiodic replies need to be reported with another dedicated message.
+	// We don't need to report the objectId, as we receive REQUESTED data
+	// before the completion success message.
+	// True aperiodic replies need to be reported with
+	// another dedicated message.
 	ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
 	//TODO Service Implementation sucks at the moment
-	if (hideSender){
+	// why does it suck and why would someone need to hide the sender?
+	if (hideSender) {
 		result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
-	} else {
+	}
+	else {
 		result = queueToUse->sendMessage(reportTo, &reply);
 	}
-	if ( result != HasReturnvaluesIF::RETURN_OK){
+
+	if (result != HasReturnvaluesIF::RETURN_OK){
 		ipcStore->deleteData(storeAddress);
 	}
 	return result;
 }
 
 void ActionHelper::resetHelper() {
+}
+
+ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
+        ActionId_t replyId, const uint8_t *data, size_t dataSize,
+        bool hideSender) {
+    CommandMessage reply;
+    store_address_t storeAddress;
+    uint8_t *dataPtr = nullptr;
+    size_t size = 0;
+    ReturnValue_t result = ipcStore->addData(&storeAddress, data, dataSize);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+        ipcStore->deleteData(storeAddress);
+        return result;
+    }
+
+    // We don't need to report the objectId, as we receive REQUESTED data
+    // before the completion success message.
+    // True aperiodic replies need to be reported with
+    // another dedicated message.
+    ActionMessage::setDataReply(&reply, replyId, storeAddress);
+
+    //TODO Service Implementation sucks at the moment
+    // why does it suck and why would someone need to hide the sender?
+    if (hideSender) {
+        result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
+    }
+    else {
+        result = queueToUse->sendMessage(reportTo, &reply);
+    }
+
+    if (result != HasReturnvaluesIF::RETURN_OK){
+        ipcStore->deleteData(storeAddress);
+    }
+    return result;
 }
