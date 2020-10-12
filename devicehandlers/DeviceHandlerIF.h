@@ -139,7 +139,8 @@ public:
 	 *
 	 * This is used by the child class to tell the base class what to do.
 	 */
-	enum CommunicationAction_t: uint8_t {
+	enum CommunicationAction: uint8_t {
+	    PERFORM_OPERATION,
 		SEND_WRITE,//!< Send write
 		GET_WRITE, //!< Get write
 		SEND_READ, //!< Send read
