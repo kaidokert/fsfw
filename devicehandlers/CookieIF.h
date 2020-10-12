@@ -1,11 +1,12 @@
-#ifndef COOKIE_H_
-#define COOKIE_H_
+#ifndef FSFW_DEVICEHANDLER_COOKIE_H_
+#define FSFW_DEVICEHANDLER_COOKIE_H_
+
 #include <cstdint>
 
 /**
  * @brief Physical address type
  */
-typedef std::uint32_t address_t;
+using address_t = uint32_t;
 
 /**
  * @brief 	This datatype is used to identify different connection over a
@@ -30,4 +31,4 @@ public:
 	virtual ~CookieIF() {};
 };
 
-#endif /* COOKIE_H_ */
+#endif /* FSFW_DEVICEHANDLER_COOKIE_H_ */

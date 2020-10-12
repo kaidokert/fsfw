@@ -1,5 +1,4 @@
-#include "../serialize/SerializeAdapter.h"
-#include "../devicehandlers/DeviceTmReportingWrapper.h"
+#include "DeviceTmReportingWrapper.h"
 #include "../serialize/SerializeAdapter.h"
 
 DeviceTmReportingWrapper::DeviceTmReportingWrapper(object_id_t objectId,

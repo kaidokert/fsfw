@@ -1,8 +1,8 @@
-#ifndef PAYLOADHANDLERBASE_H_
-#define PAYLOADHANDLERBASE_H_
+#ifndef FSFW_DEVICEHANDLER_CHILDHANDLERBASE_H_
+#define FSFW_DEVICEHANDLER_CHILDHANDLERBASE_H_
 
-#include "../devicehandlers/ChildHandlerFDIR.h"
-#include "../devicehandlers/DeviceHandlerBase.h"
+#include "DeviceHandlerBase.h"
+#include "ChildHandlerFDIR.h"
 
 class ChildHandlerBase: public DeviceHandlerBase {
 public:
@@ -10,7 +10,9 @@ public:
 			CookieIF * cookie, object_id_t hkDestination,
 			uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
 			object_id_t parent = objects::NO_OBJECT,
-			FailureIsolationBase* customFdir = nullptr, size_t cmdQueueSize = 20);
+			FailureIsolationBase* customFdir = nullptr,
+			size_t cmdQueueSize = 20);
+
 	virtual ~ChildHandlerBase();
 
 	virtual ReturnValue_t initialize();
@@ -21,4 +23,4 @@ protected:
 
 };
 
-#endif /* PAYLOADHANDLERBASE_H_ */
+#endif /* FSFW_DEVICEHANDLER_CHILDHANDLERBASE_H_ */

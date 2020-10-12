@@ -1,5 +1,5 @@
+#include "ChildHandlerBase.h"
 #include "../subsystem/SubsystemBase.h"
-#include "../devicehandlers/ChildHandlerBase.h"
 #include "../subsystem/SubsystemBase.h"
 
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,

@@ -1,8 +1,9 @@
-#ifndef FRAMEWORK_DEVICES_DEVICECOMMUNICATIONIF_H_
-#define FRAMEWORK_DEVICES_DEVICECOMMUNICATIONIF_H_
+#ifndef FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
+#define FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
 
-#include "../devicehandlers/CookieIF.h"
-#include "../devicehandlers/DeviceHandlerIF.h"
+#include "CookieIF.h"
+#include "DeviceHandlerIF.h"
+
 #include "../returnvalues/HasReturnvaluesIF.h"
 /**
  * @defgroup interfaces Interfaces
@@ -124,4 +125,4 @@ public:
 	        uint8_t **buffer, size_t *size) = 0;
 };
 
-#endif /* DEVICECOMMUNICATIONIF_H_ */
+#endif /* FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_ */

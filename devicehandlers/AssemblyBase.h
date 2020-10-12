@@ -1,8 +1,8 @@
-#ifndef FRAMEWORK_DEVICEHANDLERS_ASSEMBLYBASE_H_
-#define FRAMEWORK_DEVICEHANDLERS_ASSEMBLYBASE_H_
+#ifndef FSFW_DEVICEHANDLERS_ASSEMBLYBASE_H_
+#define FSFW_DEVICEHANDLERS_ASSEMBLYBASE_H_
 
+#include "DeviceHandlerBase.h"
 #include "../container/FixedArrayList.h"
-#include "../devicehandlers/DeviceHandlerBase.h"
 #include "../subsystem/SubsystemBase.h"
 
 /**
@@ -156,8 +156,9 @@ protected:
 	 * Also sets state to STATE_OVERWRITE_HEATH.
 	 * @param objectId Must be a registered child.
 	 */
-	void overwriteDeviceHealth(object_id_t objectId, HasHealthIF::HealthState oldHealth);
+	void overwriteDeviceHealth(object_id_t objectId,
+	        HasHealthIF::HealthState oldHealth);
 
 };
 
-#endif /* FRAMEWORK_DEVICEHANDLERS_ASSEMBLYBASE_H_ */
+#endif /* FSFW_DEVICEHANDLERS_ASSEMBLYBASE_H_ */
