@@ -69,8 +69,8 @@ public:
 	void finish(MessageQueueId_t reportTo, ActionId_t commandId,
 	        ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
 	/**
-	 * Function to be called by the owner if an action does report data
-	 *
+	 * Function to be called by the owner if an action does report data.
+	 * Takes a SerializeIF* pointer and serializes it into the IPC store.
 	 * @param reportTo  MessageQueueId_t to report the action completion
 	 *                  message to
 	 * @param replyId ID of the executed command
@@ -79,6 +79,17 @@ public:
 	 */
 	ReturnValue_t reportData(MessageQueueId_t reportTo, ActionId_t replyId,
 	        SerializeIF* data, bool hideSender = false);
+    /**
+     * Function to be called by the owner if an action does report data.
+     * Takes the raw data and writes it into the IPC store.
+     * @param reportTo  MessageQueueId_t to report the action completion
+     *                  message to
+     * @param replyId ID of the executed command
+     * @param data Pointer to the data
+     * @return Returns RETURN_OK if successful, otherwise failure code
+     */
+    ReturnValue_t reportData(MessageQueueId_t reportTo, ActionId_t replyId,
+            const uint8_t* data, size_t dataSize, bool hideSender = false);
 	/**
 	 * Function to setup the MessageQueueIF* of the helper. Can be used to
 	 * set the MessageQueueIF* if message queue is unavailable at construction
