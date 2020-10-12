@@ -1,10 +1,11 @@
-#ifndef FRAMEWORK_MONITORING_MONITORREPORTER_H_
-#define FRAMEWORK_MONITORING_MONITORREPORTER_H_
+#ifndef FSFW_MONITORING_MONITORREPORTER_H_
+#define FSFW_MONITORING_MONITORREPORTER_H_
 
-#include "../events/EventManagerIF.h"
 #include "LimitViolationReporter.h"
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"
+
+#include "../events/EventManagerIF.h"
 #include "../parameters/HasParametersIF.h"
 
 template<typename T>
@@ -14,11 +15,12 @@ public:
 	static const uint8_t ENABLED = 1;
 	static const uint8_t DISABLED = 0;
 
-	MonitorReporter(object_id_t reportingId, uint8_t monitorId, uint32_t parameterId, uint16_t confirmationLimit) :
-			monitorId(monitorId), parameterId(parameterId), reportingId(
-					reportingId), oldState(MonitoringIF::UNCHECKED), reportingEnabled(
-			ENABLED), eventEnabled(ENABLED), currentCounter(0), confirmationLimit(
-					confirmationLimit) {
+	MonitorReporter(object_id_t reportingId, uint8_t monitorId,
+	        uint32_t parameterId, uint16_t confirmationLimit) :
+			monitorId(monitorId), parameterId(parameterId),
+			reportingId(reportingId), oldState(MonitoringIF::UNCHECKED),
+			reportingEnabled(ENABLED), eventEnabled(ENABLED), currentCounter(0),
+			confirmationLimit(confirmationLimit) {
 	}
 
 	virtual ~MonitorReporter() {
@@ -148,7 +150,8 @@ protected:
 		case HasReturnvaluesIF::RETURN_OK:
 			break;
 		default:
-			EventManagerIF::triggerEvent(reportingId, MonitoringIF::MONITOR_CHANGED_STATE, state);
+			EventManagerIF::triggerEvent(reportingId,
+			        MonitoringIF::MONITOR_CHANGED_STATE, state);
 			break;
 		}
 	}
@@ -159,7 +162,8 @@ protected:
 	 * @param crossedLimit The limit crossed (if applicable).
 	 * @param state Current state the monitor is in.
 	 */
-	virtual void sendTransitionReport(T parameterValue, T crossedLimit, ReturnValue_t state) {
+	virtual void sendTransitionReport(T parameterValue, T crossedLimit,
+	        ReturnValue_t state) {
 		MonitoringReportContent<T> report(parameterId,
 				parameterValue, crossedLimit, oldState, state);
 		LimitViolationReporter::sendLimitViolationReport(&report);
@@ -175,4 +179,4 @@ protected:
 	}
 };
 
-#endif /* FRAMEWORK_MONITORING_MONITORREPORTER_H_ */
+#endif /* FSFW_MONITORING_MONITORREPORTER_H_ */
