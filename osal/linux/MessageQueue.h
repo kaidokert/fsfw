@@ -1,5 +1,5 @@
-#ifndef MESSAGEQUEUE_H_
-#define MESSAGEQUEUE_H_
+#ifndef FSFW_OSAL_LINUX_MESSAGEQUEUE_H_
+#define FSFW_OSAL_LINUX_MESSAGEQUEUE_H_
 
 #include "../../internalError/InternalErrorReporterIF.h"
 #include "../../ipc/MessageQueueIF.h"
@@ -184,4 +184,4 @@ private:
 	ReturnValue_t handleError(mq_attr* attributes, uint32_t messageDepth);
 };
 
-#endif /* MESSAGEQUEUE_H_ */
+#endif /* FSFW_OSAL_LINUX_MESSAGEQUEUE_H_ */

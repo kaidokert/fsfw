@@ -1,5 +1,5 @@
-#include "../../osal/FreeRTOS/BinSemaphUsingTask.h"
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "BinSemaphUsingTask.h"
+#include "TaskManagement.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
@@ -14,6 +14,10 @@ BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 BinarySemaphoreUsingTask::~BinarySemaphoreUsingTask() {
 	// Clear notification value on destruction.
 	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite, nullptr);
+}
+
+void BinarySemaphoreUsingTask::refreshTaskHandle() {
+	handle = TaskManagement::getCurrentTaskHandle();
 }
 
 ReturnValue_t BinarySemaphoreUsingTask::acquire(TimeoutType timeoutType,

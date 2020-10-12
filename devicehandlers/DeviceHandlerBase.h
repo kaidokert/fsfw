@@ -1,25 +1,26 @@
-#ifndef FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
-#define FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+#ifndef FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+#define FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_
+
+#include "DeviceHandlerIF.h"
+#include "DeviceCommunicationIF.h"
+#include "DeviceHandlerFailureIsolation.h"
 
 #include "../objectmanager/SystemObject.h"
 #include "../tasks/ExecutableObjectIF.h"
-#include "../devicehandlers/DeviceHandlerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../action/HasActionsIF.h"
 #include "../datapool/PoolVariableIF.h"
-#include "../devicehandlers/DeviceCommunicationIF.h"
 #include "../modes/HasModesIF.h"
 #include "../power/PowerSwitchIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../tasks/PeriodicTaskIF.h"
-
 #include "../action/ActionHelper.h"
 #include "../health/HealthHelper.h"
 #include "../parameters/ParameterHelper.h"
 #include "../datapool/HkSwitchHelper.h"
 #include "../datapoollocal/HasLocalDataPoolIF.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
-#include "../devicehandlers/DeviceHandlerFailureIsolation.h"
+
 #include <map>
 
 namespace Factory{
@@ -104,6 +105,18 @@ public:
 	void setHkDestination(object_id_t hkDestination);
 	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
 			uint32_t thermalRequestPoolId);
+	/**
+	 * @brief   Helper function to ease device handler development.
+	 * This will instruct the transition to MODE_ON immediately
+	 * (leading to doStartUp() being called for the transition to the ON mode),
+	 * so external mode commanding is not necessary anymore.
+	 *
+	 * This has to be called before the task is started!
+	 * (e.g. in the task factory). This is only a helper function for
+	 * development. Regular mode commanding should be performed by commanding
+	 * the AssemblyBase or Subsystem objects resposible for the device handler.
+	 */
+	void setStartUpImmediately();
 
 	/**
 	 * @brief 	This function is the device handler base core component and is
@@ -149,6 +162,14 @@ public:
 	 * @return
 	 */
 	virtual ReturnValue_t initialize();
+
+	/**
+	 * @brief   Intialization steps performed after all tasks have been created.
+	 *          This function will be called by the executing task.
+	 * @return
+	 */
+    virtual ReturnValue_t initializeAfterTaskCreation() override;
+
 	/** Destructor. */
 	virtual ~DeviceHandlerBase();
 
@@ -370,7 +391,8 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, PoolDataSetIF* replyDataSet = nullptr,
+			uint16_t maxDelayCycles,
+			LocalPoolDataSetBase* replyDataSet = nullptr,
 			size_t replyLen = 0, bool periodic = false,
 			bool hasDifferentReplyId = false, DeviceCommandId_t replyId = 0);
 
@@ -385,7 +407,7 @@ protected:
 	 *          - @c RETURN_FAILED else.
 	 */
 	ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
-			uint16_t maxDelayCycles, PoolDataSetIF* dataSet = nullptr,
+			uint16_t maxDelayCycles, LocalPoolDataSetBase* dataSet = nullptr,
 			size_t replyLen = 0, bool periodic = false);
 
 	/**
@@ -415,7 +437,7 @@ protected:
 			bool periodic = false);
 
 	ReturnValue_t setReplyDataset(DeviceCommandId_t replyId,
-	        PoolDataSetIF* dataset);
+	        LocalPoolDataSetBase* dataset);
 
 	/**
 	 * @brief   Can be implemented by child handler to
@@ -645,7 +667,7 @@ protected:
 		//! The dataset used to access housekeeping data related to the
 		//! respective device reply. Will point to a dataset held by
 		//! the child handler (if one is specified)
-		PoolDataSetIF* dataSet = nullptr;
+		LocalPoolDataSetBase* dataSet;
 		//! The command that expects this reply.
 		DeviceCommandMap::iterator command;
 	};
@@ -946,14 +968,17 @@ protected:
 
 	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
 			uint32_t *msToReachTheMode);
-	virtual void startTransition(Mode_t mode, Submode_t submode);
-	virtual void setToExternalControl();
-	virtual void announceMode(bool recursive);
+
+	/* HasModesIF overrides */
+	virtual void startTransition(Mode_t mode, Submode_t submode) override;
+	virtual void setToExternalControl() override;
+	virtual void announceMode(bool recursive) override;
 
 	virtual ReturnValue_t letChildHandleMessage(CommandMessage *message);
 
 	/**
-	 * Overwrites SystemObject::triggerEvent in order to inform FDIR"Helper" faster about executed events.
+	 * Overwrites SystemObject::triggerEvent in order to inform FDIR"Helper"
+	 * faster about executed events.
 	 * This is a bit sneaky, but improves responsiveness of the device FDIR.
 	 * @param event	The event to be thrown
 	 * @param parameter1	Optional parameter 1
@@ -1044,6 +1069,8 @@ private:
 	 * Set when setMode() is called.
 	 */
 	uint32_t timeoutStart = 0;
+
+	bool setStartupImmediately = false;
 
 	/**
 	 * Delay for the current mode transition, used for time out
@@ -1163,7 +1190,6 @@ private:
 	ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data,
 			uint32_t *len);
 
-
 	/**
 	 * @param modeTo either @c MODE_ON, MODE_NORMAL or MODE_RAW NOTHING ELSE!!!
 	 */
@@ -1174,28 +1200,14 @@ private:
 	 */
 	void callChildStatemachine();
 
-	/**
-	 * Switches the channel of the cookie used for the communication
-	 *
-	 *
-	 * @param newChannel the object Id of the channel to switch to
-	 * @return
-	 *     - @c RETURN_OK when cookie was changed
-	 *     - @c RETURN_FAILED when cookies could not be changed,
-	 *          e.g. because the newChannel is not enabled
-	 *     - @c returnvalues of RMAPChannelIF::isActive()
-	 */
-	ReturnValue_t switchCookieChannel(object_id_t newChannelId);
-
 	ReturnValue_t handleDeviceHandlerMessage(CommandMessage *message);
 
-	virtual ReturnValue_t initializeAfterTaskCreation() override;
-	virtual DataSetIF* getDataSetHandle(sid_t sid) override;
-
-	void parseReply(const uint8_t* receivedData,
-	            size_t receivedDataLen);
+	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
 
     virtual dur_millis_t getPeriodicOperationFrequency() const override;
+
+    void parseReply(const uint8_t* receivedData,
+                size_t receivedDataLen);
 };
 
-#endif /* FRAMEWORK_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */
+#endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */

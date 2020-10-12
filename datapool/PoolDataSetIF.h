@@ -1,7 +1,12 @@
-#ifndef FRAMEWORK_DATAPOOL_POOLDATASETIF_H_
-#define FRAMEWORK_DATAPOOL_POOLDATASETIF_H_
+#ifndef FSFW_DATAPOOL_POOLDATASETIF_H_
+#define FSFW_DATAPOOL_POOLDATASETIF_H_
+
 #include "DataSetIF.h"
 
+/**
+ * @brief   Extendes the DataSetIF by adding abstract functions to lock
+ *          and unlock a data pool and read/commit semantics.
+ */
 class PoolDataSetIF: public DataSetIF {
 public:
     virtual~ PoolDataSetIF() {};
@@ -25,4 +30,4 @@ public:
     virtual bool isValid() const = 0;
 };
 
-#endif /* FRAMEWORK_DATAPOOL_POOLDATASETIF_H_ */
+#endif /* FSFW_DATAPOOL_POOLDATASETIF_H_ */

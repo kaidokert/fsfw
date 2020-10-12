@@ -1,4 +1,4 @@
-#include "../objectmanager/ObjectManager.h"
+#include "ObjectManager.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include <iomanip>
 #include <cstdlib>

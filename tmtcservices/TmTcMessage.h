@@ -1,5 +1,5 @@
-#ifndef TMTCMESSAGE_H_
-#define TMTCMESSAGE_H_
+#ifndef FSFW_TMTCSERVICES_TMTCMESSAGE_H_
+#define FSFW_TMTCSERVICES_TMTCMESSAGE_H_
 
 #include "../ipc/MessageQueueMessage.h"
 #include "../storagemanager/StorageManagerIF.h"
@@ -10,13 +10,13 @@
  * 			a packet stored in one of the IPC stores (typically a special TM and
  * 			a special TC store). This makes passing commands very simple and
  * 			efficient.
- *	\ingroup message_queue
+ * @ingroup message_queue
  */
 class TmTcMessage : public MessageQueueMessage {
 protected:
 	/**
 	 * @brief	This call always returns the same fixed size of the message.
-	 * @return	Returns HEADER_SIZE + \c sizeof(store_address_t).
+	 * @return	Returns HEADER_SIZE + @c sizeof(store_address_t).
 	 */
 	size_t getMinimumMessageSize();
 public:
@@ -29,7 +29,7 @@ public:
 	 * 			into the message.
 	 * @param packet_id	The packet id to put into the message.
 	 */
-	TmTcMessage( store_address_t packet_id );
+	TmTcMessage( store_address_t packetId );
 	/**
 	 * @brief	The class's destructor is empty.
 	 */
@@ -42,9 +42,9 @@ public:
 	/**
 	 * @brief	In some cases it might be useful to have a setter for packet id
 	 * 			as well.
-	 * @param packet_id	The packet id to put into the message.
+	 * @param packetId	The packet id to put into the message.
 	 */
-	void setStorageId( store_address_t packet_id );
+	void setStorageId( store_address_t packetId );
 };
 
-#endif /* TMTCMESSAGE_H_ */
+#endif /* FSFW_TMTCSERVICES_TMTCMESSAGE_H_ */

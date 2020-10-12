@@ -1,5 +1,5 @@
+#include "FixedTimeslotTask.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../osal/linux/FixedTimeslotTask.h"
 
 #include <limits.h>
 
@@ -63,6 +63,7 @@ void FixedTimeslotTask::taskFunctionality() {
 	}
 
 	pst.intializeSequenceAfterTaskCreation();
+
 	//The start time for the first entry is read.
 	uint64_t lastWakeTime = getCurrentMonotonicTimeMs();
 	uint64_t interval = pst.getIntervalToNextSlotMs();

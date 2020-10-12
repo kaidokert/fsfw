@@ -5,10 +5,10 @@
 #include "../../serialize/SerializeIF.h"
 #include "../../health/HasHealthIF.h"
 
-class HealthCommand: public SerialLinkedListAdapter<SerializeIF> { //!< [EXPORT] : [SUBSERVICE] 1
+class HealthSetCommand: public SerialLinkedListAdapter<SerializeIF> { //!< [EXPORT] : [SUBSERVICE] 1
 public:
 
-	HealthCommand() {
+	HealthSetCommand() {
 		setLinks();
 	}
 

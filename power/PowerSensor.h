@@ -1,5 +1,5 @@
-#ifndef POWERSENSOR_H_
-#define POWERSENSOR_H_
+#ifndef FSFW_POWER_POWERSENSOR_H_
+#define FSFW_POWER_POWERSENSOR_H_
 
 #include "../datapoolglob/GlobalDataSet.h"
 #include "../datapoolglob/GlobalPoolVariable.h"
@@ -50,7 +50,7 @@ public:
 			ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex);
 private:
-	MessageQueueIF* commandQueue;
+	MessageQueueIF* commandQueue = nullptr;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
 	GlobDataSet set;
@@ -68,4 +68,4 @@ protected:
 	LimitMonitor<float> voltageLimit;
 };
 
-#endif /* POWERSENSOR_H_ */
+#endif /* FSFW_POWER_POWERSENSOR_H_ */

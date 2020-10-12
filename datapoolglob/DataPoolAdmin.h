@@ -1,5 +1,7 @@
-#ifndef DATAPOOLADMIN_H_
-#define DATAPOOLADMIN_H_
+#ifndef FSFW_DATAPOOLGLOB_DATAPOOLADMIN_H_
+#define FSFW_DATAPOOLGLOB_DATAPOOLADMIN_H_
+
+#include "DataPoolParameterWrapper.h"
 
 #include "../objectmanager/SystemObject.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -7,10 +9,9 @@
 #include "../action/HasActionsIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../parameters/ReceivesParameterMessagesIF.h"
-
-#include "../memory/MemoryHelper.h"
 #include "../action/SimpleActionHelper.h"
-#include "../datapoolglob/DataPoolParameterWrapper.h"
+#include "../memory/MemoryHelper.h"
+
 
 class DataPoolAdmin: public HasActionsIF,
 		public ExecutableObjectIF,
@@ -56,4 +57,4 @@ private:
 			Command_t initialCommand);
 };
 
-#endif /* DATAPOOLADMIN_H_ */
+#endif /* FSFW_DATAPOOLGLOB_DATAPOOLADMIN_H_ */

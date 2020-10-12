@@ -1,9 +1,10 @@
-#include "../../osal/linux/TmTcUnixUdpBridge.h"
+#include "TmTcUnixUdpBridge.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../ipc/MutexHelper.h"
 
 #include <errno.h>
 #include <arpa/inet.h>
+
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		object_id_t tcDestination, object_id_t tmStoreId, object_id_t tcStoreId,
@@ -24,7 +25,7 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 	// Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
 	//clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if(socket < 0) {
+	if(serverSocket < 0) {
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
 				" UDP socket!" << std::endl;
 		handleSocketError();
@@ -100,8 +101,8 @@ void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
 	}
 }
 
-void TmTcUnixUdpBridge::handleSocketError() {
 
+void TmTcUnixUdpBridge::handleSocketError() {
 	// See: https://man7.org/linux/man-pages/man2/socket.2.html
 	switch(errno) {
 	case(EACCES):
@@ -162,7 +163,8 @@ void TmTcUnixUdpBridge::handleBindError() {
 void TmTcUnixUdpBridge::handleSendError() {
 	switch(errno) {
 	default:
-		sif::error << "Error: " << strerror(errno) << std::endl;
+		sif::error << "TmTcUnixBridge::handleSendError: "
+		        << strerror(errno) << std::endl;
 	}
 }
 

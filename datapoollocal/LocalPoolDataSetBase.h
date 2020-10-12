@@ -1,27 +1,36 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
+
+#include "HasLocalDataPoolIF.h"
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
 #include "../serialize/SerializeIF.h"
 
 #include <vector>
 
 class LocalDataPoolManager;
+class PeriodicHousekeepingHelper;
 
 /**
  * @brief	The LocalDataSet class manages a set of locally checked out
  *          variables for local data pools
  * @details
+ * Extends the PoolDataSetBase class for local data pools by introducing
+ * a validity state, a flag to mark the set as changed, and various other
+ * functions to make it usable by the LocalDataPoolManager class.
+ *
  * This class manages a list, where a set of local variables (or pool variables)
  * are registered. They are checked-out (i.e. their values are looked
  * up and copied) with the read call. After the user finishes working with the
  * pool variables, he can write back all variable values to the pool with
- * the commit call. The data set manages locking and freeing the local data pools,
- * to ensure thread-safety.
+ * the commit call. The data set manages locking and freeing the local data
+ * pools, to ensure thread-safety.
+ *
+ * Pool variables can be added to the dataset by using the constructor
+ * argument of the pool variable or using the #registerVariable member function.
  *
  * An internal state manages usage of this class. Variables may only be
- * registered before the read call is made, and the commit call only
+ * registered before any read call is made, and the commit call can only happen
  * after the read call.
  *
  * If pool variables are writable and not committed until destruction
@@ -31,17 +40,21 @@ class LocalDataPoolManager;
  * @ingroup data_pool
  */
 class LocalPoolDataSetBase: public PoolDataSetBase {
+	friend class LocalDataPoolManager;
+	friend class PeriodicHousekeepingHelper;
 public:
 	/**
 	 * @brief	Constructor for the creator of local pool data.
+	 * @details
+	 * This constructor also initializes the components required for
+	 * periodic handling.
 	 */
 	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 			uint32_t setId, PoolVariableIF** registeredVariablesArray,
-	        const size_t maxNumberOfVariables);
+	        const size_t maxNumberOfVariables, bool noPeriodicHandling = false);
 
 	/**
-	 * @brief	Constructor for users of local pool data. The passed pool
-	 * 			owner should implement the HasHkPoolParametersIF.
+	 * @brief	Constructor for users of local pool data.
 	 * @details
 	 * @param sid Unique identifier of dataset consisting of object ID and
 	 * set ID.
@@ -63,6 +76,9 @@ public:
 
 	void setValidityBufferGeneration(bool withValidityBuffer);
 
+	sid_t getSid() const;
+
+	/** SerializeIF overrides */
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
 	            SerializeIF::Endianness streamEndianness) const override;
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t *size,
@@ -73,7 +89,7 @@ public:
 	 * Special version of the serilization function which appends a
 	 * validity buffer at the end. Each bit of this validity buffer
 	 * denotes whether the container data set entries are valid from left
-	 * to right, MSB first.
+	 * to right, MSB first. (length = ceil(N/8), N = number of pool variables)
 	 * @param buffer
 	 * @param size
 	 * @param maxSize
@@ -88,18 +104,58 @@ public:
 	        size_t *size, SerializeIF::Endianness streamEndianness);
 	ReturnValue_t serializeLocalPoolIds(uint8_t** buffer,
 	        size_t* size, size_t maxSize,
-	        SerializeIF::Endianness streamEndianness) const;
+	        SerializeIF::Endianness streamEndianness,
+	        bool serializeFillCount = true) const;
+	uint8_t getLocalPoolIdsSerializedSize(bool serializeFillCount = true) const;
 
+	/**
+	 * Set the dataset valid or invalid
+	 * @param setEntriesRecursively
+	 * If this is true, all contained datasets will also be set recursively.
+	 */
+	void setValidity(bool valid, bool setEntriesRecursively);
 	bool isValid() const override;
+
+	void setChanged(bool changed);
+	bool isChanged() const;
 
 protected:
 	sid_t sid;
+
+	bool diagnostic = false;
+	void setDiagnostic(bool diagnostics);
+	bool isDiagnostics() const;
+
+	/**
+	 * Used for periodic generation.
+	 */
+	bool reportingEnabled = false;
+	void setReportingEnabled(bool enabled);
+	bool getReportingEnabled() const;
+
+	void initializePeriodicHelper(float collectionInterval,
+			dur_millis_t minimumPeriodicInterval,
+			bool isDiagnostics, uint8_t nonDiagIntervalFactor = 5);
+
 	/**
 	 * If the valid state of a dataset is always relevant to the whole
 	 * data set we can use this flag.
 	 */
 	bool valid = false;
 
+	/**
+	 * Can be used to mark the dataset as changed, which is used
+	 * by the LocalDataPoolManager to send out update messages.
+	 */
+	bool changed = false;
+
+	/**
+	 * Specify whether the validity buffer is serialized too when serializing
+	 * or deserializing the packet. Each bit of the validity buffer will
+	 * contain the validity state of the pool variables from left to right.
+	 * The size of validity buffer thus will be ceil(N / 8) with N = number of
+	 * pool variables.
+	 */
 	bool withValidityBuffer = true;
 
 	/**
@@ -125,9 +181,10 @@ protected:
 	 */
 	void bitSetter(uint8_t* byte, uint8_t position) const;
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
-private:
 
+	PeriodicHousekeepingHelper* periodicHelper = nullptr;
 
 };
 
-#endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_ */
+
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_ */

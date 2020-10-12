@@ -1,5 +1,5 @@
-#include "../pus/Service2DeviceAccess.h"
-#include "../pus/servicepackets/Service2Packets.h"
+#include "Service2DeviceAccess.h"
+#include "servicepackets/Service2Packets.h"
 
 #include "../devicehandlers/DeviceHandlerIF.h"
 #include "../storagemanager/StorageManagerIF.h"
@@ -21,8 +21,8 @@ Service2DeviceAccess::~Service2DeviceAccess() {}
 
 ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
 	switch(static_cast<Subservice>(subservice)){
-	case Subservice::RAW_COMMANDING:
-	case Subservice::TOGGLE_WIRETAPPING:
+	case Subservice::COMMAND_RAW_COMMANDING:
+	case Subservice::COMMAND_TOGGLE_WIRETAPPING:
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
 		sif::error << "Invalid Subservice" << std::endl;
@@ -39,8 +39,7 @@ ReturnValue_t Service2DeviceAccess::getMessageQueueAndObject(
     SerializeAdapter::deSerialize(objectId, &tcData,
                 &tcDataLen, SerializeIF::Endianness::BIG);
 
-	ReturnValue_t result = checkInterfaceAndAcquireMessageQueue(id,objectId);
-	return result;
+    return checkInterfaceAndAcquireMessageQueue(id,objectId);
 }
 
 ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
@@ -59,11 +58,11 @@ ReturnValue_t Service2DeviceAccess::prepareCommand(CommandMessage* message,
 		uint8_t subservice, const uint8_t* tcData, size_t tcDataLen,
 		uint32_t* state, object_id_t objectId) {
 	switch(static_cast<Subservice>(subservice)){
-	case Subservice::RAW_COMMANDING: {
+	case Subservice::COMMAND_RAW_COMMANDING: {
 		return prepareRawCommand(message, tcData, tcDataLen);
 	}
 	break;
-	case Subservice::TOGGLE_WIRETAPPING: {
+	case Subservice::COMMAND_TOGGLE_WIRETAPPING: {
 		return prepareWiretappingCommand(message, tcData, tcDataLen);
 	}
 	break;
@@ -119,11 +118,11 @@ void Service2DeviceAccess::handleUnrequestedReply(CommandMessage* reply) {
 	switch(reply->getCommand()) {
 	case DeviceHandlerMessage::REPLY_RAW_COMMAND:
 		sendWiretappingTm(reply,
-				static_cast<uint8_t>(Subservice::WIRETAPPING_RAW_TC));
+				static_cast<uint8_t>(Subservice::REPLY_WIRETAPPING_RAW_TC));
 		break;
 	case DeviceHandlerMessage::REPLY_RAW_REPLY:
 		sendWiretappingTm(reply,
-				static_cast<uint8_t>(Subservice::RAW_REPLY));
+				static_cast<uint8_t>(Subservice::REPLY_RAW));
 		break;
 	default:
 		sif::error << "Unknown message in Service2DeviceAccess::"

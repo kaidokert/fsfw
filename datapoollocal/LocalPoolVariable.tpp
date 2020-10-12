@@ -1,44 +1,45 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_
 
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 #error Include LocalPoolVariable.h before LocalPoolVariable.tpp!
 #endif
 
 template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
-		HasLocalDataPoolIF* hkOwner, pool_rwm_t setReadWriteMode,
-		DataSetIF* dataSet):
-		localPoolId(poolId),readWriteMode(setReadWriteMode) {
+		HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
+		pool_rwm_t setReadWriteMode):
+		localPoolId(poolId), readWriteMode(setReadWriteMode) {
 	if(poolId == PoolVariableIF::NO_PARAMETER) {
-		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
-				"NO_PARAMETER value!" << std::endl;
+		sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
+		        << "which is the NO_PARAMETER value!" << std::endl;
 	}
 	if(hkOwner == nullptr) {
-		sif::error << "LocalPoolVariable: The supplied pool owner is a nullptr!"
-				<< std::endl;
+		sif::error << "LocalPoolVar<T>::LocalPoolVar: The supplied pool "
+		        << "owner is a invalid!" << std::endl;
 		return;
 	}
 	hkManager = hkOwner->getHkManagerHandle();
 	if(dataSet != nullptr) {
-		dataSet->registerVariable(this);
+	    dataSet->registerVariable(this);
 	}
 }
 
 template<typename T>
 inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
-		pool_rwm_t setReadWriteMode, DataSetIF *dataSet):
-		readWriteMode(setReadWriteMode) {
-	if(poolId == PoolVariableIF::NO_PARAMETER) {
-		sif::warning << "LocalPoolVector: 0 passed as pool ID, which is the "
-				"NO_PARAMETER value!" << std::endl;
-	}
-	HasLocalDataPoolIF* hkOwner =
-			objectManager->get<HasLocalDataPoolIF>(poolOwner);
-	if(hkOwner == nullptr) {
-		sif::error << "LocalPoolVariable: The supplied pool owner did not implement"
-				"the correct interface HasHkPoolParametersIF!" << std::endl;
-		return;
+        DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
+        localPoolId(poolId), readWriteMode(setReadWriteMode) {
+    if(poolId == PoolVariableIF::NO_PARAMETER) {
+        sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
+                << "which is the NO_PARAMETER value!" << std::endl;
+    }
+    HasLocalDataPoolIF* hkOwner =
+            objectManager->get<HasLocalDataPoolIF>(poolOwner);
+    if(hkOwner == nullptr) {
+        sif::error << "LocalPoolVariable: The supplied pool owner did not "
+                << "implement  the correct interface "
+                << "HasLocalDataPoolIF!" << std::endl;
+        return;
 	}
 	hkManager = hkOwner->getHkManagerHandle();
 	if(dataSet != nullptr) {

@@ -150,15 +150,6 @@ void FixedTimeslotTask::handleMissedDeadline() {
     if(deadlineMissedFunc != nullptr) {
         this->deadlineMissedFunc();
     }
-
-#ifdef DEBUG
-    object_id_t handlerId = pst.current->handlerId;
-    sif::warning << "FixedTimeslotTask: " << pcTaskGetName(NULL) << " with"
-            << " object ID 0x" << std::setfill('0') << std::setw(8) << std::hex
-            << handlerId <<  " missed deadline!" << std::setfill(' ')
-            << std::dec << std::endl;
-#endif
-
 }
 
 ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {

@@ -1,7 +1,7 @@
 #ifndef FSFW_PUS_SERVICE9TIMEMANAGEMENT_H_
 #define FSFW_PUS_SERVICE9TIMEMANAGEMENT_H_
 
-#include <fsfw/tmtcservices/PusServiceBase.h>
+#include "../tmtcservices/PusServiceBase.h"
 
 class Service9TimeManagement: public PusServiceBase {
 public:
@@ -34,7 +34,6 @@ private:
 		SET_TIME = 128 //!< [EXPORT] : [COMMAND] Time command in ASCII, CUC or CDS format
 	};
 
-	void setIsisClock(Clock::TimeOfDay_t& timeOfDay);
 };
 
 

@@ -182,7 +182,8 @@ public:
 
 	bool isDefaultDestinationSet() const override;
 
-	ReturnValue_t lockQueue(dur_millis_t lockTimeout);
+	ReturnValue_t lockQueue(MutexIF::TimeoutType timeoutType,
+	        dur_millis_t lockTimeout);
 	ReturnValue_t unlockQueue();
 protected:
 	/**

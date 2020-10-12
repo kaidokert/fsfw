@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
-#define FRAMEWORK_STORAGEMANAGER_LOCALPOOL_TPP_
+#ifndef FSFW_STORAGEMANAGER_LOCALPOOL_TPP_
+#define FSFW_STORAGEMANAGER_LOCALPOOL_TPP_
 
-#ifndef FRAMEWORK_STORAGEMANAGER_LOCALPOOL_H_
+#ifndef FSFW_STORAGEMANAGER_LOCALPOOL_H_
 #error Include LocalPool.h before LocalPool.tpp!
 #endif
 
@@ -125,9 +125,10 @@ inline LocalPool<NUMBER_OF_POOLS>::~LocalPool(void) {
 	}
 }
 
-template<uint8_t NUMBER_OF_POOLS> inline
-ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(store_address_t* storageId,
-		const uint8_t* data, size_t size, bool ignoreFault) {
+template<uint8_t NUMBER_OF_POOLS>
+inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::addData(
+		store_address_t* storageId, const uint8_t* data, size_t size,
+		bool ignoreFault) {
 	ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
 	if (status == RETURN_OK) {
 		write(*storageId, data, size);
@@ -171,7 +172,7 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(store_address_t storeId
 template<uint8_t NUMBER_OF_POOLS>
 inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::getData(
 		store_address_t packet_id, const uint8_t** packet_ptr, size_t* size) {
-	uint8_t* tempData = NULL;
+	uint8_t* tempData = nullptr;
 	ReturnValue_t status = modifyData(packet_id, &tempData, size);
 	*packet_ptr = tempData;
 	return status;
@@ -301,4 +302,4 @@ inline ReturnValue_t LocalPool<NUMBER_OF_POOLS>::initialize() {
 	return RETURN_OK;
 }
 
-#endif
+#endif /* FSFW_STORAGEMANAGER_LOCALPOOL_TPP_ */

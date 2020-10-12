@@ -247,6 +247,14 @@ bool DeviceHandlerFailureIsolation::isFdirInActionOrAreWeFaulty(
 		}
 		return true;
 	}
+
+	if (owner == nullptr) {
+	    // Configuration error.
+	    sif::error << "DeviceHandlerFailureIsolation::"
+	            << "isFdirInActionOrAreWeFaulty: Owner not set!" << std::endl;
+	    return false;
+	}
+
 	if (owner->getHealth() == HasHealthIF::FAULTY
 			|| owner->getHealth() == HasHealthIF::PERMANENT_FAULTY) {
 		//Ignore all events in case device is already faulty.

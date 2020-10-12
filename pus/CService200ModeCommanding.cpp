@@ -1,5 +1,5 @@
-#include "../pus/CService200ModeCommanding.h"
-#include "../pus/servicepackets/Service200Packets.h"
+#include "CService200ModeCommanding.h"
+#include "servicepackets/Service200Packets.h"
 
 #include "../modes/HasModesIF.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
@@ -7,9 +7,10 @@
 #include "../modes/ModeMessage.h"
 
 CService200ModeCommanding::CService200ModeCommanding(object_id_t objectId,
-        uint16_t apid, uint8_t serviceId):
+        uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
+        uint16_t commandTimeoutSeconds):
         CommandingServiceBase(objectId, apid, serviceId,
-	    NUMBER_OF_PARALLEL_COMMANDS,COMMAND_TIMEOUT_SECONDS) {}
+                numParallelCommands, commandTimeoutSeconds) {}
 
 CService200ModeCommanding::~CService200ModeCommanding() {}
 
@@ -107,13 +108,23 @@ ReturnValue_t CService200ModeCommanding::prepareWrongModeReply(
 		const CommandMessage *reply, object_id_t objectId) {
 	ModePacket wrongModeReply(objectId, ModeMessage::getMode(reply),
 			ModeMessage::getSubmode(reply));
-	return sendTmPacket(Subservice::REPLY_WRONG_MODE_REPLY, &wrongModeReply);
+	ReturnValue_t result = sendTmPacket(Subservice::REPLY_WRONG_MODE_REPLY, &wrongModeReply);
+	if(result == RETURN_OK){
+		// We want to produce an error here in any case because the mode was not correct
+		return RETURN_FAILED;
+	}
+	return result;
 }
 
 ReturnValue_t CService200ModeCommanding::prepareCantReachModeReply(
 		const CommandMessage *reply, object_id_t objectId) {
 	CantReachModePacket cantReachModePacket(objectId,
 	        ModeMessage::getCantReachModeReason(reply));
-	return sendTmPacket(Subservice::REPLY_CANT_REACH_MODE,
+	ReturnValue_t result = sendTmPacket(Subservice::REPLY_CANT_REACH_MODE,
 	        &cantReachModePacket);
+	if(result == RETURN_OK){
+		// We want to produce an error here in any case because the mode was not reached
+		return RETURN_FAILED;
+	}
+	return result;
 }

@@ -10,7 +10,6 @@
 
 //! Don't use these for time points, type is not large enough for UNIX epoch.
 using dur_millis_t = uint32_t;
-using dur_seconds_t = double;
 
 class Clock {
 public:
@@ -67,6 +66,8 @@ public:
 	static ReturnValue_t getUptime(timeval* uptime);
 
 	static timeval getUptime();
+
+	static uint32_t getUptimeSeconds();
 
 	/**
 	 * Get the time since boot in milliseconds

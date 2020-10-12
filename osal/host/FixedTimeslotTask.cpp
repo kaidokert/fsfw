@@ -1,9 +1,7 @@
-#include "../../osal/host/FixedTimeslotTask.h"
+#include "FixedTimeslotTask.h"
+#include "Mutex.h"
 
 #include "../../ipc/MutexFactory.h"
-#include "../../osal/host/Mutex.h"
-#include "../../osal/host/FixedTimeslotTask.h"
-
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
@@ -35,15 +33,15 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             ABOVE_NORMAL_PRIORITY_CLASS);
     if(result != 0) {
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
+        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with "
+                << "code " << GetLastError() << std::endl;
     }
     result = SetThreadPriority(
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             THREAD_PRIORITY_NORMAL);
     if(result != 0) {
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
+        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with "
+                "code " << GetLastError() << std::endl;
     }
 #elif defined(LINUX)
     // we can just copy and paste the code from linux here.
@@ -60,7 +58,8 @@ FixedTimeslotTask::~FixedTimeslotTask(void) {
 }
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
-    FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
+    FixedTimeslotTask *originalTask(
+            reinterpret_cast<FixedTimeslotTask*>(argument));
 
     if (not originalTask->started) {
         // we have to suspend/block here until the task is started.
@@ -90,9 +89,12 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
 }
 
 void FixedTimeslotTask::taskFunctionality() {
+    pollingSeqTable.intializeSequenceAfterTaskCreation();
+
     // A local iterator for the Polling Sequence Table is created to
     // find the start time for the first entry.
-    FixedSlotSequence::SlotListIter slotListIter = pollingSeqTable.current;
+    auto slotListIter = pollingSeqTable.current;
+
     // Get start time for first entry.
     chron_ms interval(slotListIter->pollingTimeMs);
     auto currentStartTime {
@@ -122,8 +124,11 @@ void FixedTimeslotTask::taskFunctionality() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
         uint32_t slotTimeMs, int8_t executionStep) {
-    if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
-        pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep, this);
+    ExecutableObjectIF* executableObject = objectManager->
+            get<ExecutableObjectIF>(componentId);
+    if (executableObject != nullptr) {
+        pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep,
+                executableObject, this);
         return HasReturnvaluesIF::RETURN_OK;
     }
 
@@ -132,7 +137,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
     return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t FixedTimeslotTask::checkAndInitializeSequence() const {
+ReturnValue_t FixedTimeslotTask::checkSequence() const {
     return pollingSeqTable.checkSequence();
 }
 

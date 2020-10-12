@@ -25,8 +25,6 @@ PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,
 		TaskPriority taskPriority_,TaskStackSize stackSize_,
 		TaskPeriod periodInSeconds_,
 		TaskDeadlineMissedFunction deadLineMissedFunction_) {
-	// This is going to be interesting. Time now learn the C++ threading library
-	// :-)
 	return new PeriodicTask(name_, taskPriority_, stackSize_, periodInSeconds_,
 			deadLineMissedFunction_);
 }
@@ -35,8 +33,6 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,
 		TaskPriority taskPriority_,TaskStackSize stackSize_,
 		TaskPeriod periodInSeconds_,
 		TaskDeadlineMissedFunction deadLineMissedFunction_) {
-	// This is going to be interesting. Time now learn the C++ threading library
-	// :-)
 	return new FixedTimeslotTask(name_, taskPriority_, stackSize_,
 	        periodInSeconds_, deadLineMissedFunction_);
 }

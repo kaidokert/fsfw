@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
 #define FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
 
-#include <framework/serialize/SerialBufferAdapter.h>
-#include <framework/serialize/SerialLinkedListAdapter.h>
-#include <framework/datapoollocal/LocalPoolDataSetBase.h>
+#include "../serialize/SerialBufferAdapter.h"
+#include "../serialize/SerialLinkedListAdapter.h"
+#include "../datapoollocal/LocalPoolDataSetBase.h"
 
 /**
  * @brief   This helper class will be used to serialize and deserialize

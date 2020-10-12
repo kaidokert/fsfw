@@ -1,15 +1,17 @@
+#include "PowerSwitcher.h"
+
 #include "../objectmanager/ObjectManagerIF.h"
-#include "../power/PowerSwitcher.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 PowerSwitcher::PowerSwitcher(uint8_t setSwitch1, uint8_t setSwitch2,
-		PowerSwitcher::State_t setStartState) :
-		state(setStartState), firstSwitch(setSwitch1), secondSwitch(setSwitch2), power(NULL) {
+		PowerSwitcher::State_t setStartState):
+		state(setStartState), firstSwitch(setSwitch1),
+		secondSwitch(setSwitch2) {
 }
 
 ReturnValue_t PowerSwitcher::initialize(object_id_t powerSwitchId) {
 	power = objectManager->get<PowerSwitchIF>(powerSwitchId);
-	if (power == NULL) {
+	if (power == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
@@ -17,19 +19,25 @@ ReturnValue_t PowerSwitcher::initialize(object_id_t powerSwitchId) {
 
 ReturnValue_t PowerSwitcher::getStateOfSwitches() {
 	SwitchReturn_t result = howManySwitches();
+
 	switch (result) {
 	case ONE_SWITCH:
 		return power->getSwitchState(firstSwitch);
-	case TWO_SWITCHES:
-		if ((power->getSwitchState(firstSwitch) == PowerSwitchIF::SWITCH_ON)
-				&& (power->getSwitchState(secondSwitch) == PowerSwitchIF::SWITCH_ON)) {
+	case TWO_SWITCHES: {
+	    ReturnValue_t firstSwitchState = power->getSwitchState(firstSwitch);
+	    ReturnValue_t secondSwitchState = power->getSwitchState(firstSwitch);
+		if ((firstSwitchState == PowerSwitchIF::SWITCH_ON)
+				&& (secondSwitchState == PowerSwitchIF::SWITCH_ON)) {
 			return PowerSwitchIF::SWITCH_ON;
-		} else if ((power->getSwitchState(firstSwitch) == PowerSwitchIF::SWITCH_OFF)
-				&& (power->getSwitchState(secondSwitch) == PowerSwitchIF::SWITCH_OFF)) {
+		}
+		else if ((firstSwitchState == PowerSwitchIF::SWITCH_OFF)
+				&& (secondSwitchState  == PowerSwitchIF::SWITCH_OFF)) {
 			return PowerSwitchIF::SWITCH_OFF;
-		} else {
+		}
+		else {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
+	}
 	default:
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}

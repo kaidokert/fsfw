@@ -1,5 +1,5 @@
-#ifndef MISSION_PUS_SERVICE17TEST_H_
-#define MISSION_PUS_SERVICE17TEST_H_
+#ifndef FSFW_PUS_SERVICE17TEST_H_
+#define FSFW_PUS_SERVICE17TEST_H_
 
 #include "../tmtcservices/PusServiceBase.h"
 #include "../objectmanager/SystemObject.h"
@@ -41,4 +41,4 @@ protected:
 	uint16_t packetSubCounter = 0;
 };
 
-#endif /* MISSION_PUS_SERVICE17TEST_H_ */
+#endif /* FSFW_PUS_SERVICE17TEST_H_ */

@@ -1,23 +1,26 @@
-#ifndef FRAMEWORK_HEALTH_HEALTHHELPER_H_
-#define FRAMEWORK_HEALTH_HEALTHHELPER_H_
+#ifndef FSFW_HEALTH_HEALTHHELPER_H_
+#define FSFW_HEALTH_HEALTHHELPER_H_
+
+#include "HasHealthIF.h"
+#include "HealthMessage.h"
+#include "HealthTableIF.h"
 
 #include "../events/EventManagerIF.h"
 #include "../events/EventReportingProxyIF.h"
-#include "../health/HasHealthIF.h"
-#include "../health/HealthMessage.h"
-#include "../health/HealthTableIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
 /**
- * Helper class for Objects that implement HasHealthIF
+ * @brief   Helper class for Objects that implement HasHealthIF
+ * @details
+ * It takes care of registering with the Health Table as well as handling
+ * health commands (including replying to the sender) and updating
+ * the Health Table.
  *
- * It takes care of registering with the Health Table as well as handling health commands
- * (including replying to the sender) and updating the Health Table.
- *
- * If a parent is set in the ctor, the parent will be informed with a @c HEALTH_INFO message
- * about changes in the health state. Note that a @c HEALTH_INFO is only generated if the Health
+ * If a parent is set in the ctor, the parent will be informed with a
+ * @c HEALTH_INFO message about changes in the health state.
+ * Note that a @c HEALTH_INFO is only generated if the Health
  * changes, not for all @c HEALTH_SET commands received.
  *
  * It does NOT handle @c HEALTH_INFO messages
@@ -26,10 +29,9 @@ class HealthHelper {
 public:
 
 	/**
-	 * ctor
-	 *
 	 * @param owner
-	 * @param objectId the object Id to use when communication with the HealthTable
+	 * @param objectId      The object Id to use when communication with
+	 *                      the HealthTable
 	 */
 	HealthHelper(HasHealthIF* owner, object_id_t objectId);
 
@@ -55,8 +57,9 @@ public:
 	 *
 	 * @param message
 	 * @return
-	 * 			-@c RETURN_OK if the message was handled
-	 * 			-@c RETURN_FAILED if the message could not be handled (ie it was not a @c HEALTH_SET or @c HEALTH_READ message)
+	 * -@c RETURN_OK if the message was handled
+	 * -@c RETURN_FAILED if the message could not be handled
+	 *     (ie it was not a @c HEALTH_SET or @c HEALTH_READ message)
 	 */
 	ReturnValue_t handleHealthCommand(CommandMessage *message);
 
@@ -77,16 +80,19 @@ public:
 	HasHealthIF::HealthState getHealth();
 
 	/**
-	 * @param parentQueue the Queue id of the parent object. Set to 0 if no parent present
+	 * @param parentQueue   The queue ID of the parent object.
+	 *                      Set to 0 if no parent present
 	 */
 	void setParentQueue(MessageQueueId_t parentQueue);
 
 	/**
 	 *
-	 * @param parentQueue the Queue id of the parent object. Set to 0 if no parent present
+	 * @param parentQueue   The queue ID of the parent object.
+	 *                      Set to 0 if no parent present
 	 * @return
-	 * 			-@c RETURN_OK if the Health Table was found and the object could be registered
-	 * 			-@c RETURN_FAILED else
+	 * -@c RETURN_OK if the Health Table was found and the object
+	 * could be registered
+	 * -@c RETURN_FAILED else
 	 */
 	ReturnValue_t initialize(MessageQueueId_t parentQueue );
 
@@ -109,13 +115,17 @@ private:
 	HasHealthIF* owner;
 
 	/**
-	 * if the #parentQueue is not NULL, a @c HEALTH_INFO message will be sent to this queue
-	 * @param health the health is passed as parameter so that the number of calls to the health table can be minimized
+	 * if the #parentQueue is not NULL, a @c HEALTH_INFO message
+	 * will be sent to this queue
+	 * @param health
+	 * The health is passed as parameter so that the number of
+	 * calls to the health table can be minimized
 	 * @param oldHealth information of the previous health state.
 	 */
-	void informParent(HasHealthIF::HealthState health, HasHealthIF::HealthState oldHealth);
+	void informParent(HasHealthIF::HealthState health,
+	        HasHealthIF::HealthState oldHealth);
 
 	void handleSetHealthCommand(CommandMessage *message);
 };
 
-#endif /* HEALTHHELPER_H_ */
+#endif /* FSFW_HEALTH_HEALTHHELPER_H_ */

@@ -47,8 +47,9 @@ public:
 	 * If nullptr, the variable is not registered.
 	 */
 	LocalPoolVector(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
-			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
-			DataSetIF* dataSet = nullptr);
+			DataSetIF* dataSet = nullptr,
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE
+			);
 
 	/**
 	 * This constructor is used by data users like controllers to have
@@ -65,8 +66,9 @@ public:
 	 * If nullptr, the variable is not registered.
 	 */
 	LocalPoolVector(lp_id_t poolId, object_id_t poolOwner,
-			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
-			DataSetIF* dataSet = nullptr);
+			DataSetIF* dataSet = nullptr,
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE
+			);
 
 	/**
 	 * @brief	This is the local copy of the data pool entry.
@@ -192,7 +194,7 @@ private:
 
 };
 
-#include "../datapoollocal/LocalPoolVector.tpp"
+#include "LocalPoolVector.tpp"
 
 template<typename T, uint16_t vectorSize>
 using lp_vec_t = LocalPoolVector<T, vectorSize>;

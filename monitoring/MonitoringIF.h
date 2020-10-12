@@ -1,8 +1,8 @@
-#ifndef MONITORINGIF_H_
-#define MONITORINGIF_H_
+#ifndef FSFW_MONITORING_MONITORINGIF_H_
+#define FSFW_MONITORING_MONITORINGIF_H_
 
+#include "MonitoringMessage.h"
 #include "../memory/HasMemoryIF.h"
-#include "../monitoring/MonitoringMessage.h"
 #include "../serialize/SerializeIF.h"
 
 class MonitoringIF : public SerializeIF {
@@ -64,4 +64,4 @@ public:
 
 
 
-#endif /* MONITORINGIF_H_ */
+#endif /* FSFW_MONITORING_MONITORINGIF_H_ */

@@ -1,12 +1,15 @@
-#ifndef FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_
-#define FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_
+#ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
+#define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
+
 #include "../datapool/PoolEntryIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
+
 #include <map>
 
 class LocalDataPoolManager;
-class DataSetIF;
+class LocalPoolDataSetBase;
+
 /**
  * @brief	Type definition for local pool entries.
  */
@@ -61,11 +64,11 @@ public:
 	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
 
 	/**
-	 * Returns the minimum sampling frequency, which will usually be the
-	 * period the pool owner performs its periodic operation-
+	 * Returns the minimum sampling frequency in milliseconds, which will
+	 * usually be the period the pool owner performs its periodic operation.
 	 * @return
 	 */
-	virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
+	virtual uint32_t getPeriodicOperationFrequency() const = 0;
 
 	/**
 	 * This function is used by the pool manager to get a valid dataset
@@ -73,7 +76,7 @@ public:
 	 * @param sid Corresponding structure ID
 	 * @return
 	 */
-	virtual DataSetIF* getDataSetHandle(sid_t sid) = 0;
+	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
 
 	/* These function can be implemented by pool owner, as they are required
 	 * by the housekeeping message interface */
@@ -84,9 +87,9 @@ public:
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 	virtual ReturnValue_t changeCollectionInterval(sid_t sid,
-	        dur_seconds_t newInterval) {
+	        float newIntervalSeconds) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 };
 
-#endif /* FRAMEWORK_DATAPOOL_HASHKPOOLPARAMETERSIF_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_ */

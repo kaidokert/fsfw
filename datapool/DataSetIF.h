@@ -1,5 +1,5 @@
-#ifndef DATASETIF_H_
-#define DATASETIF_H_
+#ifndef FSFW_DATAPOOL_DATASETIF_H_
+#define FSFW_DATAPOOL_DATASETIF_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../timemanager/Clock.h"
@@ -34,7 +34,6 @@ public:
 	 */
 	virtual ~DataSetIF() {}
 
-
 	/**
 	 * @brief	This operation provides a method to register local data pool
 	 * 			variables to register in a data set by passing itself
@@ -45,4 +44,4 @@ public:
 	virtual uint16_t getFillCount() const = 0;
 };
 
-#endif /* FRAMEWORK_DATAPOOL_DATASETIF_H_ */
+#endif /* FSFW_DATAPOOL_DATASETIF_H_ */

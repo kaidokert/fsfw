@@ -1,4 +1,4 @@
-#include "../monitoring/MonitoringMessage.h"
+#include "MonitoringMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
 MonitoringMessage::~MonitoringMessage() {

@@ -1,8 +1,9 @@
-#ifndef FRAMEWORK_TASKS_FIXEDSEQUENCESLOT_H_
-#define FRAMEWORK_TASKS_FIXEDSEQUENCESLOT_H_
+#ifndef FSFW_TASKS_FIXEDSEQUENCESLOT_H_
+#define FSFW_TASKS_FIXEDSEQUENCESLOT_H_
 
+#include "ExecutableObjectIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
-#include "../tasks/ExecutableObjectIF.h"
+
 class PeriodicTaskIF;
 
 /**
@@ -56,4 +57,4 @@ public:
 };
 
 
-#endif /* FIXEDSEQUENCESLOT_H_ */
+#endif /* FSFW_TASKS_FIXEDSEQUENCESLOT_H_ */

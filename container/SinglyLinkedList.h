@@ -100,7 +100,7 @@ public:
 	 */
 	ElementIterator back() const {
 	    LinkedElement<T> *element = start;
-	    while (element != nullptr) {
+	    while (element->getNext() != nullptr) {
 	        element = element->getNext();
 	    }
 	    return ElementIterator::Iterator(element);

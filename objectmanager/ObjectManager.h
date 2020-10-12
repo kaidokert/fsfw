@@ -1,15 +1,8 @@
-/**
- * @file	ObjectManager.h
- * @brief	This file contains the implementation of the ObjectManager class
- * @date	18.09.2012
- * @author	Bastian Baetz
- */
+#ifndef FSFW_OBJECTMANAGER_OBJECTMANAGER_H_
+#define FSFW_OBJECTMANAGER_OBJECTMANAGER_H_
 
-#ifndef OBJECTMANAGER_H_
-#define OBJECTMANAGER_H_
-
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../objectmanager/SystemObjectIF.h"
+#include "ObjectManagerIF.h"
+#include "SystemObjectIF.h"
 #include <map>
 
 /**
@@ -22,14 +15,15 @@
  * 			most of the system initialization.
  * 			As the system is static after initialization, no new objects are
  * 			created or inserted into the list after startup.
- * \ingroup system_objects
+ * @ingroup system_objects
+ * @author	Bastian Baetz
  */
 class ObjectManager : public ObjectManagerIF {
 private:
 	//comparison?
 	/**
-	 * \brief	This is the map of all initialized objects in the manager.
-	 * \details	Objects in the List must inherit the SystemObjectIF.
+	 * @brief	This is the map of all initialized objects in the manager.
+	 * @details	Objects in the List must inherit the SystemObjectIF.
 	 */
 	std::map<object_id_t, SystemObjectIF*> objectList;
 protected:
@@ -54,7 +48,8 @@ public:
 	/**
 	 *	@brief	In the class's destructor, all objects in the list are deleted.
 	 */
-	//SHOULDDO: If, for some reason, deleting an ObjectManager instance is required, check if this works.
+	// SHOULDDO: If, for some reason, deleting an ObjectManager instance is
+	// required, check if this works.
 	virtual ~ObjectManager( void );
 	ReturnValue_t insert( object_id_t id, SystemObjectIF* object );
 	ReturnValue_t remove( object_id_t id );
@@ -64,4 +59,4 @@ public:
 
 
 
-#endif /* OBJECTMANAGER_H_ */
+#endif /* FSFW_OBJECTMANAGER_OBJECTMANAGER_H_ */

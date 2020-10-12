@@ -1,5 +1,5 @@
 #include "MessageQueue.h"
-
+#include "../../objectmanager/ObjectManagerIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 // TODO I guess we should have a way of checking if we are in an ISR and then
@@ -11,7 +11,12 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		maxMessageSize(maxMessageSize) {
 	handle = xQueueCreate(messageDepth, maxMessageSize);
 	if (handle == nullptr) {
-		sif::error << "MessageQueue::MessageQueue Creation failed" << std::endl;
+		sif::error << "MessageQueue::MessageQueue:"
+		        << " Creation failed." << std::endl;
+		sif::error << "Specified Message Depth: " << messageDepth
+		        << std::endl;
+		sif::error << "Specified Maximum Message Size: "
+		        << maxMessageSize << std::endl;
 	}
 }
 
@@ -40,7 +45,7 @@ ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 }
 
 ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
-	if (this->lastPartner != MessageQueueMessageIF::NO_QUEUE) {
+	if (this->lastPartner != MessageQueueIF::NO_QUEUE) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
 		return NO_REPLY_PARTNER;
@@ -58,8 +63,8 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
 	if (result != pdPASS) {
 		if (not ignoreFault) {
-			InternalErrorReporterIF* internalErrorReporter =
-					objectManager->get<InternalErrorReporterIF>(
+			InternalErrorReporterIF* internalErrorReporter = objectManager->
+					get<InternalErrorReporterIF>(
 					objects::INTERNAL_ERROR_REPORTER);
 			if (internalErrorReporter != nullptr) {
 				internalErrorReporter->queueMessageNotSent();

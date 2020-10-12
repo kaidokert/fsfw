@@ -1,4 +1,4 @@
-#include "../fdir/FaultCounter.h"
+#include "FaultCounter.h"
 
 FaultCounter::FaultCounter(uint32_t failureThreshold, uint32_t decrementAfterMs,
 		uint8_t setParameterDomain) :

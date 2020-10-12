@@ -1,8 +1,8 @@
-#ifndef SERIALIZEELEMENT_H_
-#define SERIALIZEELEMENT_H_
+#ifndef FSFW_SERIALIZE_SERIALIZEELEMENT_H_
+#define FSFW_SERIALIZE_SERIALIZEELEMENT_H_
 
+#include "SerializeAdapter.h"
 #include "../container/SinglyLinkedList.h"
-#include "../serialize/SerializeAdapter.h"
 #include <utility>
 
 /**
@@ -12,7 +12,7 @@
  * Used by declaring any arbitrary datatype with SerializeElement<T> myVariable,
  * inside a SerialLinkedListAdapter implementation and setting the sequence
  * of objects with setNext() and setStart().
- * Serilization and Deserialization is then performed automatically in
+ * Serialization and Deserialization is then performed automatically in
  * specified sequence order.
  * @ingroup serialize
  */
@@ -27,7 +27,7 @@ public:
 	SerializeElement() :
 			LinkedElement<SerializeIF>(this) {
 	}
-	T entry;
+
 	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
 			Endianness streamEndianness) const override {
 		return SerializeAdapter::serialize(&entry, buffer, size, maxSize,
@@ -52,9 +52,12 @@ public:
 		entry = newValue;
 		return *this;
 	}
+
 	T* operator->() {
 		return &entry;
 	}
+
+	T entry;
 };
 
-#endif /* SERIALIZEELEMENT_H_ */
+#endif /* FSFW_SERIALIZE_SERIALIZEELEMENT_H_ */

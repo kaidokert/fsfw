@@ -1,7 +1,6 @@
-#include "../memory/MemoryMessage.h"
+#include "MemoryMessage.h"
+
 #include "../objectmanager/ObjectManagerIF.h"
-MemoryMessage::MemoryMessage() {
-}
 
 uint32_t MemoryMessage::getAddress(const CommandMessage* message) {
 	return message->getParameter();
@@ -17,18 +16,17 @@ uint32_t MemoryMessage::getLength(const CommandMessage* message) {
 	return message->getParameter2();
 }
 
-ReturnValue_t MemoryMessage::setMemoryDumpCommand(CommandMessage* message,
+void MemoryMessage::setMemoryDumpCommand(CommandMessage* message,
 		uint32_t address, uint32_t length) {
 	message->setCommand(CMD_MEMORY_DUMP);
 	message->setParameter( address );
 	message->setParameter2( length );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MemoryMessage::setMemoryDumpReply(CommandMessage* message, store_address_t storageID) {
+void MemoryMessage::setMemoryDumpReply(CommandMessage* message,
+        store_address_t storageID) {
 	message->setCommand(REPLY_MEMORY_DUMP);
 	message->setParameter2( storageID.raw );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
 void MemoryMessage::setMemoryLoadCommand(CommandMessage* message,
@@ -64,22 +62,21 @@ void MemoryMessage::clear(CommandMessage* message) {
 		}
 }
 
-ReturnValue_t MemoryMessage::setMemoryCheckCommand(CommandMessage* message,
+void MemoryMessage::setMemoryCheckCommand(CommandMessage* message,
 		uint32_t address, uint32_t length) {
 	message->setCommand(CMD_MEMORY_CHECK);
 	message->setParameter( address );
 	message->setParameter2( length );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MemoryMessage::setMemoryCheckReply(CommandMessage* message,
+void MemoryMessage::setMemoryCheckReply(CommandMessage* message,
 		uint16_t crc) {
 	message->setCommand(REPLY_MEMORY_CHECK);
 	message->setParameter( crc );
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-void MemoryMessage::setCrcReturnValue(CommandMessage* message, ReturnValue_t returnValue){
+void MemoryMessage::setCrcReturnValue(CommandMessage* message,
+        ReturnValue_t returnValue){
 	message->setParameter(returnValue<<16);
 };
 
@@ -95,18 +92,16 @@ Command_t MemoryMessage::getInitialCommand(const CommandMessage* message) {
 	return message->getParameter2();
 }
 
-ReturnValue_t MemoryMessage::setMemoryReplyFailed(CommandMessage* message,
+void MemoryMessage::setMemoryReplyFailed(CommandMessage* message,
 		ReturnValue_t errorCode, Command_t initialCommand) {
 	message->setCommand(REPLY_MEMORY_FAILED);
 	message->setParameter(errorCode);
 	message->setParameter2(initialCommand);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MemoryMessage::setMemoryCopyEnd(CommandMessage* message) {
+void MemoryMessage::setMemoryCopyEnd(CommandMessage* message) {
 	message->setCommand(END_OF_MEMORY_COPY);
 	message->setParameter(0);
 	message->setParameter2(0);
-	return HasReturnvaluesIF::RETURN_OK;
 }
 

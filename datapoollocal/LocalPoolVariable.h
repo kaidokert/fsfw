@@ -1,12 +1,12 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
+
+#include "HasLocalDataPoolIF.h"
+#include "LocalDataPoolManager.h"
 
 #include "../datapool/PoolVariableIF.h"
 #include "../datapool/DataSetIF.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
 #include "../objectmanager/ObjectManagerIF.h"
-
 #include "../serialize/SerializeAdapter.h"
 
 /**
@@ -38,13 +38,13 @@ public:
 	 * @param poolId ID of the local pool entry.
 	 * @param hkOwner Pointer of the owner. This will generally be the calling
 	 * class itself which passes "this".
-	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
+	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 */
 	LocalPoolVar(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
-			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
-			DataSetIF* dataSet = nullptr);
+			DataSetIF* dataSet = nullptr,
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
 	/**
 	 * This constructor is used by data users like controllers to have
@@ -58,13 +58,14 @@ public:
 	 * the pool variable in that dataset directly.
 	 * @param poolId ID of the local pool entry.
 	 * @param hkOwner object ID of the pool owner.
-	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
+	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
+	 *
 	 */
 	LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
-			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE,
-			DataSetIF* dataSet = nullptr);
+			DataSetIF* dataSet = nullptr,
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
 	virtual~ LocalPoolVar() {};
 
@@ -173,4 +174,4 @@ using lp_float_t = LocalPoolVar<float>;
 using lp_double_t = LocalPoolVar<double>;
 
 
-#endif
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_ */

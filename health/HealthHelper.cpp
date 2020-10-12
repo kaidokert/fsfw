@@ -1,4 +1,4 @@
-#include "../health/HealthHelper.h"
+#include "HealthHelper.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId) :
@@ -71,7 +71,7 @@ void HealthHelper::setHealth(HasHealthIF::HealthState health) {
 
 void HealthHelper::informParent(HasHealthIF::HealthState health,
 		HasHealthIF::HealthState oldHealth) {
-	if (parentQueue == MessageQueueMessageIF::NO_QUEUE) {
+	if (parentQueue == MessageQueueIF::NO_QUEUE) {
 		return;
 	}
 	CommandMessage information;
@@ -86,7 +86,7 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
 
 void HealthHelper::handleSetHealthCommand(CommandMessage* command) {
 	ReturnValue_t result = owner->setHealth(HealthMessage::getHealth(command));
-	if (command->getSender() == MessageQueueMessageIF::NO_QUEUE) {
+	if (command->getSender() == MessageQueueIF::NO_QUEUE) {
 		return;
 	}
 	CommandMessage reply;

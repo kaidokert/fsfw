@@ -1,6 +1,7 @@
+#include "QueueMapManager.h"
+
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexHelper.h"
-#include "../../osal/host/QueueMapManager.h"
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 
@@ -37,15 +38,23 @@ ReturnValue_t QueueMapManager::addMessageQueue(
 
 MessageQueueIF* QueueMapManager::getMessageQueue(
 		MessageQueueId_t messageQueueId) const {
-	MutexHelper(mapLock, 50);
+	MutexHelper(mapLock, MutexIF::TimeoutType::WAITING, 50);
 	auto queueIter = queueMap.find(messageQueueId);
 	if(queueIter != queueMap.end()) {
 		return queueIter->second;
 	}
 	else {
-		sif::warning << "QueueMapManager::getQueueHandle: The ID" <<
-				messageQueueId << " does not exists in the map" << std::endl;
-		return nullptr;
+	    if(messageQueueId == MessageQueueIF::NO_QUEUE) {
+	        sif::error << "QueueMapManager::getQueueHandle: Configuration"
+	                << " error, NO_QUEUE was passed to this function!"
+	                << std::endl;
+	    }
+	    else {
+	        sif::warning << "QueueMapManager::getQueueHandle: The ID "
+	                << messageQueueId << " does not exists in the map."
+	                << std::endl;
+	    }
+	    return nullptr;
 	}
 }
 

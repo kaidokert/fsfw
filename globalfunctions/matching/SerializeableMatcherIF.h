@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_GLOBALFUNCTIONS_MATCHING_SERIALIZEABLEMATCHERIF_H_
 #define FRAMEWORK_GLOBALFUNCTIONS_MATCHING_SERIALIZEABLEMATCHERIF_H_
 
-#include "../../globalfunctions/matching/MatcherIF.h"
+#include "MatcherIF.h"
 #include "../../serialize/SerializeIF.h"
 
 template<typename T>

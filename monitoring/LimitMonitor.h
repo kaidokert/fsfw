@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_MONITORING_LIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_LIMITMONITOR_H_
 
-#include "../monitoring/MonitorBase.h"
+#include "MonitorBase.h"
 
 /**
  * Variant of a limit checking class.
@@ -16,13 +16,12 @@ public:
 			uint16_t confirmationLimit, T lowerLimit, T upperLimit,
 			Event belowLowEvent = MonitoringIF::VALUE_BELOW_LOW_LIMIT,
 			Event aboveHighEvent = MonitoringIF::VALUE_ABOVE_HIGH_LIMIT) :
-			MonitorBase<T>(reporterId, monitorId, parameterId, confirmationLimit),
-			lowerLimit(lowerLimit), upperLimit(upperLimit), belowLowEvent(belowLowEvent),
-			aboveHighEvent(aboveHighEvent) {
+			MonitorBase<T>(reporterId, monitorId, parameterId, confirmationLimit), lowerLimit(
+					lowerLimit), upperLimit(upperLimit), belowLowEvent(
+					belowLowEvent), aboveHighEvent(aboveHighEvent) {
 	}
-
-	virtual ~LimitMonitor() {}
-
+	virtual ~LimitMonitor() {
+	}
 	virtual ReturnValue_t checkSample(T sample, T* crossedLimit) {
 		*crossedLimit = 0.0;
 		if (sample > upperLimit) {

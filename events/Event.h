@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "fwSubsystemIdRanges.h"
 //could be move to more suitable location
-#include <config/tmtc/subsystemIdRanges.h>
+#include <subsystemIdRanges.h>
 
 typedef uint16_t EventId_t;
 typedef uint8_t EventSeverity_t;
@@ -18,9 +18,10 @@ EventId_t getEventId(Event event);
 
 EventSeverity_t getSeverity(Event event);
 
-Event makeEvent(EventId_t eventId, EventSeverity_t eventSeverity);
-
+Event makeEvent(uint8_t subsystemId, uint8_t uniqueEventId,
+		EventSeverity_t eventSeverity);
 }
+
 namespace SEVERITY {
 	static const EventSeverity_t INFO = 1;
 	static const EventSeverity_t LOW = 2;

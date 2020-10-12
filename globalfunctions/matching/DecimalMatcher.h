@@ -1,7 +1,7 @@
 #ifndef DECIMALMATCHER_H_
 #define DECIMALMATCHER_H_
 
-#include "../../globalfunctions/matching/MatcherIF.h"
+#include "MatcherIF.h"
 
 template<typename T>
 class DecimalMatcher: public MatcherIF<T> {

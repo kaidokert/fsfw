@@ -3,9 +3,6 @@
 #include "../../osal/linux/CountingSemaphore.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
-const uint32_t SemaphoreIF::POLLING = 0;
-const uint32_t SemaphoreIF::BLOCKING = 0xFFFFFFFF;
-
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
 
 SemaphoreFactory::SemaphoreFactory() {

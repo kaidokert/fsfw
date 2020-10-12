@@ -1,14 +1,15 @@
+#include "MemoryHelper.h"
+#include "MemoryMessage.h"
+
 #include "../globalfunctions/CRC.h"
-#include "../memory/MemoryHelper.h"
-#include "../memory/MemoryMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/EndianConverter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis,
 		MessageQueueIF* useThisQueue):
-		workOnThis(workOnThis), queueToUse(useThisQueue), ipcStore(nullptr),
-		ipcAddress(), lastCommand(CommandMessage::CMD_NONE), busy(false) {
+		workOnThis(workOnThis), queueToUse(useThisQueue), ipcAddress(),
+		lastCommand(CommandMessage::CMD_NONE), busy(false) {
 }
 
 ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
@@ -34,7 +35,7 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
 }
 
 void MemoryHelper::completeLoad(ReturnValue_t errorCode,
-		const uint8_t* dataToCopy, const uint32_t size, uint8_t* copyHere) {
+		const uint8_t* dataToCopy, const size_t size, uint8_t* copyHere) {
 	busy = false;
 	switch (errorCode) {
 	case HasMemoryIF::DO_IT_MYSELF:
@@ -64,7 +65,7 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 }
 
 void MemoryHelper::completeDump(ReturnValue_t errorCode,
-		const uint8_t* dataToCopy, const uint32_t size) {
+		const uint8_t* dataToCopy, const size_t size) {
 	busy = false;
 	CommandMessage reply;
 	MemoryMessage::setMemoryReplyFailed(&reply, errorCode, lastCommand);
@@ -121,7 +122,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 }
 
 void MemoryHelper::swapMatrixCopy(uint8_t* out, const uint8_t *in,
-		uint32_t totalSize, uint8_t datatypeSize) {
+		size_t totalSize, uint8_t datatypeSize) {
 	if (totalSize % datatypeSize != 0){
 		return;
 	}

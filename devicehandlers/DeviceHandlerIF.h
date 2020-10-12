@@ -1,11 +1,18 @@
-#ifndef DEVICEHANDLERIF_H_
-#define DEVICEHANDLERIF_H_
+#ifndef FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
+#define FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
+
+#include "DeviceHandlerMessage.h"
 
 #include "../action/HasActionsIF.h"
-#include "../devicehandlers/DeviceHandlerMessage.h"
 #include "../events/Event.h"
 #include "../modes/HasModesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
+
+/**
+ * This is used to uniquely identify commands that are sent to a device
+ * The values are defined in the device-specific implementations
+ */
+using DeviceCommandId_t = uint32_t;
 
 /**
  * @brief 	This is the Interface used to communicate with a device handler.
@@ -14,6 +21,7 @@
  */
 class DeviceHandlerIF {
 public:
+
 
 	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
 	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
@@ -153,4 +161,4 @@ public:
 
 };
 
-#endif /* DEVICEHANDLERIF_H_ */
+#endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_ */

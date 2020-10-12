@@ -1,14 +1,15 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
+#define FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
+
+#include "HasLocalDataPoolIF.h"
 
 #include "../housekeeping/HousekeepingPacketDownlink.h"
+#include "../housekeeping/HousekeepingMessage.h"
+#include "../housekeeping/PeriodicHousekeepingHelper.h"
 #include "../datapool/DataSetIF.h"
+#include "../datapool/PoolEntry.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../ipc/MutexIF.h"
-
-#include "../housekeeping/HousekeepingMessage.h"
-#include "../datapool/PoolEntry.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
 #include "../ipc/CommandMessage.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexHelper.h"
@@ -23,7 +24,7 @@ class LocalDataSetBase;
 
 
 /**
- * @brief 	This class is the managing instance for local data pool.
+ * @brief 		This class is the managing instance for the local data pool.
  * @details
  * The actual data pool structure is a member of this class. Any class which
  * has a local data pool shall have this class as a member and implement
@@ -37,7 +38,7 @@ class LocalDataSetBase;
  * value is stored. The helper classes offer a read() and commit() interface
  * through the PoolVariableIF which is used to read and update values.
  * Each pool entry has a valid state too.
- * @author R. Mueller
+ * @author 		R. Mueller
  */
 class LocalDataPoolManager {
 	template<typename T>
@@ -49,10 +50,14 @@ class LocalDataPoolManager {
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
-    static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x0);
-    static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x1);
+    static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x00);
+    static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x01);
 
-    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x2);
+    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x02);
+
+    static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(0x03);
+    static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(0x04);
+    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(0x05);
 
     /**
      * This constructor is used by a class which wants to implement
@@ -69,15 +74,29 @@ public:
 	virtual~ LocalDataPoolManager();
 
 	/**
-	 * Initializes the map by calling the map initialization function of the
-	 * owner and assigns the queue to use.
+	 * Assigns the queue to use.
 	 * @param queueToUse
 	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
 	 * @return
 	 */
 	ReturnValue_t initialize(MessageQueueIF* queueToUse);
 
+	/**
+	 * Initializes the map by calling the map initialization function and
+	 * setting the periodic factor for non-diagnostic packets.
+	 * Don't forget to call this, otherwise the map will be invalid!
+	 * @param nonDiagInvlFactor
+	 * @return
+	 */
 	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
+
+    /**
+     * This should be called in the periodic handler of the owner.
+     * It performs all the periodic functionalities of the data pool manager,
+     * for example generating periodic HK packets.
+     * @return
+     */
+    ReturnValue_t performHkOperation();
 
 	/**
 	 * @return
@@ -97,12 +116,6 @@ public:
 	 */
 	void setNonDiagnosticIntervalFactor(uint8_t nonDiagInvlFactor);
 
-	/**
-	 * This should be called in the periodic handler of the owner.
-	 * It performs all the periodic functionalities of the data pool manager.
-	 * @return
-	 */
-	ReturnValue_t performHkOperation();
 
 	/**
 	 * Generate a housekeeping packet with a given SID.
@@ -110,9 +123,8 @@ public:
 	 * @return
 	 */
 	ReturnValue_t generateHousekeepingPacket(sid_t sid,
-	        float collectionInterval = 0,
-	        MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
-	ReturnValue_t generateSetStructurePacket(sid_t sid);
+			LocalPoolDataSetBase* dataSet, bool forDownlink,
+			MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
 
 	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
@@ -124,31 +136,43 @@ public:
 	 */
 	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
-	const HasLocalDataPoolIF* getOwner() const;
+	HasLocalDataPoolIF* getOwner();
 
 	ReturnValue_t printPoolEntry(lp_id_t localPoolId);
 
     /**
      * Different types of housekeeping reporting are possible.
-     *  1. PERIODIC: HK packets are generated in fixed intervals and sent to
+     *  1. PERIODIC:
+     *     HK packets are generated in fixed intervals and sent to
      *     destination. Fromat will be raw.
-     *  2. UPDATED: Notification will be sent out if HK data has changed.
-     *     Question: Send Raw data directly or just the message?
-     *  3. REQUESTED: HK packets are only generated if explicitely requested.
+     *  2. UPDATE_NOTIFICATION:
+     *     Notification will be sent out if HK data has changed.
+     *  3. UPDATE_SNAPSHOT:
+     *     HK packets are only generated if explicitely requested.
      *     Propably not necessary, just use multiple local data sets or
      *     shared datasets.
-     *
-     *  Notifications should also be possible for single variables instead of
-     *  full dataset updates.
      */
     enum class ReportingType: uint8_t {
         //! Periodic generation of HK packets.
         PERIODIC,
+        //! Housekeeping packet will be generated if values have changed.
+        UPDATE_HK,
 		//! Update notification will be sent out as message.
 		UPDATE_NOTIFICATION,
         //! Notification will be sent out as message and a snapshot of the
         //! current data will be generated.
         UPDATE_SNAPSHOT,
+    };
+
+    /**
+     * Different data types are possible in the HK receiver map.
+     * For example, updates can be requested for full datasets or
+     * for single pool variables. Periodic reporting is only possible for
+     * data sets.
+     */
+    enum class DataType: uint8_t {
+    	LOCAL_POOL_VARIABLE,
+		DATA_SET
     };
 
     /* Copying forbidden */
@@ -160,51 +184,37 @@ private:
     //! Every housekeeping data manager has a mutex to protect access
     //! to it's data pool.
     MutexIF* mutex = nullptr;
+
     /** The class which actually owns the manager (and its datapool). */
     HasLocalDataPoolIF* owner = nullptr;
 
     uint8_t nonDiagnosticIntervalFactor = 0;
-    dur_millis_t regularMinimumInterval = 0;
-    dur_millis_t diagnosticMinimumInterval = 0;
 
 	/** Default receiver for periodic HK packets */
 	static object_id_t defaultHkDestination;
-	MessageQueueId_t defaultHkDestinationId = MessageQueueIF::NO_QUEUE;
+	MessageQueueId_t hkDestinationId = MessageQueueIF::NO_QUEUE;
 
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
-        /** Different member of this union will be used depending on the
-        type of data the receiver is interested in (full datasets or
-        single data variables. */
+		/** Object ID of receiver */
+		object_id_t objectId = objects::NO_OBJECT;
+
+		DataType dataType = DataType::DATA_SET;
         union DataId {
-        	DataId(): dataSetSid() {}
-            /** Will be initialized to INVALID_ADDRESS */
-            sid_t dataSetSid;
-            lp_id_t localPoolId = HasLocalDataPoolIF::NO_POOL_ID;
+			DataId(): sid() {};
+            sid_t sid;
+            lp_id_t localPoolId;
         };
         DataId dataId;
 
         ReportingType reportingType = ReportingType::PERIODIC;
         MessageQueueId_t destinationQueue = MessageQueueIF::NO_QUEUE;
-        bool reportingEnabled = true;
-        /** Different members of this union will be used depending on reporting
-        type */
-        union HkParameter {
-            /** This parameter will be used for the PERIODIC type */
-            uint32_t collectionIntervalTicks = 0;
-            /** This parameter will be used for the ON_UPDATE type */
-            bool hkDataChanged;
-        };
-        HkParameter hkParameter;
-        bool isDiagnostics;
-        /** General purpose counter which is used for periodic generation. */
-        uint32_t intervalCounter;
     };
 
-    /** Using a multimap as the same object might request multiple datasets */
-    using HkReceiversMap = std::multimap<object_id_t, struct HkReceiver>;
+    /** This vector will contain the list of HK receivers. */
+    using HkReceivers = std::vector<struct HkReceiver>;
 
-    HkReceiversMap hkReceiversMap;
+    HkReceivers hkReceiversMap;
 
     /** This is the map holding the actual data. Should only be initialized
      * once ! */
@@ -245,17 +255,16 @@ private:
 	template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId,
 			PoolEntry<T> **poolEntry);
 
-	void setMinimalSamplingFrequency(float frequencySeconds);
 	ReturnValue_t serializeHkPacketIntoStore(
 	        HousekeepingPacketDownlink& hkPacket,
-	        store_address_t *storeId);
+	        store_address_t& storeId, bool forDownlink, size_t* serializedSize);
 
-	uint32_t intervalSecondsToInterval(bool isDiagnostics,
-	        float collectionIntervalSeconds);
-	float intervalToIntervalSeconds(bool isDiagnostics,
-	        uint32_t collectionInterval);
-
-	void performPeriodicHkGeneration(HkReceiver* hkReceiver);
+	void performPeriodicHkGeneration(HkReceiver& hkReceiver);
+	ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable,
+			bool isDiagnostics);
+	ReturnValue_t changeCollectionInterval(sid_t sid,
+			float newCollectionInterval, bool isDiagnostics);
+	ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
 };
 
 
@@ -279,4 +288,4 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 }
 
 
-#endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_ */

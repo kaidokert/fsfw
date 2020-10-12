@@ -1,5 +1,5 @@
-#ifndef POOLVARLIST_H_
-#define POOLVARLIST_H_
+#ifndef FSFW_DATAPOOL_POOLVARLIST_H_
+#define FSFW_DATAPOOL_POOLVARLIST_H_
 
 #include "../datapool/PoolVariableIF.h"
 #include "../datapoolglob/GlobalPoolVariable.h"
@@ -8,7 +8,8 @@ class PoolVarList {
 private:
 	GlobPoolVar<T> variables[n_var];
 public:
-	PoolVarList( const uint32_t set_id[n_var], DataSetIF* dataSet, PoolVariableIF::ReadWriteMode_t setReadWriteMode ) {
+	PoolVarList( const uint32_t set_id[n_var], DataSetIF* dataSet,
+	        PoolVariableIF::ReadWriteMode_t setReadWriteMode ) {
 		//I really should have a look at the new init list c++ syntax.
 		if (dataSet == NULL) {
 			return;
@@ -25,4 +26,4 @@ public:
 
 
 
-#endif /* POOLVARLIST_H_ */
+#endif /* FSFW_DATAPOOL_POOLVARLIST_H_ */

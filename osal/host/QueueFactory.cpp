@@ -1,5 +1,6 @@
+#include "MessageQueue.h"
 #include "../../ipc/QueueFactory.h"
-#include "../../osal/host/MessageQueue.h"
+#include "../../ipc/MessageQueueSenderIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <cstring>
 

@@ -1,18 +1,18 @@
-#include "../devicehandlers/DeviceHandlerBase.h"
+#include "DeviceHandlerBase.h"
+#include "AcceptsDeviceResponsesIF.h"
+#include "DeviceTmReportingWrapper.h"
+
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../thermal/ThermalComponentIF.h"
-#include "../devicehandlers/AcceptsDeviceResponsesIF.h"
-
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
-#include "../devicehandlers/DeviceTmReportingWrapper.h"
 #include "../globalfunctions/CRC.h"
 #include "../housekeeping/HousekeepingMessage.h"
 #include "../ipc/MessageQueueMessage.h"
-#include "../subsystem/SubsystemBase.h"
 #include "../ipc/QueueFactory.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../subsystem/SubsystemBase.h"
 
 #include <iomanip>
 
@@ -399,7 +399,7 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode,
 
 ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
 		DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
-		PoolDataSetIF* replyDataSet, size_t replyLen, bool periodic,
+		LocalPoolDataSetBase* replyDataSet, size_t replyLen, bool periodic,
 		bool hasDifferentReplyId, DeviceCommandId_t replyId) {
 	//No need to check, as we may try to insert multiple times.
 	insertInCommandMap(deviceCommand);
@@ -413,7 +413,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
-		uint16_t maxDelayCycles, PoolDataSetIF* dataSet,
+		uint16_t maxDelayCycles, LocalPoolDataSetBase* dataSet,
 		size_t replyLen, bool periodic) {
 	DeviceReplyInfo info;
 	info.maxDelayCycles = maxDelayCycles;
@@ -463,7 +463,7 @@ ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceRep
 
 
 ReturnValue_t DeviceHandlerBase::setReplyDataset(DeviceCommandId_t replyId,
-        PoolDataSetIF *dataSet) {
+        LocalPoolDataSetBase *dataSet) {
     auto replyIter = deviceReplyMap.find(replyId);
     if(replyIter == deviceReplyMap.end()) {
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -1286,10 +1286,14 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
+			//so we can track misconfigurations
 			sif::debug << std::hex << getObjectId()
 					<< ": DHB::buildInternalCommand: Command "
-					<< deviceCommandId << " isExecuting" << std::endl; //so we can track misconfigurations
-			return; //this is an internal command, no need to report a failure here, missed reply will track if a reply is too late, otherwise, it's ok
+					<< deviceCommandId << " isExecuting" << std::dec
+					<< std::endl;
+			// this is an internal command, no need to report a failure here,
+			// missed reply will track if a reply is too late, otherwise, it's ok
+			return;
 		} else {
 			iter->second.sendReplyTo = NO_COMMANDER;
 			iter->second.isExecuting = true;
@@ -1396,10 +1400,14 @@ ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
         pstIntervalMs = executingTask->getPeriodMs();
     }
     this->hkManager.initializeAfterTaskCreation();
+
+    if(setStartupImmediately) {
+        startTransition(MODE_ON, SUBMODE_NONE);
+    }
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
+LocalPoolDataSetBase* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
 	auto iter = deviceReplyMap.find(sid.ownerSetId);
 	if(iter != deviceReplyMap.end()) {
 		return iter->second.dataSet;
@@ -1411,6 +1419,10 @@ DataSetIF* DeviceHandlerBase::getDataSetHandle(sid_t sid) {
 
 object_id_t DeviceHandlerBase::getObjectId() const {
     return SystemObject::getObjectId();
+}
+
+void DeviceHandlerBase::setStartUpImmediately() {
+    this->setStartupImmediately = true;
 }
 
 dur_millis_t DeviceHandlerBase::getPeriodicOperationFrequency() const {

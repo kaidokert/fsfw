@@ -1,5 +1,6 @@
 #include "LocalPoolDataSetBase.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
+#include "../housekeeping/PeriodicHousekeepingHelper.h"
 #include "../serialize/SerializeAdapter.h"
 
 #include <cmath>
@@ -7,16 +8,22 @@
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 		uint32_t setId, PoolVariableIF** registeredVariablesArray,
-        const size_t maxNumberOfVariables):
-        PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
-    if(hkOwner == nullptr) {
-        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
-                << std::endl;
-        return;
-    }
+		const size_t maxNumberOfVariables, bool noPeriodicHandling):
+		PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
+	if(hkOwner == nullptr) {
+		// Configuration error.
+		sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
+				<< "invalid!" << std::endl;
+		return;
+	}
     hkManager = hkOwner->getHkManagerHandle();
     this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
+
+    // Data creators get a periodic helper for periodic HK data generation.
+    if(not noPeriodicHandling) {
+    	 periodicHelper = new PeriodicHousekeepingHelper(this);
+    }
 }
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
@@ -26,8 +33,9 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
             sid.objectId);
     if(hkOwner == nullptr) {
-        sif::error << "LocalDataSet::LocalDataSet: Owner can't be nullptr!"
-                << std::endl;
+    	// Configuration error.
+        sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
+        		<< "invalid!" << std::endl;
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
@@ -111,8 +119,14 @@ ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
 }
 
 ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
-        size_t* size, size_t maxSize,
-        SerializeIF::Endianness streamEndianness) const {
+        size_t* size, size_t maxSize,SerializeIF::Endianness streamEndianness,
+        bool serializeFillCount) const {
+    // Serialize as uint8_t
+    uint8_t fillCount = this->fillCount;
+    if(serializeFillCount) {
+        SerializeAdapter::serialize(&fillCount, buffer, size, maxSize,
+                streamEndianness);
+    }
     for (uint16_t count = 0; count < fillCount; count++) {
         lp_id_t currentPoolId = registeredVariables[count]->getDataPoolId();
         auto result = SerializeAdapter::serialize(&currentPoolId, buffer,
@@ -126,6 +140,16 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
+
+uint8_t LocalPoolDataSetBase::getLocalPoolIdsSerializedSize(
+        bool serializeFillCount) const {
+    if(serializeFillCount) {
+        return fillCount * sizeof(lp_id_t) + sizeof(uint8_t);
+    }
+    else {
+        return fillCount * sizeof(lp_id_t);
+    }
+}
 
 size_t LocalPoolDataSetBase::getSerializedSize() const {
     if(withValidityBuffer) {
@@ -175,6 +199,41 @@ void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     *byte |= 1 << shiftNumber;
 }
 
+void LocalPoolDataSetBase::setDiagnostic(bool isDiagnostics) {
+	this->diagnostic = isDiagnostics;
+}
+
+bool LocalPoolDataSetBase::isDiagnostics() const {
+	return diagnostic;
+}
+
+void LocalPoolDataSetBase::setReportingEnabled(bool reportingEnabled) {
+	this->reportingEnabled = reportingEnabled;
+}
+
+bool LocalPoolDataSetBase::getReportingEnabled() const {
+	return reportingEnabled;
+}
+
+void LocalPoolDataSetBase::initializePeriodicHelper(
+		float collectionInterval, dur_millis_t minimumPeriodicInterval,
+		bool isDiagnostics, uint8_t nonDiagIntervalFactor) {
+	periodicHelper->initialize(collectionInterval, minimumPeriodicInterval,
+			isDiagnostics, nonDiagIntervalFactor);
+}
+
+void LocalPoolDataSetBase::setChanged(bool changed) {
+	this->changed = changed;
+}
+
+bool LocalPoolDataSetBase::isChanged() const {
+	return changed;
+}
+
+sid_t LocalPoolDataSetBase::getSid() const {
+	return sid;
+}
+
 bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
 		uint8_t position) const {
     if(position > 7) {
@@ -190,4 +249,11 @@ bool LocalPoolDataSetBase::isValid() const {
     return this->valid;
 }
 
-
+void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
+	if(setEntriesRecursively) {
+		for(size_t idx = 0; idx < this->getFillCount(); idx++) {
+			registeredVariables[idx] -> setValid(valid);
+		}
+	}
+	this->valid = valid;
+}

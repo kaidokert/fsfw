@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_DATAPOOL_POOLVARIABLEIF_H_
-#define FRAMEWORK_DATAPOOL_POOLVARIABLEIF_H_
+#ifndef FSFW_DATAPOOL_POOLVARIABLEIF_H_
+#define FSFW_DATAPOOL_POOLVARIABLEIF_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
@@ -96,4 +96,4 @@ protected:
 
 using pool_rwm_t = PoolVariableIF::ReadWriteMode_t;
 
-#endif /* POOLVARIABLEIF_H_ */
+#endif /* FSFW_DATAPOOL_POOLVARIABLEIF_H_ */

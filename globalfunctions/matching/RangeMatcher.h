@@ -1,7 +1,7 @@
 #ifndef RANGEMATCHER_H_
 #define RANGEMATCHER_H_
 
-#include "../../globalfunctions/matching/SerializeableMatcherIF.h"
+#include "SerializeableMatcherIF.h"
 #include "../../serialize/SerializeAdapter.h"
 
 template<typename T>

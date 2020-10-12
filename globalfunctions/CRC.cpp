@@ -1,4 +1,4 @@
-#include "../globalfunctions/CRC.h"
+#include "CRC.h"
 #include <math.h>
 
 const uint16_t CRC::crc16ccitt_table[256] = {

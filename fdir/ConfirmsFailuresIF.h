@@ -4,7 +4,6 @@
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 
-// TODO: Documentation.
 class ConfirmsFailuresIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::HANDLES_FAILURES_IF;

@@ -1,19 +1,27 @@
-#ifndef FIXEDMAP_H_
-#define FIXEDMAP_H_
+#ifndef FSFW_CONTAINER_FIXEDMAP_H_
+#define FSFW_CONTAINER_FIXEDMAP_H_
 
-#include "../container/ArrayList.h"
+#include "ArrayList.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <utility>
+#include <type_traits>
 
 /**
- * @brief 	Map implementation for maps with a pre-defined size.
- * @details Can be initialized with desired maximum size.
- * 	        Iterator is used to access <key,value> pair and
- * 	        iterate through map entries. Complexity O(n).
+ * @brief    Map implementation for maps with a pre-defined size.
+ * @details
+ * Can be initialized with desired maximum size.
+ * Iterator is used to access <key,value> pair and iterate through map entries.
+ * Complexity O(n).
+ * @warning Iterators return a non-const key_t in the pair.
+ * @warning A User is not allowed to change the key, otherwise the map is corrupted.
  * @ingroup container
  */
 template<typename key_t, typename T>
 class FixedMap: public SerializeIF {
+	static_assert (std::is_trivially_copyable<T>::value or
+	        std::is_base_of<SerializeIF, T>::value,
+			"Types used in FixedMap must either be trivial copy-able or a "
+			"derived class from SerializeIF to be serialize-able");
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::FIXED_MAP;
 	static const ReturnValue_t KEY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
@@ -51,28 +59,17 @@ public:
 		Iterator(std::pair<key_t, T> *pair) :
 				ArrayList<std::pair<key_t, T>, uint32_t>::Iterator(pair) {
 		}
-
-		T operator*() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
-		// -> operator overloaded, can be used to access value
-		T *operator->() {
-			return &ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
-
-		// Can be used to access the key of the iterator
-		key_t first() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->first;
-		}
-
-		// Alternative to access value, similar to std::map implementation
-		T second() {
-			return ArrayList<std::pair<key_t, T>, uint32_t>::Iterator::value->second;
-		}
 	};
 
+	friend bool operator==(const typename FixedMap::Iterator& lhs,
+			const typename FixedMap::Iterator& rhs) {
+		return (lhs.value == rhs.value);
+	}
 
+	friend bool operator!=(const typename FixedMap::Iterator& lhs,
+			const typename FixedMap::Iterator& rhs) {
+		return not (lhs.value == rhs.value);
+	}
 
 	Iterator begin() const {
 		return Iterator(&theMap[0]);
@@ -86,16 +83,16 @@ public:
 		return _size;
 	}
 
-	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = NULL) {
+	ReturnValue_t insert(key_t key, T value, Iterator *storedValue = nullptr) {
 		if (exists(key) == HasReturnvaluesIF::RETURN_OK) {
-			return FixedMap::KEY_ALREADY_EXISTS;
+			return KEY_ALREADY_EXISTS;
 		}
 		if (_size == theMap.maxSize()) {
-			return FixedMap::MAP_FULL;
+			return MAP_FULL;
 		}
 		theMap[_size].first = key;
 		theMap[_size].second = value;
-		if (storedValue != NULL) {
+		if (storedValue != nullptr) {
 			*storedValue = Iterator(&theMap[_size]);
 		}
 		++_size;
@@ -156,22 +153,30 @@ public:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
+	bool empty() {
+	    if(_size == 0) {
+	        return true;
+	    }
+	    else {
+	        return false;
+	    }
+	}
+
+	bool full() {
+	    if(_size >= theMap.maxSize()) {
+	        return true;
+	    }
+	    else {
+	        return false;
+	    }
+	}
+
 	void clear() {
 		_size = 0;
 	}
 
 	uint32_t maxSize() const {
 		return theMap.maxSize();
-	}
-
-
-	bool full() {
-		if(_size == theMap.maxSize()) {
-			return true;
-		}
-		else {
-			return false;
-		}
 	}
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
@@ -222,4 +227,4 @@ public:
 
 };
 
-#endif /* FIXEDMAP_H_ */
+#endif /* FSFW_CONTAINER_FIXEDMAP_H_ */

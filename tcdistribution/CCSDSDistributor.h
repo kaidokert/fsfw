@@ -38,7 +38,7 @@ public:
 			MessageQueueId_t id) override;
 	ReturnValue_t registerApplication(
 			AcceptsTelecommandsIF* application) override;
-	uint16_t getIdentifier();
+	uint16_t getIdentifier() override;
 	ReturnValue_t initialize() override;
 
 protected:
@@ -50,6 +50,12 @@ protected:
 	 * @return Iterator to map entry of found APID or iterator to default APID.
 	 */
 	TcMqMapIter selectDestination() override;
+    /**
+     * The callback here handles the generation of acceptance
+     * success/failure messages.
+     */
+    ReturnValue_t callbackAfterSending( ReturnValue_t queueStatus ) override;
+
 	/**
 	 * The default APID, where packets with unknown APID are sent to.
 	 */
@@ -59,11 +65,7 @@ protected:
 	 * pure Space Packets and there exists no SpacePacketStored class.
 	 */
 	StorageManagerIF* tcStore = nullptr;
-	/**
-	 * The callback here handles the generation of acceptance
-	 * success/failure messages.
-	 */
-	ReturnValue_t callbackAfterSending( ReturnValue_t queueStatus );
+
 };
 
 #endif /* FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_ */

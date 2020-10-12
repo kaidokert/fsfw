@@ -106,6 +106,11 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
+uint32_t Clock::getUptimeSeconds() {
+	timeval uptime = getUptime();
+	return uptime.tv_sec;
+}
+
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 	// do some magic with chrono (C++20!)

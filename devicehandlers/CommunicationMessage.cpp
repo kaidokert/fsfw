@@ -122,7 +122,7 @@ uint32_t CommunicationMessage::getUint32Data() const{
 }
 
 void CommunicationMessage::setDataByte(uint8_t byte, uint8_t position) {
-	if(0 <= position && position <= 3) {
+	if(position <= 3) {
 		memcpy(getData() + 3 * sizeof(uint32_t) + position * sizeof(uint8_t), &byte, sizeof(byte));
 	}
 	else {
@@ -131,7 +131,7 @@ void CommunicationMessage::setDataByte(uint8_t byte, uint8_t position) {
 }
 
 uint8_t CommunicationMessage::getDataByte(uint8_t position) const {
-	if(0 <= position && position <= 3) {
+	if(position <= 3) {
 		uint8_t byte;
 		memcpy(&byte, getData() + 3 * sizeof(uint32_t) + position * sizeof(uint8_t), sizeof(byte));
 		return byte;

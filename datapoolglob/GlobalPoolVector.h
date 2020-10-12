@@ -1,5 +1,5 @@
-#ifndef GLOBALPOOLVECTOR_H_
-#define GLOBALPOOLVECTOR_H_
+#ifndef FSFW_DATAPOOLGLOB_GLOBALPOOLVECTOR_H_
+#define FSFW_DATAPOOLGLOB_GLOBALPOOLVECTOR_H_
 
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolEntry.h"
@@ -182,4 +182,4 @@ private:
 template<typename T, uint16_t vectorSize>
 using gp_vec_t = GlobPoolVector<T, vectorSize>;
 
-#endif /* POOLVECTOR_H_ */
+#endif /* FSFW_DATAPOOLGLOB_GLOBALPOOLVECTOR_H_ */

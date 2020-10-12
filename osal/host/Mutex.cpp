@@ -1,10 +1,9 @@
-#include "../../osal/host/Mutex.h"
+#include "Mutex.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
-const uint32_t MutexIF::POLLING = 0;
-const uint32_t MutexIF::BLOCKING = 0xffffffff;
+Mutex::Mutex() {}
 
-ReturnValue_t Mutex::lockMutex(uint32_t timeoutMs) {
+ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
 	if(timeoutMs == MutexIF::BLOCKING) {
 		mutex.lock();
 		locked = true;

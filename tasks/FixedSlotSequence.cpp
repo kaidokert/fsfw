@@ -1,5 +1,5 @@
+#include "FixedSlotSequence.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../tasks/FixedSlotSequence.h"
 #include <cstdlib>
 
 FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) :
@@ -91,21 +91,31 @@ void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs,
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
-		sif::error << "Fixed Slot Sequence: Slot list is empty!" << std::endl;
+		sif::error << "FixedSlotSequence::checkSequence:"
+				<< " Slot list is empty!" << std::endl;
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
-	uint32_t count = 0;
+	if(customCheckFunction != nullptr) {
+		ReturnValue_t result = customCheckFunction(slotList);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			// Continue for now but print error output.
+			sif::error << "FixedSlotSequence::checkSequence:"
+					<< " Custom check failed!" << std::endl;
+		}
+	}
+
+	uint32_t errorCount = 0;
 	uint32_t time = 0;
 	for(const auto& slot: slotList) {
 		if (slot.executableObject == nullptr) {
-			count++;
+			errorCount++;
 		}
 		else if (slot.pollingTimeMs < time) {
-			sif::error << "FixedSlotSequence::initialize: Time: "
+			sif::error << "FixedSlotSequence::checkSequence: Time: "
 					<< slot.pollingTimeMs << " is smaller than previous with "
 					<< time << std::endl;
-			count++;
+			errorCount++;
 		}
 		else {
 			// All ok, print slot.
@@ -117,7 +127,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 	}
 	//sif::info << "Number of elements in slot list: "
 	//	   << slotList.size() << std::endl;
-	if (count > 0) {
+	if (errorCount > 0) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
@@ -144,4 +154,9 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
         return HasReturnvaluesIF::RETURN_FAILED;
     }
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+void FixedSlotSequence::addCustomCheck(ReturnValue_t
+		(*customCheckFunction)(const SlotList&)) {
+	this->customCheckFunction = customCheckFunction;
 }

@@ -1,5 +1,5 @@
 #include "../timemanager/Clock.h"
-#include "../serviceinterface/ServiceInterfaceBuffer.h"
+#include "ServiceInterfaceBuffer.h"
 #include <cstring>
 #include <inttypes.h>
 

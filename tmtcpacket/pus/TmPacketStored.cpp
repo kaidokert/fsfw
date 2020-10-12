@@ -1,8 +1,9 @@
+#include "TmPacketStored.h"
+
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../tmtcpacket/pus/TmPacketStored.h"
 #include "../../tmtcservices/TmTcMessage.h"
-#include <string.h>
+#include <cstring>
 
 TmPacketStored::TmPacketStored(store_address_t setAddress) :
 		TmPacketBase(NULL), storeAddress(setAddress) {
@@ -11,7 +12,7 @@ TmPacketStored::TmPacketStored(store_address_t setAddress) :
 
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 		uint8_t subservice, uint8_t packetSubcounter, const uint8_t *data,
-		uint32_t size, const uint8_t *headerData, uint32_t headerSize) :
+		size_t size, const uint8_t *headerData, size_t headerSize) :
 		TmPacketBase(NULL) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (!checkAndSetStore()) {

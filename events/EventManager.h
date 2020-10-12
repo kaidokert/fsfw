@@ -8,9 +8,11 @@
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexIF.h"
+#include <FSFWConfig.h>
+
 #include <map>
 
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 // forward declaration, should be implemented by mission
 extern const char* translateObject(object_id_t object);
 extern const char* translateEvents(Event event);
@@ -55,7 +57,7 @@ protected:
 
 	void notifyListeners(EventMessage *message);
 
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 	void printEvent(EventMessage *message);
 #endif
 
