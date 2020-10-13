@@ -1,6 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 
+#include "LocalPoolObjectBase.h"
 #include "HasLocalDataPoolIF.h"
 #include "LocalDataPoolManager.h"
 
@@ -21,7 +22,7 @@
  * @ingroup data_pool
  */
 template<typename T>
-class LocalPoolVar: public PoolVariableIF, HasReturnvaluesIF {
+class LocalPoolVar: public LocalPoolObjectBase {
 public:
 	//! Default ctor is forbidden.
 	LocalPoolVar() = delete;
@@ -75,15 +76,6 @@ public:
 	 * 			just like he would on a simple local variable.
 	 */
 	T value = 0;
-
-	pool_rwm_t getReadWriteMode() const override;
-
-	lp_id_t getDataPoolId() const override;
-	void setDataPoolId(lp_id_t poolId);
-
-	bool isValid() const override;
-	void setValid(bool validity) override;
-	uint8_t getValid() const;
 
 	ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
 	        SerializeIF::Endianness streamEndianness) const override;
@@ -145,15 +137,6 @@ protected:
 			const LocalPoolVar<U> &var);
 
 private:
-	//! @brief 	Pool ID of pool entry inside the used local pool.
-	lp_id_t localPoolId = PoolVariableIF::NO_PARAMETER;
-	//! @brief 	Read-write mode of the pool variable
-	pool_rwm_t readWriteMode = pool_rwm_t::VAR_READ_WRITE;
-	//! @brief 	Specifies whether the entry is valid or invalid.
-	bool valid = false;
-
-	//! Pointer to the class which manages the HK pool.
-	LocalDataPoolManager* hkManager;
 };
 
 #include "LocalPoolVariable.tpp"

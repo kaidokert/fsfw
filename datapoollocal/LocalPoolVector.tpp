@@ -9,39 +9,12 @@ template<typename T, uint16_t vectorSize>
 inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
 		HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
 		pool_rwm_t setReadWriteMode):
-		localPoolId(poolId), valid(false), readWriteMode(setReadWriteMode) {
-	if(poolId == PoolVariableIF::NO_PARAMETER) {
-		sif::warning << "LocalPoolVector: PoolVariableIF::NO_PARAMETER passed "
-				<< "as pool ID, which is the NO_PARAMETER value!" << std::endl;
-	}
-	std::memset(this->value, 0, vectorSize * sizeof(T));
-	hkManager = hkOwner->getHkManagerHandle();
-	if (dataSet != nullptr) {
-		dataSet->registerVariable(this);
-	}
-}
+		LocalPoolObjectBase(poolId, hkOwner, dataSet, setReadWriteMode) {}
 
 template<typename T, uint16_t vectorSize>
 inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
 		object_id_t poolOwner, DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
-		readWriteMode(setReadWriteMode) {
-	if(poolId == PoolVariableIF::NO_PARAMETER) {
-		sif::warning << "LocalPoolVector: PoolVariableIF::NO_PARAMETER passed "
-				<< "as pool ID, which is the NO_PARAMETER value!" << std::endl;
-	}
-	HasLocalDataPoolIF* hkOwner =
-			objectManager->get<HasLocalDataPoolIF>(poolOwner);
-	if(hkOwner == nullptr) {
-		sif::error << "LocalPoolVariable: The supplied pool owner did not "
-				<< "implement the correct interface HasHkPoolParametersIF!"
-				<< std::endl;
-		return;
-	}
-	hkManager = hkOwner->getHkManagerHandle();
-	if(dataSet != nullptr) {
-		dataSet->registerVariable(this);
-	}
-}
+		LocalPoolObjectBase(poolId, poolOwner, dataSet, setReadWriteMode) {}
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(uint32_t lockTimeout) {
@@ -159,37 +132,6 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::deSerialize(
 		}
 	}
 	return result;
-}
-
-template<typename T, uint16_t vectorSize>
-inline pool_rwm_t LocalPoolVector<T, vectorSize>::getReadWriteMode() const {
-	return this->readWriteMode;
-}
-
-
-template<typename T, uint16_t vectorSize>
-inline uint32_t LocalPoolVector<T, vectorSize>::getDataPoolId() const {
-	return localPoolId;
-}
-
-template<typename T, uint16_t vectorSize>
-inline void LocalPoolVector<T, vectorSize>::setDataPoolId(uint32_t poolId) {
-	this->localPoolId = poolId;
-}
-
-template<typename T, uint16_t vectorSize>
-inline void LocalPoolVector<T, vectorSize>::setValid(bool valid) {
-	this->valid = valid;
-}
-
-template<typename T, uint16_t vectorSize>
-inline uint8_t LocalPoolVector<T, vectorSize>::getValid() const {
-	return valid;
-}
-
-template<typename T, uint16_t vectorSize>
-inline bool LocalPoolVector<T, vectorSize>::isValid() const {
-	return valid;
 }
 
 template<typename T, uint16_t vectorSize>

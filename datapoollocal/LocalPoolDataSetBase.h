@@ -117,7 +117,7 @@ public:
 	bool isValid() const override;
 
 	void setChanged(bool changed);
-	bool isChanged() const;
+	bool hasChanged() const;
 
 protected:
 	sid_t sid;

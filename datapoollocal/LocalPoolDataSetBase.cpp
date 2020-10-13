@@ -226,7 +226,7 @@ void LocalPoolDataSetBase::setChanged(bool changed) {
 	this->changed = changed;
 }
 
-bool LocalPoolDataSetBase::isChanged() const {
+bool LocalPoolDataSetBase::hasChanged() const {
 	return changed;
 }
 

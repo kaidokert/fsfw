@@ -88,9 +88,8 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 }
 
 ReturnValue_t LocalDataPoolManager::performHkOperation() {
+    ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
     for(auto& receiver: hkReceiversMap) {
-        //HkReceiver* receiver = &hkReceiversIter.second;
-
         switch(receiver.reportingType) {
         case(ReportingType::PERIODIC): {
             if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
@@ -100,8 +99,46 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
             performPeriodicHkGeneration(receiver);
             break;
         }
+        case(ReportingType::UPDATE_HK): {
+            if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+                // Periodic packets shall only be generated from datasets.
+                continue;
+            }
+            LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+                    receiver.dataId.sid);
+            if(dataSet->hasChanged()) {
+                // prepare and send update notification
+                ReturnValue_t result = generateHousekeepingPacket(
+                            receiver.dataId.sid, dataSet, true);
+                if(result != HasReturnvaluesIF::RETURN_OK) {
+                    status = result;
+                }
+            }
+            break;
+        }
+        case(ReportingType::UPDATE_NOTIFICATION): {
+            if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+            }
+            else {
+                LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+                        receiver.dataId.sid);
+                if(dataSet->hasChanged()) {
+                    // prepare and send update notification
+                }
+            }
+            break;
+        }
         case(ReportingType::UPDATE_SNAPSHOT): {
             // check whether data has changed and send messages in case it has.
+            if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+            }
+            else {
+                LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+                        receiver.dataId.sid);
+                if(dataSet->hasChanged()) {
+                    // prepare and send update snapshot.
+                }
+            }
             break;
         }
         default:
@@ -109,7 +146,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
             return HasReturnvaluesIF::RETURN_FAILED;
         }
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return status;
 }
 
 ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
@@ -368,8 +405,7 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 		bool isDiagnostics) {
     // Get and check dataset first.
-	LocalPoolDataSetBase* dataSet = dynamic_cast<LocalPoolDataSetBase*>(
-			owner->getDataSetHandle(sid));
+	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 	if(dataSet == nullptr) {
 		sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
 				<< " Set ID not found" << std::endl;
