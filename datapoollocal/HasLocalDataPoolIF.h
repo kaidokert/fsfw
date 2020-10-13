@@ -11,6 +11,7 @@
 
 class LocalDataPoolManager;
 class LocalPoolDataSetBase;
+class LocalPoolObjectBase;
 
 using LocalDataPool =  std::map<lp_id_t, PoolEntryIF*>;
 using LocalDataPoolMapIter = LocalDataPool::iterator;
@@ -75,6 +76,19 @@ public:
 	 * @return
 	 */
 	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
+
+	/**
+	 * Similar to the function above, but used to get a local pool variable
+	 * handle. This is only needed for update notifications, so it is not
+	 * defined as abstract.
+	 * @param localPoolId
+	 * @return
+	 */
+	virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
+	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
+	            << ". Returning nullptr!" << std::endl;
+	    return nullptr;
+	}
 
     /**
      * @brief   This function will be called by the manager if an update

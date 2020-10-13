@@ -1,4 +1,5 @@
 #include "LocalDataPoolManager.h"
+#include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
 
 #include "../housekeeping/HousekeepingSetPacket.h"
@@ -101,7 +102,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
         }
         case(ReportingType::UPDATE_HK): {
             if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-                // Periodic packets shall only be generated from datasets.
+                // Update packets shall only be generated from datasets.
                 continue;
             }
             LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
@@ -118,10 +119,21 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
         }
         case(ReportingType::UPDATE_NOTIFICATION): {
             if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+                LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
+                        receiver.dataId.localPoolId);
+                if(poolObj == nullptr) {
+                    continue;
+                }
+                if(poolObj->hasChanged()) {
+                    // prepare and send update notification.
+                }
             }
             else {
                 LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
                         receiver.dataId.sid);
+                if(dataSet == nullptr) {
+                    continue;
+                }
                 if(dataSet->hasChanged()) {
                     // prepare and send update notification
                 }
@@ -131,10 +143,21 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
         case(ReportingType::UPDATE_SNAPSHOT): {
             // check whether data has changed and send messages in case it has.
             if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+                LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
+                        receiver.dataId.localPoolId);
+                if(poolObj == nullptr) {
+                    continue;
+                }
+                if(poolObj->hasChanged()) {
+                    // prepare and send update snapshot.
+                }
             }
             else {
                 LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
                         receiver.dataId.sid);
+                if(dataSet == nullptr) {
+                    continue;
+                }
                 if(dataSet->hasChanged()) {
                     // prepare and send update snapshot.
                 }
