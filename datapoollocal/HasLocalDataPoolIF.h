@@ -1,6 +1,8 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
+#include "locPoolDefinitions.h"
+
 #include "../datapool/PoolEntryIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
@@ -10,10 +12,6 @@
 class LocalDataPoolManager;
 class LocalPoolDataSetBase;
 
-/**
- * @brief	Type definition for local pool entries.
- */
-using lp_id_t = uint32_t;
 using LocalDataPool =  std::map<lp_id_t, PoolEntryIF*>;
 using LocalDataPoolMapIter = LocalDataPool::iterator;
 
@@ -77,6 +75,28 @@ public:
 	 * @return
 	 */
 	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
+
+    /**
+     * @brief   This function will be called by the manager if an update
+     *          notification is received.
+     * @details
+     * Can be overriden by the child class to handle changed datasets.
+     * @param sid
+     */
+    virtual void handleChangedDatasetOrVariable(sid_t sid) {
+        return;
+    }
+
+    /**
+     * @brief   This function will be called by the manager if an update
+     *          notification is received.
+     * @details
+     * Can be overriden by the child class to handle changed pool IDs.
+     * @param sid
+     */
+    virtual void handleChangedPoolVariable(lp_id_t poolId) {
+        return;
+    }
 
 	/* These function can be implemented by pool owner, as they are required
 	 * by the housekeeping message interface */

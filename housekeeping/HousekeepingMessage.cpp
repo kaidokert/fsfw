@@ -1,5 +1,6 @@
-#include <fsfw/objectmanager/ObjectManagerIF.h>
 #include "HousekeepingMessage.h"
+
+#include "../objectmanager/ObjectManagerIF.h"
 #include <cstring>
 
 HousekeepingMessage::~HousekeepingMessage() {}
@@ -148,7 +149,7 @@ void HousekeepingMessage::clear(CommandMessage* message) {
     case(DIAGNOSTICS_REPORT):
     case(HK_DEFINITIONS_REPORT):
     case(DIAGNOSTICS_DEFINITION_REPORT):
-    case(UPDATE_SNAPSHOT): {
+    case(UPDATE_SNAPSHOT_SET): {
         store_address_t storeId;
         getHkDataReply(message, &storeId);
         StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
@@ -159,4 +160,56 @@ void HousekeepingMessage::clear(CommandMessage* message) {
     }
     }
     message->setCommand(CommandMessage::CMD_NONE);
+}
+
+void HousekeepingMessage::setUpdateNotificationSetCommand(
+        CommandMessage *command, sid_t sid) {
+    command->setCommand(UPDATE_NOTIFICATION_SET);
+    setSid(command, sid);
+}
+
+void HousekeepingMessage::setUpdateNotificationVariableCommand(
+        CommandMessage *command, lp_id_t localPoolId) {
+    command->setCommand(UPDATE_NOTIFICATION_VARIABLE);
+    command->setParameter(localPoolId);
+}
+
+void HousekeepingMessage::setUpdateSnapshotSetCommand(CommandMessage *command,
+        sid_t sid, store_address_t storeId) {
+    command->setCommand(UPDATE_SNAPSHOT_VARIABLE);
+    setSid(command, sid);
+    command->setParameter3(storeId.raw);
+}
+
+void HousekeepingMessage::setUpdateSnapshotVariableCommand(
+        CommandMessage *command, lp_id_t localPoolId, store_address_t storeId) {
+    command->setCommand(UPDATE_SNAPSHOT_VARIABLE);
+    command->setParameter(localPoolId);
+    command->setParameter3(storeId.raw);
+}
+
+sid_t HousekeepingMessage::getUpdateNotificationSetCommand(
+        const CommandMessage *command) {
+    return getSid(command);
+}
+
+lp_id_t HousekeepingMessage::getUpdateNotificationVariableCommand(
+        const CommandMessage *command) {
+    return command->getParameter();
+}
+
+sid_t HousekeepingMessage::getUpdateSnapshotSetCommand(
+        const CommandMessage *command, store_address_t *storeId) {
+    if(storeId != nullptr) {
+        *storeId = command->getParameter3();
+    }
+    return getSid(command);
+}
+
+lp_id_t HousekeepingMessage::getUpdateSnapshotVariableCommand(
+        const CommandMessage *command, store_address_t *storeId) {
+    if(storeId != nullptr) {
+        *storeId = command->getParameter3();
+    }
+    return command->getParameter();
 }

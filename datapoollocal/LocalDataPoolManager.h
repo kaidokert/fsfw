@@ -91,7 +91,8 @@ public:
 	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
 
     /**
-     * This should be called in the periodic handler of the owner.
+     * @brief   This should be called in the periodic handler of the owner.
+     * @details
      * It performs all the periodic functionalities of the data pool manager,
      * for example generating periodic HK packets.
      * @return
@@ -99,11 +100,46 @@ public:
     ReturnValue_t performHkOperation();
 
 	/**
+	 * @brief   Subscribe for the generation of periodic packets.
+	 * @details
+	 * This will most commonly be used to generate housekeeping packets
+	 * which are downlinked directly.
 	 * @return
 	 */
 	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
 			float collectionInterval, bool isDiagnostics,
 			object_id_t packetDestination = defaultHkDestination);
+
+	/**
+	 * @brief   Subscribe for the  generation of packets if the dataset
+	 *          is marked as changed.
+	 * @param sid
+	 * @param isDiagnostics
+	 * @param packetDestination
+	 * @return
+	 */
+    ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool isDiagnostics,
+            object_id_t packetDestination = defaultHkDestination);
+
+	/**
+	 * @brief   Subscribe for a notification message which will be sent
+	 *          if a dataset has changed.
+	 * @param sid
+	 * @param targetQueueId
+	 * @return
+	 */
+	ReturnValue_t subscribeForUpdateMessages(sid_t sid,
+	        MessageQueueId_t targetQueueId);
+
+    /**
+     * @brief   Subscribe for an notification message which will be sent if a
+     *          pool variable has changed.
+     * @param sid
+     * @param targetQueueId
+     * @return
+     */
+    ReturnValue_t subscribeForUpdateMessages(lp_id_t localPoolId,
+            MessageQueueId_t targetQueueId);
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
@@ -116,6 +152,19 @@ public:
 	 */
 	void setNonDiagnosticIntervalFactor(uint8_t nonDiagInvlFactor);
 
+    /**
+     * @brief   The manager is also able to handle housekeeping messages.
+     * @details
+     * This most commonly is used to handle messages for the housekeeping
+     * interface, but the manager is also able to handle update notifications
+     * and calls a special function which can be overriden by a child class
+     * to handle data set or pool variable updates. This is relevant
+     * for classes like controllers which have their own local datapool
+     * but pull their data from other local datapools.
+     * @param message
+     * @return
+     */
+    ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
 	/**
 	 * Generate a housekeeping packet with a given SID.
@@ -125,16 +174,6 @@ public:
 	ReturnValue_t generateHousekeepingPacket(sid_t sid,
 			LocalPoolDataSetBase* dataSet, bool forDownlink,
 			MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
-
-	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
-
-	/**
-	 * This function is used to fill the local data pool map with pool
-	 * entries. It should only be called once by the pool owner.
-	 * @param localDataPoolMap
-	 * @return
-	 */
-	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
 	HasLocalDataPoolIF* getOwner();
 
@@ -254,6 +293,14 @@ private:
 	 */
 	template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId,
 			PoolEntry<T> **poolEntry);
+
+    /**
+     * This function is used to fill the local data pool map with pool
+     * entries. It should only be called once by the pool owner.
+     * @param localDataPoolMap
+     * @return
+     */
+    ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
 	ReturnValue_t serializeHkPacketIntoStore(
 	        HousekeepingPacketDownlink& hkPacket,
