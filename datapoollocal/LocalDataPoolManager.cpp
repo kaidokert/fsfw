@@ -129,6 +129,14 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                 }
                 if(poolObj->hasChanged()) {
                     // prepare and send update notification.
+                    CommandMessage notification;
+                    HousekeepingMessage::setUpdateNotificationVariableCommand(
+                            &notification, receiver.dataId.localPoolId);
+                    ReturnValue_t result = hkQueue->sendMessage(
+                            receiver.destinationQueue, &notification);
+                    if(result != HasReturnvaluesIF::RETURN_OK) {
+                        status = result;
+                    }
                     toReset = poolObj;
                 }
 
@@ -169,6 +177,16 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                 }
                 if(poolObj->hasChanged()) {
                     // prepare and send update snapshot.
+                    CommandMessage notification;
+                    // todo: serialize into store with timestamp.
+                    store_address_t storeId;
+                    HousekeepingMessage::setUpdateSnapshotSetCommand(
+                            &notification, receiver.dataId.sid, storeId);
+                    ReturnValue_t result = hkQueue->sendMessage(
+                            receiver.destinationQueue, &notification);
+                    if(result != HasReturnvaluesIF::RETURN_OK) {
+                        status = result;
+                    }
                     toReset = poolObj;
                 }
             }
@@ -180,6 +198,16 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                 }
                 if(dataSet->hasChanged()) {
                     // prepare and send update snapshot.
+                    CommandMessage notification;
+                    // todo: serialize into store with timestamp.
+                    store_address_t storeId;
+                    HousekeepingMessage::setUpdateSnapshotVariableCommand(
+                            &notification, receiver.dataId.localPoolId, storeId);
+                    ReturnValue_t result = hkQueue->sendMessage(
+                            receiver.destinationQueue, &notification);
+                    if(result != HasReturnvaluesIF::RETURN_OK) {
+                        status = result;
+                    }
                     toReset = dataSet;
                 }
             }
@@ -384,6 +412,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
     sid_t sid = HousekeepingMessage::getSid(message);
     ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     switch(command) {
+    // Houskeeping interface handling.
     case(HousekeepingMessage::ENABLE_PERIODIC_DIAGNOSTICS_GENERATION): {
     	result = togglePeriodicGeneration(sid, true, true);
     	break;
@@ -438,8 +467,28 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
     			dataSet, true);
     }
 
+    // Notification handling.
     case(HousekeepingMessage::UPDATE_NOTIFICATION_SET): {
-        owner->handleChangedDatasetOrVariable(sid);
+        owner->handleChangedDataset(sid);
+        return HasReturnvaluesIF::RETURN_OK;
+    }
+    case(HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE): {
+        lp_id_t locPoolId = HousekeepingMessage::
+                getUpdateNotificationVariableCommand(message);
+        owner->handleChangedPoolVariable(locPoolId);
+        return HasReturnvaluesIF::RETURN_OK;
+    }
+    case(HousekeepingMessage::UPDATE_SNAPSHOT_SET): {
+        store_address_t storeId;
+        HousekeepingMessage::getUpdateSnapshotSetCommand(message, &storeId);
+        owner->handleChangedDataset(sid, storeId);
+        return HasReturnvaluesIF::RETURN_OK;
+    }
+    case(HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE): {
+        store_address_t storeId;
+        lp_id_t localPoolId = HousekeepingMessage::
+                getUpdateSnapshotVariableCommand(message, &storeId);
+        owner->handleChangedPoolVariable(localPoolId, storeId);
         return HasReturnvaluesIF::RETURN_OK;
     }
 

@@ -96,8 +96,11 @@ public:
      * @details
      * Can be overriden by the child class to handle changed datasets.
      * @param sid
+     * @param storeId If a snapshot was requested, data will be located inside
+     * the IPC store with this store ID.
      */
-    virtual void handleChangedDatasetOrVariable(sid_t sid) {
+    virtual void handleChangedDataset(sid_t sid,
+            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
         return;
     }
 
@@ -107,8 +110,11 @@ public:
      * @details
      * Can be overriden by the child class to handle changed pool IDs.
      * @param sid
+     * @param storeId If a snapshot was requested, data will be located inside
+     * the IPC store with this store ID.
      */
-    virtual void handleChangedPoolVariable(lp_id_t poolId) {
+    virtual void handleChangedPoolVariable(lp_id_t poolId,
+            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
         return;
     }
 

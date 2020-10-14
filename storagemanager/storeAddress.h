@@ -3,16 +3,21 @@
 
 #include <cstdint>
 
+namespace storeId {
+static constexpr uint32_t INVALID_STORE_ADDRESS = 0xffffffff;
+}
+
 /**
  * This union defines the type that identifies where a data packet is
  * stored in the store. It comprises of a raw part to read it as raw value and
  * a structured part to use it in pool-like stores.
  */
 union store_address_t {
+
 	/**
 	 * Default Constructor, initializing to INVALID_ADDRESS
 	 */
-	store_address_t():raw(0xFFFFFFFF){}
+	store_address_t(): raw(storeId::INVALID_STORE_ADDRESS){}
 	/**
 	 * Constructor to create an address object using the raw address
 	 *
