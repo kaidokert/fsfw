@@ -20,6 +20,8 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
     this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
 
+    mutex = MutexFactory::instance()->createMutex();
+
     // Data creators get a periodic helper for periodic HK data generation.
     if(not noPeriodicHandling) {
     	 periodicHelper = new PeriodicHousekeepingHelper(this);
@@ -40,6 +42,8 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
     }
     hkManager = hkOwner->getHkManagerHandle();
     this->sid = sid;
+
+    mutex = MutexFactory::instance()->createMutex();
 }
 
 LocalPoolDataSetBase::~LocalPoolDataSetBase() {
@@ -223,10 +227,12 @@ void LocalPoolDataSetBase::initializePeriodicHelper(
 }
 
 void LocalPoolDataSetBase::setChanged(bool changed) {
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
 	this->changed = changed;
 }
 
 bool LocalPoolDataSetBase::hasChanged() const {
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
 	return changed;
 }
 
@@ -246,10 +252,12 @@ bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
 }
 
 bool LocalPoolDataSetBase::isValid() const {
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
     return this->valid;
 }
 
 void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
 	if(setEntriesRecursively) {
 		for(size_t idx = 0; idx < this->getFillCount(); idx++) {
 			registeredVariables[idx] -> setValid(valid);

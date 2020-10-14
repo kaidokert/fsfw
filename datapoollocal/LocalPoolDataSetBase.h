@@ -2,6 +2,8 @@
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 
 #include "HasLocalDataPoolIF.h"
+#include "MarkChangedIF.h"
+
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
 #include "../serialize/SerializeIF.h"
@@ -39,7 +41,8 @@ class PeriodicHousekeepingHelper;
  *
  * @ingroup data_pool
  */
-class LocalPoolDataSetBase: public PoolDataSetBase {
+class LocalPoolDataSetBase: public PoolDataSetBase,
+        public MarkChangedIF {
 	friend class LocalDataPoolManager;
 	friend class PeriodicHousekeepingHelper;
 public:
@@ -109,18 +112,23 @@ public:
 	uint8_t getLocalPoolIdsSerializedSize(bool serializeFillCount = true) const;
 
 	/**
-	 * Set the dataset valid or invalid
+	 * Set the dataset valid or invalid. These calls are mutex protected.
 	 * @param setEntriesRecursively
 	 * If this is true, all contained datasets will also be set recursively.
 	 */
 	void setValidity(bool valid, bool setEntriesRecursively);
 	bool isValid() const override;
 
-	void setChanged(bool changed);
-	bool hasChanged() const;
+	/**
+	 * These calls are mutex protected.
+	 * @param changed
+	 */
+	void setChanged(bool changed) override;
+	bool hasChanged() const override;
 
 protected:
 	sid_t sid;
+	MutexIF* mutex = nullptr;
 
 	bool diagnostic = false;
 	void setDiagnostic(bool diagnostics);

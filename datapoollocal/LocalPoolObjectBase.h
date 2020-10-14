@@ -1,10 +1,14 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_
 
+#include "MarkChangedIF.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
 #include "../datapool/PoolVariableIF.h"
 
-class LocalPoolObjectBase: public PoolVariableIF, HasReturnvaluesIF {
+
+class LocalPoolObjectBase: public PoolVariableIF,
+        public HasReturnvaluesIF,
+        public MarkChangedIF {
 public:
     LocalPoolObjectBase(lp_id_t poolId,
             HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
@@ -19,8 +23,8 @@ public:
     bool isValid() const override;
     void setValid(bool valid) override;
 
-    void setChanged(bool changed);
-    bool hasChanged() const;
+    void setChanged(bool changed) override;
+    bool hasChanged() const override;
 
     lp_id_t getDataPoolId() const override;
     void setDataPoolId(lp_id_t poolId);

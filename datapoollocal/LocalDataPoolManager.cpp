@@ -115,9 +115,12 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                     status = result;
                 }
             }
+            handleChangeResetLogic(receiver.dataType, receiver.dataId,
+                    dataSet);
             break;
         }
         case(ReportingType::UPDATE_NOTIFICATION): {
+            MarkChangedIF* toReset = nullptr;
             if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
                 LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
                         receiver.dataId.localPoolId);
@@ -125,8 +128,10 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                     continue;
                 }
                 if(poolObj->hasChanged()) {
+
                     // prepare and send update notification.
                 }
+                toReset = poolObj;
             }
             else {
                 LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
@@ -135,12 +140,16 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                     continue;
                 }
                 if(dataSet->hasChanged()) {
+
                     // prepare and send update notification
                 }
+                toReset = dataSet;
             }
+            handleChangeResetLogic(receiver.dataType, receiver.dataId, toReset);
             break;
         }
         case(ReportingType::UPDATE_SNAPSHOT): {
+            MarkChangedIF* toReset = nullptr;
             // check whether data has changed and send messages in case it has.
             if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
                 LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
@@ -151,6 +160,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                 if(poolObj->hasChanged()) {
                     // prepare and send update snapshot.
                 }
+                toReset = poolObj;
             }
             else {
                 LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
@@ -161,7 +171,9 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                 if(dataSet->hasChanged()) {
                     // prepare and send update snapshot.
                 }
+                toReset = dataSet;
             }
+            handleChangeResetLogic(receiver.dataType, receiver.dataId, toReset);
             break;
         }
         default:
@@ -169,7 +181,51 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
             return HasReturnvaluesIF::RETURN_FAILED;
         }
     }
+    resetHkUpdateResetHelper();
     return status;
+}
+
+void LocalDataPoolManager::handleChangeResetLogic(
+        DataType type, DataId dataId, MarkChangedIF* toReset) {
+    if(hkUpdateResetList == nullptr) {
+        // config error!
+        return;
+    }
+
+    for(auto& changeInfo: *hkUpdateResetList) {
+        if(changeInfo.dataType != type) {
+            continue;
+        }
+        if((changeInfo.dataType == DataType::DATA_SET) and
+                (changeInfo.dataId.sid != dataId.sid)) {
+            continue;
+        }
+        if((changeInfo.dataType == DataType::LOCAL_POOL_VARIABLE) and
+                (changeInfo.dataId.localPoolId != dataId.localPoolId)) {
+            continue;
+        }
+
+        if(changeInfo.updateCounter <= 1) {
+            toReset->setChanged(false);
+        }
+        if(changeInfo.currentUpdateCounter == 0) {
+            toReset->setChanged(false);
+        }
+        else {
+            changeInfo.currentUpdateCounter--;
+        }
+        return;
+    }
+}
+
+void LocalDataPoolManager::resetHkUpdateResetHelper() {
+    if(hkUpdateResetList == nullptr) {
+        return;
+    }
+
+    for(auto& changeInfo: *hkUpdateResetList) {
+        changeInfo.currentUpdateCounter = changeInfo.updateCounter;
+    }
 }
 
 ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
@@ -186,6 +242,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 	struct HkReceiver hkReceiver;
 	hkReceiver.dataId.sid = sid;
 	hkReceiver.reportingType = ReportingType::PERIODIC;
+	hkReceiver.dataType = DataType::DATA_SET;
 	hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
 
 	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
@@ -198,6 +255,103 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 
 	hkReceiversMap.push_back(hkReceiver);
 	return HasReturnvaluesIF::RETURN_OK;
+}
+
+
+ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
+        bool isDiagnostics, bool reportingEnabled,
+        object_id_t packetDestination) {
+    AcceptsHkPacketsIF* hkReceiverObject =
+                objectManager->get<AcceptsHkPacketsIF>(packetDestination);
+    if(hkReceiverObject == nullptr) {
+        sif::error << "LocalDataPoolManager::subscribeForPeriodicPacket:"
+                << " Invalid receiver!"<< std::endl;
+        return HasReturnvaluesIF::RETURN_OK;
+    }
+
+    struct HkReceiver hkReceiver;
+    hkReceiver.dataId.sid = sid;
+    hkReceiver.reportingType = ReportingType::UPDATE_HK;
+    hkReceiver.dataType = DataType::DATA_SET;
+    hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
+
+    LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+    if(dataSet != nullptr) {
+        dataSet->setReportingEnabled(true);
+        dataSet->setDiagnostic(isDiagnostics);
+    }
+
+    hkReceiversMap.push_back(hkReceiver);
+
+    handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::subscribeForUpdateMessages(sid_t sid,
+        object_id_t destinationObject, MessageQueueId_t targetQueueId) {
+    struct HkReceiver hkReceiver;
+    hkReceiver.dataType = DataType::DATA_SET;
+    hkReceiver.dataId.sid = sid;
+    hkReceiver.destinationQueue = targetQueueId;
+    hkReceiver.objectId = destinationObject;
+    hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
+
+    hkReceiversMap.push_back(hkReceiver);
+
+    handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::subscribeForUpdateMessages(
+        lp_id_t localPoolId, object_id_t destinationObject,
+        MessageQueueId_t targetQueueId) {
+    struct HkReceiver hkReceiver;
+    hkReceiver.dataType = DataType::LOCAL_POOL_VARIABLE;
+    hkReceiver.dataId.localPoolId = localPoolId;
+    hkReceiver.destinationQueue = targetQueueId;
+    hkReceiver.objectId = destinationObject;
+    hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
+
+    hkReceiversMap.push_back(hkReceiver);
+
+    handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+void LocalDataPoolManager::handleHkUpdateResetListInsertion(DataType dataType,
+        DataId dataId) {
+    if(hkUpdateResetList == nullptr) {
+        hkUpdateResetList = new std::vector<struct HkUpdateResetHelper>();
+    }
+
+    for(auto& updateResetStruct: *hkUpdateResetList) {
+        if(dataType == DataType::DATA_SET) {
+            if(updateResetStruct.dataId.sid == dataId.sid) {
+                updateResetStruct.updateCounter++;
+                updateResetStruct.currentUpdateCounter++;
+                return;
+            }
+        }
+        else {
+            if(updateResetStruct.dataId.localPoolId == dataId.localPoolId) {
+                updateResetStruct.updateCounter++;
+                updateResetStruct.currentUpdateCounter++;
+                return;
+            }
+        }
+
+    }
+    HkUpdateResetHelper hkUpdateResetHelper;
+    hkUpdateResetHelper.currentUpdateCounter = 1;
+    hkUpdateResetHelper.updateCounter = 1;
+    hkUpdateResetHelper.dataType = dataType;
+    if(dataType == DataType::DATA_SET) {
+        hkUpdateResetHelper.dataId.sid = dataId.sid;
+    }
+    else {
+        hkUpdateResetHelper.dataId.localPoolId = dataId.localPoolId;
+    }
+    hkUpdateResetList->push_back(hkUpdateResetHelper);
 }
 
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(

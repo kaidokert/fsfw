@@ -118,7 +118,8 @@ public:
 	 * @param packetDestination
 	 * @return
 	 */
-    ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool isDiagnostics,
+    ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
+            bool isDiagnostics,
             object_id_t packetDestination = defaultHkDestination);
 
 	/**
@@ -129,7 +130,7 @@ public:
 	 * @return
 	 */
 	ReturnValue_t subscribeForUpdateMessages(sid_t sid,
-	        MessageQueueId_t targetQueueId);
+	        object_id_t destinationObject, MessageQueueId_t targetQueueId);
 
     /**
      * @brief   Subscribe for an notification message which will be sent if a
@@ -139,7 +140,7 @@ public:
      * @return
      */
     ReturnValue_t subscribeForUpdateMessages(lp_id_t localPoolId,
-            MessageQueueId_t targetQueueId);
+            object_id_t destinationObject, MessageQueueId_t targetQueueId);
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
@@ -233,17 +234,18 @@ private:
 	static object_id_t defaultHkDestination;
 	MessageQueueId_t hkDestinationId = MessageQueueIF::NO_QUEUE;
 
+    union DataId {
+        DataId(): sid() {};
+        sid_t sid;
+        lp_id_t localPoolId;
+    };
+
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
 		/** Object ID of receiver */
 		object_id_t objectId = objects::NO_OBJECT;
 
 		DataType dataType = DataType::DATA_SET;
-        union DataId {
-			DataId(): sid() {};
-            sid_t sid;
-            lp_id_t localPoolId;
-        };
         DataId dataId;
 
         ReportingType reportingType = ReportingType::PERIODIC;
@@ -254,6 +256,17 @@ private:
     using HkReceivers = std::vector<struct HkReceiver>;
 
     HkReceivers hkReceiversMap;
+
+    struct HkUpdateResetHelper {
+        DataType dataType = DataType::DATA_SET;
+        DataId dataId;
+        uint8_t updateCounter;
+        uint8_t currentUpdateCounter;
+    };
+
+    using HkUpdateResetList = std::vector<struct HkUpdateResetHelper>;
+    // Will only be created when needed.
+    HkUpdateResetList* hkUpdateResetList = nullptr;
 
     /** This is the map holding the actual data. Should only be initialized
      * once ! */
@@ -312,6 +325,11 @@ private:
 	ReturnValue_t changeCollectionInterval(sid_t sid,
 			float newCollectionInterval, bool isDiagnostics);
 	ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
+
+	void handleHkUpdateResetListInsertion(DataType dataType, DataId dataId);
+	void handleChangeResetLogic(DataType type,
+	        DataId dataId, MarkChangedIF* toReset);
+	void resetHkUpdateResetHelper();
 };
 
 
