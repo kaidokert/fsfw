@@ -1,13 +1,13 @@
 #ifndef FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 #define FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
+#include "AcceptsTelecommandsIF.h"
+#include "VerificationReporter.h"
+
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
-#include "AcceptsTelecommandsIF.h"
-
-#include "VerificationReporter.h"
 #include "../ipc/CommandMessage.h"
 #include "../container/FixedMap.h"
 #include "../container/FIFO.h"
