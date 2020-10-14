@@ -15,9 +15,9 @@ const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
 const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
 
 const LocalPool::LocalPoolConfig EventManager::poolConfig = {
-        LocalPool::LocalPoolCfgPair(sizeof(EventMatchTree::Node), 240),
-        LocalPool::LocalPoolCfgPair(sizeof(EventIdRangeMatcher), 120),
-        LocalPool::LocalPoolCfgPair(sizeof(ReporterRangeMatcher), 120)
+        {sizeof(EventMatchTree::Node), 240},
+        {sizeof(EventIdRangeMatcher), 120},
+        {sizeof(ReporterRangeMatcher), 120}
 };
 
 EventManager::EventManager(object_id_t setObjectId) :
