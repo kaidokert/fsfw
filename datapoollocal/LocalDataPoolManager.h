@@ -102,8 +102,8 @@ public:
 	/**
 	 * @brief   Subscribe for the generation of periodic packets.
 	 * @details
-	 * This will most commonly be used to generate housekeeping packets
-	 * which are downlinked directly.
+     * This subscription mechanism will generally be used by the data creator
+     * to generate housekeeping packets which are downlinked directly.
 	 * @return
 	 */
 	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
@@ -113,6 +113,8 @@ public:
 	/**
 	 * @brief   Subscribe for the  generation of packets if the dataset
 	 *          is marked as changed.
+	 * @details
+	 * This subscription mechanism will generally be used by the data creator.
 	 * @param sid
 	 * @param isDiagnostics
 	 * @param packetDestination
@@ -125,22 +127,40 @@ public:
 	/**
 	 * @brief   Subscribe for a notification message which will be sent
 	 *          if a dataset has changed.
-	 * @param sid
+	 * @details
+	 * This subscription mechanism will generally be used internally by
+	 * other software components.
+	 * @param setId     Set ID of the set to receive update messages from.
+	 * @param destinationObject
 	 * @param targetQueueId
+	 * @param generateSnapshot If this is set to true, a copy of the current
+	 * data with a timestamp will be generated and sent via message.
+	 * Otherwise, only an notification message is sent.
 	 * @return
 	 */
-	ReturnValue_t subscribeForUpdateMessages(sid_t sid,
-	        object_id_t destinationObject, MessageQueueId_t targetQueueId);
+	ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
+	        object_id_t destinationObject,
+	        MessageQueueId_t targetQueueId,
+	        bool generateSnapshot);
 
     /**
      * @brief   Subscribe for an notification message which will be sent if a
      *          pool variable has changed.
-     * @param sid
+     * @details
+     * This subscription mechanism will generally be used internally by
+     * other software components.
+     * @param localPoolId Pool ID of the pool variable
+     * @param destinationObject
      * @param targetQueueId
+     * @param generateSnapshot If this is set to true, a copy of the current
+     * data with a timestamp will be generated and sent via message.
+     * Otherwise, only an notification message is sent.
      * @return
      */
-    ReturnValue_t subscribeForUpdateMessages(lp_id_t localPoolId,
-            object_id_t destinationObject, MessageQueueId_t targetQueueId);
+    ReturnValue_t subscribeForVariableUpdateMessages(const lp_id_t localPoolId,
+            object_id_t destinationObject,
+            MessageQueueId_t targetQueueId,
+            bool generateSnapshot);
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency

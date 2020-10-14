@@ -287,14 +287,20 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForUpdateMessages(sid_t sid,
-        object_id_t destinationObject, MessageQueueId_t targetQueueId) {
+ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessages(
+        const uint32_t setId, object_id_t destinationObject,
+        MessageQueueId_t targetQueueId, bool generateSnapshot) {
     struct HkReceiver hkReceiver;
     hkReceiver.dataType = DataType::DATA_SET;
-    hkReceiver.dataId.sid = sid;
+    hkReceiver.dataId.sid = sid_t(this->getOwner()->getObjectId(), setId);
     hkReceiver.destinationQueue = targetQueueId;
     hkReceiver.objectId = destinationObject;
-    hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
+    if(generateSnapshot) {
+        hkReceiver.reportingType = ReportingType::UPDATE_SNAPSHOT;
+    }
+    else {
+        hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
+    }
 
     hkReceiversMap.push_back(hkReceiver);
 
@@ -302,15 +308,20 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdateMessages(sid_t sid,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForUpdateMessages(
-        lp_id_t localPoolId, object_id_t destinationObject,
-        MessageQueueId_t targetQueueId) {
+ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessages(
+        const lp_id_t localPoolId, object_id_t destinationObject,
+        MessageQueueId_t targetQueueId, bool generateSnapshot) {
     struct HkReceiver hkReceiver;
     hkReceiver.dataType = DataType::LOCAL_POOL_VARIABLE;
     hkReceiver.dataId.localPoolId = localPoolId;
     hkReceiver.destinationQueue = targetQueueId;
     hkReceiver.objectId = destinationObject;
-    hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
+    if(generateSnapshot) {
+        hkReceiver.reportingType = ReportingType::UPDATE_SNAPSHOT;
+    }
+    else {
+        hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
+    }
 
     hkReceiversMap.push_back(hkReceiver);
 
