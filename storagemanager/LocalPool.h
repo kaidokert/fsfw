@@ -16,16 +16,16 @@
 /**
  * @brief   The LocalPool class provides an intermediate data storage with
  *          a fixed pool size policy.
- * @details The class implements the StorageManagerIF interface. While the
- *          total number of pools is fixed, the element sizes in one pool and
- *          the number of pool elements per pool are set on construction.
- *          The full amount of memory is allocated on construction.
- *          The overhead is 4 byte per pool element to store the size
- *          information of each stored element.
- *          To maintain an "empty" information, the pool size is limited to
- *          0xFFFF-1 bytes.
- *          It is possible to store empty packets in the pool.
- *          The local pool is NOT thread-safe.
+ * @details
+ * The class implements the StorageManagerIF interface. While the total number
+ * of pools is fixed, the element sizes in one pool and the number of pool
+ * elements per pool are set on construction. The full amount of memory is
+ * allocated on construction.
+ * The overhead is 4 byte per pool element to store the size information of
+ * each stored element. To maintain an "empty" information, the pool size is
+ * limited to 0xFFFF-1 bytes.
+ * It is possible to store empty packets in the pool.
+ * The local pool is NOT thread-safe.
  */
 class LocalPool: public SystemObject, public StorageManagerIF {
 public:
@@ -42,21 +42,21 @@ public:
     const uint8_t NUMBER_OF_POOLS;
     /**
      * @brief   This is the default constructor for a pool manager instance.
-     * @details By passing two arrays of size NUMBER_OF_POOLS, the constructor
-     *          allocates memory (with @c new) for store and size_list. These
-     *          regions are all set to zero on start up.
+     * @details
+     * The pool is configured by passing a set of pairs into the constructor.
+     * The first value of that pair determines the number of one element on
+     * the respective page of the pool while the second value determines how
+     * many elements with that size are created on that page.
+     * All regions are to zero on start up.
      * @param setObjectId   The object identifier to be set. This allows for
      *                      multiple instances of LocalPool in the system.
-     * @param element_sizes An array of size NUMBER_OF_POOLS in which the size
-     *                      of a single element in each pool is determined.
-     *                      <b>The sizes must be provided in ascending order.
-     *                      </b>
-     * @param n_elements    An array of size NUMBER_OF_POOLS in which the
-     *                      number of elements for each pool is determined.
-     *                      The position of these values correspond to those in
-     *                      element_sizes.
-     * @param registered    Register the pool in object manager or not.
-     * Default is false (local pool).
+     * @param poolConfig
+     * This is a set of pairs to configure the number of pages in the pool,
+     * the size of an element on a page, the number of elements on a page
+     * and the total size of the pool at once while also implicitely
+     * sorting the pairs in the right order.
+     * @param registered
+     * Determines whether the pool is registered in the object manager or not.
      * @param spillsToHigherPools A variable to determine whether
      * higher n pools are used if the store is full.
      */
@@ -90,6 +90,26 @@ public:
 	virtual ReturnValue_t deleteData(store_address_t storeId) override;
 	virtual ReturnValue_t deleteData(uint8_t* ptr, size_t size,
 			store_address_t* storeId = nullptr) override;
+
+	/**
+	 * Get the total size of allocated memory for pool data.
+	 * There is an additional overhead of the sizes of elements which will
+	 * be assigned to additionalSize
+	 * @return
+	 */
+	size_t getTotalSize(size_t* additionalSize) override;
+
+	/**
+	 * Get the fill count of the pool. Each character inside the provided
+	 * buffer will be assigned to a rounded percentage fill count for each
+	 * page. The last written byte (at the index number of pools + 1)
+	 * will contain the total fill count of the pool as a mean of the
+	 * percentages.
+	 * @param buffer
+	 * @param maxSize
+	 */
+	void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) override;
+
 	void clearStore() override;
 	ReturnValue_t initialize() override;
 protected:

@@ -286,3 +286,16 @@ ReturnValue_t LocalPool::findEmpty(uint16_t poolIndex, uint16_t *element) {
     }
     return status;
 }
+
+size_t LocalPool::getTotalSize(size_t* additionalSize) {
+    size_t totalSize = 0;
+    size_t sizesSize = 0;
+    for(uint8_t idx = 0; idx < NUMBER_OF_POOLS; idx ++) {
+        totalSize += elementSizes[idx] * numberOfElements[idx];
+        sizesSize += numberOfElements[idx] * sizeof(size_type);
+    }
+    if(additionalSize != nullptr) {
+        *additionalSize = sizesSize;
+    }
+    return totalSize;
+}

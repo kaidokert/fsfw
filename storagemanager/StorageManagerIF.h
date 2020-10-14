@@ -164,6 +164,16 @@ public:
 	 * Use with care!
 	 */
 	virtual void clearStore() = 0;
+
+	/**
+	 * Get the fill count of the pool. The exact form will be implementation
+	 * dependant.
+	 * @param buffer
+	 * @param bytesWritten
+	 */
+	virtual void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) = 0;
+
+	virtual size_t getTotalSize(size_t* additionalSize) = 0;
 };
 
 #endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */
