@@ -13,12 +13,9 @@
  * 			with a lock.
  * @author 	Bastian Baetz
  */
-template <uint8_t NUMBER_OF_POOLS = 5>
-class PoolManager : public LocalPool<NUMBER_OF_POOLS> {
+class PoolManager: public LocalPool {
 public:
-	PoolManager(object_id_t setObjectId,
-			const uint16_t element_sizes[NUMBER_OF_POOLS],
-			const uint16_t n_elements[NUMBER_OF_POOLS]);
+	PoolManager(object_id_t setObjectId, const LocalPoolConfig poolConfig);
 
 	/**
 	 * @brief	In the PoolManager's destructor all allocated memory
@@ -39,7 +36,7 @@ protected:
 	//! Default mutex timeout value to prevent permanent blocking.
 	uint32_t mutexTimeoutMs = 20;
 
-	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
+	ReturnValue_t reserveSpace(const size_t size, store_address_t* address,
 			bool ignoreFault) override;
 
 	/**
@@ -50,7 +47,5 @@ protected:
 	 */
 	MutexIF* mutex;
 };
-
-#include "PoolManager.tpp"
 
 #endif /* FSFW_STORAGEMANAGER_POOLMANAGER_H_ */

@@ -33,7 +33,7 @@ union store_address_t {
 	 * @param packetIndex
 	 */
 	store_address_t(uint16_t poolIndex, uint16_t packetIndex):
-		pool_index(poolIndex),packet_index(packetIndex){}
+		poolIndex(poolIndex), packetIndex(packetIndex){}
 	/**
 	 * A structure with two elements to access the store address pool-like.
 	 */
@@ -41,11 +41,11 @@ union store_address_t {
 		/**
 		 * The index in which pool the packet lies.
 		 */
-		uint16_t pool_index;
+		uint16_t poolIndex;
 		/**
 		 * The position in the chosen pool.
 		 */
-		uint16_t packet_index;
+		uint16_t packetIndex;
 	};
 	/**
 	 * Alternative access to the raw value.

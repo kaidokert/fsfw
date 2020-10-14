@@ -1,0 +1,51 @@
+#include "PoolManager.h"
+#include <FSFWConfig.h>
+
+PoolManager::PoolManager(object_id_t setObjectId,
+        const LocalPoolConfig localPoolConfig):
+        LocalPool(setObjectId, localPoolConfig, true) {
+    mutex = MutexFactory::instance()->createMutex();
+}
+
+
+PoolManager::~PoolManager(void) {
+    MutexFactory::instance()->deleteMutex(mutex);
+}
+
+
+ReturnValue_t PoolManager::reserveSpace(const size_t size,
+        store_address_t* address, bool ignoreFault) {
+    MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
+            mutexTimeoutMs);
+    ReturnValue_t status = LocalPool::reserveSpace(size,
+            address,ignoreFault);
+    return status;
+}
+
+
+ReturnValue_t PoolManager::deleteData(
+        store_address_t storeId) {
+#if FSFW_DEBUGGING == 1
+     sif::debug << "PoolManager( " << translateObject(getObjectId()) <<
+           " )::deleteData from store " << storeId.poolIndex <<
+           ". id is "<< storeId.packetIndex << std::endl;
+#endif
+    MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
+            mutexTimeoutMs);
+    return LocalPool::deleteData(storeId);
+}
+
+
+ReturnValue_t PoolManager::deleteData(uint8_t* buffer,
+        size_t size, store_address_t* storeId) {
+    MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+    ReturnValue_t status = LocalPool::deleteData(buffer,
+            size, storeId);
+    return status;
+}
+
+
+void PoolManager::setMutexTimeout(
+        uint32_t mutexTimeoutMs) {
+    this->mutexTimeoutMs = mutexTimeoutMs;
+}

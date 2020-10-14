@@ -1,21 +1,37 @@
-#include "../../tmtcpacket/packetmatcher/ApidMatcher.h"
-#include "../../tmtcpacket/packetmatcher/PacketMatchTree.h"
-#include "../../tmtcpacket/packetmatcher/ServiceMatcher.h"
-#include "../../tmtcpacket/packetmatcher/SubserviceMatcher.h"
+#include "ApidMatcher.h"
+#include "PacketMatchTree.h"
+#include "ServiceMatcher.h"
+#include "SubserviceMatcher.h"
+
+const uint16_t PacketMatchTree::POOL_SIZES[N_POOLS] = { sizeof(ServiceMatcher),
+        sizeof(SubServiceMatcher), sizeof(ApidMatcher),
+        sizeof(PacketMatchTree::Node) };
+//Maximum number of types and subtypes to filter should be more than sufficient.
+const uint16_t PacketMatchTree::N_ELEMENTS[N_POOLS] = { 10, 20, 2, 40 };
+
+const LocalPool::LocalPoolConfig PacketMatchTree::poolConfig = {
+        LocalPool::LocalPoolCfgPair(sizeof(ServiceMatcher), 10),
+        LocalPool::LocalPoolCfgPair(sizeof(SubServiceMatcher), 20),
+        LocalPool::LocalPoolCfgPair(sizeof(ApidMatcher), 2),
+        LocalPool::LocalPoolCfgPair(sizeof(PacketMatchTree::Node), 40)
+};
 
 PacketMatchTree::PacketMatchTree(Node* root) :
-		MatchTree<TmPacketMinimal*>(root, 2), factoryBackend(0, POOL_SIZES,
-				N_ELEMENTS, false, true), factory(&factoryBackend) {
+		MatchTree<TmPacketMinimal*>(root, 2),
+		factoryBackend(0, poolConfig, false, true),
+		factory(&factoryBackend) {
 }
 
 PacketMatchTree::PacketMatchTree(iterator root) :
-		MatchTree<TmPacketMinimal*>(root.element, 2), factoryBackend(0,
-				POOL_SIZES, N_ELEMENTS, false, true), factory(&factoryBackend) {
+		MatchTree<TmPacketMinimal*>(root.element, 2),
+		factoryBackend(0, poolConfig, false, true),
+		factory(&factoryBackend) {
 }
 
 PacketMatchTree::PacketMatchTree() :
-		MatchTree<TmPacketMinimal*>((Node*) NULL, 2), factoryBackend(0,
-				POOL_SIZES, N_ELEMENTS, false, true), factory(&factoryBackend) {
+		MatchTree<TmPacketMinimal*>((Node*) NULL, 2),
+		factoryBackend(0, poolConfig, false, true),
+		factory(&factoryBackend) {
 }
 
 PacketMatchTree::~PacketMatchTree() {
@@ -172,11 +188,6 @@ ReturnValue_t PacketMatchTree::initialize() {
 	return factoryBackend.initialize();
 }
 
-const uint16_t PacketMatchTree::POOL_SIZES[N_POOLS] = { sizeof(ServiceMatcher),
-		sizeof(SubServiceMatcher), sizeof(ApidMatcher),
-		sizeof(PacketMatchTree::Node) };
-//Maximum number of types and subtypes to filter should be more than sufficient.
-const uint16_t PacketMatchTree::N_ELEMENTS[N_POOLS] = { 10, 20, 2, 40 };
 
 ReturnValue_t PacketMatchTree::changeMatch(bool addToMatch, uint16_t apid,
 		uint8_t type, uint8_t subtype) {

@@ -1,5 +1,4 @@
 #include "EventManager.h"
-#include "EventMessage.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
@@ -15,9 +14,15 @@ const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
 // SHOULDDO: Shouldn't this be in the config folder and passed via ctor?
 const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
 
+const LocalPool::LocalPoolConfig EventManager::poolConfig = {
+        LocalPool::LocalPoolCfgPair(sizeof(EventMatchTree::Node), 240),
+        LocalPool::LocalPoolCfgPair(sizeof(EventIdRangeMatcher), 120),
+        LocalPool::LocalPoolCfgPair(sizeof(ReporterRangeMatcher), 120)
+};
+
 EventManager::EventManager(object_id_t setObjectId) :
 		SystemObject(setObjectId),
-		factoryBackend(0, POOL_SIZES, N_ELEMENTS, false, true) {
+		factoryBackend(0, poolConfig, false, true) {
 	mutex = MutexFactory::instance()->createMutex();
 	eventReportQueue = QueueFactory::instance()->createMessageQueue(
 			MAX_EVENTS_PER_CYCLE, EventMessage::EVENT_MESSAGE_SIZE);
