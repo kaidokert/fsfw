@@ -14,7 +14,6 @@ LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig poolConfig,
 		store[index] = std::vector<uint8_t>(
 				numberOfElements[index] * elementSizes[index]);
 		sizeLists[index] = std::vector<size_type>(numberOfElements[index]);
-		//TODO checkme
 		for(auto& size: sizeLists[index]) {
 			size = STORAGE_FREE;
 		}
@@ -102,7 +101,7 @@ ReturnValue_t LocalPool::modifyData(store_address_t storeId,
 
     if (sizeLists[storeId.poolIndex][storeId.packetIndex]
             != STORAGE_FREE) {
-        uint32_t packetPosition = getRawPosition(storeId);
+        size_type packetPosition = getRawPosition(storeId);
         *packetPtr = &store[storeId.poolIndex][packetPosition];
         *size = sizeLists[storeId.poolIndex][storeId.packetIndex];
         status = RETURN_OK;
@@ -111,7 +110,6 @@ ReturnValue_t LocalPool::modifyData(store_address_t storeId,
         status = DATA_DOES_NOT_EXIST;
     }
     return status;
-    return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
@@ -145,7 +143,8 @@ ReturnValue_t LocalPool::deleteData(uint8_t *ptr, size_t size,
     ReturnValue_t result = ILLEGAL_ADDRESS;
     for (uint16_t n = 0; n < NUMBER_OF_POOLS; n++) {
         //Not sure if new allocates all stores in order. so better be careful.
-        if ((store[n].data() <= ptr) && (&store[n][numberOfElements[n]*elementSizes[n]]) > ptr) {
+        if ((store[n].data() <= ptr) and
+        		(&store[n][numberOfElements[n]*elementSizes[n]] > ptr)) {
             localId.poolIndex = n;
             uint32_t deltaAddress = ptr - store[n].data();
             // Getting any data from the right "block" is ok.
