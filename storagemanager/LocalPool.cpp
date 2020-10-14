@@ -9,8 +9,8 @@ LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig poolConfig,
 		spillsToHigherPools(spillsToHigherPools) {
 	uint16_t index = 0;
 	for (const auto& currentPoolConfig: poolConfig) {
-		this->elementSizes[index] = currentPoolConfig.first;
-		this->numberOfElements[index] = currentPoolConfig.second;
+		this->numberOfElements[index] = currentPoolConfig.first;
+		this->elementSizes[index] = currentPoolConfig.second;
 		store[index] = std::vector<uint8_t>(
 				numberOfElements[index] * elementSizes[index]);
 		sizeLists[index] = std::vector<size_type>(numberOfElements[index]);

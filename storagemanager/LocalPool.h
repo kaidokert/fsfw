@@ -33,7 +33,7 @@ public:
 
     using poolElementSize = size_type;
     using numberPoolElements = uint16_t;
-    using LocalPoolCfgPair = std::pair<poolElementSize, numberPoolElements>;
+    using LocalPoolCfgPair = std::pair<numberPoolElements, poolElementSize>;
     using LocalPoolConfig = std::multiset<LocalPoolCfgPair>;
     /**
      * @brief   This definition generally sets the number of different sized pools.
@@ -44,7 +44,7 @@ public:
      * @brief   This is the default constructor for a pool manager instance.
      * @details
      * The pool is configured by passing a set of pairs into the constructor.
-     * The first value of that pair determines the number of one element on
+     * The first value of that pair determines the number of one elements on
      * the respective page of the pool while the second value determines how
      * many elements with that size are created on that page.
      * All regions are to zero on start up.

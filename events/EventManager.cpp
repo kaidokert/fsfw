@@ -4,20 +4,15 @@
 #include "../ipc/MutexFactory.h"
 
 
-const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
-		sizeof(EventMatchTree::Node), sizeof(EventIdRangeMatcher),
-		sizeof(ReporterRangeMatcher) };
 // If one checks registerListener calls, there are around 40 (to max 50)
 // objects registering for certain events.
 // Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
 // So a good guess is 75 to a max of 100 pools required for each, which fits well.
-// SHOULDDO: Shouldn't this be in the config folder and passed via ctor?
-const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
-
+// This should be configurable..
 const LocalPool::LocalPoolConfig EventManager::poolConfig = {
-        {sizeof(EventMatchTree::Node), 240},
-        {sizeof(EventIdRangeMatcher), 120},
-        {sizeof(ReporterRangeMatcher), 120}
+        {240, sizeof(EventMatchTree::Node)},
+        {120, sizeof(EventIdRangeMatcher)},
+        {120, sizeof(ReporterRangeMatcher)}
 };
 
 EventManager::EventManager(object_id_t setObjectId) :

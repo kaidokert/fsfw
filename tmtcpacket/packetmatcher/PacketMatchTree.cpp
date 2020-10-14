@@ -3,17 +3,12 @@
 #include "ServiceMatcher.h"
 #include "SubserviceMatcher.h"
 
-const uint16_t PacketMatchTree::POOL_SIZES[N_POOLS] = { sizeof(ServiceMatcher),
-        sizeof(SubServiceMatcher), sizeof(ApidMatcher),
-        sizeof(PacketMatchTree::Node) };
-//Maximum number of types and subtypes to filter should be more than sufficient.
-const uint16_t PacketMatchTree::N_ELEMENTS[N_POOLS] = { 10, 20, 2, 40 };
-
+// This should be configurable..
 const LocalPool::LocalPoolConfig PacketMatchTree::poolConfig = {
-        LocalPool::LocalPoolCfgPair(sizeof(ServiceMatcher), 10),
-        LocalPool::LocalPoolCfgPair(sizeof(SubServiceMatcher), 20),
-        LocalPool::LocalPoolCfgPair(sizeof(ApidMatcher), 2),
-        LocalPool::LocalPoolCfgPair(sizeof(PacketMatchTree::Node), 40)
+		{10, sizeof(ServiceMatcher)},
+		{20, sizeof(SubServiceMatcher)},
+		{2, sizeof(ApidMatcher)},
+		{40, sizeof(PacketMatchTree::Node)}
 };
 
 PacketMatchTree::PacketMatchTree(Node* root) :
