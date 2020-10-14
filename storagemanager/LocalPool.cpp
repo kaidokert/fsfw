@@ -3,23 +3,23 @@
 #include <cstring>
 
 LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig poolConfig,
-            bool registered, bool spillsToHigherPools):
-            SystemObject(setObjectId), NUMBER_OF_POOLS(poolConfig.size()) {
-    uint16_t index = 0;
-    for (const auto& currentPoolConfig: poolConfig) {
-        this->elementSizes[index] = currentPoolConfig.first;
-        this->numberOfElements[index] = currentPoolConfig.second;
-        store[index] = std::vector<uint8_t>(
-                numberOfElements[index] * elementSizes[index]);
-        sizeLists[index] = std::vector<size_type>(numberOfElements[index]);
-        //TODO checkme
-        for(auto& size: sizeLists[index]) {
-            size = STORAGE_FREE;
-        }
-//        std::memset(sizeLists[index], 0xff,
-//                numberOfElements[index] * sizeof(size_type));
-        index++;
-    }
+		bool registered, bool spillsToHigherPools):
+		SystemObject(setObjectId, registered),
+		NUMBER_OF_POOLS(poolConfig.size()),
+		spillsToHigherPools(spillsToHigherPools) {
+	uint16_t index = 0;
+	for (const auto& currentPoolConfig: poolConfig) {
+		this->elementSizes[index] = currentPoolConfig.first;
+		this->numberOfElements[index] = currentPoolConfig.second;
+		store[index] = std::vector<uint8_t>(
+				numberOfElements[index] * elementSizes[index]);
+		sizeLists[index] = std::vector<size_type>(numberOfElements[index]);
+		//TODO checkme
+		for(auto& size: sizeLists[index]) {
+			size = STORAGE_FREE;
+		}
+		index++;
+	}
 }
 
 LocalPool::~LocalPool(void) {}
