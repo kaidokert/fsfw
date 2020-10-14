@@ -13,6 +13,7 @@
 #include <utility>
 #include <limits>
 
+
 /**
  * @brief   The LocalPool class provides an intermediate data storage with
  *          a fixed pool size policy.
@@ -29,17 +30,46 @@
  */
 class LocalPool: public SystemObject, public StorageManagerIF {
 public:
-    using size_type = size_t;
-
+	using size_type = size_t;
     using poolElementSize = size_type;
     using numberPoolElements = uint16_t;
-    using LocalPoolCfgPair = std::pair<numberPoolElements, poolElementSize>;
-    using LocalPoolConfig = std::multiset<LocalPoolCfgPair>;
+	using LocalPoolCfgPair = std::pair<numberPoolElements, poolElementSize>;
+
+	// The configuration needs to be provided with the pool sizes ascending
+	// but the number of pool elements as the first value is more intuitive.
+	// Therefore, a custom comparator was provided.
+	struct LocalPoolConfigCmp
+	{
+		bool operator ()(const LocalPoolCfgPair &a,
+				const LocalPoolCfgPair &b) const
+		{
+			if(a.second < b.second) {
+				return true;
+			}
+			else if(a.second > b.second) {
+				return false;
+			}
+			else {
+				if(a.first < b.first) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+		}
+	};
+    using LocalPoolConfig = std::multiset<LocalPoolCfgPair, LocalPoolConfigCmp>;
+
     /**
-     * @brief   This definition generally sets the number of different sized pools.
-     * @details This must be less than the maximum number of pools (currently 0xff).
+     * @brief   This definition generally sets the number of
+     * 			different sized pools. It is derived from the number of pairs
+     * 			inside the LocalPoolConfig set on object creation.
+     * @details
+     * This must be less than the maximum number of pools (currently 0xff).
      */
     const uint8_t NUMBER_OF_POOLS;
+
     /**
      * @brief   This is the default constructor for a pool manager instance.
      * @details
@@ -177,21 +207,15 @@ private:
 	 * @return	Returns the size of an element or 0.
 	 */
 	size_type getPageSize(uint16_t poolIndex);
-	/**
-	 * @brief	This helper method looks up a fitting pool for a given size.
-	 * @details	The pools are looked up in ascending order, so the first that
-	 * 			fits is used.
-	 * @param packet_size	The size of the data to be stored.
-	 * @return	Returns the pool that fits or StorageManagerIF::INVALID_ADDRESS.
-	 */
+
 	/**
 	 * @brief	This helper method looks up a fitting pool for a given size.
 	 * @details	The pools are looked up in ascending order, so the first that
 	 * 			fits is used.
 	 * @param packet_size		The size of the data to be stored.
 	 * @param[out] poolIndex	The fitting pool index found.
-	 * @return	- #RETURN_OK on success,
-	 * 			- #DATA_TOO_LARGE otherwise.
+	 * @return	- @c RETURN_OK on success,
+	 * 			- @c DATA_TOO_LARGE otherwise.
 	 */
 	ReturnValue_t getPoolIndex(size_t packetSize, uint16_t* poolIndex,
 			uint16_t startAtIndex = 0);
