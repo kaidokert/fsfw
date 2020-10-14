@@ -299,3 +299,6 @@ size_t LocalPool::getTotalSize(size_t* additionalSize) {
     }
     return totalSize;
 }
+
+void LocalPool::getFillCount(uint8_t *buffer, uint8_t *bytesWritten) {
+}
