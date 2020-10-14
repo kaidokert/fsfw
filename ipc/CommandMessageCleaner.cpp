@@ -12,7 +12,7 @@
 
 void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
 	switch(message->getMessageType()){
-	case  messagetypes::MODE_COMMAND:
+	case messagetypes::MODE_COMMAND:
 		ModeMessage::clear(message);
 		break;
 	case messagetypes::HEALTH_COMMAND:

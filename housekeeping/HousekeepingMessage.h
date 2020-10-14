@@ -130,12 +130,13 @@ public:
     static void setUpdateSnapshotVariableCommand(CommandMessage* command,
             lp_id_t localPoolId, store_address_t storeId);
 
-    sid_t getUpdateNotificationSetCommand(const CommandMessage* command);
-    lp_id_t getUpdateNotificationVariableCommand(const CommandMessage* command);
+    static sid_t getUpdateNotificationSetCommand(const CommandMessage* command);
+    static lp_id_t getUpdateNotificationVariableCommand(
+            const CommandMessage* command);
 
-    sid_t getUpdateSnapshotSetCommand(const CommandMessage* command,
+    static sid_t getUpdateSnapshotSetCommand(const CommandMessage* command,
             store_address_t* storeId);
-    lp_id_t getUpdateSnapshotVariableCommand(const CommandMessage* command,
+    static lp_id_t getUpdateSnapshotVariableCommand(const CommandMessage* command,
             store_address_t* storeId);
 
     /** Utility */

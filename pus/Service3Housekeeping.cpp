@@ -249,8 +249,9 @@ void Service3Housekeeping::handleUnrequestedReply(
 	}
 
 	default:
-		sif::error << "Service3Housekeeping::handleReply: Invalid reply with "
-				<< "reply command " << command << "!" << std::endl;
+		sif::error << "Service3Housekeeping::handleUnrequestedReply: Invalid "
+		        << "reply with " << "reply command " << command << "!"
+		        << std::endl;
 		return;
 	}
 

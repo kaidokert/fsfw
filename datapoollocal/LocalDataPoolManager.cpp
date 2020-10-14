@@ -128,10 +128,10 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                     continue;
                 }
                 if(poolObj->hasChanged()) {
-
                     // prepare and send update notification.
+                    toReset = poolObj;
                 }
-                toReset = poolObj;
+
             }
             else {
                 LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
@@ -140,12 +140,22 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                     continue;
                 }
                 if(dataSet->hasChanged()) {
-
                     // prepare and send update notification
+                    CommandMessage notification;
+                    HousekeepingMessage::setUpdateNotificationSetCommand(
+                            &notification, receiver.dataId.sid);
+                    ReturnValue_t result = hkQueue->sendMessage(
+                            receiver.destinationQueue, &notification);
+                    if(result != HasReturnvaluesIF::RETURN_OK) {
+                        status = result;
+                    }
+                    toReset = dataSet;
                 }
-                toReset = dataSet;
             }
-            handleChangeResetLogic(receiver.dataType, receiver.dataId, toReset);
+            if(toReset != nullptr) {
+                handleChangeResetLogic(receiver.dataType,
+                        receiver.dataId, toReset);
+            }
             break;
         }
         case(ReportingType::UPDATE_SNAPSHOT): {
@@ -159,8 +169,8 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                 }
                 if(poolObj->hasChanged()) {
                     // prepare and send update snapshot.
+                    toReset = poolObj;
                 }
-                toReset = poolObj;
             }
             else {
                 LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
@@ -170,10 +180,13 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
                 }
                 if(dataSet->hasChanged()) {
                     // prepare and send update snapshot.
+                    toReset = dataSet;
                 }
-                toReset = dataSet;
             }
-            handleChangeResetLogic(receiver.dataType, receiver.dataId, toReset);
+            if(toReset != nullptr) {
+                handleChangeResetLogic(receiver.dataType,
+                        receiver.dataId, toReset);
+            }
             break;
         }
         default:
@@ -423,6 +436,11 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
     	}
     	return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
     			dataSet, true);
+    }
+
+    case(HousekeepingMessage::UPDATE_NOTIFICATION_SET): {
+        owner->handleChangedDatasetOrVariable(sid);
+        return HasReturnvaluesIF::RETURN_OK;
     }
 
     default:
