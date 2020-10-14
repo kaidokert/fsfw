@@ -245,6 +245,7 @@ void LocalPool::write(store_address_t storeId, const uint8_t *data,
     std::memcpy(ptr, data, size);
     sizeLists[storeId.poolIndex][storeId.packetIndex] = size;
 }
+
 LocalPool::size_type LocalPool::getPageSize(uint16_t poolIndex) {
     if (poolIndex < NUMBER_OF_POOLS) {
         return elementSizes[poolIndex];
