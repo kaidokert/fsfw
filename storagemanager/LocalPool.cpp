@@ -132,7 +132,8 @@ ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
     }
     else {
         //pool_index or packet_index is too large
-        sif::error << "LocalPool:deleteData failed." << std::endl;
+        sif::error << "LocalPool::deleteData: Illegal store ID, no deletion!"
+        		<< std::endl;
         status = ILLEGAL_STORAGE_ID;
     }
     return status;
@@ -165,7 +166,6 @@ ReturnValue_t LocalPool::deleteData(uint8_t *ptr, size_t size,
         *storeId = localId;
     }
     return result;
-    return HasReturnvaluesIF::RETURN_OK;
 }
 
 
