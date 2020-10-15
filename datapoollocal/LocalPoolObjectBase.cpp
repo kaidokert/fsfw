@@ -2,7 +2,7 @@
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId,
         HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
-        pool_rwm_t setReadWriteMode) {
+        pool_rwm_t setReadWriteMode): localPoolId(poolId) {
     if(poolId == PoolVariableIF::NO_PARAMETER) {
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
                 << "which is the NO_PARAMETER value!" << std::endl;
@@ -19,7 +19,7 @@ LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId,
 }
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, object_id_t poolOwner,
-        DataSetIF *dataSet, pool_rwm_t setReadWriteMode) {
+        DataSetIF *dataSet, pool_rwm_t setReadWriteMode): localPoolId(poolId) {
     if(poolId == PoolVariableIF::NO_PARAMETER) {
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
                 << "which is the NO_PARAMETER value!" << std::endl;
