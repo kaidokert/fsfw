@@ -1,4 +1,5 @@
 #include "LocalPool.h"
+#include <FSFWConfig.h>
 #include <cstring>
 
 LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
