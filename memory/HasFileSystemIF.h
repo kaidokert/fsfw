@@ -16,12 +16,15 @@ public:
 
     static constexpr ReturnValue_t FILE_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x00);
     static constexpr ReturnValue_t FILE_ALREADY_EXISTS = MAKE_RETURN_CODE(0x01);
+    static constexpr ReturnValue_t FILE_LOCKED = MAKE_RETURN_CODE(0x02);
 
-    static constexpr ReturnValue_t DIRECTORY_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x02);
-    static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x03);
-    static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(0x04);
+    static constexpr ReturnValue_t DIRECTORY_DOES_NOT_EXIST = MAKE_RETURN_CODE(0x03);
+    static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(0x04);
+    static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(0x05);
 
-    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING = MAKE_RETURN_CODE(0x05);
+
+    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_WRITE = MAKE_RETURN_CODE(0x06); //! P1: Sequence number missing
+    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(0x07); //! P1: Sequence number missing
 
 	virtual ~HasFileSystemIF() {}
 	/**
