@@ -7,6 +7,10 @@ LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
 		SystemObject(setObjectId, registered),
 		NUMBER_OF_POOLS(poolConfig.size()),
 		spillsToHigherPools(spillsToHigherPools) {
+	if(NUMBER_OF_POOLS == 0) {
+		sif::error << "LocalPool::LocalPool: Passed pool configuration is "
+				<< " invalid!" << std::endl;
+	}
 	max_pools_t index = 0;
 	for (const auto& currentPoolConfig: poolConfig) {
 		this->numberOfElements[index] = currentPoolConfig.first;
@@ -168,7 +172,6 @@ ReturnValue_t LocalPool::deleteData(uint8_t *ptr, size_t size,
 }
 
 
-
 ReturnValue_t LocalPool::initialize() {
     ReturnValue_t result = SystemObject::initialize();
     if (result != RETURN_OK) {
@@ -317,13 +320,13 @@ void LocalPool::getFillCount(uint8_t *buffer, uint8_t *bytesWritten) {
 			if(size != STORAGE_FREE) {
 				reservedHits++;
 			}
-			buffer[idx] = static_cast<float>(reservedHits) /
-					numberOfElements[idx] * 100;
-			*bytesWritten += 1;
-			sum += buffer[idx];
 		}
+		buffer[idx] = static_cast<float>(reservedHits) /
+				numberOfElements[idx] * 100;
+		*bytesWritten += 1;
+		sum += buffer[idx];
+		reservedHits = 0;
 	}
-	idx++;
 	buffer[idx] = sum / NUMBER_OF_POOLS;
 	*bytesWritten += 1;
 }
