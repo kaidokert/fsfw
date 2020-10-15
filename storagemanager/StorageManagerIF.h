@@ -28,6 +28,9 @@ using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
  */
 class StorageManagerIF : public HasReturnvaluesIF {
 public:
+	using size_type = size_t;
+	using max_pools_t = uint8_t;
+
 	static const uint8_t INTERFACE_ID = CLASS_ID::STORAGE_MANAGER_IF; //!< The unique ID for return codes for this interface.
 	static const ReturnValue_t DATA_TOO_LARGE = MAKE_RETURN_CODE(1); //!< This return code indicates that the data to be stored is too large for the store.
 	static const ReturnValue_t DATA_STORAGE_FULL = MAKE_RETURN_CODE(2); //!< This return code indicates that a data storage is full.
@@ -40,7 +43,9 @@ public:
 	static const Event GET_DATA_FAILED = MAKE_EVENT(0, SEVERITY::LOW);
 	static const Event STORE_DATA_FAILED = MAKE_EVENT(1, SEVERITY::LOW);
 
-	static const uint32_t INVALID_ADDRESS = 0xFFFFFFFF; //!< Indicates an invalid (i.e unused) storage address.
+	//!< Indicates an invalid (i.e unused) storage address.
+	static const uint32_t INVALID_ADDRESS = 0xFFFFFFFF;
+
 	/**
 	 * @brief This is the empty virtual destructor as required for C++ interfaces.
 	 */
@@ -164,6 +169,12 @@ public:
 	 * Use with care!
 	 */
 	virtual void clearStore() = 0;
+
+	/**
+	 * Clears a page in the store. Use with care!
+	 * @param pageIndex
+	 */
+	virtual void clearPage(uint8_t pageIndex) = 0;
 
 	/**
 	 * Get the fill count of the pool. The exact form will be implementation

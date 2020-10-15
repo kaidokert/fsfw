@@ -30,10 +30,9 @@
  */
 class LocalPool: public SystemObject, public StorageManagerIF {
 public:
-	using size_type = size_t;
-    using poolElementSize = size_type;
-    using numberPoolElements = uint16_t;
-	using LocalPoolCfgPair = std::pair<numberPoolElements, poolElementSize>;
+    using pool_elem_size_t = size_type;
+    using n_pool_elem_t = uint16_t;
+	using LocalPoolCfgPair = std::pair<n_pool_elem_t, pool_elem_size_t>;
 
 	// The configuration needs to be provided with the pool sizes ascending
 	// but the number of pool elements as the first value is more intuitive.
@@ -68,7 +67,7 @@ public:
      * @details
      * This must be less than the maximum number of pools (currently 0xff).
      */
-    const uint8_t NUMBER_OF_POOLS;
+    const max_pools_t NUMBER_OF_POOLS;
 
     /**
      * @brief   This is the default constructor for a pool manager instance.
@@ -90,8 +89,11 @@ public:
      * @param spillsToHigherPools A variable to determine whether
      * higher n pools are used if the store is full.
      */
-    LocalPool(object_id_t setObjectId, const LocalPoolConfig poolConfig,
+    LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
             bool registered = false, bool spillsToHigherPools = false);
+
+    void setToSpillToHigherPools(bool enable);
+
 	/**
 	 * @brief	In the LocalPool's destructor all allocated memory is freed.
 	 */
@@ -132,15 +134,17 @@ public:
 	/**
 	 * Get the fill count of the pool. Each character inside the provided
 	 * buffer will be assigned to a rounded percentage fill count for each
-	 * page. The last written byte (at the index number of pools + 1)
+	 * page. The last written byte (at the index bytesWritten - 1)
 	 * will contain the total fill count of the pool as a mean of the
-	 * percentages.
+	 * percentages of single pages.
 	 * @param buffer
 	 * @param maxSize
 	 */
 	void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) override;
 
 	void clearStore() override;
+	void clearPage(max_pools_t pageIndex) override;
+
 	ReturnValue_t initialize() override;
 protected:
 	/**
@@ -206,7 +210,7 @@ private:
 	 * @param pool_index	The pool in which to look.
 	 * @return	Returns the size of an element or 0.
 	 */
-	size_type getPageSize(uint16_t poolIndex);
+	size_type getPageSize(max_pools_t poolIndex);
 
 	/**
 	 * @brief	This helper method looks up a fitting pool for a given size.
@@ -237,7 +241,7 @@ private:
 	 * @return	- #RETURN_OK on success,
 	 * 			- #DATA_STORAGE_FULL if the store is full
 	 */
-	ReturnValue_t findEmpty(uint16_t poolIndex, uint16_t* element);
+	ReturnValue_t findEmpty(n_pool_elem_t poolIndex, uint16_t* element);
 
     InternalErrorReporterIF *internalErrorReporter = nullptr;
 };

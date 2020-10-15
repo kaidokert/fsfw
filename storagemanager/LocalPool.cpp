@@ -2,12 +2,12 @@
 #include <FSFWConfig.h>
 #include <cstring>
 
-LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig poolConfig,
+LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
 		bool registered, bool spillsToHigherPools):
 		SystemObject(setObjectId, registered),
 		NUMBER_OF_POOLS(poolConfig.size()),
 		spillsToHigherPools(spillsToHigherPools) {
-	uint16_t index = 0;
+	max_pools_t index = 0;
 	for (const auto& currentPoolConfig: poolConfig) {
 		this->numberOfElements[index] = currentPoolConfig.first;
 		this->elementSizes[index] = currentPoolConfig.second;
@@ -246,13 +246,17 @@ void LocalPool::write(store_address_t storeId, const uint8_t *data,
     sizeLists[storeId.poolIndex][storeId.packetIndex] = size;
 }
 
-LocalPool::size_type LocalPool::getPageSize(uint16_t poolIndex) {
+LocalPool::size_type LocalPool::getPageSize(max_pools_t poolIndex) {
     if (poolIndex < NUMBER_OF_POOLS) {
         return elementSizes[poolIndex];
     }
     else {
         return 0;
     }
+}
+
+void LocalPool::setToSpillToHigherPools(bool enable) {
+	this->spillsToHigherPools = enable;
 }
 
 ReturnValue_t LocalPool::getPoolIndex(size_t packetSize, uint16_t *poolIndex,
@@ -274,7 +278,7 @@ LocalPool::size_type LocalPool::getRawPosition(store_address_t storeId) {
     return storeId.packetIndex * elementSizes[storeId.poolIndex];
 }
 
-ReturnValue_t LocalPool::findEmpty(uint16_t poolIndex, uint16_t *element) {
+ReturnValue_t LocalPool::findEmpty(n_pool_elem_t poolIndex, uint16_t *element) {
     ReturnValue_t status = DATA_STORAGE_FULL;
     for (uint16_t foundElement = 0; foundElement < numberOfElements[poolIndex];
             foundElement++) {
@@ -301,4 +305,40 @@ size_t LocalPool::getTotalSize(size_t* additionalSize) {
 }
 
 void LocalPool::getFillCount(uint8_t *buffer, uint8_t *bytesWritten) {
+	if(bytesWritten == nullptr or buffer == nullptr) {
+		return;
+	}
+
+	uint16_t reservedHits = 0;
+	uint8_t idx = 0;
+	uint16_t sum = 0;
+	for(; idx < NUMBER_OF_POOLS; idx ++) {
+		for(const auto& size: sizeLists[idx]) {
+			if(size != STORAGE_FREE) {
+				reservedHits++;
+			}
+			buffer[idx] = static_cast<float>(reservedHits) /
+					numberOfElements[idx] * 100;
+			*bytesWritten += 1;
+			sum += buffer[idx];
+		}
+	}
+	idx++;
+	buffer[idx] = sum / NUMBER_OF_POOLS;
+	*bytesWritten += 1;
+}
+
+
+void LocalPool::clearPage(max_pools_t  pageIndex) {
+	if(pageIndex >= NUMBER_OF_POOLS) {
+		return;
+	}
+
+	// Mark the storage as free
+	for(auto& size: sizeLists[pageIndex]) {
+		size = STORAGE_FREE;
+	}
+
+	// Set all the page content to 0.
+	std::memset(store[pageIndex].data(), 0, elementSizes[pageIndex]);
 }

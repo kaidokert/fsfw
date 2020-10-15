@@ -2,7 +2,7 @@
 #include <FSFWConfig.h>
 
 PoolManager::PoolManager(object_id_t setObjectId,
-        const LocalPoolConfig localPoolConfig):
+        const LocalPoolConfig& localPoolConfig):
         LocalPool(setObjectId, localPoolConfig, true) {
     mutex = MutexFactory::instance()->createMutex();
 }
@@ -48,4 +48,13 @@ ReturnValue_t PoolManager::deleteData(uint8_t* buffer,
 void PoolManager::setMutexTimeout(
         uint32_t mutexTimeoutMs) {
     this->mutexTimeoutMs = mutexTimeoutMs;
+}
+
+ReturnValue_t PoolManager::lockMutex(MutexIF::TimeoutType timeoutType,
+		uint32_t timeoutMs) {
+	return mutex->lockMutex(timeoutType, timeoutMs);
+}
+
+ReturnValue_t PoolManager::unlockMutex() {
+	return mutex->unlockMutex();
 }
