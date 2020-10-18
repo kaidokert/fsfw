@@ -30,7 +30,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 		uint8_t domain = HasParametersIF::getDomain(parameterId);
 		uint8_t uniqueIdentifier = HasParametersIF::getUniqueIdentifierId(
 		        parameterId);
-		uint16_t index = HasParametersIF::getIndex(parameterId);
+		uint16_t linearIndex = HasParametersIF::getIndex(parameterId);
 
 		const uint8_t *storedStream = nullptr;
 		size_t storedStreamSize = 0;
@@ -52,13 +52,13 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 
 		ParameterWrapper ownerWrapper;
 		result = owner->getParameter(domain, uniqueIdentifier, &ownerWrapper,
-				&streamWrapper, index);
+				&streamWrapper, linearIndex);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			storage->deleteData(ParameterMessage::getStoreId(message));
 			break;
 		}
 
-		result = ownerWrapper.copyFrom(&streamWrapper, index);
+		result = ownerWrapper.copyFrom(&streamWrapper, linearIndex);
 
 		storage->deleteData(ParameterMessage::getStoreId(message));
 
