@@ -9,6 +9,10 @@ ParameterHelper::~ParameterHelper() {
 }
 
 ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
+    if(storage == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	switch (message->getCommand()) {
 	case ParameterMessage::CMD_PARAMETER_DUMP: {
@@ -112,15 +116,13 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 }
 
 ReturnValue_t ParameterHelper::initialize() {
-	ownerQueueId = owner->getCommandQueue();
+    ownerQueueId = owner->getCommandQueue();
 
-
-	storage = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (storage == NULL) {
-		return HasReturnvaluesIF::RETURN_FAILED;
-	} else {
-		return HasReturnvaluesIF::RETURN_OK;
-	}
+    storage = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    if (storage == nullptr) {
+        return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason,

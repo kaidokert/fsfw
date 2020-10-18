@@ -59,6 +59,10 @@ struct PodTypeConversion {
 	static const Type::ActualType_t type = Type::UNKNOWN_TYPE;
 };
 template<>
+struct PodTypeConversion<bool> {
+    static const Type::ActualType_t type = Type::UINT8_T;
+};
+template<>
 struct PodTypeConversion<uint8_t> {
 	static const Type::ActualType_t type = Type::UINT8_T;
 };

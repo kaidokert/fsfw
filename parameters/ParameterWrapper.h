@@ -68,7 +68,7 @@ public:
 
 	template<typename T>
 	void set(const T *readonlyData, uint8_t rows, uint8_t columns) {
-		this->data = NULL;
+		this->data = nullptr;
 		this->readonlyData = readonlyData;
 		this->type = PodTypeConversion<T>::type;
 		this->rows = rows;
