@@ -202,11 +202,11 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		uint16_t startWritingAtIndex) {
-	if (data == NULL) {
+	if (data == nullptr) {
 		return READONLY;
 	}
 
-	if (from->readonlyData == NULL) {
+	if (from->readonlyData == nullptr) {
 		return SOURCE_NOT_SET;
 	}
 
@@ -215,8 +215,10 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 	}
 
 	//check if from fits into this
-	uint8_t startingRow = startWritingAtIndex / columns;
-	uint8_t startingColumn = startWritingAtIndex % columns;
+	uint8_t startingRow = 0;
+	uint8_t startingColumn = 0;
+	ParameterWrapper::convertLinearIndexToRowAndColumn(startWritingAtIndex,
+	        &startingRow, &startingColumn);
 
 	if ((from->rows > (rows - startingRow))
 			|| (from->columns > (columns - startingColumn))) {
@@ -278,4 +280,18 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 	}
 
 	return result;
+}
+
+void ParameterWrapper::convertLinearIndexToRowAndColumn(uint16_t index, uint8_t *row,
+        uint8_t *column) {
+    if(row == nullptr or column == nullptr) {
+        return;
+    }
+    *row = index / columns;
+    *column = index % columns;
+}
+
+uint16_t ParameterWrapper::convertRowAndColumnToLinearIndex(uint8_t row,
+        uint8_t column) {
+    return row * columns + column;
 }

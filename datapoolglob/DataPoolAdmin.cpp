@@ -194,7 +194,7 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 	case ParameterMessage::CMD_PARAMETER_DUMP: {
 		uint8_t domain = HasParametersIF::getDomain(
 				ParameterMessage::getParameterId(command));
-		uint16_t parameterId = HasParametersIF::getMatrixId(
+		uint16_t parameterId = HasParametersIF::getUniqueIdentifierId(
 				ParameterMessage::getParameterId(command));
 
 		DataPoolParameterWrapper wrapper;
@@ -210,7 +210,7 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 
 		uint8_t domain = HasParametersIF::getDomain(
 				ParameterMessage::getParameterId(command));
-		uint16_t parameterId = HasParametersIF::getMatrixId(
+		uint16_t parameterId = HasParametersIF::getUniqueIdentifierId(
 				ParameterMessage::getParameterId(command));
 		uint8_t index = HasParametersIF::getIndex(
 				ParameterMessage::getParameterId(command));

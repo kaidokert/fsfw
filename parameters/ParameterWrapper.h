@@ -113,6 +113,13 @@ public:
 			uint16_t startWritingAtIndex);
 
 private:
+
+    void convertLinearIndexToRowAndColumn(uint16_t index,
+            uint8_t *row, uint8_t *column);
+
+    uint16_t convertRowAndColumnToLinearIndex(uint8_t row,
+            uint8_t column);
+
 	bool pointsToStream = false;
 
 	Type type;

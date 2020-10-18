@@ -15,9 +15,9 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 		ParameterWrapper description;
 		uint8_t domain = HasParametersIF::getDomain(
 				ParameterMessage::getParameterId(message));
-		uint16_t parameterId = HasParametersIF::getMatrixId(
+		uint8_t uniqueIdentifier = HasParametersIF::getUniqueIdentifierId(
 				ParameterMessage::getParameterId(message));
-		result = owner->getParameter(domain, parameterId,
+		result = owner->getParameter(domain, uniqueIdentifier,
 				&description, &description, 0);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
 			result = sendParameter(message->getSender(),
@@ -26,12 +26,11 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 	}
 		break;
 	case ParameterMessage::CMD_PARAMETER_LOAD: {
-		uint8_t domain = HasParametersIF::getDomain(
-				ParameterMessage::getParameterId(message));
-		uint16_t parameterId = HasParametersIF::getMatrixId(
-				ParameterMessage::getParameterId(message));
-		uint8_t index = HasParametersIF::getIndex(
-				ParameterMessage::getParameterId(message));
+	    ParameterId_t parameterId = ParameterMessage::getParameterId(message);
+		uint8_t domain = HasParametersIF::getDomain(parameterId);
+		uint8_t uniqueIdentifier = HasParametersIF::getUniqueIdentifierId(
+		        parameterId);
+		uint16_t index = HasParametersIF::getIndex(parameterId);
 
 		const uint8_t *storedStream = nullptr;
 		size_t storedStreamSize = 0;
@@ -52,7 +51,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 		}
 
 		ParameterWrapper ownerWrapper;
-		result = owner->getParameter(domain, parameterId, &ownerWrapper,
+		result = owner->getParameter(domain, uniqueIdentifier, &ownerWrapper,
 				&streamWrapper, index);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			storage->deleteData(ParameterMessage::getStoreId(message));

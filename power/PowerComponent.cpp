@@ -1,4 +1,5 @@
 #include "PowerComponent.h"
+#include "../serialize/SerializeAdapter.h"
 
 PowerComponent::PowerComponent(): switchId1(0xFF), switchId2(0xFF),
         doIHaveTwoSwitches(false) {
