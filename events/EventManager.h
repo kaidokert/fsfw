@@ -51,7 +51,9 @@ protected:
 	MutexIF* mutex = nullptr;
 
 	static const uint8_t N_POOLS = 3;
-	LocalPool<N_POOLS> factoryBackend;
+	LocalPool factoryBackend;
+	static const LocalPool::LocalPoolConfig poolConfig;
+
 	static const uint16_t POOL_SIZES[N_POOLS];
 	static const uint16_t N_ELEMENTS[N_POOLS];
 
