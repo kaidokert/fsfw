@@ -21,7 +21,8 @@ public:
 	static void setParameterDumpReply(CommandMessage* message,
 			ParameterId_t id,  store_address_t storageID);
 	static void setParameterLoadCommand(CommandMessage* message,
-			ParameterId_t id, store_address_t storageID);
+	        ParameterId_t id, store_address_t storeId, uint8_t ptc,
+	        uint8_t pfc, uint8_t row, uint8_t column);
 	static void clear(CommandMessage* message);
 
 };

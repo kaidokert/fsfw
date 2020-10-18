@@ -97,12 +97,14 @@ public:
 	}
 	template<typename T>
 	void setMatrix(T& member) {
-		this->set(member[0], sizeof(member)/sizeof(member[0]), sizeof(member[0])/sizeof(member[0][0]));
+		this->set(member[0], sizeof(member)/sizeof(member[0]),
+		        sizeof(member[0])/sizeof(member[0][0]));
 	}
 
 	template<typename T>
 	void setMatrix(const T& member) {
-		this->set(member[0], sizeof(member)/sizeof(member[0]), sizeof(member[0])/sizeof(member[0][0]));
+		this->set(member[0], sizeof(member)/sizeof(member[0]),
+		        sizeof(member[0])/sizeof(member[0][0]));
 	}
 
 	ReturnValue_t set(const uint8_t *stream, size_t streamSize,
