@@ -28,14 +28,14 @@ public:
 	 * @param message
 	 * @param id
 	 * @param storeId
-	 * @param ptc
-	 * @param pfc
-	 * @param row
-	 * @param column
+	 * @param ptc Type information according to CCSDS/ECSS standards
+	 * @param pfc Type information according to CCSDS/ECSS standards
+	 * @param rows Set number of rows in parameter set, minimum one.
+	 * @param columns Set number of columns in parameter set, minimum one
 	 */
 	static void setParameterLoadCommand(CommandMessage* message,
 	        ParameterId_t id, store_address_t storeId, uint8_t ptc,
-	        uint8_t pfc, uint8_t row, uint8_t column);
+	        uint8_t pfc, uint8_t rows, uint8_t columns);
 	static void clear(CommandMessage* message);
 
 };

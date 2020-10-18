@@ -22,6 +22,7 @@ public:
 	static const ReturnValue_t SOURCE_NOT_SET = MAKE_RETURN_CODE(0x05);
 	static const ReturnValue_t OUT_OF_BOUNDS = MAKE_RETURN_CODE(0x06);
 	static const ReturnValue_t NOT_SET = MAKE_RETURN_CODE(0x07);
+	static const ReturnValue_t COLUMN_OR_ROWS_ZERO = MAKE_RETURN_CODE(0x08);
 
 	ParameterWrapper();
 	ParameterWrapper(Type type, uint8_t rows, uint8_t columns, void *data);

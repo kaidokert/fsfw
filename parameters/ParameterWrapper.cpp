@@ -202,6 +202,8 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		uint16_t startWritingAtIndex) {
+    // TODO: Optional diagnostic output (which can be disabled in FSFWConfig)
+    // to determined faulty implementations and configuration errors quickly.
 	if (data == nullptr) {
 		return READONLY;
 	}
@@ -212,6 +214,11 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 
 	if (type != from->type) {
 		return DATATYPE_MISSMATCH;
+	}
+
+	// The smallest allowed value for rows and columns is one.
+	if(rows == 0 or columns == 0) {
+	    return COLUMN_OR_ROWS_ZERO;
 	}
 
 	//check if from fits into this

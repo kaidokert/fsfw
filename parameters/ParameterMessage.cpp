@@ -26,12 +26,12 @@ void ParameterMessage::setParameterDumpReply(CommandMessage* message,
 
 void ParameterMessage::setParameterLoadCommand(CommandMessage* message,
 		ParameterId_t id, store_address_t storeId, uint8_t ptc, uint8_t pfc,
-		uint8_t row, uint8_t column) {
+		uint8_t rows = 1, uint8_t columns = 1) {
 	message->setCommand(CMD_PARAMETER_LOAD);
 	message->setParameter(id);
 	message->setParameter2(storeId.raw);
 	uint32_t packedParameterSettings = (ptc << 24) | (pfc << 16) |
-	        (row << 8) | column;
+	        (rows << 8) | columns;
 	message->setParameter3(packedParameterSettings);
 }
 
