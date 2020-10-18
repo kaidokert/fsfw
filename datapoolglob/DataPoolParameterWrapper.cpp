@@ -23,7 +23,7 @@ ReturnValue_t DataPoolParameterWrapper::set(uint8_t domainId,
 	ReturnValue_t status = mySet.read();
 	if (status != HasReturnvaluesIF::RETURN_OK) {
 		//should only fail for invalid pool id
-		return HasParametersIF::INVALID_MATRIX_ID;
+		return HasParametersIF::INVALID_IDENTIFIER_ID;
 	}
 
 	type = raw.getType();

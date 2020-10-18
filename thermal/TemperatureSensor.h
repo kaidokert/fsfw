@@ -208,7 +208,7 @@ public:
 			parameterWrapper->set(parameters.gradient);
 			break;
 		default:
-			return INVALID_MATRIX_ID;
+			return INVALID_IDENTIFIER_ID;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}

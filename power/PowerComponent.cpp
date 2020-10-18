@@ -75,7 +75,7 @@ ReturnValue_t PowerComponent::getParameter(uint8_t domainId,
 		parameterWrapper->set<>(max);
 		break;
 	default:
-		return INVALID_MATRIX_ID;
+		return INVALID_IDENTIFIER_ID;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }

@@ -41,7 +41,7 @@ public:
 		ReturnValue_t result = this->MonitorBase<T>::getParameter(domainId,
 				parameterId, parameterWrapper, newValues, startAtIndex);
 		//We'll reuse the DOMAIN_ID of MonitorReporter, as we know the parameterIds used there.
-		if (result != this->INVALID_MATRIX_ID) {
+		if (result != this->INVALID_IDENTIFIER_ID) {
 			return result;
 		}
 		switch (parameterId) {
@@ -52,7 +52,7 @@ public:
 			parameterWrapper->set(this->upperLimit);
 			break;
 		default:
-			return this->INVALID_MATRIX_ID;
+			return this->INVALID_IDENTIFIER_ID;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}

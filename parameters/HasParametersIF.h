@@ -29,7 +29,7 @@ using ParameterId_t = uint32_t;
 class HasParametersIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::HAS_PARAMETERS_IF;
-	static const ReturnValue_t INVALID_MATRIX_ID = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t INVALID_IDENTIFIER_ID = MAKE_RETURN_CODE(0x01);
 	static const ReturnValue_t INVALID_DOMAIN_ID = MAKE_RETURN_CODE(0x02);
 	static const ReturnValue_t INVALID_VALUE = MAKE_RETURN_CODE(0x03);
 	static const ReturnValue_t READ_ONLY = MAKE_RETURN_CODE(0x05);

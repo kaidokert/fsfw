@@ -151,7 +151,7 @@ ReturnValue_t ThermalComponent::getParameter(uint8_t domainId,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
 	ReturnValue_t result = CoreComponent::getParameter(domainId, parameterId,
 			parameterWrapper, newValues, startAtIndex);
-	if (result != INVALID_MATRIX_ID) {
+	if (result != INVALID_IDENTIFIER_ID) {
 		return result;
 	}
 	switch (parameterId) {
@@ -162,7 +162,7 @@ ReturnValue_t ThermalComponent::getParameter(uint8_t domainId,
 		parameterWrapper->set(nopParameters.upperNopLimit);
 		break;
 	default:
-		return INVALID_MATRIX_ID;
+		return INVALID_IDENTIFIER_ID;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }

@@ -301,7 +301,7 @@ ReturnValue_t Heater::getParameter(uint8_t domainId, uint16_t parameterId,
 		parameterWrapper->set(heaterOnCountdown.timeout);
 		break;
 	default:
-		return INVALID_MATRIX_ID;
+		return INVALID_IDENTIFIER_ID;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
