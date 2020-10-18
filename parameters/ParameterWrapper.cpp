@@ -115,7 +115,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 		uint8_t fromColumns) {
 
 	//treat from as a continuous Stream as we copy all of it
-	const uint8_t *fromAsStream = (const uint8_t*) from;
+	const uint8_t *fromAsStream = reinterpret_cast<const uint8_t*>(from);
 	size_t streamSize = fromRows * fromColumns * sizeof(T);
 
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
@@ -123,8 +123,8 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 	for (uint8_t fromRow = 0; fromRow < fromRows; fromRow++) {
 
 		//get the start element of this row in data
-		T *dataWithDataType = ((T*) data)
-				+ (((startingRow + fromRow) * columns) + startingColumn);
+	    uint16_t offset = (((startingRow + fromRow) * columns) + startingColumn);
+		T *dataWithDataType = static_cast<T*>(data) + offset;
 
 		for (uint8_t fromColumn = 0; fromColumn < fromColumns; fromColumn++) {
 			result = SerializeAdapter::deSerialize(
