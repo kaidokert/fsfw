@@ -35,6 +35,18 @@ void ParameterMessage::setParameterLoadCommand(CommandMessage* message,
 	message->setParameter3(packedParameterSettings);
 }
 
+store_address_t ParameterMessage::getParameterLoadCommand(
+        const CommandMessage *message, ParameterId_t* parameterId, uint8_t *ptc,
+        uint8_t *pfc, uint8_t *rows, uint8_t *columns) {
+    *parameterId = message->getParameter2();
+    uint32_t packedParamSettings = message->getParameter3();
+    *ptc = packedParamSettings >> 24 & 0xff;
+    *pfc = packedParamSettings >> 16 & 0xff;
+    *rows = packedParamSettings >> 8 & 0xff;
+    *columns = packedParamSettings & 0xff;
+    return message->getParameter2();
+}
+
 void ParameterMessage::clear(CommandMessage* message) {
 	switch (message->getCommand()) {
 	case CMD_PARAMETER_LOAD:

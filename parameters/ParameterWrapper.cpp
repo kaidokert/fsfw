@@ -159,6 +159,23 @@ ReturnValue_t ParameterWrapper::deSerialize(const uint8_t **buffer,
 	return copyFrom(&streamDescription, startWritingAtIndex);
 }
 
+ReturnValue_t ParameterWrapper::set(Type type, uint8_t rows, uint8_t columns,
+        const void *data, size_t dataSize) {
+    this->type = type;
+    this->rows = rows;
+    this->columns = columns;
+
+    size_t expectedSize = type.getSize() * rows * columns;
+    if (expectedSize < dataSize) {
+        return SerializeIF::STREAM_TOO_SHORT;
+    }
+
+    this->data = nullptr;
+    this->readonlyData = data;
+    pointsToStream = true;
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
 ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 		const uint8_t **remainingStream, size_t *remainingSize) {
 	ReturnValue_t result = SerializeAdapter::deSerialize(&type, &stream,
@@ -289,11 +306,12 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 	return result;
 }
 
-void ParameterWrapper::convertLinearIndexToRowAndColumn(uint16_t index, uint8_t *row,
-        uint8_t *column) {
+void ParameterWrapper::convertLinearIndexToRowAndColumn(uint16_t index,
+        uint8_t *row, uint8_t *column) {
     if(row == nullptr or column == nullptr) {
         return;
     }
+    // Integer division.
     *row = index / columns;
     *column = index % columns;
 }

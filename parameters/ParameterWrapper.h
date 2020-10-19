@@ -108,6 +108,9 @@ public:
 		        sizeof(member[0])/sizeof(member[0][0]));
 	}
 
+	ReturnValue_t set(Type type, uint8_t rows, uint8_t columns,
+	        const void *data, size_t dataSize);
+
 	ReturnValue_t set(const uint8_t *stream, size_t streamSize,
 			const uint8_t **remainingStream = nullptr,
 			size_t *remainingSize = nullptr);
@@ -158,9 +161,9 @@ inline ReturnValue_t ParameterWrapper::getElement(T *value, uint8_t row,
 	if (pointsToStream) {
 		const uint8_t *streamWithType = static_cast<const uint8_t*>(readonlyData);
 		streamWithType += (row * columns + column) * type.getSize();
-		int32_t size = type.getSize();
+		size_t size = type.getSize();
 		return SerializeAdapter::deSerialize(value, &streamWithType,
-				&size, true);
+				&size, SerializeIF::Endianness::BIG);
 	}
 	else {
 		const T *dataWithType = static_cast<const T*>(readonlyData);

@@ -210,9 +210,9 @@ ReturnValue_t DataPoolAdmin::handleParameterCommand(CommandMessage* command) {
 
 		uint8_t domain = HasParametersIF::getDomain(
 				ParameterMessage::getParameterId(command));
-		uint16_t parameterId = HasParametersIF::getUniqueIdentifierId(
+		uint8_t parameterId = HasParametersIF::getUniqueIdentifierId(
 				ParameterMessage::getParameterId(command));
-		uint8_t index = HasParametersIF::getIndex(
+		uint16_t index = HasParametersIF::getIndex(
 				ParameterMessage::getParameterId(command));
 
 		const uint8_t *storedStream;

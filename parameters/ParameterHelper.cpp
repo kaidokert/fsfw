@@ -10,6 +10,7 @@ ParameterHelper::~ParameterHelper() {
 
 ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
     if(storage == nullptr) {
+        // ParameterHelper was not initialized
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
@@ -30,48 +31,48 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 	}
 		break;
 	case ParameterMessage::CMD_PARAMETER_LOAD: {
-	    ParameterId_t parameterId = ParameterMessage::getParameterId(message);
+	    ParameterId_t parameterId = 0;
+	    uint8_t ptc = 0;
+	    uint8_t pfc = 0;
+	    uint8_t rows = 0;
+	    uint8_t columns = 0;
+	    store_address_t storeId = ParameterMessage::getParameterLoadCommand(
+	            message, &parameterId, &ptc, &pfc, &rows, &columns);
+	    Type type(Type::getActualType(ptc, pfc));
+
 		uint8_t domain = HasParametersIF::getDomain(parameterId);
 		uint8_t uniqueIdentifier = HasParametersIF::getUniqueIdentifierId(
 		        parameterId);
 		uint16_t linearIndex = HasParametersIF::getIndex(parameterId);
 
-		const uint8_t *storedStream = nullptr;
-		size_t storedStreamSize = 0;
-		result = storage->getData(
-				ParameterMessage::getStoreId(message), &storedStream,
-				&storedStreamSize);
+		ConstStorageAccessor accessor(storeId);
+		result = storage->getData(storeId, accessor);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			sif::error << "ParameterHelper::handleParameterMessage: Getting"
-					" store data failed for load command." << std::endl;
+					<< " store data failed for load command." << std::endl;
 			break;
 		}
 
 		ParameterWrapper streamWrapper;
-		result = streamWrapper.set(storedStream, storedStreamSize);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			storage->deleteData(ParameterMessage::getStoreId(message));
-			break;
+		result = streamWrapper.set(type, rows, columns, accessor.data(),
+		        accessor.size());
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+		    return result;
 		}
 
 		ParameterWrapper ownerWrapper;
 		result = owner->getParameter(domain, uniqueIdentifier, &ownerWrapper,
 				&streamWrapper, linearIndex);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			storage->deleteData(ParameterMessage::getStoreId(message));
-			break;
-		}
 
 		result = ownerWrapper.copyFrom(&streamWrapper, linearIndex);
-
-		storage->deleteData(ParameterMessage::getStoreId(message));
-
-		if (result == HasReturnvaluesIF::RETURN_OK) {
-			result = sendParameter(message->getSender(),
-					ParameterMessage::getParameterId(message), &ownerWrapper);
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+		    return result;
 		}
-	}
+
+        result = sendParameter(message->getSender(),
+                ParameterMessage::getParameterId(message), &ownerWrapper);
 		break;
+	}
 	default:
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
