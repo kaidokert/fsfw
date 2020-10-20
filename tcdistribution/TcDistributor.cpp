@@ -1,12 +1,13 @@
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "TcDistributor.h"
+
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../tmtcservices/TmTcMessage.h"
 #include "../ipc/QueueFactory.h"
 
-TcDistributor::TcDistributor(object_id_t set_object_id) :
-		SystemObject(set_object_id), tcQueue(NULL) {
-	tcQueue = QueueFactory::instance()->createMessageQueue(DISTRIBUTER_MAX_PACKETS);
+TcDistributor::TcDistributor(object_id_t objectId) :
+		SystemObject(objectId) {
+	tcQueue = QueueFactory::instance()->
+	        createMessageQueue(DISTRIBUTER_MAX_PACKETS);
 }
 
 TcDistributor::~TcDistributor() {
@@ -15,7 +16,6 @@ TcDistributor::~TcDistributor() {
 
 ReturnValue_t TcDistributor::performOperation(uint8_t opCode) {
 	ReturnValue_t status = RETURN_OK;
-//	debug << "TcDistributor: performing Operation." << std::endl;
 	for (status = tcQueue->receiveMessage(&currentMessage); status == RETURN_OK;
 			status = tcQueue->receiveMessage(&currentMessage)) {
 		status = handlePacket();
@@ -29,7 +29,7 @@ ReturnValue_t TcDistributor::performOperation(uint8_t opCode) {
 
 ReturnValue_t TcDistributor::handlePacket() {
 
-	iterator_t queueMapIt = this->selectDestination();
+	TcMqMapIter queueMapIt = this->selectDestination();
 	ReturnValue_t returnValue = RETURN_FAILED;
 	if (queueMapIt != this->queueMap.end()) {
 		returnValue = this->tcQueue->sendMessage(queueMapIt->second,
@@ -39,14 +39,14 @@ ReturnValue_t TcDistributor::handlePacket() {
 }
 
 void TcDistributor::print() {
-	sif::debug << "Distributor content is: " << std::endl << "ID\t| message queue id"
-			<< std::endl;
-	for (iterator_t it = this->queueMap.begin(); it != this->queueMap.end();
-			it++) {
-		sif::debug << it->first << "\t| 0x" << std::hex << it->second << std::dec
-				<< std::endl;
+	sif::debug << "Distributor content is: " << std::endl
+	        << "ID\t| Message Queue ID" << std::endl;
+	sif::debug << std::setfill('0') << std::setw(8) << std::hex;
+	for (const auto& queueMapIter: queueMap) {
+		sif::debug << queueMapIter.first << "\t| 0x"   << queueMapIter.second
+		         << std::endl;
 	}
-	sif::debug << std::dec;
+	sif::debug << std::setfill(' ') << std::dec;
 
 }
 
