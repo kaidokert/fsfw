@@ -1,14 +1,14 @@
+#include "MessageQueue.h"
+
 #include "../../ipc/MessageQueueSenderIF.h"
 #include "../../ipc/QueueFactory.h"
-
-#include "MessageQueue.h"
 
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 			bool ignoreFault) {
 	return MessageQueue::sendMessageFromMessageQueue(sendTo,message,
 			sentFrom,ignoreFault);
