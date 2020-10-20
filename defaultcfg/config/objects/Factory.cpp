@@ -1,11 +1,9 @@
 #include "Factory.h"
-
-/* Config */
-#include <tmtc/apid.h>
-#include <objects/systemObjectList.h>
-#include <devices/logicalAddresses.h>
-#include <devices/powerSwitcherList.h>
-#include <tmtc/pusIds.h>
+#include "../tmtc/apid.h"
+#include "../tmtc/pusIds.h"
+#include "../objects/systemObjectList.h"
+#include "../devices/logicalAddresses.h"
+#include "../devices/powerSwitcherList.h"
 
 #include <fsfw/devicehandlers/DeviceHandlerBase.h>
 #include <fsfw/events/EventManager.h>
@@ -13,21 +11,20 @@
 #include <fsfw/tmtcpacket/pus/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
-#include <mission/utility/TmFunnel.h>
-
 
 #include <cstdint>
 
-
 /**
- * Build tasks by using SystemObject Interface (Interface).
- * Header files of all tasks must be included
- * Please note that an object has to implement the system object interface
- * if the nterface validity is checked or retrieved later by using the
- * get<TargetInterface>(object_id) function from the ObjectManagerIF.
+ * This class should be used to create all system objects required for
+ * the on-board software, using the object ID list from the configuration
+ * folder.
+ *
+ * The objects are registered in the internal object manager automatically.
+ * This is used later to add objects to tasks.
+ *
+ * This file also sets static framework IDs.
  *
  * Framework objects are created first.
- *
  * @ingroup init
  */
 void Factory::produce(void) {
@@ -52,6 +49,6 @@ void Factory::setStaticFrameworkObjectIds() {
 	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 
 	TmPacketStored::timeStamperId = objects::PUS_TIME;
-	TmFunnel::downlinkDestination = objects::NO_OBJECT;
+	//TmFunnel::downlinkDestination = objects::NO_OBJECT;
 }
 
