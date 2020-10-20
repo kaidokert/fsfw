@@ -1,7 +1,7 @@
+#include "MessageQueue.h"
+
 #include "../../ipc/MessageQueueSenderIF.h"
 #include "../../ipc/QueueFactory.h"
-
-#include "MessageQueue.h"
 
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;
