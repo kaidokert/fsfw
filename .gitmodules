@@ -1,3 +1,0 @@
-[submodule "unittest"]
-	path = unittest
-	url = https://egit.irs.uni-stuttgart.de/fsfw/fsfw_tests.git
