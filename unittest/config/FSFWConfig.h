@@ -11,6 +11,12 @@
 //! Be careful, this also turns off most diagnostic prinouts!
 #define FSFW_REDUCED_PRINTOUT		0
 
+//! Defines the FIFO depth of each commanding service base which
+//! also determines how many commands a CSB service can handle in one cycle
+//! simulataneously. This will increase the required RAM for
+//! each CSB service !
+#define FSFW_CSB_FIFO_DEPTH			6
+
 //! If -DDEBUG is supplied in the build defines, there will be
 //! additional output which requires the translation files translateObjects
 //! and translateEvents (and their compiles source files)
