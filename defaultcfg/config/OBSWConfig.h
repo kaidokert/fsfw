@@ -1,6 +1,8 @@
 #ifndef CONFIG_OBSWCONFIG_H_
 #define CONFIG_OBSWCONFIG_H_
 
+#include "OBSWVersion.h"
+
 #ifdef __cplusplus
 namespace config {
 #endif
