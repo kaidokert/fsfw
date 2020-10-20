@@ -1,28 +1,29 @@
-#ifndef TCPACKETCHECK_H_
-#define TCPACKETCHECK_H_
+#ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
+#define FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcservices/PusVerificationReport.h"
+
 /**
  * This class performs a formal packet check for incoming PUS Telecommand Packets.
  * Currently, it only checks if the APID and CRC are correct.
- * \ingroup tc_distribution
+ * @ingroup tc_distribution
  */
 class TcPacketCheck : public HasReturnvaluesIF {
 protected:
 	/**
 	 * Describes the version number a packet must have to pass.
 	 */
-	static const uint8_t CCSDS_VERSION_NUMBER = 0;
+	static constexpr uint8_t CCSDS_VERSION_NUMBER = 0;
 	/**
 	 * Describes the secondary header a packet must have to pass.
 	 */
-	static const uint8_t CCSDS_SECONDARY_HEADER_FLAG = 0;
+	static constexpr uint8_t CCSDS_SECONDARY_HEADER_FLAG = 0;
 	/**
 	 * Describes the TC Packet PUS Version Number a packet must have to pass.
 	 */
-	static const uint8_t PUS_VERSION_NUMBER = 1;
+	static constexpr uint8_t PUS_VERSION_NUMBER = 1;
 	/**
 	 * The packet id each correct packet should have.
 	 * It is composed of the APID and some static fields.
@@ -41,19 +42,19 @@ public:
 	 * The constructor only sets the APID attribute.
 	 * @param set_apid The APID to set.
 	 */
-	TcPacketCheck( uint16_t set_apid );
+	TcPacketCheck( uint16_t setApid );
 	/**
 	 * This is the actual method to formally check a certain Telecommand Packet.
 	 * The packet's Application Data can not be checked here.
 	 * @param current_packet The packt to check
-	 * @return	- \c RETURN_OK on success.
-	 * 			- \c INCORRECT_CHECKSUM if checksum is invalid.
-	 * 			- \c ILLEGAL_APID if APID does not match.
+	 * @return	- @c RETURN_OK on success.
+	 * 			- @c INCORRECT_CHECKSUM if checksum is invalid.
+	 * 			- @c ILLEGAL_APID if APID does not match.
 	 */
-	ReturnValue_t checkPacket( TcPacketStored* current_packet );
+	ReturnValue_t checkPacket( TcPacketStored* currentPacket );
 
 	uint16_t getApid() const;
 };
 
 
-#endif /* TCPACKETCHECK_H_ */
+#endif /* FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_ */
