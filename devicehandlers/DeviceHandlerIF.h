@@ -21,7 +21,7 @@ using DeviceCommandId_t = uint32_t;
  */
 class DeviceHandlerIF {
 public:
-
+    static const DeviceCommandId_t NO_COMMAND = 0xffffffff;
 
 	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
 	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
