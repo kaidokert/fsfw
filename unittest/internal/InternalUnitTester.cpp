@@ -12,13 +12,13 @@ InternalUnitTester::InternalUnitTester() {}
 InternalUnitTester::~InternalUnitTester() {}
 
 ReturnValue_t InternalUnitTester::performTests() {
-	sif::info << "Running internal unit tests..\r\n" << std::flush;
+	sif::info << "Running internal unit tests.." << std::endl;
 	testserialize::test_serialization();
 	testmq::testMq();
 	testsemaph::testBinSemaph();
 	testsemaph::testCountingSemaph();
 	testmutex::testMutex();
-	sif::info << "Internal unit tests finished.\r\n" << std::flush;
+	sif::info << "Internal unit tests finished." << std::endl;
 	return RETURN_OK;
 }
 
