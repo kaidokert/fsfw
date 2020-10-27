@@ -1,14 +1,15 @@
-#include "../globalfunctions/CRC.h"
 #include "MemoryHelper.h"
 #include "MemoryMessage.h"
+
+#include "../globalfunctions/CRC.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/EndianConverter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
-MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue) :
-		workOnThis(workOnThis), queueToUse(useThisQueue), ipcStore(NULL), ipcAddress(), lastCommand(
-				CommandMessage::CMD_NONE), lastSender(0), reservedSpaceInIPC(
-				NULL), busy(false) {
+MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis,
+		MessageQueueIF* useThisQueue):
+		workOnThis(workOnThis), queueToUse(useThisQueue), ipcAddress(),
+		lastCommand(CommandMessage::CMD_NONE), busy(false) {
 }
 
 ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
@@ -33,17 +34,8 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
 	}
 }
 
-ReturnValue_t MemoryHelper::initialize() {
-	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (ipcStore != NULL) {
-		return RETURN_OK;
-	} else {
-		return RETURN_FAILED;
-	}
-}
-
 void MemoryHelper::completeLoad(ReturnValue_t errorCode,
-		const uint8_t* dataToCopy, const uint32_t size, uint8_t* copyHere) {
+		const uint8_t* dataToCopy, const size_t size, uint8_t* copyHere) {
 	busy = false;
 	switch (errorCode) {
 	case HasMemoryIF::DO_IT_MYSELF:
@@ -67,13 +59,13 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode,
 		return;
 	}
 	//Only reached on success
-	CommandMessage reply(CommandMessage::REPLY_COMMAND_OK, 0, 0);
+	CommandMessage reply( CommandMessage::REPLY_COMMAND_OK, 0, 0);
 	queueToUse->sendMessage(lastSender, &reply);
 	ipcStore->deleteData(ipcAddress);
 }
 
 void MemoryHelper::completeDump(ReturnValue_t errorCode,
-		const uint8_t* dataToCopy, const uint32_t size) {
+		const uint8_t* dataToCopy, const size_t size) {
 	busy = false;
 	CommandMessage reply;
 	MemoryMessage::setMemoryReplyFailed(&reply, errorCode, lastCommand);
@@ -125,12 +117,12 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode,
 		break;
 	}
 	if (queueToUse->sendMessage(lastSender, &reply) != RETURN_OK) {
-		reply.clearCommandMessage();
+		reply.clear();
 	}
 }
 
 void MemoryHelper::swapMatrixCopy(uint8_t* out, const uint8_t *in,
-		uint32_t totalSize, uint8_t datatypeSize) {
+		size_t totalSize, uint8_t datatypeSize) {
 	if (totalSize % datatypeSize != 0){
 		return;
 	}
@@ -185,11 +177,18 @@ void MemoryHelper::handleMemoryCheckOrDump(CommandMessage* message) {
 }
 
 ReturnValue_t MemoryHelper::initialize(MessageQueueIF* queueToUse_) {
-	if(queueToUse_!=NULL){
-		this->queueToUse = queueToUse_;
-	}else{
-		return MessageQueueIF::NO_QUEUE;
+	if(queueToUse_ == nullptr) {
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-
+	this->queueToUse = queueToUse_;
 	return initialize();
+}
+
+ReturnValue_t MemoryHelper::initialize() {
+	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+	if (ipcStore != nullptr) {
+		return RETURN_OK;
+	} else {
+		return RETURN_FAILED;
+	}
 }
