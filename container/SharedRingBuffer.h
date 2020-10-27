@@ -2,6 +2,7 @@
 #define FSFW_CONTAINER_SHAREDRINGBUFFER_H_
 
 #include "SimpleRingBuffer.h"
+#include "DynamicFIFO.h"
 #include "../ipc/MutexIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../timemanager/Clock.h"
@@ -25,6 +26,16 @@ public:
 	 */
 	SharedRingBuffer(object_id_t objectId, const size_t size,
 			bool overwriteOld, size_t maxExcessBytes);
+
+	/**
+	 * @brief	This function can be used to add an optional FIFO to the class
+	 * @details 
+	 * This FIFO will be allocated in the initialize function (and will
+	 * have a fixed maximum size after that). It can be used to store
+	 * values like packet sizes, for example for a shared ring buffer
+	 * used by producer/consumer tasks.
+	 */
+	void setToUseReceiveSizeFIFO(size_t fifoDepth);
 
 	/**
 	 * This constructor takes an external buffer with the specified size.
@@ -59,8 +70,21 @@ public:
 	 * @return
 	 */
 	MutexIF* getMutexHandle() const;
+
+	ReturnValue_t initialize() override;
+
+	/**
+	 * If the shared ring buffer was configured to have a sizes FIFO, a handle
+	 * to that FIFO can be retrieved with this function.
+	 * Do not forget to protect access with a lock if required!
+	 * @return
+	 */
+	DynamicFIFO<size_t>* getReceiveSizesFIFO();
 private:
 	MutexIF* mutex = nullptr;
+
+	size_t fifoDepth = 0;
+	DynamicFIFO<size_t>* receiveSizesFIFO = nullptr;
 };
 
 
