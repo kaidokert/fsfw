@@ -1,11 +1,14 @@
-#include "../../globalfunctions/CRC.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "TcPacketBase.h"
-#include <string.h>
 
-TcPacketBase::TcPacketBase(const uint8_t* set_data) :
-		SpacePacketBase(set_data) {
-	tcData = (TcPacketPointer*) set_data;
+#include "../../globalfunctions/CRC.h"
+#include "../../globalfunctions/arrayprinter.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+
+#include <cstring>
+
+TcPacketBase::TcPacketBase(const uint8_t* setData) :
+		SpacePacketBase(setData) {
+	tcData = reinterpret_cast<TcPacketPointer*>(const_cast<uint8_t*>(setData));
 }
 
 TcPacketBase::~TcPacketBase() {
@@ -51,12 +54,6 @@ void TcPacketBase::setData(const uint8_t* pData) {
 	tcData = (TcPacketPointer*) pData;
 }
 
-void TcPacketBase::setAppData(uint8_t * appData, uint16_t dataLen) {
-	memcpy(&tcData->appData, appData, dataLen);
-	SpacePacketBase::setPacketDataLength(dataLen +
-				sizeof(PUSTcDataFieldHeader) + TcPacketBase::CRC_SIZE - 1);
-}
-
 uint8_t TcPacketBase::getSecondaryHeaderFlag() {
 	return (tcData->dataField.version_type_ack & 0b10000000) >> 7;
 }
@@ -66,21 +63,17 @@ uint8_t TcPacketBase::getPusVersionNumber() {
 }
 
 void TcPacketBase::print() {
-	uint8_t * wholeData = getWholeData();
-	sif::debug << "TcPacket contains: " << std::endl;
-	for (uint8_t count = 0; count < getFullSize(); ++count) {
-		sif::debug << std::hex << (uint16_t) wholeData[count] << " ";
-	}
-	sif::debug << std::dec << std::endl;
+    sif::debug << "TcPacketBase::print: " << std::endl;
+	arrayprinter::print(getWholeData(), getFullSize());
 }
 
 void TcPacketBase::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
-		uint8_t ack, uint8_t service, uint8_t subservice) {
+        uint8_t ack, uint8_t service, uint8_t subservice) {
 	initSpacePacketHeader(true, true, apid, sequenceCount);
-	memset(&tcData->dataField, 0, sizeof(tcData->dataField));
+	std::memset(&tcData->dataField, 0, sizeof(tcData->dataField));
 	setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
 	//Data Field Header:
-	//Set CCSDS_secondary_header_flag to 0, version number to 001 and ack to 0000
+	//Set CCSDS_secondary_header_flag to 0 and version number to 001
 	tcData->dataField.version_type_ack = 0b00010000;
 	tcData->dataField.version_type_ack |= (ack & 0x0F);
 	tcData->dataField.service_type = service;

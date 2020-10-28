@@ -1,13 +1,19 @@
+#include "TmPacketBase.h"
+
 #include "../../globalfunctions/CRC.h"
+#include "../../globalfunctions/arrayprinter.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "TmPacketBase.h"
 #include "../../timemanager/CCSDSTime.h"
-#include <string.h>
 
-TmPacketBase::TmPacketBase(uint8_t* set_data) :
-		SpacePacketBase(set_data) {
-	tm_data = (TmPacketPointer*) set_data;
+#include <cstring>
+
+TimeStamperIF* TmPacketBase::timeStamper = nullptr;
+object_id_t TmPacketBase::timeStamperId = 0;
+
+TmPacketBase::TmPacketBase(uint8_t* setData) :
+		SpacePacketBase(setData) {
+	tmData = reinterpret_cast<TmPacketPointer*>(setData);
 }
 
 TmPacketBase::~TmPacketBase() {
@@ -15,25 +21,25 @@ TmPacketBase::~TmPacketBase() {
 }
 
 uint8_t TmPacketBase::getService() {
-	return tm_data->data_field.service_type;
+	return tmData->data_field.service_type;
 }
 
 uint8_t TmPacketBase::getSubService() {
-	return tm_data->data_field.service_subtype;
+	return tmData->data_field.service_subtype;
 }
 
 uint8_t* TmPacketBase::getSourceData() {
-	return &tm_data->data;
+	return &tmData->data;
 }
 
 uint16_t TmPacketBase::getSourceDataSize() {
-	return getPacketDataLength() - sizeof(tm_data->data_field)
+	return getPacketDataLength() - sizeof(tmData->data_field)
 			- CRC_SIZE + 1;
 }
 
 uint16_t TmPacketBase::getErrorControl() {
 	uint32_t size = getSourceDataSize() + CRC_SIZE;
-	uint8_t* p_to_buffer = &tm_data->data;
+	uint8_t* p_to_buffer = &tmData->data;
 	return (p_to_buffer[size - 2] << 8) + p_to_buffer[size - 1];
 }
 
@@ -47,16 +53,12 @@ void TmPacketBase::setErrorControl() {
 
 void TmPacketBase::setData(const uint8_t* p_Data) {
 	SpacePacketBase::setData(p_Data);
-	tm_data = (TmPacketPointer*) p_Data;
+	tmData = (TmPacketPointer*) p_Data;
 }
 
 void TmPacketBase::print() {
-	/*uint8_t * wholeData = getWholeData();
-	 debug << "TmPacket contains: " << std::endl;
-	 for (uint8_t count = 0; count < getFullSize(); ++count ) {
-	 debug << std::hex << (uint16_t)wholeData[count] << " ";
-	 }
-	 debug << std::dec << std::endl;*/
+	 sif::debug << "TmPacketBase::print: " << std::endl;
+	 arrayprinter::print(getWholeData(), getFullSize());
 }
 
 bool TmPacketBase::checkAndSetStamper() {
@@ -73,47 +75,43 @@ bool TmPacketBase::checkAndSetStamper() {
 
 ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
 	uint32_t tempSize = 0;
-	return CCSDSTime::convertFromCcsds(timestamp, tm_data->data_field.time,
-			&tempSize, sizeof(tm_data->data_field.time));
+	return CCSDSTime::convertFromCcsds(timestamp, tmData->data_field.time,
+			&tempSize, sizeof(tmData->data_field.time));
 }
 
 uint8_t* TmPacketBase::getPacketTimeRaw() const{
-	return tm_data->data_field.time;
+	return tmData->data_field.time;
 
 }
 
-void TmPacketBase::initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice, uint8_t packetSubcounter) {
+void TmPacketBase::initializeTmPacket(uint16_t apid, uint8_t service,
+        uint8_t subservice, uint8_t packetSubcounter) {
 	//Set primary header:
 	initSpacePacketHeader(false, true, apid);
 	//Set data Field Header:
 	//First, set to zero.
-	memset(&tm_data->data_field, 0, sizeof(tm_data->data_field));
-	//Set CCSDS_secondary header flag to 0, version number to 001 and ack to 0000
+	memset(&tmData->data_field, 0, sizeof(tmData->data_field));
+
 	// NOTE: In PUS-C, the PUS Version is 2 and specified for the first 4 bits.
-	// The other 4 bits of the first byte are the spacecraft time reference status
-	// To change to PUS-C, set 0b00100000
-	tm_data->data_field.version_type_ack = 0b00010000;
-	tm_data->data_field.service_type = service;
-	tm_data->data_field.service_subtype = subservice;
-	tm_data->data_field.subcounter = packetSubcounter;
+	// The other 4 bits of the first byte are the spacecraft time reference
+	// status. To change to PUS-C, set 0b00100000.
+    // Set CCSDS_secondary header flag to 0, version number to 001 and ack
+    // to 0000
+	tmData->data_field.version_type_ack = 0b00010000;
+	tmData->data_field.service_type = service;
+	tmData->data_field.service_subtype = subservice;
+	tmData->data_field.subcounter = packetSubcounter;
 	//Timestamp packet
 	if (checkAndSetStamper()) {
-		timeStamper->addTimeStamp(tm_data->data_field.time, sizeof(tm_data->data_field.time));
+		timeStamper->addTimeStamp(tmData->data_field.time,
+		        sizeof(tmData->data_field.time));
 	}
-}
-
-void TmPacketBase::setSourceData(uint8_t* sourceData, size_t sourceSize) {
-	memcpy(getSourceData(), sourceData, sourceSize);
-	setSourceDataSize(sourceSize);
 }
 
 void TmPacketBase::setSourceDataSize(uint16_t size) {
 	setPacketDataLength(size + sizeof(PUSTmDataFieldHeader) + CRC_SIZE - 1);
 }
 
-uint32_t TmPacketBase::getTimestampSize() const {
-	return sizeof(tm_data->data_field.time);
+size_t TmPacketBase::getTimestampSize() const {
+	return sizeof(tmData->data_field.time);
 }
-
-TimeStamperIF* TmPacketBase::timeStamper = NULL;
-object_id_t TmPacketBase::timeStamperId = 0;

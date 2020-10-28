@@ -1,6 +1,6 @@
-#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "SpacePacketBase.h"
-#include <string.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include <cstring>
 
 SpacePacketBase::SpacePacketBase( const uint8_t* set_address ) {
 	this->data = (SpacePacketPointer*) set_address;

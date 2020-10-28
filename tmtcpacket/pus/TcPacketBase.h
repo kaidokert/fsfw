@@ -1,5 +1,5 @@
-#ifndef TCPACKETBASE_H_
-#define TCPACKETBASE_H_
+#ifndef TMTCPACKET_PUS_TCPACKETBASE_H_
+#define TMTCPACKET_PUS_TCPACKETBASE_H_
 
 #include "../../tmtcpacket/SpacePacketBase.h"
 #include <cstddef>
@@ -32,7 +32,7 @@ struct TcPacketPointer {
 /**
  * This class is the basic data handler for any ECSS PUS Telecommand packet.
  *
- * In addition to \SpacePacketBase, the class provides methods to handle
+ * In addition to #SpacePacketBase, the class provides methods to handle
  * the standardized entries of the PUS TC Packet Data Field Header.
  * It does not contain the packet data itself but a pointer to the
  * data must be set on instantiation. An invalid pointer may cause
@@ -41,68 +41,35 @@ struct TcPacketPointer {
  * @ingroup tmtcpackets
  */
 class TcPacketBase : public SpacePacketBase {
-protected:
-	/**
-	 * A pointer to a structure which defines the data structure of
-	 * the packet's data.
-	 *
-	 * To be hardware-safe, all elements are of byte size.
-	 */
-	TcPacketPointer* tcData;
 public:
-	static const uint16_t TC_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) + sizeof(PUSTcDataFieldHeader) + 2);
-	/**
-	 * With this constant for the acknowledge field responses on all levels are expected.
-	 */
-	static const uint8_t ACK_ALL = 0b1111;
-	/**
-	 * With this constant for the acknowledge field a response on acceptance is expected.
-	 */
-	static const uint8_t ACK_ACCEPTANCE = 0b0001;
-	/**
-	 * With this constant for the acknowledge field a response on start of execution is expected.
-	 */
-	static const uint8_t ACK_START = 0b0010;
-	/**
-	 * With this constant for the acknowledge field responses on execution steps are expected.
-	 */
-	static const uint8_t ACK_STEP = 0b0100;
-	/**
-	 * With this constant for the acknowledge field a response on completion is expected.
-	 */
-	static const uint8_t ACK_COMPLETION = 0b1000;
-	/**
-	 * With this constant for the acknowledge field no responses are expected.
-	 */
-	static const uint8_t ACK_NONE = 0b000;
+	static const uint16_t TC_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
+	        sizeof(PUSTcDataFieldHeader) + 2);
+
+	enum AckField {
+	    //! Acknowledgements on all levels are expected.
+	    ACK_ALL = 0b1111,
+	    //! Acknowledgements on acceptance are expected.
+	    ACK_ACCEPTANCE = 0b0001,
+	    //! Acknowledgements on start are expected.
+	    ACK_START = 0b0010,
+	    //! Acknowledgements on step are expected.
+	    ACK_STEP = 0b0100,
+	    //! No acknowledgements are expected.
+	    ACK_NONE = 0b0000
+	};
+
 	/**
 	 * This is the default constructor.
 	 * It sets its internal data pointer to the address passed and also
 	 * forwards the data pointer to the parent SpacePacketBase class.
-	 * @param set_address	The position where the packet data lies.
+	 * @param setData	The position where the packet data lies.
 	 */
-	TcPacketBase( const uint8_t* set_data );
+	TcPacketBase( const uint8_t* setData );
 	/**
 	 * This is the empty default destructor.
 	 */
 	virtual ~TcPacketBase();
-	/**
-	 * Initializes the Tc Packet header.
-	 * @param apid APID used.
-	 * @param service	PUS Service
-	 * @param subservice PUS Subservice
-	 * @param packetSubcounter Additional subcounter used.
-	 */
-	/**
-	 * Initializes the Tc Packet header.
-	 * @param apid APID used.
-	 * @param sequenceCount Sequence Count in the primary header.
-	 * @param ack Which acknowledeges are expected from the receiver.
-	 * @param service	PUS Service
-	 * @param subservice PUS Subservice
-	 */
-	void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack,
-			uint8_t service, uint8_t subservice);
+
 	/**
 	 * This command returns the CCSDS Secondary Header Flag.
 	 * It shall always be zero for PUS Packets. This is the
@@ -171,24 +138,6 @@ public:
 	void setErrorControl();
 
 	/**
-	 * Copies the supplied data to the internal TC application data field.
-	 * @param pData
-	 * @param dataLen
-	 */
-	void setAppData(uint8_t * appData, uint16_t dataLen);
-
-	/**
-	 * With this method, the packet data pointer can be redirected to another
-	 * location.
-	 *
-	 * This call overwrites the parent's setData method to set both its
-	 * \c tc_data pointer and the parent's \c data pointer.
-	 *
-	 * @param p_data	A pointer to another PUS Telecommand Packet.
-	 */
-	void setData( const uint8_t* pData );
-
-	/**
 	 * This is a debugging helper method that prints the whole packet content
 	 * to the screen.
 	 */
@@ -199,7 +148,37 @@ public:
 	 * @return
 	 */
 	static size_t calculateFullPacketLength(size_t appDataLen);
+
+protected:
+    /**
+     * A pointer to a structure which defines the data structure of
+     * the packet's data.
+     *
+     * To be hardware-safe, all elements are of byte size.
+     */
+    TcPacketPointer* tcData;
+
+    /**
+     * Initializes the Tc Packet header.
+     * @param apid APID used.
+     * @param sequenceCount Sequence Count in the primary header.
+     * @param ack Which acknowledeges are expected from the receiver.
+     * @param service   PUS Service
+     * @param subservice PUS Subservice
+     */
+    void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack,
+            uint8_t service, uint8_t subservice);
+
+    /**
+     * With this method, the packet data pointer can be redirected to another
+     * location.
+     * This call overwrites the parent's setData method to set both its
+     * @c tc_data pointer and the parent's @c data pointer.
+     *
+     * @param p_data    A pointer to another PUS Telecommand Packet.
+     */
+    void setData( const uint8_t* pData );
 };
 
 
-#endif /* TCPACKETBASE_H_ */
+#endif /* TMTCPACKET_PUS_TCPACKETBASE_H_ */
