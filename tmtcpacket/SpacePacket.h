@@ -1,7 +1,7 @@
 #ifndef SPACEPACKET_H_
 #define SPACEPACKET_H_
 
-#include "../tmtcpacket/SpacePacketBase.h"
+#include "SpacePacketBase.h"
 
 /**
  * The SpacePacket class is a representation of a simple CCSDS Space Packet
