@@ -3,28 +3,30 @@
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../tmtcservices/TmTcMessage.h"
+
 #include <cstring>
 
+StorageManagerIF *TmPacketStored::store = nullptr;
+InternalErrorReporterIF *TmPacketStored::internalErrorReporter = nullptr;
+
 TmPacketStored::TmPacketStored(store_address_t setAddress) :
-		TmPacketBase(NULL), storeAddress(setAddress) {
+		TmPacketBase(nullptr), storeAddress(setAddress) {
 	setStoreAddress(storeAddress);
 }
 
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 		uint8_t subservice, uint8_t packetSubcounter, const uint8_t *data,
-		size_t size, const uint8_t *headerData, size_t headerSize) :
+		uint32_t size, const uint8_t *headerData, uint32_t headerSize) :
 		TmPacketBase(NULL) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-	if (!checkAndSetStore()) {
+	if (not checkAndSetStore()) {
 		return;
 	}
-	uint8_t *pData = NULL;
+	uint8_t *pData = nullptr;
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
 			(TmPacketBase::TM_PACKET_MIN_SIZE + size + headerSize), &pData);
 
-	if (returnValue != HasReturnvaluesIF::RETURN_OK) {
-		sif::debug << "TmPacketStored::TmPacketStored: "
-				"Issue getting free storage" << std::endl;
+	if (returnValue != store->RETURN_OK) {
 		checkAndReportLostTm();
 		return;
 	}
@@ -36,13 +38,12 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 			size + headerSize + sizeof(PUSTmDataFieldHeader) + CRC_SIZE - 1);
 }
 
-// todo: Endianness flags as optional parameter?
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 		uint8_t subservice, uint8_t packetSubcounter, SerializeIF *content,
 		SerializeIF *header) :
 		TmPacketBase(NULL) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-	if (!checkAndSetStore()) {
+	if (not checkAndSetStore()) {
 		return;
 	}
 	size_t sourceDataSize = 0;
@@ -81,29 +82,29 @@ store_address_t TmPacketStored::getStoreAddress() {
 void TmPacketStored::deletePacket() {
 	store->deleteData(storeAddress);
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-	setData(NULL);
+	setData(nullptr);
 }
 
 void TmPacketStored::setStoreAddress(store_address_t setAddress) {
 	storeAddress = setAddress;
-	const uint8_t *temp_data = NULL;
-	size_t temp_size;
-	if (!checkAndSetStore()) {
+	const uint8_t* tempData = nullptr;
+	size_t tempSize;
+	if (not checkAndSetStore()) {
 		return;
 	}
-	ReturnValue_t status = store->getData(storeAddress, &temp_data, &temp_size);
+	ReturnValue_t status = store->getData(storeAddress, &tempData, &tempSize);
 	if (status == StorageManagerIF::RETURN_OK) {
-		setData(temp_data);
+		setData(tempData);
 	} else {
-		setData(NULL);
+		setData(nullptr);
 		storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	}
 }
 
 bool TmPacketStored::checkAndSetStore() {
-	if (store == NULL) {
+	if (store == nullptr) {
 		store = objectManager->get<StorageManagerIF>(objects::TM_STORE);
-		if (store == NULL) {
+		if (store == nullptr) {
 			sif::error << "TmPacketStored::TmPacketStored: TM Store not found!"
 					<< std::endl;
 			return false;
@@ -112,12 +113,9 @@ bool TmPacketStored::checkAndSetStore() {
 	return true;
 }
 
-StorageManagerIF *TmPacketStored::store = NULL;
-InternalErrorReporterIF *TmPacketStored::internalErrorReporter = NULL;
-
 ReturnValue_t TmPacketStored::sendPacket(MessageQueueId_t destination,
 		MessageQueueId_t sentFrom, bool doErrorReporting) {
-	if (getWholeData() == NULL) {
+	if (getWholeData() == nullptr) {
 		//SHOULDDO: More decent code.
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -137,11 +135,11 @@ ReturnValue_t TmPacketStored::sendPacket(MessageQueueId_t destination,
 }
 
 void TmPacketStored::checkAndReportLostTm() {
-	if (internalErrorReporter == NULL) {
+	if (internalErrorReporter == nullptr) {
 		internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
 				objects::INTERNAL_ERROR_REPORTER);
 	}
-	if (internalErrorReporter != NULL) {
+	if (internalErrorReporter != nullptr) {
 		internalErrorReporter->lostTm();
 	}
 }

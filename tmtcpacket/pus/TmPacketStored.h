@@ -1,7 +1,8 @@
-#ifndef FSFW_TMTCPACKET_TMPACKETSTORED_H_
-#define FSFW_TMTCPACKET_TMPACKETSTORED_H_
+#ifndef FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_
+#define FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_
 
 #include "TmPacketBase.h"
+
 #include "../../serialize/SerializeIF.h"
 #include "../../storagemanager/StorageManagerIF.h"
 #include "../../internalError/InternalErrorReporterIF.h"
@@ -18,6 +19,64 @@
  *	@ingroup tmtcpackets
  */
 class TmPacketStored : public TmPacketBase {
+public:
+	/**
+	 * This is a default constructor which does not set the data pointer.
+	 * However, it does try to set the packet store.
+	 */
+	TmPacketStored( store_address_t setAddress );
+	/**
+	 * With this constructor, new space is allocated in the packet store and
+	 * a new PUS Telemetry Packet is created there.
+	 * Packet Application Data passed in data is copied into the packet.
+	 * The Application data is passed in two parts, first a header, then a
+	 * data field. This allows building a Telemetry Packet from two separate
+	 * data sources.
+	 * @param apid			Sets the packet's APID field.
+	 * @param service		Sets the packet's Service ID field.
+	 * 		This specifies the source service.
+	 * @param subservice	Sets the packet's Service Subtype field.
+	 * 		This specifies the source sub-service.
+	 * @param packet_counter	Sets the Packet counter field of this packet
+	 * @param data			The payload data to be copied to the
+	 * 						Application Data Field
+	 * @param size			The amount of data to be copied.
+	 * @param headerData 	The header Data of the Application field,
+	 * 						 will be copied in front of data
+	 * @param headerSize	The size of the headerDataF
+	 */
+	TmPacketStored( uint16_t apid, uint8_t service,	uint8_t subservice,
+			uint8_t packet_counter = 0, const uint8_t* data = nullptr,
+			uint32_t size = 0, const uint8_t* headerData = nullptr,
+			uint32_t headerSize = 0);
+	/**
+	 * Another ctor to directly pass structured content and header data to the
+	 * packet to avoid additional buffers.
+	 */
+	TmPacketStored( uint16_t apid, uint8_t service,	uint8_t subservice,
+			uint8_t packet_counter, SerializeIF* content,
+			SerializeIF* header = nullptr);
+	/**
+	 * This is a getter for the current store address of the packet.
+	 * @return	The current store address. The (raw) value is
+	 * 			@c StorageManagerIF::INVALID_ADDRESS if
+	 * 			the packet is not linked.
+	 */
+	store_address_t getStoreAddress();
+	/**
+	 * With this call, the packet is deleted.
+	 * It removes itself from the store and sets its data pointer to NULL.
+	 */
+	void deletePacket();
+	/**
+	 * With this call, a packet can be linked to another store. This is useful
+	 * if the packet is a class member and used for more than one packet.
+	 * @param setAddress	The new packet id to link to.
+	 */
+	void setStoreAddress( store_address_t setAddress );
+
+	ReturnValue_t sendPacket( MessageQueueId_t destination,
+			MessageQueueId_t sentFrom, bool doErrorReporting = true );
 private:
 	/**
 	 * This is a pointer to the store all instances of the class use.
@@ -43,65 +102,7 @@ private:
 	bool checkAndSetStore();
 
 	void checkAndReportLostTm();
-public:
-	/**
-	 * This is a default constructor which does not set the data pointer.
-	 * However, it does try to set the packet store.
-	 */
-	TmPacketStored( store_address_t setAddress );
-	/**
-	 * With this constructor, new space is allocated in the packet store and
-	 * a new PUS Telemetry Packet is created there.
-	 * Packet Application Data passed in data is copied into the packet.
-	 * The Application data is passed in two parts, first a header, then a
-	 * data field. This allows building a Telemetry
-	 * Packet from two separate data sources.
-	 * @param apid			Sets the packet's APID field.
-	 * @param service		Sets the packet's Service ID field.
-	 * 		This specifies the source service.
-	 * @param subservice	Sets the packet's Service Subtype field.
-	 * 		This specifies the source sub-service.
-	 * @param packet_counter	Sets the Packet counter field of this packet
-	 * @param data			The payload data to be copied to the Application
-	 * 						Data Field
-	 * @param size			The amount of data to be copied.
-	 * @param headerData 	The header Data of the Application field; will be
-	 * 						copied in front of data
-	 * @param headerSize	The size of the headerDataF
-	 */
-	TmPacketStored(uint16_t apid, uint8_t service,	uint8_t subservice,
-			uint8_t packet_counter = 0, const uint8_t* data = nullptr,
-			size_t size = 0, const uint8_t* headerData = nullptr,
-			size_t headerSize = 0);
-	/**
-	 * Another ctor to directly pass structured content and header data to the
-	 * packet to avoid additional buffers.
-	 */
-	TmPacketStored(uint16_t apid, uint8_t service,	uint8_t subservice,
-			uint8_t packet_counter, SerializeIF* content,
-			SerializeIF* header = nullptr);
-	/**
-	 * This is a getter for the current store address of the packet.
-	 * @return
-	 * The current store address. The (raw) value is
-	 * @c StorageManagerIF::INVALID_ADDRESS if the packet is not linked.
-	 */
-	store_address_t getStoreAddress();
-	/**
-	 * With this call, the packet is deleted.
-	 * It removes itself from the store and sets its data pointer to NULL.
-	 */
-	void deletePacket();
-	/**
-	 * With this call, a packet can be linked to another store. This is useful
-	 * if the packet is a class member and used for more than one packet.
-	 * @param setAddress	The new packet id to link to.
-	 */
-	void setStoreAddress(store_address_t setAddress);
-
-	ReturnValue_t sendPacket(MessageQueueId_t destination,
-			MessageQueueId_t sentFrom, bool doErrorReporting = true);
 };
 
 
-#endif /* FSFW_TMTCPACKET_TMPACKETSTORED_H_ */
+#endif /* FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_ */
