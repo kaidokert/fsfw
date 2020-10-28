@@ -9,7 +9,7 @@
 #ifndef NO_UNIT_TEST_FRAMEWORK
 
 #define CATCH_CONFIG_RUNNER
-#include <fsfw/unittest/catch2/catch.hpp>
+#include <catch2/catch.hpp>
 
 extern int customSetup();
 
