@@ -1,4 +1,5 @@
 #include "CatchDefinitions.h"
+
 #include "../config/cdatapool/dataPoolInit.h"
 #include "../config/objects/Factory.h"
 

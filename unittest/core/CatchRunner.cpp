@@ -11,6 +11,8 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch.hpp>
 
+#if CUSTOM_UNITTEST_RUNNER == 0
+
 extern int customSetup();
 
 int main( int argc, char* argv[] ) {
@@ -22,6 +24,8 @@ int main( int argc, char* argv[] ) {
     // global clean-up
     return result;
 }
+
+#endif
 
 
 #endif
