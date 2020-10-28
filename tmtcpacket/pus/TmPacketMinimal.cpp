@@ -1,7 +1,7 @@
-#include "../../tmtcpacket/pus/TmPacketMinimal.h"
+#include "TmPacketMinimal.h"
 #include <stddef.h>
 #include <time.h>
-#include "../../tmtcpacket/pus/PacketTimestampInterpreterIF.h"
+#include "PacketTimestampInterpreterIF.h"
 
 TmPacketMinimal::TmPacketMinimal(const uint8_t* set_data) : SpacePacketBase( set_data ) {
 	this->tm_data = (TmPacketMinimalPointer*)set_data;
