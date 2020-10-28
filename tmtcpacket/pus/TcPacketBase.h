@@ -46,17 +46,20 @@ public:
 	        sizeof(PUSTcDataFieldHeader) + 2);
 
 	enum AckField {
-	    //! Acknowledgements on all levels are expected.
-	    ACK_ALL = 0b1111,
-	    //! Acknowledgements on acceptance are expected.
-	    ACK_ACCEPTANCE = 0b0001,
-	    //! Acknowledgements on start are expected.
-	    ACK_START = 0b0010,
-	    //! Acknowledgements on step are expected.
-	    ACK_STEP = 0b0100,
-	    //! No acknowledgements are expected.
-	    ACK_NONE = 0b0000
+		//! No acknowledgements are expected.
+		ACK_NONE = 0b0000,
+		//! Acknowledgements on acceptance are expected.
+		ACK_ACCEPTANCE = 0b0001,
+		//! Acknowledgements on start are expected.
+		ACK_START = 0b0010,
+		//! Acknowledgements on step are expected.
+		ACK_STEP = 0b0100,
+		//! Acknowledfgement on completion are expected.
+		ACK_COMPLETION = 0b1000
 	};
+
+	static constexpr uint8_t ACK_ALL = ACK_ACCEPTANCE | ACK_START | ACK_STEP |
+			ACK_COMPLETION;
 
 	/**
 	 * This is the default constructor.

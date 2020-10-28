@@ -46,7 +46,7 @@ public:
 	 */
 	TcPacketStored(uint16_t apid, uint8_t service, uint8_t subservice,
 			uint8_t sequence_count = 0, const uint8_t* data = nullptr,
-			size_t size = 0, uint8_t ack = TcPacketBase::AckField::ACK_ALL);
+			size_t size = 0, uint8_t ack = TcPacketBase::ACK_ALL);
 	/**
 	 * Another constructor to create a TcPacket from a raw packet stream.
 	 * Takes the data and adds it unchecked to the TcStore.
