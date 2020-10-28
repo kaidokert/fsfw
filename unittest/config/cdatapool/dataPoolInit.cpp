@@ -1,4 +1,4 @@
-#include <fsfw/unittest/config/cdatapool/dataPoolInit.h>
+#include "dataPoolInit.h"
 
 void datapool::dataPoolInit(std::map<uint32_t, PoolEntryIF*> * poolMap) {
 	uint8_t UINT8T_INIT[1] = {0};

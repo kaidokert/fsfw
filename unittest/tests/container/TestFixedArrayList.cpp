@@ -1,8 +1,9 @@
+#include "../../core/CatchDefinitions.h"
+
 #include <fsfw/container/FixedArrayList.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
-#include <fsfw/unittest/catch2/catch.hpp>
-#include <fsfw/unittest/core/CatchDefinitions.h>
+#include <catch2/catch.hpp>
 
 
 TEST_CASE( "FixedArrayList Tests", "[TestFixedArrayList]") {

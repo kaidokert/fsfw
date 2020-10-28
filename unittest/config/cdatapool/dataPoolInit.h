@@ -1,7 +1,7 @@
 #ifndef HOSTED_CONFIG_CDATAPOOL_DATAPOOLINIT_H_
 #define HOSTED_CONFIG_CDATAPOOL_DATAPOOLINIT_H_
 
-#include <fsfw/datapool/DataPool.h>
+#include <fsfw/datapoolglob/GlobalDataPool.h>
 #include <fsfw/datapool/PoolEntryIF.h>
 #include <map>
 #include <cstdint>

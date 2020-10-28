@@ -1,8 +1,8 @@
 #include <fsfw/container/FixedOrderedMultimap.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
-#include <fsfw/unittest/catch2/catch.hpp>
-#include <fsfw/unittest/core/CatchDefinitions.h>
+#include <catch2/catch.hpp>
+#include "../../core/CatchDefinitions.h"
 
 TEST_CASE( "FixedOrderedMultimap Tests", "[TestFixedOrderedMultimap]") {
 	INFO("FixedOrderedMultimap Tests");
