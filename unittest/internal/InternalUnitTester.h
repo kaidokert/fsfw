@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TEST_UNITTESTCLASS_H_
 #define FRAMEWORK_TEST_UNITTESTCLASS_H_
 
-#include <unittest/internal/UnittDefinitions.h>
+#include "UnittDefinitions.h"
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
 /**
@@ -22,7 +22,7 @@ public:
 	 * Some function which calls all other tests
 	 * @return
 	 */
-	ReturnValue_t performTests();
+	virtual ReturnValue_t performTests();
 };
 
 

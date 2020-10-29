@@ -1,8 +1,9 @@
+#include "IntTestSemaphore.h"
 #include <fsfw/tasks/SemaphoreFactory.h>
 #include <unittest/internal/UnittDefinitions.h>
 #include <fsfw/serviceinterface/ServiceInterfaceStream.h>
 #include <fsfw/timemanager/Stopwatch.h>
-#include <unittest/internal/IntTestSemaphore.h>
+
 
 void testsemaph::testBinSemaph() {
 	std::string id = "[BinSemaphore]";

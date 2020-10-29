@@ -1,4 +1,4 @@
-#include <unittest/internal/IntTestSerialization.h>
+#include "IntTestSerialization.h"
 #include <fsfw/serialize/SerializeElement.h>
 #include <fsfw/serialize/SerialBufferAdapter.h>
 #include <unittest/internal/UnittDefinitions.h>

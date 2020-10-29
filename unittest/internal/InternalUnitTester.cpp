@@ -1,9 +1,10 @@
-#include <unittest/internal/InternalUnitTester.h>
-#include <unittest/internal/IntTestMq.h>
-#include <unittest/internal/IntTestSemaphore.h>
-#include <unittest/internal/IntTestSerialization.h>
-#include <unittest/internal/UnittDefinitions.h>
-#include <unittest/internal/IntTestMutex.h>
+#include "InternalUnitTester.h"
+#include "UnittDefinitions.h"
+
+#include "osal/IntTestMq.h"
+#include "osal/IntTestSemaphore.h"
+#include "osal/IntTestMutex.h"
+#include "serialize/IntTestSerialization.h"
 
 #include <cstdlib>
 

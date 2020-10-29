@@ -1,4 +1,5 @@
-#include <unittest/internal/IntTestMutex.h>
+#include "IntTestMutex.h"
+
 #include <fsfw/ipc/MutexFactory.h>
 #include <unittest/internal/UnittDefinitions.h>
 

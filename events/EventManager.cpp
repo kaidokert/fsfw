@@ -11,9 +11,12 @@
 // So a good guess is 75 to a max of 100 pools required for each, which fits well.
 // This should be configurable..
 const LocalPool::LocalPoolConfig EventManager::poolConfig = {
-        {240, sizeof(EventMatchTree::Node)},
-        {120, sizeof(EventIdRangeMatcher)},
-        {120, sizeof(ReporterRangeMatcher)}
+        {fsfwconfig::FSFW_EVENTMGMR_MATCHTREE_NODES,
+        		sizeof(EventMatchTree::Node)},
+        {fsfwconfig::FSFW_EVENTMGMT_EVENTIDMATCHERS,
+        		sizeof(EventIdRangeMatcher)},
+        {fsfwconfig::FSFW_EVENTMGMR_RANGEMATCHERS,
+        		sizeof(ReporterRangeMatcher)}
 };
 
 EventManager::EventManager(object_id_t setObjectId) :
