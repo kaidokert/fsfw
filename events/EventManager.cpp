@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include <FSFWConfig.h>
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
@@ -38,7 +39,7 @@ ReturnValue_t EventManager::performOperation(uint8_t opCode) {
 		EventMessage message;
 		result = eventReportQueue->receiveMessage(&message);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
-#ifdef DEBUG
+#ifdef FSFW_OBJECTMANAGER_
 			printEvent(&message);
 #endif
 			notifyListeners(&message);

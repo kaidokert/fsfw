@@ -20,10 +20,12 @@
 //! each CSB service !
 #define FSFW_CSB_FIFO_DEPTH			6
 
-//! If -DDEBUG is supplied in the build defines, there will be
+#define FSFW_OBJ_EVENT_TRANSLATION	0
+
+//! If FSFW_OBJ_EVENT_TRANSLATION is set to one,
 //! additional output which requires the translation files translateObjects
-//! and translateEvents (and their compiles source files)
-#ifdef DEBUG
+//! and translateEvents (and their compiled source files)
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 #define FSFW_DEBUG_OUTPUT 			1
 //! Specify whether info events are printed too.
 #define FSFW_DEBUG_INFO				1
