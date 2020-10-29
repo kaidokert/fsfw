@@ -2,7 +2,7 @@
 
 #include "catch.hpp"
 #include <array>
-#include "core/CatchDefinitions.h"
+#include "../../core/CatchDefinitions.h"
 
 static bool test_value_bool = true;
 static uint8_t tv_uint8   {5};

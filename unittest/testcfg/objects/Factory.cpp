@@ -23,10 +23,7 @@ void Factory::produce(void) {
 	setStaticFrameworkObjectIds();
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);
-	new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER,
-				datapool::INTERNAL_ERROR_FULL_MSG_QUEUES,
-				datapool::INTERNAL_ERROR_MISSED_LIVE_TM,
-				datapool::INTERNAL_ERROR_STORE_FULL);
+	new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
 
 }
 

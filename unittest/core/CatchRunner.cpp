@@ -9,7 +9,9 @@
 #ifndef NO_UNIT_TEST_FRAMEWORK
 
 #define CATCH_CONFIG_RUNNER
-#include <fsfw/unittest/catch2/catch.hpp>
+#include <catch2/catch.hpp>
+
+#if CUSTOM_UNITTEST_RUNNER == 0
 
 extern int customSetup();
 
@@ -22,6 +24,8 @@ int main( int argc, char* argv[] ) {
     // global clean-up
     return result;
 }
+
+#endif
 
 
 #endif

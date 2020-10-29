@@ -1,24 +1,25 @@
+#include "CatchDefinitions.h"
+
 #include "../config/cdatapool/dataPoolInit.h"
-#include <fsfw/unittest/config/cdatapool/dataPoolInit.h>
-#include <fsfw/unittest/config/objects/Factory.h>
-#include <fsfw/unittest/core/CatchDefinitions.h>
+#include "../config/objects/Factory.h"
+
 
 #ifdef GCOV
 #include <gcov.h>
 #endif
 
-#include <fsfw/objectmanager/ObjectManager.h>
-#include <fsfw/objectmanager/ObjectManagerIF.h>
-#include <fsfw/storagemanager/StorageManagerIF.h>
-#include <fsfw/datapool/DataPool.h>
-#include <fsfw/serviceinterface/ServiceInterfaceStream.h>
+#include "../../objectmanager/ObjectManager.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../storagemanager/StorageManagerIF.h"
+#include "../../datapoolglob/GlobalDataPool.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
 
 
 /* Global instantiations normally done in main.cpp */
 /* Initialize Data Pool */
-//namespace glob {
-DataPool dataPool(datapool::dataPoolInit);
-//}
+namespace glob {
+GlobalDataPool dataPool(datapool::dataPoolInit);
+}
 
 
 namespace sif {
