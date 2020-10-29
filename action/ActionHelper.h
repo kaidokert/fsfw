@@ -57,8 +57,9 @@ public:
 	 * @param commandId ID of the executed command
 	 * @param result Result of the execution
 	 */
-	void step(uint8_t step, MessageQueueId_t reportTo, ActionId_t commandId,
-	        ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
+	void step(uint8_t step, MessageQueueId_t reportTo,
+			ActionId_t commandId,
+			ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
 	/**
 	 * Function to be called by the owner to send a action completion message
 	 *

@@ -1,5 +1,6 @@
 #include "ActionHelper.h"
 #include "HasActionsIF.h"
+
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
@@ -65,6 +66,11 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy,
 	}
 	result = owner->executeAction(actionId, commandedBy, dataPtr, size);
 	ipcStore->deleteData(dataAddress);
+	if(result == HasActionsIF::EXECUTION_FINISHED) {
+		CommandMessage reply;
+		ActionMessage::setCompletionReply(&reply, actionId, result);
+		queueToUse->sendMessage(commandedBy, &reply);
+	}
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		CommandMessage reply;
 		ActionMessage::setStepReply(&reply, actionId, 0, result);
@@ -101,8 +107,8 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
 	// another dedicated message.
 	ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
-	// TODO: Service Implementation sucks at the moment
-	// TODO: why does it suck and why would someone need to hide the sender?
+    // If the sender needs to be hidden, for example to handle packet
+    // as unrequested reply, this will be done here.
 	if (hideSender) {
 		result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
 	}
@@ -140,8 +146,8 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
     // another dedicated message.
     ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
-    // TODO: Service Implementation sucks at the moment
-    // TODO: why does it suck and why would someone need to hide the sender?
+    // If the sender needs to be hidden, for example to handle packet
+    // as unrequested reply, this will be done here.
     if (hideSender) {
         result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
     }
