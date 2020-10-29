@@ -9,15 +9,20 @@ ParameterHelper::~ParameterHelper() {
 }
 
 ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
+    if(storage == nullptr) {
+        // ParameterHelper was not initialized
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 	switch (message->getCommand()) {
 	case ParameterMessage::CMD_PARAMETER_DUMP: {
 		ParameterWrapper description;
 		uint8_t domain = HasParametersIF::getDomain(
 				ParameterMessage::getParameterId(message));
-		uint16_t parameterId = HasParametersIF::getMatrixId(
+		uint8_t uniqueIdentifier = HasParametersIF::getUniqueIdentifierId(
 				ParameterMessage::getParameterId(message));
-		result = owner->getParameter(domain, parameterId,
+		result = owner->getParameter(domain, uniqueIdentifier,
 				&description, &description, 0);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
 			result = sendParameter(message->getSender(),
@@ -26,49 +31,48 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
 	}
 		break;
 	case ParameterMessage::CMD_PARAMETER_LOAD: {
-		uint8_t domain = HasParametersIF::getDomain(
-				ParameterMessage::getParameterId(message));
-		uint16_t parameterId = HasParametersIF::getMatrixId(
-				ParameterMessage::getParameterId(message));
-		uint8_t index = HasParametersIF::getIndex(
-				ParameterMessage::getParameterId(message));
+	    ParameterId_t parameterId = 0;
+	    uint8_t ptc = 0;
+	    uint8_t pfc = 0;
+	    uint8_t rows = 0;
+	    uint8_t columns = 0;
+	    store_address_t storeId = ParameterMessage::getParameterLoadCommand(
+	            message, &parameterId, &ptc, &pfc, &rows, &columns);
+	    Type type(Type::getActualType(ptc, pfc));
 
-		const uint8_t *storedStream = nullptr;
-		size_t storedStreamSize = 0;
-		result = storage->getData(
-				ParameterMessage::getStoreId(message), &storedStream,
-				&storedStreamSize);
+		uint8_t domain = HasParametersIF::getDomain(parameterId);
+		uint8_t uniqueIdentifier = HasParametersIF::getUniqueIdentifierId(
+		        parameterId);
+		uint16_t linearIndex = HasParametersIF::getIndex(parameterId);
+
+		ConstStorageAccessor accessor(storeId);
+		result = storage->getData(storeId, accessor);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			sif::error << "ParameterHelper::handleParameterMessage: Getting"
-					" store data failed for load command." << std::endl;
+					<< " store data failed for load command." << std::endl;
 			break;
 		}
 
 		ParameterWrapper streamWrapper;
-		result = streamWrapper.set(storedStream, storedStreamSize);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			storage->deleteData(ParameterMessage::getStoreId(message));
-			break;
+		result = streamWrapper.set(type, rows, columns, accessor.data(),
+		        accessor.size());
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+		    return result;
 		}
 
 		ParameterWrapper ownerWrapper;
-		result = owner->getParameter(domain, parameterId, &ownerWrapper,
-				&streamWrapper, index);
+		result = owner->getParameter(domain, uniqueIdentifier, &ownerWrapper,
+				&streamWrapper, linearIndex);
+
+		result = ownerWrapper.copyFrom(&streamWrapper, linearIndex);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
-			storage->deleteData(ParameterMessage::getStoreId(message));
-			break;
+		    return result;
 		}
 
-		result = ownerWrapper.copyFrom(&streamWrapper, index);
-
-		storage->deleteData(ParameterMessage::getStoreId(message));
-
-		if (result == HasReturnvaluesIF::RETURN_OK) {
-			result = sendParameter(message->getSender(),
-					ParameterMessage::getParameterId(message), &ownerWrapper);
-		}
-	}
+        result = sendParameter(message->getSender(),
+                ParameterMessage::getParameterId(message), &ownerWrapper);
 		break;
+	}
 	default:
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -113,15 +117,13 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 }
 
 ReturnValue_t ParameterHelper::initialize() {
-	ownerQueueId = owner->getCommandQueue();
+    ownerQueueId = owner->getCommandQueue();
 
-
-	storage = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	if (storage == NULL) {
-		return HasReturnvaluesIF::RETURN_FAILED;
-	} else {
-		return HasReturnvaluesIF::RETURN_OK;
-	}
+    storage = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    if (storage == nullptr) {
+        return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason,

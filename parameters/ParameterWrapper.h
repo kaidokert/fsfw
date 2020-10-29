@@ -22,6 +22,7 @@ public:
 	static const ReturnValue_t SOURCE_NOT_SET = MAKE_RETURN_CODE(0x05);
 	static const ReturnValue_t OUT_OF_BOUNDS = MAKE_RETURN_CODE(0x06);
 	static const ReturnValue_t NOT_SET = MAKE_RETURN_CODE(0x07);
+	static const ReturnValue_t COLUMN_OR_ROWS_ZERO = MAKE_RETURN_CODE(0x08);
 
 	ParameterWrapper();
 	ParameterWrapper(Type type, uint8_t rows, uint8_t columns, void *data);
@@ -68,7 +69,7 @@ public:
 
 	template<typename T>
 	void set(const T *readonlyData, uint8_t rows, uint8_t columns) {
-		this->data = NULL;
+		this->data = nullptr;
 		this->readonlyData = readonlyData;
 		this->type = PodTypeConversion<T>::type;
 		this->rows = rows;
@@ -97,13 +98,18 @@ public:
 	}
 	template<typename T>
 	void setMatrix(T& member) {
-		this->set(member[0], sizeof(member)/sizeof(member[0]), sizeof(member[0])/sizeof(member[0][0]));
+		this->set(member[0], sizeof(member)/sizeof(member[0]),
+		        sizeof(member[0])/sizeof(member[0][0]));
 	}
 
 	template<typename T>
 	void setMatrix(const T& member) {
-		this->set(member[0], sizeof(member)/sizeof(member[0]), sizeof(member[0])/sizeof(member[0][0]));
+		this->set(member[0], sizeof(member)/sizeof(member[0]),
+		        sizeof(member[0])/sizeof(member[0][0]));
 	}
+
+	ReturnValue_t set(Type type, uint8_t rows, uint8_t columns,
+	        const void *data, size_t dataSize);
 
 	ReturnValue_t set(const uint8_t *stream, size_t streamSize,
 			const uint8_t **remainingStream = nullptr,
@@ -113,6 +119,13 @@ public:
 			uint16_t startWritingAtIndex);
 
 private:
+
+    void convertLinearIndexToRowAndColumn(uint16_t index,
+            uint8_t *row, uint8_t *column);
+
+    uint16_t convertRowAndColumnToLinearIndex(uint8_t row,
+            uint8_t column);
+
 	bool pointsToStream = false;
 
 	Type type;
@@ -148,9 +161,9 @@ inline ReturnValue_t ParameterWrapper::getElement(T *value, uint8_t row,
 	if (pointsToStream) {
 		const uint8_t *streamWithType = static_cast<const uint8_t*>(readonlyData);
 		streamWithType += (row * columns + column) * type.getSize();
-		int32_t size = type.getSize();
+		size_t size = type.getSize();
 		return SerializeAdapter::deSerialize(value, &streamWithType,
-				&size, true);
+				&size, SerializeIF::Endianness::BIG);
 	}
 	else {
 		const T *dataWithType = static_cast<const T*>(readonlyData);

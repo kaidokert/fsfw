@@ -115,7 +115,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 		uint8_t fromColumns) {
 
 	//treat from as a continuous Stream as we copy all of it
-	const uint8_t *fromAsStream = (const uint8_t*) from;
+	const uint8_t *fromAsStream = reinterpret_cast<const uint8_t*>(from);
 	size_t streamSize = fromRows * fromColumns * sizeof(T);
 
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
@@ -123,8 +123,8 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 	for (uint8_t fromRow = 0; fromRow < fromRows; fromRow++) {
 
 		//get the start element of this row in data
-		T *dataWithDataType = ((T*) data)
-				+ (((startingRow + fromRow) * columns) + startingColumn);
+	    uint16_t offset = (((startingRow + fromRow) * columns) + startingColumn);
+		T *dataWithDataType = static_cast<T*>(data) + offset;
 
 		for (uint8_t fromColumn = 0; fromColumn < fromColumns; fromColumn++) {
 			result = SerializeAdapter::deSerialize(
@@ -157,6 +157,23 @@ ReturnValue_t ParameterWrapper::deSerialize(const uint8_t **buffer,
 	}
 
 	return copyFrom(&streamDescription, startWritingAtIndex);
+}
+
+ReturnValue_t ParameterWrapper::set(Type type, uint8_t rows, uint8_t columns,
+        const void *data, size_t dataSize) {
+    this->type = type;
+    this->rows = rows;
+    this->columns = columns;
+
+    size_t expectedSize = type.getSize() * rows * columns;
+    if (expectedSize < dataSize) {
+        return SerializeIF::STREAM_TOO_SHORT;
+    }
+
+    this->data = nullptr;
+    this->readonlyData = data;
+    pointsToStream = true;
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
@@ -202,11 +219,13 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		uint16_t startWritingAtIndex) {
-	if (data == NULL) {
+    // TODO: Optional diagnostic output (which can be disabled in FSFWConfig)
+    // to determined faulty implementations and configuration errors quickly.
+	if (data == nullptr) {
 		return READONLY;
 	}
 
-	if (from->readonlyData == NULL) {
+	if (from->readonlyData == nullptr) {
 		return SOURCE_NOT_SET;
 	}
 
@@ -214,9 +233,16 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		return DATATYPE_MISSMATCH;
 	}
 
+	// The smallest allowed value for rows and columns is one.
+	if(rows == 0 or columns == 0) {
+	    return COLUMN_OR_ROWS_ZERO;
+	}
+
 	//check if from fits into this
-	uint8_t startingRow = startWritingAtIndex / columns;
-	uint8_t startingColumn = startWritingAtIndex % columns;
+	uint8_t startingRow = 0;
+	uint8_t startingColumn = 0;
+	ParameterWrapper::convertLinearIndexToRowAndColumn(startWritingAtIndex,
+	        &startingRow, &startingColumn);
 
 	if ((from->rows > (rows - startingRow))
 			|| (from->columns > (columns - startingColumn))) {
@@ -278,4 +304,19 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 	}
 
 	return result;
+}
+
+void ParameterWrapper::convertLinearIndexToRowAndColumn(uint16_t index,
+        uint8_t *row, uint8_t *column) {
+    if(row == nullptr or column == nullptr) {
+        return;
+    }
+    // Integer division.
+    *row = index / columns;
+    *column = index % columns;
+}
+
+uint16_t ParameterWrapper::convertRowAndColumnToLinearIndex(uint8_t row,
+        uint8_t column) {
+    return row * columns + column;
 }
