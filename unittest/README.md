@@ -7,67 +7,6 @@ The makefile with default settings creates the unit test binary which can be
 run in the terminal or in eclipse.
 
 ### Instructions
-Basic steps:
-
-1. Clone this branch
-   ```sh
-   git clone https://egit.irs.uni-stuttgart.de/fsfw/fsfw_tests.git
-   ```
-
-2. Inititate the framework submodule (need to only be done once)
-   ```sh
-   git submodule init
-   git submodule sync
-   git submodule update
-   ```
-   
-2. Run the makefile With
-
-   ```sh
-   make all -j<Number Of Processors>
-   ```
-   This will build the debug version of the unit tests.
-   The release version can be built with the target `release`
-
-4. Run the binary located in the \_bin folder in the terminal or in eclipse.
-
-   ```sh
-   _bin/<binaryName>.elf [--success]
-   ```
-   The success parameter is optional. Leaving it out ommits the success messages.
-
-5. To clear the binary, object and dependency folder, run
-
-   ```sh
-   make clean
-   ```
-
-Please note that on most UNIX environments (e.g. Ubuntu), the real time functionalities used by the UNIX pthread module are restricted, which will lead to permission errors when creating these tasks.
-
-To solve this issues, try following steps:
-
-1. Edit the /etc/security/limits.conf 
-   file and add following lines at the end (worked on Ubuntu 19.10):
-   ```sh
-   <username>   hard   rtprio  99
-   <username>   soft   rtprio  99
-   ```
-   Then restart the computer. <br>
-   The soft limit can also be set in the console with `ulimit -Sr` if the hard
-   limit has been increased,
-   but it is recommended to add it to the file as well for convenience.
-   If adding the second line is not desired for security reasons,
-   the soft limit needs to be set for each session. If using an IDE like eclipse 
-   in that case, the IDE needs to be started from the console after setting
-   the soft limit higher there.
-2. Run the shell script inside the linux folder (worked on Ubuntu 18.04)
-   ```sh
-   ./unlockRealtime
-   ```
-   This script executes the `setcap` command on bash and on the binaries.
-   It also increases the soft real time limit of the current shell instance
-   to the maximum. If running the script before executing the binary does
-   not help, try the following step.
    
 ### Eclipse CDT settings
 
@@ -108,14 +47,3 @@ For writing basics tests, the [assertion documentation](https://github.com/catch
 or the existing examples are a good guideliens.
 For more advanced tests, refer to the [catch2 documentation](https://github.com/catchorg/Catch2/blob/master/docs/Readme.md#top).
 
-### Compile without test framework
-Alternatively, the unit tests can also be run internally without
-a framework. This can be used to perform unit tests on the real hardware.
-To do this, run
-```sh
-make -j<Number Of Processors> notestfw
-```
-This will instruct the makefile to exclude the test framework main.cpp
-and include our own. This will also create a binary which can be used
-outside the host machine (a Makefile adaptions might be neccessary
-if another OS than linux is required)
