@@ -1,35 +1,42 @@
-#ifndef HEALTHTABLE_H_
-#define HEALTHTABLE_H_
+#ifndef FSFW_HEALTH_HEALTHTABLE_H_
+#define FSFW_HEALTH_HEALTHTABLE_H_
 
 #include "HealthTableIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../ipc/MutexIF.h"
 #include <map>
 
-typedef std::map<object_id_t, HasHealthIF::HealthState> HealthMap;
 
 class HealthTable: public HealthTableIF, public SystemObject {
 public:
 	HealthTable(object_id_t objectid);
 	virtual ~HealthTable();
 
-	virtual ReturnValue_t registerObject(object_id_t object,
-			HasHealthIF::HealthState initilialState = HasHealthIF::HEALTHY);
+    /** HealthTableIF overrides */
+    virtual ReturnValue_t registerObject(object_id_t object,
+            HasHealthIF::HealthState initilialState =
+            HasHealthIF::HEALTHY) override;
+    virtual size_t getPrintSize() override;
+    virtual void printAll(uint8_t *pointer, size_t maxSize) override;
 
-	virtual bool hasHealth(object_id_t object);
-	virtual void setHealth(object_id_t object, HasHealthIF::HealthState newState);
-	virtual HasHealthIF::HealthState getHealth(object_id_t);
-
-	virtual uint32_t getPrintSize();
-	virtual void printAll(uint8_t *pointer, size_t maxSize);
+	/** ManagesHealthIF overrides */
+	virtual bool hasHealth(object_id_t object) override;
+	virtual void setHealth(object_id_t object,
+	        HasHealthIF::HealthState newState) override;
+	virtual HasHealthIF::HealthState getHealth(object_id_t) override;
 
 protected:
+	using HealthMap = std::map<object_id_t, HasHealthIF::HealthState>;
+	using HealthEntry = std::pair<object_id_t, HasHealthIF::HealthState>;
+
 	MutexIF* mutex;
 	HealthMap healthMap;
 
 	HealthMap::iterator mapIterator;
 
-	virtual ReturnValue_t iterate(std::pair<object_id_t,HasHealthIF::HealthState> *value, bool reset = false);
+	virtual ReturnValue_t iterate(
+	        HealthEntry* value,
+	        bool reset = false) override;
 };
 
-#endif /* HEALTHTABLE_H_ */
+#endif /* FSFW_HEALTH_HEALTHTABLE_H_ */
