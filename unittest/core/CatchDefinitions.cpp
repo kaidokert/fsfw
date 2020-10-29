@@ -1,5 +1,5 @@
+#include "CatchDefinitions.h"
 #include <fsfw/objectmanager/ObjectManagerIF.h>
-#include <fsfw/unittest/core/CatchDefinitions.h>
 
 StorageManagerIF* tglob::getIpcStoreHandle() {
 	if(objectManager != nullptr) {
