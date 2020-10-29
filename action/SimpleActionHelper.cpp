@@ -1,9 +1,9 @@
 #include "HasActionsIF.h"
 #include "SimpleActionHelper.h"
+
 SimpleActionHelper::SimpleActionHelper(HasActionsIF* setOwner,
 		MessageQueueIF* useThisQueue) :
-		ActionHelper(setOwner, useThisQueue), isExecuting(false), lastCommander(
-				0), lastAction(0), stepCount(0) {
+		ActionHelper(setOwner, useThisQueue), isExecuting(false) {
 }
 
 SimpleActionHelper::~SimpleActionHelper() {
