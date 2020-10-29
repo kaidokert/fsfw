@@ -1,16 +1,18 @@
 #ifndef CONFIG_TMTC_PUSIDS_HPP_
 #define CONFIG_TMTC_PUSIDS_HPP_
 
+#include <cstdint>
+
 namespace pus {
-enum Ids{
+enum Ids: uint8_t {
 	PUS_SERVICE_1 = 1,
 	PUS_SERVICE_2 = 2,
 	PUS_SERVICE_3 = 3,
-	PUS_SERVICE_3_PSB = 3,
 	PUS_SERVICE_5 = 5,
 	PUS_SERVICE_6 = 6,
 	PUS_SERVICE_8 = 8,
 	PUS_SERVICE_9 = 9,
+	PUS_SERVICE_11 = 11,
 	PUS_SERVICE_17 = 17,
 	PUS_SERVICE_19 = 19,
 	PUS_SERVICE_20 = 20,
