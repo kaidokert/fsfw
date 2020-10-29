@@ -140,8 +140,8 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
     // another dedicated message.
     ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
-    // TODO: Service Implementation sucks at the moment
-    // TODO: why does it suck and why would someone need to hide the sender?
+    // If the sender needs to be hidden, for example to handle packet
+    // as unrequested reply, this will be done here.
     if (hideSender) {
         result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
     }
