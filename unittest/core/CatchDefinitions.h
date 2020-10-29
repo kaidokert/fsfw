@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FSFW_UNITTEST_CORE_CATCHDEFINITIONS_H_
+#define FSFW_UNITTEST_CORE_CATCHDEFINITIONS_H_
 
 #include <fsfw/ipc/messageQueueDefinitions.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
@@ -17,3 +18,4 @@ namespace tglob {
 	StorageManagerIF* getIpcStoreHandle();
 }
 
+#endif /* FSFW_UNITTEST_CORE_CATCHDEFINITIONS_H_ */
