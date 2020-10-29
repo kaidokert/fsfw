@@ -1,8 +1,8 @@
-#ifndef FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_
-#define FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_
+#ifndef FSFW_RETURNVALUES_HASRETURNVALUESIF_H_
+#define FSFW_RETURNVALUES_HASRETURNVALUESIF_H_
 
-#include "../returnvalues/FwClassIds.h"
-#include <config/returnvalues/classIds.h>
+#include "FwClassIds.h"
+#include <returnvalues/classIds.h>
 #include <cstdint>
 
 #define MAKE_RETURN_CODE( number )	((INTERFACE_ID << 8) + (number))
@@ -28,4 +28,4 @@ public:
 	}
 };
 
-#endif /* FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_ */
+#endif /* FSFW_RETURNVALUES_HASRETURNVALUESIF_H_ */
