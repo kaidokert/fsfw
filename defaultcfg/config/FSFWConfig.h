@@ -11,6 +11,10 @@
 //! Be careful, this also turns off most diagnostic prinouts!
 #define FSFW_REDUCED_PRINTOUT		0
 
+//! Default timestamp size. The default timestamp will be a seven byte CDC short
+//! timestamp.
+#define FSFW_MISSION_TIMESTAMP_SIZE 8
+
 //! Can be used to enable debugging printouts for developing the FSFW
 #define FSFW_DEBUGGING              0
 
