@@ -65,6 +65,11 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy,
 	}
 	result = owner->executeAction(actionId, commandedBy, dataPtr, size);
 	ipcStore->deleteData(dataAddress);
+	if(result == HasActionsIF::EXECUTION_FINISHED) {
+		CommandMessage reply;
+		ActionMessage::setCompletionReply(&reply, actionId, result);
+		queueToUse->sendMessage(commandedBy, &reply);
+	}
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		CommandMessage reply;
 		ActionMessage::setStepReply(&reply, actionId, 0, result);
