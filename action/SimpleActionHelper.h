@@ -4,6 +4,9 @@
 #include "ActionHelper.h"
 
 /**
+ * @brief	This is an action helper which is only able to service one action
+ * 			at a time but remembers last commander and last action which
+ * 			simplifies usage
  */
 class SimpleActionHelper: public ActionHelper {
 public:

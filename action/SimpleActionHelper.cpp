@@ -10,7 +10,8 @@ SimpleActionHelper::~SimpleActionHelper() {
 }
 
 void SimpleActionHelper::step(ReturnValue_t result) {
-	//STEP_OFFESET is subtracted to compensate for adding offset in base method, which is not necessary here.
+	// STEP_OFFESET is subtracted to compensate for adding offset in base
+	// method, which is not necessary here.
 	ActionHelper::step(stepCount - STEP_OFFSET, lastCommander, lastAction,
 			result);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
