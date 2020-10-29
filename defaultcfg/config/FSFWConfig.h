@@ -12,6 +12,10 @@
 //! Be careful, this also turns off most diagnostic prinouts!
 #define FSFW_REDUCED_PRINTOUT		0
 
+//! Default timestamp size. The default timestamp will be an eight byte CDC
+//! short timestamp.
+#define FSFW_MISSION_TIMESTAMP_SIZE 8
+
 //! Can be used to enable debugging printouts for developing the FSFW
 #define FSFW_DEBUGGING              0
 
@@ -19,12 +23,14 @@
 //! also determines how many commands a CSB service can handle in one cycle
 //! simulataneously. This will increase the required RAM for
 //! each CSB service !
-#define FSFW_CSB_FIFO_DEPTH			5
+#define FSFW_CSB_FIFO_DEPTH			6
 
-//! If -DDEBUG is supplied in the build defines, there will be
+//! If FSFW_OBJ_EVENT_TRANSLATION is set to one,
 //! additional output which requires the translation files translateObjects
-//! and translateEvents (and their compiles source files)
-#ifdef DEBUG
+//! and translateEvents (and their compiled source files)
+#define FSFW_OBJ_EVENT_TRANSLATION	0
+
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 #define FSFW_DEBUG_OUTPUT 			1
 //! Specify whether info events are printed too.
 #define FSFW_DEBUG_INFO				1
@@ -44,6 +50,5 @@ static constexpr size_t FSFW_EVENTMGMR_MATCHTREE_NODES = 240;
 static constexpr size_t FSFW_EVENTMGMT_EVENTIDMATCHERS = 120;
 static constexpr size_t FSFW_EVENTMGMR_RANGEMATCHERS   = 120;
 }
-
 
 #endif /* CONFIG_FSFWCONFIG_H_ */
