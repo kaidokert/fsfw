@@ -1,9 +1,9 @@
-CXXSRC += $(wildcard $(CURRENTPATH)/config/ipc/*.cpp)
-CXXSRC += $(wildcard $(CURRENTPATH)/config/objects/*.cpp)
-CXXSRC += $(wildcard $(CURRENTPATH)/config/pollingsequence/*.cpp)
-CXXSRC += $(wildcard $(CURRENTPATH)/config/events/*.cpp)
-CXXSRC += $(wildcard $(CURRENTPATH)/config/tmtc/*.cpp)
-CXXSRC += $(wildcard $(CURRENTPATH)/config/devices/*.cpp)
+CXXSRC += $(wildcard $(CURRENTPATH)/ipc/*.cpp)
+CXXSRC += $(wildcard $(CURRENTPATH)/objects/*.cpp)
+CXXSRC += $(wildcard $(CURRENTPATH)/pollingsequence/*.cpp)
+CXXSRC += $(wildcard $(CURRENTPATH)/events/*.cpp)
+CXXSRC += $(wildcard $(CURRENTPATH)/tmtc/*.cpp)
+CXXSRC += $(wildcard $(CURRENTPATH)/devices/*.cpp)
 
 INCLUDES += $(CURRENTPATH)
 INCLUDES += $(CURRENTPATH)/objects
