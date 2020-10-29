@@ -1,11 +1,12 @@
-#ifndef FRAMEWORK_ACTION_HASACTIONSIF_H_
-#define FRAMEWORK_ACTION_HASACTIONSIF_H_
+#ifndef FSFW_ACTION_HASACTIONSIF_H_
+#define FSFW_ACTION_HASACTIONSIF_H_
 
 #include "ActionHelper.h"
 #include "ActionMessage.h"
 #include "SimpleActionHelper.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MessageQueueIF.h"
+
 /**
  * @brief
  * Interface for component which uses actions
@@ -59,4 +60,4 @@ public:
 };
 
 
-#endif /* FRAMEWORK_ACTION_HASACTIONSIF_H_ */
+#endif /* FSFW_ACTION_HASACTIONSIF_H_ */
