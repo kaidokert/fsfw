@@ -1,7 +1,7 @@
 #ifndef FSFW_DEFAULTCFG_VERSION_H_
 #define FSFW_DEFAULTCFG_VERSION_H_
 
-static const char* FSFW_VERSION_NAME = "fsfw";
+const char* const FSFW_VERSION_NAME = "fsfw";
 
 #define FSFW_VERSION 		0
 #define	FSFW_SUBVERSION 	0
