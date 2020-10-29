@@ -2,6 +2,7 @@
 #define CONFIG_FSFWCONFIG_H_
 
 #include <FSFWVersion.h>
+#include <cstddef>
 
 //! Used to determine whether C++ ostreams are used
 //! Those can lead to code bloat.
@@ -36,6 +37,13 @@
 //! When using the newlib nano library, C99 support for stdio facilities
 //! will not be provided. This define should be set to 1 if this is the case.
 #define FSFW_NO_C99_IO 	1
+
+namespace fsfwconfig {
+//! Configure the allocated pool sizes for the event manager.
+static constexpr size_t FSFW_EVENTMGMR_MATCHTREE_NODES = 240;
+static constexpr size_t FSFW_EVENTMGMT_EVENTIDMATCHERS = 120;
+static constexpr size_t FSFW_EVENTMGMR_RANGEMATCHERS   = 120;
+}
 
 
 #endif /* CONFIG_FSFWCONFIG_H_ */

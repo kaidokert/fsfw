@@ -12,7 +12,6 @@ const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
 // objects registering for certain events.
 // Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
 // So a good guess is 75 to a max of 100 pools required for each, which fits well.
-// SHOULDDO: Shouldn't this be in the config folder and passed via ctor?
 const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
 
 EventManager::EventManager(object_id_t setObjectId) :
