@@ -1,6 +1,6 @@
-#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "SpacePacketBase.h"
-#include <string.h>
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include <cstring>
 
 SpacePacketBase::SpacePacketBase( const uint8_t* set_address ) {
 	this->data = (SpacePacketPointer*) set_address;
@@ -14,7 +14,8 @@ uint8_t SpacePacketBase::getPacketVersionNumber( void ) {
 	return (this->data->header.packet_id_h & 0b11100000) >> 5;
 }
 
-void SpacePacketBase::initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader, uint16_t apid, uint16_t sequenceCount) {
+void SpacePacketBase::initSpacePacketHeader(bool isTelecommand,
+		bool hasSecondaryHeader, uint16_t apid, uint16_t sequenceCount) {
 	//reset header to zero:
 	memset(data,0, sizeof(this->data->header) );
 	//Set TC/TM bit.
@@ -81,7 +82,7 @@ void SpacePacketBase::setPacketDataLength( uint16_t new_length) {
 	this->data->header.packet_length_l = ( new_length & 0x00FF );
 }
 
-uint32_t SpacePacketBase::getFullSize() {
+size_t SpacePacketBase::getFullSize() {
 	//+1 is done because size in packet data length field is: size of data field -1
 	return this->getPacketDataLength() + sizeof(this->data->header) + 1;
 }
