@@ -1,8 +1,8 @@
-#ifndef TCPACKETSTORED_H_
-#define TCPACKETSTORED_H_
+#ifndef TMTCPACKET_PUS_TCPACKETSTORED_H_
+#define TMTCPACKET_PUS_TCPACKETSTORED_H_
 
-#include "../../storagemanager/StorageManagerIF.h"
 #include "TcPacketBase.h"
+#include "../../storagemanager/StorageManagerIF.h"
 
 /**
  *	This class generates a ECSS PUS Telecommand packet within a given
@@ -15,26 +15,6 @@
  *	@ingroup tmtcpackets
  */
 class TcPacketStored : public TcPacketBase {
-private:
-	/**
-	 * This is a pointer to the store all instances of the class use.
-	 * If the store is not yet set (i.e. \c store is NULL), every constructor
-	 * call tries to set it and throws an error message in case of failures.
-	 * The default store is objects::TC_STORE.
-	 */
-	static StorageManagerIF* store;
-	/**
-	 * The address where the packet data of the object instance is stored.
-	 */
-	store_address_t storeAddress;
-	/**
-	 * A helper method to check if a store is assigned to the class.
-	 * If not, the method tries to retrieve the store from the global
-	 * ObjectManager.
-	 * @return	@li	\c true if the store is linked or could be created.
-	 * 			@li \c false otherwise.
-	 */
-	bool checkAndSetStore();
 public:
 	/**
 	 * This is a default constructor which does not set the data pointer.
@@ -53,18 +33,20 @@ public:
 	 * a new PUS Telecommand Packet is created there.
 	 * Packet Application Data passed in data is copied into the packet.
 	 * @param apid			Sets the packet's APID field.
-	 * @param ack			Set's the packet's Ack field,
-	 * 		which specifies number and size of verification packets returned
-	 * 		for this command.
 	 * @param service		Sets the packet's Service ID field.
-	 * 		This specifies the destination service.
+	 *                      This specifies the destination service.
 	 * @param subservice	Sets the packet's Service Subtype field.
-	 * 		This specifies the destination sub-service.
-	 * @param sequence_count	Sets the packet's Source Sequence Count field.
+	 * 		                This specifies the destination sub-service.
+	 * @param sequence_count Sets the packet's Source Sequence Count field.
 	 * @param data		The data to be copied to the Application Data Field.
 	 * @param size		The amount of data to be copied.
+	 * @param ack           Set's the packet's Ack field, which specifies
+	 *                      number of verification packets returned
+     *                      for this command.
 	 */
-	TcPacketStored( uint16_t apid, uint8_t ack, uint8_t service, uint8_t subservice, uint8_t sequence_count = 0, const uint8_t* data = NULL, uint32_t size = 0 );
+	TcPacketStored(uint16_t apid, uint8_t service, uint8_t subservice,
+			uint8_t sequence_count = 0, const uint8_t* data = nullptr,
+			size_t size = 0, uint8_t ack = TcPacketBase::ACK_ALL);
 	/**
 	 * Another constructor to create a TcPacket from a raw packet stream.
 	 * Takes the data and adds it unchecked to the TcStore.
@@ -72,10 +54,19 @@ public:
 	 * @param Size size of the packet.
 	 */
 	TcPacketStored( const uint8_t* data, uint32_t size);
+
+	/**
+	 * Getter function for the raw data.
+	 * @param dataPtr [out] Pointer to the data pointer to set
+	 * @param dataSize [out] Address of size to set.
+	 * @return -@c RETURN_OK if data was retrieved successfully.
+	 */
+	ReturnValue_t getData(const uint8_t ** dataPtr,
+			size_t* dataSize);
 	/**
 	 * This is a getter for the current store address of the packet.
-	 * @return	The current store address. The (raw) value is \c StorageManagerIF::INVALID_ADDRESS if
-	 * 			the packet is not linked.
+	 * @return	The current store address. The (raw) value is
+	 * 			@c StorageManagerIF::INVALID_ADDRESS if the packet is not linked.
 	 */
 	store_address_t getStoreAddress();
 	/**
@@ -99,7 +90,28 @@ public:
 	 * 			store or size is incorrect.
 	 */
 	bool isSizeCorrect();
+
+private:
+    /**
+     * This is a pointer to the store all instances of the class use.
+     * If the store is not yet set (i.e. @c store is NULL), every constructor
+     * call tries to set it and throws an error message in case of failures.
+     * The default store is objects::TC_STORE.
+     */
+    static StorageManagerIF* store;
+    /**
+     * The address where the packet data of the object instance is stored.
+     */
+    store_address_t storeAddress;
+    /**
+     * A helper method to check if a store is assigned to the class.
+     * If not, the method tries to retrieve the store from the global
+     * ObjectManager.
+     * @return  @li @c true if the store is linked or could be created.
+     *          @li @c false otherwise.
+     */
+    bool checkAndSetStore();
 };
 
 
-#endif /* TCPACKETSTORED_H_ */
+#endif /* TMTCPACKET_PUS_TCPACKETSTORED_H_ */
