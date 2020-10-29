@@ -1,10 +1,10 @@
+#include "Factory.h"
+
 #include <fsfw/events/EventManager.h>
 #include <fsfw/health/HealthTable.h>
 
 #include <fsfw/internalError/InternalErrorReporter.h>
 #include <fsfw/objectmanager/frameworkObjects.h>
-#include <fsfw/unittest/config/cdatapool/dataPoolInit.h>
-#include <fsfw/unittest/config/objects/Factory.h>
 
 /**
  * @brief Produces system objects.
