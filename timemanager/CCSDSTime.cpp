@@ -1,8 +1,9 @@
-#include "../timemanager/CCSDSTime.h"
+#include "CCSDSTime.h"
+
 #include <cstdio>
 #include <cinttypes>
 #include <cmath>
-
+#include <FSFWConfig.h>
 
 CCSDSTime::CCSDSTime() {
 }
@@ -158,15 +159,16 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	}
 // Newlib nano can't parse uint8, see SCNu8 documentation and https://sourceware.org/newlib/README
 // Suggestion: use uint16 all the time. This should work on all systems.
-#ifdef NEWLIB_NANO_NO_C99_IO
+#if FSFW_NO_C99_IO == 1
 	uint16_t year;
 	uint16_t month;
 	uint16_t day;
 	uint16_t hour;
 	uint16_t minute;
 	float second;
-	int count = sscanf((char *) from, "%4" SCNu16 "-%2" SCNu16 "-%2" SCNu16 "T%2" SCNu16 ":%2" SCNu16 ":%fZ", &year,
-				&month, &day, &hour, &minute, &second);
+	int count = sscanf((char *) from, "%4" SCNu16 "-%2" SCNu16 "-%2" SCNu16 "T%"
+	        "2" SCNu16 ":%2" SCNu16 ":%fZ", &year, &month, &day, &hour,
+	        &minute, &second);
 	if (count == 6) {
 		to->year = year;
 		to->month = month;
@@ -179,12 +181,13 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
 	}
 
 	// try Code B (yyyy-ddd)
-	count = sscanf((char *) from, "%4" SCNu16 "-%3" SCNu16 "T%2" SCNu16 ":%2" SCNu16 ":%fZ", &year, &day,
-			&hour, &minute, &second);
+	count = sscanf((char *) from, "%4" SCNu16 "-%3" SCNu16 "T%2" SCNu16 ":%"
+	        "2" SCNu16 ":%fZ", &year, &day, &hour, &minute, &second);
 	if (count == 5) {
 		uint8_t tempDay;
 		ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year,
-				reinterpret_cast<uint8_t *>(&month), reinterpret_cast<uint8_t *>(&tempDay));
+				reinterpret_cast<uint8_t *>(&month),
+				reinterpret_cast<uint8_t *>(&tempDay));
 		if (result != RETURN_OK) {
 			return RETURN_FAILED;
 		}
