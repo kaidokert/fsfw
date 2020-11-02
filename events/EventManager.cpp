@@ -1,5 +1,7 @@
 #include "EventManager.h"
 #include "EventMessage.h"
+#include <FSFWConfig.h>
+
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
@@ -12,8 +14,10 @@ const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
 // objects registering for certain events.
 // Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
 // So a good guess is 75 to a max of 100 pools required for each, which fits well.
-// SHOULDDO: Shouldn't this be in the config folder and passed via ctor?
-const uint16_t EventManager::N_ELEMENTS[N_POOLS] = { 240, 120, 120 };
+const uint16_t EventManager::N_ELEMENTS[N_POOLS] = {
+		fsfwconfig::FSFW_EVENTMGMR_MATCHTREE_NODES ,
+		fsfwconfig::FSFW_EVENTMGMT_EVENTIDMATCHERS,
+		fsfwconfig::FSFW_EVENTMGMR_RANGEMATCHERS };
 
 EventManager::EventManager(object_id_t setObjectId) :
 		SystemObject(setObjectId),
