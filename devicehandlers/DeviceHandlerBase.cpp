@@ -1251,7 +1251,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (result == BUSY) {
 		    //so we can track misconfigurations
 			sif::debug << std::hex << getObjectId()
-					<< ": DHB::buildInternalCommand: Busy" << std::endl;
+					<< ": DHB::buildInternalCommand: Busy" << std::dec << std::endl;
 			result = NOTHING_TO_SEND; //no need to report this
 		}
 	}
