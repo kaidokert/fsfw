@@ -10,6 +10,12 @@ HealthTable::HealthTable(object_id_t objectid) :
 	mapIterator = healthMap.begin();
 }
 
+void HealthTable::setMutexTimeout(MutexIF::TimeoutType timeoutType,
+		uint32_t timeoutMs) {
+	this->timeoutType = timeoutType;
+	this->mutexTimeoutMs = timeoutMs;
+}
+
 HealthTable::~HealthTable() {
 	MutexFactory::instance()->deleteMutex(mutex);
 }
@@ -25,7 +31,7 @@ ReturnValue_t HealthTable::registerObject(object_id_t object,
 
 void HealthTable::setHealth(object_id_t object,
 		HasHealthIF::HealthState newState) {
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+    MutexHelper(mutex, timeoutType, mutexTimeoutMs);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		iter->second = newState;
@@ -34,7 +40,7 @@ void HealthTable::setHealth(object_id_t object,
 
 HasHealthIF::HealthState HealthTable::getHealth(object_id_t object) {
 	HasHealthIF::HealthState state = HasHealthIF::HEALTHY;
-	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+	MutexHelper(mutex, timeoutType, mutexTimeoutMs);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		state = iter->second;
@@ -42,9 +48,8 @@ HasHealthIF::HealthState HealthTable::getHealth(object_id_t object) {
 	return state;
 }
 
-
 bool HealthTable::hasHealth(object_id_t object) {
-	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+	MutexHelper(mutex, timeoutType, mutexTimeoutMs);
 	HealthMap::iterator iter = healthMap.find(object);
 	if (iter != healthMap.end()) {
 		return true;
@@ -53,14 +58,14 @@ bool HealthTable::hasHealth(object_id_t object) {
 }
 
 size_t HealthTable::getPrintSize() {
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+    MutexHelper(mutex, timeoutType, mutexTimeoutMs);
     uint32_t size = healthMap.size() * sizeof(object_id_t) +
             sizeof(HasHealthIF::HealthState) + sizeof(uint16_t);
     return size;
 }
 
 void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+    MutexHelper(mutex, timeoutType, mutexTimeoutMs);
 	size_t size = 0;
 	uint16_t count = healthMap.size();
 	SerializeAdapter::serialize(&count,
@@ -76,7 +81,7 @@ void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
 
 ReturnValue_t HealthTable::iterate(HealthEntry *value, bool reset) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+	MutexHelper(mutex, timeoutType, mutexTimeoutMs);
 	if (reset) {
 		mapIterator = healthMap.begin();
 	}
