@@ -1,10 +1,11 @@
-#ifndef SPACEPACKETBASE_H_
-#define SPACEPACKETBASE_H_
+#ifndef FSFW_TMTCPACKET_SPACEPACKETBASE_H_
+#define FSFW_TMTCPACKET_SPACEPACKETBASE_H_
 
 #include "ccsds_header.h"
+#include <cstddef>
 
 /**
- * \defgroup tmtcpackets Space Packets
+ * @defgroup tmtcpackets Space Packets
  * This is the group, where all classes associated with Telecommand and
  * Telemetry packets belong to.
  * The class hierarchy resembles the dependency between the different standards
@@ -81,7 +82,8 @@ public:
 	 */
 	bool isTelecommand( void );
 
-	void initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader, uint16_t apid, uint16_t sequenceCount = 0);
+	void initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader,
+	        uint16_t apid, uint16_t sequenceCount = 0);
 	/**
 	 * The CCSDS header provides a secondary header flag (the fifth-highest bit),
 	 *  which is checked with this method.
@@ -167,10 +169,10 @@ public:
 	 * This method returns the full raw packet size.
 	 * @return	The full size of the packet in bytes.
 	 */
-	uint32_t getFullSize();
+	size_t getFullSize();
 
 	uint32_t getApidAndSequenceCount() const;
 
 };
 
-#endif /* SPACEPACKETBASE_H_ */
+#endif /* FSFW_TMTCPACKET_SPACEPACKETBASE_H_ */

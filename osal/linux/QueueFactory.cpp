@@ -1,15 +1,21 @@
 #include "../../ipc/QueueFactory.h"
+#include "MessageQueue.h"
+
+#include "../../ipc/messageQueueDefinitions.h"
+#include "../../ipc/MessageQueueSenderIF.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+
 #include <mqueue.h>
 #include <errno.h>
-#include "MessageQueue.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+
+
 #include <cstring>
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom,
+			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 			bool ignoreFault) {
 	return MessageQueue::sendMessageFromMessageQueue(sendTo,message,
 			sentFrom,ignoreFault);

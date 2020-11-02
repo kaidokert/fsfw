@@ -1,11 +1,16 @@
-#ifndef MEMORYHELPER_H_
-#define MEMORYHELPER_H_
-#include "../ipc/CommandMessage.h"
+#ifndef FSFW_MEMORY_MEMORYHELPER_H_
+#define FSFW_MEMORY_MEMORYHELPER_H_
+
 #include "AcceptsMemoryMessagesIF.h"
+
+#include "../ipc/CommandMessage.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../ipc/MessageQueueIF.h"
 
+/**
+ * @brief   TODO: documentation.
+ */
 class MemoryHelper : public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::MEMORY_HELPER;
@@ -13,25 +18,32 @@ public:
 	static const ReturnValue_t INVALID_ADDRESS = MAKE_RETURN_CODE(0xE1);
 	static const ReturnValue_t INVALID_SIZE = MAKE_RETURN_CODE(0xE2);
 	static const ReturnValue_t STATE_MISMATCH = MAKE_RETURN_CODE(0xE3);
+
+    MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue);
+    ~MemoryHelper();
+
+    ReturnValue_t handleMemoryCommand(CommandMessage* message);
+    void completeLoad(ReturnValue_t errorCode,
+            const uint8_t* dataToCopy = nullptr, const size_t size = 0,
+            uint8_t* copyHere = nullptr);
+    void completeDump(ReturnValue_t errorCode,
+            const uint8_t* dataToCopy = nullptr, const size_t size = 0);
+    void swapMatrixCopy(uint8_t *out, const uint8_t *in, size_t totalSize,
+            uint8_t datatypeSize);
+    ReturnValue_t initialize(MessageQueueIF* queueToUse_);
+
 private:
 	HasMemoryIF* workOnThis;
 	MessageQueueIF* queueToUse;
-	StorageManagerIF* ipcStore;
+	StorageManagerIF* ipcStore = nullptr;
 	store_address_t ipcAddress;
 	Command_t lastCommand;
-	MessageQueueId_t lastSender;
-	uint8_t* reservedSpaceInIPC;
+	MessageQueueId_t lastSender = MessageQueueIF::NO_QUEUE;
+	uint8_t* reservedSpaceInIPC = nullptr;
 	bool busy;
 	void handleMemoryLoad(CommandMessage* message);
 	void handleMemoryCheckOrDump(CommandMessage* message);
 	ReturnValue_t initialize();
-public:
-	ReturnValue_t handleMemoryCommand(CommandMessage* message);
-	void completeLoad( ReturnValue_t errorCode, const uint8_t* dataToCopy = NULL, const uint32_t size = 0, uint8_t* copyHere = NULL );
-	void completeDump(  ReturnValue_t errorCode, const uint8_t* dataToCopy = NULL, const uint32_t size = 0);
-	void swapMatrixCopy( uint8_t *out, const uint8_t *in, uint32_t totalSize, uint8_t datatypeSize);
-	ReturnValue_t initialize(MessageQueueIF* queueToUse_);
-	MemoryHelper( HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue );
-	~MemoryHelper();
+
 };
-#endif /* MEMORYHELPER_H_ */
+#endif /* FSFW_MEMORY_MEMORYHELPER_H_ */

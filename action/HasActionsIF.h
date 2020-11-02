@@ -1,11 +1,12 @@
-#ifndef FRAMEWORK_ACTION_HASACTIONSIF_H_
-#define FRAMEWORK_ACTION_HASACTIONSIF_H_
+#ifndef FSFW_ACTION_HASACTIONSIF_H_
+#define FSFW_ACTION_HASACTIONSIF_H_
 
 #include "ActionHelper.h"
 #include "ActionMessage.h"
 #include "SimpleActionHelper.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MessageQueueIF.h"
+
 /**
  * @brief
  * Interface for component which uses actions
@@ -47,14 +48,16 @@ public:
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 	/**
 	 * Execute or initialize the execution of a certain function.
-	 * Returning #EXECUTION_FINISHED or a failure code, nothing else needs to
-	 * be done. When needing more steps, return RETURN_OK and issue steps and
-	 * completion manually.
-	 * One "step failed" or completion report must be issued!
+	 * The ActionHelpers will execute this function and behave differently
+	 * depending on the returnvalue.
+	 *
+	 * @return
+	 * -@c EXECUTION_FINISHED Finish reply will be generated
+	 * -@c Not RETURN_OK Step failure reply will be generated
 	 */
 	virtual ReturnValue_t executeAction(ActionId_t actionId,
 			MessageQueueId_t commandedBy, const uint8_t* data, size_t size) = 0;
 };
 
 
-#endif /* FRAMEWORK_ACTION_HASACTIONSIF_H_ */
+#endif /* FSFW_ACTION_HASACTIONSIF_H_ */

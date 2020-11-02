@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "fwSubsystemIdRanges.h"
 //could be move to more suitable location
-#include <config/tmtc/subsystemIdRanges.h>
+#include <subsystemIdRanges.h>
 
 typedef uint16_t EventId_t;
 typedef uint8_t EventSeverity_t;
