@@ -1,0 +1,3 @@
+CXXSRC += $(wildcard $(CURRENTPATH)/*.cpp)
+
+INCLUDES += $(CURRENTPATH)

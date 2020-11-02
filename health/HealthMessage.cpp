@@ -7,11 +7,13 @@ void HealthMessage::setHealthMessage(CommandMessage* message, Command_t command,
 	message->setParameter2(oldHealth);
 }
 
-void HealthMessage::setHealthMessage(CommandMessage* message, Command_t command) {
+void HealthMessage::setHealthMessage(CommandMessage* message,
+        Command_t command) {
 	message->setCommand(command);
 }
 
-HasHealthIF::HealthState HealthMessage::getHealth(const CommandMessage* message) {
+HasHealthIF::HealthState HealthMessage::getHealth(
+        const CommandMessage* message) {
 	return (HasHealthIF::HealthState) message->getParameter();
 }
 
