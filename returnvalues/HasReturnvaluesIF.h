@@ -24,7 +24,7 @@ public:
 	 */
 	static constexpr ReturnValue_t makeReturnCode(uint8_t interfaceId,
 			uint8_t number) {
-	    return (interfaceId << 8) + number;
+	    return (static_cast<ReturnValue_t>(interfaceId) << 8) + number;
 	}
 };
 
