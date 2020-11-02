@@ -2,7 +2,7 @@
 #define FRAMEWORK_RETURNVALUES_HASRETURNVALUESIF_H_
 
 #include "FwClassIds.h"
-#include <config/returnvalues/classIds.h>
+#include <returnvalues/classIds.h>
 #include <cstdint>
 
 #define MAKE_RETURN_CODE( number )	((INTERFACE_ID << 8) + (number))
