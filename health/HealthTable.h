@@ -12,6 +12,8 @@ public:
 	HealthTable(object_id_t objectid);
 	virtual ~HealthTable();
 
+	void setMutexTimeout(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs);
+
     /** HealthTableIF overrides */
     virtual ReturnValue_t registerObject(object_id_t object,
             HasHealthIF::HealthState initilialState =
@@ -30,6 +32,9 @@ protected:
 	using HealthEntry = std::pair<object_id_t, HasHealthIF::HealthState>;
 
 	MutexIF* mutex;
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+	uint32_t mutexTimeoutMs = 20;
+
 	HealthMap healthMap;
 
 	HealthMap::iterator mapIterator;
