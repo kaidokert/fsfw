@@ -1,5 +1,5 @@
-#ifndef COMMANDSACTIONSIF_H_
-#define COMMANDSACTIONSIF_H_
+#ifndef FSFW_ACTION_COMMANDSACTIONSIF_H_
+#define FSFW_ACTION_COMMANDSACTIONSIF_H_
 
 #include "CommandActionHelper.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -24,11 +24,14 @@ public:
 	virtual MessageQueueIF* getCommandQueuePtr() = 0;
 protected:
 	virtual void stepSuccessfulReceived(ActionId_t actionId, uint8_t step) = 0;
-	virtual void stepFailedReceived(ActionId_t actionId, uint8_t step, ReturnValue_t returnCode) = 0;
-	virtual void dataReceived(ActionId_t actionId, const uint8_t* data, uint32_t size) = 0;
+	virtual void stepFailedReceived(ActionId_t actionId, uint8_t step,
+			ReturnValue_t returnCode) = 0;
+	virtual void dataReceived(ActionId_t actionId, const uint8_t* data,
+			uint32_t size) = 0;
 	virtual void completionSuccessfulReceived(ActionId_t actionId) = 0;
-	virtual void completionFailedReceived(ActionId_t actionId, ReturnValue_t returnCode) = 0;
+	virtual void completionFailedReceived(ActionId_t actionId,
+			ReturnValue_t returnCode) = 0;
 };
 
 
-#endif /* COMMANDSACTIONSIF_H_ */
+#endif /* FSFW_ACTION_COMMANDSACTIONSIF_H_ */
