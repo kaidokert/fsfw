@@ -7,6 +7,16 @@ The makefile with default settings creates the unit test binary which can be
 run in the terminal or in eclipse.
 
 ### Instructions
+
+To run the fsfw unittests in the project, perform following steps:
+
+1. Copy the testcfg folder  the project root (folder containing the FSFW).
+2. There is a makefile inside the testcfg folder which can be used to have 
+   a starting point to compile the unit tests. Copy that Makefile to the project
+   root
+3. Create a folder named catch2 (can have other name which requires Makefile 
+   adaption) and copy the Catch2 header files there (NOTE: CMake support
+   not enabled yet!)
    
 ### Eclipse CDT settings
 
