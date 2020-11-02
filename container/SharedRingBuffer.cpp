@@ -18,7 +18,7 @@ SharedRingBuffer::SharedRingBuffer(object_id_t objectId, uint8_t *buffer,
 }
 
 
-void SharedRingBuffer::setToUseReceiveSizeFIFO(uint32_t fifoDepth) {
+void SharedRingBuffer::setToUseReceiveSizeFIFO(size_t fifoDepth) {
 	this->fifoDepth = fifoDepth;
 }
 

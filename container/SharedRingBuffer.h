@@ -27,7 +27,15 @@ public:
 	SharedRingBuffer(object_id_t objectId, const size_t size,
 			bool overwriteOld, size_t maxExcessBytes);
 
-	void setToUseReceiveSizeFIFO(uint32_t fifoDepth);
+	/**
+	 * @brief	This function can be used to add an optional FIFO to the class
+	 * @details 
+	 * This FIFO will be allocated in the initialize function (and will
+	 * have a fixed maximum size after that). It can be used to store
+	 * values like packet sizes, for example for a shared ring buffer
+	 * used by producer/consumer tasks.
+	 */
+	void setToUseReceiveSizeFIFO(size_t fifoDepth);
 
 	/**
 	 * This constructor takes an external buffer with the specified size.
