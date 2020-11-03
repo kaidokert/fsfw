@@ -1,5 +1,3 @@
-#include <fsfw/timemanager/CCSDSTime.h>
-#include <fsfw/timemanager/TimeStamperIF.h>
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
@@ -8,10 +6,10 @@
 #include "../housekeeping/HousekeepingSetPacket.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 
+#include "../timemanager/CCSDSTime.h"
 #include "../ipc/MutexFactory.h"
 #include "../ipc/MutexHelper.h"
 #include "../ipc/QueueFactory.h"
-#include "../objectmanager/frameworkObjects.h"
 
 #include <array>
 #include <cmath>
@@ -218,7 +216,6 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
         HousekeepingPacketUpdate updatePacket(reinterpret_cast<uint8_t*>(&cds),
                 sizeof(cds), owner->getPoolObjectHandle(
                 receiver.dataId.localPoolId));
-        size_t updatePacketSize = updatePacket.getSerializedSize();
 
         store_address_t storeId;
         ReturnValue_t result = addUpdateToStore(updatePacket, storeId);
