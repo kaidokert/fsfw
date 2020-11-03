@@ -2,8 +2,10 @@
 #include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
 
+#include "../housekeeping/HousekeepingPacketUpdate.h"
 #include "../housekeeping/HousekeepingSetPacket.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
+
 #include "../ipc/MutexFactory.h"
 #include "../ipc/MutexHelper.h"
 #include "../ipc/QueueFactory.h"
@@ -205,6 +207,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
              // prepare and send update snapshot.
              CommandMessage notification;
              // todo: serialize into store with timestamp.
+             HousekeepingPacketUpdate updatePacket()
              store_address_t storeId;
              HousekeepingMessage::setUpdateSnapshotSetCommand(
                      &notification, receiver.dataId.sid, storeId);
