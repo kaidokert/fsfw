@@ -1,0 +1,415 @@
+#-------------------------------------------------------------------------------
+# Makefile for FSFW Test
+#-------------------------------------------------------------------------------
+#		User-modifiable options
+#-------------------------------------------------------------------------------
+# Fundamentals on the build process of C/C++ Software:
+# https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html
+
+# Make documentation: https://www.gnu.org/software/make/manual/make.pdf
+# Online: https://www.gnu.org/software/make/manual/make.html
+# General rules: http://make.mad-scientist.net/papers/rules-of-makefiles/#rule3
+SHELL = /bin/sh
+
+# Chip & board used for compilation
+# (can be overriden by adding CHIP=chip and BOARD=board to the command-line)
+# Unit Test can only be run on host machine for now (Linux)
+FRAMEWORK_PATH = fsfw
+FILE_ROOT = $(FRAMEWORK_PATH)/unittest
+BOARD = unittest
+LINUX = 1
+OS_FSFW = linux
+CUSTOM_DEFINES += -D$(OS_FSFW)
+
+# Copied from stackoverflow, can be used to differentiate between Windows
+# and Linux
+ifeq ($(OS),Windows_NT)
+    CUSTOM_DEFINES += -DWIN32
+    ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
+        CUSTOM_DEFINES += -DAMD64
+    else
+        ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
+            CUSTOM_DEFINES += -DAMD64
+        endif
+        ifeq ($(PROCESSOR_ARCHITECTURE),x86)
+            CUSTOM_DEFINES += -DIA32
+        endif
+    endif
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+    	DETECTED_OS = LINUX
+        CUSTOM_DEFINES += -DLINUX
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        CUSTOM_DEFINES += -DOSX
+    endif
+    UNAME_P := $(shell uname -p)
+    ifeq ($(UNAME_P),x86_64)
+        CUSTOM_DEFINES += -DAMD64
+    endif
+    ifneq ($(filter %86,$(UNAME_P)),)
+        CUSTOM_DEFINES += -DIA32
+    endif
+    ifneq ($(filter arm%,$(UNAME_P)),)
+        CUSTOM_DEFINES += -DARM
+    endif
+endif
+
+UNIT_TEST = 1
+# General folder paths
+CONFIG_PATH = $(FILE_ROOT)/config
+UNIT_TEST_PATH = $(FILE_ROOT)/tests
+CORE_PATH = $(FILE_ROOT)/core
+
+# Output file basename
+BASENAME = fsfw
+BINARY_NAME := $(BASENAME)-$(BOARD)
+# Output files will be put in this directory inside
+OUTPUT_FOLDER = $(OS)
+
+# Optimization level. Optimized for debugging.
+OPTIMIZATION = -O0
+
+# Default debug output. Optimized for debugging.
+DEBUG_LEVEL = -g3
+
+ifdef GCOV
+CUSTOM_DEFINES += -DGCOV
+endif
+
+
+# Output directories
+BUILDPATH = _bin
+DEPENDPATH = _dep
+OBJECTPATH = _obj
+
+ifeq ($(MAKECMDGOALS),mission)
+BUILD_FOLDER = mission
+else 
+BUILD_FOLDER = devel
+endif
+
+DEPENDDIR = $(DEPENDPATH)/$(OUTPUT_FOLDER)/$(BUILD_FOLDER)
+OBJDIR = $(OBJECTPATH)/$(OUTPUT_FOLDER)/$(BUILD_FOLDER)
+BINDIR = $(BUILDPATH)
+
+CLEANDEP = $(DEPENDPATH)/$(OUTPUT_FOLDER)
+CLEANOBJ = $(OBJECTPATH)/$(OUTPUT_FOLDER)
+CLEANBIN = $(BUILDPATH)
+#-------------------------------------------------------------------------------
+#		Tools and Includes
+#-------------------------------------------------------------------------------
+
+# Tool suffix when cross-compiling
+CROSS_COMPILE =
+
+# C Compiler
+CC = $(CROSS_COMPILE)gcc
+
+# C++ compiler
+CXX = $(CROSS_COMPILE)g++
+
+# Additional Tools
+SIZE = $(CROSS_COMPILE)size
+STRIP = $(CROSS_COMPILE)strip
+CP = $(CROSS_COMPILE)objcopy
+
+HEXCOPY = $(CP) -O ihex
+BINCOPY = $(CP) -O binary
+# files to be compiled, will be filled in by include makefiles
+# := assignment is neccessary so we get all paths right
+# https://www.gnu.org/software/make/manual/html_node/Flavors.html
+CSRC := 
+CXXSRC := 
+ASRC := 
+INCLUDES := 
+
+# Directories where $(directoryname).mk files should be included from
+SUBDIRS :=  $(FRAMEWORK_PATH) $(TEST_PATH) $(UNIT_TEST_PATH) $(CONFIG_PATH) \
+		$(CORE_PATH)
+
+
+I_INCLUDES += $(addprefix -I, $(INCLUDES))
+
+# This is a hack from http://make.mad-scientist.net/the-eval-function/
+#
+# The problem is, that included makefiles should be aware of their relative path
+# but not need to guess or hardcode it. So we set $(CURRENTPATH) for them. If
+# we do this globally and the included makefiles want to include other makefiles as
+# well, they would overwrite $(CURRENTPATH), screwing the include after them.
+#
+# By using a for-loop with an eval'd macro, we can generate the code to include all
+# sub-makefiles (with the correct $(CURRENTPATH) set) before actually evaluating
+# (and by this possibly changing $(CURRENTPATH)) them.
+#
+# This works recursively, if an included makefile wants to include, it can safely set 
+# $(SUBDIRS) (which has already been evaluated here) and do
+# "$(foreach S,$(SUBDIRS),$(eval $(INCLUDE_FILE)))"
+# $(SUBDIRS) must be relative to the project root, so to include subdir foo, set
+# $(SUBDIRS) = $(CURRENTPATH)/foo.
+define INCLUDE_FILE
+CURRENTPATH := $S
+include $(S)/$(notdir $S).mk
+endef
+$(foreach S,$(SUBDIRS),$(eval $(INCLUDE_FILE)))
+
+INCLUDES += $(FILE_ROOT)
+INCLUDES += $(FILE_ROOT)/catch2/
+
+#-------------------------------------------------------------------------------
+#		Source Files
+#-------------------------------------------------------------------------------
+
+# All source files which are not includes by the .mk files are added here
+# Please ensure that no files are included by both .mk file and here !
+
+# if a target is not listed in the current directory, 
+# make searches in the directories specified with VPATH
+
+# All C Sources included by .mk files are assigned here
+# Add the objects to sources so dependency handling works
+C_OBJECTS += $(CSRC:.c=.o)
+
+# Objects built from Assembly source files
+ASM_OBJECTS = $(ASRC:.S=.o)
+
+# Objects built from C++ source files
+CXX_OBJECTS +=  $(CXXSRC:.cpp=.o)
+
+#-------------------------------------------------------------------------------
+#		Build Configuration + Output
+#-------------------------------------------------------------------------------
+
+TARGET = Debug build.
+DEBUG_MESSAGE = Off
+OPTIMIZATION_MESSAGE = Off
+
+# Define Messages
+MSG_INFO = Software: Hosted unittest \(Catch2\) for the FSFW.
+MSG_OPTIMIZATION = Optimization: $(OPTIMIZATION), $(OPTIMIZATION_MESSAGE)
+MSG_TARGET = Target Build: $(TARGET)
+MSG_DEBUG = Debug level: $(DEBUG_LEVEL), FSFW Debugging: $(DEBUG_MESSAGE)
+
+MSG_LINKING = Linking:
+MSG_COMPILING = Compiling:
+MSG_ASSEMBLING = Assembling:
+MSG_DEPENDENCY = Collecting dependencies for:
+MSG_BINARY = Generate binary: 
+
+# See https://stackoverflow.com/questions/6687630/how-to-remove-unused-c-c-symbols-with-gcc-and-ld
+# Used to throw away unused code. Reduces code size significantly !
+# -Wl,--gc-sections: needs to be passed to the linker to throw aways unused code
+ifdef KEEP_UNUSED_CODE
+PROTOTYPE_OPTIMIZATION = 
+UNUSED_CODE_REMOVAL = 
+else
+PROTOTYPE_OPTIMIZATION = -ffunction-sections -fdata-sections
+UNUSED_CODE_REMOVAL = -Wl,--gc-sections
+# Link time optimization
+# See https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html for reference
+# Link time is larger and size of object files can not be retrieved
+# but resulting binary is smaller. Could be used in mission/deployment build
+# Requires -ffunction-section in linker call
+LINK_TIME_OPTIMIZATION = -flto
+OPTIMIZATION += $(PROTOTYPE_OPTIMIZATION) 
+endif 
+
+# Dependency Flags
+# These flags tell the compiler to build dependencies
+# See: https://www.gnu.org/software/make/manual/html_node/Automatic-Prerequisites.html
+# Using following guide: http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/#combine
+DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPENDDIR)/$*.d
+
+# Flags for the compiler call
+# - std: Which C++ version to use. Common versions: c++11, c++14 and c++17
+# - Wall: enable all warnings
+# - Wextra: enable extra warnings
+# - g: defines debug level
+# - fmessage-length: to control the formatting algorithm for diagnostic messages;
+#    =0 means  no line-wrapping is done; each error message appears on a single line
+# - fno-exceptions: stops generating extra code needed to propagate exceptions, 
+#    which can produce significant data size overhead
+CUSTOM_DEFINES += -DUNIT_TEST
+WARNING_FLAGS = -Wall -Wshadow=local -Wextra -Wimplicit-fallthrough=1 \
+		-Wno-unused-parameter 
+		
+CXXDEFINES := $(CUSTOM_DEFINES)
+CFLAGS += 
+CXXFLAGS += -I. $(DEBUG_LEVEL) $(WARNING_FLAGS) $(DEPFLAGS) -fmessage-length=0 $(OPTIMIZATION)\
+		 $(I_INCLUDES) $(CXXDEFINES)
+CPPFLAGS += -std=c++11  
+
+# Flags for the linker call
+# LINK_INCLUDES specify the path to used libraries and the linker script
+# LINK_LIBRARIES: Link real time support
+LDFLAGS := $(DEBUG_LEVEL) $(UNUSED_CODE_REMOVAL) $(OPTIMIZATION) -pthread 
+LINK_INCLUDES := 
+LINK_LIBRARIES :=
+
+ifdef LINUX
+LINK_LIBRARIES += -lrt
+endif
+
+ifeq ($(OS),Windows_NT)
+LINK_LIBRARIES += -lwsock32 -lws2_32
+LDFLASGS += -fuse-ld=lld
+endif
+
+# Gnu Coverage Tools Flags
+ifdef GCOV
+GCOV_CXXFLAGS = -fprofile-arcs -ftest-coverage --coverage -fno-inline \
+		-fno-inline-small-functions -fno-default-inline
+CXXFLAGS += $(GCOV_CXXFLAGS)
+GCOV_LINKER_LIBS = -lgcov -fprofile-arcs -ftest-coverage
+LINK_LIBRARIES += $(GCOV_LINKER_LIBS)
+endif
+
+# $(info $${CXXFLAGS} is [${CXXFLAGS}])
+
+#-------------------------------------------------------------------------------
+#		Rules
+#-------------------------------------------------------------------------------
+# the call function assigns parameters to temporary variables
+# https://www.gnu.org/software/make/manual/make.html#Call-Function
+# $(1) = Memory names
+# Rules are called for each memory type
+# Two Expansion Symbols $$ are to escape the dollar sign for eval.
+# See: http://make.mad-scientist.net/the-eval-function/
+
+default: all
+
+# Cleans all files 
+hardclean: 
+	-rm -rf $(BUILDPATH)
+	-rm -rf $(OBJECTPATH)
+	-rm -rf $(DEPENDPATH)
+
+# Only clean files for current build
+clean:
+	-rm -rf $(CLEANOBJ)
+	-rm -rf $(CLEANBIN)
+	-rm -rf $(CLEANDEP)
+
+# Only clean binaries. Useful for changing the binary type when object files 
+# are already compiled so complete rebuild is not necessary
+cleanbin:
+	-rm -rf $(CLEANBIN)
+
+# In this section, the binaries are built for all selected memories
+# notestfw: all
+all: executable 
+
+# Build target configuration
+release: OPTIMIZATION = -Os $(PROTOTYPE_OPTIMIZATION) $(LINK_TIME_OPTIMIZATION)
+release: LINK_TIME_OPTIMIZATION = -flto
+release: TARGET = Mission build.
+release: OPTIMIZATION_MESSAGE = On with Link Time Optimization
+
+debug: CXXDEFINES += -DDEBUG
+debug: TARGET = Debug
+debug: DEBUG_MESSAGE = On
+
+ifndef KEEP_UNUSED_CODE
+debug release: OPTIMIZATION_MESSAGE += , no unused code removal
+endif
+
+debug release notestfw: executable
+	
+executable: $(BINDIR)/$(BINARY_NAME).elf	
+	@echo
+	@echo $(MSG_INFO)
+	@echo $(MSG_TARGET)
+	@echo $(MSG_OPTIMIZATION)
+	@echo $(MSG_DEBUG)
+
+C_OBJECTS_PREFIXED = $(addprefix $(OBJDIR)/, $(C_OBJECTS))
+CXX_OBJECTS_PREFIXED = $(addprefix $(OBJDIR)/, $(CXX_OBJECTS))
+ASM_OBJECTS_PREFIXED = $(addprefix $(OBJDIR)/, $(ASM_OBJECTS))
+ALL_OBJECTS = $(ASM_OBJECTS_PREFIXED) $(C_OBJECTS_PREFIXED) \
+		$(CXX_OBJECTS_PREFIXED) 
+
+# Useful for debugging the Makefile
+# Also see: https://www.oreilly.com/openbook/make3/book/ch12.pdf
+# $(info $${ALL_OBJECTS} is [${ALL_OBJECTS}])
+# $(info $${CXXSRC} is [${CXXSRC}])
+
+# Automatic variables are used here extensively. Some of them
+# are escaped($$) to suppress immediate evaluation. The most important ones are:
+# $@: Name of Target (left side of rule)
+# $<: Name of the first prerequisite (right side of rule)
+# @^: List of all prerequisite, omitting duplicates
+# @D: Directory and file-within-directory part of $@
+
+# Generates binary and displays all build properties
+# -p with mkdir ignores error and creates directory when needed.
+
+# SHOW_DETAILS = 1
+
+
+# Link with required libraries: HAL (Hardware Abstraction Layer) and 
+# HCC (File System Library)
+$(BINDIR)/$(BINARY_NAME).elf: $(ALL_OBJECTS)
+	@echo
+	@echo $(MSG_LINKING) Target $@
+	@mkdir -p $(@D)
+ifdef SHOW_DETAILS
+	$(CXX) $(LDFLAGS) $(LINK_INCLUDES) -o $@ $^ $(LINK_LIBRARIES)
+else
+	@$(CXX) $(LDFLAGS) $(LINK_INCLUDES) -o $@ $^ $(LINK_LIBRARIES)
+endif	
+ifeq ($(BUILD_FOLDER), mission)
+# With Link Time Optimization, section size is not available
+	$(SIZE) $@
+else
+	$(SIZE) $^ $@
+endif
+
+$(BINDIR)/$(BINARY_NAME).hex: $(BINDIR)/$(BINARY_NAME).elf
+	@echo
+	@echo $(MSG_BINARY)
+	@mkdir -p $(@D)
+	$(HEXCOPY) $< $@
+	
+# Build new objects for changed dependencies. 
+$(OBJDIR)/%.o: %.cpp
+$(OBJDIR)/%.o: %.cpp $(DEPENDDIR)/%.d | $(DEPENDDIR)
+	@echo 
+	@echo $(MSG_COMPILING) $<
+	@mkdir -p $(@D)
+ifdef SHOW_DETAILS
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+else
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+endif
+
+$(OBJDIR)/%.o: %.c 
+$(OBJDIR)/%.o: %.c $(DEPENDDIR)/%.d | $(DEPENDDIR) 
+	@echo 
+	@echo $(MSG_COMPILING) $<
+	@mkdir -p $(@D)
+ifdef SHOW_DETAILS
+	$(CC)  $(CXXFLAGS) $(CFLAGS) -c -o $@ $<
+else
+	@$(CC)  $(CXXFLAGS) $(CFLAGS) -c -o $@ $<
+endif
+
+#-------------------------------------------------------------------------------
+#		Dependency Handling
+#-------------------------------------------------------------------------------
+
+# Dependency Handling according to following guide:
+# http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
+$(DEPENDDIR):
+	@mkdir -p $(@D)
+DEPENDENCY_RELATIVE = $(CSRC:.c=.d) $(CXXSRC:.cpp=.d)
+# This is the list of all dependencies
+DEPFILES = $(addprefix $(DEPENDDIR)/, $(DEPENDENCY_RELATIVE))
+# Create subdirectories for dependencies
+$(DEPFILES):
+	@mkdir -p $(@D)
+# Include all dependencies
+include $(wildcard $(DEPFILES))
+	
+# .PHONY tells make that these targets aren't files
+.PHONY: clean release debug all hardclean cleanbin
