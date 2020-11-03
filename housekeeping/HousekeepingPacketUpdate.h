@@ -63,7 +63,7 @@ public:
             /* Endianness will always be MACHINE, so we can simply use memcpy
             here. */
             std::memcpy(timeStamp, *buffer, timeStampSize);
-            *size += timeStampSize;
+            *size -= timeStampSize;
             *buffer += timeStampSize;
         }
 
