@@ -59,6 +59,10 @@ public:
 
     virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
             SerializeIF::Endianness streamEndianness) override {
+        if(*size < timeStampSize) {
+            return SerializeIF::STREAM_TOO_SHORT;
+        }
+
         if(timeStamp != nullptr) {
             /* Endianness will always be MACHINE, so we can simply use memcpy
             here. */
@@ -70,6 +74,10 @@ public:
         if(updateData == nullptr) {
             return HasReturnvaluesIF::RETURN_FAILED;
         }
+        if(*size < updateData->getSerializedSize()) {
+            return SerializeIF::STREAM_TOO_SHORT;
+        }
+
         return updateData->deSerialize(buffer, size, streamEndianness);
     }
 
