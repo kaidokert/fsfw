@@ -12,10 +12,6 @@
 //! Be careful, this also turns off most diagnostic prinouts!
 #define FSFW_REDUCED_PRINTOUT		0
 
-//! Default timestamp size. The default timestamp will be an eight byte CDC
-//! short timestamp.
-#define FSFW_MISSION_TIMESTAMP_SIZE 8
-
 //! Can be used to enable debugging printouts for developing the FSFW
 #define FSFW_DEBUGGING              0
 
@@ -45,6 +41,10 @@
 #define FSFW_NO_C99_IO 	1
 
 namespace fsfwconfig {
+//! Default timestamp size. The default timestamp will be an eight byte CDC
+//! short timestamp.
+static constexpr uint8_t FSFW_MISSION_TIMESTAMP_SIZE = 8;
+
 //! Configure the allocated pool sizes for the event manager.
 static constexpr size_t FSFW_EVENTMGMR_MATCHTREE_NODES = 240;
 static constexpr size_t FSFW_EVENTMGMT_EVENTIDMATCHERS = 120;
