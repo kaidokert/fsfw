@@ -81,6 +81,10 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
             return result;
         }
     }
+
+    if(*size + validityMaskSize > maxSize) {
+        return SerializeIF::BUFFER_TOO_SHORT;
+    }
     // copy validity buffer to end
     std::memcpy(*buffer, validityMask, validityMaskSize);
     *size += validityMaskSize;
@@ -98,9 +102,13 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
             return result;
         }
     }
+
+    if(*size < std::ceil(static_cast<float>(fillCount) / 8.0)) {
+        return SerializeIF::STREAM_TOO_SHORT;
+    }
+
     uint8_t validBufferIndex = 0;
     uint8_t validBufferIndexBit = 0;
-    // could be made more efficient but make it work first
     for (uint16_t count = 0; count < fillCount; count++) {
         // set validity buffer here.
         bool nextVarValid = this->bitGetter(*buffer +
@@ -117,6 +125,7 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
     }
     return result;
 }
+
 ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
 	MutexIF* mutex = hkManager->getMutexHandle();
 	return mutex->unlockMutex();
