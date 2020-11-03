@@ -27,8 +27,15 @@ class HousekeepingPacketUpdate;
  * @brief 		This class is the managing instance for the local data pool.
  * @details
  * The actual data pool structure is a member of this class. Any class which
- * has a local data pool shall have this class as a member and implement
+ * has a local data pool shall have this manager class as a member and implement
  * the HasLocalDataPoolIF.
+ *
+ * The manager offers some adaption points and functions which can be used
+ * by the owning class to simplify data handling significantly.
+ *
+ * Please ensure that both initialize and initializeAfterTaskCreation are
+ * called at some point by the owning class in the respective functions of the
+ * same name!
  *
  * Users of the data pool use the helper classes LocalDataSet,
  * LocalPoolVariable and LocalPoolVector to access pool entries in
@@ -67,14 +74,16 @@ public:
      * initialize() has to be called in any case before using the object!
      * @param owner
      * @param queueToUse
-     * @param appendValidityBuffer
+     * @param appendValidityBuffer Specify whether a buffer containing the
+     * validity state is generated  when serializing or deserializing packets.
      */
 	LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
 	        bool appendValidityBuffer = true);
 	virtual~ LocalDataPoolManager();
 
 	/**
-	 * Assigns the queue to use.
+	 * Assigns the queue to use. Make sure to call this in the #initialize
+	 * function of the owner.
 	 * @param queueToUse
 	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
 	 * @return
@@ -84,20 +93,24 @@ public:
 	/**
 	 * Initializes the map by calling the map initialization function and
 	 * setting the periodic factor for non-diagnostic packets.
-	 * Don't forget to call this, otherwise the map will be invalid!
+	 * Don't forget to call this in the #initializeAfterTaskCreation call of
+	 * the owner, otherwise the map will be invalid!
 	 * @param nonDiagInvlFactor
 	 * @return
 	 */
-	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
+	ReturnValue_t initializeAfterTaskCreation(
+	        uint8_t nonDiagInvlFactor = 5);
 
     /**
      * @brief   This should be called in the periodic handler of the owner.
      * @details
+     * This in generally called in the #performOperation function of the owner.
      * It performs all the periodic functionalities of the data pool manager,
      * for example generating periodic HK packets.
+     * Marked virtual as an adaption point for custom data pool managers.
      * @return
      */
-    ReturnValue_t performHkOperation();
+    virtual ReturnValue_t performHkOperation();
 
 	/**
 	 * @brief   Subscribe for the generation of periodic packets.
@@ -185,7 +198,7 @@ public:
      * @param message
      * @return
      */
-    ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
+    virtual ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
 	/**
 	 * Generate a housekeeping packet with a given SID.
