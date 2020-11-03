@@ -101,120 +101,15 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
             break;
         }
         case(ReportingType::UPDATE_HK): {
-            if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-                // Update packets shall only be generated from datasets.
-                continue;
-            }
-            LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
-                    receiver.dataId.sid);
-            if(dataSet->hasChanged()) {
-                // prepare and send update notification
-                ReturnValue_t result = generateHousekeepingPacket(
-                            receiver.dataId.sid, dataSet, true);
-                if(result != HasReturnvaluesIF::RETURN_OK) {
-                    status = result;
-                }
-            }
-            handleChangeResetLogic(receiver.dataType, receiver.dataId,
-                    dataSet);
+            handleHkUpdate(receiver, status);
             break;
         }
         case(ReportingType::UPDATE_NOTIFICATION): {
-            MarkChangedIF* toReset = nullptr;
-            if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-                LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
-                        receiver.dataId.localPoolId);
-                if(poolObj == nullptr) {
-                    continue;
-                }
-                if(poolObj->hasChanged()) {
-                    // prepare and send update notification.
-                    CommandMessage notification;
-                    HousekeepingMessage::setUpdateNotificationVariableCommand(
-                            &notification, receiver.dataId.localPoolId);
-                    ReturnValue_t result = hkQueue->sendMessage(
-                            receiver.destinationQueue, &notification);
-                    if(result != HasReturnvaluesIF::RETURN_OK) {
-                        status = result;
-                    }
-                    toReset = poolObj;
-                }
-
-            }
-            else {
-                LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
-                        receiver.dataId.sid);
-                if(dataSet == nullptr) {
-                    continue;
-                }
-                if(dataSet->hasChanged()) {
-                    // prepare and send update notification
-                    CommandMessage notification;
-                    HousekeepingMessage::setUpdateNotificationSetCommand(
-                            &notification, receiver.dataId.sid);
-                    ReturnValue_t result = hkQueue->sendMessage(
-                            receiver.destinationQueue, &notification);
-                    if(result != HasReturnvaluesIF::RETURN_OK) {
-                        status = result;
-                    }
-                    toReset = dataSet;
-                }
-            }
-            if(toReset != nullptr) {
-                handleChangeResetLogic(receiver.dataType,
-                        receiver.dataId, toReset);
-            }
+            handleNotificationUpdate(receiver, status);
             break;
         }
         case(ReportingType::UPDATE_SNAPSHOT): {
-            MarkChangedIF* toReset = nullptr;
-            // check whether data has changed and send messages in case it has.
-            if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-                LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
-                        receiver.dataId.localPoolId);
-                if(poolObj == nullptr) {
-                    continue;
-                }
-                if(poolObj->hasChanged()) {
-                    // prepare and send update snapshot.
-                    CommandMessage notification;
-                    // todo: serialize into store with timestamp.
-                    store_address_t storeId;
-                    HousekeepingMessage::setUpdateSnapshotSetCommand(
-                            &notification, receiver.dataId.sid, storeId);
-                    ReturnValue_t result = hkQueue->sendMessage(
-                            receiver.destinationQueue, &notification);
-                    if(result != HasReturnvaluesIF::RETURN_OK) {
-                        status = result;
-                    }
-                    toReset = poolObj;
-                }
-            }
-            else {
-                LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
-                        receiver.dataId.sid);
-                if(dataSet == nullptr) {
-                    continue;
-                }
-                if(dataSet->hasChanged()) {
-                    // prepare and send update snapshot.
-                    CommandMessage notification;
-                    // todo: serialize into store with timestamp.
-                    store_address_t storeId;
-                    HousekeepingMessage::setUpdateSnapshotVariableCommand(
-                            &notification, receiver.dataId.localPoolId, storeId);
-                    ReturnValue_t result = hkQueue->sendMessage(
-                            receiver.destinationQueue, &notification);
-                    if(result != HasReturnvaluesIF::RETURN_OK) {
-                        status = result;
-                    }
-                    toReset = dataSet;
-                }
-            }
-            if(toReset != nullptr) {
-                handleChangeResetLogic(receiver.dataType,
-                        receiver.dataId, toReset);
-            }
+            handleNotificationSnapshot(receiver, status);
             break;
         }
         default:
@@ -224,6 +119,129 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
     }
     resetHkUpdateResetHelper();
     return status;
+}
+
+ReturnValue_t LocalDataPoolManager::handleHkUpdate(HkReceiver& receiver,
+            ReturnValue_t& status) {
+    if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+        // Update packets shall only be generated from datasets.
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+    LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+            receiver.dataId.sid);
+    if(dataSet->hasChanged()) {
+        // prepare and send update notification
+        ReturnValue_t result = generateHousekeepingPacket(
+                    receiver.dataId.sid, dataSet, true);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            status = result;
+        }
+    }
+    handleChangeResetLogic(receiver.dataType, receiver.dataId,
+            dataSet);
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(
+        HkReceiver& receiver, ReturnValue_t& status) {
+    MarkChangedIF* toReset = nullptr;
+    if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+        LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
+                receiver.dataId.localPoolId);
+        if(poolObj == nullptr) {
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+        if(poolObj->hasChanged()) {
+            // prepare and send update notification.
+            CommandMessage notification;
+            HousekeepingMessage::setUpdateNotificationVariableCommand(
+                    &notification, receiver.dataId.localPoolId);
+            ReturnValue_t result = hkQueue->sendMessage(
+                    receiver.destinationQueue, &notification);
+            if(result != HasReturnvaluesIF::RETURN_OK) {
+                status = result;
+            }
+            toReset = poolObj;
+        }
+
+    }
+    else {
+        LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+                receiver.dataId.sid);
+        if(dataSet == nullptr) {
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+        if(dataSet->hasChanged()) {
+            // prepare and send update notification
+            CommandMessage notification;
+            HousekeepingMessage::setUpdateNotificationSetCommand(
+                    &notification, receiver.dataId.sid);
+            ReturnValue_t result = hkQueue->sendMessage(
+                    receiver.destinationQueue, &notification);
+            if(result != HasReturnvaluesIF::RETURN_OK) {
+                status = result;
+            }
+            toReset = dataSet;
+        }
+    }
+    if(toReset != nullptr) {
+        handleChangeResetLogic(receiver.dataType,
+                receiver.dataId, toReset);
+    }
+    return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
+        HkReceiver& receiver, ReturnValue_t& status) {
+    MarkChangedIF* toReset = nullptr;
+     // check whether data has changed and send messages in case it has.
+     if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
+         LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
+                 receiver.dataId.localPoolId);
+         if(poolObj == nullptr) {
+             return HasReturnvaluesIF::RETURN_FAILED;
+         }
+         if(poolObj->hasChanged()) {
+             // prepare and send update snapshot.
+             CommandMessage notification;
+             // todo: serialize into store with timestamp.
+             store_address_t storeId;
+             HousekeepingMessage::setUpdateSnapshotSetCommand(
+                     &notification, receiver.dataId.sid, storeId);
+             ReturnValue_t result = hkQueue->sendMessage(
+                     receiver.destinationQueue, &notification);
+             if(result != HasReturnvaluesIF::RETURN_OK) {
+                 status = result;
+             }
+             toReset = poolObj;
+         }
+     }
+     else {
+         LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+                 receiver.dataId.sid);
+         if(dataSet == nullptr) {
+             return HasReturnvaluesIF::RETURN_FAILED;
+         }
+         if(dataSet->hasChanged()) {
+             // prepare and send update snapshot.
+             CommandMessage notification;
+             // todo: serialize into store with timestamp.
+             store_address_t storeId;
+             HousekeepingMessage::setUpdateSnapshotVariableCommand(
+                     &notification, receiver.dataId.localPoolId, storeId);
+             ReturnValue_t result = hkQueue->sendMessage(
+                     receiver.destinationQueue, &notification);
+             if(result != HasReturnvaluesIF::RETURN_OK) {
+                 status = result;
+             }
+             toReset = dataSet;
+         }
+     }
+     if(toReset != nullptr) {
+         handleChangeResetLogic(receiver.dataType,
+                 receiver.dataId, toReset);
+     }
+     return HasReturnvaluesIF::RETURN_OK;
 }
 
 void LocalDataPoolManager::handleChangeResetLogic(

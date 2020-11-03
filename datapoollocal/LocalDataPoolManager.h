@@ -350,6 +350,13 @@ private:
 	void handleChangeResetLogic(DataType type,
 	        DataId dataId, MarkChangedIF* toReset);
 	void resetHkUpdateResetHelper();
+
+	ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver,
+            ReturnValue_t& status);
+	ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver,
+	        ReturnValue_t& status);
+	ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
+            ReturnValue_t& status);
 };
 
 
