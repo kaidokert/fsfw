@@ -1,12 +1,6 @@
-/**
- * @file	ReceivesTimeInfoIF.h
- * @brief	This file defines the ReceivesTimeInfoIF class.
- * @date	26.02.2013
- * @author	baetz
- */
+#ifndef FSFW_TIMEMANAGER_RECEIVESTIMEINFOIF_H_
+#define FSFW_TIMEMANAGER_RECEIVESTIMEINFOIF_H_
 
-#ifndef RECEIVESTIMEINFOIF_H_
-#define RECEIVESTIMEINFOIF_H_
 #include "../ipc/MessageQueueSenderIF.h"
 
 /**
@@ -29,4 +23,4 @@ public:
 };
 
 
-#endif /* RECEIVESTIMEINFOIF_H_ */
+#endif /* FSFW_TIMEMANAGER_RECEIVESTIMEINFOIF_H_ */

@@ -1,15 +1,8 @@
-/**
- * @file	TimeMessage.h
- * @brief	This file defines the TimeMessage class.
- * @date	26.02.2013
- * @author	baetz
- */
+#ifndef FSFW_TIMEMANAGER_TIMEMESSAGE_H_
+#define FSFW_TIMEMANAGER_TIMEMESSAGE_H_
 
-#ifndef TIMEMESSAGE_H_
-#define TIMEMESSAGE_H_
-
+#include "Clock.h"
 #include "../ipc/MessageQueueMessage.h"
-#include "../timemanager/Clock.h"
 #include <cstring>
 
 class TimeMessage : public MessageQueueMessage {
@@ -53,4 +46,4 @@ public:
 	uint32_t getCounterValue();
 };
 
-#endif /* TIMEMESSAGE_H_ */
+#endif /* FSFW_TIMEMANAGER_TIMEMESSAGE_H_ */

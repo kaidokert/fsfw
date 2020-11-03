@@ -207,7 +207,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
              // prepare and send update snapshot.
              CommandMessage notification;
              // todo: serialize into store with timestamp.
-             HousekeepingPacketUpdate updatePacket()
+
+             // HousekeepingPacketUpdate updatePacket(timeStamp, timeStampSize,
+             //        owner->getDataSetHandle(receiver.dataId.sid));
              store_address_t storeId;
              HousekeepingMessage::setUpdateSnapshotSetCommand(
                      &notification, receiver.dataId.sid, storeId);

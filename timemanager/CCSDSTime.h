@@ -1,9 +1,10 @@
-#ifndef CCSDSTIME_H_
-#define CCSDSTIME_H_
+#ifndef FSFW_TIMEMANAGER_CCSDSTIME_H_
+#define FSFW_TIMEMANAGER_CCSDSTIME_H_
 
 // COULDDO: have calls in Clock.h which return time quality and use timespec accordingly
 
 #include "Clock.h"
+#include "clockDefinitions.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstdint>
 
@@ -111,7 +112,7 @@ public:
 	 * 		- @c INVALID_TIMECODE if not OK
 	 */
 	static ReturnValue_t convertToCcsds(Ccs_seconds *to,
-			Clock::TimeOfDay_t const *from);
+			TimeOfDay_t const *from);
 
 	/**
 	 * Converts to CDS format from timeval.
@@ -136,7 +137,7 @@ public:
 	 * 		- @c INVALID_TIMECODE if not OK
 	 */
 	static ReturnValue_t convertToCcsds(Ccs_mseconds *to,
-			Clock::TimeOfDay_t const *from);
+			TimeOfDay_t const *from);
 
 	/**
 	 * SHOULDDO: can this be modified to recognize padding?
@@ -154,7 +155,7 @@ public:
 	 * 		- @c LENGTH_MISMATCH if the length does not match the P Field
 	 * 		- @c INVALID_TIME_FORMAT if the format or a value is invalid
 	 */
-	static ReturnValue_t convertFromCcsds(Clock::TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCcsds(TimeOfDay_t *to, uint8_t const *from,
 			uint32_t length);
 
 	/**
@@ -167,7 +168,7 @@ public:
 	static ReturnValue_t convertFromCcsds(timeval *to, uint8_t const *from,
 			uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromCUC(Clock::TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCUC(TimeOfDay_t *to, uint8_t const *from,
 			uint8_t length);
 
 	static ReturnValue_t convertFromCUC(timeval *to, uint8_t const *from,
@@ -182,16 +183,16 @@ public:
 	static ReturnValue_t convertFromCCS(timeval *to, uint8_t pField,
 			uint8_t const *from, uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromCDS(Clock::TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCDS(TimeOfDay_t *to, uint8_t const *from,
 			uint8_t length);
 
 	static ReturnValue_t convertFromCDS(timeval *to, uint8_t const *from,
 			uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromCCS(Clock::TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromCCS(TimeOfDay_t *to, uint8_t const *from,
 			uint32_t* foundLength, uint32_t maxLength);
 
-	static ReturnValue_t convertFromASCII(Clock::TimeOfDay_t *to, uint8_t const *from,
+	static ReturnValue_t convertFromASCII(TimeOfDay_t *to, uint8_t const *from,
 			uint8_t length);
 
 	static uint32_t subsecondsToMicroseconds(uint16_t subseconds);
@@ -209,7 +210,7 @@ private:
 	 */
 	static ReturnValue_t checkCcs(const uint8_t* time, uint8_t length);
 
-	static ReturnValue_t checkTimeOfDay(const Clock::TimeOfDay_t *time);
+	static ReturnValue_t checkTimeOfDay(const TimeOfDay_t *time);
 
 	static const uint32_t SECONDS_PER_DAY = 24 * 60 * 60;
 	static const uint32_t SECONDS_PER_NON_LEAP_YEAR = SECONDS_PER_DAY * 365;
@@ -226,8 +227,8 @@ private:
 			uint8_t *month, uint8_t *day);
 
 	static bool isLeapYear(uint32_t year);
-	static ReturnValue_t convertTimevalToTimeOfDay(Clock::TimeOfDay_t* to,
+	static ReturnValue_t convertTimevalToTimeOfDay(TimeOfDay_t* to,
 			timeval* from);
 };
 
-#endif /* CCSDSTIME_H_ */
+#endif /* FSFW_TIMEMANAGER_CCSDSTIME_H_ */
