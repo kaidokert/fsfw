@@ -68,10 +68,10 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 }
 
 
-uint32_t Clock::getUptimeSeconds() {
-	timeval uptime = getUptime();
-	return uptime.tv_sec;
-}
+//uint32_t Clock::getUptimeSeconds() {
+//	timeval uptime = getUptime();
+//	return uptime.tv_sec;
+//}
 
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {

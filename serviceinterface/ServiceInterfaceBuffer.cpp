@@ -93,7 +93,7 @@ bool ServiceInterfaceBuffer::isBuffered() const {
 }
 
 std::string* ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
-	TimeOfDay_t loggerTime;
+	Clock::TimeOfDay_t loggerTime;
 	Clock::getDateAndTime(&loggerTime);
 	size_t currentSize = 0;
 	char* parsePosition = &preamble[0];
