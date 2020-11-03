@@ -9,9 +9,6 @@
 #include <cstdint>
 #include <sys/time.h>
 
-// TODO: Maybe a namespace would be better/more fitting for this?
-// After all, right now it is just a collection of static functions.
-// The mutex and leap seconds can be put in an anonymous namespace.
 class Clock {
 public:
 

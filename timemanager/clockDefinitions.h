@@ -3,9 +3,7 @@
 
 #include <cstdint>
 
-// It would be better to put this in a clock namespace, but then we
-// have a nameclash with the class Clock (which propably also should be put
-// in a namespace)
+
 typedef struct {
     uint32_t year; //!< Year, A.D.
     uint32_t month; //!< Month, 1 .. 12.
