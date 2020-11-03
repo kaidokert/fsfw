@@ -21,7 +21,7 @@ void setStaticFrameworkObjectIds();
 }
 
 class LocalDataSetBase;
-
+class HousekeepingPacketUpdate;
 
 /**
  * @brief 		This class is the managing instance for the local data pool.
@@ -357,6 +357,8 @@ private:
 	        ReturnValue_t& status);
 	ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
             ReturnValue_t& status);
+	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
+	        store_address_t& storeId);
 };
 
 

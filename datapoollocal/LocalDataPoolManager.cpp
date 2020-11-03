@@ -211,30 +211,24 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
         }
 
         // prepare and send update snapshot.
-        CommandMessage notification;
         timeval now;
         Clock::getClock_timeval(&now);
         CCSDSTime::CDS_short cds;
         CCSDSTime::convertToCcsds(&cds, &now);
         HousekeepingPacketUpdate updatePacket(reinterpret_cast<uint8_t*>(&cds),
-                sizeof(cds), owner->getDataSetHandle(receiver.dataId.sid));
+                sizeof(cds), owner->getPoolObjectHandle(
+                receiver.dataId.localPoolId));
         size_t updatePacketSize = updatePacket.getSerializedSize();
 
         store_address_t storeId;
-        uint8_t *storePtr = nullptr;
-        ReturnValue_t result = ipcStore->getFreeElement(&storeId,
-                updatePacket.getSerializedSize(), &storePtr);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
+        ReturnValue_t result = addUpdateToStore(updatePacket, storeId);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
             return result;
         }
-        size_t serializedSize = 0;
-        result = updatePacket.serialize(&storePtr, &serializedSize,
-                updatePacketSize, SerializeIF::Endianness::MACHINE);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
-            return result;
-        }
-        HousekeepingMessage::setUpdateSnapshotSetCommand(&notification,
-                receiver.dataId.sid, storeId);
+
+        CommandMessage notification;
+        HousekeepingMessage::setUpdateSnapshotVariableCommand(&notification,
+                receiver.dataId.localPoolId, storeId);
         result = hkQueue->sendMessage(receiver.destinationQueue,
                 &notification);
         if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -254,13 +248,23 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
         }
 
         // prepare and send update snapshot.
-        CommandMessage notification;
-        // todo: serialize into store with timestamp.
+        timeval now;
+        Clock::getClock_timeval(&now);
+        CCSDSTime::CDS_short cds;
+        CCSDSTime::convertToCcsds(&cds, &now);
+        HousekeepingPacketUpdate updatePacket(reinterpret_cast<uint8_t*>(&cds),
+                sizeof(cds), owner->getDataSetHandle(receiver.dataId.sid));
+
         store_address_t storeId;
-        HousekeepingMessage::setUpdateSnapshotVariableCommand(
-                &notification, receiver.dataId.localPoolId, storeId);
-        ReturnValue_t result = hkQueue->sendMessage(
-                receiver.destinationQueue, &notification);
+        ReturnValue_t result = addUpdateToStore(updatePacket, storeId);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
+
+        CommandMessage notification;
+        HousekeepingMessage::setUpdateSnapshotSetCommand(
+                &notification, receiver.dataId.sid, storeId);
+        result = hkQueue->sendMessage(receiver.destinationQueue, &notification);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             status = result;
         }
@@ -272,6 +276,21 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
                 receiver.dataId, toReset);
     }
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t LocalDataPoolManager::addUpdateToStore(
+        HousekeepingPacketUpdate& updatePacket, store_address_t& storeId) {
+    size_t updatePacketSize = updatePacket.getSerializedSize();
+    uint8_t *storePtr = nullptr;
+    ReturnValue_t result = ipcStore->getFreeElement(&storeId,
+            updatePacket.getSerializedSize(), &storePtr);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+    size_t serializedSize = 0;
+    result = updatePacket.serialize(&storePtr, &serializedSize,
+            updatePacketSize, SerializeIF::Endianness::MACHINE);
+    return result;;
 }
 
 void LocalDataPoolManager::handleChangeResetLogic(
