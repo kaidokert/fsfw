@@ -1,11 +1,4 @@
-/**
- * @file	TimeMessage.cpp
- * @brief	This file defines the TimeMessage class.
- * @date	26.02.2013
- * @author	baetz
- */
-
-#include "../timemanager/TimeMessage.h"
+#include "TimeMessage.h"
 
 TimeMessage::TimeMessage() {
 	this->messageSize += sizeof(timeval) + sizeof(uint32_t);

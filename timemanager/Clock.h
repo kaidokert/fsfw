@@ -11,6 +11,15 @@
 
 class Clock {
 public:
+    typedef struct {
+        uint32_t year; //!< Year, A.D.
+        uint32_t month; //!< Month, 1 .. 12.
+        uint32_t day; //!< Day, 1 .. 31.
+        uint32_t hour; //!< Hour, 0 .. 23.
+        uint32_t minute; //!< Minute, 0 .. 59.
+        uint32_t second; //!< Second, 0 .. 59.
+        uint32_t usecond; //!< Microseconds, 0 .. 999999
+    } TimeOfDay_t;
 
 	/**
 	 * This method returns the number of clock ticks per second.
@@ -55,8 +64,6 @@ public:
 	static ReturnValue_t getUptime(timeval* uptime);
 
 	static timeval getUptime();
-
-	static uint32_t getUptimeSeconds();
 
 	/**
 	 * Get the time since boot in milliseconds

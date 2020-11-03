@@ -3,16 +3,9 @@
 
 #include <cstdint>
 
-
-typedef struct {
-    uint32_t year; //!< Year, A.D.
-    uint32_t month; //!< Month, 1 .. 12.
-    uint32_t day; //!< Day, 1 .. 31.
-    uint32_t hour; //!< Hour, 0 .. 23.
-    uint32_t minute; //!< Minute, 0 .. 59.
-    uint32_t second; //!< Second, 0 .. 59.
-    uint32_t usecond; //!< Microseconds, 0 .. 999999
-} TimeOfDay_t;
+// I'd also like to include the TimeOfDay_t struct here, but that would
+// break code which uses Clock::TimeOfDay_t. Solution would be to use
+// a Clock namespace instead of class with static functions.
 
 //! Don't use these for time points, type is not large enough for UNIX epoch.
 using dur_millis_t = uint32_t;
