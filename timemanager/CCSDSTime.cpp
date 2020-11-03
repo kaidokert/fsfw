@@ -54,7 +54,7 @@ ReturnValue_t CCSDSTime::convertToCcsds(Ccs_mseconds* to,
 }
 
 ReturnValue_t CCSDSTime::convertFromCcsds(Clock::TimeOfDay_t* to,
-        const uint8_t* from, uint32_t length) {
+        const uint8_t* from, size_t length) {
 	ReturnValue_t result;
 	if (length > 0xFF) {
 		return LENGTH_MISMATCH;
@@ -72,7 +72,7 @@ ReturnValue_t CCSDSTime::convertFromCcsds(Clock::TimeOfDay_t* to,
 	case CDS:
 		return convertFromCDS(to, from, length);
 	case CCS: {
-		uint32_t temp = 0;
+		size_t temp = 0;
 		return convertFromCCS(to, from, &temp, length);
 	}
 
@@ -97,7 +97,7 @@ ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to,
 }
 
 ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to,
-        const uint8_t* from, uint32_t* foundLength, uint32_t maxLength) {
+        const uint8_t* from, size_t* foundLength, size_t maxLength) {
 	uint8_t subsecondsLength = *from & 0b111;
 	uint32_t totalLength = subsecondsLength + 8;
 	if (maxLength < totalLength) {
@@ -395,7 +395,7 @@ ReturnValue_t CCSDSTime::convertToCcsds(OBT_FLP* to, const timeval* from) {
 }
 
 ReturnValue_t CCSDSTime::convertFromCcsds(timeval* to, const uint8_t* from,
-		uint32_t* foundLength, uint32_t maxLength) {
+		size_t* foundLength, size_t maxLength) {
 	//We don't expect ascii here. SHOULDDO
 	uint8_t codeIdentification = (*from >> 4);
 	switch (codeIdentification) {
@@ -413,7 +413,7 @@ ReturnValue_t CCSDSTime::convertFromCcsds(timeval* to, const uint8_t* from,
 }
 
 ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, const uint8_t* from,
-		uint32_t* foundLength, uint32_t maxLength) {
+		size_t* foundLength, size_t maxLength) {
 	if (maxLength < 1) {
 		return INVALID_TIME_FORMAT;
 	}
@@ -491,7 +491,7 @@ ReturnValue_t CCSDSTime::convertTimevalToTimeOfDay(Clock::TimeOfDay_t* to,
 }
 
 ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from,
-		uint32_t* foundLength, uint32_t maxLength) {
+		size_t* foundLength, size_t maxLength) {
 	uint8_t pField = *from;
 	from++;
 //Check epoch
@@ -556,12 +556,12 @@ ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from,
 }
 
 ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, uint8_t pField,
-		const uint8_t* from, uint32_t* foundLength, uint32_t maxLength) {
+		const uint8_t* from, size_t* foundLength, size_t maxLength) {
 	uint32_t secs = 0;
 	uint32_t subSeconds = 0;
 	uint8_t nCoarse = ((pField & 0b1100) >> 2) + 1;
 	uint8_t nFine = (pField & 0b11);
-	uint32_t totalLength = nCoarse + nFine;
+	size_t totalLength = nCoarse + nFine;
 	if (foundLength != NULL) {
 		*foundLength = totalLength;
 	}
@@ -593,7 +593,7 @@ uint32_t CCSDSTime::subsecondsToMicroseconds(uint16_t subseconds) {
 }
 
 ReturnValue_t CCSDSTime::convertFromCCS(timeval* to, const uint8_t* from,
-		uint32_t* foundLength, uint32_t maxLength) {
+		size_t* foundLength, size_t maxLength) {
 	Clock::TimeOfDay_t tempTime;
 	ReturnValue_t result = convertFromCCS(&tempTime, from, foundLength,
 			maxLength);

@@ -156,7 +156,7 @@ public:
 	 * 		- @c INVALID_TIME_FORMAT if the format or a value is invalid
 	 */
 	static ReturnValue_t convertFromCcsds(Clock::TimeOfDay_t *to,
-	        uint8_t const *from, uint32_t length);
+	        uint8_t const *from, size_t length);
 
 	/**
 	 * not implemented yet
@@ -166,31 +166,31 @@ public:
 	 * @return
 	 */
 	static ReturnValue_t convertFromCcsds(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCUC(Clock::TimeOfDay_t *to,
 	        uint8_t const *from, uint8_t length);
 
 	static ReturnValue_t convertFromCUC(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCUC(timeval *to, uint8_t pField,
-			uint8_t const *from, uint32_t* foundLength, uint32_t maxLength);
+			uint8_t const *from, size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCCS(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCCS(timeval *to, uint8_t pField,
-			uint8_t const *from, uint32_t* foundLength, uint32_t maxLength);
+			uint8_t const *from, size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCDS(Clock::TimeOfDay_t *to,
 	        uint8_t const *from, uint8_t length);
 
 	static ReturnValue_t convertFromCDS(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCCS(Clock::TimeOfDay_t *to,
-	        uint8_t const *from, uint32_t* foundLength, uint32_t maxLength);
+	        uint8_t const *from, size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromASCII(Clock::TimeOfDay_t *to,
 	        uint8_t const *from, uint8_t length);
