@@ -1,3 +1,4 @@
+#include <fsfw/timemanager/TimeStamperIF.h>
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
@@ -207,8 +208,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
              // prepare and send update snapshot.
              CommandMessage notification;
              // todo: serialize into store with timestamp.
-
-             // HousekeepingPacketUpdate updatePacket(timeStamp, timeStampSize,
+             //TimeStamperIF* timeStamper = objectManager->
+             //        get<TimeStamperIF>(objects::TIME_STAMPER)
+             //HousekeepingPacketUpdate updatePacket(timeStamp, timeStampSize,
              //        owner->getDataSetHandle(receiver.dataId.sid));
              store_address_t storeId;
              HousekeepingMessage::setUpdateSnapshotSetCommand(
