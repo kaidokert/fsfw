@@ -42,7 +42,7 @@ ReturnValue_t EventManager::performOperation(uint8_t opCode) {
 		EventMessage message;
 		result = eventReportQueue->receiveMessage(&message);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
-#ifdef FSFW_OBJECTMANAGER_
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 			printEvent(&message);
 #endif
 			notifyListeners(&message);
