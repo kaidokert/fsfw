@@ -65,13 +65,17 @@ TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	int flags = 0;
 
-	clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
-	//clientAddress.sin_addr.s_addr = inet_addr("127.73.73.1");
-	clientAddressLen = sizeof(serverAddress);
+	MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
-//	char ipAddress [15];
-//	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-//					&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+	if(ipAddrAnySet){
+		clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
+		//clientAddress.sin_addr.s_addr = inet_addr("127.73.73.1");
+		clientAddressLen = sizeof(serverAddress);
+	}
+
+	char ipAddress [15];
+	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+					&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 
 	ssize_t bytesSent = sendto(serverSocket, data, dataLen, flags,
 			reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
@@ -85,7 +89,7 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
+void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
 	MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 //	char ipAddress [15];
@@ -166,5 +170,9 @@ void TmTcUnixUdpBridge::handleSendError() {
 		sif::error << "TmTcUnixBridge::handleSendError: "
 		        << strerror(errno) << std::endl;
 	}
+}
+
+void TmTcUnixUdpBridge::setClientAddressToAny(bool ipAddrAnySet){
+	this->ipAddrAnySet = ipAddrAnySet;
 }
 

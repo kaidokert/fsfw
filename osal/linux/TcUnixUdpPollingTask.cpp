@@ -33,7 +33,7 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 	while(1) {
 		//! Sender Address is cached here.
 		struct sockaddr_in senderAddress;
-		socklen_t senderSockLen = 0;
+		socklen_t senderSockLen = sizeof(senderAddress);
 		ssize_t bytesReceived = recvfrom(serverUdpSocket,
 				receptionBuffer.data(), frameSize, receptionFlags,
 				reinterpret_cast<sockaddr*>(&senderAddress), &senderSockLen);
@@ -45,8 +45,8 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 
 			continue;
 		}
-//		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
-//				<< " bytes received" << std::endl;
+		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
+				<< " bytes received" << std::endl;
 
 		ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
 		if(result != HasReturnvaluesIF::RETURN_FAILED) {
