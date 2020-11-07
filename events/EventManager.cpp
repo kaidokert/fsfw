@@ -42,7 +42,7 @@ ReturnValue_t EventManager::performOperation(uint8_t opCode) {
 		EventMessage message;
 		result = eventReportQueue->receiveMessage(&message);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 			printEvent(&message);
 #endif
 			notifyListeners(&message);
@@ -113,7 +113,7 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 	return result;
 }
 
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;

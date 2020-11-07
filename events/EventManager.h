@@ -55,7 +55,7 @@ protected:
 
 	void notifyListeners(EventMessage *message);
 
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 	void printEvent(EventMessage *message);
 #endif
 
