@@ -1,6 +1,5 @@
 #include "CatchDefinitions.h"
 
-#include <config/objects/Factory.h>
 #include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/storagemanager/LocalPool.h>
 
