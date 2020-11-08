@@ -11,6 +11,7 @@
 #include <fsfw/tmtcpacket/pus/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
+#include <internalError/InternalErrorReporter.h>
 
 #include <cstdint>
 
@@ -31,15 +32,15 @@ void Factory::produce(void) {
 	setStaticFrameworkObjectIds();
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);
-	//new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
+	new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
 }
 
 void Factory::setStaticFrameworkObjectIds() {
-	PusServiceBase::packetSource = objects::PUS_PACKET_DISTRIBUTOR;
-	PusServiceBase::packetDestination = objects::TM_FUNNEL;
+	PusServiceBase::packetSource = objects::NO_OBJECT;
+	PusServiceBase::packetDestination = objects::NO_OBJECT;
 
-	CommandingServiceBase::defaultPacketSource = objects::PUS_PACKET_DISTRIBUTOR;
-	CommandingServiceBase::defaultPacketDestination = objects::TM_FUNNEL;
+	CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
+	CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
 
 	VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
 
@@ -48,7 +49,6 @@ void Factory::setStaticFrameworkObjectIds() {
 
 	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 
-	TmPacketStored::timeStamperId = objects::PUS_TIME;
-	//TmFunnel::downlinkDestination = objects::NO_OBJECT;
+	TmPacketStored::timeStamperId = objects::NO_OBJECT;
 }
 
