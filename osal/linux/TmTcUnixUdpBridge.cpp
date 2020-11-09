@@ -73,9 +73,9 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 		clientAddressLen = sizeof(serverAddress);
 	}
 
-	char ipAddress [15];
-	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-					&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+//	char ipAddress [15];
+//	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+//					&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 
 	ssize_t bytesSent = sendto(serverSocket, data, dataLen, flags,
 			reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
