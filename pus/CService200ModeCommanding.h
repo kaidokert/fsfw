@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_CSERVICE200MODECOMMANDING_H_
-#define FRAMEWORK_PUS_CSERVICE200MODECOMMANDING_H_
+#ifndef FSFW_PUS_CSERVICE200MODECOMMANDING_H_
+#define FSFW_PUS_CSERVICE200MODECOMMANDING_H_
 
 #include "../tmtcservices/CommandingServiceBase.h"
 
@@ -15,11 +15,10 @@
  */
 class CService200ModeCommanding: public CommandingServiceBase {
 public:
-	static constexpr uint8_t NUMBER_OF_PARALLEL_COMMANDS = 4;
-	static constexpr uint16_t COMMAND_TIMEOUT_SECONDS = 60;
 
 	CService200ModeCommanding(object_id_t objectId,
-	        uint16_t apid, uint8_t serviceId);
+	        uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands = 4,
+            uint16_t commandTimeoutSeconds = 60);
 	virtual~ CService200ModeCommanding();
 
 protected:
@@ -82,4 +81,4 @@ private:
 	};
 };
 
-#endif /* FRAMEWORK_PUS_CSERVICE200MODECOMMANDING_H_ */
+#endif /* FSFW_PUS_CSERVICE200MODECOMMANDING_H_ */
