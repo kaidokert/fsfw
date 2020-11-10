@@ -1,8 +1,8 @@
 #ifndef FSFW_PARAMETERS_HASPARAMETERSIF_H_
 #define FSFW_PARAMETERS_HASPARAMETERSIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
 #include "ParameterWrapper.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstdint>
 
 /**
@@ -20,11 +20,10 @@ using ParameterId_t = uint32_t;
  * ID is the domain ID which can be used to identify unqiue spacecraft domains
  * (e.g. control and sensor domain in the AOCS controller).
  *
- * The second and third byte represent the matrix ID, which can represent
- * a 8-bit row and column number and the last byte...
+ * The second byte is a unique identfier ID.
  *
- * Yeah, is it matrix ID or parameter ID now and is index a 16 bit number
- * of a 8 bit number now?
+ * The third and  fourth byte can be used as a linear index for matrix or array
+ * parameter entries.
  */
 class HasParametersIF {
 public:
@@ -61,6 +60,10 @@ public:
 	virtual ~HasParametersIF() {}
 
 	/**
+	 * This is the generic function overriden by child classes to set
+	 * parameters. To set a parameter, the parameter wrapper is used with
+	 * a variety of set functions. The provided values can be checked with
+	 * newValues.
 	 * Always set parameter before checking newValues!
 	 *
 	 * @param domainId
