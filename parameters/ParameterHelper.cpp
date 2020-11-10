@@ -2,8 +2,8 @@
 #include "ParameterMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 
-ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner) :
-owner(owner) {}
+ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner):
+        owner(owner) {}
 
 ParameterHelper::~ParameterHelper() {
 }
