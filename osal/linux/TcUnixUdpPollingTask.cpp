@@ -45,8 +45,8 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 
 			continue;
 		}
-		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
-				<< " bytes received" << std::endl;
+//		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
+//				<< " bytes received" << std::endl;
 
 		ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
 		if(result != HasReturnvaluesIF::RETURN_FAILED) {
