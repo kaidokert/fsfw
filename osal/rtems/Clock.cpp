@@ -157,30 +157,24 @@ ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
 	if(checkOrCreateClockMutex()!=HasReturnvaluesIF::RETURN_OK){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::NO_TIMEOUT);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
+	MutexHelper helper(timeMutex);
+
 
 	leapSeconds = leapSeconds_;
 
-	result = timeMutex->unlockMutex();
-	return result;
+
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
 	if(timeMutex==NULL){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::NO_TIMEOUT);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
+	MutexHelper helper(timeMutex);
 
 	*leapSeconds_ = leapSeconds;
 
-	result = timeMutex->unlockMutex();
-	return result;
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::checkOrCreateClockMutex(){

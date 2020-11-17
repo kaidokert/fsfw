@@ -1,7 +1,7 @@
 #ifndef POLLINGTASK_H_
 #define POLLINGTASK_H_
 
-#include "../../devicehandlers/FixedSlotSequence.h"
+#include "../../tasks/FixedSlotSequence.h"
 #include "../../tasks/FixedTimeslotTaskIF.h"
 #include "TaskBase.h"
 
