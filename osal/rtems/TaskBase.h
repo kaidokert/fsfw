@@ -1,5 +1,5 @@
-#ifndef TASKBASE_H_
-#define TASKBASE_H_
+#ifndef FSFW_OSAL_RTEMS_TASKBASE_H_
+#define FSFW_OSAL_RTEMS_TASKBASE_H_
 
 #include "RtemsBasic.h"
 #include "../../tasks/PeriodicTaskIF.h"
@@ -44,4 +44,4 @@ private:
 };
 
 
-#endif /* TASKBASE_H_ */
+#endif /* FSFW_OSAL_RTEMS_TASKBASE_H_ */

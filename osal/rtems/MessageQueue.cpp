@@ -4,7 +4,7 @@
 #include "RtemsBasic.h"
 #include <cstring>
 MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
-		id(0), lastPartner(0), defaultDestination(NO_QUEUE), internalErrorReporter(NULL) {
+		id(0), lastPartner(0), defaultDestination(NO_QUEUE), internalErrorReporter(nullptr) {
 	rtems_name name = ('Q' << 24) + (queueCounter++ << 8);
 	rtems_status_code status = rtems_message_queue_create(name, message_depth,
 			max_message_size, 0, &(this->id));
@@ -91,11 +91,11 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 
 	//TODO: Check if we're in ISR.
 	if (result != RTEMS_SUCCESSFUL && !ignoreFault) {
-		if (internalErrorReporter == NULL) {
+		if (internalErrorReporter == nullptr) {
 			internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
 					objects::INTERNAL_ERROR_REPORTER);
 		}
-		if (internalErrorReporter != NULL) {
+		if (internalErrorReporter != nullptr) {
 			internalErrorReporter->queueMessageNotSent();
 		}
 	}

@@ -3,7 +3,7 @@
 #include "MessageQueue.h"
 #include "RtemsBasic.h"
 
-QueueFactory* QueueFactory::factoryInstance = NULL;
+QueueFactory* QueueFactory::factoryInstance = nullptr;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
@@ -38,7 +38,7 @@ ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
 }
 
 QueueFactory* QueueFactory::instance() {
-	if (factoryInstance == NULL) {
+	if (factoryInstance == nullptr) {
 		factoryInstance = new QueueFactory;
 	}
 	return factoryInstance;

@@ -64,7 +64,7 @@ void MultiObjectTask::taskFunctionality() {
 			char* ptr = rtems_object_get_name(getId(), sizeof(nameSpace),
 					nameSpace);
 			sif::error << "ObjectTask: " << ptr << " Deadline missed." << std::endl;
-			if (this->deadlineMissedFunc != NULL) {
+			if (this->deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}
 		}
@@ -74,7 +74,7 @@ void MultiObjectTask::taskFunctionality() {
 ReturnValue_t MultiObjectTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
-	if (newObject == NULL) {
+	if (newObject == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);

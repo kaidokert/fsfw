@@ -1,14 +1,5 @@
-/**
- *	@file	MessageQueue.h
- *
- *  @date	10/02/2012
- *	@author	Bastian Baetz
- *
- *	@brief	This file contains the definition of the MessageQueue class.
- */
-
-#ifndef MESSAGEQUEUE_H_
-#define MESSAGEQUEUE_H_
+#ifndef FSFW_OSAL_RTEMS_MESSAGEQUEUE_H_
+#define FSFW_OSAL_RTEMS_MESSAGEQUEUE_H_
 
 #include "../../internalError/InternalErrorReporterIF.h"
 #include "../../ipc/MessageQueueIF.h"
@@ -178,4 +169,4 @@ private:
 	static ReturnValue_t convertReturnCode(rtems_status_code inValue);
 };
 
-#endif /* MESSAGEQUEUE_H_ */
+#endif /* FSFW_OSAL_RTEMS_MESSAGEQUEUE_H_ */

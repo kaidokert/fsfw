@@ -108,7 +108,7 @@ void PollingTask::taskFunctionality() {
 			//If the deadline was missed, the deadlineMissedFunc is called.
 			rtems_status_code status = TaskBase::restartPeriod(interval,periodId);
 			if (status == RTEMS_TIMEOUT) {
-				if (this->deadlineMissedFunc != NULL) {
+				if (this->deadlineMissedFunc != nullptr) {
 					this->deadlineMissedFunc();
 				}
 			}
