@@ -10,7 +10,12 @@ with Airbus Defence and Space GmbH.
 
 ## Intended Use
 
-The framework is designed for systems, which communicate with external devices, perform control loops, receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore, a mode and health system provides control over the states of the software and the controlled devices. In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
+The framework is designed for systems, which communicate with external devices, perform control loops, receive telecommands and send telemetry, and need to maintain a high level of availability. 
+Therefore, a mode and health system provides control over the states of the software and the controlled devices. 
+In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
+
+The recommended hardware is a microprocessor with more than 2 MB of RAM and 1 MB of non-volatile Memory. 
+For reference, current Applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zync 7000 SoC.
 
 
 ## Structure
