@@ -1,28 +1,19 @@
-#include "CoreComponent.h"
+#include "ThermalComponentCore.h"
 
-CoreComponent::CoreComponent(object_id_t reportingObjectId, uint8_t domainId,
-		uint32_t temperaturePoolId, uint32_t targetStatePoolId,
-		uint32_t currentStatePoolId, uint32_t requestPoolId, GlobDataSet* dataSet,
-		AbstractTemperatureSensor* sensor,
-		AbstractTemperatureSensor* firstRedundantSensor,
-		AbstractTemperatureSensor* secondRedundantSensor,
-		ThermalModuleIF* thermalModule, Parameters parameters,
-		Priority priority, StateRequest initialTargetState) :
-		sensor(sensor), firstRedundantSensor(firstRedundantSensor), secondRedundantSensor(
-				secondRedundantSensor), thermalModule(thermalModule), temperature(
-				temperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE), targetState(
-				targetStatePoolId, dataSet, PoolVariableIF::VAR_READ), currentState(
-				currentStatePoolId, dataSet, PoolVariableIF::VAR_WRITE), heaterRequest(
-				requestPoolId, dataSet, PoolVariableIF::VAR_WRITE), isHeating(
-		false), isSafeComponent(priority == SAFE), minTemp(999), maxTemp(
-				AbstractTemperatureSensor::ZERO_KELVIN_C), parameters(
-				parameters), temperatureMonitor(reportingObjectId,
-				domainId + 1,
-				GlobalDataPool::poolIdAndPositionToPid(temperaturePoolId, 0),
+ThermalComponentCore::ThermalComponentCore(object_id_t reportingObjectId,
+        uint8_t domainId, uint32_t temperaturePoolId,
+        uint32_t targetStatePoolId,
+		uint32_t currentStatePoolId, uint32_t requestPoolId,
+		GlobDataSet* dataSet, Parameters parameters,
+		StateRequest initialTargetState) :
+		temperature(temperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE),
+		targetState(targetStatePoolId, dataSet, PoolVariableIF::VAR_READ),
+		currentState(currentStatePoolId, dataSet, PoolVariableIF::VAR_WRITE),
+		heaterRequest(requestPoolId, dataSet, PoolVariableIF::VAR_WRITE),
+		parameters(parameters),
+		temperatureMonitor(reportingObjectId, domainId + 1,
+		        GlobalDataPool::poolIdAndPositionToPid(temperaturePoolId, 0),
 				COMPONENT_TEMP_CONFIRMATION), domainId(domainId) {
-	if (thermalModule != NULL) {
-		thermalModule->registerComponent(this, priority);
-	}
 	//Set thermal state once, then leave to operator.
 	GlobDataSet mySet;
 	gp_uint8_t writableTargetState(targetStatePoolId, &mySet,
@@ -31,10 +22,39 @@ CoreComponent::CoreComponent(object_id_t reportingObjectId, uint8_t domainId,
 	mySet.commit(PoolVariableIF::VALID);
 }
 
-CoreComponent::~CoreComponent() {
+void ThermalComponentCore::addSensor(AbstractTemperatureSensor* sensor) {
+    this->sensor = sensor;
 }
 
-ThermalComponentIF::HeaterRequest CoreComponent::performOperation(uint8_t opCode) {
+void ThermalComponentCore::addFirstRedundantSensor(
+        AbstractTemperatureSensor *firstRedundantSensor) {
+    this->firstRedundantSensor = firstRedundantSensor;
+}
+
+void ThermalComponentCore::addSecondRedundantSensor(
+        AbstractTemperatureSensor *secondRedundantSensor) {
+    this->secondRedundantSensor = secondRedundantSensor;
+}
+
+void ThermalComponentCore::addThermalModule(ThermalModule *thermalModule,
+        Priority priority) {
+    this->thermalModule = thermalModule;
+    if(thermalModule != nullptr) {
+        thermalModule->registerComponent(this, priority);
+    }
+}
+
+void ThermalComponentCore::setPriority(Priority priority) {
+    if(priority == SAFE) {
+        this->isSafeComponent = true;
+    }
+}
+
+ThermalComponentCore::~ThermalComponentCore() {
+}
+
+ThermalComponentIF::HeaterRequest ThermalComponentCore::performOperation(
+        uint8_t opCode) {
 	HeaterRequest request = HEATER_DONT_CARE;
 	//SHOULDDO: Better pass db_float_t* to getTemperature and set it invalid if invalid.
 	temperature = getTemperature();
@@ -57,19 +77,21 @@ ThermalComponentIF::HeaterRequest CoreComponent::performOperation(uint8_t opCode
 	return request;
 }
 
-void CoreComponent::markStateIgnored() {
+void ThermalComponentCore::markStateIgnored() {
 	currentState = getIgnoredState(currentState);
 }
 
-object_id_t CoreComponent::getObjectId() {
+object_id_t ThermalComponentCore::getObjectId() {
 	return temperatureMonitor.getReporterId();
 }
 
-float CoreComponent::getLowerOpLimit() {
+float ThermalComponentCore::getLowerOpLimit() {
 	return parameters.lowerOpLimit;
 }
 
-ReturnValue_t CoreComponent::setTargetState(int8_t newState) {
+
+
+ReturnValue_t ThermalComponentCore::setTargetState(int8_t newState) {
 	GlobDataSet mySet;
 	gp_uint8_t writableTargetState(targetState.getDataPoolId(),
 			&mySet, PoolVariableIF::VAR_READ_WRITE);
@@ -92,7 +114,7 @@ ReturnValue_t CoreComponent::setTargetState(int8_t newState) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-void CoreComponent::setOutputInvalid() {
+void ThermalComponentCore::setOutputInvalid() {
 	temperature = INVALID_TEMPERATURE;
 	temperature.setValid(PoolVariableIF::INVALID);
 	currentState.setValid(PoolVariableIF::INVALID);
@@ -101,20 +123,22 @@ void CoreComponent::setOutputInvalid() {
 	temperatureMonitor.setToUnchecked();
 }
 
-float CoreComponent::getTemperature() {
-	if ((sensor != NULL) && (sensor->isValid())) {
+float ThermalComponentCore::getTemperature() {
+	if ((sensor != nullptr) && (sensor->isValid())) {
 		return sensor->getTemperature();
 	}
 
-	if ((firstRedundantSensor != NULL) && (firstRedundantSensor->isValid())) {
+	if ((firstRedundantSensor != nullptr) &&
+	        (firstRedundantSensor->isValid())) {
 		return firstRedundantSensor->getTemperature();
 	}
 
-	if ((secondRedundantSensor != NULL) && (secondRedundantSensor->isValid())) {
+	if ((secondRedundantSensor != nullptr) &&
+	        (secondRedundantSensor->isValid())) {
 		return secondRedundantSensor->getTemperature();
 	}
 
-	if (thermalModule != NULL) {
+	if (thermalModule != nullptr) {
 		float temperature = thermalModule->getTemperature();
 		if (temperature != ThermalModuleIF::INVALID_TEMPERATURE) {
 			return temperature;
@@ -126,7 +150,7 @@ float CoreComponent::getTemperature() {
 	}
 }
 
-ThermalComponentIF::State CoreComponent::getState(float temperature,
+ThermalComponentIF::State ThermalComponentCore::getState(float temperature,
 		Parameters parameters, int8_t targetState) {
 	ThermalComponentIF::State state;
 
@@ -144,14 +168,14 @@ ThermalComponentIF::State CoreComponent::getState(float temperature,
 	return state;
 }
 
-void CoreComponent::checkLimits(ThermalComponentIF::State state) {
+void ThermalComponentCore::checkLimits(ThermalComponentIF::State state) {
 	//Checks operational limits only.
 	temperatureMonitor.translateState(state, temperature.value,
 			getParameters().lowerOpLimit, getParameters().upperOpLimit);
 
 }
 
-ThermalComponentIF::HeaterRequest CoreComponent::getHeaterRequest(
+ThermalComponentIF::HeaterRequest ThermalComponentCore::getHeaterRequest(
 		int8_t targetState, float temperature, Parameters parameters) {
 	if (targetState == STATE_REQUEST_IGNORE) {
 		isHeating = false;
@@ -177,7 +201,7 @@ ThermalComponentIF::HeaterRequest CoreComponent::getHeaterRequest(
 	return HEATER_DONT_CARE;
 }
 
-ThermalComponentIF::State CoreComponent::getIgnoredState(int8_t state) {
+ThermalComponentIF::State ThermalComponentCore::getIgnoredState(int8_t state) {
 	switch (state) {
 	case NON_OPERATIONAL_LOW:
 		return NON_OPERATIONAL_LOW_IGNORED;
@@ -197,7 +221,7 @@ ThermalComponentIF::State CoreComponent::getIgnoredState(int8_t state) {
 	}
 }
 
-void CoreComponent::updateMinMaxTemp() {
+void ThermalComponentCore::updateMinMaxTemp() {
 	if (temperature == INVALID_TEMPERATURE) {
 		return;
 	}
@@ -209,15 +233,15 @@ void CoreComponent::updateMinMaxTemp() {
 	}
 }
 
-uint8_t CoreComponent::getDomainId() const {
+uint8_t ThermalComponentCore::getDomainId() const {
 	return domainId;
 }
 
-CoreComponent::Parameters CoreComponent::getParameters() {
+ThermalComponentCore::Parameters ThermalComponentCore::getParameters() {
 	return parameters;
 }
 
-ReturnValue_t CoreComponent::getParameter(uint8_t domainId,
+ReturnValue_t ThermalComponentCore::getParameter(uint8_t domainId,
 		uint16_t parameterId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
 	ReturnValue_t result = temperatureMonitor.getParameter(domainId,

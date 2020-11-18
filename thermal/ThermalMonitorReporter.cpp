@@ -1,10 +1,12 @@
-#include "../thermal/ThermalMonitor.h"
-#include "../thermal/ThermalComponentIF.h"
+#include "ThermalMonitorReporter.h"
+#include "ThermalComponentIF.h"
+
 #include "../monitoring/MonitoringIF.h"
-ThermalMonitor::~ThermalMonitor() {
+
+ThermalMonitorReporter::~ThermalMonitorReporter() {
 }
 
-void ThermalMonitor::sendTransitionEvent(float currentValue,
+void ThermalMonitorReporter::sendTransitionEvent(float currentValue,
 		ReturnValue_t state) {
 	switch (state) {
 	case MonitoringIF::BELOW_LOW_LIMIT:
@@ -28,7 +30,7 @@ void ThermalMonitor::sendTransitionEvent(float currentValue,
 	}
 }
 
-bool ThermalMonitor::isAboveHighLimit() {
+bool ThermalMonitorReporter::isAboveHighLimit() {
 	if (oldState == ThermalComponentIF::ABOVE_OPERATIONAL_LIMIT) {
 		return true;
 	} else {
@@ -36,7 +38,7 @@ bool ThermalMonitor::isAboveHighLimit() {
 	}
 }
 
-ReturnValue_t ThermalMonitor::translateState(ThermalComponentIF::State state, float sample, float lowerLimit,
+ReturnValue_t ThermalMonitorReporter::translateState(ThermalComponentIF::State state, float sample, float lowerLimit,
 		float upperLimit, bool componentIsOperational) {
 	if (ThermalComponentIF::isIgnoredState(state)) {
 		setToUnchecked();

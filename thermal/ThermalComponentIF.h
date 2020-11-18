@@ -49,18 +49,18 @@ public:
 		SAFE = 0,             //!< SAFE
 		IDLE,                 //!< IDLE
 		PAYLOAD,              //!< PAYLOAD
-		NUMBER_OF_PRIORITIES          //!< MAX_PRIORITY
+		NUMBER_OF_PRIORITIES  //!< MAX_PRIORITY
 	};
 
 	/**
 	 * The elements are ordered by priority, lowest have highest priority
 	 */
 	enum HeaterRequest {
-		HEATER_REQUEST_EMERGENCY_OFF = 0,          //!< REQUEST_EMERGENCY_OFF
-		HEATER_REQUEST_EMERGENCY_ON, //!< REQUEST_EMERGENCY_ON
-		HEATER_REQUEST_OFF,          //!< REQUEST_OFF
-		HEATER_REQUEST_ON,           //!< REQUEST_ON
-		HEATER_DONT_CARE             //!< DONT_CARE
+		HEATER_REQUEST_EMERGENCY_OFF = 0,   //!< REQUEST_EMERGENCY_OFF
+		HEATER_REQUEST_EMERGENCY_ON,        //!< REQUEST_EMERGENCY_ON
+		HEATER_REQUEST_OFF,                 //!< REQUEST_OFF
+		HEATER_REQUEST_ON,                  //!< REQUEST_ON
+		HEATER_DONT_CARE                    //!< DONT_CARE
 	};
 
 	virtual ~ThermalComponentIF() {
