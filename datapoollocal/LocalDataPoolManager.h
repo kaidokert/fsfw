@@ -48,11 +48,9 @@ class HousekeepingPacketUpdate;
  * @author 		R. Mueller
  */
 class LocalDataPoolManager {
-	template<typename T>
-	friend class LocalPoolVar;
-	template<typename T, uint16_t vecSize>
-	friend class LocalPoolVector;
-	friend class LocalPoolDataSetBase;
+	template<typename T> friend class LocalPoolVar;
+	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
+    friend class LocalPoolDataSetBase;
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
@@ -319,7 +317,7 @@ private:
 	StorageManagerIF* ipcStore = nullptr;
 	/**
 	 * Get the pointer to the mutex. Can be used to lock the data pool
-	 * eternally. Use with care and don't forget to unlock locked mutexes!
+	 * externally. Use with care and don't forget to unlock locked mutexes!
 	 * For now, only friend classes can accss this function.
 	 * @return
 	 */

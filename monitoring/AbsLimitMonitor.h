@@ -8,10 +8,11 @@ template<typename T>
 class AbsLimitMonitor: public MonitorBase<T> {
 public:
 	AbsLimitMonitor(object_id_t reporterId, uint8_t monitorId,
-	        uint32_t parameterId, uint16_t confirmationLimit, T limit,
+	        object_id_t dataCreatorId, lp_id_t localPoolId,
+	        uint16_t confirmationLimit, T limit,
 	        Event violationEvent = MonitoringIF::VALUE_OUT_OF_RANGE,
 	        bool aboveIsViolation = true) :
-			MonitorBase<T>(reporterId, monitorId, parameterId,
+			MonitorBase<T>(reporterId, monitorId, dataCreatorId, localPoolId,
 			        confirmationLimit),
 			limit(limit), violationEvent(violationEvent),
 			aboveIsViolation(aboveIsViolation) {

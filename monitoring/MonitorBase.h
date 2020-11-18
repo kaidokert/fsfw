@@ -6,8 +6,8 @@
 #include "MonitoringMessageContent.h"
 #include "MonitorReporter.h"
 
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/PIDReader.h"
+#include "../datapoollocal/LocalPoolVariable.h"
+
 
 /**
  * @brief   Base class for monitoring of parameters.
@@ -23,13 +23,18 @@
 template<typename T>
 class MonitorBase: public MonitorReporter<T> {
 public:
+
 	MonitorBase(object_id_t reporterId, uint8_t monitorId,
-			uint32_t parameterId, uint16_t confirmationLimit) :
-			MonitorReporter<T>(reporterId, monitorId, parameterId,
-			        confirmationLimit) {
+	        object_id_t dataCreatorId, lp_id_t localPoolId,
+	        uint16_t confirmationLimit):
+	        MonitorReporter<T>(reporterId, monitorId, dataCreatorId,
+	                confirmationLimit),
+	        poolVariable(dataCreatorId, localPoolId) {
 	}
+
 	virtual ~MonitorBase() {
 	}
+
 	virtual ReturnValue_t check() {
 		// 1. Fetch sample of type T, return validity.
 		T sample = 0;
@@ -39,8 +44,8 @@ public:
 		// Report (if oldState is != invalidity).
 		if (validity != HasReturnvaluesIF::RETURN_OK) {
 			this->monitorStateIs(validity, sample, 0);
-			//3. Otherwise, check sample.
 		} else {
+            //3. Otherwise, check sample.
 			this->oldState = doCheck(sample);
 		}
 		return this->oldState;
@@ -55,16 +60,20 @@ public:
 	virtual ReturnValue_t checkSample(T sample, T* crossedLimit) = 0;
 
 protected:
+
 	virtual ReturnValue_t fetchSample(T* sample) {
-		GlobDataSet mySet;
-		PIDReader<T> parameter(this->parameterId, &mySet);
-		mySet.read();
-		if (!parameter.isValid()) {
-			return MonitoringIF::INVALID;
-		}
-		*sample = parameter.value;
-		return HasReturnvaluesIF::RETURN_OK;
+	    ReturnValue_t result = poolVariable.read();
+	    if(result != HasReturnvaluesIF::RETURN_OK) {
+	        return result;
+	    }
+	    if (not poolVariable.isValid()) {
+	        return MonitoringIF::INVALID;
+	    }
+	    *sample = poolVariable.value;
+	    return HasReturnvaluesIF::RETURN_OK;
 	}
+
+	LocalPoolVar<T> poolVariable;
 };
 
 #endif /* FSFW_MONITORING_MONITORBASE_H_ */

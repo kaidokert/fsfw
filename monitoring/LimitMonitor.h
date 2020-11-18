@@ -12,13 +12,15 @@
 template<typename T>
 class LimitMonitor: public MonitorBase<T> {
 public:
-	LimitMonitor(object_id_t reporterId, uint8_t monitorId, uint32_t parameterId,
+	LimitMonitor(object_id_t reporterId, uint8_t monitorId,
+	        object_id_t creatorId, lp_id_t localPoolId,
 			uint16_t confirmationLimit, T lowerLimit, T upperLimit,
 			Event belowLowEvent = MonitoringIF::VALUE_BELOW_LOW_LIMIT,
 			Event aboveHighEvent = MonitoringIF::VALUE_ABOVE_HIGH_LIMIT) :
-			MonitorBase<T>(reporterId, monitorId, parameterId, confirmationLimit), lowerLimit(
-					lowerLimit), upperLimit(upperLimit), belowLowEvent(
-					belowLowEvent), aboveHighEvent(aboveHighEvent) {
+			MonitorBase<T>(reporterId, monitorId, creatorId, localPoolId,
+			        confirmationLimit),
+			lowerLimit(lowerLimit), upperLimit(upperLimit),
+			belowLowEvent(belowLowEvent), aboveHighEvent(aboveHighEvent) {
 	}
 	virtual ~LimitMonitor() {
 	}
@@ -57,7 +59,8 @@ public:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	bool isOutOfLimits() {
-		if (this->oldState == MonitoringIF::ABOVE_HIGH_LIMIT || this->oldState == MonitoringIF::BELOW_LOW_LIMIT) {
+		if (this->oldState == MonitoringIF::ABOVE_HIGH_LIMIT or
+		        this->oldState == MonitoringIF::BELOW_LOW_LIMIT) {
 			return true;
 		} else {
 			return false;
@@ -76,10 +79,12 @@ protected:
 	void sendTransitionEvent(T currentValue, ReturnValue_t state) {
 		switch (state) {
 		case MonitoringIF::BELOW_LOW_LIMIT:
-			EventManagerIF::triggerEvent(this->reportingId, belowLowEvent, this->parameterId);
+			EventManagerIF::triggerEvent(this->reportingId, belowLowEvent,
+			        this->parameterId);
 			break;
 		case MonitoringIF::ABOVE_HIGH_LIMIT:
-			EventManagerIF::triggerEvent(this->reportingId, aboveHighEvent, this->parameterId);
+			EventManagerIF::triggerEvent(this->reportingId, aboveHighEvent,
+			        this->parameterId);
 			break;
 		default:
 			break;

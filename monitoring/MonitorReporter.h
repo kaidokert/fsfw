@@ -15,6 +15,8 @@ public:
 	static const uint8_t ENABLED = 1;
 	static const uint8_t DISABLED = 0;
 
+	// TODO: Adapt to use SID instead of parameter ID.
+
 	MonitorReporter(object_id_t reportingId, uint8_t monitorId,
 	        uint32_t parameterId, uint16_t confirmationLimit) :
 			monitorId(monitorId), parameterId(parameterId),
