@@ -50,7 +50,7 @@ class HousekeepingPacketUpdate;
 class LocalDataPoolManager {
 	template<typename T> friend class LocalPoolVar;
 	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
-    friend class LocalPoolDataSetBase;
+	friend class LocalPoolDataSetBase;
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
