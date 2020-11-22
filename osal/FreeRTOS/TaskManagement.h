@@ -13,7 +13,7 @@ extern "C" {
  * Architecture dependant portmacro.h function call.
  * Should be implemented in bsp.
  */
-extern void vRequestContextSwitchFromISR();
+extern "C" void vRequestContextSwitchFromISR();
 
 /*!
  * Used by functions to tell if they are being called from
