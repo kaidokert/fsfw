@@ -28,12 +28,25 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/*.cpp)
 # select the OS
 ifeq ($(OS_FSFW),rtems)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/rtems/*.cpp)
+
 else ifeq ($(OS_FSFW),linux)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/linux/*.cpp)
+
 else ifeq ($(OS_FSFW),freeRTOS)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/FreeRTOS/*.cpp)
+
 else ifeq ($(OS_FSFW),host)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/host/*.cpp)
+ifeq ($(OS),Windows_NT)
+CXXSRC += $(wildcard $(FRAMEWORK_PATH)/osal/windows/*.cpp)
+else
+# For now, the linux UDP bridge sources needs to be included manually by upper makefile
+# for host OS because we can't be sure the OS is linux.
+# Following lines can be used to do this:
+# CXXSRC += $(FRAMEWORK_PATH)/osal/linux/TcUnixUdpPollingTask.cpp
+# CXXSRC += $(FRAMEWORK_PATH)/osal/linux/TmTcUnixUdpBridge.cpp
+endif
+
 else
 $(error invalid OS_FSFW specified, valid OS_FSFW are rtems, linux, freeRTOS, host)
 endif
@@ -57,3 +70,5 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/packetmatcher/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/pus/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcservices/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/pus/*.cpp)
+
+INCLUDES += $(CURRENTPATH)
