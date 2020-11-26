@@ -20,8 +20,9 @@ public:
 			uint16_t serverPort = 0xFFFF,uint16_t clientPort = 0xFFFF);
 	virtual~ TmTcUnixUdpBridge();
 
-	void checkAndSetClientAddress(sockaddr_in clientAddress);
+	void checkAndSetClientAddress(sockaddr_in& clientAddress);
 
+	void setClientAddressToAny(bool ipAddrAnySet);
 protected:
 	virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
 
@@ -35,6 +36,8 @@ private:
 
 	struct sockaddr_in serverAddress;
 	socklen_t serverAddressLen = 0;
+
+	bool ipAddrAnySet = false;
 
 	//! Access to the client address is mutex protected as it is set
 	//! by another task.
