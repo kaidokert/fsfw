@@ -22,7 +22,7 @@ TaskBase::TaskBase(rtems_task_priority set_priority, size_t stack_size,
 	}
 	ReturnValue_t result = convertReturnCode(status);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
-		error << "TaskBase::TaskBase: createTask with name " << std::hex
+		sif::error << "TaskBase::TaskBase: createTask with name " << std::hex
 				<< osalName << std::dec << " failed with return code "
 				<< (uint32_t) status << std::endl;
 		this->id = 0;
