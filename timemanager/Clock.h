@@ -2,7 +2,7 @@
 #define FRAMEWORK_TIMEMANAGER_CLOCK_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../ipc/MutexFactory.h"
+#include "../ipc/MutexHelper.h"
 #include "../globalfunctions/timevalOperations.h"
 
 #include <cstdint>
