@@ -15,7 +15,7 @@ Therefore, a mode and health system provides control over the states of the soft
 In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
 
 The recommended hardware is a microprocessor with more than 2 MB of RAM and 1 MB of non-volatile Memory. 
-For reference, current Applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zync 7000 SoC.
+For reference, current Applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC.
 
 
 ## Structure
@@ -134,16 +134,16 @@ A standard FDIR component for the DH will be created automatically but can be ov
 The two interfaces HasModesIF and HasHealthIF provide access for commanding and monitoring of components.
 On-board Mode Management is implement in hierarchy system. 
 DeviceHandlers and Controllers are the lowest part of the hierarchy. 
-The next layer are Assemblies. Those assemblies act as a component which handle redunandcies of handlers. 
+The next layer are Assemblies. Those assemblies act as a component which handle redundancies of handlers. 
 Assemblies share a common core with the next level which are the Subsystems. 
 
 Those Assemblies are intended to act as auto-generated components from a database which describes the subsystem modes. 
 The definitions contain transition and target tables which contain the DH, Assembly and Controller Modes to be commanded.
 Transition tables contain as many steps as needed to reach the mode from any other mode, e.g. a switch into any higher AOCS mode might first turn on the sensors, than the actuators and the controller as last component. 
-The target table is used to describe the state that is check continuously by the subsystem. 
+The target table is used to describe the state that is checked continuously by the subsystem. 
 All of this allows System Modes to be generated as Subsystem object as well from the same database. 
 This System contains list of subsystem modes in the transition and target tables. 
-Therefore, it allows a modular system to create system modes and easy commanding of those, because only the highest components must be command.
+Therefore, it allows a modular system to create system modes and easy commanding of those, because only the highest components must be commanded.
 
 The health state represents if the component is able to perform its tasks. 
 This can be used to signal the system to avoid using this component instead of a redundant one.
