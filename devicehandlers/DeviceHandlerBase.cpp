@@ -86,7 +86,6 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		decrementDeviceReplyMap();
 		fdirInstance->checkForFailures();
 		hkSwitcher.performOperation();
-		hkManager.performHkOperation();
 		performOperationHook();
 		return RETURN_OK;
 	}
@@ -111,6 +110,9 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		break;
 	case CommunicationAction::GET_READ:
 		doGetRead();
+		// This will be performed after datasets have been updated by the
+		// custom device implementation.
+        hkManager.performHkOperation();
 		break;
 	default:
 		break;
