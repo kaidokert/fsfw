@@ -39,7 +39,10 @@
 
 //! When using the newlib nano library, C99 support for stdio facilities
 //! will not be provided. This define should be set to 1 if this is the case.
-#define FSFW_NO_C99_IO 	1
+#define FSFW_NO_C99_IO 	            1
+
+//! Specify whether a special mode store is used for Subsystem components.
+#define FSFW_USE_MODESTORE          0
 
 namespace fsfwconfig {
 //! Default timestamp size. The default timestamp will be an eight byte CDC
