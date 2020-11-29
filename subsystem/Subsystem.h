@@ -10,6 +10,10 @@
 #include "../container/SinglyLinkedList.h"
 #include "../serialize/SerialArrayListAdapter.h"
 
+/**
+ * @brief   TODO: documentation missing
+ * @details
+ */
 class Subsystem: public SubsystemBase, public HasModeSequenceIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SUBSYSTEM;
@@ -31,8 +35,13 @@ public:
 	static const ReturnValue_t TARGET_TABLE_NOT_REACHED = MAKE_RETURN_CODE(0xA1);
 	static const ReturnValue_t TABLE_CHECK_FAILED = MAKE_RETURN_CODE(0xA2);
 
-
-
+	/**
+	 * TODO: Doc for constructor
+	 * @param setObjectId
+	 * @param parent
+	 * @param maxNumberOfSequences
+	 * @param maxNumberOfTables
+	 */
 	Subsystem(object_id_t setObjectId, object_id_t parent,
 			uint32_t maxNumberOfSequences, uint32_t maxNumberOfTables);
 	virtual ~Subsystem();
@@ -52,24 +61,20 @@ public:
 	virtual MessageQueueId_t getSequenceCommandQueue() const override;
 
 	/**
-	 *
-	 *
-	 * IMPORTANT: Do not call on non existing sequence! Use existsSequence() first
-	 *
+	 * @brief    Checks whether a sequence, identified by a mode.
 	 * @param sequence
 	 * @return
 	 */
 	ReturnValue_t checkSequence(Mode_t sequence);
 
 	/**
-	 *
-	 *
-	 * IMPORTANT: Do not call on non existing sequence! Use existsSequence() first
-	 *
+	 * @brief   Checks whether a sequence, identified by a mode list iterator
+	 *          and a fallback sequence.
 	 * @param iter
 	 * @return
 	 */
-	ReturnValue_t checkSequence(HybridIterator<ModeListEntry> iter, Mode_t fallbackSequence);
+	ReturnValue_t checkSequence(HybridIterator<ModeListEntry> iter,
+	        Mode_t fallbackSequence);
 protected:
 
 	struct EntryPointer {
@@ -124,8 +129,6 @@ protected:
 	HybridIterator<ModeListEntry> getTable(Mode_t id);
 
 	HybridIterator<ModeListEntry> getCurrentTable();
-
-//	void startSequence(Mode_t sequence);
 
 	/**
 	 * DO NOT USE ON NON EXISTING SEQUENCE
