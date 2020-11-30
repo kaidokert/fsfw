@@ -96,25 +96,26 @@ float ThermalComponentCore::getLowerOpLimit() {
 
 
 ReturnValue_t ThermalComponentCore::setTargetState(int8_t newState) {
-	GlobDataSet mySet;
-	gp_uint8_t writableTargetState(targetState.getDataPoolId(),
-			&mySet, PoolVariableIF::VAR_READ_WRITE);
-	mySet.read();
-	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)
-			&& (newState != STATE_REQUEST_IGNORE)) {
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	switch (newState) {
-	case STATE_REQUEST_HEATING:
-	case STATE_REQUEST_IGNORE:
-	case STATE_REQUEST_OPERATIONAL:
-		writableTargetState = newState;
-		break;
-	case STATE_REQUEST_NON_OPERATIONAL:
-	default:
-		return INVALID_TARGET_STATE;
-	}
-	mySet.commit(PoolVariableIF::VALID);
+//	GlobDataSet mySet;
+//	gp_uint8_t writableTargetState(targetState.getDataPoolId(),
+//			&mySet, PoolVariableIF::VAR_READ_WRITE);
+//	mySet.read();
+//	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)
+//			&& (newState != STATE_REQUEST_IGNORE)) {
+//		return HasReturnvaluesIF::RETURN_FAILED;
+//	}
+//	switch (newState) {
+//	case STATE_REQUEST_HEATING:
+//	case STATE_REQUEST_IGNORE:
+//	case STATE_REQUEST_OPERATIONAL:
+//		writableTargetState = newState;
+//		break;
+//	case STATE_REQUEST_NON_OPERATIONAL:
+//	default:
+//		return INVALID_TARGET_STATE;
+//	}
+//	mySet.commit(PoolVariableIF::VALID);
+//	return HasReturnvaluesIF::RETURN_OK;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

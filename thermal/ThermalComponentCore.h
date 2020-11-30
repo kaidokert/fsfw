@@ -6,8 +6,6 @@
 #include "AbstractTemperatureSensor.h"
 #include "ThermalModule.h"
 
-//#include "../datapoolglob/GlobalDataSet.h"
-//#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../datapoollocal/LocalPoolVariable.h"
 
 /**

@@ -4,9 +4,6 @@
 #include "PowerComponentIF.h"
 #include "PowerSwitchIF.h"
 
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
-#include "../datapoolglob/PIDReader.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/AbsLimitMonitor.h"
 #include "../returnvalues/HasReturnvaluesIF.h"

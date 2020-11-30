@@ -1,9 +1,6 @@
 #ifndef FSFW_POWER_POWERSENSOR_H_
 #define FSFW_POWER_POWERSENSOR_H_
 
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
-#include "../datapoolglob/PIDReader.h"
 #include "../datapoollocal/StaticLocalDataSet.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/LimitMonitor.h"
