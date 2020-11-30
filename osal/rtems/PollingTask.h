@@ -1,7 +1,7 @@
-#ifndef POLLINGTASK_H_
-#define POLLINGTASK_H_
+#ifndef FSFW_OSAL_RTEMS_POLLINGTASK_H_
+#define FSFW_OSAL_RTEMS_POLLINGTASK_H_
 
-#include "../../devicehandlers/FixedSlotSequence.h"
+#include "../../tasks/FixedSlotSequence.h"
 #include "../../tasks/FixedTimeslotTaskIF.h"
 #include "TaskBase.h"
 
@@ -82,4 +82,4 @@ protected:
 	void taskFunctionality( void );
 };
 
-#endif /* POLLINGTASK_H_ */
+#endif /* FSFW_OSAL_RTEMS_POLLINGTASK_H_ */
