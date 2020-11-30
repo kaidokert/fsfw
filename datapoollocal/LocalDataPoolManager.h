@@ -20,7 +20,7 @@ namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
-class LocalDataSetBase;
+class LocalPoolDataSetBase;
 class HousekeepingPacketUpdate;
 
 /**

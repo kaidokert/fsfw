@@ -43,7 +43,7 @@ public:
 	 * If nullptr, the variable is not registered.
 	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 */
-	LocalPoolVar(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
+	LocalPoolVar(HasLocalDataPoolIF* hkOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 

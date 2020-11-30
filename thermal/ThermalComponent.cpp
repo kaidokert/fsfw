@@ -1,9 +1,9 @@
 #include "ThermalComponent.h"
 
 ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
-		uint8_t domainId, uint32_t temperaturePoolId,
-		uint32_t targetStatePoolId, uint32_t currentStatePoolId,
-		uint32_t requestPoolId, GlobDataSet* dataSet,
+		uint8_t domainId, gp_id_t temperaturePoolId,
+		gp_id_t targetStatePoolId, gp_id_t currentStatePoolId,
+		gp_id_t requestPoolId, LocalPoolDataSetBase* dataSet,
 		AbstractTemperatureSensor* sensor,
 		AbstractTemperatureSensor* firstRedundantSensor,
 		AbstractTemperatureSensor* secondRedundantSensor,
@@ -78,13 +78,13 @@ ThermalComponentIF::State ThermalComponent::getState(float temperature,
 }
 
 void ThermalComponent::checkLimits(ThermalComponentIF::State state) {
-	if (targetState == STATE_REQUEST_OPERATIONAL || targetState == STATE_REQUEST_IGNORE) {
-		ThermalComponentCore::checkLimits(state);
-		return;
-	}
+	//if (targetState == STATE_REQUEST_OPERATIONAL || targetState == STATE_REQUEST_IGNORE) {
+	//	ThermalComponentCore::checkLimits(state);
+	//	return;
+	//}
 	//If component is not operational, it checks the NOP limits.
-	temperatureMonitor.translateState(state, temperature.value,
-			nopParameters.lowerNopLimit, nopParameters.upperNopLimit, false);
+	//temperatureMonitor.translateState(state, temperature.value,
+	//		nopParameters.lowerNopLimit, nopParameters.upperNopLimit, false);
 }
 
 ThermalComponentIF::HeaterRequest ThermalComponent::getHeaterRequest(

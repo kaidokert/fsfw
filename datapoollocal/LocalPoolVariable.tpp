@@ -6,9 +6,8 @@
 #endif
 
 template<typename T>
-inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
-		HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
-		pool_rwm_t setReadWriteMode):
+inline LocalPoolVar<T>::LocalPoolVar(HasLocalDataPoolIF* hkOwner,
+		lp_id_t poolId, DataSetIF* dataSet, pool_rwm_t setReadWriteMode):
 		LocalPoolObjectBase(poolId, hkOwner, dataSet, setReadWriteMode) {}
 
 template<typename T>

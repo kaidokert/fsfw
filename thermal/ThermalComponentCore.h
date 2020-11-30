@@ -41,7 +41,7 @@ public:
 	ThermalComponentCore(object_id_t reportingObjectId, uint8_t domainId,
 	        gp_id_t temperaturePoolId, gp_id_t targetStatePoolId,
 	        gp_id_t currentStatePoolId, gp_id_t requestPoolId,
-			LocalDataSetBase* dataSet, Parameters parameters,
+			LocalPoolDataSetBase* dataSet, Parameters parameters,
 			StateRequest initialTargetState =
 					ThermalComponentIF::STATE_REQUEST_OPERATIONAL);
 
@@ -96,7 +96,7 @@ protected:
 
 	Parameters parameters;
 
-	ThermalMonitorReporter temperatureMonitor;
+	//ThermalMonitorReporter temperatureMonitor;
 
 	const uint8_t domainId;
 
@@ -111,7 +111,7 @@ protected:
 
 	virtual State getIgnoredState(int8_t state);
 
-	void updateMinMaxTemp();
+	//void updateMinMaxTemp();
 
 	virtual Parameters getParameters();
 };
