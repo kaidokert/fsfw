@@ -43,7 +43,8 @@ public:
 	virtual~ HasLocalDataPoolIF() {};
 
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
-	static constexpr lp_id_t NO_POOL_ID = 0xffffffff;
+
+	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
 	virtual object_id_t getObjectId() const = 0;
 
