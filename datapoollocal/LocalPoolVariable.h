@@ -121,6 +121,10 @@ public:
 	LocalPoolVar<T> &operator=(const T& newValue);
 	LocalPoolVar<T> &operator=(const LocalPoolVar<T>& newPoolVariable);
 
+	//! Explicit type conversion operator. Allows casting the class to
+	//! its template type to perform operations on value.
+	explicit operator T() const;
+
 	bool operator==(const LocalPoolVar<T>& other) const;
 	bool operator==(const T& other) const;
 

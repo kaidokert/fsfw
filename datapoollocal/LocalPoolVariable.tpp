@@ -81,20 +81,6 @@ inline ReturnValue_t LocalPoolVar<T>::commitWithoutLock() {
 }
 
 template<typename T>
-inline LocalPoolVar<T> & LocalPoolVar<T>::operator=(const T& newValue) {
-    value = newValue;
-    return *this;
-}
-
-template<typename T>
-inline LocalPoolVar<T>& LocalPoolVar<T>::operator =(
-		const LocalPoolVar<T>& newPoolVariable) {
-	value = newPoolVariable.value;
-	return *this;
-}
-
-
-template<typename T>
 inline ReturnValue_t LocalPoolVar<T>::serialize(uint8_t** buffer, size_t* size,
 		const size_t max_size, SerializeIF::Endianness streamEndianness) const {
 	return SerializeAdapter::serialize(&value,
@@ -117,6 +103,24 @@ inline std::ostream& operator<< (std::ostream &out,
 		const LocalPoolVar<T> &var) {
     out << var.value;
     return out;
+}
+
+template<typename T>
+inline LocalPoolVar<T>::operator T() const {
+	return value;
+}
+
+template<typename T>
+inline LocalPoolVar<T> & LocalPoolVar<T>::operator=(const T& newValue) {
+    value = newValue;
+    return *this;
+}
+
+template<typename T>
+inline LocalPoolVar<T>& LocalPoolVar<T>::operator =(
+		const LocalPoolVar<T>& newPoolVariable) {
+	value = newPoolVariable.value;
+	return *this;
 }
 
 template<typename T>

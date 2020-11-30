@@ -60,7 +60,7 @@ ThermalComponentIF::HeaterRequest ThermalComponentCore::performOperation(
 	//SHOULDDO: Better pass db_float_t* to getTemperature and set it invalid if invalid.
 	temperature = getTemperature();
 	updateMinMaxTemp();
-	if ((temperature != INVALID_TEMPERATURE)) {
+	if (temperature != INVALID_TEMPERATURE) {
 		temperature.setValid(PoolVariableIF::VALID);
 		State state = getState(temperature.value, getParameters(),
 				targetState.value);
@@ -230,10 +230,10 @@ void ThermalComponentCore::updateMinMaxTemp() {
 		return;
 	}
 	if (temperature < minTemp) {
-		minTemp = temperature.value;
+		minTemp = static_cast<float>(temperature);
 	}
 	if (temperature > maxTemp) {
-		maxTemp = temperature.value;
+		maxTemp = static_cast<float>(temperature);
 	}
 }
 
