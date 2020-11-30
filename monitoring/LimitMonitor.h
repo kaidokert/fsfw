@@ -80,11 +80,11 @@ protected:
 		switch (state) {
 		case MonitoringIF::BELOW_LOW_LIMIT:
 			EventManagerIF::triggerEvent(this->reportingId, belowLowEvent,
-			        this->parameterId.objectId, this->parameterId.localPoolId);
+			        this->globalPoolId.objectId, this->globalPoolId.localPoolId);
 			break;
 		case MonitoringIF::ABOVE_HIGH_LIMIT:
 			EventManagerIF::triggerEvent(this->reportingId, aboveHighEvent,
-			        this->parameterId.objectId, this->parameterId.localPoolId);
+			        this->globalPoolId.objectId, this->globalPoolId.localPoolId);
 			break;
 		default:
 			break;

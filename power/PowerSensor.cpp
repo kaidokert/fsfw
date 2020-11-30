@@ -26,24 +26,24 @@ ReturnValue_t PowerSensor::calculatePower() {
 	powerSensorSet.read();
 	ReturnValue_t result1 = HasReturnvaluesIF::RETURN_FAILED;
 	ReturnValue_t result2 = HasReturnvaluesIF::RETURN_FAILED;
-//	if (healthHelper.healthTable->isHealthy(getObjectId()) && voltage.isValid()
-//			&& current.isValid()) {
-//		result1 = voltageLimit.doCheck(voltage);
-//		result2 = currentLimit.doCheck(current);
-//	} else {
-//		voltageLimit.setToInvalid();
-//		currentLimit.setToInvalid();
-//		result1 = OBJECT_NOT_HEALTHY;
-//	}
-//	if (result1 != HasReturnvaluesIF::RETURN_OK
-//			|| result2 != HasReturnvaluesIF::RETURN_OK) {
-//		result1 = MonitoringIF::INVALID;
-//		power.setValid(PoolVariableIF::INVALID);
-//	} else {
-//		power.setValid(PoolVariableIF::VALID);
-//		power = current * voltage;
-//	}
-//	powerSensorSet.commit();
+	if (healthHelper.healthTable->isHealthy(getObjectId()) && voltage.isValid()
+			&& current.isValid()) {
+		result1 = voltageLimit.doCheck(voltage.value);
+		result2 = currentLimit.doCheck(current.value);
+	} else {
+		voltageLimit.setToInvalid();
+		currentLimit.setToInvalid();
+		result1 = OBJECT_NOT_HEALTHY;
+	}
+	if (result1 != HasReturnvaluesIF::RETURN_OK
+			|| result2 != HasReturnvaluesIF::RETURN_OK) {
+		result1 = MonitoringIF::INVALID;
+		power.setValid(PoolVariableIF::INVALID);
+	} else {
+		power.setValid(PoolVariableIF::VALID);
+		power.value = current.value * voltage.value;
+	}
+	powerSensorSet.commit();
 	return result1;
 }
 

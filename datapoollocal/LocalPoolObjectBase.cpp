@@ -67,3 +67,7 @@ void LocalPoolObjectBase::setChanged(bool changed) {
 bool LocalPoolObjectBase::hasChanged() const {
     return changed;
 }
+
+void LocalPoolObjectBase::setReadWriteMode(pool_rwm_t newReadWriteMode) {
+	this->readWriteMode = newReadWriteMode;
+}

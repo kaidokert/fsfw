@@ -66,8 +66,8 @@ protected:
 		switch (state) {
 		case MonitoringIF::OUT_OF_RANGE:
 			EventManagerIF::triggerEvent(this->reportingId,
-			        violationEvent, this->parameterId.objectId,
-					this->parameterId.localPoolId);
+			        violationEvent, this->globalPoolId.objectId,
+					this->globalPoolId.localPoolId);
 			break;
 		default:
 			break;

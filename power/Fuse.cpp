@@ -72,19 +72,19 @@ ReturnValue_t Fuse::check() {
 	checkFuseState();
 	calculateFusePower();
 	//Check if power is valid and if fuse state is off or invalid.
-//	if (!power.isValid() || (state == 0) || !state.isValid()) {
-//		result = powerMonitor.setToInvalid();
-//	} else {
-//		float lowLimit = 0.0;
-//		float highLimit = RESIDUAL_POWER;
-//		calculatePowerLimits(&lowLimit, &highLimit);
-//		result = powerMonitor.checkPower(power, lowLimit, highLimit);
-//		if (result == MonitoringIF::BELOW_LOW_LIMIT) {
-//			reportEvents(POWER_BELOW_LOW_LIMIT);
-//		} else if (result == MonitoringIF::ABOVE_HIGH_LIMIT) {
-//			reportEvents(POWER_ABOVE_HIGH_LIMIT);
-//		}
-//	}
+	if (!power.isValid() || (state == 0) || !state.isValid()) {
+		result = powerMonitor.setToInvalid();
+	} else {
+		float lowLimit = 0.0;
+		float highLimit = RESIDUAL_POWER;
+		calculatePowerLimits(&lowLimit, &highLimit);
+		result = powerMonitor.checkPower(power.value, lowLimit, highLimit);
+		if (result == MonitoringIF::BELOW_LOW_LIMIT) {
+			reportEvents(POWER_BELOW_LOW_LIMIT);
+		} else if (result == MonitoringIF::ABOVE_HIGH_LIMIT) {
+			reportEvents(POWER_ABOVE_HIGH_LIMIT);
+		}
+	}
 	set.commit();
 	return result;
 }
@@ -135,7 +135,7 @@ void Fuse::calculateFusePower() {
 		return;
 	}
 	//Calculate fuse power.
-	//power = current * voltage;
+	power.value = current.value * voltage.value;
 	power.setValid(PoolVariableIF::VALID);
 }
 
@@ -188,20 +188,20 @@ void Fuse::checkFuseState() {
 		oldFuseState = 0;
 		return;
 	}
-//	if (state == 0) {
-//		if (oldFuseState != 0) {
-//			reportEvents(FUSE_WENT_OFF);
-//		}
-//	}
-//	oldFuseState = state;
+	if (state == 0) {
+		if (oldFuseState != 0) {
+			reportEvents(FUSE_WENT_OFF);
+		}
+	}
+	oldFuseState = state.value;
 }
 
 float Fuse::getPower() {
-//	if (power.isValid()) {
-//		return power;
-//	} else {
-//		return 0.0;
-//	}
+	if (power.isValid()) {
+		return power.value;
+	} else {
+		return 0.0;
+	}
 }
 
 void Fuse::setDataPoolEntriesInvalid() {

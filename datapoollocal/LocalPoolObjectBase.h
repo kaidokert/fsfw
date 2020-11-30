@@ -18,6 +18,7 @@ public:
             DataSetIF* dataSet = nullptr,
             pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
+    void setReadWriteMode(pool_rwm_t newReadWriteMode);
     pool_rwm_t getReadWriteMode() const;
 
     bool isValid() const override;

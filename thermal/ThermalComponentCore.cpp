@@ -9,16 +9,18 @@ ThermalComponentCore::ThermalComponentCore(object_id_t reportingObjectId,
 		targetState(targetStatePoolId, dataSet, PoolVariableIF::VAR_READ),
 		currentState(currentStatePoolId, dataSet, PoolVariableIF::VAR_WRITE),
 		heaterRequest(requestPoolId, dataSet, PoolVariableIF::VAR_WRITE),
-		parameters(parameters), domainId(domainId) {
-		//temperatureMonitor(reportingObjectId, domainId + 1,
-		//        GlobalDataPool::poolIdAndPositionToPid(temperaturePoolId, 0),
-		//		COMPONENT_TEMP_CONFIRMATION), domainId(domainId) {
+		parameters(parameters), domainId(domainId),
+		temperatureMonitor(reportingObjectId, domainId + 1,temperaturePoolId,
+				COMPONENT_TEMP_CONFIRMATION) {
 	//Set thermal state once, then leave to operator.
-	//GlobDataSet mySet;
-	//gp_uint8_t writableTargetState(targetStatePoolId, &mySet,
-	//		PoolVariableIF::VAR_WRITE);
-	//writableTargetState = initialTargetState;
-	//mySet.commit(PoolVariableIF::VALID);
+	targetState.setReadWriteMode(PoolVariableIF::VAR_WRITE);
+	ReturnValue_t result = targetState.read();
+	if(result == HasReturnvaluesIF::RETURN_OK) {
+		targetState = initialTargetState;
+		targetState.setValid(true);
+		targetState.commit();
+	}
+	targetState.setReadWriteMode(PoolVariableIF::VAR_READ);
 }
 
 void ThermalComponentCore::addSensor(AbstractTemperatureSensor* sensor) {
@@ -57,19 +59,21 @@ ThermalComponentIF::HeaterRequest ThermalComponentCore::performOperation(
 	HeaterRequest request = HEATER_DONT_CARE;
 	//SHOULDDO: Better pass db_float_t* to getTemperature and set it invalid if invalid.
 	temperature = getTemperature();
-	//updateMinMaxTemp();
-	//if ((temperature != INVALID_TEMPERATURE)) {
-		//temperature.setValid(PoolVariableIF::VALID);
-		//State state = getState(temperature, getParameters(), targetState);
-		//currentState = state;
-		//checkLimits(state);
-		//request = getHeaterRequest(targetState, temperature, getParameters());
-	//} else {
-	//	temperatureMonitor.setToInvalid();
-	//	temperature.setValid(PoolVariableIF::INVALID);
-	//	currentState = UNKNOWN;
-	//	request = HEATER_DONT_CARE;
-	//}
+	updateMinMaxTemp();
+	if ((temperature != INVALID_TEMPERATURE)) {
+		temperature.setValid(PoolVariableIF::VALID);
+		State state = getState(temperature.value, getParameters(),
+				targetState.value);
+		currentState = state;
+		checkLimits(state);
+		request = getHeaterRequest(targetState.value, temperature.value,
+				getParameters());
+	} else {
+		temperatureMonitor.setToInvalid();
+		temperature.setValid(PoolVariableIF::INVALID);
+		currentState = UNKNOWN;
+		request = HEATER_DONT_CARE;
+	}
 	currentState.setValid(PoolVariableIF::VALID);
 	heaterRequest = request;
 	heaterRequest.setValid(PoolVariableIF::VALID);
@@ -77,11 +81,11 @@ ThermalComponentIF::HeaterRequest ThermalComponentCore::performOperation(
 }
 
 void ThermalComponentCore::markStateIgnored() {
-	//currentState = getIgnoredState(currentState);
+	currentState = getIgnoredState(currentState.value);
 }
 
 object_id_t ThermalComponentCore::getObjectId() {
-	//return temperatureMonitor.getReporterId();
+	return temperatureMonitor.getReporterId();
 	return 0;
 }
 
@@ -120,7 +124,7 @@ void ThermalComponentCore::setOutputInvalid() {
 	currentState.setValid(PoolVariableIF::INVALID);
 	heaterRequest = HEATER_DONT_CARE;
 	heaterRequest.setValid(PoolVariableIF::INVALID);
-	//temperatureMonitor.setToUnchecked();
+	temperatureMonitor.setToUnchecked();
 }
 
 float ThermalComponentCore::getTemperature() {
@@ -170,8 +174,8 @@ ThermalComponentIF::State ThermalComponentCore::getState(float temperature,
 
 void ThermalComponentCore::checkLimits(ThermalComponentIF::State state) {
 	//Checks operational limits only.
-	//temperatureMonitor.translateState(state, temperature.value,
-	//		getParameters().lowerOpLimit, getParameters().upperOpLimit);
+	temperatureMonitor.translateState(state, temperature.value,
+			getParameters().lowerOpLimit, getParameters().upperOpLimit);
 
 }
 
@@ -221,17 +225,17 @@ ThermalComponentIF::State ThermalComponentCore::getIgnoredState(int8_t state) {
 	}
 }
 
-//void ThermalComponentCore::updateMinMaxTemp() {
-//	if (temperature == INVALID_TEMPERATURE) {
-//		return;
-//	}
-//	if (temperature < minTemp) {
-//		minTemp = temperature;
-//	}
-//	if (temperature > maxTemp) {
-//		maxTemp = temperature;
-//	}
-//}
+void ThermalComponentCore::updateMinMaxTemp() {
+	if (temperature == INVALID_TEMPERATURE) {
+		return;
+	}
+	if (temperature < minTemp) {
+		minTemp = temperature.value;
+	}
+	if (temperature > maxTemp) {
+		maxTemp = temperature.value;
+	}
+}
 
 uint8_t ThermalComponentCore::getDomainId() const {
 	return domainId;
@@ -244,38 +248,38 @@ ThermalComponentCore::Parameters ThermalComponentCore::getParameters() {
 ReturnValue_t ThermalComponentCore::getParameter(uint8_t domainId,
 		uint16_t parameterId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
-	//ReturnValue_t result = temperatureMonitor.getParameter(domainId,
-	//		parameterId, parameterWrapper, newValues, startAtIndex);
-//	if (result != INVALID_DOMAIN_ID) {
-//		return result;
-//	}
-//	if (domainId != this->domainId) {
-//		return INVALID_DOMAIN_ID;
-//	}
-//	switch (parameterId) {
-//	case 0:
-//		parameterWrapper->set(parameters.heaterOn);
-//		break;
-//	case 1:
-//		parameterWrapper->set(parameters.hysteresis);
-//		break;
-//	case 2:
-//		parameterWrapper->set(parameters.heaterSwitchoff);
-//		break;
-//	case 3:
-//		parameterWrapper->set(minTemp);
-//		break;
-//	case 4:
-//		parameterWrapper->set(maxTemp);
-//		break;
-//	case 10:
-//		parameterWrapper->set(parameters.lowerOpLimit);
-//		break;
-//	case 11:
-//		parameterWrapper->set(parameters.upperOpLimit);
-//		break;
-//	default:
-//		return INVALID_IDENTIFIER_ID;
-//	}
+	ReturnValue_t result = temperatureMonitor.getParameter(domainId,
+			parameterId, parameterWrapper, newValues, startAtIndex);
+	if (result != INVALID_DOMAIN_ID) {
+		return result;
+	}
+	if (domainId != this->domainId) {
+		return INVALID_DOMAIN_ID;
+	}
+	switch (parameterId) {
+	case 0:
+		parameterWrapper->set(parameters.heaterOn);
+		break;
+	case 1:
+		parameterWrapper->set(parameters.hysteresis);
+		break;
+	case 2:
+		parameterWrapper->set(parameters.heaterSwitchoff);
+		break;
+	case 3:
+		parameterWrapper->set(minTemp);
+		break;
+	case 4:
+		parameterWrapper->set(maxTemp);
+		break;
+	case 10:
+		parameterWrapper->set(parameters.lowerOpLimit);
+		break;
+	case 11:
+		parameterWrapper->set(parameters.upperOpLimit);
+		break;
+	default:
+		return INVALID_IDENTIFIER_ID;
+	}
 	return HasReturnvaluesIF::RETURN_OK;
 }

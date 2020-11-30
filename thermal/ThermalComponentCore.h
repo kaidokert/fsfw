@@ -96,9 +96,9 @@ protected:
 
 	Parameters parameters;
 
-	//ThermalMonitorReporter temperatureMonitor;
-
 	const uint8_t domainId;
+
+	ThermalMonitorReporter temperatureMonitor;
 
 	virtual float getTemperature();
 	virtual State getState(float temperature, Parameters parameters,
@@ -111,7 +111,7 @@ protected:
 
 	virtual State getIgnoredState(int8_t state);
 
-	//void updateMinMaxTemp();
+	void updateMinMaxTemp();
 
 	virtual Parameters getParameters();
 };

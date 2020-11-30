@@ -81,14 +81,14 @@ inline ReturnValue_t LocalPoolVar<T>::commitWithoutLock() {
 }
 
 template<typename T>
-inline LocalPoolVar<T> & LocalPoolVar<T>::operator=(T newValue) {
+inline LocalPoolVar<T> & LocalPoolVar<T>::operator=(const T& newValue) {
     value = newValue;
     return *this;
 }
 
 template<typename T>
 inline LocalPoolVar<T>& LocalPoolVar<T>::operator =(
-		LocalPoolVar<T> newPoolVariable) {
+		const LocalPoolVar<T>& newPoolVariable) {
 	value = newPoolVariable.value;
 	return *this;
 }
@@ -119,4 +119,47 @@ inline std::ostream& operator<< (std::ostream &out,
     return out;
 }
 
-#endif
+template<typename T>
+inline bool LocalPoolVar<T>::operator ==(const LocalPoolVar<T> &other) const {
+	return this->value == other.value;
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator ==(const T &other) const {
+	return this->value == other;
+}
+
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator !=(const LocalPoolVar<T> &other) const {
+	return not (*this == other);
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator !=(const T &other) const {
+	return not (*this == other);
+}
+
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator <(const LocalPoolVar<T> &other) const {
+	return this->value < other.value;
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator <(const T &other) const {
+	return this->value < other;
+}
+
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator >(const LocalPoolVar<T> &other) const {
+	return not (*this < other);
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator >(const T &other) const {
+	return not (*this < other);
+}
+
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_ */
