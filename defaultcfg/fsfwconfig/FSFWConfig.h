@@ -1,7 +1,6 @@
 #ifndef CONFIG_FSFWCONFIG_H_
 #define CONFIG_FSFWCONFIG_H_
 
-#include <FSFWVersion.h>
 #include <cstddef>
 #include <cstdint>
 
