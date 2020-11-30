@@ -25,11 +25,10 @@ class MonitorBase: public MonitorReporter<T> {
 public:
 
 	MonitorBase(object_id_t reporterId, uint8_t monitorId,
-	        object_id_t dataCreatorId, lp_id_t localPoolId,
-	        uint16_t confirmationLimit):
-	        MonitorReporter<T>(reporterId, monitorId, dataCreatorId,
+	        gp_id_t globalPoolId, uint16_t confirmationLimit):
+	        MonitorReporter<T>(reporterId, monitorId, globalPoolId,
 	                confirmationLimit),
-	        poolVariable(dataCreatorId, localPoolId) {
+	        poolVariable(globalPoolId) {
 	}
 
 	virtual ~MonitorBase() {

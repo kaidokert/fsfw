@@ -13,11 +13,11 @@ template<typename T>
 class LimitMonitor: public MonitorBase<T> {
 public:
 	LimitMonitor(object_id_t reporterId, uint8_t monitorId,
-	        object_id_t creatorId, lp_id_t localPoolId,
-			uint16_t confirmationLimit, T lowerLimit, T upperLimit,
-			Event belowLowEvent = MonitoringIF::VALUE_BELOW_LOW_LIMIT,
+	        gp_id_t globalPoolId, uint16_t confirmationLimit, T lowerLimit,
+			T upperLimit, Event belowLowEvent =
+					MonitoringIF::VALUE_BELOW_LOW_LIMIT,
 			Event aboveHighEvent = MonitoringIF::VALUE_ABOVE_HIGH_LIMIT) :
-			MonitorBase<T>(reporterId, monitorId, creatorId, localPoolId,
+			MonitorBase<T>(reporterId, monitorId, globalPoolId,
 			        confirmationLimit),
 			lowerLimit(lowerLimit), upperLimit(upperLimit),
 			belowLowEvent(belowLowEvent), aboveHighEvent(aboveHighEvent) {
@@ -80,11 +80,11 @@ protected:
 		switch (state) {
 		case MonitoringIF::BELOW_LOW_LIMIT:
 			EventManagerIF::triggerEvent(this->reportingId, belowLowEvent,
-			        this->parameterId);
+			        this->parameterId.objectId, this->parameterId.localPoolId);
 			break;
 		case MonitoringIF::ABOVE_HIGH_LIMIT:
 			EventManagerIF::triggerEvent(this->reportingId, aboveHighEvent,
-			        this->parameterId);
+			        this->parameterId.objectId, this->parameterId.localPoolId);
 			break;
 		default:
 			break;

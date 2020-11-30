@@ -2,15 +2,17 @@
 
 #include "../ipc/QueueFactory.h"
 
-PowerSensor::PowerSensor(object_id_t setId, VariableIds ids,
+PowerSensor::PowerSensor(object_id_t objectId, sid_t setId,  VariableIds ids,
 		DefaultLimits limits, SensorEvents events, uint16_t confirmationCount) :
-		SystemObject(setId), parameterHelper(this), healthHelper(this, setId),
-		set(), current(ids.pidCurrent, &set), voltage(ids.pidVoltage, &set),
-		power(ids.poolIdPower, &set, PoolVariableIF::VAR_WRITE),
-		currentLimit(setId, MODULE_ID_CURRENT, ids.pidCurrent, confirmationCount,
+		SystemObject(objectId), parameterHelper(this),
+		healthHelper(this, objectId),
+		powerSensorSet(setId), current(ids.pidCurrent, &powerSensorSet),
+		voltage(ids.pidVoltage, &powerSensorSet),
+		power(ids.poolIdPower, &powerSensorSet, PoolVariableIF::VAR_WRITE),
+		currentLimit(objectId, MODULE_ID_CURRENT, ids.pidCurrent, confirmationCount,
 				limits.currentMin, limits.currentMax, events.currentLow,
 				events.currentHigh),
-		voltageLimit(setId, MODULE_ID_VOLTAGE,
+		voltageLimit(objectId, MODULE_ID_VOLTAGE,
 				ids.pidVoltage, confirmationCount, limits.voltageMin,
 				limits.voltageMax, events.voltageLow, events.voltageHigh) {
 		commandQueue = QueueFactory::instance()->createMessageQueue();
@@ -21,27 +23,27 @@ PowerSensor::~PowerSensor() {
 }
 
 ReturnValue_t PowerSensor::calculatePower() {
-	set.read();
+	powerSensorSet.read();
 	ReturnValue_t result1 = HasReturnvaluesIF::RETURN_FAILED;
 	ReturnValue_t result2 = HasReturnvaluesIF::RETURN_FAILED;
-	if (healthHelper.healthTable->isHealthy(getObjectId()) && voltage.isValid()
-			&& current.isValid()) {
-		result1 = voltageLimit.doCheck(voltage);
-		result2 = currentLimit.doCheck(current);
-	} else {
-		voltageLimit.setToInvalid();
-		currentLimit.setToInvalid();
-		result1 = OBJECT_NOT_HEALTHY;
-	}
-	if (result1 != HasReturnvaluesIF::RETURN_OK
-			|| result2 != HasReturnvaluesIF::RETURN_OK) {
-		result1 = MonitoringIF::INVALID;
-		power.setValid(PoolVariableIF::INVALID);
-	} else {
-		power.setValid(PoolVariableIF::VALID);
-		power = current * voltage;
-	}
-	set.commit();
+//	if (healthHelper.healthTable->isHealthy(getObjectId()) && voltage.isValid()
+//			&& current.isValid()) {
+//		result1 = voltageLimit.doCheck(voltage);
+//		result2 = currentLimit.doCheck(current);
+//	} else {
+//		voltageLimit.setToInvalid();
+//		currentLimit.setToInvalid();
+//		result1 = OBJECT_NOT_HEALTHY;
+//	}
+//	if (result1 != HasReturnvaluesIF::RETURN_OK
+//			|| result2 != HasReturnvaluesIF::RETURN_OK) {
+//		result1 = MonitoringIF::INVALID;
+//		power.setValid(PoolVariableIF::INVALID);
+//	} else {
+//		power.setValid(PoolVariableIF::VALID);
+//		power = current * voltage;
+//	}
+//	powerSensorSet.commit();
 	return result1;
 }
 
@@ -94,8 +96,8 @@ void PowerSensor::checkCommandQueue() {
 }
 
 void PowerSensor::setDataPoolEntriesInvalid() {
-	set.read();
-	set.commit(PoolVariableIF::INVALID);
+	powerSensorSet.read();
+	powerSensorSet.commit(PoolVariableIF::INVALID);
 }
 
 float PowerSensor::getPower() {

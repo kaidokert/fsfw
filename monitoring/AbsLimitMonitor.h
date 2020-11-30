@@ -8,12 +8,11 @@ template<typename T>
 class AbsLimitMonitor: public MonitorBase<T> {
 public:
 	AbsLimitMonitor(object_id_t reporterId, uint8_t monitorId,
-	        object_id_t dataCreatorId, lp_id_t localPoolId,
-	        uint16_t confirmationLimit, T limit,
+	        gp_id_t globalPoolId, uint16_t confirmationLimit, T limit,
 	        Event violationEvent = MonitoringIF::VALUE_OUT_OF_RANGE,
 	        bool aboveIsViolation = true) :
-			MonitorBase<T>(reporterId, monitorId, dataCreatorId, localPoolId,
-			        confirmationLimit),
+			MonitorBase<T>(reporterId, monitorId, globalPoolId,
+					confirmationLimit),
 			limit(limit), violationEvent(violationEvent),
 			aboveIsViolation(aboveIsViolation) {
 	}
@@ -67,7 +66,8 @@ protected:
 		switch (state) {
 		case MonitoringIF::OUT_OF_RANGE:
 			EventManagerIF::triggerEvent(this->reportingId,
-			        violationEvent, this->parameterId);
+			        violationEvent, this->parameterId.objectId,
+					this->parameterId.localPoolId);
 			break;
 		default:
 			break;

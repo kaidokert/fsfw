@@ -13,6 +13,7 @@
 #include "../parameters/ParameterHelper.h"
 #include <list>
 
+#include "../datapoollocal/StaticLocalDataSet.h"
 namespace Factory {
 void setStaticFrameworkObjectIds();
 }
@@ -27,10 +28,10 @@ private:
 	static constexpr float RESIDUAL_POWER = 0.005 * 28.5; //!< This is the upper limit of residual power lost by fuses and switches. Worst case is Fuse and one of two switches on. See PCDU ICD 1.9 p29 bottom
 public:
 	struct VariableIds {
-		uint32_t pidVoltage;
-		uint32_t pidCurrent;
-		uint32_t pidState;
-		uint32_t poolIdPower;
+		gp_id_t pidVoltage;
+		gp_id_t pidCurrent;
+		gp_id_t pidState;
+		gp_id_t poolIdPower;
 	};
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PCDU_1;
@@ -40,8 +41,8 @@ public:
 	static const Event POWER_BELOW_LOW_LIMIT = MAKE_EVENT(5, SEVERITY::LOW); //!< PSS detected a fuse that violates its limits.
 
 	typedef std::list<PowerComponentIF*> DeviceList;
-	Fuse(object_id_t fuseObjectId, uint8_t fuseId, VariableIds ids,
-			float maxCurrent, uint16_t confirmationCount = 2);
+	Fuse(object_id_t fuseObjectId, uint8_t fuseId, sid_t variableSet,
+			VariableIds ids, float maxCurrent, uint16_t confirmationCount = 2);
 	virtual ~Fuse();
 	void addDevice(PowerComponentIF *set);
 	float getPower();
@@ -71,12 +72,12 @@ public:
 private:
 	uint8_t oldFuseState;
 	uint8_t fuseId;
-	PowerSwitchIF *powerIF; //could be static in our case.
+	PowerSwitchIF *powerIF = nullptr; //could be static in our case.
 	AbsLimitMonitor<float> currentLimit;
 	class PowerMonitor: public MonitorReporter<float> {
 	public:
 		template<typename ... Args>
-		PowerMonitor(Args ... args) :
+		PowerMonitor(Args ... args):
 				MonitorReporter<float>(std::forward<Args>(args)...) {
 		}
 		ReturnValue_t checkPower(float sample, float lowerLimit,
@@ -86,11 +87,16 @@ private:
 
 	};
 	PowerMonitor powerMonitor;
-	GlobDataSet set;
-	PIDReader<float> voltage;
-	PIDReader<float> current;
-	PIDReader<uint8_t> state;
-	gp_float_t power;
+	StaticLocalDataSet<3> set;
+	//LocalPoolDataSetBase* set = nullptr;
+	//PIDReader<float> voltage;
+	//PIDReader<float> current;
+	//PIDReader<uint8_t> state;
+	lp_var_t<float> voltage;
+	lp_var_t<float> current;
+	lp_var_t<uint8_t> state;
+
+	lp_var_t<float> power;
 	MessageQueueIF* commandQueue = nullptr;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;

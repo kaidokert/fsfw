@@ -47,7 +47,7 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVector(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
+	LocalPoolVector(HasLocalDataPoolIF* hkOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 

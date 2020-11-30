@@ -6,8 +6,8 @@
 #endif
 
 template<typename T, uint16_t vectorSize>
-inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
-		HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
+inline LocalPoolVector<T, vectorSize>::LocalPoolVector(
+		HasLocalDataPoolIF* hkOwner, lp_id_t poolId, DataSetIF* dataSet,
 		pool_rwm_t setReadWriteMode):
 		LocalPoolObjectBase(poolId, hkOwner, dataSet, setReadWriteMode) {}
 

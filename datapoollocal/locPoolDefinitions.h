@@ -66,7 +66,7 @@ union gp_id_t {
 
 	gp_id_t(): raw(INVALID_GPID) {}
 
-	gp_id_t(object_id_t objectID, lp_id_t localPoolId):
+	gp_id_t(object_id_t objectId, lp_id_t localPoolId):
 			objectId(objectId),
 			localPoolId(localPoolId) {}
 

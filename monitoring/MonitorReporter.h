@@ -5,6 +5,7 @@
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"
 
+#include "../datapoollocal/locPoolDefinitions.h"
 #include "../events/EventManagerIF.h"
 #include "../parameters/HasParametersIF.h"
 
@@ -18,7 +19,7 @@ public:
 	// TODO: Adapt to use SID instead of parameter ID.
 
 	MonitorReporter(object_id_t reportingId, uint8_t monitorId,
-	        uint32_t parameterId, uint16_t confirmationLimit) :
+	        gp_id_t globalPoolId, uint16_t confirmationLimit) :
 			monitorId(monitorId), parameterId(parameterId),
 			reportingId(reportingId), oldState(MonitoringIF::UNCHECKED),
 			reportingEnabled(ENABLED), eventEnabled(ENABLED), currentCounter(0),
@@ -95,7 +96,7 @@ public:
 
 protected:
 	const uint8_t monitorId;
-	const uint32_t parameterId;
+	const gp_id_t parameterId;
 	object_id_t reportingId;
 	ReturnValue_t oldState;
 
