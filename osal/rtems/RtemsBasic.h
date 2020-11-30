@@ -1,5 +1,5 @@
-#ifndef OS_RTEMS_RTEMSBASIC_H_
-#define OS_RTEMS_RTEMSBASIC_H_
+#ifndef FSFW_OSAL_RTEMS_RTEMSBASIC_H_
+#define FSFW_OSAL_RTEMS_RTEMSBASIC_H_
 
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include <rtems.h>
@@ -22,4 +22,4 @@ public:
 	}
 };
 
-#endif /* OS_RTEMS_RTEMSBASIC_H_ */
+#endif /* FSFW_OSAL_RTEMS_RTEMSBASIC_H_ */
