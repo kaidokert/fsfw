@@ -1,10 +1,9 @@
 #include "ThermalComponentCore.h"
 
 ThermalComponentCore::ThermalComponentCore(object_id_t reportingObjectId,
-        uint8_t domainId, uint32_t temperaturePoolId,
-        uint32_t targetStatePoolId,
-		uint32_t currentStatePoolId, uint32_t requestPoolId,
-		GlobDataSet* dataSet, Parameters parameters,
+        uint8_t domainId, gp_id_t temperaturePoolId,
+        gp_id_t targetStatePoolId, gp_id_t currentStatePoolId,
+		gp_id_t requestPoolId, LocalDataSetBase* dataSet, Parameters parameters,
 		StateRequest initialTargetState) :
 		temperature(temperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE),
 		targetState(targetStatePoolId, dataSet, PoolVariableIF::VAR_READ),

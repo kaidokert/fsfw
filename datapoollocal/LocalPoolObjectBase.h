@@ -14,7 +14,7 @@ public:
             HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
             pool_rwm_t setReadWriteMode);
 
-    LocalPoolObjectBase(lp_id_t poolId, object_id_t poolOwner,
+    LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId,
             DataSetIF* dataSet = nullptr,
             pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 

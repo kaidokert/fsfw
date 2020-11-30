@@ -19,7 +19,7 @@ LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId,
     }
 }
 
-LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, object_id_t poolOwner,
+LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId,
         DataSetIF *dataSet, pool_rwm_t setReadWriteMode): localPoolId(poolId),
         readWriteMode(setReadWriteMode) {
     if(poolId == PoolVariableIF::NO_PARAMETER) {

@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 
 #include "LocalPoolObjectBase.h"
 #include "../datapool/DataSetIF.h"
@@ -65,7 +65,17 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVector(lp_id_t poolId, object_id_t poolOwner,
+	LocalPoolVector(object_id_t poolOwner, lp_id_t poolId,
+			DataSetIF* dataSet = nullptr,
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
+	/**
+	 * Variation which takes the unique global identifier of a local pool
+	 * vector.
+	 * @param globalPoolId
+	 * @param dataSet
+	 * @param setReadWriteMode
+	 */
+	LocalPoolVector(gp_id_t globalPoolId,
 			DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
@@ -161,4 +171,4 @@ private:
 template<typename T, uint16_t vectorSize>
 using lp_vec_t = LocalPoolVector<T, vectorSize>;
 
-#endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_ */
