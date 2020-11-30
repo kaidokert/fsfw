@@ -22,22 +22,21 @@ ThermalComponent::~ThermalComponent() {
 }
 
 ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
-//	GlobDataSet mySet;
-//	gp_int8_t writableTargetState(targetState.getDataPoolId(),
-//			&mySet, PoolVariableIF::VAR_READ_WRITE);
-//	mySet.read();
-//	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)
-//			&& (newState != STATE_REQUEST_IGNORE)) {
-//		return HasReturnvaluesIF::RETURN_FAILED;
-//	}
-//	switch (newState) {
-//	case STATE_REQUEST_NON_OPERATIONAL:
-//		writableTargetState = newState;
-//		mySet.commit(PoolVariableIF::VALID);
-//		return HasReturnvaluesIF::RETURN_OK;
-//	default:
-//		return ThermalComponentCore::setTargetState(newState);
-//	}
+	targetState.setReadWriteMode(pool_rwm_t::VAR_READ_WRITE);
+	targetState.read();
+	if ((targetState == STATE_REQUEST_OPERATIONAL)
+			and (newState != STATE_REQUEST_IGNORE)) {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	switch (newState) {
+	case STATE_REQUEST_NON_OPERATIONAL:
+		targetState = newState;
+		targetState.setValid(true);
+		targetState.commit(PoolVariableIF::VALID);
+		return HasReturnvaluesIF::RETURN_OK;
+	default:
+		return ThermalComponentCore::setTargetState(newState);
+	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -79,13 +78,14 @@ ThermalComponentIF::State ThermalComponent::getState(float temperature,
 }
 
 void ThermalComponent::checkLimits(ThermalComponentIF::State state) {
-	//if (targetState == STATE_REQUEST_OPERATIONAL || targetState == STATE_REQUEST_IGNORE) {
-	//	ThermalComponentCore::checkLimits(state);
-	//	return;
-	//}
-	//If component is not operational, it checks the NOP limits.
-	//temperatureMonitor.translateState(state, temperature.value,
-	//		nopParameters.lowerNopLimit, nopParameters.upperNopLimit, false);
+	if ((targetState == STATE_REQUEST_OPERATIONAL) or
+			(targetState == STATE_REQUEST_IGNORE)) {
+		ThermalComponentCore::checkLimits(state);
+		return;
+	}
+	// If component is not operational, it checks the NOP limits.
+	temperatureMonitor.translateState(state, temperature.value,
+			nopParameters.lowerNopLimit, nopParameters.upperNopLimit, false);
 }
 
 ThermalComponentIF::HeaterRequest ThermalComponent::getHeaterRequest(
