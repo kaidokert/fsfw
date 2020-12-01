@@ -86,11 +86,15 @@ ReturnValue_t CService201HealthCommanding::handleReply
 		object_id_t objectId, bool *isStep) {
 	Command_t replyId = reply->getCommand();
 	if (replyId == HealthMessage::REPLY_HEALTH_SET) {
-		return prepareHealthSetReply(reply);
+		return EXECUTION_COMPLETE;
+	}
+	else if(replyId == CommandMessageIF::REPLY_REJECTED) {
+		return reply->getReplyRejectedReason();
 	}
 	return CommandingServiceBase::INVALID_REPLY;
 }
 
+// Not used for now, health state already reported by event
 ReturnValue_t CService201HealthCommanding::prepareHealthSetReply(
         const CommandMessage* reply) {
 	prepareHealthSetReply(reply);
