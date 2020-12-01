@@ -3,6 +3,7 @@
 
 #include <FSFWVersion.h>
 #include <cstddef>
+#include <cstdint>
 
 //! Used to determine whether C++ ostreams are used
 //! Those can lead to code bloat.

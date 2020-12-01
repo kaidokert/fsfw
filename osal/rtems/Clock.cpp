@@ -3,7 +3,7 @@
 #include <rtems/score/todimpl.h>
 
 uint16_t Clock::leapSeconds = 0;
-MutexIF* Clock::timeMutex = NULL;
+MutexIF* Clock::timeMutex = nullptr;
 
 uint32_t Clock::getTicksPerSecond(void){
 	rtems_interval ticks_per_second = rtems_clock_get_ticks_per_second();
@@ -40,7 +40,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 	//SHOULDDO: Not sure if we need to protect this call somehow (by thread lock or something).
 	//Uli: rtems docu says you can call this from an ISR, not sure if this means no protetion needed
 	//TODO Second parameter is ISR_lock_Context
-	_TOD_Set(&newTime,NULL);
+	_TOD_Set(&newTime,nullptr);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -131,7 +131,7 @@ ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
 
 ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval* tt) {
 	//SHOULDDO: works not for dates in the past (might have less leap seconds)
-	if (timeMutex == NULL) {
+	if (timeMutex == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -157,40 +157,34 @@ ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
 	if(checkOrCreateClockMutex()!=HasReturnvaluesIF::RETURN_OK){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::NO_TIMEOUT);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
+	MutexHelper helper(timeMutex);
+
 
 	leapSeconds = leapSeconds_;
 
-	result = timeMutex->unlockMutex();
-	return result;
+
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
-	if(timeMutex==NULL){
+	if(timeMutex==nullptr){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::NO_TIMEOUT);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
+	MutexHelper helper(timeMutex);
 
 	*leapSeconds_ = leapSeconds;
 
-	result = timeMutex->unlockMutex();
-	return result;
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::checkOrCreateClockMutex(){
-	if(timeMutex==NULL){
+	if(timeMutex==nullptr){
 		MutexFactory* mutexFactory = MutexFactory::instance();
-		if (mutexFactory == NULL) {
+		if (mutexFactory == nullptr) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 		timeMutex = mutexFactory->createMutex();
-		if (timeMutex == NULL) {
+		if (timeMutex == nullptr) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}
