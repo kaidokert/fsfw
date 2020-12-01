@@ -26,6 +26,9 @@ public:
 	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
 	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
 
+	using dh_heater_request_t = uint8_t;
+	using dh_thermal_state_t = int8_t;
+
 	/**
 	 * @brief This is the mode the <strong>device handler</strong> is in.
 	 *

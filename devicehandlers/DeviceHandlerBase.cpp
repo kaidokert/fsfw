@@ -13,10 +13,11 @@
 #include "../ipc/MessageQueueMessage.h"
 #include "../ipc/QueueFactory.h"
 #include "../subsystem/SubsystemBase.h"
+#include "../datapoollocal/LocalPoolVariable.h"
 
 #include <iomanip>
 
-#include "../datapoollocal/LocalPoolVariable.h"
+
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
@@ -57,9 +58,9 @@ void DeviceHandlerBase::setHkDestination(object_id_t hkDestination) {
 }
 
 void DeviceHandlerBase::setThermalStateRequestPoolIds(
-		gp_id_t thermalStatePoolId, gp_id_t thermalRequestPoolId) {
-	this->deviceThermalRequestPoolId = thermalStatePoolId;
-	this->deviceThermalRequestPoolId = thermalRequestPoolId;
+		lp_id_t thermalStatePoolId, lp_id_t thermalRequestPoolId) {
+	this->deviceHeaterRequestPoolId = thermalStatePoolId;
+	this->deviceHeaterRequestPoolId = thermalRequestPoolId;
 }
 
 
@@ -211,13 +212,17 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	fillCommandAndReplyMap();
 
-	//Set temperature target state to NON_OP.
-	LocalPoolVar<int8_t> thermalRequest(deviceThermalRequestPoolId, nullptr,
-			pool_rwm_t::VAR_WRITE);
-	ReturnValue_t result = thermalRequest.read();
-	if(result == HasReturnvaluesIF::RETURN_OK) {
-		thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
-		thermalRequest.commit(PoolVariableIF::VALID);
+	if(deviceHeaterRequestPoolId != localpool::INVALID_LPID) {
+		//Set temperature target state to NON_OP.
+		LocalPoolVar<DeviceHandlerIF::dh_heater_request_t>
+		heaterRequest(this, deviceHeaterRequestPoolId, nullptr,
+				pool_rwm_t::VAR_WRITE);
+		result = heaterRequest.read();
+		if(result == HasReturnvaluesIF::RETURN_OK) {
+			heaterRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
+			heaterRequest.commit(PoolVariableIF::VALID);
+		}
+
 	}
 
 	return RETURN_OK;
@@ -509,10 +514,11 @@ void DeviceHandlerBase::setMode(Mode_t newMode, uint8_t newSubmode) {
 	Clock::getUptime(&timeoutStart);
 
 	if (mode == MODE_OFF) {
-		LocalPoolVar<uint8_t> heaterRequest(deviceThermalRequestPoolId,
+		LocalPoolVar<DeviceHandlerIF::dh_heater_request_t>
+		heaterRequest(this, deviceHeaterRequestPoolId,
 				nullptr, PoolVariableIF::VAR_READ_WRITE);
 		ReturnValue_t result = heaterRequest.read();
-		if(heaterRequest == HasReturnvaluesIF::RETURN_OK) {
+		if(result == HasReturnvaluesIF::RETURN_OK) {
 			if (heaterRequest.value !=
 					ThermalComponentIF::STATE_REQUEST_IGNORE) {
 				heaterRequest.value = ThermalComponentIF::
@@ -987,7 +993,7 @@ ReturnValue_t DeviceHandlerBase::checkModeCommand(Mode_t commandedMode,
 		GlobDataSet mySet;
 		gp_uint8_t thermalState(deviceThermalStatePoolId, &mySet,
 				PoolVariableIF::VAR_READ);
-		gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
+		gp_uint8_t thermalRequest(deviceHeaterRequestPoolId, &mySet,
 				PoolVariableIF::VAR_READ);
 		mySet.read();
 		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
@@ -1015,7 +1021,7 @@ void DeviceHandlerBase::startTransition(Mode_t commandedMode,
 					MODE_ON);
 			triggerEvent(CHANGING_MODE, commandedMode, commandedSubmode);
 			GlobDataSet mySet;
-			gp_int8_t thermalRequest(deviceThermalRequestPoolId,
+			gp_int8_t thermalRequest(deviceHeaterRequestPoolId,
 					&mySet, PoolVariableIF::VAR_READ_WRITE);
 			mySet.read();
 			if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
@@ -1393,6 +1399,15 @@ void DeviceHandlerBase::performOperationHook() {
 ReturnValue_t DeviceHandlerBase::initializeLocalDataPool(
 		LocalDataPool &localDataPoolMap,
         LocalDataPoolManager& poolManager) {
+	if(deviceThermalStatePoolId != localpool::INVALID_LPID) {
+		localDataPoolMap.emplace(deviceThermalStatePoolId,
+				new PoolEntry<DeviceHandlerIF::dh_thermal_state_t>);
+	}
+
+	if(deviceHeaterRequestPoolId != localpool::INVALID_LPID) {
+		localDataPoolMap.emplace(deviceHeaterRequestPoolId,
+				new PoolEntry<DeviceHandlerIF::dh_heater_request_t>);
+	}
 	return RETURN_OK;
 }
 

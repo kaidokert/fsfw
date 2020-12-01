@@ -103,8 +103,18 @@ public:
 			size_t cmdQueueSize = 20);
 
 	void setHkDestination(object_id_t hkDestination);
-	void setThermalStateRequestPoolIds(gp_id_t thermalStatePoolId,
-			gp_id_t thermalRequestPoolId);
+
+	/**
+	 * If the device handler is controlled by the FSFW thermal building blocks,
+	 * this function should be called. The device handler will then take care
+	 * of creating local pool entries for the device thermal state and device
+	 * heating request. Custom local pool IDs can be assigned as well.
+	 * @param thermalStatePoolId
+	 * @param thermalRequestPoolId
+	 */
+	void setThermalStateRequestPoolIds(
+			lp_id_t thermalStatePoolId = localpool::INVALID_LPID - 1,
+			lp_id_t thermalRequestPoolId = localpool::INVALID_LPID - 2);
 	/**
 	 * @brief   Helper function to ease device handler development.
 	 * This will instruct the transition to MODE_ON immediately
@@ -220,7 +230,7 @@ protected:
 	 *  - If the device does not change the mode, the mode will be changed to
 	 *    _MODE_POWER_DOWN, when the timeout (from getTransitionDelay())
 	 *    has passed.
-	 *
+	 * 0xffffffff
 	 * #transitionFailure can be set to a failure code indicating the reason
 	 * for a failed transition
 	 */
@@ -699,14 +709,14 @@ protected:
 	 *
 	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
 	 */
-	gp_id_t deviceThermalStatePoolId;
+	lp_id_t deviceThermalStatePoolId = localpool::INVALID_LPID;
 
 	/**
 	 * this is the datapool variable with the thermal request of the device
 	 *
 	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
 	 */
-	gp_id_t deviceThermalRequestPoolId;
+	lp_id_t deviceHeaterRequestPoolId = localpool::INVALID_LPID;
 
 	/**
 	 * Optional Error code. Can be set in doStartUp(), doShutDown() and
