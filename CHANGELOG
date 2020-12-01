@@ -5,3 +5,8 @@
 
 - vRequestContextSwitchFromISR is declared extern "C" so it can be defined in
 a C file without issues
+
+### Device Handler Base
+
+- There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
+that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
