@@ -6,15 +6,13 @@
 #include "../tmtcpacket/pus/TmPacketStored.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../tmtcservices/AcceptsTelemetryIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-
 
 Service1TelecommandVerification::Service1TelecommandVerification(
         object_id_t objectId, uint16_t apid, uint8_t serviceId,
-        object_id_t targetDestination):
+        object_id_t targetDestination, uint16_t messageQueueDepth):
         SystemObject(objectId), apid(apid), serviceId(serviceId),
         targetDestination(targetDestination) {
-	tmQueue = QueueFactory::instance()->createMessageQueue();
+	tmQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
 Service1TelecommandVerification::~Service1TelecommandVerification() {}
@@ -53,7 +51,7 @@ ReturnValue_t Service1TelecommandVerification::sendVerificationReport(
 		result = generateSuccessReport(message);
 	}
 	if(result != HasReturnvaluesIF::RETURN_OK){
-		sif::error << "Service1TelecommandVerification::initialize: "
+		sif::error << "Service1TelecommandVerification::sendVerificationReport: "
 		        "Sending verification packet failed !" << std::endl;
 	}
 	return result;

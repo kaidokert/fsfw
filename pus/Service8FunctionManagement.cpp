@@ -7,10 +7,10 @@
 #include "../serialize/SerializeAdapter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
-Service8FunctionManagement::Service8FunctionManagement(object_id_t object_id,
+Service8FunctionManagement::Service8FunctionManagement(object_id_t objectId,
 		uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
 		uint16_t commandTimeoutSeconds):
-		CommandingServiceBase(object_id, apid, serviceId, numParallelCommands,
+		CommandingServiceBase(objectId, apid, serviceId, numParallelCommands,
 		commandTimeoutSeconds) {}
 
 Service8FunctionManagement::~Service8FunctionManagement() {}
@@ -19,7 +19,7 @@ Service8FunctionManagement::~Service8FunctionManagement() {}
 ReturnValue_t Service8FunctionManagement::isValidSubservice(
 		uint8_t subservice) {
 	switch(static_cast<Subservice>(subservice)) {
-	case Subservice::DIRECT_COMMANDING:
+	case Subservice::COMMAND_DIRECT_COMMANDING:
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
 		return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
@@ -131,7 +131,7 @@ ReturnValue_t Service8FunctionManagement::handleDataReply(
     }
     DataReply dataReply(objectId, actionId, buffer, size);
     result = sendTmPacket(static_cast<uint8_t>(
-            Subservice::DIRECT_COMMANDING_DATA_REPLY), &dataReply);
+            Subservice::REPLY_DIRECT_COMMANDING_DATA), &dataReply);
 
     auto deletionResult = IPCStore->deleteData(storeId);
     if(deletionResult != HasReturnvaluesIF::RETURN_OK) {
