@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
-#define FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
+#ifndef FSFW_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
+#define FSFW_PUS_SERVICE8FUNCTIONMANAGEMENT_H_
 
 #include "../action/ActionMessage.h"
 #include "../tmtcservices/CommandingServiceBase.h"
@@ -52,8 +52,10 @@ protected:
 
 private:
 	enum class Subservice {
-		DIRECT_COMMANDING = 128, //!< [EXPORT] : [COMMAND] Functional commanding
-		DIRECT_COMMANDING_DATA_REPLY = 130, //!< [EXPORT] : [REPLY] Data reply
+	    //!< [EXPORT] : [COMMAND] Functional commanding
+		COMMAND_DIRECT_COMMANDING = 128,
+		//!< [EXPORT] : [REPLY] Data reply
+		REPLY_DIRECT_COMMANDING_DATA = 130,
 	};
 
 	ReturnValue_t checkInterfaceAndAcquireMessageQueue(
@@ -64,4 +66,4 @@ private:
 	        object_id_t objectId, ActionId_t actionId);
 };
 
-#endif /* FRAMEWORK_PUS_SERVICE8FUNCTIONMANAGEMENT_H_ */
+#endif /* FSFW_PUS_SERVICE8FUNCTIONMANAGEMENT_H_ */
