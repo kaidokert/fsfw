@@ -1,8 +1,9 @@
 #include "IntTestSemaphore.h"
-#include <fsfw/tasks/SemaphoreFactory.h>
 #include "../UnittDefinitions.h"
-#include <fsfw/serviceinterface/ServiceInterfaceStream.h>
-#include <fsfw/timemanager/Stopwatch.h>
+
+#include "../../tasks/SemaphoreFactory.h"
+#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../timemanager/Stopwatch.h"
 
 
 void testsemaph::testBinSemaph() {
