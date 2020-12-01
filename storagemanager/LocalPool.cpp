@@ -1,4 +1,5 @@
 #include "LocalPool.h"
+#include <FSFWConfig.h>
 #include <cstring>
 
 LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
@@ -116,7 +117,7 @@ ReturnValue_t LocalPool::modifyData(store_address_t storeId,
 }
 
 ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
-#if FSFW_DEBUGGING == 1
+#if FSFW_VERBOSE_PRINTOUT == 2
       sif::debug << "Delete: Pool: " << std::dec << storeId.poolIndex
               << " Index: " << storeId.packetIndex << std::endl;
 
@@ -155,7 +156,7 @@ ReturnValue_t LocalPool::deleteData(uint8_t *ptr, size_t size,
             // element of an object.
             localId.packetIndex = deltaAddress / elementSizes[n];
             result = deleteData(localId);
-#if FSFW_DEBUGGING == 1
+#if FSFW_VERBOSE_PRINTOUT == 2
             if (deltaAddress % elementSizes[n] != 0) {
                 sif::error << "LocalPool::deleteData: Address not aligned!"
                         << std::endl;
@@ -222,7 +223,7 @@ ReturnValue_t LocalPool::reserveSpace(const size_t size,
         status = findEmpty(storeId->poolIndex, &storeId->packetIndex);
     }
     if (status == RETURN_OK) {
-#if FSFW_DEBUGGING == 1
+#if FSFW_VERBOSE_PRINTOUT == 2
         sif::debug << "Reserve: Pool: " << std::dec
                 << storeId->poolIndex << " Index: " << storeId->packetIndex
                 << std::endl;
@@ -264,7 +265,7 @@ void LocalPool::setToSpillToHigherPools(bool enable) {
 ReturnValue_t LocalPool::getPoolIndex(size_t packetSize, uint16_t *poolIndex,
         uint16_t startAtIndex) {
     for (uint16_t n = startAtIndex; n < NUMBER_OF_POOLS; n++) {
-#if FSFW_DEBUGGING == 1
+#if FSFW_VERBOSE_PRINTOUT == 2
         sif::debug << "LocalPool " << getObjectId() << "::getPoolIndex: Pool: "
              << n << ", Element Size: " << elementSizes[n] << std::endl;
 #endif

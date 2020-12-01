@@ -12,7 +12,7 @@
 #define FSFW_REDUCED_PRINTOUT		0
 
 //! Can be used to enable debugging printouts for developing the FSFW
-#define FSFW_DEBUGGING              0
+#define FSFW_VERBOSE_PRINTOUT       0
 
 //! Defines the FIFO depth of each commanding service base which
 //! also determines how many commands a CSB service can handle in one cycle
