@@ -1,0 +1,7 @@
+## Changes from ASTP 0.0.1 to 1.0.0
+
+
+### FreeRTOS OSAL
+
+- vRequestContextSwitchFromISR is declared extern "C" so it can be defined in
+a C file without issues
