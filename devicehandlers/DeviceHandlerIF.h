@@ -4,6 +4,7 @@
 #include "DeviceHandlerMessage.h"
 
 #include "../action/HasActionsIF.h"
+#include "../datapoollocal/locPoolDefinitions.h"
 #include "../events/Event.h"
 #include "../modes/HasModesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
@@ -150,6 +151,14 @@ public:
 		GET_READ,  //!< Get read
 		NOTHING    //!< Do nothing.
 	};
+
+	static constexpr uint32_t DEFAULT_THERMAL_SET_ID = sid_t::INVALID_SID - 1;
+
+	static constexpr lp_id_t DEFAULT_THERMAL_STATE_POOL_ID =
+	        localpool::INVALID_LPID - 2;
+	static constexpr lp_id_t DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID =
+			localpool::INVALID_LPID - 1;
+
 
 	/**
 	 * Default Destructor

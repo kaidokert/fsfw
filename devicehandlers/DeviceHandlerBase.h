@@ -4,6 +4,7 @@
 #include "DeviceHandlerIF.h"
 #include "DeviceCommunicationIF.h"
 #include "DeviceHandlerFailureIsolation.h"
+#include "DeviceHandlerThermalSet.h"
 
 #include "../objectmanager/SystemObject.h"
 #include "../tasks/ExecutableObjectIF.h"
@@ -112,9 +113,11 @@ public:
 	 * @param thermalStatePoolId
 	 * @param thermalRequestPoolId
 	 */
-	void setThermalStateRequestPoolIds(
-			lp_id_t thermalStatePoolId = localpool::INVALID_LPID - 1,
-			lp_id_t thermalRequestPoolId = localpool::INVALID_LPID - 2);
+	void setThermalStateRequestPoolIds(lp_id_t thermalStatePoolId =
+			DeviceHandlerIF::DEFAULT_THERMAL_STATE_POOL_ID,
+			lp_id_t thermalRequestPoolId =
+			DeviceHandlerIF::DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID,
+			uint32_t thermalSetId = DeviceHandlerIF::DEFAULT_THERMAL_SET_ID);
 	/**
 	 * @brief   Helper function to ease device handler development.
 	 * This will instruct the transition to MODE_ON immediately
@@ -717,6 +720,8 @@ protected:
 	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
 	 */
 	lp_id_t deviceHeaterRequestPoolId = localpool::INVALID_LPID;
+
+	DeviceHandlerThermalSet* thermalSet = nullptr;
 
 	/**
 	 * Optional Error code. Can be set in doStartUp(), doShutDown() and

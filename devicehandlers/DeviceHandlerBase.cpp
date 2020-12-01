@@ -58,9 +58,12 @@ void DeviceHandlerBase::setHkDestination(object_id_t hkDestination) {
 }
 
 void DeviceHandlerBase::setThermalStateRequestPoolIds(
-		lp_id_t thermalStatePoolId, lp_id_t thermalRequestPoolId) {
+		lp_id_t thermalStatePoolId, lp_id_t heaterRequestPoolId,
+		uint32_t thermalSetId) {
 	this->deviceHeaterRequestPoolId = thermalStatePoolId;
-	this->deviceHeaterRequestPoolId = thermalRequestPoolId;
+	this->deviceHeaterRequestPoolId = heaterRequestPoolId;
+	thermalSet = new DeviceHandlerThermalSet(this, thermalSetId,
+			thermalStatePoolId, heaterRequestPoolId);
 }
 
 
@@ -212,15 +215,14 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	fillCommandAndReplyMap();
 
-	if(deviceHeaterRequestPoolId != localpool::INVALID_LPID) {
+	if(thermalSet != nullptr) {
 		//Set temperature target state to NON_OP.
-		LocalPoolVar<DeviceHandlerIF::dh_heater_request_t>
-		heaterRequest(this, deviceHeaterRequestPoolId, nullptr,
-				pool_rwm_t::VAR_WRITE);
-		result = heaterRequest.read();
+		ReturnValue_t result = thermalSet->read();
 		if(result == HasReturnvaluesIF::RETURN_OK) {
-			heaterRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
-			heaterRequest.commit(PoolVariableIF::VALID);
+			thermalSet->heaterRequest.setReadWriteMode(pool_rwm_t::VAR_WRITE);
+			thermalSet->heaterRequest.value =
+					ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
+			thermalSet->commit(PoolVariableIF::VALID);
 		}
 
 	}
@@ -513,18 +515,17 @@ void DeviceHandlerBase::setMode(Mode_t newMode, uint8_t newSubmode) {
 	}
 	Clock::getUptime(&timeoutStart);
 
-	if (mode == MODE_OFF) {
-		LocalPoolVar<DeviceHandlerIF::dh_heater_request_t>
-		heaterRequest(this, deviceHeaterRequestPoolId,
-				nullptr, PoolVariableIF::VAR_READ_WRITE);
-		ReturnValue_t result = heaterRequest.read();
+	if (mode == MODE_OFF and thermalSet != nullptr) {
+		ReturnValue_t result = thermalSet->read();
 		if(result == HasReturnvaluesIF::RETURN_OK) {
-			if (heaterRequest.value !=
+			thermalSet->heaterRequest.setReadWriteMode(
+					pool_rwm_t::VAR_READ_WRITE);
+			if (thermalSet->heaterRequest.value !=
 					ThermalComponentIF::STATE_REQUEST_IGNORE) {
-				heaterRequest.value = ThermalComponentIF::
+				thermalSet->heaterRequest.value = ThermalComponentIF::
 						STATE_REQUEST_NON_OPERATIONAL;
 			}
-			heaterRequest.commit(PoolVariableIF::VALID);
+			thermalSet->heaterRequest.commit(PoolVariableIF::VALID);
 		}
 
 	}
@@ -989,17 +990,18 @@ ReturnValue_t DeviceHandlerBase::checkModeCommand(Mode_t commandedMode,
 	}
 
 	if ((commandedMode == MODE_ON) && (mode == MODE_OFF)
-			&& (deviceThermalStatePoolId != PoolVariableIF::NO_PARAMETER)) {
-		GlobDataSet mySet;
-		gp_uint8_t thermalState(deviceThermalStatePoolId, &mySet,
-				PoolVariableIF::VAR_READ);
-		gp_uint8_t thermalRequest(deviceHeaterRequestPoolId, &mySet,
-				PoolVariableIF::VAR_READ);
-		mySet.read();
-		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
-			if (!ThermalComponentIF::isOperational(thermalState)) {
+			&& (deviceThermalStatePoolId != PoolVariableIF::NO_PARAMETER)
+			and thermalSet != nullptr) {
+		ReturnValue_t result = thermalSet->read();
+		if(result == HasReturnvaluesIF::RETURN_OK) {
+			thermalSet->thermalState.setReadWriteMode(pool_rwm_t::VAR_READ);
+			thermalSet->heaterRequest.setReadWriteMode(pool_rwm_t::VAR_READ);
+			if((thermalSet->heaterRequest.value !=
+					ThermalComponentIF::STATE_REQUEST_IGNORE) and (not
+					ThermalComponentIF::isOperational(
+							thermalSet->thermalState.value))) {
 				triggerEvent(ThermalComponentIF::TEMP_NOT_IN_OP_RANGE,
-						thermalState);
+						thermalSet->thermalState.value);
 				return NON_OP_TEMPERATURE;
 			}
 		}
