@@ -89,6 +89,10 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 }
 
 void PeriodicTask::taskFunctionality() {
+    for (const auto& object: objectList) {
+        object->initializeAfterTaskCreation();
+    }
+
 	std::chrono::milliseconds periodChrono(static_cast<uint32_t>(period*1000));
 	auto currentStartTime {
 	    std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -101,9 +105,8 @@ void PeriodicTask::taskFunctionality() {
 		if(terminateThread.load()) {
 			break;
 		}
-		for (ObjectList::iterator it = objectList.begin();
-				it != objectList.end(); ++it) {
-			(*it)->performOperation();
+		for (const auto& object: objectList) {
+			object->performOperation();
 		}
 		if(not delayForInterval(&currentStartTime, periodChrono)) {
 			sif::warning << "PeriodicTask: " << taskName <<
