@@ -1,6 +1,5 @@
 ![FSFW Logo](logo/FSFW_Logo_V3_bw.png)
 # Flight Software Framework (FSFW)
-======
 
 The Flight Software Framework is a C++ Object Oriented Framework for unmanned,
 automated systems like Satellites. 
