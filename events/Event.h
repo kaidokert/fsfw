@@ -18,9 +18,10 @@ EventId_t getEventId(Event event);
 
 EventSeverity_t getSeverity(Event event);
 
-Event makeEvent(EventId_t eventId, EventSeverity_t eventSeverity);
-
+Event makeEvent(uint8_t subsystemId, uint8_t uniqueEventId,
+		EventSeverity_t eventSeverity);
 }
+
 namespace SEVERITY {
 	static const EventSeverity_t INFO = 1;
 	static const EventSeverity_t LOW = 2;
