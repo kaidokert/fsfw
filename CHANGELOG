@@ -5,3 +5,7 @@
 
 - vRequestContextSwitchFromISR is declared extern "C" so it can be defined in
 a C file without issues
+
+### EnhancedControllerBase
+
+- New base class for a controller which also implements HasActionsIF and HasLocalDataPoolIF
