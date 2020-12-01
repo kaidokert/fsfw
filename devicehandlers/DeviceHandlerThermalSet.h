@@ -26,17 +26,17 @@ public:
 					DeviceHandlerIF::DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID):
 			StaticLocalDataSet(sid_t(deviceHandler, setId)),
 			thermalStatePoolId(thermalStateId),
-			thermalStateRequestPoolId(thermalStateRequestId) {}
+			heaterRequestPoolId(thermalStateRequestId) {}
 
 	const lp_id_t thermalStatePoolId;
-	const lp_id_t thermalStateRequestPoolId;
+	const lp_id_t heaterRequestPoolId;
 
 	lp_var_t<DeviceHandlerIF::dh_thermal_state_t> thermalState =
 			lp_var_t<DeviceHandlerIF::dh_thermal_state_t>(
 			thermalStatePoolId, sid.objectId, this);
 	lp_var_t<DeviceHandlerIF::dh_heater_request_t> heaterRequest =
 			lp_var_t<DeviceHandlerIF::dh_heater_request_t>(
-			thermalStateRequestPoolId, sid.objectId, this);
+			heaterRequestPoolId, sid.objectId, this);
 };
 
 

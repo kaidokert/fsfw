@@ -107,9 +107,10 @@ public:
 
 	/**
 	 * If the device handler is controlled by the FSFW thermal building blocks,
-	 * this function should be called. The device handler will then take care
-	 * of creating local pool entries for the device thermal state and device
-	 * heating request. Custom local pool IDs can be assigned as well.
+	 * this function should be called to initialize all required components.
+	 * The device handler will then take care of creating local pool entries
+	 * for the device thermal state and device heating request.
+	 * Custom local pool IDs can be assigned as well.
 	 * @param thermalStatePoolId
 	 * @param thermalRequestPoolId
 	 */
@@ -707,20 +708,6 @@ protected:
 	//! and to send replies.
 	MessageQueueIF* commandQueue = nullptr;
 
-	/**
-	 * this is the datapool variable with the thermal state of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	lp_id_t deviceThermalStatePoolId = localpool::INVALID_LPID;
-
-	/**
-	 * this is the datapool variable with the thermal request of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	lp_id_t deviceHeaterRequestPoolId = localpool::INVALID_LPID;
-
 	DeviceHandlerThermalSet* thermalSet = nullptr;
 
 	/**
@@ -1223,6 +1210,9 @@ private:
 
     void parseReply(const uint8_t* receivedData,
                 size_t receivedDataLen);
+
+    void handleTransitionToOnMode(Mode_t commandedMode,
+    		Submode_t commandedSubmode);
 };
 
 #endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */

@@ -152,7 +152,7 @@ public:
 		NOTHING    //!< Do nothing.
 	};
 
-	static constexpr uint32_t DEFAULT_THERMAL_SET_ID = sid_t::INVALID_SID - 1;
+	static constexpr uint32_t DEFAULT_THERMAL_SET_ID = sid_t::INVALID_SET_ID - 1;
 
 	static constexpr lp_id_t DEFAULT_THERMAL_STATE_POOL_ID =
 	        localpool::INVALID_LPID - 2;
