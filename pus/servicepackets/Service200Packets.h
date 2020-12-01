@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_
-#define FRAMEWORK_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_
+#ifndef FSFW_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_
+#define FSFW_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_
 
 #include "../../serialize/SerialLinkedListAdapter.h"
 #include "../../modes/ModeMessage.h"
@@ -60,4 +60,4 @@ public:
 	SerializeElement<ReturnValue_t> reason; //!< [EXPORT] : [COMMENT] Reason the mode could not be reached
 };
 
-#endif /* FRAMEWORK_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_ */
+#endif /* FSFW_PUS_SERVICEPACKETS_SERVICE200PACKETS_H_ */
