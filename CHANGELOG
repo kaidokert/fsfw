@@ -5,3 +5,7 @@
 
 - vRequestContextSwitchFromISR is declared extern "C" so it can be defined in
 a C file without issues
+
+### PUS Services
+
+- It is now possible to change the message queue depth for the telecommand verification service (PUS1)
