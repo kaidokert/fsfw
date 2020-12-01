@@ -1,10 +1,14 @@
-## Changes from ASTP 0.0.1 to 0.0.2
+## Changes from ASTP 0.0.1 to 1.0.0
 
 
 ### FreeRTOS OSAL
 
 - vRequestContextSwitchFromISR is declared extern "C" so it can be defined in
 a C file without issues
+
+### PUS Services
+
+- PUS Health Service added, which allows to command and retrieve health via PUS packets
 
 ### Local Pool
 
