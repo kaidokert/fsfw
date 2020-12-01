@@ -14,4 +14,4 @@ a C file without issues
 
 ### Local Pool
 
-- Interface of LocalPools has change. LocalPool is not a template anymore. Instead the size and bucket number of the pools per page and the number of pages are passed to the ctor instead of two ctor arguments and a template parameter
+- Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and bucket number of the pools per page and the number of pages are passed to the ctor instead of two ctor arguments and a template parameter
