@@ -5,3 +5,5 @@
 
 - vRequestContextSwitchFromISR is declared extern "C" so it can be defined in
 a C file without issues
+
+- PUS Health Service added, which allows to command and retrieve health via PUS packets
