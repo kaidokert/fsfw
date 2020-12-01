@@ -103,8 +103,8 @@ public:
 			size_t cmdQueueSize = 20);
 
 	void setHkDestination(object_id_t hkDestination);
-	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
-			uint32_t thermalRequestPoolId);
+	void setThermalStateRequestPoolIds(gp_id_t thermalStatePoolId,
+			gp_id_t thermalRequestPoolId);
 	/**
 	 * @brief   Helper function to ease device handler development.
 	 * This will instruct the transition to MODE_ON immediately
@@ -699,14 +699,14 @@ protected:
 	 *
 	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
 	 */
-	uint32_t deviceThermalStatePoolId = PoolVariableIF::NO_PARAMETER;
+	gp_id_t deviceThermalStatePoolId;
 
 	/**
 	 * this is the datapool variable with the thermal request of the device
 	 *
 	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
 	 */
-	uint32_t deviceThermalRequestPoolId = PoolVariableIF::NO_PARAMETER;
+	gp_id_t deviceThermalRequestPoolId;
 
 	/**
 	 * Optional Error code. Can be set in doStartUp(), doShutDown() and
