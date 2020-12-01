@@ -1,4 +1,5 @@
-#include <config/ipc/MissionMessageTypes.h>
+#include "missionMessageTypes.h"
+
 #include <fsfw/ipc/CommandMessageIF.h>
 
 void messagetypes::clearMissionMessage(CommandMessage* message) {

@@ -1,16 +1,17 @@
 #include "../../ipc/QueueFactory.h"
+#include "../../ipc/MessageQueueSenderIF.h"
 #include "MessageQueue.h"
 #include "RtemsBasic.h"
 
-QueueFactory* QueueFactory::factoryInstance = NULL;
+QueueFactory* QueueFactory::factoryInstance = nullptr;
 
 
 ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
-			MessageQueueMessage* message, MessageQueueId_t sentFrom,bool ignoreFault) {
+		MessageQueueMessageIF* message, MessageQueueId_t sentFrom,bool ignoreFault) {
 	//TODO add ignoreFault functionality
 	message->setSender(sentFrom);
 	rtems_status_code result = rtems_message_queue_send(sendTo, message->getBuffer(),
-			message->messageSize);
+			message->getMessageSize());
 	switch(result){
 	case RTEMS_SUCCESSFUL:
 			//message sent successfully
@@ -37,7 +38,7 @@ ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
 }
 
 QueueFactory* QueueFactory::instance() {
-	if (factoryInstance == NULL) {
+	if (factoryInstance == nullptr) {
 		factoryInstance = new QueueFactory;
 	}
 	return factoryInstance;
