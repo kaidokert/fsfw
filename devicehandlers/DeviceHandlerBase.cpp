@@ -3,8 +3,6 @@
 #include "DeviceTmReportingWrapper.h"
 
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../thermal/ThermalComponentIF.h"
@@ -1239,10 +1237,12 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 		}
 	}
 	//Try to cast to GlobDataSet and commit data.
-	if (!neverInDataPool) {
-		GlobDataSet* dataSet = dynamic_cast<GlobDataSet*>(data);
-		if (dataSet != NULL) {
-			dataSet->commit(PoolVariableIF::VALID);
+	if (not neverInDataPool) {
+		LocalPoolDataSetBase* dataSet =
+				dynamic_cast<LocalPoolDataSetBase*>(data);
+		if (dataSet != nullptr) {
+			dataSet->setValidity(true, true);
+			dataSet->commit();
 		}
 	}
 }

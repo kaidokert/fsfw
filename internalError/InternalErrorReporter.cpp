@@ -1,8 +1,6 @@
 #include "InternalErrorReporter.h"
 
 #include "../ipc/QueueFactory.h"
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../ipc/MutexFactory.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
