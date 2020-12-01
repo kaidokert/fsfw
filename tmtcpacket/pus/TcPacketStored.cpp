@@ -1,37 +1,50 @@
+#include "TcPacketStored.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "TcPacketStored.h"
-#include <string.h>
+
+#include <cstring>
+
+StorageManagerIF* TcPacketStored::store = nullptr;
 
 TcPacketStored::TcPacketStored(store_address_t setAddress) :
-		TcPacketBase(NULL), storeAddress(setAddress) {
-	this->setStoreAddress(this->storeAddress);
+		TcPacketBase(nullptr), storeAddress(setAddress) {
+	setStoreAddress(storeAddress);
 }
 
-TcPacketStored::TcPacketStored(uint16_t apid, uint8_t ack, uint8_t service,
-		uint8_t subservice, uint8_t sequence_count, const uint8_t* data,
-		uint32_t size) :
-		TcPacketBase(NULL) {
+TcPacketStored::TcPacketStored(uint16_t apid,  uint8_t service,
+        uint8_t subservice, uint8_t sequenceCount, const uint8_t* data,
+		size_t size, uint8_t ack) :
+		TcPacketBase(nullptr) {
 	this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-	if (!this->checkAndSetStore()) {
+	if (not this->checkAndSetStore()) {
 		return;
 	}
-	uint8_t* p_data = NULL;
+	uint8_t* pData = nullptr;
 	ReturnValue_t returnValue = this->store->getFreeElement(&this->storeAddress,
-			(TC_PACKET_MIN_SIZE + size), &p_data);
+			(TC_PACKET_MIN_SIZE + size), &pData);
 	if (returnValue != this->store->RETURN_OK) {
+		sif::warning << "TcPacketStored: Could not get free element from store!"
+				<< std::endl;
 		return;
 	}
-	this->setData(p_data);
-	initializeTcPacket(apid, sequence_count, ack, service, subservice);
-	memcpy(&tcData->data, data, size);
+	this->setData(pData);
+	initializeTcPacket(apid, sequenceCount, ack, service, subservice);
+	memcpy(&tcData->appData, data, size);
 	this->setPacketDataLength(
 			size + sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
 	this->setErrorControl();
 }
 
-TcPacketStored::TcPacketStored() :
-		TcPacketBase(NULL) {
+ReturnValue_t TcPacketStored::getData(const uint8_t ** dataPtr,
+		size_t* dataSize) {
+	auto result = this->store->getData(storeAddress, dataPtr, dataSize);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+		sif::warning << "TcPacketStored: Could not get data!" << std::endl;
+	}
+	return result;
+}
+
+TcPacketStored::TcPacketStored(): TcPacketBase(nullptr) {
 	this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	this->checkAndSetStore();
 
@@ -40,14 +53,14 @@ TcPacketStored::TcPacketStored() :
 ReturnValue_t TcPacketStored::deletePacket() {
 	ReturnValue_t result = this->store->deleteData(this->storeAddress);
 	this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-	this->setData( NULL);
+	this->setData(nullptr);
 	return result;
 }
 
 bool TcPacketStored::checkAndSetStore() {
-	if (this->store == NULL) {
+	if (this->store == nullptr) {
 		this->store = objectManager->get<StorageManagerIF>(objects::TC_STORE);
-		if (this->store == NULL) {
+		if (this->store == nullptr) {
 			sif::error << "TcPacketStored::TcPacketStored: TC Store not found!"
 					<< std::endl;
 			return false;
@@ -58,17 +71,17 @@ bool TcPacketStored::checkAndSetStore() {
 
 void TcPacketStored::setStoreAddress(store_address_t setAddress) {
 	this->storeAddress = setAddress;
-	const uint8_t* temp_data = NULL;
+	const uint8_t* tempData = nullptr;
 	size_t temp_size;
 	ReturnValue_t status = StorageManagerIF::RETURN_FAILED;
 	if (this->checkAndSetStore()) {
-		status = this->store->getData(this->storeAddress, &temp_data,
+		status = this->store->getData(this->storeAddress, &tempData,
 				&temp_size);
 	}
 	if (status == StorageManagerIF::RETURN_OK) {
-		this->setData(temp_data);
+		this->setData(tempData);
 	} else {
-		this->setData(NULL);
+		this->setData(nullptr);
 		this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	}
 }
@@ -78,7 +91,7 @@ store_address_t TcPacketStored::getStoreAddress() {
 }
 
 bool TcPacketStored::isSizeCorrect() {
-	const uint8_t* temp_data = NULL;
+	const uint8_t* temp_data = nullptr;
 	size_t temp_size;
 	ReturnValue_t status = this->store->getData(this->storeAddress, &temp_data,
 			&temp_size);
@@ -90,8 +103,6 @@ bool TcPacketStored::isSizeCorrect() {
 	return false;
 }
 
-StorageManagerIF* TcPacketStored::store = NULL;
-
 TcPacketStored::TcPacketStored(const uint8_t* data, uint32_t size) :
 		TcPacketBase(data) {
 	if (getFullSize() != size) {
@@ -100,7 +111,7 @@ TcPacketStored::TcPacketStored(const uint8_t* data, uint32_t size) :
 	if (this->checkAndSetStore()) {
 		ReturnValue_t status = store->addData(&storeAddress, data, size);
 		if (status != HasReturnvaluesIF::RETURN_OK) {
-			this->setData(NULL);
+			this->setData(nullptr);
 		}
 	}
 }
