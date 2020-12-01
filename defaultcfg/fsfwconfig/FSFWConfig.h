@@ -8,12 +8,12 @@
 //! Those can lead to code bloat.
 #define FSFW_CPP_OSTREAM_ENABLED 	1
 
-//! Reduced printout to further decrese code size
+//! Reduced printout to further decrease code size
 //! Be careful, this also turns off most diagnostic prinouts!
-#define FSFW_REDUCED_PRINTOUT		0
+#define FSFW_ENHANCED_PRINTOUT		0
 
-//! Can be used to enable debugging printouts for developing the FSFW
-#define FSFW_DEBUGGING              0
+//! Can be used to enable additional debugging printouts for developing the FSFW
+#define FSFW_PRINT_VERBOSITY_LEVEL   0
 
 //! Defines the FIFO depth of each commanding service base which
 //! also determines how many commands a CSB service can handle in one cycle
@@ -38,7 +38,10 @@
 
 //! When using the newlib nano library, C99 support for stdio facilities
 //! will not be provided. This define should be set to 1 if this is the case.
-#define FSFW_NO_C99_IO 	1
+#define FSFW_NO_C99_IO 	            1
+
+//! Specify whether a special mode store is used for Subsystem components.
+#define FSFW_USE_MODESTORE          0
 
 namespace fsfwconfig {
 //! Default timestamp size. The default timestamp will be an eight byte CDC
