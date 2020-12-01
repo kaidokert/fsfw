@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_OSAL_RTEMS_MUTEX_H_
-#define FRAMEWORK_OSAL_RTEMS_MUTEX_H_
+#ifndef FSFW_OSAL_RTEMS_MUTEX_H_
+#define FSFW_OSAL_RTEMS_MUTEX_H_
 
 #include "../../ipc/MutexIF.h"
 #include "RtemsBasic.h"
@@ -15,4 +15,4 @@ private:
 	static uint8_t count;
 };
 
-#endif /* OS_RTEMS_MUTEX_H_ */
+#endif /* FSFW_OSAL_RTEMS_MUTEX_H_ */
