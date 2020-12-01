@@ -11,3 +11,7 @@ a C file without issues
 - It is now possible to change the message queue depth for the telecommand verification service (PUS1)
 - The same is possible for the event reporting service (PUS5)
 - PUS Health Service added, which allows to command and retrieve health via PUS packets
+
+### File System Interface
+
+- A new interfaces specifies the functions for a software object which exposes the file system of a given hardware to use message based file handling (e.g. PUS commanding)
