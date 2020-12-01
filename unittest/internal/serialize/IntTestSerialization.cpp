@@ -1,8 +1,9 @@
 #include "IntTestSerialization.h"
-#include <fsfw/serialize/SerializeElement.h>
-#include <fsfw/serialize/SerialBufferAdapter.h>
 #include "../UnittDefinitions.h"
-#include <fsfw/serialize/SerializeIF.h>
+#include "../../serialize/SerializeElement.h"
+#include "../../serialize/SerialBufferAdapter.h"
+#include "../../serialize/SerializeIF.h"
+
 #include <array>
 
 using retval = HasReturnvaluesIF;
