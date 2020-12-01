@@ -4,12 +4,12 @@
 Mutex::Mutex() {}
 
 ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
-	if(timeoutMs == MutexIF::BLOCKING) {
+	if(timeoutType == MutexIF::BLOCKING) {
 		mutex.lock();
 		locked = true;
 		return HasReturnvaluesIF::RETURN_OK;
 	}
-	else if(timeoutMs == MutexIF::POLLING) {
+	else if(timeoutType == MutexIF::POLLING) {
 		if(mutex.try_lock()) {
 			locked = true;
 			return HasReturnvaluesIF::RETURN_OK;
