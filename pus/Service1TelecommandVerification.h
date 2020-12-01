@@ -1,5 +1,5 @@
-#ifndef MISSION_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
-#define MISSION_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
+#ifndef FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
+#define FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
 
 #include "../objectmanager/SystemObject.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -44,14 +44,15 @@ public:
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
 
 	Service1TelecommandVerification(object_id_t objectId,
-	        uint16_t apid, uint8_t serviceId, object_id_t targetDestination);
+	        uint16_t apid, uint8_t serviceId, object_id_t targetDestination,
+			uint16_t messageQueueDepth);
 	virtual ~Service1TelecommandVerification();
 
 	/**
 	 *
 	 * @return ID of Verification Queue
 	 */
-	virtual MessageQueueId_t getVerificationQueue();
+	virtual MessageQueueId_t getVerificationQueue() override;
 
 	/**
 	 * Performs the service periodically as specified in init_mission().
@@ -91,4 +92,4 @@ private:
 	};
 };
 
-#endif /* MISSION_PUS_SERVICE1TELECOMMANDVERIFICATION_H_ */
+#endif /* FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_ */
