@@ -1,8 +1,9 @@
-#include <fsfw/globalfunctions/arrayprinter.h>
+#include "TestSerialLinkedPacket.h"
+#include "../../core/CatchDefinitions.h"
+
+#include "../../globalfunctions/arrayprinter.h"
 
 #include <catch2/catch.hpp>
-#include "../../core/CatchDefinitions.h"
-#include "TestSerialLinkedPacket.h"
 
 
 TEST_CASE("Serial Linked Packet" , "[SerLinkPacket]") {
