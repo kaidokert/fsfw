@@ -70,5 +70,3 @@ CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/packetmatcher/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcpacket/pus/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/tmtcservices/*.cpp)
 CXXSRC += $(wildcard $(FRAMEWORK_PATH)/pus/*.cpp)
-
-INCLUDES += $(CURRENTPATH)

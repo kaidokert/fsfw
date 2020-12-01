@@ -18,8 +18,6 @@ public:
 	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
 	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
 
-	static constexpr Command_t NO_COMMAND = 0xffffffff;
-
 	/**
 	 * @brief This is the mode the <strong>device handler</strong> is in.
 	 *
