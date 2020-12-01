@@ -9,3 +9,4 @@ a C file without issues
 ### PUS Services
 
 - It is now possible to change the message queue depth for the telecommand verification service (PUS1)
+- PUS Health Service added, which allows to command and retrieve health via PUS packets
