@@ -734,11 +734,14 @@ protected:
 	//! before setTaskIF was called.
 	PeriodicTaskIF* executingTask = nullptr;
 
-	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
+	//!< Object which switches power on and off.
+	static object_id_t powerSwitcherId;
 
-	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
+	//!< Object which receives RAW data by default.
+	static object_id_t rawDataReceiverId;
 
-	static object_id_t defaultFdirParentId; //!< Object which may be the root cause of an identified fault.
+	//!< Object which may be the root cause of an identified fault.
+	static object_id_t defaultFdirParentId;
 
 	/**
 	 * Helper function to get pending command. This is useful for devices
@@ -858,15 +861,18 @@ protected:
 	/**
 	 * Build the device command to send for raw mode.
 	 *
-	 * This is only called in @c MODE_RAW. It is for the rare case that in raw mode packets
-	 * are to be sent by the handler itself. It is NOT needed for the raw commanding service.
-	 * Its only current use is in the STR handler which gets its raw packets from a different
-	 * source.
-	 * Also it can be used for transitional commands, to get the device ready for @c MODE_RAW
+	 * This is only called in @c MODE_RAW. It is for the rare case that in
+	 * raw mode packets are to be sent by the handler itself. It is NOT needed
+	 * for the raw commanding service. Its only current use is in the STR
+	 * handler which gets its raw packets from a different source.
+	 * Also it can be used for transitional commands, to get the device ready
+	 * for @c MODE_RAW
 	 *
-	 * As it is almost never used, there is a default implementation returning @c NOTHING_TO_SEND.
+	 * As it is almost never used, there is a default implementation
+	 * returning @c NOTHING_TO_SEND.
 	 *
-	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 * #rawPacket and #rawPacketLen must be set by this method to the packet
+	 * to be sent.
 	 *
 	 * @param[out] id the device command id built
 	 * @return
@@ -879,7 +885,9 @@ protected:
 	 * Returns the delay cycle count of a reply.
 	 * A count != 0 indicates that the command is already executed.
 	 * @param deviceCommand	The command to look for
-	 * @return	The current delay count. If the command does not exist (should never happen) it returns 0.
+	 * @return
+	 * The current delay count. If the command does not exist  (should never
+	 * happen) it returns 0.
 	 */
 	uint8_t getReplyDelayCycles(DeviceCommandId_t deviceCommand);
 
@@ -889,8 +897,8 @@ protected:
 	 * It gets space in the #IPCStore, copies data there, then sends a raw reply
 	 * containing the store address.
 	 *
-	 * This method is virtual, as the STR has a different channel to send raw replies
-	 * and overwrites it accordingly.
+	 * This method is virtual, as the STR has a different channel to send
+	 * raw replies and overwrites it accordingly.
 	 *
 	 * @param data data to send
 	 * @param len length of @c data
@@ -902,8 +910,9 @@ protected:
 			MessageQueueId_t sendTo, bool isCommand = false);
 
 	/**
-	 * Calls replyRawData() with #defaultRawReceiver, but checks if wiretapping is active and if so,
-	 * does not send the Data as the wiretapping will have sent it already
+	 * Calls replyRawData() with #defaultRawReceiver, but checks if wiretapping
+	 * is active and if so, does not send the data as the wiretapping will have
+	 * sent it already
 	 */
 	void replyRawReplyIfnotWiretapped(const uint8_t *data, size_t len);
 
@@ -915,17 +924,19 @@ protected:
 	/**
 	 * Enable the reply checking for a command
 	 *
-	 * Is only called, if the command was sent (ie the getWriteReply was successful).
-	 * Must ensure that all replies are activated and correctly linked to the command that initiated it.
-	 * The default implementation looks for a reply with the same id as the command id in the replyMap or
-	 * uses the alternativeReplyId if flagged so.
-	 * When found, copies maxDelayCycles to delayCycles in the reply information and sets the command to
-	 * expect one reply.
+	 * Is only called, if the command was sent (i.e. the getWriteReply was
+	 * successful). Must ensure that all replies are activated and correctly
+	 * linked to the command that initiated it.
+	 * The default implementation looks for a reply with the same id as the
+	 * command id in the replyMap or uses the alternativeReplyId if flagged so.
+	 * When found, copies maxDelayCycles to delayCycles in the reply information
+	 * and sets the command to expect one reply.
 	 *
 	 * Can be overwritten by the child, if a command activates multiple replies
 	 * or replyId differs from commandId.
 	 * Notes for child implementations:
-	 * 	- If the command was not found in the reply map, NO_REPLY_EXPECTED MUST be returned.
+	 * 	- If the command was not found in the reply map,
+	 * 	  NO_REPLY_EXPECTED MUST be returned.
 	 * 	- A failure code may be returned if something went fundamentally wrong.
 	 *
 	 * @param deviceCommand
@@ -941,9 +952,11 @@ protected:
 	 * get the state of the PCDU switches in the datapool
 	 *
 	 * @return
-	 *     - @c PowerSwitchIF::SWITCH_ON if all switches specified by #switches are on
-	 *     - @c PowerSwitchIF::SWITCH_OFF one of the switches specified by #switches are off
-	 *     - @c PowerSwitchIF::RETURN_FAILED if an error occured
+	 *  - @c PowerSwitchIF::SWITCH_ON if all switches specified
+	 *       by #switches are on
+	 *  - @c PowerSwitchIF::SWITCH_OFF one of the switches specified by
+	 *       #switches are off
+	 *  - @c PowerSwitchIF::RETURN_FAILED if an error occured
 	 */
 	ReturnValue_t getStateOfSwitches(void);
 
