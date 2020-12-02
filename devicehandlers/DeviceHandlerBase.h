@@ -893,7 +893,8 @@ protected:
 	 * @param data data to send
 	 * @param len length of @c data
 	 * @param sendTo the messageQueueId of the one to send to
-	 * @param isCommand marks the raw data as a command, the message then will be of type raw_command
+	 * @param isCommand marks the raw data as a command, the message then
+	 * will be of type raw_command
 	 */
 	virtual void replyRawData(const uint8_t *data, size_t len,
 			MessageQueueId_t sendTo, bool isCommand = false);
@@ -945,10 +946,11 @@ protected:
 	ReturnValue_t getStateOfSwitches(void);
 
 	/**
-	 * set all datapool variables that are update periodically in normal mode invalid
-	 *
-	 * Child classes should provide an implementation which sets all those variables invalid
-	 * which are set periodically during any normal mode.
+	 * @brief   Set all datapool variables that are update periodically in
+	 *          normal mode invalid
+	 * @details TODO: Use local pools
+	 * Child classes should provide an implementation which sets all those
+	 * variables invalid which are set periodically during any normal mode.
 	 */
 	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
@@ -958,11 +960,12 @@ protected:
 	virtual void changeHK(Mode_t mode, Submode_t submode, bool enable);
 
 	/**
-	 * Children can overwrite this function to suppress checking of the command Queue
+	 * Children can overwrite this function to suppress checking of the
+	 * command Queue
 	 *
-	 * This can be used when the child does not want to receive a command in a certain
-	 * situation. Care must be taken that checking is not permanentely disabled as this
-	 * would render the handler unusable.
+	 * This can be used when the child does not want to receive a command in
+	 * a certain situation. Care must be taken that checking is not
+	 * permanentely disabled as this would render the handler unusable.
 	 *
 	 * @return whether checking the queue should NOT be done
 	 */
@@ -1001,17 +1004,20 @@ protected:
 	virtual void forwardEvent(Event event, uint32_t parameter1 = 0,
 			uint32_t parameter2 = 0) const;
 	/**
-	 * Checks state of switches in conjunction with mode and triggers an event if they don't fit.
+	 * Checks state of switches in conjunction with mode and triggers an event
+	 * if they don't fit.
 	 */
 	virtual void checkSwitchState();
 
 	/**
-	 * Reserved for the rare case where a device needs to perform additional operation cyclically in OFF mode.
+	 * Reserved for the rare case where a device needs to perform additional
+	 * operation cyclically in OFF mode.
 	 */
 	virtual void doOffActivity();
 
 	/**
-	 * Reserved for the rare case where a device needs to perform additional operation cyclically in ON mode.
+	 * Reserved for the rare case where a device needs to perform additional
+	 * operation cyclically in ON mode.
 	 */
 	virtual void doOnActivity();
 
@@ -1052,9 +1058,10 @@ private:
 	/**
 	 * Information about a cookie.
 	 *
-	 * This is stored in a map for each cookie, to not only track the state, but also information
-	 * about  the sent command. Tracking this information is needed as
-	 * the state of a commandId (waiting for reply) is done when a RMAP write reply is received.
+	 * This is stored in a map for each cookie, to not only track the state,
+	 * but also information about the sent command. Tracking this information
+	 * is needed as the state of a commandId (waiting for reply) is done when a
+	 * write reply is received.
 	 */
 	struct CookieInfo {
 		CookieState_t state;
@@ -1111,10 +1118,14 @@ private:
 	/**
 	 * Handle the device handler mode.
 	 *
-	 * - checks whether commands are valid for the current mode, rejects them accordingly
-	 * - checks whether commanded mode transitions are required and calls handleCommandedModeTransition()
-	 * - does the necessary action for the current mode or calls doChildStateMachine in modes @c MODE_TO_ON and @c MODE_TO_OFF
-	 * - actions that happen in transitions (eg setting a timeout) are handled in setMode()
+	 * - checks whether commands are valid for the current mode, rejects
+	 *   them accordingly
+	 * - checks whether commanded mode transitions are required and calls
+	 *   handleCommandedModeTransition()
+	 * - does the necessary action for the current mode or calls
+	 *   doChildStateMachine in modes @c MODE_TO_ON and @c MODE_TO_OFF
+	 * - actions that happen in transitions (e.g. setting a timeout) are
+	 *   handled in setMode()
 	 */
 	void doStateMachine(void);
 
@@ -1124,16 +1135,17 @@ private:
 	/**
 	 * Decrement the counter for the timout of replies.
 	 *
-	 * This is called at the beginning of each cycle. It checks whether a reply has timed out (that means a reply was expected
-	 * but not received).
+	 * This is called at the beginning of each cycle. It checks whether a
+	 * reply has timed out (that means a reply was expected but not received).
 	 */
 	void decrementDeviceReplyMap(void);
 
 	/**
 	 * Convenience function to handle a reply.
 	 *
-	 * Called after scanForReply() has found a packet. Checks if the found id is in the #deviceCommandMap, if so,
-	 * calls interpretDeviceReply(DeviceCommandId_t id, const uint8_t *packet) for further action.
+	 * Called after scanForReply() has found a packet. Checks if the found ID
+	 * is in the #deviceCommandMap, if so,  calls
+	 * #interpretDeviceReply for further action.
 	 *
 	 * It also resets the timeout counter for the command id.
 	 *
