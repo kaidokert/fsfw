@@ -98,7 +98,7 @@ void PeriodicTask::taskFunctionality() {
 	    std::chrono::duration_cast<std::chrono::milliseconds>(
 	    std::chrono::system_clock::now().time_since_epoch())
 	};
-	auto nextStartTime{ currentStartTime };
+	auto nextStartTime { currentStartTime };
 
 	/* Enter the loop that defines the task behavior. */
 	for (;;) {
@@ -109,8 +109,6 @@ void PeriodicTask::taskFunctionality() {
 			object->performOperation();
 		}
 		if(not delayForInterval(&currentStartTime, periodChrono)) {
-			sif::warning << "PeriodicTask: " << taskName <<
-					" missed deadline!\n" << std::flush;
 			if(deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}
