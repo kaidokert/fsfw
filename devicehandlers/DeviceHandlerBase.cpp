@@ -1433,4 +1433,8 @@ dur_millis_t DeviceHandlerBase::getPeriodicOperationFrequency() const {
 }
 
 DeviceCommandId_t DeviceHandlerBase::getPendingCommand() const {
+    if(cookieInfo.pendingCommand != deviceCommandMap.end()) {
+        return cookieInfo.pendingCommand->first;
+    }
+    return DeviceHandlerIF::NO_COMMAND;
 }
