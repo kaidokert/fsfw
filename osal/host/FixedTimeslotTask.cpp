@@ -46,7 +46,7 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
                 << GetLastError() << std::endl;
     }
 #elif defined(LINUX)
-    // we can just copy and paste the code from linux here.
+    // TODO: we can just copy and paste the code from the linux OSAL here.
 #endif
 }
 
