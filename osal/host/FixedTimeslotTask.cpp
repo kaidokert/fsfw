@@ -115,8 +115,9 @@ void FixedTimeslotTask::taskFunctionality() {
         this->pollingSeqTable.executeAndAdvance();
         if (not pollingSeqTable.slotFollowsImmediately()) {
             // we need to wait before executing the current slot
-            //this gives us the time to wait:
-            interval = chron_ms(this->pollingSeqTable.getIntervalToPreviousSlotMs());
+            // this gives us the time to wait:
+            interval = chron_ms(
+                    this->pollingSeqTable.getIntervalToPreviousSlotMs());
             delayForInterval(&currentStartTime, interval);
             //TODO deadline missed check
         }
