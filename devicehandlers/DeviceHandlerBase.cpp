@@ -1432,3 +1432,5 @@ dur_millis_t DeviceHandlerBase::getPeriodicOperationFrequency() const {
     return pstIntervalMs;
 }
 
+DeviceCommandId_t DeviceHandlerBase::getPendingCommand() const {
+}

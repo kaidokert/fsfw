@@ -737,10 +737,19 @@ protected:
 	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
 
 	static object_id_t defaultFdirParentId; //!< Object which may be the root cause of an identified fault.
+
+	/**
+	 * Helper function to get pending command. This is useful for devices
+	 * like SPI sensors to identify the last sent command.
+	 * @return
+	 */
+	DeviceCommandId_t getPendingCommand() const;
+
 	/**
 	 * Helper function to report a missed reply
 	 *
-	 * Can be overwritten by children to act on missed replies or to fake reporting Id.
+	 * Can be overwritten by children to act on missed replies or to fake
+	 * reporting Id.
 	 *
 	 * @param id of the missed reply
 	 */
@@ -1184,7 +1193,7 @@ private:
 	 * @param[out] len
 	 * @return
 	 *   - @c RETURN_OK @c data is valid
-	 *   - @c RETURN_FAILED IPCStore is NULL
+	 *   - @c RETURN_FAILED IPCStore is nullptr
 	 *   - the return value from the IPCStore if it was not @c RETURN_OK
 	 */
 	ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data,
