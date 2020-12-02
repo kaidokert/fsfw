@@ -1,7 +1,6 @@
 #ifndef CONFIG_FSFWCONFIG_H_
 #define CONFIG_FSFWCONFIG_H_
 
-#include <FSFWVersion.h>
 #include <cstddef>
 #include <cstdint>
 
@@ -9,12 +8,12 @@
 //! Those can lead to code bloat.
 #define FSFW_CPP_OSTREAM_ENABLED 	1
 
-//! Reduced printout to further decrese code size
+//! Reduced printout to further decrease code size
 //! Be careful, this also turns off most diagnostic prinouts!
-#define FSFW_REDUCED_PRINTOUT		0
+#define FSFW_ENHANCED_PRINTOUT		0
 
-//! Can be used to enable debugging printouts for developing the FSFW
-#define FSFW_DEBUGGING              0
+//! Can be used to enable additional debugging printouts for developing the FSFW
+#define FSFW_PRINT_VERBOSITY_LEVEL   0
 
 //! Defines the FIFO depth of each commanding service base which
 //! also determines how many commands a CSB service can handle in one cycle

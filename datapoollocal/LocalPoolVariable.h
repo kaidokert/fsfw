@@ -43,7 +43,7 @@ public:
 	 * If nullptr, the variable is not registered.
 	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 */
-	LocalPoolVar(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
+	LocalPoolVar(HasLocalDataPoolIF* hkOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
@@ -64,8 +64,16 @@ public:
 	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 *
 	 */
-	LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
+	LocalPoolVar(object_id_t poolOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
+	/**
+	 * Variation which takes the global unique identifier of a pool variable.
+	 * @param globalPoolId
+	 * @param dataSet
+	 * @param setReadWriteMode
+	 */
+	LocalPoolVar(gp_id_t globalPoolId, DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
 	virtual~ LocalPoolVar() {};
@@ -110,7 +118,25 @@ public:
 	ReturnValue_t commit(dur_millis_t lockTimeout = MutexIF::BLOCKING) override;
 
 
-	LocalPoolVar<T> &operator=(T newValue);
+	LocalPoolVar<T> &operator=(const T& newValue);
+	LocalPoolVar<T> &operator=(const LocalPoolVar<T>& newPoolVariable);
+
+	//! Explicit type conversion operator. Allows casting the class to
+	//! its template type to perform operations on value.
+	explicit operator T() const;
+
+	bool operator==(const LocalPoolVar<T>& other) const;
+	bool operator==(const T& other) const;
+
+	bool operator!=(const LocalPoolVar<T>& other) const;
+	bool operator!=(const T& other) const;
+
+	bool operator<(const LocalPoolVar<T>& other) const;
+	bool operator<(const T& other) const;
+
+	bool operator>(const LocalPoolVar<T>& other) const;
+	bool operator>(const T& other) const;
+
 protected:
 	/**
 	 * @brief	Like #read, but without a lock protection of the global pool.
@@ -155,6 +181,5 @@ using lp_int32_t = LocalPoolVar<int32_t>;
 using lp_int64_t = LocalPoolVar<int64_t>;
 using lp_float_t = LocalPoolVar<float>;
 using lp_double_t = LocalPoolVar<double>;
-
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_ */

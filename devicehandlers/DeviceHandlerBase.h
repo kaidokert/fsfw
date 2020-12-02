@@ -4,6 +4,7 @@
 #include "DeviceHandlerIF.h"
 #include "DeviceCommunicationIF.h"
 #include "DeviceHandlerFailureIsolation.h"
+#include "DeviceHandlerThermalSet.h"
 
 #include "../objectmanager/SystemObject.h"
 #include "../tasks/ExecutableObjectIF.h"
@@ -103,8 +104,21 @@ public:
 			size_t cmdQueueSize = 20);
 
 	void setHkDestination(object_id_t hkDestination);
-	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
-			uint32_t thermalRequestPoolId);
+
+	/**
+	 * If the device handler is controlled by the FSFW thermal building blocks,
+	 * this function should be called to initialize all required components.
+	 * The device handler will then take care of creating local pool entries
+	 * for the device thermal state and device heating request.
+	 * Custom local pool IDs can be assigned as well.
+	 * @param thermalStatePoolId
+	 * @param thermalRequestPoolId
+	 */
+	void setThermalStateRequestPoolIds(lp_id_t thermalStatePoolId =
+			DeviceHandlerIF::DEFAULT_THERMAL_STATE_POOL_ID,
+			lp_id_t thermalRequestPoolId =
+			DeviceHandlerIF::DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID,
+			uint32_t thermalSetId = DeviceHandlerIF::DEFAULT_THERMAL_SET_ID);
 	/**
 	 * @brief   Helper function to ease device handler development.
 	 * This will instruct the transition to MODE_ON immediately
@@ -220,7 +234,7 @@ protected:
 	 *  - If the device does not change the mode, the mode will be changed to
 	 *    _MODE_POWER_DOWN, when the timeout (from getTransitionDelay())
 	 *    has passed.
-	 *
+	 * 0xffffffff
 	 * #transitionFailure can be set to a failure code indicating the reason
 	 * for a failed transition
 	 */
@@ -694,19 +708,7 @@ protected:
 	//! and to send replies.
 	MessageQueueIF* commandQueue = nullptr;
 
-	/**
-	 * this is the datapool variable with the thermal state of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	uint32_t deviceThermalStatePoolId = PoolVariableIF::NO_PARAMETER;
-
-	/**
-	 * this is the datapool variable with the thermal request of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	uint32_t deviceThermalRequestPoolId = PoolVariableIF::NO_PARAMETER;
+	DeviceHandlerThermalSet* thermalSet = nullptr;
 
 	/**
 	 * Optional Error code. Can be set in doStartUp(), doShutDown() and
@@ -1229,6 +1231,9 @@ private:
 
     void parseReply(const uint8_t* receivedData,
                 size_t receivedDataLen);
+
+    void handleTransitionToOnMode(Mode_t commandedMode,
+    		Submode_t commandedSubmode);
 };
 
 #endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */

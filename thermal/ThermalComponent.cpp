@@ -1,9 +1,9 @@
 #include "ThermalComponent.h"
 
 ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
-		uint8_t domainId, uint32_t temperaturePoolId,
-		uint32_t targetStatePoolId, uint32_t currentStatePoolId,
-		uint32_t requestPoolId, GlobDataSet* dataSet,
+		uint8_t domainId, gp_id_t temperaturePoolId,
+		gp_id_t targetStatePoolId, gp_id_t currentStatePoolId,
+		gp_id_t requestPoolId, LocalPoolDataSetBase* dataSet,
 		AbstractTemperatureSensor* sensor,
 		AbstractTemperatureSensor* firstRedundantSensor,
 		AbstractTemperatureSensor* secondRedundantSensor,
@@ -22,22 +22,22 @@ ThermalComponent::~ThermalComponent() {
 }
 
 ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
-	GlobDataSet mySet;
-	gp_int8_t writableTargetState(targetState.getDataPoolId(),
-			&mySet, PoolVariableIF::VAR_READ_WRITE);
-	mySet.read();
-	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)
-			&& (newState != STATE_REQUEST_IGNORE)) {
+	targetState.setReadWriteMode(pool_rwm_t::VAR_READ_WRITE);
+	targetState.read();
+	if ((targetState == STATE_REQUEST_OPERATIONAL)
+			and (newState != STATE_REQUEST_IGNORE)) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	switch (newState) {
 	case STATE_REQUEST_NON_OPERATIONAL:
-		writableTargetState = newState;
-		mySet.commit(PoolVariableIF::VALID);
+		targetState = newState;
+		targetState.setValid(true);
+		targetState.commit(PoolVariableIF::VALID);
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
 		return ThermalComponentCore::setTargetState(newState);
 	}
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, size_t size) {
@@ -78,11 +78,12 @@ ThermalComponentIF::State ThermalComponent::getState(float temperature,
 }
 
 void ThermalComponent::checkLimits(ThermalComponentIF::State state) {
-	if (targetState == STATE_REQUEST_OPERATIONAL || targetState == STATE_REQUEST_IGNORE) {
+	if ((targetState == STATE_REQUEST_OPERATIONAL) or
+			(targetState == STATE_REQUEST_IGNORE)) {
 		ThermalComponentCore::checkLimits(state);
 		return;
 	}
-	//If component is not operational, it checks the NOP limits.
+	// If component is not operational, it checks the NOP limits.
 	temperatureMonitor.translateState(state, temperature.value,
 			nopParameters.lowerNopLimit, nopParameters.upperNopLimit, false);
 }

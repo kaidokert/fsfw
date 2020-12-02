@@ -1,9 +1,7 @@
 #ifndef FSFW_POWER_POWERSENSOR_H_
 #define FSFW_POWER_POWERSENSOR_H_
 
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
-#include "../datapoolglob/PIDReader.h"
+#include "../datapoollocal/StaticLocalDataSet.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/LimitMonitor.h"
 #include "../parameters/ParameterHelper.h"
@@ -12,15 +10,18 @@
 
 class PowerController;
 
+/**
+ * @brief	Does magic.
+ */
 class PowerSensor: public SystemObject,
 		public ReceivesParameterMessagesIF,
 		public HasHealthIF {
 	friend class PowerController;
 public:
 	struct VariableIds {
-		uint32_t pidCurrent;
-		uint32_t pidVoltage;
-		uint32_t poolIdPower;
+		gp_id_t pidCurrent;
+		gp_id_t pidVoltage;
+		gp_id_t poolIdPower;
 	};
 	struct DefaultLimits {
 		float currentMin;
@@ -34,8 +35,9 @@ public:
 		Event voltageLow;
 		Event voltageHigh;
 	};
-	PowerSensor(object_id_t setId, VariableIds setIds, DefaultLimits limits,
-			SensorEvents events, uint16_t confirmationCount = 0);
+	PowerSensor(object_id_t objectId, sid_t sid, VariableIds setIds,
+			DefaultLimits limits, SensorEvents events,
+			uint16_t confirmationCount = 0);
 	virtual ~PowerSensor();
 	ReturnValue_t calculatePower();
 	ReturnValue_t performOperation(uint8_t opCode);
@@ -53,12 +55,16 @@ private:
 	MessageQueueIF* commandQueue = nullptr;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
-	GlobDataSet set;
+	//GlobDataSet set;
+	StaticLocalDataSet<3> powerSensorSet;
 	//Variables in
-	PIDReader<float> current;
-	PIDReader<float> voltage;
+	lp_var_t<float> current;
+	lp_var_t<float> voltage;
+	//PIDReader<float> current;
+	//PIDReader<float> voltage;
 	//Variables out
-	gp_float_t power;
+	lp_var_t<float> power;
+	//gp_float_t power;
 
 	static const uint8_t MODULE_ID_CURRENT = 1;
 	static const uint8_t MODULE_ID_VOLTAGE = 2;

@@ -5,6 +5,7 @@
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"
 
+#include "../datapoollocal/locPoolDefinitions.h"
 #include "../events/EventManagerIF.h"
 #include "../parameters/HasParametersIF.h"
 
@@ -18,8 +19,8 @@ public:
 	// TODO: Adapt to use SID instead of parameter ID.
 
 	MonitorReporter(object_id_t reportingId, uint8_t monitorId,
-	        uint32_t parameterId, uint16_t confirmationLimit) :
-			monitorId(monitorId), parameterId(parameterId),
+	        gp_id_t globalPoolId, uint16_t confirmationLimit) :
+			monitorId(monitorId), globalPoolId(globalPoolId),
 			reportingId(reportingId), oldState(MonitoringIF::UNCHECKED),
 			reportingEnabled(ENABLED), eventEnabled(ENABLED), currentCounter(0),
 			confirmationLimit(confirmationLimit) {
@@ -95,7 +96,7 @@ public:
 
 protected:
 	const uint8_t monitorId;
-	const uint32_t parameterId;
+	const gp_id_t globalPoolId;
 	object_id_t reportingId;
 	ReturnValue_t oldState;
 
@@ -166,13 +167,13 @@ protected:
 	 */
 	virtual void sendTransitionReport(T parameterValue, T crossedLimit,
 	        ReturnValue_t state) {
-		MonitoringReportContent<T> report(parameterId,
+		MonitoringReportContent<T> report(globalPoolId,
 				parameterValue, crossedLimit, oldState, state);
 		LimitViolationReporter::sendLimitViolationReport(&report);
 	}
 	ReturnValue_t setToState(ReturnValue_t state) {
 		if (oldState != state && reportingEnabled) {
-			MonitoringReportContent<T> report(parameterId, 0, 0, oldState,
+			MonitoringReportContent<T> report(globalPoolId, 0, 0, oldState,
 					state);
 			LimitViolationReporter::sendLimitViolationReport(&report);
 			oldState = state;

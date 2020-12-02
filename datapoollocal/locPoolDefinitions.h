@@ -10,11 +10,19 @@
  */
 using lp_id_t = uint32_t;
 
+namespace localpool {
+static constexpr uint32_t INVALID_LPID = -1;
+}
 
+/**
+ * Used as a unique identifier for data sets.
+ */
 union sid_t {
     static constexpr uint64_t INVALID_SID = -1;
-    static constexpr uint32_t INVALID_SET_ID = -1;
     static constexpr uint32_t INVALID_OBJECT_ID = objects::NO_OBJECT;
+    static constexpr uint32_t INVALID_SET_ID = -1;
+
+
     sid_t(): raw(INVALID_SID) {}
 
     sid_t(object_id_t objectId, uint32_t setId):
@@ -38,6 +46,40 @@ union sid_t {
     bool notSet() const {
         return raw == INVALID_SID;
     }
+
+    bool operator==(const sid_t& other) const {
+        return raw == other.raw;
+    }
+
+    bool operator!=(const sid_t& other) const {
+        return not (raw == other.raw);
+    }
+};
+
+/**
+ * Used as a global unique identifier for local pool variables.
+ */
+union gp_id_t {
+	static constexpr uint64_t INVALID_GPID = -1;
+    static constexpr uint32_t INVALID_OBJECT_ID = objects::NO_OBJECT;
+	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
+
+	gp_id_t(): raw(INVALID_GPID) {}
+
+	gp_id_t(object_id_t objectId, lp_id_t localPoolId):
+			objectId(objectId),
+			localPoolId(localPoolId) {}
+
+	struct {
+		object_id_t objectId;
+		lp_id_t localPoolId;
+	};
+
+	uint64_t raw;
+
+	bool notSet() const {
+		return raw == INVALID_GPID;
+	}
 
     bool operator==(const sid_t& other) const {
         return raw == other.raw;

@@ -1,14 +1,20 @@
-#ifndef THERMALMODULE_H_
-#define THERMALMODULE_H_
+#ifndef FSFW_THERMAL_THERMALMODULE_H_
+#define FSFW_THERMAL_THERMALMODULE_H_
 
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
-#include "../devicehandlers/HealthDevice.h"
-#include "../events/EventReportingProxyIF.h"
 #include "ThermalModuleIF.h"
-#include <list>
 #include "tcsDefinitions.h"
 #include "RedundantHeater.h"
+
+//#include "../datapoolglob/GlobalDataSet.h"
+//#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../datapoollocal/LocalPoolDataSetBase.h"
+#include "../datapoollocal/LocalPoolVariable.h"
+#include "../devicehandlers/HealthDevice.h"
+#include "../events/EventReportingProxyIF.h"
+
+#include <list>
+
+
 class PowerSwitchIF;
 
 /**
@@ -22,11 +28,12 @@ public:
 		float hysteresis;
 	};
 
-	ThermalModule(uint32_t moduleTemperaturePoolId, uint32_t currentStatePoolId,
-			uint32_t targetStatePoolId, GlobDataSet *dataSet, Parameters parameters,
-			RedundantHeater::Parameters heaterParameters);
+	ThermalModule(gp_id_t moduleTemperaturePoolId, gp_id_t currentStatePoolId,
+			gp_id_t targetStatePoolId, LocalPoolDataSetBase *dataSet,
+			Parameters parameters, RedundantHeater::Parameters heaterParameters);
 
-	ThermalModule(uint32_t moduleTemperaturePoolId, GlobDataSet *dataSet);
+	ThermalModule(gp_id_t moduleTemperaturePoolId,
+			LocalPoolDataSetBase *dataSet);
 
 	virtual ~ThermalModule();
 
@@ -62,20 +69,21 @@ protected:
 
 	Strategy oldStrategy;
 
-	float survivalTargetTemp;
+	float survivalTargetTemp = 0.0;
 
-	float targetTemp;
+	float targetTemp = 0.0;
 
-	bool heating;
+	bool heating = false;
 
 	Parameters parameters;
 
-	gp_float_t moduleTemperature;
+	lp_var_t<float> moduleTemperature;
+	//gp_float_t moduleTemperature;
 
-	RedundantHeater *heater;
+	RedundantHeater *heater = nullptr;
 
-	gp_int8_t currentState;
-	gp_int8_t targetState;
+	lp_var_t<int8_t> currentState;
+	lp_var_t<int8_t> targetState;
 
 	std::list<AbstractTemperatureSensor *> sensors;
 	std::list<ComponentData> components;
@@ -92,4 +100,4 @@ protected:
 	void updateTargetTemperatures(ThermalComponentIF *component, bool isSafe);
 };
 
-#endif /* THERMALMODULE_H_ */
+#endif /* FSFW_THERMAL_THERMALMODULE_H_ */

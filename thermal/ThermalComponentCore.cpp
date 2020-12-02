@@ -1,25 +1,26 @@
 #include "ThermalComponentCore.h"
 
 ThermalComponentCore::ThermalComponentCore(object_id_t reportingObjectId,
-        uint8_t domainId, uint32_t temperaturePoolId,
-        uint32_t targetStatePoolId,
-		uint32_t currentStatePoolId, uint32_t requestPoolId,
-		GlobDataSet* dataSet, Parameters parameters,
-		StateRequest initialTargetState) :
+        uint8_t domainId, gp_id_t temperaturePoolId,
+        gp_id_t targetStatePoolId, gp_id_t currentStatePoolId,
+		gp_id_t requestPoolId, LocalPoolDataSetBase* dataSet,
+		Parameters parameters, StateRequest initialTargetState) :
 		temperature(temperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE),
 		targetState(targetStatePoolId, dataSet, PoolVariableIF::VAR_READ),
 		currentState(currentStatePoolId, dataSet, PoolVariableIF::VAR_WRITE),
 		heaterRequest(requestPoolId, dataSet, PoolVariableIF::VAR_WRITE),
-		parameters(parameters),
-		temperatureMonitor(reportingObjectId, domainId + 1,
-		        GlobalDataPool::poolIdAndPositionToPid(temperaturePoolId, 0),
-				COMPONENT_TEMP_CONFIRMATION), domainId(domainId) {
+		parameters(parameters), domainId(domainId),
+		temperatureMonitor(reportingObjectId, domainId + 1,temperaturePoolId,
+				COMPONENT_TEMP_CONFIRMATION) {
 	//Set thermal state once, then leave to operator.
-	GlobDataSet mySet;
-	gp_uint8_t writableTargetState(targetStatePoolId, &mySet,
-			PoolVariableIF::VAR_WRITE);
-	writableTargetState = initialTargetState;
-	mySet.commit(PoolVariableIF::VALID);
+	targetState.setReadWriteMode(PoolVariableIF::VAR_WRITE);
+	ReturnValue_t result = targetState.read();
+	if(result == HasReturnvaluesIF::RETURN_OK) {
+		targetState = initialTargetState;
+		targetState.setValid(true);
+		targetState.commit();
+	}
+	targetState.setReadWriteMode(PoolVariableIF::VAR_READ);
 }
 
 void ThermalComponentCore::addSensor(AbstractTemperatureSensor* sensor) {
@@ -59,12 +60,14 @@ ThermalComponentIF::HeaterRequest ThermalComponentCore::performOperation(
 	//SHOULDDO: Better pass db_float_t* to getTemperature and set it invalid if invalid.
 	temperature = getTemperature();
 	updateMinMaxTemp();
-	if ((temperature != INVALID_TEMPERATURE)) {
+	if (temperature != INVALID_TEMPERATURE) {
 		temperature.setValid(PoolVariableIF::VALID);
-		State state = getState(temperature, getParameters(), targetState);
+		State state = getState(temperature.value, getParameters(),
+				targetState.value);
 		currentState = state;
 		checkLimits(state);
-		request = getHeaterRequest(targetState, temperature, getParameters());
+		request = getHeaterRequest(targetState.value, temperature.value,
+				getParameters());
 	} else {
 		temperatureMonitor.setToInvalid();
 		temperature.setValid(PoolVariableIF::INVALID);
@@ -78,11 +81,12 @@ ThermalComponentIF::HeaterRequest ThermalComponentCore::performOperation(
 }
 
 void ThermalComponentCore::markStateIgnored() {
-	currentState = getIgnoredState(currentState);
+	currentState = getIgnoredState(currentState.value);
 }
 
 object_id_t ThermalComponentCore::getObjectId() {
 	return temperatureMonitor.getReporterId();
+	return 0;
 }
 
 float ThermalComponentCore::getLowerOpLimit() {
@@ -92,25 +96,25 @@ float ThermalComponentCore::getLowerOpLimit() {
 
 
 ReturnValue_t ThermalComponentCore::setTargetState(int8_t newState) {
-	GlobDataSet mySet;
-	gp_uint8_t writableTargetState(targetState.getDataPoolId(),
-			&mySet, PoolVariableIF::VAR_READ_WRITE);
-	mySet.read();
-	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)
-			&& (newState != STATE_REQUEST_IGNORE)) {
+	targetState.setReadWriteMode(pool_rwm_t::VAR_READ_WRITE);
+	targetState.read();
+	if((targetState == STATE_REQUEST_OPERATIONAL) and
+			(newState != STATE_REQUEST_IGNORE)) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+
 	switch (newState) {
 	case STATE_REQUEST_HEATING:
 	case STATE_REQUEST_IGNORE:
 	case STATE_REQUEST_OPERATIONAL:
-		writableTargetState = newState;
+		targetState = newState;
 		break;
 	case STATE_REQUEST_NON_OPERATIONAL:
 	default:
 		return INVALID_TARGET_STATE;
 	}
-	mySet.commit(PoolVariableIF::VALID);
+	targetState.setValid(true);
+	targetState.commit();
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -226,10 +230,10 @@ void ThermalComponentCore::updateMinMaxTemp() {
 		return;
 	}
 	if (temperature < minTemp) {
-		minTemp = temperature;
+		minTemp = static_cast<float>(temperature);
 	}
 	if (temperature > maxTemp) {
-		maxTemp = temperature;
+		maxTemp = static_cast<float>(temperature);
 	}
 }
 

@@ -6,8 +6,7 @@
 #include "AbstractTemperatureSensor.h"
 #include "ThermalModule.h"
 
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../datapoollocal/LocalPoolVariable.h"
 
 /**
  * @brief
@@ -38,9 +37,9 @@ public:
 	 * @param initialTargetState
 	 */
 	ThermalComponentCore(object_id_t reportingObjectId, uint8_t domainId,
-	        uint32_t temperaturePoolId, uint32_t targetStatePoolId,
-	        uint32_t currentStatePoolId, uint32_t requestPoolId,
-	        GlobDataSet *dataSet, Parameters parameters,
+	        gp_id_t temperaturePoolId, gp_id_t targetStatePoolId,
+	        gp_id_t currentStatePoolId, gp_id_t requestPoolId,
+			LocalPoolDataSetBase* dataSet, Parameters parameters,
 			StateRequest initialTargetState =
 					ThermalComponentIF::STATE_REQUEST_OPERATIONAL);
 
@@ -80,10 +79,10 @@ protected:
 	AbstractTemperatureSensor *secondRedundantSensor = nullptr;
 	ThermalModuleIF *thermalModule = nullptr;
 
-	gp_float_t temperature;
-	gp_int8_t targetState;
-	gp_int8_t currentState;
-	gp_uint8_t heaterRequest;
+	lp_var_t<float> temperature;
+	lp_var_t<int8_t> targetState;
+	lp_var_t<int8_t> currentState;
+	lp_var_t<uint8_t> heaterRequest;
 
 	bool isHeating = false;
 
@@ -95,9 +94,9 @@ protected:
 
 	Parameters parameters;
 
-	ThermalMonitorReporter temperatureMonitor;
-
 	const uint8_t domainId;
+
+	ThermalMonitorReporter temperatureMonitor;
 
 	virtual float getTemperature();
 	virtual State getState(float temperature, Parameters parameters,

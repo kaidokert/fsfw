@@ -1,20 +1,27 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_TPP_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_TPP_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_TPP_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_TPP_
 
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 #error Include LocalPoolVector.h before LocalPoolVector.tpp!
 #endif
 
 template<typename T, uint16_t vectorSize>
-inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
-		HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
+inline LocalPoolVector<T, vectorSize>::LocalPoolVector(
+		HasLocalDataPoolIF* hkOwner, lp_id_t poolId, DataSetIF* dataSet,
 		pool_rwm_t setReadWriteMode):
 		LocalPoolObjectBase(poolId, hkOwner, dataSet, setReadWriteMode) {}
 
 template<typename T, uint16_t vectorSize>
-inline LocalPoolVector<T, vectorSize>::LocalPoolVector(lp_id_t poolId,
-		object_id_t poolOwner, DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
-		LocalPoolObjectBase(poolId, poolOwner, dataSet, setReadWriteMode) {}
+inline LocalPoolVector<T, vectorSize>::LocalPoolVector(object_id_t poolOwner,
+		lp_id_t poolId, DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
+		LocalPoolObjectBase(poolOwner, poolId, dataSet, setReadWriteMode) {}
+
+
+template<typename T, uint16_t vectorSize>
+inline LocalPoolVector<T, vectorSize>::LocalPoolVector(gp_id_t globalPoolId,
+		DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
+		LocalPoolObjectBase(globalPoolId.objectId, globalPoolId.localPoolId,
+				dataSet, setReadWriteMode) {}
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(uint32_t lockTimeout) {
@@ -148,4 +155,4 @@ inline std::ostream& operator<< (std::ostream &out,
     return out;
 }
 
-#endif
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_TPP_ */

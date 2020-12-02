@@ -8,17 +8,16 @@
 
 object_id_t Fuse::powerSwitchId = 0;
 
-Fuse::Fuse(object_id_t fuseObjectId, uint8_t fuseId, VariableIds ids,
+Fuse::Fuse(object_id_t fuseObjectId, uint8_t fuseId,
+		sid_t variableSet, VariableIds ids,
 		float maxCurrent, uint16_t confirmationCount) :
-		SystemObject(fuseObjectId), oldFuseState(0), fuseId(fuseId), powerIF(
-		NULL),
+		SystemObject(fuseObjectId), oldFuseState(0), fuseId(fuseId),
 		currentLimit(fuseObjectId, 1, ids.pidCurrent, confirmationCount,
 				maxCurrent, FUSE_CURRENT_HIGH),
-		powerMonitor(fuseObjectId, 2,
-		        GlobalDataPool::poolIdAndPositionToPid(ids.poolIdPower, 0),
+		powerMonitor(fuseObjectId, 2, ids.poolIdPower,
 				confirmationCount),
-		set(), voltage(ids.pidVoltage, &set), current(ids.pidCurrent, &set),
-		state(ids.pidState, &set),
+		set(variableSet), voltage(ids.pidVoltage, &set),
+		current(ids.pidCurrent, &set), state(ids.pidState, &set),
 		power(ids.poolIdPower, &set, PoolVariableIF::VAR_READ_WRITE),
 		parameterHelper(this), healthHelper(this, fuseObjectId) {
 	commandQueue = QueueFactory::instance()->createMessageQueue();
@@ -79,7 +78,7 @@ ReturnValue_t Fuse::check() {
 		float lowLimit = 0.0;
 		float highLimit = RESIDUAL_POWER;
 		calculatePowerLimits(&lowLimit, &highLimit);
-		result = powerMonitor.checkPower(power, lowLimit, highLimit);
+		result = powerMonitor.checkPower(power.value, lowLimit, highLimit);
 		if (result == MonitoringIF::BELOW_LOW_LIMIT) {
 			reportEvents(POWER_BELOW_LOW_LIMIT);
 		} else if (result == MonitoringIF::ABOVE_HIGH_LIMIT) {
@@ -136,7 +135,7 @@ void Fuse::calculateFusePower() {
 		return;
 	}
 	//Calculate fuse power.
-	power = current * voltage;
+	power.value = current.value * voltage.value;
 	power.setValid(PoolVariableIF::VALID);
 }
 
@@ -194,12 +193,12 @@ void Fuse::checkFuseState() {
 			reportEvents(FUSE_WENT_OFF);
 		}
 	}
-	oldFuseState = state;
+	oldFuseState = state.value;
 }
 
 float Fuse::getPower() {
 	if (power.isValid()) {
-		return power;
+		return power.value;
 	} else {
 		return 0.0;
 	}

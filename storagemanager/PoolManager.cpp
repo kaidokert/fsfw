@@ -1,4 +1,5 @@
 #include "PoolManager.h"
+#include <FSFWConfig.h>
 
 PoolManager::PoolManager(object_id_t setObjectId,
         const LocalPoolConfig& localPoolConfig):
@@ -24,7 +25,7 @@ ReturnValue_t PoolManager::reserveSpace(const size_t size,
 
 ReturnValue_t PoolManager::deleteData(
         store_address_t storeId) {
-#if FSFW_DEBUGGING == 1
+#if FSFW_VERBOSE_PRINTOUT == 2
      sif::debug << "PoolManager( " << translateObject(getObjectId()) <<
            " )::deleteData from store " << storeId.poolIndex <<
            ". id is "<< storeId.packetIndex << std::endl;

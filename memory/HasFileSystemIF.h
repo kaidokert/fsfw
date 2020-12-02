@@ -8,7 +8,9 @@
 #include <cstddef>
 
 /**
- * @author  Jakob Meier
+ * @brief	Generic interface for objects which expose a file system to enable
+ * 			message based file handling.
+ * @author  J. Meier, R. Mueller
  */
 class HasFileSystemIF {
 public:
