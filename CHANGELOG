@@ -14,8 +14,8 @@ a C file without issues
 
 ### Parameter Service
 
-- The API of the parameter service has been changed to prevent incosistencies
-and clarify usage when inspecting the code.
+- The API of the parameter service has been changed to prevent inconsistencies
+between documentation and actual code and to clarify usage.
 - The parameter ID now consists of:
 	1. Domain ID (1 byte)
 	2. Unique Identifier (1 byte)
