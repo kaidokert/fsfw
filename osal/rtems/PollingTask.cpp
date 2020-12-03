@@ -1,7 +1,7 @@
-#include "../../tasks/FixedSequenceSlot.h"
+#include "../../devicehandlers/FixedSequenceSlot.h"
 #include "../../objectmanager/SystemObjectIF.h"
-#include "../../osal/rtems/PollingTask.h"
-#include "../../osal/rtems/RtemsBasic.h"
+#include "PollingTask.h"
+#include "RtemsBasic.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <rtems/bspIo.h>
@@ -73,7 +73,7 @@ ReturnValue_t PollingTask::addSlot(object_id_t componentId,
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	sif::error << "Component " << std::hex << componentId <<
+	error << "Component " << std::hex << componentId <<
 			" not found, not adding it to pst" << std::endl;
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
@@ -82,7 +82,7 @@ uint32_t PollingTask::getPeriodMs() const {
 	return pst.getLengthMs();
 }
 
-ReturnValue_t PollingTask::checkAndInitializeSequence() const {
+ReturnValue_t PollingTask::checkSequence() const {
 	return pst.checkSequence();
 }
 

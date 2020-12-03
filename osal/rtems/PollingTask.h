@@ -1,7 +1,7 @@
 #ifndef POLLINGTASK_H_
 #define POLLINGTASK_H_
 
-#include "../../tasks/FixedSlotSequence.h"
+#include "../../devicehandlers/FixedSlotSequence.h"
 #include "../../tasks/FixedTimeslotTaskIF.h"
 #include "TaskBase.h"
 
@@ -42,7 +42,7 @@ class PollingTask: public TaskBase, public FixedTimeslotTaskIF {
 
 	uint32_t getPeriodMs() const;
 
-	ReturnValue_t checkAndInitializeSequence() const;
+	ReturnValue_t checkSequence() const;
 
 	ReturnValue_t sleepFor(uint32_t ms);
 protected:

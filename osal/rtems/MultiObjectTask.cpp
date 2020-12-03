@@ -78,8 +78,9 @@ ReturnValue_t MultiObjectTask::addComponent(object_id_t object) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
-	ReturnValue_t result = newObject->initializeAfterTaskCreation();
-	return result;
+	newObject->setTaskIF(this);
+
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 uint32_t MultiObjectTask::getPeriodMs() const {
