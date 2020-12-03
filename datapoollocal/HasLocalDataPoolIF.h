@@ -1,6 +1,8 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
+#include "locPoolDefinitions.h"
+
 #include "../datapool/PoolEntryIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
@@ -9,11 +11,8 @@
 
 class LocalDataPoolManager;
 class LocalPoolDataSetBase;
+class LocalPoolObjectBase;
 
-/**
- * @brief	Type definition for local pool entries.
- */
-using lp_id_t = uint32_t;
 using LocalDataPool =  std::map<lp_id_t, PoolEntryIF*>;
 using LocalDataPoolMapIter = LocalDataPool::iterator;
 
@@ -44,7 +43,8 @@ public:
 	virtual~ HasLocalDataPoolIF() {};
 
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
-	static constexpr lp_id_t NO_POOL_ID = 0xffffffff;
+
+	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
 	virtual object_id_t getObjectId() const = 0;
 
@@ -77,6 +77,47 @@ public:
 	 * @return
 	 */
 	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
+
+	/**
+	 * Similar to the function above, but used to get a local pool variable
+	 * handle. This is only needed for update notifications, so it is not
+	 * defined as abstract.
+	 * @param localPoolId
+	 * @return
+	 */
+	virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
+	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
+	            << ". Returning nullptr!" << std::endl;
+	    return nullptr;
+	}
+
+    /**
+     * @brief   This function will be called by the manager if an update
+     *          notification is received.
+     * @details
+     * Can be overriden by the child class to handle changed datasets.
+     * @param sid
+     * @param storeId If a snapshot was requested, data will be located inside
+     * the IPC store with this store ID.
+     */
+    virtual void handleChangedDataset(sid_t sid,
+            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
+        return;
+    }
+
+    /**
+     * @brief   This function will be called by the manager if an update
+     *          notification is received.
+     * @details
+     * Can be overriden by the child class to handle changed pool IDs.
+     * @param sid
+     * @param storeId If a snapshot was requested, data will be located inside
+     * the IPC store with this store ID.
+     */
+    virtual void handleChangedPoolVariable(lp_id_t poolId,
+            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
+        return;
+    }
 
 	/* These function can be implemented by pool owner, as they are required
 	 * by the housekeeping message interface */

@@ -20,15 +20,22 @@ namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
-class LocalDataSetBase;
-
+class LocalPoolDataSetBase;
+class HousekeepingPacketUpdate;
 
 /**
  * @brief 		This class is the managing instance for the local data pool.
  * @details
  * The actual data pool structure is a member of this class. Any class which
- * has a local data pool shall have this class as a member and implement
+ * has a local data pool shall have this manager class as a member and implement
  * the HasLocalDataPoolIF.
+ *
+ * The manager offers some adaption points and functions which can be used
+ * by the owning class to simplify data handling significantly.
+ *
+ * Please ensure that both initialize and initializeAfterTaskCreation are
+ * called at some point by the owning class in the respective functions of the
+ * same name!
  *
  * Users of the data pool use the helper classes LocalDataSet,
  * LocalPoolVariable and LocalPoolVector to access pool entries in
@@ -41,10 +48,8 @@ class LocalDataSetBase;
  * @author 		R. Mueller
  */
 class LocalDataPoolManager {
-	template<typename T>
-	friend class LocalPoolVar;
-	template<typename T, uint16_t vecSize>
-	friend class LocalPoolVector;
+	template<typename T> friend class LocalPoolVar;
+	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
 	friend class LocalPoolDataSetBase;
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
@@ -67,14 +72,16 @@ public:
      * initialize() has to be called in any case before using the object!
      * @param owner
      * @param queueToUse
-     * @param appendValidityBuffer
+     * @param appendValidityBuffer Specify whether a buffer containing the
+     * validity state is generated  when serializing or deserializing packets.
      */
 	LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
 	        bool appendValidityBuffer = true);
 	virtual~ LocalDataPoolManager();
 
 	/**
-	 * Assigns the queue to use.
+	 * Assigns the queue to use. Make sure to call this in the #initialize
+	 * function of the owner.
 	 * @param queueToUse
 	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
 	 * @return
@@ -84,26 +91,87 @@ public:
 	/**
 	 * Initializes the map by calling the map initialization function and
 	 * setting the periodic factor for non-diagnostic packets.
-	 * Don't forget to call this, otherwise the map will be invalid!
+	 * Don't forget to call this in the #initializeAfterTaskCreation call of
+	 * the owner, otherwise the map will be invalid!
 	 * @param nonDiagInvlFactor
 	 * @return
 	 */
-	ReturnValue_t initializeAfterTaskCreation(uint8_t nonDiagInvlFactor = 5);
+	ReturnValue_t initializeAfterTaskCreation(
+	        uint8_t nonDiagInvlFactor = 5);
 
     /**
-     * This should be called in the periodic handler of the owner.
+     * @brief   This should be called in the periodic handler of the owner.
+     * @details
+     * This in generally called in the #performOperation function of the owner.
      * It performs all the periodic functionalities of the data pool manager,
      * for example generating periodic HK packets.
+     * Marked virtual as an adaption point for custom data pool managers.
      * @return
      */
-    ReturnValue_t performHkOperation();
+    virtual ReturnValue_t performHkOperation();
 
 	/**
+	 * @brief   Subscribe for the generation of periodic packets.
+	 * @details
+     * This subscription mechanism will generally be used by the data creator
+     * to generate housekeeping packets which are downlinked directly.
 	 * @return
 	 */
 	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
 			float collectionInterval, bool isDiagnostics,
 			object_id_t packetDestination = defaultHkDestination);
+
+	/**
+	 * @brief   Subscribe for the  generation of packets if the dataset
+	 *          is marked as changed.
+	 * @details
+	 * This subscription mechanism will generally be used by the data creator.
+	 * @param sid
+	 * @param isDiagnostics
+	 * @param packetDestination
+	 * @return
+	 */
+    ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
+            bool isDiagnostics,
+            object_id_t packetDestination = defaultHkDestination);
+
+	/**
+	 * @brief   Subscribe for a notification message which will be sent
+	 *          if a dataset has changed.
+	 * @details
+	 * This subscription mechanism will generally be used internally by
+	 * other software components.
+	 * @param setId     Set ID of the set to receive update messages from.
+	 * @param destinationObject
+	 * @param targetQueueId
+	 * @param generateSnapshot If this is set to true, a copy of the current
+	 * data with a timestamp will be generated and sent via message.
+	 * Otherwise, only an notification message is sent.
+	 * @return
+	 */
+	ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
+	        object_id_t destinationObject,
+	        MessageQueueId_t targetQueueId,
+	        bool generateSnapshot);
+
+    /**
+     * @brief   Subscribe for an notification message which will be sent if a
+     *          pool variable has changed.
+     * @details
+     * This subscription mechanism will generally be used internally by
+     * other software components.
+     * @param localPoolId Pool ID of the pool variable
+     * @param destinationObject
+     * @param targetQueueId
+     * @param generateSnapshot If this is set to true, a copy of the current
+     * data with a timestamp will be generated and sent via message.
+     * Otherwise, only an notification message is sent.
+     * @return
+     */
+    ReturnValue_t subscribeForVariableUpdateMessages(const lp_id_t localPoolId,
+            object_id_t destinationObject,
+            MessageQueueId_t targetQueueId,
+            bool generateSnapshot);
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
@@ -116,6 +184,19 @@ public:
 	 */
 	void setNonDiagnosticIntervalFactor(uint8_t nonDiagInvlFactor);
 
+    /**
+     * @brief   The manager is also able to handle housekeeping messages.
+     * @details
+     * This most commonly is used to handle messages for the housekeeping
+     * interface, but the manager is also able to handle update notifications
+     * and calls a special function which can be overriden by a child class
+     * to handle data set or pool variable updates. This is relevant
+     * for classes like controllers which have their own local datapool
+     * but pull their data from other local datapools.
+     * @param message
+     * @return
+     */
+    virtual ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
 	/**
 	 * Generate a housekeeping packet with a given SID.
@@ -125,16 +206,6 @@ public:
 	ReturnValue_t generateHousekeepingPacket(sid_t sid,
 			LocalPoolDataSetBase* dataSet, bool forDownlink,
 			MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
-
-	ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
-
-	/**
-	 * This function is used to fill the local data pool map with pool
-	 * entries. It should only be called once by the pool owner.
-	 * @param localDataPoolMap
-	 * @return
-	 */
-	ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
 	HasLocalDataPoolIF* getOwner();
 
@@ -194,17 +265,18 @@ private:
 	static object_id_t defaultHkDestination;
 	MessageQueueId_t hkDestinationId = MessageQueueIF::NO_QUEUE;
 
+    union DataId {
+        DataId(): sid() {};
+        sid_t sid;
+        lp_id_t localPoolId;
+    };
+
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
 		/** Object ID of receiver */
 		object_id_t objectId = objects::NO_OBJECT;
 
 		DataType dataType = DataType::DATA_SET;
-        union DataId {
-			DataId(): sid() {};
-            sid_t sid;
-            lp_id_t localPoolId;
-        };
         DataId dataId;
 
         ReportingType reportingType = ReportingType::PERIODIC;
@@ -215,6 +287,17 @@ private:
     using HkReceivers = std::vector<struct HkReceiver>;
 
     HkReceivers hkReceiversMap;
+
+    struct HkUpdateResetHelper {
+        DataType dataType = DataType::DATA_SET;
+        DataId dataId;
+        uint8_t updateCounter;
+        uint8_t currentUpdateCounter;
+    };
+
+    using HkUpdateResetList = std::vector<struct HkUpdateResetHelper>;
+    // Will only be created when needed.
+    HkUpdateResetList* hkUpdateResetList = nullptr;
 
     /** This is the map holding the actual data. Should only be initialized
      * once ! */
@@ -234,7 +317,7 @@ private:
 	StorageManagerIF* ipcStore = nullptr;
 	/**
 	 * Get the pointer to the mutex. Can be used to lock the data pool
-	 * eternally. Use with care and don't forget to unlock locked mutexes!
+	 * externally. Use with care and don't forget to unlock locked mutexes!
 	 * For now, only friend classes can accss this function.
 	 * @return
 	 */
@@ -255,6 +338,14 @@ private:
 	template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId,
 			PoolEntry<T> **poolEntry);
 
+    /**
+     * This function is used to fill the local data pool map with pool
+     * entries. It should only be called once by the pool owner.
+     * @param localDataPoolMap
+     * @return
+     */
+    ReturnValue_t initializeHousekeepingPoolEntriesOnce();
+
 	ReturnValue_t serializeHkPacketIntoStore(
 	        HousekeepingPacketDownlink& hkPacket,
 	        store_address_t& storeId, bool forDownlink, size_t* serializedSize);
@@ -265,6 +356,20 @@ private:
 	ReturnValue_t changeCollectionInterval(sid_t sid,
 			float newCollectionInterval, bool isDiagnostics);
 	ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
+
+	void handleHkUpdateResetListInsertion(DataType dataType, DataId dataId);
+	void handleChangeResetLogic(DataType type,
+	        DataId dataId, MarkChangedIF* toReset);
+	void resetHkUpdateResetHelper();
+
+	ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver,
+            ReturnValue_t& status);
+	ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver,
+	        ReturnValue_t& status);
+	ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
+            ReturnValue_t& status);
+	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
+	        store_address_t& storeId);
 };
 
 

@@ -7,22 +7,24 @@
 #include <cstring>
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
-		uint32_t setId, PoolVariableIF** registeredVariablesArray,
-		const size_t maxNumberOfVariables, bool noPeriodicHandling):
-		PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
-	if(hkOwner == nullptr) {
-		// Configuration error.
-		sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
-				<< "invalid!" << std::endl;
-		return;
-	}
+        uint32_t setId, PoolVariableIF** registeredVariablesArray,
+        const size_t maxNumberOfVariables, bool noPeriodicHandling):
+        PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
+    if(hkOwner == nullptr) {
+        // Configuration error.
+        sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
+                << "invalid!" << std::endl;
+        return;
+    }
     hkManager = hkOwner->getHkManagerHandle();
     this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
 
+    mutex = MutexFactory::instance()->createMutex();
+
     // Data creators get a periodic helper for periodic HK data generation.
     if(not noPeriodicHandling) {
-    	 periodicHelper = new PeriodicHousekeepingHelper(this);
+        periodicHelper = new PeriodicHousekeepingHelper(this);
     }
 }
 
@@ -33,21 +35,23 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
             sid.objectId);
     if(hkOwner == nullptr) {
-    	// Configuration error.
+        // Configuration error.
         sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
-        		<< "invalid!" << std::endl;
+                << "invalid!" << std::endl;
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
     this->sid = sid;
+
+    mutex = MutexFactory::instance()->createMutex();
 }
 
 LocalPoolDataSetBase::~LocalPoolDataSetBase() {
 }
 
 ReturnValue_t LocalPoolDataSetBase::lockDataPool(uint32_t timeoutMs) {
-	MutexIF* mutex = hkManager->getMutexHandle();
-	return mutex->lockMutex(MutexIF::TimeoutType::WAITING, timeoutMs);
+    MutexIF* mutex = hkManager->getMutexHandle();
+    return mutex->lockMutex(MutexIF::TimeoutType::WAITING, timeoutMs);
 }
 
 ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer,
@@ -77,6 +81,10 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
             return result;
         }
     }
+
+    if(*size + validityMaskSize > maxSize) {
+        return SerializeIF::BUFFER_TOO_SHORT;
+    }
     // copy validity buffer to end
     std::memcpy(*buffer, validityMask, validityMaskSize);
     *size += validityMaskSize;
@@ -89,14 +97,18 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
     ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
     for (uint16_t count = 0; count < fillCount; count++) {
         result = registeredVariables[count]->deSerialize(buffer, size,
-                        streamEndianness);
+                streamEndianness);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             return result;
         }
     }
+
+    if(*size < std::ceil(static_cast<float>(fillCount) / 8.0)) {
+        return SerializeIF::STREAM_TOO_SHORT;
+    }
+
     uint8_t validBufferIndex = 0;
     uint8_t validBufferIndexBit = 0;
-    // could be made more efficient but make it work first
     for (uint16_t count = 0; count < fillCount; count++) {
         // set validity buffer here.
         bool nextVarValid = this->bitGetter(*buffer +
@@ -113,9 +125,10 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
     }
     return result;
 }
+
 ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
-	MutexIF* mutex = hkManager->getMutexHandle();
-	return mutex->unlockMutex();
+    MutexIF* mutex = hkManager->getMutexHandle();
+    return mutex->unlockMutex();
 }
 
 ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
@@ -192,7 +205,7 @@ ReturnValue_t LocalPoolDataSetBase::serialize(uint8_t **buffer, size_t *size,
 void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     if(position > 7) {
         sif::debug << "Pool Raw Access: Bit setting invalid position"
-        		<< std::endl;
+                << std::endl;
         return;
     }
     uint8_t shiftNumber = position + (7 - 2 * position);
@@ -200,45 +213,49 @@ void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
 }
 
 void LocalPoolDataSetBase::setDiagnostic(bool isDiagnostics) {
-	this->diagnostic = isDiagnostics;
+    this->diagnostic = isDiagnostics;
 }
 
 bool LocalPoolDataSetBase::isDiagnostics() const {
-	return diagnostic;
+    return diagnostic;
 }
 
 void LocalPoolDataSetBase::setReportingEnabled(bool reportingEnabled) {
-	this->reportingEnabled = reportingEnabled;
+    this->reportingEnabled = reportingEnabled;
 }
 
 bool LocalPoolDataSetBase::getReportingEnabled() const {
-	return reportingEnabled;
+    return reportingEnabled;
 }
 
 void LocalPoolDataSetBase::initializePeriodicHelper(
-		float collectionInterval, dur_millis_t minimumPeriodicInterval,
-		bool isDiagnostics, uint8_t nonDiagIntervalFactor) {
-	periodicHelper->initialize(collectionInterval, minimumPeriodicInterval,
-			isDiagnostics, nonDiagIntervalFactor);
+        float collectionInterval, dur_millis_t minimumPeriodicInterval,
+        bool isDiagnostics, uint8_t nonDiagIntervalFactor) {
+    periodicHelper->initialize(collectionInterval, minimumPeriodicInterval,
+            isDiagnostics, nonDiagIntervalFactor);
 }
 
 void LocalPoolDataSetBase::setChanged(bool changed) {
-	this->changed = changed;
+    // TODO: Make this configurable?
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+    this->changed = changed;
 }
 
-bool LocalPoolDataSetBase::isChanged() const {
-	return changed;
+bool LocalPoolDataSetBase::hasChanged() const {
+    // TODO: Make this configurable?
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+    return changed;
 }
 
 sid_t LocalPoolDataSetBase::getSid() const {
-	return sid;
+    return sid;
 }
 
 bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
-		uint8_t position) const {
+        uint8_t position) const {
     if(position > 7) {
         sif::debug << "Pool Raw Access: Bit setting invalid position"
-        		<< std::endl;
+                << std::endl;
         return false;
     }
     uint8_t shiftNumber = position + (7 - 2 * position);
@@ -246,14 +263,16 @@ bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
 }
 
 bool LocalPoolDataSetBase::isValid() const {
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
     return this->valid;
 }
 
 void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
-	if(setEntriesRecursively) {
-		for(size_t idx = 0; idx < this->getFillCount(); idx++) {
-			registeredVariables[idx] -> setValid(valid);
-		}
-	}
-	this->valid = valid;
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
+    if(setEntriesRecursively) {
+        for(size_t idx = 0; idx < this->getFillCount(); idx++) {
+            registeredVariables[idx] -> setValid(valid);
+        }
+    }
+    this->valid = valid;
 }

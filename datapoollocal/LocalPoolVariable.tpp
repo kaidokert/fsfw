@@ -6,46 +6,22 @@
 #endif
 
 template<typename T>
-inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId,
-		HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
-		pool_rwm_t setReadWriteMode):
-		localPoolId(poolId), readWriteMode(setReadWriteMode) {
-	if(poolId == PoolVariableIF::NO_PARAMETER) {
-		sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
-		        << "which is the NO_PARAMETER value!" << std::endl;
-	}
-	if(hkOwner == nullptr) {
-		sif::error << "LocalPoolVar<T>::LocalPoolVar: The supplied pool "
-		        << "owner is a invalid!" << std::endl;
-		return;
-	}
-	hkManager = hkOwner->getHkManagerHandle();
-	if(dataSet != nullptr) {
-	    dataSet->registerVariable(this);
-	}
-}
+inline LocalPoolVar<T>::LocalPoolVar(HasLocalDataPoolIF* hkOwner,
+		lp_id_t poolId, DataSetIF* dataSet, pool_rwm_t setReadWriteMode):
+		LocalPoolObjectBase(poolId, hkOwner, dataSet, setReadWriteMode) {}
 
 template<typename T>
-inline LocalPoolVar<T>::LocalPoolVar(lp_id_t poolId, object_id_t poolOwner,
+inline LocalPoolVar<T>::LocalPoolVar(object_id_t poolOwner, lp_id_t poolId,
         DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
-        localPoolId(poolId), readWriteMode(setReadWriteMode) {
-    if(poolId == PoolVariableIF::NO_PARAMETER) {
-        sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
-                << "which is the NO_PARAMETER value!" << std::endl;
-    }
-    HasLocalDataPoolIF* hkOwner =
-            objectManager->get<HasLocalDataPoolIF>(poolOwner);
-    if(hkOwner == nullptr) {
-        sif::error << "LocalPoolVariable: The supplied pool owner did not "
-                << "implement  the correct interface "
-                << "HasLocalDataPoolIF!" << std::endl;
-        return;
-	}
-	hkManager = hkOwner->getHkManagerHandle();
-	if(dataSet != nullptr) {
-		dataSet->registerVariable(this);
-	}
-}
+        LocalPoolObjectBase(poolOwner, poolId, dataSet, setReadWriteMode) {}
+
+
+template<typename T>
+inline LocalPoolVar<T>::LocalPoolVar(gp_id_t globalPoolId, DataSetIF *dataSet,
+		pool_rwm_t setReadWriteMode):
+		LocalPoolObjectBase(globalPoolId.objectId, globalPoolId.localPoolId,
+				dataSet, setReadWriteMode){}
+
 
 template<typename T>
 inline ReturnValue_t LocalPoolVar<T>::read(dur_millis_t lockTimeout) {
@@ -105,43 +81,6 @@ inline ReturnValue_t LocalPoolVar<T>::commitWithoutLock() {
 }
 
 template<typename T>
-inline LocalPoolVar<T> & LocalPoolVar<T>::operator =(T newValue) {
-    value = newValue;
-    return *this;
-}
-
-
-template<typename T>
-inline pool_rwm_t LocalPoolVar<T>::getReadWriteMode() const {
-	return readWriteMode;
-}
-
-template<typename T>
-inline lp_id_t LocalPoolVar<T>::getDataPoolId() const {
-	return localPoolId;
-}
-
-template<typename T>
-inline void LocalPoolVar<T>::setDataPoolId(lp_id_t poolId) {
-	this->localPoolId = poolId;
-}
-
-template<typename T>
-inline bool LocalPoolVar<T>::isValid() const {
-	return valid;
-}
-
-template<typename T>
-inline void LocalPoolVar<T>::setValid(bool validity) {
-	this->valid = validity;
-}
-
-template<typename T>
-inline uint8_t LocalPoolVar<T>::getValid() const {
-	return valid;
-}
-
-template<typename T>
 inline ReturnValue_t LocalPoolVar<T>::serialize(uint8_t** buffer, size_t* size,
 		const size_t max_size, SerializeIF::Endianness streamEndianness) const {
 	return SerializeAdapter::serialize(&value,
@@ -166,4 +105,65 @@ inline std::ostream& operator<< (std::ostream &out,
     return out;
 }
 
-#endif
+template<typename T>
+inline LocalPoolVar<T>::operator T() const {
+	return value;
+}
+
+template<typename T>
+inline LocalPoolVar<T> & LocalPoolVar<T>::operator=(const T& newValue) {
+    value = newValue;
+    return *this;
+}
+
+template<typename T>
+inline LocalPoolVar<T>& LocalPoolVar<T>::operator =(
+		const LocalPoolVar<T>& newPoolVariable) {
+	value = newPoolVariable.value;
+	return *this;
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator ==(const LocalPoolVar<T> &other) const {
+	return this->value == other.value;
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator ==(const T &other) const {
+	return this->value == other;
+}
+
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator !=(const LocalPoolVar<T> &other) const {
+	return not (*this == other);
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator !=(const T &other) const {
+	return not (*this == other);
+}
+
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator <(const LocalPoolVar<T> &other) const {
+	return this->value < other.value;
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator <(const T &other) const {
+	return this->value < other;
+}
+
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator >(const LocalPoolVar<T> &other) const {
+	return not (*this < other);
+}
+
+template<typename T>
+inline bool LocalPoolVar<T>::operator >(const T &other) const {
+	return not (*this < other);
+}
+
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_ */

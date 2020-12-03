@@ -1,6 +1,7 @@
-#ifndef FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
-#define FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 
+#include "LocalPoolObjectBase.h"
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolEntry.h"
 #include "../datapool/PoolVariableIF.h"
@@ -30,7 +31,7 @@
  * @ingroup data_pool
  */
 template<typename T, uint16_t vectorSize>
-class LocalPoolVector: public PoolVariableIF, public HasReturnvaluesIF {
+class LocalPoolVector: public LocalPoolObjectBase {
 public:
 	LocalPoolVector() = delete;
 	/**
@@ -46,10 +47,9 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVector(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
+	LocalPoolVector(HasLocalDataPoolIF* hkOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
-			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE
-			);
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
 	/**
 	 * This constructor is used by data users like controllers to have
@@ -65,10 +65,19 @@ public:
 	 * @param dataSet The data set in which the variable shall register itself.
 	 * If nullptr, the variable is not registered.
 	 */
-	LocalPoolVector(lp_id_t poolId, object_id_t poolOwner,
+	LocalPoolVector(object_id_t poolOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
-			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE
-			);
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
+	/**
+	 * Variation which takes the unique global identifier of a local pool
+	 * vector.
+	 * @param globalPoolId
+	 * @param dataSet
+	 * @param setReadWriteMode
+	 */
+	LocalPoolVector(gp_id_t globalPoolId,
+			DataSetIF* dataSet = nullptr,
+			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
 	/**
 	 * @brief	This is the local copy of the data pool entry.
@@ -90,27 +99,6 @@ public:
 	uint8_t getSize() {
 		return vectorSize;
 	}
-
-	uint32_t getDataPoolId() const override;
-	/**
-	 * @brief This operation sets the data pool ID of the variable.
-	 * @details
-	 * The method is necessary to set id's of data pool member variables
-	 * with bad initialization.
-	 */
-	void setDataPoolId(uint32_t poolId);
-
-	/**
-	 * This method returns if the variable is write-only, read-write or read-only.
-	 */
-	pool_rwm_t getReadWriteMode() const;
-
-	/**
-	 * @brief	With this call, the valid information of the variable is returned.
-	 */
-	bool isValid() const override;
-	void setValid(bool valid) override;
-	uint8_t getValid() const;
 
 	T& operator [](int i);
 	const T &operator [](int i) const;
@@ -168,23 +156,7 @@ protected:
 	ReturnValue_t commitWithoutLock() override;
 
 private:
-	/**
-	 * @brief	To access the correct data pool entry on read and commit calls,
-	 * 			the data pool id is stored.
-	 */
-	uint32_t localPoolId;
-	/**
-	 * @brief	The valid information as it was stored in the data pool
-	 * 			is copied to this attribute.
-	 */
-	bool valid;
-	/**
-	 * @brief	The information whether the class is read-write or
-	 * 			read-only is stored here.
-	 */
-	ReadWriteMode_t readWriteMode;
-	//! @brief	Pointer to the class which manages the HK pool.
-	LocalDataPoolManager* hkManager;
+
 
 	// std::ostream is the type for object std::cout
 	template <typename U, uint16_t otherSize>
@@ -199,4 +171,4 @@ private:
 template<typename T, uint16_t vectorSize>
 using lp_vec_t = LocalPoolVector<T, vectorSize>;
 
-#endif /* FRAMEWORK_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_ */

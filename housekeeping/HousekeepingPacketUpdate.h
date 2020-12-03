@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
-#define FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
+#ifndef FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
+#define FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
 
 #include "../serialize/SerialBufferAdapter.h"
 #include "../serialize/SerialLinkedListAdapter.h"
@@ -12,6 +12,7 @@
 class HousekeepingPacketUpdate: public SerializeIF {
 public:
     /**
+     * Update packet constructor for datasets
      * @param timeStamp
      * @param timeStampSize
      * @param hkData
@@ -19,8 +20,19 @@ public:
      */
     HousekeepingPacketUpdate(uint8_t* timeStamp, size_t timeStampSize,
             LocalPoolDataSetBase* dataSetPtr):
-            timeStamp(timeStamp), timeStampSize(timeStampSize),
-            dataSetPtr(dataSetPtr) {};
+                timeStamp(timeStamp), timeStampSize(timeStampSize),
+                updateData(dataSetPtr) {};
+
+    /**
+     * Update packet constructor for pool variables.
+     * @param timeStamp
+     * @param timeStampSize
+     * @param dataSetPtr
+     */
+    HousekeepingPacketUpdate(uint8_t* timeStamp, size_t timeStampSize,
+            LocalPoolObjectBase* dataSetPtr):
+                timeStamp(timeStamp), timeStampSize(timeStampSize),
+                updateData(dataSetPtr) {};
 
     virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
             size_t maxSize, Endianness streamEndianness) const {
@@ -31,43 +43,50 @@ public:
             *size += timeStampSize;
             *buffer += timeStampSize;
         }
-        if(dataSetPtr == nullptr) {
+        if(updateData == nullptr) {
             return HasReturnvaluesIF::RETURN_FAILED;
         }
 
-        return dataSetPtr->serialize(buffer, size, maxSize, streamEndianness);
+        return updateData->serialize(buffer, size, maxSize, streamEndianness);
     }
 
     virtual size_t getSerializedSize() const {
-        if(dataSetPtr == nullptr) {
+        if(updateData == nullptr) {
             return 0;
         }
-        return timeStampSize + dataSetPtr->getSerializedSize();
+        return timeStampSize + updateData->getSerializedSize();
     }
 
     virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
             SerializeIF::Endianness streamEndianness) override {
+        if(*size < timeStampSize) {
+            return SerializeIF::STREAM_TOO_SHORT;
+        }
+
         if(timeStamp != nullptr) {
             /* Endianness will always be MACHINE, so we can simply use memcpy
             here. */
             std::memcpy(timeStamp, *buffer, timeStampSize);
-            *size += timeStampSize;
+            *size -= timeStampSize;
             *buffer += timeStampSize;
         }
 
-        if(dataSetPtr == nullptr) {
+        if(updateData == nullptr) {
             return HasReturnvaluesIF::RETURN_FAILED;
         }
-        return dataSetPtr->deSerialize(buffer, size, streamEndianness);
+        if(*size < updateData->getSerializedSize()) {
+            return SerializeIF::STREAM_TOO_SHORT;
+        }
+
+        return updateData->deSerialize(buffer, size, streamEndianness);
     }
 
 private:
-   uint8_t* timeStamp;
-   size_t timeStampSize;
+   uint8_t* timeStamp = nullptr;
+   size_t timeStampSize = 0;
 
-   LocalPoolDataSetBase* dataSetPtr = nullptr;
+   SerializeIF* updateData = nullptr;
 };
 
 
-
-#endif /* FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_ */
+#endif /* FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_ */
