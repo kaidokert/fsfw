@@ -11,3 +11,10 @@ a C file without issues
 - It is now possible to change the message queue depth for the telecommand verification service (PUS1)
 - The same is possible for the event reporting service (PUS5)
 - PUS Health Service added, which allows to command and retrieve health via PUS packets
+
+### Internal Error Reporter
+
+- The new internal error reporter uses the local data pools. The pool IDs for
+the exisiting three error values and the new error set will be hardcoded for
+now, the the constructor for the internal error reporter just takes an object
+ID for now.
