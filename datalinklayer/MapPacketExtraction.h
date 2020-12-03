@@ -1,10 +1,3 @@
-/**
- * @file	MapPacketExtraction.h
- * @brief	This file defines the MapPacketExtraction class.
- * @date	26.03.2013
- * @author	baetz
- */
-
 #ifndef MAPPACKETEXTRACTION_H_
 #define MAPPACKETEXTRACTION_H_
 
@@ -20,6 +13,7 @@ class StorageManagerIF;
  * The class implements the full MAP Packet Extraction functionality as described in the CCSDS
  * TC Space Data Link Protocol. It internally stores incomplete segmented packets until they are
  * fully received. All found packets are forwarded to a single distribution entity.
+ * @author B. Baetz
  */
 class MapPacketExtraction: public MapPacketExtractionIF {
 private:

@@ -1,10 +1,3 @@
-/**
- * @file	MapPacketExtraction.cpp
- * @brief	This file defines the MapPacketExtraction class.
- * @date	26.03.2013
- * @author	baetz
- */
-
 #include "MapPacketExtraction.h"
 #include "../ipc/QueueFactory.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
@@ -12,14 +5,14 @@
 #include "../tmtcpacket/SpacePacketBase.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/TmTcMessage.h"
-#include <string.h>
+#include <cstring>
 
 MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,
 		object_id_t setPacketDestination) :
-		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0), bufferPosition(
-				packetBuffer), packetDestination(setPacketDestination), packetStore(
-				NULL), tcQueueId(MessageQueueIF::NO_QUEUE) {
-	memset(packetBuffer, 0, sizeof(packetBuffer));
+		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0),
+		bufferPosition(packetBuffer), packetDestination(setPacketDestination),
+		packetStore(NULL), tcQueueId(MessageQueueIF::NO_QUEUE) {
+	std::memset(packetBuffer, 0, sizeof(packetBuffer));
 }
 
 ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
