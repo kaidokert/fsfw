@@ -1,11 +1,11 @@
 #include "CatchFactory.h"
 
-#include "../../events/EventManager.h"
-#include "../../health/HealthTable.h"
+#include <fsfw/events/EventManager.h>
+#include <fsfw/health/HealthTable.h>
 
-#include "../../internalError/InternalErrorReporter.h"
-#include "../../objectmanager/frameworkObjects.h"
-#include "../../storagemanager/PoolManager.h"
+#include <fsfw/internalError/InternalErrorReporter.h>
+#include <fsfw/objectmanager/frameworkObjects.h>
+#include <fsfw/storagemanager/PoolManager.h>
 
 /**
  * @brief Produces system objects.
