@@ -1,7 +1,11 @@
+
 #include "MessageQueue.h"
-#include "../../ipc/QueueFactory.h"
+
 #include "../../ipc/MessageQueueSenderIF.h"
+#include "../../ipc/MessageQueueMessageIF.h"
+#include "../../ipc/QueueFactory.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
+
 #include <cstring>
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;
