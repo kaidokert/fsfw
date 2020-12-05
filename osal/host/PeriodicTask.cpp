@@ -122,6 +122,7 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 	if (newObject == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+	newObject->setTaskIF(this);
 	objectList.push_back(newObject);
 	return HasReturnvaluesIF::RETURN_OK;
 }
