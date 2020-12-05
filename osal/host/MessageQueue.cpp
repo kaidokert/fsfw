@@ -106,7 +106,7 @@ bool MessageQueue::isDefaultDestinationSet() const {
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault) {
-    message->setSender(sentFrom);
+	message->setSender(sentFrom);
 	if(message->getMessageSize() > message->getMaximumMessageSize()) {
 		// Actually, this should never happen or an error will be emitted
 		// in MessageQueueMessage.
