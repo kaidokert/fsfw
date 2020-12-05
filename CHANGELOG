@@ -1,5 +1,8 @@
 ## Changes from ASTP 0.0.1 to 1.0.0
 
+### Host OSAL
+
+- Bugfix in MessageQueue, which caused the sender not to be set properly
 
 ### FreeRTOS OSAL
 
