@@ -4,6 +4,7 @@ set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
 
 option(FSFW_USE_RMAP "Compile with RMAP" ON)
+option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
 
 add_subdirectory(action)
 add_subdirectory(container)
