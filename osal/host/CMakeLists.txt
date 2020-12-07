@@ -11,3 +11,11 @@ target_sources(${LIB_FSFW_NAME}
 		SemaphoreFactory.cpp
 		TaskFactory.cpp
 )
+
+if(UNIX)
+	target_link_libraries(${LIB_FSFW_NAME} 
+	PRIVATE
+		pthread
+		rt
+	)
+endif()
