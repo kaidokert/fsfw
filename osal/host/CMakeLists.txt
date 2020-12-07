@@ -1,0 +1,13 @@
+target_sources(${LIB_FSFW_NAME} 
+	PRIVATE 
+		Clock.cpp
+		FixedTimeslotTask.cpp
+		MessageQueue.cpp
+		Mutex.cpp
+		MutexFactory.cpp
+		PeriodicTask.cpp
+		QueueFactory.cpp
+		QueueMapManager.cpp
+		SemaphoreFactory.cpp
+		TaskFactory.cpp
+)

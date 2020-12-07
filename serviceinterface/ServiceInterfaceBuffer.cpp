@@ -4,7 +4,7 @@
 #include <inttypes.h>
 
 // to be implemented by bsp
-extern "C" void printChar(const char*, bool errStream);
+/*extern "C" */void printChar(const char*, bool errStream);
 
 #ifndef UT699
 
