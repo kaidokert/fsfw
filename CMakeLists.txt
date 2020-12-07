@@ -3,6 +3,32 @@ cmake_minimum_required(VERSION 3.13)
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
 
+# Set options for FSFW OSAL selection.
+if(UNIX)
+set(OS_FSFW  "linux" CACHE STRING "OS abstraction layer used in the FSFW")
+elseif(WIN32)
+set(OS_FSFW  "host" CACHE STRING "OS abstraction layer used in the FSFW")
+endif()
+
+set_property(CACHE OS_FSFW PROPERTY STRINGS host linux rtems freertos)
+
+if(${OS_FSFW} STREQUAL host)
+set(OS_FSFW_NAME "Host")
+elseif(${OS_FSFW} STREQUAL linux)
+set(OS_FSFW_NAME "Linux")
+elseif(${OS_FSFW} STREQUAL  freertos)
+set(OS_FSFW_NAME "FreeRTOS")
+elseif(${OS_FSFW} STREQUAL rtems)
+set(OS_FSFW_NAME "RTEMS")
+else()
+message(WARNING "Invalid operating system for FSFW specified! Setting to host..")
+set(OS_FSFW_NAME "Host")
+set(OS_FSFW "host")
+endif()
+
+message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system")
+
+# Options to exclude parts of the FSFW from compilation.
 option(FSFW_USE_RMAP "Compile with RMAP" ON)
 option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
 
