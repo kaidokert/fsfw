@@ -9,6 +9,12 @@ elseif(${OS_FSFW} STREQUAL "host")
 	add_subdirectory(host)
 	if (WIN32)
 		add_subdirectory(windows)
+	elseif(UNIX)
+		target_sources(${LIB_FSFW_NAME}
+			PUBLIC
+				linux/TcUnixUdpPollingTask.cpp
+				linux/TmTcUnixUdpBridge.cpp
+		)
 	endif ()
 
 else()
