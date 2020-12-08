@@ -1,5 +1,5 @@
-#include <fsfw/container/FixedMap.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include "../../container/FixedMap.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 #include <catch2/catch.hpp>
 #include "../../core/CatchDefinitions.h"

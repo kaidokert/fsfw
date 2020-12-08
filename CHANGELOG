@@ -21,3 +21,10 @@ a C file without issues
 the exisiting three error values and the new error set will be hardcoded for
 now, the the constructor for the internal error reporter just takes an object
 ID for now.
+
+### Events
+
+- makeEvent function: Now takes three input parameters instead of two and
+allows setting a unique ID. Event.cpp source file removed, functions now
+defined in header directly. Namespaces renamed. Functions declared `constexpr`
+now

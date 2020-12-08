@@ -83,17 +83,17 @@ public:
 	static const Mode_t _MODE_SWITCH_IS_OFF = TRANSITION_MODE_BASE_ACTION_MASK | 5;
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::CDH;
-	static const Event DEVICE_BUILDING_COMMAND_FAILED = MAKE_EVENT(0, SEVERITY::LOW);
-	static const Event DEVICE_SENDING_COMMAND_FAILED = MAKE_EVENT(1, SEVERITY::LOW);
-	static const Event DEVICE_REQUESTING_REPLY_FAILED = MAKE_EVENT(2, SEVERITY::LOW);
-	static const Event DEVICE_READING_REPLY_FAILED = MAKE_EVENT(3, SEVERITY::LOW);
-	static const Event DEVICE_INTERPRETING_REPLY_FAILED = MAKE_EVENT(4, SEVERITY::LOW);
-	static const Event DEVICE_MISSED_REPLY = MAKE_EVENT(5, SEVERITY::LOW);
-	static const Event DEVICE_UNKNOWN_REPLY = MAKE_EVENT(6, SEVERITY::LOW);
-	static const Event DEVICE_UNREQUESTED_REPLY = MAKE_EVENT(7, SEVERITY::LOW);
-	static const Event INVALID_DEVICE_COMMAND = MAKE_EVENT(8, SEVERITY::LOW); //!< Indicates a SW bug in child class.
-	static const Event MONITORING_LIMIT_EXCEEDED = MAKE_EVENT(9, SEVERITY::LOW);
-	static const Event MONITORING_AMBIGUOUS = MAKE_EVENT(10, SEVERITY::HIGH);
+	static const Event DEVICE_BUILDING_COMMAND_FAILED = MAKE_EVENT(0, severity::LOW);
+	static const Event DEVICE_SENDING_COMMAND_FAILED = MAKE_EVENT(1, severity::LOW);
+	static const Event DEVICE_REQUESTING_REPLY_FAILED = MAKE_EVENT(2, severity::LOW);
+	static const Event DEVICE_READING_REPLY_FAILED = MAKE_EVENT(3, severity::LOW);
+	static const Event DEVICE_INTERPRETING_REPLY_FAILED = MAKE_EVENT(4, severity::LOW);
+	static const Event DEVICE_MISSED_REPLY = MAKE_EVENT(5, severity::LOW);
+	static const Event DEVICE_UNKNOWN_REPLY = MAKE_EVENT(6, severity::LOW);
+	static const Event DEVICE_UNREQUESTED_REPLY = MAKE_EVENT(7, severity::LOW);
+	static const Event INVALID_DEVICE_COMMAND = MAKE_EVENT(8, severity::LOW); //!< Indicates a SW bug in child class.
+	static const Event MONITORING_LIMIT_EXCEEDED = MAKE_EVENT(9, severity::LOW);
+	static const Event MONITORING_AMBIGUOUS = MAKE_EVENT(10, severity::HIGH);
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_IF;
 
