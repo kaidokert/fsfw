@@ -7,15 +7,25 @@ PeriodicOperationDivider::PeriodicOperationDivider(uint32_t divider,
 }
 
 bool PeriodicOperationDivider::checkAndIncrement() {
-	if(counter >= divider) {
+	bool opNecessary = check();
+	if(opNecessary) {
 		if(resetAutomatically) {
 			counter = 0;
 		}
-		return true;
+		return opNecessary;
 	}
 	counter ++;
+	return opNecessary;
+}
+
+bool PeriodicOperationDivider::check() {
+	if(counter >= divider) {
+		return true;
+	}
 	return false;
 }
+
+
 
 void PeriodicOperationDivider::resetCounter() {
 	counter = 0;
