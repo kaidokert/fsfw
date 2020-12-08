@@ -21,13 +21,13 @@ public:
 	static const ReturnValue_t INVALID_HEALTH_STATE = MAKE_RETURN_CODE(2);
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::SYSTEM_MANAGER_1;
-	static const Event HEALTH_INFO = MAKE_EVENT(6, SEVERITY::INFO);
-	static const Event CHILD_CHANGED_HEALTH = MAKE_EVENT(7, SEVERITY::INFO);
-	static const Event CHILD_PROBLEMS = MAKE_EVENT(8, SEVERITY::LOW);
-	static const Event OVERWRITING_HEALTH = MAKE_EVENT(9, SEVERITY::LOW); //!< Assembly overwrites health information of children to keep satellite alive.
-	static const Event TRYING_RECOVERY = MAKE_EVENT(10, SEVERITY::MEDIUM); //!< Someone starts a recovery of a component (typically power-cycle). No parameters.
-	static const Event RECOVERY_STEP = MAKE_EVENT(11, SEVERITY::MEDIUM); //!< Recovery is ongoing. Comes twice during recovery. P1: 0 for the first, 1 for the second event. P2: 0
-	static const Event RECOVERY_DONE = MAKE_EVENT(12, SEVERITY::MEDIUM); //!< Recovery was completed. Not necessarily successful. No parameters.
+	static const Event HEALTH_INFO = MAKE_EVENT(6, severity::INFO);
+	static const Event CHILD_CHANGED_HEALTH = MAKE_EVENT(7, severity::INFO);
+	static const Event CHILD_PROBLEMS = MAKE_EVENT(8, severity::LOW);
+	static const Event OVERWRITING_HEALTH = MAKE_EVENT(9, severity::LOW); //!< Assembly overwrites health information of children to keep satellite alive.
+	static const Event TRYING_RECOVERY = MAKE_EVENT(10, severity::MEDIUM); //!< Someone starts a recovery of a component (typically power-cycle). No parameters.
+	static const Event RECOVERY_STEP = MAKE_EVENT(11, severity::MEDIUM); //!< Recovery is ongoing. Comes twice during recovery. P1: 0 for the first, 1 for the second event. P2: 0
+	static const Event RECOVERY_DONE = MAKE_EVENT(12, severity::MEDIUM); //!< Recovery was completed. Not necessarily successful. No parameters.
 
 	virtual ~HasHealthIF() {
 	}

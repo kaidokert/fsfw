@@ -14,9 +14,9 @@ class FailureIsolationBase: public HasReturnvaluesIF,
 		public HasParametersIF {
 public:
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::FDIR_1;
-	static const Event FDIR_CHANGED_STATE = MAKE_EVENT(1, SEVERITY::INFO); //!< FDIR has an internal state, which changed from par2 (oldState) to par1 (newState).
-	static const Event FDIR_STARTS_RECOVERY = MAKE_EVENT(2, SEVERITY::MEDIUM); //!< FDIR tries to restart device. Par1: event that caused recovery.
-	static const Event FDIR_TURNS_OFF_DEVICE = MAKE_EVENT(3, SEVERITY::MEDIUM); //!< FDIR turns off device. Par1: event that caused recovery.
+	static const Event FDIR_CHANGED_STATE = MAKE_EVENT(1, severity::INFO); //!< FDIR has an internal state, which changed from par2 (oldState) to par1 (newState).
+	static const Event FDIR_STARTS_RECOVERY = MAKE_EVENT(2, severity::MEDIUM); //!< FDIR tries to restart device. Par1: event that caused recovery.
+	static const Event FDIR_TURNS_OFF_DEVICE = MAKE_EVENT(3, severity::MEDIUM); //!< FDIR turns off device. Par1: event that caused recovery.
 
 	FailureIsolationBase(object_id_t owner,
 			object_id_t parent = objects::NO_OBJECT,
