@@ -9,9 +9,9 @@
 
 MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,
 		object_id_t setPacketDestination) :
-		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0),
+		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId),
 		bufferPosition(packetBuffer), packetDestination(setPacketDestination),
-		packetStore(NULL), tcQueueId(MessageQueueIF::NO_QUEUE) {
+		tcQueueId(MessageQueueIF::NO_QUEUE) {
 	std::memset(packetBuffer, 0, sizeof(packetBuffer));
 }
 
