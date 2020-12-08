@@ -40,8 +40,8 @@ public:
 	static const ReturnValue_t POOL_TOO_LARGE = MAKE_RETURN_CODE(6); //!< Pool size too large on initialization.
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::OBSW;
-	static const Event GET_DATA_FAILED = MAKE_EVENT(0, SEVERITY::LOW);
-	static const Event STORE_DATA_FAILED = MAKE_EVENT(1, SEVERITY::LOW);
+	static const Event GET_DATA_FAILED = MAKE_EVENT(0, severity::LOW);
+	static const Event STORE_DATA_FAILED = MAKE_EVENT(1, severity::LOW);
 
 	//!< Indicates an invalid (i.e unused) storage address.
 	static const uint32_t INVALID_ADDRESS = 0xFFFFFFFF;

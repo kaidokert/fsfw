@@ -19,12 +19,12 @@ class VirtualChannelReception;
 class DataLinkLayer : public CCSDSReturnValuesIF {
 public:
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::SYSTEM_1;
-	static const Event RF_AVAILABLE = MAKE_EVENT(0, SEVERITY::INFO); //!< A RF available signal was detected. P1: raw RFA state, P2: 0
-	static const Event RF_LOST = MAKE_EVENT(1, SEVERITY::INFO); //!< A previously found RF available signal was lost. P1: raw RFA state, P2: 0
-	static const Event BIT_LOCK = MAKE_EVENT(2, SEVERITY::INFO); //!< A Bit Lock signal. Was detected. P1: raw BLO state, P2: 0
-	static const Event BIT_LOCK_LOST = MAKE_EVENT(3, SEVERITY::INFO); //!< A previously found Bit Lock signal was lost. P1: raw BLO state, P2: 0
+	static const Event RF_AVAILABLE = MAKE_EVENT(0, severity::INFO); //!< A RF available signal was detected. P1: raw RFA state, P2: 0
+	static const Event RF_LOST = MAKE_EVENT(1, severity::INFO); //!< A previously found RF available signal was lost. P1: raw RFA state, P2: 0
+	static const Event BIT_LOCK = MAKE_EVENT(2, severity::INFO); //!< A Bit Lock signal. Was detected. P1: raw BLO state, P2: 0
+	static const Event BIT_LOCK_LOST = MAKE_EVENT(3, severity::INFO); //!< A previously found Bit Lock signal was lost. P1: raw BLO state, P2: 0
 //	static const Event RF_CHAIN_LOST = MAKE_EVENT(4, SEVERITY::INFO); //!< The CCSDS Board detected that either bit lock or RF available or both are lost. No parameters.
-	static const Event FRAME_PROCESSING_FAILED = MAKE_EVENT(5, SEVERITY::LOW); //!< The CCSDS Board could not interpret a TC
+	static const Event FRAME_PROCESSING_FAILED = MAKE_EVENT(5, severity::LOW); //!< The CCSDS Board could not interpret a TC
 	/**
 	 * The Constructor sets the passed parameters and nothing else.
 	 * @param set_frame_buffer The buffer in which incoming frame candidates are stored.
