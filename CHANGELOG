@@ -28,5 +28,10 @@ The parameter load command now explicitely expects the ECSS PTC and PFC
 information as well as  the rows and column number. Rows and column will
 default to one, which is equivalent to one scalar parameter (the most
 important use-case)
-
    
+### Events
+
+- makeEvent function: Now takes three input parameters instead of two and
+allows setting a unique ID. Event.cpp source file removed, functions now
+defined in header directly. Namespaces renamed. Functions declared `constexpr`
+now
