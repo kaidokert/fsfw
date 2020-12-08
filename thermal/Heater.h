@@ -14,11 +14,11 @@ class Heater: public HealthDevice, public ReceivesParameterMessagesIF {
 public:
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::HEATER;
-	static const Event HEATER_ON = MAKE_EVENT(0, SEVERITY::INFO);
-	static const Event HEATER_OFF = MAKE_EVENT(1, SEVERITY::INFO);
-	static const Event HEATER_TIMEOUT = MAKE_EVENT(2, SEVERITY::LOW);
-	static const Event HEATER_STAYED_ON = MAKE_EVENT(3, SEVERITY::LOW);
-	static const Event HEATER_STAYED_OFF = MAKE_EVENT(4, SEVERITY::LOW);
+	static const Event HEATER_ON = MAKE_EVENT(0, severity::INFO);
+	static const Event HEATER_OFF = MAKE_EVENT(1, severity::INFO);
+	static const Event HEATER_TIMEOUT = MAKE_EVENT(2, severity::LOW);
+	static const Event HEATER_STAYED_ON = MAKE_EVENT(3, severity::LOW);
+	static const Event HEATER_STAYED_OFF = MAKE_EVENT(4, severity::LOW);
 
 	Heater(uint32_t objectId, uint8_t switch0, uint8_t switch1);
 	virtual ~Heater();

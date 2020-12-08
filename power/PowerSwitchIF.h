@@ -32,7 +32,7 @@ public:
 	static const ReturnValue_t FUSE_ON = MAKE_RETURN_CODE(3);
 	static const ReturnValue_t FUSE_OFF = MAKE_RETURN_CODE(4);
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PCDU_2;
-	static const Event SWITCH_WENT_OFF = MAKE_EVENT(0, SEVERITY::LOW); //!< Someone detected that a switch went off which shouldn't. Severity: Low, Parameter1: switchId1, Parameter2: switchId2
+	static const Event SWITCH_WENT_OFF = MAKE_EVENT(0, severity::LOW); //!< Someone detected that a switch went off which shouldn't. Severity: Low, Parameter1: switchId1, Parameter2: switchId2
 	/**
 	 * send a direct command to the Power Unit to enable/disable the specified switch.
 	 *
