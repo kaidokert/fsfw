@@ -113,7 +113,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		doGetRead();
 		// This will be performed after datasets have been updated by the
 		// custom device implementation.
-        hkManager.performHkOperation();
+		hkManager.performHkOperation();
 		break;
 	default:
 		break;
