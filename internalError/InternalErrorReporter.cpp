@@ -6,8 +6,7 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId,
-        uint32_t messageQueueDepth) :
-		SystemObject(setObjectId),
+        uint32_t messageQueueDepth): SystemObject(setObjectId),
 		commandQueue(QueueFactory::instance()->
 		        createMessageQueue(messageQueueDepth)),
 		poolManager(this, commandQueue),
