@@ -3,7 +3,7 @@
 ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
 		uint8_t domainId, uint32_t temperaturePoolId,
 		uint32_t targetStatePoolId, uint32_t currentStatePoolId,
-		uint32_t requestPoolId, DataSet* dataSet,
+		uint32_t requestPoolId, GlobDataSet* dataSet,
 		AbstractTemperatureSensor* sensor,
 		AbstractTemperatureSensor* firstRedundantSensor,
 		AbstractTemperatureSensor* secondRedundantSensor,
@@ -12,20 +12,18 @@ ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
 		CoreComponent(reportingObjectId, domainId, temperaturePoolId,
 				targetStatePoolId, currentStatePoolId, requestPoolId, dataSet,
 				sensor, firstRedundantSensor, secondRedundantSensor,
-				thermalModule,
-				{ parameters.lowerOpLimit, parameters.upperOpLimit,
-						parameters.heaterOn, parameters.hysteresis,
-						parameters.heaterSwitchoff }, priority,
-				ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL), nopParameters(
-				{ parameters.lowerNopLimit, parameters.upperNopLimit }) {
+				thermalModule,{ parameters.lowerOpLimit, parameters.upperOpLimit,
+				parameters.heaterOn, parameters.hysteresis, parameters.heaterSwitchoff },
+				priority, ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL),
+		nopParameters({ parameters.lowerNopLimit, parameters.upperNopLimit }) {
 }
 
 ThermalComponent::~ThermalComponent() {
 }
 
 ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
-	DataSet mySet;
-	PoolVariable<int8_t> writableTargetState(targetState.getDataPoolId(),
+	GlobDataSet mySet;
+	gp_int8_t writableTargetState(targetState.getDataPoolId(),
 			&mySet, PoolVariableIF::VAR_READ_WRITE);
 	mySet.read();
 	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)
@@ -42,7 +40,7 @@ ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
 	}
 }
 
-ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, uint32_t size) {
+ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, size_t size) {
 	if (size != 4 * sizeof(parameters.lowerOpLimit)) {
 		return MonitoringIF::INVALID_SIZE;
 	}
