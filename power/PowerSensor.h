@@ -1,9 +1,9 @@
 #ifndef POWERSENSOR_H_
 #define POWERSENSOR_H_
 
-#include "../datapool/DataSet.h"
-#include "../datapool/PIDReader.h"
-#include "../datapool/PoolVariable.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../datapoolglob/PIDReader.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/LimitMonitor.h"
 #include "../parameters/ParameterHelper.h"
@@ -53,12 +53,12 @@ private:
 	MessageQueueIF* commandQueue;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
-	DataSet set;
+	GlobDataSet set;
 	//Variables in
 	PIDReader<float> current;
 	PIDReader<float> voltage;
 	//Variables out
-	db_float_t power;
+	gp_float_t power;
 
 	static const uint8_t MODULE_ID_CURRENT = 1;
 	static const uint8_t MODULE_ID_VOLTAGE = 2;
