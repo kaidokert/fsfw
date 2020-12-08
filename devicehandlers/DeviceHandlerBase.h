@@ -4,6 +4,7 @@
 #include "DeviceHandlerIF.h"
 #include "DeviceCommunicationIF.h"
 #include "DeviceHandlerFailureIsolation.h"
+#include "DeviceHandlerThermalSet.h"
 
 #include "../objectmanager/SystemObject.h"
 #include "../tasks/ExecutableObjectIF.h"
@@ -103,8 +104,21 @@ public:
 			size_t cmdQueueSize = 20);
 
 	void setHkDestination(object_id_t hkDestination);
-	void setThermalStateRequestPoolIds(uint32_t thermalStatePoolId,
-			uint32_t thermalRequestPoolId);
+
+	/**
+	 * If the device handler is controlled by the FSFW thermal building blocks,
+	 * this function should be called to initialize all required components.
+	 * The device handler will then take care of creating local pool entries
+	 * for the device thermal state and device heating request.
+	 * Custom local pool IDs can be assigned as well.
+	 * @param thermalStatePoolId
+	 * @param thermalRequestPoolId
+	 */
+	void setThermalStateRequestPoolIds(lp_id_t thermalStatePoolId =
+			DeviceHandlerIF::DEFAULT_THERMAL_STATE_POOL_ID,
+			lp_id_t thermalRequestPoolId =
+			DeviceHandlerIF::DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID,
+			uint32_t thermalSetId = DeviceHandlerIF::DEFAULT_THERMAL_SET_ID);
 	/**
 	 * @brief   Helper function to ease device handler development.
 	 * This will instruct the transition to MODE_ON immediately
@@ -694,19 +708,7 @@ protected:
 	//! and to send replies.
 	MessageQueueIF* commandQueue = nullptr;
 
-	/**
-	 * this is the datapool variable with the thermal state of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	uint32_t deviceThermalStatePoolId = PoolVariableIF::NO_PARAMETER;
-
-	/**
-	 * this is the datapool variable with the thermal request of the device
-	 *
-	 * can be set to PoolVariableIF::NO_PARAMETER to deactivate thermal checking
-	 */
-	uint32_t deviceThermalRequestPoolId = PoolVariableIF::NO_PARAMETER;
+	DeviceHandlerThermalSet* thermalSet = nullptr;
 
 	/**
 	 * Optional Error code. Can be set in doStartUp(), doShutDown() and
@@ -732,15 +734,27 @@ protected:
 	//! before setTaskIF was called.
 	PeriodicTaskIF* executingTask = nullptr;
 
-	static object_id_t powerSwitcherId; //!< Object which switches power on and off.
+	//!< Object which switches power on and off.
+	static object_id_t powerSwitcherId;
 
-	static object_id_t rawDataReceiverId; //!< Object which receives RAW data by default.
+	//!< Object which receives RAW data by default.
+	static object_id_t rawDataReceiverId;
 
-	static object_id_t defaultFdirParentId; //!< Object which may be the root cause of an identified fault.
+	//!< Object which may be the root cause of an identified fault.
+	static object_id_t defaultFdirParentId;
+
+	/**
+	 * Helper function to get pending command. This is useful for devices
+	 * like SPI sensors to identify the last sent command.
+	 * @return
+	 */
+	DeviceCommandId_t getPendingCommand() const;
+
 	/**
 	 * Helper function to report a missed reply
 	 *
-	 * Can be overwritten by children to act on missed replies or to fake reporting Id.
+	 * Can be overwritten by children to act on missed replies or to fake
+	 * reporting Id.
 	 *
 	 * @param id of the missed reply
 	 */
@@ -847,15 +861,18 @@ protected:
 	/**
 	 * Build the device command to send for raw mode.
 	 *
-	 * This is only called in @c MODE_RAW. It is for the rare case that in raw mode packets
-	 * are to be sent by the handler itself. It is NOT needed for the raw commanding service.
-	 * Its only current use is in the STR handler which gets its raw packets from a different
-	 * source.
-	 * Also it can be used for transitional commands, to get the device ready for @c MODE_RAW
+	 * This is only called in @c MODE_RAW. It is for the rare case that in
+	 * raw mode packets are to be sent by the handler itself. It is NOT needed
+	 * for the raw commanding service. Its only current use is in the STR
+	 * handler which gets its raw packets from a different source.
+	 * Also it can be used for transitional commands, to get the device ready
+	 * for @c MODE_RAW
 	 *
-	 * As it is almost never used, there is a default implementation returning @c NOTHING_TO_SEND.
+	 * As it is almost never used, there is a default implementation
+	 * returning @c NOTHING_TO_SEND.
 	 *
-	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 * #rawPacket and #rawPacketLen must be set by this method to the packet
+	 * to be sent.
 	 *
 	 * @param[out] id the device command id built
 	 * @return
@@ -868,7 +885,9 @@ protected:
 	 * Returns the delay cycle count of a reply.
 	 * A count != 0 indicates that the command is already executed.
 	 * @param deviceCommand	The command to look for
-	 * @return	The current delay count. If the command does not exist (should never happen) it returns 0.
+	 * @return
+	 * The current delay count. If the command does not exist  (should never
+	 * happen) it returns 0.
 	 */
 	uint8_t getReplyDelayCycles(DeviceCommandId_t deviceCommand);
 
@@ -878,20 +897,22 @@ protected:
 	 * It gets space in the #IPCStore, copies data there, then sends a raw reply
 	 * containing the store address.
 	 *
-	 * This method is virtual, as the STR has a different channel to send raw replies
-	 * and overwrites it accordingly.
+	 * This method is virtual, as the STR has a different channel to send
+	 * raw replies and overwrites it accordingly.
 	 *
 	 * @param data data to send
 	 * @param len length of @c data
 	 * @param sendTo the messageQueueId of the one to send to
-	 * @param isCommand marks the raw data as a command, the message then will be of type raw_command
+	 * @param isCommand marks the raw data as a command, the message then
+	 * will be of type raw_command
 	 */
 	virtual void replyRawData(const uint8_t *data, size_t len,
 			MessageQueueId_t sendTo, bool isCommand = false);
 
 	/**
-	 * Calls replyRawData() with #defaultRawReceiver, but checks if wiretapping is active and if so,
-	 * does not send the Data as the wiretapping will have sent it already
+	 * Calls replyRawData() with #defaultRawReceiver, but checks if wiretapping
+	 * is active and if so, does not send the data as the wiretapping will have
+	 * sent it already
 	 */
 	void replyRawReplyIfnotWiretapped(const uint8_t *data, size_t len);
 
@@ -903,17 +924,19 @@ protected:
 	/**
 	 * Enable the reply checking for a command
 	 *
-	 * Is only called, if the command was sent (ie the getWriteReply was successful).
-	 * Must ensure that all replies are activated and correctly linked to the command that initiated it.
-	 * The default implementation looks for a reply with the same id as the command id in the replyMap or
-	 * uses the alternativeReplyId if flagged so.
-	 * When found, copies maxDelayCycles to delayCycles in the reply information and sets the command to
-	 * expect one reply.
+	 * Is only called, if the command was sent (i.e. the getWriteReply was
+	 * successful). Must ensure that all replies are activated and correctly
+	 * linked to the command that initiated it.
+	 * The default implementation looks for a reply with the same id as the
+	 * command id in the replyMap or uses the alternativeReplyId if flagged so.
+	 * When found, copies maxDelayCycles to delayCycles in the reply information
+	 * and sets the command to expect one reply.
 	 *
 	 * Can be overwritten by the child, if a command activates multiple replies
 	 * or replyId differs from commandId.
 	 * Notes for child implementations:
-	 * 	- If the command was not found in the reply map, NO_REPLY_EXPECTED MUST be returned.
+	 * 	- If the command was not found in the reply map,
+	 * 	  NO_REPLY_EXPECTED MUST be returned.
 	 * 	- A failure code may be returned if something went fundamentally wrong.
 	 *
 	 * @param deviceCommand
@@ -929,17 +952,20 @@ protected:
 	 * get the state of the PCDU switches in the datapool
 	 *
 	 * @return
-	 *     - @c PowerSwitchIF::SWITCH_ON if all switches specified by #switches are on
-	 *     - @c PowerSwitchIF::SWITCH_OFF one of the switches specified by #switches are off
-	 *     - @c PowerSwitchIF::RETURN_FAILED if an error occured
+	 *  - @c PowerSwitchIF::SWITCH_ON if all switches specified
+	 *       by #switches are on
+	 *  - @c PowerSwitchIF::SWITCH_OFF one of the switches specified by
+	 *       #switches are off
+	 *  - @c PowerSwitchIF::RETURN_FAILED if an error occured
 	 */
 	ReturnValue_t getStateOfSwitches(void);
 
 	/**
-	 * set all datapool variables that are update periodically in normal mode invalid
-	 *
-	 * Child classes should provide an implementation which sets all those variables invalid
-	 * which are set periodically during any normal mode.
+	 * @brief   Set all datapool variables that are update periodically in
+	 *          normal mode invalid
+	 * @details TODO: Use local pools
+	 * Child classes should provide an implementation which sets all those
+	 * variables invalid which are set periodically during any normal mode.
 	 */
 	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
@@ -949,11 +975,12 @@ protected:
 	virtual void changeHK(Mode_t mode, Submode_t submode, bool enable);
 
 	/**
-	 * Children can overwrite this function to suppress checking of the command Queue
+	 * Children can overwrite this function to suppress checking of the
+	 * command Queue
 	 *
-	 * This can be used when the child does not want to receive a command in a certain
-	 * situation. Care must be taken that checking is not permanentely disabled as this
-	 * would render the handler unusable.
+	 * This can be used when the child does not want to receive a command in
+	 * a certain situation. Care must be taken that checking is not
+	 * permanentely disabled as this would render the handler unusable.
 	 *
 	 * @return whether checking the queue should NOT be done
 	 */
@@ -992,17 +1019,20 @@ protected:
 	virtual void forwardEvent(Event event, uint32_t parameter1 = 0,
 			uint32_t parameter2 = 0) const;
 	/**
-	 * Checks state of switches in conjunction with mode and triggers an event if they don't fit.
+	 * Checks state of switches in conjunction with mode and triggers an event
+	 * if they don't fit.
 	 */
 	virtual void checkSwitchState();
 
 	/**
-	 * Reserved for the rare case where a device needs to perform additional operation cyclically in OFF mode.
+	 * Reserved for the rare case where a device needs to perform additional
+	 * operation cyclically in OFF mode.
 	 */
 	virtual void doOffActivity();
 
 	/**
-	 * Reserved for the rare case where a device needs to perform additional operation cyclically in ON mode.
+	 * Reserved for the rare case where a device needs to perform additional
+	 * operation cyclically in ON mode.
 	 */
 	virtual void doOnActivity();
 
@@ -1043,9 +1073,10 @@ private:
 	/**
 	 * Information about a cookie.
 	 *
-	 * This is stored in a map for each cookie, to not only track the state, but also information
-	 * about  the sent command. Tracking this information is needed as
-	 * the state of a commandId (waiting for reply) is done when a RMAP write reply is received.
+	 * This is stored in a map for each cookie, to not only track the state,
+	 * but also information about the sent command. Tracking this information
+	 * is needed as the state of a commandId (waiting for reply) is done when a
+	 * write reply is received.
 	 */
 	struct CookieInfo {
 		CookieState_t state;
@@ -1102,10 +1133,14 @@ private:
 	/**
 	 * Handle the device handler mode.
 	 *
-	 * - checks whether commands are valid for the current mode, rejects them accordingly
-	 * - checks whether commanded mode transitions are required and calls handleCommandedModeTransition()
-	 * - does the necessary action for the current mode or calls doChildStateMachine in modes @c MODE_TO_ON and @c MODE_TO_OFF
-	 * - actions that happen in transitions (eg setting a timeout) are handled in setMode()
+	 * - checks whether commands are valid for the current mode, rejects
+	 *   them accordingly
+	 * - checks whether commanded mode transitions are required and calls
+	 *   handleCommandedModeTransition()
+	 * - does the necessary action for the current mode or calls
+	 *   doChildStateMachine in modes @c MODE_TO_ON and @c MODE_TO_OFF
+	 * - actions that happen in transitions (e.g. setting a timeout) are
+	 *   handled in setMode()
 	 */
 	void doStateMachine(void);
 
@@ -1115,16 +1150,17 @@ private:
 	/**
 	 * Decrement the counter for the timout of replies.
 	 *
-	 * This is called at the beginning of each cycle. It checks whether a reply has timed out (that means a reply was expected
-	 * but not received).
+	 * This is called at the beginning of each cycle. It checks whether a
+	 * reply has timed out (that means a reply was expected but not received).
 	 */
 	void decrementDeviceReplyMap(void);
 
 	/**
 	 * Convenience function to handle a reply.
 	 *
-	 * Called after scanForReply() has found a packet. Checks if the found id is in the #deviceCommandMap, if so,
-	 * calls interpretDeviceReply(DeviceCommandId_t id, const uint8_t *packet) for further action.
+	 * Called after scanForReply() has found a packet. Checks if the found ID
+	 * is in the #deviceCommandMap, if so,  calls
+	 * #interpretDeviceReply for further action.
 	 *
 	 * It also resets the timeout counter for the command id.
 	 *
@@ -1184,7 +1220,7 @@ private:
 	 * @param[out] len
 	 * @return
 	 *   - @c RETURN_OK @c data is valid
-	 *   - @c RETURN_FAILED IPCStore is NULL
+	 *   - @c RETURN_FAILED IPCStore is nullptr
 	 *   - the return value from the IPCStore if it was not @c RETURN_OK
 	 */
 	ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data,
@@ -1208,6 +1244,9 @@ private:
 
     void parseReply(const uint8_t* receivedData,
                 size_t receivedDataLen);
+
+    void handleTransitionToOnMode(Mode_t commandedMode,
+    		Submode_t commandedSubmode);
 };
 
 #endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */
