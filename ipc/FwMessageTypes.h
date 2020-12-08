@@ -3,7 +3,7 @@
 
 namespace messagetypes {
 //Remember to add new Message Types to the clearCommandMessage function!
-enum FW_MESSAGE_TYPE {
+enum FsfwMessageTypes {
 	COMMAND = 0,
 	MODE_COMMAND,
 	HEALTH_COMMAND,
@@ -14,7 +14,10 @@ enum FW_MESSAGE_TYPE {
 	MONITORING,
 	MEMORY,
 	PARAMETER,
-	FW_MESSAGES_COUNT
+	FILE_SYSTEM_MESSAGE,
+	HOUSEKEEPING,
+
+	FW_MESSAGES_COUNT,
 };
 }
 

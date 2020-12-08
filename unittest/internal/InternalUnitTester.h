@@ -2,7 +2,7 @@
 #define FRAMEWORK_TEST_UNITTESTCLASS_H_
 
 #include "UnittDefinitions.h"
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 /**
  * @brief	Can be used for internal testing, for example for hardware specific
