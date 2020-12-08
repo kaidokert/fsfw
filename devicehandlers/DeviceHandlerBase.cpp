@@ -678,7 +678,7 @@ void DeviceHandlerBase::doGetRead() {
 void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		size_t receivedDataLen) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
-	DeviceCommandId_t foundId = 0xffffffff;
+	DeviceCommandId_t foundId = DeviceHandlerIF::NO_COMMAND;
 	size_t foundLen = 0;
 	// The loop may not execute more often than the number of received bytes
 	// (worst case). This approach avoids infinite loops due to buggy
