@@ -1,8 +1,8 @@
-#ifndef FRAMEWORK_DATAPOOL_PIDREADERLIST_H_
-#define FRAMEWORK_DATAPOOL_PIDREADERLIST_H_
+#ifndef FRAMEWORK_DATAPOOLGLOB_PIDREADERLIST_H_
+#define FRAMEWORK_DATAPOOLGLOB_PIDREADERLIST_H_
 
-#include "PIDReader.h"
-#include "PoolVariableIF.h"
+#include "../datapool/PoolVariableIF.h"
+#include "../datapoolglob/PIDReader.h"
 template <class T, uint8_t n_var>
 class PIDReaderList {
 private:
@@ -24,4 +24,4 @@ public:
 
 
 
-#endif /* FRAMEWORK_DATAPOOL_PIDREADERLIST_H_ */
+#endif /* FRAMEWORK_DATAPOOLGLOB_PIDREADERLIST_H_ */

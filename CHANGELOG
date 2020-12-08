@@ -18,3 +18,10 @@ a C file without issues
 ### EnhancedControllerBase
 
 - New base class for a controller which also implements HasActionsIF and HasLocalDataPoolIF
+
+### Events
+
+- makeEvent function: Now takes three input parameters instead of two and
+allows setting a unique ID. Event.cpp source file removed, functions now
+defined in header directly. Namespaces renamed. Functions declared `constexpr`
+now
