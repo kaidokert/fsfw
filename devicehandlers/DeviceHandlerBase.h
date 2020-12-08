@@ -577,6 +577,7 @@ protected:
 
 	/** This is the counter value from performOperation(). */
 	uint8_t pstStep = 0;
+	uint8_t lastStep = 0;
 	uint32_t pstIntervalMs = 0;
 
 	/**
@@ -841,7 +842,7 @@ protected:
 	 * @return The Rmap action to execute in this step
 	 */
 
-	virtual CommunicationAction_t getComAction();
+	virtual CommunicationAction getComAction();
 
 	/**
 	 * Build the device command to send for raw mode.

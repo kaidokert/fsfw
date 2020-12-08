@@ -1,5 +1,5 @@
-#ifndef HEALTHDEVICE_H_
-#define HEALTHDEVICE_H_
+#ifndef FSFW_DEVICEHANDLERS_HEALTHDEVICE_H_
+#define FSFW_DEVICEHANDLERS_HEALTHDEVICE_H_
 
 #include "../health/HasHealthIF.h"
 #include "../health/HealthHelper.h"
@@ -37,4 +37,4 @@ public:
 	HealthHelper healthHelper;
 };
 
-#endif /* HEALTHDEVICE_H_ */
+#endif /* FSFW_DEVICEHANDLERS_HEALTHDEVICE_H_ */

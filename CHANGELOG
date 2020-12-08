@@ -29,6 +29,11 @@ information as well as  the rows and column number. Rows and column will
 default to one, which is equivalent to one scalar parameter (the most
 important use-case)
    
+### Device Handler Base
+
+- There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
+that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
+
 ### Events
 
 - makeEvent function: Now takes three input parameters instead of two and

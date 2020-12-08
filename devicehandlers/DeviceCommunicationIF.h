@@ -1,9 +1,10 @@
-#ifndef DEVICECOMMUNICATIONIF_H_
-#define DEVICECOMMUNICATIONIF_H_
+#ifndef FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
+#define FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
 
 #include "CookieIF.h"
+#include "DeviceHandlerIF.h"
+
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include <cstddef>
 /**
  * @defgroup interfaces Interfaces
  * @brief Interfaces for flight software objects
@@ -19,8 +20,8 @@
  * the device handler to allow reuse of these components.
  * @details
  * Documentation: Dissertation Baetz p.138.
- * It works with the assumption that received data
- * is polled by a component. There are four generic steps of device communication:
+ * It works with the assumption that received data  is polled by a component.
+ * There are four generic steps of device communication:
  *
  *   1. Send data to a device
  *   2. Get acknowledgement for sending
@@ -38,23 +39,19 @@ class DeviceCommunicationIF: public HasReturnvaluesIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
 
-	//! Standard Error Codes
+	//! This is returned in readReceivedMessage() if no reply was reived.
+	static const ReturnValue_t NO_REPLY_RECEIVED = MAKE_RETURN_CODE(0x01);
+
 	//! General protocol error. Define more concrete errors in child handler
-	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x01);
+	static const ReturnValue_t PROTOCOL_ERROR = MAKE_RETURN_CODE(0x02);
 	//! If cookie is a null pointer
-	static const ReturnValue_t NULLPOINTER = MAKE_RETURN_CODE(0x02);
-	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x03);
+	static const ReturnValue_t NULLPOINTER = MAKE_RETURN_CODE(0x03);
+	static const ReturnValue_t INVALID_COOKIE_TYPE = MAKE_RETURN_CODE(0x04);
 	// is this needed if there is no open/close call?
 	static const ReturnValue_t NOT_ACTIVE = MAKE_RETURN_CODE(0x05);
-	static const ReturnValue_t INVALID_ADDRESS = MAKE_RETURN_CODE(0x06);
-	static const ReturnValue_t TOO_MUCH_DATA = MAKE_RETURN_CODE(0x07);
-	static const ReturnValue_t CANT_CHANGE_REPLY_LEN = MAKE_RETURN_CODE(0x08);
-
-	//! Can be used in readReceivedMessage() if no reply was received.
-	static const ReturnValue_t NO_REPLY_RECEIVED = MAKE_RETURN_CODE(0xA1);
+	static const ReturnValue_t TOO_MUCH_DATA = MAKE_RETURN_CODE(0x06);
 
 	virtual ~DeviceCommunicationIF() {}
-
 
 	/**
 	 * @brief Device specific initialization, using the cookie.
@@ -76,13 +73,13 @@ public:
 	 * by implementing and calling related drivers or wrapper functions.
 	 * @param cookie
 	 * @param data
-	 * @param len
+	 * @param len If this is 0, nothing shall be sent.
 	 * @return
 	 *  - @c RETURN_OK for successfull send
 	 *  - Everything else triggers failure event with returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t * sendData,
-			size_t sendLen) = 0;
+	virtual ReturnValue_t sendMessage(CookieIF *cookie,
+	        const uint8_t * sendData, size_t sendLen) = 0;
 
 	/**
 	 * Called by DHB in the GET_WRITE doGetWrite().
@@ -108,7 +105,7 @@ public:
 	 *           returnvalue as parameter 1
 	 */
 	virtual ReturnValue_t requestReceiveMessage(CookieIF *cookie,
-			size_t requestLen) = 0;
+	        size_t requestLen) = 0;
 
 	/**
 	 * Called by DHB in the GET_WRITE doGetRead().
@@ -124,8 +121,8 @@ public:
 	 *         - Everything else triggers failure event with
 	 *           returnvalue as parameter 1
 	 */
-	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
-			size_t *size) = 0;
+	virtual ReturnValue_t readReceivedMessage(CookieIF *cookie,
+	        uint8_t **buffer, size_t *size) = 0;
 };
 
-#endif /* DEVICECOMMUNICATIONIF_H_ */
+#endif /* FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_ */
