@@ -234,7 +234,7 @@ protected:
 	 *  - If the device does not change the mode, the mode will be changed to
 	 *    _MODE_POWER_DOWN, when the timeout (from getTransitionDelay())
 	 *    has passed.
-	 * 0xffffffff
+	 *
 	 * #transitionFailure can be set to a failure code indicating the reason
 	 * for a failed transition
 	 */
