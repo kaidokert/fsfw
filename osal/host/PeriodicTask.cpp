@@ -89,25 +89,26 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 }
 
 void PeriodicTask::taskFunctionality() {
+    for (const auto& object: objectList) {
+        object->initializeAfterTaskCreation();
+    }
+
 	std::chrono::milliseconds periodChrono(static_cast<uint32_t>(period*1000));
 	auto currentStartTime {
 	    std::chrono::duration_cast<std::chrono::milliseconds>(
 	    std::chrono::system_clock::now().time_since_epoch())
 	};
-	auto nextStartTime{ currentStartTime };
+	auto nextStartTime { currentStartTime };
 
 	/* Enter the loop that defines the task behavior. */
 	for (;;) {
 		if(terminateThread.load()) {
 			break;
 		}
-		for (ObjectList::iterator it = objectList.begin();
-				it != objectList.end(); ++it) {
-			(*it)->performOperation();
+		for (const auto& object: objectList) {
+			object->performOperation();
 		}
 		if(not delayForInterval(&currentStartTime, periodChrono)) {
-			sif::warning << "PeriodicTask: " << taskName <<
-					" missed deadline!\n" << std::flush;
 			if(deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}
@@ -121,6 +122,7 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 	if (newObject == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+	newObject->setTaskIF(this);
 	objectList.push_back(newObject);
 	return HasReturnvaluesIF::RETURN_OK;
 }
