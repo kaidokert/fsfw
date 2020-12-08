@@ -17,4 +17,7 @@ a C file without issues
 
 ### Events
 
-- makeEvent function: Now takes three input parameters instead of two and allows setting a unique ID
+- makeEvent function: Now takes three input parameters instead of two and
+allows setting a unique ID. Event.cpp source file removed, functions now
+defined in header directly. Namespaces renamed. Functions declared `constexpr`
+now
