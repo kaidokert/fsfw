@@ -14,4 +14,4 @@ a C file without issues
 
 ### Events
 
-- makeEvent function: Not takes three input parameters instead of two and allows setting a unique ID
+- makeEvent function: Now takes three input parameters instead of two and allows setting a unique ID
