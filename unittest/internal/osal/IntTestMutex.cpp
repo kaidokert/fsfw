@@ -1,10 +1,10 @@
 #include "IntTestMutex.h"
 
-#include <fsfw/ipc/MutexFactory.h>
-#include <unittest/internal/UnittDefinitions.h>
+#include "../../ipc/MutexFactory.h"
+#include "../UnittDefinitions.h"
 
 #if defined(hosted)
-#include <fsfw/osal/hosted/Mutex.h>
+#include "../../osal/hosted/Mutex.h"
 #include <thread>
 #include <future>
 #endif
@@ -20,7 +20,7 @@ void testmutex::testMutex() {
 	// timed_mutex from the C++ library specifies undefined behaviour if
 	// the timed mutex is locked twice from the same thread.
 #if defined(hosted)
-	// hold on, this actually worked ? :-D This calls the function from
+	// This calls the function from
 	// another thread and stores the returnvalue in a future.
 	auto future = std::async(&MutexIF::lockMutex, mutex, 1);
 	result = future.get();
