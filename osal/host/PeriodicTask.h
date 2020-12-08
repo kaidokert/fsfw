@@ -69,7 +69,7 @@ protected:
 	//!< Typedef for the List of objects.
 	typedef std::vector<ExecutableObjectIF*> ObjectList;
 	std::thread mainThread;
-	std::atomic<bool> terminateThread = false;
+	std::atomic<bool> terminateThread { false };
 
 	/**
 	 * @brief	This attribute holds a list of objects to be executed.

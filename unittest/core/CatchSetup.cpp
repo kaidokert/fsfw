@@ -1,8 +1,7 @@
 #include "CatchDefinitions.h"
+#include "CatchFactory.h"
 
 #include <testcfg/cdatapool/dataPoolInit.h>
-#include <testcfg/objects/Factory.h>
-
 
 #ifdef GCOV
 #include <gcov.h>
