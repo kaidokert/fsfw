@@ -21,16 +21,26 @@ public:
 	 */
 	PeriodicOperationDivider(uint32_t divider, bool resetAutomatically = true);
 
+
 	/**
 	 * Check whether operation is necessary.
 	 * If an operation is necessary and the class has been
 	 * configured to be reset automatically, the counter will be reset.
-	 * If not, the counter will be incremented.
+	 *
 	 * @return
 	 * -@c true if the counter is larger or equal to the divider
 	 * -@c false otherwise
 	 */
 	bool checkAndIncrement();
+
+	/**
+	 * Checks whether an operation is necessary.
+	 * This function will not increment the counter!
+	 * @return
+	 * -@c true if the counter is larger or equal to the divider
+	 * -@c false otherwise
+	 */
+	bool check();
 
 	/**
 	 * Can be used to reset the counter to 0 manually.
