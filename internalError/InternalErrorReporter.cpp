@@ -1,4 +1,3 @@
-#include "../datapoolglob/GlobalDataSet.h"
 #include "InternalErrorReporter.h"
 
 #include "../ipc/QueueFactory.h"
