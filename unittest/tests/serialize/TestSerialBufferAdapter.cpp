@@ -1,4 +1,4 @@
-#include <fsfw/serialize/SerialBufferAdapter.h>
+#include "../../serialize/SerialBufferAdapter.h"
 
 #include <catch2/catch.hpp>
 #include "../../core/CatchDefinitions.h"
