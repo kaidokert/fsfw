@@ -1,16 +1,18 @@
+#include "ChildHandlerBase.h"
 #include "../subsystem/SubsystemBase.h"
-#include "../devicehandlers/ChildHandlerBase.h"
 #include "../subsystem/SubsystemBase.h"
 
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * cookie,
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId,
-		object_id_t parent, FailureIsolationBase* customFdir,
-		size_t cmdQueueSize) :
+		object_id_t hkDestination, uint32_t thermalStatePoolId,
+		uint32_t thermalRequestPoolId,
+		object_id_t parent,
+		FailureIsolationBase* customFdir, size_t cmdQueueSize) :
 		DeviceHandlerBase(setObjectId, deviceCommunication, cookie,
 			(customFdir == nullptr? &childHandlerFdir : customFdir),
 			cmdQueueSize),
 		parentId(parent), childHandlerFdir(setObjectId) {
+	this->setHkDestination(hkDestination);
 	this->setThermalStateRequestPoolIds(thermalStatePoolId,
 			thermalRequestPoolId);
 
