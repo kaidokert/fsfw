@@ -1,5 +1,5 @@
-#include <fsfw/container/FixedOrderedMultimap.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include "../../container/FixedOrderedMultimap.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 #include <catch2/catch.hpp>
 #include "../../core/CatchDefinitions.h"

@@ -15,10 +15,10 @@ public:
 	static const uint8_t LIMIT_TYPE_OBJECT = 128;
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::FDIR_2;
-	static const Event MONITOR_CHANGED_STATE = MAKE_EVENT(1, SEVERITY::LOW);
-	static const Event VALUE_BELOW_LOW_LIMIT = MAKE_EVENT(2, SEVERITY::LOW);
-	static const Event VALUE_ABOVE_HIGH_LIMIT = MAKE_EVENT(3, SEVERITY::LOW);
-	static const Event VALUE_OUT_OF_RANGE = MAKE_EVENT(4, SEVERITY::LOW);
+	static const Event MONITOR_CHANGED_STATE = MAKE_EVENT(1, severity::LOW);
+	static const Event VALUE_BELOW_LOW_LIMIT = MAKE_EVENT(2, severity::LOW);
+	static const Event VALUE_ABOVE_HIGH_LIMIT = MAKE_EVENT(3, severity::LOW);
+	static const Event VALUE_OUT_OF_RANGE = MAKE_EVENT(4, severity::LOW);
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::LIMITS_IF;
 	static const ReturnValue_t UNCHECKED = MAKE_RETURN_CODE(1);
