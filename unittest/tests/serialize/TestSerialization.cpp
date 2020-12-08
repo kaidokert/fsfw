@@ -1,4 +1,4 @@
-#include <fsfw/serialize/SerializeAdapter.h>
+#include "../../serialize/SerializeAdapter.h"
 
 #include "catch.hpp"
 #include <array>

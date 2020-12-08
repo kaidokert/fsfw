@@ -1,12 +1,13 @@
 #ifndef FUSE_H_
 #define FUSE_H_
 
-#include "../datapool/DataSet.h"
-#include "../datapool/PIDReader.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../datapoolglob/PIDReader.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/AbsLimitMonitor.h"
-#include "PowerComponentIF.h"
-#include "PowerSwitchIF.h"
+#include "../power/PowerComponentIF.h"
+#include "../power/PowerSwitchIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../parameters/ParameterHelper.h"
 #include <list>
@@ -32,10 +33,10 @@ public:
 	};
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PCDU_1;
-	static const Event FUSE_CURRENT_HIGH = MAKE_EVENT(1, SEVERITY::LOW); //!< PSS detected that current on a fuse is totally out of bounds.
-	static const Event FUSE_WENT_OFF = MAKE_EVENT(2, SEVERITY::LOW); //!< PSS detected a fuse that went off.
-	static const Event POWER_ABOVE_HIGH_LIMIT = MAKE_EVENT(4, SEVERITY::LOW); //!< PSS detected a fuse that violates its limits.
-	static const Event POWER_BELOW_LOW_LIMIT = MAKE_EVENT(5, SEVERITY::LOW); //!< PSS detected a fuse that violates its limits.
+	static const Event FUSE_CURRENT_HIGH = MAKE_EVENT(1, severity::LOW); //!< PSS detected that current on a fuse is totally out of bounds.
+	static const Event FUSE_WENT_OFF = MAKE_EVENT(2, severity::LOW); //!< PSS detected a fuse that went off.
+	static const Event POWER_ABOVE_HIGH_LIMIT = MAKE_EVENT(4, severity::LOW); //!< PSS detected a fuse that violates its limits.
+	static const Event POWER_BELOW_LOW_LIMIT = MAKE_EVENT(5, severity::LOW); //!< PSS detected a fuse that violates its limits.
 
 	typedef std::list<PowerComponentIF*> DeviceList;
 	Fuse(object_id_t fuseObjectId, uint8_t fuseId, VariableIds ids,
@@ -84,12 +85,12 @@ private:
 
 	};
 	PowerMonitor powerMonitor;
-	DataSet set;
+	GlobDataSet set;
 	PIDReader<float> voltage;
 	PIDReader<float> current;
 	PIDReader<uint8_t> state;
-	db_float_t power;
-	MessageQueueIF *commandQueue;
+	gp_float_t power;
+	MessageQueueIF* commandQueue;
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
 	static object_id_t powerSwitchId;

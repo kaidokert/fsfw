@@ -1,13 +1,14 @@
 #ifndef MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 #define MISSION_CONTROLLERS_TCS_CORECOMPONENT_H_
 
-#include "../datapool/DataSet.h"
-#include "../datapool/PoolVariable.h"
-#include "ThermalComponentIF.h"
-#include "AbstractTemperatureSensor.h"
-#include "ThermalModule.h"
-#include "ThermalMonitor.h"
+#include "../datapoolglob/GlobalDataSet.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
+#include "../thermal/ThermalComponentIF.h"
+#include "../thermal/AbstractTemperatureSensor.h"
+#include "../thermal/ThermalModule.h"
+#include "../thermal/ThermalMonitor.h"
 
+// TODO: Documentaiton, how to use this? only use Thermal Component, which inherits core component?
 class CoreComponent: public ThermalComponentIF {
 public:
 	struct Parameters {
@@ -22,7 +23,7 @@ public:
 
 	CoreComponent(object_id_t reportingObjectId, uint8_t domainId, uint32_t temperaturePoolId,
 			uint32_t targetStatePoolId, uint32_t currentStatePoolId,
-			uint32_t requestPoolId, DataSet *dataSet,
+			uint32_t requestPoolId, GlobDataSet *dataSet,
 			AbstractTemperatureSensor *sensor,
 			AbstractTemperatureSensor *firstRedundantSensor,
 			AbstractTemperatureSensor *secondRedundantSensor,
@@ -57,10 +58,10 @@ protected:
 	AbstractTemperatureSensor *secondRedundantSensor;
 	ThermalModuleIF *thermalModule;
 
-	db_float_t temperature;
-	db_int8_t targetState;
-	db_int8_t currentState;
-	db_uint8_t heaterRequest;
+	gp_float_t temperature;
+	gp_int8_t targetState;
+	gp_int8_t currentState;
+	gp_uint8_t heaterRequest;
 
 	bool isHeating;
 
