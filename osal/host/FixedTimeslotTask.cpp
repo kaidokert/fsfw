@@ -46,7 +46,7 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
                 << GetLastError() << std::endl;
     }
 #elif defined(LINUX)
-    // we can just copy and paste the code from linux here.
+    // TODO: we can just copy and paste the code from the linux OSAL here.
 #endif
 }
 
@@ -115,8 +115,9 @@ void FixedTimeslotTask::taskFunctionality() {
         this->pollingSeqTable.executeAndAdvance();
         if (not pollingSeqTable.slotFollowsImmediately()) {
             // we need to wait before executing the current slot
-            //this gives us the time to wait:
-            interval = chron_ms(this->pollingSeqTable.getIntervalToPreviousSlotMs());
+            // this gives us the time to wait:
+            interval = chron_ms(
+                    this->pollingSeqTable.getIntervalToPreviousSlotMs());
             delayForInterval(&currentStartTime, interval);
             //TODO deadline missed check
         }
