@@ -1,7 +1,7 @@
 
-#include <fsfw/container/DynamicFIFO.h>
-#include <fsfw/container/FIFO.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include "../../container/DynamicFIFO.h"
+#include "../../container/FIFO.h"
+#include "../../returnvalues/HasReturnvaluesIF.h"
 
 #include <catch.hpp>
 #include <CatchDefinitions.h>
