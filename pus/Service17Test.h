@@ -21,7 +21,7 @@ class Service17Test: public PusServiceBase {
 public:
 	// Custom events which can be triggered
 	static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_17;
-	static constexpr Event TEST = MAKE_EVENT(0, SEVERITY::INFO);
+	static constexpr Event TEST = MAKE_EVENT(0, severity::INFO);
 
 	enum Subservice: uint8_t {
 		//! [EXPORT] : [COMMAND] Perform connection test
