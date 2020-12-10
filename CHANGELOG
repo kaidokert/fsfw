@@ -15,9 +15,14 @@ a C file without issues
 - The same is possible for the event reporting service (PUS5)
 - PUS Health Service added, which allows to command and retrieve health via PUS packets
 
+
 ### EnhancedControllerBase
 
 - New base class for a controller which also implements HasActionsIF and HasLocalDataPoolIF
+
+### Local Pool
+
+- Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and bucket number of the pools per page and the number of pages are passed to the ctor instead of two ctor arguments and a template parameter
 
 ### Parameter Service
 
