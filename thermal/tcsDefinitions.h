@@ -2,7 +2,7 @@
 #define TCSDEFINITIONS_H_
 
 
-static const uint32_t INVALID_TEMPERATURE = 999;
+static const float INVALID_TEMPERATURE = 999;
 
 
 #endif /* TCSDEFINITIONS_H_ */

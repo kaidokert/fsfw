@@ -1,10 +1,12 @@
-#include "ThermalMonitor.h"
+#include "ThermalMonitorReporter.h"
 #include "ThermalComponentIF.h"
+
 #include "../monitoring/MonitoringIF.h"
-ThermalMonitor::~ThermalMonitor() {
+
+ThermalMonitorReporter::~ThermalMonitorReporter() {
 }
 
-void ThermalMonitor::sendTransitionEvent(float currentValue,
+void ThermalMonitorReporter::sendTransitionEvent(float currentValue,
 		ReturnValue_t state) {
 	switch (state) {
 	case MonitoringIF::BELOW_LOW_LIMIT:
@@ -28,7 +30,7 @@ void ThermalMonitor::sendTransitionEvent(float currentValue,
 	}
 }
 
-bool ThermalMonitor::isAboveHighLimit() {
+bool ThermalMonitorReporter::isAboveHighLimit() {
 	if (oldState == ThermalComponentIF::ABOVE_OPERATIONAL_LIMIT) {
 		return true;
 	} else {
@@ -36,7 +38,8 @@ bool ThermalMonitor::isAboveHighLimit() {
 	}
 }
 
-ReturnValue_t ThermalMonitor::translateState(ThermalComponentIF::State state, float sample, float lowerLimit,
+ReturnValue_t ThermalMonitorReporter::translateState(
+		ThermalComponentIF::State state, float sample, float lowerLimit,
 		float upperLimit, bool componentIsOperational) {
 	if (ThermalComponentIF::isIgnoredState(state)) {
 		setToUnchecked();
@@ -44,10 +47,12 @@ ReturnValue_t ThermalMonitor::translateState(ThermalComponentIF::State state, fl
 	}
 	switch (state) {
 	case ThermalComponentIF::OUT_OF_RANGE_LOW:
-		return monitorStateIs(MonitoringIF::BELOW_LOW_LIMIT, sample, lowerLimit);
+		return monitorStateIs(MonitoringIF::BELOW_LOW_LIMIT, sample,
+				lowerLimit);
 	case ThermalComponentIF::NON_OPERATIONAL_LOW:
 		if (componentIsOperational) {
-			return monitorStateIs(ThermalComponentIF::BELOW_OPERATIONAL_LIMIT, sample, lowerLimit);
+			return monitorStateIs(ThermalComponentIF::BELOW_OPERATIONAL_LIMIT,
+					sample, lowerLimit);
 		} else {
 			return monitorStateIs(HasReturnvaluesIF::RETURN_OK, sample, 0.0);
 		}
@@ -55,12 +60,14 @@ ReturnValue_t ThermalMonitor::translateState(ThermalComponentIF::State state, fl
 		return monitorStateIs(HasReturnvaluesIF::RETURN_OK, sample, 0.0);
 	case ThermalComponentIF::NON_OPERATIONAL_HIGH:
 		if (componentIsOperational) {
-			return monitorStateIs(ThermalComponentIF::ABOVE_OPERATIONAL_LIMIT, sample, upperLimit);
+			return monitorStateIs(ThermalComponentIF::ABOVE_OPERATIONAL_LIMIT,
+					sample, upperLimit);
 		} else {
 			return monitorStateIs(HasReturnvaluesIF::RETURN_OK, sample, 0.0);
 		}
 	case ThermalComponentIF::OUT_OF_RANGE_HIGH:
-		return monitorStateIs(MonitoringIF::ABOVE_HIGH_LIMIT, sample, upperLimit);
+		return monitorStateIs(MonitoringIF::ABOVE_HIGH_LIMIT, sample,
+				upperLimit);
 	default:
 		//Never reached, all states covered.
 		return HasReturnvaluesIF::RETURN_FAILED;
