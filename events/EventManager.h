@@ -8,9 +8,11 @@
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexIF.h"
+#include <FSFWConfig.h>
+
 #include <map>
 
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 // forward declaration, should be implemented by mission
 extern const char* translateObject(object_id_t object);
 extern const char* translateEvents(Event event);
@@ -49,13 +51,15 @@ protected:
 	MutexIF* mutex = nullptr;
 
 	static const uint8_t N_POOLS = 3;
-	LocalPool<N_POOLS> factoryBackend;
+	LocalPool factoryBackend;
+	static const LocalPool::LocalPoolConfig poolConfig;
+
 	static const uint16_t POOL_SIZES[N_POOLS];
 	static const uint16_t N_ELEMENTS[N_POOLS];
 
 	void notifyListeners(EventMessage *message);
 
-#ifdef DEBUG
+#if FSFW_DEBUG_OUTPUT == 1
 	void printEvent(EventMessage *message);
 #endif
 
