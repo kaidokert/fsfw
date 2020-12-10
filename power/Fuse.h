@@ -1,21 +1,11 @@
 #ifndef FSFW_POWER_FUSE_H_
 #define FSFW_POWER_FUSE_H_
 
-<<<<<<< HEAD
 #include "PowerComponentIF.h"
 #include "PowerSwitchIF.h"
 
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/AbsLimitMonitor.h"
-=======
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
-#include "../datapoolglob/PIDReader.h"
-#include "../devicehandlers/HealthDevice.h"
-#include "../monitoring/AbsLimitMonitor.h"
-#include "../power/PowerComponentIF.h"
-#include "../power/PowerSwitchIF.h"
->>>>>>> upstream/development
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../parameters/ParameterHelper.h"
 #include <list>
@@ -94,26 +84,14 @@ private:
 
 	};
 	PowerMonitor powerMonitor;
-<<<<<<< HEAD
 	StaticLocalDataSet<3> set;
-	//LocalPoolDataSetBase* set = nullptr;
-	//PIDReader<float> voltage;
-	//PIDReader<float> current;
-	//PIDReader<uint8_t> state;
+
 	lp_var_t<float> voltage;
 	lp_var_t<float> current;
 	lp_var_t<uint8_t> state;
 
 	lp_var_t<float> power;
 	MessageQueueIF* commandQueue = nullptr;
-=======
-	GlobDataSet set;
-	PIDReader<float> voltage;
-	PIDReader<float> current;
-	PIDReader<uint8_t> state;
-	gp_float_t power;
-	MessageQueueIF* commandQueue;
->>>>>>> upstream/development
 	ParameterHelper parameterHelper;
 	HealthHelper healthHelper;
 	static object_id_t powerSwitchId;
