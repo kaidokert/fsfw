@@ -34,7 +34,7 @@ ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
 }
 
 ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
-	if (this->lastPartner != 0) {
+	if (this->lastPartner != MessageQueueIF::NO_QUEUE) {
 		return sendMessageFrom(this->lastPartner, message, this->getId());
 	} else {
 		return MessageQueueIF::NO_REPLY_PARTNER;
@@ -106,6 +106,7 @@ bool MessageQueue::isDefaultDestinationSet() const {
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault) {
+	message->setSender(sentFrom);
 	if(message->getMessageSize() > message->getMaximumMessageSize()) {
 		// Actually, this should never happen or an error will be emitted
 		// in MessageQueueMessage.
@@ -126,7 +127,6 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		// TODO: Better returnvalue
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
 		MutexHelper mutexLock(targetQueue->queueLock,
 		        MutexIF::TimeoutType::WAITING, 20);
@@ -145,7 +145,6 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	else {
 		return MessageQueueIF::FULL;
 	}
-    message->setSender(sentFrom);
     return HasReturnvaluesIF::RETURN_OK;
 }
 

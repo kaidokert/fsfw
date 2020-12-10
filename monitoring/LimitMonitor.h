@@ -12,13 +12,15 @@
 template<typename T>
 class LimitMonitor: public MonitorBase<T> {
 public:
-	LimitMonitor(object_id_t reporterId, uint8_t monitorId, uint32_t parameterId,
-			uint16_t confirmationLimit, T lowerLimit, T upperLimit,
-			Event belowLowEvent = MonitoringIF::VALUE_BELOW_LOW_LIMIT,
+	LimitMonitor(object_id_t reporterId, uint8_t monitorId,
+	        gp_id_t globalPoolId, uint16_t confirmationLimit, T lowerLimit,
+			T upperLimit, Event belowLowEvent =
+					MonitoringIF::VALUE_BELOW_LOW_LIMIT,
 			Event aboveHighEvent = MonitoringIF::VALUE_ABOVE_HIGH_LIMIT) :
-			MonitorBase<T>(reporterId, monitorId, parameterId, confirmationLimit), lowerLimit(
-					lowerLimit), upperLimit(upperLimit), belowLowEvent(
-					belowLowEvent), aboveHighEvent(aboveHighEvent) {
+			MonitorBase<T>(reporterId, monitorId, globalPoolId,
+			        confirmationLimit),
+			lowerLimit(lowerLimit), upperLimit(upperLimit),
+			belowLowEvent(belowLowEvent), aboveHighEvent(aboveHighEvent) {
 	}
 	virtual ~LimitMonitor() {
 	}
@@ -41,7 +43,7 @@ public:
 		ReturnValue_t result = this->MonitorBase<T>::getParameter(domainId,
 				parameterId, parameterWrapper, newValues, startAtIndex);
 		//We'll reuse the DOMAIN_ID of MonitorReporter, as we know the parameterIds used there.
-		if (result != this->INVALID_MATRIX_ID) {
+		if (result != this->INVALID_IDENTIFIER_ID) {
 			return result;
 		}
 		switch (parameterId) {
@@ -52,12 +54,13 @@ public:
 			parameterWrapper->set(this->upperLimit);
 			break;
 		default:
-			return this->INVALID_MATRIX_ID;
+			return this->INVALID_IDENTIFIER_ID;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	bool isOutOfLimits() {
-		if (this->oldState == MonitoringIF::ABOVE_HIGH_LIMIT || this->oldState == MonitoringIF::BELOW_LOW_LIMIT) {
+		if (this->oldState == MonitoringIF::ABOVE_HIGH_LIMIT or
+		        this->oldState == MonitoringIF::BELOW_LOW_LIMIT) {
 			return true;
 		} else {
 			return false;
@@ -76,10 +79,12 @@ protected:
 	void sendTransitionEvent(T currentValue, ReturnValue_t state) {
 		switch (state) {
 		case MonitoringIF::BELOW_LOW_LIMIT:
-			EventManagerIF::triggerEvent(this->reportingId, belowLowEvent, this->parameterId);
+			EventManagerIF::triggerEvent(this->reportingId, belowLowEvent,
+			        this->globalPoolId.objectId, this->globalPoolId.localPoolId);
 			break;
 		case MonitoringIF::ABOVE_HIGH_LIMIT:
-			EventManagerIF::triggerEvent(this->reportingId, aboveHighEvent, this->parameterId);
+			EventManagerIF::triggerEvent(this->reportingId, aboveHighEvent,
+			        this->globalPoolId.objectId, this->globalPoolId.localPoolId);
 			break;
 		default:
 			break;

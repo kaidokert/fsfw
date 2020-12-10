@@ -13,7 +13,7 @@ class HkSwitchHelper: public ExecutableObjectIF, public CommandsActionsIF {
 public:
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::HK;
-	static const Event SWITCHING_TM_FAILED = MAKE_EVENT(1, SEVERITY::LOW); //!< Commanding the HK Service failed, p1: error code, p2 action: 0 disable / 1 enable
+	static const Event SWITCHING_TM_FAILED = MAKE_EVENT(1, severity::LOW); //!< Commanding the HK Service failed, p1: error code, p2 action: 0 disable / 1 enable
 
 	HkSwitchHelper(EventReportingProxyIF *eventProxy);
 	virtual ~HkSwitchHelper();

@@ -48,7 +48,7 @@ void EventMessage::setMessageId(uint8_t id) {
 EventSeverity_t EventMessage::getSeverity() {
 	Event event;
 	memcpy(&event, getData(), sizeof(Event));
-	return EVENT::getSeverity(event);
+	return event::getSeverity(event);
 }
 
 void EventMessage::setSeverity(EventSeverity_t severity) {
@@ -61,7 +61,7 @@ void EventMessage::setSeverity(EventSeverity_t severity) {
 EventId_t EventMessage::getEventId() {
 	Event event;
 	memcpy(&event, getData(), sizeof(Event));
-	return EVENT::getEventId(event);
+	return event::getEventId(event);
 }
 
 void EventMessage::setEventId(EventId_t eventId) {

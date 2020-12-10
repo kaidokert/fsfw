@@ -1,5 +1,8 @@
 ## Changes from ASTP 0.0.1 to 1.0.0
 
+### Host OSAL
+
+- Bugfix in MessageQueue, which caused the sender not to be set properly
 
 ### FreeRTOS OSAL
 
@@ -15,3 +18,15 @@ a C file without issues
 ### Local Pool
 
 - Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and bucket number of the pools per page and the number of pages are passed to the ctor instead of two ctor arguments and a template parameter
+
+### Device Handler Base
+
+- There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
+that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
+
+### Events
+
+- makeEvent function: Now takes three input parameters instead of two and
+allows setting a unique ID. Event.cpp source file removed, functions now
+defined in header directly. Namespaces renamed. Functions declared `constexpr`
+now
