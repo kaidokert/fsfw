@@ -3,8 +3,6 @@
 #include "DeviceTmReportingWrapper.h"
 
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../thermal/ThermalComponentIF.h"
@@ -13,8 +11,10 @@
 #include "../ipc/MessageQueueMessage.h"
 #include "../ipc/QueueFactory.h"
 #include "../subsystem/SubsystemBase.h"
+#include "../datapoollocal/LocalPoolVariable.h"
 
 #include <iomanip>
+
 
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
@@ -56,9 +56,10 @@ void DeviceHandlerBase::setHkDestination(object_id_t hkDestination) {
 }
 
 void DeviceHandlerBase::setThermalStateRequestPoolIds(
-		uint32_t thermalStatePoolId, uint32_t thermalRequestPoolId) {
-	this->deviceThermalRequestPoolId = thermalStatePoolId;
-	this->deviceThermalRequestPoolId = thermalRequestPoolId;
+		lp_id_t thermalStatePoolId, lp_id_t heaterRequestPoolId,
+		uint32_t thermalSetId) {
+	thermalSet = new DeviceHandlerThermalSet(this, thermalSetId,
+			thermalStatePoolId, heaterRequestPoolId);
 }
 
 
@@ -86,7 +87,6 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		decrementDeviceReplyMap();
 		fdirInstance->checkForFailures();
 		hkSwitcher.performOperation();
-		hkManager.performHkOperation();
 		performOperationHook();
 		return RETURN_OK;
 	}
@@ -111,6 +111,9 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		break;
 	case CommunicationAction::GET_READ:
 		doGetRead();
+		// This will be performed after datasets have been updated by the
+		// custom device implementation.
+		hkManager.performHkOperation();
 		break;
 	default:
 		break;
@@ -208,16 +211,18 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	fillCommandAndReplyMap();
 
-	//Set temperature target state to NON_OP.
-	GlobDataSet mySet;
-	gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
-			PoolVariableIF::VAR_WRITE);
-	mySet.read();
-	thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
-	mySet.commit(PoolVariableIF::VALID);
+	if(thermalSet != nullptr) {
+		//Set temperature target state to NON_OP.
+		result = thermalSet->read();
+		if(result == HasReturnvaluesIF::RETURN_OK) {
+			thermalSet->heaterRequest.value =
+					ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
+			thermalSet->commit(PoolVariableIF::VALID);
+		}
+
+	}
 
 	return RETURN_OK;
-
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
@@ -505,15 +510,17 @@ void DeviceHandlerBase::setMode(Mode_t newMode, uint8_t newSubmode) {
 	}
 	Clock::getUptime(&timeoutStart);
 
-	if (mode == MODE_OFF) {
-		GlobDataSet mySet;
-		gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
-				PoolVariableIF::VAR_READ_WRITE);
-		mySet.read();
-		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
-			thermalRequest = ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
+	if (mode == MODE_OFF and thermalSet != nullptr) {
+		ReturnValue_t result = thermalSet->read();
+		if(result == HasReturnvaluesIF::RETURN_OK) {
+			if (thermalSet->heaterRequest.value !=
+					ThermalComponentIF::STATE_REQUEST_IGNORE) {
+				thermalSet->heaterRequest.value = ThermalComponentIF::
+						STATE_REQUEST_NON_OPERATIONAL;
+			}
+			thermalSet->heaterRequest.commit(PoolVariableIF::VALID);
 		}
-		mySet.commit(PoolVariableIF::VALID);
+
 	}
 	changeHK(mode, submode, true);
 }
@@ -976,17 +983,15 @@ ReturnValue_t DeviceHandlerBase::checkModeCommand(Mode_t commandedMode,
 	}
 
 	if ((commandedMode == MODE_ON) && (mode == MODE_OFF)
-			&& (deviceThermalStatePoolId != PoolVariableIF::NO_PARAMETER)) {
-		GlobDataSet mySet;
-		gp_uint8_t thermalState(deviceThermalStatePoolId, &mySet,
-				PoolVariableIF::VAR_READ);
-		gp_uint8_t thermalRequest(deviceThermalRequestPoolId, &mySet,
-				PoolVariableIF::VAR_READ);
-		mySet.read();
-		if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
-			if (!ThermalComponentIF::isOperational(thermalState)) {
+			and (thermalSet != nullptr)) {
+		ReturnValue_t result = thermalSet->read();
+		if(result == HasReturnvaluesIF::RETURN_OK) {
+			if((thermalSet->heaterRequest.value !=
+					ThermalComponentIF::STATE_REQUEST_IGNORE) and (not
+					ThermalComponentIF::isOperational(
+							thermalSet->thermalState.value))) {
 				triggerEvent(ThermalComponentIF::TEMP_NOT_IN_OP_RANGE,
-						thermalState);
+						thermalSet->thermalState.value);
 				return NON_OP_TEMPERATURE;
 			}
 		}
@@ -999,32 +1004,15 @@ void DeviceHandlerBase::startTransition(Mode_t commandedMode,
 		Submode_t commandedSubmode) {
 	switch (commandedMode) {
 	case MODE_ON:
-		if (mode == MODE_OFF) {
-			transitionSourceMode = _MODE_POWER_DOWN;
-			transitionSourceSubMode = SUBMODE_NONE;
-			setMode(_MODE_POWER_ON, commandedSubmode);
-			//already set the delay for the child transition so we don't need to call it twice
-			childTransitionDelay = getTransitionDelayMs(_MODE_START_UP,
-					MODE_ON);
-			triggerEvent(CHANGING_MODE, commandedMode, commandedSubmode);
-			GlobDataSet mySet;
-			gp_int8_t thermalRequest(deviceThermalRequestPoolId,
-					&mySet, PoolVariableIF::VAR_READ_WRITE);
-			mySet.read();
-			if (thermalRequest != ThermalComponentIF::STATE_REQUEST_IGNORE) {
-				thermalRequest = ThermalComponentIF::STATE_REQUEST_OPERATIONAL;
-				mySet.commit(PoolVariableIF::VALID);
-			}
-		} else {
-			setTransition(MODE_ON, commandedSubmode);
-		}
+		handleTransitionToOnMode(commandedMode, commandedSubmode);
 		break;
 	case MODE_OFF:
 		if (mode == MODE_OFF) {
 			triggerEvent(CHANGING_MODE, commandedMode, commandedSubmode);
 			setMode(_MODE_POWER_DOWN, commandedSubmode);
 		} else {
-			//already set the delay for the child transition so we don't need to call it twice
+			// already set the delay for the child transition
+			// so we don't need to call it twice
 			childTransitionDelay = getTransitionDelayMs(mode, _MODE_POWER_DOWN);
 			transitionSourceMode = _MODE_POWER_DOWN;
 			transitionSourceSubMode = commandedSubmode;
@@ -1047,6 +1035,33 @@ void DeviceHandlerBase::startTransition(Mode_t commandedMode,
 			replyReturnvalueToCommand(HasModesIF::TRANS_NOT_ALLOWED);
 		}
 		break;
+	}
+}
+
+void DeviceHandlerBase::handleTransitionToOnMode(Mode_t commandedMode,
+		Submode_t commandedSubmode) {
+	if (mode == MODE_OFF) {
+		transitionSourceMode = _MODE_POWER_DOWN;
+		transitionSourceSubMode = SUBMODE_NONE;
+		setMode(_MODE_POWER_ON, commandedSubmode);
+		// already set the delay for the child transition so we don't
+		// need to call it twice
+		childTransitionDelay = getTransitionDelayMs(_MODE_START_UP,
+				MODE_ON);
+		triggerEvent(CHANGING_MODE, commandedMode, commandedSubmode);
+		if(thermalSet != nullptr) {
+			ReturnValue_t result = thermalSet->read();
+			if(result == HasReturnvaluesIF::RETURN_OK) {
+				if(thermalSet->heaterRequest !=
+						ThermalComponentIF::STATE_REQUEST_IGNORE) {
+					thermalSet->heaterRequest =
+							ThermalComponentIF::STATE_REQUEST_OPERATIONAL;
+					thermalSet->commit();
+				}
+			}
+		}
+	} else {
+		setTransition(MODE_ON, commandedSubmode);
 	}
 }
 
@@ -1222,10 +1237,12 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* data,
 		}
 	}
 	//Try to cast to GlobDataSet and commit data.
-	if (!neverInDataPool) {
-		GlobDataSet* dataSet = dynamic_cast<GlobDataSet*>(data);
-		if (dataSet != NULL) {
-			dataSet->commit(PoolVariableIF::VALID);
+	if (not neverInDataPool) {
+		LocalPoolDataSetBase* dataSet =
+				dynamic_cast<LocalPoolDataSetBase*>(data);
+		if (dataSet != nullptr) {
+			dataSet->setValidity(true, true);
+			dataSet->commit();
 		}
 	}
 }
@@ -1262,7 +1279,8 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (result == BUSY) {
 		    //so we can track misconfigurations
 			sif::debug << std::hex << getObjectId()
-					<< ": DHB::buildInternalCommand: Busy" << std::dec << std::endl;
+					<< ": DHB::buildInternalCommand: Busy" << std::dec
+					<< std::endl;
 			result = NOTHING_TO_SEND; //no need to report this
 		}
 	}
@@ -1371,8 +1389,8 @@ bool DeviceHandlerBase::commandIsExecuting(DeviceCommandId_t commandId) {
 void DeviceHandlerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {
 }
 
-void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task_){
-	executingTask = task_;
+void DeviceHandlerBase::setTaskIF(PeriodicTaskIF* task){
+	executingTask = task;
 }
 
 // Default implementations empty.
@@ -1385,6 +1403,12 @@ void DeviceHandlerBase::performOperationHook() {
 ReturnValue_t DeviceHandlerBase::initializeLocalDataPool(
 		LocalDataPool &localDataPoolMap,
         LocalDataPoolManager& poolManager) {
+	if(thermalSet != nullptr) {
+		localDataPoolMap.emplace(thermalSet->thermalStatePoolId,
+				new PoolEntry<DeviceHandlerIF::dh_thermal_state_t>);
+		localDataPoolMap.emplace(thermalSet->heaterRequestPoolId,
+				new PoolEntry<DeviceHandlerIF::dh_heater_request_t>);
+	}
 	return RETURN_OK;
 }
 
@@ -1429,3 +1453,9 @@ dur_millis_t DeviceHandlerBase::getPeriodicOperationFrequency() const {
     return pstIntervalMs;
 }
 
+DeviceCommandId_t DeviceHandlerBase::getPendingCommand() const {
+    if(cookieInfo.pendingCommand != deviceCommandMap.end()) {
+        return cookieInfo.pendingCommand->first;
+    }
+    return DeviceHandlerIF::NO_COMMAND;
+}
