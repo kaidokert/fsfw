@@ -1,20 +1,20 @@
 #include "ThermalComponent.h"
 
 ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
-		uint8_t domainId, uint32_t temperaturePoolId,
-		uint32_t targetStatePoolId, uint32_t currentStatePoolId,
-		uint32_t requestPoolId, GlobDataSet* dataSet,
+		uint8_t domainId, gp_id_t temperaturePoolId,
+		gp_id_t targetStatePoolId, gp_id_t currentStatePoolId,
+		gp_id_t requestPoolId, LocalPoolDataSetBase* dataSet,
 		AbstractTemperatureSensor* sensor,
 		AbstractTemperatureSensor* firstRedundantSensor,
 		AbstractTemperatureSensor* secondRedundantSensor,
 		ThermalModuleIF* thermalModule, Parameters parameters,
 		Priority priority) :
-		CoreComponent(reportingObjectId, domainId, temperaturePoolId,
+		ThermalComponentCore(reportingObjectId, domainId, temperaturePoolId,
 				targetStatePoolId, currentStatePoolId, requestPoolId, dataSet,
-				sensor, firstRedundantSensor, secondRedundantSensor,
-				thermalModule,{ parameters.lowerOpLimit, parameters.upperOpLimit,
-				parameters.heaterOn, parameters.hysteresis, parameters.heaterSwitchoff },
-				priority, ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL),
+				{ parameters.lowerOpLimit, parameters.upperOpLimit,
+				parameters.heaterOn, parameters.hysteresis,
+				parameters.heaterSwitchoff },
+				ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL),
 		nopParameters({ parameters.lowerNopLimit, parameters.upperNopLimit }) {
 }
 
@@ -22,22 +22,22 @@ ThermalComponent::~ThermalComponent() {
 }
 
 ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
-	GlobDataSet mySet;
-	gp_int8_t writableTargetState(targetState.getDataPoolId(),
-			&mySet, PoolVariableIF::VAR_READ_WRITE);
-	mySet.read();
-	if ((writableTargetState == STATE_REQUEST_OPERATIONAL)
-			&& (newState != STATE_REQUEST_IGNORE)) {
+	targetState.setReadWriteMode(pool_rwm_t::VAR_READ_WRITE);
+	targetState.read();
+	if ((targetState == STATE_REQUEST_OPERATIONAL)
+			and (newState != STATE_REQUEST_IGNORE)) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	switch (newState) {
 	case STATE_REQUEST_NON_OPERATIONAL:
-		writableTargetState = newState;
-		mySet.commit(PoolVariableIF::VALID);
+		targetState = newState;
+		targetState.setValid(true);
+		targetState.commit(PoolVariableIF::VALID);
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
-		return CoreComponent::setTargetState(newState);
+		return ThermalComponentCore::setTargetState(newState);
 	}
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, size_t size) {
@@ -57,11 +57,11 @@ ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, size_t size) {
 }
 
 ThermalComponentIF::State ThermalComponent::getState(float temperature,
-		CoreComponent::Parameters parameters, int8_t targetState) {
+		ThermalComponentCore::Parameters parameters, int8_t targetState) {
 	if (temperature < nopParameters.lowerNopLimit) {
 		return OUT_OF_RANGE_LOW;
 	} else {
-		State state = CoreComponent::getState(temperature, parameters,
+		State state = ThermalComponentCore::getState(temperature, parameters,
 				targetState);
 		if (state != NON_OPERATIONAL_HIGH
 				&& state != NON_OPERATIONAL_HIGH_IGNORED) {
@@ -78,18 +78,19 @@ ThermalComponentIF::State ThermalComponent::getState(float temperature,
 }
 
 void ThermalComponent::checkLimits(ThermalComponentIF::State state) {
-	if (targetState == STATE_REQUEST_OPERATIONAL || targetState == STATE_REQUEST_IGNORE) {
-		CoreComponent::checkLimits(state);
+	if ((targetState == STATE_REQUEST_OPERATIONAL) or
+			(targetState == STATE_REQUEST_IGNORE)) {
+		ThermalComponentCore::checkLimits(state);
 		return;
 	}
-	//If component is not operational, it checks the NOP limits.
+	// If component is not operational, it checks the NOP limits.
 	temperatureMonitor.translateState(state, temperature.value,
 			nopParameters.lowerNopLimit, nopParameters.upperNopLimit, false);
 }
 
 ThermalComponentIF::HeaterRequest ThermalComponent::getHeaterRequest(
 		int8_t targetState, float temperature,
-		CoreComponent::Parameters parameters) {
+		ThermalComponentCore::Parameters parameters) {
 	if (targetState == STATE_REQUEST_IGNORE) {
 		isHeating = false;
 		return HEATER_DONT_CARE;
@@ -142,16 +143,16 @@ ThermalComponentIF::State ThermalComponent::getIgnoredState(int8_t state) {
 	case OUT_OF_RANGE_HIGH_IGNORED:
 		return OUT_OF_RANGE_HIGH_IGNORED;
 	default:
-		return CoreComponent::getIgnoredState(state);
+		return ThermalComponentCore::getIgnoredState(state);
 	}
 }
 
 ReturnValue_t ThermalComponent::getParameter(uint8_t domainId,
 		uint16_t parameterId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
-	ReturnValue_t result = CoreComponent::getParameter(domainId, parameterId,
+	ReturnValue_t result = ThermalComponentCore::getParameter(domainId, parameterId,
 			parameterWrapper, newValues, startAtIndex);
-	if (result != INVALID_MATRIX_ID) {
+	if (result != INVALID_IDENTIFIER_ID) {
 		return result;
 	}
 	switch (parameterId) {
@@ -162,7 +163,7 @@ ReturnValue_t ThermalComponent::getParameter(uint8_t domainId,
 		parameterWrapper->set(nopParameters.upperNopLimit);
 		break;
 	default:
-		return INVALID_MATRIX_ID;
+		return INVALID_IDENTIFIER_ID;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
