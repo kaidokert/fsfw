@@ -1,0 +1,10 @@
+target_sources(${LIB_FSFW_NAME} 
+	PRIVATE 
+		AbstractTemperatureSensor.cpp
+		CoreComponent.cpp
+		Heater.cpp
+		RedundantHeater.cpp
+		ThermalComponent.cpp
+		ThermalModule.cpp
+		ThermalMonitor.cpp
+)
