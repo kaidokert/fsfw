@@ -85,10 +85,7 @@ private:
 	};
 	PowerMonitor powerMonitor;
 	StaticLocalDataSet<3> set;
-	//LocalPoolDataSetBase* set = nullptr;
-	//PIDReader<float> voltage;
-	//PIDReader<float> current;
-	//PIDReader<uint8_t> state;
+
 	lp_var_t<float> voltage;
 	lp_var_t<float> current;
 	lp_var_t<uint8_t> state;
