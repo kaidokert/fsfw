@@ -1,11 +1,5 @@
-/**
- * @file	HasMonitorsIF.h
- * @brief	This file defines the HasMonitorsIF class.
- * @date	28.07.2014
- * @author	baetz
- */
-#ifndef HASMONITORSIF_H_
-#define HASMONITORSIF_H_
+#ifndef FSFW_MONITORING_HASMONITORSIF_H_
+#define FSFW_MONITORING_HASMONITORSIF_H_
 
 #include "../events/EventReportingProxyIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
@@ -27,4 +21,4 @@ public:
 	}
 };
 
-#endif /* HASMONITORSIF_H_ */
+#endif /* FSFW_MONITORING_HASMONITORSIF_H_ */
