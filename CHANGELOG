@@ -19,6 +19,20 @@ a C file without issues
 
 - Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and bucket number of the pools per page and the number of pages are passed to the ctor instead of two ctor arguments and a template parameter
 
+### Parameter Service
+
+- The API of the parameter service has been changed to prevent inconsistencies
+between documentation and actual code and to clarify usage.
+- The parameter ID now consists of:
+	1. Domain ID (1 byte)
+	2. Unique Identifier (1 byte)
+	3. Linear Index (2 bytes)
+The linear index can be used for arrays as well as matrices.
+The parameter load command now explicitely expects the ECSS PTC and PFC
+information as well as  the rows and column number. Rows and column will
+default to one, which is equivalent to one scalar parameter (the most
+important use-case)
+   
 ### File System Interface
 
 - A new interfaces specifies the functions for a software object which exposes the file system of a given hardware to use message based file handling (e.g. PUS commanding)
