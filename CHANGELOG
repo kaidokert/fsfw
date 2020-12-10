@@ -19,6 +19,17 @@ a C file without issues
 
 - Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and bucket number of the pools per page and the number of pages are passed to the ctor instead of two ctor arguments and a template parameter
 
+### File System Interface
+
+- A new interfaces specifies the functions for a software object which exposes the file system of a given hardware to use message based file handling (e.g. PUS commanding)
+
+### Internal Error Reporter
+
+- The new internal error reporter uses the local data pools. The pool IDs for
+the exisiting three error values and the new error set will be hardcoded for
+now, the the constructor for the internal error reporter just takes an object
+ID for now.
+
 ### Device Handler Base
 
 - There is an additional `PERFORM_OPERATION` step for the device handler base. It is important

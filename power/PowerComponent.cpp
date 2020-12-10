@@ -1,20 +1,15 @@
-/**
- * @file	PowerComponent.cpp
- * @brief	This file defines the PowerComponent class.
- * @date	28.08.2014
- * @author	baetz
- */
-
 #include "PowerComponent.h"
+#include "../serialize/SerializeAdapter.h"
 
-PowerComponent::PowerComponent() :
-		deviceObjectId(0), switchId1(0xFF), switchId2(0xFF), doIHaveTwoSwitches(
-		false), min(0.0), max(0.0), moduleId(0) {
+PowerComponent::PowerComponent(): switchId1(0xFF), switchId2(0xFF),
+        doIHaveTwoSwitches(false) {
 }
-PowerComponent::PowerComponent(object_id_t setId, uint8_t moduleId, float min, float max,
-		uint8_t switchId1, bool twoSwitches, uint8_t switchId2) :
-		deviceObjectId(setId), switchId1(switchId1), switchId2(switchId2), doIHaveTwoSwitches(
-				twoSwitches), min(min), max(max), moduleId(moduleId) {
+
+PowerComponent::PowerComponent(object_id_t setId, uint8_t moduleId, float min,
+        float max, uint8_t switchId1, bool twoSwitches, uint8_t switchId2) :
+		deviceObjectId(setId), switchId1(switchId1), switchId2(switchId2),
+		doIHaveTwoSwitches(twoSwitches), min(min), max(max),
+		moduleId(moduleId) {
 }
 
 ReturnValue_t PowerComponent::serialize(uint8_t** buffer, size_t* size,
@@ -57,7 +52,7 @@ float PowerComponent::getMax() {
 }
 
 ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, size_t* size,
-Endianness streamEndianness) {
+        Endianness streamEndianness) {
 	ReturnValue_t result = SerializeAdapter::deSerialize(&min, buffer,
 			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -80,7 +75,7 @@ ReturnValue_t PowerComponent::getParameter(uint8_t domainId,
 		parameterWrapper->set<>(max);
 		break;
 	default:
-		return INVALID_MATRIX_ID;
+		return INVALID_IDENTIFIER_ID;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
