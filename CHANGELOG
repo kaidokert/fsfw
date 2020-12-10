@@ -14,3 +14,15 @@ a C file without issues
 - It is now possible to change the message queue depth for the telecommand verification service (PUS1)
 - The same is possible for the event reporting service (PUS5)
 - PUS Health Service added, which allows to command and retrieve health via PUS packets
+
+### Device Handler Base
+
+- There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
+that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
+
+### Events
+
+- makeEvent function: Now takes three input parameters instead of two and
+allows setting a unique ID. Event.cpp source file removed, functions now
+defined in header directly. Namespaces renamed. Functions declared `constexpr`
+now

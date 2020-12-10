@@ -44,7 +44,7 @@ MessageQueueIF* QueueMapManager::getMessageQueue(
 		return queueIter->second;
 	}
 	else {
-		sif::warning << "QueueMapManager::getQueueHandle: The ID" <<
+		sif::warning << "QueueMapManager::getQueueHandle: The ID " <<
 				messageQueueId << " does not exists in the map" << std::endl;
 		return nullptr;
 	}

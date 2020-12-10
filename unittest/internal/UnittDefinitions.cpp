@@ -1,4 +1,4 @@
-#include <fsfw/unittest/internal/UnittDefinitions.h>
+#include "UnittDefinitions.h"
 
  ReturnValue_t unitt::put_error(std::string errorId) {
 	sif::error << "Unit Tester error: Failed at test ID "

@@ -5,9 +5,15 @@
 #include "../monitoring/MonitoringMessageContent.h"
 
 
+<<<<<<< HEAD
 ThermalModule::ThermalModule(gp_id_t moduleTemperaturePoolId,
 		gp_id_t currentStatePoolId, gp_id_t targetStatePoolId,
 		LocalPoolDataSetBase *dataSet, Parameters parameters,
+=======
+ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId,
+		uint32_t currentStatePoolId, uint32_t targetStatePoolId,
+		GlobDataSet *dataSet, Parameters parameters,
+>>>>>>> upstream/development
 		RedundantHeater::Parameters heaterParameters) :
 		oldStrategy(ACTIVE_SINGLE), parameters(parameters),
 		moduleTemperature(moduleTemperaturePoolId, dataSet,
@@ -17,6 +23,7 @@ ThermalModule::ThermalModule(gp_id_t moduleTemperaturePoolId,
 	heater = new RedundantHeater(heaterParameters);
 }
 
+<<<<<<< HEAD
 ThermalModule::ThermalModule(gp_id_t moduleTemperaturePoolId,
 		LocalPoolDataSetBase* dataSet) :
 		oldStrategy(ACTIVE_SINGLE), parameters( { 0, 0 }),
@@ -26,6 +33,15 @@ ThermalModule::ThermalModule(gp_id_t moduleTemperaturePoolId,
 				PoolVariableIF::VAR_WRITE),
 		targetState(gp_id_t(), dataSet,
 				PoolVariableIF::VAR_READ) {
+=======
+ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId, GlobDataSet* dataSet) :
+		oldStrategy(ACTIVE_SINGLE), survivalTargetTemp(0), targetTemp(0), heating(
+				false), parameters( { 0, 0 }), moduleTemperature(
+				moduleTemperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE), heater(
+				NULL), currentState(PoolVariableIF::INVALID, dataSet,
+				PoolVariableIF::VAR_WRITE), targetState(PoolVariableIF::INVALID,
+				dataSet, PoolVariableIF::VAR_READ) {
+>>>>>>> upstream/development
 }
 
 ThermalModule::~ThermalModule() {
@@ -256,6 +272,7 @@ bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 }
 
 void ThermalModule::setHeating(bool on) {
+<<<<<<< HEAD
 //	GlobDataSet mySet;
 //	gp_int8_t writableTargetState(targetState.getDataPoolId(),
 //			&mySet, PoolVariableIF::VAR_WRITE);
@@ -265,6 +282,17 @@ void ThermalModule::setHeating(bool on) {
 //		writableTargetState = STATE_REQUEST_PASSIVE;
 //	}
 //	mySet.commit(PoolVariableIF::VALID);
+=======
+	GlobDataSet mySet;
+	gp_int8_t writableTargetState(targetState.getDataPoolId(),
+			&mySet, PoolVariableIF::VAR_WRITE);
+	if (on) {
+		writableTargetState = STATE_REQUEST_HEATING;
+	} else {
+		writableTargetState = STATE_REQUEST_PASSIVE;
+	}
+	mySet.commit(PoolVariableIF::VALID);
+>>>>>>> upstream/development
 }
 
 void ThermalModule::updateTargetTemperatures(ThermalComponentIF* component,

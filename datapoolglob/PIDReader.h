@@ -1,9 +1,9 @@
 #ifndef PIDREADER_H_
 #define PIDREADER_H_
-#include "DataPool.h"
-#include "DataSetIF.h"
-#include "PoolEntry.h"
-#include "PoolVariableIF.h"
+#include "../datapool/DataSetIF.h"
+#include "../datapoolglob/GlobalDataPool.h"
+#include "../datapool/PoolEntry.h"
+#include "../datapool/PoolVariableIF.h"
 #include "../serialize/SerializeAdapter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
@@ -15,10 +15,10 @@ class PIDReader: public PoolVariableIF {
 protected:
 	uint32_t parameterId;
 	uint8_t valid;
-	ReturnValue_t read() {
-		uint8_t arrayIndex = DataPool::PIDToArrayIndex(parameterId);
-		PoolEntry<T> *read_out = ::dataPool.getData<T>(
-				DataPool::PIDToDataPoolId(parameterId), arrayIndex);
+	ReturnValue_t readWithoutLock() {
+		uint8_t arrayIndex = GlobalDataPool::PIDToArrayIndex(parameterId);
+		PoolEntry<T> *read_out = glob::dataPool.getData<T>(
+				GlobalDataPool::PIDToDataPoolId(parameterId), arrayIndex);
 		if (read_out != NULL) {
 			valid = read_out->valid;
 			value = read_out->address[arrayIndex];
@@ -36,9 +36,13 @@ protected:
 	 * Reason is the possibility to access a single DP vector element, but if we commit,
 	 * we set validity of the whole vector.
 	 */
-	ReturnValue_t commit() {
+	ReturnValue_t commit(uint32_t lockTimeout) override {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
+	ReturnValue_t commitWithoutLock() override {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	/**
 	 * Empty ctor for List initialization
 	 */
@@ -72,6 +76,19 @@ public:
 		}
 	}
 
+	ReturnValue_t read(uint32_t lockTimeout) override {
+		ReturnValue_t result = glob::dataPool.lockDataPool();
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+		result = readWithoutLock();
+		ReturnValue_t unlockResult = glob::dataPool.unlockDataPool();
+		if(unlockResult != HasReturnvaluesIF::RETURN_OK) {
+			sif::error << "PIDReader::read: Could not unlock data pool!"
+					<< std::endl;
+		}
+		return result;
+	}
 	/**
 	 * Copy ctor to copy classes containing Pool Variables.
 	 */
@@ -89,7 +106,7 @@ public:
 	 * \brief	This operation returns the data pool id of the variable.
 	 */
 	uint32_t getDataPoolId() const {
-		return DataPool::PIDToDataPoolId(parameterId);
+		return GlobalDataPool::PIDToDataPoolId(parameterId);
 	}
 	uint32_t getParameterId() const {
 		return parameterId;
@@ -114,7 +131,7 @@ public:
 		return valid;
 	}
 
-	void setValid(uint8_t valid) {
+	void setValid(bool valid) {
 		this->valid = valid;
 	}
 

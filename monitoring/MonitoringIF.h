@@ -1,8 +1,8 @@
-#ifndef MONITORINGIF_H_
-#define MONITORINGIF_H_
+#ifndef FSFW_MONITORING_MONITORINGIF_H_
+#define FSFW_MONITORING_MONITORINGIF_H_
 
-#include "../memory/HasMemoryIF.h"
 #include "MonitoringMessage.h"
+#include "../memory/HasMemoryIF.h"
 #include "../serialize/SerializeIF.h"
 
 class MonitoringIF : public SerializeIF {
@@ -15,10 +15,10 @@ public:
 	static const uint8_t LIMIT_TYPE_OBJECT = 128;
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::FDIR_2;
-	static const Event MONITOR_CHANGED_STATE = MAKE_EVENT(1, SEVERITY::LOW);
-	static const Event VALUE_BELOW_LOW_LIMIT = MAKE_EVENT(2, SEVERITY::LOW);
-	static const Event VALUE_ABOVE_HIGH_LIMIT = MAKE_EVENT(3, SEVERITY::LOW);
-	static const Event VALUE_OUT_OF_RANGE = MAKE_EVENT(4, SEVERITY::LOW);
+	static const Event MONITOR_CHANGED_STATE = MAKE_EVENT(1, severity::LOW);
+	static const Event VALUE_BELOW_LOW_LIMIT = MAKE_EVENT(2, severity::LOW);
+	static const Event VALUE_ABOVE_HIGH_LIMIT = MAKE_EVENT(3, severity::LOW);
+	static const Event VALUE_OUT_OF_RANGE = MAKE_EVENT(4, severity::LOW);
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::LIMITS_IF;
 	static const ReturnValue_t UNCHECKED = MAKE_RETURN_CODE(1);
@@ -64,4 +64,4 @@ public:
 
 
 
-#endif /* MONITORINGIF_H_ */
+#endif /* FSFW_MONITORING_MONITORINGIF_H_ */
