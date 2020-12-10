@@ -1,11 +1,12 @@
-#ifndef COOKIE_H_
-#define COOKIE_H_
+#ifndef FSFW_DEVICEHANDLER_COOKIE_H_
+#define FSFW_DEVICEHANDLER_COOKIE_H_
+
 #include <cstdint>
 
 /**
  * @brief Physical address type
  */
-typedef std::uint32_t address_t;
+using address_t = uint32_t;
 
 /**
  * @brief 	This datatype is used to identify different connection over a
@@ -16,7 +17,6 @@ typedef std::uint32_t address_t;
  * calling @code{.cpp} CookieIF* childCookie = new ChildCookie(...)
  * @endcode .
  *
- * [not implemented yet]
  * This cookie is then passed to the child device handlers, which stores the
  * pointer and passes it to the communication interface functions.
  *
@@ -31,4 +31,4 @@ public:
 	virtual ~CookieIF() {};
 };
 
-#endif /* COOKIE_H_ */
+#endif /* FSFW_DEVICEHANDLER_COOKIE_H_ */

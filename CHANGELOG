@@ -22,6 +22,11 @@ the exisiting three error values and the new error set will be hardcoded for
 now, the the constructor for the internal error reporter just takes an object
 ID for now.
 
+### Device Handler Base
+
+- There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
+that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
+
 ### Events
 
 - makeEvent function: Now takes three input parameters instead of two and

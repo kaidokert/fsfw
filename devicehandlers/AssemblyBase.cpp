@@ -2,10 +2,10 @@
 
 AssemblyBase::AssemblyBase(object_id_t objectId, object_id_t parentId,
 		uint16_t commandQueueDepth) :
-		SubsystemBase(objectId, parentId, MODE_OFF, commandQueueDepth), internalState(
-				STATE_NONE), recoveryState(RECOVERY_IDLE), recoveringDevice(
-				childrenMap.end()), targetMode(MODE_OFF), targetSubmode(
-				SUBMODE_NONE) {
+		SubsystemBase(objectId, parentId, MODE_OFF, commandQueueDepth),
+		internalState(STATE_NONE), recoveryState(RECOVERY_IDLE),
+		recoveringDevice(childrenMap.end()), targetMode(MODE_OFF),
+		targetSubmode(SUBMODE_NONE) {
 	recoveryOffTimer.setTimeout(POWER_OFF_TIME_MS);
 }
 
@@ -165,9 +165,8 @@ ReturnValue_t AssemblyBase::checkChildrenState() {
 }
 
 ReturnValue_t AssemblyBase::checkChildrenStateOff() {
-	for (std::map<object_id_t, ChildInfo>::iterator iter = childrenMap.begin();
-			iter != childrenMap.end(); iter++) {
-		if (checkChildOff(iter->first) != RETURN_OK) {
+	for (const auto& childIter: childrenMap) {
+		if (checkChildOff(childIter.first) != RETURN_OK) {
 			return NOT_ENOUGH_CHILDREN_IN_CORRECT_STATE;
 		}
 	}
