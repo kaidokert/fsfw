@@ -31,22 +31,22 @@ public:
 	static const ReturnValue_t INVALID_REQUEST = MAKE_RETURN_CODE(15);
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::MEMORY;
-	static const Event STORE_SEND_WRITE_FAILED = MAKE_EVENT(0, SEVERITY::LOW); //!< Initiating sending data to store failed. Low, par1: returnCode, par2: integer (debug info)
-	static const Event STORE_WRITE_FAILED = MAKE_EVENT(1, SEVERITY::LOW); //!< Data was sent, but writing failed. Low, par1: returnCode, par2: 0
-	static const Event STORE_SEND_READ_FAILED = MAKE_EVENT(2, SEVERITY::LOW); //!< Initiating reading data from store failed. Low, par1: returnCode, par2: 0
-	static const Event STORE_READ_FAILED = MAKE_EVENT(3, SEVERITY::LOW); //!< Data was requested, but access failed. Low, par1: returnCode, par2: 0
-	static const Event UNEXPECTED_MSG = MAKE_EVENT(4, SEVERITY::LOW); //!< An unexpected TM packet or data message occurred. Low, par1: 0, par2: integer (debug info)
-	static const Event STORING_FAILED = MAKE_EVENT(5, SEVERITY::LOW); //!< Storing data failed. May simply be a full store. Low, par1: returnCode, par2: integer (sequence count of failed packet).
-	static const Event TM_DUMP_FAILED = MAKE_EVENT(6, SEVERITY::LOW); //!< Dumping retrieved data failed. Low, par1: returnCode, par2: integer (sequence count of failed packet).
-	static const Event STORE_INIT_FAILED = MAKE_EVENT(7, SEVERITY::LOW); //!< Corrupted init data or read error. Low, par1: returnCode, par2: integer (debug info)
-	static const Event STORE_INIT_EMPTY = MAKE_EVENT(8, SEVERITY::INFO); //!< Store was not initialized. Starts empty. Info, parameters both zero.
-	static const Event STORE_CONTENT_CORRUPTED = MAKE_EVENT(9, SEVERITY::LOW); //!< Data was read out, but it is inconsistent. Low par1: Memory address of corruption, par2: integer (debug info)
-	static const Event STORE_INITIALIZE = MAKE_EVENT(10, SEVERITY::INFO); //!< Info event indicating the store will be initialized, either at boot or after IOB switch. Info. pars: 0
-	static const Event INIT_DONE = MAKE_EVENT(11, SEVERITY::INFO); //!< Info event indicating the store was successfully initialized, either at boot or after IOB switch. Info. pars: 0
-	static const Event DUMP_FINISHED = MAKE_EVENT(12, SEVERITY::INFO); //!< Info event indicating that dumping finished successfully. par1: Number of dumped packets. par2: APID/SSC (16bits each)
-	static const Event DELETION_FINISHED = MAKE_EVENT(13, SEVERITY::INFO); //!< Info event indicating that deletion finished successfully. par1: Number of deleted packets. par2: APID/SSC (16bits each)
-	static const Event DELETION_FAILED = MAKE_EVENT(14, SEVERITY::LOW); //!< Info event indicating that something went wrong during deletion. pars: 0
-	static const Event AUTO_CATALOGS_SENDING_FAILED = MAKE_EVENT(15, SEVERITY::INFO);//!< Info that the a auto catalog report failed
+	static const Event STORE_SEND_WRITE_FAILED = MAKE_EVENT(0, severity::LOW); //!< Initiating sending data to store failed. Low, par1: returnCode, par2: integer (debug info)
+	static const Event STORE_WRITE_FAILED = MAKE_EVENT(1, severity::LOW); //!< Data was sent, but writing failed. Low, par1: returnCode, par2: 0
+	static const Event STORE_SEND_READ_FAILED = MAKE_EVENT(2, severity::LOW); //!< Initiating reading data from store failed. Low, par1: returnCode, par2: 0
+	static const Event STORE_READ_FAILED = MAKE_EVENT(3, severity::LOW); //!< Data was requested, but access failed. Low, par1: returnCode, par2: 0
+	static const Event UNEXPECTED_MSG = MAKE_EVENT(4, severity::LOW); //!< An unexpected TM packet or data message occurred. Low, par1: 0, par2: integer (debug info)
+	static const Event STORING_FAILED = MAKE_EVENT(5, severity::LOW); //!< Storing data failed. May simply be a full store. Low, par1: returnCode, par2: integer (sequence count of failed packet).
+	static const Event TM_DUMP_FAILED = MAKE_EVENT(6, severity::LOW); //!< Dumping retrieved data failed. Low, par1: returnCode, par2: integer (sequence count of failed packet).
+	static const Event STORE_INIT_FAILED = MAKE_EVENT(7, severity::LOW); //!< Corrupted init data or read error. Low, par1: returnCode, par2: integer (debug info)
+	static const Event STORE_INIT_EMPTY = MAKE_EVENT(8, severity::INFO); //!< Store was not initialized. Starts empty. Info, parameters both zero.
+	static const Event STORE_CONTENT_CORRUPTED = MAKE_EVENT(9, severity::LOW); //!< Data was read out, but it is inconsistent. Low par1: Memory address of corruption, par2: integer (debug info)
+	static const Event STORE_INITIALIZE = MAKE_EVENT(10, severity::INFO); //!< Info event indicating the store will be initialized, either at boot or after IOB switch. Info. pars: 0
+	static const Event INIT_DONE = MAKE_EVENT(11, severity::INFO); //!< Info event indicating the store was successfully initialized, either at boot or after IOB switch. Info. pars: 0
+	static const Event DUMP_FINISHED = MAKE_EVENT(12, severity::INFO); //!< Info event indicating that dumping finished successfully. par1: Number of dumped packets. par2: APID/SSC (16bits each)
+	static const Event DELETION_FINISHED = MAKE_EVENT(13, severity::INFO); //!< Info event indicating that deletion finished successfully. par1: Number of deleted packets. par2: APID/SSC (16bits each)
+	static const Event DELETION_FAILED = MAKE_EVENT(14, severity::LOW); //!< Info event indicating that something went wrong during deletion. pars: 0
+	static const Event AUTO_CATALOGS_SENDING_FAILED = MAKE_EVENT(15, severity::INFO);//!< Info that the a auto catalog report failed
 
 	virtual ~TmStoreBackendIF() {}
 	virtual ReturnValue_t performOperation(uint8_t opCode) = 0;

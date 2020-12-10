@@ -1,17 +1,16 @@
+#include "../datapoolglob/GlobalDataSet.h"
 #include "InternalErrorReporter.h"
 
-#include "../datapool/DataSet.h"
-#include "../datapool/PoolVariable.h"
+#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../ipc/MutexFactory.h"
 
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
 InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId,
 		uint32_t queuePoolId, uint32_t tmPoolId, uint32_t storePoolId) :
-		SystemObject(setObjectId), mutex(NULL), queuePoolId(queuePoolId), tmPoolId(
-				tmPoolId), storePoolId(
-				storePoolId), queueHits(0), tmHits(0), storeHits(
-				0) {
+		SystemObject(setObjectId), mutex(NULL), queuePoolId(queuePoolId),
+		tmPoolId(tmPoolId),storePoolId(storePoolId), queueHits(0), tmHits(0),
+		storeHits(0) {
 	mutex = MutexFactory::instance()->createMutex();
 }
 
@@ -21,13 +20,13 @@ InternalErrorReporter::~InternalErrorReporter() {
 
 ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 
-	DataSet mySet;
-	PoolVariable<uint32_t> queueHitsInPool(queuePoolId, &mySet,
+	GlobDataSet mySet;
+	gp_uint32_t queueHitsInPool(queuePoolId, &mySet,
 			PoolVariableIF::VAR_READ_WRITE);
-	PoolVariable<uint32_t> tmHitsInPool(tmPoolId, &mySet,
+	gp_uint32_t tmHitsInPool(tmPoolId, &mySet,
 			PoolVariableIF::VAR_READ_WRITE);
 
-	PoolVariable<uint32_t> storeHitsInPool(storePoolId, &mySet,
+	gp_uint32_t storeHitsInPool(storePoolId, &mySet,
 			PoolVariableIF::VAR_READ_WRITE);
 	mySet.read();
 

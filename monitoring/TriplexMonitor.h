@@ -82,7 +82,7 @@ public:
 			parameterWrapper->set(limit);
 			break;
 		default:
-			return INVALID_MATRIX_ID;
+			return INVALID_IDENTIFIER_ID;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}

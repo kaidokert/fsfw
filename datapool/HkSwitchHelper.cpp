@@ -1,5 +1,4 @@
-#include "HkSwitchHelper.h"
-//#include <mission/tmtcservices/HKService_03.h>
+#include "../datapool/HkSwitchHelper.h"
 #include "../ipc/QueueFactory.h"
 
 HkSwitchHelper::HkSwitchHelper(EventReportingProxyIF* eventProxy) :
@@ -22,14 +21,14 @@ ReturnValue_t HkSwitchHelper::initialize() {
 }
 
 ReturnValue_t HkSwitchHelper::performOperation(uint8_t operationCode) {
-	CommandMessage message;
-	while (actionQueue->receiveMessage(&message) == HasReturnvaluesIF::RETURN_OK) {
-		ReturnValue_t result = commandActionHelper.handleReply(&message);
+	CommandMessage command;
+	while (actionQueue->receiveMessage(&command) == HasReturnvaluesIF::RETURN_OK) {
+		ReturnValue_t result = commandActionHelper.handleReply(&command);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
 			continue;
 		}
-		message.setToUnknownCommand();
-		actionQueue->reply(&message);
+		command.setToUnknownCommand();
+		actionQueue->reply(&command);
 	}
 
 	return HasReturnvaluesIF::RETURN_OK;
