@@ -15,6 +15,13 @@ a C file without issues
 - The same is possible for the event reporting service (PUS5)
 - PUS Health Service added, which allows to command and retrieve health via PUS packets
 
+### Internal Error Reporter
+
+- The new internal error reporter uses the local data pools. The pool IDs for
+the exisiting three error values and the new error set will be hardcoded for
+now, the the constructor for the internal error reporter just takes an object
+ID for now.
+
 ### Device Handler Base
 
 - There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
