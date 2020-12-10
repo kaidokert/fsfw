@@ -746,6 +746,7 @@ protected:
 	/**
 	 * Helper function to get pending command. This is useful for devices
 	 * like SPI sensors to identify the last sent command.
+	 * This only returns the command sent in the last SEND_WRITE cycle.
 	 * @return
 	 */
 	DeviceCommandId_t getPendingCommand() const;
