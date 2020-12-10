@@ -29,6 +29,10 @@ information as well as  the rows and column number. Rows and column will
 default to one, which is equivalent to one scalar parameter (the most
 important use-case)
    
+### File System Interface
+
+- A new interfaces specifies the functions for a software object which exposes the file system of a given hardware to use message based file handling (e.g. PUS commanding)
+
 ### Internal Error Reporter
 
 - The new internal error reporter uses the local data pools. The pool IDs for
