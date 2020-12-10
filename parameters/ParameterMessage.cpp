@@ -25,10 +25,26 @@ void ParameterMessage::setParameterDumpReply(CommandMessage* message,
 }
 
 void ParameterMessage::setParameterLoadCommand(CommandMessage* message,
-		ParameterId_t id, store_address_t storageID) {
+		ParameterId_t id, store_address_t storeId, uint8_t ptc, uint8_t pfc,
+		uint8_t rows = 1, uint8_t columns = 1) {
 	message->setCommand(CMD_PARAMETER_LOAD);
 	message->setParameter(id);
-	message->setParameter2(storageID.raw);
+	message->setParameter2(storeId.raw);
+	uint32_t packedParameterSettings = (ptc << 24) | (pfc << 16) |
+	        (rows << 8) | columns;
+	message->setParameter3(packedParameterSettings);
+}
+
+store_address_t ParameterMessage::getParameterLoadCommand(
+        const CommandMessage *message, ParameterId_t* parameterId, uint8_t *ptc,
+        uint8_t *pfc, uint8_t *rows, uint8_t *columns) {
+    *parameterId = message->getParameter2();
+    uint32_t packedParamSettings = message->getParameter3();
+    *ptc = packedParamSettings >> 24 & 0xff;
+    *pfc = packedParamSettings >> 16 & 0xff;
+    *rows = packedParamSettings >> 8 & 0xff;
+    *columns = packedParamSettings & 0xff;
+    return message->getParameter2();
 }
 
 void ParameterMessage::clear(CommandMessage* message) {
