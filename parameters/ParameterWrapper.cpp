@@ -123,7 +123,8 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 	for (uint8_t fromRow = 0; fromRow < fromRows; fromRow++) {
 
 		//get the start element of this row in data
-	    uint16_t offset = (((startingRow + fromRow) * columns) + startingColumn);
+	    uint16_t offset = (((startingRow + fromRow) *
+	    		static_cast<uint16_t>(columns)) + startingColumn);
 		T *dataWithDataType = static_cast<T*>(data) + offset;
 
 		for (uint8_t fromColumn = 0; fromColumn < fromColumns; fromColumn++) {
@@ -296,8 +297,8 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		//need a type to do arithmetic
 		uint8_t* typedData = static_cast<uint8_t*>(data);
 		for (uint8_t fromRow = 0; fromRow < from->rows; fromRow++) {
-			size_t offset = (((startingRow + fromRow) * columns) +
-					startingColumn) * typeSize;
+			size_t offset = (((startingRow + fromRow) * static_cast<uint16_t>(
+					columns)) + startingColumn) * typeSize;
 			std::memcpy(typedData +  offset, from->readonlyData,
 					typeSize * from->columns);
 		}
