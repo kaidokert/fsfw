@@ -279,14 +279,14 @@ ReturnValue_t Heater::initialize() {
 }
 
 void Heater::handleQueue() {
-	CommandMessage message;
-	ReturnValue_t result = commandQueue->receiveMessage(&message);
+	CommandMessage command;
+	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result == HasReturnvaluesIF::RETURN_OK) {
-		result = healthHelper.handleHealthCommand(&message);
+		result = healthHelper.handleHealthCommand(&command);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
 			return;
 		}
-		parameterHelper.handleParameterMessage(&message);
+		parameterHelper.handleParameterMessage(&command);
 	}
 }
 
@@ -301,7 +301,7 @@ ReturnValue_t Heater::getParameter(uint8_t domainId, uint16_t parameterId,
 		parameterWrapper->set(heaterOnCountdown.timeout);
 		break;
 	default:
-		return INVALID_MATRIX_ID;
+		return INVALID_IDENTIFIER_ID;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
