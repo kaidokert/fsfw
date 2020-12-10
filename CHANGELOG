@@ -19,6 +19,11 @@ a C file without issues
 
 - A new interfaces specifies the functions for a software object which exposes the file system of a given hardware to use message based file handling (e.g. PUS commanding)
 
+### Device Handler Base
+
+- There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
+that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
+
 ### Events
 
 - makeEvent function: Now takes three input parameters instead of two and
