@@ -1,8 +1,8 @@
-#include <fsfw/ipc/MessageQueueIF.h>
-#include <fsfw/ipc/QueueFactory.h>
-#include "catch.hpp"
+#include "../../ipc/MessageQueueIF.h"
+#include "../../ipc/QueueFactory.h"
+#include <catch.hpp>
 #include <array>
-#include "core/CatchDefinitions.h"
+#include "../../core/CatchDefinitions.h"
 
 TEST_CASE("MessageQueue Basic Test","[TestMq]") {
 	MessageQueueIF* testSenderMq =
