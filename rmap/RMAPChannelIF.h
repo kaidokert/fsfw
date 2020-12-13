@@ -1,7 +1,7 @@
-#ifndef RMAPCHANNELIF_H_
-#define RMAPCHANNELIF_H_
+#ifndef FSFW_RMAP_RMAPCHANNELIF_H_
+#define FSFW_RMAP_RMAPCHANNELIF_H_
 
-#include "../rmap/RMAPCookie.h"
+#include "RMAPCookie.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
@@ -113,4 +113,4 @@ public:
 
 };
 
-#endif /* RMAPCHANNELIF_H_ */
+#endif /* FSFW_RMAP_RMAPCHANNELIF_H_ */

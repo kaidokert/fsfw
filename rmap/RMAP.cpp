@@ -1,8 +1,10 @@
+#include "RMAP.h"
+#include "rmapStructs.h"
+#include "RMAPChannelIF.h"
+
 #include "../devicehandlers/DeviceCommunicationIF.h"
-#include "../rmap/rmapStructs.h"
-#include "../rmap/RMAP.h"
-#include "../rmap/RMAPChannelIF.h"
-#include <stddef.h>
+
+#include <cstddef>
 
 ReturnValue_t RMAP::reset(RMAPCookie* cookie) {
 	return cookie->getChannel()->reset();
