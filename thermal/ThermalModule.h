@@ -5,8 +5,6 @@
 #include "tcsDefinitions.h"
 #include "RedundantHeater.h"
 
-//#include "../datapoolglob/GlobalDataSet.h"
-//#include "../datapoolglob/GlobalPoolVariable.h"
 #include "../datapoollocal/LocalPoolDataSetBase.h"
 #include "../datapoollocal/LocalPoolVariable.h"
 #include "../devicehandlers/HealthDevice.h"
@@ -78,7 +76,6 @@ protected:
 	Parameters parameters;
 
 	lp_var_t<float> moduleTemperature;
-	//gp_float_t moduleTemperature;
 
 	RedundantHeater *heater = nullptr;
 
