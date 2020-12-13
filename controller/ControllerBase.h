@@ -72,9 +72,6 @@ protected:
 
 	HealthHelper healthHelper;
 
-	// Is this still needed?
-	HkSwitchHelper hkSwitcher;
-
 	/**
 	 * Pointer to the task which executes this component,
 	 * is invalid before setTaskIF was called.
