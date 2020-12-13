@@ -2,6 +2,7 @@
 #define FSFW_IPC_COMMANDMESSAGE_H_
 
 #include "CommandMessageIF.h"
+
 #include "MessageQueueMessage.h"
 #include "FwMessageTypes.h"
 
