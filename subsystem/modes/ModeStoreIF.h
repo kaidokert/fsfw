@@ -5,10 +5,11 @@
 
 #if FSFW_USE_MODESTORE == 1
 
+#include "ModeDefinitions.h"
+
 #include "../../container/ArrayList.h"
 #include "../../container/SinglyLinkedList.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
-#include "../../subsystem/modes/ModeDefinitions.h"
 
 class ModeStoreIF {
 public:
