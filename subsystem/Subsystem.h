@@ -10,6 +10,8 @@
 #include "../container/SinglyLinkedList.h"
 #include "../serialize/SerialArrayListAdapter.h"
 
+#include <FSFWConfig.h>
+
 /**
  * @brief   TODO: documentation missing
  * @details
@@ -116,7 +118,7 @@ protected:
 
 	StorageManagerIF *IPCStore = nullptr;
 
-#ifdef USE_MODESTORE
+#if FSFW_USE_MODESTORE == 1
 	ModeStoreIF *modeStore = nullptr;
 #endif
 

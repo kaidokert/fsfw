@@ -1,7 +1,9 @@
 #ifndef MODESTORE_H_
 #define MODESTORE_H_
 
-#ifdef USE_MODESTORE
+#include <FSFWConfig.h>
+
+#if FSFW_USE_MODESTORE == 1
 
 #include "../../container/ArrayList.h"
 #include "../../container/SinglyLinkedList.h"

@@ -2,6 +2,7 @@
 #define FSFW_SUBSYSTEM_MODES_MODESEQUENCEMESSAGE_H_
 
 #include "ModeDefinitions.h"
+
 #include "../../ipc/CommandMessage.h"
 #include "../../storagemanager/StorageManagerIF.h"
 
