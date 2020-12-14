@@ -1,12 +1,8 @@
-#ifndef OS_LINUX_MUTEX_H_
-#define OS_LINUX_MUTEX_H_
+#ifndef FSFW_OSAL_LINUX_MUTEX_H_
+#define FSFW_OSAL_LINUX_MUTEX_H_
 
 #include "../../ipc/MutexIF.h"
-
-extern "C" {
 #include <pthread.h>
-}
-
 
 class Mutex : public MutexIF {
 public:

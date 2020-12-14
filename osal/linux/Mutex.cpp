@@ -1,4 +1,4 @@
-#include "../../osal/linux/Mutex.h"
+#include "Mutex.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../timemanager/Clock.h"
 
