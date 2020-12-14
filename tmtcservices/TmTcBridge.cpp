@@ -1,7 +1,6 @@
-#include "../tmtcservices/TmTcBridge.h"
+#include "TmTcBridge.h"
 
 #include "../ipc/QueueFactory.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../globalfunctions/arrayprinter.h"
 

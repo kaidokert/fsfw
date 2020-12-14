@@ -1,9 +1,10 @@
+#include "PusServiceBase.h"
+#include "AcceptsTelemetryIF.h"
+#include "PusVerificationReport.h"
+#include "TmTcMessage.h"
+
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../tcdistribution/PUSDistributorIF.h"
-#include "../tmtcservices/AcceptsTelemetryIF.h"
-#include "../tmtcservices/PusServiceBase.h"
-#include "../tmtcservices/PusVerificationReport.h"
-#include "../tmtcservices/TmTcMessage.h"
 #include "../ipc/QueueFactory.h"
 
 object_id_t PusServiceBase::packetSource = 0;
@@ -60,11 +61,11 @@ void PusServiceBase::handleRequestQueue() {
 			//    ": handleRequest returned: " << (int)return_code << std::endl;
 			if (result == RETURN_OK) {
 				this->verifyReporter.sendSuccessReport(
-						TC_VERIFY::COMPLETION_SUCCESS, &this->currentPacket);
+						tc_verification::COMPLETION_SUCCESS, &this->currentPacket);
 			}
 			else {
 				this->verifyReporter.sendFailureReport(
-						TC_VERIFY::COMPLETION_FAILURE, &this->currentPacket,
+						tc_verification::COMPLETION_FAILURE, &this->currentPacket,
 						result, 0, errorParameter1, errorParameter2);
 			}
 			this->currentPacket.deletePacket();
