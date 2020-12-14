@@ -1,4 +1,4 @@
-#include "../globalfunctions/Type.h"
+#include "Type.h"
 #include "../serialize/SerializeAdapter.h"
 
 Type::Type() :
