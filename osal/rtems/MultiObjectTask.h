@@ -80,7 +80,7 @@ protected:
 	/**
 	 * @brief	The pointer to the deadline-missed function.
 	 * @details	This pointer stores the function that is executed if the task's deadline is missed.
-	 * 			So, each may react individually on a timing failure. The pointer may be NULL,
+	 * 			So, each may react individually on a timing failure. The pointer may be nullptr,
 	 * 			then nothing happens on missing the deadline. The deadline is equal to the next execution
 	 * 			of the periodic task.
 	 */

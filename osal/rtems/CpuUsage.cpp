@@ -158,7 +158,7 @@ uint32_t CpuUsage::ThreadData::getSerializedSize() const {
 }
 
 ReturnValue_t CpuUsage::ThreadData::deSerialize(const uint8_t** buffer,
-		int32_t* size, Endianness streamEndianness) {
+		size_t* size, Endianness streamEndianness) {
 	ReturnValue_t result = SerializeAdapter::deSerialize(&id, buffer,
 			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
