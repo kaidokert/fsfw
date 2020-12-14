@@ -7,6 +7,9 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
+
 /**
  * @brief 	Couting Semaphore implementation which uses the notification value
  * 			of the task. The notification value should therefore not be used
@@ -99,5 +102,8 @@ private:
 	TaskHandle_t handle;
 	const uint8_t maxCount;
 };
+
+#endif /* (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8 */
 
 #endif /* FSFW_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_ */

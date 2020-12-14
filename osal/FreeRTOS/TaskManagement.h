@@ -26,38 +26,37 @@ enum class CallContext {
 };
 
 
-class TaskManagement {
-public:
-	/**
-	 * @brief	In this function, a function dependant on the portmacro.h header
-	 * 			function calls to request a context switch can be specified.
-	 * This can be used if sending to the queue from an ISR caused a task
-	 * to unblock and a context switch is required.
-	 */
-	static void requestContextSwitch(CallContext callContext);
+namespace TaskManagement {
+/**
+ * @brief	In this function, a function dependant on the portmacro.h header
+ * 			function calls to request a context switch can be specified.
+ * This can be used if sending to the queue from an ISR caused a task
+ * to unblock and a context switch is required.
+ */
+void requestContextSwitch(CallContext callContext);
 
-	/**
-	 * If task preemption in FreeRTOS is disabled, a context switch
-	 * can be requested manually by calling this function.
-	 */
-	static void vRequestContextSwitchFromTask(void);
+/**
+ * If task preemption in FreeRTOS is disabled, a context switch
+ * can be requested manually by calling this function.
+ */
+void vRequestContextSwitchFromTask(void);
 
-	/**
-	 * @return The current task handle
-	 */
-	static TaskHandle_t getCurrentTaskHandle();
+/**
+ * @return The current task handle
+ */
+TaskHandle_t getCurrentTaskHandle();
 
-	/**
-	 * Get returns the minimum amount of remaining stack space in words
-	 * that was a available to the task since the task started executing.
-	 * Please note that the actual value in bytes depends
-	 * on the stack depth type.
-	 * E.g. on a 32 bit machine, a value of 200 means 800 bytes.
-	 * @return Smallest value of stack remaining since the task was started in
-	 * 		   words.
-	 */
-	static size_t getTaskStackHighWatermark(
-	        TaskHandle_t task = nullptr);
+/**
+ * Get returns the minimum amount of remaining stack space in words
+ * that was a available to the task since the task started executing.
+ * Please note that the actual value in bytes depends
+ * on the stack depth type.
+ * E.g. on a 32 bit machine, a value of 200 means 800 bytes.
+ * @return Smallest value of stack remaining since the task was started in
+ * 		   words.
+ */
+size_t getTaskStackHighWatermark(TaskHandle_t task = nullptr);
+
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_ */
