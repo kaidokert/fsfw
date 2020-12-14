@@ -7,6 +7,9 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
+
 // todo: does not work for older FreeRTOS version, so we should
 // actually check whether tskKERNEL_VERSION_MAJOR is larger than.. 7 or 8 ?
 
@@ -89,5 +92,7 @@ public:
 protected:
 	TaskHandle_t handle;
 };
+
+#endif
 
 #endif /* FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_ */
