@@ -1,9 +1,10 @@
-#ifndef FRAMEWORK_TASKS_TASKFACTORY_H_
-#define FRAMEWORK_TASKS_TASKFACTORY_H_
+#ifndef FSFW_TASKS_TASKFACTORY_H_
+#define FSFW_TASKS_TASKFACTORY_H_
+
+#include "FixedTimeslotTaskIF.h"
+#include "Typedef.h"
 
 #include <cstdlib>
-#include "../tasks/FixedTimeslotTaskIF.h"
-#include "../tasks/Typedef.h"
 
 /**
  * Singleton Class that produces Tasks.
@@ -19,14 +20,13 @@ public:
 	static TaskFactory* instance();
 
 	/**
-	 * Generic interface to create a periodic task
+	 * Creates a new periodic task and returns the interface pointer.
 	 * @param name_ Name of the task
 	 * @param taskPriority_ Priority of the task
-	 * @param stackSize_ Stack size if the task
-	 * @param periodInSeconds_ Period in seconds
-	 * @param deadLineMissedFunction_ This function is called if a deadline was
-	 * missed
-	 * @return Pointer to the created periodic task class
+	 * @param stackSize_ Stack Size of the task
+	 * @param period_ Period of the task
+	 * @param deadLineMissedFunction_ Function to be called if a deadline was missed
+	 * @return PeriodicTaskIF* Pointer to the newly created Task
 	 */
 	PeriodicTaskIF* createPeriodicTask(TaskName name_,
 			TaskPriority taskPriority_, TaskStackSize stackSize_,
@@ -34,14 +34,13 @@ public:
 			TaskDeadlineMissedFunction deadLineMissedFunction_);
 
 	/**
-	 * Generic interface to create a fixed timeslot task
+	 *
 	 * @param name_ Name of the task
 	 * @param taskPriority_ Priority of the task
-	 * @param stackSize_ Stack size if the task
-	 * @param periodInSeconds_ Period in seconds
-	 * @param deadLineMissedFunction_ This function is called if a deadline was
-	 * missed
-	 * @return Pointer to the created periodic task class
+	 * @param stackSize_ Stack Size of the task
+	 * @param period_ Period of the task
+	 * @param deadLineMissedFunction_ Function to be called if a deadline was missed
+	 * @return FixedTimeslotTaskIF* Pointer to the newly created Task
 	 */
 	FixedTimeslotTaskIF* createFixedTimeslotTask(TaskName name_,
 			TaskPriority taskPriority_, TaskStackSize stackSize_,
@@ -51,10 +50,10 @@ public:
 	/**
 	 * Function to be called to delete a task
 	 * @param task The pointer to the task that shall be deleted,
-	 * 				NULL specifies current Task
+	 * nullptr specifies current Task
 	 * @return Success of deletion
 	 */
-	static ReturnValue_t deleteTask(PeriodicTaskIF* task = NULL);
+	static ReturnValue_t deleteTask(PeriodicTaskIF* task = nullptr);
 
 	/**
 	 * Function to be called to delay current task
@@ -62,12 +61,14 @@ public:
 	 * @return Success of deletion
 	 */
 	static ReturnValue_t delayTask(uint32_t delayMs);
+
 private:
 	/**
 	 * External instantiation is not allowed.
 	 */
 	TaskFactory();
 	static TaskFactory* factoryInstance;
+
 };
 
-#endif /* FRAMEWORK_TASKS_TASKFACTORY_H_ */
+#endif /* FSFW_TASKS_TASKFACTORY_H_ */
