@@ -76,7 +76,7 @@ ReturnValue_t FaultCounter::getParameter(uint8_t domainId, uint16_t parameterId,
 		parameterWrapper->set(timer.timeout);
 		break;
 	default:
-		return INVALID_MATRIX_ID;
+		return INVALID_IDENTIFIER_ID;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }

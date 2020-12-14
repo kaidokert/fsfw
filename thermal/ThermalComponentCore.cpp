@@ -1,4 +1,5 @@
 #include "ThermalComponentCore.h"
+#include "tcsDefinitions.h"
 
 ThermalComponentCore::ThermalComponentCore(object_id_t reportingObjectId,
         uint8_t domainId, gp_id_t temperaturePoolId,
@@ -60,7 +61,7 @@ ThermalComponentIF::HeaterRequest ThermalComponentCore::performOperation(
 	//SHOULDDO: Better pass db_float_t* to getTemperature and set it invalid if invalid.
 	temperature = getTemperature();
 	updateMinMaxTemp();
-	if (temperature != INVALID_TEMPERATURE) {
+	if (temperature != thermal::INVALID_TEMPERATURE) {
 		temperature.setValid(PoolVariableIF::VALID);
 		State state = getState(temperature.value, getParameters(),
 				targetState.value);
@@ -119,7 +120,7 @@ ReturnValue_t ThermalComponentCore::setTargetState(int8_t newState) {
 }
 
 void ThermalComponentCore::setOutputInvalid() {
-	temperature = INVALID_TEMPERATURE;
+	temperature = thermal::INVALID_TEMPERATURE;
 	temperature.setValid(PoolVariableIF::INVALID);
 	currentState.setValid(PoolVariableIF::INVALID);
 	heaterRequest = HEATER_DONT_CARE;
@@ -144,13 +145,13 @@ float ThermalComponentCore::getTemperature() {
 
 	if (thermalModule != nullptr) {
 		float temperature = thermalModule->getTemperature();
-		if (temperature != ThermalModuleIF::INVALID_TEMPERATURE) {
+		if (temperature != thermal::INVALID_TEMPERATURE) {
 			return temperature;
 		} else {
-			return INVALID_TEMPERATURE;
+			return thermal::INVALID_TEMPERATURE;
 		}
 	} else {
-		return INVALID_TEMPERATURE;
+		return thermal::INVALID_TEMPERATURE;
 	}
 }
 
@@ -226,7 +227,7 @@ ThermalComponentIF::State ThermalComponentCore::getIgnoredState(int8_t state) {
 }
 
 void ThermalComponentCore::updateMinMaxTemp() {
-	if (temperature == INVALID_TEMPERATURE) {
+	if (temperature == thermal::INVALID_TEMPERATURE) {
 		return;
 	}
 	if (temperature < minTemp) {
