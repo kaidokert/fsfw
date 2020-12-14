@@ -1,6 +1,6 @@
 #include "IntTestMutex.h"
 
-#include "../../ipc/MutexFactory.h"
+#include "../../../ipc/MutexFactory.h"
 #include "../UnittDefinitions.h"
 
 #if defined(hosted)
