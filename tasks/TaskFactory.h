@@ -1,9 +1,9 @@
-#ifndef FRAMEWORK_TASKS_TASKFACTORY_H_
-#define FRAMEWORK_TASKS_TASKFACTORY_H_
+#ifndef FSFW_TASKS_TASKFACTORY_H_
+#define FSFW_TASKS_TASKFACTORY_H_
 
-#include <stdlib.h>
 #include "FixedTimeslotTaskIF.h"
 #include "Typedef.h"
+#include <cstdlib>
 
 /**
  * Singleton Class that produces Tasks.
@@ -69,4 +69,4 @@ private:
 
 };
 
-#endif /* FRAMEWORK_TASKS_TASKFACTORY_H_ */
+#endif /* FSFW_TASKS_TASKFACTORY_H_ */
