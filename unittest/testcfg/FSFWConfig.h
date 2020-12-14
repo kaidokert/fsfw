@@ -29,13 +29,11 @@
 //! additional output which requires the translation files translateObjects
 //! and translateEvents (and their compiles source files)
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
-#define FSFW_DEBUG_OUTPUT 			1
 //! Specify whether info events are printed too.
-#define FSFW_DEBUG_INFO				1
+#define FSFW_DEBUG_INFO             1
 #include <translateObjects.h>
 #include <translateEvents.h>
 #else
-#define FSFW_DEBUG_OUTPUT			0
 #endif
 
 //! When using the newlib nano library, C99 support for stdio facilities
