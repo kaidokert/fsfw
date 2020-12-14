@@ -1,9 +1,12 @@
-#ifndef TYPE_H_
-#define TYPE_H_
+#ifndef FSFW_GLOBALFUNCTIONS_TYPE_H_
+#define FSFW_GLOBALFUNCTIONS_TYPE_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
 
+/**
+ * @brief 	Type definition for CCSDS or ECSS.
+ */
 class Type: public SerializeIF {
 public:
 	enum ActualType_t {
@@ -56,6 +59,10 @@ struct PodTypeConversion {
 	static const Type::ActualType_t type = Type::UNKNOWN_TYPE;
 };
 template<>
+struct PodTypeConversion<bool> {
+    static const Type::ActualType_t type = Type::UINT8_T;
+};
+template<>
 struct PodTypeConversion<uint8_t> {
 	static const Type::ActualType_t type = Type::UINT8_T;
 };
@@ -88,4 +95,4 @@ struct PodTypeConversion<double> {
 	static const Type::ActualType_t type = Type::DOUBLE;
 };
 
-#endif /* TYPE_H_ */
+#endif /* FSFW_GLOBALFUNCTIONS_TYPE_H_ */
