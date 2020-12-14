@@ -1,7 +1,5 @@
 #include "EventManager.h"
-#include "EventMessage.h"
 #include <FSFWConfig.h>
-
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
@@ -11,6 +9,7 @@
 // objects registering for certain events.
 // Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
 // So a good guess is 75 to a max of 100 pools required for each, which fits well.
+// This should be configurable..
 const LocalPool::LocalPoolConfig EventManager::poolConfig = {
         {fsfwconfig::FSFW_EVENTMGMR_MATCHTREE_NODES,
         		sizeof(EventMatchTree::Node)},
@@ -43,7 +42,7 @@ ReturnValue_t EventManager::performOperation(uint8_t opCode) {
 		EventMessage message;
 		result = eventReportQueue->receiveMessage(&message);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
-#ifdef DEBUG
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 			printEvent(&message);
 #endif
 			notifyListeners(&message);
@@ -119,8 +118,8 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
-	case severity::INFO:
-#ifdef DEBUG_INFO_EVENT
+	case SEVERITY::INFO:
+#if DEBUG_INFO_EVENT == 1
 		string = translateObject(message->getReporter());
 		sif::info << "EVENT: ";
 		if (string != 0) {
