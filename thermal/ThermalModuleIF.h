@@ -2,6 +2,7 @@
 #define THERMALMODULEIF_H_
 
 #include "ThermalComponentIF.h"
+
 class AbstractTemperatureSensor;
 
 class ThermalModuleIF{
@@ -17,8 +18,6 @@ public:
 	enum State {
 		NON_OPERATIONAL = 0, OPERATIONAL = 1, UNKNOWN = 2
 	};
-
-	static constexpr float INVALID_TEMPERATURE = 999;
 
 	virtual ~ThermalModuleIF() {
 

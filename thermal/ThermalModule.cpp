@@ -107,7 +107,7 @@ void ThermalModule::calculateTemperature() {
 		moduleTemperature = moduleTemperature.value / numberOfValidSensors;
 		moduleTemperature.setValid(PoolVariableIF::VALID);
 	} else {
-		moduleTemperature = INVALID_TEMPERATURE;
+		moduleTemperature.value = thermal::INVALID_TEMPERATURE;
 		moduleTemperature.setValid(PoolVariableIF::INVALID);
 	}
 }
@@ -219,7 +219,7 @@ void ThermalModule::initialize(PowerSwitchIF* powerSwitch) {
 bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 		Strategy strategy) {
 	currentState.setValid(PoolVariableIF::VALID);
-	if (moduleTemperature == INVALID_TEMPERATURE) {
+	if (moduleTemperature == thermal::INVALID_TEMPERATURE) {
 		currentState = UNKNOWN;
 		return false;
 	}
@@ -282,7 +282,7 @@ void ThermalModule::updateTargetTemperatures(ThermalComponentIF* component,
 }
 
 void ThermalModule::setOutputInvalid() {
-	moduleTemperature = INVALID_TEMPERATURE;
+	moduleTemperature = thermal::INVALID_TEMPERATURE;
 	moduleTemperature.setValid(PoolVariableIF::INVALID);
 	currentState.setValid(PoolVariableIF::INVALID);
 	std::list<ComponentData>::iterator iter = components.begin();
