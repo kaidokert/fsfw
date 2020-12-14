@@ -1,10 +1,12 @@
+#include "Subsystem.h"
+
 #include "../health/HealthMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerialArrayListAdapter.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../serialize/SerializeElement.h"
 #include "../serialize/SerialLinkedListAdapter.h"
-#include "Subsystem.h"
+
 #include <string>
 
 Subsystem::Subsystem(object_id_t setObjectId, object_id_t parent,

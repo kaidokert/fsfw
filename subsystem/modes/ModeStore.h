@@ -1,12 +1,14 @@
 #ifndef MODESTORE_H_
 #define MODESTORE_H_
 
-#ifdef USE_MODESTORE
+#include <FSFWConfig.h>
+
+#if FSFW_USE_MODESTORE == 1
 
 #include "../../container/ArrayList.h"
 #include "../../container/SinglyLinkedList.h"
 #include "../../objectmanager/SystemObject.h"
-#include "ModeStoreIF.h"
+#include "../../subsystem/modes/ModeStoreIF.h"
 
 class ModeStore: public ModeStoreIF, public SystemObject {
 public:

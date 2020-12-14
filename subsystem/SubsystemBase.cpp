@@ -1,13 +1,13 @@
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "SubsystemBase.h"
+
+#include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		Mode_t initialMode, uint16_t commandQueueDepth) :
-		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE), childrenChangedMode(
-		false), commandsOutstanding(0), commandQueue(NULL), healthHelper(this,
-				setObjectId), modeHelper(this), parentId(parent) {
+		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE),
+		childrenChangedMode(false), commandsOutstanding(0), commandQueue(NULL),
+		healthHelper(this, setObjectId), modeHelper(this), parentId(parent) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth,
 			CommandMessage::MAX_MESSAGE_SIZE);
 }
