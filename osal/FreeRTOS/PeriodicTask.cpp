@@ -80,10 +80,16 @@ void PeriodicTask::taskFunctionality() {
 			object->performOperation();
 		}
 
-		checkMissedDeadline(xLastWakeTime, xPeriod);
-
-		vTaskDelayUntil(&xLastWakeTime, xPeriod);
-
+#if (tskKERNEL_VERSION_MAJOR == 10 && tskKERNEL_VERSION_MINOR >= 4) || \
+    tskKERNEL_VERSION_MAJOR > 10
+		BaseType_t wasDelayed = xTaskDelayUntil(&xLastWakeTime, xPeriod);
+		if(wasDelayed == pdFALSE) {
+		    handleMissedDeadline();
+		}
+#else
+        checkMissedDeadline(xLastWakeTime, xPeriod);
+        vTaskDelayUntil(&xLastWakeTime, xPeriod);
+#endif
 	}
 }
 
@@ -112,8 +118,6 @@ void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
      * it. */
     TickType_t currentTickCount = xTaskGetTickCount();
     TickType_t timeToWake = xLastWakeTime + interval;
-#if tskKERNEL_VERSION_MAJOR >= 10 && tskKERNEL_VERSION_MINOR > 4)
-#else
     // Time to wake has not overflown.
     if(timeToWake > xLastWakeTime) {
         /* If the current time has overflown exclusively or the current
@@ -128,7 +132,7 @@ void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
     else if((timeToWake < xLastWakeTime) and (currentTickCount > timeToWake)) {
         handleMissedDeadline();
     }
-#endif
+
 }
 
 TaskHandle_t PeriodicTask::getTaskHandle() {

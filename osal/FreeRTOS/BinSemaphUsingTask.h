@@ -10,9 +10,6 @@
 #if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
     tskKERNEL_VERSION_MAJOR > 8
 
-// todo: does not work for older FreeRTOS version, so we should
-// actually check whether tskKERNEL_VERSION_MAJOR is larger than.. 7 or 8 ?
-
 /**
  * @brief 	Binary Semaphore implementation using the task notification value.
  * 			The notification value should therefore not be used

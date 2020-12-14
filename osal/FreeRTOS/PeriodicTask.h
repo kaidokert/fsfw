@@ -71,6 +71,7 @@ public:
 
 	TaskHandle_t getTaskHandle() override;
 protected:
+
 	bool started;
 	TaskHandle_t handle;
 
