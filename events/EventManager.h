@@ -1,14 +1,16 @@
-#ifndef EVENTMANAGER_H_
-#define EVENTMANAGER_H_
+#ifndef FSFW_EVENT_EVENTMANAGER_H_
+#define FSFW_EVENT_EVENTMANAGER_H_
 
-#include "eventmatching/EventMatchTree.h"
 #include "EventManagerIF.h"
+#include "eventmatching/EventMatchTree.h"
+
+#include <FSFWConfig.h>
+
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/LocalPool.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexIF.h"
-#include <FSFWConfig.h>
 
 #include <map>
 
@@ -68,4 +70,4 @@ protected:
 	void unlockMutex();
 };
 
-#endif /* EVENTMANAGER_H_ */
+#endif /* FSFW_EVENT_EVENTMANAGER_H_ */
