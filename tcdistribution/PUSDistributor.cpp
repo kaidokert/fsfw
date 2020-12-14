@@ -77,14 +77,14 @@ ReturnValue_t PUSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
 		tcStatus = queueStatus;
 	}
 	if (tcStatus != RETURN_OK) {
-		this->verifyChannel.sendFailureReport(TC_VERIFY::ACCEPTANCE_FAILURE,
+		this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE,
 				currentPacket, tcStatus);
 		// A failed packet is deleted immediately after reporting,
 		// otherwise it will block memory.
 		currentPacket->deletePacket();
 		return RETURN_FAILED;
 	} else {
-		this->verifyChannel.sendSuccessReport(TC_VERIFY::ACCEPTANCE_SUCCESS,
+		this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS,
 				currentPacket);
 		return RETURN_OK;
 	}
@@ -95,16 +95,19 @@ uint16_t PUSDistributor::getIdentifier() {
 }
 
 ReturnValue_t PUSDistributor::initialize() {
+    currentPacket = new TcPacketStored();
+    if(currentPacket == nullptr) {
+        // Should not happen, memory allocation failed!
+        return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+
 	CCSDSDistributorIF* ccsdsDistributor =
 			objectManager->get<CCSDSDistributorIF>(packetSource);
-	currentPacket = new TcPacketStored();
 	if (ccsdsDistributor == nullptr) {
 		sif::error << "PUSDistributor::initialize: Packet source invalid."
 		        << " Make sure it exists and implements CCSDSDistributorIF!"
 		        << std::endl;
 	    return RETURN_FAILED;
 	}
-	else {
-		return ccsdsDistributor->registerApplication(this);
-	}
+	return ccsdsDistributor->registerApplication(this);
 }
