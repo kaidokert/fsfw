@@ -2,6 +2,9 @@
 #include "TaskManagement.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
+
 BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 	handle = TaskManagement::getCurrentTaskHandle();
 	if(handle == nullptr) {
@@ -97,3 +100,6 @@ uint8_t BinarySemaphoreUsingTask::getSemaphoreCounterFromISR(
 			higherPriorityTaskWoken);
 	return notificationValue;
 }
+
+#endif /* (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8 */

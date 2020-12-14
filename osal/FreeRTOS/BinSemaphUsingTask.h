@@ -90,6 +90,7 @@ protected:
 	TaskHandle_t handle;
 };
 
-#endif
+#endif /* (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8 */
 
 #endif /* FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_ */

@@ -22,3 +22,4 @@ size_t TaskManagement::getTaskStackHighWatermark(
         TaskHandle_t task) {
 	return uxTaskGetStackHighWaterMark(task) * sizeof(StackType_t);
 }
+
