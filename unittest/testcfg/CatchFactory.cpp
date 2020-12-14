@@ -24,31 +24,27 @@ void Factory::produce(void) {
 	setStaticFrameworkObjectIds();
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);
-	//new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
+	new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
 
 	{
-		static constexpr uint8_t NUMBER_OF_POOLS = 5;
-		const uint16_t element_sizes[NUMBER_OF_POOLS] = {16, 32, 64, 128, 1024};
-		const uint16_t n_elements[NUMBER_OF_POOLS] = {100, 50, 25, 15, 5};
-		new PoolManager<NUMBER_OF_POOLS>(objects::TC_STORE, element_sizes,
-				n_elements);
+		PoolManager::LocalPoolConfig poolCfg = {
+		        {100, 16}, {50, 32}, {25, 64} , {15, 128}, {5, 1024}
+		};
+		new PoolManager(objects::TC_STORE, poolCfg);
 	}
 
 	{
-		static constexpr uint8_t NUMBER_OF_POOLS = 5;
-		const uint16_t element_sizes[NUMBER_OF_POOLS] = {16, 32, 64, 128, 1024};
-		const uint16_t n_elements[NUMBER_OF_POOLS] = {100, 50, 25, 15, 5};
-		new PoolManager<NUMBER_OF_POOLS>(objects::TM_STORE, element_sizes,
-				n_elements);
+        PoolManager::LocalPoolConfig poolCfg = {
+                {100, 16}, {50, 32}, {25, 64} , {15, 128}, {5, 1024}
+        };
+		new PoolManager(objects::TM_STORE, poolCfg);
 	}
 
 	{
-		static constexpr uint8_t NUMBER_OF_POOLS = 6;
-		const uint16_t element_sizes[NUMBER_OF_POOLS] = {32, 64, 512,
-				1024, 2048, 4096};
-		const uint16_t n_elements[NUMBER_OF_POOLS] = {200, 100, 50, 25, 15, 5};
-		new PoolManager<NUMBER_OF_POOLS>(objects::IPC_STORE, element_sizes,
-				n_elements);
+        PoolManager::LocalPoolConfig poolCfg = {
+                {100, 16}, {50, 32}, {25, 64} , {15, 128}, {5, 1024}
+        };
+		new PoolManager(objects::IPC_STORE, poolCfg);
 	}
 
 }
