@@ -1,11 +1,18 @@
-#ifndef DEVICEHANDLERIF_H_
-#define DEVICEHANDLERIF_H_
+#ifndef FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
+#define FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
+
+#include "DeviceHandlerMessage.h"
 
 #include "../action/HasActionsIF.h"
-#include "DeviceHandlerMessage.h"
 #include "../events/Event.h"
 #include "../modes/HasModesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
+
+/**
+ * This is used to uniquely identify commands that are sent to a device
+ * The values are defined in the device-specific implementations
+ */
+using DeviceCommandId_t = uint32_t;
 
 /**
  * @brief 	This is the Interface used to communicate with a device handler.
@@ -15,10 +22,11 @@
 class DeviceHandlerIF {
 public:
 
+
 	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
 	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
 
-	static constexpr DeviceCommandId_t NO_COMMAND = 0xffffffff;
+	static constexpr Command_t NO_COMMAND = -1;
 
 	/**
 	 * @brief This is the mode the <strong>device handler</strong> is in.
@@ -49,6 +57,8 @@ public:
 	//! This is a transitional state which can not be commanded.
 	//! The device handler performs all actions and commands to get the device
 	//! shut down. When the device is off, the mode changes to @c MODE_OFF.
+	//! It is possible to set the mode to _MODE_SHUT_DOWN to use the to off
+	//! transition if available.
 	static const Mode_t _MODE_SHUT_DOWN = TRANSITION_MODE_CHILD_ACTION_MASK | 6;
 	//! It is possible to set the mode to _MODE_TO_ON to use the to on
 	//! transition if available.
@@ -83,22 +93,22 @@ public:
 	static const Mode_t _MODE_SWITCH_IS_OFF = TRANSITION_MODE_BASE_ACTION_MASK | 5;
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::CDH;
-	static const Event DEVICE_BUILDING_COMMAND_FAILED = MAKE_EVENT(0, SEVERITY::LOW);
-	static const Event DEVICE_SENDING_COMMAND_FAILED = MAKE_EVENT(1, SEVERITY::LOW);
-	static const Event DEVICE_REQUESTING_REPLY_FAILED = MAKE_EVENT(2, SEVERITY::LOW);
-	static const Event DEVICE_READING_REPLY_FAILED = MAKE_EVENT(3, SEVERITY::LOW);
-	static const Event DEVICE_INTERPRETING_REPLY_FAILED = MAKE_EVENT(4, SEVERITY::LOW);
-	static const Event DEVICE_MISSED_REPLY = MAKE_EVENT(5, SEVERITY::LOW);
-	static const Event DEVICE_UNKNOWN_REPLY = MAKE_EVENT(6, SEVERITY::LOW);
-	static const Event DEVICE_UNREQUESTED_REPLY = MAKE_EVENT(7, SEVERITY::LOW);
-	static const Event INVALID_DEVICE_COMMAND = MAKE_EVENT(8, SEVERITY::LOW); //!< Indicates a SW bug in child class.
-	static const Event MONITORING_LIMIT_EXCEEDED = MAKE_EVENT(9, SEVERITY::LOW);
-	static const Event MONITORING_AMBIGUOUS = MAKE_EVENT(10, SEVERITY::HIGH);
+	static const Event DEVICE_BUILDING_COMMAND_FAILED = MAKE_EVENT(0, severity::LOW);
+	static const Event DEVICE_SENDING_COMMAND_FAILED = MAKE_EVENT(1, severity::LOW);
+	static const Event DEVICE_REQUESTING_REPLY_FAILED = MAKE_EVENT(2, severity::LOW);
+	static const Event DEVICE_READING_REPLY_FAILED = MAKE_EVENT(3, severity::LOW);
+	static const Event DEVICE_INTERPRETING_REPLY_FAILED = MAKE_EVENT(4, severity::LOW);
+	static const Event DEVICE_MISSED_REPLY = MAKE_EVENT(5, severity::LOW);
+	static const Event DEVICE_UNKNOWN_REPLY = MAKE_EVENT(6, severity::LOW);
+	static const Event DEVICE_UNREQUESTED_REPLY = MAKE_EVENT(7, severity::LOW);
+	static const Event INVALID_DEVICE_COMMAND = MAKE_EVENT(8, severity::LOW); //!< Indicates a SW bug in child class.
+	static const Event MONITORING_LIMIT_EXCEEDED = MAKE_EVENT(9, severity::LOW);
+	static const Event MONITORING_AMBIGUOUS = MAKE_EVENT(10, severity::HIGH);
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_IF;
 
 	// Standard codes used when building commands.
-	static const ReturnValue_t NO_COMMAND_DATA = MAKE_RETURN_CODE(0xA0); //!< If the command size is 0. Checked in DHB
+	static const ReturnValue_t NO_COMMAND_DATA = MAKE_RETURN_CODE(0xA0); //!< If no command data was given when expected.
 	static const ReturnValue_t COMMAND_NOT_SUPPORTED = MAKE_RETURN_CODE(0xA1); //!< Command ID not in commandMap. Checked in DHB
 	static const ReturnValue_t COMMAND_ALREADY_SENT = MAKE_RETURN_CODE(0xA2); //!< Command was already executed. Checked in DHB
 	static const ReturnValue_t COMMAND_WAS_NOT_SENT = MAKE_RETURN_CODE(0xA3);
@@ -131,7 +141,8 @@ public:
 	 *
 	 * This is used by the child class to tell the base class what to do.
 	 */
-	enum CommunicationAction_t: uint8_t {
+	enum CommunicationAction: uint8_t {
+	    PERFORM_OPERATION,
 		SEND_WRITE,//!< Send write
 		GET_WRITE, //!< Get write
 		SEND_READ, //!< Send read
@@ -152,4 +163,4 @@ public:
 
 };
 
-#endif /* DEVICEHANDLERIF_H_ */
+#endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_ */

@@ -74,7 +74,7 @@ protected:
     //!< Typedef for the List of objects.
     typedef std::vector<ExecutableObjectIF*> ObjectList;
     std::thread mainThread;
-    std::atomic<bool> terminateThread = false;
+    std::atomic<bool> terminateThread { false };
 
     //! Polling sequence table which contains the object to execute
     //! and information like the timeslots and the passed execution step.

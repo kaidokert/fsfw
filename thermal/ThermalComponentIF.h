@@ -10,11 +10,11 @@ class ThermalComponentIF : public HasParametersIF {
 public:
 
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::TCS_1;
-	static const Event COMPONENT_TEMP_LOW = MAKE_EVENT(1, SEVERITY::LOW);
-	static const Event COMPONENT_TEMP_HIGH = MAKE_EVENT(2, SEVERITY::LOW);
-	static const Event COMPONENT_TEMP_OOL_LOW = MAKE_EVENT(3, SEVERITY::LOW);
-	static const Event COMPONENT_TEMP_OOL_HIGH = MAKE_EVENT(4, SEVERITY::LOW);
-	static const Event TEMP_NOT_IN_OP_RANGE = MAKE_EVENT(5, SEVERITY::LOW); //!< Is thrown when a device should start-up, but the temperature is out of OP range. P1: thermalState of the component, P2: 0
+	static const Event COMPONENT_TEMP_LOW = MAKE_EVENT(1, severity::LOW);
+	static const Event COMPONENT_TEMP_HIGH = MAKE_EVENT(2, severity::LOW);
+	static const Event COMPONENT_TEMP_OOL_LOW = MAKE_EVENT(3, severity::LOW);
+	static const Event COMPONENT_TEMP_OOL_HIGH = MAKE_EVENT(4, severity::LOW);
+	static const Event TEMP_NOT_IN_OP_RANGE = MAKE_EVENT(5, severity::LOW); //!< Is thrown when a device should start-up, but the temperature is out of OP range. P1: thermalState of the component, P2: 0
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::THERMAL_COMPONENT_IF;
 	static const ReturnValue_t INVALID_TARGET_STATE = MAKE_RETURN_CODE(1);
@@ -49,18 +49,18 @@ public:
 		SAFE = 0,             //!< SAFE
 		IDLE,                 //!< IDLE
 		PAYLOAD,              //!< PAYLOAD
-		NUMBER_OF_PRIORITIES          //!< MAX_PRIORITY
+		NUMBER_OF_PRIORITIES  //!< MAX_PRIORITY
 	};
 
 	/**
 	 * The elements are ordered by priority, lowest have highest priority
 	 */
 	enum HeaterRequest {
-		HEATER_REQUEST_EMERGENCY_OFF = 0,          //!< REQUEST_EMERGENCY_OFF
-		HEATER_REQUEST_EMERGENCY_ON, //!< REQUEST_EMERGENCY_ON
-		HEATER_REQUEST_OFF,          //!< REQUEST_OFF
-		HEATER_REQUEST_ON,           //!< REQUEST_ON
-		HEATER_DONT_CARE             //!< DONT_CARE
+		HEATER_REQUEST_EMERGENCY_OFF = 0,   //!< REQUEST_EMERGENCY_OFF
+		HEATER_REQUEST_EMERGENCY_ON,        //!< REQUEST_EMERGENCY_ON
+		HEATER_REQUEST_OFF,                 //!< REQUEST_OFF
+		HEATER_REQUEST_ON,                  //!< REQUEST_ON
+		HEATER_DONT_CARE                    //!< DONT_CARE
 	};
 
 	virtual ~ThermalComponentIF() {

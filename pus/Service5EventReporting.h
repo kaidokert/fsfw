@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_SERVICE5EVENTREPORTING_H_
-#define FRAMEWORK_PUS_SERVICE5EVENTREPORTING_H_
+#ifndef FSFW_PUS_SERVICE5EVENTREPORTING_H_
+#define FSFW_PUS_SERVICE5EVENTREPORTING_H_
 
 #include "../tmtcservices/PusServiceBase.h"
 #include "../events/EventMessage.h"
@@ -42,7 +42,8 @@ class Service5EventReporting: public PusServiceBase {
 public:
 
 	Service5EventReporting(object_id_t objectId, uint16_t apid,
-	        uint8_t serviceId, size_t maxNumberReportsPerCycle = 10);
+	        uint8_t serviceId, size_t maxNumberReportsPerCycle = 10,
+	        uint32_t messageQueueDepth = 10);
 	virtual ~Service5EventReporting();
 
 	/***
@@ -83,4 +84,4 @@ private:
 	ReturnValue_t generateEventReport(EventMessage message);
 };
 
-#endif /* MISSION_PUS_SERVICE5EVENTREPORTING_H_ */
+#endif /* FSFW_PUS_SERVICE5EVENTREPORTING_H_ */

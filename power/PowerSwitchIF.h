@@ -1,18 +1,16 @@
-/**
- * @file	PowerSwitchIF.h
- * @brief	This file defines the PowerSwitchIF class.
- * @date	20.03.2013
- * @author	baetz
- */
-
-#ifndef POWERSWITCHIF_H_
-#define POWERSWITCHIF_H_
+#ifndef FSFW_POWER_POWERSWITCHIF_H_
+#define FSFW_POWER_POWERSWITCHIF_H_
 
 #include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 /**
- * This interface defines a connection to a device that is capable of turning on and off
- * switches of devices identified by a switch ID.
+ *
+ * @brief   This interface defines a connection to a device that is capable of
+ *          turning on and off switches of devices identified by a switch ID.
+ * @details
+ * The virtual functions of this interface do not allow to make any assignments
+ * because they can be called asynchronosuly (const ending).
+ * @ingroup interfaces
  */
 class PowerSwitchIF : public HasReturnvaluesIF {
 public:
@@ -32,7 +30,7 @@ public:
 	static const ReturnValue_t FUSE_ON = MAKE_RETURN_CODE(3);
 	static const ReturnValue_t FUSE_OFF = MAKE_RETURN_CODE(4);
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PCDU_2;
-	static const Event SWITCH_WENT_OFF = MAKE_EVENT(0, SEVERITY::LOW); //!< Someone detected that a switch went off which shouldn't. Severity: Low, Parameter1: switchId1, Parameter2: switchId2
+	static const Event SWITCH_WENT_OFF = MAKE_EVENT(0, severity::LOW); //!< Someone detected that a switch went off which shouldn't. Severity: Low, Parameter1: switchId1, Parameter2: switchId2
 	/**
 	 * send a direct command to the Power Unit to enable/disable the specified switch.
 	 *
@@ -72,4 +70,4 @@ public:
 };
 
 
-#endif /* POWERSWITCHIF_H_ */
+#endif /* FSFW_POWER_POWERSWITCHIF_H_ */

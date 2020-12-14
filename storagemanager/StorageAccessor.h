@@ -10,9 +10,7 @@ class StorageManagerIF;
  */
 class StorageAccessor: public ConstStorageAccessor {
 	//! StorageManager classes have exclusive access to private variables.
-	template<uint8_t NUMBER_OF_POOLS>
 	friend class PoolManager;
-	template<uint8_t NUMBER_OF_POOLS>
 	friend class LocalPool;
 public:
 	StorageAccessor(store_address_t storeId);
