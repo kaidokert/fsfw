@@ -1,5 +1,4 @@
 #include "Subsystem.h"
-
 #include "../health/HealthMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerialArrayListAdapter.h"
@@ -11,21 +10,12 @@
 
 Subsystem::Subsystem(object_id_t setObjectId, object_id_t parent,
 		uint32_t maxNumberOfSequences, uint32_t maxNumberOfTables) :
-		SubsystemBase(setObjectId, parent, 0), isInTransition(false), childrenChangedHealth(
-				false), uptimeStartTable(0), currentTargetTable(), targetMode(
-				0), targetSubmode(SUBMODE_NONE), initialMode(0), currentSequenceIterator(), modeTables(
-				maxNumberOfTables), modeSequences(maxNumberOfSequences), IPCStore(
-		NULL)
-#ifdef USE_MODESTORE
-,modeStore(NULL)
-#endif
-{
+		SubsystemBase(setObjectId, parent, 0), isInTransition(false),
+		childrenChangedHealth(false), currentTargetTable(),
+		targetSubmode(SUBMODE_NONE), currentSequenceIterator(),
+		modeTables(maxNumberOfTables), modeSequences(maxNumberOfSequences) {}
 
-}
-
-Subsystem::~Subsystem() {
-	//Auto-generated destructor stub
-}
+Subsystem::~Subsystem() {}
 
 ReturnValue_t Subsystem::checkSequence(HybridIterator<ModeListEntry> iter,
 		Mode_t fallbackSequence) {
@@ -351,7 +341,8 @@ ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry> *sequence,
 
 	ReturnValue_t result;
 
-	//Before initialize() is called, tables must not be checked as the children are not added yet.
+	//Before initialize() is called, tables must not be checked as the
+	//children are not added yet.
 	//Sequences added before are checked by initialize()
 	if (!preInit) {
 		result = checkSequence(
@@ -397,8 +388,8 @@ ReturnValue_t Subsystem::addTable(ArrayList<ModeListEntry> *table, Mode_t id,
 
 	ReturnValue_t result;
 
-	//Before initialize() is called, tables must not be checked as the children are not added yet.
-	//Tables added before are checked by initialize()
+	//Before initialize() is called, tables must not be checked as the children
+	//are not added yet. Tables added before are checked by initialize()
 	if (!preInit) {
 		result = checkTable(
 				HybridIterator<ModeListEntry>(table->front(), table->back()));
@@ -589,12 +580,14 @@ void Subsystem::transitionFailed(ReturnValue_t failureCode,
 	triggerEvent(MODE_TRANSITION_FAILED, failureCode, parameter);
 	if (mode == targetMode) {
 		//already tried going back to the current mode
-		//go into fallback mode, also set current mode to fallback mode, so we come here at the next fail
+		//go into fallback mode, also set current mode to fallback mode,
+	    //so we come here at the next fail
 		modeHelper.setForced(true);
 		ReturnValue_t result;
 		if ((result = checkSequence(getFallbackSequence(mode))) != RETURN_OK) {
 			triggerEvent(FALLBACK_FAILED, result, getFallbackSequence(mode));
-			isInTransition = false; //keep still and allow arbitrary mode commands to recover
+			//keep still and allow arbitrary mode commands to recover
+			isInTransition = false;
 			return;
 		}
 		mode = getFallbackSequence(mode);
@@ -658,8 +651,10 @@ void Subsystem::cantKeepMode() {
 
 	modeHelper.setForced(true);
 
-	//already set the mode, so that we do not try to go back in our old mode when the transition fails
+	//already set the mode, so that we do not try to go back in our old mode
+	//when the transition fails
 	mode = getFallbackSequence(mode);
-	//SHOULDDO: We should store submodes for fallback sequence as well, otherwise we should get rid of submodes completely.
+	//SHOULDDO: We should store submodes for fallback sequence as well,
+	//otherwise we should get rid of submodes completely.
 	startTransition(mode, SUBMODE_NONE);
 }

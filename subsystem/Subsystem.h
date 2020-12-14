@@ -1,14 +1,19 @@
-#ifndef SUBSYSTEM_H_
-#define SUBSYSTEM_H_
+#ifndef FSFW_SUBSYSTEM_SUBSYSTEM_H_
+#define FSFW_SUBSYSTEM_SUBSYSTEM_H_
+
+#include "SubsystemBase.h"
+#include "modes/ModeDefinitions.h"
 
 #include "../container/FixedArrayList.h"
 #include "../container/FixedMap.h"
 #include "../container/HybridIterator.h"
 #include "../container/SinglyLinkedList.h"
 #include "../serialize/SerialArrayListAdapter.h"
-#include "modes/ModeDefinitions.h"
-#include "SubsystemBase.h"
 
+/**
+ * @brief   TODO: documentation missing
+ * @details
+ */
 class Subsystem: public SubsystemBase, public HasModeSequenceIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::SUBSYSTEM;
@@ -30,8 +35,13 @@ public:
 	static const ReturnValue_t TARGET_TABLE_NOT_REACHED = MAKE_RETURN_CODE(0xA1);
 	static const ReturnValue_t TABLE_CHECK_FAILED = MAKE_RETURN_CODE(0xA2);
 
-
-
+	/**
+	 * TODO: Doc for constructor
+	 * @param setObjectId
+	 * @param parent
+	 * @param maxNumberOfSequences
+	 * @param maxNumberOfTables
+	 */
 	Subsystem(object_id_t setObjectId, object_id_t parent,
 			uint32_t maxNumberOfSequences, uint32_t maxNumberOfTables);
 	virtual ~Subsystem();
@@ -44,31 +54,27 @@ public:
 
 	void setInitialMode(Mode_t mode);
 
-	virtual ReturnValue_t initialize();
+	virtual ReturnValue_t initialize() override;
 
-	virtual ReturnValue_t checkObjectConnections();
+	virtual ReturnValue_t checkObjectConnections() override;
 
-	virtual MessageQueueId_t getSequenceCommandQueue() const;
+	virtual MessageQueueId_t getSequenceCommandQueue() const override;
 
 	/**
-	 *
-	 *
-	 * IMPORTANT: Do not call on non existing sequence! Use existsSequence() first
-	 *
+	 * @brief    Checks whether a sequence, identified by a mode.
 	 * @param sequence
 	 * @return
 	 */
 	ReturnValue_t checkSequence(Mode_t sequence);
 
 	/**
-	 *
-	 *
-	 * IMPORTANT: Do not call on non existing sequence! Use existsSequence() first
-	 *
+	 * @brief   Checks whether a sequence, identified by a mode list iterator
+	 *          and a fallback sequence.
 	 * @param iter
 	 * @return
 	 */
-	ReturnValue_t checkSequence(HybridIterator<ModeListEntry> iter, Mode_t fallbackSequence);
+	ReturnValue_t checkSequence(HybridIterator<ModeListEntry> iter,
+	        Mode_t fallbackSequence);
 protected:
 
 	struct EntryPointer {
@@ -92,15 +98,15 @@ protected:
 
 	bool childrenChangedHealth;
 
-	uint32_t uptimeStartTable;
+	uint32_t uptimeStartTable = 0;
 
 	HybridIterator<ModeListEntry> currentTargetTable;
 
-	Mode_t targetMode;
+	Mode_t targetMode = 0;
 
 	Submode_t targetSubmode;
 
-	Mode_t initialMode;
+	Mode_t initialMode = 0;
 
 	HybridIterator<ModeListEntry> currentSequenceIterator;
 
@@ -108,10 +114,10 @@ protected:
 
 	FixedMap<Mode_t, SequenceInfo> modeSequences;
 
-	StorageManagerIF *IPCStore;
+	StorageManagerIF *IPCStore = nullptr;
 
 #ifdef USE_MODESTORE
-	ModeStoreIF *modeStore;
+	ModeStoreIF *modeStore = nullptr;
 #endif
 
 	bool existsModeSequence(Mode_t id);
@@ -123,8 +129,6 @@ protected:
 	HybridIterator<ModeListEntry> getTable(Mode_t id);
 
 	HybridIterator<ModeListEntry> getCurrentTable();
-
-//	void startSequence(Mode_t sequence);
 
 	/**
 	 * DO NOT USE ON NON EXISTING SEQUENCE
@@ -153,7 +157,8 @@ protected:
 
 	virtual void startTransition(Mode_t mode, Submode_t submode);
 
-	void sendSerializablesAsCommandMessage(Command_t command, SerializeIF **elements, uint8_t count);
+	void sendSerializablesAsCommandMessage(Command_t command,
+	        SerializeIF **elements, uint8_t count);
 
 	void transitionFailed(ReturnValue_t failureCode, uint32_t parameter);
 
@@ -161,4 +166,4 @@ protected:
 
 };
 
-#endif /* SUBSYSTEM_H_ */
+#endif /* FSFW_SUBSYSTEM_SUBSYSTEM_H_ */
