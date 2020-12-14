@@ -1,5 +1,6 @@
-#include "../../osal/FreeRTOS/CountingSemaphUsingTask.h"
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "CountingSemaphUsingTask.h"
+#include "TaskManagement.h"
+
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,

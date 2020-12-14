@@ -3,10 +3,9 @@
 
 #include "../../returnvalues/HasReturnvaluesIF.h"
 
-extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-}
+
 #include <cstdint>
 
 /**
