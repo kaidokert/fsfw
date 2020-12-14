@@ -1,4 +1,6 @@
 #include "EventManager.h"
+#include "EventMessage.h"
+
 #include <FSFWConfig.h>
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
@@ -9,7 +11,6 @@
 // objects registering for certain events.
 // Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
 // So a good guess is 75 to a max of 100 pools required for each, which fits well.
-// This should be configurable..
 const LocalPool::LocalPoolConfig EventManager::poolConfig = {
         {fsfwconfig::FSFW_EVENTMGMR_MATCHTREE_NODES,
         		sizeof(EventMatchTree::Node)},
