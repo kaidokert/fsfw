@@ -14,7 +14,7 @@
 
 #include <map>
 
-#if FSFW_DEBUG_OUTPUT == 1
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 // forward declaration, should be implemented by mission
 extern const char* translateObject(object_id_t object);
 extern const char* translateEvents(Event event);
@@ -61,7 +61,7 @@ protected:
 
 	void notifyListeners(EventMessage *message);
 
-#if FSFW_DEBUG_OUTPUT == 1
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 	void printEvent(EventMessage *message);
 #endif
 

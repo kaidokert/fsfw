@@ -114,7 +114,7 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 	return result;
 }
 
-#if FSFW_DEBUG_OUTPUT == 1
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
