@@ -1,8 +1,8 @@
 #include "IntTestMq.h"
 #include "../UnittDefinitions.h"
 
-#include "../../ipc/MessageQueueIF.h"
-#include "../../ipc/QueueFactory.h"
+#include "../../../ipc/MessageQueueIF.h"
+#include "../../../ipc/QueueFactory.h"
 
 #include <array>
 
