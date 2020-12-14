@@ -119,7 +119,7 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
-	case SEVERITY::INFO:
+	case severity::INFO:
 #if DEBUG_INFO_EVENT == 1
 		string = translateObject(message->getReporter());
 		sif::info << "EVENT: ";
