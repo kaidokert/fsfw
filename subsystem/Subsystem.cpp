@@ -367,7 +367,7 @@ ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry> *sequence,
 	}
 
 	if (inStore) {
-#ifdef USE_MODESTORE
+#if FSFW_USE_MODESTORE == 1
 		result = modeStore->storeArray(sequence,
 				&(modeSequences.find(id)->entries.firstLinkedElement));
 		if (result != RETURN_OK) {
@@ -410,7 +410,7 @@ ReturnValue_t Subsystem::addTable(ArrayList<ModeListEntry> *table, Mode_t id,
 	}
 
 	if (inStore) {
-#ifdef USE_MODESTORE
+#if FSFW_USE_MODESTORE == 1
 		result = modeStore->storeArray(table,
 				&(modeTables.find(id)->firstLinkedElement));
 		if (result != RETURN_OK) {
@@ -440,7 +440,7 @@ ReturnValue_t Subsystem::deleteSequence(Mode_t id) {
 		return ACCESS_DENIED;
 	}
 
-#ifdef USE_MODESTORE
+#if FSFW_USE_MODESTORE == 1
 	modeStore->deleteList(sequenceInfo->entries.firstLinkedElement);
 #endif
 	modeSequences.erase(id);
@@ -463,7 +463,7 @@ ReturnValue_t Subsystem::deleteTable(Mode_t id) {
 		return ACCESS_DENIED;
 	}
 
-#ifdef USE_MODESTORE
+#if FSFW_USE_MODESTORE == 1
 	modeStore->deleteList(pointer->firstLinkedElement);
 #endif
 	modeSequences.erase(id);
@@ -482,10 +482,10 @@ ReturnValue_t Subsystem::initialize() {
 		return RETURN_FAILED;
 	}
 
-#ifdef USE_MODESTORE
+#if FSFW_USE_MODESTORE == 1
 	modeStore = objectManager->get<ModeStoreIF>(objects::MODE_STORE);
 
-	if (modeStore == NULL) {
+	if (modeStore == nullptr) {
 		return RETURN_FAILED;
 	}
 #endif
