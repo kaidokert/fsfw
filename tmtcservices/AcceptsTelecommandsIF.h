@@ -1,5 +1,5 @@
-#ifndef ACCEPTSTELECOMMANDSIF_H_
-#define ACCEPTSTELECOMMANDSIF_H_
+#ifndef FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_
+#define FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_
 
 #include "../ipc/MessageQueueSenderIF.h"
 
@@ -12,7 +12,7 @@
 class AcceptsTelecommandsIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::ACCEPTS_TELECOMMANDS_IF;
-	static const ReturnValue_t ACTIVITY_STARTED = MAKE_RETURN_CODE(1);
+	static const ReturnValue_t ACTIVITY_STARTED = MAKE_RETURN_CODE(1); // is this used anywhere or can it be removed?
 	static const ReturnValue_t INVALID_SUBSERVICE = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t ILLEGAL_APPLICATION_DATA = MAKE_RETURN_CODE(3);
 	static const ReturnValue_t SEND_TM_FAILED = MAKE_RETURN_CODE(4);
@@ -26,9 +26,9 @@ public:
 	/**
 	 * @brief	Getter for the service id.
 	 * @details	Any receiving service (at least any PUS service) shall have a
-	 * 			service id. If the receiver can handle Telecommands, but for
+	 * 			service ID. If the receiver can handle Telecommands, but for
 	 * 			some reason has no service id, it shall return 0.
-	 * @return	The service id or 0.
+	 * @return	The service ID or 0.
 	 */
 	virtual uint16_t getIdentifier() = 0;
 	/**
@@ -40,4 +40,4 @@ public:
 };
 
 
-#endif /* ACCEPTSTELECOMMANDSIF_H_ */
+#endif /* FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_ */
