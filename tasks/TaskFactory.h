@@ -3,6 +3,7 @@
 
 #include "FixedTimeslotTaskIF.h"
 #include "Typedef.h"
+
 #include <cstdlib>
 
 /**
@@ -48,10 +49,11 @@ public:
 
 	/**
 	 * Function to be called to delete a task
-	 * @param task The pointer to the task that shall be deleted, NULL specifies current Task
+	 * @param task The pointer to the task that shall be deleted,
+	 * nullptr specifies current Task
 	 * @return Success of deletion
 	 */
-	static ReturnValue_t deleteTask(PeriodicTaskIF* task = NULL);
+	static ReturnValue_t deleteTask(PeriodicTaskIF* task = nullptr);
 
 	/**
 	 * Function to be called to delay current task
