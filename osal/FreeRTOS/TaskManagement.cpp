@@ -1,4 +1,4 @@
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "TaskManagement.h"
 
 void TaskManagement::vRequestContextSwitchFromTask() {
 	vTaskDelay(0);
