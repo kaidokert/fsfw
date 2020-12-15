@@ -80,10 +80,18 @@ void PeriodicTask::taskFunctionality() {
 			object->performOperation();
 		}
 
-		checkMissedDeadline(xLastWakeTime, xPeriod);
-
-		vTaskDelayUntil(&xLastWakeTime, xPeriod);
-
+#if (tskKERNEL_VERSION_MAJOR == 10 && tskKERNEL_VERSION_MINOR >= 4) || \
+    tskKERNEL_VERSION_MAJOR > 10
+		BaseType_t wasDelayed = xTaskDelayUntil(&xLastWakeTime, xPeriod);
+		if(wasDelayed == pdFALSE) {
+		    handleMissedDeadline();
+		}
+#else
+        if(checkMissedDeadline(xLastWakeTime, xPeriod)) {
+            handleMissedDeadline();
+        }
+        vTaskDelayUntil(&xLastWakeTime, xPeriod);
+#endif
 	}
 }
 
@@ -103,29 +111,6 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 
 uint32_t PeriodicTask::getPeriodMs() const {
 	return period * 1000;
-}
-
-void PeriodicTask::checkMissedDeadline(const TickType_t xLastWakeTime,
-        const TickType_t interval) {
-    /* Check whether deadline was missed while also taking overflows
-     * into account. Drawing this on paper with a timeline helps to understand
-     * it. */
-    TickType_t currentTickCount = xTaskGetTickCount();
-    TickType_t timeToWake = xLastWakeTime + interval;
-    // Time to wake has not overflown.
-    if(timeToWake > xLastWakeTime) {
-        /* If the current time has overflown exclusively or the current
-         * tick count is simply larger than the time to wake, a deadline was
-         * missed */
-        if((currentTickCount < xLastWakeTime) or (currentTickCount > timeToWake)) {
-            handleMissedDeadline();
-        }
-    }
-    /* Time to wake has overflown. A deadline was missed if the current time
-     * is larger than the time to wake */
-    else if((timeToWake < xLastWakeTime) and (currentTickCount > timeToWake)) {
-        handleMissedDeadline();
-    }
 }
 
 TaskHandle_t PeriodicTask::getTaskHandle() {

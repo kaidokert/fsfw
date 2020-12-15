@@ -1,7 +1,7 @@
-#ifndef RMAPSTRUCTS_H_
-#define RMAPSTRUCTS_H_
+#ifndef FSFW_RMAP_RMAPSTRUCTS_H_
+#define FSFW_RMAP_RMAPSTRUCTS_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 //SHOULDDO: having the defines within a namespace would be nice. Problem are the defines referencing the previous define, eg RMAP_COMMAND_WRITE
 
@@ -95,4 +95,4 @@ struct rmap_write_reply_header {
 
 }
 
-#endif /* RMAPSTRUCTS_H_ */
+#endif /* FSFW_RMAP_RMAPSTRUCTS_H_ */

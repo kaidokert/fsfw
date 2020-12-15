@@ -5,9 +5,9 @@
 RmapDeviceCommunicationIF::~RmapDeviceCommunicationIF() {
 }
 
-ReturnValue_t RmapDeviceCommunicationIF::sendMessage(CookieIF* cookie,
-		uint8_t* data, uint32_t len) {
-	return RMAP::sendWriteCommand((RMAPCookie *) cookie, data, len);
+ReturnValue_t RmapDeviceCommunicationIF::sendMessage(CookieIF *cookie,
+		const uint8_t * sendData, size_t sendLen) {
+	return RMAP::sendWriteCommand((RMAPCookie *) cookie, sendData, sendLen);
 }
 
 ReturnValue_t RmapDeviceCommunicationIF::getSendSuccess(CookieIF* cookie) {
@@ -15,13 +15,13 @@ ReturnValue_t RmapDeviceCommunicationIF::getSendSuccess(CookieIF* cookie) {
 }
 
 ReturnValue_t RmapDeviceCommunicationIF::requestReceiveMessage(
-		CookieIF* cookie) {
+		CookieIF *cookie, size_t requestLen) {
 	return RMAP::sendReadCommand((RMAPCookie *) cookie,
 				((RMAPCookie *) cookie)->getMaxReplyLen());
 }
 
 ReturnValue_t RmapDeviceCommunicationIF::readReceivedMessage(CookieIF* cookie,
-		uint8_t** buffer, uint32_t* size) {
+		uint8_t** buffer, size_t * size) {
 	return RMAP::getReadReply((RMAPCookie *) cookie, buffer, size);
 }
 

@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_TIMEMANAGER_CLOCK_H_
-#define FRAMEWORK_TIMEMANAGER_CLOCK_H_
+#ifndef FSFW_TIMEMANAGER_CLOCK_H_
+#define FSFW_TIMEMANAGER_CLOCK_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MutexHelper.h"
@@ -151,4 +151,4 @@ private:
 };
 
 
-#endif /* FRAMEWORK_TIMEMANAGER_CLOCK_H_ */
+#endif /* FSFW_TIMEMANAGER_CLOCK_H_ */
