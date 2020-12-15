@@ -11,7 +11,12 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		maxMessageSize(maxMessageSize) {
 	handle = xQueueCreate(messageDepth, maxMessageSize);
 	if (handle == nullptr) {
-		sif::error << "MessageQueue::MessageQueue Creation failed" << std::endl;
+		sif::error << "MessageQueue::MessageQueue:"
+		        << " Creation failed." << std::endl;
+		sif::error << "Specified Message Depth: " << messageDepth
+		        << std::endl;
+		sif::error << "Specified Maximum Message Size: "
+		        << maxMessageSize << std::endl;
 	}
 }
 

@@ -1,5 +1,5 @@
-#include "../../osal/FreeRTOS/BinarySemaphore.h"
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "BinarySemaphore.h"
+#include "TaskManagement.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 BinarySemaphore::BinarySemaphore() {

@@ -1,4 +1,3 @@
-#include "../serialize/SerializeAdapter.h"
 #include "Type.h"
 #include "../serialize/SerializeAdapter.h"
 
