@@ -1,8 +1,8 @@
-#ifndef RMAPpp_H_
-#define RMAPpp_H_
+#ifndef FSFW_RMAP_RMAP_H_
+#define FSFW_RMAP_RMAP_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "RMAPCookie.h"
+#include "../rmap/RMAPCookie.h"
 
 //SHOULDTODO: clean up includes for RMAP, should be enough to include RMAP.h but right now it's quite chaotic...
 
@@ -153,8 +153,8 @@ public:
 	 *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was == NULL in write command
 	 *      - return codes of RMAPChannelIF::sendCommand()
 	 */
-	static ReturnValue_t sendWriteCommand(RMAPCookie *cookie, uint8_t* buffer,
-			uint32_t length);
+	static ReturnValue_t sendWriteCommand(RMAPCookie *cookie, const uint8_t* buffer,
+			size_t length);
 
 	/**
 	 * get the reply to a write command
@@ -204,7 +204,7 @@ public:
 	 *      - return codes of RMAPChannelIF::getReply()
 	 */
 	static ReturnValue_t getReadReply(RMAPCookie *cookie, uint8_t **buffer,
-			uint32_t *size);
+			size_t *size);
 
 	/**
 	 * @see sendReadCommand()
