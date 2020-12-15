@@ -1,8 +1,7 @@
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../objectmanager/ObjectManagerIF.h"
+#include "ModeSequenceMessage.h"
+
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../storagemanager/StorageManagerIF.h"
-#include "ModeSequenceMessage.h"
 
 void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
 		Command_t command, Mode_t sequence, store_address_t storeAddress) {
@@ -11,24 +10,11 @@ void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
 	message->setParameter2(sequence);
 }
 
-//void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
-//		Command_t command, ModeTableId_t table, store_address_t storeAddress) {
-//	message->setCommand(command);
-//	message->setParameter(storeAddress.raw);
-//	message->setParameter2(table);
-//}
-
 void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
 		Command_t command, Mode_t sequence) {
 	message->setCommand(command);
 	message->setParameter2(sequence);
 }
-
-//void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
-//		Command_t command, ModeTableId_t table) {
-//	message->setCommand(command);
-//	message->setParameter2(table);
-//}
 
 void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
 		Command_t command, store_address_t storeAddress) {
@@ -63,9 +49,10 @@ void ModeSequenceMessage::clear(CommandMessage *message) {
 	case SEQUENCE_LIST:
 	case TABLE_LIST:
 	case TABLE:
-	case SEQUENCE:{
-		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-		if (ipcStore != NULL){
+	case SEQUENCE: {
+		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+		        objects::IPC_STORE);
+		if (ipcStore != nullptr){
 			ipcStore->deleteData(ModeSequenceMessage::getStoreAddress(message));
 		}
 	}

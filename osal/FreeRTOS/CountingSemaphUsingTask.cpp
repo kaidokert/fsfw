@@ -1,6 +1,10 @@
-#include "../../osal/FreeRTOS/CountingSemaphUsingTask.h"
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "CountingSemaphUsingTask.h"
+#include "TaskManagement.h"
+
 #include "../../serviceinterface/ServiceInterfaceStream.h"
+
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
 
 CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 		uint8_t initCount): maxCount(maxCount) {
@@ -112,3 +116,5 @@ uint8_t CountingSemaphoreUsingTask::getSemaphoreCounterFromISR(
 uint8_t CountingSemaphoreUsingTask::getMaxCount() const {
 	return maxCount;
 }
+
+#endif
