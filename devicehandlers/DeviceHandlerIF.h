@@ -22,10 +22,10 @@ using DeviceCommandId_t = uint32_t;
  */
 class DeviceHandlerIF {
 public:
-    static const DeviceCommandId_t NO_COMMAND = -1;
+	static constexpr DeviceCommandId_t NO_COMMAND = -1;
 
-	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
-	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
+	static constexpr uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
+	static constexpr uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
 
 	using dh_heater_request_t = uint8_t;
 	using dh_thermal_state_t = int8_t;
@@ -144,7 +144,7 @@ public:
 	 * This is used by the child class to tell the base class what to do.
 	 */
 	enum CommunicationAction: uint8_t {
-	    PERFORM_OPERATION,
+		PERFORM_OPERATION,
 		SEND_WRITE,//!< Send write
 		GET_WRITE, //!< Get write
 		SEND_READ, //!< Send read
@@ -155,7 +155,7 @@ public:
 	static constexpr uint32_t DEFAULT_THERMAL_SET_ID = sid_t::INVALID_SET_ID - 1;
 
 	static constexpr lp_id_t DEFAULT_THERMAL_STATE_POOL_ID =
-	        localpool::INVALID_LPID - 2;
+			localpool::INVALID_LPID - 2;
 	static constexpr lp_id_t DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID =
 			localpool::INVALID_LPID - 1;
 
