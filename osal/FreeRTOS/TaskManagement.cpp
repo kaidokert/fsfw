@@ -1,4 +1,4 @@
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "TaskManagement.h"
 
 void TaskManagement::vRequestContextSwitchFromTask() {
 	vTaskDelay(0);
@@ -22,3 +22,4 @@ size_t TaskManagement::getTaskStackHighWatermark(
         TaskHandle_t task) {
 	return uxTaskGetStackHighWaterMark(task) * sizeof(StackType_t);
 }
+
