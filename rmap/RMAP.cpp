@@ -1,8 +1,10 @@
-#include "../devicehandlers/DeviceCommunicationIF.h"
-#include "rmapStructs.h"
 #include "RMAP.h"
+#include "rmapStructs.h"
 #include "RMAPChannelIF.h"
-#include <stddef.h>
+
+#include "../devicehandlers/DeviceCommunicationIF.h"
+
+#include <cstddef>
 
 ReturnValue_t RMAP::reset(RMAPCookie* cookie) {
 	return cookie->getChannel()->reset();
@@ -12,8 +14,8 @@ RMAP::RMAP(){
 
 }
 
-ReturnValue_t RMAP::sendWriteCommand(RMAPCookie *cookie, uint8_t* buffer,
-		uint32_t length) {
+ReturnValue_t RMAP::sendWriteCommand(RMAPCookie *cookie, const uint8_t* buffer,
+		size_t length) {
 	uint8_t instruction;
 
 	if ((buffer == NULL) && (length != 0)) {
@@ -61,7 +63,7 @@ ReturnValue_t RMAP::sendReadCommand(RMAPCookie *cookie, uint32_t expLength) {
 }
 
 ReturnValue_t RMAP::getReadReply(RMAPCookie *cookie, uint8_t **buffer,
-		uint32_t *size) {
+		size_t *size) {
 	if (cookie->getChannel() == NULL) {
 		return COMMAND_NO_CHANNEL;
 	}
