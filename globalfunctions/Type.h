@@ -3,6 +3,7 @@
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
+#include <type_traits>
 
 /**
  * @brief 	Type definition for CCSDS or ECSS.
@@ -56,11 +57,12 @@ private:
 
 template<typename T>
 struct PodTypeConversion {
+	static_assert(not std::is_same<T, bool>::value,
+				"Do not use boolean for the PoolEntry type, use uint8_t "
+				"instead! The ECSS standard defines a boolean as a one bit "
+				"field. Therefore it is preferred to store a boolean as an "
+				"uint8_t");
 	static const Type::ActualType_t type = Type::UNKNOWN_TYPE;
-};
-template<>
-struct PodTypeConversion<bool> {
-    static const Type::ActualType_t type = Type::UINT8_T;
 };
 template<>
 struct PodTypeConversion<uint8_t> {
