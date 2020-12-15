@@ -1,22 +1,19 @@
-#ifndef MODEDEFINITIONS_H_
-#define MODEDEFINITIONS_H_
+#ifndef FSFW_SUBSYSTEM_MODES_MODEDEFINITIONS_H_
+#define FSFW_SUBSYSTEM_MODES_MODEDEFINITIONS_H_
 
 #include "../../modes/HasModesIF.h"
 #include "../../objectmanager/SystemObjectIF.h"
 #include "../../serialize/SerializeIF.h"
 #include "../../serialize/SerialLinkedListAdapter.h"
+
 class ModeListEntry: public SerializeIF, public LinkedElement<ModeListEntry> {
 public:
-	ModeListEntry() :
-			LinkedElement<ModeListEntry>(this), value1(0), value2(0), value3(0), value4(
-					0) {
+	ModeListEntry(): LinkedElement<ModeListEntry>(this) {}
 
-	}
-
-	uint32_t value1;
-	uint32_t value2;
-	uint8_t value3;
-	uint8_t value4;
+	uint32_t value1 = 0;
+	uint32_t value2 = 0;
+	uint8_t value3 = 0;
+	uint8_t value4 = 0;
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
 			size_t maxSize, Endianness streamEndianness) const {
@@ -149,4 +146,4 @@ public:
 	}
 };
 
-#endif //MODEDEFINITIONS_H_
+#endif /* FSFW_SUBSYSTEM_MODES_MODEDEFINITIONS_H_ */
