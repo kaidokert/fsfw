@@ -97,7 +97,6 @@ ReturnValue_t ExtendedControllerBase::initializeAfterTaskCreation() {
 
 ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
     handleQueue();
-    hkSwitcher.performOperation();
     localPoolManager.performHkOperation();
     performControlOperation();
     return RETURN_OK;
