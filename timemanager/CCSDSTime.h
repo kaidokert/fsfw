@@ -1,9 +1,10 @@
-#ifndef CCSDSTIME_H_
-#define CCSDSTIME_H_
+#ifndef FSFW_TIMEMANAGER_CCSDSTIME_H_
+#define FSFW_TIMEMANAGER_CCSDSTIME_H_
 
 // COULDDO: have calls in Clock.h which return time quality and use timespec accordingly
 
 #include "Clock.h"
+#include "clockDefinitions.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstdint>
 
@@ -154,8 +155,8 @@ public:
 	 * 		- @c LENGTH_MISMATCH if the length does not match the P Field
 	 * 		- @c INVALID_TIME_FORMAT if the format or a value is invalid
 	 */
-	static ReturnValue_t convertFromCcsds(Clock::TimeOfDay_t *to, uint8_t const *from,
-			uint32_t length);
+	static ReturnValue_t convertFromCcsds(Clock::TimeOfDay_t *to,
+	        uint8_t const *from, size_t length);
 
 	/**
 	 * not implemented yet
@@ -165,34 +166,34 @@ public:
 	 * @return
 	 */
 	static ReturnValue_t convertFromCcsds(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
-	static ReturnValue_t convertFromCUC(Clock::TimeOfDay_t *to, uint8_t const *from,
-			uint8_t length);
+	static ReturnValue_t convertFromCUC(Clock::TimeOfDay_t *to,
+	        uint8_t const *from, uint8_t length);
 
 	static ReturnValue_t convertFromCUC(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCUC(timeval *to, uint8_t pField,
-			uint8_t const *from, uint32_t* foundLength, uint32_t maxLength);
+			uint8_t const *from, size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCCS(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
 	static ReturnValue_t convertFromCCS(timeval *to, uint8_t pField,
-			uint8_t const *from, uint32_t* foundLength, uint32_t maxLength);
+			uint8_t const *from, size_t* foundLength, size_t maxLength);
 
-	static ReturnValue_t convertFromCDS(Clock::TimeOfDay_t *to, uint8_t const *from,
-			uint8_t length);
+	static ReturnValue_t convertFromCDS(Clock::TimeOfDay_t *to,
+	        uint8_t const *from, uint8_t length);
 
 	static ReturnValue_t convertFromCDS(timeval *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+			size_t* foundLength, size_t maxLength);
 
-	static ReturnValue_t convertFromCCS(Clock::TimeOfDay_t *to, uint8_t const *from,
-			uint32_t* foundLength, uint32_t maxLength);
+	static ReturnValue_t convertFromCCS(Clock::TimeOfDay_t *to,
+	        uint8_t const *from, size_t* foundLength, size_t maxLength);
 
-	static ReturnValue_t convertFromASCII(Clock::TimeOfDay_t *to, uint8_t const *from,
-			uint8_t length);
+	static ReturnValue_t convertFromASCII(Clock::TimeOfDay_t *to,
+	        uint8_t const *from, uint8_t length);
 
 	static uint32_t subsecondsToMicroseconds(uint16_t subseconds);
 private:
@@ -230,4 +231,4 @@ private:
 			timeval* from);
 };
 
-#endif /* CCSDSTIME_H_ */
+#endif /* FSFW_TIMEMANAGER_CCSDSTIME_H_ */
