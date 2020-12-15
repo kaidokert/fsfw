@@ -36,7 +36,11 @@ add_subdirectory(action)
 add_subdirectory(container)
 add_subdirectory(controller)
 add_subdirectory(coordinates)
+
+if(FSFW_USE_DATALINKLAYER)
 add_subdirectory(datalinklayer)
+endif()
+
 add_subdirectory(datapool)
 add_subdirectory(datapoollocal)
 add_subdirectory(housekeeping)
