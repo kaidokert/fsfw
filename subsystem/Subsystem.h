@@ -160,7 +160,8 @@ protected:
 
 	/**
 	 * @brief   Checks whether a sequence, identified by a mode list iterator
-	 *          and a fallback sequence.
+	 *          and a fallback sequence. Iterator needs to point to a valid
+	 *          sequence.
 	 * @param iter
 	 * @return
 	 */
