@@ -1,10 +1,11 @@
 #ifndef FSFW_OSAL_FREERTOS_MESSAGEQUEUE_H_
 #define FSFW_OSAL_FREERTOS_MESSAGEQUEUE_H_
 
+#include "TaskManagement.h"
+
 #include "../../internalError/InternalErrorReporterIF.h"
 #include "../../ipc/MessageQueueIF.h"
 #include "../../ipc/MessageQueueMessageIF.h"
-#include "../../osal/FreeRTOS/TaskManagement.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>

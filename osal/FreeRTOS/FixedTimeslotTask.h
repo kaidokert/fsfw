@@ -93,8 +93,6 @@ protected:
 	 */
 	void taskFunctionality(void);
 
-	void checkMissedDeadline(const TickType_t xLastWakeTime,
-	        const TickType_t interval);
 	void handleMissedDeadline();
 };
 
