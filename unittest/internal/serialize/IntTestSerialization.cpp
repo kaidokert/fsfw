@@ -1,8 +1,9 @@
 #include "IntTestSerialization.h"
 #include "../UnittDefinitions.h"
-#include "../../serialize/SerializeElement.h"
-#include "../../serialize/SerialBufferAdapter.h"
-#include "../../serialize/SerializeIF.h"
+
+#include "../../../serialize/SerializeElement.h"
+#include "../../../serialize/SerialBufferAdapter.h"
+#include "../../../serialize/SerializeIF.h"
 
 #include <array>
 

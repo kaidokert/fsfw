@@ -1,12 +1,15 @@
 #ifndef MODESTOREIF_H_
 #define MODESTOREIF_H_
 
-#ifdef USE_MODESTORE
+#include <FSFWConfig.h>
+
+#if FSFW_USE_MODESTORE == 1
+
+#include "ModeDefinitions.h"
 
 #include "../../container/ArrayList.h"
 #include "../../container/SinglyLinkedList.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
-#include "ModeDefinitions.h"
 
 class ModeStoreIF {
 public:

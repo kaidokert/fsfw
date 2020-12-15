@@ -1,8 +1,9 @@
-#ifndef RMAPCOOKIE_H_
-#define RMAPCOOKIE_H_
+#ifndef FSFW_RMAP_RMAPCOOKIE_H_
+#define FSFW_RMAP_RMAPCOOKIE_H_
 
-#include "../devicehandlers/CookieIF.h"
 #include "rmapStructs.h"
+#include "../devicehandlers/CookieIF.h"
+#include <cstddef>
 
 class RMAPChannelIF;
 
@@ -12,7 +13,8 @@ public:
 	RMAPCookie();
 
 	RMAPCookie(uint32_t set_address, uint8_t set_extended_address,
-			RMAPChannelIF *set_channel, uint8_t set_command_mask, uint32_t maxReplyLen = 0);
+			RMAPChannelIF *set_channel, uint8_t set_command_mask,
+			size_t maxReplyLen = 0);
 	virtual ~RMAPCookie();
 
 
@@ -28,8 +30,8 @@ public:
 	void setCommandMask(uint8_t commandMask);
 	uint8_t getCommandMask();
 
-	uint32_t getMaxReplyLen() const;
-	void setMaxReplyLen(uint32_t maxReplyLen);
+	size_t getMaxReplyLen() const;
+	void setMaxReplyLen(size_t maxReplyLen);
 
 	uint16_t getTransactionIdentifier() const;
 	void setTransactionIdentifier(uint16_t id_);
@@ -55,4 +57,4 @@ protected:
 	uint8_t dataCRC;
 };
 
-#endif /* RMAPCOOKIE_H_ */
+#endif /* FSFW_RMAP_RMAPCOOKIE_H_ */
