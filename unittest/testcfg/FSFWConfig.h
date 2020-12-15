@@ -12,7 +12,7 @@
 #define FSFW_REDUCED_PRINTOUT		0
 
 //! Can be used to enable debugging printouts for developing the FSFW
-#define FSFW_VERBOSE_PRINTOUT       0
+#define FSFW_DEBUGGING              0
 
 //! Defines the FIFO depth of each commanding service base which
 //! also determines how many commands a CSB service can handle in one cycle
@@ -29,13 +29,11 @@
 //! additional output which requires the translation files translateObjects
 //! and translateEvents (and their compiles source files)
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
-#define FSFW_DEBUG_OUTPUT 			1
 //! Specify whether info events are printed too.
-#define FSFW_DEBUG_INFO				1
+#define FSFW_DEBUG_INFO             1
 #include <translateObjects.h>
 #include <translateEvents.h>
 #else
-#define FSFW_DEBUG_OUTPUT			0
 #endif
 
 //! When using the newlib nano library, C99 support for stdio facilities

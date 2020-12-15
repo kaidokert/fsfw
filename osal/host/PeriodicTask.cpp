@@ -89,16 +89,16 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 }
 
 void PeriodicTask::taskFunctionality() {
+    for (const auto& object: objectList) {
+        object->initializeAfterTaskCreation();
+    }
+
 	std::chrono::milliseconds periodChrono(static_cast<uint32_t>(period*1000));
 	auto currentStartTime {
 	    std::chrono::duration_cast<std::chrono::milliseconds>(
 	    std::chrono::system_clock::now().time_since_epoch())
 	};
-	auto nextStartTime{ currentStartTime };
-
-	for (const auto& object: objectList) {
-	    object->initializeAfterTaskCreation();
-	}
+	auto nextStartTime { currentStartTime };
 
 	/* Enter the loop that defines the task behavior. */
 	for (;;) {
@@ -109,10 +109,6 @@ void PeriodicTask::taskFunctionality() {
 			object->performOperation();
 		}
 		if(not delayForInterval(&currentStartTime, periodChrono)) {
-#ifdef DEBUG
-			sif::warning << "PeriodicTask: " << taskName <<
-					" missed deadline!\n" << std::flush;
-#endif
 			if(deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}

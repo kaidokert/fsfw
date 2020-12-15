@@ -1,14 +1,15 @@
-#ifndef FRAMEWORK_TMTCSERVICES_PUSSERVICEBASE_H_
-#define FRAMEWORK_TMTCSERVICES_PUSSERVICEBASE_H_
+#ifndef FSFW_TMTCSERVICES_PUSSERVICEBASE_H_
+#define FSFW_TMTCSERVICES_PUSSERVICEBASE_H_
+
+#include "AcceptsTelecommandsIF.h"
+#include "VerificationCodes.h"
+#include "VerificationReporter.h"
 
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
-#include "../tmtcservices/VerificationCodes.h"
-#include "../tmtcservices/VerificationReporter.h"
 #include "../ipc/MessageQueueIF.h"
 
 namespace Factory{
@@ -156,4 +157,4 @@ private:
 	void handleRequestQueue();
 };
 
-#endif /* PUSSERVICEBASE_H_ */
+#endif /* FSFW_TMTCSERVICES_PUSSERVICEBASE_H_ */

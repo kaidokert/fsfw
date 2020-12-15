@@ -1,5 +1,6 @@
-#include "../tmtcservices/TmTcMessage.h"
-#include <string.h>
+#include "TmTcMessage.h"
+
+#include <cstring>
 
 
 TmTcMessage::TmTcMessage() {

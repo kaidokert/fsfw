@@ -1,7 +1,7 @@
-#ifndef FRAMEWORK_IPC_MUTEXFACTORY_H_
-#define FRAMEWORK_IPC_MUTEXFACTORY_H_
+#ifndef FSFW_IPC_MUTEXFACTORY_H_
+#define FSFW_IPC_MUTEXFACTORY_H_
 
-#include "../ipc/MutexIF.h"
+#include "MutexIF.h"
 /**
  * Creates Mutex.
  * This class is a "singleton" interface, i.e. it provides an
@@ -31,4 +31,4 @@ private:
 
 
 
-#endif /* FRAMEWORK_IPC_MUTEXFACTORY_H_ */
+#endif /* FSFW_IPC_MUTEXFACTORY_H_ */

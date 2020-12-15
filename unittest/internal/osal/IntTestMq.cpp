@@ -1,7 +1,8 @@
-#include <fsfw/ipc/MessageQueueIF.h>
-#include <fsfw/ipc/QueueFactory.h>
-#include <fsfw/unittest/internal/osal/IntTestMq.h>
-#include <fsfw/unittest/internal/UnittDefinitions.h>
+#include "IntTestMq.h"
+#include "../UnittDefinitions.h"
+
+#include "../../../ipc/MessageQueueIF.h"
+#include "../../../ipc/QueueFactory.h"
 
 #include <array>
 

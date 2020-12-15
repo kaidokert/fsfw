@@ -1,8 +1,8 @@
-#ifndef RMAPCOOKIE_H_
-#define RMAPCOOKIE_H_
+#ifndef FSFW_RMAP_RMAPCOOKIE_H_
+#define FSFW_RMAP_RMAPCOOKIE_H_
 
+#include "rmapStructs.h"
 #include "../devicehandlers/CookieIF.h"
-#include "../rmap/rmapStructs.h"
 #include <cstddef>
 
 class RMAPChannelIF;
@@ -13,7 +13,8 @@ public:
 	RMAPCookie();
 
 	RMAPCookie(uint32_t set_address, uint8_t set_extended_address,
-			RMAPChannelIF *set_channel, uint8_t set_command_mask, uint32_t maxReplyLen = 0);
+			RMAPChannelIF *set_channel, uint8_t set_command_mask,
+			size_t maxReplyLen = 0);
 	virtual ~RMAPCookie();
 
 
@@ -56,4 +57,4 @@ protected:
 	uint8_t dataCRC;
 };
 
-#endif /* RMAPCOOKIE_H_ */
+#endif /* FSFW_RMAP_RMAPCOOKIE_H_ */

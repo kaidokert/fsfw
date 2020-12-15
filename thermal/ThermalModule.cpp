@@ -107,7 +107,7 @@ void ThermalModule::calculateTemperature() {
 		moduleTemperature = moduleTemperature.value / numberOfValidSensors;
 		moduleTemperature.setValid(PoolVariableIF::VALID);
 	} else {
-		moduleTemperature = INVALID_TEMPERATURE;
+		moduleTemperature.value = thermal::INVALID_TEMPERATURE;
 		moduleTemperature.setValid(PoolVariableIF::INVALID);
 	}
 }
@@ -219,7 +219,7 @@ void ThermalModule::initialize(PowerSwitchIF* powerSwitch) {
 bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 		Strategy strategy) {
 	currentState.setValid(PoolVariableIF::VALID);
-	if (moduleTemperature == INVALID_TEMPERATURE) {
+	if (moduleTemperature == thermal::INVALID_TEMPERATURE) {
 		currentState = UNKNOWN;
 		return false;
 	}
@@ -256,15 +256,16 @@ bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 }
 
 void ThermalModule::setHeating(bool on) {
-//	GlobDataSet mySet;
-//	gp_int8_t writableTargetState(targetState.getDataPoolId(),
-//			&mySet, PoolVariableIF::VAR_WRITE);
-//	if (on) {
-//		writableTargetState = STATE_REQUEST_HEATING;
-//	} else {
-//		writableTargetState = STATE_REQUEST_PASSIVE;
-//	}
-//	mySet.commit(PoolVariableIF::VALID);
+	ReturnValue_t result = targetState.read();
+	if(result == HasReturnvaluesIF::RETURN_OK) {
+		if(on) {
+			targetState.value = STATE_REQUEST_HEATING;
+		}
+		else {
+			targetState.value = STATE_REQUEST_PASSIVE;
+		}
+	}
+	targetState.setValid(true);
 }
 
 void ThermalModule::updateTargetTemperatures(ThermalComponentIF* component,
@@ -281,7 +282,7 @@ void ThermalModule::updateTargetTemperatures(ThermalComponentIF* component,
 }
 
 void ThermalModule::setOutputInvalid() {
-	moduleTemperature = INVALID_TEMPERATURE;
+	moduleTemperature = thermal::INVALID_TEMPERATURE;
 	moduleTemperature.setValid(PoolVariableIF::INVALID);
 	currentState.setValid(PoolVariableIF::INVALID);
 	std::list<ComponentData>::iterator iter = components.begin();

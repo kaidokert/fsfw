@@ -8,7 +8,7 @@ ControllerBase::ControllerBase(object_id_t setObjectId, object_id_t parentId,
 		size_t commandQueueDepth) :
 		SystemObject(setObjectId), parentId(parentId), mode(MODE_OFF),
 		submode(SUBMODE_NONE), modeHelper(this),
-		healthHelper(this, setObjectId), hkSwitcher(this) {
+		healthHelper(this, setObjectId) {
 	commandQueue = QueueFactory::instance()->createMessageQueue(
 	        commandQueueDepth);
 }
@@ -44,10 +44,6 @@ ReturnValue_t ControllerBase::initialize() {
 		return result;
 	}
 
-	result = hkSwitcher.initialize();
-	if (result != RETURN_OK) {
-		return result;
-	}
 	return RETURN_OK;
 }
 
@@ -107,7 +103,6 @@ void ControllerBase::announceMode(bool recursive) {
 
 ReturnValue_t ControllerBase::performOperation(uint8_t opCode) {
 	handleQueue();
-	hkSwitcher.performOperation();
 	performControlOperation();
 	return RETURN_OK;
 }

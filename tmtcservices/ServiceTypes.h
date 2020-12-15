@@ -1,13 +1,7 @@
-/**
- * @file	ServiceTypes.h
- * @brief	This file defines the ServiceTypes class.
- * @date	11.04.2013
- * @author	baetz
- */
-
 #ifndef SERVICETYPES_H_
 #define SERVICETYPES_H_
 
+// SHOULDDO: This is a duplication of existing configuration structures. Delete it?
 namespace SERVICE {
 enum ServiceTypes {
 	TELECOMMAND_VERIFICATION = 1,

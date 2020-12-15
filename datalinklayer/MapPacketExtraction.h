@@ -1,5 +1,5 @@
-#ifndef MAPPACKETEXTRACTION_H_
-#define MAPPACKETEXTRACTION_H_
+#ifndef FSFW_DATALINKLAYER_MAPPACKETEXTRACTION_H_
+#define FSFW_DATALINKLAYER_MAPPACKETEXTRACTION_H_
 
 #include "MapPacketExtractionIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
@@ -20,11 +20,12 @@ private:
 	static const uint32_t MAX_PACKET_SIZE = 4096;
 	uint8_t lastSegmentationFlag;	//!< The segmentation flag of the last received frame.
 	uint8_t mapId;	//!< MAP ID of this MAP Channel.
-	uint32_t packetLength;	//!< Complete length of the current Space Packet.
+	uint32_t packetLength = 0;	//!< Complete length of the current Space Packet.
 	uint8_t* bufferPosition;	//!< Position to write to in the internal Packet buffer.
 	uint8_t packetBuffer[MAX_PACKET_SIZE];	//!< The internal Space Packet Buffer.
 	object_id_t packetDestination;
-	StorageManagerIF* packetStore;	//!< Pointer to the store where full TC packets are stored.
+	//!< Pointer to the store where full TC packets are stored.
+	StorageManagerIF* packetStore = nullptr;
 	MessageQueueId_t tcQueueId;		//!< QueueId to send found packets to the distributor.
 	/**
 	 * Debug method to print the packet Buffer's content.
@@ -69,4 +70,4 @@ public:
 	uint8_t getMapId() const;
 };
 
-#endif /* MAPPACKETEXTRACTION_H_ */
+#endif /* FSFW_DATALINKLAYER_MAPPACKETEXTRACTION_H_ */

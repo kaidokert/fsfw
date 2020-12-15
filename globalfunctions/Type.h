@@ -1,5 +1,5 @@
-#ifndef TYPE_H_
-#define TYPE_H_
+#ifndef FSFW_GLOBALFUNCTIONS_TYPE_H_
+#define FSFW_GLOBALFUNCTIONS_TYPE_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
@@ -97,4 +97,4 @@ struct PodTypeConversion<double> {
 	static const Type::ActualType_t type = Type::DOUBLE;
 };
 
-#endif /* TYPE_H_ */
+#endif /* FSFW_GLOBALFUNCTIONS_TYPE_H_ */

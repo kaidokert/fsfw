@@ -1,10 +1,11 @@
-#include "Factory.h"
+#include "CatchFactory.h"
 
 #include <fsfw/events/EventManager.h>
 #include <fsfw/health/HealthTable.h>
 
 #include <fsfw/internalError/InternalErrorReporter.h>
 #include <fsfw/objectmanager/frameworkObjects.h>
+#include <fsfw/storagemanager/PoolManager.h>
 
 /**
  * @brief Produces system objects.
@@ -24,6 +25,27 @@ void Factory::produce(void) {
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);
 	new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
+
+	{
+		PoolManager::LocalPoolConfig poolCfg = {
+		        {100, 16}, {50, 32}, {25, 64} , {15, 128}, {5, 1024}
+		};
+		new PoolManager(objects::TC_STORE, poolCfg);
+	}
+
+	{
+        PoolManager::LocalPoolConfig poolCfg = {
+                {100, 16}, {50, 32}, {25, 64} , {15, 128}, {5, 1024}
+        };
+		new PoolManager(objects::TM_STORE, poolCfg);
+	}
+
+	{
+        PoolManager::LocalPoolConfig poolCfg = {
+                {100, 16}, {50, 32}, {25, 64} , {15, 128}, {5, 1024}
+        };
+		new PoolManager(objects::IPC_STORE, poolCfg);
+	}
 
 }
 

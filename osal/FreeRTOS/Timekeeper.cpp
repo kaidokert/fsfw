@@ -1,6 +1,6 @@
-#include "../../osal/FreeRTOS/Timekeeper.h"
+#include "Timekeeper.h"
 
-#include "FreeRTOSConfig.h"
+#include <FreeRTOSConfig.h>
 
 Timekeeper * Timekeeper::myinstance = nullptr;
 

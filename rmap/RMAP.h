@@ -1,5 +1,5 @@
-#ifndef RMAPpp_H_
-#define RMAPpp_H_
+#ifndef FSFW_RMAP_RMAP_H_
+#define FSFW_RMAP_RMAP_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../rmap/RMAPCookie.h"

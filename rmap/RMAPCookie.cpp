@@ -1,6 +1,6 @@
-#include "../rmap/RMAPChannelIF.h"
-#include "../rmap/RMAPCookie.h"
-#include <stddef.h>
+#include "RMAPChannelIF.h"
+#include "RMAPCookie.h"
+#include <cstddef>
 
 
 RMAPCookie::RMAPCookie() {
@@ -31,7 +31,8 @@ RMAPCookie::RMAPCookie() {
 
 
 RMAPCookie::RMAPCookie(uint32_t set_address, uint8_t set_extended_address,
-		RMAPChannelIF *set_channel, uint8_t set_command_mask, uint32_t maxReplyLen) {
+		RMAPChannelIF *set_channel, uint8_t set_command_mask,
+		size_t maxReplyLen) {
 	this->header.dest_address = 0;
 	this->header.protocol = 0x01;
 	this->header.instruction = 0;

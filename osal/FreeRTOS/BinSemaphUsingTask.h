@@ -7,8 +7,8 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-// todo: does not work for older FreeRTOS version, so we should
-// actually check whether tskKERNEL_VERSION_MAJOR is larger than.. 7 or 8 ?
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
 
 /**
  * @brief 	Binary Semaphore implementation using the task notification value.
@@ -89,5 +89,8 @@ public:
 protected:
 	TaskHandle_t handle;
 };
+
+#endif /* (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8 */
 
 #endif /* FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_ */

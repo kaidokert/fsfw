@@ -1,13 +1,13 @@
-#ifndef FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
-#define FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_
+#ifndef FSFW_TMTCSERVICES_TMTCBRIDGE_H_
+#define FSFW_TMTCSERVICES_TMTCBRIDGE_H_
 
+#include "AcceptsTelemetryIF.h"
+#include "AcceptsTelecommandsIF.h"
 
 #include "../objectmanager/SystemObject.h"
-#include "../tmtcservices/AcceptsTelemetryIF.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../storagemanager/StorageManagerIF.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../container/DynamicFIFO.h"
 #include "../tmtcservices/TmTcMessage.h"
 
@@ -159,4 +159,4 @@ protected:
 };
 
 
-#endif /* FRAMEWORK_TMTCSERVICES_TMTCBRIDGE_H_ */
+#endif /* FSFW_TMTCSERVICES_TMTCBRIDGE_H_ */

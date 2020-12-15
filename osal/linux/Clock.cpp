@@ -1,4 +1,3 @@
-#include <fsfw/timemanager/Stopwatch.h>
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../timemanager/Clock.h"
 
@@ -86,15 +85,16 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-uint32_t Clock::getUptimeSeconds() {
-	//TODO This is not posix compatible and delivers only seconds precision
-	struct sysinfo sysInfo;
-	int result = sysinfo(&sysInfo);
-	if(result != 0){
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	return sysInfo.uptime;
-}
+// Wait for new FSFW Clock function delivering seconds uptime.
+//uint32_t Clock::getUptimeSeconds() {
+//	//TODO This is not posix compatible and delivers only seconds precision
+//	struct sysinfo sysInfo;
+//	int result = sysinfo(&sysInfo);
+//	if(result != 0){
+//		return HasReturnvaluesIF::RETURN_FAILED;
+//	}
+//	return sysInfo.uptime;
+//}
 
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 	timeval uptime;

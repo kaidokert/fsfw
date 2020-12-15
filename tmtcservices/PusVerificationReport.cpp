@@ -4,31 +4,6 @@
 PusVerificationMessage::PusVerificationMessage() {
 }
 
-//PusVerificationMessage::PusVerificationMessage(uint8_t set_report_id,
-//		TcPacketBase* current_packet, ReturnValue_t set_error_code,
-//		uint8_t set_step, uint32_t parameter1, uint32_t parameter2) {
-//	uint8_t ackFlags = current_packet->getAcknowledgeFlags();
-//	uint16_t tcPacketId = current_packet->getPacketId();
-//	uint16_t tcSequenceControl = current_packet->getPacketSequenceControl();
-//	uint8_t* data = this->getBuffer();
-//	data[messageSize] = set_report_id;
-//	messageSize += sizeof(set_report_id);
-//	data[messageSize] = ackFlags;
-//	messageSize += sizeof(ackFlags);
-//	memcpy(&data[messageSize], &tcPacketId, sizeof(tcPacketId));
-//	messageSize += sizeof(tcPacketId);
-//	memcpy(&data[messageSize], &tcSequenceControl, sizeof(tcSequenceControl));
-//	messageSize += sizeof(tcSequenceControl);
-//	data[messageSize] = set_step;
-//	messageSize += sizeof(set_step);
-//	memcpy(&data[messageSize], &set_error_code, sizeof(set_error_code));
-//	messageSize += sizeof(set_error_code);
-//	memcpy(&data[messageSize], &parameter1, sizeof(parameter1));
-//	messageSize += sizeof(parameter1);
-//	memcpy(&data[messageSize], &parameter2, sizeof(parameter2));
-//	messageSize += sizeof(parameter2);
-//}
-
 PusVerificationMessage::PusVerificationMessage(uint8_t set_report_id,
 		uint8_t ackFlags, uint16_t tcPacketId, uint16_t tcSequenceControl,
 		ReturnValue_t set_error_code, uint8_t set_step, uint32_t parameter1,

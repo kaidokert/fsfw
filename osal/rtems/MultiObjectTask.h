@@ -1,11 +1,5 @@
-/**
- * @file	MultiObjectTask.h
- * @brief	This file defines the MultiObjectTask class.
- * @date	30.01.2014
- * @author	baetz
- */
-#ifndef MULTIOBJECTTASK_H_
-#define MULTIOBJECTTASK_H_
+#ifndef FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
+#define FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
 
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
@@ -21,7 +15,7 @@ class ExecutableObjectIF;
  * @details MultiObjectTask is an extension to ObjectTask in the way that it is able to execute
  * 			multiple objects that implement the ExecutableObjectIF interface. The objects must be
  * 			added prior to starting the task.
- *
+ * @author  baetz
  * @ingroup task_handling
  */
 class MultiObjectTask: public TaskBase, public PeriodicTaskIF {
@@ -63,11 +57,11 @@ public:
 	 * @param object Id of the object to add.
 	 * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
 	 */
-	ReturnValue_t addComponent(object_id_t object);
+	ReturnValue_t addComponent(object_id_t object) override;
 
-	uint32_t getPeriodMs() const;
+	uint32_t getPeriodMs() const override;
 
-	ReturnValue_t sleepFor(uint32_t ms);
+	ReturnValue_t sleepFor(uint32_t ms) override;
 protected:
 	typedef std::vector<ExecutableObjectIF*> ObjectList;	//!< Typedef for the List of objects.
 	/**
@@ -86,7 +80,7 @@ protected:
 	/**
 	 * @brief	The pointer to the deadline-missed function.
 	 * @details	This pointer stores the function that is executed if the task's deadline is missed.
-	 * 			So, each may react individually on a timing failure. The pointer may be NULL,
+	 * 			So, each may react individually on a timing failure. The pointer may be nullptr,
 	 * 			then nothing happens on missing the deadline. The deadline is equal to the next execution
 	 * 			of the periodic task.
 	 */
@@ -110,4 +104,4 @@ protected:
 	void taskFunctionality(void);
 };
 
-#endif /* MULTIOBJECTTASK_H_ */
+#endif /* FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_ */

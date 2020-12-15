@@ -1,13 +1,14 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_
-#define FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_
+#ifndef FSFW_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_
+#define FSFW_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_
 
-#include "../../osal/FreeRTOS/CountingSemaphUsingTask.h"
+#include "CountingSemaphUsingTask.h"
 #include "../../tasks/SemaphoreIF.h"
 
-extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-}
+
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
 
 /**
  * @brief 	Couting Semaphore implementation which uses the notification value
@@ -102,4 +103,7 @@ private:
 	const uint8_t maxCount;
 };
 
-#endif /* FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_ */
+#endif /* (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8 */
+
+#endif /* FSFW_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_ */

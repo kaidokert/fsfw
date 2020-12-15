@@ -139,6 +139,15 @@ public:
 	 */
 	ReturnValue_t checkSequence() const;
 
+	/**
+	 * @brief   A custom check can be injected for the respective slot list.
+	 * @details
+	 * This can be used by the developer to check the validity of a certain
+	 * sequence. The function will be run in the #checkSequence function.
+	 * The general check will be continued for now if the custom check function
+	 * fails but a diagnostic debug output will be given.
+	 * @param customCheckFunction
+	 */
 	void addCustomCheck(ReturnValue_t (*customCheckFunction)(const SlotList &));
 
 	/**

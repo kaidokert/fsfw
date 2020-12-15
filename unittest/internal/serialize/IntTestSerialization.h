@@ -1,6 +1,7 @@
-#ifndef UNITTEST_INTERNAL_INTTESTSERIALIZATION_H_
-#define UNITTEST_INTERNAL_INTTESTSERIALIZATION_H_
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#ifndef FSFW_UNITTEST_INTERNAL_INTTESTSERIALIZATION_H_
+#define FSFW_UNITTEST_INTERNAL_INTTESTSERIALIZATION_H_
+
+#include "../../../returnvalues/HasReturnvaluesIF.h"
 #include <array>
 
 namespace testserialize {
@@ -12,4 +13,4 @@ ReturnValue_t test_serial_buffer_adapter();
 extern std::array<uint8_t, 512> test_array;
 }
 
-#endif /* UNITTEST_INTERNAL_INTTESTSERIALIZATION_H_ */
+#endif /* FSFW_UNITTEST_INTERNAL_INTTESTSERIALIZATION_H_ */

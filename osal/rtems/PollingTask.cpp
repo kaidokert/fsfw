@@ -1,7 +1,8 @@
 #include "../../tasks/FixedSequenceSlot.h"
 #include "../../objectmanager/SystemObjectIF.h"
-#include "../../osal/rtems/PollingTask.h"
-#include "../../osal/rtems/RtemsBasic.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+#include "PollingTask.h"
+#include "RtemsBasic.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <rtems/bspIo.h>
@@ -34,14 +35,14 @@ rtems_task PollingTask::taskEntryPoint(rtems_task_argument argument) {
 	PollingTask *originalTask(reinterpret_cast<PollingTask*>(argument));
 	//The task's functionality is called.
 	originalTask->taskFunctionality();
-	debug << "Polling task " << originalTask->getId()
+	sif::debug << "Polling task " << originalTask->getId()
 			<< " returned from taskFunctionality." << std::endl;
 }
 
 void PollingTask::missedDeadlineCounter() {
 	PollingTask::deadlineMissedCount++;
 	if (PollingTask::deadlineMissedCount % 10 == 0) {
-		error << "PST missed " << PollingTask::deadlineMissedCount
+		sif::error << "PST missed " << PollingTask::deadlineMissedCount
 				<< " deadlines." << std::endl;
 	}
 }
@@ -50,7 +51,7 @@ ReturnValue_t PollingTask::startTask() {
 	rtems_status_code status = rtems_task_start(id, PollingTask::taskEntryPoint,
 			rtems_task_argument((void *) this));
 	if (status != RTEMS_SUCCESSFUL) {
-		error << "PollingTask::startTask for " << std::hex << this->getId()
+		sif::error << "PollingTask::startTask for " << std::hex << this->getId()
 				<< std::dec << " failed." << std::endl;
 	}
 	switch(status){
@@ -68,8 +69,9 @@ ReturnValue_t PollingTask::startTask() {
 
 ReturnValue_t PollingTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-	if (objectManager->get<ExecutableObjectIF>(componentId) != nullptr) {
-		pst.addSlot(componentId, slotTimeMs, executionStep, this);
+	ExecutableObjectIF* object = objectManager->get<ExecutableObjectIF>(componentId);
+	if (object != nullptr) {
+		pst.addSlot(componentId, slotTimeMs, executionStep, object, this);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
@@ -82,7 +84,7 @@ uint32_t PollingTask::getPeriodMs() const {
 	return pst.getLengthMs();
 }
 
-ReturnValue_t PollingTask::checkAndInitializeSequence() const {
+ReturnValue_t PollingTask::checkSequence() const {
 	return pst.checkSequence();
 }
 
@@ -90,11 +92,10 @@ ReturnValue_t PollingTask::checkAndInitializeSequence() const {
 
 void PollingTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
-	std::list<FixedSequenceSlot*>::iterator it = pst.current;
+	FixedSlotSequence::SlotListIter it = pst.current;
 
 	//The start time for the first entry is read.
-	rtems_interval interval = RtemsBasic::convertMsToTicks(
-			(*it)->pollingTimeMs);
+	rtems_interval interval = RtemsBasic::convertMsToTicks(it->pollingTimeMs);
 	TaskBase::setAndStartPeriod(interval,&periodId);
 	//The task's "infinite" inner loop is entered.
 	while (1) {
@@ -107,7 +108,7 @@ void PollingTask::taskFunctionality() {
 			//If the deadline was missed, the deadlineMissedFunc is called.
 			rtems_status_code status = TaskBase::restartPeriod(interval,periodId);
 			if (status == RTEMS_TIMEOUT) {
-				if (this->deadlineMissedFunc != NULL) {
+				if (this->deadlineMissedFunc != nullptr) {
 					this->deadlineMissedFunc();
 				}
 			}
