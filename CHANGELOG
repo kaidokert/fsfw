@@ -60,3 +60,7 @@ that DHB users adapt their polling sequence tables to perform this step. This st
 allows setting a unique ID. Event.cpp source file removed, functions now
 defined in header directly. Namespaces renamed. Functions declared `constexpr`
 now
+
+### Commanding Service Base
+
+- CSB uses the 
