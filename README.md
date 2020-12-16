@@ -14,9 +14,9 @@ The framework is designed for systems, which communicate with external devices, 
 Therefore, a mode and health system provides control over the states of the software and the controlled devices. 
 In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
 
-The recommended hardware is a microprocessor with more than 2 MB of RAM and 1 MB of non-volatile Memory. 
+The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB of non-volatile Memory. 
 For reference, current Applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC.
-
+The `fsfw` was also tested on the STM32H743ZI-Nucleo board.
 
 ## Structure
 
@@ -121,12 +121,13 @@ If the communication is based on CCSDS Frames and Space Packets, several classes
 If Space Packets are used, a timestamper must be created. 
 An example can be found in the timemanager folder, this uses CCSDSTime::CDS_short.
 
-#### DeviceHandling
+#### Device Handlers
 
 DeviceHandlers are a core component of the FSFW. 
 The idea is, to have a software counterpart of every physical device to provide a simple mode, health and commanding interface.
 By separating the underlying Communication Interface with DeviceCommunicationIF, a DH can be tested on different hardware.
 The DH has mechanisms to monitor the communication with the physical device which allow for FDIR reaction. 
+Device Handlers can be created by overriding `DeviceHandlerBase`.
 A standard FDIR component for the DH will be created automatically but can be overwritten by the user.
 
 #### Modes, Health
@@ -151,7 +152,8 @@ The on-board FDIR uses the health state for isolation and recovery.
 
 ## Example config
 
-A example config can be found in defaultcfg/fsfwconfig.
+A example config can be found in defaultcfg/fsfwconfig. The fsfw will require certain configuration files,
+so a configuration folder should be provided and the folder should be added to the include path.
 
 ## Unit Tests
 
