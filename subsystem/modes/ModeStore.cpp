@@ -1,6 +1,8 @@
 #include "ModeStore.h"
 
-#ifdef USE_MODESTORE
+// todo: I think some parts are deprecated. If this is used,  the define
+// USE_MODESTORE could be part of the new FSFWConfig.h file.
+#if FSFW_USE_MODESTORE == 1
 
 ModeStore::ModeStore(object_id_t objectId, uint32_t slots) :
 		SystemObject(objectId), store(slots), emptySlot(store.front()) {
