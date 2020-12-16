@@ -1,5 +1,7 @@
-#ifndef SUBSYSTEMBASE_H_
-#define SUBSYSTEMBASE_H_
+#ifndef FSFW_SUBSYSTEM_SUBSYSTEMBASE_H_
+#define FSFW_SUBSYSTEM_SUBSYSTEMBASE_H_
+
+#include "modes/HasModeSequenceIF.h"
 
 #include "../container/HybridIterator.h"
 #include "../health/HasHealthIF.h"
@@ -7,11 +9,14 @@
 #include "../modes/HasModesIF.h"
 #include "../objectmanager/SystemObject.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "modes/HasModeSequenceIF.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include <map>
 
+/**
+ * @defgroup subsystems Subsystem Objects
+ * Contains all Subsystem and Assemblies
+ */
 class SubsystemBase: public SystemObject,
 		public HasModesIF,
 		public HasHealthIF,
@@ -30,17 +35,17 @@ public:
 			Mode_t initialMode = 0, uint16_t commandQueueDepth = 8);
 	virtual ~SubsystemBase();
 
-	virtual MessageQueueId_t getCommandQueue() const;
+	virtual MessageQueueId_t getCommandQueue() const override;
 
 	ReturnValue_t registerChild(object_id_t objectId);
 
-	virtual ReturnValue_t initialize();
+	virtual ReturnValue_t initialize() override;
 
-	virtual ReturnValue_t performOperation(uint8_t opCode);
+	virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
-	virtual ReturnValue_t setHealth(HealthState health);
+	virtual ReturnValue_t setHealth(HealthState health) override;
 
-	virtual HasHealthIF::HealthState getHealth();
+	virtual HasHealthIF::HealthState getHealth() override;
 
 protected:
 	struct ChildInfo {
@@ -58,9 +63,9 @@ protected:
 	/**
 	 * Always check this against <=0, so you are robust against too many replies
 	 */
-	int32_t commandsOutstanding;
+	int32_t commandsOutstanding = 0;
 
-	MessageQueueIF* commandQueue;
+	MessageQueueIF* commandQueue = nullptr;
 
 	HealthHelper healthHelper;
 
@@ -122,4 +127,4 @@ protected:
 	virtual void modeChanged();
 };
 
-#endif /* SUBSYSTEMBASE_H_ */
+#endif /* FSFW_SUBSYSTEM_SUBSYSTEMBASE_H_ */

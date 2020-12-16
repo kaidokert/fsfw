@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
-#define FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_
+#ifndef FSFW_OSAL_FREERTOS_BINARYSEMPAHORE_H_
+#define FSFW_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../tasks/SemaphoreIF.h"
@@ -104,4 +104,4 @@ protected:
 	SemaphoreHandle_t handle;
 };
 
-#endif /* FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_ */
+#endif /* FSFW_OSAL_FREERTOS_BINARYSEMPAHORE_H_ */
