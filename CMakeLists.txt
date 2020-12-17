@@ -3,27 +3,38 @@ cmake_minimum_required(VERSION 3.13)
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
 
-# Set options for FSFW OSAL selection.
-if(UNIX)
-set(OS_FSFW  "linux" CACHE STRING "OS abstraction layer used in the FSFW")
-elseif(WIN32)
-set(OS_FSFW  "host" CACHE STRING "OS abstraction layer used in the FSFW")
-endif()
-
 set_property(CACHE OS_FSFW PROPERTY STRINGS host linux rtems freertos)
 
+if(NOT OS_FSFW)
+	message(STATUS "No OS for FSFW via OS_FSFW set. Assuming host OS")
+	# Assume host OS and autodetermine from OS_FSFW
+	if(UNIX)
+		set(OS_FSFW  "linux" 
+			CACHE STRING 
+			"OS abstraction layer used in the FSFW"
+		)
+	elseif(WIN32)
+		set(OS_FSFW  "host" 
+			CACHE STRING "OS abstraction layer used in the FSFW"
+		)
+	endif()
+
+endif
+
 if(${OS_FSFW} STREQUAL host)
-set(OS_FSFW_NAME "Host")
+	set(OS_FSFW_NAME "Host")
 elseif(${OS_FSFW} STREQUAL linux)
-set(OS_FSFW_NAME "Linux")
+	set(OS_FSFW_NAME "Linux")
 elseif(${OS_FSFW} STREQUAL  freertos)
-set(OS_FSFW_NAME "FreeRTOS")
+	set(OS_FSFW_NAME "FreeRTOS")
 elseif(${OS_FSFW} STREQUAL rtems)
-set(OS_FSFW_NAME "RTEMS")
+	set(OS_FSFW_NAME "RTEMS")
 else()
-message(WARNING "Invalid operating system for FSFW specified! Setting to host..")
-set(OS_FSFW_NAME "Host")
-set(OS_FSFW "host")
+	message(WARNING 
+		"Invalid operating system for FSFW specified! Setting to host.."
+	)
+	set(OS_FSFW_NAME "Host")
+	set(OS_FSFW "host")
 endif()
 
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system")
@@ -38,7 +49,7 @@ add_subdirectory(controller)
 add_subdirectory(coordinates)
 
 if(FSFW_USE_DATALINKLAYER)
-add_subdirectory(datalinklayer)
+	add_subdirectory(datalinklayer)
 endif()
 
 add_subdirectory(datapool)
@@ -61,7 +72,7 @@ add_subdirectory(power)
 add_subdirectory(pus)
 
 if(FSFW_USE_RMAP)
-add_subdirectory(rmap)
+	add_subdirectory(rmap)
 endif()
 
 add_subdirectory(serialize)
@@ -79,9 +90,9 @@ add_subdirectory(tmtcservices)
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
 if(NOT FSFW_CONFIG_PATH)
-message(WARNING "Flight Software Framework configuration path not set!")
-message(WARNING "Setting default configuration!")
-add_subdirectory(defaultcfg/fsfwconfig)
+	message(WARNING "Flight Software Framework configuration path not set!")
+	message(WARNING "Setting default configuration!")
+	add_subdirectory(defaultcfg/fsfwconfig)
 endif()
 
 # Required include paths to compile the FSFW
