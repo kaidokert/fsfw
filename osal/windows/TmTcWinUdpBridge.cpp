@@ -137,6 +137,11 @@ void TmTcWinUdpBridge::handleBindError() {
                 << "WSAStartup(...) call " << "necessary" << std::endl;
         break;
     }
+    case(WSAEADDRINUSE): {
+    	sif::warning << "TmTcWinUdpBridge::handleBindError: WSAEADDRINUSE: "
+    			<< "Port is already in use!" << std::endl;
+    	break;
+    }
     default: {
         /*
         https://docs.microsoft.com/en-us/windows/win32/winsock/
