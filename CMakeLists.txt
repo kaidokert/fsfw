@@ -19,7 +19,7 @@ if(NOT OS_FSFW)
 		)
 	endif()
 
-endif
+endif()
 
 if(${OS_FSFW} STREQUAL host)
 	set(OS_FSFW_NAME "Host")
