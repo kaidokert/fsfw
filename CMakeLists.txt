@@ -38,7 +38,7 @@ else()
 	set(OS_FSFW "host")
 endif()
 
-message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system")
+message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_USE_RMAP "Compile with RMAP" ON)
