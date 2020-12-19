@@ -120,6 +120,7 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 	${FSFW_CONFIG_PATH_ABSOLUTE}
 )
 
+# Machine specific options can be set with the ABI_FLAGS variable.
 target_compile_options(${LIB_FSFW_NAME} PRIVATE 
 	${ABI_FLAGS}
 )
