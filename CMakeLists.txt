@@ -98,10 +98,10 @@ endif()
 # FSFW might be part of a possibly complicated folder structure, so we 
 # extract the absolute path of the fsfwconfig folder.
 if(IS_ABSOLUTE ${FSFW_CONFIG_PATH})
-	set(${FSFW_CONFIG_PATH_ABSOLUTE} ${FSFW_CONFIG_PATH})
+	set(FSFW_CONFIG_PATH_ABSOLUTE ${FSFW_CONFIG_PATH})
 else()
-	get_filename_component(${FSFW_CONFIG_PATH_ABSOLUTE} 
-		${FSFW_CONFIG_PATH} ABSOLUTE
+	get_filename_component(FSFW_CONFIG_PATH_ABSOLUTE
+		${FSFW_CONFIG_PATH} REALPATH BASE_DIR ${CMAKE_SOURCE_DIR}
 	)
 endif()
 
