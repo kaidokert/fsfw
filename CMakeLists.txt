@@ -119,3 +119,7 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
 )
+
+target_compile_options(${LIB_FSFW_NAME} PRIVATE 
+	${ABI_FLAGS}
+)
