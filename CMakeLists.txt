@@ -95,8 +95,26 @@ if(NOT FSFW_CONFIG_PATH)
 	add_subdirectory(defaultcfg/fsfwconfig)
 endif()
 
+# FSFW might be part of a possibly complicated folder structure, so we 
+# extract the absolute path of the fsfwconfig folder.
+if(IS_ABSOLUTE ${FSFW_CONFIG_PATH})
+	set(${FSFW_CONFIG_PATH_ABSOLUTE} ${FSFW_CONFIG_PATH})
+else()
+	get_filename_component(${FSFW_CONFIG_PATH_ABSOLUTE} 
+		${FSFW_CONFIG_PATH} ABSOLUTE
+	)
+endif()
+
 # Required include paths to compile the FSFW
-target_include_directories(${LIB_FSFW_NAME} 
-	INTERFACE 
-		${FSFW_CONFIG_PATH}
+target_include_directories(${LIB_FSFW_NAME} INTERFACE 
+	${CMAKE_SOURCE_DIR}
+	${FSFW_CONFIG_PATH_ABSOLUTE}
+)
+
+# Includes path required to compile FSFW itself as well
+# We assume that the fsfwconfig folder uses include relative to the project
+# root here!
+target_include_directories(${LIB_FSFW_NAME} PRIVATE 
+	${CMAKE_SOURCE_DIR}
+	${FSFW_CONFIG_PATH_ABSOLUTE}
 )
