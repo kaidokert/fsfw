@@ -119,7 +119,7 @@ void TcWinUdpPollingTask::setTimeout(double timeoutSeconds) {
 	int result = setsockopt(serverUdpSocket, SOL_SOCKET, SO_RCVTIMEO,
 			reinterpret_cast<const char*>(&timeoutMs), sizeof(DWORD));
 	if(result == -1) {
-		sif::error << "TcSocketPollingTask::TcSocketPollingTask: Setting "
+		sif::error << "TcWinUdpPollingTask::TcSocketPollingTask: Setting "
 				"receive timeout failed with " << strerror(errno) << std::endl;
 	}
 }
@@ -128,17 +128,22 @@ void TcWinUdpPollingTask::handleReadError() {
     int error = WSAGetLastError();
     switch(error) {
     case(WSANOTINITIALISED): {
-        sif::info << "TmTcWinUdpBridge::handleReadError: WSANOTINITIALISED: "
+        sif::info << "TcWinUdpPollingTask::handleReadError: WSANOTINITIALISED: "
                 << "WSAStartup(...) call " << "necessary" << std::endl;
         break;
     }
     case(WSAEFAULT): {
-        sif::info << "TmTcWinUdpBridge::handleReadError: WSADEFAULT: "
+        sif::info << "TcWinUdpPollingTask::handleReadError: WSADEFAULT: "
                 << "Bad address " << std::endl;
         break;
     }
+    case(WSAEINVAL): {
+        sif::info << "TcWinUdpPollingTask::handleReadError: WSAEINVAL: "
+                << "Invalid input parameters. " << std::endl;
+        break;
+    }
     default: {
-        sif::info << "TmTcWinUdpBridge::handleReadError: Error code: "
+        sif::info << "TcWinUdpPollingTask::handleReadError: Error code: "
                 << error << std::endl;
         break;
     }
