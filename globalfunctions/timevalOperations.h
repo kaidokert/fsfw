@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #ifdef WIN32
-// Why MSVC? Why? :)))
 #include <Windows.h>
 #else
 #include <sys/time.h>
