@@ -6,7 +6,9 @@
 #include "../globalfunctions/timevalOperations.h"
 
 #include <cstdint>
+#ifndef WIN32
 #include <sys/time.h>
+#endif
 
 //! Don't use these for time points, type is not large enough for UNIX epoch.
 using dur_millis_t = uint32_t;

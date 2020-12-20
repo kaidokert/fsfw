@@ -2,7 +2,13 @@
 #define TIMEVALOPERATIONS_H_
 
 #include <stdint.h>
+
+#ifdef WIN32
+// Why MSVC? Why? :)))
+#include <Windows.h>
+#else
 #include <sys/time.h>
+#endif
 
 timeval& operator+=(timeval& lhs, const timeval& rhs);
 
