@@ -106,6 +106,15 @@ else()
 	)
 endif()
 
+set(WARNING_FLAGS
+	-Wall
+	-Wextra
+	-Wshadow=local
+	-Wimplicit-fallthrough=1
+	-Wno-unused-parameter
+	-Wno-psabi
+)
+
 # Required include paths to compile the FSFW
 target_include_directories(${LIB_FSFW_NAME} INTERFACE 
 	${CMAKE_SOURCE_DIR}
@@ -122,5 +131,6 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 
 # Machine specific options can be set with the ABI_FLAGS variable.
 target_compile_options(${LIB_FSFW_NAME} PRIVATE 
+	${WARNING_FLAGS}
 	${ABI_FLAGS}
 )
