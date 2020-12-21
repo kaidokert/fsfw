@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #ifdef WIN32
-#include <Windows.h>
+#include <winsock2.h>
 #else
 #include <sys/time.h>
 #endif
