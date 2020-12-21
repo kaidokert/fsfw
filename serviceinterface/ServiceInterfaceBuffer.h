@@ -30,7 +30,7 @@ protected:
 	//! This is called when buffer becomes full. If
 	//! buffer is not used, then this is called every
 	//! time when characters are put to stream.
-	int overflow(int c = Traits::eof()) override;
+	int overflow(int c = std::ostream::traits_type::eof()) override;
 
 	//! This function is called when stream is flushed,
 	//! for example when std::endl is put to stream.
