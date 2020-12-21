@@ -6,7 +6,10 @@
 #include "../globalfunctions/timevalOperations.h"
 
 #include <cstdint>
-#ifndef WIN32
+
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/time.h>
 #endif
 
