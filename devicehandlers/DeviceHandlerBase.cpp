@@ -1459,3 +1459,11 @@ DeviceCommandId_t DeviceHandlerBase::getPendingCommand() const {
     }
     return DeviceHandlerIF::NO_COMMAND;
 }
+
+void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
+	for(const auto& reply: deviceReplyMap) {
+		if(reply.second.dataSet != nullptr) {
+			reply.second.dataSet->setValidity(false, true);
+		}
+	}
+}
