@@ -24,8 +24,8 @@
 #define FSFW_DEBUG_OUTPUT 			1
 //! Specify whether info events are printed too.
 #define FSFW_DEBUG_INFO				1
-#include <translateObjects.h>
-#include <translateEvents.h>
+#include "objects/translateObjects.h"
+#include "events/translateEvents.h"
 #else
 #define FSFW_DEBUG_OUTPUT			0
 #endif
