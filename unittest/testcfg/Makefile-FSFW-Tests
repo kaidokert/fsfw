@@ -15,7 +15,7 @@ SHELL = /bin/sh
 # (can be overriden by adding CHIP=chip and BOARD=board to the command-line)
 # Unit Test can only be run on host machine for now (Linux)
 FRAMEWORK_PATH = fsfw
-FILE_ROOT = $(FRAMEWORK_PATH)/unittest
+TEST_FILE_ROOT = $(FRAMEWORK_PATH)/unittest
 BOARD = unittest
 LINUX = 1
 OS_FSFW = linux
@@ -58,9 +58,10 @@ endif
 
 UNIT_TEST = 1
 # General folder paths
-CONFIG_PATH = $(FILE_ROOT)/config
-UNIT_TEST_PATH = $(FILE_ROOT)/tests
-CORE_PATH = $(FILE_ROOT)/core
+CONFIG_PATH = testcfg
+# Core copy has to be copied as well.
+CORE_PATH = core
+UNIT_TEST_PATH = $(TEST_FILE_ROOT)/tests
 
 # Output file basename
 BASENAME = fsfw
@@ -154,8 +155,8 @@ include $(S)/$(notdir $S).mk
 endef
 $(foreach S,$(SUBDIRS),$(eval $(INCLUDE_FILE)))
 
-INCLUDES += $(FILE_ROOT)
-INCLUDES += $(FILE_ROOT)/catch2/
+INCLUDES += $(TEST_FILE_ROOT)
+INCLUDES += $(TEST_FILE_ROOT)/catch2/
 
 #-------------------------------------------------------------------------------
 #		Source Files
