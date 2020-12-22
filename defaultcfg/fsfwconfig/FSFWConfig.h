@@ -23,8 +23,8 @@
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
 //! Specify whether info events are printed too.
 #define FSFW_DEBUG_INFO				1
-#include <translateObjects.h>
-#include <translateEvents.h>
+#include "objects/translateObjects.h"
+#include "events/translateEvents.h"
 #else
 #endif
 
