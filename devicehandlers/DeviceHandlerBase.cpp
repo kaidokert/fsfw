@@ -926,11 +926,6 @@ void DeviceHandlerBase::doTransition(Mode_t modeFrom, Submode_t subModeFrom) {
 	setMode(getBaseMode(mode));
 }
 
-uint32_t DeviceHandlerBase::getTransitionDelayMs(Mode_t modeFrom,
-		Mode_t modeTo) {
-	return 0;
-}
-
 ReturnValue_t DeviceHandlerBase::getStateOfSwitches(void) {
 	if(powerSwitcher == nullptr) {
 		return NO_SWITCH;
@@ -1458,4 +1453,12 @@ DeviceCommandId_t DeviceHandlerBase::getPendingCommand() const {
         return cookieInfo.pendingCommand->first;
     }
     return DeviceHandlerIF::NO_COMMAND;
+}
+
+void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
+	for(const auto& reply: deviceReplyMap) {
+		if(reply.second.dataSet != nullptr) {
+			reply.second.dataSet->setValidity(false, true);
+		}
+	}
 }

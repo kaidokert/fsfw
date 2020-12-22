@@ -1,7 +1,9 @@
 #ifndef SGP4PROPAGATOR_H_
 #define SGP4PROPAGATOR_H_
 
+#ifndef WIN32
 #include <sys/time.h>
+#endif
 #include "../contrib/sgp4/sgp4unit.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
