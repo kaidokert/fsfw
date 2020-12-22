@@ -1,5 +1,5 @@
-#ifndef PLATFORM_TMTCSERVICES_TMSTOREBACKENDIF_H_
-#define PLATFORM_TMTCSERVICES_TMSTOREBACKENDIF_H_
+#ifndef FSFW_TMTCSERVICES_TMSTOREBACKENDIF_H_
+#define FSFW_TMTCSERVICES_TMSTOREBACKENDIF_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../objectmanager/SystemObjectIF.h"
@@ -51,7 +51,7 @@ public:
 	virtual ~TmStoreBackendIF() {}
 
 	/**
-	 * What do I need to implement here ?
+	 * SHOULDDO: Specification on what has to be implemented here
 	 * @param opCode
 	 * @return
 	 */
@@ -71,7 +71,7 @@ public:
 	virtual ReturnValue_t dumpIndex(store_address_t* storeId) = 0;
 
 	/**
-	 * TODO: Adapt for file management system?
+	 * SHOULDDO: Adapt for file management system?
 	 * @param startAddress
 	 * @param endAddress
 	 * @return
@@ -92,4 +92,4 @@ public:
 
 
 
-#endif /* PLATFORM_TMTCSERVICES_TMSTOREBACKENDIF_H_ */
+#endif /* FSFW_TMTCSERVICES_TMSTOREBACKENDIF_H_ */

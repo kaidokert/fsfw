@@ -1,9 +1,10 @@
-#ifndef PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_
-#define PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_
+#ifndef FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_
+#define FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_
 
+#include "TmStorePackets.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../tmstorage/TmStorePackets.h"
 #include "../ipc/MessageQueueSenderIF.h"
+
 class TmPacketMinimal;
 class SpacePacketBase;
 class TmStoreBackendIF;
@@ -60,4 +61,4 @@ public:
 
 
 
-#endif /* PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_ */
+#endif /* FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_ */

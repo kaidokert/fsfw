@@ -1,10 +1,11 @@
-#ifndef FRAMEWORK_TMSTORAGE_TMSTOREMESSAGE_H_
-#define FRAMEWORK_TMSTORAGE_TMSTOREMESSAGE_H_
+#ifndef FSFW_TMSTORAGE_TMSTOREMESSAGE_H_
+#define FSFW_TMSTORAGE_TMSTOREMESSAGE_H_
 
+#include "TmStorePackets.h"
 #include "../ipc/CommandMessage.h"
 #include "../storagemanager/StorageManagerIF.h"
-#include "../tmstorage/TmStorePackets.h"
 #include "../objectmanager/SystemObjectIF.h"
+
 class TmStoreMessage  {
 public:
 	static ReturnValue_t setEnableStoringMessage(CommandMessage* cmd,
@@ -25,8 +26,10 @@ public:
 	static void setDownlinkContentTimeMessage(CommandMessage* cmd,
 			store_address_t storeId);
 	static void setIndexReportMessage(CommandMessage* cmd, store_address_t storeId);
-	static ReturnValue_t setDeleteBlocksMessage(CommandMessage* cmd, uint32_t addressLow, uint32_t addressHigh);
-	static ReturnValue_t setDownlinkBlocksMessage(CommandMessage* cmd, uint32_t addressLow, uint32_t addressHigh);
+	static ReturnValue_t setDeleteBlocksMessage(CommandMessage* cmd,
+			uint32_t addressLow, uint32_t addressHigh);
+	static ReturnValue_t setDownlinkBlocksMessage(CommandMessage* cmd,
+			uint32_t addressLow, uint32_t addressHigh);
 	static ReturnValue_t setIndexRequestMessage(CommandMessage* cmd);
 	static void setDeleteContentTimeMessage(CommandMessage* cmd,
 			store_address_t storeId);
@@ -60,4 +63,4 @@ private:
 	TmStoreMessage();
 };
 
-#endif /* FRAMEWORK_TMSTORAGE_TMSTOREMESSAGE_H_ */
+#endif /* FSFW_TMSTORAGE_TMSTOREMESSAGE_H_ */
