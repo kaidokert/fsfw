@@ -14,7 +14,8 @@ public:
 
 	/**
 	 * Add an object with a slot time and the execution step to the task.
-	 * The execution step shall be passed to the object.
+	 * The execution step will be passed to the object (e.g. as an operation
+	 * code in #performOperation)
 	 * @param componentId
 	 * @param slotTimeMs
 	 * @param executionStep
