@@ -49,7 +49,7 @@ public:
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		if (failureSubtype == TC_VERIFY::PROGRESS_FAILURE) {
+		if (failureSubtype == tc_verification::PROGRESS_FAILURE) {
 			result = SerializeAdapter::serialize(&stepNumber, buffer, size,
 			        maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -77,7 +77,7 @@ public:
 		size_t size = 0;
 		size += SerializeAdapter::getSerializedSize(&packetId);
 		size += sizeof(packetSequenceControl);
-		if(failureSubtype==TC_VERIFY::PROGRESS_FAILURE){
+		if(failureSubtype==tc_verification::PROGRESS_FAILURE){
 			size += SerializeAdapter::getSerializedSize(&stepNumber);
 		}
 		size += SerializeAdapter::getSerializedSize(&errorCode);
@@ -131,7 +131,7 @@ public:
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		if (subtype == TC_VERIFY::PROGRESS_SUCCESS) {
+		if (subtype == tc_verification::PROGRESS_SUCCESS) {
 			result = SerializeAdapter::serialize(&stepNumber, buffer, size,
 					maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -145,7 +145,7 @@ public:
 		size_t size = 0;
 		size += SerializeAdapter::getSerializedSize(&packetId);
 		size += sizeof(packetSequenceControl);
-		if(subtype == TC_VERIFY::PROGRESS_SUCCESS){
+		if(subtype == tc_verification::PROGRESS_SUCCESS){
 			size += SerializeAdapter::getSerializedSize(&stepNumber);
 		}
 		return size;

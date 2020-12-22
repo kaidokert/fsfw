@@ -1,5 +1,5 @@
-#ifndef ACCEPTSTELEMETRYIF_H_
-#define ACCEPTSTELEMETRYIF_H_
+#ifndef FSFW_TMTCSERVICES_ACCEPTSTELEMETRYIF_H_
+#define FSFW_TMTCSERVICES_ACCEPTSTELEMETRYIF_H_
 
 #include "../ipc/MessageQueueSenderIF.h"
 /**
@@ -20,7 +20,8 @@ public:
 	 * 			receiving message queue.
 	 * @return	The telemetry reception message queue id.
 	 */
-	virtual MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) = 0;
+	virtual MessageQueueId_t getReportReceptionQueue(
+	        uint8_t virtualChannel = 0) = 0;
 };
 
-#endif /* ACCEPTSTELEMETRYIF_H_ */
+#endif /* FSFW_TMTCSERVICES_ACCEPTSTELEMETRYIF_H_ */
