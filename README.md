@@ -1,4 +1,5 @@
 ![FSFW Logo](logo/FSFW_Logo_V3_bw.png)
+
 # Flight Software Framework (FSFW)
 
 The Flight Software Framework is a C++ Object Oriented Framework for unmanned,
@@ -21,8 +22,10 @@ The `fsfw` was also tested on the STM32H743ZI-Nucleo board.
 ## How to Use
 
 The [FSFW example](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example) provides a good starting point and a demo
-to see the FSFW capabilities. Generally, the FSFW is included in a project by compiling the FSFW sources and providing
-a configuration folder. A template configuration folder was provided and can be copied into the project root to have
+to see the FSFW capabilities and build it with the Make or the CMake build system. 
+Generally, the FSFW is included in a project by compiling the FSFW sources and providing
+a configuration folder and adding it to the include path. 
+A template configuration folder was provided and can be copied into the project root to have
 a starting point. The [configuration section](doc/README-config.md#top) provides more specific information about
 the possible options.
 
@@ -44,9 +47,9 @@ The CLASS_ID is a unique id for that type of object. See returnvalues/FwClassIds
 ### OSAL
 
 The FSFW provides operation system abstraction layers for Linux, FreeRTOS and RTEMS. 
-A independent OSAL called "host" is in development. 
-This OSAL is intended to provide abstraction for common type of host OSes (tested for Linux and Windows, not for MacOS yet).
-The OSAL provides periodic tasks, message queues, clocks and Semaphores as well as Mutexes.
+A independent Host OSAL is in development which will provide abstraction for common type of 
+host OSes (tested for Linux and Windows, not for MacOS yet).
+The OSAL provides periodic tasks, message queues, clocks and semaphores as well as mutexes.
 
 ### Core Components 
 
