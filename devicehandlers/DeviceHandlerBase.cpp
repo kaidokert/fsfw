@@ -926,11 +926,6 @@ void DeviceHandlerBase::doTransition(Mode_t modeFrom, Submode_t subModeFrom) {
 	setMode(getBaseMode(mode));
 }
 
-uint32_t DeviceHandlerBase::getTransitionDelayMs(Mode_t modeFrom,
-		Mode_t modeTo) {
-	return 5000;
-}
-
 ReturnValue_t DeviceHandlerBase::getStateOfSwitches(void) {
 	if(powerSwitcher == nullptr) {
 		return NO_SWITCH;
