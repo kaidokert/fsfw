@@ -22,10 +22,10 @@
  * @ingroup data_pool
  */
 template<typename T>
-class LocalPoolVar: public LocalPoolObjectBase {
+class LocalPoolVariable: public LocalPoolObjectBase {
 public:
 	//! Default ctor is forbidden.
-	LocalPoolVar() = delete;
+	LocalPoolVariable() = delete;
 
 	/**
 	 * This constructor is used by the data creators to have pool variable
@@ -43,7 +43,7 @@ public:
 	 * If nullptr, the variable is not registered.
 	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 */
-	LocalPoolVar(HasLocalDataPoolIF* hkOwner, lp_id_t poolId,
+	LocalPoolVariable(HasLocalDataPoolIF* hkOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
@@ -64,7 +64,7 @@ public:
 	 * @param setReadWriteMode Specify the read-write mode of the pool variable.
 	 *
 	 */
-	LocalPoolVar(object_id_t poolOwner, lp_id_t poolId,
+	LocalPoolVariable(object_id_t poolOwner, lp_id_t poolId,
 			DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 	/**
@@ -73,10 +73,10 @@ public:
 	 * @param dataSet
 	 * @param setReadWriteMode
 	 */
-	LocalPoolVar(gp_id_t globalPoolId, DataSetIF* dataSet = nullptr,
+	LocalPoolVariable(gp_id_t globalPoolId, DataSetIF* dataSet = nullptr,
 			pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
-	virtual~ LocalPoolVar() {};
+	virtual~ LocalPoolVariable() {};
 
 	/**
 	 * @brief	This is the local copy of the data pool entry.
@@ -118,23 +118,23 @@ public:
 	ReturnValue_t commit(dur_millis_t lockTimeout = MutexIF::BLOCKING) override;
 
 
-	LocalPoolVar<T> &operator=(const T& newValue);
-	LocalPoolVar<T> &operator=(const LocalPoolVar<T>& newPoolVariable);
+	LocalPoolVariable<T> &operator=(const T& newValue);
+	LocalPoolVariable<T> &operator=(const LocalPoolVariable<T>& newPoolVariable);
 
 	//! Explicit type conversion operator. Allows casting the class to
 	//! its template type to perform operations on value.
 	explicit operator T() const;
 
-	bool operator==(const LocalPoolVar<T>& other) const;
+	bool operator==(const LocalPoolVariable<T>& other) const;
 	bool operator==(const T& other) const;
 
-	bool operator!=(const LocalPoolVar<T>& other) const;
+	bool operator!=(const LocalPoolVariable<T>& other) const;
 	bool operator!=(const T& other) const;
 
-	bool operator<(const LocalPoolVar<T>& other) const;
+	bool operator<(const LocalPoolVariable<T>& other) const;
 	bool operator<(const T& other) const;
 
-	bool operator>(const LocalPoolVar<T>& other) const;
+	bool operator>(const LocalPoolVariable<T>& other) const;
 	bool operator>(const T& other) const;
 
 protected:
@@ -160,7 +160,7 @@ protected:
 	// std::ostream is the type for object std::cout
 	template <typename U>
 	friend std::ostream& operator<< (std::ostream &out,
-			const LocalPoolVar<U> &var);
+			const LocalPoolVariable<U> &var);
 
 private:
 };
@@ -168,18 +168,18 @@ private:
 #include "LocalPoolVariable.tpp"
 
 template<class T>
-using lp_var_t = LocalPoolVar<T>;
+using lp_var_t = LocalPoolVariable<T>;
 
-using lp_bool_t = LocalPoolVar<uint8_t>;
-using lp_uint8_t = LocalPoolVar<uint8_t>;
-using lp_uint16_t = LocalPoolVar<uint16_t>;
-using lp_uint32_t = LocalPoolVar<uint32_t>;
-using lp_uint64_t = LocalPoolVar<uint64_t>;
-using lp_int8_t = LocalPoolVar<int8_t>;
-using lp_int16_t = LocalPoolVar<int16_t>;
-using lp_int32_t = LocalPoolVar<int32_t>;
-using lp_int64_t = LocalPoolVar<int64_t>;
-using lp_float_t = LocalPoolVar<float>;
-using lp_double_t = LocalPoolVar<double>;
+using lp_bool_t = LocalPoolVariable<uint8_t>;
+using lp_uint8_t = LocalPoolVariable<uint8_t>;
+using lp_uint16_t = LocalPoolVariable<uint16_t>;
+using lp_uint32_t = LocalPoolVariable<uint32_t>;
+using lp_uint64_t = LocalPoolVariable<uint64_t>;
+using lp_int8_t = LocalPoolVariable<int8_t>;
+using lp_int16_t = LocalPoolVariable<int16_t>;
+using lp_int32_t = LocalPoolVariable<int32_t>;
+using lp_int64_t = LocalPoolVariable<int64_t>;
+using lp_float_t = LocalPoolVariable<float>;
+using lp_double_t = LocalPoolVariable<double>;
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_ */
