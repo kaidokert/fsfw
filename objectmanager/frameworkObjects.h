@@ -22,6 +22,7 @@ enum framework_objects {
 	//IDs for PUS Packet Communication
 	TC_STORE = 0x534f0100,
 	TM_STORE = 0x534f0200,
+	TIME_STAMPER = 0x53500010,
 
 	NO_OBJECT = 0xFFFFFFFF
 };
