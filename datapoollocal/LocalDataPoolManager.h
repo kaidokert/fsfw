@@ -48,7 +48,7 @@ class HousekeepingPacketUpdate;
  * @author 		R. Mueller
  */
 class LocalDataPoolManager {
-	template<typename T> friend class LocalPoolVar;
+	template<typename T> friend class LocalPoolVariable;
 	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
 	friend class LocalPoolDataSetBase;
 	friend void (Factory::setStaticFrameworkObjectIds)();
