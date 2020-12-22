@@ -1,6 +1,5 @@
+#include <fsfw/unittest/core/CatchFactory.h>
 #include "CatchDefinitions.h"
-#include <CatchFactory.h>
-
 #include <testcfg/cdatapool/dataPoolInit.h>
 
 #ifdef GCOV
