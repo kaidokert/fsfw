@@ -1,4 +1,4 @@
-#include "../../osal/linux/BinarySemaphore.h"
+#include "BinarySemaphore.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 extern "C" {
