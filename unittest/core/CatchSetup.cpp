@@ -1,6 +1,5 @@
+#include <fsfw/unittest/core/CatchFactory.h>
 #include "CatchDefinitions.h"
-#include "CatchFactory.h"
-
 #include <testcfg/cdatapool/dataPoolInit.h>
 
 #ifdef GCOV
@@ -10,15 +9,11 @@
 #include "../../objectmanager/ObjectManager.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../storagemanager/StorageManagerIF.h"
-#include "../../datapool/DataPool.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 
 /* Global instantiations normally done in main.cpp */
 /* Initialize Data Pool */
-//namespace glob {
-DataPool dataPool(datapool::dataPoolInit);
-//}
 
 
 namespace sif {
