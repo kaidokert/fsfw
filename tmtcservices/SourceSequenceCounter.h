@@ -1,12 +1,6 @@
-/**
- * @file	SourceSequenceCounter.h
- * @brief	This file defines the SourceSequenceCounter class.
- * @date	04.02.2013
- * @author	baetz
- */
+#ifndef FSFW_TMTCSERVICES_SOURCESEQUENCECOUNTER_H_
+#define FSFW_TMTCSERVICES_SOURCESEQUENCECOUNTER_H_
 
-#ifndef SOURCESEQUENCECOUNTER_H_
-#define SOURCESEQUENCECOUNTER_H_
 #include "../tmtcpacket/SpacePacketBase.h"
 
 class SourceSequenceCounter {
@@ -27,4 +21,4 @@ public:
 };
 
 
-#endif /* SOURCESEQUENCECOUNTER_H_ */
+#endif /* FSFW_TMTCSERVICES_SOURCESEQUENCECOUNTER_H_ */

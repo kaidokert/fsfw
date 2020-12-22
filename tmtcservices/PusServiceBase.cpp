@@ -1,9 +1,10 @@
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../tcdistribution/PUSDistributorIF.h"
-#include "AcceptsTelemetryIF.h"
 #include "PusServiceBase.h"
+#include "AcceptsTelemetryIF.h"
 #include "PusVerificationReport.h"
 #include "TmTcMessage.h"
+
+#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../tcdistribution/PUSDistributorIF.h"
 #include "../ipc/QueueFactory.h"
 
 object_id_t PusServiceBase::packetSource = 0;
@@ -41,9 +42,14 @@ void PusServiceBase::handleRequestQueue() {
 	ReturnValue_t result = RETURN_FAILED;
 	for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
 		ReturnValue_t status = this->requestQueue->receiveMessage(&message);
-		//	debug << "PusServiceBase::performOperation: Receiving from MQ ID: "
-		//      << std::hex << this->requestQueue.getId()
-		//      << std::dec << " returned: " << status << std::endl;
+//		if(status != MessageQueueIF::EMPTY) {
+//			sif::debug << "PusServiceBase::performOperation: Receiving from "
+//					<< "MQ ID: " << std::hex << "0x" << std::setw(8)
+//					<< std::setfill('0') << this->requestQueue->getId()
+//					<< std::dec << " returned: " << status << std::setfill(' ')
+//					<<  std::endl;
+//		}
+
 		if (status == RETURN_OK) {
 			this->currentPacket.setStoreAddress(message.getStorageId());
 			//info << "Service " << (uint16_t) this->serviceId <<
@@ -55,11 +61,11 @@ void PusServiceBase::handleRequestQueue() {
 			//    ": handleRequest returned: " << (int)return_code << std::endl;
 			if (result == RETURN_OK) {
 				this->verifyReporter.sendSuccessReport(
-						TC_VERIFY::COMPLETION_SUCCESS, &this->currentPacket);
+						tc_verification::COMPLETION_SUCCESS, &this->currentPacket);
 			}
 			else {
 				this->verifyReporter.sendFailureReport(
-						TC_VERIFY::COMPLETION_FAILURE, &this->currentPacket,
+						tc_verification::COMPLETION_FAILURE, &this->currentPacket,
 						result, 0, errorParameter1, errorParameter2);
 			}
 			this->currentPacket.deletePacket();
@@ -74,9 +80,8 @@ void PusServiceBase::handleRequestQueue() {
 		}
 		else {
 			sif::error << "PusServiceBase::performOperation: Service "
-					<< (uint16_t) this->serviceId
-					<< ": Error receiving packet. Code: " << std::hex << status
-					<< std::dec << std::endl;
+					<< this->serviceId << ": Error receiving packet. Code: "
+					<< std::hex << status << std::dec << std::endl;
 		}
 	}
 }
@@ -98,19 +103,17 @@ ReturnValue_t PusServiceBase::initialize() {
 			packetDestination);
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
-	if ((destService != nullptr) && (distributor != nullptr)) {
-		this->requestQueue->setDefaultDestination(
-				destService->getReportReceptionQueue());
-		distributor->registerService(this);
-		return RETURN_OK;
-	}
-	else {
+	if (destService == nullptr or distributor == nullptr) {
 		sif::error << "PusServiceBase::PusServiceBase: Service "
-				<< (uint32_t) this->serviceId << ": Configuration error."
-				<< " Make sure packetSource and packetDestination are defined "
-			       "correctly" << std::endl;
-		return RETURN_FAILED;
+				<< this->serviceId << ": Configuration error. Make sure "
+				<<	"packetSource and packetDestination are defined correctly"
+				<< std::endl;
+		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
+	this->requestQueue->setDefaultDestination(
+			destService->getReportReceptionQueue());
+	distributor->registerService(this);
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
