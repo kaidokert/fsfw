@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_
-#define FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_
+#ifndef FSFW_TMSTORAGE_TMSTOREPACKETS_H_
+#define FSFW_TMSTORAGE_TMSTOREPACKETS_H_
 
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../serialize/SerializeElement.h"
@@ -300,4 +300,4 @@ private:
 	uint8_t rawTimestamp[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
 
 };
-#endif /* FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_ */
+#endif /* FSFW_TMSTORAGE_TMSTOREPACKETS_H_ */
