@@ -139,8 +139,9 @@ public:
 	static bool isOlderThan(const TmPacketInformation* packet, const timeval* cmpTime){
 		if(packet->isValid()){
 			timeval packetTime = {0,0};
-			uint32_t foundlen = 0;
-			CCSDSTime::convertFromCcsds(&packetTime,&packet->rawTimestamp[0],&foundlen,sizeof(rawTimestamp));
+			size_t foundlen = 0;
+			CCSDSTime::convertFromCcsds(&packetTime,
+					&packet->rawTimestamp[0],&foundlen,sizeof(rawTimestamp));
 			if(packetTime <= *cmpTime){
 				return true;
 			}
@@ -151,8 +152,9 @@ public:
 	static bool isNewerThan(const TmPacketInformation* packet, const timeval* cmpTime){
 		if(packet->isValid()){
 			timeval packetTime = {0,0};
-			uint32_t foundlen = 0;
-			CCSDSTime::convertFromCcsds(&packetTime,&packet->rawTimestamp[0],&foundlen,sizeof(rawTimestamp));
+			size_t foundlen = 0;
+			CCSDSTime::convertFromCcsds(&packetTime,&packet->rawTimestamp[0],
+					&foundlen,sizeof(rawTimestamp));
 			if(packetTime >= *cmpTime){
 				return true;
 			}
@@ -204,8 +206,9 @@ public:
 
 	timeval getTime() const {
 		timeval packetTime = {0,0};
-		uint32_t foundlen = 0;
-		CCSDSTime::convertFromCcsds(&packetTime,&this->rawTimestamp[0],&foundlen,sizeof(rawTimestamp));
+		size_t foundlen = 0;
+		CCSDSTime::convertFromCcsds(&packetTime, &this->rawTimestamp[0],
+				&foundlen,sizeof(rawTimestamp));
 		return packetTime;
 	}
 

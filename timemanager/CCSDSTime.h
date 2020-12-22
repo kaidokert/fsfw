@@ -7,6 +7,7 @@
 #include "clockDefinitions.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstdint>
+#include <cstddef>
 
 bool operator<(const timeval& lhs, const timeval& rhs);
 bool operator<=(const timeval& lhs, const timeval& rhs);
