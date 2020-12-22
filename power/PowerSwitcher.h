@@ -1,10 +1,13 @@
-#ifndef POWERSWITCHER_H_
-#define POWERSWITCHER_H_
+#ifndef FSFW_POWER_POWERSWITCHER_H_
+#define FSFW_POWER_POWERSWITCHER_H_
+
 #include "PowerSwitchIF.h"
+
+#include "../objectmanager/SystemObjectIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../timemanager/Countdown.h"
 
-class PowerSwitcher : public HasReturnvaluesIF {
+class PowerSwitcher: public HasReturnvaluesIF {
 public:
 	enum State_t {
 		WAIT_OFF,
@@ -16,7 +19,8 @@ public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::POWER_SWITCHER;
 	static const ReturnValue_t IN_POWER_TRANSITION = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t SWITCH_STATE_MISMATCH = MAKE_RETURN_CODE(2);
-	PowerSwitcher( uint8_t setSwitch1, uint8_t setSwitch2 = NO_SWITCH, State_t setStartState = SWITCH_IS_OFF );
+	PowerSwitcher( uint8_t setSwitch1, uint8_t setSwitch2 = NO_SWITCH,
+	        State_t setStartState = SWITCH_IS_OFF );
 	ReturnValue_t initialize(object_id_t powerSwitchId);
 	void turnOn();
 	void turnOff();
@@ -29,7 +33,8 @@ public:
 private:
 	uint8_t firstSwitch;
 	uint8_t secondSwitch;
-	PowerSwitchIF* power;
+	PowerSwitchIF* power = nullptr;
+
 	static const uint8_t NO_SWITCH = 0xFF;
 	enum SwitchReturn_t {
 		ONE_SWITCH = 1,
@@ -42,4 +47,4 @@ private:
 
 
 
-#endif /* POWERSWITCHER_H_ */
+#endif /* FSFW_POWER_POWERSWITCHER_H_ */

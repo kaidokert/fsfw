@@ -1,12 +1,14 @@
-#ifndef THERMALCOMPONENT_H_
-#define THERMALCOMPONENT_H_
+#ifndef FSFW_THERMAL_THERMALCOMPONENT_H_
+#define FSFW_THERMAL_THERMALCOMPONENT_H_
 
-#include "CoreComponent.h"
+#include "ThermalComponentCore.h"
 
 /**
- * What is it. How to use
+ * @brief
+ * @details
+ * Some more documentation.
  */
-class ThermalComponent: public CoreComponent {
+class ThermalComponent: public ThermalComponentCore {
 public:
 	struct Parameters {
 		float lowerNopLimit;
@@ -42,9 +44,10 @@ public:
 	 * @param parameters
 	 * @param priority
 	 */
-	ThermalComponent(object_id_t reportingObjectId, uint8_t domainId, uint32_t temperaturePoolId,
-			uint32_t targetStatePoolId, uint32_t currentStatePoolId, uint32_t requestPoolId,
-			GlobDataSet *dataSet, AbstractTemperatureSensor *sensor,
+	ThermalComponent(object_id_t reportingObjectId, uint8_t domainId,
+	        gp_id_t temperaturePoolId, gp_id_t targetStatePoolId,
+	        gp_id_t currentStatePoolId, gp_id_t requestPoolId,
+			LocalPoolDataSetBase *dataSet, AbstractTemperatureSensor *sensor,
 			AbstractTemperatureSensor *firstRedundantSensor,
 			AbstractTemperatureSensor *secondRedundantSensor,
 			ThermalModuleIF *thermalModule, Parameters parameters,
@@ -63,15 +66,15 @@ protected:
 
 	NopParameters nopParameters;
 
-	State getState(float temperature, CoreComponent::Parameters parameters,
+	State getState(float temperature, ThermalComponentCore::Parameters parameters,
 			int8_t targetState);
 
 	virtual void checkLimits(State state);
 
 	virtual HeaterRequest getHeaterRequest(int8_t targetState, float temperature,
-			CoreComponent::Parameters parameters);
+			ThermalComponentCore::Parameters parameters);
 
 	State getIgnoredState(int8_t state);
 };
 
-#endif /* THERMALCOMPONENT_H_ */
+#endif /* FSFW_THERMAL_THERMALCOMPONENT_H_ */

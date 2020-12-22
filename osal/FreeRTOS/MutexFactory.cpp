@@ -1,10 +1,12 @@
+#include "Mutex.h"
+
 #include "../../ipc/MutexFactory.h"
 
-#include "../FreeRTOS/Mutex.h"
 
-//TODO: Different variant than the lazy loading in QueueFactory. What's better and why? -> one is on heap the other on bss/data
+//TODO: Different variant than the lazy loading in QueueFactory.
+//What's better and why? -> one is on heap the other on bss/data
 //MutexFactory* MutexFactory::factoryInstance = new MutexFactory();
-MutexFactory* MutexFactory::factoryInstance = NULL;
+MutexFactory* MutexFactory::factoryInstance = nullptr;
 
 MutexFactory::MutexFactory() {
 }
@@ -13,7 +15,7 @@ MutexFactory::~MutexFactory() {
 }
 
 MutexFactory* MutexFactory::instance() {
-	if (factoryInstance == NULL){
+	if (factoryInstance == nullptr){
 		factoryInstance = new MutexFactory();
 	}
 	return MutexFactory::factoryInstance;

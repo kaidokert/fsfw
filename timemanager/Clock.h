@@ -1,12 +1,17 @@
-#ifndef FRAMEWORK_TIMEMANAGER_CLOCK_H_
-#define FRAMEWORK_TIMEMANAGER_CLOCK_H_
+#ifndef FSFW_TIMEMANAGER_CLOCK_H_
+#define FSFW_TIMEMANAGER_CLOCK_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MutexHelper.h"
 #include "../globalfunctions/timevalOperations.h"
 
 #include <cstdint>
+
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/time.h>
+#endif
 
 //! Don't use these for time points, type is not large enough for UNIX epoch.
 using dur_millis_t = uint32_t;
@@ -151,4 +156,4 @@ private:
 };
 
 
-#endif /* FRAMEWORK_TIMEMANAGER_CLOCK_H_ */
+#endif /* FSFW_TIMEMANAGER_CLOCK_H_ */

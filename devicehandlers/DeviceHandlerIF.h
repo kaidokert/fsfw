@@ -4,6 +4,7 @@
 #include "DeviceHandlerMessage.h"
 
 #include "../action/HasActionsIF.h"
+#include "../datapoollocal/locPoolDefinitions.h"
 #include "../events/Event.h"
 #include "../modes/HasModesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
@@ -21,12 +22,13 @@ using DeviceCommandId_t = uint32_t;
  */
 class DeviceHandlerIF {
 public:
+	static constexpr DeviceCommandId_t NO_COMMAND = -1;
 
+	static constexpr uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
+	static constexpr uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
 
-	static const uint8_t TRANSITION_MODE_CHILD_ACTION_MASK = 0x20;
-	static const uint8_t TRANSITION_MODE_BASE_ACTION_MASK = 0x10;
-
-	static constexpr Command_t NO_COMMAND = -1;
+	using dh_heater_request_t = uint8_t;
+	using dh_thermal_state_t = int8_t;
 
 	/**
 	 * @brief This is the mode the <strong>device handler</strong> is in.
@@ -129,7 +131,7 @@ public:
 	// Standard codes used in  interpretDeviceReply
 	static const ReturnValue_t DEVICE_DID_NOT_EXECUTE = MAKE_RETURN_CODE(0xC0); //the device reported, that it did not execute the command
 	static const ReturnValue_t DEVICE_REPORTED_ERROR = MAKE_RETURN_CODE(0xC1);
-	static const ReturnValue_t UNKNOW_DEVICE_REPLY = MAKE_RETURN_CODE(0xC2); //the deviceCommandId reported by scanforReply is unknown
+	static const ReturnValue_t UNKNOWN_DEVICE_REPLY = MAKE_RETURN_CODE(0xC2); //the deviceCommandId reported by scanforReply is unknown
 	static const ReturnValue_t DEVICE_REPLY_INVALID = MAKE_RETURN_CODE(0xC3); //syntax etc is correct but still not ok, eg parameters where none are expected
 
 	// Standard codes used in buildCommandFromCommand
@@ -142,13 +144,21 @@ public:
 	 * This is used by the child class to tell the base class what to do.
 	 */
 	enum CommunicationAction: uint8_t {
-	    PERFORM_OPERATION,
+		PERFORM_OPERATION,
 		SEND_WRITE,//!< Send write
 		GET_WRITE, //!< Get write
 		SEND_READ, //!< Send read
 		GET_READ,  //!< Get read
 		NOTHING    //!< Do nothing.
 	};
+
+	static constexpr uint32_t DEFAULT_THERMAL_SET_ID = sid_t::INVALID_SET_ID - 1;
+
+	static constexpr lp_id_t DEFAULT_THERMAL_STATE_POOL_ID =
+			localpool::INVALID_LPID - 2;
+	static constexpr lp_id_t DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID =
+			localpool::INVALID_LPID - 1;
+
 
 	/**
 	 * Default Destructor

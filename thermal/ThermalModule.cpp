@@ -1,28 +1,31 @@
-#include "../monitoring/LimitViolationReporter.h"
-#include "../monitoring/MonitoringMessageContent.h"
 #include "ThermalModule.h"
-
 #include "AbstractTemperatureSensor.h"
 
-ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId,
-		uint32_t currentStatePoolId, uint32_t targetStatePoolId,
-		GlobDataSet *dataSet, Parameters parameters,
+#include "../monitoring/LimitViolationReporter.h"
+#include "../monitoring/MonitoringMessageContent.h"
+
+
+ThermalModule::ThermalModule(gp_id_t moduleTemperaturePoolId,
+		gp_id_t currentStatePoolId, gp_id_t targetStatePoolId,
+		LocalPoolDataSetBase *dataSet, Parameters parameters,
 		RedundantHeater::Parameters heaterParameters) :
-		oldStrategy(ACTIVE_SINGLE), survivalTargetTemp(0), targetTemp(0), heating(
-				false), parameters(parameters), moduleTemperature(
-				moduleTemperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE), currentState(
-				currentStatePoolId, dataSet, PoolVariableIF::VAR_WRITE), targetState(
-				targetStatePoolId, dataSet, PoolVariableIF::VAR_READ) {
+		oldStrategy(ACTIVE_SINGLE), parameters(parameters),
+		moduleTemperature(moduleTemperaturePoolId, dataSet,
+				PoolVariableIF::VAR_WRITE),
+		currentState(currentStatePoolId, dataSet, PoolVariableIF::VAR_WRITE),
+		targetState(targetStatePoolId, dataSet, PoolVariableIF::VAR_READ) {
 	heater = new RedundantHeater(heaterParameters);
 }
 
-ThermalModule::ThermalModule(uint32_t moduleTemperaturePoolId, GlobDataSet* dataSet) :
-		oldStrategy(ACTIVE_SINGLE), survivalTargetTemp(0), targetTemp(0), heating(
-				false), parameters( { 0, 0 }), moduleTemperature(
-				moduleTemperaturePoolId, dataSet, PoolVariableIF::VAR_WRITE), heater(
-				NULL), currentState(PoolVariableIF::INVALID, dataSet,
-				PoolVariableIF::VAR_WRITE), targetState(PoolVariableIF::INVALID,
-				dataSet, PoolVariableIF::VAR_READ) {
+ThermalModule::ThermalModule(gp_id_t moduleTemperaturePoolId,
+		LocalPoolDataSetBase* dataSet) :
+		oldStrategy(ACTIVE_SINGLE), parameters( { 0, 0 }),
+		moduleTemperature(moduleTemperaturePoolId, dataSet,
+				PoolVariableIF::VAR_WRITE),
+		currentState(gp_id_t(), dataSet,
+				PoolVariableIF::VAR_WRITE),
+		targetState(gp_id_t(), dataSet,
+				PoolVariableIF::VAR_READ) {
 }
 
 ThermalModule::~ThermalModule() {
@@ -30,7 +33,7 @@ ThermalModule::~ThermalModule() {
 }
 
 void ThermalModule::performOperation(uint8_t opCode) {
-	if (heater != NULL) {
+	if (heater != nullptr) {
 		heater->performOperation(0);
 	}
 }
@@ -42,7 +45,7 @@ void ThermalModule::performMode(Strategy strategy) {
 	ThermalComponentIF::HeaterRequest componentHeaterRequest =
 			letComponentsPerformAndDeciceIfWeNeedToHeat(safeOnly);
 
-	if (heater == NULL) {
+	if (heater == nullptr) {
 		informComponentsAboutHeaterState(false, NONE);
 		return;
 	}
@@ -53,8 +56,8 @@ void ThermalModule::performMode(Strategy strategy) {
 		//Components overwrite the module request.
 		heating = ((componentHeaterRequest
 				== ThermalComponentIF::HEATER_REQUEST_ON)
-				|| (componentHeaterRequest
-						== ThermalComponentIF::HEATER_REQUEST_EMERGENCY_ON));
+				or (componentHeaterRequest
+				== ThermalComponentIF::HEATER_REQUEST_EMERGENCY_ON));
 	}
 
 	bool dual = (strategy == ACTIVE_DUAL);
@@ -76,7 +79,7 @@ void ThermalModule::performMode(Strategy strategy) {
 }
 
 float ThermalModule::getTemperature() {
-	return moduleTemperature;
+	return moduleTemperature.value;
 }
 
 void ThermalModule::registerSensor(AbstractTemperatureSensor * sensor) {
@@ -85,7 +88,8 @@ void ThermalModule::registerSensor(AbstractTemperatureSensor * sensor) {
 
 void ThermalModule::registerComponent(ThermalComponentIF* component,
 		ThermalComponentIF::Priority priority) {
-	components.push_back(ComponentData( { component, priority, ThermalComponentIF::HEATER_DONT_CARE }));
+	components.push_back(ComponentData( { component, priority,
+		ThermalComponentIF::HEATER_DONT_CARE }));
 }
 
 void ThermalModule::calculateTemperature() {
@@ -94,15 +98,16 @@ void ThermalModule::calculateTemperature() {
 	std::list<AbstractTemperatureSensor *>::iterator iter = sensors.begin();
 	for (; iter != sensors.end(); iter++) {
 		if ((*iter)->isValid()) {
-			moduleTemperature = moduleTemperature + (*iter)->getTemperature();
+			moduleTemperature = moduleTemperature.value +
+					(*iter)->getTemperature();
 			numberOfValidSensors++;
 		}
 	}
 	if (numberOfValidSensors != 0) {
-		moduleTemperature = moduleTemperature / numberOfValidSensors;
+		moduleTemperature = moduleTemperature.value / numberOfValidSensors;
 		moduleTemperature.setValid(PoolVariableIF::VALID);
 	} else {
-		moduleTemperature = INVALID_TEMPERATURE;
+		moduleTemperature.value = thermal::INVALID_TEMPERATURE;
 		moduleTemperature.setValid(PoolVariableIF::INVALID);
 	}
 }
@@ -117,9 +122,10 @@ ThermalComponentIF* ThermalModule::findComponent(object_id_t objectId) {
 	return NULL;
 }
 
-ThermalComponentIF::HeaterRequest ThermalModule::letComponentsPerformAndDeciceIfWeNeedToHeat(
-		bool safeOnly) {
-	ThermalComponentIF::HeaterRequest heaterRequests[ThermalComponentIF::NUMBER_OF_PRIORITIES];
+ThermalComponentIF::HeaterRequest
+ThermalModule::letComponentsPerformAndDeciceIfWeNeedToHeat(bool safeOnly) {
+	ThermalComponentIF::HeaterRequest
+	heaterRequests[ThermalComponentIF::NUMBER_OF_PRIORITIES];
 
 	survivalTargetTemp = -999;
 	targetTemp = -999;
@@ -213,7 +219,7 @@ void ThermalModule::initialize(PowerSwitchIF* powerSwitch) {
 bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 		Strategy strategy) {
 	currentState.setValid(PoolVariableIF::VALID);
-	if (moduleTemperature == INVALID_TEMPERATURE) {
+	if (moduleTemperature == thermal::INVALID_TEMPERATURE) {
 		currentState = UNKNOWN;
 		return false;
 	}
@@ -224,7 +230,7 @@ bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 		limit = survivalTargetTemp;
 	}
 
-	if (moduleTemperature >= limit) {
+	if (moduleTemperature.value >= limit) {
 		currentState = OPERATIONAL;
 	} else {
 		currentState = NON_OPERATIONAL;
@@ -250,15 +256,16 @@ bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(
 }
 
 void ThermalModule::setHeating(bool on) {
-	GlobDataSet mySet;
-	gp_int8_t writableTargetState(targetState.getDataPoolId(),
-			&mySet, PoolVariableIF::VAR_WRITE);
-	if (on) {
-		writableTargetState = STATE_REQUEST_HEATING;
-	} else {
-		writableTargetState = STATE_REQUEST_PASSIVE;
+	ReturnValue_t result = targetState.read();
+	if(result == HasReturnvaluesIF::RETURN_OK) {
+		if(on) {
+			targetState.value = STATE_REQUEST_HEATING;
+		}
+		else {
+			targetState.value = STATE_REQUEST_PASSIVE;
+		}
 	}
-	mySet.commit(PoolVariableIF::VALID);
+	targetState.setValid(true);
 }
 
 void ThermalModule::updateTargetTemperatures(ThermalComponentIF* component,
@@ -275,7 +282,7 @@ void ThermalModule::updateTargetTemperatures(ThermalComponentIF* component,
 }
 
 void ThermalModule::setOutputInvalid() {
-	moduleTemperature = INVALID_TEMPERATURE;
+	moduleTemperature = thermal::INVALID_TEMPERATURE;
 	moduleTemperature.setValid(PoolVariableIF::INVALID);
 	currentState.setValid(PoolVariableIF::INVALID);
 	std::list<ComponentData>::iterator iter = components.begin();

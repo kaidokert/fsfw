@@ -10,6 +10,16 @@
 #include "ThermalModuleIF.h"
 #include "tcsDefinitions.h"
 
+/**
+ * @defgroup thermal Thermal Components
+ * @brief Contains all components related to thermal tasks (sensors, heaters)
+ */
+
+/**
+ * @brief Base class for Temperature Sensor, implements all important interfaces.
+ *        Please use the TemperatureSensor class to implement the actual sensors.
+ * @ingroup thermal
+ */
 class AbstractTemperatureSensor: public HasHealthIF,
 		public SystemObject,
 		public ExecutableObjectIF,

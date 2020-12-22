@@ -1,6 +1,7 @@
+#include "Timekeeper.h"
+
 #include "../../timemanager/Clock.h"
 #include "../../globalfunctions/timevalOperations.h"
-#include "Timekeeper.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -66,6 +67,13 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 	*uptimeMs = uptime.tv_sec * 1000 + uptime.tv_usec / 1000;
 	return HasReturnvaluesIF::RETURN_OK;
 }
+
+
+//uint32_t Clock::getUptimeSeconds() {
+//	timeval uptime = getUptime();
+//	return uptime.tv_sec;
+//}
+
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 	timeval time_timeval;

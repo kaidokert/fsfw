@@ -23,8 +23,9 @@ protected:
 	ReturnValue_t cleanUpElement(iterator position);
 private:
 	static const uint8_t N_POOLS = 4;
-	LocalPool<N_POOLS> factoryBackend;
+	LocalPool factoryBackend;
 	PlacementFactory factory;
+	static const LocalPool::LocalPoolConfig poolConfig;
 	static const uint16_t POOL_SIZES[N_POOLS];
 	static const uint16_t N_ELEMENTS[N_POOLS];
 	template<typename VALUE_T, typename INSERTION_T>

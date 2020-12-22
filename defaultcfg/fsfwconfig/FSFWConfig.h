@@ -15,25 +15,17 @@
 //! Can be used to enable additional debugging printouts for developing the FSFW
 #define FSFW_PRINT_VERBOSITY_LEVEL   0
 
-//! Defines the FIFO depth of each commanding service base which
-//! also determines how many commands a CSB service can handle in one cycle
-//! simulataneously. This will increase the required RAM for
-//! each CSB service !
-#define FSFW_CSB_FIFO_DEPTH			6
-
 //! If FSFW_OBJ_EVENT_TRANSLATION is set to one,
 //! additional output which requires the translation files translateObjects
 //! and translateEvents (and their compiled source files)
 #define FSFW_OBJ_EVENT_TRANSLATION	0
 
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
-#define FSFW_DEBUG_OUTPUT 			1
 //! Specify whether info events are printed too.
 #define FSFW_DEBUG_INFO				1
-#include <translateObjects.h>
-#include <translateEvents.h>
+#include "objects/translateObjects.h"
+#include "events/translateEvents.h"
 #else
-#define FSFW_DEBUG_OUTPUT			0
 #endif
 
 //! When using the newlib nano library, C99 support for stdio facilities
@@ -52,6 +44,12 @@ static constexpr uint8_t FSFW_MISSION_TIMESTAMP_SIZE = 8;
 static constexpr size_t FSFW_EVENTMGMR_MATCHTREE_NODES = 240;
 static constexpr size_t FSFW_EVENTMGMT_EVENTIDMATCHERS = 120;
 static constexpr size_t FSFW_EVENTMGMR_RANGEMATCHERS   = 120;
+
+//! Defines the FIFO depth of each commanding service base which
+//! also determines how many commands a CSB service can handle in one cycle
+//! simulataneously. This will increase the required RAM for
+//! each CSB service !
+static constexpr uint8_t FSFW_CSB_FIFO_DEPTH = 6;
 }
 
 #endif /* CONFIG_FSFWCONFIG_H_ */
