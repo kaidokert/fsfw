@@ -54,7 +54,7 @@ ID for now.
 - There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
 that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
 - setNormalDatapoolEntriesInvalid is not an abstract method and a default implementation was provided
-- getTransitionDelayMs now return 5000 ms instead of 0 in default implementation
+- getTransitionDelayMs is now an abstract method
 
 ### DeviceHandlerIF
 
