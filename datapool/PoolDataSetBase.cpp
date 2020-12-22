@@ -59,6 +59,11 @@ uint16_t PoolDataSetBase::getFillCount() const {
 
 ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+	if(registeredVariables[count] == nullptr) {
+	    // configuration error.
+	    return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
 	// These checks are often performed by the respective
 	// variable implementation too, but I guess a double check does not hurt.
 	if (registeredVariables[count]->getReadWriteMode() !=
