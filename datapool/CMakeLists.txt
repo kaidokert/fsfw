@@ -1,11 +1,6 @@
 target_sources(${LIB_FSFW_NAME} 
 	PRIVATE 
-		ControllerSet.cpp
-		DataPool.cpp
-		DataPoolAdmin.cpp
-		DataPoolParameterWrapper.cpp
-		DataSet.cpp
 		HkSwitchHelper.cpp
+		PoolDataSetBase.cpp
 		PoolEntry.cpp
-		PoolRawAccess.cpp
 )

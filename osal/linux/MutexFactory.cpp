@@ -1,5 +1,6 @@
-#include "../../ipc/MutexFactory.h"
 #include "Mutex.h"
+
+#include "../../ipc/MutexFactory.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
 MutexFactory* MutexFactory::factoryInstance = new MutexFactory();
