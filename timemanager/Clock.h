@@ -1,8 +1,9 @@
 #ifndef FSFW_TIMEMANAGER_CLOCK_H_
 #define FSFW_TIMEMANAGER_CLOCK_H_
 
+#include "clockDefinitions.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexFactory.h"
 #include "../globalfunctions/timevalOperations.h"
 
 #include <cstdint>
@@ -13,20 +14,17 @@
 #include <sys/time.h>
 #endif
 
-//! Don't use these for time points, type is not large enough for UNIX epoch.
-using dur_millis_t = uint32_t;
-
 class Clock {
 public:
 	typedef struct {
-	  uint32_t year; //!< Year, A.D.
-	  uint32_t month; //!< Month, 1 .. 12.
-	  uint32_t day; //!< Day, 1 .. 31.
-	  uint32_t hour; //!< Hour, 0 .. 23.
-	  uint32_t minute; //!< Minute, 0 .. 59.
-	  uint32_t second; //!< Second, 0 .. 59.
-	  uint32_t usecond; //!< Microseconds, 0 .. 999999
-	}   TimeOfDay_t;
+		uint32_t year; //!< Year, A.D.
+		uint32_t month; //!< Month, 1 .. 12.
+		uint32_t day; //!< Day, 1 .. 31.
+		uint32_t hour; //!< Hour, 0 .. 23.
+		uint32_t minute; //!< Minute, 0 .. 59.
+		uint32_t second; //!< Second, 0 .. 59.
+		uint32_t usecond; //!< Microseconds, 0 .. 999999
+	} TimeOfDay_t;
 
 	/**
 	 * This method returns the number of clock ticks per second.
@@ -87,13 +85,17 @@ public:
 	 * Returns the time in microseconds since an OS-defined epoch.
 	 * The time is returned in a 64 bit unsigned integer.
 	 * @param time A pointer to a 64 bit unisigned integer where the data is stored.
-	 * @return \c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return
+	 *  - @c RETURN_OK on success.
+	 *  - Otherwise, the OS failure code is returned.
 	 */
 	static ReturnValue_t getClock_usecs(uint64_t* time);
 	/**
 	 * Returns the time in a TimeOfDay_t struct.
 	 * @param time A pointer to a TimeOfDay_t struct.
-	 * @return \c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return
+	 *  - @c RETURN_OK on success.
+	 *  - Otherwise, the OS failure code is returned.
 	 */
 	static ReturnValue_t getDateAndTime(TimeOfDay_t* time);
 
@@ -101,17 +103,20 @@ public:
 	 * Converts a time of day struct to POSIX seconds.
 	 * @param time The time of day as input
 	 * @param timeval The corresponding seconds since the epoch.
-	 * @return \c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return
+	 *  - @c RETURN_OK on success.
+	 *  - Otherwise, the OS failure code is returned.
 	 */
 	static ReturnValue_t convertTimeOfDayToTimeval(const TimeOfDay_t* from,
 			timeval* to);
 
 	/**
-	 * Converts a time represented as seconds and subseconds since unix epoch to days since J2000
+	 * Converts a time represented as seconds and subseconds since unix
+	 * epoch to days since J2000
 	 *
 	 * @param time seconds since unix epoch
 	 * @param[out] JD2000 days since J2000
-	 * @return \c RETURN_OK
+	 * @return @c RETURN_OK
 	 */
 	static ReturnValue_t convertTimevalToJD2000(timeval time, double* JD2000);
 
@@ -122,7 +127,9 @@ public:
 	 *
 	 * @param utc timeval, corresponding to UTC time
 	 * @param[out] tt timeval, corresponding to Terrestial Time
-	 * @return \c RETURN_OK on success, \c RETURN_FAILED if leapSeconds are not set
+	 * @return
+	 *  - @c RETURN_OK on success
+	 *  - @c RETURN_FAILED if leapSeconds are not set
 	 */
 	static ReturnValue_t convertUTCToTT(timeval utc, timeval* tt);
 
@@ -130,7 +137,9 @@ public:
 	 * Set the Leap Seconds since 1972
 	 *
 	 * @param leapSeconds_
-	 * @return \c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return
+	 *  - @c RETURN_OK on success.
+	 *  - Otherwise, the OS failure code is returned.
 	 */
 	static ReturnValue_t setLeapSeconds(const uint16_t leapSeconds_);
 
@@ -140,13 +149,17 @@ public:
 	 * Must be set before!
 	 *
 	 * @param[out] leapSeconds_
-	 * @return \c RETURN_OK on success. Otherwise, the OS failure code is returned.
+	 * @return
+	 *  - @c RETURN_OK on success.
+	 *  - Otherwise, the OS failure code is returned.
 	 */
 	static ReturnValue_t getLeapSeconds(uint16_t *leapSeconds_);
 
 	/**
 	 * Function to check and create the Mutex for the clock
-	 * @return \c RETURN_OK on success. Otherwise \c RETURN_FAILED if not able to create one
+	 * @return
+	 *  - @c RETURN_OK on success.
+	 *  - Otherwise @c RETURN_FAILED if not able to create one
 	 */
 	static ReturnValue_t checkOrCreateClockMutex();
 

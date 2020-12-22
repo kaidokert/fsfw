@@ -74,7 +74,7 @@ bool TmPacketBase::checkAndSetStamper() {
 }
 
 ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
-	uint32_t tempSize = 0;
+	size_t tempSize = 0;
 	return CCSDSTime::convertFromCcsds(timestamp, tmData->data_field.time,
 			&tempSize, sizeof(tmData->data_field.time));
 }

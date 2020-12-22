@@ -1,10 +1,3 @@
-/**
- * @file	TimeMessage.cpp
- * @brief	This file defines the TimeMessage class.
- * @date	26.02.2013
- * @author	baetz
- */
-
 #include "TimeMessage.h"
 
 TimeMessage::TimeMessage() {
