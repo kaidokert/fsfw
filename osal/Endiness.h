@@ -23,8 +23,22 @@
 #error "Can't decide which end is which!"
 #endif
 #else
+
+#ifdef WIN32
+#include <Windows.h>
+#if REG_DWORD == REG_DWORD_LITTLE_ENDIAN
+#define BYTE_ORDER_SYSTEM LITTLE_ENDIAN
+#else
+#define BYTE_ORDER_SYSTEM BIG_ENDIAN
+#endif
+
+
+#else
 #error __BYTE_ORDER__ not defined
 #endif
+
+#endif
+
 #endif
 
 
