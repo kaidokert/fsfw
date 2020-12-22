@@ -62,21 +62,6 @@ public:
 
 	virtual MessageQueueId_t getSequenceCommandQueue() const override;
 
-	/**
-	 * @brief    Checks whether a sequence, identified by a mode.
-	 * @param sequence
-	 * @return
-	 */
-	ReturnValue_t checkSequence(Mode_t sequence);
-
-	/**
-	 * @brief   Checks whether a sequence, identified by a mode list iterator
-	 *          and a fallback sequence.
-	 * @param iter
-	 * @return
-	 */
-	ReturnValue_t checkSequence(HybridIterator<ModeListEntry> iter,
-	        Mode_t fallbackSequence);
 protected:
 
 	struct EntryPointer {
@@ -166,6 +151,22 @@ protected:
 
 	void cantKeepMode();
 
+	/**
+	 * @brief    Checks whether a sequence, identified by a mode.
+	 * @param sequence
+	 * @return
+	 */
+	ReturnValue_t checkSequence(Mode_t sequence);
+
+	/**
+	 * @brief   Checks whether a sequence, identified by a mode list iterator
+	 *          and a fallback sequence. Iterator needs to point to a valid
+	 *          sequence.
+	 * @param iter
+	 * @return
+	 */
+	ReturnValue_t checkSequence(HybridIterator<ModeListEntry> iter,
+	        Mode_t fallbackSequence);
 };
 
 #endif /* FSFW_SUBSYSTEM_SUBSYSTEM_H_ */
