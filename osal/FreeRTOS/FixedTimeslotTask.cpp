@@ -114,36 +114,22 @@ void FixedTimeslotTask::taskFunctionality() {
 	        intervalMs = this->pst.getIntervalToPreviousSlotMs();
 	        interval = pdMS_TO_TICKS(intervalMs);
 
-	        checkMissedDeadline(xLastWakeTime, interval);
-
-	        // Wait for the interval. This exits immediately if a deadline was
-	        // missed while also updating the last wake time.
-	        vTaskDelayUntil(&xLastWakeTime, interval);
+#if (tskKERNEL_VERSION_MAJOR == 10 && tskKERNEL_VERSION_MINOR >= 4) || \
+    tskKERNEL_VERSION_MAJOR > 10
+	        BaseType_t wasDelayed = xTaskDelayUntil(&xLastWakeTime, interval);
+	        if(wasDelayed == pdFALSE) {
+	            handleMissedDeadline();
+	        }
+#else
+            if(checkMissedDeadline(xLastWakeTime, interval)) {
+                handleMissedDeadline();
+            }
+            // Wait for the interval. This exits immediately if a deadline was
+            // missed while also updating the last wake time.
+            vTaskDelayUntil(&xLastWakeTime, interval);
+#endif
 	    }
 	}
-}
-
-void FixedTimeslotTask::checkMissedDeadline(const TickType_t xLastWakeTime,
-        const TickType_t interval) {
-    /* Check whether deadline was missed while also taking overflows
-     * into account. Drawing this on paper with a timeline helps to understand
-     * it. */
-    TickType_t currentTickCount = xTaskGetTickCount();
-    TickType_t timeToWake = xLastWakeTime + interval;
-    // Time to wake has not overflown.
-    if(timeToWake > xLastWakeTime) {
-        /* If the current time has overflown exclusively or the current
-         * tick count is simply larger than the time to wake, a deadline was
-         * missed */
-        if((currentTickCount < xLastWakeTime) or (currentTickCount > timeToWake)) {
-            handleMissedDeadline();
-        }
-    }
-    /* Time to wake has overflown. A deadline was missed if the current time
-     * is larger than the time to wake */
-    else if((timeToWake < xLastWakeTime) and (currentTickCount > timeToWake)) {
-        handleMissedDeadline();
-    }
 }
 
 void FixedTimeslotTask::handleMissedDeadline() {

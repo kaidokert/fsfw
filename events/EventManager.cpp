@@ -1,7 +1,7 @@
 #include "EventManager.h"
 #include "EventMessage.h"
-#include <FSFWConfig.h>
 
+#include <FSFWConfig.h>
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
@@ -43,7 +43,7 @@ ReturnValue_t EventManager::performOperation(uint8_t opCode) {
 		EventMessage message;
 		result = eventReportQueue->receiveMessage(&message);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
-#ifdef DEBUG
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 			printEvent(&message);
 #endif
 			notifyListeners(&message);
@@ -114,13 +114,13 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 	return result;
 }
 
-#if FSFW_DEBUG_OUTPUT == 1
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
 	case severity::INFO:
-#ifdef DEBUG_INFO_EVENT
+#if DEBUG_INFO_EVENT == 1
 		string = translateObject(message->getReporter());
 		sif::info << "EVENT: ";
 		if (string != 0) {

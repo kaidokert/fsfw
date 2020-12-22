@@ -1,10 +1,11 @@
 #ifndef EVENTMANAGERIF_H_
 #define EVENTMANAGERIF_H_
 
-#include "eventmatching/eventmatching.h"
 #include "EventMessage.h"
+#include "eventmatching/eventmatching.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
+#include "../ipc/MessageQueueIF.h"
 
 class EventManagerIF {
 public:
@@ -16,7 +17,8 @@ public:
 
 	virtual MessageQueueId_t getEventReportQueue() = 0;
 
-	virtual ReturnValue_t registerListener(MessageQueueId_t listener, bool forwardAllButSelected = false) = 0;
+	virtual ReturnValue_t registerListener(MessageQueueId_t listener,
+	        bool forwardAllButSelected = false) = 0;
 	virtual ReturnValue_t subscribeToEvent(MessageQueueId_t listener,
 			EventId_t event) = 0;
 	virtual ReturnValue_t subscribeToAllEventsFrom(MessageQueueId_t listener,
@@ -31,18 +33,22 @@ public:
 			bool reporterInverted = false) = 0;
 
 	static void triggerEvent(object_id_t reportingObject, Event event,
-			uint32_t parameter1 = 0, uint32_t parameter2 = 0, MessageQueueId_t sentFrom = 0) {
+			uint32_t parameter1 = 0, uint32_t parameter2 = 0,
+			MessageQueueId_t sentFrom = 0) {
 		EventMessage message(event, reportingObject, parameter1, parameter2);
 		triggerEvent(&message, sentFrom);
 	}
-	static void triggerEvent(EventMessage* message, MessageQueueId_t sentFrom = 0) {
-		static MessageQueueId_t eventmanagerQueue = 0;
-		if (eventmanagerQueue == 0) {
+
+	static void triggerEvent(EventMessage* message,
+	        MessageQueueId_t sentFrom = 0) {
+		static MessageQueueId_t eventmanagerQueue = MessageQueueIF::NO_QUEUE;
+		if (eventmanagerQueue == MessageQueueIF::NO_QUEUE) {
 			EventManagerIF *eventmanager = objectManager->get<EventManagerIF>(
 					objects::EVENT_MANAGER);
-			if (eventmanager != NULL) {
-				eventmanagerQueue = eventmanager->getEventReportQueue();
+			if (eventmanager == nullptr) {
+			    return;
 			}
+			eventmanagerQueue = eventmanager->getEventReportQueue();
 		}
 		MessageQueueSenderIF::sendMessage(eventmanagerQueue, message, sentFrom);
 	}
