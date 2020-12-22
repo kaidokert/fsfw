@@ -1,9 +1,10 @@
-#ifndef PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_
-#define PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_
+#ifndef FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_
+#define FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
 #include "TmStorePackets.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
+
 class TmPacketMinimal;
 class SpacePacketBase;
 class TmStoreBackendIF;
@@ -11,6 +12,14 @@ class TmStoreBackendIF;
 class TmStoreFrontendIF {
 public:
 	virtual TmStoreBackendIF* getBackend() const = 0;
+
+	/**
+	 * What do I need to implement here?
+	 * This is propably used by PUS Service 15 so we should propably check for messages..
+	 * Provide base implementation?
+	 * @param opCode
+	 * @return
+	 */
 	virtual ReturnValue_t performOperation(uint8_t opCode) = 0;
 	/**
 	 * Callback from the back-end to indicate a certain packet was received.
@@ -52,4 +61,4 @@ public:
 
 
 
-#endif /* PLATFORM_TMTCSERVICES_TMSTOREFRONTENDIF_H_ */
+#endif /* FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_ */

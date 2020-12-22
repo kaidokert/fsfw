@@ -3,9 +3,9 @@
 
 #include "../ipc/CommandMessage.h"
 #include "../storagemanager/StorageManagerIF.h"
-#include "TmStorePackets.h"
+#include "../tmstorage/TmStorePackets.h"
 #include "../objectmanager/SystemObjectIF.h"
-class TmStoreMessage: public CommandMessage {
+class TmStoreMessage  {
 public:
 	static ReturnValue_t setEnableStoringMessage(CommandMessage* cmd,
 			bool setEnabled);
