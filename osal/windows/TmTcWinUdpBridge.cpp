@@ -6,6 +6,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
         uint16_t serverPort, uint16_t clientPort):
         TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
     mutex = MutexFactory::instance()->createMutex();
+    communicationLinkUp = false;
 
     // Initiates Winsock DLL.
     WSAData wsaData;
@@ -90,7 +91,6 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 //  sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
 //          " sent." << std::endl;
     return HasReturnvaluesIF::RETURN_OK;
-    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
@@ -101,6 +101,7 @@ void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
 //          &newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 //  sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
 //          &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+    registerCommConnect();
 
     // Set new IP address if it has changed.
     if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
@@ -114,7 +115,7 @@ void TmTcWinUdpBridge::handleSocketError() {
     switch(errCode) {
     case(WSANOTINITIALISED): {
         sif::info << "TmTcWinUdpBridge::handleSocketError: WSANOTINITIALISED: "
-                << "WSAStartup(...) call " << "necessary" << std::endl;
+                << "WSAStartup(...) call necessary" << std::endl;
         break;
     }
     default: {
@@ -159,11 +160,11 @@ void TmTcWinUdpBridge::handleSendError() {
     switch(errCode) {
     case(WSANOTINITIALISED): {
         sif::info << "TmTcWinUdpBridge::handleSendError: WSANOTINITIALISED: "
-                << "WSAStartup(...) call " << "necessary" << std::endl;
+                << "WSAStartup(...) call necessary" << std::endl;
         break;
     }
     case(WSAEADDRNOTAVAIL): {
-        sif::info << "TmTcWinUdpBridge::handleReadError: WSAEADDRNOTAVAIL: "
+        sif::info << "TmTcWinUdpBridge::handleSendError: WSAEADDRNOTAVAIL: "
                 << "Check target address. " << std::endl;
         break;
     }
