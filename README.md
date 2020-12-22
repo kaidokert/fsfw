@@ -18,79 +18,48 @@ The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB
 For reference, current Applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC.
 The `fsfw` was also tested on the STM32H743ZI-Nucleo board.
 
+## How to Use
+
+The [FSFW example](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example) provides a good starting point and a demo
+to see the FSFW capabilities. Generally, the FSFW is included in a project by compiling the FSFW sources and providing
+a configuration folder. A template configuration folder was provided and can be copied into the project root to have
+a starting point. The [configuration section](doc/README-config.md#top) provides more specific information about
+the possible options.
+
 ## Structure
 
-The general structure is driven by the usage of interfaces provided by objects. The FSFW uses C++11 as baseline. The intention behind this is that this C++ Standard should be widely available, even with older compilers.
+The general structure is driven by the usage of interfaces provided by objects. 
+The FSFW uses C++11 as baseline. The intention behind this is that this C++ Standard should be widely available, even with older compilers.
 The FSFW uses dynamic allocation during the initialization but provides static containers during runtime. 
 This simplifies the instantiation of objects and allows the usage of some standard containers. 
 Dynamic Allocation after initialization is discouraged and different solutions are provided in the FSFW to achieve that.
-The fsfw uses Run-time type information.
-Exceptions are not allowed.
+The fsfw uses run-time type information but exceptions are not allowed.
 
 ### Failure Handling
 
-Functions should return a defined ReturnValue_t to signal to the caller that something is gone wrong. 
+Functions should return a defined ReturnValue_t to signal to the caller that something has gone wrong. 
 Returnvalues must be unique. For this the function HasReturnvaluesIF::makeReturnCode or the Macro MAKE_RETURN can be used.
 The CLASS_ID is a unique id for that type of object. See returnvalues/FwClassIds.
 
 ### OSAL
-The FSFW provides operation system abstraction layers for Linux, FreeRTOS and RTEMS. A independent OSAL called "host" is currently not finished. This aims to be running on windows as well. 
+
+The FSFW provides operation system abstraction layers for Linux, FreeRTOS and RTEMS. 
+A independent OSAL called "host" is in development. 
+This OSAL is intended to provide abstraction for common type of host OSes (tested for Linux and Windows, not for MacOS yet).
 The OSAL provides periodic tasks, message queues, clocks and Semaphores as well as Mutexes.
 
 ### Core Components 
 
-Clock:
- * This is a class of static functions that can be used at anytime
- * Leap Seconds must be set if any time conversions from UTC to other times is used
+The FSFW has following core components. More detailed informations can be found in the
+[core component section](doc/README-core.md#top):
 
-ObjectManager (must be created): 
-
-* The component which handles all references. All SystemObjects register at this component. 
-* Any SystemObject needs to have a unique ObjectId. Those can be managed like objects::framework_objects.
-* A reference to an object can be get by calling the following function. T must be the specific Interface you want to call.
-A nullptr check of the returning Pointer must be done. This function is based on Run-time type information. 
-
-``` c++
-	template <typename T> T* ObjectManagerIF::get( object_id_t id )
-
-```
-* A typical way to create all objects on startup is a handing a static produce function to the ObjectManager on creation.
-By calling objectManager->initialize() the produce function will be called and all SystemObjects will be initialized afterwards.
-
-Event Manager:
-
-* Component which allows routing of events
-* Other objects can subscribe to specific events, ranges of events or all events of an object.
-* Subscriptions can be done during runtime but should be done during initialization
-* Amounts of allowed subscriptions must be configured by setting this parameters:
-
-``` c++
-namespace fsfwconfig {
-//! Configure the allocated pool sizes for the event manager.
-static constexpr size_t FSFW_EVENTMGMR_MATCHTREE_NODES = 240;
-static constexpr size_t FSFW_EVENTMGMT_EVENTIDMATCHERS = 120;
-static constexpr size_t FSFW_EVENTMGMR_RANGEMATCHERS   = 120;
-}
-```
-
-
-Health Table:
-
-* A component which holds every health state 
-* Provides a thread safe way to access all health states without the need of message exchanges
-
-Stores
-
-* The message based communication can only exchange a few bytes of information inside the message itself. Therefore, additional information can be exchanged with Stores. With this, only the store address must be exchanged in the message.
-* Internally, the FSFW uses an IPC Store to exchange data between processes. For incoming TCs a TC Store is used. For outgoing TM a TM store is used.
-* All of them should use the Thread Safe Class storagemanager/PoolManager
-
-Tasks
-
-There are two different types of tasks:
- * The PeriodicTask just executes objects that are of type ExecutableObjectIF in the order of the insertion to the Tasks.
- * FixedTimeslotTask executes a list of calls in the order of the given list. This is intended for DeviceHandlers, where polling should be in a defined order. An example can be found in defaultcfg/fsfwconfig/pollingSequence
-
+1. Tasks: Abstraction for different (periodic) task types like periodic tasks or tasks with fixed timeslots
+2. ObjectManager: This module stores all `SystemObjects` by mapping a provided unique object ID to the object handles.
+3. Static Stores: Different stores are provided to store data of variable size (like telecommands or small telemetry) in a pool structure without
+   using dynamic memory allocation. These pools are allocated up front.
+3. Clock: This module provided common time related functions
+4. EventManager: This module allows routing of events generated by `SystemObjects`
+5. HealthTable: A component which stores the health states of objects
 
 ### Static Ids in the framework
 
@@ -123,12 +92,13 @@ An example can be found in the timemanager folder, this uses CCSDSTime::CDS_shor
 
 #### Device Handlers
 
-DeviceHandlers are a core component of the FSFW. 
+DeviceHandlers are another important component of the FSFW. 
 The idea is, to have a software counterpart of every physical device to provide a simple mode, health and commanding interface.
-By separating the underlying Communication Interface with DeviceCommunicationIF, a DH can be tested on different hardware.
+By separating the underlying Communication Interface with DeviceCommunicationIF, a device handler (DH) can be tested on different hardware.
 The DH has mechanisms to monitor the communication with the physical device which allow for FDIR reaction. 
-Device Handlers can be created by overriding `DeviceHandlerBase`.
+Device Handlers can be created by overriding `DeviceHandlerBase`. 
 A standard FDIR component for the DH will be created automatically but can be overwritten by the user.
+More information on DeviceHandlers can be found in the related [documentation section](doc/README-devicehandlers.md#top).
 
 #### Modes, Health
 
@@ -149,11 +119,6 @@ Therefore, it allows a modular system to create system modes and easy commanding
 The health state represents if the component is able to perform its tasks. 
 This can be used to signal the system to avoid using this component instead of a redundant one.
 The on-board FDIR uses the health state for isolation and recovery. 
-
-## Example config
-
-A example config can be found in defaultcfg/fsfwconfig. The fsfw will require certain configuration files,
-so a configuration folder should be provided and the folder should be added to the include path.
 
 ## Unit Tests
 
