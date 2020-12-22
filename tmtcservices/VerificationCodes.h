@@ -1,7 +1,7 @@
 #ifndef VERIFICATIONCODES_H_
 #define VERIFICATIONCODES_H_
 
-namespace TC_VERIFY {
+namespace tc_verification {
 
 enum verification_flags {
 	NONE = 0b0000,
