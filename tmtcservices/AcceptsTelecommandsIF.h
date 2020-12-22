@@ -12,7 +12,7 @@
 class AcceptsTelecommandsIF {
 public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::ACCEPTS_TELECOMMANDS_IF;
-	static const ReturnValue_t ACTIVITY_STARTED = MAKE_RETURN_CODE(1); // is this used anywhere or can it be removed?
+	static const ReturnValue_t ACTIVITY_STARTED = MAKE_RETURN_CODE(1);
 	static const ReturnValue_t INVALID_SUBSERVICE = MAKE_RETURN_CODE(2);
 	static const ReturnValue_t ILLEGAL_APPLICATION_DATA = MAKE_RETURN_CODE(3);
 	static const ReturnValue_t SEND_TM_FAILED = MAKE_RETURN_CODE(4);
