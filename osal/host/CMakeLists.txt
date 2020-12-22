@@ -13,9 +13,9 @@ target_sources(${LIB_FSFW_NAME}
 )
 
 if(UNIX)
-	add_definitions(-pthread)
 	target_link_libraries(${LIB_FSFW_NAME} 
 	PRIVATE
 		rt
+		pthread
 	)
 endif()

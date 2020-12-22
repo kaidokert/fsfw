@@ -2,7 +2,12 @@
 #define TIMEVALOPERATIONS_H_
 
 #include <stdint.h>
+
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/time.h>
+#endif
 
 timeval& operator+=(timeval& lhs, const timeval& rhs);
 
