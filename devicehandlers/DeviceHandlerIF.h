@@ -131,7 +131,7 @@ public:
 	// Standard codes used in  interpretDeviceReply
 	static const ReturnValue_t DEVICE_DID_NOT_EXECUTE = MAKE_RETURN_CODE(0xC0); //the device reported, that it did not execute the command
 	static const ReturnValue_t DEVICE_REPORTED_ERROR = MAKE_RETURN_CODE(0xC1);
-	static const ReturnValue_t UNKNOW_DEVICE_REPLY = MAKE_RETURN_CODE(0xC2); //the deviceCommandId reported by scanforReply is unknown
+	static const ReturnValue_t UNKNOWN_DEVICE_REPLY = MAKE_RETURN_CODE(0xC2); //the deviceCommandId reported by scanforReply is unknown
 	static const ReturnValue_t DEVICE_REPLY_INVALID = MAKE_RETURN_CODE(0xC3); //syntax etc is correct but still not ok, eg parameters where none are expected
 
 	// Standard codes used in buildCommandFromCommand
