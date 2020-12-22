@@ -490,7 +490,7 @@ protected:
 	 * @param modeTo
 	 * @return time in ms
 	 */
-	virtual uint32_t getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo);
+	virtual uint32_t getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo) = 0;
 
 	/**
 	 * Return the switches connected to the device.
