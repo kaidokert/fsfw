@@ -72,7 +72,7 @@ protected:
 	    return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	LocalPoolVar<T> poolVariable;
+	LocalPoolVariable<T> poolVariable;
 };
 
 #endif /* FSFW_MONITORING_MONITORBASE_H_ */
