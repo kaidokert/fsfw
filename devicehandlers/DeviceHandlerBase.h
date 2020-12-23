@@ -254,9 +254,10 @@ protected:
 	 *
 	 * @param[out] id the device command id that has been built
 	 * @return
-	 *    - @c RETURN_OK to send command after setting #rawPacket and #rawPacketLen.
-	 *    - @c NOTHING_TO_SEND when no command is to be sent.
-	 *    - Anything else triggers an even with the returnvalue as a parameter.
+	 *  - @c RETURN_OK to send command after setting #rawPacket and
+	 *    #rawPacketLen.
+	 *  - @c NOTHING_TO_SEND when no command is to be sent.
+	 *  - Anything else triggers an even with the returnvalue as a parameter.
 	 */
 	virtual ReturnValue_t buildNormalDeviceCommand(DeviceCommandId_t * id) = 0;
 
@@ -273,7 +274,8 @@ protected:
 	 * and filling them in doStartUp(), doShutDown() and doTransition() so no
 	 * modes have to be checked here.
 	 *
-	 * #rawPacket and #rawPacketLen must be set by this method to the packet to be sent.
+	 * #rawPacket and #rawPacketLen must be set by this method to the
+	 * packet to be sent.
 	 *
 	 * @param[out] id the device command id built
 	 * @return
@@ -284,19 +286,23 @@ protected:
 	virtual ReturnValue_t buildTransitionDeviceCommand(DeviceCommandId_t * id) = 0;
 
 	/**
-	 * @brief Build a device command packet from data supplied by a direct command.
+	 * @brief 	Build a device command packet from data supplied by a
+	 * 			direct command.
 	 *
 	 * @details
-	 * #rawPacket and #rawPacketLen should be set by this method to the packet to be sent.
-	 * The existence of the command in the command map and the command size check
-	 * against 0 are done by the base class.
+	 * #rawPacket and #rawPacketLen should be set by this method to the packet
+	 * to be sent. The existence of the command in the command map and the
+	 * command size check against 0 are done by the base class.
 	 *
-	 * @param deviceCommand the command to build, already checked against deviceCommandMap
+	 * @param deviceCommand the command to build, already checked against
+	 * deviceCommandMap
 	 * @param commandData pointer to the data from the direct command
 	 * @param commandDataLen length of commandData
 	 * @return
-	 *     - @c RETURN_OK to send command after #rawPacket and #rawPacketLen have been set.
-	 *     - Anything else triggers an event with the returnvalue as a parameter
+	 *  - @c RETURN_OK to send command after #rawPacket and #rawPacketLen
+	 *       have been set.
+	 *  - Anything else triggers an event with the
+	 *    returnvalue as a parameter
 	 */
 	virtual ReturnValue_t buildCommandFromCommand(DeviceCommandId_t deviceCommand,
 			const uint8_t * commandData, size_t commandDataLen) = 0;
@@ -484,7 +490,7 @@ protected:
 	 * @param modeTo
 	 * @return time in ms
 	 */
-	virtual uint32_t getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo);
+	virtual uint32_t getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo) = 0;
 
 	/**
 	 * Return the switches connected to the device.
@@ -681,7 +687,7 @@ protected:
 		//! The dataset used to access housekeeping data related to the
 		//! respective device reply. Will point to a dataset held by
 		//! the child handler (if one is specified)
-		LocalPoolDataSetBase* dataSet;
+		LocalPoolDataSetBase* dataSet = nullptr;
 		//! The command that expects this reply.
 		DeviceCommandMap::iterator command;
 	};
@@ -744,6 +750,17 @@ protected:
 	static object_id_t defaultFdirParentId;
 
 	/**
+	 * @brief   Set all datapool variables that are update periodically in
+	 *          normal mode invalid
+	 * @details
+	 * The default implementation will set all datasets which have been added
+	 * in #fillCommandAndReplyMap to invalid. It will also set all pool
+	 * variables inside the dataset to invalid. The user can override this
+	 * method optionally.
+	 */
+	virtual void setNormalDatapoolEntriesInvalid();
+
+	/**
 	 * Helper function to get pending command. This is useful for devices
 	 * like SPI sensors to identify the last sent command.
 	 * This only returns the command sent in the last SEND_WRITE cycle.
@@ -784,7 +801,6 @@ protected:
 	 * (which relies on a correct #transitionTargetMode).
 	 *
 	 * The submode is left unchanged.
-	 *
 	 *
 	 * @param newMode
 	 */
@@ -838,8 +854,6 @@ protected:
 	virtual void doTransition(Mode_t modeFrom, Submode_t subModeFrom);
 
 	/**
-	 * Is the combination of mode and submode valid?
-	 *
 	 * @param mode
 	 * @param submode
 	 * @return
@@ -850,13 +864,10 @@ protected:
 			Submode_t submode);
 
 	/**
-	 * Get the Rmap action for the current step.
-	 *
+	 * Get the communication action for the current step.
 	 * The step number can be read from #pstStep.
-	 *
-	 * @return The Rmap action to execute in this step
+	 * @return The communication action to execute in this step
 	 */
-
 	virtual CommunicationAction getComAction();
 
 	/**
@@ -898,8 +909,8 @@ protected:
 	 * It gets space in the #IPCStore, copies data there, then sends a raw reply
 	 * containing the store address.
 	 *
-	 * This method is virtual, as the STR has a different channel to send
-	 * raw replies and overwrites it accordingly.
+	 * This method is virtual, as devices can have different channels to send
+	 * raw replies
 	 *
 	 * @param data data to send
 	 * @param len length of @c data
@@ -918,7 +929,7 @@ protected:
 	void replyRawReplyIfnotWiretapped(const uint8_t *data, size_t len);
 
 	/**
-	 * notify child about mode change
+	 * @brief	Notify child about mode change.
 	 */
 	virtual void modeChanged(void);
 
@@ -950,8 +961,7 @@ protected:
 			DeviceCommandId_t alternateReplyID = 0);
 
 	/**
-	 * get the state of the PCDU switches in the datapool
-	 *
+	 * Get the state of the PCDU switches in the local datapool
 	 * @return
 	 *  - @c PowerSwitchIF::SWITCH_ON if all switches specified
 	 *       by #switches are on
@@ -960,15 +970,6 @@ protected:
 	 *  - @c PowerSwitchIF::RETURN_FAILED if an error occured
 	 */
 	ReturnValue_t getStateOfSwitches(void);
-
-	/**
-	 * @brief   Set all datapool variables that are update periodically in
-	 *          normal mode invalid
-	 * @details TODO: Use local pools
-	 * Child classes should provide an implementation which sets all those
-	 * variables invalid which are set periodically during any normal mode.
-	 */
-	virtual void setNormalDatapoolEntriesInvalid() = 0;
 
 	/**
 	 * build a list of sids and pass it to the #hkSwitcher

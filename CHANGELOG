@@ -53,6 +53,12 @@ ID for now.
 
 - There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
 that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
+- setNormalDatapoolEntriesInvalid is not an abstract method and a default implementation was provided
+- getTransitionDelayMs is now an abstract method
+
+### DeviceHandlerIF
+
+- Typo for UNKNOWN_DEVICE_REPLY 
 
 ### Events
 
@@ -60,3 +66,7 @@ that DHB users adapt their polling sequence tables to perform this step. This st
 allows setting a unique ID. Event.cpp source file removed, functions now
 defined in header directly. Namespaces renamed. Functions declared `constexpr`
 now
+
+### Commanding Service Base
+
+- CSB uses the new fsfwconfig::FSFW_CSB_FIFO_DEPTH variable to determine  the FIFO depth for each CSB instance. This variable has to be set in the FSFWConfig.h file

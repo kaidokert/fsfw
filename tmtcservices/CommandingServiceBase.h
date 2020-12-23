@@ -1,17 +1,19 @@
 #ifndef FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 #define FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
+#include "AcceptsTelecommandsIF.h"
+#include "VerificationReporter.h"
+
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
-#include "AcceptsTelecommandsIF.h"
-
-#include "VerificationReporter.h"
 #include "../ipc/CommandMessage.h"
 #include "../container/FixedMap.h"
 #include "../container/FIFO.h"
 #include "../serialize/SerializeIF.h"
+
+#include <FSFWConfig.h>
 
 class TcPacketStored;
 
@@ -40,7 +42,8 @@ class CommandingServiceBase: public SystemObject,
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	// We could make this configurable via preprocessor and the FSFWConfig file.
-	static constexpr uint8_t COMMAND_INFO_FIFO_DEPTH = 3;
+	static constexpr uint8_t COMMAND_INFO_FIFO_DEPTH =
+			fsfwconfig::FSFW_CSB_FIFO_DEPTH;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_SERVICE_BASE;
 

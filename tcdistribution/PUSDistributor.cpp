@@ -77,14 +77,14 @@ ReturnValue_t PUSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
 		tcStatus = queueStatus;
 	}
 	if (tcStatus != RETURN_OK) {
-		this->verifyChannel.sendFailureReport(TC_VERIFY::ACCEPTANCE_FAILURE,
+		this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE,
 				currentPacket, tcStatus);
 		// A failed packet is deleted immediately after reporting,
 		// otherwise it will block memory.
 		currentPacket->deletePacket();
 		return RETURN_FAILED;
 	} else {
-		this->verifyChannel.sendSuccessReport(TC_VERIFY::ACCEPTANCE_SUCCESS,
+		this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS,
 				currentPacket);
 		return RETURN_OK;
 	}
