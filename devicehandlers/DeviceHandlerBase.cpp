@@ -693,7 +693,7 @@ void DeviceHandlerBase::doGetRead() {
 void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		size_t receivedDataLen) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
-	DeviceCommandId_t foundId = DeviceHandlerIF::NO_COMMAND;
+	DeviceCommandId_t foundId = DeviceHandlerIF::NO_COMMAND_ID;
 	size_t foundLen = 0;
 	// The loop may not execute more often than the number of received bytes
 	// (worst case). This approach avoids infinite loops due to buggy
@@ -1452,7 +1452,7 @@ DeviceCommandId_t DeviceHandlerBase::getPendingCommand() const {
     if(cookieInfo.pendingCommand != deviceCommandMap.end()) {
         return cookieInfo.pendingCommand->first;
     }
-    return DeviceHandlerIF::NO_COMMAND;
+    return DeviceHandlerIF::NO_COMMAND_ID;
 }
 
 void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
