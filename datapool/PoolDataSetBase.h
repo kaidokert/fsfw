@@ -124,14 +124,14 @@ protected:
 	 * States of the seet.
 	 */
 	enum class States {
-		DATA_SET_UNINITIALISED, //!< DATA_SET_UNINITIALISED
-		DATA_SET_WAS_READ     //!< DATA_SET_WAS_READ
+		STATE_SET_UNINITIALISED, //!< DATA_SET_UNINITIALISED
+		STATE_SET_WAS_READ     //!< DATA_SET_WAS_READ
 	};
 	/**
 	 * @brief	state manages the internal state of the data set,
 	 *          which is important e.g. for the behavior on destruction.
 	 */
-	States state = States::DATA_SET_UNINITIALISED;
+	States state = States::STATE_SET_UNINITIALISED;
 
 	/**
 	 * @brief	This array represents all pool variables registered in this set.

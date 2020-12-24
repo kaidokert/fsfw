@@ -11,7 +11,7 @@ PoolDataSetBase::~PoolDataSetBase() {}
 
 ReturnValue_t PoolDataSetBase::registerVariable(
 		PoolVariableIF *variable) {
-	if (state != States::DATA_SET_UNINITIALISED) {
+	if (state != States::STATE_SET_UNINITIALISED) {
 		sif::error << "DataSet::registerVariable: "
 				"Call made in wrong position." << std::endl;
 		return DataSetIF::DATA_SET_UNINITIALISED;
@@ -33,7 +33,7 @@ ReturnValue_t PoolDataSetBase::registerVariable(
 
 ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	if (state == States::DATA_SET_UNINITIALISED) {
+	if (state == States::STATE_SET_UNINITIALISED) {
 		lockDataPool(lockTimeout);
 		for (uint16_t count = 0; count < fillCount; count++) {
 			result = readVariable(count);
@@ -41,7 +41,7 @@ ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
 				break;
 			}
 		}
-		state = States::DATA_SET_WAS_READ;
+		state = States::STATE_SET_WAS_READ;
 		unlockDataPool();
 	}
 	else {
@@ -80,7 +80,7 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 }
 
 ReturnValue_t PoolDataSetBase::commit(uint32_t lockTimeout) {
-	if (state == States::DATA_SET_WAS_READ) {
+	if (state == States::STATE_SET_WAS_READ) {
 		handleAlreadyReadDatasetCommit(lockTimeout);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
@@ -99,7 +99,7 @@ void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
 			registeredVariables[count]->commitWithoutLock();
 		}
 	}
-	state = States::DATA_SET_UNINITIALISED;
+	state = States::STATE_SET_UNINITIALISED;
 	unlockDataPool();
 }
 
@@ -121,7 +121,7 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 			}
 		}
 	}
-	state = States::DATA_SET_UNINITIALISED;
+	state = States::STATE_SET_UNINITIALISED;
 	unlockDataPool();
 	return result;
 }
