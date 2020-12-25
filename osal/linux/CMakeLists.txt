@@ -18,8 +18,8 @@ target_sources(${LIB_FSFW_NAME}
 		Timer.cpp
 )
 
-target_link_libraries(${LIB_FSFW_NAME} 
-	PRIVATE
-		rt
-		pthread
+target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+	${CMAKE_THREAD_LIBS_INIT}
+	rt
 )
+

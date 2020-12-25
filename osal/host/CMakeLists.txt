@@ -16,6 +16,6 @@ if(UNIX)
 	target_link_libraries(${LIB_FSFW_NAME} 
 	PRIVATE
 		rt
-		pthread
+		${CMAKE_THREAD_LIBS_INIT}
 	)
 endif()
