@@ -40,11 +40,11 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
-	if(result != RETURN_OK and poolEntry != nullptr) {
+	if(result != RETURN_OK or poolEntry == nullptr) {
 		sif::error << "PoolVector: Read of local pool variable of object "
-				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
-				hkManager->getOwner() << " and lp ID 0x" << localPoolId <<
-				std::dec << " failed.\n" << std::flush;
+				<< std::hex << std::setw(8) << std::setfill('0')
+				<< hkManager->getOwner() << " and lp ID " << localPoolId
+				<< std::dec << " failed." << std::setfill(' ') <<  std::endl;
 		return result;
 	}
 	this->value = *(poolEntry->address);
@@ -62,7 +62,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commit(dur_millis_t lockTimeout) {
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
-		sif::debug << "LocalPoolVar: Invalid read write "
+		sif::debug << "LocalPoolVariable: Invalid read write "
 				 "mode for commit() call." << std::endl;
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
