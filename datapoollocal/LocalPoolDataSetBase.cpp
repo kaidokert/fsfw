@@ -8,7 +8,7 @@
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
         uint32_t setId, PoolVariableIF** registeredVariablesArray,
-        const size_t maxNumberOfVariables, bool noPeriodicHandling):
+        const size_t maxNumberOfVariables, bool periodicHandling):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
     if(hkOwner == nullptr) {
         // Configuration error.
@@ -23,7 +23,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
     mutex = MutexFactory::instance()->createMutex();
 
     // Data creators get a periodic helper for periodic HK data generation.
-    if(not noPeriodicHandling) {
+    if(periodicHandling) {
         periodicHelper = new PeriodicHousekeepingHelper(this);
     }
 }
@@ -277,4 +277,10 @@ void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
         }
     }
     this->valid = valid;
+}
+
+void LocalPoolDataSetBase::setReadCommitProtectionBehaviour(
+		bool protectEveryReadCommit, uint32_t mutexTimeout) {
+	PoolDataSetBase::setReadCommitProtectionBehaviour(protectEveryReadCommit,
+			mutexTimeout);
 }

@@ -9,6 +9,8 @@ PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
 
 PoolDataSetBase::~PoolDataSetBase() {}
 
+
+
 ReturnValue_t PoolDataSetBase::registerVariable(
 		PoolVariableIF *variable) {
 	if (state != States::STATE_SET_UNINITIALISED) {
@@ -71,7 +73,13 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 		registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER)
 	{
-		result = registeredVariables[count]->readWithoutLock();
+		if(protectEveryReadCommitCall) {
+			result = registeredVariables[count]->read(mutexTimeout);
+		}
+		else {
+			result = registeredVariables[count]->readWithoutLock();
+		}
+
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			result = INVALID_PARAMETER_DEFINITION;
 		}
@@ -96,7 +104,12 @@ void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
 				!= PoolVariableIF::VAR_READ
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
-			registeredVariables[count]->commitWithoutLock();
+			if(protectEveryReadCommitCall) {
+				registeredVariables[count]->commit(mutexTimeout);
+			}
+			else {
+				registeredVariables[count]->commitWithoutLock();
+			}
 		}
 	}
 	state = States::STATE_SET_UNINITIALISED;
@@ -111,7 +124,13 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 				== PoolVariableIF::VAR_WRITE
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
-			registeredVariables[count]->commitWithoutLock();
+			if(protectEveryReadCommitCall) {
+				result = registeredVariables[count]->commit(mutexTimeout);
+			}
+			else {
+				result = registeredVariables[count]->commitWithoutLock();
+			}
+
 		} else if (registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if (result != COMMITING_WITHOUT_READING) {
@@ -171,4 +190,10 @@ size_t PoolDataSetBase::getSerializedSize() const {
 
 void PoolDataSetBase::setContainer(PoolVariableIF **variablesContainer) {
     this->registeredVariables = variablesContainer;
+}
+
+void PoolDataSetBase::setReadCommitProtectionBehaviour(
+		bool protectEveryReadCommit, uint32_t mutexTimeout) {
+	this->protectEveryReadCommitCall = protectEveryReadCommit;
+	this->mutexTimeout = mutexTimeout;
 }

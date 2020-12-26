@@ -89,6 +89,7 @@ public:
 	 * @return
 	 */
 	virtual ReturnValue_t registerVariable( PoolVariableIF* variable) override;
+
 	/**
 	 * Provides the means to lock the underlying data structure to ensure
 	 * thread-safety. Default implementation is empty
@@ -114,6 +115,15 @@ public:
 	        SerializeIF::Endianness streamEndianness) override;
 
 protected:
+
+	/**
+	 * Can be used to individually protect every read and commit call.
+	 * @param protectEveryReadCommit
+	 * @param mutexTimeout
+	 */
+	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
+			uint32_t mutexTimeout = 20);
+
 	/**
 	 * @brief	The fill_count attribute ensures that the variables
 	 * 			register in the correct array position and that the maximum
@@ -144,6 +154,9 @@ protected:
 	void setContainer(PoolVariableIF** variablesContainer);
 
 private:
+	bool protectEveryReadCommitCall = false;
+	uint32_t mutexTimeout = 20;
+
 	ReturnValue_t readVariable(uint16_t count);
 	void handleAlreadyReadDatasetCommit(uint32_t lockTimeout);
 	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
