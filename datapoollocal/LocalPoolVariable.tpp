@@ -11,14 +11,14 @@ inline LocalPoolVariable<T>::LocalPoolVariable(HasLocalDataPoolIF* hkOwner,
 		LocalPoolObjectBase(poolId, hkOwner, dataSet, setReadWriteMode) {}
 
 template<typename T>
-inline LocalPoolVariable<T>::LocalPoolVariable(object_id_t poolOwner, lp_id_t poolId,
-        DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
+inline LocalPoolVariable<T>::LocalPoolVariable(object_id_t poolOwner,
+		lp_id_t poolId, DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
         LocalPoolObjectBase(poolOwner, poolId, dataSet, setReadWriteMode) {}
 
 
 template<typename T>
-inline LocalPoolVariable<T>::LocalPoolVariable(gp_id_t globalPoolId, DataSetIF *dataSet,
-		pool_rwm_t setReadWriteMode):
+inline LocalPoolVariable<T>::LocalPoolVariable(gp_id_t globalPoolId,
+		DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
 		LocalPoolObjectBase(globalPoolId.objectId, globalPoolId.localPoolId,
 				dataSet, setReadWriteMode){}
 
