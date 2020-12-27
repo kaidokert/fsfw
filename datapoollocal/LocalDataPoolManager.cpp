@@ -577,7 +577,7 @@ ReturnValue_t LocalDataPoolManager::printPoolEntry(
     if (poolIter == localPoolMap.end()) {
         sif::debug << "HousekeepingManager::fechPoolEntry:"
                 << " Pool entry not found." << std::endl;
-        return POOL_ENTRY_NOT_FOUND;
+        return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
     }
     poolIter->second->print();
     return HasReturnvaluesIF::RETURN_OK;
