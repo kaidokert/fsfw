@@ -1,5 +1,5 @@
-#include "../../../ipc/MessageQueueIF.h"
-#include "../../../ipc/QueueFactory.h"
+#include <fsfw/ipc/MessageQueueIF.h>
+#include <fsfw/ipc/QueueFactory.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <unittest/core/CatchDefinitions.h>

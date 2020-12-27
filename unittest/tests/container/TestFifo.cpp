@@ -1,6 +1,6 @@
-#include "../../../container/DynamicFIFO.h"
-#include "../../../container/FIFO.h"
-#include "../../../returnvalues/HasReturnvaluesIF.h"
+#include <fsfw/container/DynamicFIFO.h>
+#include <fsfw/container/FIFO.h>
+#include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <unittest/core/CatchDefinitions.h>

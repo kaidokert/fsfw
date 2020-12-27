@@ -1,4 +1,4 @@
-#include "../../../serialize/SerialBufferAdapter.h"
+#include <fsfw/serialize/SerialBufferAdapter.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <unittest/core/CatchDefinitions.h>
