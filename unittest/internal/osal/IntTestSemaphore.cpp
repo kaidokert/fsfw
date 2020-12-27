@@ -1,10 +1,11 @@
 #include "IntTestSemaphore.h"
-#include "../UnittDefinitions.h"
+#include <fsfw/unittest/internal/UnittDefinitions.h>
 
-#include "../../../tasks/SemaphoreFactory.h"
-#include "../../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../../timemanager/Stopwatch.h"
+#include <fsfw/tasks/SemaphoreFactory.h>
+#include <fsfw/serviceinterface/ServiceInterfaceStream.h>
+#include <fsfw/timemanager/Stopwatch.h>
 
+#include <cstdlib>
 
 void testsemaph::testBinSemaph() {
 	std::string id = "[BinSemaphore]";
@@ -138,7 +139,7 @@ void testsemaph::testCountingSemaphImplementation(SemaphoreIF* countingSemaph,
 		// attempt to take when count is 0, measure time
 		result = countingSemaph->acquire(SemaphoreIF::TimeoutType::WAITING, 10);
 		dur_millis_t time = stopwatch.stop();
-		if(abs(time - 10) > 1) {
+		if(std::abs(static_cast<int32_t>(time - 10)) > 1) {
 			unitt::put_error(id);
 		}
 	}
