@@ -3,7 +3,7 @@
 
 #include <fsfw/action/HasActionsIF.h>
 #include <fsfw/ipc/MessageQueueIF.h>
-#include <fsfw/unittest/core/CatchDefinitions.h>
+#include <unittest/core/CatchDefinitions.h>
 #include <cstring>
 
 
