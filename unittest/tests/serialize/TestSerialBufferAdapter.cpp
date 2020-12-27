@@ -1,7 +1,9 @@
-#include "../../serialize/SerialBufferAdapter.h"
+#include "../../../serialize/SerialBufferAdapter.h"
 
-#include <catch2/catch.hpp>
-#include "../../core/CatchDefinitions.h"
+#include <catch2/catch_test_macros.hpp>
+#include <unittest/core/CatchDefinitions.h>
+
+#include <array>
 
 
 static bool test_value_bool = true;
