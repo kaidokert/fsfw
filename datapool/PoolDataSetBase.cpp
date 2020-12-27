@@ -35,12 +35,13 @@ ReturnValue_t PoolDataSetBase::registerVariable(
 
 ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+	ReturnValue_t error = result;
 	if (state == States::STATE_SET_UNINITIALISED) {
 		lockDataPool(lockTimeout);
 		for (uint16_t count = 0; count < fillCount; count++) {
 			result = readVariable(count);
 			if(result != RETURN_OK) {
-				break;
+				error = result;
 			}
 		}
 		state = States::STATE_SET_WAS_READ;
@@ -51,6 +52,10 @@ ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
 				"Call made in wrong position. Don't forget to commit"
 				" member datasets!" << std::endl;
 		result = SET_WAS_ALREADY_READ;
+	}
+
+	if(error != HasReturnvaluesIF::RETURN_OK) {
+		result = error;
 	}
 	return result;
 }

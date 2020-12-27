@@ -44,7 +44,11 @@ public:
 
 	/**
 	 * @brief	The read call initializes reading out all registered variables.
+	 * 			It is mandatory to call commit after every read call!
 	 * @details
+	 *
+	 * TODO: Write RAII helper so user can not forget to call commit anymore.
+	 *
 	 * It iterates through the list of registered variables and calls all read()
 	 * functions of the registered pool variables (which read out their values
 	 * from the data pool) which are not write-only.
@@ -52,13 +56,14 @@ public:
 	 * the operation is aborted and @c INVALID_PARAMETER_DEFINITION returned.
 	 *
 	 * The data pool is locked during the whole read operation and
-	 * freed afterwards.The state changes to "was written" after this operation.
+	 * freed afterwards. It is mandatory to call commit after a read call,
+	 * even if the read operation is not successful!
 	 * @return
 	 * - @c RETURN_OK if all variables were read successfully.
-	 * - @c INVALID_PARAMETER_DEFINITION if PID, size or type of the
-	 * requested variable is invalid.
+	 * - @c INVALID_PARAMETER_DEFINITION if a pool entry does not exist or there
+	 *      is a type conflict.
 	 * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
-	 * commit() in between
+	 *      commit() in between
 	 */
 	virtual ReturnValue_t read(uint32_t lockTimeout =
 			MutexIF::BLOCKING) override;
@@ -75,7 +80,7 @@ public:
 	 * If the set does contain at least one variable which is not write-only
 	 * commit() can only be called after read(). If the set only contains
 	 * variables which are write only, commit() can be called without a
-	 * preceding read() call.
+	 * preceding read() call. Every read call must be followed by a commit call!
 	 * @return	- @c RETURN_OK if all variables were read successfully.
 	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
 	 * 			  contains non write-only variables
