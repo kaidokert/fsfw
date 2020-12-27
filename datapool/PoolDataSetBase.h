@@ -46,9 +46,6 @@ public:
 	 * @brief	The read call initializes reading out all registered variables.
 	 * 			It is mandatory to call commit after every read call!
 	 * @details
-	 *
-	 * TODO: Write RAII helper so user can not forget to call commit anymore.
-	 *
 	 * It iterates through the list of registered variables and calls all read()
 	 * functions of the registered pool variables (which read out their values
 	 * from the data pool) which are not write-only.
