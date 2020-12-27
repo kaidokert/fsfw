@@ -192,7 +192,7 @@ protected:
 	 */
 	ReturnValue_t unlockDataPool() override;
 
-	LocalDataPoolManager* hkManager;
+	LocalDataPoolManager* hkManager = nullptr;
 
 	/**
 	 * Set n-th bit of a byte, with n being the position from 0
