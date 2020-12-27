@@ -10,7 +10,6 @@ PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
 PoolDataSetBase::~PoolDataSetBase() {}
 
 
-
 ReturnValue_t PoolDataSetBase::registerVariable(
 		PoolVariableIF *variable) {
 	if (state != States::STATE_SET_UNINITIALISED) {
