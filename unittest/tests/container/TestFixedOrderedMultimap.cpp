@@ -1,5 +1,5 @@
-#include "../../../container/FixedOrderedMultimap.h"
-#include "../../../returnvalues/HasReturnvaluesIF.h"
+#include <fsfw/container/FixedOrderedMultimap.h>
+#include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <unittest/core/CatchDefinitions.h>
