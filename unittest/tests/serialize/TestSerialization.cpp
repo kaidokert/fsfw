@@ -1,8 +1,10 @@
-#include "../../serialize/SerializeAdapter.h"
+#include <fsfw/serialize/SerializeAdapter.h>
 
-#include "catch.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <unittest/core/CatchDefinitions.h>
+
 #include <array>
-#include "../../core/CatchDefinitions.h"
 
 static bool test_value_bool = true;
 static uint8_t tv_uint8   {5};
@@ -119,10 +121,10 @@ TEST_CASE("Auto Serialize Adapter testing", "[single-file]") {
 		REQUIRE(tv_int16 == -829);
 		REQUIRE(tv_int32 == -2312);
 
-		REQUIRE(tv_float == Approx(8.214921));
-		REQUIRE(tv_double == Approx(9.2132142141e8));
-		REQUIRE(tv_sfloat == Approx(-922.2321321));
-		REQUIRE(tv_sdouble == Approx(-2.2421e19));
+		REQUIRE(tv_float == Catch::Approx(8.214921));
+		REQUIRE(tv_double == Catch::Approx(9.2132142141e8));
+		REQUIRE(tv_sfloat == Catch::Approx(-922.2321321));
+		REQUIRE(tv_sdouble == Catch::Approx(-2.2421e19));
 	}
 }
 

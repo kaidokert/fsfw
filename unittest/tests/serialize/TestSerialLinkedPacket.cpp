@@ -1,9 +1,12 @@
 #include "TestSerialLinkedPacket.h"
-#include "../../core/CatchDefinitions.h"
+#include <unittest/core/CatchDefinitions.h>
 
-#include "../../globalfunctions/arrayprinter.h"
+#include <fsfw/globalfunctions/arrayprinter.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <unittest/core/CatchDefinitions.h>
+
+#include <array>
 
 
 TEST_CASE("Serial Linked Packet" , "[SerLinkPacket]") {
