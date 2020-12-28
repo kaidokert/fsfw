@@ -54,7 +54,7 @@ public:
 	 */
 	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 			uint32_t setId, PoolVariableIF** registeredVariablesArray,
-	        const size_t maxNumberOfVariables, bool noPeriodicHandling = false);
+	        const size_t maxNumberOfVariables, bool periodicHandling = true);
 
 	/**
 	 * @brief	Constructor for users of local pool data.
@@ -76,6 +76,16 @@ public:
 	 * For each, the valid flag in the data pool is set to "invalid".
 	 */
 	~LocalPoolDataSetBase();
+
+	/**
+	 * If the data is pulled from different local data pools, every read and
+	 * commit call should be mutex protected for thread safety.
+	 * This can be specified with the second parameter.
+	 * @param dataCreator
+	 * @param protectEveryReadCommit
+	 */
+	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
+			uint32_t mutexTimeout = 20);
 
 	void setValidityBufferGeneration(bool withValidityBuffer);
 
@@ -128,6 +138,7 @@ public:
 
 protected:
 	sid_t sid;
+	uint32_t mutexTimeout = 20;
 	MutexIF* mutex = nullptr;
 
 	bool diagnostic = false;
@@ -181,7 +192,7 @@ protected:
 	 */
 	ReturnValue_t unlockDataPool() override;
 
-	LocalDataPoolManager* hkManager;
+	LocalDataPoolManager* hkManager = nullptr;
 
 	/**
 	 * Set n-th bit of a byte, with n being the position from 0
