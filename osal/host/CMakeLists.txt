@@ -13,6 +13,8 @@ target_sources(${LIB_FSFW_NAME}
 )
 
 if(UNIX)
+	find_package(Threads REQUIRED)
+	
 	target_link_libraries(${LIB_FSFW_NAME} 
 	PRIVATE
 		rt

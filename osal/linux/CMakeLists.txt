@@ -18,8 +18,14 @@ target_sources(${LIB_FSFW_NAME}
 		Timer.cpp
 )
 
+find_package(Threads REQUIRED)
+
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
 	${CMAKE_THREAD_LIBS_INIT}
 	rt
+)
+
+target_link_libraries(${LIB_FSFW_NAME} INTERFACE
+	${CMAKE_THREAD_LIBS_INIT}
 )
 
