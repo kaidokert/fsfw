@@ -739,10 +739,10 @@ protected:
 	PeriodicTaskIF* executingTask = nullptr;
 
 	//!< Object which switches power on and off.
-	static object_id_t defaultPowerSwitcherId;
+	static object_id_t powerSwitcherId;
 
 	//!< Object which receives RAW data by default.
-	static object_id_t defaultRawDataReceiverId;
+	static object_id_t rawDataReceiverId;
 
 	//!< Object which may be the root cause of an identified fault.
 	static object_id_t defaultFdirParentId;

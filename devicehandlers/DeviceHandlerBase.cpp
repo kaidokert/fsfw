@@ -16,8 +16,8 @@
 #include <iomanip>
 
 
-object_id_t DeviceHandlerBase::defaultPowerSwitcherId = objects::NO_OBJECT;
-object_id_t DeviceHandlerBase::defaultRawDataReceiverId = objects::NO_OBJECT;
+object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
+object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
@@ -151,9 +151,9 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
-	if(defaultRawDataReceiverId != objects::NO_OBJECT) {
+	if(rawDataReceiverId != objects::NO_OBJECT) {
 		AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
-				AcceptsDeviceResponsesIF>(defaultRawDataReceiverId);
+				AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
 		if (rawReceiver == nullptr) {
 			sif::error << "DeviceHandlerBase::initialize: Raw receiver object "
@@ -165,9 +165,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		defaultRawReceiver = rawReceiver->getDeviceQueue();
 	}
 
-	if(defaultPowerSwitcherId != objects::NO_OBJECT) {
-		powerSwitcher = objectManager->get<PowerSwitchIF>(
-				defaultPowerSwitcherId);
+	if(powerSwitcherId != objects::NO_OBJECT) {
+		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
 		if (powerSwitcher == nullptr) {
 			sif::error << "DeviceHandlerBase::initialize: Power switcher "
 					<< "object ID set but no valid object found." << std::endl;
@@ -683,10 +682,8 @@ void DeviceHandlerBase::doGetRead() {
 		replyRawData(receivedData, receivedDataLen, requestedRawTraffic);
 	}
 
-	if (mode == MODE_RAW) {
-		if(defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
-			replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
-		}
+	if (mode == MODE_RAW and defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
+		replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
 	}
 	else {
 		parseReply(receivedData, receivedDataLen);
