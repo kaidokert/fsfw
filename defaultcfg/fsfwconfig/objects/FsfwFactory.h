@@ -1,5 +1,5 @@
-#ifndef FACTORY_H_
-#define FACTORY_H_
+#ifndef FSFWCONFIG_OBJECTS_FACTORY_H_
+#define FSFWCONFIG_OBJECTS_FACTORY_H_
 
 #include <fsfw/objectmanager/SystemObjectIF.h>
 #include <cstddef>
@@ -14,4 +14,4 @@ namespace Factory {
 }
 
 
-#endif /* FACTORY_H_ */
+#endif /* FSFWCONFIG_OBJECTS_FACTORY_H_ */
