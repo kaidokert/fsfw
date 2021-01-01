@@ -1,5 +1,8 @@
-#include "../../timemanager/Clock.h"
 #include "RtemsBasic.h"
+
+#include "../../timemanager/Clock.h"
+#include "../../ipc/MutexHelper.h"
+
 #include <rtems/score/todimpl.h>
 
 uint16_t Clock::leapSeconds = 0;

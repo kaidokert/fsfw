@@ -8,8 +8,6 @@ target_include_directories(${TARGET_NAME}
 		${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# Add include paths for the FSFW library
-target_include_directories(${LIB_FSFW_NAME} 
-	PUBLIC
-		${CMAKE_CURRENT_SOURCE_DIR}
-)
+if(NOT DEFINED FSFW_CONFIG_DIRECTORY)
+	set(FSFW_CONFIG_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
