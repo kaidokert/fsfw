@@ -682,8 +682,10 @@ void DeviceHandlerBase::doGetRead() {
 		replyRawData(receivedData, receivedDataLen, requestedRawTraffic);
 	}
 
-	if (mode == MODE_RAW and defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
-		replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
+	if (mode == MODE_RAW) {
+		if (defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
+			replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
+		}
 	}
 	else {
 		parseReply(receivedData, receivedDataLen);

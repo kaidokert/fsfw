@@ -1,11 +1,12 @@
-target_sources(${TARGET_NAME} 
-	PRIVATE
+target_sources(${LIB_FSFW_NAME} PRIVATE
+	ipc/missionMessageTypes.cpp
+	objects/FsfwFactory.cpp
+	pollingsequence/PollingSequenceFactory.cpp
 )
 
-# Add include paths for the executable
-target_include_directories(${TARGET_NAME} 
-	PUBLIC 
-		${CMAKE_CURRENT_SOURCE_DIR}
+# Should be added to include path
+target_include_directories(${TARGET_NAME} PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 if(NOT DEFINED FSFW_CONFIG_DIRECTORY)
