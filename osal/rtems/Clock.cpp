@@ -4,6 +4,7 @@
 #include "../../ipc/MutexHelper.h"
 
 #include <rtems/score/todimpl.h>
+#include <rtems/rtems/clockimpl.h>
 
 uint16_t Clock::leapSeconds = 0;
 MutexIF* Clock::timeMutex = nullptr;
