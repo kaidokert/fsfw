@@ -23,7 +23,7 @@ TcPacketStored::TcPacketStored(uint16_t apid,  uint8_t service,
 	ReturnValue_t returnValue = this->store->getFreeElement(&this->storeAddress,
 			(TC_PACKET_MIN_SIZE + size), &pData);
 	if (returnValue != this->store->RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "TcPacketStored: Could not get free element from store!"
 				<< std::endl;
 #endif
@@ -41,7 +41,7 @@ ReturnValue_t TcPacketStored::getData(const uint8_t ** dataPtr,
 		size_t* dataSize) {
 	auto result = this->store->getData(storeAddress, dataPtr, dataSize);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "TcPacketStored: Could not get data!" << std::endl;
 #endif
 	}
@@ -65,7 +65,7 @@ bool TcPacketStored::checkAndSetStore() {
 	if (this->store == nullptr) {
 		this->store = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 		if (this->store == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "TcPacketStored::TcPacketStored: TC Store not found!"
 					<< std::endl;
 #endif

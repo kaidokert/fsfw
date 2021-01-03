@@ -87,7 +87,7 @@ uint8_t* TcTransferFrame::getFullDataField() {
 }
 
 void TcTransferFrame::print() {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "Raw Frame: " << std::hex << std::endl;
 	for (uint16_t count = 0; count < this->getFullSize(); count++ ) {
 		sif::debug << (uint16_t)this->getFullFrame()[count] << " ";

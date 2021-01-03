@@ -107,7 +107,7 @@ MessageQueueId_t ExtendedControllerBase::getCommandQueue() const {
 }
 
 LocalPoolDataSetBase* ExtendedControllerBase::getDataSetHandle(sid_t sid) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "ExtendedControllerBase::getDataSetHandle: No child "
             << " implementation provided, returning nullptr!" << std::endl;
 #endif

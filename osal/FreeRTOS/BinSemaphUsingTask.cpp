@@ -8,7 +8,7 @@
 BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 	handle = TaskManagement::getCurrentTaskHandle();
 	if(handle == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Could not retrieve task handle. Please ensure the"
 				"constructor was called inside a task." << std::endl;
 #endif

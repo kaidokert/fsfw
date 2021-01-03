@@ -86,7 +86,7 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter,
 		object_id_t object = tableIter.value->getObject();
 		if ((iter = childrenMap.find(object)) == childrenMap.end()) {
 			//illegal table entry, should only happen due to misconfigured mode table
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::debug << std::hex << getObjectId() << ": invalid mode table entry"
 					<< std::endl;
 #endif

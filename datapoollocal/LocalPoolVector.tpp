@@ -32,7 +32,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(uint32_t lockTimeout) 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "LocalPoolVar: Invalid read write "
 				"mode for read() call." << std::endl;
 #endif
@@ -44,7 +44,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	memset(this->value, 0, vectorSize * sizeof(T));
 
 	if(result != RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PoolVector: Read of local pool variable of object "
 				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
 				hkManager->getOwner() << "and lp ID 0x" << localPoolId <<
@@ -68,7 +68,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "LocalPoolVar: Invalid read write "
 				"mode for commit() call." << std::endl;
 #endif
@@ -77,7 +77,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PoolVector: Read of local pool variable of object "
 				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
 				hkManager->getOwner() << " and lp ID 0x" << localPoolId <<
@@ -97,7 +97,7 @@ inline T& LocalPoolVector<T, vectorSize>::operator [](int i) {
 	}
 	// If this happens, I have to set some value. I consider this
 	// a configuration error, but I wont exit here.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
 #endif
@@ -111,7 +111,7 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](int i) const {
 	}
 	// If this happens, I have to set some value. I consider this
 	// a configuration error, but I wont exit here.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
 #endif

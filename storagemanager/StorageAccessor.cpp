@@ -26,13 +26,13 @@ StorageAccessor::StorageAccessor(StorageAccessor&& other):
 
 ReturnValue_t StorageAccessor::getDataCopy(uint8_t *pointer, size_t maxSize) {
 	if(internalState == AccessState::UNINIT) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(size_ > maxSize) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "StorageAccessor: Supplied buffer not large "
 				"enough" << std::endl;
 #endif
@@ -44,7 +44,7 @@ ReturnValue_t StorageAccessor::getDataCopy(uint8_t *pointer, size_t maxSize) {
 
 uint8_t* StorageAccessor::data() {
 	if(internalState == AccessState::UNINIT) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
 	}
@@ -54,13 +54,13 @@ uint8_t* StorageAccessor::data() {
 ReturnValue_t StorageAccessor::write(uint8_t *data, size_t size,
 		uint16_t offset) {
 	if(internalState == AccessState::UNINIT) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(offset + size > size_) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "StorageAccessor: Data too large for pool "
 				"entry!" << std::endl;
 #endif

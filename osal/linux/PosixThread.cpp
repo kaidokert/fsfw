@@ -48,7 +48,7 @@ void PosixThread::suspend() {
 	sigaddset(&waitSignal, SIGUSR1);
 	sigwait(&waitSignal, &caughtSig);
 	if (caughtSig != SIGUSR1) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "FixedTimeslotTask: Unknown Signal received: " <<
 				caughtSig << std::endl;
 #endif
@@ -120,7 +120,7 @@ uint64_t PosixThread::getCurrentMonotonicTimeMs(){
 
 
 void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	//sif::debug << "PosixThread::createTask" << std::endl;
 #endif
 	/*
@@ -133,7 +133,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	pthread_attr_t attributes;
 	int status = pthread_attr_init(&attributes);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Posix Thread attribute init failed with: " <<
 				strerror(status) << std::endl;
 #endif
@@ -141,19 +141,19 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	void* stackPointer;
 	status = posix_memalign(&stackPointer, sysconf(_SC_PAGESIZE), stackSize);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PosixThread::createTask: Stack init failed with: " <<
 				strerror(status) << std::endl;
 #endif
 		if(errno == ENOMEM) {
 			uint64_t stackMb = stackSize/10e6;
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PosixThread::createTask: Insufficient memory for"
 					" the requested " << stackMb << " MB" << std::endl;
 #endif
 		}
 		else if(errno == EINVAL) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PosixThread::createTask: Wrong alignment argument!"
 					<< std::endl;
 #endif
@@ -163,7 +163,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_attr_setstack(&attributes, stackPointer, stackSize);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PosixThread::createTask: pthread_attr_setstack "
 				" failed with: " << strerror(status) <<  std::endl;
 		sif::error << "Make sure the specified stack size is valid and is "
@@ -173,7 +173,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_attr_setinheritsched(&attributes, PTHREAD_EXPLICIT_SCHED);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "Posix Thread attribute setinheritsched failed with: " <<
 					strerror(status) << std::endl;
 #endif
@@ -182,7 +182,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	// TODO FIFO -> This needs root privileges for the process
 	status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Posix Thread attribute schedule policy failed with: " <<
 				strerror(status) << std::endl;
 #endif
@@ -192,7 +192,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	scheduleParams.__sched_priority = priority;
 	status = pthread_attr_setschedparam(&attributes, &scheduleParams);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Posix Thread attribute schedule params failed with: " <<
 				strerror(status) << std::endl;
 #endif
@@ -204,7 +204,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	sigaddset(&waitSignal, SIGUSR1);
 	status = pthread_sigmask(SIG_BLOCK, &waitSignal, NULL);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Posix Thread sigmask failed failed with: " <<
 				strerror(status) << " errno: " << strerror(errno) << std::endl;
 #endif
@@ -213,7 +213,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_create(&thread,&attributes,fnc_,arg_);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Posix Thread create failed with: " <<
 				strerror(status) << std::endl;
 #endif
@@ -221,19 +221,19 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_setname_np(thread,name);
 	if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PosixThread::createTask: setname failed with: " <<
 				strerror(status) << std::endl;
 #endif
 		if(status == ERANGE) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PosixThread::createTask: Task name length longer"
 					" than 16 chars. Truncating.." << std::endl;
 #endif
 			name[15] = '\0';
 			status = pthread_setname_np(thread,name);
 			if(status != 0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 				sif::error << "PosixThread::createTask: Setting name"
 						" did not work.." << std::endl;
 #endif
@@ -243,7 +243,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 
 	status = pthread_attr_destroy(&attributes);
 	if(status!=0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Posix Thread attribute destroy failed with: " <<
 				strerror(status) << std::endl;
 #endif

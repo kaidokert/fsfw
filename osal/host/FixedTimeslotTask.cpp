@@ -35,7 +35,7 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             ABOVE_NORMAL_PRIORITY_CLASS);
     if(result != 0) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
                 << GetLastError() << std::endl;
 #endif
@@ -44,7 +44,7 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             THREAD_PRIORITY_NORMAL);
     if(result != 0) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
                 << GetLastError() << std::endl;
 #endif
@@ -74,7 +74,7 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
     }
 
     this->taskFunctionality();
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "FixedTimeslotTask::taskEntryPoint: "
             "Returned from taskFunctionality." << std::endl;
 #endif
@@ -140,7 +140,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
         return HasReturnvaluesIF::RETURN_OK;
     }
 
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Component " << std::hex << componentId <<
             " not found, not adding it to pst" << std::endl;
 #endif

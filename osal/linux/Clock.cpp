@@ -69,7 +69,7 @@ timeval Clock::getUptime() {
 	timeval uptime;
 	auto result = getUptime(&uptime);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Clock::getUptime: Error getting uptime" << std::endl;
 #endif
 	}

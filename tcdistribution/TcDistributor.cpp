@@ -39,7 +39,7 @@ ReturnValue_t TcDistributor::handlePacket() {
 }
 
 void TcDistributor::print() {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "Distributor content is: " << std::endl
 	        << "ID\t| Message Queue ID" << std::endl;
 	sif::debug << std::setfill('0') << std::setw(8) << std::hex;

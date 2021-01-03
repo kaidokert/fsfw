@@ -46,7 +46,7 @@ const uint8_t* ConstStorageAccessor::data() const {
 
 size_t ConstStorageAccessor::size() const {
 	if(internalState == AccessState::UNINIT) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
 	}
@@ -56,13 +56,13 @@ size_t ConstStorageAccessor::size() const {
 ReturnValue_t ConstStorageAccessor::getDataCopy(uint8_t *pointer,
 		size_t maxSize) {
 	if(internalState == AccessState::UNINIT) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(size_ > maxSize) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "StorageAccessor: Supplied buffer not large enough"
 				<< std::endl;
 #endif
@@ -82,7 +82,7 @@ store_address_t ConstStorageAccessor::getId() const {
 
 void ConstStorageAccessor::print() const {
 	if(internalState == AccessState::UNINIT or constDataPointer == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
 		return;

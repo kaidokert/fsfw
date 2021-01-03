@@ -4,7 +4,7 @@
 
 void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
 		bool printInfo, size_t maxCharPerLine) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	if(printInfo) {
 		sif::info << "Printing data with size " << size << ": ";
 	}
@@ -23,7 +23,7 @@ void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
 
 void arrayprinter::printHex(const uint8_t *data, size_t size,
 		size_t maxCharPerLine) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::info << std::hex;
 	for(size_t i = 0; i < size; i++) {
 		sif::info << "0x" << static_cast<int>(data[i]);
@@ -42,7 +42,7 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
 
 void arrayprinter::printDec(const uint8_t *data, size_t size,
 		size_t maxCharPerLine) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::info << std::dec;
 	for(size_t i = 0; i < size; i++) {
 		sif::info << static_cast<int>(data[i]);
@@ -58,7 +58,7 @@ void arrayprinter::printDec(const uint8_t *data, size_t size,
 }
 
 void arrayprinter::printBin(const uint8_t *data, size_t size) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::info << "\n" << std::flush;
     for(size_t i = 0; i < size; i++) {
         sif::info << "Byte " << i + 1 << ": 0b"<<

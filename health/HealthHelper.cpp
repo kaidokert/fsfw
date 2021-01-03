@@ -41,7 +41,7 @@ ReturnValue_t HealthHelper::initialize() {
 	eventSender = objectManager->get<EventReportingProxyIF>(objectId);
 
 	if (healthTable == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "HealthHelper::initialize: Health table object needs"
 	            "to be created in factory." << std::endl;
 #endif
@@ -49,7 +49,7 @@ ReturnValue_t HealthHelper::initialize() {
 	}
 
 	if(eventSender == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "HealthHelper::initialize: Owner has to implement "
 	            "ReportingProxyIF." << std::endl;
 #endif
@@ -83,7 +83,7 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
 			health, oldHealth);
 	if (MessageQueueSenderIF::sendMessage(parentQueue, &information,
 	        owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "HealthHelper::informParent: sending health reply failed."
 				<< std::endl;
 #endif
@@ -104,7 +104,7 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* command) {
 	}
 	if (MessageQueueSenderIF::sendMessage(command->getSender(), &reply,
 	        owner->getCommandQueue()) != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "HealthHelper::handleHealthCommand: sending health "
 		        "reply failed." << std::endl;
 #endif

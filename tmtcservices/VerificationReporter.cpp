@@ -27,7 +27,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 			&message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "VerificationReporter::sendSuccessReport: Error writing "
 				<< "to queue. Code: " << std::hex << status << std::dec
 				<< std::endl;
@@ -46,7 +46,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 			&message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "VerificationReporter::sendSuccessReport: Error writing "
 				<< "to queue. Code: " << std::hex << status << std::dec
 				<< std::endl;
@@ -68,7 +68,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "VerificationReporter::sendFailureReport: Error writing "
 				<< "to queue. Code: " << std::hex  << "0x" << status << std::dec
 				<< std::endl;
@@ -88,7 +88,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 	        &message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "VerificationReporter::sendFailureReport: Error writing "
 				<< "to queue. Code: " << std::hex << "0x" << status << std::dec
 				<< std::endl;
@@ -98,7 +98,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id,
 
 void VerificationReporter::initialize() {
 	if(messageReceiver == objects::NO_OBJECT) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "VerificationReporter::initialize: Verification message"
 				" receiver object ID not set yet in Factory!" << std::endl;
 #endif
@@ -107,7 +107,7 @@ void VerificationReporter::initialize() {
 	AcceptsVerifyMessageIF* temp = objectManager->get<AcceptsVerifyMessageIF>(
 			messageReceiver);
 	if (temp == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "VerificationReporter::initialize: Message "
 				<< "receiver invalid. Make sure it is set up properly and "
 				<< "implementsAcceptsVerifyMessageIF" << std::endl;

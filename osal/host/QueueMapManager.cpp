@@ -26,7 +26,7 @@ ReturnValue_t QueueMapManager::addMessageQueue(
 	auto returnPair = queueMap.emplace(currentId, queueToInsert);
 	if(not returnPair.second) {
 		// this should never happen for the atomic variable.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "QueueMapManager: This ID is already inside the map!"
 				<< std::endl;
 #endif
@@ -46,7 +46,7 @@ MessageQueueIF* QueueMapManager::getMessageQueue(
 		return queueIter->second;
 	}
 	else {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "QueueMapManager::getQueueHandle: The ID " <<
 				messageQueueId << " does not exists in the map" << std::endl;
 #endif

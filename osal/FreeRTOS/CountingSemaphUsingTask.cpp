@@ -9,7 +9,7 @@
 CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 		uint8_t initCount): maxCount(maxCount) {
 	if(initCount > maxCount) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphoreUsingTask: Max count bigger than "
 				"intial cout. Setting initial count to max count." << std::endl;
 #endif
@@ -18,7 +18,7 @@ CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 
 	handle = TaskManagement::getCurrentTaskHandle();
 	if(handle == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphoreUsingTask: Could not retrieve task "
 				"handle. Please ensure the constructor was called inside a "
 				"task." << std::endl;
@@ -29,7 +29,7 @@ CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite,
 			&oldNotificationValue);
 	if(oldNotificationValue != 0) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "CountinSemaphoreUsingTask: Semaphore initiated but "
 				"current notification value is not 0. Please ensure the "
 				"notification value is not used for other purposes!" << std::endl;

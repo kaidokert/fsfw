@@ -32,7 +32,7 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 #if FSFW_ENHANCED_PRINTOUT == 1
 	if(diagnosticPrintout) {
 	    if((newQueueHits > 0) or (newTmHits > 0) or (newStoreHits > 0)) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	        sif::debug << "InternalErrorReporter::performOperation: Errors "
 	                << "occured!" << std::endl;
 	        sif::debug << "Queue errors: " << newQueueHits << std::endl;

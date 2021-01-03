@@ -72,7 +72,7 @@ private:
 		if (timeStamper == nullptr) {
 			timeStamper = objectManager->get<TimeStamperIF>( timeStamperId );
 			if ( timeStamper == nullptr ) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 				sif::error << "MonitoringReportContent::checkAndSetStamper: "
 				        "Stamper not found!" << std::endl;
 #endif

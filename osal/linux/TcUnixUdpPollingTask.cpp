@@ -39,7 +39,7 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 				reinterpret_cast<sockaddr*>(&senderAddress), &senderSockLen);
 		if(bytesReceived < 0) {
 			// handle error
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "TcSocketPollingTask::performOperation: Reception"
 					"error." << std::endl;
 #endif
@@ -47,7 +47,7 @@ ReturnValue_t TcUnixUdpPollingTask::performOperation(uint8_t opCode) {
 
 			continue;
 		}
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 //		sif::debug << "TcSocketPollingTask::performOperation: " << bytesReceived
 //				<< " bytes received" << std::endl;
 #endif
@@ -69,7 +69,7 @@ ReturnValue_t TcUnixUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 			receptionBuffer.data(), bytesRead);
 	// arrayprinter::print(receptionBuffer.data(), bytesRead);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TcSerialPollingTask::transferPusToSoftwareBus: Data "
 				"storage failed" << std::endl;
 		sif::error << "Packet size: " << bytesRead << std::endl;
@@ -81,7 +81,7 @@ ReturnValue_t TcUnixUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 
 	result  = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Serial Polling: Sending message to queue failed"
 				<< std::endl;
 #endif
@@ -93,7 +93,7 @@ ReturnValue_t TcUnixUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 ReturnValue_t TcUnixUdpPollingTask::initialize() {
 	tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 	if (tcStore == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TcSerialPollingTask::initialize: TC Store uninitialized!"
 				<< std::endl;
 #endif
@@ -102,7 +102,7 @@ ReturnValue_t TcUnixUdpPollingTask::initialize() {
 
 	tmtcBridge = objectManager->get<TmTcUnixUdpBridge>(tmtcBridgeId);
 	if(tmtcBridge == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TcSocketPollingTask::TcSocketPollingTask: Invalid"
 				" TMTC bridge object!" << std::endl;
 #endif
@@ -127,7 +127,7 @@ void TcUnixUdpPollingTask::setTimeout(double timeoutSeconds) {
 	int result = setsockopt(serverUdpSocket, SOL_SOCKET, SO_RCVTIMEO,
 			&tval, sizeof(receptionTimeout));
 	if(result == -1) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TcSocketPollingTask::TcSocketPollingTask: Setting "
 				"receive timeout failed with " << strerror(errno) << std::endl;
 #endif
@@ -140,14 +140,14 @@ void TcUnixUdpPollingTask::handleReadError() {
 	case(EAGAIN): {
 		// todo: When working in timeout mode, this will occur more often
 		// and is not an error.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TcUnixUdpPollingTask::handleReadError: Timeout."
 				<< std::endl;
 #endif
 		break;
 	}
 	default: {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TcUnixUdpPollingTask::handleReadError: "
 				<< strerror(errno) << std::endl;
 #endif

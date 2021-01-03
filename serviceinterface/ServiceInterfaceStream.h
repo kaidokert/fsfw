@@ -3,7 +3,7 @@
 
 #include "ServiceInterfaceBuffer.h"
 
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 
 #include <iostream>
 #include <cstdio>
@@ -51,6 +51,6 @@ extern ServiceInterfaceStream warning;
 extern ServiceInterfaceStream error;
 }
 
-#endif /* CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
 #endif /* FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_ */

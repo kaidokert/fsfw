@@ -4,7 +4,7 @@
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <FSFWConfig.h>
 
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 
 #include <iostream>
 #include <sstream>
@@ -150,6 +150,6 @@ private:
 };
 #endif //ML505
 
-#endif /* CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
 #endif /* FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_ */

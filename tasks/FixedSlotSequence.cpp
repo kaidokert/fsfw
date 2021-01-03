@@ -91,7 +91,7 @@ void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs,
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "FixedSlotSequence::checkSequence:"
 				<< " Slot list is empty!" << std::endl;
 #endif
@@ -102,7 +102,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 		ReturnValue_t result = customCheckFunction(slotList);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			// Continue for now but print error output.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FixedSlotSequence::checkSequence:"
 					<< " Custom check failed!" << std::endl;
 #endif
@@ -116,7 +116,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 			errorCount++;
 		}
 		else if (slot.pollingTimeMs < time) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FixedSlotSequence::checkSequence: Time: "
 					<< slot.pollingTimeMs << " is smaller than previous with "
 					<< time << std::endl;
@@ -125,7 +125,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 		}
 		else {
 			// All ok, print slot.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			//sif::info << "Current slot polling time: " << std::endl;
 			//sif::info << std::dec << slotIt->pollingTimeMs << std::endl;
 #endif
@@ -133,7 +133,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 		time = slot.pollingTimeMs;
 
 	}
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	//sif::info << "Number of elements in slot list: "
 	//	   << slotList.size() << std::endl;
 #endif
@@ -159,7 +159,7 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
         }
     }
     if (count > 0) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "FixedSlotSequence::intializeSequenceAfterTaskCreation:"
                 "Counted " << count << " failed initializations!"  << std::endl;
 #endif

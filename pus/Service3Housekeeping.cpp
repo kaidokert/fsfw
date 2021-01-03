@@ -222,7 +222,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
 	}
 
 	default:
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Service3Housekeeping::handleReply: Invalid reply with "
 				<< "reply command " << command << "!" << std::endl;
 #endif
@@ -251,7 +251,7 @@ void Service3Housekeeping::handleUnrequestedReply(
 	}
 
 	default:
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Service3Housekeeping::handleUnrequestedReply: Invalid "
 		        << "reply with " << "reply command " << command << "!"
 		        << std::endl;
@@ -261,7 +261,7 @@ void Service3Housekeeping::handleUnrequestedReply(
 
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 		// Configuration error
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "Service3Housekeeping::handleUnrequestedReply:"
 				<< "Could not generate reply!" << std::endl;
 #endif

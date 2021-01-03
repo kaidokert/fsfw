@@ -122,7 +122,7 @@ void EventManager::printEvent(EventMessage* message) {
 	case severity::INFO:
 #if DEBUG_INFO_EVENT == 1
 		string = translateObject(message->getReporter());
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::info << "EVENT: ";
 		if (string != 0) {
 			sif::info << string;
@@ -133,12 +133,12 @@ void EventManager::printEvent(EventMessage* message) {
 				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
 				<< message->getParameter1() << " P2: 0x"
 				<< message->getParameter2() << std::dec << std::endl;
-#endif /* CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* DEBUG_INFO_EVENT == 1 */
 		break;
 	default:
 		string = translateObject(message->getReporter());
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "EventManager: ";
 		if (string != 0) {
 			sif::debug << string;

@@ -4,7 +4,7 @@
 CountingSemaphore::CountingSemaphore(const uint8_t maxCount, uint8_t initCount):
 		maxCount(maxCount), initCount(initCount) {
 	if(initCount > maxCount) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphoreUsingTask: Max count bigger than "
 				"intial cout. Setting initial count to max count." << std::endl;
 #endif

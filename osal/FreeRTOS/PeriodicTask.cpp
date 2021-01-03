@@ -13,7 +13,7 @@ PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 	BaseType_t status = xTaskCreate(taskEntryPoint, name,
 			stackSize, this, setPriority, &handle);
 	if(status != pdPASS){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "PeriodicTask Insufficient heap memory remaining. "
 		        "Status: " << status << std::endl;
 #endif
@@ -43,7 +43,7 @@ void PeriodicTask::taskEntryPoint(void* argument) {
 	}
 
 	originalTask->taskFunctionality();
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "Polling task " << originalTask->handle
 			<< " returned from taskFunctionality." << std::endl;
 #endif
@@ -103,7 +103,7 @@ ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
 	            "it implement ExecutableObjectIF" << std::endl;
 #endif

@@ -33,7 +33,7 @@ inline ReturnValue_t LocalPoolVariable<T>::read(dur_millis_t lockTimeout) {
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "LocalPoolVar: Invalid read write "
 				"mode for read() call." << std::endl;
 #endif
@@ -43,7 +43,7 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK or poolEntry == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PoolVector: Read of local pool variable of object "
 				<< std::hex << std::setw(8) << std::setfill('0')
 				<< hkManager->getOwner() << " and lp ID " << localPoolId
@@ -66,7 +66,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commit(dur_millis_t lockTimeout) {
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "LocalPoolVariable: Invalid read write "
 				 "mode for commit() call." << std::endl;
 #endif
@@ -75,7 +75,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PoolVector: Read of local pool variable of object "
 				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
 				hkManager->getOwner() << " and lp ID 0x" << localPoolId <<

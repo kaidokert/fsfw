@@ -1,6 +1,6 @@
 #include "ServiceInterfaceStream.h"
 
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 
 ServiceInterfaceStream::ServiceInterfaceStream(std::string setMessage,
 		bool addCrToPreamble, bool buffered, bool errStream, uint16_t port) :

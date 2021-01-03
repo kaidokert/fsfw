@@ -10,7 +10,7 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 	queueLock = MutexFactory::instance()->createMutex();
 	auto result = QueueMapManager::instance()->addMessageQueue(this, &mqId);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::MessageQueue:"
 		        << " Could not be created" << std::endl;
 #endif
@@ -139,7 +139,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			targetQueue->messageQueue.push(*mqmMessage);
 		}
 		else {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::sendMessageFromMessageQueue: Message"
 					"is not MessageQueueMessage!" << std::endl;
 #endif

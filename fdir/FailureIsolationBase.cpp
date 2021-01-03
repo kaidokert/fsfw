@@ -21,7 +21,7 @@ ReturnValue_t FailureIsolationBase::initialize() {
 	EventManagerIF* manager = objectManager->get<EventManagerIF>(
 			objects::EVENT_MANAGER);
 	if (manager == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "FailureIsolationBase::initialize: Event Manager has not"
 				" been initialized!" << std::endl;
 #endif
@@ -38,7 +38,7 @@ ReturnValue_t FailureIsolationBase::initialize() {
 		}
 		owner = objectManager->get<HasHealthIF>(ownerId);
 		if (owner == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FailureIsolationBase::intialize: Owner object "
 					"invalid. Make sure it implements HasHealthIF" << std::endl;
 #endif
@@ -49,11 +49,11 @@ ReturnValue_t FailureIsolationBase::initialize() {
 		ConfirmsFailuresIF* parentIF = objectManager->get<ConfirmsFailuresIF>(
 				faultTreeParent);
 		if (parentIF == nullptr) {
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FailureIsolationBase::intialize: Parent object"
 					<< "invalid." << std::endl;
 #endif
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "Make sure it implements ConfirmsFailuresIF."
 					<< std::endl;
 #endif

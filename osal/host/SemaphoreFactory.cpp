@@ -21,7 +21,7 @@ SemaphoreFactory* SemaphoreFactory::instance() {
 
 SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t arguments) {
 	// Just gonna wait for full C++20 for now.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "SemaphoreFactory: Binary Semaphore not implemented yet."
 			" Returning nullptr!\n" << std::flush;
 #endif
@@ -31,7 +31,7 @@ SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t arguments) {
 SemaphoreIF* SemaphoreFactory::createCountingSemaphore(const uint8_t maxCount,
 		uint8_t initCount, uint32_t arguments) {
 	// Just gonna wait for full C++20 for now.
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "SemaphoreFactory: Counting Semaphore not implemented yet."
 				" Returning nullptr!\n" << std::flush;
 #endif

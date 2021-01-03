@@ -10,7 +10,7 @@ Timer::Timer() {
 	sigEvent.sigev_value.sival_ptr = &timerId;
 	int status = timer_create(CLOCK_MONOTONIC, &sigEvent, &timerId);
 	if(status!=0){
-#if CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Timer creation failed with: " << status <<
 				" errno: " << errno << std::endl;
 #endif
