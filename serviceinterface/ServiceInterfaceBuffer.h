@@ -2,6 +2,7 @@
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
+#include <FSFWConfig.h>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -54,7 +55,7 @@ private:
 	bool errStream;
 
 	//! Needed for buffered mode.
-	static size_t const BUF_SIZE = 128;
+	static size_t const BUF_SIZE = fsfwconfig::FSFW_PRINT_BUFFER_SIZE;
 	char buf[BUF_SIZE];
 
 	//! In this function, the characters are parsed.
