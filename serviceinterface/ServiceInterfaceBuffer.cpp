@@ -34,6 +34,7 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 		colorPrefix = fsfw::ANSI_COLOR_RED;
 	}
 #endif
+
 	preamble.reserve(MAX_PREAMBLE_SIZE);
 	preamble.resize(MAX_PREAMBLE_SIZE);
 }
