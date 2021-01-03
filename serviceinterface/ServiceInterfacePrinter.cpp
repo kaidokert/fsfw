@@ -9,8 +9,23 @@
 
 fsfw::PrintLevel printLevel = fsfw::PrintLevel::DEBUG;
 uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
+#if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
+bool consoleInitialized = false;
+#endif
 
 void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
+
+#if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
+	if(not consoleInitialized) {
+		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		DWORD dwMode = 0;
+		GetConsoleMode(hOut, &dwMode);
+		dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+		SetConsoleMode(hOut, dwMode);
+	}
+	consoleInitialized = true;
+#endif
+
     size_t len = 0;
     char* bufferPosition = reinterpret_cast<char*>(printBuffer);
 
