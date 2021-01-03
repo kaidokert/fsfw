@@ -3,6 +3,7 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../globalfunctions/arrayprinter.h"
 #include <cstring>
+#include <algorithm>
 
 template <typename T>
 PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t setLength,

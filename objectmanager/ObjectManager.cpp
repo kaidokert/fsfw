@@ -1,6 +1,9 @@
 #include "ObjectManager.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
+
+#if CPP_OSTREAM_ENABLED == 1
 #include <iomanip>
+#endif
 #include <cstdlib>
 
 ObjectManager::ObjectManager( void (*setProducer)() ):

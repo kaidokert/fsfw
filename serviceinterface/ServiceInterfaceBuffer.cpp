@@ -1,7 +1,10 @@
-#include "../timemanager/Clock.h"
 #include "ServiceInterfaceBuffer.h"
+
+#if CPP_OSTREAM_ENABLED == 1
+
+#include "../timemanager/Clock.h"
+
 #include "serviceInterfaceDefintions.h"
-#include <FSFWConfig.h>
 #include <cstring>
 #include <inttypes.h>
 
@@ -252,3 +255,5 @@ void ServiceInterfaceBuffer::initSocket() {
 }
 
 #endif //ML505
+
+#endif /* CPP_OSTREAM_ENABLED == 1 */

@@ -2,6 +2,9 @@
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 
 #include "ServiceInterfaceBuffer.h"
+
+#if CPP_OSTREAM_ENABLED == 1
+
 #include <iostream>
 #include <cstdio>
 
@@ -47,5 +50,7 @@ extern ServiceInterfaceStream info;
 extern ServiceInterfaceStream warning;
 extern ServiceInterfaceStream error;
 }
+
+#endif /* CPP_OSTREAM_ENABLED == 1 */
 
 #endif /* FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_ */
