@@ -5,7 +5,9 @@
 Mutex::Mutex() {
 	handle = xSemaphoreCreateMutex();
 	if(handle == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Mutex::Mutex(FreeRTOS): Creation failure" << std::endl;
+#endif
 	}
 }
 

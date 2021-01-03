@@ -10,14 +10,18 @@
 CountingSemaphore::CountingSemaphore(const uint8_t maxCount, uint8_t initCount):
 		maxCount(maxCount), initCount(initCount) {
 	if(initCount > maxCount) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphoreUsingTask: Max count bigger than "
 				"intial cout. Setting initial count to max count." << std::endl;
+#endif
 		initCount = maxCount;
 	}
 
 	handle = xSemaphoreCreateCounting(maxCount, initCount);
 	if(handle == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphore: Creation failure" << std::endl;
+#endif
 	}
 }
 
@@ -25,7 +29,9 @@ CountingSemaphore::CountingSemaphore(CountingSemaphore&& other):
 		maxCount(other.maxCount), initCount(other.initCount) {
 	handle = xSemaphoreCreateCounting(other.maxCount, other.initCount);
 	if(handle == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphore: Creation failure" << std::endl;
+#endif
 	}
 }
 
@@ -33,7 +39,9 @@ CountingSemaphore& CountingSemaphore::operator =(
 		CountingSemaphore&& other) {
 	handle = xSemaphoreCreateCounting(other.maxCount, other.initCount);
 	if(handle == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphore: Creation failure" << std::endl;
+#endif
 	}
 	return * this;
 }

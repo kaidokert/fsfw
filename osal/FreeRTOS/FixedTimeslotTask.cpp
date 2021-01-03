@@ -37,15 +37,19 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
 	}
 
 	originalTask->taskFunctionality();
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "Polling task " << originalTask->handle
 			<< " returned from taskFunctionality." << std::endl;
+#endif
 }
 
 void FixedTimeslotTask::missedDeadlineCounter() {
 	FixedTimeslotTask::deadlineMissedCount++;
 	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
 				<< " deadlines." << std::endl;
+#endif
 	}
 }
 
@@ -69,8 +73,10 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "Component " << std::hex << componentId <<
 			" not found, not adding it to pst" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 

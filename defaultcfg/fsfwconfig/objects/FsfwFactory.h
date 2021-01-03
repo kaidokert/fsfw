@@ -1,5 +1,5 @@
-#ifndef FACTORY_H_
-#define FACTORY_H_
+#ifndef FSFWCONFIG_OBJECTS_FACTORY_H_
+#define FSFWCONFIG_OBJECTS_FACTORY_H_
 
 #include <fsfw/objectmanager/SystemObjectIF.h>
 #include <cstddef>
@@ -9,9 +9,9 @@ namespace Factory {
 	 * @brief   Creates all SystemObject elements which are persistent
 	 *          during execution.
 	 */
-	void produce();
+	void produceFsfwObjects();
 	void setStaticFrameworkObjectIds();
 }
 
 
-#endif /* FACTORY_H_ */
+#endif /* FSFWCONFIG_OBJECTS_FACTORY_H_ */

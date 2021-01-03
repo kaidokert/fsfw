@@ -4,6 +4,8 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../globalfunctions/arrayprinter.h"
 
+#include <algorithm>
+
 ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId):
 		storeId(storeId) {}
 
@@ -46,7 +48,9 @@ const uint8_t* ConstStorageAccessor::data() const {
 
 size_t ConstStorageAccessor::size() const {
 	if(internalState == AccessState::UNINIT) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
+#endif
 	}
 	return size_;
 }
@@ -54,12 +58,16 @@ size_t ConstStorageAccessor::size() const {
 ReturnValue_t ConstStorageAccessor::getDataCopy(uint8_t *pointer,
 		size_t maxSize) {
 	if(internalState == AccessState::UNINIT) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(size_ > maxSize) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "StorageAccessor: Supplied buffer not large enough"
 				<< std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	std::copy(constDataPointer, constDataPointer + size_, pointer);
@@ -76,7 +84,9 @@ store_address_t ConstStorageAccessor::getId() const {
 
 void ConstStorageAccessor::print() const {
 	if(internalState == AccessState::UNINIT or constDataPointer == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
+#endif
 		return;
 	}
 	arrayprinter::print(constDataPointer, size_);

@@ -2,6 +2,10 @@
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
+#include <FSFWConfig.h>
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -41,6 +45,11 @@ private:
 	//! For additional message information
 	std::string logMessage;
 	std::string preamble;
+
+#if FSFW_COLORED_OUTPUT == 1
+	std::string colorPrefix;
+#endif
+
 	// For EOF detection
 	typedef std::char_traits<char> Traits;
 
@@ -54,7 +63,7 @@ private:
 	bool errStream;
 
 	//! Needed for buffered mode.
-	static size_t const BUF_SIZE = 128;
+	static size_t const BUF_SIZE = fsfwconfig::FSFW_PRINT_BUFFER_SIZE;
 	char buf[BUF_SIZE];
 
 	//! In this function, the characters are parsed.
@@ -141,5 +150,6 @@ private:
 };
 #endif //ML505
 
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
 #endif /* FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_ */

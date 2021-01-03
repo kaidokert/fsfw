@@ -5,12 +5,16 @@ LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId,
         pool_rwm_t setReadWriteMode): localPoolId(poolId),
         readWriteMode(setReadWriteMode) {
     if(poolId == PoolVariableIF::NO_PARAMETER) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
                 << "which is the NO_PARAMETER value!" << std::endl;
+#endif
     }
     if(hkOwner == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPoolVar<T>::LocalPoolVar: The supplied pool "
                 << "owner is a invalid!" << std::endl;
+#endif
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
@@ -23,15 +27,19 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId,
         DataSetIF *dataSet, pool_rwm_t setReadWriteMode): localPoolId(poolId),
         readWriteMode(setReadWriteMode) {
     if(poolId == PoolVariableIF::NO_PARAMETER) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
                 << "which is the NO_PARAMETER value!" << std::endl;
+#endif
     }
     HasLocalDataPoolIF* hkOwner =
             objectManager->get<HasLocalDataPoolIF>(poolOwner);
     if(hkOwner == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPoolVariable: The supplied pool owner did not "
                 << "implement the correct interface"
                 << " HasLocalDataPoolIF!" << std::endl;
+#endif
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();

@@ -47,8 +47,10 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "Component " << std::hex << componentId <<
 			" not found, not adding it to pst" << std::dec << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
@@ -91,7 +93,9 @@ void FixedTimeslotTask::taskFunctionality() {
 void FixedTimeslotTask::missedDeadlineCounter() {
 	FixedTimeslotTask::deadlineMissedCount++;
 	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
 				   << " deadlines." << std::endl;
+#endif
 	}
 }

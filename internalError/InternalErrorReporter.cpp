@@ -29,14 +29,16 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 	uint32_t newTmHits = getAndResetTmHits();
 	uint32_t newStoreHits = getAndResetStoreHits();
 
-#ifdef DEBUG
+#if FSFW_ENHANCED_PRINTOUT == 1
 	if(diagnosticPrintout) {
 	    if((newQueueHits > 0) or (newTmHits > 0) or (newStoreHits > 0)) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	        sif::debug << "InternalErrorReporter::performOperation: Errors "
 	                << "occured!" << std::endl;
 	        sif::debug << "Queue errors: " << newQueueHits << std::endl;
 	        sif::debug << "TM errors: " << newTmHits << std::endl;
 	        sif::debug << "Store errors: " << newStoreHits << std::endl;
+#endif
 	    }
 	}
 #endif
