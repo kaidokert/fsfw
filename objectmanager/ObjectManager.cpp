@@ -29,7 +29,7 @@ ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 	} else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "ObjectManager::insert: Object id " << std::hex
-		           << static_cast<uint32_t> id << std::dec
+		           << static_cast<uint32_t>(id) << std::dec
 				   << " is already in use!" << std::endl;
 		sif::error << "Terminating program." << std::endl;
 #endif

@@ -4,6 +4,8 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../globalfunctions/arrayprinter.h"
 
+#include <algorithm>
+
 ConstStorageAccessor::ConstStorageAccessor(store_address_t storeId):
 		storeId(storeId) {}
 

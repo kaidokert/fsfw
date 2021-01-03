@@ -2,6 +2,8 @@
 #include "StorageManagerIF.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
+#include <algorithm>
+
 StorageAccessor::StorageAccessor(store_address_t storeId):
 		ConstStorageAccessor(storeId) {
 }

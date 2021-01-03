@@ -33,7 +33,7 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
 				sif::info << std::endl;
 
 			}
-
+		}
 	}
 	sif::info << std::dec;
 	sif::info << "]" << std::endl;
