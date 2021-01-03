@@ -5,7 +5,9 @@
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();
 	if(handle == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "Semaphore: Binary semaph creation failure" << std::endl;
+#endif
 	}
 	// Initiated semaphore must be given before it can be taken.
 	xSemaphoreGive(handle);
@@ -18,7 +20,9 @@ BinarySemaphore::~BinarySemaphore() {
 BinarySemaphore::BinarySemaphore(BinarySemaphore&& s) {
     handle = xSemaphoreCreateBinary();
     if(handle == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "Binary semaphore creation failure" << std::endl;
+#endif
     }
     xSemaphoreGive(handle);
 }
@@ -28,7 +32,9 @@ BinarySemaphore& BinarySemaphore::operator =(
     if(&s != this) {
         handle = xSemaphoreCreateBinary();
         if(handle == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
             sif::error << "Binary semaphore creation failure" << std::endl;
+#endif
         }
         xSemaphoreGive(handle);
     }

@@ -86,8 +86,10 @@ extern ObjectManagerIF *objectManager;
 template <typename T>
 T* ObjectManagerIF::get( object_id_t id ) {
 	if(objectManager == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "ObjectManagerIF: Global object manager has not "
 				"been initialized yet!" << std::endl;
+#endif
 	}
 	SystemObjectIF* temp = this->getSystemObject(id);
 	return dynamic_cast<T*>(temp);

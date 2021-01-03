@@ -15,8 +15,10 @@ ReturnValue_t pst::pollingSequenceInitDefault(
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "pst::pollingSequenceInitDefault: Sequence invalid!"
 		        << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 }

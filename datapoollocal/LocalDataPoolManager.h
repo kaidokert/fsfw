@@ -375,15 +375,19 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 		PoolEntry<T> **poolEntry) {
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::warning << "HousekeepingManager::fechPoolEntry: Pool entry "
 		        "not found." << std::endl;
+#endif
 		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::debug << "HousekeepingManager::fetchPoolEntry:"
 				" Pool entry not found." << std::endl;
+#endif
 		return HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
 	}
 	return HasReturnvaluesIF::RETURN_OK;

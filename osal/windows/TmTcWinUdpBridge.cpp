@@ -15,8 +15,10 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     if (err != 0) {
         /* Tell the user that we could not find a usable */
         /* Winsock DLL.                                  */
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge:"
                 "WSAStartup failed with error: " << err << std::endl;
+#endif
         return;
     }
 
@@ -34,8 +36,10 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     //clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
     serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if(serverSocket == INVALID_SOCKET) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not open"
                 " UDP socket!" << std::endl;
+#endif
         handleSocketError();
         return;
     }
@@ -59,9 +63,11 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
             reinterpret_cast<struct sockaddr*>(&serverAddress),
             serverAddressLen);
     if(result != 0) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not bind "
                 "local port " << setServerPort << " to server socket!"
                 << std::endl;
+#endif
         handleBindError();
     }
 }
@@ -77,19 +83,25 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
     //clientAddressLen = sizeof(serverAddress);
 
 //  char ipAddress [15];
+#if CPP_OSTREAM_ENABLED == 1
 //  sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
 //                  &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#endif
 
     ssize_t bytesSent = sendto(serverSocket,
             reinterpret_cast<const char*>(data), dataLen, flags,
             reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
     if(bytesSent == SOCKET_ERROR) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "TmTcWinUdpBridge::sendTm: Send operation failed."
                 << std::endl;
+#endif
         handleSendError();
     }
+#if CPP_OSTREAM_ENABLED == 1
 //  sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
 //          " sent." << std::endl;
+#endif
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -97,10 +109,12 @@ void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
     MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 //  char ipAddress [15];
+#if CPP_OSTREAM_ENABLED == 1
 //  sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
 //          &newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 //  sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
 //          &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#endif
     registerCommConnect();
 
     // Set new IP address if it has changed.
@@ -114,8 +128,10 @@ void TmTcWinUdpBridge::handleSocketError() {
     int errCode = WSAGetLastError();
     switch(errCode) {
     case(WSANOTINITIALISED): {
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleSocketError: WSANOTINITIALISED: "
                 << "WSAStartup(...) call necessary" << std::endl;
+#endif
         break;
     }
     default: {
@@ -123,8 +139,10 @@ void TmTcWinUdpBridge::handleSocketError() {
         https://docs.microsoft.com/en-us/windows/win32/winsock/
         windows-sockets-error-codes-2
          */
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleSocketError: Error code: "
                 << errCode << std::endl;
+#endif
         break;
     }
     }
@@ -134,13 +152,17 @@ void TmTcWinUdpBridge::handleBindError() {
     int errCode = WSAGetLastError();
     switch(errCode) {
     case(WSANOTINITIALISED): {
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleBindError: WSANOTINITIALISED: "
                 << "WSAStartup(...) call " << "necessary" << std::endl;
+#endif
         break;
     }
     case(WSAEADDRINUSE): {
+#if CPP_OSTREAM_ENABLED == 1
     	sif::warning << "TmTcWinUdpBridge::handleBindError: WSAEADDRINUSE: "
     			<< "Port is already in use!" << std::endl;
+#endif
     	break;
     }
     default: {
@@ -148,8 +170,10 @@ void TmTcWinUdpBridge::handleBindError() {
         https://docs.microsoft.com/en-us/windows/win32/winsock/
         windows-sockets-error-codes-2
         */
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleBindError: Error code: "
                 << errCode << std::endl;
+#endif
         break;
     }
     }
@@ -159,13 +183,17 @@ void TmTcWinUdpBridge::handleSendError() {
     int errCode = WSAGetLastError();
     switch(errCode) {
     case(WSANOTINITIALISED): {
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleSendError: WSANOTINITIALISED: "
                 << "WSAStartup(...) call necessary" << std::endl;
+#endif
         break;
     }
     case(WSAEADDRNOTAVAIL): {
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleSendError: WSAEADDRNOTAVAIL: "
                 << "Check target address. " << std::endl;
+#endif
         break;
     }
     default: {
@@ -173,8 +201,10 @@ void TmTcWinUdpBridge::handleSendError() {
         https://docs.microsoft.com/en-us/windows/win32/winsock/
         windows-sockets-error-codes-2
         */
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleSendError: Error code: "
                 << errCode << std::endl;
+#endif
         break;
     }
     }

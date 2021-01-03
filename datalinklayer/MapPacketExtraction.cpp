@@ -29,9 +29,11 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
 			bufferPosition = &packetBuffer[packetLength];
 			status = RETURN_OK;
 		} else {
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error
 					<< "MapPacketExtraction::extractPackets. Packet too large! Size: "
 					<< packetLength << std::endl;
+#endif
 			clearBuffers();
 			status = CONTENT_TOO_LARGE;
 		}
@@ -51,24 +53,30 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
 				}
 				status = RETURN_OK;
 			} else {
+#if CPP_OSTREAM_ENABLED == 1
 				sif::error
 						<< "MapPacketExtraction::extractPackets. Packet too large! Size: "
 						<< packetLength << std::endl;
+#endif
 				clearBuffers();
 				status = CONTENT_TOO_LARGE;
 			}
 		} else {
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error
 					<< "MapPacketExtraction::extractPackets. Illegal segment! Last flag: "
 					<< (int) lastSegmentationFlag << std::endl;
+#endif
 			clearBuffers();
 			status = ILLEGAL_SEGMENTATION_FLAG;
 		}
 		break;
 	default:
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error
 				<< "MapPacketExtraction::extractPackets. Illegal segmentationFlag: "
 				<< (int) segmentationFlag << std::endl;
+#endif
 		clearBuffers();
 		status = DATA_CORRUPTED;
 		break;
@@ -135,10 +143,14 @@ ReturnValue_t MapPacketExtraction::initialize() {
 }
 
 void MapPacketExtraction::printPacketBuffer(void) {
+#if CPP_OSTREAM_ENABLED == 1
 	sif::debug << "DLL: packet_buffer contains: " << std::endl;
+#endif
 	for (uint32_t i = 0; i < this->packetLength; ++i) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::debug << "packet_buffer[" << std::dec << i << "]: 0x" << std::hex
 				<< (uint16_t) this->packetBuffer[i] << std::endl;
+#endif
 	}
 }
 

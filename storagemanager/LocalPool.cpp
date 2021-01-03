@@ -8,8 +8,10 @@ LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
 		NUMBER_OF_POOLS(poolConfig.size()),
 		spillsToHigherPools(spillsToHigherPools) {
 	if(NUMBER_OF_POOLS == 0) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "LocalPool::LocalPool: Passed pool configuration is "
 				<< " invalid!" << std::endl;
+#endif
 	}
 	max_pools_t index = 0;
 	for (const auto& currentPoolConfig: poolConfig) {
@@ -118,8 +120,10 @@ ReturnValue_t LocalPool::modifyData(store_address_t storeId,
 
 ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
 #if FSFW_VERBOSE_PRINTOUT == 2
+#if CPP_OSTREAM_ENABLED == 1
       sif::debug << "Delete: Pool: " << std::dec << storeId.poolIndex
               << " Index: " << storeId.packetIndex << std::endl;
+#endif
 
 #endif
     ReturnValue_t status = RETURN_OK;
@@ -134,8 +138,10 @@ ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
     }
     else {
         //pool_index or packet_index is too large
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPool::deleteData: Illegal store ID, no deletion!"
         		<< std::endl;
+#endif
         status = ILLEGAL_STORAGE_ID;
     }
     return status;
@@ -158,8 +164,10 @@ ReturnValue_t LocalPool::deleteData(uint8_t *ptr, size_t size,
             result = deleteData(localId);
 #if FSFW_VERBOSE_PRINTOUT == 2
             if (deltaAddress % elementSizes[n] != 0) {
+#if CPP_OSTREAM_ENABLED == 1
                 sif::error << "LocalPool::deleteData: Address not aligned!"
                         << std::endl;
+#endif
             }
 #endif
             break;
@@ -186,8 +194,10 @@ ReturnValue_t LocalPool::initialize() {
     //Check if any pool size is large than the maximum allowed.
     for (uint8_t count = 0; count < NUMBER_OF_POOLS; count++) {
         if (elementSizes[count] >= STORAGE_FREE) {
+#if CPP_OSTREAM_ENABLED == 1
             sif::error << "LocalPool::initialize: Pool is too large! "
                     "Max. allowed size is: " << (STORAGE_FREE - 1) << std::endl;
+#endif
             return StorageManagerIF::POOL_TOO_LARGE;
         }
     }
@@ -209,8 +219,10 @@ ReturnValue_t LocalPool::reserveSpace(const size_t size,
         store_address_t *storeId, bool ignoreFault) {
     ReturnValue_t status = getPoolIndex(size, &storeId->poolIndex);
     if (status != RETURN_OK) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPool( " << std::hex << getObjectId() << std::dec
                 << " )::reserveSpace: Packet too large." << std::endl;
+#endif
         return status;
     }
     status = findEmpty(storeId->poolIndex, &storeId->packetIndex);
@@ -224,9 +236,11 @@ ReturnValue_t LocalPool::reserveSpace(const size_t size,
     }
     if (status == RETURN_OK) {
 #if FSFW_VERBOSE_PRINTOUT == 2
+#if CPP_OSTREAM_ENABLED == 1
         sif::debug << "Reserve: Pool: " << std::dec
                 << storeId->poolIndex << " Index: " << storeId->packetIndex
                 << std::endl;
+#endif
 #endif
         sizeLists[storeId->poolIndex][storeId->packetIndex] = size;
     }
@@ -266,8 +280,10 @@ ReturnValue_t LocalPool::getPoolIndex(size_t packetSize, uint16_t *poolIndex,
         uint16_t startAtIndex) {
     for (uint16_t n = startAtIndex; n < NUMBER_OF_POOLS; n++) {
 #if FSFW_VERBOSE_PRINTOUT == 2
+#if CPP_OSTREAM_ENABLED == 1
         sif::debug << "LocalPool " << getObjectId() << "::getPoolIndex: Pool: "
              << n << ", Element Size: " << elementSizes[n] << std::endl;
+#endif
 #endif
         if (elementSizes[n] >= packetSize) {
             *poolIndex = n;

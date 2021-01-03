@@ -12,8 +12,10 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
     if(hkOwner == nullptr) {
         // Configuration error.
+#if CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
                 << "invalid!" << std::endl;
+#endif
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
@@ -147,8 +149,10 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
         auto result = SerializeAdapter::serialize(&currentPoolId, buffer,
                 size, maxSize, streamEndianness);
         if(result != HasReturnvaluesIF::RETURN_OK) {
+#if CPP_OSTREAM_ENABLED == 1
             sif::warning << "LocalDataSet::serializeLocalPoolIds: Serialization"
                     " error!" << std::endl;
+#endif
             return result;
         }
     }
@@ -206,8 +210,10 @@ ReturnValue_t LocalPoolDataSetBase::serialize(uint8_t **buffer, size_t *size,
 
 void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     if(position > 7) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::debug << "Pool Raw Access: Bit setting invalid position"
                 << std::endl;
+#endif
         return;
     }
     uint8_t shiftNumber = position + (7 - 2 * position);
@@ -256,8 +262,10 @@ sid_t LocalPoolDataSetBase::getSid() const {
 bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
         uint8_t position) const {
     if(position > 7) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::debug << "Pool Raw Access: Bit setting invalid position"
                 << std::endl;
+#endif
         return false;
     }
     uint8_t shiftNumber = position + (7 - 2 * position);

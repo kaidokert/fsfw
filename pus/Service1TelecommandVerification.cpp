@@ -51,8 +51,10 @@ ReturnValue_t Service1TelecommandVerification::sendVerificationReport(
 		result = generateSuccessReport(message);
 	}
 	if(result != HasReturnvaluesIF::RETURN_OK){
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "Service1TelecommandVerification::sendVerificationReport: "
 		        "Sending verification packet failed !" << std::endl;
+#endif
 	}
 	return result;
 }
@@ -88,9 +90,11 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
 	AcceptsTelemetryIF* funnel = objectManager->
 			get<AcceptsTelemetryIF>(targetDestination);
 	if(funnel == nullptr){
+#if CPP_OSTREAM_ENABLED == 1
 	    sif::error << "Service1TelecommandVerification::initialize: Specified"
 	            " TM funnel invalid. Make sure it is set up and implements"
 	            " AcceptsTelemetryIF." << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 	tmQueue->setDefaultDestination(funnel->getReportReceptionQueue());

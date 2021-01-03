@@ -13,9 +13,11 @@ PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
 PUSDistributor::~PUSDistributor() {}
 
 PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
+#if CPP_OSTREAM_ENABLED == 1
     // sif:: debug << "PUSDistributor::handlePacket received: "
     //          << this->current_packet_id.store_index << ", "
     //          << this->current_packet_id.packet_index << std::endl;
+#endif
     TcMqMapIter queueMapIt = this->queueMap.end();
     if(this->currentPacket == nullptr) {
         return queueMapIt;
@@ -25,9 +27,11 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         tcStatus = checker.checkPacket(currentPacket);
 #ifdef DEBUG
         if(tcStatus != HasReturnvaluesIF::RETURN_OK) {
+#if CPP_OSTREAM_ENABLED == 1
             sif::debug << "PUSDistributor::handlePacket: Packet format "
                     << "invalid, code "<< static_cast<int>(tcStatus)
                     << std::endl;
+#endif
         }
 #endif
         uint32_t queue_id = currentPacket->getService();
@@ -40,8 +44,10 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     if (queueMapIt == this->queueMap.end()) {
         tcStatus = DESTINATION_NOT_FOUND;
 #ifdef DEBUG
+#if CPP_OSTREAM_ENABLED == 1
         sif::debug << "PUSDistributor::handlePacket: Destination not found, "
                 << "code "<< static_cast<int>(tcStatus) << std::endl;
+#endif
 #endif
     }
 
@@ -57,12 +63,16 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 
 ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 	uint16_t serviceId = service->getIdentifier();
+#if CPP_OSTREAM_ENABLED == 1
 	// sif::info << "Service ID: " << (int)serviceId << std::endl;
+#endif
 	MessageQueueId_t queue = service->getRequestQueue();
 	auto returnPair = queueMap.emplace(serviceId, queue);
 	if (not returnPair.second) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "PUSDistributor::registerService: Service ID already"
 				" exists in map." << std::endl;
+#endif
 		return SERVICE_ID_ALREADY_EXISTS;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
@@ -104,9 +114,11 @@ ReturnValue_t PUSDistributor::initialize() {
 	CCSDSDistributorIF* ccsdsDistributor =
 			objectManager->get<CCSDSDistributorIF>(packetSource);
 	if (ccsdsDistributor == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "PUSDistributor::initialize: Packet source invalid."
 		        << " Make sure it exists and implements CCSDSDistributorIF!"
 		        << std::endl;
+#endif
 	    return RETURN_FAILED;
 	}
 	return ccsdsDistributor->registerApplication(this);

@@ -25,9 +25,11 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
 	handleRequestQueue();
 	ReturnValue_t result = this->performService();
 	if (result != RETURN_OK) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "PusService " << (uint16_t) this->serviceId
 				<< ": performService returned with " << (int16_t) result
 				<< std::endl;
+#endif
 		return RETURN_FAILED;
 	}
 	return RETURN_OK;
@@ -43,11 +45,13 @@ void PusServiceBase::handleRequestQueue() {
 	for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
 		ReturnValue_t status = this->requestQueue->receiveMessage(&message);
 //		if(status != MessageQueueIF::EMPTY) {
+#if CPP_OSTREAM_ENABLED == 1
 //			sif::debug << "PusServiceBase::performOperation: Receiving from "
 //					<< "MQ ID: " << std::hex << "0x" << std::setw(8)
 //					<< std::setfill('0') << this->requestQueue->getId()
 //					<< std::dec << " returned: " << status << std::setfill(' ')
 //					<<  std::endl;
+#endif
 //		}
 
 		if (status == RETURN_OK) {
@@ -79,9 +83,11 @@ void PusServiceBase::handleRequestQueue() {
 			break;
 		}
 		else {
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "PusServiceBase::performOperation: Service "
 					<< this->serviceId << ": Error receiving packet. Code: "
 					<< std::hex << status << std::dec << std::endl;
+#endif
 		}
 	}
 }
@@ -104,10 +110,12 @@ ReturnValue_t PusServiceBase::initialize() {
 	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
 			packetSource);
 	if (destService == nullptr or distributor == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "PusServiceBase::PusServiceBase: Service "
 				<< this->serviceId << ": Configuration error. Make sure "
 				<<	"packetSource and packetDestination are defined correctly"
 				<< std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 	this->requestQueue->setDefaultDestination(

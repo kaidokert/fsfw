@@ -47,9 +47,11 @@ ReturnValue_t SharedRingBuffer::initialize() {
 DynamicFIFO<size_t>* SharedRingBuffer::getReceiveSizesFIFO() {
 	if(receiveSizesFIFO == nullptr) {
 		// Configuration error.
+#if CPP_OSTREAM_ENABLED == 1
 		sif::warning << "SharedRingBuffer::getReceiveSizesFIFO: Ring buffer"
 				<< " was not configured to have sizes FIFO, returning nullptr!"
 				<< std::endl;
+#endif
 	}
 	return receiveSizesFIFO;
 }

@@ -11,21 +11,27 @@ CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid,
 CCSDSDistributor::~CCSDSDistributor() {}
 
 TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
+#if CPP_OSTREAM_ENABLED == 1
 //	sif::debug << "CCSDSDistributor::selectDestination received: " <<
 //			this->currentMessage.getStorageId().pool_index << ", " <<
 //			this->currentMessage.getStorageId().packet_index << std::endl;
+#endif
 	const uint8_t* packet = nullptr;
 	size_t size = 0;
 	ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(),
 			&packet, &size );
 	if(result != HasReturnvaluesIF::RETURN_OK) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "CCSDSDistributor::selectDestination: Getting data from"
 				" store failed!" << std::endl;
+#endif
 	}
 	SpacePacketBase currentPacket(packet);
 
+#if CPP_OSTREAM_ENABLED == 1
 //	sif:: info << "CCSDSDistributor::selectDestination has packet with APID "
 //			<< std::hex << currentPacket.getAPID() << std::dec << std::endl;
+#endif
 	TcMqMapIter position = this->queueMap.find(currentPacket.getAPID());
 	if ( position != this->queueMap.end() ) {
 		return position;
@@ -70,8 +76,10 @@ ReturnValue_t CCSDSDistributor::initialize() {
 	ReturnValue_t status = this->TcDistributor::initialize();
 	this->tcStore = objectManager->get<StorageManagerIF>( objects::TC_STORE );
 	if (this->tcStore == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 	    sif::error << "CCSDSDistributor::initialize: Could not initialize"
 	            " TC store!" << std::endl;
+#endif
 	    status = RETURN_FAILED;
 	}
 	return status;

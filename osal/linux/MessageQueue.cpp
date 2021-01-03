@@ -10,7 +10,6 @@
 #include <errno.h>
 
 
-
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
 		id(MessageQueueIF::NO_QUEUE),lastPartner(MessageQueueIF::NO_QUEUE),
 		defaultDestination(MessageQueueIF::NO_QUEUE),
@@ -43,13 +42,17 @@ MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
 MessageQueue::~MessageQueue() {
 	int status = mq_close(this->id);
 	if(status != 0){
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::Destructor: mq_close Failed with status: "
 				   << strerror(errno) <<std::endl;
+#endif
 	}
 	status = mq_unlink(name);
 	if(status != 0){
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
 				   << strerror(errno) << std::endl;
+#endif
 	}
 }
 
@@ -57,8 +60,10 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		uint32_t messageDepth) {
 	switch(errno) {
 	case(EINVAL): {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::MessageQueue: Invalid name or attributes"
 				" for message size" << std::endl;
+#endif
 		size_t defaultMqMaxMsg = 0;
 		// Not POSIX conformant, but should work for all UNIX systems.
 		// Just an additional helpful printout :-)
@@ -79,11 +84,13 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 			Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
 			Apply changes with: sudo sysctl -p
 			*/
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::MessageQueue: Default MQ size "
 					<< defaultMqMaxMsg << " is too small for requested size "
 					<< messageDepth << std::endl;
 			sif::error << "This error can be fixed by setting the maximum "
 					"allowed message size higher!" << std::endl;
+#endif
 
 		}
 		break;
@@ -95,8 +102,10 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		//We unlink the other queue
 		int status = mq_unlink(name);
 		if (status != 0) {
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "mq_unlink Failed with status: " << strerror(errno)
 													<< std::endl;
+#endif
 		}
 		else {
 			// Successful unlinking, try to open again
@@ -114,9 +123,11 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 
 	default:
 		// Failed either the first time or the second time
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
 		<< name << std::dec << " failed with status: "
 		<< strerror(errno) << std::endl;
+#endif
 
 	}
 	return HasReturnvaluesIF::RETURN_FAILED;
@@ -151,15 +162,19 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	if(message == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::receiveMessage: Message is "
 				"nullptr!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
 	if(message->getMaximumMessageSize() < maxMessageSize) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::receiveMessage: Message size "
 				<< message->getMaximumMessageSize()
 				<< " too small to receive data!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -187,8 +202,10 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 			return MessageQueueIF::EMPTY;
 		case EBADF:
 			//mqdes doesn't represent a valid queue open for reading.
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::receive: configuration error "
 			           << strerror(errno)  << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINVAL:
 			/*
@@ -200,8 +217,10 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 			 *   queue, and the QNX extended option MQ_READBUF_DYNAMIC hasn't
 			 *   been set in the queue's mq_flags.
 			 */
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::receive: configuration error "
 					   << strerror(errno)  << std::endl;
+#endif
 			/*NO BREAK*/
 		case EMSGSIZE:
 			/*
@@ -213,8 +232,10 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 			 *   given msg_len is too short for the message that would have
 			 *   been received.
 			 */
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::receive: configuration error "
 			           << strerror(errno)  << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINTR:
 			//The operation was interrupted by a signal.
@@ -237,8 +258,10 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 		switch(errno){
 		case EBADF:
 			//mqdes doesn't represent a valid message queue.
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::flush configuration error, "
 					"called flush with an invalid queue ID" << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINVAL:
 			//mq_attr is NULL
@@ -253,8 +276,10 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 		switch(errno){
 		case EBADF:
 			//mqdes doesn't represent a valid message queue.
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::flush configuration error, "
 					"called flush with an invalid queue ID" << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINVAL:
 			/*
@@ -306,8 +331,10 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	if(message == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
 				"nullptr!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -335,11 +362,13 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		case EBADF: {
 			//mq_des doesn't represent a valid message queue descriptor,
 			//or mq_des wasn't opened for writing.
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::sendMessage: Configuration error, MQ"
 					<< " destination invalid."  << std::endl;
 			sif::error << strerror(errno) << " in "
 					<<"mq_send to: " << sendTo << " sent from "
 					<< sentFrom << std::endl;
+#endif
 			return DESTINVATION_INVALID;
 		}
 		case EINTR:
@@ -354,14 +383,18 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			 * - MQ_PRIO_RESTRICT is set in the mq_attr of mq_des, and
 			 *   msg_prio is greater than the priority of the calling process.
 			 */
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::sendMessage: Configuration error "
 			           << strerror(errno) << " in mq_send" << std::endl;
+#endif
 			/*NO BREAK*/
 		case EMSGSIZE:
 			// The msg_len is greater than the msgsize associated with
 			//the specified queue.
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::sendMessage: Size error [" <<
 					strerror(errno) << "] in mq_send" << std::endl;
+#endif
 			/*NO BREAK*/
 		default:
 			return HasReturnvaluesIF::RETURN_FAILED;

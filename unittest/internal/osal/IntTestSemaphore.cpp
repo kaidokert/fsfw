@@ -94,8 +94,10 @@ void testsemaph::testBinSemaphoreImplementation(SemaphoreIF* binSemaph,
 		result = binSemaph->acquire(SemaphoreIF::TimeoutType::WAITING, 10);
 		//dur_millis_t time = stopwatch.stop();
 //		if(abs(time - 10) > 2) {
+#if CPP_OSTREAM_ENABLED == 1
 //		    sif::error << "UnitTester: Semaphore timeout measured incorrect."
 //		            << std::endl;
+#endif
 //			unitt::put_error(id);
 //		}
 	}

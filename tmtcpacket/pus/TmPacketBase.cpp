@@ -57,7 +57,9 @@ void TmPacketBase::setData(const uint8_t* p_Data) {
 }
 
 void TmPacketBase::print() {
+#if CPP_OSTREAM_ENABLED == 1
 	 sif::debug << "TmPacketBase::print: " << std::endl;
+#endif
 	 arrayprinter::print(getWholeData(), getFullSize());
 }
 
@@ -65,8 +67,10 @@ bool TmPacketBase::checkAndSetStamper() {
 	if (timeStamper == NULL) {
 		timeStamper = objectManager->get<TimeStamperIF>(timeStamperId);
 		if (timeStamper == NULL) {
+#if CPP_OSTREAM_ENABLED == 1
 			sif::error << "TmPacketBase::checkAndSetStamper: Stamper not found!"
 					<< std::endl;
+#endif
 			return false;
 		}
 	}

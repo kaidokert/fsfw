@@ -32,8 +32,10 @@ SemaphoreIF* SemaphoreFactory::createBinarySemaphore(uint32_t argument) {
 		return new BinarySemaphoreUsingTask();
 	}
 	else {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::warning << "SemaphoreFactory: Invalid argument, return regular"
 				"binary semaphore" << std::endl;
+#endif
 		return new BinarySemaphore();
 	}
 }
@@ -47,8 +49,10 @@ SemaphoreIF* SemaphoreFactory::createCountingSemaphore(uint8_t maxCount,
 		return new CountingSemaphoreUsingTask(maxCount, initCount);
 	}
 	else {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::warning << "SemaphoreFactory: Invalid argument, return regular"
 						"binary semaphore" << std::endl;
+#endif
 		return new CountingSemaphore(maxCount, initCount);
 	}
 

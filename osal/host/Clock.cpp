@@ -14,7 +14,9 @@ MutexIF* Clock::timeMutex = NULL;
 using SystemClock = std::chrono::system_clock;
 
 uint32_t Clock::getTicksPerSecond(void){
+#if CPP_OSTREAM_ENABLED == 1
 	sif::warning << "Clock::getTicksPerSecond: not implemented yet" << std::endl;
+#endif
 	return 0;
 	//return CLOCKS_PER_SEC;
 	//uint32_t ticks = sysconf(_SC_CLK_TCK);
@@ -23,7 +25,9 @@ uint32_t Clock::getTicksPerSecond(void){
 
 ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
 	// do some magic with chrono
+#if CPP_OSTREAM_ENABLED == 1
 	sif::warning << "Clock::setClock: not implemented yet" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -36,7 +40,9 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 #else
 
 #endif
+#if CPP_OSTREAM_ENABLED == 1
 	sif::warning << "Clock::getUptime: Not implemented for found OS" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
@@ -60,7 +66,9 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	time->tv_usec = timeUnix.tv_nsec / 1000.0;
 	return HasReturnvaluesIF::RETURN_OK;
 #else
+#if CPP_OSTREAM_ENABLED == 1
 	sif::warning << "Clock::getUptime: Not implemented for found OS" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_FAILED;
 #endif
 
@@ -68,7 +76,9 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 	// do some magic with chrono
+#if CPP_OSTREAM_ENABLED == 1
 	sif::warning << "Clock::gerClock_usecs: not implemented yet" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -90,7 +100,9 @@ timeval Clock::getUptime() {
 		timeval.tv_usec = uptimeSeconds *(double) 1e6 - (timeval.tv_sec *1e6);
 	}
 #else
+#if CPP_OSTREAM_ENABLED == 1
 	sif::warning << "Clock::getUptime: Not implemented for found OS" << std::endl;
+#endif
 #endif
 	return timeval;
 }
@@ -126,7 +138,9 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 	auto usecond = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
 	time->usecond = usecond.count();
 
+#if CPP_OSTREAM_ENABLED == 1
 	//sif::warning << "Clock::getDateAndTime: not implemented yet" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -148,7 +162,9 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from,
 	to->tv_usec = from->usecond;
 	//Fails in 2038..
 	return HasReturnvaluesIF::RETURN_OK;
+#if CPP_OSTREAM_ENABLED == 1
 	sif::warning << "Clock::convertTimeBla: not implemented yet" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

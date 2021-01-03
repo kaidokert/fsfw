@@ -25,7 +25,9 @@ ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
 	case Subservice::COMMAND_TOGGLE_WIRETAPPING:
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "Invalid Subservice" << std::endl;
+#endif
 		return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
 	}
 }
@@ -125,9 +127,11 @@ void Service2DeviceAccess::handleUnrequestedReply(CommandMessage* reply) {
 				static_cast<uint8_t>(Subservice::REPLY_RAW));
 		break;
 	default:
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "Unknown message in Service2DeviceAccess::"
 				"handleUnrequestedReply with command ID " <<
 				reply->getCommand() << std::endl;
+#endif
 		break;
 	}
 	//Must be reached by all cases to clear message
@@ -143,9 +147,11 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage *reply,
 	size_t size = 0;
 	ReturnValue_t result = IPCStore->getData(storeAddress, &data, &size);
 	if(result != HasReturnvaluesIF::RETURN_OK){
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "Service2DeviceAccess::sendWiretappingTm: Data Lost in "
 		        "handleUnrequestedReply with failure ID "<< result
 		        << std::endl;
+#endif
 		return;
 	}
 

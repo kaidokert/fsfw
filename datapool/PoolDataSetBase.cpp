@@ -13,18 +13,24 @@ PoolDataSetBase::~PoolDataSetBase() {}
 ReturnValue_t PoolDataSetBase::registerVariable(
 		PoolVariableIF *variable) {
 	if (state != States::STATE_SET_UNINITIALISED) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"Call made in wrong position." << std::endl;
+#endif
 		return DataSetIF::DATA_SET_UNINITIALISED;
 	}
 	if (variable == nullptr) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"Pool variable is nullptr." << std::endl;
+#endif
 		return DataSetIF::POOL_VAR_NULL;
 	}
 	if (fillCount >= maxFillCount) {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"DataSet is full." << std::endl;
+#endif
 		return DataSetIF::DATA_SET_FULL;
 	}
 	registeredVariables[fillCount] = variable;
@@ -47,9 +53,11 @@ ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
 		unlockDataPool();
 	}
 	else {
+#if CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::read(): "
 				"Call made in wrong position. Don't forget to commit"
 				" member datasets!" << std::endl;
+#endif
 		result = SET_WAS_ALREADY_READ;
 	}
 
@@ -138,8 +146,10 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 		} else if (registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if (result != COMMITING_WITHOUT_READING) {
+#if CPP_OSTREAM_ENABLED == 1
 				sif::error << "DataSet::commit(): commit-without-read call made "
 						"with non write-only variable." << std::endl;
+#endif
 				result = COMMITING_WITHOUT_READING;
 			}
 		}

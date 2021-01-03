@@ -28,13 +28,17 @@ double Stopwatch::stopSeconds() {
 
 void Stopwatch::display() {
     if(displayMode == StopwatchDisplayMode::MILLIS) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::info << "Stopwatch: Operation took " << (elapsedTime.tv_sec * 1000 +
                 elapsedTime.tv_usec / 1000) << " milliseconds" << std::endl;
+#endif
     }
     else if(displayMode == StopwatchDisplayMode::SECONDS) {
+#if CPP_OSTREAM_ENABLED == 1
         sif::info <<"Stopwatch: Operation took "  << std::setprecision(3)
              << std::fixed << timevalOperations::toDouble(elapsedTime)
              << " seconds" << std::endl;
+#endif
     }
 }
 

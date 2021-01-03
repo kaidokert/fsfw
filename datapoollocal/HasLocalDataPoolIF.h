@@ -89,8 +89,10 @@ public:
 	 * @return
 	 */
 	virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
+#if CPP_OSTREAM_ENABLED == 1
 	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
 	            << ". Returning nullptr!" << std::endl;
+#endif
 	    return nullptr;
 	}
 
