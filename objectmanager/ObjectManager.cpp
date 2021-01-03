@@ -81,8 +81,8 @@ void ObjectManager::initialize() {
 	for (auto const& it : objectList) {
 		result = it.second->initialize();
 		if ( result != RETURN_OK ) {
-			object_id_t var = it.first;
 #if CPP_OSTREAM_ENABLED == 1
+			object_id_t var = it.first;
 			sif::error << "ObjectManager::initialize: Object 0x" << std::hex <<
 					std::setw(8) << std::setfill('0')<< var << " failed to "
 					"initialize with code 0x" << result << std::dec <<
