@@ -106,12 +106,14 @@ inline ReturnValue_t LocalPoolVariable<T>::deSerialize(const uint8_t** buffer,
 	return SerializeAdapter::deSerialize(&value, buffer, size, streamEndianness);
 }
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 template<typename T>
 inline std::ostream& operator<< (std::ostream &out,
 		const LocalPoolVariable<T> &var) {
     out << var.value;
     return out;
 }
+#endif
 
 template<typename T>
 inline LocalPoolVariable<T>::operator T() const {
