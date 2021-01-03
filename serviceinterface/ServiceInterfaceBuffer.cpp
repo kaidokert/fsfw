@@ -5,6 +5,10 @@
 #include <cstring>
 #include <inttypes.h>
 
+#if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
+#include "Windows.h"
+#endif
+
 // to be implemented by bsp
 extern "C" void printChar(const char*, bool errStream);
 
@@ -33,6 +37,15 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 	else if(setMessage.find("ERROR")) {
 		colorPrefix = fsfw::ANSI_COLOR_RED;
 	}
+
+#ifdef WIN32
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD dwMode = 0;
+	GetConsoleMode(hOut, &dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
+#endif
+
 #endif
 
 	preamble.reserve(MAX_PREAMBLE_SIZE);
