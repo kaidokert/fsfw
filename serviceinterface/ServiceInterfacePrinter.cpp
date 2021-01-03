@@ -14,6 +14,7 @@ uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
 
 void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
     uint32_t len = 0;
+    char* bufferPosition = reinterpret_cast<char*>(printBuffer);
 
     /* Check logger level */
     if(printType == fsfw::PrintLevel::NONE or printType > printLevel) {
@@ -24,31 +25,31 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
 
 #if FSFW_COLORED_OUTPUT == 1
     if(printType == fsfw::PrintLevel::INFO) {
-    	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_GREEN);
+    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_GREEN);
     }
     else if(printType == fsfw::PrintLevel::DEBUG) {
-    	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_MAGENTA);
+    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_MAGENTA);
     }
     else if(printType == fsfw::PrintLevel::WARNING) {
-    	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_YELLOW);
+    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_YELLOW);
     }
     else if(printType == fsfw::PrintLevel::ERROR_TYPE) {
-    	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_RED);
+    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_RED);
     }
 #endif
 
    if (printType == fsfw::PrintLevel::INFO) {
-       len += sprintf((char *)printBuffer + len, "INFO: ");
+       len += sprintf(bufferPosition + len, "INFO: ");
    }
    if(printType == fsfw::PrintLevel::DEBUG) {
-	   len += sprintf((char *)printBuffer + len, "DEBUG: ");
+	   len += sprintf(bufferPosition + len, "DEBUG: ");
    }
    if(printType == fsfw::PrintLevel::WARNING) {
-	   len += sprintf((char *)printBuffer + len, "WARNING: ");
+	   len += sprintf(bufferPosition + len, "WARNING: ");
    }
 
    if(printType == fsfw::PrintLevel::ERROR_TYPE) {
-	   len += sprintf((char *)printBuffer + len, "ERROR: ");
+	   len += sprintf(bufferPosition + len, "ERROR: ");
    }
 
     Clock::TimeOfDay_t now;
@@ -56,14 +57,13 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
     /*
      * Log current time to terminal if desired.
      */
-    len += sprintf((char*)printBuffer + len, "| %lu:%02lu:%02lu.%03lu | ",
+    len += sprintf(bufferPosition + len, "| %lu:%02lu:%02lu.%03lu | ",
     		(unsigned long) now.hour,
 			(unsigned long) now.minute,
 			(unsigned long) now.second,
 			(unsigned long) now.usecond /1000);
 
-    len += vsnprintf((char *)(printBuffer + len),
-    		sizeof(printBuffer)-len, fmt, arg);
+    len += vsnprintf(bufferPosition + len, sizeof(printBuffer) - len, fmt, arg);
 
     printf("%s", printBuffer);
 }
