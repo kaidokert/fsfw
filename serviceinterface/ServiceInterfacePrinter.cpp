@@ -62,7 +62,6 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
 			(unsigned long) now.second,
 			(unsigned long) now.usecond /1000);
 
-    //changed Jan 2017.  Need to update length with buffer size
     len += vsnprintf((char *)(printBuffer + len),
     		sizeof(printBuffer)-len, fmt, arg);
 
