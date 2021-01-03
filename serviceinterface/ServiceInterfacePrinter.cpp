@@ -1,9 +1,7 @@
+#include <FSFWConfig.h>
 #include "ServiceInterfacePrinter.h"
 #include "serviceInterfaceDefintions.h"
-
 #include "../timemanager/Clock.h"
-
-#include <FSFWConfig.h>
 
 #include <cstdarg>
 #include <cstdint>
@@ -13,7 +11,7 @@ fsfw::PrintLevel printLevel = fsfw::PrintLevel::DEBUG;
 uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
 
 void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
-    uint32_t len = 0;
+    size_t len = 0;
     char* bufferPosition = reinterpret_cast<char*>(printBuffer);
 
     /* Check logger level */
