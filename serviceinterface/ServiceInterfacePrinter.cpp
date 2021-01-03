@@ -1,8 +1,10 @@
 #include "ServiceInterfacePrinter.h"
+#include "serviceInterfaceDefintions.h"
 
 #include "../timemanager/Clock.h"
 
 #include <FSFWConfig.h>
+
 #include <cstdarg>
 #include <cstdint>
 
@@ -25,7 +27,7 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
     	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_GREEN);
     }
     else if(printType == fsfw::PrintLevel::DEBUG) {
-    	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_BLUE);
+    	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_MAGENTA);
     }
     else if(printType == fsfw::PrintLevel::WARNING) {
     	len += sprintf((char *)printBuffer, fsfw::ANSI_COLOR_YELLOW);

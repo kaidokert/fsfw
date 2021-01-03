@@ -42,6 +42,11 @@ private:
 	//! For additional message information
 	std::string logMessage;
 	std::string preamble;
+
+#if FSFW_COLORED_OUTPUT == 1
+	std::string colorPrefix;
+#endif
+
 	// For EOF detection
 	typedef std::char_traits<char> Traits;
 

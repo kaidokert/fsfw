@@ -9,24 +9,25 @@
 //! the C stdio functions can be used alternatively
 #define FSFW_CPP_OSTREAM_ENABLED 	1
 
-//! Reduced printout to further decrease code size
+//! More FSFW related printouts.
 //! Be careful, this also turns off most diagnostic prinouts!
 #define FSFW_ENHANCED_PRINTOUT		0
 
 //! Can be used to completely disable printouts, even the C stdio ones.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 0 && FSFW_ENHANCED_PRINTOUT == 0
 	#define FSFW_DISABLE_PRINTOUT 	0
 #endif
 
 //! Can be used to enable additional debugging printouts for developing the FSFW
 #define FSFW_PRINT_VERBOSITY_LEVEL   0
 
+//! Can be used to disable the ANSI color sequences for C stdio.
+#define FSFW_COLORED_OUTPUT 		1
+
 //! If FSFW_OBJ_EVENT_TRANSLATION is set to one,
 //! additional output which requires the translation files translateObjects
 //! and translateEvents (and their compiled source files)
 #define FSFW_OBJ_EVENT_TRANSLATION	0
-
-#define FSFW_COLORED_OUTPUT 		1
 
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
 //! Specify whether info events are printed too.

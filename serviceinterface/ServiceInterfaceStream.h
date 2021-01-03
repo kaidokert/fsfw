@@ -35,13 +35,6 @@ public:
 	 */
 	std::string* getPreamble();
 
-	/**
-	 * This prints an error with a preamble. Useful if using the unbuffered
-	 * mode. Flushes in default mode (prints immediately).
-	 */
-	void print(std::string error, bool withPreamble = true,
-			bool withNewline = true, bool flush = true);
-
 protected:
 	ServiceInterfaceBuffer streambuf;
 };
