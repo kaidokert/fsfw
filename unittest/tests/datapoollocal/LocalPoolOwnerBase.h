@@ -10,6 +10,7 @@
 namespace lpool {
 static constexpr lp_id_t uint8VarId = 0;
 static constexpr lp_id_t floatVarId = 1;
+static constexpr lp_id_t uint32VarId = 2;
 }
 
 
@@ -74,6 +75,7 @@ private:
 
 	lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId);
 	lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId);
+	lp_var_t<uint32_t> testUint32 = lp_var_t<uint32_t>(this, lpool::uint32VarId);
 
 	MessageQueueIF* messageQueue = nullptr;
 	LocalDataPoolManager hkManager;

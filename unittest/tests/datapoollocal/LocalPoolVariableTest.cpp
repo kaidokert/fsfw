@@ -23,6 +23,8 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		REQUIRE(testVariable.value == 5);
 
 		CHECK(not testVariable.isValid());
+		testVariable.setValid(true);
+		CHECK(testVariable.isValid());
 
 		// not try to use a local pool variable which does not exist
 		lp_var_t<uint8_t> invalidVariable = lp_var_t<uint8_t>(
@@ -36,12 +38,20 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		REQUIRE(invalidVariable2.read() ==
 				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
 
-		// now try to access with wrong type
-		lp_var_t<int8_t> readOnlyVar = lp_var_t<int8_t>(
+		lp_var_t<uint8_t> readOnlyVar = lp_var_t<uint8_t>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId,
 				nullptr, pool_rwm_t::VAR_READ);
 		REQUIRE(readOnlyVar.commit() ==
 				static_cast<int>(PoolVariableIF::INVALID_READ_WRITE_MODE));
+		lp_var_t<uint8_t> writeOnlyVar = lp_var_t<uint8_t>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId,
+				nullptr, pool_rwm_t::VAR_WRITE);
+		REQUIRE(writeOnlyVar.read() == static_cast<int>(
+				PoolVariableIF::INVALID_READ_WRITE_MODE));
+
+		lp_var_t<uint32_t> uint32tVar = lp_var_t<uint32_t>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint32VarId);
+		sif::info << "LocalPoolVariable printout: " <<uint32tVar << std::endl;
 	}
 
 }
