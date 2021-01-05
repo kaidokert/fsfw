@@ -11,27 +11,39 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 	REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation()
 			== retval::CATCH_OK);
 
-	// very basic test.
-	lp_var_t<uint8_t> testVariable = lp_var_t<uint8_t>(
-			objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);
-	REQUIRE(testVariable.read() == retval::CATCH_OK);
-	CHECK(testVariable.value == 0);
-	testVariable.value = 5;
-	REQUIRE(testVariable.commit() == retval::CATCH_OK);
-	REQUIRE(testVariable.read() == retval::CATCH_OK);
-	REQUIRE(testVariable.value == 5);
+	SECTION("Basic Tests") {
+		// very basic test.
+		lp_var_t<uint8_t> testVariable = lp_var_t<uint8_t>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);
+		REQUIRE(testVariable.read() == retval::CATCH_OK);
+		CHECK(testVariable.value == 0);
+		testVariable.value = 5;
+		REQUIRE(testVariable.commit() == retval::CATCH_OK);
+		REQUIRE(testVariable.read() == retval::CATCH_OK);
+		REQUIRE(testVariable.value == 5);
 
-	// not try to use a local pool variable which does not exist
-	lp_var_t<uint8_t> invalidVariable = lp_var_t<uint8_t>(
-			objects::TEST_LOCAL_POOL_OWNER_BASE, 0xffffffff);
-	REQUIRE(invalidVariable.read() ==
-			static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
+		CHECK(not testVariable.isValid());
 
-	// now try to access with wrong type
-	lp_var_t<int8_t> invalidVariable2 = lp_var_t<int8_t>(
-			objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);
-	REQUIRE(invalidVariable2.read() ==
-			static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
+		// not try to use a local pool variable which does not exist
+		lp_var_t<uint8_t> invalidVariable = lp_var_t<uint8_t>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, 0xffffffff);
+		REQUIRE(invalidVariable.read() ==
+				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
+
+		// now try to access with wrong type
+		lp_var_t<int8_t> invalidVariable2 = lp_var_t<int8_t>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);
+		REQUIRE(invalidVariable2.read() ==
+				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
+
+		// now try to access with wrong type
+		lp_var_t<int8_t> readOnlyVar = lp_var_t<int8_t>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId,
+				nullptr, pool_rwm_t::VAR_READ);
+		REQUIRE(readOnlyVar.commit() ==
+				static_cast<int>(PoolVariableIF::INVALID_READ_WRITE_MODE));
+	}
+
 }
 
 
