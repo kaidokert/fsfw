@@ -26,12 +26,23 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		testVariable.setValid(true);
 		CHECK(testVariable.isValid());
 
+		gp_id_t globPoolId(objects::TEST_LOCAL_POOL_OWNER_BASE,
+				lpool::uint8VarId);
+		lp_var_t<uint8_t> testVariable2 = lp_var_t<uint8_t>(globPoolId);
+		REQUIRE(testVariable.read() == retval::CATCH_OK);
+		REQUIRE(testVariable == 5);
+	}
+
+	SECTION("ErrorHandling") {
+
 		// not try to use a local pool variable which does not exist
 		lp_var_t<uint8_t> invalidVariable = lp_var_t<uint8_t>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, 0xffffffff);
 		REQUIRE(invalidVariable.read() ==
 				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
 
+		REQUIRE(invalidVariable.commit() ==
+				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
 		// now try to access with wrong type
 		lp_var_t<int8_t> invalidVariable2 = lp_var_t<int8_t>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);

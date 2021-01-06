@@ -46,7 +46,7 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PoolPoolVariable: Read of local pool variable of object "
 				<< std::hex << std::setw(8) << std::setfill('0')
-				<< hkManager->getOwner() << " and lp ID " << localPoolId
+				<< hkManager->getOwner() << " and lp ID 0x" << localPoolId
 				<< std::dec << " failed." << std::setfill(' ') <<  std::endl;
 #endif
 		return result;
@@ -78,7 +78,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PoolPoolVariable: Read of local pool variable of "
 				<< "object " << std::hex << std::setw(8) << std::setfill('0')
-				<< hkManager->getOwner() << " and lp ID " << localPoolId
+				<< hkManager->getOwner() << " and lp ID 0x" << localPoolId
 				<< std::dec << " failed." << std::endl;
 #endif
 		return result;
