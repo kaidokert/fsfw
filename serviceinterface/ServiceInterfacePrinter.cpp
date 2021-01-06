@@ -6,12 +6,14 @@
 #include <cstdarg>
 #include <cstdint>
 
-
 fsfw::PrintLevel printLevel = fsfw::PrintLevel::DEBUG;
-uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
 #if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
 bool consoleInitialized = false;
-#endif
+#endif /* defined(WIN32) && FSFW_COLORED_OUTPUT == 1 */
+
+
+#if FSFW_DISABLE_PRINTOUT == 0
+uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
 
 void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
 
@@ -81,13 +83,6 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
     printf("%s", printBuffer);
 }
 
-void fsfw::setPrintLevel(PrintLevel printLevel_) {
-	printLevel = printLevel_;
-}
-
-fsfw::PrintLevel fsfw::getPrintLevel() {
-	return printLevel;
-}
 
 void fsfw::printInfo(const char *fmt, ...) {
     va_list args;
@@ -115,4 +110,21 @@ void fsfw::printError(const char *fmt, ...) {
     va_start(args, fmt);
     fsfwPrint(fsfw::PrintLevel::ERROR_TYPE, fmt, args);
     va_end(args);
+}
+
+#else
+
+void fsfw::printInfo(const char *fmt, ...) {}
+void fsfw::printWarning(const char *fmt, ...) {}
+void fsfw::printDebug(const char *fmt, ...) {}
+void fsfw::printError(const char *fmt, ...) {}
+
+#endif /* FSFW_DISABLE_PRINTOUT == 0 */
+
+void fsfw::setPrintLevel(PrintLevel printLevel_) {
+	printLevel = printLevel_;
+}
+
+fsfw::PrintLevel fsfw::getPrintLevel() {
+	return printLevel;
 }
