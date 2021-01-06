@@ -90,7 +90,9 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 
 		lp_var_t<uint32_t> uint32tVar = lp_var_t<uint32_t>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint32VarId);
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::info << "LocalPoolVariable printout: " <<uint32tVar << std::endl;
+#endif
 	}
 
 }

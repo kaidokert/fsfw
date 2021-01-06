@@ -7,6 +7,7 @@
 
 #include "../datapool/PoolVariableIF.h"
 #include "../datapool/DataSetIF.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerializeAdapter.h"
 

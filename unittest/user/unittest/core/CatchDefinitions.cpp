@@ -1,4 +1,5 @@
 #include "CatchDefinitions.h"
+#include <fsfw/serviceinterface/ServiceInterface.h>
 #include <fsfw/objectmanager/ObjectManagerIF.h>
 
 StorageManagerIF* tglob::getIpcStoreHandle() {
@@ -7,6 +8,8 @@ StorageManagerIF* tglob::getIpcStoreHandle() {
 	} else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Global object manager uninitialized" << std::endl;
+#else
+		fsfw::printError("Global object manager uninitialized");
 #endif
 		return nullptr;
 	}

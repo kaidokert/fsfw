@@ -5,6 +5,7 @@
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include <cstdint>
 #include <cstddef>
+#include <string>
 
 namespace tv {
 // POD test values

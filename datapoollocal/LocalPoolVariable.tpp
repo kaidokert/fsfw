@@ -35,8 +35,11 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "LocalPoolVariable: Invalid read write "
-				"mode for read() call." << std::endl;
-#endif
+				"mode for read call." << std::endl;
+#else
+		fsfw::printWarning("LocalPoolVariable: Invalid read write "
+				"mode for read call.");
+#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 
@@ -48,7 +51,11 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 				<< std::hex << std::setw(8) << std::setfill('0')
 				<< hkManager->getOwner() << " and lp ID 0x" << localPoolId
 				<< std::dec << " failed." << std::setfill(' ') <<  std::endl;
-#endif
+#else
+		fsfw::printError("LocalPoolVariable: Read of local pool variable of "
+				"object 0x%08x and lp ID 0x08x failed.", hkManager->getOwner(),
+				localPoolId);
+#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 		return result;
 	}
 	this->value = *(poolEntry->address);
@@ -69,7 +76,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "LocalPoolVariable: Invalid read write "
 				 "mode for commit() call." << std::endl;
-#endif
+#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 	PoolEntry<T>* poolEntry = nullptr;
@@ -80,7 +87,11 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 				<< "object " << std::hex << std::setw(8) << std::setfill('0')
 				<< hkManager->getOwner() << " and lp ID 0x" << localPoolId
 				<< std::dec << " failed." << std::endl;
-#endif
+#else
+		fsfw::printError("LocalPoolVariable: Read of local pool variable of "
+				"object 0x%08x and lp ID 0x08x failed.", hkManager->getOwner(),
+				localPoolId);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 		return result;
 	}
 	*(poolEntry->address) = this->value;
