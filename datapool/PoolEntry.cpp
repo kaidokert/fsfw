@@ -88,8 +88,10 @@ Type PoolEntry<T>::getType() {
 template class PoolEntry<uint8_t>;
 template class PoolEntry<uint16_t>;
 template class PoolEntry<uint32_t>;
+template class PoolEntry<uint64_t>;
 template class PoolEntry<int8_t>;
 template class PoolEntry<int16_t>;
 template class PoolEntry<int32_t>;
+template class PoolEntry<int64_t>;
 template class PoolEntry<float>;
 template class PoolEntry<double>;

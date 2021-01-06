@@ -6,9 +6,11 @@
 
 
 TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
-	LocalPoolOwnerBase poolOwner(objects::TEST_LOCAL_POOL_OWNER_BASE);
-	REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
-	REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation()
+	LocalPoolOwnerBase* poolOwner = objectManager->
+			get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
+	REQUIRE(poolOwner != nullptr);
+	REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
+	REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation()
 			== retval::CATCH_OK);
 
 	SECTION("Basic Tests") {
@@ -25,6 +27,18 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		CHECK(not testVariable.isValid());
 		testVariable.setValid(true);
 		CHECK(testVariable.isValid());
+
+		testVariable.setReadWriteMode(pool_rwm_t::VAR_READ);
+		CHECK(testVariable.getReadWriteMode() == pool_rwm_t::VAR_READ);
+		testVariable.setReadWriteMode(pool_rwm_t::VAR_READ_WRITE);
+
+		testVariable.setDataPoolId(22);
+		CHECK(testVariable.getDataPoolId() == 22);
+		testVariable.setDataPoolId(lpool::uint8VarId);
+
+		testVariable.setChanged(true);
+		CHECK(testVariable.hasChanged());
+		testVariable.setChanged(false);
 
 		gp_id_t globPoolId(objects::TEST_LOCAL_POOL_OWNER_BASE,
 				lpool::uint8VarId);
@@ -93,6 +107,15 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::info << "LocalPoolVariable printout: " <<uint32tVar << std::endl;
 #endif
+
+		// for code coverage. If program does not crash -> OK
+		lp_var_t<uint8_t> invalidObjectVar = lp_var_t<uint8_t>(
+				0xffffffff, lpool::uint8VarId);
+		gp_id_t globPoolId(0xffffffff,
+				lpool::uint8VarId);
+		lp_var_t<uint8_t> invalidObjectVar2 = lp_var_t<uint8_t>(globPoolId);
+		lp_var_t<uint8_t> invalidObjectVar3 = lp_var_t<uint8_t>(nullptr,
+				lpool::uint8VarId);
 	}
 
 }

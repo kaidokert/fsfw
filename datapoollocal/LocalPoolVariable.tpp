@@ -24,9 +24,9 @@ inline LocalPoolVariable<T>::LocalPoolVariable(gp_id_t globalPoolId,
 
 
 template<typename T>
-inline ReturnValue_t LocalPoolVariable<T>::read(dur_millis_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
-			lockTimeout);
+inline ReturnValue_t LocalPoolVariable<T>::read(
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
 	return readWithoutLock();
 }
 
@@ -64,9 +64,16 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 }
 
 template<typename T>
-inline ReturnValue_t LocalPoolVariable<T>::commit(dur_millis_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
-			lockTimeout);
+inline ReturnValue_t LocalPoolVariable<T>::commit(bool setValid,
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	this->setValid(setValid);
+	return commit(timeoutType, timeoutMs);
+}
+
+template<typename T>
+inline ReturnValue_t LocalPoolVariable<T>::commit(
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
 	return commitWithoutLock();
 }
 

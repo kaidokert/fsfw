@@ -229,7 +229,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			thermalSet->heaterRequest.value =
 					ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
-			thermalSet->commit(PoolVariableIF::VALID);
+			thermalSet->heaterRequest.setValid(true);
+			thermalSet->commit();
 		}
 
 	}

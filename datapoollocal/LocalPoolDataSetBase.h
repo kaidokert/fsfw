@@ -68,6 +68,15 @@ public:
 	        const size_t maxNumberOfVariables);
 
 	/**
+	 * Simple constructor, if the dataset is not owner permanently by
+	 * a class with a HK manager.
+	 * @param registeredVariablesArray
+	 * @param maxNumberOfVariables
+	 */
+	LocalPoolDataSetBase(PoolVariableIF** registeredVariablesArray,
+	        const size_t maxNumberOfVariables, bool protectFunctions = true);
+
+	/**
 	 * @brief	The destructor automatically manages writing the valid
 	 * 			information of variables.
 	 * @details
@@ -86,6 +95,9 @@ public:
 	 */
 	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
 			uint32_t mutexTimeout = 20);
+
+	void setDataSetMutexTimeout(MutexIF::TimeoutType timeoutType,
+			uint32_t mutexTimeout);
 
 	void setValidityBufferGeneration(bool withValidityBuffer);
 
@@ -138,7 +150,12 @@ public:
 
 protected:
 	sid_t sid;
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
 	uint32_t mutexTimeout = 20;
+	/**
+	 * This mutex is required because the dataset can potentially be accessed
+	 * by multiple threads for information like change status or validity.
+	 */
 	MutexIF* mutex = nullptr;
 
 	bool diagnostic = false;
@@ -183,7 +200,9 @@ protected:
 	 * @details
 	 * It makes use of the lockDataPool method offered by the DataPool class.
 	 */
-	ReturnValue_t lockDataPool(uint32_t timeoutMs) override;
+	ReturnValue_t lockDataPool(MutexIF::TimeoutType timeoutType,
+			uint32_t timeoutMs) override;
+
 	/**
 	 * @brief	This is a small helper function to facilitate
 	 * 			unlocking the global data pool

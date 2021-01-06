@@ -24,9 +24,9 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(gp_id_t globalPoolId,
 				dataSet, setReadWriteMode) {}
 
 template<typename T, uint16_t vectorSize>
-inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(uint32_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
-			lockTimeout);
+inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
 	return readWithoutLock();
 }
 template<typename T, uint16_t vectorSize>
@@ -59,9 +59,8 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
-		uint32_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
-			lockTimeout);
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
 	return commitWithoutLock();
 }
 
@@ -153,6 +152,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::deSerialize(
 	return result;
 }
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 template<typename T, uint16_t vectorSize>
 inline std::ostream& operator<< (std::ostream &out,
         const LocalPoolVector<T, vectorSize> &var) {
@@ -166,5 +166,6 @@ inline std::ostream& operator<< (std::ostream &out,
     out << "]";
     return out;
 }
+#endif
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_TPP_ */

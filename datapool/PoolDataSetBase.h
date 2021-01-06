@@ -62,8 +62,9 @@ public:
 	 * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
 	 *      commit() in between
 	 */
-	virtual ReturnValue_t read(uint32_t lockTimeout =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t read(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t lockTimeout = 20) override;
 	/**
 	 * @brief	The commit call initializes writing back the registered variables.
 	 * @details
@@ -82,8 +83,9 @@ public:
 	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
 	 * 			  contains non write-only variables
 	 */
-	virtual ReturnValue_t commit(uint32_t lockTimeout =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t commit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t lockTimeout = 20) override;
 
 	/**
 	 * Register the passed pool variable instance into the data set.
@@ -97,8 +99,9 @@ public:
 	 * thread-safety. Default implementation is empty
 	 * @return Always returns -@c RETURN_OK
 	 */
-	virtual ReturnValue_t lockDataPool(uint32_t timeoutMs =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t lockDataPool(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) override;
 	/**
 	 * Provides the means to unlock the underlying data structure to ensure
 	 * thread-safety. Default implementation is empty
@@ -160,8 +163,12 @@ private:
 	uint32_t mutexTimeout = 20;
 
 	ReturnValue_t readVariable(uint16_t count);
-	void handleAlreadyReadDatasetCommit(uint32_t lockTimeout);
-	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
+	void handleAlreadyReadDatasetCommit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
+	ReturnValue_t handleUnreadDatasetCommit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
 };
 
 #endif /* FSFW_DATAPOOL_POOLDATASETBASE_H_ */

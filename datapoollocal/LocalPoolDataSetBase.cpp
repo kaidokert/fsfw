@@ -1,4 +1,6 @@
 #include "LocalPoolDataSetBase.h"
+
+#include "../serviceinterface/ServiceInterface.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
 #include "../housekeeping/PeriodicHousekeepingHelper.h"
 #include "../serialize/SerializeAdapter.h"
@@ -15,7 +17,10 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
                 << "invalid!" << std::endl;
-#endif
+#else
+        fsfw::printError("LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
+                "invalid!\n\r");
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         return;
     }
     hkManager = hkOwner->getHkManagerHandle();
@@ -44,13 +49,26 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
     mutex = MutexFactory::instance()->createMutex();
 }
 
+LocalPoolDataSetBase::LocalPoolDataSetBase(
+		PoolVariableIF **registeredVariablesArray,
+		const size_t maxNumberOfVariables, bool protectFunctions):
+		PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
+	if(protectFunctions) {
+	    mutex = MutexFactory::instance()->createMutex();
+	}
+
+}
+
+
 LocalPoolDataSetBase::~LocalPoolDataSetBase() {
 }
 
-ReturnValue_t LocalPoolDataSetBase::lockDataPool(uint32_t timeoutMs) {
+ReturnValue_t LocalPoolDataSetBase::lockDataPool(
+		MutexIF::TimeoutType timeoutType,
+		uint32_t timeoutMs) {
 	if(hkManager != nullptr) {
-	    MutexIF* mutex = hkManager->getMutexHandle();
-	    return mutex->lockMutex(MutexIF::TimeoutType::WAITING, timeoutMs);
+	    MutexIF* poolMutex = hkManager->getMutexHandle();
+	    return poolMutex->lockMutex(timeoutType, timeoutMs);
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -150,9 +168,12 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
                 size, maxSize, streamEndianness);
         if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::warning << "LocalDataSet::serializeLocalPoolIds: Serialization"
-                    " error!" << std::endl;
-#endif
+            sif::warning << "LocalPoolDataSetBase::serializeLocalPoolIds: "
+            		<< "Serialization error!" << std::endl;
+#else
+            fsfw::printWarning("LocalPoolDataSetBase::serializeLocalPoolIds: "
+            		"Serialization error!\n\r");
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
             return result;
         }
     }
@@ -211,8 +232,11 @@ ReturnValue_t LocalPoolDataSetBase::serialize(uint8_t **buffer, size_t *size,
 void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
     if(position > 7) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::debug << "Pool Raw Access: Bit setting invalid position"
+        sif::warning << "LocalPoolDataSetBase::bitSetter: Invalid position!"
                 << std::endl;
+#else
+        fsfw::printWarning("LocalPoolDataSetBase::bitSetter: "
+        		"Invalid position!\n\r");
 #endif
         return;
     }
@@ -244,14 +268,19 @@ void LocalPoolDataSetBase::initializePeriodicHelper(
 }
 
 void LocalPoolDataSetBase::setChanged(bool changed) {
-    // TODO: Make this configurable?
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+	if(mutex == nullptr) {
+		this->changed = changed;
+		return;
+	}
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
     this->changed = changed;
 }
 
 bool LocalPoolDataSetBase::hasChanged() const {
-    // TODO: Make this configurable?
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+	if(mutex == nullptr) {
+		return changed;
+	}
+    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
     return changed;
 }
 
@@ -273,22 +302,32 @@ bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
 }
 
 bool LocalPoolDataSetBase::isValid() const {
+	if(mutex == nullptr) {
+		return this->valid;
+	}
     MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
     return this->valid;
 }
 
 void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
+	mutex->lockMutex(timeoutType, mutexTimeout);
     if(setEntriesRecursively) {
         for(size_t idx = 0; idx < this->getFillCount(); idx++) {
             registeredVariables[idx] -> setValid(valid);
         }
     }
     this->valid = valid;
+    mutex->unlockMutex();
 }
 
 void LocalPoolDataSetBase::setReadCommitProtectionBehaviour(
 		bool protectEveryReadCommit, uint32_t mutexTimeout) {
 	PoolDataSetBase::setReadCommitProtectionBehaviour(protectEveryReadCommit,
 			mutexTimeout);
+}
+
+void LocalPoolDataSetBase::setDataSetMutexTimeout(
+		MutexIF::TimeoutType timeoutType, uint32_t mutexTimeout) {
+	this->timeoutType = timeoutType;
+	this->mutexTimeout = mutexTimeout;
 }

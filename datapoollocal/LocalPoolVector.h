@@ -7,7 +7,7 @@
 #include "../datapool/PoolVariableIF.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
 #include "../serialize/SerializeAdapter.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 
 /**
@@ -123,7 +123,9 @@ public:
 	 * It is recommended to use DataSets to read and commit multiple variables
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 */
-	ReturnValue_t read(uint32_t lockTimeout = MutexIF::BLOCKING) override;
+	ReturnValue_t read(MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) override;
 	/**
 	 * @brief	The commit call copies the array values back to the data pool.
 	 * @details
@@ -133,7 +135,9 @@ public:
 	 * It is recommended to use DataSets to read and commit multiple variables
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 */
-	ReturnValue_t commit(uint32_t lockTimeout = MutexIF::BLOCKING) override;
+	ReturnValue_t commit(MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) override;
 
 protected:
 	/**
@@ -157,12 +161,12 @@ protected:
 
 private:
 
-
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	// std::ostream is the type for object std::cout
 	template <typename U, uint16_t otherSize>
 	friend std::ostream& operator<< (std::ostream &out,
 	        const LocalPoolVector<U, otherSize> &var);
-
+#endif
 
 };
 

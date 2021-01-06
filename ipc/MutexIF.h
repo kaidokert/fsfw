@@ -14,7 +14,7 @@ public:
     /**
      * Different types of timeout for the mutex lock.
      */
-    enum TimeoutType {
+    enum class TimeoutType {
         POLLING, //!< If mutex is not available, return immediately
         WAITING, //!< Wait a specified time for the mutex to become available
         BLOCKING //!< Block indefinitely until the mutex becomes available.
