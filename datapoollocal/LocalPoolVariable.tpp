@@ -34,7 +34,7 @@ template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::debug << "LocalPoolVar: Invalid read write "
+		sif::warning << "LocalPoolVariable: Invalid read write "
 				"mode for read() call." << std::endl;
 #endif
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
@@ -44,7 +44,7 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK or poolEntry == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "PoolVector: Read of local pool variable of object "
+		sif::error << "PoolPoolVariable: Read of local pool variable of object "
 				<< std::hex << std::setw(8) << std::setfill('0')
 				<< hkManager->getOwner() << " and lp ID " << localPoolId
 				<< std::dec << " failed." << std::setfill(' ') <<  std::endl;
@@ -67,7 +67,7 @@ template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::debug << "LocalPoolVariable: Invalid read write "
+		sif::warning << "LocalPoolVariable: Invalid read write "
 				 "mode for commit() call." << std::endl;
 #endif
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
@@ -76,10 +76,10 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "PoolVector: Read of local pool variable of object "
-				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
-				hkManager->getOwner() << " and lp ID 0x" << localPoolId <<
-				std::dec << " failed.\n" << std::flush;
+		sif::error << "PoolPoolVariable: Read of local pool variable of "
+				<< "object " << std::hex << std::setw(8) << std::setfill('0')
+				<< hkManager->getOwner() << " and lp ID " << localPoolId
+				<< std::dec << " failed." << std::endl;
 #endif
 		return result;
 	}
@@ -89,8 +89,9 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 }
 
 template<typename T>
-inline ReturnValue_t LocalPoolVariable<T>::serialize(uint8_t** buffer, size_t* size,
-		const size_t max_size, SerializeIF::Endianness streamEndianness) const {
+inline ReturnValue_t LocalPoolVariable<T>::serialize(uint8_t** buffer,
+		size_t* size, const size_t max_size,
+		SerializeIF::Endianness streamEndianness) const {
 	return SerializeAdapter::serialize(&value,
 			buffer, size ,max_size, streamEndianness);
 }
@@ -121,7 +122,8 @@ inline LocalPoolVariable<T>::operator T() const {
 }
 
 template<typename T>
-inline LocalPoolVariable<T> & LocalPoolVariable<T>::operator=(const T& newValue) {
+inline LocalPoolVariable<T> & LocalPoolVariable<T>::operator=(
+		const T& newValue) {
     value = newValue;
     return *this;
 }
@@ -134,7 +136,8 @@ inline LocalPoolVariable<T>& LocalPoolVariable<T>::operator =(
 }
 
 template<typename T>
-inline bool LocalPoolVariable<T>::operator ==(const LocalPoolVariable<T> &other) const {
+inline bool LocalPoolVariable<T>::operator ==(
+		const LocalPoolVariable<T> &other) const {
 	return this->value == other.value;
 }
 
@@ -145,7 +148,8 @@ inline bool LocalPoolVariable<T>::operator ==(const T &other) const {
 
 
 template<typename T>
-inline bool LocalPoolVariable<T>::operator !=(const LocalPoolVariable<T> &other) const {
+inline bool LocalPoolVariable<T>::operator !=(
+		const LocalPoolVariable<T> &other) const {
 	return not (*this == other);
 }
 
@@ -156,7 +160,8 @@ inline bool LocalPoolVariable<T>::operator !=(const T &other) const {
 
 
 template<typename T>
-inline bool LocalPoolVariable<T>::operator <(const LocalPoolVariable<T> &other) const {
+inline bool LocalPoolVariable<T>::operator <(
+		const LocalPoolVariable<T> &other) const {
 	return this->value < other.value;
 }
 
@@ -167,7 +172,8 @@ inline bool LocalPoolVariable<T>::operator <(const T &other) const {
 
 
 template<typename T>
-inline bool LocalPoolVariable<T>::operator >(const LocalPoolVariable<T> &other) const {
+inline bool LocalPoolVariable<T>::operator >(
+		const LocalPoolVariable<T> &other) const {
 	return not (*this < other);
 }
 
