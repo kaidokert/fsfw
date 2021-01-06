@@ -29,8 +29,25 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		gp_id_t globPoolId(objects::TEST_LOCAL_POOL_OWNER_BASE,
 				lpool::uint8VarId);
 		lp_var_t<uint8_t> testVariable2 = lp_var_t<uint8_t>(globPoolId);
-		REQUIRE(testVariable.read() == retval::CATCH_OK);
-		REQUIRE(testVariable == 5);
+		REQUIRE(testVariable2.read() == retval::CATCH_OK);
+		CHECK(testVariable2 == 5);
+		CHECK(testVariable == testVariable2);
+		testVariable = 10;
+		CHECK(testVariable != 5);
+		//CHECK(not testVariable != testVariable2);
+		uint8_t variableRaw = 0;
+		uint8_t* varPtr = &variableRaw;
+		size_t maxSize = testVariable.getSerializedSize();
+		CHECK(maxSize == 1);
+		size_t serSize = 0;
+		CHECK(testVariable.serialize(&varPtr, &serSize, maxSize,
+				SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+		CHECK(variableRaw == 10);
+		const uint8_t* varConstPtr = &variableRaw;
+		testVariable = 5;
+		CHECK(testVariable.deSerialize(&varConstPtr, &serSize,
+				SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+		CHECK(testVariable == 10);
 	}
 
 	SECTION("ErrorHandling") {
