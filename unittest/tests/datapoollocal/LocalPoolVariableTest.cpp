@@ -48,6 +48,17 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		CHECK(testVariable.deSerialize(&varConstPtr, &serSize,
 				SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
 		CHECK(testVariable == 10);
+		CHECK(testVariable != testVariable2);
+		CHECK(testVariable2 < testVariable);
+		CHECK(testVariable2 < 10);
+		CHECK(testVariable > 5);
+		CHECK(testVariable > testVariable2);
+		variableRaw = static_cast<uint8_t>(testVariable2);
+		CHECK(variableRaw == 5);
+
+		CHECK(testVariable == 10);
+		testVariable = testVariable2;
+		CHECK(testVariable == 5);
 	}
 
 	SECTION("ErrorHandling") {
