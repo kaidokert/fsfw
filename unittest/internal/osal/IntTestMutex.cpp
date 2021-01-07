@@ -13,7 +13,7 @@
 void testmutex::testMutex() {
 	std::string id = "[testMutex]";
 	MutexIF* mutex = MutexFactory::instance()->createMutex();
-	auto result = mutex->lockMutex(MutexIF::POLLING);
+	auto result = mutex->lockMutex(MutexIF::TimeoutType::POLLING);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 		unitt::put_error(id);
 	}

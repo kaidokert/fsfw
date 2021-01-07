@@ -87,16 +87,25 @@ uint8_t* TcTransferFrame::getFullDataField() {
 }
 
 void TcTransferFrame::print() {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "Raw Frame: " << std::hex << std::endl;
 	for (uint16_t count = 0; count < this->getFullSize(); count++ ) {
 		sif::debug << (uint16_t)this->getFullFrame()[count] << " ";
 	}
 	sif::debug << std::dec << std::endl;
-//	debug << "Frame Header:" << std::endl;
-//	debug << "Version Number: " << std::hex << (uint16_t)this->current_frame.getVersionNumber() << std::endl;
-//	debug << "Bypass Flag set?| Ctrl Cmd Flag set?: " << (uint16_t)this->current_frame.bypassFlagSet() << " | " << (uint16_t)this->current_frame.controlCommandFlagSet()  << std::endl;
-//	debug << "SCID : " << this->current_frame.getSpacecraftId() << std::endl;
-//	debug << "VCID : " << (uint16_t)this->current_frame.getVirtualChannelId() << std::endl;
-//	debug << "Frame length: " << std::dec << this->current_frame.getFrameLength() << std::endl;
-//	debug << "Sequence Number: " << (uint16_t)this->current_frame.getSequenceNumber() << std::endl;
+
+	sif::debug << "Frame Header:" << std::endl;
+	sif::debug << "Version Number: " << std::hex
+			<< (uint16_t)this->getVersionNumber() << std::endl;
+	sif::debug << "Bypass Flag set?| Ctrl Cmd Flag set?: "
+			<< (uint16_t)this->bypassFlagSet() << " | "
+			<< (uint16_t)this->controlCommandFlagSet()  << std::endl;
+	sif::debug << "SCID : " << this->getSpacecraftId() << std::endl;
+	sif::debug << "VCID : " << (uint16_t)this->getVirtualChannelId()
+			<< std::endl;
+	sif::debug << "Frame length: " << std::dec << this->getFrameLength()
+			<< std::endl;
+	sif::debug << "Sequence Number: " << (uint16_t)this->getSequenceNumber()
+			<< std::endl;
+#endif
 }

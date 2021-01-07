@@ -91,8 +91,10 @@ void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs,
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "FixedSlotSequence::checkSequence:"
 				<< " Slot list is empty!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -100,8 +102,10 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 		ReturnValue_t result = customCheckFunction(slotList);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			// Continue for now but print error output.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FixedSlotSequence::checkSequence:"
 					<< " Custom check failed!" << std::endl;
+#endif
 		}
 	}
 
@@ -112,21 +116,27 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 			errorCount++;
 		}
 		else if (slot.pollingTimeMs < time) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FixedSlotSequence::checkSequence: Time: "
 					<< slot.pollingTimeMs << " is smaller than previous with "
 					<< time << std::endl;
+#endif
 			errorCount++;
 		}
 		else {
 			// All ok, print slot.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			//sif::info << "Current slot polling time: " << std::endl;
 			//sif::info << std::dec << slotIt->pollingTimeMs << std::endl;
+#endif
 		}
 		time = slot.pollingTimeMs;
 
 	}
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	//sif::info << "Number of elements in slot list: "
 	//	   << slotList.size() << std::endl;
+#endif
 	if (errorCount > 0) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -149,8 +159,10 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
         }
     }
     if (count > 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "FixedSlotSequence::intializeSequenceAfterTaskCreation:"
                 "Counted " << count << " failed initializations!"  << std::endl;
+#endif
         return HasReturnvaluesIF::RETURN_FAILED;
     }
     return HasReturnvaluesIF::RETURN_OK;

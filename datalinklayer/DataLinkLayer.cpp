@@ -98,8 +98,10 @@ ReturnValue_t DataLinkLayer::processFrame(uint16_t length) {
 	receivedDataLength = length;
 	ReturnValue_t status = allFramesReception();
 	if (status != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataLinkLayer::processFrame: frame reception failed. "
 		         "Error code: " << std::hex << status << std::dec << std::endl;
+#endif
 //		currentFrame.print();
 		return status;
 	} else {
@@ -124,7 +126,9 @@ ReturnValue_t DataLinkLayer::initialize() {
 	if ( virtualChannels.begin() != virtualChannels.end() ) {
 		clcw->setVirtualChannel( virtualChannels.begin()->second->getChannelId() );
 	} else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataLinkLayer::initialize: No VC assigned to this DLL instance! " << std::endl;
+#endif
 		return RETURN_FAILED;
 	}
 

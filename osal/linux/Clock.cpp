@@ -69,7 +69,9 @@ timeval Clock::getUptime() {
 	timeval uptime;
 	auto result = getUptime(&uptime);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Clock::getUptime: Error getting uptime" << std::endl;
+#endif
 	}
 	return uptime;
 }
@@ -180,7 +182,7 @@ ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
 	if(checkOrCreateClockMutex()!=HasReturnvaluesIF::RETURN_OK){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::BLOCKING);
+	ReturnValue_t result = timeMutex->lockMutex(MutexIF::TimeoutType::BLOCKING);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -195,7 +197,7 @@ ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
 	if(timeMutex==NULL){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::BLOCKING);
+	ReturnValue_t result = timeMutex->lockMutex(MutexIF::TimeoutType::BLOCKING);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -207,13 +209,13 @@ ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
 }
 
 ReturnValue_t Clock::checkOrCreateClockMutex(){
-	if(timeMutex==NULL){
+	if(timeMutex == nullptr){
 		MutexFactory* mutexFactory = MutexFactory::instance();
-		if (mutexFactory == NULL) {
+		if (mutexFactory == nullptr) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 		timeMutex = mutexFactory->createMutex();
-		if (timeMutex == NULL) {
+		if (timeMutex == nullptr) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}

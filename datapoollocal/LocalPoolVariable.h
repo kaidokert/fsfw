@@ -7,6 +7,7 @@
 
 #include "../datapool/PoolVariableIF.h"
 #include "../datapool/DataSetIF.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerializeAdapter.h"
 
@@ -105,7 +106,9 @@ public:
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 *
 	 */
-	ReturnValue_t read(dur_millis_t lockTimeout = MutexIF::BLOCKING) override;
+	ReturnValue_t read(MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) override;
 	/**
 	 * @brief	The commit call copies the array values back to the data pool.
 	 * @details
@@ -115,8 +118,21 @@ public:
 	 * It is recommended to use DataSets to read and commit multiple variables
 	 * at once to avoid the overhead of unnecessary lock und unlock operations.
 	 */
-	ReturnValue_t commit(dur_millis_t lockTimeout = MutexIF::BLOCKING) override;
+	ReturnValue_t commit(MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) override;
 
+	/**
+	 * @brief	This commit function can be used to set the pool variable valid
+	 * 			as well.
+	 * @param setValid
+	 * @param timeoutType
+	 * @param timeoutMs
+	 * @return
+	 */
+	ReturnValue_t commit(bool setValid, MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
 
 	LocalPoolVariable<T> &operator=(const T& newValue);
 	LocalPoolVariable<T> &operator=(const LocalPoolVariable<T>& newPoolVariable);
@@ -157,12 +173,12 @@ protected:
 	 */
 	ReturnValue_t commitWithoutLock() override;
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	// std::ostream is the type for object std::cout
 	template <typename U>
 	friend std::ostream& operator<< (std::ostream &out,
 			const LocalPoolVariable<U> &var);
-
-private:
+#endif
 };
 
 #include "LocalPoolVariable.tpp"

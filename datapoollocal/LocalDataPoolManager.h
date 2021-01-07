@@ -3,6 +3,7 @@
 
 #include "HasLocalDataPoolIF.h"
 
+#include "../serviceinterface/ServiceInterface.h"
 #include "../housekeeping/HousekeepingPacketDownlink.h"
 #include "../housekeeping/HousekeepingMessage.h"
 #include "../housekeeping/PeriodicHousekeepingHelper.h"
@@ -375,15 +376,25 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 		PoolEntry<T> **poolEntry) {
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "HousekeepingManager::fechPoolEntry: Pool entry "
 		        "not found." << std::endl;
+#else
+		fsfw::printWarning("HousekeepingManager::fechPoolEntry: Pool entry "
+		        "not found.");
+#endif
 		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
-		sif::debug << "HousekeepingManager::fetchPoolEntry:"
-				" Pool entry not found." << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::warning << "HousekeepingManager::fetchPoolEntry:"
+				" Pool entry type conflict." << std::endl;
+#else
+		fsfw::printWarning("HousekeepingManager::fetchPoolEntry:"
+				" Pool entry type conflict.");
+#endif
 		return HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
 	}
 	return HasReturnvaluesIF::RETURN_OK;

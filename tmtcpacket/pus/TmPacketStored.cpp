@@ -105,8 +105,10 @@ bool TmPacketStored::checkAndSetStore() {
 	if (store == nullptr) {
 		store = objectManager->get<StorageManagerIF>(objects::TM_STORE);
 		if (store == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "TmPacketStored::TmPacketStored: TM Store not found!"
 					<< std::endl;
+#endif
 			return false;
 		}
 	}

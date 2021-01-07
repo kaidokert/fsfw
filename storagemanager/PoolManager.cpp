@@ -26,9 +26,11 @@ ReturnValue_t PoolManager::reserveSpace(const size_t size,
 ReturnValue_t PoolManager::deleteData(
         store_address_t storeId) {
 #if FSFW_VERBOSE_PRINTOUT == 2
+#if FSFW_CPP_OSTREAM_ENABLED == 1
      sif::debug << "PoolManager( " << translateObject(getObjectId()) <<
            " )::deleteData from store " << storeId.poolIndex <<
            ". id is "<< storeId.packetIndex << std::endl;
+#endif
 #endif
     MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
             mutexTimeoutMs);

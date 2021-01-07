@@ -22,7 +22,6 @@ class InternalErrorReporter: public SystemObject,
 		public InternalErrorReporterIF,
 		public HasLocalDataPoolIF {
 public:
-    static constexpr uint8_t INTERNAL_ERROR_MUTEX_TIMEOUT = 20;
 
 	InternalErrorReporter(object_id_t setObjectId,
 	        uint32_t messageQueueDepth = 5);
@@ -33,6 +32,9 @@ public:
 	 * @param enable
 	 */
 	void setDiagnosticPrintout(bool enable);
+
+	void setMutexTimeout(MutexIF::TimeoutType timeoutType,
+			uint32_t timeoutMs);
 
 	virtual ~InternalErrorReporter();
 
@@ -61,7 +63,11 @@ protected:
 	LocalDataPoolManager poolManager;
 
 	PeriodicTaskIF* executingTask = nullptr;
+
 	MutexIF* mutex = nullptr;
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+	uint32_t timeoutMs = 20;
+
 	sid_t internalErrorSid;
 	InternalErrorDataset internalErrorDataset;
 

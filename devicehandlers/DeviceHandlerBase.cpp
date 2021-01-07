@@ -39,11 +39,13 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 	cookieInfo.state = COOKIE_UNUSED;
 	cookieInfo.pendingCommand = deviceCommandMap.end();
 	if (comCookie == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex
 				<< std::setw(8) << std::setfill('0') << this->getObjectId()
 				<< std::dec << ": Do not pass nullptr as a cookie, consider "
 				<< std::setfill(' ') << "passing a dummy cookie instead!"
 				<< std::endl;
+#endif
 	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
@@ -130,24 +132,30 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	communicationInterface = objectManager->get<DeviceCommunicationIF>(
 			deviceCommunicationId);
 	if (communicationInterface == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DeviceHandlerBase::initialize: Communication interface "
 				"invalid." << std::endl;
 		sif::error << "Make sure it is set up properly and implements"
 				" DeviceCommunicationIF" << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	result = communicationInterface->initializeInterface(comCookie);
 	if (result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "DeviceHandlerBase::initialize: Initializing "
 	            "communication interface failed!" << std::endl;
+#endif
 	    return result;
 	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (IPCStore == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DeviceHandlerBase::initialize: IPC store not set up in "
 				"factory." << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
@@ -156,10 +164,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 				AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
 		if (rawReceiver == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "DeviceHandlerBase::initialize: Raw receiver object "
 					"ID set but no valid object found." << std::endl;
 			sif::error << "Make sure the raw receiver object is set up properly"
 					" and implements AcceptsDeviceResponsesIF" << std::endl;
+#endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 		defaultRawReceiver = rawReceiver->getDeviceQueue();
@@ -168,10 +178,12 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	if(powerSwitcherId != objects::NO_OBJECT) {
 		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
 		if (powerSwitcher == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "DeviceHandlerBase::initialize: Power switcher "
 					<< "object ID set but no valid object found." << std::endl;
 			sif::error << "Make sure the raw receiver object is set up properly"
 					<< " and implements PowerSwitchIF" << std::endl;
+#endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 	}
@@ -217,7 +229,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			thermalSet->heaterRequest.value =
 					ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
-			thermalSet->commit(PoolVariableIF::VALID);
+			thermalSet->heaterRequest.setValid(true);
+			thermalSet->commit();
 		}
 
 	}
@@ -682,8 +695,10 @@ void DeviceHandlerBase::doGetRead() {
 		replyRawData(receivedData, receivedDataLen, requestedRawTraffic);
 	}
 
-	if (mode == MODE_RAW and defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
-		replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
+	if (mode == MODE_RAW) {
+		if (defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
+			replyRawReplyIfnotWiretapped(receivedData, receivedDataLen);
+		}
 	}
 	else {
 		parseReply(receivedData, receivedDataLen);
@@ -706,8 +721,10 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		case RETURN_OK:
 			handleReply(receivedData, foundId, foundLen);
 			if(foundLen == 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
 			            " Packet parsing will be stuck." << std::endl;
+#endif
 			}
 			break;
 		case APERIODIC_REPLY: {
@@ -718,8 +735,10 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 			            foundId);
 			}
 			if(foundLen == 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
 			            " Packet parsing will be stuck." << std::endl;
+#endif
 			}
 			break;
 		}
@@ -1273,9 +1292,11 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		result = buildNormalDeviceCommand(&deviceCommandId);
 		if (result == BUSY) {
 		    //so we can track misconfigurations
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::debug << std::hex << getObjectId()
 					<< ": DHB::buildInternalCommand: Busy" << std::dec
 					<< std::endl;
+#endif
 			result = NOTHING_TO_SEND; //no need to report this
 		}
 	}
@@ -1300,10 +1321,12 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
 			//so we can track misconfigurations
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::debug << std::hex << getObjectId()
 					<< ": DHB::buildInternalCommand: Command "
 					<< deviceCommandId << " isExecuting" << std::dec
 					<< std::endl;
+#endif
 			// this is an internal command, no need to report a failure here,
 			// missed reply will track if a reply is too late, otherwise, it's ok
 			return;

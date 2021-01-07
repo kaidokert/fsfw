@@ -60,9 +60,11 @@ ReturnValue_t Service8FunctionManagement::prepareCommand(
 ReturnValue_t Service8FunctionManagement::prepareDirectCommand(
 		CommandMessage *message, const uint8_t *tcData, size_t tcDataLen) {
     if(tcDataLen < sizeof(object_id_t) + sizeof(ActionId_t)) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "Service8FunctionManagement::prepareDirectCommand:"
                 << " TC size smaller thant minimum size of direct command."
                 << std::endl;
+#endif
         return CommandingServiceBase::INVALID_TC;
     }
 
@@ -125,8 +127,10 @@ ReturnValue_t Service8FunctionManagement::handleDataReply(
     const uint8_t * buffer = nullptr;
     ReturnValue_t result = IPCStore->getData(storeId, &buffer, &size);
     if(result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "Service 8: Could not retrieve data for data reply"
                 << std::endl;
+#endif
         return result;
     }
     DataReply dataReply(objectId, actionId, buffer, size);
@@ -135,8 +139,10 @@ ReturnValue_t Service8FunctionManagement::handleDataReply(
 
     auto deletionResult = IPCStore->deleteData(storeId);
     if(deletionResult != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "Service8FunctionManagement::handleReply: Deletion"
                 << " of data in pool failed." << std::endl;
+#endif
     }
     return result;
 }

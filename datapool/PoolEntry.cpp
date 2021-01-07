@@ -3,6 +3,7 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../globalfunctions/arrayprinter.h"
 #include <cstring>
+#include <algorithm>
 
 template <typename T>
 PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t setLength,
@@ -12,9 +13,11 @@ PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t setLength,
 		std::memset(this->address, 0, this->getByteSize());
 	}
 	else if (initValue.size() != setLength){
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "PoolEntry: setLength is not equal to initializer list"
 				"length! Performing zero initialization with given setLength"
 				<< std::endl;
+#endif
 		std::memset(this->address, 0, this->getByteSize());
 	}
 	else {
@@ -67,10 +70,14 @@ bool PoolEntry<T>::getValid() {
 
 template <typename T>
 void PoolEntry<T>::print() {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	 sif::debug << "Pool Entry Validity: " <<
 			 (this->valid? " (valid) " : " (invalid) ") << std::endl;
+#endif
 	arrayprinter::print(reinterpret_cast<uint8_t*>(address), length);
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << std::dec << std::endl;
+#endif
 }
 
 template<typename T>
@@ -81,8 +88,10 @@ Type PoolEntry<T>::getType() {
 template class PoolEntry<uint8_t>;
 template class PoolEntry<uint16_t>;
 template class PoolEntry<uint32_t>;
+template class PoolEntry<uint64_t>;
 template class PoolEntry<int8_t>;
 template class PoolEntry<int16_t>;
 template class PoolEntry<int32_t>;
+template class PoolEntry<int64_t>;
 template class PoolEntry<float>;
 template class PoolEntry<double>;

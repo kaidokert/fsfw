@@ -24,16 +24,18 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(gp_id_t globalPoolId,
 				dataSet, setReadWriteMode) {}
 
 template<typename T, uint16_t vectorSize>
-inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(uint32_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
-			lockTimeout);
+inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
 	return readWithoutLock();
 }
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
-		sif::debug << "LocalPoolVar: Invalid read write "
-				"mode for read() call." << std::endl;
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector",
+				PoolVariableIF::INVALID_READ_WRITE_MODE, true, targetObjectId,
+				localPoolId);
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 
@@ -42,10 +44,9 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	memset(this->value, 0, vectorSize * sizeof(T));
 
 	if(result != RETURN_OK) {
-		sif::error << "PoolVector: Read of local pool variable of object "
-				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
-				hkManager->getOwner() << "and lp ID 0x" << localPoolId <<
-				std::dec << " failed." << std::endl;
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector", result, true, targetObjectId,
+				localPoolId);
 		return result;
 	}
 	std::memcpy(this->value, poolEntry->address, poolEntry->getByteSize());
@@ -55,26 +56,26 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
-		uint32_t lockTimeout) {
-	MutexHelper(hkManager->getMutexHandle(), MutexIF::TimeoutType::WAITING,
-			lockTimeout);
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
 	return commitWithoutLock();
 }
 
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
-		sif::debug << "LocalPoolVar: Invalid read write "
-				"mode for commit() call." << std::endl;
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector",
+				PoolVariableIF::INVALID_READ_WRITE_MODE, false, targetObjectId,
+				localPoolId);
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
-		sif::error << "PoolVector: Read of local pool variable of object "
-				"0x" << std::hex << std::setw(8) << std::setfill('0') <<
-				hkManager->getOwner() << " and lp ID 0x" << localPoolId <<
-				std::dec << " failed.\n" << std::flush;
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector", result, false, targetObjectId,
+				localPoolId);
 		return result;
 	}
 	std::memcpy(poolEntry->address, this->value, poolEntry->getByteSize());
@@ -89,8 +90,10 @@ inline T& LocalPoolVector<T, vectorSize>::operator [](int i) {
 	}
 	// If this happens, I have to set some value. I consider this
 	// a configuration error, but I wont exit here.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
+#endif
 	return value[i];
 }
 
@@ -101,8 +104,10 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](int i) const {
 	}
 	// If this happens, I have to set some value. I consider this
 	// a configuration error, but I wont exit here.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
+#endif
 	return value[i];
 }
 
@@ -141,6 +146,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::deSerialize(
 	return result;
 }
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 template<typename T, uint16_t vectorSize>
 inline std::ostream& operator<< (std::ostream &out,
         const LocalPoolVector<T, vectorSize> &var) {
@@ -154,5 +160,6 @@ inline std::ostream& operator<< (std::ostream &out,
     out << "]";
     return out;
 }
+#endif
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_TPP_ */

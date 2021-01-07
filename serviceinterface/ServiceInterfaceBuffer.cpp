@@ -1,7 +1,16 @@
-#include "../timemanager/Clock.h"
 #include "ServiceInterfaceBuffer.h"
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+
+#include "../timemanager/Clock.h"
+
+#include "serviceInterfaceDefintions.h"
 #include <cstring>
 #include <inttypes.h>
+
+#if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
+#include "Windows.h"
+#endif
 
 // to be implemented by bsp
 extern "C" void printChar(const char*, bool errStream);
@@ -17,6 +26,34 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 		// Set pointers if the stream is buffered.
 		setp( buf, buf + BUF_SIZE );
 	}
+
+#if FSFW_COLORED_OUTPUT == 1
+	if(setMessage.find("DEBUG") != std::string::npos) {
+		colorPrefix = fsfw::ANSI_COLOR_MAGENTA;
+	}
+	else if(setMessage.find("INFO") != std::string::npos) {
+		colorPrefix = fsfw::ANSI_COLOR_GREEN;
+	}
+	else if(setMessage.find("WARNING") != std::string::npos) {
+		colorPrefix = fsfw::ANSI_COLOR_YELLOW;
+	}
+	else if(setMessage.find("ERROR") != std::string::npos) {
+		colorPrefix = fsfw::ANSI_COLOR_RED;
+	}
+	else {
+		colorPrefix = fsfw::ANSI_COLOR_RESET;
+	}
+
+#ifdef WIN32
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD dwMode = 0;
+	GetConsoleMode(hOut, &dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
+#endif
+
+#endif
+
 	preamble.reserve(MAX_PREAMBLE_SIZE);
 	preamble.resize(MAX_PREAMBLE_SIZE);
 }
@@ -102,6 +139,12 @@ std::string* ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 		currentSize += 1;
 		parsePosition += 1;
 	}
+
+#if FSFW_COLORED_OUTPUT == 1
+	currentSize += sprintf(parsePosition, "%s", colorPrefix.c_str());
+	parsePosition += colorPrefix.size();
+#endif
+
 	int32_t charCount = sprintf(parsePosition,
 			"%s: | %02" SCNu32 ":%02" SCNu32 ":%02" SCNu32 ".%03" SCNu32 " | ",
 					this->logMessage.c_str(), loggerTime.hour,
@@ -215,3 +258,5 @@ void ServiceInterfaceBuffer::initSocket() {
 }
 
 #endif //ML505
+
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */

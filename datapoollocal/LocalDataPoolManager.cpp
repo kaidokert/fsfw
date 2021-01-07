@@ -21,15 +21,19 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
                         appendValidityBuffer(appendValidityBuffer) {
     if(owner == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
                 << "Invalid supplied owner!" << std::endl;
+#endif
         return;
     }
     this->owner = owner;
     mutex = MutexFactory::instance()->createMutex();
     if(mutex == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
                 << "Could not create mutex." << std::endl;
+#endif
     }
 
     hkQueue = queueToUse;
@@ -39,17 +43,21 @@ LocalDataPoolManager::~LocalDataPoolManager() {}
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
     if(queueToUse == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalDataPoolManager::initialize: "
                 << std::hex << "0x" << owner->getObjectId() << ". Supplied "
                 << "queue invalid!" << std::dec << std::endl;
+#endif
     }
     hkQueue = queueToUse;
 
     ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
     if(ipcStore == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalDataPoolManager::initialize: "
                 << std::hex << "0x" << owner->getObjectId() << ": Could not "
                 << "set IPC store." <<std::dec << std::endl;
+#endif
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
@@ -61,8 +69,10 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
             hkDestinationId = hkPacketReceiver->getHkQueue();
         }
         else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
                     << "Default HK destination object is invalid!" << std::endl;
+#endif
             return HasReturnvaluesIF::RETURN_FAILED;
         }
     }
@@ -85,8 +95,10 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
         }
         return result;
     }
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "HousekeepingManager: The map should only be initialized "
             << "once!" << std::endl;
+#endif
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -339,8 +351,10 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
     AcceptsHkPacketsIF* hkReceiverObject =
             objectManager->get<AcceptsHkPacketsIF>(packetDestination);
     if(hkReceiverObject == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalDataPoolManager::subscribeForPeriodicPacket:"
                 << " Invalid receiver!"<< std::endl;
+#endif
         return HasReturnvaluesIF::RETURN_OK;
     }
 
@@ -369,8 +383,10 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
     AcceptsHkPacketsIF* hkReceiverObject =
             objectManager->get<AcceptsHkPacketsIF>(packetDestination);
     if(hkReceiverObject == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalDataPoolManager::subscribeForPeriodicPacket:"
                 << " Invalid receiver!"<< std::endl;
+#endif
         return HasReturnvaluesIF::RETURN_OK;
     }
 
@@ -575,8 +591,10 @@ ReturnValue_t LocalDataPoolManager::printPoolEntry(
         lp_id_t localPoolId) {
     auto poolIter = localPoolMap.find(localPoolId);
     if (poolIter == localPoolMap.end()) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "HousekeepingManager::fechPoolEntry:"
                 << " Pool entry not found." << std::endl;
+#endif
         return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
     }
     poolIter->second->print();
@@ -596,8 +614,10 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
         MessageQueueId_t destination) {
     if(dataSet == nullptr) {
         // Configuration error.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
                 << " Set ID not found or dataset not assigned!" << std::endl;
+#endif
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
@@ -678,10 +698,12 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
             sid, dataSet, true);
     if(result != HasReturnvaluesIF::RETURN_OK) {
         // configuration error
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "LocalDataPoolManager::performHkOperation:"
                 << "0x" << std::hex << std::setfill('0') << std::setw(8)
                 << owner->getObjectId() << " Error generating "
                 << "HK packet" << std::setfill(' ') << std::dec << std::endl;
+#endif
     }
 }
 
@@ -726,8 +748,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
     // Get and check dataset first.
     LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
     if(dataSet == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
                 << " Set ID not found" << std::endl;
+#endif
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
@@ -752,8 +776,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
     ReturnValue_t result = ipcStore->getFreeElement(&storeId,
             expectedSize,&storePtr);
     if(result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "HousekeepingManager::generateHousekeepingPacket: "
                 << "Could not get free element from IPC store." << std::endl;
+#endif
         return result;
     }
 
@@ -762,8 +788,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
     result = setPacket.serialize(&storePtr, &size, expectedSize,
             SerializeIF::Endianness::BIG);
     if(expectedSize != size) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "HousekeepingManager::generateSetStructurePacket: "
                 << "Expected size is not equal to serialized size" << std::endl;
+#endif
     }
 
     // Send structure reporting reply.

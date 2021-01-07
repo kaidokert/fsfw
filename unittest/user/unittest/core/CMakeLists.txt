@@ -5,3 +5,9 @@ target_sources(${TARGET_NAME} PRIVATE
 	CatchSetup.cpp
 	printChar.cpp
 )
+
+if(CUSTOM_UNITTEST_RUNNER)
+	target_sources(${TARGET_NAME} PRIVATE
+		CatchRunner.cpp
+	)
+endif()

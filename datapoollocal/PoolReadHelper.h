@@ -9,12 +9,16 @@
  */
 class PoolReadHelper {
 public:
-	PoolReadHelper(ReadCommitIF* readObject, uint32_t mutexTimeout = 20):
+	PoolReadHelper(ReadCommitIF* readObject,
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t mutexTimeout = 20):
 			readObject(readObject), mutexTimeout(mutexTimeout) {
 		if(readObject != nullptr) {
-			readResult = readObject->read(mutexTimeout);
+			readResult = readObject->read(timeoutType, mutexTimeout);
 #if FSFW_PRINT_VERBOSITY_LEVEL == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PoolReadHelper: Read failed!" << std::endl;
+#endif
 #endif
 		}
 	}
@@ -25,7 +29,7 @@ public:
 
 	~PoolReadHelper() {
 		if(readObject != nullptr) {
-			readObject->commit(mutexTimeout);
+			readObject->commit(timeoutType, mutexTimeout);
 		}
 
 	}
@@ -33,6 +37,7 @@ public:
 private:
 	ReadCommitIF* readObject = nullptr;
 	ReturnValue_t readResult = HasReturnvaluesIF::RETURN_OK;
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
 	uint32_t mutexTimeout = 20;
 };
 

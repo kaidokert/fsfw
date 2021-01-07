@@ -5,6 +5,8 @@
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
+#include <utility>
+
 class HealthTableIF: public ManagesHealthIF {
 public:
 	virtual ~HealthTableIF() {}

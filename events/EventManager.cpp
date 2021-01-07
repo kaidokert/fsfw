@@ -122,6 +122,7 @@ void EventManager::printEvent(EventMessage* message) {
 	case severity::INFO:
 #if DEBUG_INFO_EVENT == 1
 		string = translateObject(message->getReporter());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::info << "EVENT: ";
 		if (string != 0) {
 			sif::info << string;
@@ -132,10 +133,12 @@ void EventManager::printEvent(EventMessage* message) {
 				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
 				<< message->getParameter1() << " P2: 0x"
 				<< message->getParameter2() << std::dec << std::endl;
-#endif
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* DEBUG_INFO_EVENT == 1 */
 		break;
 	default:
 		string = translateObject(message->getReporter());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "EventManager: ";
 		if (string != 0) {
 			sif::debug << string;
@@ -146,22 +149,28 @@ void EventManager::printEvent(EventMessage* message) {
 		sif::debug << " reported " << translateEvents(message->getEvent())
 				<< " (" << std::dec << message->getEventId() << ") "
 				<< std::endl;
-
 		sif::debug << std::hex << "P1 Hex: 0x" << message->getParameter1()
 				<< ", P1 Dec: " << std::dec << message->getParameter1()
 				<< std::endl;
 		sif::debug << std::hex << "P2 Hex: 0x" << message->getParameter2()
 				<< ", P2 Dec: " <<  std::dec << message->getParameter2()
 				<< std::endl;
+#endif
 		break;
 	}
 }
 #endif
 
 void EventManager::lockMutex() {
-	mutex->lockMutex(MutexIF::BLOCKING);
+	mutex->lockMutex(timeoutType, timeoutMs);
 }
 
 void EventManager::unlockMutex() {
 	mutex->unlockMutex();
+}
+
+void EventManager::setMutexTimeout(MutexIF::TimeoutType timeoutType,
+		uint32_t timeoutMs) {
+	this->timeoutType = timeoutType;
+	this->timeoutMs = timeoutMs;
 }

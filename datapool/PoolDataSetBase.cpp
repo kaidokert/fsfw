@@ -13,18 +13,24 @@ PoolDataSetBase::~PoolDataSetBase() {}
 ReturnValue_t PoolDataSetBase::registerVariable(
 		PoolVariableIF *variable) {
 	if (state != States::STATE_SET_UNINITIALISED) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"Call made in wrong position." << std::endl;
+#endif
 		return DataSetIF::DATA_SET_UNINITIALISED;
 	}
 	if (variable == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"Pool variable is nullptr." << std::endl;
+#endif
 		return DataSetIF::POOL_VAR_NULL;
 	}
 	if (fillCount >= maxFillCount) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"DataSet is full." << std::endl;
+#endif
 		return DataSetIF::DATA_SET_FULL;
 	}
 	registeredVariables[fillCount] = variable;
@@ -32,11 +38,12 @@ ReturnValue_t PoolDataSetBase::registerVariable(
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	ReturnValue_t error = result;
 	if (state == States::STATE_SET_UNINITIALISED) {
-		lockDataPool(lockTimeout);
+		lockDataPool(timeoutType, lockTimeout);
 		for (uint16_t count = 0; count < fillCount; count++) {
 			result = readVariable(count);
 			if(result != RETURN_OK) {
@@ -47,9 +54,11 @@ ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
 		unlockDataPool();
 	}
 	else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::read(): "
 				"Call made in wrong position. Don't forget to commit"
 				" member datasets!" << std::endl;
+#endif
 		result = SET_WAS_ALREADY_READ;
 	}
 
@@ -78,7 +87,8 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 				!= PoolVariableIF::NO_PARAMETER)
 	{
 		if(protectEveryReadCommitCall) {
-			result = registeredVariables[count]->read(mutexTimeout);
+			result = registeredVariables[count]->read(
+					MutexIF::TimeoutType::WAITING, mutexTimeout);
 		}
 		else {
 			result = registeredVariables[count]->readWithoutLock();
@@ -91,25 +101,28 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 	return result;
 }
 
-ReturnValue_t PoolDataSetBase::commit(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::commit(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	if (state == States::STATE_SET_WAS_READ) {
-		handleAlreadyReadDatasetCommit(lockTimeout);
+		handleAlreadyReadDatasetCommit(timeoutType, lockTimeout);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
-		return handleUnreadDatasetCommit(lockTimeout);
+		return handleUnreadDatasetCommit(timeoutType, lockTimeout);
 	}
 }
 
-void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
-	lockDataPool(lockTimeout);
+void PoolDataSetBase::handleAlreadyReadDatasetCommit(
+		MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
+	lockDataPool(timeoutType, lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				!= PoolVariableIF::VAR_READ
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if(protectEveryReadCommitCall) {
-				registeredVariables[count]->commit(mutexTimeout);
+				registeredVariables[count]->commit(
+						MutexIF::TimeoutType::WAITING, mutexTimeout);
 			}
 			else {
 				registeredVariables[count]->commitWithoutLock();
@@ -120,16 +133,18 @@ void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
 	unlockDataPool();
 }
 
-ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(
+		MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	lockDataPool(lockTimeout);
+	lockDataPool(timeoutType, lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				== PoolVariableIF::VAR_WRITE
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if(protectEveryReadCommitCall) {
-				result = registeredVariables[count]->commit(mutexTimeout);
+				result = registeredVariables[count]->commit(
+						MutexIF::TimeoutType::WAITING, mutexTimeout);
 			}
 			else {
 				result = registeredVariables[count]->commitWithoutLock();
@@ -138,8 +153,10 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 		} else if (registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if (result != COMMITING_WITHOUT_READING) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 				sif::error << "DataSet::commit(): commit-without-read call made "
 						"with non write-only variable." << std::endl;
+#endif
 				result = COMMITING_WITHOUT_READING;
 			}
 		}
@@ -150,7 +167,8 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 }
 
 
-ReturnValue_t PoolDataSetBase::lockDataPool(uint32_t timeoutMs) {
+ReturnValue_t PoolDataSetBase::lockDataPool(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

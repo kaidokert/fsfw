@@ -4,16 +4,16 @@
 Mutex::Mutex() {}
 
 ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
-	if(timeoutType == MutexIF::BLOCKING) {
+	if(timeoutType == TimeoutType::BLOCKING) {
 		mutex.lock();
 		return HasReturnvaluesIF::RETURN_OK;
 	}
-	else if(timeoutType == MutexIF::POLLING) {
+	else if(timeoutType == TimeoutType::POLLING) {
 		if(mutex.try_lock()) {
 			return HasReturnvaluesIF::RETURN_OK;
 		}
 	}
-	else if(timeoutMs > MutexIF::POLLING){
+	else if(timeoutType == TimeoutType::WAITING){
 		auto chronoMs = std::chrono::milliseconds(timeoutMs);
 		if(mutex.try_lock_for(chronoMs)) {
 			return HasReturnvaluesIF::RETURN_OK;

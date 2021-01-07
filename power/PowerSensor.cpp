@@ -97,7 +97,8 @@ void PowerSensor::checkCommandQueue() {
 
 void PowerSensor::setDataPoolEntriesInvalid() {
 	powerSensorSet.read();
-	powerSensorSet.commit(PoolVariableIF::INVALID);
+	powerSensorSet.setValidity(false, true);
+	powerSensorSet.commit();
 }
 
 float PowerSensor::getPower() {

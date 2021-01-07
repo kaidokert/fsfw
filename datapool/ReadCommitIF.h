@@ -2,6 +2,7 @@
 #define FSFW_DATAPOOL_READCOMMITIF_H_
 
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/ipc/MutexIF.h>
 
 /**
  * @brief 	Common interface for all software objects which employ read-commit
@@ -10,8 +11,10 @@
 class ReadCommitIF {
 public:
 	virtual ~ReadCommitIF() {}
-	virtual ReturnValue_t read(uint32_t mutexTimeout) = 0;
-	virtual ReturnValue_t commit(uint32_t mutexTimeout) = 0;
+	virtual ReturnValue_t read(MutexIF::TimeoutType timeoutType,
+			uint32_t timeoutMs) = 0;
+	virtual ReturnValue_t commit(MutexIF::TimeoutType timeoutType,
+			uint32_t timeoutMs) = 0;
 
 protected:
 
@@ -19,11 +22,11 @@ protected:
 	//! members with commit and read semantics where the lock is only necessary
 	//! once.
 	virtual ReturnValue_t readWithoutLock()  {
-		return read(20);
+		return read(MutexIF::TimeoutType::WAITING, 20);
 	}
 
 	virtual ReturnValue_t commitWithoutLock() {
-		return commit(20);
+		return commit(MutexIF::TimeoutType::WAITING, 20);
 	}
 };
 

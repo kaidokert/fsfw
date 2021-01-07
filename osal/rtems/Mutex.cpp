@@ -10,27 +10,31 @@ Mutex::Mutex() :
 	RTEMS_BINARY_SEMAPHORE | RTEMS_PRIORITY | RTEMS_INHERIT_PRIORITY, 0,
 			&mutexId);
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Mutex: creation with name, id " << mutexName << ", " << mutexId
 				<< " failed with " << status << std::endl;
+#endif
 	}
 }
 
 Mutex::~Mutex() {
 	rtems_status_code status = rtems_semaphore_delete(mutexId);
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Mutex: deletion for id " << mutexId
 				<< " failed with " << status << std::endl;
+#endif
 	}
 }
 
 ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType =
         TimeoutType::BLOCKING, uint32_t timeoutMs) {
 	rtems_status_code status = RTEMS_INVALID_ID;
-	if(timeoutMs == MutexIF::TimeoutType::BLOCKING) {
+	if(timeoutType == MutexIF::TimeoutType::BLOCKING) {
 		status = rtems_semaphore_obtain(mutexId,
 				RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 	}
-	else if(timeoutMs == MutexIF::TimeoutType::POLLING) {
+	else if(timeoutType == MutexIF::TimeoutType::POLLING) {
 		timeoutMs = RTEMS_NO_TIMEOUT;
 		status = rtems_semaphore_obtain(mutexId,
 				RTEMS_NO_WAIT, 0);
