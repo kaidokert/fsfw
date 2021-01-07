@@ -33,13 +33,10 @@ inline ReturnValue_t LocalPoolVariable<T>::read(
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "LocalPoolVariable: Invalid read write "
-				"mode for read call." << std::endl;
-#else
-		fsfw::printWarning("LocalPoolVariable: Invalid read write "
-				"mode for read call.\n\r");
-#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector",
+				PoolVariableIF::INVALID_READ_WRITE_MODE, true, targetObjectId,
+				localPoolId);
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 
@@ -83,13 +80,10 @@ inline ReturnValue_t LocalPoolVariable<T>::commit(
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "LocalPoolVariable: Invalid read write "
-				 "mode for commit call." << std::endl;
-#else
-		fsfw::printWarning("LocalPoolVariable: Invalid read write "
-				 "mode for commit call.\n\r");
-#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector",
+				PoolVariableIF::INVALID_READ_WRITE_MODE, false, targetObjectId,
+				localPoolId);
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 	PoolEntry<T>* poolEntry = nullptr;
