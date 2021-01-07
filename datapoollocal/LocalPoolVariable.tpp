@@ -86,6 +86,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 				localPoolId);
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
+
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
