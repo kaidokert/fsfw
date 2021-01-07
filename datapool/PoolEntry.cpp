@@ -6,18 +6,10 @@
 #include <algorithm>
 
 template <typename T>
-PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t setLength,
-		bool setValid ) : length(setLength), valid(setValid) {
+PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid ):
+		length(initValue.size()), valid(setValid) {
 	this->address = new T[this->length];
 	if(initValue.size() == 0) {
-		std::memset(this->address, 0, this->getByteSize());
-	}
-	else if (initValue.size() != setLength){
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "PoolEntry: setLength is not equal to initializer list"
-				"length! Performing zero initialization with given setLength"
-				<< std::endl;
-#endif
 		std::memset(this->address, 0, this->getByteSize());
 	}
 	else {
@@ -26,7 +18,7 @@ PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t setLength,
 }
 
 template <typename T>
-PoolEntry<T>::PoolEntry( T* initValue, uint8_t setLength, bool setValid ) :
+PoolEntry<T>::PoolEntry(T* initValue, uint8_t setLength, bool setValid):
 		length(setLength), valid(setValid) {
 	this->address = new T[this->length];
 	if (initValue != nullptr) {

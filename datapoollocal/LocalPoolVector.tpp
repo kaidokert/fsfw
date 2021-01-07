@@ -55,6 +55,13 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 }
 
 template<typename T, uint16_t vectorSize>
+inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(bool valid,
+		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
+	this->setValid(valid);
+	return commit(timeoutType, timeoutMs);
+}
+
+template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
 		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
 	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);

@@ -43,16 +43,16 @@ public:
 	 * corresponding length should be passed too, otherwise a zero
 	 * initialization will be performed with the given setLength.
 	 * @param initValue
-	 * Initializer list with values to initialize with, for example {0,0} to
-	 * initialize the two entries to zero.
+	 * Initializer list with values to initialize with, for example {0, 0} to
+	 * initialize the a pool entry of a vector with two entries to 0.
 	 * @param setLength
 	 * Defines the array length of this entry. Should be equal to the
 	 * intializer list length.
 	 * @param setValid
 	 * Sets the initialization flag. It is invalid by default.
 	 */
-	PoolEntry(std::initializer_list<T> initValue = {}, uint8_t setLength = 1,
-			bool setValid = false);
+	PoolEntry(std::initializer_list<T> initValue = {0}, bool setValid = false);
+
 	/**
 	 * @brief	In the classe's constructor, space is allocated on the heap and
 	 * 			potential init values are copied to that space.

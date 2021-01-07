@@ -139,6 +139,14 @@ public:
 			MutexIF::TimeoutType::WAITING,
 			uint32_t timeoutMs = 20) override;
 
+	/**
+	 * @brief	This commit call also sets the validity of the pool entry.
+	 * @details
+	 */
+	ReturnValue_t commit(bool valid, MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
+
 protected:
 	/**
 	 * @brief	Like #read, but without a lock protection of the global pool.
