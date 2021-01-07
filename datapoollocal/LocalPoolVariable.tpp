@@ -46,18 +46,17 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK or poolEntry == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "PoolPoolVariable: Read of local pool variable of object "
-				<< std::hex << std::setw(8) << std::setfill('0')
-				<< hkManager->getOwner() << " and lp ID 0x" << localPoolId
-				<< std::dec << " failed." << std::setfill(' ') <<  std::endl;
-#else
-		fsfw::printError("LocalPoolVariable: Read of local pool variable of "
-				"object 0x%08x and lp ID 0x%08x failed.\n\r",
-				hkManager->getOwner(), localPoolId);
-#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError(true, ownerObjectId, localPoolId);
 		return result;
 	}
+
+	if(poolEntry->address == nullptr) {
+		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError(true, ownerObjectId, localPoolId);
+		return PoolVariableIF::INVALID_POOL_ENTRY;
+	}
+
 	this->value = *(poolEntry->address);
 	this->valid = poolEntry->valid;
 	return RETURN_OK;
@@ -91,19 +90,12 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	}
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
-	if(result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "PoolPoolVariable: Read of local pool variable of "
-				<< "object " << std::hex << std::setw(8) << std::setfill('0')
-				<< hkManager->getOwner() << " and lp ID 0x" << localPoolId
-				<< std::dec << " failed." << std::endl;
-#else
-		fsfw::printError("LocalPoolVariable: Read of local pool variable of "
-				"object 0x%08x and lp ID 0x%08x failed.\n\r",
-				hkManager->getOwner(), localPoolId);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+	if(result != RETURN_OK or poolEntry == nullptr) {
+		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError(false, ownerObjectId, localPoolId);
 		return result;
 	}
+
 	*(poolEntry->address) = this->value;
 	poolEntry->valid = this->valid;
 	return RETURN_OK;
@@ -202,5 +194,29 @@ template<typename T>
 inline bool LocalPoolVariable<T>::operator >(const T &other) const {
 	return not (*this < other);
 }
+
+template<typename T>
+inline void LocalPoolVariable<T>::reportReadCommitError(bool read,
+		object_id_t objectId, lp_id_t lpId) {
+	const char* type = nullptr;
+	if(read) {
+		type = "read";
+	}
+	else {
+		type = "commit";
+	}
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	sif::warning << "PoolPoolVariable: " << type << " of local pool "
+			<<"variable of object " << std::hex << std::setw(8)
+			<< std::setfill('0') << objectId << " and lp ID 0x" << lpId
+			<< std::dec << " failed." << std::endl;
+#else
+	fsfw::printWarning("LocalPoolVariable: %s of local pool variable of "
+			"object 0x%08x and lp ID 0x%08x failed.\n\r",
+			type, objectId, lpId);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+}
+
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_ */
