@@ -64,9 +64,9 @@ public:
 	 */
 	PoolEntry(T* initValue, uint8_t setLength = 1, bool setValid = false);
 
-	//! Explicitely deleted copy ctor, copying is not allowed!
+	//! Explicitely deleted copy ctor, copying is not allowed.
 	PoolEntry(const PoolEntry&) = delete;
-	//! Explicitely deleted copy assignment, copying is not allowed!
+	//! Explicitely deleted copy assignment, copying is not allowed.
 	PoolEntry& operator=(const PoolEntry&) = delete;
 
 	/**
