@@ -35,19 +35,17 @@ public:
 				"uint8_t");
 	/**
 	 * @brief	In the classe's constructor, space is allocated on the heap and
-	 * 			potential init values are copied to that space.
+	 * 			potential initialization values are copied to that space.
 	 * @details
 	 * Not passing any arguments will initialize an non-array pool entry
-	 * (setLength = 1) with an initial invalid state.
-	 * Please note that if an initializer list is passed, the correct
-	 * corresponding length should be passed too, otherwise a zero
-	 * initialization will be performed with the given setLength.
+	 * with an initial invalid state and the value 0.
+	 * Please note that if an initializer list is passed, the length of the
+	 * initializer list needs to be correct for vector entries because
+	 * required allocated space will be deduced from the initializer list length
+	 * and the pool entry type.
 	 * @param initValue
 	 * Initializer list with values to initialize with, for example {0, 0} to
 	 * initialize the a pool entry of a vector with two entries to 0.
-	 * @param setLength
-	 * Defines the array length of this entry. Should be equal to the
-	 * intializer list length.
 	 * @param setValid
 	 * Sets the initialization flag. It is invalid by default.
 	 */
