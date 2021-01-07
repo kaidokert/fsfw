@@ -44,12 +44,9 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	memset(this->value, 0, vectorSize * sizeof(T));
 
 	if(result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "LocalPoolVector: Read of local pool variable of object "
-				<< std::hex << std::setw(8) << std::setfill('0')
-				<< hkManager->getOwner() << "and lp ID 0x" << localPoolId
-				<< std::dec << " failed." << std::endl;
-#endif
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector", result, true, targetObjectId,
+				localPoolId);
 		return result;
 	}
 	std::memcpy(this->value, poolEntry->address, poolEntry->getByteSize());
@@ -69,19 +66,19 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "LocalPoolVector: Invalid read write "
-				"mode for commit() call." << std::endl;
+				"mode for commit call." << std::endl;
+#else
+		sif::warning << "LocalPoolVector: Invalid read write "
+				"mode for commit call." << std::endl;
 #endif
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "LocalPoolVector: Read of local pool variable of object "
-				<< std::hex << std::setw(8) << std::setfill('0')
-				<< hkManager->getOwner() << " and lp ID " << localPoolId
-				<< std::dec << " failed." << std::endl;
-#endif
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector", result, true, targetObjectId,
+				localPoolId);
 		return result;
 	}
 	std::memcpy(poolEntry->address, this->value, poolEntry->getByteSize());

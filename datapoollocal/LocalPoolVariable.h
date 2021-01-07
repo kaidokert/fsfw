@@ -179,9 +179,6 @@ protected:
 	friend std::ostream& operator<< (std::ostream &out,
 			const LocalPoolVariable<U> &var);
 #endif
-
-private:
-	void reportReadCommitError(bool read, object_id_t objectId, lp_id_t lpId);
 };
 
 #include "LocalPoolVariable.tpp"

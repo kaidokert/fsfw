@@ -45,16 +45,20 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
-	if(result != RETURN_OK or poolEntry == nullptr) {
+	if(result != RETURN_OK) {
 		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
-		reportReadCommitError(true, ownerObjectId, localPoolId);
+		reportReadCommitError("LocalPoolVariable", result,
+				false, ownerObjectId, localPoolId);
 		return result;
 	}
 
+	// Actually this should never happen..
 	if(poolEntry->address == nullptr) {
+		result = PoolVariableIF::INVALID_POOL_ENTRY;
 		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
-		reportReadCommitError(true, ownerObjectId, localPoolId);
-		return PoolVariableIF::INVALID_POOL_ENTRY;
+		reportReadCommitError("LocalPoolVariable", result,
+				false, ownerObjectId, localPoolId);
+		return result;
 	}
 
 	this->value = *(poolEntry->address);
@@ -90,9 +94,10 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	}
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
-	if(result != RETURN_OK or poolEntry == nullptr) {
+	if(result != RETURN_OK) {
 		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
-		reportReadCommitError(false, ownerObjectId, localPoolId);
+		reportReadCommitError("LocalPoolVariable", result,
+				false, ownerObjectId, localPoolId);
 		return result;
 	}
 
@@ -194,29 +199,5 @@ template<typename T>
 inline bool LocalPoolVariable<T>::operator >(const T &other) const {
 	return not (*this < other);
 }
-
-template<typename T>
-inline void LocalPoolVariable<T>::reportReadCommitError(bool read,
-		object_id_t objectId, lp_id_t lpId) {
-	const char* type = nullptr;
-	if(read) {
-		type = "read";
-	}
-	else {
-		type = "commit";
-	}
-
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << "PoolPoolVariable: " << type << " of local pool "
-			<<"variable of object " << std::hex << std::setw(8)
-			<< std::setfill('0') << objectId << " and lp ID 0x" << lpId
-			<< std::dec << " failed." << std::endl;
-#else
-	fsfw::printWarning("LocalPoolVariable: %s of local pool variable of "
-			"object 0x%08x and lp ID 0x%08x failed.\n\r",
-			type, objectId, lpId);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-}
-
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_TPP_ */
