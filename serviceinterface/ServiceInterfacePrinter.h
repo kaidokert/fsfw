@@ -1,5 +1,5 @@
 #if FSFW_DISABLE_PRINTOUT == 0
-#include <stdio.h>
+#include <cstdio>
 #endif
 
 namespace fsfw {

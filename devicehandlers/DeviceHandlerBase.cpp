@@ -2,7 +2,7 @@
 #include "AcceptsDeviceResponsesIF.h"
 #include "DeviceTmReportingWrapper.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../thermal/ThermalComponentIF.h"
@@ -12,9 +12,6 @@
 #include "../ipc/QueueFactory.h"
 #include "../subsystem/SubsystemBase.h"
 #include "../datapoollocal/LocalPoolVariable.h"
-
-#include <iomanip>
-
 
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
@@ -720,10 +717,9 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		case RETURN_OK:
 			handleReply(receivedData, foundId, foundLen);
 			if(foundLen == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
-			            " Packet parsing will be stuck." << std::endl;
-#endif
+				printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
+						"parseReply", ObjectManagerIF::CHILD_INIT_FAILED,
+						"Found length is one, parsing might be stuck");
 			}
 			break;
 		case APERIODIC_REPLY: {
@@ -1323,6 +1319,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
+#if FSFW_DISABLE_PRINTOUT == 0
 			char output[36];
 			sprintf(output, "Command 0x%08x is executing", deviceCommandId);
 			// so we can track misconfigurations
@@ -1330,6 +1327,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 					"buildInternalCommand",
 					HasReturnvaluesIF::RETURN_FAILED,
 					output);
+#endif
 			// this is an internal command, no need to report a failure here,
 			// missed reply will track if a reply is too late, otherwise, it's ok
 			return;
