@@ -38,7 +38,7 @@ TEST_CASE("LocalPoolVector" , "[LocPoolVecTest]") {
 		// This is invalid access, so the last value will be set instead.
 		// (we can't throw exceptions)
 		testVector[4] = 12;
-		CHECK(testVector[3] == 12);
+		CHECK(testVector[2] == 12);
 		CHECK(testVector.commit() == retval::CATCH_OK);
 
 		// Use read-only reference.
@@ -48,6 +48,42 @@ TEST_CASE("LocalPoolVector" , "[LocPoolVecTest]") {
 
 		uint16_t lastVal = roTestVec[25];
 		CHECK(lastVal == 12);
+
+		size_t maxSize = testVector.getSerializedSize();
+		CHECK(maxSize == 6);
+
+		uint16_t serializedVector[3];
+		uint8_t* vecPtr = reinterpret_cast<uint8_t*>(serializedVector);
+		size_t serSize = 0;
+		REQUIRE(testVector.serialize(&vecPtr, &serSize,
+				maxSize, SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+
+		CHECK(serSize == 6);
+		CHECK(serializedVector[0] == 5);
+		CHECK(serializedVector[1] == 232);
+		CHECK(serializedVector[2] == 12);
+
+		maxSize = 1;
+		REQUIRE(testVector.serialize(&vecPtr, &serSize,
+				maxSize, SerializeIF::Endianness::MACHINE) ==
+				static_cast<int>(SerializeIF::BUFFER_TOO_SHORT));
+
+		serializedVector[0] = 16;
+		serializedVector[1] = 7832;
+		serializedVector[2] = 39232;
+
+		const uint8_t* constVecPtr = reinterpret_cast<const uint8_t*>(
+				serializedVector);
+		REQUIRE(testVector.deSerialize(&constVecPtr, &serSize,
+				SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+		CHECK(testVector[0] == 16);
+		CHECK(testVector[1] == 7832);
+		CHECK(testVector[2] == 39232);
+
+		serSize = 1;
+		REQUIRE(testVector.deSerialize(&constVecPtr, &serSize,
+				SerializeIF::Endianness::MACHINE) ==
+				static_cast<int>(SerializeIF::STREAM_TOO_SHORT));
 	}
 
 	SECTION("ErrorHandling") {
@@ -64,6 +100,20 @@ TEST_CASE("LocalPoolVector" , "[LocPoolVecTest]") {
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint16Vec3Id);
 		REQUIRE(invalidVector2.read() ==
 				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
+		REQUIRE(invalidVector2.commit() ==
+				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
+
+		lp_vec_t<uint16_t, 3> writeOnlyVec = lp_vec_t<uint16_t, 3>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint16Vec3Id,
+				nullptr, pool_rwm_t::VAR_WRITE);
+		REQUIRE(writeOnlyVec.read() ==
+				static_cast<int>(PoolVariableIF::INVALID_READ_WRITE_MODE));
+
+		lp_vec_t<uint16_t, 3> readOnlyVec = lp_vec_t<uint16_t, 3>(
+				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint16Vec3Id,
+				nullptr, pool_rwm_t::VAR_READ);
+		REQUIRE(readOnlyVec.commit() ==
+				static_cast<int>(PoolVariableIF::INVALID_READ_WRITE_MODE));
 	}
 }
 

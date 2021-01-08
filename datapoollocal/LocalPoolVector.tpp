@@ -104,7 +104,7 @@ inline T& LocalPoolVector<T, vectorSize>::operator [](size_t i) {
 	fsfw::printWarning("LocalPoolVector: Invalid index. Setting or returning"
 			" last value!\n");
 #endif
-	return value[vectorSize];
+	return value[vectorSize - 1];
 }
 
 template<typename T, uint16_t vectorSize>
@@ -121,7 +121,7 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](size_t i) const {
 	fsfw::printWarning("LocalPoolVector: Invalid index. Setting or returning"
 			" last value!\n");
 #endif
-	return value[vectorSize];
+	return value[vectorSize - 1];
 }
 
 template<typename T, uint16_t vectorSize>
