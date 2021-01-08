@@ -1,6 +1,6 @@
 #include "PoolEntry.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../globalfunctions/arrayprinter.h"
 #include <cstring>
 #include <algorithm>
@@ -62,14 +62,26 @@ bool PoolEntry<T>::getValid() {
 
 template <typename T>
 void PoolEntry<T>::print() {
+	const char* validString = nullptr;
+	if(valid) {
+		validString = "Valid";
+	}
+	else {
+		validString = "Invalid";
+	}
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	 sif::debug << "Pool Entry Validity: " <<
-			 (this->valid? " (valid) " : " (invalid) ") << std::endl;
+	 sif::info << "PoolEntry information." << std::endl;
+	 sif::info << "PoolEntry validity: " << validString << std::endl;
+#else
+	 fsfw::printInfo("PoolEntry information.\n");
+	 fsfw::printInfo("PoolEntry validity: %s\n", validString);
 #endif
-	arrayprinter::print(reinterpret_cast<uint8_t*>(address), length);
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::debug << std::dec << std::endl;
-#endif
+	arrayprinter::print(reinterpret_cast<uint8_t*>(address), getByteSize());
+}
+
+template<typename T>
+inline T* PoolEntry<T>::getDataPtr() {
+	return this->address;
 }
 
 template<typename T>

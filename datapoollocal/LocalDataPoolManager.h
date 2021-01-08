@@ -56,11 +56,13 @@ class LocalDataPoolManager {
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
-    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x0);
+    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0);
 
-    static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(0x01);
-    static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(0x02);
-    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(0x03);
+    static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(1);
+    static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(2);
+    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(3);
+    static constexpr ReturnValue_t POOLOBJECT_NOT_FOUND = MAKE_RETURN_CODE(4);
+    static constexpr ReturnValue_t DATASET_NOT_FOUND = MAKE_RETURN_CODE(5);
 
     /**
      * This constructor is used by a class which wants to implement

@@ -50,16 +50,16 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	}
 
 	// Actually this should never happen..
-	if(poolEntry->address == nullptr) {
-		result = PoolVariableIF::INVALID_POOL_ENTRY;
-		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
-		reportReadCommitError("LocalPoolVariable", result,
-				false, ownerObjectId, localPoolId);
-		return result;
-	}
+//	if(poolEntry->address == nullptr) {
+//		result = PoolVariableIF::INVALID_POOL_ENTRY;
+//		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
+//		reportReadCommitError("LocalPoolVariable", result,
+//				false, ownerObjectId, localPoolId);
+//		return result;
+//	}
 
-	this->value = *(poolEntry->address);
-	this->valid = poolEntry->valid;
+	this->value = *(poolEntry->getDataPtr());
+	this->valid = poolEntry->getValid();
 	return RETURN_OK;
 }
 
@@ -96,8 +96,8 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 		return result;
 	}
 
-	*(poolEntry->address) = this->value;
-	poolEntry->valid = this->valid;
+	*(poolEntry->getDataPtr()) = this->value;
+	poolEntry->setValid(this->valid);
 	return RETURN_OK;
 }
 

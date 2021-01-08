@@ -213,7 +213,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
         LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
                 receiver.dataId.localPoolId);
         if(poolObj == nullptr) {
-            return HasReturnvaluesIF::RETURN_FAILED;
+            return POOLOBJECT_NOT_FOUND;
         }
 
         if (not poolObj->hasChanged()) {
@@ -249,7 +249,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
         LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
                 receiver.dataId.sid);
         if(dataSet == nullptr) {
-            return HasReturnvaluesIF::RETURN_FAILED;
+            return DATASET_NOT_FOUND;
         }
 
         if(not dataSet->hasChanged()) {
@@ -618,7 +618,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
         sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
                 << " Set ID not found or dataset not assigned!" << std::endl;
 #endif
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return DATASET_NOT_FOUND;
     }
 
     store_address_t storeId;

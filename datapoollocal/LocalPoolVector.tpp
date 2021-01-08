@@ -49,8 +49,8 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 				localPoolId);
 		return result;
 	}
-	std::memcpy(this->value, poolEntry->address, poolEntry->getByteSize());
-	this->valid = poolEntry->valid;
+	std::memcpy(this->value, poolEntry->getDataPtr(), poolEntry->getByteSize());
+	this->valid = poolEntry->getValid();
 	return RETURN_OK;
 }
 
@@ -85,8 +85,8 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 				localPoolId);
 		return result;
 	}
-	std::memcpy(poolEntry->address, this->value, poolEntry->getByteSize());
-	poolEntry->valid = this->valid;
+	std::memcpy(poolEntry->getDataPtr(), this->value, poolEntry->getByteSize());
+	poolEntry->setValid(this->valid);
 	return RETURN_OK;
 }
 

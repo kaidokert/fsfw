@@ -80,21 +80,16 @@ public:
 	~PoolEntry();
 
 	/**
-	 * @brief	This is the address pointing to the allocated memory.
+	 * Return typed pointer to start of data.
+	 * @return
 	 */
-	T* address;
-	/**
-	 * @brief	This attribute stores the length information.
-	 */
-	uint8_t length;
-	/**
-	 * @brief	Here, the validity information for a variable is stored.
-	 * 			Every entry (single variable or vector) has one valid flag.
-	 */
-	uint8_t valid;
+	T* getDataPtr();
+
 	/**
 	 * @brief	getSize returns the array size of the entry.
-	 * @details	A single parameter has size 1.
+	 * @details
+	 * For non-array pool entries return type size, for vector entries
+	 * return type size times the number of entries.
 	 */
 	uint8_t getSize();
 	/**
@@ -121,8 +116,22 @@ public:
 	 * 			information to the screen. It prints all array entries in a row.
 	 */
 	void print();
-
 	Type getType();
+
+private:
+	/**
+	 * @brief	This attribute stores the length information.
+	 */
+	uint8_t length;
+	/**
+	 * @brief	Here, the validity information for a variable is stored.
+	 * 			Every entry (single variable or vector) has one valid flag.
+	 */
+	uint8_t valid;
+	/**
+	 * @brief	This is the address pointing to the allocated memory.
+	 */
+	T* address;
 };
 
 #endif /* FSFW_DATAPOOL_POOLENTRY_H_ */
