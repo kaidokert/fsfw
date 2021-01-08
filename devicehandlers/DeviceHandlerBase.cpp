@@ -749,7 +749,8 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		case IGNORE_FULL_PACKET:
 			return;
 		default:
-			//We need to wait for timeout.. don't know what command failed and who sent it.
+			// We need to wait for timeout.. don't know what command failed
+			// and who sent it.
 			replyRawReplyIfnotWiretapped(receivedData, foundLen);
 			triggerEvent(DEVICE_READING_REPLY_FAILED, result, foundLen);
 			break;
