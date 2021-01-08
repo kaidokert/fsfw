@@ -1322,8 +1322,8 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
-			char* output = nullptr;
-			sprintf(output, "Command %lu is executing", deviceCommandId);
+			char output[36];
+			sprintf(output, "Command 0x%08x is executing", deviceCommandId);
 			// so we can track misconfigurations
 			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
 					"buildInternalCommand",
