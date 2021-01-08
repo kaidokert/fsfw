@@ -8,8 +8,6 @@
 
 
 TEST_CASE( "Local Pool Simple Tests [1 Pool]" , "[TestPool]") {
-//	uint16_t numberOfElements[1] = {1};
-//	uint16_t sizeofElements[1] = {10};
 	LocalPool::LocalPoolConfig config = {{1, 10}};
 	LocalPool simplePool(0, config);
 	std::array<uint8_t, 20> testDataArray;

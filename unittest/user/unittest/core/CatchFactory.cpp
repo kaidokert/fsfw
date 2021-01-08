@@ -1,11 +1,15 @@
+#include <fsfw/datapoollocal/LocalDataPoolManager.h>
+#include <fsfw/devicehandlers/DeviceHandlerBase.h>
 #include "CatchFactory.h"
 
 #include <fsfw/events/EventManager.h>
 #include <fsfw/health/HealthTable.h>
-
 #include <fsfw/internalError/InternalErrorReporter.h>
 #include <fsfw/objectmanager/frameworkObjects.h>
 #include <fsfw/storagemanager/PoolManager.h>
+#include <fsfw/tmtcpacket/pus/TmPacketStored.h>
+#include <fsfw/tmtcservices/CommandingServiceBase.h>
+#include <fsfw/tmtcservices/PusServiceBase.h>
 
 /**
  * @brief Produces system objects.
@@ -50,7 +54,23 @@ void Factory::produce(void) {
 }
 
 void Factory::setStaticFrameworkObjectIds() {
+	PusServiceBase::packetSource = objects::NO_OBJECT;
+	PusServiceBase::packetDestination = objects::NO_OBJECT;
 
+	CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
+	CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
+
+	VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
+
+	DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
+	DeviceHandlerBase::rawDataReceiverId = objects::PUS_SERVICE_2_DEVICE_ACCESS;
+
+	LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
+
+	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
+
+	TmPacketStored::timeStamperId = objects::NO_OBJECT;
 }
+
 
 

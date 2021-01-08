@@ -3,6 +3,7 @@
 
 #include "HasLocalDataPoolIF.h"
 
+#include "../serviceinterface/ServiceInterface.h"
 #include "../housekeeping/HousekeepingPacketDownlink.h"
 #include "../housekeeping/HousekeepingMessage.h"
 #include "../housekeeping/PeriodicHousekeepingHelper.h"
@@ -55,11 +56,13 @@ class LocalDataPoolManager {
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
-    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x0);
+    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_INVALID = MAKE_RETURN_CODE(0);
 
-    static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(0x01);
-    static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(0x02);
-    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(0x03);
+    static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(1);
+    static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(2);
+    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(3);
+    static constexpr ReturnValue_t POOLOBJECT_NOT_FOUND = MAKE_RETURN_CODE(4);
+    static constexpr ReturnValue_t DATASET_NOT_FOUND = MAKE_RETURN_CODE(5);
 
     /**
      * This constructor is used by a class which wants to implement
@@ -367,6 +370,11 @@ private:
             ReturnValue_t& status);
 	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
 	        store_address_t& storeId);
+
+	void printWarningOrError(fsfw::OutputTypes outputType,
+			const char* functionName,
+			ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
+			const char* errorPrint = nullptr);
 };
 
 
@@ -375,19 +383,15 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 		PoolEntry<T> **poolEntry) {
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "HousekeepingManager::fechPoolEntry: Pool entry "
-		        "not found." << std::endl;
-#endif
+    	printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "fetchPoolEntry",
+				HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND);
 		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::debug << "HousekeepingManager::fetchPoolEntry:"
-				" Pool entry not found." << std::endl;
-#endif
+    	printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "fetchPoolEntry",
+    			HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT);
 		return HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
 	}
 	return HasReturnvaluesIF::RETURN_OK;

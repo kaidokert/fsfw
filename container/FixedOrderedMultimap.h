@@ -3,6 +3,7 @@
 
 #include "ArrayList.h"
 #include <cstring>
+#include <functional>
 
 /**
  * @brief  An associative container which allows multiple entries of the same key.

@@ -28,17 +28,20 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 	}
 
 #if FSFW_COLORED_OUTPUT == 1
-	if(setMessage.find("DEBUG")) {
+	if(setMessage.find("DEBUG") != std::string::npos) {
 		colorPrefix = fsfw::ANSI_COLOR_MAGENTA;
 	}
-	else if(setMessage.find("INFO")) {
+	else if(setMessage.find("INFO") != std::string::npos) {
 		colorPrefix = fsfw::ANSI_COLOR_GREEN;
 	}
-	else if(setMessage.find("WARNING")) {
+	else if(setMessage.find("WARNING") != std::string::npos) {
 		colorPrefix = fsfw::ANSI_COLOR_YELLOW;
 	}
-	else if(setMessage.find("ERROR")) {
+	else if(setMessage.find("ERROR") != std::string::npos) {
 		colorPrefix = fsfw::ANSI_COLOR_RED;
+	}
+	else {
+		colorPrefix = fsfw::ANSI_COLOR_RESET;
 	}
 
 #ifdef WIN32

@@ -79,3 +79,43 @@ bool LocalPoolObjectBase::hasChanged() const {
 void LocalPoolObjectBase::setReadWriteMode(pool_rwm_t newReadWriteMode) {
 	this->readWriteMode = newReadWriteMode;
 }
+
+void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
+		ReturnValue_t error, bool read, object_id_t objectId, lp_id_t lpId) {
+#if FSFW_DISABLE_PRINTOUT == 0
+	const char* type = nullptr;
+	if(read) {
+		type = "read";
+	}
+	else {
+		type = "commit";
+	}
+
+	const char* errMsg = nullptr;
+	if(error == HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND) {
+		errMsg = "Pool entry not found";
+	}
+	else if(error == HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT) {
+		errMsg = "Pool entry type conflict";
+	}
+	else if(error == PoolVariableIF::INVALID_READ_WRITE_MODE) {
+		errMsg = "Pool variable wrong read-write mode";
+	}
+	else if(error == PoolVariableIF::INVALID_POOL_ENTRY) {
+		errMsg = "Pool entry invalid";
+	}
+	else {
+		errMsg = "Unknown error code";
+	}
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	sif::warning << variableType << ": " << type << " call | " << errMsg
+			<< " | Owner: 0x" << std::hex << std::setw(8)
+			<< std::setfill('0') << objectId << std::dec << " LPID: " << lpId
+			<< std::endl;
+#else
+	fsfw::printWarning("%s: %s call | %s | Owner: 0x%08x LPID: %lu\n",
+			variableType, type, errMsg, objectId, lpId);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_DISABLE_PRINTOUT == 0 */
+}

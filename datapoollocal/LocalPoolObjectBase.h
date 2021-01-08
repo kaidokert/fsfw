@@ -56,6 +56,8 @@ protected:
     //! @brief  Pointer to the class which manages the HK pool.
     LocalDataPoolManager* hkManager;
 
+	void reportReadCommitError(const char* variableType,
+			ReturnValue_t error, bool read, object_id_t objectId, lp_id_t lpId);
 };
 
 

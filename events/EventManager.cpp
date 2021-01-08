@@ -162,9 +162,15 @@ void EventManager::printEvent(EventMessage* message) {
 #endif
 
 void EventManager::lockMutex() {
-	mutex->lockMutex(MutexIF::BLOCKING);
+	mutex->lockMutex(timeoutType, timeoutMs);
 }
 
 void EventManager::unlockMutex() {
 	mutex->unlockMutex();
+}
+
+void EventManager::setMutexTimeout(MutexIF::TimeoutType timeoutType,
+		uint32_t timeoutMs) {
+	this->timeoutType = timeoutType;
+	this->timeoutMs = timeoutMs;
 }

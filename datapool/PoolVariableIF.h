@@ -25,6 +25,7 @@ class PoolVariableIF : public SerializeIF,
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::POOL_VARIABLE_IF;
 	static constexpr ReturnValue_t INVALID_READ_WRITE_MODE = MAKE_RETURN_CODE(0xA0);
+	static constexpr ReturnValue_t INVALID_POOL_ENTRY = MAKE_RETURN_CODE(0xA1);
 
 	static constexpr bool VALID = 1;
 	static constexpr bool INVALID = 0;
