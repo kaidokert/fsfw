@@ -1321,7 +1321,8 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		} else if (iter->second.isExecuting) {
 #if FSFW_DISABLE_PRINTOUT == 0
 			char output[36];
-			sprintf(output, "Command 0x%08x is executing", deviceCommandId);
+			sprintf(output, "Command 0x%08x is executing",
+					static_cast<unsigned int>(deviceCommandId));
 			// so we can track misconfigurations
 			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
 					"buildInternalCommand",
