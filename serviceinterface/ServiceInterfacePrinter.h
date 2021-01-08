@@ -7,10 +7,10 @@ namespace fsfw {
 enum PrintLevel {
 	NONE = 0,
 	//! Strange error when using just ERROR..
-	ERROR_TYPE = 1,
-	WARNING = 2,
-	INFO = 3,
-	DEBUG = 4
+	ERROR_LEVEL = 1,
+	WARNING_LEVEL = 2,
+	INFO_LEVEL = 3,
+	DEBUG_LEVEL = 4
 };
 
 /**
