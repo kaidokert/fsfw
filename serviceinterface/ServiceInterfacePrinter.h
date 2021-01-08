@@ -16,6 +16,8 @@ enum class PrintLevel {
 void setPrintLevel(PrintLevel printLevel);
 PrintLevel getPrintLevel();
 
+void setToAddCrAtEnd(bool addCrAtEnd_);
+
 /**
  * These functions can be used like the C stdio printf and forward the
  * supplied formatted string arguments to a printf function.

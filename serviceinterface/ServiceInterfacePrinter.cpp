@@ -10,7 +10,7 @@ fsfw::PrintLevel printLevel = fsfw::PrintLevel::DEBUG;
 #if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
 bool consoleInitialized = false;
 #endif /* defined(WIN32) && FSFW_COLORED_OUTPUT == 1 */
-
+bool addCrAtEnd = false;
 
 #if FSFW_DISABLE_PRINTOUT == 0
 uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
@@ -80,6 +80,10 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
 
     len += vsnprintf(bufferPosition + len, sizeof(printBuffer) - len, fmt, arg);
 
+    if(addCrAtEnd) {
+    	len += sprintf(bufferPosition + len, "\r");
+    }
+
     printf("%s", printBuffer);
 }
 
@@ -103,6 +107,10 @@ void fsfw::printDebug(const char *fmt, ...) {
     va_start(args, fmt);
     fsfwPrint(fsfw::PrintLevel::DEBUG, fmt, args);
     va_end(args);
+}
+
+void fsfw::setToAddCrAtEnd(bool addCrAtEnd_) {
+	addCrAtEnd = addCrAtEnd_;
 }
 
 void fsfw::printError(const char *fmt, ...) {

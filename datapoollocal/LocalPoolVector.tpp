@@ -98,11 +98,11 @@ inline T& LocalPoolVector<T, vectorSize>::operator [](size_t i) {
 	// If this happens, I have to set some value. I consider this
 	// a configuration error, but I wont exit here.
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
+	sif::warning << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
 #else
-	fsfw::printError("LocalPoolVector: Invalid index. Setting or returning"
-			" last value!\n\r");
+	fsfw::printWarning("LocalPoolVector: Invalid index. Setting or returning"
+			" last value!\n");
 #endif
 	return value[vectorSize];
 }
@@ -115,11 +115,11 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](size_t i) const {
 	// If this happens, I have to set some value. I consider this
 	// a configuration error, but I wont exit here.
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
+	sif::warning << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
 #else
-	fsfw::printError("LocalPoolVector: Invalid index. Setting or returning"
-			" last value!\n\r");
+	fsfw::printWarning("LocalPoolVector: Invalid index. Setting or returning"
+			" last value!\n");
 #endif
 	return value[vectorSize];
 }
