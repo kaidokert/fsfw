@@ -91,8 +91,8 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 }
 
 template<typename T, uint16_t vectorSize>
-inline T& LocalPoolVector<T, vectorSize>::operator [](int i) {
-	if(i <= vectorSize) {
+inline T& LocalPoolVector<T, vectorSize>::operator [](size_t i) {
+	if(i < vectorSize) {
 		return value[i];
 	}
 	// If this happens, I have to set some value. I consider this
@@ -100,13 +100,16 @@ inline T& LocalPoolVector<T, vectorSize>::operator [](int i) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
+#else
+	fsfw::printError("LocalPoolVector: Invalid index. Setting or returning"
+			" last value!\n\r");
 #endif
-	return value[i];
+	return value[vectorSize];
 }
 
 template<typename T, uint16_t vectorSize>
-inline const T& LocalPoolVector<T, vectorSize>::operator [](int i) const {
-	if(i <= vectorSize) {
+inline const T& LocalPoolVector<T, vectorSize>::operator [](size_t i) const {
+	if(i < vectorSize) {
 		return value[i];
 	}
 	// If this happens, I have to set some value. I consider this
@@ -114,8 +117,11 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](int i) const {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
+#else
+	fsfw::printError("LocalPoolVector: Invalid index. Setting or returning"
+			" last value!\n\r");
 #endif
-	return value[i];
+	return value[vectorSize];
 }
 
 template<typename T, uint16_t vectorSize>
