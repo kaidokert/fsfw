@@ -6,6 +6,8 @@
 #include "DeviceHandlerFailureIsolation.h"
 #include "DeviceHandlerThermalSet.h"
 
+#include "../serviceinterface/ServiceInterface.h"
+#include "../serviceinterface/serviceInterfaceDefintions.h"
 #include "../objectmanager/SystemObject.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -1111,7 +1113,7 @@ private:
 	/**
 	 * @brief   The mode the current transition originated from
 	 *
-	 * This is private so the child can not change it and fuck up the timeouts
+	 * This is private so the child can not change it and mess up the timeouts
 	 *
 	 * IMPORTANT: This is not valid during _MODE_SHUT_DOWN and _MODE_START_UP!!
 	 * (it is _MODE_POWER_DOWN during this modes)
@@ -1190,7 +1192,8 @@ private:
 	 * Check if the RMAP sendWrite action was successful.
 	 *
 	 * Depending on the result, the following is done
-	 * - if the device command was external commanded, a reply is sent indicating the result
+	 * - if the device command was external commanded, a reply is sent
+	 *   indicating the result
 	 * - if the action was successful, the reply timout counter is initialized
 	 */
 	void doGetWrite(void);
@@ -1206,9 +1209,9 @@ private:
 	/**
 	 * Check the getRead reply and the contained data.
 	 *
-	 * If data was received scanForReply() and, if successful, handleReply() are called.
-	 * If the current mode is @c MODE_RAW, the received packet is sent to the commanding object
-	 * via commandQueue.
+	 * If data was received scanForReply() and, if successful, handleReply()
+	 * are called. If the current mode is @c MODE_RAW, the received packet
+	 * is sent to the commanding object via commandQueue.
 	 */
 	void doGetRead(void);
 
@@ -1227,7 +1230,7 @@ private:
 			uint32_t *len);
 
 	/**
-	 * @param modeTo either @c MODE_ON, MODE_NORMAL or MODE_RAW NOTHING ELSE!!!
+	 * @param modeTo either @c MODE_ON, MODE_NORMAL or MODE_RAW, nothing else!
 	 */
 	void setTransition(Mode_t modeTo, Submode_t submodeTo);
 
@@ -1247,6 +1250,11 @@ private:
 
     void handleTransitionToOnMode(Mode_t commandedMode,
     		Submode_t commandedSubmode);
+
+    void printWarningOrError(fsfw::OutputTypes errorType,
+    		const char* functionName,
+			ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
+			const char* errorPrint = nullptr);
 };
 
 #endif /* FSFW_DEVICEHANDLERS_DEVICEHANDLERBASE_H_ */

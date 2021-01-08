@@ -371,12 +371,8 @@ private:
 	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
 	        store_address_t& storeId);
 
-	enum class ErrorTypes {
-		WARNING_TYPE,
-		ERROR_TYPE
-	};
-
-	void printWarningOrError(ErrorTypes errorType, const char* functionName,
+	void printWarningOrError(fsfw::OutputTypes outputType,
+			const char* functionName,
 			ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
 			const char* errorPrint = nullptr);
 };
@@ -387,14 +383,14 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 		PoolEntry<T> **poolEntry) {
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
-    	printWarningOrError(ErrorTypes::ERROR_TYPE, "fetchPoolEntry",
+    	printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "fetchPoolEntry",
 				HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND);
 		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
-    	printWarningOrError(ErrorTypes::ERROR_TYPE, "fetchPoolEntry",
+    	printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "fetchPoolEntry",
     			HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT);
 		return HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
 	}

@@ -4,7 +4,7 @@
 
 namespace fsfw {
 
-enum class PrintLevel {
+enum PrintLevel {
 	NONE = 0,
 	//! Strange error when using just ERROR..
 	ERROR_TYPE = 1,
@@ -13,6 +13,12 @@ enum class PrintLevel {
 	DEBUG = 4
 };
 
+/**
+ * Set the print level. All print types with a smaller level will be printed
+ * as well. For example, set to PrintLevel::WARNING to only enable error
+ * and warning output.
+ * @param printLevel
+ */
 void setPrintLevel(PrintLevel printLevel);
 PrintLevel getPrintLevel();
 

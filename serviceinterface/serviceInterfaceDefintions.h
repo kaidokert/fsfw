@@ -3,6 +3,13 @@
 
 namespace fsfw {
 
+enum class OutputTypes {
+	OUT_INFO,
+	OUT_DEBUG,
+	OUT_WARNING,
+	OUT_ERROR
+};
+
 static const char* const ANSI_COLOR_RED = "\x1b[31m";
 static const char* const ANSI_COLOR_GREEN = "\x1b[32m";
 static const char* const ANSI_COLOR_YELLOW = "\x1b[33m";
