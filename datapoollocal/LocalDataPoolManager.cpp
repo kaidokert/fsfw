@@ -3,10 +3,8 @@
 #include "LocalPoolDataSetBase.h"
 
 #include "../housekeeping/HousekeepingPacketUpdate.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "../housekeeping/HousekeepingSetPacket.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
-
 #include "../timemanager/CCSDSTime.h"
 #include "../ipc/MutexFactory.h"
 #include "../ipc/MutexHelper.h"
@@ -834,6 +832,12 @@ void LocalDataPoolManager::printWarningOrError(ErrorTypes errorType,
 		}
 		else if(error == QUEUE_OR_DESTINATION_INVALID) {
 			errorPrint = "Queue or destination not set";
+		}
+		else if(error == HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT) {
+			errorPrint = "Pool entry type conflict";
+		}
+		else if(error == HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND) {
+			errorPrint = "Pool entry not found";
 		}
 		else {
 			errorPrint = "Unknown error";

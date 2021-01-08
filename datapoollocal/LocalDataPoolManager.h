@@ -387,25 +387,15 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 		PoolEntry<T> **poolEntry) {
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "HousekeepingManager::fetchPoolEntry: Pool entry "
-		        "not found." << std::endl;
-#else
-		fsfw::printWarning("HousekeepingManager::fetchPoolEntry: Pool entry "
-		        "not found.\n");
-#endif
+    	printWarningOrError(ErrorTypes::ERROR_TYPE, "fetchPoolEntry",
+				HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND);
 		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "HousekeepingManager::fetchPoolEntry:"
-				" Pool entry type conflict." << std::endl;
-#else
-		fsfw::printWarning("HousekeepingManager::fetchPoolEntry:"
-				" Pool entry type conflict.\n");
-#endif
+    	printWarningOrError(ErrorTypes::ERROR_TYPE, "fetchPoolEntry",
+    			HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT);
 		return HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
