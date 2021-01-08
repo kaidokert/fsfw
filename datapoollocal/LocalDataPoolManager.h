@@ -56,7 +56,7 @@ class LocalDataPoolManager {
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
-    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0);
+    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_INVALID = MAKE_RETURN_CODE(0);
 
     static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(1);
     static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(2);
@@ -370,6 +370,15 @@ private:
             ReturnValue_t& status);
 	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
 	        store_address_t& storeId);
+
+	enum class ErrorTypes {
+		WARNING_TYPE,
+		ERROR_TYPE
+	};
+
+	void printWarningOrError(ErrorTypes errorType, const char* functionName,
+			ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
+			const char* errorPrint = nullptr);
 };
 
 

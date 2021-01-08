@@ -3,6 +3,7 @@
 #include "LocalPoolDataSetBase.h"
 
 #include "../housekeeping/HousekeepingPacketUpdate.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../housekeeping/HousekeepingSetPacket.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 
@@ -21,19 +22,17 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
         MessageQueueIF* queueToUse, bool appendValidityBuffer):
                         appendValidityBuffer(appendValidityBuffer) {
     if(owner == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
-                << "Invalid supplied owner!" << std::endl;
-#endif
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"LocalDataPoolManager", HasReturnvaluesIF::RETURN_FAILED,
+				"Invalid supplied owner");
         return;
     }
     this->owner = owner;
     mutex = MutexFactory::instance()->createMutex();
     if(mutex == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
-                << "Could not create mutex." << std::endl;
-#endif
+    	printWarningOrError(ErrorTypes::ERROR_TYPE,
+    			"LocalDataPoolManager", HasReturnvaluesIF::RETURN_FAILED,
+				"Could not create mutex");
     }
 
     hkQueue = queueToUse;
@@ -43,21 +42,18 @@ LocalDataPoolManager::~LocalDataPoolManager() {}
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
     if(queueToUse == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalDataPoolManager::initialize: "
-                << std::hex << "0x" << owner->getObjectId() << ". Supplied "
-                << "queue invalid!" << std::dec << std::endl;
-#endif
+        // error, all destinations invalid
+    	printWarningOrError(ErrorTypes::ERROR_TYPE,
+    			"initialize", QUEUE_OR_DESTINATION_INVALID);
     }
     hkQueue = queueToUse;
 
     ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
     if(ipcStore == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalDataPoolManager::initialize: "
-                << std::hex << "0x" << owner->getObjectId() << ": Could not "
-                << "set IPC store." <<std::dec << std::endl;
-#endif
+        // error, all destinations invalid
+    	printWarningOrError(ErrorTypes::ERROR_TYPE,
+    			"initialize", HasReturnvaluesIF::RETURN_FAILED,
+				"Could not set IPC store.");
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
@@ -69,11 +65,9 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
             hkDestinationId = hkPacketReceiver->getHkQueue();
         }
         else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "LocalDataPoolManager::LocalDataPoolManager: "
-                    << "Default HK destination object is invalid!" << std::endl;
-#endif
-            return HasReturnvaluesIF::RETURN_FAILED;
+        	printWarningOrError(ErrorTypes::ERROR_TYPE,
+        			"initialize", QUEUE_OR_DESTINATION_INVALID);
+            return QUEUE_OR_DESTINATION_INVALID;
         }
     }
 
@@ -95,10 +89,10 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
         }
         return result;
     }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "HousekeepingManager: The map should only be initialized "
-            << "once!" << std::endl;
-#endif
+
+	printWarningOrError(ErrorTypes::WARNING_TYPE,
+			"initialize", HasReturnvaluesIF::RETURN_FAILED,
+			"The map should only be initialized once");
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -163,7 +157,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(
         LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
                 receiver.dataId.localPoolId);
         if(poolObj == nullptr) {
-            return HasReturnvaluesIF::RETURN_FAILED;
+        	printWarningOrError(ErrorTypes::WARNING_TYPE,
+        			"handleNotificationUpdate", POOLOBJECT_NOT_FOUND);
+            return POOLOBJECT_NOT_FOUND;
         }
         if(poolObj->hasChanged()) {
             // prepare and send update notification.
@@ -183,7 +179,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(
         LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
                 receiver.dataId.sid);
         if(dataSet == nullptr) {
-            return HasReturnvaluesIF::RETURN_FAILED;
+        	printWarningOrError(ErrorTypes::WARNING_TYPE,
+        			"handleNotificationUpdate", DATASET_NOT_FOUND);
+            return DATASET_NOT_FOUND;
         }
         if(dataSet->hasChanged()) {
             // prepare and send update notification
@@ -213,6 +211,8 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
         LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
                 receiver.dataId.localPoolId);
         if(poolObj == nullptr) {
+        	printWarningOrError(ErrorTypes::WARNING_TYPE,
+        			"handleNotificationSnapshot", POOLOBJECT_NOT_FOUND);
             return POOLOBJECT_NOT_FOUND;
         }
 
@@ -249,6 +249,8 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
         LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
                 receiver.dataId.sid);
         if(dataSet == nullptr) {
+        	printWarningOrError(ErrorTypes::WARNING_TYPE,
+        			"handleNotificationSnapshot", DATASET_NOT_FOUND);
             return DATASET_NOT_FOUND;
         }
 
@@ -351,11 +353,9 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
     AcceptsHkPacketsIF* hkReceiverObject =
             objectManager->get<AcceptsHkPacketsIF>(packetDestination);
     if(hkReceiverObject == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalDataPoolManager::subscribeForPeriodicPacket:"
-                << " Invalid receiver!"<< std::endl;
-#endif
-        return HasReturnvaluesIF::RETURN_OK;
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"subscribeForPeriodicPacket", QUEUE_OR_DESTINATION_INVALID);
+        return QUEUE_OR_DESTINATION_INVALID;
     }
 
     struct HkReceiver hkReceiver;
@@ -383,11 +383,9 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
     AcceptsHkPacketsIF* hkReceiverObject =
             objectManager->get<AcceptsHkPacketsIF>(packetDestination);
     if(hkReceiverObject == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalDataPoolManager::subscribeForPeriodicPacket:"
-                << " Invalid receiver!"<< std::endl;
-#endif
-        return HasReturnvaluesIF::RETURN_OK;
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"subscribeForPeriodicPacket", QUEUE_OR_DESTINATION_INVALID);
+        return QUEUE_OR_DESTINATION_INVALID;
     }
 
     struct HkReceiver hkReceiver;
@@ -591,10 +589,8 @@ ReturnValue_t LocalDataPoolManager::printPoolEntry(
         lp_id_t localPoolId) {
     auto poolIter = localPoolMap.find(localPoolId);
     if (poolIter == localPoolMap.end()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::debug << "HousekeepingManager::fechPoolEntry:"
-                << " Pool entry not found." << std::endl;
-#endif
+    	printWarningOrError(ErrorTypes::WARNING_TYPE, "printPoolEntry",
+    			 HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND);
         return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
     }
     poolIter->second->print();
@@ -614,10 +610,9 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
         MessageQueueId_t destination) {
     if(dataSet == nullptr) {
         // Configuration error.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
-                << " Set ID not found or dataset not assigned!" << std::endl;
-#endif
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"generateHousekeepingPacket",
+    			DATASET_NOT_FOUND);
         return DATASET_NOT_FOUND;
     }
 
@@ -640,12 +635,18 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
     }
 
     if(hkQueue == nullptr) {
-        return QUEUE_OR_DESTINATION_NOT_SET;
+        // error, all destinations invalid
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"generateHousekeepingPacket",
+    			QUEUE_OR_DESTINATION_INVALID);
+        return QUEUE_OR_DESTINATION_INVALID;
     }
     if(destination == MessageQueueIF::NO_QUEUE) {
         if(hkDestinationId == MessageQueueIF::NO_QUEUE) {
             // error, all destinations invalid
-            return HasReturnvaluesIF::RETURN_FAILED;
+        	printWarningOrError(ErrorTypes::WARNING_TYPE,
+        			"generateHousekeepingPacket",
+        			QUEUE_OR_DESTINATION_INVALID);
         }
         destination = hkDestinationId;
     }
@@ -681,6 +682,13 @@ void LocalDataPoolManager::setNonDiagnosticIntervalFactor(
 void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
     sid_t sid = receiver.dataId.sid;
     LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+    if(dataSet == nullptr) {
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"performPeriodicHkGeneration",
+    			DATASET_NOT_FOUND);
+    	return;
+    }
+
     if(not dataSet->getReportingEnabled()) {
         return;
     }
@@ -699,10 +707,11 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
     if(result != HasReturnvaluesIF::RETURN_OK) {
         // configuration error
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::debug << "LocalDataPoolManager::performHkOperation:"
-                << "0x" << std::hex << std::setfill('0') << std::setw(8)
-                << owner->getObjectId() << " Error generating "
-                << "HK packet" << std::setfill(' ') << std::dec << std::endl;
+        sif::warning << "LocalDataPoolManager::performHkOperation: "
+                << "HK generation failed." << std::endl;
+#else
+        fsfw::printWarning("LocalDataPoolManager::performHkOperation: "
+        		"HK generation failed.\n");
 #endif
     }
 }
@@ -748,11 +757,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
     // Get and check dataset first.
     LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
     if(dataSet == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "HousekeepingManager::generateHousekeepingPacket:"
-                << " Set ID not found" << std::endl;
-#endif
-        return HasReturnvaluesIF::RETURN_FAILED;
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"performPeriodicHkGeneration",
+    			DATASET_NOT_FOUND);
+        return DATASET_NOT_FOUND;
     }
 
 
@@ -776,10 +784,9 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
     ReturnValue_t result = ipcStore->getFreeElement(&storeId,
             expectedSize,&storePtr);
     if(result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "HousekeepingManager::generateHousekeepingPacket: "
-                << "Could not get free element from IPC store." << std::endl;
-#endif
+    	printWarningOrError(ErrorTypes::ERROR_TYPE,
+    			"generateSetStructurePacket", HasReturnvaluesIF::RETURN_FAILED,
+				"Could not get free element from IPC store.");
         return result;
     }
 
@@ -788,10 +795,9 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
     result = setPacket.serialize(&storePtr, &size, expectedSize,
             SerializeIF::Endianness::BIG);
     if(expectedSize != size) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "HousekeepingManager::generateSetStructurePacket: "
-                << "Expected size is not equal to serialized size" << std::endl;
-#endif
+    	printWarningOrError(ErrorTypes::WARNING_TYPE,
+    			"generateSetStructurePacket", HasReturnvaluesIF::RETURN_FAILED,
+				"Expected size is not equal to serialized size");
     }
 
     // Send structure reporting reply.
@@ -807,4 +813,53 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 
     hkQueue->reply(&reply);
     return result;
+}
+
+void LocalDataPoolManager::printWarningOrError(ErrorTypes errorType,
+		const char* functionName, ReturnValue_t error, const char* errorPrint) {
+	if(errorPrint == nullptr) {
+		if(error == DATASET_NOT_FOUND) {
+			errorPrint = "Dataset not found";
+		}
+		else if(error == POOLOBJECT_NOT_FOUND) {
+			errorPrint = "Pool Object not found";
+		}
+		else if(error == HasReturnvaluesIF::RETURN_FAILED) {
+			if(errorType == ErrorTypes::WARNING_TYPE) {
+				errorPrint = "Generic Warning";
+			}
+			else {
+				errorPrint = "Generic error";
+			}
+		}
+		else if(error == QUEUE_OR_DESTINATION_INVALID) {
+			errorPrint = "Queue or destination not set";
+		}
+		else {
+			errorPrint = "Unknown error";
+		}
+	}
+
+	if(errorType == ErrorTypes::WARNING_TYPE) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::warning << "LocalDataPoolManager::" << functionName
+				<< ": Object ID " << std::setw(8) << std::setfill('0')
+				<< std::hex << owner->getObjectId() << " | " << errorPrint
+				<< std::dec << std::setfill(' ') << std::endl;
+#else
+		fsfw::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
+				owner->getObjectId(), errorPrint);
+#endif
+	}
+	else if(errorType == ErrorTypes::ERROR_TYPE) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "LocalDataPoolManager::" << functionName
+				<< ": Object ID " << std::setw(8) << std::setfill('0')
+				<< std::hex << owner->getObjectId() << " | " << errorPrint
+				<< std::dec << std::setfill(' ') << std::endl;
+#else
+		fsfw::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
+				owner->getObjectId(), errorPrint);
+#endif
+	}
 }
