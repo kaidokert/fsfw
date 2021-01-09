@@ -1,10 +1,11 @@
 #include "BinarySemaphore.h"
+#include "../../serviceinterface/ServiceInterfacePrinter.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
-extern "C" {
+#include <time.h>
 #include <errno.h>
 #include <string.h>
-}
+
 
 BinarySemaphore::BinarySemaphore() {
 	// Using unnamed semaphores for now
@@ -113,7 +114,8 @@ uint8_t BinarySemaphore::getSemaphoreCounter(sem_t *handle) {
 	}
 	else if(result != 0 and errno == EINVAL) {
 		// Could be called from interrupt, use lightweight printf
-		printf("BinarySemaphore::getSemaphoreCounter: Invalid semaphore\n");
+		fsfw::printError("BinarySemaphore::getSemaphoreCounter: "
+				"Invalid semaphore\n");
 		return 0;
 	}
 	else {
@@ -128,12 +130,16 @@ void BinarySemaphore::initSemaphore(uint8_t initCount) {
 		switch(errno) {
 		case(EINVAL):
 			// Value exceeds SEM_VALUE_MAX
-		case(ENOSYS):
-		// System does not support process-shared semaphores
+		case(ENOSYS): {
+			// System does not support process-shared semaphores
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "BinarySemaphore: Init failed with" << strerror(errno)
-				<< std::endl;
+				sif::error << "BinarySemaphore: Init failed with "
+						<< strerror(errno) << std::endl;
+#else
+				fsfw::printError("BinarySemaphore: Init failed with %s\n",
+						strerror(errno));
 #endif
+		}
 		}
 	}
 }

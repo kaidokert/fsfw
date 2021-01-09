@@ -1,5 +1,5 @@
 #include "MessageQueue.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 
 #include <fstream>
@@ -121,14 +121,16 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		break;
 	}
 
-	default:
+	default: {
 		// Failed either the first time or the second time
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
-		<< name << std::dec << " failed with status: "
-		<< strerror(errno) << std::endl;
+		sif::error << "MessageQueue::MessageQueue: Creating Queue " << name
+				<< " failed with status: " << strerror(errno) << std::endl;
+#else
+		fsfw::printError("MessageQueue::MessageQueue: Creating Queue %s"
+				" failed with status: %s\n", name, strerror(errno));
 #endif
-
+	}
 	}
 	return HasReturnvaluesIF::RETURN_FAILED;
 
