@@ -33,13 +33,10 @@ inline ReturnValue_t LocalPoolVariable<T>::read(
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "LocalPoolVariable: Invalid read write "
-				"mode for read call." << std::endl;
-#else
-		fsfw::printWarning("LocalPoolVariable: Invalid read write "
-				"mode for read call.\n\r");
-#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector",
+				PoolVariableIF::INVALID_READ_WRITE_MODE, true, targetObjectId,
+				localPoolId);
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 
@@ -53,16 +50,16 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	}
 
 	// Actually this should never happen..
-	if(poolEntry->address == nullptr) {
-		result = PoolVariableIF::INVALID_POOL_ENTRY;
-		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
-		reportReadCommitError("LocalPoolVariable", result,
-				false, ownerObjectId, localPoolId);
-		return result;
-	}
+//	if(poolEntry->address == nullptr) {
+//		result = PoolVariableIF::INVALID_POOL_ENTRY;
+//		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
+//		reportReadCommitError("LocalPoolVariable", result,
+//				false, ownerObjectId, localPoolId);
+//		return result;
+//	}
 
-	this->value = *(poolEntry->address);
-	this->valid = poolEntry->valid;
+	this->value = *(poolEntry->getDataPtr());
+	this->valid = poolEntry->getValid();
 	return RETURN_OK;
 }
 
@@ -83,15 +80,13 @@ inline ReturnValue_t LocalPoolVariable<T>::commit(
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "LocalPoolVariable: Invalid read write "
-				 "mode for commit call." << std::endl;
-#else
-		fsfw::printWarning("LocalPoolVariable: Invalid read write "
-				 "mode for commit call.\n\r");
-#endif  /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		reportReadCommitError("LocalPoolVector",
+				PoolVariableIF::INVALID_READ_WRITE_MODE, false, targetObjectId,
+				localPoolId);
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
+
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
@@ -101,8 +96,8 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 		return result;
 	}
 
-	*(poolEntry->address) = this->value;
-	poolEntry->valid = this->valid;
+	*(poolEntry->getDataPtr()) = this->value;
+	poolEntry->setValid(this->valid);
 	return RETURN_OK;
 }
 

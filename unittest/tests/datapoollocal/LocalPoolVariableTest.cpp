@@ -23,10 +23,10 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		REQUIRE(testVariable.commit() == retval::CATCH_OK);
 		REQUIRE(testVariable.read() == retval::CATCH_OK);
 		REQUIRE(testVariable.value == 5);
-
 		CHECK(not testVariable.isValid());
 		testVariable.setValid(true);
 		CHECK(testVariable.isValid());
+		CHECK(testVariable.commit(true) == retval::CATCH_OK);
 
 		testVariable.setReadWriteMode(pool_rwm_t::VAR_READ);
 		CHECK(testVariable.getReadWriteMode() == pool_rwm_t::VAR_READ);

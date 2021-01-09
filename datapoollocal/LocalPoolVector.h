@@ -100,8 +100,8 @@ public:
 		return vectorSize;
 	}
 
-	T& operator [](int i);
-	const T &operator [](int i) const;
+	T& operator [](size_t i);
+	const T &operator [](size_t i) const;
 
 	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
 			const size_t maxSize,
@@ -126,6 +126,7 @@ public:
 	ReturnValue_t read(MutexIF::TimeoutType timeoutType =
 			MutexIF::TimeoutType::WAITING,
 			uint32_t timeoutMs = 20) override;
+
 	/**
 	 * @brief	The commit call copies the array values back to the data pool.
 	 * @details
@@ -138,6 +139,14 @@ public:
 	ReturnValue_t commit(MutexIF::TimeoutType timeoutType =
 			MutexIF::TimeoutType::WAITING,
 			uint32_t timeoutMs = 20) override;
+
+	/**
+	 * @brief	This commit call also sets the validity of the pool entry.
+	 * @details
+	 */
+	ReturnValue_t commit(bool valid, MutexIF::TimeoutType timeoutType =
+			MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
 
 protected:
 	/**
