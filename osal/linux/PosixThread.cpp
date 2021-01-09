@@ -1,6 +1,6 @@
 #include "PosixThread.h"
 
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 #include <errno.h>
@@ -146,16 +146,22 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 				strerror(status) << std::endl;
 #endif
 		if(errno == ENOMEM) {
-			uint64_t stackMb = stackSize/10e6;
+			size_t stackMb = stackSize/10e6;
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PosixThread::createTask: Insufficient memory for"
 					" the requested " << stackMb << " MB" << std::endl;
+#else
+			fsfw::printError("PosixThread::createTask: Insufficient memory for "
+					"the requested %zu MB\n", stackMb);
 #endif
 		}
 		else if(errno == EINVAL) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PosixThread::createTask: Wrong alignment argument!"
 					<< std::endl;
+#else
+			fsfw::printError("PosixThread::createTask: "
+					"Wrong alignment argument!\n");
 #endif
 		}
 		return;
