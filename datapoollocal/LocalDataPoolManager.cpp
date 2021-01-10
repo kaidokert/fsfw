@@ -48,7 +48,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
 
     ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
     if(ipcStore == nullptr) {
-        // error, all destinations invalid
+    	// error, all destinations invalid
     	printWarningOrError(fsfw::OutputTypes::OUT_ERROR,
     			"initialize", HasReturnvaluesIF::RETURN_FAILED,
 				"Could not set IPC store.");
