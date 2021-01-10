@@ -250,6 +250,12 @@ public:
     LocalDataPoolManager(const LocalDataPoolManager &) = delete;
     LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
 
+    /**
+     * This function can be used to clear the receivers list. This is
+     * intended for test functions and not for regular operations, because
+     * the insertion operations allocate dynamically.
+     */
+    void clearReceiversList();
 private:
     LocalDataPool localPoolMap;
     //! Every housekeeping data manager has a mutex to protect access

@@ -40,6 +40,10 @@ public:
 		return receiveMessage(message);
 	}
 	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) {
+		if(messagesSentQueue.empty()) {
+			return MessageQueueIF::EMPTY;
+		}
+
 		std::memcpy(message->getBuffer(), messagesSentQueue.front().getBuffer(),
 				message->getMessageSize());
 		messagesSentQueue.pop();
@@ -95,8 +99,15 @@ public:
 		return defaultDestSet;
 	}
 
-	void clearMessages() {
+	void clearMessages(bool clearCommandMessages = true) {
 		while(not messagesSentQueue.empty()) {
+			if(clearCommandMessages) {
+				CommandMessage message;
+				std::memcpy(message.getBuffer(),
+						messagesSentQueue.front().getBuffer(),
+						message.getMessageSize());
+				message.clear();
+			}
 			messagesSentQueue.pop();
 		}
 	}

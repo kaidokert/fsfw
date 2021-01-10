@@ -66,6 +66,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 	}
 
 	SECTION("AdvancedTests") {
+		poolOwner->resetSubscriptionList();
 		// Subscribe for variable update as well
 		REQUIRE(not poolOwner->dataset.hasChanged());
 		REQUIRE(poolOwner->subscribeWrapperVariableUpdate(lpool::uint8VarId) ==
@@ -89,7 +90,31 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		REQUIRE(poolOwner->subscribeWrapperSetUpdate() == retval::CATCH_OK);
 		REQUIRE(poolOwner->subscribeWrapperSetUpdateHk() == retval::CATCH_OK);
 
+		poolOwner->dataset.setChanged(true);
+		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		// now two messages should be sent.
+		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+		CHECK(messagesSent == 2);
+		mqMock->clearMessages(true);
 
+		poolOwner->dataset.setChanged(true);
+		poolVar->setChanged(true);
+		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		// now three messages should be sent.
+		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+		CHECK(messagesSent == 3);
+		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+		CHECK(messageSent.getCommand() == static_cast<int>(
+				HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE));
+		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+		CHECK(messageSent.getCommand() == static_cast<int>(
+				HousekeepingMessage::UPDATE_NOTIFICATION_SET));
+		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+		CHECK(messageSent.getCommand() == static_cast<int>(
+				HousekeepingMessage::HK_REPORT));
+		CommandMessageCleaner::clearCommandMessage(&messageSent);
+		REQUIRE(mqMock->receiveMessage(&messageSent) ==
+				static_cast<int>(MessageQueueIF::EMPTY));
 	}
 }
 

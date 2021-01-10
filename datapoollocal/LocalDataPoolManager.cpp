@@ -820,6 +820,11 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
     return result;
 }
 
+void LocalDataPoolManager::clearReceiversList() {
+	// clear the vector completely and releases allocated memory.
+	HkReceivers().swap(hkReceiversMap);
+}
+
 void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,
 		const char* functionName, ReturnValue_t error, const char* errorPrint) {
 	if(errorPrint == nullptr) {

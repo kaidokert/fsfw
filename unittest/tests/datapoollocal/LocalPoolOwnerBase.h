@@ -168,6 +168,10 @@ public:
 				MessageQueueIF::NO_QUEUE, objects::NO_OBJECT, false);
 	}
 
+	void resetSubscriptionList() {
+		hkManager.clearReceiversList();
+	}
+
 	LocalDataPoolManager hkManager;
 	LocalPoolTestDataSet dataset;
 private:
