@@ -17,6 +17,8 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 	REQUIRE(poolOwner->dataset.assignPointers() == retval::CATCH_OK);
 	MessageQueueMockBase* mqMock = poolOwner->getMockQueueHandle();
 	REQUIRE(mqMock != nullptr);
+	CommandMessage messageSent;
+	uint8_t messagesSent = 0;
 
 
 	SECTION("BasicTest") {
@@ -27,8 +29,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		// Now the update message should be generated.
 		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
 		REQUIRE(mqMock->wasMessageSent() == true);
-		CommandMessage messageSent;
-		uint8_t messagesSent = 0;
+
 		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
 		CHECK(messageSent.getCommand() == static_cast<int>(
 				HousekeepingMessage::UPDATE_NOTIFICATION_SET));
@@ -62,8 +63,10 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 				HousekeepingMessage::HK_REPORT));
 		// clear message to avoid memory leak, our mock won't do it for us (yet)
 		CommandMessageCleaner::clearCommandMessage(&messageSent);
+	}
 
-		// now subscribe for variable update as well
+	SECTION("AdvancedTests") {
+		// Subscribe for variable update as well
 		REQUIRE(not poolOwner->dataset.hasChanged());
 		REQUIRE(poolOwner->subscribeWrapperVariableUpdate(lpool::uint8VarId) ==
 				retval::CATCH_OK);
@@ -73,11 +76,19 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		poolVar->setChanged(true);
 		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
 
+		// Check update notification was sent.
 		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
 		CHECK(messagesSent == 1);
+		// Should have been reset.
+		CHECK(poolVar->hasChanged() == false);
 		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
 		CHECK(messageSent.getCommand() == static_cast<int>(
 				HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE));
+
+		// now subscribe for the dataset update (HK and update) again
+		REQUIRE(poolOwner->subscribeWrapperSetUpdate() == retval::CATCH_OK);
+		REQUIRE(poolOwner->subscribeWrapperSetUpdateHk() == retval::CATCH_OK);
+
 
 	}
 }
