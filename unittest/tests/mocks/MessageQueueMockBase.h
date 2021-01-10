@@ -6,68 +6,81 @@
 #include <unittest/core/CatchDefinitions.h>
 #include <cstring>
 
+#include <queue>
 
 class MessageQueueMockBase: public MessageQueueIF {
 public:
-	MessageQueueId_t myQueueId = 0;
+	MessageQueueId_t myQueueId = tconst::testQueueId;
+	uint8_t messageSentCounter = 0;
 	bool defaultDestSet = false;
 	bool messageSent = false;
 
 
-	bool wasMessageSent() {
+	bool wasMessageSent(uint8_t* messageSentCounter = nullptr,
+			bool resetCounter = true) {
 		bool tempMessageSent = messageSent;
 		messageSent = false;
+		if(messageSentCounter != nullptr) {
+			*messageSentCounter = this->messageSentCounter;
+		}
+		if(resetCounter) {
+			this->messageSentCounter = 0;
+		}
 		return tempMessageSent;
 	}
 
 	virtual ReturnValue_t reply( MessageQueueMessageIF* message ) {
-		messageSent = true;
-		lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
+		//messageSent = true;
+		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
+		return sendMessage(myQueueId, message);
 		return HasReturnvaluesIF::RETURN_OK;
 	};
 	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
 			MessageQueueId_t *receivedFrom) {
-		(*message) = lastMessage;
-		lastMessage.clear();
-		return HasReturnvaluesIF::RETURN_OK;
+		return receiveMessage(message);
 	}
 	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) {
-		std::memcpy(message->getBuffer(), lastMessage.getBuffer(),
+		std::memcpy(message->getBuffer(), messagesSentQueue.front().getBuffer(),
 				message->getMessageSize());
-		lastMessage.clear();
+		messagesSentQueue.pop();
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	virtual ReturnValue_t flush(uint32_t* count) {
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	virtual MessageQueueId_t getLastPartner() const {
-		return tconst::testQueueId;
+		return myQueueId;
 	}
 	virtual MessageQueueId_t getId() const {
-		return tconst::testQueueId;
+		return myQueueId;
 	}
 	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo,
 			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 			bool ignoreFault = false ) {
-		messageSent = true;
-		lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
-		return HasReturnvaluesIF::RETURN_OK;
+		//messageSent = true;
+		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
+		//return HasReturnvaluesIF::RETURN_OK;
+		return sendMessage(sendTo, message);
+	}
+	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessageIF* message,
+			MessageQueueId_t sentFrom, bool ignoreFault = false ) {
+		//messageSent = true;
+		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
+		//return HasReturnvaluesIF::RETURN_OK;
+		return sendMessage(myQueueId, message);
+	}
+	virtual ReturnValue_t sendToDefault( MessageQueueMessageIF* message ) {
+		//messageSent = true;
+		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
+		return sendMessage(myQueueId, message);
 	}
 	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo,
 			MessageQueueMessageIF* message, bool ignoreFault = false ) override {
 		messageSent = true;
-		lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessageIF* message,
-			MessageQueueId_t sentFrom, bool ignoreFault = false ) {
-		messageSent = true;
-		lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
-		return HasReturnvaluesIF::RETURN_OK;
-	}
-	virtual ReturnValue_t sendToDefault( MessageQueueMessageIF* message ) {
-		messageSent = true;
-		lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
+		messageSentCounter++;
+		MessageQueueMessage& messageRef = *(
+				dynamic_cast<MessageQueueMessage*>(message));
+		messagesSentQueue.push(messageRef);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	virtual void setDefaultDestination(MessageQueueId_t defaultDestination) {
@@ -81,9 +94,16 @@ public:
 	virtual bool isDefaultDestinationSet() const {
 		return defaultDestSet;
 	}
-private:
-	MessageQueueMessage lastMessage;
 
+	void clearMessages() {
+		while(not messagesSentQueue.empty()) {
+			messagesSentQueue.pop();
+		}
+	}
+
+private:
+	std::queue<MessageQueueMessage> messagesSentQueue;
+	//MessageQueueMessage lastMessage;
 };
 
 

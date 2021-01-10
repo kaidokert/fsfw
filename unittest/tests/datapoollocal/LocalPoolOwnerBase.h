@@ -18,6 +18,8 @@ static constexpr lp_id_t uint16Vec3Id = 3;
 static constexpr lp_id_t int64Vec2Id = 4;
 
 static constexpr uint32_t testSetId = 0;
+static const sid_t testSid = sid_t(objects::TEST_LOCAL_POOL_OWNER_BASE,
+		testSetId);
 }
 
 
@@ -123,12 +125,27 @@ public:
 		return &dataset;
 	}
 
+	virtual LocalPoolObjectBase* getPoolObjectHandle(
+			lp_id_t localPoolId) override {
+		return &testUint8;
+	}
+
 	MessageQueueMockBase* getMockQueueHandle() const {
 		return dynamic_cast<MessageQueueMockBase*>(messageQueue);
 	}
 
-	void subscribeWrapperSetUpdate() {
-		hkManager.subscribeForSetUpdateMessages(lpool::testSetId,
+	ReturnValue_t subscribeWrapperSetUpdate() {
+		return hkManager.subscribeForSetUpdateMessages(lpool::testSetId,
+				objects::NO_OBJECT, MessageQueueIF::NO_QUEUE, false);
+	}
+
+	ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false) {
+		return hkManager.subscribeForUpdatePackets(lpool::testSid, diagnostics,
+				false, objects::HK_RECEIVER_MOCK);
+	}
+
+	ReturnValue_t subscribeWrapperVariableUpdate() {
+		return hkManager.subscribeForSetUpdateMessages(lpool::testSetId,
 				objects::NO_OBJECT, MessageQueueIF::NO_QUEUE, false);
 	}
 
