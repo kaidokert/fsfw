@@ -60,7 +60,25 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
 		CHECK(messageSent.getCommand() == static_cast<int>(
 				HousekeepingMessage::HK_REPORT));
+		// clear message to avoid memory leak, our mock won't do it for us (yet)
 		CommandMessageCleaner::clearCommandMessage(&messageSent);
+
+		// now subscribe for variable update as well
+		REQUIRE(not poolOwner->dataset.hasChanged());
+		REQUIRE(poolOwner->subscribeWrapperVariableUpdate(lpool::uint8VarId) ==
+				retval::CATCH_OK);
+		lp_var_t<uint8_t>* poolVar = dynamic_cast<lp_var_t<uint8_t>*>(
+				poolOwner->getPoolObjectHandle(lpool::uint8VarId));
+		REQUIRE(poolVar != nullptr);
+		poolVar->setChanged(true);
+		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+
+		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+		CHECK(messagesSent == 1);
+		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+		CHECK(messageSent.getCommand() == static_cast<int>(
+				HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE));
+
 	}
 }
 

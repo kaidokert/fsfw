@@ -322,12 +322,16 @@ void LocalDataPoolManager::handleChangeResetLogic(
             continue;
         }
 
+        // only one update recipient, we can reset changes status immediately.
         if(changeInfo.updateCounter <= 1) {
             toReset->setChanged(false);
         }
-        if(changeInfo.currentUpdateCounter == 0) {
+        // All recipients have been notified, reset the changed flag.
+        if(changeInfo.currentUpdateCounter <= 1) {
             toReset->setChanged(false);
+            changeInfo.currentUpdateCounter = 0;
         }
+        // Not all recipiens have been notified yet, decrement.
         else {
             changeInfo.currentUpdateCounter--;
         }

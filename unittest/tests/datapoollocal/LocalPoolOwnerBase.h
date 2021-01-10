@@ -2,6 +2,7 @@
 #define FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
+#include <fsfw/datapoollocal/LocalDataSet.h>
 #include <fsfw/objectmanager/SystemObject.h>
 #include <fsfw/datapoollocal/LocalPoolVariable.h>
 #include <fsfw/datapoollocal/LocalPoolVector.h>
@@ -18,15 +19,16 @@ static constexpr lp_id_t uint16Vec3Id = 3;
 static constexpr lp_id_t int64Vec2Id = 4;
 
 static constexpr uint32_t testSetId = 0;
+static constexpr uint8_t dataSetMaxVariables = 10;
 static const sid_t testSid = sid_t(objects::TEST_LOCAL_POOL_OWNER_BASE,
 		testSetId);
 }
 
 
-class LocalPoolTestDataSet: public StaticLocalDataSet<3> {
+class LocalPoolTestDataSet: public LocalDataSet {
 public:
 	LocalPoolTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
-		StaticLocalDataSet(owner, setId) {
+		LocalDataSet(owner, setId, lpool::dataSetMaxVariables) {
 	}
 
 	ReturnValue_t assignPointers() {
@@ -127,7 +129,24 @@ public:
 
 	virtual LocalPoolObjectBase* getPoolObjectHandle(
 			lp_id_t localPoolId) override {
-		return &testUint8;
+		if(localPoolId == lpool::uint8VarId) {
+			return &testUint8;
+		}
+		else if(localPoolId == lpool::uint16Vec3Id) {
+			return &testUint16Vec;
+		}
+		else if(localPoolId == lpool::floatVarId) {
+			return &testFloat;
+		}
+		else if(localPoolId == lpool::int64Vec2Id) {
+			return &testInt64Vec;
+		}
+		else if(localPoolId == lpool::uint32VarId) {
+			return &testUint32;
+		}
+		else {
+			return &testUint8;
+		}
 	}
 
 	MessageQueueMockBase* getMockQueueHandle() const {
@@ -144,9 +163,9 @@ public:
 				false, objects::HK_RECEIVER_MOCK);
 	}
 
-	ReturnValue_t subscribeWrapperVariableUpdate() {
-		return hkManager.subscribeForSetUpdateMessages(lpool::testSetId,
-				objects::NO_OBJECT, MessageQueueIF::NO_QUEUE, false);
+	ReturnValue_t subscribeWrapperVariableUpdate(lp_id_t localPoolId) {
+		return hkManager.subscribeForVariableUpdateMessages(localPoolId,
+				MessageQueueIF::NO_QUEUE, objects::NO_OBJECT, false);
 	}
 
 	LocalDataPoolManager hkManager;
