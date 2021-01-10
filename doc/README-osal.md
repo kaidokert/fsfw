@@ -6,7 +6,7 @@ Some specific information on the provided OSALs are provided.
 
 This OSAL can be used to compile for Linux host systems like Ubuntu 20.04 or for 
 embedded Linux targets like the Raspberry Pi. This OSAL generally requires threading support
-and real-time functionalities. This is generally done by adding `-lrt` and `-lpthread` to the linked libraries in the compilation process. The CMake build support provided will do this automatically for the `fsfw` target. It should be noted that most UNIX systems need to be configured specifically to allow the real-time functionalities required by the FSFW.
+and real-time functionalities. For most UNIX systems, this is done by adding `-lrt` and `-lpthread` to the linked libraries in the compilation process. The CMake build support provided will do this automatically for the `fsfw` target. It should be noted that most UNIX systems need to be configured specifically to allow the real-time functionalities required by the FSFW.
 
 More information on how to set up a Linux system accordingly can be found in the 
 [Linux README of the FSFW example application](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example/src/branch/master/doc/README-linux.md#top)
