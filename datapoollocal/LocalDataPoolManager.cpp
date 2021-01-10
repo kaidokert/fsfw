@@ -65,7 +65,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
         else {
         	printWarningOrError(fsfw::OutputTypes::OUT_ERROR,
         			"initialize", QUEUE_OR_DESTINATION_INVALID);
-            return QUEUE_OR_DESTINATION_INVALID;
+        	return QUEUE_OR_DESTINATION_INVALID;
         }
     }
 
