@@ -10,6 +10,8 @@
 #include <fsfw/tmtcpacket/pus/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
+#include <fsfw/unittest/tests/datapoollocal/LocalPoolOwnerBase.h>
+#include <fsfw/unittest/tests/mocks/HkReceiverMock.h>
 
 /**
  * @brief Produces system objects.
@@ -29,6 +31,9 @@ void Factory::produce(void) {
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);
 	new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
+
+	new LocalPoolOwnerBase (objects::TEST_LOCAL_POOL_OWNER_BASE);
+	new HkReceiverMock(objects::HK_RECEIVER_MOCK);
 
 	{
 		PoolManager::LocalPoolConfig poolCfg = {
@@ -65,7 +70,7 @@ void Factory::setStaticFrameworkObjectIds() {
 	DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 	DeviceHandlerBase::rawDataReceiverId = objects::PUS_SERVICE_2_DEVICE_ACCESS;
 
-	LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
+	LocalDataPoolManager::defaultHkDestination = objects::HK_RECEIVER_MOCK;
 
 	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 
