@@ -22,7 +22,7 @@ Currently, the FSFW provides the following OSALs:
 - FreeRTOS
 - RTEMS
 
-The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB of non-volatile Memory. For reference, current applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC. The `fsfw` was also successfully run on the STM32H743ZI-Nucleo board and on a Raspberry Pi.
+The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB of non-volatile Memory. For reference, current applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC. The `fsfw` was also successfully run on the STM32H743ZI-Nucleo board and on a Raspberry Pi and is currently running on the active satellite mission Flying Laptop.
 
 ## Getting started
 
