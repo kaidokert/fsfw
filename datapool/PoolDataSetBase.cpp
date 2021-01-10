@@ -214,6 +214,10 @@ void PoolDataSetBase::setContainer(PoolVariableIF **variablesContainer) {
     this->registeredVariables = variablesContainer;
 }
 
+PoolVariableIF** PoolDataSetBase::getContainer() const {
+	return registeredVariables;
+}
+
 void PoolDataSetBase::setReadCommitProtectionBehaviour(
 		bool protectEveryReadCommit, uint32_t mutexTimeout) {
 	this->protectEveryReadCommitCall = protectEveryReadCommit;

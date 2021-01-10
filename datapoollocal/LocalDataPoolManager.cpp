@@ -308,8 +308,8 @@ void LocalDataPoolManager::handleChangeResetLogic(
         // config error!
         return;
     }
-
-    for(auto& changeInfo: *hkUpdateResetList) {
+    HkUpdateResetList& listRef = *hkUpdateResetList;
+    for(auto& changeInfo: listRef) {
         if(changeInfo.dataType != type) {
             continue;
         }
@@ -636,7 +636,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
     }
 
     if(hkQueue == nullptr) {
-        // error, all destinations invalid
+        // error, no queue available to send packet with.
     	printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
     			"generateHousekeepingPacket",
     			QUEUE_OR_DESTINATION_INVALID);

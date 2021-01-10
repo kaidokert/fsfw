@@ -157,6 +157,7 @@ protected:
 	const size_t maxFillCount = 0;
 
 	void setContainer(PoolVariableIF** variablesContainer);
+	PoolVariableIF** getContainer() const;
 
 private:
 	bool protectEveryReadCommitCall = false;
