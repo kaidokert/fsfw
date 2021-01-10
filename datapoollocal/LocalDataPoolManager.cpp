@@ -509,10 +509,13 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
         break;
     }
 
-    case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
-                        return generateSetStructurePacket(sid, true);
-    case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
-                        return generateSetStructurePacket(sid, false);
+    case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES): {
+        return generateSetStructurePacket(sid, true);
+    }
+
+    case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES): {
+        return generateSetStructurePacket(sid, false);
+    }
     case(HousekeepingMessage::MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL):
     case(HousekeepingMessage::MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL): {
         float newCollIntvl = 0;
