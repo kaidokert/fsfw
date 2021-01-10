@@ -66,6 +66,8 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 	}
 
 	SECTION("AdvancedTests") {
+		// we need to reset the subscription list because the pool owner
+		// is a global object.
 		poolOwner->resetSubscriptionList();
 		// Subscribe for variable update as well
 		REQUIRE(not poolOwner->dataset.hasChanged());
