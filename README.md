@@ -36,8 +36,8 @@ a starting point. The [configuration section](doc/README-config.md#top) provides
 
 ## Index
 
-[1. High-level overview](doc/README-highlevel.md#top)
-[2. Core components](doc/README-core.md#top)
-[3. OSAL overview](doc/README-osal.md#top)
+[1. High-level overview](doc/README-highlevel.md#top) <br>
+[2. Core components](doc/README-core.md#top) <br>
+[3. OSAL overview](doc/README-osal.md#top) <br>
 
 
