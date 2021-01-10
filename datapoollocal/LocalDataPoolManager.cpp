@@ -48,7 +48,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
 
     ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
     if(ipcStore == nullptr) {
-        // error, all destinations invalid
+    	// error, all destinations invalid
     	printWarningOrError(fsfw::OutputTypes::OUT_ERROR,
     			"initialize", HasReturnvaluesIF::RETURN_FAILED,
 				"Could not set IPC store.");
@@ -65,7 +65,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
         else {
         	printWarningOrError(fsfw::OutputTypes::OUT_ERROR,
         			"initialize", QUEUE_OR_DESTINATION_INVALID);
-            return QUEUE_OR_DESTINATION_INVALID;
+        	return QUEUE_OR_DESTINATION_INVALID;
         }
     }
 
@@ -308,8 +308,8 @@ void LocalDataPoolManager::handleChangeResetLogic(
         // config error!
         return;
     }
-
-    for(auto& changeInfo: *hkUpdateResetList) {
+    HkUpdateResetList& listRef = *hkUpdateResetList;
+    for(auto& changeInfo: listRef) {
         if(changeInfo.dataType != type) {
             continue;
         }
@@ -322,12 +322,16 @@ void LocalDataPoolManager::handleChangeResetLogic(
             continue;
         }
 
+        // only one update recipient, we can reset changes status immediately.
         if(changeInfo.updateCounter <= 1) {
             toReset->setChanged(false);
         }
-        if(changeInfo.currentUpdateCounter == 0) {
+        // All recipients have been notified, reset the changed flag.
+        if(changeInfo.currentUpdateCounter <= 1) {
             toReset->setChanged(false);
+            changeInfo.currentUpdateCounter = 0;
         }
+        // Not all recipiens have been notified yet, decrement.
         else {
             changeInfo.currentUpdateCounter--;
         }
@@ -509,10 +513,13 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
         break;
     }
 
-    case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES):
-                        return generateSetStructurePacket(sid, true);
-    case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES):
-                        return generateSetStructurePacket(sid, false);
+    case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES): {
+        return generateSetStructurePacket(sid, true);
+    }
+
+    case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES): {
+        return generateSetStructurePacket(sid, false);
+    }
     case(HousekeepingMessage::MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL):
     case(HousekeepingMessage::MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL): {
         float newCollIntvl = 0;
@@ -633,7 +640,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
     }
 
     if(hkQueue == nullptr) {
-        // error, all destinations invalid
+        // error, no queue available to send packet with.
     	printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
     			"generateHousekeepingPacket",
     			QUEUE_OR_DESTINATION_INVALID);
@@ -811,6 +818,11 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 
     hkQueue->reply(&reply);
     return result;
+}
+
+void LocalDataPoolManager::clearReceiversList() {
+	// clear the vector completely and releases allocated memory.
+	HkReceivers().swap(hkReceiversMap);
 }
 
 void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,

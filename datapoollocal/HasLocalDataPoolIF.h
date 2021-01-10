@@ -4,6 +4,7 @@
 #include "locPoolDefinitions.h"
 
 #include "../datapool/PoolEntryIF.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
 
@@ -92,6 +93,9 @@ public:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
 	            << ". Returning nullptr!" << std::endl;
+#else
+	    fsfw::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
+	    		"Not overriden. Returning nullptr!\n");
 #endif
 	    return nullptr;
 	}

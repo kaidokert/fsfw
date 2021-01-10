@@ -1,5 +1,5 @@
 #include "TmTcUnixUdpBridge.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexHelper.h"
 
 #include <errno.h>
@@ -188,11 +188,15 @@ void TmTcUnixUdpBridge::handleBindError() {
 
 void TmTcUnixUdpBridge::handleSendError() {
 	switch(errno) {
-	default:
+	default: {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixBridge::handleSendError: "
 		        << strerror(errno) << std::endl;
+#else
+		fsfw::printError("TmTcUnixBridge::handleSendError: %s\n",
+				strerror(errno));
 #endif
+	}
 	}
 }
 

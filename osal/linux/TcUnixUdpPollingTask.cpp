@@ -1,6 +1,8 @@
 #include "TcUnixUdpPollingTask.h"
 #include "../../globalfunctions/arrayprinter.h"
 
+#include <errno.h>
+
 TcUnixUdpPollingTask::TcUnixUdpPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,
 		double timeoutSeconds): SystemObject(objectId),

@@ -9,8 +9,8 @@ StorageManagerIF* tglob::getIpcStoreHandle() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Global object manager uninitialized" << std::endl;
 #else
-		fsfw::printError("Global object manager uninitialized");
-#endif
+		fsfw::printError("Global object manager uninitialized\n\r");
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 		return nullptr;
 	}
 }
