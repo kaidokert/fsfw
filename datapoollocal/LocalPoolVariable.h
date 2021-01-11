@@ -4,6 +4,7 @@
 #include "LocalPoolObjectBase.h"
 #include "HasLocalDataPoolIF.h"
 #include "LocalDataPoolManager.h"
+#include "AccessLocalPoolF.h"
 
 #include "../datapool/PoolVariableIF.h"
 #include "../datapool/DataSetIF.h"
@@ -23,7 +24,7 @@
  * @ingroup data_pool
  */
 template<typename T>
-class LocalPoolVariable: public LocalPoolObjectBase {
+class LocalPoolVariable: public LocalPoolObjectBase, public AccessLocalPoolIF<T> {
 public:
 	//! Default ctor is forbidden.
 	LocalPoolVariable() = delete;
