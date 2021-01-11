@@ -145,6 +145,7 @@ public:
 	void setChanged(bool changed) override;
 	bool hasChanged() const override;
 
+	object_id_t getCreatorObjectId(object_id_t objectId);
 protected:
 	sid_t sid;
 	//! This mutex is used if the data is created by one object only.
@@ -211,6 +212,7 @@ protected:
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
 
 	PeriodicHousekeepingHelper* periodicHelper = nullptr;
+	LocalDataPoolManager* hkManager = nullptr;
 
 };
 

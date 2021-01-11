@@ -23,12 +23,14 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         return;
     }
-    LocalDataPoolManager* hkManager = hkOwner->getHkManagerHandle();
-    mutexIfSingleDataCreator = hkManager->getMutexHandle();
+    hkManager = hkOwner->getHkManagerHandle();
+
+    if(hkManager != nullptr) {
+        mutexIfSingleDataCreator = hkManager->getMutexHandle();
+    }
+
     this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
-
-    //mutex = MutexFactory::instance()->createMutex();
 
     // Data creators get a periodic helper for periodic HK data generation.
     if(periodicHandling) {
@@ -42,8 +44,13 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
             sid.objectId);
-    LocalDataPoolManager* hkManager = hkOwner->getHkManagerHandle();
-    mutexIfSingleDataCreator = hkManager->getMutexHandle();
+    if(hkOwner != nullptr) {
+        hkManager = hkOwner->getHkManagerHandle();
+    }
+
+    if(hkManager != nullptr) {
+        mutexIfSingleDataCreator = hkManager->getMutexHandle();
+    }
     this->sid = sid;
 }
 
@@ -301,4 +308,12 @@ void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
     this->valid = valid;
 }
 
-
+object_id_t LocalPoolDataSetBase::getCreatorObjectId(object_id_t objectId) {
+	if(hkManager != nullptr) {
+		HasLocalDataPoolIF* owner = hkManager->getOwner();
+		if(owner != nullptr) {
+			return owner->getObjectId();
+		}
+	}
+	return objects::NO_OBJECT;
+}
