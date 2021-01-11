@@ -127,6 +127,7 @@ protected:
 	 * @param mutexTimeout
 	 */
 	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
 			uint32_t mutexTimeout = 20);
 
 	/**
@@ -161,7 +162,8 @@ protected:
 
 private:
 	bool protectEveryReadCommitCall = false;
-	uint32_t mutexTimeout = 20;
+	MutexIF::TimeoutType timeoutTypeForSingleVars;
+	uint32_t mutexTimeoutForSingleVars = 20;
 
 	ReturnValue_t readVariable(uint16_t count);
 	void handleAlreadyReadDatasetCommit(

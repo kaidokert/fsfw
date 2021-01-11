@@ -57,7 +57,8 @@ public:
 	        const size_t maxNumberOfVariables, bool periodicHandling = true);
 
 	/**
-	 * @brief	Constructor for users of local pool data.
+	 * @brief	Constructor for users of the local pool data, which need
+	 *          to access data created by one HK manager.
 	 * @details
 	 * @param sid Unique identifier of dataset consisting of object ID and
 	 * set ID.
@@ -68,13 +69,22 @@ public:
 	        const size_t maxNumberOfVariables);
 
 	/**
-	 * Simple constructor, if the dataset is not owner permanently by
-	 * a class with a HK manager.
+	 * Simple constructor, if the dataset is not the owner by
+	 * a class with a HK manager. This function should also be called by
+	 * classes which needs to access pool variables from different creators.
+	 *
+	 * If the class is intended to access pool variables from different
+	 * creators, the third argument should be set to true. The mutex
+	 * properties can be set with #setReadCommitProtectionBehaviour .
 	 * @param registeredVariablesArray
 	 * @param maxNumberOfVariables
+	 * @param protectEveryReadCommitCall If the pool variables are created by
+	 * multiple creators, this flag can be set to protect all read and
+	 * commit calls separately.
 	 */
 	LocalPoolDataSetBase(PoolVariableIF** registeredVariablesArray,
-	        const size_t maxNumberOfVariables, bool protectFunctions = true);
+	        const size_t maxNumberOfVariables,
+			bool protectEveryReadCommitCall = true);
 
 	/**
 	 * @brief	The destructor automatically manages writing the valid
@@ -85,19 +95,6 @@ public:
 	 * For each, the valid flag in the data pool is set to "invalid".
 	 */
 	~LocalPoolDataSetBase();
-
-	/**
-	 * If the data is pulled from different local data pools, every read and
-	 * commit call should be mutex protected for thread safety.
-	 * This can be specified with the second parameter.
-	 * @param dataCreator
-	 * @param protectEveryReadCommit
-	 */
-	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
-			uint32_t mutexTimeout = 20);
-
-	void setDataSetMutexTimeout(MutexIF::TimeoutType timeoutType,
-			uint32_t mutexTimeout);
 
 	void setValidityBufferGeneration(bool withValidityBuffer);
 
@@ -150,13 +147,8 @@ public:
 
 protected:
 	sid_t sid;
-	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
-	uint32_t mutexTimeout = 20;
-	/**
-	 * This mutex is required because the dataset can potentially be accessed
-	 * by multiple threads for information like change status or validity.
-	 */
-	MutexIF* mutex = nullptr;
+	//! This mutex is used if the data is created by one object only.
+	MutexIF* mutexIfSingleDataCreator = nullptr;
 
 	bool diagnostic = false;
 	void setDiagnostic(bool diagnostics);
@@ -210,8 +202,6 @@ protected:
 	 * It makes use of the freeDataPoolLock method offered by the DataPool class.
 	 */
 	ReturnValue_t unlockDataPool() override;
-
-	LocalDataPoolManager* hkManager = nullptr;
 
 	/**
 	 * Set n-th bit of a byte, with n being the position from 0

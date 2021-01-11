@@ -19,15 +19,16 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
                 << "invalid!" << std::endl;
 #else
         fsfw::printError("LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
-                "invalid!\n\r");
+                "invalid!\n");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         return;
     }
-    hkManager = hkOwner->getHkManagerHandle();
+    LocalDataPoolManager* hkManager = hkOwner->getHkManagerHandle();
+    mutexIfSingleDataCreator = hkManager->getMutexHandle();
     this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
 
-    mutex = MutexFactory::instance()->createMutex();
+    //mutex = MutexFactory::instance()->createMutex();
 
     // Data creators get a periodic helper for periodic HK data generation.
     if(periodicHandling) {
@@ -41,34 +42,29 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
             sid.objectId);
-    if(hkOwner != nullptr) {
-    	hkManager = hkOwner->getHkManagerHandle();
-    }
+    LocalDataPoolManager* hkManager = hkOwner->getHkManagerHandle();
+    mutexIfSingleDataCreator = hkManager->getMutexHandle();
     this->sid = sid;
-
-    mutex = MutexFactory::instance()->createMutex();
 }
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(
 		PoolVariableIF **registeredVariablesArray,
-		const size_t maxNumberOfVariables, bool protectFunctions):
+		const size_t maxNumberOfVariables):
 		PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
-	if(protectFunctions) {
-	    mutex = MutexFactory::instance()->createMutex();
-	}
-
 }
 
 
 LocalPoolDataSetBase::~LocalPoolDataSetBase() {
+	if(periodicHelper != nullptr) {
+		delete periodicHelper;
+	}
 }
 
 ReturnValue_t LocalPoolDataSetBase::lockDataPool(
 		MutexIF::TimeoutType timeoutType,
 		uint32_t timeoutMs) {
-	if(hkManager != nullptr) {
-	    MutexIF* poolMutex = hkManager->getMutexHandle();
-	    return poolMutex->lockMutex(timeoutType, timeoutMs);
+	if(mutexIfSingleDataCreator != nullptr) {
+	    return mutexIfSingleDataCreator->lockMutex(timeoutType, timeoutMs);
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -146,9 +142,8 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
 }
 
 ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
-	if(hkManager != nullptr) {
-	    MutexIF* mutex = hkManager->getMutexHandle();
-	    return mutex->unlockMutex();
+	if(mutexIfSingleDataCreator != nullptr) {
+	    return mutexIfSingleDataCreator->unlockMutex();
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -268,19 +263,10 @@ void LocalPoolDataSetBase::initializePeriodicHelper(
 }
 
 void LocalPoolDataSetBase::setChanged(bool changed) {
-	if(mutex == nullptr) {
-		this->changed = changed;
-		return;
-	}
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
     this->changed = changed;
 }
 
 bool LocalPoolDataSetBase::hasChanged() const {
-	if(mutex == nullptr) {
-		return changed;
-	}
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, mutexTimeout);
     return changed;
 }
 
@@ -302,32 +288,16 @@ bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
 }
 
 bool LocalPoolDataSetBase::isValid() const {
-	if(mutex == nullptr) {
-		return this->valid;
-	}
-    MutexHelper(mutex, MutexIF::TimeoutType::WAITING, 5);
     return this->valid;
 }
 
 void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
-	mutex->lockMutex(timeoutType, mutexTimeout);
     if(setEntriesRecursively) {
         for(size_t idx = 0; idx < this->getFillCount(); idx++) {
             registeredVariables[idx] -> setValid(valid);
         }
     }
     this->valid = valid;
-    mutex->unlockMutex();
 }
 
-void LocalPoolDataSetBase::setReadCommitProtectionBehaviour(
-		bool protectEveryReadCommit, uint32_t mutexTimeout) {
-	PoolDataSetBase::setReadCommitProtectionBehaviour(protectEveryReadCommit,
-			mutexTimeout);
-}
 
-void LocalPoolDataSetBase::setDataSetMutexTimeout(
-		MutexIF::TimeoutType timeoutType, uint32_t mutexTimeout) {
-	this->timeoutType = timeoutType;
-	this->mutexTimeout = mutexTimeout;
-}
