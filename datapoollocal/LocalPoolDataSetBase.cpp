@@ -49,8 +49,9 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(
 		PoolVariableIF **registeredVariablesArray,
-		const size_t maxNumberOfVariables):
+		const size_t maxNumberOfVariables, bool protectEveryReadCommitCall):
 		PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
+	this->setReadCommitProtectionBehaviour(protectEveryReadCommitCall);
 }
 
 
