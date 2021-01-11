@@ -17,6 +17,7 @@
 #include "../ipc/MutexHelper.h"
 
 #include <map>
+#include <vector>
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
@@ -53,6 +54,7 @@ class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF {
 	template<typename T> friend class LocalPoolVariable;
 	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
 	friend class LocalPoolDataSetBase;
+	//friend class AccessLocalDataPoolIF;
 	friend void (Factory::setStaticFrameworkObjectIds)();
 
 

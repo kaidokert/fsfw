@@ -3,6 +3,7 @@
 
 #include "PoolDataSetIF.h"
 #include "PoolVariableIF.h"
+#include "../serialize/SerializeIF.h"
 #include "../ipc/MutexIF.h"
 
 /**

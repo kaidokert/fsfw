@@ -42,8 +42,8 @@ using LocalDataPoolMapIter = LocalDataPool::iterator;
  */
 class HasLocalDataPoolIF {
 	friend class LocalDataPoolManager;
-	//friend class LocalPoolDataSetBase;
-	//friend class LocalPoolObjectBase;
+	friend class LocalPoolDataSetBase;
+	friend class LocalPoolObjectBase;
 public:
 	virtual~ HasLocalDataPoolIF() {};
 

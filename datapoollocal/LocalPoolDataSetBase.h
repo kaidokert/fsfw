@@ -43,8 +43,7 @@ class PeriodicHousekeepingHelper;
  * @ingroup data_pool
  */
 class LocalPoolDataSetBase: public PoolDataSetBase,
-        public MarkChangedIF,
-		public AccessLocalDataPoolIF {
+        public MarkChangedIF {
 	friend class LocalDataPoolManager;
 	friend class PeriodicHousekeepingHelper;
 public:
@@ -54,7 +53,7 @@ public:
 	 * This constructor also initializes the components required for
 	 * periodic handling.
 	 */
-	LocalPoolDataSetBase(AccessLocalDataPoolIF *hkOwner,
+	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 			uint32_t setId, PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables, bool periodicHandling = true);
 
@@ -220,7 +219,7 @@ protected:
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
 
 	PeriodicHousekeepingHelper* periodicHelper = nullptr;
-	AccessLocalDataPoolIF* hkManager = nullptr;
+	LocalDataPoolManager* hkManager = nullptr;
 
 };
 

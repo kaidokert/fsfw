@@ -4,14 +4,18 @@
 #include <fsfw/datapoollocal/LocalDataPoolManager.h>
 
 
-class AccessLocalDataPoolIF {
-public:
-	virtual ~AccessLocalDataPoolIF() {};
-
-protected:
-	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
-
-};
+//class AccessLocalDataPoolIF {
+//public:
+//	virtual ~AccessLocalDataPoolIF() {};
+//
+//protected:
+//
+//	template <class T> ReturnValue_t fetchPoolEntry(LocalDataPoolManager& manager,
+//			lp_id_t localPoolId, PoolEntry<T> **poolEntry) {
+//		return manager.fetchPoolEntry(localPoolId, poolEntry);
+//	}
+//
+//};
 
 
 #endif /* FSFW_DATAPOOLLOCAL_ACCESSLOCALDATAPOOLIF_H_ */
