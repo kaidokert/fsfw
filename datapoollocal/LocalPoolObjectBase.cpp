@@ -1,9 +1,8 @@
 #include "LocalPoolObjectBase.h"
 
-LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId,
-        HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
-        pool_rwm_t setReadWriteMode): localPoolId(poolId),
-        readWriteMode(setReadWriteMode) {
+LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
+		DataSetIF* dataSet, pool_rwm_t setReadWriteMode):
+		localPoolId(poolId), readWriteMode(setReadWriteMode) {
     if(poolId == PoolVariableIF::NO_PARAMETER) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
@@ -23,9 +22,9 @@ LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId,
     }
 }
 
-LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId,
-        DataSetIF *dataSet, pool_rwm_t setReadWriteMode): localPoolId(poolId),
-        readWriteMode(setReadWriteMode) {
+LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, DataSetIF *dataSet,
+		pool_rwm_t setReadWriteMode):
+		localPoolId(poolId), readWriteMode(setReadWriteMode) {
     if(poolId == PoolVariableIF::NO_PARAMETER) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
@@ -109,10 +108,9 @@ void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
 	}
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << variableType << ": " << type << " call | " << errMsg
-			<< " | Owner: 0x" << std::hex << std::setw(8)
-			<< std::setfill('0') << objectId << std::dec << " LPID: " << lpId
-			<< std::endl;
+	sif::warning << variableType << ": " << type << " call | " << errMsg << " | Owner: 0x"
+			<< std::hex << std::setw(8) << std::setfill('0') << objectId << std::dec
+			<< " LPID: " << lpId << std::endl;
 #else
 	fsfw::printWarning("%s: %s call | %s | Owner: 0x%08x LPID: %lu\n",
 			variableType, type, errMsg, objectId, lpId);
