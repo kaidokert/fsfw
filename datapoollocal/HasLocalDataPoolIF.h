@@ -40,6 +40,8 @@ using LocalDataPoolMapIter = LocalDataPool::iterator;
  * of the LocalDataPoolManager.
  */
 class HasLocalDataPoolIF {
+	friend class LocalPoolDataSetBase;
+	friend class LocalPoolObjectBase;
 public:
 	virtual~ HasLocalDataPoolIF() {};
 
@@ -63,9 +65,6 @@ public:
 	virtual ReturnValue_t initializeLocalDataPool(
 	        LocalDataPool& localDataPoolMap,
 	        LocalDataPoolManager& poolManager) = 0;
-
-	/** Can be used to get a handle to the local data pool manager. */
-	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
 
 	/**
 	 * Returns the minimum sampling frequency in milliseconds, which will
@@ -140,6 +139,12 @@ public:
 	        float newIntervalSeconds) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
+
+	virtual ProvidesDataPoolSubscriptionIF* getSubsciptionInterface() = 0;
+protected:
+
+	/** Can be used to get a handle to the local data pool manager. */
+	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
 };
 
 #endif /* FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_ */
