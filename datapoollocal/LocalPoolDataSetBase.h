@@ -58,8 +58,10 @@ public:
 
 	/**
 	 * @brief	Constructor for users of the local pool data, which need
-	 *          to access data created by one HK manager.
+	 *          to access data created by one (!) HK manager.
 	 * @details
+	 * Unlike the first constructor, no component for periodic handling
+	 * will be initiated.
 	 * @param sid Unique identifier of dataset consisting of object ID and
 	 * set ID.
 	 * @param registeredVariablesArray
@@ -69,9 +71,13 @@ public:
 	        const size_t maxNumberOfVariables);
 
 	/**
-	 * Simple constructor, if the dataset is not the owner by
-	 * a class with a HK manager. This function should also be called by
-	 * classes which needs to access pool variables from different creators.
+	 * @brief	Simple constructor, if the dataset is not the owner by
+	 * 			a class with a HK manager.
+	 * @details
+	 * This constructor won't create components required for periodic handling
+	 * and it also won't try to deduce the HK manager because no SID is
+	 * supplied. This function should therefore be called by classes which need
+	 * to access pool variables from different creators.
 	 *
 	 * If the class is intended to access pool variables from different
 	 * creators, the third argument should be set to true. The mutex
