@@ -520,7 +520,7 @@ protected:
 	/** Get the HK manager object handle */
 	LocalDataPoolManager* getHkManagerHandle() override;
 
-    ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
+	ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per
