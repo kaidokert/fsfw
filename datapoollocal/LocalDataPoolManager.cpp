@@ -16,9 +16,9 @@
 object_id_t LocalDataPoolManager::defaultHkDestination =
         objects::PUS_SERVICE_3_HOUSEKEEPING;
 
-LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner,
-        MessageQueueIF* queueToUse, bool appendValidityBuffer):
-                        appendValidityBuffer(appendValidityBuffer) {
+LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
+		bool appendValidityBuffer):
+				appendValidityBuffer(appendValidityBuffer) {
     if(owner == nullptr) {
     	printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
     			"LocalDataPoolManager", HasReturnvaluesIF::RETURN_FAILED,
@@ -148,12 +148,11 @@ ReturnValue_t LocalDataPoolManager::handleHkUpdate(HkReceiver& receiver,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(
-        HkReceiver& receiver, ReturnValue_t& status) {
+ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receiver,
+		ReturnValue_t& status) {
     MarkChangedIF* toReset = nullptr;
     if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-        LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
-                receiver.dataId.localPoolId);
+        LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(receiver.dataId.localPoolId);
         if(poolObj == nullptr) {
         	printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
         			"handleNotificationUpdate", POOLOBJECT_NOT_FOUND);
@@ -162,8 +161,8 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(
         if(poolObj->hasChanged()) {
             // prepare and send update notification.
             CommandMessage notification;
-            HousekeepingMessage::setUpdateNotificationVariableCommand(
-                    &notification, receiver.dataId.localPoolId);
+            HousekeepingMessage::setUpdateNotificationVariableCommand(&notification,
+            		receiver.dataId.localPoolId);
             ReturnValue_t result = hkQueue->sendMessage(
                     receiver.destinationQueue, &notification);
             if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -174,8 +173,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(
 
     }
     else {
-        LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
-                receiver.dataId.sid);
+        LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(receiver.dataId.sid);
         if(dataSet == nullptr) {
         	printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
         			"handleNotificationUpdate", DATASET_NOT_FOUND);
