@@ -3,11 +3,9 @@
 
 #include "HasLocalDataPoolIF.h"
 #include "MarkChangedIF.h"
-#include "AccessLocalDataPoolIF.h"
 
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
-#include "../serialize/SerializeIF.h"
 
 #include <vector>
 
