@@ -54,10 +54,7 @@ class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF {
 	template<typename T> friend class LocalPoolVariable;
 	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
 	friend class LocalPoolDataSetBase;
-	//friend class AccessLocalDataPoolIF;
 	friend void (Factory::setStaticFrameworkObjectIds)();
-
-
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 

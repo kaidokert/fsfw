@@ -2,7 +2,7 @@
 
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId,
         uint32_t messageQueueDepth): SystemObject(setObjectId),
@@ -196,7 +196,6 @@ void InternalErrorReporter::setMutexTimeout(MutexIF::TimeoutType timeoutType,
 	this->timeoutMs = timeoutMs;
 }
 
-ProvidesDataPoolSubscriptionIF* InternalErrorReporter::getSubsciptionInterface(
-		) {
+ProvidesDataPoolSubscriptionIF* InternalErrorReporter::getSubscriptionInterface() {
 	return &poolManager;
 }

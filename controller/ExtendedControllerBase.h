@@ -32,7 +32,7 @@ public:
     virtual ReturnValue_t performOperation(uint8_t opCode) override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;
 
-   ProvidesDataPoolSubscriptionIF* getSubsciptionInterface() override;
+   ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
 
 protected:
     LocalDataPoolManager localPoolManager;

@@ -123,7 +123,7 @@ public:
 	 * which allows subscriptions to dataset and variable updates.
 	 * @return
 	 */
-	virtual ProvidesDataPoolSubscriptionIF* getSubsciptionInterface() = 0;
+	virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() = 0;
 protected:
 
 	/**

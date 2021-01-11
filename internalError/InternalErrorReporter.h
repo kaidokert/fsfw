@@ -46,7 +46,7 @@ public:
     virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual dur_millis_t getPeriodicOperationFrequency() const override;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
-    ProvidesDataPoolSubscriptionIF* getSubsciptionInterface() override;
+    ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
 
     virtual ReturnValue_t initialize() override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;

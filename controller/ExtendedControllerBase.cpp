@@ -114,7 +114,6 @@ LocalPoolDataSetBase* ExtendedControllerBase::getDataSetHandle(sid_t sid) {
     return nullptr;
 }
 
-ProvidesDataPoolSubscriptionIF* ExtendedControllerBase::getSubsciptionInterface(
-		) {
+ProvidesDataPoolSubscriptionIF* ExtendedControllerBase::getSubscriptionInterface() {
 	return &localPoolManager;
 }

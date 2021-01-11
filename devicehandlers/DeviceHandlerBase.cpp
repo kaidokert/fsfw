@@ -1533,6 +1533,6 @@ void DeviceHandlerBase::printWarningOrError(fsfw::OutputTypes errorType,
 
 }
 
-ProvidesDataPoolSubscriptionIF* DeviceHandlerBase::getSubsciptionInterface() {
+ProvidesDataPoolSubscriptionIF* DeviceHandlerBase::getSubscriptionInterface() {
 	return &hkManager;
 }
