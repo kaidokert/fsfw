@@ -1,6 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
+#include "ProvidesDataPoolSubscriptionIF.h"
 #include "locPoolDefinitions.h"
 
 #include "../datapool/PoolEntryIF.h"
@@ -40,8 +41,9 @@ using LocalDataPoolMapIter = LocalDataPool::iterator;
  * of the LocalDataPoolManager.
  */
 class HasLocalDataPoolIF {
-	friend class LocalPoolDataSetBase;
-	friend class LocalPoolObjectBase;
+	friend class LocalDataPoolManager;
+	//friend class LocalPoolDataSetBase;
+	//friend class LocalPoolObjectBase;
 public:
 	virtual~ HasLocalDataPoolIF() {};
 
@@ -73,36 +75,10 @@ public:
 	 */
 	virtual uint32_t getPeriodicOperationFrequency() const = 0;
 
-	/**
-	 * This function is used by the pool manager to get a valid dataset
-     * from a SID
-	 * @param sid Corresponding structure ID
-	 * @return
-	 */
-	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
-
-	/**
-	 * Similar to the function above, but used to get a local pool variable
-	 * handle. This is only needed for update notifications, so it is not
-	 * defined as abstract.
-	 * @param localPoolId
-	 * @return
-	 */
-	virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
-	            << ". Returning nullptr!" << std::endl;
-#else
-	    fsfw::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
-	    		"Not overriden. Returning nullptr!\n");
-#endif
-	    return nullptr;
-	}
-
     /**
      * @brief   This function will be called by the manager if an update
      *          notification is received.
-     * @details
+     * @details  HasLocalDataPoolIF
      * Can be overriden by the child class to handle changed datasets.
      * @param sid
      * @param storeId If a snapshot was requested, data will be located inside
@@ -127,8 +103,10 @@ public:
         return;
     }
 
-	/* These function can be implemented by pool owner, as they are required
-	 * by the housekeeping message interface */
+	/**
+	 * These function can be implemented by pool owner, if they are required
+	 * and used by the housekeeping message interface.
+	 * */
 	virtual ReturnValue_t addDataSet(sid_t sid) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
@@ -140,11 +118,50 @@ public:
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 
+	/**
+	 * This function can be used by data pool consumers to retrieve a  handle
+	 * which allows subscriptions to dataset and variable updates.
+	 * @return
+	 */
 	virtual ProvidesDataPoolSubscriptionIF* getSubsciptionInterface() = 0;
 protected:
 
-	/** Can be used to get a handle to the local data pool manager. */
+	/**
+	 * Can be used to get a handle to the local data pool manager.
+	 * This function is protected because it should only be used by the
+	 * class imlementing the interface.
+	 */
 	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
+
+	/**
+	 * This function is used by the pool manager to get a valid dataset
+     * from a SID. This function is protected to prevent users from
+     * using raw data set pointers which could not be thread-safe. Users
+     * should use the #ProvidesDataPoolSubscriptionIF.
+	 * @param sid Corresponding structure ID
+	 * @return
+	 */
+	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
+
+	/**
+	 * Similar to the function above, but used to get a local pool variable
+	 * handle. This is only needed for update notifications, so it is not
+	 * defined as abstract. This function is protected to prevent users from
+     * using raw pool variable pointers which could not be thread-safe.
+     * Users should use the #ProvidesDataPoolSubscriptionIF.
+	 * @param localPoolId
+	 * @return
+	 */
+	virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
+	            << ". Returning nullptr!" << std::endl;
+#else
+	    fsfw::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
+	    		"Not overriden. Returning nullptr!\n");
+#endif
+	    return nullptr;
+	}
 };
 
 #endif /* FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_ */

@@ -518,7 +518,9 @@ protected:
 				LocalDataPoolManager& poolManager) override;
 
 	/** Get the HK manager object handle */
-	virtual LocalDataPoolManager* getHkManagerHandle() override;
+	LocalDataPoolManager* getHkManagerHandle() override;
+
+    ProvidesDataPoolSubscriptionIF* getSubsciptionInterface() override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per

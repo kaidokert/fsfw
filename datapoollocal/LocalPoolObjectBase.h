@@ -54,7 +54,7 @@ protected:
     ReadWriteMode_t readWriteMode = pool_rwm_t::VAR_READ_WRITE;
 
     //! @brief  Pointer to the class which manages the HK pool.
-    LocalDataPoolManager* hkManager;
+    LocalDataPoolManager* hkManager = nullptr;
 
 	void reportReadCommitError(const char* variableType,
 			ReturnValue_t error, bool read, object_id_t objectId, lp_id_t lpId);

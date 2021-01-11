@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 #define FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 
-#include <fsfw/datapoollocal/ProvidesDataPoolSubscriptionIF.h>
+#include "ProvidesDataPoolSubscriptionIF.h"
 #include "HasLocalDataPoolIF.h"
 
 #include "../serviceinterface/ServiceInterface.h"

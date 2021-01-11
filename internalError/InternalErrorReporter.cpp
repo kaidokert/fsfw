@@ -195,3 +195,8 @@ void InternalErrorReporter::setMutexTimeout(MutexIF::TimeoutType timeoutType,
 	this->timeoutType = timeoutType;
 	this->timeoutMs = timeoutMs;
 }
+
+ProvidesDataPoolSubscriptionIF* InternalErrorReporter::getSubsciptionInterface(
+		) {
+	return &poolManager;
+}

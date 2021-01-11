@@ -8,7 +8,7 @@
 #include <cmath>
 #include <cstring>
 
-LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
+LocalPoolDataSetBase::LocalPoolDataSetBase(AccessLocalDataPoolIF *hkOwner,
         uint32_t setId, PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables, bool periodicHandling):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {

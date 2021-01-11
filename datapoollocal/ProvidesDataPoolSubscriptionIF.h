@@ -1,10 +1,13 @@
+#ifndef FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_
+#define FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_
+
 #include <fsfw/datapoollocal/locPoolDefinitions.h>
 #include <fsfw/ipc/messageQueueDefinitions.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
 
 
-class ProvidesDataPoolSubscriptionIF{
+class ProvidesDataPoolSubscriptionIF {
 public:
 	virtual ~ProvidesDataPoolSubscriptionIF(){};
 
@@ -77,3 +80,5 @@ public:
 			bool generateSnapshot) = 0;
 
 };
+
+#endif /* FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_ */

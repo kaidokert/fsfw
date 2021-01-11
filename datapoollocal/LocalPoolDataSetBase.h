@@ -3,6 +3,7 @@
 
 #include "HasLocalDataPoolIF.h"
 #include "MarkChangedIF.h"
+#include "AccessLocalDataPoolIF.h"
 
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
@@ -42,7 +43,8 @@ class PeriodicHousekeepingHelper;
  * @ingroup data_pool
  */
 class LocalPoolDataSetBase: public PoolDataSetBase,
-        public MarkChangedIF {
+        public MarkChangedIF,
+		public AccessLocalDataPoolIF {
 	friend class LocalDataPoolManager;
 	friend class PeriodicHousekeepingHelper;
 public:
@@ -52,7 +54,7 @@ public:
 	 * This constructor also initializes the components required for
 	 * periodic handling.
 	 */
-	LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
+	LocalPoolDataSetBase(AccessLocalDataPoolIF *hkOwner,
 			uint32_t setId, PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables, bool periodicHandling = true);
 
@@ -218,7 +220,7 @@ protected:
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
 
 	PeriodicHousekeepingHelper* periodicHelper = nullptr;
-	LocalDataPoolManager* hkManager = nullptr;
+	AccessLocalDataPoolIF* hkManager = nullptr;
 
 };
 
