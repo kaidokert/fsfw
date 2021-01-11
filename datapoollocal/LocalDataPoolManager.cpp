@@ -13,12 +13,11 @@
 #include <array>
 #include <cmath>
 
-object_id_t LocalDataPoolManager::defaultHkDestination =
-		objects::PUS_SERVICE_3_HOUSEKEEPING;
+object_id_t LocalDataPoolManager::defaultHkDestination = objects::PUS_SERVICE_3_HOUSEKEEPING;
 
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
 		bool appendValidityBuffer):
-						appendValidityBuffer(appendValidityBuffer) {
+		appendValidityBuffer(appendValidityBuffer) {
 	if(owner == nullptr) {
 		printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
 				"LocalDataPoolManager", HasReturnvaluesIF::RETURN_FAILED,
