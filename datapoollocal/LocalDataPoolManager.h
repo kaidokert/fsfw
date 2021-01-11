@@ -1,6 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 #define FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 
+#include <fsfw/datapoollocal/ProvidesDataPoolSubscriptionIF.h>
 #include "HasLocalDataPoolIF.h"
 
 #include "../serviceinterface/ServiceInterface.h"
@@ -48,11 +49,13 @@ class HousekeepingPacketUpdate;
  * Each pool entry has a valid state too.
  * @author 		R. Mueller
  */
-class LocalDataPoolManager {
+class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF {
 	template<typename T> friend class LocalPoolVariable;
 	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
 	friend class LocalPoolDataSetBase;
 	friend void (Factory::setStaticFrameworkObjectIds)();
+
+
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
@@ -63,6 +66,7 @@ public:
     static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(3);
     static constexpr ReturnValue_t POOLOBJECT_NOT_FOUND = MAKE_RETURN_CODE(4);
     static constexpr ReturnValue_t DATASET_NOT_FOUND = MAKE_RETURN_CODE(5);
+
 
     /**
      * This constructor is used by a class which wants to implement
@@ -119,7 +123,7 @@ public:
 	 */
 	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
 			float collectionInterval, bool isDiagnostics,
-			object_id_t packetDestination = defaultHkDestination);
+			object_id_t packetDestination = defaultHkDestination) override;
 
 	/**
 	 * @brief   Subscribe for the  generation of packets if the dataset
@@ -133,7 +137,7 @@ public:
 	 */
     ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
             bool isDiagnostics,
-            object_id_t packetDestination = defaultHkDestination);
+            object_id_t packetDestination = defaultHkDestination) override;
 
 	/**
 	 * @brief   Subscribe for a notification message which will be sent
@@ -152,7 +156,7 @@ public:
 	ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
 	        object_id_t destinationObject,
 	        MessageQueueId_t targetQueueId,
-	        bool generateSnapshot);
+	        bool generateSnapshot) override;
 
     /**
      * @brief   Subscribe for an notification message which will be sent if a
@@ -171,7 +175,7 @@ public:
     ReturnValue_t subscribeForVariableUpdateMessages(const lp_id_t localPoolId,
             object_id_t destinationObject,
             MessageQueueId_t targetQueueId,
-            bool generateSnapshot);
+            bool generateSnapshot) override;
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
