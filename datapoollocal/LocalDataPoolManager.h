@@ -50,10 +50,11 @@ class HousekeepingPacketUpdate;
  * Each pool entry has a valid state too.
  * @author 		R. Mueller
  */
-class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF {
+class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF,
+		public AccessLocalPoolIF {
 	template<typename T> friend class LocalPoolVariable;
 	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
-	friend class LocalPoolDataSetBase;
+	//friend class LocalPoolDataSetBase;
 	friend void (Factory::setStaticFrameworkObjectIds)();
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
@@ -176,6 +177,8 @@ public:
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;
 
+    ReturnValue_t retrieveLocalPoolMutex(MutexIF* mutex) override;
+
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
 	 * than diagnostic packets.
@@ -259,6 +262,8 @@ public:
      * the insertion operations allocate dynamically.
      */
     void clearReceiversList();
+
+    object_id_t getCreatorObjectId() const override;
 private:
     LocalDataPool localPoolMap;
     //! Every housekeeping data manager has a mutex to protect access

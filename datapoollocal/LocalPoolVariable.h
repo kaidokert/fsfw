@@ -24,7 +24,7 @@
  * @ingroup data_pool
  */
 template<typename T>
-class LocalPoolVariable: public LocalPoolObjectBase, public AccessLocalPoolIF<T> {
+class LocalPoolVariable: public LocalPoolObjectBase {
 public:
 	//! Default ctor is forbidden.
 	LocalPoolVariable() = delete;

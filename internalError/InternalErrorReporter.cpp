@@ -134,6 +134,10 @@ uint32_t InternalErrorReporter::getStoreHits() {
 	return value;
 }
 
+AccessLocalPoolIF* InternalErrorReporter::getAccessorHandle() {
+	return &poolManager;
+}
+
 void InternalErrorReporter::incrementStoreHits() {
 	mutex->lockMutex(timeoutType, timeoutMs);
 	storeHits++;

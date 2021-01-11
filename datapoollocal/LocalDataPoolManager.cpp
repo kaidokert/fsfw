@@ -410,7 +410,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessages(
 		MessageQueueId_t targetQueueId, bool generateSnapshot) {
 	struct HkReceiver hkReceiver;
 	hkReceiver.dataType = DataType::DATA_SET;
-	hkReceiver.dataId.sid = sid_t(this->getOwner()->getObjectId(), setId);
+	hkReceiver.dataId.sid = sid_t(this->getCreatorObjectId(), setId);
 	hkReceiver.destinationQueue = targetQueueId;
 	hkReceiver.objectId = destinationObject;
 	if(generateSnapshot) {
@@ -822,6 +822,18 @@ void LocalDataPoolManager::clearReceiversList() {
 	HkReceivers().swap(hkReceiversMap);
 }
 
+ReturnValue_t LocalDataPoolManager::retrieveLocalPoolMutex(MutexIF *mutex) {
+	if(this->mutex == nullptr) {
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+	mutex = this->mutex;
+	return HasReturnvaluesIF::RETURN_OK;
+}
+
+object_id_t LocalDataPoolManager::getCreatorObjectId() const {
+	return owner->getAccessorHandle()->getCreatorObjectId();
+}
+
 void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,
 		const char* functionName, ReturnValue_t error, const char* errorPrint) {
 	if(errorPrint == nullptr) {
@@ -857,7 +869,7 @@ void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "LocalDataPoolManager::" << functionName
 				<< ": Object ID " << std::setw(8) << std::setfill('0')
-				<< std::hex << owner->getObjectId() << " | " << errorPrint
+				<< std::hex << this->getCreatorObjectId() << " | " << errorPrint
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
 		fsfw::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
@@ -868,7 +880,7 @@ void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "LocalDataPoolManager::" << functionName
 				<< ": Object ID " << std::setw(8) << std::setfill('0')
-				<< std::hex << owner->getObjectId() << " | " << errorPrint
+				<< std::hex << this->getCreatorObjectId() << " | " << errorPrint
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
 		fsfw::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",

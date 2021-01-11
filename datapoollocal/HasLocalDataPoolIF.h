@@ -1,6 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
+#include "AccessLocalPoolF.h"
 #include "ProvidesDataPoolSubscriptionIF.h"
 #include "locPoolDefinitions.h"
 
@@ -53,8 +54,6 @@ public:
     static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x01);
 
 	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
-
-	virtual object_id_t getObjectId() const = 0;
 
 	/** Command queue for housekeeping messages. */
 	virtual MessageQueueId_t getCommandQueue() const = 0;
@@ -124,6 +123,8 @@ public:
 	 * @return
 	 */
 	virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() = 0;
+
+	virtual AccessLocalPoolIF* getAccessorHandle() = 0;
 protected:
 
 	/**

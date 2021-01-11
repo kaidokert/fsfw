@@ -15,7 +15,7 @@ public:
 					DeviceHandlerIF::DEFAULT_THERMAL_STATE_POOL_ID,
 			lp_id_t heaterRequestId =
 					DeviceHandlerIF::DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID):
-			DeviceHandlerThermalSet(hkOwner->getObjectId(), setId,
+			DeviceHandlerThermalSet(hkOwner->getAccessorHandle()->getCreatorObjectId(), setId,
 					thermalStateId, heaterRequestId) {}
 
 	DeviceHandlerThermalSet(object_id_t deviceHandler, uint32_t setId =

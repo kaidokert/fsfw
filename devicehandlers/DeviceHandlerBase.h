@@ -517,10 +517,13 @@ protected:
 	virtual ReturnValue_t initializeLocalDataPool(LocalDataPool& localDataPoolMap,
 				LocalDataPoolManager& poolManager) override;
 
+
 	/** Get the HK manager object handle */
 	LocalDataPoolManager* getHkManagerHandle() override;
 
 	ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
+
+	AccessLocalPoolIF* getAccessorHandle() override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per

@@ -23,13 +23,14 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         return;
     }
-    hkManager = hkOwner->getHkManagerHandle();
+    localPoolAccessor = hkOwner->getAccessorHandle();
 
-    if(hkManager != nullptr) {
-        mutexIfSingleDataCreator = hkManager->getMutexHandle();
+    if(localPoolAccessor != nullptr) {
+    	localPoolAccessor->retrieveLocalPoolMutex(mutexIfSingleDataCreator);
+        //mutexIfSingleDataCreator = hkManager->getAc();
     }
 
-    this->sid.objectId = hkOwner->getObjectId();
+    this->sid.objectId = localPoolAccessor->getCreatorObjectId();
     this->sid.ownerSetId = setId;
 
     // Data creators get a periodic helper for periodic HK data generation.
@@ -42,15 +43,15 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
         PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
-    HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
+	AccessLocalPoolIF* hkOwner = objectManager->get<AccessLocalPoolIF>(
             sid.objectId);
     if(hkOwner != nullptr) {
-        hkManager = hkOwner->getHkManagerHandle();
+        ReturnValue_t result = hkOwner->retrieveLocalPoolMutex(mutexIfSingleDataCreator);
     }
 
-    if(hkManager != nullptr) {
-        mutexIfSingleDataCreator = hkManager->getMutexHandle();
-    }
+    //if(hkManager != nullptr) {
+    //    mutexIfSingleDataCreator = hkManager->getMutexHandle();
+    //}
     this->sid = sid;
 }
 
@@ -308,12 +309,9 @@ void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
     this->valid = valid;
 }
 
-object_id_t LocalPoolDataSetBase::getCreatorObjectId(object_id_t objectId) {
-	if(hkManager != nullptr) {
-		HasLocalDataPoolIF* owner = hkManager->getOwner();
-		if(owner != nullptr) {
-			return owner->getObjectId();
-		}
+object_id_t LocalPoolDataSetBase::getCreatorObjectId() {
+	if(localPoolAccessor != nullptr) {
+		return localPoolAccessor->getCreatorObjectId();
 	}
 	return objects::NO_OBJECT;
 }

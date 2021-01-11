@@ -1488,6 +1488,10 @@ void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
 	}
 }
 
+AccessLocalPoolIF* DeviceHandlerBase::getAccessorHandle() {
+	return &hkManager;
+}
+
 void DeviceHandlerBase::printWarningOrError(fsfw::OutputTypes errorType,
 		const char *functionName, ReturnValue_t errorCode,
 		const char *errorPrint) {

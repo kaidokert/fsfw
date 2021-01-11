@@ -32,7 +32,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_WRITE) {
-		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		object_id_t targetObjectId = hkManager->getCreatorObjectId();
 		reportReadCommitError("LocalPoolVector",
 				PoolVariableIF::INVALID_READ_WRITE_MODE, true, targetObjectId,
 				localPoolId);
@@ -44,7 +44,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	memset(this->value, 0, vectorSize * sizeof(T));
 
 	if(result != RETURN_OK) {
-		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		object_id_t targetObjectId = hkManager->getCreatorObjectId();
 		reportReadCommitError("LocalPoolVector", result, true, targetObjectId,
 				localPoolId);
 		return result;
@@ -71,7 +71,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 	if(readWriteMode == pool_rwm_t::VAR_READ) {
-		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		object_id_t targetObjectId = hkManager->getCreatorObjectId();
 		reportReadCommitError("LocalPoolVector",
 				PoolVariableIF::INVALID_READ_WRITE_MODE, false, targetObjectId,
 				localPoolId);
@@ -80,7 +80,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 	PoolEntry<T>* poolEntry = nullptr;
 	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
-		object_id_t targetObjectId = hkManager->getOwner()->getObjectId();
+		object_id_t targetObjectId = hkManager->getCreatorObjectId();
 		reportReadCommitError("LocalPoolVector", result, false, targetObjectId,
 				localPoolId);
 		return result;

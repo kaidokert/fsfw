@@ -33,6 +33,7 @@ public:
     virtual ReturnValue_t initializeAfterTaskCreation() override;
 
    ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
+   AccessLocalPoolIF* getAccessorHandle() override;
 
 protected:
     LocalDataPoolManager localPoolManager;
