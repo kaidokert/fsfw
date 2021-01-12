@@ -9,9 +9,11 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 	rtems_status_code status = rtems_message_queue_create(name, message_depth,
 			max_message_size, 0, &(this->id));
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
 				<< name << std::dec << " failed with status:"
 				<< (uint32_t) status << std::endl;
+#endif
 		this->id = 0;
 	}
 }

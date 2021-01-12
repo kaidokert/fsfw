@@ -30,8 +30,10 @@ ReturnValue_t MultiObjectTask::startTask() {
 	rtems_status_code status = rtems_task_start(id, MultiObjectTask::taskEntryPoint,
 			rtems_task_argument((void *) this));
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "ObjectTask::startTask for " << std::hex << this->getId()
 				<< std::dec << " failed." << std::endl;
+#endif
 	}
 	switch(status){
 	case RTEMS_SUCCESSFUL:
@@ -63,7 +65,9 @@ void MultiObjectTask::taskFunctionality() {
 			char nameSpace[8] = { 0 };
 			char* ptr = rtems_object_get_name(getId(), sizeof(nameSpace),
 					nameSpace);
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "ObjectTask: " << ptr << " Deadline missed." << std::endl;
+#endif
 			if (this->deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}

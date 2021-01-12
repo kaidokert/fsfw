@@ -1,6 +1,10 @@
-#include "../../timemanager/Clock.h"
 #include "RtemsBasic.h"
+
+#include "../../timemanager/Clock.h"
+#include "../../ipc/MutexHelper.h"
+
 #include <rtems/score/todimpl.h>
+#include <rtems/rtems/clockimpl.h>
 
 uint16_t Clock::leapSeconds = 0;
 MutexIF* Clock::timeMutex = nullptr;
@@ -33,15 +37,24 @@ ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
 }
 
 ReturnValue_t Clock::setClock(const timeval* time) {
-	//TODO This routine uses _TOD_Set which is not
 	timespec newTime;
 	newTime.tv_sec = time->tv_sec;
+	if(time->tv_usec < 0) {
+		// better returnvalue.
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
 	newTime.tv_nsec = time->tv_usec * TOD_NANOSECONDS_PER_MICROSECOND;
-	//SHOULDDO: Not sure if we need to protect this call somehow (by thread lock or something).
-	//Uli: rtems docu says you can call this from an ISR, not sure if this means no protetion needed
-	//TODO Second parameter is ISR_lock_Context
-	_TOD_Set(&newTime,nullptr);
-	return HasReturnvaluesIF::RETURN_OK;
+
+	ISR_lock_Context context;
+	_TOD_Lock();
+	_TOD_Acquire(&context);
+	Status_Control status = _TOD_Set(&newTime, &context);
+	_TOD_Unlock();
+	if(status == STATUS_SUCCESSFUL) {
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+	// better returnvalue
+	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
@@ -91,6 +104,7 @@ ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 }
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
+	// TIsn't this a bug? Are RTEMS ticks always microseconds?
 	rtems_time_of_day* timeRtems = reinterpret_cast<rtems_time_of_day*>(time);
 	rtems_status_code status = rtems_clock_get_tod(timeRtems);
 	switch (status) {
