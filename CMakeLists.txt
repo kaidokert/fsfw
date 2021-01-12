@@ -139,5 +139,4 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 target_compile_options(${LIB_FSFW_NAME} PRIVATE 
 	${WARNING_FLAGS}
 	${COMPILER_FLAGS}
-	${ABI_FLAGS}
 )
