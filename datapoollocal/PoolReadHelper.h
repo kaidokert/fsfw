@@ -16,7 +16,7 @@ public:
 			readObject(readObject), mutexTimeout(mutexTimeout) {
 		if(readObject != nullptr) {
 			readResult = readObject->read(timeoutType, mutexTimeout);
-#if FSFW_PRINT_VERBOSITY_LEVEL == 1
+#if FSFW_VERBOSE_LEVEL == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PoolReadHelper: Read failed!" << std::endl;
 #endif

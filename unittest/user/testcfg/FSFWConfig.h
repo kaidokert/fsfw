@@ -9,17 +9,13 @@
 //! the C stdio functions can be used alternatively
 #define FSFW_CPP_OSTREAM_ENABLED 	1
 
-//! More FSFW related printouts.
-//! Be careful, this also turns off most diagnostic prinouts!
-#define FSFW_ENHANCED_PRINTOUT		0
+//! More FSFW related printouts depending on level. Useful for development.
+#define FSFW_VERBOSE_LEVEL			1
 
 //! Can be used to completely disable printouts, even the C stdio ones.
-#if FSFW_CPP_OSTREAM_ENABLED == 0 && FSFW_ENHANCED_PRINTOUT == 0
+#if FSFW_CPP_OSTREAM_ENABLED == 0 && FSFW_VERBOSE_LEVEL == 0
 	#define FSFW_DISABLE_PRINTOUT 	0
 #endif
-
-//! Can be used to enable additional debugging printouts for developing the FSFW
-#define FSFW_PRINT_VERBOSITY_LEVEL   0
 
 //! Can be used to disable the ANSI color sequences for C stdio.
 #define FSFW_COLORED_OUTPUT 		1

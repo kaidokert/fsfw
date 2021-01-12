@@ -17,9 +17,6 @@
 	#define FSFW_DISABLE_PRINTOUT 	0
 #endif
 
-//! Can be used to enable additional debugging printouts for developing the FSFW
-#define FSFW_PRINT_VERBOSITY_LEVEL   0
-
 //! Can be used to disable the ANSI color sequences for C stdio.
 #define FSFW_COLORED_OUTPUT 		1
 
