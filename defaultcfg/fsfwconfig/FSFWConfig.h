@@ -13,7 +13,7 @@
 #define FSFW_VERBOSE_LEVEL			1
 
 //! Can be used to completely disable printouts, even the C stdio ones.
-#if FSFW_CPP_OSTREAM_ENABLED == 0 && FSFW_ENHANCED_PRINTOUT == 0
+#if FSFW_CPP_OSTREAM_ENABLED == 0 && FSFW_VERBOSE_LEVEL == 0
 	#define FSFW_DISABLE_PRINTOUT 	0
 #endif
 
