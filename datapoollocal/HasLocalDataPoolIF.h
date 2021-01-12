@@ -23,16 +23,11 @@ class LocalDataPoolManager;
  * @details
  * Any class implementing this interface shall also have a LocalDataPoolManager member class which
  * contains the actual pool data structure and exposes the public interface for it.
- * This is required because the pool entries are templates, which makes specifying an interface
- * rather difficult. The local data pool can be accessed by using the LocalPoolVariable,
- * LocalPoolVector or LocalDataSet classes.
+ * The local data pool can be accessed using helper classes by using the
+ * LocalPoolVariable, LocalPoolVector or LocalDataSet classes. Every local pool variable can
+ * be uniquely identified by a global pool ID (gp_id_t) and every dataset tied
+ * to a pool manager can be uniqely identified by a global structure ID (sid_t).
  *
- * Architectural Note:
- * This could be circumvented by using a wrapper/accessor function or implementing the templated
- * function in this interface.. The first solution sounds better than the second but the
- * LocalPoolVariable classes are templates as well, so this just shifts the problem somewhere else.
- * Interfaces are nice, but the most pragmatic solution I found was to offer the client the full
- * interface of the LocalDataPoolManager.
  */
 class HasLocalDataPoolIF {
 	friend class HasLocalDpIFManagerAttorney;
@@ -106,13 +101,21 @@ public:
 
 	/**
 	 * This function can be used by data pool consumers to retrieve a handle
-	 * which allows subscriptions to dataset and variable updates.
+	 * which allows subscriptions to dataset and variable updates in form of messages.
+	 * The consumers can then read the most recent variable value by calling read with
+	 * an own pool variable or set instance or using the deserialized snapshot data.
 	 * @return
 	 */
 	virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() = 0;
 
 protected:
 
+	/**
+	 * Accessor handle required for internal handling. Not intended for users and therefore
+	 * declared protected. Users should instead use pool variables, sets or the subscription
+	 * interface to access pool entries.
+	 * @return
+	 */
 	virtual AccessPoolManagerIF* getAccessorHandle() = 0;
 
 	/**

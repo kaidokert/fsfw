@@ -1,7 +1,7 @@
 #include "HasLocalDpIFManagerAttorney.h"
-#include "LocalPoolObjectBase.h"
-#include "LocalPoolDataSetBase.h"
-#include "HasLocalDataPoolIF.h"
+#include "../LocalPoolObjectBase.h"
+#include "../LocalPoolDataSetBase.h"
+#include "../HasLocalDataPoolIF.h"
 
 LocalPoolDataSetBase* HasLocalDpIFManagerAttorney::getDataSetHandle(HasLocalDataPoolIF* clientIF,
 		sid_t sid) {

@@ -1,8 +1,9 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLVECTOR_H_
 
-#include <fsfw/datapoollocal/LocalDpManagerAttorney.h>
 #include "LocalPoolObjectBase.h"
+#include "internal/LocalDpManagerAttorney.h"
+
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolEntry.h"
 #include "../datapool/PoolVariableIF.h"

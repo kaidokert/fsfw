@@ -1,6 +1,6 @@
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
-#include "HasLocalDpIFUserAttorney.h"
+#include "internal/HasLocalDpIFUserAttorney.h"
 #include "HasLocalDataPoolIF.h"
 
 #include "../objectmanager/ObjectManagerIF.h"

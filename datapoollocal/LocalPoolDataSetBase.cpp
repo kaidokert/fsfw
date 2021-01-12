@@ -1,6 +1,6 @@
 #include "LocalPoolDataSetBase.h"
 #include "HasLocalDataPoolIF.h"
-#include "HasLocalDpIFUserAttorney.h"
+#include "internal/HasLocalDpIFUserAttorney.h"
 
 #include "../serviceinterface/ServiceInterface.h"
 #include "../datapoollocal/LocalDataPoolManager.h"

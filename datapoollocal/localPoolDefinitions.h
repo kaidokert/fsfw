@@ -29,7 +29,7 @@ using DataPoolMapIter = DataPool::iterator;
 }
 
 /**
- * Used as a unique identifier for data sets.
+ * Used as a unique identifier for data sets. Consists of 4 byte object ID and 4 byte set ID.
  */
 union sid_t {
     static constexpr uint64_t INVALID_SID = -1;
@@ -71,7 +71,8 @@ union sid_t {
 };
 
 /**
- * Used as a global unique identifier for local pool variables.
+ * Used as a global unique identifier for local pool variables. Consists of 4 byte object ID
+ * and 4 byte local pool ID.
  */
 union gp_id_t {
 	static constexpr uint64_t INVALID_GPID = -1;

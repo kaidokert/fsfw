@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETATTORNEY_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETATTORNEY_H_
 
-#include <fsfw/datapoollocal/LocalPoolDataSetBase.h>
+#include "../LocalPoolDataSetBase.h"
 
 class LocalPoolDataSetAttorney {
 private:
@@ -34,7 +34,6 @@ private:
 
 	friend class LocalDataPoolManager;
 };
-
 
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETATTORNEY_H_ */

@@ -5,6 +5,6 @@ target_sources(${LIB_FSFW_NAME}
 		LocalPoolDataSetBase.cpp
 		LocalPoolObjectBase.cpp
 		SharedLocalDataSet.cpp
-		HasLocalDpIFUserAttorney.cpp
-		HasLocalDpIFManagerAttorney.cpp
 )
+
+add_subdirectory(internal)

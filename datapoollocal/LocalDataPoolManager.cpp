@@ -2,8 +2,8 @@
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
-#include "LocalPoolDataSetAttorney.h"
-#include "HasLocalDpIFManagerAttorney.h"
+#include "internal/LocalPoolDataSetAttorney.h"
+#include "internal/HasLocalDpIFManagerAttorney.h"
 
 #include "../housekeeping/HousekeepingPacketUpdate.h"
 #include "../housekeeping/HousekeepingSetPacket.h"

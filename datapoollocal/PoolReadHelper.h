@@ -1,7 +1,8 @@
 #ifndef FSFW_DATAPOOLLOCAL_POOLREADHELPER_H_
 #define FSFW_DATAPOOLLOCAL_POOLREADHELPER_H_
 
-#include <fsfw/datapoollocal/LocalPoolDataSetBase.h>
+#include "LocalPoolDataSetBase.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include <FSFWConfig.h>
 
 /**
@@ -19,6 +20,8 @@ public:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PoolReadHelper: Read failed!" << std::endl;
 #endif
+#else
+			sif::printError("PoolReadHelper: Read failed!\n");
 #endif
 		}
 	}
