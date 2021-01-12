@@ -1,6 +1,9 @@
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
 #include "HasLocalDpIFUserAttorney.h"
+#include "HasLocalDataPoolIF.h"
+
+#include "../objectmanager/ObjectManagerIF.h"
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
 		DataSetIF* dataSet, pool_rwm_t setReadWriteMode):
@@ -35,8 +38,7 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
 				<< "which is the NO_PARAMETER value!" << std::endl;
 #endif
 	}
-	HasLocalDataPoolIF* hkOwner =
-			objectManager->get<HasLocalDataPoolIF>(poolOwner);
+	HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(poolOwner);
 	if(hkOwner == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "LocalPoolVariable: The supplied pool owner did not "
@@ -98,10 +100,10 @@ void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
 	}
 
 	const char* errMsg = nullptr;
-	if(error == HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND) {
+	if(error == localpool::POOL_ENTRY_NOT_FOUND) {
 		errMsg = "Pool entry not found";
 	}
-	else if(error == HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT) {
+	else if(error == localpool::POOL_ENTRY_TYPE_CONFLICT) {
 		errMsg = "Pool entry type conflict";
 	}
 	else if(error == PoolVariableIF::INVALID_READ_WRITE_MODE) {

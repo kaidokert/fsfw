@@ -1,10 +1,10 @@
 #ifndef FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
 #define FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
 
+#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "DeviceHandlerMessage.h"
 
 #include "../action/HasActionsIF.h"
-#include "../datapoollocal/locPoolDefinitions.h"
 #include "../events/Event.h"
 #include "../modes/HasModesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"

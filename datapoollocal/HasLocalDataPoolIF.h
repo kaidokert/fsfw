@@ -1,10 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
-#include "AccessLocalPoolF.h"
-#include "ProvidesDataPoolSubscriptionIF.h"
-#include "locPoolDefinitions.h"
-
+#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "../datapool/PoolEntryIF.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "../ipc/MessageQueueSenderIF.h"
@@ -12,11 +9,11 @@
 
 #include <map>
 
+class AccessPoolManagerIF;
+class ProvidesDataPoolSubscriptionIF;
 class LocalPoolDataSetBase;
 class LocalPoolObjectBase;
-
-using LocalDataPool =  std::map<lp_id_t, PoolEntryIF*>;
-using LocalDataPoolMapIter = LocalDataPool::iterator;
+class LocalDataPoolManager;
 
 /**
  * @brief 		This interface is implemented by classes which posses a local data pool (not the
@@ -42,11 +39,6 @@ class HasLocalDataPoolIF {
 public:
 	virtual~ HasLocalDataPoolIF() {};
 
-	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
-
-    static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x00);
-    static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x01);
-
 	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
 	virtual object_id_t getObjectId() const = 0;
@@ -59,7 +51,7 @@ public:
 	 * The manager instance shall also be passed to this function.
 	 * It can be used to subscribe for periodic packets for for updates.
 	 */
-	virtual ReturnValue_t initializeLocalDataPool(LocalDataPool& localDataPoolMap,
+	virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
 	        LocalDataPoolManager& poolManager) = 0;
 
 	/**

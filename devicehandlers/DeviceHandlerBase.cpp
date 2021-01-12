@@ -1421,7 +1421,7 @@ void DeviceHandlerBase::performOperationHook() {
 }
 
 ReturnValue_t DeviceHandlerBase::initializeLocalDataPool(
-		LocalDataPool &localDataPoolMap,
+		localpool::DataPool &localDataPoolMap,
         LocalDataPoolManager& poolManager) {
 	if(thermalSet != nullptr) {
 		localDataPoolMap.emplace(thermalSet->thermalStatePoolId,

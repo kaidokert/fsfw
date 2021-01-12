@@ -1,11 +1,11 @@
 #ifndef FSFW_MONITORING_MONITORREPORTER_H_
 #define FSFW_MONITORING_MONITORREPORTER_H_
 
+#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "LimitViolationReporter.h"
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"
 
-#include "../datapoollocal/locPoolDefinitions.h"
 #include "../events/EventManagerIF.h"
 #include "../parameters/HasParametersIF.h"
 

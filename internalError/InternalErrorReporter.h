@@ -41,7 +41,7 @@ public:
     virtual object_id_t getObjectId() const override;
     virtual MessageQueueId_t getCommandQueue() const override;
     virtual ReturnValue_t initializeLocalDataPool(
-            LocalDataPool& localDataPoolMap,
+    		localpool::DataPool& localDataPoolMap,
             LocalDataPoolManager& poolManager) override;
     virtual dur_millis_t getPeriodicOperationFrequency() const override;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;

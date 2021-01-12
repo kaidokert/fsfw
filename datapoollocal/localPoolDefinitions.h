@@ -1,9 +1,12 @@
-#ifndef FSFW_DATAPOOLLOCAL_LOCPOOLDEFINITIONS_H_
-#define FSFW_DATAPOOLLOCAL_LOCPOOLDEFINITIONS_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDEFINITIONS_H_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLDEFINITIONS_H_
 
-#include <cstdint>
+#include "../datapool/PoolEntryIF.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../objectmanager/frameworkObjects.h"
+
+#include <cstdint>
+#include <map>
 
 /**
  * @brief   Type definition for local pool entries.
@@ -12,6 +15,14 @@ using lp_id_t = uint32_t;
 
 namespace localpool {
 static constexpr uint32_t INVALID_LPID = -1;
+
+static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
+
+static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x00);
+static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x01);
+
+using DataPool =  std::map<lp_id_t, PoolEntryIF*>;
+using DataPoolMapIter = DataPool::iterator;
 }
 
 /**
@@ -90,4 +101,4 @@ union gp_id_t {
     }
 };
 
-#endif /* FSFW_DATAPOOLLOCAL_LOCPOOLDEFINITIONS_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLDEFINITIONS_H_ */

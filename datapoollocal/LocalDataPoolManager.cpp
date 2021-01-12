@@ -1,8 +1,9 @@
-#include <fsfw/datapoollocal/HasLocalDpIFManagerAttorney.h>
+#include "HasLocalDataPoolIF.h"
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
 #include "LocalPoolDataSetAttorney.h"
+#include "HasLocalDpIFManagerAttorney.h"
 
 #include "../housekeeping/HousekeepingPacketUpdate.h"
 #include "../housekeeping/HousekeepingSetPacket.h"
@@ -601,8 +602,8 @@ ReturnValue_t LocalDataPoolManager::printPoolEntry(
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
 		printWarningOrError(sif::OutputTypes::OUT_WARNING, "printPoolEntry",
-				HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND);
-		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
+				localpool::POOL_ENTRY_NOT_FOUND);
+		return localpool::POOL_ENTRY_NOT_FOUND;
 	}
 	poolIter->second->print();
 	return HasReturnvaluesIF::RETURN_OK;
@@ -870,10 +871,10 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 		else if(error == QUEUE_OR_DESTINATION_INVALID) {
 			errorPrint = "Queue or destination not set";
 		}
-		else if(error == HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT) {
+		else if(error == localpool::POOL_ENTRY_TYPE_CONFLICT) {
 			errorPrint = "Pool entry type conflict";
 		}
-		else if(error == HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND) {
+		else if(error == localpool::POOL_ENTRY_NOT_FOUND) {
 			errorPrint = "Pool entry not found";
 		}
 		else {

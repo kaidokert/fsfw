@@ -2,7 +2,7 @@
 #define FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 
 #include "ProvidesDataPoolSubscriptionIF.h"
-#include "HasLocalDataPoolIF.h"
+#include "AccessLocalPoolF.h"
 
 #include "../serviceinterface/ServiceInterface.h"
 #include "../housekeeping/HousekeepingPacketDownlink.h"
@@ -25,6 +25,8 @@ void setStaticFrameworkObjectIds();
 
 class LocalPoolDataSetBase;
 class HousekeepingPacketUpdate;
+class HasLocalDataPoolIF;
+class LocalDataPool;
 
 /**
  * @brief 		This class is the managing instance for the local data pool.
@@ -267,7 +269,7 @@ public:
 
     virtual LocalDataPoolManager* getHkManagerHandle() override;
 private:
-    LocalDataPool localPoolMap;
+    localpool::DataPool localPoolMap;
     //! Every housekeeping data manager has a mutex to protect access
     //! to it's data pool.
     MutexIF* mutex = nullptr;
@@ -400,15 +402,15 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
     	printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
-				HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND);
-		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
+    			localpool::POOL_ENTRY_NOT_FOUND);
+		return localpool::POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
     	printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
-    			HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT);
-		return HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
+    			localpool::POOL_ENTRY_TYPE_CONFLICT);
+		return localpool::POOL_ENTRY_TYPE_CONFLICT;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }

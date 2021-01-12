@@ -514,7 +514,7 @@ protected:
 	 * @param localDataPoolMap
 	 * @return
 	 */
-	virtual ReturnValue_t initializeLocalDataPool(LocalDataPool& localDataPoolMap,
+	virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
 				LocalDataPoolManager& poolManager) override;
 
 

@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_
 #define FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_
 
-#include <fsfw/datapoollocal/locPoolDefinitions.h>
+#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include <fsfw/ipc/messageQueueDefinitions.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 

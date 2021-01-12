@@ -1,8 +1,9 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDPIFUSERATTORNEY_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDPIFUSERATTORNEY_H_
 
+#include "HasLocalDataPoolIF.h"
+
 class AccessPoolManagerIF;
-class HasLocalDataPoolIF;
 
 class HasLocalDpIFUserAttorney {
 private:

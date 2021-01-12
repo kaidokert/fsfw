@@ -1,9 +1,9 @@
 #ifndef MONITORINGMESSAGECONTENT_H_
 #define MONITORINGMESSAGECONTENT_H_
 
+#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "HasMonitorsIF.h"
 #include "MonitoringIF.h"
-#include "../datapoollocal/locPoolDefinitions.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerialBufferAdapter.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"

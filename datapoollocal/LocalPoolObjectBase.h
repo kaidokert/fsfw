@@ -1,8 +1,8 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_
 
+#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "MarkChangedIF.h"
-#include "../datapoollocal/locPoolDefinitions.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../datapool/PoolVariableIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"

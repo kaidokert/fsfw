@@ -63,7 +63,7 @@ protected:
     /** HasLocalDatapoolIF overrides */
     virtual object_id_t getObjectId() const override;
     virtual ReturnValue_t initializeLocalDataPool(
-            LocalDataPool& localDataPoolMap,
+            localpool::DataPool& localDataPoolMap,
             LocalDataPoolManager& poolManager) override;
     virtual uint32_t getPeriodicOperationFrequency() const override;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;

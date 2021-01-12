@@ -17,7 +17,7 @@ ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
 
 
 ReturnValue_t ExtendedControllerBase::initializeLocalDataPool(
-        LocalDataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
+        localpool::DataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
     // needs to be overriden and implemented by child class.
     return HasReturnvaluesIF::RETURN_OK;
 }

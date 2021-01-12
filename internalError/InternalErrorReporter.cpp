@@ -153,7 +153,7 @@ MessageQueueId_t InternalErrorReporter::getCommandQueue() const {
 }
 
 ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
-        LocalDataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
+        localpool::DataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
     localDataPoolMap.emplace(errorPoolIds::TM_HITS,
             new PoolEntry<uint32_t>());
     localDataPoolMap.emplace(errorPoolIds::QUEUE_HITS,
