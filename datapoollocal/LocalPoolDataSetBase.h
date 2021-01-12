@@ -1,15 +1,16 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 
-#include "HasLocalDataPoolIF.h"
 #include "MarkChangedIF.h"
 
+#include "../datapoollocal/locPoolDefinitions.h"
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
 
 #include <vector>
 
 class LocalDataPoolManager;
+class HasLocalDataPoolIF;
 class PeriodicHousekeepingHelper;
 
 /**
@@ -42,7 +43,6 @@ class PeriodicHousekeepingHelper;
  */
 class LocalPoolDataSetBase: public PoolDataSetBase,
         public MarkChangedIF {
-	//friend class LocalDataPoolManager;
 	friend class LocalPoolDataSetAttorney;
 	friend class PeriodicHousekeepingHelper;
 public:

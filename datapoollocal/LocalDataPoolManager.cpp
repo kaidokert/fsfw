@@ -1,7 +1,7 @@
+#include <fsfw/datapoollocal/HasLocalDpIFManagerAttorney.h>
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
-#include "HasLocalDataPoolIFAttorney.h"
 #include "LocalPoolDataSetAttorney.h"
 
 #include "../housekeeping/HousekeepingPacketUpdate.h"

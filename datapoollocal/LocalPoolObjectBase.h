@@ -2,9 +2,14 @@
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_
 
 #include "MarkChangedIF.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
+#include "../datapoollocal/locPoolDefinitions.h"
+#include "../objectmanager/SystemObjectIF.h"
 #include "../datapool/PoolVariableIF.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 
+class LocalDataPoolManager;
+class DataSetIF;
+class HasLocalDataPoolIF;
 
 class LocalPoolObjectBase: public PoolVariableIF,
         public HasReturnvaluesIF,

@@ -1,5 +1,6 @@
 #include "LocalPoolDataSetBase.h"
-#include "HasLocalDataPoolIFAttorney.h"
+#include "HasLocalDataPoolIF.h"
+#include "HasLocalDpIFUserAttorney.h"
 
 #include "../serviceinterface/ServiceInterface.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
@@ -50,9 +51,6 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
     	mutexIfSingleDataCreator = hkOwner->getLocalPoolMutex();
     }
 
-    //if(hkManager != nullptr) {
-    //    mutexIfSingleDataCreator = hkManager->getMutexHandle();
-    //}
     this->sid = sid;
 }
 
