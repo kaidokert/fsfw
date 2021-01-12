@@ -35,15 +35,19 @@ rtems_task PollingTask::taskEntryPoint(rtems_task_argument argument) {
 	PollingTask *originalTask(reinterpret_cast<PollingTask*>(argument));
 	//The task's functionality is called.
 	originalTask->taskFunctionality();
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "Polling task " << originalTask->getId()
 			<< " returned from taskFunctionality." << std::endl;
+#endif
 }
 
 void PollingTask::missedDeadlineCounter() {
 	PollingTask::deadlineMissedCount++;
 	if (PollingTask::deadlineMissedCount % 10 == 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PST missed " << PollingTask::deadlineMissedCount
 				<< " deadlines." << std::endl;
+#endif
 	}
 }
 
@@ -51,8 +55,10 @@ ReturnValue_t PollingTask::startTask() {
 	rtems_status_code status = rtems_task_start(id, PollingTask::taskEntryPoint,
 			rtems_task_argument((void *) this));
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PollingTask::startTask for " << std::hex << this->getId()
 				<< std::dec << " failed." << std::endl;
+#endif
 	}
 	switch(status){
 	case RTEMS_SUCCESSFUL:
@@ -75,8 +81,10 @@ ReturnValue_t PollingTask::addSlot(object_id_t componentId,
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "Component " << std::hex << componentId <<
 			" not found, not adding it to pst" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 

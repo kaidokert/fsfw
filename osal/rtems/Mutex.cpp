@@ -10,16 +10,20 @@ Mutex::Mutex() :
 	RTEMS_BINARY_SEMAPHORE | RTEMS_PRIORITY | RTEMS_INHERIT_PRIORITY, 0,
 			&mutexId);
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Mutex: creation with name, id " << mutexName << ", " << mutexId
 				<< " failed with " << status << std::endl;
+#endif
 	}
 }
 
 Mutex::~Mutex() {
 	rtems_status_code status = rtems_semaphore_delete(mutexId);
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Mutex: deletion for id " << mutexId
 				<< " failed with " << status << std::endl;
+#endif
 	}
 }
 
