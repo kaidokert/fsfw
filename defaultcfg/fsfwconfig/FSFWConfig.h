@@ -9,8 +9,8 @@
 //! the C stdio functions can be used alternatively
 #define FSFW_CPP_OSTREAM_ENABLED 	1
 
-//! More FSFW related printouts. Useful for development.
-#define FSFW_ENHANCED_PRINTOUT		0
+//! More FSFW related printouts depending on level. Useful for development.
+#define FSFW_VERBOSE_LEVEL			1
 
 //! Can be used to completely disable printouts, even the C stdio ones.
 #if FSFW_CPP_OSTREAM_ENABLED == 0 && FSFW_ENHANCED_PRINTOUT == 0

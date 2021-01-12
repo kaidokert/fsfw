@@ -29,7 +29,7 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 	uint32_t newTmHits = getAndResetTmHits();
 	uint32_t newStoreHits = getAndResetStoreHits();
 
-#if FSFW_ENHANCED_PRINTOUT == 1
+#if FSFW_VERBOSE_LEVEL == 1
 	if(diagnosticPrintout) {
 	    if((newQueueHits > 0) or (newTmHits > 0) or (newStoreHits > 0)) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -38,6 +38,11 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 	        sif::debug << "Queue errors: " << newQueueHits << std::endl;
 	        sif::debug << "TM errors: " << newTmHits << std::endl;
 	        sif::debug << "Store errors: " << newStoreHits << std::endl;
+#else
+	        sif::printDebug("InternalErrorReporter::performOperation: Errors occured!\n");
+	        sif::printDebug("Queue errors: %lu\n", static_cast<unsigned int>(newQueueHits));
+	        sif::printDebug("TM errors: %lu\n", static_cast<unsigned int>(newTmHits));
+	        sif::printDebug("Store errors: %lu\n", static_cast<unsigned int>(newStoreHits));
 #endif
 	    }
 	}

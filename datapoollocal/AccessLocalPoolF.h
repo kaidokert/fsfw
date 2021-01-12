@@ -1,11 +1,12 @@
 #ifndef FSFW_DATAPOOLLOCAL_ACCESSLOCALPOOLF_H_
 #define FSFW_DATAPOOLLOCAL_ACCESSLOCALPOOLF_H_
 
-//#include "LocalDataPoolManager.h"
-#include <fsfw/ipc/MutexIF.h>
-
 class LocalDataPoolManager;
+class MutexIF;
 
+/**
+ * @brief 	Accessor class which can be used by classes which like to use the pool manager.
+ */
 class AccessPoolManagerIF {
 public:
 	virtual ~AccessPoolManagerIF() {};
