@@ -10,9 +10,11 @@ static sif::PrintLevel printLevel = sif::PrintLevel::DEBUG_LEVEL;
 #if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
 static bool consoleInitialized = false;
 #endif /* defined(WIN32) && FSFW_COLORED_OUTPUT == 1 */
-static bool addCrAtEnd = false;
 
 #if FSFW_DISABLE_PRINTOUT == 0
+
+static bool addCrAtEnd = false;
+
 uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
 
 void fsfwPrint(sif::PrintLevel printType, const char* fmt, va_list arg) {
