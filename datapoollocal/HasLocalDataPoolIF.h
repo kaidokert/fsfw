@@ -94,7 +94,7 @@ public:
 	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
 	            << ". Returning nullptr!" << std::endl;
 #else
-	    fsfw::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
+	    sif::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
 	    		"Not overriden. Returning nullptr!\n");
 #endif
 	    return nullptr;

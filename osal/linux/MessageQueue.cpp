@@ -127,7 +127,7 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		sif::error << "MessageQueue::MessageQueue: Creating Queue " << name
 				<< " failed with status: " << strerror(errno) << std::endl;
 #else
-		fsfw::printError("MessageQueue::MessageQueue: Creating Queue %s"
+		sif::printError("MessageQueue::MessageQueue: Creating Queue %s"
 				" failed with status: %s\n", name, strerror(errno));
 #endif
 	}

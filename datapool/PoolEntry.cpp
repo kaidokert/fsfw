@@ -73,8 +73,8 @@ void PoolEntry<T>::print() {
 	 sif::info << "PoolEntry information." << std::endl;
 	 sif::info << "PoolEntry validity: " << validString << std::endl;
 #else
-	 fsfw::printInfo("PoolEntry information.\n");
-	 fsfw::printInfo("PoolEntry validity: %s\n", validString);
+	 sif::printInfo("PoolEntry information.\n");
+	 sif::printInfo("PoolEntry validity: %s\n", validString);
 #endif
 	arrayprinter::print(reinterpret_cast<uint8_t*>(address), getByteSize());
 }

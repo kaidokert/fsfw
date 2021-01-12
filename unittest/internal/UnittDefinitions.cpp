@@ -5,7 +5,7 @@
 	sif::error << "Unit Tester error: Failed at test ID "
 			<< errorId << std::endl;
 #else
-	fsfw::printError("Unit Tester error: Failed at test ID 0x%08x", errorId);
+	sif::printError("Unit Tester error: Failed at test ID 0x%08x", errorId);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 	return HasReturnvaluesIF::RETURN_FAILED;
 }

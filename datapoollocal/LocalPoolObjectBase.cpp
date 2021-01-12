@@ -114,7 +114,7 @@ void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
 			<< std::setfill('0') << objectId << std::dec << " LPID: " << lpId
 			<< std::endl;
 #else
-	fsfw::printWarning("%s: %s call | %s | Owner: 0x%08x LPID: %lu\n",
+	sif::printWarning("%s: %s call | %s | Owner: 0x%08x LPID: %lu\n",
 			variableType, type, errMsg, objectId, lpId);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_DISABLE_PRINTOUT == 0 */

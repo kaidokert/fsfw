@@ -18,7 +18,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
         sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
                 << "invalid!" << std::endl;
 #else
-        fsfw::printError("LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
+        sif::printError("LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
                 "invalid!\n\r");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         return;
@@ -171,7 +171,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
             sif::warning << "LocalPoolDataSetBase::serializeLocalPoolIds: "
             		<< "Serialization error!" << std::endl;
 #else
-            fsfw::printWarning("LocalPoolDataSetBase::serializeLocalPoolIds: "
+            sif::printWarning("LocalPoolDataSetBase::serializeLocalPoolIds: "
             		"Serialization error!\n\r");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
             return result;
@@ -235,7 +235,7 @@ void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
         sif::warning << "LocalPoolDataSetBase::bitSetter: Invalid position!"
                 << std::endl;
 #else
-        fsfw::printWarning("LocalPoolDataSetBase::bitSetter: "
+        sif::printWarning("LocalPoolDataSetBase::bitSetter: "
         		"Invalid position!\n\r");
 #endif
         return;
