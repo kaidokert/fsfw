@@ -1,7 +1,7 @@
 #ifndef FSFW_SERVICEINTERFACE_SERVICEINTERFACEDEFINTIONS_H_
 #define FSFW_SERVICEINTERFACE_SERVICEINTERFACEDEFINTIONS_H_
 
-namespace fsfw {
+namespace sif {
 
 enum class OutputTypes {
 	OUT_INFO,

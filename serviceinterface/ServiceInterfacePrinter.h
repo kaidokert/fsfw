@@ -2,7 +2,7 @@
 #include <cstdio>
 #endif
 
-namespace fsfw {
+namespace sif {
 
 enum PrintLevel {
 	NONE = 0,
