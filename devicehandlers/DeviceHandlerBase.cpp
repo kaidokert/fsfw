@@ -24,7 +24,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
-		actionHelper(this, nullptr), hkManager(this, nullptr),
+		actionHelper(this, nullptr), poolManager(this, nullptr),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
 		switchOffWasReported(false), childTransitionDelay(5000),
@@ -107,7 +107,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		doGetRead();
 		// This will be performed after datasets have been updated by the
 		// custom device implementation.
-		hkManager.performHkOperation();
+		poolManager.performHkOperation();
 		break;
 	default:
 		break;
@@ -210,7 +210,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
-	result = hkManager.initialize(commandQueue);
+	result = poolManager.initialize(commandQueue);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -280,7 +280,7 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	result = hkManager.handleHousekeepingMessage(&command);
+	result = poolManager.handleHousekeepingMessage(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
@@ -1438,7 +1438,7 @@ ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     if(executingTask != nullptr) {
         pstIntervalMs = executingTask->getPeriodMs();
     }
-    this->hkManager.initializeAfterTaskCreation();
+    this->poolManager.initializeAfterTaskCreation();
 
     if(setStartupImmediately) {
         startTransition(MODE_ON, SUBMODE_NONE);
@@ -1484,7 +1484,7 @@ void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
 }
 
 AccessPoolManagerIF* DeviceHandlerBase::getAccessorHandle() {
-	return &hkManager;
+	return &poolManager;
 }
 
 void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
@@ -1533,5 +1533,5 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
 }
 
 ProvidesDataPoolSubscriptionIF* DeviceHandlerBase::getSubscriptionInterface() {
-	return &hkManager;
+	return &poolManager;
 }

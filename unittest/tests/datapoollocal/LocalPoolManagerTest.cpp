@@ -27,7 +27,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		// Subscribe for an update message.
 		poolOwner->dataset.setChanged(true);
 		// Now the update message should be generated.
-		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 		REQUIRE(mqMock->wasMessageSent() == true);
 
 		REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
@@ -38,7 +38,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		CHECK(poolOwner->dataset.hasChanged() == false);
 		// Set changed again, result should be the same.
 		poolOwner->dataset.setChanged(true);
-		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 
 		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
 		CHECK(messagesSent == 1);
@@ -49,7 +49,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		// now subscribe for set update HK as well.
 		REQUIRE(poolOwner->subscribeWrapperSetUpdateHk() == retval::CATCH_OK);
 		poolOwner->dataset.setChanged(true);
-		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
 		CHECK(messagesSent == 2);
 		// first message sent should be the update notification, considering
@@ -77,7 +77,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 				poolOwner->getPoolObjectHandle(lpool::uint8VarId));
 		REQUIRE(poolVar != nullptr);
 		poolVar->setChanged(true);
-		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 
 		// Check update notification was sent.
 		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
@@ -93,7 +93,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 		REQUIRE(poolOwner->subscribeWrapperSetUpdateHk() == retval::CATCH_OK);
 
 		poolOwner->dataset.setChanged(true);
-		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 		// now two messages should be sent.
 		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
 		CHECK(messagesSent == 2);
@@ -101,7 +101,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 
 		poolOwner->dataset.setChanged(true);
 		poolVar->setChanged(true);
-		REQUIRE(poolOwner->hkManager.performHkOperation() == retval::CATCH_OK);
+		REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 		// now three messages should be sent.
 		REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
 		CHECK(messagesSent == 3);

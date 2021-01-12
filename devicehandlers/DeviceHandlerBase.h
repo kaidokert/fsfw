@@ -517,12 +517,14 @@ protected:
 	virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
 				LocalDataPoolManager& poolManager) override;
 
-
-	/** Get the HK manager object handle */
-	//LocalDataPoolManager* getHkManagerHandle() override;
-
+	/**
+	 * Provides the subscription handle which can be used by classes like controllers
+	 * to get messages on data updates.
+	 * @return
+	 */
 	ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
 
+	//! Accessor handle required for internal handling.
 	AccessPoolManagerIF* getAccessorHandle() override;
 
 	/**
@@ -653,7 +655,7 @@ protected:
 	/** Action helper for HasActionsIF */
 	ActionHelper actionHelper;
 	/** Housekeeping Manager */
-	LocalDataPoolManager hkManager;
+	LocalDataPoolManager poolManager;
 
 	/**
 	 *  @brief Information about commands
