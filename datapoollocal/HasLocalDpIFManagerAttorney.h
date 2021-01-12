@@ -4,6 +4,7 @@
 #include "HasLocalDataPoolIF.h"
 
 class LocalPoolDataSetBase;
+class LocalPoolObjectBase;
 
 class HasLocalDpIFManagerAttorney {
 
