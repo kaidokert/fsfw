@@ -44,6 +44,9 @@ public:
 
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
 
+    static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x00);
+    static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x01);
+
 	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
 	virtual object_id_t getObjectId() const = 0;
@@ -86,8 +89,10 @@ public:
 	 * @return
 	 */
 	virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
 	            << ". Returning nullptr!" << std::endl;
+#endif
 	    return nullptr;
 	}
 

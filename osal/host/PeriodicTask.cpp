@@ -33,15 +33,19 @@ PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             ABOVE_NORMAL_PRIORITY_CLASS);
     if(result != 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "PeriodicTask: Windows SetPriorityClass failed with code "
                 << GetLastError() << std::endl;
+#endif
     }
     result = SetThreadPriority(
             reinterpret_cast<HANDLE>(mainThread.native_handle()),
             THREAD_PRIORITY_NORMAL);
     if(result != 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "PeriodicTask: Windows SetPriorityClass failed with code "
                 << GetLastError() << std::endl;
+#endif
     }
 #elif defined(LINUX)
     // we can just copy and paste the code from linux here.
@@ -69,8 +73,10 @@ void PeriodicTask::taskEntryPoint(void* argument) {
 	}
 
 	this->taskFunctionality();
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "PeriodicTask::taskEntryPoint: "
 			"Returned from taskFunctionality." << std::endl;
+#endif
 }
 
 ReturnValue_t PeriodicTask::startTask() {

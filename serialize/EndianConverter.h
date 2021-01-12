@@ -3,7 +3,7 @@
 
 #include "../osal/Endiness.h"
 #include <cstring>
-#include <iostream>
+#include <cstdint>
 
 /**
  * Helper class to convert variables or bitstreams between machine

@@ -55,7 +55,9 @@ void Clcw::setBitLock(bool bitLock) {
 }
 
 void Clcw::print() {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "Clcw::print: Clcw is: " << std::hex << getAsWhole() << std::dec << std::endl;
+#endif
 }
 
 void Clcw::setWhole(uint32_t rawClcw) {

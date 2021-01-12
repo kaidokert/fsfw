@@ -1,9 +1,5 @@
-#include "Factory.h"
-#include "../tmtc/apid.h"
-#include "../tmtc/pusIds.h"
-#include "../objects/systemObjectList.h"
-#include "../devices/logicalAddresses.h"
-#include "../devices/powerSwitcherList.h"
+#include "FsfwFactory.h"
+#include <OBSWConfig.h>
 
 #include <fsfw/devicehandlers/DeviceHandlerBase.h>
 #include <fsfw/events/EventManager.h>
@@ -11,24 +7,27 @@
 #include <fsfw/tmtcpacket/pus/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
-#include <internalError/InternalErrorReporter.h>
+#include <fsfw/internalError/InternalErrorReporter.h>
 
 #include <cstdint>
 
 /**
- * This class should be used to create all system objects required for
- * the on-board software, using the object ID list from the configuration
- * folder.
+ * This function builds all system objects required for using
+ * the FSFW. It is recommended to build all other required objects
+ * in a function with an identical prototype, call this function in it and
+ * then pass the function to the object manager so it builds all system
+ * objects on software startup.
  *
- * The objects are registered in the internal object manager automatically.
- * This is used later to add objects to tasks.
+ * All system objects are registered in the internal object manager
+ * automatically. The objects should be added to tasks at a later stage, using
+ * their objects IDs.
  *
- * This file also sets static framework IDs.
+ * This function also sets static framework IDs.
  *
- * Framework objects are created first.
+ * Framework should be created first before creating mission system objects.
  * @ingroup init
  */
-void Factory::produce(void) {
+void Factory::produceFsfwObjects(void) {
 	setStaticFrameworkObjectIds();
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);

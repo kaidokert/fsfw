@@ -157,10 +157,12 @@ protected:
 	 */
 	ReturnValue_t commitWithoutLock() override;
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	// std::ostream is the type for object std::cout
 	template <typename U>
 	friend std::ostream& operator<< (std::ostream &out,
 			const LocalPoolVariable<U> &var);
+#endif
 
 private:
 };

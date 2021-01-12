@@ -22,7 +22,9 @@ ReturnValue_t CService201HealthCommanding::isValidSubservice(uint8_t subservice)
 	case(Subservice::COMMAND_ANNOUNCE_HEALTH_ALL):
 		return RETURN_OK;
 	default:
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Invalid Subservice" << std::endl;
+#endif
 		return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
 	}
 }
