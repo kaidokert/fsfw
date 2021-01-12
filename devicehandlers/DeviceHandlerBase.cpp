@@ -1432,11 +1432,6 @@ ReturnValue_t DeviceHandlerBase::initializeLocalDataPool(
 	return RETURN_OK;
 }
 
-LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
-	return &hkManager;
-}
-
-
 ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     // In this function, the task handle should be valid if the task
     // was implemented correctly. We still check to be 1000 % sure :-)
@@ -1488,7 +1483,7 @@ void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
 	}
 }
 
-AccessLocalPoolIF* DeviceHandlerBase::getAccessorHandle() {
+AccessPoolManagerIF* DeviceHandlerBase::getAccessorHandle() {
 	return &hkManager;
 }
 

@@ -1,6 +1,8 @@
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
 #include "LocalPoolDataSetBase.h"
+#include "HasLocalDataPoolIFAttorney.h"
+#include "LocalPoolDataSetAttorney.h"
 
 #include "../housekeeping/HousekeepingPacketUpdate.h"
 #include "../housekeeping/HousekeepingSetPacket.h"
@@ -132,7 +134,7 @@ ReturnValue_t LocalDataPoolManager::handleHkUpdate(HkReceiver& receiver,
 		// Update packets shall only be generated from datasets.
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner,
 			receiver.dataId.sid);
 	if(dataSet->hasChanged()) {
 		// prepare and send update notification
@@ -151,7 +153,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
 		ReturnValue_t& status) {
 	MarkChangedIF* toReset = nullptr;
 	if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-		LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(receiver.dataId.localPoolId);
+		LocalPoolObjectBase* poolObj = HasLocalDpIFManagerAttorney::getPoolObjectHandle(owner,
+				receiver.dataId.localPoolId);
+		//LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(receiver.dataId.localPoolId);
 		if(poolObj == nullptr) {
 			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
 					"handleNotificationUpdate", POOLOBJECT_NOT_FOUND);
@@ -172,7 +176,8 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
 
 	}
 	else {
-		LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(receiver.dataId.sid);
+		LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner,
+				receiver.dataId.sid);
 		if(dataSet == nullptr) {
 			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
 					"handleNotificationUpdate", DATASET_NOT_FOUND);
@@ -203,7 +208,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 	MarkChangedIF* toReset = nullptr;
 	// check whether data has changed and send messages in case it has.
 	if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-		LocalPoolObjectBase* poolObj = owner->getPoolObjectHandle(
+		LocalPoolObjectBase* poolObj = HasLocalDpIFManagerAttorney::getPoolObjectHandle(owner,
 				receiver.dataId.localPoolId);
 		if(poolObj == nullptr) {
 			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
@@ -221,7 +226,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 		CCSDSTime::CDS_short cds;
 		CCSDSTime::convertToCcsds(&cds, &now);
 		HousekeepingPacketUpdate updatePacket(reinterpret_cast<uint8_t*>(&cds),
-				sizeof(cds), owner->getPoolObjectHandle(
+				sizeof(cds), HasLocalDpIFManagerAttorney::getPoolObjectHandle(owner,
 						receiver.dataId.localPoolId));
 
 		store_address_t storeId;
@@ -241,7 +246,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 		toReset = poolObj;
 	}
 	else {
-		LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(
+		LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner,
 				receiver.dataId.sid);
 		if(dataSet == nullptr) {
 			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
@@ -259,7 +264,8 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 		CCSDSTime::CDS_short cds;
 		CCSDSTime::convertToCcsds(&cds, &now);
 		HousekeepingPacketUpdate updatePacket(reinterpret_cast<uint8_t*>(&cds),
-				sizeof(cds), owner->getDataSetHandle(receiver.dataId.sid));
+				sizeof(cds), HasLocalDpIFManagerAttorney::getDataSetHandle(owner,
+						receiver.dataId.sid));
 
 		store_address_t storeId;
 		ReturnValue_t result = addUpdateToStore(updatePacket, storeId);
@@ -363,11 +369,12 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 	hkReceiver.dataType = DataType::DATA_SET;
 	hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
 
-	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 	if(dataSet != nullptr) {
-		dataSet->setReportingEnabled(enableReporting);
-		dataSet->setDiagnostic(isDiagnostics);
-		dataSet->initializePeriodicHelper(collectionInterval,
+		LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, enableReporting);
+		LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
+		LocalPoolDataSetAttorney::initializePeriodicHelper(*dataSet, collectionInterval,
 				owner->getPeriodicOperationFrequency(), isDiagnostics);
 	}
 
@@ -393,10 +400,11 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
 	hkReceiver.dataType = DataType::DATA_SET;
 	hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
 
-	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 	if(dataSet != nullptr) {
-		dataSet->setReportingEnabled(true);
-		dataSet->setDiagnostic(isDiagnostics);
+		LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, true);
+		LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
 	}
 
 	hkReceiversMap.push_back(hkReceiver);
@@ -410,7 +418,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessages(
 		MessageQueueId_t targetQueueId, bool generateSnapshot) {
 	struct HkReceiver hkReceiver;
 	hkReceiver.dataType = DataType::DATA_SET;
-	hkReceiver.dataId.sid = sid_t(this->getCreatorObjectId(), setId);
+	hkReceiver.dataId.sid = sid_t(owner->getObjectId(), setId);
 	hkReceiver.destinationQueue = targetQueueId;
 	hkReceiver.objectId = destinationObject;
 	if(generateSnapshot) {
@@ -534,13 +542,14 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 
 	case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
 	case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT): {
-		LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+		LocalPoolDataSetBase* dataSet =HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+		//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 		if(command == HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT
-				and dataSet->isDiagnostics()) {
+				and LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
 			return WRONG_HK_PACKET_TYPE;
 		}
 		else if(command == HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT
-				and not dataSet->isDiagnostics()) {
+				and not LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
 			return WRONG_HK_PACKET_TYPE;
 		}
 		return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
@@ -629,7 +638,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 
 	// and now we set a HK message and send it the HK packet destination.
 	CommandMessage hkMessage;
-	if(dataSet->isDiagnostics()) {
+	if(LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
 		HousekeepingMessage::setHkDiagnosticsReply(&hkMessage, sid, storeId);
 	}
 	else {
@@ -683,7 +692,8 @@ void LocalDataPoolManager::setNonDiagnosticIntervalFactor(
 
 void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 	sid_t sid = receiver.dataId.sid;
-	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
 	if(dataSet == nullptr) {
 		printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
 				"performPeriodicHkGeneration",
@@ -691,16 +701,19 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 		return;
 	}
 
-	if(not dataSet->getReportingEnabled()) {
+	if(not LocalPoolDataSetAttorney::getReportingEnabled(*dataSet)) {
 		return;
 	}
 
-	if(dataSet->periodicHelper == nullptr) {
+	PeriodicHousekeepingHelper* periodicHelper =
+			LocalPoolDataSetAttorney::getPeriodicHelper(*dataSet);
+
+	if(periodicHelper == nullptr) {
 		// Configuration error.
 		return;
 	}
 
-	if(not dataSet->periodicHelper->checkOpNecessary()) {
+	if(periodicHelper->checkOpNecessary()) {
 		return;
 	}
 
@@ -721,43 +734,49 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 
 ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
 		bool enable, bool isDiagnostics) {
-	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
-	if((dataSet->isDiagnostics() and not isDiagnostics) or
-			(not dataSet->isDiagnostics() and isDiagnostics)) {
+	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+	if((LocalPoolDataSetAttorney::isDiagnostics(*dataSet) and not isDiagnostics) or
+			(not LocalPoolDataSetAttorney::isDiagnostics(*dataSet) and isDiagnostics)) {
 		return WRONG_HK_PACKET_TYPE;
 	}
 
-	if((dataSet->getReportingEnabled() and enable) or
-			(not dataSet->getReportingEnabled() and not enable)) {
+	if((LocalPoolDataSetAttorney::getReportingEnabled(*dataSet) and enable) or
+			(not LocalPoolDataSetAttorney::getReportingEnabled(*dataSet) and not enable)) {
 		return REPORTING_STATUS_UNCHANGED;
 	}
 
-	dataSet->setReportingEnabled(enable);
+	LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, enable);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 		float newCollectionInterval, bool isDiagnostics) {
-	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
-	bool targetIsDiagnostics = dataSet->isDiagnostics();
+	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+	bool targetIsDiagnostics = LocalPoolDataSetAttorney::isDiagnostics(*dataSet);
 	if((targetIsDiagnostics and not isDiagnostics) or
 			(not targetIsDiagnostics and isDiagnostics)) {
 		return WRONG_HK_PACKET_TYPE;
 	}
 
-	if(dataSet->periodicHelper == nullptr) {
+	PeriodicHousekeepingHelper* periodicHelper =
+			LocalPoolDataSetAttorney::getPeriodicHelper(*dataSet);
+
+	if(periodicHelper == nullptr) {
 		// config error
 		return PERIODIC_HELPER_INVALID;
 	}
 
-	dataSet->periodicHelper->changeCollectionInterval(newCollectionInterval);
+	periodicHelper->changeCollectionInterval(newCollectionInterval);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 		bool isDiagnostics) {
 	// Get and check dataset first.
-	LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
 	if(dataSet == nullptr) {
 		printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
 				"performPeriodicHkGeneration",
@@ -766,16 +785,16 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 	}
 
 
-	bool targetIsDiagnostics = dataSet->isDiagnostics();
+	bool targetIsDiagnostics = LocalPoolDataSetAttorney::isDiagnostics(*dataSet);
 	if((targetIsDiagnostics and not isDiagnostics) or
 			(not targetIsDiagnostics and isDiagnostics)) {
 		return WRONG_HK_PACKET_TYPE;
 	}
 
 	bool valid = dataSet->isValid();
-	bool reportingEnabled = dataSet->getReportingEnabled();
-	float collectionInterval =
-			dataSet->periodicHelper->getCollectionIntervalInSeconds();
+	bool reportingEnabled = LocalPoolDataSetAttorney::getReportingEnabled(*dataSet);
+	float collectionInterval = LocalPoolDataSetAttorney::getPeriodicHelper(*dataSet)->
+			getCollectionIntervalInSeconds();
 
 	// Generate set packet which can be serialized.
 	HousekeepingSetPacket setPacket(sid,
@@ -822,16 +841,13 @@ void LocalDataPoolManager::clearReceiversList() {
 	HkReceivers().swap(hkReceiversMap);
 }
 
-ReturnValue_t LocalDataPoolManager::retrieveLocalPoolMutex(MutexIF *mutex) {
-	if(this->mutex == nullptr) {
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	mutex = this->mutex;
-	return HasReturnvaluesIF::RETURN_OK;
+MutexIF* LocalDataPoolManager::getLocalPoolMutex() {
+	return this->mutex;
 }
 
 object_id_t LocalDataPoolManager::getCreatorObjectId() const {
-	return owner->getAccessorHandle()->getCreatorObjectId();
+	return owner->getObjectId();
+	//return owner->getObjectId();
 }
 
 void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,
@@ -869,7 +885,7 @@ void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "LocalDataPoolManager::" << functionName
 				<< ": Object ID " << std::setw(8) << std::setfill('0')
-				<< std::hex << this->getCreatorObjectId() << " | " << errorPrint
+				<< std::hex << owner->getObjectId() << " | " << errorPrint
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
 		fsfw::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
@@ -880,11 +896,15 @@ void LocalDataPoolManager::printWarningOrError(fsfw::OutputTypes outputType,
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "LocalDataPoolManager::" << functionName
 				<< ": Object ID " << std::setw(8) << std::setfill('0')
-				<< std::hex << this->getCreatorObjectId() << " | " << errorPrint
+				<< std::hex << owner->getObjectId() << " | " << errorPrint
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
 		fsfw::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
 				owner->getObjectId(), errorPrint);
 #endif
 	}
+}
+
+LocalDataPoolManager* LocalDataPoolManager::getHkManagerHandle() {
+	return this;
 }

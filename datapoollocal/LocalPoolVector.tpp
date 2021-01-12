@@ -26,7 +26,7 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(gp_id_t globalPoolId,
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(
 		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
-	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
+	MutexHelper(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
 	return readWithoutLock();
 }
 template<typename T, uint16_t vectorSize>
@@ -40,7 +40,8 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
 	}
 
 	PoolEntry<T>* poolEntry = nullptr;
-	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
+	ReturnValue_t result = LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId,
+			&poolEntry);
 	memset(this->value, 0, vectorSize * sizeof(T));
 
 	if(result != RETURN_OK) {
@@ -64,7 +65,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(bool valid,
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
 		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
-	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
+	MutexHelper(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
 	return commitWithoutLock();
 }
 
@@ -78,7 +79,8 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
 		return PoolVariableIF::INVALID_READ_WRITE_MODE;
 	}
 	PoolEntry<T>* poolEntry = nullptr;
-	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
+	ReturnValue_t result = LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId,
+			&poolEntry);
 	if(result != RETURN_OK) {
 		object_id_t targetObjectId = hkManager->getCreatorObjectId();
 		reportReadCommitError("LocalPoolVector", result, false, targetObjectId,

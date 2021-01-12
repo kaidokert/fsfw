@@ -12,7 +12,6 @@
 
 #include <map>
 
-class LocalDataPoolManager;
 class LocalPoolDataSetBase;
 class LocalPoolObjectBase;
 
@@ -20,31 +19,26 @@ using LocalDataPool =  std::map<lp_id_t, PoolEntryIF*>;
 using LocalDataPoolMapIter = LocalDataPool::iterator;
 
 /**
- * @brief 		This interface is implemented by classes which posses a local
- * 				data pool (not the managing class). It defines the relationship
- * 				between the local data pool owner and the LocalDataPoolManager.
+ * @brief 		This interface is implemented by classes which posses a local data pool (not the
+ * 				managing class). It defines the relationship between the local data pool owner
+ * 				and the LocalDataPoolManager.
  * @details
- * Any class implementing this interface shall also have a LocalDataPoolManager
- * member class which contains the actual pool data structure
- * and exposes the public interface for it.
- * This is required because the pool entries are templates, which makes
- * specifying an interface rather difficult. The local data pool can be
- * accessed by using the LocalPoolVariable, LocalPoolVector or LocalDataSet
- * classes.
+ * Any class implementing this interface shall also have a LocalDataPoolManager member class which
+ * contains the actual pool data structure and exposes the public interface for it.
+ * This is required because the pool entries are templates, which makes specifying an interface
+ * rather difficult. The local data pool can be accessed by using the LocalPoolVariable,
+ * LocalPoolVector or LocalDataSet classes.
  *
  * Architectural Note:
- * This could be circumvented by using a wrapper/accessor function or
- * implementing the templated function in this interface..
- * The first solution sounds better than the second but
- * the LocalPoolVariable classes are templates as well, so this just shifts
- * the problem somewhere else. Interfaces are nice, but the most
- * pragmatic solution I found was to offer the client the full interface
- * of the LocalDataPoolManager.
+ * This could be circumvented by using a wrapper/accessor function or implementing the templated
+ * function in this interface.. The first solution sounds better than the second but the
+ * LocalPoolVariable classes are templates as well, so this just shifts the problem somewhere else.
+ * Interfaces are nice, but the most pragmatic solution I found was to offer the client the full
+ * interface of the LocalDataPoolManager.
  */
 class HasLocalDataPoolIF {
-	friend class LocalDataPoolManager;
-	friend class LocalPoolDataSetBase;
-	friend class LocalPoolObjectBase;
+	friend class HasLocalDpIFManagerAttorney;
+	friend class HasLocalDpIFUserAttorney;
 public:
 	virtual~ HasLocalDataPoolIF() {};
 
@@ -55,6 +49,8 @@ public:
 
 	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
+	virtual object_id_t getObjectId() const = 0;
+
 	/** Command queue for housekeeping messages. */
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 
@@ -63,8 +59,7 @@ public:
 	 * The manager instance shall also be passed to this function.
 	 * It can be used to subscribe for periodic packets for for updates.
 	 */
-	virtual ReturnValue_t initializeLocalDataPool(
-	        LocalDataPool& localDataPoolMap,
+	virtual ReturnValue_t initializeLocalDataPool(LocalDataPool& localDataPoolMap,
 	        LocalDataPoolManager& poolManager) = 0;
 
 	/**
@@ -84,7 +79,7 @@ public:
      * the IPC store with this store ID.
      */
     virtual void handleChangedDataset(sid_t sid,
-            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
+    		store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
         return;
     }
 
@@ -112,27 +107,20 @@ public:
 	virtual ReturnValue_t removeDataSet(sid_t sid) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
-	virtual ReturnValue_t changeCollectionInterval(sid_t sid,
-	        float newIntervalSeconds) {
+	virtual ReturnValue_t changeCollectionInterval(sid_t sid, float newIntervalSeconds) {
 	    return HasReturnvaluesIF::RETURN_FAILED;
 	};
 
 	/**
-	 * This function can be used by data pool consumers to retrieve a  handle
+	 * This function can be used by data pool consumers to retrieve a handle
 	 * which allows subscriptions to dataset and variable updates.
 	 * @return
 	 */
 	virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() = 0;
 
-	virtual AccessLocalPoolIF* getAccessorHandle() = 0;
 protected:
 
-	/**
-	 * Can be used to get a handle to the local data pool manager.
-	 * This function is protected because it should only be used by the
-	 * class imlementing the interface.
-	 */
-	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
+	virtual AccessPoolManagerIF* getAccessorHandle() = 0;
 
 	/**
 	 * This function is used by the pool manager to get a valid dataset

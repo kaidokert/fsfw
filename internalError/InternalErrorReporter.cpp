@@ -134,7 +134,7 @@ uint32_t InternalErrorReporter::getStoreHits() {
 	return value;
 }
 
-AccessLocalPoolIF* InternalErrorReporter::getAccessorHandle() {
+AccessPoolManagerIF* InternalErrorReporter::getAccessorHandle() {
 	return &poolManager;
 }
 
@@ -164,10 +164,6 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
             getPeriodicOperationFrequency(), true);
     internalErrorDataset.setValidity(true, true);
     return HasReturnvaluesIF::RETURN_OK;
-}
-
-LocalDataPoolManager* InternalErrorReporter::getHkManagerHandle() {
-    return &poolManager;
 }
 
 dur_millis_t InternalErrorReporter::getPeriodicOperationFrequency() const {

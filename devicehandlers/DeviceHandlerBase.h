@@ -519,11 +519,11 @@ protected:
 
 
 	/** Get the HK manager object handle */
-	LocalDataPoolManager* getHkManagerHandle() override;
+	//LocalDataPoolManager* getHkManagerHandle() override;
 
 	ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
 
-	AccessLocalPoolIF* getAccessorHandle() override;
+	AccessPoolManagerIF* getAccessorHandle() override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per

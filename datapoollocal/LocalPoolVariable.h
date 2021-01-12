@@ -1,11 +1,11 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLVARIABLE_H_
 
+#include <fsfw/datapoollocal/LocalDpManagerAttorney.h>
 #include "LocalPoolObjectBase.h"
 #include "HasLocalDataPoolIF.h"
 #include "LocalDataPoolManager.h"
 #include "AccessLocalPoolF.h"
-
 #include "../datapool/PoolVariableIF.h"
 #include "../datapool/DataSetIF.h"
 #include "../serviceinterface/ServiceInterface.h"

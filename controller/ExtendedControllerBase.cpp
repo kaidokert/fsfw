@@ -26,7 +26,7 @@ object_id_t ExtendedControllerBase::getObjectId() const {
     return SystemObject::getObjectId();
 }
 
-LocalDataPoolManager* ExtendedControllerBase::getHkManagerHandle() {
+AccessPoolManagerIF* ExtendedControllerBase::getAccessorHandle() {
     return &localPoolManager;
 }
 
@@ -104,10 +104,6 @@ ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
 
 MessageQueueId_t ExtendedControllerBase::getCommandQueue() const {
     return commandQueue->getId();
-}
-
-AccessLocalPoolIF* ExtendedControllerBase::getAccessorHandle() {
-	return &localPoolManager;
 }
 
 LocalPoolDataSetBase* ExtendedControllerBase::getDataSetHandle(sid_t sid) {

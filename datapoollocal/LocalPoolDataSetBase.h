@@ -42,7 +42,8 @@ class PeriodicHousekeepingHelper;
  */
 class LocalPoolDataSetBase: public PoolDataSetBase,
         public MarkChangedIF {
-	friend class LocalDataPoolManager;
+	//friend class LocalDataPoolManager;
+	friend class LocalPoolDataSetAttorney;
 	friend class PeriodicHousekeepingHelper;
 public:
 	/**
@@ -217,7 +218,7 @@ protected:
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
 
 	PeriodicHousekeepingHelper* periodicHelper = nullptr;
-	AccessLocalPoolIF* localPoolAccessor = nullptr;
+	LocalDataPoolManager* poolManager = nullptr;
 
 };
 

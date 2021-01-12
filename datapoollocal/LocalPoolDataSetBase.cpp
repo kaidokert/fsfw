@@ -1,4 +1,5 @@
 #include "LocalPoolDataSetBase.h"
+#include "HasLocalDataPoolIFAttorney.h"
 
 #include "../serviceinterface/ServiceInterface.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
@@ -23,14 +24,14 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         return;
     }
-    localPoolAccessor = hkOwner->getAccessorHandle();
+    AccessPoolManagerIF* accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
 
-    if(localPoolAccessor != nullptr) {
-    	localPoolAccessor->retrieveLocalPoolMutex(mutexIfSingleDataCreator);
-        //mutexIfSingleDataCreator = hkManager->getAc();
+    if(poolManager != nullptr) {
+        poolManager = accessor->getHkManagerHandle();
+    	mutexIfSingleDataCreator = accessor->getLocalPoolMutex();
     }
 
-    this->sid.objectId = localPoolAccessor->getCreatorObjectId();
+    this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
 
     // Data creators get a periodic helper for periodic HK data generation.
@@ -43,10 +44,10 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
         PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
-	AccessLocalPoolIF* hkOwner = objectManager->get<AccessLocalPoolIF>(
+	AccessPoolManagerIF* hkOwner = objectManager->get<AccessPoolManagerIF>(
             sid.objectId);
     if(hkOwner != nullptr) {
-        ReturnValue_t result = hkOwner->retrieveLocalPoolMutex(mutexIfSingleDataCreator);
+    	mutexIfSingleDataCreator = hkOwner->getLocalPoolMutex();
     }
 
     //if(hkManager != nullptr) {
@@ -310,8 +311,8 @@ void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
 }
 
 object_id_t LocalPoolDataSetBase::getCreatorObjectId() {
-	if(localPoolAccessor != nullptr) {
-		return localPoolAccessor->getCreatorObjectId();
+	if(poolManager != nullptr) {
+		return poolManager->getCreatorObjectId();
 	}
 	return objects::NO_OBJECT;
 }

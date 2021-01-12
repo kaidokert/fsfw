@@ -1,4 +1,5 @@
 #include "LocalPoolObjectBase.h"
+#include "HasLocalDataPoolIFAttorney.h"
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
 		DataSetIF* dataSet, pool_rwm_t setReadWriteMode):
@@ -16,7 +17,9 @@ LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkO
 #endif
 		return;
 	}
-	hkManager = hkOwner->getHkManagerHandle();
+	AccessPoolManagerIF* poolManAccessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
+	hkManager = poolManAccessor->getHkManagerHandle();
+	//HasLohkOwner->getHkManagerHandle();
 	if (dataSet != nullptr) {
 		dataSet->registerVariable(this);
 	}
@@ -41,7 +44,10 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
 #endif
 		return;
 	}
-	hkManager = hkOwner->getHkManagerHandle();
+	//hkManager = hkOwner->getHkManagerHandle();
+	AccessPoolManagerIF* poolManAccessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
+	//hkManager = HasLocalDpIFUserAttorney::getHkManagerHandle(hkOwner);
+	hkManager = poolManAccessor->getHkManagerHandle();
 	if(dataSet != nullptr) {
 		dataSet->registerVariable(this);
 	}

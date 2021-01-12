@@ -51,11 +51,11 @@ class HousekeepingPacketUpdate;
  * @author 		R. Mueller
  */
 class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF,
-		public AccessLocalPoolIF {
-	template<typename T> friend class LocalPoolVariable;
-	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
-	//friend class LocalPoolDataSetBase;
+		public AccessPoolManagerIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
+	//! Some classes using the pool manager directly need to access class internals of the
+	//! manager. The attorney provides granular control of access to these internals.
+	friend class LocalDpManagerAttorney;
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
@@ -177,7 +177,7 @@ public:
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;
 
-    ReturnValue_t retrieveLocalPoolMutex(MutexIF* mutex) override;
+    MutexIF* getLocalPoolMutex() override;
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
@@ -263,7 +263,9 @@ public:
      */
     void clearReceiversList();
 
-    object_id_t getCreatorObjectId() const override;
+    object_id_t getCreatorObjectId() const;
+
+    virtual LocalDataPoolManager* getHkManagerHandle() override;
 private:
     LocalDataPool localPoolMap;
     //! Every housekeeping data manager has a mutex to protect access

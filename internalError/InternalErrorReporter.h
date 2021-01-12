@@ -43,11 +43,10 @@ public:
     virtual ReturnValue_t initializeLocalDataPool(
             LocalDataPool& localDataPoolMap,
             LocalDataPoolManager& poolManager) override;
-    virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual dur_millis_t getPeriodicOperationFrequency() const override;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
     ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
-	AccessLocalPoolIF* getAccessorHandle() override;
+	AccessPoolManagerIF* getAccessorHandle() override;
 
     virtual ReturnValue_t initialize() override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;

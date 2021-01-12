@@ -26,7 +26,7 @@ inline LocalPoolVariable<T>::LocalPoolVariable(gp_id_t globalPoolId,
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::read(
 		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
-	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
+	MutexHelper(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
 	return readWithoutLock();
 }
 
@@ -41,7 +41,9 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 	}
 
 	PoolEntry<T>* poolEntry = nullptr;
-	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
+	ReturnValue_t result = LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId,
+			&poolEntry);
+	//ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
 	if(result != RETURN_OK) {
 		object_id_t ownerObjectId = hkManager->getCreatorObjectId();
 		reportReadCommitError("LocalPoolVariable", result,
@@ -73,7 +75,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commit(bool setValid,
 template<typename T>
 inline ReturnValue_t LocalPoolVariable<T>::commit(
 		MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
-	MutexHelper(hkManager->getMutexHandle(), timeoutType, timeoutMs);
+	MutexHelper(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
 	return commitWithoutLock();
 }
 
@@ -88,7 +90,9 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 	}
 
 	PoolEntry<T>* poolEntry = nullptr;
-	ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
+	//ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
+	ReturnValue_t result = LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId,
+			&poolEntry);
 	if(result != RETURN_OK) {
 		object_id_t ownerObjectId = hkManager->getCreatorObjectId();
 		reportReadCommitError("LocalPoolVariable", result,
