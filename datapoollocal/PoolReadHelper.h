@@ -16,8 +16,8 @@ public:
 #if FSFW_PRINT_VERBOSITY_LEVEL == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "PoolReadHelper: Read failed!" << std::endl;
-#endif
-#endif
+#endif /* FSFW_PRINT_VERBOSITY_LEVEL == 1 */
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 		}
 	}
 
