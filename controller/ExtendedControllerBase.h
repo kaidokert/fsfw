@@ -32,12 +32,19 @@ public:
     virtual ReturnValue_t performOperation(uint8_t opCode) override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;
 
-   ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
-   AccessPoolManagerIF* getAccessorHandle() override;
+    /**
+     * Provides a subscription interface for objects which required updates on changed
+     * controller variables or datasets
+     * @return
+     */
+    ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
 
 protected:
-    LocalDataPoolManager localPoolManager;
+    LocalDataPoolManager poolManager;
     ActionHelper actionHelper;
+
+    //! Accessor handle required for internal handling
+    AccessPoolManagerIF* getAccessorHandle() override;
 
     /**
      * Implemented by child class. Handle all command messages which are

@@ -4,7 +4,7 @@
 ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId,
         object_id_t parentId, size_t commandQueueDepth):
         ControllerBase(objectId, parentId, commandQueueDepth),
-        localPoolManager(this, commandQueue),
+        poolManager(this, commandQueue),
         actionHelper(this, commandQueue) {
 }
 
@@ -27,7 +27,7 @@ object_id_t ExtendedControllerBase::getObjectId() const {
 }
 
 AccessPoolManagerIF* ExtendedControllerBase::getAccessorHandle() {
-    return &localPoolManager;
+    return &poolManager;
 }
 
 uint32_t ExtendedControllerBase::getPeriodicOperationFrequency() const {
@@ -40,7 +40,7 @@ ReturnValue_t ExtendedControllerBase::handleCommandMessage(
     if(result == HasReturnvaluesIF::RETURN_OK) {
         return result;
     }
-    return localPoolManager.handleHousekeepingMessage(message);
+    return poolManager.handleHousekeepingMessage(message);
 }
 
 void ExtendedControllerBase::handleQueue() {
@@ -64,7 +64,7 @@ void ExtendedControllerBase::handleQueue() {
             continue;
         }
 
-        result = localPoolManager.handleHousekeepingMessage(&command);
+        result = poolManager.handleHousekeepingMessage(&command);
         if (result == RETURN_OK) {
             continue;
         }
@@ -88,16 +88,16 @@ ReturnValue_t ExtendedControllerBase::initialize() {
         return result;
     }
 
-    return localPoolManager.initialize(commandQueue);
+    return poolManager.initialize(commandQueue);
 }
 
 ReturnValue_t ExtendedControllerBase::initializeAfterTaskCreation() {
-    return localPoolManager.initializeAfterTaskCreation();
+    return poolManager.initializeAfterTaskCreation();
 }
 
 ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
     handleQueue();
-    localPoolManager.performHkOperation();
+    poolManager.performHkOperation();
     performControlOperation();
     return RETURN_OK;
 }
@@ -115,5 +115,5 @@ LocalPoolDataSetBase* ExtendedControllerBase::getDataSetHandle(sid_t sid) {
 }
 
 ProvidesDataPoolSubscriptionIF* ExtendedControllerBase::getSubscriptionInterface() {
-	return &localPoolManager;
+	return &poolManager;
 }
