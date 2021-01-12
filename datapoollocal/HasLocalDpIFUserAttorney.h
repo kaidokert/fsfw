@@ -1,16 +1,13 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDPIFUSERATTORNEY_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDPIFUSERATTORNEY_H_
 
-#include "HasLocalDataPoolIF.h"
-
+class HasLocalDataPoolIF;
 class AccessPoolManagerIF;
 
 class HasLocalDpIFUserAttorney {
 private:
 
-	static AccessPoolManagerIF* getAccessorHandle(HasLocalDataPoolIF* interface) {
-		return interface->getAccessorHandle();
-	}
+	static AccessPoolManagerIF* getAccessorHandle(HasLocalDataPoolIF* interface);
 
 	friend class LocalPoolObjectBase;
 	friend class LocalPoolDataSetBase;
