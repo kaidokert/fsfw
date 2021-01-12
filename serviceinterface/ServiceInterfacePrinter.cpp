@@ -6,14 +6,18 @@
 #include <cstdarg>
 #include <cstdint>
 
-
-fsfw::PrintLevel printLevel = fsfw::PrintLevel::DEBUG;
-uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
+static sif::PrintLevel printLevel = sif::PrintLevel::DEBUG_LEVEL;
 #if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
-bool consoleInitialized = false;
-#endif
+static bool consoleInitialized = false;
+#endif /* defined(WIN32) && FSFW_COLORED_OUTPUT == 1 */
 
-void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
+#if FSFW_DISABLE_PRINTOUT == 0
+
+static bool addCrAtEnd = false;
+
+uint8_t printBuffer[fsfwconfig::FSFW_PRINT_BUFFER_SIZE];
+
+void fsfwPrint(sif::PrintLevel printType, const char* fmt, va_list arg) {
 
 #if defined(WIN32) && FSFW_COLORED_OUTPUT == 1
 	if(not consoleInitialized) {
@@ -30,38 +34,38 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
     char* bufferPosition = reinterpret_cast<char*>(printBuffer);
 
     /* Check logger level */
-    if(printType == fsfw::PrintLevel::NONE or printType > printLevel) {
+    if(printType == sif::PrintLevel::NONE or printType > printLevel) {
         return;
     }
 
     /* Log message to terminal */
 
 #if FSFW_COLORED_OUTPUT == 1
-    if(printType == fsfw::PrintLevel::INFO) {
-    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_GREEN);
+    if(printType == sif::PrintLevel::INFO_LEVEL) {
+    	len += sprintf(bufferPosition, sif::ANSI_COLOR_GREEN);
     }
-    else if(printType == fsfw::PrintLevel::DEBUG) {
-    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_MAGENTA);
+    else if(printType == sif::PrintLevel::DEBUG_LEVEL) {
+    	len += sprintf(bufferPosition, sif::ANSI_COLOR_MAGENTA);
     }
-    else if(printType == fsfw::PrintLevel::WARNING) {
-    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_YELLOW);
+    else if(printType == sif::PrintLevel::WARNING_LEVEL) {
+    	len += sprintf(bufferPosition, sif::ANSI_COLOR_YELLOW);
     }
-    else if(printType == fsfw::PrintLevel::ERROR_TYPE) {
-    	len += sprintf(bufferPosition, fsfw::ANSI_COLOR_RED);
+    else if(printType == sif::PrintLevel::ERROR_LEVEL) {
+    	len += sprintf(bufferPosition, sif::ANSI_COLOR_RED);
     }
 #endif
 
-   if (printType == fsfw::PrintLevel::INFO) {
+   if (printType == sif::PrintLevel::INFO_LEVEL) {
        len += sprintf(bufferPosition + len, "INFO: ");
    }
-   if(printType == fsfw::PrintLevel::DEBUG) {
+   if(printType == sif::PrintLevel::DEBUG_LEVEL) {
 	   len += sprintf(bufferPosition + len, "DEBUG: ");
    }
-   if(printType == fsfw::PrintLevel::WARNING) {
+   if(printType == sif::PrintLevel::WARNING_LEVEL) {
 	   len += sprintf(bufferPosition + len, "WARNING: ");
    }
 
-   if(printType == fsfw::PrintLevel::ERROR_TYPE) {
+   if(printType == sif::PrintLevel::ERROR_LEVEL) {
 	   len += sprintf(bufferPosition + len, "ERROR: ");
    }
 
@@ -78,41 +82,59 @@ void fsfwPrint(fsfw::PrintLevel printType, const char* fmt, va_list arg) {
 
     len += vsnprintf(bufferPosition + len, sizeof(printBuffer) - len, fmt, arg);
 
+    if(addCrAtEnd) {
+    	len += sprintf(bufferPosition + len, "\r");
+    }
+
     printf("%s", printBuffer);
 }
 
-void fsfw::setPrintLevel(PrintLevel printLevel_) {
+
+void sif::printInfo(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fsfwPrint(sif::PrintLevel::INFO_LEVEL, fmt, args);
+    va_end(args);
+}
+
+void sif::printWarning(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fsfwPrint(sif::PrintLevel::WARNING_LEVEL, fmt, args);
+    va_end(args);
+}
+
+void sif::printDebug(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fsfwPrint(sif::PrintLevel::DEBUG_LEVEL, fmt, args);
+    va_end(args);
+}
+
+void sif::setToAddCrAtEnd(bool addCrAtEnd_) {
+	addCrAtEnd = addCrAtEnd_;
+}
+
+void sif::printError(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fsfwPrint(sif::PrintLevel::ERROR_LEVEL, fmt, args);
+    va_end(args);
+}
+
+#else
+
+void sif::printInfo(const char *fmt, ...) {}
+void sif::printWarning(const char *fmt, ...) {}
+void sif::printDebug(const char *fmt, ...) {}
+void sif::printError(const char *fmt, ...) {}
+
+#endif /* FSFW_DISABLE_PRINTOUT == 0 */
+
+void sif::setPrintLevel(PrintLevel printLevel_) {
 	printLevel = printLevel_;
 }
 
-fsfw::PrintLevel fsfw::getPrintLevel() {
+sif::PrintLevel sif::getPrintLevel() {
 	return printLevel;
-}
-
-void fsfw::printInfo(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    fsfwPrint(fsfw::PrintLevel::INFO, fmt, args);
-    va_end(args);
-}
-
-void fsfw::printWarning(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    fsfwPrint(fsfw::PrintLevel::WARNING, fmt, args);
-    va_end(args);
-}
-
-void fsfw::printDebug(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    fsfwPrint(fsfw::PrintLevel::DEBUG, fmt, args);
-    va_end(args);
-}
-
-void fsfw::printError(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    fsfwPrint(fsfw::PrintLevel::ERROR_TYPE, fmt, args);
-    va_end(args);
 }

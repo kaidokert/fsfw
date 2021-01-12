@@ -1,7 +1,14 @@
 #ifndef FSFW_SERVICEINTERFACE_SERVICEINTERFACEDEFINTIONS_H_
 #define FSFW_SERVICEINTERFACE_SERVICEINTERFACEDEFINTIONS_H_
 
-namespace fsfw {
+namespace sif {
+
+enum class OutputTypes {
+	OUT_INFO,
+	OUT_DEBUG,
+	OUT_WARNING,
+	OUT_ERROR
+};
 
 static const char* const ANSI_COLOR_RED = "\x1b[31m";
 static const char* const ANSI_COLOR_GREEN = "\x1b[32m";
