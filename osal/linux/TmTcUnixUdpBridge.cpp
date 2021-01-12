@@ -193,7 +193,7 @@ void TmTcUnixUdpBridge::handleSendError() {
 		sif::error << "TmTcUnixBridge::handleSendError: "
 		        << strerror(errno) << std::endl;
 #else
-		fsfw::printError("TmTcUnixBridge::handleSendError: %s\n",
+		sif::printError("TmTcUnixBridge::handleSendError: %s\n",
 				strerror(errno));
 #endif
 	}

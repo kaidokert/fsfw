@@ -10,7 +10,7 @@ void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
 	}
 	sif::info << "[";
 #else
-	fsfw::printInfo("Printing data with size %zu: [", size);
+	sif::printInfo("Printing data with size %zu: [", size);
 #endif
 	if(type == OutputType::HEX) {
 		arrayprinter::printHex(data, size, maxCharPerLine);

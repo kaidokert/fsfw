@@ -1256,7 +1256,7 @@ private:
     void handleTransitionToOnMode(Mode_t commandedMode,
     		Submode_t commandedSubmode);
 
-    void printWarningOrError(fsfw::OutputTypes errorType,
+    void printWarningOrError(sif::OutputTypes errorType,
     		const char* functionName,
 			ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
 			const char* errorPrint = nullptr);

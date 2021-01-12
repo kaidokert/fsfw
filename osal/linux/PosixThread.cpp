@@ -151,7 +151,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 			sif::error << "PosixThread::createTask: Insufficient memory for"
 					" the requested " << stackMb << " MB" << std::endl;
 #else
-			fsfw::printError("PosixThread::createTask: Insufficient memory for "
+			sif::printError("PosixThread::createTask: Insufficient memory for "
 					"the requested %zu MB\n", stackMb);
 #endif
 		}
@@ -160,7 +160,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 			sif::error << "PosixThread::createTask: Wrong alignment argument!"
 					<< std::endl;
 #else
-			fsfw::printError("PosixThread::createTask: "
+			sif::printError("PosixThread::createTask: "
 					"Wrong alignment argument!\n");
 #endif
 		}

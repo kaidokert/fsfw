@@ -114,7 +114,7 @@ uint8_t BinarySemaphore::getSemaphoreCounter(sem_t *handle) {
 	}
 	else if(result != 0 and errno == EINVAL) {
 		// Could be called from interrupt, use lightweight printf
-		fsfw::printError("BinarySemaphore::getSemaphoreCounter: "
+		sif::printError("BinarySemaphore::getSemaphoreCounter: "
 				"Invalid semaphore\n");
 		return 0;
 	}
@@ -136,7 +136,7 @@ void BinarySemaphore::initSemaphore(uint8_t initCount) {
 				sif::error << "BinarySemaphore: Init failed with "
 						<< strerror(errno) << std::endl;
 #else
-				fsfw::printError("BinarySemaphore: Init failed with %s\n",
+				sif::printError("BinarySemaphore: Init failed with %s\n",
 						strerror(errno));
 #endif
 		}

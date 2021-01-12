@@ -36,7 +36,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 	cookieInfo.state = COOKIE_UNUSED;
 	cookieInfo.pendingCommand = deviceCommandMap.end();
 	if (comCookie == nullptr) {
-		printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "DeviceHandlerBase",
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "DeviceHandlerBase",
 				HasReturnvaluesIF::RETURN_FAILED, "Invalid cookie");
 	}
 	if (this->fdirInstance == nullptr) {
@@ -124,7 +124,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	communicationInterface = objectManager->get<DeviceCommunicationIF>(
 			deviceCommunicationId);
 	if (communicationInterface == nullptr) {
-		printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "initialize",
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
 				ObjectManagerIF::CHILD_INIT_FAILED,
 				"Passed communication IF invalid");
 		return ObjectManagerIF::CHILD_INIT_FAILED;
@@ -132,7 +132,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	result = communicationInterface->initializeInterface(comCookie);
 	if (result != RETURN_OK) {
-		printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "initialize",
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
 				ObjectManagerIF::CHILD_INIT_FAILED,
 				"ComIF initialization failed");
 	    return result;
@@ -140,7 +140,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (IPCStore == nullptr) {
-		printWarningOrError(fsfw::OutputTypes::OUT_ERROR, "initialize",
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
 				ObjectManagerIF::CHILD_INIT_FAILED, "IPC Store not set up");
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
@@ -150,14 +150,14 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 				AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
 		if (rawReceiver == nullptr) {
-			printWarningOrError(fsfw::OutputTypes::OUT_ERROR,
+			printWarningOrError(sif::OutputTypes::OUT_ERROR,
 					"initialize", ObjectManagerIF::CHILD_INIT_FAILED,
 					"Raw receiver object ID set but no valid object found.");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "Make sure the raw receiver object is set up properly"
 					" and implements AcceptsDeviceResponsesIF" << std::endl;
 #else
-			fsfw::printError("Make sure the raw receiver object is set up "
+			sif::printError("Make sure the raw receiver object is set up "
 					"properly and implements AcceptsDeviceResponsesIF\n");
 #endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
@@ -168,14 +168,14 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	if(powerSwitcherId != objects::NO_OBJECT) {
 		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
 		if (powerSwitcher == nullptr) {
-			printWarningOrError(fsfw::OutputTypes::OUT_ERROR,
+			printWarningOrError(sif::OutputTypes::OUT_ERROR,
 					"initialize", ObjectManagerIF::CHILD_INIT_FAILED,
 					"Power switcher set but no valid object found.");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "Make sure the power switcher object is set up "
 					<< "properly and implements PowerSwitchIF" << std::endl;
 #else
-			fsfw::printError("Make sure the power switcher object is set up "
+			sif::printError("Make sure the power switcher object is set up "
 					"properly and implements PowerSwitchIF\n");
 #endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
@@ -717,7 +717,7 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		case RETURN_OK:
 			handleReply(receivedData, foundId, foundLen);
 			if(foundLen == 0) {
-				printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
+				printWarningOrError(sif::OutputTypes::OUT_WARNING,
 						"parseReply", ObjectManagerIF::CHILD_INIT_FAILED,
 						"Found length is one, parsing might be stuck");
 			}
@@ -730,7 +730,7 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 			            foundId);
 			}
 			if(foundLen == 0) {
-				printWarningOrError(fsfw::OutputTypes::OUT_ERROR,
+				printWarningOrError(sif::OutputTypes::OUT_ERROR,
 						"parseReply", ObjectManagerIF::CHILD_INIT_FAILED,
 						"Power switcher set but no valid object found.");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -1292,7 +1292,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		result = buildNormalDeviceCommand(&deviceCommandId);
 		if (result == BUSY) {
 		    // so we can track misconfigurations
-			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
+			printWarningOrError(sif::OutputTypes::OUT_WARNING,
 					"buildInternalCommand",
 					HasReturnvaluesIF::RETURN_FAILED,
 					"Busy.");
@@ -1324,7 +1324,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 			sprintf(output, "Command 0x%08x is executing",
 					static_cast<unsigned int>(deviceCommandId));
 			// so we can track misconfigurations
-			printWarningOrError(fsfw::OutputTypes::OUT_WARNING,
+			printWarningOrError(sif::OutputTypes::OUT_WARNING,
 					"buildInternalCommand",
 					HasReturnvaluesIF::RETURN_FAILED,
 					output);
@@ -1487,7 +1487,7 @@ AccessPoolManagerIF* DeviceHandlerBase::getAccessorHandle() {
 	return &hkManager;
 }
 
-void DeviceHandlerBase::printWarningOrError(fsfw::OutputTypes errorType,
+void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
 		const char *functionName, ReturnValue_t errorCode,
 		const char *errorPrint) {
 	if(errorPrint == nullptr) {
@@ -1495,7 +1495,7 @@ void DeviceHandlerBase::printWarningOrError(fsfw::OutputTypes errorType,
 			errorPrint = "Initialization error";
 		}
 		if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
-			if(errorType == fsfw::OutputTypes::OUT_WARNING) {
+			if(errorType == sif::OutputTypes::OUT_WARNING) {
 				errorPrint = "Generic Warning";
 			}
 			else {
@@ -1507,25 +1507,25 @@ void DeviceHandlerBase::printWarningOrError(fsfw::OutputTypes errorType,
 		}
 	}
 
-	if(errorType == fsfw::OutputTypes::OUT_WARNING) {
+	if(errorType == sif::OutputTypes::OUT_WARNING) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "DeviceHandlerBase::" << functionName << ": Object ID "
 				<< std::hex << std::setw(8) << std::setfill('0')
 				<< this->getObjectId() << " | " << errorPrint << std::dec
 				<< std::setfill(' ') << std::endl;
 #else
-		fsfw::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
+		sif::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
 				this->getObjectId(), errorPrint);
 #endif
 	}
-	else if(errorType == fsfw::OutputTypes::OUT_ERROR) {
+	else if(errorType == sif::OutputTypes::OUT_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DeviceHandlerBase::" << functionName << ": Object ID "
 				<< std::hex << std::setw(8) << std::setfill('0')
 				<< this->getObjectId() << " | " << errorPrint << std::dec
 				<< std::setfill(' ') << std::endl;
 #else
-		fsfw::printError("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
+		sif::printError("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
 				this->getObjectId(), errorPrint);
 #endif
 	}

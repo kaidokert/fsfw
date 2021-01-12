@@ -103,7 +103,7 @@ inline T& LocalPoolVector<T, vectorSize>::operator [](size_t i) {
 	sif::warning << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
 #else
-	fsfw::printWarning("LocalPoolVector: Invalid index. Setting or returning"
+	sif::printWarning("LocalPoolVector: Invalid index. Setting or returning"
 			" last value!\n");
 #endif
 	return value[vectorSize - 1];
@@ -120,7 +120,7 @@ inline const T& LocalPoolVector<T, vectorSize>::operator [](size_t i) const {
 	sif::warning << "LocalPoolVector: Invalid index. Setting or returning"
 			" last value!" << std::endl;
 #else
-	fsfw::printWarning("LocalPoolVector: Invalid index. Setting or returning"
+	sif::printWarning("LocalPoolVector: Invalid index. Setting or returning"
 			" last value!\n");
 #endif
 	return value[vectorSize - 1];
