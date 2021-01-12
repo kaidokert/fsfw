@@ -9,12 +9,12 @@ class LocalPoolObjectBase;
 
 class HasLocalDpIFManagerAttorney {
 
-	static LocalPoolDataSetBase* getDataSetHandle(HasLocalDataPoolIF* interface, sid_t sid);
+	static LocalPoolDataSetBase* getDataSetHandle(HasLocalDataPoolIF* clientIF, sid_t sid);
 
-	static LocalPoolObjectBase* getPoolObjectHandle(HasLocalDataPoolIF* interface,
+	static LocalPoolObjectBase* getPoolObjectHandle(HasLocalDataPoolIF* clientIF,
 			lp_id_t localPoolId);
 
-	static object_id_t getObjectId(HasLocalDataPoolIF* interface);
+	static object_id_t getObjectId(HasLocalDataPoolIF* clientIF);
 
 	friend class LocalDataPoolManager;
 };

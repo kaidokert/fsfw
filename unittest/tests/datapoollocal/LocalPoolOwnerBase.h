@@ -92,7 +92,7 @@ public:
 
 	// This is called by initializeAfterTaskCreation of the HK manager.
 	virtual ReturnValue_t initializeLocalDataPool(
-	        LocalDataPool& localDataPoolMap,
+	        localpool::DataPool& localDataPoolMap,
 	        LocalDataPoolManager& poolManager) {
 		// Default initialization empty for now.
 		localDataPoolMap.emplace(lpool::uint8VarId,
@@ -109,7 +109,16 @@ public:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	LocalDataPoolManager* getHkManagerHandle() override {
+	/**
+	 * This function can be used by data pool consumers to retrieve a handle
+	 * which allows subscriptions to dataset and variable updates.
+	 * @return
+	 */
+	virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override {
+		return &hkManager;
+	}
+
+	virtual AccessPoolManagerIF* getAccessorHandle() override {
 		return &hkManager;
 	}
 

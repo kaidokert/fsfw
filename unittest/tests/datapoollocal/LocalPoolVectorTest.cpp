@@ -91,17 +91,17 @@ TEST_CASE("LocalPoolVector" , "[LocPoolVecTest]") {
 		lp_vec_t<uint16_t, 3> invalidVector = lp_vec_t<uint16_t, 3>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, 0xffffffff);
 		REQUIRE(invalidVector.read() ==
-				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
+				static_cast<int>(localpool::POOL_ENTRY_NOT_FOUND));
 		REQUIRE(invalidVector.commit() ==
-				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
+				static_cast<int>(localpool::POOL_ENTRY_NOT_FOUND));
 
 		// now try to access with wrong type
 		lp_vec_t<uint32_t, 3> invalidVector2 = lp_vec_t<uint32_t, 3>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint16Vec3Id);
 		REQUIRE(invalidVector2.read() ==
-				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
+				static_cast<int>(localpool::POOL_ENTRY_TYPE_CONFLICT));
 		REQUIRE(invalidVector2.commit() ==
-				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
+				static_cast<int>(localpool::POOL_ENTRY_TYPE_CONFLICT));
 
 		lp_vec_t<uint16_t, 3> writeOnlyVec = lp_vec_t<uint16_t, 3>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint16Vec3Id,

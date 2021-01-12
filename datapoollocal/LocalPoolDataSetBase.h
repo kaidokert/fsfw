@@ -1,8 +1,8 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 
-#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "MarkChangedIF.h"
+#include "localPoolDefinitions.h"
 
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"

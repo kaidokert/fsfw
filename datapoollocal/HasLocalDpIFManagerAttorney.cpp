@@ -3,16 +3,16 @@
 #include "LocalPoolDataSetBase.h"
 #include "HasLocalDataPoolIF.h"
 
-LocalPoolDataSetBase* HasLocalDpIFManagerAttorney::getDataSetHandle(HasLocalDataPoolIF* interface,
+LocalPoolDataSetBase* HasLocalDpIFManagerAttorney::getDataSetHandle(HasLocalDataPoolIF* clientIF,
 		sid_t sid) {
-	return interface->getDataSetHandle(sid);
+	return clientIF->getDataSetHandle(sid);
 }
 
-LocalPoolObjectBase* HasLocalDpIFManagerAttorney::getPoolObjectHandle(HasLocalDataPoolIF* interface,
+LocalPoolObjectBase* HasLocalDpIFManagerAttorney::getPoolObjectHandle(HasLocalDataPoolIF* clientIF,
 		lp_id_t localPoolId) {
-	return interface->getPoolObjectHandle(localPoolId);
+	return clientIF->getPoolObjectHandle(localPoolId);
 }
 
-object_id_t HasLocalDpIFManagerAttorney::getObjectId(HasLocalDataPoolIF* interface) {
-	return interface->getObjectId();
+object_id_t HasLocalDpIFManagerAttorney::getObjectId(HasLocalDataPoolIF* clientIF) {
+	return clientIF->getObjectId();
 }

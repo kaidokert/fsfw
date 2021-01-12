@@ -1,7 +1,8 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
-#include <fsfw/datapoollocal/localPoolDefinitions.h>
+#include "localPoolDefinitions.h"
+
 #include "../datapool/PoolEntryIF.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "../ipc/MessageQueueSenderIF.h"
