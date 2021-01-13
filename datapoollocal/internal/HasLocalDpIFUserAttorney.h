@@ -7,10 +7,10 @@ class AccessPoolManagerIF;
 class HasLocalDpIFUserAttorney {
 private:
 
-	static AccessPoolManagerIF* getAccessorHandle(HasLocalDataPoolIF* clientIF);
+    static AccessPoolManagerIF* getAccessorHandle(HasLocalDataPoolIF* clientIF);
 
-	friend class LocalPoolObjectBase;
-	friend class LocalPoolDataSetBase;
+    friend class LocalPoolObjectBase;
+    friend class LocalPoolDataSetBase;
 
 };
 

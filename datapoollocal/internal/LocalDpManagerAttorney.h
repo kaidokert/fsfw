@@ -15,18 +15,18 @@
  */
 class LocalDpManagerAttorney {
 private:
-	template<typename T> static ReturnValue_t fetchPoolEntry(LocalDataPoolManager& manager,
-			lp_id_t localPoolId, PoolEntry<T> **poolEntry) {
-		return manager.fetchPoolEntry(localPoolId, poolEntry);
-	}
+    template<typename T> static ReturnValue_t fetchPoolEntry(LocalDataPoolManager& manager,
+            lp_id_t localPoolId, PoolEntry<T> **poolEntry) {
+        return manager.fetchPoolEntry(localPoolId, poolEntry);
+    }
 
-	static MutexIF* getMutexHandle(LocalDataPoolManager& manager) {
-		return manager.getMutexHandle();
-	}
+    static MutexIF* getMutexHandle(LocalDataPoolManager& manager) {
+        return manager.getMutexHandle();
+    }
 
 
-	template<typename T> friend class LocalPoolVariable;
-	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
+    template<typename T> friend class LocalPoolVariable;
+    template<typename T, uint16_t vecSize> friend class LocalPoolVector;
 };
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALDPMANAGERATTORNEY_H_ */
