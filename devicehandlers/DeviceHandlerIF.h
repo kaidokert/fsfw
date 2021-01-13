@@ -1,9 +1,9 @@
 #ifndef FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
 #define FSFW_DEVICEHANDLERS_DEVICEHANDLERIF_H_
 
-#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "DeviceHandlerMessage.h"
 
+#include "../datapoollocal/localPoolDefinitions.h"
 #include "../action/HasActionsIF.h"
 #include "../events/Event.h"
 #include "../modes/HasModesIF.h"
