@@ -17,8 +17,8 @@ class HasLocalDataPoolIF;
  * 			or pool vectors.
  */
 class LocalPoolObjectBase: public PoolVariableIF,
-public HasReturnvaluesIF,
-public MarkChangedIF {
+        public HasReturnvaluesIF,
+        public MarkChangedIF {
 public:
     LocalPoolObjectBase(lp_id_t poolId,
             HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
