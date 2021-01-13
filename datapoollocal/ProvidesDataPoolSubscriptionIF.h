@@ -1,10 +1,9 @@
 #ifndef FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_
 #define FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_
 
-#include <fsfw/datapoollocal/localPoolDefinitions.h>
-#include <fsfw/ipc/messageQueueDefinitions.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
-
+#include "localPoolDefinitions.h"
+#include "../ipc/messageQueueDefinitions.h"
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 
 class ProvidesDataPoolSubscriptionIF {
