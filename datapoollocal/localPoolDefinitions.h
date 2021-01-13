@@ -1,9 +1,12 @@
-#ifndef FSFW_DATAPOOLLOCAL_LOCPOOLDEFINITIONS_H_
-#define FSFW_DATAPOOLLOCAL_LOCPOOLDEFINITIONS_H_
+#ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDEFINITIONS_H_
+#define FSFW_DATAPOOLLOCAL_LOCALPOOLDEFINITIONS_H_
 
-#include <cstdint>
+#include "../datapool/PoolEntryIF.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../objectmanager/frameworkObjects.h"
+
+#include <cstdint>
+#include <map>
 
 /**
  * @brief   Type definition for local pool entries.
@@ -12,10 +15,21 @@ using lp_id_t = uint32_t;
 
 namespace localpool {
 static constexpr uint32_t INVALID_LPID = -1;
+
+static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
+
+static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x00);
+static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x01);
+
+//! This is the core data structure of the local data pools. Users should insert all desired
+//! pool variables, using the std::map interface.
+using DataPool =  std::map<lp_id_t, PoolEntryIF*>;
+using DataPoolMapIter = DataPool::iterator;
+
 }
 
 /**
- * Used as a unique identifier for data sets.
+ * Used as a unique identifier for data sets. Consists of 4 byte object ID and 4 byte set ID.
  */
 union sid_t {
     static constexpr uint64_t INVALID_SID = -1;
@@ -57,7 +71,8 @@ union sid_t {
 };
 
 /**
- * Used as a global unique identifier for local pool variables.
+ * Used as a global unique identifier for local pool variables. Consists of 4 byte object ID
+ * and 4 byte local pool ID.
  */
 union gp_id_t {
 	static constexpr uint64_t INVALID_GPID = -1;
@@ -90,4 +105,4 @@ union gp_id_t {
     }
 };
 
-#endif /* FSFW_DATAPOOLLOCAL_LOCPOOLDEFINITIONS_H_ */
+#endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLDEFINITIONS_H_ */

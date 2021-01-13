@@ -1,9 +1,10 @@
-#ifndef MONITORINGMESSAGECONTENT_H_
-#define MONITORINGMESSAGECONTENT_H_
+#ifndef FSFW_MONITORING_MONITORINGMESSAGECONTENT_H_
+#define FSFW_MONITORING_MONITORINGMESSAGECONTENT_H_
 
 #include "HasMonitorsIF.h"
 #include "MonitoringIF.h"
-#include "../datapoollocal/locPoolDefinitions.h"
+
+#include "../datapoollocal/localPoolDefinitions.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerialBufferAdapter.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"
@@ -85,4 +86,4 @@ private:
 template<typename T>
 object_id_t MonitoringReportContent<T>::timeStamperId = 0;
 
-#endif /* MONITORINGMESSAGECONTENT_H_ */
+#endif /* FSFW_MONITORING_MONITORINGMESSAGECONTENT_H_ */

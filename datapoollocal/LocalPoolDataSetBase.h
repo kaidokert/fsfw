@@ -1,16 +1,16 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETBASE_H_
 
-#include "HasLocalDataPoolIF.h"
 #include "MarkChangedIF.h"
+#include "localPoolDefinitions.h"
 
 #include "../datapool/DataSetIF.h"
 #include "../datapool/PoolDataSetBase.h"
-#include "../serialize/SerializeIF.h"
 
 #include <vector>
 
 class LocalDataPoolManager;
+class HasLocalDataPoolIF;
 class PeriodicHousekeepingHelper;
 
 /**
@@ -43,7 +43,7 @@ class PeriodicHousekeepingHelper;
  */
 class LocalPoolDataSetBase: public PoolDataSetBase,
         public MarkChangedIF {
-	friend class LocalDataPoolManager;
+	friend class LocalPoolDataSetAttorney;
 	friend class PeriodicHousekeepingHelper;
 public:
 	/**
@@ -57,8 +57,11 @@ public:
 	        const size_t maxNumberOfVariables, bool periodicHandling = true);
 
 	/**
-	 * @brief	Constructor for users of local pool data.
+	 * @brief	Constructor for users of the local pool data, which need
+	 *          to access data created by one (!) HK manager.
 	 * @details
+	 * Unlike the first constructor, no component for periodic handling
+	 * will be initiated.
 	 * @param sid Unique identifier of dataset consisting of object ID and
 	 * set ID.
 	 * @param registeredVariablesArray
@@ -66,6 +69,28 @@ public:
 	 */
 	LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registeredVariablesArray,
 	        const size_t maxNumberOfVariables);
+
+	/**
+	 * @brief	Simple constructor, if the dataset is not the owner by
+	 * 			a class with a HK manager.
+	 * @details
+	 * This constructor won't create components required for periodic handling
+	 * and it also won't try to deduce the HK manager because no SID is
+	 * supplied. This function should therefore be called by classes which need
+	 * to access pool variables from different creators.
+	 *
+	 * If the class is intended to access pool variables from different
+	 * creators, the third argument should be set to true. The mutex
+	 * properties can be set with #setReadCommitProtectionBehaviour .
+	 * @param registeredVariablesArray
+	 * @param maxNumberOfVariables
+	 * @param protectEveryReadCommitCall If the pool variables are created by
+	 * multiple creators, this flag can be set to protect all read and
+	 * commit calls separately.
+	 */
+	LocalPoolDataSetBase(PoolVariableIF** registeredVariablesArray,
+	        const size_t maxNumberOfVariables,
+			bool protectEveryReadCommitCall = true);
 
 	/**
 	 * @brief	The destructor automatically manages writing the valid
@@ -76,16 +101,6 @@ public:
 	 * For each, the valid flag in the data pool is set to "invalid".
 	 */
 	~LocalPoolDataSetBase();
-
-	/**
-	 * If the data is pulled from different local data pools, every read and
-	 * commit call should be mutex protected for thread safety.
-	 * This can be specified with the second parameter.
-	 * @param dataCreator
-	 * @param protectEveryReadCommit
-	 */
-	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
-			uint32_t mutexTimeout = 20);
 
 	void setValidityBufferGeneration(bool withValidityBuffer);
 
@@ -136,10 +151,11 @@ public:
 	void setChanged(bool changed) override;
 	bool hasChanged() const override;
 
+	object_id_t getCreatorObjectId();
 protected:
 	sid_t sid;
-	uint32_t mutexTimeout = 20;
-	MutexIF* mutex = nullptr;
+	//! This mutex is used if the data is created by one object only.
+	MutexIF* mutexIfSingleDataCreator = nullptr;
 
 	bool diagnostic = false;
 	void setDiagnostic(bool diagnostics);
@@ -183,7 +199,9 @@ protected:
 	 * @details
 	 * It makes use of the lockDataPool method offered by the DataPool class.
 	 */
-	ReturnValue_t lockDataPool(uint32_t timeoutMs) override;
+	ReturnValue_t lockDataPool(MutexIF::TimeoutType timeoutType,
+			uint32_t timeoutMs) override;
+
 	/**
 	 * @brief	This is a small helper function to facilitate
 	 * 			unlocking the global data pool
@@ -191,8 +209,6 @@ protected:
 	 * It makes use of the freeDataPoolLock method offered by the DataPool class.
 	 */
 	ReturnValue_t unlockDataPool() override;
-
-	LocalDataPoolManager* hkManager = nullptr;
 
 	/**
 	 * Set n-th bit of a byte, with n being the position from 0
@@ -202,6 +218,7 @@ protected:
 	bool bitGetter(const uint8_t* byte, uint8_t position) const;
 
 	PeriodicHousekeepingHelper* periodicHelper = nullptr;
+	LocalDataPoolManager* poolManager = nullptr;
 
 };
 

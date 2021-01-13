@@ -1,11 +1,17 @@
+#include <fsfw/datapoollocal/LocalDataPoolManager.h>
+#include <fsfw/devicehandlers/DeviceHandlerBase.h>
 #include "CatchFactory.h"
 
 #include <fsfw/events/EventManager.h>
 #include <fsfw/health/HealthTable.h>
-
 #include <fsfw/internalError/InternalErrorReporter.h>
 #include <fsfw/objectmanager/frameworkObjects.h>
 #include <fsfw/storagemanager/PoolManager.h>
+#include <fsfw/tmtcpacket/pus/TmPacketStored.h>
+#include <fsfw/tmtcservices/CommandingServiceBase.h>
+#include <fsfw/tmtcservices/PusServiceBase.h>
+#include <fsfw/unittest/tests/datapoollocal/LocalPoolOwnerBase.h>
+#include <fsfw/unittest/tests/mocks/HkReceiverMock.h>
 
 /**
  * @brief Produces system objects.
@@ -25,6 +31,9 @@ void Factory::produce(void) {
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);
 	new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
+
+	new LocalPoolOwnerBase (objects::TEST_LOCAL_POOL_OWNER_BASE);
+	new HkReceiverMock(objects::HK_RECEIVER_MOCK);
 
 	{
 		PoolManager::LocalPoolConfig poolCfg = {
@@ -50,7 +59,23 @@ void Factory::produce(void) {
 }
 
 void Factory::setStaticFrameworkObjectIds() {
+	PusServiceBase::packetSource = objects::NO_OBJECT;
+	PusServiceBase::packetDestination = objects::NO_OBJECT;
 
+	CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
+	CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
+
+	VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
+
+	DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
+	DeviceHandlerBase::rawDataReceiverId = objects::PUS_SERVICE_2_DEVICE_ACCESS;
+
+	LocalDataPoolManager::defaultHkDestination = objects::HK_RECEIVER_MOCK;
+
+	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
+
+	TmPacketStored::timeStamperId = objects::NO_OBJECT;
 }
+
 
 

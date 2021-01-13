@@ -1,5 +1,5 @@
 #include "arrayprinter.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include <bitset>
 
 void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
@@ -9,6 +9,8 @@ void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
 		sif::info << "Printing data with size " << size << ": ";
 	}
 	sif::info << "[";
+#else
+	sif::printInfo("Printing data with size %zu: [", size);
 #endif
 	if(type == OutputType::HEX) {
 		arrayprinter::printHex(data, size, maxCharPerLine);
@@ -37,6 +39,8 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
 	}
 	sif::info << std::dec;
 	sif::info << "]" << std::endl;
+#else
+	// how much memory to reserve for printout?
 #endif
 }
 
@@ -54,6 +58,8 @@ void arrayprinter::printDec(const uint8_t *data, size_t size,
 		}
 	}
 	sif::info << "]" << std::endl;
+#else
+	// how much memory to reserve for printout?
 #endif
 }
 
@@ -65,5 +71,7 @@ void arrayprinter::printBin(const uint8_t *data, size_t size) {
                 std::bitset<8>(data[i]) << ",\n" << std::flush;
     }
     sif::info << "]" << std::endl;
+#else
+    // how much memory to reserve for printout?
 #endif
 }

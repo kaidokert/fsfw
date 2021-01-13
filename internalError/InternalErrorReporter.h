@@ -22,7 +22,6 @@ class InternalErrorReporter: public SystemObject,
 		public InternalErrorReporterIF,
 		public HasLocalDataPoolIF {
 public:
-    static constexpr uint8_t INTERNAL_ERROR_MUTEX_TIMEOUT = 20;
 
 	InternalErrorReporter(object_id_t setObjectId,
 	        uint32_t messageQueueDepth = 5);
@@ -34,16 +33,20 @@ public:
 	 */
 	void setDiagnosticPrintout(bool enable);
 
+	void setMutexTimeout(MutexIF::TimeoutType timeoutType,
+			uint32_t timeoutMs);
+
 	virtual ~InternalErrorReporter();
 
     virtual object_id_t getObjectId() const override;
     virtual MessageQueueId_t getCommandQueue() const override;
     virtual ReturnValue_t initializeLocalDataPool(
-            LocalDataPool& localDataPoolMap,
+    		localpool::DataPool& localDataPoolMap,
             LocalDataPoolManager& poolManager) override;
-    virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual dur_millis_t getPeriodicOperationFrequency() const override;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
+    ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
+	AccessPoolManagerIF* getAccessorHandle() override;
 
     virtual ReturnValue_t initialize() override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;
@@ -61,7 +64,11 @@ protected:
 	LocalDataPoolManager poolManager;
 
 	PeriodicTaskIF* executingTask = nullptr;
+
 	MutexIF* mutex = nullptr;
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+	uint32_t timeoutMs = 20;
+
 	sid_t internalErrorSid;
 	InternalErrorDataset internalErrorDataset;
 

@@ -6,6 +6,13 @@
 #include "../objectmanager/SystemObject.h"
 #include <vector>
 
+/**
+ * This local dataset variation can be used if the dataset is used concurrently across
+ * multiple threads. It provides a lock in addition to all other functionalities provided
+ * by the LocalPoolDataSetBase class.
+ *
+ * TODO: override and protect read, commit and some other calls used by pool manager.
+ */
 class SharedLocalDataSet: public SystemObject,
         public LocalPoolDataSetBase,
         public SharedDataSetIF {

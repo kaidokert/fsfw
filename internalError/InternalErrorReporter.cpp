@@ -2,7 +2,7 @@
 
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId,
         uint32_t messageQueueDepth): SystemObject(setObjectId),
@@ -23,13 +23,13 @@ void InternalErrorReporter::setDiagnosticPrintout(bool enable) {
 }
 
 ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
-    internalErrorDataset.read(INTERNAL_ERROR_MUTEX_TIMEOUT);
+    internalErrorDataset.read(timeoutType, timeoutMs);
 
 	uint32_t newQueueHits = getAndResetQueueHits();
 	uint32_t newTmHits = getAndResetTmHits();
 	uint32_t newStoreHits = getAndResetStoreHits();
 
-#if FSFW_ENHANCED_PRINTOUT == 1
+#if FSFW_VERBOSE_LEVEL == 1
 	if(diagnosticPrintout) {
 	    if((newQueueHits > 0) or (newTmHits > 0) or (newStoreHits > 0)) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -38,6 +38,11 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 	        sif::debug << "Queue errors: " << newQueueHits << std::endl;
 	        sif::debug << "TM errors: " << newTmHits << std::endl;
 	        sif::debug << "Store errors: " << newStoreHits << std::endl;
+#else
+	        sif::printDebug("InternalErrorReporter::performOperation: Errors occured!\n");
+	        sif::printDebug("Queue errors: %lu\n", static_cast<unsigned int>(newQueueHits));
+	        sif::printDebug("TM errors: %lu\n", static_cast<unsigned int>(newTmHits));
+	        sif::printDebug("Store errors: %lu\n", static_cast<unsigned int>(newStoreHits));
 #endif
 	    }
 	}
@@ -46,8 +51,8 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 	internalErrorDataset.queueHits.value += newQueueHits;
 	internalErrorDataset.storeHits.value += newStoreHits;
 	internalErrorDataset.tmHits.value += newTmHits;
-
-	internalErrorDataset.commit(INTERNAL_ERROR_MUTEX_TIMEOUT);
+	internalErrorDataset.setValidity(true, true);
+	internalErrorDataset.commit(timeoutType, timeoutMs);
 
 	poolManager.performHkOperation();
 
@@ -69,7 +74,7 @@ void InternalErrorReporter::lostTm() {
 
 uint32_t InternalErrorReporter::getAndResetQueueHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	value = queueHits;
 	queueHits = 0;
 	mutex->unlockMutex();
@@ -78,21 +83,21 @@ uint32_t InternalErrorReporter::getAndResetQueueHits() {
 
 uint32_t InternalErrorReporter::getQueueHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	value = queueHits;
 	mutex->unlockMutex();
 	return value;
 }
 
 void InternalErrorReporter::incrementQueueHits() {
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	queueHits++;
 	mutex->unlockMutex();
 }
 
 uint32_t InternalErrorReporter::getAndResetTmHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	value = tmHits;
 	tmHits = 0;
 	mutex->unlockMutex();
@@ -101,14 +106,14 @@ uint32_t InternalErrorReporter::getAndResetTmHits() {
 
 uint32_t InternalErrorReporter::getTmHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	value = tmHits;
 	mutex->unlockMutex();
 	return value;
 }
 
 void InternalErrorReporter::incrementTmHits() {
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	tmHits++;
 	mutex->unlockMutex();
 }
@@ -119,7 +124,7 @@ void InternalErrorReporter::storeFull() {
 
 uint32_t InternalErrorReporter::getAndResetStoreHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	value = storeHits;
 	storeHits = 0;
 	mutex->unlockMutex();
@@ -128,14 +133,18 @@ uint32_t InternalErrorReporter::getAndResetStoreHits() {
 
 uint32_t InternalErrorReporter::getStoreHits() {
 	uint32_t value;
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	value = storeHits;
 	mutex->unlockMutex();
 	return value;
 }
 
+AccessPoolManagerIF* InternalErrorReporter::getAccessorHandle() {
+	return &poolManager;
+}
+
 void InternalErrorReporter::incrementStoreHits() {
-	mutex->lockMutex(MutexIF::WAITING, INTERNAL_ERROR_MUTEX_TIMEOUT);
+	mutex->lockMutex(timeoutType, timeoutMs);
 	storeHits++;
 	mutex->unlockMutex();
 }
@@ -149,7 +158,7 @@ MessageQueueId_t InternalErrorReporter::getCommandQueue() const {
 }
 
 ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
-        LocalDataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
+        localpool::DataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
     localDataPoolMap.emplace(errorPoolIds::TM_HITS,
             new PoolEntry<uint32_t>());
     localDataPoolMap.emplace(errorPoolIds::QUEUE_HITS,
@@ -160,10 +169,6 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(
             getPeriodicOperationFrequency(), true);
     internalErrorDataset.setValidity(true, true);
     return HasReturnvaluesIF::RETURN_OK;
-}
-
-LocalDataPoolManager* InternalErrorReporter::getHkManagerHandle() {
-    return &poolManager;
 }
 
 dur_millis_t InternalErrorReporter::getPeriodicOperationFrequency() const {
@@ -190,3 +195,12 @@ ReturnValue_t InternalErrorReporter::initializeAfterTaskCreation() {
     return poolManager.initializeAfterTaskCreation();
 }
 
+void InternalErrorReporter::setMutexTimeout(MutexIF::TimeoutType timeoutType,
+		uint32_t timeoutMs) {
+	this->timeoutType = timeoutType;
+	this->timeoutMs = timeoutMs;
+}
+
+ProvidesDataPoolSubscriptionIF* InternalErrorReporter::getSubscriptionInterface() {
+	return &poolManager;
+}

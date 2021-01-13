@@ -38,11 +38,12 @@ ReturnValue_t PoolDataSetBase::registerVariable(
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	ReturnValue_t error = result;
 	if (state == States::STATE_SET_UNINITIALISED) {
-		lockDataPool(lockTimeout);
+		lockDataPool(timeoutType, lockTimeout);
 		for (uint16_t count = 0; count < fillCount; count++) {
 			result = readVariable(count);
 			if(result != RETURN_OK) {
@@ -86,7 +87,9 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 				!= PoolVariableIF::NO_PARAMETER)
 	{
 		if(protectEveryReadCommitCall) {
-			result = registeredVariables[count]->read(mutexTimeout);
+			result = registeredVariables[count]->read(
+					timeoutTypeForSingleVars,
+					mutexTimeoutForSingleVars);
 		}
 		else {
 			result = registeredVariables[count]->readWithoutLock();
@@ -99,25 +102,29 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 	return result;
 }
 
-ReturnValue_t PoolDataSetBase::commit(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::commit(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	if (state == States::STATE_SET_WAS_READ) {
-		handleAlreadyReadDatasetCommit(lockTimeout);
+		handleAlreadyReadDatasetCommit(timeoutType, lockTimeout);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
-		return handleUnreadDatasetCommit(lockTimeout);
+		return handleUnreadDatasetCommit(timeoutType, lockTimeout);
 	}
 }
 
-void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
-	lockDataPool(lockTimeout);
+void PoolDataSetBase::handleAlreadyReadDatasetCommit(
+		MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
+	lockDataPool(timeoutType, lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				!= PoolVariableIF::VAR_READ
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if(protectEveryReadCommitCall) {
-				registeredVariables[count]->commit(mutexTimeout);
+				registeredVariables[count]->commit(
+						timeoutTypeForSingleVars,
+						mutexTimeoutForSingleVars);
 			}
 			else {
 				registeredVariables[count]->commitWithoutLock();
@@ -128,16 +135,19 @@ void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
 	unlockDataPool();
 }
 
-ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(
+		MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	lockDataPool(lockTimeout);
+	lockDataPool(timeoutType, lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				== PoolVariableIF::VAR_WRITE
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if(protectEveryReadCommitCall) {
-				result = registeredVariables[count]->commit(mutexTimeout);
+				result = registeredVariables[count]->commit(
+						timeoutTypeForSingleVars,
+						mutexTimeoutForSingleVars);
 			}
 			else {
 				result = registeredVariables[count]->commitWithoutLock();
@@ -160,7 +170,8 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
 }
 
 
-ReturnValue_t PoolDataSetBase::lockDataPool(uint32_t timeoutMs) {
+ReturnValue_t PoolDataSetBase::lockDataPool(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -206,8 +217,14 @@ void PoolDataSetBase::setContainer(PoolVariableIF **variablesContainer) {
     this->registeredVariables = variablesContainer;
 }
 
+PoolVariableIF** PoolDataSetBase::getContainer() const {
+	return registeredVariables;
+}
+
 void PoolDataSetBase::setReadCommitProtectionBehaviour(
-		bool protectEveryReadCommit, uint32_t mutexTimeout) {
+		bool protectEveryReadCommit, MutexIF::TimeoutType timeoutType,
+		uint32_t mutexTimeout) {
 	this->protectEveryReadCommitCall = protectEveryReadCommit;
-	this->mutexTimeout = mutexTimeout;
+	this->timeoutTypeForSingleVars = timeoutType;
+	this->mutexTimeoutForSingleVars = mutexTimeout;
 }
