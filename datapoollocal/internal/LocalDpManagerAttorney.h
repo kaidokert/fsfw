@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALDPMANAGERATTORNEY_H_
 #define FSFW_DATAPOOLLOCAL_LOCALDPMANAGERATTORNEY_H_
 
-#include <fsfw/datapoollocal/LocalDataPoolManager.h>
+#include "../LocalDataPoolManager.h"
 
 /**
  * @brief	This is a helper class implements the Attorney-Client idiom for access to
