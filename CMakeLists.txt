@@ -106,7 +106,7 @@ else()
 	)
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(WARNING_FLAGS
 		-Wall
 		-Wextra
