@@ -1,8 +1,9 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_
 
-#include <fsfw/datapoollocal/localPoolDefinitions.h>
 #include "MarkChangedIF.h"
+#include "localPoolDefinitions.h"
+
 #include "../objectmanager/SystemObjectIF.h"
 #include "../datapool/PoolVariableIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -11,9 +12,13 @@ class LocalDataPoolManager;
 class DataSetIF;
 class HasLocalDataPoolIF;
 
+/**
+ * @brief 	This class serves as a non-template base for pool objects like pool variables
+ * 			or pool vectors.
+ */
 class LocalPoolObjectBase: public PoolVariableIF,
-        public HasReturnvaluesIF,
-        public MarkChangedIF {
+public HasReturnvaluesIF,
+public MarkChangedIF {
 public:
     LocalPoolObjectBase(lp_id_t poolId,
             HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
@@ -61,10 +66,8 @@ protected:
     //! @brief  Pointer to the class which manages the HK pool.
     LocalDataPoolManager* hkManager = nullptr;
 
-	void reportReadCommitError(const char* variableType,
-			ReturnValue_t error, bool read, object_id_t objectId, lp_id_t lpId);
+    void reportReadCommitError(const char* variableType,
+            ReturnValue_t error, bool read, object_id_t objectId, lp_id_t lpId);
 };
-
-
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALPOOLOBJECTBASE_H_ */

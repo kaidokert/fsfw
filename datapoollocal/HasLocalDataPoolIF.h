@@ -30,32 +30,32 @@ class LocalDataPoolManager;
  *
  */
 class HasLocalDataPoolIF {
-	friend class HasLocalDpIFManagerAttorney;
-	friend class HasLocalDpIFUserAttorney;
+    friend class HasLocalDpIFManagerAttorney;
+    friend class HasLocalDpIFUserAttorney;
 public:
-	virtual~ HasLocalDataPoolIF() {};
+    virtual~ HasLocalDataPoolIF() {};
 
-	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
+    static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
-	virtual object_id_t getObjectId() const = 0;
+    virtual object_id_t getObjectId() const = 0;
 
-	/** Command queue for housekeeping messages. */
-	virtual MessageQueueId_t getCommandQueue() const = 0;
+    /** Command queue for housekeeping messages. */
+    virtual MessageQueueId_t getCommandQueue() const = 0;
 
-	/**
-	 * Is used by pool owner to initialize the pool map once
-	 * The manager instance shall also be passed to this function.
-	 * It can be used to subscribe for periodic packets for for updates.
-	 */
-	virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
-	        LocalDataPoolManager& poolManager) = 0;
+    /**
+     * Is used by pool owner to initialize the pool map once
+     * The manager instance shall also be passed to this function.
+     * It can be used to subscribe for periodic packets for for updates.
+     */
+    virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
+            LocalDataPoolManager& poolManager) = 0;
 
-	/**
-	 * Returns the minimum sampling frequency in milliseconds, which will
-	 * usually be the period the pool owner performs its periodic operation.
-	 * @return
-	 */
-	virtual uint32_t getPeriodicOperationFrequency() const = 0;
+    /**
+     * Returns the minimum sampling frequency in milliseconds, which will
+     * usually be the period the pool owner performs its periodic operation.
+     * @return
+     */
+    virtual uint32_t getPeriodicOperationFrequency() const = 0;
 
     /**
      * @brief   This function will be called by the manager if an update
@@ -67,7 +67,7 @@ public:
      * the IPC store with this store ID.
      */
     virtual void handleChangedDataset(sid_t sid,
-    		store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
+            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
         return;
     }
 
@@ -85,68 +85,68 @@ public:
         return;
     }
 
-	/**
-	 * These function can be implemented by pool owner, if they are required
-	 * and used by the housekeeping message interface.
-	 * */
-	virtual ReturnValue_t addDataSet(sid_t sid) {
-	    return HasReturnvaluesIF::RETURN_FAILED;
-	};
-	virtual ReturnValue_t removeDataSet(sid_t sid) {
-	    return HasReturnvaluesIF::RETURN_FAILED;
-	};
-	virtual ReturnValue_t changeCollectionInterval(sid_t sid, float newIntervalSeconds) {
-	    return HasReturnvaluesIF::RETURN_FAILED;
-	};
+    /**
+     * These function can be implemented by pool owner, if they are required
+     * and used by the housekeeping message interface.
+     * */
+    virtual ReturnValue_t addDataSet(sid_t sid) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    };
+    virtual ReturnValue_t removeDataSet(sid_t sid) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    };
+    virtual ReturnValue_t changeCollectionInterval(sid_t sid, float newIntervalSeconds) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    };
 
-	/**
-	 * This function can be used by data pool consumers to retrieve a handle
-	 * which allows subscriptions to dataset and variable updates in form of messages.
-	 * The consumers can then read the most recent variable value by calling read with
-	 * an own pool variable or set instance or using the deserialized snapshot data.
-	 * @return
-	 */
-	virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() = 0;
+    /**
+     * This function can be used by data pool consumers to retrieve a handle
+     * which allows subscriptions to dataset and variable updates in form of messages.
+     * The consumers can then read the most recent variable value by calling read with
+     * an own pool variable or set instance or using the deserialized snapshot data.
+     * @return
+     */
+    virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() = 0;
 
 protected:
 
-	/**
-	 * Accessor handle required for internal handling. Not intended for users and therefore
-	 * declared protected. Users should instead use pool variables, sets or the subscription
-	 * interface to access pool entries.
-	 * @return
-	 */
-	virtual AccessPoolManagerIF* getAccessorHandle() = 0;
+    /**
+     * Accessor handle required for internal handling. Not intended for users and therefore
+     * declared protected. Users should instead use pool variables, sets or the subscription
+     * interface to access pool entries.
+     * @return
+     */
+    virtual AccessPoolManagerIF* getAccessorHandle() = 0;
 
-	/**
-	 * This function is used by the pool manager to get a valid dataset
+    /**
+     * This function is used by the pool manager to get a valid dataset
      * from a SID. This function is protected to prevent users from
      * using raw data set pointers which could not be thread-safe. Users
      * should use the #ProvidesDataPoolSubscriptionIF.
-	 * @param sid Corresponding structure ID
-	 * @return
-	 */
-	virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
+     * @param sid Corresponding structure ID
+     * @return
+     */
+    virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
 
-	/**
-	 * Similar to the function above, but used to get a local pool variable
-	 * handle. This is only needed for update notifications, so it is not
-	 * defined as abstract. This function is protected to prevent users from
+    /**
+     * Similar to the function above, but used to get a local pool variable
+     * handle. This is only needed for update notifications, so it is not
+     * defined as abstract. This function is protected to prevent users from
      * using raw pool variable pointers which could not be thread-safe.
      * Users should use the #ProvidesDataPoolSubscriptionIF.
-	 * @param localPoolId
-	 * @return
-	 */
-	virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
+     * @param localPoolId
+     * @return
+     */
+    virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
-	            << ". Returning nullptr!" << std::endl;
+        sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden"
+                << ". Returning nullptr!" << std::endl;
 #else
-	    sif::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
-	    		"Not overriden. Returning nullptr!\n");
+        sif::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
+                "Not overriden. Returning nullptr!\n");
 #endif
-	    return nullptr;
-	}
+        return nullptr;
+    }
 };
 
 #endif /* FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_ */

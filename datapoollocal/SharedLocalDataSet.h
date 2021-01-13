@@ -13,7 +13,8 @@
  *
  * TODO: override and protect read, commit and some other calls used by pool manager.
  */
-class SharedLocalDataSet: public SystemObject,
+class SharedLocalDataSet:
+        public SystemObject,
         public LocalPoolDataSetBase,
         public SharedDataSetIF {
 public:

@@ -40,8 +40,8 @@ union sid_t {
     sid_t(): raw(INVALID_SID) {}
 
     sid_t(object_id_t objectId, uint32_t setId):
-            objectId(objectId),
-            ownerSetId(setId) {}
+        objectId(objectId),
+        ownerSetId(setId) {}
 
     struct {
         object_id_t objectId ;
@@ -75,26 +75,26 @@ union sid_t {
  * and 4 byte local pool ID.
  */
 union gp_id_t {
-	static constexpr uint64_t INVALID_GPID = -1;
+    static constexpr uint64_t INVALID_GPID = -1;
     static constexpr uint32_t INVALID_OBJECT_ID = objects::NO_OBJECT;
-	static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
+    static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
-	gp_id_t(): raw(INVALID_GPID) {}
+    gp_id_t(): raw(INVALID_GPID) {}
 
-	gp_id_t(object_id_t objectId, lp_id_t localPoolId):
-			objectId(objectId),
-			localPoolId(localPoolId) {}
+    gp_id_t(object_id_t objectId, lp_id_t localPoolId):
+        objectId(objectId),
+        localPoolId(localPoolId) {}
 
-	struct {
-		object_id_t objectId;
-		lp_id_t localPoolId;
-	};
+    struct {
+        object_id_t objectId;
+        lp_id_t localPoolId;
+    };
 
-	uint64_t raw;
+    uint64_t raw;
 
-	bool notSet() const {
-		return raw == INVALID_GPID;
-	}
+    bool notSet() const {
+        return raw == INVALID_GPID;
+    }
 
     bool operator==(const sid_t& other) const {
         return raw == other.raw;

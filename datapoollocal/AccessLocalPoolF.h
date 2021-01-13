@@ -9,16 +9,16 @@ class MutexIF;
  */
 class AccessPoolManagerIF {
 public:
-	virtual ~AccessPoolManagerIF() {};
+    virtual ~AccessPoolManagerIF() {};
 
-	virtual MutexIF* getLocalPoolMutex() = 0;
+    virtual MutexIF* getLocalPoolMutex() = 0;
 
-	/**
-	 * Can be used to get a handle to the local data pool manager.
-	 * This function is protected because it should only be used by the
-	 * class imlementing the interface.
-	 */
-	virtual LocalDataPoolManager* getHkManagerHandle() = 0;
+    /**
+     * Can be used to get a handle to the local data pool manager.
+     * This function is protected because it should only be used by the
+     * class imlementing the interface.
+     */
+    virtual LocalDataPoolManager* getHkManagerHandle() = 0;
 
 protected:
 
