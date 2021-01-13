@@ -107,14 +107,16 @@ else()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	set(WARNING_FLAGS
-		-Wall
-		-Wextra
-		-Wshadow=local
-		-Wimplicit-fallthrough=1
-		-Wno-unused-parameter
-		-Wno-psabi
-	)
+    if(NOT DEFINED FSFW_WARNING_FLAGS)
+	   set(FSFW_WARNING_FLAGS
+		  -Wall
+		  -Wextra
+		  -Wshadow=local
+		  -Wimplicit-fallthrough=1
+		  -Wno-unused-parameter
+		  -Wno-psabi
+        )
+	endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -135,8 +137,7 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 	${FSFW_CONFIG_PATH_ABSOLUTE}
 )
 
-# Machine specific options can be set with the ABI_FLAGS variable.
 target_compile_options(${LIB_FSFW_NAME} PRIVATE 
-	${WARNING_FLAGS}
+	${FSFW_WARNING_FLAGS}
 	${COMPILER_FLAGS}
 )

@@ -120,16 +120,15 @@ public:
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 	        SerializeIF::Endianness streamEndianness) override;
 
+    /**
+     * Can be used to individually protect every read and commit call.
+     * @param protectEveryReadCommit
+     * @param mutexTimeout
+     */
+    void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
+            MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+            uint32_t mutexTimeout = 20);
 protected:
-
-	/**
-	 * Can be used to individually protect every read and commit call.
-	 * @param protectEveryReadCommit
-	 * @param mutexTimeout
-	 */
-	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
-			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
-			uint32_t mutexTimeout = 20);
 
 	/**
 	 * @brief	The fill_count attribute ensures that the variables
