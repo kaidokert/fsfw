@@ -1,8 +1,8 @@
 #ifndef FSFW_DATAPOOL_READCOMMITIF_H_
 #define FSFW_DATAPOOL_READCOMMITIF_H_
 
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
-#include <fsfw/ipc/MutexIF.h>
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../ipc/MutexIF.h"
 
 /**
  * @brief 	Common interface for all software objects which employ read-commit

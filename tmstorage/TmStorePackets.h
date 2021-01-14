@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_
-#define FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_
+#ifndef FSFW_TMSTORAGE_TMSTOREPACKETS_H_
+#define FSFW_TMSTORAGE_TMSTOREPACKETS_H_
 
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../serialize/SerializeElement.h"
@@ -140,8 +140,8 @@ public:
 		if(packet->isValid()){
 			timeval packetTime = {0,0};
 			size_t foundlen = 0;
-			CCSDSTime::convertFromCcsds(&packetTime,
-					&packet->rawTimestamp[0],&foundlen,sizeof(rawTimestamp));
+			CCSDSTime::convertFromCcsds(&packetTime,&packet->rawTimestamp[0],
+			        &foundlen,sizeof(rawTimestamp));
 			if(packetTime <= *cmpTime){
 				return true;
 			}
@@ -154,7 +154,7 @@ public:
 			timeval packetTime = {0,0};
 			size_t foundlen = 0;
 			CCSDSTime::convertFromCcsds(&packetTime,&packet->rawTimestamp[0],
-					&foundlen,sizeof(rawTimestamp));
+			        &foundlen,sizeof(rawTimestamp));
 			if(packetTime >= *cmpTime){
 				return true;
 			}
@@ -208,7 +208,7 @@ public:
 		timeval packetTime = {0,0};
 		size_t foundlen = 0;
 		CCSDSTime::convertFromCcsds(&packetTime, &this->rawTimestamp[0],
-				&foundlen,sizeof(rawTimestamp));
+		        &foundlen, sizeof(rawTimestamp));
 		return packetTime;
 	}
 
@@ -300,4 +300,4 @@ private:
 	uint8_t rawTimestamp[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
 
 };
-#endif /* FRAMEWORK_TMSTORAGE_TMSTOREPACKETS_H_ */
+#endif /* FSFW_TMSTORAGE_TMSTOREPACKETS_H_ */

@@ -3,6 +3,7 @@
 
 #include "PoolDataSetIF.h"
 #include "PoolVariableIF.h"
+#include "../serialize/SerializeIF.h"
 #include "../ipc/MutexIF.h"
 
 /**
@@ -119,15 +120,15 @@ public:
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 	        SerializeIF::Endianness streamEndianness) override;
 
+    /**
+     * Can be used to individually protect every read and commit call.
+     * @param protectEveryReadCommit
+     * @param mutexTimeout
+     */
+    void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
+            MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+            uint32_t mutexTimeout = 20);
 protected:
-
-	/**
-	 * Can be used to individually protect every read and commit call.
-	 * @param protectEveryReadCommit
-	 * @param mutexTimeout
-	 */
-	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
-			uint32_t mutexTimeout = 20);
 
 	/**
 	 * @brief	The fill_count attribute ensures that the variables
@@ -157,10 +158,12 @@ protected:
 	const size_t maxFillCount = 0;
 
 	void setContainer(PoolVariableIF** variablesContainer);
+	PoolVariableIF** getContainer() const;
 
 private:
 	bool protectEveryReadCommitCall = false;
-	uint32_t mutexTimeout = 20;
+	MutexIF::TimeoutType timeoutTypeForSingleVars;
+	uint32_t mutexTimeoutForSingleVars = 20;
 
 	ReturnValue_t readVariable(uint16_t count);
 	void handleAlreadyReadDatasetCommit(

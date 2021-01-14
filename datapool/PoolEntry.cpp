@@ -1,23 +1,15 @@
 #include "PoolEntry.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../globalfunctions/arrayprinter.h"
 #include <cstring>
 #include <algorithm>
 
 template <typename T>
-PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t setLength,
-		bool setValid ) : length(setLength), valid(setValid) {
+PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid ):
+		length(initValue.size()), valid(setValid) {
 	this->address = new T[this->length];
 	if(initValue.size() == 0) {
-		std::memset(this->address, 0, this->getByteSize());
-	}
-	else if (initValue.size() != setLength){
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "PoolEntry: setLength is not equal to initializer list"
-				"length! Performing zero initialization with given setLength"
-				<< std::endl;
-#endif
 		std::memset(this->address, 0, this->getByteSize());
 	}
 	else {
@@ -26,7 +18,7 @@ PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, uint8_t setLength,
 }
 
 template <typename T>
-PoolEntry<T>::PoolEntry( T* initValue, uint8_t setLength, bool setValid ) :
+PoolEntry<T>::PoolEntry(T* initValue, uint8_t setLength, bool setValid):
 		length(setLength), valid(setValid) {
 	this->address = new T[this->length];
 	if (initValue != nullptr) {
@@ -70,14 +62,26 @@ bool PoolEntry<T>::getValid() {
 
 template <typename T>
 void PoolEntry<T>::print() {
+	const char* validString = nullptr;
+	if(valid) {
+		validString = "Valid";
+	}
+	else {
+		validString = "Invalid";
+	}
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	 sif::debug << "Pool Entry Validity: " <<
-			 (this->valid? " (valid) " : " (invalid) ") << std::endl;
+	 sif::info << "PoolEntry information." << std::endl;
+	 sif::info << "PoolEntry validity: " << validString << std::endl;
+#else
+	 sif::printInfo("PoolEntry information.\n");
+	 sif::printInfo("PoolEntry validity: %s\n", validString);
 #endif
-	arrayprinter::print(reinterpret_cast<uint8_t*>(address), length);
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::debug << std::dec << std::endl;
-#endif
+	arrayprinter::print(reinterpret_cast<uint8_t*>(address), getByteSize());
+}
+
+template<typename T>
+inline T* PoolEntry<T>::getDataPtr() {
+	return this->address;
 }
 
 template<typename T>

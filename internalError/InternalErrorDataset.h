@@ -21,11 +21,11 @@ public:
     InternalErrorDataset(object_id_t objectId):
            StaticLocalDataSet(sid_t(objectId , ERROR_SET_ID)) {}
 
-    lp_var_t<uint32_t> tmHits = lp_var_t<uint32_t>(hkManager->getOwner(),
+    lp_var_t<uint32_t> tmHits = lp_var_t<uint32_t>(sid.objectId,
     		TM_HITS, this);
-    lp_var_t<uint32_t> queueHits = lp_var_t<uint32_t>(hkManager->getOwner(),
+    lp_var_t<uint32_t> queueHits = lp_var_t<uint32_t>(sid.objectId,
     		QUEUE_HITS, this);
-    lp_var_t<uint32_t> storeHits = lp_var_t<uint32_t>(hkManager->getOwner(),
+    lp_var_t<uint32_t> storeHits = lp_var_t<uint32_t>(sid.objectId,
     		STORE_HITS, this);
 };
 

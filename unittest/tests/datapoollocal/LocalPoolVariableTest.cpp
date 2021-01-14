@@ -23,10 +23,10 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		REQUIRE(testVariable.commit() == retval::CATCH_OK);
 		REQUIRE(testVariable.read() == retval::CATCH_OK);
 		REQUIRE(testVariable.value == 5);
-
 		CHECK(not testVariable.isValid());
 		testVariable.setValid(true);
 		CHECK(testVariable.isValid());
+		CHECK(testVariable.commit(true) == retval::CATCH_OK);
 
 		testVariable.setReadWriteMode(pool_rwm_t::VAR_READ);
 		CHECK(testVariable.getReadWriteMode() == pool_rwm_t::VAR_READ);
@@ -81,15 +81,15 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
 		lp_var_t<uint8_t> invalidVariable = lp_var_t<uint8_t>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, 0xffffffff);
 		REQUIRE(invalidVariable.read() ==
-				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
+				static_cast<int>(localpool::POOL_ENTRY_NOT_FOUND));
 
 		REQUIRE(invalidVariable.commit() ==
-				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND));
+				static_cast<int>(localpool::POOL_ENTRY_NOT_FOUND));
 		// now try to access with wrong type
 		lp_var_t<int8_t> invalidVariable2 = lp_var_t<int8_t>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);
 		REQUIRE(invalidVariable2.read() ==
-				static_cast<int>(HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT));
+				static_cast<int>(localpool::POOL_ENTRY_TYPE_CONFLICT));
 
 		lp_var_t<uint8_t> readOnlyVar = lp_var_t<uint8_t>(
 				objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId,

@@ -21,6 +21,7 @@ namespace objects {
 		TEST_ECHO_COM_IF = 20,
 		TEST_DEVICE = 21,
 
+		HK_RECEIVER_MOCK = 22,
 		TEST_LOCAL_POOL_OWNER_BASE = 25
 	};
 }

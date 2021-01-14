@@ -1,20 +1,28 @@
 #if FSFW_DISABLE_PRINTOUT == 0
-#include <stdio.h>
+#include <cstdio>
 #endif
 
-namespace fsfw {
+namespace sif {
 
-enum class PrintLevel {
+enum PrintLevel {
 	NONE = 0,
 	//! Strange error when using just ERROR..
-	ERROR_TYPE = 1,
-	WARNING = 2,
-	INFO = 3,
-	DEBUG = 4
+	ERROR_LEVEL = 1,
+	WARNING_LEVEL = 2,
+	INFO_LEVEL = 3,
+	DEBUG_LEVEL = 4
 };
 
+/**
+ * Set the print level. All print types with a smaller level will be printed
+ * as well. For example, set to PrintLevel::WARNING to only enable error
+ * and warning output.
+ * @param printLevel
+ */
 void setPrintLevel(PrintLevel printLevel);
 PrintLevel getPrintLevel();
+
+void setToAddCrAtEnd(bool addCrAtEnd_);
 
 /**
  * These functions can be used like the C stdio printf and forward the

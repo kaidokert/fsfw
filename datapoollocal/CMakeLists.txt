@@ -6,3 +6,5 @@ target_sources(${LIB_FSFW_NAME}
 		LocalPoolObjectBase.cpp
 		SharedLocalDataSet.cpp
 )
+
+add_subdirectory(internal)
