@@ -32,19 +32,9 @@ public:
     virtual ReturnValue_t performOperation(uint8_t opCode) override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;
 
-    /**
-     * Provides a subscription interface for objects which required updates on changed
-     * controller variables or datasets
-     * @return
-     */
-    ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
-
 protected:
     LocalDataPoolManager poolManager;
     ActionHelper actionHelper;
-
-    //! Accessor handle required for internal handling
-    AccessPoolManagerIF* getAccessorHandle() override;
 
     /**
      * Implemented by child class. Handle all command messages which are
@@ -68,6 +58,7 @@ protected:
             size_t size) override;
 
     /** HasLocalDatapoolIF overrides */
+    virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual object_id_t getObjectId() const override;
     virtual ReturnValue_t initializeLocalDataPool(
             localpool::DataPool& localDataPoolMap,

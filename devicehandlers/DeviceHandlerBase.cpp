@@ -1483,10 +1483,6 @@ void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
 	}
 }
 
-AccessPoolManagerIF* DeviceHandlerBase::getAccessorHandle() {
-	return &poolManager;
-}
-
 void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
 		const char *functionName, ReturnValue_t errorCode,
 		const char *errorPrint) {
@@ -1532,6 +1528,6 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
 
 }
 
-ProvidesDataPoolSubscriptionIF* DeviceHandlerBase::getSubscriptionInterface() {
-	return &poolManager;
+LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
+    return &poolManager;
 }
