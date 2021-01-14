@@ -5,7 +5,6 @@ target_sources(${LIB_FSFW_NAME}
 		Service17Test.cpp
 		Service1TelecommandVerification.cpp
 		Service2DeviceAccess.cpp
-		Service3Housekeeping.cpp
 		Service5EventReporting.cpp
 		Service8FunctionManagement.cpp
 		Service9TimeManagement.cpp
