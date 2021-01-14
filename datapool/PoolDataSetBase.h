@@ -162,7 +162,7 @@ protected:
 
 private:
 	bool protectEveryReadCommitCall = false;
-	MutexIF::TimeoutType timeoutTypeForSingleVars;
+	MutexIF::TimeoutType timeoutTypeForSingleVars = MutexIF::TimeoutType::WAITING;
 	uint32_t mutexTimeoutForSingleVars = 20;
 
 	ReturnValue_t readVariable(uint16_t count);
