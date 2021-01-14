@@ -16,13 +16,15 @@ public:
                 readObject(readObject), mutexTimeout(mutexTimeout) {
         if(readObject != nullptr) {
             readResult = readObject->read(timeoutType, mutexTimeout);
+            if(readResult != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "PoolReadHelper: Read failed!" << std::endl;
+                sif::error << "PoolReadHelper: Read failed!" << std::endl;
 #else
-            sif::printError("PoolReadHelper: Read failed!\n");
+                sif::printError("PoolReadHelper: Read failed!\n");
 #endif /* FSFW_PRINT_VERBOSITY_LEVEL == 1 */
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+            }
         }
     }
 
