@@ -26,10 +26,6 @@ object_id_t ExtendedControllerBase::getObjectId() const {
     return SystemObject::getObjectId();
 }
 
-AccessPoolManagerIF* ExtendedControllerBase::getAccessorHandle() {
-    return &poolManager;
-}
-
 uint32_t ExtendedControllerBase::getPeriodicOperationFrequency() const {
     return this->executingTask->getPeriodMs();
 }
@@ -114,6 +110,6 @@ LocalPoolDataSetBase* ExtendedControllerBase::getDataSetHandle(sid_t sid) {
     return nullptr;
 }
 
-ProvidesDataPoolSubscriptionIF* ExtendedControllerBase::getSubscriptionInterface() {
-	return &poolManager;
+LocalDataPoolManager* ExtendedControllerBase::getHkManagerHandle() {
+    return &poolManager;
 }

@@ -518,14 +518,10 @@ protected:
 				LocalDataPoolManager& poolManager) override;
 
 	/**
-	 * Provides the subscription handle which can be used by classes like controllers
-	 * to get messages on data updates.
+	 * Required for HasLocalDataPoolIF, return a handle to the local pool manager.
 	 * @return
 	 */
-	ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override;
-
-	//! Accessor handle required for internal handling.
-	AccessPoolManagerIF* getAccessorHandle() override;
+	LocalDataPoolManager* getHkManagerHandle() override;
 
 	/**
 	 * @brief 	Hook function for child handlers which is called once per

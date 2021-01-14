@@ -2,6 +2,7 @@
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
 #include "localPoolDefinitions.h"
+#include "LocalDataPoolManager.h"
 
 #include "../datapool/PoolEntryIF.h"
 #include "../serviceinterface/ServiceInterface.h"
@@ -14,7 +15,6 @@ class AccessPoolManagerIF;
 class ProvidesDataPoolSubscriptionIF;
 class LocalPoolDataSetBase;
 class LocalPoolObjectBase;
-class LocalDataPoolManager;
 
 /**
  * @brief 		This interface is implemented by classes which posses a local data pool (not the
@@ -104,19 +104,32 @@ public:
      * which allows subscriptions to dataset and variable updates in form of messages.
      * The consumers can then read the most recent variable value by calling read with
      * an own pool variable or set instance or using the deserialized snapshot data.
+     * Returns the HK manager casted to the required interface by default.
      * @return
      */
-    virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() = 0;
+    virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() {
+        return getHkManagerHandle();
+    }
 
 protected:
 
     /**
-     * Accessor handle required for internal handling. Not intended for users and therefore
-     * declared protected. Users should instead use pool variables, sets or the subscription
-     * interface to access pool entries.
+     * Every class implementing this interface should have a local data pool manager. This
+     * function will return a reference to the manager.
      * @return
      */
-    virtual AccessPoolManagerIF* getAccessorHandle() = 0;
+    virtual LocalDataPoolManager* getHkManagerHandle() = 0;
+
+    /**
+     * Accessor handle required for internal handling. Not intended for users and therefore
+     * declared protected. Users should instead use pool variables, sets or the subscription
+     * interface to access pool entries. Returns the HK manager casted to a different interface
+     * by default.
+     * @return
+     */
+    virtual AccessPoolManagerIF* getAccessorHandle() {
+        return getHkManagerHandle();
+    }
 
     /**
      * This function is used by the pool manager to get a valid dataset
