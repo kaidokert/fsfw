@@ -56,7 +56,7 @@ class LocalPoolOwnerBase: public SystemObject, public HasLocalDataPoolIF {
 public:
 	LocalPoolOwnerBase(
 			object_id_t objectId = objects::TEST_LOCAL_POOL_OWNER_BASE):
-		SystemObject(objectId), hkManager(this, messageQueue),
+		SystemObject(objectId), poolManager(this, messageQueue),
 		dataset(this, lpool::testSetId) {
 		messageQueue = new MessageQueueMockBase();
 	}
@@ -72,7 +72,7 @@ public:
 	ReturnValue_t initializeHkManager() {
 		if(not initialized) {
 			initialized = true;
-			return hkManager.initialize(messageQueue);
+			return poolManager.initialize(messageQueue);
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
@@ -80,7 +80,7 @@ public:
 	ReturnValue_t initializeHkManagerAfterTaskCreation() {
 		if(not initializedAfterTaskCreation) {
 			initializedAfterTaskCreation = true;
-			return hkManager.initializeAfterTaskCreation();
+			return poolManager.initializeAfterTaskCreation();
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
@@ -109,17 +109,8 @@ public:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	/**
-	 * This function can be used by data pool consumers to retrieve a handle
-	 * which allows subscriptions to dataset and variable updates.
-	 * @return
-	 */
-	virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() override {
-		return &hkManager;
-	}
-
-	virtual AccessPoolManagerIF* getAccessorHandle() override {
-		return &hkManager;
+	LocalDataPoolManager* getHkManagerHandle() override {
+	    return &poolManager;
 	}
 
 	uint32_t getPeriodicOperationFrequency() const override {
@@ -163,25 +154,25 @@ public:
 	}
 
 	ReturnValue_t subscribeWrapperSetUpdate() {
-		return hkManager.subscribeForSetUpdateMessages(lpool::testSetId,
+		return poolManager.subscribeForSetUpdateMessages(lpool::testSetId,
 				objects::NO_OBJECT, MessageQueueIF::NO_QUEUE, false);
 	}
 
 	ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false) {
-		return hkManager.subscribeForUpdatePackets(lpool::testSid, diagnostics,
+		return poolManager.subscribeForUpdatePackets(lpool::testSid, diagnostics,
 				false, objects::HK_RECEIVER_MOCK);
 	}
 
 	ReturnValue_t subscribeWrapperVariableUpdate(lp_id_t localPoolId) {
-		return hkManager.subscribeForVariableUpdateMessages(localPoolId,
+		return poolManager.subscribeForVariableUpdateMessages(localPoolId,
 				MessageQueueIF::NO_QUEUE, objects::NO_OBJECT, false);
 	}
 
 	void resetSubscriptionList() {
-		hkManager.clearReceiversList();
+		poolManager.clearReceiversList();
 	}
 
-	LocalDataPoolManager hkManager;
+	LocalDataPoolManager poolManager;
 	LocalPoolTestDataSet dataset;
 private:
 
