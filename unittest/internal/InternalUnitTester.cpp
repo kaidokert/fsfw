@@ -32,7 +32,7 @@ ReturnValue_t InternalUnitTester::performTests(struct InternalUnitTester::TestCo
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::info << "Internal unit tests finished." << std::endl;
 #else
-	sif::printInfo("Running internal unit tests..\n");
+	sif::printInfo("Internal unit tests finished.\n");
 #endif
 	return RETURN_OK;
 }

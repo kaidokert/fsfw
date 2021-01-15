@@ -70,6 +70,8 @@ private:
 	void putChars(char const* begin, char const* end);
 
 	std::string* getPreamble(size_t * preambleSize = nullptr);
+
+	bool crAdditionEnabled() const;
 };
 
 #endif
