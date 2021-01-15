@@ -10,7 +10,8 @@ void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
 	}
 	sif::info << "[";
 #else
-	sif::printInfo("Printing data with size %zu: [", size);
+	// TODO: Use %zu or %lu depending on whether C99 support is given.
+	sif::printInfo("Printing data with size %lu: [", static_cast<unsigned long>(size));
 #endif
 	if(type == OutputType::HEX) {
 		arrayprinter::printHex(data, size, maxCharPerLine);
