@@ -22,7 +22,7 @@ public:
 	 * Some function which calls all other tests
 	 * @return
 	 */
-	virtual ReturnValue_t performTests();
+	virtual ReturnValue_t performTests(struct TestConfig testConfig);
 };
 
 
