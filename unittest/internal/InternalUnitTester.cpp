@@ -9,14 +9,11 @@
 
 #include <cstdlib>
 
-struct TestConfig {
-    bool testArrayPrinter;
-};
 InternalUnitTester::InternalUnitTester() {}
 
 InternalUnitTester::~InternalUnitTester() {}
 
-ReturnValue_t InternalUnitTester::performTests(struct TestConfig testConfig) {
+ReturnValue_t InternalUnitTester::performTests(struct InternalUnitTester::TestConfig& testConfig) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::info << "Running internal unit tests.." << std::endl;
 #else

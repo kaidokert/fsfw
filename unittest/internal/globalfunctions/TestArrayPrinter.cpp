@@ -1,4 +1,4 @@
-#include "TestArrayPrinter.cpp"
+#include "TestArrayPrinter.h"
 
 void arrayprinter::testArrayPrinter() {
 }
