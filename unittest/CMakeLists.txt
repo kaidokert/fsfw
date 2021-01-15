@@ -1,2 +1,5 @@
 add_subdirectory(internal)
-add_subdirectory(tests)
+
+if(LINK_CATCH2)
+    add_subdirectory(tests)
+endif()
