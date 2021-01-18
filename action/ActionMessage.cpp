@@ -1,5 +1,7 @@
 #include <fsfw/action/HasActionsIF.h>
 #include "ActionMessage.h"
+#include "HasActionsIF.h"
+
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../storagemanager/StorageManagerIF.h"
 
