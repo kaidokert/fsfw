@@ -10,8 +10,8 @@ using ActionId_t = uint32_t;
 /**
  * @brief   These messages are part of the action module of the FSFW.
  * @details
- * These messages are sent amongst objects implementing the HasActionsIF. The ActionHelper
- * class is able to process these messages.
+ * These messages are sent amongst objects implementing the HasActionsIF. Classes like the
+ * ActionHelper are able to process these messages.
  */
 class ActionMessage {
 private:
