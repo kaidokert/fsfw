@@ -61,15 +61,6 @@ public:
     using LocalPoolConfig = std::multiset<LocalPoolCfgPair, LocalPoolConfigCmp>;
 
     /**
-     * @brief   This definition generally sets the number of
-     * 			different sized pools. It is derived from the number of pairs
-     * 			inside the LocalPoolConfig set on object creation.
-     * @details
-     * This must be less than the maximum number of pools (currently 0xff).
-     */
-    const max_pools_t NUMBER_OF_POOLS;
-
-    /**
      * @brief   This is the default constructor for a pool manager instance.
      * @details
      * The pool is configured by passing a set of pairs into the constructor.
@@ -143,9 +134,15 @@ public:
 	void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) override;
 
 	void clearStore() override;
-	void clearPage(max_pools_t pageIndex) override;
+	void clearPool(max_pools_t poolIndex) override;
 
 	ReturnValue_t initialize() override;
+
+    /**
+     * Get number pools. Each pool has pages with a specific bucket size.
+     * @return
+     */
+    max_pools_t getNumberOfPools() const override;
 protected:
 	/**
 	 * With this helper method, a free element of @c size is reserved.
@@ -158,6 +155,16 @@ protected:
 			store_address_t* address, bool ignoreFault);
 
 private:
+
+    /**
+     * @brief   This definition generally sets the number of
+     *          different sized pools. It is derived from the number of pairs
+     *          inside the LocalPoolConfig set on object creation.
+     * @details
+     * This must be less than the maximum number of pools (currently 0xff).
+     */
+    const max_pools_t NUMBER_OF_POOLS;
+
     /**
      * Indicates that this element is free.
      * This value limits the maximum size of a pool.

@@ -348,16 +348,20 @@ void LocalPool::getFillCount(uint8_t *buffer, uint8_t *bytesWritten) {
 }
 
 
-void LocalPool::clearPage(max_pools_t  pageIndex) {
-	if(pageIndex >= NUMBER_OF_POOLS) {
+void LocalPool::clearPool(max_pools_t  poolIndex) {
+	if(poolIndex >= NUMBER_OF_POOLS) {
 		return;
 	}
 
 	// Mark the storage as free
-	for(auto& size: sizeLists[pageIndex]) {
+	for(auto& size: sizeLists[poolIndex]) {
 		size = STORAGE_FREE;
 	}
 
 	// Set all the page content to 0.
-	std::memset(store[pageIndex].data(), 0, elementSizes[pageIndex]);
+	std::memset(store[poolIndex].data(), 0, elementSizes[poolIndex]);
+}
+
+LocalPool::max_pools_t LocalPool::getNumberOfPools() const {
+    return NUMBER_OF_POOLS;
 }

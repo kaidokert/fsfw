@@ -171,10 +171,10 @@ public:
 	virtual void clearStore() = 0;
 
 	/**
-	 * Clears a page in the store. Use with care!
+	 * Clears a pool in the store with the given pool index. Use with care!
 	 * @param pageIndex
 	 */
-	virtual void clearPage(uint8_t pageIndex) = 0;
+	virtual void clearPool(uint8_t poolIndex) = 0;
 
 	/**
 	 * Get the fill count of the pool. The exact form will be implementation
@@ -185,6 +185,12 @@ public:
 	virtual void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) = 0;
 
 	virtual size_t getTotalSize(size_t* additionalSize) = 0;
+
+	/**
+	 * Get number of pools.
+	 * @return
+	 */
+	virtual max_pools_t getNumberOfPools() const = 0;
 };
 
 #endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */
