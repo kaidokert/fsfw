@@ -177,10 +177,13 @@ public:
 	virtual void clearPool(uint8_t poolIndex) = 0;
 
 	/**
-	 * Get the fill count of the pool. The exact form will be implementation
-	 * dependant.
+	 * Get the fill count of the pool. Each character inside the provided
+	 * buffer will be assigned to a rounded percentage fill count for each
+	 * page. The last written byte (at the index bytesWritten - 1)
+	 * will contain the total fill count of the pool as a mean of the
+	 * percentages of single pages.
 	 * @param buffer
-	 * @param bytesWritten
+	 * @param maxSize
 	 */
 	virtual void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) = 0;
 
