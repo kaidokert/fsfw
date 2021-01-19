@@ -65,8 +65,8 @@ ReturnValue_t Fuse::check() {
 	set.read();
 	if (!healthHelper.healthTable->isHealthy(getObjectId())) {
 		setAllMonitorsToUnchecked();
-		set.commit(PoolVariableIF::INVALID);
-		return RETURN_OK;
+		set.setValidity(false, true);
+		return set.commit();
 	}
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	checkFuseState();
@@ -206,7 +206,8 @@ float Fuse::getPower() {
 
 void Fuse::setDataPoolEntriesInvalid() {
 	set.read();
-	set.commit(PoolVariableIF::INVALID);
+	set.setValidity(false, true);
+	set.commit();
 }
 
 ReturnValue_t Fuse::getParameter(uint8_t domainId, uint16_t parameterId,

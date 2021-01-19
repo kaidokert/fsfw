@@ -1,21 +1,20 @@
-#include <fsfw/unittest/core/CatchFactory.h>
+#include "CatchFactory.h"
 #include "CatchDefinitions.h"
-#include <testcfg/cdatapool/dataPoolInit.h>
 
 #ifdef GCOV
 #include <gcov.h>
 #endif
 
-#include "../../objectmanager/ObjectManager.h"
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../storagemanager/StorageManagerIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include <fsfw/objectmanager/ObjectManager.h>
+#include <fsfw/objectmanager/ObjectManagerIF.h>
+#include <fsfw/storagemanager/StorageManagerIF.h>
+#include <fsfw/serviceinterface/ServiceInterfaceStream.h>
 
 
 /* Global instantiations normally done in main.cpp */
 /* Initialize Data Pool */
 
-
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 namespace sif {
 /* Set up output streams */
 ServiceInterfaceStream debug("DEBUG");
@@ -23,6 +22,7 @@ ServiceInterfaceStream info("INFO");
 ServiceInterfaceStream error("ERROR");
 ServiceInterfaceStream warning("WARNING");
 }
+#endif
 
 /* Global object manager */
 ObjectManagerIF *objectManager;

@@ -29,6 +29,8 @@ public:
 	EventManager(object_id_t setObjectId);
 	virtual ~EventManager();
 
+	void setMutexTimeout(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs);
+
 	MessageQueueId_t getEventReportQueue();
 
 	ReturnValue_t registerListener(MessageQueueId_t listener, bool forwardAllButSelected = false);
@@ -51,6 +53,8 @@ protected:
 	std::map<MessageQueueId_t, EventMatchTree> listenerList;
 
 	MutexIF* mutex = nullptr;
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+	uint32_t timeoutMs = 20;
 
 	static const uint8_t N_POOLS = 3;
 	LocalPool factoryBackend;

@@ -2,7 +2,7 @@
 #include "AcceptsDeviceResponsesIF.h"
 #include "DeviceTmReportingWrapper.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../thermal/ThermalComponentIF.h"
@@ -12,9 +12,6 @@
 #include "../ipc/QueueFactory.h"
 #include "../subsystem/SubsystemBase.h"
 #include "../datapoollocal/LocalPoolVariable.h"
-
-#include <iomanip>
-
 
 object_id_t DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
@@ -27,7 +24,7 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 		wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
 		deviceCommunicationId(deviceCommunication), comCookie(comCookie),
 		healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
-		actionHelper(this, nullptr), hkManager(this, nullptr),
+		actionHelper(this, nullptr), poolManager(this, nullptr),
 		childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
 		hkSwitcher(this), defaultFDIRUsed(fdirInstance == nullptr),
 		switchOffWasReported(false), childTransitionDelay(5000),
@@ -39,13 +36,8 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId,
 	cookieInfo.state = COOKIE_UNUSED;
 	cookieInfo.pendingCommand = deviceCommandMap.end();
 	if (comCookie == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "DeviceHandlerBase: ObjectID 0x" << std::hex
-				<< std::setw(8) << std::setfill('0') << this->getObjectId()
-				<< std::dec << ": Do not pass nullptr as a cookie, consider "
-				<< std::setfill(' ') << "passing a dummy cookie instead!"
-				<< std::endl;
-#endif
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "DeviceHandlerBase",
+				HasReturnvaluesIF::RETURN_FAILED, "Invalid cookie");
 	}
 	if (this->fdirInstance == nullptr) {
 		this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId,
@@ -115,7 +107,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
 		doGetRead();
 		// This will be performed after datasets have been updated by the
 		// custom device implementation.
-		hkManager.performHkOperation();
+		poolManager.performHkOperation();
 		break;
 	default:
 		break;
@@ -132,30 +124,24 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	communicationInterface = objectManager->get<DeviceCommunicationIF>(
 			deviceCommunicationId);
 	if (communicationInterface == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "DeviceHandlerBase::initialize: Communication interface "
-				"invalid." << std::endl;
-		sif::error << "Make sure it is set up properly and implements"
-				" DeviceCommunicationIF" << std::endl;
-#endif
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
+				ObjectManagerIF::CHILD_INIT_FAILED,
+				"Passed communication IF invalid");
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
 	result = communicationInterface->initializeInterface(comCookie);
 	if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	    sif::error << "DeviceHandlerBase::initialize: Initializing "
-	            "communication interface failed!" << std::endl;
-#endif
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
+				ObjectManagerIF::CHILD_INIT_FAILED,
+				"ComIF initialization failed");
 	    return result;
 	}
 
 	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if (IPCStore == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "DeviceHandlerBase::initialize: IPC store not set up in "
-				"factory." << std::endl;
-#endif
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
+				ObjectManagerIF::CHILD_INIT_FAILED, "IPC Store not set up");
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
@@ -164,11 +150,15 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 				AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
 		if (rawReceiver == nullptr) {
+			printWarningOrError(sif::OutputTypes::OUT_ERROR,
+					"initialize", ObjectManagerIF::CHILD_INIT_FAILED,
+					"Raw receiver object ID set but no valid object found.");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "DeviceHandlerBase::initialize: Raw receiver object "
-					"ID set but no valid object found." << std::endl;
 			sif::error << "Make sure the raw receiver object is set up properly"
 					" and implements AcceptsDeviceResponsesIF" << std::endl;
+#else
+			sif::printError("Make sure the raw receiver object is set up "
+					"properly and implements AcceptsDeviceResponsesIF\n");
 #endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
@@ -178,11 +168,15 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 	if(powerSwitcherId != objects::NO_OBJECT) {
 		powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
 		if (powerSwitcher == nullptr) {
+			printWarningOrError(sif::OutputTypes::OUT_ERROR,
+					"initialize", ObjectManagerIF::CHILD_INIT_FAILED,
+					"Power switcher set but no valid object found.");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "DeviceHandlerBase::initialize: Power switcher "
-					<< "object ID set but no valid object found." << std::endl;
-			sif::error << "Make sure the raw receiver object is set up properly"
-					<< " and implements PowerSwitchIF" << std::endl;
+			sif::error << "Make sure the power switcher object is set up "
+					<< "properly and implements PowerSwitchIF" << std::endl;
+#else
+			sif::printError("Make sure the power switcher object is set up "
+					"properly and implements PowerSwitchIF\n");
 #endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
@@ -216,7 +210,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		return result;
 	}
 
-	result = hkManager.initialize(commandQueue);
+	result = poolManager.initialize(commandQueue);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -229,7 +223,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 		if(result == HasReturnvaluesIF::RETURN_OK) {
 			thermalSet->heaterRequest.value =
 					ThermalComponentIF::STATE_REQUEST_NON_OPERATIONAL;
-			thermalSet->commit(PoolVariableIF::VALID);
+			thermalSet->heaterRequest.setValid(true);
+			thermalSet->commit();
 		}
 
 	}
@@ -285,7 +280,7 @@ void DeviceHandlerBase::readCommandQueue() {
 		return;
 	}
 
-	result = hkManager.handleHousekeepingMessage(&command);
+	result = poolManager.handleHousekeepingMessage(&command);
 	if (result == RETURN_OK) {
 		return;
 	}
@@ -555,17 +550,17 @@ void DeviceHandlerBase::replyReturnvalueToCommand(ReturnValue_t status,
 
 void DeviceHandlerBase::replyToCommand(ReturnValue_t status,
 		uint32_t parameter) {
-//Check if we reply to a raw command.
+	// Check if we reply to a raw command.
 	if (cookieInfo.pendingCommand->first == RAW_COMMAND_ID) {
 		if (status == NO_REPLY_EXPECTED) {
 			status = RETURN_OK;
 		}
 		replyReturnvalueToCommand(status, parameter);
-		//Always delete data from a raw command.
+		// Always delete data from a raw command.
 		IPCStore->deleteData(storedRawData);
 		return;
 	}
-//Check if we were externally commanded.
+	// Check if we were externally commanded.
 	if (cookieInfo.pendingCommand->second.sendReplyTo != NO_COMMANDER) {
 		MessageQueueId_t queueId = cookieInfo.pendingCommand->second.sendReplyTo;
 		if (status == NO_REPLY_EXPECTED) {
@@ -580,15 +575,17 @@ void DeviceHandlerBase::replyToCommand(ReturnValue_t status,
 
 void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
 		ReturnValue_t status) {
-//No need to check if iter exists, as this is checked by callers. If someone else uses the method, add check.
+	// No need to check if iter exists, as this is checked by callers.
+	// If someone else uses the method, add check.
 	if (iter->second.command == deviceCommandMap.end()) {
 		//Is most likely periodic reply. Silent return.
 		return;
 	}
-//Check if more replies are expected. If so, do nothing.
+	// Check if more replies are expected. If so, do nothing.
 	DeviceCommandInfo* info = &(iter->second.command->second);
 	if (--info->expectedReplies == 0) {
-		//Check if it was transition or internal command. Don't send any replies in that case.
+		// Check if it was transition or internal command.
+		// Don't send any replies in that case.
 		if (info->sendReplyTo != NO_COMMANDER) {
 			actionHelper.finish(info->sendReplyTo, iter->first, status);
 		}
@@ -605,7 +602,7 @@ void DeviceHandlerBase::doSendWrite() {
 		if (result == RETURN_OK) {
 			cookieInfo.state = COOKIE_WRITE_SENT;
 		} else {
-			//always generate a failure event, so that FDIR knows what's up
+			// always generate a failure event, so that FDIR knows what's up
 			triggerEvent(DEVICE_SENDING_COMMAND_FAILED, result,
 					cookieInfo.pendingCommand->first);
 			replyToCommand(result);
@@ -720,10 +717,9 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		case RETURN_OK:
 			handleReply(receivedData, foundId, foundLen);
 			if(foundLen == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
-			            " Packet parsing will be stuck." << std::endl;
-#endif
+				printWarningOrError(sif::OutputTypes::OUT_WARNING,
+						"parseReply", ObjectManagerIF::CHILD_INIT_FAILED,
+						"Found length is one, parsing might be stuck");
 			}
 			break;
 		case APERIODIC_REPLY: {
@@ -734,6 +730,9 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 			            foundId);
 			}
 			if(foundLen == 0) {
+				printWarningOrError(sif::OutputTypes::OUT_ERROR,
+						"parseReply", ObjectManagerIF::CHILD_INIT_FAILED,
+						"Power switcher set but no valid object found.");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			    sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
 			            " Packet parsing will be stuck." << std::endl;
@@ -746,7 +745,8 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
 		case IGNORE_FULL_PACKET:
 			return;
 		default:
-			//We need to wait for timeout.. don't know what command failed and who sent it.
+			// We need to wait for timeout.. don't know what command failed
+			// and who sent it.
 			replyRawReplyIfnotWiretapped(receivedData, foundLen);
 			triggerEvent(DEVICE_READING_REPLY_FAILED, result, foundLen);
 			break;
@@ -967,7 +967,8 @@ ReturnValue_t DeviceHandlerBase::getStateOfSwitches(void) {
 }
 
 Mode_t DeviceHandlerBase::getBaseMode(Mode_t transitionMode) {
-//only child action special modes are handled, as a child should never see any base action modes
+	// only child action special modes are handled, as a child should
+	// never see any base action modes
 	if (transitionMode == _MODE_START_UP) {
 		return _MODE_TO_ON;
 	}
@@ -1290,12 +1291,11 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 	if (mode == MODE_NORMAL) {
 		result = buildNormalDeviceCommand(&deviceCommandId);
 		if (result == BUSY) {
-		    //so we can track misconfigurations
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::debug << std::hex << getObjectId()
-					<< ": DHB::buildInternalCommand: Busy" << std::dec
-					<< std::endl;
-#endif
+		    // so we can track misconfigurations
+			printWarningOrError(sif::OutputTypes::OUT_WARNING,
+					"buildInternalCommand",
+					HasReturnvaluesIF::RETURN_FAILED,
+					"Busy.");
 			result = NOTHING_TO_SEND; //no need to report this
 		}
 	}
@@ -1319,12 +1319,15 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
 		} else if (iter->second.isExecuting) {
-			//so we can track misconfigurations
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::debug << std::hex << getObjectId()
-					<< ": DHB::buildInternalCommand: Command "
-					<< deviceCommandId << " isExecuting" << std::dec
-					<< std::endl;
+#if FSFW_DISABLE_PRINTOUT == 0
+			char output[36];
+			sprintf(output, "Command 0x%08x is executing",
+					static_cast<unsigned int>(deviceCommandId));
+			// so we can track misconfigurations
+			printWarningOrError(sif::OutputTypes::OUT_WARNING,
+					"buildInternalCommand",
+					HasReturnvaluesIF::RETURN_FAILED,
+					output);
 #endif
 			// this is an internal command, no need to report a failure here,
 			// missed reply will track if a reply is too late, otherwise, it's ok
@@ -1418,7 +1421,7 @@ void DeviceHandlerBase::performOperationHook() {
 }
 
 ReturnValue_t DeviceHandlerBase::initializeLocalDataPool(
-		LocalDataPool &localDataPoolMap,
+		localpool::DataPool &localDataPoolMap,
         LocalDataPoolManager& poolManager) {
 	if(thermalSet != nullptr) {
 		localDataPoolMap.emplace(thermalSet->thermalStatePoolId,
@@ -1429,18 +1432,13 @@ ReturnValue_t DeviceHandlerBase::initializeLocalDataPool(
 	return RETURN_OK;
 }
 
-LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
-	return &hkManager;
-}
-
-
 ReturnValue_t DeviceHandlerBase::initializeAfterTaskCreation() {
     // In this function, the task handle should be valid if the task
     // was implemented correctly. We still check to be 1000 % sure :-)
     if(executingTask != nullptr) {
         pstIntervalMs = executingTask->getPeriodMs();
     }
-    this->hkManager.initializeAfterTaskCreation();
+    this->poolManager.initializeAfterTaskCreation();
 
     if(setStartupImmediately) {
         startTransition(MODE_ON, SUBMODE_NONE);
@@ -1483,4 +1481,53 @@ void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
 			reply.second.dataSet->setValidity(false, true);
 		}
 	}
+}
+
+void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
+		const char *functionName, ReturnValue_t errorCode,
+		const char *errorPrint) {
+	if(errorPrint == nullptr) {
+		if(errorCode == ObjectManagerIF::CHILD_INIT_FAILED) {
+			errorPrint = "Initialization error";
+		}
+		if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
+			if(errorType == sif::OutputTypes::OUT_WARNING) {
+				errorPrint = "Generic Warning";
+			}
+			else {
+				errorPrint = "Generic Error";
+			}
+		}
+		else {
+			errorPrint = "Unknown error";
+		}
+	}
+
+	if(errorType == sif::OutputTypes::OUT_WARNING) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::warning << "DeviceHandlerBase::" << functionName << ": Object ID "
+				<< std::hex << std::setw(8) << std::setfill('0')
+				<< this->getObjectId() << " | " << errorPrint << std::dec
+				<< std::setfill(' ') << std::endl;
+#else
+		sif::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
+				this->getObjectId(), errorPrint);
+#endif
+	}
+	else if(errorType == sif::OutputTypes::OUT_ERROR) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "DeviceHandlerBase::" << functionName << ": Object ID "
+				<< std::hex << std::setw(8) << std::setfill('0')
+				<< this->getObjectId() << " | " << errorPrint << std::dec
+				<< std::setfill(' ') << std::endl;
+#else
+		sif::printError("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
+				this->getObjectId(), errorPrint);
+#endif
+	}
+
+}
+
+LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
+    return &poolManager;
 }

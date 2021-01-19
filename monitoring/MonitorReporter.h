@@ -5,7 +5,7 @@
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"
 
-#include "../datapoollocal/locPoolDefinitions.h"
+#include "../datapoollocal/localPoolDefinitions.h"
 #include "../events/EventManagerIF.h"
 #include "../parameters/HasParametersIF.h"
 

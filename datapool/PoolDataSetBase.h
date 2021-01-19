@@ -3,6 +3,7 @@
 
 #include "PoolDataSetIF.h"
 #include "PoolVariableIF.h"
+#include "../serialize/SerializeIF.h"
 #include "../ipc/MutexIF.h"
 
 /**
@@ -62,8 +63,9 @@ public:
 	 * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
 	 *      commit() in between
 	 */
-	virtual ReturnValue_t read(uint32_t lockTimeout =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t read(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t lockTimeout = 20) override;
 	/**
 	 * @brief	The commit call initializes writing back the registered variables.
 	 * @details
@@ -82,8 +84,9 @@ public:
 	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
 	 * 			  contains non write-only variables
 	 */
-	virtual ReturnValue_t commit(uint32_t lockTimeout =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t commit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t lockTimeout = 20) override;
 
 	/**
 	 * Register the passed pool variable instance into the data set.
@@ -97,8 +100,9 @@ public:
 	 * thread-safety. Default implementation is empty
 	 * @return Always returns -@c RETURN_OK
 	 */
-	virtual ReturnValue_t lockDataPool(uint32_t timeoutMs =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t lockDataPool(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) override;
 	/**
 	 * Provides the means to unlock the underlying data structure to ensure
 	 * thread-safety. Default implementation is empty
@@ -116,15 +120,15 @@ public:
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 	        SerializeIF::Endianness streamEndianness) override;
 
+    /**
+     * Can be used to individually protect every read and commit call.
+     * @param protectEveryReadCommit
+     * @param mutexTimeout
+     */
+    void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
+            MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+            uint32_t mutexTimeout = 20);
 protected:
-
-	/**
-	 * Can be used to individually protect every read and commit call.
-	 * @param protectEveryReadCommit
-	 * @param mutexTimeout
-	 */
-	void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
-			uint32_t mutexTimeout = 20);
 
 	/**
 	 * @brief	The fill_count attribute ensures that the variables
@@ -154,14 +158,20 @@ protected:
 	const size_t maxFillCount = 0;
 
 	void setContainer(PoolVariableIF** variablesContainer);
+	PoolVariableIF** getContainer() const;
 
 private:
 	bool protectEveryReadCommitCall = false;
-	uint32_t mutexTimeout = 20;
+	MutexIF::TimeoutType timeoutTypeForSingleVars = MutexIF::TimeoutType::WAITING;
+	uint32_t mutexTimeoutForSingleVars = 20;
 
 	ReturnValue_t readVariable(uint16_t count);
-	void handleAlreadyReadDatasetCommit(uint32_t lockTimeout);
-	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
+	void handleAlreadyReadDatasetCommit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
+	ReturnValue_t handleUnreadDatasetCommit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
 };
 
 #endif /* FSFW_DATAPOOL_POOLDATASETBASE_H_ */

@@ -3,8 +3,8 @@
 
 #include "DeviceHandlerMessage.h"
 
+#include "../datapoollocal/localPoolDefinitions.h"
 #include "../action/HasActionsIF.h"
-#include "../datapoollocal/locPoolDefinitions.h"
 #include "../events/Event.h"
 #include "../modes/HasModesIF.h"
 #include "../ipc/MessageQueueSenderIF.h"

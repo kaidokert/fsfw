@@ -1,4 +1,4 @@
-#include <fsfw/unittest/core/printChar.h>
+#include "printChar.h"
 #include <cstdio>
 
 void printChar(const char* character, bool errStream) {

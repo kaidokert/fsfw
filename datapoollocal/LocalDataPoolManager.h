@@ -1,8 +1,10 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 #define FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_
 
-#include "HasLocalDataPoolIF.h"
+#include "ProvidesDataPoolSubscriptionIF.h"
+#include "AccessLocalPoolF.h"
 
+#include "../serviceinterface/ServiceInterface.h"
 #include "../housekeeping/HousekeepingPacketDownlink.h"
 #include "../housekeeping/HousekeepingMessage.h"
 #include "../housekeeping/PeriodicHousekeepingHelper.h"
@@ -15,6 +17,7 @@
 #include "../ipc/MutexHelper.h"
 
 #include <map>
+#include <vector>
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
@@ -22,6 +25,8 @@ void setStaticFrameworkObjectIds();
 
 class LocalPoolDataSetBase;
 class HousekeepingPacketUpdate;
+class HasLocalDataPoolIF;
+class LocalDataPool;
 
 /**
  * @brief 		This class is the managing instance for the local data pool.
@@ -47,19 +52,23 @@ class HousekeepingPacketUpdate;
  * Each pool entry has a valid state too.
  * @author 		R. Mueller
  */
-class LocalDataPoolManager {
-	template<typename T> friend class LocalPoolVariable;
-	template<typename T, uint16_t vecSize> friend class LocalPoolVector;
-	friend class LocalPoolDataSetBase;
+class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF,
+		public AccessPoolManagerIF {
 	friend void (Factory::setStaticFrameworkObjectIds)();
+	//! Some classes using the pool manager directly need to access class internals of the
+	//! manager. The attorney provides granular control of access to these internals.
+	friend class LocalDpManagerAttorney;
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
-    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_NOT_SET = MAKE_RETURN_CODE(0x0);
+    static constexpr ReturnValue_t QUEUE_OR_DESTINATION_INVALID = MAKE_RETURN_CODE(0);
 
-    static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(0x01);
-    static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(0x02);
-    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(0x03);
+    static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(1);
+    static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(2);
+    static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(3);
+    static constexpr ReturnValue_t POOLOBJECT_NOT_FOUND = MAKE_RETURN_CODE(4);
+    static constexpr ReturnValue_t DATASET_NOT_FOUND = MAKE_RETURN_CODE(5);
+
 
     /**
      * This constructor is used by a class which wants to implement
@@ -116,7 +125,7 @@ public:
 	 */
 	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
 			float collectionInterval, bool isDiagnostics,
-			object_id_t packetDestination = defaultHkDestination);
+			object_id_t packetDestination = defaultHkDestination) override;
 
 	/**
 	 * @brief   Subscribe for the  generation of packets if the dataset
@@ -130,7 +139,7 @@ public:
 	 */
     ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
             bool isDiagnostics,
-            object_id_t packetDestination = defaultHkDestination);
+            object_id_t packetDestination = defaultHkDestination) override;
 
 	/**
 	 * @brief   Subscribe for a notification message which will be sent
@@ -149,7 +158,7 @@ public:
 	ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
 	        object_id_t destinationObject,
 	        MessageQueueId_t targetQueueId,
-	        bool generateSnapshot);
+	        bool generateSnapshot) override;
 
     /**
      * @brief   Subscribe for an notification message which will be sent if a
@@ -168,7 +177,9 @@ public:
     ReturnValue_t subscribeForVariableUpdateMessages(const lp_id_t localPoolId,
             object_id_t destinationObject,
             MessageQueueId_t targetQueueId,
-            bool generateSnapshot);
+            bool generateSnapshot) override;
+
+    MutexIF* getLocalPoolMutex() override;
 
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
@@ -247,8 +258,18 @@ public:
     LocalDataPoolManager(const LocalDataPoolManager &) = delete;
     LocalDataPoolManager operator=(const LocalDataPoolManager&) = delete;
 
+    /**
+     * This function can be used to clear the receivers list. This is
+     * intended for test functions and not for regular operations, because
+     * the insertion operations allocate dynamically.
+     */
+    void clearReceiversList();
+
+    object_id_t getCreatorObjectId() const;
+
+    virtual LocalDataPoolManager* getHkManagerHandle() override;
 private:
-    LocalDataPool localPoolMap;
+    localpool::DataPool localPoolMap;
     //! Every housekeeping data manager has a mutex to protect access
     //! to it's data pool.
     MutexIF* mutex = nullptr;
@@ -367,6 +388,11 @@ private:
             ReturnValue_t& status);
 	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
 	        store_address_t& storeId);
+
+	void printWarningOrError(sif::OutputTypes outputType,
+			const char* functionName,
+			ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
+			const char* errorPrint = nullptr);
 };
 
 
@@ -375,20 +401,16 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 		PoolEntry<T> **poolEntry) {
 	auto poolIter = localPoolMap.find(localPoolId);
 	if (poolIter == localPoolMap.end()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "HousekeepingManager::fechPoolEntry: Pool entry "
-		        "not found." << std::endl;
-#endif
-		return HasLocalDataPoolIF::POOL_ENTRY_NOT_FOUND;
+    	printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
+    			localpool::POOL_ENTRY_NOT_FOUND);
+		return localpool::POOL_ENTRY_NOT_FOUND;
 	}
 
 	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
 	if(*poolEntry == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::debug << "HousekeepingManager::fetchPoolEntry:"
-				" Pool entry not found." << std::endl;
-#endif
-		return HasLocalDataPoolIF::POOL_ENTRY_TYPE_CONFLICT;
+    	printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
+    			localpool::POOL_ENTRY_TYPE_CONFLICT);
+		return localpool::POOL_ENTRY_TYPE_CONFLICT;
 	}
 	return HasReturnvaluesIF::RETURN_OK;
 }

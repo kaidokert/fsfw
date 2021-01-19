@@ -2,9 +2,10 @@
 #define UNITTEST_INTERNAL_UNITTDEFINITIONS_H_
 
 #include "../../returnvalues/HasReturnvaluesIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include <cstdint>
 #include <cstddef>
+#include <string>
 
 namespace tv {
 // POD test values

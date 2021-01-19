@@ -18,7 +18,10 @@ public:
      *          thread-safety
      * @return Lock operation result
      */
-    virtual ReturnValue_t lockDataPool(dur_millis_t timeoutMs) = 0;
+    virtual ReturnValue_t lockDataPool(
+    		MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) = 0;
+
     /**
      * @brief   Unlock call corresponding to the lock call.
      * @return Unlock operation result

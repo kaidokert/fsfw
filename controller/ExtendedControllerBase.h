@@ -33,7 +33,7 @@ public:
     virtual ReturnValue_t initializeAfterTaskCreation() override;
 
 protected:
-    LocalDataPoolManager localPoolManager;
+    LocalDataPoolManager poolManager;
     ActionHelper actionHelper;
 
     /**
@@ -58,11 +58,11 @@ protected:
             size_t size) override;
 
     /** HasLocalDatapoolIF overrides */
+    virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual object_id_t getObjectId() const override;
     virtual ReturnValue_t initializeLocalDataPool(
-            LocalDataPool& localDataPoolMap,
+            localpool::DataPool& localDataPoolMap,
             LocalDataPoolManager& poolManager) override;
-    virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual uint32_t getPeriodicOperationFrequency() const override;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
 };
