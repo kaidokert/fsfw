@@ -45,8 +45,6 @@ endif()
 
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
-
-
 add_subdirectory(action)
 add_subdirectory(container)
 add_subdirectory(controller)
