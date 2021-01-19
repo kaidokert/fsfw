@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 
+option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
+# Options to exclude parts of the FSFW from compilation.
+option(FSFW_USE_RMAP "Compile with RMAP" ON)
+option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
+
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
 
@@ -40,9 +45,7 @@ endif()
 
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
-# Options to exclude parts of the FSFW from compilation.
-option(FSFW_USE_RMAP "Compile with RMAP" ON)
-option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
+
 
 add_subdirectory(action)
 add_subdirectory(container)
@@ -116,12 +119,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		  -Wno-unused-parameter
 		  -Wno-psabi
         )
-		
-	if(NOT DEFINED WARNING_SHADOW_LOCAL)
-		option(WARNING_SHADOW_LOCAL "Show shadows declarations warning." ON)
-	endif()
 	
-	if(WARNING_SHADOW_LOCAL)
+	if(FSFW_WARNING_SHADOW_LOCAL_GCC)
 		list(APPEND WARNING_FLAGS "-Wshadow=local")
 	endif()
 	
