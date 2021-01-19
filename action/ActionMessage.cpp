@@ -1,4 +1,3 @@
-#include <fsfw/action/HasActionsIF.h>
 #include "ActionMessage.h"
 #include "HasActionsIF.h"
 
