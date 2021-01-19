@@ -217,7 +217,7 @@ private:
 	 * @param pool_index	The pool in which to look.
 	 * @return	Returns the size of an element or 0.
 	 */
-	size_type getPageSize(max_subpools_t poolIndex);
+	size_type getSubpoolElementSize(max_subpools_t subpoolIndex);
 
 	/**
 	 * @brief	This helper method looks up a fitting pool for a given size.
@@ -228,7 +228,7 @@ private:
 	 * @return	- @c RETURN_OK on success,
 	 * 			- @c DATA_TOO_LARGE otherwise.
 	 */
-	ReturnValue_t getPoolIndex(size_t packetSize, uint16_t* poolIndex,
+	ReturnValue_t getSubPoolIndex(size_t packetSize, uint16_t* subpoolIndex,
 			uint16_t startAtIndex = 0);
 	/**
 	 * @brief	This helper method calculates the true array position in store

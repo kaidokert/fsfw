@@ -127,7 +127,7 @@ ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
 
 #endif
     ReturnValue_t status = RETURN_OK;
-    size_type pageSize = getPageSize(storeId.poolIndex);
+    size_type pageSize = getSubpoolElementSize(storeId.poolIndex);
     if ((pageSize != 0) and
             (storeId.packetIndex < numberOfElements[storeId.poolIndex])) {
         uint16_t packetPosition = getRawPosition(storeId);
@@ -217,7 +217,7 @@ void LocalPool::clearStore() {
 
 ReturnValue_t LocalPool::reserveSpace(const size_t size,
         store_address_t *storeId, bool ignoreFault) {
-    ReturnValue_t status = getPoolIndex(size, &storeId->poolIndex);
+    ReturnValue_t status = getSubPoolIndex(size, &storeId->poolIndex);
     if (status != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPool( " << std::hex << getObjectId() << std::dec
@@ -227,7 +227,7 @@ ReturnValue_t LocalPool::reserveSpace(const size_t size,
     }
     status = findEmpty(storeId->poolIndex, &storeId->packetIndex);
     while (status != RETURN_OK && spillsToHigherPools) {
-        status = getPoolIndex(size, &storeId->poolIndex, storeId->poolIndex + 1);
+        status = getSubPoolIndex(size, &storeId->poolIndex, storeId->poolIndex + 1);
         if (status != RETURN_OK) {
             //We don't find any fitting pool anymore.
             break;
@@ -263,9 +263,9 @@ void LocalPool::write(store_address_t storeId, const uint8_t *data,
     sizeLists[storeId.poolIndex][storeId.packetIndex] = size;
 }
 
-LocalPool::size_type LocalPool::getPageSize(max_subpools_t poolIndex) {
-    if (poolIndex < NUMBER_OF_SUBPOOLS) {
-        return elementSizes[poolIndex];
+LocalPool::size_type LocalPool::getSubpoolElementSize(max_subpools_t subpoolIndex) {
+    if (subpoolIndex < NUMBER_OF_SUBPOOLS) {
+        return elementSizes[subpoolIndex];
     }
     else {
         return 0;
@@ -276,7 +276,7 @@ void LocalPool::setToSpillToHigherPools(bool enable) {
 	this->spillsToHigherPools = enable;
 }
 
-ReturnValue_t LocalPool::getPoolIndex(size_t packetSize, uint16_t *poolIndex,
+ReturnValue_t LocalPool::getSubPoolIndex(size_t packetSize, uint16_t *subpoolIndex,
         uint16_t startAtIndex) {
     for (uint16_t n = startAtIndex; n < NUMBER_OF_SUBPOOLS; n++) {
 #if FSFW_VERBOSE_PRINTOUT == 2
@@ -286,7 +286,7 @@ ReturnValue_t LocalPool::getPoolIndex(size_t packetSize, uint16_t *poolIndex,
 #endif
 #endif
         if (elementSizes[n] >= packetSize) {
-            *poolIndex = n;
+            *subpoolIndex = n;
             return RETURN_OK;
         }
     }
