@@ -116,7 +116,15 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		  -Wno-unused-parameter
 		  -Wno-psabi
         )
+		
+	if(NOT DEFINED WARNING_SHADOW_LOCAL)
+		option(WARNING_SHADOW_LOCAL "Show shadows declarations warning." ON)
 	endif()
+	
+	if(WARNING_SHADOW_LOCAL)
+		list(APPEND WARNING_FLAGS "-Wshadow=local")
+	endif()
+	
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
