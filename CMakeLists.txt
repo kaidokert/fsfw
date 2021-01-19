@@ -112,7 +112,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	   set(FSFW_WARNING_FLAGS
 		  -Wall
 		  -Wextra
-		  -Wshadow=local
 		  -Wimplicit-fallthrough=1
 		  -Wno-unused-parameter
 		  -Wno-psabi
