@@ -16,9 +16,8 @@ Flight Software Framework
 * A reference to an object can be get by calling the following function. T must be the specific Interface you want to call.
 A nullptr check of the returning Pointer must be done. This function is based on Run-time type information. 
 
-``` c++
-	template <typename T> T* ObjectManagerIF::get( object_id_t id )
-
+```cpp
+template <typename T> T* ObjectManagerIF::get( object_id_t id )
 ```
 * A typical way to create all objects on startup is a handing a static produce function to the ObjectManager on creation.
 By calling objectManager->initialize() the produce function will be called and all SystemObjects will be initialized afterwards.
