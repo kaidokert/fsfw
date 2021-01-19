@@ -4,8 +4,15 @@
 #include "../ipc/CommandMessage.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../storagemanager/StorageManagerIF.h"
-typedef uint32_t ActionId_t;
 
+using ActionId_t = uint32_t;
+
+/**
+ * @brief   These messages are part of the action module of the FSFW.
+ * @details
+ * These messages are sent amongst objects implementing the HasActionsIF. Classes like the
+ * ActionHelper are able to process these messages.
+ */
 class ActionMessage {
 private:
 	ActionMessage();
