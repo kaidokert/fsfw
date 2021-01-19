@@ -16,7 +16,9 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
 	lastSender = message->getSender();
 	lastCommand = message->getCommand();
 	if (busy) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "MemHelper: Busy!" << std::endl;
+#endif
 	}
 	switch (lastCommand) {
 	case MemoryMessage::CMD_MEMORY_DUMP:

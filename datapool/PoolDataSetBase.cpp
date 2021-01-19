@@ -9,21 +9,28 @@ PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
 
 PoolDataSetBase::~PoolDataSetBase() {}
 
+
 ReturnValue_t PoolDataSetBase::registerVariable(
 		PoolVariableIF *variable) {
-	if (state != States::DATA_SET_UNINITIALISED) {
+	if (state != States::STATE_SET_UNINITIALISED) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"Call made in wrong position." << std::endl;
+#endif
 		return DataSetIF::DATA_SET_UNINITIALISED;
 	}
 	if (variable == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"Pool variable is nullptr." << std::endl;
+#endif
 		return DataSetIF::POOL_VAR_NULL;
 	}
 	if (fillCount >= maxFillCount) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::registerVariable: "
 				"DataSet is full." << std::endl;
+#endif
 		return DataSetIF::DATA_SET_FULL;
 	}
 	registeredVariables[fillCount] = variable;
@@ -31,24 +38,32 @@ ReturnValue_t PoolDataSetBase::registerVariable(
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t PoolDataSetBase::read(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	if (state == States::DATA_SET_UNINITIALISED) {
-		lockDataPool(lockTimeout);
+	ReturnValue_t error = result;
+	if (state == States::STATE_SET_UNINITIALISED) {
+		lockDataPool(timeoutType, lockTimeout);
 		for (uint16_t count = 0; count < fillCount; count++) {
 			result = readVariable(count);
 			if(result != RETURN_OK) {
-				break;
+				error = result;
 			}
 		}
-		state = States::DATA_SET_WAS_READ;
+		state = States::STATE_SET_WAS_READ;
 		unlockDataPool();
 	}
 	else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DataSet::read(): "
 				"Call made in wrong position. Don't forget to commit"
 				" member datasets!" << std::endl;
+#endif
 		result = SET_WAS_ALREADY_READ;
+	}
+
+	if(error != HasReturnvaluesIF::RETURN_OK) {
+		result = error;
 	}
 	return result;
 }
@@ -71,7 +86,15 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 		registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER)
 	{
-		result = registeredVariables[count]->readWithoutLock();
+		if(protectEveryReadCommitCall) {
+			result = registeredVariables[count]->read(
+					timeoutTypeForSingleVars,
+					mutexTimeoutForSingleVars);
+		}
+		else {
+			result = registeredVariables[count]->readWithoutLock();
+		}
+
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			result = INVALID_PARAMETER_DEFINITION;
 		}
@@ -79,55 +102,76 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 	return result;
 }
 
-ReturnValue_t PoolDataSetBase::commit(uint32_t lockTimeout) {
-	if (state == States::DATA_SET_WAS_READ) {
-		handleAlreadyReadDatasetCommit(lockTimeout);
+ReturnValue_t PoolDataSetBase::commit(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
+	if (state == States::STATE_SET_WAS_READ) {
+		handleAlreadyReadDatasetCommit(timeoutType, lockTimeout);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	else {
-		return handleUnreadDatasetCommit(lockTimeout);
+		return handleUnreadDatasetCommit(timeoutType, lockTimeout);
 	}
 }
 
-void PoolDataSetBase::handleAlreadyReadDatasetCommit(uint32_t lockTimeout) {
-	lockDataPool(lockTimeout);
+void PoolDataSetBase::handleAlreadyReadDatasetCommit(
+		MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
+	lockDataPool(timeoutType, lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				!= PoolVariableIF::VAR_READ
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
-			registeredVariables[count]->commitWithoutLock();
+			if(protectEveryReadCommitCall) {
+				registeredVariables[count]->commit(
+						timeoutTypeForSingleVars,
+						mutexTimeoutForSingleVars);
+			}
+			else {
+				registeredVariables[count]->commitWithoutLock();
+			}
 		}
 	}
-	state = States::DATA_SET_UNINITIALISED;
+	state = States::STATE_SET_UNINITIALISED;
 	unlockDataPool();
 }
 
-ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(uint32_t lockTimeout) {
+ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(
+		MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-	lockDataPool(lockTimeout);
+	lockDataPool(timeoutType, lockTimeout);
 	for (uint16_t count = 0; count < fillCount; count++) {
 		if (registeredVariables[count]->getReadWriteMode()
 				== PoolVariableIF::VAR_WRITE
 				&& registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
-			registeredVariables[count]->commitWithoutLock();
+			if(protectEveryReadCommitCall) {
+				result = registeredVariables[count]->commit(
+						timeoutTypeForSingleVars,
+						mutexTimeoutForSingleVars);
+			}
+			else {
+				result = registeredVariables[count]->commitWithoutLock();
+			}
+
 		} else if (registeredVariables[count]->getDataPoolId()
 				!= PoolVariableIF::NO_PARAMETER) {
 			if (result != COMMITING_WITHOUT_READING) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 				sif::error << "DataSet::commit(): commit-without-read call made "
 						"with non write-only variable." << std::endl;
+#endif
 				result = COMMITING_WITHOUT_READING;
 			}
 		}
 	}
-	state = States::DATA_SET_UNINITIALISED;
+	state = States::STATE_SET_UNINITIALISED;
 	unlockDataPool();
 	return result;
 }
 
 
-ReturnValue_t PoolDataSetBase::lockDataPool(uint32_t timeoutMs) {
+ReturnValue_t PoolDataSetBase::lockDataPool(MutexIF::TimeoutType timeoutType,
+		uint32_t lockTimeout) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -171,4 +215,16 @@ size_t PoolDataSetBase::getSerializedSize() const {
 
 void PoolDataSetBase::setContainer(PoolVariableIF **variablesContainer) {
     this->registeredVariables = variablesContainer;
+}
+
+PoolVariableIF** PoolDataSetBase::getContainer() const {
+	return registeredVariables;
+}
+
+void PoolDataSetBase::setReadCommitProtectionBehaviour(
+		bool protectEveryReadCommit, MutexIF::TimeoutType timeoutType,
+		uint32_t mutexTimeout) {
+	this->protectEveryReadCommitCall = protectEveryReadCommit;
+	this->timeoutTypeForSingleVars = timeoutType;
+	this->mutexTimeoutForSingleVars = mutexTimeout;
 }

@@ -3,6 +3,7 @@
 
 #include "PoolDataSetIF.h"
 #include "PoolVariableIF.h"
+#include "../serialize/SerializeIF.h"
 #include "../ipc/MutexIF.h"
 
 /**
@@ -44,6 +45,7 @@ public:
 
 	/**
 	 * @brief	The read call initializes reading out all registered variables.
+	 * 			It is mandatory to call commit after every read call!
 	 * @details
 	 * It iterates through the list of registered variables and calls all read()
 	 * functions of the registered pool variables (which read out their values
@@ -52,16 +54,18 @@ public:
 	 * the operation is aborted and @c INVALID_PARAMETER_DEFINITION returned.
 	 *
 	 * The data pool is locked during the whole read operation and
-	 * freed afterwards.The state changes to "was written" after this operation.
+	 * freed afterwards. It is mandatory to call commit after a read call,
+	 * even if the read operation is not successful!
 	 * @return
 	 * - @c RETURN_OK if all variables were read successfully.
-	 * - @c INVALID_PARAMETER_DEFINITION if PID, size or type of the
-	 * requested variable is invalid.
+	 * - @c INVALID_PARAMETER_DEFINITION if a pool entry does not exist or there
+	 *      is a type conflict.
 	 * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
-	 * commit() in between
+	 *      commit() in between
 	 */
-	virtual ReturnValue_t read(uint32_t lockTimeout =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t read(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t lockTimeout = 20) override;
 	/**
 	 * @brief	The commit call initializes writing back the registered variables.
 	 * @details
@@ -75,13 +79,14 @@ public:
 	 * If the set does contain at least one variable which is not write-only
 	 * commit() can only be called after read(). If the set only contains
 	 * variables which are write only, commit() can be called without a
-	 * preceding read() call.
+	 * preceding read() call. Every read call must be followed by a commit call!
 	 * @return	- @c RETURN_OK if all variables were read successfully.
 	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
 	 * 			  contains non write-only variables
 	 */
-	virtual ReturnValue_t commit(uint32_t lockTimeout =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t commit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t lockTimeout = 20) override;
 
 	/**
 	 * Register the passed pool variable instance into the data set.
@@ -89,13 +94,15 @@ public:
 	 * @return
 	 */
 	virtual ReturnValue_t registerVariable( PoolVariableIF* variable) override;
+
 	/**
 	 * Provides the means to lock the underlying data structure to ensure
 	 * thread-safety. Default implementation is empty
 	 * @return Always returns -@c RETURN_OK
 	 */
-	virtual ReturnValue_t lockDataPool(uint32_t timeoutMs =
-			MutexIF::BLOCKING) override;
+	virtual ReturnValue_t lockDataPool(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20) override;
 	/**
 	 * Provides the means to unlock the underlying data structure to ensure
 	 * thread-safety. Default implementation is empty
@@ -113,7 +120,16 @@ public:
 	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 	        SerializeIF::Endianness streamEndianness) override;
 
+    /**
+     * Can be used to individually protect every read and commit call.
+     * @param protectEveryReadCommit
+     * @param mutexTimeout
+     */
+    void setReadCommitProtectionBehaviour(bool protectEveryReadCommit,
+            MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+            uint32_t mutexTimeout = 20);
 protected:
+
 	/**
 	 * @brief	The fill_count attribute ensures that the variables
 	 * 			register in the correct array position and that the maximum
@@ -124,14 +140,14 @@ protected:
 	 * States of the seet.
 	 */
 	enum class States {
-		DATA_SET_UNINITIALISED, //!< DATA_SET_UNINITIALISED
-		DATA_SET_WAS_READ     //!< DATA_SET_WAS_READ
+		STATE_SET_UNINITIALISED, //!< DATA_SET_UNINITIALISED
+		STATE_SET_WAS_READ     //!< DATA_SET_WAS_READ
 	};
 	/**
 	 * @brief	state manages the internal state of the data set,
 	 *          which is important e.g. for the behavior on destruction.
 	 */
-	States state = States::DATA_SET_UNINITIALISED;
+	States state = States::STATE_SET_UNINITIALISED;
 
 	/**
 	 * @brief	This array represents all pool variables registered in this set.
@@ -142,11 +158,20 @@ protected:
 	const size_t maxFillCount = 0;
 
 	void setContainer(PoolVariableIF** variablesContainer);
+	PoolVariableIF** getContainer() const;
 
 private:
+	bool protectEveryReadCommitCall = false;
+	MutexIF::TimeoutType timeoutTypeForSingleVars = MutexIF::TimeoutType::WAITING;
+	uint32_t mutexTimeoutForSingleVars = 20;
+
 	ReturnValue_t readVariable(uint16_t count);
-	void handleAlreadyReadDatasetCommit(uint32_t lockTimeout);
-	ReturnValue_t handleUnreadDatasetCommit(uint32_t lockTimeout);
+	void handleAlreadyReadDatasetCommit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
+	ReturnValue_t handleUnreadDatasetCommit(
+			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+			uint32_t timeoutMs = 20);
 };
 
 #endif /* FSFW_DATAPOOL_POOLDATASETBASE_H_ */

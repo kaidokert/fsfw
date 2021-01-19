@@ -37,7 +37,9 @@ TcTransferFrameLocal::TcTransferFrameLocal(bool bypass, bool controlCommand, uin
 			this->getFullFrame()[getFullSize()-2] = (crc & 0xFF00) >> 8;
 			this->getFullFrame()[getFullSize()-1] = (crc & 0x00FF);
 		} else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::debug << "TcTransferFrameLocal: dataSize too large: " << dataSize << std::endl;
+#endif
 		}
 	} else {
 		//No data in frame

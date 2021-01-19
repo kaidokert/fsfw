@@ -1,5 +1,5 @@
 #include "TmTcUnixUdpBridge.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexHelper.h"
 
 #include <errno.h>
@@ -26,8 +26,10 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 	//clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if(serverSocket < 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
 				" UDP socket!" << std::endl;
+#endif
 		handleSocketError();
 		return;
 	}
@@ -51,9 +53,11 @@ TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 			reinterpret_cast<struct sockaddr*>(&serverAddress),
 			serverAddressLen);
 	if(result == -1) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
 				"local port " << setServerPort << " to server socket!"
 				<< std::endl;
+#endif
 		handleBindError();
 		return;
 	}
@@ -74,18 +78,24 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	}
 
 //	char ipAddress [15];
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 //	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
 //					&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#endif
 
 	ssize_t bytesSent = sendto(serverSocket, data, dataLen, flags,
 			reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
 	if(bytesSent < 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixUdpBridge::sendTm: Send operation failed."
 				<< std::endl;
+#endif
 		handleSendError();
 	}
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 //	sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
 //			" sent." << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -93,10 +103,12 @@ void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
 	MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 //	char ipAddress [15];
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 //	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
 //			&newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 //	sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
 //			&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#endif
 
 	// Set new IP address if it has changed.
 	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
@@ -117,12 +129,16 @@ void TmTcUnixUdpBridge::handleSocketError() {
 	case(ENOBUFS):
 	case(ENOMEM):
 	case(EPROTONOSUPPORT):
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixBridge::handleSocketError: Socket creation failed"
 				<< " with " << strerror(errno) << std::endl;
+#endif
 		break;
 	default:
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixBridge::handleSocketError: Unknown error"
 				<< std::endl;
+#endif
 		break;
 	}
 }
@@ -135,10 +151,12 @@ void TmTcUnixUdpBridge::handleBindError() {
 		 Ephermeral ports can be shown with following command:
 		 sysctl -A | grep ip_local_port_range
 		 */
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixBridge::handleBindError: Port access issue."
 				"Ports 1-1024 are reserved on UNIX systems and require root "
 				"rights while ephermeral ports should not be used as well."
 				<< std::endl;
+#endif
 	}
 	break;
 	case(EADDRINUSE):
@@ -153,22 +171,32 @@ void TmTcUnixUdpBridge::handleBindError() {
 	case(ENOMEM):
 	case(ENOTDIR):
 	case(EROFS): {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixBridge::handleBindError: Socket creation failed"
 				<< " with " << strerror(errno) << std::endl;
+#endif
 		break;
 	}
 	default:
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixBridge::handleBindError: Unknown error"
 				<< std::endl;
+#endif
 		break;
 	}
 }
 
 void TmTcUnixUdpBridge::handleSendError() {
 	switch(errno) {
-	default:
+	default: {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcUnixBridge::handleSendError: "
 		        << strerror(errno) << std::endl;
+#else
+		sif::printError("TmTcUnixBridge::handleSendError: %s\n",
+				strerror(errno));
+#endif
+	}
 	}
 }
 

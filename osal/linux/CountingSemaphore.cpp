@@ -1,11 +1,15 @@
 #include "../../osal/linux/CountingSemaphore.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
+
+#include <errno.h>
 
 CountingSemaphore::CountingSemaphore(const uint8_t maxCount, uint8_t initCount):
 		maxCount(maxCount), initCount(initCount) {
 	if(initCount > maxCount) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphoreUsingTask: Max count bigger than "
 				"intial cout. Setting initial count to max count." << std::endl;
+#endif
 		initCount = maxCount;
 	}
 

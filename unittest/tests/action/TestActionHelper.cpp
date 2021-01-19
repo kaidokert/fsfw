@@ -1,8 +1,14 @@
 #include "TestActionHelper.h"
+
+#include <unittest/core/CatchDefinitions.h>
+
 #include <fsfw/action/ActionHelper.h>
 #include <fsfw/ipc/CommandMessage.h>
-#include <catch2/catch.hpp>
-#include "../../core/CatchDefinitions.h"
+#include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
+
+#include <catch2/catch_test_macros.hpp>
+
+#include <array>
 
 
 TEST_CASE( "Action Helper" , "[ActionHelper]") {

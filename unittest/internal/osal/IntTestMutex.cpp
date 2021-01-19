@@ -1,10 +1,10 @@
 #include "IntTestMutex.h"
 
-#include "../../../ipc/MutexFactory.h"
-#include "../UnittDefinitions.h"
+#include <fsfw/ipc/MutexFactory.h>
+#include <fsfw/unittest/internal/UnittDefinitions.h>
 
 #if defined(hosted)
-#include "../../osal/hosted/Mutex.h"
+#include <fsfw/osal/hosted/Mutex.h>
 #include <thread>
 #include <future>
 #endif
@@ -13,7 +13,7 @@
 void testmutex::testMutex() {
 	std::string id = "[testMutex]";
 	MutexIF* mutex = MutexFactory::instance()->createMutex();
-	auto result = mutex->lockMutex(MutexIF::POLLING);
+	auto result = mutex->lockMutex(MutexIF::TimeoutType::POLLING);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 		unitt::put_error(id);
 	}

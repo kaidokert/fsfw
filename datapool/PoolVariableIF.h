@@ -3,6 +3,7 @@
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
+#include "ReadCommitIF.h"
 
 /**
  * @brief	This interface is used to control data pool
@@ -17,13 +18,14 @@
  * @author 	Bastian Baetz
  * @ingroup data_pool
  */
-class PoolVariableIF : public SerializeIF {
+class PoolVariableIF : public SerializeIF,
+		public ReadCommitIF {
 	friend class PoolDataSetBase;
-	friend class GlobDataSet;
 	friend class LocalPoolDataSetBase;
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::POOL_VARIABLE_IF;
 	static constexpr ReturnValue_t INVALID_READ_WRITE_MODE = MAKE_RETURN_CODE(0xA0);
+	static constexpr ReturnValue_t INVALID_POOL_ENTRY = MAKE_RETURN_CODE(0xA1);
 
 	static constexpr bool VALID = 1;
 	static constexpr bool INVALID = 0;
@@ -57,41 +59,6 @@ public:
 	 */
 	virtual void setValid(bool validity) = 0;
 
-	/**
-	 * @brief	The commit call shall write back a newly calculated local
-	 * 			value to the data pool.
-	 * @details
-	 * It is assumed that these calls are implemented in a thread-safe manner!
-	 */
-	virtual ReturnValue_t commit(uint32_t lockTimeout) = 0;
-	/**
-	 * @brief	The read call shall read the value of this parameter from
-	 * 			the data pool and store the content locally.
-	 * @details
-	 * It is assumbed that these calls are implemented in a thread-safe manner!
-	 */
-	virtual ReturnValue_t read(uint32_t lockTimeout) = 0;
-
-protected:
-
-	/**
-	 * @brief 	Same as commit with the difference that comitting will be
-	 * 			performed without a lock
-	 * @return
-	 * This can be used if the lock protection is handled externally
-	 * to avoid the overhead of locking and unlocking consecutively.
-	 * Declared protected to avoid free public usage.
-	 */
-	virtual ReturnValue_t readWithoutLock() = 0;
-	/**
-	 * @brief 	Same as commit with the difference that comitting will be
-	 * 			performed without a lock
-	 * @return
-	 * This can be used if the lock protection is handled externally
-	 * to avoid the overhead of locking and unlocking consecutively.
-	 * Declared protected to avoid free public usage.
-	 */
-	virtual ReturnValue_t commitWithoutLock() = 0;
 };
 
 using pool_rwm_t = PoolVariableIF::ReadWriteMode_t;

@@ -9,121 +9,40 @@ The initial version of the Flight Software Framework was developed during
 the Flying Laptop Project by the University of Stuttgart in cooperation
 with Airbus Defence and Space GmbH.
 
-## Intended Use
+## Quick facts
 
-The framework is designed for systems, which communicate with external devices, perform control loops, receive telecommands and send telemetry, and need to maintain a high level of availability. 
-Therefore, a mode and health system provides control over the states of the software and the controlled devices. 
-In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
+The framework is designed for systems, which communicate with external devices, perform control loops, receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore, a mode and health system provides control over the states of the software and the controlled devices. In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
 
-The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB of non-volatile Memory. 
-For reference, current Applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC.
-The `fsfw` was also tested on the STM32H743ZI-Nucleo board.
+The FSFW provides abstraction layers for operating systems to provide a uniform operating system abstraction layer (OSAL). Some components of this OSAL are required internally by the FSFW but is also very useful for developers to implement the same application logic on different operating systems with a uniform interface.
 
-## How to Use
+Currently, the FSFW provides the following OSALs:
 
-The [FSFW example](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example) provides a good starting point and a demo
-to see the FSFW capabilities and build it with the Make or the CMake build system. 
+- Linux
+- Host 
+- FreeRTOS
+- RTEMS
+
+The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB of non-volatile Memory. For reference, current applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC. The `fsfw` was also successfully run on the STM32H743ZI-Nucleo board and on a Raspberry Pi and is currently running on the active satellite mission Flying Laptop.
+
+## Getting started
+
+The [FSFW example](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example) provides a good starting point and a demo to see the FSFW capabilities and build it with the Make or the CMake build system. It is recommended to evaluate the FSFW by building and playing around with the demo application.
+
 Generally, the FSFW is included in a project by compiling the FSFW sources and providing
-a configuration folder and adding it to the include path. 
+a configuration folder and adding it to the include path. There are some functions like `printChar` which are different depending on the target architecture and need to be implemented by the mission developer.
+
 A template configuration folder was provided and can be copied into the project root to have
-a starting point. The [configuration section](doc/README-config.md#top) provides more specific information about
-the possible options.
+a starting point. The [configuration section](doc/README-config.md#top) provides more specific information about the possible options.
 
-## Structure
+## Index
 
-The general structure is driven by the usage of interfaces provided by objects. 
-The FSFW uses C++11 as baseline. The intention behind this is that this C++ Standard should be widely available, even with older compilers.
-The FSFW uses dynamic allocation during the initialization but provides static containers during runtime. 
-This simplifies the instantiation of objects and allows the usage of some standard containers. 
-Dynamic Allocation after initialization is discouraged and different solutions are provided in the FSFW to achieve that.
-The fsfw uses run-time type information but exceptions are not allowed.
+[1. High-level overview](doc/README-highlevel.md#top) <br>
+[2. Core components](doc/README-core.md#top) <br>
+[3. OSAL overview](doc/README-osal.md#top) <br>
+[4. PUS services](doc/README-pus.md#top) <br>
+[5. Device Handler overview](doc/README-devicehandlers.md#top) <br>
+[6. Controller overview](doc/README-controllers.md#top) <br>
+[7. Local Data Pools](doc/README-localpools.md#top) <br>
 
-### Failure Handling
 
-Functions should return a defined ReturnValue_t to signal to the caller that something has gone wrong. 
-Returnvalues must be unique. For this the function HasReturnvaluesIF::makeReturnCode or the Macro MAKE_RETURN can be used.
-The CLASS_ID is a unique id for that type of object. See returnvalues/FwClassIds.
 
-### OSAL
-
-The FSFW provides operation system abstraction layers for Linux, FreeRTOS and RTEMS. 
-A independent Host OSAL is in development which will provide abstraction for common type of 
-host OSes (tested for Linux and Windows, not for MacOS yet).
-The OSAL provides periodic tasks, message queues, clocks and semaphores as well as mutexes.
-
-### Core Components 
-
-The FSFW has following core components. More detailed informations can be found in the
-[core component section](doc/README-core.md#top):
-
-1. Tasks: Abstraction for different (periodic) task types like periodic tasks or tasks with fixed timeslots
-2. ObjectManager: This module stores all `SystemObjects` by mapping a provided unique object ID to the object handles.
-3. Static Stores: Different stores are provided to store data of variable size (like telecommands or small telemetry) in a pool structure without
-   using dynamic memory allocation. These pools are allocated up front.
-3. Clock: This module provided common time related functions
-4. EventManager: This module allows routing of events generated by `SystemObjects`
-5. HealthTable: A component which stores the health states of objects
-
-### Static Ids in the framework
-
-Some parts of the framework use a static routing address for communication. 
-An example setup of ids can be found in the example config in "defaultcft/fsfwconfig/objects/Factory::setStaticFrameworkObjectIds()".
-
-### Events
-
-Events are tied to objects. EventIds can be generated by calling the Macro MAKE_EVENT. This works analog to the returnvalues.
-Every object that needs own EventIds has to get a unique SUBSYSTEM_ID. 
-Every SystemObject can call triggerEvent from the parent class.
-Therefore, event messages contain the specific EventId and the objectId of the object that has triggered.
-
-### Internal Communication
-
-Components communicate mostly over Message through Queues. 
-Those queues are created by calling the singleton QueueFactory::instance()->create(). 
-
-### External Communication
-
-The external communication with the mission control system is mostly up to the user implementation.
-The FSFW provides PUS Services which can be used to but don't need to be used. 
-The services can be seen as a conversion from a TC to a message based communication and back.
-
-#### CCSDS Frames, CCSDS Space Packets and PUS
-
-If the communication is based on CCSDS Frames and Space Packets, several classes can be used to distributed the packets to the corresponding services. Those can be found in tcdistribution. 
-If Space Packets are used, a timestamper must be created. 
-An example can be found in the timemanager folder, this uses CCSDSTime::CDS_short.
-
-#### Device Handlers
-
-DeviceHandlers are another important component of the FSFW. 
-The idea is, to have a software counterpart of every physical device to provide a simple mode, health and commanding interface.
-By separating the underlying Communication Interface with DeviceCommunicationIF, a device handler (DH) can be tested on different hardware.
-The DH has mechanisms to monitor the communication with the physical device which allow for FDIR reaction. 
-Device Handlers can be created by overriding `DeviceHandlerBase`. 
-A standard FDIR component for the DH will be created automatically but can be overwritten by the user.
-More information on DeviceHandlers can be found in the related [documentation section](doc/README-devicehandlers.md#top).
-
-#### Modes, Health
-
-The two interfaces HasModesIF and HasHealthIF provide access for commanding and monitoring of components.
-On-board Mode Management is implement in hierarchy system. 
-DeviceHandlers and Controllers are the lowest part of the hierarchy. 
-The next layer are Assemblies. Those assemblies act as a component which handle redundancies of handlers. 
-Assemblies share a common core with the next level which are the Subsystems. 
-
-Those Assemblies are intended to act as auto-generated components from a database which describes the subsystem modes. 
-The definitions contain transition and target tables which contain the DH, Assembly and Controller Modes to be commanded.
-Transition tables contain as many steps as needed to reach the mode from any other mode, e.g. a switch into any higher AOCS mode might first turn on the sensors, than the actuators and the controller as last component. 
-The target table is used to describe the state that is checked continuously by the subsystem. 
-All of this allows System Modes to be generated as Subsystem object as well from the same database. 
-This System contains list of subsystem modes in the transition and target tables. 
-Therefore, it allows a modular system to create system modes and easy commanding of those, because only the highest components must be commanded.
-
-The health state represents if the component is able to perform its tasks. 
-This can be used to signal the system to avoid using this component instead of a redundant one.
-The on-board FDIR uses the health state for isolation and recovery. 
-
-## Unit Tests
-
-Unit Tests are provided in the unittest folder. Those use the catch2 framework but do not include catch2 itself. 
-See README.md in the unittest Folder.

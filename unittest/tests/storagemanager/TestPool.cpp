@@ -1,17 +1,13 @@
-#include "CatchDefinitions.h"
-
 #include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/storagemanager/LocalPool.h>
 
-#include <catch.hpp>
-#include <CatchDefinitions.h>
+#include <catch2/catch_test_macros.hpp>
+#include <unittest/core/CatchDefinitions.h>
 
 #include <cstring>
 
 
 TEST_CASE( "Local Pool Simple Tests [1 Pool]" , "[TestPool]") {
-//	uint16_t numberOfElements[1] = {1};
-//	uint16_t sizeofElements[1] = {10};
 	LocalPool::LocalPoolConfig config = {{1, 10}};
 	LocalPool simplePool(0, config);
 	std::array<uint8_t, 20> testDataArray;
