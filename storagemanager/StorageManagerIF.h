@@ -29,7 +29,7 @@ using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
 class StorageManagerIF : public HasReturnvaluesIF {
 public:
 	using size_type = size_t;
-	using max_pools_t = uint8_t;
+	using max_subpools_t = uint8_t;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::STORAGE_MANAGER_IF; //!< The unique ID for return codes for this interface.
 	static const ReturnValue_t DATA_TOO_LARGE = MAKE_RETURN_CODE(1); //!< This return code indicates that the data to be stored is too large for the store.
@@ -149,10 +149,10 @@ public:
 	virtual ReturnValue_t modifyData(store_address_t packet_id,
 			uint8_t** packet_ptr, size_t* size) = 0;
 	/**
-	 * This method reserves an element of \c size.
+	 * This method reserves an element of @c size.
 	 *
 	 * It returns the packet id of this element as well as a direct pointer to the
-	 * data of the element. It must be assured that exactly \c size data is
+	 * data of the element. It must be assured that exactly @c size data is
 	 * written to p_data!
 	 * @param storageId A pointer to the storageId to retrieve.
 	 * @param size		The size of the space to be reserved.
@@ -174,7 +174,7 @@ public:
 	 * Clears a pool in the store with the given pool index. Use with care!
 	 * @param pageIndex
 	 */
-	virtual void clearPool(uint8_t poolIndex) = 0;
+	virtual void clearSubPool(uint8_t poolIndex) = 0;
 
 	/**
 	 * Get the fill count of the pool. Each character inside the provided
@@ -193,7 +193,7 @@ public:
 	 * Get number of pools.
 	 * @return
 	 */
-	virtual max_pools_t getNumberOfPools() const = 0;
+	virtual max_subpools_t getNumberOfSubPools() const = 0;
 };
 
 #endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */

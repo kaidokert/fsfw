@@ -134,15 +134,15 @@ public:
 	void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) override;
 
 	void clearStore() override;
-	void clearPool(max_pools_t poolIndex) override;
+	void clearSubPool(max_subpools_t poolIndex) override;
 
 	ReturnValue_t initialize() override;
 
     /**
-     * Get number pools. Each pool has pages with a specific bucket size.
+     * Get number sub pools. Each pool has pages with a specific bucket size.
      * @return
      */
-    max_pools_t getNumberOfPools() const override;
+    max_subpools_t getNumberOfSubPools() const override;
 protected:
 	/**
 	 * With this helper method, a free element of @c size is reserved.
@@ -163,7 +163,7 @@ private:
      * @details
      * This must be less than the maximum number of pools (currently 0xff).
      */
-    const max_pools_t NUMBER_OF_POOLS;
+    const max_subpools_t NUMBER_OF_SUBPOOLS;
 
     /**
      * Indicates that this element is free.
@@ -177,20 +177,20 @@ private:
 	 * 			must be set in ascending order on construction.
 	 */
     std::vector<size_type> elementSizes =
-            std::vector<size_type>(NUMBER_OF_POOLS);
+            std::vector<size_type>(NUMBER_OF_SUBPOOLS);
 	/**
 	 * @brief	n_elements stores the number of elements per pool.
 	 * @details	These numbers are maintained for internal pool management.
 	 */
 	std::vector<uint16_t> numberOfElements =
-	        std::vector<uint16_t>(NUMBER_OF_POOLS);
+	        std::vector<uint16_t>(NUMBER_OF_SUBPOOLS);
 	/**
 	 * @brief	store represents the actual memory pool.
 	 * @details	It is an array of pointers to memory, which was allocated with
 	 * 			a @c new call on construction.
 	 */
 	std::vector<std::vector<uint8_t>> store =
-	        std::vector<std::vector<uint8_t>>(NUMBER_OF_POOLS);
+	        std::vector<std::vector<uint8_t>>(NUMBER_OF_SUBPOOLS);
 
 	/**
 	 * @brief	The size_list attribute stores the size values of every pool element.
@@ -198,7 +198,7 @@ private:
 	 * 			is also dynamically allocated there.
 	 */
 	std::vector<std::vector<size_type>> sizeLists =
-	        std::vector<std::vector<size_type>>(NUMBER_OF_POOLS);
+	        std::vector<std::vector<size_type>>(NUMBER_OF_SUBPOOLS);
 
 	//! A variable to determine whether higher n pools are used if
 	//! the store is full.
@@ -217,7 +217,7 @@ private:
 	 * @param pool_index	The pool in which to look.
 	 * @return	Returns the size of an element or 0.
 	 */
-	size_type getPageSize(max_pools_t poolIndex);
+	size_type getPageSize(max_subpools_t poolIndex);
 
 	/**
 	 * @brief	This helper method looks up a fitting pool for a given size.

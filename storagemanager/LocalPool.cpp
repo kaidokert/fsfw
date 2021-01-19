@@ -5,15 +5,15 @@
 LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
 		bool registered, bool spillsToHigherPools):
 		SystemObject(setObjectId, registered),
-		NUMBER_OF_POOLS(poolConfig.size()),
+		NUMBER_OF_SUBPOOLS(poolConfig.size()),
 		spillsToHigherPools(spillsToHigherPools) {
-	if(NUMBER_OF_POOLS == 0) {
+	if(NUMBER_OF_SUBPOOLS == 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "LocalPool::LocalPool: Passed pool configuration is "
 				<< " invalid!" << std::endl;
 #endif
 	}
-	max_pools_t index = 0;
+	max_subpools_t index = 0;
 	for (const auto& currentPoolConfig: poolConfig) {
 		this->numberOfElements[index] = currentPoolConfig.first;
 		this->elementSizes[index] = currentPoolConfig.second;
@@ -98,7 +98,7 @@ ReturnValue_t LocalPool::modifyData(store_address_t storeId,
 ReturnValue_t LocalPool::modifyData(store_address_t storeId,
         uint8_t **packetPtr, size_t *size) {
     ReturnValue_t status = RETURN_FAILED;
-    if (storeId.poolIndex >= NUMBER_OF_POOLS) {
+    if (storeId.poolIndex >= NUMBER_OF_SUBPOOLS) {
         return ILLEGAL_STORAGE_ID;
     }
     if ((storeId.packetIndex >= numberOfElements[storeId.poolIndex])) {
@@ -151,7 +151,7 @@ ReturnValue_t LocalPool::deleteData(uint8_t *ptr, size_t size,
         store_address_t *storeId) {
     store_address_t localId;
     ReturnValue_t result = ILLEGAL_ADDRESS;
-    for (uint16_t n = 0; n < NUMBER_OF_POOLS; n++) {
+    for (uint16_t n = 0; n < NUMBER_OF_SUBPOOLS; n++) {
         //Not sure if new allocates all stores in order. so better be careful.
         if ((store[n].data() <= ptr) and
         		(&store[n][numberOfElements[n]*elementSizes[n]] > ptr)) {
@@ -192,7 +192,7 @@ ReturnValue_t LocalPool::initialize() {
     }
 
     //Check if any pool size is large than the maximum allowed.
-    for (uint8_t count = 0; count < NUMBER_OF_POOLS; count++) {
+    for (uint8_t count = 0; count < NUMBER_OF_SUBPOOLS; count++) {
         if (elementSizes[count] >= STORAGE_FREE) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "LocalPool::initialize: Pool is too large! "
@@ -263,8 +263,8 @@ void LocalPool::write(store_address_t storeId, const uint8_t *data,
     sizeLists[storeId.poolIndex][storeId.packetIndex] = size;
 }
 
-LocalPool::size_type LocalPool::getPageSize(max_pools_t poolIndex) {
-    if (poolIndex < NUMBER_OF_POOLS) {
+LocalPool::size_type LocalPool::getPageSize(max_subpools_t poolIndex) {
+    if (poolIndex < NUMBER_OF_SUBPOOLS) {
         return elementSizes[poolIndex];
     }
     else {
@@ -278,7 +278,7 @@ void LocalPool::setToSpillToHigherPools(bool enable) {
 
 ReturnValue_t LocalPool::getPoolIndex(size_t packetSize, uint16_t *poolIndex,
         uint16_t startAtIndex) {
-    for (uint16_t n = startAtIndex; n < NUMBER_OF_POOLS; n++) {
+    for (uint16_t n = startAtIndex; n < NUMBER_OF_SUBPOOLS; n++) {
 #if FSFW_VERBOSE_PRINTOUT == 2
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "LocalPool " << getObjectId() << "::getPoolIndex: Pool: "
@@ -313,7 +313,7 @@ ReturnValue_t LocalPool::findEmpty(n_pool_elem_t poolIndex, uint16_t *element) {
 size_t LocalPool::getTotalSize(size_t* additionalSize) {
     size_t totalSize = 0;
     size_t sizesSize = 0;
-    for(uint8_t idx = 0; idx < NUMBER_OF_POOLS; idx ++) {
+    for(uint8_t idx = 0; idx < NUMBER_OF_SUBPOOLS; idx ++) {
         totalSize += elementSizes[idx] * numberOfElements[idx];
         sizesSize += numberOfElements[idx] * sizeof(size_type);
     }
@@ -331,7 +331,7 @@ void LocalPool::getFillCount(uint8_t *buffer, uint8_t *bytesWritten) {
 	uint16_t reservedHits = 0;
 	uint8_t idx = 0;
 	uint16_t sum = 0;
-	for(; idx < NUMBER_OF_POOLS; idx ++) {
+	for(; idx < NUMBER_OF_SUBPOOLS; idx ++) {
 		for(const auto& size: sizeLists[idx]) {
 			if(size != STORAGE_FREE) {
 				reservedHits++;
@@ -343,25 +343,25 @@ void LocalPool::getFillCount(uint8_t *buffer, uint8_t *bytesWritten) {
 		sum += buffer[idx];
 		reservedHits = 0;
 	}
-	buffer[idx] = sum / NUMBER_OF_POOLS;
+	buffer[idx] = sum / NUMBER_OF_SUBPOOLS;
 	*bytesWritten += 1;
 }
 
 
-void LocalPool::clearPool(max_pools_t  poolIndex) {
-	if(poolIndex >= NUMBER_OF_POOLS) {
+void LocalPool::clearSubPool(max_subpools_t  subpoolIndex) {
+	if(subpoolIndex >= NUMBER_OF_SUBPOOLS) {
 		return;
 	}
 
 	// Mark the storage as free
-	for(auto& size: sizeLists[poolIndex]) {
+	for(auto& size: sizeLists[subpoolIndex]) {
 		size = STORAGE_FREE;
 	}
 
 	// Set all the page content to 0.
-	std::memset(store[poolIndex].data(), 0, elementSizes[poolIndex]);
+	std::memset(store[subpoolIndex].data(), 0, elementSizes[subpoolIndex]);
 }
 
-LocalPool::max_pools_t LocalPool::getNumberOfPools() const {
-    return NUMBER_OF_POOLS;
+LocalPool::max_subpools_t LocalPool::getNumberOfSubPools() const {
+    return NUMBER_OF_SUBPOOLS;
 }
