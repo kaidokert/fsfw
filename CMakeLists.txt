@@ -119,10 +119,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		  -Wno-unused-parameter
 		  -Wno-psabi
         )
-	
-	if(FSFW_WARNING_SHADOW_LOCAL_GCC)
-		list(APPEND WARNING_FLAGS "-Wshadow=local")
-	endif()
+    endif()
+        
+    if(FSFW_WARNING_SHADOW_LOCAL_GCC)
+        list(APPEND WARNING_FLAGS "-Wshadow=local")
+    endif()
 	
 endif()
 
