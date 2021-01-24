@@ -155,7 +155,12 @@ public:
 
     ReturnValue_t subscribeWrapperSetUpdate() {
         return poolManager.subscribeForSetUpdateMessages(lpool::testSetId,
-                objects::NO_OBJECT, MessageQueueIF::NO_QUEUE, false);
+                objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, false);
+    }
+
+    ReturnValue_t subscribeWrapperSetUpdateSnapshot() {
+        return poolManager.subscribeForSetUpdateMessages(lpool::testSetId,
+                objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, true);
     }
 
     ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false) {

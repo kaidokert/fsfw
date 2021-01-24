@@ -63,12 +63,27 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
                 HousekeepingMessage::HK_REPORT));
         /* Clear message to avoid memory leak, our mock won't do it for us (yet) */
         CommandMessageCleaner::clearCommandMessage(&messageSent);
-    }
-
-    SECTION("AdvancedTests") {
         /* we need to reset the subscription list because the pool owner
         is a global object. */
         poolOwner->resetSubscriptionList();
+    }
+
+    SECTION("SnapshotUpdateTests") {
+        /* we need to reset the subscription list because the pool owner
+        is a global object. */
+        poolOwner->resetSubscriptionList();
+
+        /* Subscribe for snapshot generation on update. */
+        REQUIRE(poolOwner->subscribeWrapperSetUpdateSnapshot() == retval::CATCH_OK);
+        poolOwner->dataset.setChanged(true);
+        REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
+
+    }
+
+    SECTION("AdvancedTests") {
+
         /* Subscribe for variable update as well */
         REQUIRE(not poolOwner->dataset.hasChanged());
         REQUIRE(poolOwner->subscribeWrapperVariableUpdate(lpool::uint8VarId) ==
