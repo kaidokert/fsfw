@@ -1,7 +1,7 @@
-#ifndef FSFW_DATAPOOLLOCAL_POOLREADHELPER_H_
-#define FSFW_DATAPOOLLOCAL_POOLREADHELPER_H_
+#ifndef FSFW_DATAPOOL_POOLREADHELPER_H_
+#define FSFW_DATAPOOL_POOLREADHELPER_H_
 
-#include "LocalPoolDataSetBase.h"
+#include "ReadCommitIF.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include <FSFWConfig.h>
 
@@ -48,4 +48,4 @@ private:
 
 
 
-#endif /* FSFW_DATAPOOLLOCAL_POOLREADHELPER_H_ */
+#endif /* FSFW_DATAPOOL_POOLREADHELPER_H_ */
