@@ -243,12 +243,9 @@ public:
         UPDATE_SNAPSHOT,
     };
 
-    /**
-     * Different data types are possible in the HK receiver map.
-     * For example, updates can be requested for full datasets or
-     * for single pool variables. Periodic reporting is only possible for
-     * data sets.
-     */
+    /** Different data types are possible in the HK receiver map. For example, updates can be
+    requested for full datasets or for single pool variables. Periodic reporting is only possible
+    for data sets. */
     enum class DataType: uint8_t {
     	LOCAL_POOL_VARIABLE,
 		DATA_SET
@@ -270,8 +267,8 @@ public:
     virtual LocalDataPoolManager* getHkManagerHandle() override;
 private:
     localpool::DataPool localPoolMap;
-    //! Every housekeeping data manager has a mutex to protect access
-    //! to it's data pool.
+    /** Every housekeeping data manager has a mutex to protect access
+    to it's data pool. */
     MutexIF* mutex = nullptr;
 
     /** The class which actually owns the manager (and its datapool). */
