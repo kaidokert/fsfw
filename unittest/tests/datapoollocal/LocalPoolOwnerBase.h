@@ -20,33 +20,43 @@ static constexpr lp_id_t int64Vec2Id = 4;
 
 static constexpr uint32_t testSetId = 0;
 static constexpr uint8_t dataSetMaxVariables = 10;
-static const sid_t testSid = sid_t(objects::TEST_LOCAL_POOL_OWNER_BASE,
-        testSetId);
+
+static const sid_t testSid = sid_t(objects::TEST_LOCAL_POOL_OWNER_BASE, testSetId);
+
+static const gp_id_t uint8VarGpid = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE, uint8VarId);
+static const gp_id_t floatVarGpid = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE, floatVarId);
+static const gp_id_t uint32Gpid = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE, uint32VarId);
+static const gp_id_t uint16Vec3Gpid = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE, uint16Vec3Id);
+static const gp_id_t uint64Vec2Id = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE, int64Vec2Id);
 }
 
 
 class LocalPoolTestDataSet: public LocalDataSet {
 public:
+    LocalPoolTestDataSet():
+        LocalDataSet(lpool::testSid, lpool::dataSetMaxVariables) {
+    }
+
     LocalPoolTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
         LocalDataSet(owner, setId, lpool::dataSetMaxVariables) {
     }
 
-    ReturnValue_t assignPointers() {
-        PoolVariableIF** rawVarArray = getContainer();
-        localPoolVarUint8 = dynamic_cast<lp_var_t<uint8_t>*>(rawVarArray[0]);
-        localPoolVarFloat = dynamic_cast<lp_var_t<float>*>(rawVarArray[1]);
-        localPoolUint16Vec = dynamic_cast<lp_vec_t<uint16_t, 3>*>(
-                rawVarArray[2]);
-        if(localPoolVarUint8 == nullptr or  localPoolVarFloat == nullptr or
-                localPoolUint16Vec == nullptr) {
-            return HasReturnvaluesIF::RETURN_FAILED;
-        }
-        return HasReturnvaluesIF::RETURN_OK;
-    }
+//    ReturnValue_t assignPointers() {
+//        PoolVariableIF** rawVarArray = getContainer();
+//        localPoolVarUint8 = dynamic_cast<lp_var_t<uint8_t>*>(rawVarArray[0]);
+//        localPoolVarFloat = dynamic_cast<lp_var_t<float>*>(rawVarArray[1]);
+//        localPoolUint16Vec = dynamic_cast<lp_vec_t<uint16_t, 3>*>(
+//                rawVarArray[2]);
+//        if(localPoolVarUint8 == nullptr or  localPoolVarFloat == nullptr or
+//                localPoolUint16Vec == nullptr) {
+//            return HasReturnvaluesIF::RETURN_FAILED;
+//        }
+//        return HasReturnvaluesIF::RETURN_OK;
+//    }
 
-    lp_var_t<uint8_t>* localPoolVarUint8 = nullptr;
-    lp_var_t<float>* localPoolVarFloat = nullptr;
-    lp_vec_t<uint16_t, 3>* localPoolUint16Vec = nullptr;
+    lp_var_t<uint8_t> localPoolVarUint8 = lp_var_t<uint8_t>(lpool::uint8VarGpid, this);
+    lp_var_t<float> localPoolVarFloat = lp_var_t<float>(lpool::floatVarGpid, this);
+    lp_vec_t<uint16_t, 3> localPoolUint16Vec = lp_vec_t<uint16_t, 3>(lpool::uint16Vec3Gpid, this);
 
 private:
 };
@@ -170,7 +180,7 @@ public:
 
     ReturnValue_t subscribeWrapperVariableUpdate(lp_id_t localPoolId) {
         return poolManager.subscribeForVariableUpdateMessages(localPoolId,
-                MessageQueueIF::NO_QUEUE, objects::NO_OBJECT, false);
+                MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, false);
     }
 
     void resetSubscriptionList() {

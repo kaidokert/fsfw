@@ -176,7 +176,7 @@ void HousekeepingMessage::setUpdateNotificationVariableCommand(
 
 void HousekeepingMessage::setUpdateSnapshotSetCommand(CommandMessage *command,
         sid_t sid, store_address_t storeId) {
-    command->setCommand(UPDATE_SNAPSHOT_VARIABLE);
+    command->setCommand(UPDATE_SNAPSHOT_SET);
     setSid(command, sid);
     command->setParameter3(storeId.raw);
 }

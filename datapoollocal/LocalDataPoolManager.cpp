@@ -5,8 +5,8 @@
 #include "internal/LocalPoolDataSetAttorney.h"
 #include "internal/HasLocalDpIFManagerAttorney.h"
 
-#include "../housekeeping/HousekeepingPacketUpdate.h"
 #include "../housekeeping/HousekeepingSetPacket.h"
+#include "../housekeeping/HousekeepingSnapshot.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 #include "../timemanager/CCSDSTime.h"
 #include "../ipc/MutexFactory.h"
@@ -226,7 +226,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 		Clock::getClock_timeval(&now);
 		CCSDSTime::CDS_short cds;
 		CCSDSTime::convertToCcsds(&cds, &now);
-		HousekeepingPacketUpdate updatePacket(reinterpret_cast<uint8_t*>(&cds),
+		HousekeepingSnapshot updatePacket(reinterpret_cast<uint8_t*>(&cds),
 				sizeof(cds), HasLocalDpIFManagerAttorney::getPoolObjectHandle(owner,
 						receiver.dataId.localPoolId));
 
@@ -264,7 +264,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 		Clock::getClock_timeval(&now);
 		CCSDSTime::CDS_short cds;
 		CCSDSTime::convertToCcsds(&cds, &now);
-		HousekeepingPacketUpdate updatePacket(reinterpret_cast<uint8_t*>(&cds),
+		HousekeepingSnapshot updatePacket(reinterpret_cast<uint8_t*>(&cds),
 				sizeof(cds), HasLocalDpIFManagerAttorney::getDataSetHandle(owner,
 						receiver.dataId.sid));
 
@@ -292,7 +292,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 }
 
 ReturnValue_t LocalDataPoolManager::addUpdateToStore(
-		HousekeepingPacketUpdate& updatePacket, store_address_t& storeId) {
+		HousekeepingSnapshot& updatePacket, store_address_t& storeId) {
 	size_t updatePacketSize = updatePacket.getSerializedSize();
 	uint8_t *storePtr = nullptr;
 	ReturnValue_t result = ipcStore->getFreeElement(&storeId,

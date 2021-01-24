@@ -24,7 +24,7 @@ void setStaticFrameworkObjectIds();
 }
 
 class LocalPoolDataSetBase;
-class HousekeepingPacketUpdate;
+class HousekeepingSnapshot;
 class HasLocalDataPoolIF;
 class LocalDataPool;
 
@@ -386,7 +386,7 @@ private:
 	        ReturnValue_t& status);
 	ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
             ReturnValue_t& status);
-	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
+	ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket,
 	        store_address_t& storeId);
 
 	void printWarningOrError(sif::OutputTypes outputType,
