@@ -29,7 +29,7 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 
 #if FSFW_COLORED_OUTPUT == 1
 	if(setMessage.find("DEBUG") != std::string::npos) {
-		colorPrefix = sif::ANSI_COLOR_MAGENTA;
+		colorPrefix = sif::ANSI_COLOR_CYAN;
 	}
 	else if(setMessage.find("INFO") != std::string::npos) {
 		colorPrefix = sif::ANSI_COLOR_GREEN;

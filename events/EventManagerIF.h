@@ -1,11 +1,12 @@
-#ifndef EVENTMANAGERIF_H_
-#define EVENTMANAGERIF_H_
+#ifndef FSFW_EVENTS_EVENTMANAGERIF_H_
+#define FSFW_EVENTS_EVENTMANAGERIF_H_
 
 #include "EventMessage.h"
 #include "eventmatching/eventmatching.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../ipc/MessageQueueIF.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 class EventManagerIF {
 public:
@@ -41,11 +42,19 @@ public:
 
 	static void triggerEvent(EventMessage* message,
 	        MessageQueueId_t sentFrom = 0) {
-		static MessageQueueId_t eventmanagerQueue = MessageQueueIF::NO_QUEUE;
 		if (eventmanagerQueue == MessageQueueIF::NO_QUEUE) {
 			EventManagerIF *eventmanager = objectManager->get<EventManagerIF>(
 					objects::EVENT_MANAGER);
 			if (eventmanager == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+			    sif::warning << "EventManagerIF::triggerEvent: EventManager invalid or not found!"
+			            << std::endl;
+#else
+			    sif::printWarning("EventManagerIF::triggerEvent: "
+			            "EventManager invalid or not found!");
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 			    return;
 			}
 			eventmanagerQueue = eventmanager->getEventReportQueue();
@@ -53,6 +62,10 @@ public:
 		MessageQueueSenderIF::sendMessage(eventmanagerQueue, message, sentFrom);
 	}
 
+private:
+	//! Initialized by EventManager (C++11 does not allow header-only static member initialization).
+    static MessageQueueId_t eventmanagerQueue;
+
 };
 
-#endif /* EVENTMANAGERIF_H_ */
+#endif /* FSFW_EVENTS_EVENTMANAGERIF_H_ */
