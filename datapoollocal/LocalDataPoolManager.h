@@ -52,8 +52,9 @@ class LocalDataPool;
  * Each pool entry has a valid state too.
  * @author 		R. Mueller
  */
-class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF,
-public AccessPoolManagerIF {
+class LocalDataPoolManager:
+        public ProvidesDataPoolSubscriptionIF,
+        public AccessPoolManagerIF {
     friend void (Factory::setStaticFrameworkObjectIds)();
     //! Some classes using the pool manager directly need to access class internals of the
     //! manager. The attorney provides granular control of access to these internals.
