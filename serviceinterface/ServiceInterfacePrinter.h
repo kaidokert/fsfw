@@ -1,6 +1,23 @@
+#ifndef FSFW_SERVICEINTERFACE_SERVICEINTERFACEPRINTER
+#define FSFW_SERVICEINTERFACE_SERVICEINTERFACEPRINTER
+
 #if FSFW_DISABLE_PRINTOUT == 0
 #include <cstdio>
 #endif
+
+//! https://stackoverflow.com/questions/111928/is-there-a-printf-converter-to-print-in-binary-format
+//! Can be used to print out binary numbers in human-readable format.
+#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
+#define BYTE_TO_BINARY(byte)  \
+  (byte & 0x80 ? '1' : '0'), \
+  (byte & 0x40 ? '1' : '0'), \
+  (byte & 0x20 ? '1' : '0'), \
+  (byte & 0x10 ? '1' : '0'), \
+  (byte & 0x08 ? '1' : '0'), \
+  (byte & 0x04 ? '1' : '0'), \
+  (byte & 0x02 ? '1' : '0'), \
+  (byte & 0x01 ? '1' : '0')
+
 
 namespace sif {
 
@@ -38,3 +55,4 @@ void printError(const char* fmt, ...);
 
 }
 
+#endif /* FSFW_SERVICEINTERFACE_SERVICEINTERFACEPRINTER */

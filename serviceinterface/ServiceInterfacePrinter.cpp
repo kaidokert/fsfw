@@ -45,7 +45,7 @@ void fsfwPrint(sif::PrintLevel printType, const char* fmt, va_list arg) {
     	len += sprintf(bufferPosition, sif::ANSI_COLOR_GREEN);
     }
     else if(printType == sif::PrintLevel::DEBUG_LEVEL) {
-    	len += sprintf(bufferPosition, sif::ANSI_COLOR_MAGENTA);
+    	len += sprintf(bufferPosition, sif::ANSI_COLOR_CYAN);
     }
     else if(printType == sif::PrintLevel::WARNING_LEVEL) {
     	len += sprintf(bufferPosition, sif::ANSI_COLOR_YELLOW);

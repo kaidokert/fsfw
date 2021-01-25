@@ -18,7 +18,7 @@ public:
      * This function is protected because it should only be used by the
      * class imlementing the interface.
      */
-    virtual LocalDataPoolManager* getHkManagerHandle() = 0;
+    virtual LocalDataPoolManager* getPoolManagerHandle() = 0;
 
 protected:
 

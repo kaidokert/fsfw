@@ -61,15 +61,6 @@ public:
     using LocalPoolConfig = std::multiset<LocalPoolCfgPair, LocalPoolConfigCmp>;
 
     /**
-     * @brief   This definition generally sets the number of
-     * 			different sized pools. It is derived from the number of pairs
-     * 			inside the LocalPoolConfig set on object creation.
-     * @details
-     * This must be less than the maximum number of pools (currently 0xff).
-     */
-    const max_pools_t NUMBER_OF_POOLS;
-
-    /**
      * @brief   This is the default constructor for a pool manager instance.
      * @details
      * The pool is configured by passing a set of pairs into the constructor.
@@ -143,9 +134,15 @@ public:
 	void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) override;
 
 	void clearStore() override;
-	void clearPage(max_pools_t pageIndex) override;
+	void clearSubPool(max_subpools_t poolIndex) override;
 
 	ReturnValue_t initialize() override;
+
+    /**
+     * Get number sub pools. Each pool has pages with a specific bucket size.
+     * @return
+     */
+    max_subpools_t getNumberOfSubPools() const override;
 protected:
 	/**
 	 * With this helper method, a free element of @c size is reserved.
@@ -158,6 +155,16 @@ protected:
 			store_address_t* address, bool ignoreFault);
 
 private:
+
+    /**
+     * @brief   This definition generally sets the number of
+     *          different sized pools. It is derived from the number of pairs
+     *          inside the LocalPoolConfig set on object creation.
+     * @details
+     * This must be less than the maximum number of pools (currently 0xff).
+     */
+    const max_subpools_t NUMBER_OF_SUBPOOLS;
+
     /**
      * Indicates that this element is free.
      * This value limits the maximum size of a pool.
@@ -170,20 +177,20 @@ private:
 	 * 			must be set in ascending order on construction.
 	 */
     std::vector<size_type> elementSizes =
-            std::vector<size_type>(NUMBER_OF_POOLS);
+            std::vector<size_type>(NUMBER_OF_SUBPOOLS);
 	/**
 	 * @brief	n_elements stores the number of elements per pool.
 	 * @details	These numbers are maintained for internal pool management.
 	 */
 	std::vector<uint16_t> numberOfElements =
-	        std::vector<uint16_t>(NUMBER_OF_POOLS);
+	        std::vector<uint16_t>(NUMBER_OF_SUBPOOLS);
 	/**
 	 * @brief	store represents the actual memory pool.
 	 * @details	It is an array of pointers to memory, which was allocated with
 	 * 			a @c new call on construction.
 	 */
 	std::vector<std::vector<uint8_t>> store =
-	        std::vector<std::vector<uint8_t>>(NUMBER_OF_POOLS);
+	        std::vector<std::vector<uint8_t>>(NUMBER_OF_SUBPOOLS);
 
 	/**
 	 * @brief	The size_list attribute stores the size values of every pool element.
@@ -191,7 +198,7 @@ private:
 	 * 			is also dynamically allocated there.
 	 */
 	std::vector<std::vector<size_type>> sizeLists =
-	        std::vector<std::vector<size_type>>(NUMBER_OF_POOLS);
+	        std::vector<std::vector<size_type>>(NUMBER_OF_SUBPOOLS);
 
 	//! A variable to determine whether higher n pools are used if
 	//! the store is full.
@@ -210,7 +217,7 @@ private:
 	 * @param pool_index	The pool in which to look.
 	 * @return	Returns the size of an element or 0.
 	 */
-	size_type getPageSize(max_pools_t poolIndex);
+	size_type getSubpoolElementSize(max_subpools_t subpoolIndex);
 
 	/**
 	 * @brief	This helper method looks up a fitting pool for a given size.
@@ -221,7 +228,7 @@ private:
 	 * @return	- @c RETURN_OK on success,
 	 * 			- @c DATA_TOO_LARGE otherwise.
 	 */
-	ReturnValue_t getPoolIndex(size_t packetSize, uint16_t* poolIndex,
+	ReturnValue_t getSubPoolIndex(size_t packetSize, uint16_t* subpoolIndex,
 			uint16_t startAtIndex = 0);
 	/**
 	 * @brief	This helper method calculates the true array position in store

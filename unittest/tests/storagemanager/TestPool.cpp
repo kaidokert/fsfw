@@ -276,7 +276,7 @@ TEST_CASE( "Local Pool Extended Tests [3 Pools]" , "[TestPool2]") {
 		CHECK(receptionArray[3] == 66);
 
 		// now clear first page
-		simplePool.clearPage(0);
+		simplePool.clearSubPool(0);
 		bytesWritten = 0;
 		simplePool.getFillCount(receptionArray.data(), &bytesWritten);
 		// Second page full, median fill count is 33 %
