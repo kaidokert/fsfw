@@ -138,6 +138,10 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
     }
 
     SECTION("AdvancedTests") {
+        /* Acquire subscription interface */
+        ProvidesDataPoolSubscriptionIF* subscriptionIF = poolOwner->getSubscriptionInterface();
+        REQUIRE(subscriptionIF != nullptr);
+
         /* Subscribe for variable update */
         REQUIRE(poolOwner->subscribeWrapperVariableUpdate(lpool::uint8VarId) ==
                 retval::CATCH_OK);
@@ -155,8 +159,9 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
         CHECK(messageSent.getCommand() == static_cast<int>(
                 HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE));
-        /* Now subscribe for the dataset update (HK and update) again */
-        REQUIRE(poolOwner->subscribeWrapperSetUpdate() == retval::CATCH_OK);
+        /* Now subscribe for the dataset update (HK and update) again with subscription interface */
+        REQUIRE(subscriptionIF->subscribeForSetUpdateMessages(lpool::testSetId,
+                objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, false) == retval::CATCH_OK);
         REQUIRE(poolOwner->subscribeWrapperSetUpdateHk() == retval::CATCH_OK);
 
         poolOwner->dataset.setChanged(true);
