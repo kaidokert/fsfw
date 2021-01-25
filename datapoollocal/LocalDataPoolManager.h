@@ -179,8 +179,6 @@ public:
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;
 
-    MutexIF* getLocalPoolMutex() override;
-
 	/**
 	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
 	 * than diagnostic packets.
@@ -264,7 +262,7 @@ public:
 
     object_id_t getCreatorObjectId() const;
 
-    virtual LocalDataPoolManager* getHkManagerHandle() override;
+    virtual LocalDataPoolManager* getPoolManagerHandle() override;
 private:
     localpool::DataPool localPoolMap;
     /** Every housekeeping data manager has a mutex to protect access
@@ -360,6 +358,8 @@ private:
      * @return
      */
     ReturnValue_t initializeHousekeepingPoolEntriesOnce();
+
+    MutexIF* getLocalPoolMutex() override;
 
 	ReturnValue_t serializeHkPacketIntoStore(
 	        HousekeepingPacketDownlink& hkPacket,

@@ -906,6 +906,6 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 	}
 }
 
-LocalDataPoolManager* LocalDataPoolManager::getHkManagerHandle() {
+LocalDataPoolManager* LocalDataPoolManager::getPoolManagerHandle() {
 	return this;
 }
