@@ -1,10 +1,10 @@
-#ifndef FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
-#define FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_
+#ifndef FSFW_OSAL_RTEMS_PERIODICTASK_H_
+#define FSFW_OSAL_RTEMS_PERIODICTASK_H_
 
+#include "RTEMSTaskBase.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
 
-#include "TaskBase.h"
 #include <vector>
 
 class ExecutableObjectIF;
@@ -18,7 +18,7 @@ class ExecutableObjectIF;
  * @author  baetz
  * @ingroup task_handling
  */
-class MultiObjectTask: public TaskBase, public PeriodicTaskIF {
+class PeriodicTask: public RTEMSTaskBase, public PeriodicTaskIF {
 public:
 	/**
 	 * @brief	Standard constructor of the class.
@@ -35,13 +35,13 @@ public:
 	 * @param setDeadlineMissedFunc	The function pointer to the deadline missed function
 	 * 								that shall be assigned.
 	 */
-	MultiObjectTask(const char *name, rtems_task_priority setPriority, size_t setStack, rtems_interval setPeriod,
-			void (*setDeadlineMissedFunc)());
+	PeriodicTask(const char *name, rtems_task_priority setPriority, size_t setStack,
+	        rtems_interval setPeriod, void (*setDeadlineMissedFunc)());
 	/**
 	 * @brief	Currently, the executed object's lifetime is not coupled with the task object's
 	 * 			lifetime, so the destructor is empty.
 	 */
-	virtual ~MultiObjectTask(void);
+	virtual ~PeriodicTask(void);
 
 	/**
 	 * @brief	The method to start the task.
@@ -76,7 +76,7 @@ protected:
 	/**
 	 * @brief id of the associated OS period
 	 */
-	rtems_id periodId;
+	rtems_id periodId = 0;
 	/**
 	 * @brief	The pointer to the deadline-missed function.
 	 * @details	This pointer stores the function that is executed if the task's deadline is missed.
@@ -104,4 +104,4 @@ protected:
 	void taskFunctionality(void);
 };
 
-#endif /* FSFW_OSAL_RTEMS_MULTIOBJECTTASK_H_ */
+#endif /* FSFW_OSAL_RTEMS_PERIODICTASK_H_ */

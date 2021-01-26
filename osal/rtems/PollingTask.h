@@ -1,11 +1,11 @@
 #ifndef FSFW_OSAL_RTEMS_POLLINGTASK_H_
 #define FSFW_OSAL_RTEMS_POLLINGTASK_H_
 
+#include <fsfw/osal/rtems/RTEMSTaskBase.h>
 #include "../../tasks/FixedSlotSequence.h"
 #include "../../tasks/FixedTimeslotTaskIF.h"
-#include "TaskBase.h"
 
-class PollingTask: public TaskBase, public FixedTimeslotTaskIF {
+class PollingTask: public RTEMSTaskBase, public FixedTimeslotTaskIF {
 	public:
 	/**
 	 * @brief	The standard constructor of the class.

@@ -1,5 +1,5 @@
-#ifndef FSFW_OSAL_RTEMS_TASKBASE_H_
-#define FSFW_OSAL_RTEMS_TASKBASE_H_
+#ifndef FSFW_OSAL_RTEMS_RTEMSTASKBASE_H_
+#define FSFW_OSAL_RTEMS_RTEMSTASKBASE_H_
 
 #include "RtemsBasic.h"
 #include "../../tasks/PeriodicTaskIF.h"
@@ -9,7 +9,7 @@
  *
  * @details Task creation base class for rtems.
  */
-class TaskBase {
+class RTEMSTaskBase {
 protected:
 	/**
 	 * @brief	The class stores the task id it got assigned from the operating system in this attribute.
@@ -26,11 +26,11 @@ public:
 	 * @param stack_size	The stack size reserved by the operating system for the task.
 	 * @param nam			The name of the Task, as a null-terminated String. Currently max 4 chars supported (excluding Null-terminator), rest will be truncated
 	 */
-	TaskBase( rtems_task_priority priority, size_t stack_size, const char  *name);
+	RTEMSTaskBase( rtems_task_priority priority, size_t stack_size, const char  *name);
 	/**
 	 * @brief	In the destructor, the created task is deleted.
 	 */
-	virtual ~TaskBase();
+	virtual ~RTEMSTaskBase();
 	/**
 	 * @brief	This method returns the task id of this class.
 	 */
@@ -44,4 +44,4 @@ private:
 };
 
 
-#endif /* FSFW_OSAL_RTEMS_TASKBASE_H_ */
+#endif /* FSFW_OSAL_RTEMS_RTEMSTASKBASE_H_ */

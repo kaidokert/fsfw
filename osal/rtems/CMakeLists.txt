@@ -5,13 +5,13 @@ target_sources(${LIB_FSFW_NAME}
 		InitTask.cpp
 		InternalErrorCodes.cpp
 		MessageQueue.cpp
-		MultiObjectTask.cpp
+		PeriodicTask.cpp
 		Mutex.cpp
 		MutexFactory.cpp
 		PollingTask.cpp
 		QueueFactory.cpp
 		RtemsBasic.cpp
-		TaskBase.cpp
+		RTEMSTaskBase.cpp
 		TaskFactory.cpp
 )
 

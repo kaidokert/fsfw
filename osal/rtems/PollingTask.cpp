@@ -20,7 +20,7 @@ uint32_t PollingTask::deadlineMissedCount = 0;
 PollingTask::PollingTask(const char *name, rtems_task_priority setPriority,
 		size_t setStack, uint32_t setOverallPeriod,
 		void (*setDeadlineMissedFunc)()) :
-		TaskBase(setPriority, setStack, name), periodId(0), pst(
+		RTEMSTaskBase(setPriority, setStack, name), periodId(0), pst(
 				setOverallPeriod) {
 	// All additional attributes are applied to the object.
 	this->deadlineMissedFunc = setDeadlineMissedFunc;
@@ -104,7 +104,7 @@ void PollingTask::taskFunctionality() {
 
 	//The start time for the first entry is read.
 	rtems_interval interval = RtemsBasic::convertMsToTicks(it->pollingTimeMs);
-	TaskBase::setAndStartPeriod(interval,&periodId);
+	RTEMSTaskBase::setAndStartPeriod(interval,&periodId);
 	//The task's "infinite" inner loop is entered.
 	while (1) {
 		if (pst.slotFollowsImmediately()) {
@@ -114,7 +114,7 @@ void PollingTask::taskFunctionality() {
 			interval = RtemsBasic::convertMsToTicks(this->pst.getIntervalToNextSlotMs());
 			//The period is checked and restarted with the new interval.
 			//If the deadline was missed, the deadlineMissedFunc is called.
-			rtems_status_code status = TaskBase::restartPeriod(interval,periodId);
+			rtems_status_code status = RTEMSTaskBase::restartPeriod(interval,periodId);
 			if (status == RTEMS_TIMEOUT) {
 				if (this->deadlineMissedFunc != nullptr) {
 					this->deadlineMissedFunc();
@@ -127,5 +127,5 @@ void PollingTask::taskFunctionality() {
 }
 
 ReturnValue_t PollingTask::sleepFor(uint32_t ms){
-	return TaskBase::sleepFor(ms);
+	return RTEMSTaskBase::sleepFor(ms);
 };

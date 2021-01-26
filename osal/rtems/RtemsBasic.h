@@ -2,12 +2,13 @@
 #define FSFW_OSAL_RTEMS_RTEMSBASIC_H_
 
 #include "../../returnvalues/HasReturnvaluesIF.h"
+
 #include <rtems.h>
 #include <rtems/libio.h>
 #include <rtems/error.h>
 #include <rtems/stackchk.h>
-#include <stddef.h>
 
+#include <cstddef>
 
 class RtemsBasic {
 public:

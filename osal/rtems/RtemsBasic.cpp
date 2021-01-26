@@ -1,5 +1,6 @@
 #include "RtemsBasic.h"
 
+// TODO: Can this be removed?
 
 //ReturnValue_t RtemsBasic::convertReturnCode(rtems_status_code inValue) {
 //	if (inValue == RTEMS_SUCCESSFUL) {

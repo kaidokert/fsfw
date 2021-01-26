@@ -1,5 +1,5 @@
+#include <fsfw/osal/rtems/PeriodicTask.h>
 #include "../../tasks/TaskFactory.h"
-#include "MultiObjectTask.h"
 #include "PollingTask.h"
 #include "InitTask.h"
 #include "RtemsBasic.h"
@@ -18,7 +18,7 @@ TaskFactory* TaskFactory::instance() {
 PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,TaskPriority taskPriority_,TaskStackSize stackSize_,TaskPeriod periodInSeconds_,TaskDeadlineMissedFunction deadLineMissedFunction_) {
 	rtems_interval taskPeriod = periodInSeconds_ * Clock::getTicksPerSecond();
 
-	return static_cast<PeriodicTaskIF*>(new MultiObjectTask(name_,taskPriority_,stackSize_,taskPeriod,deadLineMissedFunction_));
+	return static_cast<PeriodicTaskIF*>(new PeriodicTask(name_,taskPriority_,stackSize_,taskPeriod,deadLineMissedFunction_));
 }
 
 FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,TaskPriority taskPriority_,TaskStackSize stackSize_,TaskPeriod periodInSeconds_,TaskDeadlineMissedFunction deadLineMissedFunction_) {

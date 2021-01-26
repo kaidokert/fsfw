@@ -1,9 +1,9 @@
-#include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "TaskBase.h"
+#include <fsfw/osal/rtems/RTEMSTaskBase.h>
+#include "../../serviceinterface/ServiceInterface.h"
 
-const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE=RTEMS_MINIMUM_STACK_SIZE;
+const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = RTEMS_MINIMUM_STACK_SIZE;
 
-TaskBase::TaskBase(rtems_task_priority set_priority, size_t stack_size,
+RTEMSTaskBase::RTEMSTaskBase(rtems_task_priority set_priority, size_t stack_size,
 		const char *name) {
 	rtems_name osalName = 0;
 	for (uint8_t i = 0; i < 4; i++) {
@@ -31,21 +31,21 @@ TaskBase::TaskBase(rtems_task_priority set_priority, size_t stack_size,
 	}
 }
 
-TaskBase::~TaskBase() {
+RTEMSTaskBase::~RTEMSTaskBase() {
 	rtems_task_delete(id);
 }
 
-rtems_id TaskBase::getId() {
+rtems_id RTEMSTaskBase::getId() {
 	return this->id;
 }
 
-ReturnValue_t TaskBase::sleepFor(uint32_t ms) {
+ReturnValue_t RTEMSTaskBase::sleepFor(uint32_t ms) {
 	rtems_status_code status = rtems_task_wake_after(RtemsBasic::convertMsToTicks(ms));
 	return convertReturnCode(status);
 }
 
 
-ReturnValue_t TaskBase::convertReturnCode(rtems_status_code inValue) {
+ReturnValue_t RTEMSTaskBase::convertReturnCode(rtems_status_code inValue) {
 	switch (inValue) {
 	case RTEMS_SUCCESSFUL:
 		return HasReturnvaluesIF::RETURN_OK;
@@ -68,7 +68,7 @@ ReturnValue_t TaskBase::convertReturnCode(rtems_status_code inValue) {
 }
 
 
-ReturnValue_t TaskBase::setAndStartPeriod(rtems_interval period, rtems_id *periodId) {
+ReturnValue_t RTEMSTaskBase::setAndStartPeriod(rtems_interval period, rtems_id *periodId) {
 	rtems_name periodName = (('P' << 24) + ('e' << 16) + ('r' << 8) + 'd');
 	rtems_status_code status = rtems_rate_monotonic_create(periodName, periodId);
 	if (status == RTEMS_SUCCESSFUL) {
@@ -77,7 +77,7 @@ ReturnValue_t TaskBase::setAndStartPeriod(rtems_interval period, rtems_id *perio
 	return convertReturnCode(status);
 }
 
-rtems_status_code TaskBase::restartPeriod(rtems_interval period, rtems_id periodId){
+rtems_status_code RTEMSTaskBase::restartPeriod(rtems_interval period, rtems_id periodId){
 	//This is necessary to avoid a call with period = 0, which does not start the period.
 	rtems_status_code status = rtems_rate_monotonic_period(periodId, period + 1);
 	return status;
