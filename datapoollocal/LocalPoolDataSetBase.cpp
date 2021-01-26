@@ -28,7 +28,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
     AccessPoolManagerIF* accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
 
     if(accessor != nullptr) {
-        poolManager = accessor->getHkManagerHandle();
+        poolManager = accessor->getPoolManagerHandle();
         mutexIfSingleDataCreator = accessor->getLocalPoolMutex();
     }
 

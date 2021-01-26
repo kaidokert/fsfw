@@ -77,8 +77,7 @@ public:
      * @param dataSet
      * @param setReadWriteMode
      */
-    LocalPoolVector(gp_id_t globalPoolId,
-            DataSetIF* dataSet = nullptr,
+    LocalPoolVector(gp_id_t globalPoolId, DataSetIF* dataSet = nullptr,
             pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
     /**
@@ -87,7 +86,7 @@ public:
      * The user can work on this attribute just like he would on a local
      * array of this type.
      */
-    T value[vectorSize];
+    T value[vectorSize]= {};
     /**
      * @brief	The classes destructor is empty.
      * @details	If commit() was not called, the local value is
