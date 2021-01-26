@@ -6,6 +6,7 @@
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
 
+MessageQueueId_t EventManagerIF::eventmanagerQueue = MessageQueueIF::NO_QUEUE;
 
 // If one checks registerListener calls, there are around 40 (to max 50)
 // objects registering for certain events.

@@ -15,5 +15,9 @@ std::string* ServiceInterfaceStream::getPreamble() {
 	return streambuf.getPreamble();
 }
 
+bool ServiceInterfaceStream::crAdditionEnabled() const {
+    return streambuf.crAdditionEnabled();
+}
+
 #endif
 

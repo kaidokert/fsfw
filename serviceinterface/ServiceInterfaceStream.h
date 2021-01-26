@@ -39,6 +39,13 @@ public:
 	 */
 	std::string* getPreamble();
 
+	/**
+	 * Can be used to determine if the stream was configured to add CR characters in addition
+	 * to newline characters.
+	 * @return
+	 */
+	bool crAdditionEnabled() const;
+
 protected:
 	ServiceInterfaceBuffer streambuf;
 };

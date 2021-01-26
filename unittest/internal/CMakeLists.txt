@@ -5,3 +5,4 @@ target_sources(${TARGET_NAME} PRIVATE
 
 add_subdirectory(osal)
 add_subdirectory(serialize)
+add_subdirectory(globalfunctions)
