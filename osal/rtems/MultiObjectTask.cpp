@@ -62,12 +62,6 @@ void MultiObjectTask::taskFunctionality() {
 		}
 		rtems_status_code status = TaskBase::restartPeriod(periodTicks,periodId);
 		if (status == RTEMS_TIMEOUT) {
-			char nameSpace[8] = { 0 };
-			char* ptr = rtems_object_get_name(getId(), sizeof(nameSpace),
-					nameSpace);
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "ObjectTask: " << ptr << " Deadline missed." << std::endl;
-#endif
 			if (this->deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}

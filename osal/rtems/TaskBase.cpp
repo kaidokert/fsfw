@@ -14,7 +14,7 @@ TaskBase::TaskBase(rtems_task_priority set_priority, size_t stack_size,
 	}
 	//The task is created with the operating system's system call.
 	rtems_status_code status = RTEMS_UNSATISFIED;
-	if (set_priority >= 0 && set_priority <= 99) {
+	if (set_priority <= 99) {
 		 status = rtems_task_create(osalName,
 				(0xFF - 2 * set_priority), stack_size,
 				RTEMS_PREEMPT | RTEMS_NO_TIMESLICE | RTEMS_NO_ASR,
