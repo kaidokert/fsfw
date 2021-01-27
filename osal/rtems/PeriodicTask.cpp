@@ -50,6 +50,9 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 
 void PeriodicTask::taskFunctionality() {
     RTEMSTaskBase::setAndStartPeriod(periodTicks,&periodId);
+    for (const auto& object: objectList) {
+        object->initializeAfterTaskCreation();
+    }
     /* The task's "infinite" inner loop is entered. */
     while (1) {
         for (const auto& object: objectList) {
