@@ -8,6 +8,7 @@
 #include "../../serviceinterface/ServiceInterface.h"
 
 #include <rtems/bspIo.h>
+#include <rtems/io.h>
 #include <rtems/rtems/ratemon.h>
 #include <rtems/rtems/status.h>
 #include <rtems/rtems/tasks.h>
@@ -103,20 +104,23 @@ ReturnValue_t FixedTimeslotTask::checkSequence() const {
 	return pst.checkSequence();
 }
 
-#include <rtems/io.h>
-
 void FixedTimeslotTask::taskFunctionality() {
-	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
+	/* A local iterator for the Polling Sequence Table is created to find the start time for
+	the first entry. */
 	FixedSlotSequence::SlotListIter it = pst.current;
 
-	//The start time for the first entry is read.
+	/* Initialize the PST with the correct calling task */
+	pst.intializeSequenceAfterTaskCreation();
+
+	/* The start time for the first entry is read. */
 	rtems_interval interval = RtemsBasic::convertMsToTicks(it->pollingTimeMs);
 	RTEMSTaskBase::setAndStartPeriod(interval,&periodId);
 	//The task's "infinite" inner loop is entered.
 	while (1) {
 		if (pst.slotFollowsImmediately()) {
 			//Do nothing
-		} else {
+		}
+		else {
 			//The interval for the next polling slot is selected.
 			interval = RtemsBasic::convertMsToTicks(this->pst.getIntervalToNextSlotMs());
 			//The period is checked and restarted with the new interval.
