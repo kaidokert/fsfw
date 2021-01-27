@@ -11,7 +11,7 @@ public:
 	ReturnValue_t lockMutex(TimeoutType timeoutType, uint32_t timeoutMs = 0);
 	ReturnValue_t unlockMutex();
 private:
-	rtems_id mutexId;
+	rtems_id mutexId = 0;
 	static uint8_t count;
 };
 
