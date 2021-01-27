@@ -1,8 +1,10 @@
 #ifndef FSFW_OBJECTMANAGER_FRAMEWORKOBJECTS_H_
 #define FSFW_OBJECTMANAGER_FRAMEWORKOBJECTS_H_
 
+#include <fsfw/objectmanager/SystemObjectIF.h>
+
 namespace objects {
-enum framework_objects {
+enum framework_objects: object_id_t {
     FSFW_OBJECTS_START = 0x53000000,
     // Default verification reporter.
     PUS_SERVICE_1_VERIFICATION = 0x53000001,
