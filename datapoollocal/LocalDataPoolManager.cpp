@@ -890,7 +890,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
 		sif::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
-				owner->getObjectId(), errorPrint);
+				functionName, owner->getObjectId(), errorPrint);
 #endif
 	}
 	else if(outputType == sif::OutputTypes::OUT_ERROR) {
@@ -901,7 +901,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
 		sif::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
-				owner->getObjectId(), errorPrint);
+				functionName, owner->getObjectId(), errorPrint);
 #endif
 	}
 }
