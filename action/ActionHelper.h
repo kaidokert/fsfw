@@ -99,7 +99,7 @@ public:
 	 */
 	void setQueueToUse(MessageQueueIF *queue);
 protected:
-	//!< Increase of value of this per step
+	//! Increase of value of this per step
 	static const uint8_t STEP_OFFSET = 1;
 	HasActionsIF* owner;//!< Pointer to the owner
 	//! Queue to be used as response sender, has to be set in ctor or with

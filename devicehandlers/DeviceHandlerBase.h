@@ -189,6 +189,38 @@ public:
 	/** Destructor. */
 	virtual ~DeviceHandlerBase();
 
+
+    /**
+     * Implementation of ExecutableObjectIF function
+     * Used to setup the reference of the task, that executes this component
+     * @param task_ Pointer to the taskIF of this task
+     */
+    virtual  void setTaskIF(PeriodicTaskIF* task_) override;
+    virtual MessageQueueId_t getCommandQueue(void) const override;
+
+    /** Explicit interface implementation of getObjectId */
+    virtual object_id_t getObjectId() const override;
+
+    /**
+     * @param parentQueueId
+     */
+    virtual void setParentQueue(MessageQueueId_t parentQueueId);
+
+    /** @brief  Implementation required for HasActionIF */
+    ReturnValue_t executeAction(ActionId_t actionId,
+            MessageQueueId_t commandedBy, const uint8_t* data,
+            size_t size) override;
+
+    Mode_t getTransitionSourceMode() const;
+    Submode_t getTransitionSourceSubMode() const;
+    virtual void getMode(Mode_t *mode, Submode_t *submode);
+    HealthState getHealth();
+    ReturnValue_t setHealth(HealthState health);
+    virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
+            ParameterWrapper *parameterWrapper,
+            const ParameterWrapper *newValues, uint16_t startAtIndex) override;
+
+
 protected:
 	/**
 	 * @brief 	This is used to let the child class handle the transition from
@@ -535,37 +567,6 @@ protected:
 	 */
 	virtual void performOperationHook();
 
-public:
-	/** Explicit interface implementation of getObjectId */
-	virtual object_id_t getObjectId() const override;
-
-	/**
-	 * @param parentQueueId
-	 */
-	virtual void setParentQueue(MessageQueueId_t parentQueueId);
-
-	/** @brief 	Implementation required for HasActionIF */
-	ReturnValue_t executeAction(ActionId_t actionId,
-			MessageQueueId_t commandedBy, const uint8_t* data,
-			size_t size) override;
-
-	Mode_t getTransitionSourceMode() const;
-	Submode_t getTransitionSourceSubMode() const;
-	virtual void getMode(Mode_t *mode, Submode_t *submode);
-	HealthState getHealth();
-	ReturnValue_t setHealth(HealthState health);
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex) override;
-	/**
-	 * Implementation of ExecutableObjectIF function
-	 *
-	 * Used to setup the reference of the task, that executes this component
-	 * @param task_ Pointer to the taskIF of this task
-	 */
-	virtual  void setTaskIF(PeriodicTaskIF* task_);
-	virtual MessageQueueId_t getCommandQueue(void) const;
-
 protected:
 	/**
 	 * The Returnvalues id of this class, required by HasReturnvaluesIF
@@ -573,16 +574,16 @@ protected:
 	static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_HANDLER_BASE;
 
 	static const ReturnValue_t INVALID_CHANNEL = MAKE_RETURN_CODE(0xA0);
-	// Returnvalues for scanForReply()
+	/* Return codes for scanForReply */
 	static const ReturnValue_t APERIODIC_REPLY = MAKE_RETURN_CODE(0xB0); //!< This is used to specify for replies from a device which are not replies to requests
 	static const ReturnValue_t IGNORE_REPLY_DATA = MAKE_RETURN_CODE(0xB1); //!< Ignore parts of the received packet
 	static const ReturnValue_t IGNORE_FULL_PACKET = MAKE_RETURN_CODE(0xB2); //!< Ignore full received packet
-	// Returnvalues for command building
+	/* Return codes for command building */
 	static const ReturnValue_t NOTHING_TO_SEND = MAKE_RETURN_CODE(0xC0); //!< Return this if no command sending in required
 	static const ReturnValue_t COMMAND_MAP_ERROR = MAKE_RETURN_CODE(0xC2);
-	// Returnvalues for getSwitches()
+	// Return codes for getSwitches */
 	static const ReturnValue_t NO_SWITCH = MAKE_RETURN_CODE(0xD0);
-	// Mode handling error Codes
+	/* Mode handling error Codes */
 	static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE0);
 	static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE1);
 
@@ -768,6 +769,8 @@ protected:
 	 * method optionally.
 	 */
 	virtual void setNormalDatapoolEntriesInvalid();
+
+	MessageQueueId_t getCommanderId(DeviceCommandId_t replyId) const;
 
 	/**
 	 * Helper function to get pending command. This is useful for devices
@@ -1003,8 +1006,8 @@ protected:
 
 	void handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t replyId,
 	        bool forceDirectTm = false);
-	void handleDeviceTM(uint8_t* data, size_t dataSize, DeviceCommandId_t replyId,
-	        bool forceDirectTm);
+//	void handleDeviceTM(uint8_t* data, size_t dataSize, DeviceCommandId_t replyId,
+//	        bool forceDirectTm);
 
 	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
 			uint32_t *msToReachTheMode);
@@ -1070,6 +1073,7 @@ protected:
 	 * @param onOff on == @c SWITCH_ON; off != @c SWITCH_ON
 	 */
 	void commandSwitch(ReturnValue_t onOff);
+
 private:
 
 	/**

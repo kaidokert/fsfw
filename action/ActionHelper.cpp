@@ -155,7 +155,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
         result = queueToUse->sendMessage(reportTo, &reply);
     }
 
-    if (result != HasReturnvaluesIF::RETURN_OK){
+    if (result != HasReturnvaluesIF::RETURN_OK) {
         ipcStore->deleteData(storeAddress);
     }
     return result;

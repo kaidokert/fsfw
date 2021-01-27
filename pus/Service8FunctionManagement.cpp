@@ -104,13 +104,14 @@ ReturnValue_t Service8FunctionManagement::handleReply(
 		break;
 	}
 	case ActionMessage::DATA_REPLY: {
+	    /* Multiple data replies are possible, so declare data reply as step */
 	    *isStep = true;
 	    result = handleDataReply(reply, objectId, actionId);
 		break;
 	}
 	case ActionMessage::STEP_FAILED:
 		*isStep = true;
-		/*No break, falls through*/
+		/* No break, falls through */
 	case ActionMessage::COMPLETION_FAILED:
 		result = ActionMessage::getReturnCode(reply);
 		break;

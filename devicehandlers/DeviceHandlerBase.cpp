@@ -1203,7 +1203,7 @@ ReturnValue_t DeviceHandlerBase::letChildHandleMessage(
 }
 
 void DeviceHandlerBase::handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t replyId,
-        bool forceDirectTm = false) {
+        bool forceDirectTm) {
     if(dataSet == nullptr) {
         return;
     }
@@ -1224,7 +1224,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t r
 			actionHelper.reportData(queueId, replyId, dataSet);
 		}
 
-		//This check should make sure we get any TM but don't get anything doubled.
+		/* This check should make sure we get any TM but don't get anything doubled. */
 		if (wiretappingMode == TM && (requestedRawTraffic != queueId)) {
             DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataSet);
 			actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
@@ -1246,9 +1246,14 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t r
 		if (wiretappingMode == TM) {
 			actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
 		}
-		else if (forceDirectTm and defaultRawReceiver !=
-				MessageQueueIF::NO_QUEUE)
+		if (forceDirectTm and defaultRawReceiver != MessageQueueIF::NO_QUEUE)
 		{
+//		    sid_t setSid = sid_t(this->getObjectId(), replyId);
+//		    LocalPoolDataSetBase* dataset = getDataSetHandle(setSid);
+//		    if(dataset != nullptr) {
+//	            poolManager.generateHousekeepingPacket(setSid, dataset, true);
+//		    }
+
 			// hiding of sender needed so the service will handle it as
 			// unexpected Data, no matter what state (progress or completed)
 			// it is in
@@ -1526,4 +1531,12 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
 
 LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
     return &poolManager;
+}
+
+MessageQueueId_t DeviceHandlerBase::getCommanderId(DeviceCommandId_t replyId) const {
+    auto commandIter = deviceCommandMap.find(replyId);
+    if(commandIter == deviceCommandMap.end()) {
+        return MessageQueueIF::NO_QUEUE;
+    }
+    return commandIter->second.sendReplyTo;
 }
