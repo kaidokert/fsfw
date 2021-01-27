@@ -8,7 +8,7 @@ target_sources(${LIB_FSFW_NAME}
 		PeriodicTask.cpp
 		Mutex.cpp
 		MutexFactory.cpp
-		PollingTask.cpp
+		FixedTimeslotTask.cpp
 		QueueFactory.cpp
 		RtemsBasic.cpp
 		RTEMSTaskBase.cpp

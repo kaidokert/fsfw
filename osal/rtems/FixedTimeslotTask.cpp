@@ -1,4 +1,4 @@
-#include <fsfw/osal/rtems/FixedTimeslotTask.h>
+#include "FixedTimeslotTask.h"
 #include "RtemsBasic.h"
 
 #include "../../tasks/FixedSequenceSlot.h"
