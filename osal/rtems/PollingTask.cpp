@@ -1,18 +1,24 @@
+#include "PollingTask.h"
+#include "RtemsBasic.h"
+
 #include "../../tasks/FixedSequenceSlot.h"
 #include "../../objectmanager/SystemObjectIF.h"
 #include "../../objectmanager/ObjectManagerIF.h"
-#include "PollingTask.h"
-#include "RtemsBasic.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
+
 #include <rtems/bspIo.h>
 #include <rtems/rtems/ratemon.h>
 #include <rtems/rtems/status.h>
 #include <rtems/rtems/tasks.h>
 #include <rtems/rtems/types.h>
-#include <stddef.h>
 #include <sys/_stdint.h>
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 #include <iostream>
+#endif
+
+#include <cstddef>
 #include <list>
 
 uint32_t PollingTask::deadlineMissedCount = 0;
