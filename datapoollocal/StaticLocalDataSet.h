@@ -2,6 +2,9 @@
 #define FSFW_DATAPOOLLOCAL_STATICLOCALDATASET_H_
 
 #include "LocalPoolDataSetBase.h"
+#include "LocalPoolVariable.h"
+#include "LocalPoolVector.h"
+
 #include "../objectmanager/SystemObjectIF.h"
 #include <array>
 
