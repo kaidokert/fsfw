@@ -288,23 +288,29 @@ protected:
 	virtual ReturnValue_t buildTransitionDeviceCommand(DeviceCommandId_t * id) = 0;
 
 	/**
-	 * @brief 	Build a device command packet from data supplied by a
-	 * 			direct command.
-	 *
+	 * @brief 	Build a device command packet from data supplied by a direct
+	 *          command (PUS Service 8)
 	 * @details
-	 * #rawPacket and #rawPacketLen should be set by this method to the packet
-	 * to be sent. The existence of the command in the command map and the
-	 * command size check against 0 are done by the base class.
+	 * This will be called if an functional command via PUS Service 8 is received and is
+	 * the primary interface for functional command instead of #executeAction for users. The
+	 * supplied ActionId_t action ID will be converted to a DeviceCommandId_t command ID after
+	 * an internal check whether the action ID is a key in the device command map.
 	 *
-	 * @param deviceCommand the command to build, already checked against
-	 * deviceCommandMap
-	 * @param commandData pointer to the data from the direct command
-	 * @param commandDataLen length of commandData
+	 * #rawPacket and #rawPacketLen should be set by this method to the packet to be sent.
+	 * The existence of the command in the command map and the command size check against 0 are
+	 * done by the base class.
+	 *
+	 * @param deviceCommand     The command to build, already checked against deviceCommandMap
+	 * @param commandData       Pointer to the data from the direct command
+	 * @param commandDataLen    Length of commandData
 	 * @return
 	 *  - @c RETURN_OK to send command after #rawPacket and #rawPacketLen
 	 *       have been set.
-	 *  - Anything else triggers an event with the
-	 *    returnvalue as a parameter
+	 *  - @c HasActionsIF::EXECUTION_COMPLETE to generate a finish reply immediately. This can
+	 *       be used if no reply is expected. Otherwise, the developer can call #actionHelper.finish
+	 *       to finish the command handling.
+	 *  - Anything else triggers an event with the return code as a parameter as well as a
+	 *    step reply failed with the return code
 	 */
 	virtual ReturnValue_t buildCommandFromCommand(DeviceCommandId_t deviceCommand,
 			const uint8_t * commandData, size_t commandDataLen) = 0;
@@ -995,8 +1001,10 @@ protected:
 
 	bool isAwaitingReply();
 
-	void handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t commandId,
-			bool neverInDataPool = false, bool forceDirectTm = false);
+	void handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t replyId,
+	        bool forceDirectTm = false);
+	void handleDeviceTM(uint8_t* data, size_t dataSize, DeviceCommandId_t replyId,
+	        bool forceDirectTm);
 
 	virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
 			uint32_t *msToReachTheMode);

@@ -104,6 +104,7 @@ ReturnValue_t Service8FunctionManagement::handleReply(
 		break;
 	}
 	case ActionMessage::DATA_REPLY: {
+	    *isStep = true;
 	    result = handleDataReply(reply, objectId, actionId);
 		break;
 	}
