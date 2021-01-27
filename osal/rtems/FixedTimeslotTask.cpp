@@ -1,4 +1,4 @@
-#include "PollingTask.h"
+#include <fsfw/osal/rtems/FixedTimeslotTask.h>
 #include "RtemsBasic.h"
 
 #include "../../tasks/FixedSequenceSlot.h"
@@ -21,9 +21,9 @@
 #include <cstddef>
 #include <list>
 
-uint32_t PollingTask::deadlineMissedCount = 0;
+uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 
-PollingTask::PollingTask(const char *name, rtems_task_priority setPriority,
+FixedTimeslotTask::FixedTimeslotTask(const char *name, rtems_task_priority setPriority,
 		size_t setStack, uint32_t setOverallPeriod,
 		void (*setDeadlineMissedFunc)()) :
 		RTEMSTaskBase(setPriority, setStack, name), periodId(0), pst(
@@ -32,33 +32,34 @@ PollingTask::PollingTask(const char *name, rtems_task_priority setPriority,
 	this->deadlineMissedFunc = setDeadlineMissedFunc;
 }
 
-PollingTask::~PollingTask() {
+FixedTimeslotTask::~FixedTimeslotTask() {
 }
 
-rtems_task PollingTask::taskEntryPoint(rtems_task_argument argument) {
+rtems_task FixedTimeslotTask::taskEntryPoint(rtems_task_argument argument) {
 
 	//The argument is re-interpreted as PollingTask.
-	PollingTask *originalTask(reinterpret_cast<PollingTask*>(argument));
+	FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
 	//The task's functionality is called.
-	originalTask->taskFunctionality();
+	return originalTask->taskFunctionality();
+	/* Should never be reached */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::debug << "Polling task " << originalTask->getId()
-			<< " returned from taskFunctionality." << std::endl;
+	sif::error << "Polling task " << originalTask->getId() << " returned from taskFunctionality." <<
+	        std::endl;
 #endif
 }
 
-void PollingTask::missedDeadlineCounter() {
-	PollingTask::deadlineMissedCount++;
-	if (PollingTask::deadlineMissedCount % 10 == 0) {
+void FixedTimeslotTask::missedDeadlineCounter() {
+	FixedTimeslotTask::deadlineMissedCount++;
+	if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "PST missed " << PollingTask::deadlineMissedCount
+		sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount
 				<< " deadlines." << std::endl;
 #endif
 	}
 }
 
-ReturnValue_t PollingTask::startTask() {
-	rtems_status_code status = rtems_task_start(id, PollingTask::taskEntryPoint,
+ReturnValue_t FixedTimeslotTask::startTask() {
+	rtems_status_code status = rtems_task_start(id, FixedTimeslotTask::taskEntryPoint,
 			rtems_task_argument((void *) this));
 	if (status != RTEMS_SUCCESSFUL) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -79,7 +80,7 @@ ReturnValue_t PollingTask::startTask() {
 	}
 }
 
-ReturnValue_t PollingTask::addSlot(object_id_t componentId,
+ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
 	ExecutableObjectIF* object = objectManager->get<ExecutableObjectIF>(componentId);
 	if (object != nullptr) {
@@ -94,17 +95,17 @@ ReturnValue_t PollingTask::addSlot(object_id_t componentId,
 	return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-uint32_t PollingTask::getPeriodMs() const {
+uint32_t FixedTimeslotTask::getPeriodMs() const {
 	return pst.getLengthMs();
 }
 
-ReturnValue_t PollingTask::checkSequence() const {
+ReturnValue_t FixedTimeslotTask::checkSequence() const {
 	return pst.checkSequence();
 }
 
 #include <rtems/io.h>
 
-void PollingTask::taskFunctionality() {
+void FixedTimeslotTask::taskFunctionality() {
 	// A local iterator for the Polling Sequence Table is created to find the start time for the first entry.
 	FixedSlotSequence::SlotListIter it = pst.current;
 
@@ -132,6 +133,6 @@ void PollingTask::taskFunctionality() {
 	}
 }
 
-ReturnValue_t PollingTask::sleepFor(uint32_t ms){
+ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms){
 	return RTEMSTaskBase::sleepFor(ms);
 };

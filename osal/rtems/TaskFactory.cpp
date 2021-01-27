@@ -1,8 +1,9 @@
-#include <fsfw/osal/rtems/PeriodicTask.h>
-#include "../../tasks/TaskFactory.h"
-#include "PollingTask.h"
+#include "FixedTimeslotTask.h"
+#include "PeriodicTask.h"
 #include "InitTask.h"
 #include "RtemsBasic.h"
+
+#include "../../tasks/TaskFactory.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
@@ -15,15 +16,21 @@ TaskFactory* TaskFactory::instance() {
 	return TaskFactory::factoryInstance;
 }
 
-PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_,TaskPriority taskPriority_,TaskStackSize stackSize_,TaskPeriod periodInSeconds_,TaskDeadlineMissedFunction deadLineMissedFunction_) {
+PeriodicTaskIF* TaskFactory::createPeriodicTask(TaskName name_, TaskPriority taskPriority_,
+        TaskStackSize stackSize_,TaskPeriod periodInSeconds_,
+        TaskDeadlineMissedFunction deadLineMissedFunction_) {
 	rtems_interval taskPeriod = periodInSeconds_ * Clock::getTicksPerSecond();
 
-	return static_cast<PeriodicTaskIF*>(new PeriodicTask(name_,taskPriority_,stackSize_,taskPeriod,deadLineMissedFunction_));
+	return static_cast<PeriodicTaskIF*>(new PeriodicTask(name_, taskPriority_, stackSize_,
+	        taskPeriod,deadLineMissedFunction_));
 }
 
-FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,TaskPriority taskPriority_,TaskStackSize stackSize_,TaskPeriod periodInSeconds_,TaskDeadlineMissedFunction deadLineMissedFunction_) {
+FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(TaskName name_,
+        TaskPriority taskPriority_,TaskStackSize stackSize_,TaskPeriod periodInSeconds_,
+        TaskDeadlineMissedFunction deadLineMissedFunction_) {
 	rtems_interval taskPeriod = periodInSeconds_ * Clock::getTicksPerSecond();
-	return static_cast<FixedTimeslotTaskIF*>(new PollingTask(name_,taskPriority_,stackSize_,taskPeriod,deadLineMissedFunction_));
+	return static_cast<FixedTimeslotTaskIF*>(new FixedTimeslotTask(name_, taskPriority_,
+	        stackSize_, taskPeriod, deadLineMissedFunction_));
 }
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
