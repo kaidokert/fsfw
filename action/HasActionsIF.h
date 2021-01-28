@@ -35,28 +35,28 @@
  */
 class HasActionsIF {
 public:
-	static const uint8_t INTERFACE_ID = CLASS_ID::HAS_ACTIONS_IF;
-	static const ReturnValue_t IS_BUSY = MAKE_RETURN_CODE(1);
-	static const ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(2);
-	static const ReturnValue_t EXECUTION_FINISHED = MAKE_RETURN_CODE(3);
-	static const ReturnValue_t INVALID_ACTION_ID = MAKE_RETURN_CODE(4);
-	virtual ~HasActionsIF() { }
-	/**
-	 * Function to get the MessageQueueId_t of the implementing object
-	 * @return MessageQueueId_t of the object
-	 */
-	virtual MessageQueueId_t getCommandQueue() const = 0;
-	/**
-	 * Execute or initialize the execution of a certain function.
-	 * The ActionHelpers will execute this function and behave differently
-	 * depending on the returnvalue.
-	 *
-	 * @return
-	 * -@c EXECUTION_FINISHED Finish reply will be generated
-	 * -@c Not RETURN_OK Step failure reply will be generated
-	 */
-	virtual ReturnValue_t executeAction(ActionId_t actionId,
-			MessageQueueId_t commandedBy, const uint8_t* data, size_t size) = 0;
+    static const uint8_t INTERFACE_ID = CLASS_ID::HAS_ACTIONS_IF;
+    static const ReturnValue_t IS_BUSY = MAKE_RETURN_CODE(1);
+    static const ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(2);
+    static const ReturnValue_t EXECUTION_FINISHED = MAKE_RETURN_CODE(3);
+    static const ReturnValue_t INVALID_ACTION_ID = MAKE_RETURN_CODE(4);
+    virtual ~HasActionsIF() { }
+    /**
+     * Function to get the MessageQueueId_t of the implementing object
+     * @return MessageQueueId_t of the object
+     */
+    virtual MessageQueueId_t getCommandQueue() const = 0;
+    /**
+     * Execute or initialize the execution of a certain function.
+     * The ActionHelpers will execute this function and behave differently
+     * depending on the returnvalue.
+     *
+     * @return
+     * -@c EXECUTION_FINISHED Finish reply will be generated
+     * -@c Not RETURN_OK Step failure reply will be generated
+     */
+    virtual ReturnValue_t executeAction(ActionId_t actionId,
+            MessageQueueId_t commandedBy, const uint8_t* data, size_t size) = 0;
 };
 
 
