@@ -3,7 +3,7 @@
 
 #include <chrono>
 #if defined(WIN32)
-#include <windows.h>
+#include <sysinfoapi.h>
 #elif defined(LINUX)
 #include <fstream>
 #endif

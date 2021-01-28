@@ -9,7 +9,7 @@
 #include <chrono>
 
 #if defined(WIN32)
-#include <windows.h>
+#include <processthreadsapi.h>
 #elif defined(LINUX)
 #include <pthread.h>
 #endif
