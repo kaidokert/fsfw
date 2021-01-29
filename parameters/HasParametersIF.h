@@ -75,7 +75,7 @@ public:
 	 * @return
 	 */
 	virtual ReturnValue_t getParameter(uint8_t domainId,
-	        uint16_t uniqueIdentifier, ParameterWrapper *parameterWrapper,
+	        uint8_t uniqueIdentifier, ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex) = 0;
 };
 
