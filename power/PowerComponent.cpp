@@ -61,13 +61,13 @@ ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, size_t* size,
 	return SerializeAdapter::deSerialize(&max, buffer, size, streamEndianness);
 }
 
-ReturnValue_t PowerComponent::getParameter(uint8_t domainId,
-		uint16_t parameterId, ParameterWrapper* parameterWrapper,
-		const ParameterWrapper* newValues, uint16_t startAtIndex) {
+ReturnValue_t PowerComponent::getParameter(uint8_t domainId, uint8_t uniqueId,
+        ParameterWrapper* parameterWrapper, const ParameterWrapper* newValues,
+        uint16_t startAtIndex) {
 	if (domainId != moduleId) {
 		return INVALID_DOMAIN_ID;
 	}
-	switch (parameterId) {
+	switch (uniqueId) {
 	case 0:
 		parameterWrapper->set<>(min);
 		break;

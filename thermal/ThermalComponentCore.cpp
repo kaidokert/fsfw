@@ -247,17 +247,17 @@ ThermalComponentCore::Parameters ThermalComponentCore::getParameters() {
 }
 
 ReturnValue_t ThermalComponentCore::getParameter(uint8_t domainId,
-		uint16_t parameterId, ParameterWrapper* parameterWrapper,
+		uint8_t uniqueId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
 	ReturnValue_t result = temperatureMonitor.getParameter(domainId,
-			parameterId, parameterWrapper, newValues, startAtIndex);
+			uniqueId, parameterWrapper, newValues, startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
 	if (domainId != this->domainId) {
 		return INVALID_DOMAIN_ID;
 	}
-	switch (parameterId) {
+	switch (uniqueId) {
 	case 0:
 		parameterWrapper->set(parameters.heaterOn);
 		break;

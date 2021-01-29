@@ -183,10 +183,10 @@ public:
 
 	static const uint8_t DOMAIN_ID_SENSOR = 1;
 
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
 			ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex) {
-		ReturnValue_t result = sensorMonitor.getParameter(domainId, parameterId,
+		ReturnValue_t result = sensorMonitor.getParameter(domainId, uniqueId,
 				parameterWrapper, newValues, startAtIndex);
 		if (result != INVALID_DOMAIN_ID) {
 			return result;
@@ -194,7 +194,7 @@ public:
 		if (domainId != this->DOMAIN_ID_BASE) {
 			return INVALID_DOMAIN_ID;
 		}
-		switch (parameterId) {
+		switch (uniqueId) {
 		case ADDRESS_A:
 			parameterWrapper->set(parameters.a);
 			break;

@@ -216,7 +216,7 @@ public:
     virtual void getMode(Mode_t *mode, Submode_t *submode);
     HealthState getHealth();
     ReturnValue_t setHealth(HealthState health);
-    virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
+    virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
             ParameterWrapper *parameterWrapper,
             const ParameterWrapper *newValues, uint16_t startAtIndex) override;
 

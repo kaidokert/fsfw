@@ -58,14 +58,14 @@ FaultCounter::FaultCounter() :
 		parameterDomain(0), timer(), faultCount(0), failureThreshold(0) {
 }
 
-ReturnValue_t FaultCounter::getParameter(uint8_t domainId, uint16_t parameterId,
+ReturnValue_t FaultCounter::getParameter(uint8_t domainId, uint8_t uniqueId,
 		ParameterWrapper* parameterWrapper, const ParameterWrapper* newValues,
 		uint16_t startAtIndex) {
 	if (domainId != parameterDomain) {
 		return INVALID_DOMAIN_ID;
 	}
 
-	switch (parameterId) {
+	switch (uniqueId) {
 	case 0:
 		parameterWrapper->set(failureThreshold);
 		break;

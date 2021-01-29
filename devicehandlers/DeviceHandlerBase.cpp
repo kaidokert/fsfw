@@ -1380,10 +1380,10 @@ void DeviceHandlerBase::doOffActivity() {
 }
 
 ReturnValue_t DeviceHandlerBase::getParameter(uint8_t domainId,
-		uint16_t parameterId, ParameterWrapper* parameterWrapper,
+		uint8_t uniqueId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
-	ReturnValue_t result = fdirInstance->getParameter(domainId, parameterId,
-			parameterWrapper, newValues, startAtIndex);
+	ReturnValue_t result = fdirInstance->getParameter(domainId, uniqueId, parameterWrapper,
+	        newValues, startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
