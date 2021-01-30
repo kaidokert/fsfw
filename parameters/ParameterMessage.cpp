@@ -38,7 +38,7 @@ void ParameterMessage::setParameterLoadCommand(CommandMessage* message,
 store_address_t ParameterMessage::getParameterLoadCommand(
         const CommandMessage *message, ParameterId_t* parameterId, uint8_t *ptc,
         uint8_t *pfc, uint8_t *rows, uint8_t *columns) {
-    *parameterId = message->getParameter2();
+    *parameterId = message->getParameter();
     uint32_t packedParamSettings = message->getParameter3();
     *ptc = packedParamSettings >> 24 & 0xff;
     *pfc = packedParamSettings >> 16 & 0xff;

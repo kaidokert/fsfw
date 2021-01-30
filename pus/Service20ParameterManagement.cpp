@@ -70,10 +70,8 @@ ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "Service20ParameterManagement::checkInterfaceAndAcquire"
                 <<"MessageQueue: Can't access object" << std::endl;
-        sif::error << "Object ID: " << std::hex << objectId << std::dec
-                << std::endl;
-        sif::error << "Make sure it implements ReceivesParameterMessagesIF!"
-                << std::endl;
+        sif::error << "Object ID: " << std::hex << objectId << std::dec << std::endl;
+        sif::error << "Make sure it implements ReceivesParameterMessagesIF!" << std::endl;
 #else
         sif::printError("Service20ParameterManagement::checkInterfaceAndAcquire"
                 "MessageQueue: Can't access object\n");
@@ -134,8 +132,8 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(
 
     uint8_t* storePointer = nullptr;
     store_address_t storeAddress;
-    size_t parameterDataLen = tcDataLen - sizeof(object_id_t) -
-            sizeof(ParameterId_t) - sizeof(uint32_t);
+    size_t parameterDataLen = tcDataLen - sizeof(object_id_t) - sizeof(ParameterId_t) -
+            sizeof(uint32_t);
     ReturnValue_t result = IPCStore->getFreeElement(&storeAddress,
             parameterDataLen, &storePointer);
     if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -149,9 +147,8 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(
         return result;
     }
 
-    ParameterMessage::setParameterLoadCommand(message,
-            command.getParameterId(), storeAddress, command.getPtc(),
-            command.getPfc(), command.getRows(), command.getColumns());
+    ParameterMessage::setParameterLoadCommand(message, command.getParameterId(), storeAddress,
+            command.getPtc(), command.getPfc(), command.getRows(), command.getColumns());
     return HasReturnvaluesIF::RETURN_OK;
 }
 
