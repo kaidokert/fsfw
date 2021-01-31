@@ -67,8 +67,8 @@ private:
     SerializeElement<ParameterId_t> parameterId = 0;
     //! [EXPORT] : [COMMENT] Type consisting of one byte PTC and one byte PFC.
     SerializeElement<uint16_t> ccsdsType = 0;
-    SerializeElement<uint8_t> columns = 0;
     SerializeElement<uint8_t> rows = 0;
+    SerializeElement<uint8_t> columns = 0;
     SerializeElement<SerialBufferAdapter<uint8_t>> parameterBuffer;
 };
 
