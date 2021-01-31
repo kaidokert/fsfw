@@ -75,17 +75,14 @@ private:
 class ParameterLoadCommand: public ParameterCommand {
 public:
     ParameterLoadCommand(uint8_t* parameterPacket, size_t parameterDataLen):
-        ParameterCommand(parameterPacket, parameterDataLen) {
-    }
+            ParameterCommand(parameterPacket, parameterDataLen) {}
 };
 
 class ParameterDumpReply: public ParameterCommand {
 public:
     ParameterDumpReply(object_id_t objectId, ParameterId_t parameterId,
             const uint8_t* parameterBuffer, size_t parameterBufferSize):
-                ParameterCommand(objectId, parameterId, parameterBuffer,
-                        parameterBufferSize) {
-    }
+            ParameterCommand(objectId, parameterId, parameterBuffer, parameterBufferSize) {}
 };
 
 #endif /* FSFW_PUS_SERVICEPACKETS_SERVICE20PACKETS_H_ */
