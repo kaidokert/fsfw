@@ -172,6 +172,7 @@ ReturnValue_t Service20ParameterManagement::handleReply(
         if(parameterData.first != HasReturnvaluesIF::RETURN_OK) {
             return HasReturnvaluesIF::RETURN_FAILED;
         }
+
         ParameterId_t parameterId = ParameterMessage::getParameterId(reply);
         ParameterDumpReply parameterReply(objectId, parameterId,
                 parameterData.second.data(), parameterData.second.size());

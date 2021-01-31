@@ -7,13 +7,13 @@ ParameterWrapper::ParameterWrapper() :
 }
 
 ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
-		void *data) :
+		void *data):
 		pointsToStream(false), type(type), rows(rows), columns(columns),
 		data(data), readonlyData(data) {
 }
 
 ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
-		const void *data) :
+		const void *data):
 		pointsToStream(false), type(type), rows(rows), columns(columns),
 		data(nullptr), readonlyData(data) {
 }
@@ -42,8 +42,8 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t **buffer, size_t *size,
 		return result;
 	}
 
-	//serialize uses readonlyData, as it is always valid
-	if (readonlyData == NULL) {
+	/* serialize uses readonlyData, as it is always valid */
+	if (readonlyData == nullptr) {
 		return NOT_SET;
 	}
 	switch (type) {
