@@ -105,8 +105,8 @@ ReturnValue_t Service20ParameterManagement::prepareCommand(
 
 ReturnValue_t Service20ParameterManagement::prepareDumpCommand(
         CommandMessage* message, const uint8_t* tcData, size_t tcDataLen) {
-    //the first part is the objectId, but we have extracted that earlier
-    //and only need the parameterId
+    /* the first part is the objectId, but we have extracted that earlier
+    and only need the parameterId */
     tcData += sizeof(object_id_t);
     tcDataLen -= sizeof(object_id_t);
     ParameterId_t parameterId;
@@ -114,7 +114,7 @@ ReturnValue_t Service20ParameterManagement::prepareDumpCommand(
             SerializeIF::Endianness::BIG) != HasReturnvaluesIF::RETURN_OK) {
         return CommandingServiceBase::INVALID_TC;
     }
-    //Autodeserialize should have decremented size to 0 by this point
+    /* The length should have been decremented to 0 by this point */
     if(tcDataLen != 0) {
         return CommandingServiceBase::INVALID_TC;
     }
@@ -140,6 +140,13 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(
         return result;
     }
 
+    /* Following format is expected: The first 4 bytes in the TC data are the 4 byte
+    parameter ID (ParameterId_t). The second 4 bytes are the parameter information field,
+    containing the following 1 byte fields:
+     1. ECSS PTC field
+     2. ECSS PFC field
+     3. Number of rows
+     4. Number of columns */
     ParameterLoadCommand command(storePointer, parameterDataLen);
     result = command.deSerialize(&tcData, &tcDataLen,
             SerializeIF::Endianness::BIG);

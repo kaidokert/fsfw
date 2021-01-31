@@ -1,4 +1,6 @@
 #include "ParameterWrapper.h"
+#include <FSFWConfig.h>
+#include <fsfw/serviceinterface/ServiceInterface.h>
 
 ParameterWrapper::ParameterWrapper() :
 		pointsToStream(false), type(Type::UNKNOWN_TYPE) {
@@ -75,7 +77,7 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t **buffer, size_t *size,
 		result = serializeData<double>(buffer, size, maxSize, streamEndianness);
 		break;
 	default:
-		result = UNKNOW_DATATYPE;
+		result = UNKNOWN_DATATYPE;
 		break;
 	}
 	return result;
@@ -220,22 +222,48 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		uint16_t startWritingAtIndex) {
-    // TODO: Optional diagnostic output (which can be disabled in FSFWConfig)
-    // to determined faulty implementations and configuration errors quickly.
 	if (data == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	    sif::warning << "ParameterWrapper::copyFrom: Called on read-only variable!" << std::endl;
+#else
+	    sif::printWarning("ParameterWrapper::copyFrom: Called on read-only variable!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		return READONLY;
 	}
 
 	if (from->readonlyData == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ParameterWrapper::copyFrom: Source not set!" << std::endl;
+#else
+        sif::printWarning("ParameterWrapper::copyFrom: Source not set!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		return SOURCE_NOT_SET;
 	}
 
 	if (type != from->type) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ParameterWrapper::copyFrom: Datatype missmatch!" << std::endl;
+#else
+        sif::printWarning("ParameterWrapper::copyFrom: Datatype missmatch!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		return DATATYPE_MISSMATCH;
 	}
 
 	// The smallest allowed value for rows and columns is one.
 	if(rows == 0 or columns == 0) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ParameterWrapper::copyFrom: Columns or rows zero!" << std::endl;
+#else
+        sif::printWarning("ParameterWrapper::copyFrom: Columns or rows zero!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 	    return COLUMN_OR_ROWS_ZERO;
 	}
 
@@ -289,7 +317,7 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 					from->readonlyData, from->rows, from->columns);
 			break;
 		default:
-			result = UNKNOW_DATATYPE;
+			result = UNKNOWN_DATATYPE;
 			break;
 		}
 	}

@@ -6,6 +6,8 @@
 /**
  * @brief   PUS Service 20 Parameter Service implementation
  * @details
+ * This service handles PUS service requests related to parameter management and forwards
+ * them to the internal software bus.
  * @author  J. Gerhards
  *
  */
