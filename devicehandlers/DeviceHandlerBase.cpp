@@ -19,16 +19,16 @@ object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
         CookieIF * comCookie, FailureIsolationBase* fdirInstance, size_t cmdQueueSize):
-		                SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
-		                wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
-		                deviceCommunicationId(deviceCommunication), comCookie(comCookie),
-		                healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
-		                actionHelper(this, nullptr), poolManager(this, nullptr),
-		                childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
-		                defaultFDIRUsed(fdirInstance == nullptr),
-		                switchOffWasReported(false), childTransitionDelay(5000),
-		                transitionSourceMode(_MODE_POWER_DOWN),
-		                transitionSourceSubMode(SUBMODE_NONE) {
+        SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
+        wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
+        deviceCommunicationId(deviceCommunication), comCookie(comCookie),
+        healthHelper(this,setObjectId), modeHelper(this), parameterHelper(this),
+        actionHelper(this, nullptr), poolManager(this, nullptr),
+        childTransitionFailure(RETURN_OK), fdirInstance(fdirInstance),
+        defaultFDIRUsed(fdirInstance == nullptr),
+        switchOffWasReported(false), childTransitionDelay(5000),
+        transitionSourceMode(_MODE_POWER_DOWN),
+        transitionSourceSubMode(SUBMODE_NONE) {
     commandQueue = QueueFactory::instance()->createMessageQueue(cmdQueueSize,
             MessageQueueMessage::MAX_MESSAGE_SIZE);
     insertInCommandMap(RAW_COMMAND_ID);
@@ -90,7 +90,7 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
     switch (getComAction()) {
     case CommunicationAction::SEND_WRITE:
         if (cookieInfo.state == COOKIE_UNUSED) {
-            // if no external command was specified, build internal command.
+            /* If no external command was specified, build internal command. */
             buildInternalCommand();
         }
         doSendWrite();
@@ -103,8 +103,8 @@ ReturnValue_t DeviceHandlerBase::performOperation(uint8_t counter) {
         break;
     case CommunicationAction::GET_READ:
         doGetRead();
-        // This will be performed after datasets have been updated by the
-        // custom device implementation.
+        /* This will be performed after datasets have been updated by the
+        custom device implementation. */
         poolManager.performHkOperation();
         break;
     default:
