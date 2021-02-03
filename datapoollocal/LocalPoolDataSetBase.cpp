@@ -83,7 +83,7 @@ ReturnValue_t LocalPoolDataSetBase::lockDataPool(
 ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer,
         size_t *size, size_t maxSize,
         SerializeIF::Endianness streamEndianness) const {
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
     uint8_t validityMask[validityMaskSize];
     uint8_t validBufferIndex = 0;
