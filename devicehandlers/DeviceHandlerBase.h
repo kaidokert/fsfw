@@ -716,15 +716,15 @@ protected:
     /** Cookie used for communication */
     CookieIF * comCookie;
 
-    /** Health helper for HasHealthIF */
+    /* Health helper for HasHealthIF */
     HealthHelper healthHelper;
-    /** Mode helper for HasModesIF */
+    /* Mode helper for HasModesIF */
     ModeHelper modeHelper;
-    /** Parameter helper for ReceivesParameterMessagesIF */
+    /* Parameter helper for ReceivesParameterMessagesIF */
     ParameterHelper parameterHelper;
-    /** Action helper for HasActionsIF */
+    /* Action helper for HasActionsIF */
     ActionHelper actionHelper;
-    /** Housekeeping Manager */
+    /* Housekeeping Manager */
     LocalDataPoolManager poolManager;
 
     /**
@@ -1161,7 +1161,6 @@ private:
 
     void buildRawDeviceCommand(CommandMessage* message);
     void buildInternalCommand(void);
-
     /**
      * Decrement the counter for the timout of replies.
      *
@@ -1169,7 +1168,6 @@ private:
      * reply has timed out (that means a reply was expected but not received).
      */
     void decrementDeviceReplyMap(void);
-
     /**
      * Convenience function to handle a reply.
      *
@@ -1184,8 +1182,8 @@ private:
      * @foundLen the length of the packet
      */
     void handleReply(const uint8_t *data, DeviceCommandId_t id, uint32_t foundLen);
-
     void replyToReply(DeviceReplyMap::iterator iter, ReturnValue_t status);
+
     /**
      * Build and send a command to the device.
      *
@@ -1200,7 +1198,6 @@ private:
      * sends the command via RMAP.
      */
     void doSendWrite(void);
-
     /**
      * Check if the RMAP sendWrite action was successful.
      *
@@ -1210,7 +1207,6 @@ private:
      * - if the action was successful, the reply timout counter is initialized
      */
     void doGetWrite(void);
-
     /**
      * Send a RMAP getRead command.
      *
@@ -1218,7 +1214,6 @@ private:
      * This is always executed, independently from the current mode.
      */
     void doSendRead(void);
-
     /**
      * Check the getRead reply and the contained data.
      *
