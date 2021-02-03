@@ -203,11 +203,6 @@ ReturnValue_t DeviceHandlerBase::initialize() {
         return result;
     }
 
-    result = hkSwitcher.initialize();
-    if (result != HasReturnvaluesIF::RETURN_OK) {
-        return result;
-    }
-
     result = poolManager.initialize(commandQueue);
     if (result != HasReturnvaluesIF::RETURN_OK) {
         return result;
