@@ -215,9 +215,8 @@ public:
     HealthState getHealth();
     ReturnValue_t setHealth(HealthState health);
     virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
-            ParameterWrapper *parameterWrapper,
-            const ParameterWrapper *newValues, uint16_t startAtIndex) override;
-
+            ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+            uint16_t startAtIndex) override;
 
 protected:
     /**
