@@ -152,7 +152,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 					" the requested " << stackMb << " MB" << std::endl;
 #else
 			sif::printError("PosixThread::createTask: Insufficient memory for "
-					"the requested %zu MB\n", stackMb);
+					"the requested %lu MB\n", static_cast<unsigned long>(stackMb));
 #endif
 		}
 		else if(errno == EINVAL) {

@@ -167,7 +167,9 @@ std::string* ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 	return &preamble;
 }
 
-
+bool ServiceInterfaceBuffer::crAdditionEnabled() const {
+    return addCrToPreamble;
+}
 
 #ifdef UT699
 #include "../osal/rtems/Interrupt.h"

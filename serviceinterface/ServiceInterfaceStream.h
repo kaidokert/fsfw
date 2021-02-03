@@ -39,6 +39,8 @@ public:
 	 */
 	std::string* getPreamble();
 
+	bool crAdditionEnabled() const;
+
 protected:
 	ServiceInterfaceBuffer streambuf;
 };
