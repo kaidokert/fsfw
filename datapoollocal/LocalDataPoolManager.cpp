@@ -848,7 +848,6 @@ MutexIF* LocalDataPoolManager::getLocalPoolMutex() {
 
 object_id_t LocalDataPoolManager::getCreatorObjectId() const {
 	return owner->getObjectId();
-	//return owner->getObjectId();
 }
 
 void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
@@ -885,7 +884,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 	if(outputType == sif::OutputTypes::OUT_WARNING) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "LocalDataPoolManager::" << functionName
-				<< ": Object ID " << std::setw(8) << std::setfill('0')
+				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
 				<< std::hex << owner->getObjectId() << " | " << errorPrint
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
@@ -896,7 +895,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 	else if(outputType == sif::OutputTypes::OUT_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "LocalDataPoolManager::" << functionName
-				<< ": Object ID " << std::setw(8) << std::setfill('0')
+				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
 				<< std::hex << owner->getObjectId() << " | " << errorPrint
 				<< std::dec << std::setfill(' ') << std::endl;
 #else
