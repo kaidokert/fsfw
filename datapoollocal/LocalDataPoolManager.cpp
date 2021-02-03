@@ -714,7 +714,7 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 		return;
 	}
 
-	if(periodicHelper->checkOpNecessary()) {
+	if(not periodicHelper->checkOpNecessary()) {
 		return;
 	}
 
@@ -723,11 +723,10 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 		// configuration error
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "LocalDataPoolManager::performHkOperation: "
-				<< "HK generation failed." << std::endl;
+		sif::warning << "LocalDataPoolManager::performHkOperation: HK generation failed." <<
+		        std::endl;
 #else
-		sif::printWarning("LocalDataPoolManager::performHkOperation: "
-				"HK generation failed.\n");
+		sif::printWarning("LocalDataPoolManager::performHkOperation: HK generation failed.\n");
 #endif
 	}
 }
