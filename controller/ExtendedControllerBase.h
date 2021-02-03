@@ -22,6 +22,7 @@ class ExtendedControllerBase: public ControllerBase,
 public:
     ExtendedControllerBase(object_id_t objectId, object_id_t parentId,
             size_t commandQueueDepth = 3);
+    virtual ~ExtendedControllerBase();
 
     /** SystemObjectIF overrides */
     virtual ReturnValue_t initialize() override;
