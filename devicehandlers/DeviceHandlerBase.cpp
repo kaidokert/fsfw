@@ -18,7 +18,7 @@ object_id_t DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 object_id_t DeviceHandlerBase::defaultFdirParentId = objects::NO_OBJECT;
 
 DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t deviceCommunication,
-        CookieIF * comCookie, FailureIsolationBase* fdirInstance, size_t cmdQueueSize):
+        CookieIF* comCookie, FailureIsolationBase* fdirInstance, size_t cmdQueueSize):
         SystemObject(setObjectId), mode(MODE_OFF), submode(SUBMODE_NONE),
         wiretappingMode(OFF), storedRawData(StorageManagerIF::INVALID_ADDRESS),
         deviceCommunicationId(deviceCommunication), comCookie(comCookie),
