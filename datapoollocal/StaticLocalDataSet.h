@@ -2,11 +2,15 @@
 #define FSFW_DATAPOOLLOCAL_STATICLOCALDATASET_H_
 
 #include "LocalPoolDataSetBase.h"
+#include "LocalPoolVariable.h"
+#include "LocalPoolVector.h"
+
 #include "../objectmanager/SystemObjectIF.h"
 #include <array>
 
 /**
- * @brief   This local dataset type is created on the stack.
+ * @brief   This dataset type can be used to group related pool variables if the number of
+ *          variables is fixed.
  * @details
  * This will is the primary data structure to organize pool variables into
  * sets which can be accessed via the housekeeping service interface or

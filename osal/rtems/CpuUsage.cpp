@@ -164,7 +164,7 @@ ReturnValue_t CpuUsage::ThreadData::deSerialize(const uint8_t** buffer,
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	if ((*size = *size - MAX_LENGTH_OF_THREAD_NAME) < 0) {
+	if (*size < MAX_LENGTH_OF_THREAD_NAME) {
 		return STREAM_TOO_SHORT;
 	}
 	memcpy(name, *buffer, MAX_LENGTH_OF_THREAD_NAME);

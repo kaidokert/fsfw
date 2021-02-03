@@ -90,7 +90,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
         const ParameterWrapper* description) {
     size_t serializedSize = description->getSerializedSize();
 
-    uint8_t *storeElement;
+    uint8_t *storeElement = nullptr;
     store_address_t address;
 
     ReturnValue_t result = storage->getFreeElement(&address, serializedSize,

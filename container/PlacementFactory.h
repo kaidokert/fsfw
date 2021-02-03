@@ -22,50 +22,50 @@
  */
 class PlacementFactory {
 public:
-	PlacementFactory(StorageManagerIF* backend) :
-			dataBackend(backend) {
-	}
+    PlacementFactory(StorageManagerIF* backend) :
+            dataBackend(backend) {
+    }
 
-	/***
-	 * Generates an object of type T in the backend storage.
-	 *
-	 * @warning Do not use with any Type that allocates memory internally!
-	 *
-	 * @tparam T Type of Object
-	 * @param args Constructor Arguments to be passed
-	 * @return A pointer to the new object or a nullptr in case of failure
-	 */
-	template<typename T, typename ... Args>
-	T* generate(Args&&... args) {
-		store_address_t tempId;
-		uint8_t* pData = nullptr;
-		ReturnValue_t result = dataBackend->getFreeElement(&tempId, sizeof(T),
-				&pData);
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return nullptr;
-		}
-		T* temp = new (pData) T(std::forward<Args>(args)...);
-		return temp;
-	}
-	/***
-	 * Function to destroy the object allocated with generate and free space in backend.
-	 * This must be called by the user.
-	 *
-	 * @param thisElement Element to be destroyed
-	 * @return RETURN_OK if the element was destroyed, different errors on failure
-	 */
-	template<typename T>
-	ReturnValue_t destroy(T* thisElement) {
-		if (thisElement == nullptr){
-			return HasReturnvaluesIF::RETURN_FAILED;
-		}
-		//Need to call destructor first, in case something was allocated by the object (shouldn't do that, however).
-		thisElement->~T();
-		uint8_t* pointer = (uint8_t*) (thisElement);
-		return dataBackend->deleteData(pointer, sizeof(T));
-	}
+    /***
+     * Generates an object of type T in the backend storage.
+     *
+     * @warning Do not use with any Type that allocates memory internally!
+     *
+     * @tparam T Type of Object
+     * @param args Constructor Arguments to be passed
+     * @return A pointer to the new object or a nullptr in case of failure
+     */
+    template<typename T, typename ... Args>
+    T* generate(Args&&... args) {
+        store_address_t tempId;
+        uint8_t* pData = nullptr;
+        ReturnValue_t result = dataBackend->getFreeElement(&tempId, sizeof(T),
+                &pData);
+        if (result != HasReturnvaluesIF::RETURN_OK) {
+            return nullptr;
+        }
+        T* temp = new (pData) T(std::forward<Args>(args)...);
+        return temp;
+    }
+    /***
+     * Function to destroy the object allocated with generate and free space in backend.
+     * This must be called by the user.
+     *
+     * @param thisElement Element to be destroyed
+     * @return RETURN_OK if the element was destroyed, different errors on failure
+     */
+    template<typename T>
+    ReturnValue_t destroy(T* thisElement) {
+        if (thisElement == nullptr){
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+        //Need to call destructor first, in case something was allocated by the object (shouldn't do that, however).
+        thisElement->~T();
+        uint8_t* pointer = (uint8_t*) (thisElement);
+        return dataBackend->deleteData(pointer, sizeof(T));
+    }
 private:
-	StorageManagerIF* dataBackend;
+    StorageManagerIF* dataBackend;
 };
 
 #endif /* FRAMEWORK_CONTAINER_PLACEMENTFACTORY_H_ */

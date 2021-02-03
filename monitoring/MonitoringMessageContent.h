@@ -10,7 +10,7 @@
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../serialize/SerializeElement.h"
 #include "../serialize/SerialLinkedListAdapter.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../timemanager/TimeStamperIF.h"
 
 namespace Factory{

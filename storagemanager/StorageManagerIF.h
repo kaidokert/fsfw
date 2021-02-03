@@ -29,7 +29,7 @@ using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
 class StorageManagerIF : public HasReturnvaluesIF {
 public:
 	using size_type = size_t;
-	using max_pools_t = uint8_t;
+	using max_subpools_t = uint8_t;
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::STORAGE_MANAGER_IF; //!< The unique ID for return codes for this interface.
 	static const ReturnValue_t DATA_TOO_LARGE = MAKE_RETURN_CODE(1); //!< This return code indicates that the data to be stored is too large for the store.
@@ -149,10 +149,10 @@ public:
 	virtual ReturnValue_t modifyData(store_address_t packet_id,
 			uint8_t** packet_ptr, size_t* size) = 0;
 	/**
-	 * This method reserves an element of \c size.
+	 * This method reserves an element of @c size.
 	 *
 	 * It returns the packet id of this element as well as a direct pointer to the
-	 * data of the element. It must be assured that exactly \c size data is
+	 * data of the element. It must be assured that exactly @c size data is
 	 * written to p_data!
 	 * @param storageId A pointer to the storageId to retrieve.
 	 * @param size		The size of the space to be reserved.
@@ -171,20 +171,29 @@ public:
 	virtual void clearStore() = 0;
 
 	/**
-	 * Clears a page in the store. Use with care!
+	 * Clears a pool in the store with the given pool index. Use with care!
 	 * @param pageIndex
 	 */
-	virtual void clearPage(uint8_t pageIndex) = 0;
+	virtual void clearSubPool(uint8_t poolIndex) = 0;
 
 	/**
-	 * Get the fill count of the pool. The exact form will be implementation
-	 * dependant.
+	 * Get the fill count of the pool. Each character inside the provided
+	 * buffer will be assigned to a rounded percentage fill count for each
+	 * page. The last written byte (at the index bytesWritten - 1)
+	 * will contain the total fill count of the pool as a mean of the
+	 * percentages of single pages.
 	 * @param buffer
-	 * @param bytesWritten
+	 * @param maxSize
 	 */
 	virtual void getFillCount(uint8_t* buffer, uint8_t* bytesWritten) = 0;
 
 	virtual size_t getTotalSize(size_t* additionalSize) = 0;
+
+	/**
+	 * Get number of pools.
+	 * @return
+	 */
+	virtual max_subpools_t getNumberOfSubPools() const = 0;
 };
 
 #endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */

@@ -1,24 +1,37 @@
-#ifndef FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
-#define FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_
+#ifndef FSFW_HOUSEKEEPING_HOUSEKEEPINGSNAPSHOT_H_
+#define FSFW_HOUSEKEEPING_HOUSEKEEPINGSNAPSHOT_H_
 
 #include "../serialize/SerialBufferAdapter.h"
 #include "../serialize/SerialLinkedListAdapter.h"
 #include "../datapoollocal/LocalPoolDataSetBase.h"
+#include "../datapoollocal/LocalPoolObjectBase.h"
+#include "../timemanager/CCSDSTime.h"
 
 /**
- * @brief   This helper class will be used to serialize and deserialize
- *          update housekeeping packets into the store.
+ * @brief   This helper class will be used to serialize and deserialize update housekeeping packets
+ *          into the store.
  */
-class HousekeepingPacketUpdate: public SerializeIF {
+class HousekeepingSnapshot: public SerializeIF {
 public:
+
     /**
-     * Update packet constructor for datasets
-     * @param timeStamp
-     * @param timeStampSize
-     * @param hkData
-     * @param hkDataSize
+     * Update packet constructor for datasets.
+     * @param cdsShort          If a CSD short timestamp is used, a reference should be
+     *                          supplied here
+     * @param dataSetPtr        Pointer to the dataset instance to serialize or deserialize the
+     *                          data into
      */
-    HousekeepingPacketUpdate(uint8_t* timeStamp, size_t timeStampSize,
+    HousekeepingSnapshot(CCSDSTime::CDS_short* cdsShort, LocalPoolDataSetBase* dataSetPtr):
+                timeStamp(reinterpret_cast<uint8_t*>(cdsShort)),
+                timeStampSize(sizeof(CCSDSTime::CDS_short)), updateData(dataSetPtr) {};
+
+    /**
+     * Update packet constructor for datasets.
+     * @param timeStamp         Pointer to the buffer where the timestamp will be stored.
+     * @param timeStampSize     Size of the timestamp
+     * @param dataSetPtr        Pointer to the dataset instance to deserialize the data into
+     */
+    HousekeepingSnapshot(uint8_t* timeStamp, size_t timeStampSize,
             LocalPoolDataSetBase* dataSetPtr):
                 timeStamp(timeStamp), timeStampSize(timeStampSize),
                 updateData(dataSetPtr) {};
@@ -29,7 +42,7 @@ public:
      * @param timeStampSize
      * @param dataSetPtr
      */
-    HousekeepingPacketUpdate(uint8_t* timeStamp, size_t timeStampSize,
+    HousekeepingSnapshot(uint8_t* timeStamp, size_t timeStampSize,
             LocalPoolObjectBase* dataSetPtr):
                 timeStamp(timeStamp), timeStampSize(timeStampSize),
                 updateData(dataSetPtr) {};
@@ -89,4 +102,4 @@ private:
 };
 
 
-#endif /* FSFW_HOUSEKEEPING_HOUSEKEEPINGPACKETUPDATE_H_ */
+#endif /* FSFW_HOUSEKEEPING_HOUSEKEEPINGSNAPSHOT_H_ */

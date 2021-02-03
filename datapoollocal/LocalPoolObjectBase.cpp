@@ -22,7 +22,7 @@ LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkO
         return;
     }
     AccessPoolManagerIF* poolManAccessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
-    hkManager = poolManAccessor->getHkManagerHandle();
+    hkManager = poolManAccessor->getPoolManagerHandle();
 
     if (dataSet != nullptr) {
         dataSet->registerVariable(this);
@@ -50,7 +50,7 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
 
     AccessPoolManagerIF* accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
     if(accessor != nullptr) {
-        hkManager = accessor->getHkManagerHandle();
+        hkManager = accessor->getPoolManagerHandle();
     }
 
     if(dataSet != nullptr) {

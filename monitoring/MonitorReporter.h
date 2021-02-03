@@ -51,13 +51,13 @@ public:
 		return state;
 	}
 
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex) {
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
+			ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+			uint16_t startAtIndex) {
 		if (domainId != monitorId) {
 			return INVALID_DOMAIN_ID;
 		}
-		switch (parameterId) {
+		switch (uniqueId) {
 		case 0:
 			parameterWrapper->set(this->confirmationLimit);
 			break;

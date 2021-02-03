@@ -31,9 +31,9 @@ public:
 	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
 			Endianness streamEndianness) override;
 
-	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-				ParameterWrapper *parameterWrapper,
-				const ParameterWrapper *newValues, uint16_t startAtIndex);
+	ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
+	        ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+	        uint16_t startAtIndex);
 private:
 	const object_id_t deviceObjectId = objects::NO_OBJECT;
 	const uint8_t switchId1;

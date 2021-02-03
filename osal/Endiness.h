@@ -25,7 +25,8 @@
 #else
 
 #ifdef WIN32
-#include <Windows.h>
+#include <winsock2.h>
+#include <windows.h>
 #if REG_DWORD == REG_DWORD_LITTLE_ENDIAN
 #define BYTE_ORDER_SYSTEM LITTLE_ENDIAN
 #else

@@ -5,13 +5,17 @@
 SystemObject::SystemObject(object_id_t setObjectId, bool doRegister) :
 		objectId(setObjectId), registered(doRegister) {
 	if (registered) {
-		objectManager->insert(objectId, this);
+	    if(objectManager != nullptr) {
+	        objectManager->insert(objectId, this);
+	    }
 	}
 }
 
 SystemObject::~SystemObject() {
 	if (registered) {
-		objectManager->remove(objectId);
+	    if(objectManager != nullptr) {
+	        objectManager->remove(objectId);
+	    }
 	}
 }
 

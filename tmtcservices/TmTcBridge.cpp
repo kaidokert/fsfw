@@ -1,7 +1,7 @@
 #include "TmTcBridge.h"
 
 #include "../ipc/QueueFactory.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../globalfunctions/arrayprinter.h"
 
 TmTcBridge::TmTcBridge(object_id_t objectId, object_id_t tcDestination,
@@ -109,9 +109,8 @@ ReturnValue_t TmTcBridge::handleTm() {
 	ReturnValue_t result = handleTmQueue();
 	if(result != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcBridge::handleTm: Error handling TM queue with "
-		       << "error code 0x" << std::hex << result  << std::dec
-			   << "!" << std::endl;
+		sif::error << "TmTcBridge::handleTm: Error handling TM queue with error code 0x" <<
+		        std::hex << result  << std::dec << "!" << std::endl;
 #endif
 		status = result;
 	}
@@ -121,8 +120,7 @@ ReturnValue_t TmTcBridge::handleTm() {
 	    result = handleStoredTm();
 	    if(result != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	        sif::error << "TmTcBridge::handleTm: Error handling stored TMs!"
-	                << std::endl;
+	        sif::error << "TmTcBridge::handleTm: Error handling stored TMs!" << std::endl;
 #endif
 	        status = result;
 	    }
@@ -140,9 +138,15 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 		 result == HasReturnvaluesIF::RETURN_OK;
 		 result = tmTcReceptionQueue->receiveMessage(&message))
 	{
+
+#if FSFW_VERBOSE_LEVEL >= 3
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	    //sif::info << (int) packetSentCounter << std::endl;
+	    sif::info << "Sent packet counter: " << static_cast<int>(packetSentCounter) << std::endl;
+#else
+	    sif::printInfo("Sent packet counter: %d\n", packetSentCounter);
 #endif
+#endif /* FSFW_VERBOSE_LEVEL >= 3 */
+
 		if(communicationLinkUp == false or
 		        packetSentCounter >= sentPacketsPerCycle) {
 			storeDownlinkData(&message);

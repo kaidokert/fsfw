@@ -23,7 +23,7 @@ public:
 	void setFailureThreshold(uint32_t failureThreshold);
 	void setFaultDecrementTimeMs(uint32_t timeMs);
 
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
 			ParameterWrapper *parameterWrapper,
 			const ParameterWrapper *newValues, uint16_t startAtIndex);
 

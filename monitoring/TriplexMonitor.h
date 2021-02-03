@@ -71,13 +71,13 @@ public:
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
-	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-				ParameterWrapper *parameterWrapper,
-				const ParameterWrapper *newValues, uint16_t startAtIndex) {
+	ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
+				ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+				uint16_t startAtIndex) {
 		if (domainId != this->domainId) {
 			return INVALID_DOMAIN_ID;
 		}
-		switch (parameterId) {
+		switch (uniqueId) {
 		case 0:
 			parameterWrapper->set(limit);
 			break;

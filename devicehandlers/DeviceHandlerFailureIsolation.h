@@ -17,9 +17,9 @@ public:
 	ReturnValue_t initialize();
 	void triggerEvent(Event event, uint32_t parameter1 = 0,
 			uint32_t parameter2 = 0);bool isFdirActionInProgress();
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex);
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
+			ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+			uint16_t startAtIndex);
 
 protected:
 	FaultCounter strangeReplyCount;

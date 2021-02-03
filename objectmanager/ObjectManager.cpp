@@ -1,5 +1,5 @@
 #include "ObjectManager.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 #include <iomanip>
@@ -75,6 +75,8 @@ void ObjectManager::initialize() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "ObjectManager::initialize: Passed produceObjects "
 				"functions is nullptr!" << std::endl;
+#else
+		sif::printError("ObjectManager::initialize: Passed produceObjects functions is nullptr!\n");
 #endif
 		return;
 	}

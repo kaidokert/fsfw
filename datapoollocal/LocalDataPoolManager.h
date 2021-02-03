@@ -24,7 +24,7 @@ void setStaticFrameworkObjectIds();
 }
 
 class LocalPoolDataSetBase;
-class HousekeepingPacketUpdate;
+class HousekeepingSnapshot;
 class HasLocalDataPoolIF;
 class LocalDataPool;
 
@@ -52,17 +52,17 @@ class LocalDataPool;
  * Each pool entry has a valid state too.
  * @author 		R. Mueller
  */
-class LocalDataPoolManager: public ProvidesDataPoolSubscriptionIF,
-		public AccessPoolManagerIF {
-	friend void (Factory::setStaticFrameworkObjectIds)();
-	//! Some classes using the pool manager directly need to access class internals of the
-	//! manager. The attorney provides granular control of access to these internals.
-	friend class LocalDpManagerAttorney;
+class LocalDataPoolManager:
+        public ProvidesDataPoolSubscriptionIF,
+        public AccessPoolManagerIF {
+    friend void (Factory::setStaticFrameworkObjectIds)();
+    //! Some classes using the pool manager directly need to access class internals of the
+    //! manager. The attorney provides granular control of access to these internals.
+    friend class LocalDpManagerAttorney;
 public:
-	static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
+    static constexpr uint8_t INTERFACE_ID = CLASS_ID::HOUSEKEEPING_MANAGER;
 
     static constexpr ReturnValue_t QUEUE_OR_DESTINATION_INVALID = MAKE_RETURN_CODE(0);
-
     static constexpr ReturnValue_t WRONG_HK_PACKET_TYPE = MAKE_RETURN_CODE(1);
     static constexpr ReturnValue_t REPORTING_STATUS_UNCHANGED = MAKE_RETURN_CODE(2);
     static constexpr ReturnValue_t PERIODIC_HELPER_INVALID = MAKE_RETURN_CODE(3);
@@ -81,29 +81,29 @@ public:
      * @param appendValidityBuffer Specify whether a buffer containing the
      * validity state is generated  when serializing or deserializing packets.
      */
-	LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
-	        bool appendValidityBuffer = true);
-	virtual~ LocalDataPoolManager();
+    LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
+            bool appendValidityBuffer = true);
+    virtual~ LocalDataPoolManager();
 
-	/**
-	 * Assigns the queue to use. Make sure to call this in the #initialize
-	 * function of the owner.
-	 * @param queueToUse
-	 * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
-	 * @return
-	 */
-	ReturnValue_t initialize(MessageQueueIF* queueToUse);
+    /**
+     * Assigns the queue to use. Make sure to call this in the #initialize
+     * function of the owner.
+     * @param queueToUse
+     * @param nonDiagInvlFactor See #setNonDiagnosticIntervalFactor doc
+     * @return
+     */
+    ReturnValue_t initialize(MessageQueueIF* queueToUse);
 
-	/**
-	 * Initializes the map by calling the map initialization function and
-	 * setting the periodic factor for non-diagnostic packets.
-	 * Don't forget to call this in the #initializeAfterTaskCreation call of
-	 * the owner, otherwise the map will be invalid!
-	 * @param nonDiagInvlFactor
-	 * @return
-	 */
-	ReturnValue_t initializeAfterTaskCreation(
-	        uint8_t nonDiagInvlFactor = 5);
+    /**
+     * Initializes the map by calling the map initialization function and
+     * setting the periodic factor for non-diagnostic packets.
+     * Don't forget to call this in the #initializeAfterTaskCreation call of
+     * the owner, otherwise the map will be invalid!
+     * @param nonDiagInvlFactor
+     * @return
+     */
+    ReturnValue_t initializeAfterTaskCreation(
+            uint8_t nonDiagInvlFactor = 5);
 
     /**
      * @brief   This should be called in the periodic handler of the owner.
@@ -116,49 +116,49 @@ public:
      */
     virtual ReturnValue_t performHkOperation();
 
-	/**
-	 * @brief   Subscribe for the generation of periodic packets.
-	 * @details
+    /**
+     * @brief   Subscribe for the generation of periodic packets.
+     * @details
      * This subscription mechanism will generally be used by the data creator
      * to generate housekeeping packets which are downlinked directly.
-	 * @return
-	 */
-	ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
-			float collectionInterval, bool isDiagnostics,
-			object_id_t packetDestination = defaultHkDestination) override;
+     * @return
+     */
+    ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
+            float collectionInterval, bool isDiagnostics,
+            object_id_t packetDestination = defaultHkDestination) override;
 
-	/**
-	 * @brief   Subscribe for the  generation of packets if the dataset
-	 *          is marked as changed.
-	 * @details
-	 * This subscription mechanism will generally be used by the data creator.
-	 * @param sid
-	 * @param isDiagnostics
-	 * @param packetDestination
-	 * @return
-	 */
+    /**
+     * @brief   Subscribe for the  generation of packets if the dataset
+     *          is marked as changed.
+     * @details
+     * This subscription mechanism will generally be used by the data creator.
+     * @param sid
+     * @param isDiagnostics
+     * @param packetDestination
+     * @return
+     */
     ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
             bool isDiagnostics,
             object_id_t packetDestination = defaultHkDestination) override;
 
-	/**
-	 * @brief   Subscribe for a notification message which will be sent
-	 *          if a dataset has changed.
-	 * @details
-	 * This subscription mechanism will generally be used internally by
-	 * other software components.
-	 * @param setId     Set ID of the set to receive update messages from.
-	 * @param destinationObject
-	 * @param targetQueueId
-	 * @param generateSnapshot If this is set to true, a copy of the current
-	 * data with a timestamp will be generated and sent via message.
-	 * Otherwise, only an notification message is sent.
-	 * @return
-	 */
-	ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
-	        object_id_t destinationObject,
-	        MessageQueueId_t targetQueueId,
-	        bool generateSnapshot) override;
+    /**
+     * @brief   Subscribe for a notification message which will be sent
+     *          if a dataset has changed.
+     * @details
+     * This subscription mechanism will generally be used internally by
+     * other software components.
+     * @param setId     Set ID of the set to receive update messages from.
+     * @param destinationObject
+     * @param targetQueueId
+     * @param generateSnapshot If this is set to true, a copy of the current
+     * data with a timestamp will be generated and sent via message.
+     * Otherwise, only an notification message is sent.
+     * @return
+     */
+    ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
+            object_id_t destinationObject,
+            MessageQueueId_t targetQueueId,
+            bool generateSnapshot) override;
 
     /**
      * @brief   Subscribe for an notification message which will be sent if a
@@ -179,18 +179,16 @@ public:
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;
 
-    MutexIF* getLocalPoolMutex() override;
-
-	/**
-	 * Non-Diagnostics packets usually have a lower minimum sampling frequency
-	 * than diagnostic packets.
-	 * A factor can be specified to determine the minimum sampling frequency
-	 * for non-diagnostic packets. The minimum sampling frequency of the
-	 * diagnostics packets,which is usually jusst the period of the
-	 * performOperation calls, is multiplied with that factor.
-	 * @param factor
-	 */
-	void setNonDiagnosticIntervalFactor(uint8_t nonDiagInvlFactor);
+    /**
+     * Non-Diagnostics packets usually have a lower minimum sampling frequency
+     * than diagnostic packets.
+     * A factor can be specified to determine the minimum sampling frequency
+     * for non-diagnostic packets. The minimum sampling frequency of the
+     * diagnostics packets,which is usually jusst the period of the
+     * performOperation calls, is multiplied with that factor.
+     * @param factor
+     */
+    void setNonDiagnosticIntervalFactor(uint8_t nonDiagInvlFactor);
 
     /**
      * @brief   The manager is also able to handle housekeeping messages.
@@ -206,18 +204,18 @@ public:
      */
     virtual ReturnValue_t handleHousekeepingMessage(CommandMessage* message);
 
-	/**
-	 * Generate a housekeeping packet with a given SID.
-	 * @param sid
-	 * @return
-	 */
-	ReturnValue_t generateHousekeepingPacket(sid_t sid,
-			LocalPoolDataSetBase* dataSet, bool forDownlink,
-			MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
+    /**
+     * Generate a housekeeping packet with a given SID.
+     * @param sid
+     * @return
+     */
+    ReturnValue_t generateHousekeepingPacket(sid_t sid,
+            LocalPoolDataSetBase* dataSet, bool forDownlink,
+            MessageQueueId_t destination = MessageQueueIF::NO_QUEUE);
 
-	HasLocalDataPoolIF* getOwner();
+    HasLocalDataPoolIF* getOwner();
 
-	ReturnValue_t printPoolEntry(lp_id_t localPoolId);
+    ReturnValue_t printPoolEntry(lp_id_t localPoolId);
 
     /**
      * Different types of housekeeping reporting are possible.
@@ -236,22 +234,19 @@ public:
         PERIODIC,
         //! Housekeeping packet will be generated if values have changed.
         UPDATE_HK,
-		//! Update notification will be sent out as message.
-		UPDATE_NOTIFICATION,
+        //! Update notification will be sent out as message.
+        UPDATE_NOTIFICATION,
         //! Notification will be sent out as message and a snapshot of the
         //! current data will be generated.
         UPDATE_SNAPSHOT,
     };
 
-    /**
-     * Different data types are possible in the HK receiver map.
-     * For example, updates can be requested for full datasets or
-     * for single pool variables. Periodic reporting is only possible for
-     * data sets.
-     */
+    /** Different data types are possible in the HK receiver map. For example, updates can be
+    requested for full datasets or for single pool variables. Periodic reporting is only possible
+    for data sets. */
     enum class DataType: uint8_t {
-    	LOCAL_POOL_VARIABLE,
-		DATA_SET
+        LOCAL_POOL_VARIABLE,
+        DATA_SET
     };
 
     /* Copying forbidden */
@@ -267,11 +262,19 @@ public:
 
     object_id_t getCreatorObjectId() const;
 
-    virtual LocalDataPoolManager* getHkManagerHandle() override;
+    /**
+     * Get the pointer to the mutex. Can be used to lock the data pool
+     * externally. Use with care and don't forget to unlock locked mutexes!
+     * For now, only friend classes can accss this function.
+     * @return
+     */
+    MutexIF* getMutexHandle();
+
+    virtual LocalDataPoolManager* getPoolManagerHandle() override;
 private:
     localpool::DataPool localPoolMap;
-    //! Every housekeeping data manager has a mutex to protect access
-    //! to it's data pool.
+    /** Every housekeeping data manager has a mutex to protect access
+    to it's data pool. */
     MutexIF* mutex = nullptr;
 
     /** The class which actually owns the manager (and its datapool). */
@@ -279,9 +282,9 @@ private:
 
     uint8_t nonDiagnosticIntervalFactor = 0;
 
-	/** Default receiver for periodic HK packets */
-	static object_id_t defaultHkDestination;
-	MessageQueueId_t hkDestinationId = MessageQueueIF::NO_QUEUE;
+    /** Default receiver for periodic HK packets */
+    static object_id_t defaultHkDestination;
+    MessageQueueId_t hkDestinationId = MessageQueueIF::NO_QUEUE;
 
     union DataId {
         DataId(): sid() {};
@@ -291,10 +294,10 @@ private:
 
     /** The data pool manager will keep an internal map of HK receivers. */
     struct HkReceiver {
-		/** Object ID of receiver */
-		object_id_t objectId = objects::NO_OBJECT;
+        /** Object ID of receiver */
+        object_id_t objectId = objects::NO_OBJECT;
 
-		DataType dataType = DataType::DATA_SET;
+        DataType dataType = DataType::DATA_SET;
         DataId dataId;
 
         ReportingType reportingType = ReportingType::PERIODIC;
@@ -324,37 +327,30 @@ private:
      * of generated housekeeping packets. */
     bool appendValidityBuffer = true;
 
-	/**
-	 * @brief Queue used for communication, for example commands.
-	 * Is also used to send messages. Can be set either in the constructor
+    /**
+     * @brief Queue used for communication, for example commands.
+     * Is also used to send messages. Can be set either in the constructor
      * or in the initialize() function.
-	 */
-	MessageQueueIF* hkQueue = nullptr;
+     */
+    MessageQueueIF* hkQueue = nullptr;
 
-	/** Global IPC store is used to store all packets. */
-	StorageManagerIF* ipcStore = nullptr;
-	/**
-	 * Get the pointer to the mutex. Can be used to lock the data pool
-	 * externally. Use with care and don't forget to unlock locked mutexes!
-	 * For now, only friend classes can accss this function.
-	 * @return
-	 */
-	MutexIF* getMutexHandle();
+    /** Global IPC store is used to store all packets. */
+    StorageManagerIF* ipcStore = nullptr;
 
-	/**
-	 * Read a variable by supplying its local pool ID and assign the pool
-	 * entry to the supplied PoolEntry pointer. The type of the pool entry
-	 * is deduced automatically. This call is not thread-safe!
-	 * For now, only friend classes like LocalPoolVar may access this
-	 * function.
-	 * @tparam T Type of the pool entry
-	 * @param localPoolId Pool ID of the variable to read
-	 * @param poolVar [out] Corresponding pool entry will be assigned to the
-	 * 						supplied pointer.
-	 * @return
-	 */
-	template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId,
-			PoolEntry<T> **poolEntry);
+    /**
+     * Read a variable by supplying its local pool ID and assign the pool
+     * entry to the supplied PoolEntry pointer. The type of the pool entry
+     * is deduced automatically. This call is not thread-safe!
+     * For now, only friend classes like LocalPoolVar may access this
+     * function.
+     * @tparam T Type of the pool entry
+     * @param localPoolId Pool ID of the variable to read
+     * @param poolVar [out] Corresponding pool entry will be assigned to the
+     * 						supplied pointer.
+     * @return
+     */
+    template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId,
+            PoolEntry<T> **poolEntry);
 
     /**
      * This function is used to fill the local data pool map with pool
@@ -364,55 +360,57 @@ private:
      */
     ReturnValue_t initializeHousekeepingPoolEntriesOnce();
 
-	ReturnValue_t serializeHkPacketIntoStore(
-	        HousekeepingPacketDownlink& hkPacket,
-	        store_address_t& storeId, bool forDownlink, size_t* serializedSize);
+    MutexIF* getLocalPoolMutex() override;
 
-	void performPeriodicHkGeneration(HkReceiver& hkReceiver);
-	ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable,
-			bool isDiagnostics);
-	ReturnValue_t changeCollectionInterval(sid_t sid,
-			float newCollectionInterval, bool isDiagnostics);
-	ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
+    ReturnValue_t serializeHkPacketIntoStore(
+            HousekeepingPacketDownlink& hkPacket,
+            store_address_t& storeId, bool forDownlink, size_t* serializedSize);
 
-	void handleHkUpdateResetListInsertion(DataType dataType, DataId dataId);
-	void handleChangeResetLogic(DataType type,
-	        DataId dataId, MarkChangedIF* toReset);
-	void resetHkUpdateResetHelper();
+    void performPeriodicHkGeneration(HkReceiver& hkReceiver);
+    ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable,
+            bool isDiagnostics);
+    ReturnValue_t changeCollectionInterval(sid_t sid,
+            float newCollectionInterval, bool isDiagnostics);
+    ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
 
-	ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver,
+    void handleHkUpdateResetListInsertion(DataType dataType, DataId dataId);
+    void handleChangeResetLogic(DataType type,
+            DataId dataId, MarkChangedIF* toReset);
+    void resetHkUpdateResetHelper();
+
+    ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver,
             ReturnValue_t& status);
-	ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver,
-	        ReturnValue_t& status);
-	ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
+    ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver,
             ReturnValue_t& status);
-	ReturnValue_t addUpdateToStore(HousekeepingPacketUpdate& updatePacket,
-	        store_address_t& storeId);
+    ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
+            ReturnValue_t& status);
+    ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket,
+            store_address_t& storeId);
 
-	void printWarningOrError(sif::OutputTypes outputType,
-			const char* functionName,
-			ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
-			const char* errorPrint = nullptr);
+    void printWarningOrError(sif::OutputTypes outputType,
+            const char* functionName,
+            ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
+            const char* errorPrint = nullptr);
 };
 
 
 template<class T> inline
 ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
-		PoolEntry<T> **poolEntry) {
-	auto poolIter = localPoolMap.find(localPoolId);
-	if (poolIter == localPoolMap.end()) {
-    	printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
-    			localpool::POOL_ENTRY_NOT_FOUND);
-		return localpool::POOL_ENTRY_NOT_FOUND;
-	}
+        PoolEntry<T> **poolEntry) {
+    auto poolIter = localPoolMap.find(localPoolId);
+    if (poolIter == localPoolMap.end()) {
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",
+                localpool::POOL_ENTRY_NOT_FOUND);
+        return localpool::POOL_ENTRY_NOT_FOUND;
+    }
 
-	*poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
-	if(*poolEntry == nullptr) {
-    	printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
-    			localpool::POOL_ENTRY_TYPE_CONFLICT);
-		return localpool::POOL_ENTRY_TYPE_CONFLICT;
-	}
-	return HasReturnvaluesIF::RETURN_OK;
+    *poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
+    if(*poolEntry == nullptr) {
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",
+                localpool::POOL_ENTRY_TYPE_CONFLICT);
+        return localpool::POOL_ENTRY_TYPE_CONFLICT;
+    }
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 

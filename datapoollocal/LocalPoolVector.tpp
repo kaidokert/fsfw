@@ -16,7 +16,6 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(object_id_t poolOwner,
         lp_id_t poolId, DataSetIF *dataSet, pool_rwm_t setReadWriteMode):
         LocalPoolObjectBase(poolOwner, poolId, dataSet, setReadWriteMode) {}
 
-
 template<typename T, uint16_t vectorSize>
 inline LocalPoolVector<T, vectorSize>::LocalPoolVector(gp_id_t globalPoolId,
         DataSetIF *dataSet, pool_rwm_t setReadWriteMode):

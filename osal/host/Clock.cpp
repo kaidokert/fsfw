@@ -3,7 +3,7 @@
 
 #include <chrono>
 #if defined(WIN32)
-#include <windows.h>
+#include <sysinfoapi.h>
 #elif defined(LINUX)
 #include <fstream>
 #endif
@@ -15,35 +15,34 @@ using SystemClock = std::chrono::system_clock;
 
 uint32_t Clock::getTicksPerSecond(void){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << "Clock::getTicksPerSecond: not implemented yet" << std::endl;
+	sif::warning << "Clock::getTicksPerSecond: Not implemented for host OSAL" << std::endl;
+#else
+	sif::printWarning("Clock::getTicksPerSecond: Not implemented for host OSAL\n");
 #endif
-	return 0;
-	//return CLOCKS_PER_SEC;
-	//uint32_t ticks = sysconf(_SC_CLK_TCK);
-	//return ticks;
+	/* To avoid division by zero */
+	return 1;
 }
 
 ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
-	// do some magic with chrono
+	/* I don't know why someone would need to set a clock which is probably perfectly fine on a
+	host system with internet access so this is not implemented for now. */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << "Clock::setClock: not implemented yet" << std::endl;
+    sif::warning << "Clock::setClock: Not implemented for host OSAL" << std::endl;
+#else
+    sif::printWarning("Clock::setClock: Not implemented for host OSAL\n");
 #endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::setClock(const timeval* time) {
-	// do some magic with chrono
-#if defined(WIN32)
-	return HasReturnvaluesIF::RETURN_OK;
-#elif defined(LINUX)
-	return HasReturnvaluesIF::RETURN_OK;
-#else
-
-#endif
+    /* I don't know why someone would need to set a clock which is probably perfectly fine on a
+    host system with internet access so this is not implemented for now. */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << "Clock::getUptime: Not implemented for found OS" << std::endl;
+    sif::warning << "Clock::setClock: Not implemented for host OSAL" << std::endl;
+#else
+    sif::printWarning("Clock::setClock: Not implemented for host OSAL\n");
 #endif
-	return HasReturnvaluesIF::RETURN_FAILED;
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
@@ -53,8 +52,7 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	auto epoch = now.time_since_epoch();
 	time->tv_sec = std::chrono::duration_cast<std::chrono::seconds>(epoch).count();
 	auto fraction = now - secondsChrono;
-	time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(
-	        fraction).count();
+	time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(fraction).count();
 	return HasReturnvaluesIF::RETURN_OK;
 #elif defined(LINUX)
 	timespec timeUnix;
@@ -67,7 +65,9 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	return HasReturnvaluesIF::RETURN_OK;
 #else
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << "Clock::getUptime: Not implemented for found OS" << std::endl;
+	sif::warning << "Clock::getUptime: Not implemented for found OS!" << std::endl;
+#else
+	sif::printWarning("Clock::getUptime: Not implemented for found OS!\n");
 #endif
 	return HasReturnvaluesIF::RETURN_FAILED;
 #endif
@@ -75,10 +75,11 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 }
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
-	// do some magic with chrono
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << "Clock::gerClock_usecs: not implemented yet" << std::endl;
-#endif
+    if(time == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+    using namespace std::chrono;
+    *time = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -120,9 +121,9 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
-	// do some magic with chrono (C++20!)
-	// Right now, the library doesn't have the new features yet.
-	// so we work around that for now.
+	/* Do some magic with chrono (C++20!) */
+	/* Right now, the library doesn't have the new features to get the required values yet.
+	so we work around that for now. */
 	auto now = SystemClock::now();
 	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
 	auto fraction = now - seconds;
@@ -137,10 +138,6 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 	time->second = timeInfo->tm_sec;
 	auto usecond = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
 	time->usecond = usecond.count();
-
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	//sif::warning << "Clock::getDateAndTime: not implemented yet" << std::endl;
-#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

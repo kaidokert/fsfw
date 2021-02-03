@@ -1,18 +1,20 @@
 #include "Mutex.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 uint8_t Mutex::count = 0;
 
-Mutex::Mutex() :
-		mutexId(0) {
+Mutex::Mutex() {
 	rtems_name mutexName = ('M' << 24) + ('T' << 16) + ('X' << 8) + count++;
 	rtems_status_code status = rtems_semaphore_create(mutexName, 1,
 	RTEMS_BINARY_SEMAPHORE | RTEMS_PRIORITY | RTEMS_INHERIT_PRIORITY, 0,
 			&mutexId);
 	if (status != RTEMS_SUCCESSFUL) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "Mutex: creation with name, id " << mutexName << ", " << mutexId
-				<< " failed with " << status << std::endl;
+		sif::error << "Mutex::Mutex: Creation with name, id " << mutexName << ", " << mutexId <<
+		        " failed with " << status << std::endl;
+#else
+		sif::printError("Mutex::Mutex: Creation with name, id %s, %d failed with %d\n", mutexName,
+		        static_cast<int>(mutexId), static_cast<int>(status));
 #endif
 	}
 }

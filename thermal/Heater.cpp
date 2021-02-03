@@ -290,13 +290,13 @@ void Heater::handleQueue() {
 	}
 }
 
-ReturnValue_t Heater::getParameter(uint8_t domainId, uint16_t parameterId,
-		ParameterWrapper* parameterWrapper, const ParameterWrapper* newValues,
+ReturnValue_t Heater::getParameter(uint8_t domainId, uint8_t uniqueId,
+        ParameterWrapper* parameterWrapper, const ParameterWrapper* newValues,
 		uint16_t startAtIndex) {
 	if (domainId != DOMAIN_ID_BASE) {
 		return INVALID_DOMAIN_ID;
 	}
-	switch (parameterId) {
+	switch (uniqueId) {
 	case 0:
 		parameterWrapper->set(heaterOnCountdown.timeout);
 		break;
