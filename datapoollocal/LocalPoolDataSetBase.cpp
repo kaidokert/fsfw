@@ -51,6 +51,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
         AccessPoolManagerIF* accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
         if(accessor != nullptr) {
             mutexIfSingleDataCreator = accessor->getLocalPoolMutex();
+            poolManager = accessor->getPoolManagerHandle();
         }
     }
 
