@@ -166,7 +166,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
 			// prepare and send update notification.
 			CommandMessage notification;
 			HousekeepingMessage::setUpdateNotificationVariableCommand(&notification,
-					receiver.dataId.localPoolId);
+					gp_id_t(owner->getObjectId(), receiver.dataId.localPoolId));
 			ReturnValue_t result = hkQueue->sendMessage(
 					receiver.destinationQueue, &notification);
 			if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -238,7 +238,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(
 
 		CommandMessage notification;
 		HousekeepingMessage::setUpdateSnapshotVariableCommand(&notification,
-				receiver.dataId.localPoolId, storeId);
+				gp_id_t(owner->getObjectId(), receiver.dataId.localPoolId), storeId);
 		result = hkQueue->sendMessage(receiver.destinationQueue,
 				&notification);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -563,9 +563,9 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	case(HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE): {
-		lp_id_t locPoolId = HousekeepingMessage::
+		gp_id_t globPoolId = HousekeepingMessage::
 				getUpdateNotificationVariableCommand(message);
-		owner->handleChangedPoolVariable(locPoolId);
+		owner->handleChangedPoolVariable(globPoolId);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	case(HousekeepingMessage::UPDATE_SNAPSHOT_SET): {
@@ -576,9 +576,9 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 	}
 	case(HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE): {
 		store_address_t storeId;
-		lp_id_t localPoolId = HousekeepingMessage::
+		gp_id_t globPoolId = HousekeepingMessage::
 				getUpdateSnapshotVariableCommand(message, &storeId);
-		owner->handleChangedPoolVariable(localPoolId, storeId);
+		owner->handleChangedPoolVariable(globPoolId, storeId);
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 

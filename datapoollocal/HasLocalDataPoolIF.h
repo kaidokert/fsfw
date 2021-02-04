@@ -80,7 +80,7 @@ public:
      * @param storeId If a snapshot was requested, data will be located inside
      * the IPC store with this store ID.
      */
-    virtual void handleChangedPoolVariable(lp_id_t poolId,
+    virtual void handleChangedPoolVariable(gp_id_t globPoolId,
             store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
         return;
     }

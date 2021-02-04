@@ -38,7 +38,6 @@ public:
             bool isDiagnostics,
             object_id_t packetDestination) = 0;
 
-
     /**
      * @brief   Subscribe for a notification message which will be sent
      *          if a dataset has changed.
@@ -54,8 +53,7 @@ public:
      * @return
      */
     virtual ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
-            object_id_t destinationObject,
-            MessageQueueId_t targetQueueId,
+            object_id_t destinationObject, MessageQueueId_t targetQueueId,
             bool generateSnapshot) = 0;
 
     /**
