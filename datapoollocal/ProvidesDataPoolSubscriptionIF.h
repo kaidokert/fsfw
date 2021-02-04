@@ -44,12 +44,12 @@ public:
      * @details
      * This subscription mechanism will generally be used internally by
      * other software components.
-     * @param setId     Set ID of the set to receive update messages from.
-     * @param destinationObject
-     * @param targetQueueId
-     * @param generateSnapshot If this is set to true, a copy of the current
-     * data with a timestamp will be generated and sent via message.
-     * Otherwise, only an notification message is sent.
+     * @param setId                 Set ID of the set to receive update messages from.
+     * @param destinationObject     Object ID of the receiver.
+     * @param targetQueueId         Receiver queue ID
+     * @param generateSnapshot      If this is set to true, a copy of the current data with a
+     *                              timestamp will be generated and sent via message.
+     *                              Otherwise, only an notification message is sent.
      * @return
      */
     virtual ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
@@ -62,12 +62,12 @@ public:
      * @details
      * This subscription mechanism will generally be used internally by
      * other software components.
-     * @param localPoolId Pool ID of the pool variable
-     * @param destinationObject
-     * @param targetQueueId
-     * @param generateSnapshot If this is set to true, a copy of the current
-     * data with a timestamp will be generated and sent via message.
-     * Otherwise, only an notification message is sent.
+     * @param localPoolId           Pool ID of the pool variable
+     * @param destinationObject     Object ID of the receiver
+     * @param targetQueueId         Receiver queue ID
+     * @param generateSnapshot      If this is set to true, a copy of the current data with a
+     *                              timestamp will be generated and sent via message. Otherwise,
+     *                              only an notification message is sent.
      * @return
      */
     virtual ReturnValue_t subscribeForVariableUpdateMessages(
