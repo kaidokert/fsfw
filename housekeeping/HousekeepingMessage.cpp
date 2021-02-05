@@ -125,8 +125,10 @@ sid_t HousekeepingMessage::getSid(const CommandMessage* message) {
 	return sid;
 }
 
-void HousekeepingMessage::setSid(CommandMessage *message, sid_t sid) {
-	std::memcpy(message->getData(), &sid.raw, sizeof(sid.raw));
+gp_id_t HousekeepingMessage::getGpid(const CommandMessage* message) {
+    gp_id_t globalPoolId;
+    std::memcpy(&globalPoolId.raw, message->getData(), sizeof(globalPoolId.raw));
+    return globalPoolId;
 }
 
 void HousekeepingMessage::setHkStuctureReportReply(CommandMessage *reply,
@@ -169,9 +171,9 @@ void HousekeepingMessage::setUpdateNotificationSetCommand(
 }
 
 void HousekeepingMessage::setUpdateNotificationVariableCommand(
-        CommandMessage *command, lp_id_t localPoolId) {
+        CommandMessage *command, gp_id_t globalPoolId) {
     command->setCommand(UPDATE_NOTIFICATION_VARIABLE);
-    command->setParameter(localPoolId);
+    setGpid(command, globalPoolId);
 }
 
 void HousekeepingMessage::setUpdateSnapshotSetCommand(CommandMessage *command,
@@ -182,9 +184,9 @@ void HousekeepingMessage::setUpdateSnapshotSetCommand(CommandMessage *command,
 }
 
 void HousekeepingMessage::setUpdateSnapshotVariableCommand(
-        CommandMessage *command, lp_id_t localPoolId, store_address_t storeId) {
+        CommandMessage *command, gp_id_t globalPoolId, store_address_t storeId) {
     command->setCommand(UPDATE_SNAPSHOT_VARIABLE);
-    command->setParameter(localPoolId);
+    setGpid(command, globalPoolId);
     command->setParameter3(storeId.raw);
 }
 
@@ -193,9 +195,9 @@ sid_t HousekeepingMessage::getUpdateNotificationSetCommand(
     return getSid(command);
 }
 
-lp_id_t HousekeepingMessage::getUpdateNotificationVariableCommand(
+gp_id_t HousekeepingMessage::getUpdateNotificationVariableCommand(
         const CommandMessage *command) {
-    return command->getParameter();
+    return getGpid(command);
 }
 
 sid_t HousekeepingMessage::getUpdateSnapshotSetCommand(
@@ -206,10 +208,18 @@ sid_t HousekeepingMessage::getUpdateSnapshotSetCommand(
     return getSid(command);
 }
 
-lp_id_t HousekeepingMessage::getUpdateSnapshotVariableCommand(
+gp_id_t HousekeepingMessage::getUpdateSnapshotVariableCommand(
         const CommandMessage *command, store_address_t *storeId) {
     if(storeId != nullptr) {
         *storeId = command->getParameter3();
     }
-    return command->getParameter();
+    return getGpid(command);
+}
+
+void HousekeepingMessage::setSid(CommandMessage *message, sid_t sid) {
+    std::memcpy(message->getData(), &sid.raw, sizeof(sid.raw));
+}
+
+void HousekeepingMessage::setGpid(CommandMessage *message, gp_id_t globalPoolId) {
+    std::memcpy(message->getData(), &globalPoolId.raw, sizeof(globalPoolId.raw));
 }

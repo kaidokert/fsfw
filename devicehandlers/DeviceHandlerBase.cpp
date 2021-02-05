@@ -435,8 +435,7 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
     }
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandMap(
-        DeviceCommandId_t deviceCommand) {
+ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceCommand) {
     DeviceCommandInfo info;
     info.expectedReplies = 0;
     info.isExecuting = false;
@@ -701,13 +700,11 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData,
     ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
     DeviceCommandId_t foundId = DeviceHandlerIF::NO_COMMAND_ID;
     size_t foundLen = 0;
-    // The loop may not execute more often than the number of received bytes
-    // (worst case). This approach avoids infinite loops due to buggy
-    // scanForReply routines.
+    /* The loop may not execute more often than the number of received bytes
+    (worst case). This approach avoids infinite loops due to buggy scanForReply routines. */
     uint32_t remainingLength = receivedDataLen;
     for (uint32_t count = 0; count < receivedDataLen; count++) {
-        result = scanForReply(receivedData, remainingLength, &foundId,
-                &foundLen);
+        result = scanForReply(receivedData, remainingLength, &foundId, &foundLen);
         switch (result) {
         case RETURN_OK:
             handleReply(receivedData, foundId, foundLen);
@@ -790,9 +787,9 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
         replyToReply(iter, result);
     }
     else {
-        // Other completion failure messages are created by timeout.
-        // Powering down the device might take some time during which periodic
-        // replies may still come in.
+        /* Other completion failure messages are created by timeout.
+        Powering down the device might take some time during which periodic
+        replies may still come in. */
         if (mode != _MODE_WAIT_OFF) {
             triggerEvent(DEVICE_UNREQUESTED_REPLY, foundId);
         }

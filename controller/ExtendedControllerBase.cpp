@@ -8,6 +8,9 @@ ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId,
         actionHelper(this, commandQueue) {
 }
 
+ExtendedControllerBase::~ExtendedControllerBase() {
+}
+
 ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
         MessageQueueId_t commandedBy, const uint8_t *data, size_t size) {
     // needs to be overriden and implemented by child class.
