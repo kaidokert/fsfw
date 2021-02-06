@@ -67,8 +67,18 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(
 
 
 LocalPoolDataSetBase::~LocalPoolDataSetBase() {
+    /* We only delete objects which were created in the class constructor */
     if(periodicHelper != nullptr) {
         delete periodicHelper;
+    }
+    /* In case set was read but not comitted, we commit all variables with an invalid state */
+    if(state == States::STATE_SET_WAS_READ) {
+        for (uint16_t count = 0; count < fillCount; count++) {
+            if(registeredVariables[count] != nullptr) {
+                registeredVariables[count]->setValid(false);
+                registeredVariables[count]->commit(MutexIF::TimeoutType::WAITING, 20);
+            }
+        }
     }
 }
 
