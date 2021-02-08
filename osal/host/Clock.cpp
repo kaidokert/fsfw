@@ -53,8 +53,7 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	auto epoch = now.time_since_epoch();
 	time->tv_sec = std::chrono::duration_cast<std::chrono::seconds>(epoch).count();
 	auto fraction = now - secondsChrono;
-	time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(
-	        fraction).count();
+	time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(fraction).count();
 	return HasReturnvaluesIF::RETURN_OK;
 #elif defined(LINUX)
 	timespec timeUnix;
@@ -67,7 +66,9 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	return HasReturnvaluesIF::RETURN_OK;
 #else
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::warning << "Clock::getUptime: Not implemented for found OS" << std::endl;
+	sif::warning << "Clock::getUptime: Not implemented for found OS!" << std::endl;
+#else
+	sif::printWarning("Clock::getUptime: Not implemented for found OS!\n");
 #endif
 	return HasReturnvaluesIF::RETURN_FAILED;
 #endif
