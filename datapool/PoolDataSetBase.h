@@ -39,8 +39,12 @@ public:
 	 * 			supply a pointer to this dataset to PoolVariable
 	 * 			initializations to register pool variables.
 	 */
-	PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
-	        const size_t maxFillCount);
+	PoolDataSetBase(PoolVariableIF** registeredVariablesArray, const size_t maxFillCount);
+
+	/* Forbidden for now */
+	PoolDataSetBase(const PoolDataSetBase& otherSet) = delete;
+	const PoolDataSetBase& operator=(const PoolDataSetBase& otherSet) = delete;
+
 	virtual~ PoolDataSetBase();
 
 	/**
@@ -63,8 +67,7 @@ public:
 	 * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
 	 *      commit() in between
 	 */
-	virtual ReturnValue_t read(
-			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+	virtual ReturnValue_t read(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
 			uint32_t lockTimeout = 20) override;
 	/**
 	 * @brief	The commit call initializes writing back the registered variables.
@@ -84,8 +87,7 @@ public:
 	 * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
 	 * 			  contains non write-only variables
 	 */
-	virtual ReturnValue_t commit(
-			MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+	virtual ReturnValue_t commit(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
 			uint32_t lockTimeout = 20) override;
 
 	/**

@@ -75,6 +75,7 @@ public:
 	//static constexpr Command_t UPDATE_HK_REPORT = MAKE_COMMAND_ID(134);
 
 	static sid_t getSid(const CommandMessage* message);
+	static gp_id_t getGpid(const CommandMessage* message);
 
 	/* Housekeeping Interface Messages */
 
@@ -123,26 +124,27 @@ public:
     static void setUpdateNotificationSetCommand(CommandMessage* command,
             sid_t sid);
     static void setUpdateNotificationVariableCommand(CommandMessage* command,
-            lp_id_t localPoolId);
+            gp_id_t globalPoolId);
 
     static void setUpdateSnapshotSetCommand(CommandMessage* command, sid_t sid,
             store_address_t storeId);
     static void setUpdateSnapshotVariableCommand(CommandMessage* command,
-            lp_id_t localPoolId, store_address_t storeId);
+            gp_id_t globalPoolId, store_address_t storeId);
 
     static sid_t getUpdateNotificationSetCommand(const CommandMessage* command);
-    static lp_id_t getUpdateNotificationVariableCommand(
+    static gp_id_t getUpdateNotificationVariableCommand(
             const CommandMessage* command);
 
     static sid_t getUpdateSnapshotSetCommand(const CommandMessage* command,
             store_address_t* storeId);
-    static lp_id_t getUpdateSnapshotVariableCommand(const CommandMessage* command,
+    static gp_id_t getUpdateSnapshotVariableCommand(const CommandMessage* command,
             store_address_t* storeId);
 
     /** Utility */
 	static void clear(CommandMessage* message);
 private:
 	static void setSid(CommandMessage* message, sid_t sid);
+	static void setGpid(CommandMessage* message, gp_id_t globalPoolId);
 };
 
 
