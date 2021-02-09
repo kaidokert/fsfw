@@ -18,17 +18,19 @@ QueueMapManager* QueueMapManager::instance() {
 
 ReturnValue_t QueueMapManager::addMessageQueue(
 		MessageQueueIF* queueToInsert, MessageQueueId_t* id) {
-	// Not thread-safe, but it is assumed all message queues are created
-	// at software initialization now. If this is to be made thread-safe in
-	// the future, it propably would be sufficient to lock the increment
-	// operation here
+	/* Not thread-safe, but it is assumed all message queues are created at software initialization
+	now. If this is to be made thread-safe in the future, it propably would be sufficient to lock
+	the increment operation here. */
 	uint32_t currentId = queueCounter++;
 	auto returnPair = queueMap.emplace(currentId, queueToInsert);
 	if(not returnPair.second) {
-		// this should never happen for the atomic variable.
+		/* This should never happen for the atomic variable. */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "QueueMapManager: This ID is already inside the map!"
-				<< std::endl;
+		sif::error << "QueueMapManager::addMessageQueue This ID is already "
+		        "inside the map!" << std::endl;
+#else
+		sif::printError("QueueMapManager::addMessageQueue This ID is already "
+                "inside the map!\n");
 #endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -47,8 +49,11 @@ MessageQueueIF* QueueMapManager::getMessageQueue(
 	}
 	else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "QueueMapManager::getQueueHandle: The ID " <<
-				messageQueueId << " does not exists in the map" << std::endl;
+		sif::warning << "QueueMapManager::getQueueHandle: The ID " << messageQueueId <<
+		        " does not exists in the map!" << std::endl;
+#else
+		sif::printWarning("QueueMapManager::getQueueHandle: The ID %d does not exist in the map!\n",
+		        messageQueueId);
 #endif
 		return nullptr;
 	}

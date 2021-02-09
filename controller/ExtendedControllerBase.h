@@ -22,13 +22,14 @@ class ExtendedControllerBase: public ControllerBase,
 public:
     ExtendedControllerBase(object_id_t objectId, object_id_t parentId,
             size_t commandQueueDepth = 3);
+    virtual ~ExtendedControllerBase();
 
-    /** SystemObjectIF overrides */
+    /* SystemObjectIF overrides */
     virtual ReturnValue_t initialize() override;
 
     virtual MessageQueueId_t getCommandQueue() const override;
 
-    /** ExecutableObjectIF overrides */
+    /* ExecutableObjectIF overrides */
     virtual ReturnValue_t performOperation(uint8_t opCode) override;
     virtual ReturnValue_t initializeAfterTaskCreation() override;
 
@@ -49,15 +50,15 @@ protected:
      */
     virtual void performControlOperation() = 0;
 
-    /** Handle the four messages mentioned above */
+    /* Handle the four messages mentioned above */
     void handleQueue() override;
 
-    /** HasActionsIF overrides */
+    /* HasActionsIF overrides */
     virtual ReturnValue_t executeAction(ActionId_t actionId,
             MessageQueueId_t commandedBy, const uint8_t* data,
             size_t size) override;
 
-    /** HasLocalDatapoolIF overrides */
+    /* HasLocalDatapoolIF overrides */
     virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual object_id_t getObjectId() const override;
     virtual ReturnValue_t initializeLocalDataPool(

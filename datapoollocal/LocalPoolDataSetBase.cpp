@@ -51,6 +51,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
         AccessPoolManagerIF* accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
         if(accessor != nullptr) {
             mutexIfSingleDataCreator = accessor->getLocalPoolMutex();
+            poolManager = accessor->getPoolManagerHandle();
         }
     }
 
@@ -66,8 +67,18 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(
 
 
 LocalPoolDataSetBase::~LocalPoolDataSetBase() {
+    /* We only delete objects which were created in the class constructor */
     if(periodicHelper != nullptr) {
         delete periodicHelper;
+    }
+    /* In case set was read but not comitted, we commit all variables with an invalid state */
+    if(state == States::STATE_SET_WAS_READ) {
+        for (uint16_t count = 0; count < fillCount; count++) {
+            if(registeredVariables[count] != nullptr) {
+                registeredVariables[count]->setValid(false);
+                registeredVariables[count]->commit(MutexIF::TimeoutType::WAITING, 20);
+            }
+        }
     }
 }
 
@@ -83,7 +94,7 @@ ReturnValue_t LocalPoolDataSetBase::lockDataPool(
 ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer,
         size_t *size, size_t maxSize,
         SerializeIF::Endianness streamEndianness) const {
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
     uint8_t validityMask[validityMaskSize];
     uint8_t validBufferIndex = 0;

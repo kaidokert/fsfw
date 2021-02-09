@@ -97,11 +97,17 @@ public:
      * @brief	The destructor automatically manages writing the valid
      * 			information of variables.
      * @details
-     * In case the data set was read out, but not committed(indicated by state),
+     * In case the data set was read out, but not committed (indicated by state),
      * the destructor parses all variables that are still registered to the set.
      * For each, the valid flag in the data pool is set to "invalid".
      */
     ~LocalPoolDataSetBase();
+
+    /* The copy constructor and assingment constructor are forbidden for now.
+    The use-cases are limited and the first step would be to implement them properly for the
+    base class */
+    LocalPoolDataSetBase(const LocalPoolDataSetBase& otherSet) = delete;
+    const LocalPoolDataSetBase& operator=(const LocalPoolDataSetBase& otherSet) = delete;
 
     void setValidityBufferGeneration(bool withValidityBuffer);
 
@@ -153,6 +159,7 @@ public:
     bool hasChanged() const override;
 
     object_id_t getCreatorObjectId();
+
 protected:
     sid_t sid;
     //! This mutex is used if the data is created by one object only.

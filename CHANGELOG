@@ -81,4 +81,7 @@ now
   For the fsfw, this can be done by checking the processor define FSFW_CPP_OSTREAM_ENABLED from FSFWConfig.h. 
   For mission code, developers need to replace sif:: calls by the printf counterparts, but only if the CPP stream are excluded. 
   If this is not the case, everything should work as usual.
-- 
+
+### PUS Parameter Service 20
+
+Added PUS parameter service 20 (only custom subservices available).
