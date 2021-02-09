@@ -37,16 +37,16 @@ public:
 		}
 	}
 
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex) {
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
+			ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+			uint16_t startAtIndex) {
 		ReturnValue_t result = this->MonitorBase<T>::getParameter(domainId,
-				parameterId, parameterWrapper, newValues, startAtIndex);
+				uniqueId, parameterWrapper, newValues, startAtIndex);
 		//We'll reuse the DOMAIN_ID of MonitorReporter, as we know the parameterIds used there.
 		if (result != this->INVALID_IDENTIFIER_ID) {
 			return result;
 		}
-		switch (parameterId) {
+		switch (uniqueId) {
 		case 10:
 			parameterWrapper->set(this->lowerLimit);
 			break;

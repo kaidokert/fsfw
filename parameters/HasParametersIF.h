@@ -52,9 +52,8 @@ public:
 		return id;
 	}
 
-	static uint32_t getFullParameterId(uint8_t domainId,
-	        uint8_t uniqueIdentifier, uint16_t linearIndex) {
-		return (domainId << 24) + (uniqueIdentifier << 16) + linearIndex;
+	static uint32_t getFullParameterId(uint8_t domainId, uint8_t uniqueId, uint16_t linearIndex) {
+		return (domainId << 24) + (uniqueId << 16) + linearIndex;
 	}
 
 	virtual ~HasParametersIF() {}
@@ -74,9 +73,9 @@ public:
 	 * matrix indexes.
 	 * @return
 	 */
-	virtual ReturnValue_t getParameter(uint8_t domainId,
-	        uint16_t uniqueIdentifier, ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex) = 0;
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueIdentifier,
+	        ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+	        uint16_t startAtIndex) = 0;
 };
 
 #endif /* FSFW_PARAMETERS_HASPARAMETERSIF_H_ */

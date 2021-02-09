@@ -148,14 +148,14 @@ ThermalComponentIF::State ThermalComponent::getIgnoredState(int8_t state) {
 }
 
 ReturnValue_t ThermalComponent::getParameter(uint8_t domainId,
-		uint16_t parameterId, ParameterWrapper* parameterWrapper,
+		uint8_t uniqueId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
-	ReturnValue_t result = ThermalComponentCore::getParameter(domainId, parameterId,
+	ReturnValue_t result = ThermalComponentCore::getParameter(domainId, uniqueId,
 			parameterWrapper, newValues, startAtIndex);
 	if (result != INVALID_IDENTIFIER_ID) {
 		return result;
 	}
-	switch (parameterId) {
+	switch (uniqueId) {
 	case 12:
 		parameterWrapper->set(nopParameters.lowerNopLimit);
 		break;

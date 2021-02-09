@@ -209,20 +209,20 @@ void DeviceHandlerFailureIsolation::startRecovery(Event reason) {
 }
 
 ReturnValue_t DeviceHandlerFailureIsolation::getParameter(uint8_t domainId,
-		uint16_t parameterId, ParameterWrapper* parameterWrapper,
+		uint8_t uniqueId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
-	ReturnValue_t result = strangeReplyCount.getParameter(domainId, parameterId,
+	ReturnValue_t result = strangeReplyCount.getParameter(domainId, uniqueId,
 			parameterWrapper, newValues, startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
-	result = missedReplyCount.getParameter(domainId, parameterId,
-			parameterWrapper, newValues, startAtIndex);
+	result = missedReplyCount.getParameter(domainId, uniqueId, parameterWrapper, newValues,
+	        startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
-	result = recoveryCounter.getParameter(domainId, parameterId,
-			parameterWrapper, newValues, startAtIndex);
+	result = recoveryCounter.getParameter(domainId, uniqueId, parameterWrapper, newValues,
+	        startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}

@@ -62,9 +62,9 @@ public:
 	ReturnValue_t setHealth(HealthState health);
 	HasHealthIF::HealthState getHealth();
 
-	ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex);
+	ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
+	        ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+			uint16_t startAtIndex);
 
 private:
 	uint8_t oldFuseState;

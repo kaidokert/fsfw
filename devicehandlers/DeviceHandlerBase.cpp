@@ -1286,18 +1286,17 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId,
 }
 
 void DeviceHandlerBase::buildInternalCommand(void) {
-//Neither Raw nor Direct could build a command
+    /* Neither raw nor direct could build a command */
 	ReturnValue_t result = NOTHING_TO_SEND;
 	DeviceCommandId_t deviceCommandId = NO_COMMAND_ID;
 	if (mode == MODE_NORMAL) {
 		result = buildNormalDeviceCommand(&deviceCommandId);
 		if (result == BUSY) {
-		    // so we can track misconfigurations
-			printWarningOrError(sif::OutputTypes::OUT_WARNING,
-					"buildInternalCommand",
-					HasReturnvaluesIF::RETURN_FAILED,
-					"Busy.");
-			result = NOTHING_TO_SEND; //no need to report this
+		    /* So we can track misconfigurations */
+			printWarningOrError(sif::OutputTypes::OUT_WARNING, "buildInternalCommand",
+					HasReturnvaluesIF::RETURN_FAILED, "Busy.");
+			/* No need to report this */
+			result = NOTHING_TO_SEND;
 		}
 	}
 	else if (mode == MODE_RAW) {
@@ -1319,7 +1318,8 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 				deviceCommandId);
 		if (iter == deviceCommandMap.end()) {
 			result = COMMAND_NOT_SUPPORTED;
-		} else if (iter->second.isExecuting) {
+		}
+		else if (iter->second.isExecuting) {
 #if FSFW_DISABLE_PRINTOUT == 0
 			char output[36];
 			sprintf(output, "Command 0x%08x is executing",
@@ -1380,10 +1380,10 @@ void DeviceHandlerBase::doOffActivity() {
 }
 
 ReturnValue_t DeviceHandlerBase::getParameter(uint8_t domainId,
-		uint16_t parameterId, ParameterWrapper* parameterWrapper,
+		uint8_t uniqueId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
-	ReturnValue_t result = fdirInstance->getParameter(domainId, parameterId,
-			parameterWrapper, newValues, startAtIndex);
+	ReturnValue_t result = fdirInstance->getParameter(domainId, uniqueId, parameterWrapper,
+	        newValues, startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
