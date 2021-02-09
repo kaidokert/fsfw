@@ -101,7 +101,8 @@ public:
 protected:
     //! Increase of value of this per step
     static const uint8_t STEP_OFFSET = 1;
-    HasActionsIF* owner;//!< Pointer to the owner
+    //! Pointer to the owner
+    HasActionsIF* owner;
     //! Queue to be used as response sender, has to be set in ctor or with
     //! setQueueToUse
     MessageQueueIF* queueToUse;
