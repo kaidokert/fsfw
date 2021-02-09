@@ -104,9 +104,13 @@ ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 }
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
-	// TIsn't this a bug? Are RTEMS ticks always microseconds?
+	/* For all but the last field, the struct will be filled with the correct values */
 	rtems_time_of_day* timeRtems = reinterpret_cast<rtems_time_of_day*>(time);
 	rtems_status_code status = rtems_clock_get_tod(timeRtems);
+	/* The last field now contains the RTEMS ticks of the seconds from 0
+    to rtems_clock_get_ticks_per_second() minus one. We calculate the microseconds accordingly */
+	timeRtems->ticks = static_cast<float>(timeRtems->ticks) /
+	        rtems_clock_get_ticks_per_second() * 1e6;
 	switch (status) {
 	case RTEMS_SUCCESSFUL:
 		return HasReturnvaluesIF::RETURN_OK;
