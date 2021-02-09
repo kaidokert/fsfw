@@ -1,6 +1,9 @@
 #include "Stopwatch.h"
 #include "../serviceinterface/ServiceInterface.h"
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 #include <iomanip>
+#endif
 
 Stopwatch::Stopwatch(bool displayOnDestruction,
         StopwatchDisplayMode displayMode): displayOnDestruction(

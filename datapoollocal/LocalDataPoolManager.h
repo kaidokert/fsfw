@@ -399,14 +399,14 @@ ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
         PoolEntry<T> **poolEntry) {
     auto poolIter = localPoolMap.find(localPoolId);
     if (poolIter == localPoolMap.end()) {
-        printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",
                 localpool::POOL_ENTRY_NOT_FOUND);
         return localpool::POOL_ENTRY_NOT_FOUND;
     }
 
     *poolEntry = dynamic_cast< PoolEntry<T>* >(poolIter->second);
     if(*poolEntry == nullptr) {
-        printWarningOrError(sif::OutputTypes::OUT_ERROR, "fetchPoolEntry",
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",
                 localpool::POOL_ENTRY_TYPE_CONFLICT);
         return localpool::POOL_ENTRY_TYPE_CONFLICT;
     }

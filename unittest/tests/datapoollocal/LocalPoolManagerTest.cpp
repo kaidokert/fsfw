@@ -187,8 +187,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(messageSent.getCommand() == static_cast<int>(
                 HousekeepingMessage::HK_REPORT));
         CommandMessageCleaner::clearCommandMessage(&messageSent);
-        REQUIRE(mqMock->receiveMessage(&messageSent) ==
-                static_cast<int>(MessageQueueIF::EMPTY));
+        REQUIRE(mqMock->receiveMessage(&messageSent) == static_cast<int>(MessageQueueIF::EMPTY));
     }
 
     /* we need to reset the subscription list because the pool owner
