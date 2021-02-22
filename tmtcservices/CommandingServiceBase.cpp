@@ -7,6 +7,7 @@
 #include "../ipc/QueueFactory.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
 object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
@@ -104,9 +105,27 @@ ReturnValue_t CommandingServiceBase::initialize() {
 void CommandingServiceBase::handleCommandQueue() {
 	CommandMessage reply;
 	ReturnValue_t result = RETURN_FAILED;
-	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
-			result = commandQueue->receiveMessage(&reply)) {
-		handleCommandMessage(&reply);
+	while(true) {
+	    result = commandQueue->receiveMessage(&reply);
+	    if (result == HasReturnvaluesIF::RETURN_OK) {
+	        handleCommandMessage(&reply);
+	        continue;
+	    }
+	    else if(result == MessageQueueIF::EMPTY) {
+	        break;
+	    }
+	    else {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	        sif::warning << "CommandingServiceBase::handleCommandQueue: Receiving message failed"
+	                "with code" << result << std::endl;
+#else
+	        sif::printWarning("CommandingServiceBase::handleCommandQueue: Receiving message "
+	                "failed with code %d\n", result);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+	        break;
+	    }
 	}
 }
 

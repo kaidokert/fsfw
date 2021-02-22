@@ -229,20 +229,3 @@ void PoolDataSetBase::setReadCommitProtectionBehaviour(
 	this->timeoutTypeForSingleVars = timeoutType;
 	this->mutexTimeoutForSingleVars = mutexTimeout;
 }
-
-/* We really should supply the container as a template argument instead of writing sth like this */
-//PoolDataSetBase::PoolDataSetBase(const PoolDataSetBase &otherSet):
-//          fillCount(otherSet.fillCount), state(otherSet.state),
-//          maxFillCount(otherSet.maxFillCount),
-//          protectEveryReadCommitCall(otherSet.protectEveryReadCommitCall),
-//          timeoutTypeForSingleVars(otherSet.timeoutTypeForSingleVars),
-//          mutexTimeoutForSingleVars(otherSet.mutexTimeoutForSingleVars) {
-//    if(registeredVariables != nullptr and otherSet.registeredVariables != nullptr) {
-//        std::memcpy(reinterpret_cast<void*>(*(this->registeredVariables)),
-//                reinterpret_cast<const void*>(*(otherSet.registeredVariables)),
-//                fillCount * sizeof(PoolVariableIF*));
-//    }
-//}
-//
-//const PoolDataSetBase& PoolDataSetBase::operator=(const PoolDataSetBase &otherSet) {
-//}

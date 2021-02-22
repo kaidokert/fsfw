@@ -20,12 +20,10 @@ class LocalPoolObjectBase: public PoolVariableIF,
         public HasReturnvaluesIF,
         public MarkChangedIF {
 public:
-    LocalPoolObjectBase(lp_id_t poolId,
-            HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
+    LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
             pool_rwm_t setReadWriteMode);
 
-    LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId,
-            DataSetIF* dataSet = nullptr,
+    LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, DataSetIF* dataSet = nullptr,
             pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
     void setReadWriteMode(pool_rwm_t newReadWriteMode);
