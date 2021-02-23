@@ -62,6 +62,12 @@ public:
 	 */
 	static ReturnValue_t delayTask(uint32_t delayMs);
 
+	/**
+	 * OS specific implementation to print deadline. In most cases, there is a OS specific
+	 * way to retrieve the task name and print it out as well.
+	 */
+	static void printMissedDeadline();
+
 private:
 	/**
 	 * External instantiation is not allowed.

@@ -49,5 +49,11 @@ ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
+void TaskFactory::printMissedDeadline() {
+    /* TODO: Implement */
+    return;
+}
+
+
 TaskFactory::TaskFactory() {
 }
