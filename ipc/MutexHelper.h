@@ -33,7 +33,6 @@ public:
 
         }
         else if(status != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "MutexHelper: Lock of Mutex failed with code " << status << std::endl;
 #else
