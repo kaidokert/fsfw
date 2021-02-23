@@ -10,26 +10,37 @@ public:
             MutexIF::TimeoutType::BLOCKING, uint32_t timeoutMs = 0):
             internalMutex(mutex) {
         if(mutex == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+            sif::error << "MutexHelper: Passed mutex is invalid!" << std::endl;
+#else
+            sif::printError("MutexHelper: Passed mutex is invalid!\n");
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
             return;
         }
         ReturnValue_t status = mutex->lockMutex(timeoutType,
                 timeoutMs);
         if(status == MutexIF::MUTEX_TIMEOUT) {
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "MutexHelper: Lock of mutex failed with timeout of "
                     << timeoutMs << " milliseconds!" << std::endl;
 #else
             sif::printError("MutexHelper: Lock of mutex failed with timeout of %lu milliseconds\n",
                     timeoutMs);
-#endif
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
         }
-        else if(status != HasReturnvaluesIF::RETURN_OK){
+        else if(status != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "MutexHelper: Lock of Mutex failed with code "
                     << status << std::endl;
 #else
             sif::printError("MutexHelper: Lock of Mutex failed with code %d\n", status);
-#endif
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
         }
     }
 
