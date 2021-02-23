@@ -1494,10 +1494,9 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
 
     if(errorType == sif::OutputTypes::OUT_WARNING) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "DeviceHandlerBase::" << functionName << ": Object ID "
-                << std::hex << std::setw(8) << std::setfill('0')
-                << this->getObjectId() << " | " << errorPrint << std::dec
-                << std::setfill(' ') << std::endl;
+        sif::warning << "DeviceHandlerBase::" << functionName << ": Object ID 0x" << std::hex <<
+                std::setw(8) << std::setfill('0') << this->getObjectId() << " | " << errorPrint <<
+                std::dec << std::setfill(' ') << std::endl;
 #else
         sif::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
                 this->getObjectId(), errorPrint);
