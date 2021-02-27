@@ -410,7 +410,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid,
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessages(
+ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessage(
 		const uint32_t setId, object_id_t destinationObject,
 		MessageQueueId_t targetQueueId, bool generateSnapshot) {
 	struct HkReceiver hkReceiver;
@@ -431,7 +431,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessages(
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessages(
+ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessage(
 		const lp_id_t localPoolId, object_id_t destinationObject,
 		MessageQueueId_t targetQueueId, bool generateSnapshot) {
 	struct HkReceiver hkReceiver;

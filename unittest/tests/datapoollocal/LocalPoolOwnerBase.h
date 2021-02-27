@@ -164,12 +164,12 @@ public:
     }
 
     ReturnValue_t subscribeWrapperSetUpdate() {
-        return poolManager.subscribeForSetUpdateMessages(lpool::testSetId,
+        return poolManager.subscribeForSetUpdateMessage(lpool::testSetId,
                 objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, false);
     }
 
     ReturnValue_t subscribeWrapperSetUpdateSnapshot() {
-        return poolManager.subscribeForSetUpdateMessages(lpool::testSetId,
+        return poolManager.subscribeForSetUpdateMessage(lpool::testSetId,
                 objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, true);
     }
 
@@ -179,7 +179,7 @@ public:
     }
 
     ReturnValue_t subscribeWrapperVariableUpdate(lp_id_t localPoolId) {
-        return poolManager.subscribeForVariableUpdateMessages(localPoolId,
+        return poolManager.subscribeForVariableUpdateMessage(localPoolId,
                 MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, false);
     }
 

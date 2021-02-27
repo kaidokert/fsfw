@@ -52,7 +52,7 @@ public:
      *                              Otherwise, only an notification message is sent.
      * @return
      */
-    virtual ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
+    virtual ReturnValue_t subscribeForSetUpdateMessage(const uint32_t setId,
             object_id_t destinationObject, MessageQueueId_t targetQueueId,
             bool generateSnapshot) = 0;
 
@@ -70,7 +70,7 @@ public:
      *                              only an notification message is sent.
      * @return
      */
-    virtual ReturnValue_t subscribeForVariableUpdateMessages(
+    virtual ReturnValue_t subscribeForVariableUpdateMessage(
             const lp_id_t localPoolId,
             object_id_t destinationObject,
             MessageQueueId_t targetQueueId,
