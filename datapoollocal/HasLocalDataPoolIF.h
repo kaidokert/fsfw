@@ -30,7 +30,8 @@ class LocalPoolObjectBase;
  * to a pool manager can be uniqely identified by a global structure ID (sid_t).
  *
  * All software objects which want to use the local pool of another object shall also use this
- * interface, for example to get a handle to the subscription interface.
+ * interface, for example to get a handle to the subscription interface. The interface
+ * can be retrieved using the object manager, provided the target object is a SystemObject.
  * For example, the following line of code can be used to retrieve the interface
  *
  *    HasLocalDataPoolIF* poolIF = objectManager->get<HasLocalDataPoolIF>(objects::SOME_OBJECT);
