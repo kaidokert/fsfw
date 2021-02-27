@@ -174,7 +174,7 @@ public:
     }
 
     ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false) {
-        return poolManager.subscribeForUpdatePackets(lpool::testSid, diagnostics,
+        return poolManager.subscribeForUpdatePacket(lpool::testSid, diagnostics,
                 false, objects::HK_RECEIVER_MOCK);
     }
 

@@ -380,7 +380,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 }
 
 
-ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
+ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid,
 		bool isDiagnostics, bool reportingEnabled,
 		object_id_t packetDestination) {
 	AcceptsHkPacketsIF* hkReceiverObject =

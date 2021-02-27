@@ -137,7 +137,7 @@ public:
      * @param packetDestination
      * @return
      */
-    ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
+    ReturnValue_t subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
             bool isDiagnostics,
             object_id_t packetDestination = defaultHkDestination) override;
 

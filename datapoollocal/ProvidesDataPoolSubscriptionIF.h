@@ -33,7 +33,7 @@ public:
      * @param packetDestination
      * @return
      */
-    virtual ReturnValue_t subscribeForUpdatePackets(sid_t sid,
+    virtual ReturnValue_t subscribeForUpdatePacket(sid_t sid,
             bool reportingEnabled,
             bool isDiagnostics,
             object_id_t packetDestination) = 0;
