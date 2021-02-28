@@ -17,7 +17,7 @@ public:
 	virtual ReturnValue_t commit(MutexIF::TimeoutType timeoutType,
 			uint32_t timeoutMs) = 0;
 
-public:
+protected:
 
 	/* Optional and protected because this is interesting for classes grouping members with commit
 	and read semantics where the lock is only necessary once. */

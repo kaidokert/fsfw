@@ -93,6 +93,7 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
                     mutexTimeoutForSingleVars);
         }
         else {
+            /* The readWithoutLock function is protected, so we use the attorney here */
             result = ReadCommitIFAttorney::readWithoutLock(registeredVariables[count]);
         }
 
@@ -125,6 +126,7 @@ void PoolDataSetBase::handleAlreadyReadDatasetCommit(
                         mutexTimeoutForSingleVars);
             }
             else {
+                /* The commitWithoutLock function is protected, so we use the attorney here */
                 ReadCommitIFAttorney::commitWithoutLock(registeredVariables[count]);
             }
         }
@@ -145,7 +147,8 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(
                         mutexTimeoutForSingleVars);
             }
             else {
-                result = registeredVariables[count]->commitWithoutLock();
+                /* The commitWithoutLock function is protected, so we use the attorney here */
+                ReadCommitIFAttorney::commitWithoutLock(registeredVariables[count]);
             }
 
         } else if (registeredVariables[count]->getDataPoolId()
