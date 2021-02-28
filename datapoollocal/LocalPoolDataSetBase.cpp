@@ -173,7 +173,7 @@ ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
 ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
         size_t* size, size_t maxSize,SerializeIF::Endianness streamEndianness,
         bool serializeFillCount) const {
-    // Serialize as uint8_t
+    /* Serialize fill count as uint8_t */
     uint8_t fillCount = this->fillCount;
     if(serializeFillCount) {
         SerializeAdapter::serialize(&fillCount, buffer, size, maxSize,
