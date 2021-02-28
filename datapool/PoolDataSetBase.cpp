@@ -17,22 +17,25 @@ PoolDataSetBase::~PoolDataSetBase() {}
 ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF *variable) {
     if (state != States::STATE_SET_UNINITIALISED) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "DataSet::registerVariable: "
-                "Call made in wrong position." << std::endl;
+        sif::error << "DataSet::registerVariable: Call made in wrong position." << std::endl;
+#else
+        sif::printError("DataSet::registerVariable: Call made in wrong position.");
 #endif
         return DataSetIF::DATA_SET_UNINITIALISED;
     }
     if (variable == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "DataSet::registerVariable: "
-                "Pool variable is nullptr." << std::endl;
+        sif::error << "DataSet::registerVariable: Pool variable is nullptr." << std::endl;
+#else
+        sif::printError("DataSet::registerVariable: Pool variable is nullptr.\n");
 #endif
         return DataSetIF::POOL_VAR_NULL;
     }
     if (fillCount >= maxFillCount) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "DataSet::registerVariable: "
-                "DataSet is full." << std::endl;
+        sif::error << "DataSet::registerVariable: DataSet is full." << std::endl;
+#else
+        sif::printError("DataSet::registerVariable: DataSet is full.\n");
 #endif
         return DataSetIF::DATA_SET_FULL;
     }

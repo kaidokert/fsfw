@@ -53,6 +53,14 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
             CHECK(localSet.localPoolVarUint8.isValid());
         }
 
+        /* Common fault test cases */
+        LocalPoolObjectBase* variableHandle = poolOwner->getPoolObjectHandle(lpool::uint32VarId);
+        CHECK(variableHandle != nullptr);
+        CHECK(localSet.registerVariable(variableHandle) ==
+                static_cast<int>(DataSetIF::DATA_SET_FULL));
+        variableHandle = nullptr;
+        REQUIRE(localSet.registerVariable(variableHandle) ==
+                static_cast<int>(DataSetIF::POOL_VAR_NULL));
     }
 
     /* we need to reset the subscription list because the pool owner
