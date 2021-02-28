@@ -6,6 +6,8 @@
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/datapool/PoolReadHelper.h>
+#include <fsfw/globalfunctions/bitutility.h>
+
 #include <unittest/core/CatchDefinitions.h>
 
 TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
@@ -160,12 +162,31 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
             CHECK(rawUint16Vec[2] == 1);
             /* We can do it like this because the buffer only has one byte for
             less than 8 variables */
-            uint8_t validityByte = buffer[sizeof(buffer) - 1];
-            CHECK(LocalPoolDataSetBase::bitGetter(&validityByte, 0) == true);
-            CHECK(LocalPoolDataSetBase::bitGetter(&validityByte, 1) == false);
-            CHECK(LocalPoolDataSetBase::bitGetter(&validityByte, 2) == true);
+            uint8_t* validityByte = buffer + sizeof(buffer) - 1;
+            CHECK(bitutil::bitGet(validityByte, 0) == true);
+            CHECK(bitutil::bitGet(validityByte, 1) == false);
+            CHECK(bitutil::bitGet(validityByte, 2) == true);
 
             /* Now we manipulate the validity buffer for the deserialization */
+            bitutil::bitClear(validityByte, 0);
+            bitutil::bitSet(validityByte, 1);
+            bitutil::bitClear(validityByte, 2);
+            /* Zero out everything except validity buffer */
+            std::memset(buffer, 0, sizeof(buffer) - 1);
+            sizeToDeserialize = maxSize;
+            constBuffPtr = buffer;
+            CHECK(localSet.deSerialize(&constBuffPtr, &sizeToDeserialize,
+                    SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+            /* Check whether deserialization was successfull */
+            CHECK(localSet.localPoolVarUint8.value == 0);
+            CHECK(localSet.localPoolVarFloat.value == Catch::Approx(0.0));
+            CHECK(localSet.localPoolVarUint8.value == 0);
+            CHECK(localSet.localPoolUint16Vec.value[0] == 0);
+            CHECK(localSet.localPoolUint16Vec.value[1] == 0);
+            CHECK(localSet.localPoolUint16Vec.value[2] == 0);
+            CHECK(not localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolVarFloat.isValid());
+            CHECK(not localSet.localPoolUint16Vec.isValid());
 
         }
 

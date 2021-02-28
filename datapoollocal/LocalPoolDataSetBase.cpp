@@ -3,6 +3,7 @@
 #include "internal/HasLocalDpIFUserAttorney.h"
 
 #include "../serviceinterface/ServiceInterface.h"
+#include "../globalfunctions/bitutility.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
 #include "../housekeeping/PeriodicHousekeepingHelper.h"
 #include "../serialize/SerializeAdapter.h"
@@ -102,7 +103,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
     for (uint16_t count = 0; count < fillCount; count++) {
         if(registeredVariables[count]->isValid()) {
             /* Set bit at correct position */
-            this->bitSetter(validityMask + validBufferIndex, validBufferIndexBit);
+            bitutil::bitSet(validityMask + validBufferIndex, validBufferIndexBit);
         }
         if(validBufferIndexBit == 7) {
             validBufferIndex ++;
@@ -148,7 +149,7 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
     uint8_t validBufferIndexBit = 0;
     for (uint16_t count = 0; count < fillCount; count++) {
         // set validity buffer here.
-        bool nextVarValid = this->bitGetter(*buffer +
+        bool nextVarValid = bitutil::bitGet(*buffer +
                 validBufferIndex, validBufferIndexBit);
         registeredVariables[count]->setValid(nextVarValid);
 
@@ -301,29 +302,3 @@ object_id_t LocalPoolDataSetBase::getCreatorObjectId() {
     return objects::NO_OBJECT;
 }
 
-void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) {
-    if(position > 7) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "LocalPoolDataSetBase::bitSetter: Invalid position!"
-                << std::endl;
-#else
-        sif::printWarning("LocalPoolDataSetBase::bitSetter: "
-                "Invalid position!\n\r");
-#endif
-        return;
-    }
-    uint8_t shiftNumber = position + (7 - 2 * position);
-    *byte |= 1 << shiftNumber;
-}
-
-bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte, uint8_t position) {
-    if(position > 7) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::debug << "Pool Raw Access: Bit setting invalid position"
-                << std::endl;
-#endif
-        return false;
-    }
-    uint8_t shiftNumber = position + (7 - 2 * position);
-    return *byte & (1 << shiftNumber);
-}
