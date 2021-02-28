@@ -134,7 +134,39 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
             CHECK(localSet.localPoolUint16Vec.isValid());
 
             /* Now we do the same process but with the validity buffer */
+            localSet.localPoolVarUint8 = 232;
+            localSet.localPoolVarFloat = -2324.322;
+            localSet.localPoolUint16Vec.value[0] = 232;
+            localSet.localPoolUint16Vec.value[1] = 23923;
+            localSet.localPoolUint16Vec.value[2] = 1;
+            localSet.localPoolVarUint8.setValid(true);
+            localSet.localPoolVarFloat.setValid(false);
+            localSet.localPoolUint16Vec.setValid(true);
             localSet.setValidityBufferGeneration(true);
+            maxSize = localSet.getSerializedSize();
+            CHECK(maxSize == sizeof(uint8_t) + sizeof(uint16_t) * 3 + sizeof(float) + 1);
+            serSize = 0;
+            buffPtr = buffer;
+            CHECK(localSet.serialize(&buffPtr, &serSize, maxSize,
+                    SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+            CHECK(rawUint8 == 232);
+            std::memcpy(&rawFloat, buffer + sizeof(uint8_t), sizeof(float));
+            CHECK(rawFloat == Catch::Approx(-2324.322));
+
+            std::memcpy(&rawUint16Vec, buffer + sizeof(uint8_t) + sizeof(float),
+                    3 * sizeof(uint16_t));
+            CHECK(rawUint16Vec[0] == 232);
+            CHECK(rawUint16Vec[1] == 23923);
+            CHECK(rawUint16Vec[2] == 1);
+            /* We can do it like this because the buffer only has one byte for
+            less than 8 variables */
+            uint8_t validityByte = buffer[sizeof(buffer) - 1];
+            CHECK(LocalPoolDataSetBase::bitGetter(&validityByte, 0) == true);
+            CHECK(LocalPoolDataSetBase::bitGetter(&validityByte, 1) == false);
+            CHECK(LocalPoolDataSetBase::bitGetter(&validityByte, 2) == true);
+
+            /* Now we manipulate the validity buffer for the deserialization */
+
         }
 
         /* Common fault test cases */
@@ -145,6 +177,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
         variableHandle = nullptr;
         REQUIRE(localSet.registerVariable(variableHandle) ==
                 static_cast<int>(DataSetIF::POOL_VAR_NULL));
+
     }
 
     /* we need to reset the subscription list because the pool owner

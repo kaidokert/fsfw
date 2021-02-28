@@ -160,6 +160,13 @@ public:
 
     object_id_t getCreatorObjectId();
 
+    /* Static helper functions for manipulating validity buffers */
+    /**
+     * Set n-th bit of a byte, with n being the position from 0
+     * (most significant bit) to 7 (least significant bit)
+     */
+    static void bitSetter(uint8_t* byte, uint8_t position);
+    static bool bitGetter(const uint8_t* byte, uint8_t position);
 protected:
     sid_t sid;
     //! This mutex is used if the data is created by one object only.
@@ -217,13 +224,6 @@ protected:
      * It makes use of the freeDataPoolLock method offered by the DataPool class.
      */
     ReturnValue_t unlockDataPool() override;
-
-    /**
-     * Set n-th bit of a byte, with n being the position from 0
-     * (most significant bit) to 7 (least significant bit)
-     */
-    void bitSetter(uint8_t* byte, uint8_t position) const;
-    bool bitGetter(const uint8_t* byte, uint8_t position) const;
 
     PeriodicHousekeepingHelper* periodicHelper = nullptr;
     LocalDataPoolManager* poolManager = nullptr;
