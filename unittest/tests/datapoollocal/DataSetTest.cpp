@@ -14,8 +14,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
             == retval::CATCH_OK);
     const uint32_t setId = 0;
     SECTION("BasicTest") {
-        StaticLocalDataSet<3> localSet = StaticLocalDataSet<3>(
-                sid_t(objects::TEST_LOCAL_POOL_OWNER_BASE, setId));
+        StaticLocalDataSet<3> localSet(sid_t(objects::TEST_LOCAL_POOL_OWNER_BASE, setId));
     }
 }
 

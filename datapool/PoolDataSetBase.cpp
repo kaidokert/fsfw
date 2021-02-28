@@ -1,7 +1,7 @@
 #include "PoolDataSetBase.h"
 #include "ReadCommitIFAttorney.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 
