@@ -29,9 +29,10 @@
  * @author	Bastian Baetz
  * @ingroup data_pool
  */
-class PoolDataSetBase: public PoolDataSetIF,
-		public SerializeIF,
-		public HasReturnvaluesIF {
+class PoolDataSetBase:
+        public PoolDataSetIF,
+        public SerializeIF,
+        public HasReturnvaluesIF {
 public:
 
 	/**
