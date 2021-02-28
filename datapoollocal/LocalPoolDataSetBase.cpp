@@ -3,6 +3,7 @@
 #include "internal/HasLocalDpIFUserAttorney.h"
 
 #include "../serviceinterface/ServiceInterface.h"
+#include "../globalfunctions/bitutility.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
 #include "../housekeeping/PeriodicHousekeepingHelper.h"
 #include "../serialize/SerializeAdapter.h"
@@ -96,22 +97,22 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
         SerializeIF::Endianness streamEndianness) const {
     ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
-    uint8_t validityMask[validityMaskSize];
+    uint8_t validityMask[validityMaskSize] = {};
     uint8_t validBufferIndex = 0;
     uint8_t validBufferIndexBit = 0;
     for (uint16_t count = 0; count < fillCount; count++) {
         if(registeredVariables[count]->isValid()) {
-            // set validity buffer here.
-            this->bitSetter(validityMask + validBufferIndex,
-                    validBufferIndexBit);
-            if(validBufferIndexBit == 7) {
-                validBufferIndex ++;
-                validBufferIndexBit = 0;
-            }
-            else {
-                validBufferIndexBit ++;
-            }
+            /* Set bit at correct position */
+            bitutil::bitSet(validityMask + validBufferIndex, validBufferIndexBit);
         }
+        if(validBufferIndexBit == 7) {
+            validBufferIndex ++;
+            validBufferIndexBit = 0;
+        }
+        else {
+            validBufferIndexBit ++;
+        }
+
         result = registeredVariables[count]->serialize(buffer, size, maxSize,
                 streamEndianness);
         if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -148,7 +149,7 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
     uint8_t validBufferIndexBit = 0;
     for (uint16_t count = 0; count < fillCount; count++) {
         // set validity buffer here.
-        bool nextVarValid = this->bitGetter(*buffer +
+        bool nextVarValid = bitutil::bitGet(*buffer +
                 validBufferIndex, validBufferIndexBit);
         registeredVariables[count]->setValid(nextVarValid);
 
@@ -173,7 +174,7 @@ ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
 ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t** buffer,
         size_t* size, size_t maxSize,SerializeIF::Endianness streamEndianness,
         bool serializeFillCount) const {
-    // Serialize as uint8_t
+    /* Serialize fill count as uint8_t */
     uint8_t fillCount = this->fillCount;
     if(serializeFillCount) {
         SerializeAdapter::serialize(&fillCount, buffer, size, maxSize,
@@ -246,21 +247,6 @@ ReturnValue_t LocalPoolDataSetBase::serialize(uint8_t **buffer, size_t *size,
     }
 }
 
-void LocalPoolDataSetBase::bitSetter(uint8_t* byte, uint8_t position) const {
-    if(position > 7) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "LocalPoolDataSetBase::bitSetter: Invalid position!"
-                << std::endl;
-#else
-        sif::printWarning("LocalPoolDataSetBase::bitSetter: "
-                "Invalid position!\n\r");
-#endif
-        return;
-    }
-    uint8_t shiftNumber = position + (7 - 2 * position);
-    *byte |= 1 << shiftNumber;
-}
-
 void LocalPoolDataSetBase::setDiagnostic(bool isDiagnostics) {
     this->diagnostic = isDiagnostics;
 }
@@ -296,19 +282,6 @@ sid_t LocalPoolDataSetBase::getSid() const {
     return sid;
 }
 
-bool LocalPoolDataSetBase::bitGetter(const uint8_t* byte,
-        uint8_t position) const {
-    if(position > 7) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::debug << "Pool Raw Access: Bit setting invalid position"
-                << std::endl;
-#endif
-        return false;
-    }
-    uint8_t shiftNumber = position + (7 - 2 * position);
-    return *byte & (1 << shiftNumber);
-}
-
 bool LocalPoolDataSetBase::isValid() const {
     return this->valid;
 }
@@ -328,3 +301,4 @@ object_id_t LocalPoolDataSetBase::getCreatorObjectId() {
     }
     return objects::NO_OBJECT;
 }
+

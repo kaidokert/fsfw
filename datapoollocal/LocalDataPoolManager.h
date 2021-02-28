@@ -137,7 +137,7 @@ public:
      * @param packetDestination
      * @return
      */
-    ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
+    ReturnValue_t subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
             bool isDiagnostics,
             object_id_t packetDestination = defaultHkDestination) override;
 
@@ -155,7 +155,7 @@ public:
      * Otherwise, only an notification message is sent.
      * @return
      */
-    ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
+    ReturnValue_t subscribeForSetUpdateMessage(const uint32_t setId,
             object_id_t destinationObject,
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;
@@ -174,7 +174,7 @@ public:
      * Otherwise, only an notification message is sent.
      * @return
      */
-    ReturnValue_t subscribeForVariableUpdateMessages(const lp_id_t localPoolId,
+    ReturnValue_t subscribeForVariableUpdateMessage(const lp_id_t localPoolId,
             object_id_t destinationObject,
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;

@@ -18,15 +18,13 @@ class PoolVariableIF;
 class DataSetIF {
 public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::DATA_SET_CLASS;
-	static constexpr ReturnValue_t INVALID_PARAMETER_DEFINITION =
-			MAKE_RETURN_CODE( 0x01 );
-	static constexpr ReturnValue_t SET_WAS_ALREADY_READ = MAKE_RETURN_CODE( 0x02 );
-	static constexpr ReturnValue_t COMMITING_WITHOUT_READING =
-			MAKE_RETURN_CODE(0x03);
+	static constexpr ReturnValue_t INVALID_PARAMETER_DEFINITION = MAKE_RETURN_CODE(1);
+	static constexpr ReturnValue_t SET_WAS_ALREADY_READ = MAKE_RETURN_CODE(2);
+	static constexpr ReturnValue_t COMMITING_WITHOUT_READING = MAKE_RETURN_CODE(3);
 
-	static constexpr ReturnValue_t DATA_SET_UNINITIALISED = MAKE_RETURN_CODE( 0x04 );
-	static constexpr ReturnValue_t DATA_SET_FULL = MAKE_RETURN_CODE( 0x05 );
-	static constexpr ReturnValue_t POOL_VAR_NULL = MAKE_RETURN_CODE( 0x06 );
+	static constexpr ReturnValue_t DATA_SET_UNINITIALISED = MAKE_RETURN_CODE(4);
+	static constexpr ReturnValue_t DATA_SET_FULL = MAKE_RETURN_CODE(5);
+	static constexpr ReturnValue_t POOL_VAR_NULL = MAKE_RETURN_CODE(6);
 
 	/**
 	 * @brief	This is an empty virtual destructor,

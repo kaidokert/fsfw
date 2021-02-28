@@ -1,9 +1,10 @@
 #ifndef FSFW_DATAPOOL_POOLVARIABLEIF_H_
 #define FSFW_DATAPOOL_POOLVARIABLEIF_H_
 
+#include "ReadCommitIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
-#include "ReadCommitIF.h"
+
 
 /**
  * @brief	This interface is used to control data pool
@@ -18,46 +19,46 @@
  * @author 	Bastian Baetz
  * @ingroup data_pool
  */
-class PoolVariableIF : public SerializeIF,
-		public ReadCommitIF {
-	friend class PoolDataSetBase;
-	friend class LocalPoolDataSetBase;
+class PoolVariableIF :
+        public SerializeIF,
+        public ReadCommitIF {
+
 public:
-	static constexpr uint8_t INTERFACE_ID = CLASS_ID::POOL_VARIABLE_IF;
-	static constexpr ReturnValue_t INVALID_READ_WRITE_MODE = MAKE_RETURN_CODE(0xA0);
-	static constexpr ReturnValue_t INVALID_POOL_ENTRY = MAKE_RETURN_CODE(0xA1);
+    static constexpr uint8_t INTERFACE_ID = CLASS_ID::POOL_VARIABLE_IF;
+    static constexpr ReturnValue_t INVALID_READ_WRITE_MODE = MAKE_RETURN_CODE(0xA0);
+    static constexpr ReturnValue_t INVALID_POOL_ENTRY = MAKE_RETURN_CODE(0xA1);
 
-	static constexpr bool VALID = 1;
-	static constexpr bool INVALID = 0;
-	static constexpr uint32_t NO_PARAMETER = 0xffffffff;
+    static constexpr bool VALID = 1;
+    static constexpr bool INVALID = 0;
+    static constexpr uint32_t NO_PARAMETER = 0xffffffff;
 
-	enum ReadWriteMode_t {
-		VAR_READ, VAR_WRITE, VAR_READ_WRITE
-	};
+    enum ReadWriteMode_t {
+        VAR_READ, VAR_WRITE, VAR_READ_WRITE
+    };
 
-	/**
-	 * @brief	This is an empty virtual destructor,
-	 * 			as it is proposed for C++ interfaces.
-	 */
-	virtual ~PoolVariableIF() {}
-	/**
-	 * @brief	This method returns if the variable is write-only,
-	 * 			read-write or read-only.
-	 */
-	virtual ReadWriteMode_t getReadWriteMode() const = 0;
-	/**
-	 * @brief	This operation shall return the data pool id of the variable.
-	 */
-	virtual uint32_t getDataPoolId() const = 0;
-	/**
-	 * @brief	With this call, the valid information of the
-	 * 			variable is returned.
-	 */
-	virtual bool isValid() const = 0;
-	/**
-	 * @brief	With this call, the valid information of the variable is set.
-	 */
-	virtual void setValid(bool validity) = 0;
+    /**
+     * @brief	This is an empty virtual destructor,
+     * 			as it is proposed for C++ interfaces.
+     */
+    virtual ~PoolVariableIF() {}
+    /**
+     * @brief	This method returns if the variable is write-only,
+     * 			read-write or read-only.
+     */
+    virtual ReadWriteMode_t getReadWriteMode() const = 0;
+    /**
+     * @brief	This operation shall return the data pool id of the variable.
+     */
+    virtual uint32_t getDataPoolId() const = 0;
+    /**
+     * @brief	With this call, the valid information of the
+     * 			variable is returned.
+     */
+    virtual bool isValid() const = 0;
+    /**
+     * @brief	With this call, the valid information of the variable is set.
+     */
+    virtual void setValid(bool validity) = 0;
 
 };
 

@@ -7,6 +7,7 @@ target_sources(${LIB_FSFW_NAME}
 		PeriodicOperationDivider.cpp
 		timevalOperations.cpp
 		Type.cpp
+		bitutility.cpp
 )
 
 add_subdirectory(math)
