@@ -95,6 +95,10 @@ void LocalPoolObjectBase::setReadWriteMode(pool_rwm_t newReadWriteMode) {
 void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
         ReturnValue_t error, bool read, object_id_t objectId, lp_id_t lpId) {
 #if FSFW_DISABLE_PRINTOUT == 0
+    const char* variablePrintout = variableType;
+    if(variablePrintout == nullptr) {
+        variablePrintout = "Unknown Type";
+    }
     const char* type = nullptr;
     if(read) {
         type = "read";
@@ -121,12 +125,12 @@ void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
     }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << variableType << ": " << type << " call | " << errMsg << " | Owner: 0x"
+    sif::warning << variablePrintout << ": " << type << " call | " << errMsg << " | Owner: 0x"
             << std::hex << std::setw(8) << std::setfill('0') << objectId << std::dec
             << " LPID: " << lpId << std::endl;
 #else
     sif::printWarning("%s: %s call | %s | Owner: 0x%08x LPID: %lu\n",
-            variableType, type, errMsg, objectId, lpId);
+            variablePrintout, type, errMsg, objectId, lpId);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_DISABLE_PRINTOUT == 0 */
 }
