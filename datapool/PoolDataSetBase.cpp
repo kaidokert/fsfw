@@ -14,8 +14,7 @@ PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
 PoolDataSetBase::~PoolDataSetBase() {}
 
 
-ReturnValue_t PoolDataSetBase::registerVariable(
-        PoolVariableIF *variable) {
+ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF *variable) {
     if (state != States::STATE_SET_UNINITIALISED) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "DataSet::registerVariable: "
@@ -59,10 +58,12 @@ ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType,
     }
     else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "DataSet::read(): "
-                "Call made in wrong position. Don't forget to commit"
+        sif::error << "DataSet::read(): Call made in wrong position. Don't forget to commit"
                 " member datasets!" << std::endl;
-#endif
+#else
+        sif::printError("DataSet::read(): Call made in wrong position. Don't forget to commit"
+                " member datasets!\n");
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         result = SET_WAS_ALREADY_READ;
     }
 
@@ -85,14 +86,10 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 
     /* These checks are often performed by the respective variable implementation too, but I guess
     a double check does not hurt. */
-    if (registeredVariables[count]->getReadWriteMode() !=
-            PoolVariableIF::VAR_WRITE and
-            registeredVariables[count]->getDataPoolId()
-            != PoolVariableIF::NO_PARAMETER)
-    {
+    if (registeredVariables[count]->getReadWriteMode() != PoolVariableIF::VAR_WRITE and
+            registeredVariables[count]->getDataPoolId() != PoolVariableIF::NO_PARAMETER) {
         if(protectEveryReadCommitCall) {
-            result = registeredVariables[count]->read(
-                    timeoutTypeForSingleVars,
+            result = registeredVariables[count]->read(timeoutTypeForSingleVars,
                     mutexTimeoutForSingleVars);
         }
         else {
@@ -121,13 +118,10 @@ void PoolDataSetBase::handleAlreadyReadDatasetCommit(
         MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
     lockDataPool(timeoutType, lockTimeout);
     for (uint16_t count = 0; count < fillCount; count++) {
-        if (registeredVariables[count]->getReadWriteMode()
-                != PoolVariableIF::VAR_READ
-                && registeredVariables[count]->getDataPoolId()
-                != PoolVariableIF::NO_PARAMETER) {
+        if ((registeredVariables[count]->getReadWriteMode() != PoolVariableIF::VAR_READ) and
+                (registeredVariables[count]->getDataPoolId() != PoolVariableIF::NO_PARAMETER)) {
             if(protectEveryReadCommitCall) {
-                registeredVariables[count]->commit(
-                        timeoutTypeForSingleVars,
+                registeredVariables[count]->commit(timeoutTypeForSingleVars,
                         mutexTimeoutForSingleVars);
             }
             else {
@@ -144,13 +138,10 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(
     ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     lockDataPool(timeoutType, lockTimeout);
     for (uint16_t count = 0; count < fillCount; count++) {
-        if (registeredVariables[count]->getReadWriteMode()
-                == PoolVariableIF::VAR_WRITE
-                && registeredVariables[count]->getDataPoolId()
-                != PoolVariableIF::NO_PARAMETER) {
+        if ((registeredVariables[count]->getReadWriteMode() == PoolVariableIF::VAR_WRITE) and
+                (registeredVariables[count]->getDataPoolId() != PoolVariableIF::NO_PARAMETER)) {
             if(protectEveryReadCommitCall) {
-                result = registeredVariables[count]->commit(
-                        timeoutTypeForSingleVars,
+                result = registeredVariables[count]->commit(timeoutTypeForSingleVars,
                         mutexTimeoutForSingleVars);
             }
             else {
@@ -187,8 +178,7 @@ ReturnValue_t PoolDataSetBase::serialize(uint8_t** buffer, size_t* size,
         const size_t maxSize, SerializeIF::Endianness streamEndianness) const {
     ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
     for (uint16_t count = 0; count < fillCount; count++) {
-        result = registeredVariables[count]->serialize(buffer, size, maxSize,
-                streamEndianness);
+        result = registeredVariables[count]->serialize(buffer, size, maxSize, streamEndianness);
         if (result != HasReturnvaluesIF::RETURN_OK) {
             return result;
         }
