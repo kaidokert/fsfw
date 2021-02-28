@@ -31,6 +31,23 @@ static const gp_id_t uint64Vec2Id = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE,
 }
 
 
+class LocalPoolStaticTestDataSet: public StaticLocalDataSet<3> {
+public:
+    LocalPoolStaticTestDataSet():
+        StaticLocalDataSet(lpool::testSid) {
+    }
+
+    LocalPoolStaticTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
+        StaticLocalDataSet(owner, setId) {
+    }
+
+    lp_var_t<uint8_t> localPoolVarUint8 = lp_var_t<uint8_t>(lpool::uint8VarGpid, this);
+    lp_var_t<float> localPoolVarFloat = lp_var_t<float>(lpool::floatVarGpid, this);
+    lp_vec_t<uint16_t, 3> localPoolUint16Vec = lp_vec_t<uint16_t, 3>(lpool::uint16Vec3Gpid, this);
+
+private:
+};
+
 class LocalPoolTestDataSet: public LocalDataSet {
 public:
     LocalPoolTestDataSet():
@@ -40,19 +57,6 @@ public:
     LocalPoolTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
         LocalDataSet(owner, setId, lpool::dataSetMaxVariables) {
     }
-
-//    ReturnValue_t assignPointers() {
-//        PoolVariableIF** rawVarArray = getContainer();
-//        localPoolVarUint8 = dynamic_cast<lp_var_t<uint8_t>*>(rawVarArray[0]);
-//        localPoolVarFloat = dynamic_cast<lp_var_t<float>*>(rawVarArray[1]);
-//        localPoolUint16Vec = dynamic_cast<lp_vec_t<uint16_t, 3>*>(
-//                rawVarArray[2]);
-//        if(localPoolVarUint8 == nullptr or  localPoolVarFloat == nullptr or
-//                localPoolUint16Vec == nullptr) {
-//            return HasReturnvaluesIF::RETURN_FAILED;
-//        }
-//        return HasReturnvaluesIF::RETURN_OK;
-//    }
 
     lp_var_t<uint8_t> localPoolVarUint8 = lp_var_t<uint8_t>(lpool::uint8VarGpid, this);
     lp_var_t<float> localPoolVarFloat = lp_var_t<float>(lpool::floatVarGpid, this);

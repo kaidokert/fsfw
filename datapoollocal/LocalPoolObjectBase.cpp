@@ -1,9 +1,11 @@
 #include "LocalPoolObjectBase.h"
 #include "LocalDataPoolManager.h"
-#include "internal/HasLocalDpIFUserAttorney.h"
+#include "AccessLocalPoolF.h"
 #include "HasLocalDataPoolIF.h"
+#include "internal/HasLocalDpIFUserAttorney.h"
 
 #include "../objectmanager/ObjectManagerIF.h"
+
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
         DataSetIF* dataSet, pool_rwm_t setReadWriteMode):

@@ -12,9 +12,9 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
     REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
     REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation()
             == retval::CATCH_OK);
-    const uint32_t setId = 0;
+    //const uint32_t setId = 0;
     SECTION("BasicTest") {
-        StaticLocalDataSet<3> localSet(sid_t(objects::TEST_LOCAL_POOL_OWNER_BASE, setId));
+        LocalPoolStaticTestDataSet localSet;
     }
 }
 
