@@ -10,6 +10,7 @@
 #include <testcfg/objects/systemObjectList.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
+#include "../../../datapool/PoolReadHelper.h"
 
 namespace lpool {
 static constexpr lp_id_t uint8VarId = 0;
@@ -187,6 +188,43 @@ public:
                 MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, false);
     }
 
+    ReturnValue_t reset() {
+        resetSubscriptionList();
+        ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+        {
+            PoolReadHelper readHelper(&dataset);
+            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+                status = readHelper.getReadResult();
+            }
+            dataset.localPoolVarUint8.value = 0;
+            dataset.localPoolVarFloat.value = 0.0;
+            dataset.localPoolUint16Vec.value[0] = 0;
+            dataset.localPoolUint16Vec.value[1] = 0;
+            dataset.localPoolUint16Vec.value[2] = 0;
+            dataset.setValidity(false, true);
+        }
+
+        {
+            PoolReadHelper readHelper(&testUint32);
+            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+                status = readHelper.getReadResult();
+            }
+            testUint32.value = 0;
+            testUint32.setValid(false);
+        }
+
+        {
+            PoolReadHelper readHelper(&testInt64Vec);
+            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+                status = readHelper.getReadResult();
+            }
+            testInt64Vec.value[0] = 0;
+            testInt64Vec.value[1] = 0;
+            testInt64Vec.setValid(false);
+        }
+        return status;
+    }
+
     void resetSubscriptionList() {
         poolManager.clearReceiversList();
     }
@@ -195,14 +233,12 @@ public:
     LocalPoolTestDataSet dataset;
 private:
 
-    lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId,
-            &dataset);
-    lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId,
-            &dataset);
+    lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId);
+    lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId);
     lp_var_t<uint32_t> testUint32 = lp_var_t<uint32_t>(this, lpool::uint32VarId);
 
     lp_vec_t<uint16_t, 3> testUint16Vec = lp_vec_t<uint16_t, 3>(this,
-            lpool::uint16Vec3Id, &dataset);
+            lpool::uint16Vec3Id);
     lp_vec_t<int64_t, 2> testInt64Vec = lp_vec_t<int64_t, 2>(this,
             lpool::int64Vec2Id);
 

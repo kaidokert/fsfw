@@ -192,7 +192,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 
     /* we need to reset the subscription list because the pool owner
     is a global object. */
-    poolOwner->resetSubscriptionList();
+    CHECK(poolOwner->reset() == retval::CATCH_OK);
     mqMock->clearMessages(true);
 }
 

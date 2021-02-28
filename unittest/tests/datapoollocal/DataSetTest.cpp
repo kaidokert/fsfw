@@ -1,8 +1,11 @@
 #include "LocalPoolOwnerBase.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
+#include <fsfw/datapool/PoolReadHelper.h>
 #include <unittest/core/CatchDefinitions.h>
 
 TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
@@ -12,10 +15,49 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
     REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
     REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation()
             == retval::CATCH_OK);
+    LocalPoolStaticTestDataSet localSet;
     //const uint32_t setId = 0;
     SECTION("BasicTest") {
-        LocalPoolStaticTestDataSet localSet;
+        {
+            PoolReadHelper readHelper(&localSet);
+            REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
+            CHECK(not localSet.isValid());
+            CHECK(localSet.localPoolVarUint8.value == 0);
+            CHECK(not localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolVarFloat.value == Catch::Approx(0.0));
+            CHECK(not localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolUint16Vec.value[0] == 0);
+            CHECK(localSet.localPoolUint16Vec.value[1] == 0);
+            CHECK(localSet.localPoolUint16Vec.value[2] == 0);
+            CHECK(not localSet.localPoolVarUint8.isValid());
+
+            localSet.localPoolVarUint8 = 232;
+            localSet.localPoolVarFloat = -2324.322;
+            localSet.localPoolUint16Vec.value[0] = 232;
+            localSet.localPoolUint16Vec.value[1] = 23923;
+            localSet.localPoolUint16Vec.value[2] = 1;
+            localSet.setValidity(true, true);
+        }
+
+        {
+            PoolReadHelper readHelper(&localSet);
+            REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
+            CHECK(localSet.isValid());
+            CHECK(localSet.localPoolVarUint8.value == 232);
+            CHECK(localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolVarFloat.value == Catch::Approx(-2324.322));
+            CHECK(localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolUint16Vec.value[0] == 232);
+            CHECK(localSet.localPoolUint16Vec.value[1] == 23923);
+            CHECK(localSet.localPoolUint16Vec.value[2] == 1);
+            CHECK(localSet.localPoolVarUint8.isValid());
+        }
+
     }
+
+    /* we need to reset the subscription list because the pool owner
+    is a global object. */
+    CHECK(poolOwner->reset() == retval::CATCH_OK);
 }
 
 
