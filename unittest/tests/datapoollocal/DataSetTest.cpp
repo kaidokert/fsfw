@@ -73,24 +73,32 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
             localSet.setValidity(true, true);
         }
 
+        /* Zero out some values for next test */
+        localSet.localPoolVarUint8 = 0;
+        localSet.localPoolVarFloat = 0;
+
         {
+            /* Now we read again and check whether our zeroed values were overwritten with
+            the values in the pool */
             PoolReadHelper readHelper(&localSet);
             REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
             CHECK(localSet.isValid());
             CHECK(localSet.localPoolVarUint8.value == 232);
             CHECK(localSet.localPoolVarUint8.isValid());
             CHECK(localSet.localPoolVarFloat.value == Catch::Approx(-2324.322));
-            CHECK(localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolVarFloat.isValid());
             CHECK(localSet.localPoolUint16Vec.value[0] == 232);
             CHECK(localSet.localPoolUint16Vec.value[1] == 23923);
             CHECK(localSet.localPoolUint16Vec.value[2] == 1);
-            CHECK(localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolUint16Vec.isValid());
 
+            /* Now we serialize these values into a buffer without the validity buffer */
             localSet.setValidityBufferGeneration(false);
             maxSize = localSet.getSerializedSize();
             CHECK(maxSize == sizeof(uint8_t) + sizeof(uint16_t) * 3 + sizeof(float));
             serSize = 0;
-            uint8_t buffer[maxSize];
+            /* Already reserve additional space for validity buffer, will be needed later */
+            uint8_t buffer[maxSize + 1];
             uint8_t* buffPtr = buffer;
             CHECK(localSet.serialize(&buffPtr, &serSize, maxSize,
                     SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
@@ -106,6 +114,27 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
             CHECK(rawUint16Vec[0] == 232);
             CHECK(rawUint16Vec[1] == 23923);
             CHECK(rawUint16Vec[2] == 1);
+
+            size_t sizeToDeserialize = maxSize;
+            /* Now we zeros out the raw entries and deserialize back into the dataset */
+            std::memset(buffer, 0, sizeof(buffer));
+            const uint8_t* constBuffPtr = buffer;
+            CHECK(localSet.deSerialize(&constBuffPtr, &sizeToDeserialize,
+                    SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+            /* Check whether deserialization was successfull */
+            CHECK(localSet.localPoolVarUint8.value == 0);
+            CHECK(localSet.localPoolVarFloat.value == Catch::Approx(0.0));
+            CHECK(localSet.localPoolVarUint8.value == 0);
+            CHECK(localSet.localPoolUint16Vec.value[0] == 0);
+            CHECK(localSet.localPoolUint16Vec.value[1] == 0);
+            CHECK(localSet.localPoolUint16Vec.value[2] == 0);
+            /* Validity should be unchanged */
+            CHECK(localSet.localPoolVarUint8.isValid());
+            CHECK(localSet.localPoolVarFloat.isValid());
+            CHECK(localSet.localPoolUint16Vec.isValid());
+
+            /* Now we do the same process but with the validity buffer */
+            localSet.setValidityBufferGeneration(true);
         }
 
         /* Common fault test cases */
