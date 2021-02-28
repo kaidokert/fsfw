@@ -9,6 +9,7 @@
  * 			semantics.
  */
 class ReadCommitIF {
+    friend class ReadCommitIFAttorney;
 public:
 	virtual ~ReadCommitIF() {}
 	virtual ReturnValue_t read(MutexIF::TimeoutType timeoutType,
@@ -16,11 +17,10 @@ public:
 	virtual ReturnValue_t commit(MutexIF::TimeoutType timeoutType,
 			uint32_t timeoutMs) = 0;
 
-protected:
+public:
 
-	//! Optional and protected because this is interesting for classes grouping
-	//! members with commit and read semantics where the lock is only necessary
-	//! once.
+	/* Optional and protected because this is interesting for classes grouping members with commit
+	and read semantics where the lock is only necessary once. */
 	virtual ReturnValue_t readWithoutLock()  {
 		return read(MutexIF::TimeoutType::WAITING, 20);
 	}
