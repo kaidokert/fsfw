@@ -16,7 +16,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
     REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation()
             == retval::CATCH_OK);
     LocalPoolStaticTestDataSet localSet;
-    //const uint32_t setId = 0;
+
     SECTION("BasicTest") {
         {
             PoolReadHelper readHelper(&localSet);
