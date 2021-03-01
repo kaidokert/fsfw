@@ -271,7 +271,9 @@ public:
     MutexIF* getMutexHandle();
 
     virtual LocalDataPoolManager* getPoolManagerHandle() override;
-private:
+
+protected:
+
     localpool::DataPool localPoolMap;
     /** Every housekeeping data manager has a mutex to protect access
     to it's data pool. */
@@ -307,7 +309,7 @@ private:
     /** This vector will contain the list of HK receivers. */
     using HkReceivers = std::vector<struct HkReceiver>;
 
-    HkReceivers hkReceiversMap;
+    HkReceivers hkReceivers;
 
     struct HkUpdateResetHelper {
         DataType dataType = DataType::DATA_SET;
