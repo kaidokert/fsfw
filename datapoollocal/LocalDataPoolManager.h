@@ -397,8 +397,7 @@ protected:
 
 
 template<class T> inline
-ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
-        PoolEntry<T> **poolEntry) {
+ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId, PoolEntry<T> **poolEntry) {
     auto poolIter = localPoolMap.find(localPoolId);
     if (poolIter == localPoolMap.end()) {
         printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",
