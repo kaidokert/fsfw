@@ -21,8 +21,8 @@ static constexpr uint8_t INTERFACE_ID = CLASS_ID::LOCAL_POOL_OWNER_IF;
 static constexpr ReturnValue_t POOL_ENTRY_NOT_FOUND = MAKE_RETURN_CODE(0x00);
 static constexpr ReturnValue_t POOL_ENTRY_TYPE_CONFLICT = MAKE_RETURN_CODE(0x01);
 
-//! This is the core data structure of the local data pools. Users should insert all desired
-//! pool variables, using the std::map interface.
+/** This is the core data structure of the local data pools. Users should insert all desired
+pool variables, using the std::map interface. */
 using DataPool =  std::map<lp_id_t, PoolEntryIF*>;
 using DataPoolMapIter = DataPool::iterator;
 

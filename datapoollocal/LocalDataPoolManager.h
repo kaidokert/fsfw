@@ -274,6 +274,7 @@ public:
 
 protected:
 
+    /** Core data structure for the actual pool data */
     localpool::DataPool localPoolMap;
     /** Every housekeeping data manager has a mutex to protect access
     to it's data pool. */
@@ -319,7 +320,8 @@ protected:
     };
 
     using HkUpdateResetList = std::vector<struct HkUpdateResetHelper>;
-    // Will only be created when needed.
+    /** This list is used to manage creating multiple update packets and only resetting
+    the update flag if all of them were created. Will only be created when needed. */
     HkUpdateResetList* hkUpdateResetList = nullptr;
 
     /** This is the map holding the actual data. Should only be initialized
@@ -343,16 +345,14 @@ protected:
      * Read a variable by supplying its local pool ID and assign the pool
      * entry to the supplied PoolEntry pointer. The type of the pool entry
      * is deduced automatically. This call is not thread-safe!
-     * For now, only friend classes like LocalPoolVar may access this
-     * function.
+     * For now, only classes designated by the LocalDpManagerAttorney may use this function.
      * @tparam T Type of the pool entry
      * @param localPoolId Pool ID of the variable to read
      * @param poolVar [out] Corresponding pool entry will be assigned to the
      * 						supplied pointer.
      * @return
      */
-    template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId,
-            PoolEntry<T> **poolEntry);
+    template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId, PoolEntry<T> **poolEntry);
 
     /**
      * This function is used to fill the local data pool map with pool
@@ -364,15 +364,13 @@ protected:
 
     MutexIF* getLocalPoolMutex() override;
 
-    ReturnValue_t serializeHkPacketIntoStore(
-            HousekeepingPacketDownlink& hkPacket,
+    ReturnValue_t serializeHkPacketIntoStore(HousekeepingPacketDownlink& hkPacket,
             store_address_t& storeId, bool forDownlink, size_t* serializedSize);
 
     void performPeriodicHkGeneration(HkReceiver& hkReceiver);
-    ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable,
+    ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable, bool isDiagnostics);
+    ReturnValue_t changeCollectionInterval(sid_t sid, float newCollectionInterval,
             bool isDiagnostics);
-    ReturnValue_t changeCollectionInterval(sid_t sid,
-            float newCollectionInterval, bool isDiagnostics);
     ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
 
     void handleHkUpdateResetListInsertion(DataType dataType, DataId dataId);
@@ -380,17 +378,12 @@ protected:
             DataId dataId, MarkChangedIF* toReset);
     void resetHkUpdateResetHelper();
 
-    ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver,
-            ReturnValue_t& status);
-    ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver,
-            ReturnValue_t& status);
-    ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
-            ReturnValue_t& status);
-    ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket,
-            store_address_t& storeId);
+    ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver, ReturnValue_t& status);
+    ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver, ReturnValue_t& status);
+    ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver, ReturnValue_t& status);
+    ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket, store_address_t& storeId);
 
-    void printWarningOrError(sif::OutputTypes outputType,
-            const char* functionName,
+    void printWarningOrError(sif::OutputTypes outputType, const char* functionName,
             ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
             const char* errorPrint = nullptr);
 };
