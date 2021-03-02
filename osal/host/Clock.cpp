@@ -1,4 +1,4 @@
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../timemanager/Clock.h"
 
 #include <chrono>

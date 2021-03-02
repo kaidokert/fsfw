@@ -98,7 +98,7 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
 
 ReturnValue_t LocalDataPoolManager::performHkOperation() {
 	ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
-	for(auto& receiver: hkReceiversMap) {
+	for(auto& receiver: hkReceivers) {
 		switch(receiver.reportingType) {
 		case(ReportingType::PERIODIC): {
 			if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
@@ -375,12 +375,12 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 				owner->getPeriodicOperationFrequency(), isDiagnostics);
 	}
 
-	hkReceiversMap.push_back(hkReceiver);
+	hkReceivers.push_back(hkReceiver);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 
-ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
+ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid,
 		bool isDiagnostics, bool reportingEnabled,
 		object_id_t packetDestination) {
 	AcceptsHkPacketsIF* hkReceiverObject =
@@ -404,13 +404,13 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePackets(sid_t sid,
 		LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
 	}
 
-	hkReceiversMap.push_back(hkReceiver);
+	hkReceivers.push_back(hkReceiver);
 
 	handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessages(
+ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessage(
 		const uint32_t setId, object_id_t destinationObject,
 		MessageQueueId_t targetQueueId, bool generateSnapshot) {
 	struct HkReceiver hkReceiver;
@@ -425,13 +425,13 @@ ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessages(
 		hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
 	}
 
-	hkReceiversMap.push_back(hkReceiver);
+	hkReceivers.push_back(hkReceiver);
 
 	handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessages(
+ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessage(
 		const lp_id_t localPoolId, object_id_t destinationObject,
 		MessageQueueId_t targetQueueId, bool generateSnapshot) {
 	struct HkReceiver hkReceiver;
@@ -446,7 +446,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessages(
 		hkReceiver.reportingType = ReportingType::UPDATE_NOTIFICATION;
 	}
 
-	hkReceiversMap.push_back(hkReceiver);
+	hkReceivers.push_back(hkReceiver);
 
 	handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
 	return HasReturnvaluesIF::RETURN_OK;
@@ -829,8 +829,8 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 }
 
 void LocalDataPoolManager::clearReceiversList() {
-	// clear the vector completely and releases allocated memory.
-	HkReceivers().swap(hkReceiversMap);
+	/* Clear the vector completely and releases allocated memory. */
+	HkReceivers().swap(hkReceivers);
 }
 
 MutexIF* LocalDataPoolManager::getLocalPoolMutex() {

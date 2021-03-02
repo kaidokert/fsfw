@@ -218,13 +218,6 @@ protected:
      */
     ReturnValue_t unlockDataPool() override;
 
-    /**
-     * Set n-th bit of a byte, with n being the position from 0
-     * (most significant bit) to 7 (least significant bit)
-     */
-    void bitSetter(uint8_t* byte, uint8_t position) const;
-    bool bitGetter(const uint8_t* byte, uint8_t position) const;
-
     PeriodicHousekeepingHelper* periodicHelper = nullptr;
     LocalDataPoolManager* poolManager = nullptr;
 

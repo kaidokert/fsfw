@@ -23,11 +23,21 @@ class LocalPoolObjectBase;
  * @details
  * Any class implementing this interface shall also have a LocalDataPoolManager member class which
  * contains the actual pool data structure and exposes the public interface for it.
+ *
  * The local data pool can be accessed using helper classes by using the
  * LocalPoolVariable, LocalPoolVector or LocalDataSet classes. Every local pool variable can
  * be uniquely identified by a global pool ID (gp_id_t) and every dataset tied
  * to a pool manager can be uniqely identified by a global structure ID (sid_t).
  *
+ * All software objects which want to use the local pool of another object shall also use this
+ * interface, for example to get a handle to the subscription interface. The interface
+ * can be retrieved using the object manager, provided the target object is a SystemObject.
+ * For example, the following line of code can be used to retrieve the interface
+ *
+ *    HasLocalDataPoolIF* poolIF = objectManager->get<HasLocalDataPoolIF>(objects::SOME_OBJECT);
+ *    if(poolIF != nullptr) {
+ *        doSomething()
+ *    }
  */
 class HasLocalDataPoolIF {
     friend class HasLocalDpIFManagerAttorney;

@@ -32,8 +32,18 @@ public:
         return readResult;
     }
 
+    /**
+     * @brief   Can be used to suppress commit on destruction.
+     */
+    void setNoCommitMode(bool commit) {
+        this->noCommit = commit;
+    }
+
+    /**
+     * @brief   Default destructor which will take care of commiting changed values.
+     */
     ~PoolReadHelper() {
-        if(readObject != nullptr) {
+        if(readObject != nullptr and not noCommit) {
             readObject->commit(timeoutType, mutexTimeout);
         }
 
@@ -42,6 +52,7 @@ public:
 private:
     ReadCommitIF* readObject = nullptr;
     ReturnValue_t readResult = HasReturnvaluesIF::RETURN_OK;
+    bool noCommit = false;
     MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
     uint32_t mutexTimeout = 20;
 };
