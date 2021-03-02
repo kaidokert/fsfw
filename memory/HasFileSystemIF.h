@@ -18,24 +18,25 @@ public:
 
     //! [EXPORT] : P1: Can be file system specific error code
     static constexpr ReturnValue_t GENERIC_FILE_ERROR = MAKE_RETURN_CODE(0);
-
-    static constexpr ReturnValue_t FILE_DOES_NOT_EXIST = MAKE_RETURN_CODE(1);
-    static constexpr ReturnValue_t FILE_ALREADY_EXISTS = MAKE_RETURN_CODE(2);
-    static constexpr ReturnValue_t FILE_LOCKED = MAKE_RETURN_CODE(3);
-
-    static constexpr ReturnValue_t DIRECTORY_DOES_NOT_EXIST = MAKE_RETURN_CODE(4);
-    static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(5);
-    static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(6);
-
-    //! [EXPORT] : P1: Sequence number missing
-    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_WRITE = MAKE_RETURN_CODE(7);
-    //! [EXPORT] : P1: Sequence number missing
-    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(8);
-
     //! [EXPORT] : File system is currently busy
-    static constexpr ReturnValue_t IS_BUSY = MAKE_RETURN_CODE(9);
+    static constexpr ReturnValue_t IS_BUSY = MAKE_RETURN_CODE(1);
     //! [EXPORT] : Invalid parameters like file name or repository path
-    static constexpr ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(10);
+    static constexpr ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(2);
+
+    static constexpr ReturnValue_t FILE_DOES_NOT_EXIST = MAKE_RETURN_CODE(5);
+    static constexpr ReturnValue_t FILE_ALREADY_EXISTS = MAKE_RETURN_CODE(6);
+    static constexpr ReturnValue_t FILE_LOCKED = MAKE_RETURN_CODE(7);
+
+    static constexpr ReturnValue_t DIRECTORY_DOES_NOT_EXIST = MAKE_RETURN_CODE(10);
+    static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(11);
+    static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(12);
+
+    //! [EXPORT] : P1: Sequence number missing
+    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_WRITE = MAKE_RETURN_CODE(15);
+    //! [EXPORT] : P1: Sequence number missing
+    static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(16);
+
+
 
 	virtual ~HasFileSystemIF() {}
 	/**
