@@ -13,8 +13,7 @@ public:
     /**
      * Header consists of sender ID and command ID.
      */
-    static constexpr size_t HEADER_SIZE = MessageQueueMessageIF::HEADER_SIZE +
-    sizeof(Command_t);
+    static constexpr size_t HEADER_SIZE = MessageQueueMessageIF::HEADER_SIZE + sizeof(Command_t);
     /**
      * This minimum size is derived from the interface requirement to be able
      * to set a rejected reply, which contains a returnvalue and the initial
@@ -23,12 +22,12 @@ public:
     static constexpr size_t MINIMUM_COMMAND_MESSAGE_SIZE = CommandMessageIF::HEADER_SIZE +
             sizeof(ReturnValue_t) + sizeof(Command_t);
 
-    static Command_t makeCommandId(uint8_t messageId, uint8_t uniqueId) {
+    static constexpr Command_t makeCommandId(uint8_t messageId, uint8_t uniqueId) {
         return ((messageId << 8) | uniqueId);
     }
 
     static const uint8_t INTERFACE_ID = CLASS_ID::COMMAND_MESSAGE;
-    static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(0x01);
+    static const ReturnValue_t UNKNOWN_COMMAND = MAKE_RETURN_CODE(1);
 
     static const uint8_t MESSAGE_ID = messagetypes::COMMAND;
     //! Used internally, shall be ignored
