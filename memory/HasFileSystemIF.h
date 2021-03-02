@@ -32,6 +32,11 @@ public:
     //! [EXPORT] : P1: Sequence number missing
     static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(8);
 
+    //! [EXPORT] : File system is currently busy
+    static constexpr ReturnValue_t IS_BUSY = MAKE_RETURN_CODE(9);
+    //! [EXPORT] : Invalid parameters like file name or repository path
+    static constexpr ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(10);
+
 	virtual ~HasFileSystemIF() {}
 	/**
 	 * Function to get the MessageQueueId_t of the implementing object
