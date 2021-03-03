@@ -62,7 +62,7 @@ void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy,
         stepCount++;
         break;
     case HasActionsIF::EXECUTION_FINISHED:
-        ActionMessage::setCompletionReply(&reply, actionId,
+        ActionMessage::setCompletionReply(true, &reply, actionId,
                 HasReturnvaluesIF::RETURN_OK);
         queueToUse->sendMessage(commandedBy, &reply);
         break;

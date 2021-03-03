@@ -53,11 +53,12 @@ void ActionMessage::setDataReply(CommandMessage* message, ActionId_t actionId,
     message->setParameter2(data.raw);
 }
 
-void ActionMessage::setCompletionReply(CommandMessage* message,
+void ActionMessage::setCompletionReply(bool success, CommandMessage* message,
         ActionId_t fid, ReturnValue_t result) {
-    if (result == HasReturnvaluesIF::RETURN_OK or result == HasActionsIF::EXECUTION_FINISHED) {
+    if (success) {
         message->setCommand(COMPLETION_SUCCESS);
-    } else {
+    }
+    else {
         message->setCommand(COMPLETION_FAILED);
     }
     message->setParameter(fid);

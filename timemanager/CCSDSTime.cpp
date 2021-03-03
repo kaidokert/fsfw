@@ -396,12 +396,20 @@ ReturnValue_t CCSDSTime::convertToCcsds(OBT_FLP* to, const timeval* from) {
 
 ReturnValue_t CCSDSTime::convertFromCcsds(timeval* to, const uint8_t* from,
 		size_t* foundLength, size_t maxLength) {
-	//We don't expect ascii here. SHOULDDO
+    if(maxLength >= 19) {
+        Clock::TimeOfDay_t timeOfDay;
+        /* Try to parse it as ASCII */
+        ReturnValue_t result = convertFromASCII(&timeOfDay, from, maxLength);
+        if (result == RETURN_OK) {
+            return Clock::convertTimeOfDayToTimeval(&timeOfDay, to);
+        }
+    }
+
 	uint8_t codeIdentification = (*from >> 4);
 	switch (codeIdentification) {
-	//unsupported, as Leap second correction would have to be applied
-//	case CUC_LEVEL1:
-//		return convertFromCUC(to, from, foundLength, maxLength);
+	/* Unsupported, as Leap second correction would have to be applied */
+	case CUC_LEVEL1:
+		return UNSUPPORTED_TIME_FORMAT;
 	case CDS:
 		return convertFromCDS(to, from, foundLength, maxLength);
 	case CCS:
