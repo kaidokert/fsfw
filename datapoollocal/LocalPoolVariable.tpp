@@ -43,22 +43,12 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
     PoolEntry<T>* poolEntry = nullptr;
     ReturnValue_t result = LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId,
             &poolEntry);
-    //ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
     if(result != RETURN_OK) {
         object_id_t ownerObjectId = hkManager->getCreatorObjectId();
         reportReadCommitError("LocalPoolVariable", result,
                 false, ownerObjectId, localPoolId);
         return result;
     }
-
-    // Actually this should never happen..
-    //	if(poolEntry->address == nullptr) {
-    //		result = PoolVariableIF::INVALID_POOL_ENTRY;
-    //		object_id_t ownerObjectId = hkManager->getOwner()->getObjectId();
-    //		reportReadCommitError("LocalPoolVariable", result,
-    //				false, ownerObjectId, localPoolId);
-    //		return result;
-    //	}
 
     this->value = *(poolEntry->getDataPtr());
     this->valid = poolEntry->getValid();
