@@ -24,19 +24,23 @@ public:
     static const Command_t DATA_REPLY =  MAKE_COMMAND_ID(4);
     static const Command_t COMPLETION_SUCCESS = MAKE_COMMAND_ID(5);
     static const Command_t COMPLETION_FAILED = MAKE_COMMAND_ID(6);
+
     virtual ~ActionMessage();
     static void setCommand(CommandMessage* message, ActionId_t fid,
             store_address_t parameters);
+
     static ActionId_t getActionId(const CommandMessage* message );
-    static store_address_t getStoreId(const CommandMessage* message );
+    static store_address_t getStoreId(const CommandMessage* message);
+
     static void setStepReply(CommandMessage* message, ActionId_t fid,
             uint8_t step, ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
     static uint8_t getStep(const CommandMessage* message );
     static ReturnValue_t getReturnCode(const CommandMessage* message );
     static void setDataReply(CommandMessage* message, ActionId_t actionId,
             store_address_t data);
-    static void setCompletionReply(CommandMessage* message, ActionId_t fid,
+    static void setCompletionReply(bool success, CommandMessage* message, ActionId_t fid,
             ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
+
     static void clear(CommandMessage* message);
 };
 
