@@ -42,8 +42,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
     }
 }
 
-LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
-        PoolVariableIF** registeredVariablesArray,
+LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
                 PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
