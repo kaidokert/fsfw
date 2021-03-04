@@ -1,8 +1,9 @@
 ## Local Data Pools Developer Information
 
-The local data pools can be used to store data like sensor values so they can be used 
-by other software objects like controllers as well. If a custom class should have a local pool which 
-can be used by other software objects as well, following steps have to be performed:
+The following text is targeted towards mission software developers which would like
+to use the local data pools provided by the FSFW to store data like sensor values so they can be 
+used by other software objects like controllers as well. If a custom class should have a local 
+pool which  can be used by other software objects as well, following steps have to be performed:
 
 1. Create a `LocalDataPoolManager` member object in the custom class
 2. Implement the `HasLocalDataPoolIF` with specifies the interface between the local pool manager
@@ -67,7 +68,7 @@ private:
 ```
 
 There is a public constructor for users which sets all variables to read-only and there is a
-constructor for the GyroHandler data creator by makring it private and declaring the `GyroHandler`
+constructor for the GyroHandler data creator by marking it private and declaring the `GyroHandler`
 as a friend class. Both the atittude controller and the `GyroHandler` can now
 use the same class definition to access the pool variables with `read` and `commit` semantics
 in a thread-safe way. Generally, each class requiring access will have the set class as a member
