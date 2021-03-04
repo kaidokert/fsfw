@@ -103,8 +103,8 @@ GyroHandler::GyroHandler(object_id_t objectId, object_id_t comIF,
 We need to assign the set to a reply ID used in the `DeviceHandlerBase`. 
 The combination of the `GyroHandler` object ID and the reply ID will be the 64-bit structure ID
 `sid_t` and is used to globally identify the set, for example when requesting housekeeping data or
-generating update messages. We need to assign our custom in some way so that the local pool manager
-can access the custom data sets as well.
+generating update messages. We need to assign our custom set class in some way so that the local 
+pool manager can access the custom data sets as well.
 By default, the `getDataSetHandle` will take care of this tasks. The default implementation for a
 `DeviceHandlerBase` subclass will use the internal command map to retrieve 
 a handle to a dataset from a given reply ID. Therefore,
