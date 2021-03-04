@@ -39,6 +39,9 @@ public:
             sif::printError("MutexHelper: Lock of Mutex failed with code %d\n", status);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         }
+#else
+        /* To avoid unused variable warning */
+        static_cast<void>(status);
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
     }
 
