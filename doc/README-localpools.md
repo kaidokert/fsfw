@@ -15,11 +15,7 @@ The two former tasks are related to the external interface using telemetry and t
 while the later two are related to data consumers like controllers only acting on data change 
 detected by the data creator instead of checking the data manually each cycle. Two important 
 framework classes `DeviceHandlerBase` and `ExtendedControllerBase` already perform the two steps 
-shown above so the steps required are altered slightly. The following diagram shows the
-high-level architecture of the local data pools.
-
-<img align="center" src="./images/PoolArchitecture.png" width="50%">
-
+shown above so the steps required are altered slightly.
 
 ### Storing and Accessing pool data 
 
@@ -31,7 +27,10 @@ on a `read` call. Changed variables can then be written to the local pool with a
 The `read` and `commit` calls are thread-safe and can be called concurrently from data creators
 and data consumers. Generally, a user will create a dataset class which in turn groups all 
 cohesive pool variables. These sets simply iterator over the list of variables and call the 
-`read` and `commit` functions of each variable.
+`read` and `commit` functions of each variable. The following diagram shows the
+high-level architecture of the local data pools.
+
+<img align="center" src="./images/PoolArchitecture.png" width="50%"> <br>
 
 An example is shown for using the local data pools with a Gyroscope.
 For example, the following code shows an implementation to access data from a Gyroscope taken
