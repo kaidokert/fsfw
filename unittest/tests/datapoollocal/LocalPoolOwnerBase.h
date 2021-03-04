@@ -192,7 +192,7 @@ public:
         resetSubscriptionList();
         ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
         {
-            PoolReadHelper readHelper(&dataset);
+            PoolReadGuard readHelper(&dataset);
             if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
                 status = readHelper.getReadResult();
             }
@@ -205,7 +205,7 @@ public:
         }
 
         {
-            PoolReadHelper readHelper(&testUint32);
+            PoolReadGuard readHelper(&testUint32);
             if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
                 status = readHelper.getReadResult();
             }
@@ -214,7 +214,7 @@ public:
         }
 
         {
-            PoolReadHelper readHelper(&testInt64Vec);
+            PoolReadGuard readHelper(&testInt64Vec);
             if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
                 status = readHelper.getReadResult();
             }
