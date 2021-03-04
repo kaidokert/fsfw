@@ -59,7 +59,7 @@ public:
 
     /**
      * @brief	Constructor for users of the local pool data, which need
-     *          to access data created by one (!) HK manager.
+     *          to access data created by one HK manager.
      * @details
      * Unlike the first constructor, no component for periodic handling
      * will be initiated.
