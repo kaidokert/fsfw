@@ -98,7 +98,6 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
     }
 
     PoolEntry<T>* poolEntry = nullptr;
-    //ReturnValue_t result = hkManager->fetchPoolEntry(localPoolId, &poolEntry);
     ReturnValue_t result = LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId,
             &poolEntry);
     if(result != RETURN_OK) {
