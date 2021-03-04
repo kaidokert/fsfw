@@ -82,6 +82,10 @@ now
   For mission code, developers need to replace sif:: calls by the printf counterparts, but only if the CPP stream are excluded. 
   If this is not the case, everything should work as usual.
 
+### ActionHelper
+
+- ActionHelper finish function now expects explicit information whether to report a success or failure message instead of deriving it implicitely from returnvalue
+
 ### PUS Parameter Service 20
 
 Added PUS parameter service 20 (only custom subservices available).
