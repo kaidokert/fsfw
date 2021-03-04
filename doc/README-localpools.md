@@ -1,27 +1,37 @@
 ## Local Data Pools Developer Information
 
 The local data pools can be used to store data like sensor values so they can be used 
-by other software objects like controllers as well. If a class should have a local pool which
+by other software objects like controllers as well. If a custom class should have a local pool which 
 can be used by other software objects as well, following steps have to be performed:
 
-1. Create a `LocalDataPoolManager` member class
-2. Implement the `HasLocalDataPoolIF`
+1. Create a `LocalDataPoolManager` member object in the custom class
+2. Implement the `HasLocalDataPoolIF` with specifies the interface between the local pool manager
+and the class owning the local pool.
 
 The local data pool manager is also able to process housekeeping service requests in form
 of messages, generate periodic housekeeping packet, generate notification and snapshots of changed
 variables and datasets and process notifications and snapshots coming from other objects.
-Two important framework classes already perform the two steps shown above so the steps required
-are altered slightly. 
+The two former tasks are related to the external interface using telemetry and telecommands (TMTC)
+while the later two are related to data consumers like controllers only acting on data change 
+detected by the data creator instead of checking the data manually each cycle. Two important 
+framework classes `DeviceHandlerBase` and `ExtendedControllerBase` already perform the two steps 
+shown above so the steps required are altered slightly. 
 
 ### Storing and Accessing pool data 
 
 The pool manager is responsible for thread-safe access of the pool data, but the actual
-access to the pool data is done via proxy classes like pool variable classes or dataset classes.
-Generally, a user will create a dataset class which in turn groups all cohesive pool variables.
+access to the pool data from the point of a mission software developer is given in form of
+proxy classes like pool variable classes. These classes store a copy
+of the pool variable with the matching datatype and copy the actual data from the local pool
+on a `read` call. Changed variables can then be written to the local pool with a `commit` call.
+The `read` and `commit` calls are thread-safe and can be called concurrently from data creators
+and data consumers. Generally, a user will create a dataset class which in turn groups all 
+cohesive pool variables. These sets simply iterator over the list of variables and call the 
+`read` and `commit` functions of each variable.
 
-The user can then use this set class to `read` the variables and `commit` changed variables
-back into the pool. The general approach is that a user will create a header containing the set
-class. For example, the following code shows an implementation to access data from a Gyroscope:
+An example is shown for using the local data pools with a Gyroscope.
+For example, the following code shows an implementation to access data from a Gyroscope taken
+from the SOURCE CubeSat project:
 
 ```cpp
 class GyroPrimaryDataset: public StaticLocalDataSet<3 * sizeof(float)> {
@@ -53,8 +63,9 @@ private:
 };
 ```
 
-There is a constructor for users which sets all variables to read-only and there is the constructor
-for the GyroHandler data creator. Both the atittude controller and the `GyroHandler` can now
+There is a public constructor for users which sets all variables to read-only and there is a
+constructor for the GyroHandler data creator by makring it private and declaring the `GyroHandler`
+as a friend class. Both the atittude controller and the `GyroHandler` can now
 use the same class definition to access the pool variables with `read` and `commit` semantics
 in a thread-safe way. Generally, each class requiring access will have the set class as a member
 class. The data creator will also be generally a `DeviceHandlerBase` subclass and some additional
@@ -147,6 +158,8 @@ if(readHelper.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
 	gyroData.angVelocityZ = angularVelocityZ;
 }
 ```
+
+The guard class will commit the changed data on destruction automatically.
 
 ### Using the local data pools in a `ExtendedControllerBase` subclass
 
