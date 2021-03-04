@@ -21,7 +21,7 @@ shown above so the steps required are altered slightly.
 ### Storing and Accessing pool data 
 
 The pool manager is responsible for thread-safe access of the pool data, but the actual
-access to the pool data from the point of a mission software developer is given in form of
+access to the pool data from the point of view of a mission software developer is in form of
 proxy classes like pool variable classes. These classes store a copy
 of the pool variable with the matching datatype and copy the actual data from the local pool
 on a `read` call. Changed variables can then be written to the local pool with a `commit` call.
