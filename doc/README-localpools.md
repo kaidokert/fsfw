@@ -142,7 +142,7 @@ ReturnValue_t GyroHandler::initializeLocalDataPool(localpool::DataPool &localDat
 }
 ```
 
-Now, we have received some sensor data and converted them into the right format, 
+Now, if we receive some sensor data and converted them into the right format, 
 we can write it into the pool like this, using a guard class to ensure the set is commited back 
 in any case:
 
