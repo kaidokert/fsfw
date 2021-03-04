@@ -37,15 +37,20 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
     if(poolId == PoolVariableIF::NO_PARAMETER) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
-                << "which is the NO_PARAMETER value!" << std::endl;
+                "which is the NO_PARAMETER value!" << std::endl;
+#else
+        sif::printWarning("LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
+                "which is the NO_PARAMETER value!\n");
 #endif
     }
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(poolOwner);
     if(hkOwner == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalPoolVariable: The supplied pool owner did not "
-                << "implement the correct interface"
-                << " HasLocalDataPoolIF!" << std::endl;
+        sif::error << "LocalPoolVariable: The supplied pool owner did not implement the correct "
+                "interface HasLocalDataPoolIF!" << std::endl;
+#else
+        sif::printError( "LocalPoolVariable: The supplied pool owner did not implement the correct "
+                "interface HasLocalDataPoolIF!\n");
 #endif
         return;
     }
