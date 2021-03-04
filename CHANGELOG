@@ -22,8 +22,8 @@ a C file without issues
 
 ### Local Pool
 
-- Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and 
-bucket number of the pools per page and the number of pages are passed to the ctor instead of 
+- Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and
+bucket number of the pools per page and the number of pages are passed to the ctor instead of
 two ctor arguments and a template parameter
 
 ### Parameter Service
@@ -42,7 +42,7 @@ important use-case)
    
 ### File System Interface
 
-- A new interfaces specifies the functions for a software object which exposes the file system of 
+- A new interfaces specifies the functions for a software object which exposes the file system of
 a given hardware to use message based file handling (e.g. PUS commanding)
 
 ### Internal Error Reporter
