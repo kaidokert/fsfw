@@ -15,7 +15,11 @@ The two former tasks are related to the external interface using telemetry and t
 while the later two are related to data consumers like controllers only acting on data change 
 detected by the data creator instead of checking the data manually each cycle. Two important 
 framework classes `DeviceHandlerBase` and `ExtendedControllerBase` already perform the two steps 
-shown above so the steps required are altered slightly. 
+shown above so the steps required are altered slightly. The following diagram shows the
+high-level architecture of the local data pools.
+
+<img align="center" src="./images/PoolArchitecture.png" width="50%">
+
 
 ### Storing and Accessing pool data 
 
