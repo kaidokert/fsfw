@@ -3,6 +3,7 @@
 
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 ActionHelper::ActionHelper(HasActionsIF* setOwner,
         MessageQueueIF* useThisQueue) :
@@ -86,13 +87,20 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
     uint8_t *dataPtr;
     size_t maxSize = data->getSerializedSize();
     if (maxSize == 0) {
-        //No error, there's simply nothing to report.
+        /* No error, there's simply nothing to report. */
         return HasReturnvaluesIF::RETURN_OK;
     }
     size_t size = 0;
     ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, maxSize,
             &dataPtr);
     if (result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ActionHelper::reportData: Getting free element from IPC store failed!" <<
+                std::endl;
+#else
+        sif::printWarning("ActionHelper::reportData: Getting free element from IPC "
+                "store failed!\n");
+#endif
         return result;
     }
     result = data->serialize(&dataPtr, &size, maxSize,
@@ -101,14 +109,13 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
         ipcStore->deleteData(storeAddress);
         return result;
     }
-    // We don't need to report the objectId, as we receive REQUESTED data
-    // before the completion success message.
-    // True aperiodic replies need to be reported with
-    // another dedicated message.
+
+    /* We don't need to report the objectId, as we receive REQUESTED data before the completion
+    success message. True aperiodic replies need to be reported with another dedicated message. */
     ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
-    // If the sender needs to be hidden, for example to handle packet
-    // as unrequested reply, this will be done here.
+    /* If the sender needs to be hidden, for example to handle packet
+    as unrequested reply, this will be done here. */
     if (hideSender) {
         result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
     }
@@ -132,6 +139,11 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
     store_address_t storeAddress;
     ReturnValue_t result = ipcStore->addData(&storeAddress, data, dataSize);
     if (result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ActionHelper::reportData: Adding data to IPC store failed!" << std::endl;
+#else
+        sif::printWarning("ActionHelper::reportData: Adding data to IPC store failed!\n");
+#endif
         return result;
     }
 
@@ -140,14 +152,12 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
         return result;
     }
 
-    // We don't need to report the objectId, as we receive REQUESTED data
-    // before the completion success message.
-    // True aperiodic replies need to be reported with
-    // another dedicated message.
+    /* We don't need to report the objectId, as we receive REQUESTED data before the completion
+    success message. True aperiodic replies need to be reported with another dedicated message. */
     ActionMessage::setDataReply(&reply, replyId, storeAddress);
 
-    // If the sender needs to be hidden, for example to handle packet
-    // as unrequested reply, this will be done here.
+    /* If the sender needs to be hidden, for example to handle packet
+    as unrequested reply, this will be done here. */
     if (hideSender) {
         result = MessageQueueSenderIF::sendMessage(reportTo, &reply);
     }
