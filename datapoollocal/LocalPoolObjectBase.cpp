@@ -1,9 +1,11 @@
 #include "LocalPoolObjectBase.h"
 #include "LocalDataPoolManager.h"
-#include "internal/HasLocalDpIFUserAttorney.h"
+#include "AccessLocalPoolF.h"
 #include "HasLocalDataPoolIF.h"
+#include "internal/HasLocalDpIFUserAttorney.h"
 
 #include "../objectmanager/ObjectManagerIF.h"
+
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
         DataSetIF* dataSet, pool_rwm_t setReadWriteMode):
@@ -35,15 +37,20 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
     if(poolId == PoolVariableIF::NO_PARAMETER) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
-                << "which is the NO_PARAMETER value!" << std::endl;
+                "which is the NO_PARAMETER value!" << std::endl;
+#else
+        sif::printWarning("LocalPoolVar<T>::LocalPoolVar: 0 passed as pool ID, "
+                "which is the NO_PARAMETER value!\n");
 #endif
     }
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(poolOwner);
     if(hkOwner == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "LocalPoolVariable: The supplied pool owner did not "
-                << "implement the correct interface"
-                << " HasLocalDataPoolIF!" << std::endl;
+        sif::error << "LocalPoolVariable: The supplied pool owner did not implement the correct "
+                "interface HasLocalDataPoolIF!" << std::endl;
+#else
+        sif::printError( "LocalPoolVariable: The supplied pool owner did not implement the correct "
+                "interface HasLocalDataPoolIF!\n");
 #endif
         return;
     }
@@ -93,6 +100,10 @@ void LocalPoolObjectBase::setReadWriteMode(pool_rwm_t newReadWriteMode) {
 void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
         ReturnValue_t error, bool read, object_id_t objectId, lp_id_t lpId) {
 #if FSFW_DISABLE_PRINTOUT == 0
+    const char* variablePrintout = variableType;
+    if(variablePrintout == nullptr) {
+        variablePrintout = "Unknown Type";
+    }
     const char* type = nullptr;
     if(read) {
         type = "read";
@@ -119,12 +130,12 @@ void LocalPoolObjectBase::reportReadCommitError(const char* variableType,
     }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << variableType << ": " << type << " call | " << errMsg << " | Owner: 0x"
+    sif::warning << variablePrintout << ": " << type << " call | " << errMsg << " | Owner: 0x"
             << std::hex << std::setw(8) << std::setfill('0') << objectId << std::dec
             << " LPID: " << lpId << std::endl;
 #else
     sif::printWarning("%s: %s call | %s | Owner: 0x%08x LPID: %lu\n",
-            variableType, type, errMsg, objectId, lpId);
+            variablePrintout, type, errMsg, objectId, lpId);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_DISABLE_PRINTOUT == 0 */
 }

@@ -160,7 +160,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(messageSent.getCommand() == static_cast<int>(
                 HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE));
         /* Now subscribe for the dataset update (HK and update) again with subscription interface */
-        REQUIRE(subscriptionIF->subscribeForSetUpdateMessages(lpool::testSetId,
+        REQUIRE(subscriptionIF->subscribeForSetUpdateMessage(lpool::testSetId,
                 objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, false) == retval::CATCH_OK);
         REQUIRE(poolOwner->subscribeWrapperSetUpdateHk() == retval::CATCH_OK);
 
@@ -192,7 +192,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 
     /* we need to reset the subscription list because the pool owner
     is a global object. */
-    poolOwner->resetSubscriptionList();
+    CHECK(poolOwner->reset() == retval::CATCH_OK);
     mqMock->clearMessages(true);
 }
 

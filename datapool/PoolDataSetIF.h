@@ -8,7 +8,9 @@
  * @brief   Extendes the DataSetIF by adding abstract functions to lock
  *          and unlock a data pool and read/commit semantics.
  */
-class PoolDataSetIF: public DataSetIF, public ReadCommitIF {
+class PoolDataSetIF:
+        public DataSetIF,
+        public ReadCommitIF {
 public:
     virtual~ PoolDataSetIF() {};
 

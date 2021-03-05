@@ -10,7 +10,11 @@
  *          which are destined to be downlinked into the store.
  * @details
  * The housekeeping packets are stored into the IPC store and forwarded
- * to the designated housekeeping handler.
+ * to the designated housekeeping handler. The packet will consist of the following fields
+ *  - SID (8 byte): Structure ID, with the first 4 bytes being the object ID and the last four
+ *    bytes being the set ID
+ *  - Housekeeping Data: The rest of the packet will be the serialized housekeeping data. A validity
+ *    buffer might be appended at the end, depending on the set configuration.
  */
 class HousekeepingPacketDownlink: public SerialLinkedListAdapter<SerializeIF> {
 public:

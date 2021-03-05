@@ -22,7 +22,9 @@ a C file without issues
 
 ### Local Pool
 
-- Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and bucket number of the pools per page and the number of pages are passed to the ctor instead of two ctor arguments and a template parameter
+- Interface of LocalPools has changed. LocalPool is not a template anymore. Instead the size and
+bucket number of the pools per page and the number of pages are passed to the ctor instead of
+two ctor arguments and a template parameter
 
 ### Parameter Service
 
@@ -40,7 +42,8 @@ important use-case)
    
 ### File System Interface
 
-- A new interfaces specifies the functions for a software object which exposes the file system of a given hardware to use message based file handling (e.g. PUS commanding)
+- A new interfaces specifies the functions for a software object which exposes the file system of
+a given hardware to use message based file handling (e.g. PUS commanding)
 
 ### Internal Error Reporter
 
@@ -52,7 +55,8 @@ ID for now.
 ### Device Handler Base
 
 - There is an additional `PERFORM_OPERATION` step for the device handler base. It is important
-that DHB users adapt their polling sequence tables to perform this step. This steps allows for aclear distinction between operation and communication steps
+that DHB users adapt their polling sequence tables to perform this step. This steps allows for 
+a clear distinction between operation and communication steps
 - setNormalDatapoolEntriesInvalid is not an abstract method and a default implementation was provided
 - getTransitionDelayMs is now an abstract method
 
@@ -69,7 +73,8 @@ now
 
 ### Commanding Service Base
 
-- CSB uses the new fsfwconfig::FSFW_CSB_FIFO_DEPTH variable to determine  the FIFO depth for each CSB instance. This variable has to be set in the FSFWConfig.h file
+- CSB uses the new fsfwconfig::FSFW_CSB_FIFO_DEPTH variable to determine  the FIFO depth for each 
+CSB instance. This variable has to be set in the FSFWConfig.h file
 
 ### Service Interface
 
@@ -81,6 +86,12 @@ now
   For the fsfw, this can be done by checking the processor define FSFW_CPP_OSTREAM_ENABLED from FSFWConfig.h. 
   For mission code, developers need to replace sif:: calls by the printf counterparts, but only if the CPP stream are excluded. 
   If this is not the case, everything should work as usual.
+
+### ActionHelper and ActionMessage
+
+- ActionHelper finish function and ActionMessage::setCompletionReply now expects explicit 
+information whether to report a success or failure message instead of deriving it implicitely 
+from returnvalue
 
 ### PUS Parameter Service 20
 
