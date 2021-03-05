@@ -24,7 +24,6 @@ private:
         return manager.getMutexHandle();
     }
 
-
     template<typename T> friend class LocalPoolVariable;
     template<typename T, uint16_t vecSize> friend class LocalPoolVector;
 };

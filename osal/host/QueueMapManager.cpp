@@ -1,5 +1,6 @@
 #include "QueueMapManager.h"
 
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexHelper.h"
 

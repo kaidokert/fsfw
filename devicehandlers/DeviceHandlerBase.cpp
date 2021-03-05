@@ -558,7 +558,7 @@ void DeviceHandlerBase::replyToCommand(ReturnValue_t status,
     if (cookieInfo.pendingCommand->second.sendReplyTo != NO_COMMANDER) {
         MessageQueueId_t queueId = cookieInfo.pendingCommand->second.sendReplyTo;
         if (status == NO_REPLY_EXPECTED) {
-            actionHelper.finish(queueId, cookieInfo.pendingCommand->first,
+            actionHelper.finish(true, queueId, cookieInfo.pendingCommand->first,
                     RETURN_OK);
         } else {
             actionHelper.step(1, queueId, cookieInfo.pendingCommand->first,
@@ -581,7 +581,11 @@ void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
         // Check if it was transition or internal command.
         // Don't send any replies in that case.
         if (info->sendReplyTo != NO_COMMANDER) {
-            actionHelper.finish(info->sendReplyTo, iter->first, status);
+            bool success = false;
+            if(status == HasReturnvaluesIF::RETURN_OK) {
+                success = true;
+            }
+            actionHelper.finish(success, info->sendReplyTo, iter->first, status);
         }
         info->isExecuting = false;
     }

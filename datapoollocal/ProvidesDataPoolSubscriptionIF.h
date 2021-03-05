@@ -17,12 +17,8 @@ public:
      * to generate housekeeping packets which are downlinked directly.
      * @return
      */
-    virtual ReturnValue_t subscribeForPeriodicPacket(sid_t sid,
-            bool enableReporting,
-            float collectionInterval, bool isDiagnostics,
-            object_id_t packetDestination) = 0;
-
-
+    virtual ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
+            float collectionInterval, bool isDiagnostics, object_id_t packetDestination) = 0;
     /**
      * @brief   Subscribe for the  generation of packets if the dataset
      *          is marked as changed.
@@ -33,11 +29,8 @@ public:
      * @param packetDestination
      * @return
      */
-    virtual ReturnValue_t subscribeForUpdatePackets(sid_t sid,
-            bool reportingEnabled,
-            bool isDiagnostics,
-            object_id_t packetDestination) = 0;
-
+    virtual ReturnValue_t subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
+            bool isDiagnostics, object_id_t packetDestination) = 0;
     /**
      * @brief   Subscribe for a notification message which will be sent
      *          if a dataset has changed.
@@ -52,10 +45,9 @@ public:
      *                              Otherwise, only an notification message is sent.
      * @return
      */
-    virtual ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
+    virtual ReturnValue_t subscribeForSetUpdateMessage(const uint32_t setId,
             object_id_t destinationObject, MessageQueueId_t targetQueueId,
             bool generateSnapshot) = 0;
-
     /**
      * @brief   Subscribe for an notification message which will be sent if a
      *          pool variable has changed.
@@ -70,12 +62,9 @@ public:
      *                              only an notification message is sent.
      * @return
      */
-    virtual ReturnValue_t subscribeForVariableUpdateMessages(
-            const lp_id_t localPoolId,
-            object_id_t destinationObject,
-            MessageQueueId_t targetQueueId,
+    virtual ReturnValue_t subscribeForVariableUpdateMessage(const lp_id_t localPoolId,
+            object_id_t destinationObject, MessageQueueId_t targetQueueId,
             bool generateSnapshot) = 0;
-
 };
 
 #endif /* FSFW_DATAPOOLLOCAL_PROVIDESDATAPOOLSUBSCRIPTION_H_ */
