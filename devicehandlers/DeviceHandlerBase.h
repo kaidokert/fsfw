@@ -119,7 +119,7 @@ public:
             DeviceHandlerIF::DEFAULT_THERMAL_STATE_POOL_ID,
             lp_id_t thermalRequestPoolId =
                     DeviceHandlerIF::DEFAULT_THERMAL_HEATING_REQUEST_POOL_ID,
-                    uint32_t thermalSetId = DeviceHandlerIF::DEFAULT_THERMAL_SET_ID);
+            uint32_t thermalSetId = DeviceHandlerIF::DEFAULT_THERMAL_SET_ID);
     /**
      * @brief   Helper function to ease device handler development.
      * This will instruct the transition to MODE_ON immediately
