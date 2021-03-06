@@ -308,6 +308,14 @@ void DeviceHandlerBase::doStateMachine() {
         uint32_t currentUptime;
         Clock::getUptime(&currentUptime);
         if (currentUptime - timeoutStart >= childTransitionDelay) {
+#if FSFW_VERBOSE_LEVEL >= 1
+            char printout[60];
+            sprintf(printout, "Transition timeout (%lu) occured !",
+                    static_cast<unsigned long>(childTransitionDelay));
+            /* Very common configuration error, so print it */
+            printWarningOrError(sif::OutputTypes::OUT_WARNING, "doStateMachine",
+                    RETURN_FAILED, printout);
+#endif
             triggerEvent(MODE_TRANSITION_FAILED, childTransitionFailure, 0);
             setMode(transitionSourceMode, transitionSourceSubMode);
             break;
