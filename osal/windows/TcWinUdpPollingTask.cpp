@@ -4,6 +4,10 @@
 
 #include <winsock2.h>
 #include <windows.h>
+#if defined(_MSC_VER)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
 
 TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,

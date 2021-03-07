@@ -9,7 +9,7 @@
 
 class PowerComponent: public PowerComponentIF {
 public:
-	PowerComponent(object_id_t setId, uint8_t moduleId, float min, float max,
+	PowerComponent(object_id_t setId, uint8_t moduleId, float minVoltage, float maxVoltage,
 	        uint8_t switchId1, bool twoSwitches = false,
 	        uint8_t switchId2 = 0xFF);
 
@@ -41,8 +41,8 @@ private:
 
 	const bool doIHaveTwoSwitches;
 
-	float min = 0.0;
-	float max = 0.0;
+	float minVoltage = 0.0;
+	float maxVoltage = 0.0;
 
 	uint8_t moduleId = 0;
 

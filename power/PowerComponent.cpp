@@ -1,6 +1,7 @@
 #include "PowerComponent.h"
 #include "../serialize/SerializeAdapter.h"
 
+
 PowerComponent::PowerComponent(): switchId1(0xFF), switchId2(0xFF),
         doIHaveTwoSwitches(false) {
 }
@@ -8,23 +9,23 @@ PowerComponent::PowerComponent(): switchId1(0xFF), switchId2(0xFF),
 PowerComponent::PowerComponent(object_id_t setId, uint8_t moduleId, float min,
         float max, uint8_t switchId1, bool twoSwitches, uint8_t switchId2) :
 		deviceObjectId(setId), switchId1(switchId1), switchId2(switchId2),
-		doIHaveTwoSwitches(twoSwitches), min(min), max(max),
+		doIHaveTwoSwitches(twoSwitches), minVoltage(min), maxVoltage(max),
 		moduleId(moduleId) {
 }
 
 ReturnValue_t PowerComponent::serialize(uint8_t** buffer, size_t* size,
 		size_t maxSize, Endianness streamEndianness) const {
-	ReturnValue_t result = SerializeAdapter::serialize(&min, buffer,
+	ReturnValue_t result = SerializeAdapter::serialize(&minVoltage, buffer,
 			size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter::serialize(&max, buffer, size, maxSize,
+	return SerializeAdapter::serialize(&maxVoltage, buffer, size, maxSize,
 			streamEndianness);
 }
 
 size_t PowerComponent::getSerializedSize() const {
-	return sizeof(min) + sizeof(max);
+	return sizeof(minVoltage) + sizeof(maxVoltage);
 }
 
 object_id_t PowerComponent::getDeviceObjectId() {
@@ -44,21 +45,21 @@ bool PowerComponent::hasTwoSwitches() {
 }
 
 float PowerComponent::getMin() {
-	return min;
+	return minVoltage;
 }
 
 float PowerComponent::getMax() {
-	return max;
+	return maxVoltage;
 }
 
 ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, size_t* size,
         Endianness streamEndianness) {
-	ReturnValue_t result = SerializeAdapter::deSerialize(&min, buffer,
+	ReturnValue_t result = SerializeAdapter::deSerialize(&minVoltage, buffer,
 			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter::deSerialize(&max, buffer, size, streamEndianness);
+	return SerializeAdapter::deSerialize(&maxVoltage, buffer, size, streamEndianness);
 }
 
 ReturnValue_t PowerComponent::getParameter(uint8_t domainId, uint8_t uniqueId,
@@ -69,10 +70,10 @@ ReturnValue_t PowerComponent::getParameter(uint8_t domainId, uint8_t uniqueId,
 	}
 	switch (uniqueId) {
 	case 0:
-		parameterWrapper->set<>(min);
+		parameterWrapper->set<>(minVoltage);
 		break;
 	case 1:
-		parameterWrapper->set<>(max);
+		parameterWrapper->set<>(maxVoltage);
 		break;
 	default:
 		return INVALID_IDENTIFIER_ID;
