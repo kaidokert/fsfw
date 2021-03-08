@@ -14,19 +14,29 @@ public:
     static constexpr uint16_t DEFAULT_TCP_SERVER_PORT = 7301;
     static constexpr uint16_t DEFAULT_TCP_CLIENT_PORT = 7302;
 
-    TcWinTcpServer(object_id_t objectId, object_id_t tmtcUnixUdpBridge);
+    TcWinTcpServer(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
+            uint16_t customTcpServerPort = 0xffff);
     virtual~ TcWinTcpServer();
+
+    ReturnValue_t initialize() override;
+    ReturnValue_t performOperation(uint8_t opCode) override;
 
 private:
 
     SOCKET serverTcpSocket = 0;
+    struct sockaddr_in tcpAddress;
+    int tcpAddrLen = sizeof(tcpAddress);
+    int backlog = 3;
 
     std::vector<uint8_t> receptionBuffer;
     int tcpSockOpt = 0;
 
     enum class ErrorSources {
         SOCKET_CALL,
-        SETSOCKOPT_CALL
+        SETSOCKOPT_CALL,
+        BIND_CALL,
+        LISTEN_CALL,
+        ACCEPT_CALL
     };
 
     void handleError(ErrorSources errorSrc);

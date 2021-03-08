@@ -14,7 +14,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     mutex = MutexFactory::instance()->createMutex();
     communicationLinkUp = false;
 
-    // Initiates Winsock DLL.
+    /* Initiates Winsock DLL. */
     WSAData wsaData;
     WORD wVersionRequested = MAKEWORD(2, 2);
     int err = WSAStartup(wVersionRequested, &wsaData);
@@ -87,6 +87,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
 }
 
 TmTcWinUdpBridge::~TmTcWinUdpBridge() {
+    closesocket(serverSocket);
     WSACleanup();
 }
 
