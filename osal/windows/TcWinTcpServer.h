@@ -24,7 +24,12 @@ private:
     std::vector<uint8_t> receptionBuffer;
     int tcpSockOpt = 0;
 
-    void handleSocketError();
+    enum class ErrorSources {
+        SOCKET_CALL,
+        SETSOCKOPT_CALL
+    };
+
+    void handleError(ErrorSources errorSrc);
 };
 
 #endif /* FSFW_OSAL_WINDOWS_TCWINTCPSERVER_H_ */

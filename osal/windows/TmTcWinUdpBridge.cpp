@@ -44,8 +44,8 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if(serverSocket == INVALID_SOCKET) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not open"
-                " UDP socket!" << std::endl;
+        sif::warning << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not open UDP socket!" <<
+                std::endl;
 #endif
         handleSocketError();
         return;
@@ -57,16 +57,23 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddress.sin_port = htons(setServerPort);
     serverAddressLen = sizeof(serverAddress);
-    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR,
+    int result = setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR,
             reinterpret_cast<const char*>(&serverSocketOptions),
             sizeof(serverSocketOptions));
+    if(result != 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not set socket options!" <<
+                std::endl;
+#endif
+        handleSocketError();
+    }
 
     clientAddress.sin_family = AF_INET;
     clientAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     clientAddress.sin_port = htons(setClientPort);
     clientAddressLen = sizeof(clientAddress);
 
-    int result = bind(serverSocket,
+    result = bind(serverSocket,
             reinterpret_cast<struct sockaddr*>(&serverAddress),
             serverAddressLen);
     if(result != 0) {
@@ -159,14 +166,14 @@ void TmTcWinUdpBridge::handleBindError() {
     case(WSANOTINITIALISED): {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::info << "TmTcWinUdpBridge::handleBindError: WSANOTINITIALISED: "
-                << "WSAStartup(...) call " << "necessary" << std::endl;
+                << "WSAStartup call necessary" << std::endl;
 #endif
         break;
     }
     case(WSAEADDRINUSE): {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     	sif::warning << "TmTcWinUdpBridge::handleBindError: WSAEADDRINUSE: "
-    			<< "Port is already in use!" << std::endl;
+    	        "Port is already in use!" << std::endl;
 #endif
     	break;
     }

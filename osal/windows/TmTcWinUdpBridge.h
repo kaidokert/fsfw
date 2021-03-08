@@ -41,6 +41,11 @@ private:
     //! by another task.
     MutexIF* mutex;
 
+    enum class ErrorSources {
+        SOCKET_CALL,
+        SETSOCKOPT_CALL
+    };
+
     void handleSocketError();
     void handleBindError();
     void handleSendError();
