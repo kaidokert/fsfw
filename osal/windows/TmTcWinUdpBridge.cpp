@@ -85,13 +85,12 @@ TmTcWinUdpBridge::~TmTcWinUdpBridge() {
 ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
     int flags = 0;
 
-    //clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
-    //clientAddressLen = sizeof(serverAddress);
-
-//  char ipAddress [15];
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-//  sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-//                  &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+    clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
+    clientAddressLen = sizeof(serverAddress);
+    char ipAddress [15];
+    sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+            &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 #endif
 
     ssize_t bytesSent = sendto(serverSocket,
@@ -104,9 +103,9 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 #endif
         handleSendError();
     }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-//  sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
-//          " sent." << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+    sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
+            " sent." << std::endl;
 #endif
     return HasReturnvaluesIF::RETURN_OK;
 }
@@ -114,16 +113,16 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
     MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
-//  char ipAddress [15];
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-//  sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-//          &newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
-//  sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
-//          &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+    char ipAddress [15];
+    sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+            &newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+    sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
+            &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 #endif
     registerCommConnect();
 
-    // Set new IP address if it has changed.
+    /* Set new IP address if it has changed. */
     if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
         clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
         clientAddressLen = sizeof(clientAddress);
@@ -135,8 +134,8 @@ void TmTcWinUdpBridge::handleSocketError() {
     switch(errCode) {
     case(WSANOTINITIALISED): {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TmTcWinUdpBridge::handleSocketError: WSANOTINITIALISED: "
-                << "WSAStartup(...) call necessary" << std::endl;
+        sif::warning << "TmTcWinUdpBridge::handleSocketError: WSANOTINITIALISED: WSAStartup"
+                " call necessary" << std::endl;
 #endif
         break;
     }
@@ -146,8 +145,7 @@ void TmTcWinUdpBridge::handleSocketError() {
         windows-sockets-error-codes-2
          */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TmTcWinUdpBridge::handleSocketError: Error code: "
-                << errCode << std::endl;
+        sif::warning << "TmTcWinUdpBridge::handleSocketError: Error code: " << errCode << std::endl;
 #endif
         break;
     }

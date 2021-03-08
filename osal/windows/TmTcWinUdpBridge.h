@@ -6,10 +6,13 @@
 #include <winsock2.h>
 #include <windows.h>
 
+//! Debugging preprocessor define.
+#define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
+
 class TmTcWinUdpBridge: public TmTcBridge {
     friend class TcWinUdpPollingTask;
 public:
-    // The ports chosen here should not be used by any other process.
+    /* The ports chosen here should not be used by any other process. */
     static constexpr uint16_t DEFAULT_UDP_SERVER_PORT = 7301;
     static constexpr uint16_t DEFAULT_UDP_CLIENT_PORT = 7302;
 
