@@ -38,8 +38,9 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
         setClientPort = clientPort;
     }
 
-    // Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
-    //clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
+    /* Set up UDP socket:
+    https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-socket
+    */
     serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if(serverSocket == INVALID_SOCKET) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -52,7 +53,7 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
 
     serverAddress.sin_family = AF_INET;
 
-    // Accept packets from any interface. (potentially insecure).
+    /* Accept packets from any interface. (potentially insecure). */
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddress.sin_port = htons(setServerPort);
     serverAddressLen = sizeof(serverAddress);
