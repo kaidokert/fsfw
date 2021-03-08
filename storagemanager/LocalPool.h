@@ -169,7 +169,6 @@ private:
      * Indicates that this element is free.
      * This value limits the maximum size of a pool.
      * Change to larger data type if increase is required.
-     * Brackets required for MSVC (nameclashes with min and max)
      */
     static const size_type STORAGE_FREE = std::numeric_limits<size_type>::max();
 	/**
