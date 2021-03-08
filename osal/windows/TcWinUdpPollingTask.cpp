@@ -3,11 +3,6 @@
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 #include <winsock2.h>
-#include <windows.h>
-#if defined(_MSC_VER)
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
-#endif
 
 TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,
@@ -41,7 +36,7 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 		//! Sender Address is cached here.
 		struct sockaddr_in senderAddress;
 		int senderAddressSize = sizeof(senderAddress);
-		ssize_t bytesReceived = recvfrom(serverUdpSocket,
+		int bytesReceived = recvfrom(serverUdpSocket,
 				reinterpret_cast<char*>(receptionBuffer.data()), frameSize,
 				receptionFlags, reinterpret_cast<sockaddr*>(&senderAddress),
 				&senderAddressSize);

@@ -4,18 +4,22 @@
 #include "../../objectmanager/SystemObject.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
+#include <string>
 #include <vector>
+
+//! Debugging preprocessor define.
+#define FSFW_TCP_SERVER_WIRETAPPING_ENABLED    0
 
 class TcWinTcpServer:
         public SystemObject,
         public ExecutableObjectIF {
 public:
     /* The ports chosen here should not be used by any other process. */
-    static constexpr uint16_t DEFAULT_TCP_SERVER_PORT = 7301;
-    static constexpr uint16_t DEFAULT_TCP_CLIENT_PORT = 7302;
+    static const std::string DEFAULT_TCP_SERVER_PORT;
+    static const std::string DEFAULT_TCP_CLIENT_PORT;
 
     TcWinTcpServer(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
-            uint16_t customTcpServerPort = 0xffff);
+            std::string customTcpServerPort = "");
     virtual~ TcWinTcpServer();
 
     ReturnValue_t initialize() override;
@@ -23,15 +27,17 @@ public:
 
 private:
 
-    SOCKET serverTcpSocket = 0;
+    std::string tcpPort;
+    SOCKET listenerTcpSocket = 0;
     struct sockaddr_in tcpAddress;
     int tcpAddrLen = sizeof(tcpAddress);
-    int backlog = 3;
+    int currentBacklog = 3;
 
     std::vector<uint8_t> receptionBuffer;
     int tcpSockOpt = 0;
 
     enum class ErrorSources {
+        GETADDRINFO_CALL,
         SOCKET_CALL,
         SETSOCKOPT_CALL,
         BIND_CALL,
