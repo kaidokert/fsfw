@@ -1,5 +1,6 @@
 #include "TcWinTcpServer.h"
 #include "../../serviceinterface/ServiceInterface.h"
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
@@ -90,7 +91,7 @@ TcWinTcpServer::~TcWinTcpServer() {
 }
 
 ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
-    /* If a connection is accepted, the corresponding scoket will be assigned to the new socket */
+    /* If a connection is accepted, the corresponding socket will be assigned to the new socket */
     SOCKET clientSocket;
     sockaddr_in clientSockAddr;
     int connectorSockAddrLen = 0;
@@ -113,9 +114,21 @@ ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
 
         retval = recv(clientSocket, reinterpret_cast<char*>(receptionBuffer.data()),
                 receptionBuffer.size(), 0);
+        if(retval > 0) {
 #if FSFW_TCP_SERVER_WIRETAPPING_ENABLED == 1
+            sif::info << "TcWinTcpServer::performOperation: Received " << retval << " bytes."
+                    std::endl;
 #endif
+        }
+        else if(retval == 0) {
 
+        }
+        else {
+
+        }
+
+        /* Done, shut down connection */
+        retval = shutdown(clientSocket, SD_SEND);
     }
     return HasReturnvaluesIF::RETURN_OK;
 }

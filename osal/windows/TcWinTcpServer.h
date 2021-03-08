@@ -10,6 +10,11 @@
 //! Debugging preprocessor define.
 #define FSFW_TCP_SERVER_WIRETAPPING_ENABLED    0
 
+/**
+ * @brief   Windows TCP server used to receive telecommands on a Windows Host
+ * @details
+ * Based on: https://docs.microsoft.com/en-us/windows/win32/winsock/complete-server-code
+ */
 class TcWinTcpServer:
         public SystemObject,
         public ExecutableObjectIF {
