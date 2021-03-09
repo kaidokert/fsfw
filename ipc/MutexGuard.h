@@ -36,7 +36,7 @@ public:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "MutexHelper: Lock of Mutex failed with code " << result << std::endl;
 #else
-            sif::printError("MutexHelper: Lock of Mutex failed with code %d\n", status);
+            sif::printError("MutexHelper: Lock of Mutex failed with code %d\n", result);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         }
 #else

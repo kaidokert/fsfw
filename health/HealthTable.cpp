@@ -1,5 +1,5 @@
 #include "HealthTable.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 #include "../ipc/MutexFactory.h"
 #include "../serialize/SerializeAdapter.h"
 
