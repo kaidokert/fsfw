@@ -46,6 +46,8 @@ public:
      * 			read-write or read-only.
      */
     virtual ReadWriteMode_t getReadWriteMode() const = 0;
+    virtual void setReadWriteMode(ReadWriteMode_t newMode) = 0;
+
     /**
      * @brief	This operation shall return the data pool id of the variable.
      */
@@ -59,7 +61,6 @@ public:
      * @brief	With this call, the valid information of the variable is set.
      */
     virtual void setValid(bool validity) = 0;
-
 };
 
 using pool_rwm_t = PoolVariableIF::ReadWriteMode_t;

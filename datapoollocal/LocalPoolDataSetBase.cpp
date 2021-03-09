@@ -42,8 +42,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
     }
 }
 
-LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid,
-        PoolVariableIF** registeredVariablesArray,
+LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
                 PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
@@ -289,7 +288,7 @@ bool LocalPoolDataSetBase::isValid() const {
 void LocalPoolDataSetBase::setValidity(bool valid, bool setEntriesRecursively) {
     if(setEntriesRecursively) {
         for(size_t idx = 0; idx < this->getFillCount(); idx++) {
-            registeredVariables[idx] -> setValid(valid);
+            registeredVariables[idx]->setValid(valid);
         }
     }
     this->valid = valid;
@@ -302,3 +301,8 @@ object_id_t LocalPoolDataSetBase::getCreatorObjectId() {
     return objects::NO_OBJECT;
 }
 
+void LocalPoolDataSetBase::setAllVariablesReadOnly() {
+    for(size_t idx = 0; idx < this->getFillCount(); idx++) {
+        registeredVariables[idx]->setReadWriteMode(pool_rwm_t::VAR_READ);
+    }
+}

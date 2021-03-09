@@ -59,7 +59,7 @@ public:
 
     /**
      * @brief	Constructor for users of the local pool data, which need
-     *          to access data created by one (!) HK manager.
+     *          to access data created by one HK manager.
      * @details
      * Unlike the first constructor, no component for periodic handling
      * will be initiated.
@@ -109,6 +109,12 @@ public:
     LocalPoolDataSetBase(const LocalPoolDataSetBase& otherSet) = delete;
     const LocalPoolDataSetBase& operator=(const LocalPoolDataSetBase& otherSet) = delete;
 
+    /**
+     * Helper functions used to set all currently contained variables to read-only.
+     * It is recommended to call this in set constructors intended to be used
+     * by data consumers to prevent accidentally changing pool data.
+     */
+    void setAllVariablesReadOnly();
     void setValidityBufferGeneration(bool withValidityBuffer);
 
     sid_t getSid() const;

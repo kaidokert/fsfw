@@ -62,12 +62,12 @@ public:
             ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
     /**
      * Function to be called by the owner to send a action completion message
-     *
+     * @param success   Specify whether action was completed successfully or not.
      * @param reportTo MessageQueueId_t to report the action completion message to
      * @param commandId ID of the executed command
      * @param result Result of the execution
      */
-    void finish(MessageQueueId_t reportTo, ActionId_t commandId,
+    void finish(bool success, MessageQueueId_t reportTo, ActionId_t commandId,
             ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
     /**
      * Function to be called by the owner if an action does report data.

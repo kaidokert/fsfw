@@ -42,15 +42,15 @@ LocalDataPoolManager::~LocalDataPoolManager() {}
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
 	if(queueToUse == nullptr) {
-		// error, all destinations invalid
-		printWarningOrError(sif::OutputTypes::OUT_ERROR,
-				"initialize", QUEUE_OR_DESTINATION_INVALID);
+		/* Error, all destinations invalid */
+		printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
+		        QUEUE_OR_DESTINATION_INVALID);
 	}
 	hkQueue = queueToUse;
 
 	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
 	if(ipcStore == nullptr) {
-		// error, all destinations invalid
+		/* Error, all destinations invalid */
 		printWarningOrError(sif::OutputTypes::OUT_ERROR,
 				"initialize", HasReturnvaluesIF::RETURN_FAILED,
 				"Could not set IPC store.");
