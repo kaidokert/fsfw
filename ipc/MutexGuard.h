@@ -4,9 +4,9 @@
 #include "MutexFactory.h"
 #include "../serviceinterface/ServiceInterface.h"
 
-class MutexHelper {
+class MutexGuard {
 public:
-    MutexHelper(MutexIF* mutex, MutexIF::TimeoutType timeoutType =
+    MutexGuard(MutexIF* mutex, MutexIF::TimeoutType timeoutType =
             MutexIF::TimeoutType::BLOCKING, uint32_t timeoutMs = 0):
             internalMutex(mutex) {
         if(mutex == nullptr) {
@@ -19,10 +19,10 @@ public:
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
             return;
         }
-        ReturnValue_t status = mutex->lockMutex(timeoutType,
+        result = mutex->lockMutex(timeoutType,
                 timeoutMs);
 #if FSFW_VERBOSE_LEVEL >= 1
-        if(status == MutexIF::MUTEX_TIMEOUT) {
+        if(result == MutexIF::MUTEX_TIMEOUT) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "MutexHelper: Lock of mutex failed with timeout of "
                     << timeoutMs << " milliseconds!" << std::endl;
@@ -32,11 +32,11 @@ public:
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
         }
-        else if(status != HasReturnvaluesIF::RETURN_OK) {
+        else if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MutexHelper: Lock of Mutex failed with code " << status << std::endl;
+            sif::error << "MutexHelper: Lock of Mutex failed with code " << result << std::endl;
 #else
-            sif::printError("MutexHelper: Lock of Mutex failed with code %d\n", status);
+            sif::printError("MutexHelper: Lock of Mutex failed with code %d\n", result);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         }
 #else
@@ -45,13 +45,18 @@ public:
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
     }
 
-    ~MutexHelper() {
+    ReturnValue_t getLockResult() const {
+        return result;
+    }
+
+    ~MutexGuard() {
         if(internalMutex != nullptr) {
             internalMutex->unlockMutex();
         }
     }
 private:
     MutexIF* internalMutex;
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 };
 
 #endif /* FRAMEWORK_IPC_MUTEXHELPER_H_ */

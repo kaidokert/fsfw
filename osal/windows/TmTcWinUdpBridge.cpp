@@ -112,7 +112,7 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
-    MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
+    MutexGuard lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 //  char ipAddress [15];
 #if FSFW_CPP_OSTREAM_ENABLED == 1
