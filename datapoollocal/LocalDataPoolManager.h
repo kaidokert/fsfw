@@ -14,7 +14,7 @@
 #include "../ipc/MutexIF.h"
 #include "../ipc/CommandMessage.h"
 #include "../ipc/MessageQueueIF.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 
 #include <map>
 #include <vector>

@@ -25,7 +25,7 @@ inline LocalPoolVector<T, vectorSize>::LocalPoolVector(gp_id_t globalPoolId,
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::read(
         MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
-    MutexHelper(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
+    MutexGuard(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
     return readWithoutLock();
 }
 template<typename T, uint16_t vectorSize>
@@ -64,7 +64,7 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(bool valid,
 template<typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::commit(
         MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) {
-    MutexHelper(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
+    MutexGuard(LocalDpManagerAttorney::getMutexHandle(*hkManager), timeoutType, timeoutMs);
     return commitWithoutLock();
 }
 

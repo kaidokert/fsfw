@@ -66,7 +66,7 @@ public:
 
     /**
      * The mutex handle can be accessed directly, for example to perform
-     * the lock with the #MutexHelper for a RAII compliant lock operation.
+     * the lock with the #MutexGuard for a RAII compliant lock operation.
      * @return
      */
     MutexIF* getMutexHandle() const;
