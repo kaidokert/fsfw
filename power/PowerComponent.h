@@ -41,8 +41,8 @@ private:
 
 	const bool doIHaveTwoSwitches;
 
-	float minVoltage = 0.0;
-	float maxVoltage = 0.0;
+	float minPower = 0.0;
+	float maxPower = 0.0;
 
 	uint8_t moduleId = 0;
 

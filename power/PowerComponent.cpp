@@ -9,23 +9,23 @@ PowerComponent::PowerComponent(): switchId1(0xFF), switchId2(0xFF),
 PowerComponent::PowerComponent(object_id_t setId, uint8_t moduleId, float min,
         float max, uint8_t switchId1, bool twoSwitches, uint8_t switchId2) :
 		deviceObjectId(setId), switchId1(switchId1), switchId2(switchId2),
-		doIHaveTwoSwitches(twoSwitches), minVoltage(min), maxVoltage(max),
+		doIHaveTwoSwitches(twoSwitches), minPower(min), maxPower(max),
 		moduleId(moduleId) {
 }
 
 ReturnValue_t PowerComponent::serialize(uint8_t** buffer, size_t* size,
 		size_t maxSize, Endianness streamEndianness) const {
-	ReturnValue_t result = SerializeAdapter::serialize(&minVoltage, buffer,
+	ReturnValue_t result = SerializeAdapter::serialize(&minPower, buffer,
 			size, maxSize, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter::serialize(&maxVoltage, buffer, size, maxSize,
+	return SerializeAdapter::serialize(&maxPower, buffer, size, maxSize,
 			streamEndianness);
 }
 
 size_t PowerComponent::getSerializedSize() const {
-	return sizeof(minVoltage) + sizeof(maxVoltage);
+	return sizeof(minPower) + sizeof(maxPower);
 }
 
 object_id_t PowerComponent::getDeviceObjectId() {
@@ -45,21 +45,21 @@ bool PowerComponent::hasTwoSwitches() {
 }
 
 float PowerComponent::getMin() {
-	return minVoltage;
+	return minPower;
 }
 
 float PowerComponent::getMax() {
-	return maxVoltage;
+	return maxPower;
 }
 
 ReturnValue_t PowerComponent::deSerialize(const uint8_t** buffer, size_t* size,
         Endianness streamEndianness) {
-	ReturnValue_t result = SerializeAdapter::deSerialize(&minVoltage, buffer,
+	ReturnValue_t result = SerializeAdapter::deSerialize(&minPower, buffer,
 			size, streamEndianness);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
-	return SerializeAdapter::deSerialize(&maxVoltage, buffer, size, streamEndianness);
+	return SerializeAdapter::deSerialize(&maxPower, buffer, size, streamEndianness);
 }
 
 ReturnValue_t PowerComponent::getParameter(uint8_t domainId, uint8_t uniqueId,
@@ -70,10 +70,10 @@ ReturnValue_t PowerComponent::getParameter(uint8_t domainId, uint8_t uniqueId,
 	}
 	switch (uniqueId) {
 	case 0:
-		parameterWrapper->set<>(minVoltage);
+		parameterWrapper->set<>(minPower);
 		break;
 	case 1:
-		parameterWrapper->set<>(maxVoltage);
+		parameterWrapper->set<>(maxPower);
 		break;
 	default:
 		return INVALID_IDENTIFIER_ID;
