@@ -21,6 +21,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
 
     SECTION("BasicTest") {
         /* Test some basic functions */
+        CHECK(localSet.getReportingEnabled() == false);
         CHECK(localSet.getLocalPoolIdsSerializedSize(false) == 3 * sizeof(lp_id_t));
         CHECK(localSet.getLocalPoolIdsSerializedSize(true) ==
                 3 * sizeof(lp_id_t) + sizeof(uint8_t));
