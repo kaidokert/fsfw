@@ -40,8 +40,6 @@ public:
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         }
 #else
-        /* To avoid unused variable warning */
-        static_cast<void>(status);
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
     }
 
