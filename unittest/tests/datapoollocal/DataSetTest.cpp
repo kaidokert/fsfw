@@ -5,7 +5,7 @@
 
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
-#include <fsfw/datapool/PoolReadHelper.h>
+#include <fsfw/datapool/PoolReadGuard.h>
 #include <fsfw/globalfunctions/bitutility.h>
 
 #include <unittest/core/CatchDefinitions.h>
@@ -54,7 +54,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
 
         {
             /* Test read operation. Values should be all zeros */
-            PoolReadHelper readHelper(&localSet);
+            PoolReadGuard readHelper(&localSet);
             REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
             CHECK(not localSet.isValid());
             CHECK(localSet.localPoolVarUint8.value == 0);
@@ -82,7 +82,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
         {
             /* Now we read again and check whether our zeroed values were overwritten with
             the values in the pool */
-            PoolReadHelper readHelper(&localSet);
+            PoolReadGuard readHelper(&localSet);
             REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
             CHECK(localSet.isValid());
             CHECK(localSet.localPoolVarUint8.value == 232);
