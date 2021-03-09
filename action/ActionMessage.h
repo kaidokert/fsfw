@@ -38,8 +38,8 @@ public:
     static ReturnValue_t getReturnCode(const CommandMessage* message );
     static void setDataReply(CommandMessage* message, ActionId_t actionId,
             store_address_t data);
-    static void setCompletionReply(bool success, CommandMessage* message, ActionId_t fid,
-            ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
+    static void setCompletionReply(CommandMessage* message, ActionId_t fid,
+            bool success, ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
 
     static void clear(CommandMessage* message);
 };

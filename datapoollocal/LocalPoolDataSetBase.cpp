@@ -36,7 +36,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
     this->sid.objectId = hkOwner->getObjectId();
     this->sid.ownerSetId = setId;
 
-    // Data creators get a periodic helper for periodic HK data generation.
+    /* Data creators get a periodic helper for periodic HK data generation. */
     if(periodicHandling) {
         periodicHelper = new PeriodicHousekeepingHelper(this);
     }

@@ -46,7 +46,7 @@ void ActionHelper::step(uint8_t step, MessageQueueId_t reportTo,
 void ActionHelper::finish(bool success, MessageQueueId_t reportTo, ActionId_t commandId,
         ReturnValue_t result) {
     CommandMessage reply;
-    ActionMessage::setCompletionReply(success, &reply, commandId, result);
+    ActionMessage::setCompletionReply(&reply, commandId, success, result);
     queueToUse->sendMessage(reportTo, &reply);
 }
 
@@ -69,7 +69,7 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy,
     ipcStore->deleteData(dataAddress);
     if(result == HasActionsIF::EXECUTION_FINISHED) {
         CommandMessage reply;
-        ActionMessage::setCompletionReply(true, &reply, actionId, result);
+        ActionMessage::setCompletionReply(&reply, actionId, true, result);
         queueToUse->sendMessage(commandedBy, &reply);
     }
     if (result != HasReturnvaluesIF::RETURN_OK) {
