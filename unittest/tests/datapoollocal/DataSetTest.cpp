@@ -10,7 +10,7 @@
 
 #include <unittest/core/CatchDefinitions.h>
 
-TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
+TEST_CASE("DataSetTest" , "[DataSetTest]") {
     LocalPoolOwnerBase* poolOwner = objectManager->
             get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
     REQUIRE(poolOwner != nullptr);
