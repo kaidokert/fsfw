@@ -80,6 +80,13 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
         localSet.localPoolVarUint8 = 0;
         localSet.localPoolVarFloat = 0;
 
+        localSet.setAllVariablesReadOnly();
+        CHECK(localSet.localPoolUint16Vec.getReadWriteMode() == pool_rwm_t::VAR_READ);
+        CHECK(localSet.localPoolVarUint8.getReadWriteMode() == pool_rwm_t::VAR_READ);
+        CHECK(localSet.localPoolVarFloat.getReadWriteMode() == pool_rwm_t::VAR_READ);
+        /* For code coverage */
+        localSet.initializePeriodicHelper(0.0, 0.4, false);
+
         {
             /* Now we read again and check whether our zeroed values were overwritten with
             the values in the pool */

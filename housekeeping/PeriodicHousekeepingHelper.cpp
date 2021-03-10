@@ -16,6 +16,9 @@ void PeriodicHousekeepingHelper::initialize(float collectionInterval,
 				nonDiagIntervalFactor;
 	}
 	collectionIntervalTicks = intervalSecondsToInterval(collectionInterval);
+	/* This will cause a checkOpNecessary call to be true immediately. I think it's okay
+	if a HK packet is generated immediately instead of waiting one generation cycle. */
+	internalTickCounter = collectionIntervalTicks;
 }
 
 float PeriodicHousekeepingHelper::getCollectionIntervalInSeconds() {
