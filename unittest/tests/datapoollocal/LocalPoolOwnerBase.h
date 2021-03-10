@@ -130,7 +130,7 @@ public:
     }
 
     uint32_t getPeriodicOperationFrequency() const override {
-        return 0;
+        return 0.2;
     }
 
     /**
@@ -167,6 +167,10 @@ public:
 
     MessageQueueMockBase* getMockQueueHandle() const {
         return dynamic_cast<MessageQueueMockBase*>(messageQueue);
+    }
+
+    ReturnValue_t subscribePeriodicHk() {
+        return poolManager.subscribeForPeriodicPacket(lpool::testSid, true, 0.2, false);
     }
 
     ReturnValue_t subscribeWrapperSetUpdate() {

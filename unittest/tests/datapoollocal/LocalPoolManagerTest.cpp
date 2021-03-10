@@ -28,6 +28,10 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 
 
     SECTION("BasicTest") {
+        auto owner = poolOwner->poolManager.getOwner();
+        REQUIRE(owner != nullptr);
+        CHECK(owner->getObjectId() == objects::TEST_LOCAL_POOL_OWNER_BASE);
+
         /* Subscribe for message generation on update. */
         REQUIRE(poolOwner->subscribeWrapperSetUpdate() == retval::CATCH_OK);
         /* Subscribe for an update message. */
@@ -188,6 +192,18 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
                 HousekeepingMessage::HK_REPORT));
         CommandMessageCleaner::clearCommandMessage(&messageSent);
         REQUIRE(mqMock->receiveMessage(&messageSent) == static_cast<int>(MessageQueueIF::EMPTY));
+    }
+
+    SECTION("Periodic HK") {
+        /* Now we subcribe for a HK periodic generation. Even when it's difficult to simulate
+        the temporal behaviour correctly the HK manager should generate a HK packet
+        immediately and the periodic helper depends on HK op function calls anyway instead of
+        using the clock, so we could also just call performHkOperation multiple times */
+        REQUIRE(poolOwner->subscribePeriodicHk() == retval::CATCH_OK);
+        REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
+        /* Now HK packet should be sent as message. */
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
     }
 
     /* we need to reset the subscription list because the pool owner
