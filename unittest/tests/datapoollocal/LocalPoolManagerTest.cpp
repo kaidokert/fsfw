@@ -245,6 +245,13 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, true, false);
         CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
         CHECK(setHandle->getReportingEnabled() == true);
+
+        HousekeepingMessage::setCollectionIntervalModificationCommand(&hkCmd,
+                lpool::testSid, 0.4, false);
+        CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
+        /* For non-diagnostics and a specified minimum frequency of 0.2 seconds, the
+        resulting collection interval should be 1.0 second */
+        CHECK(poolOwner->dataset.getCollectionInterval() == 1.0);
     }
 
     /* we need to reset the subscription list because the pool owner

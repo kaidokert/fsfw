@@ -65,7 +65,7 @@ public:
      * usually be the period the pool owner performs its periodic operation.
      * @return
      */
-    virtual uint32_t getPeriodicOperationFrequency() const = 0;
+    virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
 
     /**
      * @brief   This function will be called by the manager if an update

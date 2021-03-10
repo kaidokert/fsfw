@@ -129,8 +129,8 @@ public:
         return &poolManager;
     }
 
-    uint32_t getPeriodicOperationFrequency() const override {
-        return 0.2;
+    dur_millis_t getPeriodicOperationFrequency() const override {
+        return 200;
     }
 
     /**

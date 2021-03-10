@@ -168,6 +168,14 @@ public:
 
     bool getReportingEnabled() const;
 
+    /**
+     * Returns the current periodic HK generation interval this set
+     * belongs to a HK manager and the interval is not 0. Otherwise,
+     * returns 0.0
+     * @return
+     */
+    float getCollectionInterval() const;
+
 protected:
     sid_t sid;
     //! This mutex is used if the data is created by one object only.

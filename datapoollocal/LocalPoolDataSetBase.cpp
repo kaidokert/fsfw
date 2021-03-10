@@ -308,3 +308,12 @@ void LocalPoolDataSetBase::setAllVariablesReadOnly() {
         registeredVariables[idx]->setReadWriteMode(pool_rwm_t::VAR_READ);
     }
 }
+
+float LocalPoolDataSetBase::getCollectionInterval() const {
+    if(periodicHelper != nullptr) {
+        return periodicHelper->getCollectionIntervalInSeconds();
+    }
+    else {
+        return 0.0;
+    }
+}

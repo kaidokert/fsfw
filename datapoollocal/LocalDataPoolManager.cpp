@@ -770,7 +770,7 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 			LocalPoolDataSetAttorney::getPeriodicHelper(*dataSet);
 
 	if(periodicHelper == nullptr) {
-		// config error
+		/* Configuration error, set might not have a corresponding pool manager */
 		return PERIODIC_HELPER_INVALID;
 	}
 

@@ -15,13 +15,15 @@ public:
 			uint8_t nonDiagIntervalFactor);
 
 	void changeCollectionInterval(float newInterval);
-	float getCollectionIntervalInSeconds();
+	float getCollectionIntervalInSeconds() const;
 	bool checkOpNecessary();
 private:
 	LocalPoolDataSetBase* owner = nullptr;
+	bool isDiagnostics = true;
+	uint8_t nonDiagIntervalFactor = 0;
 
-	uint32_t intervalSecondsToInterval(float collectionIntervalSeconds);
-	float intervalToIntervalSeconds(uint32_t collectionInterval);
+	uint32_t intervalSecondsToIntervalTicks(float collectionIntervalSeconds);
+	float intervalTicksToSeconds(uint32_t collectionInterval) const;
 
 	dur_millis_t minimumPeriodicInterval = 0;
 	uint32_t internalTickCounter = 1;

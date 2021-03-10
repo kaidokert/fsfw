@@ -84,15 +84,21 @@ void HousekeepingMessage::setCollectionIntervalModificationCommand(
 	else {
 		command->setCommand(MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL);
 	}
-	command->setParameter3(collectionInterval);
+
+	/* Raw storage of the float in the message. Do not use setParameter3, does
+	implicit conversion to integer type! */
+	std::memcpy(command->getData() + 2 * sizeof(uint32_t), &collectionInterval,
+	        sizeof(collectionInterval));
 
 	setSid(command, sid);
 }
 
 sid_t HousekeepingMessage::getCollectionIntervalModificationCommand(
 		const CommandMessage* command, float* newCollectionInterval) {
+
 	if(newCollectionInterval != nullptr) {
-		*newCollectionInterval = command->getParameter3();
+	    std::memcpy(newCollectionInterval, command->getData() + 2 * sizeof(uint32_t),
+	            sizeof(*newCollectionInterval));
 	}
 
 	return getSid(command);
