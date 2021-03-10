@@ -1,6 +1,6 @@
 #include "TmTcWinUdpBridge.h"
 
-#include <fsfw/ipc/MutexHelper.h>
+#include <fsfw/ipc/MutexGuard.h>
 
 #if defined(_MSC_VER)
 #include <BaseTsd.h>
@@ -120,7 +120,7 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in newAddress) {
-    MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
+    MutexGuard lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
     char ipAddress [15];

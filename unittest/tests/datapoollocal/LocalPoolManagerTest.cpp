@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
-#include <fsfw/datapool/PoolReadHelper.h>
+#include <fsfw/datapool/PoolReadGuard.h>
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/housekeeping/HousekeepingSnapshot.h>
@@ -75,7 +75,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
     SECTION("SnapshotUpdateTests") {
         /* Set the variables in the set to certain values. These are checked later. */
         {
-            PoolReadHelper readHelper(&poolOwner->dataset);
+            PoolReadGuard readHelper(&poolOwner->dataset);
             REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
             poolOwner->dataset.localPoolVarUint8.value = 5;
             poolOwner->dataset.localPoolVarFloat.value = -12.242;

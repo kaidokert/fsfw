@@ -1,6 +1,6 @@
 #include "TmTcUnixUdpBridge.h"
 #include "../../serviceinterface/ServiceInterface.h"
-#include "../../ipc/MutexHelper.h"
+#include "../../ipc/MutexGuard.h"
 
 #include <errno.h>
 #include <arpa/inet.h>
@@ -69,7 +69,7 @@ TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	int flags = 0;
 
-	MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
+	MutexGuard lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 	if(ipAddrAnySet){
 		clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
@@ -100,7 +100,7 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
-	MutexHelper lock(mutex, MutexIF::TimeoutType::WAITING, 10);
+	MutexGuard lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
 //	char ipAddress [15];
 #if FSFW_CPP_OSTREAM_ENABLED == 1

@@ -10,7 +10,7 @@
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 #include "../timemanager/CCSDSTime.h"
 #include "../ipc/MutexFactory.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 #include "../ipc/QueueFactory.h"
 
 #include <array>
