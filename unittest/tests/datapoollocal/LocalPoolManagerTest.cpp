@@ -76,7 +76,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
 
     }
 
-    SECTION("SnapshotUpdateTests") {
+    SECTION("SetSnapshotUpdateTest") {
         /* Set the variables in the set to certain values. These are checked later. */
         {
             PoolReadGuard readHelper(&poolOwner->dataset);
@@ -141,7 +141,31 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(1));
     }
 
-    SECTION("AdvancedTests") {
+    SECTION("VariableSnapshotTest") {
+        /* Acquire subscription interface */
+        ProvidesDataPoolSubscriptionIF* subscriptionIF = poolOwner->getSubscriptionInterface();
+        REQUIRE(subscriptionIF != nullptr);
+
+        /* Subscribe for variable snapshot */
+        REQUIRE(poolOwner->subscribeWrapperVariableSnapshot(lpool::uint8VarId) == retval::CATCH_OK);
+        auto poolVar = dynamic_cast<lp_var_t<uint8_t>*>(
+                poolOwner->getPoolObjectHandle(lpool::uint8VarId));
+        REQUIRE(poolVar != nullptr);
+        poolVar->setChanged(true);
+        REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
+
+        /* Check update snapshot was sent. */
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
+
+        /* Should have been reset. */
+        CHECK(poolVar->hasChanged() == false);
+        REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+        CHECK(messageSent.getCommand() == static_cast<int>(
+                HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE));
+    }
+
+    SECTION("VariableUpdateTest") {
         /* Acquire subscription interface */
         ProvidesDataPoolSubscriptionIF* subscriptionIF = poolOwner->getSubscriptionInterface();
         REQUIRE(subscriptionIF != nullptr);
@@ -153,6 +177,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
                 poolOwner->getPoolObjectHandle(lpool::uint8VarId));
         REQUIRE(poolVar != nullptr);
         poolVar->setChanged(true);
+        REQUIRE(poolVar->hasChanged() == true);
         REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 
         /* Check update notification was sent. */
@@ -204,6 +229,22 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         /* Now HK packet should be sent as message. */
         REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
         CHECK(messagesSent == 1);
+
+        LocalPoolDataSetBase* setHandle = poolOwner->getDataSetHandle(lpool::testSid);
+        REQUIRE(setHandle != nullptr);
+        CHECK(poolOwner->poolManager.generateHousekeepingPacket(lpool::testSid,
+                setHandle, false) == retval::CATCH_OK);
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
+
+        CHECK(setHandle->getReportingEnabled() == true);
+        CommandMessage hkCmd;
+        HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, false, false);
+        CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
+        CHECK(setHandle->getReportingEnabled() == false);
+        HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, true, false);
+        CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
+        CHECK(setHandle->getReportingEnabled() == true);
     }
 
     /* we need to reset the subscription list because the pool owner

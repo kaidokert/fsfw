@@ -193,6 +193,11 @@ public:
                 MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, false);
     }
 
+    ReturnValue_t subscribeWrapperVariableSnapshot(lp_id_t localPoolId) {
+        return poolManager.subscribeForVariableUpdateMessage(localPoolId,
+                MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, true);
+    }
+
     ReturnValue_t reset() {
         resetSubscriptionList();
         ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;

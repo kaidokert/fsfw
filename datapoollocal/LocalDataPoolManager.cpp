@@ -132,13 +132,16 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
 ReturnValue_t LocalDataPoolManager::handleHkUpdate(HkReceiver& receiver,
 		ReturnValue_t& status) {
 	if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-		// Update packets shall only be generated from datasets.
+		/* Update packets shall only be generated from datasets. */
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner,
 			receiver.dataId.sid);
+	if(dataSet == nullptr) {
+        return DATASET_NOT_FOUND;
+	}
 	if(dataSet->hasChanged()) {
-		// prepare and send update notification
+		/* Prepare and send update notification */
 		ReturnValue_t result = generateHousekeepingPacket(
 				receiver.dataId.sid, dataSet, true);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -328,7 +331,7 @@ void LocalDataPoolManager::handleChangeResetLogic(
 			toReset->setChanged(false);
 		}
 		/* All recipients have been notified, reset the changed flag */
-		if(changeInfo.currentUpdateCounter <= 1) {
+		else if(changeInfo.currentUpdateCounter <= 1) {
 			toReset->setChanged(false);
 			changeInfo.currentUpdateCounter = 0;
 		}
@@ -398,7 +401,6 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid,
 	hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
 
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
-	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 	if(dataSet != nullptr) {
 		LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, true);
 		LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
@@ -616,7 +618,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 		LocalPoolDataSetBase* dataSet, bool forDownlink,
 		MessageQueueId_t destination) {
 	if(dataSet == nullptr) {
-		// Configuration error.
+		/* Configuration error. */
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
 				"generateHousekeepingPacket",
 				DATASET_NOT_FOUND);
@@ -632,7 +634,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 		return result;
 	}
 
-	// and now we set a HK message and send it the HK packet destination.
+	/* Now we set a HK message and send it the HK packet destination. */
 	CommandMessage hkMessage;
 	if(LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
 		HousekeepingMessage::setHkDiagnosticsReply(&hkMessage, sid, storeId);
@@ -642,7 +644,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	}
 
 	if(hkQueue == nullptr) {
-		// error, no queue available to send packet with.
+		/* Error, no queue available to send packet with. */
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
 				"generateHousekeepingPacket",
 				QUEUE_OR_DESTINATION_INVALID);
@@ -650,7 +652,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	}
 	if(destination == MessageQueueIF::NO_QUEUE) {
 		if(hkDestinationId == MessageQueueIF::NO_QUEUE) {
-			// error, all destinations invalid
+			/* Error, all destinations invalid */
 			printWarningOrError(sif::OutputTypes::OUT_WARNING,
 					"generateHousekeepingPacket",
 					QUEUE_OR_DESTINATION_INVALID);
@@ -831,6 +833,9 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 void LocalDataPoolManager::clearReceiversList() {
 	/* Clear the vector completely and releases allocated memory. */
 	HkReceivers().swap(hkReceivers);
+	if(hkUpdateResetList != nullptr) {
+	    HkUpdateResetList().swap(*hkUpdateResetList);
+	}
 }
 
 MutexIF* LocalDataPoolManager::getLocalPoolMutex() {
