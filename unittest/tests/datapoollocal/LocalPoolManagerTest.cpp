@@ -219,14 +219,14 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         REQUIRE(mqMock->receiveMessage(&messageSent) == static_cast<int>(MessageQueueIF::EMPTY));
     }
 
-    SECTION("Periodic HK") {
+    SECTION("PeriodicHKAndMessaging") {
         /* Now we subcribe for a HK periodic generation. Even when it's difficult to simulate
         the temporal behaviour correctly the HK manager should generate a HK packet
         immediately and the periodic helper depends on HK op function calls anyway instead of
         using the clock, so we could also just call performHkOperation multiple times */
-        REQUIRE(poolOwner->subscribePeriodicHk() == retval::CATCH_OK);
+        REQUIRE(poolOwner->subscribePeriodicHk(true) == retval::CATCH_OK);
         REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
-        /* Now HK packet should be sent as message. */
+        /* Now HK packet should be sent as message immediately. */
         REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
         CHECK(messagesSent == 1);
 
@@ -242,9 +242,19 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, false, false);
         CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
         CHECK(setHandle->getReportingEnabled() == false);
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
         HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, true, false);
         CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
         CHECK(setHandle->getReportingEnabled() == true);
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
+
+        HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, false, false);
+        CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
+        CHECK(setHandle->getReportingEnabled() == false);
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
 
         HousekeepingMessage::setCollectionIntervalModificationCommand(&hkCmd,
                 lpool::testSid, 0.4, false);
@@ -252,6 +262,20 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         /* For non-diagnostics and a specified minimum frequency of 0.2 seconds, the
         resulting collection interval should be 1.0 second */
         CHECK(poolOwner->dataset.getCollectionInterval() == 1.0);
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
+
+        HousekeepingMessage::setStructureReportingCommand(&hkCmd, lpool::testSid, false);
+        REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
+        CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
+        /* Now HK packet should be sent as message. */
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
+
+        HousekeepingMessage::setOneShotReportCommand(&hkCmd, lpool::testSid, false);
+        CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
+        REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+        CHECK(messagesSent == 1);
     }
 
     /* we need to reset the subscription list because the pool owner

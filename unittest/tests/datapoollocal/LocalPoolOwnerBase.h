@@ -169,8 +169,8 @@ public:
         return dynamic_cast<MessageQueueMockBase*>(messageQueue);
     }
 
-    ReturnValue_t subscribePeriodicHk() {
-        return poolManager.subscribeForPeriodicPacket(lpool::testSid, true, 0.2, false);
+    ReturnValue_t subscribePeriodicHk(bool enableReporting) {
+        return poolManager.subscribeForPeriodicPacket(lpool::testSid, enableReporting, 0.2, false);
     }
 
     ReturnValue_t subscribeWrapperSetUpdate() {
