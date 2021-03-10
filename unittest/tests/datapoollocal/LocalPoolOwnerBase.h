@@ -10,7 +10,7 @@
 #include <testcfg/objects/systemObjectList.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
-#include "../../../datapool/PoolReadHelper.h"
+#include <fsfw/datapool/PoolReadGuard.h>
 
 namespace lpool {
 static constexpr lp_id_t uint8VarId = 0;
