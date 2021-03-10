@@ -278,6 +278,11 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(messagesSent == 1);
 
         HousekeepingMessage::setUpdateNotificationSetCommand(&hkCmd, lpool::testSid);
+        sid_t sidToCheck;
+        store_address_t storeId;
+        CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
+        CHECK(poolOwner->changedDataSetCallbackWasCalled(sidToCheck, storeId) == true);
+        CHECK(sidToCheck == lpool::testSid);
     }
 
     /* we need to reset the subscription list because the pool owner

@@ -82,13 +82,7 @@ public:
 
     ReturnValue_t initializeHkManager();
 
-    ReturnValue_t initializeHkManagerAfterTaskCreation() {
-        if(not initializedAfterTaskCreation) {
-            initializedAfterTaskCreation = true;
-            return poolManager.initializeAfterTaskCreation();
-        }
-        return HasReturnvaluesIF::RETURN_OK;
-    }
+    ReturnValue_t initializeHkManagerAfterTaskCreation();
 
     /** Command queue for housekeeping messages. */
     MessageQueueId_t getCommandQueue() const override {
@@ -158,17 +152,20 @@ public:
         poolManager.clearReceiversList();
     }
 
-    void handleChangedDataset(sid_t sid, store_address_t storeId) {
-        this->thisSidHasChanged = sid;
-        this->storeIdForChangedSid = storeId;
-    }
+    bool changedDataSetCallbackWasCalled(sid_t& sid, store_address_t& storeId);
+    bool changedVariableCallbackWasCalled(gp_id_t& gpid, store_address_t& storeId);
 
     LocalDataPoolManager poolManager;
     LocalPoolTestDataSet dataset;
 private:
 
-    sid_t thisSidHasChanged;
-    store_address_t storeIdForChangedSid;
+    void handleChangedDataset(sid_t sid, store_address_t storeId) override;
+    sid_t changedDatasetSid;
+    store_address_t storeIdForChangedSet;
+
+    void handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId) override;
+    gp_id_t changedPoolVariableGpid;
+    store_address_t storeIdForChangedVariable;
 
     lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId);
     lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId);

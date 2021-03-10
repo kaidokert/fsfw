@@ -1,5 +1,6 @@
 #include "SharedLocalDataSet.h"
 
+
 SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, sid_t sid,
         const size_t maxSize): SystemObject(objectId),
         LocalPoolDataSetBase(sid, nullptr, maxSize) {
@@ -9,6 +10,18 @@ SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, sid_t sid,
 
 ReturnValue_t SharedLocalDataSet::lockDataset(dur_millis_t mutexTimeout) {
     return datasetLock->lockMutex(MutexIF::TimeoutType::WAITING, mutexTimeout);
+}
+
+SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId,
+        HasLocalDataPoolIF *owner, uint32_t setId,
+        const size_t maxSize): SystemObject(objectId),
+        LocalPoolDataSetBase(owner, setId, nullptr, maxSize) {
+    this->setContainer(poolVarVector.data());
+    datasetLock = MutexFactory::instance()->createMutex();
+}
+
+SharedLocalDataSet::~SharedLocalDataSet() {
+    MutexFactory::instance()->deleteMutex(datasetLock);
 }
 
 ReturnValue_t SharedLocalDataSet::unlockDataset() {

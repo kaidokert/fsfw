@@ -6,6 +6,7 @@
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/datapool/PoolReadGuard.h>
+#include <fsfw/datapoollocal/SharedLocalDataSet.h>
 #include <fsfw/globalfunctions/bitutility.h>
 
 #include <unittest/core/CatchDefinitions.h>
@@ -250,6 +251,11 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
                 == retval::CATCH_OK);
         CHECK(localSet.localPoolVarUint8.isValid() == false);
         CHECK(localSet.localPoolUint16Vec.isValid() == true);
+    }
+
+    SECTION("SharedDataSet") {
+        object_id_t sharedSetId = objects::SHARED_SET_ID;
+        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, 2, 5);
     }
 
     /* we need to reset the subscription list because the pool owner

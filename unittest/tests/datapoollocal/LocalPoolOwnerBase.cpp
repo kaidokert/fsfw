@@ -89,3 +89,46 @@ ReturnValue_t LocalPoolOwnerBase::reset() {
     }
     return status;
 }
+
+bool LocalPoolOwnerBase::changedDataSetCallbackWasCalled(sid_t &sid, store_address_t &storeId) {
+    bool condition = false;
+    if(not this->changedDatasetSid.notSet()) {
+        condition = true;
+    }
+    sid = changedDatasetSid;
+    storeId = storeIdForChangedSet;
+    this->changedDatasetSid.raw = sid_t::INVALID_SID;
+    this->storeIdForChangedSet = storeId::INVALID_STORE_ADDRESS;
+    return condition;
+}
+
+void LocalPoolOwnerBase::handleChangedDataset(sid_t sid, store_address_t storeId) {
+    this->changedDatasetSid = sid;
+    this->storeIdForChangedSet = storeId;
+}
+
+bool LocalPoolOwnerBase::changedVariableCallbackWasCalled(gp_id_t &gpid, store_address_t &storeId) {
+    bool condition = false;
+    if(not this->changedPoolVariableGpid.notSet()) {
+        condition = true;
+    }
+    gpid = changedPoolVariableGpid;
+    storeId = storeIdForChangedVariable;
+    this->changedPoolVariableGpid.raw = gp_id_t::INVALID_GPID;
+    this->storeIdForChangedVariable = storeId::INVALID_STORE_ADDRESS;
+    return condition;
+}
+
+ReturnValue_t LocalPoolOwnerBase::initializeHkManagerAfterTaskCreation() {
+    if(not initializedAfterTaskCreation) {
+        initializedAfterTaskCreation = true;
+        return poolManager.initializeAfterTaskCreation();
+    }
+    return HasReturnvaluesIF::RETURN_OK;
+
+}
+
+void LocalPoolOwnerBase::handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId) {
+    this->changedPoolVariableGpid = globPoolId;
+    this->storeIdForChangedVariable = storeId;
+}
