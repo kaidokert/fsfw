@@ -731,6 +731,12 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
 		bool enable, bool isDiagnostics) {
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+    if(dataSet == nullptr) {
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "togglePeriodicGeneration",
+                DATASET_NOT_FOUND);
+        return DATASET_NOT_FOUND;
+    }
+
 	if((LocalPoolDataSetAttorney::isDiagnostics(*dataSet) and not isDiagnostics) or
 			(not LocalPoolDataSetAttorney::isDiagnostics(*dataSet) and isDiagnostics)) {
 		return WRONG_HK_PACKET_TYPE;
@@ -748,6 +754,12 @@ ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
 ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 		float newCollectionInterval, bool isDiagnostics) {
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+	if(dataSet == nullptr) {
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "changeCollectionInterval",
+                DATASET_NOT_FOUND);
+	    return DATASET_NOT_FOUND;
+	}
+
 	bool targetIsDiagnostics = LocalPoolDataSetAttorney::isDiagnostics(*dataSet);
 	if((targetIsDiagnostics and not isDiagnostics) or
 			(not targetIsDiagnostics and isDiagnostics)) {
@@ -768,13 +780,11 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 		bool isDiagnostics) {
-	// Get and check dataset first.
-	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	/* Get and check dataset first. */
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
 	if(dataSet == nullptr) {
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
-				"performPeriodicHkGeneration",
-				DATASET_NOT_FOUND);
+				"performPeriodicHkGeneration", DATASET_NOT_FOUND);
 		return DATASET_NOT_FOUND;
 	}
 
@@ -833,6 +843,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 void LocalDataPoolManager::clearReceiversList() {
 	/* Clear the vector completely and releases allocated memory. */
 	HkReceivers().swap(hkReceivers);
+	/* Also clear the reset helper if it exists */
 	if(hkUpdateResetList != nullptr) {
 	    HkUpdateResetList().swap(*hkUpdateResetList);
 	}
