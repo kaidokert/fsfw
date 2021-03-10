@@ -843,6 +843,7 @@ object_id_t LocalDataPoolManager::getCreatorObjectId() const {
 
 void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 		const char* functionName, ReturnValue_t error, const char* errorPrint) {
+#if FSFW_VERBOSE_LEVEL >= 1
 	if(errorPrint == nullptr) {
 		if(error == DATASET_NOT_FOUND) {
 			errorPrint = "Dataset not found";
@@ -873,7 +874,6 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 	}
 
 	if(outputType == sif::OutputTypes::OUT_WARNING) {
-#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "LocalDataPoolManager::" << functionName
 				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
