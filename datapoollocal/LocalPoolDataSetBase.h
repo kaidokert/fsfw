@@ -166,6 +166,8 @@ public:
 
     object_id_t getCreatorObjectId();
 
+    bool getReportingEnabled() const;
+
 protected:
     sid_t sid;
     //! This mutex is used if the data is created by one object only.
@@ -180,7 +182,6 @@ protected:
      */
     bool reportingEnabled = false;
     void setReportingEnabled(bool enabled);
-    bool getReportingEnabled() const;
 
     void initializePeriodicHelper(float collectionInterval,
             dur_millis_t minimumPeriodicInterval,

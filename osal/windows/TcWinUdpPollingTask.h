@@ -8,6 +8,9 @@
 
 #include <vector>
 
+//! Debugging preprocessor define.
+#define FSFW_UDP_RCV_WIRETAPPING_ENABLED    0
+
 /**
  * @brief 	This class can be used to implement the polling of a Unix socket,
  * 			using UDP for now.
@@ -51,8 +54,7 @@ private:
 	//! Reception flags: https://linux.die.net/man/2/recvfrom.
 	int receptionFlags = 0;
 
-	//! Server socket, which is member of TMTC bridge and is assigned in
-	//! constructor
+	//! Server socket, which is member of TMTC bridge and is assigned in constructor
 	SOCKET serverUdpSocket = 0;
 
 	std::vector<uint8_t> receptionBuffer;

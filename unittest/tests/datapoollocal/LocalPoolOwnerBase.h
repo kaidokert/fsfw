@@ -1,13 +1,14 @@
 #ifndef FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 #define FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 
+#include <testcfg/objects/systemObjectList.h>
+
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/LocalDataSet.h>
 #include <fsfw/objectmanager/SystemObject.h>
 #include <fsfw/datapoollocal/LocalPoolVariable.h>
 #include <fsfw/datapoollocal/LocalPoolVector.h>
 #include <fsfw/ipc/QueueFactory.h>
-#include <testcfg/objects/systemObjectList.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
 #include <fsfw/datapool/PoolReadGuard.h>
