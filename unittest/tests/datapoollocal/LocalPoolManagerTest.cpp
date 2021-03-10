@@ -276,6 +276,8 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
         REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
         CHECK(messagesSent == 1);
+
+        HousekeepingMessage::setUpdateNotificationSetCommand(&hkCmd, lpool::testSid);
     }
 
     /* we need to reset the subscription list because the pool owner
