@@ -883,10 +883,8 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 		sif::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
 				functionName, owner->getObjectId(), errorPrint);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 	}
 	else if(outputType == sif::OutputTypes::OUT_ERROR) {
-#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "LocalDataPoolManager::" << functionName
 				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
@@ -896,8 +894,8 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 		sif::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
 				functionName, owner->getObjectId(), errorPrint);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 	}
+#endif /* #if FSFW_VERBOSE_LEVEL >= 1 */
 }
 
 LocalDataPoolManager* LocalDataPoolManager::getPoolManagerHandle() {
