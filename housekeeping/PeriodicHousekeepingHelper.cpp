@@ -55,8 +55,7 @@ uint32_t PeriodicHousekeepingHelper::intervalSecondsToIntervalTicks(
         uint32_t ticks = std::ceil(static_cast<float>(intervalInMs) / divisor);
         if(not isDiagnostics) {
             /* Now we need to multiply the calculated ticks with the factor as as well
-            because the minimum tick count to generate a non-diagnostic is
-            the factor.
+            because the minimum tick count to generate a non-diagnostic is the factor itself.
 
             Example calculation for non-diagnostic with
             0.4 second interval and 0.2 second task interval.
