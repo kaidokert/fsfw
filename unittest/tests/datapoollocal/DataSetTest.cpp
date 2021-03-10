@@ -207,6 +207,51 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
 
     }
 
+    SECTION("MorePoolVariables") {
+        LocalDataSet set(poolOwner, 2, 10);
+
+        /* Register same variables again to get more than 8 registered variables */
+        for(uint8_t idx = 0; idx < 8; idx ++) {
+            REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == retval::CATCH_OK);
+        }
+        REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == retval::CATCH_OK);
+        REQUIRE(set.registerVariable(&localSet.localPoolUint16Vec) == retval::CATCH_OK);
+
+        set.setValidityBufferGeneration(true);
+        {
+            PoolReadGuard readHelper(&localSet);
+            localSet.localPoolVarUint8.value = 42;
+            localSet.localPoolVarUint8.setValid(true);
+            localSet.localPoolUint16Vec.setValid(false);
+        }
+
+        size_t maxSize = set.getSerializedSize();
+        CHECK(maxSize == 9 + sizeof(uint16_t) * 3 + 2);
+        size_t serSize = 0;
+        /* Already reserve additional space for validity buffer, will be needed later */
+        uint8_t buffer[maxSize + 1];
+        uint8_t* buffPtr = buffer;
+        CHECK(set.serialize(&buffPtr, &serSize, maxSize,
+                SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+        std::array<uint8_t, 2> validityBuffer;
+        std::memcpy(validityBuffer.data(), buffer + 9 + sizeof(uint16_t) * 3, 2);
+        /* The first 9 variables should be valid */
+        CHECK(validityBuffer[0] == 0xff);
+        CHECK(bitutil::bitGet(validityBuffer.data() + 1, 0) == true);
+        CHECK(bitutil::bitGet(validityBuffer.data() + 1, 1) == false);
+
+        /* Now we invert the validity */
+        validityBuffer[0] = 0;
+        validityBuffer[1] = 0b0100'0000;
+        std::memcpy(buffer + 9 + sizeof(uint16_t) * 3, validityBuffer.data(), 2);
+        const uint8_t* constBuffPtr = buffer;
+        size_t sizeToDeSerialize = serSize;
+        CHECK(set.deSerialize(&constBuffPtr, &sizeToDeSerialize, SerializeIF::Endianness::MACHINE)
+                == retval::CATCH_OK);
+        CHECK(localSet.localPoolVarUint8.isValid() == false);
+        CHECK(localSet.localPoolUint16Vec.isValid() == true);
+    }
+
     /* we need to reset the subscription list because the pool owner
     is a global object. */
     CHECK(poolOwner->reset() == retval::CATCH_OK);
