@@ -25,7 +25,8 @@ public:
 
     virtual~ SharedLocalDataSet();
 
-    ReturnValue_t lockDataset(dur_millis_t mutexTimeout) override;
+    ReturnValue_t lockDataset(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+            dur_millis_t mutexTimeout = 20) override;
     ReturnValue_t unlockDataset() override;
 private:
 

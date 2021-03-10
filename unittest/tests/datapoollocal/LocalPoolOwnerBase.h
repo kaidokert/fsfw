@@ -36,11 +36,11 @@ static const gp_id_t uint64Vec2Id = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE,
 class LocalPoolStaticTestDataSet: public StaticLocalDataSet<3> {
 public:
     LocalPoolStaticTestDataSet():
-        StaticLocalDataSet(lpool::testSid) {
+            StaticLocalDataSet(lpool::testSid) {
     }
 
     LocalPoolStaticTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
-        StaticLocalDataSet(owner, setId) {
+            StaticLocalDataSet(owner, setId) {
     }
 
     lp_var_t<uint8_t> localPoolVarUint8 = lp_var_t<uint8_t>(lpool::uint8VarGpid, this);

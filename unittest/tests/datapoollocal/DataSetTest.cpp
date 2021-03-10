@@ -4,9 +4,9 @@
 #include <catch2/catch_approx.hpp>
 
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
+#include <fsfw/datapoollocal/SharedLocalDataSet.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/datapool/PoolReadGuard.h>
-#include <fsfw/datapoollocal/SharedLocalDataSet.h>
 #include <fsfw/globalfunctions/bitutility.h>
 
 #include <unittest/core/CatchDefinitions.h>
@@ -254,8 +254,12 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
     }
 
     SECTION("SharedDataSet") {
-        object_id_t sharedSetId = objects::SHARED_SET_ID;
-        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, 2, 5);
+//        object_id_t sharedSetId = objects::SHARED_SET_ID;
+//        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, 2, 5);
+//        CHECK(sharedSet.initialize() == retval::CATCH_OK);
+//        CHECK(sharedSet.lockDataset() == retval::CATCH_OK);
+//
+//        CHECK(sharedSet.unlockDataset() == retval::CATCH_OK);
     }
 
     /* we need to reset the subscription list because the pool owner

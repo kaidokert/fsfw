@@ -8,10 +8,6 @@ SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, sid_t sid,
     datasetLock = MutexFactory::instance()->createMutex();
 }
 
-ReturnValue_t SharedLocalDataSet::lockDataset(dur_millis_t mutexTimeout) {
-    return datasetLock->lockMutex(MutexIF::TimeoutType::WAITING, mutexTimeout);
-}
-
 SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId,
         HasLocalDataPoolIF *owner, uint32_t setId,
         const size_t maxSize): SystemObject(objectId),
@@ -20,10 +16,22 @@ SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId,
     datasetLock = MutexFactory::instance()->createMutex();
 }
 
+ReturnValue_t SharedLocalDataSet::lockDataset(MutexIF::TimeoutType timeoutType,
+        dur_millis_t mutexTimeout) {
+    if(datasetLock != nullptr) {
+        return datasetLock->lockMutex(timeoutType, mutexTimeout);
+    }
+    return HasReturnvaluesIF::RETURN_FAILED;
+}
+
+
 SharedLocalDataSet::~SharedLocalDataSet() {
     MutexFactory::instance()->deleteMutex(datasetLock);
 }
 
 ReturnValue_t SharedLocalDataSet::unlockDataset() {
-    return datasetLock->unlockMutex();
+    if(datasetLock != nullptr) {
+        return datasetLock->unlockMutex();
+    }
+    return HasReturnvaluesIF::RETURN_FAILED;
 }

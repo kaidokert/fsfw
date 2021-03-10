@@ -8,8 +8,7 @@
 PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
         const size_t maxFillCount):
         registeredVariables(registeredVariablesArray),
-        maxFillCount(maxFillCount) {
-}
+        maxFillCount(maxFillCount) {}
 
 PoolDataSetBase::~PoolDataSetBase() {}
 
