@@ -13,13 +13,15 @@ class TmTcWinUdpBridge: public TmTcBridge {
     friend class TcWinUdpPollingTask;
 public:
     /* The ports chosen here should not be used by any other process. */
-    static constexpr uint16_t DEFAULT_UDP_SERVER_PORT = 7301;
-    static constexpr uint16_t DEFAULT_UDP_CLIENT_PORT = 7302;
+    static const std::string DEFAULT_UDP_SERVER_PORT;
+    static const std::string DEFAULT_UDP_CLIENT_PORT;
 
     TmTcWinUdpBridge(object_id_t objectId, object_id_t tcDestination,
             object_id_t tmStoreId, object_id_t tcStoreId,
-            uint16_t serverPort = 0xFFFF,uint16_t clientPort = 0xFFFF);
+            std::string udpServerPort = "", std::string udpClientPort = "");
     virtual~ TmTcWinUdpBridge();
+
+    ReturnValue_t initialize() override;
 
     void checkAndSetClientAddress(sockaddr_in clientAddress);
 
@@ -28,6 +30,8 @@ protected:
 
 private:
     SOCKET serverSocket = 0;
+    std::string udpServerPort;
+    std::string udpClientPort;
 
     const int serverSocketOptions = 0;
 

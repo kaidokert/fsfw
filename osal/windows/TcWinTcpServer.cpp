@@ -71,8 +71,7 @@ ReturnValue_t TcWinTcpServer::initialize() {
 //    tcpAddress.sin_family = AF_INET;
 //    tcpAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    retval = bind(listenerTcpSocket, reinterpret_cast<const sockaddr*>(&tcpAddress),
-            tcpAddrLen);
+    retval = bind(listenerTcpSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval == SOCKET_ERROR) {
         sif::warning << "TcWinTcpServer::TcWinTcpServer: Binding socket failed!" <<
                 std::endl;

@@ -33,7 +33,7 @@ TcWinUdpPollingTask::~TcWinUdpPollingTask() {}
 ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 	/* Poll for new UDP datagrams in permanent loop. */
 	while(true) {
-		//! Sender Address is cached here.
+		/* Sender Address is cached here. */
 		struct sockaddr_in senderAddress;
 		int senderAddressSize = sizeof(senderAddress);
 		int bytesReceived = recvfrom(serverUdpSocket,
