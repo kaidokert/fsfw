@@ -206,7 +206,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(1));
     }
 
-    SECTION("VariableUpdateTest") {
+    SECTION("VariableNotificationTest") {
         /* Acquire subscription interface */
         ProvidesDataPoolSubscriptionIF* subscriptionIF = poolOwner->getSubscriptionInterface();
         REQUIRE(subscriptionIF != nullptr);
