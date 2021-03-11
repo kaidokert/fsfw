@@ -81,7 +81,9 @@ public:
     virtual void handleChangedDataset(sid_t sid,
             store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
             bool* clearMessage = nullptr) {
-        return;
+        if(clearMessage != nullptr) {
+            *clearMessage = true;
+        }
     }
 
     /**
@@ -99,7 +101,9 @@ public:
     virtual void handleChangedPoolVariable(gp_id_t gpid,
             store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
             bool* clearMessage = nullptr) {
-        return;
+        if(clearMessage != nullptr) {
+            *clearMessage = true;
+        }
     }
 
     /**
