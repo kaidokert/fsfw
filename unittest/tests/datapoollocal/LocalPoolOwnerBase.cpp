@@ -106,7 +106,8 @@ bool LocalPoolOwnerBase::changedDataSetCallbackWasCalled(sid_t &sid, store_addre
     return condition;
 }
 
-void LocalPoolOwnerBase::handleChangedDataset(sid_t sid, store_address_t storeId) {
+void LocalPoolOwnerBase::handleChangedDataset(sid_t sid, store_address_t storeId,
+        bool* clearMessage) {
     this->changedDatasetSid = sid;
     this->storeIdForChangedSet = storeId;
 }
@@ -132,7 +133,8 @@ ReturnValue_t LocalPoolOwnerBase::initializeHkManagerAfterTaskCreation() {
 
 }
 
-void LocalPoolOwnerBase::handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId) {
+void LocalPoolOwnerBase::handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId,
+        bool* clearMessage) {
     this->changedPoolVariableGpid = globPoolId;
     this->storeIdForChangedVariable = storeId;
 }

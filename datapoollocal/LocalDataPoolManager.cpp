@@ -554,14 +554,15 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 	case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
 	case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT): {
 		LocalPoolDataSetBase* dataSet =HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
-		//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 		if(command == HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT
 				and LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
-			return WRONG_HK_PACKET_TYPE;
+			result = WRONG_HK_PACKET_TYPE;
+			break;
 		}
 		else if(command == HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT
 				and not LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
-			return WRONG_HK_PACKET_TYPE;
+            result = WRONG_HK_PACKET_TYPE;
+            break;
 		}
 		return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
 				dataSet, true);
@@ -580,14 +581,22 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 	case(HousekeepingMessage::UPDATE_SNAPSHOT_SET): {
 		store_address_t storeId;
 		HousekeepingMessage::getUpdateSnapshotSetCommand(message, &storeId);
-		owner->handleChangedDataset(sid, storeId);
+		bool clearMessage = true;
+		owner->handleChangedDataset(sid, storeId, &clearMessage);
+		if(clearMessage) {
+	        message->clear();
+		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	case(HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE): {
 		store_address_t storeId;
 		gp_id_t globPoolId = HousekeepingMessage::getUpdateSnapshotVariableCommand(message,
 		        &storeId);
-		owner->handleChangedPoolVariable(globPoolId, storeId);
+        bool clearMessage = true;
+		owner->handleChangedPoolVariable(globPoolId, storeId, &clearMessage);
+		if(clearMessage) {
+	        message->clear();
+		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 

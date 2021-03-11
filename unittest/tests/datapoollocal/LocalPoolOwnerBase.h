@@ -160,11 +160,12 @@ public:
     LocalPoolTestDataSet dataset;
 private:
 
-    void handleChangedDataset(sid_t sid, store_address_t storeId) override;
+    void handleChangedDataset(sid_t sid, store_address_t storeId, bool* clearMessage) override;
     sid_t changedDatasetSid;
     store_address_t storeIdForChangedSet;
 
-    void handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId) override;
+    void handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId,
+            bool* clearMessage) override;
     gp_id_t changedPoolVariableGpid;
     store_address_t storeIdForChangedVariable;
 
