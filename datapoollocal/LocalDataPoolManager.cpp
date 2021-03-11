@@ -38,7 +38,11 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQue
 	hkQueue = queueToUse;
 }
 
-LocalDataPoolManager::~LocalDataPoolManager() {}
+LocalDataPoolManager::~LocalDataPoolManager() {
+    if(mutex != nullptr) {
+        MutexFactory::instance()->deleteMutex(mutex);
+    }
+}
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
 	if(queueToUse == nullptr) {
@@ -375,7 +379,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 		LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, enableReporting);
 		LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
 		LocalPoolDataSetAttorney::initializePeriodicHelper(*dataSet, collectionInterval,
-				owner->getPeriodicOperationFrequency(), isDiagnostics);
+				owner->getPeriodicOperationFrequency());
 	}
 
 	hkReceivers.push_back(hkReceiver);
@@ -518,11 +522,19 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 	}
 
 	case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES): {
-		return generateSetStructurePacket(sid, true);
+		result = generateSetStructurePacket(sid, true);
+		if(result == HasReturnvaluesIF::RETURN_OK) {
+		    return result;
+		}
+		break;
 	}
 
 	case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES): {
-		return generateSetStructurePacket(sid, false);
+		result = generateSetStructurePacket(sid, false);
+        if(result == HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
+        break;
 	}
 	case(HousekeepingMessage::MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL):
 	case(HousekeepingMessage::MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL): {

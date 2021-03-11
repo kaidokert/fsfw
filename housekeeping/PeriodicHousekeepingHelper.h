@@ -10,16 +10,15 @@ class PeriodicHousekeepingHelper {
 public:
 	PeriodicHousekeepingHelper(LocalPoolDataSetBase* owner);
 
-	void initialize(float collectionInterval,
-			dur_millis_t minimumPeriodicInterval, bool isDiagnostics,
-			uint8_t nonDiagIntervalFactor);
+	void initialize(float collectionInterval, dur_millis_t minimumPeriodicInterval,
+	        uint8_t nonDiagIntervalFactor);
 
 	void changeCollectionInterval(float newInterval);
 	float getCollectionIntervalInSeconds() const;
 	bool checkOpNecessary();
+
 private:
 	LocalPoolDataSetBase* owner = nullptr;
-	bool isDiagnostics = true;
 	uint8_t nonDiagIntervalFactor = 0;
 
 	uint32_t intervalSecondsToIntervalTicks(float collectionIntervalSeconds);

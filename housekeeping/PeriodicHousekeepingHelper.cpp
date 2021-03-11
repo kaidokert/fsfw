@@ -6,11 +6,8 @@
 PeriodicHousekeepingHelper::PeriodicHousekeepingHelper(
         LocalPoolDataSetBase* owner): owner(owner) {}
 
-
 void PeriodicHousekeepingHelper::initialize(float collectionInterval,
-        dur_millis_t minimumPeriodicInterval, bool isDiagnostics,
-        uint8_t nonDiagIntervalFactor) {
-    this->isDiagnostics = isDiagnostics;
+        dur_millis_t minimumPeriodicInterval, uint8_t nonDiagIntervalFactor) {
     this->minimumPeriodicInterval = minimumPeriodicInterval;
     this->nonDiagIntervalFactor = nonDiagIntervalFactor;
     collectionIntervalTicks = intervalSecondsToIntervalTicks(collectionInterval);
@@ -34,6 +31,11 @@ bool PeriodicHousekeepingHelper::checkOpNecessary() {
 
 uint32_t PeriodicHousekeepingHelper::intervalSecondsToIntervalTicks(
         float collectionIntervalSeconds) {
+    if(owner == nullptr) {
+        return 0;
+    }
+    bool isDiagnostics = owner->isDiagnostics();
+
     /* Avoid division by zero */
     if(minimumPeriodicInterval == 0) {
         if(isDiagnostics) {
@@ -85,3 +87,4 @@ void PeriodicHousekeepingHelper::changeCollectionInterval(
         float newIntervalSeconds) {
     collectionIntervalTicks = intervalSecondsToIntervalTicks(newIntervalSeconds);
 }
+

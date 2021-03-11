@@ -6,6 +6,10 @@ LocalPoolOwnerBase::LocalPoolOwnerBase(object_id_t objectId):
     messageQueue = new MessageQueueMockBase();
 }
 
+LocalPoolOwnerBase::~LocalPoolOwnerBase() {
+    QueueFactory::instance()->deleteMessageQueue(messageQueue);
+}
+
 ReturnValue_t LocalPoolOwnerBase::initializeHkManager() {
     if(not initialized) {
         initialized = true;
@@ -132,3 +136,4 @@ void LocalPoolOwnerBase::handleChangedPoolVariable(gp_id_t globPoolId, store_add
     this->changedPoolVariableGpid = globPoolId;
     this->storeIdForChangedVariable = storeId;
 }
+

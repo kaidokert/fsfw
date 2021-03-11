@@ -54,13 +54,7 @@ private:
 class LocalPoolTestDataSet: public LocalDataSet {
 public:
     LocalPoolTestDataSet():
-        LocalDataSet(lpool::testSid, lpool::dataSetMaxVariables),
-        localPoolVarUint8(lpool::uint8VarGpid, this),
-        localPoolVarFloat(lpool::floatVarGpid, this),
-        localPoolUint16Vec(lpool::uint16Vec3Gpid, this)
-
-    {
-    }
+        LocalDataSet(lpool::testSid, lpool::dataSetMaxVariables) {}
 
     LocalPoolTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
         LocalDataSet(owner, setId, lpool::dataSetMaxVariables) {
@@ -70,6 +64,9 @@ public:
     lp_var_t<float> localPoolVarFloat = lp_var_t<float>(lpool::floatVarGpid, this);
     lp_vec_t<uint16_t, 3> localPoolUint16Vec = lp_vec_t<uint16_t, 3>(lpool::uint16Vec3Gpid, this);
 
+    void setDiagnostic(bool isDiagnostic) {
+        LocalPoolDataSetBase::setDiagnostic(isDiagnostic);
+    }
 private:
 };
 
@@ -78,9 +75,7 @@ class LocalPoolOwnerBase: public SystemObject, public HasLocalDataPoolIF {
 public:
     LocalPoolOwnerBase(object_id_t objectId = objects::TEST_LOCAL_POOL_OWNER_BASE);
 
-    ~LocalPoolOwnerBase() {
-        QueueFactory::instance()->deleteMessageQueue(messageQueue);
-    }
+    ~LocalPoolOwnerBase();
 
     object_id_t getObjectId() const override {
         return SystemObject::getObjectId();

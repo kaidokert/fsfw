@@ -29,6 +29,16 @@ public:
 		return tempMessageSent;
 	}
 
+	/**
+	 * Pop a message, clearing it in the process.
+	 * @return
+	 */
+	ReturnValue_t popMessage() {
+	    CommandMessage message;
+	    message.clear();
+	    return receiveMessage(&message);
+	}
+
 	virtual ReturnValue_t reply( MessageQueueMessageIF* message ) {
 		return sendMessage(myQueueId, message);
 	};
@@ -36,6 +46,7 @@ public:
 			MessageQueueId_t *receivedFrom) {
 		return receiveMessage(message);
 	}
+
 	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) {
 		if(messagesSentQueue.empty()) {
 			return MessageQueueIF::EMPTY;

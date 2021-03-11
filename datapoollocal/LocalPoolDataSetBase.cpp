@@ -264,11 +264,9 @@ bool LocalPoolDataSetBase::getReportingEnabled() const {
     return reportingEnabled;
 }
 
-void LocalPoolDataSetBase::initializePeriodicHelper(
-        float collectionInterval, dur_millis_t minimumPeriodicInterval,
-        bool isDiagnostics, uint8_t nonDiagIntervalFactor) {
-    periodicHelper->initialize(collectionInterval, minimumPeriodicInterval,
-            isDiagnostics, nonDiagIntervalFactor);
+void LocalPoolDataSetBase::initializePeriodicHelper(float collectionInterval,
+        dur_millis_t minimumPeriodicInterval, uint8_t nonDiagIntervalFactor) {
+    periodicHelper->initialize(collectionInterval, minimumPeriodicInterval, nonDiagIntervalFactor);
 }
 
 void LocalPoolDataSetBase::setChanged(bool changed) {

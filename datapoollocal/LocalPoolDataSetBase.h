@@ -191,9 +191,8 @@ protected:
     bool reportingEnabled = false;
     void setReportingEnabled(bool enabled);
 
-    void initializePeriodicHelper(float collectionInterval,
-            dur_millis_t minimumPeriodicInterval,
-            bool isDiagnostics, uint8_t nonDiagIntervalFactor = 5);
+    void initializePeriodicHelper(float collectionInterval, dur_millis_t minimumPeriodicInterval,
+            uint8_t nonDiagIntervalFactor = 5);
 
     /**
      * If the valid state of a dataset is always relevant to the whole
