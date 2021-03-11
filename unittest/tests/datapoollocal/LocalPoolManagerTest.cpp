@@ -20,7 +20,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
     REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
     REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation()
             == retval::CATCH_OK);
-    //REQUIRE(poolOwner->dataset.assignPointers() == retval::CATCH_OK);
+
     MessageQueueMockBase* mqMock = poolOwner->getMockQueueHandle();
     REQUIRE(mqMock != nullptr);
     CommandMessage messageSent;
@@ -154,7 +154,21 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         auto poolVar = dynamic_cast<lp_var_t<uint8_t>*>(
                 poolOwner->getPoolObjectHandle(lpool::uint8VarId));
         REQUIRE(poolVar != nullptr);
+
+        {
+            PoolReadGuard rg(poolVar);
+            CHECK(rg.getReadResult() == retval::CATCH_OK);
+            poolVar->value = 25;
+        }
+
         poolVar->setChanged(true);
+
+        /* Store current time, we are going to check the (approximate) time equality later */
+        CCSDSTime::CDS_short timeCdsNow;
+        timeval now;
+        Clock::getClock_timeval(&now);
+        CCSDSTime::convertToCcsds(&timeCdsNow, &now);
+
         REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 
         /* Check update snapshot was sent. */
@@ -166,6 +180,30 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
         CHECK(messageSent.getCommand() == static_cast<int>(
                 HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE));
+        /* Now we deserialize the snapshot into a new dataset instance */
+        CCSDSTime::CDS_short cdsShort;
+        lp_var_t<uint8_t> varCopy = lp_var_t<uint8_t>(lpool::uint8VarGpid);
+        HousekeepingSnapshot snapshot(&cdsShort, &varCopy);
+        store_address_t storeId;
+        HousekeepingMessage::getUpdateSnapshotVariableCommand(&messageSent, &storeId);
+        ConstAccessorPair accessorPair = tglob::getIpcStoreHandle()->getData(storeId);
+        REQUIRE(accessorPair.first == retval::CATCH_OK);
+        const uint8_t* readOnlyPtr = accessorPair.second.data();
+        size_t sizeToDeserialize = accessorPair.second.size();
+        CHECK(varCopy.value == 0);
+        /* Fill the dataset and timestamp */
+        REQUIRE(snapshot.deSerialize(&readOnlyPtr, &sizeToDeserialize,
+                SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+        CHECK(varCopy.value == 25);
+
+        /* Now we check that both times are equal */
+        CHECK(cdsShort.pField == timeCdsNow.pField);
+        CHECK(cdsShort.dayLSB == Catch::Approx(timeCdsNow.dayLSB).margin(1));
+        CHECK(cdsShort.dayMSB == Catch::Approx(timeCdsNow.dayMSB).margin(1));
+        CHECK(cdsShort.msDay_h == Catch::Approx(timeCdsNow.msDay_h).margin(1));
+        CHECK(cdsShort.msDay_hh == Catch::Approx(timeCdsNow.msDay_hh).margin(1));
+        CHECK(cdsShort.msDay_l == Catch::Approx(timeCdsNow.msDay_l).margin(1));
+        CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(1));
     }
 
     SECTION("VariableUpdateTest") {
