@@ -592,7 +592,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 		store_address_t storeId;
 		gp_id_t globPoolId = HousekeepingMessage::getUpdateSnapshotVariableCommand(message,
 		        &storeId);
-        bool clearMessage = true;
+		bool clearMessage = true;
 		owner->handleChangedPoolVariable(globPoolId, storeId, &clearMessage);
 		if(clearMessage) {
 	        message->clear();
