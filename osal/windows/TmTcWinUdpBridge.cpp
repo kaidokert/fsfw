@@ -29,6 +29,11 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
 }
 
 ReturnValue_t TmTcWinUdpBridge::initialize() {
+    ReturnValue_t result = TmTcBridge::initialize();
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+
     /* Initiates Winsock DLL. */
     WSAData wsaData;
     WORD wVersionRequested = MAKEWORD(2, 2);

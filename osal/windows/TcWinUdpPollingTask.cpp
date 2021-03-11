@@ -122,8 +122,8 @@ ReturnValue_t TcWinUdpPollingTask::initialize() {
 }
 
 ReturnValue_t TcWinUdpPollingTask::initializeAfterTaskCreation() {
-	// Initialize the destination after task creation. This ensures
-	// that the destination has already been set in the TMTC bridge.
+	/* Initialize the destination after task creation. This ensures
+	that the destination has already been set in the TMTC bridge. */
 	targetTcDestination = tmtcBridge->getRequestQueue();
 	return HasReturnvaluesIF::RETURN_OK;
 }
