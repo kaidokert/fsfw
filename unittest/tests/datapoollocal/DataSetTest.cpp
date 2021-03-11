@@ -255,11 +255,27 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
 
     SECTION("SharedDataSet") {
         object_id_t sharedSetId = objects::SHARED_SET_ID;
-        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, 2, 5);
+        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, lpool::testSetId, 5);
+        localSet.localPoolVarUint8.setReadWriteMode(pool_rwm_t::VAR_WRITE);
+        localSet.localPoolUint16Vec.setReadWriteMode(pool_rwm_t::VAR_WRITE);
+        CHECK(sharedSet.registerVariable(&localSet.localPoolVarUint8) == retval::CATCH_OK);
+        CHECK(sharedSet.registerVariable(&localSet.localPoolUint16Vec) == retval::CATCH_OK);
         CHECK(sharedSet.initialize() == retval::CATCH_OK);
         CHECK(sharedSet.lockDataset() == retval::CATCH_OK);
-
         CHECK(sharedSet.unlockDataset() == retval::CATCH_OK);
+
+        {
+            //PoolReadGuard rg(&sharedSet);
+            //CHECK(rg.getReadResult() == retval::CATCH_OK);
+            localSet.localPoolVarUint8.value = 5;
+            localSet.localPoolUint16Vec.value[0] = 1;
+            localSet.localPoolUint16Vec.value[1] = 2;
+            localSet.localPoolUint16Vec.value[2] = 3;
+            CHECK(sharedSet.commit() == retval::CATCH_OK);
+        }
+
+        sharedSet.setReadCommitProtectionBehaviour(true);
+
     }
 
     /* we need to reset the subscription list because the pool owner

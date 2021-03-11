@@ -3,7 +3,7 @@
 
 SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, sid_t sid,
         const size_t maxSize): SystemObject(objectId),
-        LocalPoolDataSetBase(sid, nullptr, maxSize) {
+        LocalPoolDataSetBase(sid, nullptr, maxSize), poolVarVector(maxSize) {
     this->setContainer(poolVarVector.data());
     datasetLock = MutexFactory::instance()->createMutex();
 }
@@ -11,7 +11,7 @@ SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId, sid_t sid,
 SharedLocalDataSet::SharedLocalDataSet(object_id_t objectId,
         HasLocalDataPoolIF *owner, uint32_t setId,
         const size_t maxSize): SystemObject(objectId),
-        LocalPoolDataSetBase(owner, setId, nullptr, maxSize) {
+        LocalPoolDataSetBase(owner, setId, nullptr, maxSize), poolVarVector(maxSize)  {
     this->setContainer(poolVarVector.data());
     datasetLock = MutexFactory::instance()->createMutex();
 }

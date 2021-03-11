@@ -14,6 +14,10 @@ PoolDataSetBase::~PoolDataSetBase() {}
 
 
 ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF *variable) {
+    if(registeredVariables == nullptr) {
+        /* Underlying container invalid */
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
     if (state != States::STATE_SET_UNINITIALISED) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "DataSet::registerVariable: Call made in wrong position." << std::endl;
