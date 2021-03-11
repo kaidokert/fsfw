@@ -3,8 +3,7 @@
 
 #include "PoolDataSetIF.h"
 
-class SharedDataSetIF:
-        public PoolDataSetIF {
+class SharedDataSetIF {
 public:
     virtual ~SharedDataSetIF() {};
 

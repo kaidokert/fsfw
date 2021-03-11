@@ -254,12 +254,12 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
     }
 
     SECTION("SharedDataSet") {
-//        object_id_t sharedSetId = objects::SHARED_SET_ID;
-//        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, 2, 5);
-//        CHECK(sharedSet.initialize() == retval::CATCH_OK);
-//        CHECK(sharedSet.lockDataset() == retval::CATCH_OK);
-//
-//        CHECK(sharedSet.unlockDataset() == retval::CATCH_OK);
+        object_id_t sharedSetId = objects::SHARED_SET_ID;
+        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, 2, 5);
+        CHECK(sharedSet.initialize() == retval::CATCH_OK);
+        CHECK(sharedSet.lockDataset() == retval::CATCH_OK);
+
+        CHECK(sharedSet.unlockDataset() == retval::CATCH_OK);
     }
 
     /* we need to reset the subscription list because the pool owner
