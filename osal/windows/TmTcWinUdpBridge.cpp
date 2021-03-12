@@ -11,21 +11,14 @@
 const std::string TmTcWinUdpBridge::DEFAULT_UDP_SERVER_PORT =  "7301";
 const std::string TmTcWinUdpBridge::DEFAULT_UDP_CLIENT_PORT =  "7302";
 
-TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
-        object_id_t tcDestination, object_id_t tmStoreId, object_id_t tcStoreId,
-        std::string udpServerPort, std::string udpClientPort):
+TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId, object_id_t tcDestination,
+        object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort):
         TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
     if(udpServerPort == "") {
-         this->udpServerPort = DEFAULT_UDP_SERVER_PORT;
+        this->udpServerPort = DEFAULT_UDP_SERVER_PORT;
     }
     else {
         this->udpServerPort = udpServerPort;
-    }
-    if(udpClientPort == "") {
-        this->udpClientPort = DEFAULT_UDP_CLIENT_PORT;
-    }
-    else {
-        this->udpClientPort = udpClientPort;
     }
 
     mutex = MutexFactory::instance()->createMutex();

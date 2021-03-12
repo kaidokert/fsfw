@@ -13,8 +13,7 @@ public:
     static const std::string DEFAULT_UDP_CLIENT_PORT;
 
     TmTcWinUdpBridge(object_id_t objectId, object_id_t tcDestination,
-            object_id_t tmStoreId, object_id_t tcStoreId,
-            std::string udpServerPort = "", std::string udpClientPort = "");
+            object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort = "");
     virtual~ TmTcWinUdpBridge();
 
     /**
@@ -32,15 +31,9 @@ protected:
 private:
     SOCKET serverSocket = 0;
     std::string udpServerPort;
-    std::string udpClientPort;
-
-    const int serverSocketOptions = 0;
 
     struct sockaddr_in clientAddress;
     int clientAddressLen = 0;
-
-    struct sockaddr_in serverAddress;
-    int serverAddressLen = 0;
 
     //! Access to the client address is mutex protected as it is set by another task.
     MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
