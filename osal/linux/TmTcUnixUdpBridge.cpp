@@ -146,7 +146,8 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
-	MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
+    /* The target address can be set by different threads so this lock ensures thread-safety */
+    MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
     char ipAddress [15];
