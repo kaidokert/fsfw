@@ -8,7 +8,7 @@
 #include <vector>
 
 //! Debugging preprocessor define.
-#define FSFW_TCP_SERVER_WIRETAPPING_ENABLED    0
+#define FSFW_TCP_RCV_WIRETAPPING_ENABLED    0
 
 /**
  * @brief   Windows TCP server used to receive telecommands on a Windows Host
@@ -41,16 +41,7 @@ private:
     std::vector<uint8_t> receptionBuffer;
     int tcpSockOpt = 0;
 
-    enum class ErrorSources {
-        GETADDRINFO_CALL,
-        SOCKET_CALL,
-        SETSOCKOPT_CALL,
-        BIND_CALL,
-        LISTEN_CALL,
-        ACCEPT_CALL
-    };
 
-    void handleError(ErrorSources errorSrc);
 };
 
 #endif /* FSFW_OSAL_WINDOWS_TCWINTCPSERVER_H_ */

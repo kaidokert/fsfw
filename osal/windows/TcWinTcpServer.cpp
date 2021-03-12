@@ -1,4 +1,5 @@
 #include "TcWinTcpServer.h"
+#include "tcpipHelpers.h"
 #include "../../serviceinterface/ServiceInterface.h"
 
 #include <winsock2.h>
@@ -16,6 +17,7 @@ TcWinTcpServer::TcWinTcpServer(object_id_t objectId, object_id_t tmtcUnixUdpBrid
 }
 
 ReturnValue_t TcWinTcpServer::initialize() {
+    using namespace tcpip;
     int retval = 0;
     struct addrinfo *addrResult = nullptr;
     struct addrinfo hints;
@@ -44,7 +46,7 @@ ReturnValue_t TcWinTcpServer::initialize() {
         sif::warning << "TcWinTcpServer::TcWinTcpServer: Retrieving address info failed!" <<
                 std::endl;
 #endif
-        handleError(ErrorSources::GETADDRINFO_CALL);
+        handleError(Protocol::TCP, ErrorSources::GETADDRINFO_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
@@ -56,27 +58,16 @@ ReturnValue_t TcWinTcpServer::initialize() {
         sif::warning << "TcWinTcpServer::TcWinTcpServer: Socket creation failed!" << std::endl;
 #endif
         freeaddrinfo(addrResult);
-        handleError(ErrorSources::SOCKET_CALL);
+        handleError(Protocol::TCP, ErrorSources::SOCKET_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
     }
-
-//    retval = setsockopt(listenerTcpSocket, SOL_SOCKET, SO_REUSEADDR | SO_BROADCAST,
-//            reinterpret_cast<const char*>(&tcpSockOpt), sizeof(tcpSockOpt));
-//    if(retval != 0) {
-//        sif::warning << "TcWinTcpServer::TcWinTcpServer: Setting socket options failed!" <<
-//                std::endl;
-//        handleError(ErrorSources::SETSOCKOPT_CALL);
-//        return HasReturnvaluesIF::RETURN_FAILED;
-//    }
-//    tcpAddress.sin_family = AF_INET;
-//    tcpAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
     retval = bind(listenerTcpSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval == SOCKET_ERROR) {
         sif::warning << "TcWinTcpServer::TcWinTcpServer: Binding socket failed!" <<
                 std::endl;
         freeaddrinfo(addrResult);
-        handleError(ErrorSources::BIND_CALL);
+        handleError(Protocol::TCP, ErrorSources::BIND_CALL);
     }
 
     freeaddrinfo(addrResult);
@@ -90,16 +81,18 @@ TcWinTcpServer::~TcWinTcpServer() {
 }
 
 ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
+    using namespace tcpip;
     /* If a connection is accepted, the corresponding socket will be assigned to the new socket */
     SOCKET clientSocket;
     sockaddr_in clientSockAddr;
     int connectorSockAddrLen = 0;
     int retval = 0;
+
     /* Listen for connection requests permanently for lifetime of program */
     while(true) {
         retval = listen(listenerTcpSocket, currentBacklog);
         if(retval == SOCKET_ERROR) {
-            handleError(ErrorSources::LISTEN_CALL);
+            handleError(Protocol::TCP, ErrorSources::LISTEN_CALL, 500);
             continue;
         }
 
@@ -107,17 +100,18 @@ ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
                 &connectorSockAddrLen);
 
         if(clientSocket == INVALID_SOCKET) {
-            handleError(ErrorSources::ACCEPT_CALL);
+            handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
             continue;
         };
 
         retval = recv(clientSocket, reinterpret_cast<char*>(receptionBuffer.data()),
                 receptionBuffer.size(), 0);
         if(retval > 0) {
-#if FSFW_TCP_SERVER_WIRETAPPING_ENABLED == 1
+#if FSFW_TCP_RCV_WIRETAPPING_ENABLED == 1
             sif::info << "TcWinTcpServer::performOperation: Received " << retval << " bytes."
                     std::endl;
 #endif
+            handleError(Protocol::TCP, ErrorSources::RECV_CALL, 500);
         }
         else if(retval == 0) {
 
@@ -132,45 +126,4 @@ ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TcWinTcpServer::handleError(ErrorSources errorSrc) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    int errCode = WSAGetLastError();
-    std::string errorSrcString;
-    if(errorSrc == ErrorSources::SETSOCKOPT_CALL) {
-        errorSrcString = "setsockopt call";
-    }
-    else if(errorSrc == ErrorSources::SOCKET_CALL) {
-        errorSrcString = "socket call";
-    }
-    else if(errorSrc == ErrorSources::LISTEN_CALL) {
-        errorSrcString = "listen call";
-    }
-    else if(errorSrc == ErrorSources::ACCEPT_CALL) {
-        errorSrcString = "accept call";
-    }
-    else if(errorSrc == ErrorSources::GETADDRINFO_CALL) {
-        errorSrcString = "getaddrinfo call";
-    }
 
-    switch(errCode) {
-    case(WSANOTINITIALISED): {
-        sif::warning << "TmTcWinUdpBridge::handleError: " << errorSrcString << " | "
-                "WSANOTINITIALISED: WSAStartup call necessary" << std::endl;
-        break;
-    }
-    case(WSAEINVAL): {
-        sif::warning << "TmTcWinUdpBridge::handleError: " << errorSrcString << " | "
-                "WSAEINVAL: Invalid parameters" << std::endl;
-        break;
-    }
-    default: {
-        /*
-        https://docs.microsoft.com/en-us/windows/win32/winsock/
-        windows-sockets-error-codes-2
-         */
-        sif::warning << "TmTcWinUdpBridge::handleSocketError: Error code: " << errCode << std::endl;
-        break;
-    }
-    }
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-}

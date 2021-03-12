@@ -41,23 +41,9 @@ private:
     struct sockaddr_in serverAddress;
     int serverAddressLen = 0;
 
-    //! Access to the client address is mutex protected as it is set
-    //! by another task.
+    //! Access to the client address is mutex protected as it is set by another task.
     MutexIF* mutex;
-
-    enum class ErrorSources {
-        SOCKET_CALL,
-        SETSOCKOPT_CALL
-    };
-
-    void handleSocketError();
-    void handleBindError();
-    void handleSendError();
-
-    ReturnValue_t oldSetup();
 };
-
-
 
 #endif /* FSFW_OSAL_HOST_TMTCWINUDPBRIDGE_H_ */
 
