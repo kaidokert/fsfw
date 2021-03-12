@@ -112,9 +112,9 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 
 	if(ipAddrAnySet){
 		clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
-		// clientAddress.sin_addr.s_addr = inet_addr("127.73.73.1");
 		clientAddressLen = sizeof(serverAddress);
 	}
+
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
     char ipAddress [15];
 	sif::debug << "IP Address Sender: "<<
