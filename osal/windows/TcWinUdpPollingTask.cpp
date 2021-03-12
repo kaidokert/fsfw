@@ -49,7 +49,7 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 			handleReadError();
 			continue;
 		}
-#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_WIRETAPPING_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
 		sif::debug << "TcWinUdpPollingTask::performOperation: " << bytesReceived <<
 		        " bytes received" << std::endl;
 #endif
@@ -58,7 +58,6 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 		if(result != HasReturnvaluesIF::RETURN_FAILED) {
 
 		}
-		tmtcBridge->registerCommConnect();
 		tmtcBridge->checkAndSetClientAddress(senderAddress);
 	}
 	return HasReturnvaluesIF::RETURN_OK;
@@ -69,8 +68,8 @@ ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	store_address_t storeId;
 	ReturnValue_t result = tcStore->addData(&storeId,
 			receptionBuffer.data(), bytesRead);
-#if FSFW_UDP_WIRETAPPING_ENABLED == 1
-	arrayprinter::print(receptionBuffer.data(), bytesRead);#
+#if FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
+	arrayprinter::print(receptionBuffer.data(), bytesRead);
 #endif
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -113,7 +112,7 @@ ReturnValue_t TcWinUdpPollingTask::initialize() {
 	}
 
 	serverUdpSocket = tmtcBridge->serverSocket;
-#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_WIRETAPPING_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
 	sif::info << "TcWinUdpPollingTask::initialize: Server UDP socket " << serverUdpSocket <<
 	        std::endl;
 #endif

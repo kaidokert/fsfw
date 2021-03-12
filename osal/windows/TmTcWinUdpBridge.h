@@ -23,7 +23,7 @@ public:
 
     ReturnValue_t initialize() override;
 
-    void checkAndSetClientAddress(sockaddr_in clientAddress);
+    void checkAndSetClientAddress(sockaddr_in& clientAddress);
 
 protected:
     virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
@@ -53,6 +53,8 @@ private:
     void handleSocketError();
     void handleBindError();
     void handleSendError();
+
+    ReturnValue_t oldSetup();
 };
 
 
