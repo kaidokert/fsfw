@@ -93,7 +93,7 @@ ReturnValue_t TmTcWinUdpBridge::initialize() {
     if(retval != 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not bind "
-                "local port " << udpServerPort << " to server socket!" << std::endl;
+                "local port (" << udpServerPort << ") to server socket!" << std::endl;
 #endif
         freeaddrinfo(addrResult);
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::BIND_CALL);

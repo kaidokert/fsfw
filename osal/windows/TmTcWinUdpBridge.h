@@ -4,7 +4,6 @@
 #include "../../tmtcservices/TmTcBridge.h"
 
 #include <winsock2.h>
-#include <windows.h>
 
 //! Debugging preprocessor define.
 #define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
