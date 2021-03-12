@@ -108,7 +108,8 @@ TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 	int flags = 0;
 
-	MutexGuard lock(mutex, MutexIF::TimeoutType::WAITING, 10);
+	/* The target address can be set by different threads so this lock ensures thread-safety */
+	MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
 	if(ipAddrAnySet){
 		clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
@@ -145,7 +146,7 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
-	MutexGuard lock(mutex, MutexIF::TimeoutType::WAITING, 10);
+	MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
     char ipAddress [15];
@@ -161,6 +162,12 @@ void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
 	    clientAddress = newAddress;
 		clientAddressLen = sizeof(clientAddress);
 	}
+}
+
+void TmTcUnixUdpBridge::setMutexProperties(MutexIF::TimeoutType timeoutType,
+        dur_millis_t timeoutMs) {
+    this->timeoutType = timeoutType;
+    this->mutexTimeoutMs = timeoutMs;
 }
 
 void TmTcUnixUdpBridge::setClientAddressToAny(bool ipAddrAnySet){

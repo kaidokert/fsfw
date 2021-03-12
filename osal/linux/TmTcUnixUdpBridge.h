@@ -20,6 +20,11 @@ public:
 			std::string serverPort = "", std::string clientPort = "");
 	virtual~ TmTcUnixUdpBridge();
 
+	/**
+	 * Set properties of internal mutex.
+	 */
+	void setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs);
+
 	ReturnValue_t initialize() override;
 
 	void checkAndSetClientAddress(sockaddr_in& clientAddress);
@@ -43,8 +48,9 @@ private:
 
 	bool ipAddrAnySet = false;
 
-	//! Access to the client address is mutex protected as it is set
-	//! by another task.
+	//! Access to the client address is mutex protected as it is set by another task.
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+	dur_millis_t mutexTimeoutMs = 20;
 	MutexIF* mutex;
 };
 

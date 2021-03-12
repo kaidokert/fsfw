@@ -17,6 +17,11 @@ public:
             std::string udpServerPort = "", std::string udpClientPort = "");
     virtual~ TmTcWinUdpBridge();
 
+    /**
+     * Set properties of internal mutex.
+     */
+    void setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs);
+
     ReturnValue_t initialize() override;
 
     void checkAndSetClientAddress(sockaddr_in& clientAddress);
@@ -38,6 +43,8 @@ private:
     int serverAddressLen = 0;
 
     //! Access to the client address is mutex protected as it is set by another task.
+    MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+    dur_millis_t mutexTimeoutMs = 20;
     MutexIF* mutex;
 };
 
