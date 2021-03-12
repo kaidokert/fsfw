@@ -8,7 +8,7 @@
 //! Debugging preprocessor define.
 #define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
 
-const std::string TmTcWinUdpBridge::DEFAULT_UDP_SERVER_PORT =  "7301";
+const std::string TmTcWinUdpBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_UDP_SERVER_PORT;
 
 TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId, object_id_t tcDestination,
         object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort):

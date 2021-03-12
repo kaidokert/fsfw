@@ -125,7 +125,6 @@ ReturnValue_t TcUnixUdpPollingTask::initialize() {
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
-
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

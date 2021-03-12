@@ -12,24 +12,16 @@
 //! Debugging preprocessor define.
 #define FSFW_UDP_SEND_WIRETAPPING_ENABLED   0
 
-const std::string TmTcUnixUdpBridge::DEFAULT_UDP_SERVER_PORT =  "7301";
-const std::string TmTcUnixUdpBridge::DEFAULT_UDP_CLIENT_PORT =  "7302";
+const std::string TmTcUnixUdpBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_UDP_SERVER_PORT;
 
-TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
-		object_id_t tcDestination, object_id_t tmStoreId, object_id_t tcStoreId,
-		std::string udpServerPort, std::string udpClientPort):
+TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId, object_id_t tcDestination,
+        object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort):
 		TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
     if(udpServerPort == "") {
-         this->udpServerPort = DEFAULT_UDP_SERVER_PORT;
+        this->udpServerPort = DEFAULT_UDP_SERVER_PORT;
     }
     else {
         this->udpServerPort = udpServerPort;
-    }
-    if(udpClientPort == "") {
-        this->udpClientPort = DEFAULT_UDP_CLIENT_PORT;
-    }
-    else {
-        this->udpClientPort = udpClientPort;
     }
 
     mutex = MutexFactory::instance()->createMutex();
@@ -106,43 +98,43 @@ TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
 }
 
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
-	int flags = 0;
+    int flags = 0;
 
-	/* The target address can be set by different threads so this lock ensures thread-safety */
-	MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
+    /* The target address can be set by different threads so this lock ensures thread-safety */
+    MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
-	if(ipAddrAnySet){
-		clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
-		clientAddressLen = sizeof(serverAddress);
-	}
+    if(ipAddrAnySet){
+        clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
+        clientAddressLen = sizeof(clientAddress);
+    }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
     char ipAddress [15];
-	sif::debug << "IP Address Sender: "<<
-	        inet_ntop(AF_INET,&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+    sif::debug << "IP Address Sender: "<<
+            inet_ntop(AF_INET,&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 #endif
 
-	ssize_t bytesSent = sendto(
-	        serverSocket,
-	        data,
-	        dataLen,
-	        flags,
-			reinterpret_cast<sockaddr*>(&clientAddress),
-			clientAddressLen
-	);
-	if(bytesSent < 0) {
+    ssize_t bytesSent = sendto(
+            serverSocket,
+            data,
+            dataLen,
+            flags,
+            reinterpret_cast<sockaddr*>(&clientAddress),
+            clientAddressLen
+    );
+    if(bytesSent < 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "TmTcUnixUdpBridge::sendTm: Send operation failed." << std::endl;
 #endif
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SENDTO_CALL);
-	}
+    }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
-	sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
-	        " sent." << std::endl;
+    sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
+            " sent." << std::endl;
 #endif
 
-	return HasReturnvaluesIF::RETURN_OK;
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
@@ -151,18 +143,18 @@ void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
     char ipAddress [15];
-	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-			&newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
-	sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
-			&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+    sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+            &newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+    sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
+            &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 #endif
-	registerCommConnect();
+    registerCommConnect();
 
-	/* Set new IP address if it has changed. */
-	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
-	    clientAddress = newAddress;
-		clientAddressLen = sizeof(clientAddress);
-	}
+    /* Set new IP address if it has changed. */
+    if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
+        clientAddress = newAddress;
+        clientAddressLen = sizeof(clientAddress);
+    }
 }
 
 void TmTcUnixUdpBridge::setMutexProperties(MutexIF::TimeoutType timeoutType,
@@ -172,6 +164,6 @@ void TmTcUnixUdpBridge::setMutexProperties(MutexIF::TimeoutType timeoutType,
 }
 
 void TmTcUnixUdpBridge::setClientAddressToAny(bool ipAddrAnySet){
-	this->ipAddrAnySet = ipAddrAnySet;
+    this->ipAddrAnySet = ipAddrAnySet;
 }
 
