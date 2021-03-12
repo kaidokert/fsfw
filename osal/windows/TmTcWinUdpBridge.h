@@ -10,7 +10,6 @@ class TmTcWinUdpBridge: public TmTcBridge {
 public:
     /* The ports chosen here should not be used by any other process. */
     static const std::string DEFAULT_UDP_SERVER_PORT;
-    static const std::string DEFAULT_UDP_CLIENT_PORT;
 
     TmTcWinUdpBridge(object_id_t objectId, object_id_t tcDestination,
             object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort = "");
