@@ -125,13 +125,17 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
             &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 #endif
 
-    int bytesSent = sendto(serverSocket,
-            reinterpret_cast<const char*>(data), dataLen, flags,
-            reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
+    int bytesSent = sendto(
+            serverSocket,
+            reinterpret_cast<const char*>(data),
+            dataLen,
+            flags,
+            reinterpret_cast<sockaddr*>(&clientAddress),
+            clientAddressLen
+    );
     if(bytesSent == SOCKET_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcWinUdpBridge::sendTm: Send operation failed."
-                << std::endl;
+        sif::warning << "TmTcWinUdpBridge::sendTm: Send operation failed." << std::endl;
 #endif
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SENDTO_CALL);
     }

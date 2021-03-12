@@ -46,10 +46,6 @@ private:
 	//! Access to the client address is mutex protected as it is set
 	//! by another task.
 	MutexIF* mutex;
-
-	void handleSocketError();
-	void handleBindError();
-	void handleSendError();
 };
 
 #endif /* FRAMEWORK_OSAL_LINUX_TMTCUNIXUDPBRIDGE_H_ */

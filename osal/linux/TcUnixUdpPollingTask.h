@@ -48,6 +48,7 @@ private:
 	object_id_t tmtcBridgeId = objects::NO_OBJECT;
 	TmTcUnixUdpBridge* tmtcBridge = nullptr;
 	MessageQueueId_t targetTcDestination = MessageQueueIF::NO_QUEUE;
+
 	//! Reception flags: https://linux.die.net/man/2/recvfrom.
 	int receptionFlags = 0;
 
@@ -61,7 +62,6 @@ private:
 	timeval receptionTimeout;
 
 	ReturnValue_t handleSuccessfullTcRead(size_t bytesRead);
-	void handleReadError();
 };
 
 #endif /* FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_ */

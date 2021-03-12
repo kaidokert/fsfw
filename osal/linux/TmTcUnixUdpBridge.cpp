@@ -3,7 +3,6 @@
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexGuard.h"
 
-#include <errno.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <netdb.h>
@@ -11,7 +10,7 @@
 #include <cstring>
 
 //! Debugging preprocessor define.
-#define FSFW_UDP_RCV_WIRETAPPING_ENABLED    1
+#define FSFW_UDP_SEND_WIRETAPPING_ENABLED   0
 
 const std::string TmTcUnixUdpBridge::DEFAULT_UDP_SERVER_PORT =  "7301";
 const std::string TmTcUnixUdpBridge::DEFAULT_UDP_CLIENT_PORT =  "7302";
@@ -52,7 +51,7 @@ ReturnValue_t TmTcUnixUdpBridge::initialize() {
     struct addrinfo *addrResult = nullptr;
     struct addrinfo hints;
 
-    std::memset(hints, 0, sizeof(hints));
+    std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
@@ -82,36 +81,18 @@ ReturnValue_t TmTcUnixUdpBridge::initialize() {
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         freeaddrinfo(addrResult);
         handleError(Protocol::UDP, ErrorSources::SOCKET_CALL);
-        handleSocketError();
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
-    serverAddress.sin_family = AF_INET;
-
-    // Accept packets from any interface.
-    //serverAddress.sin_addr.s_addr = inet_addr("127.73.73.0");
-    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    serverAddress.sin_port = htons(setServerPort);
-    serverAddressLen = sizeof(serverAddress);
-    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &serverSocketOptions,
-            sizeof(serverSocketOptions));
-
-    clientAddress.sin_family = AF_INET;
-    clientAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    clientAddress.sin_port = htons(setClientPort);
-    clientAddressLen = sizeof(clientAddress);
-
-    int result = bind(serverSocket,
-            reinterpret_cast<struct sockaddr*>(&serverAddress),
-            serverAddressLen);
-    if(result == -1) {
+    retval = bind(serverSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
+    if(retval != 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
-                "local port " << setServerPort << " to server socket!"
-                << std::endl;
+        sif::warning << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not bind "
+                "local port (" << udpServerPort << ") to server socket!" << std::endl;
 #endif
-        handleBindError();
-        return;
+        freeaddrinfo(addrResult);
+        handleError(Protocol::UDP, ErrorSources::BIND_CALL);
+        return HasReturnvaluesIF::RETURN_FAILED;
     }
 
     return HasReturnvaluesIF::RETURN_OK;
@@ -131,130 +112,54 @@ ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
 
 	if(ipAddrAnySet){
 		clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
-		//clientAddress.sin_addr.s_addr = inet_addr("127.73.73.1");
+		// clientAddress.sin_addr.s_addr = inet_addr("127.73.73.1");
 		clientAddressLen = sizeof(serverAddress);
 	}
-
-//	char ipAddress [15];
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-//	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-//					&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+    char ipAddress [15];
+	sif::debug << "IP Address Sender: "<<
+	        inet_ntop(AF_INET,&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 #endif
 
-	ssize_t bytesSent = sendto(serverSocket, data, dataLen, flags,
-			reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLen);
+	ssize_t bytesSent = sendto(
+	        serverSocket,
+	        data,
+	        dataLen,
+	        flags,
+			reinterpret_cast<sockaddr*>(&clientAddress),
+			clientAddressLen
+	);
 	if(bytesSent < 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixUdpBridge::sendTm: Send operation failed."
-				<< std::endl;
+        sif::warning << "TmTcUnixUdpBridge::sendTm: Send operation failed." << std::endl;
 #endif
-		handleSendError();
+        tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SENDTO_CALL);
 	}
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-//	sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
-//			" sent." << std::endl;
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+	sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
+	        " sent." << std::endl;
 #endif
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
 	MutexGuard lock(mutex, MutexIF::TimeoutType::WAITING, 10);
 
-//	char ipAddress [15];
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-//	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-//			&newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
-//	sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
-//			&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
+    char ipAddress [15];
+	sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
+			&newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+	sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
+			&clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
 #endif
+	registerCommConnect();
 
-	// Set new IP address if it has changed.
+	/* Set new IP address if it has changed. */
 	if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
-		clientAddress.sin_addr.s_addr = newAddress.sin_addr.s_addr;
+	    clientAddress = newAddress;
 		clientAddressLen = sizeof(clientAddress);
-	}
-}
-
-
-void TmTcUnixUdpBridge::handleSocketError() {
-	// See: https://man7.org/linux/man-pages/man2/socket.2.html
-	switch(errno) {
-	case(EACCES):
-	case(EINVAL):
-	case(EMFILE):
-	case(ENFILE):
-	case(EAFNOSUPPORT):
-	case(ENOBUFS):
-	case(ENOMEM):
-	case(EPROTONOSUPPORT):
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixBridge::handleSocketError: Socket creation failed"
-				<< " with " << strerror(errno) << std::endl;
-#endif
-		break;
-	default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixBridge::handleSocketError: Unknown error"
-				<< std::endl;
-#endif
-		break;
-	}
-}
-
-void TmTcUnixUdpBridge::handleBindError() {
-	// See: https://man7.org/linux/man-pages/man2/bind.2.html
-	switch(errno) {
-	case(EACCES): {
-		/*
-		 Ephermeral ports can be shown with following command:
-		 sysctl -A | grep ip_local_port_range
-		 */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixBridge::handleBindError: Port access issue."
-				"Ports 1-1024 are reserved on UNIX systems and require root "
-				"rights while ephermeral ports should not be used as well."
-				<< std::endl;
-#endif
-	}
-	break;
-	case(EADDRINUSE):
-	case(EBADF):
-	case(EINVAL):
-	case(ENOTSOCK):
-	case(EADDRNOTAVAIL):
-	case(EFAULT):
-	case(ELOOP):
-	case(ENAMETOOLONG):
-	case(ENOENT):
-	case(ENOMEM):
-	case(ENOTDIR):
-	case(EROFS): {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixBridge::handleBindError: Socket creation failed"
-				<< " with " << strerror(errno) << std::endl;
-#endif
-		break;
-	}
-	default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixBridge::handleBindError: Unknown error"
-				<< std::endl;
-#endif
-		break;
-	}
-}
-
-void TmTcUnixUdpBridge::handleSendError() {
-	switch(errno) {
-	default: {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixBridge::handleSendError: "
-		        << strerror(errno) << std::endl;
-#else
-		sif::printError("TmTcUnixBridge::handleSendError: %s\n",
-				strerror(errno));
-#endif
-	}
 	}
 }
 
