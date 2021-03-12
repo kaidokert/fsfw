@@ -5,9 +5,6 @@
 
 #include <winsock2.h>
 
-//! Debugging preprocessor define.
-#define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
-
 class TmTcWinUdpBridge: public TmTcBridge {
     friend class TcWinUdpPollingTask;
 public:

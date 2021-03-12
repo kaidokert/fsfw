@@ -1,69 +1,127 @@
 #include "TmTcUnixUdpBridge.h"
+#include "tcpipHelpers.h"
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexGuard.h"
 
 #include <errno.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <netdb.h>
 
+#include <cstring>
+
+//! Debugging preprocessor define.
+#define FSFW_UDP_RCV_WIRETAPPING_ENABLED    1
+
+const std::string TmTcUnixUdpBridge::DEFAULT_UDP_SERVER_PORT =  "7301";
+const std::string TmTcUnixUdpBridge::DEFAULT_UDP_CLIENT_PORT =  "7302";
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId,
 		object_id_t tcDestination, object_id_t tmStoreId, object_id_t tcStoreId,
-		uint16_t serverPort, uint16_t clientPort):
+		std::string udpServerPort, std::string udpClientPort):
 		TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
-	mutex = MutexFactory::instance()->createMutex();
+    if(udpServerPort == "") {
+         this->udpServerPort = DEFAULT_UDP_SERVER_PORT;
+    }
+    else {
+        this->udpServerPort = udpServerPort;
+    }
+    if(udpClientPort == "") {
+        this->udpClientPort = DEFAULT_UDP_CLIENT_PORT;
+    }
+    else {
+        this->udpClientPort = udpClientPort;
+    }
 
-	uint16_t setServerPort = DEFAULT_UDP_SERVER_PORT;
-	if(serverPort != 0xFFFF) {
-		setServerPort = serverPort;
-	}
+    mutex = MutexFactory::instance()->createMutex();
+    communicationLinkUp = false;
+}
 
-	uint16_t setClientPort = DEFAULT_UDP_CLIENT_PORT;
-	if(clientPort != 0xFFFF) {
-		setClientPort = clientPort;
-	}
+ReturnValue_t TmTcUnixUdpBridge::initialize() {
+    using namespace tcpip;
 
-	// Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html
-	//clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
-	serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if(serverSocket < 0) {
+    ReturnValue_t result = TmTcBridge::initialize();
+    if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open"
-				" UDP socket!" << std::endl;
+        sif::error << "TmTcUnixUdpBridge::initialize: TmTcBridge initialization failed!"
+                << std::endl;
 #endif
-		handleSocketError();
-		return;
-	}
+        return result;
+    }
 
-	serverAddress.sin_family = AF_INET;
+    struct addrinfo *addrResult = nullptr;
+    struct addrinfo hints;
 
-	// Accept packets from any interface.
-	//serverAddress.sin_addr.s_addr = inet_addr("127.73.73.0");
-	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-	serverAddress.sin_port = htons(setServerPort);
-	serverAddressLen = sizeof(serverAddress);
-	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &serverSocketOptions,
-			sizeof(serverSocketOptions));
+    std::memset(hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_protocol = IPPROTO_UDP;
+    hints.ai_flags = AI_PASSIVE;
 
-	clientAddress.sin_family = AF_INET;
-	clientAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-	clientAddress.sin_port = htons(setClientPort);
-	clientAddressLen = sizeof(clientAddress);
-
-	int result = bind(serverSocket,
-			reinterpret_cast<struct sockaddr*>(&serverAddress),
-			serverAddressLen);
-	if(result == -1) {
+    /* Set up UDP socket:
+    https://man7.org/linux/man-pages/man3/getaddrinfo.3.html
+    Passing nullptr as the first parameter and specifying AI_PASSIVE in hints will cause
+    getaddrinfo to assign the address 0.0.0.0 (any address) */
+    int retval = getaddrinfo(nullptr, udpServerPort.c_str(), &hints, &addrResult);
+    if (retval != 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
-				"local port " << setServerPort << " to server socket!"
-				<< std::endl;
+        sif::warning << "TmTcWinUdpBridge::TmTcWinUdpBridge: Retrieving address info failed!" <<
+                std::endl;
 #endif
-		handleBindError();
-		return;
-	}
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+
+    /* Set up UDP socket: https://man7.org/linux/man-pages/man7/ip.7.html */
+    serverSocket = socket(addrResult->ai_family, addrResult->ai_socktype, addrResult->ai_protocol);
+    if(serverSocket < 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open UDP socket!" <<
+                std::endl;
+#else
+        sif::printError("TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not open UDP socket!\n");
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+        freeaddrinfo(addrResult);
+        handleError(Protocol::UDP, ErrorSources::SOCKET_CALL);
+        handleSocketError();
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+
+    serverAddress.sin_family = AF_INET;
+
+    // Accept packets from any interface.
+    //serverAddress.sin_addr.s_addr = inet_addr("127.73.73.0");
+    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+    serverAddress.sin_port = htons(setServerPort);
+    serverAddressLen = sizeof(serverAddress);
+    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &serverSocketOptions,
+            sizeof(serverSocketOptions));
+
+    clientAddress.sin_family = AF_INET;
+    clientAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+    clientAddress.sin_port = htons(setClientPort);
+    clientAddressLen = sizeof(clientAddress);
+
+    int result = bind(serverSocket,
+            reinterpret_cast<struct sockaddr*>(&serverAddress),
+            serverAddressLen);
+    if(result == -1) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::error << "TmTcUnixUdpBridge::TmTcUnixUdpBridge: Could not bind "
+                "local port " << setServerPort << " to server socket!"
+                << std::endl;
+#endif
+        handleBindError();
+        return;
+    }
+
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 TmTcUnixUdpBridge::~TmTcUnixUdpBridge() {
+    if(mutex != nullptr) {
+        MutexFactory::instance()->deleteMutex(mutex);
+    }
+    close(serverSocket);
 }
 
 ReturnValue_t TmTcUnixUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {

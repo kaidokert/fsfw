@@ -10,15 +10,17 @@
 class TmTcUnixUdpBridge: public TmTcBridge {
 	friend class TcUnixUdpPollingTask;
 public:
-	// The ports chosen here should not be used by any other process.
-	// List of used ports on Linux: /etc/services
-	static constexpr uint16_t DEFAULT_UDP_SERVER_PORT = 7301;
-	static constexpr uint16_t DEFAULT_UDP_CLIENT_PORT = 7302;
+	/* The ports chosen here should not be used by any other process.
+	List of used ports on Linux: /etc/services */
+	static const std::string DEFAULT_UDP_SERVER_PORT;
+    static const std::string DEFAULT_UDP_CLIENT_PORT;
 
 	TmTcUnixUdpBridge(object_id_t objectId, object_id_t tcDestination,
 			object_id_t tmStoreId, object_id_t tcStoreId,
-			uint16_t serverPort = 0xFFFF,uint16_t clientPort = 0xFFFF);
+			std::string serverPort = "", std::string clientPort = "");
 	virtual~ TmTcUnixUdpBridge();
+
+	ReturnValue_t initialize() override;
 
 	void checkAndSetClientAddress(sockaddr_in& clientAddress);
 
@@ -28,6 +30,8 @@ protected:
 
 private:
 	int serverSocket = 0;
+	std::string udpServerPort;
+	std::string udpClientPort;
 
 	const int serverSocketOptions = 0;
 

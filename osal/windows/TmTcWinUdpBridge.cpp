@@ -5,6 +5,9 @@
 #include <fsfw/ipc/MutexGuard.h>
 #include <ws2tcpip.h>
 
+//! Debugging preprocessor define.
+#define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
+
 const std::string TmTcWinUdpBridge::DEFAULT_UDP_SERVER_PORT =  "7301";
 const std::string TmTcWinUdpBridge::DEFAULT_UDP_CLIENT_PORT =  "7302";
 
