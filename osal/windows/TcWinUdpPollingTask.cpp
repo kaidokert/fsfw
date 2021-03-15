@@ -6,7 +6,7 @@
 #include <winsock2.h>
 
 //! Debugging preprocessor define.
-#define FSFW_UDP_RCV_WIRETAPPING_ENABLED    1
+#define FSFW_UDP_RCV_WIRETAPPING_ENABLED    0
 
 TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,

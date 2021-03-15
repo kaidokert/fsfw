@@ -6,7 +6,7 @@
 #include <ws2tcpip.h>
 
 //! Debugging preprocessor define.
-#define FSFW_UDP_SEND_WIRETAPPING_ENABLED    1
+#define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
 
 const std::string TmTcWinUdpBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_UDP_SERVER_PORT;
 
