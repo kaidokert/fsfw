@@ -1,6 +1,6 @@
 #include "TmTcWinUdpBridge.h"
 
-#include <fsfw/ipc/MutexHelper.h>
+#include <fsfw/ipc/MutexGuard.h>
 
 #if defined(_MSC_VER)
 #include <BaseTsd.h>

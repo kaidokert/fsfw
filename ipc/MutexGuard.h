@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_IPC_MUTEXHELPER_H_
-#define FRAMEWORK_IPC_MUTEXHELPER_H_
+#ifndef FRAMEWORK_IPC_MUTEXGUARD_H_
+#define FRAMEWORK_IPC_MUTEXGUARD_H_
 
 #include "MutexFactory.h"
 #include "../serviceinterface/ServiceInterface.h"
@@ -12,9 +12,9 @@ public:
         if(mutex == nullptr) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MutexHelper: Passed mutex is invalid!" << std::endl;
+            sif::error << "MutexGuard: Passed mutex is invalid!" << std::endl;
 #else
-            sif::printError("MutexHelper: Passed mutex is invalid!\n");
+            sif::printError("MutexGuard: Passed mutex is invalid!\n");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
             return;
@@ -24,24 +24,22 @@ public:
 #if FSFW_VERBOSE_LEVEL >= 1
         if(result == MutexIF::MUTEX_TIMEOUT) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MutexHelper: Lock of mutex failed with timeout of "
+            sif::error << "MutexGuard: Lock of mutex failed with timeout of "
                     << timeoutMs << " milliseconds!" << std::endl;
 #else
-            sif::printError("MutexHelper: Lock of mutex failed with timeout of %lu milliseconds\n",
+            sif::printError("MutexGuard: Lock of mutex failed with timeout of %lu milliseconds\n",
                     timeoutMs);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
         }
         else if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MutexHelper: Lock of Mutex failed with code " << result << std::endl;
+            sif::error << "MutexGuard: Lock of Mutex failed with code " << result << std::endl;
 #else
-            sif::printError("MutexHelper: Lock of Mutex failed with code %d\n", result);
+            sif::printError("MutexGuard: Lock of Mutex failed with code %d\n", result);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         }
 #else
-        /* To avoid unused variable warning */
-        static_cast<void>(status);
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
     }
 
@@ -59,4 +57,4 @@ private:
     ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
 };
 
-#endif /* FRAMEWORK_IPC_MUTEXHELPER_H_ */
+#endif /* FRAMEWORK_IPC_MUTEXGUARD_H_ */
