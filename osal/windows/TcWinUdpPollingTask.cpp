@@ -3,11 +3,6 @@
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 #include <winsock2.h>
-#include <windows.h>
-#if defined(_MSC_VER)
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
-#endif
 
 TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,
@@ -20,8 +15,8 @@ TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 		this->frameSize = DEFAULT_MAX_FRAME_SIZE;
 	}
 
-	// Set up reception buffer with specified frame size.
-	// For now, it is assumed that only one frame is held in the buffer!
+	/* Set up reception buffer with specified frame size.
+	For now, it is assumed that only one frame is held in the buffer! */
 	receptionBuffer.reserve(this->frameSize);
 	receptionBuffer.resize(this->frameSize);
 
@@ -36,17 +31,17 @@ TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 TcWinUdpPollingTask::~TcWinUdpPollingTask() {}
 
 ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
-	// Poll for new UDP datagrams in permanent loop.
+	/* Poll for new UDP datagrams in permanent loop. */
 	while(true) {
 		//! Sender Address is cached here.
 		struct sockaddr_in senderAddress;
 		int senderAddressSize = sizeof(senderAddress);
-		ssize_t bytesReceived = recvfrom(serverUdpSocket,
+		int bytesReceived = recvfrom(serverUdpSocket,
 				reinterpret_cast<char*>(receptionBuffer.data()), frameSize,
 				receptionFlags, reinterpret_cast<sockaddr*>(&senderAddress),
 				&senderAddressSize);
 		if(bytesReceived == SOCKET_ERROR) {
-			// handle error
+			/* Handle error */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "TcWinUdpPollingTask::performOperation: Reception"
 					" error." << std::endl;
@@ -54,9 +49,9 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 			handleReadError();
 			continue;
 		}
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		//sif::debug << "TcWinUdpPollingTask::performOperation: " << bytesReceived
-		//		<< " bytes received" << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_WIRETAPPING_ENABLED == 1
+		sif::debug << "TcWinUdpPollingTask::performOperation: " << bytesReceived <<
+		        " bytes received" << std::endl;
 #endif
 
 		ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
@@ -74,12 +69,14 @@ ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	store_address_t storeId;
 	ReturnValue_t result = tcStore->addData(&storeId,
 			receptionBuffer.data(), bytesRead);
-	// arrayprinter::print(receptionBuffer.data(), bytesRead);
+#if FSFW_UDP_WIRETAPPING_ENABLED == 1
+	arrayprinter::print(receptionBuffer.data(), bytesRead);#
+#endif
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TcSerialPollingTask::transferPusToSoftwareBus: Data "
-				"storage failed" << std::endl;
-		sif::error << "Packet size: " << bytesRead << std::endl;
+		sif::warning<< "TcSerialPollingTask::transferPusToSoftwareBus: Data "
+		        "storage failed" << std::endl;
+		sif::warning << "Packet size: " << bytesRead << std::endl;
 #endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -89,8 +86,7 @@ ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	result  = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "Serial Polling: Sending message to queue failed"
-				<< std::endl;
+		sif::warning << "Serial Polling: Sending message to queue failed" << std::endl;
 #endif
 		tcStore->deleteData(storeId);
 	}
@@ -117,9 +113,9 @@ ReturnValue_t TcWinUdpPollingTask::initialize() {
 	}
 
 	serverUdpSocket = tmtcBridge->serverSocket;
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	//sif::info << "TcWinUdpPollingTask::initialize: Server UDP socket "
-	//        << serverUdpSocket << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_WIRETAPPING_ENABLED == 1
+	sif::info << "TcWinUdpPollingTask::initialize: Server UDP socket " << serverUdpSocket <<
+	        std::endl;
 #endif
 
 	return HasReturnvaluesIF::RETURN_OK;

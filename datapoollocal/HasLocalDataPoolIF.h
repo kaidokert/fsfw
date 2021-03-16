@@ -65,34 +65,45 @@ public:
      * usually be the period the pool owner performs its periodic operation.
      * @return
      */
-    virtual uint32_t getPeriodicOperationFrequency() const = 0;
+    virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
 
     /**
      * @brief   This function will be called by the manager if an update
      *          notification is received.
      * @details  HasLocalDataPoolIF
      * Can be overriden by the child class to handle changed datasets.
-     * @param sid
-     * @param storeId If a snapshot was requested, data will be located inside
+     * @param sid           SID of the updated set
+     * @param storeId       If a snapshot was requested, data will be located inside
      * the IPC store with this store ID.
+     * @param clearMessage  If this is set to true, the pool manager will take care of
+     *                      clearing the store automatically
      */
     virtual void handleChangedDataset(sid_t sid,
-            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
-        return;
+            store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
+            bool* clearMessage = nullptr) {
+        if(clearMessage != nullptr) {
+            *clearMessage = true;
+        }
     }
 
     /**
      * @brief   This function will be called by the manager if an update
      *          notification is received.
      * @details
-     * Can be overriden by the child class to handle changed pool IDs.
-     * @param sid
-     * @param storeId If a snapshot was requested, data will be located inside
+     * Can be overriden by the child class to handle changed pool variables.
+     * @param gpid          GPID of the updated variable.
+     * @param storeId       If a snapshot was requested, data will be located inside
      * the IPC store with this store ID.
+     * @param clearMessage  Relevant for snapshots. If the boolean this points to is set to true,
+     *                      the pool manager will take care of clearing the store automatically
+     *                      after the callback.
      */
-    virtual void handleChangedPoolVariable(gp_id_t globPoolId,
-            store_address_t storeId = storeId::INVALID_STORE_ADDRESS) {
-        return;
+    virtual void handleChangedPoolVariable(gp_id_t gpid,
+            store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
+            bool* clearMessage = nullptr) {
+        if(clearMessage != nullptr) {
+            *clearMessage = true;
+        }
     }
 
     /**

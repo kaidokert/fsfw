@@ -96,11 +96,11 @@ union gp_id_t {
         return raw == INVALID_GPID;
     }
 
-    bool operator==(const sid_t& other) const {
+    bool operator==(const gp_id_t& other) const {
         return raw == other.raw;
     }
 
-    bool operator!=(const sid_t& other) const {
+    bool operator!=(const gp_id_t& other) const {
         return not (raw == other.raw);
     }
 };

@@ -4,13 +4,14 @@
 #include <catch2/catch_approx.hpp>
 
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
+#include <fsfw/datapoollocal/SharedLocalDataSet.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
-#include <fsfw/datapool/PoolReadHelper.h>
+#include <fsfw/datapool/PoolReadGuard.h>
 #include <fsfw/globalfunctions/bitutility.h>
 
 #include <unittest/core/CatchDefinitions.h>
 
-TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
+TEST_CASE("DataSetTest" , "[DataSetTest]") {
     LocalPoolOwnerBase* poolOwner = objectManager->
             get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
     REQUIRE(poolOwner != nullptr);
@@ -21,6 +22,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
 
     SECTION("BasicTest") {
         /* Test some basic functions */
+        CHECK(localSet.getReportingEnabled() == false);
         CHECK(localSet.getLocalPoolIdsSerializedSize(false) == 3 * sizeof(lp_id_t));
         CHECK(localSet.getLocalPoolIdsSerializedSize(true) ==
                 3 * sizeof(lp_id_t) + sizeof(uint8_t));
@@ -54,7 +56,7 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
 
         {
             /* Test read operation. Values should be all zeros */
-            PoolReadHelper readHelper(&localSet);
+            PoolReadGuard readHelper(&localSet);
             REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
             CHECK(not localSet.isValid());
             CHECK(localSet.localPoolVarUint8.value == 0);
@@ -79,10 +81,15 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
         localSet.localPoolVarUint8 = 0;
         localSet.localPoolVarFloat = 0;
 
+        localSet.setAllVariablesReadOnly();
+        CHECK(localSet.localPoolUint16Vec.getReadWriteMode() == pool_rwm_t::VAR_READ);
+        CHECK(localSet.localPoolVarUint8.getReadWriteMode() == pool_rwm_t::VAR_READ);
+        CHECK(localSet.localPoolVarFloat.getReadWriteMode() == pool_rwm_t::VAR_READ);
+
         {
             /* Now we read again and check whether our zeroed values were overwritten with
             the values in the pool */
-            PoolReadHelper readHelper(&localSet);
+            PoolReadGuard readHelper(&localSet);
             REQUIRE(readHelper.getReadResult() == retval::CATCH_OK);
             CHECK(localSet.isValid());
             CHECK(localSet.localPoolVarUint8.value == 232);
@@ -198,6 +205,76 @@ TEST_CASE("LocalDataSet" , "[LocDataSetTest]") {
         variableHandle = nullptr;
         REQUIRE(localSet.registerVariable(variableHandle) ==
                 static_cast<int>(DataSetIF::POOL_VAR_NULL));
+
+    }
+
+    SECTION("MorePoolVariables") {
+        LocalDataSet set(poolOwner, 2, 10);
+
+        /* Register same variables again to get more than 8 registered variables */
+        for(uint8_t idx = 0; idx < 8; idx ++) {
+            REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == retval::CATCH_OK);
+        }
+        REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == retval::CATCH_OK);
+        REQUIRE(set.registerVariable(&localSet.localPoolUint16Vec) == retval::CATCH_OK);
+
+        set.setValidityBufferGeneration(true);
+        {
+            PoolReadGuard readHelper(&localSet);
+            localSet.localPoolVarUint8.value = 42;
+            localSet.localPoolVarUint8.setValid(true);
+            localSet.localPoolUint16Vec.setValid(false);
+        }
+
+        size_t maxSize = set.getSerializedSize();
+        CHECK(maxSize == 9 + sizeof(uint16_t) * 3 + 2);
+        size_t serSize = 0;
+        /* Already reserve additional space for validity buffer, will be needed later */
+        uint8_t buffer[maxSize + 1];
+        uint8_t* buffPtr = buffer;
+        CHECK(set.serialize(&buffPtr, &serSize, maxSize,
+                SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
+        std::array<uint8_t, 2> validityBuffer;
+        std::memcpy(validityBuffer.data(), buffer + 9 + sizeof(uint16_t) * 3, 2);
+        /* The first 9 variables should be valid */
+        CHECK(validityBuffer[0] == 0xff);
+        CHECK(bitutil::bitGet(validityBuffer.data() + 1, 0) == true);
+        CHECK(bitutil::bitGet(validityBuffer.data() + 1, 1) == false);
+
+        /* Now we invert the validity */
+        validityBuffer[0] = 0;
+        validityBuffer[1] = 0b0100'0000;
+        std::memcpy(buffer + 9 + sizeof(uint16_t) * 3, validityBuffer.data(), 2);
+        const uint8_t* constBuffPtr = buffer;
+        size_t sizeToDeSerialize = serSize;
+        CHECK(set.deSerialize(&constBuffPtr, &sizeToDeSerialize, SerializeIF::Endianness::MACHINE)
+                == retval::CATCH_OK);
+        CHECK(localSet.localPoolVarUint8.isValid() == false);
+        CHECK(localSet.localPoolUint16Vec.isValid() == true);
+    }
+
+    SECTION("SharedDataSet") {
+        object_id_t sharedSetId = objects::SHARED_SET_ID;
+        SharedLocalDataSet sharedSet(sharedSetId, poolOwner, lpool::testSetId, 5);
+        localSet.localPoolVarUint8.setReadWriteMode(pool_rwm_t::VAR_WRITE);
+        localSet.localPoolUint16Vec.setReadWriteMode(pool_rwm_t::VAR_WRITE);
+        CHECK(sharedSet.registerVariable(&localSet.localPoolVarUint8) == retval::CATCH_OK);
+        CHECK(sharedSet.registerVariable(&localSet.localPoolUint16Vec) == retval::CATCH_OK);
+        CHECK(sharedSet.initialize() == retval::CATCH_OK);
+        CHECK(sharedSet.lockDataset() == retval::CATCH_OK);
+        CHECK(sharedSet.unlockDataset() == retval::CATCH_OK);
+
+        {
+            //PoolReadGuard rg(&sharedSet);
+            //CHECK(rg.getReadResult() == retval::CATCH_OK);
+            localSet.localPoolVarUint8.value = 5;
+            localSet.localPoolUint16Vec.value[0] = 1;
+            localSet.localPoolUint16Vec.value[1] = 2;
+            localSet.localPoolUint16Vec.value[2] = 3;
+            CHECK(sharedSet.commit() == retval::CATCH_OK);
+        }
+
+        sharedSet.setReadCommitProtectionBehaviour(true);
 
     }
 

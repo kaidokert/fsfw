@@ -11,7 +11,8 @@
  * @brief   This helper class will be used to serialize and deserialize update housekeeping packets
  *          into the store.
  */
-class HousekeepingSnapshot: public SerializeIF {
+class HousekeepingSnapshot:
+        public SerializeIF {
 public:
 
     /**
@@ -42,13 +43,24 @@ public:
      * @param timeStampSize
      * @param dataSetPtr
      */
+    HousekeepingSnapshot(CCSDSTime::CDS_short* cdsShort, LocalPoolObjectBase* dataSetPtr):
+            timeStamp(reinterpret_cast<uint8_t*>(cdsShort)),
+            timeStampSize(sizeof(CCSDSTime::CDS_short)), updateData(dataSetPtr) {};
+
+
+    /**
+     * Update packet constructor for pool variables.
+     * @param timeStamp
+     * @param timeStampSize
+     * @param dataSetPtr
+     */
     HousekeepingSnapshot(uint8_t* timeStamp, size_t timeStampSize,
             LocalPoolObjectBase* dataSetPtr):
                 timeStamp(timeStamp), timeStampSize(timeStampSize),
                 updateData(dataSetPtr) {};
 
-    virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
-            size_t maxSize, Endianness streamEndianness) const {
+    virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+            Endianness streamEndianness) const {
         if(timeStamp != nullptr) {
             /* Endianness will always be MACHINE, so we can simply use memcpy
             here. */
