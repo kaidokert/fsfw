@@ -112,8 +112,6 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
     MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
-    clientAddress.sin_addr.s_addr = htons(INADDR_ANY);
-    clientAddressLen = sizeof(serverAddress);
     char ipAddress [15];
     sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
             &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
