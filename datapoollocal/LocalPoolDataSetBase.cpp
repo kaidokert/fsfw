@@ -96,15 +96,22 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
         SerializeIF::Endianness streamEndianness) const {
     ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     const uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
+    uint8_t* validityPtr = nullptr;
+#ifdef _WIN32
     /* Use a std::vector here because MSVC will (rightly) not create a fixed size array
     with a non constant size specifier */
     std::vector<uint8_t> validityMask(validityMaskSize);
+    validityPtr = validityMask.data();
+#else
+    uint8_t validityMask[validityMaskSize];
+    validityPtr = validityMask;
+#endif
     uint8_t validBufferIndex = 0;
     uint8_t validBufferIndexBit = 0;
     for (uint16_t count = 0; count < fillCount; count++) {
         if(registeredVariables[count]->isValid()) {
             /* Set bit at correct position */
-            bitutil::bitSet(validityMask.data() + validBufferIndex, validBufferIndexBit);
+            bitutil::bitSet(validityMask + validBufferIndex, validBufferIndexBit);
         }
         if(validBufferIndexBit == 7) {
             validBufferIndex ++;
@@ -125,7 +132,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
         return SerializeIF::BUFFER_TOO_SHORT;
     }
     // copy validity buffer to end
-    std::memcpy(*buffer, validityMask.data(), validityMaskSize);
+    std::memcpy(*buffer, validityPtr, validityMaskSize);
     *size += validityMaskSize;
     return result;
 }
