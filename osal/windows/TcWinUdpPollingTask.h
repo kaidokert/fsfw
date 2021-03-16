@@ -23,7 +23,7 @@ class TcWinUdpPollingTask: public SystemObject,
 public:
 	static constexpr size_t DEFAULT_MAX_FRAME_SIZE = 2048;
 	//! 0.5  default milliseconds timeout for now.
-	static constexpr timeval DEFAULT_TIMEOUT = {.tv_sec = 0, .tv_usec = 500};
+	static constexpr timeval DEFAULT_TIMEOUT = {0, 500};
 
 	TcWinUdpPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
 			size_t frameSize = 0, double timeoutSeconds = -1);
