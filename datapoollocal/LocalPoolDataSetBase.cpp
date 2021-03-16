@@ -111,7 +111,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
     for (uint16_t count = 0; count < fillCount; count++) {
         if(registeredVariables[count]->isValid()) {
             /* Set bit at correct position */
-            bitutil::bitSet(validityMask + validBufferIndex, validBufferIndexBit);
+            bitutil::bitSet(validityPtr + validBufferIndex, validBufferIndexBit);
         }
         if(validBufferIndexBit == 7) {
             validBufferIndex ++;
