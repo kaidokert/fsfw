@@ -51,10 +51,12 @@ private:
 	object_id_t tmtcBridgeId = objects::NO_OBJECT;
 	TmTcWinUdpBridge* tmtcBridge = nullptr;
 	MessageQueueId_t targetTcDestination = MessageQueueIF::NO_QUEUE;
-	//! Reception flags: https://linux.die.net/man/2/recvfrom.
+
+	//! See: https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
 	int receptionFlags = 0;
 
-	//! Server socket, which is member of TMTC bridge and is assigned in constructor
+	//! Server socket, which is member of TMTC bridge.
+	//! Will be cached shortly after SW intialization.
 	SOCKET serverUdpSocket = 0;
 
 	std::vector<uint8_t> receptionBuffer;
@@ -63,7 +65,6 @@ private:
 	timeval receptionTimeout;
 
 	ReturnValue_t handleSuccessfullTcRead(size_t bytesRead);
-	void handleReadError();
 };
 
 #endif /* FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_ */

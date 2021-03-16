@@ -275,7 +275,6 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
         }
 
         sharedSet.setReadCommitProtectionBehaviour(true);
-
     }
 
     /* we need to reset the subscription list because the pool owner
