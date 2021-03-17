@@ -54,7 +54,6 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 #endif
 
     PoolReadGuard readGuard(&internalErrorDataset);
-    internalErrorDataset.read(timeoutType, timeoutMs);
     if(readGuard.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
         internalErrorDataset.queueHits.value += newQueueHits;
         internalErrorDataset.storeHits.value += newStoreHits;
