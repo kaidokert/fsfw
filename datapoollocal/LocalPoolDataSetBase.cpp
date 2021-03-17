@@ -103,7 +103,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
     std::vector<uint8_t> validityMask(validityMaskSize);
     validityPtr = validityMask.data();
 #else
-    uint8_t validityMask[validityMaskSize] = {};
+    uint8_t validityMask[validityMaskSize] = {0};
     validityPtr = validityMask;
 #endif
     uint8_t validBufferIndex = 0;
