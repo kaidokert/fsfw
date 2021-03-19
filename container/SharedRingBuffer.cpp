@@ -1,6 +1,6 @@
 #include "SharedRingBuffer.h"
 #include "../ipc/MutexFactory.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 
 SharedRingBuffer::SharedRingBuffer(object_id_t objectId, const size_t size,
         bool overwriteOld, size_t maxExcessBytes):

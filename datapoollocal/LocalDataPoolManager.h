@@ -14,7 +14,7 @@
 #include "../ipc/MutexIF.h"
 #include "../ipc/CommandMessage.h"
 #include "../ipc/MessageQueueIF.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 
 #include <map>
 #include <vector>
@@ -391,6 +391,10 @@ protected:
 
 template<class T> inline
 ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId, PoolEntry<T> **poolEntry) {
+    if(poolEntry == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+
     auto poolIter = localPoolMap.find(localPoolId);
     if (poolIter == localPoolMap.end()) {
         printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",

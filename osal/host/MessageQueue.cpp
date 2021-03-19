@@ -3,7 +3,7 @@
 
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../ipc/MutexFactory.h"
-#include "../../ipc/MutexHelper.h"
+#include "../../ipc/MutexGuard.h"
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		messageSize(maxMessageSize), messageDepth(messageDepth) {
@@ -65,7 +65,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	}
 	// not sure this will work..
 	//*message = std::move(messageQueue.front());
-	MutexHelper mutexLock(queueLock, MutexIF::TimeoutType::WAITING, 20);
+	MutexGuard mutexLock(queueLock, MutexIF::TimeoutType::WAITING, 20);
 	MessageQueueMessage* currentMessage = &messageQueue.front();
 	std::copy(currentMessage->getBuffer(),
 			currentMessage->getBuffer() + messageSize, message->getBuffer());
@@ -130,7 +130,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
-		MutexHelper mutexLock(targetQueue->queueLock,
+		MutexGuard mutexLock(targetQueue->queueLock,
 		        MutexIF::TimeoutType::WAITING, 20);
 		// not ideal, works for now though.
 		MessageQueueMessage* mqmMessage =

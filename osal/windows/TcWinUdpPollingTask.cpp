@@ -1,9 +1,12 @@
 #include "TcWinUdpPollingTask.h"
+#include "tcpipHelpers.h"
 #include "../../globalfunctions/arrayprinter.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
 #include <winsock2.h>
-#include <windows.h>
+
+//! Debugging preprocessor define.
+#define FSFW_UDP_RCV_WIRETAPPING_ENABLED    0
 
 TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,
@@ -16,8 +19,8 @@ TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 		this->frameSize = DEFAULT_MAX_FRAME_SIZE;
 	}
 
-	// Set up reception buffer with specified frame size.
-	// For now, it is assumed that only one frame is held in the buffer!
+	/* Set up reception buffer with specified frame size.
+	For now, it is assumed that only one frame is held in the buffer! */
 	receptionBuffer.reserve(this->frameSize);
 	receptionBuffer.resize(this->frameSize);
 
@@ -32,34 +35,37 @@ TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 TcWinUdpPollingTask::~TcWinUdpPollingTask() {}
 
 ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
-	// Poll for new UDP datagrams in permanent loop.
+    /* Sender Address is cached here. */
+    struct sockaddr_in senderAddress;
+    int senderAddressSize = sizeof(senderAddress);
+
+	/* Poll for new UDP datagrams in permanent loop. */
 	while(true) {
-		//! Sender Address is cached here.
-		struct sockaddr_in senderAddress;
-		int senderAddressSize = sizeof(senderAddress);
-		ssize_t bytesReceived = recvfrom(serverUdpSocket,
-				reinterpret_cast<char*>(receptionBuffer.data()), frameSize,
-				receptionFlags, reinterpret_cast<sockaddr*>(&senderAddress),
-				&senderAddressSize);
+		int bytesReceived = recvfrom(
+		        serverUdpSocket,
+		        reinterpret_cast<char*>(receptionBuffer.data()),
+		        frameSize,
+				receptionFlags,
+				reinterpret_cast<sockaddr*>(&senderAddress),
+				&senderAddressSize
+		);
 		if(bytesReceived == SOCKET_ERROR) {
-			// handle error
+			/* Handle error */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "TcWinUdpPollingTask::performOperation: Reception"
-					" error." << std::endl;
+			sif::error << "TcWinUdpPollingTask::performOperation: Reception error." << std::endl;
 #endif
-			handleReadError();
+			tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::RECVFROM_CALL, 1000);
 			continue;
 		}
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		//sif::debug << "TcWinUdpPollingTask::performOperation: " << bytesReceived
-		//		<< " bytes received" << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
+		sif::debug << "TcWinUdpPollingTask::performOperation: " << bytesReceived <<
+		        " bytes received" << std::endl;
 #endif
 
 		ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
 		if(result != HasReturnvaluesIF::RETURN_FAILED) {
 
 		}
-		tmtcBridge->registerCommConnect();
 		tmtcBridge->checkAndSetClientAddress(senderAddress);
 	}
 	return HasReturnvaluesIF::RETURN_OK;
@@ -68,15 +74,20 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 
 ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	store_address_t storeId;
-	ReturnValue_t result = tcStore->addData(&storeId,
-			receptionBuffer.data(), bytesRead);
-	// arrayprinter::print(receptionBuffer.data(), bytesRead);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TcSerialPollingTask::transferPusToSoftwareBus: Data "
-				"storage failed" << std::endl;
-		sif::error << "Packet size: " << bytesRead << std::endl;
+
+#if FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
+    arrayprinter::print(receptionBuffer.data(), bytesRead);
 #endif
+
+	ReturnValue_t result = tcStore->addData(&storeId, receptionBuffer.data(), bytesRead);
+	if (result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::warning<< "TcWinUdpPollingTask::transferPusToSoftwareBus: Data storage failed." <<
+		        std::endl;
+		sif::warning << "Packet size: " << bytesRead << std::endl;
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -84,10 +95,12 @@ ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 
 	result  = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "Serial Polling: Sending message to queue failed"
-				<< std::endl;
-#endif
+		sif::warning << "TcWinUdpPollingTask::handleSuccessfullTcRead: "
+		        " Sending message to queue failed" << std::endl;
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		tcStore->deleteData(storeId);
 	}
 	return result;
@@ -97,8 +110,7 @@ ReturnValue_t TcWinUdpPollingTask::initialize() {
 	tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 	if (tcStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TcSerialPollingTask::initialize: TC Store uninitialized!"
-				<< std::endl;
+		sif::error << "TcWinUdpPollingTask::initialize: TC store uninitialized!" << std::endl;
 #endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
@@ -106,25 +118,21 @@ ReturnValue_t TcWinUdpPollingTask::initialize() {
 	tmtcBridge = objectManager->get<TmTcWinUdpBridge>(tmtcBridgeId);
 	if(tmtcBridge == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TcSocketPollingTask::TcSocketPollingTask: Invalid"
-				" TMTC bridge object!" << std::endl;
+		sif::error << "TcWinUdpPollingTask::initialize: Invalid TMTC bridge object!" <<
+		        std::endl;
 #endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
-
-	serverUdpSocket = tmtcBridge->serverSocket;
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	//sif::info << "TcWinUdpPollingTask::initialize: Server UDP socket "
-	//        << serverUdpSocket << std::endl;
-#endif
-
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t TcWinUdpPollingTask::initializeAfterTaskCreation() {
-	// Initialize the destination after task creation. This ensures
-	// that the destination has already been set in the TMTC bridge.
+	/* Initialize the destination after task creation. This ensures
+	that the destination has already been set in the TMTC bridge. */
 	targetTcDestination = tmtcBridge->getRequestQueue();
+	/* The server socket is set up in the bridge intialization. Calling this function here
+	ensures that it is set up properly in any case*/
+    serverUdpSocket = tmtcBridge->serverSocket;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -138,40 +146,4 @@ void TcWinUdpPollingTask::setTimeout(double timeoutSeconds) {
 				"receive timeout failed with " << strerror(errno) << std::endl;
 #endif
 	}
-}
-
-void TcWinUdpPollingTask::handleReadError() {
-    int error = WSAGetLastError();
-    switch(error) {
-    case(WSANOTINITIALISED): {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TcWinUdpPollingTask::handleReadError: WSANOTINITIALISED: "
-                << "WSAStartup(...) call " << "necessary" << std::endl;
-#endif
-        break;
-    }
-    case(WSAEFAULT): {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TcWinUdpPollingTask::handleReadError: WSADEFAULT: "
-                << "Bad address " << std::endl;
-#endif
-        break;
-    }
-    case(WSAEINVAL): {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TcWinUdpPollingTask::handleReadError: WSAEINVAL: "
-                << "Invalid input parameters. " << std::endl;
-#endif
-        break;
-    }
-    default: {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TcWinUdpPollingTask::handleReadError: Error code: "
-                << error << std::endl;
-#endif
-        break;
-    }
-    }
-    // to prevent spam.
-    Sleep(1000);
 }

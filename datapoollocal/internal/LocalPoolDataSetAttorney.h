@@ -14,9 +14,8 @@ private:
     }
 
     static void initializePeriodicHelper(LocalPoolDataSetBase& set, float collectionInterval,
-            uint32_t minimumPeriodicIntervalMs,
-            bool isDiagnostics, uint8_t nonDiagIntervalFactor = 5) {
-        set.initializePeriodicHelper(collectionInterval, minimumPeriodicIntervalMs, isDiagnostics,
+            uint32_t minimumPeriodicIntervalMs, uint8_t nonDiagIntervalFactor = 5) {
+        set.initializePeriodicHelper(collectionInterval, minimumPeriodicIntervalMs,
                 nonDiagIntervalFactor);
     }
 

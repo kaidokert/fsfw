@@ -24,5 +24,7 @@ MutexIF* MutexFactory::createMutex() {
 }
 
 void MutexFactory::deleteMutex(MutexIF* mutex) {
-	delete mutex;
+    if(mutex != nullptr) {
+        delete mutex;
+    }
 }
