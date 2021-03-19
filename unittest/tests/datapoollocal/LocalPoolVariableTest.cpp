@@ -118,6 +118,8 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
                 lpool::uint8VarId);
     }
 
+    CHECK(poolOwner->reset() == retval::CATCH_OK);
+
 }
 
 

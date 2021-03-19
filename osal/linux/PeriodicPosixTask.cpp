@@ -68,20 +68,6 @@ void PeriodicPosixTask::taskFunctionality(void) {
 		}
 
 		if(not PosixThread::delayUntil(&lastWakeTime, periodMs)){
-			char name[20] = {0};
-			int status = pthread_getname_np(pthread_self(), name, sizeof(name));
-			if(status == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-				sif::error << "PeriodicPosixTask " << name << ": Deadline "
-						"missed." << std::endl;
-#endif
-			}
-			else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-				sif::error << "PeriodicPosixTask X: Deadline missed. " <<
-						status << std::endl;
-#endif
-			}
 			if (this->deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}
