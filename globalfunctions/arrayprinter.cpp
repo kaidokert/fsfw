@@ -5,6 +5,15 @@
 
 void arrayprinter::print(const uint8_t *data, size_t size, OutputType type,
         bool printInfo, size_t maxCharPerLine) {
+    if(size == 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::info << "Size is zero, nothing to print" << std::endl;
+#else
+        sif::printInfo("Size is zero, nothing to print\n");
+#endif
+        return;
+    }
+
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     if(printInfo) {
          sif::info << "Printing data with size " << size << ": " << std::endl;

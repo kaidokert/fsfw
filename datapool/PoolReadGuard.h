@@ -8,9 +8,9 @@
 /**
  * @brief 	Helper class to read data sets or pool variables
  */
-class PoolReadHelper {
+class PoolReadGuard {
 public:
-    PoolReadHelper(ReadCommitIF* readObject,
+    PoolReadGuard(ReadCommitIF* readObject,
             MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
             uint32_t mutexTimeout = 20):
                 readObject(readObject), mutexTimeout(mutexTimeout) {
@@ -32,8 +32,18 @@ public:
         return readResult;
     }
 
-    ~PoolReadHelper() {
-        if(readObject != nullptr) {
+    /**
+     * @brief   Can be used to suppress commit on destruction.
+     */
+    void setNoCommitMode(bool commit) {
+        this->noCommit = commit;
+    }
+
+    /**
+     * @brief   Default destructor which will take care of commiting changed values.
+     */
+    ~PoolReadGuard() {
+        if(readObject != nullptr and not noCommit) {
             readObject->commit(timeoutType, mutexTimeout);
         }
 
@@ -42,6 +52,7 @@ public:
 private:
     ReadCommitIF* readObject = nullptr;
     ReturnValue_t readResult = HasReturnvaluesIF::RETURN_OK;
+    bool noCommit = false;
     MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
     uint32_t mutexTimeout = 20;
 };

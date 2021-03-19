@@ -137,7 +137,7 @@ public:
      * @param packetDestination
      * @return
      */
-    ReturnValue_t subscribeForUpdatePackets(sid_t sid, bool reportingEnabled,
+    ReturnValue_t subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
             bool isDiagnostics,
             object_id_t packetDestination = defaultHkDestination) override;
 
@@ -155,7 +155,7 @@ public:
      * Otherwise, only an notification message is sent.
      * @return
      */
-    ReturnValue_t subscribeForSetUpdateMessages(const uint32_t setId,
+    ReturnValue_t subscribeForSetUpdateMessage(const uint32_t setId,
             object_id_t destinationObject,
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;
@@ -174,7 +174,7 @@ public:
      * Otherwise, only an notification message is sent.
      * @return
      */
-    ReturnValue_t subscribeForVariableUpdateMessages(const lp_id_t localPoolId,
+    ReturnValue_t subscribeForVariableUpdateMessage(const lp_id_t localPoolId,
             object_id_t destinationObject,
             MessageQueueId_t targetQueueId,
             bool generateSnapshot) override;
@@ -271,7 +271,10 @@ public:
     MutexIF* getMutexHandle();
 
     virtual LocalDataPoolManager* getPoolManagerHandle() override;
-private:
+
+protected:
+
+    /** Core data structure for the actual pool data */
     localpool::DataPool localPoolMap;
     /** Every housekeeping data manager has a mutex to protect access
     to it's data pool. */
@@ -307,7 +310,7 @@ private:
     /** This vector will contain the list of HK receivers. */
     using HkReceivers = std::vector<struct HkReceiver>;
 
-    HkReceivers hkReceiversMap;
+    HkReceivers hkReceivers;
 
     struct HkUpdateResetHelper {
         DataType dataType = DataType::DATA_SET;
@@ -317,7 +320,8 @@ private:
     };
 
     using HkUpdateResetList = std::vector<struct HkUpdateResetHelper>;
-    // Will only be created when needed.
+    /** This list is used to manage creating multiple update packets and only resetting
+    the update flag if all of them were created. Will only be created when needed. */
     HkUpdateResetList* hkUpdateResetList = nullptr;
 
     /** This is the map holding the actual data. Should only be initialized
@@ -341,16 +345,14 @@ private:
      * Read a variable by supplying its local pool ID and assign the pool
      * entry to the supplied PoolEntry pointer. The type of the pool entry
      * is deduced automatically. This call is not thread-safe!
-     * For now, only friend classes like LocalPoolVar may access this
-     * function.
+     * For now, only classes designated by the LocalDpManagerAttorney may use this function.
      * @tparam T Type of the pool entry
      * @param localPoolId Pool ID of the variable to read
      * @param poolVar [out] Corresponding pool entry will be assigned to the
      * 						supplied pointer.
      * @return
      */
-    template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId,
-            PoolEntry<T> **poolEntry);
+    template <class T> ReturnValue_t fetchPoolEntry(lp_id_t localPoolId, PoolEntry<T> **poolEntry);
 
     /**
      * This function is used to fill the local data pool map with pool
@@ -362,15 +364,13 @@ private:
 
     MutexIF* getLocalPoolMutex() override;
 
-    ReturnValue_t serializeHkPacketIntoStore(
-            HousekeepingPacketDownlink& hkPacket,
+    ReturnValue_t serializeHkPacketIntoStore(HousekeepingPacketDownlink& hkPacket,
             store_address_t& storeId, bool forDownlink, size_t* serializedSize);
 
     void performPeriodicHkGeneration(HkReceiver& hkReceiver);
-    ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable,
+    ReturnValue_t togglePeriodicGeneration(sid_t sid, bool enable, bool isDiagnostics);
+    ReturnValue_t changeCollectionInterval(sid_t sid, float newCollectionInterval,
             bool isDiagnostics);
-    ReturnValue_t changeCollectionInterval(sid_t sid,
-            float newCollectionInterval, bool isDiagnostics);
     ReturnValue_t generateSetStructurePacket(sid_t sid, bool isDiagnostics);
 
     void handleHkUpdateResetListInsertion(DataType dataType, DataId dataId);
@@ -378,25 +378,19 @@ private:
             DataId dataId, MarkChangedIF* toReset);
     void resetHkUpdateResetHelper();
 
-    ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver,
-            ReturnValue_t& status);
-    ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver,
-            ReturnValue_t& status);
-    ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver,
-            ReturnValue_t& status);
-    ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket,
-            store_address_t& storeId);
+    ReturnValue_t handleHkUpdate(HkReceiver& hkReceiver, ReturnValue_t& status);
+    ReturnValue_t handleNotificationUpdate(HkReceiver& hkReceiver, ReturnValue_t& status);
+    ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver, ReturnValue_t& status);
+    ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket, store_address_t& storeId);
 
-    void printWarningOrError(sif::OutputTypes outputType,
-            const char* functionName,
+    void printWarningOrError(sif::OutputTypes outputType, const char* functionName,
             ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
             const char* errorPrint = nullptr);
 };
 
 
 template<class T> inline
-ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
-        PoolEntry<T> **poolEntry) {
+ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId, PoolEntry<T> **poolEntry) {
     auto poolIter = localPoolMap.find(localPoolId);
     if (poolIter == localPoolMap.end()) {
         printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",

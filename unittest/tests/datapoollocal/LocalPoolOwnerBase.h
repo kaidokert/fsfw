@@ -10,6 +10,7 @@
 #include <testcfg/objects/systemObjectList.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
+#include "../../../datapool/PoolReadHelper.h"
 
 namespace lpool {
 static constexpr lp_id_t uint8VarId = 0;
@@ -31,6 +32,23 @@ static const gp_id_t uint64Vec2Id = gp_id_t(objects::TEST_LOCAL_POOL_OWNER_BASE,
 }
 
 
+class LocalPoolStaticTestDataSet: public StaticLocalDataSet<3> {
+public:
+    LocalPoolStaticTestDataSet():
+        StaticLocalDataSet(lpool::testSid) {
+    }
+
+    LocalPoolStaticTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
+        StaticLocalDataSet(owner, setId) {
+    }
+
+    lp_var_t<uint8_t> localPoolVarUint8 = lp_var_t<uint8_t>(lpool::uint8VarGpid, this);
+    lp_var_t<float> localPoolVarFloat = lp_var_t<float>(lpool::floatVarGpid, this);
+    lp_vec_t<uint16_t, 3> localPoolUint16Vec = lp_vec_t<uint16_t, 3>(lpool::uint16Vec3Gpid, this);
+
+private:
+};
+
 class LocalPoolTestDataSet: public LocalDataSet {
 public:
     LocalPoolTestDataSet():
@@ -40,19 +58,6 @@ public:
     LocalPoolTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
         LocalDataSet(owner, setId, lpool::dataSetMaxVariables) {
     }
-
-//    ReturnValue_t assignPointers() {
-//        PoolVariableIF** rawVarArray = getContainer();
-//        localPoolVarUint8 = dynamic_cast<lp_var_t<uint8_t>*>(rawVarArray[0]);
-//        localPoolVarFloat = dynamic_cast<lp_var_t<float>*>(rawVarArray[1]);
-//        localPoolUint16Vec = dynamic_cast<lp_vec_t<uint16_t, 3>*>(
-//                rawVarArray[2]);
-//        if(localPoolVarUint8 == nullptr or  localPoolVarFloat == nullptr or
-//                localPoolUint16Vec == nullptr) {
-//            return HasReturnvaluesIF::RETURN_FAILED;
-//        }
-//        return HasReturnvaluesIF::RETURN_OK;
-//    }
 
     lp_var_t<uint8_t> localPoolVarUint8 = lp_var_t<uint8_t>(lpool::uint8VarGpid, this);
     lp_var_t<float> localPoolVarFloat = lp_var_t<float>(lpool::floatVarGpid, this);
@@ -164,23 +169,60 @@ public:
     }
 
     ReturnValue_t subscribeWrapperSetUpdate() {
-        return poolManager.subscribeForSetUpdateMessages(lpool::testSetId,
+        return poolManager.subscribeForSetUpdateMessage(lpool::testSetId,
                 objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, false);
     }
 
     ReturnValue_t subscribeWrapperSetUpdateSnapshot() {
-        return poolManager.subscribeForSetUpdateMessages(lpool::testSetId,
+        return poolManager.subscribeForSetUpdateMessage(lpool::testSetId,
                 objects::NO_OBJECT, objects::HK_RECEIVER_MOCK, true);
     }
 
     ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false) {
-        return poolManager.subscribeForUpdatePackets(lpool::testSid, diagnostics,
+        return poolManager.subscribeForUpdatePacket(lpool::testSid, diagnostics,
                 false, objects::HK_RECEIVER_MOCK);
     }
 
     ReturnValue_t subscribeWrapperVariableUpdate(lp_id_t localPoolId) {
-        return poolManager.subscribeForVariableUpdateMessages(localPoolId,
+        return poolManager.subscribeForVariableUpdateMessage(localPoolId,
                 MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, false);
+    }
+
+    ReturnValue_t reset() {
+        resetSubscriptionList();
+        ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+        {
+            PoolReadGuard readHelper(&dataset);
+            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+                status = readHelper.getReadResult();
+            }
+            dataset.localPoolVarUint8.value = 0;
+            dataset.localPoolVarFloat.value = 0.0;
+            dataset.localPoolUint16Vec.value[0] = 0;
+            dataset.localPoolUint16Vec.value[1] = 0;
+            dataset.localPoolUint16Vec.value[2] = 0;
+            dataset.setValidity(false, true);
+        }
+
+        {
+            PoolReadGuard readHelper(&testUint32);
+            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+                status = readHelper.getReadResult();
+            }
+            testUint32.value = 0;
+            testUint32.setValid(false);
+        }
+
+        {
+            PoolReadGuard readHelper(&testInt64Vec);
+            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+                status = readHelper.getReadResult();
+            }
+            testInt64Vec.value[0] = 0;
+            testInt64Vec.value[1] = 0;
+            testInt64Vec.setValid(false);
+        }
+        return status;
     }
 
     void resetSubscriptionList() {
@@ -191,14 +233,12 @@ public:
     LocalPoolTestDataSet dataset;
 private:
 
-    lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId,
-            &dataset);
-    lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId,
-            &dataset);
+    lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId);
+    lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId);
     lp_var_t<uint32_t> testUint32 = lp_var_t<uint32_t>(this, lpool::uint32VarId);
 
     lp_vec_t<uint16_t, 3> testUint16Vec = lp_vec_t<uint16_t, 3>(this,
-            lpool::uint16Vec3Id, &dataset);
+            lpool::uint16Vec3Id);
     lp_vec_t<int64_t, 2> testInt64Vec = lp_vec_t<int64_t, 2>(this,
             lpool::int64Vec2Id);
 

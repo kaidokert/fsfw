@@ -13,7 +13,7 @@ ExtendedControllerBase::~ExtendedControllerBase() {
 
 ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
         MessageQueueId_t commandedBy, const uint8_t *data, size_t size) {
-    // needs to be overriden and implemented by child class.
+    /* Needs to be overriden and implemented by child class. */
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -21,7 +21,7 @@ ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
 
 ReturnValue_t ExtendedControllerBase::initializeLocalDataPool(
         localpool::DataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
-    // needs to be overriden and implemented by child class.
+    /* Needs to be overriden and implemented by child class. */
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -96,8 +96,10 @@ ReturnValue_t ExtendedControllerBase::initializeAfterTaskCreation() {
 
 ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
     handleQueue();
-    poolManager.performHkOperation();
     performControlOperation();
+    /* We do this after performing control operation because variables will be set changed
+    in this function. */
+    poolManager.performHkOperation();
     return RETURN_OK;
 }
 

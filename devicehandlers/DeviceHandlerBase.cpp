@@ -308,6 +308,14 @@ void DeviceHandlerBase::doStateMachine() {
         uint32_t currentUptime;
         Clock::getUptime(&currentUptime);
         if (currentUptime - timeoutStart >= childTransitionDelay) {
+#if FSFW_VERBOSE_LEVEL >= 1
+            char printout[60];
+            sprintf(printout, "Transition timeout (%lu) occured !",
+                    static_cast<unsigned long>(childTransitionDelay));
+            /* Very common configuration error, so print it */
+            printWarningOrError(sif::OutputTypes::OUT_WARNING, "doStateMachine",
+                    RETURN_FAILED, printout);
+#endif
             triggerEvent(MODE_TRANSITION_FAILED, childTransitionFailure, 0);
             setMode(transitionSourceMode, transitionSourceSubMode);
             break;
@@ -558,7 +566,7 @@ void DeviceHandlerBase::replyToCommand(ReturnValue_t status,
     if (cookieInfo.pendingCommand->second.sendReplyTo != NO_COMMANDER) {
         MessageQueueId_t queueId = cookieInfo.pendingCommand->second.sendReplyTo;
         if (status == NO_REPLY_EXPECTED) {
-            actionHelper.finish(queueId, cookieInfo.pendingCommand->first,
+            actionHelper.finish(true, queueId, cookieInfo.pendingCommand->first,
                     RETURN_OK);
         } else {
             actionHelper.step(1, queueId, cookieInfo.pendingCommand->first,
@@ -581,7 +589,11 @@ void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
         // Check if it was transition or internal command.
         // Don't send any replies in that case.
         if (info->sendReplyTo != NO_COMMANDER) {
-            actionHelper.finish(info->sendReplyTo, iter->first, status);
+            bool success = false;
+            if(status == HasReturnvaluesIF::RETURN_OK) {
+                success = true;
+            }
+            actionHelper.finish(success, info->sendReplyTo, iter->first, status);
         }
         info->isExecuting = false;
     }
@@ -1494,10 +1506,9 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
 
     if(errorType == sif::OutputTypes::OUT_WARNING) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "DeviceHandlerBase::" << functionName << ": Object ID "
-                << std::hex << std::setw(8) << std::setfill('0')
-                << this->getObjectId() << " | " << errorPrint << std::dec
-                << std::setfill(' ') << std::endl;
+        sif::warning << "DeviceHandlerBase::" << functionName << ": Object ID 0x" << std::hex <<
+                std::setw(8) << std::setfill('0') << this->getObjectId() << " | " << errorPrint <<
+                std::dec << std::setfill(' ') << std::endl;
 #else
         sif::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
                 this->getObjectId(), errorPrint);
