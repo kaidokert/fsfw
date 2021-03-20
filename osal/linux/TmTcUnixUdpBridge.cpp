@@ -150,11 +150,9 @@ void TmTcUnixUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
 #endif
     registerCommConnect();
 
-    /* Set new IP address if it has changed. */
-    if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
-        clientAddress = newAddress;
-        clientAddressLen = sizeof(clientAddress);
-    }
+    /* Set new IP address to reply to. */
+    clientAddress = newAddress;
+    clientAddressLen = sizeof(clientAddress);
 }
 
 void TmTcUnixUdpBridge::setMutexProperties(MutexIF::TimeoutType timeoutType,
