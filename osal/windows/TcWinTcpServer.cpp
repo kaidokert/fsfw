@@ -64,8 +64,10 @@ ReturnValue_t TcWinTcpServer::initialize() {
 
     retval = bind(listenerTcpSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval == SOCKET_ERROR) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "TcWinTcpServer::TcWinTcpServer: Binding socket failed!" <<
                 std::endl;
+#endif
         freeaddrinfo(addrResult);
         handleError(Protocol::TCP, ErrorSources::BIND_CALL);
     }
