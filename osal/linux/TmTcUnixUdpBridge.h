@@ -30,8 +30,6 @@ public:
 
     void checkAndSetClientAddress(sockaddr_in& clientAddress);
 
-    void setClientAddressToAny(bool ipAddrAnySet);
-
 protected:
     virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
 
@@ -41,8 +39,6 @@ private:
 
     struct sockaddr_in clientAddress;
     socklen_t clientAddressLen = 0;
-
-    bool ipAddrAnySet = false;
 
     //! Access to the client address is mutex protected as it is set by another task.
     MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
