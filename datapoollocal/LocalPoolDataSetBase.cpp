@@ -58,8 +58,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registere
     this->sid = sid;
 }
 
-LocalPoolDataSetBase::LocalPoolDataSetBase(
-        PoolVariableIF **registeredVariablesArray,
+LocalPoolDataSetBase::LocalPoolDataSetBase(PoolVariableIF **registeredVariablesArray,
         const size_t maxNumberOfVariables, bool protectEveryReadCommitCall):
 		        PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
     this->setReadCommitProtectionBehaviour(protectEveryReadCommitCall);
@@ -103,7 +102,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
     std::vector<uint8_t> validityMask(validityMaskSize);
     validityPtr = validityMask.data();
 #else
-    uint8_t validityMask[validityMaskSize];
+    uint8_t validityMask[validityMaskSize] = {0};
     validityPtr = validityMask;
 #endif
     uint8_t validBufferIndex = 0;
