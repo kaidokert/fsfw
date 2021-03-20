@@ -1,8 +1,8 @@
 #include "TmTcWinUdpBridge.h"
 #include "tcpipHelpers.h"
 
-#include <fsfw/serviceinterface/ServiceInterface.h>
-#include <fsfw/ipc/MutexGuard.h>
+#include "../../ipc/MutexGuard.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 #include <ws2tcpip.h>
 
