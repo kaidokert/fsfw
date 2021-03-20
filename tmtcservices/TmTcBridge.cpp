@@ -173,6 +173,9 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	store_address_t storeId = 0;
+	if(tmFifo == nullptr) {
+	    return HasReturnvaluesIF::RETURN_FAILED;
+	}
 
 	if(tmFifo->full()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
