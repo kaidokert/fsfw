@@ -1,5 +1,6 @@
-#include <fsfw/ipc/MutexHelper.h>
 #include "TmTcWinUdpBridge.h"
+#include <fsfw/ipc/MutexGuard.h>
+
 
 TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId,
         object_id_t tcDestination, object_id_t tmStoreId, object_id_t tcStoreId,
