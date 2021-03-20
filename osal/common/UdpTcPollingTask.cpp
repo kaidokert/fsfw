@@ -1,4 +1,4 @@
-#include "TcWinUdpPollingTask.h"
+#include "UdpTcPollingTask.h"
 #include "tcpipHelpers.h"
 #include "../../globalfunctions/arrayprinter.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
@@ -8,7 +8,7 @@
 //! Debugging preprocessor define.
 #define FSFW_UDP_RCV_WIRETAPPING_ENABLED    0
 
-TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
+UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId,
 		object_id_t tmtcUnixUdpBridge, size_t frameSize,
 		double timeoutSeconds): SystemObject(objectId),
 		tmtcBridgeId(tmtcUnixUdpBridge) {
@@ -32,9 +32,9 @@ TcWinUdpPollingTask::TcWinUdpPollingTask(object_id_t objectId,
 	}
 }
 
-TcWinUdpPollingTask::~TcWinUdpPollingTask() {}
+UdpTcPollingTask::~UdpTcPollingTask() {}
 
-ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
+ReturnValue_t UdpTcPollingTask::performOperation(uint8_t opCode) {
     /* Sender Address is cached here. */
     struct sockaddr_in senderAddress;
     int senderAddressSize = sizeof(senderAddress);
@@ -52,13 +52,13 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 		if(bytesReceived == SOCKET_ERROR) {
 			/* Handle error */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "TcWinUdpPollingTask::performOperation: Reception error." << std::endl;
+			sif::error << "UdpTcPollingTask::performOperation: Reception error." << std::endl;
 #endif
 			tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::RECVFROM_CALL, 1000);
 			continue;
 		}
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
-		sif::debug << "TcWinUdpPollingTask::performOperation: " << bytesReceived <<
+		sif::debug << "UdpTcPollingTask::performOperation: " << bytesReceived <<
 		        " bytes received" << std::endl;
 #endif
 
@@ -72,7 +72,7 @@ ReturnValue_t TcWinUdpPollingTask::performOperation(uint8_t opCode) {
 }
 
 
-ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
+ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	store_address_t storeId;
 
 #if FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
@@ -83,7 +83,7 @@ ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning<< "TcWinUdpPollingTask::transferPusToSoftwareBus: Data storage failed." <<
+		sif::warning<< "UdpTcPollingTask::transferPusToSoftwareBus: Data storage failed." <<
 		        std::endl;
 		sif::warning << "Packet size: " << bytesRead << std::endl;
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
@@ -97,7 +97,7 @@ ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "TcWinUdpPollingTask::handleSuccessfullTcRead: "
+		sif::warning << "UdpTcPollingTask::handleSuccessfullTcRead: "
 		        " Sending message to queue failed" << std::endl;
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
@@ -106,37 +106,44 @@ ReturnValue_t TcWinUdpPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 	return result;
 }
 
-ReturnValue_t TcWinUdpPollingTask::initialize() {
+ReturnValue_t UdpTcPollingTask::initialize() {
 	tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 	if (tcStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TcWinUdpPollingTask::initialize: TC store uninitialized!" << std::endl;
+		sif::error << "UdpTcPollingTask::initialize: TC store uninitialized!" << std::endl;
 #endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
-	tmtcBridge = objectManager->get<TmTcWinUdpBridge>(tmtcBridgeId);
+	tmtcBridge = objectManager->get<UdpTmTcBridge>(tmtcBridgeId);
 	if(tmtcBridge == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "TcWinUdpPollingTask::initialize: Invalid TMTC bridge object!" <<
+		sif::error << "UdpTcPollingTask::initialize: Invalid TMTC bridge object!" <<
 		        std::endl;
 #endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
+
+    ReturnValue_t result = TcpIpBase::initialize();
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t TcWinUdpPollingTask::initializeAfterTaskCreation() {
+ReturnValue_t UdpTcPollingTask::initializeAfterTaskCreation() {
 	/* Initialize the destination after task creation. This ensures
 	that the destination has already been set in the TMTC bridge. */
 	targetTcDestination = tmtcBridge->getRequestQueue();
 	/* The server socket is set up in the bridge intialization. Calling this function here
-	ensures that it is set up properly in any case*/
+	ensures that it is set up regardless of which class was initialized first */
     serverUdpSocket = tmtcBridge->serverSocket;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TcWinUdpPollingTask::setTimeout(double timeoutSeconds) {
+void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
+#ifdef _WIN32
 	DWORD timeoutMs = timeoutSeconds * 1000.0;
 	int result = setsockopt(serverUdpSocket, SOL_SOCKET, SO_RCVTIMEO,
 			reinterpret_cast<const char*>(&timeoutMs), sizeof(DWORD));
@@ -146,4 +153,6 @@ void TcWinUdpPollingTask::setTimeout(double timeoutSeconds) {
 				"receive timeout failed with " << strerror(errno) << std::endl;
 #endif
 	}
+#elif defined(__unix__)
+#endif
 }

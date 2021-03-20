@@ -1,16 +1,24 @@
-#include "TmTcWinUdpBridge.h"
 #include "tcpipHelpers.h"
 
 #include <fsfw/serviceinterface/ServiceInterface.h>
 #include <fsfw/ipc/MutexGuard.h>
+#include <fsfw/osal/common/UdpTmTcBridge.h>
+
+#ifdef _WIN32
 #include <ws2tcpip.h>
+
+#elif defined(__unix__)
+
+#include <arap/inet.h>
+
+#endif
 
 //! Debugging preprocessor define.
 #define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
 
-const std::string TmTcWinUdpBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_UDP_SERVER_PORT;
+const std::string UdpTmTcBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
 
-TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId, object_id_t tcDestination,
+UdpTmTcBridge::UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
         object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort):
         TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
     if(udpServerPort == "") {
@@ -24,16 +32,18 @@ TmTcWinUdpBridge::TmTcWinUdpBridge(object_id_t objectId, object_id_t tcDestinati
     communicationLinkUp = false;
 }
 
-ReturnValue_t TmTcWinUdpBridge::initialize() {
+ReturnValue_t UdpTmTcBridge::initialize() {
     ReturnValue_t result = TmTcBridge::initialize();
     if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcWinUdpBridge::initialize: TmTcBridge initialization failed!"
+        sif::error << "TmTcUdpBridge::initialize: TmTcBridge initialization failed!"
                 << std::endl;
 #endif
         return result;
     }
 
+
+#ifdef _WIN32
     /* Initiates Winsock DLL. */
     WSAData wsaData;
     WORD wVersionRequested = MAKEWORD(2, 2);
@@ -42,26 +52,28 @@ ReturnValue_t TmTcWinUdpBridge::initialize() {
         /* Tell the user that we could not find a usable */
         /* Winsock DLL.                                  */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: WSAStartup failed with error: " <<
+        sif::error << "TmTcUdpBridge::TmTcUdpBridge: WSAStartup failed with error: " <<
                 err << std::endl;
 #else
-        sif::printError("TmTcWinUdpBridge::TmTcWinUdpBridge: WSAStartup failed with error: %d\n",
+        sif::printError("TmTcUdpBridge::TmTcUdpBridge: WSAStartup failed with error: %d\n",
                 err);
 #endif
         return HasReturnvaluesIF::RETURN_FAILED;
     }
+#endif
 
     struct addrinfo *addrResult = nullptr;
-    struct addrinfo hints;
+    struct addrinfo hints = { 0 };
 
-    ZeroMemory(&hints, sizeof (hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
+#ifdef _WIN32
     /* See:
     https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo
     for information about AI_PASSIVE. */
     hints.ai_flags = AI_PASSIVE;
+#endif
 
     /* Set up UDP socket:
     https://en.wikipedia.org/wiki/Getaddrinfo
@@ -70,7 +82,7 @@ ReturnValue_t TmTcWinUdpBridge::initialize() {
     int retval = getaddrinfo(nullptr, udpServerPort.c_str(), &hints, &addrResult);
     if (retval != 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TmTcWinUdpBridge::TmTcWinUdpBridge: Retrieving address info failed!" <<
+        sif::warning << "TmTcUdpBridge::TmTcUdpBridge: Retrieving address info failed!" <<
                 std::endl;
 #endif
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -79,7 +91,7 @@ ReturnValue_t TmTcWinUdpBridge::initialize() {
     serverSocket = socket(addrResult->ai_family, addrResult->ai_socktype, addrResult->ai_protocol);
     if(serverSocket == INVALID_SOCKET) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not open UDP socket!" <<
+        sif::warning << "TmTcUdpBridge::TmTcUdpBridge: Could not open UDP socket!" <<
                 std::endl;
 #endif
         freeaddrinfo(addrResult);
@@ -90,7 +102,7 @@ ReturnValue_t TmTcWinUdpBridge::initialize() {
     retval = bind(serverSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval != 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: Could not bind "
+        sif::error << "TmTcUdpBridge::TmTcUdpBridge: Could not bind "
                 "local port (" << udpServerPort << ") to server socket!" << std::endl;
 #endif
         freeaddrinfo(addrResult);
@@ -100,15 +112,13 @@ ReturnValue_t TmTcWinUdpBridge::initialize() {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-TmTcWinUdpBridge::~TmTcWinUdpBridge() {
+UdpTmTcBridge::~UdpTmTcBridge() {
     if(mutex != nullptr) {
         MutexFactory::instance()->deleteMutex(mutex);
     }
-    closesocket(serverSocket);
-    WSACleanup();
 }
 
-ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
+ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
     int flags = 0;
 
     /* The target address can be set by different threads so this lock ensures thread-safety */
@@ -130,18 +140,18 @@ ReturnValue_t TmTcWinUdpBridge::sendTm(const uint8_t *data, size_t dataLen) {
     );
     if(bytesSent == SOCKET_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TmTcWinUdpBridge::sendTm: Send operation failed." << std::endl;
+        sif::warning << "TmTcUdpBridge::sendTm: Send operation failed." << std::endl;
 #endif
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SENDTO_CALL);
     }
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
-    sif::debug << "TmTcUnixUdpBridge::sendTm: " << bytesSent << " bytes were"
+    sif::debug << "TmTcUdpBridge::sendTm: " << bytesSent << " bytes were"
             " sent." << std::endl;
 #endif
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
+void UdpTmTcBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
     /* The target address can be set by different threads so this lock ensures thread-safety */
     MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
@@ -159,7 +169,7 @@ void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
     clientAddressLen = sizeof(clientAddress);
 }
 
-void TmTcWinUdpBridge::setMutexProperties(MutexIF::TimeoutType timeoutType,
+void UdpTmTcBridge::setMutexProperties(MutexIF::TimeoutType timeoutType,
         dur_millis_t timeoutMs) {
     this->timeoutType = timeoutType;
     this->mutexTimeoutMs = timeoutMs;

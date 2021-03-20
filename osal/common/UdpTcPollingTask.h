@@ -1,7 +1,7 @@
 #ifndef FSFW_OSAL_WINDOWS_TCSOCKETPOLLINGTASK_H_
 #define FSFW_OSAL_WINDOWS_TCSOCKETPOLLINGTASK_H_
 
-#include "TmTcWinUdpBridge.h"
+#include "UdpTmTcBridge.h"
 #include "../../objectmanager/SystemObject.h"
 #include "../../tasks/ExecutableObjectIF.h"
 #include "../../storagemanager/StorageManagerIF.h"
@@ -17,7 +17,9 @@
  * This class caches the IP address of the sender. It is assumed there
  * is only one sender for now.
  */
-class TcWinUdpPollingTask: public SystemObject,
+class UdpTcPollingTask:
+        public TcpIpBase,
+        public SystemObject,
 		public ExecutableObjectIF {
 	friend class TmTcWinUdpBridge;
 public:
@@ -25,9 +27,9 @@ public:
 	//! 0.5  default milliseconds timeout for now.
 	static constexpr timeval DEFAULT_TIMEOUT = {0, 500};
 
-	TcWinUdpPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
+	UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
 			size_t frameSize = 0, double timeoutSeconds = -1);
-	virtual~ TcWinUdpPollingTask();
+	virtual~ UdpTcPollingTask();
 
 	/**
 	 * Turn on optional timeout for UDP polling. In the default mode,
@@ -46,7 +48,7 @@ protected:
 private:
 	//! TMTC bridge is cached.
 	object_id_t tmtcBridgeId = objects::NO_OBJECT;
-	TmTcWinUdpBridge* tmtcBridge = nullptr;
+	UdpTmTcBridge* tmtcBridge = nullptr;
 	MessageQueueId_t targetTcDestination = MessageQueueIF::NO_QUEUE;
 
 	//! See: https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
