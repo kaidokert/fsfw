@@ -11,13 +11,6 @@ TcpIpBase::TcpIpBase() {
 
 }
 
-TcpIpBase::~TcpIpBase() {
-    closeSocket(serverSocket);
-#ifdef _WIN32
-    WSACleanup();
-#endif
-}
-
 ReturnValue_t TcpIpBase::initialize() {
 #ifdef _WIN32
     /* Initiates Winsock DLL. */
@@ -34,6 +27,13 @@ ReturnValue_t TcpIpBase::initialize() {
     }
 #endif
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+TcpIpBase::~TcpIpBase() {
+    closeSocket(serverSocket);
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 int TcpIpBase::closeSocket(socket_t socket) {
