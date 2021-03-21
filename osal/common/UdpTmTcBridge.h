@@ -4,8 +4,14 @@
 #include "TcpIpBase.h"
 #include "../../tmtcservices/TmTcBridge.h"
 
-#ifdef __unix__
+#ifdef _WIN32
+
+#include <ws2tcpip.h>
+
+#elif defined(__unix__)
+
 #include <sys/socket.h>
+
 #endif
 
 #include <string>

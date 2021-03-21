@@ -154,7 +154,7 @@ ReturnValue_t UdpTcPollingTask::initializeAfterTaskCreation() {
 void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
 #ifdef _WIN32
     DWORD timeoutMs = timeoutSeconds * 1000.0;
-    int result = setsockopt(serverUdpSocket, SOL_SOCKET, SO_RCVTIMEO,
+    int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO,
             reinterpret_cast<const char*>(&timeoutMs), sizeof(DWORD));
     if(result == -1) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

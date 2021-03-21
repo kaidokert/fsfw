@@ -8,29 +8,13 @@
 #endif
 
 TcpIpBase::TcpIpBase() {
-    closeSocket(serverSocket);
+
 }
 
 TcpIpBase::~TcpIpBase() {
+    closeSocket(serverSocket);
 #ifdef _WIN32
     WSACleanup();
-#endif
-}
-
-
-int TcpIpBase::closeSocket(socket_t socket) {
-#ifdef _WIN32
-    return closesocket(socket);
-#elif defined(__unix__)
-    return close(socket);
-#endif
-}
-
-int TcpIpBase::getLastSocketError() {
-#ifdef _WIN32
-    return WSAGetLastError();
-#elif defined(__unix__)
-    return errno;
 #endif
 }
 
@@ -51,3 +35,20 @@ ReturnValue_t TcpIpBase::initialize() {
 #endif
     return HasReturnvaluesIF::RETURN_OK;
 }
+
+int TcpIpBase::closeSocket(socket_t socket) {
+#ifdef _WIN32
+    return closesocket(socket);
+#elif defined(__unix__)
+    return close(socket);
+#endif
+}
+
+int TcpIpBase::getLastSocketError() {
+#ifdef _WIN32
+    return WSAGetLastError();
+#elif defined(__unix__)
+    return errno;
+#endif
+}
+
