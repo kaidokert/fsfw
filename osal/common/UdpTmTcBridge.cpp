@@ -70,12 +70,14 @@ ReturnValue_t UdpTmTcBridge::initialize() {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
-#ifdef _WIN32
-    /* See:
-    https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo
-    for information about AI_PASSIVE. */
-    hints.ai_flags = AI_PASSIVE;
-#endif
+//#ifdef _WIN32
+//    /* See:
+//    https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo
+//    and
+//
+//    for information about AI_PASSIVE. */
+//    hints.ai_flags = AI_PASSIVE;
+//#endif
 
     /* Set up UDP socket:
     https://en.wikipedia.org/wiki/Getaddrinfo

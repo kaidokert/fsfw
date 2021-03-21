@@ -23,12 +23,12 @@ class UdpTcPollingTask:
 		public ExecutableObjectIF {
 	friend class TmTcWinUdpBridge;
 public:
-	static constexpr size_t DEFAULT_MAX_FRAME_SIZE = 2048;
+	static constexpr size_t DEFAULT_MAX_RECV_SIZE = 1500;
 	//! 0.5  default milliseconds timeout for now.
 	static constexpr timeval DEFAULT_TIMEOUT = {0, 500};
 
 	UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
-			size_t frameSize = 0, double timeoutSeconds = -1);
+			size_t maxRecvSize = 0, double timeoutSeconds = -1);
 	virtual~ UdpTcPollingTask();
 
 	/**
