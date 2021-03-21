@@ -3,7 +3,16 @@
 #include "../../globalfunctions/arrayprinter.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
+#ifdef _WIN32
+
 #include <winsock2.h>
+
+#else
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#endif
 
 //! Debugging preprocessor define.
 #define FSFW_UDP_RCV_WIRETAPPING_ENABLED    0
@@ -36,17 +45,17 @@ UdpTcPollingTask::~UdpTcPollingTask() {}
 
 ReturnValue_t UdpTcPollingTask::performOperation(uint8_t opCode) {
     /* Sender Address is cached here. */
-    struct sockaddr_in senderAddress;
-    int senderAddressSize = sizeof(senderAddress);
+    struct sockaddr senderAddress;
+    socklen_t senderAddressSize = sizeof(senderAddress);
 
 	/* Poll for new UDP datagrams in permanent loop. */
 	while(true) {
 		int bytesReceived = recvfrom(
-		        serverUdpSocket,
+		        this->serverSocket,
 		        reinterpret_cast<char*>(receptionBuffer.data()),
 		        frameSize,
 				receptionFlags,
-				reinterpret_cast<sockaddr*>(&senderAddress),
+				&senderAddress,
 				&senderAddressSize
 		);
 		if(bytesReceived == SOCKET_ERROR) {
@@ -138,7 +147,7 @@ ReturnValue_t UdpTcPollingTask::initializeAfterTaskCreation() {
 	targetTcDestination = tmtcBridge->getRequestQueue();
 	/* The server socket is set up in the bridge intialization. Calling this function here
 	ensures that it is set up regardless of which class was initialized first */
-    serverUdpSocket = tmtcBridge->serverSocket;
+    this->serverSocket = tmtcBridge->serverSocket;
 	return HasReturnvaluesIF::RETURN_OK;
 }
 

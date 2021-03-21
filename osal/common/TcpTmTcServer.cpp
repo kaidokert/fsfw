@@ -5,6 +5,11 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+#elif defined(__unix__)
+
+#include <netdb.h>
+
 #endif
 
 const std::string TcpTmTcServer::DEFAULT_TCP_SERVER_PORT =  "7301";
@@ -30,7 +35,6 @@ ReturnValue_t TcpTmTcServer::initialize() {
     struct addrinfo *addrResult = nullptr;
     struct addrinfo hints = { 0 };
 
-    ZeroMemory(&hints, sizeof (hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -74,16 +78,15 @@ ReturnValue_t TcpTmTcServer::initialize() {
 
 
 TcpTmTcServer::~TcpTmTcServer() {
-    closesocket(listenerTcpSocket);
-    WSACleanup();
+    closeSocket(listenerTcpSocket);
 }
 
 ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
     using namespace tcpip;
     /* If a connection is accepted, the corresponding socket will be assigned to the new socket */
-    SOCKET clientSocket;
-    sockaddr_in clientSockAddr;
-    int connectorSockAddrLen = 0;
+    socket_t clientSocket;
+    sockaddr clientSockAddr;
+    socklen_t connectorSockAddrLen = 0;
     int retval = 0;
 
     /* Listen for connection requests permanently for lifetime of program */
@@ -94,8 +97,7 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
             continue;
         }
 
-        clientSocket = accept(listenerTcpSocket, reinterpret_cast<sockaddr*>(&clientSockAddr),
-                &connectorSockAddrLen);
+        clientSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
 
         if(clientSocket == INVALID_SOCKET) {
             handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
@@ -119,7 +121,7 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
         }
 
         /* Done, shut down connection */
-        retval = shutdown(clientSocket, SD_SEND);
+        retval = shutdown(clientSocket, SHUT_SEND);
     }
     return HasReturnvaluesIF::RETURN_OK;
 }

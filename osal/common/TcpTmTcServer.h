@@ -5,6 +5,10 @@
 #include "../../objectmanager/SystemObject.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
+#ifdef __unix__
+#include <sys/socket.h>
+#endif
+
 #include <string>
 #include <vector>
 
@@ -36,7 +40,7 @@ private:
 
     std::string tcpPort;
     socket_t listenerTcpSocket = 0;
-    struct sockaddr_in tcpAddress;
+    struct sockaddr tcpAddress;
     int tcpAddrLen = sizeof(tcpAddress);
     int currentBacklog = 3;
 

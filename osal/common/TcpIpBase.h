@@ -9,6 +9,7 @@
 
 #elif defined(__unix__)
 
+#include <sys/socket.h>
 
 #endif
 

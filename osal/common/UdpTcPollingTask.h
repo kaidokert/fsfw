@@ -54,10 +54,6 @@ private:
 	//! See: https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
 	int receptionFlags = 0;
 
-	//! Server socket, which is member of TMTC bridge.
-	//! Will be cached shortly after SW intialization.
-	SOCKET serverUdpSocket = 0;
-
 	std::vector<uint8_t> receptionBuffer;
 
 	size_t frameSize = 0;

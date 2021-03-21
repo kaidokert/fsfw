@@ -5,11 +5,13 @@
 #include <fsfw/osal/common/UdpTmTcBridge.h>
 
 #ifdef _WIN32
+
 #include <ws2tcpip.h>
 
 #elif defined(__unix__)
 
-#include <arap/inet.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
 #endif
 
@@ -135,7 +137,7 @@ ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
             reinterpret_cast<const char*>(data),
             dataLen,
             flags,
-            reinterpret_cast<sockaddr*>(&clientAddress),
+            &clientAddress,
             clientAddressLen
     );
     if(bytesSent == SOCKET_ERROR) {
@@ -151,7 +153,7 @@ ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void UdpTmTcBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
+void UdpTmTcBridge::checkAndSetClientAddress(sockaddr& newAddress) {
     /* The target address can be set by different threads so this lock ensures thread-safety */
     MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 

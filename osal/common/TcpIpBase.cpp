@@ -2,6 +2,7 @@
 
 #ifdef __unix__
 
+#include <errno.h>
 #include <unistd.h>
 
 #endif
@@ -21,7 +22,7 @@ int TcpIpBase::closeSocket(socket_t socket) {
 #ifdef _WIN32
     return closesocket(socket);
 #elif defined(__unix__)
-    return close(socket)
+    return close(socket);
 #endif
 }
 
