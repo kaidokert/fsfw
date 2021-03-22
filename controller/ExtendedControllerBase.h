@@ -66,7 +66,7 @@ protected:
     virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
             LocalDataPoolManager& poolManager) override = 0;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid, store_address_t storeId,
-            bool* clearMessage = nullptr) override = 0;
+            bool* clearMessage) override = 0;
 };
 
 
