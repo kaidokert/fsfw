@@ -22,9 +22,23 @@ public:
 	/**
 	 * Creates a new periodic task and returns the interface pointer.
 	 * @param name_ Name of the task
-	 * @param taskPriority_ Priority of the task
+	 * @param taskPriority_
+	 * Priority of the task. This value might have different ranges for the various OSALs.
+	 * Linux: Value ranging from 0 to 99 with 99 being the highest value.
+	 * Host: Value can be retrieved by using the #tasks::makeWinPriority function.
+	 * FreeRTOS: Value depends on the FreeRTOS configuration, higher number means higher priority
+	 * RTEMS: Values ranging from 0 to 99 with 99 being the highest value.
+	 *
 	 * @param stackSize_ Stack Size of the task
+	 * This value might have different recommended ranges for the various OSALs.
+	 * Linux: Lowest limit is the PeriodicTaskIF::MINIMUM_STACK_SIZE value
+	 * Host: Value is ignored for now because the C++ threading abstraction layer is used.
+	 * FreeRTOS: Stack size in bytes. It is recommended to specify at least 1kB of stack for
+	 * FSFW tasks, but the lowest possible size is specified in the FreeRTOSConfig.h file.
+	 * RTEMS: Lowest limit is the PeriodicTaskIF::MINIMUM_STACK_SIZE value.
+	 *
 	 * @param period_ Period of the task
+	 *
 	 * @param deadLineMissedFunction_ Function to be called if a deadline was missed
 	 * @return PeriodicTaskIF* Pointer to the newly created Task
 	 */

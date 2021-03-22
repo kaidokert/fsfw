@@ -6,7 +6,7 @@
 #include <errno.h>
 
 PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
-		thread(0),priority(priority_),stackSize(stackSize_) {
+		thread(0), priority(priority_), stackSize(stackSize_) {
     name[0] = '\0';
     std::strncat(name, name_, PTHREAD_MAX_NAMELEN - 1);
 }
@@ -75,18 +75,18 @@ bool PosixThread::delayUntil(uint64_t* const prevoiusWakeTime_ms,
 
 	if (currentTime_ms < *prevoiusWakeTime_ms) {
 		/* The tick count has overflowed since this function was
-		 lasted called.  In this case the only time we should ever
-		 actually delay is if the wake time has also	overflowed,
-		 and the wake time is greater than the tick time.  When this
-		 is the case it is as if neither time had overflowed. */
+		lasted called.  In this case the only time we should ever
+		actually delay is if the wake time has also overflowed,
+		and the wake time is greater than the tick time. When this
+		is the case it is as if neither time had overflowed. */
 		if ((nextTimeToWake_ms < *prevoiusWakeTime_ms)
 				&& (nextTimeToWake_ms > currentTime_ms)) {
 			shouldDelay = true;
 		}
 	} else {
-		/* The tick time has not overflowed.  In this case we will
-		 delay if either the wake time has overflowed, and/or the
-		 tick time is less than the wake time. */
+		/* The tick time has not overflowed. In this case we will
+		delay if either the wake time has overflowed, and/or the
+		tick time is less than the wake time. */
 		if ((nextTimeToWake_ms < *prevoiusWakeTime_ms)
 				|| (nextTimeToWake_ms > currentTime_ms)) {
 			shouldDelay = true;

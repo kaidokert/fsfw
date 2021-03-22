@@ -1,14 +1,21 @@
-#include "TcWinTcpServer.h"
+#include "TcpTmTcServer.h"
 #include "tcpipHelpers.h"
 #include "../../serviceinterface/ServiceInterface.h"
 
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-const std::string TcWinTcpServer::DEFAULT_TCP_SERVER_PORT =  "7301";
-const std::string TcWinTcpServer::DEFAULT_TCP_CLIENT_PORT =  "7302";
+#elif defined(__unix__)
 
-TcWinTcpServer::TcWinTcpServer(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
+#include <netdb.h>
+
+#endif
+
+const std::string TcpTmTcServer::DEFAULT_TCP_SERVER_PORT =  "7301";
+const std::string TcpTmTcServer::DEFAULT_TCP_CLIENT_PORT =  "7302";
+
+TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
         std::string customTcpServerPort):
         SystemObject(objectId), tcpPort(customTcpServerPort) {
     if(tcpPort == "") {
@@ -16,25 +23,18 @@ TcWinTcpServer::TcWinTcpServer(object_id_t objectId, object_id_t tmtcUnixUdpBrid
     }
 }
 
-ReturnValue_t TcWinTcpServer::initialize() {
+ReturnValue_t TcpTmTcServer::initialize() {
     using namespace tcpip;
-    int retval = 0;
-    struct addrinfo *addrResult = nullptr;
-    struct addrinfo hints;
-    /* Initiates Winsock DLL. */
-    WSAData wsaData;
-    WORD wVersionRequested = MAKEWORD(2, 2);
-    int err = WSAStartup(wVersionRequested, &wsaData);
-    if (err != 0) {
-        /* Tell the user that we could not find a usable Winsock DLL. */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: WSAStartup failed with error: " <<
-                err << std::endl;
-#endif
-        return HasReturnvaluesIF::RETURN_FAILED;
+
+    ReturnValue_t result = TcpIpBase::initialize();
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
     }
 
-    ZeroMemory(&hints, sizeof (hints));
+    int retval = 0;
+    struct addrinfo *addrResult = nullptr;
+    struct addrinfo hints = { 0 };
+
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -43,7 +43,7 @@ ReturnValue_t TcWinTcpServer::initialize() {
     retval = getaddrinfo(nullptr, tcpPort.c_str(), &hints, &addrResult);
     if (retval != 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TcWinTcpServer::TcWinTcpServer: Retrieving address info failed!" <<
+        sif::warning << "TcWinTcpServer::TcpTmTcServer: Retrieving address info failed!" <<
                 std::endl;
 #endif
         handleError(Protocol::TCP, ErrorSources::GETADDRINFO_CALL);
@@ -65,7 +65,7 @@ ReturnValue_t TcWinTcpServer::initialize() {
     retval = bind(listenerTcpSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval == SOCKET_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TcWinTcpServer::TcWinTcpServer: Binding socket failed!" <<
+        sif::warning << "TcWinTcpServer::TcpTmTcServer: Binding socket failed!" <<
                 std::endl;
 #endif
         freeaddrinfo(addrResult);
@@ -77,17 +77,16 @@ ReturnValue_t TcWinTcpServer::initialize() {
 }
 
 
-TcWinTcpServer::~TcWinTcpServer() {
-    closesocket(listenerTcpSocket);
-    WSACleanup();
+TcpTmTcServer::~TcpTmTcServer() {
+    closeSocket(listenerTcpSocket);
 }
 
-ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
+ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
     using namespace tcpip;
     /* If a connection is accepted, the corresponding socket will be assigned to the new socket */
-    SOCKET clientSocket;
-    sockaddr_in clientSockAddr;
-    int connectorSockAddrLen = 0;
+    socket_t clientSocket;
+    sockaddr clientSockAddr;
+    socklen_t connectorSockAddrLen = 0;
     int retval = 0;
 
     /* Listen for connection requests permanently for lifetime of program */
@@ -98,8 +97,7 @@ ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
             continue;
         }
 
-        clientSocket = accept(listenerTcpSocket, reinterpret_cast<sockaddr*>(&clientSockAddr),
-                &connectorSockAddrLen);
+        clientSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
 
         if(clientSocket == INVALID_SOCKET) {
             handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
@@ -110,7 +108,7 @@ ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
                 receptionBuffer.size(), 0);
         if(retval > 0) {
 #if FSFW_TCP_RCV_WIRETAPPING_ENABLED == 1
-            sif::info << "TcWinTcpServer::performOperation: Received " << retval << " bytes."
+            sif::info << "TcpTmTcServer::performOperation: Received " << retval << " bytes."
                     std::endl;
 #endif
             handleError(Protocol::TCP, ErrorSources::RECV_CALL, 500);
@@ -123,7 +121,7 @@ ReturnValue_t TcWinTcpServer::performOperation(uint8_t opCode) {
         }
 
         /* Done, shut down connection */
-        retval = shutdown(clientSocket, SD_SEND);
+        retval = shutdown(clientSocket, SHUT_SEND);
     }
     return HasReturnvaluesIF::RETURN_OK;
 }

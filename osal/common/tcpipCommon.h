@@ -6,8 +6,7 @@
 
 namespace tcpip {
 
-const char* const DEFAULT_UDP_SERVER_PORT = "7301";
-const char* const DEFAULT_TCP_SERVER_PORT = "7303";
+const char* const DEFAULT_SERVER_PORT = "7301";
 
 enum class Protocol {
     UDP,

@@ -1,14 +1,20 @@
+#include "../../tasks/TaskFactory.h"
 #include "../../osal/host/FixedTimeslotTask.h"
 #include "../../osal/host/PeriodicTask.h"
-#include "../../tasks/TaskFactory.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
+
+#ifdef _WIN32
+
+#include "../windows/winTaskHelpers.h"
+
+#endif
 
 #include <chrono>
 
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
 
-// Will propably not be used for hosted implementation
+// Not used for the host implementation for now because C++ thread abstraction is used
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = 0;
 
 TaskFactory::TaskFactory() {
@@ -49,8 +55,33 @@ ReturnValue_t TaskFactory::delayTask(uint32_t delayMs){
 }
 
 void TaskFactory::printMissedDeadline() {
-    /* TODO: Implement */
-    return;
+#ifdef __unix__
+    char name[20] = {0};
+    int status = pthread_getname_np(pthread_self(), name, sizeof(name));
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    if(status == 0) {
+        sif::warning << "TaskFactory::printMissedDeadline: " << name << "" << std::endl;
+    }
+    else {
+        sif::warning << "TaskFactory::printMissedDeadline: Unknown task name" << status <<
+                std::endl;
+    }
+#else
+    if(status == 0) {
+        sif::printWarning("TaskFactory::printMissedDeadline: %s\n", name);
+    }
+    else {
+        sif::printWarning("TaskFactory::printMissedDeadline: Unknown task name\n", name);
+    }
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#elif defined(_WIN32)
+    std::string name = tasks::getTaskName(std::this_thread::get_id());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::warning << "TaskFactory::printMissedDeadline: " << name << std::endl;
+#else
+    sif::printWarning("TaskFactory::printMissedDeadline: %s\n", name);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* defined(_WIN32) */
 }
 
 
