@@ -3,6 +3,7 @@
 
 #include "../../tmtcservices/TmTcBridge.h"
 
+#include <string>
 #include <winsock2.h>
 
 class TmTcWinUdpBridge: public TmTcBridge {
