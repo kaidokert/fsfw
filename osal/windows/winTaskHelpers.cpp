@@ -1,9 +1,6 @@
 #include <fsfw/osal/windows/winTaskHelpers.h>
 #include <mutex>
 
-std::mutex nameMapLock;
-std::map<std::thread::id, std::string> taskNameMap;
-
 TaskPriority tasks::makeWinPriority(PriorityClass prioClass, PriorityNumber prioNumber) {
     return (static_cast<uint16_t>(prioClass) << 16) | static_cast<uint16_t> (prioNumber);
 }
@@ -107,24 +104,4 @@ ReturnValue_t tasks::setTaskPriority(HANDLE nativeHandle, TaskPriority priority)
 #endif
     }
     return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t tasks::insertTaskName(std::thread::id threadId, std::string taskName) {
-    std::lock_guard<std::mutex> lg(nameMapLock);
-    auto returnPair = taskNameMap.emplace(threadId, taskName);
-    if(not returnPair.second) {
-        return HasReturnvaluesIF::RETURN_FAILED;
-    }
-    return HasReturnvaluesIF::RETURN_OK;
-}
-
-std::string tasks::getTaskName(std::thread::id threadId) {
-    std::lock_guard<std::mutex> lg(nameMapLock);
-    auto resultIter = taskNameMap.find(threadId);
-    if(resultIter != taskNameMap.end()) {
-        return resultIter->second;
-    }
-    else {
-        return "Unknown task";
-    }
 }

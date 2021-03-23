@@ -1,5 +1,6 @@
 #include "Mutex.h"
 #include "PeriodicTask.h"
+#include "taskHelpers.h"
 
 #include "../../ipc/MutexFactory.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"

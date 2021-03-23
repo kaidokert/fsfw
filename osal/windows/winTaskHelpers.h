@@ -31,9 +31,6 @@ void getWinPriorityParameters(TaskPriority priority, DWORD& priorityClass,
 
 ReturnValue_t setTaskPriority(HANDLE nativeHandle, TaskPriority priority);
 
-ReturnValue_t insertTaskName(std::thread::id threadId, std::string taskName);
-std::string getTaskName(std::thread::id threadId);
-
 }
 
 #endif
