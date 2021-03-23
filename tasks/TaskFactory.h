@@ -51,7 +51,8 @@ public:
 			TaskDeadlineMissedFunction deadLineMissedFunction_);
 
 	/**
-	 *
+	 * The meaning for the variables for fixed timeslot tasks is the same as for periodic tasks.
+	 * See #createPeriodicTask documentation.
 	 * @param name_ Name of the task
 	 * @param taskPriority_ Priority of the task
 	 * @param stackSize_ Stack Size of the task
