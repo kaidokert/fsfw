@@ -53,12 +53,14 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
     }
 #endif
 
-    PoolReadGuard readGuard(&internalErrorDataset);
-    if(readGuard.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
-        internalErrorDataset.queueHits.value += newQueueHits;
-        internalErrorDataset.storeHits.value += newStoreHits;
-        internalErrorDataset.tmHits.value += newTmHits;
-        internalErrorDataset.setValidity(true, true);
+    {
+        PoolReadGuard readGuard(&internalErrorDataset);
+        if(readGuard.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
+            internalErrorDataset.queueHits.value += newQueueHits;
+            internalErrorDataset.storeHits.value += newStoreHits;
+            internalErrorDataset.tmHits.value += newTmHits;
+            internalErrorDataset.setValidity(true, true);
+        }
     }
 
     poolManager.performHkOperation();
