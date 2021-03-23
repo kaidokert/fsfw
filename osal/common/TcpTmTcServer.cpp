@@ -33,7 +33,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
 
     int retval = 0;
     struct addrinfo *addrResult = nullptr;
-    struct addrinfo hints = { 0 };
+    struct addrinfo hints = {};
 
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
