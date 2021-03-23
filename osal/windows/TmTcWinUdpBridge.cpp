@@ -58,6 +58,9 @@ ReturnValue_t TmTcWinUdpBridge::initialize() {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
+    /* See:
+    https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo
+    for information about AI_PASSIVE. */
     hints.ai_flags = AI_PASSIVE;
 
     /* Set up UDP socket:
@@ -151,11 +154,9 @@ void TmTcWinUdpBridge::checkAndSetClientAddress(sockaddr_in& newAddress) {
 #endif
     registerCommConnect();
 
-    /* Set new IP address if it has changed. */
-    if(clientAddress.sin_addr.s_addr != newAddress.sin_addr.s_addr) {
-        clientAddress = newAddress;
-        clientAddressLen = sizeof(clientAddress);
-    }
+    /* Set new IP address to reply to */
+    clientAddress = newAddress;
+    clientAddressLen = sizeof(clientAddress);
 }
 
 void TmTcWinUdpBridge::setMutexProperties(MutexIF::TimeoutType timeoutType,
