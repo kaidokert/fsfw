@@ -3,6 +3,7 @@
 #include "../../osal/host/PeriodicTask.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 #ifdef _WIN32
 
