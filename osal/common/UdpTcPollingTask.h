@@ -9,13 +9,8 @@
 #include <vector>
 
 /**
- * @brief 	This class can be used to implement the polling of a Unix socket,
- * 			using UDP for now.
- * @details
- * The task will be blocked while the specified number of bytes has not been
- * received, so TC reception is handled inside a separate task.
- * This class caches the IP address of the sender. It is assumed there
- * is only one sender for now.
+ * @brief   This class should be used with the UdpTmTcBridge to implement a UDP server
+ *          for receiving and sending PUS TMTC.
  */
 class UdpTcPollingTask:
         public TcpIpBase,

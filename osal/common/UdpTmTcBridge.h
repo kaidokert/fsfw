@@ -16,6 +16,10 @@
 
 #include <string>
 
+/**
+ * @brief   This class should be used with the UdpTcPollingTask to implement a UDP server
+ *          for receiving and sending PUS TMTC.
+ */
 class UdpTmTcBridge:
         public TmTcBridge,
         public TcpIpBase {
