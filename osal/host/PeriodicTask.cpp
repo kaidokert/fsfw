@@ -12,7 +12,7 @@
 #if defined(WIN32)
 #include <processthreadsapi.h>
 #include <fsfw/osal/windows/winTaskHelpers.h>
-#elif defined(LINUX)
+#elif defined(__unix__)
 #include <pthread.h>
 #endif
 
@@ -26,10 +26,10 @@ PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 	mainThread = std::thread(&PeriodicTask::taskEntryPoint, this, this);
 #if defined(_WIN32)
 	tasks::setTaskPriority(reinterpret_cast<HANDLE>(mainThread.native_handle()), setPriority);
-	tasks::insertTaskName(mainThread.get_id(), taskName);
 #elif defined(__unix__)
     // TODO: We could reuse existing code here.
 #endif
+    tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
 PeriodicTask::~PeriodicTask(void) {
