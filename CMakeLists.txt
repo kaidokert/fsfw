@@ -32,7 +32,9 @@ elseif(${OS_FSFW} STREQUAL linux)
 	set(OS_FSFW_NAME "Linux")
 elseif(${OS_FSFW} STREQUAL  freertos)
 	set(OS_FSFW_NAME "FreeRTOS")
-	target_link_libraries(${LIB_FSFW_NAME} ${LIB_OS_NAME})
+	target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+        ${LIB_OS_NAME}
+	)
 elseif(${OS_FSFW} STREQUAL rtems)
 	set(OS_FSFW_NAME "RTEMS")
 else()
@@ -107,6 +109,21 @@ else()
 	)
 endif()
 
+foreach(INCLUDE_PATH ${FSFW_ADDITIONAL_INC_PATH})
+    if(IS_ABSOLUTE ${INCLUDE_PATH})
+        set(CURR_ABS_INC_PATH "${FREERTOS_PATH}")
+    else()
+        get_filename_component(CURR_ABS_INC_PATH
+            ${INCLUDE_PATH} REALPATH BASE_DIR ${CMAKE_SOURCE_DIR})
+    endif()
+
+    if(CMAKE_VERBOSE)
+        message(STATUS "FSFW include path: ${CURR_ABS_INC_PATH}")
+    endif()
+
+    list(APPEND FSFW_ADD_INC_PATHS_ABS ${CURR_ABS_INC_PATH})
+endforeach()
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(NOT DEFINED FSFW_WARNING_FLAGS)
 	   set(FSFW_WARNING_FLAGS
@@ -140,9 +157,14 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
 target_include_directories(${LIB_FSFW_NAME} PRIVATE 
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
+	${FSFW_ADD_INC_PATHS_ABS}
 )
 
 target_compile_options(${LIB_FSFW_NAME} PRIVATE 
 	${FSFW_WARNING_FLAGS}
 	${COMPILER_FLAGS}
+)
+
+target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+    ${FSFW_ADDITIONAL_LINK_LIBS}
 )
