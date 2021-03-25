@@ -90,6 +90,7 @@ add_subdirectory(timemanager)
 add_subdirectory(tmstorage)
 add_subdirectory(tmtcpacket)
 add_subdirectory(tmtcservices)
+add_subdirectory(unittest)
 
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
