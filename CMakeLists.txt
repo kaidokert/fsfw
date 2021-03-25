@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.13)
 
+option(FSFW_GENERATE_SECTIONS
+    "Generate function and data sections. Required to remove unused code" ON
+)
+
+if(FSFW_GENERATE_SECTIONS)
+    option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
+endif()
+
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_USE_RMAP "Compile with RMAP" ON)
@@ -135,7 +143,20 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		  -Wno-psabi
         )
     endif()
-        
+
+    if(FSFW_GENERATE_SECTIONS)
+        target_compile_options(${LIB_FSFW_NAME} PRIVATE
+            "-ffunction-sections"
+            "-fdata-sections"
+        )
+    endif()
+
+    if(FSFW_REMOVE_UNUSED_CODE)
+        target_link_options(${LIB_FSFW_NAME} PRIVATE
+            "Wl,--gc-sections"
+        )
+    endif()
+  
     if(FSFW_WARNING_SHADOW_LOCAL_GCC)
         list(APPEND WARNING_FLAGS "-Wshadow=local")
     endif()
