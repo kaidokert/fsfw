@@ -3,7 +3,7 @@
 
 #include "LocalPool.h"
 #include "StorageAccessor.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 
 
 /**

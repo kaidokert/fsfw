@@ -23,7 +23,7 @@ class TcWinUdpPollingTask: public SystemObject,
 public:
 	static constexpr size_t DEFAULT_MAX_FRAME_SIZE = 2048;
 	//! 0.5  default milliseconds timeout for now.
-	static constexpr timeval DEFAULT_TIMEOUT = {.tv_sec = 0, .tv_usec = 500};
+	static constexpr timeval DEFAULT_TIMEOUT = {0, 500};
 
 	TcWinUdpPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
 			size_t frameSize = 0, double timeoutSeconds = -1);
@@ -48,11 +48,12 @@ private:
 	object_id_t tmtcBridgeId = objects::NO_OBJECT;
 	TmTcWinUdpBridge* tmtcBridge = nullptr;
 	MessageQueueId_t targetTcDestination = MessageQueueIF::NO_QUEUE;
-	//! Reception flags: https://linux.die.net/man/2/recvfrom.
+
+	//! See: https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
 	int receptionFlags = 0;
 
-	//! Server socket, which is member of TMTC bridge and is assigned in
-	//! constructor
+	//! Server socket, which is member of TMTC bridge.
+	//! Will be cached shortly after SW intialization.
 	SOCKET serverUdpSocket = 0;
 
 	std::vector<uint8_t> receptionBuffer;
@@ -61,7 +62,6 @@ private:
 	timeval receptionTimeout;
 
 	ReturnValue_t handleSuccessfullTcRead(size_t bytesRead);
-	void handleReadError();
 };
 
 #endif /* FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_ */

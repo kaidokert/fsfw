@@ -76,7 +76,9 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
             }
         }
     }
+#if FSFW_DISABLE_PRINTOUT == 0
     printf("[%s]\n", printBuffer);
+#endif /* FSFW_DISABLE_PRINTOUT == 0 */
 #endif
 }
 
@@ -117,7 +119,9 @@ void arrayprinter::printDec(const uint8_t *data, size_t size,
             }
         }
     }
+#if FSFW_DISABLE_PRINTOUT == 0
     printf("[%s]\n", printBuffer);
+#endif /* FSFW_DISABLE_PRINTOUT == 0 */
 #endif
 }
 

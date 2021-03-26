@@ -166,6 +166,16 @@ public:
 
     object_id_t getCreatorObjectId();
 
+    bool getReportingEnabled() const;
+
+    /**
+     * Returns the current periodic HK generation interval this set
+     * belongs to a HK manager and the interval is not 0. Otherwise,
+     * returns 0.0
+     * @return
+     */
+    float getCollectionInterval() const;
+
 protected:
     sid_t sid;
     //! This mutex is used if the data is created by one object only.
@@ -180,11 +190,9 @@ protected:
      */
     bool reportingEnabled = false;
     void setReportingEnabled(bool enabled);
-    bool getReportingEnabled() const;
 
-    void initializePeriodicHelper(float collectionInterval,
-            dur_millis_t minimumPeriodicInterval,
-            bool isDiagnostics, uint8_t nonDiagIntervalFactor = 5);
+    void initializePeriodicHelper(float collectionInterval, dur_millis_t minimumPeriodicInterval,
+            uint8_t nonDiagIntervalFactor = 5);
 
     /**
      * If the valid state of a dataset is always relevant to the whole
