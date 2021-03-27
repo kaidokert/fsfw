@@ -58,7 +58,11 @@ else()
 	set(OS_FSFW "host")
 endif()
 
-target_compile_definitions(${LIB_FSFW_NAME} INTERFACE PRIVATE
+target_compile_definitions(${LIB_FSFW_NAME} PRIVATE
+    ${FSFW_OSAL_DEFINITION}
+)
+
+target_compile_definitions(${LIB_FSFW_NAME} INTERFACE
     ${FSFW_OSAL_DEFINITION}
 )
 
