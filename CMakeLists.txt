@@ -26,15 +26,20 @@ if(NOT OS_FSFW)
 
 endif()
 
+set(FSFW_OSAL_DEFINITION FSFW_HOST)
+
 if(${OS_FSFW} STREQUAL host)
 	set(OS_FSFW_NAME "Host")
 elseif(${OS_FSFW} STREQUAL linux)
 	set(OS_FSFW_NAME "Linux")
+	set(FSFW_OSAL_DEFINITION FSFW_LINUX)
 elseif(${OS_FSFW} STREQUAL  freertos)
 	set(OS_FSFW_NAME "FreeRTOS")
 	target_link_libraries(${LIB_FSFW_NAME} ${LIB_OS_NAME})
+	set(FSFW_OSAL_DEFINITION FSFW_FREERTOS)
 elseif(${OS_FSFW} STREQUAL rtems)
 	set(OS_FSFW_NAME "RTEMS")
+    set(FSFW_OSAL_DEFINITION FSFW_RTEMS)
 else()
 	message(WARNING 
 		"Invalid operating system for FSFW specified! Setting to host.."
@@ -42,6 +47,10 @@ else()
 	set(OS_FSFW_NAME "Host")
 	set(OS_FSFW "host")
 endif()
+
+target_compile_definitions(${LIB_FSFW_NAME} INTERFACE PRIVATE
+    ${FSFW_OSAL_DEFINITION}
+)
 
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
