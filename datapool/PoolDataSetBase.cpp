@@ -64,11 +64,11 @@ ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType,
     }
     else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "DataSet::read(): Call made in wrong position. Don't forget to commit"
-                " member datasets!" << std::endl;
+        sif::warning << "PoolDataSetBase::read: Call made in wrong position. Don't forget to "
+                "commit member datasets!" << std::endl;
 #else
-        sif::printError("DataSet::read(): Call made in wrong position. Don't forget to commit"
-                " member datasets!\n");
+        sif::printWarning("PoolDataSetBase::read: Call made in wrong position. Don't forget to "
+                "commit member datasets!\n");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         result = SET_WAS_ALREADY_READ;
     }

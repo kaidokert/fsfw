@@ -1,9 +1,8 @@
+#include "taskHelpers.h"
 #include "../../osal/host/FixedTimeslotTask.h"
-
 #include "../../ipc/MutexFactory.h"
 #include "../../osal/host/Mutex.h"
 #include "../../osal/host/FixedTimeslotTask.h"
-
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
@@ -12,6 +11,7 @@
 
 #if defined(WIN32)
 #include <windows.h>
+#include "../windows/winTaskHelpers.h"
 #elif defined(LINUX)
 #include <pthread.h>
 #endif
@@ -24,34 +24,12 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
     // It is propably possible to set task priorities by using the native
     // task handles for Windows / Linux
     mainThread = std::thread(&FixedTimeslotTask::taskEntryPoint, this, this);
-#if defined(WIN32)
-    /* List of possible priority classes:
-     * https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/
-     * nf-processthreadsapi-setpriorityclass
-     * And respective thread priority numbers:
-     * https://docs.microsoft.com/en-us/windows/
-     * win32/procthread/scheduling-priorities */
-    int result = SetPriorityClass(
-            reinterpret_cast<HANDLE>(mainThread.native_handle()),
-            ABOVE_NORMAL_PRIORITY_CLASS);
-    if(result != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
+#if defined(_WIN32)
+    tasks::setTaskPriority(reinterpret_cast<HANDLE>(mainThread.native_handle()), setPriority);
+#elif defined(__unix__)
+    // TODO: We could reuse existing code here.
 #endif
-    }
-    result = SetThreadPriority(
-            reinterpret_cast<HANDLE>(mainThread.native_handle()),
-            THREAD_PRIORITY_NORMAL);
-    if(result != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
-#endif
-    }
-#elif defined(LINUX)
-    // TODO: we can just copy and paste the code from the linux OSAL here.
-#endif
+    tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
 FixedTimeslotTask::~FixedTimeslotTask(void) {
