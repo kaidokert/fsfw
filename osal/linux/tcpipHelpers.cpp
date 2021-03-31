@@ -1,5 +1,6 @@
 #include "../common/tcpipHelpers.h"
 
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tasks/TaskFactory.h"
 
 #include <errno.h>
