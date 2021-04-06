@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.13)
 
+option(FSFW_GENERATE_SECTIONS
+    "Generate function and data sections. Required to remove unused code" ON
+)
+
+if(FSFW_GENERATE_SECTIONS)
+    option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
+endif()
+
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_USE_RMAP "Compile with RMAP" ON)
@@ -26,15 +34,22 @@ if(NOT OS_FSFW)
 
 endif()
 
+set(FSFW_OSAL_DEFINITION FSFW_HOST)
+
 if(${OS_FSFW} STREQUAL host)
 	set(OS_FSFW_NAME "Host")
 elseif(${OS_FSFW} STREQUAL linux)
 	set(OS_FSFW_NAME "Linux")
+	set(FSFW_OSAL_DEFINITION FSFW_LINUX)
 elseif(${OS_FSFW} STREQUAL  freertos)
 	set(OS_FSFW_NAME "FreeRTOS")
-	target_link_libraries(${LIB_FSFW_NAME} ${LIB_OS_NAME})
+	set(FSFW_OSAL_DEFINITION FSFW_FREERTOS)
+	target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+        ${LIB_OS_NAME}
+	)
 elseif(${OS_FSFW} STREQUAL rtems)
 	set(OS_FSFW_NAME "RTEMS")
+    set(FSFW_OSAL_DEFINITION FSFW_RTEMS)
 else()
 	message(WARNING 
 		"Invalid operating system for FSFW specified! Setting to host.."
@@ -42,6 +57,14 @@ else()
 	set(OS_FSFW_NAME "Host")
 	set(OS_FSFW "host")
 endif()
+
+target_compile_definitions(${LIB_FSFW_NAME} PRIVATE
+    ${FSFW_OSAL_DEFINITION}
+)
+
+target_compile_definitions(${LIB_FSFW_NAME} INTERFACE
+    ${FSFW_OSAL_DEFINITION}
+)
 
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
@@ -88,6 +111,7 @@ add_subdirectory(timemanager)
 add_subdirectory(tmstorage)
 add_subdirectory(tmtcpacket)
 add_subdirectory(tmtcservices)
+add_subdirectory(unittest)
 
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
@@ -107,6 +131,21 @@ else()
 	)
 endif()
 
+foreach(INCLUDE_PATH ${FSFW_ADDITIONAL_INC_PATH})
+    if(IS_ABSOLUTE ${INCLUDE_PATH})
+        set(CURR_ABS_INC_PATH "${FREERTOS_PATH}")
+    else()
+        get_filename_component(CURR_ABS_INC_PATH
+            ${INCLUDE_PATH} REALPATH BASE_DIR ${CMAKE_SOURCE_DIR})
+    endif()
+
+    if(CMAKE_VERBOSE)
+        message(STATUS "FSFW include path: ${CURR_ABS_INC_PATH}")
+    endif()
+
+    list(APPEND FSFW_ADD_INC_PATHS_ABS ${CURR_ABS_INC_PATH})
+endforeach()
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(NOT DEFINED FSFW_WARNING_FLAGS)
 	   set(FSFW_WARNING_FLAGS
@@ -117,7 +156,20 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		  -Wno-psabi
         )
     endif()
-        
+
+    if(FSFW_GENERATE_SECTIONS)
+        target_compile_options(${LIB_FSFW_NAME} PRIVATE
+            "-ffunction-sections"
+            "-fdata-sections"
+        )
+    endif()
+
+    if(FSFW_REMOVE_UNUSED_CODE)
+        target_link_options(${LIB_FSFW_NAME} PRIVATE
+            "Wl,--gc-sections"
+        )
+    endif()
+  
     if(FSFW_WARNING_SHADOW_LOCAL_GCC)
         list(APPEND WARNING_FLAGS "-Wshadow=local")
     endif()
@@ -140,9 +192,14 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
 target_include_directories(${LIB_FSFW_NAME} PRIVATE 
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
+	${FSFW_ADD_INC_PATHS_ABS}
 )
 
 target_compile_options(${LIB_FSFW_NAME} PRIVATE 
 	${FSFW_WARNING_FLAGS}
 	${COMPILER_FLAGS}
+)
+
+target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+    ${FSFW_ADDITIONAL_LINK_LIBS}
 )
