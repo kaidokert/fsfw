@@ -5,7 +5,7 @@
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcservices/PusVerificationReport.h"
 
-#define PUS_DISTRIBUTOR_DEBUGGING     1
+#define PUS_DISTRIBUTOR_DEBUGGING     0
 
 PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
         object_id_t setPacketSource) :
