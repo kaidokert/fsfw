@@ -1,7 +1,9 @@
 #include "CCSDSDistributor.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../tmtcpacket/SpacePacketBase.h"
+
+#define CCSDS_DISTRIBUTOR_DEBUGGING     1
 
 CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid,
 		object_id_t setObjectId):
@@ -11,26 +13,36 @@ CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid,
 CCSDSDistributor::~CCSDSDistributor() {}
 
 TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
+#if CCSDS_DISTRIBUTOR_DEBUGGING == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-//	sif::debug << "CCSDSDistributor::selectDestination received: " <<
-//			this->currentMessage.getStorageId().pool_index << ", " <<
-//			this->currentMessage.getStorageId().packet_index << std::endl;
+	sif::debug << "CCSDSDistributor::selectDestination received: " <<
+			this->currentMessage.getStorageId().poolIndex << ", " <<
+			this->currentMessage.getStorageId().packetIndex << std::endl;
+#else
+	sif::printDebug("CCSDSDistributor::selectDestination received: %d, %d\n",
+	        currentMessage.getStorageId().poolIndex, currentMessage.getStorageId().packetIndex);
+#endif
 #endif
 	const uint8_t* packet = nullptr;
 	size_t size = 0;
 	ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(),
 			&packet, &size );
 	if(result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CCSDSDistributor::selectDestination: Getting data from"
 				" store failed!" << std::endl;
+#else
+		sif::printError("CCSDSDistributor::selectDestination: Getting data from"
+                " store failed!\n");
+#endif
 #endif
 	}
 	SpacePacketBase currentPacket(packet);
 
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-//	sif:: info << "CCSDSDistributor::selectDestination has packet with APID "
-//			<< std::hex << currentPacket.getAPID() << std::dec << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1 && CCSDS_DISTRIBUTOR_DEBUGGING == 1
+	sif::info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex <<
+	        currentPacket.getAPID() << std::dec << std::endl;
 #endif
 	TcMqMapIter position = this->queueMap.find(currentPacket.getAPID());
 	if ( position != this->queueMap.end() ) {
@@ -76,9 +88,14 @@ ReturnValue_t CCSDSDistributor::initialize() {
 	ReturnValue_t status = this->TcDistributor::initialize();
 	this->tcStore = objectManager->get<StorageManagerIF>( objects::TC_STORE );
 	if (this->tcStore == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "CCSDSDistributor::initialize: Could not initialize"
 	            " TC store!" << std::endl;
+#else
+	    sif::printError("CCSDSDistributor::initialize: Could not initialize"
+                " TC store!\n");
+#endif
 #endif
 	    status = RETURN_FAILED;
 	}
