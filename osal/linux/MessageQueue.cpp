@@ -191,13 +191,14 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
-	else if(status==0) {
+	else if (status==0) {
 		//Success but no message received
 		return MessageQueueIF::EMPTY;
-	} else {
+	}
+	else {
 		//No message was received. Keep lastPartner anyway, I might send
 		//something later. But still, delete packet content.
-		memset(message->getBuffer(), 0, message->getMaximumMessageSize());
+		memset(message->getData(), 0, message->getMaximumDataSize());
 		switch(errno){
 		case EAGAIN:
 			//O_NONBLOCK or MQ_NONBLOCK was set and there are no messages
