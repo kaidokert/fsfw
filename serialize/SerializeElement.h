@@ -25,7 +25,7 @@ public:
 
 	}
 	SerializeElement() :
-			LinkedElement<SerializeIF>(this) {
+			LinkedElement<SerializeIF>(this), entry(0) {
 	}
 
 	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
@@ -57,7 +57,7 @@ public:
 		return &entry;
 	}
 
-	T entry = 0;
+	T entry;
 };
 
 #endif /* FSFW_SERIALIZE_SERIALIZEELEMENT_H_ */
