@@ -1483,7 +1483,7 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
         if(errorCode == ObjectManagerIF::CHILD_INIT_FAILED) {
             errorPrint = "Initialization error";
         }
-        if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
+        else if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
             if(errorType == sif::OutputTypes::OUT_WARNING) {
                 errorPrint = "Generic Warning";
             }
