@@ -38,7 +38,6 @@ FixedTimeslotTask::~FixedTimeslotTask(void) {
     if(mainThread.joinable()) {
         mainThread.join();
     }
-    delete this;
 }
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
