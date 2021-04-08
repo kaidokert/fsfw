@@ -106,6 +106,9 @@ bool MessageQueue::isDefaultDestinationSet() const {
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault) {
+    if(message == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
 	message->setSender(sentFrom);
 	if(message->getMessageSize() > message->getMaximumMessageSize()) {
 		// Actually, this should never happen or an error will be emitted
@@ -128,12 +131,12 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
-		MutexGuard mutexLock(targetQueue->queueLock,
-		        MutexIF::TimeoutType::WAITING, 20);
-		// not ideal, works for now though.
-		MessageQueueMessage* mqmMessage =
-				dynamic_cast<MessageQueueMessage*>(message);
-		if(message != nullptr) {
+		MutexGuard mutexLock(targetQueue->queueLock, MutexIF::TimeoutType::WAITING, 20);
+		// TODO: Would be nice to support other message types, but this would require
+		// create the message on the heap from an upper layer and simply storing
+		// MessageQueueMessageIF pointers in the queue.
+		MessageQueueMessage* mqmMessage = dynamic_cast<MessageQueueMessage*>(message);
+		if(mqmMessage != nullptr) {
 			targetQueue->messageQueue.push(*mqmMessage);
 		}
 		else {
