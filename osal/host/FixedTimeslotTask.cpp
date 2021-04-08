@@ -118,8 +118,11 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
     }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "Component " << std::hex << componentId <<
-            " not found, not adding it to pst" << std::endl;
+    sif::error << "Component " << std::hex << "0x" << componentId << "not found, "
+            "not adding it to PST.." << std::dec << std::endl;
+#else
+    sif::printError("Component 0x%08x not found, not adding it to PST..\n",
+            static_cast<unsigned int>(componentId));
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
 }
