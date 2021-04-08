@@ -135,7 +135,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	QueueHandle_t destination = nullptr;
 
 	if(sendTo == MessageQueueIF::NO_QUEUE or sendTo == 0x00) {
-		return MessageQueueIF::DESTINVATION_INVALID;
+		return MessageQueueIF::DESTINATION_INVALID;
 	}
 	else  {
 		destination = reinterpret_cast<QueueHandle_t>(sendTo);
