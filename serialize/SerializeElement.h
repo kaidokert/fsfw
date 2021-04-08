@@ -57,7 +57,7 @@ public:
 		return &entry;
 	}
 
-	T entry;
+	T entry = 0;
 };
 
 #endif /* FSFW_SERIALIZE_SERIALIZEELEMENT_H_ */
