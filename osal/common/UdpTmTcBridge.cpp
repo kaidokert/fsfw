@@ -103,6 +103,7 @@ ReturnValue_t UdpTmTcBridge::initialize() {
 #endif
         freeaddrinfo(addrResult);
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::BIND_CALL);
+        return HasReturnvaluesIF::RETURN_FAILED;
     }
     freeaddrinfo(addrResult);
     return HasReturnvaluesIF::RETURN_OK;

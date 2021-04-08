@@ -85,8 +85,8 @@ TcpTmTcServer::~TcpTmTcServer() {
 ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
     using namespace tcpip;
     /* If a connection is accepted, the corresponding socket will be assigned to the new socket */
-    socket_t clientSocket;
-    sockaddr clientSockAddr;
+    socket_t clientSocket = 0;
+    sockaddr clientSockAddr = {};
     socklen_t connectorSockAddrLen = 0;
     int retval = 0;
 
@@ -102,6 +102,7 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
 
         if(clientSocket == INVALID_SOCKET) {
             handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
+            closeSocket(clientSocket);
             continue;
         };
 
@@ -123,6 +124,7 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
 
         /* Done, shut down connection */
         retval = shutdown(clientSocket, SHUT_SEND);
+        closeSocket(clientSocket);
     }
     return HasReturnvaluesIF::RETURN_OK;
 }
