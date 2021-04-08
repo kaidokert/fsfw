@@ -70,6 +70,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
 #endif
         freeaddrinfo(addrResult);
         handleError(Protocol::TCP, ErrorSources::BIND_CALL);
+        return HasReturnvaluesIF::RETURN_FAILED;
     }
 
     freeaddrinfo(addrResult);
