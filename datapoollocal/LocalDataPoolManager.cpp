@@ -909,27 +909,29 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 			errorPrint = "Unknown error";
 		}
 	}
+	object_id_t objectId = 0xffffffff;
+	if(owner != nullptr) {
+	    objectId = owner->getObjectId();
+	}
 
 	if(outputType == sif::OutputTypes::OUT_WARNING) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "LocalDataPoolManager::" << functionName
-				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
-				<< std::hex << owner->getObjectId() << " | " << errorPrint
-				<< std::dec << std::setfill(' ') << std::endl;
+		sif::warning << "LocalDataPoolManager::" << functionName << ": Object ID 0x" <<
+		        std::setw(8) << std::setfill('0') << std::hex << objectId << " | " << errorPrint <<
+		        std::dec << std::setfill(' ') << std::endl;
 #else
 		sif::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
-				functionName, owner->getObjectId(), errorPrint);
+				functionName, objectId, errorPrint);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 	}
 	else if(outputType == sif::OutputTypes::OUT_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "LocalDataPoolManager::" << functionName
-				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
-				<< std::hex << owner->getObjectId() << " | " << errorPrint
-				<< std::dec << std::setfill(' ') << std::endl;
+		sif::error << "LocalDataPoolManager::" << functionName << ": Object ID 0x" <<
+		        std::setw(8) << std::setfill('0') << std::hex << objectId << " | " << errorPrint <<
+		        std::dec << std::setfill(' ') << std::endl;
 #else
 		sif::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
-				functionName, owner->getObjectId(), errorPrint);
+				functionName, objectId, errorPrint);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 	}
 #endif /* #if FSFW_VERBOSE_LEVEL >= 1 */
