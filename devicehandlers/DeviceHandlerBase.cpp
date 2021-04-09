@@ -1515,7 +1515,7 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
                 << std::setfill(' ') << std::endl;
 #else
         sif::printError("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
-                this->getObjectId(), errorPrint);
+                functionName, this->getObjectId(), errorPrint);
 #endif
     }
 
