@@ -15,7 +15,9 @@ Service1TelecommandVerification::Service1TelecommandVerification(
 	tmQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
-Service1TelecommandVerification::~Service1TelecommandVerification() {}
+Service1TelecommandVerification::~Service1TelecommandVerification() {
+    QueueFactory::instance()->deleteMessageQueue(tmQueue);
+}
 
 MessageQueueId_t Service1TelecommandVerification::getVerificationQueue(){
 	return tmQueue->getId();
