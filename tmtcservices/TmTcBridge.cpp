@@ -16,7 +16,9 @@ TmTcBridge::TmTcBridge(object_id_t objectId, object_id_t tcDestination,
             createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
 }
 
-TmTcBridge::~TmTcBridge() {}
+TmTcBridge::~TmTcBridge() {
+    QueueFactory::instance()->deleteMessageQueue(tmTcReceptionQueue);
+}
 
 ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
 		uint8_t sentPacketsPerCycle) {

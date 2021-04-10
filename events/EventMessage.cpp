@@ -109,6 +109,6 @@ bool EventMessage::isClearedEventMessage() {
 	return getEvent() == INVALID_EVENT;
 }
 
-size_t EventMessage::getMinimumMessageSize() {
+size_t EventMessage::getMinimumMessageSize() const {
 	return EVENT_MESSAGE_SIZE;
 }

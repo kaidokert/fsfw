@@ -139,6 +139,7 @@ public:
 	virtual void setMessageSize(size_t messageSize) override;
 	virtual size_t getMinimumMessageSize() const override;
 	virtual size_t getMaximumMessageSize() const override;
+	virtual size_t getMaximumDataSize() const override;
 
 	/**
 	 * @brief	This is a debug method that prints the content.

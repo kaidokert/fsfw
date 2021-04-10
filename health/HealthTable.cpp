@@ -68,8 +68,18 @@ void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
     MutexGuard(mutex, timeoutType, mutexTimeoutMs);
 	size_t size = 0;
 	uint16_t count = healthMap.size();
-	SerializeAdapter::serialize(&count,
+	ReturnValue_t result = SerializeAdapter::serialize(&count,
 			&pointer, &size, maxSize, SerializeIF::Endianness::BIG);
+	if(result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	    sif::warning << "HealthTable::printAll: Serialization of health table failed" << std::endl;
+#else
+	    sif::printWarning("HealthTable::printAll: Serialization of health table failed\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+	    return;
+	}
 	for (const auto& health: healthMap) {
 		SerializeAdapter::serialize(&health.first,
 				&pointer, &size, maxSize, SerializeIF::Endianness::BIG);

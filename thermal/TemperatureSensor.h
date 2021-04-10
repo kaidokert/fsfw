@@ -1,10 +1,13 @@
 #ifndef TEMPERATURESENSOR_H_
 #define TEMPERATURESENSOR_H_
 
-#include "../thermal/AbstractTemperatureSensor.h"
-#include "../datapoolglob/GlobalDataSet.h"
-#include "../datapoolglob/GlobalPoolVariable.h"
+#include "tcsDefinitions.h"
+#include "AbstractTemperatureSensor.h"
+
+#include "../datapoollocal/LocalPoolDataSetBase.h"
+#include "../datapoollocal/LocalPoolVariable.h"
 #include "../monitoring/LimitMonitor.h"
+
 
 /**
  * @brief 	This building block handles non-linear value conversion and
@@ -57,27 +60,26 @@ public:
 
 	/**
 	 * Instantiate Temperature Sensor Object.
-	 * @param setObjectid objectId of the sensor object
-	 * @param inputValue Input value which is converted to a temperature
-	 * @param poolVariable Pool Variable to store the temperature value
-	 * @param vectorIndex Vector Index for the sensor monitor
-	 * @param parameters Calculation parameters, temperature limits, gradient limit
-	 * @param datapoolId Datapool ID of the output temperature
-	 * @param outputSet Output dataset for the output temperature to fetch it with read()
+	 * @param setObjectid   objectId of the sensor object
+	 * @param inputValue    Pointer to input value which is converted to a temperature
+	 * @param variableGpid  Global Pool ID of the output value
+	 * @param inputVariable Input variable handle
+	 * @param vectorIndex   Vector Index for the sensor monitor
+	 * @param parameters    Calculation parameters, temperature limits, gradient limit
+	 * @param outputSet     Output dataset for the output temperature to fetch it with read()
 	 * @param thermalModule respective thermal module, if it has one
 	 */
 	TemperatureSensor(object_id_t setObjectid,
-			inputType *inputValue, PoolVariableIF *poolVariable,
-			uint8_t vectorIndex, uint32_t datapoolId, Parameters parameters = {0, 0, 0, 0, 0, 0},
-			GlobDataSet *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
+			inputType *inputValue, gp_id_t variableGpid, PoolVariableIF* inputVariable,
+			uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
+			LocalPoolDataSetBase *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
 			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
-			inputValue(inputValue), poolVariable(poolVariable),
-			outputTemperature(datapoolId, outputSet, PoolVariableIF::VAR_WRITE),
-			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR,
-				GlobalDataPool::poolIdAndPositionToPid(poolVariable->getDataPoolId(), vectorIndex),
+			inputValue(inputValue), poolVariable(inputVariable),
+			outputTemperature(variableGpid, outputSet, PoolVariableIF::VAR_WRITE),
+			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR, poolVariable,
 				DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit, parameters.upperLimit,
 				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
-			oldTemperature(20), uptimeOfOldTemperature( { INVALID_TEMPERATURE, 0 }) {
+			oldTemperature(20), uptimeOfOldTemperature({ thermal::INVALID_TEMPERATURE, 0 }) {
 	}
 
 
@@ -98,7 +100,7 @@ protected:
 
 private:
 	void setInvalid() {
-		outputTemperature = INVALID_TEMPERATURE;
+		outputTemperature = thermal::INVALID_TEMPERATURE;
 		outputTemperature.setValid(false);
 		uptimeOfOldTemperature.tv_sec = INVALID_UPTIME;
 		sensorMonitor.setToInvalid();
@@ -108,11 +110,11 @@ protected:
 
 	UsedParameters parameters;
 
-	inputType * inputValue;
+	inputType* inputValue;
 
-	PoolVariableIF *poolVariable;
+	PoolVariableIF* poolVariable;
 
-	gp_float_t outputTemperature;
+	lp_var_t<float> outputTemperature;
 
 	LimitMonitor<limitType> sensorMonitor;
 
@@ -120,8 +122,8 @@ protected:
 	timeval uptimeOfOldTemperature;
 
 	void doChildOperation() {
-		if (!poolVariable->isValid()
-				|| !healthHelper.healthTable->isHealthy(getObjectId())) {
+		if ((not poolVariable->isValid()) or
+		        (not healthHelper.healthTable->isHealthy(getObjectId()))) {
 			setInvalid();
 			return;
 		}
@@ -152,13 +154,13 @@ protected:
 			}
 		}
 
-		//Check is done against raw limits. SHOULDDO: Why? Using �C would be more easy to handle.
+		//Check is done against raw limits. SHOULDDO: Why? Using C would be more easy to handle.
 		sensorMonitor.doCheck(outputTemperature.value);
 
 		if (sensorMonitor.isOutOfLimits()) {
 			uptimeOfOldTemperature.tv_sec = INVALID_UPTIME;
 			outputTemperature.setValid(PoolVariableIF::INVALID);
-			outputTemperature = INVALID_TEMPERATURE;
+			outputTemperature = thermal::INVALID_TEMPERATURE;
 		} else {
 			oldTemperature = outputTemperature;
 			uptimeOfOldTemperature = uptime;
