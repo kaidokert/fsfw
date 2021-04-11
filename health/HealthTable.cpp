@@ -81,11 +81,17 @@ void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
 	    return;
 	}
 	for (const auto& health: healthMap) {
-		SerializeAdapter::serialize(&health.first,
+		result = SerializeAdapter::serialize(&health.first,
 				&pointer, &size, maxSize, SerializeIF::Endianness::BIG);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+		    return;
+		}
 		uint8_t healthValue = health.second;
-		SerializeAdapter::serialize(&healthValue, &pointer, &size,
+		result = SerializeAdapter::serialize(&healthValue, &pointer, &size,
 				maxSize, SerializeIF::Endianness::BIG);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            return;
+        }
 	}
 }
 
