@@ -1,6 +1,10 @@
 #include "tcpipCommon.h"
 #include <fsfw/serviceinterface/ServiceInterface.h>
 
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#endif
+
 void tcpip::determineErrorStrings(Protocol protocol, ErrorSources errorSrc, std::string &protStr,
         std::string &srcString) {
     if(protocol == Protocol::TCP) {
