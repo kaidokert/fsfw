@@ -96,7 +96,7 @@ ReturnValue_t HealthTable::iterate(HealthEntry *value, bool reset) {
 		mapIterator = healthMap.begin();
 	}
 	if (mapIterator == healthMap.end()) {
-		result = HasReturnvaluesIF::RETURN_FAILED;
+		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	*value = *mapIterator;
 	mapIterator++;
