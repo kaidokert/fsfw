@@ -26,6 +26,18 @@ public:
      */
     SharedRingBuffer(object_id_t objectId, const size_t size,
             bool overwriteOld, size_t maxExcessBytes);
+    /**
+     * This constructor takes an external buffer with the specified size.
+     * @param buffer
+     * @param size
+     * @param overwriteOld
+     * If the ring buffer is overflowing at a write operartion, the oldest data
+     * will be overwritten.
+     */
+    SharedRingBuffer(object_id_t objectId, uint8_t* buffer, const size_t size,
+            bool overwriteOld, size_t maxExcessBytes);
+
+    virtual~ SharedRingBuffer();
 
     /**
      * @brief    This function can be used to add an optional FIFO to the class
@@ -37,16 +49,7 @@ public:
      */
     void setToUseReceiveSizeFIFO(size_t fifoDepth);
 
-    /**
-     * This constructor takes an external buffer with the specified size.
-     * @param buffer
-     * @param size
-     * @param overwriteOld
-     * If the ring buffer is overflowing at a write operartion, the oldest data
-     * will be overwritten.
-     */
-    SharedRingBuffer(object_id_t objectId, uint8_t* buffer, const size_t size,
-            bool overwriteOld, size_t maxExcessBytes);
+
 
     /**
      * Unless a read-only constant value is read, all operations on the

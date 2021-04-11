@@ -7,7 +7,7 @@ HkSwitchHelper::HkSwitchHelper(EventReportingProxyIF* eventProxy) :
 }
 
 HkSwitchHelper::~HkSwitchHelper() {
-	// TODO Auto-generated destructor stub
+    QueueFactory::instance()->deleteMessageQueue(actionQueue);
 }
 
 ReturnValue_t HkSwitchHelper::initialize() {

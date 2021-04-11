@@ -45,7 +45,7 @@ public:
 
 protected:
 	static const Event INVALID_EVENT = 0;
-	virtual size_t getMinimumMessageSize();
+	virtual size_t getMinimumMessageSize() const override;
 
 };
 
