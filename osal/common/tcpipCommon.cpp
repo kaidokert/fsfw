@@ -1,4 +1,5 @@
 #include "tcpipCommon.h"
+#include <fsfw/serviceinterface/ServiceInterface.h>
 
 void tcpip::determineErrorStrings(Protocol protocol, ErrorSources errorSrc, std::string &protStr,
         std::string &srcString) {
@@ -33,4 +34,38 @@ void tcpip::determineErrorStrings(Protocol protocol, ErrorSources errorSrc, std:
     else {
         srcString = "unknown call";
     }
+}
+
+void tcpip::printAddress(struct sockaddr* addr) {
+    char ipAddress[INET6_ADDRSTRLEN] = {};
+    const char* stringPtr = NULL;
+    switch(addr->sa_family) {
+    case AF_INET: {
+        struct sockaddr_in *addrIn = reinterpret_cast<struct sockaddr_in*>(addr);
+        stringPtr = inet_ntop(AF_INET, &(addrIn->sin_addr), ipAddress, INET_ADDRSTRLEN);
+        break;
+    }
+    case AF_INET6: {
+        struct sockaddr_in6 *addrIn = reinterpret_cast<struct sockaddr_in6*>(addr);
+        stringPtr = inet_ntop(AF_INET6, &(addrIn->sin6_addr), ipAddress, INET6_ADDRSTRLEN);
+        break;
+    }
+    }
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    if(stringPtr == NULL) {
+        sif::debug << "Could not convert IP address to text representation, error code "
+                << errno << std::endl;
+    }
+    else {
+        sif::debug << "IP Address Sender: " <<  ipAddress << std::endl;
+    }
+#else
+    if(stringPtr == NULL) {
+        sif::printDebug("Could not convert IP address to text representation, error code %d\n",
+                errno);
+    }
+    else {
+        sif::printDebug("IP Address Sender: %s\n", ipAddress);
+    }
+#endif
 }
