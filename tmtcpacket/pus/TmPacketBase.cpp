@@ -3,13 +3,13 @@
 #include "../../globalfunctions/CRC.h"
 #include "../../globalfunctions/arrayprinter.h"
 #include "../../objectmanager/ObjectManagerIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../timemanager/CCSDSTime.h"
 
 #include <cstring>
 
 TimeStamperIF* TmPacketBase::timeStamper = nullptr;
-object_id_t TmPacketBase::timeStamperId = 0;
+object_id_t TmPacketBase::timeStamperId = objects::NO_OBJECT;
 
 TmPacketBase::TmPacketBase(uint8_t* setData):
         SpacePacketBase(setData) {
@@ -52,8 +52,10 @@ bool TmPacketBase::checkAndSetStamper() {
         timeStamper = objectManager->get<TimeStamperIF>(timeStamperId);
         if (timeStamper == NULL) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "TmPacketBase::checkAndSetStamper: Stamper not found!"
+            sif::Warning << "TmPacketBase::checkAndSetStamper: Stamper not found!"
                     << std::endl;
+#else
+            sif::printWarning("TmPacketBase::checkAndSetStamper: Stamper not found!\n");
 #endif
             return false;
         }

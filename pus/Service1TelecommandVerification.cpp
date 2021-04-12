@@ -3,7 +3,7 @@
 
 #include "../ipc/QueueFactory.h"
 #include "../tmtcservices/PusVerificationReport.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/TmPacketStoredPusA.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../tmtcservices/AcceptsTelemetryIF.h"
 

@@ -2,7 +2,7 @@
 
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../objectmanager/SystemObject.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/TmPacketStoredPusA.h"
 
 
 Service17Test::Service17Test(object_id_t objectId,

@@ -6,7 +6,7 @@
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../ipc/QueueFactory.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/TmPacketStoredPusA.h"
 #include "../serviceinterface/ServiceInterface.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
