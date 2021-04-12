@@ -64,9 +64,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 		return MessageQueueIF::EMPTY;
 	}
 	MutexGuard mutexLock(queueLock, MutexIF::TimeoutType::WAITING, 20);
-	MessageQueueMessage* currentMessage = &messageQueue.front();
-	std::copy(currentMessage->getBuffer(),
-			currentMessage->getBuffer() + messageSize, message->getBuffer());
+	std::copy(messageQueue.front().data(), messageQueue.front().data() + messageSize,
+	        message->getBuffer());
 	messageQueue.pop();
 	// The last partner is the first uint32_t field in the message
 	this->lastPartner = message->getSender();
@@ -80,7 +79,7 @@ MessageQueueId_t MessageQueue::getLastPartner() const {
 ReturnValue_t MessageQueue::flush(uint32_t* count) {
 	*count = messageQueue.size();
 	// Clears the queue.
-	messageQueue = std::queue<MessageQueueMessage>();
+	messageQueue = std::queue<std::vector<uint8_t>>();
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -106,6 +105,9 @@ bool MessageQueue::isDefaultDestinationSet() const {
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault) {
+    if(message == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
 	message->setSender(sentFrom);
 	if(message->getMessageSize() > message->getMaximumMessageSize()) {
 		// Actually, this should never happen or an error will be emitted
@@ -128,21 +130,10 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
-		MutexGuard mutexLock(targetQueue->queueLock,
-		        MutexIF::TimeoutType::WAITING, 20);
-		// not ideal, works for now though.
-		MessageQueueMessage* mqmMessage =
-				dynamic_cast<MessageQueueMessage*>(message);
-		if(message != nullptr) {
-			targetQueue->messageQueue.push(*mqmMessage);
-		}
-		else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "MessageQueue::sendMessageFromMessageQueue: Message"
-					"is not MessageQueueMessage!" << std::endl;
-#endif
-		}
-
+		MutexGuard mutexLock(targetQueue->queueLock, MutexIF::TimeoutType::WAITING, 20);
+		targetQueue->messageQueue.push(std::vector<uint8_t>(message->getMaximumMessageSize()));
+		memcpy(targetQueue->messageQueue.back().data(), message->getBuffer(),
+		        message->getMaximumMessageSize());
 	}
 	else {
 		return MessageQueueIF::FULL;
