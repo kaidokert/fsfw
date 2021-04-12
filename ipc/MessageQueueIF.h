@@ -27,7 +27,7 @@ public:
 	//! Returned if a reply method was called without partner
 	static const ReturnValue_t NO_REPLY_PARTNER = MAKE_RETURN_CODE(3);
 	//! Returned if the target destination is invalid.
-	static constexpr ReturnValue_t DESTINVATION_INVALID = MAKE_RETURN_CODE(4);
+	static constexpr ReturnValue_t DESTINATION_INVALID = MAKE_RETURN_CODE(4);
 
 	virtual ~MessageQueueIF() {}
 	/**
