@@ -6,9 +6,6 @@
 
 #include <cstring>
 
-StorageManagerIF *TmPacketStoredPusA::store = nullptr;
-InternalErrorReporterIF *TmPacketStoredPusA::internalErrorReporter = nullptr;
-
 TmPacketStoredPusA::TmPacketStoredPusA(store_address_t setAddress) :
 		TmPacketStoredBase(setAddress), TmPacketPusA(nullptr){
 }
@@ -42,7 +39,7 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service,
 		SerializeIF *header) :
 		TmPacketPusA(nullptr) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-	if (not  TmPacketStoredBase::checkAndSetStore()) {
+	if (not TmPacketStoredBase::checkAndSetStore()) {
 		return;
 	}
 	size_t sourceDataSize = 0;
