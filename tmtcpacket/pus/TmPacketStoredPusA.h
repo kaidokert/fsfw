@@ -1,18 +1,12 @@
 #ifndef FSFW_TMTCPACKET_PUS_TMPACKETSTORED_PUSA_H_
 #define FSFW_TMTCPACKET_PUS_TMPACKETSTORED_PUSA_H_
 
-#include "TmPacketBase.h"
 #include "TmPacketStoredBase.h"
+#include "TmPacketPusA.h"
 #include <FSFWConfig.h>
 
-#include "../../tmtcpacket/pus/TmPacketPusA.h"
-#include "../../serialize/SerializeIF.h"
-#include "../../storagemanager/StorageManagerIF.h"
-#include "../../internalError/InternalErrorReporterIF.h"
-#include "../../ipc/MessageQueueSenderIF.h"
-
 /**
- *	This class generates a ECSS PUS Telemetry packet within a given
+ *	This class generates a ECSS PUS A Telemetry packet within a given
  *	intermediate storage.
  *	As most packets are passed between tasks with the help of a storage
  *	anyway, it seems logical to create a Packet-In-Storage access class

@@ -74,18 +74,12 @@ public:
     uint16_t getDataFieldSize() override;
 
     /**
-     * Interprets the "time"-field in the secondary header and returns it in
-     * timeval format.
-     * @return Converted timestamp of packet.
-     */
-    ReturnValue_t getPacketTime(timeval* timestamp) const override;
-    /**
      * Returns a raw pointer to the beginning of the time field.
      * @return Raw pointer to time field.
      */
     uint8_t* getPacketTimeRaw() const override;
-
     size_t getTimestampSize() const override;
+
     size_t getPacketMinimumSize() const override;
 
 protected:
@@ -106,7 +100,7 @@ protected:
      * @param packetSubcounter Additional subcounter used.
      */
     void initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice,
-            uint16_t packetSubcounter, uint16_t destinationId, uint8_t timeRefField);
+            uint16_t packetSubcounter, uint16_t destinationId = 0, uint8_t timeRefField = 0);
 
     /**
      * With this method, the packet data pointer can be redirected to another
@@ -125,11 +119,6 @@ protected:
      */
     void setSourceDataSize(uint16_t size);
 
-    /**
-     * Checks if a time stamper is available and tries to set it if not.
-     * @return Returns false if setting failed.
-     */
-    bool checkAndSetStamper();
 };
 
 #endif /* FSFW_TMTCPACKET_PUS_TMPACKETPUSC_H_ */

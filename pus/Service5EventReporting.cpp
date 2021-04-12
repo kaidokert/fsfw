@@ -4,7 +4,7 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../events/EventManagerIF.h"
 #include "../ipc/QueueFactory.h"
-#include "../tmtcpacket/pus/TmPacketStoredPusA.h"
+#include "../tmtcpacket/pus/TmPacketStored.h"
 
 
 Service5EventReporting::Service5EventReporting(object_id_t objectId,
@@ -52,8 +52,13 @@ ReturnValue_t Service5EventReporting::generateEventReport(
 {
 	EventReport report(message.getEventId(),message.getReporter(),
 			message.getParameter1(),message.getParameter2());
+#if FSFW_USE_PUS_C_TELEMETRY == 0
 	TmPacketStoredPusA tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
 			message.getSeverity(), packetSubCounter++, &report);
+#else
+    TmPacketStoredPusC tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
+            message.getSeverity(), packetSubCounter++, &report);
+#endif
 	ReturnValue_t result = tmPacket.sendPacket(
 	        requestQueue->getDefaultDestination(),requestQueue->getId());
 	if(result != HasReturnvaluesIF::RETURN_OK) {

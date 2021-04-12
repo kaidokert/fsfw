@@ -4,6 +4,7 @@
 #include <FSFWConfig.h>
 
 #if FSFW_USE_PUS_C_TELEMETRY == 1
+#include "TmPacketStoredPusC.h"
 #else
 #include "TmPacketStoredPusA.h"
 #endif

@@ -1,7 +1,6 @@
 #include "TmPacketStoredPusA.h"
 
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tmtcservices/TmTcMessage.h"
 
 #include <cstring>
