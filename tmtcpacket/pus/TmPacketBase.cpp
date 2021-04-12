@@ -38,7 +38,11 @@ void TmPacketBase::setErrorControl() {
     getSourceData()[size + 1] = (crc) & 0X00FF; 		// CRCL
 }
 
-
+ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
+    size_t tempSize = 0;
+    return CCSDSTime::convertFromCcsds(timestamp, getPacketTimeRaw(),
+            &tempSize, getTimestampSize());
+}
 
 void TmPacketBase::print() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -52,8 +56,7 @@ bool TmPacketBase::checkAndSetStamper() {
         timeStamper = objectManager->get<TimeStamperIF>(timeStamperId);
         if (timeStamper == NULL) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::Warning << "TmPacketBase::checkAndSetStamper: Stamper not found!"
-                    << std::endl;
+            sif::warning << "TmPacketBase::checkAndSetStamper: Stamper not found!" << std::endl;
 #else
             sif::printWarning("TmPacketBase::checkAndSetStamper: Stamper not found!\n");
 #endif

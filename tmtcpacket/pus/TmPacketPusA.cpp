@@ -49,27 +49,7 @@ uint16_t TmPacketPusA::getDataFieldSize() {
     return sizeof(PUSTmDataFieldHeaderPusA);
 }
 
-bool TmPacketPusA::checkAndSetStamper() {
-    if (timeStamper == NULL) {
-        timeStamper = objectManager->get<TimeStamperIF>(timeStamperId);
-        if (timeStamper == NULL) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "TmPacketPusA::checkAndSetStamper: Stamper not found!"
-                    << std::endl;
-#endif
-            return false;
-        }
-    }
-    return true;
-}
-
-ReturnValue_t TmPacketPusA::getPacketTime(timeval* timestamp) const {
-    size_t tempSize = 0;
-    return CCSDSTime::convertFromCcsds(timestamp, tmData->data_field.time,
-            &tempSize, sizeof(tmData->data_field.time));
-}
-
-uint8_t* TmPacketPusA::getPacketTimeRaw() const{
+uint8_t* TmPacketPusA::getPacketTimeRaw() const {
     return tmData->data_field.time;
 
 }
@@ -92,7 +72,7 @@ void TmPacketPusA::initializeTmPacket(uint16_t apid, uint8_t service,
     tmData->data_field.service_subtype = subservice;
     tmData->data_field.subcounter = packetSubcounter;
     //Timestamp packet
-    if (checkAndSetStamper()) {
+    if (TmPacketBase::checkAndSetStamper()) {
         timeStamper->addTimeStamp(tmData->data_field.time,
                 sizeof(tmData->data_field.time));
     }

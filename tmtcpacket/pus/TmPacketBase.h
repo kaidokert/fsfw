@@ -29,8 +29,7 @@ public:
     //! Maximum size of a TM Packet in this mission.
     //! TODO: Make this dependant on a config variable.
     static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048;
-    //! First byte of secondary header for PUS-A packets.
-    //! TODO: Maybe also support PUS-C via config?
+    //! First four bits of first byte of secondary header
     static const uint8_t VERSION_NUMBER_BYTE = 0b00010000;
 
     /**
@@ -87,7 +86,7 @@ public:
      * timeval format.
      * @return Converted timestamp of packet.
      */
-    virtual ReturnValue_t getPacketTime(timeval* timestamp) const = 0;
+    virtual ReturnValue_t getPacketTime(timeval* timestamp) const;
     /**
      * Returns a raw pointer to the beginning of the time field.
      * @return Raw pointer to time field.
