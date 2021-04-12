@@ -1,7 +1,8 @@
-#ifndef FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_
-#define FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_
+#ifndef FSFW_TMTCPACKET_PUS_TMPACKETSTORED_PUSA_H_
+#define FSFW_TMTCPACKET_PUS_TMPACKETSTORED_PUSA_H_
 
 #include "TmPacketBase.h"
+#include "TmPacketStoredBase.h"
 #include <FSFWConfig.h>
 
 #include "../../tmtcpacket/pus/TmPacketPusA.h"
@@ -20,13 +21,15 @@
  *	packets in a store with the help of a storeAddress.
  *	@ingroup tmtcpackets
  */
-class TmPacketStored : public TmPacketPusA {
+class TmPacketStoredPusA :
+        public TmPacketStoredBase,
+        public TmPacketPusA {
 public:
 	/**
 	 * This is a default constructor which does not set the data pointer.
 	 * However, it does try to set the packet store.
 	 */
-	TmPacketStored( store_address_t setAddress );
+	TmPacketStoredPusA( store_address_t setAddress );
 	/**
 	 * With this constructor, new space is allocated in the packet store and
 	 * a new PUS Telemetry Packet is created there.
@@ -47,7 +50,7 @@ public:
 	 * 						 will be copied in front of data
 	 * @param headerSize	The size of the headerDataF
 	 */
-	TmPacketStored( uint16_t apid, uint8_t service,	uint8_t subservice,
+	TmPacketStoredPusA( uint16_t apid, uint8_t service,	uint8_t subservice,
 			uint8_t packet_counter = 0, const uint8_t* data = nullptr,
 			uint32_t size = 0, const uint8_t* headerData = nullptr,
 			uint32_t headerSize = 0);
@@ -55,30 +58,13 @@ public:
 	 * Another ctor to directly pass structured content and header data to the
 	 * packet to avoid additional buffers.
 	 */
-	TmPacketStored( uint16_t apid, uint8_t service,	uint8_t subservice,
+	TmPacketStoredPusA( uint16_t apid, uint8_t service,	uint8_t subservice,
 			uint8_t packet_counter, SerializeIF* content,
 			SerializeIF* header = nullptr);
-	/**
-	 * This is a getter for the current store address of the packet.
-	 * @return	The current store address. The (raw) value is
-	 * 			@c StorageManagerIF::INVALID_ADDRESS if
-	 * 			the packet is not linked.
-	 */
-	store_address_t getStoreAddress();
-	/**
-	 * With this call, the packet is deleted.
-	 * It removes itself from the store and sets its data pointer to NULL.
-	 */
-	void deletePacket();
-	/**
-	 * With this call, a packet can be linked to another store. This is useful
-	 * if the packet is a class member and used for more than one packet.
-	 * @param setAddress	The new packet id to link to.
-	 */
-	void setStoreAddress( store_address_t setAddress );
 
-	ReturnValue_t sendPacket( MessageQueueId_t destination,
-			MessageQueueId_t sentFrom, bool doErrorReporting = true );
+    uint8_t* getAllTmData() override;
+    void setDataPointer(const uint8_t* newPointer) override;
+
 private:
 	/**
 	 * This is a pointer to the store all instances of the class use.
@@ -94,17 +80,7 @@ private:
 	 * The address where the packet data of the object instance is stored.
 	 */
 	store_address_t storeAddress;
-	/**
-	 * A helper method to check if a store is assigned to the class.
-	 * If not, the method tries to retrieve the store from the global
-	 * ObjectManager.
-	 * @return	@li	@c true if the store is linked or could be created.
-	 * 			@li @c false otherwise.
-	 */
-	bool checkAndSetStore();
-
-	void checkAndReportLostTm();
 };
 
 
-#endif /* FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_ */
+#endif /* FSFW_TMTCPACKET_PUS_TMPACKETSTORED_PUSA_H_ */

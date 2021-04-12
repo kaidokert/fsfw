@@ -31,7 +31,7 @@ public:
     static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048;
     //! First byte of secondary header for PUS-A packets.
     //! TODO: Maybe also support PUS-C via config?
-    static const uint8_t VERSION_NUMBER_BYTE_PUS_A = 0b00010000;
+    static const uint8_t VERSION_NUMBER_BYTE = 0b00010000;
 
     /**
      * This is the default constructor.

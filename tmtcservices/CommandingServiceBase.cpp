@@ -293,7 +293,7 @@ void CommandingServiceBase::handleRequestQueue() {
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 		const uint8_t* data, size_t dataLen, const uint8_t* headerData,
 		size_t headerSize) {
-	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+	TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
 			this->tmPacketCounter, data, dataLen, headerData, headerSize);
 	ReturnValue_t result = tmPacketStored.sendPacket(
 			requestQueue->getDefaultDestination(), requestQueue->getId());
@@ -311,7 +311,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
     size_t size = 0;
     SerializeAdapter::serialize(&objectId, &pBuffer, &size,
                 sizeof(object_id_t), SerializeIF::Endianness::BIG);
-    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+    TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
             this->tmPacketCounter, data, dataLen, buffer, size);
     ReturnValue_t result = tmPacketStored.sendPacket(
             requestQueue->getDefaultDestination(), requestQueue->getId());
@@ -324,7 +324,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
         SerializeIF* content, SerializeIF* header) {
-    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+    TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
             this->tmPacketCounter, content, header);
     ReturnValue_t result = tmPacketStored.sendPacket(
             requestQueue->getDefaultDestination(), requestQueue->getId());

@@ -68,7 +68,7 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
 			message->getTcSequenceControl(), message->getStep(),
 			message->getErrorCode(), message->getParameter1(),
 			message->getParameter2());
-	TmPacketStored tmPacket(apid, serviceId, message->getReportId(),
+	TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(),
 	        packetSubCounter++, &report);
 	ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(),
 			tmQueue->getId());
@@ -79,7 +79,7 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
         PusVerificationMessage *message) {
 	SuccessReport report(message->getReportId(),message->getTcPacketId(),
 			message->getTcSequenceControl(),message->getStep());
-	TmPacketStored tmPacket(apid, serviceId, message->getReportId(),
+	TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(),
 	        packetSubCounter++, &report);
 	ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(),
 			tmQueue->getId());

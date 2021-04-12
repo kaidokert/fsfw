@@ -52,7 +52,7 @@ ReturnValue_t Service5EventReporting::generateEventReport(
 {
 	EventReport report(message.getEventId(),message.getReporter(),
 			message.getParameter1(),message.getParameter2());
-	TmPacketStored tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
+	TmPacketStoredPusA tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
 			message.getSeverity(), packetSubCounter++, &report);
 	ReturnValue_t result = tmPacket.sendPacket(
 	        requestQueue->getDefaultDestination(),requestQueue->getId());

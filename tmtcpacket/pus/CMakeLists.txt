@@ -7,4 +7,5 @@ target_sources(${LIB_FSFW_NAME}
 		TmPacketStored.cpp
 		TmPacketPusA.cpp
 		TmPacketPusC.cpp
+		TmPacketStoredBase.cpp
 )

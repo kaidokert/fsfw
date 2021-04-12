@@ -18,7 +18,7 @@ void setStaticFrameworkObjectIds();
  * for a time tag.
  * @ingroup tmtcpackets
  */
-struct PUSTmDataFieldHeader {
+struct PUSTmDataFieldHeaderPusA {
     uint8_t version_type_ack;
     uint8_t service_type;
     uint8_t service_subtype;
@@ -32,9 +32,9 @@ struct PUSTmDataFieldHeader {
  * accessed via a pointer.
  * @ingroup tmtcpackets
  */
-struct TmPacketPointer {
+struct TmPacketPointerPusA {
     CCSDSPrimaryHeader primary;
-    PUSTmDataFieldHeader data_field;
+    PUSTmDataFieldHeaderPusA data_field;
     uint8_t data;
 };
 
@@ -49,7 +49,7 @@ public:
      * This constant defines the minimum size of a valid PUS Telemetry Packet.
      */
     static const uint32_t  TM_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
-            sizeof(PUSTmDataFieldHeader) + 2);
+            sizeof(PUSTmDataFieldHeaderPusA) + 2);
     //! Maximum size of a TM Packet in this mission.
     //! TODO: Make this dependant on a config variable.
     static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048;
@@ -75,6 +75,7 @@ public:
     uint8_t* getSourceData() override;
     uint16_t getSourceDataSize() override;
     uint16_t getDataFieldSize() override;
+
     /**
      * Interprets the "time"-field in the secondary header and returns it in
      * timeval format.
@@ -97,7 +98,7 @@ protected:
      *
      * To be hardware-safe, all elements are of byte size.
      */
-    TmPacketPointer* tmData;
+    TmPacketPointerPusA* tmData;
 
     /**
      * Initializes the Tm Packet header.

@@ -11,7 +11,7 @@
 
 
 TmPacketPusA::TmPacketPusA(uint8_t* setData) : TmPacketBase(setData) {
-    tmData = reinterpret_cast<TmPacketPointer*>(setData);
+    tmData = reinterpret_cast<TmPacketPointerPusA*>(setData);
 }
 
 TmPacketPusA::~TmPacketPusA() {
@@ -35,23 +35,9 @@ uint16_t TmPacketPusA::getSourceDataSize() {
             - CRC_SIZE + 1;
 }
 
-//uint16_t TmPacketPusA::getErrorControl() {
-//    uint32_t size = getSourceDataSize() + CRC_SIZE;
-//    uint8_t* p_to_buffer = &tmData->data;
-//    return (p_to_buffer[size - 2] << 8) + p_to_buffer[size - 1];
-//}
-//
-//void TmPacketPusA::setErrorControl() {
-//    uint32_t full_size = getFullSize();
-//    uint16_t crc = CRC::crc16ccitt(getWholeData(), full_size - CRC_SIZE);
-//    uint32_t size = getSourceDataSize();
-//    getSourceData()[size] = (crc & 0XFF00) >> 8;    // CRCH
-//    getSourceData()[size + 1] = (crc) & 0X00FF;         // CRCL
-//}
-
 void TmPacketPusA::setData(const uint8_t* p_Data) {
     SpacePacketBase::setData(p_Data);
-    tmData = (TmPacketPointer*) p_Data;
+    tmData = (TmPacketPointerPusA*) p_Data;
 }
 
 
@@ -60,7 +46,7 @@ size_t TmPacketPusA::getPacketMinimumSize() const {
 }
 
 uint16_t TmPacketPusA::getDataFieldSize() {
-    return sizeof(PUSTmDataFieldHeader);
+    return sizeof(PUSTmDataFieldHeaderPusA);
 }
 
 bool TmPacketPusA::checkAndSetStamper() {
@@ -113,7 +99,7 @@ void TmPacketPusA::initializeTmPacket(uint16_t apid, uint8_t service,
 }
 
 void TmPacketPusA::setSourceDataSize(uint16_t size) {
-    setPacketDataLength(size + sizeof(PUSTmDataFieldHeader) + CRC_SIZE - 1);
+    setPacketDataLength(size + sizeof(PUSTmDataFieldHeaderPusA) + CRC_SIZE - 1);
 }
 
 size_t TmPacketPusA::getTimestampSize() const {

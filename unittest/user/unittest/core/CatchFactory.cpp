@@ -74,7 +74,7 @@ void Factory::setStaticFrameworkObjectIds() {
 
 	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 
-	TmPacketStored::timeStamperId = objects::NO_OBJECT;
+	TmPacketStoredPusA::timeStamperId = objects::NO_OBJECT;
 }
 
 
