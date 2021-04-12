@@ -17,6 +17,8 @@
 	#define FSFW_DISABLE_PRINTOUT 	0
 #endif
 
+#define FSFW_USE_PUS_C_TELEMETRY    1
+
 //! Can be used to disable the ANSI color sequences for C stdio.
 #define FSFW_COLORED_OUTPUT 		1
 
