@@ -2,7 +2,9 @@
 #define FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_
 
 #include "TmPacketBase.h"
+#include <FSFWConfig.h>
 
+#include "../../tmtcpacket/pus/TmPacketPusA.h"
 #include "../../serialize/SerializeIF.h"
 #include "../../storagemanager/StorageManagerIF.h"
 #include "../../internalError/InternalErrorReporterIF.h"
@@ -18,7 +20,7 @@
  *	packets in a store with the help of a storeAddress.
  *	@ingroup tmtcpackets
  */
-class TmPacketStored : public TmPacketBase {
+class TmPacketStored : public TmPacketPusA {
 public:
 	/**
 	 * This is a default constructor which does not set the data pointer.

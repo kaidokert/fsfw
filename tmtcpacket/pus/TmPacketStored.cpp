@@ -10,21 +10,21 @@ StorageManagerIF *TmPacketStored::store = nullptr;
 InternalErrorReporterIF *TmPacketStored::internalErrorReporter = nullptr;
 
 TmPacketStored::TmPacketStored(store_address_t setAddress) :
-		TmPacketBase(nullptr), storeAddress(setAddress) {
+		TmPacketPusA(nullptr), storeAddress(setAddress) {
 	setStoreAddress(storeAddress);
 }
 
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 		uint8_t subservice, uint8_t packetSubcounter, const uint8_t *data,
 		uint32_t size, const uint8_t *headerData, uint32_t headerSize) :
-		TmPacketBase(NULL) {
+		TmPacketPusA(nullptr) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (not checkAndSetStore()) {
 		return;
 	}
 	uint8_t *pData = nullptr;
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
-			(TmPacketBase::TM_PACKET_MIN_SIZE + size + headerSize), &pData);
+			(getPacketMinimumSize() + size + headerSize), &pData);
 
 	if (returnValue != store->RETURN_OK) {
 		checkAndReportLostTm();
@@ -41,7 +41,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 		uint8_t subservice, uint8_t packetSubcounter, SerializeIF *content,
 		SerializeIF *header) :
-		TmPacketBase(NULL) {
+		TmPacketPusA(nullptr) {
 	storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
 	if (not checkAndSetStore()) {
 		return;
@@ -55,7 +55,7 @@ TmPacketStored::TmPacketStored(uint16_t apid, uint8_t service,
 	}
 	uint8_t *p_data = NULL;
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
-			(TmPacketBase::TM_PACKET_MIN_SIZE + sourceDataSize), &p_data);
+			(getPacketMinimumSize() + sourceDataSize), &p_data);
 	if (returnValue != store->RETURN_OK) {
 		checkAndReportLostTm();
 	}
