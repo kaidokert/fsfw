@@ -22,8 +22,10 @@ struct PUSTmDataFieldHeaderPusC {
     uint8_t versionTimeReferenceField;
     uint8_t serviceType;
     uint8_t serviceSubtype;
-    uint16_t subcounter;
-    uint16_t destinationId;
+    uint8_t subcounterMsb;
+    uint8_t subcounterLsb;
+    uint8_t destinationIdMsb;
+    uint8_t destinationIdLsb;
     uint8_t time[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
 };
 

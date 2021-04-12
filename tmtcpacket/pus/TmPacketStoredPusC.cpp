@@ -56,7 +56,7 @@ TmPacketStoredPusC::TmPacketStoredPusC(uint16_t apid, uint8_t service,
         TmPacketStoredBase::checkAndReportLostTm();
     }
     setData(p_data);
-    initializeTmPacket(apid, service, subservice, packetSubcounter);
+    initializeTmPacket(apid, service, subservice, packetSubcounter, destinationId, timeRefField);
     uint8_t *putDataHere = getSourceData();
     size_t size = 0;
     if (header != NULL) {

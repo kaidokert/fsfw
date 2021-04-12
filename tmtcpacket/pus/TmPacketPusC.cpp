@@ -72,8 +72,10 @@ void TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service,
     tmData->dataField.versionTimeReferenceField = VERSION_NUMBER_BYTE | timeRefField;
     tmData->dataField.serviceType = service;
     tmData->dataField.serviceSubtype = subservice;
-    tmData->dataField.subcounter = packetSubcounter;
-    tmData->dataField.destinationId = destinationId;
+    tmData->dataField.subcounterMsb = packetSubcounter << 8 & 0xff;
+    tmData->dataField.subcounterLsb = packetSubcounter & 0xff;
+    tmData->dataField.destinationIdMsb = destinationId << 8 & 0xff;
+    tmData->dataField.destinationIdLsb = destinationId & 0xff;
     //Timestamp packet
     if (TmPacketBase::checkAndSetStamper()) {
         timeStamper->addTimeStamp(tmData->dataField.time,
