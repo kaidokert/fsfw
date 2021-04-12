@@ -52,10 +52,10 @@ public:
      * if the packet is a class member and used for more than one packet.
      * @param setAddress    The new packet id to link to.
      */
-    void setStoreAddress( store_address_t setAddress );
+    void setStoreAddress(store_address_t setAddress);
 
-    ReturnValue_t sendPacket( MessageQueueId_t destination,
-            MessageQueueId_t sentFrom, bool doErrorReporting = true );
+    ReturnValue_t sendPacket(MessageQueueId_t destination, MessageQueueId_t sentFrom,
+            bool doErrorReporting = true);
 
 protected:
     /**

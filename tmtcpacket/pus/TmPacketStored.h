@@ -65,12 +65,6 @@ public:
     uint8_t* getAllTmData() override;
     void setDataPointer(const uint8_t* newPointer) override;
 
-private:
-
-	/**
-	 * The address where the packet data of the object instance is stored.
-	 */
-	store_address_t storeAddress;
 };
 
 
