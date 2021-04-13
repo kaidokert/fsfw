@@ -373,7 +373,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 					<<"mq_send to: " << sendTo << " sent from "
 					<< sentFrom << std::endl;
 #endif
-			return DESTINVATION_INVALID;
+			return DESTINATION_INVALID;
 		}
 		case EINTR:
 			//The call was interrupted by a signal.
