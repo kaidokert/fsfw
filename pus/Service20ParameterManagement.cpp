@@ -75,9 +75,8 @@ ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue
 #else
         sif::printError("Service20ParameterManagement::checkInterfaceAndAcquire"
                 "MessageQueue: Can't access object\n");
-        sif::printError("Object ID: 0x%08x\n", objectId);
-        sif::printError("Make sure it implements "
-                "ReceivesParameterMessagesIF!\n");
+        sif::printError("Object ID: 0x%08x\n", *objectId);
+        sif::printError("Make sure it implements ReceivesParameterMessagesIF!\n");
 #endif
 
         return CommandingServiceBase::INVALID_OBJECT;

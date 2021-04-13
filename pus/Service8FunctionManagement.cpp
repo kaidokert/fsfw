@@ -53,12 +53,14 @@ ReturnValue_t Service8FunctionManagement::checkInterfaceAndAcquireMessageQueue(
 ReturnValue_t Service8FunctionManagement::prepareCommand(
 		CommandMessage* message, uint8_t subservice, const uint8_t* tcData,
 		size_t tcDataLen, uint32_t* state, object_id_t objectId) {
-	return prepareDirectCommand(dynamic_cast<CommandMessage*>(message),
-				tcData, tcDataLen);
+	return prepareDirectCommand(message, tcData, tcDataLen);
 }
 
 ReturnValue_t Service8FunctionManagement::prepareDirectCommand(
 		CommandMessage *message, const uint8_t *tcData, size_t tcDataLen) {
+    if(message == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
     if(tcDataLen < sizeof(object_id_t) + sizeof(ActionId_t)) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "Service8FunctionManagement::prepareDirectCommand:"

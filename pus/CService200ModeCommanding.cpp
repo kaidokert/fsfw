@@ -61,8 +61,7 @@ ReturnValue_t CService200ModeCommanding::prepareCommand(
 		return result;
 	}
 
-	ModeMessage::setModeMessage(dynamic_cast<CommandMessage*>(message),
-	        ModeMessage::CMD_MODE_COMMAND, modeCommandPacket.getMode(),
+	ModeMessage::setModeMessage(message, ModeMessage::CMD_MODE_COMMAND, modeCommandPacket.getMode(),
 	        modeCommandPacket.getSubmode());
 	return result;
 }
