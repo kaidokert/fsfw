@@ -184,6 +184,7 @@ endif()
 target_include_directories(${LIB_FSFW_NAME} INTERFACE 
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
+	${FSFW_ADD_INC_PATHS_ABS}
 )
 
 # Includes path required to compile FSFW itself as well
