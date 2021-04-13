@@ -10,6 +10,10 @@ QueueMapManager::QueueMapManager() {
     mapLock = MutexFactory::instance()->createMutex();
 }
 
+QueueMapManager::~QueueMapManager() {
+    MutexFactory::instance()->deleteMutex(mapLock);
+}
+
 QueueMapManager* QueueMapManager::instance() {
 	if (mqManagerInstance == nullptr){
 		mqManagerInstance = new QueueMapManager();
