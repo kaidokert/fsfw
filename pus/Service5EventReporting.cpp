@@ -15,7 +15,9 @@ Service5EventReporting::Service5EventReporting(object_id_t objectId,
 	eventQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
-Service5EventReporting::~Service5EventReporting(){}
+Service5EventReporting::~Service5EventReporting() {
+    QueueFactory::instance()->deleteMessageQueue(eventQueue);
+}
 
 ReturnValue_t Service5EventReporting::performService() {
 	EventMessage message;
