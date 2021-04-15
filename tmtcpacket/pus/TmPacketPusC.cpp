@@ -62,12 +62,7 @@ void TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service,
     //First, set to zero.
     memset(&tmData->dataField, 0, sizeof(tmData->dataField));
 
-    // NOTE: In PUS-C, the PUS Version is 2 and specified for the first 4 bits.
-    // The other 4 bits of the first byte are the spacecraft time reference
-    // status. To change to PUS-C, set 0b00100000.
-    // Set CCSDS_secondary header flag to 0, version number to 001 and ack
-    // to 0000
-    /* Only account for last 4 bytes */
+    /* Only account for last 4 bytes for time reference field */
     timeRefField &= 0b1111;
     tmData->dataField.versionTimeReferenceField = VERSION_NUMBER_BYTE | timeRefField;
     tmData->dataField.serviceType = service;
