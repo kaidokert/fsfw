@@ -52,7 +52,7 @@ static constexpr size_t FSFW_EVENTMGMR_RANGEMATCHERS   = 120;
 
 //! Defines the FIFO depth of each commanding service base which
 //! also determines how many commands a CSB service can handle in one cycle
-//! Simultaneously. This will increase the required RAM for
+//! simultaneously. This will increase the required RAM for
 //! each CSB service !
 static constexpr uint8_t FSFW_CSB_FIFO_DEPTH = 6;
 
