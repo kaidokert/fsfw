@@ -137,9 +137,9 @@ protected:
 		Clock::getUptime(&uptime);
 
 		if (uptimeOfOldTemperature.tv_sec != INVALID_UPTIME) {
-			//In theory, we could use an AbsValueMonitor to monitor the gradient.
-			//But this would require storing the maxGradient in DP and quite some overhead.
-			//The concept of delta limits is a bit strange anyway.
+			// In theory, we could use an AbsValueMonitor to monitor the gradient.
+			// But this would require storing the maxGradient in DP and quite some overhead.
+			// The concept of delta limits is a bit strange anyway.
 			float deltaTime;
 			float deltaTemp;
 
@@ -152,11 +152,10 @@ protected:
 			}
 			if (parameters.gradient < deltaTemp / deltaTime) {
 				triggerEvent(TEMP_SENSOR_GRADIENT);
-				//Don't set invalid, as we did not recognize it as invalid with full authority, let FDIR handle it
+				// Don't set invalid, as we did not recognize it as invalid with full authority, let FDIR handle it
 			}
 		}
 
-		//Check is done against raw limits. SHOULDDO: Why? Using C would be more easy to handle.
 		sensorMonitor.doCheck(outputTemperature.value);
 
 		if (sensorMonitor.isOutOfLimits()) {
