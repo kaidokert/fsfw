@@ -38,7 +38,6 @@ PeriodicTask::~PeriodicTask(void) {
 	if(mainThread.joinable()) {
 		mainThread.join();
 	}
-	delete this;
 }
 
 void PeriodicTask::taskEntryPoint(void* argument) {
