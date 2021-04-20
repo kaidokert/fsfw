@@ -56,9 +56,9 @@ protected:
 
 	Mode_t mode;
 
-	Submode_t submode;
+	Submode_t submode = SUBMODE_NONE;
 
-	bool childrenChangedMode;
+	bool childrenChangedMode = false;
 
 	/**
 	 * Always check this against <=0, so you are robust against too many replies
