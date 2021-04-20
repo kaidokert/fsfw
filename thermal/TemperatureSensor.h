@@ -122,6 +122,11 @@ protected:
 	timeval uptimeOfOldTemperature;
 
 	void doChildOperation() {
+		ReturnValue_t result = poolVariable->read(MutexIF::TimeoutType::WAITING, 20);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return;
+		}
+
 		if ((not poolVariable->isValid()) or
 		        (not healthHelper.healthTable->isHealthy(getObjectId()))) {
 			setInvalid();
