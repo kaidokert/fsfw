@@ -1,7 +1,7 @@
 #include "RtemsBasic.h"
 
 #include "../../timemanager/Clock.h"
-#include "../../ipc/MutexHelper.h"
+#include "../../ipc/MutexGuard.h"
 
 #include <rtems/score/todimpl.h>
 #include <rtems/rtems/clockimpl.h>
@@ -183,7 +183,7 @@ ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
     if(checkOrCreateClockMutex()!=HasReturnvaluesIF::RETURN_OK){
         return HasReturnvaluesIF::RETURN_FAILED;
     }
-    MutexHelper helper(timeMutex);
+    MutexGuard helper(timeMutex);
 
 
     leapSeconds = leapSeconds_;
@@ -196,7 +196,7 @@ ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
     if(timeMutex==nullptr){
         return HasReturnvaluesIF::RETURN_FAILED;
     }
-    MutexHelper helper(timeMutex);
+    MutexGuard helper(timeMutex);
 
     *leapSeconds_ = leapSeconds;
 

@@ -9,8 +9,8 @@
  *          and unlock a data pool and read/commit semantics.
  */
 class PoolDataSetIF:
-        public DataSetIF,
-        public ReadCommitIF {
+        virtual public DataSetIF,
+        virtual public ReadCommitIF {
 public:
     virtual~ PoolDataSetIF() {};
 

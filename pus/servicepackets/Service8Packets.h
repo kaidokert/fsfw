@@ -43,8 +43,8 @@ public:
 
 private:
 	DirectCommand(const DirectCommand &command);
-	object_id_t objectId;
-	ActionId_t actionId;
+	object_id_t objectId = 0;
+	ActionId_t actionId = 0;
 	uint32_t parametersSize; //!< [EXPORT] : [IGNORE]
 	const uint8_t * parameterBuffer; //!< [EXPORT] : [MAXSIZE] 65535 Bytes
 

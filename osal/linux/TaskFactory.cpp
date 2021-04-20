@@ -2,6 +2,7 @@
 #include "PeriodicPosixTask.h"
 
 #include "../../tasks/TaskFactory.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory. What's better and why?

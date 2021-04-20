@@ -44,7 +44,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
-                PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
+        PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
     HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
             sid.objectId);
     if(hkOwner != nullptr) {
@@ -58,8 +58,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registere
     this->sid = sid;
 }
 
-LocalPoolDataSetBase::LocalPoolDataSetBase(
-        PoolVariableIF **registeredVariablesArray,
+LocalPoolDataSetBase::LocalPoolDataSetBase(PoolVariableIF **registeredVariablesArray,
         const size_t maxNumberOfVariables, bool protectEveryReadCommitCall):
 		        PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
     this->setReadCommitProtectionBehaviour(protectEveryReadCommitCall);
@@ -95,14 +94,23 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
         size_t *size, size_t maxSize,
         SerializeIF::Endianness streamEndianness) const {
     ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-    uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
-    uint8_t validityMask[validityMaskSize] = {};
+    const uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount)/8.0);
+    uint8_t* validityPtr = nullptr;
+#ifdef _MSC_VER
+    /* Use a std::vector here because MSVC will (rightly) not create a fixed size array
+    with a non constant size specifier */
+    std::vector<uint8_t> validityMask(validityMaskSize);
+    validityPtr = validityMask.data();
+#else
+    uint8_t validityMask[validityMaskSize] = {0};
+    validityPtr = validityMask;
+#endif
     uint8_t validBufferIndex = 0;
     uint8_t validBufferIndexBit = 0;
     for (uint16_t count = 0; count < fillCount; count++) {
         if(registeredVariables[count]->isValid()) {
             /* Set bit at correct position */
-            bitutil::bitSet(validityMask + validBufferIndex, validBufferIndexBit);
+            bitutil::bitSet(validityPtr + validBufferIndex, validBufferIndexBit);
         }
         if(validBufferIndexBit == 7) {
             validBufferIndex ++;
@@ -123,7 +131,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
         return SerializeIF::BUFFER_TOO_SHORT;
     }
     // copy validity buffer to end
-    std::memcpy(*buffer, validityMask, validityMaskSize);
+    std::memcpy(*buffer, validityPtr, validityMaskSize);
     *size += validityMaskSize;
     return result;
 }
@@ -262,11 +270,9 @@ bool LocalPoolDataSetBase::getReportingEnabled() const {
     return reportingEnabled;
 }
 
-void LocalPoolDataSetBase::initializePeriodicHelper(
-        float collectionInterval, dur_millis_t minimumPeriodicInterval,
-        bool isDiagnostics, uint8_t nonDiagIntervalFactor) {
-    periodicHelper->initialize(collectionInterval, minimumPeriodicInterval,
-            isDiagnostics, nonDiagIntervalFactor);
+void LocalPoolDataSetBase::initializePeriodicHelper(float collectionInterval,
+        dur_millis_t minimumPeriodicInterval, uint8_t nonDiagIntervalFactor) {
+    periodicHelper->initialize(collectionInterval, minimumPeriodicInterval, nonDiagIntervalFactor);
 }
 
 void LocalPoolDataSetBase::setChanged(bool changed) {
@@ -304,5 +310,14 @@ object_id_t LocalPoolDataSetBase::getCreatorObjectId() {
 void LocalPoolDataSetBase::setAllVariablesReadOnly() {
     for(size_t idx = 0; idx < this->getFillCount(); idx++) {
         registeredVariables[idx]->setReadWriteMode(pool_rwm_t::VAR_READ);
+    }
+}
+
+float LocalPoolDataSetBase::getCollectionInterval() const {
+    if(periodicHelper != nullptr) {
+        return periodicHelper->getCollectionIntervalInSeconds();
+    }
+    else {
+        return 0.0;
     }
 }

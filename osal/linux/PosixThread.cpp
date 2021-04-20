@@ -6,7 +6,7 @@
 #include <errno.h>
 
 PosixThread::PosixThread(const char* name_, int priority_, size_t stackSize_):
-		thread(0),priority(priority_),stackSize(stackSize_) {
+		thread(0), priority(priority_), stackSize(stackSize_) {
     name[0] = '\0';
     std::strncat(name, name_, PTHREAD_MAX_NAMELEN - 1);
 }
@@ -75,18 +75,18 @@ bool PosixThread::delayUntil(uint64_t* const prevoiusWakeTime_ms,
 
 	if (currentTime_ms < *prevoiusWakeTime_ms) {
 		/* The tick count has overflowed since this function was
-		 lasted called.  In this case the only time we should ever
-		 actually delay is if the wake time has also	overflowed,
-		 and the wake time is greater than the tick time.  When this
-		 is the case it is as if neither time had overflowed. */
+		lasted called.  In this case the only time we should ever
+		actually delay is if the wake time has also overflowed,
+		and the wake time is greater than the tick time. When this
+		is the case it is as if neither time had overflowed. */
 		if ((nextTimeToWake_ms < *prevoiusWakeTime_ms)
 				&& (nextTimeToWake_ms > currentTime_ms)) {
 			shouldDelay = true;
 		}
 	} else {
-		/* The tick time has not overflowed.  In this case we will
-		 delay if either the wake time has overflowed, and/or the
-		 tick time is less than the wake time. */
+		/* The tick time has not overflowed. In this case we will
+		delay if either the wake time has overflowed, and/or the
+		tick time is less than the wake time. */
 		if ((nextTimeToWake_ms < *prevoiusWakeTime_ms)
 				|| (nextTimeToWake_ms > currentTime_ms)) {
 			shouldDelay = true;
@@ -184,8 +184,11 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 					strerror(status) << std::endl;
 #endif
 	}
-
-	// TODO FIFO -> This needs root privileges for the process
+#ifndef FSFW_USE_REALTIME_FOR_LINUX
+#error "Please define FSFW_USE_REALTIME_FOR_LINUX with either 0 or 1"
+#endif
+#if FSFW_USE_REALTIME_FOR_LINUX == 1
+	// FIFO -> This needs root privileges for the process
 	status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
 	if(status != 0){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -203,7 +206,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 				strerror(status) << std::endl;
 #endif
 	}
-
+#endif
 	//Set Signal Mask for suspend until startTask is called
 	sigset_t waitSignal;
 	sigemptyset(&waitSignal);
@@ -220,8 +223,16 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	status = pthread_create(&thread,&attributes,fnc_,arg_);
 	if(status != 0){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "Posix Thread create failed with: " <<
+		sif::error << "PosixThread::createTask: Failed with: " <<
 				strerror(status) << std::endl;
+		sif::error << "For FSFW_USE_REALTIME_FOR_LINUX == 1 make sure to call " <<
+		        "\"all sudo setcap 'cap_sys_nice=eip'\" on the application or set "
+		        "/etc/security/limit.conf" << std::endl;
+#else
+		sif::printError("PosixThread::createTask: Create failed with: %s\n", strerror(status));
+		sif::printError("For FSFW_USE_REALTIME_FOR_LINUX == 1 make sure to call "
+		        "\"all sudo setcap 'cap_sys_nice=eip'\" on the application or set "
+                "/etc/security/limit.conf\n");
 #endif
 	}
 

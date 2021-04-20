@@ -10,6 +10,7 @@ target_sources(${LIB_FSFW_NAME}
 		QueueMapManager.cpp
 		SemaphoreFactory.cpp
 		TaskFactory.cpp
+		taskHelpers.cpp
 )
 
 if(UNIX)

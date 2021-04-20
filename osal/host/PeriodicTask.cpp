@@ -1,5 +1,6 @@
 #include "Mutex.h"
 #include "PeriodicTask.h"
+#include "taskHelpers.h"
 
 #include "../../ipc/MutexFactory.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
@@ -10,7 +11,8 @@
 
 #if defined(WIN32)
 #include <processthreadsapi.h>
-#elif defined(LINUX)
+#include <fsfw/osal/windows/winTaskHelpers.h>
+#elif defined(__unix__)
 #include <pthread.h>
 #endif
 
@@ -19,37 +21,15 @@ PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		void (*setDeadlineMissedFunc)()) :
 		started(false), taskName(name), period(setPeriod),
 		deadlineMissedFunc(setDeadlineMissedFunc) {
-    // It is propably possible to set task priorities by using the native
+    // It is probably possible to set task priorities by using the native
     // task handles for Windows / Linux
 	mainThread = std::thread(&PeriodicTask::taskEntryPoint, this, this);
-#if defined(WIN32)
-    /* List of possible priority classes:
-     * https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/
-     * nf-processthreadsapi-setpriorityclass
-     * And respective thread priority numbers:
-     * https://docs.microsoft.com/en-us/windows/
-     * win32/procthread/scheduling-priorities */
-    int result = SetPriorityClass(
-            reinterpret_cast<HANDLE>(mainThread.native_handle()),
-            ABOVE_NORMAL_PRIORITY_CLASS);
-    if(result != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "PeriodicTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
+#if defined(_WIN32)
+	tasks::setTaskPriority(reinterpret_cast<HANDLE>(mainThread.native_handle()), setPriority);
+#elif defined(__unix__)
+    // TODO: We could reuse existing code here.
 #endif
-    }
-    result = SetThreadPriority(
-            reinterpret_cast<HANDLE>(mainThread.native_handle()),
-            THREAD_PRIORITY_NORMAL);
-    if(result != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "PeriodicTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
-#endif
-    }
-#elif defined(LINUX)
-    // we can just copy and paste the code from linux here.
-#endif
+    tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
 PeriodicTask::~PeriodicTask(void) {
@@ -58,7 +38,6 @@ PeriodicTask::~PeriodicTask(void) {
 	if(mainThread.joinable()) {
 		mainThread.join();
 	}
-	delete this;
 }
 
 void PeriodicTask::taskEntryPoint(void* argument) {
