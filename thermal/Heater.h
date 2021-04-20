@@ -57,28 +57,28 @@ protected:
         // no need for any special treatment is needed
     } internalState;
 
-    PowerSwitchIF *powerSwitcher;
-    MessageQueueId_t pcduQueueId;
+    PowerSwitchIF *powerSwitcher = nullptr;
+    MessageQueueId_t pcduQueueId = MessageQueueIF::NO_QUEUE;
 
     uint8_t switch0;
     uint8_t switch1;
 
-    bool wasOn;
+    bool wasOn = false;
 
-    bool timedOut;
+    bool timedOut = false;
 
-    bool reactedToBeingFaulty;
+    bool reactedToBeingFaulty = false;
 
-    bool passive;
+    bool passive = false;
 
-    MessageQueueIF* eventQueue;
+    MessageQueueIF* eventQueue = nullptr;
     Countdown heaterOnCountdown;
     Countdown switchCountdown;
     ParameterHelper parameterHelper;
 
     enum Action {
         SET, CLEAR
-    } lastAction;
+    } lastAction = CLEAR;
 
     void doAction(Action action);
 

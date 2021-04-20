@@ -5,10 +5,9 @@
 #include "../ipc/QueueFactory.h"
 
 Heater::Heater(uint32_t objectId, uint8_t switch0, uint8_t switch1) :
-HealthDevice(objectId, 0), internalState(STATE_OFF), powerSwitcher(
-        NULL), pcduQueueId(0), switch0(switch0), switch1(switch1), wasOn(false), timedOut(false),
-        reactedToBeingFaulty(false), passive(false), eventQueue(NULL),
-        heaterOnCountdown(10800000)/*about two orbits*/, parameterHelper(this), lastAction(CLEAR) {
+HealthDevice(objectId, 0), internalState(STATE_OFF), switch0(switch0), switch1(switch1),
+        heaterOnCountdown(10800000)/*about two orbits*/,
+		parameterHelper(this) {
     eventQueue = QueueFactory::instance()->createMessageQueue();
 }
 
