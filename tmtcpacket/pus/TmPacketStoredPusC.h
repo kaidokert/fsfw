@@ -5,7 +5,7 @@
 #include <fsfw/tmtcpacket/pus/TmPacketStoredBase.h>
 
 /**
- *  This class generates a ECSS PUS A Telemetry packet within a given
+ *  This class generates a ECSS PUS C Telemetry packet within a given
  *  intermediate storage.
  *  As most packets are passed between tasks with the help of a storage
  *  anyway, it seems logical to create a Packet-In-Storage access class
@@ -42,6 +42,9 @@ public:
      * @param headerData    The header Data of the Application field,
      *                       will be copied in front of data
      * @param headerSize    The size of the headerDataF
+     * @param destinationId Destination ID containing the application process ID as specified
+     *                      by PUS C
+     * @param timeRefField  4 bit time reference field as specified by PUS C
      */
     TmPacketStoredPusC( uint16_t apid, uint8_t service, uint8_t subservice,
             uint16_t packetCounter = 0, const uint8_t* data = nullptr,
