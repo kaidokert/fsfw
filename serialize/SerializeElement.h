@@ -25,7 +25,7 @@ public:
 
 	}
 	SerializeElement() :
-			LinkedElement<SerializeIF>(this) {
+			LinkedElement<SerializeIF>(this), entry() {
 	}
 
 	ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
