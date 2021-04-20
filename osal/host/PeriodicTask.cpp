@@ -19,7 +19,7 @@ PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		void (*setDeadlineMissedFunc)()) :
 		started(false), taskName(name), period(setPeriod),
 		deadlineMissedFunc(setDeadlineMissedFunc) {
-    // It is propably possible to set task priorities by using the native
+    // It is probably possible to set task priorities by using the native
     // task handles for Windows / Linux
 	mainThread = std::thread(&PeriodicTask::taskEntryPoint, this, this);
 #if defined(WIN32)

@@ -57,6 +57,10 @@ static constexpr size_t FSFW_EVENTMGMR_RANGEMATCHERS   = 120;
 static constexpr uint8_t FSFW_CSB_FIFO_DEPTH = 6;
 
 static constexpr size_t FSFW_PRINT_BUFFER_SIZE = 124;
+
+//! Defines if the real time scheduler for linux should be used.
+//! If set to 1 the binary needs "cap_sys_nice=eip" privileges to run
+#define FSFW_USE_REALTIME_FOR_LINUX 0
 }
 
 #endif /* CONFIG_FSFWCONFIG_H_ */

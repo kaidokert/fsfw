@@ -184,8 +184,11 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 					strerror(status) << std::endl;
 #endif
 	}
-
-	// TODO FIFO -> This needs root privileges for the process
+#ifndef FSFW_USE_REALTIME_FOR_LINUX
+#error "Please define FSFW_USE_REALTIME_FOR_LINUX with either 0 or 1"
+#endif
+#if FSFW_USE_REALTIME_FOR_LINUX == 1
+	// FIFO -> This needs root privileges for the process
 	status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
 	if(status != 0){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -203,7 +206,7 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 				strerror(status) << std::endl;
 #endif
 	}
-
+#endif
 	//Set Signal Mask for suspend until startTask is called
 	sigset_t waitSignal;
 	sigemptyset(&waitSignal);
