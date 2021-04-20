@@ -69,14 +69,14 @@ public:
 	 * @param outputSet     Output dataset for the output temperature to fetch it with read()
 	 * @param thermalModule respective thermal module, if it has one
 	 */
-	TemperatureSensor(object_id_t setObjectid,
-			inputType *inputValue, gp_id_t variableGpid, PoolVariableIF* inputVariable,
+	TemperatureSensor(object_id_t setObjectid,lp_var_t<limitType>* inputTemperature,
+			gp_id_t variableGpid, PoolVariableIF* inputVariable,
 			uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
-			LocalPoolDataSetBase *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
+			LocalPoolDataSetBase *outputSet = nullptr, ThermalModuleIF *thermalModule = nullptr) :
 			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
-			inputValue(inputValue), poolVariable(inputVariable),
+			inputTemperature(inputTemperature),
 			outputTemperature(variableGpid, outputSet, PoolVariableIF::VAR_WRITE),
-			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR, poolVariable,
+			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR, variableGpid,
 				DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit, parameters.upperLimit,
 				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
 			oldTemperature(20), uptimeOfOldTemperature({ thermal::INVALID_TEMPERATURE, 0 }) {
@@ -110,10 +110,7 @@ protected:
 
 	UsedParameters parameters;
 
-	inputType* inputValue;
-
-	PoolVariableIF* poolVariable;
-
+	lp_var_t<limitType>* inputTemperature;
 	lp_var_t<float> outputTemperature;
 
 	LimitMonitor<limitType> sensorMonitor;
@@ -122,18 +119,18 @@ protected:
 	timeval uptimeOfOldTemperature;
 
 	void doChildOperation() {
-		ReturnValue_t result = poolVariable->read(MutexIF::TimeoutType::WAITING, 20);
+		ReturnValue_t result = inputTemperature->read(MutexIF::TimeoutType::WAITING, 20);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
 			return;
 		}
 
-		if ((not poolVariable->isValid()) or
+		if ((not inputTemperature->isValid()) or
 		        (not healthHelper.healthTable->isHealthy(getObjectId()))) {
 			setInvalid();
 			return;
 		}
 
-		outputTemperature = calculateOutputTemperature(*inputValue);
+		outputTemperature = calculateOutputTemperature(inputTemperature->value);
 		outputTemperature.setValid(PoolVariableIF::VALID);
 
 		timeval uptime;
