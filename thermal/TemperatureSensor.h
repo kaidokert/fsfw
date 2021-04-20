@@ -60,18 +60,17 @@ public:
 
 	/**
 	 * Instantiate Temperature Sensor Object.
-	 * @param setObjectid   objectId of the sensor object
-	 * @param inputValue    Pointer to input value which is converted to a temperature
-	 * @param variableGpid  Global Pool ID of the output value
-	 * @param inputVariable Input variable handle
-	 * @param vectorIndex   Vector Index for the sensor monitor
-	 * @param parameters    Calculation parameters, temperature limits, gradient limit
-	 * @param outputSet     Output dataset for the output temperature to fetch it with read()
-	 * @param thermalModule respective thermal module, if it has one
+	 * @param setObjectid       objectId of the sensor object
+	 * @param inputTemperature  Pointer to a raw input value which is converted to an floating
+	 *                          point C output temperature
+	 * @param variableGpid      Global Pool ID of the output value
+	 * @param vectorIndex       Vector Index for the sensor monitor
+	 * @param parameters        Calculation parameters, temperature limits, gradient limit
+	 * @param outputSet         Output dataset for the output temperature to fetch it with read()
+	 * @param thermalModule     Respective thermal module, if it has one
 	 */
 	TemperatureSensor(object_id_t setObjectid,lp_var_t<limitType>* inputTemperature,
-			gp_id_t variableGpid, PoolVariableIF* inputVariable,
-			uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
+			gp_id_t variableGpid, uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
 			LocalPoolDataSetBase *outputSet = nullptr, ThermalModuleIF *thermalModule = nullptr) :
 			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
 			inputTemperature(inputTemperature),
