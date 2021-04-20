@@ -51,7 +51,7 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
 #else
     // General format: 0x01, 0x02, 0x03 so it is number of chars times 6
     // plus line break plus small safety margin.
-    char printBuffer[(size + 1) * 7 + 1];
+    char printBuffer[(size + 1) * 7 + 1] = {};
     size_t currentPos = 0;
     for(size_t i = 0; i < size; i++) {
         // To avoid buffer overflows.
@@ -67,7 +67,9 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
             }
         }
     }
+#if FSFW_DISABLE_PRINTOUT == 0
     printf("[%s]\n", printBuffer);
+#endif /* FSFW_DISABLE_PRINTOUT == 0 */
 #endif
 }
 
@@ -92,7 +94,7 @@ void arrayprinter::printDec(const uint8_t *data, size_t size,
 #else
     // General format: 32, 243, -12 so it is number of chars times 5
     // plus line break plus small safety margin.
-    char printBuffer[(size + 1) * 5 + 1];
+    char printBuffer[(size + 1) * 5 + 1] = {};
     size_t currentPos = 0;
     for(size_t i = 0; i < size; i++) {
         // To avoid buffer overflows.
@@ -108,7 +110,9 @@ void arrayprinter::printDec(const uint8_t *data, size_t size,
             }
         }
     }
+#if FSFW_DISABLE_PRINTOUT == 0
     printf("[%s]\n", printBuffer);
+#endif /* FSFW_DISABLE_PRINTOUT == 0 */
 #endif
 }
 

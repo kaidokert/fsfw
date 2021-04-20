@@ -1,6 +1,6 @@
 #include "SharedRingBuffer.h"
 #include "../ipc/MutexFactory.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 
 SharedRingBuffer::SharedRingBuffer(object_id_t objectId, const size_t size,
         bool overwriteOld, size_t maxExcessBytes):
@@ -17,6 +17,9 @@ SharedRingBuffer::SharedRingBuffer(object_id_t objectId, uint8_t *buffer,
     mutex = MutexFactory::instance()->createMutex();
 }
 
+SharedRingBuffer::~SharedRingBuffer() {
+    MutexFactory::instance()->deleteMutex(mutex);
+}
 
 void SharedRingBuffer::setToUseReceiveSizeFIFO(size_t fifoDepth) {
     this->fifoDepth = fifoDepth;

@@ -1,16 +1,17 @@
 #ifndef FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 #define FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 
+#include <testcfg/objects/systemObjectList.h>
+
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/LocalDataSet.h>
 #include <fsfw/objectmanager/SystemObject.h>
 #include <fsfw/datapoollocal/LocalPoolVariable.h>
 #include <fsfw/datapoollocal/LocalPoolVector.h>
 #include <fsfw/ipc/QueueFactory.h>
-#include <testcfg/objects/systemObjectList.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
-#include "../../../datapool/PoolReadHelper.h"
+#include <fsfw/datapool/PoolReadGuard.h>
 
 namespace lpool {
 static constexpr lp_id_t uint8VarId = 0;
@@ -36,10 +37,11 @@ class LocalPoolStaticTestDataSet: public StaticLocalDataSet<3> {
 public:
     LocalPoolStaticTestDataSet():
         StaticLocalDataSet(lpool::testSid) {
+
     }
 
     LocalPoolStaticTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
-        StaticLocalDataSet(owner, setId) {
+            StaticLocalDataSet(owner, setId) {
     }
 
     lp_var_t<uint8_t> localPoolVarUint8 = lp_var_t<uint8_t>(lpool::uint8VarGpid, this);
@@ -52,8 +54,7 @@ private:
 class LocalPoolTestDataSet: public LocalDataSet {
 public:
     LocalPoolTestDataSet():
-        LocalDataSet(lpool::testSid, lpool::dataSetMaxVariables) {
-    }
+        LocalDataSet(lpool::testSid, lpool::dataSetMaxVariables) {}
 
     LocalPoolTestDataSet(HasLocalDataPoolIF* owner, uint32_t setId):
         LocalDataSet(owner, setId, lpool::dataSetMaxVariables) {
@@ -63,42 +64,26 @@ public:
     lp_var_t<float> localPoolVarFloat = lp_var_t<float>(lpool::floatVarGpid, this);
     lp_vec_t<uint16_t, 3> localPoolUint16Vec = lp_vec_t<uint16_t, 3>(lpool::uint16Vec3Gpid, this);
 
+    void setDiagnostic(bool isDiagnostic) {
+        LocalPoolDataSetBase::setDiagnostic(isDiagnostic);
+    }
 private:
 };
 
 
 class LocalPoolOwnerBase: public SystemObject, public HasLocalDataPoolIF {
 public:
-    LocalPoolOwnerBase(
-            object_id_t objectId = objects::TEST_LOCAL_POOL_OWNER_BASE):
-                SystemObject(objectId), poolManager(this, messageQueue),
-                dataset(this, lpool::testSetId) {
-        messageQueue = new MessageQueueMockBase();
-    }
+    LocalPoolOwnerBase(object_id_t objectId = objects::TEST_LOCAL_POOL_OWNER_BASE);
 
-    ~LocalPoolOwnerBase() {
-        QueueFactory::instance()->deleteMessageQueue(messageQueue);
-    }
+    ~LocalPoolOwnerBase();
 
     object_id_t getObjectId() const override {
         return SystemObject::getObjectId();
     }
 
-    ReturnValue_t initializeHkManager() {
-        if(not initialized) {
-            initialized = true;
-            return poolManager.initialize(messageQueue);
-        }
-        return HasReturnvaluesIF::RETURN_OK;
-    }
+    ReturnValue_t initializeHkManager();
 
-    ReturnValue_t initializeHkManagerAfterTaskCreation() {
-        if(not initializedAfterTaskCreation) {
-            initializedAfterTaskCreation = true;
-            return poolManager.initializeAfterTaskCreation();
-        }
-        return HasReturnvaluesIF::RETURN_OK;
-    }
+    ReturnValue_t initializeHkManagerAfterTaskCreation();
 
     /** Command queue for housekeeping messages. */
     MessageQueueId_t getCommandQueue() const override {
@@ -106,30 +91,15 @@ public:
     }
 
     // This is called by initializeAfterTaskCreation of the HK manager.
-    virtual ReturnValue_t initializeLocalDataPool(
-            localpool::DataPool& localDataPoolMap,
-            LocalDataPoolManager& poolManager) {
-        // Default initialization empty for now.
-        localDataPoolMap.emplace(lpool::uint8VarId,
-                new PoolEntry<uint8_t>({0}));
-        localDataPoolMap.emplace(lpool::floatVarId,
-                new PoolEntry<float>({0}));
-        localDataPoolMap.emplace(lpool::uint32VarId,
-                new PoolEntry<uint32_t>({0}));
-
-        localDataPoolMap.emplace(lpool::uint16Vec3Id,
-                new PoolEntry<uint16_t>({0, 0, 0}));
-        localDataPoolMap.emplace(lpool::int64Vec2Id,
-                new PoolEntry<int64_t>({0, 0}));
-        return HasReturnvaluesIF::RETURN_OK;
-    }
+    virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
+            LocalDataPoolManager& poolManager) override;
 
     LocalDataPoolManager* getHkManagerHandle() override {
         return &poolManager;
     }
 
-    uint32_t getPeriodicOperationFrequency() const override {
-        return 0;
+    dur_millis_t getPeriodicOperationFrequency() const override {
+        return 200;
     }
 
     /**
@@ -142,30 +112,14 @@ public:
         return &dataset;
     }
 
-    virtual LocalPoolObjectBase* getPoolObjectHandle(
-            lp_id_t localPoolId) override {
-        if(localPoolId == lpool::uint8VarId) {
-            return &testUint8;
-        }
-        else if(localPoolId == lpool::uint16Vec3Id) {
-            return &testUint16Vec;
-        }
-        else if(localPoolId == lpool::floatVarId) {
-            return &testFloat;
-        }
-        else if(localPoolId == lpool::int64Vec2Id) {
-            return &testInt64Vec;
-        }
-        else if(localPoolId == lpool::uint32VarId) {
-            return &testUint32;
-        }
-        else {
-            return &testUint8;
-        }
-    }
+    virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) override;
 
     MessageQueueMockBase* getMockQueueHandle() const {
         return dynamic_cast<MessageQueueMockBase*>(messageQueue);
+    }
+
+    ReturnValue_t subscribePeriodicHk(bool enableReporting) {
+        return poolManager.subscribeForPeriodicPacket(lpool::testSid, enableReporting, 0.2, false);
     }
 
     ReturnValue_t subscribeWrapperSetUpdate() {
@@ -188,50 +142,32 @@ public:
                 MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, false);
     }
 
-    ReturnValue_t reset() {
-        resetSubscriptionList();
-        ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
-        {
-            PoolReadGuard readHelper(&dataset);
-            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
-                status = readHelper.getReadResult();
-            }
-            dataset.localPoolVarUint8.value = 0;
-            dataset.localPoolVarFloat.value = 0.0;
-            dataset.localPoolUint16Vec.value[0] = 0;
-            dataset.localPoolUint16Vec.value[1] = 0;
-            dataset.localPoolUint16Vec.value[2] = 0;
-            dataset.setValidity(false, true);
-        }
-
-        {
-            PoolReadGuard readHelper(&testUint32);
-            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
-                status = readHelper.getReadResult();
-            }
-            testUint32.value = 0;
-            testUint32.setValid(false);
-        }
-
-        {
-            PoolReadGuard readHelper(&testInt64Vec);
-            if(readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
-                status = readHelper.getReadResult();
-            }
-            testInt64Vec.value[0] = 0;
-            testInt64Vec.value[1] = 0;
-            testInt64Vec.setValid(false);
-        }
-        return status;
+    ReturnValue_t subscribeWrapperVariableSnapshot(lp_id_t localPoolId) {
+        return poolManager.subscribeForVariableUpdateMessage(localPoolId,
+                MessageQueueIF::NO_QUEUE, objects::HK_RECEIVER_MOCK, true);
     }
+
+    ReturnValue_t reset();
 
     void resetSubscriptionList() {
         poolManager.clearReceiversList();
     }
 
+    bool changedDataSetCallbackWasCalled(sid_t& sid, store_address_t& storeId);
+    bool changedVariableCallbackWasCalled(gp_id_t& gpid, store_address_t& storeId);
+
     LocalDataPoolManager poolManager;
     LocalPoolTestDataSet dataset;
 private:
+
+    void handleChangedDataset(sid_t sid, store_address_t storeId, bool* clearMessage) override;
+    sid_t changedDatasetSid;
+    store_address_t storeIdForChangedSet;
+
+    void handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId,
+            bool* clearMessage) override;
+    gp_id_t changedPoolVariableGpid;
+    store_address_t storeIdForChangedVariable;
 
     lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId);
     lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId);

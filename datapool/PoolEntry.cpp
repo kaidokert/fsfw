@@ -7,7 +7,7 @@
 
 template <typename T>
 PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid ):
-		length(initValue.size()), valid(setValid) {
+		length(static_cast<uint8_t>(initValue.size())), valid(setValid) {
 	this->address = new T[this->length];
 	if(initValue.size() == 0) {
 		std::memset(this->address, 0, this->getByteSize());

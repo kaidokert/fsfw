@@ -10,7 +10,7 @@
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 #include "../timemanager/CCSDSTime.h"
 #include "../ipc/MutexFactory.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 #include "../ipc/QueueFactory.h"
 
 #include <array>
@@ -38,7 +38,11 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQue
 	hkQueue = queueToUse;
 }
 
-LocalDataPoolManager::~LocalDataPoolManager() {}
+LocalDataPoolManager::~LocalDataPoolManager() {
+    if(mutex != nullptr) {
+        MutexFactory::instance()->deleteMutex(mutex);
+    }
+}
 
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
 	if(queueToUse == nullptr) {
@@ -132,13 +136,16 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
 ReturnValue_t LocalDataPoolManager::handleHkUpdate(HkReceiver& receiver,
 		ReturnValue_t& status) {
 	if(receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
-		// Update packets shall only be generated from datasets.
+		/* Update packets shall only be generated from datasets. */
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner,
 			receiver.dataId.sid);
+	if(dataSet == nullptr) {
+        return DATASET_NOT_FOUND;
+	}
 	if(dataSet->hasChanged()) {
-		// prepare and send update notification
+		/* Prepare and send update notification */
 		ReturnValue_t result = generateHousekeepingPacket(
 				receiver.dataId.sid, dataSet, true);
 		if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -328,7 +335,7 @@ void LocalDataPoolManager::handleChangeResetLogic(
 			toReset->setChanged(false);
 		}
 		/* All recipients have been notified, reset the changed flag */
-		if(changeInfo.currentUpdateCounter <= 1) {
+		else if(changeInfo.currentUpdateCounter <= 1) {
 			toReset->setChanged(false);
 			changeInfo.currentUpdateCounter = 0;
 		}
@@ -372,7 +379,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 		LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, enableReporting);
 		LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
 		LocalPoolDataSetAttorney::initializePeriodicHelper(*dataSet, collectionInterval,
-				owner->getPeriodicOperationFrequency(), isDiagnostics);
+				owner->getPeriodicOperationFrequency());
 	}
 
 	hkReceivers.push_back(hkReceiver);
@@ -398,7 +405,6 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid,
 	hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
 
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
-	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 	if(dataSet != nullptr) {
 		LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, true);
 		LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
@@ -516,11 +522,19 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 	}
 
 	case(HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES): {
-		return generateSetStructurePacket(sid, true);
+		result = generateSetStructurePacket(sid, true);
+		if(result == HasReturnvaluesIF::RETURN_OK) {
+		    return result;
+		}
+		break;
 	}
 
 	case(HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES): {
-		return generateSetStructurePacket(sid, false);
+		result = generateSetStructurePacket(sid, false);
+        if(result == HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
+        break;
 	}
 	case(HousekeepingMessage::MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL):
 	case(HousekeepingMessage::MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL): {
@@ -540,14 +554,15 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 	case(HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT):
 	case(HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT): {
 		LocalPoolDataSetBase* dataSet =HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
-		//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
 		if(command == HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT
 				and LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
-			return WRONG_HK_PACKET_TYPE;
+			result = WRONG_HK_PACKET_TYPE;
+			break;
 		}
 		else if(command == HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT
 				and not LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
-			return WRONG_HK_PACKET_TYPE;
+            result = WRONG_HK_PACKET_TYPE;
+            break;
 		}
 		return generateHousekeepingPacket(HousekeepingMessage::getSid(message),
 				dataSet, true);
@@ -566,14 +581,22 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(
 	case(HousekeepingMessage::UPDATE_SNAPSHOT_SET): {
 		store_address_t storeId;
 		HousekeepingMessage::getUpdateSnapshotSetCommand(message, &storeId);
-		owner->handleChangedDataset(sid, storeId);
+		bool clearMessage = true;
+		owner->handleChangedDataset(sid, storeId, &clearMessage);
+		if(clearMessage) {
+	        message->clear();
+		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 	case(HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE): {
 		store_address_t storeId;
 		gp_id_t globPoolId = HousekeepingMessage::getUpdateSnapshotVariableCommand(message,
 		        &storeId);
-		owner->handleChangedPoolVariable(globPoolId, storeId);
+		bool clearMessage = true;
+		owner->handleChangedPoolVariable(globPoolId, storeId, &clearMessage);
+		if(clearMessage) {
+	        message->clear();
+		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
 
@@ -616,7 +639,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 		LocalPoolDataSetBase* dataSet, bool forDownlink,
 		MessageQueueId_t destination) {
 	if(dataSet == nullptr) {
-		// Configuration error.
+		/* Configuration error. */
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
 				"generateHousekeepingPacket",
 				DATASET_NOT_FOUND);
@@ -632,7 +655,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 		return result;
 	}
 
-	// and now we set a HK message and send it the HK packet destination.
+	/* Now we set a HK message and send it the HK packet destination. */
 	CommandMessage hkMessage;
 	if(LocalPoolDataSetAttorney::isDiagnostics(*dataSet)) {
 		HousekeepingMessage::setHkDiagnosticsReply(&hkMessage, sid, storeId);
@@ -642,7 +665,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	}
 
 	if(hkQueue == nullptr) {
-		// error, no queue available to send packet with.
+		/* Error, no queue available to send packet with. */
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
 				"generateHousekeepingPacket",
 				QUEUE_OR_DESTINATION_INVALID);
@@ -650,7 +673,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 	}
 	if(destination == MessageQueueIF::NO_QUEUE) {
 		if(hkDestinationId == MessageQueueIF::NO_QUEUE) {
-			// error, all destinations invalid
+			/* Error, all destinations invalid */
 			printWarningOrError(sif::OutputTypes::OUT_WARNING,
 					"generateHousekeepingPacket",
 					QUEUE_OR_DESTINATION_INVALID);
@@ -729,6 +752,12 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
 ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
 		bool enable, bool isDiagnostics) {
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+    if(dataSet == nullptr) {
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "togglePeriodicGeneration",
+                DATASET_NOT_FOUND);
+        return DATASET_NOT_FOUND;
+    }
+
 	if((LocalPoolDataSetAttorney::isDiagnostics(*dataSet) and not isDiagnostics) or
 			(not LocalPoolDataSetAttorney::isDiagnostics(*dataSet) and isDiagnostics)) {
 		return WRONG_HK_PACKET_TYPE;
@@ -746,6 +775,12 @@ ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid,
 ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 		float newCollectionInterval, bool isDiagnostics) {
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+	if(dataSet == nullptr) {
+        printWarningOrError(sif::OutputTypes::OUT_WARNING, "changeCollectionInterval",
+                DATASET_NOT_FOUND);
+	    return DATASET_NOT_FOUND;
+	}
+
 	bool targetIsDiagnostics = LocalPoolDataSetAttorney::isDiagnostics(*dataSet);
 	if((targetIsDiagnostics and not isDiagnostics) or
 			(not targetIsDiagnostics and isDiagnostics)) {
@@ -756,7 +791,7 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 			LocalPoolDataSetAttorney::getPeriodicHelper(*dataSet);
 
 	if(periodicHelper == nullptr) {
-		// config error
+		/* Configuration error, set might not have a corresponding pool manager */
 		return PERIODIC_HELPER_INVALID;
 	}
 
@@ -766,13 +801,11 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid,
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 		bool isDiagnostics) {
-	// Get and check dataset first.
-	//LocalPoolDataSetBase* dataSet = owner->getDataSetHandle(sid);
+	/* Get and check dataset first. */
 	LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
 	if(dataSet == nullptr) {
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
-				"performPeriodicHkGeneration",
-				DATASET_NOT_FOUND);
+				"performPeriodicHkGeneration", DATASET_NOT_FOUND);
 		return DATASET_NOT_FOUND;
 	}
 
@@ -831,6 +864,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid,
 void LocalDataPoolManager::clearReceiversList() {
 	/* Clear the vector completely and releases allocated memory. */
 	HkReceivers().swap(hkReceivers);
+	/* Also clear the reset helper if it exists */
+	if(hkUpdateResetList != nullptr) {
+	    HkUpdateResetList().swap(*hkUpdateResetList);
+	}
 }
 
 MutexIF* LocalDataPoolManager::getLocalPoolMutex() {
@@ -843,6 +880,7 @@ object_id_t LocalDataPoolManager::getCreatorObjectId() const {
 
 void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 		const char* functionName, ReturnValue_t error, const char* errorPrint) {
+#if FSFW_VERBOSE_LEVEL >= 1
 	if(errorPrint == nullptr) {
 		if(error == DATASET_NOT_FOUND) {
 			errorPrint = "Dataset not found";
@@ -871,33 +909,32 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 			errorPrint = "Unknown error";
 		}
 	}
+	object_id_t objectId = 0xffffffff;
+	if(owner != nullptr) {
+	    objectId = owner->getObjectId();
+	}
 
 	if(outputType == sif::OutputTypes::OUT_WARNING) {
-#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "LocalDataPoolManager::" << functionName
-				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
-				<< std::hex << owner->getObjectId() << " | " << errorPrint
-				<< std::dec << std::setfill(' ') << std::endl;
+		sif::warning << "LocalDataPoolManager::" << functionName << ": Object ID 0x" <<
+		        std::setw(8) << std::setfill('0') << std::hex << objectId << " | " << errorPrint <<
+		        std::dec << std::setfill(' ') << std::endl;
 #else
 		sif::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
-				functionName, owner->getObjectId(), errorPrint);
+				functionName, objectId, errorPrint);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 	}
 	else if(outputType == sif::OutputTypes::OUT_ERROR) {
-#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "LocalDataPoolManager::" << functionName
-				<< ": Object ID 0x" << std::setw(8) << std::setfill('0')
-				<< std::hex << owner->getObjectId() << " | " << errorPrint
-				<< std::dec << std::setfill(' ') << std::endl;
+		sif::error << "LocalDataPoolManager::" << functionName << ": Object ID 0x" <<
+		        std::setw(8) << std::setfill('0') << std::hex << objectId << " | " << errorPrint <<
+		        std::dec << std::setfill(' ') << std::endl;
 #else
 		sif::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n",
-				functionName, owner->getObjectId(), errorPrint);
+				functionName, objectId, errorPrint);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 	}
+#endif /* #if FSFW_VERBOSE_LEVEL >= 1 */
 }
 
 LocalDataPoolManager* LocalDataPoolManager::getPoolManagerHandle() {
