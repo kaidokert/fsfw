@@ -1,5 +1,5 @@
-#ifndef TEMPERATURESENSOR_H_
-#define TEMPERATURESENSOR_H_
+#ifndef FSFW_THERMAL_TEMPERATURESENSOR_H_
+#define FSFW_THERMAL_TEMPERATURESENSOR_H_
 
 #include "tcsDefinitions.h"
 #include "AbstractTemperatureSensor.h"
@@ -60,23 +60,22 @@ public:
 
 	/**
 	 * Instantiate Temperature Sensor Object.
-	 * @param setObjectid   objectId of the sensor object
-	 * @param inputValue    Pointer to input value which is converted to a temperature
-	 * @param variableGpid  Global Pool ID of the output value
-	 * @param inputVariable Input variable handle
-	 * @param vectorIndex   Vector Index for the sensor monitor
-	 * @param parameters    Calculation parameters, temperature limits, gradient limit
-	 * @param outputSet     Output dataset for the output temperature to fetch it with read()
-	 * @param thermalModule respective thermal module, if it has one
+	 * @param setObjectid       objectId of the sensor object
+	 * @param inputTemperature  Pointer to a raw input value which is converted to an floating
+	 *                          point C output temperature
+	 * @param outputGpid        Global Pool ID of the output value
+	 * @param vectorIndex       Vector Index for the sensor monitor
+	 * @param parameters        Calculation parameters, temperature limits, gradient limit
+	 * @param outputSet         Output dataset for the output temperature to fetch it with read()
+	 * @param thermalModule     Respective thermal module, if it has one
 	 */
-	TemperatureSensor(object_id_t setObjectid,
-			inputType *inputValue, gp_id_t variableGpid, PoolVariableIF* inputVariable,
-			uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
-			LocalPoolDataSetBase *outputSet = NULL, ThermalModuleIF *thermalModule = NULL) :
+	TemperatureSensor(object_id_t setObjectid,lp_var_t<limitType>* inputTemperature,
+			gp_id_t outputGpid, uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
+			LocalPoolDataSetBase *outputSet = nullptr, ThermalModuleIF *thermalModule = nullptr) :
 			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
-			inputValue(inputValue), poolVariable(inputVariable),
-			outputTemperature(variableGpid, outputSet, PoolVariableIF::VAR_WRITE),
-			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR, poolVariable,
+			inputTemperature(inputTemperature),
+			outputTemperature(outputGpid, outputSet, PoolVariableIF::VAR_WRITE),
+			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR, outputGpid,
 				DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit, parameters.upperLimit,
 				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
 			oldTemperature(20), uptimeOfOldTemperature({ thermal::INVALID_TEMPERATURE, 0 }) {
@@ -110,10 +109,7 @@ protected:
 
 	UsedParameters parameters;
 
-	inputType* inputValue;
-
-	PoolVariableIF* poolVariable;
-
+	lp_var_t<limitType>* inputTemperature;
 	lp_var_t<float> outputTemperature;
 
 	LimitMonitor<limitType> sensorMonitor;
@@ -122,22 +118,27 @@ protected:
 	timeval uptimeOfOldTemperature;
 
 	void doChildOperation() {
-		if ((not poolVariable->isValid()) or
+		ReturnValue_t result = inputTemperature->read(MutexIF::TimeoutType::WAITING, 20);
+		if(result != HasReturnvaluesIF::RETURN_OK) {
+			return;
+		}
+
+		if ((not inputTemperature->isValid()) or
 		        (not healthHelper.healthTable->isHealthy(getObjectId()))) {
 			setInvalid();
 			return;
 		}
 
-		outputTemperature = calculateOutputTemperature(*inputValue);
+		outputTemperature = calculateOutputTemperature(inputTemperature->value);
 		outputTemperature.setValid(PoolVariableIF::VALID);
 
 		timeval uptime;
 		Clock::getUptime(&uptime);
 
 		if (uptimeOfOldTemperature.tv_sec != INVALID_UPTIME) {
-			//In theory, we could use an AbsValueMonitor to monitor the gradient.
-			//But this would require storing the maxGradient in DP and quite some overhead.
-			//The concept of delta limits is a bit strange anyway.
+			// In theory, we could use an AbsValueMonitor to monitor the gradient.
+			// But this would require storing the maxGradient in DP and quite some overhead.
+			// The concept of delta limits is a bit strange anyway.
 			float deltaTime;
 			float deltaTemp;
 
@@ -150,11 +151,11 @@ protected:
 			}
 			if (parameters.gradient < deltaTemp / deltaTime) {
 				triggerEvent(TEMP_SENSOR_GRADIENT);
-				//Don't set invalid, as we did not recognize it as invalid with full authority, let FDIR handle it
+				// Don't set invalid, as we did not recognize it as invalid with full authority,
+				// let FDIR handle it
 			}
 		}
 
-		//Check is done against raw limits. SHOULDDO: Why? Using C would be more easy to handle.
 		sensorMonitor.doCheck(outputTemperature.value);
 
 		if (sensorMonitor.isOutOfLimits()) {
@@ -181,7 +182,10 @@ public:
 	static const uint16_t ADDRESS_C = 2;
 	static const uint16_t ADDRESS_GRADIENT = 3;
 
-	static const uint16_t DEFAULT_CONFIRMATION_COUNT = 1; //!< Changed due to issue with later temperature checking even tough the sensor monitor was confirming already (Was 10 before with comment = Correlates to a 10s confirmation time. Chosen rather large, should not be so bad for components and helps survive glitches.)
+	//! Changed due to issue with later temperature checking even tough the sensor monitor was
+	//! confirming already (Was 10 before with comment = Correlates to a 10s confirmation time.
+	//! Chosen rather large, should not be so bad for components and helps survive glitches.)
+	static const uint16_t DEFAULT_CONFIRMATION_COUNT = 1;
 
 	static const uint8_t DOMAIN_ID_SENSOR = 1;
 
@@ -221,4 +225,4 @@ public:
 
 };
 
-#endif /* TEMPERATURESENSOR_H_ */
+#endif /* FSFW_THERMAL_TEMPERATURESENSOR_H_ */
