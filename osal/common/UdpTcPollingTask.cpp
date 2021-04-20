@@ -15,7 +15,7 @@
 #endif
 
 //! Debugging preprocessor define.
-#define FSFW_UDP_RCV_WIRETAPPING_ENABLED    0
+#define FSFW_UDP_RECV_WIRETAPPING_ENABLED    0
 
 UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId,
         object_id_t tmtcUnixUdpBridge, size_t maxRecvSize,
@@ -66,10 +66,13 @@ ReturnValue_t UdpTcPollingTask::performOperation(uint8_t opCode) {
             tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::RECVFROM_CALL, 1000);
             continue;
         }
-#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
+#if FSFW_UDP_RECV_WIRETAPPING_ENABLED == 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "UdpTcPollingTask::performOperation: " << bytesReceived <<
                 " bytes received" << std::endl;
+#else
 #endif
+#endif /* FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1 */
 
         ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
         if(result != HasReturnvaluesIF::RETURN_FAILED) {
@@ -84,7 +87,7 @@ ReturnValue_t UdpTcPollingTask::performOperation(uint8_t opCode) {
 ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
     store_address_t storeId;
 
-#if FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1
+#if FSFW_UDP_RECV_WIRETAPPING_ENABLED == 1
     arrayprinter::print(receptionBuffer.data(), bytesRead);
 #endif
 
