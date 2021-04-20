@@ -63,19 +63,19 @@ public:
 	 * @param setObjectid       objectId of the sensor object
 	 * @param inputTemperature  Pointer to a raw input value which is converted to an floating
 	 *                          point C output temperature
-	 * @param variableGpid      Global Pool ID of the output value
+	 * @param outputGpid        Global Pool ID of the output value
 	 * @param vectorIndex       Vector Index for the sensor monitor
 	 * @param parameters        Calculation parameters, temperature limits, gradient limit
 	 * @param outputSet         Output dataset for the output temperature to fetch it with read()
 	 * @param thermalModule     Respective thermal module, if it has one
 	 */
 	TemperatureSensor(object_id_t setObjectid,lp_var_t<limitType>* inputTemperature,
-			gp_id_t variableGpid, uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
+			gp_id_t outputGpid, uint8_t vectorIndex, Parameters parameters = {0, 0, 0, 0, 0, 0},
 			LocalPoolDataSetBase *outputSet = nullptr, ThermalModuleIF *thermalModule = nullptr) :
 			AbstractTemperatureSensor(setObjectid, thermalModule), parameters(parameters),
 			inputTemperature(inputTemperature),
-			outputTemperature(variableGpid, outputSet, PoolVariableIF::VAR_WRITE),
-			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR, variableGpid,
+			outputTemperature(outputGpid, outputSet, PoolVariableIF::VAR_WRITE),
+			sensorMonitor(setObjectid, DOMAIN_ID_SENSOR, outputGpid,
 				DEFAULT_CONFIRMATION_COUNT, parameters.lowerLimit, parameters.upperLimit,
 				TEMP_SENSOR_LOW, TEMP_SENSOR_HIGH),
 			oldTemperature(20), uptimeOfOldTemperature({ thermal::INVALID_TEMPERATURE, 0 }) {
