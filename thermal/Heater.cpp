@@ -286,7 +286,10 @@ void Heater::handleQueue() {
 		if (result == HasReturnvaluesIF::RETURN_OK) {
 			return;
 		}
-		parameterHelper.handleParameterMessage(&command);
+		result = parameterHelper.handleParameterMessage(&command);
+        if (result == HasReturnvaluesIF::RETURN_OK) {
+            return;
+        }
 	}
 }
 

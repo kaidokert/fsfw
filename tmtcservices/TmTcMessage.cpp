@@ -21,7 +21,7 @@ TmTcMessage::TmTcMessage(store_address_t storeId) {
 	this->setStorageId(storeId);
 }
 
-size_t TmTcMessage::getMinimumMessageSize() {
+size_t TmTcMessage::getMinimumMessageSize() const {
 	return this->HEADER_SIZE + sizeof(store_address_t);
 }
 
