@@ -224,7 +224,6 @@ void Heater::setSwitch(uint8_t number, ReturnValue_t state,
                         triggerEvent(HEATER_STAYED_ON);
                     }
                 }
-                //SHOULDDO MiniOps during switch timeout leads to a faulty switch
             }
         }
     }
@@ -317,7 +316,7 @@ void Heater::handleEventQueue() {
             switch (event.getEvent()) {
             case Fuse::FUSE_WENT_OFF:
             case HEATER_STAYED_OFF:
-            // Setting it faulty does not help, but we need to reach a stable state and can check
+            // HEATER_STAYED_ON is a setting if faulty does not help, but we need to reach a stable state and can check
             // for being faulty before throwing this event again.
             case HEATER_STAYED_ON:
                 if (healthHelper.healthTable->isCommandable(getObjectId())) {
