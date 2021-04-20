@@ -1,5 +1,5 @@
-#ifndef TEMPERATURESENSOR_H_
-#define TEMPERATURESENSOR_H_
+#ifndef FSFW_THERMAL_TEMPERATURESENSOR_H_
+#define FSFW_THERMAL_TEMPERATURESENSOR_H_
 
 #include "tcsDefinitions.h"
 #include "AbstractTemperatureSensor.h"
@@ -151,7 +151,8 @@ protected:
 			}
 			if (parameters.gradient < deltaTemp / deltaTime) {
 				triggerEvent(TEMP_SENSOR_GRADIENT);
-				// Don't set invalid, as we did not recognize it as invalid with full authority, let FDIR handle it
+				// Don't set invalid, as we did not recognize it as invalid with full authority,
+				// let FDIR handle it
 			}
 		}
 
@@ -181,7 +182,10 @@ public:
 	static const uint16_t ADDRESS_C = 2;
 	static const uint16_t ADDRESS_GRADIENT = 3;
 
-	static const uint16_t DEFAULT_CONFIRMATION_COUNT = 1; //!< Changed due to issue with later temperature checking even tough the sensor monitor was confirming already (Was 10 before with comment = Correlates to a 10s confirmation time. Chosen rather large, should not be so bad for components and helps survive glitches.)
+	//! Changed due to issue with later temperature checking even tough the sensor monitor was
+	//! confirming already (Was 10 before with comment = Correlates to a 10s confirmation time.
+	//! Chosen rather large, should not be so bad for components and helps survive glitches.)
+	static const uint16_t DEFAULT_CONFIRMATION_COUNT = 1;
 
 	static const uint8_t DOMAIN_ID_SENSOR = 1;
 
@@ -221,4 +225,4 @@ public:
 
 };
 
-#endif /* TEMPERATURESENSOR_H_ */
+#endif /* FSFW_THERMAL_TEMPERATURESENSOR_H_ */
