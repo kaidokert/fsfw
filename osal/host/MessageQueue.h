@@ -212,7 +212,7 @@ protected:
 	//static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
 private:
-	std::queue<MessageQueueMessage> messageQueue;
+	std::queue<std::vector<uint8_t>> messageQueue;
 	/**
 	 * @brief	The class stores the queue id it got assigned.
 	 * 			If initialization fails, the queue id is set to zero.
