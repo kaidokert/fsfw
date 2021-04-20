@@ -1483,7 +1483,7 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
         if(errorCode == ObjectManagerIF::CHILD_INIT_FAILED) {
             errorPrint = "Initialization error";
         }
-        if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
+        else if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
             if(errorType == sif::OutputTypes::OUT_WARNING) {
                 errorPrint = "Generic Warning";
             }
@@ -1495,6 +1495,9 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
             errorPrint = "Unknown error";
         }
     }
+    if(functionName == nullptr) {
+        functionName = "unknown function";
+    }
 
     if(errorType == sif::OutputTypes::OUT_WARNING) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -1504,7 +1507,7 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
                 << std::setfill(' ') << std::endl;
 #else
         sif::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
-                this->getObjectId(), errorPrint);
+                functionName, this->getObjectId(), errorPrint);
 #endif
     }
     else if(errorType == sif::OutputTypes::OUT_ERROR) {
@@ -1515,7 +1518,7 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
                 << std::setfill(' ') << std::endl;
 #else
         sif::printError("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
-                this->getObjectId(), errorPrint);
+                functionName, this->getObjectId(), errorPrint);
 #endif
     }
 
