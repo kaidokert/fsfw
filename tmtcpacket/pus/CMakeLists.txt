@@ -4,5 +4,9 @@ target_sources(${LIB_FSFW_NAME}
 		TcPacketStored.cpp
 		TmPacketBase.cpp
 		TmPacketMinimal.cpp
-		TmPacketStored.cpp
+		TmPacketStoredPusA.cpp
+		TmPacketStoredPusC.cpp
+		TmPacketPusA.cpp
+		TmPacketPusC.cpp
+		TmPacketStoredBase.cpp
 )
