@@ -223,8 +223,16 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
 	status = pthread_create(&thread,&attributes,fnc_,arg_);
 	if(status != 0){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "Posix Thread create failed with: " <<
+		sif::error << "PosixThread::createTask: Failed with: " <<
 				strerror(status) << std::endl;
+		sif::error << "For FSFW_USE_REALTIME_FOR_LINUX == 1 make sure to call " <<
+		        "\"all sudo setcap 'cap_sys_nice=eip'\" on the application or set "
+		        "/etc/security/limit.conf" << std::endl;
+#else
+		sif::printError("PosixThread::createTask: Create failed with: %s\n", strerror(status));
+		sif::printError("For FSFW_USE_REALTIME_FOR_LINUX == 1 make sure to call "
+		        "\"all sudo setcap 'cap_sys_nice=eip'\" on the application or set "
+                "/etc/security/limit.conf\n");
 #endif
 	}
 
