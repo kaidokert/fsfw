@@ -3,4 +3,5 @@ target_sources(${TARGET_NAME} PRIVATE
 	LocalPoolVectorTest.cpp
 	DataSetTest.cpp
 	LocalPoolManagerTest.cpp
+	LocalPoolOwnerBase.cpp
 )

@@ -8,13 +8,16 @@
 PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
         const size_t maxFillCount):
         registeredVariables(registeredVariablesArray),
-        maxFillCount(maxFillCount) {
-}
+        maxFillCount(maxFillCount) {}
 
 PoolDataSetBase::~PoolDataSetBase() {}
 
 
 ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF *variable) {
+    if(registeredVariables == nullptr) {
+        /* Underlying container invalid */
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
     if (state != States::STATE_SET_UNINITIALISED) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "DataSet::registerVariable: Call made in wrong position." << std::endl;
@@ -61,11 +64,11 @@ ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType,
     }
     else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "DataSet::read(): Call made in wrong position. Don't forget to commit"
-                " member datasets!" << std::endl;
+        sif::warning << "PoolDataSetBase::read: Call made in wrong position. Don't forget to "
+                "commit member datasets!" << std::endl;
 #else
-        sif::printError("DataSet::read(): Call made in wrong position. Don't forget to commit"
-                " member datasets!\n");
+        sif::printWarning("PoolDataSetBase::read: Call made in wrong position. Don't forget to "
+                "commit member datasets!\n");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
         result = SET_WAS_ALREADY_READ;
     }

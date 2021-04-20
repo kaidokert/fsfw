@@ -13,9 +13,8 @@ target_sources(${LIB_FSFW_NAME}
 		QueueFactory.cpp
 		SemaphoreFactory.cpp
 		TaskFactory.cpp
-		TcUnixUdpPollingTask.cpp
-		TmTcUnixUdpBridge.cpp
 		Timer.cpp
+		tcpipHelpers.cpp
 )
 
 find_package(Threads REQUIRED)

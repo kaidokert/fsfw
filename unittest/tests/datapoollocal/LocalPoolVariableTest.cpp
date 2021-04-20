@@ -10,8 +10,7 @@ TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
             get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
     REQUIRE(poolOwner != nullptr);
     REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
-    REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation()
-            == retval::CATCH_OK);
+    REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
 
     SECTION("Basic Tests") {
         /* very basic test. */

@@ -11,7 +11,7 @@ protected:
 	 * @brief	This call always returns the same fixed size of the message.
 	 * @return	Returns HEADER_SIZE + \c sizeof(timeval) + sizeof(uint32_t).
 	 */
-	size_t getMinimumMessageSize();
+	size_t getMinimumMessageSize() const override;
 public:
 
 	/**

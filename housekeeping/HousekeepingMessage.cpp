@@ -84,15 +84,21 @@ void HousekeepingMessage::setCollectionIntervalModificationCommand(
 	else {
 		command->setCommand(MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL);
 	}
-	command->setParameter3(collectionInterval);
+
+	/* Raw storage of the float in the message. Do not use setParameter3, does
+	implicit conversion to integer type! */
+	std::memcpy(command->getData() + 2 * sizeof(uint32_t), &collectionInterval,
+	        sizeof(collectionInterval));
 
 	setSid(command, sid);
 }
 
 sid_t HousekeepingMessage::getCollectionIntervalModificationCommand(
 		const CommandMessage* command, float* newCollectionInterval) {
+
 	if(newCollectionInterval != nullptr) {
-		*newCollectionInterval = command->getParameter3();
+	    std::memcpy(newCollectionInterval, command->getData() + 2 * sizeof(uint32_t),
+	            sizeof(*newCollectionInterval));
 	}
 
 	return getSid(command);
@@ -151,7 +157,8 @@ void HousekeepingMessage::clear(CommandMessage* message) {
     case(DIAGNOSTICS_REPORT):
     case(HK_DEFINITIONS_REPORT):
     case(DIAGNOSTICS_DEFINITION_REPORT):
-    case(UPDATE_SNAPSHOT_SET): {
+    case(UPDATE_SNAPSHOT_SET):
+    case(UPDATE_SNAPSHOT_VARIABLE): {
         store_address_t storeId;
         getHkDataReply(message, &storeId);
         StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(

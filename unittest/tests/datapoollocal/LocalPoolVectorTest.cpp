@@ -115,6 +115,7 @@ TEST_CASE("LocalPoolVector" , "[LocPoolVecTest]") {
         REQUIRE(readOnlyVec.commit() ==
                 static_cast<int>(PoolVariableIF::INVALID_READ_WRITE_MODE));
     }
+    poolOwner->reset();
 }
 
 

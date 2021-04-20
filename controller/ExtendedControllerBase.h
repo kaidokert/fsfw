@@ -61,11 +61,11 @@ protected:
     /* HasLocalDatapoolIF overrides */
     virtual LocalDataPoolManager* getHkManagerHandle() override;
     virtual object_id_t getObjectId() const override;
-    virtual ReturnValue_t initializeLocalDataPool(
-            localpool::DataPool& localDataPoolMap,
-            LocalDataPoolManager& poolManager) override;
     virtual uint32_t getPeriodicOperationFrequency() const override;
-    virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override;
+
+    virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
+            LocalDataPoolManager& poolManager) override = 0;
+    virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override = 0;
 };
 
 

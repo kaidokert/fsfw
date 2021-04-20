@@ -159,7 +159,7 @@ ReturnValue_t Service3Housekeeping::prepareCollectionIntervalModificationCommand
         CommandMessage *command, object_id_t objectId, bool isDiagnostics,
         const uint8_t *tcData, size_t tcDataLen) {
     if(tcDataLen < sizeof(sid_t) + sizeof(float)) {
-        // SID plus the size of the new collection intervL.
+        /* SID plus the size of the new collection interval. */
         return CommandingServiceBase::INVALID_TC;
     }
 
