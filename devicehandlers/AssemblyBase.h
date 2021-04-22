@@ -24,6 +24,13 @@
  * 1. check logic when active-> checkChildrenStateOn
  * 2. transition logic to change the mode -> commandChildren
  *
+ * Important:
+ *
+ * The implementation must call registerChild(object_id_t child)
+ * for all commanded children during initialization.
+ * The implementation must call the initialization function of the base class.
+ * (This will call the function in SubsystemBase)
+ *
  */
 class AssemblyBase: public SubsystemBase {
 public:
@@ -41,9 +48,6 @@ public:
 	virtual ~AssemblyBase();
 
 protected:
-
-    // SHOULDDO: Change that OVERWRITE_HEALTH may be returned
-    // (or return internalState directly?)
     /**
      * Command children to reach [mode,submode] combination
      * Can be done by setting #commandsOutstanding correctly,
@@ -68,6 +72,18 @@ protected:
     virtual ReturnValue_t checkChildrenStateOn(Mode_t wantedMode,
             Submode_t wantedSubmode) = 0;
 
+    /**
+     * Check whether a combination of mode and submode is valid.
+     *
+     * Ground Controller like precise return values from HasModesIF.
+     * So, please return any of them.
+     *
+     * @param mode The targeted mode
+     * @param submode The targeted submmode
+     * @return Any information why this combination is invalid from HasModesIF
+     * 			like HasModesIF::INVALID_SUBMODE.
+     * 			On success return HasReturnvaluesIF::RETURN_OK
+     */
     virtual ReturnValue_t isModeCombinationValid(Mode_t mode,
             Submode_t submode) = 0;
 

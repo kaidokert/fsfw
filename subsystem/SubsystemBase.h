@@ -37,6 +37,17 @@ public:
 
 	virtual MessageQueueId_t getCommandQueue() const override;
 
+	/**
+	 * Function to register the child objects.
+	 * Performs a checks if the child does implement HasHealthIF and/or HasModesIF
+	 *
+	 * 	Also adds them to the internal childrenMap.
+	 *
+	 * @param objectId
+	 * @return RETURN_OK if successful
+	 * 		   CHILD_DOESNT_HAVE_MODES if Child is no HasHealthIF and no HasModesIF
+	 * 		   COULD_NOT_INSERT_CHILD If the Child could not be added to the ChildrenMap
+	 */
 	ReturnValue_t registerChild(object_id_t objectId);
 
 	virtual ReturnValue_t initialize() override;
@@ -56,9 +67,9 @@ protected:
 
 	Mode_t mode;
 
-	Submode_t submode;
+	Submode_t submode = SUBMODE_NONE;
 
-	bool childrenChangedMode;
+	bool childrenChangedMode = false;
 
 	/**
 	 * Always check this against <=0, so you are robust against too many replies
