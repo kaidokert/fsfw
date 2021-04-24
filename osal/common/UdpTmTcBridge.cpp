@@ -70,6 +70,7 @@ ReturnValue_t UdpTmTcBridge::initialize() {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
+    hints.ai_flags = AI_PASSIVE;
 
     /* Set up UDP socket:
     https://en.wikipedia.org/wiki/Getaddrinfo
@@ -94,6 +95,10 @@ ReturnValue_t UdpTmTcBridge::initialize() {
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SOCKET_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
     }
+
+#if FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+    tcpip::printAddress(addrResult->ai_addr);
+#endif
 
     retval = bind(serverSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval != 0) {
@@ -121,10 +126,8 @@ ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
     /* The target address can be set by different threads so this lock ensures thread-safety */
     MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
-#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
-    char ipAddress [15];
-    sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-            &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#if FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+    tcpip::printAddress(&clientAddress);
 #endif
 
     int bytesSent = sendto(
@@ -152,13 +155,11 @@ void UdpTmTcBridge::checkAndSetClientAddress(sockaddr& newAddress) {
     /* The target address can be set by different threads so this lock ensures thread-safety */
     MutexGuard lock(mutex, timeoutType, mutexTimeoutMs);
 
-#if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
-    char ipAddress [15];
-    sif::debug << "IP Address Sender: "<< inet_ntop(AF_INET,
-            &newAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
-    sif::debug << "IP Address Old: " <<  inet_ntop(AF_INET,
-            &clientAddress.sin_addr.s_addr, ipAddress, 15) << std::endl;
+#if FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
+    tcpip::printAddress(&newAddress);
+    tcpip::printAddress(&clientAddress);
 #endif
+
     registerCommConnect();
 
     /* Set new IP address to reply to */

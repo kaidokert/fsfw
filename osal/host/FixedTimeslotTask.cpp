@@ -3,7 +3,7 @@
 #include "../../ipc/MutexFactory.h"
 #include "../../osal/host/Mutex.h"
 #include "../../osal/host/FixedTimeslotTask.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
 #include <thread>

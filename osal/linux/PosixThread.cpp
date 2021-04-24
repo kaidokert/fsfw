@@ -181,11 +181,14 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
         sif::error << "Posix Thread attribute setinheritsched failed with: " <<
                 strerror(status) << std::endl;
 #endif
-    }
-
-    // TODO FIFO -> This needs root privileges for the process
-    status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
-    if(status != 0){
+	}
+#ifndef FSFW_USE_REALTIME_FOR_LINUX
+#error "Please define FSFW_USE_REALTIME_FOR_LINUX with either 0 or 1"
+#endif
+#if FSFW_USE_REALTIME_FOR_LINUX == 1
+	// FIFO -> This needs root privileges for the process
+	status = pthread_attr_setschedpolicy(&attributes,SCHED_FIFO);
+	if(status != 0){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "Posix Thread attribute schedule policy failed with: " <<
                 strerror(status) << std::endl;
@@ -200,14 +203,14 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
         sif::error << "Posix Thread attribute schedule params failed with: " <<
                 strerror(status) << std::endl;
 #endif
-    }
-
-    //Set Signal Mask for suspend until startTask is called
-    sigset_t waitSignal;
-    sigemptyset(&waitSignal);
-    sigaddset(&waitSignal, SIGUSR1);
-    status = pthread_sigmask(SIG_BLOCK, &waitSignal, NULL);
-    if(status != 0){
+	}
+#endif
+	//Set Signal Mask for suspend until startTask is called
+	sigset_t waitSignal;
+	sigemptyset(&waitSignal);
+	sigaddset(&waitSignal, SIGUSR1);
+	status = pthread_sigmask(SIG_BLOCK, &waitSignal, NULL);
+	if(status != 0){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "Posix Thread sigmask failed failed with: " <<
                 strerror(status) << " errno: " << strerror(errno) << std::endl;
@@ -218,8 +221,16 @@ void PosixThread::createTask(void* (*fnc_)(void*), void* arg_) {
     status = pthread_create(&thread,&attributes,fnc_,arg_);
     if(status != 0){
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "Posix Thread create failed with: " <<
-                strerror(status) << std::endl;
+		sif::error << "PosixThread::createTask: Failed with: " <<
+				strerror(status) << std::endl;
+		sif::error << "For FSFW_USE_REALTIME_FOR_LINUX == 1 make sure to call " <<
+		        "\"all sudo setcap 'cap_sys_nice=eip'\" on the application or set "
+		        "/etc/security/limit.conf" << std::endl;
+#else
+		sif::printError("PosixThread::createTask: Create failed with: %s\n", strerror(status));
+		sif::printError("For FSFW_USE_REALTIME_FOR_LINUX == 1 make sure to call "
+		        "\"all sudo setcap 'cap_sys_nice=eip'\" on the application or set "
+                "/etc/security/limit.conf\n");
 #endif
     }
 

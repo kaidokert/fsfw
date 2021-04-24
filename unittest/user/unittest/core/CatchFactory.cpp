@@ -1,6 +1,6 @@
+#include "CatchFactory.h"
 #include <fsfw/datapoollocal/LocalDataPoolManager.h>
 #include <fsfw/devicehandlers/DeviceHandlerBase.h>
-#include "CatchFactory.h"
 
 #include <fsfw/events/EventManager.h>
 #include <fsfw/health/HealthTable.h>
@@ -74,7 +74,7 @@ void Factory::setStaticFrameworkObjectIds() {
 
 	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 
-	TmPacketStored::timeStamperId = objects::NO_OBJECT;
+	TmPacketBase::timeStamperId = objects::NO_OBJECT;
 }
 
 
