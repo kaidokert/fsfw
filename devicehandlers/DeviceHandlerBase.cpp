@@ -456,6 +456,15 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
     }
 }
 
+size_t DeviceHandlerBase::getNextReplyLength(DeviceCommandId_t commandId){
+    DeviceReplyIter iter = deviceReplyMap.find(commandId);
+    if(iter != deviceReplyMap.end()) {
+        return iter->second.replyLen;
+    }else{
+        return 0;
+   }
+}
+
 ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
         uint16_t delayCycles, uint16_t maxDelayCycles, bool periodic) {
     auto replyIter = deviceReplyMap.find(deviceReply);
@@ -646,16 +655,12 @@ void DeviceHandlerBase::doGetWrite() {
 void DeviceHandlerBase::doSendRead() {
     ReturnValue_t result;
 
-    size_t requestLen = 0;
+    size_t replyLen = 0;
     if(cookieInfo.pendingCommand != deviceCommandMap.end()) {
-        DeviceReplyIter iter = deviceReplyMap.find(
-                cookieInfo.pendingCommand->first);
-        if(iter != deviceReplyMap.end()) {
-            requestLen = iter->second.replyLen;
-        }
+        replyLen = getNextReplyLength(cookieInfo.pendingCommand->first);
     }
 
-    result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
+    result = communicationInterface->requestReceiveMessage(comCookie, replyLen);
 
     if (result == RETURN_OK) {
         cookieInfo.state = COOKIE_READ_SENT;
