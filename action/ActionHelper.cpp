@@ -147,11 +147,6 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo,
         return result;
     }
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
-        ipcStore->deleteData(storeAddress);
-        return result;
-    }
-
     /* We don't need to report the objectId, as we receive REQUESTED data before the completion
     success message. True aperiodic replies need to be reported with another dedicated message. */
     ActionMessage::setDataReply(&reply, replyId, storeAddress);

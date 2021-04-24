@@ -9,7 +9,7 @@
 
 class TmTcUnixUdpBridge:
         public TmTcBridge {
-    friend class TcUnixUdpPollingTask;
+    friend class UdpTcPollingTask;
 public:
 
     /* The ports chosen here should not be used by any other process.

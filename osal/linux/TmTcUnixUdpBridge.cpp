@@ -1,5 +1,5 @@
 #include "TmTcUnixUdpBridge.h"
-#include "tcpipHelpers.h"
+#include "../common/tcpipHelpers.h"
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexGuard.h"
 
@@ -12,7 +12,7 @@
 //! Debugging preprocessor define.
 #define FSFW_UDP_SEND_WIRETAPPING_ENABLED   0
 
-const std::string TmTcUnixUdpBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_UDP_SERVER_PORT;
+const std::string TmTcUnixUdpBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
 
 TmTcUnixUdpBridge::TmTcUnixUdpBridge(object_id_t objectId, object_id_t tcDestination,
         object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort):

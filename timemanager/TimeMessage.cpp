@@ -25,6 +25,6 @@ uint32_t TimeMessage::getCounterValue() {
 	return temp;
 }
 
-size_t TimeMessage::getMinimumMessageSize() {
+size_t TimeMessage::getMinimumMessageSize() const {
 	return this->MAX_SIZE;
 }
