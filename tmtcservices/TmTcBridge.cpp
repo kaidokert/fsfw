@@ -4,6 +4,8 @@
 #include "../serviceinterface/ServiceInterface.h"
 #include "../globalfunctions/arrayprinter.h"
 
+#define TMTCBRIDGE_WIRETAPPING 0
+
 TmTcBridge::TmTcBridge(object_id_t objectId, object_id_t tcDestination,
 		object_id_t tmStoreId, object_id_t tcStoreId):
 		SystemObject(objectId),tmStoreId(tmStoreId), tcStoreId(tcStoreId),
@@ -234,17 +236,11 @@ ReturnValue_t TmTcBridge::handleStoredTm() {
 
 void TmTcBridge::registerCommConnect() {
 	if(not communicationLinkUp) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		//sif::info << "TMTC Bridge: Registered Comm Link Connect" << std::endl;
-#endif
 		communicationLinkUp = true;
 	}
 }
 
 void TmTcBridge::registerCommDisconnect() {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	//sif::info << "TMTC Bridge: Registered Comm Link Disconnect" << std::endl;
-#endif
 	if(communicationLinkUp) {
 		communicationLinkUp = false;
 	}

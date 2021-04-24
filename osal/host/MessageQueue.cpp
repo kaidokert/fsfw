@@ -63,8 +63,6 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	if(messageQueue.empty()) {
 		return MessageQueueIF::EMPTY;
 	}
-	// not sure this will work..
-	//*message = std::move(messageQueue.front());
 	MutexGuard mutexLock(queueLock, MutexIF::TimeoutType::WAITING, 20);
 	MessageQueueMessage* currentMessage = &messageQueue.front();
 	std::copy(currentMessage->getBuffer(),
