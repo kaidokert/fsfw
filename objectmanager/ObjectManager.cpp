@@ -108,9 +108,9 @@ void ObjectManager::initialize() {
 		result = it.second->checkObjectConnections();
 		if ( result != RETURN_OK ) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "ObjectManager::ObjectManager: Object " << std::hex <<
-					(int) it.first  << " connection check failed with code 0x"
-					<< result << std::dec << std::endl;
+			sif::error << "ObjectManager::ObjectManager: Object 0x" << std::hex <<
+					(int) it.first  << " connection check failed with code 0x" << result <<
+					std::dec << std::endl;
 #endif
 			errorCount++;
 		}
