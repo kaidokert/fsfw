@@ -21,8 +21,10 @@ ReturnValue_t FailureIsolationBase::initialize() {
 	EventManagerIF* manager = objectManager->get<EventManagerIF>(
 			objects::EVENT_MANAGER);
 	if (manager == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "FailureIsolationBase::initialize: Event Manager has not"
 				" been initialized!" << std::endl;
+#endif
 		return RETURN_FAILED;
 	}
 	ReturnValue_t result = manager->registerListener(eventQueue->getId());
@@ -36,8 +38,10 @@ ReturnValue_t FailureIsolationBase::initialize() {
 		}
 		owner = objectManager->get<HasHealthIF>(ownerId);
 		if (owner == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FailureIsolationBase::intialize: Owner object "
 					"invalid. Make sure it implements HasHealthIF" << std::endl;
+#endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
 		}
 	}
@@ -45,10 +49,14 @@ ReturnValue_t FailureIsolationBase::initialize() {
 		ConfirmsFailuresIF* parentIF = objectManager->get<ConfirmsFailuresIF>(
 				faultTreeParent);
 		if (parentIF == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FailureIsolationBase::intialize: Parent object"
 					<< "invalid." << std::endl;
+#endif
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "Make sure it implements ConfirmsFailuresIF."
 					<< std::endl;
+#endif
 			return ObjectManagerIF::CHILD_INIT_FAILED;
 			return RETURN_FAILED;
 		}
@@ -139,7 +147,7 @@ void FailureIsolationBase::triggerEvent(Event event, uint32_t parameter1,
 		uint32_t parameter2) {
 	//With this mechanism, all events are disabled for a certain device.
 	//That's not so good for visibility.
-	if (isFdirDisabledForSeverity(EVENT::getSeverity(event))) {
+	if (isFdirDisabledForSeverity(event::getSeverity(event))) {
 		return;
 	}
 	EventMessage message(event, ownerId, parameter1, parameter2);
@@ -148,7 +156,7 @@ void FailureIsolationBase::triggerEvent(Event event, uint32_t parameter1,
 }
 
 bool FailureIsolationBase::isFdirDisabledForSeverity(EventSeverity_t severity) {
-	if ((owner != NULL) && (severity != SEVERITY::INFO)) {
+	if ((owner != NULL) && (severity != severity::INFO)) {
 		if (owner->getHealth() == HasHealthIF::EXTERNAL_CONTROL) {
 			//External control disables handling of fault messages.
 			return true;

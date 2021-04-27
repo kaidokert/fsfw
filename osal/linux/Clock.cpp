@@ -69,32 +69,34 @@ timeval Clock::getUptime() {
 	timeval uptime;
 	auto result = getUptime(&uptime);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Clock::getUptime: Error getting uptime" << std::endl;
+#endif
 	}
 	return uptime;
 }
 
 ReturnValue_t Clock::getUptime(timeval* uptime) {
     //TODO This is not posix compatible and delivers only seconds precision
-    // is the OS not called Linux?
-    //Linux specific file read but more precise
+    // Linux specific file read but more precise.
     double uptimeSeconds;
     if(std::ifstream("/proc/uptime",std::ios::in) >> uptimeSeconds){
         uptime->tv_sec = uptimeSeconds;
         uptime->tv_usec = uptimeSeconds *(double) 1e6 - (uptime->tv_sec *1e6);
     }
+    return HasReturnvaluesIF::RETURN_OK;
+}
 
-	//TODO This is not posix compatible and delivers only seconds precision
-    // I suggest this is moved into another clock function which will
-    // deliver second precision later.
+// Wait for new FSFW Clock function delivering seconds uptime.
+//uint32_t Clock::getUptimeSeconds() {
+//	//TODO This is not posix compatible and delivers only seconds precision
 //	struct sysinfo sysInfo;
 //	int result = sysinfo(&sysInfo);
 //	if(result != 0){
 //		return HasReturnvaluesIF::RETURN_FAILED;
 //	}
 //	return sysInfo.uptime;
-    return HasReturnvaluesIF::RETURN_OK;
-}
+//}
 
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 	timeval uptime;
@@ -180,7 +182,7 @@ ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
 	if(checkOrCreateClockMutex()!=HasReturnvaluesIF::RETURN_OK){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::BLOCKING);
+	ReturnValue_t result = timeMutex->lockMutex(MutexIF::TimeoutType::BLOCKING);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -195,7 +197,7 @@ ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
 	if(timeMutex==NULL){
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
-	ReturnValue_t result = timeMutex->lockMutex(MutexIF::BLOCKING);
+	ReturnValue_t result = timeMutex->lockMutex(MutexIF::TimeoutType::BLOCKING);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}
@@ -207,13 +209,13 @@ ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
 }
 
 ReturnValue_t Clock::checkOrCreateClockMutex(){
-	if(timeMutex==NULL){
+	if(timeMutex == nullptr){
 		MutexFactory* mutexFactory = MutexFactory::instance();
-		if (mutexFactory == NULL) {
+		if (mutexFactory == nullptr) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 		timeMutex = mutexFactory->createMutex();
-		if (timeMutex == NULL) {
+		if (timeMutex == nullptr) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}

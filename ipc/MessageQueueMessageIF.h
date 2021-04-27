@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_IPC_MESSAGEQUEUEMESSAGEIF_H_
 #define FRAMEWORK_IPC_MESSAGEQUEUEMESSAGEIF_H_
 
-#include <fsfw/ipc/messageQueueDefinitions.h>
+#include "messageQueueDefinitions.h"
 #include <cstddef>
 #include <cstdint>
 
@@ -72,6 +72,7 @@ public:
     virtual void setMessageSize(size_t messageSize) = 0;
     virtual size_t getMinimumMessageSize() const = 0;
     virtual size_t getMaximumMessageSize() const = 0;
+    virtual size_t getMaximumDataSize() const = 0;
 
 };
 

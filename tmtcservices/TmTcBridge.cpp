@@ -1,9 +1,10 @@
-#include "../tmtcservices/TmTcBridge.h"
+#include "TmTcBridge.h"
 
 #include "../ipc/QueueFactory.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../globalfunctions/arrayprinter.h"
+
+#define TMTCBRIDGE_WIRETAPPING 0
 
 TmTcBridge::TmTcBridge(object_id_t objectId, object_id_t tcDestination,
 		object_id_t tmStoreId, object_id_t tcStoreId):
@@ -15,7 +16,9 @@ TmTcBridge::TmTcBridge(object_id_t objectId, object_id_t tcDestination,
             createMessageQueue(TMTC_RECEPTION_QUEUE_DEPTH);
 }
 
-TmTcBridge::~TmTcBridge() {}
+TmTcBridge::~TmTcBridge() {
+    QueueFactory::instance()->deleteMessageQueue(tmTcReceptionQueue);
+}
 
 ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
 		uint8_t sentPacketsPerCycle) {
@@ -24,9 +27,11 @@ ReturnValue_t TmTcBridge::setNumberOfSentPacketsPerCycle(
 		return RETURN_OK;
 	}
 	else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::warning << "TmTcBridge::setNumberOfSentPacketsPerCycle: Number of "
 	             << "packets sent per cycle exceeds limits. "
 	             << "Keeping default value." << std::endl;
+#endif
 		return RETURN_FAILED;
 	}
 }
@@ -38,9 +43,11 @@ ReturnValue_t TmTcBridge::setMaxNumberOfPacketsStored(
         return RETURN_OK;
     }
     else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "TmTcBridge::setMaxNumberOfPacketsStored: Number of "
                 << "packets stored exceeds limits. "
                 << "Keeping default value." << std::endl;
+#endif
         return RETURN_FAILED;
     }
 }
@@ -48,21 +55,27 @@ ReturnValue_t TmTcBridge::setMaxNumberOfPacketsStored(
 ReturnValue_t TmTcBridge::initialize() {
 	tcStore = objectManager->get<StorageManagerIF>(tcStoreId);
 	if (tcStore == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcBridge::initialize: TC store invalid. Make sure"
 				"it is created and set up properly." << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 	tmStore = objectManager->get<StorageManagerIF>(tmStoreId);
 	if (tmStore == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcBridge::initialize: TM store invalid. Make sure"
 				"it is created and set up properly." << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 	AcceptsTelecommandsIF* tcDistributor =
 			objectManager->get<AcceptsTelecommandsIF>(tcDestination);
 	if (tcDistributor == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcBridge::initialize: TC Distributor invalid"
 				<< std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
@@ -76,13 +89,17 @@ ReturnValue_t TmTcBridge::performOperation(uint8_t operationCode) {
 	ReturnValue_t result;
 	result = handleTc();
 	if(result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "TmTcBridge::performOperation: "
 		        << "Error handling TCs" << std::endl;
+#endif
 	}
 	result = handleTm();
 	if (result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::debug << "TmTcBridge::performOperation: "
 	                    << "Error handling TMs" << std::endl;
+#endif
 	}
 	return result;
 }
@@ -95,8 +112,10 @@ ReturnValue_t TmTcBridge::handleTm() {
     ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
 	ReturnValue_t result = handleTmQueue();
 	if(result != RETURN_OK) {
-		sif::error << "TmTcBridge::handleTm: Error handling TM queue!"
-		        << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "TmTcBridge::handleTm: Error handling TM queue with error code 0x" <<
+		        std::hex << result  << std::dec << "!" << std::endl;
+#endif
 		status = result;
 	}
 
@@ -104,8 +123,9 @@ ReturnValue_t TmTcBridge::handleTm() {
 	        (packetSentCounter < sentPacketsPerCycle)) {
 	    result = handleStoredTm();
 	    if(result != RETURN_OK) {
-	        sif::error << "TmTcBridge::handleTm: Error handling stored TMs!"
-	                << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	        sif::error << "TmTcBridge::handleTm: Error handling stored TMs!" << std::endl;
+#endif
 	        status = result;
 	    }
 	}
@@ -122,7 +142,15 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 		 result == HasReturnvaluesIF::RETURN_OK;
 		 result = tmTcReceptionQueue->receiveMessage(&message))
 	{
-	    //sif::info << (int) packetSentCounter << std::endl;
+
+#if FSFW_VERBOSE_LEVEL >= 3
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	    sif::info << "Sent packet counter: " << static_cast<int>(packetSentCounter) << std::endl;
+#else
+	    sif::printInfo("Sent packet counter: %d\n", packetSentCounter);
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 3 */
+
 		if(communicationLinkUp == false or
 		        packetSentCounter >= sentPacketsPerCycle) {
 			storeDownlinkData(&message);
@@ -149,10 +177,15 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 	store_address_t storeId = 0;
+	if(tmFifo == nullptr) {
+	    return HasReturnvaluesIF::RETURN_FAILED;
+	}
 
 	if(tmFifo->full()) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::debug << "TmTcBridge::storeDownlinkData: TM downlink max. number "
 	                    << "of stored packet IDs reached! " << std::endl;
+#endif
 	    if(overwriteOld) {
 	        tmFifo->retrieve(&storeId);
 	        tmStore->deleteData(storeId);
@@ -171,8 +204,10 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 ReturnValue_t TmTcBridge::handleStoredTm() {
     ReturnValue_t status = RETURN_OK;
 	while(not tmFifo->empty() and packetSentCounter < sentPacketsPerCycle) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		//sif::info << "TMTC Bridge: Sending stored TM data. There are "
 		//     << (int) tmFifo->size() << " left to send\r\n" << std::flush;
+#endif
 
 		store_address_t storeId;
 		const uint8_t* data = nullptr;
@@ -185,8 +220,10 @@ ReturnValue_t TmTcBridge::handleStoredTm() {
 
 		result = sendTm(data,size);
 		if(result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "TMTC Bridge: Could not send stored downlink data"
 			      << std::endl;
+#endif
 			status = result;
 		}
 		packetSentCounter ++;
@@ -201,13 +238,11 @@ ReturnValue_t TmTcBridge::handleStoredTm() {
 
 void TmTcBridge::registerCommConnect() {
 	if(not communicationLinkUp) {
-		//sif::info << "TMTC Bridge: Registered Comm Link Connect" << std::endl;
 		communicationLinkUp = true;
 	}
 }
 
 void TmTcBridge::registerCommDisconnect() {
-	//sif::info << "TMTC Bridge: Registered Comm Link Disconnect" << std::endl;
 	if(communicationLinkUp) {
 		communicationLinkUp = false;
 	}

@@ -1,9 +1,11 @@
-#ifndef MODESEQUENCEMESSAGE_H_
-#define MODESEQUENCEMESSAGE_H_
+#ifndef FSFW_SUBSYSTEM_MODES_MODESEQUENCEMESSAGE_H_
+#define FSFW_SUBSYSTEM_MODES_MODESEQUENCEMESSAGE_H_
+
+#include "ModeDefinitions.h"
 
 #include "../../ipc/CommandMessage.h"
 #include "../../storagemanager/StorageManagerIF.h"
-#include "ModeDefinitions.h"
+
 
 class ModeSequenceMessage {
 public:
@@ -45,4 +47,4 @@ private:
 	ModeSequenceMessage();
 };
 
-#endif /* MODESEQUENCEMESSAGE_H_ */
+#endif /* FSFW_SUBSYSTEM_MODES_MODESEQUENCEMESSAGE_H_ */

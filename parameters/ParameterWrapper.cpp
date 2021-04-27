@@ -1,17 +1,19 @@
 #include "ParameterWrapper.h"
+#include <FSFWConfig.h>
+#include <fsfw/serviceinterface/ServiceInterface.h>
 
 ParameterWrapper::ParameterWrapper() :
 		pointsToStream(false), type(Type::UNKNOWN_TYPE) {
 }
 
 ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
-		void *data) :
+		void *data):
 		pointsToStream(false), type(type), rows(rows), columns(columns),
 		data(data), readonlyData(data) {
 }
 
 ParameterWrapper::ParameterWrapper(Type type, uint8_t rows, uint8_t columns,
-		const void *data) :
+		const void *data):
 		pointsToStream(false), type(type), rows(rows), columns(columns),
 		data(nullptr), readonlyData(data) {
 }
@@ -40,8 +42,8 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t **buffer, size_t *size,
 		return result;
 	}
 
-	//serialize uses readonlyData, as it is always valid
-	if (readonlyData == NULL) {
+	/* serialize uses readonlyData, as it is always valid */
+	if (readonlyData == nullptr) {
 		return NOT_SET;
 	}
 	switch (type) {
@@ -75,7 +77,7 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t **buffer, size_t *size,
 		result = serializeData<double>(buffer, size, maxSize, streamEndianness);
 		break;
 	default:
-		result = UNKNOW_DATATYPE;
+		result = UNKNOWN_DATATYPE;
 		break;
 	}
 	return result;
@@ -115,7 +117,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 		uint8_t fromColumns) {
 
 	//treat from as a continuous Stream as we copy all of it
-	const uint8_t *fromAsStream = (const uint8_t*) from;
+	const uint8_t *fromAsStream = reinterpret_cast<const uint8_t*>(from);
 	size_t streamSize = fromRows * fromColumns * sizeof(T);
 
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
@@ -123,8 +125,9 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow,
 	for (uint8_t fromRow = 0; fromRow < fromRows; fromRow++) {
 
 		//get the start element of this row in data
-		T *dataWithDataType = ((T*) data)
-				+ (((startingRow + fromRow) * columns) + startingColumn);
+	    uint16_t offset = (((startingRow + fromRow) *
+	    		static_cast<uint16_t>(columns)) + startingColumn);
+		T *dataWithDataType = static_cast<T*>(data) + offset;
 
 		for (uint8_t fromColumn = 0; fromColumn < fromColumns; fromColumn++) {
 			result = SerializeAdapter::deSerialize(
@@ -157,6 +160,23 @@ ReturnValue_t ParameterWrapper::deSerialize(const uint8_t **buffer,
 	}
 
 	return copyFrom(&streamDescription, startWritingAtIndex);
+}
+
+ReturnValue_t ParameterWrapper::set(Type type, uint8_t rows, uint8_t columns,
+        const void *data, size_t dataSize) {
+    this->type = type;
+    this->rows = rows;
+    this->columns = columns;
+
+    size_t expectedSize = type.getSize() * rows * columns;
+    if (expectedSize < dataSize) {
+        return SerializeIF::STREAM_TOO_SHORT;
+    }
+
+    this->data = nullptr;
+    this->readonlyData = data;
+    pointsToStream = true;
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
@@ -202,21 +222,56 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		uint16_t startWritingAtIndex) {
-	if (data == NULL) {
+	if (data == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	    sif::warning << "ParameterWrapper::copyFrom: Called on read-only variable!" << std::endl;
+#else
+	    sif::printWarning("ParameterWrapper::copyFrom: Called on read-only variable!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		return READONLY;
 	}
 
-	if (from->readonlyData == NULL) {
+	if (from->readonlyData == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ParameterWrapper::copyFrom: Source not set!" << std::endl;
+#else
+        sif::printWarning("ParameterWrapper::copyFrom: Source not set!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		return SOURCE_NOT_SET;
 	}
 
 	if (type != from->type) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ParameterWrapper::copyFrom: Datatype missmatch!" << std::endl;
+#else
+        sif::printWarning("ParameterWrapper::copyFrom: Datatype missmatch!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
 		return DATATYPE_MISSMATCH;
 	}
 
+	// The smallest allowed value for rows and columns is one.
+	if(rows == 0 or columns == 0) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ParameterWrapper::copyFrom: Columns or rows zero!" << std::endl;
+#else
+        sif::printWarning("ParameterWrapper::copyFrom: Columns or rows zero!\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+	    return COLUMN_OR_ROWS_ZERO;
+	}
+
 	//check if from fits into this
-	uint8_t startingRow = startWritingAtIndex / columns;
-	uint8_t startingColumn = startWritingAtIndex % columns;
+	uint8_t startingRow = 0;
+	uint8_t startingColumn = 0;
+	ParameterWrapper::convertLinearIndexToRowAndColumn(startWritingAtIndex,
+	        &startingRow, &startingColumn);
 
 	if ((from->rows > (rows - startingRow))
 			|| (from->columns > (columns - startingColumn))) {
@@ -262,7 +317,7 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 					from->readonlyData, from->rows, from->columns);
 			break;
 		default:
-			result = UNKNOW_DATATYPE;
+			result = UNKNOWN_DATATYPE;
 			break;
 		}
 	}
@@ -270,12 +325,27 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 		//need a type to do arithmetic
 		uint8_t* typedData = static_cast<uint8_t*>(data);
 		for (uint8_t fromRow = 0; fromRow < from->rows; fromRow++) {
-			size_t offset = (((startingRow + fromRow) * columns) +
-					startingColumn) * typeSize;
+			size_t offset = (((startingRow + fromRow) * static_cast<uint16_t>(
+					columns)) + startingColumn) * typeSize;
 			std::memcpy(typedData +  offset, from->readonlyData,
 					typeSize * from->columns);
 		}
 	}
 
 	return result;
+}
+
+void ParameterWrapper::convertLinearIndexToRowAndColumn(uint16_t index,
+        uint8_t *row, uint8_t *column) {
+    if(row == nullptr or column == nullptr) {
+        return;
+    }
+    // Integer division.
+    *row = index / columns;
+    *column = index % columns;
+}
+
+uint16_t ParameterWrapper::convertRowAndColumnToLinearIndex(uint8_t row,
+        uint8_t column) {
+    return row * columns + column;
 }

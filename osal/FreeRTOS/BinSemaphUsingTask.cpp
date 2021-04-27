@@ -1,12 +1,17 @@
-#include "../../osal/FreeRTOS/BinSemaphUsingTask.h"
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "BinSemaphUsingTask.h"
+#include "TaskManagement.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
+
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
 
 BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 	handle = TaskManagement::getCurrentTaskHandle();
 	if(handle == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Could not retrieve task handle. Please ensure the"
 				"constructor was called inside a task." << std::endl;
+#endif
 	}
 	xTaskNotifyGive(handle);
 }
@@ -14,6 +19,10 @@ BinarySemaphoreUsingTask::BinarySemaphoreUsingTask() {
 BinarySemaphoreUsingTask::~BinarySemaphoreUsingTask() {
 	// Clear notification value on destruction.
 	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite, nullptr);
+}
+
+void BinarySemaphoreUsingTask::refreshTaskHandle() {
+	handle = TaskManagement::getCurrentTaskHandle();
 }
 
 ReturnValue_t BinarySemaphoreUsingTask::acquire(TimeoutType timeoutType,
@@ -93,3 +102,6 @@ uint8_t BinarySemaphoreUsingTask::getSemaphoreCounterFromISR(
 			higherPriorityTaskWoken);
 	return notificationValue;
 }
+
+#endif /* (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8 */

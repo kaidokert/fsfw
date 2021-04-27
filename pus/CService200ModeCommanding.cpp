@@ -7,9 +7,10 @@
 #include "../modes/ModeMessage.h"
 
 CService200ModeCommanding::CService200ModeCommanding(object_id_t objectId,
-        uint16_t apid, uint8_t serviceId):
+        uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
+        uint16_t commandTimeoutSeconds):
         CommandingServiceBase(objectId, apid, serviceId,
-	    NUMBER_OF_PARALLEL_COMMANDS,COMMAND_TIMEOUT_SECONDS) {}
+                numParallelCommands, commandTimeoutSeconds) {}
 
 CService200ModeCommanding::~CService200ModeCommanding() {}
 
@@ -60,8 +61,7 @@ ReturnValue_t CService200ModeCommanding::prepareCommand(
 		return result;
 	}
 
-	ModeMessage::setModeMessage(dynamic_cast<CommandMessage*>(message),
-	        ModeMessage::CMD_MODE_COMMAND, modeCommandPacket.getMode(),
+	ModeMessage::setModeMessage(message, ModeMessage::CMD_MODE_COMMAND, modeCommandPacket.getMode(),
 	        modeCommandPacket.getSubmode());
 	return result;
 }

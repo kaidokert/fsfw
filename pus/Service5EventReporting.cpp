@@ -8,13 +8,16 @@
 
 
 Service5EventReporting::Service5EventReporting(object_id_t objectId,
-            uint16_t apid, uint8_t serviceId, size_t maxNumberReportsPerCycle):
+            uint16_t apid, uint8_t serviceId, size_t maxNumberReportsPerCycle,
+            uint32_t messageQueueDepth):
 		PusServiceBase(objectId, apid, serviceId),
 		maxNumberReportsPerCycle(maxNumberReportsPerCycle) {
-	eventQueue = QueueFactory::instance()->createMessageQueue();
+	eventQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
-Service5EventReporting::~Service5EventReporting(){}
+Service5EventReporting::~Service5EventReporting() {
+    QueueFactory::instance()->deleteMessageQueue(eventQueue);
+}
 
 ReturnValue_t Service5EventReporting::performService() {
 	EventMessage message;
@@ -36,8 +39,10 @@ ReturnValue_t Service5EventReporting::performService() {
 	       }
 	    }
 	}
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug <<  "Service5EventReporting::generateEventReport:"
 	        " Too many events" << std::endl;
+#endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -52,8 +57,10 @@ ReturnValue_t Service5EventReporting::generateEventReport(
 	ReturnValue_t result = tmPacket.sendPacket(
 	        requestQueue->getDefaultDestination(),requestQueue->getId());
 	if(result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "Service5EventReporting::generateEventReport:"
 		        " Could not send TM packet" << std::endl;
+#endif
 	}
 	return result;
 }

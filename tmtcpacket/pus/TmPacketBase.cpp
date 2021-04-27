@@ -57,7 +57,9 @@ void TmPacketBase::setData(const uint8_t* p_Data) {
 }
 
 void TmPacketBase::print() {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	 sif::debug << "TmPacketBase::print: " << std::endl;
+#endif
 	 arrayprinter::print(getWholeData(), getFullSize());
 }
 
@@ -65,8 +67,10 @@ bool TmPacketBase::checkAndSetStamper() {
 	if (timeStamper == NULL) {
 		timeStamper = objectManager->get<TimeStamperIF>(timeStamperId);
 		if (timeStamper == NULL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "TmPacketBase::checkAndSetStamper: Stamper not found!"
 					<< std::endl;
+#endif
 			return false;
 		}
 	}
@@ -74,7 +78,7 @@ bool TmPacketBase::checkAndSetStamper() {
 }
 
 ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
-	uint32_t tempSize = 0;
+	size_t tempSize = 0;
 	return CCSDSTime::convertFromCcsds(timestamp, tmData->data_field.time,
 			&tempSize, sizeof(tmData->data_field.time));
 }

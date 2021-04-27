@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_DATAPOOL_POOLENTRY_H_
-#define FRAMEWORK_DATAPOOL_POOLENTRY_H_
+#ifndef FSFW_DATAPOOL_POOLENTRY_H_
+#define FSFW_DATAPOOL_POOLENTRY_H_
 
 #include "PoolEntryIF.h"
 
@@ -35,24 +35,22 @@ public:
 				"uint8_t");
 	/**
 	 * @brief	In the classe's constructor, space is allocated on the heap and
-	 * 			potential init values are copied to that space.
+	 * 			potential initialization values are copied to that space.
 	 * @details
 	 * Not passing any arguments will initialize an non-array pool entry
-	 * (setLength = 1) with an initial invalid state.
-	 * Please note that if an initializer list is passed, the correct
-	 * corresponding length should be passed too, otherwise a zero
-	 * initialization will be performed with the given setLength.
+	 * with an initial invalid state and the value 0.
+	 * Please note that if an initializer list is passed, the length of the
+	 * initializer list needs to be correct for vector entries because
+	 * required allocated space will be deduced from the initializer list length
+	 * and the pool entry type.
 	 * @param initValue
-	 * Initializer list with values to initialize with, for example {0,0} to
-	 * initialize the two entries to zero.
-	 * @param setLength
-	 * Defines the array length of this entry. Should be equal to the
-	 * intializer list length.
+	 * Initializer list with values to initialize with, for example {0, 0} to
+	 * initialize the a pool entry of a vector with two entries to 0.
 	 * @param setValid
 	 * Sets the initialization flag. It is invalid by default.
 	 */
-	PoolEntry(std::initializer_list<T> initValue = {}, uint8_t setLength = 1,
-			bool setValid = false);
+	PoolEntry(std::initializer_list<T> initValue = {0}, bool setValid = false);
+
 	/**
 	 * @brief	In the classe's constructor, space is allocated on the heap and
 	 * 			potential init values are copied to that space.
@@ -66,9 +64,9 @@ public:
 	 */
 	PoolEntry(T* initValue, uint8_t setLength = 1, bool setValid = false);
 
-	//! Explicitely deleted copy ctor, copying is not allowed!
+	//! Explicitely deleted copy ctor, copying is not allowed.
 	PoolEntry(const PoolEntry&) = delete;
-	//! Explicitely deleted copy assignment, copying is not allowed!
+	//! Explicitely deleted copy assignment, copying is not allowed.
 	PoolEntry& operator=(const PoolEntry&) = delete;
 
 	/**
@@ -82,21 +80,16 @@ public:
 	~PoolEntry();
 
 	/**
-	 * @brief	This is the address pointing to the allocated memory.
+	 * Return typed pointer to start of data.
+	 * @return
 	 */
-	T* address;
-	/**
-	 * @brief	This attribute stores the length information.
-	 */
-	uint8_t length;
-	/**
-	 * @brief	Here, the validity information for a variable is stored.
-	 * 			Every entry (single variable or vector) has one valid flag.
-	 */
-	uint8_t valid;
+	T* getDataPtr();
+
 	/**
 	 * @brief	getSize returns the array size of the entry.
-	 * @details	A single parameter has size 1.
+	 * @details
+	 * For non-array pool entries return type size, for vector entries
+	 * return type size times the number of entries.
 	 */
 	uint8_t getSize();
 	/**
@@ -123,8 +116,22 @@ public:
 	 * 			information to the screen. It prints all array entries in a row.
 	 */
 	void print();
-
 	Type getType();
+
+private:
+	/**
+	 * @brief	This attribute stores the length information.
+	 */
+	uint8_t length;
+	/**
+	 * @brief	Here, the validity information for a variable is stored.
+	 * 			Every entry (single variable or vector) has one valid flag.
+	 */
+	uint8_t valid;
+	/**
+	 * @brief	This is the address pointing to the allocated memory.
+	 */
+	T* address;
 };
 
-#endif /* POOLENTRY_H_ */
+#endif /* FSFW_DATAPOOL_POOLENTRY_H_ */

@@ -15,7 +15,7 @@ Service17Test::~Service17Test() {
 }
 
 ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
-	switch(subservice){
+	switch(subservice) {
 	case Subservice::CONNECTION_TEST: {
 		TmPacketStored connectionPacket(apid, serviceId,
 		        Subservice::CONNECTION_TEST_REPORT, packetSubCounter++);

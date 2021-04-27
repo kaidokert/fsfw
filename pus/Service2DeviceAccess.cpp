@@ -21,11 +21,13 @@ Service2DeviceAccess::~Service2DeviceAccess() {}
 
 ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
 	switch(static_cast<Subservice>(subservice)){
-	case Subservice::RAW_COMMANDING:
-	case Subservice::TOGGLE_WIRETAPPING:
+	case Subservice::COMMAND_RAW_COMMANDING:
+	case Subservice::COMMAND_TOGGLE_WIRETAPPING:
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Invalid Subservice" << std::endl;
+#endif
 		return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
 	}
 }
@@ -39,8 +41,7 @@ ReturnValue_t Service2DeviceAccess::getMessageQueueAndObject(
     SerializeAdapter::deSerialize(objectId, &tcData,
                 &tcDataLen, SerializeIF::Endianness::BIG);
 
-	ReturnValue_t result = checkInterfaceAndAcquireMessageQueue(id,objectId);
-	return result;
+    return checkInterfaceAndAcquireMessageQueue(id,objectId);
 }
 
 ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
@@ -59,14 +60,12 @@ ReturnValue_t Service2DeviceAccess::prepareCommand(CommandMessage* message,
 		uint8_t subservice, const uint8_t* tcData, size_t tcDataLen,
 		uint32_t* state, object_id_t objectId) {
 	switch(static_cast<Subservice>(subservice)){
-	case Subservice::RAW_COMMANDING: {
-		return prepareRawCommand(dynamic_cast<CommandMessage*>(message),
-				tcData, tcDataLen);
+	case Subservice::COMMAND_RAW_COMMANDING: {
+		return prepareRawCommand(message, tcData, tcDataLen);
 	}
 	break;
-	case Subservice::TOGGLE_WIRETAPPING: {
-		return prepareWiretappingCommand(dynamic_cast<CommandMessage*>(message),
-				tcData, tcDataLen);
+	case Subservice::COMMAND_TOGGLE_WIRETAPPING: {
+		return prepareWiretappingCommand(message, tcData, tcDataLen);
 	}
 	break;
 	default:
@@ -121,16 +120,18 @@ void Service2DeviceAccess::handleUnrequestedReply(CommandMessage* reply) {
 	switch(reply->getCommand()) {
 	case DeviceHandlerMessage::REPLY_RAW_COMMAND:
 		sendWiretappingTm(reply,
-				static_cast<uint8_t>(Subservice::WIRETAPPING_RAW_TC));
+				static_cast<uint8_t>(Subservice::REPLY_WIRETAPPING_RAW_TC));
 		break;
 	case DeviceHandlerMessage::REPLY_RAW_REPLY:
 		sendWiretappingTm(reply,
-				static_cast<uint8_t>(Subservice::RAW_REPLY));
+				static_cast<uint8_t>(Subservice::REPLY_RAW));
 		break;
 	default:
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Unknown message in Service2DeviceAccess::"
 				"handleUnrequestedReply with command ID " <<
 				reply->getCommand() << std::endl;
+#endif
 		break;
 	}
 	//Must be reached by all cases to clear message
@@ -146,9 +147,11 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage *reply,
 	size_t size = 0;
 	ReturnValue_t result = IPCStore->getData(storeAddress, &data, &size);
 	if(result != HasReturnvaluesIF::RETURN_OK){
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Service2DeviceAccess::sendWiretappingTm: Data Lost in "
 		        "handleUnrequestedReply with failure ID "<< result
 		        << std::endl;
+#endif
 		return;
 	}
 

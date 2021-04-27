@@ -1,16 +1,20 @@
-#ifndef EVENTMANAGER_H_
-#define EVENTMANAGER_H_
+#ifndef FSFW_EVENT_EVENTMANAGER_H_
+#define FSFW_EVENT_EVENTMANAGER_H_
 
-#include "eventmatching/EventMatchTree.h"
 #include "EventManagerIF.h"
+#include "eventmatching/EventMatchTree.h"
+
+#include <FSFWConfig.h>
+
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/LocalPool.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexIF.h"
+
 #include <map>
 
-#ifdef DEBUG
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 // forward declaration, should be implemented by mission
 extern const char* translateObject(object_id_t object);
 extern const char* translateEvents(Event event);
@@ -24,6 +28,8 @@ public:
 
 	EventManager(object_id_t setObjectId);
 	virtual ~EventManager();
+
+	void setMutexTimeout(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs);
 
 	MessageQueueId_t getEventReportQueue();
 
@@ -47,15 +53,19 @@ protected:
 	std::map<MessageQueueId_t, EventMatchTree> listenerList;
 
 	MutexIF* mutex = nullptr;
+	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+	uint32_t timeoutMs = 20;
 
 	static const uint8_t N_POOLS = 3;
-	LocalPool<N_POOLS> factoryBackend;
+	LocalPool factoryBackend;
+	static const LocalPool::LocalPoolConfig poolConfig;
+
 	static const uint16_t POOL_SIZES[N_POOLS];
 	static const uint16_t N_ELEMENTS[N_POOLS];
 
 	void notifyListeners(EventMessage *message);
 
-#ifdef DEBUG
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 	void printEvent(EventMessage *message);
 #endif
 
@@ -64,4 +74,4 @@ protected:
 	void unlockMutex();
 };
 
-#endif /* EVENTMANAGER_H_ */
+#endif /* FSFW_EVENT_EVENTMANAGER_H_ */

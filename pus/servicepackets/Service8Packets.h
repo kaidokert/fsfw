@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_
-#define FRAMEWORK_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_
+#ifndef FSFW_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_
+#define FSFW_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_
 
 #include "../../action/ActionMessage.h"
 #include "../../objectmanager/SystemObjectIF.h"
@@ -43,8 +43,8 @@ public:
 
 private:
 	DirectCommand(const DirectCommand &command);
-	object_id_t objectId;
-	ActionId_t actionId;
+	object_id_t objectId = 0;
+	ActionId_t actionId = 0;
 	uint32_t parametersSize; //!< [EXPORT] : [IGNORE]
 	const uint8_t * parameterBuffer; //!< [EXPORT] : [MAXSIZE] 65535 Bytes
 
@@ -118,4 +118,4 @@ private:
 
 };
 
-#endif /* FRAMEWORK_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_ */
+#endif /* FSFW_PUS_SERVICEPACKETS_SERVICE8PACKETS_H_ */

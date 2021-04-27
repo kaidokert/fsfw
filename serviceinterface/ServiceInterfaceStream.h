@@ -2,6 +2,10 @@
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 
 #include "ServiceInterfaceBuffer.h"
+#include <FSFWConfig.h>
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+
 #include <iostream>
 #include <cstdio>
 
@@ -36,11 +40,11 @@ public:
 	std::string* getPreamble();
 
 	/**
-	 * This prints an error with a preamble. Useful if using the unbuffered
-	 * mode. Flushes in default mode (prints immediately).
+	 * Can be used to determine if the stream was configured to add CR characters in addition
+	 * to newline characters.
+	 * @return
 	 */
-	void print(std::string error, bool withPreamble = true,
-			bool withNewline = true, bool flush = true);
+	bool crAdditionEnabled() const;
 
 protected:
 	ServiceInterfaceBuffer streambuf;
@@ -54,5 +58,7 @@ extern ServiceInterfaceStream info;
 extern ServiceInterfaceStream warning;
 extern ServiceInterfaceStream error;
 }
+
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
 #endif /* FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_ */

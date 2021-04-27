@@ -1,5 +1,5 @@
 #include "../serialize/SerializeAdapter.h"
-#include "PusVerificationReport.h"
+#include "../tmtcservices/PusVerificationReport.h"
 
 PusVerificationMessage::PusVerificationMessage() {
 }

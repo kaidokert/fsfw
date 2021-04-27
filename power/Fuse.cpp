@@ -1,22 +1,25 @@
+#include "Fuse.h"
+
 #include "../monitoring/LimitViolationReporter.h"
 #include "../monitoring/MonitoringMessageContent.h"
 #include "../objectmanager/ObjectManagerIF.h"
-#include "Fuse.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../ipc/QueueFactory.h"
 
 object_id_t Fuse::powerSwitchId = 0;
 
-Fuse::Fuse(object_id_t fuseObjectId, uint8_t fuseId, VariableIds ids,
+Fuse::Fuse(object_id_t fuseObjectId, uint8_t fuseId,
+		sid_t variableSet, VariableIds ids,
 		float maxCurrent, uint16_t confirmationCount) :
-		SystemObject(fuseObjectId), oldFuseState(0), fuseId(fuseId), powerIF(
-		NULL), currentLimit(fuseObjectId, 1, ids.pidCurrent, confirmationCount,
-				maxCurrent, FUSE_CURRENT_HIGH), powerMonitor(fuseObjectId, 2,
-				DataPool::poolIdAndPositionToPid(ids.poolIdPower, 0),
-				confirmationCount), set(), voltage(ids.pidVoltage, &set), current(
-				ids.pidCurrent, &set), state(ids.pidState, &set), power(
-				ids.poolIdPower, &set, PoolVariableIF::VAR_READ_WRITE), commandQueue(
-				NULL), parameterHelper(this), healthHelper(this, fuseObjectId) {
+		SystemObject(fuseObjectId), oldFuseState(0), fuseId(fuseId),
+		currentLimit(fuseObjectId, 1, ids.pidCurrent, confirmationCount,
+				maxCurrent, FUSE_CURRENT_HIGH),
+		powerMonitor(fuseObjectId, 2, ids.poolIdPower,
+				confirmationCount),
+		set(variableSet), voltage(ids.pidVoltage, &set),
+		current(ids.pidCurrent, &set), state(ids.pidState, &set),
+		power(ids.poolIdPower, &set, PoolVariableIF::VAR_READ_WRITE),
+		parameterHelper(this), healthHelper(this, fuseObjectId) {
 	commandQueue = QueueFactory::instance()->createMessageQueue();
 }
 
@@ -62,8 +65,8 @@ ReturnValue_t Fuse::check() {
 	set.read();
 	if (!healthHelper.healthTable->isHealthy(getObjectId())) {
 		setAllMonitorsToUnchecked();
-		set.commit(PoolVariableIF::INVALID);
-		return RETURN_OK;
+		set.setValidity(false, true);
+		return set.commit();
 	}
 	ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 	checkFuseState();
@@ -75,7 +78,7 @@ ReturnValue_t Fuse::check() {
 		float lowLimit = 0.0;
 		float highLimit = RESIDUAL_POWER;
 		calculatePowerLimits(&lowLimit, &highLimit);
-		result = powerMonitor.checkPower(power, lowLimit, highLimit);
+		result = powerMonitor.checkPower(power.value, lowLimit, highLimit);
 		if (result == MonitoringIF::BELOW_LOW_LIMIT) {
 			reportEvents(POWER_BELOW_LOW_LIMIT);
 		} else if (result == MonitoringIF::ABOVE_HIGH_LIMIT) {
@@ -109,7 +112,7 @@ size_t Fuse::getSerializedSize() const {
 }
 
 ReturnValue_t Fuse::deSerialize(const uint8_t** buffer, size_t* size,
-Endianness streamEndianness) {
+        Endianness streamEndianness) {
 	ReturnValue_t result = RETURN_FAILED;
 	for (DeviceList::iterator iter = devices.begin(); iter != devices.end();
 			iter++) {
@@ -132,7 +135,7 @@ void Fuse::calculateFusePower() {
 		return;
 	}
 	//Calculate fuse power.
-	power = current * voltage;
+	power.value = current.value * voltage.value;
 	power.setValid(PoolVariableIF::VALID);
 }
 
@@ -190,12 +193,12 @@ void Fuse::checkFuseState() {
 			reportEvents(FUSE_WENT_OFF);
 		}
 	}
-	oldFuseState = state;
+	oldFuseState = state.value;
 }
 
 float Fuse::getPower() {
 	if (power.isValid()) {
-		return power;
+		return power.value;
 	} else {
 		return 0.0;
 	}
@@ -203,18 +206,19 @@ float Fuse::getPower() {
 
 void Fuse::setDataPoolEntriesInvalid() {
 	set.read();
-	set.commit(PoolVariableIF::INVALID);
+	set.setValidity(false, true);
+	set.commit();
 }
 
-ReturnValue_t Fuse::getParameter(uint8_t domainId, uint16_t parameterId,
+ReturnValue_t Fuse::getParameter(uint8_t domainId, uint8_t uniqueId,
 		ParameterWrapper* parameterWrapper, const ParameterWrapper* newValues,
 		uint16_t startAtIndex) {
-	ReturnValue_t result = currentLimit.getParameter(domainId, parameterId,
+	ReturnValue_t result = currentLimit.getParameter(domainId, uniqueId,
 			parameterWrapper, newValues, startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
-	result = powerMonitor.getParameter(domainId, parameterId, parameterWrapper,
+	result = powerMonitor.getParameter(domainId, uniqueId, parameterWrapper,
 			newValues, startAtIndex);
 	return result;
 }

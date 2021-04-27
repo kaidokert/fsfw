@@ -1,12 +1,13 @@
-#include "../tcdistribution/PUSDistributorIF.h"
 #include "AcceptsTelemetryIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
-
 #include "CommandingServiceBase.h"
 #include "TmTcMessage.h"
+
+#include "../tcdistribution/PUSDistributorIF.h"
+#include "../objectmanager/ObjectManagerIF.h"
 #include "../ipc/QueueFactory.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
 object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
@@ -75,8 +76,10 @@ ReturnValue_t CommandingServiceBase::initialize() {
 			packetSource);
 
 	if (packetForwarding == nullptr or distributor == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "CommandingServiceBase::intialize: Packet source or "
 	            "packet destination invalid!" << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
@@ -88,8 +91,10 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
 
 	if (IPCStore == nullptr or TCStore == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "CommandingServiceBase::intialize: IPC store or TC store "
 	                    "not initialized yet!" << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 
@@ -100,9 +105,27 @@ ReturnValue_t CommandingServiceBase::initialize() {
 void CommandingServiceBase::handleCommandQueue() {
 	CommandMessage reply;
 	ReturnValue_t result = RETURN_FAILED;
-	for (result = commandQueue->receiveMessage(&reply); result == RETURN_OK;
-			result = commandQueue->receiveMessage(&reply)) {
-		handleCommandMessage(&reply);
+	while(true) {
+	    result = commandQueue->receiveMessage(&reply);
+	    if (result == HasReturnvaluesIF::RETURN_OK) {
+	        handleCommandMessage(&reply);
+	        continue;
+	    }
+	    else if(result == MessageQueueIF::EMPTY) {
+	        break;
+	    }
+	    else {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	        sif::warning << "CommandingServiceBase::handleCommandQueue: Receiving message failed"
+	                "with code" << result << std::endl;
+#else
+	        sif::printWarning("CommandingServiceBase::handleCommandQueue: Receiving message "
+	                "failed with code %d\n", result);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+	        break;
+	    }
 	}
 }
 
@@ -149,13 +172,13 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
 	default:
 		if (isStep) {
 			verificationReporter.sendFailureReport(
-					TC_VERIFY::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags,
+					tc_verification::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags,
 					iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl,
 					result, ++iter->second.step, failureParameter1,
 					failureParameter2);
 		} else {
 			verificationReporter.sendFailureReport(
-					TC_VERIFY::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
+					tc_verification::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
 					iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl,
 					result, 0, failureParameter1, failureParameter2);
 		}
@@ -184,13 +207,13 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 	if (sendResult == RETURN_OK) {
 		if (isStep and result != NO_STEP_MESSAGE) {
 			verificationReporter.sendSuccessReport(
-					TC_VERIFY::PROGRESS_SUCCESS,
+					tc_verification::PROGRESS_SUCCESS,
 					iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
 					iter->second.tcInfo.tcSequenceControl, ++iter->second.step);
 		}
 		else {
 			verificationReporter.sendSuccessReport(
-					TC_VERIFY::COMPLETION_SUCCESS,
+					tc_verification::COMPLETION_SUCCESS,
 					iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
 					iter->second.tcInfo.tcSequenceControl, 0);
 			checkAndExecuteFifo(iter);
@@ -200,14 +223,14 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result,
 		if (isStep) {
 			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
-					TC_VERIFY::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags,
+					tc_verification::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags,
 					iter->second.tcInfo.tcPacketId,
 					iter->second.tcInfo.tcSequenceControl, sendResult,
 					++iter->second.step, failureParameter1, failureParameter2);
 		} else {
 			nextCommand->clearCommandMessage();
 			verificationReporter.sendFailureReport(
-					TC_VERIFY::COMPLETION_FAILURE,
+					tc_verification::COMPLETION_FAILURE,
 					iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
 					iter->second.tcInfo.tcSequenceControl, sendResult, 0,
 					failureParameter1, failureParameter2);
@@ -232,14 +255,14 @@ void CommandingServiceBase::handleRequestQueue() {
 
 		if ((packet.getSubService() == 0)
 				or (isValidSubservice(packet.getSubService()) != RETURN_OK)) {
-			rejectPacket(TC_VERIFY::START_FAILURE, &packet, INVALID_SUBSERVICE);
+			rejectPacket(tc_verification::START_FAILURE, &packet, INVALID_SUBSERVICE);
 			continue;
 		}
 		result = getMessageQueueAndObject(packet.getSubService(),
 				packet.getApplicationData(), packet.getApplicationDataSize(),
 				&queue, &objectId);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
-			rejectPacket(TC_VERIFY::START_FAILURE, &packet, result);
+			rejectPacket(tc_verification::START_FAILURE, &packet, result);
 			continue;
 		}
 
@@ -250,14 +273,14 @@ void CommandingServiceBase::handleRequestQueue() {
 		if (iter != commandMap.end()) {
 			result = iter->second.fifo.insert(address);
 			if (result != RETURN_OK) {
-				rejectPacket(TC_VERIFY::START_FAILURE, &packet, OBJECT_BUSY);
+				rejectPacket(tc_verification::START_FAILURE, &packet, OBJECT_BUSY);
 			}
 		} else {
 			CommandInfo newInfo; //Info will be set by startExecution if neccessary
 			newInfo.objectId = objectId;
 			result = commandMap.insert(queue, newInfo, &iter);
 			if (result != RETURN_OK) {
-				rejectPacket(TC_VERIFY::START_FAILURE, &packet, BUSY);
+				rejectPacket(tc_verification::START_FAILURE, &packet, BUSY);
 			} else {
 				startExecution(&packet, iter);
 			}
@@ -338,10 +361,10 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 			iter->second.tcInfo.tcPacketId = storedPacket->getPacketId();
 			iter->second.tcInfo.tcSequenceControl =
 					storedPacket->getPacketSequenceControl();
-			acceptPacket(TC_VERIFY::START_SUCCESS, storedPacket);
+			acceptPacket(tc_verification::START_SUCCESS, storedPacket);
 		} else {
 			command.clearCommandMessage();
-			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
+			rejectPacket(tc_verification::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
 		break;
@@ -352,18 +375,18 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 					&command);
 		}
 		if (sendResult == RETURN_OK) {
-			verificationReporter.sendSuccessReport(TC_VERIFY::START_SUCCESS,
+			verificationReporter.sendSuccessReport(tc_verification::START_SUCCESS,
 					storedPacket);
-			acceptPacket(TC_VERIFY::COMPLETION_SUCCESS, storedPacket);
+			acceptPacket(tc_verification::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
 			command.clearCommandMessage();
-			rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, sendResult);
+			rejectPacket(tc_verification::START_FAILURE, storedPacket, sendResult);
 			checkAndExecuteFifo(iter);
 		}
 		break;
 	default:
-		rejectPacket(TC_VERIFY::START_FAILURE, storedPacket, result);
+		rejectPacket(tc_verification::START_FAILURE, storedPacket, result);
 		checkAndExecuteFifo(iter);
 		break;
 	}
@@ -414,7 +437,7 @@ void CommandingServiceBase::checkTimeout() {
 	for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {
 		if ((iter->second.uptimeOfStart + (timeoutSeconds * 1000)) < uptime) {
 			verificationReporter.sendFailureReport(
-					TC_VERIFY::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
+					tc_verification::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
 					iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl,
 					TIMEOUT);
 			checkAndExecuteFifo(iter);

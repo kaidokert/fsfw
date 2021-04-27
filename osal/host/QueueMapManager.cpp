@@ -1,12 +1,17 @@
 #include "QueueMapManager.h"
 
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexFactory.h"
-#include "../../ipc/MutexHelper.h"
+#include "../../ipc/MutexGuard.h"
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 
 QueueMapManager::QueueMapManager() {
     mapLock = MutexFactory::instance()->createMutex();
+}
+
+QueueMapManager::~QueueMapManager() {
+    MutexFactory::instance()->deleteMutex(mapLock);
 }
 
 QueueMapManager* QueueMapManager::instance() {
@@ -18,16 +23,20 @@ QueueMapManager* QueueMapManager::instance() {
 
 ReturnValue_t QueueMapManager::addMessageQueue(
 		MessageQueueIF* queueToInsert, MessageQueueId_t* id) {
-	// Not thread-safe, but it is assumed all message queues are created
-	// at software initialization now. If this is to be made thread-safe in
-	// the future, it propably would be sufficient to lock the increment
-	// operation here
+	/* Not thread-safe, but it is assumed all message queues are created at software initialization
+	now. If this is to be made thread-safe in the future, it propably would be sufficient to lock
+	the increment operation here. */
 	uint32_t currentId = queueCounter++;
 	auto returnPair = queueMap.emplace(currentId, queueToInsert);
 	if(not returnPair.second) {
-		// this should never happen for the atomic variable.
-		sif::error << "QueueMapManager: This ID is already inside the map!"
-				<< std::endl;
+		/* This should never happen for the atomic variable. */
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "QueueMapManager::addMessageQueue This ID is already "
+		        "inside the map!" << std::endl;
+#else
+		sif::printError("QueueMapManager::addMessageQueue This ID is already "
+                "inside the map!\n");
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if (id != nullptr) {
@@ -38,14 +47,19 @@ ReturnValue_t QueueMapManager::addMessageQueue(
 
 MessageQueueIF* QueueMapManager::getMessageQueue(
 		MessageQueueId_t messageQueueId) const {
-	MutexHelper(mapLock, MutexIF::TimeoutType::WAITING, 50);
+	MutexGuard(mapLock, MutexIF::TimeoutType::WAITING, 50);
 	auto queueIter = queueMap.find(messageQueueId);
 	if(queueIter != queueMap.end()) {
 		return queueIter->second;
 	}
 	else {
-		sif::warning << "QueueMapManager::getQueueHandle: The ID" <<
-				messageQueueId << " does not exists in the map" << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::warning << "QueueMapManager::getQueueHandle: The ID " << messageQueueId <<
+		        " does not exists in the map!" << std::endl;
+#else
+		sif::printWarning("QueueMapManager::getQueueHandle: The ID %d does not exist in the map!\n",
+		        messageQueueId);
+#endif
 		return nullptr;
 	}
 }

@@ -1,13 +1,13 @@
 #include "MessageQueue.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 
 #include <fstream>
+
 #include <fcntl.h>           /* For O_* constants */
 #include <sys/stat.h>        /* For mode constants */
 #include <cstring>
 #include <errno.h>
-
 
 
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
@@ -42,13 +42,17 @@ MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
 MessageQueue::~MessageQueue() {
 	int status = mq_close(this->id);
 	if(status != 0){
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::Destructor: mq_close Failed with status: "
 				   << strerror(errno) <<std::endl;
+#endif
 	}
 	status = mq_unlink(name);
 	if(status != 0){
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
 				   << strerror(errno) << std::endl;
+#endif
 	}
 }
 
@@ -56,8 +60,10 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		uint32_t messageDepth) {
 	switch(errno) {
 	case(EINVAL): {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::MessageQueue: Invalid name or attributes"
 				" for message size" << std::endl;
+#endif
 		size_t defaultMqMaxMsg = 0;
 		// Not POSIX conformant, but should work for all UNIX systems.
 		// Just an additional helpful printout :-)
@@ -78,11 +84,13 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 			Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
 			Apply changes with: sudo sysctl -p
 			*/
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::MessageQueue: Default MQ size "
 					<< defaultMqMaxMsg << " is too small for requested size "
 					<< messageDepth << std::endl;
 			sif::error << "This error can be fixed by setting the maximum "
 					"allowed message size higher!" << std::endl;
+#endif
 
 		}
 		break;
@@ -94,8 +102,10 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		//We unlink the other queue
 		int status = mq_unlink(name);
 		if (status != 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "mq_unlink Failed with status: " << strerror(errno)
 													<< std::endl;
+#endif
 		}
 		else {
 			// Successful unlinking, try to open again
@@ -111,12 +121,16 @@ ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
 		break;
 	}
 
-	default:
+	default: {
 		// Failed either the first time or the second time
-		sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex
-		<< name << std::dec << " failed with status: "
-		<< strerror(errno) << std::endl;
-
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "MessageQueue::MessageQueue: Creating Queue " << name
+				<< " failed with status: " << strerror(errno) << std::endl;
+#else
+		sif::printError("MessageQueue::MessageQueue: Creating Queue %s"
+				" failed with status: %s\n", name, strerror(errno));
+#endif
+	}
 	}
 	return HasReturnvaluesIF::RETURN_FAILED;
 
@@ -150,15 +164,19 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	if(message == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::receiveMessage: Message is "
 				"nullptr!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
 	if(message->getMaximumMessageSize() < maxMessageSize) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::receiveMessage: Message size "
 				<< message->getMaximumMessageSize()
 				<< " too small to receive data!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -172,13 +190,15 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
-	}else if(status==0){
+	}
+	else if (status==0) {
 		//Success but no message received
 		return MessageQueueIF::EMPTY;
-	} else {
+	}
+	else {
 		//No message was received. Keep lastPartner anyway, I might send
 		//something later. But still, delete packet content.
-		memset(message->getData(), 0, message->getMaximumMessageSize());
+		memset(message->getData(), 0, message->getMaximumDataSize());
 		switch(errno){
 		case EAGAIN:
 			//O_NONBLOCK or MQ_NONBLOCK was set and there are no messages
@@ -186,8 +206,10 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 			return MessageQueueIF::EMPTY;
 		case EBADF:
 			//mqdes doesn't represent a valid queue open for reading.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::receive: configuration error "
 			           << strerror(errno)  << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINVAL:
 			/*
@@ -199,8 +221,10 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 			 *   queue, and the QNX extended option MQ_READBUF_DYNAMIC hasn't
 			 *   been set in the queue's mq_flags.
 			 */
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::receive: configuration error "
 					   << strerror(errno)  << std::endl;
+#endif
 			/*NO BREAK*/
 		case EMSGSIZE:
 			/*
@@ -212,8 +236,10 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 			 *   given msg_len is too short for the message that would have
 			 *   been received.
 			 */
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::receive: configuration error "
 			           << strerror(errno)  << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINTR:
 			//The operation was interrupted by a signal.
@@ -236,8 +262,10 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 		switch(errno){
 		case EBADF:
 			//mqdes doesn't represent a valid message queue.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::flush configuration error, "
 					"called flush with an invalid queue ID" << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINVAL:
 			//mq_attr is NULL
@@ -252,8 +280,10 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 		switch(errno){
 		case EBADF:
 			//mqdes doesn't represent a valid message queue.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::flush configuration error, "
 					"called flush with an invalid queue ID" << std::endl;
+#endif
 			/*NO BREAK*/
 		case EINVAL:
 			/*
@@ -305,8 +335,10 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		MessageQueueMessageIF *message, MessageQueueId_t sentFrom,
 		bool ignoreFault) {
 	if(message == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
 				"nullptr!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 
@@ -334,12 +366,14 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 		case EBADF: {
 			//mq_des doesn't represent a valid message queue descriptor,
 			//or mq_des wasn't opened for writing.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::sendMessage: Configuration error, MQ"
 					<< " destination invalid."  << std::endl;
 			sif::error << strerror(errno) << " in "
 					<<"mq_send to: " << sendTo << " sent from "
 					<< sentFrom << std::endl;
-			return DESTINVATION_INVALID;
+#endif
+			return DESTINATION_INVALID;
 		}
 		case EINTR:
 			//The call was interrupted by a signal.
@@ -353,14 +387,18 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			 * - MQ_PRIO_RESTRICT is set in the mq_attr of mq_des, and
 			 *   msg_prio is greater than the priority of the calling process.
 			 */
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::sendMessage: Configuration error "
 			           << strerror(errno) << " in mq_send" << std::endl;
+#endif
 			/*NO BREAK*/
 		case EMSGSIZE:
 			// The msg_len is greater than the msgsize associated with
 			//the specified queue.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "MessageQueue::sendMessage: Size error [" <<
 					strerror(errno) << "] in mq_send" << std::endl;
+#endif
 			/*NO BREAK*/
 		default:
 			return HasReturnvaluesIF::RETURN_FAILED;

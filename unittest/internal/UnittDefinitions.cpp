@@ -1,7 +1,11 @@
-#include <fsfw/unittest/internal/UnittDefinitions.h>
+#include "UnittDefinitions.h"
 
  ReturnValue_t unitt::put_error(std::string errorId) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::error << "Unit Tester error: Failed at test ID "
-			<< errorId << "\n" << std::flush;
+			<< errorId << std::endl;
+#else
+	sif::printError("Unit Tester error: Failed at test ID %s\n", errorId.c_str());
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 	return HasReturnvaluesIF::RETURN_FAILED;
 }

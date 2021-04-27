@@ -15,8 +15,10 @@ MessageQueueMessage::MessageQueueMessage(uint8_t* data, size_t size) :
 		this->messageSize = this->HEADER_SIZE + size;
 	}
 	else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "MessageQueueMessage: Passed size larger than maximum"
 				"allowed size! Setting content to 0" << std::endl;
+#endif
 		memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
 		this->messageSize = this->HEADER_SIZE;
 	}
@@ -52,7 +54,9 @@ void MessageQueueMessage::setSender(MessageQueueId_t setId) {
 }
 
 void MessageQueueMessage::print(bool printWholeMessage) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "MessageQueueMessage content: " << std::endl;
+#endif
 	if(printWholeMessage) {
 	    arrayprinter::print(getData(), getMaximumMessageSize());
 	}
@@ -80,5 +84,9 @@ size_t MessageQueueMessage::getMinimumMessageSize() const {
 
 size_t MessageQueueMessage::getMaximumMessageSize() const {
     return this->MAX_MESSAGE_SIZE;
+}
+
+size_t MessageQueueMessage::getMaximumDataSize() const {
+    return this->MAX_DATA_SIZE;
 }
 

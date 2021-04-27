@@ -1,7 +1,7 @@
+#include <unittest/core/CatchDefinitions.h>
 #include <fsfw/container/SimpleRingBuffer.h>
-#include <catch2/catch.hpp>
-#include "../../core/CatchDefinitions.h"
 
+#include <catch2/catch_test_macros.hpp>
 #include <cstring>
 
 TEST_CASE("Ring Buffer Test" , "[RingBufferTest]") {

@@ -7,10 +7,10 @@
 #include "../serialize/SerializeAdapter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
-Service8FunctionManagement::Service8FunctionManagement(object_id_t object_id,
+Service8FunctionManagement::Service8FunctionManagement(object_id_t objectId,
 		uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
 		uint16_t commandTimeoutSeconds):
-		CommandingServiceBase(object_id, apid, serviceId, numParallelCommands,
+		CommandingServiceBase(objectId, apid, serviceId, numParallelCommands,
 		commandTimeoutSeconds) {}
 
 Service8FunctionManagement::~Service8FunctionManagement() {}
@@ -19,7 +19,7 @@ Service8FunctionManagement::~Service8FunctionManagement() {}
 ReturnValue_t Service8FunctionManagement::isValidSubservice(
 		uint8_t subservice) {
 	switch(static_cast<Subservice>(subservice)) {
-	case Subservice::DIRECT_COMMANDING:
+	case Subservice::COMMAND_DIRECT_COMMANDING:
 		return HasReturnvaluesIF::RETURN_OK;
 	default:
 		return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
@@ -53,16 +53,20 @@ ReturnValue_t Service8FunctionManagement::checkInterfaceAndAcquireMessageQueue(
 ReturnValue_t Service8FunctionManagement::prepareCommand(
 		CommandMessage* message, uint8_t subservice, const uint8_t* tcData,
 		size_t tcDataLen, uint32_t* state, object_id_t objectId) {
-	return prepareDirectCommand(dynamic_cast<CommandMessage*>(message),
-				tcData, tcDataLen);
+	return prepareDirectCommand(message, tcData, tcDataLen);
 }
 
 ReturnValue_t Service8FunctionManagement::prepareDirectCommand(
 		CommandMessage *message, const uint8_t *tcData, size_t tcDataLen) {
+    if(message == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
     if(tcDataLen < sizeof(object_id_t) + sizeof(ActionId_t)) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "Service8FunctionManagement::prepareDirectCommand:"
                 << " TC size smaller thant minimum size of direct command."
                 << std::endl;
+#endif
         return CommandingServiceBase::INVALID_TC;
     }
 
@@ -102,12 +106,14 @@ ReturnValue_t Service8FunctionManagement::handleReply(
 		break;
 	}
 	case ActionMessage::DATA_REPLY: {
+	    /* Multiple data replies are possible, so declare data reply as step */
+	    *isStep = true;
 	    result = handleDataReply(reply, objectId, actionId);
 		break;
 	}
 	case ActionMessage::STEP_FAILED:
 		*isStep = true;
-		/*No break, falls through*/
+		/* No break, falls through */
 	case ActionMessage::COMPLETION_FAILED:
 		result = ActionMessage::getReturnCode(reply);
 		break;
@@ -125,18 +131,22 @@ ReturnValue_t Service8FunctionManagement::handleDataReply(
     const uint8_t * buffer = nullptr;
     ReturnValue_t result = IPCStore->getData(storeId, &buffer, &size);
     if(result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "Service 8: Could not retrieve data for data reply"
                 << std::endl;
+#endif
         return result;
     }
     DataReply dataReply(objectId, actionId, buffer, size);
     result = sendTmPacket(static_cast<uint8_t>(
-            Subservice::DIRECT_COMMANDING_DATA_REPLY), &dataReply);
+            Subservice::REPLY_DIRECT_COMMANDING_DATA), &dataReply);
 
     auto deletionResult = IPCStore->deleteData(storeId);
     if(deletionResult != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "Service8FunctionManagement::handleReply: Deletion"
                 << " of data in pool failed." << std::endl;
+#endif
     }
     return result;
 }

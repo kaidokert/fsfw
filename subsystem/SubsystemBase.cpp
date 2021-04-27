@@ -1,15 +1,14 @@
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
-#include "SubsystemBase.h"
+#include "../subsystem/SubsystemBase.h"
 #include "../ipc/QueueFactory.h"
 
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		Mode_t initialMode, uint16_t commandQueueDepth) :
-		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE), childrenChangedMode(
-		false), commandsOutstanding(0), commandQueue(NULL), healthHelper(this,
-				setObjectId), modeHelper(this), parentId(parent) {
-	commandQueue = QueueFactory::instance()->createMessageQueue(commandQueueDepth,
-			CommandMessage::MAX_MESSAGE_SIZE);
+		SystemObject(setObjectId), mode(initialMode),
+		commandQueue(QueueFactory::instance()->createMessageQueue(
+		        commandQueueDepth, CommandMessage::MAX_MESSAGE_SIZE)),
+		healthHelper(this, setObjectId), modeHelper(this), parentId(parent) {
 }
 
 SubsystemBase::~SubsystemBase() {
@@ -21,10 +20,11 @@ ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
 	ChildInfo info;
 
 	HasModesIF *child = objectManager->get<HasModesIF>(objectId);
-	//This is a rather ugly hack to have the changedHealth info for all children available. (needed for FOGs).
+	// This is a rather ugly hack to have the changedHealth info for all
+	// children available.
 	HasHealthIF* healthChild = objectManager->get<HasHealthIF>(objectId);
-	if (child == NULL) {
-		if (healthChild == NULL) {
+	if (child == nullptr) {
+		if (healthChild == nullptr) {
 			return CHILD_DOESNT_HAVE_MODES;
 		} else {
 			info.commandQueue = healthChild->getCommandQueue();
@@ -38,14 +38,11 @@ ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
 	info.submode = SUBMODE_NONE;
 	info.healthChanged = false;
 
-	std::pair<std::map<object_id_t, ChildInfo>::iterator, bool> returnValue =
-			childrenMap.insert(
-					std::pair<object_id_t, ChildInfo>(objectId, info));
-	if (!(returnValue.second)) {
+	auto resultPair = childrenMap.emplace(objectId, info);
+	if (not resultPair.second) {
 		return COULD_NOT_INSERT_CHILD;
-	} else {
-		return RETURN_OK;
 	}
+	return RETURN_OK;
 }
 
 ReturnValue_t SubsystemBase::checkStateAgainstTable(
@@ -76,20 +73,22 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(
 	return RETURN_OK;
 }
 
-void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
-
-	CommandMessage message;
+void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter,
+        Submode_t targetSubmode) {
+	CommandMessage command;
 
 	std::map<object_id_t, ChildInfo>::iterator iter;
 
 	commandsOutstanding = 0;
 
-	for (; tableIter.value != NULL; ++tableIter) {
+	for (; tableIter.value != nullptr; ++tableIter) {
 		object_id_t object = tableIter.value->getObject();
 		if ((iter = childrenMap.find(object)) == childrenMap.end()) {
 			//illegal table entry, should only happen due to misconfigured mode table
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::debug << std::hex << getObjectId() << ": invalid mode table entry"
 					<< std::endl;
+#endif
 			continue;
 		}
 
@@ -100,17 +99,17 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submod
 
 		if (healthHelper.healthTable->hasHealth(object)) {
 			if (healthHelper.healthTable->isFaulty(object)) {
-				ModeMessage::setModeMessage(&message,
+				ModeMessage::setModeMessage(&command,
 						ModeMessage::CMD_MODE_COMMAND, HasModesIF::MODE_OFF,
 						SUBMODE_NONE);
 			} else {
 				if (modeHelper.isForced()) {
-					ModeMessage::setModeMessage(&message,
+					ModeMessage::setModeMessage(&command,
 							ModeMessage::CMD_MODE_COMMAND_FORCED,
 							tableIter.value->getMode(), submodeToCommand);
 				} else {
 					if (healthHelper.healthTable->isCommandable(object)) {
-						ModeMessage::setModeMessage(&message,
+						ModeMessage::setModeMessage(&command,
 								ModeMessage::CMD_MODE_COMMAND,
 								tableIter.value->getMode(), submodeToCommand);
 					} else {
@@ -119,17 +118,17 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submod
 				}
 			}
 		} else {
-			ModeMessage::setModeMessage(&message, ModeMessage::CMD_MODE_COMMAND,
+			ModeMessage::setModeMessage(&command, ModeMessage::CMD_MODE_COMMAND,
 					tableIter.value->getMode(), submodeToCommand);
 		}
 
-		if ((iter->second.mode == ModeMessage::getMode(&message))
-				&& (iter->second.submode == ModeMessage::getSubmode(&message))
+		if ((iter->second.mode == ModeMessage::getMode(&command))
+				&& (iter->second.submode == ModeMessage::getSubmode(&command))
 				&& !modeHelper.isForced()) {
 			continue; //don't send redundant mode commands (produces event spam), but still command if mode is forced to reach lower levels
 		}
 		ReturnValue_t result = commandQueue->sendMessage(
-				iter->second.commandQueue, &message);
+				iter->second.commandQueue, &command);
 		if (result == RETURN_OK) {
 			++commandsOutstanding;
 		}
@@ -167,16 +166,16 @@ MessageQueueId_t SubsystemBase::getCommandQueue() const {
 }
 
 ReturnValue_t SubsystemBase::initialize() {
-	MessageQueueId_t parentQueue = 0;
+	MessageQueueId_t parentQueue = MessageQueueIF::NO_QUEUE;
 	ReturnValue_t result = SystemObject::initialize();
 
 	if (result != RETURN_OK) {
 		return result;
 	}
 
-	if (parentId != 0) {
+	if (parentId != objects::NO_OBJECT) {
 		SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
-		if (parent == NULL) {
+		if (parent == nullptr) {
 			return RETURN_FAILED;
 		}
 		parentQueue = parent->getCommandQueue();
@@ -306,31 +305,31 @@ void SubsystemBase::announceMode(bool recursive) {
 
 void SubsystemBase::checkCommandQueue() {
 	ReturnValue_t result;
-	CommandMessage message;
+	CommandMessage command;
 
-	for (result = commandQueue->receiveMessage(&message); result == RETURN_OK;
-			result = commandQueue->receiveMessage(&message)) {
+	for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+			result = commandQueue->receiveMessage(&command)) {
 
-		result = healthHelper.handleHealthCommand(&message);
+		result = healthHelper.handleHealthCommand(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
 
-		result = modeHelper.handleModeCommand(&message);
+		result = modeHelper.handleModeCommand(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
 
-		result = handleModeReply(&message);
+		result = handleModeReply(&command);
 		if (result == RETURN_OK) {
 			continue;
 		}
 
-		result = handleCommandMessage(&message);
+		result = handleCommandMessage(&command);
 		if (result != RETURN_OK) {
 			CommandMessage reply;
 			reply.setReplyRejected(CommandMessage::UNKNOWN_COMMAND,
-					message.getCommand());
+					command.getCommand());
 			replyToCommand(&reply);
 		}
 	}

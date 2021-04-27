@@ -1,6 +1,8 @@
 #include "FixedTimeslotTask.h"
 #include "PeriodicPosixTask.h"
+
 #include "../../tasks/TaskFactory.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
@@ -36,6 +38,27 @@ ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
 
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs){
 	return PosixThread::sleep(delayMs*1000000ull);
+}
+
+void TaskFactory::printMissedDeadline() {
+    char name[20] = {0};
+    int status = pthread_getname_np(pthread_self(), name, sizeof(name));
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    if(status == 0) {
+        sif::warning << "task::printMissedDeadline: " << name << "" << std::endl;
+    }
+    else {
+        sif::warning << "task::printMissedDeadline: Unknown task name" << status <<
+                std::endl;
+    }
+#else
+    if(status == 0) {
+        sif::printWarning("task::printMissedDeadline: %s\n", name);
+    }
+    else {
+        sif::printWarning("task::printMissedDeadline: Unknown task name\n", name);
+    }
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 }
 
 TaskFactory::TaskFactory() {

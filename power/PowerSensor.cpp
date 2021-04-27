@@ -1,14 +1,18 @@
 #include "PowerSensor.h"
+
 #include "../ipc/QueueFactory.h"
 
-PowerSensor::PowerSensor(object_id_t setId, VariableIds ids,
+PowerSensor::PowerSensor(object_id_t objectId, sid_t setId,  VariableIds ids,
 		DefaultLimits limits, SensorEvents events, uint16_t confirmationCount) :
-		SystemObject(setId), commandQueue(NULL), parameterHelper(this), healthHelper(this, setId), set(), current(
-				ids.pidCurrent, &set), voltage(ids.pidVoltage, &set), power(
-				ids.poolIdPower, &set, PoolVariableIF::VAR_WRITE), currentLimit(
-				setId, MODULE_ID_CURRENT, ids.pidCurrent, confirmationCount,
+		SystemObject(objectId), parameterHelper(this),
+		healthHelper(this, objectId),
+		powerSensorSet(setId), current(ids.pidCurrent, &powerSensorSet),
+		voltage(ids.pidVoltage, &powerSensorSet),
+		power(ids.poolIdPower, &powerSensorSet, PoolVariableIF::VAR_WRITE),
+		currentLimit(objectId, MODULE_ID_CURRENT, ids.pidCurrent, confirmationCount,
 				limits.currentMin, limits.currentMax, events.currentLow,
-				events.currentHigh), voltageLimit(setId, MODULE_ID_VOLTAGE,
+				events.currentHigh),
+		voltageLimit(objectId, MODULE_ID_VOLTAGE,
 				ids.pidVoltage, confirmationCount, limits.voltageMin,
 				limits.voltageMax, events.voltageLow, events.voltageHigh) {
 		commandQueue = QueueFactory::instance()->createMessageQueue();
@@ -19,13 +23,13 @@ PowerSensor::~PowerSensor() {
 }
 
 ReturnValue_t PowerSensor::calculatePower() {
-	set.read();
+	powerSensorSet.read();
 	ReturnValue_t result1 = HasReturnvaluesIF::RETURN_FAILED;
 	ReturnValue_t result2 = HasReturnvaluesIF::RETURN_FAILED;
 	if (healthHelper.healthTable->isHealthy(getObjectId()) && voltage.isValid()
 			&& current.isValid()) {
-		result1 = voltageLimit.doCheck(voltage);
-		result2 = currentLimit.doCheck(current);
+		result1 = voltageLimit.doCheck(voltage.value);
+		result2 = currentLimit.doCheck(current.value);
 	} else {
 		voltageLimit.setToInvalid();
 		currentLimit.setToInvalid();
@@ -37,9 +41,9 @@ ReturnValue_t PowerSensor::calculatePower() {
 		power.setValid(PoolVariableIF::INVALID);
 	} else {
 		power.setValid(PoolVariableIF::VALID);
-		power = current * voltage;
+		power.value = current.value * voltage.value;
 	}
-	set.commit();
+	powerSensorSet.commit();
 	return result1;
 }
 
@@ -92,8 +96,9 @@ void PowerSensor::checkCommandQueue() {
 }
 
 void PowerSensor::setDataPoolEntriesInvalid() {
-	set.read();
-	set.commit(PoolVariableIF::INVALID);
+	powerSensorSet.read();
+	powerSensorSet.setValidity(false, true);
+	powerSensorSet.commit();
 }
 
 float PowerSensor::getPower() {
@@ -114,15 +119,15 @@ HasHealthIF::HealthState PowerSensor::getHealth() {
 	return healthHelper.getHealth();
 }
 
-ReturnValue_t PowerSensor::getParameter(uint8_t domainId, uint16_t parameterId,
+ReturnValue_t PowerSensor::getParameter(uint8_t domainId, uint8_t uniqueId,
 		ParameterWrapper* parameterWrapper, const ParameterWrapper* newValues,
 		uint16_t startAtIndex) {
-	ReturnValue_t result = currentLimit.getParameter(domainId, parameterId,
+	ReturnValue_t result = currentLimit.getParameter(domainId, uniqueId,
 			parameterWrapper, newValues, startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
-	result = voltageLimit.getParameter(domainId, parameterId, parameterWrapper,
+	result = voltageLimit.getParameter(domainId, uniqueId, parameterWrapper,
 			newValues, startAtIndex);
 	return result;
 }

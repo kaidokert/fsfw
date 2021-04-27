@@ -1,10 +1,9 @@
-
 #include <fsfw/container/DynamicFIFO.h>
 #include <fsfw/container/FIFO.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
-#include <catch2/catch.hpp>
-#include "../../core/CatchDefinitions.h"
+#include <catch2/catch_test_macros.hpp>
+#include <unittest/core/CatchDefinitions.h>
 
 TEST_CASE( "Static Fifo Tests", "[TestFifo]") {
 	INFO("Fifo Tests");

@@ -1,12 +1,12 @@
+#ifndef FSFW_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
+#define FSFW_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
+
 /**
  * @defgroup spacepackets PUS Packet Definitions
  *  This group contains all implemented TM or TM packages that are sent to
  *  or sent by the OBC.They are exported later to display
  *  packet structures in Mission Information Base (MIB).
  */
-
-#ifndef MISSION_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
-#define MISSION_PUS_SERVICEPACKETS_SERVICE1PACKETS_H_
 
 #include "../../serialize/SerializeAdapter.h"
 #include "../../tmtcservices/VerificationCodes.h"
@@ -49,7 +49,7 @@ public:
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		if (failureSubtype == TC_VERIFY::PROGRESS_FAILURE) {
+		if (failureSubtype == tc_verification::PROGRESS_FAILURE) {
 			result = SerializeAdapter::serialize(&stepNumber, buffer, size,
 			        maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -77,7 +77,7 @@ public:
 		size_t size = 0;
 		size += SerializeAdapter::getSerializedSize(&packetId);
 		size += sizeof(packetSequenceControl);
-		if(failureSubtype==TC_VERIFY::PROGRESS_FAILURE){
+		if(failureSubtype==tc_verification::PROGRESS_FAILURE){
 			size += SerializeAdapter::getSerializedSize(&stepNumber);
 		}
 		size += SerializeAdapter::getSerializedSize(&errorCode);
@@ -131,7 +131,7 @@ public:
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		if (subtype == TC_VERIFY::PROGRESS_SUCCESS) {
+		if (subtype == tc_verification::PROGRESS_SUCCESS) {
 			result = SerializeAdapter::serialize(&stepNumber, buffer, size,
 					maxSize, streamEndianness);
 			if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -145,7 +145,7 @@ public:
 		size_t size = 0;
 		size += SerializeAdapter::getSerializedSize(&packetId);
 		size += sizeof(packetSequenceControl);
-		if(subtype == TC_VERIFY::PROGRESS_SUCCESS){
+		if(subtype == tc_verification::PROGRESS_SUCCESS){
 			size += SerializeAdapter::getSerializedSize(&stepNumber);
 		}
 		return size;

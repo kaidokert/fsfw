@@ -2,7 +2,8 @@
 #define FRAMEWORK_TEST_UNITTESTCLASS_H_
 
 #include "UnittDefinitions.h"
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include "../../returnvalues/HasReturnvaluesIF.h"
+
 
 /**
  * @brief	Can be used for internal testing, for example for hardware specific
@@ -15,6 +16,10 @@
  */
 class InternalUnitTester: public HasReturnvaluesIF {
 public:
+    struct TestConfig {
+        bool testArrayPrinter;
+    };
+
 	InternalUnitTester();
 	virtual~ InternalUnitTester();
 
@@ -22,7 +27,7 @@ public:
 	 * Some function which calls all other tests
 	 * @return
 	 */
-	virtual ReturnValue_t performTests();
+	virtual ReturnValue_t performTests(struct InternalUnitTester::TestConfig& testConfig);
 };
 
 

@@ -1,4 +1,3 @@
-#include "../serialize/SerializeAdapter.h"
 #include "DeviceTmReportingWrapper.h"
 #include "../serialize/SerializeAdapter.h"
 

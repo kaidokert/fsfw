@@ -1,27 +1,29 @@
 #include "EventManager.h"
 #include "EventMessage.h"
-#include <FSFWConfig.h>
 
+#include <FSFWConfig.h>
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
 
+MessageQueueId_t EventManagerIF::eventmanagerQueue = MessageQueueIF::NO_QUEUE;
 
-const uint16_t EventManager::POOL_SIZES[N_POOLS] = {
-		sizeof(EventMatchTree::Node), sizeof(EventIdRangeMatcher),
-		sizeof(ReporterRangeMatcher) };
 // If one checks registerListener calls, there are around 40 (to max 50)
 // objects registering for certain events.
 // Each listener requires 1 or 2 EventIdMatcher and 1 or 2 ReportRangeMatcher.
 // So a good guess is 75 to a max of 100 pools required for each, which fits well.
-const uint16_t EventManager::N_ELEMENTS[N_POOLS] = {
-		fsfwconfig::FSFW_EVENTMGMR_MATCHTREE_NODES ,
-		fsfwconfig::FSFW_EVENTMGMT_EVENTIDMATCHERS,
-		fsfwconfig::FSFW_EVENTMGMR_RANGEMATCHERS };
+const LocalPool::LocalPoolConfig EventManager::poolConfig = {
+        {fsfwconfig::FSFW_EVENTMGMR_MATCHTREE_NODES,
+        		sizeof(EventMatchTree::Node)},
+        {fsfwconfig::FSFW_EVENTMGMT_EVENTIDMATCHERS,
+        		sizeof(EventIdRangeMatcher)},
+        {fsfwconfig::FSFW_EVENTMGMR_RANGEMATCHERS,
+        		sizeof(ReporterRangeMatcher)}
+};
 
 EventManager::EventManager(object_id_t setObjectId) :
 		SystemObject(setObjectId),
-		factoryBackend(0, POOL_SIZES, N_ELEMENTS, false, true) {
+		factoryBackend(0, poolConfig, false, true) {
 	mutex = MutexFactory::instance()->createMutex();
 	eventReportQueue = QueueFactory::instance()->createMessageQueue(
 			MAX_EVENTS_PER_CYCLE, EventMessage::EVENT_MESSAGE_SIZE);
@@ -42,7 +44,7 @@ ReturnValue_t EventManager::performOperation(uint8_t opCode) {
 		EventMessage message;
 		result = eventReportQueue->receiveMessage(&message);
 		if (result == HasReturnvaluesIF::RETURN_OK) {
-#ifdef DEBUG
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 			printEvent(&message);
 #endif
 			notifyListeners(&message);
@@ -113,14 +115,15 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 	return result;
 }
 
-#ifdef DEBUG
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
 
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
-	case SEVERITY::INFO:
-#ifdef DEBUG_INFO_EVENT
+	case severity::INFO:
+#if DEBUG_INFO_EVENT == 1
 		string = translateObject(message->getReporter());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::info << "EVENT: ";
 		if (string != 0) {
 			sif::info << string;
@@ -131,10 +134,12 @@ void EventManager::printEvent(EventMessage* message) {
 				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
 				<< message->getParameter1() << " P2: 0x"
 				<< message->getParameter2() << std::dec << std::endl;
-#endif
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* DEBUG_INFO_EVENT == 1 */
 		break;
 	default:
 		string = translateObject(message->getReporter());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "EventManager: ";
 		if (string != 0) {
 			sif::debug << string;
@@ -145,22 +150,28 @@ void EventManager::printEvent(EventMessage* message) {
 		sif::debug << " reported " << translateEvents(message->getEvent())
 				<< " (" << std::dec << message->getEventId() << ") "
 				<< std::endl;
-
 		sif::debug << std::hex << "P1 Hex: 0x" << message->getParameter1()
 				<< ", P1 Dec: " << std::dec << message->getParameter1()
 				<< std::endl;
 		sif::debug << std::hex << "P2 Hex: 0x" << message->getParameter2()
 				<< ", P2 Dec: " <<  std::dec << message->getParameter2()
 				<< std::endl;
+#endif
 		break;
 	}
 }
 #endif
 
 void EventManager::lockMutex() {
-	mutex->lockMutex(MutexIF::BLOCKING);
+	mutex->lockMutex(timeoutType, timeoutMs);
 }
 
 void EventManager::unlockMutex() {
 	mutex->unlockMutex();
+}
+
+void EventManager::setMutexTimeout(MutexIF::TimeoutType timeoutType,
+		uint32_t timeoutMs) {
+	this->timeoutType = timeoutType;
+	this->timeoutMs = timeoutMs;
 }

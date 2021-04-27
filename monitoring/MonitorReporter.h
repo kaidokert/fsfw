@@ -1,10 +1,12 @@
-#ifndef FRAMEWORK_MONITORING_MONITORREPORTER_H_
-#define FRAMEWORK_MONITORING_MONITORREPORTER_H_
+#ifndef FSFW_MONITORING_MONITORREPORTER_H_
+#define FSFW_MONITORING_MONITORREPORTER_H_
 
-#include "../events/EventManagerIF.h"
 #include "LimitViolationReporter.h"
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"
+
+#include "../datapoollocal/localPoolDefinitions.h"
+#include "../events/EventManagerIF.h"
 #include "../parameters/HasParametersIF.h"
 
 template<typename T>
@@ -14,11 +16,14 @@ public:
 	static const uint8_t ENABLED = 1;
 	static const uint8_t DISABLED = 0;
 
-	MonitorReporter(object_id_t reportingId, uint8_t monitorId, uint32_t parameterId, uint16_t confirmationLimit) :
-			monitorId(monitorId), parameterId(parameterId), reportingId(
-					reportingId), oldState(MonitoringIF::UNCHECKED), reportingEnabled(
-			ENABLED), eventEnabled(ENABLED), currentCounter(0), confirmationLimit(
-					confirmationLimit) {
+	// TODO: Adapt to use SID instead of parameter ID.
+
+	MonitorReporter(object_id_t reportingId, uint8_t monitorId,
+	        gp_id_t globalPoolId, uint16_t confirmationLimit) :
+			monitorId(monitorId), globalPoolId(globalPoolId),
+			reportingId(reportingId), oldState(MonitoringIF::UNCHECKED),
+			reportingEnabled(ENABLED), eventEnabled(ENABLED), currentCounter(0),
+			confirmationLimit(confirmationLimit) {
 	}
 
 	virtual ~MonitorReporter() {
@@ -46,13 +51,13 @@ public:
 		return state;
 	}
 
-	virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-			ParameterWrapper *parameterWrapper,
-			const ParameterWrapper *newValues, uint16_t startAtIndex) {
+	virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
+			ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+			uint16_t startAtIndex) {
 		if (domainId != monitorId) {
 			return INVALID_DOMAIN_ID;
 		}
-		switch (parameterId) {
+		switch (uniqueId) {
 		case 0:
 			parameterWrapper->set(this->confirmationLimit);
 			break;
@@ -63,7 +68,7 @@ public:
 			parameterWrapper->set(this->eventEnabled);
 			break;
 		default:
-			return INVALID_MATRIX_ID;
+			return INVALID_IDENTIFIER_ID;
 		}
 		return HasReturnvaluesIF::RETURN_OK;
 	}
@@ -91,7 +96,7 @@ public:
 
 protected:
 	const uint8_t monitorId;
-	const uint32_t parameterId;
+	const gp_id_t globalPoolId;
 	object_id_t reportingId;
 	ReturnValue_t oldState;
 
@@ -148,7 +153,8 @@ protected:
 		case HasReturnvaluesIF::RETURN_OK:
 			break;
 		default:
-			EventManagerIF::triggerEvent(reportingId, MonitoringIF::MONITOR_CHANGED_STATE, state);
+			EventManagerIF::triggerEvent(reportingId,
+			        MonitoringIF::MONITOR_CHANGED_STATE, state);
 			break;
 		}
 	}
@@ -159,14 +165,15 @@ protected:
 	 * @param crossedLimit The limit crossed (if applicable).
 	 * @param state Current state the monitor is in.
 	 */
-	virtual void sendTransitionReport(T parameterValue, T crossedLimit, ReturnValue_t state) {
-		MonitoringReportContent<T> report(parameterId,
+	virtual void sendTransitionReport(T parameterValue, T crossedLimit,
+	        ReturnValue_t state) {
+		MonitoringReportContent<T> report(globalPoolId,
 				parameterValue, crossedLimit, oldState, state);
 		LimitViolationReporter::sendLimitViolationReport(&report);
 	}
 	ReturnValue_t setToState(ReturnValue_t state) {
 		if (oldState != state && reportingEnabled) {
-			MonitoringReportContent<T> report(parameterId, 0, 0, oldState,
+			MonitoringReportContent<T> report(globalPoolId, 0, 0, oldState,
 					state);
 			LimitViolationReporter::sendLimitViolationReport(&report);
 			oldState = state;
@@ -175,4 +182,4 @@ protected:
 	}
 };
 
-#endif /* FRAMEWORK_MONITORING_MONITORREPORTER_H_ */
+#endif /* FSFW_MONITORING_MONITORREPORTER_H_ */

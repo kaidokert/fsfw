@@ -1,10 +1,3 @@
-/**
- * @file	MapPacketExtraction.cpp
- * @brief	This file defines the MapPacketExtraction class.
- * @date	26.03.2013
- * @author	baetz
- */
-
 #include "MapPacketExtraction.h"
 #include "../ipc/QueueFactory.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
@@ -12,14 +5,14 @@
 #include "../tmtcpacket/SpacePacketBase.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/TmTcMessage.h"
-#include <string.h>
+#include <cstring>
 
 MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,
 		object_id_t setPacketDestination) :
-		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId), packetLength(0), bufferPosition(
-				packetBuffer), packetDestination(setPacketDestination), packetStore(
-				NULL), tcQueueId(MessageQueueIF::NO_QUEUE) {
-	memset(packetBuffer, 0, sizeof(packetBuffer));
+		lastSegmentationFlag(NO_SEGMENTATION), mapId(setMapId),
+		bufferPosition(packetBuffer), packetDestination(setPacketDestination),
+		tcQueueId(MessageQueueIF::NO_QUEUE) {
+	std::memset(packetBuffer, 0, sizeof(packetBuffer));
 }
 
 ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
@@ -36,9 +29,11 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
 			bufferPosition = &packetBuffer[packetLength];
 			status = RETURN_OK;
 		} else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error
 					<< "MapPacketExtraction::extractPackets. Packet too large! Size: "
 					<< packetLength << std::endl;
+#endif
 			clearBuffers();
 			status = CONTENT_TOO_LARGE;
 		}
@@ -58,24 +53,30 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
 				}
 				status = RETURN_OK;
 			} else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 				sif::error
 						<< "MapPacketExtraction::extractPackets. Packet too large! Size: "
 						<< packetLength << std::endl;
+#endif
 				clearBuffers();
 				status = CONTENT_TOO_LARGE;
 			}
 		} else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error
 					<< "MapPacketExtraction::extractPackets. Illegal segment! Last flag: "
 					<< (int) lastSegmentationFlag << std::endl;
+#endif
 			clearBuffers();
 			status = ILLEGAL_SEGMENTATION_FLAG;
 		}
 		break;
 	default:
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error
 				<< "MapPacketExtraction::extractPackets. Illegal segmentationFlag: "
 				<< (int) segmentationFlag << std::endl;
+#endif
 		clearBuffers();
 		status = DATA_CORRUPTED;
 		break;
@@ -142,10 +143,14 @@ ReturnValue_t MapPacketExtraction::initialize() {
 }
 
 void MapPacketExtraction::printPacketBuffer(void) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::debug << "DLL: packet_buffer contains: " << std::endl;
+#endif
 	for (uint32_t i = 0; i < this->packetLength; ++i) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::debug << "packet_buffer[" << std::dec << i << "]: 0x" << std::hex
 				<< (uint16_t) this->packetBuffer[i] << std::endl;
+#endif
 	}
 }
 

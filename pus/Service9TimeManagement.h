@@ -7,8 +7,8 @@ class Service9TimeManagement: public PusServiceBase {
 public:
 
 	static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_9;
-	static constexpr Event CLOCK_SET = MAKE_EVENT(0, SEVERITY::INFO); //!< Clock has been set. P1: New Uptime. P2: Old Uptime
-	static constexpr Event CLOCK_SET_FAILURE = MAKE_EVENT(1, SEVERITY::LOW); //!< Clock could not be set. P1: Returncode.
+	static constexpr Event CLOCK_SET = MAKE_EVENT(0, severity::INFO); //!< Clock has been set. P1: New Uptime. P2: Old Uptime
+	static constexpr Event CLOCK_SET_FAILURE = MAKE_EVENT(1, severity::LOW); //!< Clock could not be set. P1: Returncode.
 
 	static constexpr uint8_t CLASS_ID = CLASS_ID::PUS_SERVICE_9;
 

@@ -4,6 +4,11 @@
 #include "OBSWVersion.h"
 
 #ifdef __cplusplus
+
+#include "objects/systemObjectList.h"
+#include "events/subsystemIdRanges.h"
+#include "returnvalues/classIds.h"
+
 namespace config {
 #endif
 

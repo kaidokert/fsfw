@@ -25,8 +25,10 @@ ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
 	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
 				<< " it implements ExecutableObjectIF!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	objectList.push_back(newObject);
@@ -42,7 +44,9 @@ ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
 
 ReturnValue_t PeriodicPosixTask::startTask(void) {
 	started = true;
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	//sif::info << stackSize << std::endl;
+#endif
 	PosixThread::createTask(&taskEntryPoint,this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -64,16 +68,6 @@ void PeriodicPosixTask::taskFunctionality(void) {
 		}
 
 		if(not PosixThread::delayUntil(&lastWakeTime, periodMs)){
-			char name[20] = {0};
-			int status = pthread_getname_np(pthread_self(), name, sizeof(name));
-			if(status == 0) {
-				sif::error << "PeriodicPosixTask " << name << ": Deadline "
-						"missed." << std::endl;
-			}
-			else {
-				sif::error << "PeriodicPosixTask X: Deadline missed. " <<
-						status << std::endl;
-			}
 			if (this->deadlineMissedFunc != nullptr) {
 				this->deadlineMissedFunc();
 			}

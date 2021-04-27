@@ -22,7 +22,6 @@ public:
 
 	std::timed_mutex* getMutexHandle();
 private:
-	bool locked = false;
 	std::timed_mutex mutex;
 };
 

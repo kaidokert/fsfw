@@ -1,10 +1,9 @@
+#include "taskHelpers.h"
 #include "../../osal/host/FixedTimeslotTask.h"
-
 #include "../../ipc/MutexFactory.h"
 #include "../../osal/host/Mutex.h"
 #include "../../osal/host/FixedTimeslotTask.h"
-
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
 #include <thread>
@@ -12,6 +11,7 @@
 
 #if defined(WIN32)
 #include <windows.h>
+#include "../windows/winTaskHelpers.h"
 #elif defined(LINUX)
 #include <pthread.h>
 #endif
@@ -24,30 +24,12 @@ FixedTimeslotTask::FixedTimeslotTask(const char *name, TaskPriority setPriority,
     // It is propably possible to set task priorities by using the native
     // task handles for Windows / Linux
     mainThread = std::thread(&FixedTimeslotTask::taskEntryPoint, this, this);
-#if defined(WIN32)
-    /* List of possible priority classes:
-     * https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/
-     * nf-processthreadsapi-setpriorityclass
-     * And respective thread priority numbers:
-     * https://docs.microsoft.com/en-us/windows/
-     * win32/procthread/scheduling-priorities */
-    int result = SetPriorityClass(
-            reinterpret_cast<HANDLE>(mainThread.native_handle()),
-            ABOVE_NORMAL_PRIORITY_CLASS);
-    if(result != 0) {
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
-    }
-    result = SetThreadPriority(
-            reinterpret_cast<HANDLE>(mainThread.native_handle()),
-            THREAD_PRIORITY_NORMAL);
-    if(result != 0) {
-        sif::error << "FixedTimeslotTask: Windows SetPriorityClass failed with code "
-                << GetLastError() << std::endl;
-    }
-#elif defined(LINUX)
-    // we can just copy and paste the code from linux here.
+#if defined(_WIN32)
+    tasks::setTaskPriority(reinterpret_cast<HANDLE>(mainThread.native_handle()), setPriority);
+#elif defined(__unix__)
+    // TODO: We could reuse existing code here.
 #endif
+    tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
 FixedTimeslotTask::~FixedTimeslotTask(void) {
@@ -56,7 +38,6 @@ FixedTimeslotTask::~FixedTimeslotTask(void) {
     if(mainThread.joinable()) {
         mainThread.join();
     }
-    delete this;
 }
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
@@ -70,8 +51,10 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
     }
 
     this->taskFunctionality();
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "FixedTimeslotTask::taskEntryPoint: "
             "Returned from taskFunctionality." << std::endl;
+#endif
 }
 
 ReturnValue_t FixedTimeslotTask::startTask() {
@@ -115,8 +98,9 @@ void FixedTimeslotTask::taskFunctionality() {
         this->pollingSeqTable.executeAndAdvance();
         if (not pollingSeqTable.slotFollowsImmediately()) {
             // we need to wait before executing the current slot
-            //this gives us the time to wait:
-            interval = chron_ms(this->pollingSeqTable.getIntervalToPreviousSlotMs());
+            // this gives us the time to wait:
+            interval = chron_ms(
+                    this->pollingSeqTable.getIntervalToPreviousSlotMs());
             delayForInterval(&currentStartTime, interval);
             //TODO deadline missed check
         }
@@ -133,8 +117,13 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
         return HasReturnvaluesIF::RETURN_OK;
     }
 
-    sif::error << "Component " << std::hex << componentId <<
-            " not found, not adding it to pst" << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << "Component " << std::hex << "0x" << componentId << "not found, "
+            "not adding it to PST.." << std::dec << std::endl;
+#else
+    sif::printError("Component 0x%08x not found, not adding it to PST..\n",
+            static_cast<unsigned int>(componentId));
+#endif
     return HasReturnvaluesIF::RETURN_FAILED;
 }
 

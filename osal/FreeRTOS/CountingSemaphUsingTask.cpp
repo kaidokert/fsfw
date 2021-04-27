@@ -1,29 +1,39 @@
-#include "../../osal/FreeRTOS/CountingSemaphUsingTask.h"
-#include "../../osal/FreeRTOS/TaskManagement.h"
+#include "CountingSemaphUsingTask.h"
+#include "TaskManagement.h"
+
 #include "../../serviceinterface/ServiceInterfaceStream.h"
+
+#if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
+    tskKERNEL_VERSION_MAJOR > 8
 
 CountingSemaphoreUsingTask::CountingSemaphoreUsingTask(const uint8_t maxCount,
 		uint8_t initCount): maxCount(maxCount) {
 	if(initCount > maxCount) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphoreUsingTask: Max count bigger than "
 				"intial cout. Setting initial count to max count." << std::endl;
+#endif
 		initCount = maxCount;
 	}
 
 	handle = TaskManagement::getCurrentTaskHandle();
 	if(handle == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "CountingSemaphoreUsingTask: Could not retrieve task "
 				"handle. Please ensure the constructor was called inside a "
 				"task." << std::endl;
+#endif
 	}
 
 	uint32_t oldNotificationValue;
 	xTaskNotifyAndQuery(handle, 0, eSetValueWithOverwrite,
 			&oldNotificationValue);
 	if(oldNotificationValue != 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "CountinSemaphoreUsingTask: Semaphore initiated but "
 				"current notification value is not 0. Please ensure the "
 				"notification value is not used for other purposes!" << std::endl;
+#endif
 	}
 	for(int i = 0; i < initCount; i++) {
 		xTaskNotifyGive(handle);
@@ -112,3 +122,5 @@ uint8_t CountingSemaphoreUsingTask::getSemaphoreCounterFromISR(
 uint8_t CountingSemaphoreUsingTask::getMaxCount() const {
 	return maxCount;
 }
+
+#endif

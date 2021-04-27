@@ -1,14 +1,16 @@
+#include "taskHelpers.h"
+#include "../../tasks/TaskFactory.h"
 #include "../../osal/host/FixedTimeslotTask.h"
 #include "../../osal/host/PeriodicTask.h"
-#include "../../tasks/TaskFactory.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../tasks/PeriodicTaskIF.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 #include <chrono>
 
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
 
-// Will propably not be used for hosted implementation
+// Not used for the host implementation for now because C++ thread abstraction is used
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = 0;
 
 TaskFactory::TaskFactory() {
@@ -46,6 +48,15 @@ ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs){
 	std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
 	return HasReturnvaluesIF::RETURN_OK;
+}
+
+void TaskFactory::printMissedDeadline() {
+    std::string name = tasks::getTaskName(std::this_thread::get_id());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::warning << "TaskFactory::printMissedDeadline: " << name << std::endl;
+#else
+    sif::printWarning("TaskFactory::printMissedDeadline: %s\n", name);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 }
 
 

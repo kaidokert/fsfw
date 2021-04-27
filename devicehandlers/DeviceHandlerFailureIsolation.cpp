@@ -169,8 +169,10 @@ void DeviceHandlerFailureIsolation::clearFaultCounters() {
 ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
 	ReturnValue_t result = FailureIsolationBase::initialize();
 	if (result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "DeviceHandlerFailureIsolation::initialize: Could not"
 				" initialize FailureIsolationBase." << std::endl;
+#endif
 		return result;
 	}
 	ConfirmsFailuresIF* power = objectManager->get<ConfirmsFailuresIF>(
@@ -191,7 +193,7 @@ void DeviceHandlerFailureIsolation::triggerEvent(Event event, uint32_t parameter
 		uint32_t parameter2) {
 	//Do not throw error events if fdirState != none.
 	//This will still forward MODE and HEALTH INFO events in any case.
-	if (fdirState == NONE || EVENT::getSeverity(event) == SEVERITY::INFO) {
+	if (fdirState == NONE || event::getSeverity(event) == severity::INFO) {
 		FailureIsolationBase::triggerEvent(event, parameter1, parameter2);
 	}
 }
@@ -201,26 +203,26 @@ bool DeviceHandlerFailureIsolation::isFdirActionInProgress() {
 }
 
 void DeviceHandlerFailureIsolation::startRecovery(Event reason) {
-	throwFdirEvent(FDIR_STARTS_RECOVERY, EVENT::getEventId(reason));
+	throwFdirEvent(FDIR_STARTS_RECOVERY, event::getEventId(reason));
 	setOwnerHealth(HasHealthIF::NEEDS_RECOVERY);
 	setFdirState(RECOVERY_ONGOING);
 }
 
 ReturnValue_t DeviceHandlerFailureIsolation::getParameter(uint8_t domainId,
-		uint16_t parameterId, ParameterWrapper* parameterWrapper,
+		uint8_t uniqueId, ParameterWrapper* parameterWrapper,
 		const ParameterWrapper* newValues, uint16_t startAtIndex) {
-	ReturnValue_t result = strangeReplyCount.getParameter(domainId, parameterId,
+	ReturnValue_t result = strangeReplyCount.getParameter(domainId, uniqueId,
 			parameterWrapper, newValues, startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
-	result = missedReplyCount.getParameter(domainId, parameterId,
-			parameterWrapper, newValues, startAtIndex);
+	result = missedReplyCount.getParameter(domainId, uniqueId, parameterWrapper, newValues,
+	        startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
-	result = recoveryCounter.getParameter(domainId, parameterId,
-			parameterWrapper, newValues, startAtIndex);
+	result = recoveryCounter.getParameter(domainId, uniqueId, parameterWrapper, newValues,
+	        startAtIndex);
 	if (result != INVALID_DOMAIN_ID) {
 		return result;
 	}
@@ -228,7 +230,7 @@ ReturnValue_t DeviceHandlerFailureIsolation::getParameter(uint8_t domainId,
 }
 
 void DeviceHandlerFailureIsolation::setFaulty(Event reason) {
-	throwFdirEvent(FDIR_TURNS_OFF_DEVICE, EVENT::getEventId(reason));
+	throwFdirEvent(FDIR_TURNS_OFF_DEVICE, event::getEventId(reason));
 	setOwnerHealth(HasHealthIF::FAULTY);
 	setFdirState(AWAIT_SHUTDOWN);
 }
@@ -247,6 +249,16 @@ bool DeviceHandlerFailureIsolation::isFdirInActionOrAreWeFaulty(
 		}
 		return true;
 	}
+
+	if (owner == nullptr) {
+	    // Configuration error.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+	    sif::error << "DeviceHandlerFailureIsolation::"
+	            << "isFdirInActionOrAreWeFaulty: Owner not set!" << std::endl;
+#endif
+	    return false;
+	}
+
 	if (owner->getHealth() == HasHealthIF::FAULTY
 			|| owner->getHealth() == HasHealthIF::PERMANENT_FAULTY) {
 		//Ignore all events in case device is already faulty.

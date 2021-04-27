@@ -63,7 +63,9 @@ uint8_t TcPacketBase::getPusVersionNumber() {
 }
 
 void TcPacketBase::print() {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "TcPacketBase::print: " << std::endl;
+#endif
 	arrayprinter::print(getWholeData(), getFullSize());
 }
 

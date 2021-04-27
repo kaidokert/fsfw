@@ -3,28 +3,38 @@
 
 #include "LocalPool.h"
 #include "StorageAccessor.h"
-#include "../ipc/MutexHelper.h"
+#include "../ipc/MutexGuard.h"
 
 
 /**
  * @brief	The PoolManager class provides an intermediate data storage with
  * 			a fixed pool size policy for inter-process communication.
- * @details	Uses local pool calls but is thread safe by protecting the call
- * 			with a lock.
+ * @details
+ * Uses local pool calls but is thread safe by protecting most calls
+ * with a lock. The developer can lock the pool with the provided API
+ * if the lock needs to persists beyond the function call.
+ *
+ * Other than that, the class provides the same interface as the LocalPool
+ * class. The class is always registered as a system object as it is assumed
+ * it will always be used concurrently (if this is not the case, it is
+ * recommended to use the LocalPool class instead).
  * @author 	Bastian Baetz
  */
-template <uint8_t NUMBER_OF_POOLS = 5>
-class PoolManager : public LocalPool<NUMBER_OF_POOLS> {
+class PoolManager: public LocalPool {
 public:
-	PoolManager(object_id_t setObjectId,
-			const uint16_t element_sizes[NUMBER_OF_POOLS],
-			const uint16_t n_elements[NUMBER_OF_POOLS]);
+	PoolManager(object_id_t setObjectId, const LocalPoolConfig& poolConfig);
 
 	/**
 	 * @brief	In the PoolManager's destructor all allocated memory
 	 * 			is freed.
 	 */
 	virtual ~PoolManager();
+
+	/**
+	 * Set the default mutex timeout for internal calls.
+	 * @param mutexTimeoutMs
+	 */
+	void setMutexTimeout(uint32_t mutexTimeoutMs);
 
 	/**
 	 * @brief 	LocalPool overrides for thread-safety. Decorator function
@@ -34,12 +44,23 @@ public:
 	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
 			store_address_t* storeId = nullptr) override;
 
-	void setMutexTimeout(uint32_t mutexTimeoutMs);
+	/**
+	 * The developer is allowed to lock the mutex in case the lock needs
+	 * to persist beyond the function calls which are not protected by the
+	 * class.
+	 * @param timeoutType
+	 * @param timeoutMs
+	 * @return
+	 */
+	ReturnValue_t lockMutex(MutexIF::TimeoutType timeoutType,
+			uint32_t timeoutMs);
+	ReturnValue_t unlockMutex();
+
 protected:
 	//! Default mutex timeout value to prevent permanent blocking.
 	uint32_t mutexTimeoutMs = 20;
 
-	ReturnValue_t reserveSpace(const uint32_t size, store_address_t* address,
+	ReturnValue_t reserveSpace(const size_t size, store_address_t* address,
 			bool ignoreFault) override;
 
 	/**
@@ -50,7 +71,5 @@ protected:
 	 */
 	MutexIF* mutex;
 };
-
-#include "PoolManager.tpp"
 
 #endif /* FSFW_STORAGEMANAGER_POOLMANAGER_H_ */

@@ -7,8 +7,6 @@
 #include "../tmtcpacket/pus/TcPacketBase.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 
-#include <cstdint>
-
 class PusVerificationMessage: public MessageQueueMessage {
 private:
 	struct verifciationMessageContent {

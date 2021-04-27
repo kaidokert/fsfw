@@ -10,9 +10,17 @@
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		maxMessageSize(maxMessageSize) {
 	handle = xQueueCreate(messageDepth, maxMessageSize);
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	if (handle == nullptr) {
-		sif::error << "MessageQueue::MessageQueue Creation failed" << std::endl;
+		sif::error << "MessageQueue::MessageQueue:"
+		        << " Creation failed." << std::endl;
+		sif::error << "Specified Message Depth: " << messageDepth
+		        << std::endl;
+		sif::error << "Specified Maximum Message Size: "
+		        << maxMessageSize << std::endl;
+
 	}
+#endif
 }
 
 MessageQueue::~MessageQueue() {
@@ -127,7 +135,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	QueueHandle_t destination = nullptr;
 
 	if(sendTo == MessageQueueIF::NO_QUEUE or sendTo == 0x00) {
-		return MessageQueueIF::DESTINVATION_INVALID;
+		return MessageQueueIF::DESTINATION_INVALID;
 	}
 	else  {
 		destination = reinterpret_cast<QueueHandle_t>(sendTo);

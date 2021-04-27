@@ -2,6 +2,8 @@
 #include "StorageManagerIF.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 
+#include <algorithm>
+
 StorageAccessor::StorageAccessor(store_address_t storeId):
 		ConstStorageAccessor(storeId) {
 }
@@ -26,12 +28,16 @@ StorageAccessor::StorageAccessor(StorageAccessor&& other):
 
 ReturnValue_t StorageAccessor::getDataCopy(uint8_t *pointer, size_t maxSize) {
 	if(internalState == AccessState::UNINIT) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(size_ > maxSize) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "StorageAccessor: Supplied buffer not large "
 				"enough" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	std::copy(dataPointer, dataPointer + size_, pointer);
@@ -40,7 +46,9 @@ ReturnValue_t StorageAccessor::getDataCopy(uint8_t *pointer, size_t maxSize) {
 
 uint8_t* StorageAccessor::data() {
 	if(internalState == AccessState::UNINIT) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
+#endif
 	}
 	return dataPointer;
 }
@@ -48,12 +56,16 @@ uint8_t* StorageAccessor::data() {
 ReturnValue_t StorageAccessor::write(uint8_t *data, size_t size,
 		uint16_t offset) {
 	if(internalState == AccessState::UNINIT) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::warning << "StorageAccessor: Not initialized!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	if(offset + size > size_) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "StorageAccessor: Data too large for pool "
 				"entry!" << std::endl;
+#endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
 	std::copy(data, data + size, dataPointer + offset);

@@ -6,18 +6,18 @@
 #include "../tmtcpacket/pus/TmPacketStored.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../tmtcservices/AcceptsTelemetryIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-
 
 Service1TelecommandVerification::Service1TelecommandVerification(
         object_id_t objectId, uint16_t apid, uint8_t serviceId,
-        object_id_t targetDestination):
+        object_id_t targetDestination, uint16_t messageQueueDepth):
         SystemObject(objectId), apid(apid), serviceId(serviceId),
         targetDestination(targetDestination) {
-	tmQueue = QueueFactory::instance()->createMessageQueue();
+	tmQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
-Service1TelecommandVerification::~Service1TelecommandVerification() {}
+Service1TelecommandVerification::~Service1TelecommandVerification() {
+    QueueFactory::instance()->deleteMessageQueue(tmQueue);
+}
 
 MessageQueueId_t Service1TelecommandVerification::getVerificationQueue(){
 	return tmQueue->getId();
@@ -53,8 +53,10 @@ ReturnValue_t Service1TelecommandVerification::sendVerificationReport(
 		result = generateSuccessReport(message);
 	}
 	if(result != HasReturnvaluesIF::RETURN_OK){
-		sif::error << "Service1TelecommandVerification::initialize: "
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "Service1TelecommandVerification::sendVerificationReport: "
 		        "Sending verification packet failed !" << std::endl;
+#endif
 	}
 	return result;
 }
@@ -90,9 +92,11 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
 	AcceptsTelemetryIF* funnel = objectManager->
 			get<AcceptsTelemetryIF>(targetDestination);
 	if(funnel == nullptr){
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 	    sif::error << "Service1TelecommandVerification::initialize: Specified"
 	            " TM funnel invalid. Make sure it is set up and implements"
 	            " AcceptsTelemetryIF." << std::endl;
+#endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 	tmQueue->setDefaultDestination(funnel->getReportReceptionQueue());

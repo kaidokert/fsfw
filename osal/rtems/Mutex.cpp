@@ -1,36 +1,42 @@
 #include "Mutex.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 uint8_t Mutex::count = 0;
 
-Mutex::Mutex() :
-		mutexId(0) {
+Mutex::Mutex() {
 	rtems_name mutexName = ('M' << 24) + ('T' << 16) + ('X' << 8) + count++;
 	rtems_status_code status = rtems_semaphore_create(mutexName, 1,
 	RTEMS_BINARY_SEMAPHORE | RTEMS_PRIORITY | RTEMS_INHERIT_PRIORITY, 0,
 			&mutexId);
 	if (status != RTEMS_SUCCESSFUL) {
-		sif::error << "Mutex: creation with name, id " << mutexName << ", " << mutexId
-				<< " failed with " << status << std::endl;
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "Mutex::Mutex: Creation with name, id " << mutexName << ", " << mutexId <<
+		        " failed with " << status << std::endl;
+#else
+		sif::printError("Mutex::Mutex: Creation with name, id %s, %d failed with %d\n", mutexName,
+		        static_cast<int>(mutexId), static_cast<int>(status));
+#endif
 	}
 }
 
 Mutex::~Mutex() {
 	rtems_status_code status = rtems_semaphore_delete(mutexId);
 	if (status != RTEMS_SUCCESSFUL) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "Mutex: deletion for id " << mutexId
 				<< " failed with " << status << std::endl;
+#endif
 	}
 }
 
 ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType =
         TimeoutType::BLOCKING, uint32_t timeoutMs) {
 	rtems_status_code status = RTEMS_INVALID_ID;
-	if(timeoutMs == MutexIF::TimeoutType::BLOCKING) {
+	if(timeoutType == MutexIF::TimeoutType::BLOCKING) {
 		status = rtems_semaphore_obtain(mutexId,
 				RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 	}
-	else if(timeoutMs == MutexIF::TimeoutType::POLLING) {
+	else if(timeoutType == MutexIF::TimeoutType::POLLING) {
 		timeoutMs = RTEMS_NO_TIMEOUT;
 		status = rtems_semaphore_obtain(mutexId,
 				RTEMS_NO_WAIT, 0);

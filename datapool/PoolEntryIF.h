@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_DATAPOOL_POOLENTRYIF_H_
-#define FRAMEWORK_DATAPOOL_POOLENTRYIF_H_
+#ifndef FSFW_DATAPOOL_POOLENTRYIF_H_
+#define FSFW_DATAPOOL_POOLENTRYIF_H_
 
 #include "../globalfunctions/Type.h"
 #include <cstdint>
@@ -60,4 +60,4 @@ public:
 	virtual Type getType() = 0;
 };
 
-#endif /* POOLENTRYIF_H_ */
+#endif /* FSFW_DATAPOOL_POOLENTRYIF_H_ */
