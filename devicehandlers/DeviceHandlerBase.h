@@ -471,13 +471,27 @@ protected:
     ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand,
             uint16_t maxDelayCycles, LocalPoolDataSetBase* dataSet = nullptr,
             size_t replyLen = 0, bool periodic = false);
+
     /**
-     * @brief 	A simple command to add a command to the commandList.
+     * @brief   A simple command to add a command to the commandList.
      * @param deviceCommand The command to add
      * @return - @c RETURN_OK when the command was successfully inserted,
      *         - @c RETURN_FAILED else.
      */
     ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand);
+
+    /**
+     * @brief   This function returns the reply length of the next reply to read.
+     *
+     * @param deviceCommand The command which triggered the device reply.
+     *
+     * @details The default implementation assumes only one reply is triggered by the command. In
+     *          case the command triggers multiple replies (e.g. one acknowledgment, one data,
+     *          and one execution status reply), this function can be overwritten to get the
+     *          reply length of the next reply to read.
+     */
+    virtual size_t getNextReplyLength(DeviceCommandId_t deviceCommand);
+
     /**
      * @brief 	This is a helper method to facilitate updating entries
      *        	in the reply map.
@@ -953,7 +967,7 @@ protected:
      * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an
      * 			  error case as many commands do not expect a reply.
      */
-    virtual ReturnValue_t enableReplyInReplyMap(DeviceCommandMap::iterator cmd,
+    virtual ReturnValue_t enableReplyInReplyMap(DeviceCommandMap::iterator command,
             uint8_t expectedReplies = 1, bool useAlternateId = false,
             DeviceCommandId_t alternateReplyID = 0);
 
