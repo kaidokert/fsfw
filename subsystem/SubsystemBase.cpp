@@ -5,8 +5,7 @@
 
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		Mode_t initialMode, uint16_t commandQueueDepth) :
-		SystemObject(setObjectId), mode(initialMode), submode(SUBMODE_NONE),
-		childrenChangedMode(false),
+		SystemObject(setObjectId), mode(initialMode),
 		commandQueue(QueueFactory::instance()->createMessageQueue(
 		        commandQueueDepth, CommandMessage::MAX_MESSAGE_SIZE)),
 		healthHelper(this, setObjectId), modeHelper(this), parentId(parent) {
@@ -167,16 +166,16 @@ MessageQueueId_t SubsystemBase::getCommandQueue() const {
 }
 
 ReturnValue_t SubsystemBase::initialize() {
-	MessageQueueId_t parentQueue = 0;
+	MessageQueueId_t parentQueue = MessageQueueIF::NO_QUEUE;
 	ReturnValue_t result = SystemObject::initialize();
 
 	if (result != RETURN_OK) {
 		return result;
 	}
 
-	if (parentId != 0) {
+	if (parentId != objects::NO_OBJECT) {
 		SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
-		if (parent == NULL) {
+		if (parent == nullptr) {
 			return RETURN_FAILED;
 		}
 		parentQueue = parent->getCommandQueue();

@@ -65,6 +65,9 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage *message) {
         ParameterWrapper ownerWrapper;
         result = owner->getParameter(domain, uniqueIdentifier, &ownerWrapper,
                 &streamWrapper, linearIndex);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
 
         result = ownerWrapper.copyFrom(&streamWrapper, linearIndex);
         if (result != HasReturnvaluesIF::RETURN_OK) {
