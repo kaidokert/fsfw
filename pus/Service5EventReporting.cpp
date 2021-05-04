@@ -52,8 +52,13 @@ ReturnValue_t Service5EventReporting::generateEventReport(
 {
 	EventReport report(message.getEventId(),message.getReporter(),
 			message.getParameter1(),message.getParameter2());
-	TmPacketStored tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
 			message.getSeverity(), packetSubCounter++, &report);
+#else
+    TmPacketStoredPusC tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
+            message.getSeverity(), packetSubCounter++, &report);
+#endif
 	ReturnValue_t result = tmPacket.sendPacket(
 	        requestQueue->getDefaultDestination(),requestQueue->getId());
 	if(result != HasReturnvaluesIF::RETURN_OK) {

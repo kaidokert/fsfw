@@ -17,6 +17,8 @@
 	#define FSFW_DISABLE_PRINTOUT 	0
 #endif
 
+#define FSFW_USE_PUS_C_TELEMETRY    1
+
 //! Can be used to disable the ANSI color sequences for C stdio.
 #define FSFW_COLORED_OUTPUT 		1
 
@@ -48,9 +50,9 @@
 #define FSFW_USE_REALTIME_FOR_LINUX 1
 
 namespace fsfwconfig {
-//! Default timestamp size. The default timestamp will be an eight byte CDC
-//! short timestamp.
-static constexpr uint8_t FSFW_MISSION_TIMESTAMP_SIZE = 8;
+
+//! Default timestamp size. The default timestamp will be an seven byte CDC short timestamp.
+static constexpr uint8_t FSFW_MISSION_TIMESTAMP_SIZE = 7;
 
 //! Configure the allocated pool sizes for the event manager.
 static constexpr size_t FSFW_EVENTMGMR_MATCHTREE_NODES = 240;

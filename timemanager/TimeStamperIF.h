@@ -1,6 +1,7 @@
 #ifndef FSFW_TIMEMANAGER_TIMESTAMPERIF_H_
 #define FSFW_TIMEMANAGER_TIMESTAMPERIF_H_
 
+#include <FSFWConfig.h>
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include <FSFWConfig.h>
 
@@ -18,6 +19,7 @@ public:
 	//! This is a mission-specific constant and determines the total
 	//! size reserved for timestamps.
 	static const uint8_t MISSION_TIMESTAMP_SIZE = fsfwconfig::FSFW_MISSION_TIMESTAMP_SIZE;
+
 	virtual ReturnValue_t addTimeStamp(uint8_t* buffer,
 	        const uint8_t maxSize) = 0;
 	virtual ~TimeStamperIF() {}
