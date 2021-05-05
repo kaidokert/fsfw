@@ -1,5 +1,5 @@
-#ifndef FSFW_OSAL_WINDOWS_TCSOCKETPOLLINGTASK_H_
-#define FSFW_OSAL_WINDOWS_TCSOCKETPOLLINGTASK_H_
+#ifndef FSFW_OSAL_COMMON_UDPTCPOLLINGTASK_H_
+#define FSFW_OSAL_COMMON_UDPTCPOLLINGTASK_H_
 
 #include "UdpTmTcBridge.h"
 #include "../../objectmanager/SystemObject.h"
@@ -22,7 +22,7 @@ public:
 	//! 0.5  default milliseconds timeout for now.
 	static constexpr timeval DEFAULT_TIMEOUT = {0, 500};
 
-	UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
+	UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUdpBridge,
 			size_t maxRecvSize = 0, double timeoutSeconds = -1);
 	virtual~ UdpTcPollingTask();
 
@@ -57,4 +57,4 @@ private:
 	ReturnValue_t handleSuccessfullTcRead(size_t bytesRead);
 };
 
-#endif /* FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_ */
+#endif /* FSFW_OSAL_COMMON_UDPTCPOLLINGTASK_H_ */
