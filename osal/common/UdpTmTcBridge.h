@@ -17,8 +17,13 @@
 #include <string>
 
 /**
- * @brief   This class should be used with the UdpTcPollingTask to implement a UDP server
+ * @brief   This class can be used with the UdpTcPollingTask to implement a UDP server
  *          for receiving and sending PUS TMTC.
+ * @details
+ * This bridge task will take care of sending telemetry back to a UDP client if a connection
+ * was established and store them in a FIFO if this was not done yet. It is also be the default
+ * destination for telecommands, but the telecommands will be relayed to a specified tcDestination
+ * directly.
  */
 class UdpTmTcBridge:
         public TmTcBridge,
@@ -29,7 +34,8 @@ public:
     static const std::string DEFAULT_UDP_SERVER_PORT;
 
     UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
-            object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort = "");
+            std::string udpServerPort = "", object_id_t tmStoreId = objects::TM_STORE,
+            object_id_t tcStoreId = objects::TC_STORE);
     virtual~ UdpTmTcBridge();
 
     /**

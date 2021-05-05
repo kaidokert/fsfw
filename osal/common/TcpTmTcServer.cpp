@@ -4,6 +4,7 @@
 
 #include "../../container/SharedRingBuffer.h"
 #include "../../ipc/MessageQueueSenderIF.h"
+#include "../../ipc/MutexGuard.h"
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../tmtcservices/TmTcMessage.h"
@@ -25,10 +26,9 @@
 const std::string TcpTmTcServer::DEFAULT_TCP_SERVER_PORT =  "7301";
 
 TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
-        /*SharedRingBuffer* tcpRingBuffer, */ size_t receptionBufferSize,
-        std::string customTcpServerPort):
-                        SystemObject(objectId), tmtcBridgeId(tmtcTcpBridge), tcpPort(customTcpServerPort),
-                        receptionBuffer(receptionBufferSize) /*, tcpRingBuffer(tcpRingBuffer) */ {
+        size_t receptionBufferSize, std::string customTcpServerPort):
+        SystemObject(objectId), tmtcBridgeId(tmtcTcpBridge),
+        tcpPort(customTcpServerPort), receptionBuffer(receptionBufferSize) {
     if(tcpPort == "") {
         tcpPort = DEFAULT_TCP_SERVER_PORT;
     }
@@ -36,17 +36,6 @@ TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
 
 ReturnValue_t TcpTmTcServer::initialize() {
     using namespace tcpip;
-
-    /*
-    if(tcpRingBuffer == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TcpTmTcServer::initialize: Invalid ring buffer!" << std::endl;
-#else
-        sif::printError("TcpTmTcServer::initialize: Invalid ring buffer!\n");
-#endif
-        return ObjectManagerIF::CHILD_INIT_FAILED;
-    }
-    */
 
     ReturnValue_t result = TcpIpBase::initialize();
     if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -74,13 +63,14 @@ ReturnValue_t TcpTmTcServer::initialize() {
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
+    // Listen to all addresses (0.0.0.0) by using AI_PASSIVE in the hint flags
     retval = getaddrinfo(nullptr, tcpPort.c_str(), &hints, &addrResult);
     if (retval != 0) {
         handleError(Protocol::TCP, ErrorSources::GETADDRINFO_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
-    /* Open TCP (stream) socket */
+    // Open TCP (stream) socket
     listenerTcpSocket = socket(addrResult->ai_family, addrResult->ai_socktype,
             addrResult->ai_protocol);
     if(listenerTcpSocket == INVALID_SOCKET) {
@@ -89,6 +79,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
+    // Bind to the address found by getaddrinfo
     retval = bind(listenerTcpSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval == SOCKET_ERROR) {
         freeaddrinfo(addrResult);
@@ -107,15 +98,15 @@ TcpTmTcServer::~TcpTmTcServer() {
 
 ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
     using namespace tcpip;
-    /* If a connection is accepted, the corresponding socket will be assigned to the new socket */
+    // If a connection is accepted, the corresponding socket will be assigned to the new socket
     socket_t connSocket = 0;
     sockaddr clientSockAddr = {};
     socklen_t connectorSockAddrLen = 0;
     int retval = 0;
 
-    /* Listen for connection requests permanently for lifetime of program */
+    // Listen for connection requests permanently for lifetime of program
     while(true) {
-        retval = listen(listenerTcpSocket, currentBacklog);
+        retval = listen(listenerTcpSocket, tcpBacklog);
         if(retval == SOCKET_ERROR) {
             handleError(Protocol::TCP, ErrorSources::LISTEN_CALL, 500);
             continue;
@@ -131,7 +122,7 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
 
         handleServerOperation(connSocket);
 
-        /* Done, shut down connection */
+        // Done, shut down connection and go back to listening for client requests
         retval = shutdown(connSocket, SHUT_SEND);
         if(retval != 0) {
             handleError(Protocol::TCP, ErrorSources::SHUTDOWN_CALL);
@@ -142,29 +133,21 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
 }
 
 ReturnValue_t TcpTmTcServer::initializeAfterTaskCreation() {
+    if(tmtcBridge == nullptr) {
+        return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
     /* Initialize the destination after task creation. This ensures
     that the destination has already been set in the TMTC bridge. */
     targetTcDestination = tmtcBridge->getRequestQueue();
-
-//
-//    if(tcpRingBuffer != nullptr) {
-//        auto fifoCheck = tcpRingBuffer->getReceiveSizesFIFO();
-//        if (fifoCheck == nullptr) {
-//#if FSFW_CPP_OSTREAM_ENABLED == 1
-//            sif::error << "TcpTmTcServer::initializeAfterTaskCreation: "
-//                    "TCP ring buffer does not have a FIFO!" << std::endl;
-//#else
-//            sif::printError("TcpTmTcServer::initialize: TCP ring buffer does not have a FIFO!\n");
-//#endif /* FSFW_CPP_OSTREAM_ENABLED == 0 */
-//        }
-//    }
-
+    tcStore = tmtcBridge->tcStore;
+    tmStore = tmtcBridge->tmStore;
     return HasReturnvaluesIF::RETURN_OK;
 }
 
 void TcpTmTcServer::handleServerOperation(socket_t connSocket) {
     int retval = 0;
     do {
+        // Read all telecommands sent by the client
         retval = recv(connSocket,
                 reinterpret_cast<char*>(receptionBuffer.data()),
                 receptionBuffer.capacity(),
@@ -173,10 +156,12 @@ void TcpTmTcServer::handleServerOperation(socket_t connSocket) {
             handleTcReception(retval);
         }
         else if(retval == 0) {
-            /* Client has finished sending telecommands, send telemetry now */
+            // Client has finished sending telecommands, send telemetry now
+            handleTmSending(connSocket);
         }
         else {
-            /* Should not happen */
+            // Should not happen
+            tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL);
         }
     } while(retval > 0);
 }
@@ -209,4 +194,33 @@ ReturnValue_t TcpTmTcServer::handleTcReception(size_t bytesRecvd) {
         tcStore->deleteData(storeId);
     }
     return result;
+}
+
+void TcpTmTcServer::setTcpBacklog(uint8_t tcpBacklog) {
+    this->tcpBacklog = tcpBacklog;
+}
+
+ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket) {
+    // Access to the FIFO is mutex protected because it is filled by the bridge
+    MutexGuard(tmtcBridge->mutex, tmtcBridge->timeoutType, tmtcBridge->mutexTimeoutMs);
+    store_address_t storeId;
+    while((not tmtcBridge->tmFifo->empty()) and
+            (tmtcBridge->packetSentCounter < tmtcBridge->sentPacketsPerCycle)) {
+        tmtcBridge->tmFifo->retrieve(&storeId);
+
+        // Using the store accessor will take care of deleting TM from the store automatically
+        ConstStorageAccessor storeAccessor(storeId);
+        ReturnValue_t result = tmStore->getData(storeId, storeAccessor);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
+        int retval = send(connSocket,
+                reinterpret_cast<const char*>(storeAccessor.data()),
+                storeAccessor.size(),
+                tcpTmFlags);
+        if(retval != static_cast<int>(storeAccessor.size())) {
+            tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::SEND_CALL);
+        }
+    }
+    return HasReturnvaluesIF::RETURN_OK;
 }

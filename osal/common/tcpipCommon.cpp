@@ -32,6 +32,12 @@ void tcpip::determineErrorStrings(Protocol protocol, ErrorSources errorSrc, std:
     else if(errorSrc == ErrorSources::RECVFROM_CALL) {
         srcString = "recvfrom call";
     }
+    else if(errorSrc == ErrorSources::SEND_CALL) {
+        srcString = "send call";
+    }
+    else if(errorSrc == ErrorSources::SENDTO_CALL) {
+        srcString = "sendto call";
+    }
     else if(errorSrc == ErrorSources::GETADDRINFO_CALL) {
         srcString = "getaddrinfo call";
     }
