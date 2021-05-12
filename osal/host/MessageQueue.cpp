@@ -128,8 +128,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 				internalErrorReporter->queueMessageNotSent();
 			}
 		}
-		// TODO: Better returnvalue
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MessageQueueIF::DESTINATION_INVALID;
 	}
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
 		MutexGuard mutexLock(targetQueue->queueLock, MutexIF::TimeoutType::WAITING, 20);

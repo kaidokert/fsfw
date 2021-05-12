@@ -50,8 +50,8 @@
 #define FSFW_USE_REALTIME_FOR_LINUX 1
 
 namespace fsfwconfig {
-//! Default timestamp size. The default timestamp will be an eight byte CDC
-//! short timestamp.
+
+//! Default timestamp size. The default timestamp will be an seven byte CDC short timestamp.
 static constexpr uint8_t FSFW_MISSION_TIMESTAMP_SIZE = 7;
 
 //! Configure the allocated pool sizes for the event manager.
