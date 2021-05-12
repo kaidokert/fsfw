@@ -2,7 +2,7 @@
 #include "EventMessage.h"
 
 #include <FSFWConfig.h>
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
 
@@ -120,23 +120,39 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 void EventManager::printEvent(EventMessage* message) {
 	const char *string = 0;
 	switch (message->getSeverity()) {
-	case severity::INFO:
-#if DEBUG_INFO_EVENT == 1
-		string = translateObject(message->getReporter());
+	case severity::INFO: {
+#if FSFW_DEBUG_INFO == 1
+        string = translateObject(message->getReporter());
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::info << "EVENT: ";
-		if (string != 0) {
-			sif::info << string;
-		} else {
-			sif::info << "0x" << std::hex << message->getReporter() << std::dec;
-		}
-		sif::info << " reported " << translateEvents(message->getEvent()) << " ("
-				<< std::dec << message->getEventId() << std::hex << ") P1: 0x"
-				<< message->getParameter1() << " P2: 0x"
-				<< message->getParameter2() << std::dec << std::endl;
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+        sif::info << "EVENT: ";
+        if (string != 0) {
+            sif::info << string;
+        }
+        else {
+            sif::info << "0x" << std::hex << std::setfill('0') << std::setw(8) <<
+                    message->getReporter() << std::setfill(' ') << std::dec;
+        }
+        sif::info << " reported " << translateEvents(message->getEvent()) << " ("
+                << std::dec << message->getEventId() << std::hex << ") P1: 0x"
+                << message->getParameter1() << " P2: 0x"
+                << message->getParameter2() << std::dec << std::endl;
+#else
+        const char totalString[140] = {};
+        if (string != 0) {
+            snprintf((char*) totalString, sizeof(totalString),"Event: %s", string);
+        }
+        else {
+            snprintf((char*) totalString, sizeof(totalString),"Event: 0x%08x",
+                    message->getReporter());
+        }
+        snprintf((char*) totalString, sizeof(totalString),
+                " reported %s | ID %d | P1: 0x%x | P2: 0x%x\n", translateEvents(message->getEvent()),
+                message->getEventId(), message->getParameter1(), message->getParameter2());
+        sif::printInfo("%s", totalString);
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 0 */
 #endif /* DEBUG_INFO_EVENT == 1 */
-		break;
+        break;
+	}
 	default:
 		string = translateObject(message->getReporter());
 #if FSFW_CPP_OSTREAM_ENABLED == 1
