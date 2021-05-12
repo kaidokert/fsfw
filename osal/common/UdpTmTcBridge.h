@@ -28,8 +28,8 @@ public:
     /* The ports chosen here should not be used by any other process. */
     static const std::string DEFAULT_UDP_SERVER_PORT;
 
-    UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
-            object_id_t tmStoreId, object_id_t tcStoreId, std::string udpServerPort = "");
+    UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination, std::string udpServerPort = "",
+            object_id_t tmStoreId = objects::TM_STORE, object_id_t tcStoreId = objects::TC_STORE);
     virtual~ UdpTmTcBridge();
 
     /**
