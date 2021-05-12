@@ -156,21 +156,19 @@ void EventManager::printUtility(sif::OutputTypes printType, EventMessage *messag
             sif::info << "0x" << std::hex << std::setw(8) << std::setfill('0') <<
                     message->getReporter() << std::setfill(' ') << std::dec;
         }
-        sif::info << " reported " << translateEvents(message->getEvent())
-                        << " with event ID " << std::dec << message->getEventId() << std::endl;
+        sif::info << " report event with ID " << message->getEventId() << std::endl;
         sif::info << std::hex << "P1 Hex: 0x" << message->getParameter1() <<
                 " | P1 Dec: " << std::dec << message->getParameter1() <<  std::hex <<
                 " | P2 Hex: 0x" << message->getParameter2() << " | P2 Dec: " <<  std::dec <<
                 message->getParameter2() << std::endl;
 #else
         if (string != 0) {
-            sif::printInfo("Event Manager: %s reported %s with event ID %d\n",
-                    message->getReporter(), translateEvents(message->getEvent()),
+            sif::printInfo("Event Manager: %s reported event with ID %d\n", string,
                     message->getEventId());
         }
         else {
-            sif::printInfo("Event Manager: Reporter ID 0x%08x reported %s with event ID %d\n",
-                    string, translateEvents(message->getEvent()), message->getEventId());
+            sif::printInfo("Event Manager: Reporter ID 0x%08x reported event with ID %d\n",
+                    message->getReporter(), message->getEventId());
         }
         sif::printInfo("P1 Hex: 0x%x | P1 Dec: %d | P2 Hex: 0x%x | P2 Dec: %d\n",
                 message->getParameter1(), message->getParameter1(),
@@ -185,23 +183,22 @@ void EventManager::printUtility(sif::OutputTypes printType, EventMessage *messag
             sif::debug << string;
         }
         else {
-            sif::debug << "0x" << std::hex << message->getReporter() << std::dec;
+            sif::debug << "0x" << std::hex << std::setw(8) << std::setfill('0') <<
+                    message->getReporter() << std::setfill(' ') << std::dec;
         }
-        sif::debug << " reported " << translateEvents(message->getEvent())
-                        << " with event ID " << std::dec << message->getEventId() << std::endl;
+        sif::debug << " report event with ID " << message->getEventId() << std::endl;
         sif::debug << std::hex << "P1 Hex: 0x" << message->getParameter1() <<
                 " | P1 Dec: " << std::dec << message->getParameter1() <<  std::hex <<
                 " | P2 Hex: 0x" << message->getParameter2() << " | P2 Dec: " <<  std::dec <<
                 message->getParameter2() << std::endl;
 #else
         if (string != 0) {
-            sif::printDebug("Event Manager: %s reported %s with event ID %d\n",
-                    message->getReporter(), translateEvents(message->getEvent()),
+            sif::printDebug("Event Manager: %s reported event with ID %d\n", string,
                     message->getEventId());
         }
         else {
-            sif::printDebug("Event Manager: Reporter ID 0x%08x reported %s with event ID %d\n",
-                    string, translateEvents(message->getEvent()), message->getEventId());
+            sif::printDebug("Event Manager: Reporter ID 0x%08x reported event with ID %d\n",
+                    message->getReporter(), message->getEventId());
         }
         sif::printDebug("P1 Hex: 0x%x | P1 Dec: %d | P2 Hex: 0x%x | P2 Dec: %d\n",
                 message->getParameter1(), message->getParameter1(),
