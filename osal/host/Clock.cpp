@@ -2,9 +2,9 @@
 #include "../../timemanager/Clock.h"
 
 #include <chrono>
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <sysinfoapi.h>
-#elif defined(LINUX)
+#elif defined(__unix__)
 #include <fstream>
 #endif
 
@@ -92,7 +92,7 @@ timeval Clock::getUptime() {
 	auto fraction = uptime - secondsChrono;
 	timeval.tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(
 	            fraction).count();
-#elif defined(LINUX)
+#elif defined(__unix__)
 	double uptimeSeconds;
 	if (std::ifstream("/proc/uptime", std::ios::in) >> uptimeSeconds)
 	{
@@ -120,7 +120,6 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 }
 
 
-ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 	/* Do some magic with chrono (C++20!) */
 	/* Right now, the library doesn't have the new features to get the required values yet.
 	so we work around that for now. */
