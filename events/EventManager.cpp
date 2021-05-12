@@ -1,8 +1,6 @@
 #include "EventManager.h"
 #include "EventMessage.h"
 
-#include <FSFWConfig.h>
-#include "../serviceinterface/ServiceInterface.h"
 #include "../ipc/QueueFactory.h"
 #include "../ipc/MutexFactory.h"
 
@@ -115,69 +113,6 @@ ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener,
 	return result;
 }
 
-#if FSFW_OBJ_EVENT_TRANSLATION == 1
-
-void EventManager::printEvent(EventMessage* message) {
-	const char *string = 0;
-	switch (message->getSeverity()) {
-	case severity::INFO: {
-#if FSFW_DEBUG_INFO == 1
-        string = translateObject(message->getReporter());
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "EVENT: ";
-        if (string != 0) {
-            sif::info << string;
-        }
-        else {
-            sif::info << "0x" << std::hex << std::setfill('0') << std::setw(8) <<
-                    message->getReporter() << std::setfill(' ') << std::dec;
-        }
-        sif::info << " reported " << translateEvents(message->getEvent()) << " ("
-                << std::dec << message->getEventId() << std::hex << ") P1: 0x"
-                << message->getParameter1() << " P2: 0x"
-                << message->getParameter2() << std::dec << std::endl;
-#else
-        const char totalString[140] = {};
-        if (string != 0) {
-            snprintf((char*) totalString, sizeof(totalString),"Event: %s", string);
-        }
-        else {
-            snprintf((char*) totalString, sizeof(totalString),"Event: 0x%08x",
-                    message->getReporter());
-        }
-        snprintf((char*) totalString, sizeof(totalString),
-                " reported %s | ID %d | P1: 0x%x | P2: 0x%x\n", translateEvents(message->getEvent()),
-                message->getEventId(), message->getParameter1(), message->getParameter2());
-        sif::printInfo("%s", totalString);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 0 */
-#endif /* DEBUG_INFO_EVENT == 1 */
-        break;
-	}
-	default:
-		string = translateObject(message->getReporter());
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::debug << "EventManager: ";
-		if (string != 0) {
-			sif::debug << string;
-		}
-		else {
-			sif::debug << "0x" << std::hex << message->getReporter() << std::dec;
-		}
-		sif::debug << " reported " << translateEvents(message->getEvent())
-				<< " (" << std::dec << message->getEventId() << ") "
-				<< std::endl;
-		sif::debug << std::hex << "P1 Hex: 0x" << message->getParameter1()
-				<< ", P1 Dec: " << std::dec << message->getParameter1()
-				<< std::endl;
-		sif::debug << std::hex << "P2 Hex: 0x" << message->getParameter2()
-				<< ", P2 Dec: " <<  std::dec << message->getParameter2()
-				<< std::endl;
-#endif
-		break;
-	}
-}
-#endif
-
 void EventManager::lockMutex() {
 	mutex->lockMutex(timeoutType, timeoutMs);
 }
@@ -191,3 +126,88 @@ void EventManager::setMutexTimeout(MutexIF::TimeoutType timeoutType,
 	this->timeoutType = timeoutType;
 	this->timeoutMs = timeoutMs;
 }
+
+#if FSFW_OBJ_EVENT_TRANSLATION == 1
+
+void EventManager::printEvent(EventMessage* message) {
+    switch (message->getSeverity()) {
+    case severity::INFO: {
+#if FSFW_DEBUG_INFO == 1
+        printUtility(sif::OutputTypes::OUT_INFO, message);
+#endif /* DEBUG_INFO_EVENT == 1 */
+        break;
+    }
+    default:
+        printUtility(sif::OutputTypes::OUT_DEBUG, message);
+        break;
+    }
+}
+
+void EventManager::printUtility(sif::OutputTypes printType, EventMessage *message) {
+    const char *string = 0;
+    if(printType == sif::OutputTypes::OUT_INFO) {
+        string = translateObject(message->getReporter());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::info << "EventManager: ";
+        if (string != 0) {
+            sif::info << string;
+        }
+        else {
+            sif::info << "0x" << std::hex << std::setw(8) << std::setfill('0') <<
+                    message->getReporter() << std::setfill(' ') << std::dec;
+        }
+        sif::info << " reported " << translateEvents(message->getEvent())
+                        << " with event ID " << std::dec << message->getEventId() << std::endl;
+        sif::info << std::hex << "P1 Hex: 0x" << message->getParameter1() <<
+                " | P1 Dec: " << std::dec << message->getParameter1() <<  std::hex <<
+                " | P2 Hex: 0x" << message->getParameter2() << " | P2 Dec: " <<  std::dec <<
+                message->getParameter2() << std::endl;
+#else
+        if (string != 0) {
+            sif::printInfo("Event Manager: %s reported %s with event ID %d\n",
+                    message->getReporter(), translateEvents(message->getEvent()),
+                    message->getEventId());
+        }
+        else {
+            sif::printInfo("Event Manager: Reporter ID 0x%08x reported %s with event ID %d\n",
+                    string, translateEvents(message->getEvent()), message->getEventId());
+        }
+        sif::printInfo("P1 Hex: 0x%x | P1 Dec: %d | P2 Hex: 0x%x | P2 Dec: %d\n",
+                message->getParameter1(), message->getParameter1(),
+                message->getParameter2(), message->getParameter2());
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 0 */
+    }
+    else {
+        string = translateObject(message->getReporter());
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::debug << "EventManager: ";
+        if (string != 0) {
+            sif::debug << string;
+        }
+        else {
+            sif::debug << "0x" << std::hex << message->getReporter() << std::dec;
+        }
+        sif::debug << " reported " << translateEvents(message->getEvent())
+                        << " with event ID " << std::dec << message->getEventId() << std::endl;
+        sif::debug << std::hex << "P1 Hex: 0x" << message->getParameter1() <<
+                " | P1 Dec: " << std::dec << message->getParameter1() <<  std::hex <<
+                " | P2 Hex: 0x" << message->getParameter2() << " | P2 Dec: " <<  std::dec <<
+                message->getParameter2() << std::endl;
+#else
+        if (string != 0) {
+            sif::printDebug("Event Manager: %s reported %s with event ID %d\n",
+                    message->getReporter(), translateEvents(message->getEvent()),
+                    message->getEventId());
+        }
+        else {
+            sif::printDebug("Event Manager: Reporter ID 0x%08x reported %s with event ID %d\n",
+                    string, translateEvents(message->getEvent()), message->getEventId());
+        }
+        sif::printDebug("P1 Hex: 0x%x | P1 Dec: %d | P2 Hex: 0x%x | P2 Dec: %d\n",
+                message->getParameter1(), message->getParameter1(),
+                message->getParameter2(), message->getParameter2());
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 0 */
+    }
+}
+
+#endif /* FSFW_OBJ_EVENT_TRANSLATION == 1 */
