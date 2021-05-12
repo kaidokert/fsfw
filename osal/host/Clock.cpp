@@ -46,7 +46,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
-#if defined(WIN32)
+#if defined(_WIN32)
 	auto now  = std::chrono::system_clock::now();
 	auto secondsChrono = std::chrono::time_point_cast<std::chrono::seconds>(now);
 	auto epoch = now.time_since_epoch();
@@ -54,7 +54,7 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	auto fraction = now - secondsChrono;
 	time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(fraction).count();
 	return HasReturnvaluesIF::RETURN_OK;
-#elif defined(LINUX)
+#elif defined(__unix__)
 	timespec timeUnix;
 	int status = clock_gettime(CLOCK_REALTIME,&timeUnix);
 	if(status!=0){
@@ -85,7 +85,7 @@ ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 
 timeval Clock::getUptime() {
 	timeval timeval;
-#if defined(WIN32)
+#if defined(_WIN32)
 	auto uptime  = std::chrono::milliseconds(GetTickCount64());
 	auto secondsChrono = std::chrono::duration_cast<std::chrono::seconds>(uptime);
 	timeval.tv_sec = secondsChrono.count();
