@@ -1,10 +1,12 @@
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../timemanager/Clock.h"
+#include "../../platform.h"
 
 #include <chrono>
-#if defined(_WIN32)
+
+#if defined(PLATFORM_WIN)
 #include <sysinfoapi.h>
-#elif defined(__unix__)
+#elif defined(PLATFORM_UNIX)
 #include <fstream>
 #endif
 

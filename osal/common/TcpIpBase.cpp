@@ -1,10 +1,9 @@
 #include "TcpIpBase.h"
+#include "../../platform.h"
 
-#ifdef __unix__
-
+#ifdef PLATFORM_UNIX
 #include <errno.h>
 #include <unistd.h>
-
 #endif
 
 TcpIpBase::TcpIpBase() {
@@ -37,17 +36,17 @@ TcpIpBase::~TcpIpBase() {
 }
 
 int TcpIpBase::closeSocket(socket_t socket) {
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
     return closesocket(socket);
-#elif defined(__unix__)
+#elif defined(PLATFORM_UNIX)
     return close(socket);
 #endif
 }
 
 int TcpIpBase::getLastSocketError() {
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
     return WSAGetLastError();
-#elif defined(__unix__)
+#elif defined(PLATFORM_UNIX)
     return errno;
 #endif
 }

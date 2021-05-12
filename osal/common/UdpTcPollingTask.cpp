@@ -1,17 +1,14 @@
 #include "UdpTcPollingTask.h"
 #include "tcpipHelpers.h"
+#include "../../platform.h"
 #include "../../globalfunctions/arrayprinter.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
-#ifdef _WIN32
-
+#ifdef PLATFORM_WIN
 #include <winsock2.h>
-
-#else
-
+#elif defined(PLATFORM_UNIX)
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #endif
 
 //! Debugging preprocessor define.
@@ -155,7 +152,7 @@ ReturnValue_t UdpTcPollingTask::initializeAfterTaskCreation() {
 }
 
 void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
     DWORD timeoutMs = timeoutSeconds * 1000.0;
     int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO,
             reinterpret_cast<const char*>(&timeoutMs), sizeof(DWORD));
@@ -165,7 +162,7 @@ void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
                 "receive timeout failed with " << strerror(errno) << std::endl;
 #endif
     }
-#elif defined(__unix__)
+#elif defined(PLATFORM_UNIX)
     timeval tval;
     tval = timevalOperations::toTimeval(timeoutSeconds);
     int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO,
