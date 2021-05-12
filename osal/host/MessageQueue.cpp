@@ -5,6 +5,8 @@
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexGuard.h"
 
+#include <cstring>
+
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		messageSize(maxMessageSize), messageDepth(messageDepth) {
 	queueLock = MutexFactory::instance()->createMutex();
