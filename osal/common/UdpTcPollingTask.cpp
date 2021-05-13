@@ -15,9 +15,9 @@
 #define FSFW_UDP_RECV_WIRETAPPING_ENABLED    0
 
 UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId,
-        object_id_t tmtcUnixUdpBridge, size_t maxRecvSize,
+        object_id_t tmtcUdpBridge, size_t maxRecvSize,
         double timeoutSeconds): SystemObject(objectId),
-        tmtcBridgeId(tmtcUnixUdpBridge) {
+        tmtcBridgeId(tmtcUdpBridge) {
     if(frameSize > 0) {
         this->frameSize = frameSize;
     }

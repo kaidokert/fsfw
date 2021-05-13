@@ -5,6 +5,7 @@ if(DEFINED WIN32 OR DEFINED UNIX)
         UdpTcPollingTask.cpp
         UdpTmTcBridge.cpp
         TcpTmTcServer.cpp
+        TcpTmTcBridge.cpp
     )
 endif()
 
