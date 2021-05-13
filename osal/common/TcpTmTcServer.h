@@ -43,7 +43,7 @@ class TcpTmTcServer:
 public:
     /* The ports chosen here should not be used by any other process. */
     static const std::string DEFAULT_TCP_SERVER_PORT;
-    static const std::string DEFAULT_TCP_CLIENT_PORT;
+
     static constexpr  size_t ETHERNET_MTU_SIZE = 1500;
 
     /**

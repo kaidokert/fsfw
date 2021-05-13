@@ -99,8 +99,8 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
     using namespace tcpip;
     // If a connection is accepted, the corresponding socket will be assigned to the new socket
     socket_t connSocket = 0;
-    sockaddr clientSockAddr = {};
-    socklen_t connectorSockAddrLen = 0;
+    // sockaddr clientSockAddr = {};
+    // socklen_t connectorSockAddrLen = 0;
     int retval = 0;
 
     // Listen for connection requests permanently for lifetime of program
@@ -111,7 +111,8 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
             continue;
         }
 
-        connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
+        //connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
+        connSocket = accept(listenerTcpSocket, nullptr, nullptr);
 
         if(connSocket == INVALID_SOCKET) {
             handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
