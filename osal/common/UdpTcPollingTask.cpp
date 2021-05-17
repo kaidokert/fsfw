@@ -1,26 +1,23 @@
 #include "UdpTcPollingTask.h"
 #include "tcpipHelpers.h"
+#include "../../platform.h"
 #include "../../globalfunctions/arrayprinter.h"
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
-#ifdef _WIN32
-
+#ifdef PLATFORM_WIN
 #include <winsock2.h>
-
-#else
-
+#elif defined(PLATFORM_UNIX)
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #endif
 
 //! Debugging preprocessor define.
 #define FSFW_UDP_RECV_WIRETAPPING_ENABLED    0
 
 UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId,
-        object_id_t tmtcUnixUdpBridge, size_t maxRecvSize,
+        object_id_t tmtcUdpBridge, size_t maxRecvSize,
         double timeoutSeconds): SystemObject(objectId),
-        tmtcBridgeId(tmtcUnixUdpBridge) {
+        tmtcBridgeId(tmtcUdpBridge) {
     if(frameSize > 0) {
         this->frameSize = frameSize;
     }
@@ -155,7 +152,7 @@ ReturnValue_t UdpTcPollingTask::initializeAfterTaskCreation() {
 }
 
 void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
     DWORD timeoutMs = timeoutSeconds * 1000.0;
     int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO,
             reinterpret_cast<const char*>(&timeoutMs), sizeof(DWORD));
@@ -165,7 +162,7 @@ void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
                 "receive timeout failed with " << strerror(errno) << std::endl;
 #endif
     }
-#elif defined(__unix__)
+#elif defined(PLATFORM_UNIX)
     timeval tval;
     tval = timevalOperations::toTimeval(timeoutSeconds);
     int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO,

@@ -4,7 +4,7 @@
 #include "frameworkObjects.h"
 #include "SystemObjectIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 /**
  * @brief	This class provides an interface to the global object manager.

@@ -150,8 +150,7 @@ protected:
 	void printData(uint8_t * data, size_t dataLen);
 
 	/**
-	 * This fifo can be used to store downlink data
-	 * which can not be sent at the moment.
+	 * This FIFO can be used to store downlink data which can not be sent at the moment.
 	 */
 	DynamicFIFO<store_address_t>* tmFifo = nullptr;
     uint8_t sentPacketsPerCycle = DEFAULT_STORED_DATA_SENT_PER_CYCLE;

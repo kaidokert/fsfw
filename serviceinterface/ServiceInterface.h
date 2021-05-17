@@ -5,9 +5,9 @@
 #include "serviceInterfaceDefintions.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-#include <fsfw/serviceinterface/ServiceInterfaceStream.h>
+#include "ServiceInterfaceStream.h"
 #else
-#include <fsfw/serviceinterface/ServiceInterfacePrinter.h>
+#include "ServiceInterfacePrinter.h"
 #endif
 
 #endif /* FSFW_SERVICEINTERFACE_SERVICEINTERFACE_H_ */

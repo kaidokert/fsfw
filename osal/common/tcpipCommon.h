@@ -29,7 +29,9 @@ enum class ErrorSources {
     RECVFROM_CALL,
     LISTEN_CALL,
     ACCEPT_CALL,
-    SENDTO_CALL
+    SEND_CALL,
+    SENDTO_CALL,
+    SHUTDOWN_CALL
 };
 
 void determineErrorStrings(Protocol protocol, ErrorSources errorSrc, std::string& protStr,

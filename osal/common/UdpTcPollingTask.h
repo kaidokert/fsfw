@@ -1,5 +1,5 @@
-#ifndef FSFW_OSAL_WINDOWS_TCSOCKETPOLLINGTASK_H_
-#define FSFW_OSAL_WINDOWS_TCSOCKETPOLLINGTASK_H_
+#ifndef FSFW_OSAL_COMMON_UDPTCPOLLINGTASK_H_
+#define FSFW_OSAL_COMMON_UDPTCPOLLINGTASK_H_
 
 #include "UdpTmTcBridge.h"
 #include "../../objectmanager/SystemObject.h"
@@ -9,8 +9,11 @@
 #include <vector>
 
 /**
- * @brief   This class should be used with the UdpTmTcBridge to implement a UDP server
+ * @brief   This class can be used with the UdpTmTcBridge to implement a UDP server
  *          for receiving and sending PUS TMTC.
+ * @details
+ * This task is exclusively used to poll telecommands from a given socket and transfer them
+ * to the FSFW software bus. It used the blocking recvfrom call to do this.
  */
 class UdpTcPollingTask:
         public TcpIpBase,
@@ -22,7 +25,7 @@ public:
 	//! 0.5  default milliseconds timeout for now.
 	static constexpr timeval DEFAULT_TIMEOUT = {0, 500};
 
-	UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
+	UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUdpBridge,
 			size_t maxRecvSize = 0, double timeoutSeconds = -1);
 	virtual~ UdpTcPollingTask();
 
@@ -45,8 +48,6 @@ private:
 	object_id_t tmtcBridgeId = objects::NO_OBJECT;
 	UdpTmTcBridge* tmtcBridge = nullptr;
 	MessageQueueId_t targetTcDestination = MessageQueueIF::NO_QUEUE;
-
-	//! See: https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
 	int receptionFlags = 0;
 
 	std::vector<uint8_t> receptionBuffer;
@@ -57,4 +58,4 @@ private:
 	ReturnValue_t handleSuccessfullTcRead(size_t bytesRead);
 };
 
-#endif /* FRAMEWORK_OSAL_LINUX_TCSOCKETPOLLINGTASK_H_ */
+#endif /* FSFW_OSAL_COMMON_UDPTCPOLLINGTASK_H_ */
