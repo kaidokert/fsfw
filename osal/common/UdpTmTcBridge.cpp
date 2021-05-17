@@ -1,22 +1,21 @@
+#include "UdpTmTcBridge.h"
 #include "tcpipHelpers.h"
 
-#include <fsfw/serviceinterface/ServiceInterface.h>
-#include <fsfw/ipc/MutexGuard.h>
-#include <fsfw/osal/common/UdpTmTcBridge.h>
+#include "../../platform.h"
+#include "../../serviceinterface/ServiceInterface.h"
+#include "../../ipc/MutexGuard.h"
 
-#ifdef _WIN32
-
+#ifdef PLATFORM_WIN
 #include <ws2tcpip.h>
-
-#elif defined(__unix__)
-
+#elif defined(PLATFORM_UNIX)
 #include <netdb.h>
 #include <arpa/inet.h>
-
 #endif
 
 //! Debugging preprocessor define.
+#ifndef FSFW_UDP_SEND_WIRETAPPING_ENABLED
 #define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
+#endif
 
 const std::string UdpTmTcBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
 
@@ -38,7 +37,7 @@ ReturnValue_t UdpTmTcBridge::initialize() {
     ReturnValue_t result = TmTcBridge::initialize();
     if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcUdpBridge::initialize: TmTcBridge initialization failed!"
+        sif::error << "UdpTmTcBridge::initialize: TmTcBridge initialization failed!"
                 << std::endl;
 #endif
         return result;
@@ -54,10 +53,10 @@ ReturnValue_t UdpTmTcBridge::initialize() {
         /* Tell the user that we could not find a usable */
         /* Winsock DLL.                                  */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcUdpBridge::TmTcUdpBridge: WSAStartup failed with error: " <<
+        sif::error << "UdpTmTcBridge::UdpTmTcBridge: WSAStartup failed with error: " <<
                 err << std::endl;
 #else
-        sif::printError("TmTcUdpBridge::TmTcUdpBridge: WSAStartup failed with error: %d\n",
+        sif::printError("UdpTmTcBridge::UdpTmTcBridge: WSAStartup failed with error: %d\n",
                 err);
 #endif
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -78,19 +77,12 @@ ReturnValue_t UdpTmTcBridge::initialize() {
     getaddrinfo to assign the address 0.0.0.0 (any address) */
     int retval = getaddrinfo(nullptr, udpServerPort.c_str(), &hints, &addrResult);
     if (retval != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TmTcUdpBridge::TmTcUdpBridge: Retrieving address info failed!" <<
-                std::endl;
-#endif
+        tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::GETADDRINFO_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
     serverSocket = socket(addrResult->ai_family, addrResult->ai_socktype, addrResult->ai_protocol);
     if(serverSocket == INVALID_SOCKET) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TmTcUdpBridge::TmTcUdpBridge: Could not open UDP socket!" <<
-                std::endl;
-#endif
         freeaddrinfo(addrResult);
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SOCKET_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -102,10 +94,6 @@ ReturnValue_t UdpTmTcBridge::initialize() {
 
     retval = bind(serverSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcUdpBridge::TmTcUdpBridge: Could not bind "
-                "local port (" << udpServerPort << ") to server socket!" << std::endl;
-#endif
         freeaddrinfo(addrResult);
         tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::BIND_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
