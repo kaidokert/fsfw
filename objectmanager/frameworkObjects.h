@@ -3,6 +3,7 @@
 
 #include "SystemObjectIF.h"
 
+// The objects will be instantiated in the ID order
 namespace objects {
 enum framework_objects: object_id_t {
     FSFW_OBJECTS_START = 0x53000000,
