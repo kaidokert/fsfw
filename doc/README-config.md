@@ -9,7 +9,7 @@ of the available options will be explained in more detail here.
 # Auto-Translation of Events
 
 The FSFW allows the automatic translation of events, which allows developers to track triggered
-events directly via consoke output. Using this feature requires:
+events directly via console output. Using this feature requires:
 
 1. `FSFW_OBJ_EVENT_TRANSLATION` set to 1 in the configuration file.
 2. Special auto-generated translation files which translate event IDs and object IDs into
