@@ -1,7 +1,7 @@
 #ifndef FSFW_OBJECTMANAGER_FRAMEWORKOBJECTS_H_
 #define FSFW_OBJECTMANAGER_FRAMEWORKOBJECTS_H_
 
-#include <fsfw/objectmanager/SystemObjectIF.h>
+#include "SystemObjectIF.h"
 
 namespace objects {
 enum framework_objects: object_id_t {
@@ -17,7 +17,6 @@ enum framework_objects: object_id_t {
     PUS_SERVICE_20_PARAMETERS = 0x53000020,
     PUS_SERVICE_200_MODE_MGMT = 0x53000200,
     PUS_SERVICE_201_HEALTH = 0x53000201,
-
 
     //Generic IDs for IPC, modes, health, events
     HEALTH_TABLE = 0x53010000,
