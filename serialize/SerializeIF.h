@@ -19,7 +19,10 @@
 class SerializeIF {
 public:
 	enum class Endianness : uint8_t {
-		BIG, LITTLE, MACHINE
+		BIG,
+		LITTLE,
+		MACHINE,
+		NETWORK = BIG // Added for convenience like htons on sockets
 	};
 
 	static const uint8_t INTERFACE_ID = CLASS_ID::SERIALIZE_IF;

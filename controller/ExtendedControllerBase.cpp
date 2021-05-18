@@ -17,14 +17,6 @@ ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-
-
-ReturnValue_t ExtendedControllerBase::initializeLocalDataPool(
-        localpool::DataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
-    /* Needs to be overriden and implemented by child class. */
-    return HasReturnvaluesIF::RETURN_OK;
-}
-
 object_id_t ExtendedControllerBase::getObjectId() const {
     return SystemObject::getObjectId();
 }
@@ -105,14 +97,6 @@ ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
 
 MessageQueueId_t ExtendedControllerBase::getCommandQueue() const {
     return commandQueue->getId();
-}
-
-LocalPoolDataSetBase* ExtendedControllerBase::getDataSetHandle(sid_t sid) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ExtendedControllerBase::getDataSetHandle: No child "
-            << " implementation provided, returning nullptr!" << std::endl;
-#endif
-    return nullptr;
 }
 
 LocalDataPoolManager* ExtendedControllerBase::getHkManagerHandle() {

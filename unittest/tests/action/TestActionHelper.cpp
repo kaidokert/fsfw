@@ -70,7 +70,7 @@ TEST_CASE( "Action Helper" , "[ActionHelper]") {
 	SECTION("Handle finish"){
 		CHECK(not testMqMock.wasMessageSent());
 		ReturnValue_t status = 0x9876;
-		actionHelper.finish(true, testMqMock.getId(), testActionId, status);
+		actionHelper.finish(false, testMqMock.getId(), testActionId, status);
 		CHECK(testMqMock.wasMessageSent());
 		CommandMessage testMessage;
 		REQUIRE(testMqMock.receiveMessage(&testMessage) == static_cast<uint32_t>(HasReturnvaluesIF::RETURN_OK));

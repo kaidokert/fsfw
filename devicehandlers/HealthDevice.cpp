@@ -16,9 +16,9 @@ ReturnValue_t HealthDevice::performOperation(uint8_t opCode) {
 	CommandMessage command;
 	ReturnValue_t result = commandQueue->receiveMessage(&command);
 	if (result == HasReturnvaluesIF::RETURN_OK) {
-		healthHelper.handleHealthCommand(&command);
+		result = healthHelper.handleHealthCommand(&command);
 	}
-	return HasReturnvaluesIF::RETURN_OK;
+	return result;
 }
 
 ReturnValue_t HealthDevice::initialize() {

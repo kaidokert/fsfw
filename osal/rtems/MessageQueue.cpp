@@ -61,7 +61,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
 	} else {
 		//No message was received. Keep lastPartner anyway, I might send something later.
 		//But still, delete packet content.
-		memset(message->getData(), 0, message->getMaximumMessageSize());
+		memset(message->getData(), 0, message->getMaximumDataSize());
 	}
 	return convertReturnCode(status);
 }

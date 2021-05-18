@@ -308,11 +308,11 @@ void DeviceHandlerBase::doStateMachine() {
         uint32_t currentUptime;
         Clock::getUptime(&currentUptime);
         if (currentUptime - timeoutStart >= childTransitionDelay) {
-#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_VERBOSE_LEVEL >= 1 && FSFW_OBJ_EVENT_TRANSLATION == 0
             char printout[60];
             sprintf(printout, "Transition timeout (%lu) occured !",
                     static_cast<unsigned long>(childTransitionDelay));
-            /* Very common configuration error, so print it */
+            /* Common configuration error for development, so print it */
             printWarningOrError(sif::OutputTypes::OUT_WARNING, "doStateMachine",
                     RETURN_FAILED, printout);
 #endif
@@ -454,6 +454,15 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
     } else {
         return RETURN_FAILED;
     }
+}
+
+size_t DeviceHandlerBase::getNextReplyLength(DeviceCommandId_t commandId){
+    DeviceReplyIter iter = deviceReplyMap.find(commandId);
+    if(iter != deviceReplyMap.end()) {
+        return iter->second.replyLen;
+    }else{
+        return 0;
+   }
 }
 
 ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
@@ -646,16 +655,12 @@ void DeviceHandlerBase::doGetWrite() {
 void DeviceHandlerBase::doSendRead() {
     ReturnValue_t result;
 
-    size_t requestLen = 0;
+    size_t replyLen = 0;
     if(cookieInfo.pendingCommand != deviceCommandMap.end()) {
-        DeviceReplyIter iter = deviceReplyMap.find(
-                cookieInfo.pendingCommand->first);
-        if(iter != deviceReplyMap.end()) {
-            requestLen = iter->second.replyLen;
-        }
+        replyLen = getNextReplyLength(cookieInfo.pendingCommand->first);
     }
 
-    result = communicationInterface->requestReceiveMessage(comCookie, requestLen);
+    result = communicationInterface->requestReceiveMessage(comCookie, replyLen);
 
     if (result == RETURN_OK) {
         cookieInfo.state = COOKIE_READ_SENT;
@@ -1491,7 +1496,7 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
         if(errorCode == ObjectManagerIF::CHILD_INIT_FAILED) {
             errorPrint = "Initialization error";
         }
-        if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
+        else if(errorCode == HasReturnvaluesIF::RETURN_FAILED) {
             if(errorType == sif::OutputTypes::OUT_WARNING) {
                 errorPrint = "Generic Warning";
             }
@@ -1503,6 +1508,9 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
             errorPrint = "Unknown error";
         }
     }
+    if(functionName == nullptr) {
+        functionName = "unknown function";
+    }
 
     if(errorType == sif::OutputTypes::OUT_WARNING) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -1511,18 +1519,18 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType,
                 std::dec << std::setfill(' ') << std::endl;
 #else
         sif::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
-                this->getObjectId(), errorPrint);
+                functionName, this->getObjectId(), errorPrint);
 #endif
     }
     else if(errorType == sif::OutputTypes::OUT_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "DeviceHandlerBase::" << functionName << ": Object ID "
+        sif::error << "DeviceHandlerBase::" << functionName << ": Object ID 0x"
                 << std::hex << std::setw(8) << std::setfill('0')
                 << this->getObjectId() << " | " << errorPrint << std::dec
                 << std::setfill(' ') << std::endl;
 #else
         sif::printError("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n",
-                this->getObjectId(), errorPrint);
+                functionName, this->getObjectId(), errorPrint);
 #endif
     }
 

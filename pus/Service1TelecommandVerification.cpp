@@ -15,7 +15,9 @@ Service1TelecommandVerification::Service1TelecommandVerification(
 	tmQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
-Service1TelecommandVerification::~Service1TelecommandVerification() {}
+Service1TelecommandVerification::~Service1TelecommandVerification() {
+    QueueFactory::instance()->deleteMessageQueue(tmQueue);
+}
 
 MessageQueueId_t Service1TelecommandVerification::getVerificationQueue(){
 	return tmQueue->getId();
@@ -66,8 +68,13 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
 			message->getTcSequenceControl(), message->getStep(),
 			message->getErrorCode(), message->getParameter1(),
 			message->getParameter2());
-	TmPacketStored tmPacket(apid, serviceId, message->getReportId(),
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(),
 	        packetSubCounter++, &report);
+#else
+    TmPacketStoredPusC tmPacket(apid, serviceId, message->getReportId(),
+            packetSubCounter++, &report);
+#endif
 	ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(),
 			tmQueue->getId());
 	return result;
@@ -77,8 +84,13 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
         PusVerificationMessage *message) {
 	SuccessReport report(message->getReportId(),message->getTcPacketId(),
 			message->getTcSequenceControl(),message->getStep());
-	TmPacketStored tmPacket(apid, serviceId, message->getReportId(),
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(),
 	        packetSubCounter++, &report);
+#else
+    TmPacketStoredPusC tmPacket(apid, serviceId, message->getReportId(),
+            packetSubCounter++, &report);
+#endif
 	ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(),
 			tmQueue->getId());
 	return result;

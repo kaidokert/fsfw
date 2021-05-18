@@ -29,16 +29,24 @@ public:
 		return tempMessageSent;
 	}
 
+	/**
+	 * Pop a message, clearing it in the process.
+	 * @return
+	 */
+	ReturnValue_t popMessage() {
+	    CommandMessage message;
+	    message.clear();
+	    return receiveMessage(&message);
+	}
+
 	virtual ReturnValue_t reply( MessageQueueMessageIF* message ) {
-		//messageSent = true;
-		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
 		return sendMessage(myQueueId, message);
-		return HasReturnvaluesIF::RETURN_OK;
 	};
 	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
 			MessageQueueId_t *receivedFrom) {
 		return receiveMessage(message);
 	}
+
 	virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) {
 		if(messagesSentQueue.empty()) {
 			return MessageQueueIF::EMPTY;
@@ -61,21 +69,13 @@ public:
 	virtual ReturnValue_t sendMessageFrom( MessageQueueId_t sendTo,
 			MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
 			bool ignoreFault = false ) {
-		//messageSent = true;
-		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
-		//return HasReturnvaluesIF::RETURN_OK;
 		return sendMessage(sendTo, message);
 	}
 	virtual ReturnValue_t sendToDefaultFrom( MessageQueueMessageIF* message,
 			MessageQueueId_t sentFrom, bool ignoreFault = false ) {
-		//messageSent = true;
-		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
-		//return HasReturnvaluesIF::RETURN_OK;
 		return sendMessage(myQueueId, message);
 	}
 	virtual ReturnValue_t sendToDefault( MessageQueueMessageIF* message ) {
-		//messageSent = true;
-		//lastMessage = *(dynamic_cast<MessageQueueMessage*>(message));
 		return sendMessage(myQueueId, message);
 	}
 	virtual ReturnValue_t sendMessage( MessageQueueId_t sendTo,
@@ -114,7 +114,6 @@ public:
 
 private:
 	std::queue<MessageQueueMessage> messagesSentQueue;
-	//MessageQueueMessage lastMessage;
 };
 
 

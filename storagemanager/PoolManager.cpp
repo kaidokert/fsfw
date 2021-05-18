@@ -15,7 +15,7 @@ PoolManager::~PoolManager(void) {
 
 ReturnValue_t PoolManager::reserveSpace(const size_t size,
         store_address_t* address, bool ignoreFault) {
-    MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
+    MutexGuard mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
             mutexTimeoutMs);
     ReturnValue_t status = LocalPool::reserveSpace(size,
             address,ignoreFault);
@@ -32,7 +32,7 @@ ReturnValue_t PoolManager::deleteData(
            ". id is "<< storeId.packetIndex << std::endl;
 #endif
 #endif
-    MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
+    MutexGuard mutexHelper(mutex, MutexIF::TimeoutType::WAITING,
             mutexTimeoutMs);
     return LocalPool::deleteData(storeId);
 }
@@ -40,7 +40,7 @@ ReturnValue_t PoolManager::deleteData(
 
 ReturnValue_t PoolManager::deleteData(uint8_t* buffer,
         size_t size, store_address_t* storeId) {
-    MutexHelper mutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
+    MutexGuard mutexHelper(mutex, MutexIF::TimeoutType::WAITING, 20);
     ReturnValue_t status = LocalPool::deleteData(buffer,
             size, storeId);
     return status;

@@ -22,12 +22,12 @@ public:
 	static const uint8_t INTERFACE_ID = CLASS_ID::MESSAGE_QUEUE_IF;
 	//! No new messages on the queue
 	static const ReturnValue_t EMPTY = MAKE_RETURN_CODE(1);
-	//! No space left for more messages
+	//! [EXPORT] : [COMMENT] No space left for more messages
 	static const ReturnValue_t FULL = MAKE_RETURN_CODE(2);
-	//! Returned if a reply method was called without partner
+	//! [EXPORT] : [COMMENT] Returned if a reply method was called without partner
 	static const ReturnValue_t NO_REPLY_PARTNER = MAKE_RETURN_CODE(3);
-	//! Returned if the target destination is invalid.
-	static constexpr ReturnValue_t DESTINVATION_INVALID = MAKE_RETURN_CODE(4);
+	//! [EXPORT] : [COMMENT] Returned if the target destination is invalid.
+	static constexpr ReturnValue_t DESTINATION_INVALID = MAKE_RETURN_CODE(4);
 
 	virtual ~MessageQueueIF() {}
 	/**

@@ -1,10 +1,12 @@
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../timemanager/Clock.h"
+#include "../../platform.h"
 
 #include <chrono>
-#if defined(WIN32)
+
+#if defined(PLATFORM_WIN)
 #include <sysinfoapi.h>
-#elif defined(LINUX)
+#elif defined(PLATFORM_UNIX)
 #include <fstream>
 #endif
 
@@ -46,7 +48,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
-#if defined(WIN32)
+#if defined(PLATFORM_WIN)
 	auto now  = std::chrono::system_clock::now();
 	auto secondsChrono = std::chrono::time_point_cast<std::chrono::seconds>(now);
 	auto epoch = now.time_since_epoch();
@@ -54,7 +56,7 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	auto fraction = now - secondsChrono;
 	time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(fraction).count();
 	return HasReturnvaluesIF::RETURN_OK;
-#elif defined(LINUX)
+#elif defined(PLATFORM_UNIX)
 	timespec timeUnix;
 	int status = clock_gettime(CLOCK_REALTIME,&timeUnix);
 	if(status!=0){
@@ -85,14 +87,14 @@ ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 
 timeval Clock::getUptime() {
 	timeval timeval;
-#if defined(WIN32)
+#if defined(PLATFORM_WIN)
 	auto uptime  = std::chrono::milliseconds(GetTickCount64());
 	auto secondsChrono = std::chrono::duration_cast<std::chrono::seconds>(uptime);
 	timeval.tv_sec = secondsChrono.count();
 	auto fraction = uptime - secondsChrono;
 	timeval.tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(
 	            fraction).count();
-#elif defined(LINUX)
+#elif defined(PLATFORM_UNIX)
 	double uptimeSeconds;
 	if (std::ifstream("/proc/uptime", std::ios::in) >> uptimeSeconds)
 	{
@@ -118,7 +120,6 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 	*uptimeMs = uptime.tv_sec * 1000 + uptime.tv_usec / 1000;
 	return HasReturnvaluesIF::RETURN_OK;
 }
-
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 	/* Do some magic with chrono (C++20!) */

@@ -36,6 +36,8 @@ public:
 private:
 	//! External instantiation is forbidden.
 	QueueMapManager();
+	~QueueMapManager();
+
 	uint32_t queueCounter = 0;
 	MutexIF* mapLock;
 	QueueMap queueMap;

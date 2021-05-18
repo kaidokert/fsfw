@@ -2,12 +2,16 @@
 
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexFactory.h"
-#include "../../ipc/MutexHelper.h"
+#include "../../ipc/MutexGuard.h"
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 
 QueueMapManager::QueueMapManager() {
     mapLock = MutexFactory::instance()->createMutex();
+}
+
+QueueMapManager::~QueueMapManager() {
+    MutexFactory::instance()->deleteMutex(mapLock);
 }
 
 QueueMapManager* QueueMapManager::instance() {
@@ -43,7 +47,7 @@ ReturnValue_t QueueMapManager::addMessageQueue(
 
 MessageQueueIF* QueueMapManager::getMessageQueue(
 		MessageQueueId_t messageQueueId) const {
-	MutexHelper(mapLock, MutexIF::TimeoutType::WAITING, 50);
+	MutexGuard(mapLock, MutexIF::TimeoutType::WAITING, 50);
 	auto queueIter = queueMap.find(messageQueueId);
 	if(queueIter != queueMap.end()) {
 		return queueIter->second;

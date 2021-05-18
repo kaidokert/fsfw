@@ -212,20 +212,20 @@ protected:
 	//static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
 private:
-	std::queue<MessageQueueMessage> messageQueue;
+	std::queue<std::vector<uint8_t>> messageQueue;
 	/**
 	 * @brief	The class stores the queue id it got assigned.
 	 * 			If initialization fails, the queue id is set to zero.
 	 */
-	MessageQueueId_t mqId = 0;
+	MessageQueueId_t mqId = MessageQueueIF::NO_QUEUE;
 	size_t messageSize = 0;
 	size_t messageDepth = 0;
 
 	MutexIF* queueLock;
 
 	bool defaultDestinationSet = false;
-	MessageQueueId_t defaultDestination = 0;
-	MessageQueueId_t lastPartner = 0;
+	MessageQueueId_t defaultDestination = MessageQueueIF::NO_QUEUE;
+	MessageQueueId_t lastPartner = MessageQueueIF::NO_QUEUE;
 };
 
 #endif /* FRAMEWORK_OSAL_HOST_MESSAGEQUEUE_H_ */
