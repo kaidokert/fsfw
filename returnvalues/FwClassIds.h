@@ -7,7 +7,8 @@
 // It is recommended to add it as well for mission returnvalues
 namespace CLASS_ID {
 enum: uint8_t {
-    OPERATING_SYSTEM_ABSTRACTION = 1,  //OS
+    FW_CLASS_ID_START = 0, // [EXPORT] : [START]
+    OPERATING_SYSTEM_ABSTRACTION,  //OS
     OBJECT_MANAGER_IF, //OM
     DEVICE_HANDLER_BASE, //DHB
     RMAP_CHANNEL, //RMP
@@ -71,7 +72,7 @@ enum: uint8_t {
     PUS_SERVICE_3, //PUS3
     PUS_SERVICE_9, //PUS9
     FILE_SYSTEM, //FILS
-    FW_CLASS_ID_COUNT //is actually count + 1 !
+    FW_CLASS_ID_COUNT // [EXPORT] : [END]
 
 };
 }
