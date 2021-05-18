@@ -1,11 +1,12 @@
-## Configuring the FSFW
+Configuring the FSFW
+======
 
 The FSFW can be configured via the `fsfwconfig` folder. A template folder has
 been provided to have a starting point for this. The folder should be added
 to the include path. The primary configuration file is the `FSFWConfig.h` folder. Some
 of the available options will be explained in more detail here.
 
-## Auto-Translation of Events
+# Auto-Translation of Events
 
 The FSFW allows the automatic translation of events, which allows developers to track triggered
 events directly via consoke output. Using this feature requires:
@@ -23,7 +24,7 @@ An example implementations of these translation file generators can be found as 
 of the [SOURCE project here](https://git.ksat-stuttgart.de/source/sourceobsw/-/tree/development/generators)
 or the [FSFW example](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example_public/src/branch/master/generators)
 
-### Configuring the Event Manager
+## Configuring the Event Manager
 
 The number of allowed subscriptions can be modified with the following
 parameters:
