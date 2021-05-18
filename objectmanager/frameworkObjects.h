@@ -16,6 +16,8 @@ enum framework_objects: object_id_t {
     PUS_SERVICE_17_TEST = 0x53000017,
     PUS_SERVICE_20_PARAMETERS = 0x53000020,
     PUS_SERVICE_200_MODE_MGMT = 0x53000200,
+    PUS_SERVICE_201_HEALTH = 0x53000201,
+
 
     //Generic IDs for IPC, modes, health, events
     HEALTH_TABLE = 0x53010000,
