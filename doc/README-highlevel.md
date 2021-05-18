@@ -71,12 +71,13 @@ The services can be seen as a conversion from a TC to a message based communicat
 ## TMTC Communication
 
 The FSFW provides some components to facilitate TMTC handling via the PUS commands.
-For example, a UDP or TCP PUS server socket can be opended on a specific port using the
+For example, a UDP or TCP PUS server socket can be opened on a specific port using the
 files located in `osal/common`. The FSFW example uses this functionality to allow sending telecommands
 and receiving telemetry using the [TMTC commander application](https://github.com/spacefisch/tmtccmd).
 Simple commands like the PUS Service 17 ping service can be tested by simply running the
 `tmtc_client_cli.py` or `tmtc_client_gui.py` utility in 
-the [example tmtc folder](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example_public/src/branch/master/tmtc). 
+the [example tmtc folder](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example_public/src/branch/master/tmtc)
+while the `fsfw_example` application is running.
 
 More generally, any class responsible for handling incoming telecommands and sending telemetry
 can implement the generic `TmTcBridge` class located in `tmtcservices`.
