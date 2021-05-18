@@ -80,7 +80,9 @@ the [example tmtc folder](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example_pu
 while the `fsfw_example` application is running.
 
 More generally, any class responsible for handling incoming telecommands and sending telemetry
-can implement the generic `TmTcBridge` class located in `tmtcservices`.
+can implement the generic `TmTcBridge` class located in `tmtcservices`. Many applications
+also use a dedicated polling task for reading telecommands which passes telecommands
+to the `TmTcBridge` implementation.
 
 ## CCSDS Frames, CCSDS Space Packets and PUS
 
