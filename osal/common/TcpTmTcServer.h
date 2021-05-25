@@ -2,10 +2,11 @@
 #define FSFW_OSAL_WINDOWS_TCWINTCPSERVER_H_
 
 #include "TcpIpBase.h"
+#include "../../platform.h"
 #include "../../objectmanager/SystemObject.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
-#ifdef __unix__
+#ifdef PLATFORM_UNIX
 #include <sys/socket.h>
 #endif
 

@@ -1,15 +1,13 @@
 #include "TcpTmTcServer.h"
 #include "tcpipHelpers.h"
+#include "../../platform.h"
 #include "../../serviceinterface/ServiceInterface.h"
 
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-#elif defined(__unix__)
-
+#elif defined(PLATFORM_UNIX)
 #include <netdb.h>
-
 #endif
 
 const std::string TcpTmTcServer::DEFAULT_TCP_SERVER_PORT =  "7301";

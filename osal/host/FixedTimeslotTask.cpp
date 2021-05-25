@@ -1,4 +1,5 @@
 #include "taskHelpers.h"
+#include "../../platform.h"
 #include "../../osal/host/FixedTimeslotTask.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../osal/host/Mutex.h"
@@ -9,10 +10,10 @@
 #include <thread>
 #include <chrono>
 
-#if defined(WIN32)
+#if defined(PLATFORM_WIN)
 #include <windows.h>
 #include "../windows/winTaskHelpers.h"
-#elif defined(LINUX)
+#elif defined(PLATFORM_UNIX)
 #include <pthread.h>
 #endif
 

@@ -1,18 +1,15 @@
+#include "UdpTmTcBridge.h"
 #include "tcpipHelpers.h"
 
-#include <fsfw/serviceinterface/ServiceInterface.h>
-#include <fsfw/ipc/MutexGuard.h>
-#include <fsfw/osal/common/UdpTmTcBridge.h>
+#include "../../platform.h"
+#include "../../serviceinterface/ServiceInterface.h"
+#include "../../ipc/MutexGuard.h"
 
-#ifdef _WIN32
-
+#ifdef PLATFORM_WIN
 #include <ws2tcpip.h>
-
-#elif defined(__unix__)
-
+#elif defined(PLATFORM_UNIX)
 #include <netdb.h>
 #include <arpa/inet.h>
-
 #endif
 
 //! Debugging preprocessor define.

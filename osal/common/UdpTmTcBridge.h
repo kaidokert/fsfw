@@ -2,16 +2,13 @@
 #define FSFW_OSAL_WINDOWS_TMTCWINUDPBRIDGE_H_
 
 #include "TcpIpBase.h"
+#include "../../platform.h"
 #include "../../tmtcservices/TmTcBridge.h"
 
-#ifdef _WIN32
-
+#ifdef PLATFORM_WIN
 #include <ws2tcpip.h>
-
-#elif defined(__unix__)
-
+#elif defined(PLATFORM_UNIX)
 #include <sys/socket.h>
-
 #endif
 
 #include <string>
