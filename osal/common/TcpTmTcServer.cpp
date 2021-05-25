@@ -1,7 +1,15 @@
 #include "TcpTmTcServer.h"
+#include "TcpTmTcBridge.h"
 #include "tcpipHelpers.h"
+
 #include "../../platform.h"
+#include "../../container/SharedRingBuffer.h"
+#include "../../ipc/MessageQueueSenderIF.h"
+#include "../../ipc/MutexGuard.h"
+#include "../../objectmanager/ObjectManagerIF.h"
+
 #include "../../serviceinterface/ServiceInterface.h"
+#include "../../tmtcservices/TmTcMessage.h"
 
 #ifdef PLATFORM_WIN
 #include <winsock2.h>
@@ -10,12 +18,16 @@
 #include <netdb.h>
 #endif
 
-const std::string TcpTmTcServer::DEFAULT_TCP_SERVER_PORT =  "7301";
-const std::string TcpTmTcServer::DEFAULT_TCP_CLIENT_PORT =  "7302";
+#ifndef FSFW_TCP_RECV_WIRETAPPING_ENABLED
+#define FSFW_TCP_RECV_WIRETAPPING_ENABLED 0
+#endif
 
-TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcUnixUdpBridge,
-        std::string customTcpServerPort):
-        SystemObject(objectId), tcpPort(customTcpServerPort) {
+const std::string TcpTmTcServer::DEFAULT_TCP_SERVER_PORT =  "7303";
+
+TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
+        size_t receptionBufferSize, std::string customTcpServerPort):
+        SystemObject(objectId), tmtcBridgeId(tmtcTcpBridge),
+        tcpPort(customTcpServerPort), receptionBuffer(receptionBufferSize) {
     if(tcpPort == "") {
         tcpPort = DEFAULT_TCP_SERVER_PORT;
     }
@@ -29,6 +41,18 @@ ReturnValue_t TcpTmTcServer::initialize() {
         return result;
     }
 
+    tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
+    if (tcStore == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::error << "TcpTmTcServer::initialize: TC store uninitialized!" << std::endl;
+#else
+        sif::printError("TcpTmTcServer::initialize: TC store uninitialized!\n");
+#endif
+        return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+
+    tmtcBridge = objectManager->get<TcpTmTcBridge>(tmtcBridgeId);
+
     int retval = 0;
     struct addrinfo *addrResult = nullptr;
     struct addrinfo hints = {};
@@ -38,34 +62,25 @@ ReturnValue_t TcpTmTcServer::initialize() {
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
+    // Listen to all addresses (0.0.0.0) by using AI_PASSIVE in the hint flags
     retval = getaddrinfo(nullptr, tcpPort.c_str(), &hints, &addrResult);
     if (retval != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TcWinTcpServer::TcpTmTcServer: Retrieving address info failed!" <<
-                std::endl;
-#endif
         handleError(Protocol::TCP, ErrorSources::GETADDRINFO_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
-    /* Open TCP (stream) socket */
+    // Open TCP (stream) socket
     listenerTcpSocket = socket(addrResult->ai_family, addrResult->ai_socktype,
             addrResult->ai_protocol);
     if(listenerTcpSocket == INVALID_SOCKET) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TcWinTcpServer::TcWinTcpServer: Socket creation failed!" << std::endl;
-#endif
         freeaddrinfo(addrResult);
         handleError(Protocol::TCP, ErrorSources::SOCKET_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
+    // Bind to the address found by getaddrinfo
     retval = bind(listenerTcpSocket, addrResult->ai_addr, static_cast<int>(addrResult->ai_addrlen));
     if(retval == SOCKET_ERROR) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "TcWinTcpServer::TcpTmTcServer: Binding socket failed!" <<
-                std::endl;
-#endif
         freeaddrinfo(addrResult);
         handleError(Protocol::TCP, ErrorSources::BIND_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -82,49 +97,130 @@ TcpTmTcServer::~TcpTmTcServer() {
 
 ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
     using namespace tcpip;
-    /* If a connection is accepted, the corresponding socket will be assigned to the new socket */
-    socket_t clientSocket = 0;
-    sockaddr clientSockAddr = {};
-    socklen_t connectorSockAddrLen = 0;
+    // If a connection is accepted, the corresponding socket will be assigned to the new socket
+    socket_t connSocket = 0;
+    // sockaddr clientSockAddr = {};
+    // socklen_t connectorSockAddrLen = 0;
     int retval = 0;
 
-    /* Listen for connection requests permanently for lifetime of program */
+    // Listen for connection requests permanently for lifetime of program
     while(true) {
-        retval = listen(listenerTcpSocket, currentBacklog);
+        retval = listen(listenerTcpSocket, tcpBacklog);
         if(retval == SOCKET_ERROR) {
             handleError(Protocol::TCP, ErrorSources::LISTEN_CALL, 500);
             continue;
         }
 
-        clientSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
+        //connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
+        connSocket = accept(listenerTcpSocket, nullptr, nullptr);
 
-        if(clientSocket == INVALID_SOCKET) {
+        if(connSocket == INVALID_SOCKET) {
             handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
-            closeSocket(clientSocket);
+            closeSocket(connSocket);
             continue;
         };
 
-        retval = recv(clientSocket, reinterpret_cast<char*>(receptionBuffer.data()),
-                receptionBuffer.size(), 0);
-        if(retval > 0) {
-#if FSFW_TCP_RCV_WIRETAPPING_ENABLED == 1
-            sif::info << "TcpTmTcServer::performOperation: Received " << retval << " bytes."
-                    std::endl;
-#endif
-            handleError(Protocol::TCP, ErrorSources::RECV_CALL, 500);
-        }
-        else if(retval == 0) {
+        handleServerOperation(connSocket);
 
+        // Done, shut down connection and go back to listening for client requests
+        retval = shutdown(connSocket, SHUT_SEND);
+        if(retval != 0) {
+            handleError(Protocol::TCP, ErrorSources::SHUTDOWN_CALL);
         }
-        else {
-
-        }
-
-        /* Done, shut down connection */
-        retval = shutdown(clientSocket, SHUT_SEND);
-        closeSocket(clientSocket);
+        closeSocket(connSocket);
     }
     return HasReturnvaluesIF::RETURN_OK;
 }
 
+ReturnValue_t TcpTmTcServer::initializeAfterTaskCreation() {
+    if(tmtcBridge == nullptr) {
+        return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+    /* Initialize the destination after task creation. This ensures
+    that the destination has already been set in the TMTC bridge. */
+    targetTcDestination = tmtcBridge->getRequestQueue();
+    tcStore = tmtcBridge->tcStore;
+    tmStore = tmtcBridge->tmStore;
+    return HasReturnvaluesIF::RETURN_OK;
+}
 
+void TcpTmTcServer::handleServerOperation(socket_t connSocket) {
+    int retval = 0;
+    do {
+        // Read all telecommands sent by the client
+        retval = recv(connSocket,
+                reinterpret_cast<char*>(receptionBuffer.data()),
+                receptionBuffer.capacity(),
+                tcpFlags);
+        if (retval > 0) {
+            handleTcReception(retval);
+        }
+        else if(retval == 0) {
+            // Client has finished sending telecommands, send telemetry now
+            handleTmSending(connSocket);
+        }
+        else {
+            // Should not happen
+            tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL);
+        }
+    } while(retval > 0);
+}
+
+ReturnValue_t TcpTmTcServer::handleTcReception(size_t bytesRecvd) {
+#if FSFW_TCP_RECV_WIRETAPPING_ENABLED == 1
+    arrayprinter::print(receptionBuffer.data(), bytesRead);
+#endif
+    store_address_t storeId;
+    ReturnValue_t result = tcStore->addData(&storeId, receptionBuffer.data(), bytesRecvd);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning<< "TcpTmTcServer::handleServerOperation: Data storage failed." << std::endl;
+        sif::warning << "Packet size: " << bytesRecvd << std::endl;
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    }
+
+    TmTcMessage message(storeId);
+
+    result  = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "UdpTcPollingTask::handleSuccessfullTcRead: "
+                " Sending message to queue failed" << std::endl;
+#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+        tcStore->deleteData(storeId);
+    }
+    return result;
+}
+
+void TcpTmTcServer::setTcpBacklog(uint8_t tcpBacklog) {
+    this->tcpBacklog = tcpBacklog;
+}
+
+ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket) {
+    // Access to the FIFO is mutex protected because it is filled by the bridge
+    MutexGuard(tmtcBridge->mutex, tmtcBridge->timeoutType, tmtcBridge->mutexTimeoutMs);
+    store_address_t storeId;
+    while((not tmtcBridge->tmFifo->empty()) and
+            (tmtcBridge->packetSentCounter < tmtcBridge->sentPacketsPerCycle)) {
+        tmtcBridge->tmFifo->retrieve(&storeId);
+
+        // Using the store accessor will take care of deleting TM from the store automatically
+        ConstStorageAccessor storeAccessor(storeId);
+        ReturnValue_t result = tmStore->getData(storeId, storeAccessor);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+            return result;
+        }
+        int retval = send(connSocket,
+                reinterpret_cast<const char*>(storeAccessor.data()),
+                storeAccessor.size(),
+                tcpTmFlags);
+        if(retval != static_cast<int>(storeAccessor.size())) {
+            tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::SEND_CALL);
+        }
+    }
+    return HasReturnvaluesIF::RETURN_OK;
+}

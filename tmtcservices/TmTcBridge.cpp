@@ -183,8 +183,11 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 
 	if(tmFifo->full()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	    sif::debug << "TmTcBridge::storeDownlinkData: TM downlink max. number "
-	                    << "of stored packet IDs reached! " << std::endl;
+	    sif::warning << "TmTcBridge::storeDownlinkData: TM downlink max. number "
+	            "of stored packet IDs reached!" << std::endl;
+#else
+	    sif::printWarning("TmTcBridge::storeDownlinkData: TM downlink max. number "
+                "of stored packet IDs reached!\n");
 #endif
 	    if(overwriteOld) {
 	        tmFifo->retrieve(&storeId);

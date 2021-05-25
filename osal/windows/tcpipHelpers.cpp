@@ -50,8 +50,8 @@ void tcpip::handleError(Protocol protocol, ErrorSources errorSrc, dur_millis_t s
     sif::warning << "tcpip::handleError: " << protocolString << " | " << errorSrcString <<
             " | " << infoString << std::endl;
 #else
-    sif::printWarning("tcpip::handleError: %s | %s | %s\n", protocolString,
-            errorSrcString, infoString);
+    sif::printWarning("tcpip::handleError: %s | %s | %s\n", protocolString.c_str(),
+            errorSrcString.c_str(), infoString.c_str());
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
