@@ -1,33 +1,16 @@
 #include "QueueMapManager.h"
-
-#include "../../serviceinterface/ServiceInterface.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexGuard.h"
-
-QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 
 QueueMapManager::QueueMapManager() {
     mapLock = MutexFactory::instance()->createMutex();
 }
 
-QueueMapManager::~QueueMapManager() {
-    MutexFactory::instance()->deleteMutex(mapLock);
-}
-
-QueueMapManager* QueueMapManager::instance() {
-    if (mqManagerInstance == nullptr){
-        mqManagerInstance = new QueueMapManager();
-    }
-    return QueueMapManager::mqManagerInstance;
-}
-
-ReturnValue_t QueueMapManager::addMessageQueue(
-        MessageQueueIF* queueToInsert, MessageQueueId_t* id) {
+ReturnValue_t QueueMapManager::addMessageQueue(QueueHandle_t queue, MessageQueueId_t* id) {
     MutexGuard lock(mapLock);
     uint32_t currentId = queueCounter++;
-    auto returnPair = queueMap.emplace(currentId, queueToInsert);
+    auto returnPair = queueMap.emplace(currentId, queue);
     if(not returnPair.second) {
-        /* This should never happen for the atomic variable. */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "QueueMapManager::addMessageQueue This ID is already "
                 "inside the map!" << std::endl;
@@ -41,10 +24,10 @@ ReturnValue_t QueueMapManager::addMessageQueue(
         *id = currentId;
     }
     return HasReturnvaluesIF::RETURN_OK;
+
 }
 
-MessageQueueIF* QueueMapManager::getMessageQueue(
-        MessageQueueId_t messageQueueId) const {
+QueueHandle_t QueueMapManager::getMessageQueue(MessageQueueId_t messageQueueId) const {
     auto queueIter = queueMap.find(messageQueueId);
     if(queueIter != queueMap.end()) {
         return queueIter->second;
@@ -61,3 +44,6 @@ MessageQueueIF* QueueMapManager::getMessageQueue(
     return nullptr;
 }
 
+QueueMapManager::~QueueMapManager() {
+    MutexFactory::instance()->deleteMutex(mapLock);
+}
