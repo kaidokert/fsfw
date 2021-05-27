@@ -11,11 +11,6 @@
 #include <freertos/queue.h>
 #include <fsfw/ipc/MessageQueueMessage.h>
 
-// TODO: this class assumes that MessageQueueId_t is the same size as void*
-// (the FreeRTOS handle type), compiler will catch this but it might be nice
-// to have something checking or even an always working solution
-// https://scaryreasoner.wordpress.com/2009/02/28/checking-sizeof-at-compile-time/
-
 /**
  * @brief		This class manages sending and receiving of
  * 				message queue messages.
@@ -112,6 +107,8 @@ public:
 
 	bool isDefaultDestinationSet() const override;
 
+	QueueHandle_t getNativeQueueHandle();
+
 protected:
 	/**
 	 * @brief 	Implementation to be called from any send Call within
@@ -141,6 +138,8 @@ protected:
 private:
 	bool defaultDestinationSet = false;
 	QueueHandle_t handle;
+	MessageQueueId_t queueId = MessageQueueIF::NO_QUEUE;
+
 	MessageQueueId_t defaultDestination = MessageQueueIF::NO_QUEUE;
 	MessageQueueId_t lastPartner = MessageQueueIF::NO_QUEUE;
 	const size_t maxMessageSize;

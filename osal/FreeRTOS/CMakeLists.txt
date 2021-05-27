@@ -15,6 +15,7 @@ target_sources(${LIB_FSFW_NAME}
 		TaskFactory.cpp
 		Timekeeper.cpp
 		TaskManagement.cpp
+		QueueMapManager.cpp
 )
 
 # FreeRTOS is required to link the FSFW now. It is recommended to compile 
