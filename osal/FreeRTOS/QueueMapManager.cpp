@@ -2,8 +2,17 @@
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexGuard.h"
 
+QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
+
 QueueMapManager::QueueMapManager() {
     mapLock = MutexFactory::instance()->createMutex();
+}
+
+QueueMapManager* QueueMapManager::instance() {
+    if (mqManagerInstance == nullptr){
+        mqManagerInstance = new QueueMapManager();
+    }
+    return QueueMapManager::mqManagerInstance;
 }
 
 ReturnValue_t QueueMapManager::addMessageQueue(QueueHandle_t queue, MessageQueueId_t* id) {
