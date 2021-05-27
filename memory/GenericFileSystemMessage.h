@@ -52,6 +52,17 @@ public:
     static const Command_t COMPLETION_SUCCESS = MAKE_COMMAND_ID(128);
     static const Command_t COMPLETION_FAILED = MAKE_COMMAND_ID(129);
 
+    // These command IDs will remain until CFDP has been introduced and consolidated.
+    /** Append operation commands */
+    static const Command_t CMD_APPEND_TO_FILE = MAKE_COMMAND_ID(130);
+    static const Command_t CMD_FINISH_APPEND_TO_FILE = MAKE_COMMAND_ID(131);
+    static const Command_t REPLY_FINISH_APPEND = MAKE_COMMAND_ID(132);
+
+    static const Command_t CMD_READ_FROM_FILE = MAKE_COMMAND_ID(140);
+    static const Command_t REPLY_READ_FROM_FILE = MAKE_COMMAND_ID(141);
+    static const Command_t CMD_STOP_READ = MAKE_COMMAND_ID(142);
+    static const Command_t REPLY_READ_FINISHED_STOP = MAKE_COMMAND_ID(143);
+
     static void setLockFileCommand(CommandMessage* message, store_address_t storeId);
     static void setUnlockFileCommand(CommandMessage* message, store_address_t storeId);
 
@@ -73,8 +84,30 @@ public:
     static void setSuccessReply(CommandMessage* message);
     static void setFailureReply(CommandMessage* message,
             ReturnValue_t errorCode, uint32_t errorParam = 0);
+    static void setCopyCommand(CommandMessage* message, store_address_t storeId);
+
+    static void setWriteCommand(CommandMessage* message,
+            store_address_t storeId);
+    static void setFinishStopWriteCommand(CommandMessage* message,
+            store_address_t storeId);
+    static void setFinishStopWriteReply(CommandMessage* message,
+            store_address_t storeId);
+    static void setFinishAppendReply(CommandMessage* message,
+            store_address_t storeId);
+
+    static void setReadCommand(CommandMessage* message,
+            store_address_t storeId);
+    static void setReadFinishedReply(CommandMessage* message,
+            store_address_t storeId);
+    static void setReadReply(CommandMessage* message, bool readFinished,
+            store_address_t storeId);
+    static bool getReadReply(const CommandMessage* message,
+            store_address_t* storeId);
+
+    static store_address_t getStoreId(const CommandMessage* message);
+    static ReturnValue_t getFailureReply(const CommandMessage* message,
+            uint32_t* errorParam = nullptr);
+
 };
-
-
 
 #endif /* MISSION_MEMORY_GENERICFILESYSTEMMESSAGE_H_ */
