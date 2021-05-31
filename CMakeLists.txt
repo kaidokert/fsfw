@@ -133,7 +133,7 @@ endif()
 
 foreach(INCLUDE_PATH ${FSFW_ADDITIONAL_INC_PATHS})
     if(IS_ABSOLUTE ${INCLUDE_PATH})
-        set(CURR_ABS_INC_PATH "${FREERTOS_PATH}")
+        set(CURR_ABS_INC_PATH "${INCLUDE_PATH}")
     else()
         get_filename_component(CURR_ABS_INC_PATH
             ${INCLUDE_PATH} REALPATH BASE_DIR ${CMAKE_SOURCE_DIR})
