@@ -3,8 +3,7 @@
 
 #include "EventManagerIF.h"
 #include "eventmatching/EventMatchTree.h"
-
-#include <FSFWConfig.h>
+#include "FSFWConfig.h"
 
 #include "../serviceinterface/ServiceInterface.h"
 #include "../objectmanager/SystemObject.h"
