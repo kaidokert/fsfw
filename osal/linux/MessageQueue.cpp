@@ -204,11 +204,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
             return MessageQueueIF::EMPTY;
         case EBADF: {
             //mqdes doesn't represent a valid queue open for reading.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::receive: configuration error "
-                    << strerror(errno)  << std::endl;
-#endif
-            return HasReturnvaluesIF::RETURN_FAILED;
+            return handleRecvError("EBADF");
         }
         case EINVAL: {
             /*
@@ -220,11 +216,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
              *   queue, and the QNX extended option MQ_READBUF_DYNAMIC hasn't
              *   been set in the queue's mq_flags.
              */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::receive: EINVAL error "
-                    << strerror(errno)  << std::endl;
-#endif
-            return HasReturnvaluesIF::RETURN_FAILED;
+            return handleRecvError("EINVAL");
         }
         case EMSGSIZE: {
             /*
@@ -236,28 +228,16 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
              *   given msg_len is too short for the message that would have
              *   been received.
              */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::receive: EMSGSIZE error "
-                    << strerror(errno)  << std::endl;
-#endif
-            return HasReturnvaluesIF::RETURN_FAILED;
+            return handleRecvError("EMSGSIZE");
         }
 
         case EINTR: {
             //The operation was interrupted by a signal.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::receiveMessage: EINTR error " << strerror(errno)  <<
-                    std::endl;
-#endif
-            return HasReturnvaluesIF::RETURN_FAILED;
+            return handleRecvError("EINTR");
         }
         case ETIMEDOUT: {
             //The operation was interrupted by a signal.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::receiveMessage: ETIMEDOUT error " << strerror(errno)  <<
-                    std::endl;
-#endif
-            return HasReturnvaluesIF::RETURN_FAILED;
+            return handleRecvError("ETIMEDOUT");
         }
 
         default:
@@ -422,4 +402,18 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         }
     }
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t MessageQueue::handleRecvError(const char * const failString) {
+    if(failString == nullptr) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << "MessageQueue::receiveMessage: " << failString << " error "
+            << strerror(errno)  << std::endl;
+#else
+    sif::printError("MessageQueue::receiveMessage: %s error %s\n", failString,
+            strerror(errno));
+#endif
+    return HasReturnvaluesIF::RETURN_FAILED;
 }
