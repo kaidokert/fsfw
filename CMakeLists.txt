@@ -131,7 +131,7 @@ else()
 	)
 endif()
 
-foreach(INCLUDE_PATH ${FSFW_ADDITIONAL_INC_PATH})
+foreach(INCLUDE_PATH ${FSFW_ADDITIONAL_INC_PATHS})
     if(IS_ABSOLUTE ${INCLUDE_PATH})
         set(CURR_ABS_INC_PATH "${FREERTOS_PATH}")
     else()
