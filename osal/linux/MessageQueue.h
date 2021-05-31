@@ -182,6 +182,7 @@ private:
 	const size_t maxMessageSize;
 
 	ReturnValue_t handleError(mq_attr* attributes, uint32_t messageDepth);
+	ReturnValue_t handleRecvError(const char* const failString);
 };
 
 #endif /* FSFW_OSAL_LINUX_MESSAGEQUEUE_H_ */
