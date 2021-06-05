@@ -252,48 +252,9 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         bool ignoreFault) {
     if(message == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-<<<<<<< HEAD
-		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
-				"nullptr!" << std::endl;
-#endif
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-
-	message->setSender(sentFrom);
-	int result = mq_send(sendTo,
-			reinterpret_cast<const char*>(message->getBuffer()),
-			message->getMessageSize(),0);
-
-	//TODO: Check if we're in ISR.
-	if (result != 0) {
-		if(!ignoreFault){
-			InternalErrorReporterIF* internalErrorReporter =
-			        ObjectManager::instance()->get<InternalErrorReporterIF>(
-						objects::INTERNAL_ERROR_REPORTER);
-			if (internalErrorReporter != NULL) {
-				internalErrorReporter->queueMessageNotSent();
-			}
-		}
-		switch(errno){
-		case EAGAIN:
-			//The O_NONBLOCK flag was set when opening the queue, or the
-			//MQ_NONBLOCK flag was set in its attributes, and the
-			//specified queue is full.
-			return MessageQueueIF::FULL;
-		case EBADF: {
-			//mq_des doesn't represent a valid message queue descriptor,
-			//or mq_des wasn't opened for writing.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "MessageQueue::sendMessage: Configuration error, MQ"
-					<< " destination invalid."  << std::endl;
-			sif::error << strerror(errno) << " in "
-					<<"mq_send to: " << sendTo << " sent from "
-					<< sentFrom << std::endl;
-=======
         sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is nullptr!" << std::endl;
 #else
         sif::printError("MessageQueue::sendMessageFromMessageQueue: Message is nullptr!\n");
->>>>>>> 38910143400e455f5184ad85be98e05638c2eea6
 #endif
         return HasReturnvaluesIF::RETURN_FAILED;
     }
@@ -306,8 +267,8 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     //TODO: Check if we're in ISR.
     if (result != 0) {
         if(!ignoreFault){
-            InternalErrorReporterIF* internalErrorReporter =
-                    objectManager->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
+            InternalErrorReporterIF* internalErrorReporter = ObjectManager::instance()->
+                    get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
             if (internalErrorReporter != NULL) {
                 internalErrorReporter->queueMessageNotSent();
             }
