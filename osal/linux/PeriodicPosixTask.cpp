@@ -6,7 +6,6 @@
 
 #include <errno.h>
 
-
 PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_,
 		size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):
 		PosixThread(name_, priority_, stackSize_), objectList(), started(false),
@@ -32,6 +31,9 @@ ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
 				<< " it implements ExecutableObjectIF!" << std::endl;
+#else
+		sif::printError("PeriodicTask::addComponent: Invalid object. Make sure it"
+		        "implements ExecutableObjectIF!\n");
 #endif
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}
@@ -48,9 +50,6 @@ ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
 
 ReturnValue_t PeriodicPosixTask::startTask(void) {
 	started = true;
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-	//sif::info << stackSize << std::endl;
-#endif
 	PosixThread::createTask(&taskEntryPoint,this);
 	return HasReturnvaluesIF::RETURN_OK;
 }
