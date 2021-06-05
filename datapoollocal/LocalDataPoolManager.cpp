@@ -6,6 +6,7 @@
 #include "internal/HasLocalDpIFManagerAttorney.h"
 
 #include "../housekeeping/HousekeepingSetPacket.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../housekeeping/HousekeepingSnapshot.h"
 #include "../housekeeping/AcceptsHkPacketsIF.h"
 #include "../timemanager/CCSDSTime.h"
@@ -52,7 +53,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
 	}
 	hkQueue = queueToUse;
 
-	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+	ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
 	if(ipcStore == nullptr) {
 		/* Error, all destinations invalid */
 		printWarningOrError(sif::OutputTypes::OUT_ERROR,
@@ -63,8 +64,8 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
 
 
 	if(defaultHkDestination != objects::NO_OBJECT) {
-		AcceptsHkPacketsIF* hkPacketReceiver =
-				objectManager->get<AcceptsHkPacketsIF>(defaultHkDestination);
+		AcceptsHkPacketsIF* hkPacketReceiver = ObjectManager::instance()->
+		        get<AcceptsHkPacketsIF>(defaultHkDestination);
 		if(hkPacketReceiver != nullptr) {
 			hkDestinationId = hkPacketReceiver->getHkQueue();
 		}
@@ -360,8 +361,8 @@ void LocalDataPoolManager::resetHkUpdateResetHelper() {
 ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid,
 		bool enableReporting, float collectionInterval, bool isDiagnostics,
 		object_id_t packetDestination) {
-	AcceptsHkPacketsIF* hkReceiverObject =
-			objectManager->get<AcceptsHkPacketsIF>(packetDestination);
+	AcceptsHkPacketsIF* hkReceiverObject = ObjectManager::instance()->
+	        get<AcceptsHkPacketsIF>(packetDestination);
 	if(hkReceiverObject == nullptr) {
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
 				"subscribeForPeriodicPacket", QUEUE_OR_DESTINATION_INVALID);
@@ -391,7 +392,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid,
 		bool isDiagnostics, bool reportingEnabled,
 		object_id_t packetDestination) {
 	AcceptsHkPacketsIF* hkReceiverObject =
-			objectManager->get<AcceptsHkPacketsIF>(packetDestination);
+	        ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
 	if(hkReceiverObject == nullptr) {
 		printWarningOrError(sif::OutputTypes::OUT_WARNING,
 				"subscribeForPeriodicPacket", QUEUE_OR_DESTINATION_INVALID);

@@ -2,7 +2,8 @@
 #include "CommandActionHelper.h"
 #include "CommandsActionsIF.h"
 #include "HasActionsIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+
+#include "../objectmanager/ObjectManager.h"
 
 CommandActionHelper::CommandActionHelper(CommandsActionsIF *setOwner) :
         owner(setOwner), queueToUse(NULL), ipcStore(
@@ -14,7 +15,7 @@ CommandActionHelper::~CommandActionHelper() {
 
 ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
         ActionId_t actionId, SerializeIF *data) {
-    HasActionsIF *receiver = objectManager->get<HasActionsIF>(commandTo);
+    HasActionsIF *receiver = ObjectManager::instance()->get<HasActionsIF>(commandTo);
     if (receiver == NULL) {
         return CommandsActionsIF::OBJECT_HAS_NO_FUNCTIONS;
     }
@@ -40,7 +41,7 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo,
 //    if (commandCount != 0) {
 //        return CommandsFunctionsIF::ALREADY_COMMANDING;
 //    }
-    HasActionsIF *receiver = objectManager->get<HasActionsIF>(commandTo);
+    HasActionsIF *receiver = ObjectManager::instance()->get<HasActionsIF>(commandTo);
     if (receiver == NULL) {
         return CommandsActionsIF::OBJECT_HAS_NO_FUNCTIONS;
     }
@@ -66,7 +67,7 @@ ReturnValue_t CommandActionHelper::sendCommand(MessageQueueId_t queueId,
 }
 
 ReturnValue_t CommandActionHelper::initialize() {
-    ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
     if (ipcStore == NULL) {
         return HasReturnvaluesIF::RETURN_FAILED;
     }

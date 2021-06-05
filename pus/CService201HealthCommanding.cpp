@@ -1,9 +1,11 @@
 #include "CService201HealthCommanding.h"
+#include "servicepackets/Service201Packets.h"
 
 #include "../health/HasHealthIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../health/HealthMessage.h"
-#include "servicepackets/Service201Packets.h"
+
 
 CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId,
         uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
@@ -43,7 +45,7 @@ ReturnValue_t CService201HealthCommanding::getMessageQueueAndObject(
 
 ReturnValue_t CService201HealthCommanding::checkInterfaceAndAcquireMessageQueue(
         MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
-    HasHealthIF * destination = objectManager->get<HasHealthIF>(*objectId);
+    HasHealthIF * destination = ObjectManager::instance()->get<HasHealthIF>(*objectId);
     if(destination == nullptr) {
         return CommandingServiceBase::INVALID_OBJECT;
     }

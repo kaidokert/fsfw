@@ -5,6 +5,7 @@
 #include "SystemObjectIF.h"
 #include <map>
 
+
 /**
  * @brief	This class implements a global object manager.
  * @details	This manager handles a list of available objects with system-wide
@@ -19,44 +20,65 @@
  * @author	Bastian Baetz
  */
 class ObjectManager : public ObjectManagerIF {
-private:
-	//comparison?
-	/**
-	 * @brief	This is the map of all initialized objects in the manager.
-	 * @details	Objects in the List must inherit the SystemObjectIF.
-	 */
-	std::map<object_id_t, SystemObjectIF*> objectList;
-protected:
-	SystemObjectIF* getSystemObject( object_id_t id );
-	/**
-	 * @brief	This attribute is initialized with the factory function
-	 * 			that creates new objects.
-	 * @details	The function is called if an object was requested with
-	 * 			getSystemObject, but not found in objectList.
-	 * @param 	The id of the object to be created.
-	 * @return	Returns a pointer to the newly created object or NULL.
-	 */
-	void (*produceObjects)();
 public:
-	/**
-	 * @brief	Apart from setting the producer function, nothing special
-	 * 			happens in the constructor.
-	 * @param setProducer	A pointer to a factory function.
-	 */
-	ObjectManager( void (*produce)() );
-	ObjectManager();
-	/**
-	 *	@brief	In the class's destructor, all objects in the list are deleted.
-	 */
-	// SHOULDDO: If, for some reason, deleting an ObjectManager instance is
-	// required, check if this works.
-	virtual ~ObjectManager( void );
-	ReturnValue_t insert( object_id_t id, SystemObjectIF* object );
-	ReturnValue_t remove( object_id_t id );
-	void initialize();
-	void printList();
+
+    using produce_function_t = void (*) (void* args);
+
+    /**
+     * Returns the single instance of TaskFactory.
+     * The implementation of #instance is found in its subclasses.
+     * Thus, we choose link-time variability of the  instance.
+     */
+    static ObjectManager* instance();
+
+    void setObjectFactoryFunction(produce_function_t prodFunc, void* args);
+
+    template <typename T> T* get( object_id_t id );
+
+    /**
+     *  @brief  In the class's destructor, all objects in the list are deleted.
+     */
+    virtual ~ObjectManager();
+    ReturnValue_t insert(object_id_t id, SystemObjectIF* object) override;
+    ReturnValue_t remove(object_id_t id) override;
+    void initialize() override;
+    void printList() override;
+
+protected:
+    SystemObjectIF* getSystemObject(object_id_t id) override;
+    /**
+     * @brief   This attribute is initialized with the factory function
+     *          that creates new objects.
+     * @details The function is called if an object was requested with
+     *          getSystemObject, but not found in objectList.
+     * @param   The id of the object to be created.
+     * @return  Returns a pointer to the newly created object or NULL.
+     */
+    produce_function_t objectFactoryFunction = nullptr;
+    void* factoryArgs = nullptr;
+
+private:
+    ObjectManager();
+
+    /**
+     * @brief	This is the map of all initialized objects in the manager.
+     * @details	Objects in the List must inherit the SystemObjectIF.
+     */
+    std::map<object_id_t, SystemObjectIF*> objectList;
+    static ObjectManager* objManagerInstance;
 };
 
+/**
+ * @brief   This is the forward declaration of the global objectManager instance.
+ */
+// SHOULDDO: maybe put this in the glob namespace to explicitely mark it global?
+//extern ObjectManagerIF *objectManager;
 
+/*Documentation can be found in the class method declaration above.*/
+template <typename T>
+T* ObjectManager::get( object_id_t id ) {
+    SystemObjectIF* temp = this->getSystemObject(id);
+    return dynamic_cast<T*>(temp);
+}
 
 #endif /* FSFW_OBJECTMANAGER_OBJECTMANAGER_H_ */

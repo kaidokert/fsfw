@@ -1,6 +1,8 @@
 #include "MessageQueue.h"
+#include "unixUtility.h"
+
 #include "../../serviceinterface/ServiceInterface.h"
-#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManager.h"
 
 #include <fstream>
 
@@ -13,7 +15,6 @@
 MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
         id(MessageQueueIF::NO_QUEUE),lastPartner(MessageQueueIF::NO_QUEUE),
         defaultDestination(MessageQueueIF::NO_QUEUE), maxMessageSize(maxMessageSize) {
-    //debug << "MessageQueue::MessageQueue: Creating a queue" << std::endl;
     mq_attr attributes;
     this->id = 0;
     //Set attributes
@@ -30,7 +31,7 @@ MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
     mode_t mode = S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP | S_IROTH | S_IWOTH;
     mqd_t tempId = mq_open(name, oflag, mode, &attributes);
     if (tempId == -1) {
-        handleError(&attributes, messageDepth);
+        handleOpenError(&attributes, messageDepth);
     }
     else {
         //Successful mq_open call
@@ -41,99 +42,12 @@ MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize):
 MessageQueue::~MessageQueue() {
     int status = mq_close(this->id);
     if(status != 0){
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "MessageQueue::Destructor: mq_close Failed with status: "
-                << strerror(errno) <<std::endl;
-#endif
+        utility::printUnixErrorGeneric(CLASS_NAME, "~MessageQueue", "close");
     }
     status = mq_unlink(name);
     if(status != 0){
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "MessageQueue::Destructor: mq_unlink Failed with status: "
-                << strerror(errno) << std::endl;
-#endif
+        utility::printUnixErrorGeneric(CLASS_NAME, "~MessageQueue", "unlink");
     }
-}
-
-ReturnValue_t MessageQueue::handleError(mq_attr* attributes,
-        uint32_t messageDepth) {
-    switch(errno) {
-    case(EINVAL): {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "MessageQueue::MessageQueue: Invalid name or attributes"
-                " for message size" << std::endl;
-#endif
-        size_t defaultMqMaxMsg = 0;
-        // Not POSIX conformant, but should work for all UNIX systems.
-        // Just an additional helpful printout :-)
-        if(std::ifstream("/proc/sys/fs/mqueue/msg_max",std::ios::in) >>
-                defaultMqMaxMsg and defaultMqMaxMsg < messageDepth) {
-            /*
-			See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
-			This happens if the msg_max value is not large enough
-			It is ignored if the executable is run in privileged mode.
-		    Run the unlockRealtime script or grant the mode manually by using:
-			sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
-
-			Persistent solution for session:
-			echo <newMsgMax> | sudo tee /proc/sys/fs/mqueue/msg_max
-
-			Permanent solution:
-			sudo nano /etc/sysctl.conf
-			Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
-			Apply changes with: sudo sysctl -p
-             */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::MessageQueue: Default MQ size "
-                    << defaultMqMaxMsg << " is too small for requested size "
-                    << messageDepth << std::endl;
-            sif::error << "This error can be fixed by setting the maximum "
-                    "allowed message size higher!" << std::endl;
-#endif
-        }
-        break;
-    }
-    case(EEXIST): {
-        // An error occured during open
-        // We need to distinguish if it is caused by an already created queue
-        // There's another queue with the same name
-        // We unlink the other queue
-        int status = mq_unlink(name);
-        if (status != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "mq_unlink Failed with status: " << strerror(errno)
-													        << std::endl;
-#endif
-        }
-        else {
-            // Successful unlinking, try to open again
-            mqd_t tempId = mq_open(name,
-                    O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
-                    S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, attributes);
-            if (tempId != -1) {
-                //Successful mq_open
-                this->id = tempId;
-                return HasReturnvaluesIF::RETURN_OK;
-            }
-        }
-        break;
-    }
-
-    default: {
-        // Failed either the first time or the second time
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "MessageQueue::MessageQueue: Creating Queue " << name
-                << " failed with status: " << strerror(errno) << std::endl;
-#else
-        sif::printError("MessageQueue::MessageQueue: Creating Queue %s"
-                " failed with status: %s\n", name, strerror(errno));
-#endif
-    }
-    }
-    return HasReturnvaluesIF::RETURN_FAILED;
-
-
-
 }
 
 ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo,
@@ -204,7 +118,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
             return MessageQueueIF::EMPTY;
         case EBADF: {
             //mqdes doesn't represent a valid queue open for reading.
-            return handleRecvError("EBADF");
+            utility::printUnixErrorGeneric(CLASS_NAME, "receiveMessage", "EBADF");
+            break;
         }
         case EINVAL: {
             /*
@@ -216,7 +131,8 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
              *   queue, and the QNX extended option MQ_READBUF_DYNAMIC hasn't
              *   been set in the queue's mq_flags.
              */
-            return handleRecvError("EINVAL");
+            utility::printUnixErrorGeneric(CLASS_NAME, "receiveMessage", "EINVAL");
+            break;
         }
         case EMSGSIZE: {
             /*
@@ -228,23 +144,25 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
              *   given msg_len is too short for the message that would have
              *   been received.
              */
-            return handleRecvError("EMSGSIZE");
+            utility::printUnixErrorGeneric(CLASS_NAME, "receiveMessage", "EMSGSIZE");
+            break;
         }
 
         case EINTR: {
             //The operation was interrupted by a signal.
-            return handleRecvError("EINTR");
+            utility::printUnixErrorGeneric(CLASS_NAME, "receiveMessage", "EINTR");
+            break;
         }
         case ETIMEDOUT: {
             //The operation was interrupted by a signal.
-            return handleRecvError("ETIMEDOUT");
+            utility::printUnixErrorGeneric(CLASS_NAME, "receiveMessage", "ETIMEDOUT");
+            break;
         }
 
         default:
-
             return HasReturnvaluesIF::RETURN_FAILED;
         }
-
+        return HasReturnvaluesIF::RETURN_FAILED;
     }
 }
 
@@ -259,29 +177,27 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
         switch(errno){
         case EBADF:
             //mqdes doesn't represent a valid message queue.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::flush configuration error, "
-            "called flush with an invalid queue ID" << std::endl;
-#endif
+            utility::printUnixErrorGeneric(CLASS_NAME, "flush", "EBADF");
+            break;
             /*NO BREAK*/
         case EINVAL:
             //mq_attr is NULL
+            utility::printUnixErrorGeneric(CLASS_NAME, "flush", "EINVAL");
+            break;
         default:
             return HasReturnvaluesIF::RETURN_FAILED;
         }
+        return HasReturnvaluesIF::RETURN_FAILED;
     }
     *count = attrib.mq_curmsgs;
     attrib.mq_curmsgs = 0;
     status = mq_setattr(id,&attrib,NULL);
     if(status != 0){
-        switch(errno){
+        switch(errno) {
         case EBADF:
             //mqdes doesn't represent a valid message queue.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::flush configuration error, "
-            "called flush with an invalid queue ID" << std::endl;
-#endif
-            /*NO BREAK*/
+            utility::printUnixErrorGeneric(CLASS_NAME, "flush", "EBADF");
+            break;
         case EINVAL:
             /*
              * This value indicates one of the following:
@@ -290,9 +206,12 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
              *    mq_flags includes a 0 in the MQ_MULT_NOTIFY bit. Once
              *    MQ_MULT_NOTIFY has been turned on, it may never be turned off.
              */
+            utility::printUnixErrorGeneric(CLASS_NAME, "flush", "EINVAL");
+            break;
         default:
             return HasReturnvaluesIF::RETURN_FAILED;
         }
+        return HasReturnvaluesIF::RETURN_FAILED;
     }
     return HasReturnvaluesIF::RETURN_OK;
 }
@@ -333,8 +252,48 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         bool ignoreFault) {
     if(message == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
-                "nullptr!" << std::endl;
+<<<<<<< HEAD
+		sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is "
+				"nullptr!" << std::endl;
+#endif
+		return HasReturnvaluesIF::RETURN_FAILED;
+	}
+
+	message->setSender(sentFrom);
+	int result = mq_send(sendTo,
+			reinterpret_cast<const char*>(message->getBuffer()),
+			message->getMessageSize(),0);
+
+	//TODO: Check if we're in ISR.
+	if (result != 0) {
+		if(!ignoreFault){
+			InternalErrorReporterIF* internalErrorReporter =
+			        ObjectManager::instance()->get<InternalErrorReporterIF>(
+						objects::INTERNAL_ERROR_REPORTER);
+			if (internalErrorReporter != NULL) {
+				internalErrorReporter->queueMessageNotSent();
+			}
+		}
+		switch(errno){
+		case EAGAIN:
+			//The O_NONBLOCK flag was set when opening the queue, or the
+			//MQ_NONBLOCK flag was set in its attributes, and the
+			//specified queue is full.
+			return MessageQueueIF::FULL;
+		case EBADF: {
+			//mq_des doesn't represent a valid message queue descriptor,
+			//or mq_des wasn't opened for writing.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+			sif::error << "MessageQueue::sendMessage: Configuration error, MQ"
+					<< " destination invalid."  << std::endl;
+			sif::error << strerror(errno) << " in "
+					<<"mq_send to: " << sendTo << " sent from "
+					<< sentFrom << std::endl;
+=======
+        sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is nullptr!" << std::endl;
+#else
+        sif::printError("MessageQueue::sendMessageFromMessageQueue: Message is nullptr!\n");
+>>>>>>> 38910143400e455f5184ad85be98e05638c2eea6
 #endif
         return HasReturnvaluesIF::RETURN_FAILED;
     }
@@ -348,8 +307,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     if (result != 0) {
         if(!ignoreFault){
             InternalErrorReporterIF* internalErrorReporter =
-                    objectManager->get<InternalErrorReporterIF>(
-                            objects::INTERNAL_ERROR_REPORTER);
+                    objectManager->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
             if (internalErrorReporter != NULL) {
                 internalErrorReporter->queueMessageNotSent();
             }
@@ -363,17 +321,20 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         case EBADF: {
             //mq_des doesn't represent a valid message queue descriptor,
             //or mq_des wasn't opened for writing.
+
+            utility::printUnixErrorGeneric(CLASS_NAME, "sendMessageFromMessageQueue", "EBADF");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::sendMessage: Configuration error, MQ"
-                    << " destination invalid."  << std::endl;
-            sif::error << strerror(errno) << " in "
-                    <<"mq_send to: " << sendTo << " sent from "
-                    << sentFrom << std::endl;
+            sif::warning << "mq_send to: " << sendTo << " sent from "
+                    << sentFrom << "failed" << std::endl;
+#else
+            sif::printWarning("mq_send to: %d sent from %d failed\n", sendTo, sentFrom);
 #endif
             return DESTINATION_INVALID;
         }
         case EINTR:
             //The call was interrupted by a signal.
+            utility::printUnixErrorGeneric(CLASS_NAME, "sendMessageFromMessageQueue", "EINTR");
+            break;
         case EINVAL:
             /*
              * This value indicates one of the following:
@@ -384,36 +345,87 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
              * - MQ_PRIO_RESTRICT is set in the mq_attr of mq_des, and
              *   msg_prio is greater than the priority of the calling process.
              */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::sendMessage: Configuration error "
-            << strerror(errno) << " in mq_send" << std::endl;
-#endif
-            /*NO BREAK*/
+            utility::printUnixErrorGeneric(CLASS_NAME, "sendMessageFromMessageQueue", "EINVAL");
+            break;
         case EMSGSIZE:
             // The msg_len is greater than the msgsize associated with
             //the specified queue.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::error << "MessageQueue::sendMessage: Size error [" <<
-            strerror(errno) << "] in mq_send" << std::endl;
-#endif
-            /*NO BREAK*/
+            utility::printUnixErrorGeneric(CLASS_NAME, "sendMessageFromMessageQueue", "EMSGSIZE");
+            break;
         default:
             return HasReturnvaluesIF::RETURN_FAILED;
         }
+        return HasReturnvaluesIF::RETURN_FAILED;
     }
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MessageQueue::handleRecvError(const char * const failString) {
-    if(failString == nullptr) {
-        return HasReturnvaluesIF::RETURN_FAILED;
-    }
+ReturnValue_t MessageQueue::handleOpenError(mq_attr* attributes,
+        uint32_t messageDepth) {
+    switch(errno) {
+    case(EINVAL): {
+        utility::printUnixErrorGeneric(CLASS_NAME, "MessageQueue", "EINVAL");
+        size_t defaultMqMaxMsg = 0;
+        // Not POSIX conformant, but should work for all UNIX systems.
+        // Just an additional helpful printout :-)
+        if(std::ifstream("/proc/sys/fs/mqueue/msg_max",std::ios::in) >>
+                defaultMqMaxMsg and defaultMqMaxMsg < messageDepth) {
+            /*
+            See: https://www.man7.org/linux/man-pages/man3/mq_open.3.html
+            This happens if the msg_max value is not large enough
+            It is ignored if the executable is run in privileged mode.
+            Run the unlockRealtime script or grant the mode manually by using:
+            sudo setcap 'CAP_SYS_RESOURCE=+ep' <pathToBinary>
+
+            Persistent solution for session:
+            echo <newMsgMax> | sudo tee /proc/sys/fs/mqueue/msg_max
+
+            Permanent solution:
+            sudo nano /etc/sysctl.conf
+            Append at end: fs/mqueue/msg_max = <newMsgMaxLen>
+            Apply changes with: sudo sysctl -p
+             */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "MessageQueue::receiveMessage: " << failString << " error "
-            << strerror(errno)  << std::endl;
+            sif::error << "MessageQueue::MessageQueue: Default MQ size " << defaultMqMaxMsg <<
+                    " is too small for requested size " << messageDepth << std::endl;
+            sif::error << "This error can be fixed by setting the maximum "
+                    "allowed message size higher!" << std::endl;
 #else
-    sif::printError("MessageQueue::receiveMessage: %s error %s\n", failString,
-            strerror(errno));
+            sif::printError("MessageQueue::MessageQueue: Default MQ size %d is too small for"
+                    "requested size %d\n");
+            sif::printError("This error can be fixes by setting the maximum allowed"
+                    "message size higher!\n");
 #endif
+        }
+        break;
+    }
+    case(EEXIST): {
+        // An error occured during open.
+        // We need to distinguish if it is caused by an already created queue
+        // There's another queue with the same name
+        // We unlink the other queue
+        int status = mq_unlink(name);
+        if (status != 0) {
+            utility::printUnixErrorGeneric(CLASS_NAME, "MessageQueue", "EEXIST");
+        }
+        else {
+            // Successful unlinking, try to open again
+            mqd_t tempId = mq_open(name,
+                    O_NONBLOCK | O_RDWR | O_CREAT | O_EXCL,
+                    S_IWUSR | S_IREAD | S_IWGRP | S_IRGRP, attributes);
+            if (tempId != -1) {
+                //Successful mq_open
+                this->id = tempId;
+                return HasReturnvaluesIF::RETURN_OK;
+            }
+        }
+        break;
+    }
+
+    default: {
+        // Failed either the first time or the second time
+        utility::printUnixErrorGeneric(CLASS_NAME, "MessageQueue", "Unknown");
+    }
+    }
     return HasReturnvaluesIF::RETURN_FAILED;
 }

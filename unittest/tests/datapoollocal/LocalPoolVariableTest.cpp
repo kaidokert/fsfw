@@ -1,12 +1,13 @@
 #include "LocalPoolOwnerBase.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <unittest/core/CatchDefinitions.h>
 
 
 TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
-    LocalPoolOwnerBase* poolOwner = objectManager->
+    LocalPoolOwnerBase* poolOwner = ObjectManager::instance()->
             get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
     REQUIRE(poolOwner != nullptr);
     REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);

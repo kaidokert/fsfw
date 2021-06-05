@@ -1,9 +1,11 @@
 #include "taskHelpers.h"
+
 #include "../../platform.h"
 #include "../../osal/host/FixedTimeslotTask.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../osal/host/Mutex.h"
 #include "../../osal/host/FixedTimeslotTask.h"
+#include "../../objectmanager/ObjectManager.h"
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
@@ -110,7 +112,7 @@ void FixedTimeslotTask::taskFunctionality() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
         uint32_t slotTimeMs, int8_t executionStep) {
-    ExecutableObjectIF* executableObject = objectManager->
+    ExecutableObjectIF* executableObject = ObjectManager::instance()->
             get<ExecutableObjectIF>(componentId);
     if (executableObject != nullptr) {
         pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep,

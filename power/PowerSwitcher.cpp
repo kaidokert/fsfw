@@ -1,7 +1,7 @@
 #include "PowerSwitcher.h"
 
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../objectmanager/ObjectManager.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 PowerSwitcher::PowerSwitcher(uint8_t setSwitch1, uint8_t setSwitch2,
 		PowerSwitcher::State_t setStartState):
@@ -10,7 +10,7 @@ PowerSwitcher::PowerSwitcher(uint8_t setSwitch1, uint8_t setSwitch2,
 }
 
 ReturnValue_t PowerSwitcher::initialize(object_id_t powerSwitchId) {
-	power = objectManager->get<PowerSwitchIF>(powerSwitchId);
+	power = ObjectManager::instance()->get<PowerSwitchIF>(powerSwitchId);
 	if (power == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
 	}

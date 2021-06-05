@@ -1,26 +1,23 @@
 #include "MessageQueue.h"
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "QueueMapManager.h"
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
-// TODO I guess we should have a way of checking if we are in an ISR and then
-// use the "fromISR" versions of all calls
-// As a first step towards this, introduces system context variable which needs
-// to be switched manually
-// Haven't found function to find system context.
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		maxMessageSize(maxMessageSize) {
 	handle = xQueueCreate(messageDepth, maxMessageSize);
-#if FSFW_CPP_OSTREAM_ENABLED == 1
 	if (handle == nullptr) {
-		sif::error << "MessageQueue::MessageQueue:"
-		        << " Creation failed." << std::endl;
-		sif::error << "Specified Message Depth: " << messageDepth
-		        << std::endl;
-		sif::error << "Specified Maximum Message Size: "
-		        << maxMessageSize << std::endl;
-
-	}
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+		sif::error << "MessageQueue::MessageQueue: Creation failed" << std::endl;
+		sif::error << "Specified Message Depth: " << messageDepth << std::endl;
+		sif::error << "Specified Maximum Message Size: " << maxMessageSize << std::endl;
+#else
+		sif::printError("MessageQueue::MessageQueue: Creation failed\n");
+		sif::printError("Specified Message Depth: %d\n", messageDepth);
+		sif::printError("Specified MAximum Message Size: %d\n", maxMessageSize);
 #endif
+	}
+    QueueMapManager::instance()->addMessageQueue(handle, &queueId);
 }
 
 MessageQueue::~MessageQueue() {
@@ -62,13 +59,15 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 	        callContext);
 }
 
+QueueHandle_t MessageQueue::getNativeQueueHandle() {
+    return handle;
+}
 
 ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
 	if (result != pdPASS) {
 		if (not ignoreFault) {
-			InternalErrorReporterIF* internalErrorReporter = objectManager->
-					get<InternalErrorReporterIF>(
-					objects::INTERNAL_ERROR_REPORTER);
+			InternalErrorReporterIF* internalErrorReporter = ObjectManager::instance()->
+			        get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
 			if (internalErrorReporter != nullptr) {
 				internalErrorReporter->queueMessageNotSent();
 			}
@@ -110,7 +109,7 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
 }
 
 MessageQueueId_t MessageQueue::getId() const {
-	return reinterpret_cast<MessageQueueId_t>(handle);
+	return queueId;
 }
 
 void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
@@ -132,29 +131,24 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
         bool ignoreFault, CallContext callContext) {
 	BaseType_t result = pdFALSE;
-	QueueHandle_t destination = nullptr;
-
-	if(sendTo == MessageQueueIF::NO_QUEUE or sendTo == 0x00) {
-		return MessageQueueIF::DESTINATION_INVALID;
+	if(sendTo == MessageQueueIF::NO_QUEUE) {
+        return MessageQueueIF::DESTINATION_INVALID;
 	}
-	else  {
-		destination = reinterpret_cast<QueueHandle_t>(sendTo);
+
+	QueueHandle_t destination = QueueMapManager::instance()->getMessageQueue(sendTo);
+	if(destination == nullptr) {
+        return MessageQueueIF::DESTINATION_INVALID;
 	}
 
     message->setSender(sentFrom);
-
-
     if(callContext == CallContext::TASK) {
-        result = xQueueSendToBack(destination,
-                static_cast<const void*>(message->getBuffer()), 0);
+        result = xQueueSendToBack(destination, static_cast<const void*>(message->getBuffer()), 0);
     }
     else {
-        /* If the call context is from an interrupt,
-         * request a context switch if a higher priority task
-         * was blocked by the interrupt. */
+        /* If the call context is from an interrupt, request a context switch if a higher priority
+        task was blocked by the interrupt. */
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        result = xQueueSendFromISR(reinterpret_cast<QueueHandle_t>(sendTo),
-                static_cast<const void*>(message->getBuffer()),
+        result = xQueueSendFromISR(destination, static_cast<const void*>(message->getBuffer()),
                 &xHigherPriorityTaskWoken);
         if(xHigherPriorityTaskWoken == pdTRUE) {
             TaskManagement::requestContextSwitch(callContext);

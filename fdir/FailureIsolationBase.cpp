@@ -3,7 +3,7 @@
 #include "../health/HasHealthIF.h"
 #include "../health/HealthMessage.h"
 #include "../ipc/QueueFactory.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 FailureIsolationBase::FailureIsolationBase(object_id_t owner,
 		object_id_t parent, uint8_t messageDepth, uint8_t parameterDomainBase) :
@@ -18,7 +18,7 @@ FailureIsolationBase::~FailureIsolationBase() {
 }
 
 ReturnValue_t FailureIsolationBase::initialize() {
-	EventManagerIF* manager = objectManager->get<EventManagerIF>(
+	EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(
 			objects::EVENT_MANAGER);
 	if (manager == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -36,7 +36,7 @@ ReturnValue_t FailureIsolationBase::initialize() {
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-		owner = objectManager->get<HasHealthIF>(ownerId);
+		owner = ObjectManager::instance()->get<HasHealthIF>(ownerId);
 		if (owner == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "FailureIsolationBase::intialize: Owner object "
@@ -46,7 +46,7 @@ ReturnValue_t FailureIsolationBase::initialize() {
 		}
 	}
 	if (faultTreeParent != objects::NO_OBJECT) {
-		ConfirmsFailuresIF* parentIF = objectManager->get<ConfirmsFailuresIF>(
+		ConfirmsFailuresIF* parentIF = ObjectManager::instance()->get<ConfirmsFailuresIF>(
 				faultTreeParent);
 		if (parentIF == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

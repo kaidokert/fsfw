@@ -181,8 +181,8 @@ private:
 	static uint16_t queueCounter;
 	const size_t maxMessageSize;
 
-	ReturnValue_t handleError(mq_attr* attributes, uint32_t messageDepth);
-	ReturnValue_t handleRecvError(const char* const failString);
+	static constexpr const char* CLASS_NAME = "MessageQueue";
+	ReturnValue_t handleOpenError(mq_attr* attributes, uint32_t messageDepth);
 };
 
 #endif /* FSFW_OSAL_LINUX_MESSAGEQUEUE_H_ */

@@ -1,5 +1,6 @@
 #include "CCSDSDistributor.h"
 
+#include "../objectmanager/ObjectManager.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "../tmtcpacket/SpacePacketBase.h"
 
@@ -86,7 +87,7 @@ uint16_t CCSDSDistributor::getIdentifier() {
 
 ReturnValue_t CCSDSDistributor::initialize() {
 	ReturnValue_t status = this->TcDistributor::initialize();
-	this->tcStore = objectManager->get<StorageManagerIF>( objects::TC_STORE );
+	this->tcStore = ObjectManager::instance()->get<StorageManagerIF>( objects::TC_STORE );
 	if (this->tcStore == nullptr) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
