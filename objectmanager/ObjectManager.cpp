@@ -6,10 +6,22 @@
 #endif
 #include <cstdlib>
 
-ObjectManager::ObjectManager( void (*setProducer)() ):
-		produceObjects(setProducer) {
-	//There's nothing special to do in the constructor.
+ObjectManager* ObjectManager::objManagerInstance = nullptr;
+
+ObjectManager* ObjectManager::instance() {
+    if(objManagerInstance == nullptr) {
+        objManagerInstance = new ObjectManager();
+    }
+    return objManagerInstance;
 }
+
+void ObjectManager::setObjectFactoryFunction(produce_function_t objFactoryFunc, void *factoryArgs) {
+    this->objectFactoryFunction = objFactoryFunc;
+    this->factoryArgs = factoryArgs;
+}
+
+
+ObjectManager::ObjectManager() {}
 
 
 ObjectManager::~ObjectManager() {
@@ -28,10 +40,13 @@ ReturnValue_t ObjectManager::insert( object_id_t id, SystemObjectIF* object) {
 		return this->RETURN_OK;
 	} else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "ObjectManager::insert: Object id " << std::hex
-		           << static_cast<uint32_t>(id) << std::dec
-				   << " is already in use!" << std::endl;
-		sif::error << "Terminating program." << std::endl;
+		sif::error << "ObjectManager::insert: Object ID " << std::hex <<
+		        static_cast<uint32_t>(id) << std::dec << " is already in use!" << std::endl;
+		sif::error << "Terminating program" << std::endl;
+#else
+		sif::printError("ObjectManager::insert: Object ID 0x%08x is already in use!\n",
+		        static_cast<unsigned int>(id));
+		sif::printError("Terminating program");
 #endif
 		//This is very severe and difficult to handle in other places.
 		std::exit(INSERTION_FAILED);
@@ -66,12 +81,8 @@ SystemObjectIF* ObjectManager::getSystemObject( object_id_t id ) {
 	}
 }
 
-ObjectManager::ObjectManager() : produceObjects(nullptr) {
-
-}
-
 void ObjectManager::initialize() {
-	if(produceObjects == nullptr) {
+	if(objectFactoryFunction == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "ObjectManager::initialize: Passed produceObjects "
 				"functions is nullptr!" << std::endl;
@@ -80,7 +91,7 @@ void ObjectManager::initialize() {
 #endif
 		return;
 	}
-	this->produceObjects();
+	objectFactoryFunction(factoryArgs);
 	ReturnValue_t result = RETURN_FAILED;
 	uint32_t errorCount = 0;
 	for (auto const& it : objectList) {

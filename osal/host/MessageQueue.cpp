@@ -1,7 +1,8 @@
 #include "MessageQueue.h"
 #include "QueueMapManager.h"
 
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
+#include "../../objectmanager/ObjectManager.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexGuard.h"
 
@@ -121,9 +122,8 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			QueueMapManager::instance()->getMessageQueue(sendTo));
 	if(targetQueue == nullptr) {
 		if(not ignoreFault) {
-			InternalErrorReporterIF* internalErrorReporter =
-					objectManager->get<InternalErrorReporterIF>(
-							objects::INTERNAL_ERROR_REPORTER);
+			InternalErrorReporterIF* internalErrorReporter = ObjectManager::instance()->
+			        get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
 			if (internalErrorReporter != nullptr) {
 				internalErrorReporter->queueMessageNotSent();
 			}

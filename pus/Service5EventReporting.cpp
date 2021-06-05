@@ -1,7 +1,8 @@
 #include "Service5EventReporting.h"
 #include "servicepackets/Service5Packets.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../events/EventManagerIF.h"
 #include "../ipc/QueueFactory.h"
 #include "../tmtcpacket/pus/TmPacketStored.h"
@@ -89,7 +90,7 @@ ReturnValue_t Service5EventReporting::handleRequest(uint8_t subservice) {
 // In addition to the default PUSServiceBase initialization, this service needs
 // to be registered to the event manager to listen for events.
 ReturnValue_t Service5EventReporting::initialize() {
-	EventManagerIF* manager = objectManager->get<EventManagerIF>(
+	EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(
 				objects::EVENT_MANAGER);
 	if (manager == NULL) {
 			return RETURN_FAILED;

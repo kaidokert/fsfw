@@ -1,7 +1,11 @@
-#include "../../tasks/ExecutableObjectIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
-#include <errno.h>
 #include "PeriodicPosixTask.h"
+
+#include "../../objectmanager/ObjectManager.h"
+#include "../../tasks/ExecutableObjectIF.h"
+#include "../../serviceinterface/ServiceInterface.h"
+
+#include <errno.h>
+
 
 PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_,
 		size_t stackSize_, uint32_t period_, void(deadlineMissedFunc_)()):
@@ -22,7 +26,7 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
 }
 
 ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
-	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
+	ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

@@ -4,7 +4,7 @@
 #include <FSFWConfig.h>
 
 #include "../tcdistribution/PUSDistributorIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../ipc/QueueFactory.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcpacket/pus/TmPacketStored.h"
@@ -68,12 +68,12 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	    packetDestination = defaultPacketDestination;
 	}
 	AcceptsTelemetryIF* packetForwarding =
-			objectManager->get<AcceptsTelemetryIF>(packetDestination);
+	        ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
 
 	if(packetSource == objects::NO_OBJECT) {
 	    packetSource = defaultPacketSource;
 	}
-	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
+	PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(
 			packetSource);
 
 	if (packetForwarding == nullptr or distributor == nullptr) {
@@ -88,8 +88,8 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	requestQueue->setDefaultDestination(
 			packetForwarding->getReportReceptionQueue());
 
-	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
+	IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+	TCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
 
 	if (IPCStore == nullptr or TCStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

@@ -1,6 +1,7 @@
 #include "MessageQueue.h"
+
 #include "../../serviceinterface/ServiceInterface.h"
-#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManager.h"
 
 #include <fstream>
 
@@ -351,7 +352,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 	if (result != 0) {
 		if(!ignoreFault){
 			InternalErrorReporterIF* internalErrorReporter =
-					objectManager->get<InternalErrorReporterIF>(
+			        ObjectManager::instance()->get<InternalErrorReporterIF>(
 						objects::INTERNAL_ERROR_REPORTER);
 			if (internalErrorReporter != NULL) {
 				internalErrorReporter->queueMessageNotSent();

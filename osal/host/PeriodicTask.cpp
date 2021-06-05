@@ -4,7 +4,8 @@
 
 #include "../../platform.h"
 #include "../../ipc/MutexFactory.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
 #include <thread>
@@ -103,7 +104,7 @@ void PeriodicTask::taskFunctionality() {
 }
 
 ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
+	ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;
