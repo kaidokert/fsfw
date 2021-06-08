@@ -1,6 +1,7 @@
 #include "PeriodicTask.h"
 
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
 PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
@@ -100,7 +101,7 @@ void PeriodicTask::taskFunctionality() {
 }
 
 ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
+	ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

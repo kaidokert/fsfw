@@ -15,6 +15,7 @@ target_sources(${LIB_FSFW_NAME}
 		TaskFactory.cpp
 		Timer.cpp
 		tcpipHelpers.cpp
+		unixUtility.cpp
 )
 
 find_package(Threads REQUIRED)

@@ -1,6 +1,5 @@
 #include "ChildHandlerBase.h"
 #include "../subsystem/SubsystemBase.h"
-#include "../subsystem/SubsystemBase.h"
 
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * cookie,
@@ -30,7 +29,7 @@ ReturnValue_t ChildHandlerBase::initialize() {
 	MessageQueueId_t parentQueue = 0;
 
 	if (parentId != objects::NO_OBJECT) {
-		SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
+		SubsystemBase *parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
 		if (parent == NULL) {
 			return RETURN_FAILED;
 		}

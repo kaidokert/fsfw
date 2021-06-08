@@ -1,7 +1,7 @@
 #include "TmPacketStoredBase.h"
 
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tmtcservices/TmTcMessage.h"
 
 #include <cstring>
@@ -48,7 +48,7 @@ void TmPacketStoredBase::setStoreAddress(store_address_t setAddress) {
 
 bool TmPacketStoredBase::checkAndSetStore() {
     if (store == nullptr) {
-        store = objectManager->get<StorageManagerIF>(objects::TM_STORE);
+        store = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
         if (store == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "TmPacketStored::TmPacketStored: TM Store not found!"
@@ -83,7 +83,7 @@ ReturnValue_t TmPacketStoredBase::sendPacket(MessageQueueId_t destination,
 
 void TmPacketStoredBase::checkAndReportLostTm() {
     if (internalErrorReporter == nullptr) {
-        internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+        internalErrorReporter = ObjectManager::instance()->get<InternalErrorReporterIF>(
                 objects::INTERNAL_ERROR_REPORTER);
     }
     if (internalErrorReporter != nullptr) {

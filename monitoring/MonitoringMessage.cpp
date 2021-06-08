@@ -1,5 +1,5 @@
 #include "MonitoringMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 MonitoringMessage::~MonitoringMessage() {
 }
@@ -25,7 +25,7 @@ void MonitoringMessage::clear(CommandMessage* message) {
 	message->setCommand(CommandMessage::CMD_NONE);
 	switch (message->getCommand()) {
 	case MonitoringMessage::LIMIT_VIOLATION_REPORT: {
-		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+		StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
 				objects::IPC_STORE);
 		if (ipcStore != NULL) {
 			ipcStore->deleteData(getStoreId(message));

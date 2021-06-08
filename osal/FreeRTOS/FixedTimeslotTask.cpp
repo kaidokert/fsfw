@@ -1,6 +1,7 @@
 #include "FixedTimeslotTask.h"
 
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;
@@ -66,8 +67,7 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
-    ExecutableObjectIF* handler =
-            objectManager->get<ExecutableObjectIF>(componentId);
+    ExecutableObjectIF* handler = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
 	if (handler != nullptr) {
 		pst.addSlot(componentId, slotTimeMs, executionStep, handler, this);
 		return HasReturnvaluesIF::RETURN_OK;

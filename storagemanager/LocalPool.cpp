@@ -1,5 +1,8 @@
 #include "LocalPool.h"
-#include <FSFWConfig.h>
+#include "FSFWConfig.h"
+
+#include "../objectmanager/ObjectManager.h"
+
 #include <cstring>
 
 LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
@@ -185,7 +188,7 @@ ReturnValue_t LocalPool::initialize() {
     if (result != RETURN_OK) {
         return result;
     }
-    internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+    internalErrorReporter = ObjectManager::instance()->get<InternalErrorReporterIF>(
             objects::INTERNAL_ERROR_REPORTER);
     if (internalErrorReporter == nullptr){
         return ObjectManagerIF::INTERNAL_ERR_REPORTER_UNINIT;

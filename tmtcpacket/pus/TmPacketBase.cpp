@@ -2,7 +2,7 @@
 
 #include "../../globalfunctions/CRC.h"
 #include "../../globalfunctions/arrayprinter.h"
-#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManager.h"
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../timemanager/CCSDSTime.h"
 
@@ -53,7 +53,7 @@ void TmPacketBase::print() {
 
 bool TmPacketBase::checkAndSetStamper() {
     if (timeStamper == NULL) {
-        timeStamper = objectManager->get<TimeStamperIF>(timeStamperId);
+        timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
         if (timeStamper == NULL) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::warning << "TmPacketBase::checkAndSetStamper: Stamper not found!" << std::endl;

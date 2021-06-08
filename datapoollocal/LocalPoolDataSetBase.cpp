@@ -3,6 +3,7 @@
 #include "internal/HasLocalDpIFUserAttorney.h"
 
 #include "../serviceinterface/ServiceInterface.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../globalfunctions/bitutility.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
 #include "../housekeeping/PeriodicHousekeepingHelper.h"
@@ -45,7 +46,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner,
 LocalPoolDataSetBase::LocalPoolDataSetBase(sid_t sid, PoolVariableIF** registeredVariablesArray,
         const size_t maxNumberOfVariables):
         PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables)  {
-    HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(
+    HasLocalDataPoolIF* hkOwner = ObjectManager::instance()->get<HasLocalDataPoolIF>(
             sid.objectId);
     if(hkOwner != nullptr) {
         AccessPoolManagerIF* accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);

@@ -1,10 +1,13 @@
 #include "MapPacketExtraction.h"
+
 #include "../ipc/QueueFactory.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../tmtcpacket/SpacePacketBase.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/TmTcMessage.h"
+#include "../objectmanager/ObjectManager.h"
+
 #include <cstring>
 
 MapPacketExtraction::MapPacketExtraction(uint8_t setMapId,
@@ -131,9 +134,9 @@ void MapPacketExtraction::clearBuffers() {
 }
 
 ReturnValue_t MapPacketExtraction::initialize() {
-	packetStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
-	AcceptsTelecommandsIF* distributor = objectManager->get<
-			AcceptsTelecommandsIF>(packetDestination);
+	packetStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+	AcceptsTelecommandsIF* distributor = ObjectManager::instance()->
+	        get<AcceptsTelecommandsIF>(packetDestination);
 	if ((packetStore != NULL) && (distributor != NULL)) {
 		tcQueueId = distributor->getRequestQueue();
 		return RETURN_OK;

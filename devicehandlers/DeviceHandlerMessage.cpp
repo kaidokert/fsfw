@@ -1,5 +1,5 @@
 #include "DeviceHandlerMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 store_address_t DeviceHandlerMessage::getStoreAddress(
 		const CommandMessage* message) {
@@ -70,7 +70,7 @@ void DeviceHandlerMessage::clear(CommandMessage* message) {
 	case REPLY_RAW_COMMAND:
 	case REPLY_RAW_REPLY:
 	case REPLY_DIRECT_COMMAND_DATA: {
-		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+		StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
 				objects::IPC_STORE);
 		if (ipcStore != nullptr) {
 			ipcStore->deleteData(getStoreAddress(message));

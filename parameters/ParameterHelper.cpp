@@ -1,6 +1,7 @@
 #include "ParameterHelper.h"
 #include "ParameterMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
+
+#include "../objectmanager/ObjectManager.h"
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner):
         owner(owner) {}
@@ -124,7 +125,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 ReturnValue_t ParameterHelper::initialize() {
     ownerQueueId = owner->getCommandQueue();
 
-    storage = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    storage = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
     if (storage == nullptr) {
         return ObjectManagerIF::CHILD_INIT_FAILED;
     }

@@ -1,7 +1,7 @@
 #include "MessageQueue.h"
 #include "QueueMapManager.h"
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
         maxMessageSize(maxMessageSize) {
@@ -64,17 +64,17 @@ QueueHandle_t MessageQueue::getNativeQueueHandle() {
 }
 
 ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault) {
-    if (result != pdPASS) {
-        if (not ignoreFault) {
-            InternalErrorReporterIF* internalErrorReporter = objectManager->
-                    get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
-            if (internalErrorReporter != nullptr) {
-                internalErrorReporter->queueMessageNotSent();
-            }
-        }
-        return MessageQueueIF::FULL;
-    }
-    return HasReturnvaluesIF::RETURN_OK;
+	if (result != pdPASS) {
+		if (not ignoreFault) {
+			InternalErrorReporterIF* internalErrorReporter = ObjectManager::instance()->
+			        get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
+			if (internalErrorReporter != nullptr) {
+				internalErrorReporter->queueMessageNotSent();
+			}
+		}
+		return MessageQueueIF::FULL;
+	}
+	return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,

@@ -3,6 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
+#include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/datapool/PoolReadGuard.h>
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
@@ -14,7 +15,7 @@
 
 
 TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
-    LocalPoolOwnerBase* poolOwner = objectManager->
+    LocalPoolOwnerBase* poolOwner = ObjectManager::instance()->
             get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
     REQUIRE(poolOwner != nullptr);
     REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);

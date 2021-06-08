@@ -1,6 +1,6 @@
 #include "ModeSequenceMessage.h"
 
-#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManager.h"
 #include "../../storagemanager/StorageManagerIF.h"
 
 void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
@@ -50,7 +50,7 @@ void ModeSequenceMessage::clear(CommandMessage *message) {
 	case TABLE_LIST:
 	case TABLE:
 	case SEQUENCE: {
-		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+		StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
 		        objects::IPC_STORE);
 		if (ipcStore != nullptr){
 			ipcStore->deleteData(ModeSequenceMessage::getStoreAddress(message));

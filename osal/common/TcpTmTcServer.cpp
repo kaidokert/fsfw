@@ -6,7 +6,7 @@
 #include "../../container/SharedRingBuffer.h"
 #include "../../ipc/MessageQueueSenderIF.h"
 #include "../../ipc/MutexGuard.h"
-#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManager.h"
 
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../tmtcservices/TmTcMessage.h"
@@ -41,7 +41,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
         return result;
     }
 
-    tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
+    tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
     if (tcStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "TcpTmTcServer::initialize: TC store uninitialized!" << std::endl;
@@ -51,7 +51,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
         return ObjectManagerIF::CHILD_INIT_FAILED;
     }
 
-    tmtcBridge = objectManager->get<TcpTmTcBridge>(tmtcBridgeId);
+    tmtcBridge = ObjectManager::instance()->get<TcpTmTcBridge>(tmtcBridgeId);
 
     int retval = 0;
     struct addrinfo *addrResult = nullptr;

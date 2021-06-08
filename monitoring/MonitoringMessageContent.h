@@ -5,7 +5,7 @@
 #include "MonitoringIF.h"
 
 #include "../datapoollocal/localPoolDefinitions.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../serialize/SerialBufferAdapter.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../serialize/SerializeElement.h"
@@ -71,7 +71,7 @@ private:
 	}
 	bool checkAndSetStamper() {
 		if (timeStamper == nullptr) {
-			timeStamper = objectManager->get<TimeStamperIF>( timeStamperId );
+			timeStamper = ObjectManager::instance()->get<TimeStamperIF>( timeStamperId );
 			if ( timeStamper == nullptr ) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 				sif::error << "MonitoringReportContent::checkAndSetStamper: "
