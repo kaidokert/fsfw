@@ -68,12 +68,6 @@ private:
     static ObjectManager* objManagerInstance;
 };
 
-/**
- * @brief   This is the forward declaration of the global objectManager instance.
- */
-// SHOULDDO: maybe put this in the glob namespace to explicitely mark it global?
-//extern ObjectManagerIF *objectManager;
-
 /*Documentation can be found in the class method declaration above.*/
 template <typename T>
 T* ObjectManager::get( object_id_t id ) {
