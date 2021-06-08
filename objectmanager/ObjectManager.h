@@ -68,7 +68,7 @@ private:
     static ObjectManager* objManagerInstance;
 };
 
-/*Documentation can be found in the class method declaration above.*/
+// Documentation can be found in the class method declaration above
 template <typename T>
 T* ObjectManager::get( object_id_t id ) {
     SystemObjectIF* temp = this->getSystemObject(id);
