@@ -1,11 +1,12 @@
 #include "Service8FunctionManagement.h"
 #include "servicepackets/Service8Packets.h"
 
+#include "../objectmanager/ObjectManager.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../action/HasActionsIF.h"
 #include "../devicehandlers/DeviceHandlerIF.h"
 #include "../serialize/SerializeAdapter.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 Service8FunctionManagement::Service8FunctionManagement(object_id_t objectId,
 		uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,
@@ -41,7 +42,7 @@ ReturnValue_t Service8FunctionManagement::getMessageQueueAndObject(
 ReturnValue_t Service8FunctionManagement::checkInterfaceAndAcquireMessageQueue(
 		MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
 	// check HasActionIF property of target
-	HasActionsIF* possibleTarget = objectManager->get<HasActionsIF>(*objectId);
+	HasActionsIF* possibleTarget = ObjectManager::instance()->get<HasActionsIF>(*objectId);
 	if(possibleTarget == nullptr){
 		return CommandingServiceBase::INVALID_OBJECT;
 	}

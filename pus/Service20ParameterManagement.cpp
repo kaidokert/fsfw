@@ -1,11 +1,11 @@
 #include "Service20ParameterManagement.h"
 #include "servicepackets/Service20Packets.h"
 
-#include <fsfw/serviceinterface/ServiceInterface.h>
-#include <fsfw/parameters/HasParametersIF.h>
-#include <fsfw/parameters/ParameterMessage.h>
-#include <fsfw/parameters/ReceivesParameterMessagesIF.h>
-#include <tmtc/pusIds.h>
+#include "../serviceinterface/ServiceInterface.h"
+#include "../parameters/HasParametersIF.h"
+#include "../parameters/ParameterMessage.h"
+#include "../objectmanager/ObjectManager.h"
+#include "../parameters/ReceivesParameterMessagesIF.h"
 
 
 Service20ParameterManagement::Service20ParameterManagement(object_id_t objectId, uint16_t apid,
@@ -65,7 +65,7 @@ ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue
         MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
     // check ReceivesParameterMessagesIF property of target
     ReceivesParameterMessagesIF* possibleTarget =
-            objectManager->get<ReceivesParameterMessagesIF>(*objectId);
+            ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
     if(possibleTarget == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "Service20ParameterManagement::checkInterfaceAndAcquire"

@@ -119,7 +119,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
         return result;
     }
 
-    communicationInterface = objectManager->get<DeviceCommunicationIF>(
+    communicationInterface = ObjectManager::instance()->get<DeviceCommunicationIF>(
             deviceCommunicationId);
     if (communicationInterface == nullptr) {
         printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
@@ -136,7 +136,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
         return result;
     }
 
-    IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
     if (IPCStore == nullptr) {
         printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
                 ObjectManagerIF::CHILD_INIT_FAILED, "IPC Store not set up");
@@ -144,8 +144,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
     }
 
     if(rawDataReceiverId != objects::NO_OBJECT) {
-        AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
-                AcceptsDeviceResponsesIF>(rawDataReceiverId);
+        AcceptsDeviceResponsesIF *rawReceiver = ObjectManager::instance()->
+                get<AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
         if (rawReceiver == nullptr) {
             printWarningOrError(sif::OutputTypes::OUT_ERROR,
@@ -164,7 +164,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
     }
 
     if(powerSwitcherId != objects::NO_OBJECT) {
-        powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
+        powerSwitcher = ObjectManager::instance()->get<PowerSwitchIF>(powerSwitcherId);
         if (powerSwitcher == nullptr) {
             printWarningOrError(sif::OutputTypes::OUT_ERROR,
                     "initialize", ObjectManagerIF::CHILD_INIT_FAILED,

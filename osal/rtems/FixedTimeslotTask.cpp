@@ -3,7 +3,7 @@
 
 #include "../../tasks/FixedSequenceSlot.h"
 #include "../../objectmanager/SystemObjectIF.h"
-#include "../../objectmanager/ObjectManagerIF.h"
+#include "../../objectmanager/ObjectManager.h"
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../serviceinterface/ServiceInterface.h"
 
@@ -81,7 +81,7 @@ ReturnValue_t FixedTimeslotTask::startTask() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
         uint32_t slotTimeMs, int8_t executionStep) {
-    ExecutableObjectIF* object = objectManager->get<ExecutableObjectIF>(componentId);
+    ExecutableObjectIF* object = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
     if (object != nullptr) {
         pst.addSlot(componentId, slotTimeMs, executionStep, object, this);
         return HasReturnvaluesIF::RETURN_OK;

@@ -2,6 +2,7 @@
 #include "servicepackets/Service1Packets.h"
 
 #include "../ipc/QueueFactory.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../tmtcservices/PusVerificationReport.h"
 #include "../tmtcpacket/pus/TmPacketStored.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
@@ -99,7 +100,7 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
 
 ReturnValue_t Service1TelecommandVerification::initialize() {
 	// Get target object for TC verification messages
-	AcceptsTelemetryIF* funnel = objectManager->
+	AcceptsTelemetryIF* funnel = ObjectManager::instance()->
 			get<AcceptsTelemetryIF>(targetDestination);
 	if(funnel == nullptr){
 #if FSFW_CPP_OSTREAM_ENABLED == 1

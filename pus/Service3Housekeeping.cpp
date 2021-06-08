@@ -1,7 +1,8 @@
 #include "Service3Housekeeping.h"
 #include "servicepackets/Service3Packets.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
 
+#include "../objectmanager/ObjectManager.h"
+#include "../datapoollocal/HasLocalDataPoolIF.h"
 
 Service3Housekeeping::Service3Housekeeping(object_id_t objectId, uint16_t apid,
         uint8_t serviceId):
@@ -56,7 +57,7 @@ ReturnValue_t Service3Housekeeping::checkInterfaceAndAcquireMessageQueue(
         MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
     // check HasLocalDataPoolIF property of target
     HasLocalDataPoolIF* possibleTarget =
-            objectManager->get<HasLocalDataPoolIF>(*objectId);
+            ObjectManager::instance()->get<HasLocalDataPoolIF>(*objectId);
     if(possibleTarget == nullptr){
         return CommandingServiceBase::INVALID_OBJECT;
     }

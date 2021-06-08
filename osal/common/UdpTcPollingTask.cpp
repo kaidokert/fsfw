@@ -2,7 +2,8 @@
 #include "tcpipHelpers.h"
 #include "../../platform.h"
 #include "../../globalfunctions/arrayprinter.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
+#include "../../objectmanager/ObjectManager.h"
 
 #ifdef PLATFORM_WIN
 #include <winsock2.h>
@@ -116,7 +117,7 @@ ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 }
 
 ReturnValue_t UdpTcPollingTask::initialize() {
-    tcStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
+    tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
     if (tcStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "UdpTcPollingTask::initialize: TC store uninitialized!" << std::endl;
@@ -124,7 +125,7 @@ ReturnValue_t UdpTcPollingTask::initialize() {
         return ObjectManagerIF::CHILD_INIT_FAILED;
     }
 
-    tmtcBridge = objectManager->get<UdpTmTcBridge>(tmtcBridgeId);
+    tmtcBridge = ObjectManager::instance()->get<UdpTmTcBridge>(tmtcBridgeId);
     if(tmtcBridge == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "UdpTcPollingTask::initialize: Invalid TMTC bridge object!" <<

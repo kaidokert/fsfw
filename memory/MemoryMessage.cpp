@@ -1,6 +1,6 @@
 #include "MemoryMessage.h"
 
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 uint32_t MemoryMessage::getAddress(const CommandMessage* message) {
 	return message->getParameter();
@@ -44,7 +44,7 @@ void MemoryMessage::clear(CommandMessage* message) {
 	switch (message->getCommand()) {
 	case CMD_MEMORY_LOAD:
 	case REPLY_MEMORY_DUMP: {
-		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+		StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
 				objects::IPC_STORE);
 		if (ipcStore != NULL) {
 			ipcStore->deleteData(getStoreID(message));

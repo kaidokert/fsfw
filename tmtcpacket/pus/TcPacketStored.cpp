@@ -1,6 +1,7 @@
 #include "TcPacketStored.h"
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 
@@ -63,7 +64,7 @@ ReturnValue_t TcPacketStored::deletePacket() {
 
 bool TcPacketStored::checkAndSetStore() {
 	if (this->store == nullptr) {
-		this->store = objectManager->get<StorageManagerIF>(objects::TC_STORE);
+		this->store = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
 		if (this->store == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 			sif::error << "TcPacketStored::TcPacketStored: TC Store not found!"

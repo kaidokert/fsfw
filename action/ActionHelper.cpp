@@ -2,7 +2,7 @@
 #include "HasActionsIF.h"
 
 #include "../ipc/MessageQueueSenderIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../serviceinterface/ServiceInterface.h"
 
 ActionHelper::ActionHelper(HasActionsIF* setOwner,
@@ -25,7 +25,7 @@ ReturnValue_t ActionHelper::handleActionMessage(CommandMessage* command) {
 }
 
 ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
-    ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
     if (ipcStore == nullptr) {
         return HasReturnvaluesIF::RETURN_FAILED;
     }

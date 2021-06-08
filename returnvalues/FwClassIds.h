@@ -72,6 +72,9 @@ enum: uint8_t {
     PUS_SERVICE_3, //PUS3
     PUS_SERVICE_9, //PUS9
     FILE_SYSTEM, //FILS
+    HAL_SPI, //HSPI
+    HAL_UART, //HURT
+    HAL_I2C, //HI2C
     FW_CLASS_ID_COUNT // [EXPORT] : [END]
 
 };

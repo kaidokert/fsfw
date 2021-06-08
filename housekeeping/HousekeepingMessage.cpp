@@ -1,6 +1,6 @@
 #include "HousekeepingMessage.h"
 
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include <cstring>
 
 HousekeepingMessage::~HousekeepingMessage() {}
@@ -161,7 +161,7 @@ void HousekeepingMessage::clear(CommandMessage* message) {
     case(UPDATE_SNAPSHOT_VARIABLE): {
         store_address_t storeId;
         getHkDataReply(message, &storeId);
-        StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+        StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
                 objects::IPC_STORE);
         if (ipcStore != nullptr) {
             ipcStore->deleteData(storeId);

@@ -1,6 +1,7 @@
 #include "CCSDSDistributorIF.h"
 #include "PUSDistributor.h"
 
+#include "../objectmanager/ObjectManager.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcservices/PusVerificationReport.h"
@@ -125,7 +126,7 @@ ReturnValue_t PUSDistributor::initialize() {
     }
 
     CCSDSDistributorIF* ccsdsDistributor =
-            objectManager->get<CCSDSDistributorIF>(packetSource);
+            ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
     if (ccsdsDistributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "PUSDistributor::initialize: Packet source invalid" << std::endl;

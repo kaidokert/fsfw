@@ -1,6 +1,7 @@
 #include "PeriodicTask.h"
 
 #include "../../serviceinterface/ServiceInterface.h"
+#include "../../objectmanager/ObjectManager.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
 PeriodicTask::PeriodicTask(const char *name, rtems_task_priority setPriority,
@@ -68,7 +69,7 @@ void PeriodicTask::taskFunctionality() {
 }
 
 ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-    ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(object);
+    ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
     if (newObject == nullptr) {
         return HasReturnvaluesIF::RETURN_FAILED;
     }

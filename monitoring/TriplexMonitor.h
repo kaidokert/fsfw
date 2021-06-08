@@ -5,7 +5,7 @@
 #include "../datapool/PIDReaderList.h"
 #include "../health/HealthTableIF.h"
 #include "../parameters/HasParametersIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 
 //SHOULDDO: This is by far not perfect. Could be merged with new Monitor classes. But still, it's over-engineering.
@@ -64,7 +64,7 @@ public:
 		return result;
 	}
 	ReturnValue_t initialize() {
-		healthTable = objectManager->get<HealthTableIF>(objects::HEALTH_TABLE);
+		healthTable = ObjectManager::instance()->get<HealthTableIF>(objects::HEALTH_TABLE);
 		if (healthTable == NULL) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}

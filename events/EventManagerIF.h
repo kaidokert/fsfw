@@ -3,7 +3,7 @@
 
 #include "EventMessage.h"
 #include "eventmatching/eventmatching.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../serviceinterface/ServiceInterface.h"
@@ -43,7 +43,7 @@ public:
 	static void triggerEvent(EventMessage* message,
 	        MessageQueueId_t sentFrom = 0) {
 		if (eventmanagerQueue == MessageQueueIF::NO_QUEUE) {
-			EventManagerIF *eventmanager = objectManager->get<EventManagerIF>(
+			EventManagerIF *eventmanager = ObjectManager::instance()->get<EventManagerIF>(
 					objects::EVENT_MANAGER);
 			if (eventmanager == nullptr) {
 #if FSFW_VERBOSE_LEVEL >= 1

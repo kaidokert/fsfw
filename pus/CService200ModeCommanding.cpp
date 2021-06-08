@@ -2,7 +2,8 @@
 #include "servicepackets/Service200Packets.h"
 
 #include "../modes/HasModesIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../objectmanager/ObjectManager.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../serialize/SerialLinkedListAdapter.h"
 #include "../modes/ModeMessage.h"
 
@@ -40,7 +41,7 @@ ReturnValue_t CService200ModeCommanding::getMessageQueueAndObject(
 
 ReturnValue_t CService200ModeCommanding::checkInterfaceAndAcquireMessageQueue(
         MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
-    HasModesIF * destination = objectManager->get<HasModesIF>(*objectId);
+    HasModesIF * destination = ObjectManager::instance()->get<HasModesIF>(*objectId);
     if(destination == nullptr) {
         return CommandingServiceBase::INVALID_OBJECT;
 
