@@ -130,3 +130,7 @@ bool GenericFileSystemMessage::getReadReply(const CommandMessage *message,
     }
     return message->getParameter();
 }
+
+ReturnValue_t GenericFileSystemMessage::clear(CommandMessage* message) {
+    return HasReturnvaluesIF::RETURN_OK;
+}

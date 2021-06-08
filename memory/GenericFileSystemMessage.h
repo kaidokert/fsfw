@@ -108,6 +108,8 @@ public:
     static ReturnValue_t getFailureReply(const CommandMessage* message,
             uint32_t* errorParam = nullptr);
 
+    static ReturnValue_t clear(CommandMessage* message);
+
 };
 
 #endif /* MISSION_MEMORY_GENERICFILESYSTEMMESSAGE_H_ */
