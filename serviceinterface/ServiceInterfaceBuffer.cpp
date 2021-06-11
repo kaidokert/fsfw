@@ -171,6 +171,10 @@ bool ServiceInterfaceBuffer::crAdditionEnabled() const {
     return addCrToPreamble;
 }
 
+void ServiceInterfaceBuffer::setAsciiColorPrefix(std::string colorPrefix) {
+    this->colorPrefix = colorPrefix;
+}
+
 #ifdef UT699
 #include "../osal/rtems/Interrupt.h"
 

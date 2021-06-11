@@ -19,5 +19,9 @@ bool ServiceInterfaceStream::crAdditionEnabled() const {
     return streambuf.crAdditionEnabled();
 }
 
+bool ServiceInterfaceStream::setAsciiColorPrefix(std::string asciiColorCode) {
+    streambuf.setAsciiColorPrefix(asciiColorCode);
+}
+
 #endif
 
