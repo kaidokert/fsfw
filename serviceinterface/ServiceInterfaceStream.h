@@ -46,6 +46,8 @@ public:
 	 */
 	bool crAdditionEnabled() const;
 
+	void setAsciiColorPrefix(std::string asciiColorCode);
+
 protected:
 	ServiceInterfaceBuffer streambuf;
 };
