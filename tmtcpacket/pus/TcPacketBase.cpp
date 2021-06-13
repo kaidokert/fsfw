@@ -23,6 +23,10 @@ uint8_t TcPacketBase::getSubService() {
 	return tcData->dataField.service_subtype;
 }
 
+uint8_t TcPacketBase::getSourceId() {
+    return tcData->dataField.source_id;
+}
+
 uint8_t TcPacketBase::getAcknowledgeFlags() {
 	return tcData->dataField.version_type_ack & 0b00001111;
 }

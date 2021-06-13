@@ -109,6 +109,13 @@ public:
 	 */
 	uint8_t getSubService();
 	/**
+	 * The source ID can be used to have an additional identifier, e.g. for different ground
+	 * station.
+	 * @return
+	 */
+	uint8_t getSourceId();
+
+	/**
 	 * This is a getter for a pointer to the packet's Application data.
 	 *
 	 * These are the bytes that follow after the Data Field Header. They form
