@@ -246,7 +246,11 @@ void CommandingServiceBase::handleRequestQueue() {
 	TmTcMessage message;
 	ReturnValue_t result;
 	store_address_t address;
-	TcPacketStored packet;
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+	TcPacketStoredPusC packet;
+#else
+	TcPacketStoredPusA packet;
+#endif
 	MessageQueueId_t queue;
 	object_id_t objectId;
 	for (result = requestQueue->receiveMessage(&message); result == RETURN_OK;
@@ -351,14 +355,18 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 }
 
 
-void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
+void CommandingServiceBase::startExecution(TcPacketStoredBase *storedPacket,
         CommandMapIter iter) {
     ReturnValue_t result = RETURN_OK;
     CommandMessage command;
-    iter->second.subservice = storedPacket->getSubService();
+    TcPacketBase* tcPacketBase = storedPacket->getPacketBase();
+    if(tcPacketBase == nullptr) {
+        return;
+    }
+    iter->second.subservice = tcPacketBase->getSubService();
     result = prepareCommand(&command, iter->second.subservice,
-            storedPacket->getApplicationData(),
-            storedPacket->getApplicationDataSize(), &iter->second.state,
+            tcPacketBase->getApplicationData(),
+            tcPacketBase->getApplicationDataSize(), &iter->second.state,
             iter->second.objectId);
 
     ReturnValue_t sendResult = RETURN_OK;
@@ -371,12 +379,12 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 		if (sendResult == RETURN_OK) {
 			Clock::getUptime(&iter->second.uptimeOfStart);
 			iter->second.step = 0;
-			iter->second.subservice = storedPacket->getSubService();
+			iter->second.subservice = tcPacketBase->getSubService();
 			iter->second.command = command.getCommand();
-			iter->second.tcInfo.ackFlags = storedPacket->getAcknowledgeFlags();
-			iter->second.tcInfo.tcPacketId = storedPacket->getPacketId();
+			iter->second.tcInfo.ackFlags = tcPacketBase->getAcknowledgeFlags();
+			iter->second.tcInfo.tcPacketId = tcPacketBase->getPacketId();
 			iter->second.tcInfo.tcSequenceControl =
-					storedPacket->getPacketSequenceControl();
+			        tcPacketBase->getPacketSequenceControl();
 			acceptPacket(tc_verification::START_SUCCESS, storedPacket);
 		} else {
 			command.clearCommandMessage();
@@ -392,7 +400,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 		}
 		if (sendResult == RETURN_OK) {
 			verificationReporter.sendSuccessReport(tc_verification::START_SUCCESS,
-					storedPacket);
+					storedPacket->getPacketBase());
 			acceptPacket(tc_verification::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
@@ -409,16 +417,16 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 }
 
 
-void CommandingServiceBase::rejectPacket(uint8_t report_id,
-		TcPacketStored* packet, ReturnValue_t error_code) {
-	verificationReporter.sendFailureReport(report_id, packet, error_code);
+void CommandingServiceBase::rejectPacket(uint8_t reportId,
+		TcPacketStoredBase* packet, ReturnValue_t errorCode) {
+	verificationReporter.sendFailureReport(reportId, packet->getPacketBase(), errorCode);
 	packet->deletePacket();
 }
 
 
 void CommandingServiceBase::acceptPacket(uint8_t reportId,
-		TcPacketStored* packet) {
-	verificationReporter.sendSuccessReport(reportId, packet);
+		TcPacketStoredBase* packet) {
+	verificationReporter.sendSuccessReport(reportId, packet->getPacketBase());
 	packet->deletePacket();
 }
 
@@ -428,7 +436,11 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
 	if (iter->second.fifo.retrieve(&address) != RETURN_OK) {
 		commandMap.erase(&iter);
 	} else {
-		TcPacketStored newPacket(address);
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+		TcPacketStoredPusC newPacket(address);
+#else
+		TcPacketStoredPusA newPacket(address);
+#endif
 		startExecution(&newPacket, iter);
 	}
 }
