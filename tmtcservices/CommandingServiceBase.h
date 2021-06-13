@@ -1,6 +1,7 @@
 #ifndef FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 #define FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
+#include <fsfw/tmtcpacket/pus/TcPacketStoredBase.h>
 #include "AcceptsTelecommandsIF.h"
 #include "VerificationReporter.h"
 
@@ -351,12 +352,12 @@ private:
 	 */
 	void handleRequestQueue();
 
-	void rejectPacket(uint8_t reportId, TcPacketStored* packet,
+	void rejectPacket(uint8_t reportId, TcPacketStoredBase* packet,
 			ReturnValue_t errorCode);
 
-	void acceptPacket(uint8_t reportId, TcPacketStored* packet);
+	void acceptPacket(uint8_t reportId, TcPacketStoredBase* packet);
 
-	void startExecution(TcPacketStored *storedPacket, CommandMapIter iter);
+	void startExecution(TcPacketStoredBase *storedPacket, CommandMapIter iter);
 
 	void handleCommandMessage(CommandMessage* reply);
 	void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,

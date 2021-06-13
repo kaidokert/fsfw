@@ -17,14 +17,17 @@ VerificationReporter::VerificationReporter() :
 VerificationReporter::~VerificationReporter() {}
 
 void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
-		TcPacketBase* current_packet, uint8_t set_step) {
+		TcPacketBase* currentPacket, uint8_t set_step) {
 	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
 		this->initialize();
 	}
+	if(currentPacket == nullptr) {
+	    return;
+	}
 	PusVerificationMessage message(set_report_id,
-			current_packet->getAcknowledgeFlags(),
-			current_packet->getPacketId(),
-			current_packet->getPacketSequenceControl(), 0, set_step);
+			currentPacket->getAcknowledgeFlags(),
+			currentPacket->getPacketId(),
+			currentPacket->getPacketSequenceControl(), 0, set_step);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 			&message);
 	if (status != HasReturnvaluesIF::RETURN_OK) {
@@ -56,15 +59,18 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 }
 
 void VerificationReporter::sendFailureReport(uint8_t report_id,
-		TcPacketBase* current_packet, ReturnValue_t error_code, uint8_t step,
+		TcPacketBase* currentPacket, ReturnValue_t error_code, uint8_t step,
 		uint32_t parameter1, uint32_t parameter2) {
 	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
 		this->initialize();
 	}
+	if(currentPacket == nullptr) {
+	    return;
+	}
 	PusVerificationMessage message(report_id,
-			current_packet->getAcknowledgeFlags(),
-			current_packet->getPacketId(),
-			current_packet->getPacketSequenceControl(), error_code, step,
+			currentPacket->getAcknowledgeFlags(),
+			currentPacket->getPacketId(),
+			currentPacket->getPacketSequenceControl(), error_code, step,
 			parameter1, parameter2);
 	ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue,
 	        &message);

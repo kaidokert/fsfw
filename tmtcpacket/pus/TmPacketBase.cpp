@@ -44,13 +44,6 @@ ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
             &tempSize, getTimestampSize());
 }
 
-void TmPacketBase::print() {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "TmPacketBase::print: " << std::endl;
-#endif
-    arrayprinter::print(getWholeData(), getFullSize());
-}
-
 bool TmPacketBase::checkAndSetStamper() {
     if (timeStamper == NULL) {
         timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
@@ -66,3 +59,11 @@ bool TmPacketBase::checkAndSetStamper() {
     return true;
 }
 
+void TmPacketBase::print() {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::info << "TmPacketBase::print:" << std::endl;
+#else
+    sif::printInfo("TmPacketBase::print:\n");
+#endif
+    arrayprinter::print(getWholeData(), getFullSize());
+}

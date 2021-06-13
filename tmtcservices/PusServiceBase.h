@@ -141,7 +141,11 @@ protected:
 	 * The current Telecommand to be processed.
 	 * It is deleted after handleRequest was executed.
 	 */
-	TcPacketStored currentPacket;
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+	TcPacketStoredPusC currentPacket;
+#else
+    TcPacketStoredPusA currentPacket;
+#endif
 
 	static object_id_t packetSource;
 

@@ -4,31 +4,6 @@
 #include "../../tmtcpacket/SpacePacketBase.h"
 #include <cstddef>
 
-
-/**
- * This struct defines a byte-wise structured PUS TC Data Field Header.
- * Any optional fields in the header must be added or removed here.
- * Currently, the Source Id field is present with one byte.
- * @ingroup tmtcpackets
- */
-struct PUSTcDataFieldHeader {
-	uint8_t version_type_ack;
-	uint8_t service_type;
-	uint8_t service_subtype;
-	uint8_t source_id;
-};
-
-/**
- * This struct defines the data structure of a PUS Telecommand Packet when
- * accessed via a pointer.
- * @ingroup tmtcpackets
- */
-struct TcPacketPointer {
-	CCSDSPrimaryHeader primary;
-	PUSTcDataFieldHeader dataField;
-	uint8_t appData;
-};
-
 /**
  * This class is the basic data handler for any ECSS PUS Telecommand packet.
  *
@@ -41,9 +16,8 @@ struct TcPacketPointer {
  * @ingroup tmtcpackets
  */
 class TcPacketBase : public SpacePacketBase {
+    friend class TcPacketStoredBase;
 public:
-	static const uint16_t TC_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
-	        sizeof(PUSTcDataFieldHeader) + 2);
 
 	enum AckField {
 		//! No acknowledgements are expected.
@@ -79,7 +53,7 @@ public:
 	 * highest bit of the first byte of the Data Field Header.
 	 * @return	the CCSDS Secondary Header Flag
 	 */
-	uint8_t getSecondaryHeaderFlag();
+	virtual uint8_t getSecondaryHeaderFlag() = 0;
 	/**
 	 * This command returns the TC Packet PUS Version Number.
 	 * The version number of ECSS PUS 2003 is 1.
@@ -87,7 +61,7 @@ public:
 	 * first byte.
 	 * @return
 	 */
-	uint8_t getPusVersionNumber();
+	virtual uint8_t getPusVersionNumber() = 0;
 	/**
 	 * This is a getter for the packet's Ack field, which are the lowest four
 	 * bits of the first byte of the Data Field Header.
@@ -95,19 +69,19 @@ public:
 	 * It is packed in a uint8_t variable.
 	 * @return	The packet's PUS Ack field.
 	 */
-	uint8_t getAcknowledgeFlags();
+	virtual uint8_t getAcknowledgeFlags() = 0;
 	/**
 	 * This is a getter for the packet's PUS Service ID, which is the second
 	 * byte of the Data Field Header.
 	 * @return	The packet's PUS Service ID.
 	 */
-	uint8_t getService();
+	virtual uint8_t getService() const = 0;
 	/**
 	 * This is a getter for the packet's PUS Service Subtype, which is the
 	 * third byte of the Data Field Header.
 	 * @return	The packet's PUS Service Subtype.
 	 */
-	uint8_t getSubService();
+	virtual uint8_t getSubService() = 0;
 	/**
 	 * The source ID can be used to have an additional identifier, e.g. for different ground
 	 * station.
@@ -122,7 +96,7 @@ public:
 	 * the packet's application data.
 	 * @return	A pointer to the PUS Application Data.
 	 */
-	const uint8_t* getApplicationData() const;
+	virtual const uint8_t* getApplicationData() const = 0;
 	/**
 	 * This method calculates the size of the PUS Application data field.
 	 *
@@ -131,7 +105,7 @@ public:
 	 * @return	The size of the PUS Application Data (without Error Control
 	 * 		field)
 	 */
-	uint16_t getApplicationDataSize();
+	virtual uint16_t getApplicationDataSize() = 0;
 	/**
 	 * This getter returns the Error Control Field of the packet.
 	 *
@@ -140,44 +114,26 @@ public:
 	 * supposed to be a 16bit-CRC.
 	 * @return	The PUS Error Control
 	 */
-	uint16_t getErrorControl();
+	virtual uint16_t getErrorControl() = 0;
 	/**
 	 * With this method, the Error Control Field is updated to match the
 	 * current content of the packet.
 	 */
-	void setErrorControl();
+	virtual void setErrorControl() = 0;
 
-	/**
-	 * This is a debugging helper method that prints the whole packet content
-	 * to the screen.
-	 */
-	void print();
 	/**
 	 * Calculate full packet length from application data length.
 	 * @param appDataLen
 	 * @return
 	 */
-	static size_t calculateFullPacketLength(size_t appDataLen);
+	virtual size_t calculateFullPacketLength(size_t appDataLen) = 0;
 
+    /**
+     * This is a debugging helper method that prints the whole packet content
+     * to the screen.
+     */
+    void print();
 protected:
-    /**
-     * A pointer to a structure which defines the data structure of
-     * the packet's data.
-     *
-     * To be hardware-safe, all elements are of byte size.
-     */
-    TcPacketPointer* tcData;
-
-    /**
-     * Initializes the Tc Packet header.
-     * @param apid APID used.
-     * @param sequenceCount Sequence Count in the primary header.
-     * @param ack Which acknowledeges are expected from the receiver.
-     * @param service   PUS Service
-     * @param subservice PUS Subservice
-     */
-    void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack,
-            uint8_t service, uint8_t subservice);
 
     /**
      * With this method, the packet data pointer can be redirected to another
@@ -187,7 +143,7 @@ protected:
      *
      * @param p_data    A pointer to another PUS Telecommand Packet.
      */
-    void setData( const uint8_t* pData );
+    void setData( const uint8_t* pData ) = 0;
 };
 
 
