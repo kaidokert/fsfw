@@ -4,31 +4,6 @@
 #include "../../tmtcpacket/SpacePacketBase.h"
 #include <cstddef>
 
-
-/**
- * This struct defines a byte-wise structured PUS TC Data Field Header.
- * Any optional fields in the header must be added or removed here.
- * Currently, the Source Id field is present with one byte.
- * @ingroup tmtcpackets
- */
-struct PUSTcDataFieldHeader {
-	uint8_t version_type_ack;
-	uint8_t service_type;
-	uint8_t service_subtype;
-	uint8_t source_id;
-};
-
-/**
- * This struct defines the data structure of a PUS Telecommand Packet when
- * accessed via a pointer.
- * @ingroup tmtcpackets
- */
-struct TcPacketPointer {
-	CCSDSPrimaryHeader primary;
-	PUSTcDataFieldHeader dataField;
-	uint8_t appData;
-};
-
 /**
  * This class is the basic data handler for any ECSS PUS Telecommand packet.
  *

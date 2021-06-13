@@ -1,6 +1,7 @@
 target_sources(${LIB_FSFW_NAME} 
-	PRIVATE 
+	PRIVATE
 		TcPacketBase.cpp
+		TcPacketPusA.cpp
 		TcPacketStored.cpp
 		TmPacketBase.cpp
 		TmPacketMinimal.cpp
