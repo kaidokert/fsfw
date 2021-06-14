@@ -35,7 +35,7 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage,
 		colorPrefix = sif::ANSI_COLOR_GREEN;
 	}
 	else if(setMessage.find("WARNING") != std::string::npos) {
-		colorPrefix = sif::ANSI_COLOR_YELLOW;
+		colorPrefix = sif::ANSI_COLOR_MAGENTA;
 	}
 	else if(setMessage.find("ERROR") != std::string::npos) {
 		colorPrefix = sif::ANSI_COLOR_RED;
@@ -169,6 +169,10 @@ std::string* ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 
 bool ServiceInterfaceBuffer::crAdditionEnabled() const {
     return addCrToPreamble;
+}
+
+void ServiceInterfaceBuffer::setAsciiColorPrefix(std::string colorPrefix) {
+    this->colorPrefix = colorPrefix;
 }
 
 #ifdef UT699
