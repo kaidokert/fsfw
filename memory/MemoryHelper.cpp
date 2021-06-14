@@ -2,9 +2,9 @@
 #include "MemoryMessage.h"
 
 #include "../globalfunctions/CRC.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../serialize/EndianConverter.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis,
 		MessageQueueIF* useThisQueue):
@@ -187,7 +187,7 @@ ReturnValue_t MemoryHelper::initialize(MessageQueueIF* queueToUse_) {
 }
 
 ReturnValue_t MemoryHelper::initialize() {
-	ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+	ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
 	if (ipcStore != nullptr) {
 		return RETURN_OK;
 	} else {

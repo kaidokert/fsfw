@@ -2,8 +2,9 @@
 #include "AcceptsVerifyMessageIF.h"
 #include "PusVerificationReport.h"
 
+#include "../objectmanager/ObjectManager.h"
 #include "../ipc/MessageQueueIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../objectmanager/frameworkObjects.h"
 
 object_id_t VerificationReporter::messageReceiver =
@@ -104,7 +105,7 @@ void VerificationReporter::initialize() {
 #endif
 		return;
 	}
-	AcceptsVerifyMessageIF* temp = objectManager->get<AcceptsVerifyMessageIF>(
+	AcceptsVerifyMessageIF* temp = ObjectManager::instance()->get<AcceptsVerifyMessageIF>(
 			messageReceiver);
 	if (temp == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

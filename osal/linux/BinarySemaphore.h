@@ -76,6 +76,7 @@ public:
 	static ReturnValue_t checkCount(sem_t* handle, uint8_t maxCount);
 protected:
 	sem_t handle;
+    static constexpr const char* CLASS_NAME = "BinarySemaphore";
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_BINARYSEMPAHORE_H_ */

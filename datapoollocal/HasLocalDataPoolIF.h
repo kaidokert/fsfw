@@ -34,7 +34,8 @@ class LocalPoolObjectBase;
  * can be retrieved using the object manager, provided the target object is a SystemObject.
  * For example, the following line of code can be used to retrieve the interface
  *
- *    HasLocalDataPoolIF* poolIF = objectManager->get<HasLocalDataPoolIF>(objects::SOME_OBJECT);
+ *    HasLocalDataPoolIF* poolIF = ObjectManager::instance()->
+ *             get<HasLocalDataPoolIF>(objects::SOME_OBJECT);
  *    if(poolIF != nullptr) {
  *        doSomething()
  *    }

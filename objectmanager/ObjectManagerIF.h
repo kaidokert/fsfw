@@ -4,15 +4,15 @@
 #include "frameworkObjects.h"
 #include "SystemObjectIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 /**
  * @brief	This class provides an interface to the global object manager.
- * @details	This manager handles a list of available objects with system-wide
- * 			relevance, such as device handlers, and TM/TC services. They can be
- * 			inserted, removed and retrieved from the list. On getting the
- * 			object, the call checks if the object implements the requested
- * 			interface.
+ * @details
+ * This manager handles a list of available objects with system-wide relevance, such as device
+ * handlers, and TM/TC services. They can be inserted, removed and retrieved from the list.
+ * On getting the object, the call checks if the object implements the requested interface.
+ * This interface does not specify a getter function because templates can't be used in interfaces.
  * @author	Bastian Baetz
  * @ingroup system_objects
  */
@@ -21,7 +21,8 @@ public:
 	static constexpr uint8_t INTERFACE_ID = CLASS_ID::OBJECT_MANAGER_IF;
 	static constexpr ReturnValue_t INSERTION_FAILED = MAKE_RETURN_CODE( 1 );
 	static constexpr ReturnValue_t NOT_FOUND = MAKE_RETURN_CODE( 2 );
-	static constexpr ReturnValue_t CHILD_INIT_FAILED = MAKE_RETURN_CODE( 3 ); //!< Can be used if the initialization of a SystemObject failed.
+	//!< Can be used if the initialization of a SystemObject failed.
+	static constexpr ReturnValue_t CHILD_INIT_FAILED = MAKE_RETURN_CODE( 3 );
 	static constexpr ReturnValue_t INTERNAL_ERR_REPORTER_UNINIT = MAKE_RETURN_CODE( 4 );
 
 protected:
@@ -50,21 +51,10 @@ public:
 	 */
 	virtual ReturnValue_t insert( object_id_t id, SystemObjectIF* object ) = 0;
 	/**
-	 * @brief	With the get call, interfaces of an object can be retrieved in
-	 * 			a type-safe manner.
-	 * @details With the template-based call, the object list is searched with the
-	 * 			getSystemObject method and afterwards it is checked, if the object
-	 * 			implements the requested interface (with a dynamic_cast).
-	 * @param id	The object id of the requested object.
-	 * @return	The method returns a pointer to an object implementing the
-	 * 			requested interface, or NULL.
-	 */
-	template <typename T> T* get( object_id_t id );
-	/**
 	 * @brief	With this call, an object is removed from the list.
 	 * @param id	The object id of the object to be removed.
-	 * @return	\li NOT_FOUND in case the object was not found
-	 * 			\li RETURN_OK in case the object was successfully removed
+	 * @return	@li NOT_FOUND in case the object was not found
+	 * 			@li RETURN_OK in case the object was successfully removed
 	 */
 	virtual ReturnValue_t remove( object_id_t id ) = 0;
 	virtual void initialize() = 0;
@@ -74,25 +64,5 @@ public:
 	 */
 	virtual void printList() = 0;
 };
-
-
-/**
- * @brief	This is the forward declaration of the global objectManager instance.
- */
-// SHOULDDO: maybe put this in the glob namespace to explicitely mark it global?
-extern ObjectManagerIF *objectManager;
-
-/*Documentation can be found in the class method declaration above.*/
-template <typename T>
-T* ObjectManagerIF::get( object_id_t id ) {
-	if(objectManager == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "ObjectManagerIF: Global object manager has not "
-				"been initialized yet!" << std::endl;
-#endif
-	}
-	SystemObjectIF* temp = this->getSystemObject(id);
-	return dynamic_cast<T*>(temp);
-}
 
 #endif /* OBJECTMANAGERIF_H_ */

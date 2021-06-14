@@ -4,7 +4,7 @@
 #include "HasLocalDataPoolIF.h"
 #include "internal/HasLocalDpIFUserAttorney.h"
 
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,
@@ -43,7 +43,7 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
                 "which is the NO_PARAMETER value!\n");
 #endif
     }
-    HasLocalDataPoolIF* hkOwner = objectManager->get<HasLocalDataPoolIF>(poolOwner);
+    HasLocalDataPoolIF* hkOwner = ObjectManager::instance()->get<HasLocalDataPoolIF>(poolOwner);
     if(hkOwner == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPoolVariable: The supplied pool owner did not implement the correct "

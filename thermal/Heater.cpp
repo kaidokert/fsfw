@@ -1,5 +1,6 @@
 #include "Heater.h"
 
+#include "../objectmanager/ObjectManager.h"
 #include "../devicehandlers/DeviceHandlerFailureIsolation.h"
 #include "../power/Fuse.h"
 #include "../ipc/QueueFactory.h"
@@ -239,7 +240,7 @@ ReturnValue_t Heater::initialize() {
         return result;
     }
 
-    EventManagerIF* manager = objectManager->get<EventManagerIF>(
+    EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(
             objects::EVENT_MANAGER);
     if (manager == NULL) {
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -249,7 +250,7 @@ ReturnValue_t Heater::initialize() {
         return result;
     }
 
-    ConfirmsFailuresIF* pcdu = objectManager->get<ConfirmsFailuresIF>(
+    ConfirmsFailuresIF* pcdu = ObjectManager::instance()->get<ConfirmsFailuresIF>(
             DeviceHandlerFailureIsolation::powerConfirmationId);
     if (pcdu == NULL) {
         return HasReturnvaluesIF::RETURN_FAILED;

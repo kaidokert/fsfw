@@ -3,6 +3,7 @@
 #include "../subsystem/SubsystemBase.h"
 #include "../ipc/QueueFactory.h"
 #include "../action/HasActionsIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 ControllerBase::ControllerBase(object_id_t setObjectId, object_id_t parentId,
         size_t commandQueueDepth) :
@@ -25,7 +26,7 @@ ReturnValue_t ControllerBase::initialize() {
 
     MessageQueueId_t parentQueue = 0;
     if (parentId != objects::NO_OBJECT) {
-        SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
+        SubsystemBase *parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
         if (parent == nullptr) {
             return RETURN_FAILED;
         }

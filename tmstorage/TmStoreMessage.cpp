@@ -1,5 +1,5 @@
 #include "TmStoreMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 
 TmStoreMessage::~TmStoreMessage() {
 	
@@ -64,7 +64,7 @@ void TmStoreMessage::clear(CommandMessage* cmd) {
 	case INDEX_REPORT:
 	case DELETE_STORE_CONTENT_TIME:
 	case DOWNLINK_STORE_CONTENT_TIME: {
-		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+		StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
 				objects::IPC_STORE);
 		if (ipcStore != NULL) {
 			ipcStore->deleteData(getStoreId(cmd));

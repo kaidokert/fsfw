@@ -1,8 +1,11 @@
-#include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../objectmanager/ObjectManagerIF.h"
 #include "MessageQueue.h"
 #include "RtemsBasic.h"
+
+#include "../../serviceinterface/ServiceInterface.h"
+#include "../../objectmanager/ObjectManager.h"
+
 #include <cstring>
+
 MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size) :
 		id(0), lastPartner(0), defaultDestination(NO_QUEUE), internalErrorReporter(nullptr) {
 	rtems_name name = ('Q' << 24) + (queueCounter++ << 8);
@@ -94,7 +97,7 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo,
 	//TODO: Check if we're in ISR.
 	if (result != RTEMS_SUCCESSFUL && !ignoreFault) {
 		if (internalErrorReporter == nullptr) {
-			internalErrorReporter = objectManager->get<InternalErrorReporterIF>(
+			internalErrorReporter = ObjectManager::instance()->get<InternalErrorReporterIF>(
 					objects::INTERNAL_ERROR_REPORTER);
 		}
 		if (internalErrorReporter != nullptr) {

@@ -1,8 +1,9 @@
 #ifndef FSFW_OBJECTMANAGER_FRAMEWORKOBJECTS_H_
 #define FSFW_OBJECTMANAGER_FRAMEWORKOBJECTS_H_
 
-#include <fsfw/objectmanager/SystemObjectIF.h>
+#include "SystemObjectIF.h"
 
+// The objects will be instantiated in the ID order
 namespace objects {
 enum framework_objects: object_id_t {
     FSFW_OBJECTS_START = 0x53000000,
@@ -16,6 +17,7 @@ enum framework_objects: object_id_t {
     PUS_SERVICE_17_TEST = 0x53000017,
     PUS_SERVICE_20_PARAMETERS = 0x53000020,
     PUS_SERVICE_200_MODE_MGMT = 0x53000200,
+    PUS_SERVICE_201_HEALTH = 0x53000201,
 
     //Generic IDs for IPC, modes, health, events
     HEALTH_TABLE = 0x53010000,

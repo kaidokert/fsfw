@@ -1,9 +1,10 @@
 #include "AcceptsTelemetryIF.h"
 #include "CommandingServiceBase.h"
 #include "TmTcMessage.h"
+#include <FSFWConfig.h>
 
 #include "../tcdistribution/PUSDistributorIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../ipc/QueueFactory.h"
 #include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcpacket/pus/TmPacketStored.h"
@@ -67,12 +68,12 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	    packetDestination = defaultPacketDestination;
 	}
 	AcceptsTelemetryIF* packetForwarding =
-			objectManager->get<AcceptsTelemetryIF>(packetDestination);
+	        ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
 
 	if(packetSource == objects::NO_OBJECT) {
 	    packetSource = defaultPacketSource;
 	}
-	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
+	PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(
 			packetSource);
 
 	if (packetForwarding == nullptr or distributor == nullptr) {
@@ -87,8 +88,8 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	requestQueue->setDefaultDestination(
 			packetForwarding->getReportReceptionQueue());
 
-	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
+	IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+	TCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
 
 	if (IPCStore == nullptr or TCStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -293,8 +294,13 @@ void CommandingServiceBase::handleRequestQueue() {
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 		const uint8_t* data, size_t dataLen, const uint8_t* headerData,
 		size_t headerSize) {
-	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
 			this->tmPacketCounter, data, dataLen, headerData, headerSize);
+#else
+	TmPacketStoredPusC tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, data, dataLen, headerData, headerSize);
+#endif
 	ReturnValue_t result = tmPacketStored.sendPacket(
 			requestQueue->getDefaultDestination(), requestQueue->getId());
 	if (result == HasReturnvaluesIF::RETURN_OK) {
@@ -311,8 +317,13 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
     size_t size = 0;
     SerializeAdapter::serialize(&objectId, &pBuffer, &size,
                 sizeof(object_id_t), SerializeIF::Endianness::BIG);
-    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+    TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
             this->tmPacketCounter, data, dataLen, buffer, size);
+#else
+    TmPacketStoredPusC tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, data, dataLen, buffer, size);
+#endif
     ReturnValue_t result = tmPacketStored.sendPacket(
             requestQueue->getDefaultDestination(), requestQueue->getId());
     if (result == HasReturnvaluesIF::RETURN_OK) {
@@ -324,8 +335,13 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
         SerializeIF* content, SerializeIF* header) {
-    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+    TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
             this->tmPacketCounter, content, header);
+#else
+    TmPacketStoredPusC tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, content, header);
+#endif
     ReturnValue_t result = tmPacketStored.sendPacket(
             requestQueue->getDefaultDestination(), requestQueue->getId());
     if (result == HasReturnvaluesIF::RETURN_OK) {

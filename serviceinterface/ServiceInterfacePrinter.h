@@ -7,6 +7,8 @@
 
 //! https://stackoverflow.com/questions/111928/is-there-a-printf-converter-to-print-in-binary-format
 //! Can be used to print out binary numbers in human-readable format.
+//! Example usage:
+//! sif::printInfo("Status register: " BYTE_TO_BINARY_PATTERN "\n",BYTE_TO_BINARY(0x1f));
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)  \
   (byte & 0x80 ? '1' : '0'), \

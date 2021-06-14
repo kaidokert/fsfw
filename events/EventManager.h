@@ -3,9 +3,9 @@
 
 #include "EventManagerIF.h"
 #include "eventmatching/EventMatchTree.h"
+#include "FSFWConfig.h"
 
-#include <FSFWConfig.h>
-
+#include "../serviceinterface/ServiceInterface.h"
 #include "../objectmanager/SystemObject.h"
 #include "../storagemanager/LocalPool.h"
 #include "../tasks/ExecutableObjectIF.h"
@@ -67,6 +67,7 @@ protected:
 
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
 	void printEvent(EventMessage *message);
+	void printUtility(sif::OutputTypes printType, EventMessage* message);
 #endif
 
 	void lockMutex();

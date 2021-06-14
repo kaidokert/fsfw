@@ -1,5 +1,7 @@
 #include "FixedTimeslotTask.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 #include <limits.h>
 
@@ -40,7 +42,7 @@ uint32_t FixedTimeslotTask::getPeriodMs() const {
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId,
 		uint32_t slotTimeMs, int8_t executionStep) {
 	ExecutableObjectIF* executableObject =
-			objectManager->get<ExecutableObjectIF>(componentId);
+	        ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
 	if (executableObject != nullptr) {
 		pst.addSlot(componentId, slotTimeMs, executionStep,
 				executableObject,this);

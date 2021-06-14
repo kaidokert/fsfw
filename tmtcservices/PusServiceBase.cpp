@@ -3,7 +3,8 @@
 #include "PusVerificationReport.h"
 #include "TmTcMessage.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../objectmanager/ObjectManager.h"
+#include "../serviceinterface/ServiceInterface.h"
 #include "../tcdistribution/PUSDistributorIF.h"
 #include "../ipc/QueueFactory.h"
 
@@ -105,9 +106,9 @@ ReturnValue_t PusServiceBase::initialize() {
 	if (result != RETURN_OK) {
 		return result;
 	}
-	AcceptsTelemetryIF* destService = objectManager->get<AcceptsTelemetryIF>(
+	AcceptsTelemetryIF* destService = ObjectManager::instance()->get<AcceptsTelemetryIF>(
 			packetDestination);
-	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
+	PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(
 			packetSource);
 	if (destService == nullptr or distributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

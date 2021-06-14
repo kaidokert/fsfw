@@ -2,7 +2,7 @@
 
 #include "../monitoring/LimitViolationReporter.h"
 #include "../monitoring/MonitoringMessageContent.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../ipc/QueueFactory.h"
 
@@ -44,7 +44,7 @@ ReturnValue_t Fuse::initialize() {
 	if (result != RETURN_OK) {
 		return result;
 	}
-	powerIF = objectManager->get<PowerSwitchIF>(powerSwitchId);
+	powerIF = ObjectManager::instance()->get<PowerSwitchIF>(powerSwitchId);
 	if (powerIF == NULL) {
 		return RETURN_FAILED;
 	}

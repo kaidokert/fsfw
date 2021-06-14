@@ -48,6 +48,7 @@ private:
 
 #if FSFW_COLORED_OUTPUT == 1
 	std::string colorPrefix;
+	void setAsciiColorPrefix(std::string colorPrefix);
 #endif
 
 	// For EOF detection

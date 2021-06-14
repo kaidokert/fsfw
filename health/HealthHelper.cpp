@@ -1,5 +1,5 @@
 #include "HealthHelper.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
 
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId) :
 		objectId(objectId), owner(owner) {
@@ -37,8 +37,8 @@ void HealthHelper::setParentQueue(MessageQueueId_t parentQueue) {
 }
 
 ReturnValue_t HealthHelper::initialize() {
-	healthTable = objectManager->get<HealthTableIF>(objects::HEALTH_TABLE);
-	eventSender = objectManager->get<EventReportingProxyIF>(objectId);
+	healthTable = ObjectManager::instance()->get<HealthTableIF>(objects::HEALTH_TABLE);
+	eventSender = ObjectManager::instance()->get<EventReportingProxyIF>(objectId);
 
 	if (healthTable == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

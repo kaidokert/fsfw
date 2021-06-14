@@ -2,17 +2,19 @@
 #include "PeriodicTask.h"
 #include "taskHelpers.h"
 
+#include "../../platform.h"
 #include "../../ipc/MutexFactory.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../objectmanager/ObjectManager.h"
+#include "../../serviceinterface/ServiceInterface.h"
 #include "../../tasks/ExecutableObjectIF.h"
 
 #include <thread>
 #include <chrono>
 
-#if defined(WIN32)
+#if defined(PLATFORM_WIN)
 #include <processthreadsapi.h>
 #include <fsfw/osal/windows/winTaskHelpers.h>
-#elif defined(__unix__)
+#elif defined(PLATFORM_UNIX)
 #include <pthread.h>
 #endif
 
@@ -24,9 +26,9 @@ PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
     // It is probably possible to set task priorities by using the native
     // task handles for Windows / Linux
 	mainThread = std::thread(&PeriodicTask::taskEntryPoint, this, this);
-#if defined(_WIN32)
+#if defined(PLATFORM_WIN)
 	tasks::setTaskPriority(reinterpret_cast<HANDLE>(mainThread.native_handle()), setPriority);
-#elif defined(__unix__)
+#elif defined(PLATFORM_UNIX)
     // TODO: We could reuse existing code here.
 #endif
     tasks::insertTaskName(mainThread.get_id(), taskName);
@@ -102,7 +104,7 @@ void PeriodicTask::taskFunctionality() {
 }
 
 ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-	ExecutableObjectIF* newObject = objectManager->get<ExecutableObjectIF>(
+	ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(
 			object);
 	if (newObject == nullptr) {
 		return HasReturnvaluesIF::RETURN_FAILED;

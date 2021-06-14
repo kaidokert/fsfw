@@ -66,6 +66,10 @@ protected:
     virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
             LocalDataPoolManager& poolManager) override = 0;
     virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override = 0;
+
+    // Mode abstract functions
+    virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
+            uint32_t *msToReachTheMode) override = 0;
 };
 
 
