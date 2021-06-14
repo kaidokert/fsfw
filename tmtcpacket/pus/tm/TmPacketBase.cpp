@@ -11,9 +11,7 @@
 TimeStamperIF* TmPacketBase::timeStamper = nullptr;
 object_id_t TmPacketBase::timeStamperId = objects::NO_OBJECT;
 
-TmPacketBase::TmPacketBase(uint8_t* setData):
-        SpacePacketBase(setData) {
-}
+TmPacketBase::TmPacketBase(uint8_t* setData): SpacePacketBase(setData) {}
 
 TmPacketBase::~TmPacketBase() {
     //Nothing to do.

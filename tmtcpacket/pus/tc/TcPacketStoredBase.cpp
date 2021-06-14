@@ -18,32 +18,32 @@ TcPacketStoredBase::~TcPacketStoredBase() {
 }
 
 ReturnValue_t TcPacketStoredBase::getData(const uint8_t ** dataPtr,
-		size_t* dataSize) {
-	auto result = this->store->getData(storeAddress, dataPtr, dataSize);
-	if(result != HasReturnvaluesIF::RETURN_OK) {
+        size_t* dataSize) {
+    auto result = this->store->getData(storeAddress, dataPtr, dataSize);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::warning << "TcPacketStoredBase: Could not get data!" << std::endl;
+        sif::warning << "TcPacketStoredBase: Could not get data!" << std::endl;
 #else
-		sif::printWarning("TcPacketStoredBase: Could not get data!\n");
+        sif::printWarning("TcPacketStoredBase: Could not get data!\n");
 #endif
-	}
-	return result;
+    }
+    return result;
 }
 
 
 
 bool TcPacketStoredBase::checkAndSetStore() {
-	if (this->store == nullptr) {
-		this->store = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
-		if (this->store == nullptr) {
+    if (this->store == nullptr) {
+        this->store = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+        if (this->store == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::error << "TcPacketStoredBase::TcPacketStoredBase: TC Store not found!"
-					<< std::endl;
+            sif::error << "TcPacketStoredBase::TcPacketStoredBase: TC Store not found!"
+                    << std::endl;
 #endif
-			return false;
-		}
-	}
-	return true;
+            return false;
+        }
+    }
+    return true;
 }
 
 void TcPacketStoredBase::setStoreAddress(store_address_t setAddress) {
@@ -68,5 +68,5 @@ void TcPacketStoredBase::setStoreAddress(store_address_t setAddress) {
 }
 
 store_address_t TcPacketStoredBase::getStoreAddress() {
-	return this->storeAddress;
+    return this->storeAddress;
 }
