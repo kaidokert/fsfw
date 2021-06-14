@@ -1,6 +1,7 @@
 #ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
 #define FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
 
+#include "../FSFW.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../tmtcservices/PusVerificationReport.h"
 
@@ -24,7 +25,12 @@ protected:
     /**
      * Describes the TC Packet PUS Version Number a packet must have to pass.
      */
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+    static constexpr uint8_t PUS_VERSION_NUMBER = 2;
+#else
     static constexpr uint8_t PUS_VERSION_NUMBER = 1;
+#endif
+
     /**
      * The packet id each correct packet should have.
      * It is composed of the APID and some static fields.

@@ -32,6 +32,7 @@ ReturnValue_t TcPacketCheck::checkPacket(TcPacketStoredBase* currentPacket) {
     if (not currentPacket->isSizeCorrect()) {
         return INCOMPLETE_PACKET;
     }
+
     condition = (tcPacketBase->getSecondaryHeaderFlag() != CCSDS_SECONDARY_HEADER_FLAG) ||
             (tcPacketBase->getPusVersionNumber() != PUS_VERSION_NUMBER);
     if (condition) {

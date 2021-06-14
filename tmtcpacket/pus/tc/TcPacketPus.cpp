@@ -62,11 +62,20 @@ void TcPacketPus::setData(const uint8_t* pData) {
 }
 
 uint8_t TcPacketPus::getSecondaryHeaderFlag() const {
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+    // Does not exist for PUS C
+    return 0;
+#else
     return (tcData->dataField.versionTypeAck & 0b10000000) >> 7;
+#endif
 }
 
 uint8_t TcPacketPus::getPusVersionNumber() const {
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+    return (tcData->dataField.versionTypeAck & 0b11110000) >> 4;
+#else
     return (tcData->dataField.versionTypeAck & 0b01110000) >> 4;
+#endif
 }
 
 uint16_t TcPacketPus::getSourceId() const {
