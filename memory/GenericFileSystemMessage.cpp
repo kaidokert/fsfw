@@ -134,28 +134,28 @@ bool GenericFileSystemMessage::getReadReply(const CommandMessage *message,
 }
 
 ReturnValue_t GenericFileSystemMessage::clear(CommandMessage* message) {
-	switch(message->getCommand()) {
-	case(CMD_CREATE_FILE):
-	case(CMD_DELETE_FILE):
-	case(CMD_CREATE_DIRECTORY):
-	case(CMD_REPORT_FILE_ATTRIBUTES):
-	case(REPLY_REPORT_FILE_ATTRIBUTES):
-	case(CMD_LOCK_FILE):
-	case(CMD_UNLOCK_FILE):
-	case(CMD_COPY_FILE):
-	case(REPLY_READ_FROM_FILE):
-	case(CMD_READ_FROM_FILE):
-	case(CMD_APPEND_TO_FILE):
-	case(CMD_FINISH_APPEND_TO_FILE):
-	case(REPLY_READ_FINISHED_STOP):
-	case(REPLY_FINISH_APPEND): {
-		store_address_t storeId = GenericFileSystemMessage::getStoreId(message);
-		auto ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
-		if(ipcStore == nullptr) {
-			return HasReturnvaluesIF::RETURN_FAILED;
-		}
-		return ipcStore->deleteData(storeId);
-	}
-	}
+    switch(message->getCommand()) {
+    case(CMD_CREATE_FILE):
+    case(CMD_DELETE_FILE):
+    case(CMD_CREATE_DIRECTORY):
+    case(CMD_REPORT_FILE_ATTRIBUTES):
+    case(REPLY_REPORT_FILE_ATTRIBUTES):
+    case(CMD_LOCK_FILE):
+    case(CMD_UNLOCK_FILE):
+    case(CMD_COPY_FILE):
+    case(REPLY_READ_FROM_FILE):
+    case(CMD_READ_FROM_FILE):
+    case(CMD_APPEND_TO_FILE):
+    case(CMD_FINISH_APPEND_TO_FILE):
+    case(REPLY_READ_FINISHED_STOP):
+    case(REPLY_FINISH_APPEND): {
+        store_address_t storeId = GenericFileSystemMessage::getStoreId(message);
+        auto ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+        if(ipcStore == nullptr) {
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+        return ipcStore->deleteData(storeId);
+    }
+    }
     return HasReturnvaluesIF::RETURN_OK;
 }
