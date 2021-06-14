@@ -7,15 +7,28 @@ TcPacketPus::TcPacketPus(const uint8_t *setData): TcPacketBase(setData) {
     tcData = reinterpret_cast<TcPacketPointer*>(const_cast<uint8_t*>(setData));
 }
 
+void TcPacketPus::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
+        uint8_t ack, uint8_t service, uint8_t subservice) {
+    initSpacePacketHeader(true, true, apid, sequenceCount);
+    std::memset(&tcData->dataField, 0, sizeof(tcData->dataField));
+    setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
+    // Data Field Header:
+    // Set CCSDS_secondary_header_flag to 0 and version number to 001
+    tcData->dataField.versionTypeAck = 0b00010000;
+    tcData->dataField.versionTypeAck |= (ack & 0x0F);
+    tcData->dataField.serviceType = service;
+    tcData->dataField.serviceSubtype = subservice;
+}
+
 uint8_t TcPacketPus::getService() const {
     return tcData->dataField.serviceType;
 }
 
-uint8_t TcPacketPus::getSubService() {
+uint8_t TcPacketPus::getSubService() const {
     return tcData->dataField.serviceSubtype;
 }
 
-uint8_t TcPacketPus::getAcknowledgeFlags() {
+uint8_t TcPacketPus::getAcknowledgeFlags() const {
     return tcData->dataField.versionTypeAck & 0b00001111;
 }
 
@@ -23,11 +36,11 @@ const uint8_t* TcPacketPus::getApplicationData() const {
     return &tcData->appData;
 }
 
-uint16_t TcPacketPus::getApplicationDataSize() {
+uint16_t TcPacketPus::getApplicationDataSize() const {
     return getPacketDataLength() - sizeof(tcData->dataField) - CRC_SIZE + 1;
 }
 
-uint16_t TcPacketPus::getErrorControl() {
+uint16_t TcPacketPus::getErrorControl() const {
     uint16_t size = getApplicationDataSize() + CRC_SIZE;
     uint8_t* p_to_buffer = &tcData->appData;
     return (p_to_buffer[size - 2] << 8) + p_to_buffer[size - 1];
@@ -48,28 +61,23 @@ void TcPacketPus::setData(const uint8_t* pData) {
     tcData = reinterpret_cast<TcPacketPointer*>(const_cast<uint8_t*>(pData));
 }
 
-uint8_t TcPacketPus::getSecondaryHeaderFlag() {
+uint8_t TcPacketPus::getSecondaryHeaderFlag() const {
     return (tcData->dataField.versionTypeAck & 0b10000000) >> 7;
 }
 
-uint8_t TcPacketPus::getPusVersionNumber() {
+uint8_t TcPacketPus::getPusVersionNumber() const {
     return (tcData->dataField.versionTypeAck & 0b01110000) >> 4;
 }
 
-void TcPacketPus::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
-        uint8_t ack, uint8_t service, uint8_t subservice) {
-    initSpacePacketHeader(true, true, apid, sequenceCount);
-    std::memset(&tcData->dataField, 0, sizeof(tcData->dataField));
-    setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
-    // Data Field Header:
-    // Set CCSDS_secondary_header_flag to 0 and version number to 001
-    tcData->dataField.versionTypeAck = 0b00010000;
-    tcData->dataField.versionTypeAck |= (ack & 0x0F);
-    tcData->dataField.serviceType = service;
-    tcData->dataField.serviceSubtype = subservice;
+uint16_t TcPacketPus::getSourceId() const {
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+    return (tcData->dataField.sourceIdH << 8) | tcData->dataField.sourceIdL;
+#else
+    return tcData->dataField.sourceId;
+#endif
 }
 
-size_t TcPacketPus::calculateFullPacketLength(size_t appDataLen) {
+size_t TcPacketPus::calculateFullPacketLength(size_t appDataLen) const {
     return sizeof(CCSDSPrimaryHeader) + sizeof(PUSTcDataFieldHeader) +
             appDataLen + TcPacketBase::CRC_SIZE;
 }

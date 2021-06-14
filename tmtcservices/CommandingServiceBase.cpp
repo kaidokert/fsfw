@@ -259,6 +259,7 @@ void CommandingServiceBase::handleRequestQueue() {
 			rejectPacket(tc_verification::START_FAILURE, &packet, INVALID_SUBSERVICE);
 			continue;
 		}
+
 		result = getMessageQueueAndObject(packet.getSubService(),
 				packet.getApplicationData(), packet.getApplicationDataSize(),
 				&queue, &objectId);

@@ -18,7 +18,8 @@ struct PUSTcDataFieldHeader {
     uint8_t serviceType;
     uint8_t serviceSubtype;
 #if FSFW_USE_PUS_C_TELECOMMANDS == 1
-    uint16_t sourceId;
+    uint8_t sourceIdH;
+    uint8_t sourceIdL;
 #else
     uint8_t sourceId;
 #endif
@@ -49,16 +50,17 @@ public:
     TcPacketPus(const uint8_t* setData);
 
     // Base class overrides
-    virtual uint8_t getSecondaryHeaderFlag() override;
-    virtual uint8_t getPusVersionNumber() override;
-    virtual uint8_t getAcknowledgeFlags() override;
-    virtual uint8_t getService() const override;
-    virtual uint8_t getSubService() override;
+    uint8_t getSecondaryHeaderFlag() const override;
+    uint8_t getPusVersionNumber() const override;
+    uint8_t getAcknowledgeFlags() const override;
+    uint8_t getService() const override;
+    uint8_t getSubService() const override;
+    uint16_t getSourceId() const override;
     const uint8_t* getApplicationData() const override;
-    uint16_t getApplicationDataSize() override;
-    uint16_t getErrorControl() override;
+    uint16_t getApplicationDataSize() const override;
+    uint16_t getErrorControl() const override;
     void setErrorControl() override;
-    size_t calculateFullPacketLength(size_t appDataLen) override;
+    size_t calculateFullPacketLength(size_t appDataLen) const override;
 
 protected:
 

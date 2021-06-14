@@ -53,7 +53,7 @@ public:
 	 * highest bit of the first byte of the Data Field Header.
 	 * @return	the CCSDS Secondary Header Flag
 	 */
-	virtual uint8_t getSecondaryHeaderFlag() = 0;
+	virtual uint8_t getSecondaryHeaderFlag() const = 0;
 	/**
 	 * This command returns the TC Packet PUS Version Number.
 	 * The version number of ECSS PUS 2003 is 1.
@@ -61,7 +61,7 @@ public:
 	 * first byte.
 	 * @return
 	 */
-	virtual uint8_t getPusVersionNumber() = 0;
+	virtual uint8_t getPusVersionNumber() const = 0;
 	/**
 	 * This is a getter for the packet's Ack field, which are the lowest four
 	 * bits of the first byte of the Data Field Header.
@@ -69,7 +69,7 @@ public:
 	 * It is packed in a uint8_t variable.
 	 * @return	The packet's PUS Ack field.
 	 */
-	virtual uint8_t getAcknowledgeFlags() = 0;
+	virtual uint8_t getAcknowledgeFlags() const = 0;
 	/**
 	 * This is a getter for the packet's PUS Service ID, which is the second
 	 * byte of the Data Field Header.
@@ -81,13 +81,13 @@ public:
 	 * third byte of the Data Field Header.
 	 * @return	The packet's PUS Service Subtype.
 	 */
-	virtual uint8_t getSubService() = 0;
+	virtual uint8_t getSubService() const = 0;
 	/**
 	 * The source ID can be used to have an additional identifier, e.g. for different ground
 	 * station.
 	 * @return
 	 */
-	uint8_t getSourceId();
+	virtual uint16_t getSourceId() const = 0;
 
 	/**
 	 * This is a getter for a pointer to the packet's Application data.
@@ -105,7 +105,7 @@ public:
 	 * @return	The size of the PUS Application Data (without Error Control
 	 * 		field)
 	 */
-	virtual uint16_t getApplicationDataSize() = 0;
+	virtual uint16_t getApplicationDataSize() const = 0;
 	/**
 	 * This getter returns the Error Control Field of the packet.
 	 *
@@ -114,7 +114,7 @@ public:
 	 * supposed to be a 16bit-CRC.
 	 * @return	The PUS Error Control
 	 */
-	virtual uint16_t getErrorControl() = 0;
+	virtual uint16_t getErrorControl() const = 0;
 	/**
 	 * With this method, the Error Control Field is updated to match the
 	 * current content of the packet.
@@ -126,7 +126,7 @@ public:
 	 * @param appDataLen
 	 * @return
 	 */
-	virtual size_t calculateFullPacketLength(size_t appDataLen) = 0;
+	virtual size_t calculateFullPacketLength(size_t appDataLen) const = 0;
 
     /**
      * This is a debugging helper method that prints the whole packet content
