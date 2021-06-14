@@ -53,8 +53,7 @@ public:
     static const uint32_t  TM_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
             sizeof(PUSTmDataFieldHeaderPusC) + 2);
     //! Maximum size of a TM Packet in this mission.
-    //! TODO: Make this dependant on a config variable.
-    static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048;
+    static const uint32_t MISSION_TM_PACKET_MAX_SIZE = fsfwconfig::FSFW_MAX_TM_PACKET_SIZE;
 
     /**
      * This is the default constructor.

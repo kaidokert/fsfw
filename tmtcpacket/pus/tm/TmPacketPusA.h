@@ -23,7 +23,7 @@ struct PUSTmDataFieldHeaderPusA {
     uint8_t service_type;
     uint8_t service_subtype;
     uint8_t subcounter;
-//  uint8_t destination;
+    // uint8_t destination;
     uint8_t time[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
 };
 
@@ -51,8 +51,7 @@ public:
     static const uint32_t  TM_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
             sizeof(PUSTmDataFieldHeaderPusA) + 2);
     //! Maximum size of a TM Packet in this mission.
-    //! TODO: Make this dependant on a config variable.
-    static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048;
+    static const uint32_t MISSION_TM_PACKET_MAX_SIZE = fsfwconfig::FSFW_MAX_TM_PACKET_SIZE;
 
     /**
      * This is the default constructor.

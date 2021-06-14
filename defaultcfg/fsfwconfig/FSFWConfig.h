@@ -68,6 +68,8 @@ static constexpr uint8_t FSFW_CSB_FIFO_DEPTH = 6;
 
 static constexpr size_t FSFW_PRINT_BUFFER_SIZE = 124;
 
+static constexpr size_t FSFW_MAX_TM_PACKET_SIZE = 2048;
+
 }
 
 #endif /* CONFIG_FSFWCONFIG_H_ */

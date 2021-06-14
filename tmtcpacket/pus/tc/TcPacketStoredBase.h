@@ -34,35 +34,35 @@ public:
      */
     TcPacketStoredBase(const uint8_t* data, uint32_t size);
 
-	virtual~ TcPacketStoredBase();
+    virtual~ TcPacketStoredBase();
 
-	/**
-	 * Getter function for the raw data.
-	 * @param dataPtr [out] Pointer to the data pointer to set
-	 * @param dataSize [out] Address of size to set.
-	 * @return -@c RETURN_OK if data was retrieved successfully.
-	 */
-	ReturnValue_t getData(const uint8_t ** dataPtr, size_t* dataSize) override;
+    /**
+     * Getter function for the raw data.
+     * @param dataPtr [out] Pointer to the data pointer to set
+     * @param dataSize [out] Address of size to set.
+     * @return -@c RETURN_OK if data was retrieved successfully.
+     */
+    ReturnValue_t getData(const uint8_t ** dataPtr, size_t* dataSize) override;
 
     void setStoreAddress(store_address_t setAddress) override;
     store_address_t getStoreAddress() override;
 
-	/**
-	 * With this call, the packet is deleted.
-	 * It removes itself from the store and sets its data pointer to NULL.
-	 * @return	returncode from deleting the data.
-	 */
-	virtual ReturnValue_t deletePacket() = 0;
+    /**
+     * With this call, the packet is deleted.
+     * It removes itself from the store and sets its data pointer to NULL.
+     * @return	returncode from deleting the data.
+     */
+    virtual ReturnValue_t deletePacket() = 0;
 
-	/**
-	 * This method performs a size check.
-	 * It reads the stored size and compares it with the size entered in the
-	 * packet header. This class is the optimal place for such a check as it
-	 * has access to both the header data and the store.
-	 * @return	true if size is correct, false if packet is not registered in
-	 * 			store or size is incorrect.
-	 */
-	virtual bool isSizeCorrect() = 0;
+    /**
+     * This method performs a size check.
+     * It reads the stored size and compares it with the size entered in the
+     * packet header. This class is the optimal place for such a check as it
+     * has access to both the header data and the store.
+     * @return	true if size is correct, false if packet is not registered in
+     * 			store or size is incorrect.
+     */
+    virtual bool isSizeCorrect() = 0;
 
 protected:
     /**
