@@ -41,14 +41,14 @@ public:
 	 * @return	-@c RETURN_OK on success. Otherwise, the OS failure code
 	 * 				is returned.
 	 */
-	static ReturnValue_t setClock(const TimeOfDay_t* time);
+	static ReturnValue_t setClock(const TimeOfDay_t *time);
 	/**
 	 * This system call sets the system time.
 	 * To set the time, it uses a timeval struct.
 	 * @param time The struct with the time settings to set.
 	 * @return	-@c RETURN_OK on success. Otherwise, the OS failure code is returned.
 	 */
-	static ReturnValue_t setClock(const timeval* time);
+	static ReturnValue_t setClock(const timeval *time);
 	/**
 	 * This system call returns the current system clock in timeval format.
 	 * The timval format has the fields @c tv_sec with seconds and @c tv_usec with
@@ -56,7 +56,7 @@ public:
 	 * @param time	A pointer to a timeval struct where the current time is stored.
 	 * @return @c RETURN_OK on success. Otherwise, the OS failure code is returned.
 	 */
-	static ReturnValue_t getClock_timeval(timeval* time);
+	static ReturnValue_t getClock_timeval(timeval *time);
 
 	/**
 	 * Get the time since boot in a timeval struct
@@ -66,7 +66,7 @@ public:
 	 *
 	 * @deprecated, I do not think this should be able to fail, use timeval getUptime()
 	 */
-	static ReturnValue_t getUptime(timeval* uptime);
+	static ReturnValue_t getUptime(timeval *uptime);
 
 	static timeval getUptime();
 
@@ -79,7 +79,7 @@ public:
 	 * @param ms uptime in ms
 	 * @return RETURN_OK on success. Otherwise, the OS failure code is returned.
 	 */
-	static ReturnValue_t getUptime(uint32_t* uptimeMs);
+	static ReturnValue_t getUptime(uint32_t *uptimeMs);
 
 	/**
 	 * Returns the time in microseconds since an OS-defined epoch.
@@ -89,7 +89,7 @@ public:
 	 *  - @c RETURN_OK on success.
 	 *  - Otherwise, the OS failure code is returned.
 	 */
-	static ReturnValue_t getClock_usecs(uint64_t* time);
+	static ReturnValue_t getClock_usecs(uint64_t *time);
 	/**
 	 * Returns the time in a TimeOfDay_t struct.
 	 * @param time A pointer to a TimeOfDay_t struct.
@@ -97,7 +97,7 @@ public:
 	 *  - @c RETURN_OK on success.
 	 *  - Otherwise, the OS failure code is returned.
 	 */
-	static ReturnValue_t getDateAndTime(TimeOfDay_t* time);
+	static ReturnValue_t getDateAndTime(TimeOfDay_t *time);
 
 	/**
 	 * Converts a time of day struct to POSIX seconds.
@@ -107,8 +107,8 @@ public:
 	 *  - @c RETURN_OK on success.
 	 *  - Otherwise, the OS failure code is returned.
 	 */
-	static ReturnValue_t convertTimeOfDayToTimeval(const TimeOfDay_t* from,
-			timeval* to);
+	static ReturnValue_t convertTimeOfDayToTimeval(const TimeOfDay_t *from,
+			timeval *to);
 
 	/**
 	 * Converts a time represented as seconds and subseconds since unix
@@ -118,12 +118,14 @@ public:
 	 * @param[out] JD2000 days since J2000
 	 * @return @c RETURN_OK
 	 */
-	static ReturnValue_t convertTimevalToJD2000(timeval time, double* JD2000);
+	static ReturnValue_t convertTimevalToJD2000(timeval time, double *JD2000);
 
 	/**
 	 * Calculates and adds the offset between UTC and TT
 	 *
 	 * Depends on the leap seconds to be set correctly.
+	 * Therefore, it does not work for historic
+	 * dates as only the current leap seconds are known.
 	 *
 	 * @param utc timeval, corresponding to UTC time
 	 * @param[out] tt timeval, corresponding to Terrestial Time
@@ -131,7 +133,28 @@ public:
 	 *  - @c RETURN_OK on success
 	 *  - @c RETURN_FAILED if leapSeconds are not set
 	 */
-	static ReturnValue_t convertUTCToTT(timeval utc, timeval* tt);
+	static ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval *tt) {
+		if (timeMutex == nullptr) {
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
+
+		uint16_t leapSeconds;
+		ReturnValue_t result = getLeapSeconds(&leapSeconds);
+		if (result != HasReturnvaluesIF::RETURN_OK) {
+			return result;
+		}
+		timeval leapSeconds_timeval = { 0, 0 };
+		leapSeconds_timeval.tv_sec = leapSeconds;
+
+		//initial offset between UTC and TAI
+		timeval UTCtoTAI1972 = { 10, 0 };
+
+		timeval TAItoTT = { 32, 184000 };
+
+		*tt = utc + leapSeconds_timeval + UTCtoTAI1972 + TAItoTT;
+
+		return HasReturnvaluesIF::RETURN_OK;
+	}
 
 	/**
 	 * Set the Leap Seconds since 1972
@@ -139,34 +162,63 @@ public:
 	 * @param leapSeconds_
 	 * @return
 	 *  - @c RETURN_OK on success.
-	 *  - Otherwise, the OS failure code is returned.
 	 */
-	static ReturnValue_t setLeapSeconds(const uint16_t leapSeconds_);
+	static ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
+		if (checkOrCreateClockMutex() != HasReturnvaluesIF::RETURN_OK) {
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
+		MutexGuard helper(timeMutex);
+
+		leapSeconds = leapSeconds_;
+
+		return HasReturnvaluesIF::RETURN_OK;
+	}
 
 	/**
 	 * Get the Leap Seconds since 1972
 	 *
-	 * Must be set before!
+	 * Setter must be called before
 	 *
 	 * @param[out] leapSeconds_
 	 * @return
 	 *  - @c RETURN_OK on success.
-	 *  - Otherwise, the OS failure code is returned.
+	 *  - @c RETURN_FAILED on error
 	 */
 	static ReturnValue_t getLeapSeconds(uint16_t *leapSeconds_);
+	ReturnValue_t Clock::getLeapSeconds(uint16_t *leapSeconds_) {
+		if (timeMutex == nullptr) {
+			return HasReturnvaluesIF::RETURN_FAILED;
+		}
+		MutexGuard helper(timeMutex);
 
+		*leapSeconds_ = leapSeconds;
+
+		return HasReturnvaluesIF::RETURN_OK;
+	}
+
+private:
 	/**
 	 * Function to check and create the Mutex for the clock
 	 * @return
 	 *  - @c RETURN_OK on success.
 	 *  - Otherwise @c RETURN_FAILED if not able to create one
 	 */
-	static ReturnValue_t checkOrCreateClockMutex();
+	static ReturnValue_t Clock::checkOrCreateClockMutex() {
+		if (timeMutex == nullptr) {
+			MutexFactory *mutexFactory = MutexFactory::instance();
+			if (mutexFactory == nullptr) {
+				return HasReturnvaluesIF::RETURN_FAILED;
+			}
+			timeMutex = mutexFactory->createMutex();
+			if (timeMutex == nullptr) {
+				return HasReturnvaluesIF::RETURN_FAILED;
+			}
+		}
+		return HasReturnvaluesIF::RETURN_OK;
+	}
 
-private:
-	static MutexIF* timeMutex;
+	static MutexIF *timeMutex;
 	static uint16_t leapSeconds;
 };
-
 
 #endif /* FSFW_TIMEMANAGER_CLOCK_H_ */
