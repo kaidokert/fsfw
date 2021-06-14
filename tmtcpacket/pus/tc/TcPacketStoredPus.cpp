@@ -1,11 +1,11 @@
-#include "TcPacketStoredPusA.h"
+#include "TcPacketStoredPus.h"
 
 #include <cstring>
 
-TcPacketStoredPusA::TcPacketStoredPusA(uint16_t apid,  uint8_t service,
+TcPacketStoredPus::TcPacketStoredPus(uint16_t apid,  uint8_t service,
         uint8_t subservice, uint8_t sequenceCount, const uint8_t* data,
         size_t size, uint8_t ack) :
-        TcPacketPusA(nullptr) {
+        TcPacketPus(nullptr) {
     this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
     if (not this->checkAndSetStore()) {
         return;
@@ -28,14 +28,14 @@ TcPacketStoredPusA::TcPacketStoredPusA(uint16_t apid,  uint8_t service,
     this->setErrorControl();
 }
 
-TcPacketStoredPusA::TcPacketStoredPusA(): TcPacketStoredBase(), TcPacketPusA(nullptr) {
+TcPacketStoredPus::TcPacketStoredPus(): TcPacketStoredBase(), TcPacketPus(nullptr) {
 }
 
-TcPacketStoredPusA::TcPacketStoredPusA(store_address_t setAddress): TcPacketPusA(nullptr) {
+TcPacketStoredPus::TcPacketStoredPus(store_address_t setAddress): TcPacketPus(nullptr) {
     TcPacketStoredBase::setStoreAddress(setAddress);
 }
 
-TcPacketStoredPusA::TcPacketStoredPusA(const uint8_t* data, size_t size): TcPacketPusA(data) {
+TcPacketStoredPus::TcPacketStoredPus(const uint8_t* data, size_t size): TcPacketPus(data) {
     if (this->getFullSize() != size) {
         return;
     }
@@ -51,19 +51,19 @@ TcPacketStoredPusA::TcPacketStoredPusA(const uint8_t* data, size_t size): TcPack
     }
 }
 
-ReturnValue_t TcPacketStoredPusA::deletePacket() {
+ReturnValue_t TcPacketStoredPus::deletePacket() {
     ReturnValue_t result = this->store->deleteData(this->storeAddress);
     this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
     this->setData(nullptr);
     return result;
 }
 
-TcPacketBase* TcPacketStoredPusA::getPacketBase() {
+TcPacketBase* TcPacketStoredPus::getPacketBase() {
     return this;
 }
 
 
-bool TcPacketStoredPusA::isSizeCorrect() {
+bool TcPacketStoredPus::isSizeCorrect() {
     const uint8_t* temp_data = nullptr;
     size_t temp_size;
     ReturnValue_t status = this->store->getData(this->storeAddress, &temp_data,

@@ -3,7 +3,7 @@
 
 #include "../../globalfunctions/matching/SerializeableMatcherIF.h"
 #include "../../serialize/SerializeAdapter.h"
-#include "../../tmtcpacket/pus/TmPacketMinimal.h"
+#include "../pus/tm/TmPacketMinimal.h"
 
 class ServiceMatcher: public SerializeableMatcherIF<TmPacketMinimal*> {
 private:

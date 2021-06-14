@@ -2,10 +2,10 @@
 #define FSFW_TMTCPACKET_PUS_TMPACKETPUSC_H_
 
 #include "TmPacketBase.h"
-#include "../SpacePacketBase.h"
-#include "../../timemanager/TimeStamperIF.h"
-#include "../../timemanager/Clock.h"
-#include "../../objectmanager/SystemObjectIF.h"
+#include "../../SpacePacketBase.h"
+#include "../../../timemanager/TimeStamperIF.h"
+#include "../../../timemanager/Clock.h"
+#include "../../../objectmanager/SystemObjectIF.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();

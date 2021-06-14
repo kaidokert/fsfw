@@ -2,11 +2,11 @@
 #define FSFW_TMTCPACKET_PUS_TCPACKETSTOREDPUSA_H_
 
 #include "TcPacketStoredBase.h"
-#include "TcPacketPusA.h"
+#include "TcPacketPus.h"
 
-class TcPacketStoredPusA:
+class TcPacketStoredPus:
         public TcPacketStoredBase,
-        public TcPacketPusA {
+        public TcPacketPus {
 public:
     /**
      * With this constructor, new space is allocated in the packet store and
@@ -24,7 +24,7 @@ public:
      *                      number of verification packets returned
      *                      for this command.
      */
-    TcPacketStoredPusA(uint16_t apid, uint8_t service, uint8_t subservice,
+    TcPacketStoredPus(uint16_t apid, uint8_t service, uint8_t subservice,
             uint8_t sequence_count = 0, const uint8_t* data = nullptr,
             size_t size = 0, uint8_t ack = TcPacketBase::ACK_ALL);
     /**
@@ -32,13 +32,13 @@ public:
      * @param data
      * @param size
      */
-    TcPacketStoredPusA(const uint8_t* data, size_t size);
+    TcPacketStoredPus(const uint8_t* data, size_t size);
     /**
      * Create stored packet from existing packet in store
      * @param setAddress
      */
-    TcPacketStoredPusA(store_address_t setAddress);
-    TcPacketStoredPusA();
+    TcPacketStoredPus(store_address_t setAddress);
+    TcPacketStoredPus();
 
     ReturnValue_t deletePacket() override;
     TcPacketBase* getPacketBase() override;

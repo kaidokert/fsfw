@@ -1,10 +1,10 @@
 #include "TmPacketBase.h"
 
-#include "../../globalfunctions/CRC.h"
-#include "../../globalfunctions/arrayprinter.h"
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../timemanager/CCSDSTime.h"
+#include "../../../globalfunctions/CRC.h"
+#include "../../../globalfunctions/arrayprinter.h"
+#include "../../../objectmanager/ObjectManager.h"
+#include "../../../serviceinterface/ServiceInterface.h"
+#include "../../../timemanager/CCSDSTime.h"
 
 #include <cstring>
 

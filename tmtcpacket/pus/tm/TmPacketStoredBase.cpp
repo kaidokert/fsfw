@@ -1,8 +1,8 @@
 #include "TmPacketStoredBase.h"
 
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../tmtcservices/TmTcMessage.h"
+#include "../../../objectmanager/ObjectManager.h"
+#include "../../../serviceinterface/ServiceInterface.h"
+#include "../../../tmtcservices/TmTcMessage.h"
 
 #include <cstring>
 

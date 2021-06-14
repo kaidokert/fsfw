@@ -5,7 +5,7 @@
 #include "../serialize/SerializeElement.h"
 #include "../serialize/SerialLinkedListAdapter.h"
 #include "../serialize/SerialBufferAdapter.h"
-#include "../tmtcpacket/pus/TmPacketMinimal.h"
+#include "../tmtcpacket/pus/tm/TmPacketMinimal.h"
 #include "../timemanager/TimeStamperIF.h"
 #include "../timemanager/CCSDSTime.h"
 #include "../globalfunctions/timevalOperations.h"

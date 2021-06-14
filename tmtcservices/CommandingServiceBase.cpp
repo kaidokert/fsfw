@@ -6,8 +6,8 @@
 #include "../tcdistribution/PUSDistributorIF.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../ipc/QueueFactory.h"
-#include "../tmtcpacket/pus/TcPacketStored.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/tc.h"
+#include "../tmtcpacket/pus/tm.h"
 #include "../serviceinterface/ServiceInterface.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
@@ -246,11 +246,7 @@ void CommandingServiceBase::handleRequestQueue() {
 	TmTcMessage message;
 	ReturnValue_t result;
 	store_address_t address;
-#if FSFW_USE_PUS_C_TELECOMMANDS == 1
-	TcPacketStoredPusC packet;
-#else
-	TcPacketStoredPusA packet;
-#endif
+	TcPacketStoredPus packet;
 	MessageQueueId_t queue;
 	object_id_t objectId;
 	for (result = requestQueue->receiveMessage(&message); result == RETURN_OK;
@@ -436,11 +432,7 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
 	if (iter->second.fifo.retrieve(&address) != RETURN_OK) {
 		commandMap.erase(&iter);
 	} else {
-#if FSFW_USE_PUS_C_TELECOMMANDS == 1
-		TcPacketStoredPusC newPacket(address);
-#else
-		TcPacketStoredPusA newPacket(address);
-#endif
+		TcPacketStoredPus newPacket(address);
 		startExecution(&newPacket, iter);
 	}
 }

@@ -118,11 +118,7 @@ uint16_t PUSDistributor::getIdentifier() {
 }
 
 ReturnValue_t PUSDistributor::initialize() {
-#if FSFW_USE_PUS_C_TELECOMMANDS == 1
-    currentPacket = new TcPacketStoredPusC();
-#else
-    currentPacket = new TcPacketStoredPusA();
-#endif
+    currentPacket = new TcPacketStoredPus();
     if(currentPacket == nullptr) {
         // Should not happen, memory allocation failed!
         return ObjectManagerIF::CHILD_INIT_FAILED;

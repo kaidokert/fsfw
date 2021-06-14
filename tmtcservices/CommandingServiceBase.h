@@ -1,7 +1,6 @@
 #ifndef FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 #define FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
-#include <fsfw/tmtcpacket/pus/TcPacketStoredBase.h>
 #include "AcceptsTelecommandsIF.h"
 #include "VerificationReporter.h"
 
@@ -17,6 +16,7 @@
 #include <FSFWConfig.h>
 
 class TcPacketStored;
+class TcPacketStoredBase;
 
 namespace Factory{
 void setStaticFrameworkObjectIds();

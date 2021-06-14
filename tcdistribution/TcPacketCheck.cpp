@@ -1,8 +1,8 @@
 #include "TcPacketCheck.h"
 
 #include "../globalfunctions/CRC.h"
-#include "../tmtcpacket/pus/TcPacketBase.h"
-#include "../tmtcpacket/pus/TcPacketStoredBase.h"
+#include "../tmtcpacket/pus/tc/TcPacketBase.h"
+#include "../tmtcpacket/pus/tc/TcPacketStoredBase.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../tmtcservices/VerificationCodes.h"

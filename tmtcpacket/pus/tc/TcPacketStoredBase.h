@@ -1,8 +1,8 @@
 #ifndef TMTCPACKET_PUS_TCPACKETSTORED_H_
 #define TMTCPACKET_PUS_TCPACKETSTORED_H_
 
-#include <fsfw/tmtcpacket/pus/TcPacketStoredIF.h>
-#include "../../storagemanager/StorageManagerIF.h"
+#include "TcPacketStoredIF.h"
+#include "../../../storagemanager/StorageManagerIF.h"
 
 /**
  *	This class generates a ECSS PUS Telecommand packet within a given

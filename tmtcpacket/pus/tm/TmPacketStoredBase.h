@@ -1,15 +1,15 @@
 #ifndef FSFW_TMTCPACKET_PUS_TMPACKETSTOREDBASE_H_
 #define FSFW_TMTCPACKET_PUS_TMPACKETSTOREDBASE_H_
 
+#include "../../../FSFW.h"
 #include "TmPacketBase.h"
 #include "TmPacketStoredBase.h"
-#include <FSFWConfig.h>
+#include "TmPacketPusA.h"
 
-#include "../../tmtcpacket/pus/TmPacketPusA.h"
-#include "../../serialize/SerializeIF.h"
-#include "../../storagemanager/StorageManagerIF.h"
-#include "../../internalError/InternalErrorReporterIF.h"
-#include "../../ipc/MessageQueueSenderIF.h"
+#include "../../../serialize/SerializeIF.h"
+#include "../../../storagemanager/StorageManagerIF.h"
+#include "../../../internalError/InternalErrorReporterIF.h"
+#include "../../../ipc/MessageQueueSenderIF.h"
 
 /**
  *  This class generates a ECSS PUS Telemetry packet within a given

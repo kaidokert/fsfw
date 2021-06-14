@@ -1,7 +1,8 @@
 #ifndef FSFW_TMTCPACKET_PUS_TCPACKETPUSA_H_
 #define FSFW_TMTCPACKET_PUS_TCPACKETPUSA_H_
 
-#include "../ccsds_header.h"
+#include "../../../FSFW.h"
+#include "../../ccsds_header.h"
 #include "TcPacketBase.h"
 
 #include <cstdint>
@@ -13,10 +14,14 @@
  * @ingroup tmtcpackets
  */
 struct PUSTcDataFieldHeader {
-    uint8_t version_type_ack;
-    uint8_t service_type;
-    uint8_t service_subtype;
-    uint8_t source_id;
+    uint8_t versionTypeAck;
+    uint8_t serviceType;
+    uint8_t serviceSubtype;
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+    uint16_t sourceId;
+#else
+    uint8_t sourceId;
+#endif
 };
 
 /**
@@ -31,7 +36,7 @@ struct TcPacketPointer {
 };
 
 
-class TcPacketPusA: public TcPacketBase {
+class TcPacketPus: public TcPacketBase {
 public:
     static const uint16_t TC_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
             sizeof(PUSTcDataFieldHeader) + 2);
@@ -41,7 +46,7 @@ public:
      * create an empty (invalid) object by passing nullptr as the data pointer
      * @param setData
      */
-    TcPacketPusA(const uint8_t* setData);
+    TcPacketPus(const uint8_t* setData);
 
     // Base class overrides
     virtual uint8_t getSecondaryHeaderFlag() override;

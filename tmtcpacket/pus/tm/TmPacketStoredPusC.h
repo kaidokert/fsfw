@@ -1,8 +1,8 @@
 #ifndef FSFW_TMTCPACKET_PUS_TMPACKETSTOREDPUSC_H_
 #define FSFW_TMTCPACKET_PUS_TMPACKETSTOREDPUSC_H_
 
-#include <fsfw/tmtcpacket/pus/TmPacketPusC.h>
-#include <fsfw/tmtcpacket/pus/TmPacketStoredBase.h>
+#include "TmPacketPusC.h"
+#include "TmPacketStoredBase.h"
 
 /**
  *  This class generates a ECSS PUS C Telemetry packet within a given

@@ -4,7 +4,7 @@
 #include "../../container/PlacementFactory.h"
 #include "../../globalfunctions/matching/MatchTree.h"
 #include "../../storagemanager/LocalPool.h"
-#include "../../tmtcpacket/pus/TmPacketMinimal.h"
+#include "../../tmtcpacket/pus/tm/TmPacketMinimal.h"
 
 class PacketMatchTree: public MatchTree<TmPacketMinimal*>, public HasReturnvaluesIF {
 public:

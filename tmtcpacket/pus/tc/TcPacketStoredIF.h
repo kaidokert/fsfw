@@ -1,9 +1,9 @@
 #ifndef FSFW_TMTCPACKET_PUS_TCPACKETSTOREDIF_H_
 #define FSFW_TMTCPACKET_PUS_TCPACKETSTOREDIF_H_
 
-#include "../../tmtcpacket/pus/TcPacketBase.h"
-#include "../../storagemanager/storeAddress.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "TcPacketBase.h"
+#include "../../../storagemanager/storeAddress.h"
+#include "../../../returnvalues/HasReturnvaluesIF.h"
 
 class TcPacketStoredIF {
 public:

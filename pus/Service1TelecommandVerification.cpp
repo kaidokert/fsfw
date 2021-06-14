@@ -4,7 +4,7 @@
 #include "../ipc/QueueFactory.h"
 #include "../objectmanager/ObjectManager.h"
 #include "../tmtcservices/PusVerificationReport.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/tm/TmPacketStored.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../tmtcservices/AcceptsTelemetryIF.h"
 

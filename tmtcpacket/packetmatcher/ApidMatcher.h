@@ -3,7 +3,7 @@
 
 #include "../../globalfunctions/matching/SerializeableMatcherIF.h"
 #include "../../serialize/SerializeAdapter.h"
-#include "../../tmtcpacket/pus/TmPacketMinimal.h"
+#include "../../tmtcpacket/pus/tm/TmPacketMinimal.h"
 
 class ApidMatcher: public SerializeableMatcherIF<TmPacketMinimal*> {
 private:
