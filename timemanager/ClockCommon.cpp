@@ -9,10 +9,6 @@
 #include "../ipc/MutexGuard.h"
 
 ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval *tt) {
-	if (timeMutex == nullptr) {
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-
 	uint16_t leapSeconds;
 	ReturnValue_t result = getLeapSeconds(&leapSeconds);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
