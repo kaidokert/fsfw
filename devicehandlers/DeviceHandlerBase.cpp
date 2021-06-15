@@ -226,15 +226,15 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
-    for (auto pair: deviceReplyMap) {
-        if (pair.second.delayCycles != 0) {
-            pair.second.delayCycles--;
-            if (pair.second.delayCycles == 0) {
-                if (pair.second.periodic) {
-                    pair.second.delayCycles = pair.second.maxDelayCycles;
+    for (auto replyPair: deviceReplyMap) {
+        if (replyPair.second.delayCycles != 0) {
+            replyPair.second.delayCycles--;
+            if (replyPair.second.delayCycles == 0) {
+                if (replyPair.second.periodic) {
+                    replyPair.second.delayCycles = replyPair.second.maxDelayCycles;
                 }
-                replyToReply(pair.first, pair.second, TIMEOUT);
-                missedReply(pair.first);
+                replyToReply(replyPair.first, replyPair.second, TIMEOUT);
+                missedReply(replyPair.first);
             }
         }
     }
