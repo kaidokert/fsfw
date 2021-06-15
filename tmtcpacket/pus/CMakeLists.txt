@@ -1,12 +1,2 @@
-target_sources(${LIB_FSFW_NAME} 
-	PRIVATE 
-		TcPacketBase.cpp
-		TcPacketStored.cpp
-		TmPacketBase.cpp
-		TmPacketMinimal.cpp
-		TmPacketStoredPusA.cpp
-		TmPacketStoredPusC.cpp
-		TmPacketPusA.cpp
-		TmPacketPusC.cpp
-		TmPacketStoredBase.cpp
-)
+add_subdirectory(tm)
+add_subdirectory(tc)

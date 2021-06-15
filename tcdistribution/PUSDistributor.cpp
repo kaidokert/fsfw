@@ -3,7 +3,6 @@
 
 #include "../objectmanager/ObjectManager.h"
 #include "../serviceinterface/ServiceInterface.h"
-#include "../tmtcpacket/pus/TcPacketStored.h"
 #include "../tmtcservices/PusVerificationReport.h"
 
 #define PUS_DISTRIBUTOR_DEBUGGING     0
@@ -119,7 +118,7 @@ uint16_t PUSDistributor::getIdentifier() {
 }
 
 ReturnValue_t PUSDistributor::initialize() {
-    currentPacket = new TcPacketStored();
+    currentPacket = new TcPacketStoredPus();
     if(currentPacket == nullptr) {
         // Should not happen, memory allocation failed!
         return ObjectManagerIF::CHILD_INIT_FAILED;

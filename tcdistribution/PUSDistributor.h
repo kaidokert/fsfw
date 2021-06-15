@@ -5,6 +5,7 @@
 #include "TcDistributor.h"
 #include "TcPacketCheck.h"
 
+#include "../tmtcpacket/pus/tc.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/VerificationReporter.h"
@@ -51,7 +52,8 @@ protected:
 	/**
 	 * The currently handled packet is stored here.
 	 */
-	TcPacketStored* currentPacket = nullptr;
+	TcPacketStoredPus* currentPacket = nullptr;
+
 	/**
 	 * With this variable, the current check status is stored to generate
 	 * acceptance messages later.

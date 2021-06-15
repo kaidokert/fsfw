@@ -1,19 +1,17 @@
 #include "TmPacketBase.h"
 
-#include "../../globalfunctions/CRC.h"
-#include "../../globalfunctions/arrayprinter.h"
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../timemanager/CCSDSTime.h"
+#include "../../../globalfunctions/CRC.h"
+#include "../../../globalfunctions/arrayprinter.h"
+#include "../../../objectmanager/ObjectManager.h"
+#include "../../../serviceinterface/ServiceInterface.h"
+#include "../../../timemanager/CCSDSTime.h"
 
 #include <cstring>
 
 TimeStamperIF* TmPacketBase::timeStamper = nullptr;
 object_id_t TmPacketBase::timeStamperId = objects::NO_OBJECT;
 
-TmPacketBase::TmPacketBase(uint8_t* setData):
-        SpacePacketBase(setData) {
-}
+TmPacketBase::TmPacketBase(uint8_t* setData): SpacePacketBase(setData) {}
 
 TmPacketBase::~TmPacketBase() {
     //Nothing to do.
@@ -44,13 +42,6 @@ ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
             &tempSize, getTimestampSize());
 }
 
-void TmPacketBase::print() {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "TmPacketBase::print: " << std::endl;
-#endif
-    arrayprinter::print(getWholeData(), getFullSize());
-}
-
 bool TmPacketBase::checkAndSetStamper() {
     if (timeStamper == NULL) {
         timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
@@ -66,3 +57,11 @@ bool TmPacketBase::checkAndSetStamper() {
     return true;
 }
 
+void TmPacketBase::print() {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::info << "TmPacketBase::print:" << std::endl;
+#else
+    sif::printInfo("TmPacketBase::print:\n");
+#endif
+    arrayprinter::print(getWholeData(), getFullSize());
+}

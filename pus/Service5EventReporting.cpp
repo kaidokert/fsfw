@@ -5,7 +5,7 @@
 #include "../objectmanager/ObjectManager.h"
 #include "../events/EventManagerIF.h"
 #include "../ipc/QueueFactory.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/tm/TmPacketStored.h"
 
 
 Service5EventReporting::Service5EventReporting(object_id_t objectId,

@@ -1,11 +1,11 @@
-#ifndef FSFW_TMTCPACKET_PUS_TMPACKETPUSA_H_
-#define FSFW_TMTCPACKET_PUS_TMPACKETPUSA_H_
+#ifndef FSFW_TMTCPACKET_PUS_TMPACKETPUSC_H_
+#define FSFW_TMTCPACKET_PUS_TMPACKETPUSC_H_
 
 #include "TmPacketBase.h"
-#include "../SpacePacketBase.h"
-#include "../../timemanager/TimeStamperIF.h"
-#include "../../timemanager/Clock.h"
-#include "../../objectmanager/SystemObjectIF.h"
+#include "../../SpacePacketBase.h"
+#include "../../../timemanager/TimeStamperIF.h"
+#include "../../../timemanager/Clock.h"
+#include "../../../objectmanager/SystemObjectIF.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();
@@ -18,12 +18,14 @@ void setStaticFrameworkObjectIds();
  * for a time tag.
  * @ingroup tmtcpackets
  */
-struct PUSTmDataFieldHeaderPusA {
-    uint8_t version_type_ack;
-    uint8_t service_type;
-    uint8_t service_subtype;
-    uint8_t subcounter;
-//  uint8_t destination;
+struct PUSTmDataFieldHeaderPusC {
+    uint8_t versionTimeReferenceField;
+    uint8_t serviceType;
+    uint8_t serviceSubtype;
+    uint8_t subcounterMsb;
+    uint8_t subcounterLsb;
+    uint8_t destinationIdMsb;
+    uint8_t destinationIdLsb;
     uint8_t time[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
 };
 
@@ -32,9 +34,9 @@ struct PUSTmDataFieldHeaderPusA {
  * accessed via a pointer.
  * @ingroup tmtcpackets
  */
-struct TmPacketPointerPusA {
+struct TmPacketPointerPusC {
     CCSDSPrimaryHeader primary;
-    PUSTmDataFieldHeaderPusA data_field;
+    PUSTmDataFieldHeaderPusC dataField;
     uint8_t data;
 };
 
@@ -42,17 +44,16 @@ struct TmPacketPointerPusA {
  * PUS A packet implementation
  * @ingroup tmtcpackets
  */
-class TmPacketPusA: public TmPacketBase {
+class TmPacketPusC: public TmPacketBase {
     friend void (Factory::setStaticFrameworkObjectIds)();
 public:
     /**
      * This constant defines the minimum size of a valid PUS Telemetry Packet.
      */
     static const uint32_t  TM_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
-            sizeof(PUSTmDataFieldHeaderPusA) + 2);
+            sizeof(PUSTmDataFieldHeaderPusC) + 2);
     //! Maximum size of a TM Packet in this mission.
-    //! TODO: Make this dependant on a config variable.
-    static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048;
+    static const uint32_t MISSION_TM_PACKET_MAX_SIZE = fsfwconfig::FSFW_MAX_TM_PACKET_SIZE;
 
     /**
      * This is the default constructor.
@@ -60,11 +61,11 @@ public:
      * forwards the data pointer to the parent SpacePacketBase class.
      * @param set_address   The position where the packet data lies.
      */
-    TmPacketPusA( uint8_t* setData );
+    TmPacketPusC( uint8_t* setData );
     /**
      * This is the empty default destructor.
      */
-    virtual ~TmPacketPusA();
+    virtual ~TmPacketPusC();
 
     /* TmPacketBase implementations */
     uint8_t getService() override;
@@ -89,7 +90,7 @@ protected:
      *
      * To be hardware-safe, all elements are of byte size.
      */
-    TmPacketPointerPusA* tmData;
+    TmPacketPointerPusC* tmData;
 
     /**
      * Initializes the Tm Packet header.
@@ -100,7 +101,7 @@ protected:
      * @param packetSubcounter Additional subcounter used.
      */
     void initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice,
-            uint8_t packetSubcounter);
+            uint16_t packetSubcounter, uint16_t destinationId = 0, uint8_t timeRefField = 0);
 
     /**
      * With this method, the packet data pointer can be redirected to another
@@ -119,11 +120,6 @@ protected:
      */
     void setSourceDataSize(uint16_t size);
 
-    /**
-     * Checks if a time stamper is available and tries to set it if not.
-     * @return Returns false if setting failed.
-     */
-    bool checkAndSetStamper();
 };
 
-#endif /* FSFW_TMTCPACKET_PUS_TMPACKETPUSA_H_ */
+#endif /* FSFW_TMTCPACKET_PUS_TMPACKETPUSC_H_ */

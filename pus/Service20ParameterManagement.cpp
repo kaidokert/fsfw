@@ -133,6 +133,9 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(
     store_address_t storeAddress;
     size_t parameterDataLen = tcDataLen - sizeof(object_id_t) - sizeof(ParameterId_t) -
             sizeof(uint32_t);
+    if(parameterDataLen == 0) {
+        return CommandingServiceBase::INVALID_TC;
+    }
     ReturnValue_t result = IPCStore->getFreeElement(&storeAddress,
             parameterDataLen, &storePointer);
     if(result != HasReturnvaluesIF::RETURN_OK) {
