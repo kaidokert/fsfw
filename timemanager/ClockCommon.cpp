@@ -1,10 +1,3 @@
-/*
- * ClockCommon.cpp
- *
- *  Created on: Jun 15, 2021
- *      Author: steffen
- */
-
 #include "Clock.h"
 #include "../ipc/MutexGuard.h"
 
