@@ -1195,7 +1195,8 @@ private:
      * @foundLen the length of the packet
      */
     void handleReply(const uint8_t *data, DeviceCommandId_t id, uint32_t foundLen);
-    void replyToReply(DeviceCommandId_t command, DeviceReplyInfo& replyInfo, ReturnValue_t status);
+    void replyToReply(const DeviceCommandId_t command, DeviceReplyInfo& replyInfo,
+            ReturnValue_t status);
 
     /**
      * Build and send a command to the device.

@@ -583,7 +583,7 @@ void DeviceHandlerBase::replyToCommand(ReturnValue_t status,
     }
 }
 
-void DeviceHandlerBase::replyToReply(DeviceCommandId_t command, DeviceReplyInfo& replyInfo,
+void DeviceHandlerBase::replyToReply(const DeviceCommandId_t command, DeviceReplyInfo& replyInfo,
         ReturnValue_t status) {
     // No need to check if iter exists, as this is checked by callers.
     // If someone else uses the method, add check.
