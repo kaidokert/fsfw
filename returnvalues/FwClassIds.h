@@ -75,6 +75,7 @@ enum: uint8_t {
     HAL_SPI, //HSPI
     HAL_UART, //HURT
     HAL_I2C, //HI2C
+    HAL_GPIO, //HGIO
     FW_CLASS_ID_COUNT // [EXPORT] : [END]
 
 };
