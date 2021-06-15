@@ -1,3 +1,16 @@
+## Changes from ASTP 1.0.0 to 1.1.0
+
+### PUS
+
+- Added PUS C support
+
+### Configuration
+
+- Additional configuration option fsfwconfig::FSFW_MAX_TM_PACKET_SIZE which 
+  need to be specified in FSFWConfig.h
+
+
+
 ## Changes from ASTP 0.0.1 to 1.0.0
 
 ### Host OSAL
