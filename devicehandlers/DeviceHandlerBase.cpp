@@ -226,7 +226,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
-    for (auto replyPair: deviceReplyMap) {
+    for (std::pair<const DeviceCommandId_t, DeviceReplyInfo>& replyPair: deviceReplyMap) {
         if (replyPair.second.delayCycles != 0) {
             replyPair.second.delayCycles--;
             if (replyPair.second.delayCycles == 0) {
