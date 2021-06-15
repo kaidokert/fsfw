@@ -591,9 +591,20 @@ void DeviceHandlerBase::replyToReply(const DeviceCommandId_t command, DeviceRepl
         //Is most likely periodic reply. Silent return.
         return;
     }
-    // Check if more replies are expected. If so, do nothing.
     DeviceCommandInfo* info = &replyInfo.command->second;
-    if (--info->expectedReplies == 0) {
+    if (info == nullptr){
+    	printWarningOrError(sif::OutputTypes::OUT_ERROR,
+    	                        "replyToReply", HasReturnvaluesIF::RETURN_FAILED,
+    	                        "Command pointer not found");
+    	return;
+    }
+
+    if (info->expectedReplies > 0){
+    	// Check before to avoid underflow
+    	info->expectedReplies--;
+    }
+    // Check if more replies are expected. If so, do nothing.
+    if (info->expectedReplies == 0) {
         // Check if it was transition or internal command.
         // Don't send any replies in that case.
         if (info->sendReplyTo != NO_COMMANDER) {
