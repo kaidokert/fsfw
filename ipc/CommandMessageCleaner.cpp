@@ -1,5 +1,6 @@
 #include "CommandMessageCleaner.h"
 
+#include "../memory/GenericFileSystemMessage.h"
 #include "../devicehandlers/DeviceHandlerMessage.h"
 #include "../health/HealthMessage.h"
 #include "../memory/MemoryMessage.h"
@@ -41,6 +42,9 @@ void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
 		break;
 	case messagetypes::HOUSEKEEPING:
 	    HousekeepingMessage::clear(message);
+	    break;
+	case messagetypes::FILE_SYSTEM_MESSAGE:
+	    GenericFileSystemMessage::clear(message);
 	    break;
 	default:
 		messagetypes::clearMissionMessage(message);
