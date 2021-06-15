@@ -133,7 +133,7 @@ public:
 	 *  - @c RETURN_OK on success
 	 *  - @c RETURN_FAILED if leapSeconds are not set
 	 */
-	static ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval *tt);
+	static ReturnValue_t convertUTCToTT(timeval utc, timeval *tt);
 
 	/**
 	 * Set the Leap Seconds since 1972
@@ -142,7 +142,7 @@ public:
 	 * @return
 	 *  - @c RETURN_OK on success.
 	 */
-	static ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_);
+	static ReturnValue_t setLeapSeconds(const uint16_t leapSeconds_);
 
 	/**
 	 * Get the Leap Seconds since 1972
@@ -154,7 +154,7 @@ public:
 	 *  - @c RETURN_OK on success.
 	 *  - @c RETURN_FAILED on error
 	 */
-	static ReturnValue_t Clock::getLeapSeconds(uint16_t *leapSeconds_);
+	static ReturnValue_t getLeapSeconds(uint16_t *leapSeconds_);
 
 private:
 	/**
@@ -163,7 +163,7 @@ private:
 	 *  - @c RETURN_OK on success.
 	 *  - Otherwise @c RETURN_FAILED if not able to create one
 	 */
-	static ReturnValue_t Clock::checkOrCreateClockMutex();
+	static ReturnValue_t checkOrCreateClockMutex();
 
 	static MutexIF *timeMutex;
 	static uint16_t leapSeconds;
