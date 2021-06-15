@@ -226,16 +226,15 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
-    for (std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
-            deviceReplyMap.begin(); iter != deviceReplyMap.end(); iter++) {
-        if (iter->second.delayCycles != 0) {
-            iter->second.delayCycles--;
-            if (iter->second.delayCycles == 0) {
-                if (iter->second.periodic) {
-                    iter->second.delayCycles = iter->second.maxDelayCycles;
+    for (auto pair: deviceReplyMap) {
+        if (pair.second.delayCycles != 0) {
+            pair.second.delayCycles--;
+            if (pair.second.delayCycles == 0) {
+                if (pair.second.periodic) {
+                    pair.second.delayCycles = pair.second.maxDelayCycles;
                 }
-                replyToReply(iter, TIMEOUT);
-                missedReply(iter->first);
+                replyToReply(pair.first, pair.second, TIMEOUT);
+                missedReply(pair.first);
             }
         }
     }
@@ -584,16 +583,16 @@ void DeviceHandlerBase::replyToCommand(ReturnValue_t status,
     }
 }
 
-void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
+void DeviceHandlerBase::replyToReply(DeviceCommandId_t command, DeviceReplyInfo& replyInfo,
         ReturnValue_t status) {
     // No need to check if iter exists, as this is checked by callers.
     // If someone else uses the method, add check.
-    if (iter->second.command == deviceCommandMap.end()) {
+    if (replyInfo.command == deviceCommandMap.end()) {
         //Is most likely periodic reply. Silent return.
         return;
     }
     // Check if more replies are expected. If so, do nothing.
-    DeviceCommandInfo* info = &(iter->second.command->second);
+    DeviceCommandInfo* info = &replyInfo.command->second;
     if (--info->expectedReplies == 0) {
         // Check if it was transition or internal command.
         // Don't send any replies in that case.
@@ -602,7 +601,7 @@ void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
             if(status == HasReturnvaluesIF::RETURN_OK) {
                 success = true;
             }
-            actionHelper.finish(success, info->sendReplyTo, iter->first, status);
+            actionHelper.finish(success, info->sendReplyTo, command, status);
         }
         info->isExecuting = false;
     }
@@ -801,7 +800,7 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
             replyRawReplyIfnotWiretapped(receivedData, foundLen);
             triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result, foundId);
         }
-        replyToReply(iter, result);
+        replyToReply(iter->first, iter->second, result);
     }
     else {
         /* Other completion failure messages are created by timeout.
