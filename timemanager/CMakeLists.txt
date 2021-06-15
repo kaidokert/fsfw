@@ -5,4 +5,5 @@ target_sources(${LIB_FSFW_NAME}
 		Stopwatch.cpp
 		TimeMessage.cpp
 		TimeStamper.cpp
+		ClockCommon.cpp
 )
