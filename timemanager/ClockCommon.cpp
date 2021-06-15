@@ -42,7 +42,7 @@ ReturnValue_t Clock::getLeapSeconds(uint16_t *leapSeconds_) {
 	return HasReturnvaluesIF::RETURN_OK;
 }
 
-static ReturnValue_t Clock::checkOrCreateClockMutex() {
+ReturnValue_t Clock::checkOrCreateClockMutex() {
 	if (timeMutex == nullptr) {
 		MutexFactory *mutexFactory = MutexFactory::instance();
 		if (mutexFactory == nullptr) {
