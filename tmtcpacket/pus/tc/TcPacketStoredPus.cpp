@@ -1,5 +1,7 @@
 #include "TcPacketStoredPus.h"
 
+#include "../../../serviceinterface/ServiceInterface.h"
+
 #include <cstring>
 
 TcPacketStoredPus::TcPacketStoredPus(uint16_t apid,  uint8_t service,
