@@ -667,7 +667,7 @@ protected:
     static const ReturnValue_t CHILD_TIMEOUT = MAKE_RETURN_CODE(0xE0);
     static const ReturnValue_t SWITCH_FAILED = MAKE_RETURN_CODE(0xE1);
 
-    static const MessageQueueId_t NO_COMMANDER = 0;
+    static const MessageQueueId_t NO_COMMANDER = MessageQueueIF::NO_QUEUE;
 
     //! Pointer to the raw packet that will be sent.
     uint8_t *rawPacket = nullptr;
@@ -1195,7 +1195,8 @@ private:
      * @foundLen the length of the packet
      */
     void handleReply(const uint8_t *data, DeviceCommandId_t id, uint32_t foundLen);
-    void replyToReply(DeviceReplyMap::iterator iter, ReturnValue_t status);
+    void replyToReply(const DeviceCommandId_t command, DeviceReplyInfo& replyInfo,
+            ReturnValue_t status);
 
     /**
      * Build and send a command to the device.
