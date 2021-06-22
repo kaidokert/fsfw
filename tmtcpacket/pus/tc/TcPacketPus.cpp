@@ -8,7 +8,7 @@ TcPacketPus::TcPacketPus(const uint8_t *setData): TcPacketBase(setData) {
 }
 
 void TcPacketPus::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
-        uint8_t ack, uint8_t service, uint8_t subservice) {
+        uint8_t ack, uint8_t service, uint8_t subservice, uint16_t sourceId) {
     initSpacePacketHeader(true, true, apid, sequenceCount);
     std::memset(&tcData->dataField, 0, sizeof(tcData->dataField));
     setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
@@ -18,6 +18,12 @@ void TcPacketPus::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
     tcData->dataField.versionTypeAck |= (ack & 0x0F);
     tcData->dataField.serviceType = service;
     tcData->dataField.serviceSubtype = subservice;
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+    tcData->dataField.sourceIdH = (sourceId >> 8) | 0xff;
+    tcData->dataField.sourceIdL = sourceId & 0xff;
+#else
+    tcData->dataField.sourceId = sourceId;
+#endif
 }
 
 uint8_t TcPacketPus::getService() const {
