@@ -104,7 +104,8 @@ public:
 	static const Event DEVICE_MISSED_REPLY = MAKE_EVENT(5, severity::LOW);
 	static const Event DEVICE_UNKNOWN_REPLY = MAKE_EVENT(6, severity::LOW);
 	static const Event DEVICE_UNREQUESTED_REPLY = MAKE_EVENT(7, severity::LOW);
-	static const Event INVALID_DEVICE_COMMAND = MAKE_EVENT(8, severity::LOW); //!< Indicates a SW bug in child class.
+	//! [EXPORT] : [COMMENT] Indicates a SW bug in child class.
+	static const Event INVALID_DEVICE_COMMAND = MAKE_EVENT(8, severity::LOW);
 	static const Event MONITORING_LIMIT_EXCEEDED = MAKE_EVENT(9, severity::LOW);
 	static const Event MONITORING_AMBIGUOUS = MAKE_EVENT(10, severity::HIGH);
 
