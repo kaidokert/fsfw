@@ -1,5 +1,6 @@
 #include "TmTcBridge.h"
 
+#include "../objectmanager/ObjectManager.h"
 #include "../ipc/QueueFactory.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "../globalfunctions/arrayprinter.h"
@@ -53,7 +54,7 @@ ReturnValue_t TmTcBridge::setMaxNumberOfPacketsStored(
 }
 
 ReturnValue_t TmTcBridge::initialize() {
-	tcStore = objectManager->get<StorageManagerIF>(tcStoreId);
+	tcStore = ObjectManager::instance()->get<StorageManagerIF>(tcStoreId);
 	if (tcStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcBridge::initialize: TC store invalid. Make sure"
@@ -61,7 +62,7 @@ ReturnValue_t TmTcBridge::initialize() {
 #endif
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
-	tmStore = objectManager->get<StorageManagerIF>(tmStoreId);
+	tmStore = ObjectManager::instance()->get<StorageManagerIF>(tmStoreId);
 	if (tmStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcBridge::initialize: TM store invalid. Make sure"
@@ -70,7 +71,7 @@ ReturnValue_t TmTcBridge::initialize() {
 		return ObjectManagerIF::CHILD_INIT_FAILED;
 	}
 	AcceptsTelecommandsIF* tcDistributor =
-			objectManager->get<AcceptsTelecommandsIF>(tcDestination);
+	        ObjectManager::instance()->get<AcceptsTelecommandsIF>(tcDestination);
 	if (tcDistributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "TmTcBridge::initialize: TC Distributor invalid"
@@ -183,8 +184,11 @@ ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage *message) {
 
 	if(tmFifo->full()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	    sif::debug << "TmTcBridge::storeDownlinkData: TM downlink max. number "
-	                    << "of stored packet IDs reached! " << std::endl;
+	    sif::warning << "TmTcBridge::storeDownlinkData: TM downlink max. number "
+	            "of stored packet IDs reached!" << std::endl;
+#else
+	    sif::printWarning("TmTcBridge::storeDownlinkData: TM downlink max. number "
+                "of stored packet IDs reached!\n");
 #endif
 	    if(overwriteOld) {
 	        tmFifo->retrieve(&storeId);

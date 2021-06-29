@@ -119,7 +119,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
         return result;
     }
 
-    communicationInterface = objectManager->get<DeviceCommunicationIF>(
+    communicationInterface = ObjectManager::instance()->get<DeviceCommunicationIF>(
             deviceCommunicationId);
     if (communicationInterface == nullptr) {
         printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
@@ -136,7 +136,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
         return result;
     }
 
-    IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+    IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
     if (IPCStore == nullptr) {
         printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
                 ObjectManagerIF::CHILD_INIT_FAILED, "IPC Store not set up");
@@ -144,8 +144,8 @@ ReturnValue_t DeviceHandlerBase::initialize() {
     }
 
     if(rawDataReceiverId != objects::NO_OBJECT) {
-        AcceptsDeviceResponsesIF *rawReceiver = objectManager->get<
-                AcceptsDeviceResponsesIF>(rawDataReceiverId);
+        AcceptsDeviceResponsesIF *rawReceiver = ObjectManager::instance()->
+                get<AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
         if (rawReceiver == nullptr) {
             printWarningOrError(sif::OutputTypes::OUT_ERROR,
@@ -164,7 +164,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
     }
 
     if(powerSwitcherId != objects::NO_OBJECT) {
-        powerSwitcher = objectManager->get<PowerSwitchIF>(powerSwitcherId);
+        powerSwitcher = ObjectManager::instance()->get<PowerSwitchIF>(powerSwitcherId);
         if (powerSwitcher == nullptr) {
             printWarningOrError(sif::OutputTypes::OUT_ERROR,
                     "initialize", ObjectManagerIF::CHILD_INIT_FAILED,
@@ -226,16 +226,15 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
-    for (std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter =
-            deviceReplyMap.begin(); iter != deviceReplyMap.end(); iter++) {
-        if (iter->second.delayCycles != 0) {
-            iter->second.delayCycles--;
-            if (iter->second.delayCycles == 0) {
-                if (iter->second.periodic) {
-                    iter->second.delayCycles = iter->second.maxDelayCycles;
+    for (std::pair<const DeviceCommandId_t, DeviceReplyInfo>& replyPair: deviceReplyMap) {
+        if (replyPair.second.delayCycles != 0) {
+            replyPair.second.delayCycles--;
+            if (replyPair.second.delayCycles == 0) {
+                if (replyPair.second.periodic) {
+                    replyPair.second.delayCycles = replyPair.second.maxDelayCycles;
                 }
-                replyToReply(iter, TIMEOUT);
-                missedReply(iter->first);
+                replyToReply(replyPair.first, replyPair.second, TIMEOUT);
+                missedReply(replyPair.first);
             }
         }
     }
@@ -584,17 +583,28 @@ void DeviceHandlerBase::replyToCommand(ReturnValue_t status,
     }
 }
 
-void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
+void DeviceHandlerBase::replyToReply(const DeviceCommandId_t command, DeviceReplyInfo& replyInfo,
         ReturnValue_t status) {
     // No need to check if iter exists, as this is checked by callers.
     // If someone else uses the method, add check.
-    if (iter->second.command == deviceCommandMap.end()) {
+    if (replyInfo.command == deviceCommandMap.end()) {
         //Is most likely periodic reply. Silent return.
         return;
     }
+    DeviceCommandInfo* info = &replyInfo.command->second;
+    if (info == nullptr){
+    	printWarningOrError(sif::OutputTypes::OUT_ERROR,
+    	                        "replyToReply", HasReturnvaluesIF::RETURN_FAILED,
+    	                        "Command pointer not found");
+    	return;
+    }
+
+    if (info->expectedReplies > 0){
+    	// Check before to avoid underflow
+    	info->expectedReplies--;
+    }
     // Check if more replies are expected. If so, do nothing.
-    DeviceCommandInfo* info = &(iter->second.command->second);
-    if (--info->expectedReplies == 0) {
+    if (info->expectedReplies == 0) {
         // Check if it was transition or internal command.
         // Don't send any replies in that case.
         if (info->sendReplyTo != NO_COMMANDER) {
@@ -602,7 +612,7 @@ void DeviceHandlerBase::replyToReply(DeviceReplyMap::iterator iter,
             if(status == HasReturnvaluesIF::RETURN_OK) {
                 success = true;
             }
-            actionHelper.finish(success, info->sendReplyTo, iter->first, status);
+            actionHelper.finish(success, info->sendReplyTo, command, status);
         }
         info->isExecuting = false;
     }
@@ -801,7 +811,7 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData,
             replyRawReplyIfnotWiretapped(receivedData, foundLen);
             triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result, foundId);
         }
-        replyToReply(iter, result);
+        replyToReply(iter->first, iter->second, result);
     }
     else {
         /* Other completion failure messages are created by timeout.

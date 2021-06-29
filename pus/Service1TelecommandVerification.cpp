@@ -2,8 +2,9 @@
 #include "servicepackets/Service1Packets.h"
 
 #include "../ipc/QueueFactory.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../tmtcservices/PusVerificationReport.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/tm/TmPacketStored.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "../tmtcservices/AcceptsTelemetryIF.h"
 
@@ -68,8 +69,13 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
 			message->getTcSequenceControl(), message->getStep(),
 			message->getErrorCode(), message->getParameter1(),
 			message->getParameter2());
-	TmPacketStored tmPacket(apid, serviceId, message->getReportId(),
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(),
 	        packetSubCounter++, &report);
+#else
+    TmPacketStoredPusC tmPacket(apid, serviceId, message->getReportId(),
+            packetSubCounter++, &report);
+#endif
 	ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(),
 			tmQueue->getId());
 	return result;
@@ -79,8 +85,13 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
         PusVerificationMessage *message) {
 	SuccessReport report(message->getReportId(),message->getTcPacketId(),
 			message->getTcSequenceControl(),message->getStep());
-	TmPacketStored tmPacket(apid, serviceId, message->getReportId(),
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(),
 	        packetSubCounter++, &report);
+#else
+    TmPacketStoredPusC tmPacket(apid, serviceId, message->getReportId(),
+            packetSubCounter++, &report);
+#endif
 	ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(),
 			tmQueue->getId());
 	return result;
@@ -89,7 +100,7 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
 
 ReturnValue_t Service1TelecommandVerification::initialize() {
 	// Get target object for TC verification messages
-	AcceptsTelemetryIF* funnel = objectManager->
+	AcceptsTelemetryIF* funnel = ObjectManager::instance()->
 			get<AcceptsTelemetryIF>(targetDestination);
 	if(funnel == nullptr){
 #if FSFW_CPP_OSTREAM_ENABLED == 1

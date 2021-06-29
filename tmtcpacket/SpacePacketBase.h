@@ -138,9 +138,11 @@ public:
 	 * Returns the packet data length, which is the fifth and sixth byte of the
 	 * CCSDS Primary Header. The packet data length is the size of every kind
 	 * of data \b after the CCSDS Primary Header \b -1.
-	 * @return The CCSDS packet data length.
+	 * @return
+	 * The CCSDS packet data length. uint16_t is sufficient,
+	 * because this is limit in CCSDS standard
 	 */
-	uint16_t getPacketDataLength( void ); //uint16_t is sufficient, because this is limit in CCSDS standard
+	uint16_t getPacketDataLength(void) const;
 	/**
 	 * Sets the packet data length, which is the fifth and sixth byte of the
 	 * CCSDS Primary Header.

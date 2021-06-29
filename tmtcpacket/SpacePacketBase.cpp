@@ -72,7 +72,7 @@ void SpacePacketBase::setPacketSequenceCount( uint16_t new_count) {
 	this->data->header.sequence_control_l = ( (new_count%LIMIT_SEQUENCE_COUNT) & 0x00FF );
 }
 
-uint16_t SpacePacketBase::getPacketDataLength( void ) {
+uint16_t SpacePacketBase::getPacketDataLength() const {
 	return ( (this->data->header.packet_length_h) << 8 )
 		+ this->data->header.packet_length_l;
 }

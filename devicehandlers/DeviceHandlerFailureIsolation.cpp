@@ -1,6 +1,7 @@
 #include "DeviceHandlerFailureIsolation.h"
 
 #include "../devicehandlers/DeviceHandlerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../modes/HasModesIF.h"
 #include "../health/HealthTableIF.h"
 #include "../power/Fuse.h"
@@ -175,7 +176,7 @@ ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
 #endif
 		return result;
 	}
-	ConfirmsFailuresIF* power = objectManager->get<ConfirmsFailuresIF>(
+	ConfirmsFailuresIF* power = ObjectManager::instance()->get<ConfirmsFailuresIF>(
 			powerConfirmationId);
 	if (power != nullptr) {
 		powerConfirmation = power->getEventReceptionQueue();

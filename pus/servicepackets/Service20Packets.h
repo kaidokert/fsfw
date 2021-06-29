@@ -27,12 +27,11 @@ public:
     ParameterCommand(uint8_t* storePointer, size_t parameterDataLen):
         parameterBuffer(storePointer, parameterDataLen) {
 #if FSFW_VERBOSE_LEVEL >= 1
-        if(parameterDataLen < sizeof(object_id_t) + sizeof(ParameterId_t) + 4) {
+        if(parameterDataLen == 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::warning << "ParameterCommand: Parameter data length is less than 12!"
-                    << std::endl;
+            sif::warning << "ParameterCommand: Parameter data length is 0" << std::endl;
 #else
-            sif::printWarning("ParameterCommand: Parameter data length is less than 12!\n");
+            sif::printWarning("ParameterCommand: Parameter data length is 0!\n");
 #endif
         }
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */

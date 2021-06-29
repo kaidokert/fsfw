@@ -9,7 +9,7 @@
 #include "../objectmanager/SystemObject.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../tasks/ExecutableObjectIF.h"
-#include "../tmtcpacket/pus/TcPacketStored.h"
+#include "../tmtcpacket/pus/tc.h"
 #include "../ipc/MessageQueueIF.h"
 
 namespace Factory{
@@ -141,7 +141,7 @@ protected:
 	 * The current Telecommand to be processed.
 	 * It is deleted after handleRequest was executed.
 	 */
-	TcPacketStored currentPacket;
+	TcPacketStoredPus currentPacket;
 
 	static object_id_t packetSource;
 

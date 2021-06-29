@@ -1,5 +1,6 @@
-#include "../parameters/ParameterMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "ParameterMessage.h"
+
+#include "../objectmanager/ObjectManager.h"
 
 ParameterId_t ParameterMessage::getParameterId(const CommandMessage* message) {
 	return message->getParameter();
@@ -51,7 +52,7 @@ void ParameterMessage::clear(CommandMessage* message) {
 	switch (message->getCommand()) {
 	case CMD_PARAMETER_LOAD:
 	case REPLY_PARAMETER_DUMP: {
-		StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+		StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
 				objects::IPC_STORE);
 		if (ipcStore != NULL) {
 			ipcStore->deleteData(getStoreId(message));

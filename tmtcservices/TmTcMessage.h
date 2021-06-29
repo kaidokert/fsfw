@@ -18,7 +18,7 @@ protected:
 	 * @brief	This call always returns the same fixed size of the message.
 	 * @return	Returns HEADER_SIZE + @c sizeof(store_address_t).
 	 */
-	size_t getMinimumMessageSize();
+	size_t getMinimumMessageSize() const override;
 public:
 	/**
 	 * @brief	In the default constructor, only the message_size is set.

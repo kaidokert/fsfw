@@ -1,10 +1,12 @@
 #include "../../serviceinterface/ServiceInterface.h"
 #include "../../timemanager/Clock.h"
+#include "../../platform.h"
 
 #include <chrono>
-#if defined(WIN32)
+
+#if defined(PLATFORM_WIN)
 #include <sysinfoapi.h>
-#elif defined(LINUX)
+#elif defined(PLATFORM_UNIX)
 #include <fstream>
 #endif
 
@@ -46,7 +48,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
-#if defined(WIN32)
+#if defined(PLATFORM_WIN)
 	auto now  = std::chrono::system_clock::now();
 	auto secondsChrono = std::chrono::time_point_cast<std::chrono::seconds>(now);
 	auto epoch = now.time_since_epoch();
@@ -54,7 +56,7 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 	auto fraction = now - secondsChrono;
 	time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(fraction).count();
 	return HasReturnvaluesIF::RETURN_OK;
-#elif defined(LINUX)
+#elif defined(PLATFORM_UNIX)
 	timespec timeUnix;
 	int status = clock_gettime(CLOCK_REALTIME,&timeUnix);
 	if(status!=0){
@@ -85,14 +87,14 @@ ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
 
 timeval Clock::getUptime() {
 	timeval timeval;
-#if defined(WIN32)
+#if defined(PLATFORM_WIN)
 	auto uptime  = std::chrono::milliseconds(GetTickCount64());
 	auto secondsChrono = std::chrono::duration_cast<std::chrono::seconds>(uptime);
 	timeval.tv_sec = secondsChrono.count();
 	auto fraction = uptime - secondsChrono;
 	timeval.tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(
 	            fraction).count();
-#elif defined(LINUX)
+#elif defined(PLATFORM_UNIX)
 	double uptimeSeconds;
 	if (std::ifstream("/proc/uptime", std::ios::in) >> uptimeSeconds)
 	{
@@ -118,7 +120,6 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 	*uptimeMs = uptime.tv_sec * 1000 + uptime.tv_usec / 1000;
 	return HasReturnvaluesIF::RETURN_OK;
 }
-
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 	/* Do some magic with chrono (C++20!) */
@@ -168,73 +169,5 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from,
 ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
 	*JD2000 = (time.tv_sec - 946728000. + time.tv_usec / 1000000.) / 24.
 			/ 3600.;
-	return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval* tt) {
-	//SHOULDDO: works not for dates in the past (might have less leap seconds)
-	if (timeMutex == NULL) {
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-
-	uint16_t leapSeconds;
-	ReturnValue_t result = getLeapSeconds(&leapSeconds);
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
-	timeval leapSeconds_timeval = { 0, 0 };
-	leapSeconds_timeval.tv_sec = leapSeconds;
-
-	//initial offset between UTC and TAI
-	timeval UTCtoTAI1972 = { 10, 0 };
-
-	timeval TAItoTT = { 32, 184000 };
-
-	*tt = utc + leapSeconds_timeval + UTCtoTAI1972 + TAItoTT;
-
-	return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
-	if(checkOrCreateClockMutex()!=HasReturnvaluesIF::RETURN_OK){
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	ReturnValue_t result = timeMutex->lockMutex();
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
-
-	leapSeconds = leapSeconds_;
-
-	result = timeMutex->unlockMutex();
-	return result;
-}
-
-ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
-	if(timeMutex == nullptr){
-		return HasReturnvaluesIF::RETURN_FAILED;
-	}
-	ReturnValue_t result = timeMutex->lockMutex();
-	if (result != HasReturnvaluesIF::RETURN_OK) {
-		return result;
-	}
-
-	*leapSeconds_ = leapSeconds;
-
-	result = timeMutex->unlockMutex();
-	return result;
-}
-
-ReturnValue_t Clock::checkOrCreateClockMutex(){
-	if(timeMutex == nullptr){
-		MutexFactory* mutexFactory = MutexFactory::instance();
-		if (mutexFactory == nullptr) {
-			return HasReturnvaluesIF::RETURN_FAILED;
-		}
-		timeMutex = mutexFactory->createMutex();
-		if (timeMutex == nullptr) {
-			return HasReturnvaluesIF::RETURN_FAILED;
-		}
-	}
 	return HasReturnvaluesIF::RETURN_OK;
 }

@@ -1,13 +1,8 @@
-/**
- * @file	LimitViolationReporter.cpp
- * @brief	This file defines the LimitViolationReporter class.
- * @date	17.07.2014
- * @author	baetz
- */
 #include "LimitViolationReporter.h"
 #include "MonitoringIF.h"
 #include "ReceivesMonitoringReportsIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+
+#include "../objectmanager/ObjectManager.h"
 #include "../serialize/SerializeAdapter.h"
 
 ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF* data) {
@@ -16,7 +11,7 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 		return result;
 	}
 	store_address_t storeId;
-	uint8_t* dataTarget = NULL;
+	uint8_t* dataTarget = nullptr;
 	size_t maxSize = data->getSerializedSize();
 	if (maxSize > MonitoringIF::VIOLATION_REPORT_MAX_SIZE) {
 		return MonitoringIF::INVALID_SIZE;
@@ -38,16 +33,16 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
 
 ReturnValue_t LimitViolationReporter::checkClassLoaded() {
 	if (reportQueue == 0) {
-		ReceivesMonitoringReportsIF* receiver = objectManager->get<
+		ReceivesMonitoringReportsIF* receiver = ObjectManager::instance()->get<
 				ReceivesMonitoringReportsIF>(reportingTarget);
-		if (receiver == NULL) {
+		if (receiver == nullptr) {
 			return ObjectManagerIF::NOT_FOUND;
 		}
 		reportQueue = receiver->getCommandQueue();
 	}
-	if (ipcStore == NULL) {
-		ipcStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-		if (ipcStore == NULL) {
+	if (ipcStore == nullptr) {
+		ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+		if (ipcStore == nullptr) {
 			return HasReturnvaluesIF::RETURN_FAILED;
 		}
 	}
@@ -56,5 +51,5 @@ ReturnValue_t LimitViolationReporter::checkClassLoaded() {
 
 //Lazy initialization.
 MessageQueueId_t LimitViolationReporter::reportQueue = 0;
-StorageManagerIF* LimitViolationReporter::ipcStore = NULL;
+StorageManagerIF* LimitViolationReporter::ipcStore = nullptr;
 object_id_t LimitViolationReporter::reportingTarget = 0;

@@ -19,8 +19,9 @@ A nullptr check of the returning Pointer must be done. This function is based on
 ```cpp
 template <typename T> T* ObjectManagerIF::get( object_id_t id )
 ```
-* A typical way to create all objects on startup is a handing a static produce function to the ObjectManager on creation.
-By calling objectManager->initialize() the produce function will be called and all SystemObjects will be initialized afterwards.
+* A typical way to create all objects on startup is a handing a static produce function to the
+  ObjectManager on creation. By calling objectManager->initialize() the produce function will be
+  called and all SystemObjects will be initialized afterwards.
 
 ### Event Manager
 
@@ -36,14 +37,19 @@ By calling objectManager->initialize() the produce function will be called and a
 
 ### Stores
 
-* The message based communication can only exchange a few bytes of information inside the message itself. Therefore, additional information can 
-  be exchanged with Stores. With this, only the store address must be exchanged in the message.
-* Internally, the FSFW uses an IPC Store to exchange data between processes. For incoming TCs a TC Store is used. For outgoing TM a TM store is used.
+* The message based communication can only exchange a few bytes of information inside the message
+  itself. Therefore, additional information can  be exchanged with Stores. With this, only the
+  store address must be exchanged in the message.
+* Internally, the FSFW uses an IPC Store to exchange data between processes. For incoming TCs a TC
+  Store is used. For outgoing TM a TM store is used.
 * All of them should use the Thread Safe Class storagemanager/PoolManager
 
 ### Tasks
 
 There are two different types of tasks:
- * The PeriodicTask just executes objects that are of type ExecutableObjectIF in the order of the insertion to the Tasks.
- * FixedTimeslotTask executes a list of calls in the order of the given list. This is intended for DeviceHandlers, where polling should be in a defined order. An example can be found in defaultcfg/fsfwconfig/pollingSequence
+ * The PeriodicTask just executes objects that are of type ExecutableObjectIF in the order of the
+   insertion to the Tasks.
+ * FixedTimeslotTask executes a list of calls in the order of the given list. This is intended for
+   DeviceHandlers, where polling should be in a defined order. An example can be found in 
+   `defaultcfg/fsfwconfig/pollingSequence` folder
 

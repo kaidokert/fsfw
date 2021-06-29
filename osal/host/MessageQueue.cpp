@@ -1,9 +1,12 @@
 #include "MessageQueue.h"
 #include "QueueMapManager.h"
 
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
+#include "../../objectmanager/ObjectManager.h"
 #include "../../ipc/MutexFactory.h"
 #include "../../ipc/MutexGuard.h"
+
+#include <cstring>
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 		messageSize(maxMessageSize), messageDepth(messageDepth) {
@@ -11,8 +14,9 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
 	auto result = QueueMapManager::instance()->addMessageQueue(this, &mqId);
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "MessageQueue::MessageQueue:"
-		        << " Could not be created" << std::endl;
+		sif::error << "MessageQueue::MessageQueue: Could not be created" << std::endl;
+#else
+		sif::printError("MessageQueue::MessageQueue: Could not be created\n");
 #endif
 	}
 }
@@ -119,15 +123,13 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 			QueueMapManager::instance()->getMessageQueue(sendTo));
 	if(targetQueue == nullptr) {
 		if(not ignoreFault) {
-			InternalErrorReporterIF* internalErrorReporter =
-					objectManager->get<InternalErrorReporterIF>(
-							objects::INTERNAL_ERROR_REPORTER);
+			InternalErrorReporterIF* internalErrorReporter = ObjectManager::instance()->
+			        get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
 			if (internalErrorReporter != nullptr) {
 				internalErrorReporter->queueMessageNotSent();
 			}
 		}
-		// TODO: Better returnvalue
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return MessageQueueIF::DESTINATION_INVALID;
 	}
 	if(targetQueue->messageQueue.size() < targetQueue->messageDepth) {
 		MutexGuard mutexLock(targetQueue->queueLock, MutexIF::TimeoutType::WAITING, 20);

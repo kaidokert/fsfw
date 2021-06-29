@@ -18,6 +18,13 @@ add_library(${LIB_FSFW_NAME})
 
 set_property(CACHE OS_FSFW PROPERTY STRINGS host linux rtems freertos)
 
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED True)
+elseif(${CMAKE_CXX_STANDARD} LESS 11)
+    message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
+endif()
+
 if(NOT OS_FSFW)
 	message(STATUS "No OS for FSFW via OS_FSFW set. Assuming host OS")
 	# Assume host OS and autodetermine from OS_FSFW
@@ -131,9 +138,9 @@ else()
 	)
 endif()
 
-foreach(INCLUDE_PATH ${FSFW_ADDITIONAL_INC_PATH})
+foreach(INCLUDE_PATH ${FSFW_ADDITIONAL_INC_PATHS})
     if(IS_ABSOLUTE ${INCLUDE_PATH})
-        set(CURR_ABS_INC_PATH "${FREERTOS_PATH}")
+        set(CURR_ABS_INC_PATH "${INCLUDE_PATH}")
     else()
         get_filename_component(CURR_ABS_INC_PATH
             ${INCLUDE_PATH} REALPATH BASE_DIR ${CMAKE_SOURCE_DIR})

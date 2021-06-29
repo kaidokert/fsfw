@@ -1,7 +1,7 @@
 #include "ActionMessage.h"
 #include "HasActionsIF.h"
 
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../storagemanager/StorageManagerIF.h"
 
 ActionMessage::ActionMessage() {
@@ -69,7 +69,7 @@ void ActionMessage::clear(CommandMessage* message) {
     switch(message->getCommand()) {
     case EXECUTE_ACTION:
     case DATA_REPLY: {
-        StorageManagerIF *ipcStore = objectManager->get<StorageManagerIF>(
+        StorageManagerIF *ipcStore = ObjectManager::instance()->get<StorageManagerIF>(
                 objects::IPC_STORE);
         if (ipcStore != NULL) {
             ipcStore->deleteData(getStoreId(message));

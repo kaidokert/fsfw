@@ -1,10 +1,11 @@
 #include "Service5EventReporting.h"
 #include "servicepackets/Service5Packets.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "../serviceinterface/ServiceInterface.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../events/EventManagerIF.h"
 #include "../ipc/QueueFactory.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/tm/TmPacketStored.h"
 
 
 Service5EventReporting::Service5EventReporting(object_id_t objectId,
@@ -52,8 +53,13 @@ ReturnValue_t Service5EventReporting::generateEventReport(
 {
 	EventReport report(message.getEventId(),message.getReporter(),
 			message.getParameter1(),message.getParameter2());
-	TmPacketStored tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
 			message.getSeverity(), packetSubCounter++, &report);
+#else
+    TmPacketStoredPusC tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
+            message.getSeverity(), packetSubCounter++, &report);
+#endif
 	ReturnValue_t result = tmPacket.sendPacket(
 	        requestQueue->getDefaultDestination(),requestQueue->getId());
 	if(result != HasReturnvaluesIF::RETURN_OK) {
@@ -84,7 +90,7 @@ ReturnValue_t Service5EventReporting::handleRequest(uint8_t subservice) {
 // In addition to the default PUSServiceBase initialization, this service needs
 // to be registered to the event manager to listen for events.
 ReturnValue_t Service5EventReporting::initialize() {
-	EventManagerIF* manager = objectManager->get<EventManagerIF>(
+	EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(
 				objects::EVENT_MANAGER);
 	if (manager == NULL) {
 			return RETURN_FAILED;

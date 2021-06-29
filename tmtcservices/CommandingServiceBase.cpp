@@ -1,12 +1,13 @@
 #include "AcceptsTelemetryIF.h"
 #include "CommandingServiceBase.h"
 #include "TmTcMessage.h"
+#include <FSFWConfig.h>
 
 #include "../tcdistribution/PUSDistributorIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../ipc/QueueFactory.h"
-#include "../tmtcpacket/pus/TcPacketStored.h"
-#include "../tmtcpacket/pus/TmPacketStored.h"
+#include "../tmtcpacket/pus/tc.h"
+#include "../tmtcpacket/pus/tm.h"
 #include "../serviceinterface/ServiceInterface.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
@@ -67,12 +68,12 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	    packetDestination = defaultPacketDestination;
 	}
 	AcceptsTelemetryIF* packetForwarding =
-			objectManager->get<AcceptsTelemetryIF>(packetDestination);
+	        ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
 
 	if(packetSource == objects::NO_OBJECT) {
 	    packetSource = defaultPacketSource;
 	}
-	PUSDistributorIF* distributor = objectManager->get<PUSDistributorIF>(
+	PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(
 			packetSource);
 
 	if (packetForwarding == nullptr or distributor == nullptr) {
@@ -87,8 +88,8 @@ ReturnValue_t CommandingServiceBase::initialize() {
 	requestQueue->setDefaultDestination(
 			packetForwarding->getReportReceptionQueue());
 
-	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
-	TCStore = objectManager->get<StorageManagerIF>(objects::TC_STORE);
+	IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+	TCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
 
 	if (IPCStore == nullptr or TCStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -245,7 +246,7 @@ void CommandingServiceBase::handleRequestQueue() {
 	TmTcMessage message;
 	ReturnValue_t result;
 	store_address_t address;
-	TcPacketStored packet;
+	TcPacketStoredPus packet;
 	MessageQueueId_t queue;
 	object_id_t objectId;
 	for (result = requestQueue->receiveMessage(&message); result == RETURN_OK;
@@ -258,6 +259,7 @@ void CommandingServiceBase::handleRequestQueue() {
 			rejectPacket(tc_verification::START_FAILURE, &packet, INVALID_SUBSERVICE);
 			continue;
 		}
+
 		result = getMessageQueueAndObject(packet.getSubService(),
 				packet.getApplicationData(), packet.getApplicationDataSize(),
 				&queue, &objectId);
@@ -293,8 +295,13 @@ void CommandingServiceBase::handleRequestQueue() {
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 		const uint8_t* data, size_t dataLen, const uint8_t* headerData,
 		size_t headerSize) {
-	TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+	TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
 			this->tmPacketCounter, data, dataLen, headerData, headerSize);
+#else
+	TmPacketStoredPusC tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, data, dataLen, headerData, headerSize);
+#endif
 	ReturnValue_t result = tmPacketStored.sendPacket(
 			requestQueue->getDefaultDestination(), requestQueue->getId());
 	if (result == HasReturnvaluesIF::RETURN_OK) {
@@ -311,8 +318,13 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
     size_t size = 0;
     SerializeAdapter::serialize(&objectId, &pBuffer, &size,
                 sizeof(object_id_t), SerializeIF::Endianness::BIG);
-    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+    TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
             this->tmPacketCounter, data, dataLen, buffer, size);
+#else
+    TmPacketStoredPusC tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, data, dataLen, buffer, size);
+#endif
     ReturnValue_t result = tmPacketStored.sendPacket(
             requestQueue->getDefaultDestination(), requestQueue->getId());
     if (result == HasReturnvaluesIF::RETURN_OK) {
@@ -324,8 +336,13 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
         SerializeIF* content, SerializeIF* header) {
-    TmPacketStored tmPacketStored(this->apid, this->service, subservice,
+#if FSFW_USE_PUS_C_TELEMETRY == 0
+    TmPacketStoredPusA tmPacketStored(this->apid, this->service, subservice,
             this->tmPacketCounter, content, header);
+#else
+    TmPacketStoredPusC tmPacketStored(this->apid, this->service, subservice,
+            this->tmPacketCounter, content, header);
+#endif
     ReturnValue_t result = tmPacketStored.sendPacket(
             requestQueue->getDefaultDestination(), requestQueue->getId());
     if (result == HasReturnvaluesIF::RETURN_OK) {
@@ -335,14 +352,18 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice,
 }
 
 
-void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
+void CommandingServiceBase::startExecution(TcPacketStoredBase *storedPacket,
         CommandMapIter iter) {
     ReturnValue_t result = RETURN_OK;
     CommandMessage command;
-    iter->second.subservice = storedPacket->getSubService();
+    TcPacketBase* tcPacketBase = storedPacket->getPacketBase();
+    if(tcPacketBase == nullptr) {
+        return;
+    }
+    iter->second.subservice = tcPacketBase->getSubService();
     result = prepareCommand(&command, iter->second.subservice,
-            storedPacket->getApplicationData(),
-            storedPacket->getApplicationDataSize(), &iter->second.state,
+            tcPacketBase->getApplicationData(),
+            tcPacketBase->getApplicationDataSize(), &iter->second.state,
             iter->second.objectId);
 
     ReturnValue_t sendResult = RETURN_OK;
@@ -355,12 +376,12 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 		if (sendResult == RETURN_OK) {
 			Clock::getUptime(&iter->second.uptimeOfStart);
 			iter->second.step = 0;
-			iter->second.subservice = storedPacket->getSubService();
+			iter->second.subservice = tcPacketBase->getSubService();
 			iter->second.command = command.getCommand();
-			iter->second.tcInfo.ackFlags = storedPacket->getAcknowledgeFlags();
-			iter->second.tcInfo.tcPacketId = storedPacket->getPacketId();
+			iter->second.tcInfo.ackFlags = tcPacketBase->getAcknowledgeFlags();
+			iter->second.tcInfo.tcPacketId = tcPacketBase->getPacketId();
 			iter->second.tcInfo.tcSequenceControl =
-					storedPacket->getPacketSequenceControl();
+			        tcPacketBase->getPacketSequenceControl();
 			acceptPacket(tc_verification::START_SUCCESS, storedPacket);
 		} else {
 			command.clearCommandMessage();
@@ -376,7 +397,7 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 		}
 		if (sendResult == RETURN_OK) {
 			verificationReporter.sendSuccessReport(tc_verification::START_SUCCESS,
-					storedPacket);
+					storedPacket->getPacketBase());
 			acceptPacket(tc_verification::COMPLETION_SUCCESS, storedPacket);
 			checkAndExecuteFifo(iter);
 		} else {
@@ -393,16 +414,16 @@ void CommandingServiceBase::startExecution(TcPacketStored *storedPacket,
 }
 
 
-void CommandingServiceBase::rejectPacket(uint8_t report_id,
-		TcPacketStored* packet, ReturnValue_t error_code) {
-	verificationReporter.sendFailureReport(report_id, packet, error_code);
+void CommandingServiceBase::rejectPacket(uint8_t reportId,
+		TcPacketStoredBase* packet, ReturnValue_t errorCode) {
+	verificationReporter.sendFailureReport(reportId, packet->getPacketBase(), errorCode);
 	packet->deletePacket();
 }
 
 
 void CommandingServiceBase::acceptPacket(uint8_t reportId,
-		TcPacketStored* packet) {
-	verificationReporter.sendSuccessReport(reportId, packet);
+		TcPacketStoredBase* packet) {
+	verificationReporter.sendSuccessReport(reportId, packet->getPacketBase());
 	packet->deletePacket();
 }
 
@@ -412,7 +433,7 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
 	if (iter->second.fifo.retrieve(&address) != RETURN_OK) {
 		commandMap.erase(&iter);
 	} else {
-		TcPacketStored newPacket(address);
+		TcPacketStoredPus newPacket(address);
 		startExecution(&newPacket, iter);
 	}
 }

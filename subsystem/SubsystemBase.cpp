@@ -1,6 +1,7 @@
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../subsystem/SubsystemBase.h"
+#include "SubsystemBase.h"
+
+#include "../serviceinterface/ServiceInterface.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../ipc/QueueFactory.h"
 
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
@@ -19,10 +20,10 @@ SubsystemBase::~SubsystemBase() {
 ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
 	ChildInfo info;
 
-	HasModesIF *child = objectManager->get<HasModesIF>(objectId);
+	HasModesIF *child = ObjectManager::instance()->get<HasModesIF>(objectId);
 	// This is a rather ugly hack to have the changedHealth info for all
 	// children available.
-	HasHealthIF* healthChild = objectManager->get<HasHealthIF>(objectId);
+	HasHealthIF* healthChild = ObjectManager::instance()->get<HasHealthIF>(objectId);
 	if (child == nullptr) {
 		if (healthChild == nullptr) {
 			return CHILD_DOESNT_HAVE_MODES;
@@ -174,7 +175,7 @@ ReturnValue_t SubsystemBase::initialize() {
 	}
 
 	if (parentId != objects::NO_OBJECT) {
-		SubsystemBase *parent = objectManager->get<SubsystemBase>(parentId);
+		SubsystemBase *parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
 		if (parent == nullptr) {
 			return RETURN_FAILED;
 		}

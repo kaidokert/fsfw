@@ -1,6 +1,7 @@
 #include "Service2DeviceAccess.h"
 #include "servicepackets/Service2Packets.h"
 
+#include "../objectmanager/ObjectManager.h"
 #include "../devicehandlers/DeviceHandlerIF.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "../devicehandlers/DeviceHandlerMessage.h"
@@ -47,7 +48,7 @@ ReturnValue_t Service2DeviceAccess::getMessageQueueAndObject(
 ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
 		MessageQueueId_t * messageQueueToSet, object_id_t *objectId) {
 	DeviceHandlerIF* possibleTarget =
-			objectManager->get<DeviceHandlerIF>(*objectId);
+	        ObjectManager::instance()->get<DeviceHandlerIF>(*objectId);
 	if(possibleTarget == nullptr) {
 		return CommandingServiceBase::INVALID_OBJECT;
 	}

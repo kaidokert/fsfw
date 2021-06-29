@@ -1,6 +1,7 @@
 #include "Subsystem.h"
+
 #include "../health/HealthMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "../objectmanager/ObjectManager.h"
 #include "../serialize/SerialArrayListAdapter.h"
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../serialize/SerializeElement.h"
@@ -477,13 +478,13 @@ ReturnValue_t Subsystem::initialize() {
 		return result;
 	}
 
-	IPCStore = objectManager->get<StorageManagerIF>(objects::IPC_STORE);
+	IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
 	if (IPCStore == NULL) {
 		return RETURN_FAILED;
 	}
 
 #if FSFW_USE_MODESTORE == 1
-	modeStore = objectManager->get<ModeStoreIF>(objects::MODE_STORE);
+	modeStore = ObjectManager::instance()->get<ModeStoreIF>(objects::MODE_STORE);
 
 	if (modeStore == nullptr) {
 		return RETURN_FAILED;

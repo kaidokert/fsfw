@@ -19,7 +19,8 @@ class VirtualChannelReception;
 class DataLinkLayer : public CCSDSReturnValuesIF {
 public:
 	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::SYSTEM_1;
-	static const Event RF_AVAILABLE = MAKE_EVENT(0, severity::INFO); //!< A RF available signal was detected. P1: raw RFA state, P2: 0
+	//! [EXPORT] : [COMMENT] A RF available signal was detected. P1: raw RFA state, P2: 0
+	static const Event RF_AVAILABLE = MAKE_EVENT(0, severity::INFO);
 	static const Event RF_LOST = MAKE_EVENT(1, severity::INFO); //!< A previously found RF available signal was lost. P1: raw RFA state, P2: 0
 	static const Event BIT_LOCK = MAKE_EVENT(2, severity::INFO); //!< A Bit Lock signal. Was detected. P1: raw BLO state, P2: 0
 	static const Event BIT_LOCK_LOST = MAKE_EVENT(3, severity::INFO); //!< A previously found Bit Lock signal was lost. P1: raw BLO state, P2: 0
