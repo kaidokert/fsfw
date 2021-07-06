@@ -6,8 +6,8 @@
 #include "../../tasks/PeriodicTaskIF.h"
 #include "../../tasks/Typedef.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include <vector>
 

@@ -7,8 +7,8 @@
 #include "../../ipc/MessageQueueIF.h"
 #include "../../ipc/MessageQueueMessageIF.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
+#include "FreeRTOS.h"
+#include "queue.h"
 #include <fsfw/ipc/MessageQueueMessage.h>
 
 /**

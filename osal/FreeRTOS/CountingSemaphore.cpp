@@ -3,7 +3,7 @@
 
 #include "../../serviceinterface/ServiceInterfaceStream.h"
 
-#include <freertos/semphr.h>
+#include "semphr.h"
 
 // Make sure #define configUSE_COUNTING_SEMAPHORES 1 is set in
 // free FreeRTOSConfig.h file.

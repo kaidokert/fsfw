@@ -3,7 +3,7 @@
 
 #include <fsfw/ipc/MessageQueueIF.h>
 #include <fsfw/ipc/MessageQueueMessage.h>
-#include <unittest/core/CatchDefinitions.h>
+#include <unittest/user/unittest/core/CatchDefinitions.h>
 #include <cstring>
 
 #include <queue>

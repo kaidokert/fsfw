@@ -4,7 +4,7 @@
 #include <fsfw/devicehandlers/DeviceHandlerBase.h>
 #include <fsfw/events/EventManager.h>
 #include <fsfw/health/HealthTable.h>
-#include <fsfw/tmtcpacket/pus/TmPacketStored.h>
+#include <fsfw/tmtcpacket/pus/tm/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
 #include <fsfw/internalError/InternalErrorReporter.h>
