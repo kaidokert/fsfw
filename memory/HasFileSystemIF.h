@@ -36,9 +36,8 @@ public:
     //! [EXPORT] : P1: Sequence number missing
     static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(16);
 
-
-
 	virtual ~HasFileSystemIF() {}
+
 	/**
 	 * Function to get the MessageQueueId_t of the implementing object
 	 * @return MessageQueueId_t of the object
