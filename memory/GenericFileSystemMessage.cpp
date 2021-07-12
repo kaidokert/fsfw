@@ -34,8 +34,9 @@ void GenericFileSystemMessage::setReportFileAttributesReply(CommandMessage *mess
 }
 
 void GenericFileSystemMessage::setDeleteDirectoryCommand(CommandMessage* message,
-        store_address_t storeId) {
+        store_address_t storeId, bool deleteRecursively) {
     message->setCommand(CMD_DELETE_DIRECTORY);
+    message->setParameter(deleteRecursively);
     message->setParameter2(storeId.raw);
 }
 
@@ -131,6 +132,12 @@ bool GenericFileSystemMessage::getReadReply(const CommandMessage *message,
         (*storeId).raw = message->getParameter2();
     }
     return message->getParameter();
+}
+
+store_address_t GenericFileSystemMessage::getDeleteDirectoryCommand(const CommandMessage *message,
+        bool &deleteRecursively) {
+    deleteRecursively = message->getParameter();
+    return getStoreId(message);
 }
 
 ReturnValue_t GenericFileSystemMessage::clear(CommandMessage* message) {

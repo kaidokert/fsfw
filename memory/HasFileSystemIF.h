@@ -97,7 +97,8 @@ public:
 	 * @param repositoryPath
      * @param args Any other arguments which an implementation might require
 	 */
-	virtual ReturnValue_t removeDirectory(const char* repositoryPath, void* args = nullptr) = 0;
+	virtual ReturnValue_t removeDirectory(const char* repositoryPath,
+	        bool deleteRecurively = false, void* args = nullptr) = 0;
 };
 
 

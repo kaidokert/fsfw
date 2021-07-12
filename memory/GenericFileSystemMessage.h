@@ -79,7 +79,9 @@ public:
     static void setCreateDirectoryCommand(CommandMessage* message,
             store_address_t storeId);
     static void setDeleteDirectoryCommand(CommandMessage* message,
-            store_address_t storeId);
+            store_address_t storeId, bool deleteRecursively);
+    static store_address_t getDeleteDirectoryCommand(const CommandMessage* message,
+            bool& deleteRecursively);
 
     static void setSuccessReply(CommandMessage* message);
     static void setFailureReply(CommandMessage* message,
