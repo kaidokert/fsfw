@@ -45,7 +45,7 @@ public:
 	virtual MessageQueueId_t getCommandQueue() const = 0;
 
 	/**
-	 * Generic function to append to file.
+	 * @brief   Generic function to append to file.
 	 * @param dirname Directory of the file
 	 * @param filename The filename of the file
 	 * @param data The data to write to the file
@@ -62,12 +62,12 @@ public:
 	        uint16_t packetNumber, void* args = nullptr) = 0;
 
 	/**
-	 * Generic function to create a new file.
+	 * @brief   Generic function to create a new file.
 	 * @param repositoryPath
 	 * @param filename
 	 * @param data
 	 * @param size
-	 * @param args Any other arguments which an implementation might require.
+	 * @param args Any other arguments which an implementation might require
 	 * @return
 	 */
 	virtual ReturnValue_t createFile(const char* repositoryPath,
@@ -75,14 +75,29 @@ public:
 	        size_t size = 0, void* args = nullptr) = 0;
 
 	/**
-	 * Generic function to delete a file.
+	 * @brief   Generic function to delete a file.
 	 * @param repositoryPath
 	 * @param filename
-	 * @param args
+	 * @param args Any other arguments which an implementation might require
 	 * @return
 	 */
 	virtual ReturnValue_t deleteFile(const char* repositoryPath,
 	        const char* filename, void* args = nullptr) = 0;
+
+	/**
+	 * @brief   Generic function to create a directory
+	 * @param repositoryPath
+	 * @param args Any other arguments which an implementation might require
+	 * @return
+	 */
+	virtual ReturnValue_t createDirectory(const char* repositoryPath, void* args = nullptr) = 0;
+
+	/**
+	 * @brief   Generic function to remove a directory
+	 * @param repositoryPath
+     * @param args Any other arguments which an implementation might require
+	 */
+	virtual ReturnValue_t removeDirectory(const char* repositoryPath, void* args = nullptr) = 0;
 };
 
 
