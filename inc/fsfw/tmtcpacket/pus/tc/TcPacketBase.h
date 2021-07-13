@@ -1,7 +1,7 @@
 #ifndef TMTCPACKET_PUS_TCPACKETBASE_H_
 #define TMTCPACKET_PUS_TCPACKETBASE_H_
 
-#include "../../../tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/SpacePacketBase.h"
 #include <cstddef>
 
 /**

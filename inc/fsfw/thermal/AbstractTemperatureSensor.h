@@ -1,12 +1,12 @@
 #ifndef ABSTRACTSENSOR_H_
 #define ABSTRACTSENSOR_H_
 
-#include "../health/HasHealthIF.h"
-#include "../health/HealthHelper.h"
-#include "../objectmanager/SystemObject.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../parameters/ParameterHelper.h"
-#include "../ipc/MessageQueueIF.h"
+#include "fsfw/health/HasHealthIF.h"
+#include "fsfw/health/HealthHelper.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/parameters/ParameterHelper.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 #include "ThermalModuleIF.h"
 #include "tcsDefinitions.h"
 

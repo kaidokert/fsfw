@@ -1,18 +1,16 @@
-#include "HasLocalDataPoolIF.h"
-#include "LocalDataPoolManager.h"
-#include "LocalPoolObjectBase.h"
-#include "LocalPoolDataSetBase.h"
+#include "fsfw/datapoollocal/LocalDataPoolManager.h"
+#include "fsfw/datapoollocal.h"
 #include "internal/LocalPoolDataSetAttorney.h"
 #include "internal/HasLocalDpIFManagerAttorney.h"
 
-#include "../housekeeping/HousekeepingSetPacket.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../housekeeping/HousekeepingSnapshot.h"
-#include "../housekeeping/AcceptsHkPacketsIF.h"
-#include "../timemanager/CCSDSTime.h"
-#include "../ipc/MutexFactory.h"
-#include "../ipc/MutexGuard.h"
-#include "../ipc/QueueFactory.h"
+#include "fsfw/housekeeping/HousekeepingSetPacket.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/housekeeping/HousekeepingSnapshot.h"
+#include "fsfw/housekeeping/AcceptsHkPacketsIF.h"
+#include "fsfw/timemanager/CCSDSTime.h"
+#include "fsfw/ipc/MutexFactory.h"
+#include "fsfw/ipc/MutexGuard.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 #include <array>
 #include <cmath>

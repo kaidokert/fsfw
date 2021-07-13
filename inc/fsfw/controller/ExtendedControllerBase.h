@@ -3,10 +3,9 @@
 
 #include "ControllerBase.h"
 
-#include "../action/HasActionsIF.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
-#include "../action/ActionHelper.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
+#include "fsfw/action.h"
+#include "fsfw/datapoollocal/HasLocalDataPoolIF.h"
+#include "fsfw/datapoollocal/LocalDataPoolManager.h"
 
 /**
  * @brief   Extendes the basic ControllerBase with the common components

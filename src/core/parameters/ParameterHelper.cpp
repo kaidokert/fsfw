@@ -1,7 +1,7 @@
-#include "ParameterHelper.h"
-#include "ParameterMessage.h"
+#include "fsfw/parameters/ParameterHelper.h"
+#include "fsfw/parameters/ParameterMessage.h"
 
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner):
         owner(owner) {}

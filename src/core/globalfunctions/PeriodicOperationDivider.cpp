@@ -1,4 +1,4 @@
-#include "PeriodicOperationDivider.h"
+#include "fsfw/globalfunctions/PeriodicOperationDivider.h"
 
 
 PeriodicOperationDivider::PeriodicOperationDivider(uint32_t divider,

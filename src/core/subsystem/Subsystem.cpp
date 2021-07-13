@@ -1,11 +1,11 @@
-#include "Subsystem.h"
+#include "fsfw/subsystem/Subsystem.h"
 
-#include "../health/HealthMessage.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../serialize/SerialArrayListAdapter.h"
-#include "../serialize/SerialFixedArrayListAdapter.h"
-#include "../serialize/SerializeElement.h"
-#include "../serialize/SerialLinkedListAdapter.h"
+#include "fsfw/health/HealthMessage.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serialize/SerialArrayListAdapter.h"
+#include "fsfw/serialize/SerialFixedArrayListAdapter.h"
+#include "fsfw/serialize/SerializeElement.h"
+#include "fsfw/serialize/SerialLinkedListAdapter.h"
 
 #include <string>
 

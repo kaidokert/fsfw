@@ -1,9 +1,9 @@
-#include "CCSDSDistributorIF.h"
-#include "PUSDistributor.h"
+#include "fsfw/tcdistribution/CCSDSDistributorIF.h"
+#include "fsfw/tcdistribution/PUSDistributor.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../tmtcservices/PusVerificationReport.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tmtcservices/PusVerificationReport.h"
 
 #define PUS_DISTRIBUTOR_DEBUGGING     0
 

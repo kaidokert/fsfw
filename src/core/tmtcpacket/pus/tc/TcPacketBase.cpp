@@ -1,8 +1,8 @@
-#include "TcPacketBase.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketBase.h"
 
-#include "../../../globalfunctions/CRC.h"
-#include "../../../globalfunctions/arrayprinter.h"
-#include "../../../serviceinterface/ServiceInterface.h"
+#include "fsfw/globalfunctions/CRC.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 

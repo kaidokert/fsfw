@@ -1,7 +1,7 @@
-#include "GenericFileSystemMessage.h"
+#include "fsfw/memory/GenericFileSystemMessage.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../storagemanager/StorageManagerIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
 void GenericFileSystemMessage::setCreateFileCommand(CommandMessage* message,
         store_address_t storeId) {

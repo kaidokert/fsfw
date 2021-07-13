@@ -1,11 +1,11 @@
-#include "TcPacketCheck.h"
+#include "fsfw/tcdistribution/TcPacketCheck.h"
 
-#include "../globalfunctions/CRC.h"
-#include "../tmtcpacket/pus/tc/TcPacketBase.h"
-#include "../tmtcpacket/pus/tc/TcPacketStoredBase.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../tmtcservices/VerificationCodes.h"
+#include "fsfw/globalfunctions/CRC.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketBase.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketStoredBase.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/tmtcservices/VerificationCodes.h"
 
 TcPacketCheck::TcPacketCheck(uint16_t setApid): apid(setApid) {
 }

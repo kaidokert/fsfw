@@ -1,15 +1,15 @@
-#include "CommandMessageCleaner.h"
+#include "fsfw/ipc/CommandMessageCleaner.h"
 
-#include "../memory/GenericFileSystemMessage.h"
-#include "../devicehandlers/DeviceHandlerMessage.h"
-#include "../health/HealthMessage.h"
-#include "../memory/MemoryMessage.h"
-#include "../modes/ModeMessage.h"
-#include "../monitoring/MonitoringMessage.h"
-#include "../subsystem/modes/ModeSequenceMessage.h"
-#include "../tmstorage/TmStoreMessage.h"
-#include "../housekeeping/HousekeepingMessage.h"
-#include "../parameters/ParameterMessage.h"
+#include "fsfw/memory/GenericFileSystemMessage.h"
+#include "fsfw/devicehandlers/DeviceHandlerMessage.h"
+#include "fsfw/health/HealthMessage.h"
+#include "fsfw/memory/MemoryMessage.h"
+#include "fsfw/modes/ModeMessage.h"
+#include "fsfw/monitoring/MonitoringMessage.h"
+#include "fsfw/subsystem/modes/ModeSequenceMessage.h"
+#include "fsfw/tmstorage/TmStoreMessage.h"
+#include "fsfw/housekeeping/HousekeepingMessage.h"
+#include "fsfw/parameters/ParameterMessage.h"
 
 void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
 	switch(message->getMessageType()){

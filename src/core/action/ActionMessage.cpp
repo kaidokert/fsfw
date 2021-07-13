@@ -1,8 +1,7 @@
-#include "ActionMessage.h"
-#include "HasActionsIF.h"
+#include "fsfw/action.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../storagemanager/StorageManagerIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
 ActionMessage::ActionMessage() {
 }

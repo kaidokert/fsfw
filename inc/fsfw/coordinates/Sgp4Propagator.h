@@ -1,11 +1,12 @@
 #ifndef SGP4PROPAGATOR_H_
 #define SGP4PROPAGATOR_H_
 
-#ifndef WIN32
+#include "fsfw/platform.h"
+#ifndef PLATFORM_WIN
 #include <sys/time.h>
 #endif
-#include "../contrib/sgp4/sgp4unit.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/contrib/sgp4/sgp4unit.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 class Sgp4Propagator {
 public:

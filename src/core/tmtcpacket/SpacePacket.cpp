@@ -1,10 +1,10 @@
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "ccsds_header.h"
-#include "SpacePacket.h"
-#include <string.h>
+#include "fsfw/tmtcpacket/ccsds_header.h"
+#include "fsfw/tmtcpacket/SpacePacket.h"
+#include <cstring>
 
-SpacePacket::SpacePacket( uint16_t packetDataLength, bool isTelecommand, uint16_t apid, uint16_t sequenceCount ):
-SpacePacketBase( (uint8_t*)&this->localData ) {
+SpacePacket::SpacePacket(uint16_t packetDataLength, bool isTelecommand, uint16_t apid,
+        uint16_t sequenceCount):
+        SpacePacketBase( (uint8_t*)&this->localData ) {
 	initSpacePacketHeader(isTelecommand, false, apid, sequenceCount);
 	this->setPacketSequenceCount(sequenceCount);
 	if ( packetDataLength <= sizeof(this->localData.fields.buffer) ) {

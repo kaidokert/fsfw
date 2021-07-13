@@ -1,8 +1,8 @@
-#include "ThermalModule.h"
-#include "AbstractTemperatureSensor.h"
+#include "fsfw/thermal/ThermalModule.h"
+#include "fsfw/thermal/AbstractTemperatureSensor.h"
 
-#include "../monitoring/LimitViolationReporter.h"
-#include "../monitoring/MonitoringMessageContent.h"
+#include "fsfw/monitoring/LimitViolationReporter.h"
+#include "fsfw/monitoring/MonitoringMessageContent.h"
 
 
 ThermalModule::ThermalModule(gp_id_t moduleTemperaturePoolId,

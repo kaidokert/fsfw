@@ -1,12 +1,12 @@
-#include "DeviceHandlerFailureIsolation.h"
+#include "fsfw/devicehandlers/DeviceHandlerFailureIsolation.h"
 
-#include "../devicehandlers/DeviceHandlerIF.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../modes/HasModesIF.h"
-#include "../health/HealthTableIF.h"
-#include "../power/Fuse.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../thermal/ThermalComponentIF.h"
+#include "fsfw/devicehandlers/DeviceHandlerIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/modes/HasModesIF.h"
+#include "fsfw/health/HealthTableIF.h"
+#include "fsfw/power/Fuse.h"
+#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/thermal/ThermalComponentIF.h"
 
 object_id_t DeviceHandlerFailureIsolation::powerConfirmationId =
         objects::NO_OBJECT;

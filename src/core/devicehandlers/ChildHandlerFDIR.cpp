@@ -1,4 +1,4 @@
-#include "ChildHandlerFDIR.h"
+#include "fsfw/devicehandlers/ChildHandlerFDIR.h"
 
 ChildHandlerFDIR::ChildHandlerFDIR(object_id_t owner,
         object_id_t faultTreeParent, uint32_t recoveryCount) :

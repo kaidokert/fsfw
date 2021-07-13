@@ -15,6 +15,7 @@ option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
 
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
+set(FSFW_CORE_INC_PATH "inc")
 
 set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
 
@@ -154,6 +155,7 @@ endif()
 target_include_directories(${LIB_FSFW_NAME} INTERFACE 
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
+	${FSFW_CORE_INC_PATH}
 	${FSFW_ADD_INC_PATHS_ABS}
 )
 
@@ -163,6 +165,7 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
 target_include_directories(${LIB_FSFW_NAME} PRIVATE 
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
+	${FSFW_CORE_INC_PATH}
 	${FSFW_ADD_INC_PATHS_ABS}
 )
 

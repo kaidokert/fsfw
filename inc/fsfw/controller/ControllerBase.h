@@ -1,14 +1,14 @@
 #ifndef FSFW_CONTROLLER_CONTROLLERBASE_H_
 #define FSFW_CONTROLLER_CONTROLLERBASE_H_
 
-#include "../health/HasHealthIF.h"
-#include "../health/HealthHelper.h"
-#include "../modes/HasModesIF.h"
-#include "../modes/ModeHelper.h"
-#include "../objectmanager/SystemObject.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../tasks/PeriodicTaskIF.h"
-#include "../datapool/HkSwitchHelper.h"
+#include "fsfw/health/HasHealthIF.h"
+#include "fsfw/health/HealthHelper.h"
+#include "fsfw/modes/HasModesIF.h"
+#include "fsfw/modes/ModeHelper.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
+#include "fsfw/datapool/HkSwitchHelper.h"
 
 /**
  * @brief   Generic base class for controller classes

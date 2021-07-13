@@ -1,9 +1,9 @@
-#include "ControllerBase.h"
+#include "fsfw/controller/ControllerBase.h"
 
-#include "../subsystem/SubsystemBase.h"
-#include "../ipc/QueueFactory.h"
-#include "../action/HasActionsIF.h"
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/subsystem/SubsystemBase.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/action/HasActionsIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 ControllerBase::ControllerBase(object_id_t setObjectId, object_id_t parentId,
         size_t commandQueueDepth) :

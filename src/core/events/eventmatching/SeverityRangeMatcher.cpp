@@ -1,6 +1,6 @@
-#include "SeverityRangeMatcher.h"
-#include "../../events/EventMessage.h"
-#include "../../serialize/SerializeAdapter.h"
+#include "fsfw/events/eventmatching/SeverityRangeMatcher.h"
+#include "fsfw/events/EventMessage.h"
+#include "fsfw/serialize/SerializeAdapter.h"
 
 SeverityRangeMatcher::SeverityRangeMatcher(EventSeverity_t from,
 		EventSeverity_t till, bool inverted) : EventRangeMatcherBase<EventSeverity_t>(from, till, inverted) {

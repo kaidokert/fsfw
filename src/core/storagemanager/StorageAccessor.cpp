@@ -1,6 +1,7 @@
-#include "StorageAccessor.h"
-#include "StorageManagerIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/storagemanager/StorageAccessor.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <algorithm>
 

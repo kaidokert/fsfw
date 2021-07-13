@@ -1,5 +1,5 @@
-#include "ObjectManager.h"
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 #include <iomanip>

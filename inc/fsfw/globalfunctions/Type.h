@@ -1,8 +1,9 @@
 #ifndef FSFW_GLOBALFUNCTIONS_TYPE_H_
 #define FSFW_GLOBALFUNCTIONS_TYPE_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../serialize/SerializeIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/serialize/SerializeIF.h"
+
 #include <type_traits>
 
 /**

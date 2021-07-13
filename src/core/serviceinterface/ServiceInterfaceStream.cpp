@@ -1,4 +1,4 @@
-#include "ServiceInterfaceStream.h"
+#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 

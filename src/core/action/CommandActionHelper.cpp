@@ -1,9 +1,6 @@
-#include "ActionMessage.h"
-#include "CommandActionHelper.h"
-#include "CommandsActionsIF.h"
-#include "HasActionsIF.h"
+#include "fsfw/action.h"
 
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 CommandActionHelper::CommandActionHelper(CommandsActionsIF *setOwner) :
         owner(setOwner), queueToUse(NULL), ipcStore(

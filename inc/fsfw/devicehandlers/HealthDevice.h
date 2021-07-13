@@ -1,11 +1,11 @@
 #ifndef FSFW_DEVICEHANDLERS_HEALTHDEVICE_H_
 #define FSFW_DEVICEHANDLERS_HEALTHDEVICE_H_
 
-#include "../health/HasHealthIF.h"
-#include "../health/HealthHelper.h"
-#include "../objectmanager/SystemObject.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../ipc/MessageQueueIF.h"
+#include "fsfw/health/HasHealthIF.h"
+#include "fsfw/health/HealthHelper.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 
 class HealthDevice: public SystemObject,
 		public ExecutableObjectIF,

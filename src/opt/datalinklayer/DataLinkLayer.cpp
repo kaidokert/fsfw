@@ -1,6 +1,6 @@
-#include "DataLinkLayer.h"
-#include "../globalfunctions/CRC.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/datalinklayer/DataLinkLayer.h"
+#include "fsfw/globalfunctions/CRC.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 DataLinkLayer::DataLinkLayer(uint8_t* set_frame_buffer, ClcwIF* setClcw,
 		uint8_t set_start_sequence_length, uint16_t set_scid) :

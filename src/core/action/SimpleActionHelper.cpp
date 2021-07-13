@@ -1,5 +1,4 @@
-#include "HasActionsIF.h"
-#include "SimpleActionHelper.h"
+#include "fsfw/action.h"
 
 SimpleActionHelper::SimpleActionHelper(HasActionsIF* setOwner,
         MessageQueueIF* useThisQueue) :

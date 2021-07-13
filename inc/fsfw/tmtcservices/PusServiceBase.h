@@ -5,12 +5,12 @@
 #include "VerificationCodes.h"
 #include "VerificationReporter.h"
 
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../objectmanager/SystemObject.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../tmtcpacket/pus/tc.h"
-#include "../ipc/MessageQueueIF.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/tmtcpacket/pus/tc.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();

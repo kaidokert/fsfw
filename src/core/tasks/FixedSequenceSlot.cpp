@@ -1,5 +1,6 @@
-#include "FixedSequenceSlot.h"
-#include "PeriodicTaskIF.h"
+#include "fsfw/tasks/FixedSequenceSlot.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
+
 #include <cstddef>
 
 FixedSequenceSlot::FixedSequenceSlot(object_id_t handlerId, uint32_t setTime,

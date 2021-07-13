@@ -1,8 +1,8 @@
-#include "EventManager.h"
-#include "EventMessage.h"
+#include "fsfw/events/EventManager.h"
+#include "fsfw/events/EventMessage.h"
 
-#include "../ipc/QueueFactory.h"
-#include "../ipc/MutexFactory.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/ipc/MutexFactory.h"
 
 MessageQueueId_t EventManagerIF::eventmanagerQueue = MessageQueueIF::NO_QUEUE;
 

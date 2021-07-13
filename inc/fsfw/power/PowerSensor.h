@@ -1,12 +1,12 @@
 #ifndef FSFW_POWER_POWERSENSOR_H_
 #define FSFW_POWER_POWERSENSOR_H_
 
-#include "../datapoollocal/StaticLocalDataSet.h"
-#include "../devicehandlers/HealthDevice.h"
-#include "../monitoring/LimitMonitor.h"
-#include "../parameters/ParameterHelper.h"
-#include "../objectmanager/SystemObject.h"
-#include "../ipc/MessageQueueIF.h"
+#include "fsfw/datapoollocal/StaticLocalDataSet.h"
+#include "fsfw/devicehandlers/HealthDevice.h"
+#include "fsfw/monitoring/LimitMonitor.h"
+#include "fsfw/parameters/ParameterHelper.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 
 class PowerController;
 

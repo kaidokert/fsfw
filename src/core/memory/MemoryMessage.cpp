@@ -1,6 +1,6 @@
-#include "MemoryMessage.h"
+#include "fsfw/memory/MemoryMessage.h"
 
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 uint32_t MemoryMessage::getAddress(const CommandMessage* message) {
 	return message->getParameter();

@@ -1,17 +1,7 @@
-/**
- * @file	Farm1StateOpen.cpp
- * @brief	This file defines the Farm1StateOpen class.
- * @date	24.04.2013
- * @author	baetz
- */
-
-
-
-
-#include "ClcwIF.h"
-#include "Farm1StateOpen.h"
-#include "TcTransferFrame.h"
-#include "VirtualChannelReception.h"
+#include "fsfw/datalinklayer/ClcwIF.h"
+#include "fsfw/datalinklayer/Farm1StateOpen.h"
+#include "fsfw/datalinklayer/TcTransferFrame.h"
+#include "fsfw/datalinklayer/VirtualChannelReception.h"
 
 Farm1StateOpen::Farm1StateOpen(VirtualChannelReception* setMyVC) : myVC(setMyVC) {
 }

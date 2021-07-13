@@ -1,6 +1,6 @@
-#include "PowerSensor.h"
+#include "fsfw/power/PowerSensor.h"
 
-#include "../ipc/QueueFactory.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 PowerSensor::PowerSensor(object_id_t objectId, sid_t setId,  VariableIds ids,
 		DefaultLimits limits, SensorEvents events, uint16_t confirmationCount) :

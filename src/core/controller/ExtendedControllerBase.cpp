@@ -1,5 +1,4 @@
-#include "ExtendedControllerBase.h"
-
+#include "fsfw/controller/ExtendedControllerBase.h"
 
 ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId,
         object_id_t parentId, size_t commandQueueDepth):

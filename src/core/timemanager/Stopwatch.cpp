@@ -1,5 +1,5 @@
-#include "Stopwatch.h"
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/timemanager/Stopwatch.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 #include <iomanip>

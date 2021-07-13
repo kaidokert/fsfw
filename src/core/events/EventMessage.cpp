@@ -1,4 +1,4 @@
-#include "EventMessage.h"
+#include "fsfw/events/EventMessage.h"
 #include <cstring>
 
 EventMessage::EventMessage() {

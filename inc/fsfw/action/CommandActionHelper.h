@@ -2,11 +2,11 @@
 #define COMMANDACTIONHELPER_H_
 
 #include "ActionMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../serialize/SerializeIF.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../ipc/MessageQueueIF.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/serialize/SerializeIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 
 class CommandsActionsIF;
 

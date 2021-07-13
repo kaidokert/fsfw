@@ -1,14 +1,5 @@
-/**
- * @file	Clcw.cpp
- * @brief	This file defines the Clcw class.
- * @date	17.04.2013
- * @author	baetz
- */
-
-
-
-#include "Clcw.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/datalinklayer/Clcw.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 Clcw::Clcw() {
 	content.raw = 0;

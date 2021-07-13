@@ -1,7 +1,7 @@
 #ifndef COORDINATETRANSFORMATIONS_H_
 #define COORDINATETRANSFORMATIONS_H_
 
-#include "../timemanager/Clock.h"
+#include "fsfw/timemanager/Clock.h"
 #include <cstring>
 
 class CoordinateTransformations {

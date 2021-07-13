@@ -1,5 +1,5 @@
-#include "Clock.h"
-#include "../ipc/MutexGuard.h"
+#include "fsfw/timemanager/Clock.h"
+#include "fsfw/ipc/MutexGuard.h"
 
 ReturnValue_t Clock::convertUTCToTT(timeval utc, timeval *tt) {
 	uint16_t leapSeconds;

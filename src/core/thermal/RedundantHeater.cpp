@@ -1,4 +1,4 @@
-#include "RedundantHeater.h"
+#include "fsfw/thermal/RedundantHeater.h"
 
 RedundantHeater::~RedundantHeater() {
 }

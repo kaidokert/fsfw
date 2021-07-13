@@ -1,5 +1,5 @@
-#include "QuaternionOperations.h"
-#include "VectorOperations.h"
+#include "fsfw/globalfunctions/math/QuaternionOperations.h"
+#include "fsfw/globalfunctions/math/VectorOperations.h"
 
 #include <cmath>
 #include <cstring>

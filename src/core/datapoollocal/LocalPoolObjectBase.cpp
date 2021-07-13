@@ -1,10 +1,10 @@
-#include "LocalPoolObjectBase.h"
-#include "LocalDataPoolManager.h"
-#include "AccessLocalPoolF.h"
-#include "HasLocalDataPoolIF.h"
+#include "fsfw/datapoollocal/LocalPoolObjectBase.h"
+#include "fsfw/datapoollocal/LocalDataPoolManager.h"
+#include "fsfw/datapoollocal/AccessLocalPoolF.h"
+#include "fsfw/datapoollocal/HasLocalDataPoolIF.h"
 #include "internal/HasLocalDpIFUserAttorney.h"
 
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 
 LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner,

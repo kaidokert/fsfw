@@ -1,4 +1,4 @@
-#include "ThermalComponent.h"
+#include "fsfw/thermal/ThermalComponent.h"
 
 ThermalComponent::ThermalComponent(object_id_t reportingObjectId,
 		uint8_t domainId, gp_id_t temperaturePoolId,

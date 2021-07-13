@@ -1,7 +1,7 @@
-#include "ApidMatcher.h"
-#include "PacketMatchTree.h"
-#include "ServiceMatcher.h"
-#include "SubserviceMatcher.h"
+#include "fsfw/tmtcpacket/packetmatcher/ApidMatcher.h"
+#include "fsfw/tmtcpacket/packetmatcher/PacketMatchTree.h"
+#include "fsfw/tmtcpacket/packetmatcher/ServiceMatcher.h"
+#include "fsfw/tmtcpacket/packetmatcher/SubserviceMatcher.h"
 
 // This should be configurable..
 const LocalPool::LocalPoolConfig PacketMatchTree::poolConfig = {

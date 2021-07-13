@@ -1,9 +1,9 @@
-#ifndef EVENTMESSAGE_H_
-#define EVENTMESSAGE_H_
+#ifndef FSFW_EVENTS_EVENTMESSAGE_H_
+#define FSFW_EVENTS_EVENTMESSAGE_H_
 
 #include "Event.h"
-#include "../ipc/MessageQueueMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "fsfw/ipc/MessageQueueMessage.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
 
 /**
  * Passing on events through IPC.
@@ -49,4 +49,4 @@ protected:
 
 };
 
-#endif /* EVENTMESSAGE_H_ */
+#endif /* FSFW_EVENTS_EVENTMESSAGE_H_ */

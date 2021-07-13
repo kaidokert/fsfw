@@ -2,9 +2,9 @@
 #define FSFW_MODES_MODEHELPER_H_
 
 #include "ModeMessage.h"
-#include "../ipc/MessageQueueIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../timemanager/Countdown.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/timemanager/Countdown.h"
 
 class HasModesIF;
 

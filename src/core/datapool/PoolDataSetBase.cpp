@@ -1,7 +1,7 @@
-#include "PoolDataSetBase.h"
-#include "ReadCommitIFAttorney.h"
+#include "fsfw/datapool/PoolDataSetBase.h"
+#include "fsfw/datapool/ReadCommitIFAttorney.h"
 
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 

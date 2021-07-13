@@ -1,8 +1,8 @@
-#ifndef FRAMEWORK_FDIR_FAULTCOUNTER_H_
-#define FRAMEWORK_FDIR_FAULTCOUNTER_H_
+#ifndef FSFW_FDIR_FAULTCOUNTER_H_
+#define FSFW_FDIR_FAULTCOUNTER_H_
 
-#include "../parameters/HasParametersIF.h"
-#include "../timemanager/Countdown.h"
+#include "fsfw/parameters/HasParametersIF.h"
+#include "fsfw/timemanager/Countdown.h"
 
 class FaultCounter: public HasParametersIF {
 public:
@@ -35,4 +35,4 @@ private:
 	uint32_t failureThreshold;
 };
 
-#endif /* FRAMEWORK_FDIR_FAULTCOUNTER_H_ */
+#endif /* FSFW_FDIR_FAULTCOUNTER_H_ */

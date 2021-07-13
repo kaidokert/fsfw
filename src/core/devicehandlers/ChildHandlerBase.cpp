@@ -1,5 +1,5 @@
-#include "ChildHandlerBase.h"
-#include "../subsystem/SubsystemBase.h"
+#include "fsfw/devicehandlers/ChildHandlerBase.h"
+#include "fsfw/subsystem/SubsystemBase.h"
 
 ChildHandlerBase::ChildHandlerBase(object_id_t setObjectId,
 		object_id_t deviceCommunication, CookieIF * cookie,

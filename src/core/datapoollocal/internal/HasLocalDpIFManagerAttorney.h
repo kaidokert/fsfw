@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDPIFMANAGERATTORNEY_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDPIFMANAGERATTORNEY_H_
 
-#include "../localPoolDefinitions.h"
+#include "fsfw/datapoollocal/localPoolDefinitions.h"
 
 class HasLocalDataPoolIF;
 class LocalPoolDataSetBase;

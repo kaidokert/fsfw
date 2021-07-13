@@ -1,7 +1,8 @@
-#include "PoolEntry.h"
+#include "fsfw/datapool/PoolEntry.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../globalfunctions/arrayprinter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
+
 #include <cstring>
 #include <algorithm>
 

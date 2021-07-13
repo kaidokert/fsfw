@@ -1,6 +1,6 @@
-#include "ParameterWrapper.h"
-#include <FSFWConfig.h>
-#include <fsfw/serviceinterface/ServiceInterface.h>
+#include "fsfw/FSFW.h"
+#include "fsfw/parameters/ParameterWrapper.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 ParameterWrapper::ParameterWrapper() :
 		pointsToStream(false), type(Type::UNKNOWN_TYPE) {

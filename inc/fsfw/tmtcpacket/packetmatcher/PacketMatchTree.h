@@ -1,10 +1,10 @@
 #ifndef FSFW_TMTCPACKET_PACKETMATCHER_PACKETMATCHTREE_H_
 #define FSFW_TMTCPACKET_PACKETMATCHER_PACKETMATCHTREE_H_
 
-#include "../../container/PlacementFactory.h"
-#include "../../globalfunctions/matching/MatchTree.h"
-#include "../../storagemanager/LocalPool.h"
-#include "../../tmtcpacket/pus/tm/TmPacketMinimal.h"
+#include "fsfw/container/PlacementFactory.h"
+#include "fsfw/globalfunctions/matching/MatchTree.h"
+#include "fsfw/storagemanager/LocalPool.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketMinimal.h"
 
 class PacketMatchTree: public MatchTree<TmPacketMinimal*>, public HasReturnvaluesIF {
 public:

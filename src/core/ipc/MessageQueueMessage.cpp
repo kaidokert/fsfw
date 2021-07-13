@@ -1,6 +1,7 @@
-#include "MessageQueueMessage.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../globalfunctions/arrayprinter.h"
+#include "fsfw/ipc/MessageQueueMessage.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
+
 #include <cstring>
 
 MessageQueueMessage::MessageQueueMessage() :

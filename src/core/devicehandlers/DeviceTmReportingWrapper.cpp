@@ -1,5 +1,5 @@
-#include "DeviceTmReportingWrapper.h"
-#include "../serialize/SerializeAdapter.h"
+#include "fsfw/devicehandlers/DeviceTmReportingWrapper.h"
+#include "fsfw/serialize/SerializeAdapter.h"
 
 DeviceTmReportingWrapper::DeviceTmReportingWrapper(object_id_t objectId,
 		ActionId_t actionId, SerializeIF* data) :

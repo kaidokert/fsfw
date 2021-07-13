@@ -1,10 +1,10 @@
-#include "MemoryHelper.h"
-#include "MemoryMessage.h"
+#include "fsfw/memory/MemoryHelper.h"
+#include "fsfw/memory/MemoryMessage.h"
 
-#include "../globalfunctions/CRC.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../serialize/EndianConverter.h"
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/globalfunctions/CRC.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serialize/EndianConverter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis,
 		MessageQueueIF* useThisQueue):

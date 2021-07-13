@@ -1,5 +1,5 @@
-#include "PowerComponent.h"
-#include "../serialize/SerializeAdapter.h"
+#include "fsfw/power/PowerComponent.h"
+#include "fsfw/serialize/SerializeAdapter.h"
 
 
 PowerComponent::PowerComponent(): switchId1(0xFF), switchId2(0xFF),

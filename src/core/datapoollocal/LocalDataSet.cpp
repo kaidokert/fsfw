@@ -1,6 +1,7 @@
-#include "LocalDataSet.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
-#include "../serialize/SerializeAdapter.h"
+#include "fsfw/datapoollocal/LocalDataSet.h"
+#include "fsfw/datapoollocal/LocalDataPoolManager.h"
+
+#include "fsfw/serialize/SerializeAdapter.h"
 
 #include <cmath>
 #include <cstring>

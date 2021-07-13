@@ -3,8 +3,8 @@
 
 #include "PowerComponentIF.h"
 
-#include "../objectmanager/frameworkObjects.h"
-#include "../objectmanager/SystemObjectIF.h"
+#include "fsfw/objectmanager/frameworkObjects.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
 
 
 class PowerComponent: public PowerComponentIF {

@@ -1,9 +1,9 @@
 #ifndef FSFW_ACTION_ACTIONMESSAGE_H_
 #define FSFW_ACTION_ACTIONMESSAGE_H_
 
-#include "../ipc/CommandMessage.h"
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../storagemanager/StorageManagerIF.h"
+#include "fsfw/ipc/CommandMessage.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
 using ActionId_t = uint32_t;
 

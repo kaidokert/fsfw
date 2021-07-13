@@ -1,8 +1,8 @@
-#include "CCSDSDistributor.h"
+#include "fsfw/tcdistribution/CCSDSDistributor.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../tmtcpacket/SpacePacketBase.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tmtcpacket/SpacePacketBase.h"
 
 #define CCSDS_DISTRIBUTOR_DEBUGGING     0
 

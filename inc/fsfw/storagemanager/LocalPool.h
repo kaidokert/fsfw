@@ -1,12 +1,13 @@
 #ifndef FSFW_STORAGEMANAGER_LOCALPOOL_H_
 #define FSFW_STORAGEMANAGER_LOCALPOOL_H_
 
-#include "StorageManagerIF.h"
-#include "../objectmanager/SystemObject.h"
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../internalError/InternalErrorReporterIF.h"
-#include "../storagemanager/StorageAccessor.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/internalerror/InternalErrorReporterIF.h"
+#include "fsfw/storagemanager/StorageAccessor.h"
 
 #include <vector>
 #include <set>

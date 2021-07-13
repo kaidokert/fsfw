@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETATTORNEY_H_
 #define FSFW_DATAPOOLLOCAL_LOCALPOOLDATASETATTORNEY_H_
 
-#include "../LocalPoolDataSetBase.h"
+#include "fsfw/datapoollocal/LocalPoolDataSetBase.h"
 
 class LocalPoolDataSetAttorney {
 private:

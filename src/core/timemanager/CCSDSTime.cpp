@@ -1,5 +1,6 @@
-#include "CCSDSTime.h"
-#include <FSFWConfig.h>
+#include "fsfw/FSFW.h"
+#include "fsfw/timemanager/CCSDSTime.h"
+
 #include <cstdio>
 #include <cinttypes>
 #include <cmath>

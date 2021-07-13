@@ -1,6 +1,6 @@
-#include "PeriodicHousekeepingHelper.h"
+#include "fsfw/housekeeping/PeriodicHousekeepingHelper.h"
 
-#include "../datapoollocal/LocalPoolDataSetBase.h"
+#include "fsfw/datapoollocal/LocalPoolDataSetBase.h"
 #include <cmath>
 
 PeriodicHousekeepingHelper::PeriodicHousekeepingHelper(

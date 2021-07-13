@@ -5,10 +5,10 @@
 #include "TcDistributor.h"
 #include "TcPacketCheck.h"
 
-#include "../tmtcpacket/pus/tc.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
-#include "../tmtcservices/VerificationReporter.h"
+#include "fsfw/tmtcpacket/pus/tc.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
+#include "fsfw/tmtcservices/VerificationReporter.h"
 
 /**
  * This class accepts PUS Telecommands and forwards them to Application

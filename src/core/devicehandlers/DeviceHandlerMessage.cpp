@@ -1,5 +1,5 @@
-#include "DeviceHandlerMessage.h"
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/devicehandlers/DeviceHandlerMessage.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 store_address_t DeviceHandlerMessage::getStoreAddress(
 		const CommandMessage* message) {

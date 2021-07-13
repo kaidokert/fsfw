@@ -1,10 +1,13 @@
-#include "CoordinateTransformations.h"
-#include "Sgp4Propagator.h"
-#include "../globalfunctions/constants.h"
-#include "../globalfunctions/math/MatrixOperations.h"
-#include "../globalfunctions/math/VectorOperations.h"
-#include "../globalfunctions/timevalOperations.h"
+#include "fsfw/coordinates/CoordinateTransformations.h"
+#include "fsfw/coordinates/Sgp4Propagator.h"
+
+#include "fsfw/globalfunctions/constants.h"
+#include "fsfw/globalfunctions/math/MatrixOperations.h"
+#include "fsfw/globalfunctions/math/VectorOperations.h"
+#include "fsfw/globalfunctions/timevalOperations.h"
+
 #include <cstring>
+
 Sgp4Propagator::Sgp4Propagator() :
 		initialized(false), epoch({0, 0}), whichconst(wgs84) {
 

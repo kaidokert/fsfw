@@ -1,6 +1,7 @@
-#include "HousekeepingMessage.h"
+#include "fsfw/housekeeping/HousekeepingMessage.h"
 
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+
 #include <cstring>
 
 HousekeepingMessage::~HousekeepingMessage() {}

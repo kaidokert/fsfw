@@ -1,7 +1,7 @@
-#include "EventIdRangeMatcher.h"
-#include "EventMatchTree.h"
-#include "ReporterRangeMatcher.h"
-#include "SeverityRangeMatcher.h"
+#include "fsfw/events/eventmatching/EventIdRangeMatcher.h"
+#include "fsfw/events/eventmatching/EventMatchTree.h"
+#include "fsfw/events/eventmatching/ReporterRangeMatcher.h"
+#include "fsfw/events/eventmatching/SeverityRangeMatcher.h"
 
 EventMatchTree::EventMatchTree(StorageManagerIF* storageBackend,
 		bool invertedMatch) :

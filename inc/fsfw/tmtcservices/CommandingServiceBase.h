@@ -3,17 +3,16 @@
 
 #include "AcceptsTelecommandsIF.h"
 #include "VerificationReporter.h"
+#include "fsfw/FSFW.h"
 
-#include "../objectmanager/SystemObject.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../ipc/MessageQueueIF.h"
-#include "../ipc/CommandMessage.h"
-#include "../container/FixedMap.h"
-#include "../container/FIFO.h"
-#include "../serialize/SerializeIF.h"
-
-#include <FSFWConfig.h>
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/ipc/CommandMessage.h"
+#include "fsfw/container/FixedMap.h"
+#include "fsfw/container/FIFO.h"
+#include "fsfw/serialize/SerializeIF.h"
 
 class TcPacketStored;
 class TcPacketStoredBase;

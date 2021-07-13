@@ -1,4 +1,4 @@
-#include "EventCorrelation.h"
+#include "fsfw/fdir/EventCorrelation.h"
 
 EventCorrelation::EventCorrelation(uint32_t timeout) :
 		eventPending(false) {

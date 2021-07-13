@@ -1,14 +1,13 @@
-#include "AcceptsTelemetryIF.h"
-#include "CommandingServiceBase.h"
-#include "TmTcMessage.h"
-#include <FSFWConfig.h>
+#include "fsfw/tmtcservices/CommandingServiceBase.h"
+#include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
 
-#include "../tcdistribution/PUSDistributorIF.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../ipc/QueueFactory.h"
-#include "../tmtcpacket/pus/tc.h"
-#include "../tmtcpacket/pus/tm.h"
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/tcdistribution/PUSDistributorIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/tmtcpacket/pus/tc.h"
+#include "fsfw/tmtcpacket/pus/tm.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
 object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;

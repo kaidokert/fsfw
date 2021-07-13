@@ -1,12 +1,12 @@
-#include "PusServiceBase.h"
-#include "AcceptsTelemetryIF.h"
-#include "PusVerificationReport.h"
-#include "TmTcMessage.h"
+#include "fsfw/tmtcservices/PusServiceBase.h"
+#include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
+#include "fsfw/tmtcservices/PusVerificationReport.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../tcdistribution/PUSDistributorIF.h"
-#include "../ipc/QueueFactory.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tcdistribution/PUSDistributorIF.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 object_id_t PusServiceBase::packetSource = 0;
 object_id_t PusServiceBase::packetDestination = 0;

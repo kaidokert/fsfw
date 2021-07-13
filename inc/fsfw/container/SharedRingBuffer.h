@@ -3,9 +3,10 @@
 
 #include "SimpleRingBuffer.h"
 #include "DynamicFIFO.h"
-#include "../ipc/MutexIF.h"
-#include "../objectmanager/SystemObject.h"
-#include "../timemanager/Clock.h"
+
+#include "fsfw/ipc/MutexIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/timemanager/Clock.h"
 
 /**
  * @brief   Ring buffer which can be shared among multiple objects

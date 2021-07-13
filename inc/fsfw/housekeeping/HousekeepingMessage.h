@@ -1,11 +1,11 @@
 #ifndef FSFW_HOUSEKEEPING_HOUSEKEEPINGMESSAGE_H_
 #define FSFW_HOUSEKEEPING_HOUSEKEEPINGMESSAGE_H_
 
-#include "../datapoollocal/localPoolDefinitions.h"
-#include "../ipc/CommandMessage.h"
-#include "../ipc/FwMessageTypes.h"
-#include "../objectmanager/frameworkObjects.h"
-#include "../storagemanager/StorageManagerIF.h"
+#include "fsfw/datapoollocal/localPoolDefinitions.h"
+#include "fsfw/ipc/CommandMessage.h"
+#include "fsfw/ipc/FwMessageTypes.h"
+#include "fsfw/objectmanager/frameworkObjects.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
 
 /**

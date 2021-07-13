@@ -1,7 +1,8 @@
-#include "HealthTable.h"
-#include "../ipc/MutexGuard.h"
-#include "../ipc/MutexFactory.h"
-#include "../serialize/SerializeAdapter.h"
+#include "fsfw/health/HealthTable.h"
+
+#include "fsfw/ipc/MutexGuard.h"
+#include "fsfw/ipc/MutexFactory.h"
+#include "fsfw/serialize/SerializeAdapter.h"
 
 HealthTable::HealthTable(object_id_t objectid) :
 		SystemObject(objectid) {

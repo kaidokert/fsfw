@@ -1,10 +1,3 @@
-/**
- * @file	Farm1StateLockout.h
- * @brief	This file defines the Farm1StateLockout class.
- * @date	24.04.2013
- * @author	baetz
- */
-
 #ifndef FARM1STATELOCKOUT_H_
 #define FARM1STATELOCKOUT_H_
 

@@ -3,12 +3,12 @@
 
 #include "InternalErrorReporterIF.h"
 
-#include "../tasks/PeriodicTaskIF.h"
-#include "../internalError/InternalErrorDataset.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../objectmanager/SystemObject.h"
-#include "../ipc/MutexIF.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
+#include "fsfw/internalerror/InternalErrorDataset.h"
+#include "fsfw/datapoollocal/LocalDataPoolManager.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/ipc/MutexIF.h"
 
 /**
  * @brief   This class is used to track internal errors like lost telemetry,

@@ -1,4 +1,4 @@
-#include "HealthMessage.h"
+#include "fsfw/health/HealthMessage.h"
 
 void HealthMessage::setHealthMessage(CommandMessage* message, Command_t command,
 		HasHealthIF::HealthState health, HasHealthIF::HealthState oldHealth) {

@@ -3,8 +3,9 @@
 
 #include "PoolDataSetIF.h"
 #include "PoolVariableIF.h"
-#include "../serialize/SerializeIF.h"
-#include "../ipc/MutexIF.h"
+
+#include "fsfw/serialize/SerializeIF.h"
+#include "fsfw/ipc/MutexIF.h"
 
 /**
  * @brief	The DataSetBase class manages a set of locally checked out variables.

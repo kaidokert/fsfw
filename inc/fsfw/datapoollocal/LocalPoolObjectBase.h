@@ -4,9 +4,9 @@
 #include "MarkChangedIF.h"
 #include "localPoolDefinitions.h"
 
-#include "../objectmanager/SystemObjectIF.h"
-#include "../datapool/PoolVariableIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/datapool/PoolVariableIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 class LocalDataPoolManager;
 class DataSetIF;

@@ -1,8 +1,9 @@
-#include "CoordinateTransformations.h"
-#include "../globalfunctions/constants.h"
-#include "../globalfunctions/math/MatrixOperations.h"
-#include "../globalfunctions/math/VectorOperations.h"
-#include <stddef.h>
+#include "fsfw/coordinates/CoordinateTransformations.h"
+#include "fsfw/globalfunctions/constants.h"
+#include "fsfw/globalfunctions/math/MatrixOperations.h"
+#include "fsfw/globalfunctions/math/VectorOperations.h"
+
+#include <cstddef>
 #include <cmath>
 
 
@@ -17,11 +18,13 @@ void CoordinateTransformations::velocityEcfToEci(const double* ecfVelocity,
 	ecfToEci(ecfVelocity, eciVelocity, ecfPosition, timeUTC);
 }
 
-void CoordinateTransformations::positionEciToEcf(const double* eciCoordinates, double* ecfCoordinates,timeval *timeUTC){
+void CoordinateTransformations::positionEciToEcf(const double* eciCoordinates,
+        double* ecfCoordinates,timeval *timeUTC){
 	eciToEcf(eciCoordinates,ecfCoordinates,NULL,timeUTC);
 };
 
-void CoordinateTransformations::velocityEciToEcf(const double* eciVelocity,const double* eciPosition, double* ecfVelocity,timeval* timeUTC){
+void CoordinateTransformations::velocityEciToEcf(const double* eciVelocity,
+        const double* eciPosition, double* ecfVelocity,timeval* timeUTC){
 	eciToEcf(eciVelocity,ecfVelocity,eciPosition,timeUTC);
 }
 

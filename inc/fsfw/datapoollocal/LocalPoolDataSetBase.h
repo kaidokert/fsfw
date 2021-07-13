@@ -4,8 +4,8 @@
 #include "MarkChangedIF.h"
 #include "localPoolDefinitions.h"
 
-#include "../datapool/DataSetIF.h"
-#include "../datapool/PoolDataSetBase.h"
+#include "fsfw/datapool/DataSetIF.h"
+#include "fsfw/datapool/PoolDataSetBase.h"
 
 #include <vector>
 

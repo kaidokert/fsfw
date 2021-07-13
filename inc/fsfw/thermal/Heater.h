@@ -1,11 +1,12 @@
 #ifndef FSFW_THERMAL_HEATER_H_
 #define FSFW_THERMAL_HEATER_H_
 
-#include "../devicehandlers/HealthDevice.h"
-#include "../parameters/ParameterHelper.h"
-#include "../power/PowerSwitchIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../timemanager/Countdown.h"
+#include "fsfw/devicehandlers/HealthDevice.h"
+#include "fsfw/parameters/ParameterHelper.h"
+#include "fsfw/power/PowerSwitchIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/timemanager/Countdown.h"
+
 #include <cstdint>
 
 

@@ -1,8 +1,8 @@
-#include "SubsystemBase.h"
+#include "fsfw/subsystem/SubsystemBase.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../ipc/QueueFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 SubsystemBase::SubsystemBase(object_id_t setObjectId, object_id_t parent,
 		Mode_t initialMode, uint16_t commandQueueDepth) :

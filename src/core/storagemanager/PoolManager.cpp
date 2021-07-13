@@ -1,5 +1,6 @@
-#include "PoolManager.h"
-#include <FSFWConfig.h>
+#include "fsfw/FSFW.h"
+#include "fsfw/storagemanager/PoolManager.h"
+
 
 PoolManager::PoolManager(object_id_t setObjectId,
         const LocalPoolConfig& localPoolConfig):

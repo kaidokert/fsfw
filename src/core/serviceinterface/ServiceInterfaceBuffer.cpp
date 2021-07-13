@@ -1,10 +1,10 @@
-#include "ServiceInterfaceBuffer.h"
+#include "fsfw/serviceinterface/ServiceInterfaceBuffer.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 
-#include "../timemanager/Clock.h"
+#include "fsfw/timemanager/Clock.h"
 
-#include "serviceInterfaceDefintions.h"
+#include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
 #include <cstring>
 #include <inttypes.h>
 

@@ -1,9 +1,9 @@
-#include "Heater.h"
+#include "fsfw/thermal/Heater.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../devicehandlers/DeviceHandlerFailureIsolation.h"
-#include "../power/Fuse.h"
-#include "../ipc/QueueFactory.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/devicehandlers/DeviceHandlerFailureIsolation.h"
+#include "fsfw/power/Fuse.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 Heater::Heater(uint32_t objectId, uint8_t switch0, uint8_t switch1) :
 HealthDevice(objectId, 0), internalState(STATE_OFF), switch0(switch0), switch1(switch1),

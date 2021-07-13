@@ -4,17 +4,17 @@
 #include "ProvidesDataPoolSubscriptionIF.h"
 #include "AccessLocalPoolF.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../housekeeping/HousekeepingPacketDownlink.h"
-#include "../housekeeping/HousekeepingMessage.h"
-#include "../housekeeping/PeriodicHousekeepingHelper.h"
-#include "../datapool/DataSetIF.h"
-#include "../datapool/PoolEntry.h"
-#include "../objectmanager/SystemObjectIF.h"
-#include "../ipc/MutexIF.h"
-#include "../ipc/CommandMessage.h"
-#include "../ipc/MessageQueueIF.h"
-#include "../ipc/MutexGuard.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/housekeeping/HousekeepingPacketDownlink.h"
+#include "fsfw/housekeeping/HousekeepingMessage.h"
+#include "fsfw/housekeeping/PeriodicHousekeepingHelper.h"
+#include "fsfw/datapool/DataSetIF.h"
+#include "fsfw/datapool/PoolEntry.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/ipc/MutexIF.h"
+#include "fsfw/ipc/CommandMessage.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/ipc/MutexGuard.h"
 
 #include <map>
 #include <vector>

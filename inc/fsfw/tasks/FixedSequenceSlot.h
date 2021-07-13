@@ -2,7 +2,7 @@
 #define FSFW_TASKS_FIXEDSEQUENCESLOT_H_
 
 #include "ExecutableObjectIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
 
 class PeriodicTaskIF;
 

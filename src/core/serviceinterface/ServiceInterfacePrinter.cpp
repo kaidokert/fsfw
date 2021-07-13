@@ -1,7 +1,7 @@
-#include <FSFWConfig.h>
-#include "ServiceInterfacePrinter.h"
-#include "serviceInterfaceDefintions.h"
-#include "../timemanager/Clock.h"
+#include "fsfw/FSFW.h"
+#include "fsfw/serviceinterface/ServiceInterfacePrinter.h"
+#include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
+#include "fsfw/timemanager/Clock.h"
 
 #include <cstdarg>
 #include <cstdint>

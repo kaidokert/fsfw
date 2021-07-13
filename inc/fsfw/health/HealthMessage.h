@@ -2,7 +2,7 @@
 #define FSFW_HEALTH_HEALTHMESSAGE_H_
 
 #include "HasHealthIF.h"
-#include "../ipc/CommandMessage.h"
+#include "fsfw/ipc/CommandMessage.h"
 
 class HealthMessage {
 public:

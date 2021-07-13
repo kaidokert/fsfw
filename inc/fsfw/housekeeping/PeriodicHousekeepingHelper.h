@@ -1,7 +1,7 @@
 #ifndef FSFW_HOUSEKEEPING_PERIODICHOUSEKEEPINGHELPER_H_
 #define FSFW_HOUSEKEEPING_PERIODICHOUSEKEEPINGHELPER_H_
 
-#include "../timemanager/Clock.h"
+#include "fsfw/timemanager/Clock.h"
 #include <cstdint>
 
 class LocalPoolDataSetBase;

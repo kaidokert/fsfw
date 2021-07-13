@@ -1,9 +1,8 @@
-#include "ActionHelper.h"
-#include "HasActionsIF.h"
+#include "fsfw/action.h"
 
-#include "../ipc/MessageQueueSenderIF.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 ActionHelper::ActionHelper(HasActionsIF* setOwner,
         MessageQueueIF* useThisQueue) :

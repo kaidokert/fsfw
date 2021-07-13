@@ -1,8 +1,8 @@
-#include "ConstStorageAccessor.h"
-#include "StorageManagerIF.h"
+#include "fsfw/storagemanager/ConstStorageAccessor.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../globalfunctions/arrayprinter.h"
+#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
 
 #include <algorithm>
 

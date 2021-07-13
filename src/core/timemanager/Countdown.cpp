@@ -1,4 +1,4 @@
-#include "Countdown.h"
+#include "fsfw/timemanager/Countdown.h"
 
 Countdown::Countdown(uint32_t initialTimeout): timeout(initialTimeout) {
 }

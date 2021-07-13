@@ -1,13 +1,13 @@
 #ifndef FSFW_TMTCSERVICES_TCDISTRIBUTOR_H_
 #define FSFW_TMTCSERVICES_TCDISTRIBUTOR_H_
 
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../objectmanager/SystemObject.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../tmtcservices/TmTcMessage.h"
-#include "../ipc/MessageQueueIF.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 #include <map>
 
 /**

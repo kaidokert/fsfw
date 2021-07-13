@@ -1,4 +1,4 @@
-#include "bitutility.h"
+#include "fsfw/globalfunctions/bitutility.h"
 
 void bitutil::bitSet(uint8_t *byte, uint8_t position) {
     if(position > 7) {

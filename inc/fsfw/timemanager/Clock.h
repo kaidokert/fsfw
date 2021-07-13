@@ -2,9 +2,9 @@
 #define FSFW_TIMEMANAGER_CLOCK_H_
 
 #include "clockDefinitions.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../ipc/MutexFactory.h"
-#include "../globalfunctions/timevalOperations.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/ipc/MutexFactory.h"
+#include "fsfw/globalfunctions/timevalOperations.h"
 
 #include <cstdint>
 

@@ -1,5 +1,6 @@
-#include "arrayprinter.h"
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+
 #include <bitset>
 
 

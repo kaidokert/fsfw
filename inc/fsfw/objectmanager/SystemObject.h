@@ -2,9 +2,9 @@
 #define FSFW_OBJECTMANAGER_SYSTEMOBJECT_H_
 
 #include "SystemObjectIF.h"
-#include "../events/Event.h"
-#include "../events/EventReportingProxyIF.h"
-#include "../timemanager/Clock.h"
+#include "fsfw/events/Event.h"
+#include "fsfw/events/EventReportingProxyIF.h"
+#include "fsfw/timemanager/Clock.h"
 
 /**
  * @brief	This class automates insertion into the ObjectManager and

@@ -1,10 +1,10 @@
-#include "Fuse.h"
+#include "fsfw/power/Fuse.h"
 
-#include "../monitoring/LimitViolationReporter.h"
-#include "../monitoring/MonitoringMessageContent.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../serialize/SerialFixedArrayListAdapter.h"
-#include "../ipc/QueueFactory.h"
+#include "fsfw/monitoring/LimitViolationReporter.h"
+#include "fsfw/monitoring/MonitoringMessageContent.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serialize/SerialFixedArrayListAdapter.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 object_id_t Fuse::powerSwitchId = 0;
 

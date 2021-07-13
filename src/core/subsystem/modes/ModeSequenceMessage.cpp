@@ -1,7 +1,7 @@
-#include "ModeSequenceMessage.h"
+#include "fsfw/subsystem/modes/ModeSequenceMessage.h"
 
-#include "../../objectmanager/ObjectManager.h"
-#include "../../storagemanager/StorageManagerIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
 void ModeSequenceMessage::setModeSequenceMessage(CommandMessage* message,
 		Command_t command, Mode_t sequence, store_address_t storeAddress) {

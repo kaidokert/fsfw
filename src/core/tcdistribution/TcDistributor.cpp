@@ -1,8 +1,8 @@
-#include "TcDistributor.h"
+#include "fsfw/tcdistribution/TcDistributor.h"
 
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../tmtcservices/TmTcMessage.h"
-#include "../ipc/QueueFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 TcDistributor::TcDistributor(object_id_t objectId) :
 		SystemObject(objectId) {

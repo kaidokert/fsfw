@@ -1,13 +1,12 @@
-#include "LocalPoolDataSetBase.h"
-#include "HasLocalDataPoolIF.h"
+#include "fsfw/datapoollocal.h"
 #include "internal/HasLocalDpIFUserAttorney.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../globalfunctions/bitutility.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
-#include "../housekeeping/PeriodicHousekeepingHelper.h"
-#include "../serialize/SerializeAdapter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/globalfunctions/bitutility.h"
+#include "fsfw/datapoollocal/LocalDataPoolManager.h"
+#include "fsfw/housekeeping/PeriodicHousekeepingHelper.h"
+#include "fsfw/serialize/SerializeAdapter.h"
 
 #include <cmath>
 #include <cstring>

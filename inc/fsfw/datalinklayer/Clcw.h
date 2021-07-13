@@ -1,10 +1,3 @@
-/**
- * @file	Clcw.h
- * @brief	This file defines the Clcw class.
- * @date	17.04.2013
- * @author	baetz
- */
-
 #ifndef CLCW_H_
 #define CLCW_H_
 

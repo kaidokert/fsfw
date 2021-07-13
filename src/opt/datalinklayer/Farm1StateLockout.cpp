@@ -1,16 +1,8 @@
-/**
- * @file	Farm1StateLockout.cpp
- * @brief	This file defines the Farm1StateLockout class.
- * @date	24.04.2013
- * @author	baetz
- */
+#include "fsfw/datalinklayer/ClcwIF.h"
+#include "fsfw/datalinklayer/Farm1StateLockout.h"
+#include "fsfw/datalinklayer/TcTransferFrame.h"
+#include "fsfw/datalinklayer/VirtualChannelReception.h"
 
-
-
-#include "ClcwIF.h"
-#include "Farm1StateLockout.h"
-#include "TcTransferFrame.h"
-#include "VirtualChannelReception.h"
 Farm1StateLockout::Farm1StateLockout(VirtualChannelReception* setMyVC) : myVC(setMyVC) {
 }
 

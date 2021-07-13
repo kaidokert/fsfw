@@ -1,6 +1,6 @@
-#include "ParameterMessage.h"
+#include "fsfw/parameters/ParameterMessage.h"
 
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 ParameterId_t ParameterMessage::getParameterId(const CommandMessage* message) {
 	return message->getParameter();
