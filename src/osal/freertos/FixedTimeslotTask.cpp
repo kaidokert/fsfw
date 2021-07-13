@@ -1,7 +1,7 @@
-#include "FixedTimeslotTask.h"
+#include "fsfw/osal/freertos/FixedTimeslotTask.h"
 
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;

@@ -1,6 +1,6 @@
-#include "BinSemaphUsingTask.h"
-#include "TaskManagement.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/osal/freertos/BinSemaphUsingTask.h"
+#include "fsfw/osal/freertos/TaskManagement.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
     tskKERNEL_VERSION_MAJOR > 8

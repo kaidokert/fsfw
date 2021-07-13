@@ -1,6 +1,6 @@
-#include "Mutex.h"
+#include "fsfw/osal/freertos/Mutex.h"
 
-#include "../../ipc/MutexFactory.h"
+#include "fsfw/ipc/MutexFactory.h"
 
 
 //TODO: Different variant than the lazy loading in QueueFactory.

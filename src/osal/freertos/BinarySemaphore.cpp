@@ -1,6 +1,6 @@
-#include "BinarySemaphore.h"
-#include "TaskManagement.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/osal/freertos/BinarySemaphore.h"
+#include "fsfw/osal/freertos/TaskManagement.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 BinarySemaphore::BinarySemaphore() {
 	handle = xSemaphoreCreateBinary();

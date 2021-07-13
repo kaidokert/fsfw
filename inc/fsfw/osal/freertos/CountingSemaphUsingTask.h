@@ -2,7 +2,7 @@
 #define FSFW_OSAL_FREERTOS_COUNTINGSEMAPHUSINGTASK_H_
 
 #include "CountingSemaphUsingTask.h"
-#include "../../tasks/SemaphoreIF.h"
+#include "fsfw/tasks/SemaphoreIF.h"
 
 #include "FreeRTOS.h"
 #include "task.h"

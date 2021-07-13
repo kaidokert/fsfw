@@ -1,8 +1,8 @@
 #ifndef FSFW_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 #define FSFW_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 
-#include "../../returnvalues/HasReturnvaluesIF.h"
-#include "../../tasks/SemaphoreIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/SemaphoreIF.h"
 
 #include "FreeRTOS.h"
 #include "semphr.h"

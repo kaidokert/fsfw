@@ -1,9 +1,8 @@
-#include "../../tasks/TaskFactory.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/TaskFactory.h"
+#include "fsfw/osal/freertos/PeriodicTask.h"
+#include "fsfw/osal/freertos/FixedTimeslotTask.h"
 
-#include "PeriodicTask.h"
-#include "FixedTimeslotTask.h"
-
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
 

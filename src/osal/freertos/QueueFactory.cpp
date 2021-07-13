@@ -1,7 +1,7 @@
-#include "MessageQueue.h"
+#include "fsfw/osal/freertos/MessageQueue.h"
 
-#include "../../ipc/MessageQueueSenderIF.h"
-#include "../../ipc/QueueFactory.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
+#include "fsfw/ipc/QueueFactory.h"
 
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;

@@ -3,10 +3,10 @@
 
 #include "TaskManagement.h"
 
-#include "../../internalError/InternalErrorReporterIF.h"
-#include "../../ipc/MessageQueueIF.h"
-#include "../../ipc/MessageQueueMessageIF.h"
-#include "../../ipc/MessageQueueMessage.h"
+#include "fsfw/internalerror/InternalErrorReporterIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/ipc/MessageQueueMessageIF.h"
+#include "fsfw/ipc/MessageQueueMessage.h"
 
 #include "FreeRTOS.h"
 #include "queue.h"

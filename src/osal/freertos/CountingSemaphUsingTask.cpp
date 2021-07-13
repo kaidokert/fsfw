@@ -1,7 +1,7 @@
-#include "CountingSemaphUsingTask.h"
-#include "TaskManagement.h"
+#include "fsfw/osal/freertos/CountingSemaphUsingTask.h"
+#include "fsfw/osal/freertos/TaskManagement.h"
 
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
     tskKERNEL_VERSION_MAJOR > 8

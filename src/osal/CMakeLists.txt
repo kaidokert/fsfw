@@ -1,6 +1,6 @@
 # Check the OS_FSFW variable
 if(FSFW_OSAL MATCHES "freertos")
-    add_subdirectory(FreeRTOS)
+    add_subdirectory(freertos)
 elseif(FSFW_OSAL MATCHES "rtems")
     add_subdirectory(rtems)
 elseif(FSFW_OSAL MATCHES "linux")

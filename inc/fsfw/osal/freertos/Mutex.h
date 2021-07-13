@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_FREERTOS_MUTEX_H_
 #define FRAMEWORK_FREERTOS_MUTEX_H_
 
-#include "../../ipc/MutexIF.h"
+#include "fsfw/ipc/MutexIF.h"
 
 #include "FreeRTOS.h"
 #include "semphr.h"

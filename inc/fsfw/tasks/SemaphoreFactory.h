@@ -1,7 +1,7 @@
 #ifndef FSFW_TASKS_SEMAPHOREFACTORY_H_
 #define FSFW_TASKS_SEMAPHOREFACTORY_H_
 
-#include "../tasks/SemaphoreIF.h"
+#include "fsfw/tasks/SemaphoreIF.h"
 
 /**
  * Creates Semaphore.

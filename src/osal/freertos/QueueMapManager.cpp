@@ -1,6 +1,6 @@
-#include "QueueMapManager.h"
-#include "../../ipc/MutexFactory.h"
-#include "../../ipc/MutexGuard.h"
+#include "fsfw/osal/freertos/QueueMapManager.h"
+#include "fsfw/ipc/MutexFactory.h"
+#include "fsfw/ipc/MutexGuard.h"
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 

@@ -1,5 +1,6 @@
-#include "MessageQueue.h"
-#include "QueueMapManager.h"
+#include "fsfw/osal/freertos/MessageQueue.h"
+#include "fsfw/osal/freertos/QueueMapManager.h"
+
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 

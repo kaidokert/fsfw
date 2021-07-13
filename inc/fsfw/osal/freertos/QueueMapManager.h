@@ -1,9 +1,9 @@
 #ifndef FSFW_OSAL_FREERTOS_QUEUEMAPMANAGER_H_
 #define FSFW_OSAL_FREERTOS_QUEUEMAPMANAGER_H_
 
-#include "../../ipc/MutexIF.h"
-#include "../../ipc/messageQueueDefinitions.h"
-#include "../../ipc/MessageQueueIF.h"
+#include "fsfw/ipc/MutexIF.h"
+#include "fsfw/ipc/messageQueueDefinitions.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 
 #include "FreeRTOS.h"
 #include "queue.h"

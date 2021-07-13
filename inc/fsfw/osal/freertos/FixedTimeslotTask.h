@@ -2,9 +2,9 @@
 #define FSFW_OSAL_FREERTOS_FIXEDTIMESLOTTASK_H_
 
 #include "FreeRTOSTaskIF.h"
-#include "../../tasks/FixedSlotSequence.h"
-#include "../../tasks/FixedTimeslotTaskIF.h"
-#include "../../tasks/Typedef.h"
+#include "fsfw/tasks/FixedSlotSequence.h"
+#include "fsfw/tasks/FixedTimeslotTaskIF.h"
+#include "fsfw/tasks/Typedef.h"
 
 #include "FreeRTOS.h"
 #include "task.h"

@@ -1,8 +1,8 @@
-#include "PeriodicTask.h"
+#include "fsfw/osal/freertos/PeriodicTask.h"
 
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../tasks/ExecutableObjectIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
 
 PeriodicTask::PeriodicTask(const char *name, TaskPriority setPriority,
 		TaskStackSize setStack, TaskPeriod setPeriod,

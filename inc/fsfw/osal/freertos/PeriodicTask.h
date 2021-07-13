@@ -2,9 +2,9 @@
 #define FSFW_OSAL_FREERTOS_PERIODICTASK_H_
 
 #include "FreeRTOSTaskIF.h"
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../tasks/PeriodicTaskIF.h"
-#include "../../tasks/Typedef.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
+#include "fsfw/tasks/Typedef.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
