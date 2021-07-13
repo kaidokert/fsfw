@@ -1,7 +1,7 @@
 #ifndef FSFW_PUS_SERVICE20PARAMETERMANAGEMENT_H_
 #define FSFW_PUS_SERVICE20PARAMETERMANAGEMENT_H_
 
-#include "../tmtcservices/CommandingServiceBase.h"
+#include "fsfw/tmtcservices/CommandingServiceBase.h"
 
 /**
  * @brief   PUS Service 20 Parameter Service implementation

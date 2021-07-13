@@ -1,7 +1,7 @@
-#include "../common/tcpipHelpers.h"
+#include "fsfw/osal/common/tcpipHelpers.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../tasks/TaskFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tasks/TaskFactory.h"
 
 #include <errno.h>
 #include <string>

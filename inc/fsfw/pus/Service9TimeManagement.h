@@ -1,7 +1,7 @@
 #ifndef FSFW_PUS_SERVICE9TIMEMANAGEMENT_H_
 #define FSFW_PUS_SERVICE9TIMEMANAGEMENT_H_
 
-#include "../tmtcservices/PusServiceBase.h"
+#include "fsfw/tmtcservices/PusServiceBase.h"
 
 class Service9TimeManagement: public PusServiceBase {
 public:

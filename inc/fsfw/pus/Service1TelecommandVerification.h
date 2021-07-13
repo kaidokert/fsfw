@@ -1,12 +1,12 @@
 #ifndef FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
 #define FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
 
-#include "../objectmanager/SystemObject.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../tmtcservices/AcceptsVerifyMessageIF.h"
-#include "../tmtcservices/PusVerificationReport.h"
-#include "../ipc/MessageQueueIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
+#include "fsfw/tmtcservices/PusVerificationReport.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 
 /**
  * @brief Verify TC acceptance, start, progress and execution.

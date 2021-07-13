@@ -6,7 +6,7 @@
 #include "AbstractTemperatureSensor.h"
 #include "ThermalModule.h"
 
-#include "../datapoollocal/LocalPoolVariable.h"
+#include "fsfw/datapoollocal/LocalPoolVariable.h"
 
 /**
  * @brief

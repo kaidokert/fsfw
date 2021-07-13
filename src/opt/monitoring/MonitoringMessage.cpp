@@ -1,5 +1,5 @@
-#include "MonitoringMessage.h"
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/monitoring/MonitoringMessage.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 MonitoringMessage::~MonitoringMessage() {
 }

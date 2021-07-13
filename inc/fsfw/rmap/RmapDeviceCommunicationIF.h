@@ -1,7 +1,7 @@
 #ifndef FSFW_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_
 #define FSFW_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_
 
-#include "../devicehandlers/DeviceCommunicationIF.h"
+#include "fsfw/devicehandlers/DeviceCommunicationIF.h"
 
 /**
  * @brief	This class is a implementation of a DeviceCommunicationIF for RMAP calls.

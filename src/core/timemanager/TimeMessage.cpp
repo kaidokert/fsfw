@@ -1,4 +1,4 @@
-#include "TimeMessage.h"
+#include "fsfw/timemanager/TimeMessage.h"
 
 TimeMessage::TimeMessage() {
 	this->messageSize += sizeof(timeval) + sizeof(uint32_t);

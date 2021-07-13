@@ -1,9 +1,9 @@
-#include "LimitViolationReporter.h"
-#include "MonitoringIF.h"
-#include "ReceivesMonitoringReportsIF.h"
+#include "fsfw/monitoring/LimitViolationReporter.h"
+#include "fsfw/monitoring/MonitoringIF.h"
+#include "fsfw/monitoring/ReceivesMonitoringReportsIF.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../serialize/SerializeAdapter.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serialize/SerializeAdapter.h"
 
 ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF* data) {
 	ReturnValue_t result = checkClassLoaded();

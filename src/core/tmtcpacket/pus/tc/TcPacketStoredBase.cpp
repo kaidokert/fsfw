@@ -1,8 +1,8 @@
-#include "TcPacketStoredBase.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketStoredBase.h"
 
-#include "../../../objectmanager/ObjectManager.h"
-#include "../../../serviceinterface/ServiceInterface.h"
-#include "../../../objectmanager/frameworkObjects.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/frameworkObjects.h"
 
 #include <cstring>
 

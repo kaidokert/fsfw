@@ -1,5 +1,5 @@
-#include "../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../timemanager/Clock.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/timemanager/Clock.h"
 
 #include <sys/time.h>
 #include <sys/sysinfo.h>

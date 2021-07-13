@@ -1,8 +1,8 @@
 #ifndef TCTRANSFERFRAME_H_
 #define TCTRANSFERFRAME_H_
 
-#include <stdint.h>
-#include <stddef.h>
+#include <cstdint>
+#include <cstddef>
 
 /**
  * The TcTransferFrame class simplifies handling of such Frames.

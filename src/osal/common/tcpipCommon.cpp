@@ -1,7 +1,8 @@
-#include "tcpipCommon.h"
-#include <fsfw/serviceinterface/ServiceInterface.h>
+#include "fsfw/platform.h"
+#include "fsfw/osal/common/tcpipCommon.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
 #include <ws2tcpip.h>
 #endif
 

@@ -1,7 +1,7 @@
 #include "MessageQueue.h"
 #include "QueueMapManager.h"
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize):
         maxMessageSize(maxMessageSize) {

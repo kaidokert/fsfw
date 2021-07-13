@@ -1,4 +1,4 @@
-#include "TmTcMessage.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
 
 #include <cstring>
 

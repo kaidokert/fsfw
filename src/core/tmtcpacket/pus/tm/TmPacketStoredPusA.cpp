@@ -1,7 +1,7 @@
-#include "TmPacketStoredPusA.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketStoredPusA.h"
 
-#include "../../../serviceinterface/ServiceInterface.h"
-#include "../../../tmtcservices/TmTcMessage.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
 
 #include <cstring>
 

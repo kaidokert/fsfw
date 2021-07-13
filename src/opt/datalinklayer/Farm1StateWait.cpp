@@ -1,15 +1,7 @@
-/**
- * @file	Farm1StateWait.cpp
- * @brief	This file defines the Farm1StateWait class.
- * @date	24.04.2013
- * @author	baetz
- */
-
-
-#include "ClcwIF.h"
-#include "Farm1StateWait.h"
-#include "TcTransferFrame.h"
-#include "VirtualChannelReception.h"
+#include "fsfw/datalinklayer/ClcwIF.h"
+#include "fsfw/datalinklayer/Farm1StateWait.h"
+#include "fsfw/datalinklayer/TcTransferFrame.h"
+#include "fsfw/datalinklayer/VirtualChannelReception.h"
 
 Farm1StateWait::Farm1StateWait(VirtualChannelReception* setMyVC) : myVC(setMyVC) {
 }

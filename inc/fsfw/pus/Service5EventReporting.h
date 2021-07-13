@@ -1,8 +1,8 @@
 #ifndef FSFW_PUS_SERVICE5EVENTREPORTING_H_
 #define FSFW_PUS_SERVICE5EVENTREPORTING_H_
 
-#include "../tmtcservices/PusServiceBase.h"
-#include "../events/EventMessage.h"
+#include "fsfw/tmtcservices/PusServiceBase.h"
+#include "fsfw/events/EventMessage.h"
 
 /**
  * @brief Report on-board events like information or errors

@@ -1,9 +1,9 @@
-#include "Service9TimeManagement.h"
-#include "servicepackets/Service9Packets.h"
+#include "fsfw/pus/Service9TimeManagement.h"
+#include "fsfw/pus/servicepackets/Service9Packets.h"
 
-#include "../timemanager/CCSDSTime.h"
-#include "../events/EventManagerIF.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/timemanager/CCSDSTime.h"
+#include "fsfw/events/EventManagerIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 
 Service9TimeManagement::Service9TimeManagement(object_id_t objectId,

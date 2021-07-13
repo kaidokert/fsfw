@@ -1,11 +1,11 @@
-#include "CService200ModeCommanding.h"
-#include "servicepackets/Service200Packets.h"
+#include "fsfw/pus/CService200ModeCommanding.h"
+#include "fsfw/pus/servicepackets/Service200Packets.h"
 
-#include "../modes/HasModesIF.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../serialize/SerialLinkedListAdapter.h"
-#include "../modes/ModeMessage.h"
+#include "fsfw/modes/HasModesIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serialize/SerialLinkedListAdapter.h"
+#include "fsfw/modes/ModeMessage.h"
 
 CService200ModeCommanding::CService200ModeCommanding(object_id_t objectId,
         uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,

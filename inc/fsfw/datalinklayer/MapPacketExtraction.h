@@ -2,9 +2,9 @@
 #define FSFW_DATALINKLAYER_MAPPACKETEXTRACTION_H_
 
 #include "MapPacketExtractionIF.h"
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../ipc/MessageQueueSenderIF.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
 
 class StorageManagerIF;
 

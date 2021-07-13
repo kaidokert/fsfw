@@ -1,7 +1,7 @@
-#include "FixedTimeslotTask.h"
+#include "fsfw/osal/linux/FixedTimeslotTask.h"
 
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <limits.h>
 

@@ -1,9 +1,9 @@
-#include "Service17Test.h"
-#include <FSFWConfig.h>
+#include "fsfw/FSFW.h"
+#include "fsfw/pus/Service17Test.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../objectmanager/SystemObject.h"
-#include "../tmtcpacket/pus/tm/TmPacketStored.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 
 
 Service17Test::Service17Test(object_id_t objectId,

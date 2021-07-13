@@ -1,11 +1,11 @@
-#include "TmPacketPusA.h"
-#include "TmPacketBase.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketPusA.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketBase.h"
 
-#include "../../../globalfunctions/CRC.h"
-#include "../../../globalfunctions/arrayprinter.h"
-#include "../../../objectmanager/ObjectManagerIF.h"
-#include "../../../serviceinterface/ServiceInterfaceStream.h"
-#include "../../../timemanager/CCSDSTime.h"
+#include "fsfw/globalfunctions/CRC.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/timemanager/CCSDSTime.h"
 
 #include <cstring>
 

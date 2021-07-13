@@ -1,10 +1,10 @@
-#include "CService201HealthCommanding.h"
-#include "servicepackets/Service201Packets.h"
+#include "fsfw/pus/CService201HealthCommanding.h"
+#include "fsfw/pus/servicepackets/Service201Packets.h"
 
-#include "../health/HasHealthIF.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../health/HealthMessage.h"
+#include "fsfw/health/HasHealthIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/health/HealthMessage.h"
 
 
 CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId,

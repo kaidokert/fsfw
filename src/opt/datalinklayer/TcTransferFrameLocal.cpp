@@ -1,14 +1,8 @@
-/**
- * @file	TcTransferFrameLocal.cpp
- * @brief	This file defines the TcTransferFrameLocal class.
- * @date	27.04.2013
- * @author	baetz
- */
+#include "fsfw/datalinklayer/TcTransferFrameLocal.h"
+#include "fsfw/globalfunctions/CRC.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
-#include "TcTransferFrameLocal.h"
-#include "../globalfunctions/CRC.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include <string.h>
+#include <cstring>
 
 TcTransferFrameLocal::TcTransferFrameLocal(bool bypass, bool controlCommand, uint16_t scid,
 		uint8_t vcId, uint8_t sequenceNumber, uint8_t setSegmentHeader, uint8_t* data, uint16_t dataSize, uint16_t forceCrc) {
@@ -38,7 +32,7 @@ TcTransferFrameLocal::TcTransferFrameLocal(bool bypass, bool controlCommand, uin
 			this->getFullFrame()[getFullSize()-1] = (crc & 0x00FF);
 		} else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-			sif::debug << "TcTransferFrameLocal: dataSize too large: " << dataSize << std::endl;
+			sif::warning << "TcTransferFrameLocal: dataSize too large: " << dataSize << std::endl;
 #endif
 		}
 	} else {

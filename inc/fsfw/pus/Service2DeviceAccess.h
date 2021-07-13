@@ -1,9 +1,9 @@
 #ifndef FSFW_PUS_SERVICE2DEVICEACCESS_H_
 #define FSFW_PUS_SERVICE2DEVICEACCESS_H_
 
-#include "../objectmanager/SystemObjectIF.h"
-#include "../devicehandlers/AcceptsDeviceResponsesIF.h"
-#include "../tmtcservices/CommandingServiceBase.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/devicehandlers/AcceptsDeviceResponsesIF.h"
+#include "fsfw/tmtcservices/CommandingServiceBase.h"
 
 /**
  * @brief   Raw Commanding and Wiretapping of devices.

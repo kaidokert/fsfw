@@ -1,11 +1,11 @@
-#include "BinarySemaphore.h"
-#include "unixUtility.h"
-#include "../../serviceinterface/ServiceInterfacePrinter.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/osal/linux/BinarySemaphore.h"
+#include "fsfw/osal/linux/unixUtility.h"
+#include "fsfw/serviceinterface/ServiceInterfacePrinter.h"
+#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
 
 #include <time.h>
 #include <errno.h>
-#include <string.h>
+#include <cstring>
 
 
 BinarySemaphore::BinarySemaphore() {

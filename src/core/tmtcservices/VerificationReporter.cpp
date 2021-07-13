@@ -1,11 +1,11 @@
-#include "VerificationReporter.h"
-#include "AcceptsVerifyMessageIF.h"
-#include "PusVerificationReport.h"
+#include "fsfw/tmtcservices/VerificationReporter.h"
+#include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
+#include "fsfw/tmtcservices/PusVerificationReport.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../ipc/MessageQueueIF.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../objectmanager/frameworkObjects.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/frameworkObjects.h"
 
 object_id_t VerificationReporter::messageReceiver =
 		objects::PUS_SERVICE_1_VERIFICATION;

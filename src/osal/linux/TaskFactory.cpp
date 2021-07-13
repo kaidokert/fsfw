@@ -1,9 +1,9 @@
-#include "FixedTimeslotTask.h"
-#include "PeriodicPosixTask.h"
+#include "fsfw/osal/linux/FixedTimeslotTask.h"
+#include "fsfw/osal/linux/PeriodicPosixTask.h"
 
-#include "../../tasks/TaskFactory.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/TaskFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();

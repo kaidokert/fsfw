@@ -1,13 +1,15 @@
 #ifndef TMTCPACKET_PUS_TMPACKETBASE_H_
 #define TMTCPACKET_PUS_TMPACKETBASE_H_
 
-#include "../../SpacePacketBase.h"
-#include "../../../timemanager/TimeStamperIF.h"
-#include "../../../timemanager/Clock.h"
-#include "../../../objectmanager/SystemObjectIF.h"
+#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/timemanager/Clock.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
 
-namespace Factory{
+namespace Factory {
+
 void setStaticFrameworkObjectIds();
+
 }
 
 

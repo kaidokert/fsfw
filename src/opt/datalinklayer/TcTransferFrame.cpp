@@ -1,17 +1,8 @@
-/**
- * @file	TcTransferFrame.cpp
- * @brief	This file defines the TcTransferFrame class.
- * @date	27.04.2013
- * @author	baetz
- */
-
-
-
-#include "TcTransferFrame.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/datalinklayer/TcTransferFrame.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 TcTransferFrame::TcTransferFrame() {
-	 frame = NULL;
+	 frame = nullptr;
 }
 
 TcTransferFrame::TcTransferFrame(uint8_t* setData) {

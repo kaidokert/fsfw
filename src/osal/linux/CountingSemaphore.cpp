@@ -1,7 +1,7 @@
-#include "CountingSemaphore.h"
-#include "unixUtility.h"
+#include "fsfw/osal/linux/CountingSemaphore.h"
+#include "fsfw/osal/linux/unixUtility.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <errno.h>
 

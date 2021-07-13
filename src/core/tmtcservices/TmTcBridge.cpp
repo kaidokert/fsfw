@@ -1,9 +1,9 @@
-#include "TmTcBridge.h"
+#include "fsfw/tmtcservices/TmTcBridge.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../ipc/QueueFactory.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../globalfunctions/arrayprinter.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
 
 #define TMTCBRIDGE_WIRETAPPING 0
 

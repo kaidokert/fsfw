@@ -1,7 +1,7 @@
 #ifndef FSFW_PUS_CSERVICE200MODECOMMANDING_H_
 #define FSFW_PUS_CSERVICE200MODECOMMANDING_H_
 
-#include "../tmtcservices/CommandingServiceBase.h"
+#include "fsfw/tmtcservices/CommandingServiceBase.h"
 
 /**
  * @brief Custom PUS service to set mode of all objects implementing HasModesIF

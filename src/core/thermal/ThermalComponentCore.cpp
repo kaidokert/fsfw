@@ -1,5 +1,5 @@
-#include "ThermalComponentCore.h"
-#include "tcsDefinitions.h"
+#include "fsfw/thermal/ThermalComponentCore.h"
+#include "fsfw/thermal/tcsDefinitions.h"
 
 ThermalComponentCore::ThermalComponentCore(object_id_t reportingObjectId,
         uint8_t domainId, gp_id_t temperaturePoolId,

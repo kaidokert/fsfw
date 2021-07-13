@@ -1,8 +1,8 @@
-#include "RMAP.h"
-#include "rmapStructs.h"
-#include "RMAPChannelIF.h"
+#include "fsfw/rmap/RMAP.h"
+#include "fsfw/rmap/rmapStructs.h"
+#include "fsfw/rmap/RMAPChannelIF.h"
 
-#include "../devicehandlers/DeviceCommunicationIF.h"
+#include "fsfw/devicehandlers/DeviceCommunicationIF.h"
 
 #include <cstddef>
 

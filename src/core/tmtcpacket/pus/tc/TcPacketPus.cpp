@@ -1,5 +1,5 @@
-#include "TcPacketPus.h"
-#include "../../../globalfunctions/CRC.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketPus.h"
+#include "fsfw/globalfunctions/CRC.h"
 
 #include <cstring>
 

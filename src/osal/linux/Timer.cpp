@@ -1,5 +1,5 @@
-#include "Timer.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/osal/linux/Timer.h"
+#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
 #include <errno.h>
 
 

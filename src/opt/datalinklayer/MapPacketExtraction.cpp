@@ -1,12 +1,12 @@
-#include "MapPacketExtraction.h"
+#include "fsfw/datalinklayer/MapPacketExtraction.h"
 
-#include "../ipc/QueueFactory.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../tmtcpacket/SpacePacketBase.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
-#include "../tmtcservices/TmTcMessage.h"
-#include "../objectmanager/ObjectManager.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 #include <cstring>
 

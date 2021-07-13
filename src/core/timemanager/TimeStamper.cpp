@@ -1,5 +1,6 @@
-#include "TimeStamper.h"
-#include "Clock.h"
+#include "fsfw/timemanager/TimeStamper.h"
+#include "fsfw/timemanager/Clock.h"
+
 #include <cstring>
 
 TimeStamper::TimeStamper(object_id_t objectId): SystemObject(objectId) {}

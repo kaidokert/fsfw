@@ -4,12 +4,12 @@
 #include "AcceptsTelemetryIF.h"
 #include "AcceptsTelecommandsIF.h"
 
-#include "../objectmanager/SystemObject.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../ipc/MessageQueueIF.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../container/DynamicFIFO.h"
-#include "../tmtcservices/TmTcMessage.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/container/DynamicFIFO.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
 
 class TmTcBridge : public AcceptsTelemetryIF,
 		public AcceptsTelecommandsIF,

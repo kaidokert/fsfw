@@ -1,11 +1,11 @@
-#include "Service5EventReporting.h"
-#include "servicepackets/Service5Packets.h"
+#include "fsfw/pus/Service5EventReporting.h"
+#include "fsfw/pus/servicepackets/Service5Packets.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../events/EventManagerIF.h"
-#include "../ipc/QueueFactory.h"
-#include "../tmtcpacket/pus/tm/TmPacketStored.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/events/EventManagerIF.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 
 
 Service5EventReporting::Service5EventReporting(object_id_t objectId,

@@ -1,8 +1,8 @@
-#include "Service3Housekeeping.h"
-#include "servicepackets/Service3Packets.h"
+#include "fsfw/pus/Service3Housekeeping.h"
+#include "fsfw/pus/servicepackets/Service3Packets.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/datapoollocal/HasLocalDataPoolIF.h"
 
 Service3Housekeeping::Service3Housekeeping(object_id_t objectId, uint16_t apid,
         uint8_t serviceId):

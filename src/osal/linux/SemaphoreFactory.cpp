@@ -1,8 +1,7 @@
-#include "BinarySemaphore.h"
-#include "CountingSemaphore.h"
+#include "fsfw/osal/linux/BinarySemaphore.h"
+#include "fsfw/osal/linux/CountingSemaphore.h"
 
-#include "../../tasks/SemaphoreFactory.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/tasks/SemaphoreFactory.h"
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
 

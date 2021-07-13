@@ -1,8 +1,8 @@
-#include "MessageQueue.h"
-#include "unixUtility.h"
+#include "fsfw/osal/linux/MessageQueue.h"
+#include "fsfw/osal/linux/unixUtility.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 #include <fstream>
 

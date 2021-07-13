@@ -1,12 +1,12 @@
-#include "Service8FunctionManagement.h"
-#include "servicepackets/Service8Packets.h"
+#include "fsfw/pus/Service8FunctionManagement.h"
+#include "fsfw/pus/servicepackets/Service8Packets.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../objectmanager/SystemObjectIF.h"
-#include "../action/HasActionsIF.h"
-#include "../devicehandlers/DeviceHandlerIF.h"
-#include "../serialize/SerializeAdapter.h"
-#include "../serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/action/HasActionsIF.h"
+#include "fsfw/devicehandlers/DeviceHandlerIF.h"
+#include "fsfw/serialize/SerializeAdapter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 Service8FunctionManagement::Service8FunctionManagement(object_id_t objectId,
 		uint16_t apid, uint8_t serviceId, uint8_t numParallelCommands,

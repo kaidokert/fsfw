@@ -1,8 +1,8 @@
 #ifndef FSFW_TMTCSERVICES_TMTCMESSAGE_H_
 #define FSFW_TMTCSERVICES_TMTCMESSAGE_H_
 
-#include "../ipc/MessageQueueMessage.h"
-#include "../storagemanager/StorageManagerIF.h"
+#include "fsfw/ipc/MessageQueueMessage.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 /**
  * @brief	This message class is used to pass Telecommand and Telemetry
  * 			packets between tasks.

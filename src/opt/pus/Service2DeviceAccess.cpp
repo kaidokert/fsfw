@@ -1,15 +1,15 @@
-#include "Service2DeviceAccess.h"
-#include "servicepackets/Service2Packets.h"
+#include "fsfw/pus/Service2DeviceAccess.h"
+#include "fsfw/pus/servicepackets/Service2Packets.h"
 
-#include "../objectmanager/ObjectManager.h"
-#include "../devicehandlers/DeviceHandlerIF.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../devicehandlers/DeviceHandlerMessage.h"
-#include "../serialize/EndianConverter.h"
-#include "../action/ActionMessage.h"
-#include "../serialize/SerializeAdapter.h"
-#include "../serialize/SerialLinkedListAdapter.h"
-#include "../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/devicehandlers/DeviceHandlerIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/devicehandlers/DeviceHandlerMessage.h"
+#include "fsfw/serialize/EndianConverter.h"
+#include "fsfw/action/ActionMessage.h"
+#include "fsfw/serialize/SerializeAdapter.h"
+#include "fsfw/serialize/SerialLinkedListAdapter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 Service2DeviceAccess::Service2DeviceAccess(object_id_t objectId,
         uint16_t apid, uint8_t serviceId, uint8_t numberOfParallelCommands,

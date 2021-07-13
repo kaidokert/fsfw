@@ -1,8 +1,8 @@
 #ifndef FSFW_PUS_SERVICE17TEST_H_
 #define FSFW_PUS_SERVICE17TEST_H_
 
-#include "../tmtcservices/PusServiceBase.h"
-#include "../objectmanager/SystemObject.h"
+#include "fsfw/tmtcservices/PusServiceBase.h"
+#include "fsfw/objectmanager/SystemObject.h"
 
 /**
  * @brief Test Service

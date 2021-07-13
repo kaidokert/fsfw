@@ -1,7 +1,7 @@
-#include "ThermalMonitorReporter.h"
-#include "ThermalComponentIF.h"
+#include "fsfw/thermal/ThermalMonitorReporter.h"
+#include "fsfw/thermal/ThermalComponentIF.h"
 
-#include "../monitoring/MonitoringIF.h"
+#include "fsfw/monitoring/MonitoringIF.h"
 
 ThermalMonitorReporter::~ThermalMonitorReporter() {
 }

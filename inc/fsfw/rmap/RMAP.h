@@ -1,8 +1,8 @@
 #ifndef FSFW_RMAP_RMAP_H_
 #define FSFW_RMAP_RMAP_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../rmap/RMAPCookie.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/rmap/RMAPCookie.h"
 
 //SHOULDTODO: clean up includes for RMAP, should be enough to include RMAP.h but right now it's quite chaotic...
 

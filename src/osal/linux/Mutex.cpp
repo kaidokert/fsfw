@@ -1,8 +1,8 @@
-#include "Mutex.h"
-#include "unixUtility.h"
+#include "fsfw/osal/linux/Mutex.h"
+#include "fsfw/osal/linux/unixUtility.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../timemanager/Clock.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/timemanager/Clock.h"
 
 #include <cstring>
 #include <errno.h>

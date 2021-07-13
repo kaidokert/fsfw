@@ -1,11 +1,11 @@
-#include "Service20ParameterManagement.h"
-#include "servicepackets/Service20Packets.h"
+#include "fsfw/pus/Service20ParameterManagement.h"
+#include "fsfw/pus/servicepackets/Service20Packets.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../parameters/HasParametersIF.h"
-#include "../parameters/ParameterMessage.h"
-#include "../objectmanager/ObjectManager.h"
-#include "../parameters/ReceivesParameterMessagesIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/parameters/HasParametersIF.h"
+#include "fsfw/parameters/ParameterMessage.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/parameters/ReceivesParameterMessagesIF.h"
 
 
 Service20ParameterManagement::Service20ParameterManagement(object_id_t objectId, uint16_t apid,

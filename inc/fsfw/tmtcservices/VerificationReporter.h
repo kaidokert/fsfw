@@ -2,7 +2,7 @@
 #define FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_
 
 #include "PusVerificationReport.h"
-#include "../objectmanager/ObjectManagerIF.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
 
 namespace Factory{
 void setStaticFrameworkObjectIds();

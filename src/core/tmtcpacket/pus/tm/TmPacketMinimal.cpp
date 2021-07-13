@@ -1,5 +1,5 @@
-#include "TmPacketMinimal.h"
-#include "../PacketTimestampInterpreterIF.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketMinimal.h"
+#include "fsfw/tmtcpacket/pus/PacketTimestampInterpreterIF.h"
 
 #include <cstddef>
 #include <ctime>

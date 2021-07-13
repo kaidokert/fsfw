@@ -1,9 +1,9 @@
 #ifndef FSFW_PUS_SERVICE3HOUSEKEEPINGSERVICE_H_
 #define FSFW_PUS_SERVICE3HOUSEKEEPINGSERVICE_H_
 
-#include "../housekeeping/AcceptsHkPacketsIF.h"
-#include "../housekeeping/HousekeepingMessage.h"
-#include "../tmtcservices/CommandingServiceBase.h"
+#include "fsfw/housekeeping/AcceptsHkPacketsIF.h"
+#include "fsfw/housekeeping/HousekeepingMessage.h"
+#include "fsfw/tmtcservices/CommandingServiceBase.h"
 
 /**
  * @brief   Manges spacecraft housekeeping reports and

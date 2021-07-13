@@ -2,7 +2,7 @@
 #define FSFW_RMAP_RMAPCOOKIE_H_
 
 #include "rmapStructs.h"
-#include "../devicehandlers/CookieIF.h"
+#include "fsfw/devicehandlers/CookieIF.h"
 #include <cstddef>
 
 class RMAPChannelIF;

@@ -1,13 +1,11 @@
-#include "../../ipc/QueueFactory.h"
-#include "MessageQueue.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/osal/linux/MessageQueue.h"
 
-#include "../../ipc/messageQueueDefinitions.h"
-#include "../../ipc/MessageQueueSenderIF.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/ipc/messageQueueDefinitions.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
 
 #include <mqueue.h>
 #include <errno.h>
-
 
 #include <cstring>
 
