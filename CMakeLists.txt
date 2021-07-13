@@ -16,7 +16,7 @@ option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
 
-set_property(CACHE OS_FSFW PROPERTY STRINGS host linux rtems freertos)
+set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
@@ -25,16 +25,16 @@ elseif(${CMAKE_CXX_STANDARD} LESS 11)
     message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
 endif()
 
-if(NOT OS_FSFW)
-	message(STATUS "No OS for FSFW via OS_FSFW set. Assuming host OS")
+if(NOT FSFW_OSAL)
+	message(STATUS "No OS for FSFW via FSFW_OSAL set. Assuming host OS")
 	# Assume host OS and autodetermine from OS_FSFW
 	if(UNIX)
-		set(OS_FSFW  "linux" 
+		set(FSFW_OSAL  "linux" 
 			CACHE STRING 
 			"OS abstraction layer used in the FSFW"
 		)
 	elseif(WIN32)
-		set(OS_FSFW  "host" 
+		set(FSFW_OSAL  "host" 
 			CACHE STRING "OS abstraction layer used in the FSFW"
 		)
 	endif()
