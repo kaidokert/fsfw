@@ -4,8 +4,8 @@
 #include "../../returnvalues/HasReturnvaluesIF.h"
 #include "../../tasks/SemaphoreIF.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
+#include "FreeRTOS.h"
+#include "semphr.h"
 
 /**
  * @brief 	OS Tool to achieve synchronization of between tasks or between

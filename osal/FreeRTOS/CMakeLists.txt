@@ -22,10 +22,11 @@ target_sources(${LIB_FSFW_NAME}
 # FreeRTOS as a static library and set LIB_OS_NAME to the target name of the 
 # library.
 if(NOT LIB_OS_NAME)
-	message(FATAL_ERROR 
-		"FreeRTOS needs to be linked as a target and "
-		"LIB_OS_NAME needs to be set to the target"
+	message(STATUS
+		"LIB_OS_NAME is empty. Make sure to include the FreeRTOS header path properly."
 	)
+else()
+    target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+        ${LIB_OS_NAME}
+    )
 endif()
-
-target_link_libraries(${LIB_FSWFW_NAME} ${LIB_OS_NAME})

@@ -32,7 +32,7 @@ ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object) {
 		sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
 				<< " it implements ExecutableObjectIF!" << std::endl;
 #else
-		sif::printError("PeriodicTask::addComponent: Invalid object. Make sure it"
+		sif::printError("PeriodicTask::addComponent: Invalid object. Make sure it "
 		        "implements ExecutableObjectIF!\n");
 #endif
 		return HasReturnvaluesIF::RETURN_FAILED;
