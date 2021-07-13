@@ -1,15 +1,16 @@
-#include "TcpTmTcBridge.h"
-#include "tcpipHelpers.h"
+#include "fsfw/platform.h"
+#include "fsfw/osal/common/TcpTmTcBridge.h"
+#include "fsfw/osal/common/tcpipHelpers.h"
 
-#include <fsfw/serviceinterface/ServiceInterface.h>
-#include <fsfw/ipc/MutexGuard.h>
-#include <fsfw/osal/common/TcpTmTcBridge.h>
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/ipc/MutexGuard.h"
+#include "fsfw/osal/common/TcpTmTcBridge.h"
 
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
 
 #include <ws2tcpip.h>
 
-#elif defined(__unix__)
+#elif defined PLATFORM_UNIX
 
 #include <netdb.h>
 #include <arpa/inet.h>

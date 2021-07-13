@@ -1,6 +1,6 @@
-#include "TcPacketStoredPus.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketStoredPus.h"
 
-#include "../../../serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 

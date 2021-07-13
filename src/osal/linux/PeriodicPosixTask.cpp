@@ -1,8 +1,8 @@
-#include "PeriodicPosixTask.h"
+#include "fsfw/osal/linux/PeriodicPosixTask.h"
 
-#include "../../objectmanager/ObjectManager.h"
-#include "../../tasks/ExecutableObjectIF.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <errno.h>
 

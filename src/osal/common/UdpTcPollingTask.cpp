@@ -1,9 +1,10 @@
-#include "UdpTcPollingTask.h"
-#include "tcpipHelpers.h"
-#include "../../platform.h"
-#include "../../globalfunctions/arrayprinter.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../objectmanager/ObjectManager.h"
+#include "fsfw/osal/common/UdpTcPollingTask.h"
+#include "fsfw/osal/common/tcpipHelpers.h"
+
+#include "fsfw/platform.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 #ifdef PLATFORM_WIN
 #include <winsock2.h>

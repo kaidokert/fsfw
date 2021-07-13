@@ -1,7 +1,7 @@
-#include "PosixThread.h"
-#include "unixUtility.h"
+#include "fsfw/osal/linux/PosixThread.h"
+#include "fsfw/osal/linux/unixUtility.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 #include <errno.h>

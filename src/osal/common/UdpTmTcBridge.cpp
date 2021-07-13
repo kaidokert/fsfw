@@ -1,9 +1,9 @@
-#include "UdpTmTcBridge.h"
-#include "tcpipHelpers.h"
+#include "fsfw/osal/common/UdpTmTcBridge.h"
+#include "fsfw/osal/common/tcpipHelpers.h"
 
-#include "../../platform.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../ipc/MutexGuard.h"
+#include "fsfw/platform.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/ipc/MutexGuard.h"
 
 #ifdef PLATFORM_WIN
 #include <ws2tcpip.h>

@@ -1,15 +1,15 @@
-#include "TcpTmTcServer.h"
-#include "TcpTmTcBridge.h"
-#include "tcpipHelpers.h"
+#include "fsfw/osal/common/TcpTmTcServer.h"
+#include "fsfw/osal/common/TcpTmTcBridge.h"
+#include "fsfw/osal/common/tcpipHelpers.h"
 
-#include "../../platform.h"
-#include "../../container/SharedRingBuffer.h"
-#include "../../ipc/MessageQueueSenderIF.h"
-#include "../../ipc/MutexGuard.h"
-#include "../../objectmanager/ObjectManager.h"
+#include "fsfw/platform.h"
+#include "fsfw/container/SharedRingBuffer.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
+#include "fsfw/ipc/MutexGuard.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../tmtcservices/TmTcMessage.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
 
 #ifdef PLATFORM_WIN
 #include <winsock2.h>

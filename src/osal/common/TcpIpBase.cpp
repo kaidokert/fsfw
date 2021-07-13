@@ -1,5 +1,5 @@
-#include "TcpIpBase.h"
-#include "../../platform.h"
+#include "fsfw/osal/common/TcpIpBase.h"
+#include "fsfw/platform.h"
 
 #ifdef PLATFORM_UNIX
 #include <errno.h>

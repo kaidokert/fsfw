@@ -1,6 +1,6 @@
-#include "FSFWConfig.h"
-#include "unixUtility.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/FSFW.h"
+#include "fsfw/osal/linux/unixUtility.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 #include <errno.h>
