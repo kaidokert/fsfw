@@ -25,6 +25,12 @@ elseif(${CMAKE_CXX_STANDARD} LESS 11)
     message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
 endif()
 
+# Backwards comptability
+if(OS_FSFW)
+    message(WARNING "Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
+    set(FSFW_OSAL OS_FSFW)
+endif()
+
 if(NOT FSFW_OSAL)
 	message(STATUS "No OS for FSFW via FSFW_OSAL set. Assuming host OS")
 	# Assume host OS and autodetermine from OS_FSFW
