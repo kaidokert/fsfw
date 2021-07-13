@@ -43,12 +43,12 @@ endif()
 
 set(FSFW_OSAL_DEFINITION FSFW_HOST)
 
-if(${OS_FSFW} STREQUAL host)
+if(OS_FSFW MATCHES host)
 	set(OS_FSFW_NAME "Host")
-elseif(${OS_FSFW} STREQUAL linux)
+elseif(OS_FSFW MATCHES linux)
 	set(OS_FSFW_NAME "Linux")
 	set(FSFW_OSAL_DEFINITION FSFW_LINUX)
-elseif(${OS_FSFW} STREQUAL  freertos)
+elseif(OS_FSFW MATCHES freertos)
 	set(OS_FSFW_NAME "FreeRTOS")
 	set(FSFW_OSAL_DEFINITION FSFW_FREERTOS)
 	target_link_libraries(${LIB_FSFW_NAME} PRIVATE

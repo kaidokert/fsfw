@@ -6,10 +6,11 @@
 #include "../../internalError/InternalErrorReporterIF.h"
 #include "../../ipc/MessageQueueIF.h"
 #include "../../ipc/MessageQueueMessageIF.h"
+#include "../../ipc/MessageQueueMessage.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
-#include <fsfw/ipc/MessageQueueMessage.h>
+#include "FreeRTOS.h"
+#include "queue.h"
+
 
 /**
  * @brief		This class manages sending and receiving of

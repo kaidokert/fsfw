@@ -5,8 +5,8 @@
 #include "../../ipc/messageQueueDefinitions.h"
 #include "../../ipc/MessageQueueIF.h"
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
+#include "FreeRTOS.h"
+#include "queue.h"
 
 #include <map>
 

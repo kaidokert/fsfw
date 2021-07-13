@@ -1,8 +1,8 @@
 #ifndef FSFW_OSAL_FREERTOS_FREERTOSTASKIF_H_
 #define FSFW_OSAL_FREERTOS_FREERTOSTASKIF_H_
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 class FreeRTOSTaskIF {
 public:

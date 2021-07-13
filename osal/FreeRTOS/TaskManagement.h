@@ -1,10 +1,10 @@
-#ifndef FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
-#define FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_
+#ifndef FSFW_OSAL_FREERTOS_TASKMANAGEMENT_H_
+#define FSFW_OSAL_FREERTOS_TASKMANAGEMENT_H_
 
 #include "../../returnvalues/HasReturnvaluesIF.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include <cstdint>
 

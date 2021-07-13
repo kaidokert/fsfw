@@ -4,8 +4,8 @@
 #include "CountingSemaphUsingTask.h"
 #include "../../tasks/SemaphoreIF.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 #if (tskKERNEL_VERSION_MAJOR == 8 && tskKERNEL_VERSION_MINOR > 2) || \
     tskKERNEL_VERSION_MAJOR > 8
