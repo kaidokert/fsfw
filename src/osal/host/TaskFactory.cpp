@@ -1,10 +1,11 @@
-#include "taskHelpers.h"
-#include "../../tasks/TaskFactory.h"
-#include "../../osal/host/FixedTimeslotTask.h"
-#include "../../osal/host/PeriodicTask.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
-#include "../../tasks/PeriodicTaskIF.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/osal/host/FixedTimeslotTask.h"
+#include "fsfw/osal/host/PeriodicTask.h"
+#include "fsfw/osal/host/taskHelpers.h"
+
+#include "fsfw/tasks/TaskFactory.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <chrono>
 

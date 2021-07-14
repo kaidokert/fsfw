@@ -1,5 +1,5 @@
-#include "InitTask.h"
-#include "RtemsBasic.h"
+#include "fsfw/osal/rtems/InitTask.h"
+#include "fsfw/osal/rtems/RtemsBasic.h"
 
 
 

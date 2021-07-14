@@ -1,10 +1,9 @@
+#include "fsfw/osal/host/MessageQueue.h"
 
-#include "MessageQueue.h"
-
-#include "../../ipc/MessageQueueSenderIF.h"
-#include "../../ipc/MessageQueueMessageIF.h"
-#include "../../ipc/QueueFactory.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
+#include "fsfw/ipc/MessageQueueMessageIF.h"
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <cstring>
 

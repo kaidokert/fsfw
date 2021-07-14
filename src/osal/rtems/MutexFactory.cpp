@@ -1,6 +1,6 @@
-#include "Mutex.h"
+#include "fsfw/osal/rtems/Mutex.h"
 
-#include "../../ipc/MutexFactory.h"
+#include "fsfw/ipc/MutexFactory.h"
 
 
 MutexFactory* MutexFactory::factoryInstance = new MutexFactory();

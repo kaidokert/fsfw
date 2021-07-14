@@ -1,6 +1,6 @@
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../timemanager/Clock.h"
-#include "../../platform.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/timemanager/Clock.h"
+#include "fsfw/platform.h"
 
 #include <chrono>
 

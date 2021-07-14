@@ -1,8 +1,8 @@
-#include "../common/tcpipHelpers.h"
-#include <FSFWConfig.h>
+#include "fsfw/FSFW.h"
+#include "fsfw/osal/common/tcpipHelpers.h"
 
-#include "../../tasks/TaskFactory.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/tasks/TaskFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 
 #include <winsock2.h>

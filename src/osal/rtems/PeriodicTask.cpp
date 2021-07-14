@@ -1,8 +1,8 @@
-#include "PeriodicTask.h"
+#include "fsfw/osal/rtems/PeriodicTask.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../objectmanager/ObjectManager.h"
-#include "../../tasks/ExecutableObjectIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
 
 PeriodicTask::PeriodicTask(const char *name, rtems_task_priority setPriority,
         size_t setStack, rtems_interval setPeriod, void (*setDeadlineMissedFunc)()) :

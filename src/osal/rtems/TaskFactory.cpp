@@ -1,10 +1,10 @@
-#include "FixedTimeslotTask.h"
-#include "PeriodicTask.h"
-#include "InitTask.h"
-#include "RtemsBasic.h"
+#include "fsfw/osal/rtems/FixedTimeslotTask.h"
+#include "fsfw/osal/rtems/PeriodicTask.h"
+#include "fsfw/osal/rtems/InitTask.h"
+#include "fsfw/osal/rtems/RtemsBasic.h"
 
-#include "../../tasks/TaskFactory.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/TaskFactory.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();

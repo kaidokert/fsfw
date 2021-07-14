@@ -1,10 +1,10 @@
-#include "MessageQueue.h"
-#include "QueueMapManager.h"
+#include "fsfw/osal/host/MessageQueue.h"
+#include "fsfw/osal/host/QueueMapManager.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../objectmanager/ObjectManager.h"
-#include "../../ipc/MutexFactory.h"
-#include "../../ipc/MutexGuard.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/ipc/MutexFactory.h"
+#include "fsfw/ipc/MutexGuard.h"
 
 #include <cstring>
 

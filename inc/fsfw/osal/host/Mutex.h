@@ -1,7 +1,7 @@
 #ifndef FSFW_OSAL_HOSTED_MUTEX_H_
 #define FSFW_OSAL_HOSTED_MUTEX_H_
 
-#include "../../ipc/MutexIF.h"
+#include "fsfw/ipc/MutexIF.h"
 
 #include <mutex>
 

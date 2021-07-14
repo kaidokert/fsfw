@@ -1,11 +1,11 @@
-#include "FixedTimeslotTask.h"
-#include "RtemsBasic.h"
+#include "fsfw/osal/rtems/FixedTimeslotTask.h"
+#include "fsfw/osal/rtems/RtemsBasic.h"
 
-#include "../../tasks/FixedSequenceSlot.h"
-#include "../../objectmanager/SystemObjectIF.h"
-#include "../../objectmanager/ObjectManager.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/tasks/FixedSequenceSlot.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <rtems/bspIo.h>
 #include <rtems/io.h>

@@ -1,7 +1,8 @@
-#include "../../ipc/QueueFactory.h"
-#include "../../ipc/MessageQueueSenderIF.h"
-#include "MessageQueue.h"
-#include "RtemsBasic.h"
+#include "fsfw/osal/rtems/MessageQueue.h"
+#include "fsfw/osal/rtems/RtemsBasic.h"
+
+#include "fsfw/ipc/QueueFactory.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;
 

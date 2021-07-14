@@ -1,5 +1,5 @@
-#include "../../ipc/MutexFactory.h"
-#include "../../osal/host/Mutex.h"
+#include "fsfw/osal/host/Mutex.h"
+#include "fsfw/ipc/MutexFactory.h"
 
 //TODO: Different variant than the lazy loading in QueueFactory.
 //What's better and why? -> one is on heap the other on bss/data

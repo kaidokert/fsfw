@@ -1,7 +1,7 @@
-#include "RtemsBasic.h"
+#include "fsfw/osal/rtems/RtemsBasic.h"
 
-#include "../../timemanager/Clock.h"
-#include "../../ipc/MutexGuard.h"
+#include "fsfw/timemanager/Clock.h"
+#include "fsfw/ipc/MutexGuard.h"
 
 #include <rtems/score/todimpl.h>
 #include <rtems/rtems/clockimpl.h>

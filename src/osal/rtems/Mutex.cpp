@@ -1,5 +1,5 @@
-#include "Mutex.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/osal/rtems/Mutex.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 uint8_t Mutex::count = 0;
 

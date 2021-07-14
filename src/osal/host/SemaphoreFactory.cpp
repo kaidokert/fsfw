@@ -1,5 +1,5 @@
-#include "../../tasks/SemaphoreFactory.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/tasks/SemaphoreFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
 

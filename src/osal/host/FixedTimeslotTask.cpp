@@ -1,20 +1,20 @@
-#include "taskHelpers.h"
+#include "fsfw/osal/host/taskHelpers.h"
+#include "fsfw/osal/host/FixedTimeslotTask.h"
+#include "fsfw/osal/host/FixedTimeslotTask.h"
 
-#include "../../platform.h"
-#include "../../osal/host/FixedTimeslotTask.h"
-#include "../../ipc/MutexFactory.h"
-#include "../../osal/host/Mutex.h"
-#include "../../osal/host/FixedTimeslotTask.h"
-#include "../../objectmanager/ObjectManager.h"
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../tasks/ExecutableObjectIF.h"
+#include "fsfw/platform.h"
+#include "fsfw/ipc/MutexFactory.h"
+#include "fsfw/osal/host/Mutex.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
 
 #include <thread>
 #include <chrono>
 
 #if defined(PLATFORM_WIN)
 #include <windows.h>
-#include "../windows/winTaskHelpers.h"
+#include "fsfw/osal/windows/winTaskHelpers.h"
 #elif defined(PLATFORM_UNIX)
 #include <pthread.h>
 #endif

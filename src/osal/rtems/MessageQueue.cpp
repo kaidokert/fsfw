@@ -1,8 +1,8 @@
-#include "MessageQueue.h"
-#include "RtemsBasic.h"
+#include "fsfw/osal/rtems/MessageQueue.h"
+#include "fsfw/osal/rtems/RtemsBasic.h"
 
-#include "../../serviceinterface/ServiceInterface.h"
-#include "../../objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 
 #include <cstring>
 

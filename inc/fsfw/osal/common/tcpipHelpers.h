@@ -1,7 +1,7 @@
 #ifndef FSFW_OSAL_WINDOWS_TCPIPHELPERS_H_
 #define FSFW_OSAL_WINDOWS_TCPIPHELPERS_H_
 
-#include "../../timemanager/clockDefinitions.h"
+#include "fsfw/timemanager/clockDefinitions.h"
 #include "tcpipCommon.h"
 
 namespace tcpip {

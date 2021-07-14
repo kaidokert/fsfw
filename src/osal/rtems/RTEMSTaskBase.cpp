@@ -1,5 +1,5 @@
-#include "RTEMSTaskBase.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/osal/rtems/RTEMSTaskBase.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = RTEMS_MINIMUM_STACK_SIZE;
 
