@@ -20,7 +20,7 @@ ReturnValue_t QueueMapManager::addMessageQueue(QueueHandle_t queue, MessageQueue
     uint32_t currentId = queueCounter++;
     if(currentId == MessageQueueIF::NO_QUEUE) {
         // Skip the NO_QUEUE value
-        queueCounter++;
+        currentId++;
     }
     auto returnPair = queueMap.emplace(currentId, queue);
     if(not returnPair.second) {
