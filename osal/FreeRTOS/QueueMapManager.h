@@ -39,7 +39,8 @@ private:
     QueueMapManager();
     ~QueueMapManager();
 
-    uint32_t queueCounter = 0;
+    // Start at 1 because 0 might be the NO_QUEUE value
+    uint32_t queueCounter = 1;
     MutexIF* mapLock;
     QueueMap queueMap;
     static QueueMapManager* mqManagerInstance;
