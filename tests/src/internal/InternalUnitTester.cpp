@@ -1,11 +1,11 @@
-#include "InternalUnitTester.h"
-#include "UnittDefinitions.h"
+#include "fsfw/tests/internal/InternalUnitTester.h"
+#include "fsfw/tests/internal/UnittDefinitions.h"
 
-#include "osal/IntTestMq.h"
-#include "osal/IntTestSemaphore.h"
-#include "osal/IntTestMutex.h"
-#include "serialize/IntTestSerialization.h"
-#include "globalfunctions/TestArrayPrinter.h"
+#include "fsfw/tests/internal/osal/IntTestMq.h"
+#include "fsfw/tests/internal/osal/IntTestSemaphore.h"
+#include "fsfw/tests/internal/osal/IntTestMutex.h"
+#include "fsfw/tests/internal/serialize/IntTestSerialization.h"
+#include "fsfw/tests/internal/globalfunctions/TestArrayPrinter.h"
 
 #include <cstdlib>
 
@@ -13,7 +13,8 @@ InternalUnitTester::InternalUnitTester() {}
 
 InternalUnitTester::~InternalUnitTester() {}
 
-ReturnValue_t InternalUnitTester::performTests(struct InternalUnitTester::TestConfig& testConfig) {
+ReturnValue_t InternalUnitTester::performTests(
+        const struct InternalUnitTester::TestConfig& testConfig) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 	sif::info << "Running internal unit tests.." << std::endl;
 #else

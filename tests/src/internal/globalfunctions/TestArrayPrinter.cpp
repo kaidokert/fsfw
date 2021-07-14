@@ -1,4 +1,4 @@
-#include "TestArrayPrinter.h"
+#include "fsfw/tests/internal/globalfunctions/TestArrayPrinter.h"
 
 void arrayprinter::testArrayPrinter() {
     {

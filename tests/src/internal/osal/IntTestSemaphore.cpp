@@ -1,8 +1,8 @@
-#include "IntTestSemaphore.h"
-#include <fsfw/unittest/internal/UnittDefinitions.h>
+#include "fsfw/tests/internal/osal/IntTestSemaphore.h"
+#include "fsfw/tests/internal/UnittDefinitions.h"
 
 #include <fsfw/tasks/SemaphoreFactory.h>
-#include <fsfw/serviceinterface/ServiceInterfaceStream.h>
+#include <fsfw/serviceinterface/ServiceInterface.h>
 #include <fsfw/timemanager/Stopwatch.h>
 
 #include <cstdlib>

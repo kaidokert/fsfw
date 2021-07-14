@@ -1,7 +1,7 @@
-#include "IntTestMutex.h"
+#include "fsfw/tests/internal/osal/IntTestMutex.h"
+#include "fsfw/tests/internal/UnittDefinitions.h"
 
 #include <fsfw/ipc/MutexFactory.h>
-#include <fsfw/unittest/internal/UnittDefinitions.h>
 
 #if defined(WIN32) || defined(UNIX)
 #include <fsfw/osal/host/Mutex.h>

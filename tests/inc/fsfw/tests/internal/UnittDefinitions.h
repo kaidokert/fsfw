@@ -1,8 +1,9 @@
 #ifndef UNITTEST_INTERNAL_UNITTDEFINITIONS_H_
 #define UNITTEST_INTERNAL_UNITTDEFINITIONS_H_
 
-#include "../../returnvalues/HasReturnvaluesIF.h"
-#include "../../serviceinterface/ServiceInterface.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+
 #include <cstdint>
 #include <cstddef>
 #include <string>

@@ -1,4 +1,4 @@
-target_sources(${TARGET_NAME} PRIVATE
+target_sources(${LIB_FSFW_NAME} PRIVATE
 	IntTestMq.cpp
 	IntTestMutex.cpp
 	IntTestSemaphore.cpp

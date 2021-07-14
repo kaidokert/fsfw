@@ -2,7 +2,7 @@
 #define FRAMEWORK_TEST_UNITTESTCLASS_H_
 
 #include "UnittDefinitions.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 
 /**
@@ -17,7 +17,7 @@
 class InternalUnitTester: public HasReturnvaluesIF {
 public:
     struct TestConfig {
-        bool testArrayPrinter;
+        bool testArrayPrinter = false;
     };
 
 	InternalUnitTester();
@@ -27,7 +27,7 @@ public:
 	 * Some function which calls all other tests
 	 * @return
 	 */
-	virtual ReturnValue_t performTests(struct InternalUnitTester::TestConfig& testConfig);
+	virtual ReturnValue_t performTests(const struct InternalUnitTester::TestConfig& testConfig);
 };
 
 

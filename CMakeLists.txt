@@ -10,6 +10,7 @@ endif()
 
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
+option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
 option(FSFW_USE_RMAP "Compile with RMAP" ON)
 option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
 
@@ -48,22 +49,22 @@ if(NOT FSFW_OSAL)
 
 endif()
 
-set(FSFW_OSAL_DEFINITION FSFW_HOST)
+set(FSFW_OSAL_DEFINITION FSFW_OSAL_HOST)
 
 if(FSFW_OSAL MATCHES host)
 	set(OS_FSFW_NAME "Host")
 elseif(FSFW_OSAL MATCHES linux)
 	set(OS_FSFW_NAME "Linux")
-	set(FSFW_OSAL_DEFINITION FSFW_LINUX)
+	set(FSFW_OSAL_DEFINITION FSFW_OSAL_LINUX)
 elseif(FSFW_OSAL MATCHES freertos)
 	set(OS_FSFW_NAME "FreeRTOS")
-	set(FSFW_OSAL_DEFINITION FSFW_FREERTOS)
+	set(FSFW_OSAL_DEFINITION FSFW_OSAL_FREERTOS)
 	target_link_libraries(${LIB_FSFW_NAME} PRIVATE
         ${LIB_OS_NAME}
 	)
 elseif(FSFW_OSAL STREQUAL rtems)
 	set(OS_FSFW_NAME "RTEMS")
-    set(FSFW_OSAL_DEFINITION FSFW_RTEMS)
+    set(FSFW_OSAL_DEFINITION FSFW_OSAL_RTEMS)
 else()
 	message(WARNING 
 		"Invalid operating system for FSFW specified! Setting to host.."
@@ -83,6 +84,7 @@ target_compile_definitions(${LIB_FSFW_NAME} INTERFACE
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
 add_subdirectory(src)
+add_subdirectory(tests)
 
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
