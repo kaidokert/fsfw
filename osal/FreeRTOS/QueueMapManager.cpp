@@ -18,6 +18,10 @@ QueueMapManager* QueueMapManager::instance() {
 ReturnValue_t QueueMapManager::addMessageQueue(QueueHandle_t queue, MessageQueueId_t* id) {
     MutexGuard lock(mapLock);
     uint32_t currentId = queueCounter++;
+    if(currentId == MessageQueueIF::NO_QUEUE) {
+        // Skip the NO_QUEUE value
+        queueCounter++;
+    }
     auto returnPair = queueMap.emplace(currentId, queue);
     if(not returnPair.second) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
