@@ -13,6 +13,7 @@ option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
 option(FSFW_USE_RMAP "Compile with RMAP" ON)
 option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
+option(FSFW_ADD_SPG4_PROPAGATOR "Add SPG4 propagator code" ON)
 
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
@@ -85,6 +86,7 @@ message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(contrib)
 
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
