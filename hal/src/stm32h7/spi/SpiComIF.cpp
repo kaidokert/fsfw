@@ -1,12 +1,12 @@
-#include "SpiComIF.h"
-#include "SpiCookie.h"
+#include "fsfw/hal/stm32h7/spi/SpiComIF.h"
+#include "fsfw/hal/stm32h7/spi/SpiCookie.h"
 
 #include "fsfw/tasks/SemaphoreFactory.h"
-#include "fsfw/osal/FreeRTOS/TaskManagement.h"
-#include "fsfw_hal/stm32h7/spi/spiCore.h"
-#include "fsfw_hal/stm32h7/spi/spiInterrupts.h"
-#include "fsfw_hal/stm32h7/spi/mspInit.h"
-#include "fsfw_hal/stm32h7/gpio/gpio.h"
+#include "fsfw/osal/freertos/TaskManagement.h"
+#include "fsfw/hal/stm32h7/spi/spiCore.h"
+#include "fsfw/hal/stm32h7/spi/spiInterrupts.h"
+#include "fsfw/hal/stm32h7/spi/mspInit.h"
+#include "fsfw/hal/stm32h7/gpio/gpio.h"
 
 #include "stm32h7xx_hal_gpio.h"
 

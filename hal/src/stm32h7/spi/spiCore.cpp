@@ -1,5 +1,6 @@
-#include "spiDefinitions.h"
-#include "spiCore.h"
+#include "fsfw/hal/stm32h7/spi/spiCore.h"
+#include "fsfw/hal/stm32h7/spi/spiDefinitions.h"
+
 #include <cstdio>
 
 SPI_HandleTypeDef* spiHandle = nullptr;

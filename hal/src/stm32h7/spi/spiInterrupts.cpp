@@ -1,5 +1,5 @@
-#include "spiInterrupts.h"
-#include "spiCore.h"
+#include "fsfw/hal/stm32h7/spi/spiInterrupts.h"
+#include "fsfw/hal/stm32h7/spi/spiCore.h"
 
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_dma.h"
