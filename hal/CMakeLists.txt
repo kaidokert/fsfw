@@ -5,9 +5,7 @@ find_library(LIB_FSFW_NAME fsfw REQUIRED)
 
 option(FSFW_HAL_ADD_LINUX "Add the Linux HAL to the sources. Required gpiod library" OFF)
 option(FSFW_HAL_ADD_RASPBERRY_PI "Add Raspberry Pi specific code to the sources" OFF)
-
 option(FSFW_HAL_ADD_STM32H7 "Add the STM32H7 HAL to the sources" OFF)
-
 option(FSFW_HAL_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 
 set(LIB_FSFW_HAL_NAME fsfw_hal)
