@@ -1,4 +1,4 @@
-#include "UartComIF.h"
+#include "fsfw/hal/linux/uart/UartComIF.h"
 #include "OBSWConfig.h"
 
 #include "fsfw/serviceinterface/ServiceInterface.h"

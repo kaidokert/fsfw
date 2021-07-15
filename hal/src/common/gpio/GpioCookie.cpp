@@ -1,4 +1,4 @@
-#include "GpioCookie.h"
+#include "fsfw/hal/common/gpio/GpioCookie.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 GpioCookie::GpioCookie() {

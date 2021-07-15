@@ -1,6 +1,6 @@
-#include "GyroL3GD20Handler.h"
+#include "fsfw/hal/devicehandlers/GyroL3GD20Handler.h"
 
-#include <fsfw/datapool/PoolReadGuard.h>
+#include "fsfw/datapool/PoolReadGuard.h"
 
 GyroHandlerL3GD20H::GyroHandlerL3GD20H(object_id_t objectId, object_id_t deviceCommunication,
         CookieIF *comCookie):
