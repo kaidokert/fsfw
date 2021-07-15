@@ -1,6 +1,7 @@
-#include <fsfw_hal/stm32h7/dma.h>
-#include <stdint.h>
-#include <stddef.h>
+#include <fsfw/hal/stm32h7/dma.h>
+
+#include <cstdint>
+#include <cstddef>
 
 user_handler_t DMA_1_USER_HANDLERS[8];
 user_args_t DMA_1_USER_ARGS[8];
