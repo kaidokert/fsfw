@@ -2,7 +2,7 @@ if(FSFW_HAL_ADD_RASPBERRY_PI)
     add_subdirectory(rpi)
 endif()
 
-target_sources(${LIB_FSFW_HAL_NAME} PRIVATE
+target_sources(${LIB_FSFW_NAME} PRIVATE
 	UnixFileGuard.cpp
 	utility.cpp
 )

@@ -1,2 +1,2 @@
-target_sources(${LIB_FSFW_HAL_NAME} PRIVATE
+target_sources(${LIB_FSFW_NAME} PRIVATE
 )

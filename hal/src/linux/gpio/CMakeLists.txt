@@ -1,4 +1,4 @@
-target_sources(${LIB_FSFW_HAL_NAME} PRIVATE
+target_sources(${LIB_FSFW_NAME} PRIVATE
     LinuxLibgpioIF.cpp
 )
 
@@ -7,6 +7,6 @@ target_sources(${LIB_FSFW_HAL_NAME} PRIVATE
 # to install the package before syncing the sysroot to your host computer.
 find_library(LIB_GPIO gpiod REQUIRED)
 
-target_link_libraries(${LIB_FSFW_HAL_NAME} PRIVATE
+target_link_libraries(${LIB_FSFW_NAME} PRIVATE
     ${LIB_GPIO}
 )

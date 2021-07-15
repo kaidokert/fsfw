@@ -1,4 +1,4 @@
-#include "SpiCookie.h"
+#include "fsfw/hal/linux/spi/SpiCookie.h"
 
 SpiCookie::SpiCookie(address_t spiAddress, gpioId_t chipSelect, std::string spiDev,
         const size_t maxSize, spi::SpiModes spiMode, uint32_t spiSpeed):

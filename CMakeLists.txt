@@ -86,6 +86,7 @@ message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(hal)
 add_subdirectory(contrib)
 
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.

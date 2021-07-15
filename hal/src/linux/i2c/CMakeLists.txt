@@ -1,4 +1,4 @@
-target_sources(${LIB_FSFW_HAL_NAME} PUBLIC
+target_sources(${LIB_FSFW_NAME} PUBLIC
     I2cComIF.cpp
     I2cCookie.cpp
 )
