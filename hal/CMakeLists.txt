@@ -8,13 +8,8 @@ option(FSFW_HAL_ADD_RASPBERRY_PI "Add Raspberry Pi specific code to the sources"
 option(FSFW_HAL_ADD_STM32H7 "Add the STM32H7 HAL to the sources" OFF)
 option(FSFW_HAL_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 
-set(LIB_FSFW_HAL_NAME fsfw_hal)
 set(LINUX_HAL_PATH_NAME linux)
 set(STM32H7_PATH_NAME stm32h7)
-
-if(NOT LIB_FSFW_NAME)
-    message(ERROR "LIB_FSFW_NAME needs to be set as a linkable target")
-endif()
 
 add_subdirectory(src)
 add_subdirectory(inc)
@@ -35,7 +30,6 @@ foreach(INCLUDE_PATH ${FSFW_HAL_ADDITIONAL_INC_PATHS})
 endforeach()
 
 target_include_directories(${LIB_FSFW_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
     ${FSFW_HAL_ADD_INC_PATHS_ABS}
 )
 
