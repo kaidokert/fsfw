@@ -1,13 +1,14 @@
-#include <fsfw_hal/stm32h7/dma.h>
-#include "mspInit.h"
-#include "spiCore.h"
-#include "spiInterrupts.h"
+#include "fsfw/hal/stm32h7/dma.h"
+#include "fsfw/hal/stm32h7/spi/mspInit.h"
+#include "fsfw/hal/stm32h7/spi/spiCore.h"
+#include "fsfw/hal/stm32h7/spi/spiInterrupts.h"
+
 #include "stm32h743xx.h"
 #include "stm32h7xx_hal_spi.h"
 #include "stm32h7xx_hal_dma.h"
 #include "stm32h7xx_hal_def.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 spi::msp_func_t mspInitFunc = nullptr;
 spi::MspCfgBase* mspInitArgs = nullptr;
