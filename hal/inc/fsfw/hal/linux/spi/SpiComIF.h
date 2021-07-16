@@ -3,10 +3,10 @@
 
 #include "spiDefinitions.h"
 #include "returnvalues/classIds.h"
-#include "../../common/gpio/GpioIF.h"
+#include "fsfw/hal/common/gpio/GpioIF.h"
 
-#include <fsfw/devicehandlers/DeviceCommunicationIF.h>
-#include <fsfw/objectmanager/SystemObject.h>
+#include "fsfw/devicehandlers/DeviceCommunicationIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
 
 #include <vector>
 #include <unordered_map>

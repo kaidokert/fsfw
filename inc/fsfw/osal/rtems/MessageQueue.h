@@ -1,9 +1,9 @@
 #ifndef FSFW_OSAL_RTEMS_MESSAGEQUEUE_H_
 #define FSFW_OSAL_RTEMS_MESSAGEQUEUE_H_
 
-#include "../../internalError/InternalErrorReporterIF.h"
-#include "../../ipc/MessageQueueIF.h"
-#include "../../ipc/MessageQueueMessage.h"
+#include "fsfw/internalerror/InternalErrorReporterIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/ipc/MessageQueueMessage.h"
 #include "RtemsBasic.h"
 
 /**

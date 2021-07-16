@@ -2,11 +2,20 @@
 #include "fsfw/hal/stm32h7/spi/SpiCookie.h"
 
 #include "fsfw/tasks/SemaphoreFactory.h"
-#include "fsfw/osal/freertos/TaskManagement.h"
 #include "fsfw/hal/stm32h7/spi/spiCore.h"
 #include "fsfw/hal/stm32h7/spi/spiInterrupts.h"
 #include "fsfw/hal/stm32h7/spi/mspInit.h"
 #include "fsfw/hal/stm32h7/gpio/gpio.h"
+
+// FreeRTOS required special Semaphore handling from an ISR. Therefore, we use the concrete
+// instance here, because RTEMS and FreeRTOS are the only relevant OSALs currently
+// and it is not trivial to add a releaseFromISR to the SemaphoreIF
+#if defined FSFW_OSAL_RTEMS
+#include "fsfw/osal/rtems/BinarySemaphore.h"
+#elif defined FSFW_OSAL_FREERTOS
+#include "fsfw/osal/freertos/TaskManagement.h"
+#include "fsfw/osal/freertos/BinarySemaphore.h"
+#endif
 
 #include "stm32h7xx_hal_gpio.h"
 
@@ -421,10 +430,14 @@ void SpiComIF::genericIrqHandler(void *irqArgsVoid, spi::TransferStates targetSt
     HAL_GPIO_WritePin(spiCookie->getChipSelectGpioPort(), spiCookie->getChipSelectGpioPin(),
             GPIO_PIN_SET);
 
+#if defined FSFW_OSAL_FREERTOS
     // Release the task semaphore
     BaseType_t taskWoken = pdFALSE;
     ReturnValue_t result = BinarySemaphore::releaseFromISR(comIF->spiSemaphore->getSemaphore(),
             &taskWoken);
+#elif defined FSFW_OSAL_RTEMS
+    ReturnValue_t result = comIF->spiSemaphore->release();
+#endif
     if(result != HasReturnvaluesIF::RETURN_OK) {
         // Configuration error
         printf("SpiComIF::genericIrqHandler: Failure releasing Semaphore!\n");
@@ -436,11 +449,13 @@ void SpiComIF::genericIrqHandler(void *irqArgsVoid, spi::TransferStates targetSt
         SCB_InvalidateDCache_by_Addr ((uint32_t *) comIF->currentRecvPtr,
                 comIF->currentRecvBuffSize);
     }
+#if defined FSFW_OSAL_FREERTOS
     /* Request a context switch if the SPI ComIF task was woken up and has a higher priority
     than the currently running task */
     if(taskWoken == pdTRUE) {
         TaskManagement::requestContextSwitch(CallContext::ISR);
     }
+#endif
 }
 
 void SpiComIF::printCfgError(const char *const type) {

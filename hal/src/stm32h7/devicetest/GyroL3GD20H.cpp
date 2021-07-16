@@ -9,7 +9,6 @@
 #include "fsfw/tasks/TaskFactory.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-#include "stm32h7xx_nucleo.h"
 #include "stm32h7xx_hal_spi.h"
 #include "stm32h7xx_hal_rcc.h"
 

@@ -5,7 +5,6 @@
 #include "fsfw/devicehandlers/DeviceCommunicationIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
 
-#include "fsfw/osal/freertos/BinarySemaphore.h"
 #include "fsfw/hal/stm32h7/spi/spiDefinitions.h"
 #include "stm32h7xx_hal_spi.h"
 #include "stm32h743xx.h"
@@ -14,6 +13,7 @@
 #include <map>
 
 class SpiCookie;
+class BinarySemaphore;
 
 /**
  * @brief   This communication interface allows using generic device handlers with using

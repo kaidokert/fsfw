@@ -13,6 +13,7 @@ target_sources(${LIB_FSFW_NAME}
 		RtemsBasic.cpp
 		RTEMSTaskBase.cpp
 		TaskFactory.cpp
+		BinarySemaphore.cpp
 )
 
 
