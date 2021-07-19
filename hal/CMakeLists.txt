@@ -12,7 +12,6 @@ set(LINUX_HAL_PATH_NAME linux)
 set(STM32H7_PATH_NAME stm32h7)
 
 add_subdirectory(src)
-add_subdirectory(inc)
 
 foreach(INCLUDE_PATH ${FSFW_HAL_ADDITIONAL_INC_PATHS})
     if(IS_ABSOLUTE ${INCLUDE_PATH})

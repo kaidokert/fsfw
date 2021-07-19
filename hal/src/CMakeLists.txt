@@ -1,10 +1,9 @@
-add_subdirectory(devicehandlers)
-add_subdirectory(common)
+target_include_directories(${LIB_FSFW_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-if(FSFW_HAL_ADD_LINUX)
-    add_subdirectory(${LINUX_HAL_PATH_NAME})
-endif()
+target_include_directories(${LIB_FSFW_NAME} INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-if(FSFW_HAL_ADD_STM32H7)
-    add_subdirectory(${STM32H7_PATH_NAME})
-endif()
+add_subdirectory(fsfw)

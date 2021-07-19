@@ -1,7 +1,9 @@
-if(FSFW_ADD_INTERNAL_TESTS)
-    add_subdirectory(internal)
-endif()
+target_include_directories(${LIB_FSFW_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-if(FSFW_ADD_UNITTESTS)
-    add_subdirectory(tests)
-endif()
+target_include_directories(${LIB_FSFW_NAME} INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_subdirectory(fsfw)

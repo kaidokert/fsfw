@@ -1,6 +1,0 @@
-add_subdirectory(coordinates)
-add_subdirectory(datalinklayer)
-add_subdirectory(monitoring)
-add_subdirectory(pus)
-add_subdirectory(rmap)
-add_subdirectory(tmstorage)
