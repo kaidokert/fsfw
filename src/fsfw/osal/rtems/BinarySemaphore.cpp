@@ -1,4 +1,4 @@
-#include "fsfw/osal/rtems/BinarySemaphore.h"
+#include "BinarySemaphore.h"
 
 #include <rtems/rtems/sem.h>
 
@@ -9,7 +9,6 @@ BinarySemaphore::~BinarySemaphore() {
 
 }
 
-// Interface implementation
 ReturnValue_t BinarySemaphore::acquire(TimeoutType timeoutType, uint32_t timeoutMs) {
     return HasReturnvaluesIF::RETURN_OK;
 }
