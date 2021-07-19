@@ -1,4 +1,9 @@
-#include <fsfw_hal/linux/utility.h>
+#include "fsfw/FSFW.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/hal/linux/utility.h"
+
+#include <cerrno>
+#include <cstring>
 
 void utility::handleIoctlError(const char* const customPrintout) {
 #if FSFW_VERBOSE_LEVEL >= 1

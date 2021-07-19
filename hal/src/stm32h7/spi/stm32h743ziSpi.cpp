@@ -1,6 +1,7 @@
-#include "stm32h743ziSpi.h"
-#include "spiCore.h"
-#include "spiInterrupts.h"
+#include "fsfw/hal/stm32h7/spi/stm32h743ziSpi.h"
+#include "fsfw/hal/stm32h7/spi/spiCore.h"
+#include "fsfw/hal/stm32h7/spi/spiInterrupts.h"
+
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_rcc.h"
 

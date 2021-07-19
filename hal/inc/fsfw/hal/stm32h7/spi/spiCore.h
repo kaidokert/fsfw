@@ -1,10 +1,11 @@
 #ifndef FSFW_HAL_STM32H7_SPI_SPICORE_H_
 #define FSFW_HAL_STM32H7_SPI_SPICORE_H_
 
-#include <fsfw_hal/stm32h7/dma.h>
+#include "fsfw/hal/stm32h7/dma.h"
+#include "fsfw/hal/stm32h7/spi/spiDefinitions.h"
+
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_dma.h"
-
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-target_sources(${TARGET_NAME} PUBLIC
+target_sources(${LIB_FSFW_NAME} PUBLIC
 	UartComIF.cpp
 	UartCookie.cpp
 )

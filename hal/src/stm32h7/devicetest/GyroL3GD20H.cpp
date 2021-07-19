@@ -1,10 +1,10 @@
-#include "GyroL3GD20H.h"
+#include "fsfw/hal/stm32h7/devicetest/GyroL3GD20H.h"
 
-#include "../spi/mspInit.h"
-#include "../spi/spiDefinitions.h"
-#include "../spi/spiCore.h"
-#include "../spi/spiInterrupts.h"
-#include "../spi/stm32h743ziSpi.h"
+#include "fsfw/hal/stm32h7/spi/mspInit.h"
+#include "fsfw/hal/stm32h7/spi/spiDefinitions.h"
+#include "fsfw/hal/stm32h7/spi/spiCore.h"
+#include "fsfw/hal/stm32h7/spi/spiInterrupts.h"
+#include "fsfw/hal/stm32h7/spi/stm32h743ziSpi.h"
 
 #include "fsfw/tasks/TaskFactory.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"

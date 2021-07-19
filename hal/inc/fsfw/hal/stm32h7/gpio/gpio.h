@@ -9,6 +9,4 @@ void initializeGpioClock(GPIO_TypeDef* gpioPort);
 
 }
 
-
-
 #endif /* FSFW_HAL_STM32H7_GPIO_GPIO_H_ */
