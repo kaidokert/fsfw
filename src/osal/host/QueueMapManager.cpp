@@ -24,7 +24,13 @@ QueueMapManager* QueueMapManager::instance() {
 ReturnValue_t QueueMapManager::addMessageQueue(
         MessageQueueIF* queueToInsert, MessageQueueId_t* id) {
     MutexGuard lock(mapLock);
-    uint32_t currentId = queueCounter++;
+    uint32_t currentId = queueCounter;
+    queueCounter++;
+    if(currentId == MessageQueueIF::NO_QUEUE) {
+        // Skip the NO_QUEUE value
+        currentId = queueCounter;
+        queueCounter++;
+    }
     auto returnPair = queueMap.emplace(currentId, queueToInsert);
     if(not returnPair.second) {
         /* This should never happen for the atomic variable. */
