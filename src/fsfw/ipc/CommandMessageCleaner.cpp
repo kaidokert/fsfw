@@ -8,9 +8,11 @@
 #include "fsfw/modes/ModeMessage.h"
 #include "fsfw/monitoring/MonitoringMessage.h"
 #include "fsfw/subsystem/modes/ModeSequenceMessage.h"
-#include "fsfw/tmstorage/TmStoreMessage.h"
 #include "fsfw/housekeeping/HousekeepingMessage.h"
 #include "fsfw/parameters/ParameterMessage.h"
+#ifdef FSFW_ADD_TMSTORAGE
+#include "fsfw/tmstorage/TmStoreMessage.h"
+#endif
 
 void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
 	switch(message->getMessageType()){

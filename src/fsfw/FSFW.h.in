@@ -8,5 +8,6 @@
 #cmakedefine FSFW_ADD_TMSTORAGE
 #cmakedefine FSFW_ADD_COORDINATES
 #cmakedefine FSFW_ADD_PUS
+#cmakedefine FSFW_ADD_MONITORING
 
 #endif /* FSFW_FSFW_H_ */
