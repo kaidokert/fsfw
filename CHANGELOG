@@ -4,10 +4,11 @@
 
 ### FSFW Architecture
 
-- Internal API changed completely to have separation of sources and headers
-- External API mostly stayed the same
+- New src folder which contains all source files except the HAL, contributed code and test code
+- External and internal API mostly stayed the same
 - Folder names are now all smaller case: internalError was renamed to internalerror and
   FreeRTOS was renamed to freertos
+- Warning if optional headers are used but the modules was not added to the source files to compile
 
 ### HAL
 
