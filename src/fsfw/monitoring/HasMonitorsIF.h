@@ -1,6 +1,7 @@
 #ifndef FSFW_MONITORING_HASMONITORSIF_H_
 #define FSFW_MONITORING_HASMONITORSIF_H_
 
+#include "monitoringConf.h"
 #include "../events/EventReportingProxyIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../ipc/MessageQueueSenderIF.h"

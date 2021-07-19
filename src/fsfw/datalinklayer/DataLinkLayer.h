@@ -1,11 +1,13 @@
 #ifndef DATALINKLAYER_H_
 #define DATALINKLAYER_H_
 
+#include "dllConf.h"
 #include "CCSDSReturnValuesIF.h"
 #include "ClcwIF.h"
 #include "TcTransferFrame.h"
 #include "VirtualChannelReceptionIF.h"
-#include "../events/Event.h"
+#include "fsfw/events/Event.h"
+
 #include <map>
 
 

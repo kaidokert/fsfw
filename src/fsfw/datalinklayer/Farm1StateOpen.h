@@ -8,6 +8,7 @@
 #ifndef FARM1STATEOPEN_H_
 #define FARM1STATEOPEN_H_
 
+#include "dllConf.h"
 #include "Farm1StateIF.h"
 
 /**

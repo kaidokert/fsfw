@@ -1,4 +1,4 @@
-#include "fsfw/tmstorage/TmStoreMessage.h"
+#include "TmStoreMessage.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 
 TmStoreMessage::~TmStoreMessage() {

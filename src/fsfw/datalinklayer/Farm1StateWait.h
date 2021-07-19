@@ -8,6 +8,7 @@
 #ifndef FARM1STATEWAIT_H_
 #define FARM1STATEWAIT_H_
 
+#include "dllConf.h"
 #include "Farm1StateIF.h"
 
 /**

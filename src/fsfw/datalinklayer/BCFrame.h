@@ -8,6 +8,7 @@
 #ifndef BCFRAME_H_
 #define BCFRAME_H_
 
+#include "dllConf.h"
 #include "CCSDSReturnValuesIF.h"
 
 /**

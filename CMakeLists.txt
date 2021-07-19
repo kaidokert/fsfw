@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.13)
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
 )
-
 if(FSFW_GENERATE_SECTIONS)
     option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
 endif()
@@ -11,9 +10,18 @@ endif()
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
-option(FSFW_USE_RMAP "Compile with RMAP" ON)
-option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
-option(FSFW_ADD_SPG4_PROPAGATOR "Add SPG4 propagator code" ON)
+
+# Optional sources
+option(FSFW_ADD_PUS "Compile with PUS sources" ON)
+option(FSFW_ADD_MONITORING "Compile with monitoring components" ON)
+
+option(FSFW_ADD_RMAP "Compile with RMAP" OFF)
+option(FSFW_ADD_DATALINKLAYER "Compile with Data Link Layer" OFF)
+option(FSFW_ADD_COORDINATES "Compile with coordinate components" OFF)
+option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
+
+# Contrib sources
+option(FSFW_ADD_SPG4_PROPAGATOR "Add SPG4 propagator code" OFF)
 
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})

@@ -1,7 +1,9 @@
 #ifndef CLCW_H_
 #define CLCW_H_
 
+#include "dllConf.h"
 #include "ClcwIF.h"
+
 /**
  * Small helper method to handle the Clcw values.
  * It has a content struct that manages the register and can be set externally.

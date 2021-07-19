@@ -8,9 +8,10 @@
 #ifndef VIRTUALCHANNELRECEPTIONIF_H_
 #define VIRTUALCHANNELRECEPTIONIF_H_
 
+#include "dllConf.h"
 #include "ClcwIF.h"
 #include "TcTransferFrame.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 /**
  * This is the interface for Virtual Channel reception classes.

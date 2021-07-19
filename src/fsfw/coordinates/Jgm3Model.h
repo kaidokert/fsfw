@@ -1,13 +1,14 @@
 #ifndef FRAMEWORK_COORDINATES_JGM3MODEL_H_
 #define FRAMEWORK_COORDINATES_JGM3MODEL_H_
 
-#include <stdint.h>
+#include "coordinatesConf.h"
 #include "CoordinateTransformations.h"
-#include "../globalfunctions/math/VectorOperations.h"
-#include "../globalfunctions/timevalOperations.h"
-#include "../globalfunctions/constants.h"
-#include <memory.h>
 
+#include "fsfw/globalfunctions/math/VectorOperations.h"
+#include "fsfw/globalfunctions/timevalOperations.h"
+#include "fsfw/globalfunctions/constants.h"
+#include <memory.h>
+#include <cstdint>
 
 template<uint8_t DEGREE,uint8_t ORDER>
 class Jgm3Model {

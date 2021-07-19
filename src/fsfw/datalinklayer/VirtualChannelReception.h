@@ -8,6 +8,7 @@
 #ifndef VIRTUALCHANNELRECEPTION_H_
 #define VIRTUALCHANNELRECEPTION_H_
 
+#include "dllConf.h"
 #include "CCSDSReturnValuesIF.h"
 #include "Clcw.h"
 #include "Farm1StateIF.h"
@@ -16,6 +17,7 @@
 #include "Farm1StateWait.h"
 #include "MapPacketExtractionIF.h"
 #include "VirtualChannelReceptionIF.h"
+
 #include <map>
 /**
  * Implementation of a TC Virtual Channel.

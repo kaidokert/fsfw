@@ -1,10 +1,11 @@
 #ifndef FSFW_TMSTORAGE_TMSTOREMESSAGE_H_
 #define FSFW_TMSTORAGE_TMSTOREMESSAGE_H_
 
+#include "tmStorageConf.h"
 #include "TmStorePackets.h"
-#include "../ipc/CommandMessage.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../objectmanager/SystemObjectIF.h"
+#include "fsfw/ipc/CommandMessage.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
 
 class TmStoreMessage  {
 public:

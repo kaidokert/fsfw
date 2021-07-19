@@ -8,7 +8,8 @@
 #ifndef CCSDSRETURNVALUESIF_H_
 #define CCSDSRETURNVALUESIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "dllConf.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 /**
  * This is a helper class to collect special return values that come up during CCSDS Handling.
  * @ingroup ccsds_handling

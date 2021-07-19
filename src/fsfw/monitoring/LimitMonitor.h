@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_MONITORING_LIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_LIMITMONITOR_H_
 
+#include "monitoringConf.h"
 #include "MonitorBase.h"
 
 /**

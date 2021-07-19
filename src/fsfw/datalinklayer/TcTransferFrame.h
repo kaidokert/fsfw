@@ -1,6 +1,8 @@
 #ifndef TCTRANSFERFRAME_H_
 #define TCTRANSFERFRAME_H_
 
+#include "dllConf.h"
+
 #include <cstdint>
 #include <cstddef>
 

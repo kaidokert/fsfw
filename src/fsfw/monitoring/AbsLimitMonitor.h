@@ -1,6 +1,7 @@
 #ifndef FSFW_MONITORING_ABSLIMITMONITOR_H_
 #define FSFW_MONITORING_ABSLIMITMONITOR_H_
 
+#include "monitoringConf.h"
 #include "MonitorBase.h"
 #include <cmath>
 

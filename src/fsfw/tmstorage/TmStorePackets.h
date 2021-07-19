@@ -1,14 +1,15 @@
 #ifndef FSFW_TMSTORAGE_TMSTOREPACKETS_H_
 #define FSFW_TMSTORAGE_TMSTOREPACKETS_H_
 
-#include "../serialize/SerialFixedArrayListAdapter.h"
-#include "../serialize/SerializeElement.h"
-#include "../serialize/SerialLinkedListAdapter.h"
-#include "../serialize/SerialBufferAdapter.h"
-#include "../tmtcpacket/pus/tm/TmPacketMinimal.h"
-#include "../timemanager/TimeStamperIF.h"
-#include "../timemanager/CCSDSTime.h"
-#include "../globalfunctions/timevalOperations.h"
+#include "tmStorageConf.h"
+#include "fsfw/serialize/SerialFixedArrayListAdapter.h"
+#include "fsfw/serialize/SerializeElement.h"
+#include "fsfw/serialize/SerialLinkedListAdapter.h"
+#include "fsfw/serialize/SerialBufferAdapter.h"
+#include "fsfw/tmtcpacket/pus/tm/TmPacketMinimal.h"
+#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/timemanager/CCSDSTime.h"
+#include "fsfw/globalfunctions/timevalOperations.h"
 
 class ServiceSubservice: public SerialLinkedListAdapter<SerializeIF> {
 public:

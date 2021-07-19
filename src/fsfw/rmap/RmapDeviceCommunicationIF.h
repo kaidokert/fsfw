@@ -1,6 +1,7 @@
 #ifndef FSFW_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_
 #define FSFW_RMAP_RMAPDEVICECOMMUNICATIONINTERFACE_H_
 
+#include "rmapConf.h"
 #include "fsfw/devicehandlers/DeviceCommunicationIF.h"
 
 /**

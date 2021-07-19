@@ -7,6 +7,7 @@
 #ifndef LIMITVIOLATIONREPORTER_H_
 #define LIMITVIOLATIONREPORTER_H_
 
+#include "monitoringConf.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
 #include "../storagemanager/StorageManagerIF.h"

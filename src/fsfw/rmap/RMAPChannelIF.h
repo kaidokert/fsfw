@@ -1,8 +1,9 @@
 #ifndef FSFW_RMAP_RMAPCHANNELIF_H_
 #define FSFW_RMAP_RMAPCHANNELIF_H_
 
+#include "rmapConf.h"
 #include "RMAPCookie.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
 
 class RMAPChannelIF {

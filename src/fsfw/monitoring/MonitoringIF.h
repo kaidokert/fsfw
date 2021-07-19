@@ -1,6 +1,7 @@
 #ifndef FSFW_MONITORING_MONITORINGIF_H_
 #define FSFW_MONITORING_MONITORINGIF_H_
 
+#include "monitoringConf.h"
 #include "MonitoringMessage.h"
 #include "../serialize/SerializeIF.h"
 

@@ -1,11 +1,13 @@
 #ifndef FSFW_TMTCSERVICES_TMSTOREBACKENDIF_H_
 #define FSFW_TMTCSERVICES_TMSTOREBACKENDIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../objectmanager/SystemObjectIF.h"
-#include "../parameters/HasParametersIF.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../timemanager/Clock.h"
+#include "tmStorageConf.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/parameters/HasParametersIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/timemanager/Clock.h"
+
 class TmPacketInformation;
 class TmPacketMinimal;
 class SpacePacketBase;

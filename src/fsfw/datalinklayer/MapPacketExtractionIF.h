@@ -8,6 +8,7 @@
 #ifndef MAPPACKETEXTRACTIONIF_H_
 #define MAPPACKETEXTRACTIONIF_H_
 
+#include "dllConf.h"
 #include "CCSDSReturnValuesIF.h"
 #include "TcTransferFrame.h"
 

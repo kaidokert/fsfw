@@ -1,6 +1,7 @@
 #ifndef FSFW_RMAP_RMAP_H_
 #define FSFW_RMAP_RMAP_H_
 
+#include "rmapConf.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/rmap/RMAPCookie.h"
 

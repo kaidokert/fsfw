@@ -1,0 +1,12 @@
+#ifndef FSFW_FSFW_H_
+#define FSFW_FSFW_H_
+
+#include "FSFWConfig.h"
+
+#cmakedefine FSFW_ADD_RMAP
+#cmakedefine FSFW_ADD_DATALINKLAYER
+#cmakedefine FSFW_ADD_TMSTORAGE
+#cmakedefine FSFW_ADD_COORDINATES
+#cmakedefine FSFW_ADD_PUS
+
+#endif /* FSFW_FSFW_H_ */

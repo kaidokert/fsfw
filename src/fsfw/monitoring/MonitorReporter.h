@@ -1,6 +1,7 @@
 #ifndef FSFW_MONITORING_MONITORREPORTER_H_
 #define FSFW_MONITORING_MONITORREPORTER_H_
 
+#include "monitoringConf.h"
 #include "LimitViolationReporter.h"
 #include "MonitoringIF.h"
 #include "MonitoringMessageContent.h"

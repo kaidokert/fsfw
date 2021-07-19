@@ -1,9 +1,10 @@
 #ifndef FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_
 #define FSFW_TMTCSERVICES_TMSTOREFRONTENDIF_H_
 
+#include "tmStorageConf.h"
 #include "TmStorePackets.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../ipc/MessageQueueSenderIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
 
 class TmPacketMinimal;
 class SpacePacketBase;

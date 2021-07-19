@@ -1,9 +1,9 @@
 #ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
 #define FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
 
-#include "../FSFW.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../tmtcservices/PusVerificationReport.h"
+#include "fsfw/FSFW.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tmtcservices/PusVerificationReport.h"
 
 class TcPacketStoredBase;
 

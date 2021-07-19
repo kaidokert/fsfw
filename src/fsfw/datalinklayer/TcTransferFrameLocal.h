@@ -8,6 +8,7 @@
 #ifndef TCTRANSFERFRAMELOCAL_H_
 #define TCTRANSFERFRAMELOCAL_H_
 
+#include "dllConf.h"
 #include "TcTransferFrame.h"
 
 /**

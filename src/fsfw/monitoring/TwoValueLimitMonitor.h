@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_MONITORING_TWOVALUELIMITMONITOR_H_
 #define FRAMEWORK_MONITORING_TWOVALUELIMITMONITOR_H_
 
+#include "monitoringConf.h"
 #include "LimitMonitor.h"
 
 template<typename T>

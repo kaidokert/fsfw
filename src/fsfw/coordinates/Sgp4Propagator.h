@@ -1,7 +1,9 @@
 #ifndef SGP4PROPAGATOR_H_
 #define SGP4PROPAGATOR_H_
 
+#include "coordinatesConf.h"
 #include "fsfw/platform.h"
+
 #ifndef PLATFORM_WIN
 #include <sys/time.h>
 #endif

@@ -1,3 +1,4 @@
+#include "fsfw/FSFW.h"
 #include "fsfw/ipc/CommandMessageCleaner.h"
 
 #include "fsfw/memory/GenericFileSystemMessage.h"
@@ -34,9 +35,11 @@ void CommandMessageCleaner::clearCommandMessage(CommandMessage* message) {
 	case messagetypes::MONITORING:
 		MonitoringMessage::clear(message);
 		break;
+#ifdef FSFW_ADD_TMSTORAGE
 	case messagetypes::TM_STORE:
 		TmStoreMessage::clear(message);
 		break;
+#endif
 	case messagetypes::PARAMETER:
 		ParameterMessage::clear(message);
 		break;

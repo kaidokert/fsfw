@@ -1,6 +1,7 @@
 #ifndef FSFW_MONITORING_MONITORINGMESSAGECONTENT_H_
 #define FSFW_MONITORING_MONITORINGMESSAGECONTENT_H_
 
+#include "monitoringConf.h"
 #include "HasMonitorsIF.h"
 #include "MonitoringIF.h"
 

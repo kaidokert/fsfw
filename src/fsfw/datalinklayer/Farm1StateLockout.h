@@ -1,6 +1,7 @@
 #ifndef FARM1STATELOCKOUT_H_
 #define FARM1STATELOCKOUT_H_
 
+#include "dllConf.h"
 #include "Farm1StateIF.h"
 
 /**

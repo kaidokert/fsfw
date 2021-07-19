@@ -1,7 +1,7 @@
 #ifndef FSFW_TMTCPACKET_PUS_TM_H_
 #define FSFW_TMTCPACKET_PUS_TM_H_
 
-#include "../../FSFW.h"
+#include "fsfw/FSFW.h"
 
 #if FSFW_USE_PUS_C_TELEMETRY == 1
 #include "tm/TmPacketPusC.h"

@@ -1,6 +1,7 @@
 #ifndef FSFW_DATALINKLAYER_MAPPACKETEXTRACTION_H_
 #define FSFW_DATALINKLAYER_MAPPACKETEXTRACTION_H_
 
+#include "dllConf.h"
 #include "MapPacketExtractionIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"

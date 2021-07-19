@@ -1,8 +1,8 @@
 #ifndef FSFW_TMTCPACKET_PUS_TCPACKETPUSA_H_
 #define FSFW_TMTCPACKET_PUS_TCPACKETPUSA_H_
 
-#include "../../../FSFW.h"
-#include "../../ccsds_header.h"
+#include "fsfw/FSFW.h"
+#include "fsfw/tmtcpacket/ccsds_header.h"
 #include "TcPacketBase.h"
 
 #include <cstdint>

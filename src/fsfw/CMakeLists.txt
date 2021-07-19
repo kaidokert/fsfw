@@ -31,12 +31,24 @@ add_subdirectory(tmtcservices)
 
 # Optional
 
-add_subdirectory(coordinates)
-add_subdirectory(datalinklayer)
+if(FSFW_ADD_MONITORING)
 add_subdirectory(monitoring)
-add_subdirectory(pus)
-add_subdirectory(rmap)
-add_subdirectory(tmstorage)
+endif()
+if(FSFW_ADD_PUS)
+    add_subdirectory(pus)
+endif()
+if(FSFW_ADD_TMSTORAGE)
+    add_subdirectory(tmstorage)
+endif()
+if(FSFW_ADD_COORDINATES)
+    add_subdirectory(coordinates)
+endif()
+if(FSFW_ADD_RMAP)
+    add_subdirectory(rmap)
+endif()
+if(FSFW_ADD_DATALINKLAYER)
+    add_subdirectory(datalinklayer)
+endif()
 
 # OSAL
 

@@ -1,6 +1,7 @@
 #ifndef FSFW_RMAP_RMAPCOOKIE_H_
 #define FSFW_RMAP_RMAPCOOKIE_H_
 
+#include "rmapConf.h"
 #include "rmapStructs.h"
 #include "fsfw/devicehandlers/CookieIF.h"
 #include <cstddef>

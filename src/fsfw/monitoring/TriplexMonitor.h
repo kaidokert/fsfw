@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_MONITORING_TRIPLEXMONITOR_H_
 #define FRAMEWORK_MONITORING_TRIPLEXMONITOR_H_
 
+#include "monitoringConf.h"
 #include "../datapool/DataSet.h"
 #include "../datapool/PIDReaderList.h"
 #include "../health/HealthTableIF.h"
