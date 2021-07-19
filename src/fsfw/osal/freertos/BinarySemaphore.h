@@ -98,7 +98,7 @@ public:
 	 *         	already available.
 	 */
 	static ReturnValue_t releaseFromISR(SemaphoreHandle_t semaphore,
-				BaseType_t * higherPriorityTaskWoken) override;
+				BaseType_t * higherPriorityTaskWoken);
 
 protected:
 	SemaphoreHandle_t handle;
