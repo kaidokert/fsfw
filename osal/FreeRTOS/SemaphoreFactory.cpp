@@ -1,9 +1,10 @@
-#include "../../osal/FreeRTOS/BinarySemaphore.h"
-#include "../../osal/FreeRTOS/BinSemaphUsingTask.h"
-#include "../../osal/FreeRTOS/CountingSemaphore.h"
-#include "../../osal/FreeRTOS/CountingSemaphUsingTask.h"
+#include "BinarySemaphore.h"
+#include "BinSemaphUsingTask.h"
+#include "CountingSemaphore.h"
+#include "CountingSemaphUsingTask.h"
+
 #include "../../tasks/SemaphoreFactory.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "../../serviceinterface/ServiceInterface.h"
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
 

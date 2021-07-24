@@ -46,7 +46,9 @@ public:
 	 */
 	bool crAdditionEnabled() const;
 
+#if FSFW_COLORED_OUTPUT == 1
 	void setAsciiColorPrefix(std::string asciiColorCode);
+#endif
 
 protected:
 	ServiceInterfaceBuffer streambuf;
