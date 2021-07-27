@@ -7,7 +7,7 @@
 #include <fsfw/internalError/InternalErrorReporter.h>
 #include <fsfw/objectmanager/frameworkObjects.h>
 #include <fsfw/storagemanager/PoolManager.h>
-#include <fsfw/tmtcpacket/pus/TmPacketStored.h>
+#include <fsfw/tmtcpacket/pus/tm/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
 #include <fsfw/unittest/tests/datapoollocal/LocalPoolOwnerBase.h>

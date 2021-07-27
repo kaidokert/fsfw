@@ -19,9 +19,11 @@ bool ServiceInterfaceStream::crAdditionEnabled() const {
     return streambuf.crAdditionEnabled();
 }
 
+#if FSFW_COLORED_OUTPUT == 1
 void ServiceInterfaceStream::setAsciiColorPrefix(std::string asciiColorCode) {
     streambuf.setAsciiColorPrefix(asciiColorCode);
 }
+#endif
 
 #endif
 
