@@ -172,9 +172,9 @@ bool ServiceInterfaceBuffer::crAdditionEnabled() const {
 }
 
 #if FSFW_COLORED_OUTPUT == 1
-	void ServiceInterfaceBuffer::setAsciiColorPrefix(std::string colorPrefix) {
-		this->colorPrefix = colorPrefix;
-	}
+void ServiceInterfaceBuffer::setAsciiColorPrefix(std::string colorPrefix) {
+	this->colorPrefix = colorPrefix;
+}
 #endif
 
 #ifdef UT699
