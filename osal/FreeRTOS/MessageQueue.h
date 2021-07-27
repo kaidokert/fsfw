@@ -11,9 +11,6 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#include "FreeRTOS.h"
-#include "queue.h"
-
 /**
  * @brief		This class manages sending and receiving of
  * 				message queue messages.
