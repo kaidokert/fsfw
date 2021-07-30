@@ -12,6 +12,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # set(CMAKE_VERBOSE TRUE)
+# set(CODE_COVERAGE_VERBOSE TRUE)
 
 set(CMAKE_SCRIPT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -21,6 +22,8 @@ option(GENERATE_COVERAGE
 	TRUE
 )
 
+set(FSFW_ADD_UNITTESTS ON)
+
 if(TMTC_TEST)
 	set(LINK_CATCH2 FALSE)
 else()
@@ -28,8 +31,8 @@ else()
 endif()
 
 # Tests can be built with the Host OSAL or with the Linux OSAL.
-if(NOT OS_FSFW)
-	set(OS_FSFW host CACHE STRING "OS for the FSFW.")
+if(NOT FSFW_OSAL)
+	set(FSFW_OSAL host CACHE STRING "OS for the FSFW.")
 endif()
 
 option(CUSTOM_UNITTEST_RUNNER 
@@ -41,7 +44,7 @@ option(CUSTOM_UNITTEST_RUNNER
 #pre_project_config()
 
 # Project Name
-project(fsfw_tests C CXX)
+project(fsfw-tests C CXX)
 
 ################################################################################
 # Pre-Sources preparation
@@ -71,7 +74,7 @@ set(TMTC_TEST_PATH tests)
 # determine BSP_PATH
 
 # FreeRTOS
-if(${OS_FSFW} STREQUAL linux)
+if(FSFW_OSAL STREQUAL linux)
 	add_definitions(-DUNIX -DLINUX)	
 	find_package(Threads REQUIRED)
 # Hosted
@@ -94,6 +97,11 @@ if(GENERATE_COVERAGE)
 endif()
 
 set(FSFW_CONFIG_PATH testcfg)
+set(FSFW_ADDITIONAL_INC_PATHS ${CMAKE_CURRENT_BINARY_DIR})
+
+configure_file(${FSFW_CONFIG_PATH}/FSFWConfig.h.in FSFWConfig.h)
+configure_file(${FSFW_CONFIG_PATH}/OBSWConfig.h.in OBSWConfig.h)
+configure_file(${FSFW_CONFIG_PATH}/TestsConfig.h.in TestsConfig.h)
 
 ################################################################################
 # Executable and Sources
@@ -108,10 +116,16 @@ add_subdirectory(${FSFW_CONFIG_PATH})
 
 if(LINK_CATCH2)
 	add_subdirectory(${CATCH2_PATH})
-	add_subdirectory(${FSFW_TESTS_PATH})
 	add_subdirectory(${TEST_SETUP_PATH})
 else()
+	target_compile_definitions(${TARGET_NAME} PRIVATE
+		FSFW_DISABLE_PRINTOUT=0
+	)
+	target_compile_definitions(${LIB_FSFW_NAME} PRIVATE	
+		FSFW_DISABLE_PRINTOUT=0
+	)
 	add_subdirectory(${TMTC_TEST_PATH})
+	add_subdirectory(${FSFW_TESTS_PATH})
 endif()
 
 
@@ -132,7 +146,7 @@ endif()
 
 if(GENERATE_COVERAGE)
 	if(CMAKE_COMPILER_IS_GNUCXX)
-		set(CODE_COVERAGE_VERBOSE TRUE)
+		# set(CODE_COVERAGE_VERBOSE TRUE)
     	include(CodeCoverage)
     	
     	# Remove quotes.
@@ -194,6 +208,7 @@ endif()
 target_include_directories(${TARGET_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${FSFW_CONFIG_PATH}
+	${CMAKE_CURRENT_BINARY_DIR}
 )	
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -225,12 +240,9 @@ if(CMAKE_VERBOSE)
 	message(STATUS "Warning flags: ${WARNING_FLAGS}")
 endif()
 		 
-
 # Compile options for all sources.
 target_compile_options(${TARGET_NAME} PRIVATE
-	$<$<COMPILE_LANGUAGE:C>:${WARNING_FLAGS} ${COMPILER_FLAGS}>
-	$<$<COMPILE_LANGUAGE:CXX>:${WARNING_FLAGS} ${COMPILER_FLAGS}>
-	${ABI_FLAGS}
+	${WARNING_FLAGS}
 )
 
 if(NOT CMAKE_SIZE)
@@ -240,12 +252,16 @@ if(NOT CMAKE_SIZE)
 	endif()
 endif()
 
+string(CONCAT POST_BUILD_COMMENT
+    "Build directory: ${CMAKE_BINARY_DIR}\n"
+    "Target OSAL: ${FSFW_OSAL}\n"
+    "Target Build Type: ${CMAKE_BUILD_TYPE}"
+)
+
 add_custom_command(TARGET ${TARGET_NAME}
-   POST_BUILD
-   COMMAND echo "Build directory: ${CMAKE_BINARY_DIR}"
-   COMMAND echo "Target OSAL: ${OS_FSFW}"
-   COMMAND echo "Target Build Type: ${CMAKE_BUILD_TYPE}"
-   COMMAND ${CMAKE_SIZE} ${TARGET_NAME}${FILE_SUFFIX}
+    POST_BUILD
+    COMMAND ${CMAKE_SIZE} ${TARGET_NAME}${FILE_SUFFIX}
+    COMMENT ${POST_BUILD_COMMENT}
 )
 
 include (${CMAKE_SCRIPT_PATH}/BuildType.cmake)
