@@ -1,8 +1,5 @@
 ################################################################################
 # CMake support for the Flight Software Framework Tests
-# 
-# Developed in an effort to replace Make with a modern build system.
-# 
 # Author: R. Mueller
 ################################################################################
 
@@ -38,10 +35,6 @@ endif()
 option(CUSTOM_UNITTEST_RUNNER 
 	"Specify whether custom main or Catch2 main is used" TRUE
 )
-
-# Perform steps like loading toolchain files where applicable.
-#include(${CMAKE_SCRIPT_PATH}/PreProjectConfig.cmake)
-#pre_project_config()
 
 # Project Name
 project(fsfw-tests C CXX)
@@ -266,8 +259,3 @@ add_custom_command(TARGET ${TARGET_NAME}
 
 include (${CMAKE_SCRIPT_PATH}/BuildType.cmake)
 set_build_type()
-
-
-
-
-
