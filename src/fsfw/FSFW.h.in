@@ -10,4 +10,8 @@
 #cmakedefine FSFW_ADD_PUS
 #cmakedefine FSFW_ADD_MONITORING
 
+#ifndef FSFW_HAL_L3GD20_GYRO_DEBUG
+#define FSFW_HAL_L3GD20_GYRO_DEBUG   0
+#endif /* FSFW_HAL_L3GD20_GYRO_DEBUG */
+
 #endif /* FSFW_FSFW_H_ */

@@ -1,14 +1,14 @@
 #ifndef MISSION_DEVICES_GYROL3GD20HANDLER_H_
 #define MISSION_DEVICES_GYROL3GD20HANDLER_H_
 
-#include "OBSWConfig.h"
+#include "fsfw/FSFW.h"
 #include "devicedefinitions/GyroL3GD20Definitions.h"
 
 #include <fsfw/devicehandlers/DeviceHandlerBase.h>
 #include <fsfw/globalfunctions/PeriodicOperationDivider.h>
 
 #ifndef FSFW_HAL_L3GD20_GYRO_DEBUG
-#define FSFW_HAL_L3GD20_GYRO_DEBUG   1
+#define FSFW_HAL_L3GD20_GYRO_DEBUG   0
 #endif /* FSFW_HAL_L3GD20_GYRO_DEBUG */
 
 /**

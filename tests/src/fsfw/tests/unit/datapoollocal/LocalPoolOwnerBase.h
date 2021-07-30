@@ -10,7 +10,7 @@
 #include <fsfw/datapoollocal/LocalPoolVector.h>
 #include <fsfw/ipc/QueueFactory.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
-#include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
+#include <fsfw/tests/unit/mocks/MessageQueueMockBase.h>
 #include <fsfw/datapool/PoolReadGuard.h>
 
 namespace lpool {

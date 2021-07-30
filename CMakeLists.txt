@@ -10,6 +10,7 @@ endif()
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
+option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
 
 # Optional sources
 option(FSFW_ADD_PUS "Compile with PUS sources" ON)
@@ -94,7 +95,9 @@ message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
 add_subdirectory(src)
 add_subdirectory(tests)
-add_subdirectory(hal)
+if(FSFW_ADD_HAL)
+    add_subdirectory(hal)
+endif()
 add_subdirectory(contrib)
 
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.

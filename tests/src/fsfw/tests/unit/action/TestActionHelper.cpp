@@ -4,7 +4,7 @@
 
 #include <fsfw/action/ActionHelper.h>
 #include <fsfw/ipc/CommandMessage.h>
-#include <fsfw/unittest/tests/mocks/MessageQueueMockBase.h>
+#include <fsfw/tests/unit/mocks/MessageQueueMockBase.h>
 
 #include <catch2/catch_test_macros.hpp>
 
