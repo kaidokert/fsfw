@@ -1,6 +1,6 @@
-#include "fsfw/hal/linux/gpio/LinuxLibgpioIF.h"
-#include "fsfw/hal/common/gpio/gpioDefinitions.h"
-#include "fsfw/hal/common/gpio/GpioCookie.h"
+#include "fsfw-hal/linux/gpio/LinuxLibgpioIF.h"
+#include "fsfw-hal/common/gpio/gpioDefinitions.h"
+#include "fsfw-hal/common/gpio/GpioCookie.h"
 
 #include <fsfw/serviceinterface/ServiceInterface.h>
 

@@ -1,4 +1,4 @@
-#include "fsfw/hal/stm32h7/gpio/gpio.h"
+#include "fsfw-hal/stm32h7/gpio/gpio.h"
 
 #include "stm32h7xx_hal_rcc.h"
 

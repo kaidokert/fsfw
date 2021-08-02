@@ -1,5 +1,5 @@
-#include "fsfw/tests/internal/osal/IntTestMutex.h"
-#include "fsfw/tests/internal/UnittDefinitions.h"
+#include "fsfw-tests/internal/osal/IntTestMutex.h"
+#include "fsfw-tests/internal/UnittDefinitions.h"
 
 #include <fsfw/ipc/MutexFactory.h>
 

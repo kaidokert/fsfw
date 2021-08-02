@@ -1,5 +1,5 @@
-#include "fsfw/hal/stm32h7/spi/spiCore.h"
-#include "fsfw/hal/stm32h7/spi/spiDefinitions.h"
+#include "fsfw-hal/stm32h7/spi/spiCore.h"
+#include "fsfw-hal/stm32h7/spi/spiDefinitions.h"
 
 #include <cstdio>
 

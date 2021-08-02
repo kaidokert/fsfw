@@ -1,4 +1,4 @@
-#include "fsfw/hal/linux/i2c/I2cCookie.h"
+#include "fsfw-hal/linux/i2c/I2cCookie.h"
 
 I2cCookie::I2cCookie(address_t i2cAddress_, size_t maxReplyLen_,
 		std::string deviceFile_) :

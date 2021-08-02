@@ -1,5 +1,5 @@
-#include "fsfw/tests/internal/osal/IntTestMq.h"
-#include "fsfw/tests/internal/UnittDefinitions.h"
+#include "fsfw-tests/internal/osal/IntTestMq.h"
+#include "fsfw-tests/internal/UnittDefinitions.h"
 
 #include <fsfw/ipc/MessageQueueIF.h>
 #include <fsfw/ipc/QueueFactory.h>

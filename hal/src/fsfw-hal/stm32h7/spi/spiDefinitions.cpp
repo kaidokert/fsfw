@@ -1,4 +1,4 @@
-#include "fsfw/hal/stm32h7/spi/spiDefinitions.h"
+#include "fsfw-hal/stm32h7/spi/spiDefinitions.h"
 
 void spi::assignSpiMode(SpiModes spiMode, SPI_HandleTypeDef& spiHandle) {
     switch(spiMode) {

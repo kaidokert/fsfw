@@ -5,7 +5,7 @@
 #include "fsfw/devicehandlers/DeviceCommunicationIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
 
-#include "fsfw/hal/stm32h7/spi/spiDefinitions.h"
+#include "fsfw-hal/stm32h7/spi/spiDefinitions.h"
 #include "stm32h7xx_hal_spi.h"
 #include "stm32h743xx.h"
 

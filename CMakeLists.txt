@@ -21,7 +21,7 @@ option(FSFW_ADD_COORDINATES "Compile with coordinate components" OFF)
 option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
 
 # Contrib sources
-option(FSFW_ADD_SPG4_PROPAGATOR "Add SPG4 propagator code" OFF)
+option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})

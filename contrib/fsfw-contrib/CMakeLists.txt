@@ -1,4 +1,4 @@
-if(FSFW_ADD_SPG4_PROPAGATOR)
+if(FSFW_ADD_SGP4_PROPAGATOR)
     target_sources(${LIB_FSFW_NAME} PRIVATE
         sgp4/sgp4unit.cpp
     )

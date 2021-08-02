@@ -1,4 +1,4 @@
-#include "fsfw/tests/internal/UnittDefinitions.h"
+#include "fsfw-tests/internal/UnittDefinitions.h"
 
  ReturnValue_t unitt::put_error(std::string errorId) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

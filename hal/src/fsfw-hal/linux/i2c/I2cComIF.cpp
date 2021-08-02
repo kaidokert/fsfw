@@ -1,6 +1,6 @@
-#include "fsfw/hal/linux/i2c/I2cComIF.h"
-#include "fsfw/hal/linux/utility.h"
-#include "fsfw/hal/linux/UnixFileGuard.h"
+#include "fsfw-hal/linux/i2c/I2cComIF.h"
+#include "fsfw-hal/linux/utility.h"
+#include "fsfw-hal/linux/UnixFileGuard.h"
 
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
