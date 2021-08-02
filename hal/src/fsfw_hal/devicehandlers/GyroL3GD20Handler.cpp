@@ -1,4 +1,4 @@
-#include "fsfw-hal/devicehandlers/GyroL3GD20Handler.h"
+#include "fsfw_hal/devicehandlers/GyroL3GD20Handler.h"
 
 #include "fsfw/datapool/PoolReadGuard.h"
 

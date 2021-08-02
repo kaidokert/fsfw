@@ -1,6 +1,6 @@
 #include "fsfw/FSFW.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw-hal/linux/utility.h"
+#include "fsfw_hal/linux/utility.h"
 
 #include <cerrno>
 #include <cstring>

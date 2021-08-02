@@ -1,11 +1,11 @@
-#include "fsfw-hal/stm32h7/spi/SpiComIF.h"
-#include "fsfw-hal/stm32h7/spi/SpiCookie.h"
+#include "fsfw_hal/stm32h7/spi/SpiComIF.h"
+#include "fsfw_hal/stm32h7/spi/SpiCookie.h"
 
 #include "fsfw/tasks/SemaphoreFactory.h"
-#include "fsfw-hal/stm32h7/spi/spiCore.h"
-#include "fsfw-hal/stm32h7/spi/spiInterrupts.h"
-#include "fsfw-hal/stm32h7/spi/mspInit.h"
-#include "fsfw-hal/stm32h7/gpio/gpio.h"
+#include "fsfw_hal/stm32h7/spi/spiCore.h"
+#include "fsfw_hal/stm32h7/spi/spiInterrupts.h"
+#include "fsfw_hal/stm32h7/spi/mspInit.h"
+#include "fsfw_hal/stm32h7/gpio/gpio.h"
 
 // FreeRTOS required special Semaphore handling from an ISR. Therefore, we use the concrete
 // instance here, because RTEMS and FreeRTOS are the only relevant OSALs currently

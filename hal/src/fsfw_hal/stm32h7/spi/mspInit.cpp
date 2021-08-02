@@ -1,7 +1,7 @@
-#include "fsfw-hal/stm32h7/dma.h"
-#include "fsfw-hal/stm32h7/spi/mspInit.h"
-#include "fsfw-hal/stm32h7/spi/spiCore.h"
-#include "fsfw-hal/stm32h7/spi/spiInterrupts.h"
+#include "fsfw_hal/stm32h7/dma.h"
+#include "fsfw_hal/stm32h7/spi/mspInit.h"
+#include "fsfw_hal/stm32h7/spi/spiCore.h"
+#include "fsfw_hal/stm32h7/spi/spiInterrupts.h"
 
 #include "stm32h743xx.h"
 #include "stm32h7xx_hal_spi.h"

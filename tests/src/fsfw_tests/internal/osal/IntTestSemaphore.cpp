@@ -1,5 +1,5 @@
-#include "fsfw-tests/internal/osal/IntTestSemaphore.h"
-#include "fsfw-tests/internal/UnittDefinitions.h"
+#include "fsfw_tests/internal/osal/IntTestSemaphore.h"
+#include "fsfw_tests/internal/UnittDefinitions.h"
 
 #include <fsfw/tasks/SemaphoreFactory.h>
 #include <fsfw/serviceinterface/ServiceInterface.h>

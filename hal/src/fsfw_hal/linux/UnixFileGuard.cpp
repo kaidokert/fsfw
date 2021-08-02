@@ -1,4 +1,4 @@
-#include "fsfw-hal/linux/UnixFileGuard.h"
+#include "fsfw_hal/linux/UnixFileGuard.h"
 
 UnixFileGuard::UnixFileGuard(std::string device, int* fileDescriptor, int flags,
         std::string diagnosticPrefix):

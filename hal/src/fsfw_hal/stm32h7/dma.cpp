@@ -1,4 +1,4 @@
-#include <fsfw-hal/stm32h7/dma.h>
+#include <fsfw_hal/stm32h7/dma.h>
 
 #include <cstdint>
 #include <cstddef>

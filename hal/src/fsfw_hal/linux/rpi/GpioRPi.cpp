@@ -1,7 +1,7 @@
 #include "fsfw/FSFW.h"
 
-#include "fsfw-hal/linux/rpi/GpioRPi.h"
-#include "fsfw-hal/common/gpio/GpioCookie.h"
+#include "fsfw_hal/linux/rpi/GpioRPi.h"
+#include "fsfw_hal/common/gpio/GpioCookie.h"
 
 #include <fsfw/serviceinterface/ServiceInterface.h>
 

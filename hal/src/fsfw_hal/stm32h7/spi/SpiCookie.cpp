@@ -1,4 +1,4 @@
-#include "fsfw-hal/stm32h7/spi/SpiCookie.h"
+#include "fsfw_hal/stm32h7/spi/SpiCookie.h"
 
 
 SpiCookie::SpiCookie(address_t deviceAddress, spi::SpiBus spiIdx, spi::TransferModes transferMode,

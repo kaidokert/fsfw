@@ -3,7 +3,7 @@
 
 #include "spiDefinitions.h"
 #include "returnvalues/classIds.h"
-#include "fsfw-hal/common/gpio/GpioIF.h"
+#include "fsfw_hal/common/gpio/GpioIF.h"
 
 #include "fsfw/devicehandlers/DeviceCommunicationIF.h"
 #include "fsfw/objectmanager/SystemObject.h"

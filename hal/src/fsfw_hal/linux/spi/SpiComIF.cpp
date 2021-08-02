@@ -1,8 +1,8 @@
 #include "fsfw/FSFW.h"
-#include "fsfw-hal/linux/spi/SpiComIF.h"
-#include "fsfw-hal/linux/spi/SpiCookie.h"
-#include "fsfw-hal/linux/utility.h"
-#include "fsfw-hal/linux/UnixFileGuard.h"
+#include "fsfw_hal/linux/spi/SpiComIF.h"
+#include "fsfw_hal/linux/spi/SpiCookie.h"
+#include "fsfw_hal/linux/utility.h"
+#include "fsfw_hal/linux/UnixFileGuard.h"
 
 #include <fsfw/ipc/MutexFactory.h>
 #include <fsfw/globalfunctions/arrayprinter.h>
