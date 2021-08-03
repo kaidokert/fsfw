@@ -7,7 +7,7 @@
 #ifndef PLATFORM_WIN
 #include <sys/time.h>
 #endif
-#include "fsfw-contrib/sgp4/sgp4unit.h"
+#include "fsfw_contrib/sgp4/sgp4unit.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 class Sgp4Propagator {
