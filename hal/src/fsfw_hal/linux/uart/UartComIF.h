@@ -41,6 +41,21 @@ public:
     ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer,
             size_t *size) override;
 
+    /**
+     * @brief   This function discards all data received but not read in the UART buffer.
+     */
+    ReturnValue_t flushUartRxBuffer(CookieIF *cookie);
+
+    /**
+     * @brief   This function discards all data in the transmit buffer of the UART driver.
+     */
+    ReturnValue_t flushUartTxBuffer(CookieIF *cookie);
+
+    /**
+     * @brief   This function discards both data in the transmit and receive buffer of the UART.
+     */
+    ReturnValue_t flushUartTxAndRxBuf(CookieIF *cookie);
+
 private:
 
     using UartDeviceFile_t = std::string;

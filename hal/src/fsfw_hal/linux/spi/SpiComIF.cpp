@@ -82,7 +82,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
         gpioComIF->pullHigh(gpioId);
     }
 
-    size_t spiSpeed = 0;
+    uint32_t spiSpeed = 0;
     spi::SpiModes spiMode = spi::SpiModes::MODE_0;
 
     SpiCookie::UncommonParameters params;
