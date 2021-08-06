@@ -56,25 +56,29 @@ void fsfwPrint(sif::PrintLevel printType, const char* fmt, va_list arg) {
 #endif
 
    if (printType == sif::PrintLevel::INFO_LEVEL) {
-       len += sprintf(bufferPosition + len, "INFO: ");
+       len += sprintf(bufferPosition + len, "INFO");
    }
    if(printType == sif::PrintLevel::DEBUG_LEVEL) {
-	   len += sprintf(bufferPosition + len, "DEBUG: ");
+	   len += sprintf(bufferPosition + len, "DEBUG");
    }
    if(printType == sif::PrintLevel::WARNING_LEVEL) {
-	   len += sprintf(bufferPosition + len, "WARNING: ");
+	   len += sprintf(bufferPosition + len, "WARNING");
    }
 
    if(printType == sif::PrintLevel::ERROR_LEVEL) {
-	   len += sprintf(bufferPosition + len, "ERROR: ");
+	   len += sprintf(bufferPosition + len, "ERROR");
    }
+
+#if FSFW_COLORED_OUTPUT == 1
+   len += sprintf(bufferPosition + len, sif::ANSI_COLOR_RESET);
+#endif
 
     Clock::TimeOfDay_t now;
     Clock::getDateAndTime(&now);
     /*
      * Log current time to terminal if desired.
      */
-    len += sprintf(bufferPosition + len, "| %lu:%02lu:%02lu.%03lu | ",
+    len += sprintf(bufferPosition + len, " | %lu:%02lu:%02lu.%03lu | ",
     		(unsigned long) now.hour,
 			(unsigned long) now.minute,
 			(unsigned long) now.second,

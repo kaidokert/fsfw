@@ -146,8 +146,8 @@ std::string* ServiceInterfaceBuffer::getPreamble(size_t * preambleSize) {
 #endif
 
 	int32_t charCount = sprintf(parsePosition,
-			"%s: | %02" SCNu32 ":%02" SCNu32 ":%02" SCNu32 ".%03" SCNu32 " | ",
-					this->logMessage.c_str(), loggerTime.hour,
+			"%s%s | %02" SCNu32 ":%02" SCNu32 ":%02" SCNu32 ".%03" SCNu32 " | ",
+					this->logMessage.c_str(), sif::ANSI_COLOR_RESET, loggerTime.hour,
 					loggerTime.minute,
 					loggerTime.second,
 					loggerTime.usecond /1000);
