@@ -44,6 +44,8 @@ public:
 
     void checkAndSetClientAddress(sockaddr& clientAddress);
 
+    std::string getUdpPort() const;
+
 protected:
     virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
 

@@ -108,6 +108,10 @@ UdpTmTcBridge::~UdpTmTcBridge() {
     }
 }
 
+std::string UdpTmTcBridge::getUdpPort() const {
+    return udpServerPort;
+}
+
 ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
     int flags = 0;
 
