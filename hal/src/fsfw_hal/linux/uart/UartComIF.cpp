@@ -443,6 +443,60 @@ ReturnValue_t UartComIF::readReceivedMessage(CookieIF *cookie,
     return RETURN_OK;
 }
 
+ReturnValue_t UartComIF::flushUartRxBuffer(CookieIF *cookie) {
+    std::string deviceFile;
+    UartDeviceMapIter uartDeviceMapIter;
+    UartCookie* uartCookie = dynamic_cast<UartCookie*>(cookie);
+    if(uartCookie == nullptr) {
+        sif::warning << "UartComIF::flushUartRxBuffer: Invalid uart cookie!" << std::endl;
+        return NULLPOINTER;
+    }
+    deviceFile = uartCookie->getDeviceFile();
+    uartDeviceMapIter = uartDeviceMap.find(deviceFile);
+    if(uartDeviceMapIter != uartDeviceMap.end()) {
+        int fd = uartDeviceMapIter->second.fileDescriptor;
+        tcflush(fd, TCIFLUSH);
+        return RETURN_OK;
+    }
+    return RETURN_FAILED;
+}
+
+ReturnValue_t UartComIF::flushUartTxBuffer(CookieIF *cookie) {
+    std::string deviceFile;
+    UartDeviceMapIter uartDeviceMapIter;
+    UartCookie* uartCookie = dynamic_cast<UartCookie*>(cookie);
+    if(uartCookie == nullptr) {
+        sif::warning << "UartComIF::flushUartTxBuffer: Invalid uart cookie!" << std::endl;
+        return NULLPOINTER;
+    }
+    deviceFile = uartCookie->getDeviceFile();
+    uartDeviceMapIter = uartDeviceMap.find(deviceFile);
+    if(uartDeviceMapIter != uartDeviceMap.end()) {
+        int fd = uartDeviceMapIter->second.fileDescriptor;
+        tcflush(fd, TCOFLUSH);
+        return RETURN_OK;
+    }
+    return RETURN_FAILED;
+}
+
+ReturnValue_t UartComIF::flushUartTxAndRxBuf(CookieIF *cookie) {
+    std::string deviceFile;
+    UartDeviceMapIter uartDeviceMapIter;
+    UartCookie* uartCookie = dynamic_cast<UartCookie*>(cookie);
+    if(uartCookie == nullptr) {
+        sif::warning << "UartComIF::flushUartTxAndRxBuf: Invalid uart cookie!" << std::endl;
+        return NULLPOINTER;
+    }
+    deviceFile = uartCookie->getDeviceFile();
+    uartDeviceMapIter = uartDeviceMap.find(deviceFile);
+    if(uartDeviceMapIter != uartDeviceMap.end()) {
+        int fd = uartDeviceMapIter->second.fileDescriptor;
+        tcflush(fd, TCIOFLUSH);
+        return RETURN_OK;
+    }
+    return RETURN_FAILED;
+}
+
 void UartComIF::setUartMode(struct termios *options, UartCookie &uartCookie) {
     UartModes uartMode = uartCookie.getUartMode();
     if(uartMode == UartModes::NON_CANONICAL) {
