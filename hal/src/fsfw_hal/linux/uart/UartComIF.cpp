@@ -453,9 +453,12 @@ ReturnValue_t UartComIF::flushUartRxBuffer(CookieIF *cookie) {
     }
     deviceFile = uartCookie->getDeviceFile();
     uartDeviceMapIter = uartDeviceMap.find(deviceFile);
-    int fd = uartDeviceMapIter->second.fileDescriptor;
-    tcflush(fd, TCIFLUSH);
-    return RETURN_OK;
+    if(uartDeviceMapIter != uartDeviceMap.end()) {
+        int fd = uartDeviceMapIter->second.fileDescriptor;
+        tcflush(fd, TCIFLUSH);
+        return RETURN_OK;
+    }
+    return RETURN_FAILED;
 }
 
 ReturnValue_t UartComIF::flushUartTxBuffer(CookieIF *cookie) {
@@ -468,9 +471,12 @@ ReturnValue_t UartComIF::flushUartTxBuffer(CookieIF *cookie) {
     }
     deviceFile = uartCookie->getDeviceFile();
     uartDeviceMapIter = uartDeviceMap.find(deviceFile);
-    int fd = uartDeviceMapIter->second.fileDescriptor;
-    tcflush(fd, TCOFLUSH);
-    return RETURN_OK;
+    if(uartDeviceMapIter != uartDeviceMap.end()) {
+        int fd = uartDeviceMapIter->second.fileDescriptor;
+        tcflush(fd, TCOFLUSH);
+        return RETURN_OK;
+    }
+    return RETURN_FAILED;
 }
 
 ReturnValue_t UartComIF::flushUartTxAndRxBuf(CookieIF *cookie) {
@@ -483,9 +489,12 @@ ReturnValue_t UartComIF::flushUartTxAndRxBuf(CookieIF *cookie) {
     }
     deviceFile = uartCookie->getDeviceFile();
     uartDeviceMapIter = uartDeviceMap.find(deviceFile);
-    int fd = uartDeviceMapIter->second.fileDescriptor;
-    tcflush(fd, TCIOFLUSH);
-    return RETURN_OK;
+    if(uartDeviceMapIter != uartDeviceMap.end()) {
+        int fd = uartDeviceMapIter->second.fileDescriptor;
+        tcflush(fd, TCIOFLUSH);
+        return RETURN_OK;
+    }
+    return RETURN_FAILED;
 }
 
 void UartComIF::setUartMode(struct termios *options, UartCookie &uartCookie) {
