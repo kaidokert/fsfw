@@ -2,8 +2,8 @@
 #define FSFW_OSAL_COMMON_TMTCUDPBRIDGE_H_
 
 #include "TcpIpBase.h"
-#include "../../platform.h"
-#include "../../tmtcservices/TmTcBridge.h"
+#include "fsfw/platform.h"
+#include "fsfw/tmtcservices/TmTcBridge.h"
 
 #ifdef PLATFORM_WIN
 #include <ws2tcpip.h>

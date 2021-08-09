@@ -22,7 +22,7 @@
 #define FSFW_TCP_RECV_WIRETAPPING_ENABLED 0
 #endif
 
-const std::string TcpTmTcServer::DEFAULT_SERVER_PORT =  TcpTmTcBridge::DEFAULT_SERVER_PORT;
+const std::string TcpTmTcServer::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_PORT;
 
 TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
         size_t receptionBufferSize, std::string customTcpServerPort):
@@ -198,6 +198,10 @@ ReturnValue_t TcpTmTcServer::handleTcReception(size_t bytesRecvd) {
 
 void TcpTmTcServer::setTcpBacklog(uint8_t tcpBacklog) {
     this->tcpBacklog = tcpBacklog;
+}
+
+std::string TcpTmTcServer::getTcpPort() const {
+    return tcpPort;
 }
 
 ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket) {

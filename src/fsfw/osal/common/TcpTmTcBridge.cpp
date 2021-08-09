@@ -1,6 +1,5 @@
 #include "fsfw/platform.h"
 #include "fsfw/osal/common/TcpTmTcBridge.h"
-#include "fsfw/osal/common/tcpipHelpers.h"
 
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/ipc/MutexGuard.h"
@@ -16,8 +15,6 @@
 #include <arpa/inet.h>
 
 #endif
-
-const std::string TcpTmTcBridge::DEFAULT_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
 
 TcpTmTcBridge::TcpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
         object_id_t tmStoreId, object_id_t tcStoreId):

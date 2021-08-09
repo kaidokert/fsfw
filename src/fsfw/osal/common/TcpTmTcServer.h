@@ -3,13 +3,14 @@
 
 #include "TcpIpBase.h"
 
-#include "../../platform.h"
-#include "../../ipc/messageQueueDefinitions.h"
-#include "../../ipc/MessageQueueIF.h"
-#include "../../objectmanager/frameworkObjects.h"
-#include "../../objectmanager/SystemObject.h"
-#include "../../storagemanager/StorageManagerIF.h"
-#include "../../tasks/ExecutableObjectIF.h"
+#include "fsfw/platform.h"
+#include "fsfw/osal/common/tcpipHelpers.h"
+#include "fsfw/ipc/messageQueueDefinitions.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/objectmanager/frameworkObjects.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
 
 #ifdef PLATFORM_UNIX
 #include <sys/socket.h>
@@ -43,7 +44,7 @@ class TcpTmTcServer:
 public:
     static const std::string DEFAULT_SERVER_PORT;
 
-    static constexpr  size_t ETHERNET_MTU_SIZE = 1500;
+    static constexpr size_t ETHERNET_MTU_SIZE = 1500;
 
     /**
      * TCP Server Constructor
@@ -63,6 +64,8 @@ public:
     ReturnValue_t initialize() override;
     ReturnValue_t performOperation(uint8_t opCode) override;
     ReturnValue_t initializeAfterTaskCreation() override;
+
+    std::string getTcpPort() const;
 
 protected:
     StorageManagerIF* tcStore = nullptr;
