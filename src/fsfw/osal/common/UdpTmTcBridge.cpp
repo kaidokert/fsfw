@@ -17,13 +17,13 @@
 #define FSFW_UDP_SEND_WIRETAPPING_ENABLED    0
 #endif
 
-const std::string UdpTmTcBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
+const std::string UdpTmTcBridge::DEFAULT_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
 
 UdpTmTcBridge::UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
         std::string udpServerPort, object_id_t tmStoreId, object_id_t tcStoreId):
         TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
     if(udpServerPort == "") {
-        this->udpServerPort = DEFAULT_UDP_SERVER_PORT;
+        this->udpServerPort = DEFAULT_SERVER_PORT;
     }
     else {
         this->udpServerPort = udpServerPort;

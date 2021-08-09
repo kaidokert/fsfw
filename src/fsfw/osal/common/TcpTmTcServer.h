@@ -41,8 +41,7 @@ class TcpTmTcServer:
         public TcpIpBase,
         public ExecutableObjectIF {
 public:
-    /* The ports chosen here should not be used by any other process. */
-    static const std::string DEFAULT_TCP_SERVER_PORT;
+    static const std::string DEFAULT_SERVER_PORT;
 
     static constexpr  size_t ETHERNET_MTU_SIZE = 1500;
 

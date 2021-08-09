@@ -30,7 +30,7 @@ class TcpTmTcBridge:
     friend class TcpTmTcServer;
 public:
     /* The ports chosen here should not be used by any other process. */
-    static const std::string DEFAULT_UDP_SERVER_PORT;
+    static const std::string DEFAULT_SERVER_PORT;
 
     /**
      * Constructor

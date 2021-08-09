@@ -17,7 +17,7 @@
 
 #endif
 
-const std::string TcpTmTcBridge::DEFAULT_UDP_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
+const std::string TcpTmTcBridge::DEFAULT_SERVER_PORT =  tcpip::DEFAULT_SERVER_PORT;
 
 TcpTmTcBridge::TcpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
         object_id_t tmStoreId, object_id_t tcStoreId):
