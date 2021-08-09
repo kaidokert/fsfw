@@ -1,4 +1,4 @@
-![FSFW Logo](logo/FSFW_Logo_V3_bw.png)
+![FSFW Logo](misc/logo/FSFW_Logo_V3_bw.png)
 
 # Flight Software Framework (FSFW)
 
