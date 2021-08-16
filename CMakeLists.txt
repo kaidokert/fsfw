@@ -39,7 +39,7 @@ elseif(${CMAKE_CXX_STANDARD} LESS 11)
 endif()
 
 # Backwards comptability
-if(OS_FSFW AND NOT FSFW_OSAL)
+if(OS_FSFW)
     message(WARNING "Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
     set(FSFW_OSAL OS_FSFW)
 endif()
