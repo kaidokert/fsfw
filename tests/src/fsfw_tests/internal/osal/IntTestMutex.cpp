@@ -1,10 +1,12 @@
 #include "fsfw_tests/internal/osal/IntTestMutex.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"
+#include "fsfw/platform.h"
 
 #include <fsfw/ipc/MutexFactory.h>
 
-#if defined(WIN32) || defined(UNIX)
-#include <fsfw/osal/host/Mutex.h>
+#if defined PLATFORM_WIN || defined PLATFORM_UNIX
+#include "fsfw/osal/host/Mutex.h"
+
 #include <thread>
 #include <future>
 #endif
@@ -20,7 +22,7 @@ void testmutex::testMutex() {
 	// timed_mutex from the C++ library specifies undefined behaviour if
 	// the timed mutex is locked twice from the same thread.
     // TODO: we should pass a define like FSFW_OSAL_HOST to the build.
-#if defined(WIN32) || defined(UNIX)
+#if defined PLATFORM_WIN || defined PLATFORM_UNIX
 	// This calls the function from
 	// another thread and stores the returnvalue in a future.
 	auto future = std::async(&MutexIF::lockMutex, mutex, MutexIF::TimeoutType::WAITING, 1);
@@ -37,8 +39,7 @@ void testmutex::testMutex() {
 		unitt::put_error(id);
 	}
 
-	// TODO: we should pass a define like FSFW_OSAL_HOST to the build.
-#if !defined(WIN32) && !defined(UNIX)
+#if !defined PLATFORM_WIN && !defined PLATFORM_UNIX
     result = mutex->unlockMutex();
 	if(result != MutexIF::CURR_THREAD_DOES_NOT_OWN_MUTEX) {
 		unitt::put_error(id);

@@ -1,9 +1,10 @@
+#include "fsfw/FSFW.h"
 #include "fsfw_tests/internal/osal/IntTestSemaphore.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"
 
-#include <fsfw/tasks/SemaphoreFactory.h>
-#include <fsfw/serviceinterface/ServiceInterface.h>
-#include <fsfw/timemanager/Stopwatch.h>
+#include "fsfw/tasks/SemaphoreFactory.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/timemanager/Stopwatch.h"
 
 #include <cstdlib>
 
@@ -16,7 +17,7 @@ void testsemaph::testBinSemaph() {
 	}
 	testBinSemaphoreImplementation(binSemaph, id);
 	SemaphoreFactory::instance()->deleteSemaphore(binSemaph);
-#if defined(freeRTOS)
+#if defined FSFW_OSAL_FREERTOS
 	SemaphoreIF* binSemaphUsingTask =
 			SemaphoreFactory::instance()->createBinarySemaphore(1);
 	testBinSemaphoreImplementation(binSemaphUsingTask, id);
@@ -36,7 +37,7 @@ void testsemaph::testCountingSemaph() {
 		}
 		testBinSemaphoreImplementation(countingSemaph, id);
 		SemaphoreFactory::instance()->deleteSemaphore(countingSemaph);
-#if defined(freeRTOS)
+#if defined FSFW_OSAL_FREERTOS
 		countingSemaph = SemaphoreFactory::instance()->
 				createCountingSemaphore(1, 1, 1);
 		testBinSemaphoreImplementation(countingSemaph, id);
@@ -50,7 +51,7 @@ void testsemaph::testCountingSemaph() {
 				createCountingSemaphore(3,3);
 		testCountingSemaphImplementation(countingSemaph, id);
 		SemaphoreFactory::instance()->deleteSemaphore(countingSemaph);
-#if defined(freeRTOS)
+#if defined FSFW_OSAL_FREERTOS
 		countingSemaph = SemaphoreFactory::instance()->
 				createCountingSemaphore(3, 0, 1);
 		uint8_t semaphCount = countingSemaph->getSemaphoreCounter();
