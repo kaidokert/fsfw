@@ -1,4 +1,4 @@
-#include <unittest/core/CatchDefinitions.h>
+#include "fsfw_tests/unit/CatchDefinitions.h"
 #include <fsfw/container/SimpleRingBuffer.h>
 
 #include <catch2/catch_test_macros.hpp>

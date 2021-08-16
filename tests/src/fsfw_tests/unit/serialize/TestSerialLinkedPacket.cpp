@@ -1,10 +1,9 @@
 #include "TestSerialLinkedPacket.h"
-#include <unittest/core/CatchDefinitions.h>
+#include "fsfw_tests/unit/CatchDefinitions.h"
 
 #include <fsfw/globalfunctions/arrayprinter.h>
 
 #include <catch2/catch_test_macros.hpp>
-#include <unittest/core/CatchDefinitions.h>
 
 #include <array>
 

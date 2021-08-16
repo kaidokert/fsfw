@@ -1,9 +1,12 @@
 #ifndef FSFW_UNITTEST_TESTS_MOCKS_MESSAGEQUEUEMOCKBASE_H_
 #define FSFW_UNITTEST_TESTS_MOCKS_MESSAGEQUEUEMOCKBASE_H_
 
-#include <fsfw/ipc/MessageQueueIF.h>
-#include <fsfw/ipc/MessageQueueMessage.h>
-#include <unittest/core/CatchDefinitions.h>
+#include "fsfw_tests/unit/CatchDefinitions.h"
+
+#include "fsfw/ipc/CommandMessage.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/ipc/MessageQueueMessage.h"
+
 #include <cstring>
 
 #include <queue>
