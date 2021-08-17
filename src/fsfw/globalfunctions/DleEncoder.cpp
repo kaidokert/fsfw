@@ -83,7 +83,7 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 		size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
 		size_t maxDestStreamlen, size_t *decodedLen) {
-	size_t encodedIndex = 0, decodedIndex = 0;
+	size_t encodedIndex = 0;
 	if(not escapeStxEtx) {
 	    if (*sourceStream != DLE_CHAR) {
 	        return DECODING_ERROR;
@@ -94,21 +94,22 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 	    return DECODING_ERROR;
 	}
 
-	++encodedIndex;
-
 	if(escapeStxEtx) {
-	    return decodeStreamEscaped(encodedIndex, decodedIndex, sourceStream, sourceStreamLen,
+	    return decodeStreamEscaped(sourceStream, sourceStreamLen,
 	            readLen, destStream, maxDestStreamlen, decodedLen);
 	}
 	else {
-        return decodeStreamNonEscaped(encodedIndex, decodedIndex, sourceStream, sourceStreamLen,
+        return decodeStreamNonEscaped(sourceStream, sourceStreamLen,
                 readLen, destStream, maxDestStreamlen, decodedLen);
 	}
 }
 
-ReturnValue_t DleEncoder::decodeStreamEscaped(size_t encodedIndex, size_t decodedIndex,
-        const uint8_t *sourceStream, size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
+ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
+        size_t *readLen, uint8_t *destStream,
         size_t maxDestStreamlen, size_t *decodedLen) {
+    // Skip start marker, was already checked
+    size_t encodedIndex = 1;
+    size_t decodedIndex = 0;
     uint8_t nextByte;
     while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)
             && (sourceStream[encodedIndex] != ETX_CHAR)
@@ -158,9 +159,12 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(size_t encodedIndex, size_t decode
     }
 }
 
-ReturnValue_t DleEncoder::decodeStreamNonEscaped(size_t encodedIndex, size_t decodedIndex,
-        const uint8_t *sourceStream, size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
+ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
+        size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
         size_t maxDestStreamlen, size_t *decodedLen) {
+    // Skip start marker, was already checked
+    size_t encodedIndex = 2;
+    size_t decodedIndex = 0;
     uint8_t nextByte;
     while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)) {
         if (sourceStream[encodedIndex] == DLE_CHAR) {
@@ -177,6 +181,8 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(size_t encodedIndex, size_t dec
             }
             else if(nextByte == ETX_CHAR) {
                 // End of stream reached
+                *readLen = encodedIndex + 2;
+                *decodedLen = decodedIndex;
                 return RETURN_OK;
             }
         }

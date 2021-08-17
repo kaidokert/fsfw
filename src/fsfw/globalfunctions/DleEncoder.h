@@ -12,24 +12,29 @@
  * https://en.wikipedia.org/wiki/C0_and_C1_control_codes
  *
  * This encoder can be used to achieve a basic transport layer when using
- * char based transmission systems.
- * The passed source stream is converted into a encoded stream by adding
- * a STX marker at the start of the stream and an ETX marker at the end of
- * the stream. Any STX, ETX, DLE and CR occurrences in the source stream can be
- * escaped by a DLE character. The encoder also replaces escaped control chars
- * by another char, so STX, ETX and CR should not appear anywhere in the actual
- * encoded data stream.
+ * char based transmission systems. There are two implemented variants:
  *
- * When using a strictly char based reception of packets encoded with DLE,
+ * 1. Escaped variant
+ *
+ * The encoded stream starts with a STX marker and ends with an ETX marker.
+ * STX and ETX occurrences in the stream are escaped and internally encoded as well so the
+ * receiver side can simply check for STX and ETX markers as frame delimiters. When using a
+ * strictly char based reception of packets encoded with DLE,
  * STX can be used to notify a reader that actual data will start to arrive
  * while ETX can be used to notify the reader that the data has ended.
+ *
+ * 2. Non-escaped variant
+ *
+ * The encoded stream starts with DLE STX and ends with DLE ETX. All DLE occurrences in the stream
+ * are escaped with DLE. If the received detects a DLE char, it needs to read the next char
+ * and to determine whether a start (STX) or end (ETX) of a frame has been detected.
  */
 class DleEncoder: public HasReturnvaluesIF {
 public:
     /**
      * Create an encoder instance with the given configuration.
-     * @param escapeStxEtx
-     * @param escapeCr
+     * @param escapeStxEtx  Determines whether the algorithm works in escaped or non-escaped mode
+     * @param escapeCr      In escaped mode, escape all CR occurrences as well
      */
     DleEncoder(bool escapeStxEtx = true, bool escapeCr = false);
     virtual ~DleEncoder();
@@ -62,10 +67,6 @@ public:
      * @param encodedLen
      * @param addStxEtx     Adding STX start marker and ETX end marker can be omitted,
      *                      if they are added manually
-     * @param escapeStxEtx  STX and ETX occurrences in the given source stream will be escaped and
-     *                      encoded by adding 0x40
-     * @param escapeCr      CR characters in the given source stream will be escaped and encoded
-     *                      by adding 0x40
      * @return
      */
     ReturnValue_t encode(const uint8_t *sourceStream, size_t sourceLen,
@@ -80,23 +81,17 @@ public:
      * @param destStream
      * @param maxDestStreamlen
      * @param decodedLen
-     * @param escapeStxEtx  STX and ETX characters were escaped in the encoded stream and need to
-     *                      be decoded back as well
-     * @param escapeCr      CR characters were escaped in the encoded stream and need to
-     *                      be decoded back as well by subtracting 0x40
      * @return
      */
     ReturnValue_t decode(const uint8_t *sourceStream,
             size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
             size_t maxDestStreamlen, size_t *decodedLen);
 
-    ReturnValue_t decodeStreamEscaped(size_t encodedIndex, size_t decodedIndex,
-            const uint8_t *sourceStream, size_t sourceStreamLen, size_t *readLen,
-            uint8_t *destStream, size_t maxDestStreamlen, size_t *decodedLen);
+    ReturnValue_t decodeStreamEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
+            size_t *readLen, uint8_t *destStream, size_t maxDestStreamlen, size_t *decodedLen);
 
-    ReturnValue_t decodeStreamNonEscaped(size_t encodedIndex, size_t decodedIndex,
-            const uint8_t *sourceStream, size_t sourceStreamLen, size_t *readLen,
-            uint8_t *destStream, size_t maxDestStreamlen, size_t *decodedLen);
+    ReturnValue_t decodeStreamNonEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
+            size_t *readLen, uint8_t *destStream, size_t maxDestStreamlen, size_t *decodedLen);
 
 private:
 
