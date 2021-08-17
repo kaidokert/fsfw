@@ -80,19 +80,10 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 	}
 }
 
-ReturnValue_t DleEncoder::encodeEscaped(const uint8_t *sourceStream, size_t sourceLen,
-        uint8_t *destStream, size_t maxDestLen, size_t *encodedLen, bool addStxEtx) {
-}
-
-ReturnValue_t DleEncoder::encodeNonEscaped(const uint8_t *sourceStream, size_t sourceLen,
-        uint8_t *destStream, size_t maxDestLen, size_t *encodedLen, bool addStxEtx) {
-}
-
 ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 		size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
 		size_t maxDestStreamlen, size_t *decodedLen) {
 	size_t encodedIndex = 0, decodedIndex = 0;
-	uint8_t nextByte;
 	if(not escapeStxEtx) {
 	    if (*sourceStream != DLE_CHAR) {
 	        return DECODING_ERROR;
