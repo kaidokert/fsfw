@@ -25,11 +25,15 @@
  * while ETX can be used to notify the reader that the data has ended.
  */
 class DleEncoder: public HasReturnvaluesIF {
-private:
+public:
+    /**
+     * Create an encoder instance with the given configuration.
+     * @param escapeStxEtx
+     * @param escapeCr
+     */
     DleEncoder(bool escapeStxEtx = true, bool escapeCr = false);
     virtual ~DleEncoder();
 
-public:
     static constexpr uint8_t INTERFACE_ID = CLASS_ID::DLE_ENCODER;
     static constexpr ReturnValue_t STREAM_TOO_SHORT = MAKE_RETURN_CODE(0x01);
     static constexpr ReturnValue_t DECODING_ERROR = MAKE_RETURN_CODE(0x02);
