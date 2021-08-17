@@ -26,8 +26,8 @@
  * 2. Non-escaped variant
  *
  * The encoded stream starts with DLE STX and ends with DLE ETX. All DLE occurrences in the stream
- * are escaped with DLE. If the received detects a DLE char, it needs to read the next char
- * and to determine whether a start (STX) or end (ETX) of a frame has been detected.
+ * are escaped with DLE. If the receiver detects a DLE char, it needs to read the next char
+ * to determine whether a start (STX) or end (ETX) of a frame has been detected.
  */
 class DleEncoder: public HasReturnvaluesIF {
 public:
