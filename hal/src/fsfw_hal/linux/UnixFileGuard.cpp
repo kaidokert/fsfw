@@ -1,4 +1,9 @@
+#include "fsfw/FSFW.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw_hal/linux/UnixFileGuard.h"
+
+#include <cerrno>
+#include <cstring>
 
 UnixFileGuard::UnixFileGuard(std::string device, int* fileDescriptor, int flags,
         std::string diagnosticPrefix):
@@ -10,12 +15,11 @@ UnixFileGuard::UnixFileGuard(std::string device, int* fileDescriptor, int flags,
     if (*fileDescriptor < 0) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << diagnosticPrefix <<"Opening device failed with error code " << errno <<
-                "." << std::endl;
-        sif::warning << "Error description: " << strerror(errno) << std::endl;
+        sif::warning << diagnosticPrefix << "Opening device failed with error code " <<
+                errno << ": " << strerror(errno) << std::endl;
 #else
-        sif::printError("%sOpening device failed with error code %d.\n", diagnosticPrefix);
-        sif::printWarning("Error description: %s\n", strerror(errno));
+        sif::printWarning("%sOpening device failed with error code %d: %s\n",
+                diagnosticPrefix, errno, strerror(errno));
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
         openStatus = OPEN_FILE_FAILED;
