@@ -89,6 +89,14 @@ public:
 
 private:
 
+    ReturnValue_t encodeStreamEscaped(const uint8_t *sourceStream, size_t sourceLen,
+            uint8_t *destStream, size_t maxDestLen, size_t *encodedLen,
+            bool addStxEtx = true);
+
+    ReturnValue_t encodeStreamNonEscaped(const uint8_t *sourceStream, size_t sourceLen,
+            uint8_t *destStream, size_t maxDestLen, size_t *encodedLen,
+            bool addStxEtx = true);
+
     ReturnValue_t decodeStreamEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
             size_t *readLen, uint8_t *destStream, size_t maxDestStreamlen, size_t *decodedLen);
 
