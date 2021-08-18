@@ -87,13 +87,13 @@ public:
             size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
             size_t maxDestStreamlen, size_t *decodedLen);
 
+private:
+
     ReturnValue_t decodeStreamEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
             size_t *readLen, uint8_t *destStream, size_t maxDestStreamlen, size_t *decodedLen);
 
     ReturnValue_t decodeStreamNonEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
             size_t *readLen, uint8_t *destStream, size_t maxDestStreamlen, size_t *decodedLen);
-
-private:
 
     bool escapeStxEtx;
     bool escapeCr;

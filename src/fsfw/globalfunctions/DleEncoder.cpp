@@ -122,18 +122,13 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
                 destStream[decodedIndex] = nextByte;
             }
             else {
-                if(this->escapeStxEtx) {
-                    /* The next byte is a STX, DTX or 0x0D character which
-                     * was escaped by a DLE character. The actual byte was
-                     * also encoded by adding + 0x40 to prevent having control chars,
-                     * in the stream at all, so we convert it back. */
-                    if ((nextByte == STX_CHAR + 0x40 or nextByte == ETX_CHAR + 0x40) or
-                            (this->escapeCr and nextByte == CARRIAGE_RETURN + 0x40)) {
-                        destStream[decodedIndex] = nextByte - 0x40;
-                    }
-                    else {
-                        return DECODING_ERROR;
-                    }
+                /* The next byte is a STX, DTX or 0x0D character which
+                 * was escaped by a DLE character. The actual byte was
+                 * also encoded by adding + 0x40 to prevent having control chars,
+                 * in the stream at all, so we convert it back. */
+                if ((nextByte == STX_CHAR + 0x40 or nextByte == ETX_CHAR + 0x40) or
+                        (this->escapeCr and nextByte == CARRIAGE_RETURN + 0x40)) {
+                    destStream[decodedIndex] = nextByte - 0x40;
                 }
                 else {
                     return DECODING_ERROR;
