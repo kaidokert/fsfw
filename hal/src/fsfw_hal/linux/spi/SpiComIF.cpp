@@ -90,7 +90,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
 
     int fileDescriptor = 0;
     UnixFileGuard fileHelper(spiCookie->getSpiDevice(), &fileDescriptor, O_RDWR,
-            "SpiComIF::initializeInterface: ");
+            "SpiComIF::initializeInterface");
     if(fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
         return fileHelper.getOpenResult();
     }
