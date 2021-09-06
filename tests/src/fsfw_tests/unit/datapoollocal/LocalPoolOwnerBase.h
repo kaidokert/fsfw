@@ -2,6 +2,7 @@
 #define FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 
 #include "objects/systemObjectList.h"
+#include "../mocks/MessageQueueMockBase.h"
 
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
 #include <fsfw/datapoollocal/LocalDataSet.h>
@@ -10,7 +11,6 @@
 #include <fsfw/datapoollocal/LocalPoolVector.h>
 #include <fsfw/ipc/QueueFactory.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
-#include <fsfw/tests/unit/mocks/MessageQueueMockBase.h>
 #include <fsfw/datapool/PoolReadGuard.h>
 
 namespace lpool {
