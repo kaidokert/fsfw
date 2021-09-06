@@ -1,3 +1,16 @@
+target_sources(${TARGET_NAME} PRIVATE
+    CatchDefinitions.cpp
+    CatchFactory.cpp
+    printChar.cpp
+)
+
+if(FSFW_CUSTOM_UNITTEST_RUNNER)
+    target_sources(${TARGET_NAME} PRIVATE
+        CatchRunner.cpp
+        CatchSetup.cpp
+    )
+endif()
+
 add_subdirectory(action)
 add_subdirectory(container)
 add_subdirectory(osal)
