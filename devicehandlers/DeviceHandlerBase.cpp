@@ -430,7 +430,12 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
     DeviceReplyInfo info;
     info.maxDelayCycles = maxDelayCycles;
     info.periodic = periodic;
-    info.delayCycles = 0;
+    if(info.periodic) {
+        info.delayCycles = info.maxDelayCycles;
+    }
+    else {
+        info.delayCycles = 0;
+    }
     info.replyLen = replyLen;
     info.dataSet = dataSet;
     info.command = deviceCommandMap.end();
