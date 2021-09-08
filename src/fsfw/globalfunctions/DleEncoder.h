@@ -37,6 +37,9 @@ public:
      * @param escapeCr      In escaped mode, escape all CR occurrences as well
      */
     DleEncoder(bool escapeStxEtx = true, bool escapeCr = false);
+
+    void setEscapeMode(bool escapeStxEtx);
+
     virtual ~DleEncoder();
 
     static constexpr uint8_t INTERFACE_ID = CLASS_ID::DLE_ENCODER;

@@ -22,7 +22,7 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 	    if(not escapeStxEtx) {
 	        destStream[0] = DLE_CHAR;
 	    }
-		destStream[0] = STX_CHAR;
+		destStream[1] = STX_CHAR;
 	}
 
     if(escapeStxEtx) {
@@ -220,6 +220,9 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
     uint8_t nextByte;
     while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)) {
         if (sourceStream[encodedIndex] == DLE_CHAR) {
+            if(encodedIndex + 1 >= sourceStreamLen) {
+                return DECODING_ERROR;
+            }
             nextByte = sourceStream[encodedIndex + 1];
             if(nextByte == STX_CHAR) {
                 *readLen = ++encodedIndex;
@@ -247,3 +250,6 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
     return DECODING_ERROR;
 }
 
+void DleEncoder::setEscapeMode(bool escapeStxEtx) {
+    this->escapeStxEtx = escapeStxEtx;
+}
