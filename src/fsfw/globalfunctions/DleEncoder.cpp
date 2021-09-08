@@ -19,10 +19,11 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
         return STREAM_TOO_SHORT;
     }
 	if (addStxEtx) {
+	    size_t currentIdx = 0;
 	    if(not escapeStxEtx) {
-	        destStream[0] = DLE_CHAR;
+	        destStream[currentIdx++] = DLE_CHAR;
 	    }
-		destStream[1] = STX_CHAR;
+		destStream[currentIdx] = STX_CHAR;
 	}
 
     if(escapeStxEtx) {
@@ -122,8 +123,8 @@ ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, si
 
     if (sourceIndex == sourceLen and encodedIndex < maxDestLen) {
         if (addStxEtx) {
-            destStream[encodedIndex] = ETX_CHAR;
-            ++encodedIndex;
+            destStream[encodedIndex++] = DLE_CHAR;
+            destStream[encodedIndex++] = ETX_CHAR;
         }
         *encodedLen = encodedIndex;
         return RETURN_OK;
