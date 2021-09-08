@@ -10,12 +10,10 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 		size_t* encodedLen, bool addStxEtx) {
     size_t minAllowedLen = 0;
     if(escapeStxEtx) {
-        minAllowedLen = 2;
-
+        minAllowedLen = 1;
     }
     else {
-        minAllowedLen = 1;
-
+        minAllowedLen = 2;
     }
     if(maxDestLen < minAllowedLen) {
         return STREAM_TOO_SHORT;
@@ -41,7 +39,7 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 ReturnValue_t DleEncoder::encodeStreamEscaped(const uint8_t *sourceStream, size_t sourceLen,
         uint8_t *destStream, size_t maxDestLen, size_t *encodedLen,
         bool addStxEtx) {
-    size_t encodedIndex = 2;
+    size_t encodedIndex = 1;
     size_t sourceIndex = 0;
     uint8_t nextByte = 0;
     while (encodedIndex < maxDestLen and sourceIndex < sourceLen) {
@@ -99,7 +97,7 @@ ReturnValue_t DleEncoder::encodeStreamEscaped(const uint8_t *sourceStream, size_
 ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, size_t sourceLen,
         uint8_t *destStream, size_t maxDestLen, size_t *encodedLen,
         bool addStxEtx) {
-    size_t encodedIndex = 1;
+    size_t encodedIndex = 2;
     size_t sourceIndex = 0;
     uint8_t nextByte = 0;
     while (encodedIndex < maxDestLen and sourceIndex < sourceLen) {
@@ -166,10 +164,14 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
     size_t encodedIndex = 1;
     size_t decodedIndex = 0;
     uint8_t nextByte;
-    while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)
-            && (sourceStream[encodedIndex] != ETX_CHAR)
-            && (sourceStream[encodedIndex] != STX_CHAR)) {
+    while ((encodedIndex < sourceStreamLen)
+            and (decodedIndex < maxDestStreamlen)
+            and (sourceStream[encodedIndex] != ETX_CHAR)
+            and (sourceStream[encodedIndex] != STX_CHAR)) {
         if (sourceStream[encodedIndex] == DLE_CHAR) {
+            if(encodedIndex + 1 >= sourceStreamLen) {
+                return DECODING_ERROR;
+            }
             nextByte = sourceStream[encodedIndex + 1];
             // The next byte is a DLE character that was escaped by another
             // DLE character, so we can write it to the destination stream.
