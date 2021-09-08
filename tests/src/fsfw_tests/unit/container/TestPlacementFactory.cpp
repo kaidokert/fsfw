@@ -1,10 +1,11 @@
+#include "fsfw_tests/unit/CatchDefinitions.h"
+
 #include <fsfw/container/PlacementFactory.h>
 #include <fsfw/storagemanager/LocalPool.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 #include <fsfw/container/ArrayList.h>
 
 #include <catch2/catch_test_macros.hpp>
-#include <unittest/core/CatchDefinitions.h>
 
 TEST_CASE( "PlacementFactory Tests", "[TestPlacementFactory]") {
 	INFO("PlacementFactory Tests");
