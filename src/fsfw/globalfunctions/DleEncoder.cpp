@@ -244,6 +244,9 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
                 *decodedLen = decodedIndex;
                 return RETURN_OK;
             }
+            else {
+                return DECODING_ERROR;
+            }
         }
         else {
             destStream[decodedIndex] = sourceStream[encodedIndex];

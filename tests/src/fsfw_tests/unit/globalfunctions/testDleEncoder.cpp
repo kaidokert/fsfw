@@ -101,9 +101,6 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
                 const std::vector<uint8_t>& expectedVec) {
 
             for(size_t faultyDestSize = 0; faultyDestSize < expectedVec.size(); faultyDestSize ++) {
-                if(faultyDestSize == 8) {
-
-                }
                 result = dleEncoder.encode(vecToEncode.data(), vecToEncode.size(),
                         buffer.data(), faultyDestSize, &encodedLen);
                 REQUIRE(result == DleEncoder::STREAM_TOO_SHORT);
@@ -138,6 +135,28 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
         testLambdaDecode(dleEncoder, TEST_ARRAY_3_ENCODED_ESCAPED, TEST_ARRAY_3);
         testLambdaDecode(dleEncoder, TEST_ARRAY_4_ENCODED_ESCAPED, TEST_ARRAY_4);
 
+        // Faulty source data
+        auto testArray1EncodedFaulty = TEST_ARRAY_1_ENCODED_ESCAPED;
+        testArray1EncodedFaulty[3] = 0;
+        result = dleEncoder.decode(testArray1EncodedFaulty.data(), testArray1EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+        auto testArray2EncodedFaulty = TEST_ARRAY_2_ENCODED_ESCAPED;
+        testArray2EncodedFaulty[5] = 0;
+        result = dleEncoder.decode(testArray2EncodedFaulty.data(), testArray2EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+        auto testArray4EncodedFaulty = TEST_ARRAY_4_ENCODED_ESCAPED;
+        testArray4EncodedFaulty[2] = 0;
+        result = dleEncoder.decode(testArray4EncodedFaulty.data(), testArray4EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+        auto testArray4EncodedFaulty2 = TEST_ARRAY_4_ENCODED_ESCAPED;
+        testArray4EncodedFaulty2[4] = 0;
+        result = dleEncoder.decode(testArray4EncodedFaulty2.data(), testArray4EncodedFaulty2.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+
         auto testFaultyDecoding = [&](const std::vector<uint8_t>& vecToDecode,
                 const std::vector<uint8_t>& expectedVec) {
             for(size_t faultyDestSizes = 0;
@@ -168,6 +187,35 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
         testFaultyDecoding(TEST_ARRAY_2_ENCODED_NON_ESCAPED, TEST_ARRAY_2);
         testFaultyDecoding(TEST_ARRAY_3_ENCODED_NON_ESCAPED, TEST_ARRAY_3);
         testFaultyDecoding(TEST_ARRAY_4_ENCODED_NON_ESCAPED, TEST_ARRAY_4);
+
+        // Faulty source data
+        testArray1EncodedFaulty = TEST_ARRAY_1_ENCODED_NON_ESCAPED;
+        auto prevVal = testArray1EncodedFaulty[0];
+        testArray1EncodedFaulty[0] = 0;
+        result = dleEncoder.decode(testArray1EncodedFaulty.data(), testArray1EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+        testArray1EncodedFaulty[0] = prevVal;
+        testArray1EncodedFaulty[1] = 0;
+        result = dleEncoder.decode(testArray1EncodedFaulty.data(), testArray1EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+
+        testArray1EncodedFaulty = TEST_ARRAY_1_ENCODED_NON_ESCAPED;
+        testArray1EncodedFaulty[6] = 0;
+        result = dleEncoder.decode(testArray1EncodedFaulty.data(), testArray1EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+        testArray1EncodedFaulty = TEST_ARRAY_1_ENCODED_NON_ESCAPED;
+        testArray1EncodedFaulty[7] = 0;
+        result = dleEncoder.decode(testArray1EncodedFaulty.data(), testArray1EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+        testArray4EncodedFaulty = TEST_ARRAY_4_ENCODED_NON_ESCAPED;
+        testArray4EncodedFaulty[3] = 0;
+        result = dleEncoder.decode(testArray4EncodedFaulty.data(), testArray4EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
 
         dleEncoder.setEscapeMode(true);
     }
