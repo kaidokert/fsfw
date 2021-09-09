@@ -15,7 +15,7 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
     else {
         minAllowedLen = 2;
     }
-    if(maxDestLen < minAllowedLen) {
+    if(minAllowedLen > maxDestLen) {
         return STREAM_TOO_SHORT;
     }
 	if (addStxEtx) {
@@ -123,6 +123,9 @@ ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, si
 
     if (sourceIndex == sourceLen and encodedIndex < maxDestLen) {
         if (addStxEtx) {
+            if(encodedIndex + 2 >= maxDestLen) {
+                return STREAM_TOO_SHORT;
+            }
             destStream[encodedIndex++] = DLE_CHAR;
             destStream[encodedIndex++] = ETX_CHAR;
         }

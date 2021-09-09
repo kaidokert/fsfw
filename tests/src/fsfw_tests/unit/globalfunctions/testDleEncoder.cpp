@@ -59,6 +59,7 @@ const std::vector<uint8_t> TEST_ARRAY_4_ENCODED_NON_ESCAPED = {
 
 TEST_CASE("DleEncoder" , "[DleEncoder]") {
     DleEncoder dleEncoder;
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
     std::array<uint8_t, 32> buffer;
 
     size_t encodedLen = 0;
@@ -67,7 +68,7 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
 
     auto testLambdaEncode = [&](DleEncoder& encoder, const std::vector<uint8_t>& vecToEncode,
             const std::vector<uint8_t>& expectedVec) {
-        ReturnValue_t result = encoder.encode(vecToEncode.data(), vecToEncode.size(),
+        result = encoder.encode(vecToEncode.data(), vecToEncode.size(),
                 buffer.data(), buffer.size(), &encodedLen);
         REQUIRE(result == retval::CATCH_OK);
         for(size_t idx = 0; idx < expectedVec.size(); idx++) {
@@ -78,7 +79,7 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
 
     auto testLambdaDecode = [&](DleEncoder& encoder, const std::vector<uint8_t>& testVecEncoded,
             const std::vector<uint8_t>& expectedVec) {
-        ReturnValue_t result = encoder.decode(testVecEncoded.data(),
+        result = encoder.decode(testVecEncoded.data(),
                 testVecEncoded.size(),
                 &readLen, buffer.data(), buffer.size(), &decodedLen);
         REQUIRE(result == retval::CATCH_OK);
@@ -95,12 +96,25 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
         testLambdaEncode(dleEncoder, TEST_ARRAY_2, TEST_ARRAY_2_ENCODED_ESCAPED);
         testLambdaEncode(dleEncoder, TEST_ARRAY_3, TEST_ARRAY_3_ENCODED_ESCAPED);
         testLambdaEncode(dleEncoder, TEST_ARRAY_4, TEST_ARRAY_4_ENCODED_ESCAPED);
-        ReturnValue_t result = dleEncoder.encode(TEST_ARRAY_3.data(), TEST_ARRAY_3.size(),
-                buffer.data(), 0, &encodedLen);
-        REQUIRE(result == DleEncoder::STREAM_TOO_SHORT);
-        result = dleEncoder.encode(TEST_ARRAY_1.data(), TEST_ARRAY_1.size(),
-                buffer.data(), 4, &encodedLen);
-        REQUIRE(result == DleEncoder::STREAM_TOO_SHORT);
+
+        auto testFaultyEncoding = [&](const std::vector<uint8_t>& vecToEncode,
+                const std::vector<uint8_t>& expectedVec) {
+
+            for(size_t faultyDestSize = 0; faultyDestSize < expectedVec.size(); faultyDestSize ++) {
+                if(faultyDestSize == 8) {
+
+                }
+                result = dleEncoder.encode(vecToEncode.data(), vecToEncode.size(),
+                        buffer.data(), faultyDestSize, &encodedLen);
+                REQUIRE(result == DleEncoder::STREAM_TOO_SHORT);
+            }
+        };
+
+        testFaultyEncoding(TEST_ARRAY_0, TEST_ARRAY_0_ENCODED_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_1, TEST_ARRAY_1_ENCODED_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_2, TEST_ARRAY_2_ENCODED_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_3, TEST_ARRAY_3_ENCODED_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_4, TEST_ARRAY_4_ENCODED_ESCAPED);
 
         dleEncoder.setEscapeMode(false);
         testLambdaEncode(dleEncoder, TEST_ARRAY_0, TEST_ARRAY_0_ENCODED_NON_ESCAPED);
@@ -108,6 +122,12 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
         testLambdaEncode(dleEncoder, TEST_ARRAY_2, TEST_ARRAY_2_ENCODED_NON_ESCAPED);
         testLambdaEncode(dleEncoder, TEST_ARRAY_3, TEST_ARRAY_3_ENCODED_NON_ESCAPED);
         testLambdaEncode(dleEncoder, TEST_ARRAY_4, TEST_ARRAY_4_ENCODED_NON_ESCAPED);
+
+        testFaultyEncoding(TEST_ARRAY_0, TEST_ARRAY_0_ENCODED_NON_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_1, TEST_ARRAY_1_ENCODED_NON_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_2, TEST_ARRAY_2_ENCODED_NON_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_3, TEST_ARRAY_3_ENCODED_NON_ESCAPED);
+        testFaultyEncoding(TEST_ARRAY_4, TEST_ARRAY_4_ENCODED_NON_ESCAPED);
         dleEncoder.setEscapeMode(true);
     }
 
@@ -117,5 +137,38 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
         testLambdaDecode(dleEncoder, TEST_ARRAY_2_ENCODED_ESCAPED, TEST_ARRAY_2);
         testLambdaDecode(dleEncoder, TEST_ARRAY_3_ENCODED_ESCAPED, TEST_ARRAY_3);
         testLambdaDecode(dleEncoder, TEST_ARRAY_4_ENCODED_ESCAPED, TEST_ARRAY_4);
+
+        auto testFaultyDecoding = [&](const std::vector<uint8_t>& vecToDecode,
+                const std::vector<uint8_t>& expectedVec) {
+            for(size_t faultyDestSizes = 0;
+                    faultyDestSizes < expectedVec.size();
+                    faultyDestSizes ++) {
+                result = dleEncoder.decode(vecToDecode.data(),
+                        vecToDecode.size(), &readLen,
+                        buffer.data(), faultyDestSizes, &decodedLen);
+                REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+            }
+        };
+
+        testFaultyDecoding(TEST_ARRAY_0_ENCODED_ESCAPED, TEST_ARRAY_0);
+        testFaultyDecoding(TEST_ARRAY_1_ENCODED_ESCAPED, TEST_ARRAY_1);
+        testFaultyDecoding(TEST_ARRAY_2_ENCODED_ESCAPED, TEST_ARRAY_2);
+        testFaultyDecoding(TEST_ARRAY_3_ENCODED_ESCAPED, TEST_ARRAY_3);
+        testFaultyDecoding(TEST_ARRAY_4_ENCODED_ESCAPED, TEST_ARRAY_4);
+
+        dleEncoder.setEscapeMode(false);
+        testLambdaDecode(dleEncoder, TEST_ARRAY_0_ENCODED_NON_ESCAPED, TEST_ARRAY_0);
+        testLambdaDecode(dleEncoder, TEST_ARRAY_1_ENCODED_NON_ESCAPED, TEST_ARRAY_1);
+        testLambdaDecode(dleEncoder, TEST_ARRAY_2_ENCODED_NON_ESCAPED, TEST_ARRAY_2);
+        testLambdaDecode(dleEncoder, TEST_ARRAY_3_ENCODED_NON_ESCAPED, TEST_ARRAY_3);
+        testLambdaDecode(dleEncoder, TEST_ARRAY_4_ENCODED_NON_ESCAPED, TEST_ARRAY_4);
+
+        testFaultyDecoding(TEST_ARRAY_0_ENCODED_NON_ESCAPED, TEST_ARRAY_0);
+        testFaultyDecoding(TEST_ARRAY_1_ENCODED_NON_ESCAPED, TEST_ARRAY_1);
+        testFaultyDecoding(TEST_ARRAY_2_ENCODED_NON_ESCAPED, TEST_ARRAY_2);
+        testFaultyDecoding(TEST_ARRAY_3_ENCODED_NON_ESCAPED, TEST_ARRAY_3);
+        testFaultyDecoding(TEST_ARRAY_4_ENCODED_NON_ESCAPED, TEST_ARRAY_4);
+
+        dleEncoder.setEscapeMode(true);
     }
 }
