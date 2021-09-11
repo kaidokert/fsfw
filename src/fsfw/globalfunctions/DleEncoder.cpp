@@ -8,14 +8,6 @@ DleEncoder::~DleEncoder() {}
 ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 		size_t sourceLen, uint8_t* destStream, size_t maxDestLen,
 		size_t* encodedLen, bool addStxEtx) {
-	if (addStxEtx) {
-	    size_t currentIdx = 0;
-	    if(not escapeStxEtx) {
-	        destStream[currentIdx++] = DLE_CHAR;
-	    }
-
-	}
-
     if(escapeStxEtx) {
         return encodeStreamEscaped(sourceStream, sourceLen,
                 destStream, maxDestLen, encodedLen, addStxEtx);
