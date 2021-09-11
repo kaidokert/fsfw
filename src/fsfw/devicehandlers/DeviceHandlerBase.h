@@ -449,7 +449,9 @@ protected:
      * @param replyLen Will be supplied to the requestReceiveMessage call of
      * the communication interface.
      * @param periodic	Indicates if the command is periodic (i.e. it is sent
-     * by the device repeatedly without request) or not. Default is aperiodic (0)
+     * by the device repeatedly without request) or not. Default is aperiodic (0).
+     * Please note that periodic replies are disabled by default. You can enable them with
+     * #enablePeriodicReplies
      * @return	- @c RETURN_OK when the command was successfully inserted,
      *          - @c RETURN_FAILED else.
      */
@@ -464,7 +466,9 @@ protected:
      * @param maxDelayCycles The maximum number of delay cycles the reply waits
      * until it times out.
      * @param periodic	Indicates if the command is periodic (i.e. it is sent
-     * by the device repeatedly without request) or not. Default is aperiodic (0)
+     * by the device repeatedly without request) or not. Default is aperiodic (0).
+     * Please note that periodic replies are disabled by default. You can enable them with
+     * #enablePeriodicReplies
      * @return	- @c RETURN_OK when the command was successfully inserted,
      *          - @c RETURN_FAILED else.
      */
@@ -481,6 +485,13 @@ protected:
     ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand);
 
     /**
+     * Enables a periodic reply for a given command. It sets to delay cycles to the specified
+     * maximum delay cycles for a given reply ID.
+     * @return
+     */
+    ReturnValue_t enablePeriodicReply(DeviceCommandId_t deviceReply);
+
+    /**
      * @brief   This function returns the reply length of the next reply to read.
      *
      * @param deviceCommand The command which triggered the device reply.
@@ -493,16 +504,14 @@ protected:
     virtual size_t getNextReplyLength(DeviceCommandId_t deviceCommand);
 
     /**
-     * @brief 	This is a helper method to facilitate updating entries
-     *        	in the reply map.
+     * @brief 	This is a helper method to facilitate updating entries in the reply map.
      * @param deviceCommand	Identifier of the reply to update.
-     * @param delayCycles The current number of delay cycles to wait.
-     * As stated in #fillCommandAndCookieMap, to disable periodic commands,
-     * this is set to zero.
+     * @param delayCycles The current number of delay cycles to wait. As stated in
+     * #fillCommandAndReplyMap, to disable periodic commands, this is set to zero.
      * @param maxDelayCycles The maximum number of delay cycles the reply waits
      * until it times out. By passing 0 the entry remains untouched.
      * @param periodic Indicates if the command is periodic (i.e. it is sent
-     * by the device repeatedly without request) or not.Default is aperiodic (0).
+     * by the device repeatedly without request) or not. Default is aperiodic (0).
      * Warning: The setting always overrides the value that was entered in the map.
      * @return - @c RETURN_OK when the command was successfully inserted,
      *         - @c RETURN_FAILED else.
