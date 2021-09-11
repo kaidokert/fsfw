@@ -8,22 +8,12 @@ DleEncoder::~DleEncoder() {}
 ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 		size_t sourceLen, uint8_t* destStream, size_t maxDestLen,
 		size_t* encodedLen, bool addStxEtx) {
-    size_t minAllowedLen = 0;
-    if(escapeStxEtx) {
-        minAllowedLen = 1;
-    }
-    else {
-        minAllowedLen = 2;
-    }
-    if(minAllowedLen > maxDestLen) {
-        return STREAM_TOO_SHORT;
-    }
 	if (addStxEtx) {
 	    size_t currentIdx = 0;
 	    if(not escapeStxEtx) {
 	        destStream[currentIdx++] = DLE_CHAR;
 	    }
-		destStream[currentIdx] = STX_CHAR;
+
 	}
 
     if(escapeStxEtx) {
@@ -40,9 +30,15 @@ ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
 ReturnValue_t DleEncoder::encodeStreamEscaped(const uint8_t *sourceStream, size_t sourceLen,
         uint8_t *destStream, size_t maxDestLen, size_t *encodedLen,
         bool addStxEtx) {
-    size_t encodedIndex = 1;
+    size_t encodedIndex = 0;
     size_t sourceIndex = 0;
     uint8_t nextByte = 0;
+    if(addStxEtx) {
+        if(maxDestLen < 1) {
+            return STREAM_TOO_SHORT;
+        }
+        destStream[encodedIndex++] = STX_CHAR;
+    }
     while (encodedIndex < maxDestLen and sourceIndex < sourceLen) {
         nextByte = sourceStream[sourceIndex];
         // STX, ETX and CR characters in the stream need to be escaped with DLE
@@ -82,8 +78,11 @@ ReturnValue_t DleEncoder::encodeStreamEscaped(const uint8_t *sourceStream, size_
         ++sourceIndex;
     }
 
-    if (sourceIndex == sourceLen and encodedIndex < maxDestLen) {
+    if (sourceIndex == sourceLen) {
         if (addStxEtx) {
+            if(encodedIndex + 1 >= maxDestLen) {
+                return STREAM_TOO_SHORT;
+            }
             destStream[encodedIndex] = ETX_CHAR;
             ++encodedIndex;
         }
@@ -98,9 +97,16 @@ ReturnValue_t DleEncoder::encodeStreamEscaped(const uint8_t *sourceStream, size_
 ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, size_t sourceLen,
         uint8_t *destStream, size_t maxDestLen, size_t *encodedLen,
         bool addStxEtx) {
-    size_t encodedIndex = 2;
+    size_t encodedIndex = 0;
     size_t sourceIndex = 0;
     uint8_t nextByte = 0;
+    if(addStxEtx) {
+        if(maxDestLen < 2) {
+            return STREAM_TOO_SHORT;
+        }
+        destStream[encodedIndex++] = DLE_CHAR;
+        destStream[encodedIndex++] = STX_CHAR;
+    }
     while (encodedIndex < maxDestLen and sourceIndex < sourceLen) {
         nextByte = sourceStream[sourceIndex];
         // DLE characters are simply escaped with DLE.
@@ -121,7 +127,7 @@ ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, si
         ++sourceIndex;
     }
 
-    if (sourceIndex == sourceLen and encodedIndex < maxDestLen) {
+    if (sourceIndex == sourceLen) {
         if (addStxEtx) {
             if(encodedIndex + 2 >= maxDestLen) {
                 return STREAM_TOO_SHORT;
@@ -140,17 +146,6 @@ ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, si
 ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 		size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
 		size_t maxDestStreamlen, size_t *decodedLen) {
-	size_t encodedIndex = 0;
-	if(not escapeStxEtx) {
-	    if (*sourceStream != DLE_CHAR) {
-	        return DECODING_ERROR;
-	    }
-	    ++encodedIndex;
-	}
-	if (sourceStream[encodedIndex] != STX_CHAR) {
-	    return DECODING_ERROR;
-	}
-
 	if(escapeStxEtx) {
 	    return decodeStreamEscaped(sourceStream, sourceStreamLen,
 	            readLen, destStream, maxDestStreamlen, decodedLen);
@@ -164,10 +159,15 @@ ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
 ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
         size_t *readLen, uint8_t *destStream,
         size_t maxDestStreamlen, size_t *decodedLen) {
-    // Skip start marker, was already checked
-    size_t encodedIndex = 1;
+    size_t encodedIndex = 0;
     size_t decodedIndex = 0;
     uint8_t nextByte;
+    if(maxDestStreamlen < 1) {
+        return STREAM_TOO_SHORT;
+    }
+    if (sourceStream[encodedIndex++] != STX_CHAR) {
+        return DECODING_ERROR;
+    }
     while ((encodedIndex < sourceStreamLen)
             and (decodedIndex < maxDestStreamlen)
             and (sourceStream[encodedIndex] != ETX_CHAR)
@@ -192,6 +192,8 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
                     destStream[decodedIndex] = nextByte - 0x40;
                 }
                 else {
+                    // Set readLen so user can resume parsing after incorrect data
+                    *readLen = encodedIndex + 2;
                     return DECODING_ERROR;
                 }
             }
@@ -205,8 +207,13 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
         ++decodedIndex;
     }
     if (sourceStream[encodedIndex] != ETX_CHAR) {
-        *readLen = ++encodedIndex;
-        return DECODING_ERROR;
+        if(decodedIndex == maxDestStreamlen) {
+            return STREAM_TOO_SHORT;
+        }
+        else {
+            *readLen = ++encodedIndex;
+            return DECODING_ERROR;
+        }
     }
     else {
         *readLen = ++encodedIndex;
@@ -218,18 +225,29 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
 ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
         size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
         size_t maxDestStreamlen, size_t *decodedLen) {
-    // Skip start marker, was already checked
-    size_t encodedIndex = 2;
+    size_t encodedIndex = 0;
     size_t decodedIndex = 0;
     uint8_t nextByte;
+    if(maxDestStreamlen < 2) {
+        return STREAM_TOO_SHORT;
+    }
+    if (sourceStream[encodedIndex++] != DLE_CHAR) {
+        return DECODING_ERROR;
+    }
+    if (sourceStream[encodedIndex++] != STX_CHAR) {
+        return DECODING_ERROR;
+    }
     while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)) {
         if (sourceStream[encodedIndex] == DLE_CHAR) {
             if(encodedIndex + 1 >= sourceStreamLen) {
+                *readLen = encodedIndex;
                 return DECODING_ERROR;
             }
             nextByte = sourceStream[encodedIndex + 1];
             if(nextByte == STX_CHAR) {
-                *readLen = ++encodedIndex;
+                // Set readLen so the DLE/STX char combination is preserved. Could be start of
+                // another frame
+                *readLen = encodedIndex;
                 return DECODING_ERROR;
             }
             else if(nextByte == DLE_CHAR) {
@@ -245,6 +263,7 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
                 return RETURN_OK;
             }
             else {
+                *readLen = encodedIndex;
                 return DECODING_ERROR;
             }
         }
@@ -254,7 +273,13 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
         ++encodedIndex;
         ++decodedIndex;
     }
-    return DECODING_ERROR;
+    *readLen = encodedIndex;
+    if(decodedIndex == maxDestStreamlen) {
+        return STREAM_TOO_SHORT;
+    }
+    else {
+        return DECODING_ERROR;
+    }
 }
 
 void DleEncoder::setEscapeMode(bool escapeStxEtx) {

@@ -165,7 +165,7 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
                 result = dleEncoder.decode(vecToDecode.data(),
                         vecToDecode.size(), &readLen,
                         buffer.data(), faultyDestSizes, &decodedLen);
-                REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
+                REQUIRE(result == static_cast<int>(DleEncoder::STREAM_TOO_SHORT));
             }
         };
 

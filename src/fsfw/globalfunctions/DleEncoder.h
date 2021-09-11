@@ -71,6 +71,8 @@ public:
      * @param addStxEtx     Adding STX start marker and ETX end marker can be omitted,
      *                      if they are added manually
      * @return
+     *  - RETURN_OK for successful encoding operation
+     *  - STREAM_TOO_SHORT if the destination stream is too short
      */
     ReturnValue_t encode(const uint8_t *sourceStream, size_t sourceLen,
             uint8_t *destStream, size_t maxDestLen, size_t *encodedLen,
@@ -85,6 +87,9 @@ public:
      * @param maxDestStreamlen
      * @param decodedLen
      * @return
+     *  - RETURN_OK for successful decode operation
+     *  - DECODE_ERROR if the source stream is invalid
+     *  - STREAM_TOO_SHORT if the destination stream is too short
      */
     ReturnValue_t decode(const uint8_t *sourceStream,
             size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
