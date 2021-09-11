@@ -481,7 +481,7 @@ ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceRep
     }
 }
 
-ReturnValue_t DeviceHandlerBase::enablePeriodicReply(DeviceCommandId_t deviceReply) {
+ReturnValue_t DeviceHandlerBase::enablePeriodicReply(bool enable, DeviceCommandId_t deviceReply) {
     auto replyIter = deviceReplyMap.find(deviceReply);
     if (replyIter == deviceReplyMap.end()) {
         triggerEvent(INVALID_DEVICE_COMMAND, deviceReply);
@@ -491,7 +491,12 @@ ReturnValue_t DeviceHandlerBase::enablePeriodicReply(DeviceCommandId_t deviceRep
         if(not info->periodic) {
             return COMMAND_NOT_SUPPORTED;
         }
-        info->delayCycles = info->maxDelayCycles;
+        if(enable) {
+            info->delayCycles = info->maxDelayCycles;
+        }
+        else {
+            info->delayCycles = 0;
+        }
     }
     return HasReturnvaluesIF::RETURN_OK;
 }

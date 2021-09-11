@@ -486,10 +486,11 @@ protected:
 
     /**
      * Enables a periodic reply for a given command. It sets to delay cycles to the specified
-     * maximum delay cycles for a given reply ID.
+     * maximum delay cycles for a given reply ID if enabled or to 0 if disabled.
+     * @param enable Specify whether to enable or disable a given periodic reply
      * @return
      */
-    ReturnValue_t enablePeriodicReply(DeviceCommandId_t deviceReply);
+    ReturnValue_t enablePeriodicReply(bool enable, DeviceCommandId_t deviceReply);
 
     /**
      * @brief   This function returns the reply length of the next reply to read.
