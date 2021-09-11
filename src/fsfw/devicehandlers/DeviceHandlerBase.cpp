@@ -481,7 +481,7 @@ ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceRep
     }
 }
 
-ReturnValue_t DeviceHandlerBase::enablePeriodicReply(bool enable, DeviceCommandId_t deviceReply) {
+ReturnValue_t DeviceHandlerBase::updatePeriodicReply(bool enable, DeviceCommandId_t deviceReply) {
     auto replyIter = deviceReplyMap.find(deviceReply);
     if (replyIter == deviceReplyMap.end()) {
         triggerEvent(INVALID_DEVICE_COMMAND, deviceReply);

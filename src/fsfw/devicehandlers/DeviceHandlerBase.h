@@ -451,7 +451,7 @@ protected:
      * @param periodic	Indicates if the command is periodic (i.e. it is sent
      * by the device repeatedly without request) or not. Default is aperiodic (0).
      * Please note that periodic replies are disabled by default. You can enable them with
-     * #enablePeriodicReplies
+     * #updatePeriodicReply
      * @return	- @c RETURN_OK when the command was successfully inserted,
      *          - @c RETURN_FAILED else.
      */
@@ -468,7 +468,7 @@ protected:
      * @param periodic	Indicates if the command is periodic (i.e. it is sent
      * by the device repeatedly without request) or not. Default is aperiodic (0).
      * Please note that periodic replies are disabled by default. You can enable them with
-     * #enablePeriodicReplies
+     * #updatePeriodicReply
      * @return	- @c RETURN_OK when the command was successfully inserted,
      *          - @c RETURN_FAILED else.
      */
@@ -490,7 +490,7 @@ protected:
      * @param enable Specify whether to enable or disable a given periodic reply
      * @return
      */
-    ReturnValue_t enablePeriodicReply(bool enable, DeviceCommandId_t deviceReply);
+    ReturnValue_t updatePeriodicReply(bool enable, DeviceCommandId_t deviceReply);
 
     /**
      * @brief   This function returns the reply length of the next reply to read.
