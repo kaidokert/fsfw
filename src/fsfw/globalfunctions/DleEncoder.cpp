@@ -1,13 +1,13 @@
 #include "fsfw/globalfunctions/DleEncoder.h"
 
-DleEncoder::DleEncoder(bool escapeStxEtx, bool escapeCr): escapeStxEtx(escapeStxEtx),
-        escapeCr(escapeCr) {}
+DleEncoder::DleEncoder(bool escapeStxEtx, bool escapeCr):
+        escapeStxEtx(escapeStxEtx), escapeCr(escapeCr) {}
 
 DleEncoder::~DleEncoder() {}
 
 ReturnValue_t DleEncoder::encode(const uint8_t* sourceStream,
-		size_t sourceLen, uint8_t* destStream, size_t maxDestLen,
-		size_t* encodedLen, bool addStxEtx) {
+        size_t sourceLen, uint8_t* destStream, size_t maxDestLen,
+        size_t* encodedLen, bool addStxEtx) {
     if(escapeStxEtx) {
         return encodeStreamEscaped(sourceStream, sourceLen,
                 destStream, maxDestLen, encodedLen, addStxEtx);
@@ -136,16 +136,16 @@ ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, si
 }
 
 ReturnValue_t DleEncoder::decode(const uint8_t *sourceStream,
-		size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
-		size_t maxDestStreamlen, size_t *decodedLen) {
-	if(escapeStxEtx) {
-	    return decodeStreamEscaped(sourceStream, sourceStreamLen,
-	            readLen, destStream, maxDestStreamlen, decodedLen);
-	}
-	else {
+        size_t sourceStreamLen, size_t *readLen, uint8_t *destStream,
+        size_t maxDestStreamlen, size_t *decodedLen) {
+    if(escapeStxEtx) {
+        return decodeStreamEscaped(sourceStream, sourceStreamLen,
+                readLen, destStream, maxDestStreamlen, decodedLen);
+    }
+    else {
         return decodeStreamNonEscaped(sourceStream, sourceStreamLen,
                 readLen, destStream, maxDestStreamlen, decodedLen);
-	}
+    }
 }
 
 ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_t sourceStreamLen,
