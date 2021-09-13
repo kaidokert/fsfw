@@ -469,7 +469,7 @@ ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceRep
     auto replyIter = deviceReplyMap.find(deviceReply);
     if (replyIter == deviceReplyMap.end()) {
         triggerEvent(INVALID_DEVICE_COMMAND, deviceReply);
-        return RETURN_FAILED;
+        return COMMAND_NOT_SUPPORTED;
     } else {
         DeviceReplyInfo *info = &(replyIter->second);
         if (maxDelayCycles != 0) {
@@ -481,6 +481,25 @@ ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceRep
     }
 }
 
+ReturnValue_t DeviceHandlerBase::updatePeriodicReply(bool enable, DeviceCommandId_t deviceReply) {
+    auto replyIter = deviceReplyMap.find(deviceReply);
+    if (replyIter == deviceReplyMap.end()) {
+        triggerEvent(INVALID_DEVICE_COMMAND, deviceReply);
+        return COMMAND_NOT_SUPPORTED;
+    } else {
+        DeviceReplyInfo *info = &(replyIter->second);
+        if(not info->periodic) {
+            return COMMAND_NOT_SUPPORTED;
+        }
+        if(enable) {
+            info->delayCycles = info->maxDelayCycles;
+        }
+        else {
+            info->delayCycles = 0;
+        }
+    }
+    return HasReturnvaluesIF::RETURN_OK;
+}
 
 ReturnValue_t DeviceHandlerBase::setReplyDataset(DeviceCommandId_t replyId,
         LocalPoolDataSetBase *dataSet) {
