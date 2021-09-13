@@ -4,8 +4,8 @@
 
 UartCookie::UartCookie(object_id_t handlerId, std::string deviceFile, UartModes uartMode,
         uint32_t baudrate, size_t maxReplyLen):
-        handlerId(handlerId), deviceFile(deviceFile), uartMode(uartMode), baudrate(baudrate),
-        maxReplyLen(maxReplyLen) {
+        handlerId(handlerId), deviceFile(deviceFile), uartMode(uartMode),
+        baudrate(baudrate), maxReplyLen(maxReplyLen) {
 }
 
 UartCookie::~UartCookie() {}
