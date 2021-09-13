@@ -1,7 +1,7 @@
 #ifndef FSFW_OSAL_COMMON_TCPIPCOMMON_H_
 #define FSFW_OSAL_COMMON_TCPIPCOMMON_H_
 
-#include "../../timemanager/clockDefinitions.h"
+#include "fsfw/timemanager/clockDefinitions.h"
 #include <string>
 
 #ifdef _WIN32
@@ -13,7 +13,7 @@
 
 namespace tcpip {
 
-const char* const DEFAULT_SERVER_PORT = "7301";
+static constexpr char DEFAULT_SERVER_PORT[] = "7301";
 
 enum class Protocol {
     UDP,

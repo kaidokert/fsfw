@@ -10,6 +10,7 @@ endif()
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
+option(FSFW_ADD_UNITTESTS "Add regular unittests. Requires Catch2" OFF)
 option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
 
 # Optional sources
@@ -38,7 +39,7 @@ elseif(${CMAKE_CXX_STANDARD} LESS 11)
 endif()
 
 # Backwards comptability
-if(OS_FSFW)
+if(OS_FSFW AND NOT FSFW_OSAL)
     message(WARNING "Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
     set(FSFW_OSAL OS_FSFW)
 endif()

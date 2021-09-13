@@ -1,10 +1,10 @@
 #include "LocalPoolOwnerBase.h"
+#include "fsfw_tests/unit/CatchDefinitions.h"
 
-#include <catch2/catch_test_macros.hpp>
 #include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
-#include <unittest/core/CatchDefinitions.h>
 
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("LocalPoolVariable" , "[LocPoolVarTest]") {
     LocalPoolOwnerBase* poolOwner = ObjectManager::instance()->
