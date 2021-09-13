@@ -3,6 +3,11 @@
 
 #include "FSFWConfig.h"
 
+#cmakedefine FSFW_OSAL_RTEMS
+#cmakedefine FSFW_OSAL_FREERTOS
+#cmakedefine FSFW_OSAL_LINUX
+#cmakedefine FSFW_OSAL_HOST
+
 #cmakedefine FSFW_ADD_RMAP
 #cmakedefine FSFW_ADD_DATALINKLAYER
 #cmakedefine FSFW_ADD_TMSTORAGE

@@ -2,7 +2,7 @@
 #define FSFW_OSAL_COMMON_TCPTMTCBRIDGE_H_
 
 #include "TcpIpBase.h"
-#include "../../tmtcservices/TmTcBridge.h"
+#include "fsfw/tmtcservices/TmTcBridge.h"
 
 #ifdef _WIN32
 
@@ -29,8 +29,6 @@ class TcpTmTcBridge:
         public TmTcBridge {
     friend class TcpTmTcServer;
 public:
-    /* The ports chosen here should not be used by any other process. */
-    static const std::string DEFAULT_UDP_SERVER_PORT;
 
     /**
      * Constructor
