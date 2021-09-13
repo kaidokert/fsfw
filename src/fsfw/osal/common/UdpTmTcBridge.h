@@ -2,8 +2,8 @@
 #define FSFW_OSAL_COMMON_TMTCUDPBRIDGE_H_
 
 #include "TcpIpBase.h"
-#include "../../platform.h"
-#include "../../tmtcservices/TmTcBridge.h"
+#include "fsfw/platform.h"
+#include "fsfw/tmtcservices/TmTcBridge.h"
 
 #ifdef PLATFORM_WIN
 #include <ws2tcpip.h>
@@ -28,7 +28,7 @@ class UdpTmTcBridge:
     friend class UdpTcPollingTask;
 public:
     /* The ports chosen here should not be used by any other process. */
-    static const std::string DEFAULT_UDP_SERVER_PORT;
+    static const std::string DEFAULT_SERVER_PORT;
 
     UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
             std::string udpServerPort = "", object_id_t tmStoreId = objects::TM_STORE,
@@ -43,6 +43,8 @@ public:
     ReturnValue_t initialize() override;
 
     void checkAndSetClientAddress(sockaddr& clientAddress);
+
+    std::string getUdpPort() const;
 
 protected:
     virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
