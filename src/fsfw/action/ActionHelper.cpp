@@ -32,6 +32,17 @@ ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
         setQueueToUse(queueToUse_);
     }
 
+    if(queueToUse == nullptr) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "ActionHelper::initialize: No queue set" << std::endl;
+#else
+        sif::printWarning("ActionHelper::initialize: No queue set\n");
+#endif
+#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+
     return HasReturnvaluesIF::RETURN_OK;
 }
 
