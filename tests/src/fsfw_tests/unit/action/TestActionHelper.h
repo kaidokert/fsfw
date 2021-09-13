@@ -1,11 +1,10 @@
 #ifndef UNITTEST_HOSTED_TESTACTIONHELPER_H_
 #define UNITTEST_HOSTED_TESTACTIONHELPER_H_
 
+#include "fsfw_tests/unit/CatchDefinitions.h"
 #include <fsfw/action/HasActionsIF.h>
 #include <fsfw/ipc/MessageQueueIF.h>
-#include <unittest/core/CatchDefinitions.h>
 #include <cstring>
-
 
 class ActionHelperOwnerMockBase: public HasActionsIF {
 public:
