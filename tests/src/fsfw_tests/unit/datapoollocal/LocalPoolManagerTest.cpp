@@ -1,7 +1,5 @@
 #include "LocalPoolOwnerBase.h"
-
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_approx.hpp>
+#include "fsfw_tests/unit/CatchDefinitions.h"
 
 #include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/datapool/PoolReadGuard.h>
@@ -10,7 +8,10 @@
 #include <fsfw/housekeeping/HousekeepingSnapshot.h>
 #include <fsfw/ipc/CommandMessageCleaner.h>
 #include <fsfw/timemanager/CCSDSTime.h>
-#include <unittest/core/CatchDefinitions.h>
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
 #include <iostream>
 
 

@@ -1,17 +1,21 @@
 #include "CatchFactory.h"
+#include "datapoollocal/LocalPoolOwnerBase.h"
+#include "mocks/HkReceiverMock.h"
+
 #include <fsfw/datapoollocal/LocalDataPoolManager.h>
 #include <fsfw/devicehandlers/DeviceHandlerBase.h>
 
 #include <fsfw/events/EventManager.h>
 #include <fsfw/health/HealthTable.h>
-#include <fsfw/internalError/InternalErrorReporter.h>
+#include <fsfw/internalerror/InternalErrorReporter.h>
 #include <fsfw/objectmanager/frameworkObjects.h>
 #include <fsfw/storagemanager/PoolManager.h>
 #include <fsfw/tmtcpacket/pus/tm/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
-#include <fsfw/unittest/tests/datapoollocal/LocalPoolOwnerBase.h>
-#include <fsfw/unittest/tests/mocks/HkReceiverMock.h>
+
+
+#if FSFW_ADD_DEFAULT_FACTORY_FUNCTIONS == 1
 
 /**
  * @brief Produces system objects.
@@ -26,7 +30,7 @@
  *
  * @ingroup init
  */
-void Factory::produce(void) {
+void Factory::produceFrameworkObjects(void* args) {
 	setStaticFrameworkObjectIds();
 	new EventManager(objects::EVENT_MANAGER);
 	new HealthTable(objects::HEALTH_TABLE);
@@ -55,7 +59,6 @@ void Factory::produce(void) {
         };
 		new PoolManager(objects::IPC_STORE, poolCfg);
 	}
-
 }
 
 void Factory::setStaticFrameworkObjectIds() {
@@ -77,5 +80,4 @@ void Factory::setStaticFrameworkObjectIds() {
 	TmPacketBase::timeStamperId = objects::NO_OBJECT;
 }
 
-
-
+#endif

@@ -1,13 +1,10 @@
 #include "TestActionHelper.h"
-
-#include <unittest/core/CatchDefinitions.h>
+#include "fsfw_tests/unit/mocks/MessageQueueMockBase.h"
 
 #include <fsfw/action/ActionHelper.h>
 #include <fsfw/ipc/CommandMessage.h>
-#include <fsfw/tests/unit/mocks/MessageQueueMockBase.h>
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <array>
 
 

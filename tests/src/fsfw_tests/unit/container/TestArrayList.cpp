@@ -1,8 +1,9 @@
+#include "fsfw_tests/unit/CatchDefinitions.h"
+
 #include <fsfw/container/ArrayList.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
 
 #include <catch2/catch_test_macros.hpp>
-#include <unittest/core/CatchDefinitions.h>
 
 /**
  * @brief 	Array List test

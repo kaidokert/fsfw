@@ -32,7 +32,7 @@ if(NOT FSFW_OSAL)
 	set(FSFW_OSAL host CACHE STRING "OS for the FSFW.")
 endif()
 
-option(CUSTOM_UNITTEST_RUNNER 
+option(FSFW_CUSTOM_UNITTEST_RUNNER 
 	"Specify whether custom main or Catch2 main is used" TRUE
 )
 
@@ -49,7 +49,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set names and variables
 set(TARGET_NAME ${CMAKE_PROJECT_NAME}) 
-if(CUSTOM_UNITTEST_RUNNER)
+if(FSFW_CUSTOM_UNITTEST_RUNNER)
 	set(CATCH2_TARGET Catch2)
 else()
 	set(CATCH2_TARGET Catch2WithMain)

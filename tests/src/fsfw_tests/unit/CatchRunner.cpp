@@ -6,7 +6,7 @@
  * from the eclipse market place to get colored characters.
  */
 
-#include <TestsConfig.h>
+#include "CatchRunner.h"
 
 #define CATCH_CONFIG_COLOUR_WINDOWS
 
@@ -14,11 +14,11 @@
 
 extern int customSetup();
 
-int main( int argc, char* argv[] ) {
+int fsfwtest::customMain(int argc, char* argv[]) {
     customSetup();
 
     // Catch internal function call
-    int result = Catch::Session().run( argc, argv );
+    int result = Catch::Session().run(argc, argv);
 
     // global clean-up
     return result;

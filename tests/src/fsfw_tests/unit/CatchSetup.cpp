@@ -5,10 +5,9 @@
 #include <gcov.h>
 #endif
 
-#include <fsfw/objectmanager/ObjectManager.h>
-#include <fsfw/objectmanager/ObjectManagerIF.h>
-#include <fsfw/storagemanager/StorageManagerIF.h>
-#include <fsfw/serviceinterface/ServiceInterfaceStream.h>
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 
 /* Global instantiations normally done in main.cpp */
@@ -24,13 +23,11 @@ ServiceInterfaceStream warning("WARNING");
 }
 #endif
 
-/* Global object manager */
-ObjectManagerIF *objectManager;
-
 int customSetup() {
     // global setup
-    objectManager = new ObjectManager(Factory::produce);
-    objectManager -> initialize();
+    ObjectManager* objMan = ObjectManager::instance();
+    objMan->setObjectFactoryFunction(Factory::produceFrameworkObjects, nullptr);
+    objMan->initialize();
     return 0;
 }
 
