@@ -154,6 +154,11 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
     size_t encodedIndex = 0;
     size_t decodedIndex = 0;
     uint8_t nextByte;
+
+    //init to 0 so that we can just return in the first checks (which do not consume anything from
+    //the source stream)
+    *readLen = 0;
+
     if(maxDestStreamlen < 1) {
         return STREAM_TOO_SHORT;
     }
@@ -166,6 +171,8 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
             and (sourceStream[encodedIndex] != STX_CHAR)) {
         if (sourceStream[encodedIndex] == DLE_CHAR) {
             if(encodedIndex + 1 >= sourceStreamLen) {
+                //reached the end of the sourceStream
+                *readLen = sourceStreamLen;
                 return DECODING_ERROR;
             }
             nextByte = sourceStream[encodedIndex + 1];
@@ -200,6 +207,8 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
     }
     if (sourceStream[encodedIndex] != ETX_CHAR) {
         if(decodedIndex == maxDestStreamlen) {
+            //so far we did not find anything wrong here, so let user try again
+            *readLen = 0;
             return STREAM_TOO_SHORT;
         }
         else {
@@ -220,6 +229,11 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
     size_t encodedIndex = 0;
     size_t decodedIndex = 0;
     uint8_t nextByte;
+
+    //init to 0 so that we can just return in the first checks (which do not consume anything from
+    //the source stream)
+    *readLen = 0;
+    
     if(maxDestStreamlen < 2) {
         return STREAM_TOO_SHORT;
     }
@@ -227,6 +241,7 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
         return DECODING_ERROR;
     }
     if (sourceStream[encodedIndex++] != STX_CHAR) {
+        *readLen = 1;
         return DECODING_ERROR;
     }
     while ((encodedIndex < sourceStreamLen) && (decodedIndex < maxDestStreamlen)) {
@@ -265,11 +280,13 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
         ++encodedIndex;
         ++decodedIndex;
     }
-    *readLen = encodedIndex;
+
     if(decodedIndex == maxDestStreamlen) {
+        //so far we did not find anything wrong here, so let user try again
+        *readLen = 0;
         return STREAM_TOO_SHORT;
-    }
-    else {
+    } else {
+        *readLen = encodedIndex;
         return DECODING_ERROR;
     }
 }
