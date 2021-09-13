@@ -10,6 +10,7 @@ endif()
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
+option(FSFW_ADD_UNITTESTS "Add regular unittests. Requires Catch2" OFF)
 option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
 
 # Optional sources
@@ -38,7 +39,7 @@ elseif(${CMAKE_CXX_STANDARD} LESS 11)
 endif()
 
 # Backwards comptability
-if(OS_FSFW)
+if(OS_FSFW AND NOT FSFW_OSAL)
     message(WARNING "Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
     set(FSFW_OSAL OS_FSFW)
 endif()
@@ -62,34 +63,27 @@ endif()
 set(FSFW_OSAL_DEFINITION FSFW_OSAL_HOST)
 
 if(FSFW_OSAL MATCHES host)
-	set(OS_FSFW_NAME "Host")
+    set(OS_FSFW_NAME "Host")
+    set(FSFW_OSAL_HOST ON)
 elseif(FSFW_OSAL MATCHES linux)
-	set(OS_FSFW_NAME "Linux")
-	set(FSFW_OSAL_DEFINITION FSFW_OSAL_LINUX)
+    set(OS_FSFW_NAME "Linux")
+    set(FSFW_OSAL_LINUX ON)
 elseif(FSFW_OSAL MATCHES freertos)
-	set(OS_FSFW_NAME "FreeRTOS")
-	set(FSFW_OSAL_DEFINITION FSFW_OSAL_FREERTOS)
-	target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+    set(OS_FSFW_NAME "FreeRTOS")
+    set(FSFW_OSAL_FREERTOS ON)
+    target_link_libraries(${LIB_FSFW_NAME} PRIVATE
         ${LIB_OS_NAME}
-	)
+    )
 elseif(FSFW_OSAL STREQUAL rtems)
-	set(OS_FSFW_NAME "RTEMS")
-    set(FSFW_OSAL_DEFINITION FSFW_OSAL_RTEMS)
+    set(OS_FSFW_NAME "RTEMS")
+    set(FSFW_OSAL_RTEMS ON)
 else()
-	message(WARNING 
-		"Invalid operating system for FSFW specified! Setting to host.."
-	)
-	set(OS_FSFW_NAME "Host")
-	set(OS_FSFW "host")
+    message(WARNING
+        "Invalid operating system for FSFW specified! Setting to host.."
+    )
+    set(OS_FSFW_NAME "Host")
+    set(OS_FSFW "host")
 endif()
-
-target_compile_definitions(${LIB_FSFW_NAME} PRIVATE
-    ${FSFW_OSAL_DEFINITION}
-)
-
-target_compile_definitions(${LIB_FSFW_NAME} INTERFACE
-    ${FSFW_OSAL_DEFINITION}
-)
 
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 

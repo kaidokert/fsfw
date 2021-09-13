@@ -1,7 +1,5 @@
 #include "LocalPoolOwnerBase.h"
-
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_approx.hpp>
+#include "fsfw_tests/unit/CatchDefinitions.h"
 
 #include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>
@@ -10,7 +8,8 @@
 #include <fsfw/datapool/PoolReadGuard.h>
 #include <fsfw/globalfunctions/bitutility.h>
 
-#include <unittest/core/CatchDefinitions.h>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 
 TEST_CASE("DataSetTest" , "[DataSetTest]") {
     LocalPoolOwnerBase* poolOwner = ObjectManager::instance()->

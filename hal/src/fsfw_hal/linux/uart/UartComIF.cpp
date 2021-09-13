@@ -1,6 +1,7 @@
-#include "fsfw_hal/linux/uart/UartComIF.h"
+#include "UartComIF.h"
 #include "OBSWConfig.h"
 
+#include "fsfw_hal/linux/utility.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <cstring>
@@ -60,7 +61,13 @@ int UartComIF::configureUartPort(UartCookie* uartCookie) {
     struct termios options = {};
 
     std::string deviceFile = uartCookie->getDeviceFile();
-    int fd = open(deviceFile.c_str(), O_RDWR);
+    int flags = O_RDWR;
+    if(uartCookie->getUartMode() == UartModes::CANONICAL) {
+        // In non-canonical mode, don't specify O_NONBLOCK because these properties will be
+        // controlled by the VTIME and VMIN parameters and O_NONBLOCK would override this
+        flags |= O_NONBLOCK;
+    }
+    int fd = open(deviceFile.c_str(), flags);
 
     if (fd < 0) {
         sif::warning << "UartComIF::configureUartPort: Failed to open uart " << deviceFile <<
@@ -259,23 +266,22 @@ void UartComIF::configureBaudrate(struct termios* options, UartCookie* uartCooki
 
 ReturnValue_t UartComIF::sendMessage(CookieIF *cookie,
         const uint8_t *sendData, size_t sendLen) {
-
     int fd = 0;
     std::string deviceFile;
     UartDeviceMapIter uartDeviceMapIter;
-
-    if(sendData == nullptr) {
-        sif::debug << "UartComIF::sendMessage: Send Data is nullptr" << std::endl;
-        return RETURN_FAILED;
-    }
 
     if(sendLen == 0) {
         return RETURN_OK;
     }
 
+    if(sendData == nullptr) {
+        sif::warning << "UartComIF::sendMessage: Send data is nullptr" << std::endl;
+        return RETURN_FAILED;
+    }
+
     UartCookie* uartCookie = dynamic_cast<UartCookie*>(cookie);
     if(uartCookie == nullptr) {
-        sif::debug << "UartComIF::sendMessasge: Invalid UART Cookie!" << std::endl;
+        sif::warning << "UartComIF::sendMessasge: Invalid UART Cookie!" << std::endl;
         return NULLPOINTER;
     }
 
@@ -347,12 +353,13 @@ ReturnValue_t UartComIF::handleCanonicalRead(UartCookie& uartCookie, UartDeviceM
     size_t maxReplySize = uartCookie.getMaxReplyLen();
     int fd = iter->second.fileDescriptor;
     auto bufferPtr = iter->second.replyBuffer.data();
+    iter->second.replyLen = 0;
     do {
         size_t allowedReadSize = 0;
         if(currentBytesRead >= maxReplySize) {
             // Overflow risk. Emit warning, trigger event and break. If this happens,
             // the reception buffer is not large enough or data is not polled often enough.
-#if OBSW_VERBOSE_LEVEL >= 1
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::warning << "UartComIF::requestReceiveMessage: Next read would cause overflow!"
                     << std::endl;
@@ -370,7 +377,20 @@ ReturnValue_t UartComIF::handleCanonicalRead(UartCookie& uartCookie, UartDeviceM
 
         bytesRead = read(fd, bufferPtr, allowedReadSize);
         if (bytesRead < 0) {
-            return RETURN_FAILED;
+            // EAGAIN: No data available in non-blocking mode
+            if(errno != EAGAIN) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+                sif::warning << "UartComIF::handleCanonicalRead: read failed with code" <<
+                        errno << ": " << strerror(errno) << std::endl;
+#else
+                sif::printWarning("UartComIF::handleCanonicalRead: read failed with code %d: %s\n",
+                        errno, strerror(errno));
+#endif
+#endif
+                return RETURN_FAILED;
+            }
+
         }
         else if(bytesRead > 0) {
             iter->second.replyLen += bytesRead;

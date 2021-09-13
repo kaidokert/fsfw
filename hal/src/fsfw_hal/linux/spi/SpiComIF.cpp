@@ -90,7 +90,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
 
     int fileDescriptor = 0;
     UnixFileGuard fileHelper(spiCookie->getSpiDevice(), &fileDescriptor, O_RDWR,
-            "SpiComIF::initializeInterface: ");
+            "SpiComIF::initializeInterface");
     if(fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
         return fileHelper.getOpenResult();
     }
@@ -184,7 +184,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie *spiCookie, const 
     /* Prepare transfer */
     int fileDescriptor = 0;
     std::string device = spiCookie->getSpiDevice();
-    UnixFileGuard fileHelper(device, &fileDescriptor, O_RDWR, "SpiComIF::sendMessage: ");
+    UnixFileGuard fileHelper(device, &fileDescriptor, O_RDWR, "SpiComIF::sendMessage");
     if(fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
         return OPENING_FILE_FAILED;
     }
@@ -273,7 +273,7 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
     std::string device = spiCookie->getSpiDevice();
     int fileDescriptor = 0;
     UnixFileGuard fileHelper(device, &fileDescriptor, O_RDWR,
-            "SpiComIF::requestReceiveMessage: ");
+            "SpiComIF::requestReceiveMessage");
     if(fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
         return OPENING_FILE_FAILED;
     }
