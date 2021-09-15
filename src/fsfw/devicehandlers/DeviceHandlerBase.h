@@ -6,22 +6,22 @@
 #include "DeviceHandlerFailureIsolation.h"
 #include "DeviceHandlerThermalSet.h"
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "../serviceinterface/serviceInterfaceDefintions.h"
-#include "../objectmanager/SystemObject.h"
-#include "../tasks/ExecutableObjectIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../action/HasActionsIF.h"
-#include "../datapool/PoolVariableIF.h"
-#include "../modes/HasModesIF.h"
-#include "../power/PowerSwitchIF.h"
-#include "../ipc/MessageQueueIF.h"
-#include "../tasks/PeriodicTaskIF.h"
-#include "../action/ActionHelper.h"
-#include "../health/HealthHelper.h"
-#include "../parameters/ParameterHelper.h"
-#include "../datapoollocal/HasLocalDataPoolIF.h"
-#include "../datapoollocal/LocalDataPoolManager.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/action/HasActionsIF.h"
+#include "fsfw/datapool/PoolVariableIF.h"
+#include "fsfw/modes/HasModesIF.h"
+#include "fsfw/power/PowerSwitchIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
+#include "fsfw/action/ActionHelper.h"
+#include "fsfw/health/HealthHelper.h"
+#include "fsfw/parameters/ParameterHelper.h"
+#include "fsfw/datapoollocal/HasLocalDataPoolIF.h"
+#include "fsfw/datapoollocal/LocalDataPoolManager.h"
 
 #include <map>
 
@@ -399,7 +399,7 @@ protected:
      */
     virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id,
             const uint8_t *packet) = 0;
-    MessageQueueId_t getCommanderId(DeviceCommandId_t replyId) const;
+    MessageQueueId_t getCommanderQueueId(DeviceCommandId_t replyId) const;
     /**
      * Helper function to get pending command. This is useful for devices
      * like SPI sensors to identify the last sent command.
