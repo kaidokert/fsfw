@@ -1,6 +1,7 @@
 #ifndef LINUX_SPI_SPICOMIF_H_
 #define LINUX_SPI_SPICOMIF_H_
 
+#include "fsfw/FSFW.h"
 #include "spiDefinitions.h"
 #include "returnvalues/classIds.h"
 #include "fsfw_hal/common/gpio/GpioIF.h"
