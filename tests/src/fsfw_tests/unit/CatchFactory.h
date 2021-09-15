@@ -1,7 +1,7 @@
 #ifndef FSFW_CATCHFACTORY_H_
 #define FSFW_CATCHFACTORY_H_
 
-#include "TestConfig.h"
+#include "TestsConfig.h"
 #include "fsfw/objectmanager/SystemObjectIF.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 
