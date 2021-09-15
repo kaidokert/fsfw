@@ -7,10 +7,6 @@
 #include <fsfw/devicehandlers/DeviceHandlerBase.h>
 #include <fsfw/globalfunctions/PeriodicOperationDivider.h>
 
-#ifndef FSFW_HAL_L3GD20_GYRO_DEBUG
-#define FSFW_HAL_L3GD20_GYRO_DEBUG   0
-#endif /* FSFW_HAL_L3GD20_GYRO_DEBUG */
-
 /**
  * @brief 	Device Handler for the L3GD20H gyroscope sensor
  *          (https://www.st.com/en/mems-and-sensors/l3gd20h.html)
@@ -23,9 +19,12 @@
 class GyroHandlerL3GD20H: public DeviceHandlerBase {
 public:
     GyroHandlerL3GD20H(object_id_t objectId, object_id_t deviceCommunication,
-            CookieIF* comCookie);
+            CookieIF* comCookie, uint8_t switchId, uint32_t transitionDelayMs = 10000);
     virtual ~GyroHandlerL3GD20H();
 
+    /**
+     * @brief   Configure device handler to go to normal mode immediately
+     */
     void setGoNormalModeAtStartup();
 protected:
 
@@ -51,6 +50,8 @@ protected:
             LocalDataPoolManager &poolManager) override;
 
 private:
+    uint8_t switchId = 0;
+    uint32_t transitionDelayMs = 0;
     GyroPrimaryDataset dataset;
 
     enum class InternalState {
