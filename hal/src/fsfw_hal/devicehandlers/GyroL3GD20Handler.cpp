@@ -3,9 +3,9 @@
 #include "fsfw/datapool/PoolReadGuard.h"
 
 GyroHandlerL3GD20H::GyroHandlerL3GD20H(object_id_t objectId, object_id_t deviceCommunication,
-        CookieIF *comCookie):
+        CookieIF *comCookie, uint8_t switchId, uint32_t transitionDelayMs):
         DeviceHandlerBase(objectId, deviceCommunication, comCookie),
-        dataset(this) {
+        switchId(switchId), transitionDelayMs(transitionDelayMs), dataset(this) {
 #if FSFW_HAL_L3GD20_GYRO_DEBUG == 1
     debugDivider = new PeriodicOperationDivider(5);
 #endif
@@ -47,7 +47,7 @@ ReturnValue_t GyroHandlerL3GD20H::buildTransitionDeviceCommand(DeviceCommandId_t
     switch(internalState) {
     case(InternalState::NONE):
     case(InternalState::NORMAL): {
-        return HasReturnvaluesIF::RETURN_OK;
+        return NOTHING_TO_SEND;
     }
     case(InternalState::CONFIGURE): {
         *id = L3GD20H::CONFIGURE_CTRL_REGS;
@@ -66,10 +66,11 @@ ReturnValue_t GyroHandlerL3GD20H::buildTransitionDeviceCommand(DeviceCommandId_t
     default:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         /* Might be a configuration error. */
-        sif::debug << "GyroHandler::buildTransitionDeviceCommand: Unknown internal state!" <<
-        std::endl;
+        sif::warning << "GyroL3GD20Handler::buildTransitionDeviceCommand: "
+                "Unknown internal state!" << std::endl;
 #else
-        sif::printDebug("GyroHandler::buildTransitionDeviceCommand: Unknown internal state!\n");
+        sif::printDebug("GyroL3GD20Handler::buildTransitionDeviceCommand: "
+                "Unknown internal state!\n");
 #endif
         return HasReturnvaluesIF::RETURN_OK;
     }
@@ -144,7 +145,7 @@ ReturnValue_t GyroHandlerL3GD20H::buildCommandFromCommand(
 
 ReturnValue_t GyroHandlerL3GD20H::scanForReply(const uint8_t *start, size_t len,
         DeviceCommandId_t *foundId, size_t *foundLen) {
-    /* For SPI, the ID will always be the one of the last sent command. */
+    // For SPI, the ID will always be the one of the last sent command
     *foundId = this->getPendingCommand();
     *foundLen = this->rawPacketLen;
 
@@ -166,7 +167,7 @@ ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
             commandExecuted = true;
         }
         else {
-            /* Attempt reconfiguration. */
+            // Attempt reconfiguration
             internalState = InternalState::CONFIGURE;
             return DeviceHandlerIF::DEVICE_REPLY_INVALID;
         }
@@ -199,13 +200,12 @@ ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
         if(debugDivider->checkAndIncrement()) {
             /* Set terminal to utf-8 if there is an issue with micro printout. */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::info << "GyroHandlerL3GD20H: Angular velocities in degrees per second:" <<
-                    std::endl;
-            sif::info << "X: " << angVelocX << " \xC2\xB0" << std::endl;
-            sif::info << "Y: " << angVelocY << " \xC2\xB0" << std::endl;
-            sif::info << "Z: " << angVelocZ << " \xC2\xB0" << std::endl;
+            sif::info << "GyroHandlerL3GD20H: Angular velocities (deg/s):" << std::endl;
+            sif::info << "X: " << angVelocX << std::endl;
+            sif::info << "Y: " << angVelocY << std::endl;
+            sif::info << "Z: " << angVelocZ << std::endl;
 #else
-            sif::printInfo("GyroHandlerL3GD20H: Angular velocities in degrees per second:\n");
+            sif::printInfo("GyroHandlerL3GD20H: Angular velocities (deg/s):\n");
             sif::printInfo("X: %f\n", angVelocX);
             sif::printInfo("Y: %f\n", angVelocY);
             sif::printInfo("Z: %f\n", angVelocZ);
@@ -231,7 +231,7 @@ ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
 
 
 uint32_t GyroHandlerL3GD20H::getTransitionDelayMs(Mode_t from, Mode_t to) {
-    return 10000;
+    return this->transitionDelayMs;
 }
 
 void GyroHandlerL3GD20H::setGoNormalModeAtStartup() {
@@ -240,14 +240,10 @@ void GyroHandlerL3GD20H::setGoNormalModeAtStartup() {
 
 ReturnValue_t GyroHandlerL3GD20H::initializeLocalDataPool(
         localpool::DataPool &localDataPoolMap, LocalDataPoolManager &poolManager) {
-    localDataPoolMap.emplace(L3GD20H::ANG_VELOC_X,
-            new PoolEntry<float>({0.0}));
-    localDataPoolMap.emplace(L3GD20H::ANG_VELOC_Y,
-            new PoolEntry<float>({0.0}));
-    localDataPoolMap.emplace(L3GD20H::ANG_VELOC_Z,
-            new PoolEntry<float>({0.0}));
-    localDataPoolMap.emplace(L3GD20H::TEMPERATURE,
-            new PoolEntry<float>({0.0}));
+    localDataPoolMap.emplace(L3GD20H::ANG_VELOC_X, new PoolEntry<float>({0.0}));
+    localDataPoolMap.emplace(L3GD20H::ANG_VELOC_Y, new PoolEntry<float>({0.0}));
+    localDataPoolMap.emplace(L3GD20H::ANG_VELOC_Z, new PoolEntry<float>({0.0}));
+    localDataPoolMap.emplace(L3GD20H::TEMPERATURE, new PoolEntry<float>({0.0}));
     return HasReturnvaluesIF::RETURN_OK;
 }
 
