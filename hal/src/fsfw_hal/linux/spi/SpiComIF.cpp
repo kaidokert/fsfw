@@ -15,11 +15,6 @@
 #include <cerrno>
 #include <cstring>
 
-/* Can be used for low-level debugging of the SPI bus */
-#ifndef FSFW_HAL_LINUX_SPI_WIRETAPPING
-#define FSFW_HAL_LINUX_SPI_WIRETAPPING                  0
-#endif
-
 SpiComIF::SpiComIF(object_id_t objectId, GpioIF* gpioComIF):
         SystemObject(objectId), gpioComIF(gpioComIF) {
     if(gpioComIF == nullptr) {
@@ -193,7 +188,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie *spiCookie, const 
     spiCookie->getSpiParameters(spiMode, spiSpeed, nullptr);
     setSpiSpeedAndMode(fileDescriptor, spiMode, spiSpeed);
     spiCookie->assignWriteBuffer(sendData);
-    spiCookie->assignTransferSize(sendLen);
+    spiCookie->setTransferSize(sendLen);
 
     bool fullDuplex = spiCookie->isFullDuplex();
     gpioId_t gpioId = spiCookie->getChipSelectPin();
@@ -335,6 +330,7 @@ ReturnValue_t SpiComIF::readReceivedMessage(CookieIF *cookie, uint8_t **buffer, 
 
     *buffer = rxBuf;
     *size = spiCookie->getCurrentTransferSize();
+    spiCookie->setTransferSize(0);
     return HasReturnvaluesIF::RETURN_OK;
 }
 

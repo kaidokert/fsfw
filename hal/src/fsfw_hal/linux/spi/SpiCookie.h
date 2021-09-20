@@ -103,10 +103,10 @@ public:
     void assignReadBuffer(uint8_t* rx);
     void assignWriteBuffer(const uint8_t* tx);
     /**
-     * Assign size for the next transfer.
+     * Set size for the next transfer. Set to 0 for no transfer
      * @param transferSize
      */
-    void assignTransferSize(size_t transferSize);
+    void setTransferSize(size_t transferSize);
     size_t getCurrentTransferSize() const;
 
     struct UncommonParameters {
@@ -157,8 +157,6 @@ private:
     SpiCookie(spi::SpiComIfModes comIfMode, address_t spiAddress, gpioId_t chipSelect,
             std::string spiDev, const size_t maxSize, spi::SpiModes spiMode, uint32_t spiSpeed,
             spi::send_callback_function_t callback, void* args);
-
-    size_t currentTransferSize = 0;
 
     address_t spiAddress;
     gpioId_t chipSelectPin;

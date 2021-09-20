@@ -121,7 +121,7 @@ bool SpiCookie::isFullDuplex() const {
     return not this->halfDuplex;
 }
 
-void SpiCookie::assignTransferSize(size_t transferSize) {
+void SpiCookie::setTransferSize(size_t transferSize) {
     spiTransferStruct.len = transferSize;
 }
 
