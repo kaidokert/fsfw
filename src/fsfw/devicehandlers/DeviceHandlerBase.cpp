@@ -461,7 +461,7 @@ size_t DeviceHandlerBase::getNextReplyLength(DeviceCommandId_t commandId){
         return iter->second.replyLen;
     }else{
         return 0;
-   }
+    }
 }
 
 ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
@@ -612,15 +612,15 @@ void DeviceHandlerBase::replyToReply(const DeviceCommandId_t command, DeviceRepl
     }
     DeviceCommandInfo* info = &replyInfo.command->second;
     if (info == nullptr){
-    	printWarningOrError(sif::OutputTypes::OUT_ERROR,
-    	                        "replyToReply", HasReturnvaluesIF::RETURN_FAILED,
-    	                        "Command pointer not found");
-    	return;
+        printWarningOrError(sif::OutputTypes::OUT_ERROR,
+                "replyToReply", HasReturnvaluesIF::RETURN_FAILED,
+                "Command pointer not found");
+        return;
     }
 
     if (info->expectedReplies > 0){
-    	// Check before to avoid underflow
-    	info->expectedReplies--;
+        // Check before to avoid underflow
+        info->expectedReplies--;
     }
     // Check if more replies are expected. If so, do nothing.
     if (info->expectedReplies == 0) {
@@ -1355,10 +1355,20 @@ void DeviceHandlerBase::buildInternalCommand(void) {
         DeviceCommandMap::iterator iter = deviceCommandMap.find(
                 deviceCommandId);
         if (iter == deviceCommandMap.end()) {
+#if FSFW_VERBOSE_LEVEL >= 1
+            char output[36];
+            sprintf(output, "Command 0x%08x unknown",
+                    static_cast<unsigned int>(deviceCommandId));
+            // so we can track misconfigurations
+            printWarningOrError(sif::OutputTypes::OUT_WARNING,
+                    "buildInternalCommand",
+                    COMMAND_NOT_SUPPORTED,
+                    output);
+#endif
             result = COMMAND_NOT_SUPPORTED;
         }
         else if (iter->second.isExecuting) {
-#if FSFW_DISABLE_PRINTOUT == 0
+#if FSFW_VERBOSE_LEVEL >= 1
             char output[36];
             sprintf(output, "Command 0x%08x is executing",
                     static_cast<unsigned int>(deviceCommandId));
@@ -1569,7 +1579,7 @@ LocalDataPoolManager* DeviceHandlerBase::getHkManagerHandle() {
     return &poolManager;
 }
 
-MessageQueueId_t DeviceHandlerBase::getCommanderId(DeviceCommandId_t replyId) const {
+MessageQueueId_t DeviceHandlerBase::getCommanderQueueId(DeviceCommandId_t replyId) const {
     auto commandIter = deviceCommandMap.find(replyId);
     if(commandIter == deviceCommandMap.end()) {
         return MessageQueueIF::NO_QUEUE;
