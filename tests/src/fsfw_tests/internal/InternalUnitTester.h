@@ -18,6 +18,7 @@ class InternalUnitTester: public HasReturnvaluesIF {
 public:
     struct TestConfig {
         bool testArrayPrinter = false;
+        bool testSemaphores = true;
     };
 
 	InternalUnitTester();

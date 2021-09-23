@@ -16,15 +16,18 @@ InternalUnitTester::~InternalUnitTester() {}
 ReturnValue_t InternalUnitTester::performTests(
         const struct InternalUnitTester::TestConfig& testConfig) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::info << "Running internal unit tests.." << std::endl;
+	sif::info << "Running internal unit tests.. Error messages might follow" <<
+	        std::endl;
 #else
 	sif::printInfo("Running internal unit tests..\n");
 #endif
 
 	testserialize::test_serialization();
 	testmq::testMq();
-	testsemaph::testBinSemaph();
-	testsemaph::testCountingSemaph();
+	if(testConfig.testSemaphores) {
+	    testsemaph::testBinSemaph();
+	    testsemaph::testCountingSemaph();
+	}
 	testmutex::testMutex();
 	if(testConfig.testArrayPrinter) {
 	    arrayprinter::testArrayPrinter();
