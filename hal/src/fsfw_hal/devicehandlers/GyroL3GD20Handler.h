@@ -19,13 +19,22 @@
 class GyroHandlerL3GD20H: public DeviceHandlerBase {
 public:
     GyroHandlerL3GD20H(object_id_t objectId, object_id_t deviceCommunication,
-            CookieIF* comCookie, uint8_t switchId, uint32_t transitionDelayMs = 10000);
+            CookieIF* comCookie, uint32_t transitionDelayMs);
     virtual ~GyroHandlerL3GD20H();
+
+    /**
+     * Set the absolute limit for the values on the axis in degrees per second.
+     * The dataset values will be marked as invalid if that limit is exceeded
+     * @param xLimit
+     * @param yLimit
+     * @param zLimit
+     */
+    void setAbsoluteLimits(float limitX, float limitY, float limitZ);
 
     /**
      * @brief   Configure device handler to go to normal mode immediately
      */
-    void setGoNormalModeAtStartup();
+    void setToGoToNormalMode(bool enable);
 protected:
 
     /* DeviceHandlerBase overrides */
@@ -40,12 +49,12 @@ protected:
             size_t commandDataLen) override;
     ReturnValue_t scanForReply(const uint8_t *start, size_t len,
             DeviceCommandId_t *foundId, size_t *foundLen) override;
-    ReturnValue_t interpretDeviceReply(DeviceCommandId_t id,
+    virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id,
             const uint8_t *packet) override;
 
     void fillCommandAndReplyMap() override;
     void modeChanged() override;
-    uint32_t getTransitionDelayMs(Mode_t from, Mode_t to) override;
+    virtual uint32_t getTransitionDelayMs(Mode_t from, Mode_t to) override;
     ReturnValue_t initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
             LocalDataPoolManager &poolManager) override;
 
@@ -53,6 +62,10 @@ private:
     uint8_t switchId = 0;
     uint32_t transitionDelayMs = 0;
     GyroPrimaryDataset dataset;
+
+    float absLimitX = L3GD20H::RANGE_DPS_00;
+    float absLimitY = L3GD20H::RANGE_DPS_00;
+    float absLimitZ = L3GD20H::RANGE_DPS_00;
 
     enum class InternalState {
         NONE,
