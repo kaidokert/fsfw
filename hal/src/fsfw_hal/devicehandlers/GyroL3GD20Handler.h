@@ -59,7 +59,6 @@ protected:
             LocalDataPoolManager &poolManager) override;
 
 private:
-    uint8_t switchId = 0;
     uint32_t transitionDelayMs = 0;
     GyroPrimaryDataset dataset;
 
