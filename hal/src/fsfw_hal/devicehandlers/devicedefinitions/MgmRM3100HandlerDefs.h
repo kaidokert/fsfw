@@ -108,7 +108,7 @@ enum MgmPoolIds: lp_id_t {
     FIELD_STRENGTH_Z,
 };
 
-class Rm3100PrimaryDataset: public StaticLocalDataSet<3 * sizeof(float)> {
+class Rm3100PrimaryDataset: public StaticLocalDataSet<3> {
 public:
 	Rm3100PrimaryDataset(HasLocalDataPoolIF* hkOwner):
         StaticLocalDataSet(hkOwner, MGM_DATASET_ID) {}

@@ -154,7 +154,7 @@ enum MgmPoolIds: lp_id_t {
     TEMPERATURE_CELCIUS
 };
 
-class MgmPrimaryDataset: public StaticLocalDataSet<5> {
+class MgmPrimaryDataset: public StaticLocalDataSet<4> {
 public:
     MgmPrimaryDataset(HasLocalDataPoolIF* hkOwner):
         StaticLocalDataSet(hkOwner, MGM_DATA_SET_ID) {}
