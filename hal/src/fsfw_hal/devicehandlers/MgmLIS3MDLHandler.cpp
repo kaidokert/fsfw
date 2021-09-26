@@ -5,6 +5,8 @@
 #include "fsfw/globalfunctions/PeriodicOperationDivider.h"
 #endif
 
+#include <cmath>
+
 MgmLIS3MDLHandler::MgmLIS3MDLHandler(object_id_t objectId, object_id_t deviceCommunication,
         CookieIF* comCookie, uint32_t transitionDelay):
         DeviceHandlerBase(objectId, deviceCommunication, comCookie),
