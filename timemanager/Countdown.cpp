@@ -47,7 +47,7 @@ uint32_t Countdown::getRemainingMillis() const {
 }
 
 uint32_t Countdown::getCurrentTime() const {
-	uint32_t current_time;
-	Clock::getUptime( &current_time );
-	return current_time;
+	uint32_t currentTime;
+	Clock::getUptime( &currentTime );
+	return currentTime;
 }
