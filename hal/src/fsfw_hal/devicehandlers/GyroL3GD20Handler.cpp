@@ -3,11 +3,11 @@
 #include "fsfw/datapool/PoolReadGuard.h"
 
 GyroHandlerL3GD20H::GyroHandlerL3GD20H(object_id_t objectId, object_id_t deviceCommunication,
-        CookieIF *comCookie, uint8_t switchId, uint32_t transitionDelayMs):
+        CookieIF *comCookie, uint32_t transitionDelayMs):
         DeviceHandlerBase(objectId, deviceCommunication, comCookie),
-        switchId(switchId), transitionDelayMs(transitionDelayMs), dataset(this) {
+        transitionDelayMs(transitionDelayMs), dataset(this) {
 #if FSFW_HAL_L3GD20_GYRO_DEBUG == 1
-    debugDivider = new PeriodicOperationDivider(5);
+    debugDivider = new PeriodicOperationDivider(3);
 #endif
 }
 
@@ -215,11 +215,32 @@ ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
 
         PoolReadGuard readSet(&dataset);
         if(readSet.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
-            dataset.angVelocX = angVelocX;
-            dataset.angVelocY = angVelocY;
-            dataset.angVelocZ = angVelocZ;
+            if(std::abs(angVelocX) < this->absLimitX) {
+                dataset.angVelocX = angVelocX;
+                dataset.angVelocX.setValid(true);
+            }
+            else {
+                dataset.angVelocX.setValid(false);
+            }
+
+            if(std::abs(angVelocY) < this->absLimitY) {
+                dataset.angVelocY = angVelocY;
+                dataset.angVelocY.setValid(true);
+            }
+            else {
+                dataset.angVelocY.setValid(false);
+            }
+
+            if(std::abs(angVelocZ) < this->absLimitZ) {
+                dataset.angVelocZ = angVelocZ;
+                dataset.angVelocZ.setValid(true);
+            }
+            else {
+                dataset.angVelocZ.setValid(false);
+            }
+
             dataset.temperature = temperature;
-            dataset.setValidity(true, true);
+            dataset.temperature.setValid(true);
         }
         break;
     }
@@ -234,7 +255,7 @@ uint32_t GyroHandlerL3GD20H::getTransitionDelayMs(Mode_t from, Mode_t to) {
     return this->transitionDelayMs;
 }
 
-void GyroHandlerL3GD20H::setGoNormalModeAtStartup() {
+void GyroHandlerL3GD20H::setToGoToNormalMode(bool enable) {
     this->goNormalModeImmediately = true;
 }
 
@@ -255,4 +276,10 @@ void GyroHandlerL3GD20H::fillCommandAndReplyMap() {
 
 void GyroHandlerL3GD20H::modeChanged() {
     internalState = InternalState::NONE;
+}
+
+void GyroHandlerL3GD20H::setAbsoluteLimits(float limitX, float limitY, float limitZ) {
+    this->absLimitX = limitX;
+    this->absLimitY = limitY;
+    this->absLimitZ = limitZ;
 }
