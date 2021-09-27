@@ -26,7 +26,8 @@ enum GpioOperation {
 
 enum GpioTypes {
     NONE,
-    GPIO_REGULAR,
+    GPIO_REGULAR_BY_CHIP,
+    GPIO_REGULAR_BY_LABEL,
     CALLBACK
 };
 
@@ -68,26 +69,55 @@ public:
     int initValue = 0;
 };
 
-class GpiodRegular: public GpioBase {
+class GpiodRegularBase: public GpioBase {
 public:
-    GpiodRegular() :
-            GpioBase(gpio::GpioTypes::GPIO_REGULAR, std::string(), gpio::Direction::IN, 0) {
+    GpiodRegularBase(gpio::GpioTypes gpioType, std::string consumer, gpio::Direction direction,
+            int initValue, int lineNum): GpioBase(gpioType, consumer, direction, initValue),
+            lineNum(lineNum) {
     }
-    ;
-
-    GpiodRegular(std::string chipname_, int lineNum_, std::string consumer_,
-            gpio::Direction direction_, int initValue_) :
-            GpioBase(gpio::GpioTypes::GPIO_REGULAR, consumer_, direction_, initValue_),
-            chipname(chipname_), lineNum(lineNum_) {
-    }
-
-    GpiodRegular(std::string chipname_, int lineNum_, std::string consumer_) :
-            GpioBase(gpio::GpioTypes::GPIO_REGULAR, consumer_, gpio::Direction::IN, 0),
-            chipname(chipname_), lineNum(lineNum_) {
-    }
-    std::string chipname;
     int lineNum = 0;
     struct gpiod_line* lineHandle = nullptr;
+};
+
+class GpiodRegularByChip: public GpiodRegularBase {
+public:
+    GpiodRegularByChip() :
+            GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP,
+                    std::string(), gpio::Direction::IN, gpio::LOW, 0) {
+    }
+
+    GpiodRegularByChip(std::string chipname_, int lineNum_, std::string consumer_,
+            gpio::Direction direction_, int initValue_) :
+            GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP,
+                    consumer_, direction_, initValue_, lineNum_),
+            chipname(chipname_){
+    }
+
+    GpiodRegularByChip(std::string chipname_, int lineNum_, std::string consumer_) :
+            GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP, consumer_,
+                    gpio::Direction::IN, gpio::LOW, lineNum_),
+            chipname(chipname_) {
+    }
+
+    std::string chipname;
+};
+
+class GpiodRegularByLabel: public GpiodRegularBase {
+public:
+    GpiodRegularByLabel(std::string label_, int lineNum_, std::string consumer_,
+            gpio::Direction direction_, int initValue_) :
+            GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_LABEL, consumer_,
+                    direction_, initValue_, lineNum_),
+            label(label_) {
+    }
+
+    GpiodRegularByLabel(std::string label_, int lineNum_, std::string consumer_) :
+            GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_LABEL, consumer_,
+                    gpio::Direction::IN, gpio::LOW, lineNum_),
+            label(label_) {
+    }
+
+    std::string label;
 };
 
 class GpioCallback: public GpioBase {

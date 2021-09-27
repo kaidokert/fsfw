@@ -76,6 +76,8 @@ enum: uint8_t {
     HAL_UART, //HURT
     HAL_I2C, //HI2C
     HAL_GPIO, //HGIO
+    MGM_LIS3MDL, //MGMLIS3
+    MGM_RM3100, //MGMRM3100
     FW_CLASS_ID_COUNT // [EXPORT] : [END]
 
 };
