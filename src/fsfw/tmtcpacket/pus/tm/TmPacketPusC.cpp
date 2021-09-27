@@ -53,11 +53,14 @@ uint8_t* TmPacketPusC::getPacketTimeRaw() const{
 
 }
 
-void TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service,
+ReturnValue_t TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service,
         uint8_t subservice, uint16_t packetSubcounter, uint16_t destinationId,
         uint8_t timeRefField) {
     //Set primary header:
-    initSpacePacketHeader(false, true, apid);
+    ReturnValue_t result = initSpacePacketHeader(false, true, apid);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
     //Set data Field Header:
     //First, set to zero.
     memset(&tmData->dataField, 0, sizeof(tmData->dataField));
@@ -76,6 +79,7 @@ void TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service,
         timeStamper->addTimeStamp(tmData->dataField.time,
                 sizeof(tmData->dataField.time));
     }
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 void TmPacketPusC::setSourceDataSize(uint16_t size) {

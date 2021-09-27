@@ -43,27 +43,55 @@ TmPacketStoredPusC::TmPacketStoredPusC(uint16_t apid, uint8_t service,
         return;
     }
     size_t sourceDataSize = 0;
-    if (content != NULL) {
+    if (content != nullptr) {
         sourceDataSize += content->getSerializedSize();
     }
-    if (header != NULL) {
+    if (header != nullptr) {
         sourceDataSize += header->getSerializedSize();
     }
-    uint8_t *p_data = NULL;
-    ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
-            (getPacketMinimumSize() + sourceDataSize), &p_data);
+    uint8_t *pData = nullptr;
+    size_t sizeToReserve = getPacketMinimumSize() + sourceDataSize;
+    ReturnValue_t returnValue = store->getFreeElement(&storeAddress, sizeToReserve, &pData);
     if (returnValue != store->RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
+        switch(returnValue) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        case(StorageManagerIF::DATA_STORAGE_FULL): {
+            sif::warning << "TmPacketStoredPusC::TmPacketStoredPusC: Store full for packet with "
+                    "size " << sizeToReserve << std::endl;
+            break;
+        }
+        case(StorageManagerIF::DATA_TOO_LARGE): {
+            sif::warning << "TmPacketStoredPusC::TmPacketStoredPusC: Data with size " <<
+                    sizeToReserve << " too large" <<  std::endl;
+            break;
+        }
+#else
+        case(StorageManagerIF::DATA_STORAGE_FULL): {
+            sif::printWarning("TmPacketStoredPusC::TmPacketStoredPusC: Store full for packet with "
+                    "size %d\n", sizeToReserve);
+            break;
+        }
+        case(StorageManagerIF::DATA_TOO_LARGE): {
+            sif::printWarning("TmPacketStoredPusC::TmPacketStoredPusC: Data with size "
+                    "%d too large\n", sizeToReserve);
+            break;
+        }
+#endif
+#endif
+        }
         TmPacketStoredBase::checkAndReportLostTm();
+        return;
     }
-    setData(p_data);
+    setData(pData);
     initializeTmPacket(apid, service, subservice, packetSubcounter, destinationId, timeRefField);
     uint8_t *putDataHere = getSourceData();
     size_t size = 0;
-    if (header != NULL) {
+    if (header != nullptr) {
         header->serialize(&putDataHere, &size, sourceDataSize,
                 SerializeIF::Endianness::BIG);
     }
-    if (content != NULL) {
+    if (content != nullptr) {
         content->serialize(&putDataHere, &size, sourceDataSize,
                 SerializeIF::Endianness::BIG);
     }
