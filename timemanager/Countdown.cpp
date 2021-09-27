@@ -1,4 +1,6 @@
 #include "Countdown.h"
+#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
+
 
 Countdown::Countdown(uint32_t initialTimeout): timeout(initialTimeout) {
 }
@@ -6,16 +8,14 @@ Countdown::Countdown(uint32_t initialTimeout): timeout(initialTimeout) {
 Countdown::~Countdown() {
 }
 
-ReturnValue_t Countdown::setTimeout(uint32_t miliseconds) {
-	ReturnValue_t return_value = Clock::getUptime( &startTime );
-	timeout = miliseconds;
-	return return_value;
+ReturnValue_t Countdown::setTimeout(uint32_t milliseconds) {
+	ReturnValue_t returnValue = Clock::getUptime( &startTime );
+	timeout = milliseconds;
+	return returnValue;
 }
 
 bool Countdown::hasTimedOut() const {
-	uint32_t current_time;
-	Clock::getUptime( &current_time );
-	if ( uint32_t(current_time - startTime) >= timeout) {
+	if ( uint32_t( this->getCurrentTime() - startTime) >= timeout) {
 		return true;
 	} else {
 		return false;
@@ -31,7 +31,23 @@ ReturnValue_t Countdown::resetTimer() {
 }
 
 void Countdown::timeOut() {
+	startTime = this->getCurrentTime() - timeout;
+}
+
+uint32_t Countdown::getRemainingMillis() const {
+	// We fetch the time before the if-statement
+	// to be sure that the return is in
+	// range 0 <= number <= timeout
+	uint32_t currentTime = this->getCurrentTime();
+	if (this->hasTimedOut()){
+		return 0;
+	}else{
+		return (startTime + timeout) - currentTime;
+	}
+}
+
+uint32_t Countdown::getCurrentTime() const {
 	uint32_t current_time;
-		Clock::getUptime( &current_time );
-	startTime= current_time - timeout;
+	Clock::getUptime( &current_time );
+	return current_time;
 }
