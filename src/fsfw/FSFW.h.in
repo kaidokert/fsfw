@@ -1,0 +1,36 @@
+#ifndef FSFW_FSFW_H_
+#define FSFW_FSFW_H_
+
+#include "FSFWConfig.h"
+
+#cmakedefine FSFW_OSAL_RTEMS
+#cmakedefine FSFW_OSAL_FREERTOS
+#cmakedefine FSFW_OSAL_LINUX
+#cmakedefine FSFW_OSAL_HOST
+
+#cmakedefine FSFW_ADD_RMAP
+#cmakedefine FSFW_ADD_DATALINKLAYER
+#cmakedefine FSFW_ADD_TMSTORAGE
+#cmakedefine FSFW_ADD_COORDINATES
+#cmakedefine FSFW_ADD_PUS
+#cmakedefine FSFW_ADD_MONITORING
+#cmakedefine FSFW_ADD_SGP4_PROPAGATOR
+
+// Can be used for low-level debugging of the SPI bus
+#ifndef FSFW_HAL_SPI_WIRETAPPING
+#define FSFW_HAL_SPI_WIRETAPPING      0
+#endif
+
+#ifndef FSFW_HAL_L3GD20_GYRO_DEBUG
+#define FSFW_HAL_L3GD20_GYRO_DEBUG          0
+#endif /* FSFW_HAL_L3GD20_GYRO_DEBUG */
+
+#ifndef FSFW_HAL_RM3100_MGM_DEBUG
+#define FSFW_HAL_RM3100_MGM_DEBUG           0
+#endif /* FSFW_HAL_RM3100_MGM_DEBUG */
+
+#ifndef FSFW_HAL_LIS3MDL_MGM_DEBUG
+#define FSFW_HAL_LIS3MDL_MGM_DEBUG          0
+#endif /* FSFW_HAL_LIS3MDL_MGM_DEBUG */
+
+#endif /* FSFW_FSFW_H_ */
