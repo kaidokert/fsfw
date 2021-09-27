@@ -1,4 +1,5 @@
 #include "fsfw/tasks/FixedSlotSequence.h"
+#include "fsfw/tasks/FixedTimeslotTaskIF.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include <cstdlib>
 
@@ -92,10 +93,9 @@ void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs,
 ReturnValue_t FixedSlotSequence::checkSequence() const {
 	if(slotList.empty()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::error << "FixedSlotSequence::checkSequence:"
-				<< " Slot list is empty!" << std::endl;
+		sif::warning << "FixedSlotSequence::checkSequence: Slot list is empty!" << std::endl;
 #endif
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return FixedTimeslotTaskIF::SLOT_LIST_EMPTY;
 	}
 
 	if(customCheckFunction != nullptr) {
