@@ -44,7 +44,7 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t **buffer, const
             foundSize = packetSize;
         }
         *buffer += foundSize;
-        readLen += foundSize;
+        readLen += idx + foundSize;
         return result;
     };
 

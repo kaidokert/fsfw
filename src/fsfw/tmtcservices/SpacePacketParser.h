@@ -8,19 +8,11 @@
 #include <cstdint>
 
 /**
- * @brief	This small helper class scans a given buffer for PUS packets.
- * 			Can be used if PUS packets are serialized in a tightly packed frame.
+ * @brief	This small helper class scans a given buffer for space packets.
+ * 			Can be used if space packets are serialized in a tightly packed frame.
  * @details
- * The parser uses the length field field of the space packets to find
- * the respective space packet sizes.
- *
- * The parser parses a buffer by taking a pointer and the maximum size to scan.
- * If space packets are found, they are stored in a FIFO which stores pairs
- * consisting of the index in the buffer and the respective packet sizes.
- *
- * If the parser detects split packets (which means that the size of the
- * next packet is larger than the remaining size to scan), it can either
- * store that split packet or throw away the packet.
+ * The parser uses the length field field and the 16-bit TC packet ID of the space packets to find
+ * find space packets in a given data stream
  * @author   R. Mueller
  */
 class SpacePacketParser {
@@ -35,62 +27,52 @@ public:
 
 	/**
 	 * @brief   Parser constructor.
-	 * @param maxExpectedPusPackets
-	 * Maximum expected number of PUS packets. A good estimate is to divide
-	 * the frame size by the minimum size of a PUS packet (12 bytes)
-	 * @param storeSplitPackets
-	 * Specifies whether split packets are also stored inside the FIFO,
-	 * with the size being the remaining frame size.
+	 * @param validPacketIds    This vector contains the allowed 16-bit TC packet ID start markers
+	 * The parser will search for these stark markers to detect the start of a space packet.
+	 * It is also possible to pass an empty vector here, but this is not recommended.
+	 * If an empty vector is passed, the parser will assume that the start of the given stream
+	 * contains the start of a new space packet.
 	 */
 	SpacePacketParser(std::vector<uint16_t> validPacketIds);
 
+    /**
+     * Parse a given frame for space packets but also increment the given buffer and assign the
+     * total number of bytes read so far
+     * @param buffer        Parser will look for space packets in this buffer
+     * @param maxSize       Maximum size of the buffer
+     * @param startIndex    Start index of a found space packet
+     * @param foundSize     Found size of the space packet
+     * @param readLen       Length read so far. This value is incremented by the number of parsed
+     *                      bytes which also includes the size of a found packet
+     *  -@c NO_PACKET_FOUND if no packet was found in the given buffer or the length field is
+     *      invalid. foundSize will be set to the size of the space packet header. buffer and
+     *      readLen will be incremented accordingly.
+     *  -@c SPLIT_PACKET if a packet was found but the detected size exceeds maxSize. foundSize
+     *      will be set to the detected packet size and startIndex will be set to the start of the
+     *      detected packet. buffer and read length will not be incremented but the found length
+     *      will be assigned.
+     *  -@c RETURN_OK if a packet was found
+     */
+    ReturnValue_t parseSpacePackets(const uint8_t **buffer, const size_t maxSize,
+            size_t& startIndex, size_t& foundSize, size_t& readLen);
+
 	/**
-	 * Parse a given frame for PUS packets
-	 * @param frame
-	 * @param frameSize
-	 * @param foundPackets The number of found packets will be stored here
-	 * @return
-	 *  -@c NO_PACKET_FOUND if no packet was found
-	 *  -@c SPLIT_PACKET if splitting is enabled and a split packet was found
-	 *  -@c RETURN_OK if a packet was found. The index and sizes are stored in the internal FIFO
+	 * Parse a given frame for space packets
+	 * @param buffer        Parser will look for space packets in this buffer
+	 * @param maxSize       Maximum size of the buffer
+	 * @param startIndex    Start index of a found space packet
+	 * @param foundSize     Found size of the space packet
+	 *  -@c NO_PACKET_FOUND if no packet was found in the given buffer or the length field is
+	 *      invalid. foundSize will be set to the size of the space packet header
+	 *  -@c SPLIT_PACKET if a packet was found but the detected size exceeds maxSize. foundSize
+	 *      will be set to the detected packet size and startIndex will be set to the start of the
+	 *      detected packet
+	 *  -@c RETURN_OK if a packet was found
 	 */
 	ReturnValue_t parseSpacePackets(const uint8_t* buffer, const size_t maxSize,
 	        size_t& startIndex, size_t& foundSize);
-
-	ReturnValue_t parseSpacePackets(const uint8_t **buffer, const size_t maxSize,
-	        size_t& startIndex, size_t& foundSize, size_t& readLen);
-	/**
-	 * Accessor function to get a reference to the internal FIFO which
-	 * stores pairs of index and packet sizes. This FIFO is filled
-	 * by the #parsePusPackets function.
-	 * @return
-	 */
-	//DynamicFIFO<IndexSizePair>& fifo();
-
-	/**
-	 * Retrieve the next index and packet size pair from the FIFO.
-	 * This also removes it from the FIFO. Please note that if the FIFO
-	 * is empty, an empty pair will be returned.
-	 * @return
-	 */
-	//IndexSizePair getNextFifoPair();
-
 private:
-	/**
-	 * A FIFO is used to store information about multiple PUS packets
-	 * inside the receive buffer. The maximum number of entries is defined
-	 * by the first constructor argument.
-	 */
-	//DynamicFIFO<IndexSizePair> indexSizePairFIFO;
-
 	std::vector<uint16_t> validPacketIds;
-
-	//bool storeSplitPackets = false;
-
-//	ReturnValue_t readMultiplePackets(const uint8_t *frame, size_t frameSize,
-//			size_t startIndex, uint32_t& foundPackets);
-//	ReturnValue_t readNextPacket(const uint8_t *frame,
-//			size_t frameSize, size_t& startIndex, uint32_t& foundPackets);
 };
 
 #endif /* FRAMEWORK_TMTCSERVICES_PUSPARSER_H_ */
