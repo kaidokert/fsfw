@@ -46,10 +46,11 @@ ReturnValue_t TcpTmTcServer::initialize() {
         if(spacePacketParser == nullptr) {
             return HasReturnvaluesIF::RETURN_FAILED;
         }
+#if defined PLATFORM_UNIX
         tcpConfig.tcpFlags |= MSG_DONTWAIT;
+#endif
     }
     }
-
     tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
     if (tcStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -155,6 +156,10 @@ ReturnValue_t TcpTmTcServer::initializeAfterTaskCreation() {
 }
 
 void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
+#if defined PLATFORM_WIN
+    setSocketNonBlocking(connSocket);
+#endif
+
     while (true) {
         int retval = recv(
                 connSocket,
@@ -172,7 +177,13 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
             ringBuffer.writeData(receptionBuffer.data(), retval);
         }
         else if(retval < 0)  {
-            if(errno == EAGAIN) {
+            int errorValue = GetLastError();
+#if defined PLATFORM_UNIX
+            int wouldBlockValue = EAGAIN;
+#elif defined PLATFORM_WIN
+            int wouldBlockValue = WSAEWOULDBLOCK;
+#endif
+            if(errorValue == wouldBlockValue) {
                 // No data available. Check whether any packets have been read, then send back
                 // telemetry if available
                 bool tcAvailable = false;
@@ -191,7 +202,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
                 }
             }
             else {
-                tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL);
+                tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL, 300);
             }
         }
     }
@@ -373,5 +384,21 @@ void TcpTmTcServer::handleSocketError(ConstStorageAccessor &accessor) {
     default: {
         tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::SEND_CALL);
     }
+    }
+}
+
+void TcpTmTcServer::setSocketNonBlocking(socket_t &connSocket) {
+    u_long iMode = 1;
+    int iResult = ioctlsocket(connSocket, FIONBIO, &iMode);
+    if(iResult != NO_ERROR) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "TcpTmTcServer::handleServerOperation: Setting socket"
+                " non-blocking failed with error " << iResult;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: Setting socket"
+                " non-blocking failed with error %d\n", iResult);
+#endif
+#endif
     }
 }

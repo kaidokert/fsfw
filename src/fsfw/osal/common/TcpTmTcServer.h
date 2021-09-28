@@ -136,6 +136,9 @@ private:
     ReturnValue_t handleTmSending(socket_t connSocket, bool& tmSent);
     ReturnValue_t handleTcRingBufferData(size_t availableReadData);
     void handleSocketError(ConstStorageAccessor& accessor);
+#if defined PLATFORM_WIN
+    void setSocketNonBlocking(socket_t& connSocket);
+#endif
 };
 
 #endif /* FSFW_OSAL_COMMON_TCP_TMTC_SERVER_H_ */
