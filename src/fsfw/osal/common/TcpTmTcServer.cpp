@@ -29,7 +29,7 @@ TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
         ReceptionModes receptionMode):
         SystemObject(objectId), tmtcBridgeId(tmtcTcpBridge), receptionMode(receptionMode),
         tcpConfig(customTcpServerPort), receptionBuffer(receptionBufferSize),
-        ringBuffer(ringBufferSize, true), validPacketIds() {
+        ringBuffer(ringBufferSize, true) {
 }
 
 ReturnValue_t TcpTmTcServer::initialize() {
