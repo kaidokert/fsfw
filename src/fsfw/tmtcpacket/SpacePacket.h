@@ -32,15 +32,6 @@ public:
      */
     virtual ~SpacePacket();
 
-    static constexpr uint16_t getTcSpacePacketIdFromApid(uint16_t apid) {
-        uint16_t tcPacketId = (0x18 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
-        return tcPacketId;
-    }
-    static constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid) {
-        uint16_t tmPacketId = (0x08 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
-        return tmPacketId;
-    }
-
     /**
      * With this call, the complete data content (including the CCSDS Primary
      * Header) is overwritten with the byte stream given.
@@ -77,5 +68,13 @@ protected:
      */
     SpacePacketData localData;
 };
+
+constexpr uint16_t getTcSpacePacketIdFromApid(uint16_t apid) {
+    return (0x18 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
+}
+
+constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid) {
+    return (0x08 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
+}
 
 #endif /* SPACEPACKET_H_ */

@@ -21,7 +21,7 @@ public:
 	//! is the size of the PUS packet starting at that index.
 	using IndexSizePair = std::pair<size_t, size_t>;
 
-	static constexpr uint8_t INTERFACE_ID = CLASS_ID::PUS_PARSER;
+	static constexpr uint8_t INTERFACE_ID = CLASS_ID::SPACE_PACKET_PARSER;
 	static constexpr ReturnValue_t NO_PACKET_FOUND = MAKE_RETURN_CODE(0x00);
 	static constexpr ReturnValue_t SPLIT_PACKET = MAKE_RETURN_CODE(0x01);
 
