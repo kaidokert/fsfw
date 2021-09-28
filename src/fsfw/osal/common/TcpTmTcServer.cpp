@@ -5,12 +5,13 @@
 #include "TcpTmTcBridge.h"
 #include "tcpipHelpers.h"
 
+#include "fsfw/tmtcservices/SpacePacketParser.h"
 #include "fsfw/tasks/TaskFactory.h"
+#include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/container/SharedRingBuffer.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
@@ -19,11 +20,6 @@
 #include <ws2tcpip.h>
 #elif defined(PLATFORM_UNIX)
 #include <netdb.h>
-#endif
-#include <chrono>
-
-#ifndef FSFW_TCP_RECV_WIRETAPPING_ENABLED
-#define FSFW_TCP_RECV_WIRETAPPING_ENABLED 0
 #endif
 
 const std::string TcpTmTcServer::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_PORT;
@@ -202,9 +198,11 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
 }
 
 ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t packetSize) {
-#if FSFW_TCP_RECV_WIRETAPPING_ENABLED == 1
-    arrayprinter::print(receptionBuffer.data(), bytesRead);
-#endif
+    if(wiretappingEnabled) {
+        sif::info << "Received TC:" << std::endl;
+        arrayprinter::print(spacePacket, packetSize);
+    }
+
     if(spacePacket == nullptr or packetSize == 0) {
         return HasReturnvaluesIF::RETURN_FAILED;
     }
@@ -267,6 +265,10 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) 
         ReturnValue_t result = tmStore->getData(storeId, storeAccessor);
         if(result != HasReturnvaluesIF::RETURN_OK) {
             return result;
+        }
+        if(wiretappingEnabled) {
+            sif::info << "Sending TM:" << std::endl;
+            arrayprinter::print(storeAccessor.data(), storeAccessor.size());
         }
         int retval = send(connSocket,
                 reinterpret_cast<const char*>(storeAccessor.data()),
@@ -344,6 +346,10 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
         std::memset(receptionBuffer.data() + startIdx, 0, foundSize);
     }
     return status;
+}
+
+void TcpTmTcServer::enableWiretapping(bool enable) {
+    this->wiretappingEnabled = enable;
 }
 
 void TcpTmTcServer::handleSocketError(ConstStorageAccessor &accessor) {

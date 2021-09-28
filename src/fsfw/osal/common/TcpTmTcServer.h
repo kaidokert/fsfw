@@ -1,7 +1,6 @@
 #ifndef FSFW_OSAL_COMMON_TCP_TMTC_SERVER_H_
 #define FSFW_OSAL_COMMON_TCP_TMTC_SERVER_H_
 
-#include <fsfw/tmtcservices/SpacePacketParser.h>
 #include "TcpIpBase.h"
 
 #include "fsfw/platform.h"
@@ -22,6 +21,7 @@
 #include <vector>
 
 class TcpTmTcBridge;
+class SpacePacketParser;
 
 /**
  * @brief   TCP server implementation
@@ -91,6 +91,8 @@ public:
             ReceptionModes receptionMode = ReceptionModes::SPACE_PACKETS);
     virtual~ TcpTmTcServer();
 
+    void enableWiretapping(bool enable);
+
     /**
      * Get a handle to the TCP configuration struct, which can be used to configure TCP
      * properties
@@ -113,6 +115,7 @@ private:
     //! TMTC bridge is cached.
     object_id_t tmtcBridgeId = objects::NO_OBJECT;
     TcpTmTcBridge* tmtcBridge = nullptr;
+    bool wiretappingEnabled = false;
 
     ReceptionModes receptionMode;
     TcpConfig tcpConfig;
