@@ -1,8 +1,11 @@
-#include "fsfw/osal/common/TcpTmTcServer.h"
-#include "fsfw/osal/common/TcpTmTcBridge.h"
-#include "fsfw/osal/common/tcpipHelpers.h"
-
 #include "fsfw/platform.h"
+#include "fsfw/FSFW.h"
+
+#include "TcpTmTcServer.h"
+#include "TcpTmTcBridge.h"
+#include "tcpipHelpers.h"
+
+#include "fsfw/tasks/TaskFactory.h"
 #include "fsfw/container/SharedRingBuffer.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/ipc/MutexGuard.h"
@@ -17,6 +20,7 @@
 #elif defined(PLATFORM_UNIX)
 #include <netdb.h>
 #endif
+#include <chrono>
 
 #ifndef FSFW_TCP_RECV_WIRETAPPING_ENABLED
 #define FSFW_TCP_RECV_WIRETAPPING_ENABLED 0
@@ -25,12 +29,11 @@
 const std::string TcpTmTcServer::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_PORT;
 
 TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
-        size_t receptionBufferSize, std::string customTcpServerPort):
-        SystemObject(objectId), tmtcBridgeId(tmtcTcpBridge),
-        tcpPort(customTcpServerPort), receptionBuffer(receptionBufferSize) {
-    if(tcpPort == "") {
-        tcpPort = DEFAULT_SERVER_PORT;
-    }
+        size_t receptionBufferSize, size_t ringBufferSize, std::string customTcpServerPort,
+        ReceptionModes receptionMode):
+        SystemObject(objectId), tmtcBridgeId(tmtcTcpBridge), receptionMode(receptionMode),
+        tcpConfig(customTcpServerPort), receptionBuffer(receptionBufferSize),
+        ringBuffer(ringBufferSize, true), validPacketIds() {
 }
 
 ReturnValue_t TcpTmTcServer::initialize() {
@@ -39,6 +42,16 @@ ReturnValue_t TcpTmTcServer::initialize() {
     ReturnValue_t result = TcpIpBase::initialize();
     if(result != HasReturnvaluesIF::RETURN_OK) {
         return result;
+    }
+
+    switch(receptionMode) {
+    case(ReceptionModes::SPACE_PACKETS): {
+        spacePacketParser = new SpacePacketParser(validPacketIds);
+        if(spacePacketParser == nullptr) {
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+        tcpConfig.tcpFlags |= MSG_DONTWAIT;
+    }
     }
 
     tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
@@ -63,7 +76,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
     hints.ai_flags = AI_PASSIVE;
 
     // Listen to all addresses (0.0.0.0) by using AI_PASSIVE in the hint flags
-    retval = getaddrinfo(nullptr, tcpPort.c_str(), &hints, &addrResult);
+    retval = getaddrinfo(nullptr, tcpConfig.tcpPort.c_str(), &hints, &addrResult);
     if (retval != 0) {
         handleError(Protocol::TCP, ErrorSources::GETADDRINFO_CALL);
         return HasReturnvaluesIF::RETURN_FAILED;
@@ -105,7 +118,7 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
 
     // Listen for connection requests permanently for lifetime of program
     while(true) {
-        retval = listen(listenerTcpSocket, tcpBacklog);
+        retval = listen(listenerTcpSocket, tcpConfig.tcpBacklog);
         if(retval == SOCKET_ERROR) {
             handleError(Protocol::TCP, ErrorSources::LISTEN_CALL, 500);
             continue;
@@ -123,11 +136,12 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
         handleServerOperation(connSocket);
 
         // Done, shut down connection and go back to listening for client requests
-        retval = shutdown(connSocket, SHUT_SEND);
+        retval = shutdown(connSocket, SHUT_BOTH);
         if(retval != 0) {
             handleError(Protocol::TCP, ErrorSources::SHUTDOWN_CALL);
         }
         closeSocket(connSocket);
+        connSocket = 0;
     }
     return HasReturnvaluesIF::RETURN_OK;
 }
@@ -144,51 +158,82 @@ ReturnValue_t TcpTmTcServer::initializeAfterTaskCreation() {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TcpTmTcServer::handleServerOperation(socket_t connSocket) {
-    int retval = 0;
-    do {
-        // Read all telecommands sent by the client
-        retval = recv(connSocket,
+void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
+    while (true) {
+        int retval = recv(
+                connSocket,
                 reinterpret_cast<char*>(receptionBuffer.data()),
                 receptionBuffer.capacity(),
-                tcpFlags);
-        if (retval > 0) {
-            handleTcReception(retval);
+                tcpConfig.tcpFlags
+        );
+        if(retval == 0) {
+            // Client closed connection
+            return;
         }
-        else if(retval == 0) {
-            // Client has finished sending telecommands, send telemetry now
-            handleTmSending(connSocket);
+        else if(retval > 0) {
+            // The ring buffer was configured for overwrite, so the returnvalue does not need to
+            // be checked for now
+            ringBuffer.writeData(receptionBuffer.data(), retval);
         }
-        else {
-            // Should not happen
-            tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL);
+        else if(retval < 0)  {
+            if(errno == EAGAIN) {
+                // No data available. Check whether any packets have been read, then send back
+                // telemetry if available
+                bool tcAvailable = false;
+                bool tmSent = false;
+                size_t availableReadData = ringBuffer.getAvailableReadData();
+                if(availableReadData > lastRingBufferSize) {
+                    tcAvailable = true;
+                    handleTcRingBufferData(availableReadData);
+                }
+                ReturnValue_t result = handleTmSending(connSocket, tmSent);
+                if(result == CONN_BROKEN) {
+                    return;
+                }
+                if(not tcAvailable and not tmSent) {
+                    TaskFactory::delayTask(DEFAULT_LOOP_DELAY_MS);
+                }
+            }
+            else {
+                tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL);
+            }
         }
-    } while(retval > 0);
+    }
 }
 
-ReturnValue_t TcpTmTcServer::handleTcReception(size_t bytesRecvd) {
+ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t packetSize) {
 #if FSFW_TCP_RECV_WIRETAPPING_ENABLED == 1
     arrayprinter::print(receptionBuffer.data(), bytesRead);
 #endif
+    if(spacePacket == nullptr or packetSize == 0) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
     store_address_t storeId;
-    ReturnValue_t result = tcStore->addData(&storeId, receptionBuffer.data(), bytesRecvd);
+    ReturnValue_t result = tcStore->addData(&storeId, spacePacket, packetSize);
     if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning<< "TcpTmTcServer::handleServerOperation: Data storage failed." << std::endl;
-        sif::warning << "Packet size: " << bytesRecvd << std::endl;
+        sif::warning << "TcpTmTcServer::handleServerOperation: Data storage with packet size" <<
+                packetSize << " failed" << std::endl;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: Data storage with packet size %d "
+                "failed\n", packetSize);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
+        return result;
     }
 
     TmTcMessage message(storeId);
 
-    result  = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
+    result = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
     if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "UdpTcPollingTask::handleSuccessfullTcRead: "
+        sif::warning << "TcpTmTcServer::handleServerOperation: "
                 " Sending message to queue failed" << std::endl;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: "
+                " Sending message to queue failed\n");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
         tcStore->deleteData(storeId);
@@ -196,21 +241,26 @@ ReturnValue_t TcpTmTcServer::handleTcReception(size_t bytesRecvd) {
     return result;
 }
 
-void TcpTmTcServer::setTcpBacklog(uint8_t tcpBacklog) {
-    this->tcpBacklog = tcpBacklog;
-}
-
 std::string TcpTmTcServer::getTcpPort() const {
-    return tcpPort;
+    return tcpConfig.tcpPort;
 }
 
-ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket) {
+void TcpTmTcServer::setSpacePacketParsingOptions(std::vector<uint16_t> validPacketIds) {
+    this->validPacketIds = validPacketIds;
+}
+
+TcpTmTcServer::TcpConfig& TcpTmTcServer::getTcpConfigStruct() {
+    return tcpConfig;
+}
+
+ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) {
     // Access to the FIFO is mutex protected because it is filled by the bridge
     MutexGuard(tmtcBridge->mutex, tmtcBridge->timeoutType, tmtcBridge->mutexTimeoutMs);
     store_address_t storeId;
     while((not tmtcBridge->tmFifo->empty()) and
             (tmtcBridge->packetSentCounter < tmtcBridge->sentPacketsPerCycle)) {
-        tmtcBridge->tmFifo->retrieve(&storeId);
+        // Send can fail, so only peek from the FIFO
+        tmtcBridge->tmFifo->peek(&storeId);
 
         // Using the store accessor will take care of deleting TM from the store automatically
         ConstStorageAccessor storeAccessor(storeId);
@@ -221,10 +271,101 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket) {
         int retval = send(connSocket,
                 reinterpret_cast<const char*>(storeAccessor.data()),
                 storeAccessor.size(),
-                tcpTmFlags);
-        if(retval != static_cast<int>(storeAccessor.size())) {
-            tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::SEND_CALL);
+                tcpConfig.tcpTmFlags);
+        if(retval == static_cast<int>(storeAccessor.size())) {
+            // Packet sent, clear FIFO entry
+            tmtcBridge->tmFifo->pop();
+            tmSent = true;
+
+        }
+        else if(retval <= 0) {
+            // Assume that the client has closed the connection here for now
+            handleSocketError(storeAccessor);
+            return CONN_BROKEN;
         }
     }
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
+    ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    size_t readAmount = availableReadData;
+    lastRingBufferSize = availableReadData;
+    if(readAmount >= ringBuffer.getMaxSize()) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        // Possible configuration error, too much data or/and data coming in too fast,
+        // requiring larger buffers
+        sif::warning << "TcpTmTcServer::handleServerOperation: Ring buffer reached " <<
+                "fill count" << std::endl;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: Ring buffer reached "
+                "fill count");
+#endif
+#endif
+    }
+    if(readAmount >= receptionBuffer.size()) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        // Possible configuration error, too much data or/and data coming in too fast,
+        // requiring larger buffers
+        sif::warning << "TcpTmTcServer::handleServerOperation: "
+                "Reception buffer too small " << std::endl;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: Reception buffer too small\n");
+#endif
+#endif
+        readAmount = receptionBuffer.size();
+    }
+    ringBuffer.readData(receptionBuffer.data(), readAmount, true);
+    const uint8_t* bufPtr = receptionBuffer.data();
+    const uint8_t** bufPtrPtr = &bufPtr;
+    size_t startIdx = 0;
+    size_t foundSize = 0;
+    size_t readLen = 0;
+    while(readLen < readAmount) {
+        result = spacePacketParser->parseSpacePackets(bufPtrPtr, readAmount,
+                startIdx, foundSize, readLen);
+        switch(result) {
+        case(SpacePacketParser::NO_PACKET_FOUND):
+        case(SpacePacketParser::SPLIT_PACKET): {
+            break;
+        }
+        case(HasReturnvaluesIF::RETURN_OK): {
+            result = handleTcReception(receptionBuffer.data() + startIdx, foundSize);
+            if(result != HasReturnvaluesIF::RETURN_OK) {
+                status = result;
+            }
+        }
+        }
+        ringBuffer.deleteData(foundSize);
+        lastRingBufferSize = ringBuffer.getAvailableReadData();
+        std::memset(receptionBuffer.data() + startIdx, 0, foundSize);
+    }
+    return status;
+}
+
+void TcpTmTcServer::handleSocketError(ConstStorageAccessor &accessor) {
+    // Don't delete data
+    accessor.release();
+    auto socketError = getLastSocketError();
+    switch(socketError) {
+#if defined PLATFORM_WIN
+    case(WSAECONNRESET): {
+        // See https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-send
+        // Remote client might have shut down connection
+        return;
+    }
+#else
+    case(EPIPE): {
+        // See https://man7.org/linux/man-pages/man2/send.2.html
+        // Remote client might have shut down connection
+        return;
+    }
+#endif
+    default: {
+        tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::SEND_CALL);
+    }
+    }
 }
