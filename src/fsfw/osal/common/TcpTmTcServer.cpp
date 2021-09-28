@@ -41,6 +41,17 @@ ReturnValue_t TcpTmTcServer::initialize() {
         return result;
     }
 
+    switch(receptionMode) {
+    case(ReceptionModes::SPACE_PACKETS): {
+        spacePacketParser = new SpacePacketParser(validPacketIds);
+        if(spacePacketParser == nullptr) {
+            return HasReturnvaluesIF::RETURN_FAILED;
+        }
+#if defined PLATFORM_UNIX
+        tcpConfig.tcpFlags |= MSG_DONTWAIT;
+#endif
+    }
+    }
     tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
     if (tcStore == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -144,11 +155,14 @@ ReturnValue_t TcpTmTcServer::initializeAfterTaskCreation() {
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TcpTmTcServer::handleServerOperation(socket_t connSocket) {
-    int retval = 0;
-    do {
-        // Read all telecommands sent by the client
-        retval = recv(connSocket,
+void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
+#if defined PLATFORM_WIN
+    setSocketNonBlocking(connSocket);
+#endif
+
+    while (true) {
+        int retval = recv(
+                connSocket,
                 reinterpret_cast<char*>(receptionBuffer.data()),
                 receptionBuffer.capacity(),
                 tcpFlags);
@@ -159,9 +173,34 @@ void TcpTmTcServer::handleServerOperation(socket_t connSocket) {
             // Client has finished sending telecommands, send telemetry now
             handleTmSending(connSocket);
         }
-        else {
-            // Should not happen
-            tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL);
+        else if(retval < 0)  {
+            int errorValue = GetLastError();
+#if defined PLATFORM_UNIX
+            int wouldBlockValue = EAGAIN;
+#elif defined PLATFORM_WIN
+            int wouldBlockValue = WSAEWOULDBLOCK;
+#endif
+            if(errorValue == wouldBlockValue) {
+                // No data available. Check whether any packets have been read, then send back
+                // telemetry if available
+                bool tcAvailable = false;
+                bool tmSent = false;
+                size_t availableReadData = ringBuffer.getAvailableReadData();
+                if(availableReadData > lastRingBufferSize) {
+                    tcAvailable = true;
+                    handleTcRingBufferData(availableReadData);
+                }
+                ReturnValue_t result = handleTmSending(connSocket, tmSent);
+                if(result == CONN_BROKEN) {
+                    return;
+                }
+                if(not tcAvailable and not tmSent) {
+                    TaskFactory::delayTask(tcpConfig.tcpLoopDelay);
+                }
+            }
+            else {
+                tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::RECV_CALL, 300);
+            }
         }
     } while(retval > 0);
 }
@@ -227,4 +266,107 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket) {
         }
     }
     return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
+    ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    size_t readAmount = availableReadData;
+    lastRingBufferSize = availableReadData;
+    if(readAmount >= ringBuffer.getMaxSize()) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        // Possible configuration error, too much data or/and data coming in too fast,
+        // requiring larger buffers
+        sif::warning << "TcpTmTcServer::handleServerOperation: Ring buffer reached " <<
+                "fill count" << std::endl;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: Ring buffer reached "
+                "fill count");
+#endif
+#endif
+    }
+    if(readAmount >= receptionBuffer.size()) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        // Possible configuration error, too much data or/and data coming in too fast,
+        // requiring larger buffers
+        sif::warning << "TcpTmTcServer::handleServerOperation: "
+                "Reception buffer too small " << std::endl;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: Reception buffer too small\n");
+#endif
+#endif
+        readAmount = receptionBuffer.size();
+    }
+    ringBuffer.readData(receptionBuffer.data(), readAmount, true);
+    const uint8_t* bufPtr = receptionBuffer.data();
+    const uint8_t** bufPtrPtr = &bufPtr;
+    size_t startIdx = 0;
+    size_t foundSize = 0;
+    size_t readLen = 0;
+    while(readLen < readAmount) {
+        result = spacePacketParser->parseSpacePackets(bufPtrPtr, readAmount,
+                startIdx, foundSize, readLen);
+        switch(result) {
+        case(SpacePacketParser::NO_PACKET_FOUND):
+        case(SpacePacketParser::SPLIT_PACKET): {
+            break;
+        }
+        case(HasReturnvaluesIF::RETURN_OK): {
+            result = handleTcReception(receptionBuffer.data() + startIdx, foundSize);
+            if(result != HasReturnvaluesIF::RETURN_OK) {
+                status = result;
+            }
+        }
+        }
+        ringBuffer.deleteData(foundSize);
+        lastRingBufferSize = ringBuffer.getAvailableReadData();
+        std::memset(receptionBuffer.data() + startIdx, 0, foundSize);
+    }
+    return status;
+}
+
+void TcpTmTcServer::enableWiretapping(bool enable) {
+    this->wiretappingEnabled = enable;
+}
+
+void TcpTmTcServer::handleSocketError(ConstStorageAccessor &accessor) {
+    // Don't delete data
+    accessor.release();
+    auto socketError = getLastSocketError();
+    switch(socketError) {
+#if defined PLATFORM_WIN
+    case(WSAECONNRESET): {
+        // See https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-send
+        // Remote client might have shut down connection
+        return;
+    }
+#else
+    case(EPIPE): {
+        // See https://man7.org/linux/man-pages/man2/send.2.html
+        // Remote client might have shut down connection
+        return;
+    }
+#endif
+    default: {
+        tcpip::handleError(tcpip::Protocol::TCP, tcpip::ErrorSources::SEND_CALL);
+    }
+    }
+}
+
+void TcpTmTcServer::setSocketNonBlocking(socket_t &connSocket) {
+    u_long iMode = 1;
+    int iResult = ioctlsocket(connSocket, FIONBIO, &iMode);
+    if(iResult != NO_ERROR) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "TcpTmTcServer::handleServerOperation: Setting socket"
+                " non-blocking failed with error " << iResult;
+#else
+        sif::printWarning("TcpTmTcServer::handleServerOperation: Setting socket"
+                " non-blocking failed with error %d\n", iResult);
+#endif
+#endif
+    }
 }

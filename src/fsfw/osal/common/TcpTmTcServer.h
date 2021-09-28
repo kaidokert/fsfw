@@ -84,12 +84,19 @@ private:
     int tcpBacklog = 3;
 
     std::vector<uint8_t> receptionBuffer;
-    int tcpSockOpt = 0;
-    int tcpTmFlags = 0;
+    SimpleRingBuffer ringBuffer;
+    std::vector<uint16_t> validPacketIds;
+    SpacePacketParser* spacePacketParser = nullptr;
+    uint8_t lastRingBufferSize = 0;
 
-    void handleServerOperation(socket_t connSocket);
-    ReturnValue_t handleTcReception(size_t bytesRecvd);
-    ReturnValue_t handleTmSending(socket_t connSocket);
+    virtual void handleServerOperation(socket_t& connSocket);
+    ReturnValue_t handleTcReception(uint8_t* spacePacket, size_t packetSize);
+    ReturnValue_t handleTmSending(socket_t connSocket, bool& tmSent);
+    ReturnValue_t handleTcRingBufferData(size_t availableReadData);
+    void handleSocketError(ConstStorageAccessor& accessor);
+#if defined PLATFORM_WIN
+    void setSocketNonBlocking(socket_t& connSocket);
+#endif
 };
 
 #endif /* FSFW_OSAL_COMMON_TCP_TMTC_SERVER_H_ */
