@@ -69,12 +69,16 @@ protected:
     SpacePacketData localData;
 };
 
+namespace spacepacket {
+
 constexpr uint16_t getTcSpacePacketIdFromApid(uint16_t apid) {
     return (0x18 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
 }
 
 constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid) {
     return (0x08 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
+}
+
 }
 
 #endif /* SPACEPACKET_H_ */
