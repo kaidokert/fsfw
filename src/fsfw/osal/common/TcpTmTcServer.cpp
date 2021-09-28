@@ -187,7 +187,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
                     return;
                 }
                 if(not tcAvailable and not tmSent) {
-                    TaskFactory::delayTask(DEFAULT_LOOP_DELAY_MS);
+                    TaskFactory::delayTask(tcpConfig.tcpLoopDelay);
                 }
             }
             else {

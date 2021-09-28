@@ -59,9 +59,10 @@ public:
         int tcpBacklog = 3;
 
         /**
-         * Passed to the select call which is used to ensure non-blocking TC reception
+         * If no telecommands packets are being received and no telemetry is being sent,
+         * the TCP server will delay periodically by this amount to decrease the CPU load
          */
-        //uint32_t selectTimeoutMs = DEFAULT_SELECT_TIMEOUT_MS;
+        uint32_t tcpLoopDelay = DEFAULT_LOOP_DELAY_MS ;
         /**
          * Passed to the send call
          */
