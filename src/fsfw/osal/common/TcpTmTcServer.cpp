@@ -177,7 +177,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
             ringBuffer.writeData(receptionBuffer.data(), retval);
         }
         else if(retval < 0)  {
-            int errorValue = GetLastError();
+            int errorValue = getLastSocketError();
 #if defined PLATFORM_UNIX
             int wouldBlockValue = EAGAIN;
 #elif defined PLATFORM_WIN
@@ -387,6 +387,7 @@ void TcpTmTcServer::handleSocketError(ConstStorageAccessor &accessor) {
     }
 }
 
+#if defined PLATFORM_WIN
 void TcpTmTcServer::setSocketNonBlocking(socket_t &connSocket) {
     u_long iMode = 1;
     int iResult = ioctlsocket(connSocket, FIONBIO, &iMode);
@@ -402,3 +403,4 @@ void TcpTmTcServer::setSocketNonBlocking(socket_t &connSocket) {
 #endif
     }
 }
+#endif
