@@ -49,7 +49,7 @@ static constexpr uint8_t TMRC_DEFAULT_VALUE = TMRC_DEFAULT_37HZ_VALUE;
 
 static constexpr uint8_t MEASUREMENT_REG_START = 0x24;
 static constexpr uint8_t BIST_REGISTER = 0x33;
-static constexpr uint8_t DATA_READY_VAL = 0b1000'0000;
+static constexpr uint8_t DATA_READY_VAL = 0b10000000;
 static constexpr uint8_t STATUS_REGISTER = 0x34;
 static constexpr uint8_t REVID_REGISTER = 0x36;
 
