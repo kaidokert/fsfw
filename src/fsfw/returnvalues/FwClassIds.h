@@ -78,6 +78,7 @@ enum: uint8_t {
     HAL_GPIO, //HGIO
     MGM_LIS3MDL, //MGMLIS3
     MGM_RM3100, //MGMRM3100
+    SPACE_PACKET_PARSER, //SPPA
     FW_CLASS_ID_COUNT // [EXPORT] : [END]
 
 };
