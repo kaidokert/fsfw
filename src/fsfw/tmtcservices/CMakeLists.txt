@@ -6,4 +6,5 @@ target_sources(${LIB_FSFW_NAME}
 		TmTcBridge.cpp
 		TmTcMessage.cpp
 		VerificationReporter.cpp
+		SpacePacketParser.cpp
 )
