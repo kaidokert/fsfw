@@ -2,7 +2,6 @@
 #define MISSION_DEVICES_MGMRM3100HANDLER_H_
 
 #include "fsfw/FSFW.h"
-#include "devices/powerSwitcherList.h"
 #include "devicedefinitions/MgmRM3100HandlerDefs.h"
 #include "fsfw/devicehandlers/DeviceHandlerBase.h"
 

@@ -103,7 +103,7 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
             for(size_t faultyDestSize = 0; faultyDestSize < expectedVec.size(); faultyDestSize ++) {
                 result = dleEncoder.encode(vecToEncode.data(), vecToEncode.size(),
                         buffer.data(), faultyDestSize, &encodedLen);
-                REQUIRE(result == DleEncoder::STREAM_TOO_SHORT);
+                REQUIRE(result == static_cast<int>(DleEncoder::STREAM_TOO_SHORT));
             }
         };
 
