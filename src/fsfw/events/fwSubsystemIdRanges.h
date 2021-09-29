@@ -29,6 +29,8 @@ enum: uint8_t {
     PUS_SERVICE_9 = 89,
     PUS_SERVICE_17 = 97,
     PUS_SERVICE_23 = 103,
+    MGM_LIS3MDL = 106,
+    MGM_RM3100 = 107,
 
     FW_SUBSYSTEM_ID_RANGE
 };

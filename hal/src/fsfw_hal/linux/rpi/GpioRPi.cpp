@@ -12,7 +12,7 @@ ReturnValue_t gpio::createRpiGpioConfig(GpioCookie* cookie, gpioId_t gpioId, int
         return HasReturnvaluesIF::RETURN_FAILED;
     }
 
-    GpiodRegular* config = new GpiodRegular();
+    auto config = new GpiodRegularByChip();
     /* Default chipname for Raspberry Pi. There is still gpiochip1 for expansion, but most users
     will not need this */
     config->chipname = "gpiochip0";
