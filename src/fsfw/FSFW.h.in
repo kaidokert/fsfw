@@ -14,7 +14,7 @@
 #cmakedefine FSFW_ADD_COORDINATES
 #cmakedefine FSFW_ADD_PUS
 #cmakedefine FSFW_ADD_MONITORING
-#cmakedefine FSFW_ADD_SGP4_PROPAGATOR0
+#cmakedefine FSFW_ADD_SGP4_PROPAGATOR
 
 // FSFW core defines
 
