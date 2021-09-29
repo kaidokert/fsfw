@@ -141,8 +141,8 @@ ReturnValue_t SpiComIF::sendMessage(CookieIF *cookie, const uint8_t *sendData, s
     if(sendLen > spiCookie->getMaxBufferSize()) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "SpiComIF::sendMessage: Too much data sent, send length" << sendLen <<
-                "larger than maximum buffer length" << spiCookie->getMaxBufferSize() << std::endl;
+        sif::warning << "SpiComIF::sendMessage: Too much data sent, send length " << sendLen <<
+                "larger than maximum buffer length " << spiCookie->getMaxBufferSize() << std::endl;
 #else
         sif::printWarning("SpiComIF::sendMessage: Too much data sent, send length %lu larger "
                 "than maximum buffer length %lu!\n", static_cast<unsigned long>(sendLen),
@@ -197,12 +197,26 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie *spiCookie, const 
     if(gpioId != gpio::NO_GPIO) {
         result = spiMutex->lockMutex(timeoutType, timeoutMs);
         if (result != RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::error << "SpiComIF::sendMessage: Failed to lock mutex" << std::endl;
+#else
+            sif::printError("SpiComIF::sendMessage: Failed to lock mutex\n");
+#endif
 #endif
             return result;
         }
-        gpioComIF->pullLow(gpioId);
+        ReturnValue_t result = gpioComIF->pullLow(gpioId);
+        if(result != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+            sif::warning << "SpiComIF::sendMessage: Pulling low CS pin failed" << std::endl;
+#else
+            sif::printWarning("SpiComIF::sendMessage: Pulling low CS pin failed");
+#endif
+#endif
+            return result;
+        }
     }
 
     /* Execute transfer */
@@ -213,7 +227,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie *spiCookie, const 
             utility::handleIoctlError("SpiComIF::sendMessage: ioctl error.");
             result = FULL_DUPLEX_TRANSFER_FAILED;
         }
-#if FSFW_HAL_LINUX_SPI_WIRETAPPING == 1
+#if FSFW_HAL_SPI_WIRETAPPING == 1
         performSpiWiretapping(spiCookie);
 #endif /* FSFW_LINUX_SPI_WIRETAPPING == 1 */
     }
@@ -384,11 +398,11 @@ GpioIF* SpiComIF::getGpioInterface() {
 void SpiComIF::setSpiSpeedAndMode(int spiFd, spi::SpiModes mode, uint32_t speed) {
     int retval = ioctl(spiFd, SPI_IOC_WR_MODE, reinterpret_cast<uint8_t*>(&mode));
     if(retval != 0) {
-        utility::handleIoctlError("SpiTestClass::performRm3100Test: Setting SPI mode failed!");
+        utility::handleIoctlError("SpiComIF::setSpiSpeedAndMode: Setting SPI mode failed");
     }
 
     retval = ioctl(spiFd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
     if(retval != 0) {
-        utility::handleIoctlError("SpiTestClass::performRm3100Test: Setting SPI speed failed!");
+        utility::handleIoctlError("SpiComIF::setSpiSpeedAndMode: Setting SPI speed failed");
     }
 }

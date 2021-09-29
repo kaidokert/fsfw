@@ -6,6 +6,7 @@
 #include <fsfw/objectmanager/SystemObject.h>
 
 class GpioCookie;
+class GpiodRegularIF;
 
 /**
  * @brief	This class implements the GpioIF for a linux based system. The
@@ -47,9 +48,13 @@ private:
 	 * @param gpioId	The GPIO ID of the GPIO to drive.
 	 * @param logiclevel	The logic level to set. O or 1.
 	 */
-	ReturnValue_t driveGpio(gpioId_t gpioId, GpiodRegular* regularGpio, unsigned int logiclevel);
+	ReturnValue_t driveGpio(gpioId_t gpioId, GpiodRegularBase& regularGpio,
+	        gpio::Levels logicLevel);
 
-	ReturnValue_t configureRegularGpio(gpioId_t gpioId, GpiodRegular* regularGpio);
+	ReturnValue_t configureGpioByLabel(gpioId_t gpioId, GpiodRegularByLabel& gpioByLabel);
+	ReturnValue_t configureGpioByChip(gpioId_t gpioId, GpiodRegularByChip& gpioByChip);
+    ReturnValue_t configureRegularGpio(gpioId_t gpioId, gpio::GpioTypes gpioType,
+            struct gpiod_chip* chip, GpiodRegularBase& regularGpio, std::string failOutput);
 
 	/**
 	 * @brief	This function checks if GPIOs are already registered and whether
@@ -62,7 +67,7 @@ private:
 	 */
 	ReturnValue_t checkForConflicts(GpioMap& mapToAdd);
 
-	ReturnValue_t checkForConflictsRegularGpio(gpioId_t gpiodId, GpiodRegular* regularGpio,
+	ReturnValue_t checkForConflictsRegularGpio(gpioId_t gpiodId, GpiodRegularBase& regularGpio,
 	        GpioMap& mapToAdd);
     ReturnValue_t checkForConflictsCallbackGpio(gpioId_t gpiodId, GpioCallback* regularGpio,
             GpioMap& mapToAdd);
