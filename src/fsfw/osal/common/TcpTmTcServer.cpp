@@ -210,7 +210,11 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
 
 ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t packetSize) {
     if(wiretappingEnabled) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::info << "Received TC:" << std::endl;
+#else
+        sif::printInfo("Received TC:\n");
+#endif
         arrayprinter::print(spacePacket, packetSize);
     }
 
@@ -278,7 +282,11 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) 
             return result;
         }
         if(wiretappingEnabled) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::info << "Sending TM:" << std::endl;
+#else
+            sif::printInfo("Sending TM:\n");
+#endif
             arrayprinter::print(storeAccessor.data(), storeAccessor.size());
         }
         int retval = send(connSocket,
