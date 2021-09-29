@@ -16,6 +16,14 @@
 #cmakedefine FSFW_ADD_MONITORING
 #cmakedefine FSFW_ADD_SGP4_PROPAGATOR
 
+#ifndef FSFW_USE_PUS_C_TELEMETRY
+#define FSFW_USE_PUS_C_TELEMETRY            1
+#endif
+
+#ifndef FSFW_USE_PUS_C_TELECOMMANDS
+#define FSFW_USE_PUS_C_TELECOMMANDS         1
+#endif
+
 // Can be used for low-level debugging of the SPI bus
 #ifndef FSFW_HAL_SPI_WIRETAPPING
 #define FSFW_HAL_SPI_WIRETAPPING      0
