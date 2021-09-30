@@ -165,7 +165,7 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
     if (sourceStream[encodedIndex++] != STX_CHAR) {
         return DECODING_ERROR;
     }
-    while ((encodedIndex < sourceStreamLen)
+    while ((encodedIndex < sourceStreamLen - 1)
             and (decodedIndex < maxDestStreamlen)
             and (sourceStream[encodedIndex] != ETX_CHAR)
             and (sourceStream[encodedIndex] != STX_CHAR)) {
