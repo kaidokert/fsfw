@@ -218,5 +218,10 @@ TEST_CASE("DleEncoder" , "[DleEncoder]") {
         REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
 
         dleEncoder.setEscapeMode(true);
+        testArray1EncodedFaulty = TEST_ARRAY_1_ENCODED_ESCAPED;
+        testArray1EncodedFaulty[5] = 0;
+        result = dleEncoder.decode(testArray1EncodedFaulty.data(), testArray1EncodedFaulty.size(),
+                &readLen, buffer.data(), buffer.size(), &encodedLen);
+        REQUIRE(result == static_cast<int>(DleEncoder::DECODING_ERROR));
     }
 }
