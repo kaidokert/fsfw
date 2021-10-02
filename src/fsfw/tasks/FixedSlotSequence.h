@@ -2,7 +2,7 @@
 #define FSFW_TASKS_FIXEDSLOTSEQUENCE_H_
 
 #include "FixedSequenceSlot.h"
-#include "../objectmanager/SystemObject.h"
+#include "fsfw/objectmanager/SystemObject.h"
 
 #include <set>
 
@@ -136,6 +136,7 @@ public:
 	 * @details
 	 * Checks if timing is ok (must be ascending) and if all handlers were found.
 	 * @return
+	 *  - SLOT_LIST_EMPTY if the slot list is empty
 	 */
 	ReturnValue_t checkSequence() const;
 
@@ -147,6 +148,7 @@ public:
 	 * The general check will be continued for now if the custom check function
 	 * fails but a diagnostic debug output will be given.
 	 * @param customCheckFunction
+	 *
 	 */
 	void addCustomCheck(ReturnValue_t (*customCheckFunction)(const SlotList &));
 
