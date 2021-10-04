@@ -19,7 +19,7 @@ class TmTcBridge : public AcceptsTelemetryIF,
 public:
 	static constexpr uint8_t TMTC_RECEPTION_QUEUE_DEPTH = 20;
 	static constexpr uint8_t LIMIT_STORED_DATA_SENT_PER_CYCLE = 15;
-	static constexpr uint8_t LIMIT_DOWNLINK_PACKETS_STORED = 20;
+	static constexpr uint8_t LIMIT_DOWNLINK_PACKETS_STORED = 200;
 
 	static constexpr uint8_t DEFAULT_STORED_DATA_SENT_PER_CYCLE = 5;
 	static constexpr uint8_t DEFAULT_DOWNLINK_PACKETS_STORED = 10;

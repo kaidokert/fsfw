@@ -165,11 +165,9 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
     if (sourceStream[encodedIndex++] != STX_CHAR) {
         return DECODING_ERROR;
     }
-    while ((encodedIndex < sourceStreamLen)
-            and (decodedIndex < maxDestStreamlen)
-            and (sourceStream[encodedIndex] != ETX_CHAR)
-            and (sourceStream[encodedIndex] != STX_CHAR)) {
-        if (sourceStream[encodedIndex] == DLE_CHAR) {
+    while ((encodedIndex < sourceStreamLen) and (decodedIndex < maxDestStreamlen)) {
+        switch(sourceStream[encodedIndex]) {
+        case(DLE_CHAR): {
             if(encodedIndex + 1 >= sourceStreamLen) {
                 //reached the end of the sourceStream
                 *readLen = sourceStreamLen;
@@ -197,29 +195,33 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
                 }
             }
             ++encodedIndex;
+            break;
         }
-        else {
+        case(STX_CHAR): {
+            *readLen = encodedIndex;
+            return DECODING_ERROR;
+        }
+        case(ETX_CHAR): {
+            *readLen = ++encodedIndex;
+            *decodedLen = decodedIndex;
+            return RETURN_OK;
+        }
+        default: {
             destStream[decodedIndex] = sourceStream[encodedIndex];
+            break;
         }
-
+        }
         ++encodedIndex;
         ++decodedIndex;
     }
-    if (sourceStream[encodedIndex] != ETX_CHAR) {
-        if(decodedIndex == maxDestStreamlen) {
-            //so far we did not find anything wrong here, so let user try again
-            *readLen = 0;
-            return STREAM_TOO_SHORT;
-        }
-        else {
-            *readLen = ++encodedIndex;
-            return DECODING_ERROR;
-        }
-    }
-    else {
-        *readLen = ++encodedIndex;
-        *decodedLen = decodedIndex;
-        return RETURN_OK;
+
+    if(decodedIndex == maxDestStreamlen) {
+        //so far we did not find anything wrong here, so let user try again
+        *readLen = 0;
+        return STREAM_TOO_SHORT;
+    } else {
+        *readLen = encodedIndex;
+        return DECODING_ERROR;
     }
 }
 
