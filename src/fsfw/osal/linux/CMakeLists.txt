@@ -13,7 +13,6 @@ target_sources(${LIB_FSFW_NAME}
 		QueueFactory.cpp
 		SemaphoreFactory.cpp
 		TaskFactory.cpp
-		Timer.cpp
 		tcpipHelpers.cpp
 		unixUtility.cpp
 )
