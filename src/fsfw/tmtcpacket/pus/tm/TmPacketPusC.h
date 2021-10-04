@@ -54,6 +54,9 @@ public:
             sizeof(PUSTmDataFieldHeaderPusC) + 2);
     //! Maximum size of a TM Packet in this mission.
     static const uint32_t MISSION_TM_PACKET_MAX_SIZE = fsfwconfig::FSFW_MAX_TM_PACKET_SIZE;
+    //! First four bits of first byte of secondary header. Set to 2 according
+    //! to ECSS-E-ST-70-41C p.439
+    static constexpr uint8_t TM_PUS_VERSION_NUMBER = 2;
 
     /**
      * This is the default constructor.

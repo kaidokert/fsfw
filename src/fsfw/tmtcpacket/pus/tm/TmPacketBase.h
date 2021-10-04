@@ -31,8 +31,6 @@ public:
     //! Maximum size of a TM Packet in this mission.
     //! TODO: Make this dependant on a config variable.
     static const uint32_t MISSION_TM_PACKET_MAX_SIZE = 2048;
-    //! First four bits of first byte of secondary header
-    static const uint8_t VERSION_NUMBER_BYTE = 0b00010000;
 
     /**
      * This is the default constructor.
