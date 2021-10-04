@@ -198,7 +198,7 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
             break;
         }
         case(STX_CHAR): {
-            *readLen = ++encodedIndex;
+            *readLen = encodedIndex;
             return DECODING_ERROR;
         }
         case(ETX_CHAR): {
