@@ -1,17 +1,81 @@
-## Changes from ASTP 1.0.0 to 1.1.0
+# Changed from ASTP 1.1.0 to 1.2.0
+
+## API Changes
+
+### FSFW Architecture
+
+- New src folder which contains all source files except the HAL, contributed code and test code
+- External and internal API mostly stayed the same
+- Folder names are now all smaller case: internalError was renamed to internalerror and
+  FreeRTOS was renamed to freertos
+- Warning if optional headers are used but the modules was not added to the source files to compile
+
+### HAL
+
+- HAL added back into FSFW. It is tightly bound to the FSFW, and compiling it as a static library
+  made using it more complicated than necessary
+
+## Bugfixes
+
+### FreeRTOS QueueMapManager
+
+- Fixed a bug which causes the first generated Queue ID to be invalid
+
+## Enhancements
+
+### FSFW Architecture
+
+- See API changes chapter. This change will keep the internal API consistent in the future
+
+# Changes from ASTP 1.0.0 to 1.1.0
+
+## API Changes
 
 ### PUS
 
 - Added PUS C support
+- SUBSYSTEM_IDs added for PUS Services
+- Added new Parameter which must be defined in config: fsfwconfig::FSFW_MAX_TM_PACKET_SIZE
+
+### ObjectManager
+
+ - ObjectManager is now a singelton
+
 
 ### Configuration
 
 - Additional configuration option fsfwconfig::FSFW_MAX_TM_PACKET_SIZE which 
   need to be specified in FSFWConfig.h
 
+### CMake
+
+- Changed Cmake FSFW_ADDITIONAL_INC_PATH to FSFW_ADDITIONAL_INC_PATHS
+
+## Bugfixes 
+
+- timemanager/TimeStamperIF.h: Timestamp config was not used correctly, leading to different timestamp sizes than configured in fsfwconfig::FSFW_MISSION_TIMESTAMP_SIZE
+- TCP server fixes
+
+## Enhancements
+
+### FreeRTOS Queue Handles
+
+- Fixed an internal issue how FreeRTOS MessageQueues were handled
+
+### Linux OSAL
+
+- Better printf error messages
+
+### CMake
+
+- Check for C++11 as mininimum required Version
+
+### Debug Output
+
+- Changed Warning color to magenta, which is well readable on both dark and light mode IDEs
 
 
-## Changes from ASTP 0.0.1 to 1.0.0
+# Changes from ASTP 0.0.1 to 1.0.0
 
 ### Host OSAL
 

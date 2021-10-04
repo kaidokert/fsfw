@@ -3,20 +3,33 @@ cmake_minimum_required(VERSION 3.13)
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
 )
-
 if(FSFW_GENERATE_SECTIONS)
     option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
 endif()
 
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
-option(FSFW_USE_RMAP "Compile with RMAP" ON)
-option(FSFW_USE_DATALINKLAYER "Compile with Data Link Layer" ON)
+option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
+option(FSFW_ADD_UNITTESTS "Add regular unittests. Requires Catch2" OFF)
+option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
+
+# Optional sources
+option(FSFW_ADD_PUS "Compile with PUS sources" ON)
+option(FSFW_ADD_MONITORING "Compile with monitoring components" ON)
+
+option(FSFW_ADD_RMAP "Compile with RMAP" OFF)
+option(FSFW_ADD_DATALINKLAYER "Compile with Data Link Layer" OFF)
+option(FSFW_ADD_COORDINATES "Compile with coordinate components" OFF)
+option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
+
+# Contrib sources
+option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
 set(LIB_FSFW_NAME fsfw)
 add_library(${LIB_FSFW_NAME})
+set(FSFW_CORE_INC_PATH "inc")
 
-set_property(CACHE OS_FSFW PROPERTY STRINGS host linux rtems freertos)
+set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
@@ -25,100 +38,61 @@ elseif(${CMAKE_CXX_STANDARD} LESS 11)
     message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
 endif()
 
-if(NOT OS_FSFW)
-	message(STATUS "No OS for FSFW via OS_FSFW set. Assuming host OS")
+# Backwards comptability
+if(OS_FSFW AND NOT FSFW_OSAL)
+    message(WARNING "Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
+    set(FSFW_OSAL OS_FSFW)
+endif()
+
+if(NOT FSFW_OSAL)
+	message(STATUS "No OS for FSFW via FSFW_OSAL set. Assuming host OS")
 	# Assume host OS and autodetermine from OS_FSFW
 	if(UNIX)
-		set(OS_FSFW  "linux" 
+		set(FSFW_OSAL  "linux" 
 			CACHE STRING 
 			"OS abstraction layer used in the FSFW"
 		)
 	elseif(WIN32)
-		set(OS_FSFW  "host" 
+		set(FSFW_OSAL  "host" 
 			CACHE STRING "OS abstraction layer used in the FSFW"
 		)
 	endif()
 
 endif()
 
-set(FSFW_OSAL_DEFINITION FSFW_HOST)
+set(FSFW_OSAL_DEFINITION FSFW_OSAL_HOST)
 
-if(${OS_FSFW} STREQUAL host)
-	set(OS_FSFW_NAME "Host")
-elseif(${OS_FSFW} STREQUAL linux)
-	set(OS_FSFW_NAME "Linux")
-	set(FSFW_OSAL_DEFINITION FSFW_LINUX)
-elseif(${OS_FSFW} STREQUAL  freertos)
-	set(OS_FSFW_NAME "FreeRTOS")
-	set(FSFW_OSAL_DEFINITION FSFW_FREERTOS)
-	target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+if(FSFW_OSAL MATCHES host)
+    set(OS_FSFW_NAME "Host")
+    set(FSFW_OSAL_HOST ON)
+elseif(FSFW_OSAL MATCHES linux)
+    set(OS_FSFW_NAME "Linux")
+    set(FSFW_OSAL_LINUX ON)
+elseif(FSFW_OSAL MATCHES freertos)
+    set(OS_FSFW_NAME "FreeRTOS")
+    set(FSFW_OSAL_FREERTOS ON)
+    target_link_libraries(${LIB_FSFW_NAME} PRIVATE
         ${LIB_OS_NAME}
-	)
-elseif(${OS_FSFW} STREQUAL rtems)
-	set(OS_FSFW_NAME "RTEMS")
-    set(FSFW_OSAL_DEFINITION FSFW_RTEMS)
+    )
+elseif(FSFW_OSAL STREQUAL rtems)
+    set(OS_FSFW_NAME "RTEMS")
+    set(FSFW_OSAL_RTEMS ON)
 else()
-	message(WARNING 
-		"Invalid operating system for FSFW specified! Setting to host.."
-	)
-	set(OS_FSFW_NAME "Host")
-	set(OS_FSFW "host")
+    message(WARNING
+        "Invalid operating system for FSFW specified! Setting to host.."
+    )
+    set(OS_FSFW_NAME "Host")
+    set(OS_FSFW "host")
 endif()
-
-target_compile_definitions(${LIB_FSFW_NAME} PRIVATE
-    ${FSFW_OSAL_DEFINITION}
-)
-
-target_compile_definitions(${LIB_FSFW_NAME} INTERFACE
-    ${FSFW_OSAL_DEFINITION}
-)
 
 message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
 
-add_subdirectory(action)
-add_subdirectory(container)
-add_subdirectory(controller)
-add_subdirectory(coordinates)
-
-if(FSFW_USE_DATALINKLAYER)
-	add_subdirectory(datalinklayer)
+add_subdirectory(src)
+add_subdirectory(tests)
+if(FSFW_ADD_HAL)
+    add_subdirectory(hal)
 endif()
-
-add_subdirectory(datapool)
-add_subdirectory(datapoollocal)
-add_subdirectory(housekeeping)
-add_subdirectory(devicehandlers)
-add_subdirectory(events)
-add_subdirectory(fdir)
-add_subdirectory(globalfunctions)
-add_subdirectory(health)
-add_subdirectory(internalError)
-add_subdirectory(ipc)
-add_subdirectory(memory)
-add_subdirectory(modes)
-add_subdirectory(monitoring)
-add_subdirectory(objectmanager)
-add_subdirectory(osal)
-add_subdirectory(parameters)
-add_subdirectory(power)
-add_subdirectory(pus)
-
-if(FSFW_USE_RMAP)
-	add_subdirectory(rmap)
-endif()
-
-add_subdirectory(serialize)
-add_subdirectory(serviceinterface)
-add_subdirectory(storagemanager)
-add_subdirectory(subsystem)
-add_subdirectory(tasks)
-add_subdirectory(tcdistribution)
-add_subdirectory(thermal)
-add_subdirectory(timemanager)
-add_subdirectory(tmstorage)
-add_subdirectory(tmtcpacket)
-add_subdirectory(tmtcservices)
-add_subdirectory(unittest)
+add_subdirectory(contrib)
 
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
@@ -191,6 +165,7 @@ endif()
 target_include_directories(${LIB_FSFW_NAME} INTERFACE 
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
+	${FSFW_CORE_INC_PATH}
 	${FSFW_ADD_INC_PATHS_ABS}
 )
 
@@ -200,6 +175,7 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
 target_include_directories(${LIB_FSFW_NAME} PRIVATE 
 	${CMAKE_SOURCE_DIR}
 	${FSFW_CONFIG_PATH_ABSOLUTE}
+	${FSFW_CORE_INC_PATH}
 	${FSFW_ADD_INC_PATHS_ABS}
 )
 
