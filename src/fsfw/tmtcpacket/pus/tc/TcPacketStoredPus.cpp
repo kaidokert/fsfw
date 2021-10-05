@@ -23,7 +23,12 @@ TcPacketStoredPus::TcPacketStoredPus(uint16_t apid,  uint8_t service,
         return;
     }
     this->setData(pData);
-    initializeTcPacket(apid, sequenceCount, ack, service, subservice);
+#if FSFW_USE_PUS_C_TELECOMMANDS == 1
+    pus::PusVersion pusVersion = pus::PusVersion::PUS_C_VERSION;
+#else
+    pus::PusVersion pusVersion = pus::PusVersion::PUS_A_VERSION;
+#endif
+    initializeTcPacket(apid, sequenceCount, ack, service, subservice, pusVersion);
     std::memcpy(&tcData->appData, data, size);
     this->setPacketDataLength(
             size + sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);

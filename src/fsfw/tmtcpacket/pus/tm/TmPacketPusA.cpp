@@ -1,5 +1,6 @@
-#include "fsfw/tmtcpacket/pus/tm/TmPacketPusA.h"
-#include "fsfw/tmtcpacket/pus/tm/TmPacketBase.h"
+#include "../definitions.h"
+#include "TmPacketPusA.h"
+#include "TmPacketBase.h"
 
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
@@ -62,7 +63,7 @@ void TmPacketPusA::initializeTmPacket(uint16_t apid, uint8_t service,
     //First, set to zero.
     memset(&tmData->data_field, 0, sizeof(tmData->data_field));
 
-    tmData->data_field.version_type_ack = TM_PUS_VERSION_NUMBER << 4;
+    tmData->data_field.version_type_ack = pus::PusVersion::PUS_A_VERSION << 4;
     tmData->data_field.service_type = service;
     tmData->data_field.service_subtype = subservice;
     tmData->data_field.subcounter = packetSubcounter;

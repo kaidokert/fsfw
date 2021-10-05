@@ -1,4 +1,4 @@
-#include "fsfw/tmtcpacket/pus/tc/TcPacketPus.h"
+#include "TcPacketPus.h"
 #include "fsfw/globalfunctions/CRC.h"
 
 #include <cstring>
@@ -8,14 +8,13 @@ TcPacketPus::TcPacketPus(const uint8_t *setData): TcPacketBase(setData) {
 }
 
 void TcPacketPus::initializeTcPacket(uint16_t apid, uint16_t sequenceCount,
-        uint8_t ack, uint8_t service, uint8_t subservice, uint16_t sourceId) {
+        uint8_t ack, uint8_t service, uint8_t subservice, pus::PusVersion pusVersion,
+        uint16_t sourceId) {
     initSpacePacketHeader(true, true, apid, sequenceCount);
     std::memset(&tcData->dataField, 0, sizeof(tcData->dataField));
     setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);
-    // Data Field Header:
-    // Set CCSDS_secondary_header_flag to 0 and version number to 001
-    tcData->dataField.versionTypeAck = 0b00010000;
-    tcData->dataField.versionTypeAck |= (ack & 0x0F);
+    // Data Field Header. For PUS A, the first bit (CCSDS Secondary Header Flag) is zero
+    tcData->dataField.versionTypeAck = pusVersion << 4 | (ack & 0x0F);
     tcData->dataField.serviceType = service;
     tcData->dataField.serviceSubtype = subservice;
 #if FSFW_USE_PUS_C_TELECOMMANDS == 1
