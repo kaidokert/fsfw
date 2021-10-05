@@ -49,10 +49,38 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service,
 		sourceDataSize += header->getSerializedSize();
 	}
 	uint8_t *pData = nullptr;
+	size_t sizeToReserve = getPacketMinimumSize() + sourceDataSize;
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
-			(getPacketMinimumSize() + sourceDataSize), &pData);
+			sizeToReserve, &pData);
 	if (returnValue != store->RETURN_OK) {
 	    TmPacketStoredBase::checkAndReportLostTm();
+#if FSFW_VERBOSE_LEVEL >= 1
+        switch(returnValue) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        case(StorageManagerIF::DATA_STORAGE_FULL): {
+            sif::warning << "TmPacketStoredPusA::TmPacketStoredPusC: Store full for packet with "
+                    "size " << sizeToReserve << std::endl;
+            break;
+        }
+        case(StorageManagerIF::DATA_TOO_LARGE): {
+            sif::warning << "TmPacketStoredPusA::TmPacketStoredPusC: Data with size " <<
+                    sizeToReserve << " too large" <<  std::endl;
+            break;
+        }
+#else
+        case(StorageManagerIF::DATA_STORAGE_FULL): {
+            sif::printWarning("TmPacketStoredPusA::TmPacketStoredPusC: Store full for packet with "
+                    "size %d\n", sizeToReserve);
+            break;
+        }
+        case(StorageManagerIF::DATA_TOO_LARGE): {
+            sif::printWarning("TmPacketStoredPusA::TmPacketStoredPusC: Data with size "
+                    "%d too large\n", sizeToReserve);
+            break;
+        }
+#endif
+#endif
+	    }
 	    return;
 	}
 	setData(pData);
