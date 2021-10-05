@@ -42,32 +42,32 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service,
 		return;
 	}
 	size_t sourceDataSize = 0;
-	if (content != NULL) {
+	if (content != nullptr) {
 		sourceDataSize += content->getSerializedSize();
 	}
-	if (header != NULL) {
+	if (header != nullptr) {
 		sourceDataSize += header->getSerializedSize();
 	}
-	uint8_t *p_data = NULL;
+	uint8_t *pData = nullptr;
 	ReturnValue_t returnValue = store->getFreeElement(&storeAddress,
-			(getPacketMinimumSize() + sourceDataSize), &p_data);
+			(getPacketMinimumSize() + sourceDataSize), &pData);
 	if (returnValue != store->RETURN_OK) {
 	    TmPacketStoredBase::checkAndReportLostTm();
+	    return;
 	}
-	setData(p_data);
+	setData(pData);
 	initializeTmPacket(apid, service, subservice, packetSubcounter);
 	uint8_t *putDataHere = getSourceData();
 	size_t size = 0;
-	if (header != NULL) {
+	if (header != nullptr) {
 		header->serialize(&putDataHere, &size, sourceDataSize,
 				SerializeIF::Endianness::BIG);
 	}
-	if (content != NULL) {
+	if (content != nullptr) {
 		content->serialize(&putDataHere, &size, sourceDataSize,
 				SerializeIF::Endianness::BIG);
 	}
-	setPacketDataLength(
-			sourceDataSize + sizeof(PUSTmDataFieldHeaderPusA) + CRC_SIZE - 1);
+	setPacketDataLength(sourceDataSize + sizeof(PUSTmDataFieldHeaderPusA) + CRC_SIZE - 1);
 }
 
 uint8_t* TmPacketStoredPusA::getAllTmData() {
