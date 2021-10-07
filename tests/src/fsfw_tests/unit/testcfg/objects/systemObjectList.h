@@ -1,8 +1,9 @@
 #ifndef HOSTED_CONFIG_OBJECTS_SYSTEMOBJECTLIST_H_
 #define HOSTED_CONFIG_OBJECTS_SYSTEMOBJECTLIST_H_
 
+#include "fsfw/objectmanager/frameworkObjects.h"
+#include "common/objects/commonObjectsList.h"
 #include <cstdint>
-#include <fsfw/objectmanager/frameworkObjects.h>
 
 // The objects will be instantiated in the ID order
 namespace objects {
@@ -10,10 +11,6 @@ namespace objects {
 		/* All addresses between start and end are reserved for the FSFW */
 		FSFW_CONFIG_RESERVED_START = PUS_SERVICE_1_VERIFICATION,
 		FSFW_CONFIG_RESERVED_END = TM_STORE,
-
-		CCSDS_DISTRIBUTOR = 10,
-		PUS_DISTRIBUTOR = 11,
-		TM_FUNNEL = 12,
 
 		UDP_BRIDGE = 15,
 		UDP_POLLING_TASK = 16,

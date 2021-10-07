@@ -22,17 +22,83 @@ Currently, the FSFW provides the following OSALs:
 - FreeRTOS
 - RTEMS
 
-The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB of non-volatile Memory. For reference, current applications use a Cobham Gaisler UT699 (LEON3FT), a ISISPACE IOBC or a Zynq-7020 SoC. The `fsfw` was also successfully run on the STM32H743ZI-Nucleo board and on a Raspberry Pi and is currently running on the active satellite mission Flying Laptop.
+The recommended hardware is a microprocessor with more than 1 MB of RAM and 1 MB of non-volatile
+memory. For reference, current applications use a Cobham Gaisler UT699 (LEON3FT), a
+ISISPACE IOBC or a Zynq-7020 SoC. The `fsfw` was also successfully run on the
+STM32H743ZI-Nucleo board and on a Raspberry Pi and is currently running on the active
+satellite mission Flying Laptop.
 
 ## Getting started
 
-The [FSFW example](https://egit.irs.uni-stuttgart.de/fsfw/fsfw_example) provides a good starting point and a demo to see the FSFW capabilities and build it with the Make or the CMake build system. It is recommended to evaluate the FSFW by building and playing around with the demo application.
+The [Hosted FSFW example](https://egit.irs.uni-stuttgart.de/fsfw/fsfw-example-hosted) provides a
+good starting point and a demo to see the FSFW capabilities.
+It is recommended to get started by building and playing around with the demo application.
+There are also other examples provided for all OSALs using the popular embedded platforms
+Raspberry Pi, Beagle Bone Black and STM32H7.
 
-Generally, the FSFW is included in a project by compiling the FSFW sources and providing
-a configuration folder and adding it to the include path. There are some functions like `printChar` which are different depending on the target architecture and need to be implemented by the mission developer.
+Generally, the FSFW is included in a project by providing
+a configuration folder, building the static library and linking against it. 
+There are some functions like `printChar` which are different depending on the target architecture
+and need to be implemented by the mission developer.
 
 A template configuration folder was provided and can be copied into the project root to have
-a starting point. The [configuration section](doc/README-config.md#top) provides more specific information about the possible options.
+a starting point. The [configuration section](doc/README-config.md#top) provides more specific 
+information about the possible options.
+
+## Adding the library
+
+The following steps show how to add and use FSFW components. It is still recommended to
+try out the example mentioned above to get started, but the following steps show how to
+add and link against the FSFW library in general.
+
+1. Add this repository as a submodule
+
+   ```sh
+   git submodule add https://egit.irs.uni-stuttgart.de/fsfw/fsfw.git fsfw   
+   ```
+
+2. Add the following directive inside the uppermost `CMakeLists.txt` file of your project
+
+   ```cmake
+   add_subdirectory(fsfw)
+   ```
+
+3. Make sure to provide a configuration folder and supply the path to that folder with
+   the `FSFW_CONFIG_PATH` CMake variable from the uppermost `CMakeLists.txt` file.
+   It is also necessary to provide the `printChar` function. You can find an example
+   implementation for a hosted build 
+   [here](https://egit.irs.uni-stuttgart.de/fsfw/fsfw-example-hosted/src/branch/master/bsp_hosted/utility/printChar.c).
+
+4. Link against the FSFW library
+
+	```cmake
+	target_link_libraries(<YourProjectName> PRIVATE fsfw)
+	```
+
+5. It should now be possible use the FSFW as a static library from the user code.
+
+## Building the unittests
+
+The FSFW also has unittests which use the [Catch2 library](https://github.com/catchorg/Catch2).
+These are built by setting the CMake option `FSFW_BUILD_UNITTESTS` to `ON` or `TRUE`
+from your project `CMakeLists.txt` file or from the command line.
+
+The fsfw-tests binary will be built as part of the static library and dropped alongside it inside
+the `fsfw` folder of the build folder.
+
+If the unittests are built, the library and the tests will be built with coverage information by
+default. This can be disabled by setting the `FSFW_TESTS_COV_GEN` option to `OFF` or `FALSE`.
+
+Coverage data in HTML format can be generated using the `CodeCoverage`
+[CMake module](https://github.com/bilke/cmake-modules/tree/master).
+To build the unittests, run them and then generare the coverage data in this format,
+the following command can be used inside the build directory after the build system was set up
+
+```sh
+cmake --build . -- fsfw-tests_coverage -j
+```
+
+The `coverage.py` script located in the `script` folder can also be used to do this conveniently.
 
 ## Index
 

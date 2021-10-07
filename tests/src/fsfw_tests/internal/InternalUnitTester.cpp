@@ -1,9 +1,9 @@
 #include "fsfw_tests/internal/InternalUnitTester.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"
 
-#include "fsfw_tests/internal/osal/IntTestMq.h"
-#include "fsfw_tests/internal/osal/IntTestSemaphore.h"
-#include "fsfw_tests/internal/osal/IntTestMutex.h"
+#include "fsfw_tests/internal/osal/testMq.h"
+#include "fsfw_tests/internal/osal/testSemaphore.h"
+#include "fsfw_tests/internal/osal/testMutex.h"
 #include "fsfw_tests/internal/serialize/IntTestSerialization.h"
 #include "fsfw_tests/internal/globalfunctions/TestArrayPrinter.h"
 

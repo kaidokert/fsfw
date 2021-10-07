@@ -1,16 +1,17 @@
-target_sources(${TARGET_NAME} PRIVATE
+target_sources(${FSFW_TEST_TGT} PRIVATE
     CatchDefinitions.cpp
     CatchFactory.cpp
     printChar.cpp
 )
 
-if(FSFW_CUSTOM_UNITTEST_RUNNER)
-    target_sources(${TARGET_NAME} PRIVATE
+# if(FSFW_CUSTOM_UNITTEST_RUNNER)
+    target_sources(${FSFW_TEST_TGT} PRIVATE
         CatchRunner.cpp
         CatchSetup.cpp
     )
-endif()
+# endif()
 
+add_subdirectory(testcfg)
 add_subdirectory(action)
 add_subdirectory(container)
 add_subdirectory(osal)

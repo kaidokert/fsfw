@@ -1,7 +1,8 @@
 #ifndef CONFIG_RETURNVALUES_CLASSIDS_H_
 #define CONFIG_RETURNVALUES_CLASSIDS_H_
 
-#include <fsfw/returnvalues/FwClassIds.h>
+#include "common/returnvalues/commonClassIds.h"
+#include "fsfw/returnvalues/FwClassIds.h"
 
 /**
  * @brief   CLASS_ID defintions which are required for custom returnvalues.
