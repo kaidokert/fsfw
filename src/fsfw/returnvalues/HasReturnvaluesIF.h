@@ -22,9 +22,9 @@ public:
 	 * @param number
 	 * @return
 	 */
-	static constexpr ReturnValue_t makeReturnCode(uint8_t interfaceId,
+	static constexpr ReturnValue_t makeReturnCode(uint8_t classId,
 			uint8_t number) {
-	    return (static_cast<ReturnValue_t>(interfaceId) << 8) + number;
+	    return (static_cast<ReturnValue_t>(classId) << 8) + number;
 	}
 };
 
