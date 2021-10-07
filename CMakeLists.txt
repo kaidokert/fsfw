@@ -40,6 +40,7 @@ set(FSFW_TEST_TGT fsfw-tests)
 add_library(${LIB_FSFW_NAME})
 
 if(FSFW_BUILD_UNITTESTS)
+    message(STATUS "Building the FSFW unittests in addition to the static library")
     # Check whether the user has already installed Catch2 first
     find_package(Catch2 3)
     # Not installed, so use FetchContent to download and provide Catch2
@@ -61,12 +62,17 @@ if(FSFW_BUILD_UNITTESTS)
     add_executable(${FSFW_TEST_TGT})
 
     if(FSFW_TESTS_GEN_COV)
+        message(STATUS "Generating coverage data for the library")
+        message(STATUS "Targets linking against ${LIB_FSFW_NAME} "
+            "will be compiled with coverage data as well"
+        )
         include(FetchContent)
         FetchContent_Declare(
             cmake-modules
             GIT_REPOSITORY https://github.com/bilke/cmake-modules.git
         )
         FetchContent_MakeAvailable(cmake-modules)
+        set(CMAKE_BUILD_TYPE "Debug")
         list(APPEND CMAKE_MODULE_PATH ${cmake-modules_SOURCE_DIR})
         include(CodeCoverage)
     endif()
@@ -190,6 +196,11 @@ if(FSFW_BUILD_UNITTESTS)
                 -fprofile-arcs
                 -ftest-coverage
             )
+            # Need to specify this as an interface, otherwise there will the compile issues
+            target_link_options(${LIB_FSFW_NAME} INTERFACE
+                -fprofile-arcs
+                -ftest-coverage
+            )
 
             if(WIN32)
                 setup_target_for_coverage_gcovr_html(
@@ -301,4 +312,17 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
 
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
     ${FSFW_ADDITIONAL_LINK_LIBS}
+)
+
+string(CONCAT POST_BUILD_COMMENT
+    "######################################################################\n"
+    "Building FSFW v${FSFW_VERSION}.${FSFW_SUBVERSION}.${FSFW_REVISION}, "
+    "Target OSAL: ${FSFW_OS_NAME}\n"
+    "######################################################################\n"
+)
+
+add_custom_command(
+   TARGET ${LIB_FSFW_NAME}
+   POST_BUILD
+   COMMENT ${POST_BUILD_COMMENT}
 )
