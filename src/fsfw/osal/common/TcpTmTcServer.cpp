@@ -168,7 +168,10 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
                 tcpConfig.tcpFlags
         );
         if(retval == 0) {
-            // Client closed connection
+            size_t availableReadData = ringBuffer.getAvailableReadData();
+            if(availableReadData > lastRingBufferSize) {
+                handleTcRingBufferData(availableReadData);
+            }
             return;
         }
         else if(retval > 0) {
