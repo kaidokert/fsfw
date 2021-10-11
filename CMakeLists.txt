@@ -57,7 +57,9 @@ if(FSFW_BUILD_UNITTESTS)
     endif()
 
     set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
+    configure_file(tests/src/fsfw_tests/unit/testcfg/FSFWConfig.h.in FSFWConfig.h)
     configure_file(tests/src/fsfw_tests/unit/testcfg/TestsConfig.h.in tests/TestsConfig.h)
+    configure_file(tests/src/fsfw_tests/unit/testcfg/OBSWConfig.h.in OBSWConfig.h)
     add_executable(${FSFW_TEST_TGT})
 
     if(FSFW_TESTS_GEN_COV)
