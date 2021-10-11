@@ -83,11 +83,16 @@ The FSFW also has unittests which use the [Catch2 library](https://github.com/ca
 These are built by setting the CMake option `FSFW_BUILD_UNITTESTS` to `ON` or `TRUE`
 from your project `CMakeLists.txt` file or from the command line.
 
-The fsfw-tests binary will be built as part of the static library and dropped alongside it inside
-the `fsfw` folder of the build folder.
-
+The fsfw-tests binary will be built as part of the static library and dropped alongside it.
 If the unittests are built, the library and the tests will be built with coverage information by
 default. This can be disabled by setting the `FSFW_TESTS_COV_GEN` option to `OFF` or `FALSE`.
+
+You can use the following commands inside the `fsfw` folder to set up the build system
+
+```sh
+mkdir build-Unittest && cd build-Unittest
+cmake -DFSFW_BUILD_UNITTESTS=ON ..
+```
 
 Coverage data in HTML format can be generated using the `CodeCoverage`
 [CMake module](https://github.com/bilke/cmake-modules/tree/master).
