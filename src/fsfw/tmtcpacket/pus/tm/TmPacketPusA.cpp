@@ -1,5 +1,6 @@
-#include "fsfw/tmtcpacket/pus/tm/TmPacketPusA.h"
-#include "fsfw/tmtcpacket/pus/tm/TmPacketBase.h"
+#include "../definitions.h"
+#include "TmPacketPusA.h"
+#include "TmPacketBase.h"
 
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
@@ -62,12 +63,7 @@ void TmPacketPusA::initializeTmPacket(uint16_t apid, uint8_t service,
     //First, set to zero.
     memset(&tmData->data_field, 0, sizeof(tmData->data_field));
 
-    // NOTE: In PUS-C, the PUS Version is 2 and specified for the first 4 bits.
-    // The other 4 bits of the first byte are the spacecraft time reference
-    // status. To change to PUS-C, set 0b00100000.
-    // Set CCSDS_secondary header flag to 0, version number to 001 and ack
-    // to 0000
-    tmData->data_field.version_type_ack = 0b00010000;
+    tmData->data_field.version_type_ack = pus::PusVersion::PUS_A_VERSION << 4;
     tmData->data_field.service_type = service;
     tmData->data_field.service_subtype = subservice;
     tmData->data_field.subcounter = packetSubcounter;

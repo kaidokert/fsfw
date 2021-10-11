@@ -2,6 +2,7 @@
 #define FSFW_TMTCPACKET_PUS_TCPACKETPUSA_H_
 
 #include "fsfw/FSFW.h"
+#include "../definitions.h"
 #include "fsfw/tmtcpacket/ccsds_header.h"
 #include "TcPacketBase.h"
 
@@ -75,7 +76,8 @@ protected:
      * @param subservice PUS Subservice
      */
     void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack,
-            uint8_t service, uint8_t subservice, uint16_t sourceId = 0);
+            uint8_t service, uint8_t subservice, pus::PusVersion pusVersion,
+            uint16_t sourceId = 0);
 
     /**
      * A pointer to a structure which defines the data structure of
