@@ -29,12 +29,31 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         tcStatus = checker.checkPacket(currentPacket);
         if(tcStatus != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
+            std::string keyword;
+            if(tcStatus == TcPacketCheck::INCORRECT_CHECKSUM) {
+                keyword = "checksum";
+            }
+            else if(tcStatus == TcPacketCheck::INCORRECT_PRIMARY_HEADER) {
+                keyword = "incorrect primary header";
+            }
+            else if(tcStatus == TcPacketCheck::ILLEGAL_APID) {
+                keyword = "illegal APID";
+            }
+            else if(tcStatus == TcPacketCheck::INCORRECT_SECONDARY_HEADER) {
+                keyword = "incorrect secondary header";
+            }
+            else if(tcStatus == TcPacketCheck::INCOMPLETE_PACKET) {
+                keyword = "incomplete packet";
+            }
+            else {
+                keyword = "unnamed error";
+            }
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::debug << "PUSDistributor::handlePacket: Packet format invalid, code " <<
-                    static_cast<int>(tcStatus) << std::endl;
+            sif::warning << "PUSDistributor::handlePacket: Packet format invalid, "
+                    << keyword << " error" << std::endl;
 #else
-            sif::printDebug("PUSDistributor::handlePacket: Packet format invalid, code %d\n",
-                    static_cast<int>(tcStatus));
+            sif::printWarning("PUSDistributor::handlePacket: Packet format invalid, "
+                    "%s error\n", keyword);
 #endif
 #endif
         }
