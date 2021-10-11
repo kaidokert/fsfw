@@ -320,7 +320,7 @@ target_link_libraries(${LIB_FSFW_NAME} PRIVATE
 
 string(CONCAT POST_BUILD_COMMENT
     "######################################################################\n"
-    "Building FSFW v${FSFW_VERSION}.${FSFW_SUBVERSION}.${FSFW_REVISION}, "
+    "Built FSFW v${FSFW_VERSION}.${FSFW_SUBVERSION}.${FSFW_REVISION}, "
     "Target OSAL: ${FSFW_OS_NAME}\n"
     "######################################################################\n"
 )
