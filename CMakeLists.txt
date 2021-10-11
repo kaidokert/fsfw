@@ -92,8 +92,14 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 target_include_directories(${LIB_FSFW_NAME} INTERFACE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
-configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
-configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
+
+if(FSFW_BUILD_UNITTESTS)
+    configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
+    configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
+else()
+    configure_file(src/fsfw/FSFW.h.in FSFW.h)
+    configure_file(src/fsfw/FSFWVersion.h.in FSFWVersion.h)
+endif()
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
