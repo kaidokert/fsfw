@@ -60,6 +60,7 @@ if(FSFW_BUILD_UNITTESTS)
     configure_file(tests/src/fsfw_tests/unit/testcfg/FSFWConfig.h.in FSFWConfig.h)
     configure_file(tests/src/fsfw_tests/unit/testcfg/TestsConfig.h.in tests/TestsConfig.h)
     configure_file(tests/src/fsfw_tests/unit/testcfg/OBSWConfig.h.in OBSWConfig.h)
+    project(${FSFW_TEST_TGT} CXX C)
     add_executable(${FSFW_TEST_TGT})
 
     if(FSFW_TESTS_GEN_COV)
