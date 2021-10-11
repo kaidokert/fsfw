@@ -91,8 +91,10 @@ You can use the following commands inside the `fsfw` folder to set up the build 
 
 ```sh
 mkdir build-Unittest && cd build-Unittest
-cmake -DFSFW_BUILD_UNITTESTS=ON ..
+cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host ..
 ```
+
+You can also use `-DFSFW_OSAL=linux` on Linux systems.
 
 Coverage data in HTML format can be generated using the `CodeCoverage`
 [CMake module](https://github.com/bilke/cmake-modules/tree/master).
