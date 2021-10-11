@@ -100,7 +100,7 @@ protected:
      * @param subservice PUS Subservice
      * @param packetSubcounter Additional subcounter used.
      */
-    void initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice,
+    ReturnValue_t initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice,
             uint16_t packetSubcounter, uint16_t destinationId = 0, uint8_t timeRefField = 0);
 
     /**

@@ -82,6 +82,9 @@ protected:
     bool checkAndSetStore();
 
     void checkAndReportLostTm();
+
+    void handleStoreFailure(const char* const packetType, ReturnValue_t result,
+            size_t sizeToReserve);
 };
 
 

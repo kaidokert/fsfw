@@ -91,4 +91,34 @@ void TmPacketStoredBase::checkAndReportLostTm() {
     }
 }
 
-
+void TmPacketStoredBase::handleStoreFailure(const char *const packetType, ReturnValue_t result,
+        size_t sizeToReserve) {
+    checkAndReportLostTm();
+#if FSFW_VERBOSE_LEVEL >= 1
+    switch(result) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    case(StorageManagerIF::DATA_STORAGE_FULL): {
+        sif::warning << "TmPacketStoredPus" << packetType << ": " <<
+                "Store full for packet with size" << sizeToReserve << std::endl;
+        break;
+    }
+    case(StorageManagerIF::DATA_TOO_LARGE): {
+        sif::warning << "TmPacketStoredPus" << packetType << ": Data with size " <<
+                sizeToReserve << " too large" <<  std::endl;
+        break;
+    }
+#else
+    case(StorageManagerIF::DATA_STORAGE_FULL): {
+        sif::printWarning("TmPacketStoredPus%s: Store full for packet with "
+                "size %d\n", packetType, sizeToReserve);
+        break;
+    }
+    case(StorageManagerIF::DATA_TOO_LARGE): {
+        sif::printWarning("TmPacketStoredPus%s: Data with size "
+                "%d too large\n", packetType, sizeToReserve);
+        break;
+    }
+#endif
+#endif
+    }
+}
