@@ -26,12 +26,11 @@ public:
      * @param sequenceCount ets the packet's Source Sequence Count field.
      */
     SpacePacket(uint16_t packetDataLength, bool isTelecommand = false,
-            uint16_t apid = APID_IDLE_PACKET, uint16_t sequenceCount = 0);
+    		uint16_t apid = APID_IDLE_PACKET, uint16_t sequenceCount = 0);
     /**
      * The class's default destructor.
      */
     virtual ~SpacePacket();
-
     /**
      * With this call, the complete data content (including the CCSDS Primary
      * Header) is overwritten with the byte stream given.
@@ -41,6 +40,7 @@ public:
      * 			@li \c false else.
      */
     bool addWholeData(const uint8_t* p_data, uint32_t packet_size);
+
 protected:
     /**
      * This structure defines the data structure of a Space Packet as local data.
