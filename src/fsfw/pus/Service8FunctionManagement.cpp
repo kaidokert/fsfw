@@ -33,8 +33,8 @@ ReturnValue_t Service8FunctionManagement::getMessageQueueAndObject(
 	if(tcDataLen < sizeof(object_id_t)) {
 		return CommandingServiceBase::INVALID_TC;
 	}
-	SerializeAdapter::deSerialize(objectId, &tcData,
-			&tcDataLen, SerializeIF::Endianness::BIG);
+	// Can't fail, size was checked before
+	SerializeAdapter::deSerialize(objectId, &tcData, &tcDataLen, SerializeIF::Endianness::BIG);
 
 	return checkInterfaceAndAcquireMessageQueue(id,objectId);
 }
