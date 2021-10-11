@@ -41,8 +41,7 @@ ReturnValue_t Service5EventReporting::performService() {
 	    }
 	}
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	sif::debug <<  "Service5EventReporting::generateEventReport:"
-	        " Too many events" << std::endl;
+	sif::warning <<  "Service5EventReporting::generateEventReport: Too many events" << std::endl;
 #endif
 	return HasReturnvaluesIF::RETURN_OK;
 }
@@ -64,8 +63,11 @@ ReturnValue_t Service5EventReporting::generateEventReport(
 	        requestQueue->getDefaultDestination(),requestQueue->getId());
 	if(result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::debug << "Service5EventReporting::generateEventReport:"
-		        " Could not send TM packet" << std::endl;
+		sif::warning << "Service5EventReporting::generateEventReport: "
+		        "Could not send TM packet" << std::endl;
+#else
+		sif::printWarning("Service5EventReporting::generateEventReport: "
+                "Could not send TM packet\n");
 #endif
 	}
 	return result;
