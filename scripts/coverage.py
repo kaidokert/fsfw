@@ -20,6 +20,8 @@ def main():
     parser = argparse.ArgumentParser(description="Processing arguments for LCOV helper script.")
 
     build_dir_list = []
+    if not os.path.isfile('README.md'):
+        os.chdir('..')
     for directory in os.listdir("."):
         if os.path.isdir(directory):
             os.chdir(directory)
