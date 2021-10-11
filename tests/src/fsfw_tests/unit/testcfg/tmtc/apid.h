@@ -12,7 +12,6 @@
  */
 namespace apid {
 	static const uint16_t DEFAULT_APID = 0x00;
-	static const uint16_t SOURCE_OBSW = 0x73;
 }
 
 
