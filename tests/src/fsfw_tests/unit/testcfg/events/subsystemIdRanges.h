@@ -12,7 +12,7 @@
  */
 namespace SUBSYSTEM_ID {
 enum: uint8_t {
-	SUBSYSTEM_ID_START =  0,
+	SUBSYSTEM_ID_START = FW_SUBSYSTEM_ID_RANGE,
 	SUBSYSTEM_ID_END // [EXPORT] : [END]
 };
 }
