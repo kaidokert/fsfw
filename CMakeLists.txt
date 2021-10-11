@@ -226,6 +226,7 @@ if(NOT FSFW_CONFIG_PATH)
     set(DEF_CONF_PATH misc/defaultcfg/fsfwconfig)
     message(WARNING "Setting default configuration from ${DEF_CONF_PATH} ..")
     add_subdirectory(${DEF_CONF_PATH})
+    set(FSFW_CONFIG_PATH ${DEF_CONF_PATH})
 endif()
 
 # FSFW might be part of a possibly complicated folder structure, so we 
