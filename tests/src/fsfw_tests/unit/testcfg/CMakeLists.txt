@@ -4,7 +4,7 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
 )
 
 # Add include paths for the executable
-target_include_directories(${FSFW_TEST_TGT} PUBLIC 
+target_include_directories(${FSFW_TEST_TGT} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
