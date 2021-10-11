@@ -2,7 +2,6 @@
 #define HOSTED_CONFIG_OBJECTS_SYSTEMOBJECTLIST_H_
 
 #include "fsfw/objectmanager/frameworkObjects.h"
-#include "common/objects/commonObjectsList.h"
 #include <cstdint>
 
 // The objects will be instantiated in the ID order
