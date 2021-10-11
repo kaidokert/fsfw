@@ -30,8 +30,7 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service,
     initializeTmPacket(apid, service, subservice, packetSubcounter);
     memcpy(getSourceData(), headerData, headerSize);
     memcpy(getSourceData() + headerSize, data, size);
-    setPacketDataLength(
-            size + headerSize + sizeof(PUSTmDataFieldHeaderPusA) + CRC_SIZE - 1);
+    setPacketDataLength(size + headerSize + sizeof(PUSTmDataFieldHeaderPusA) + CRC_SIZE - 1);
 }
 
 TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service,

@@ -1,5 +1,6 @@
-#include "fsfw/tmtcpacket/pus/tm/TmPacketPusC.h"
-#include "fsfw/tmtcpacket/pus/tm/TmPacketBase.h"
+#include "../definitions.h"
+#include "TmPacketPusC.h"
+#include "TmPacketBase.h"
 
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
@@ -67,7 +68,8 @@ ReturnValue_t TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service,
 
     /* Only account for last 4 bytes for time reference field */
     timeRefField &= 0b1111;
-    tmData->dataField.versionTimeReferenceField = VERSION_NUMBER_BYTE | timeRefField;
+    tmData->dataField.versionTimeReferenceField =
+            (pus::PusVersion::PUS_C_VERSION << 4) | timeRefField;
     tmData->dataField.serviceType = service;
     tmData->dataField.serviceSubtype = subservice;
     tmData->dataField.subcounterMsb = packetSubcounter << 8 & 0xff;

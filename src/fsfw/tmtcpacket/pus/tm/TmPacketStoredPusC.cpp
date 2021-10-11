@@ -31,8 +31,7 @@ TmPacketStoredPusC::TmPacketStoredPusC(uint16_t apid, uint8_t service,
     initializeTmPacket(apid, service, subservice, packetSubcounter, destinationId, timeRefField);
     memcpy(getSourceData(), headerData, headerSize);
     memcpy(getSourceData() + headerSize, data, size);
-    setPacketDataLength(
-            size + headerSize + sizeof(PUSTmDataFieldHeaderPusC) + CRC_SIZE - 1);
+    setPacketDataLength(size + headerSize + sizeof(PUSTmDataFieldHeaderPusC) + CRC_SIZE - 1);
 }
 
 TmPacketStoredPusC::TmPacketStoredPusC(uint16_t apid, uint8_t service,
