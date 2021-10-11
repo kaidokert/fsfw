@@ -195,7 +195,7 @@ if(FSFW_BUILD_UNITTESTS)
                 set(COVERAGE_EXCLUDES
                     "/usr/include/*" "/usr/bin/*" "Catch2/*"
                     "/usr/local/include/*" "*/fsfw_tests/*"
-                    "/catch2-src/*"
+                    "*/catch2-src/*"
                 )
             endif()
 
