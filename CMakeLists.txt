@@ -56,9 +56,8 @@ if(FSFW_BUILD_UNITTESTS)
         FetchContent_MakeAvailable(Catch2)
     endif()
 
-    configure_file(tests/src/fsfw_tests/unit/testcfg/FSFWConfig.h.in tests/FSFWConfig.h)
+    set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
     configure_file(tests/src/fsfw_tests/unit/testcfg/TestsConfig.h.in tests/TestsConfig.h)
-    configure_file(tests/src/fsfw_tests/unit/testcfg/OBSWConfig.h.in tests/OBSWConfig.h)
     add_executable(${FSFW_TEST_TGT})
 
     if(FSFW_TESTS_GEN_COV)
