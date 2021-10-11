@@ -223,9 +223,10 @@ endif()
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
 if(NOT FSFW_CONFIG_PATH)
-	message(WARNING "Flight Software Framework configuration path not set!")
-	message(WARNING "Setting default configuration!")
-	add_subdirectory(defaultcfg/fsfwconfig)
+    message(WARNING "Flight Software Framework configuration path not set!")
+    set(DEF_CONF_PATH misc/defaultcfg/fsfwconfig)
+    message(WARNING "Setting default configuration from ${DEF_CONF_PATH} ..")
+    add_subdirectory(${DEF_CONF_PATH})
 endif()
 
 # FSFW might be part of a possibly complicated folder structure, so we 
