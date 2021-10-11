@@ -2,7 +2,6 @@
 #define CONFIG_EVENTS_SUBSYSTEMIDRANGES_H_
 
 #include "fsfw/events/fwSubsystemIdRanges.h"
-#include "common/events/commonSubsystemIds.h"
 #include <cstdint>
 
 
@@ -13,7 +12,7 @@
  */
 namespace SUBSYSTEM_ID {
 enum: uint8_t {
-	SUBSYSTEM_ID_START =  COMMON_SUBSYSTEM_ID_RANGE,
+	SUBSYSTEM_ID_START =  0,
 	SUBSYSTEM_ID_END // [EXPORT] : [END]
 };
 }
