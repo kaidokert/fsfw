@@ -19,7 +19,8 @@ public:
 	/**
 	 * The constructor initializes the packet and sets all header information
 	 * according to the passed parameters.
-	 * @param packetDataLength Sets the packet data length field and therefore specifies the size of the packet.
+	 * @param packetDataLength Sets the packet data length field and therefore specifies
+	 * the size of the packet.
 	 * @param isTelecommand Sets the packet type field to either TC (true) or TM (false).
 	 * @param apid Sets the packet's APID field. The default value describes an idle packet.
 	 * @param sequenceCount ets the packet's Source Sequence Count field.
