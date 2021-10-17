@@ -29,7 +29,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         tcStatus = checker.checkPacket(currentPacket);
         if(tcStatus != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
-            std::string keyword;
+            const char* keyword = nullptr;
             if(tcStatus == TcPacketCheck::INCORRECT_CHECKSUM) {
                 keyword = "checksum";
             }
