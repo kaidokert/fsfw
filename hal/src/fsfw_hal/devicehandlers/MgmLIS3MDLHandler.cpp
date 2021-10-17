@@ -73,7 +73,7 @@ ReturnValue_t MgmLIS3MDLHandler::buildTransitionDeviceCommand(
     switch (internalState) {
     case(InternalState::STATE_NONE):
     case(InternalState::STATE_NORMAL): {
-        return HasReturnvaluesIF::RETURN_OK;
+        return DeviceHandlerBase::NOTHING_TO_SEND;
     }
     case(InternalState::STATE_FIRST_CONTACT): {
         *id = MGMLIS3MDL::IDENTIFY_DEVICE;

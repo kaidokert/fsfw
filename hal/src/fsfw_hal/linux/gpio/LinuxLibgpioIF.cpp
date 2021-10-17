@@ -1,8 +1,9 @@
-#include "fsfw_hal/linux/gpio/LinuxLibgpioIF.h"
+#include "LinuxLibgpioIF.h"
+
 #include "fsfw_hal/common/gpio/gpioDefinitions.h"
 #include "fsfw_hal/common/gpio/GpioCookie.h"
 
-#include <fsfw/serviceinterface/ServiceInterface.h>
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 #include <utility>
 #include <unistd.h>
@@ -66,6 +67,14 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
             configureGpioByLabel(gpioConfig.first, *regularGpio);
             break;
         }
+        case(gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME):{
+            auto regularGpio = dynamic_cast<GpiodRegularByLineName*>(gpioConfig.second);
+            if(regularGpio == nullptr) {
+                return GPIO_INVALID_INSTANCE;
+            }
+            configureGpioByLineName(gpioConfig.first, *regularGpio);
+            break;
+        }
         case(gpio::GpioTypes::CALLBACK): {
             auto gpioCallback = dynamic_cast<GpioCallback*>(gpioConfig.second);
             if(gpioCallback->callback == nullptr) {
@@ -84,13 +93,13 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByLabel(gpioId_t gpioId,
     std::string& label = gpioByLabel.label;
     struct gpiod_chip* chip = gpiod_chip_open_by_label(label.c_str());
     if (chip == nullptr) {
-        sif::warning << "LinuxLibgpioIF::configureRegularGpio: Failed to open gpio from gpio "
+        sif::warning << "LinuxLibgpioIF::configureGpioByLabel: Failed to open gpio from gpio "
                 << "group with label " << label << ". Gpio ID: " << gpioId << std::endl;
         return RETURN_FAILED;
 
     }
     std::string failOutput = "label: " + label;
-    return configureRegularGpio(gpioId, gpioByLabel.gpioType, chip, gpioByLabel, failOutput);
+    return configureRegularGpio(gpioId, chip, gpioByLabel, failOutput);
 }
 
 ReturnValue_t LinuxLibgpioIF::configureGpioByChip(gpioId_t gpioId,
@@ -98,16 +107,41 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByChip(gpioId_t gpioId,
     std::string& chipname = gpioByChip.chipname;
     struct gpiod_chip* chip = gpiod_chip_open_by_name(chipname.c_str());
     if (chip == nullptr) {
-        sif::warning << "LinuxLibgpioIF::configureRegularGpio: Failed to open chip "
+        sif::warning << "LinuxLibgpioIF::configureGpioByChip: Failed to open chip "
                 << chipname << ". Gpio ID: " << gpioId << std::endl;
         return RETURN_FAILED;
     }
     std::string failOutput = "chipname: " + chipname;
-    return configureRegularGpio(gpioId, gpioByChip.gpioType, chip, gpioByChip, failOutput);
+    return configureRegularGpio(gpioId, chip, gpioByChip, failOutput);
 }
 
-ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, gpio::GpioTypes gpioType,
-        struct gpiod_chip* chip, GpiodRegularBase& regularGpio, std::string failOutput) {
+ReturnValue_t LinuxLibgpioIF::configureGpioByLineName(gpioId_t gpioId,
+        GpiodRegularByLineName &gpioByLineName) {
+    std::string& lineName = gpioByLineName.lineName;
+    char chipname[MAX_CHIPNAME_LENGTH];
+    unsigned int lineOffset;
+
+    int result = gpiod_ctxless_find_line(lineName.c_str(), chipname, MAX_CHIPNAME_LENGTH,
+            &lineOffset);
+    if (result != LINE_FOUND) {
+        parseFindeLineResult(result, lineName);
+        return RETURN_FAILED;
+    }
+
+    gpioByLineName.lineNum = static_cast<int>(lineOffset);
+
+    struct gpiod_chip* chip = gpiod_chip_open_by_name(chipname);
+    if (chip == nullptr) {
+        sif::warning << "LinuxLibgpioIF::configureGpioByLineName: Failed to open chip "
+                << chipname << ". <Gpio ID: " << gpioId << std::endl;
+        return RETURN_FAILED;
+    }
+    std::string failOutput = "line name: " + lineName;
+    return configureRegularGpio(gpioId, chip, gpioByLineName, failOutput);
+}
+
+ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod_chip* chip,
+        GpiodRegularBase& regularGpio, std::string failOutput) {
     unsigned int lineNum;
     gpio::Direction direction;
     std::string consumer;
@@ -132,28 +166,28 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, gpio::GpioTy
     case(gpio::OUT): {
         result = gpiod_line_request_output(lineHandle, consumer.c_str(),
                 regularGpio.initValue);
-        if (result < 0) {
-            sif::error << "LinuxLibgpioIF::configureRegularGpio: Failed to request line " << lineNum <<
-                    " from GPIO instance with ID: " << gpioId << std::endl;
-            gpiod_line_release(lineHandle);
-            return RETURN_FAILED;
-        }
         break;
     }
     case(gpio::IN): {
         result = gpiod_line_request_input(lineHandle, consumer.c_str());
-        if (result < 0) {
-            sif::error << "LinuxLibgpioIF::configureGpios: Failed to request line "
-                    << lineNum << " from GPIO instance with ID: " << gpioId << std::endl;
-            gpiod_line_release(lineHandle);
-            return RETURN_FAILED;
-        }
         break;
     }
     default: {
         sif::error << "LinuxLibgpioIF::configureGpios: Invalid direction specified"
                 << std::endl;
         return GPIO_INVALID_INSTANCE;
+    }
+
+    if (result < 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::error << "LinuxLibgpioIF::configureRegularGpio: Failed to request line " <<
+                lineNum << " from GPIO instance with ID: " << gpioId << std::endl;
+#else
+        sif::printError("LinuxLibgpioIF::configureRegularGpio: "
+                "Failed to request line %d from GPIO instance with ID: %d\n", lineNum, gpioId);
+#endif
+        gpiod_line_release(lineHandle);
+        return RETURN_FAILED;
     }
 
     }
@@ -173,8 +207,9 @@ ReturnValue_t LinuxLibgpioIF::pullHigh(gpioId_t gpioId) {
     }
 
     auto gpioType = gpioMapIter->second->gpioType;
-    if(gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_CHIP or
-            gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LABEL) {
+    if (gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_CHIP
+            or gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LABEL
+            or gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME) {
         auto regularGpio = dynamic_cast<GpiodRegularBase*>(gpioMapIter->second);
         if(regularGpio == nullptr) {
             return GPIO_TYPE_FAILURE;
@@ -187,7 +222,7 @@ ReturnValue_t LinuxLibgpioIF::pullHigh(gpioId_t gpioId) {
             return GPIO_INVALID_INSTANCE;
         }
         gpioCallback->callback(gpioMapIter->first, gpio::GpioOperation::WRITE,
-                1, gpioCallback->callbackArgs);
+                gpio::Levels::HIGH, gpioCallback->callbackArgs);
         return RETURN_OK;
     }
     return GPIO_TYPE_FAILURE;
@@ -196,13 +231,18 @@ ReturnValue_t LinuxLibgpioIF::pullHigh(gpioId_t gpioId) {
 ReturnValue_t LinuxLibgpioIF::pullLow(gpioId_t gpioId) {
     gpioMapIter = gpioMap.find(gpioId);
     if (gpioMapIter == gpioMap.end()) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LinuxLibgpioIF::pullLow: Unknown GPIO ID " << gpioId << std::endl;
+#else
+        sif::printWarning("LinuxLibgpioIF::pullLow: Unknown GPIO ID %d\n", gpioId);
+#endif
         return UNKNOWN_GPIO_ID;
     }
 
     auto& gpioType = gpioMapIter->second->gpioType;
-    if(gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_CHIP or
-            gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LABEL) {
+    if (gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_CHIP
+            or gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LABEL
+            or gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME) {
         auto regularGpio = dynamic_cast<GpiodRegularBase*>(gpioMapIter->second);
         if(regularGpio == nullptr) {
             return GPIO_TYPE_FAILURE;
@@ -215,7 +255,7 @@ ReturnValue_t LinuxLibgpioIF::pullLow(gpioId_t gpioId) {
             return GPIO_INVALID_INSTANCE;
         }
         gpioCallback->callback(gpioMapIter->first, gpio::GpioOperation::WRITE,
-                0, gpioCallback->callbackArgs);
+                gpio::Levels::LOW, gpioCallback->callbackArgs);
         return RETURN_OK;
     }
     return GPIO_TYPE_FAILURE;
@@ -225,8 +265,13 @@ ReturnValue_t LinuxLibgpioIF::driveGpio(gpioId_t gpioId,
         GpiodRegularBase& regularGpio, gpio::Levels logicLevel) {
     int result = gpiod_line_set_value(regularGpio.lineHandle, logicLevel);
     if (result < 0) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LinuxLibgpioIF::driveGpio: Failed to pull GPIO with ID " << gpioId <<
                 " to logic level " << logicLevel << std::endl;
+#else
+        sif::printWarning("LinuxLibgpioIF::driveGpio: Failed to pull GPIO with ID %d to "
+                "logic level %d\n", gpioId, logicLevel);
+#endif
         return DRIVE_GPIO_FAILURE;
     }
 
@@ -236,12 +281,18 @@ ReturnValue_t LinuxLibgpioIF::driveGpio(gpioId_t gpioId,
 ReturnValue_t LinuxLibgpioIF::readGpio(gpioId_t gpioId, int* gpioState) {
     gpioMapIter = gpioMap.find(gpioId);
     if (gpioMapIter == gpioMap.end()){
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "LinuxLibgpioIF::readGpio: Unknown GPIOD ID " << gpioId << std::endl;
+#else
+        sif::printWarning("LinuxLibgpioIF::readGpio: Unknown GPIOD ID %d\n", gpioId);
+#endif
         return UNKNOWN_GPIO_ID;
     }
+
     auto gpioType = gpioMapIter->second->gpioType;
-    if(gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_CHIP or
-            gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LABEL) {
+    if (gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_CHIP
+            or gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LABEL
+            or gpioType == gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME) {
         auto regularGpio = dynamic_cast<GpiodRegularBase*>(gpioMapIter->second);
         if(regularGpio == nullptr) {
             return GPIO_TYPE_FAILURE;
@@ -249,10 +300,14 @@ ReturnValue_t LinuxLibgpioIF::readGpio(gpioId_t gpioId, int* gpioState) {
         *gpioState = gpiod_line_get_value(regularGpio->lineHandle);
     }
     else {
-
+        auto gpioCallback = dynamic_cast<GpioCallback*>(gpioMapIter->second);
+        if(gpioCallback->callback == nullptr) {
+            return GPIO_INVALID_INSTANCE;
+        }
+        gpioCallback->callback(gpioMapIter->first, gpio::GpioOperation::READ,
+                gpio::Levels::NONE, gpioCallback->callbackArgs);
+        return RETURN_OK;
     }
-
-
     return RETURN_OK;
 }
 
@@ -262,13 +317,14 @@ ReturnValue_t LinuxLibgpioIF::checkForConflicts(GpioMap& mapToAdd){
     for(auto& gpioConfig: mapToAdd) {
         switch(gpioConfig.second->gpioType) {
         case(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP):
-        case(gpio::GpioTypes::GPIO_REGULAR_BY_LABEL): {
+        case(gpio::GpioTypes::GPIO_REGULAR_BY_LABEL):
+        case(gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME): {
             auto regularGpio = dynamic_cast<GpiodRegularBase*>(gpioConfig.second);
             if(regularGpio == nullptr)  {
                 return GPIO_TYPE_FAILURE;
             }
-            /* Check for conflicts and remove duplicates if necessary */
-            result = checkForConflictsRegularGpio(gpioConfig.first, *regularGpio, mapToAdd);
+            // Check for conflicts and remove duplicates if necessary
+            result = checkForConflictsById(gpioConfig.first, gpioConfig.second->gpioType, mapToAdd);
             if(result != HasReturnvaluesIF::RETURN_OK) {
                 status = result;
             }
@@ -279,66 +335,108 @@ ReturnValue_t LinuxLibgpioIF::checkForConflicts(GpioMap& mapToAdd){
             if(callbackGpio == nullptr)  {
                 return GPIO_TYPE_FAILURE;
             }
-            /* Check for conflicts and remove duplicates if necessary */
-            result = checkForConflictsCallbackGpio(gpioConfig.first, callbackGpio, mapToAdd);
+            // Check for conflicts and remove duplicates if necessary
+            result = checkForConflictsById(gpioConfig.first,
+                    gpioConfig.second->gpioType, mapToAdd);
             if(result != HasReturnvaluesIF::RETURN_OK) {
                 status = result;
             }
             break;
         }
         default: {
-
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+            sif::warning << "Invalid GPIO type detected for GPIO ID " << gpioConfig.first
+                    << std::endl;
+#else
+            sif::printWarning("Invalid GPIO type detected for GPIO ID %d\n", gpioConfig.first);
+#endif
+            status = GPIO_TYPE_FAILURE;
         }
         }
     }
     return status;
 }
 
-
-ReturnValue_t LinuxLibgpioIF::checkForConflictsRegularGpio(gpioId_t gpioIdToCheck,
-        GpiodRegularBase& gpioToCheck, GpioMap& mapToAdd) {
-    /* Cross check with private map */
+ReturnValue_t LinuxLibgpioIF::checkForConflictsById(gpioId_t gpioIdToCheck,
+        gpio::GpioTypes expectedType, GpioMap& mapToAdd) {
+    // Cross check with private map
     gpioMapIter = gpioMap.find(gpioIdToCheck);
     if(gpioMapIter != gpioMap.end()) {
         auto& gpioType = gpioMapIter->second->gpioType;
-        if(gpioType != gpio::GpioTypes::GPIO_REGULAR_BY_CHIP and
-                gpioType != gpio::GpioTypes::GPIO_REGULAR_BY_LABEL) {
-            sif::warning << "LinuxLibgpioIF::checkForConflicts: ID already exists for different "
-                    "GPIO type" << gpioIdToCheck << ". Removing duplicate." << std::endl;
-            mapToAdd.erase(gpioIdToCheck);
-            return HasReturnvaluesIF::RETURN_OK;
+        bool eraseDuplicateDifferentType = false;
+        switch(expectedType) {
+        case(gpio::GpioTypes::NONE): {
+            break;
         }
-        auto ownRegularGpio = dynamic_cast<GpiodRegularBase*>(gpioMapIter->second);
-        if(ownRegularGpio == nullptr) {
-            return GPIO_TYPE_FAILURE;
+        case(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP):
+        case(gpio::GpioTypes::GPIO_REGULAR_BY_LABEL):
+        case(gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME): {
+            if(gpioType == gpio::GpioTypes::NONE or gpioType == gpio::GpioTypes::CALLBACK) {
+                eraseDuplicateDifferentType = true;
+            }
+            break;
+        }
+        case(gpio::GpioTypes::CALLBACK): {
+            if(gpioType != gpio::GpioTypes::CALLBACK) {
+                eraseDuplicateDifferentType = true;
+            }
+        }
+        }
+        if(eraseDuplicateDifferentType) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+            sif::warning << "LinuxLibgpioIF::checkForConflicts: ID already exists for "
+                    "different GPIO type " << gpioIdToCheck <<
+                    ". Removing duplicate from map to add" << std::endl;
+#else
+            sif::printWarning("LinuxLibgpioIF::checkForConflicts: ID already exists for "
+                    "different GPIO type %d. Removing duplicate from map to add\n", gpioIdToCheck);
+#endif
+            mapToAdd.erase(gpioIdToCheck);
+            return GPIO_DUPLICATE_DETECTED;
         }
 
-        /* Remove element from map to add because a entry for this GPIO
-        already exists */
-        sif::warning << "LinuxLibgpioIF::checkForConflictsRegularGpio: Duplicate GPIO definition"
-                << " detected. Duplicate will be removed from map to add." << std::endl;
+        // Remove element from map to add because a entry for this GPIO already exists
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+        sif::warning << "LinuxLibgpioIF::checkForConflictsRegularGpio: Duplicate GPIO "
+                "definition with ID " << gpioIdToCheck << " detected. " <<
+                "Duplicate will be removed from map to add" << std::endl;
+#else
+        sif::printWarning("LinuxLibgpioIF::checkForConflictsRegularGpio: Duplicate GPIO definition "
+                "with ID %d detected. Duplicate will be removed from map to add\n", gpioIdToCheck);
+#endif
         mapToAdd.erase(gpioIdToCheck);
+        return GPIO_DUPLICATE_DETECTED;
     }
     return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LinuxLibgpioIF::checkForConflictsCallbackGpio(gpioId_t gpioIdToCheck,
-        GpioCallback *callbackGpio, GpioMap& mapToAdd) {
-    /* Cross check with private map */
-    gpioMapIter = gpioMap.find(gpioIdToCheck);
-    if(gpioMapIter != gpioMap.end()) {
-        if(gpioMapIter->second->gpioType != gpio::GpioTypes::CALLBACK) {
-            sif::warning << "LinuxLibgpioIF::checkForConflicts: ID already exists for different "
-                    "GPIO type" << gpioIdToCheck << ". Removing duplicate." << std::endl;
-            mapToAdd.erase(gpioIdToCheck);
-            return HasReturnvaluesIF::RETURN_OK;
-        }
-
-        /* Remove element from map to add because a entry for this GPIO
-        already exists */
-        sif::warning << "LinuxLibgpioIF::checkForConflictsRegularGpio: Duplicate GPIO definition"
-                << " detected. Duplicate will be removed from map to add." << std::endl;
-        mapToAdd.erase(gpioIdToCheck);
+void LinuxLibgpioIF::parseFindeLineResult(int result, std::string& lineName) {
+    switch (result) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    case LINE_NOT_EXISTS:
+    case LINE_ERROR: {
+        sif::warning << "LinuxLibgpioIF::parseFindeLineResult: Line with name " << lineName <<
+                " does not exist" << std::endl;
+        break;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    default: {
+        sif::warning << "LinuxLibgpioIF::parseFindeLineResult: Unknown return code for line "
+                "with name " << lineName << std::endl;
+        break;
+    }
+#else
+    case LINE_NOT_EXISTS:
+    case LINE_ERROR: {
+        sif::printWarning("LinuxLibgpioIF::parseFindeLineResult: Line with name %s "
+                "does not exist\n", lineName);
+        break;
+    }
+    default: {
+        sif::printWarning("LinuxLibgpioIF::parseFindeLineResult: Unknown return code for line "
+                "with name %s\n", lineName);
+        break;
+    }
+#endif
+    }
+
 }
