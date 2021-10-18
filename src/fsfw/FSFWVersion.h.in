@@ -1,0 +1,9 @@
+#ifndef FSFW_VERSION_H_
+#define FSFW_VERSION_H_
+
+// Versioning is kept in project CMakeLists.txt file
+#define FSFW_VERSION @FSFW_VERSION@
+#define FSFW_SUBVERSION @FSFW_SUBVERSION@
+#define FSFW_REVISION @FSFW_REVISION@
+
+#endif /* FSFW_VERSION_H_ */

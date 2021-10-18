@@ -1,4 +1,4 @@
-target_sources(${TARGET_NAME} PRIVATE
+target_sources(${FSFW_TEST_TGT} PRIVATE
 	RingBufferTest.cpp
 	TestArrayList.cpp
 	TestDynamicFifo.cpp

@@ -1,4 +1,4 @@
-#include "fsfw_tests/internal/osal/IntTestMutex.h"
+#include "testMutex.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"
 #include "fsfw/platform.h"
 
