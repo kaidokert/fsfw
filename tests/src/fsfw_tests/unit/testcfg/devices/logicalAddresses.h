@@ -2,7 +2,7 @@
 #define CONFIG_DEVICES_LOGICALADDRESSES_H_
 
 #include <fsfw/devicehandlers/CookieIF.h>
-#include <fsfw/unittest/config/objects/systemObjectList.h>
+
 #include <cstdint>
 
 namespace addresses {
