@@ -71,12 +71,20 @@ protected:
 
 namespace spacepacket {
 
-constexpr uint16_t getTcSpacePacketIdFromApid(uint16_t apid) {
-    return (0x18 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
+constexpr uint16_t getSpacePacketIdFromApid(bool isTc, uint16_t apid,
+        bool secondaryHeaderFlag = true) {
+    return (((isTc << 5) & 0x10) | ((secondaryHeaderFlag << 4) & 0x08) |
+            ((apid >> 8) & 0x07)) << 8 | (apid & 0x00ff);
 }
 
-constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid) {
-    return (0x08 << 8) | (((apid >> 8) & 0x07) << 8) | (apid & 0x00ff);
+constexpr uint16_t getTcSpacketIdFromApid(uint16_t apid,
+        bool secondaryHeaderFlag = true) {
+    return getSpacePacketIdFromApid(true, apid, secondaryHeaderFlag);
+}
+
+constexpr uint16_t getTmSpacketIdFromApid(uint16_t apid,
+        bool secondaryHeaderFlag = true) {
+    return getSpacePacketIdFromApid(false, apid, secondaryHeaderFlag);
 }
 
 }
