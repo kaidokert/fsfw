@@ -29,7 +29,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         tcStatus = checker.checkPacket(currentPacket);
         if(tcStatus != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
-            const char* keyword = nullptr;
+            const char* keyword = "unnamed error";
             if(tcStatus == TcPacketCheck::INCORRECT_CHECKSUM) {
                 keyword = "checksum";
             }
@@ -44,9 +44,6 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
             }
             else if(tcStatus == TcPacketCheck::INCOMPLETE_PACKET) {
                 keyword = "incomplete packet";
-            }
-            else {
-                keyword = "unnamed error";
             }
 #if FSFW_CPP_OSTREAM_ENABLED == 1
             sif::warning << "PUSDistributor::handlePacket: Packet format invalid, "
