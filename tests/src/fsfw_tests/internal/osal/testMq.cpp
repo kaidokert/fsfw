@@ -1,4 +1,4 @@
-#include "fsfw_tests/internal/osal/IntTestMq.h"
+#include "testMq.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"
 
 #include <fsfw/ipc/MessageQueueIF.h>

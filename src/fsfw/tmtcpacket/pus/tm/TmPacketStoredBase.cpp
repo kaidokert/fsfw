@@ -119,6 +119,6 @@ void TmPacketStoredBase::handleStoreFailure(const char *const packetType, Return
         break;
     }
 #endif
-#endif
     }
+#endif
 }
