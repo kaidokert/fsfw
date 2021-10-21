@@ -45,11 +45,11 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
         std::cout << "\r" << std::endl;
     }
 
-    std::cout << "[" << std::hex;
+    std::cout << "hex [" << std::hex;
     for(size_t i = 0; i < size; i++) {
-        std::cout << "0x" << static_cast<int>(data[i]);
+        std::cout << "" << static_cast<int>(data[i]);
         if(i < size - 1) {
-            std::cout << " , ";
+            std::cout << ",";
             if(i > 0 and (i + 1) % maxCharPerLine == 0) {
                 std::cout << std::endl;
 
@@ -69,16 +69,16 @@ void arrayprinter::printHex(const uint8_t *data, size_t size,
             break;
         }
 
-        currentPos += snprintf(printBuffer + currentPos, 6, "0x%02x", data[i]);
+        currentPos += snprintf(printBuffer + currentPos, 6, "%02x", data[i]);
         if(i < size - 1) {
-            currentPos += sprintf(printBuffer + currentPos, ", ");
+            currentPos += sprintf(printBuffer + currentPos, ",");
             if(i > 0 and (i + 1) % maxCharPerLine == 0) {
                 currentPos += sprintf(printBuffer + currentPos, "\n");
             }
         }
     }
 #if FSFW_DISABLE_PRINTOUT == 0
-    printf("[%s]\n", printBuffer);
+    printf("hex [%s]\n", printBuffer);
 #endif /* FSFW_DISABLE_PRINTOUT == 0 */
 #endif
 }
@@ -90,11 +90,11 @@ void arrayprinter::printDec(const uint8_t *data, size_t size,
         std::cout << "\r" << std::endl;
     }
 
-    std::cout << "[" << std::dec;
+    std::cout << "dec [" << std::dec;
     for(size_t i = 0; i < size; i++) {
         std::cout << static_cast<int>(data[i]);
         if(i < size - 1){
-            std::cout << " , ";
+            std::cout << ",";
             if(i > 0 and (i + 1) % maxCharPerLine == 0) {
                 std::cout << std::endl;
             }
@@ -114,14 +114,14 @@ void arrayprinter::printDec(const uint8_t *data, size_t size,
 
         currentPos += snprintf(printBuffer + currentPos, 3, "%d", data[i]);
         if(i < size - 1) {
-            currentPos += sprintf(printBuffer + currentPos, ", ");
+            currentPos += sprintf(printBuffer + currentPos, ",");
             if(i > 0 and (i + 1) % maxCharPerLine == 0) {
                 currentPos += sprintf(printBuffer + currentPos, "\n");
             }
         }
     }
 #if FSFW_DISABLE_PRINTOUT == 0
-    printf("[%s]\n", printBuffer);
+    printf("dec [%s]\n", printBuffer);
 #endif /* FSFW_DISABLE_PRINTOUT == 0 */
 #endif
 }
