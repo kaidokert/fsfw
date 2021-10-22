@@ -9,12 +9,13 @@ using gpioId_t = uint16_t;
 
 namespace gpio {
 
-enum Levels {
+enum Levels: uint8_t {
     LOW = 0,
-    HIGH = 1
+    HIGH = 1,
+    NONE = 99
 };
 
-enum Direction {
+enum Direction: uint8_t {
     IN = 0,
     OUT = 1
 };
@@ -24,16 +25,18 @@ enum GpioOperation {
     WRITE
 };
 
-enum GpioTypes {
+enum class GpioTypes {
     NONE,
     GPIO_REGULAR_BY_CHIP,
     GPIO_REGULAR_BY_LABEL,
+    GPIO_REGULAR_BY_LINE_NAME,
     CALLBACK
 };
 
 static constexpr gpioId_t NO_GPIO = -1;
 
-using gpio_cb_t = void (*) (gpioId_t gpioId, gpio::GpioOperation gpioOp, int value, void* args);
+using gpio_cb_t = void (*) (gpioId_t gpioId, gpio::GpioOperation gpioOp, gpio::Levels value,
+        void* args);
 
 }
 
@@ -57,7 +60,7 @@ public:
     GpioBase() = default;
 
     GpioBase(gpio::GpioTypes gpioType, std::string consumer, gpio::Direction direction,
-            int initValue):
+            gpio::Levels initValue):
             gpioType(gpioType), consumer(consumer),direction(direction), initValue(initValue) {}
 
     virtual~ GpioBase() {};
@@ -66,15 +69,21 @@ public:
     gpio::GpioTypes gpioType = gpio::GpioTypes::NONE;
     std::string consumer;
     gpio::Direction direction = gpio::Direction::IN;
-    int initValue = 0;
+    gpio::Levels initValue = gpio::Levels::NONE;
 };
 
 class GpiodRegularBase: public GpioBase {
 public:
     GpiodRegularBase(gpio::GpioTypes gpioType, std::string consumer, gpio::Direction direction,
-            int initValue, int lineNum): GpioBase(gpioType, consumer, direction, initValue),
-            lineNum(lineNum) {
+            gpio::Levels initValue, int lineNum):
+            GpioBase(gpioType, consumer, direction, initValue), lineNum(lineNum) {
     }
+
+    // line number will be configured at a later point for the open by line name configuration
+    GpiodRegularBase(gpio::GpioTypes gpioType, std::string consumer, gpio::Direction direction,
+            gpio::Levels initValue): GpioBase(gpioType, consumer, direction, initValue) {
+    }
+
     int lineNum = 0;
     struct gpiod_line* lineHandle = nullptr;
 };
@@ -87,7 +96,7 @@ public:
     }
 
     GpiodRegularByChip(std::string chipname_, int lineNum_, std::string consumer_,
-            gpio::Direction direction_, int initValue_) :
+            gpio::Direction direction_, gpio::Levels initValue_) :
             GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP,
                     consumer_, direction_, initValue_, lineNum_),
             chipname(chipname_){
@@ -105,7 +114,7 @@ public:
 class GpiodRegularByLabel: public GpiodRegularBase {
 public:
     GpiodRegularByLabel(std::string label_, int lineNum_, std::string consumer_,
-            gpio::Direction direction_, int initValue_) :
+            gpio::Direction direction_, gpio::Levels initValue_) :
             GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_LABEL, consumer_,
                     direction_, initValue_, lineNum_),
             label(label_) {
@@ -120,9 +129,30 @@ public:
     std::string label;
 };
 
+/**
+ * @brief   Passing this GPIO configuration to the GPIO IF object will try to open the GPIO by its
+ *          line name. This line name can be set in the device tree and must be unique. Otherwise
+ *          the driver will open the first line with the given name.
+ */
+class GpiodRegularByLineName: public GpiodRegularBase {
+public:
+    GpiodRegularByLineName(std::string lineName_, std::string consumer_, gpio::Direction direction_,
+            gpio::Levels initValue_) :
+            GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME, consumer_, direction_,
+                    initValue_), lineName(lineName_) {
+    }
+
+    GpiodRegularByLineName(std::string lineName_, std::string consumer_) :
+            GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME, consumer_,
+                    gpio::Direction::IN, gpio::LOW), lineName(lineName_) {
+    }
+
+    std::string lineName;
+};
+
 class GpioCallback: public GpioBase {
 public:
-    GpioCallback(std::string consumer, gpio::Direction direction_, int initValue_,
+    GpioCallback(std::string consumer, gpio::Direction direction_, gpio::Levels initValue_,
             gpio::gpio_cb_t callback, void* callbackArgs):
             GpioBase(gpio::GpioTypes::CALLBACK, consumer, direction_, initValue_),
             callback(callback), callbackArgs(callbackArgs) {}

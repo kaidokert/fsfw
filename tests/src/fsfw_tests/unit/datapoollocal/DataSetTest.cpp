@@ -1,4 +1,5 @@
 #include "LocalPoolOwnerBase.h"
+#include "tests/TestsConfig.h"
 #include "fsfw_tests/unit/CatchDefinitions.h"
 
 #include <fsfw/objectmanager/ObjectManager.h>

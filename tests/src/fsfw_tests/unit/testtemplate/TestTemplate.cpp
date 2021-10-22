@@ -1,6 +1,5 @@
-#include <fsfw/unittest/catch2/catch.hpp>
-#include <fsfw/unittest/core/CatchDefinitions.h>
-
+#include "fsfw_tests/unit/CatchDefinitions.h"
+#include <catch2/catch_test_macros.hpp>
 
 /**
  * @brief 	Template test file

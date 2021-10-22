@@ -21,6 +21,9 @@ void tcpip::determineErrorStrings(Protocol protocol, ErrorSources errorSrc, std:
     if(errorSrc == ErrorSources::SETSOCKOPT_CALL) {
         srcString = "setsockopt call";
     }
+    if(errorSrc == ErrorSources::BIND_CALL) {
+        srcString = "bind call";
+    }
     else if(errorSrc == ErrorSources::SOCKET_CALL) {
         srcString = "socket call";
     }

@@ -1,5 +1,5 @@
 #include "fsfw/FSFW.h"
-#include "fsfw_tests/internal/osal/IntTestSemaphore.h"
+#include "testSemaphore.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"
 
 #include "fsfw/tasks/SemaphoreFactory.h"
