@@ -77,12 +77,12 @@ constexpr uint16_t getSpacePacketIdFromApid(bool isTc, uint16_t apid,
             ((apid >> 8) & 0x07)) << 8 | (apid & 0x00ff);
 }
 
-constexpr uint16_t getTcSpacketIdFromApid(uint16_t apid,
+constexpr uint16_t getTcSpacePacketIdFromApid(uint16_t apid,
         bool secondaryHeaderFlag = true) {
     return getSpacePacketIdFromApid(true, apid, secondaryHeaderFlag);
 }
 
-constexpr uint16_t getTmSpacketIdFromApid(uint16_t apid,
+constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid,
         bool secondaryHeaderFlag = true) {
     return getSpacePacketIdFromApid(false, apid, secondaryHeaderFlag);
 }
