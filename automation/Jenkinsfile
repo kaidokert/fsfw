@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clean') {
+            steps {
+                sh 'rm -rf build-unittests'
+            }
+        }
+        stage('Build') {
+            agent {
+                dockerfile {
+                    dir 'automation'
+                    additionalBuildArgs  '--no-cache'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('build-unittests') {
+                    sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
+                    sh 'cmake --build . -j'
+                }
+            }
+        }
+        stage('Unittests') {
+            agent {
+                dockerfile {
+                    dir 'automation'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('build-unittests') {
+                    sh 'cmake --build . -- fsfw-tests_coverage -j'
+                }
+            }
+        }
+    }
+}
