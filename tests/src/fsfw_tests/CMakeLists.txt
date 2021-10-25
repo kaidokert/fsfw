@@ -1,3 +1,4 @@
+add_subdirectory(integration)
 
 if(FSFW_ADD_INTERNAL_TESTS)
     add_subdirectory(internal)
