@@ -1,4 +1,4 @@
-target_sources(${TARGET_NAME} PRIVATE
+target_sources(${FSFW_TEST_TGT} PRIVATE
 	TestSerialBufferAdapter.cpp
 	TestSerialization.cpp
 	TestSerialLinkedPacket.cpp

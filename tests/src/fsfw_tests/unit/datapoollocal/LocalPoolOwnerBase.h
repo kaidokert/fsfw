@@ -1,7 +1,7 @@
 #ifndef FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 #define FSFW_UNITTEST_TESTS_DATAPOOLLOCAL_LOCALPOOLOWNERBASE_H_
 
-#include "objects/systemObjectList.h"
+#include "tests/TestsConfig.h"
 #include "../mocks/MessageQueueMockBase.h"
 
 #include <fsfw/datapoollocal/HasLocalDataPoolIF.h>

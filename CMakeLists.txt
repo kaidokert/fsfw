@@ -1,10 +1,19 @@
 cmake_minimum_required(VERSION 3.13)
 
+set(FSFW_VERSION 2)
+set(FSFW_SUBVERSION 0)
+set(FSFW_REVISION 0)
+
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
 )
 if(FSFW_GENERATE_SECTIONS)
     option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
+endif()
+
+option(FSFW_BUILD_UNITTESTS "Build unittest binary in addition to static library" OFF)
+if(FSFW_BUILD_UNITTESTS)
+    option(FSFW_TESTS_GEN_COV "Generate coverage data for unittests" ON)
 endif()
 
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
@@ -26,10 +35,71 @@ option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
 option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
 set(LIB_FSFW_NAME fsfw)
+set(FSFW_TEST_TGT fsfw-tests)
+
 add_library(${LIB_FSFW_NAME})
+
+if(FSFW_BUILD_UNITTESTS)
+    message(STATUS "Building the FSFW unittests in addition to the static library")
+    # Check whether the user has already installed Catch2 first
+    find_package(Catch2 3)
+    # Not installed, so use FetchContent to download and provide Catch2
+    if(NOT Catch2_FOUND)
+        include(FetchContent)
+
+        FetchContent_Declare(
+            Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG        v3.0.0-preview3
+        )
+
+        FetchContent_MakeAvailable(Catch2)
+    endif()
+
+    set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
+    configure_file(tests/src/fsfw_tests/unit/testcfg/FSFWConfig.h.in FSFWConfig.h)
+    configure_file(tests/src/fsfw_tests/unit/testcfg/TestsConfig.h.in tests/TestsConfig.h)
+    configure_file(tests/src/fsfw_tests/unit/testcfg/OBSWConfig.h.in OBSWConfig.h)
+
+    project(${FSFW_TEST_TGT} CXX C)
+    add_executable(${FSFW_TEST_TGT})
+
+    if(FSFW_TESTS_GEN_COV)
+        message(STATUS "Generating coverage data for the library")
+        message(STATUS "Targets linking against ${LIB_FSFW_NAME} "
+            "will be compiled with coverage data as well"
+        )
+        include(FetchContent)
+        FetchContent_Declare(
+            cmake-modules
+            GIT_REPOSITORY https://github.com/bilke/cmake-modules.git
+        )
+        FetchContent_MakeAvailable(cmake-modules)
+        set(CMAKE_BUILD_TYPE "Debug")
+        list(APPEND CMAKE_MODULE_PATH ${cmake-modules_SOURCE_DIR})
+        include(CodeCoverage)
+    endif()
+endif()
+
 set(FSFW_CORE_INC_PATH "inc")
 
 set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
+
+# Configure Files
+target_include_directories(${LIB_FSFW_NAME} PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+target_include_directories(${LIB_FSFW_NAME} INTERFACE
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+if(FSFW_BUILD_UNITTESTS)
+    configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
+    configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
+else()
+    configure_file(src/fsfw/FSFW.h.in FSFW.h)
+    configure_file(src/fsfw/FSFWVersion.h.in FSFWVersion.h)
+endif()
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
@@ -63,29 +133,29 @@ endif()
 set(FSFW_OSAL_DEFINITION FSFW_OSAL_HOST)
 
 if(FSFW_OSAL MATCHES host)
-    set(OS_FSFW_NAME "Host")
+    set(FSFW_OS_NAME "Host")
     set(FSFW_OSAL_HOST ON)
 elseif(FSFW_OSAL MATCHES linux)
-    set(OS_FSFW_NAME "Linux")
+    set(FSFW_OS_NAME "Linux")
     set(FSFW_OSAL_LINUX ON)
 elseif(FSFW_OSAL MATCHES freertos)
-    set(OS_FSFW_NAME "FreeRTOS")
+    set(FSFW_OS_NAME "FreeRTOS")
     set(FSFW_OSAL_FREERTOS ON)
     target_link_libraries(${LIB_FSFW_NAME} PRIVATE
         ${LIB_OS_NAME}
     )
 elseif(FSFW_OSAL STREQUAL rtems)
-    set(OS_FSFW_NAME "RTEMS")
+    set(FSFW_OS_NAME "RTEMS")
     set(FSFW_OSAL_RTEMS ON)
 else()
     message(WARNING
         "Invalid operating system for FSFW specified! Setting to host.."
     )
-    set(OS_FSFW_NAME "Host")
+    set(FSFW_OS_NAME "Host")
     set(OS_FSFW "host")
 endif()
 
-message(STATUS "Compiling FSFW for the ${OS_FSFW_NAME} operating system.")
+message(STATUS "Compiling FSFW for the ${FSFW_OS_NAME} operating system.")
 
 add_subdirectory(src)
 add_subdirectory(tests)
@@ -94,12 +164,81 @@ if(FSFW_ADD_HAL)
 endif()
 add_subdirectory(contrib)
 
+if(FSFW_BUILD_UNITTESTS)
+    if(FSFW_TESTS_GEN_COV)
+        if(CMAKE_COMPILER_IS_GNUCXX)
+            include(CodeCoverage)
+
+            # Remove quotes.
+            separate_arguments(COVERAGE_COMPILER_FLAGS
+                NATIVE_COMMAND "${COVERAGE_COMPILER_FLAGS}"
+            )
+
+            # Add compile options manually, we don't want coverage for Catch2
+            target_compile_options(${FSFW_TEST_TGT} PRIVATE
+                "${COVERAGE_COMPILER_FLAGS}"
+            )
+            target_compile_options(${LIB_FSFW_NAME} PRIVATE
+                "${COVERAGE_COMPILER_FLAGS}"
+            )
+
+            # Exclude directories here
+            if(WIN32)
+                set(GCOVR_ADDITIONAL_ARGS
+                    "--exclude-throw-branches"
+                    "--exclude-unreachable-branches"
+                )
+                set(COVERAGE_EXCLUDES
+                    "/c/msys64/mingw64/*"
+                )
+            elseif(UNIX)
+                set(COVERAGE_EXCLUDES
+                    "/usr/include/*" "/usr/bin/*" "Catch2/*"
+                    "/usr/local/include/*" "*/fsfw_tests/*"
+                    "*/catch2-src/*"
+                )
+            endif()
+
+            target_link_options(${FSFW_TEST_TGT} PRIVATE
+                -fprofile-arcs
+                -ftest-coverage
+            )
+            target_link_options(${LIB_FSFW_NAME} PRIVATE
+                -fprofile-arcs
+                -ftest-coverage
+            )
+            # Need to specify this as an interface, otherwise there will the compile issues
+            target_link_options(${LIB_FSFW_NAME} INTERFACE
+                -fprofile-arcs
+                -ftest-coverage
+            )
+
+            if(WIN32)
+                setup_target_for_coverage_gcovr_html(
+                    NAME ${FSFW_TEST_TGT}_coverage
+                    EXECUTABLE ${FSFW_TEST_TGT}
+                    DEPENDENCIES ${FSFW_TEST_TGT}
+                )
+            else()
+                setup_target_for_coverage_lcov(
+                    NAME ${FSFW_TEST_TGT}_coverage
+                    EXECUTABLE ${FSFW_TEST_TGT}
+                    DEPENDENCIES ${FSFW_TEST_TGT}
+                )
+            endif()
+        endif()
+    endif()
+    target_link_libraries(${FSFW_TEST_TGT} PRIVATE Catch2::Catch2 ${LIB_FSFW_NAME})
+endif()
+
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
 if(NOT FSFW_CONFIG_PATH)
-	message(WARNING "Flight Software Framework configuration path not set!")
-	message(WARNING "Setting default configuration!")
-	add_subdirectory(defaultcfg/fsfwconfig)
+    message(WARNING "Flight Software Framework configuration path not set!")
+    set(DEF_CONF_PATH misc/defaultcfg/fsfwconfig)
+    message(WARNING "Setting default configuration from ${DEF_CONF_PATH} ..")
+    add_subdirectory(${DEF_CONF_PATH})
+    set(FSFW_CONFIG_PATH ${DEF_CONF_PATH})
 endif()
 
 # FSFW might be part of a possibly complicated folder structure, so we 
@@ -186,4 +325,17 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
 
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
     ${FSFW_ADDITIONAL_LINK_LIBS}
+)
+
+string(CONCAT POST_BUILD_COMMENT
+    "######################################################################\n"
+    "Built FSFW v${FSFW_VERSION}.${FSFW_SUBVERSION}.${FSFW_REVISION}, "
+    "Target OSAL: ${FSFW_OS_NAME}\n"
+    "######################################################################\n"
+)
+
+add_custom_command(
+   TARGET ${LIB_FSFW_NAME}
+   POST_BUILD
+   COMMENT ${POST_BUILD_COMMENT}
 )
