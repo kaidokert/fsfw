@@ -1,12 +1,10 @@
 pipeline {
     agent any
+    environment {
+        BUILDDIR = 'build-unittests'
+    }
     stages {
-        stage('Clean') {
-            steps {
-                sh 'rm -rf build-unittests'
-            }
-        }
-        stage('Build') {
+        stage('Configure') {
             agent {
                 dockerfile {
                     dir 'automation'
@@ -15,8 +13,21 @@ pipeline {
                 }
             }
             steps {
-                dir('build-unittests') {
+                sh 'rm -rf $BUILDDIR'
+                dir($BUILDDIR) {
                     sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
+                }
+            }
+        }
+        stage('Build') {
+            agent {
+                dockerfile {
+                    dir 'automation'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir($BUILDDIR) {
                     sh 'cmake --build . -j'
                 }
             }
@@ -29,7 +40,7 @@ pipeline {
                 }
             }
             steps {
-                dir('build-unittests') {
+                dir($BUILDDIR) {
                     sh 'cmake --build . -- fsfw-tests_coverage -j'
                 }
             }
