@@ -5,10 +5,11 @@
 #include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/serviceinterface/ServiceInterface.h>
 
-TestController::TestController(object_id_t objectId, size_t commandQueueDepth):
+TestController::TestController(object_id_t objectId, object_id_t device0, object_id_t device1,
+        size_t commandQueueDepth):
         ExtendedControllerBase(objectId, objects::NO_OBJECT, commandQueueDepth),
-        deviceDataset0(objects::TEST_DEVICE_HANDLER_0),
-        deviceDataset1(objects::TEST_DEVICE_HANDLER_1) {
+        deviceDataset0(device0),
+        deviceDataset1(device1) {
 }
 
 TestController::~TestController() {
@@ -163,7 +164,7 @@ ReturnValue_t TestController::initializeLocalDataPool(localpool::DataPool &local
 ReturnValue_t TestController::initializeAfterTaskCreation() {
     namespace td = testdevice;
     HasLocalDataPoolIF* device0 = ObjectManager::instance()->get<HasLocalDataPoolIF>(
-            objects::TEST_DEVICE_HANDLER_0);
+            deviceDataset0.getCreatorObjectId());
     if(device0 == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "TestController::initializeAfterTaskCreation: Test device handler 0 "
@@ -185,7 +186,7 @@ ReturnValue_t TestController::initializeAfterTaskCreation() {
 
 
     HasLocalDataPoolIF* device1 = ObjectManager::instance()->get<HasLocalDataPoolIF>(
-            objects::TEST_DEVICE_HANDLER_1);
+            deviceDataset0.getCreatorObjectId());
     if(device1 == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::warning << "TestController::initializeAfterTaskCreation: Test device handler 1 "

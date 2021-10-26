@@ -160,11 +160,11 @@ ReturnValue_t TestAssembly::initialize() {
 	handler1->setParentQueue(this->getCommandQueue());
 
 
-	result = registerChild(objects::TEST_DEVICE_HANDLER_0);
+	result = registerChild(deviceHandler0Id);
 		if (result != HasReturnvaluesIF::RETURN_OK) {
 			return result;
 		}
-	result = registerChild(objects::TEST_DEVICE_HANDLER_1);
+	result = registerChild(deviceHandler1Id);
 	if (result != HasReturnvaluesIF::RETURN_OK) {
 		return result;
 	}

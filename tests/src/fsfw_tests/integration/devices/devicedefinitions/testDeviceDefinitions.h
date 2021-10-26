@@ -3,7 +3,6 @@
 
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/devicehandlers/DeviceHandlerIF.h>
-#include <commonSystemObjects.h>
 
 namespace testdevice {
 
@@ -79,8 +78,6 @@ enum PoolIds: lp_id_t {
 };
 
 static constexpr uint8_t TEST_SET_ID = TEST_NORMAL_MODE_CMD;
-static const sid_t TEST_SET_DEV_0_SID = sid_t(objects::TEST_DEVICE_HANDLER_0, TEST_SET_ID);
-static const sid_t TEST_SET_DEV_1_SID = sid_t(objects::TEST_DEVICE_HANDLER_1, TEST_SET_ID);
 
 class TestDataSet: public StaticLocalDataSet<3> {
 public:
