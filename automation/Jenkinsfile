@@ -4,7 +4,7 @@ pipeline {
         BUILDDIR = 'build-unittests'
     }
     stages {
-        stage('Configure') {
+        stage('Create Docker') {
             agent {
                 dockerfile {
                     dir 'automation'
@@ -14,6 +14,16 @@ pipeline {
             }
             steps {
                 sh 'rm -rf $BUILDDIR'
+            }
+        }
+        stage('Configure') {
+            agent {
+                dockerfile {
+                    dir 'automation'
+                    reuseNode true
+                }
+            }
+            steps {
                 dir(BUILDDIR) {
                     sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
                 }
