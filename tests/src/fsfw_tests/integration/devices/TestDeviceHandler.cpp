@@ -644,13 +644,7 @@ ReturnValue_t TestDevice::initializeLocalDataPool(localpool::DataPool &localData
     localDataPoolMap.emplace(td::PoolIds::TEST_FLOAT_VEC_3_ID,
             new PoolEntry<float>({0.0, 0.0, 0.0}));
 
-    sid_t sid;
-    if(deviceIdx == td::DeviceIndex::DEVICE_0) {
-        sid = td::TEST_SET_DEV_0_SID;
-    }
-    else {
-        sid = td::TEST_SET_DEV_1_SID;
-    }
+    sid_t sid(this->getObjectId(), td::TEST_SET_ID);
     /* Subscribe for periodic HK packets but do not enable reporting for now.
     Non-diangostic with a period of one second */
     poolManager.subscribeForPeriodicPacket(sid, false, 1.0, false);

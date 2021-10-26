@@ -8,7 +8,8 @@
 class TestController:
         public ExtendedControllerBase {
 public:
-    TestController(object_id_t objectId, size_t commandQueueDepth = 10);
+    TestController(object_id_t objectId, object_id_t device0, object_id_t device1,
+            size_t commandQueueDepth = 10);
     virtual~ TestController();
 protected:
     testdevice::TestDataSet deviceDataset0;
