@@ -6,9 +6,8 @@
 bool TestTask::oneShotAction = true;
 MutexIF* TestTask::testLock = nullptr;
 
-TestTask::TestTask(object_id_t objectId, bool periodicPrintout, bool periodicEvent):
-	SystemObject(objectId), testMode(testModes::A),
-	periodicPrinout(periodicPrintout), periodicEvent(periodicEvent) {
+TestTask::TestTask(object_id_t objectId):
+	SystemObject(objectId), testMode(testModes::A) {
 	if(testLock == nullptr) {
 		testLock = MutexFactory::instance()->createMutex();
 	}
@@ -52,17 +51,6 @@ ReturnValue_t TestTask::performOneShotAction() {
 ReturnValue_t TestTask::performPeriodicAction() {
     /* This is performed each task cycle */
 	ReturnValue_t result = RETURN_OK;
-
-	if(periodicPrinout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-		sif::info << "TestTask::performPeriodicAction: Hello World!" << std::endl;
-#else
-		sif::printInfo("TestTask::performPeriodicAction: Hello World!\n");
-#endif
-	}
-	if(periodicEvent) {
-	    triggerEvent(TEST_EVENT, 0x1234, 0x4321);
-	}
 	return result;
 }
 

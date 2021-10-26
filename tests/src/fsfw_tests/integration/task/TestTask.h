@@ -5,9 +5,6 @@
 #include <fsfw/objectmanager/SystemObject.h>
 #include <fsfw/storagemanager/StorageManagerIF.h>
 
-#include "fsfw/events/Event.h"
-#include "events/subsystemIdRanges.h"
-
 /**
  * @brief 	Test class for general C++ testing and any other code which will not be part of the
  *          primary mission software.
@@ -19,12 +16,9 @@ class TestTask :
         public ExecutableObjectIF,
         public HasReturnvaluesIF {
 public:
-    TestTask(object_id_t objectId, bool periodicPrintout = false, bool periodicEvent = false);
+    TestTask(object_id_t objectId);
     virtual ~TestTask();
-    virtual ReturnValue_t performOperation(uint8_t operationCode = 0);
-
-    static constexpr uint8_t subsystemId = SUBSYSTEM_ID::TEST_TASK_ID;
-    static constexpr Event TEST_EVENT = event::makeEvent(subsystemId, 0, severity::INFO);
+    virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
 
 protected:
     virtual ReturnValue_t performOneShotAction();
@@ -38,15 +32,8 @@ protected:
     };
 
     testModes testMode;
-    bool periodicPrinout = false;
-    bool periodicEvent = false;
-
     bool testFlag = false;
-    uint8_t counter { 1 };
-    uint8_t counterTrigger { 3 };
 
-    void performPusInjectorTest();
-    void examplePacketTest();
 private:
     static bool oneShotAction;
     static MutexIF* testLock;
