@@ -14,7 +14,7 @@ pipeline {
             }
             steps {
                 sh 'rm -rf $BUILDDIR'
-                dir($BUILDDIR) {
+                dir(env.BUILDDIR) {
                     sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
                 }
             }
@@ -27,7 +27,7 @@ pipeline {
                 }
             }
             steps {
-                dir($BUILDDIR) {
+                dir(BUILDDIR) {
                     sh 'cmake --build . -j'
                 }
             }
@@ -40,7 +40,7 @@ pipeline {
                 }
             }
             steps {
-                dir($BUILDDIR) {
+                dir(BUILDDIR) {
                     sh 'cmake --build . -- fsfw-tests_coverage -j'
                 }
             }
