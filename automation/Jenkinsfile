@@ -14,7 +14,7 @@ pipeline {
             }
             steps {
                 sh 'rm -rf $BUILDDIR'
-                dir(env.BUILDDIR) {
+                dir(BUILDDIR) {
                     sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
                 }
             }
