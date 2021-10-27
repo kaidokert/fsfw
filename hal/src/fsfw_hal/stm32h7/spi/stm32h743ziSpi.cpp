@@ -23,17 +23,17 @@ void spiDmaClockEnableWrapper() {
 }
 
 void spi::h743zi::standardPollingCfg(MspPollingConfigStruct& cfg) {
-    cfg.setupMacroWrapper =  &spiSetupWrapper;
-    cfg.cleanUpMacroWrapper = &spiCleanUpWrapper;
-    cfg.sckPort = GPIOA;
-    cfg.sckPin = GPIO_PIN_5;
-    cfg.misoPort = GPIOA;
-    cfg.misoPin = GPIO_PIN_6;
-    cfg.mosiPort = GPIOA;
-    cfg.mosiPin = GPIO_PIN_7;
-    cfg.sckAlternateFunction = GPIO_AF5_SPI1;
-    cfg.mosiAlternateFunction = GPIO_AF5_SPI1;
-    cfg.misoAlternateFunction = GPIO_AF5_SPI1;
+    cfg.setupCb =  &spiSetupWrapper;
+    cfg.cleanupCb = &spiCleanUpWrapper;
+    cfg.sck.port = GPIOA;
+    cfg.sck.pin = GPIO_PIN_5;
+    cfg.miso.port = GPIOA;
+    cfg.miso.pin = GPIO_PIN_6;
+    cfg.mosi.port = GPIOA;
+    cfg.mosi.pin = GPIO_PIN_7;
+    cfg.sck.altFnc = GPIO_AF5_SPI1;
+    cfg.mosi.altFnc = GPIO_AF5_SPI1;
+    cfg.miso.altFnc = GPIO_AF5_SPI1;
 }
 
 void spi::h743zi::standardInterruptCfg(MspIrqConfigStruct& cfg, IrqPriorities spiIrqPrio,

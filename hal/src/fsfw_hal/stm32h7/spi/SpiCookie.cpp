@@ -3,7 +3,7 @@
 
 SpiCookie::SpiCookie(address_t deviceAddress, spi::SpiBus spiIdx, spi::TransferModes transferMode,
         spi::MspCfgBase* mspCfg, uint32_t spiSpeed, spi::SpiModes spiMode,
-        size_t maxRecvSize, GpioPair csGpio):
+        size_t maxRecvSize, stm32h7::GpioCfg csGpio):
         deviceAddress(deviceAddress), spiIdx(spiIdx), spiSpeed(spiSpeed), spiMode(spiMode),
         transferMode(transferMode), csGpio(csGpio),
         mspCfg(mspCfg), maxRecvSize(maxRecvSize) {
@@ -24,11 +24,11 @@ SpiCookie::SpiCookie(address_t deviceAddress, spi::SpiBus spiIdx, spi::TransferM
 }
 
 uint16_t SpiCookie::getChipSelectGpioPin() const {
-    return csGpio.second;
+    return csGpio.pin;
 }
 
 GPIO_TypeDef* SpiCookie::getChipSelectGpioPort() {
-    return csGpio.first;
+    return csGpio.port;
 }
 
 address_t SpiCookie::getDeviceAddress() const {

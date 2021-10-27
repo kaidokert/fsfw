@@ -2,6 +2,7 @@
 #define FSFW_HAL_STM32H7_SPI_MSPINIT_H_
 
 #include "spiDefinitions.h"
+#include "../definitions.h"
 #include "../dma.h"
 
 #include "stm32h7xx_hal_spi.h"
@@ -12,6 +13,8 @@
 extern "C" {
 #endif
 
+using mspCb = void (*) (void);
+
 /**
  * @brief   This file provides MSP implementation for DMA, IRQ and Polling mode for the
  *          SPI peripheral. This configuration is required for the SPI communication to work.
@@ -19,27 +22,37 @@ extern "C" {
 namespace spi {
 
 struct MspCfgBase {
+    MspCfgBase();
+    MspCfgBase(stm32h7::GpioCfg sck, stm32h7::GpioCfg mosi, stm32h7::GpioCfg miso,
+            mspCb cleanupCb = nullptr, mspCb setupCb = nullptr):
+        sck(sck), mosi(mosi), miso(miso), cleanupCb(cleanupCb),
+        setupCb(setupCb) {}
+
     virtual ~MspCfgBase() = default;
 
-    void (* cleanUpMacroWrapper) (void) = nullptr;
-    void (* setupMacroWrapper) (void) = nullptr;
+    stm32h7::GpioCfg sck;
+    stm32h7::GpioCfg mosi;
+    stm32h7::GpioCfg miso;
 
-   GPIO_TypeDef* sckPort = nullptr;
-   uint32_t sckPin = 0;
-   uint8_t sckAlternateFunction = 0;
-   GPIO_TypeDef* mosiPort = nullptr;
-   uint32_t mosiPin = 0;
-   uint8_t mosiAlternateFunction = 0;
-   GPIO_TypeDef* misoPort = nullptr;
-   uint32_t misoPin = 0;
-   uint8_t misoAlternateFunction = 0;
+    mspCb cleanupCb = nullptr;
+    mspCb setupCb = nullptr;
 };
 
-struct MspPollingConfigStruct: public MspCfgBase {};
+struct MspPollingConfigStruct: public MspCfgBase {
+    MspPollingConfigStruct(): MspCfgBase() {};
+    MspPollingConfigStruct(stm32h7::GpioCfg sck, stm32h7::GpioCfg mosi, stm32h7::GpioCfg miso,
+            mspCb cleanupCb = nullptr, mspCb setupCb = nullptr):
+            MspCfgBase(sck, mosi, miso, cleanupCb, setupCb) {}
+};
 
 /* A valid instance of this struct must be passed to the MSP initialization function as a void*
 argument */
 struct MspIrqConfigStruct: public MspPollingConfigStruct {
+    MspIrqConfigStruct(): MspPollingConfigStruct() {};
+    MspIrqConfigStruct(stm32h7::GpioCfg sck, stm32h7::GpioCfg mosi, stm32h7::GpioCfg miso,
+            mspCb cleanupCb = nullptr, mspCb setupCb = nullptr):
+            MspPollingConfigStruct(sck, mosi, miso, cleanupCb, setupCb) {}
+
     SpiBus spiBus = SpiBus::SPI_1;
     user_handler_t spiIrqHandler = nullptr;
     user_args_t spiUserArgs = nullptr;
@@ -53,11 +66,16 @@ struct MspIrqConfigStruct: public MspPollingConfigStruct {
 /* A valid instance of this struct must be passed to the MSP initialization function as a void*
 argument */
 struct MspDmaConfigStruct: public MspIrqConfigStruct {
+    MspDmaConfigStruct(): MspIrqConfigStruct() {};
+    MspDmaConfigStruct(stm32h7::GpioCfg sck, stm32h7::GpioCfg mosi, stm32h7::GpioCfg miso,
+            mspCb cleanupCb = nullptr, mspCb setupCb = nullptr):
+            MspIrqConfigStruct(sck, mosi, miso, cleanupCb, setupCb) {}
     void (* dmaClkEnableWrapper) (void) = nullptr;
-    dma::DMAIndexes txDmaIndex;
-    dma::DMAIndexes rxDmaIndex;
-    dma::DMAStreams txDmaStream;
-    dma::DMAStreams rxDmaStream;
+
+    dma::DMAIndexes txDmaIndex = dma::DMAIndexes::DMA_1;
+    dma::DMAIndexes rxDmaIndex = dma::DMAIndexes::DMA_1;
+    dma::DMAStreams txDmaStream = dma::DMAStreams::STREAM_0;
+    dma::DMAStreams rxDmaStream = dma::DMAStreams::STREAM_0;
     IRQn_Type txDmaIrqNumber = DMA1_Stream0_IRQn;
     IRQn_Type rxDmaIrqNumber = DMA1_Stream1_IRQn;
     // Priorities for NVIC
