@@ -138,12 +138,14 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
         spi::setSpiDmaMspFunctions(typedCfg);
     }
 
-    gpio::initializeGpioClock(gpioPort);
-    GPIO_InitTypeDef chipSelect = {};
-    chipSelect.Pin = gpioPin;
-    chipSelect.Mode = GPIO_MODE_OUTPUT_PP;
-    HAL_GPIO_Init(gpioPort, &chipSelect);
-    HAL_GPIO_WritePin(gpioPort, gpioPin, GPIO_PIN_SET);
+    if(gpioPort != nullptr) {
+        gpio::initializeGpioClock(gpioPort);
+        GPIO_InitTypeDef chipSelect = {};
+        chipSelect.Pin = gpioPin;
+        chipSelect.Mode = GPIO_MODE_OUTPUT_PP;
+        HAL_GPIO_Init(gpioPort, &chipSelect);
+        HAL_GPIO_WritePin(gpioPort, gpioPin, GPIO_PIN_SET);
+    }
 
     if(HAL_SPI_Init(&spiHandle) != HAL_OK) {
         sif::printWarning("SpiComIF::initialize: Error initializing SPI\n");
@@ -259,10 +261,15 @@ ReturnValue_t SpiComIF::handlePollingSendOperation(uint8_t* recvPtr, SPI_HandleT
         return returnval;
     }
     spiCookie.setTransferState(spi::TransferStates::WAIT);
-    HAL_GPIO_WritePin(gpioPort, gpioPin, GPIO_PIN_RESET);
+    if(gpioPort != nullptr) {
+        HAL_GPIO_WritePin(gpioPort, gpioPin, GPIO_PIN_RESET);
+    }
+
     auto result = HAL_SPI_TransmitReceive(&spiHandle, const_cast<uint8_t*>(sendData),
             recvPtr, sendLen, defaultPollingTimeout);
-    HAL_GPIO_WritePin(gpioPort, gpioPin,  GPIO_PIN_SET);
+    if(gpioPort != nullptr) {
+        HAL_GPIO_WritePin(gpioPort, gpioPin,  GPIO_PIN_SET);
+    }
     spiSemaphore->release();
     switch(result) {
     case(HAL_OK): {
@@ -392,8 +399,10 @@ ReturnValue_t SpiComIF::genericIrqSendSetup(uint8_t *recvPtr, SPI_HandleTypeDef&
     // The SPI handle is passed to the default SPI callback as a void argument. This callback
     // is different from the user callbacks specified above!
     spi::assignSpiUserArgs(spiCookie.getSpiIdx(), reinterpret_cast<void*>(&spiHandle));
-    HAL_GPIO_WritePin(spiCookie.getChipSelectGpioPort(), spiCookie.getChipSelectGpioPin(),
-            GPIO_PIN_RESET);
+    if(spiCookie.getChipSelectGpioPort() != nullptr) {
+        HAL_GPIO_WritePin(spiCookie.getChipSelectGpioPort(), spiCookie.getChipSelectGpioPin(),
+                GPIO_PIN_RESET);
+    }
     return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -426,9 +435,12 @@ void SpiComIF::genericIrqHandler(void *irqArgsVoid, spi::TransferStates targetSt
 
     spiCookie->setTransferState(targetState);
 
-    // Pull CS pin high again
-    HAL_GPIO_WritePin(spiCookie->getChipSelectGpioPort(), spiCookie->getChipSelectGpioPin(),
-            GPIO_PIN_SET);
+    if(spiCookie->getChipSelectGpioPort() != nullptr) {
+        // Pull CS pin high again
+        HAL_GPIO_WritePin(spiCookie->getChipSelectGpioPort(), spiCookie->getChipSelectGpioPin(),
+                GPIO_PIN_SET);
+    }
+
 
 #if defined FSFW_OSAL_FREERTOS
     // Release the task semaphore
