@@ -78,7 +78,7 @@ TEST_CASE("Ring Buffer Test" , "[RingBufferTest]") {
 TEST_CASE("Ring Buffer Test2" , "[RingBufferTest2]") {
 	uint8_t testData[13]= {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 	uint8_t readBuffer[10] = {13, 13, 13, 13, 13, 13, 13, 13, 13, 13};
-	uint8_t* newBuffer = new uint8_t[10];
+	uint8_t* newBuffer = new uint8_t[15];
 	SimpleRingBuffer ringBuffer(newBuffer, 10, true, 5);
 
 	SECTION("Simple Test") {
@@ -168,7 +168,7 @@ TEST_CASE("Ring Buffer Test2" , "[RingBufferTest2]") {
 TEST_CASE("Ring Buffer Test3" , "[RingBufferTest3]") {
 	uint8_t testData[13]= {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 	uint8_t readBuffer[10] = {13, 13, 13, 13, 13, 13, 13, 13, 13, 13};
-	uint8_t* newBuffer = new uint8_t[10];
+	uint8_t* newBuffer = new uint8_t[25];
 	SimpleRingBuffer ringBuffer(newBuffer, 10, true, 15);
 
 	SECTION("Simple Test") {
