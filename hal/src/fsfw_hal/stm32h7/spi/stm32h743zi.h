@@ -3,21 +3,20 @@
 
 #include "mspInit.h"
 
-namespace spi {
+namespace stm32h7 {
 
 namespace h743zi {
 
-void standardPollingCfg(MspPollingConfigStruct& cfg);
-void standardInterruptCfg(MspIrqConfigStruct& cfg, IrqPriorities spiIrqPrio,
+void standardPollingCfg(spi::MspPollingConfigStruct& cfg);
+void standardInterruptCfg(spi::MspIrqConfigStruct& cfg, IrqPriorities spiIrqPrio,
         IrqPriorities spiSubprio = HIGHEST);
-void standardDmaCfg(MspDmaConfigStruct& cfg, IrqPriorities spiIrqPrio,
+void standardDmaCfg(spi::MspDmaConfigStruct& cfg, IrqPriorities spiIrqPrio,
         IrqPriorities txIrqPrio, IrqPriorities rxIrqPrio,
         IrqPriorities spiSubprio = HIGHEST, IrqPriorities txSubPrio = HIGHEST,
         IrqPriorities rxSubprio = HIGHEST);
 
+
 }
 }
-
-
 
 #endif /* FSFW_HAL_STM32H7_SPI_STM32H743ZISPI_H_ */
