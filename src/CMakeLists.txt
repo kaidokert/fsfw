@@ -16,5 +16,3 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 target_include_directories(${LIB_FSFW_NAME} INTERFACE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
-
-configure_file(fsfw/FSFW.h.in fsfw/FSFW.h)
