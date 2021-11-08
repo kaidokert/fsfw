@@ -93,14 +93,6 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-if(FSFW_BUILD_UNITTESTS)
-    configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
-else()
-    configure_file(src/fsfw/FSFW.h.in FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in FSFWVersion.h)
-endif()
-
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -153,6 +145,14 @@ else()
     )
     set(FSFW_OS_NAME "Host")
     set(OS_FSFW "host")
+endif()
+
+if(FSFW_BUILD_UNITTESTS)
+    configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
+    configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
+else()
+    configure_file(src/fsfw/FSFW.h.in FSFW.h)
+    configure_file(src/fsfw/FSFWVersion.h.in FSFWVersion.h)
 endif()
 
 message(STATUS "Compiling FSFW for the ${FSFW_OS_NAME} operating system.")
