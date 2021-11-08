@@ -4,7 +4,7 @@
 #include "fsfw_hal/stm32h7/spi/spiDefinitions.h"
 #include "fsfw_hal/stm32h7/spi/spiCore.h"
 #include "fsfw_hal/stm32h7/spi/spiInterrupts.h"
-#include "fsfw_hal/stm32h7/spi/stm32h743ziSpi.h"
+#include "fsfw_hal/stm32h7/spi/stm32h743zi.h"
 
 #include "fsfw/tasks/TaskFactory.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
@@ -33,20 +33,20 @@ GyroL3GD20H::GyroL3GD20H(SPI_HandleTypeDef *spiHandle, spi::TransferModes transf
         mspCfg = new spi::MspDmaConfigStruct();
         auto typedCfg = dynamic_cast<spi::MspDmaConfigStruct*>(mspCfg);
         spi::setDmaHandles(txDmaHandle, rxDmaHandle);
-        spi::h743zi::standardDmaCfg(*typedCfg, IrqPriorities::HIGHEST_FREERTOS,
+        stm32h7::h743zi::standardDmaCfg(*typedCfg, IrqPriorities::HIGHEST_FREERTOS,
                 IrqPriorities::HIGHEST_FREERTOS, IrqPriorities::HIGHEST_FREERTOS);
         spi::setSpiDmaMspFunctions(typedCfg);
     }
     else if(transferMode == spi::TransferModes::INTERRUPT) {
         mspCfg = new spi::MspIrqConfigStruct();
         auto typedCfg = dynamic_cast<spi::MspIrqConfigStruct*>(mspCfg);
-        spi::h743zi::standardInterruptCfg(*typedCfg, IrqPriorities::HIGHEST_FREERTOS);
+        stm32h7::h743zi::standardInterruptCfg(*typedCfg, IrqPriorities::HIGHEST_FREERTOS);
         spi::setSpiIrqMspFunctions(typedCfg);
     }
     else if(transferMode == spi::TransferModes::POLLING) {
         mspCfg = new spi::MspPollingConfigStruct();
         auto typedCfg = dynamic_cast<spi::MspPollingConfigStruct*>(mspCfg);
-        spi::h743zi::standardPollingCfg(*typedCfg);
+        stm32h7::h743zi::standardPollingCfg(*typedCfg);
         spi::setSpiPollingMspFunctions(typedCfg);
     }
 

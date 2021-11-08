@@ -1,4 +1,4 @@
-#include "fsfw_hal/stm32h7/spi/stm32h743ziSpi.h"
+#include "fsfw_hal/stm32h7/spi/stm32h743zi.h"
 #include "fsfw_hal/stm32h7/spi/spiCore.h"
 #include "fsfw_hal/stm32h7/spi/spiInterrupts.h"
 
@@ -22,27 +22,27 @@ void spiDmaClockEnableWrapper() {
     __HAL_RCC_DMA2_CLK_ENABLE();
 }
 
-void spi::h743zi::standardPollingCfg(MspPollingConfigStruct& cfg) {
-    cfg.setupMacroWrapper =  &spiSetupWrapper;
-    cfg.cleanUpMacroWrapper = &spiCleanUpWrapper;
-    cfg.sckPort = GPIOA;
-    cfg.sckPin = GPIO_PIN_5;
-    cfg.misoPort = GPIOA;
-    cfg.misoPin = GPIO_PIN_6;
-    cfg.mosiPort = GPIOA;
-    cfg.mosiPin = GPIO_PIN_7;
-    cfg.sckAlternateFunction = GPIO_AF5_SPI1;
-    cfg.mosiAlternateFunction = GPIO_AF5_SPI1;
-    cfg.misoAlternateFunction = GPIO_AF5_SPI1;
+void stm32h7::h743zi::standardPollingCfg(spi::MspPollingConfigStruct& cfg) {
+    cfg.setupCb =  &spiSetupWrapper;
+    cfg.cleanupCb = &spiCleanUpWrapper;
+    cfg.sck.port = GPIOA;
+    cfg.sck.pin = GPIO_PIN_5;
+    cfg.miso.port = GPIOA;
+    cfg.miso.pin = GPIO_PIN_6;
+    cfg.mosi.port = GPIOA;
+    cfg.mosi.pin = GPIO_PIN_7;
+    cfg.sck.altFnc = GPIO_AF5_SPI1;
+    cfg.mosi.altFnc = GPIO_AF5_SPI1;
+    cfg.miso.altFnc = GPIO_AF5_SPI1;
 }
 
-void spi::h743zi::standardInterruptCfg(MspIrqConfigStruct& cfg, IrqPriorities spiIrqPrio,
+void stm32h7::h743zi::standardInterruptCfg(spi::MspIrqConfigStruct& cfg, IrqPriorities spiIrqPrio,
         IrqPriorities spiSubprio) {
     // High, but works on FreeRTOS as well (priorities range from 0 to 15)
     cfg.preEmptPriority = spiIrqPrio;
     cfg.subpriority = spiSubprio;
     cfg.spiIrqNumber = SPI1_IRQn;
-    cfg.spiBus = SpiBus::SPI_1;
+    cfg.spiBus = spi::SpiBus::SPI_1;
     user_handler_t spiUserHandler = nullptr;
     user_args_t spiUserArgs = nullptr;
     getSpiUserHandler(spi::SpiBus::SPI_1, &spiUserHandler, &spiUserArgs);
@@ -55,7 +55,7 @@ void spi::h743zi::standardInterruptCfg(MspIrqConfigStruct& cfg, IrqPriorities sp
     standardPollingCfg(cfg);
 }
 
-void spi::h743zi::standardDmaCfg(MspDmaConfigStruct& cfg, IrqPriorities spiIrqPrio,
+void stm32h7::h743zi::standardDmaCfg(spi::MspDmaConfigStruct& cfg, IrqPriorities spiIrqPrio,
         IrqPriorities txIrqPrio, IrqPriorities rxIrqPrio, IrqPriorities spiSubprio,
         IrqPriorities txSubprio, IrqPriorities rxSubprio) {
     cfg.dmaClkEnableWrapper = &spiDmaClockEnableWrapper;
