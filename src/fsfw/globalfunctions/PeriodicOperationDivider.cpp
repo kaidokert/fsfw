@@ -2,43 +2,40 @@
 
 
 PeriodicOperationDivider::PeriodicOperationDivider(uint32_t divider,
-		bool resetAutomatically): resetAutomatically(resetAutomatically),
-		counter(divider), divider(divider) {
+        bool resetAutomatically): resetAutomatically(resetAutomatically),
+        divider(divider) {
 }
 
 bool PeriodicOperationDivider::checkAndIncrement() {
-	bool opNecessary = check();
-	if(opNecessary) {
-		if(resetAutomatically) {
-			counter = 0;
-		}
-		return opNecessary;
-	}
-	counter ++;
-	return opNecessary;
+    bool opNecessary = check();
+    if(opNecessary and resetAutomatically) {
+        resetCounter();
+    }
+    else {
+        counter++;
+    }
+    return opNecessary;
 }
 
 bool PeriodicOperationDivider::check() {
-	if(counter >= divider) {
-		return true;
-	}
-	return false;
+    if(counter >= divider) {
+        return true;
+    }
+    return false;
 }
 
-
-
 void PeriodicOperationDivider::resetCounter() {
-	counter = 0;
+    counter = 1;
 }
 
 void PeriodicOperationDivider::setDivider(uint32_t newDivider) {
-	divider = newDivider;
+    divider = newDivider;
 }
 
 uint32_t PeriodicOperationDivider::getCounter() const {
-	return counter;
+    return counter;
 }
 
 uint32_t PeriodicOperationDivider::getDivider() const {
-	return divider;
+    return divider;
 }

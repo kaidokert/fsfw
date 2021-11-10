@@ -110,7 +110,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(uint8_t **buffer
     for (uint16_t count = 0; count < fillCount; count++) {
         if(registeredVariables[count]->isValid()) {
             /* Set bit at correct position */
-            bitutil::bitSet(validityPtr + validBufferIndex, validBufferIndexBit);
+            bitutil::set(validityPtr + validBufferIndex, validBufferIndexBit);
         }
         if(validBufferIndexBit == 7) {
             validBufferIndex ++;
@@ -156,8 +156,8 @@ ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
     uint8_t validBufferIndexBit = 0;
     for (uint16_t count = 0; count < fillCount; count++) {
         // set validity buffer here.
-        bool nextVarValid = bitutil::bitGet(*buffer +
-                validBufferIndex, validBufferIndexBit);
+        bool nextVarValid = false;
+        bitutil::get(*buffer + validBufferIndex, validBufferIndexBit, nextVarValid);
         registeredVariables[count]->setValid(nextVarValid);
 
         if(validBufferIndexBit == 7) {
