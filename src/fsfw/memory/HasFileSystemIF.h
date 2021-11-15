@@ -1,9 +1,10 @@
 #ifndef FSFW_MEMORY_HASFILESYSTEMIF_H_
 #define FSFW_MEMORY_HASFILESYSTEMIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
-#include "../returnvalues/FwClassIds.h"
-#include "../ipc/messageQueueDefinitions.h"
+#include "FileSystemArgsIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/FwClassIds.h"
+#include "fsfw/ipc/messageQueueDefinitions.h"
 
 #include <cstddef>
 
@@ -59,7 +60,7 @@ public:
 	 */
 	virtual ReturnValue_t appendToFile(const char* repositoryPath,
 	        const char* filename, const uint8_t* data, size_t size,
-	        uint16_t packetNumber, void* args = nullptr) = 0;
+	        uint16_t packetNumber, FileSystemArgsIF* args = nullptr) = 0;
 
 	/**
 	 * @brief   Generic function to create a new file.
@@ -72,7 +73,7 @@ public:
 	 */
 	virtual ReturnValue_t createFile(const char* repositoryPath,
 	        const char* filename, const uint8_t* data = nullptr,
-	        size_t size = 0, void* args = nullptr) = 0;
+	        size_t size = 0, FileSystemArgsIF* args = nullptr) = 0;
 
 	/**
 	 * @brief   Generic function to delete a file.
@@ -81,24 +82,30 @@ public:
 	 * @param args Any other arguments which an implementation might require
 	 * @return
 	 */
-	virtual ReturnValue_t deleteFile(const char* repositoryPath,
-	        const char* filename, void* args = nullptr) = 0;
+	virtual ReturnValue_t removeFile(const char* repositoryPath,
+	        const char* filename, FileSystemArgsIF* args = nullptr) = 0;
 
 	/**
 	 * @brief   Generic function to create a directory
 	 * @param repositoryPath
+	 * @param   Equivalent to the -p flag in Unix systems. If some required parent directories
+	 *          do not exist, create them as well
 	 * @param args Any other arguments which an implementation might require
 	 * @return
 	 */
-	virtual ReturnValue_t createDirectory(const char* repositoryPath, void* args = nullptr) = 0;
+	virtual ReturnValue_t createDirectory(const char* repositoryPath, const char* dirname,
+	        bool createParentDirs, FileSystemArgsIF* args = nullptr) = 0;
 
 	/**
 	 * @brief   Generic function to remove a directory
 	 * @param repositoryPath
      * @param args Any other arguments which an implementation might require
 	 */
-	virtual ReturnValue_t removeDirectory(const char* repositoryPath,
-	        bool deleteRecurively = false, void* args = nullptr) = 0;
+	virtual ReturnValue_t removeDirectory(const char* repositoryPath, const char* dirname,
+	        bool deleteRecurively = false, FileSystemArgsIF* args = nullptr) = 0;
+
+	virtual ReturnValue_t renameFile(const char* repositoryPath, const char* oldFilename,
+	        const char* newFilename, FileSystemArgsIF* args = nullptr) = 0;
 };
 
 
