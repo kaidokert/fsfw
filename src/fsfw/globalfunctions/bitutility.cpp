@@ -1,6 +1,6 @@
 #include "fsfw/globalfunctions/bitutility.h"
 
-void bitutil::bitSet(uint8_t *byte, uint8_t position) {
+void bitutil::set(uint8_t *byte, uint8_t position) {
     if(position > 7) {
         return;
     }
@@ -8,7 +8,7 @@ void bitutil::bitSet(uint8_t *byte, uint8_t position) {
     *byte |= 1 << shiftNumber;
 }
 
-void bitutil::bitToggle(uint8_t *byte, uint8_t position) {
+void bitutil::toggle(uint8_t *byte, uint8_t position) {
     if(position > 7) {
         return;
     }
@@ -16,7 +16,7 @@ void bitutil::bitToggle(uint8_t *byte, uint8_t position) {
     *byte ^= 1 << shiftNumber;
 }
 
-void bitutil::bitClear(uint8_t *byte, uint8_t position) {
+void bitutil::clear(uint8_t *byte, uint8_t position) {
     if(position > 7) {
         return;
     }
@@ -24,10 +24,11 @@ void bitutil::bitClear(uint8_t *byte, uint8_t position) {
     *byte &= ~(1 << shiftNumber);
 }
 
-bool bitutil::bitGet(const uint8_t *byte, uint8_t position) {
+bool bitutil::get(const uint8_t *byte, uint8_t position, bool& bit) {
     if(position > 7) {
         return false;
     }
     uint8_t shiftNumber = position + (7 - 2 * position);
-    return *byte & (1 << shiftNumber);
+    bit = *byte & (1 << shiftNumber);
+    return true;
 }
