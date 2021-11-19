@@ -6,6 +6,7 @@ import platform
 import sys
 import time
 import argparse
+import webbrowser
 from typing import List
 
 
@@ -18,6 +19,10 @@ information how to set up the build folder.
 def main():
 
     parser = argparse.ArgumentParser(description="Processing arguments for LCOV helper script.")
+    parser.add_argument(
+        '-o', '--open', action='store_true', help='Open coverage data in webbrowser'
+    )
+    args = parser.parse_args()
 
     build_dir_list = []
     if not os.path.isfile('README.md'):
@@ -41,6 +46,8 @@ def main():
         print("Multiple build directories found!")
         build_directory = determine_build_dir(build_dir_list)
     perform_lcov_operation(build_directory)
+    if os.path.isdir('fsfw-tests_coverage') and args.open:
+        webbrowser.open('fsfw-tests_coverage/index.html')
 
 
 def check_for_cmake_build_dir(build_dir_dict: list):
