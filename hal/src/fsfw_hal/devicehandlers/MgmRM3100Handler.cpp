@@ -186,7 +186,7 @@ ReturnValue_t MgmRM3100Handler::interpretDeviceReply(DeviceCommandId_t id, const
         uint8_t cmmValue = packet[1];
         // We clear the seventh bit in any case
         // because this one is zero sometimes for some reason
-        bitutil::bitClear(&cmmValue, 6);
+        bitutil::clear(&cmmValue, 6);
         if(cmmValue == cmmRegValue and internalState == InternalState::READ_CMM) {
             commandExecuted = true;
         }
