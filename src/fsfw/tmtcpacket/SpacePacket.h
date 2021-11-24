@@ -73,7 +73,7 @@ namespace spacepacket {
 
 constexpr uint16_t getSpacePacketIdFromApid(bool isTc, uint16_t apid,
         bool secondaryHeaderFlag = true) {
-    return (((isTc << 5) & 0x10) | ((secondaryHeaderFlag << 4) & 0x08) |
+    return ((isTc << 4) | (secondaryHeaderFlag << 3) |
             ((apid >> 8) & 0x07)) << 8 | (apid & 0x00ff);
 }
 
