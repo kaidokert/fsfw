@@ -107,6 +107,12 @@ cmake --build . -- fsfw-tests_coverage -j
 
 The `coverage.py` script located in the `script` folder can also be used to do this conveniently.
 
+## Formatting the sources
+
+The formatting is done by the `clang-format` tool. The configuration is contained within the
+`.clang-format` file in the repository root. As long as `clang-format` is installed, you
+can run the `apply-clang-format.sh` helper script to format all source files consistently.
+
 ## Index
 
 [1. High-level overview](doc/README-highlevel.md#top) <br>
