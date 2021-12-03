@@ -78,15 +78,16 @@ class StorageManagerIF;
  *
  * @ingroup devices
  */
-class DeviceHandlerBase: public DeviceHandlerIF,
-public HasReturnvaluesIF,
-public ExecutableObjectIF,
-public SystemObject,
-public HasModesIF,
-public HasHealthIF,
-public HasActionsIF,
-public ReceivesParameterMessagesIF,
-public HasLocalDataPoolIF {
+class DeviceHandlerBase:
+        public DeviceHandlerIF,
+        public HasReturnvaluesIF,
+        public ExecutableObjectIF,
+        public SystemObject,
+        public HasModesIF,
+        public HasHealthIF,
+        public HasActionsIF,
+        public ReceivesParameterMessagesIF,
+        public HasLocalDataPoolIF {
     friend void (Factory::setStaticFrameworkObjectIds)();
 public:
     /**
@@ -334,8 +335,7 @@ protected:
      *  - @c RETURN_OK to send command after #rawPacket and #rawPacketLen
      *       have been set.
      *  - @c HasActionsIF::EXECUTION_COMPLETE to generate a finish reply immediately. This can
-     *       be used if no reply is expected. Otherwise, the developer can call #actionHelper.finish
-     *       to finish the command handling.
+     *       be used if no reply is expected
      *  - Anything else triggers an event with the return code as a parameter as well as a
      *    step reply failed with the return code
      */

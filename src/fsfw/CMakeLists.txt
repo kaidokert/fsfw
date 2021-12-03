@@ -1,6 +1,7 @@
 # Core
 
 add_subdirectory(action)
+add_subdirectory(cfdp)
 add_subdirectory(container)
 add_subdirectory(controller)
 add_subdirectory(datapool)

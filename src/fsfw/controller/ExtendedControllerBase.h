@@ -8,11 +8,10 @@
 #include "fsfw/datapoollocal/LocalDataPoolManager.h"
 
 /**
- * @brief   Extendes the basic ControllerBase with the common components
- *          HasActionsIF for commandability and HasLocalDataPoolIF to keep
- *          a pool of local data pool variables.
+ * @brief   Extends the basic ControllerBase with commonly used components
  * @details
- * Default implementations required for the interfaces will be empty and have
+ * HasActionsIF for commandability and HasLocalDataPoolIF to keep a pool of local data pool
+ * variables. Default implementations required for the interfaces will be empty and have
  * to be implemented by child class.
  */
 class ExtendedControllerBase: public ControllerBase,

@@ -120,7 +120,8 @@ public:
 	static const ReturnValue_t WRONG_MODE_FOR_COMMAND = MAKE_RETURN_CODE(0xA5);
 	static const ReturnValue_t TIMEOUT = MAKE_RETURN_CODE(0xA6);
 	static const ReturnValue_t BUSY = MAKE_RETURN_CODE(0xA7);
-	static const ReturnValue_t NO_REPLY_EXPECTED = MAKE_RETURN_CODE(0xA8); //!< Used to indicate that this is a command-only command.
+	//!< Used to indicate that this is a command-only command.
+	static const ReturnValue_t NO_REPLY_EXPECTED = MAKE_RETURN_CODE(0xA8);
 	static const ReturnValue_t NON_OP_TEMPERATURE = MAKE_RETURN_CODE(0xA9);
 	static const ReturnValue_t COMMAND_NOT_IMPLEMENTED = MAKE_RETURN_CODE(0xAA);
 

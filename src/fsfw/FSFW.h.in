@@ -42,6 +42,10 @@
 #define FSFW_USE_PUS_C_TELECOMMANDS         1
 #endif
 
+#ifndef FSFW_TCP_RECV_WIRETAPPING_ENABLED
+#define FSFW_TCP_RECV_WIRETAPPING_ENABLED   0
+#endif
+
 // FSFW HAL defines
 
 // Can be used for low-level debugging of the SPI bus

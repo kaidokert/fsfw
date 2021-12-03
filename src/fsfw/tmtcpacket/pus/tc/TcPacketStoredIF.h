@@ -1,9 +1,10 @@
 #ifndef FSFW_TMTCPACKET_PUS_TCPACKETSTOREDIF_H_
 #define FSFW_TMTCPACKET_PUS_TCPACKETSTOREDIF_H_
 
-#include "TcPacketBase.h"
-#include "../../../storagemanager/storeAddress.h"
-#include "../../../returnvalues/HasReturnvaluesIF.h"
+#include <fsfw/tmtcpacket/RedirectableDataPointerIF.h>
+#include "TcPacketPusBase.h"
+#include "fsfw/storagemanager/storeAddress.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 class TcPacketStoredIF {
 public:
@@ -14,7 +15,7 @@ public:
      * if the packet is a class member and used for more than one packet.
      * @param setAddress    The new packet id to link to.
      */
-    virtual void setStoreAddress(store_address_t setAddress) = 0;
+    virtual void setStoreAddress(store_address_t setAddress, RedirectableDataPointerIF* packet) = 0;
 
     virtual store_address_t getStoreAddress() = 0;
 
@@ -25,12 +26,6 @@ public:
      * @return -@c RETURN_OK if data was retrieved successfully.
      */
     virtual ReturnValue_t getData(const uint8_t ** dataPtr, size_t* dataSize) = 0;
-
-    /**
-     * Get packet base pointer which can be used to get access to PUS packet fields
-     * @return
-     */
-    virtual TcPacketBase* getPacketBase() = 0;
 };
 
 

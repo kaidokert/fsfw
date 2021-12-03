@@ -1,6 +1,7 @@
 #ifndef FSFW_TMTCPACKET_SPACEPACKETBASE_H_
 #define FSFW_TMTCPACKET_SPACEPACKETBASE_H_
 
+#include <fsfw/tmtcpacket/RedirectableDataPointerIF.h>
 #include "ccsds_header.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
@@ -37,7 +38,7 @@ struct SpacePacketPointer {
  * the most significant bit (from left).
  * @ingroup tmtcpackets
  */
-class SpacePacketBase {
+class SpacePacketBase: virtual public RedirectableDataPointerIF {
 protected:
     /**
      * A pointer to a structure which defines the data structure of
@@ -70,8 +71,7 @@ public:
      */
     virtual ~SpacePacketBase();
 
-    //CCSDS Methods
-
+    //CCSDS Methods:
     /**
      * Getter for the packet version number field.
      * @return Returns the highest three bit of the packet in one byte.
@@ -163,7 +163,7 @@ public:
      */
     void setPacketDataLength( uint16_t setLength );
 
-    // Helper methods
+    //Helper methods:
     /**
      * This method returns a raw uint8_t pointer to the packet.
      * @return	A \c uint8_t pointer to the first byte of the CCSDS primary header.
@@ -171,12 +171,14 @@ public:
     virtual uint8_t* getWholeData( void );
 
     uint8_t* getPacketData();
+
     /**
      * With this method, the packet data pointer can be redirected to another
      * location.
      * @param p_Data A pointer to another raw Space Packet.
      */
-    virtual void setData( const uint8_t* p_Data );
+    virtual ReturnValue_t setData(uint8_t* p_Data , size_t maxSize,
+            void* args = nullptr) override;
     /**
      * This method returns the full raw packet size.
      * @return	The full size of the packet in bytes.

@@ -105,7 +105,7 @@ uint8_t * SerialBufferAdapter<count_t>::getBuffer() {
 }
 
 template<typename count_t>
-const uint8_t * SerialBufferAdapter<count_t>::getConstBuffer() {
+const uint8_t * SerialBufferAdapter<count_t>::getConstBuffer() const {
 	if(constBuffer == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "SerialBufferAdapter::getConstBuffer:"

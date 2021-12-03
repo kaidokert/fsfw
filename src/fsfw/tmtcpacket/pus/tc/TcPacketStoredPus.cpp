@@ -22,7 +22,7 @@ TcPacketStoredPus::TcPacketStoredPus(uint16_t apid,  uint8_t service,
 #endif
         return;
     }
-    this->setData(pData);
+    this->setData(pData, TC_PACKET_MIN_SIZE + size);
 #if FSFW_USE_PUS_C_TELECOMMANDS == 1
     pus::PusVersion pusVersion = pus::PusVersion::PUS_C_VERSION;
 #else
@@ -39,7 +39,7 @@ TcPacketStoredPus::TcPacketStoredPus(): TcPacketStoredBase(), TcPacketPus(nullpt
 }
 
 TcPacketStoredPus::TcPacketStoredPus(store_address_t setAddress): TcPacketPus(nullptr) {
-    TcPacketStoredBase::setStoreAddress(setAddress);
+    TcPacketStoredBase::setStoreAddress(setAddress, this);
 }
 
 TcPacketStoredPus::TcPacketStoredPus(const uint8_t* data, size_t size): TcPacketPus(data) {
@@ -49,23 +49,24 @@ TcPacketStoredPus::TcPacketStoredPus(const uint8_t* data, size_t size): TcPacket
     if (this->checkAndSetStore()) {
         ReturnValue_t status = store->addData(&storeAddress, data, size);
         if (status != HasReturnvaluesIF::RETURN_OK) {
-            this->setData(nullptr);
+            this->setData(nullptr, size);
         }
         const uint8_t* storePtr = nullptr;
         // Repoint base data pointer to the data in the store.
         store->getData(storeAddress, &storePtr, &size);
-        this->setData(storePtr);
+        this->setData(const_cast<uint8_t*>(storePtr), size);
     }
 }
 
 ReturnValue_t TcPacketStoredPus::deletePacket() {
     ReturnValue_t result = this->store->deleteData(this->storeAddress);
     this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-    this->setData(nullptr);
+    // To circumvent size checks
+    this->setData(nullptr, -1);
     return result;
 }
 
-TcPacketBase* TcPacketStoredPus::getPacketBase() {
+TcPacketPusBase* TcPacketStoredPus::getPacketBase() {
     return this;
 }
 

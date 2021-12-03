@@ -26,7 +26,7 @@ public:
      * @param sequenceCount ets the packet's Source Sequence Count field.
      */
     SpacePacket(uint16_t packetDataLength, bool isTelecommand = false,
-    		uint16_t apid = APID_IDLE_PACKET, uint16_t sequenceCount = 0);
+            uint16_t apid = APID_IDLE_PACKET, uint16_t sequenceCount = 0);
     /**
      * The class's default destructor.
      */

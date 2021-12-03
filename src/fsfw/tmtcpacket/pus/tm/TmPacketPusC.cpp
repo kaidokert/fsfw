@@ -35,9 +35,16 @@ uint16_t TmPacketPusC::getSourceDataSize() {
     return getPacketDataLength() - sizeof(tmData->dataField) - CRC_SIZE + 1;
 }
 
-void TmPacketPusC::setData(const uint8_t* p_Data) {
-    SpacePacketBase::setData(p_Data);
-    tmData = (TmPacketPointerPusC*) p_Data;
+ReturnValue_t TmPacketPusC::setData(uint8_t* p_Data, size_t maxSize, void* args) {
+    ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+    if(maxSize < sizeof(TmPacketPointerPusC)) {
+        return HasReturnvaluesIF::RETURN_OK;
+    }
+    tmData = reinterpret_cast<TmPacketPointerPusC*>(const_cast<uint8_t*>(p_Data));
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 

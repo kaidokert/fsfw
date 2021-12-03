@@ -26,7 +26,7 @@ public:
      */
     TcPacketStoredPus(uint16_t apid, uint8_t service, uint8_t subservice,
             uint8_t sequence_count = 0, const uint8_t* data = nullptr,
-            size_t size = 0, uint8_t ack = TcPacketBase::ACK_ALL);
+            size_t size = 0, uint8_t ack = TcPacketPusBase::ACK_ALL);
     /**
      * Create stored packet with existing data.
      * @param data
@@ -41,7 +41,7 @@ public:
     TcPacketStoredPus();
 
     ReturnValue_t deletePacket() override;
-    TcPacketBase* getPacketBase() override;
+    TcPacketPusBase* getPacketBase();
 
 private:
 

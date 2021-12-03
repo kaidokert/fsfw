@@ -17,7 +17,7 @@ VerificationReporter::VerificationReporter() :
 VerificationReporter::~VerificationReporter() {}
 
 void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
-		TcPacketBase* currentPacket, uint8_t set_step) {
+		TcPacketPusBase* currentPacket, uint8_t set_step) {
 	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
 		this->initialize();
 	}
@@ -59,7 +59,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id,
 }
 
 void VerificationReporter::sendFailureReport(uint8_t report_id,
-		TcPacketBase* currentPacket, ReturnValue_t error_code, uint8_t step,
+		TcPacketPusBase* currentPacket, ReturnValue_t error_code, uint8_t step,
 		uint32_t parameter1, uint32_t parameter2) {
 	if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
 		this->initialize();
