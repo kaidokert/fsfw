@@ -8,6 +8,7 @@ import argparse
 import webbrowser
 import shutil
 import sys
+import time
 from typing import List
 
 
@@ -70,7 +71,8 @@ def main():
 
 def handle_docs_type(args, build_dir_list: list):
     if args.create:
-        shutil.rmtree(DOCS_FOLDER_NAME)
+        if os.path.exists(DOCS_FOLDER_NAME):
+            shutil.rmtree(DOCS_FOLDER_NAME)
         create_docs_build_cfg()
         build_directory = DOCS_FOLDER_NAME
     elif len(build_dir_list) == 0:
@@ -88,17 +90,21 @@ def handle_docs_type(args, build_dir_list: list):
         os.system('cmake --build . -j')
     if args.open:
         if not os.path.isfile('docs/sphinx/index.html'):
-            print(
-                "No Sphinx documentation file detected. "
-                "Try to build it first with the -b argument"
-            )
-            sys.exit(1)
+            # try again..
+            os.system('cmake --build . -j')
+            if not os.path.isfile('docs/sphinx/index.html'):
+                print(
+                    "No Sphinx documentation file detected. "
+                    "Try to build it first with the -b argument"
+                )
+                sys.exit(1)
         webbrowser.open('docs/sphinx/index.html')
 
 
 def handle_tests_type(args, build_dir_list: list):
     if args.create:
-        shutil.rmtree(UNITTEST_FOLDER_NAME)
+        if os.path.exists(UNITTEST_FOLDER_NAME):
+            shutil.rmtree(UNITTEST_FOLDER_NAME)
         create_tests_build_cfg()
         build_directory = UNITTEST_FOLDER_NAME
     elif len(build_dir_list) == 0:
