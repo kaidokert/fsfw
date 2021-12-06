@@ -1,3 +1,3 @@
-target_sources(${TARGET_NAME} PRIVATE
+target_sources(${LIB_FSFW_NAME} PRIVATE
     TestTask.cpp
 )

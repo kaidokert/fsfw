@@ -4,6 +4,9 @@ set(FSFW_VERSION 2)
 set(FSFW_SUBVERSION 0)
 set(FSFW_REVISION 0)
 
+# Add the cmake folder so the FindSphinx module is found
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
 )
@@ -12,6 +15,7 @@ if(FSFW_GENERATE_SECTIONS)
 endif()
 
 option(FSFW_BUILD_UNITTESTS "Build unittest binary in addition to static library" OFF)
+option(FSFW_BUILD_DOCS "Build documentation with Sphinx and Doxygen" OFF)
 if(FSFW_BUILD_UNITTESTS)
     option(FSFW_TESTS_GEN_COV "Generate coverage data for unittests" ON)
 endif()
@@ -36,7 +40,9 @@ option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
 set(LIB_FSFW_NAME fsfw)
 set(FSFW_TEST_TGT fsfw-tests)
+set(FSFW_DUMMY_TGT fsfw-dummy)
 
+project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
 
 if(FSFW_BUILD_UNITTESTS)
@@ -59,7 +65,6 @@ if(FSFW_BUILD_UNITTESTS)
     set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
     configure_file(tests/src/fsfw_tests/unit/testcfg/FSFWConfig.h.in FSFWConfig.h)
     configure_file(tests/src/fsfw_tests/unit/testcfg/TestsConfig.h.in tests/TestsConfig.h)
-    configure_file(tests/src/fsfw_tests/unit/testcfg/OBSWConfig.h.in OBSWConfig.h)
 
     project(${FSFW_TEST_TGT} CXX C)
     add_executable(${FSFW_TEST_TGT})
@@ -147,7 +152,7 @@ else()
     set(OS_FSFW "host")
 endif()
 
-if(FSFW_BUILD_UNITTESTS)
+if(FSFW_BUILD_UNITTESTS OR FSFW_BUILD_DOCS)
     configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
     configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
 else()
@@ -163,6 +168,9 @@ if(FSFW_ADD_HAL)
     add_subdirectory(hal)
 endif()
 add_subdirectory(contrib)
+if(FSFW_BUILD_DOCS)
+    add_subdirectory(docs)
+endif()
 
 if(FSFW_BUILD_UNITTESTS)
     if(FSFW_TESTS_GEN_COV)
@@ -234,9 +242,11 @@ endif()
 # The project CMakeLists file has to set the FSFW_CONFIG_PATH and add it.
 # If this is not given, we include the default configuration and emit a warning.
 if(NOT FSFW_CONFIG_PATH)
-    message(WARNING "Flight Software Framework configuration path not set!")
     set(DEF_CONF_PATH misc/defaultcfg/fsfwconfig)
-    message(WARNING "Setting default configuration from ${DEF_CONF_PATH} ..")
+    if(NOT FSFW_BUILD_DOCS)
+        message(WARNING "Flight Software Framework configuration path not set!")
+        message(WARNING "Setting default configuration from ${DEF_CONF_PATH} ..")
+    endif()
     add_subdirectory(${DEF_CONF_PATH})
     set(FSFW_CONFIG_PATH ${DEF_CONF_PATH})
 endif()
