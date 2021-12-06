@@ -121,7 +121,7 @@ def handle_tests_type(args, build_dir_list: list):
         build_directory = determine_build_dir(build_dir_list)
     os.chdir(build_directory)
     if args.build:
-        perform_lcov_operation(build_directory)
+        perform_lcov_operation(build_directory, False)
     if args.open:
         if not os.path.isdir('fsfw-tests_coverage'):
             print("No Unittest folder detected. Try to build them first with the -b argument")
@@ -159,8 +159,9 @@ def check_for_cmake_build_dir(build_dir_list: list) -> list:
     return build_dir_list
 
 
-def perform_lcov_operation(directory):
-    os.chdir(directory)
+def perform_lcov_operation(directory: str, chdir: bool):
+    if chdir:
+        os.chdir(directory)
     os.system("cmake --build . -- fsfw-tests_coverage -j")
 
 
