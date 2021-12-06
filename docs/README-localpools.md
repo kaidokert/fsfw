@@ -31,7 +31,9 @@ cohesive pool variables. These sets simply iterator over the list of variables a
 `read` and `commit` functions of each variable. The following diagram shows the
 high-level architecture of the local data pools.
 
-<img align="center" src="./images/PoolArchitecture.png" width="50%"> <br>
+.. image:: ../misc/logo/FSFW_Logo_V3_bw.png
+   :alt: FSFW Logo
+
 
 An example is shown for using the local data pools with a Gyroscope.
 For example, the following code shows an implementation to access data from a Gyroscope taken
