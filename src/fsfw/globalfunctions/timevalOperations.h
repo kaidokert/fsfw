@@ -2,8 +2,9 @@
 #define TIMEVALOPERATIONS_H_
 
 #include <stdint.h>
+#include <fsfw/platform.h>
 
-#ifdef WIN32
+#ifdef PLATFORM_WIN
 #include <winsock2.h>
 #else
 #include <sys/time.h>
