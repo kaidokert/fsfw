@@ -1,4 +1,5 @@
 #include "LocalPoolOwnerBase.h"
+#include "tests/TestsConfig.h"
 #include "fsfw_tests/unit/CatchDefinitions.h"
 
 #include <fsfw/objectmanager/ObjectManager.h>
@@ -170,14 +171,19 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
             /* We can do it like this because the buffer only has one byte for
             less than 8 variables */
             uint8_t* validityByte = buffer + sizeof(buffer) - 1;
-            CHECK(bitutil::bitGet(validityByte, 0) == true);
-            CHECK(bitutil::bitGet(validityByte, 1) == false);
-            CHECK(bitutil::bitGet(validityByte, 2) == true);
+            bool bitSet = false;
+            bitutil::get(validityByte, 0, bitSet);
+
+            CHECK(bitSet == true);
+            bitutil::get(validityByte, 1, bitSet);
+            CHECK(bitSet == false);
+            bitutil::get(validityByte, 2, bitSet);
+            CHECK(bitSet == true);
 
             /* Now we manipulate the validity buffer for the deserialization */
-            bitutil::bitClear(validityByte, 0);
-            bitutil::bitSet(validityByte, 1);
-            bitutil::bitClear(validityByte, 2);
+            bitutil::clear(validityByte, 0);
+            bitutil::set(validityByte, 1);
+            bitutil::clear(validityByte, 2);
             /* Zero out everything except validity buffer */
             std::memset(buffer, 0, sizeof(buffer) - 1);
             sizeToDeserialize = maxSize;
@@ -238,8 +244,11 @@ TEST_CASE("DataSetTest" , "[DataSetTest]") {
         std::memcpy(validityBuffer.data(), buffer + 9 + sizeof(uint16_t) * 3, 2);
         /* The first 9 variables should be valid */
         CHECK(validityBuffer[0] == 0xff);
-        CHECK(bitutil::bitGet(validityBuffer.data() + 1, 0) == true);
-        CHECK(bitutil::bitGet(validityBuffer.data() + 1, 1) == false);
+        bool bitSet = false;
+        bitutil::get(validityBuffer.data() + 1, 0, bitSet);
+        CHECK(bitSet == true);
+        bitutil::get(validityBuffer.data() + 1, 1, bitSet);
+        CHECK(bitSet == false);
 
         /* Now we invert the validity */
         validityBuffer[0] = 0;

@@ -60,7 +60,6 @@ public:
     void addDmaHandles(DMA_HandleTypeDef* txHandle, DMA_HandleTypeDef* rxHandle);
 
     ReturnValue_t initialize() override;
-protected:
 
     // DeviceCommunicationIF overrides
     virtual ReturnValue_t initializeInterface(CookieIF * cookie) override;
@@ -72,7 +71,7 @@ protected:
     virtual ReturnValue_t readReceivedMessage(CookieIF *cookie,
             uint8_t **buffer, size_t *size) override;
 
-private:
+protected:
 
     struct SpiInstance {
         SpiInstance(size_t maxRecvSize): replyBuffer(std::vector<uint8_t>(maxRecvSize)) {}

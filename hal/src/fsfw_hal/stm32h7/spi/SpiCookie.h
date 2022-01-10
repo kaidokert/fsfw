@@ -3,10 +3,13 @@
 
 #include "spiDefinitions.h"
 #include "mspInit.h"
+#include "../definitions.h"
 
 #include "fsfw/devicehandlers/CookieIF.h"
 
 #include "stm32h743xx.h"
+
+#include <utility>
 
 /**
  * @brief   SPI cookie implementation for the STM32H7 device family
@@ -18,6 +21,7 @@
 class SpiCookie: public CookieIF {
     friend class SpiComIF;
 public:
+
     /**
      * Allows construction of a SPI cookie for a connected SPI device
      * @param deviceAddress
@@ -32,10 +36,11 @@ public:
      *                              definitions supplied in the MCU header file! (e.g. GPIO_PIN_X)
      * @param chipSelectGpioPort    GPIO port (e.g. GPIOA)
      * @param maxRecvSize           Maximum expected receive size. Chose as small as possible.
+     * @param csGpio                Optional CS GPIO definition.
      */
     SpiCookie(address_t deviceAddress, spi::SpiBus spiIdx, spi::TransferModes transferMode,
             spi::MspCfgBase* mspCfg, uint32_t spiSpeed, spi::SpiModes spiMode,
-            uint16_t chipSelectGpioPin, GPIO_TypeDef* chipSelectGpioPort, size_t maxRecvSize);
+            size_t maxRecvSize, stm32h7::GpioCfg csGpio = stm32h7::GpioCfg(nullptr, 0, 0));
 
     uint16_t getChipSelectGpioPin() const;
     GPIO_TypeDef* getChipSelectGpioPort();
@@ -55,8 +60,8 @@ private:
     spi::SpiModes spiMode;
     spi::TransferModes transferMode;
     volatile spi::TransferStates transferState = spi::TransferStates::IDLE;
-    uint16_t chipSelectGpioPin;
-    GPIO_TypeDef* chipSelectGpioPort;
+    stm32h7::GpioCfg csGpio;
+
     // The MSP configuration is cached here. Be careful when using this, it is automatically
     // deleted by the SPI  communication interface if it is not required anymore!
     spi::MspCfgBase* mspCfg = nullptr;

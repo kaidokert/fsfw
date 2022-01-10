@@ -143,7 +143,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(cdsShort.msDay_h == Catch::Approx(timeCdsNow.msDay_h).margin(1));
         CHECK(cdsShort.msDay_hh == Catch::Approx(timeCdsNow.msDay_hh).margin(1));
         CHECK(cdsShort.msDay_l == Catch::Approx(timeCdsNow.msDay_l).margin(1));
-        CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(1));
+        CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(5));
     }
 
     SECTION("VariableSnapshotTest") {
@@ -205,7 +205,7 @@ TEST_CASE("LocalPoolManagerTest" , "[LocManTest]") {
         CHECK(cdsShort.msDay_h == Catch::Approx(timeCdsNow.msDay_h).margin(1));
         CHECK(cdsShort.msDay_hh == Catch::Approx(timeCdsNow.msDay_hh).margin(1));
         CHECK(cdsShort.msDay_l == Catch::Approx(timeCdsNow.msDay_l).margin(1));
-        CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(1));
+        CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(5));
     }
 
     SECTION("VariableNotificationTest") {

@@ -1,8 +1,9 @@
-
 if(FSFW_ADD_INTERNAL_TESTS)
     add_subdirectory(internal)
 endif()
 
-if(FSFW_ADD_UNITTESTS)
+if(FSFW_BUILD_UNITTESTS)
     add_subdirectory(unit)
+else()
+    add_subdirectory(integration)
 endif()

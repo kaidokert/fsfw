@@ -1,4 +1,5 @@
 #include "CatchFactory.h"
+#include "tests/TestsConfig.h"
 #include "datapoollocal/LocalPoolOwnerBase.h"
 #include "mocks/HkReceiverMock.h"
 

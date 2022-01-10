@@ -118,40 +118,40 @@ void spi::halMspInitPolling(SPI_HandleTypeDef* hspi, MspCfgBase* cfgBase) {
     GPIO_InitTypeDef GPIO_InitStruct = {};
     /*##-1- Enable peripherals and GPIO Clocks #################################*/
     /* Enable GPIO TX/RX clock */
-    cfg->setupMacroWrapper();
+    cfg->setupCb();
 
     /*##-2- Configure peripheral GPIO ##########################################*/
     /* SPI SCK GPIO pin configuration  */
-    GPIO_InitStruct.Pin       = cfg->sckPin;
+    GPIO_InitStruct.Pin       = cfg->sck.pin;
     GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull      = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
-    GPIO_InitStruct.Alternate = cfg->sckAlternateFunction;
-    HAL_GPIO_Init(cfg->sckPort, &GPIO_InitStruct);
+    GPIO_InitStruct.Alternate = cfg->sck.altFnc;
+    HAL_GPIO_Init(cfg->sck.port, &GPIO_InitStruct);
 
     /* SPI MISO GPIO pin configuration  */
-    GPIO_InitStruct.Pin = cfg->misoPin;
-    GPIO_InitStruct.Alternate = cfg->misoAlternateFunction;
-    HAL_GPIO_Init(cfg->misoPort, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = cfg->miso.pin;
+    GPIO_InitStruct.Alternate = cfg->miso.altFnc;
+    HAL_GPIO_Init(cfg->miso.port, &GPIO_InitStruct);
 
     /* SPI MOSI GPIO pin configuration  */
-    GPIO_InitStruct.Pin = cfg->mosiPin;
-    GPIO_InitStruct.Alternate = cfg->mosiAlternateFunction;
-    HAL_GPIO_Init(cfg->mosiPort, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = cfg->mosi.pin;
+    GPIO_InitStruct.Alternate = cfg->mosi.altFnc;
+    HAL_GPIO_Init(cfg->mosi.port, &GPIO_InitStruct);
 }
 
 void spi::halMspDeinitPolling(SPI_HandleTypeDef* hspi, MspCfgBase* cfgBase) {
     auto cfg = reinterpret_cast<MspPollingConfigStruct*>(cfgBase);
     // Reset peripherals
-    cfg->cleanUpMacroWrapper();
+    cfg->cleanupCb();
 
     // Disable peripherals and GPIO Clocks
     /* Configure SPI SCK as alternate function  */
-    HAL_GPIO_DeInit(cfg->sckPort, cfg->sckPin);
+    HAL_GPIO_DeInit(cfg->sck.port, cfg->sck.pin);
     /* Configure SPI MISO as alternate function  */
-    HAL_GPIO_DeInit(cfg->misoPort, cfg->misoPin);
+    HAL_GPIO_DeInit(cfg->miso.port, cfg->miso.pin);
     /* Configure SPI MOSI as alternate function  */
-    HAL_GPIO_DeInit(cfg->mosiPort, cfg->mosiPin);
+    HAL_GPIO_DeInit(cfg->mosi.port, cfg->mosi.pin);
 }
 
 void spi::halMspInitInterrupt(SPI_HandleTypeDef* hspi, MspCfgBase* cfgBase) {

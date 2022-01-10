@@ -1,3 +1,3 @@
-target_sources(${TARGET_NAME} PRIVATE
-	PusTmTest.cpp
+target_sources(${FSFW_TEST_TGT} PRIVATE
+	testCcsds.cpp
 )
