@@ -152,13 +152,8 @@ else()
     set(OS_FSFW "host")
 endif()
 
-if(FSFW_BUILD_UNITTESTS OR FSFW_BUILD_DOCS)
-    configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
-else()
-    configure_file(src/fsfw/FSFW.h.in FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in FSFWVersion.h)
-endif()
+configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
+configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
 
 message(STATUS "Compiling FSFW for the ${FSFW_OS_NAME} operating system.")
 
