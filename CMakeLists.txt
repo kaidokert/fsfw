@@ -90,7 +90,7 @@ set(FSFW_CORE_INC_PATH "inc")
 
 set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
 
-# Configure Files
+# For configure files
 target_include_directories(${LIB_FSFW_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
