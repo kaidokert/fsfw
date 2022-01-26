@@ -16,6 +16,18 @@ pipeline {
                 sh 'rm -rf $BUILDDIR'
             }
         }
+        stage('Clean') {
+            when {
+                anyOf {
+                    changelog 'cleanCI'
+                    changeset '*.cmake'
+                    changeset 'CMakeLists.txt'
+                }
+            }
+            steps {
+                sh 'rm -rf $BUILDDIR'
+            }
+        }
         stage('Configure') {
             agent {
                 dockerfile {
