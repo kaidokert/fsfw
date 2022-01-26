@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        BUILDDIR = 'build-unittests'
+        BUILDDIR = 'build-tests'
     }
     stages {
         stage('Create Docker') {
