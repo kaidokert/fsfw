@@ -1,7 +1,7 @@
 add_subdirectory(devicehandlers)
 add_subdirectory(common)
 
-if(FSFW_HAL_ADD_LINUX)
+if(UNIX)
     add_subdirectory(linux)
 endif()
 

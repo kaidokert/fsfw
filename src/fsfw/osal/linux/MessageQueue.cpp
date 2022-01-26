@@ -285,10 +285,10 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 
             utility::printUnixErrorGeneric(CLASS_NAME, "sendMessageFromMessageQueue", "EBADF");
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::warning << "mq_send to: " << sendTo << " sent from "
-                    << sentFrom << "failed" << std::endl;
+            sif::warning << "mq_send to " << sendTo << " sent from "
+                    << sentFrom << " failed" << std::endl;
 #else
-            sif::printWarning("mq_send to: %d sent from %d failed\n", sendTo, sentFrom);
+            sif::printWarning("mq_send to %d sent from %d failed\n", sendTo, sentFrom);
 #endif
             return DESTINATION_INVALID;
         }

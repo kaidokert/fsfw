@@ -7,7 +7,7 @@
 
 /**
  * @brief   Base class to implement reconfiguration and failure handling for
- *          redundant devices by monitoring their modes health states.
+ *          redundant devices by monitoring their modes and health states.
  * @details
  * Documentation: Dissertation Baetz p.156, 157.
  *

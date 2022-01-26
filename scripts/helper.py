@@ -132,7 +132,9 @@ def handle_tests_type(args, build_dir_list: list):
 def create_tests_build_cfg():
     os.mkdir(UNITTEST_FOLDER_NAME)
     os.chdir(UNITTEST_FOLDER_NAME)
-    os.system('cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..')
+    cmake_cmd = "cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON .."
+    print(f"Executing CMake command {cmake_cmd}")
+    os.system(cmake_cmd)
     os.chdir('..')
 
 

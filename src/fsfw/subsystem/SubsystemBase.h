@@ -62,7 +62,8 @@ protected:
 	struct ChildInfo {
 		MessageQueueId_t commandQueue;
 		Mode_t mode;
-		Submode_t submode;bool healthChanged;
+		Submode_t submode;
+		bool healthChanged;
 	};
 
 	Mode_t mode;
