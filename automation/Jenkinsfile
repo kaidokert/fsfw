@@ -1,22 +1,28 @@
 pipeline {
     agent any
     environment {
+        DOCKER_TAG = 'fsfw-build'
         BUILDDIR = 'build-tests'
     }
     stages {
-        stage('Create Docker') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    additionalBuildArgs  '--no-cache'
-                    reuseNode true
+        stage('Build Container') {
+            when {
+                anyOf {
+                    changeset "automation/Dockerfile";
+                    changelog 'cleanDocker'
                 }
             }
             steps {
-                sh 'rm -rf $BUILDDIR'
+                sh 'docker build -t $DOCKER_TAG - < automation/Dockerfile'
             }
         }
         stage('Clean') {
+            agent {
+                docker {
+                    image '$DOCKER_TAG'
+                    reuseNode true
+                }
+            }
             when {
                 anyOf {
                     changelog 'cleanCI'
@@ -30,8 +36,8 @@ pipeline {
         }
         stage('Configure') {
             agent {
-                dockerfile {
-                    dir 'automation'
+                docker {
+                    image '$DOCKER_TAG'
                     reuseNode true
                 }
             }
@@ -43,8 +49,8 @@ pipeline {
         }
         stage('Build') {
             agent {
-                dockerfile {
-                    dir 'automation'
+                docker {
+                    image '$DOCKER_TAG'
                     reuseNode true
                 }
             }
@@ -56,8 +62,8 @@ pipeline {
         }
         stage('Unittests') {
             agent {
-                dockerfile {
-                    dir 'automation'
+                docker {
+                    image '$DOCKER_TAG'
                     reuseNode true
                 }
             }
@@ -69,8 +75,8 @@ pipeline {
         }
         stage('Valgrind') {
             agent {
-                dockerfile {
-                    dir 'automation'
+                docker {
+                    image '$DOCKER_TAG'
                     reuseNode true
                 }
             }
