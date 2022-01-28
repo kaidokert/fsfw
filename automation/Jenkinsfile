@@ -15,7 +15,7 @@ pipeline {
             }
             when {
                 anyOf {
-                    changeset "$DOCK_FILE_DIR/Dockerfile";
+                    changeset "${DOCK_FILE_DIR}/Dockerfile";
                     changelog 'cleanDocker'
                 }
             }
