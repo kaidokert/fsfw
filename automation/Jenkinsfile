@@ -10,6 +10,7 @@ pipeline {
                 dockerfile {
                     dir '$DOCK_FILE_DIR'
                     additionalBuildArgs  '--no-cache'
+                    reuseNode true
                 }
             }
             when {
@@ -17,6 +18,9 @@ pipeline {
                     changeset "$DOCK_FILE_DIR/Dockerfile";
                     changelog 'cleanDocker'
                 }
+            }
+            steps {
+                sh 'rm -rf $BUILDDIR'
             }
         }
         stage('Clean') {
