@@ -1,25 +1,28 @@
 pipeline {
     agent any
     environment {
-        DOCKER_TAG = 'fsfw-build'
+        DOCK_FILE_DIR = 'automation'
         BUILDDIR = 'build-tests'
     }
     stages {
-        stage('Build Container') {
-            when {
-                anyOf {
-                    changeset "automation/Dockerfile";
-                    changelog 'cleanDocker'
+        stage('Create Docker') {
+            agent {
+                dockerfile {
+                    dir '$DOCK_FILE_DIR'
+                    additionalBuildArgs  '--no-cache'
                 }
             }
-            steps {
-                sh 'docker build -t $DOCKER_TAG - < automation/Dockerfile'
+            when {
+                anyOf {
+                    changeset "$DOCK_FILE_DIR/Dockerfile";
+                    changelog 'cleanDocker'
+                }
             }
         }
         stage('Clean') {
             agent {
-                docker {
-                    image '$DOCKER_TAG'
+                dockerfile {
+                    dir '$DOCK_FILE_DIR'
                     reuseNode true
                 }
             }
@@ -36,8 +39,8 @@ pipeline {
         }
         stage('Configure') {
             agent {
-                docker {
-                    image '$DOCKER_TAG'
+                dockerfile {
+                    dir '$DOCK_FILE_DIR'
                     reuseNode true
                 }
             }
@@ -49,8 +52,8 @@ pipeline {
         }
         stage('Build') {
             agent {
-                docker {
-                    image '$DOCKER_TAG'
+                dockerfile {
+                    dir '$DOCK_FILE_DIR'
                     reuseNode true
                 }
             }
@@ -62,8 +65,8 @@ pipeline {
         }
         stage('Unittests') {
             agent {
-                docker {
-                    image '$DOCKER_TAG'
+                dockerfile {
+                    dir '$DOCK_FILE_DIR'
                     reuseNode true
                 }
             }
@@ -75,8 +78,8 @@ pipeline {
         }
         stage('Valgrind') {
             agent {
-                docker {
-                    image '$DOCKER_TAG'
+                dockerfile {
+                    dir '$DOCK_FILE_DIR'
                     reuseNode true
                 }
             }
