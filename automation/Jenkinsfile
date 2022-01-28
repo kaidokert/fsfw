@@ -8,7 +8,7 @@ pipeline {
         stage('Create Docker') {
             agent {
                 dockerfile {
-                    dir '$DOCK_FILE_DIR'
+                    dir DOCK_FILE_DIR
                     additionalBuildArgs  '--no-cache'
                     reuseNode true
                 }
@@ -27,7 +27,7 @@ pipeline {
         stage('Clean') {
             agent {
                 dockerfile {
-                    dir '$DOCK_FILE_DIR'
+                    dir DOCK_FILE_DIR
                     reuseNode true
                 }
             }
@@ -45,7 +45,7 @@ pipeline {
         stage('Configure') {
             agent {
                 dockerfile {
-                    dir '$DOCK_FILE_DIR'
+                    dir DOCK_FILE_DIR
                     reuseNode true
                 }
             }
@@ -58,7 +58,7 @@ pipeline {
         stage('Build') {
             agent {
                 dockerfile {
-                    dir '$DOCK_FILE_DIR'
+                    dir DOCK_FILE_DIR
                     reuseNode true
                 }
             }
@@ -71,7 +71,7 @@ pipeline {
         stage('Unittests') {
             agent {
                 dockerfile {
-                    dir '$DOCK_FILE_DIR'
+                    dir DOCK_FILE_DIR
                     reuseNode true
                 }
             }
@@ -84,7 +84,7 @@ pipeline {
         stage('Valgrind') {
             agent {
                 dockerfile {
-                    dir '$DOCK_FILE_DIR'
+                    dir DOCK_FILE_DIR
                     reuseNode true
                 }
             }
