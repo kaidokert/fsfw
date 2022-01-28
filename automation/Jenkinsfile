@@ -13,12 +13,13 @@ pipeline {
                     reuseNode true
                 }
             }
-            when {
-                anyOf {
-                    changeset "${DOCK_FILE_DIR}/Dockerfile";
-                    changelog 'cleanDocker'
-                }
-            }
+            // Does not work, but maybe not necessary anyway..
+            //when {
+            //    anyOf {
+            //        changeset "${DOCK_FILE_DIR}/Dockerfile";
+            //        changelog 'cleanDocker'
+            //    }
+            //}
             steps {
                 sh 'rm -rf $BUILDDIR'
             }
