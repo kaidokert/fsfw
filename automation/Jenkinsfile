@@ -1,11 +1,10 @@
 pipeline {
     environment {
-                DOCK_FILE_DIR = 'automation'
-                        BUILDDIR = 'build-tests'
+        BUILDDIR = 'build-tests'
     }
     agent {
         dockerfile {
-            dir DOCK_FILE_DIR
+            dir 'automation'
             additionalBuildArgs  '--no-cache'
             reuseNode true
         }
