@@ -5,7 +5,9 @@ pipeline {
     agent {
         dockerfile {
             dir 'automation'
-            additionalBuildArgs  '--no-cache'
+            #force docker to redownload base image and rebuild all steps instead of caching them
+            #this way, we always get an up to date docker image one each build
+            additionalBuildArgs  '--no-cache --pull'
             reuseNode true
         }
     }
