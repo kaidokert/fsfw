@@ -1,54 +1,22 @@
 pipeline {
-    agent any
     environment {
-        DOCK_FILE_DIR = 'automation'
-        BUILDDIR = 'build-tests'
+                DOCK_FILE_DIR = 'automation'
+                        BUILDDIR = 'build-tests'
+    }
+    agent {
+        dockerfile {
+            dir DOCK_FILE_DIR
+            additionalBuildArgs  '--no-cache'
+            reuseNode true
+        }
     }
     stages {
-        stage('Create Docker') {
-            agent {
-                dockerfile {
-                    dir DOCK_FILE_DIR
-                    additionalBuildArgs  '--no-cache'
-                    reuseNode true
-                }
-            }
-            // Does not work, but maybe not necessary anyway..
-            //when {
-            //    anyOf {
-            //        changeset "${DOCK_FILE_DIR}/Dockerfile";
-            //        changelog 'cleanDocker'
-            //    }
-            //}
-            steps {
-                sh 'rm -rf $BUILDDIR'
-            }
-        }
         stage('Clean') {
-            agent {
-                dockerfile {
-                    dir DOCK_FILE_DIR
-                    reuseNode true
-                }
-            }
-            when {
-                anyOf {
-                    changelog 'cleanCI'
-                    changeset '*.cmake'
-                    changeset 'CMakeLists.txt'
-                }
-            }
             steps {
                 sh 'rm -rf $BUILDDIR'
             }
         }
         stage('Configure') {
-            agent {
-                dockerfile {
-                    dir DOCK_FILE_DIR
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
@@ -56,12 +24,6 @@ pipeline {
             }
         }
         stage('Build') {
-            agent {
-                dockerfile {
-                    dir DOCK_FILE_DIR
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'cmake --build . -j'
@@ -69,12 +31,6 @@ pipeline {
             }
         }
         stage('Unittests') {
-            agent {
-                dockerfile {
-                    dir DOCK_FILE_DIR
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'cmake --build . -- fsfw-tests_coverage -j'
@@ -82,12 +38,6 @@ pipeline {
             }
         }
         stage('Valgrind') {
-            agent {
-                dockerfile {
-                    dir DOCK_FILE_DIR
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'valgrind --leak-check=full --error-exitcode=1 ./fsfw-tests'
