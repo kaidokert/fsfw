@@ -56,7 +56,7 @@ if(FSFW_BUILD_UNITTESTS)
         FetchContent_Declare(
             Catch2
             GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG        v3.0.0-preview3
+            GIT_TAG        v3.0.0-preview4
         )
 
         FetchContent_MakeAvailable(Catch2)
@@ -90,7 +90,7 @@ set(FSFW_CORE_INC_PATH "inc")
 
 set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
 
-# Configure Files
+# For configure files
 target_include_directories(${LIB_FSFW_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -152,13 +152,8 @@ else()
     set(OS_FSFW "host")
 endif()
 
-if(FSFW_BUILD_UNITTESTS OR FSFW_BUILD_DOCS)
-    configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
-else()
-    configure_file(src/fsfw/FSFW.h.in FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in FSFWVersion.h)
-endif()
+configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
+configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
 
 message(STATUS "Compiling FSFW for the ${FSFW_OS_NAME} operating system.")
 
