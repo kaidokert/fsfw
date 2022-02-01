@@ -59,7 +59,8 @@ TEST_CASE( "Command Executor" , "[cmd-exec]") {
     REQUIRE(outputBuffer.getAvailableReadData() == 12);
     uint8_t readBuffer[32];
     REQUIRE(outputBuffer.readData(readBuffer, 12) == HasReturnvaluesIF::RETURN_OK);
-    CHECK(strcmp(reinterpret_cast<char*>(readBuffer), "Hello World\n") == 0);
+    std::string cmpString = "Hello World\n";
+    CHECK(strcmp(reinterpret_cast<char*>(readBuffer), cmpString.c_str()) == 0);
     outputBuffer.deleteData(12, true);
     // Test more complex command
     result = cmdExecutor.load("ping -c 1 localhost", false, false);
