@@ -59,7 +59,17 @@ public:
             SerializeIF* header = nullptr, uint16_t destinationId = 0, uint8_t timeRefField = 0);
 
     uint8_t* getAllTmData() override;
-    void setDataPointer(const uint8_t* newPointer) override;
+
+private:
+
+    /**
+     * Implementation required by base class
+     * @param newPointer
+     * @param maxSize
+     * @param args
+     * @return
+     */
+    ReturnValue_t setData(uint8_t* newPointer, size_t maxSize, void* args = nullptr) override;
 
 };
 

@@ -27,7 +27,7 @@ store_address_t TmPacketStoredBase::getStoreAddress() {
 void TmPacketStoredBase::deletePacket() {
     store->deleteData(storeAddress);
     storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-    setDataPointer(nullptr);
+    setData(nullptr, -1);
 }
 
 void TmPacketStoredBase::setStoreAddress(store_address_t setAddress) {
@@ -39,9 +39,9 @@ void TmPacketStoredBase::setStoreAddress(store_address_t setAddress) {
     }
     ReturnValue_t status = store->getData(storeAddress, &tempData, &tempSize);
     if (status == StorageManagerIF::RETURN_OK) {
-        setDataPointer(tempData);
+        setData(const_cast<uint8_t*>(tempData), tempSize);
     } else {
-        setDataPointer(nullptr);
+        setData(nullptr, -1);
         storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
     }
 }

@@ -110,14 +110,18 @@ uint8_t* SpacePacketBase::getWholeData() {
     return (uint8_t*)this->data;
 }
 
-void SpacePacketBase::setData( const uint8_t* p_Data ) {
-    this->data = (SpacePacketPointer*)p_Data;
-}
-
 uint32_t SpacePacketBase::getApidAndSequenceCount() const {
     return (getAPID() << 16) + getPacketSequenceCount();
 }
 
 uint8_t* SpacePacketBase::getPacketData() {
     return &(data->packet_data);
+}
+
+ReturnValue_t SpacePacketBase::setData(uint8_t *pData, size_t maxSize, void *args) {
+    if(maxSize < 6) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+    this->data = reinterpret_cast<SpacePacketPointer*>(const_cast<uint8_t*>(pData));
+    return HasReturnvaluesIF::RETURN_OK;
 }

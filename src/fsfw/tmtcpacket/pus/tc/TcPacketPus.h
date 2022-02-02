@@ -4,7 +4,7 @@
 #include "fsfw/FSFW.h"
 #include "../definitions.h"
 #include "fsfw/tmtcpacket/ccsds_header.h"
-#include "TcPacketBase.h"
+#include "TcPacketPusBase.h"
 
 #include <cstdint>
 
@@ -38,7 +38,7 @@ struct TcPacketPointer {
 };
 
 
-class TcPacketPus: public TcPacketBase {
+class TcPacketPus: public TcPacketPusBase {
 public:
     static const uint16_t TC_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
             sizeof(PUSTcDataFieldHeader) + 2);
@@ -65,7 +65,8 @@ public:
 
 protected:
 
-    void setData(const uint8_t* pData) override;
+    ReturnValue_t setData(uint8_t* dataPtr, size_t maxSize,
+            void* args = nullptr) override;
 
     /**
      * Initializes the Tc Packet header.

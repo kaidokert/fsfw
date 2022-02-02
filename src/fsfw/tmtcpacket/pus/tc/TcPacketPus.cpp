@@ -3,7 +3,7 @@
 
 #include <cstring>
 
-TcPacketPus::TcPacketPus(const uint8_t *setData): TcPacketBase(setData) {
+TcPacketPus::TcPacketPus(const uint8_t *setData): TcPacketPusBase(setData) {
     tcData = reinterpret_cast<TcPacketPointer*>(const_cast<uint8_t*>(setData));
 }
 
@@ -59,13 +59,6 @@ void TcPacketPus::setErrorControl() {
     (&tcData->appData)[size + 1] = (crc) & 0X00FF;      // CRCL
 }
 
-void TcPacketPus::setData(const uint8_t* pData) {
-    SpacePacketBase::setData(pData);
-    // This function is const-correct, but it was decided to keep the pointer non-const
-    // for convenience. Therefore, cast aways constness here and then cast to packet type.
-    tcData = reinterpret_cast<TcPacketPointer*>(const_cast<uint8_t*>(pData));
-}
-
 uint8_t TcPacketPus::getSecondaryHeaderFlag() const {
 #if FSFW_USE_PUS_C_TELECOMMANDS == 1
     // Does not exist for PUS C
@@ -93,5 +86,20 @@ uint16_t TcPacketPus::getSourceId() const {
 
 size_t TcPacketPus::calculateFullPacketLength(size_t appDataLen) const {
     return sizeof(CCSDSPrimaryHeader) + sizeof(PUSTcDataFieldHeader) +
-            appDataLen + TcPacketBase::CRC_SIZE;
+            appDataLen + TcPacketPusBase::CRC_SIZE;
 }
+
+ReturnValue_t TcPacketPus::setData(uint8_t *dataPtr, size_t maxSize, void *args) {
+    ReturnValue_t result = SpacePacketBase::setData(dataPtr, maxSize);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+    if(maxSize < sizeof(TcPacketPointer)) {
+        return HasReturnvaluesIF::RETURN_FAILED;
+    }
+    // This function is const-correct, but it was decided to keep the pointer non-const
+    // for convenience. Therefore, cast away constness here and then cast to packet type.
+    tcData = reinterpret_cast<TcPacketPointer*>(const_cast<uint8_t*>(dataPtr));
+    return HasReturnvaluesIF::RETURN_OK;
+}
+

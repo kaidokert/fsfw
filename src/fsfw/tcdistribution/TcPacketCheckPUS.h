@@ -1,5 +1,7 @@
-#ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
-#define FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_
+#ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECKPUS_H_
+#define FSFW_TCDISTRIBUTION_TCPACKETCHECKPUS_H_
+
+#include "TcPacketCheckIF.h"
 
 #include "fsfw/FSFW.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
@@ -12,7 +14,9 @@ class TcPacketStoredBase;
  * Currently, it only checks if the APID and CRC are correct.
  * @ingroup tc_distribution
  */
-class TcPacketCheck : public HasReturnvaluesIF {
+class TcPacketCheckPUS :
+		public TcPacketCheckIF,
+		public HasReturnvaluesIF {
 protected:
     /**
      * Describes the version number a packet must have to pass.
@@ -49,18 +53,11 @@ public:
      * The constructor only sets the APID attribute.
      * @param set_apid The APID to set.
      */
-    TcPacketCheck(uint16_t setApid);
-    /**
-     * This is the actual method to formally check a certain Telecommand Packet.
-     * The packet's Application Data can not be checked here.
-     * @param current_packet The packt to check
-     * @return	- @c RETURN_OK on success.
-     * 			- @c INCORRECT_CHECKSUM if checksum is invalid.
-     * 			- @c ILLEGAL_APID if APID does not match.
-     */
-    ReturnValue_t checkPacket(TcPacketStoredBase* currentPacket);
+    TcPacketCheckPUS(uint16_t setApid);
+
+    ReturnValue_t checkPacket(SpacePacketBase* currentPacket) override;
 
     uint16_t getApid() const;
 };
 
-#endif /* FSFW_TCDISTRIBUTION_TCPACKETCHECK_H_ */
+#endif /* FSFW_TCDISTRIBUTION_TCPACKETCHECKPUS_H_ */

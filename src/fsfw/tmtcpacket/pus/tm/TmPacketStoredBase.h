@@ -21,7 +21,7 @@
  *  packets in a store with the help of a storeAddress.
  *  @ingroup tmtcpackets
  */
-class TmPacketStoredBase {
+class TmPacketStoredBase: virtual public RedirectableDataPointerIF {
 public:
     /**
      * This is a default constructor which does not set the data pointer.
@@ -33,7 +33,6 @@ public:
     virtual ~TmPacketStoredBase();
 
     virtual uint8_t* getAllTmData() = 0;
-    virtual void setDataPointer(const uint8_t* newPointer) = 0;
 
     /**
      * This is a getter for the current store address of the packet.

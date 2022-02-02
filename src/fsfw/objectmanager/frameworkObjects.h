@@ -19,6 +19,9 @@ enum framework_objects: object_id_t {
     PUS_SERVICE_200_MODE_MGMT = 0x53000200,
     PUS_SERVICE_201_HEALTH = 0x53000201,
 
+    /* CFDP Distributer */
+    CFDP_PACKET_DISTRIBUTOR = 0x53001000,
+
     //Generic IDs for IPC, modes, health, events
     HEALTH_TABLE = 0x53010000,
     //	MODE_STORE = 0x53010100,

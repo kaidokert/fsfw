@@ -66,7 +66,7 @@ public:
             Endianness streamEndianness) override;
 
     uint8_t * getBuffer();
-    const uint8_t * getConstBuffer();
+    const uint8_t * getConstBuffer() const;
     void setBuffer(uint8_t* buffer, count_t bufferLength);
 private:
 	bool serializeLength = false;

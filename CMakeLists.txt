@@ -192,13 +192,13 @@ if(FSFW_BUILD_UNITTESTS)
                     "--exclude-unreachable-branches"
                 )
                 set(COVERAGE_EXCLUDES
-                    "/c/msys64/mingw64/*"
+                    "/c/msys64/mingw64/*" "*/fsfw_hal/*"
                 )
             elseif(UNIX)
                 set(COVERAGE_EXCLUDES
                     "/usr/include/*" "/usr/bin/*" "Catch2/*"
                     "/usr/local/include/*" "*/fsfw_tests/*"
-                    "*/catch2-src/*"
+                    "*/catch2-src/*" "*/fsfw_hal/*"
                 )
             endif()
 

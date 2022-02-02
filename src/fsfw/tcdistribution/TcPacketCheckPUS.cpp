@@ -1,18 +1,20 @@
-#include "fsfw/tcdistribution/TcPacketCheck.h"
+#include "fsfw/tcdistribution/TcPacketCheckPUS.h"
 
 #include "fsfw/globalfunctions/CRC.h"
-#include "fsfw/tmtcpacket/pus/tc/TcPacketBase.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketStoredPus.h"
+#include "fsfw/tmtcpacket/pus/tc/TcPacketPusBase.h"
 #include "fsfw/tmtcpacket/pus/tc/TcPacketStoredBase.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tmtcservices/VerificationCodes.h"
 
-TcPacketCheck::TcPacketCheck(uint16_t setApid): apid(setApid) {
+TcPacketCheckPUS::TcPacketCheckPUS(uint16_t setApid): apid(setApid) {
 }
 
-ReturnValue_t TcPacketCheck::checkPacket(TcPacketStoredBase* currentPacket) {
-    TcPacketBase* tcPacketBase = currentPacket->getPacketBase();
-    if(tcPacketBase == nullptr) {
+ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketBase* currentPacket) {
+    TcPacketStoredBase* storedPacket = dynamic_cast<TcPacketStoredBase*>(currentPacket);
+    TcPacketPusBase* tcPacketBase = dynamic_cast<TcPacketPusBase*>(currentPacket);
+    if(tcPacketBase == nullptr or storedPacket == nullptr) {
         return RETURN_FAILED;
     }
     uint16_t calculated_crc = CRC::crc16ccitt(tcPacketBase->getWholeData(),
@@ -29,7 +31,7 @@ ReturnValue_t TcPacketCheck::checkPacket(TcPacketStoredBase* currentPacket) {
     if (tcPacketBase->getAPID() != this->apid)
         return ILLEGAL_APID;
 
-    if (not currentPacket->isSizeCorrect()) {
+    if (not storedPacket->isSizeCorrect()) {
         return INCOMPLETE_PACKET;
     }
 
@@ -41,6 +43,6 @@ ReturnValue_t TcPacketCheck::checkPacket(TcPacketStoredBase* currentPacket) {
     return RETURN_OK;
 }
 
-uint16_t TcPacketCheck::getApid() const {
+uint16_t TcPacketCheckPUS::getApid() const {
     return apid;
 }

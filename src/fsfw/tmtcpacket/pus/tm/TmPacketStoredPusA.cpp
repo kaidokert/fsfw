@@ -26,7 +26,7 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service,
         handleStoreFailure("A", returnValue, sizeToReserve);
         return;
     }
-    setData(pData);
+    setData(pData, sizeToReserve);
     initializeTmPacket(apid, service, subservice, packetSubcounter);
     memcpy(getSourceData(), headerData, headerSize);
     memcpy(getSourceData() + headerSize, data, size);
@@ -56,7 +56,7 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service,
         handleStoreFailure("A", returnValue, sizeToReserve);
         return;
     }
-    setData(pData);
+    setData(pData, sizeToReserve);
     initializeTmPacket(apid, service, subservice, packetSubcounter);
     uint8_t *putDataHere = getSourceData();
     size_t size = 0;
@@ -75,6 +75,6 @@ uint8_t* TmPacketStoredPusA::getAllTmData() {
     return getWholeData();
 }
 
-void TmPacketStoredPusA::setDataPointer(const uint8_t *newPointer) {
-    setData(newPointer);
+ReturnValue_t TmPacketStoredPusA::setData(uint8_t *newPointer, size_t maxSize, void* args) {
+    return TmPacketPusA::setData(newPointer, maxSize);
 }

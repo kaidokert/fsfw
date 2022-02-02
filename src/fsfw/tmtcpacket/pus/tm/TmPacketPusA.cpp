@@ -36,9 +36,13 @@ uint16_t TmPacketPusA::getSourceDataSize() {
             - CRC_SIZE + 1;
 }
 
-void TmPacketPusA::setData(const uint8_t* p_Data) {
-    SpacePacketBase::setData(p_Data);
-    tmData = (TmPacketPointerPusA*) p_Data;
+ReturnValue_t TmPacketPusA::setData(uint8_t* p_Data, size_t maxSize, void* args) {
+    ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize);
+    if(result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+    }
+    tmData = reinterpret_cast<TmPacketPointerPusA*>(const_cast<uint8_t*>(p_Data));
+    return HasReturnvaluesIF::RETURN_OK;
 }
 
 

@@ -78,15 +78,16 @@ class StorageManagerIF;
  *
  * @ingroup devices
  */
-class DeviceHandlerBase: public DeviceHandlerIF,
-public HasReturnvaluesIF,
-public ExecutableObjectIF,
-public SystemObject,
-public HasModesIF,
-public HasHealthIF,
-public HasActionsIF,
-public ReceivesParameterMessagesIF,
-public HasLocalDataPoolIF {
+class DeviceHandlerBase:
+        public DeviceHandlerIF,
+        public HasReturnvaluesIF,
+        public ExecutableObjectIF,
+        public SystemObject,
+        public HasModesIF,
+        public HasHealthIF,
+        public HasActionsIF,
+        public ReceivesParameterMessagesIF,
+        public HasLocalDataPoolIF {
     friend void (Factory::setStaticFrameworkObjectIds)();
 public:
     /**

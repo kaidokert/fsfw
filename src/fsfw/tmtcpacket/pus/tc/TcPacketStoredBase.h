@@ -2,16 +2,10 @@
 #define TMTCPACKET_PUS_TCPACKETSTORED_H_
 
 #include "TcPacketStoredIF.h"
-#include "../../../storagemanager/StorageManagerIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
 /**
- *	This class generates a ECSS PUS Telecommand packet within a given
- *	intermediate storage.
- *	As most packets are passed between tasks with the help of a storage
- *	anyway, it seems logical to create a Packet-In-Storage access class
- *	which saves the user almost all storage handling operation.
- *	Packets can both be newly created with the class and be "linked" to
- *	packets in a store with the help of a storeAddress.
+ *	Base class for telecommand packets like CFDP or PUS packets.
  *	@ingroup tmtcpackets
  */
 class TcPacketStoredBase: public TcPacketStoredIF {
@@ -44,7 +38,7 @@ public:
      */
     ReturnValue_t getData(const uint8_t ** dataPtr, size_t* dataSize) override;
 
-    void setStoreAddress(store_address_t setAddress) override;
+    void setStoreAddress(store_address_t setAddress, RedirectableDataPointerIF* packet) override;
     store_address_t getStoreAddress() override;
 
     /**

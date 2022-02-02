@@ -1,6 +1,7 @@
 #ifndef TMTCPACKET_PUS_TCPACKETBASE_H_
 #define TMTCPACKET_PUS_TCPACKETBASE_H_
 
+#include <fsfw/tmtcpacket/RedirectableDataPointerIF.h>
 #include "fsfw/tmtcpacket/SpacePacketBase.h"
 #include <cstddef>
 
@@ -15,7 +16,8 @@
  * check can be performed by making use of the getWholeData method.
  * @ingroup tmtcpackets
  */
-class TcPacketBase : public SpacePacketBase {
+class TcPacketPusBase : public SpacePacketBase,
+    virtual public RedirectableDataPointerIF {
     friend class TcPacketStoredBase;
 public:
 
@@ -41,11 +43,11 @@ public:
      * forwards the data pointer to the parent SpacePacketBase class.
      * @param setData	The position where the packet data lies.
      */
-    TcPacketBase( const uint8_t* setData );
+    TcPacketPusBase( const uint8_t* setData );
     /**
      * This is the empty default destructor.
      */
-    virtual ~TcPacketBase();
+    virtual ~TcPacketPusBase();
 
     /**
      * This command returns the CCSDS Secondary Header Flag.
@@ -133,6 +135,7 @@ public:
      * to the screen.
      */
     void print();
+
 protected:
 
     /**
@@ -143,7 +146,8 @@ protected:
      *
      * @param p_data    A pointer to another PUS Telecommand Packet.
      */
-    void setData( const uint8_t* pData ) = 0;
+    virtual ReturnValue_t setData(uint8_t* pData, size_t maxSize,
+            void* args = nullptr) override = 0;
 };
 
 

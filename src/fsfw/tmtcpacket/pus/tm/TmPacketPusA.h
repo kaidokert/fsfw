@@ -110,7 +110,8 @@ protected:
      *
      * @param p_data    A pointer to another PUS Telemetry Packet.
      */
-    void setData( const uint8_t* pData );
+    ReturnValue_t setData(uint8_t* pData, size_t maxSize,
+            void* args = nullptr) override;
 
     /**
      * In case data was filled manually (almost never the case).

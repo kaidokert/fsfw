@@ -24,25 +24,25 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     if(this->currentPacket == nullptr) {
         return queueMapIt;
     }
-    this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
+    this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
     if (currentPacket->getWholeData() != nullptr) {
         tcStatus = checker.checkPacket(currentPacket);
         if(tcStatus != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
             const char* keyword = "unnamed error";
-            if(tcStatus == TcPacketCheck::INCORRECT_CHECKSUM) {
+            if(tcStatus == TcPacketCheckPUS::INCORRECT_CHECKSUM) {
                 keyword = "checksum";
             }
-            else if(tcStatus == TcPacketCheck::INCORRECT_PRIMARY_HEADER) {
+            else if(tcStatus == TcPacketCheckPUS::INCORRECT_PRIMARY_HEADER) {
                 keyword = "incorrect primary header";
             }
-            else if(tcStatus == TcPacketCheck::ILLEGAL_APID) {
+            else if(tcStatus == TcPacketCheckPUS::ILLEGAL_APID) {
                 keyword = "illegal APID";
             }
-            else if(tcStatus == TcPacketCheck::INCORRECT_SECONDARY_HEADER) {
+            else if(tcStatus == TcPacketCheckPUS::INCORRECT_SECONDARY_HEADER) {
                 keyword = "incorrect secondary header";
             }
-            else if(tcStatus == TcPacketCheck::INCOMPLETE_PACKET) {
+            else if(tcStatus == TcPacketCheckPUS::INCOMPLETE_PACKET) {
                 keyword = "incomplete packet";
             }
 #if FSFW_CPP_OSTREAM_ENABLED == 1
