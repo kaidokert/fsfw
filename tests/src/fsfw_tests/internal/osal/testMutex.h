@@ -5,6 +5,4 @@ namespace testmutex {
 void testMutex();
 }
 
-
-
 #endif /* UNITTEST_INTERNAL_INTTESTMUTEX_H_ */

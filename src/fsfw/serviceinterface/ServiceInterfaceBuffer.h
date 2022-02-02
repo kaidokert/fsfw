@@ -1,14 +1,15 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
 #include <FSFWConfig.h>
+
+#include "../returnvalues/HasReturnvaluesIF.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
 
 #ifndef UT699
 
@@ -20,138 +21,140 @@
  * It also calls the char printing function which is implemented in the
  * board supply package (BSP).
  */
-class ServiceInterfaceBuffer:
-        public std::streambuf {
-	friend class ServiceInterfaceStream;
-public:
-	static constexpr uint8_t MAX_PREAMBLE_SIZE = 40;
+class ServiceInterfaceBuffer : public std::streambuf {
+  friend class ServiceInterfaceStream;
 
-	ServiceInterfaceBuffer(std::string setMessage, bool addCrToPreamble,
-			bool buffered, bool errStream, uint16_t port);
+ public:
+  static constexpr uint8_t MAX_PREAMBLE_SIZE = 40;
 
-protected:
-	bool isActive;
-	//! This is called when buffer becomes full. If
-	//! buffer is not used, then this is called every
-	//! time when characters are put to stream.
-	int overflow(int c = Traits::eof()) override;
+  ServiceInterfaceBuffer(std::string setMessage, bool addCrToPreamble, bool buffered,
+                         bool errStream, uint16_t port);
 
-	//! This function is called when stream is flushed,
-	//! for example when std::endl is put to stream.
-	int sync(void) override;
+ protected:
+  bool isActive;
+  //! This is called when buffer becomes full. If
+  //! buffer is not used, then this is called every
+  //! time when characters are put to stream.
+  int overflow(int c = Traits::eof()) override;
 
-	bool isBuffered() const;
-private:
-	//! For additional message information
-	std::string logMessage;
-	std::string preamble;
+  //! This function is called when stream is flushed,
+  //! for example when std::endl is put to stream.
+  int sync(void) override;
+
+  bool isBuffered() const;
+
+ private:
+  //! For additional message information
+  std::string logMessage;
+  std::string preamble;
 
 #if FSFW_COLORED_OUTPUT == 1
-	std::string colorPrefix;
-	void setAsciiColorPrefix(std::string colorPrefix);
+  std::string colorPrefix;
+  void setAsciiColorPrefix(std::string colorPrefix);
 #endif
 
-	// For EOF detection
-	typedef std::char_traits<char> Traits;
+  // For EOF detection
+  typedef std::char_traits<char> Traits;
 
-	//! This is useful for some terminal programs which do not have
-	//! implicit carriage return with newline characters.
-	bool addCrToPreamble;
+  //! This is useful for some terminal programs which do not have
+  //! implicit carriage return with newline characters.
+  bool addCrToPreamble;
 
-	//! Specifies whether the stream operates in buffered or unbuffered mode.
-	bool buffered;
-	//! This specifies to print to stderr and work in unbuffered mode.
-	bool errStream;
+  //! Specifies whether the stream operates in buffered or unbuffered mode.
+  bool buffered;
+  //! This specifies to print to stderr and work in unbuffered mode.
+  bool errStream;
 
-	//! Needed for buffered mode.
-	static size_t const BUF_SIZE = fsfwconfig::FSFW_PRINT_BUFFER_SIZE;
-	char buf[BUF_SIZE];
+  //! Needed for buffered mode.
+  static size_t const BUF_SIZE = fsfwconfig::FSFW_PRINT_BUFFER_SIZE;
+  char buf[BUF_SIZE];
 
-	//! In this function, the characters are parsed.
-	void putChars(char const* begin, char const* end);
+  //! In this function, the characters are parsed.
+  void putChars(char const* begin, char const* end);
 
-	std::string* getPreamble(size_t * preambleSize = nullptr);
+  std::string* getPreamble(size_t* preambleSize = nullptr);
 
-	bool crAdditionEnabled() const;
+  bool crAdditionEnabled() const;
 };
 
 #endif
-
 
 #ifdef UT699
-class ServiceInterfaceBuffer: public std::basic_streambuf<char,
-		std::char_traits<char> > {
-	friend class ServiceInterfaceStream;
-public:
-	ServiceInterfaceBuffer(std::string set_message, uint16_t port);
-protected:
-	bool isActive;
-	// This is called when buffer becomes full. If
-	// buffer is not used, then this is called every
-	// time when characters are put to stream.
-	virtual int overflow(int c = Traits::eof());
+class ServiceInterfaceBuffer : public std::basic_streambuf<char, std::char_traits<char> > {
+  friend class ServiceInterfaceStream;
 
-	// This function is called when stream is flushed,
-	// for example when std::endl is put to stream.
-	virtual int sync(void);
+ public:
+  ServiceInterfaceBuffer(std::string set_message, uint16_t port);
 
-private:
-	// For additional message information
-	std::string log_message;
-	// For EOF detection
-	typedef std::char_traits<char> Traits;
+ protected:
+  bool isActive;
+  // This is called when buffer becomes full. If
+  // buffer is not used, then this is called every
+  // time when characters are put to stream.
+  virtual int overflow(int c = Traits::eof());
 
-	// Work in buffer mode. It is also possible to work without buffer.
-	static size_t const BUF_SIZE = 128;
-	char buf[BUF_SIZE];
+  // This function is called when stream is flushed,
+  // for example when std::endl is put to stream.
+  virtual int sync(void);
 
-	// In this function, the characters are parsed.
-	void putChars(char const* begin, char const* end);
+ private:
+  // For additional message information
+  std::string log_message;
+  // For EOF detection
+  typedef std::char_traits<char> Traits;
+
+  // Work in buffer mode. It is also possible to work without buffer.
+  static size_t const BUF_SIZE = 128;
+  char buf[BUF_SIZE];
+
+  // In this function, the characters are parsed.
+  void putChars(char const* begin, char const* end);
 };
-#endif //UT699
+#endif  // UT699
 
 #ifdef ML505
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
-class ServiceInterfaceBuffer: public std::basic_streambuf<char,
-		std::char_traits<char> > {
-	friend class ServiceInterfaceStream;
-public:
-	ServiceInterfaceBuffer(std::string set_message, uint16_t port);
-protected:
-	bool isActive;
-	// This is called when buffer becomes full. If
-	// buffer is not used, then this is called every
-	// time when characters are put to stream.
-	virtual int overflow(int c = Traits::eof());
+class ServiceInterfaceBuffer : public std::basic_streambuf<char, std::char_traits<char> > {
+  friend class ServiceInterfaceStream;
 
-	// This function is called when stream is flushed,
-	// for example when std::endl is put to stream.
-	virtual int sync(void);
+ public:
+  ServiceInterfaceBuffer(std::string set_message, uint16_t port);
 
-private:
-	// For additional message information
-	std::string log_message;
-	// For EOF detection
-	typedef std::char_traits<char> Traits;
+ protected:
+  bool isActive;
+  // This is called when buffer becomes full. If
+  // buffer is not used, then this is called every
+  // time when characters are put to stream.
+  virtual int overflow(int c = Traits::eof());
 
-	// Work in buffer mode. It is also possible to work without buffer.
-	static size_t const BUF_SIZE = 128;
-	char buf[BUF_SIZE];
+  // This function is called when stream is flushed,
+  // for example when std::endl is put to stream.
+  virtual int sync(void);
 
-	// In this function, the characters are parsed.
-	void putChars(char const* begin, char const* end);
+ private:
+  // For additional message information
+  std::string log_message;
+  // For EOF detection
+  typedef std::char_traits<char> Traits;
 
-	int udpSocket;
-	sockaddr_in remoteAddress;
-	socklen_t remoteAddressLength;
-	void initSocket();
+  // Work in buffer mode. It is also possible to work without buffer.
+  static size_t const BUF_SIZE = 128;
+  char buf[BUF_SIZE];
+
+  // In this function, the characters are parsed.
+  void putChars(char const* begin, char const* end);
+
+  int udpSocket;
+  sockaddr_in remoteAddress;
+  socklen_t remoteAddressLength;
+  void initSocket();
 };
-#endif //ML505
+#endif  // ML505
 
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 

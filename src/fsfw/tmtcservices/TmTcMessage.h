@@ -13,38 +13,39 @@
  * @ingroup message_queue
  */
 class TmTcMessage : public MessageQueueMessage {
-protected:
-	/**
-	 * @brief	This call always returns the same fixed size of the message.
-	 * @return	Returns HEADER_SIZE + @c sizeof(store_address_t).
-	 */
-	size_t getMinimumMessageSize() const override;
-public:
-	/**
-	 * @brief	In the default constructor, only the message_size is set.
-	 */
-	TmTcMessage();
-	/**
-	 * @brief	With this constructor, the passed packet id is directly put
-	 * 			into the message.
-	 * @param packet_id	The packet id to put into the message.
-	 */
-	TmTcMessage( store_address_t packetId );
-	/**
-	 * @brief	The class's destructor is empty.
-	 */
-	~TmTcMessage();
-	/**
-	 * @brief	This getter returns the packet id in the correct format.
-	 * @return	Returns the packet id.
-	 */
-	store_address_t getStorageId();
-	/**
-	 * @brief	In some cases it might be useful to have a setter for packet id
-	 * 			as well.
-	 * @param packetId	The packet id to put into the message.
-	 */
-	void setStorageId( store_address_t packetId );
+ protected:
+  /**
+   * @brief	This call always returns the same fixed size of the message.
+   * @return	Returns HEADER_SIZE + @c sizeof(store_address_t).
+   */
+  size_t getMinimumMessageSize() const override;
+
+ public:
+  /**
+   * @brief	In the default constructor, only the message_size is set.
+   */
+  TmTcMessage();
+  /**
+   * @brief	With this constructor, the passed packet id is directly put
+   * 			into the message.
+   * @param packet_id	The packet id to put into the message.
+   */
+  TmTcMessage(store_address_t packetId);
+  /**
+   * @brief	The class's destructor is empty.
+   */
+  ~TmTcMessage();
+  /**
+   * @brief	This getter returns the packet id in the correct format.
+   * @return	Returns the packet id.
+   */
+  store_address_t getStorageId();
+  /**
+   * @brief	In some cases it might be useful to have a setter for packet id
+   * 			as well.
+   * @param packetId	The packet id to put into the message.
+   */
+  void setStorageId(store_address_t packetId);
 };
 
 #endif /* FSFW_TMTCSERVICES_TMTCMESSAGE_H_ */

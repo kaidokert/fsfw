@@ -1,12 +1,11 @@
 #ifndef FSFW_OSAL_FREERTOS_TASKMANAGEMENT_H_
 #define FSFW_OSAL_FREERTOS_TASKMANAGEMENT_H_
 
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include <cstdint>
 
+#include "../../returnvalues/HasReturnvaluesIF.h"
 #include "FreeRTOS.h"
 #include "task.h"
-
-#include <cstdint>
 
 /**
  * Architecture dependant portmacro.h function call.
@@ -21,10 +20,9 @@ extern "C" void vRequestContextSwitchFromISR();
  * an ISR and task.
  */
 enum class CallContext {
-	TASK = 0x00,//!< task_context
-	ISR = 0xFF  //!< isr_context
+  TASK = 0x00,  //!< task_context
+  ISR = 0xFF    //!< isr_context
 };
-
 
 namespace TaskManagement {
 /**
@@ -57,6 +55,6 @@ TaskHandle_t getCurrentTaskHandle();
  */
 size_t getTaskStackHighWatermark(TaskHandle_t task = nullptr);
 
-};
+};  // namespace TaskManagement
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_TASKMANAGEMENT_H_ */

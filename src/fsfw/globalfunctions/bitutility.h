@@ -36,6 +36,6 @@ void clear(uint8_t* byte, uint8_t position);
  */
 bool get(const uint8_t* byte, uint8_t position, bool& bit);
 
-}
+}  // namespace bitutil
 
 #endif /* FSFW_GLOBALFUNCTIONS_BITUTIL_H_ */

@@ -3,38 +3,37 @@
 
 #include "fsfw/health/HasHealthIF.h"
 #include "fsfw/health/HealthHelper.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
-#include "fsfw/ipc/MessageQueueIF.h"
 
-class HealthDevice: public SystemObject,
-		public ExecutableObjectIF,
-		public HasHealthIF {
-public:
-	HealthDevice(object_id_t setObjectId, MessageQueueId_t parentQueue);
-	virtual ~HealthDevice();
+class HealthDevice : public SystemObject, public ExecutableObjectIF, public HasHealthIF {
+ public:
+  HealthDevice(object_id_t setObjectId, MessageQueueId_t parentQueue);
+  virtual ~HealthDevice();
 
-	ReturnValue_t performOperation(uint8_t opCode);
+  ReturnValue_t performOperation(uint8_t opCode);
 
-	ReturnValue_t initialize();
+  ReturnValue_t initialize();
 
-	virtual MessageQueueId_t getCommandQueue() const;
+  virtual MessageQueueId_t getCommandQueue() const;
 
-	void setParentQueue(MessageQueueId_t parentQueue);
+  void setParentQueue(MessageQueueId_t parentQueue);
 
-	bool hasHealthChanged();
+  bool hasHealthChanged();
 
-	virtual ReturnValue_t setHealth(HealthState health);
+  virtual ReturnValue_t setHealth(HealthState health);
 
-	virtual HealthState getHealth();
+  virtual HealthState getHealth();
 
-protected:
-	HealthState lastHealth;
+ protected:
+  HealthState lastHealth;
 
-	MessageQueueId_t parentQueue;
-	MessageQueueIF* commandQueue;
-public:
-	HealthHelper healthHelper;
+  MessageQueueId_t parentQueue;
+  MessageQueueIF* commandQueue;
+
+ public:
+  HealthHelper healthHelper;
 };
 
 #endif /* FSFW_DEVICEHANDLERS_HEALTHDEVICE_H_ */

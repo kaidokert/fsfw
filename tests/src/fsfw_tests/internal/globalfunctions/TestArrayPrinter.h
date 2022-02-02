@@ -2,6 +2,7 @@
 #define FSFW_UNITTEST_INTERNAL_GLOBALFUNCTIONS_TESTARRAYPRINTER_H_
 
 #include <fsfw/globalfunctions/arrayprinter.h>
+
 #include <array>
 
 namespace arrayprinter {

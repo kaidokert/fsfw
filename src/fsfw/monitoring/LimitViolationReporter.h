@@ -7,26 +7,28 @@
 #ifndef LIMITVIOLATIONREPORTER_H_
 #define LIMITVIOLATIONREPORTER_H_
 
-#include "monitoringConf.h"
+#include "../ipc/MessageQueueSenderIF.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serialize/SerializeIF.h"
 #include "../storagemanager/StorageManagerIF.h"
-#include "../ipc/MessageQueueSenderIF.h"
+#include "monitoringConf.h"
 
-namespace Factory{
+namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
 class LimitViolationReporter {
-	friend void (Factory::setStaticFrameworkObjectIds)();
-public:
-	static ReturnValue_t sendLimitViolationReport(const SerializeIF* data);
-private:
-	static object_id_t reportingTarget;
-	static MessageQueueId_t reportQueue;
-	static StorageManagerIF* ipcStore;
-	static ReturnValue_t checkClassLoaded();
-	LimitViolationReporter();
+  friend void(Factory::setStaticFrameworkObjectIds)();
+
+ public:
+  static ReturnValue_t sendLimitViolationReport(const SerializeIF* data);
+
+ private:
+  static object_id_t reportingTarget;
+  static MessageQueueId_t reportQueue;
+  static StorageManagerIF* ipcStore;
+  static ReturnValue_t checkClassLoaded();
+  LimitViolationReporter();
 };
 
 #endif /* LIMITVIOLATIONREPORTER_H_ */

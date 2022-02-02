@@ -1,9 +1,8 @@
 #ifndef FRAMEWORK_FREERTOS_MUTEX_H_
 #define FRAMEWORK_FREERTOS_MUTEX_H_
 
-#include "fsfw/ipc/MutexIF.h"
-
 #include "FreeRTOS.h"
+#include "fsfw/ipc/MutexIF.h"
 #include "semphr.h"
 
 /**
@@ -15,15 +14,14 @@
  * @ingroup osal
  */
 class Mutex : public MutexIF {
-public:
-	Mutex();
-	~Mutex();
-	ReturnValue_t lockMutex(TimeoutType timeoutType,
-	        uint32_t timeoutMs) override;
-	ReturnValue_t unlockMutex() override;
+ public:
+  Mutex();
+  ~Mutex();
+  ReturnValue_t lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) override;
+  ReturnValue_t unlockMutex() override;
 
-private:
-	SemaphoreHandle_t handle;
+ private:
+  SemaphoreHandle_t handle;
 };
 
 #endif /* FRAMEWORK_FREERTOS_MUTEX_H_ */

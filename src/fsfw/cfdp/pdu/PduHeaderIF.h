@@ -1,9 +1,10 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_PDUHEADERIF_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_PDUHEADERIF_H_
 
-#include "PduConfig.h"
-#include "../definitions.h"
 #include <cstddef>
+
+#include "../definitions.h"
+#include "PduConfig.h"
 
 /**
  * @brief   Generic interface to access all fields of a PDU header
@@ -11,27 +12,26 @@
  * See CCSDS 727.0-B-5 pp.75 for more information about these fields
  */
 class PduHeaderIF {
-public:
-    virtual~ PduHeaderIF() {};
+ public:
+  virtual ~PduHeaderIF(){};
 
-    virtual size_t getWholePduSize() const = 0;
-    virtual size_t getPduDataFieldLen() const = 0;
-    virtual cfdp::PduType getPduType() const = 0;
-    virtual cfdp::Direction getDirection() const = 0;
-    virtual cfdp::TransmissionModes getTransmissionMode() const = 0;
-    virtual bool getCrcFlag() const = 0;
-    virtual bool getLargeFileFlag() const = 0;
-    virtual cfdp::SegmentationControl getSegmentationControl() const = 0;
-    virtual cfdp::WidthInBytes getLenEntityIds() const = 0;
-    virtual cfdp::WidthInBytes getLenSeqNum() const = 0;
-    virtual cfdp::SegmentMetadataFlag getSegmentMetadataFlag() const = 0;
-    virtual bool hasSegmentMetadataFlag() const = 0;
-    virtual void getSourceId(cfdp::EntityId& sourceId) const = 0;
-    virtual void getDestId(cfdp::EntityId& destId) const = 0;
-    virtual void getTransactionSeqNum(cfdp::TransactionSeqNum& seqNum) const = 0;
-private:
+  virtual size_t getWholePduSize() const = 0;
+  virtual size_t getPduDataFieldLen() const = 0;
+  virtual cfdp::PduType getPduType() const = 0;
+  virtual cfdp::Direction getDirection() const = 0;
+  virtual cfdp::TransmissionModes getTransmissionMode() const = 0;
+  virtual bool getCrcFlag() const = 0;
+  virtual bool getLargeFileFlag() const = 0;
+  virtual cfdp::SegmentationControl getSegmentationControl() const = 0;
+  virtual cfdp::WidthInBytes getLenEntityIds() const = 0;
+  virtual cfdp::WidthInBytes getLenSeqNum() const = 0;
+  virtual cfdp::SegmentMetadataFlag getSegmentMetadataFlag() const = 0;
+  virtual bool hasSegmentMetadataFlag() const = 0;
+  virtual void getSourceId(cfdp::EntityId& sourceId) const = 0;
+  virtual void getDestId(cfdp::EntityId& destId) const = 0;
+  virtual void getTransactionSeqNum(cfdp::TransactionSeqNum& seqNum) const = 0;
+
+ private:
 };
-
-
 
 #endif /* FSFW_SRC_FSFW_CFDP_PDU_PDUHEADERIF_H_ */

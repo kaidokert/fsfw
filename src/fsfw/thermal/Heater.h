@@ -1,94 +1,89 @@
 #ifndef FSFW_THERMAL_HEATER_H_
 #define FSFW_THERMAL_HEATER_H_
 
+#include <cstdint>
+
 #include "fsfw/devicehandlers/HealthDevice.h"
 #include "fsfw/parameters/ParameterHelper.h"
 #include "fsfw/power/PowerSwitchIF.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/timemanager/Countdown.h"
 
-#include <cstdint>
+class Heater : public HealthDevice, public ReceivesParameterMessagesIF {
+  friend class RedundantHeater;
 
+ public:
+  static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::HEATER;
+  static const Event HEATER_ON = MAKE_EVENT(0, severity::INFO);
+  static const Event HEATER_OFF = MAKE_EVENT(1, severity::INFO);
+  static const Event HEATER_TIMEOUT = MAKE_EVENT(2, severity::LOW);
+  static const Event HEATER_STAYED_ON = MAKE_EVENT(3, severity::LOW);
+  static const Event HEATER_STAYED_OFF = MAKE_EVENT(4, severity::LOW);
 
-class Heater: public HealthDevice, public ReceivesParameterMessagesIF {
-    friend class RedundantHeater;
-public:
+  Heater(uint32_t objectId, uint8_t switch0, uint8_t switch1);
+  virtual ~Heater();
 
-    static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::HEATER;
-    static const Event HEATER_ON = MAKE_EVENT(0, severity::INFO);
-    static const Event HEATER_OFF = MAKE_EVENT(1, severity::INFO);
-    static const Event HEATER_TIMEOUT = MAKE_EVENT(2, severity::LOW);
-    static const Event HEATER_STAYED_ON = MAKE_EVENT(3, severity::LOW);
-    static const Event HEATER_STAYED_OFF = MAKE_EVENT(4, severity::LOW);
+  ReturnValue_t performOperation(uint8_t opCode);
 
-    Heater(uint32_t objectId, uint8_t switch0, uint8_t switch1);
-    virtual ~Heater();
+  ReturnValue_t initialize();
 
-    ReturnValue_t performOperation(uint8_t opCode);
+  ReturnValue_t set();
+  void clear(bool passive);
 
-    ReturnValue_t initialize();
+  void setPowerSwitcher(PowerSwitchIF *powerSwitch);
 
-    ReturnValue_t set();
-    void clear(bool passive);
+  MessageQueueId_t getCommandQueue() const;
 
-    void setPowerSwitcher(PowerSwitchIF *powerSwitch);
+  ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId, ParameterWrapper *parameterWrapper,
+                             const ParameterWrapper *newValues, uint16_t startAtIndex);
 
-    MessageQueueId_t getCommandQueue() const;
+ protected:
+  static const uint32_t INVALID_UPTIME = 0;
 
-    ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
-            ParameterWrapper *parameterWrapper,
-            const ParameterWrapper *newValues, uint16_t startAtIndex);
+  enum InternalState {
+    STATE_ON,
+    STATE_OFF,
+    STATE_PASSIVE,
+    STATE_WAIT_FOR_SWITCHES_ON,
+    STATE_WAIT_FOR_SWITCHES_OFF,
+    STATE_WAIT_FOR_FDIR,  // Used to avoid doing anything until fdir decided what to do
+    STATE_FAULTY,
+    STATE_WAIT,  // Used when waiting for system to recover from miniops
+    // Entered when under external control and a fdir reaction would be triggered.
+    // This is useful when leaving external control into an unknown state
+    STATE_EXTERNAL_CONTROL
+    // If no fdir reaction is triggered under external control the state is still ok and
+    // no need for any special treatment is needed
+  } internalState;
 
-protected:
-    static const uint32_t INVALID_UPTIME = 0;
+  PowerSwitchIF *powerSwitcher = nullptr;
+  MessageQueueId_t pcduQueueId = MessageQueueIF::NO_QUEUE;
 
-    enum InternalState {
-        STATE_ON,
-        STATE_OFF,
-        STATE_PASSIVE,
-        STATE_WAIT_FOR_SWITCHES_ON,
-        STATE_WAIT_FOR_SWITCHES_OFF,
-        STATE_WAIT_FOR_FDIR, // Used to avoid doing anything until fdir decided what to do
-        STATE_FAULTY,
-        STATE_WAIT, // Used when waiting for system to recover from miniops
-        // Entered when under external control and a fdir reaction would be triggered.
-        // This is useful when leaving external control into an unknown state
-        STATE_EXTERNAL_CONTROL
-        // If no fdir reaction is triggered under external control the state is still ok and
-        // no need for any special treatment is needed
-    } internalState;
+  uint8_t switch0;
+  uint8_t switch1;
 
-    PowerSwitchIF *powerSwitcher = nullptr;
-    MessageQueueId_t pcduQueueId = MessageQueueIF::NO_QUEUE;
+  bool wasOn = false;
 
-    uint8_t switch0;
-    uint8_t switch1;
+  bool timedOut = false;
 
-    bool wasOn = false;
+  bool reactedToBeingFaulty = false;
 
-    bool timedOut = false;
+  bool passive = false;
 
-    bool reactedToBeingFaulty = false;
+  MessageQueueIF *eventQueue = nullptr;
+  Countdown heaterOnCountdown;
+  Countdown switchCountdown;
+  ParameterHelper parameterHelper;
 
-    bool passive = false;
+  enum Action { SET, CLEAR } lastAction = CLEAR;
 
-    MessageQueueIF* eventQueue = nullptr;
-    Countdown heaterOnCountdown;
-    Countdown switchCountdown;
-    ParameterHelper parameterHelper;
+  void doAction(Action action);
 
-    enum Action {
-        SET, CLEAR
-    } lastAction = CLEAR;
+  void setSwitch(uint8_t number, ReturnValue_t state, uint32_t *upTimeOfSwitching);
 
-    void doAction(Action action);
+  void handleQueue();
 
-    void setSwitch(uint8_t number, ReturnValue_t state,
-            uint32_t *upTimeOfSwitching);
-
-    void handleQueue();
-
-    void handleEventQueue();
+  void handleEventQueue();
 };
 
 #endif /* FSFW_THERMAL_HEATER_H_ */
