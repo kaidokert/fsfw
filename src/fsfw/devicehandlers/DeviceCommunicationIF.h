@@ -85,9 +85,10 @@ public:
 	 * Called by DHB in the GET_WRITE doGetWrite().
 	 * Get send confirmation that the data in sendMessage() was sent successfully.
 	 * @param cookie
-	 * @return - @c RETURN_OK if data was sent successfull
-	 * 		   - Everything else triggers falure event with
-	 * 		     returnvalue as parameter 1
+	 * @return
+	 *  - @c RETURN_OK if data was sent successfully but a reply is expected
+	 *  - NO_REPLY_EXPECTED if data was sent successfully and no reply is expected
+	 *  - Everything else to indicate failure
 	 */
 	virtual ReturnValue_t getSendSuccess(CookieIF *cookie) = 0;
 

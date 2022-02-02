@@ -1,6 +1,6 @@
 #include "fsfw_hal/linux/uart/UartCookie.h"
 
-#include <fsfw/serviceinterface/ServiceInterface.h>
+#include <fsfw/serviceinterface.h>
 
 UartCookie::UartCookie(object_id_t handlerId, std::string deviceFile, UartModes uartMode,
         uint32_t baudrate, size_t maxReplyLen):
@@ -42,7 +42,9 @@ void UartCookie::setBitsPerWord(uint8_t bitsPerWord_) {
     case 8:
         break;
     default:
+#if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::debug << "UartCookie::setBitsPerWord: Invalid bits per word specified" << std::endl;
+#endif
         return;
     }
     bitsPerWord = bitsPerWord_;
