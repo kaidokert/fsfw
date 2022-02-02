@@ -1,8 +1,8 @@
 #ifndef TIMEVALOPERATIONS_H_
 #define TIMEVALOPERATIONS_H_
 
-#include <stdint.h>
 #include <fsfw/platform.h>
+#include <stdint.h>
 
 #ifdef PLATFORM_WIN
 #include <winsock2.h>
@@ -48,6 +48,6 @@ namespace timevalOperations {
  */
 double toDouble(const timeval timeval);
 timeval toTimeval(const double seconds);
-}
+}  // namespace timevalOperations
 
 #endif /* TIMEVALOPERATIONS_H_ */

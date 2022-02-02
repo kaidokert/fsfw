@@ -9,14 +9,13 @@
 #include "../ipc/MessageQueueSenderIF.h"
 
 class AcceptsThermalMessagesIF {
-public:
+ public:
+  /**
+   * @brief	This is the empty virtual destructor as required for C++ interfaces.
+   */
+  virtual ~AcceptsThermalMessagesIF() {}
 
-	/**
-	 * @brief	This is the empty virtual destructor as required for C++ interfaces.
-	 */
-	virtual ~AcceptsThermalMessagesIF() { }
-
-	virtual MessageQueueId_t getReceptionQueue() const = 0;
+  virtual MessageQueueId_t getReceptionQueue() const = 0;
 };
 
 #endif /* FRAMEWORK_THERMAL_ACCEPTSTHERMALMESSAGESIF_H_ */

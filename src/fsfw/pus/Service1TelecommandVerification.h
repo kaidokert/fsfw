@@ -1,12 +1,12 @@
 #ifndef FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
 #define FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_
 
+#include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
-#include "fsfw/ipc/MessageQueueIF.h"
 
 /**
  * @brief Verify TC acceptance, start, progress and execution.
@@ -36,60 +36,60 @@
  * generate verification reports.
  * @ingroup pus_services
  */
-class Service1TelecommandVerification: public AcceptsVerifyMessageIF,
-		public SystemObject,
-		public ExecutableObjectIF,
-		public HasReturnvaluesIF {
-public:
-	static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
+class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
+                                        public SystemObject,
+                                        public ExecutableObjectIF,
+                                        public HasReturnvaluesIF {
+ public:
+  static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
 
-	Service1TelecommandVerification(object_id_t objectId,
-	        uint16_t apid, uint8_t serviceId, object_id_t targetDestination,
-			uint16_t messageQueueDepth);
-	virtual ~Service1TelecommandVerification();
+  Service1TelecommandVerification(object_id_t objectId, uint16_t apid, uint8_t serviceId,
+                                  object_id_t targetDestination, uint16_t messageQueueDepth);
+  virtual ~Service1TelecommandVerification();
 
-	/**
-	 *
-	 * @return ID of Verification Queue
-	 */
-	virtual MessageQueueId_t getVerificationQueue() override;
+  /**
+   *
+   * @return ID of Verification Queue
+   */
+  virtual MessageQueueId_t getVerificationQueue() override;
 
-	/**
-	 * Performs the service periodically as specified in init_mission().
-	 * Triggers the handlePacket function to send TC verification messages
-	 * @param operationCode
-	 * @return
-	 */
-	ReturnValue_t performOperation(uint8_t operationCode = 0) override;
+  /**
+   * Performs the service periodically as specified in init_mission().
+   * Triggers the handlePacket function to send TC verification messages
+   * @param operationCode
+   * @return
+   */
+  ReturnValue_t performOperation(uint8_t operationCode = 0) override;
 
-	/**
-	 * Initializes the destination for TC verification messages and initializes
-	 * Service 1 as a system object
-	 * @return
-	 */
-	ReturnValue_t initialize() override;
-private:
-	uint16_t apid = 0;
-	uint8_t serviceId = 0;
+  /**
+   * Initializes the destination for TC verification messages and initializes
+   * Service 1 as a system object
+   * @return
+   */
+  ReturnValue_t initialize() override;
 
-	object_id_t targetDestination = objects::NO_OBJECT;
+ private:
+  uint16_t apid = 0;
+  uint8_t serviceId = 0;
 
-	ReturnValue_t sendVerificationReport(PusVerificationMessage* message);
-	ReturnValue_t generateFailureReport(PusVerificationMessage* message);
-	ReturnValue_t generateSuccessReport(PusVerificationMessage* message);
+  object_id_t targetDestination = objects::NO_OBJECT;
 
-	uint16_t packetSubCounter = 0;
+  ReturnValue_t sendVerificationReport(PusVerificationMessage* message);
+  ReturnValue_t generateFailureReport(PusVerificationMessage* message);
+  ReturnValue_t generateSuccessReport(PusVerificationMessage* message);
 
-	MessageQueueIF* tmQueue = nullptr;
+  uint16_t packetSubCounter = 0;
 
-	enum class Subservice: uint8_t {
-		VERIFY_ACCEPTANCE_SUCCESS = 1, //!< [EXPORT] : [TM]
-		VERIFY_ACCEPTANCE_FAILED = 2, //!< [EXPORT] : [TM]
-		VERIFY_START_SUCCESS = 3, //!< [EXPORT] : [TM]
-		VERIFY_START_FAILED = 4, //!< [EXPORT] : [TM]
-		VERIFY_STEP_SUCCESS = 5, //!< [EXPORT] : [TM]
-		VERIFY_STEP_FAILED = 6 //!< [EXPORT] : [TM]
-	};
+  MessageQueueIF* tmQueue = nullptr;
+
+  enum class Subservice : uint8_t {
+    VERIFY_ACCEPTANCE_SUCCESS = 1,  //!< [EXPORT] : [TM]
+    VERIFY_ACCEPTANCE_FAILED = 2,   //!< [EXPORT] : [TM]
+    VERIFY_START_SUCCESS = 3,       //!< [EXPORT] : [TM]
+    VERIFY_START_FAILED = 4,        //!< [EXPORT] : [TM]
+    VERIFY_STEP_SUCCESS = 5,        //!< [EXPORT] : [TM]
+    VERIFY_STEP_FAILED = 6          //!< [EXPORT] : [TM]
+  };
 };
 
 #endif /* FSFW_PUS_SERVICE1TELECOMMANDVERIFICATION_H_ */

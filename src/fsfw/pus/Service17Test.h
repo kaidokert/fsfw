@@ -1,8 +1,8 @@
 #ifndef FSFW_PUS_SERVICE17TEST_H_
 #define FSFW_PUS_SERVICE17TEST_H_
 
-#include "fsfw/tmtcservices/PusServiceBase.h"
 #include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tmtcservices/PusServiceBase.h"
 
 /**
  * @brief Test Service
@@ -17,28 +17,28 @@
  *
  * @ingroup pus_services
  */
-class Service17Test: public PusServiceBase {
-public:
-	// Custom events which can be triggered
-	static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_17;
-	static constexpr Event TEST = MAKE_EVENT(0, severity::INFO);
+class Service17Test : public PusServiceBase {
+ public:
+  // Custom events which can be triggered
+  static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_17;
+  static constexpr Event TEST = MAKE_EVENT(0, severity::INFO);
 
-	enum Subservice: uint8_t {
-		//! [EXPORT] : [COMMAND] Perform connection test
-	    CONNECTION_TEST = 1,
-	    //! [EXPORT] : [REPLY] Connection test reply
-	    CONNECTION_TEST_REPORT = 2,
-		//!  [EXPORT] : [COMMAND] Trigger test reply and test event
-	    EVENT_TRIGGER_TEST = 128,
-	};
+  enum Subservice : uint8_t {
+    //! [EXPORT] : [COMMAND] Perform connection test
+    CONNECTION_TEST = 1,
+    //! [EXPORT] : [REPLY] Connection test reply
+    CONNECTION_TEST_REPORT = 2,
+    //!  [EXPORT] : [COMMAND] Trigger test reply and test event
+    EVENT_TRIGGER_TEST = 128,
+  };
 
-	Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId);
-	virtual ~Service17Test();
-	virtual ReturnValue_t handleRequest(uint8_t subservice) override;
-	virtual ReturnValue_t performService() override;
+  Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId);
+  virtual ~Service17Test();
+  virtual ReturnValue_t handleRequest(uint8_t subservice) override;
+  virtual ReturnValue_t performService() override;
 
-protected:
-	uint16_t packetSubCounter = 0;
+ protected:
+  uint16_t packetSubCounter = 0;
 };
 
 #endif /* FSFW_PUS_SERVICE17TEST_H_ */

@@ -22,44 +22,42 @@
  * destination for telecommands, but the telecommands will be relayed to a specified tcDestination
  * directly.
  */
-class UdpTmTcBridge:
-        public TmTcBridge,
-        public TcpIpBase {
-    friend class UdpTcPollingTask;
-public:
-    /* The ports chosen here should not be used by any other process. */
-    static const std::string DEFAULT_SERVER_PORT;
+class UdpTmTcBridge : public TmTcBridge, public TcpIpBase {
+  friend class UdpTcPollingTask;
 
-    UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
-            std::string udpServerPort = "", object_id_t tmStoreId = objects::TM_STORE,
-            object_id_t tcStoreId = objects::TC_STORE);
-    virtual~ UdpTmTcBridge();
+ public:
+  /* The ports chosen here should not be used by any other process. */
+  static const std::string DEFAULT_SERVER_PORT;
 
-    /**
-     * Set properties of internal mutex.
-     */
-    void setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs);
+  UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination, std::string udpServerPort = "",
+                object_id_t tmStoreId = objects::TM_STORE,
+                object_id_t tcStoreId = objects::TC_STORE);
+  virtual ~UdpTmTcBridge();
 
-    ReturnValue_t initialize() override;
+  /**
+   * Set properties of internal mutex.
+   */
+  void setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs);
 
-    void checkAndSetClientAddress(sockaddr& clientAddress);
+  ReturnValue_t initialize() override;
 
-    std::string getUdpPort() const;
+  void checkAndSetClientAddress(sockaddr& clientAddress);
 
-protected:
-    virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
+  std::string getUdpPort() const;
 
-private:
-    std::string udpServerPort;
+ protected:
+  virtual ReturnValue_t sendTm(const uint8_t* data, size_t dataLen) override;
 
-    struct sockaddr clientAddress;
-    socklen_t clientAddressLen = 0;
+ private:
+  std::string udpServerPort;
 
-    //! Access to the client address is mutex protected as it is set by another task.
-    MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
-    dur_millis_t mutexTimeoutMs = 20;
-    MutexIF* mutex;
+  struct sockaddr clientAddress;
+  socklen_t clientAddressLen = 0;
+
+  //! Access to the client address is mutex protected as it is set by another task.
+  MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+  dur_millis_t mutexTimeoutMs = 20;
+  MutexIF* mutex;
 };
 
 #endif /* FSFW_OSAL_COMMON_TMTCUDPBRIDGE_H_ */
-

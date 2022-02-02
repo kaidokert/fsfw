@@ -6,18 +6,18 @@
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
 class CFDPMessage {
-private:
-    CFDPMessage();
-public:
-    static const uint8_t MESSAGE_ID = messagetypes::CFDP;
+ private:
+  CFDPMessage();
 
-    virtual ~CFDPMessage();
-    static void setCommand(CommandMessage* message,
-            store_address_t cfdpPacket);
+ public:
+  static const uint8_t MESSAGE_ID = messagetypes::CFDP;
 
-    static store_address_t getStoreId(const CommandMessage* message);
+  virtual ~CFDPMessage();
+  static void setCommand(CommandMessage* message, store_address_t cfdpPacket);
 
-    static void clear(CommandMessage* message);
+  static store_address_t getStoreId(const CommandMessage* message);
+
+  static void clear(CommandMessage* message);
 };
 
 #endif /* FSFW_CFDP_CFDPMESSAGE_H_ */

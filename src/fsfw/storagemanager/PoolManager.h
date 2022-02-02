@@ -1,10 +1,9 @@
 #ifndef FSFW_STORAGEMANAGER_POOLMANAGER_H_
 #define FSFW_STORAGEMANAGER_POOLMANAGER_H_
 
+#include "../ipc/MutexGuard.h"
 #include "LocalPool.h"
 #include "StorageAccessor.h"
-#include "../ipc/MutexGuard.h"
-
 
 /**
  * @brief	The PoolManager class provides an intermediate data storage with
@@ -20,56 +19,55 @@
  * recommended to use the LocalPool class instead).
  * @author 	Bastian Baetz
  */
-class PoolManager: public LocalPool {
-public:
-	PoolManager(object_id_t setObjectId, const LocalPoolConfig& poolConfig);
+class PoolManager : public LocalPool {
+ public:
+  PoolManager(object_id_t setObjectId, const LocalPoolConfig& poolConfig);
 
-	/**
-	 * @brief	In the PoolManager's destructor all allocated memory
-	 * 			is freed.
-	 */
-	virtual ~PoolManager();
+  /**
+   * @brief	In the PoolManager's destructor all allocated memory
+   * 			is freed.
+   */
+  virtual ~PoolManager();
 
-	/**
-	 * Set the default mutex timeout for internal calls.
-	 * @param mutexTimeoutMs
-	 */
-	void setMutexTimeout(uint32_t mutexTimeoutMs);
+  /**
+   * Set the default mutex timeout for internal calls.
+   * @param mutexTimeoutMs
+   */
+  void setMutexTimeout(uint32_t mutexTimeoutMs);
 
-	/**
-	 * @brief 	LocalPool overrides for thread-safety. Decorator function
-	 * 			which wraps LocalPool calls with a mutex protection.
-	 */
-	ReturnValue_t deleteData(store_address_t) override;
-	ReturnValue_t deleteData(uint8_t* buffer, size_t size,
-			store_address_t* storeId = nullptr) override;
+  /**
+   * @brief 	LocalPool overrides for thread-safety. Decorator function
+   * 			which wraps LocalPool calls with a mutex protection.
+   */
+  ReturnValue_t deleteData(store_address_t) override;
+  ReturnValue_t deleteData(uint8_t* buffer, size_t size,
+                           store_address_t* storeId = nullptr) override;
 
-	/**
-	 * The developer is allowed to lock the mutex in case the lock needs
-	 * to persist beyond the function calls which are not protected by the
-	 * class.
-	 * @param timeoutType
-	 * @param timeoutMs
-	 * @return
-	 */
-	ReturnValue_t lockMutex(MutexIF::TimeoutType timeoutType,
-			uint32_t timeoutMs);
-	ReturnValue_t unlockMutex();
+  /**
+   * The developer is allowed to lock the mutex in case the lock needs
+   * to persist beyond the function calls which are not protected by the
+   * class.
+   * @param timeoutType
+   * @param timeoutMs
+   * @return
+   */
+  ReturnValue_t lockMutex(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs);
+  ReturnValue_t unlockMutex();
 
-protected:
-	//! Default mutex timeout value to prevent permanent blocking.
-	uint32_t mutexTimeoutMs = 20;
+ protected:
+  //! Default mutex timeout value to prevent permanent blocking.
+  uint32_t mutexTimeoutMs = 20;
 
-	ReturnValue_t reserveSpace(const size_t size, store_address_t* address,
-			bool ignoreFault) override;
+  ReturnValue_t reserveSpace(const size_t size, store_address_t* address,
+                             bool ignoreFault) override;
 
-	/**
-	 * @brief	The mutex is created in the constructor and makes
-	 * 			access mutual exclusive.
-	 * @details	Locking and unlocking is done during searching for free slots
-	 * 			and deleting existing slots.
-	 */
-	MutexIF* mutex;
+  /**
+   * @brief	The mutex is created in the constructor and makes
+   * 			access mutual exclusive.
+   * @details	Locking and unlocking is done during searching for free slots
+   * 			and deleting existing slots.
+   */
+  MutexIF* mutex;
 };
 
 #endif /* FSFW_STORAGEMANAGER_POOLMANAGER_H_ */

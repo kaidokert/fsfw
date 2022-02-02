@@ -2,10 +2,8 @@
 #define FRAMEWORK_OSAL_FREERTOS_TIMEKEEPER_H_
 
 #include "../../timemanager/Clock.h"
-
 #include "FreeRTOS.h"
 #include "task.h"
-
 
 /**
  * A Class to basically store the time difference between uptime and UTC
@@ -16,25 +14,26 @@
  */
 
 class Timekeeper {
-private:
-	Timekeeper();
+ private:
+  Timekeeper();
 
-	timeval offset;
+  timeval offset;
 
-	static Timekeeper * myinstance;
-public:
-	static Timekeeper * instance();
-	virtual ~Timekeeper();
+  static Timekeeper* myinstance;
 
-	static timeval ticksToTimeval(TickType_t ticks);
-    /**
-     * Get elapsed time in system ticks.
-     * @return
-     */
-    static TickType_t getTicks();
+ public:
+  static Timekeeper* instance();
+  virtual ~Timekeeper();
 
-	const timeval& getOffset() const;
-	void setOffset(const timeval& offset);
+  static timeval ticksToTimeval(TickType_t ticks);
+  /**
+   * Get elapsed time in system ticks.
+   * @return
+   */
+  static TickType_t getTicks();
+
+  const timeval& getOffset() const;
+  void setOffset(const timeval& offset);
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_TIMEKEEPER_H_ */

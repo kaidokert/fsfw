@@ -28,42 +28,38 @@
  *
  * @ingroup pus_services
  */
-class Service8FunctionManagement : public CommandingServiceBase
-{
-public:
-	Service8FunctionManagement(object_id_t objectId, uint16_t apid,
-			uint8_t serviceId, uint8_t numParallelCommands = 4,
-			uint16_t commandTimeoutSeconds = 60);
-	virtual ~Service8FunctionManagement();
+class Service8FunctionManagement : public CommandingServiceBase {
+ public:
+  Service8FunctionManagement(object_id_t objectId, uint16_t apid, uint8_t serviceId,
+                             uint8_t numParallelCommands = 4, uint16_t commandTimeoutSeconds = 60);
+  virtual ~Service8FunctionManagement();
 
-protected:
-	/* CSB abstract functions implementation . See CSB documentation. */
-	ReturnValue_t isValidSubservice(uint8_t subservice) override;
-	ReturnValue_t getMessageQueueAndObject(uint8_t subservice,
-			const uint8_t *tcData, size_t tcDataLen, MessageQueueId_t *id,
-			object_id_t *objectId) override;
-	ReturnValue_t prepareCommand(CommandMessage* message,
-				uint8_t subservice, const uint8_t *tcData, size_t tcDataLen,
-				uint32_t *state, object_id_t objectId) override;
-	ReturnValue_t handleReply(const CommandMessage* reply,
-				Command_t previousCommand, uint32_t *state,
-				CommandMessage* optionalNextCommand, object_id_t objectId,
-				bool *isStep) override;
+ protected:
+  /* CSB abstract functions implementation . See CSB documentation. */
+  ReturnValue_t isValidSubservice(uint8_t subservice) override;
+  ReturnValue_t getMessageQueueAndObject(uint8_t subservice, const uint8_t* tcData,
+                                         size_t tcDataLen, MessageQueueId_t* id,
+                                         object_id_t* objectId) override;
+  ReturnValue_t prepareCommand(CommandMessage* message, uint8_t subservice, const uint8_t* tcData,
+                               size_t tcDataLen, uint32_t* state, object_id_t objectId) override;
+  ReturnValue_t handleReply(const CommandMessage* reply, Command_t previousCommand, uint32_t* state,
+                            CommandMessage* optionalNextCommand, object_id_t objectId,
+                            bool* isStep) override;
 
-private:
-	enum class Subservice {
-	    //!< [EXPORT] : [COMMAND] Functional commanding
-		COMMAND_DIRECT_COMMANDING = 128,
-		//!< [EXPORT] : [REPLY] Data reply
-		REPLY_DIRECT_COMMANDING_DATA = 130,
-	};
+ private:
+  enum class Subservice {
+    //!< [EXPORT] : [COMMAND] Functional commanding
+    COMMAND_DIRECT_COMMANDING = 128,
+    //!< [EXPORT] : [REPLY] Data reply
+    REPLY_DIRECT_COMMANDING_DATA = 130,
+  };
 
-	ReturnValue_t checkInterfaceAndAcquireMessageQueue(
-	        MessageQueueId_t* messageQueueToSet, object_id_t* objectId);
-	ReturnValue_t prepareDirectCommand(CommandMessage* message,
-			const uint8_t* tcData, size_t tcDataLen);
-	ReturnValue_t handleDataReply(const CommandMessage* reply,
-	        object_id_t objectId, ActionId_t actionId);
+  ReturnValue_t checkInterfaceAndAcquireMessageQueue(MessageQueueId_t* messageQueueToSet,
+                                                     object_id_t* objectId);
+  ReturnValue_t prepareDirectCommand(CommandMessage* message, const uint8_t* tcData,
+                                     size_t tcDataLen);
+  ReturnValue_t handleDataReply(const CommandMessage* reply, object_id_t objectId,
+                                ActionId_t actionId);
 };
 
 #endif /* FSFW_PUS_SERVICE8FUNCTIONMANAGEMENT_H_ */

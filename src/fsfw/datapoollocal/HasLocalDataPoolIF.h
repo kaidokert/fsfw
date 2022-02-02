@@ -1,15 +1,14 @@
 #ifndef FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 #define FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_
 
-#include "localPoolDefinitions.h"
-#include "LocalDataPoolManager.h"
+#include <map>
 
 #include "../datapool/PoolEntryIF.h"
-#include "../serviceinterface/ServiceInterface.h"
-#include "../ipc/MessageQueueSenderIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
-
-#include <map>
+#include "../ipc/MessageQueueSenderIF.h"
+#include "../serviceinterface/ServiceInterface.h"
+#include "LocalDataPoolManager.h"
+#include "localPoolDefinitions.h"
 
 class AccessPoolManagerIF;
 class ProvidesDataPoolSubscriptionIF;
@@ -17,9 +16,9 @@ class LocalPoolDataSetBase;
 class LocalPoolObjectBase;
 
 /**
- * @brief 		This interface is implemented by classes which posses a local data pool (not the
- * 				managing class). It defines the relationship between the local data pool owner
- * 				and the LocalDataPoolManager.
+ * @brief 		This interface is implemented by classes which posses a local data pool (not
+ * the managing class). It defines the relationship between the local data pool owner and the
+ * LocalDataPoolManager.
  * @details
  * Any class implementing this interface shall also have a LocalDataPoolManager member class which
  * contains the actual pool data structure and exposes the public interface for it.
@@ -41,147 +40,143 @@ class LocalPoolObjectBase;
  *    }
  */
 class HasLocalDataPoolIF {
-    friend class HasLocalDpIFManagerAttorney;
-    friend class HasLocalDpIFUserAttorney;
-public:
-    virtual~ HasLocalDataPoolIF() {};
+  friend class HasLocalDpIFManagerAttorney;
+  friend class HasLocalDpIFUserAttorney;
 
-    static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
+ public:
+  virtual ~HasLocalDataPoolIF(){};
 
-    virtual object_id_t getObjectId() const = 0;
+  static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
-    /** Command queue for housekeeping messages. */
-    virtual MessageQueueId_t getCommandQueue() const = 0;
+  virtual object_id_t getObjectId() const = 0;
 
-    /**
-     * Is used by pool owner to initialize the pool map once
-     * The manager instance shall also be passed to this function.
-     * It can be used to subscribe for periodic packets for for updates.
-     */
-    virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
-            LocalDataPoolManager& poolManager) = 0;
+  /** Command queue for housekeeping messages. */
+  virtual MessageQueueId_t getCommandQueue() const = 0;
 
-    /**
-     * Returns the minimum sampling frequency in milliseconds, which will
-     * usually be the period the pool owner performs its periodic operation.
-     * @return
-     */
-    virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
+  /**
+   * Is used by pool owner to initialize the pool map once
+   * The manager instance shall also be passed to this function.
+   * It can be used to subscribe for periodic packets for for updates.
+   */
+  virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
+                                                LocalDataPoolManager& poolManager) = 0;
 
-    /**
-     * @brief   This function will be called by the manager if an update
-     *          notification is received.
-     * @details  HasLocalDataPoolIF
-     * Can be overriden by the child class to handle changed datasets.
-     * @param sid           SID of the updated set
-     * @param storeId       If a snapshot was requested, data will be located inside
-     * the IPC store with this store ID.
-     * @param clearMessage  If this is set to true, the pool manager will take care of
-     *                      clearing the store automatically
-     */
-    virtual void handleChangedDataset(sid_t sid,
-            store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
-            bool* clearMessage = nullptr) {
-        if(clearMessage != nullptr) {
-            *clearMessage = true;
-        }
+  /**
+   * Returns the minimum sampling frequency in milliseconds, which will
+   * usually be the period the pool owner performs its periodic operation.
+   * @return
+   */
+  virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
+
+  /**
+   * @brief   This function will be called by the manager if an update
+   *          notification is received.
+   * @details  HasLocalDataPoolIF
+   * Can be overriden by the child class to handle changed datasets.
+   * @param sid           SID of the updated set
+   * @param storeId       If a snapshot was requested, data will be located inside
+   * the IPC store with this store ID.
+   * @param clearMessage  If this is set to true, the pool manager will take care of
+   *                      clearing the store automatically
+   */
+  virtual void handleChangedDataset(sid_t sid,
+                                    store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
+                                    bool* clearMessage = nullptr) {
+    if (clearMessage != nullptr) {
+      *clearMessage = true;
     }
+  }
 
-    /**
-     * @brief   This function will be called by the manager if an update
-     *          notification is received.
-     * @details
-     * Can be overriden by the child class to handle changed pool variables.
-     * @param gpid          GPID of the updated variable.
-     * @param storeId       If a snapshot was requested, data will be located inside
-     * the IPC store with this store ID.
-     * @param clearMessage  Relevant for snapshots. If the boolean this points to is set to true,
-     *                      the pool manager will take care of clearing the store automatically
-     *                      after the callback.
-     */
-    virtual void handleChangedPoolVariable(gp_id_t gpid,
-            store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
-            bool* clearMessage = nullptr) {
-        if(clearMessage != nullptr) {
-            *clearMessage = true;
-        }
+  /**
+   * @brief   This function will be called by the manager if an update
+   *          notification is received.
+   * @details
+   * Can be overriden by the child class to handle changed pool variables.
+   * @param gpid          GPID of the updated variable.
+   * @param storeId       If a snapshot was requested, data will be located inside
+   * the IPC store with this store ID.
+   * @param clearMessage  Relevant for snapshots. If the boolean this points to is set to true,
+   *                      the pool manager will take care of clearing the store automatically
+   *                      after the callback.
+   */
+  virtual void handleChangedPoolVariable(gp_id_t gpid,
+                                         store_address_t storeId = storeId::INVALID_STORE_ADDRESS,
+                                         bool* clearMessage = nullptr) {
+    if (clearMessage != nullptr) {
+      *clearMessage = true;
     }
+  }
 
-    /**
-     * These function can be implemented by pool owner, if they are required
-     * and used by the housekeeping message interface.
-     * */
-    virtual ReturnValue_t addDataSet(sid_t sid) {
-        return HasReturnvaluesIF::RETURN_FAILED;
-    };
-    virtual ReturnValue_t removeDataSet(sid_t sid) {
-        return HasReturnvaluesIF::RETURN_FAILED;
-    };
-    virtual ReturnValue_t changeCollectionInterval(sid_t sid, float newIntervalSeconds) {
-        return HasReturnvaluesIF::RETURN_FAILED;
-    };
+  /**
+   * These function can be implemented by pool owner, if they are required
+   * and used by the housekeeping message interface.
+   * */
+  virtual ReturnValue_t addDataSet(sid_t sid) { return HasReturnvaluesIF::RETURN_FAILED; };
+  virtual ReturnValue_t removeDataSet(sid_t sid) { return HasReturnvaluesIF::RETURN_FAILED; };
+  virtual ReturnValue_t changeCollectionInterval(sid_t sid, float newIntervalSeconds) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  };
 
-    /**
-     * This function can be used by data pool consumers to retrieve a handle
-     * which allows subscriptions to dataset and variable updates in form of messages.
-     * The consumers can then read the most recent variable value by calling read with
-     * an own pool variable or set instance or using the deserialized snapshot data.
-     * Returns the HK manager casted to the required interface by default.
-     * @return
-     */
-    virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() {
-        return getHkManagerHandle();
-    }
+  /**
+   * This function can be used by data pool consumers to retrieve a handle
+   * which allows subscriptions to dataset and variable updates in form of messages.
+   * The consumers can then read the most recent variable value by calling read with
+   * an own pool variable or set instance or using the deserialized snapshot data.
+   * Returns the HK manager casted to the required interface by default.
+   * @return
+   */
+  virtual ProvidesDataPoolSubscriptionIF* getSubscriptionInterface() {
+    return getHkManagerHandle();
+  }
 
-protected:
+ protected:
+  /**
+   * Every class implementing this interface should have a local data pool manager. This
+   * function will return a reference to the manager.
+   * @return
+   */
+  virtual LocalDataPoolManager* getHkManagerHandle() = 0;
 
-    /**
-     * Every class implementing this interface should have a local data pool manager. This
-     * function will return a reference to the manager.
-     * @return
-     */
-    virtual LocalDataPoolManager* getHkManagerHandle() = 0;
+  /**
+   * Accessor handle required for internal handling. Not intended for users and therefore
+   * declared protected. Users should instead use pool variables, sets or the subscription
+   * interface to access pool entries. Returns the HK manager casted to a different interface
+   * by default.
+   * @return
+   */
+  virtual AccessPoolManagerIF* getAccessorHandle() { return getHkManagerHandle(); }
 
-    /**
-     * Accessor handle required for internal handling. Not intended for users and therefore
-     * declared protected. Users should instead use pool variables, sets or the subscription
-     * interface to access pool entries. Returns the HK manager casted to a different interface
-     * by default.
-     * @return
-     */
-    virtual AccessPoolManagerIF* getAccessorHandle() {
-        return getHkManagerHandle();
-    }
+  /**
+   * This function is used by the pool manager to get a valid dataset
+   * from a SID. This function is protected to prevent users from
+   * using raw data set pointers which could not be thread-safe. Users
+   * should use the #ProvidesDataPoolSubscriptionIF.
+   * @param sid Corresponding structure ID
+   * @return
+   */
+  virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
 
-    /**
-     * This function is used by the pool manager to get a valid dataset
-     * from a SID. This function is protected to prevent users from
-     * using raw data set pointers which could not be thread-safe. Users
-     * should use the #ProvidesDataPoolSubscriptionIF.
-     * @param sid Corresponding structure ID
-     * @return
-     */
-    virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) = 0;
-
-    /**
-     * Similar to the function above, but used to get a local pool variable
-     * handle. This is only needed for update notifications, so it is not
-     * defined as abstract. This function is protected to prevent users from
-     * using raw pool variable pointers which could not be thread-safe.
-     * Users should use the #ProvidesDataPoolSubscriptionIF.
-     * @param localPoolId
-     * @return
-     */
-    virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
+  /**
+   * Similar to the function above, but used to get a local pool variable
+   * handle. This is only needed for update notifications, so it is not
+   * defined as abstract. This function is protected to prevent users from
+   * using raw pool variable pointers which could not be thread-safe.
+   * Users should use the #ProvidesDataPoolSubscriptionIF.
+   * @param localPoolId
+   * @return
+   */
+  virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden. "
-                "Returning nullptr!" << std::endl;
+    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden. "
+                    "Returning nullptr!"
+                 << std::endl;
 #else
-        sif::printWarning("HasLocalDataPoolIF::getPoolObjectHandle: "
-                "Not overriden. Returning nullptr!\n");
+    sif::printWarning(
+        "HasLocalDataPoolIF::getPoolObjectHandle: "
+        "Not overriden. Returning nullptr!\n");
 #endif
-        return nullptr;
-    }
+    return nullptr;
+  }
 };
 
 #endif /* FSFW_DATAPOOLLOCAL_HASLOCALDATAPOOLIF_H_ */

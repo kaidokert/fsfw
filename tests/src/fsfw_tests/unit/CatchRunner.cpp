@@ -15,12 +15,11 @@
 extern int customSetup();
 
 int main(int argc, char* argv[]) {
-    customSetup();
+  customSetup();
 
-    // Catch internal function call
-    int result = Catch::Session().run(argc, argv);
+  // Catch internal function call
+  int result = Catch::Session().run(argc, argv);
 
-    // global clean-up
-    return result;
+  // global clean-up
+  return result;
 }
-

@@ -18,7 +18,8 @@ class FixedTimeslotTaskIF;
  * The task is created using the FixedTimeslotTaskIF,
  * which utilises the underlying Operating System Abstraction Layer (OSAL)
  *
- * @param thisSequence FixedTimeslotTaskIF * object is passed inside the Factory class when creating the PST
+ * @param thisSequence FixedTimeslotTaskIF * object is passed inside the Factory class when creating
+ * the PST
  * @return
  */
 namespace pst {
@@ -26,7 +27,6 @@ namespace pst {
 /* Default PST */
 ReturnValue_t pollingSequenceInitDefault(FixedTimeslotTaskIF *thisSequence);
 
-
-}
+}  // namespace pst
 
 #endif /* POLLINGSEQUENCEINIT_H_ */

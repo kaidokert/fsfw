@@ -1,8 +1,8 @@
 #ifndef FSFW_PUS_SERVICE5EVENTREPORTING_H_
 #define FSFW_PUS_SERVICE5EVENTREPORTING_H_
 
-#include "fsfw/tmtcservices/PusServiceBase.h"
 #include "fsfw/events/EventMessage.h"
+#include "fsfw/tmtcservices/PusServiceBase.h"
 
 /**
  * @brief Report on-board events like information or errors
@@ -38,50 +38,48 @@
  * @author 	R. Mueller
  * @ingroup pus_services
  */
-class Service5EventReporting: public PusServiceBase {
-public:
+class Service5EventReporting : public PusServiceBase {
+ public:
+  Service5EventReporting(object_id_t objectId, uint16_t apid, uint8_t serviceId,
+                         size_t maxNumberReportsPerCycle = 10, uint32_t messageQueueDepth = 10);
+  virtual ~Service5EventReporting();
 
-	Service5EventReporting(object_id_t objectId, uint16_t apid,
-	        uint8_t serviceId, size_t maxNumberReportsPerCycle = 10,
-	        uint32_t messageQueueDepth = 10);
-	virtual ~Service5EventReporting();
+  /***
+   * Check for events and generate event reports if required.
+   * @return
+   */
+  ReturnValue_t performService() override;
 
-	/***
-	* Check for events and generate event reports if required.
-	* @return
-	*/
-	ReturnValue_t performService() override;
+  /***
+   * Turn event generation on or off.
+   * @return
+   */
+  ReturnValue_t handleRequest(uint8_t subservice) override;
 
-	/***
-	 * Turn event generation on or off.
-	 * @return
-	 */
-	ReturnValue_t handleRequest(uint8_t subservice) override;
+  /**
+   * The default PusServiceBase initialize has been overridden but is still
+   * executed. Registers this service as a listener for events at the
+   * EventManager.
+   * @return
+   */
+  ReturnValue_t initialize() override;
 
-	/**
-	 * The default PusServiceBase initialize has been overridden but is still
-	 * executed. Registers this service as a listener for events at the
-	 * EventManager.
-	 * @return
-	 */
-	ReturnValue_t initialize() override;
+  enum Subservice : uint8_t {
+    NORMAL_REPORT = 1,        //!< [EXPORT] : [REPLY] Generate normal report
+    ERROR_LOW_SEVERITY = 2,   //!< [EXPORT] : [REPLY] Generate error report with low severity
+    ERROR_MED_SEVERITY = 3,   //!< [EXPORT] : [REPLY] Generate error report with medium severity
+    ERROR_HIGH_SEVERITY = 4,  //!< [EXPORT] : [REPLY] Generate error report with high severity
+    ENABLE = 5,               //!< [EXPORT] : [COMMAND] Enable report generation
+    DISABLE = 6               //!< [EXPORT] : [COMMAND] Disable report generation
+  };
 
-	enum Subservice: uint8_t {
-		NORMAL_REPORT = 1, //!< [EXPORT] : [REPLY] Generate normal report
-		ERROR_LOW_SEVERITY = 2, //!< [EXPORT] : [REPLY] Generate error report with low severity
-		ERROR_MED_SEVERITY = 3, //!< [EXPORT] : [REPLY] Generate error report with medium severity
-		ERROR_HIGH_SEVERITY = 4, //!< [EXPORT] : [REPLY] Generate error report with high severity
-		ENABLE = 5, //!< [EXPORT] : [COMMAND] Enable report generation
-		DISABLE = 6 //!< [EXPORT] : [COMMAND] Disable report generation
-	};
+ private:
+  uint16_t packetSubCounter = 0;
+  MessageQueueIF* eventQueue = nullptr;
+  bool enableEventReport = true;
+  const uint8_t maxNumberReportsPerCycle;
 
-private:
-	uint16_t packetSubCounter = 0;
-	MessageQueueIF* eventQueue = nullptr;
-	bool enableEventReport = true;
-	const uint8_t maxNumberReportsPerCycle;
-
-	ReturnValue_t generateEventReport(EventMessage message);
+  ReturnValue_t generateEventReport(EventMessage message);
 };
 
 #endif /* FSFW_PUS_SERVICE5EVENTREPORTING_H_ */

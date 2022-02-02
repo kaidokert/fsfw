@@ -1,4 +1,5 @@
 #include "fsfw/osal/common/TcpIpBase.h"
+
 #include "fsfw/platform.h"
 
 #ifdef PLATFORM_UNIX
@@ -6,48 +7,45 @@
 #include <unistd.h>
 #endif
 
-TcpIpBase::TcpIpBase() {
-
-}
+TcpIpBase::TcpIpBase() {}
 
 ReturnValue_t TcpIpBase::initialize() {
 #ifdef _WIN32
-    /* Initiates Winsock DLL. */
-    WSAData wsaData;
-    WORD wVersionRequested = MAKEWORD(2, 2);
-    int err = WSAStartup(wVersionRequested, &wsaData);
-    if (err != 0) {
-        /* Tell the user that we could not find a usable Winsock DLL. */
+  /* Initiates Winsock DLL. */
+  WSAData wsaData;
+  WORD wVersionRequested = MAKEWORD(2, 2);
+  int err = WSAStartup(wVersionRequested, &wsaData);
+  if (err != 0) {
+    /* Tell the user that we could not find a usable Winsock DLL. */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: WSAStartup failed with error: " <<
-                err << std::endl;
+    sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: WSAStartup failed with error: " << err
+               << std::endl;
 #endif
-        return HasReturnvaluesIF::RETURN_FAILED;
-    }
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
 #endif
-    return HasReturnvaluesIF::RETURN_OK;
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
 TcpIpBase::~TcpIpBase() {
-    closeSocket(serverSocket);
+  closeSocket(serverSocket);
 #ifdef _WIN32
-    WSACleanup();
+  WSACleanup();
 #endif
 }
 
 int TcpIpBase::closeSocket(socket_t socket) {
 #ifdef PLATFORM_WIN
-    return closesocket(socket);
+  return closesocket(socket);
 #elif defined(PLATFORM_UNIX)
-    return close(socket);
+  return close(socket);
 #endif
 }
 
 int TcpIpBase::getLastSocketError() {
 #ifdef PLATFORM_WIN
-    return WSAGetLastError();
+  return WSAGetLastError();
 #elif defined(PLATFORM_UNIX)
-    return errno;
+  return errno;
 #endif
 }
-

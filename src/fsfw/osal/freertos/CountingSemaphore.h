@@ -11,25 +11,26 @@
  * so we just inherit from binary semaphore and provide the respective
  * constructors.
  */
-class CountingSemaphore: public BinarySemaphore {
-public:
-	CountingSemaphore(const uint8_t maxCount, uint8_t initCount);
-	//! @brief Copy ctor, disabled
-	CountingSemaphore(const CountingSemaphore&) = delete;
-	//! @brief Copy assignment, disabled
-	CountingSemaphore& operator=(const CountingSemaphore&) = delete;
-	//! @brief Move ctor
-	CountingSemaphore (CountingSemaphore &&);
-	//! @brief Move assignment
-	CountingSemaphore & operator=(CountingSemaphore &&);
+class CountingSemaphore : public BinarySemaphore {
+ public:
+  CountingSemaphore(const uint8_t maxCount, uint8_t initCount);
+  //! @brief Copy ctor, disabled
+  CountingSemaphore(const CountingSemaphore &) = delete;
+  //! @brief Copy assignment, disabled
+  CountingSemaphore &operator=(const CountingSemaphore &) = delete;
+  //! @brief Move ctor
+  CountingSemaphore(CountingSemaphore &&);
+  //! @brief Move assignment
+  CountingSemaphore &operator=(CountingSemaphore &&);
 
-	/* Same API as binary semaphore otherwise. acquire() can be called
-	 * until there are not semaphores left and release() can be called
-	 * until maxCount is reached. */
-	uint8_t getMaxCount() const;
-private:
-	const uint8_t maxCount;
-	uint8_t initCount = 0;
+  /* Same API as binary semaphore otherwise. acquire() can be called
+   * until there are not semaphores left and release() can be called
+   * until maxCount is reached. */
+  uint8_t getMaxCount() const;
+
+ private:
+  const uint8_t maxCount;
+  uint8_t initCount = 0;
 };
 
 #endif /* FRAMEWORK_OSAL_FREERTOS_COUNTINGSEMAPHORE_H_ */
