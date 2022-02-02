@@ -10,22 +10,21 @@ class SpacePacketBase;
  * @ingroup tc_distribution
  */
 class TcPacketCheckIF {
-public:
-	/**
-	 * The empty virtual destructor.
-	 */
-	virtual ~TcPacketCheckIF() {
-	}
+ public:
+  /**
+   * The empty virtual destructor.
+   */
+  virtual ~TcPacketCheckIF() {}
 
-	/**
-	 * This is the actual method to formally check a certain Packet.
-	 * The packet's Application Data can not be checked here.
-	 * @param current_packet The packet to check
-	 * @return	- @c RETURN_OK on success.
-	 * 			- @c INCORRECT_CHECKSUM if checksum is invalid.
-	 * 			- @c ILLEGAL_APID if APID does not match.
-	 */
-	virtual ReturnValue_t checkPacket(SpacePacketBase* currentPacket) = 0;
+  /**
+   * This is the actual method to formally check a certain Packet.
+   * The packet's Application Data can not be checked here.
+   * @param current_packet The packet to check
+   * @return	- @c RETURN_OK on success.
+   * 			- @c INCORRECT_CHECKSUM if checksum is invalid.
+   * 			- @c ILLEGAL_APID if APID does not match.
+   */
+  virtual ReturnValue_t checkPacket(SpacePacketBase* currentPacket) = 0;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_ */

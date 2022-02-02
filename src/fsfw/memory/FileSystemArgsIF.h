@@ -6,8 +6,8 @@
  * Users can then dynamic_cast the base pointer to the require child pointer.
  */
 class FileSystemArgsIF {
-public:
-    virtual~ FileSystemArgsIF() {};
+ public:
+  virtual ~FileSystemArgsIF(){};
 };
 
 #endif /* FSFW_SRC_FSFW_MEMORY_FILESYSTEMARGS_H_ */

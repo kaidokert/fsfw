@@ -4,7 +4,6 @@
 #include "UnittDefinitions.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
-
 /**
  * @brief	Can be used for internal testing, for example for hardware specific
  * 			tests which can not be run on a host-machine.
@@ -14,22 +13,21 @@
  * 		 which simply calls all other tests from other files manually.
  * 		 Maybe there is a better way..
  */
-class InternalUnitTester: public HasReturnvaluesIF {
-public:
-    struct TestConfig {
-        bool testArrayPrinter = false;
-        bool testSemaphores = true;
-    };
+class InternalUnitTester : public HasReturnvaluesIF {
+ public:
+  struct TestConfig {
+    bool testArrayPrinter = false;
+    bool testSemaphores = true;
+  };
 
-	InternalUnitTester();
-	virtual~ InternalUnitTester();
+  InternalUnitTester();
+  virtual ~InternalUnitTester();
 
-	/**
-	 * Some function which calls all other tests
-	 * @return
-	 */
-	virtual ReturnValue_t performTests(const struct InternalUnitTester::TestConfig& testConfig);
+  /**
+   * Some function which calls all other tests
+   * @return
+   */
+  virtual ReturnValue_t performTests(const struct InternalUnitTester::TestConfig& testConfig);
 };
-
 
 #endif /* FRAMEWORK_TEST_UNITTESTCLASS_H_ */

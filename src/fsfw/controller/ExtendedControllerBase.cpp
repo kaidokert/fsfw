@@ -1,103 +1,94 @@
 #include "fsfw/controller/ExtendedControllerBase.h"
 
-ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId,
-        object_id_t parentId, size_t commandQueueDepth):
-        ControllerBase(objectId, parentId, commandQueueDepth),
-        poolManager(this, commandQueue),
-        actionHelper(this, commandQueue) {
-}
+ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId, object_id_t parentId,
+                                               size_t commandQueueDepth)
+    : ControllerBase(objectId, parentId, commandQueueDepth),
+      poolManager(this, commandQueue),
+      actionHelper(this, commandQueue) {}
 
-ExtendedControllerBase::~ExtendedControllerBase() {
-}
+ExtendedControllerBase::~ExtendedControllerBase() {}
 
 ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
-        MessageQueueId_t commandedBy, const uint8_t *data, size_t size) {
-    /* Needs to be overriden and implemented by child class. */
-    return HasReturnvaluesIF::RETURN_OK;
+                                                    MessageQueueId_t commandedBy,
+                                                    const uint8_t *data, size_t size) {
+  /* Needs to be overriden and implemented by child class. */
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
-object_id_t ExtendedControllerBase::getObjectId() const {
-    return SystemObject::getObjectId();
-}
+object_id_t ExtendedControllerBase::getObjectId() const { return SystemObject::getObjectId(); }
 
 uint32_t ExtendedControllerBase::getPeriodicOperationFrequency() const {
-    return this->executingTask->getPeriodMs();
+  return this->executingTask->getPeriodMs();
 }
 
-ReturnValue_t ExtendedControllerBase::handleCommandMessage(
-        CommandMessage *message) {
-    ReturnValue_t result = actionHelper.handleActionMessage(message);
-    if(result == HasReturnvaluesIF::RETURN_OK) {
-        return result;
-    }
-    return poolManager.handleHousekeepingMessage(message);
+ReturnValue_t ExtendedControllerBase::handleCommandMessage(CommandMessage *message) {
+  ReturnValue_t result = actionHelper.handleActionMessage(message);
+  if (result == HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  return poolManager.handleHousekeepingMessage(message);
 }
 
 void ExtendedControllerBase::handleQueue() {
-    CommandMessage command;
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-    for (result = commandQueue->receiveMessage(&command);
-            result == RETURN_OK;
-            result = commandQueue->receiveMessage(&command)) {
-        result = actionHelper.handleActionMessage(&command);
-        if (result == RETURN_OK) {
-            continue;
-        }
-
-        result = modeHelper.handleModeCommand(&command);
-        if (result == RETURN_OK) {
-            continue;
-        }
-
-        result = healthHelper.handleHealthCommand(&command);
-        if (result == RETURN_OK) {
-            continue;
-        }
-
-        result = poolManager.handleHousekeepingMessage(&command);
-        if (result == RETURN_OK) {
-            continue;
-        }
-
-        result = handleCommandMessage(&command);
-        if (result == RETURN_OK) {
-            continue;
-        }
-        command.setToUnknownCommand();
-        commandQueue->reply(&command);
+  CommandMessage command;
+  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+       result = commandQueue->receiveMessage(&command)) {
+    result = actionHelper.handleActionMessage(&command);
+    if (result == RETURN_OK) {
+      continue;
     }
+
+    result = modeHelper.handleModeCommand(&command);
+    if (result == RETURN_OK) {
+      continue;
+    }
+
+    result = healthHelper.handleHealthCommand(&command);
+    if (result == RETURN_OK) {
+      continue;
+    }
+
+    result = poolManager.handleHousekeepingMessage(&command);
+    if (result == RETURN_OK) {
+      continue;
+    }
+
+    result = handleCommandMessage(&command);
+    if (result == RETURN_OK) {
+      continue;
+    }
+    command.setToUnknownCommand();
+    commandQueue->reply(&command);
+  }
 }
 
 ReturnValue_t ExtendedControllerBase::initialize() {
-    ReturnValue_t result = ControllerBase::initialize();
-    if(result != HasReturnvaluesIF::RETURN_OK) {
-        return result;
-    }
-    result = actionHelper.initialize(commandQueue);
-    if(result != HasReturnvaluesIF::RETURN_OK) {
-        return result;
-    }
+  ReturnValue_t result = ControllerBase::initialize();
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  result = actionHelper.initialize(commandQueue);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
 
-    return poolManager.initialize(commandQueue);
+  return poolManager.initialize(commandQueue);
 }
 
 ReturnValue_t ExtendedControllerBase::initializeAfterTaskCreation() {
-    return poolManager.initializeAfterTaskCreation();
+  return poolManager.initializeAfterTaskCreation();
 }
 
 ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
-    handleQueue();
-    performControlOperation();
-    /* We do this after performing control operation because variables will be set changed
-    in this function. */
-    poolManager.performHkOperation();
-    return RETURN_OK;
+  handleQueue();
+  performControlOperation();
+  /* We do this after performing control operation because variables will be set changed
+  in this function. */
+  poolManager.performHkOperation();
+  return RETURN_OK;
 }
 
-MessageQueueId_t ExtendedControllerBase::getCommandQueue() const {
-    return commandQueue->getId();
-}
+MessageQueueId_t ExtendedControllerBase::getCommandQueue() const { return commandQueue->getId(); }
 
-LocalDataPoolManager* ExtendedControllerBase::getHkManagerHandle() {
-    return &poolManager;
-}
+LocalDataPoolManager *ExtendedControllerBase::getHkManagerHandle() { return &poolManager; }

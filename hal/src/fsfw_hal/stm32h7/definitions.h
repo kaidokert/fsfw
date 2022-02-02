@@ -2,6 +2,7 @@
 #define FSFW_HAL_STM32H7_DEFINITIONS_H_
 
 #include <utility>
+
 #include "stm32h7xx.h"
 
 namespace stm32h7 {
@@ -11,15 +12,15 @@ namespace stm32h7 {
  * and the second entry is the pin number
  */
 struct GpioCfg {
-    GpioCfg(): port(nullptr), pin(0), altFnc(0) {};
+  GpioCfg() : port(nullptr), pin(0), altFnc(0){};
 
-    GpioCfg(GPIO_TypeDef* port, uint16_t pin, uint8_t altFnc = 0):
-        port(port), pin(pin), altFnc(altFnc) {};
-    GPIO_TypeDef* port;
-    uint16_t pin;
-    uint8_t altFnc;
+  GpioCfg(GPIO_TypeDef* port, uint16_t pin, uint8_t altFnc = 0)
+      : port(port), pin(pin), altFnc(altFnc){};
+  GPIO_TypeDef* port;
+  uint16_t pin;
+  uint8_t altFnc;
 };
 
-}
+}  // namespace stm32h7
 
 #endif /* #ifndef FSFW_HAL_STM32H7_DEFINITIONS_H_ */

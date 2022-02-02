@@ -11,8 +11,7 @@
  * Chose APID(s) for mission and define it here.
  */
 namespace apid {
-	static const uint16_t DEFAULT_APID = 0x00;
+static const uint16_t DEFAULT_APID = 0x00;
 }
-
 
 #endif /* CONFIG_TMTC_APID_H_ */

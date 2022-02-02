@@ -4,9 +4,9 @@
 #include "../ipc/MessageQueueMessageIF.h"
 
 class AcceptsHkPacketsIF {
-public:
-    virtual~ AcceptsHkPacketsIF() {};
-    virtual MessageQueueId_t getHkQueue() const = 0;
+ public:
+  virtual ~AcceptsHkPacketsIF(){};
+  virtual MessageQueueId_t getHkQueue() const = 0;
 };
 
 #endif /* FRAMEWORK_HOUSEKEEPING_ACCEPTSHKPACKETSIF_H_ */

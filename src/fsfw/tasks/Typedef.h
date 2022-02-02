@@ -1,8 +1,8 @@
 #ifndef FSFW_TASKS_TYPEDEF_H_
 #define FSFW_TASKS_TYPEDEF_H_
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 typedef const char* TaskName;
 typedef uint32_t TaskPriority;

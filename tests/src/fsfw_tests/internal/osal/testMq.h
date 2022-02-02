@@ -5,5 +5,4 @@ namespace testmq {
 void testMq();
 }
 
-
 #endif /* UNITTEST_INTERNAL_INTESTMQ_H_ */
