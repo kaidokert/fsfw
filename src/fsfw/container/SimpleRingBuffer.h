@@ -5,8 +5,7 @@
 #include <cstddef>
 
 /**
- * @brief     Circular buffer implementation, useful for buffering
- *          into data streams.
+ * @brief     Circular buffer implementation, useful for buffering into data streams.
  * @details
  * Note that the deleteData() has to be called to increment the read pointer.
  * This class allocated dynamically, so
@@ -20,8 +19,8 @@ public:
      * @param size
      * @param overwriteOld If the ring buffer is overflowing at a write
      * operation, the oldest data will be overwritten.
-     * @param maxExcessBytes These additional bytes will be allocated in addtion
-     * to the specified size to accomodate contiguous write operations
+     * @param maxExcessBytes These additional bytes will be allocated in addition
+     * to the specified size to accommodate continuous write operations
      * with getFreeElement.
      *
      */
@@ -32,10 +31,10 @@ public:
      * @param buffer
      * @param size
      * @param overwriteOld
-     * If the ring buffer is overflowing at a write operartion, the oldest data
+     * If the ring buffer is overflowing at a write operation, the oldest data
      * will be overwritten.
      * @param maxExcessBytes
-     * If the buffer can accomodate additional bytes for contigous write
+     * If the buffer can accommodate additional bytes for contiguous write
      * operations with getFreeElement, this is the maximum allowed additional
      * size
      */
@@ -48,7 +47,7 @@ public:
      * Write to circular buffer and increment write pointer by amount.
      * @param data
      * @param amount
-     * @return -@c RETURN_OK if write operation was successfull
+     * @return -@c RETURN_OK if write operation was successful
      * -@c RETURN_FAILED if
      */
     ReturnValue_t writeData(const uint8_t* data, size_t amount);
@@ -108,7 +107,7 @@ public:
      * Delete data by incrementing read pointer.
      * @param amount
      * @param deleteRemaining
-     * If the amount specified is larger than the remaing size to read and this
+     * If the amount specified is larger than the remaining size to read and this
      * is set to true, the remaining amount will be deleted as well
      * @param trueAmount [out]
      * If deleteRemaining was set to true, the amount deleted will be assigned
