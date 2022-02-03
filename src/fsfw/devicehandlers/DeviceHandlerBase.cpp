@@ -665,6 +665,11 @@ void DeviceHandlerBase::doGetWrite() {
 void DeviceHandlerBase::doSendRead() {
   ReturnValue_t result;
 
+  result = doSendReadHook();
+  if (result != RETURN_OK) {
+    return;
+  }
+
   size_t replyLen = 0;
   if (cookieInfo.pendingCommand != deviceCommandMap.end()) {
     replyLen = getNextReplyLength(cookieInfo.pendingCommand->first);
@@ -919,6 +924,8 @@ void DeviceHandlerBase::commandSwitch(ReturnValue_t onOff) {
     }
   }
 }
+
+ReturnValue_t DeviceHandlerBase::doSendReadHook() { return RETURN_OK; }
 
 ReturnValue_t DeviceHandlerBase::getSwitches(const uint8_t** switches, uint8_t* numberOfSwitches) {
   return DeviceHandlerBase::NO_SWITCH;
