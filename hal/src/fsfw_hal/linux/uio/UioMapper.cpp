@@ -67,7 +67,11 @@ ReturnValue_t UioMapper::getMapSize(size_t* size) {
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
-  items = sscanf(hexstring, "%lx", size);
+  uint32_t sizeTmp = 0;
+  items = sscanf(hexstring, "%x", &sizeTmp);
+  if(size != nullptr) {
+    *size = sizeTmp;
+  }
   if (items != 1) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "UioMapper::getMapSize: Failed with error code " << errno << "to convert "
