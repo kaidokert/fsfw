@@ -2,6 +2,7 @@
 #define BSP_RPI_GPIO_GPIORPI_H_
 
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
+
 #include "../../common/gpio/gpioDefinitions.h"
 
 class GpioCookie;
@@ -20,7 +21,7 @@ namespace gpio {
  * @return
  */
 ReturnValue_t createRpiGpioConfig(GpioCookie* cookie, gpioId_t gpioId, int bcmPin,
-        std::string consumer, gpio::Direction direction, int initValue);
-}
+                                  std::string consumer, gpio::Direction direction, int initValue);
+}  // namespace gpio
 
 #endif /* BSP_RPI_GPIO_GPIORPI_H_ */

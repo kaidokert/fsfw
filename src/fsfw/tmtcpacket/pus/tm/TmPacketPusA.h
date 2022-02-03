@@ -2,12 +2,12 @@
 #define FSFW_TMTCPACKET_PUS_TMPACKETPUSA_H_
 
 #include "TmPacketBase.h"
-#include "fsfw/tmtcpacket/SpacePacketBase.h"
-#include "fsfw/timemanager/TimeStamperIF.h"
-#include "fsfw/timemanager/Clock.h"
 #include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/timemanager/Clock.h"
+#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/tmtcpacket/SpacePacketBase.h"
 
-namespace Factory{
+namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
@@ -19,12 +19,12 @@ void setStaticFrameworkObjectIds();
  * @ingroup tmtcpackets
  */
 struct PUSTmDataFieldHeaderPusA {
-    uint8_t version_type_ack;
-    uint8_t service_type;
-    uint8_t service_subtype;
-    uint8_t subcounter;
-    // uint8_t destination;
-    uint8_t time[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
+  uint8_t version_type_ack;
+  uint8_t service_type;
+  uint8_t service_subtype;
+  uint8_t subcounter;
+  // uint8_t destination;
+  uint8_t time[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
 };
 
 /**
@@ -33,96 +33,97 @@ struct PUSTmDataFieldHeaderPusA {
  * @ingroup tmtcpackets
  */
 struct TmPacketPointerPusA {
-    CCSDSPrimaryHeader primary;
-    PUSTmDataFieldHeaderPusA data_field;
-    uint8_t data;
+  CCSDSPrimaryHeader primary;
+  PUSTmDataFieldHeaderPusA data_field;
+  uint8_t data;
 };
 
 /**
  * PUS A packet implementation
  * @ingroup tmtcpackets
  */
-class TmPacketPusA: public TmPacketBase {
-    friend void (Factory::setStaticFrameworkObjectIds)();
-public:
-    /**
-     * This constant defines the minimum size of a valid PUS Telemetry Packet.
-     */
-    static const uint32_t  TM_PACKET_MIN_SIZE = (sizeof(CCSDSPrimaryHeader) +
-            sizeof(PUSTmDataFieldHeaderPusA) + 2);
-    //! Maximum size of a TM Packet in this mission.
-    static const uint32_t MISSION_TM_PACKET_MAX_SIZE = fsfwconfig::FSFW_MAX_TM_PACKET_SIZE;
+class TmPacketPusA : public TmPacketBase {
+  friend void(Factory::setStaticFrameworkObjectIds)();
 
-    /**
-     * This is the default constructor.
-     * It sets its internal data pointer to the address passed and also
-     * forwards the data pointer to the parent SpacePacketBase class.
-     * @param set_address   The position where the packet data lies.
-     */
-    TmPacketPusA( uint8_t* setData );
-    /**
-     * This is the empty default destructor.
-     */
-    virtual ~TmPacketPusA();
+ public:
+  /**
+   * This constant defines the minimum size of a valid PUS Telemetry Packet.
+   */
+  static const uint32_t TM_PACKET_MIN_SIZE =
+      (sizeof(CCSDSPrimaryHeader) + sizeof(PUSTmDataFieldHeaderPusA) + 2);
+  //! Maximum size of a TM Packet in this mission.
+  static const uint32_t MISSION_TM_PACKET_MAX_SIZE = fsfwconfig::FSFW_MAX_TM_PACKET_SIZE;
 
-    /* TmPacketBase implementations */
-    uint8_t getService() override;
-    uint8_t getSubService() override;
-    uint8_t* getSourceData() override;
-    uint16_t getSourceDataSize() override;
-    uint16_t getDataFieldSize() override;
+  /**
+   * This is the default constructor.
+   * It sets its internal data pointer to the address passed and also
+   * forwards the data pointer to the parent SpacePacketBase class.
+   * @param set_address   The position where the packet data lies.
+   */
+  TmPacketPusA(uint8_t* setData);
+  /**
+   * This is the empty default destructor.
+   */
+  virtual ~TmPacketPusA();
 
-    /**
-     * Returns a raw pointer to the beginning of the time field.
-     * @return Raw pointer to time field.
-     */
-    uint8_t* getPacketTimeRaw() const override;
-    size_t getTimestampSize() const override;
+  /* TmPacketBase implementations */
+  uint8_t getService() override;
+  uint8_t getSubService() override;
+  uint8_t* getSourceData() override;
+  uint16_t getSourceDataSize() override;
+  uint16_t getDataFieldSize() override;
 
-    size_t getPacketMinimumSize() const override;
+  /**
+   * Returns a raw pointer to the beginning of the time field.
+   * @return Raw pointer to time field.
+   */
+  uint8_t* getPacketTimeRaw() const override;
+  size_t getTimestampSize() const override;
 
-protected:
-    /**
-     * A pointer to a structure which defines the data structure of
-     * the packet's data.
-     *
-     * To be hardware-safe, all elements are of byte size.
-     */
-    TmPacketPointerPusA* tmData;
+  size_t getPacketMinimumSize() const override;
 
-    /**
-     * Initializes the Tm Packet header.
-     * Does set the timestamp (to now), but not the error control field.
-     * @param apid APID used.
-     * @param service   PUS Service
-     * @param subservice PUS Subservice
-     * @param packetSubcounter Additional subcounter used.
-     */
-    void initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice,
-            uint8_t packetSubcounter);
+ protected:
+  /**
+   * A pointer to a structure which defines the data structure of
+   * the packet's data.
+   *
+   * To be hardware-safe, all elements are of byte size.
+   */
+  TmPacketPointerPusA* tmData;
 
-    /**
-     * With this method, the packet data pointer can be redirected to another
-     * location.
-     *
-     * This call overwrites the parent's setData method to set both its
-     * @c tc_data pointer and the parent's @c data pointer.
-     *
-     * @param p_data    A pointer to another PUS Telemetry Packet.
-     */
-    void setData( const uint8_t* pData );
+  /**
+   * Initializes the Tm Packet header.
+   * Does set the timestamp (to now), but not the error control field.
+   * @param apid APID used.
+   * @param service   PUS Service
+   * @param subservice PUS Subservice
+   * @param packetSubcounter Additional subcounter used.
+   */
+  void initializeTmPacket(uint16_t apid, uint8_t service, uint8_t subservice,
+                          uint8_t packetSubcounter);
 
-    /**
-     * In case data was filled manually (almost never the case).
-     * @param size Size of source data (without CRC and data filed header!).
-     */
-    void setSourceDataSize(uint16_t size);
+  /**
+   * With this method, the packet data pointer can be redirected to another
+   * location.
+   *
+   * This call overwrites the parent's setData method to set both its
+   * @c tc_data pointer and the parent's @c data pointer.
+   *
+   * @param p_data    A pointer to another PUS Telemetry Packet.
+   */
+  ReturnValue_t setData(uint8_t* pData, size_t maxSize, void* args = nullptr) override;
 
-    /**
-     * Checks if a time stamper is available and tries to set it if not.
-     * @return Returns false if setting failed.
-     */
-    bool checkAndSetStamper();
+  /**
+   * In case data was filled manually (almost never the case).
+   * @param size Size of source data (without CRC and data filed header!).
+   */
+  void setSourceDataSize(uint16_t size);
+
+  /**
+   * Checks if a time stamper is available and tries to set it if not.
+   * @return Returns false if setting failed.
+   */
+  bool checkAndSetStamper();
 };
 
 #endif /* FSFW_TMTCPACKET_PUS_TMPACKETPUSA_H_ */

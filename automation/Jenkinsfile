@@ -1,28 +1,23 @@
 pipeline {
-    agent any
     environment {
-        BUILDDIR = 'build-unittests'
+        BUILDDIR = 'build-tests'
+    }
+    agent {
+        dockerfile {
+            dir 'automation'
+            //force docker to redownload base image and rebuild all steps instead of caching them
+            //this way, we always get an up to date docker image one each build
+            additionalBuildArgs  '--no-cache --pull'
+            reuseNode true
+        }
     }
     stages {
-        stage('Create Docker') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    additionalBuildArgs  '--no-cache'
-                    reuseNode true
-                }
-            }
+        stage('Clean') {
             steps {
                 sh 'rm -rf $BUILDDIR'
             }
         }
         stage('Configure') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
@@ -30,12 +25,6 @@ pipeline {
             }
         }
         stage('Build') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'cmake --build . -j'
@@ -43,12 +32,6 @@ pipeline {
             }
         }
         stage('Unittests') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'cmake --build . -- fsfw-tests_coverage -j'
@@ -56,12 +39,6 @@ pipeline {
             }
         }
         stage('Valgrind') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'valgrind --leak-check=full --error-exitcode=1 ./fsfw-tests'

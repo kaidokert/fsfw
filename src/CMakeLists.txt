@@ -7,12 +7,3 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
 )
 
 add_subdirectory(fsfw)
-
-# Configure File
-
-target_include_directories(${LIB_FSFW_NAME} PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
-target_include_directories(${LIB_FSFW_NAME} INTERFACE
-    ${CMAKE_CURRENT_BINARY_DIR}
-)

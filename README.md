@@ -42,7 +42,7 @@ There are some functions like `printChar` which are different depending on the t
 and need to be implemented by the mission developer.
 
 A template configuration folder was provided and can be copied into the project root to have
-a starting point. The [configuration section](doc/README-config.md#top) provides more specific 
+a starting point. The [configuration section](docs/README-config.md#top) provides more specific 
 information about the possible options.
 
 ## Adding the library
@@ -91,7 +91,7 @@ You can use the following commands inside the `fsfw` folder to set up the build 
 
 ```sh
 mkdir build-Unittest && cd build-Unittest
-cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host ..
+cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
 You can also use `-DFSFW_OSAL=linux` on Linux systems.
@@ -107,16 +107,22 @@ cmake --build . -- fsfw-tests_coverage -j
 
 The `coverage.py` script located in the `script` folder can also be used to do this conveniently.
 
+## Formatting the sources
+
+The formatting is done by the `clang-format` tool. The configuration is contained within the
+`.clang-format` file in the repository root. As long as `clang-format` is installed, you
+can run the `apply-clang-format.sh` helper script to format all source files consistently.
+
 ## Index
 
-[1. High-level overview](doc/README-highlevel.md#top) <br>
-[2. Core components](doc/README-core.md#top) <br>
-[3. Configuration](doc/README-config.md#top) <br>
-[4. OSAL overview](doc/README-osal.md#top) <br>
-[5. PUS services](doc/README-pus.md#top) <br>
-[6. Device Handler overview](doc/README-devicehandlers.md#top) <br>
-[7. Controller overview](doc/README-controllers.md#top) <br>
-[8. Local Data Pools](doc/README-localpools.md#top) <br>
+[1. High-level overview](docs/README-highlevel.md#top) <br>
+[2. Core components](docs/README-core.md#top) <br>
+[3. Configuration](docs/README-config.md#top) <br>
+[4. OSAL overview](docs/README-osal.md#top) <br>
+[5. PUS services](docs/README-pus.md#top) <br>
+[6. Device Handler overview](docs/README-devicehandlers.md#top) <br>
+[7. Controller overview](docs/README-controllers.md#top) <br>
+[8. Local Data Pools](docs/README-localpools.md#top) <br>
 
 
 

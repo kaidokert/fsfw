@@ -4,11 +4,13 @@ endif()
 
 target_sources(${LIB_FSFW_NAME} PRIVATE
 	UnixFileGuard.cpp
+	CommandExecutor.cpp
 	utility.cpp
 )
 
-add_subdirectory(gpio)
-add_subdirectory(spi)
-add_subdirectory(i2c)
-add_subdirectory(uart)
-add_subdirectory(uio)
+if(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS)
+	add_subdirectory(gpio)
+	add_subdirectory(spi)
+	add_subdirectory(i2c)
+	add_subdirectory(uart)
+endif()

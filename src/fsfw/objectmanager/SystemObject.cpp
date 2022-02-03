@@ -1,37 +1,31 @@
-#include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/events/EventManagerIF.h"
 
-SystemObject::SystemObject(object_id_t setObjectId, bool doRegister) :
-		objectId(setObjectId), registered(doRegister) {
-    if (registered) {
-        ObjectManager::instance()->insert(objectId, this);
-    }
+#include "fsfw/events/EventManagerIF.h"
+#include "fsfw/objectmanager/ObjectManager.h"
+
+SystemObject::SystemObject(object_id_t setObjectId, bool doRegister)
+    : objectId(setObjectId), registered(doRegister) {
+  if (registered) {
+    ObjectManager::instance()->insert(objectId, this);
+  }
 }
 
 SystemObject::~SystemObject() {
-	if (registered) {
-	    ObjectManager::instance()->remove(objectId);
-	}
+  if (registered) {
+    ObjectManager::instance()->remove(objectId);
+  }
 }
 
-object_id_t SystemObject::getObjectId() const {
-	return objectId;
+object_id_t SystemObject::getObjectId() const { return objectId; }
+
+void SystemObject::triggerEvent(Event event, uint32_t parameter1, uint32_t parameter2) {
+  EventManagerIF::triggerEvent(objectId, event, parameter1, parameter2);
 }
 
-void SystemObject::triggerEvent(Event event, uint32_t parameter1,
-		uint32_t parameter2) {
-	EventManagerIF::triggerEvent(objectId, event, parameter1, parameter2);
-}
+ReturnValue_t SystemObject::initialize() { return HasReturnvaluesIF::RETURN_OK; }
 
-ReturnValue_t SystemObject::initialize() {
-	return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t SystemObject::checkObjectConnections() {
-	return HasReturnvaluesIF::RETURN_OK;
-}
+ReturnValue_t SystemObject::checkObjectConnections() { return HasReturnvaluesIF::RETURN_OK; }
 
 void SystemObject::forwardEvent(Event event, uint32_t parameter1, uint32_t parameter2) const {
-	EventManagerIF::triggerEvent(objectId, event, parameter1, parameter2);
+  EventManagerIF::triggerEvent(objectId, event, parameter1, parameter2);
 }

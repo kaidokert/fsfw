@@ -7,7 +7,7 @@
 #include <fsfw/tmtcpacket/pus/tm/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
-#include <fsfw/internalError/InternalErrorReporter.h>
+#include <fsfw/internalerror/InternalErrorReporter.h>
 
 #include <cstdint>
 
@@ -48,6 +48,6 @@ void Factory::setStaticFrameworkObjectIds() {
 
 	DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 
-	TmPacketStored::timeStamperId = objects::NO_OBJECT;
+	TmPacketBase::timeStamperId = objects::NO_OBJECT;
 }
 

@@ -10,26 +10,20 @@
 //! Example usage:
 //! sif::printInfo("Status register: " BYTE_TO_BINARY_PATTERN "\n",BYTE_TO_BINARY(0x1f));
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
-#define BYTE_TO_BINARY(byte)  \
-  (byte & 0x80 ? '1' : '0'), \
-  (byte & 0x40 ? '1' : '0'), \
-  (byte & 0x20 ? '1' : '0'), \
-  (byte & 0x10 ? '1' : '0'), \
-  (byte & 0x08 ? '1' : '0'), \
-  (byte & 0x04 ? '1' : '0'), \
-  (byte & 0x02 ? '1' : '0'), \
-  (byte & 0x01 ? '1' : '0')
-
+#define BYTE_TO_BINARY(byte)                                                           \
+  (byte & 0x80 ? '1' : '0'), (byte & 0x40 ? '1' : '0'), (byte & 0x20 ? '1' : '0'),     \
+      (byte & 0x10 ? '1' : '0'), (byte & 0x08 ? '1' : '0'), (byte & 0x04 ? '1' : '0'), \
+      (byte & 0x02 ? '1' : '0'), (byte & 0x01 ? '1' : '0')
 
 namespace sif {
 
 enum PrintLevel {
-	NONE = 0,
-	//! Strange error when using just ERROR..
-	ERROR_LEVEL = 1,
-	WARNING_LEVEL = 2,
-	INFO_LEVEL = 3,
-	DEBUG_LEVEL = 4
+  NONE = 0,
+  //! Strange error when using just ERROR..
+  ERROR_LEVEL = 1,
+  WARNING_LEVEL = 2,
+  INFO_LEVEL = 3,
+  DEBUG_LEVEL = 4
 };
 
 /**
@@ -50,11 +44,11 @@ void setToAddCrAtEnd(bool addCrAtEnd_);
  * a timestamp.
  * @param fmt Formatted string
  */
-void printInfo(const char *fmt, ...);
+void printInfo(const char* fmt, ...);
 void printWarning(const char* fmt, ...);
 void printDebug(const char* fmt, ...);
 void printError(const char* fmt, ...);
 
-}
+}  // namespace sif
 
 #endif /* FSFW_SERVICEINTERFACE_SERVICEINTERFACEPRINTER */
