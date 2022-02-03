@@ -171,6 +171,11 @@ class LocalPoolDataSetBase : public PoolDataSetBase, public MarkChangedIF {
    */
   float getCollectionInterval() const;
 
+  /**
+   * @brief   Can be overwritten by a specific implementation of a dataset to print the set.
+   */
+  virtual void printSet();
+
  protected:
   sid_t sid;
   //! This mutex is used if the data is created by one object only.
