@@ -30,6 +30,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Aforementioned changes to existing TMTC stack
 
+# [v3.0.1]
+
+## API Changes
+
+* 
+
+## Bugfixes
+
+* Version number was not updated for v3.0.0 #542
+
+## Enhancement
+
+* 
+
+## Known bugs
+
+* 
+
 # [v3.0.0]
 
 ## API Changes
@@ -86,7 +104,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Known bugs
 
-* 
+* Version number was not updated for v3.0.0 #542
 
 
 All Pull Requests:
