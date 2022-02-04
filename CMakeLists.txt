@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 set(FSFW_VERSION 3)
 set(FSFW_SUBVERSION 0)
-set(FSFW_REVISION 0)
+set(FSFW_REVISION 1)
 
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
