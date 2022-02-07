@@ -1082,6 +1082,12 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    */
   void commandSwitch(ReturnValue_t onOff);
 
+  /**
+   * @brief   This function can be used to insert device specific code during the do-send-read
+   *          step.
+   */
+  virtual ReturnValue_t doSendReadHook();
+
  private:
   /**
    * State a cookie is in.
