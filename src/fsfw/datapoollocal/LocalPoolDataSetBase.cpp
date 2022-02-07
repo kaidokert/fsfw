@@ -291,3 +291,5 @@ float LocalPoolDataSetBase::getCollectionInterval() const {
     return 0.0;
   }
 }
+
+void LocalPoolDataSetBase::printSet() { return; }
