@@ -33,12 +33,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/534
 - Updated Catch2 to v3.0.0-preview4
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/538
+- Changed CI to use prebuilt docker image
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/549
 
 ## Bugfix
 
 - CMake fixes in PR https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/533 , was problematic
   if the uppermost user `CMakeLists.txt` did not have the include paths set up properly, which
   could lead to compile errors that `#include "fsfw/FSFW.h"` was not found.
+- Fix for build regression in Catch2 v3.0.0-preview4
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/548
 
 ## API Changes
 
