@@ -60,6 +60,8 @@ if(FSFW_BUILD_UNITTESTS)
         )
 
         FetchContent_MakeAvailable(Catch2)
+        #fixes regression -preview4, to be confirmed in later releases
+        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
     endif()
 
     set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
