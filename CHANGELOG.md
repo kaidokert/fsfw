@@ -1,4 +1,208 @@
-# Changed from ASTP 1.1.0 to 1.2.0
+Change Log
+=======
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
+and this project adheres to [Semantic Versioning](http://semver.org/).
+
+# [unreleased]
+
+# [v4.0.0]
+
+## Additions
+
+- CFDP Packet Stack and related tests added. It also refactors the existing TMTC infastructure to
+  allow sending of CFDP packets to the CCSDS handlers.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/528
+- added virtual function to print datasets
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/544
+- doSendRead Hook
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/545
+  
+### HAL additions
+
+- Linux Command Executor, which can execute shell commands in blocking and non-blocking mode
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/536
+- uio Mapper
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/543
+
+## Changes
+
+- Applied the `clang-format` auto-formatter to all source code
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/534
+- Updated Catch2 to v3.0.0-preview4
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/538
+- Changed CI to use prebuilt docker image
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/549
+
+## Bugfix
+
+- CMake fixes in PR https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/533 , was problematic
+  if the uppermost user `CMakeLists.txt` did not have the include paths set up properly, which
+  could lead to compile errors that `#include "fsfw/FSFW.h"` was not found.
+- Fix for build regression in Catch2 v3.0.0-preview4
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/548
+
+## API Changes
+
+- Aforementioned changes to existing TMTC stack
+
+## Known bugs
+
+- 
+
+# [v3.0.1]
+
+## API Changes
+
+* 
+
+## Bugfixes
+
+* Version number was not updated for v3.0.0 #542
+
+## Enhancement
+
+* 
+
+## Known bugs
+
+* 
+
+# [v3.0.0]
+
+## API Changes
+
+#### TCP Socket Changes
+
+* Keep Open TCP Implementation #496
+    * The socket will now kept open after disconnect. This allows reconnecting. 
+    * Only one connection is allowed
+    * No internal influence but clients need to change their Code.
+
+### GPIO IF
+
+* Add feature to open GPIO by line name #506
+
+### Bitutil
+
+* Unittests for Op Divider and Bitutility #510
+
+### Filesystem IF changed
+
+*  Filesystem Base Interface: Use IF instead of void pointer #511 
+
+### STM32
+
+* STM32 SPI Updates #518
+
+## Bugfixes
+
+* Small bugfix for LIS3 handler #504
+* Spelling fixed for function names #509
+* CMakeLists fixes #517
+* Out of bound reads and writes in unittests #519
+* Bug in TmPacketStoredPusC (#478)
+* Windows ifdef fixed #529
+
+## Enhancement
+
+* FSFW.h.in more default values #491
+* Minor updates for PUS services #498
+* HasReturnvaluesIF naming for parameter #499
+* Tests can now be built as part of FSFW and versioning moved to CMake #500
+*  Added integration test code #508 
+* More printouts for rejected TC packets #505
+* Arrayprinter format improvements #514
+* Adding code for CI with docker and jenkins #520
+* Added new function in SerializeAdapter  #513
+    *  Enables simple deSerialize if you keep track of the buffer position yourself
+    *  `` static ReturnValue_t deSerialize(T *object, const uint8_t* buffer,
+            size_t* deserSize, SerializeIF::Endianness streamEndianness) ``
+* Unittest helper scripts has a new Parameter to open the coverage html in the webrowser  #525
+    * ``'-o', '--open', Open coverage data in webbrowser`` 
+* Documentation updated. Sphinx Documentation can now be build with python script #526
+
+## Known bugs
+
+* Version number was not updated for v3.0.0 #542
+
+
+All Pull Requests:
+
+Milestone: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/milestone/19
+
+# [v2.0.0]
+
+## API Changes
+
+
+### File Structure changed to fit more common structure
+
+* See pull request (#445)
+  * HAL is now part of the main project
+    * **See Instructions below:**
+
+#### Instruction how to update existing / user code
+
+* Changes in `#include`:
+  * Rename `internalError` in includes to `internalerror`
+  * Rename `fsfw/hal` to `fsfw_hal`
+  * Rename `fsfw/tests` to `fsfw_tests`
+  * Rename `osal/FreeRTOS` to `osal/freertos`
+
+* Changes in `CMakeLists.txt`: 
+  * Rename `OS_FSFW` to `FSFW_OSAL`
+
+* Changes in `DleEncoder.cpp`
+    * Create an instance of the `DleEncoder` first before calling the `encode` and `decode` functions
+
+### Removed osal/linux/Timer (#486)
+
+* Was redundant to timemanager/Countdown
+
+#### Instruction how to update existing / user code
+
+* Use timemanager/Countdown instead
+
+## Bugfixes
+
+### TM Stack
+
+* Increased TM stack robustness by introducing `nullptr` checks and more printouts (#483)
+
+#### Host OSAL / FreeRTOS 
+
+* QueueMapManager Bugfix (NO_QUEUE was used as MessageQueueId) (#444)
+
+#### Events
+
+* Event output is now consistent (#447)
+
+#### DLE Encoder
+
+* Fixed possible out of bounds access in DLE Encoder (#492)
+
+## Enhancment
+
+* HAL as major new feature, also includes three MEMS devicehandlers as part of #481
+* Linux HAL updates (#456)
+* FreeRTOS Header cleaning update and Cmake tweaks (#442)
+* Printer updates (#453)
+* New returnvalue for for empty PST (#485)
+* TMTC Bridge: Increase limit of packets stored (#484)
+
+## Known bugs
+
+* Bug in TmPacketStoredPusC (#478)
+
+
+All Pull Requests:
+
+Milestone: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/milestone/5
+
+# [v1.2.0]
 
 ## API Changes
 
@@ -27,7 +231,7 @@
 
 - See API changes chapter. This change will keep the internal API consistent in the future
 
-# Changes from ASTP 1.0.0 to 1.1.0
+# [v1.1.0]
 
 ## API Changes
 
