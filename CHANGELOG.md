@@ -15,16 +15,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - CFDP Packet Stack and related tests added. It also refactors the existing TMTC infastructure to
   allow sending of CFDP packets to the CCSDS handlers.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/528
-- Linux Command Executor, which can execute shell commands in blocking and non-blocking mode
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/536
 - added virtual function to print datasets
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/544
+- doSendRead Hook
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/545
+  
+### HAL additions
+
+- Linux Command Executor, which can execute shell commands in blocking and non-blocking mode
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/536
+- uio Mapper
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/543
 
 ## Changes
 
 - Applied the `clang-format` auto-formatter to all source code
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/534
-- Updated Catch2 to v3.0.0-preview4, might fail installing with cmake, see known bugs below
+- Updated Catch2 to v3.0.0-preview4
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/538
 
 ## Bugfix
@@ -39,8 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Known bugs
 
-* on some platforms building Catch2 from cmake might fail. In this case, it is advised to build and
-  install locally from git, see automation/Dockerfile for an example
+- 
 
 # [v3.0.1]
 
