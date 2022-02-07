@@ -3,7 +3,7 @@ pipeline {
         BUILDDIR = 'build-tests'
     }
     agent {
-        docker { image: fsfw-ci:d1}
+        docker { image: 'fsfw-ci:d1'}
     }
     stages {
         stage('Clean') {
