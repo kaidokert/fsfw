@@ -72,7 +72,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
     usleep(500);
-    REQUIRE(limitIdx < 20);
+    REQUIRE(limitIdx < 50);
   }
   limitIdx = 0;
   CHECK(bytesHaveBeenRead == true);
@@ -102,7 +102,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
     usleep(500);
-    REQUIRE(limitIdx < 20);
+    REQUIRE(limitIdx < 50);
   }
   REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
   REQUIRE(cmdExecutor.getLastError() == 1);
