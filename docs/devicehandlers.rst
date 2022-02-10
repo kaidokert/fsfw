@@ -7,7 +7,7 @@ Device handler components represent, control and monitor equipment, for example 
 of a spacecraft or the payload.
 
 Most device handlers have the same common functionality or
-requirements, which are fulfilled by implementing an certain interface:
+requirements, which are fulfilled by implementing certain interfaces:
 
 - The handler/device needs to be commandable: :cpp:class:`HasActionsIF`
 - The handler needs to communicate with the physical device via a dedicated
