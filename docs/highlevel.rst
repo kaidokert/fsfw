@@ -118,7 +118,7 @@ The DH has mechanisms to monitor the communication with the physical device whic
 for FDIR reaction.  Device Handlers can be created by implementing ``DeviceHandlerBase``.
 A standard FDIR component for the DH will be created automatically but can
 be overwritten by the user. More information on DeviceHandlers can be found in the
-related [documentation section](doc/README-devicehandlers.md#top).
+related :ref:`documentation section <dhb-prim-doc>`.
 
 Modes and Health
 --------------------

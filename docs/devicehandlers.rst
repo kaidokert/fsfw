@@ -1,7 +1,10 @@
+.. _dhb-prim-doc:
+
 Device Handlers
 ==================
 
-Device handler components rerpresent, control and monitor equipment, for example sensors or actuators of a spacecraft or the payload.
+Device handler components represent, control and monitor equipment, for example sensors or actuators
+of a spacecraft or the payload.
 
 Most device handlers have the same common functionality or
 requirements, which are fulfilled by implementing an certain interface:
@@ -17,7 +20,7 @@ requirements, which are fulfilled by implementing an certain interface:
 - The handler has modes. For example there are the core modes `MODE_ON`, `MODE_OFF`
   and `MODE_NORMAL` provided by the FSFW. `MODE_ON` means that a device is physically powered
   but that it is not periodically polling data from the
-  physical device, `MODE_NORMAL` means that it is able to do that: :cpp:class`HasModesIF`
+  physical device, `MODE_NORMAL` means that it is able to do that: :cpp:class:`HasModesIF`
 
 The device handler base therefore provides abstractions for a lot of common
 functionality, which can potentially avoid high amounts or logic and code duplication.
@@ -60,6 +63,7 @@ functions implemented:
 and the respective source file with sensible default return values:
 
 .. code-block:: cpp
+
 	#include "TestDeviceHandler.h"
 
 	TestDeviceHandler::TestDeviceHandler(object_id_t objectId, object_id_t comIF, CookieIF* cookie)
