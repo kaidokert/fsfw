@@ -14,3 +14,5 @@ if(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS)
 	add_subdirectory(i2c)
 	add_subdirectory(uart)
 endif()
+
+add_subdirectory(uio)

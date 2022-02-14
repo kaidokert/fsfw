@@ -25,8 +25,8 @@ class RTEMSTaskBase {
    * all other attributes are set with default values.
    * @param priority		Sets the priority of a task. Values range from a low 0 to a high 99.
    * @param stack_size	The stack size reserved by the operating system for the task.
-   * @param nam			The name of the Task, as a null-terminated String. Currently max 4 chars
-   * supported (excluding Null-terminator), rest will be truncated
+   * @param nam			The name of the Task, as a null-terminated String. Currently max 4
+   * chars supported (excluding Null-terminator), rest will be truncated
    */
   RTEMSTaskBase(rtems_task_priority priority, size_t stack_size, const char *name);
   /**
