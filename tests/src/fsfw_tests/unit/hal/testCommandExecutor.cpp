@@ -45,7 +45,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
     usleep(500);
-    REQUIRE(limitIdx < 5);
+    REQUIRE(limitIdx < 500);
   }
 
   limitIdx = 0;
