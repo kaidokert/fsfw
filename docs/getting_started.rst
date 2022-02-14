@@ -90,8 +90,21 @@ Building the documentation
 ----------------------------
 
 The FSFW documentation is built using the tools Sphinx, doxygen and breathe based on the
-instructions provided in `this blogpost <https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/>`_. You can set up a
-documentation build system using the following commands
+instructions provided in `this blogpost <https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/>`_. If you
+want to do this locally, set up the prerequisites first. This requires a ``python3``
+installation as well. Example here is for Ubuntu.
+
+.. code-block:: console
+
+   sudo apt-get install doxygen graphviz
+
+And the following Python packages
+
+.. code-block:: console
+
+   python3 -m pip install sphinx breathe
+
+You can set up a documentation build system using the following commands
 
 .. code-block:: bash
 
@@ -109,6 +122,14 @@ folder. Simply open the ``index.html`` in the webbrowser of your choice.
 
 The ``helper.py`` script located in the ``script`` folder can also be used to create, build
 and open the documentation conveniently. Try ``helper.py -h`` for more information.
+
+Formatting the source
+-----------------------
+
+The formatting is done by the ``clang-format`` tool. The configuration is contained within the
+``.clang-format`` file in the repository root. As long as ``clang-format`` is installed, you
+can run the ``apply-clang-format.sh`` helper script to format all source files consistently.
+
 
 .. _`Hosted FSFW example`: https://egit.irs.uni-stuttgart.de/fsfw/fsfw-example-hosted
 .. _`Catch2 library`: https://github.com/catchorg/Catch2

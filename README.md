@@ -107,6 +107,42 @@ cmake --build . -- fsfw-tests_coverage -j
 
 The `coverage.py` script located in the `script` folder can also be used to do this conveniently.
 
+## Building the documentations
+
+The FSFW documentation is built using the tools Sphinx, doxygen and breathe based on the
+instructions provided in  [this blogpost](https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/). If you
+want to do this locally, set up the prerequisites first. This requires a ``python3``
+installation as well. Example here is for Ubuntu.
+
+```sh
+sudo apt-get install doxygen graphviz
+```
+
+And the following Python packages
+
+```sh
+python3 -m pip install sphinx breathe
+```
+
+You can set up a documentation build system using the following commands
+
+```sh
+mkdir build-docs && cd build-docs
+cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..
+```
+
+Then you can generate the documentation using
+
+```sh
+cmake --build . -j
+```
+
+You can find the generated documentation inside the `docs/sphinx` folder inside the build
+folder. Simply open the `index.html` in the webbrowser of your choice.
+
+The `helper.py` script located in the script` folder can also be used to create, build
+and open the documentation conveniently. Try `helper.py -h for more information.
+
 ## Formatting the sources
 
 The formatting is done by the `clang-format` tool. The configuration is contained within the
