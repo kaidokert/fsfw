@@ -45,7 +45,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
     usleep(500);
-    REQUIRE(limitIdx < 5);
+    REQUIRE(limitIdx < 500);
   }
 
   limitIdx = 0;
@@ -71,8 +71,9 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     limitIdx++;
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
+    // This ensures that the tests do not block indefinitely
     usleep(500);
-    REQUIRE(limitIdx < 20);
+    REQUIRE(limitIdx < 500);
   }
   limitIdx = 0;
   CHECK(bytesHaveBeenRead == true);
@@ -89,7 +90,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   std::string allTheReply(reinterpret_cast<char*>(largerReadBuffer));
   // I am just going to assume that this string is the same across ping implementations
   // of different Linux systems
-  REQUIRE(allTheReply.find("localhost ping statistics") != std::string::npos);
+  REQUIRE(allTheReply.find("PING localhost") != std::string::npos);
 
   // Now check failing command
   result = cmdExecutor.load("false", false, false);
@@ -101,8 +102,9 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     limitIdx++;
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
+    // This ensures that the tests do not block indefinitely
     usleep(500);
-    REQUIRE(limitIdx < 20);
+    REQUIRE(limitIdx < 500);
   }
   REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
   REQUIRE(cmdExecutor.getLastError() == 1);

@@ -30,7 +30,7 @@ class DataLinkLayer : public CCSDSReturnValuesIF {
   //! [EXPORT] : [COMMENT] A previously found Bit Lock signal was lost. P1: raw BLO state, P2: 0
   static const Event BIT_LOCK_LOST = MAKE_EVENT(3, severity::INFO);
   //	static const Event RF_CHAIN_LOST = MAKE_EVENT(4, severity::INFO); //!< The CCSDS Board
-  //detected that either bit lock or RF available or both are lost. No parameters.
+  // detected that either bit lock or RF available or both are lost. No parameters.
   //! [EXPORT] : [COMMENT] The CCSDS Board could not interpret a TC
   static const Event FRAME_PROCESSING_FAILED = MAKE_EVENT(5, severity::LOW);
   /**

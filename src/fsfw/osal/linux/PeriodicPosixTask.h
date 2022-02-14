@@ -65,8 +65,8 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
   /**
    * @brief	The function containing the actual functionality of the task.
    * @details	The method sets and starts
-   * 			the task's period, then enters a loop that is repeated indefinitely. Within the loop,
-   * all performOperation methods of the added objects are called. Afterwards the task will be
+   * 			the task's period, then enters a loop that is repeated indefinitely. Within the
+   * loop, all performOperation methods of the added objects are called. Afterwards the task will be
    * blocked until the next period. On missing the deadline, the deadlineMissedFunction is executed.
    */
   virtual void taskFunctionality(void);

@@ -30,9 +30,9 @@ ReturnValue_t VirtualChannelReception::mapDemultiplexing(TcTransferFrame* frame)
   mapChannelIterator iter = mapChannels.find(mapId);
   if (iter == mapChannels.end()) {
     //		error << "VirtualChannelReception::mapDemultiplexing on VC " << std::hex << (int)
-    //channelId
+    // channelId
     //				<< ": MapChannel " << (int) mapId << std::dec << " not found." <<
-    //std::endl;
+    // std::endl;
     return VC_NOT_FOUND;
   } else {
     return (iter->second)->extractPackets(frame);

@@ -51,9 +51,9 @@ class RMAP : public HasReturnvaluesIF {
   // MAKE_RETURN_CODE(0xE4); //the data that was to be sent was too long for the hw to handle (write
   // command) or the expected len was bigger than maximal expected len (read command) command was
   // not sent
-  // replaced by DeviceCommunicationIF::NULLPOINTER	static const ReturnValue_t COMMAND_NULLPOINTER
-  // = MAKE_RETURN_CODE(0xE5); //datalen was != 0 but data was == NULL in write command, or
-  // nullpointer in read command
+  // replaced by DeviceCommunicationIF::NULLPOINTER	static const ReturnValue_t
+  // COMMAND_NULLPOINTER = MAKE_RETURN_CODE(0xE5); //datalen was != 0 but data was == NULL in write
+  // command, or nullpointer in read command
   static const ReturnValue_t COMMAND_CHANNEL_DEACTIVATED =
       MAKE_RETURN_CODE(0xE6);  // the channel has no port set
   static const ReturnValue_t COMMAND_PORT_OUT_OF_RANGE =
@@ -73,8 +73,8 @@ class RMAP : public HasReturnvaluesIF {
   static const ReturnValue_t REPLY_MISSMATCH = MAKE_RETURN_CODE(
       0xD3);  // a read command was issued, but get_write_rply called, or other way round
   static const ReturnValue_t REPLY_TIMEOUT = MAKE_RETURN_CODE(0xD4);  // timeout
-  // replaced by DeviceCommunicationIF::NULLPOINTER	static const ReturnValue_t REPLY_NULLPOINTER =
-  // MAKE_RETURN_CODE(0xD5);//one of the arguments in a read reply was NULL return values for
+  // replaced by DeviceCommunicationIF::NULLPOINTER	static const ReturnValue_t REPLY_NULLPOINTER
+  // = MAKE_RETURN_CODE(0xD5);//one of the arguments in a read reply was NULL return values for
   // get_reply
   static const ReturnValue_t REPLY_INTERFACE_BUSY =
       MAKE_RETURN_CODE(0xC0);  // Interface is busy (transmission buffer still being processed)
@@ -169,8 +169,8 @@ class RMAP : public HasReturnvaluesIF {
    * @param buffer the data to write
    * @param length length of data
    * @return
-   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was == NULL in write
-   * command
+   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was == NULL in
+   * write command
    *      - return codes of RMAPChannelIF::sendCommand()
    */
   static ReturnValue_t sendWriteCommand(RMAPCookie *cookie, const uint8_t *buffer, size_t length);
@@ -205,8 +205,8 @@ class RMAP : public HasReturnvaluesIF {
    * @param cookie to cookie to read from
    * @param expLength the expected maximum length of the reply
    * @return
-   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was == NULL in write
-   * command, or nullpointer in read command
+   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was == NULL in
+   * write command, or nullpointer in read command
    *      - return codes of RMAPChannelIF::sendCommand()
    */
   static ReturnValue_t sendReadCommand(RMAPCookie *cookie, uint32_t expLength);

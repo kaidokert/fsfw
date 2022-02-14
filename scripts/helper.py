@@ -143,7 +143,10 @@ def handle_tests_type(args, build_dir_list: list):
         if which("valgrind") is None:
             print("Please install valgrind first")
             sys.exit(1)
-        os.chdir(UNITTEST_FOLDER_NAME)
+        if os.path.split(os.getcwd())[1] != UNITTEST_FOLDER_NAME:
+            # If we are in a different directory we try to switch into it but
+            # this might fail
+            os.chdir(UNITTEST_FOLDER_NAME)
         os.system("valgrind --leak-check=full ./fsfw-tests")
         os.chdir("..")
 
