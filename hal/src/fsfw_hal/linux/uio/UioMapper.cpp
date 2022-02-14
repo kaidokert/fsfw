@@ -54,7 +54,6 @@ ReturnValue_t UioMapper::getMapSize(size_t* size) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "UioMapper::getMapSize: Failed to open file " << namestream.str() << std::endl;
 #endif
-    fclose(fp);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   char hexstring[SIZE_HEX_STRING] = "";
