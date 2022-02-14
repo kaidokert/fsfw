@@ -90,7 +90,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   std::string allTheReply(reinterpret_cast<char*>(largerReadBuffer));
   // I am just going to assume that this string is the same across ping implementations
   // of different Linux systems
-  REQUIRE(allTheReply.find("localhost ping statistics") != std::string::npos);
+  REQUIRE(allTheReply.find("PING localhost") != std::string::npos);
 
   // Now check failing command
   result = cmdExecutor.load("false", false, false);
