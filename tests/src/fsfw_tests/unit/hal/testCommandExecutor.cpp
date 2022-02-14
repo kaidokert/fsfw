@@ -71,8 +71,9 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     limitIdx++;
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
+    // This ensures that the tests do not block indefinitely
     usleep(500);
-    REQUIRE(limitIdx < 50);
+    REQUIRE(limitIdx < 500);
   }
   limitIdx = 0;
   CHECK(bytesHaveBeenRead == true);
@@ -101,8 +102,9 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     limitIdx++;
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
+    // This ensures that the tests do not block indefinitely
     usleep(500);
-    REQUIRE(limitIdx < 50);
+    REQUIRE(limitIdx < 500);
   }
   REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
   REQUIRE(cmdExecutor.getLastError() == 1);
