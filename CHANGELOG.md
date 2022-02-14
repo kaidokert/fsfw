@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/544
 - doSendRead Hook
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/545
+- Dockumentation for DHB
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/551
   
 ### HAL additions
 
@@ -43,6 +45,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   could lead to compile errors that `#include "fsfw/FSFW.h"` was not found.
 - Fix for build regression in Catch2 v3.0.0-preview4
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/548
+- Fix in unittest which failed on CI
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/552
+- Fix in helper script
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/553
 
 ## API Changes
 
