@@ -22,7 +22,7 @@ ReturnValue_t UioMapper::getMappedAdress(uint32_t** address, Permissions permiss
   int fd = open(uioFile.c_str(), O_RDWR);
   if (fd < 1) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "PtmeAxiConfig::initialize: Invalid UIO device file" << std::endl;
+    sif::error << "PtmeAxiConfig::initialize: Invalid UIO device file" << std::endl;
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -36,7 +36,7 @@ ReturnValue_t UioMapper::getMappedAdress(uint32_t** address, Permissions permiss
 
   if (*address == MAP_FAILED) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "UioMapper::getMappedAdress: Failed to map physical address of uio device "
+    sif::error << "UioMapper::getMappedAdress: Failed to map physical address of uio device "
                  << uioFile.c_str() << " and map" << static_cast<int>(mapNum) << std::endl;
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
@@ -52,19 +52,21 @@ ReturnValue_t UioMapper::getMapSize(size_t* size) {
   fp = fopen(namestream.str().c_str(), "r");
   if (fp == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "UioMapper::getMapSize: Failed to open file " << namestream.str() << std::endl;
+    sif::error << "UioMapper::getMapSize: Failed to open file " << namestream.str() << std::endl;
 #endif
+    fclose(fp);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   char hexstring[SIZE_HEX_STRING] = "";
   int items = fscanf(fp, "%s", hexstring);
   if (items != 1) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "UioMapper::getMapSize: Failed with error code " << errno
+    sif::error << "UioMapper::getMapSize: Failed with error code " << errno
                  << " to read size "
                     "string from file "
                  << namestream.str() << std::endl;
 #endif
+    fclose(fp);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   uint32_t sizeTmp = 0;
@@ -74,9 +76,10 @@ ReturnValue_t UioMapper::getMapSize(size_t* size) {
   }
   if (items != 1) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "UioMapper::getMapSize: Failed with error code " << errno << "to convert "
+    sif::error << "UioMapper::getMapSize: Failed with error code " << errno << "to convert "
                  << "size of map" << mapNum << " to integer" << std::endl;
 #endif
+    fclose(fp);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   fclose(fp);
