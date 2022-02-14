@@ -14,7 +14,8 @@ requirements, which are fulfilled by implementing certain interfaces:
   communication bus, for example SpaceWire, UART or SPI: :cpp:class:`DeviceCommunicationIF`
 - The handler has housekeeping data which has to be exposed to the operator and/or other software
   components: :cpp:class:`HasLocalDataPoolIF`
-- The handler has configurable parameters
+- The handler has configurable parameters: :cpp:class:`ReceivesParameterMessagesIF` which
+  also implements :cpp:class:`HasParametersIF`
 - The handler has health states, for example to indicate a broken device:
   :cpp:class:`HasHealthIF`
 - The handler has modes. For example there are the core modes `MODE_ON`, `MODE_OFF`
