@@ -11,12 +11,12 @@ class CommandMessage;
  * <fsfw/ipc/FwMessageTypes.h>
  * @param message Generic Command Message
  */
-namespace messagetypes{
+namespace messagetypes {
 enum MESSAGE_TYPE {
-	MISSION_MESSAGE_TYPE_START = FW_MESSAGES_COUNT,
+  MISSION_MESSAGE_TYPE_START = FW_MESSAGES_COUNT,
 };
 
 void clearMissionMessage(CommandMessage* message);
-}
+}  // namespace messagetypes
 
 #endif /* CONFIG_IPC_MISSIONMESSAGETYPES_H_ */

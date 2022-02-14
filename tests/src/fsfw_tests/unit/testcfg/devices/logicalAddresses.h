@@ -6,10 +6,8 @@
 #include <cstdint>
 
 namespace addresses {
-	/* Logical addresses have uint32_t datatype */
-	enum logicalAddresses: address_t {
-	};
-}
-
+/* Logical addresses have uint32_t datatype */
+enum logicalAddresses : address_t {};
+}  // namespace addresses
 
 #endif /* CONFIG_DEVICES_LOGICALADDRESSES_H_ */

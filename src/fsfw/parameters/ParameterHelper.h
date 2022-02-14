@@ -1,9 +1,9 @@
 #ifndef FSFW_PARAMETERS_PARAMETERHELPER_H_
 #define FSFW_PARAMETERS_PARAMETERHELPER_H_
 
+#include "../ipc/MessageQueueIF.h"
 #include "ParameterMessage.h"
 #include "ReceivesParameterMessagesIF.h"
-#include "../ipc/MessageQueueIF.h"
 
 /**
  * @brief	Helper class to handle parameter messages.
@@ -12,25 +12,25 @@
  * to a class which implements ReceivesParameterMessagesIF.
  */
 class ParameterHelper {
-public:
-	ParameterHelper(ReceivesParameterMessagesIF *owner);
-	virtual ~ParameterHelper();
+ public:
+  ParameterHelper(ReceivesParameterMessagesIF *owner);
+  virtual ~ParameterHelper();
 
-	ReturnValue_t handleParameterMessage(CommandMessage *message);
+  ReturnValue_t handleParameterMessage(CommandMessage *message);
 
-	ReturnValue_t initialize();
-private:
-	ReceivesParameterMessagesIF *owner;
+  ReturnValue_t initialize();
 
-	MessageQueueId_t ownerQueueId = MessageQueueIF::NO_QUEUE;
+ private:
+  ReceivesParameterMessagesIF *owner;
 
-	StorageManagerIF *storage = nullptr;
+  MessageQueueId_t ownerQueueId = MessageQueueIF::NO_QUEUE;
 
-	ReturnValue_t sendParameter(MessageQueueId_t to, uint32_t id,
-			const ParameterWrapper *description);
+  StorageManagerIF *storage = nullptr;
 
-	void rejectCommand(MessageQueueId_t to, ReturnValue_t reason,
-			Command_t initialCommand);
+  ReturnValue_t sendParameter(MessageQueueId_t to, uint32_t id,
+                              const ParameterWrapper *description);
+
+  void rejectCommand(MessageQueueId_t to, ReturnValue_t reason, Command_t initialCommand);
 };
 
 #endif /* FSFW_PARAMETERS_PARAMETERHELPER_H_ */

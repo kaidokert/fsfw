@@ -8,14 +8,14 @@
 namespace retval {
 static constexpr int CATCH_OK = static_cast<int>(HasReturnvaluesIF::RETURN_OK);
 static constexpr int CATCH_FAILED = static_cast<int>(HasReturnvaluesIF::RETURN_FAILED);
-}
+}  // namespace retval
 
 namespace tconst {
-	static constexpr MessageQueueId_t testQueueId = 42;
+static constexpr MessageQueueId_t testQueueId = 42;
 }
 
 namespace tglob {
-	StorageManagerIF* getIpcStoreHandle();
+StorageManagerIF* getIpcStoreHandle();
 }
 
 #endif /* FSFW_UNITTEST_CORE_CATCHDEFINITIONS_H_ */

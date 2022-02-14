@@ -4,35 +4,35 @@
 #include <cstdint>
 
 namespace SUBSYSTEM_ID {
-enum: uint8_t {
-    MEMORY = 22,
-    OBSW = 26,
-    CDH = 28,
-    TCS_1 = 59,
-    PCDU_1 = 42,
-    PCDU_2 = 43,
-    HEATER = 50,
-    T_SENSORS = 52,
-    FDIR = 70,
-    FDIR_1 = 71,
-    FDIR_2 = 72,
-    HK = 73,
-    SYSTEM_MANAGER = 74,
-    SYSTEM_MANAGER_1 = 75,
-    SYSTEM_1 = 79,
-    PUS_SERVICE_1 = 80,
-    PUS_SERVICE_2 = 82,
-    PUS_SERVICE_3 = 83,
-    PUS_SERVICE_5 = 85,
-    PUS_SERVICE_6 = 86,
-    PUS_SERVICE_8 = 88,
-    PUS_SERVICE_9 = 89,
-    PUS_SERVICE_17 = 97,
-    PUS_SERVICE_23 = 103,
-    MGM_LIS3MDL = 106,
-    MGM_RM3100 = 107,
+enum : uint8_t {
+  MEMORY = 22,
+  OBSW = 26,
+  CDH = 28,
+  TCS_1 = 59,
+  PCDU_1 = 42,
+  PCDU_2 = 43,
+  HEATER = 50,
+  T_SENSORS = 52,
+  FDIR = 70,
+  FDIR_1 = 71,
+  FDIR_2 = 72,
+  HK = 73,
+  SYSTEM_MANAGER = 74,
+  SYSTEM_MANAGER_1 = 75,
+  SYSTEM_1 = 79,
+  PUS_SERVICE_1 = 80,
+  PUS_SERVICE_2 = 82,
+  PUS_SERVICE_3 = 83,
+  PUS_SERVICE_5 = 85,
+  PUS_SERVICE_6 = 86,
+  PUS_SERVICE_8 = 88,
+  PUS_SERVICE_9 = 89,
+  PUS_SERVICE_17 = 97,
+  PUS_SERVICE_23 = 103,
+  MGM_LIS3MDL = 106,
+  MGM_RM3100 = 107,
 
-    FW_SUBSYSTEM_ID_RANGE
+  FW_SUBSYSTEM_ID_RANGE
 };
 }
 

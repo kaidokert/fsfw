@@ -1,10 +1,11 @@
 #ifndef MISSION_DEVICES_DEVICEDEFINITIONS_MGMHANDLERRM3100DEFINITIONS_H_
 #define MISSION_DEVICES_DEVICEDEFINITIONS_MGMHANDLERRM3100DEFINITIONS_H_
 
-#include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/datapoollocal/LocalPoolVariable.h>
+#include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/devicehandlers/DeviceHandlerIF.h>
 #include <fsfw/serialize/SerialLinkedListAdapter.h>
+
 #include <cstdint>
 
 namespace RM3100 {
@@ -24,8 +25,8 @@ static constexpr uint8_t SET_CMM_DRDM = 1 << 2;
 static constexpr uint8_t SET_CMM_START = 1;
 static constexpr uint8_t CMM_REGISTER = 0x01;
 
-static constexpr uint8_t CMM_VALUE = SET_CMM_CMZ | SET_CMM_CMY | SET_CMM_CMX |
-		SET_CMM_DRDM | SET_CMM_START;
+static constexpr uint8_t CMM_VALUE =
+    SET_CMM_CMZ | SET_CMM_CMY | SET_CMM_CMX | SET_CMM_DRDM | SET_CMM_START;
 
 /*----------------------------------------------------------------------------*/
 /* Cycle count register */
@@ -33,8 +34,7 @@ static constexpr uint8_t CMM_VALUE = SET_CMM_CMZ | SET_CMM_CMY | SET_CMM_CMX |
 // Default value (200)
 static constexpr uint8_t CYCLE_COUNT_VALUE = 0xC8;
 
-static constexpr float DEFAULT_GAIN = static_cast<float>(CYCLE_COUNT_VALUE) /
-		100 * 38;
+static constexpr float DEFAULT_GAIN = static_cast<float>(CYCLE_COUNT_VALUE) / 100 * 38;
 static constexpr uint8_t CYCLE_COUNT_START_REGISTER = 0x04;
 
 /*----------------------------------------------------------------------------*/
@@ -67,66 +67,58 @@ static constexpr DeviceCommandId_t READ_TMRC = 4;
 static constexpr DeviceCommandId_t CONFIGURE_CYCLE_COUNT = 5;
 static constexpr DeviceCommandId_t READ_CYCLE_COUNT = 6;
 
-class CycleCountCommand: public SerialLinkedListAdapter<SerializeIF> {
-public:
-	CycleCountCommand(bool oneCycleCount = true): oneCycleCount(oneCycleCount) {
-		setLinks(oneCycleCount);
-	}
+class CycleCountCommand : public SerialLinkedListAdapter<SerializeIF> {
+ public:
+  CycleCountCommand(bool oneCycleCount = true) : oneCycleCount(oneCycleCount) {
+    setLinks(oneCycleCount);
+  }
 
-	ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			Endianness streamEndianness) override {
-		ReturnValue_t result = SerialLinkedListAdapter::deSerialize(buffer,
-				size, streamEndianness);
-		if(oneCycleCount) {
-			cycleCountY = cycleCountX;
-			cycleCountZ = cycleCountX;
-		}
-		return result;
-	}
+  ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                            Endianness streamEndianness) override {
+    ReturnValue_t result = SerialLinkedListAdapter::deSerialize(buffer, size, streamEndianness);
+    if (oneCycleCount) {
+      cycleCountY = cycleCountX;
+      cycleCountZ = cycleCountX;
+    }
+    return result;
+  }
 
-	SerializeElement<uint16_t> cycleCountX;
-	SerializeElement<uint16_t> cycleCountY;
-	SerializeElement<uint16_t> cycleCountZ;
+  SerializeElement<uint16_t> cycleCountX;
+  SerializeElement<uint16_t> cycleCountY;
+  SerializeElement<uint16_t> cycleCountZ;
 
-private:
-	void setLinks(bool oneCycleCount) {
-		setStart(&cycleCountX);
-		if(not oneCycleCount) {
-			cycleCountX.setNext(&cycleCountY);
-			cycleCountY.setNext(&cycleCountZ);
-		}
-	}
+ private:
+  void setLinks(bool oneCycleCount) {
+    setStart(&cycleCountX);
+    if (not oneCycleCount) {
+      cycleCountX.setNext(&cycleCountY);
+      cycleCountY.setNext(&cycleCountZ);
+    }
+  }
 
-	bool oneCycleCount;
+  bool oneCycleCount;
 };
 
 static constexpr uint32_t MGM_DATASET_ID = READ_DATA;
 
-enum MgmPoolIds: lp_id_t {
-    FIELD_STRENGTH_X,
-    FIELD_STRENGTH_Y,
-    FIELD_STRENGTH_Z,
+enum MgmPoolIds : lp_id_t {
+  FIELD_STRENGTH_X,
+  FIELD_STRENGTH_Y,
+  FIELD_STRENGTH_Z,
 };
 
-class Rm3100PrimaryDataset: public StaticLocalDataSet<3> {
-public:
-	Rm3100PrimaryDataset(HasLocalDataPoolIF* hkOwner):
-        StaticLocalDataSet(hkOwner, MGM_DATASET_ID) {}
+class Rm3100PrimaryDataset : public StaticLocalDataSet<3> {
+ public:
+  Rm3100PrimaryDataset(HasLocalDataPoolIF* hkOwner) : StaticLocalDataSet(hkOwner, MGM_DATASET_ID) {}
 
-	Rm3100PrimaryDataset(object_id_t mgmId):
-        StaticLocalDataSet(sid_t(mgmId, MGM_DATASET_ID)) {}
+  Rm3100PrimaryDataset(object_id_t mgmId) : StaticLocalDataSet(sid_t(mgmId, MGM_DATASET_ID)) {}
 
-	// Field strengths in micro Tesla.
-    lp_var_t<float> fieldStrengthX = lp_var_t<float>(sid.objectId,
-            FIELD_STRENGTH_X, this);
-    lp_var_t<float> fieldStrengthY = lp_var_t<float>(sid.objectId,
-            FIELD_STRENGTH_Y, this);
-    lp_var_t<float> fieldStrengthZ = lp_var_t<float>(sid.objectId,
-            FIELD_STRENGTH_Z, this);
+  // Field strengths in micro Tesla.
+  lp_var_t<float> fieldStrengthX = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_X, this);
+  lp_var_t<float> fieldStrengthY = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_Y, this);
+  lp_var_t<float> fieldStrengthZ = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_Z, this);
 };
 
-}
-
-
+}  // namespace RM3100
 
 #endif /* MISSION_DEVICES_DEVICEDEFINITIONS_MGMHANDLERRM3100DEFINITIONS_H_ */

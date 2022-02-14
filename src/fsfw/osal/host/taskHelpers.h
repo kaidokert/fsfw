@@ -2,6 +2,7 @@
 #define FSFW_OSAL_HOST_TASKHELPERS_H_
 
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
+
 #include <thread>
 
 namespace tasks {
@@ -9,8 +10,6 @@ namespace tasks {
 ReturnValue_t insertTaskName(std::thread::id threadId, std::string taskName);
 std::string getTaskName(std::thread::id threadId);
 
-}
-
-
+}  // namespace tasks
 
 #endif /* FSFW_OSAL_HOST_TASKHELPERS_H_ */

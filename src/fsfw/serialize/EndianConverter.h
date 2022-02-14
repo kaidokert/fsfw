@@ -1,9 +1,10 @@
 #ifndef FSFW_SERIALIZE_ENDIANCONVERTER_H_
 #define FSFW_SERIALIZE_ENDIANCONVERTER_H_
 
-#include "../osal/Endiness.h"
-#include <cstring>
 #include <cstdint>
+#include <cstring>
+
+#include "../osal/Endiness.h"
 
 /**
  * Helper class to convert variables or bitstreams between machine
@@ -34,91 +35,90 @@
  * Thus, there is only one function supplied to do the conversion.
  */
 class EndianConverter {
-private:
-	EndianConverter() {};
-public:
-	/**
-	 * Convert a typed variable between big endian and machine endian.
-	 * Intended for plain old datatypes.
-	 */
-	template<typename T>
-	static T convertBigEndian(T in) {
+ private:
+  EndianConverter(){};
+
+ public:
+  /**
+   * Convert a typed variable between big endian and machine endian.
+   * Intended for plain old datatypes.
+   */
+  template <typename T>
+  static T convertBigEndian(T in) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-		T tmp;
-		uint8_t *pointerOut = (uint8_t*) &tmp;
-		uint8_t *pointerIn = (uint8_t*) &in;
-		for (size_t count = 0; count < sizeof(T); count++) {
-			pointerOut[sizeof(T) - count - 1] = pointerIn[count];
-		}
-		return tmp;
+    T tmp;
+    uint8_t *pointerOut = (uint8_t *)&tmp;
+    uint8_t *pointerIn = (uint8_t *)&in;
+    for (size_t count = 0; count < sizeof(T); count++) {
+      pointerOut[sizeof(T) - count - 1] = pointerIn[count];
+    }
+    return tmp;
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-		return in;
+    return in;
 #else
 #error Unknown Byte Order
 #endif
-	}
+  }
 
-	/**
-	 * convert a bytestream representing a single variable between big endian
-	 * and machine endian.
-	 */
-	static void convertBigEndian(uint8_t *out, const uint8_t *in,
-			size_t size) {
+  /**
+   * convert a bytestream representing a single variable between big endian
+   * and machine endian.
+   */
+  static void convertBigEndian(uint8_t *out, const uint8_t *in, size_t size) {
 #ifndef BYTE_ORDER_SYSTEM
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-		for (size_t count = 0; count < size; count++) {
-			out[size - count - 1] = in[count];
-		}
-		return;
+    for (size_t count = 0; count < size; count++) {
+      out[size - count - 1] = in[count];
+    }
+    return;
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-		memcpy(out, in, size);
-		return;
+    memcpy(out, in, size);
+    return;
 #endif
-	}
+  }
 
-	/**
-	 * Convert a typed variable between little endian and machine endian.
-	 * Intended for plain old datatypes.
-	 */
-	template<typename T>
-	static T convertLittleEndian(T in) {
+  /**
+   * Convert a typed variable between little endian and machine endian.
+   * Intended for plain old datatypes.
+   */
+  template <typename T>
+  static T convertLittleEndian(T in) {
 #ifndef BYTE_ORDER_SYSTEM
-	#error BYTE_ORDER_SYSTEM not defined
-	#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			T tmp;
-			uint8_t *pointerOut = (uint8_t *) &tmp;
-			uint8_t *pointerIn = (uint8_t *) &in;
-			for (size_t count = 0; count < sizeof(T); count++) {
-				pointerOut[sizeof(T) - count - 1] = pointerIn[count];
-			}
-			return tmp;
-	#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-		return in;
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
+    T tmp;
+    uint8_t *pointerOut = (uint8_t *)&tmp;
+    uint8_t *pointerIn = (uint8_t *)&in;
+    for (size_t count = 0; count < sizeof(T); count++) {
+      pointerOut[sizeof(T) - count - 1] = pointerIn[count];
+    }
+    return tmp;
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
+    return in;
 #else
-	#error Unknown Byte Order
-	#endif
-	}
-	/**
-	 * convert a bytestream representing a single variable between little endian
-	 * and machine endian.
-	 */
-	static void convertLittleEndian(uint8_t *out, const uint8_t *in,
-			size_t size) {
-#ifndef BYTE_ORDER_SYSTEM
-	#error BYTE_ORDER_SYSTEM not defined
-	#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
-			for (size_t count = 0; count < size; count++) {
-				out[size - count - 1] = in[count];
-			}
-			return;
-	#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
-		memcpy(out, in, size);
-		return;
+#error Unknown Byte Order
 #endif
-	}
+  }
+  /**
+   * convert a bytestream representing a single variable between little endian
+   * and machine endian.
+   */
+  static void convertLittleEndian(uint8_t *out, const uint8_t *in, size_t size) {
+#ifndef BYTE_ORDER_SYSTEM
+#error BYTE_ORDER_SYSTEM not defined
+#elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
+    for (size_t count = 0; count < size; count++) {
+      out[size - count - 1] = in[count];
+    }
+    return;
+#elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
+    memcpy(out, in, size);
+    return;
+#endif
+  }
 };
 
 #endif /* FSFW_SERIALIZE_ENDIANCONVERTER_H_ */

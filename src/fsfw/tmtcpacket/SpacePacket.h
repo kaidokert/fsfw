@@ -13,80 +13,77 @@
  * so the parent's methods are reachable.
  * @ingroup tmtcpackets
  */
-class SpacePacket: public SpacePacketBase {
-public:
-    static const uint16_t PACKET_MAX_SIZE = 1024;
-    /**
-     * The constructor initializes the packet and sets all header information
-     * according to the passed parameters.
-     * @param packetDataLength Sets the packet data length field and therefore specifies
-     * the size of the packet.
-     * @param isTelecommand Sets the packet type field to either TC (true) or TM (false).
-     * @param apid Sets the packet's APID field. The default value describes an idle packet.
-     * @param sequenceCount ets the packet's Source Sequence Count field.
-     */
-    SpacePacket(uint16_t packetDataLength, bool isTelecommand = false,
-    		uint16_t apid = APID_IDLE_PACKET, uint16_t sequenceCount = 0);
-    /**
-     * The class's default destructor.
-     */
-    virtual ~SpacePacket();
-    /**
-     * With this call, the complete data content (including the CCSDS Primary
-     * Header) is overwritten with the byte stream given.
-     * @param p_data		Pointer to data to overwrite the content with
-     * @param packet_size	Size of the data
-     * @return	@li	\c true if packet_size is smaller than \c MAX_PACKET_SIZE.
-     * 			@li \c false else.
-     */
-    bool addWholeData(const uint8_t* p_data, uint32_t packet_size);
+class SpacePacket : public SpacePacketBase {
+ public:
+  static const uint16_t PACKET_MAX_SIZE = 1024;
+  /**
+   * The constructor initializes the packet and sets all header information
+   * according to the passed parameters.
+   * @param packetDataLength Sets the packet data length field and therefore specifies
+   * the size of the packet.
+   * @param isTelecommand Sets the packet type field to either TC (true) or TM (false).
+   * @param apid Sets the packet's APID field. The default value describes an idle packet.
+   * @param sequenceCount ets the packet's Source Sequence Count field.
+   */
+  SpacePacket(uint16_t packetDataLength, bool isTelecommand = false,
+              uint16_t apid = APID_IDLE_PACKET, uint16_t sequenceCount = 0);
+  /**
+   * The class's default destructor.
+   */
+  virtual ~SpacePacket();
+  /**
+   * With this call, the complete data content (including the CCSDS Primary
+   * Header) is overwritten with the byte stream given.
+   * @param p_data		Pointer to data to overwrite the content with
+   * @param packet_size	Size of the data
+   * @return	@li	\c true if packet_size is smaller than \c MAX_PACKET_SIZE.
+   * 			@li \c false else.
+   */
+  bool addWholeData(const uint8_t* p_data, uint32_t packet_size);
 
-protected:
-    /**
-     * This structure defines the data structure of a Space Packet as local data.
-     * There's a buffer which corresponds to the Space Packet Data Field with a
-     * maximum size of \c PACKET_MAX_SIZE.
-     */
-    struct PacketStructured {
-        CCSDSPrimaryHeader header;
-        uint8_t buffer[PACKET_MAX_SIZE];
-    };
-    /**
-     * This union simplifies accessing the full data content of the Space Packet.
-     * This is achieved by putting the \c PacketStructured struct in a union with
-     * a plain buffer.
-     */
-    union SpacePacketData {
-        PacketStructured fields;
-        uint8_t byteStream[PACKET_MAX_SIZE + sizeof(CCSDSPrimaryHeader)];
-    };
-    /**
-     * This is the data representation of the class.
-     * It is a struct of CCSDS Primary Header and a data field, which again is
-     * packed in an union, so the data can be accessed as a byte stream without
-     * a cast.
-     */
-    SpacePacketData localData;
+ protected:
+  /**
+   * This structure defines the data structure of a Space Packet as local data.
+   * There's a buffer which corresponds to the Space Packet Data Field with a
+   * maximum size of \c PACKET_MAX_SIZE.
+   */
+  struct PacketStructured {
+    CCSDSPrimaryHeader header;
+    uint8_t buffer[PACKET_MAX_SIZE];
+  };
+  /**
+   * This union simplifies accessing the full data content of the Space Packet.
+   * This is achieved by putting the \c PacketStructured struct in a union with
+   * a plain buffer.
+   */
+  union SpacePacketData {
+    PacketStructured fields;
+    uint8_t byteStream[PACKET_MAX_SIZE + sizeof(CCSDSPrimaryHeader)];
+  };
+  /**
+   * This is the data representation of the class.
+   * It is a struct of CCSDS Primary Header and a data field, which again is
+   * packed in an union, so the data can be accessed as a byte stream without
+   * a cast.
+   */
+  SpacePacketData localData;
 };
 
 namespace spacepacket {
 
 constexpr uint16_t getSpacePacketIdFromApid(bool isTc, uint16_t apid,
-        bool secondaryHeaderFlag = true) {
-    return ((isTc << 4) | (secondaryHeaderFlag << 3) |
-            ((apid >> 8) & 0x07)) << 8 | (apid & 0x00ff);
+                                            bool secondaryHeaderFlag = true) {
+  return ((isTc << 4) | (secondaryHeaderFlag << 3) | ((apid >> 8) & 0x07)) << 8 | (apid & 0x00ff);
 }
 
-constexpr uint16_t getTcSpacePacketIdFromApid(uint16_t apid,
-        bool secondaryHeaderFlag = true) {
-    return getSpacePacketIdFromApid(true, apid, secondaryHeaderFlag);
+constexpr uint16_t getTcSpacePacketIdFromApid(uint16_t apid, bool secondaryHeaderFlag = true) {
+  return getSpacePacketIdFromApid(true, apid, secondaryHeaderFlag);
 }
 
-constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid,
-        bool secondaryHeaderFlag = true) {
-    return getSpacePacketIdFromApid(false, apid, secondaryHeaderFlag);
+constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid, bool secondaryHeaderFlag = true) {
+  return getSpacePacketIdFromApid(false, apid, secondaryHeaderFlag);
 }
 
-}
+}  // namespace spacepacket
 
 #endif /* SPACEPACKET_H_ */

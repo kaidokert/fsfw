@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 
-set(FSFW_VERSION 3)
+set(FSFW_VERSION 4)
 set(FSFW_SUBVERSION 0)
-set(FSFW_REVISION 1)
+set(FSFW_REVISION 0)
 
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -56,10 +56,12 @@ if(FSFW_BUILD_UNITTESTS)
         FetchContent_Declare(
             Catch2
             GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG        v3.0.0-preview3
+            GIT_TAG        v3.0.0-preview4
         )
 
         FetchContent_MakeAvailable(Catch2)
+        #fixes regression -preview4, to be confirmed in later releases
+        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
     endif()
 
     set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
@@ -90,7 +92,7 @@ set(FSFW_CORE_INC_PATH "inc")
 
 set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
 
-# Configure Files
+# For configure files
 target_include_directories(${LIB_FSFW_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -152,13 +154,8 @@ else()
     set(OS_FSFW "host")
 endif()
 
-if(FSFW_BUILD_UNITTESTS OR FSFW_BUILD_DOCS)
-    configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
-else()
-    configure_file(src/fsfw/FSFW.h.in FSFW.h)
-    configure_file(src/fsfw/FSFWVersion.h.in FSFWVersion.h)
-endif()
+configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
+configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
 
 message(STATUS "Compiling FSFW for the ${FSFW_OS_NAME} operating system.")
 
@@ -197,13 +194,13 @@ if(FSFW_BUILD_UNITTESTS)
                     "--exclude-unreachable-branches"
                 )
                 set(COVERAGE_EXCLUDES
-                    "/c/msys64/mingw64/*"
+                    "/c/msys64/mingw64/*" "*/fsfw_hal/*"
                 )
             elseif(UNIX)
                 set(COVERAGE_EXCLUDES
                     "/usr/include/*" "/usr/bin/*" "Catch2/*"
                     "/usr/local/include/*" "*/fsfw_tests/*"
-                    "*/catch2-src/*"
+                    "*/catch2-src/*" "*/fsfw_hal/*"
                 )
             endif()
 

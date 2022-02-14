@@ -6,7 +6,7 @@
 #include "SerializeElement.h"
 #include "SerializeIF.h"
 
- /**
+/**
  * @brief  	Implement the conversion of object data to data streams
  * 		   	or vice-versa, using linked lists.
  * @details
@@ -33,96 +33,84 @@
  * @author baetz
  * @ingroup serialize
  */
-template<typename T, typename count_t = uint8_t>
-class SerialLinkedListAdapter: public SinglyLinkedList<T>, public SerializeIF {
-public:
+template <typename T, typename count_t = uint8_t>
+class SerialLinkedListAdapter : public SinglyLinkedList<T>, public SerializeIF {
+ public:
+  SerialLinkedListAdapter(typename LinkedElement<T>::Iterator start, bool printCount = false)
+      : SinglyLinkedList<T>(start), printCount(printCount) {}
 
-	SerialLinkedListAdapter(typename LinkedElement<T>::Iterator start,
-			bool printCount = false) :
-			SinglyLinkedList<T>(start), printCount(printCount) {
-	}
+  SerialLinkedListAdapter(LinkedElement<T>* first, bool printCount = false)
+      : SinglyLinkedList<T>(first), printCount(printCount) {}
 
-	SerialLinkedListAdapter(LinkedElement<T>* first, bool printCount = false) :
-			SinglyLinkedList<T>(first), printCount(printCount) {
+  SerialLinkedListAdapter(bool printCount = false)
+      : SinglyLinkedList<T>(), printCount(printCount) {}
 
-	}
+  virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+                                  Endianness streamEndianness) const override {
+    if (printCount) {
+      count_t mySize = SinglyLinkedList<T>::getSize();
+      ReturnValue_t result =
+          SerializeAdapter::serialize(&mySize, buffer, size, maxSize, streamEndianness);
+      if (result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+      }
+    }
+    return serialize(SinglyLinkedList<T>::start, buffer, size, maxSize, streamEndianness);
+  }
 
-	SerialLinkedListAdapter(bool printCount = false) :
-			SinglyLinkedList<T>(), printCount(printCount) {
-	}
+  static ReturnValue_t serialize(const LinkedElement<T>* element, uint8_t** buffer, size_t* size,
+                                 size_t maxSize, Endianness streamEndianness) {
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    while ((result == HasReturnvaluesIF::RETURN_OK) and (element != nullptr)) {
+      result = element->value->serialize(buffer, size, maxSize, streamEndianness);
+      element = element->getNext();
+    }
+    return result;
+  }
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			size_t maxSize, Endianness streamEndianness) const override {
-		if (printCount) {
-			count_t mySize = SinglyLinkedList<T>::getSize();
-			ReturnValue_t result = SerializeAdapter::serialize(&mySize,
-					buffer, size, maxSize, streamEndianness);
-			if (result != HasReturnvaluesIF::RETURN_OK) {
-				return result;
-			}
-		}
-		return serialize(SinglyLinkedList<T>::start, buffer, size, maxSize,
-				streamEndianness);
-	}
+  virtual size_t getSerializedSize() const override {
+    if (printCount) {
+      return SerialLinkedListAdapter<T>::getSerializedSize() + sizeof(count_t);
+    } else {
+      return getSerializedSize(SinglyLinkedList<T>::start);
+    }
+  }
 
-	static ReturnValue_t serialize(const LinkedElement<T>* element,
-			uint8_t** buffer, size_t* size, size_t maxSize,
-			Endianness streamEndianness) {
-		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-		while ((result == HasReturnvaluesIF::RETURN_OK) and (element != nullptr)) {
-			result = element->value->serialize(buffer, size, maxSize,
-					streamEndianness);
-			element = element->getNext();
-		}
-		return result;
-	}
+  static size_t getSerializedSize(const LinkedElement<T>* element) {
+    size_t size = 0;
+    while (element != nullptr) {
+      size += element->value->getSerializedSize();
+      element = element->getNext();
+    }
+    return size;
+  }
 
-	virtual size_t getSerializedSize() const override {
-		if (printCount) {
-			return SerialLinkedListAdapter<T>::getSerializedSize()
-					+ sizeof(count_t);
-		} else {
-			return getSerializedSize(SinglyLinkedList<T>::start);
-		}
-	}
+  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                                    Endianness streamEndianness) override {
+    return deSerialize(SinglyLinkedList<T>::start, buffer, size, streamEndianness);
+  }
 
-	static size_t getSerializedSize(const LinkedElement<T> *element) {
-		size_t size = 0;
-		while (element != nullptr) {
-			size += element->value->getSerializedSize();
-			element = element->getNext();
-		}
-		return size;
-	}
+  static ReturnValue_t deSerialize(LinkedElement<T>* element, const uint8_t** buffer, size_t* size,
+                                   Endianness streamEndianness) {
+    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    while ((result == HasReturnvaluesIF::RETURN_OK) and (element != nullptr)) {
+      result = element->value->deSerialize(buffer, size, streamEndianness);
+      element = element->getNext();
+    }
+    return result;
+  }
 
+  /**
+   * Copying is forbidden by deleting the copy constructor and the copy
+   * assignment operator because of the pointers to the linked list members.
+   * Unless the child class implements an own copy constructor or
+   * copy assignment operator, these operation will throw a compiler error.
+   * @param
+   */
+  SerialLinkedListAdapter(const SerialLinkedListAdapter&) = delete;
+  SerialLinkedListAdapter& operator=(const SerialLinkedListAdapter&) = delete;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			Endianness streamEndianness) override {
-		return deSerialize(SinglyLinkedList<T>::start, buffer, size,
-				streamEndianness);
-	}
-
-	static ReturnValue_t deSerialize(LinkedElement<T>* element,
-			const uint8_t** buffer, size_t* size, Endianness streamEndianness) {
-		ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-		while ((result == HasReturnvaluesIF::RETURN_OK) and (element != nullptr)) {
-			result = element->value->deSerialize(buffer, size, streamEndianness);
-			element = element->getNext();
-		}
-		return result;
-	}
-
-	/**
-	 * Copying is forbidden by deleting the copy constructor and the copy
-	 * assignment operator because of the pointers to the linked list members.
-	 * Unless the child class implements an own copy constructor or
-	 * copy assignment operator, these operation will throw a compiler error.
-	 * @param
-	 */
-	SerialLinkedListAdapter(const SerialLinkedListAdapter &) = delete;
-	SerialLinkedListAdapter& operator=(const SerialLinkedListAdapter&) = delete;
-
-	bool printCount;
+  bool printCount;
 };
 
 #endif /* FSFW_SERIALIZE_SERIALLINKEDLISTADAPTER_H_ */

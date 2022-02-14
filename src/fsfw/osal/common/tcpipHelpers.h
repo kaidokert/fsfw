@@ -10,6 +10,4 @@ void handleError(Protocol protocol, ErrorSources errorSrc, dur_millis_t sleepDur
 
 }
 
-
-
 #endif /* FSFW_OSAL_WINDOWS_TCPIPHELPERS_H_ */

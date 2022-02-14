@@ -1,14 +1,13 @@
-#include "CatchFactory.h"
 #include "CatchDefinitions.h"
+#include "CatchFactory.h"
 
 #ifdef GCOV
 #include <gcov.h>
 #endif
 
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-
+#include "fsfw/storagemanager/StorageManagerIF.h"
 
 /* Global instantiations normally done in main.cpp */
 /* Initialize Data Pool */
@@ -20,14 +19,13 @@ ServiceInterfaceStream debug("DEBUG");
 ServiceInterfaceStream info("INFO");
 ServiceInterfaceStream error("ERROR");
 ServiceInterfaceStream warning("WARNING");
-}
+}  // namespace sif
 #endif
 
 int customSetup() {
-    // global setup
-    ObjectManager* objMan = ObjectManager::instance();
-    objMan->setObjectFactoryFunction(Factory::produceFrameworkObjects, nullptr);
-    objMan->initialize();
-    return 0;
+  // global setup
+  ObjectManager* objMan = ObjectManager::instance();
+  objMan->setObjectFactoryFunction(Factory::produceFrameworkObjects, nullptr);
+  objMan->initialize();
+  return 0;
 }
-

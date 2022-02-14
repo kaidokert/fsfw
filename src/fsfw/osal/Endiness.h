@@ -1,15 +1,14 @@
 #ifndef FRAMEWORK_OSAL_ENDINESS_H_
 #define FRAMEWORK_OSAL_ENDINESS_H_
 
-
 /*
  * BSD-style endian declaration
  */
 #ifndef BIG_ENDIAN
-#define BIG_ENDIAN	4321
+#define BIG_ENDIAN 4321
 #endif
 #ifndef LITTLE_ENDIAN
-#define LITTLE_ENDIAN	1234
+#define LITTLE_ENDIAN 1234
 #endif
 
 // This is a GCC C extension
@@ -25,14 +24,13 @@
 #else
 
 #ifdef WIN32
-#include <winsock2.h>
 #include <windows.h>
+#include <winsock2.h>
 #if REG_DWORD == REG_DWORD_LITTLE_ENDIAN
 #define BYTE_ORDER_SYSTEM LITTLE_ENDIAN
 #else
 #define BYTE_ORDER_SYSTEM BIG_ENDIAN
 #endif
-
 
 #else
 #error __BYTE_ORDER__ not defined
@@ -41,8 +39,5 @@
 #endif
 
 #endif
-
-
-
 
 #endif /* FRAMEWORK_OSAL_ENDINESS_H_ */

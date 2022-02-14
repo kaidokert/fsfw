@@ -9,5 +9,4 @@
 #include "TmPacketStoredPusA.h"
 #endif
 
-
 #endif /* FSFW_TMTCPACKET_PUS_TMPACKETSTORED_H_ */

@@ -25,45 +25,41 @@
  * server. This bridge will also be the default destination for telecommands, but the telecommands
  * will be relayed to a specified tcDestination directly.
  */
-class TcpTmTcBridge:
-        public TmTcBridge {
-    friend class TcpTmTcServer;
-public:
+class TcpTmTcBridge : public TmTcBridge {
+  friend class TcpTmTcServer;
 
-    /**
-     * Constructor
-     * @param objectId  Object ID of the TcpTmTcBridge.
-     * @param tcDestination Destination for received TC packets. Any received telecommands will
-     *                      be sent there directly. The destination object needs to implement
-     *                      AcceptsTelecommandsIF.
-     * @param tmStoreId TM store object ID. It is recommended to the default object ID
-     * @param tcStoreId TC store object ID. It is recommended to the default object ID
-     */
-    TcpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
-            object_id_t tmStoreId = objects::TM_STORE,
-            object_id_t tcStoreId = objects::TC_STORE);
-    virtual~ TcpTmTcBridge();
+ public:
+  /**
+   * Constructor
+   * @param objectId  Object ID of the TcpTmTcBridge.
+   * @param tcDestination Destination for received TC packets. Any received telecommands will
+   *                      be sent there directly. The destination object needs to implement
+   *                      AcceptsTelecommandsIF.
+   * @param tmStoreId TM store object ID. It is recommended to the default object ID
+   * @param tcStoreId TC store object ID. It is recommended to the default object ID
+   */
+  TcpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
+                object_id_t tmStoreId = objects::TM_STORE,
+                object_id_t tcStoreId = objects::TC_STORE);
+  virtual ~TcpTmTcBridge();
 
-    /**
-     * Set properties of internal mutex.
-     */
-    void setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs);
+  /**
+   * Set properties of internal mutex.
+   */
+  void setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs);
 
-    ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
+ protected:
+  ReturnValue_t handleTm() override;
+  virtual ReturnValue_t sendTm(const uint8_t* data, size_t dataLen) override;
 
-protected:
-    ReturnValue_t handleTm() override;
-    virtual ReturnValue_t sendTm(const uint8_t * data, size_t dataLen) override;
-
-private:
-
-    //! Access to the FIFO needs to be mutex protected because it is used by the bridge and
-    //! the server.
-    MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
-    dur_millis_t mutexTimeoutMs = 20;
-    MutexIF* mutex;
+ private:
+  //! Access to the FIFO needs to be mutex protected because it is used by the bridge and
+  //! the server.
+  MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+  dur_millis_t mutexTimeoutMs = 20;
+  MutexIF* mutex;
 };
 
 #endif /* FSFW_OSAL_COMMON_TCPTMTCBRIDGE_H_ */
-

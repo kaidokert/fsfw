@@ -8,12 +8,12 @@
  * to the queue ID, which is returned in the implemented abstract method.
  */
 class AcceptsDeviceResponsesIF {
-public:
-	/**
-	 * Default empty virtual destructor.
-	 */
-	virtual ~AcceptsDeviceResponsesIF() {}
-	virtual MessageQueueId_t getDeviceQueue() = 0;
+ public:
+  /**
+   * Default empty virtual destructor.
+   */
+  virtual ~AcceptsDeviceResponsesIF() {}
+  virtual MessageQueueId_t getDeviceQueue() = 0;
 };
 
 #endif /* FSFW_DEVICEHANDLERS_ACCEPTSDEVICERESPONSESIF_H_ */

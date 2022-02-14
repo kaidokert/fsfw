@@ -3,7 +3,13 @@ cmake_minimum_required(VERSION 3.13)
 # Can also be changed by upper CMakeLists.txt file
 find_library(LIB_FSFW_NAME fsfw REQUIRED)
 
-option(FSFW_HAL_ADD_LINUX "Add the Linux HAL to the sources. Required gpiod library" OFF)
+option(FSFW_HAL_ADD_LINUX "Add the Linux HAL to the sources. Requires gpiod library" OFF)
+# On by default for now because I did not have an issue including and compiling those files
+# and libraries on a Desktop Linux system and the primary target of the FSFW is still embedded
+# Linux. The only exception from this is the gpiod library which requires a dedicated installation,
+# but CMake is able to determine whether this library is installed with find_library.
+option(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS "Add peripheral drivers for embedded Linux" ON)
+
 option(FSFW_HAL_ADD_RASPBERRY_PI "Add Raspberry Pi specific code to the sources" OFF)
 option(FSFW_HAL_ADD_STM32H7 "Add the STM32H7 HAL to the sources" OFF)
 option(FSFW_HAL_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)

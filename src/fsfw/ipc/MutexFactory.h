@@ -8,27 +8,25 @@
  * interface, but also is the base class for a singleton.
  */
 class MutexFactory {
-public:
-	virtual ~MutexFactory();
-	/**
-	 * Returns the single instance of MutexFactory.
-	 * The implementation of #instance is found in its subclasses.
-	 * Thus, we choose link-time variability of the  instance.
-	 */
-	static MutexFactory* instance();
+ public:
+  virtual ~MutexFactory();
+  /**
+   * Returns the single instance of MutexFactory.
+   * The implementation of #instance is found in its subclasses.
+   * Thus, we choose link-time variability of the  instance.
+   */
+  static MutexFactory* instance();
 
-	MutexIF* createMutex();
+  MutexIF* createMutex();
 
-	void deleteMutex(MutexIF* mutex);
+  void deleteMutex(MutexIF* mutex);
 
-private:
-	/**
-	 * External instantiation is not allowed.
-	 */
-	MutexFactory();
-	static MutexFactory* factoryInstance;
+ private:
+  /**
+   * External instantiation is not allowed.
+   */
+  MutexFactory();
+  static MutexFactory* factoryInstance;
 };
-
-
 
 #endif /* FSFW_IPC_MUTEXFACTORY_H_ */

@@ -1,5 +1,6 @@
-#include "fsfw_tests/unit/CatchDefinitions.h"
 #include <catch2/catch_test_macros.hpp>
+
+#include "fsfw_tests/unit/CatchDefinitions.h"
 
 /**
  * @brief 	Template test file
@@ -18,13 +19,13 @@
  *  - https://github.com/catchorg/Catch2/blob/master/docs/assertions.md
  *  - https://github.com/catchorg/Catch2/blob/master/docs/test-cases-and-sections.md
  */
-TEST_CASE("Dummy Test" , "[DummyTest]") {
-	uint8_t testVariable = 1;
-	//perform set-up here
-	CHECK(testVariable == 1);
-	SECTION("TestSection") {
-		// set-up is run for each section
-		REQUIRE(testVariable == 1);
-	}
-	// perform tear-down here
+TEST_CASE("Dummy Test", "[DummyTest]") {
+  uint8_t testVariable = 1;
+  // perform set-up here
+  CHECK(testVariable == 1);
+  SECTION("TestSection") {
+    // set-up is run for each section
+    REQUIRE(testVariable == 1);
+  }
+  // perform tear-down here
 }
