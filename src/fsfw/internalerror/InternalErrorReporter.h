@@ -46,11 +46,11 @@ class InternalErrorReporter : public SystemObject,
   virtual ReturnValue_t initializeAfterTaskCreation() override;
   virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
-  virtual void queueMessageNotSent();
+  virtual void queueMessageNotSent() override;
 
-  virtual void lostTm();
+  virtual void lostTm() override;
 
-  virtual void storeFull();
+  virtual void storeFull() override;
 
   virtual void setTaskIF(PeriodicTaskIF* task) override;
 

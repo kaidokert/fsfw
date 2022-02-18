@@ -35,4 +35,25 @@ TEST_CASE("MessageQueue Basic Test", "[TestMq]") {
     senderId = testReceiverMq->getLastPartner();
     CHECK(senderId == testSenderMqId);
   }
+  SECTION("Test Full") {
+    auto result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
+    REQUIRE(result == retval::CATCH_OK);
+    result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
+    REQUIRE(result == MessageQueueIF::FULL);
+    // We try another message
+    result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
+    REQUIRE(result == MessageQueueIF::FULL);
+    MessageQueueMessage recvMessage;
+    result = testReceiverMq->receiveMessage(&recvMessage);
+    REQUIRE(result == retval::CATCH_OK);
+    CHECK(recvMessage.getData()[0] == 42);
+    result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
+    REQUIRE(result == retval::CATCH_OK);
+    result = testReceiverMq->receiveMessage(&recvMessage);
+    REQUIRE(result == retval::CATCH_OK);
+    CHECK(recvMessage.getData()[0] == 42);
+  }
+  // We have to clear MQs ourself ATM
+  delete testSenderMq;
+  delete testReceiverMq;
 }
