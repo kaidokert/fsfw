@@ -1,7 +1,6 @@
 #ifndef FSFW_CONTROLLER_CONTROLLERBASE_H_
 #define FSFW_CONTROLLER_CONTROLLERBASE_H_
 
-#include "fsfw/datapool/HkSwitchHelper.h"
 #include "fsfw/health/HasHealthIF.h"
 #include "fsfw/health/HealthHelper.h"
 #include "fsfw/modes/HasModesIF.h"
