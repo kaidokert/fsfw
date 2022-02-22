@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
+# [v5.0.0]
+
+## Changes
+
+- HAL Devicehandlers: Periodic printout is run-time configurable now
+
 # [v4.0.0]
 
 ## Additions
