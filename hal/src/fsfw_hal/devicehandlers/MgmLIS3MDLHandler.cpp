@@ -12,9 +12,6 @@ MgmLIS3MDLHandler::MgmLIS3MDLHandler(object_id_t objectId, object_id_t deviceCom
     : DeviceHandlerBase(objectId, deviceCommunication, comCookie),
       dataset(this),
       transitionDelay(transitionDelay) {
-#if FSFW_HAL_LIS3MDL_MGM_DEBUG == 1
-  debugDivider = new PeriodicOperationDivider(3);
-#endif
   // Set to default values right away
   registers[0] = MGMLIS3MDL::CTRL_REG1_DEFAULT;
   registers[1] = MGMLIS3MDL::CTRL_REG2_DEFAULT;
@@ -264,7 +261,7 @@ ReturnValue_t MgmLIS3MDLHandler::interpretDeviceReply(DeviceCommandId_t id, cons
       int16_t mgmMeasurementRawZ =
           packet[MGMLIS3MDL::Z_HIGHBYTE_IDX] << 8 | packet[MGMLIS3MDL::Z_LOWBYTE_IDX];
 
-      /* Target value in microtesla */
+      // Target value in microtesla
       float mgmX = static_cast<float>(mgmMeasurementRawX) * sensitivityFactor *
                    MGMLIS3MDL::GAUSS_TO_MICROTESLA_FACTOR;
       float mgmY = static_cast<float>(mgmMeasurementRawY) * sensitivityFactor *
@@ -272,23 +269,24 @@ ReturnValue_t MgmLIS3MDLHandler::interpretDeviceReply(DeviceCommandId_t id, cons
       float mgmZ = static_cast<float>(mgmMeasurementRawZ) * sensitivityFactor *
                    MGMLIS3MDL::GAUSS_TO_MICROTESLA_FACTOR;
 
-#if FSFW_HAL_LIS3MDL_MGM_DEBUG == 1
-      if (debugDivider->checkAndIncrement()) {
+      if (periodicPrintout) {
+        if (debugDivider.checkAndIncrement()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "MGMHandlerLIS3: Magnetic field strength in"
-                     " microtesla:"
-                  << std::endl;
-        sif::info << "X: " << mgmX << " uT" << std::endl;
-        sif::info << "Y: " << mgmY << " uT" << std::endl;
-        sif::info << "Z: " << mgmZ << " uT" << std::endl;
+          sif::info << "MGMHandlerLIS3: Magnetic field strength in"
+                       " microtesla:"
+                    << std::endl;
+          sif::info << "X: " << mgmX << " uT" << std::endl;
+          sif::info << "Y: " << mgmY << " uT" << std::endl;
+          sif::info << "Z: " << mgmZ << " uT" << std::endl;
 #else
-        sif::printInfo("MGMHandlerLIS3: Magnetic field strength in microtesla:\n");
-        sif::printInfo("X: %f uT\n", mgmX);
-        sif::printInfo("Y: %f uT\n", mgmY);
-        sif::printInfo("Z: %f uT\n", mgmZ);
+          sif::printInfo("MGMHandlerLIS3: Magnetic field strength in microtesla:\n");
+          sif::printInfo("X: %f uT\n", mgmX);
+          sif::printInfo("Y: %f uT\n", mgmY);
+          sif::printInfo("Z: %f uT\n", mgmZ);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 0 */
+        }
       }
-#endif /* OBSW_VERBOSE_LEVEL >= 1 */
+
       PoolReadGuard readHelper(&dataset);
       if (readHelper.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
         if (std::abs(mgmX) < absLimitX) {
@@ -318,15 +316,16 @@ ReturnValue_t MgmLIS3MDLHandler::interpretDeviceReply(DeviceCommandId_t id, cons
     case MGMLIS3MDL::READ_TEMPERATURE: {
       int16_t tempValueRaw = packet[2] << 8 | packet[1];
       float tempValue = 25.0 + ((static_cast<float>(tempValueRaw)) / 8.0);
-#if FSFW_HAL_LIS3MDL_MGM_DEBUG == 1
-      if (debugDivider->check()) {
+      if (periodicPrintout) {
+        if (debugDivider.check()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "MGMHandlerLIS3: Temperature: " << tempValue << " C" << std::endl;
+          sif::info << "MGMHandlerLIS3: Temperature: " << tempValue << " C" << std::endl;
 #else
-        sif::printInfo("MGMHandlerLIS3: Temperature: %f C\n");
+          sif::printInfo("MGMHandlerLIS3: Temperature: %f C\n");
 #endif
+        }
       }
-#endif
+
       ReturnValue_t result = dataset.read();
       if (result == HasReturnvaluesIF::RETURN_OK) {
         dataset.temperature = tempValue;
@@ -462,7 +461,9 @@ ReturnValue_t MgmLIS3MDLHandler::prepareCtrlRegisterWrite() {
   return RETURN_OK;
 }
 
-void MgmLIS3MDLHandler::doTransition(Mode_t modeFrom, Submode_t subModeFrom) {}
+void MgmLIS3MDLHandler::doTransition(Mode_t modeFrom, Submode_t subModeFrom) {
+  DeviceHandlerBase::doTransition(modeFrom, subModeFrom);
+}
 
 uint32_t MgmLIS3MDLHandler::getTransitionDelayMs(Mode_t from, Mode_t to) { return transitionDelay; }
 
@@ -481,4 +482,9 @@ void MgmLIS3MDLHandler::setAbsoluteLimits(float xLimit, float yLimit, float zLim
   this->absLimitX = xLimit;
   this->absLimitY = yLimit;
   this->absLimitZ = zLimit;
+}
+
+void MgmLIS3MDLHandler::enablePeriodicPrintouts(bool enable, uint8_t divider) {
+  periodicPrintout = enable;
+  debugDivider.setDivider(divider);
 }

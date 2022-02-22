@@ -10,11 +10,7 @@ MgmRM3100Handler::MgmRM3100Handler(object_id_t objectId, object_id_t deviceCommu
                                    CookieIF *comCookie, uint32_t transitionDelay)
     : DeviceHandlerBase(objectId, deviceCommunication, comCookie),
       primaryDataset(this),
-      transitionDelay(transitionDelay) {
-#if FSFW_HAL_RM3100_MGM_DEBUG == 1
-  debugDivider = new PeriodicOperationDivider(3);
-#endif
-}
+      transitionDelay(transitionDelay) {}
 
 MgmRM3100Handler::~MgmRM3100Handler() {}
 
@@ -337,23 +333,23 @@ ReturnValue_t MgmRM3100Handler::handleDataReadout(const uint8_t *packet) {
   float fieldStrengthY = fieldStrengthRawY * scaleFactorX;
   float fieldStrengthZ = fieldStrengthRawZ * scaleFactorX;
 
-#if FSFW_HAL_RM3100_MGM_DEBUG == 1
-  if (debugDivider->checkAndIncrement()) {
+  if (periodicPrintout) {
+    if (debugDivider.checkAndIncrement()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "MgmRM3100Handler: Magnetic field strength in"
-                 " microtesla:"
-              << std::endl;
-    sif::info << "X: " << fieldStrengthX << " uT" << std::endl;
-    sif::info << "Y: " << fieldStrengthY << " uT" << std::endl;
-    sif::info << "Z: " << fieldStrengthZ << " uT" << std::endl;
+      sif::info << "MgmRM3100Handler: Magnetic field strength in"
+                   " microtesla:"
+                << std::endl;
+      sif::info << "X: " << fieldStrengthX << " uT" << std::endl;
+      sif::info << "Y: " << fieldStrengthY << " uT" << std::endl;
+      sif::info << "Z: " << fieldStrengthZ << " uT" << std::endl;
 #else
-    sif::printInfo("MgmRM3100Handler: Magnetic field strength in microtesla:\n");
-    sif::printInfo("X: %f uT\n", fieldStrengthX);
-    sif::printInfo("Y: %f uT\n", fieldStrengthY);
-    sif::printInfo("Z: %f uT\n", fieldStrengthZ);
+      sif::printInfo("MgmRM3100Handler: Magnetic field strength in microtesla:\n");
+      sif::printInfo("X: %f uT\n", fieldStrengthX);
+      sif::printInfo("Y: %f uT\n", fieldStrengthY);
+      sif::printInfo("Z: %f uT\n", fieldStrengthZ);
 #endif
+    }
   }
-#endif
 
   // TODO: Sanity check on values?
   PoolReadGuard readGuard(&primaryDataset);
@@ -364,4 +360,9 @@ ReturnValue_t MgmRM3100Handler::handleDataReadout(const uint8_t *packet) {
     primaryDataset.setValidity(true, true);
   }
   return RETURN_OK;
+}
+
+void MgmRM3100Handler::enablePeriodicPrintouts(bool enable, uint8_t divider) {
+  periodicPrintout = enable;
+  debugDivider.setDivider(divider);
 }
