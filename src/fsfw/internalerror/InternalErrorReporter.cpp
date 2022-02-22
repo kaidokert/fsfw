@@ -57,7 +57,7 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
       internalErrorDataset.storeHits.value += newStoreHits;
       internalErrorDataset.tmHits.value += newTmHits;
       internalErrorDataset.setValidity(true, true);
-      if((newQueueHits != 0) or (newStoreHits !=0) or (newTmHits != 0)){
+      if ((newQueueHits != 0) or (newStoreHits != 0) or (newTmHits != 0)) {
         internalErrorDataset.setChanged(true);
       }
     }

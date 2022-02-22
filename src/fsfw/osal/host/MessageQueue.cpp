@@ -125,13 +125,13 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     memcpy(targetQueue->messageQueue.back().data(), message->getBuffer(),
            message->getMaximumMessageSize());
   } else {
-      if (not ignoreFault) {
+    if (not ignoreFault) {
       InternalErrorReporterIF* internalErrorReporter =
           ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
       if (internalErrorReporter != nullptr) {
         internalErrorReporter->queueMessageNotSent();
       }
-      }
+    }
     return MessageQueueIF::FULL;
   }
   return HasReturnvaluesIF::RETURN_OK;
