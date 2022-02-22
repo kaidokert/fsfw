@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
+# [v5.0.0]
+
+## Removed
+
+- Removed the `HkSwitchHelper`. This module should not be needed anymore, now that the local
+  datapools have been implemented
+
 # [v4.0.0]
 
 ## Additions
