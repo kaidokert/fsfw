@@ -84,7 +84,7 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
     return result;
   }
 
-  printWarningOrError(sif::OutputTypes::OUT_WARNING, "initialize", HasReturnvaluesIF::RETURN_FAILED,
+  printWarningOrError(sif::OutputTypes::OUT_WARNING, "initializeHousekeepingPoolEntriesOnce", HasReturnvaluesIF::RETURN_FAILED,
                       "The map should only be initialized once");
   return HasReturnvaluesIF::RETURN_OK;
 }

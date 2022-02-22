@@ -54,6 +54,6 @@ TEST_CASE("MessageQueue Basic Test", "[TestMq]") {
     CHECK(recvMessage.getData()[0] == 42);
   }
   // We have to clear MQs ourself ATM
-  delete testSenderMq;
-  delete testReceiverMq;
+  QueueFactory::instance()->deleteMessageQueue(testSenderMq);
+  QueueFactory::instance()->deleteMessageQueue(testReceiverMq);
 }
