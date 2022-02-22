@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
+# [v5.0.0]
+
+## Changes
+
+- `oneShotAction` flag in the `TestTask` class is not static anymore
+
 # [v4.0.0]
 
 ## Additions
