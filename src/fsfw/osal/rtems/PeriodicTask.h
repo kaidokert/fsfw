@@ -13,8 +13,8 @@ class ExecutableObjectIF;
  * @brief This class represents a specialized task for periodic activities of multiple objects.
  *
  * @details MultiObjectTask is an extension to ObjectTask in the way that it is able to execute
- * 			multiple objects that implement the ExecutableObjectIF interface. The objects
- * must be added prior to starting the task.
+ * 			multiple objects that implement the ExecutableObjectIF interface. The
+ * objects must be added prior to starting the task.
  * @author  baetz
  * @ingroup task_handling
  */
