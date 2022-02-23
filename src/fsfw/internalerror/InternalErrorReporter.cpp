@@ -80,14 +80,6 @@ uint32_t InternalErrorReporter::getAndResetQueueHits() {
   return value;
 }
 
-uint32_t InternalErrorReporter::getQueueHits() {
-  uint32_t value;
-  mutex->lockMutex(timeoutType, timeoutMs);
-  value = queueHits;
-  mutex->unlockMutex();
-  return value;
-}
-
 void InternalErrorReporter::incrementQueueHits() {
   mutex->lockMutex(timeoutType, timeoutMs);
   queueHits++;
@@ -99,14 +91,6 @@ uint32_t InternalErrorReporter::getAndResetTmHits() {
   mutex->lockMutex(timeoutType, timeoutMs);
   value = tmHits;
   tmHits = 0;
-  mutex->unlockMutex();
-  return value;
-}
-
-uint32_t InternalErrorReporter::getTmHits() {
-  uint32_t value;
-  mutex->lockMutex(timeoutType, timeoutMs);
-  value = tmHits;
   mutex->unlockMutex();
   return value;
 }
@@ -124,14 +108,6 @@ uint32_t InternalErrorReporter::getAndResetStoreHits() {
   mutex->lockMutex(timeoutType, timeoutMs);
   value = storeHits;
   storeHits = 0;
-  mutex->unlockMutex();
-  return value;
-}
-
-uint32_t InternalErrorReporter::getStoreHits() {
-  uint32_t value;
-  mutex->lockMutex(timeoutType, timeoutMs);
-  value = storeHits;
   mutex->unlockMutex();
   return value;
 }

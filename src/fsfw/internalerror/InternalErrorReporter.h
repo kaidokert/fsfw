@@ -74,15 +74,12 @@ class InternalErrorReporter : public SystemObject,
   uint32_t storeHits = 0;
 
   uint32_t getAndResetQueueHits();
-  uint32_t getQueueHits();
   void incrementQueueHits();
 
   uint32_t getAndResetTmHits();
-  uint32_t getTmHits();
   void incrementTmHits();
 
   uint32_t getAndResetStoreHits();
-  uint32_t getStoreHits();
   void incrementStoreHits();
 };
 
