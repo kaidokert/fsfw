@@ -71,9 +71,9 @@ add and link against the FSFW library in general.
 
 4. Link against the FSFW library
 
-	```cmake
-	target_link_libraries(<YourProjectName> PRIVATE fsfw)
-	```
+   ```cmake
+   target_link_libraries(${YourProjectName} PRIVATE fsfw)
+   ```
 
 5. It should now be possible use the FSFW as a static library from the user code.
 
