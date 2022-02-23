@@ -117,7 +117,7 @@ uint16_t CRC::crc16ccitt(uint8_t const input[], uint32_t length, uint16_t starti
   //	{
   //		 if  (xor_out[i] == true)
   //			 crc_value = crc_value + pow(2,(15 -i));   // reverse CrC result before
-  //Final XOR
+  // Final XOR
   //	}
   //
   //	crc_value = 0;// for debug mode
