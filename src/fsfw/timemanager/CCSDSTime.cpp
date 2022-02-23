@@ -127,7 +127,7 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
     }
     to->month = tempMonth;
     to->day = tempDay;
-  }else{
+  } else {
     to->month = temp->month;
     to->day = temp->day;
   }
@@ -228,8 +228,8 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
   }
 
   // try Code B (yyyy-ddd)
-  count = sscanf((const char*)from, "%4" SCNu16 "-%3" SCNu16 "T%2" SCNu8 ":%2" SCNu8 ":%fZ", &year, &day,
-                 &hour, &minute, &second);
+  count = sscanf((const char*)from, "%4" SCNu16 "-%3" SCNu16 "T%2" SCNu8 ":%2" SCNu8 ":%fZ", &year,
+                 &day, &hour, &minute, &second);
   if (count == 5) {
     uint8_t tempDay;
     ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year, &month, &tempDay);

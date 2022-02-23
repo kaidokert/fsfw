@@ -1,8 +1,8 @@
 #include "fsfw/storagemanager/LocalPool.h"
 
-#include <cstring>
-
 #include <FSFWConfig.h>
+
+#include <cstring>
 
 #include "fsfw/FSFW.h"
 #include "fsfw/objectmanager/ObjectManager.h"

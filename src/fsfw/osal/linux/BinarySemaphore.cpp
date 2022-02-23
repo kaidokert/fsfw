@@ -1,6 +1,7 @@
 #include "fsfw/osal/linux/BinarySemaphore.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <time.h>
 
 #include <cstring>
@@ -8,8 +9,6 @@
 #include "fsfw/osal/linux/unixUtility.h"
 #include "fsfw/serviceinterface/ServiceInterfacePrinter.h"
 #include "fsfw/serviceinterface/ServiceInterfaceStream.h"
-
-#include <stdio.h>
 
 BinarySemaphore::BinarySemaphore() {
   // Using unnamed semaphores for now

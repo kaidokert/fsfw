@@ -1,9 +1,8 @@
-#include <array>
-
 #include <fsfw/timemanager/CCSDSTime.h>
 
-#include <catch2/catch_test_macros.hpp>
+#include <array>
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "fsfw_tests/unit/CatchDefinitions.h"
 
@@ -53,11 +52,12 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     REQUIRE(timeTo.second == 45);
     REQUIRE(timeTo.usecond == 123400);
   }
-  SECTION("CCS_Day of Year"){
+  SECTION("CCS_Day of Year") {
     Clock::TimeOfDay_t timeTo;
-    std::array<uint8_t,8> ccsDayOfYear = {0b01011000, 0x07, 0xe4, 0, 60, 13, 24, 45};
+    std::array<uint8_t, 8> ccsDayOfYear = {0b01011000, 0x07, 0xe4, 0, 60, 13, 24, 45};
     size_t length = ccsDayOfYear.size();
-    auto result = CCSDSTime::convertFromCCS(&timeTo, ccsDayOfYear.data(), &length, ccsDayOfYear.size());
+    auto result =
+        CCSDSTime::convertFromCCS(&timeTo, ccsDayOfYear.data(), &length, ccsDayOfYear.size());
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     // Check constness
     REQUIRE(ccsDayOfYear[0] == 0b01011000);
@@ -76,11 +76,11 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     REQUIRE(timeTo.second == 45);
     REQUIRE(timeTo.usecond == 0);
   }
-  SECTION("Test convertFromASCII"){
-      std::string timeAscii = "2022-12-31T23:59:59.123Z";
-      Clock::TimeOfDay_t timeTo;
-      const uint8_t* timeChar = reinterpret_cast<const uint8_t*>(timeAscii.c_str());
-      CCSDSTime::convertFromASCII(&timeTo, timeChar, timeAscii.length());
+  SECTION("Test convertFromASCII") {
+    std::string timeAscii = "2022-12-31T23:59:59.123Z";
+    Clock::TimeOfDay_t timeTo;
+    const uint8_t* timeChar = reinterpret_cast<const uint8_t*>(timeAscii.c_str());
+    CCSDSTime::convertFromASCII(&timeTo, timeChar, timeAscii.length());
     REQUIRE(timeTo.year == 2022);
     REQUIRE(timeTo.month == 12);
     REQUIRE(timeTo.day == 31);

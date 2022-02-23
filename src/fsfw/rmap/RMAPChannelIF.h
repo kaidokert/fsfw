@@ -77,9 +77,9 @@ class RMAPChannelIF {
    * command; command was not sent
    *      - @c COMMAND_BUFFER_FULL				no receiver buffer available for
    * expected len; command was not sent
-   *      - @c COMMAND_TOO_BIG					the data that was to be sent was too long
-   * for the hw to handle (write command) or the expected len was bigger than maximal expected len
-   * (read command) command was not sent
+   *      - @c COMMAND_TOO_BIG					the data that was to be sent was too
+   * long for the hw to handle (write command) or the expected len was bigger than maximal expected
+   * len (read command) command was not sent
    *      - @c COMMAND_CHANNEL_DEACTIVATED		the channel has no port set
    *      - @c NOT_SUPPORTED						if you dont feel like
    * implementing something...
