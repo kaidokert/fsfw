@@ -98,6 +98,20 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       REQUIRE(dataset.tmHits.value == (lostTm + 1));
       REQUIRE(dataset.storeHits.value == (storeHits + 1));
     }
+    // Complete Coverage
+    internalErrorReporter->setDiagnosticPrintout(true);
+    internalErrorReporter->setMutexTimeout(MutexIF::TimeoutType::BLOCKING, 0);
+    {
+      // Message Queue Id
+      MessageQueueId_t id = internalErrorReporter->getCommandQueue();
+      REQUIRE(id != MessageQueueIF::NO_QUEUE);
+      CommandMessage message;
+      sid_t sid(objects::INTERNAL_ERROR_REPORTER, InternalErrorDataset::ERROR_SET_ID);
+      HousekeepingMessage::setToggleReportingCommand(&message, sid, true, false);
+      result = hkQueue->sendMessage(id, &message);
+      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      internalErrorReporter->performOperation(0);
+    }
   }
   QueueFactory::instance()->deleteMessageQueue(testQueue);
   QueueFactory::instance()->deleteMessageQueue(hkQueue);
