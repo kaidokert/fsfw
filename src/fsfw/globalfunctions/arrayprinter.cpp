@@ -107,7 +107,7 @@ void arrayprinter::printDec(const uint8_t *data, size_t size, size_t maxCharPerL
       break;
     }
 
-    currentPos += snprintf(printBuffer + currentPos, 3, "%d", data[i]);
+    currentPos += snprintf(printBuffer + currentPos, 4, "%d", data[i]);
     if (i < size - 1) {
       currentPos += sprintf(printBuffer + currentPos, ",");
       if (i > 0 and (i + 1) % maxCharPerLine == 0) {
