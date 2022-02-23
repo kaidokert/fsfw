@@ -6,6 +6,7 @@
 #include <fsfw/cfdp/tlv/Tlv.h>
 #include <fsfw/cfdp/tlv/TlvIF.h>
 #include <fsfw/serialize/SerializeIF.h>
+#include <FSFWConfig.h>
 
 #include <cstddef>
 #include <cstdint>

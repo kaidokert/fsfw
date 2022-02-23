@@ -28,7 +28,7 @@ const uint16_t CRC::crc16ccitt_table[256] = {
 
 // CRC implementation
 uint16_t CRC::crc16ccitt(uint8_t const input[], uint32_t length, uint16_t startingCrc) {
-  uint8_t *data = (uint8_t *)input;
+  const uint8_t *data = static_cast<const uint8_t *>(input);
   unsigned int tbl_idx;
 
   while (length--) {
@@ -38,89 +38,5 @@ uint16_t CRC::crc16ccitt(uint8_t const input[], uint32_t length, uint16_t starti
     data++;
   }
   return startingCrc & 0xffff;
-
-  // The part below is not used!
-  //	bool temr[16];
-  //	bool xor_out[16];
-  //	bool r[16];
-  //	bool d[8];
-  //	uint16_t crc_value = 0;
-  //
-  //
-  //	for (int i=0; i<16 ;i++) {
-  //		temr[i] = false;
-  //		xor_out[i] = false;
-  //	}
-  //
-  //
-  //	for (int i=0; i<16 ;i++)
-  //			r[i] = true;    // initialize with 0xFFFF
-  //
-  //
-  //
-  //	for (int j=0; j<length ;j++)
-  //	{
-  //
-  //	for (int i=0; i<8 ;i++)
-  //		if ((input[j] & 1<<i) == 1<<i)
-  //			d[7-i]=true;			// reverse   input data
-  //		else
-  //			d[7-i]=false;			// reverse input data
-  //
-  //
-  //
-  //		  temr[0] = d[4] ^ d[0];
-  //		  temr[1] = d[5] ^ d[1];
-  //		  temr[2] = d[6] ^ d[2];
-  //		  temr[3] = d[7] ^ d[3];
-  //		  temr[4] = r[12] ^ r[8];
-  //		  temr[5] = r[13] ^ r[9];
-  //		  temr[6] = r[14] ^ r[10];
-  //		  temr[7] = r[15] ^ r[11];
-  //		  temr[8] = d[4] ^ r[12];
-  //		  temr[9] = d[5] ^ r[13];
-  //		  temr[10] = d[6] ^ r[14];
-  //		  temr[11] = d[7] ^ r[15];
-  //		  temr[12] = temr[0] ^ temr[4];
-  //		  temr[13] = temr[1] ^ temr[5];
-  //		  temr[14] = temr[2] ^ temr[6];
-  //		  temr[15] = temr[3] ^ temr[7];
-  //
-  //
-  //		  xor_out[0] = temr[12];
-  //		  xor_out[1] = temr[13];
-  //		  xor_out[2] = temr[14];
-  //		  xor_out[3] = temr[15];
-  //		  xor_out[4] = temr[8];
-  //		  xor_out[5] = temr[9] ^ temr[12];
-  //		  xor_out[6] = temr[10] ^ temr[13];
-  //		  xor_out[7] = temr[11] ^ temr[14];
-  //		  xor_out[8] = temr[15] ^ r[0];
-  //		  xor_out[9] = temr[8] ^ r[1];
-  //		  xor_out[10] = temr[9] ^ r[2];
-  //		  xor_out[11] = temr[10] ^ r[3];
-  //		  xor_out[12] = temr[11] ^ temr[12] ^ r[4];
-  //		  xor_out[13] = temr[13] ^ r[5];
-  //		  xor_out[14] = temr[14] ^ r[6];
-  //		  xor_out[15] = temr[15] ^ r[7];
-  //
-  //	 for (int i=0; i<16 ;i++)
-  //	 {
-  //		  r[i]= xor_out[i] ;
-  //	 }
-  //
-  //	}
-  //
-  //
-  //
-  //	for (int i=0; i<16 ;i++)
-  //	{
-  //		 if  (xor_out[i] == true)
-  //			 crc_value = crc_value + pow(2,(15 -i));   // reverse CrC result before
-  // Final XOR
-  //	}
-  //
-  //	crc_value = 0;// for debug mode
-  //	return (crc_value);
 
 } /* Calculate_CRC() */

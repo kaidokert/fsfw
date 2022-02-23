@@ -169,8 +169,8 @@ class RMAP : public HasReturnvaluesIF {
    * @param buffer the data to write
    * @param length length of data
    * @return
-   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was == NULL
-   * in write command
+   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was ==
+   * NULL in write command
    *      - return codes of RMAPChannelIF::sendCommand()
    */
   static ReturnValue_t sendWriteCommand(RMAPCookie *cookie, const uint8_t *buffer, size_t length);
@@ -205,8 +205,8 @@ class RMAP : public HasReturnvaluesIF {
    * @param cookie to cookie to read from
    * @param expLength the expected maximum length of the reply
    * @return
-   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was == NULL
-   * in write command, or nullpointer in read command
+   *      - @c COMMAND_NULLPOINTER				datalen was != 0 but data was ==
+   * NULL in write command, or nullpointer in read command
    *      - return codes of RMAPChannelIF::sendCommand()
    */
   static ReturnValue_t sendReadCommand(RMAPCookie *cookie, uint32_t expLength);

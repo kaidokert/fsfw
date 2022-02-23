@@ -9,6 +9,8 @@
 #include "fsfw/serviceinterface/ServiceInterfacePrinter.h"
 #include "fsfw/serviceinterface/ServiceInterfaceStream.h"
 
+#include <stdio.h>
+
 BinarySemaphore::BinarySemaphore() {
   // Using unnamed semaphores for now
   initSemaphore();
