@@ -1,6 +1,7 @@
 #include "fsfw/globalfunctions/arrayprinter.h"
 
 #include <bitset>
+#include <cmath>
 
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
@@ -68,7 +69,7 @@ void arrayprinter::printHex(const uint8_t *data, size_t size, size_t maxCharPerL
     currentPos += snprintf(printBuffer + currentPos, 6, "%02x", data[i]);
     if (i < size - 1) {
       currentPos += sprintf(printBuffer + currentPos, ",");
-      if (i > 0 and (i + 1) % maxCharPerLine == 0) {
+      if ((i + 1) % maxCharPerLine == 0) {
         currentPos += sprintf(printBuffer + currentPos, "\n");
       }
     }
@@ -97,20 +98,21 @@ void arrayprinter::printDec(const uint8_t *data, size_t size, size_t maxCharPerL
   }
   std::cout << "]" << std::endl;
 #else
-  // General format: 32, 243, -12 so it is number of chars times 5
+  // General format: 32,243,-12 so it is number of chars times 4
   // plus line break plus small safety margin.
-  char printBuffer[(size + 1) * 5 + 1] = {};
+  uint16_t expectedLines = ceil((double)size / maxCharPerLine);
+  char printBuffer[size * 4 + 1 + expectedLines] = {};
   size_t currentPos = 0;
   for (size_t i = 0; i < size; i++) {
     // To avoid buffer overflows.
-    if (sizeof(printBuffer) - currentPos <= 5) {
+    if (sizeof(printBuffer) - currentPos <= 4) {
       break;
     }
 
     currentPos += snprintf(printBuffer + currentPos, 4, "%d", data[i]);
     if (i < size - 1) {
       currentPos += sprintf(printBuffer + currentPos, ",");
-      if (i > 0 and (i + 1) % maxCharPerLine == 0) {
+      if ((i + 1) % maxCharPerLine == 0) {
         currentPos += sprintf(printBuffer + currentPos, "\n");
       }
     }
