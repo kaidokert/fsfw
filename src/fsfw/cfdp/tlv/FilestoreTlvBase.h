@@ -1,7 +1,6 @@
 #ifndef FSFW_SRC_FSFW_CFDP_FILESTOREREQUESTBASE_H_
 #define FSFW_SRC_FSFW_CFDP_FILESTOREREQUESTBASE_H_
 
-#include <FSFWConfig.h>
 #include <fsfw/cfdp/definitions.h>
 #include <fsfw/cfdp/tlv/Lv.h>
 #include <fsfw/cfdp/tlv/Tlv.h>
@@ -11,6 +10,8 @@
 
 #include <cstddef>
 #include <cstdint>
+
+#include "fsfw/FSFW.h"
 
 namespace cfdp {
 
