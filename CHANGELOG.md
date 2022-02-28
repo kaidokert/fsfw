@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 
+## Removed
+
+- Removed the `HkSwitchHelper`. This module should not be needed anymore, now that the local
+  datapools have been implemented
+
 ## Additions
 
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
