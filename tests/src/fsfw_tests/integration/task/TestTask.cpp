@@ -3,7 +3,6 @@
 #include <fsfw/objectmanager/ObjectManager.h>
 #include <fsfw/serviceinterface/ServiceInterface.h>
 
-bool TestTask::oneShotAction = true;
 MutexIF* TestTask::testLock = nullptr;
 
 TestTask::TestTask(object_id_t objectId) : SystemObject(objectId), testMode(testModes::A) {
