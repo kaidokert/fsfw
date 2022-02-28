@@ -10,9 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [v5.0.0]
 
+
 ## Changes
 
 - HAL Devicehandlers: Periodic printout is run-time configurable now
+
+## Removed
+
+- Removed the `HkSwitchHelper`. This module should not be needed anymore, now that the local
+  datapools have been implemented
 
 ## Additions
 
