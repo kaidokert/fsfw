@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [v5.0.0]
 
+## Changes
+
+- `oneShotAction` flag in the `TestTask` class is not static anymore
+
 ## Removed
 
 - Removed the `HkSwitchHelper`. This module should not be needed anymore, now that the local
