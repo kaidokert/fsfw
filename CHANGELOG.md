@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [v5.0.0]
 
+## Removed
+
+- Removed the `HkSwitchHelper`. This module should not be needed anymore, now that the local
+  datapools have been implemented
+
 ## Additions
 
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
