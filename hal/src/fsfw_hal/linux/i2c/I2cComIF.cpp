@@ -1,4 +1,13 @@
-#include "fsfw_hal/linux/i2c/I2cComIF.h"
+#include "I2cComIF.h"
+
+#include "fsfw/FSFW.h"
+#include "fsfw/serviceinterface.h"
+#include "fsfw_hal/linux/UnixFileGuard.h"
+#include "fsfw_hal/linux/utility.h"
+
+#if FSFW_HAL_I2C_WIRETAPPING == 1
+#include "fsfw/globalfunctions/arrayprinter.h"
+#endif
 
 #include <errno.h>
 #include <fcntl.h>
@@ -7,11 +16,6 @@
 #include <unistd.h>
 
 #include <cstring>
-
-#include "fsfw/FSFW.h"
-#include "fsfw/serviceinterface.h"
-#include "fsfw_hal/linux/UnixFileGuard.h"
-#include "fsfw_hal/linux/utility.h"
 
 I2cComIF::I2cComIF(object_id_t objectId) : SystemObject(objectId) {}
 
@@ -112,6 +116,11 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
+
+#if FSFW_HAL_I2C_WIRETAPPING == 1
+  sif::info << "Sent I2C data to bus " << deviceFile << ":" << std::endl;
+  arrayprinter::print(sendData, sendLen);
+#endif
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -175,6 +184,11 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
+
+#if FSFW_HAL_I2C_WIRETAPPING == 1
+  sif::info << "I2C read bytes from bus " << deviceFile << ":" << std::endl;
+  arrayprinter::print(replyBuffer, requestLen);
+#endif
 
   i2cDeviceMapIter->second.replyLen = requestLen;
   return HasReturnvaluesIF::RETURN_OK;

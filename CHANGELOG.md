@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 
+## Additions
+
+- Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
+
 # [v4.0.0]
 
 ## Additions
