@@ -21,14 +21,14 @@ pipeline {
         stage('Build') {
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake --build . -j'
+                    sh 'cmake --build . -j4'
                 }
             }
         }
         stage('Unittests') {
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake --build . -- fsfw-tests_coverage -j'
+                    sh 'cmake --build . -- fsfw-tests_coverage -j4'
                 }
             }
         }
