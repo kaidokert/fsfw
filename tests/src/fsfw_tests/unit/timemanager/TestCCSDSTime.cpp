@@ -1,3 +1,4 @@
+#include <fsfw/globalfunctions/timevalOperations.h>
 #include <fsfw/timemanager/CCSDSTime.h>
 
 #include <array>
@@ -88,5 +89,36 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     REQUIRE(timeTo.minute == 59);
     REQUIRE(timeTo.second == 59);
     REQUIRE(timeTo.usecond == Catch::Approx(123000));
+  }
+
+  SECTION("CDS Conversions") {
+    // Preperation
+    Clock::TimeOfDay_t time;
+    time.year = 2020;
+    time.month = 2;
+    time.day = 29;
+    time.hour = 13;
+    time.minute = 24;
+    time.second = 45;
+    time.usecond = 123456;
+    timeval timeAsTimeval;
+    auto result = Clock::convertTimeOfDayToTimeval(&time, &timeAsTimeval);
+    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(timeAsTimeval.tv_sec == 1582982685);
+    CHECK(timeAsTimeval.tv_usec == 123456);
+
+    // Conversion to CDS Short
+    CCSDSTime::CDS_short cdsTime;
+    result = CCSDSTime::convertToCcsds(&cdsTime, &timeAsTimeval);
+    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+
+    // Conversion back to timeval
+    timeval timeReturnAsTimeval;
+    result = CCSDSTime::convertFromCDS(&timeReturnAsTimeval, &cdsTime);
+    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    // us precision is lost
+    timeval difference = timeAsTimeval - timeReturnAsTimeval;
+    CHECK(difference.tv_usec == 456);
+    CHECK(difference.tv_sec == 0);
   }
 }
