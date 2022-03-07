@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
+- GPIO HAL: Renamed entries of enumerations to avoid nameclashes with Windows defines.
+  `IN` and `OUT` in `Direction` changed to `DIR_IN` and `DIR_OUT`.
+  `CALLBACK` in `GpioTypes` changed to `TYPE_CALLBACK`
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 
