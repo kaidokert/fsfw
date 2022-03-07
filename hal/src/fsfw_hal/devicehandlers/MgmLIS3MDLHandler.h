@@ -3,8 +3,8 @@
 
 #include "devicedefinitions/MgmLIS3HandlerDefs.h"
 #include "events/subsystemIdRanges.h"
-#include "fsfw/FSFW.h"
 #include "fsfw/devicehandlers/DeviceHandlerBase.h"
+#include "fsfw/globalfunctions/PeriodicOperationDivider.h"
 
 class PeriodicOperationDivider;
 
@@ -30,6 +30,7 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
                     uint32_t transitionDelay);
   virtual ~MgmLIS3MDLHandler();
 
+  void enablePeriodicPrintouts(bool enable, uint8_t divider);
   /**
    * Set the absolute limit for the values on the axis in microtesla. The dataset values will
    * be marked as invalid if that limit is exceeded
@@ -167,9 +168,8 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
    */
   ReturnValue_t prepareCtrlRegisterWrite();
 
-#if FSFW_HAL_LIS3MDL_MGM_DEBUG == 1
-  PeriodicOperationDivider *debugDivider;
-#endif
+  bool periodicPrintout = false;
+  PeriodicOperationDivider debugDivider = PeriodicOperationDivider(3);
 };
 
 #endif /* MISSION_DEVICES_MGMLIS3MDLHANDLER_H_ */

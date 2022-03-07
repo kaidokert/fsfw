@@ -8,11 +8,7 @@ GyroHandlerL3GD20H::GyroHandlerL3GD20H(object_id_t objectId, object_id_t deviceC
                                        CookieIF *comCookie, uint32_t transitionDelayMs)
     : DeviceHandlerBase(objectId, deviceCommunication, comCookie),
       transitionDelayMs(transitionDelayMs),
-      dataset(this) {
-#if FSFW_HAL_L3GD20_GYRO_DEBUG == 1
-  debugDivider = new PeriodicOperationDivider(3);
-#endif
-}
+      dataset(this) {}
 
 GyroHandlerL3GD20H::~GyroHandlerL3GD20H() {}
 
@@ -193,22 +189,22 @@ ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
 
       int8_t temperaturOffset = (-1) * packet[L3GD20H::TEMPERATURE_IDX];
       float temperature = 25.0 + temperaturOffset;
-#if FSFW_HAL_L3GD20_GYRO_DEBUG == 1
-      if (debugDivider->checkAndIncrement()) {
-        /* Set terminal to utf-8 if there is an issue with micro printout. */
+      if (periodicPrintout) {
+        if (debugDivider.checkAndIncrement()) {
+          /* Set terminal to utf-8 if there is an issue with micro printout. */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "GyroHandlerL3GD20H: Angular velocities (deg/s):" << std::endl;
-        sif::info << "X: " << angVelocX << std::endl;
-        sif::info << "Y: " << angVelocY << std::endl;
-        sif::info << "Z: " << angVelocZ << std::endl;
+          sif::info << "GyroHandlerL3GD20H: Angular velocities (deg/s):" << std::endl;
+          sif::info << "X: " << angVelocX << std::endl;
+          sif::info << "Y: " << angVelocY << std::endl;
+          sif::info << "Z: " << angVelocZ << std::endl;
 #else
-        sif::printInfo("GyroHandlerL3GD20H: Angular velocities (deg/s):\n");
-        sif::printInfo("X: %f\n", angVelocX);
-        sif::printInfo("Y: %f\n", angVelocY);
-        sif::printInfo("Z: %f\n", angVelocZ);
+          sif::printInfo("GyroHandlerL3GD20H: Angular velocities (deg/s):\n");
+          sif::printInfo("X: %f\n", angVelocX);
+          sif::printInfo("Y: %f\n", angVelocY);
+          sif::printInfo("Z: %f\n", angVelocZ);
 #endif
+        }
       }
-#endif
 
       PoolReadGuard readSet(&dataset);
       if (readSet.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
@@ -271,4 +267,9 @@ void GyroHandlerL3GD20H::setAbsoluteLimits(float limitX, float limitY, float lim
   this->absLimitX = limitX;
   this->absLimitY = limitY;
   this->absLimitZ = limitZ;
+}
+
+void GyroHandlerL3GD20H::enablePeriodicPrintouts(bool enable, uint8_t divider) {
+  periodicPrintout = enable;
+  debugDivider.setDivider(divider);
 }

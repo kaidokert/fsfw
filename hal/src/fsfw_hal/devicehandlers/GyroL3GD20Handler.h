@@ -5,7 +5,6 @@
 #include <fsfw/globalfunctions/PeriodicOperationDivider.h>
 
 #include "devicedefinitions/GyroL3GD20Definitions.h"
-#include "fsfw/FSFW.h"
 
 /**
  * @brief 	Device Handler for the L3GD20H gyroscope sensor
@@ -21,6 +20,8 @@ class GyroHandlerL3GD20H : public DeviceHandlerBase {
   GyroHandlerL3GD20H(object_id_t objectId, object_id_t deviceCommunication, CookieIF *comCookie,
                      uint32_t transitionDelayMs);
   virtual ~GyroHandlerL3GD20H();
+
+  void enablePeriodicPrintouts(bool enable, uint8_t divider);
 
   /**
    * Set the absolute limit for the values on the axis in degrees per second.
@@ -80,9 +81,8 @@ class GyroHandlerL3GD20H : public DeviceHandlerBase {
   // Set default value
   float sensitivity = L3GD20H::SENSITIVITY_00;
 
-#if FSFW_HAL_L3GD20_GYRO_DEBUG == 1
-  PeriodicOperationDivider *debugDivider = nullptr;
-#endif
+  bool periodicPrintout = false;
+  PeriodicOperationDivider debugDivider = PeriodicOperationDivider(3);
 };
 
 #endif /* MISSION_DEVICES_GYROL3GD20HANDLER_H_ */

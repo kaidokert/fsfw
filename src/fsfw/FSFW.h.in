@@ -57,18 +57,6 @@
 #define FSFW_HAL_SPI_WIRETAPPING            0
 #endif
 
-#ifndef FSFW_HAL_L3GD20_GYRO_DEBUG
-#define FSFW_HAL_L3GD20_GYRO_DEBUG          0
-#endif /* FSFW_HAL_L3GD20_GYRO_DEBUG */
-
-#ifndef FSFW_HAL_RM3100_MGM_DEBUG
-#define FSFW_HAL_RM3100_MGM_DEBUG           0
-#endif /* FSFW_HAL_RM3100_MGM_DEBUG */
-
-#ifndef FSFW_HAL_LIS3MDL_MGM_DEBUG
-#define FSFW_HAL_LIS3MDL_MGM_DEBUG          0
-#endif /* FSFW_HAL_LIS3MDL_MGM_DEBUG */
-
 // Can be used for low-level debugging of the I2C bus
 #ifndef FSFW_HAL_I2C_WIRETAPPING
 #define FSFW_HAL_I2C_WIRETAPPING            0
