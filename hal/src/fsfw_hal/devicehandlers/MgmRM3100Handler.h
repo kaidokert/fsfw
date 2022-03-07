@@ -2,12 +2,8 @@
 #define MISSION_DEVICES_MGMRM3100HANDLER_H_
 
 #include "devicedefinitions/MgmRM3100HandlerDefs.h"
-#include "fsfw/FSFW.h"
 #include "fsfw/devicehandlers/DeviceHandlerBase.h"
-
-#if FSFW_HAL_RM3100_MGM_DEBUG == 1
 #include "fsfw/globalfunctions/PeriodicOperationDivider.h"
-#endif
 
 /**
  * @brief 	Device Handler for the RM3100 geomagnetic magnetometer sensor
@@ -33,6 +29,7 @@ class MgmRM3100Handler : public DeviceHandlerBase {
                    uint32_t transitionDelay);
   virtual ~MgmRM3100Handler();
 
+  void enablePeriodicPrintouts(bool enable, uint8_t divider);
   /**
    * Configure device handler to go to normal mode after startup immediately
    * @param enable
@@ -98,9 +95,9 @@ class MgmRM3100Handler : public DeviceHandlerBase {
                                         size_t commandDataLen);
 
   ReturnValue_t handleDataReadout(const uint8_t *packet);
-#if FSFW_HAL_RM3100_MGM_DEBUG == 1
-  PeriodicOperationDivider *debugDivider;
-#endif
+
+  bool periodicPrintout = false;
+  PeriodicOperationDivider debugDivider = PeriodicOperationDivider(3);
 };
 
 #endif /* MISSION_DEVICEHANDLING_MGMRM3100HANDLER_H_ */
