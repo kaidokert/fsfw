@@ -12,17 +12,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
-- HAL Devicehandlers: Periodic printout is run-time configurable now
-- `oneShotAction` flag in the `TestTask` class is not static anymore
+- HAL Linux SPI: Set the Clock Default State when setting new SPI speed
+  and mode
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
+- HAL Devicehandlers: Periodic printout is run-time configurable now.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/561
+- `oneShotAction` flag in the `TestTask` class is not static anymore.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/560
 
 ## Removed
 
 - Removed the `HkSwitchHelper`. This module should not be needed anymore, now that the local
-  datapools have been implemented
+  datapools have been implemented.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/557
 
 ## Additions
 
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
 
 # [v4.0.0]
 
