@@ -824,7 +824,7 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData, DeviceCommandId
 }
 
 ReturnValue_t DeviceHandlerBase::getStorageData(store_address_t storageAddress, uint8_t** data,
-                                                uint32_t* len) {
+                                                size_t* len) {
   size_t lenTmp;
 
   if (IPCStore == nullptr) {

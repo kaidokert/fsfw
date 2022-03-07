@@ -673,7 +673,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   //! Pointer to the raw packet that will be sent.
   uint8_t *rawPacket = nullptr;
   //! Size of the #rawPacket.
-  uint32_t rawPacketLen = 0;
+  size_t rawPacketLen = 0;
 
   /**
    * The mode the device handler is currently in.
@@ -1250,7 +1250,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *   - @c RETURN_FAILED IPCStore is nullptr
    *   - the return value from the IPCStore if it was not @c RETURN_OK
    */
-  ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data, uint32_t *len);
+  ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data, size_t *len);
 
   /**
    * @param modeTo either @c MODE_ON, MODE_NORMAL or MODE_RAW, nothing else!
