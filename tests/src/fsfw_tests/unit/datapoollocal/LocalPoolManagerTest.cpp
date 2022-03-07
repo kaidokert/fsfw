@@ -94,10 +94,8 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     poolOwner->dataset.setChanged(true);
 
     /* Store current time, we are going to check the (approximate) time equality later */
-    CCSDSTime::CDS_short timeCdsNow;
     timeval now;
     Clock::getClock_timeval(&now);
-    CCSDSTime::convertToCcsds(&timeCdsNow, &now);
 
     /* Trigger generation of snapshot */
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
@@ -132,13 +130,11 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     CHECK(newSet.localPoolUint16Vec.value[2] == 42932);
 
     /* Now we check that both times are equal */
-    CHECK(cdsShort.pField == timeCdsNow.pField);
-    CHECK(cdsShort.dayLSB == Catch::Approx(timeCdsNow.dayLSB).margin(1));
-    CHECK(cdsShort.dayMSB == Catch::Approx(timeCdsNow.dayMSB).margin(1));
-    CHECK(cdsShort.msDay_h == Catch::Approx(timeCdsNow.msDay_h).margin(1));
-    CHECK(cdsShort.msDay_hh == Catch::Approx(timeCdsNow.msDay_hh).margin(1));
-    CHECK(cdsShort.msDay_l == Catch::Approx(timeCdsNow.msDay_l).margin(1));
-    CHECK(cdsShort.msDay_ll == Catch::Approx(timeCdsNow.msDay_ll).margin(5));
+    timeval timeFromHK;
+    auto result = CCSDSTime::convertFromCDS(&timeFromHK, &cdsShort);
+    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    timeval difference = timeFromHK - now;
+    CHECK(timevalOperations::toDouble(difference) < 1.0);
   }
 
   SECTION("VariableSnapshotTest") {
@@ -190,10 +186,10 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
                                  SerializeIF::Endianness::MACHINE) == retval::CATCH_OK);
     CHECK(varCopy.value == 25);
 
+    /* Now we check that both times are equal */
     timeval timeFromHK;
     auto result = CCSDSTime::convertFromCDS(&timeFromHK, &cdsShort);
     CHECK(result == HasReturnvaluesIF::RETURN_OK);
-    /// timeval* to, const uint8_t* from, size_t* foundLength,size_t maxLength)
     timeval difference = timeFromHK - now;
     CHECK(timevalOperations::toDouble(difference) < 1.0);
   }
