@@ -29,7 +29,7 @@ class TestTask : public SystemObject, public ExecutableObjectIF, public HasRetur
   bool testFlag = false;
 
  private:
-  static bool oneShotAction;
+  bool oneShotAction = true;
   static MutexIF* testLock;
   StorageManagerIF* IPCStore;
 };
