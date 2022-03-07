@@ -75,11 +75,11 @@ class RMAPChannelIF {
    *      - @c RETURN_OK
    *      - @c COMMAND_NO_DESCRIPTORS_AVAILABLE 	no descriptors available for sending
    * command; command was not sent
-   *      - @c COMMAND_BUFFER_FULL				no receiver buffer available for expected
-   * len; command was not sent
-   *      - @c COMMAND_TOO_BIG					the data that was to be sent was too long for the
-   * hw to handle (write command) or the expected len was bigger than maximal expected len (read
-   * command) command was not sent
+   *      - @c COMMAND_BUFFER_FULL				no receiver buffer available for
+   * expected len; command was not sent
+   *      - @c COMMAND_TOO_BIG					the data that was to be sent was too
+   * long for the hw to handle (write command) or the expected len was bigger than maximal expected
+   * len (read command) command was not sent
    *      - @c COMMAND_CHANNEL_DEACTIVATED		the channel has no port set
    *      - @c NOT_SUPPORTED						if you dont feel like
    * implementing something...
@@ -97,8 +97,8 @@ class RMAPChannelIF {
    *      - @c REPLY_NO_REPLY				no reply was received
    *      - @c REPLY_NOT_SENT				command was not sent, implies no reply
    *      - @c REPLY_NOT_YET_SENT			command is still waiting to be sent
-   *      - @c WRITE_REPLY_INTERFACE_BUSY			Interface is busy (transmission buffer
-   * still being processed)
+   *      - @c WRITE_REPLY_INTERFACE_BUSY			Interface is busy (transmission
+   * buffer still being processed)
    *      - @c WRITE_REPLY_TRANSMISSION_ERROR		Interface encountered errors during last
    * operation, data could not be processed. (transmission error)
    *      - @c WRITE_REPLY_INVALID_DATA			Invalid data (amount / value)

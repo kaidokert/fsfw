@@ -427,7 +427,7 @@ ReturnValue_t UartComIF::handleNoncanonicalRead(UartCookie& uartCookie, UartDevi
   auto bufferPtr = iter->second.replyBuffer.data();
   // Size check to prevent buffer overflow
   if (requestLen > uartCookie.getMaxReplyLen()) {
-#if OBSW_VERBOSE_LEVEL >= 1
+#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "UartComIF::requestReceiveMessage: Next read would cause overflow!"
                  << std::endl;
