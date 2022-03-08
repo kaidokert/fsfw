@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - GPIO HAL: `Direction` amd `GpioTypes` are enum classes now, which prevents
   name clashes with Windows defines
+- New CMake option `FSFW_HAL_LINUX_ADD_LIBGPIOD` to specifically exclude `gpiod` code
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 
