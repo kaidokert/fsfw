@@ -31,7 +31,7 @@
 #endif /* FSFW_VERBOSE_LEVEL */
 
 #ifndef FSFW_DISABLE_PRINTOUT
-#define FSFW_DISABLE_PRINTOUT 0
+#define FSFW_DISABLE_PRINTOUT               0
 #endif
 
 #ifndef FSFW_USE_REALTIME_FOR_LINUX
