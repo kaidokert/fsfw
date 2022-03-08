@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
-- GPIO HAL: `Direction` amd `GpioTypes` are enum classes now, which prevents
+- GPIO HAL: `Direction`, `GpioOperation` and `Levels` are enum classes now, which prevents
   name clashes with Windows defines.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - New CMake option `FSFW_HAL_LINUX_ADD_LIBGPIOD` to specifically exclude `gpiod` code.
