@@ -32,8 +32,6 @@ class Version {
 
 extern const fsfw::Version FSFW_VERSION;
 
-void getVersion(Version& version);
-
 }  // namespace fsfw
 
 #endif /* FSFW_SRC_FSFW_VERSION_H_ */
