@@ -111,12 +111,20 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CCSDSTime::CDS_short cdsTime;
     result = CCSDSTime::convertToCcsds(&cdsTime, &timeAsTimeval);
     CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    // Days in CCSDS Epoch 22704 (0x58B0)
+    CHECK(cdsTime.dayMSB == 0x58);
+    CHECK(cdsTime.dayLSB == 0xB0);
+    // MS of day 48285123.456 (floored here)
+    CHECK(cdsTime.msDay_hh == 0x2);
+    CHECK(cdsTime.msDay_h == 0xE0);
+    CHECK(cdsTime.msDay_l == 0xC5);
+    CHECK(cdsTime.msDay_ll == 0xC3);
 
     // Conversion back to timeval
     timeval timeReturnAsTimeval;
     result = CCSDSTime::convertFromCDS(&timeReturnAsTimeval, &cdsTime);
     CHECK(result == HasReturnvaluesIF::RETURN_OK);
-    // us precision is lost
+    // micro seconds precision is lost
     timeval difference = timeAsTimeval - timeReturnAsTimeval;
     CHECK(difference.tv_usec == 456);
     CHECK(difference.tv_sec == 0);
