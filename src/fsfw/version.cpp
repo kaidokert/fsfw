@@ -2,6 +2,9 @@
 
 #include "fsfw/FSFWVersion.h"
 
+#undef major
+#undef minor
+
 const fsfw::Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR,
                                           FSFW_VERSION_REVISION};
 
