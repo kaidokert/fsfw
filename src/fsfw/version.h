@@ -7,7 +7,6 @@
 #include <iostream>
 #endif
 #include <cstdint>
-#include <cstdio>
 
 namespace fsfw {
 
@@ -53,9 +52,7 @@ class Version {
    * @param str
    * @param maxLen
    */
-  void getVersion(char* str, size_t maxLen) const {
-    snprintf(str, maxLen, "%d.%d.%d", major, minor, revision);
-  }
+  void getVersion(char* str, size_t maxLen) const;
 };
 
 extern const fsfw::Version FSFW_VERSION;
