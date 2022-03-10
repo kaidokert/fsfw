@@ -55,8 +55,12 @@ TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   REQUIRE(v1 == v2);
   REQUIRE(v1 <= v2);
   REQUIRE(v1 >= v2);
+#if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::info << "v" << fsfw::FSFW_VERSION << std::endl;
+#endif
   char verString[10] = {};
   fsfw::FSFW_VERSION.getVersion(verString, sizeof(verString));
-  sif::info << "v" << verString << std::endl;
+#if FSFW_DISABLE_PRINTOUT == 0
+  printf("v%s\n",verString);
+#endif
 }
