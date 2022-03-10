@@ -16,6 +16,9 @@ TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   REQUIRE(fsfw::Version(0, 0, 0) <= fsfw::FSFW_VERSION);
   fsfw::Version v1 = fsfw::Version(1, 1, 1);
   fsfw::Version v2 = fsfw::Version(1, 1, 1);
+  REQUIRE(v1 == v2);
+  REQUIRE(v1 <= v2);
+  REQUIRE(v1 >= v2);
   v1.revision -= 1;
   REQUIRE(v1 != v2);
   REQUIRE(v1 < v2);
@@ -32,6 +35,8 @@ TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   REQUIRE(v1 <= v2);
   v1.major += 1;
   REQUIRE(v1 == v2);
+  REQUIRE(v1 <= v2);
+  REQUIRE(v1 >= v2);
   v1.major += 1;
   REQUIRE(v1 != v2);
   REQUIRE(v1 > v2);
@@ -48,6 +53,8 @@ TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   REQUIRE(v1 >= v2);
   v1.revision -= 1;
   REQUIRE(v1 == v2);
+  REQUIRE(v1 <= v2);
+  REQUIRE(v1 >= v2);
   sif::info << "v" << fsfw::FSFW_VERSION << std::endl;
   char verString[10] = {};
   fsfw::FSFW_VERSION.getVersion(verString, sizeof(verString));
