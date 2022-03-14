@@ -15,10 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - HAL Linux SPI: Set the Clock Default State when setting new SPI speed
   and mode
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
-- HAL Devicehandlers: Periodic printout is run-time configurable now.
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/561
-- `oneShotAction` flag in the `TestTask` class is not static anymore.
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/560
+- GPIO HAL: `Direction`, `GpioOperation` and `Levels` are enum classes now, which prevents
+  name clashes with Windows defines.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
+- New CMake option `FSFW_HAL_LINUX_ADD_LIBGPIOD` to specifically exclude `gpiod` code.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
+- HAL Devicehandlers: Periodic printout is run-time configurable now
+- `oneShotAction` flag in the `TestTask` class is not static anymore
 
 ## Removed
 

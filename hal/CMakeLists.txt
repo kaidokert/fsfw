@@ -9,6 +9,7 @@ option(FSFW_HAL_ADD_LINUX "Add the Linux HAL to the sources. Requires gpiod libr
 # Linux. The only exception from this is the gpiod library which requires a dedicated installation,
 # but CMake is able to determine whether this library is installed with find_library.
 option(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS "Add peripheral drivers for embedded Linux" ON)
+option(FSFW_HAL_LINUX_ADD_LIBGPIOD "Target implements libgpiod" ON)
 
 option(FSFW_HAL_ADD_RASPBERRY_PI "Add Raspberry Pi specific code to the sources" OFF)
 option(FSFW_HAL_ADD_STM32H7 "Add the STM32H7 HAL to the sources" OFF)
