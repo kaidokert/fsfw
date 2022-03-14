@@ -74,6 +74,7 @@ class SpiComIF : public DeviceCommunicationIF, public SystemObject {
   MutexIF* spiMutex = nullptr;
   MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
   uint32_t timeoutMs = 20;
+  spi_ioc_transfer clockUpdateTransfer = {};
 
   using SpiDeviceMap = std::unordered_map<address_t, SpiInstance>;
   using SpiDeviceMapIter = SpiDeviceMap::iterator;
