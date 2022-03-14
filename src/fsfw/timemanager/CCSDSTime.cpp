@@ -557,6 +557,35 @@ ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from, size_t
   return RETURN_OK;
 }
 
+ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const CCSDSTime::CDS_short* from) {
+  if (to == nullptr or from == nullptr) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
+  uint16_t days = (from->dayMSB << 8) + from->dayLSB;
+  if (days <= DAYS_CCSDS_TO_UNIX_EPOCH) {
+    return INVALID_TIME_FORMAT;
+  }
+  days -= DAYS_CCSDS_TO_UNIX_EPOCH;
+  to->tv_sec = days * SECONDS_PER_DAY;
+  uint32_t msDay =
+      (from->msDay_hh << 24) + (from->msDay_h << 16) + (from->msDay_l << 8) + from->msDay_ll;
+  to->tv_sec += (msDay / 1000);
+  to->tv_usec = (msDay % 1000) * 1000;
+  return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to, const CCSDSTime::CDS_short* from) {
+  if (to == nullptr or from == nullptr) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
+  timeval tempTimeval;
+  ReturnValue_t result = convertFromCDS(&tempTimeval, from);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  return CCSDSTime::convertTimevalToTimeOfDay(to, &tempTimeval);
+}
+
 ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, uint8_t pField, const uint8_t* from,
                                         size_t* foundLength, size_t maxLength) {
   uint32_t secs = 0;

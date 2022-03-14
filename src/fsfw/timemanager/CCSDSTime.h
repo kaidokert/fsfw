@@ -180,6 +180,8 @@ class CCSDSTime : public HasReturnvaluesIF {
 
   static ReturnValue_t convertFromCDS(timeval *to, uint8_t const *from, size_t *foundLength,
                                       size_t maxLength);
+  static ReturnValue_t convertFromCDS(timeval *to, const CCSDSTime::CDS_short *from);
+  static ReturnValue_t convertFromCDS(Clock::TimeOfDay_t *to, const CCSDSTime::CDS_short *from);
 
   static ReturnValue_t convertFromCCS(Clock::TimeOfDay_t *to, uint8_t const *from,
                                       size_t *foundLength, size_t maxLength);

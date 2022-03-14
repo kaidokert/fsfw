@@ -7,7 +7,7 @@
 
 ReturnValue_t gpio::createRpiGpioConfig(GpioCookie* cookie, gpioId_t gpioId, int bcmPin,
                                         std::string consumer, gpio::Direction direction,
-                                        int initValue) {
+                                        gpio::Levels initValue) {
   if (cookie == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }

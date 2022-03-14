@@ -161,11 +161,12 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod
   consumer = regularGpio.consumer;
   /* Configure direction and add a description to the GPIO */
   switch (direction) {
-    case (gpio::OUT): {
-      result = gpiod_line_request_output(lineHandle, consumer.c_str(), regularGpio.initValue);
+    case (gpio::Direction::OUT): {
+      result = gpiod_line_request_output(lineHandle, consumer.c_str(),
+                                         static_cast<int>(regularGpio.initValue));
       break;
     }
-    case (gpio::IN): {
+    case (gpio::Direction::IN): {
       result = gpiod_line_request_input(lineHandle, consumer.c_str());
       break;
     }
@@ -211,7 +212,7 @@ ReturnValue_t LinuxLibgpioIF::pullHigh(gpioId_t gpioId) {
     if (regularGpio == nullptr) {
       return GPIO_TYPE_FAILURE;
     }
-    return driveGpio(gpioId, *regularGpio, gpio::HIGH);
+    return driveGpio(gpioId, *regularGpio, gpio::Levels::HIGH);
   } else {
     auto gpioCallback = dynamic_cast<GpioCallback*>(gpioMapIter->second);
     if (gpioCallback->callback == nullptr) {
@@ -243,7 +244,7 @@ ReturnValue_t LinuxLibgpioIF::pullLow(gpioId_t gpioId) {
     if (regularGpio == nullptr) {
       return GPIO_TYPE_FAILURE;
     }
-    return driveGpio(gpioId, *regularGpio, gpio::LOW);
+    return driveGpio(gpioId, *regularGpio, gpio::Levels::LOW);
   } else {
     auto gpioCallback = dynamic_cast<GpioCallback*>(gpioMapIter->second);
     if (gpioCallback->callback == nullptr) {
@@ -258,11 +259,11 @@ ReturnValue_t LinuxLibgpioIF::pullLow(gpioId_t gpioId) {
 
 ReturnValue_t LinuxLibgpioIF::driveGpio(gpioId_t gpioId, GpiodRegularBase& regularGpio,
                                         gpio::Levels logicLevel) {
-  int result = gpiod_line_set_value(regularGpio.lineHandle, logicLevel);
+  int result = gpiod_line_set_value(regularGpio.lineHandle, static_cast<int>(logicLevel));
   if (result < 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "LinuxLibgpioIF::driveGpio: Failed to pull GPIO with ID " << gpioId
-                 << " to logic level " << logicLevel << std::endl;
+                 << " to logic level " << static_cast<int>(logicLevel) << std::endl;
 #else
     sif::printWarning(
         "LinuxLibgpioIF::driveGpio: Failed to pull GPIO with ID %d to "
