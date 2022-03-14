@@ -28,7 +28,9 @@ class Version {
             (v1.major == v2.major and v1.minor == v2.minor and v1.revision < v2.revision));
   }
 
-  friend bool operator>(const Version& v1, const Version& v2) { return not(v1 < v2); }
+  friend bool operator>(const Version& v1, const Version& v2) {
+    return not (v1 < v2) and not (v1 == v2);
+  }
 
   friend bool operator<=(const Version& v1, const Version& v2) { return ((v1 == v2) or (v1 < v2)); }
 
