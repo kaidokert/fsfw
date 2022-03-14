@@ -9,7 +9,9 @@ target_sources(${LIB_FSFW_NAME} PRIVATE
 )
 
 if(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS)
+if(FSFW_HAL_LINUX_ADD_LIBGPIOD)
 	add_subdirectory(gpio)
+endif()
 	add_subdirectory(spi)
 	add_subdirectory(i2c)
 	add_subdirectory(uart)
