@@ -9,11 +9,11 @@ using gpioId_t = uint16_t;
 
 namespace gpio {
 
-enum Levels : uint8_t { LOW = 0, HIGH = 1, NONE = 99 };
+enum class Levels : int { LOW = 0, HIGH = 1, NONE = 99 };
 
-enum Direction : uint8_t { IN = 0, OUT = 1 };
+enum class Direction : int { IN = 0, OUT = 1 };
 
-enum GpioOperation { READ, WRITE };
+enum class GpioOperation { READ, WRITE };
 
 enum class GpioTypes {
   NONE,
@@ -80,7 +80,7 @@ class GpiodRegularByChip : public GpiodRegularBase {
  public:
   GpiodRegularByChip()
       : GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP, std::string(), gpio::Direction::IN,
-                         gpio::LOW, 0) {}
+                         gpio::Levels::LOW, 0) {}
 
   GpiodRegularByChip(std::string chipname_, int lineNum_, std::string consumer_,
                      gpio::Direction direction_, gpio::Levels initValue_)
@@ -90,7 +90,7 @@ class GpiodRegularByChip : public GpiodRegularBase {
 
   GpiodRegularByChip(std::string chipname_, int lineNum_, std::string consumer_)
       : GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_CHIP, consumer_, gpio::Direction::IN,
-                         gpio::LOW, lineNum_),
+                         gpio::Levels::LOW, lineNum_),
         chipname(chipname_) {}
 
   std::string chipname;
@@ -106,7 +106,7 @@ class GpiodRegularByLabel : public GpiodRegularBase {
 
   GpiodRegularByLabel(std::string label_, int lineNum_, std::string consumer_)
       : GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_LABEL, consumer_, gpio::Direction::IN,
-                         gpio::LOW, lineNum_),
+                         gpio::Levels::LOW, lineNum_),
         label(label_) {}
 
   std::string label;
@@ -127,7 +127,7 @@ class GpiodRegularByLineName : public GpiodRegularBase {
 
   GpiodRegularByLineName(std::string lineName_, std::string consumer_)
       : GpiodRegularBase(gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME, consumer_, gpio::Direction::IN,
-                         gpio::LOW),
+                         gpio::Levels::LOW),
         lineName(lineName_) {}
 
   std::string lineName;

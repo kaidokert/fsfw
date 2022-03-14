@@ -1,6 +1,8 @@
 #include "fsfw/timemanager/Countdown.h"
 
-Countdown::Countdown(uint32_t initialTimeout) : timeout(initialTimeout) {}
+Countdown::Countdown(uint32_t initialTimeout) : timeout(initialTimeout) {
+  setTimeout(initialTimeout);
+}
 
 Countdown::~Countdown() {}
 

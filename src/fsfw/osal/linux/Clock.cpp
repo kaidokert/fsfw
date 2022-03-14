@@ -140,8 +140,9 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval*
   fromTm.tm_hour = from->hour;
   fromTm.tm_min = from->minute;
   fromTm.tm_sec = from->second;
+  fromTm.tm_isdst = 0;
 
-  to->tv_sec = mktime(&fromTm);
+  to->tv_sec = timegm(&fromTm);
   to->tv_usec = from->usecond;
   return HasReturnvaluesIF::RETURN_OK;
 }

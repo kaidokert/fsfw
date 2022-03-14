@@ -12,17 +12,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
+- HAL Linux SPI: Set the Clock Default State when setting new SPI speed
+  and mode
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
+- GPIO HAL: `Direction`, `GpioOperation` and `Levels` are enum classes now, which prevents
+  name clashes with Windows defines.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
+- New CMake option `FSFW_HAL_LINUX_ADD_LIBGPIOD` to specifically exclude `gpiod` code.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 
 ## Removed
 
 - Removed the `HkSwitchHelper`. This module should not be needed anymore, now that the local
-  datapools have been implemented
+  datapools have been implemented.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/557
 
 ## Additions
 
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
+- Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
+  inside `fsfw/version.h`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
 
 # [v4.0.0]
 

@@ -401,4 +401,12 @@ void SpiComIF::setSpiSpeedAndMode(int spiFd, spi::SpiModes mode, uint32_t speed)
   if (retval != 0) {
     utility::handleIoctlError("SpiComIF::setSpiSpeedAndMode: Setting SPI speed failed");
   }
+  // This updates the SPI clock default polarity. Only setting the mode does not update
+  // the line state, which can be an issue on mode switches because the clock line will
+  // switch the state after the chip select is pulled low
+  clockUpdateTransfer.len = 0;
+  retval = ioctl(spiFd, SPI_IOC_MESSAGE(1), &clockUpdateTransfer);
+  if (retval != 0) {
+    utility::handleIoctlError("SpiComIF::setSpiSpeedAndMode: Updating SPI default clock failed");
+  }
 }
