@@ -8,16 +8,11 @@
 #include <events/subsystemIdRanges.h>
 
 using EventId_t = uint16_t;
-using EventSeverity_t = uint8_t ;
+using EventSeverity_t = uint8_t;
 using UniqueEventId_t = uint8_t;
 
 namespace severity {
-enum Severity: EventSeverity_t {
-  INFO = 1,
-  LOW = 2,
-  MEDIUM = 3,
-  HIGH = 4
-};
+enum Severity : EventSeverity_t { INFO = 1, LOW = 2, MEDIUM = 3, HIGH = 4 };
 
 }  // namespace severity
 
