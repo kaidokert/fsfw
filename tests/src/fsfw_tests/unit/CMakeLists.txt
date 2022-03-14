@@ -2,14 +2,13 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
     CatchDefinitions.cpp
     CatchFactory.cpp
     printChar.cpp
+    version.cpp
 )
 
-# if(FSFW_CUSTOM_UNITTEST_RUNNER)
-    target_sources(${FSFW_TEST_TGT} PRIVATE
-        CatchRunner.cpp
-        CatchSetup.cpp
-    )
-# endif()
+target_sources(${FSFW_TEST_TGT} PRIVATE
+    CatchRunner.cpp
+    CatchSetup.cpp
+)
 
 add_subdirectory(testcfg)
 add_subdirectory(action)
