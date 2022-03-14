@@ -150,16 +150,13 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval*
   time_tm.tm_hour = from->hour;
   time_tm.tm_min = from->minute;
   time_tm.tm_sec = from->second;
+  time_tm.tm_isdst = 0;
 
-  time_t seconds = mktime(&time_tm);
+  time_t seconds = timegm(&time_tm);
 
   to->tv_sec = seconds;
   to->tv_usec = from->usecond;
   // Fails in 2038..
-  return HasReturnvaluesIF::RETURN_OK;
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::warning << "Clock::convertTimeBla: not implemented yet" << std::endl;
-#endif
   return HasReturnvaluesIF::RETURN_OK;
 }
 

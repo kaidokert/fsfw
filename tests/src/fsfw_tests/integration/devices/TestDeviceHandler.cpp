@@ -208,7 +208,7 @@ ReturnValue_t TestDevice::buildNormalModeCommand(DeviceCommandId_t deviceCommand
                                                  const uint8_t* commandData,
                                                  size_t commandDataLen) {
   if (fullInfoPrintout) {
-#if OBSW_VERBOSE_LEVEL >= 3
+#if FSFW_VERBOSE_LEVEL >= 3
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::info << "TestDevice::buildTestCommand1: Building normal command" << std::endl;
 #else
@@ -351,7 +351,7 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
   switch (pendingCmd) {
     case (TEST_NORMAL_MODE_CMD): {
       if (fullInfoPrintout) {
-#if OBSW_VERBOSE_LEVEL >= 3
+#if FSFW_VERBOSE_LEVEL >= 3
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::info << "TestDevice::scanForReply: Reply for normal commnand (ID "
                   << TEST_NORMAL_MODE_CMD << ") received!" << std::endl;
@@ -678,7 +678,6 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
         int32_t newValue = 0;
         ReturnValue_t result = newValues->getElement<int32_t>(&newValue, 0, 0);
         if (result == HasReturnvaluesIF::RETURN_OK) {
-#if OBSW_DEVICE_HANDLER_PRINTOUT == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
           sif::info << "TestDevice" << deviceIdx
                     << "::getParameter: Setting parameter 1 to "
@@ -688,7 +687,6 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
           sif::printInfo("TestDevice%d::getParameter: Setting parameter 1 to new value %lu\n",
                          deviceIdx, static_cast<unsigned long>(newValue));
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* OBSW_DEVICE_HANDLER_PRINTOUT == 1 */
         }
       }
       parameterWrapper->set(testParameter1);
@@ -702,7 +700,6 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
             newValues->getElement<float>(newVector + 2, 0, 2) != RETURN_OK) {
           return HasReturnvaluesIF::RETURN_FAILED;
         }
-#if OBSW_DEVICE_HANDLER_PRINTOUT == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::info << "TestDevice" << deviceIdx
                   << "::getParameter: Setting parameter 3 to "
@@ -715,7 +712,6 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
             "[%f, %f, %f]\n",
             deviceIdx, newVector[0], newVector[1], newVector[2]);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* OBSW_DEVICE_HANDLER_PRINTOUT == 1 */
       }
       parameterWrapper->setVector(vectorFloatParams2);
       break;
