@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
+- Additional baudrates for Linux UART HAL
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/581
 
 # [v4.0.0]
 
