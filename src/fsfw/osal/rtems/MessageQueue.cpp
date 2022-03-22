@@ -6,7 +6,7 @@
 #include "fsfw/osal/rtems/RtemsBasic.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size)
+MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size, MqArgs* args)
     : id(0), lastPartner(0), defaultDestination(NO_QUEUE), internalErrorReporter(nullptr) {
   rtems_name name = ('Q' << 24) + (queueCounter++ << 8);
   rtems_status_code status =

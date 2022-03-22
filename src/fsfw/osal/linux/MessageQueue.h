@@ -6,6 +6,7 @@
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
+#include "fsfw/ipc/definitions.h"
 /**
  * @brief		This class manages sending and receiving of message queue messages.
  *
@@ -42,7 +43,8 @@ class MessageQueue : public MessageQueueIF {
    * 							This should be left default.
    */
   MessageQueue(uint32_t messageDepth = 3,
-               size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE);
+               size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE,
+               MqArgs* args = nullptr);
   /**
    * @brief	The destructor deletes the formerly created message queue.
    * @details	This is accomplished by using the delete call provided by the operating system.
@@ -183,6 +185,8 @@ class MessageQueue : public MessageQueueIF {
    * The name of the message queue, stored for unlinking
    */
   char name[16];
+
+  MqArgs mqArgs = {};
 
   static uint16_t queueCounter;
   const size_t maxMessageSize;

@@ -11,7 +11,7 @@
 #include "fsfw/osal/linux/unixUtility.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize)
+MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize, MqArgs* args)
     : id(MessageQueueIF::NO_QUEUE),
       lastPartner(MessageQueueIF::NO_QUEUE),
       defaultDestination(MessageQueueIF::NO_QUEUE),
@@ -36,6 +36,9 @@ MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize)
   } else {
     // Successful mq_open call
     this->id = tempId;
+  }
+  if (args != nullptr) {
+    this->mqArgs = *args;
   }
 }
 
@@ -240,9 +243,9 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
                                                         bool ignoreFault) {
   if (message == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is nullptr!" << std::endl;
+    sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is nullptr" << std::endl;
 #else
-    sif::printError("MessageQueue::sendMessageFromMessageQueue: Message is nullptr!\n");
+    sif::printError("MessageQueue::sendMessageFromMessageQueue: Message is nullptr\n");
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -256,7 +259,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     if (!ignoreFault) {
       InternalErrorReporterIF* internalErrorReporter =
           ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
-      if (internalErrorReporter != NULL) {
+      if (internalErrorReporter != nullptr) {
         internalErrorReporter->queueMessageNotSent();
       }
     }

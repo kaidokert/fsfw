@@ -4,7 +4,7 @@
 #include "fsfw/osal/freertos/QueueMapManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize)
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* args)
     : maxMessageSize(maxMessageSize) {
   handle = xQueueCreate(messageDepth, maxMessageSize);
   if (handle == nullptr) {

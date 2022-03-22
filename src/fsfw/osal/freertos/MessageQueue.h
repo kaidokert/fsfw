@@ -7,6 +7,7 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/ipc/MessageQueueMessageIF.h"
+#include "fsfw/ipc/definitions.h"
 #include "queue.h"
 
 /**
@@ -53,7 +54,8 @@ class MessageQueue : public MessageQueueIF {
    * This should be left default.
    */
   MessageQueue(size_t messageDepth = 3,
-               size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE);
+               size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE,
+               MqArgs* args = nullptr);
 
   /** Copying message queues forbidden */
   MessageQueue(const MessageQueue&) = delete;

@@ -8,7 +8,7 @@
 #include "fsfw/osal/host/QueueMapManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize)
+MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* args)
     : messageSize(maxMessageSize), messageDepth(messageDepth) {
   queueLock = MutexFactory::instance()->createMutex();
   auto result = QueueMapManager::instance()->addMessageQueue(this, &mqId);
