@@ -269,6 +269,50 @@ void UartComIF::configureBaudrate(struct termios* options, UartCookie* uartCooki
       cfsetispeed(options, B460800);
       cfsetospeed(options, B460800);
       break;
+    case 500000:
+      cfsetispeed(options, B500000);
+      cfsetospeed(options, B500000);
+      break;
+    case 576000:
+      cfsetispeed(options, B576000);
+      cfsetospeed(options, B576000);
+      break;
+    case 921600:
+      cfsetispeed(options, B921600);
+      cfsetospeed(options, B921600);
+      break;
+    case 1000000:
+      cfsetispeed(options, B1000000);
+      cfsetospeed(options, B1000000);
+      break;
+    case 1152000:
+      cfsetispeed(options, B1152000);
+      cfsetospeed(options, B1152000);
+      break;
+    case 1500000:
+      cfsetispeed(options, B1500000);
+      cfsetospeed(options, B1500000);
+      break;
+    case 2000000:
+      cfsetispeed(options, B2000000);
+      cfsetospeed(options, B2000000);
+      break;
+    case 2500000:
+      cfsetispeed(options, B2500000);
+      cfsetospeed(options, B2500000);
+      break;
+    case 3000000:
+      cfsetispeed(options, B3000000);
+      cfsetospeed(options, B3000000);
+      break;
+    case 3500000:
+      cfsetispeed(options, B3500000);
+      cfsetospeed(options, B3500000);
+      break;
+    case 4000000:
+      cfsetispeed(options, B4000000);
+      cfsetospeed(options, B4000000);
+      break;
     default:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::warning << "UartComIF::configureBaudrate: Baudrate not supported" << std::endl;

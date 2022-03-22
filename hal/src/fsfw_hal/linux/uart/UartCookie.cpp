@@ -1,4 +1,4 @@
-#include "fsfw_hal/linux/uart/UartCookie.h"
+#include "UartCookie.h"
 
 #include <fsfw/serviceinterface.h>
 
