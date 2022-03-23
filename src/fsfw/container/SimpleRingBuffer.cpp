@@ -48,6 +48,9 @@ void SimpleRingBuffer::confirmBytesWritten(size_t amount) {
 }
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data, size_t amount) {
+  if(amount > maxSize()) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
   if (availableWriteSpace() >= amount or overwriteOld) {
     size_t amountTillWrap = writeTillWrap();
     if (amountTillWrap >= amount) {
