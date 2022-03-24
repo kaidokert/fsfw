@@ -3,7 +3,7 @@
 #include <fsfw/serviceinterface.h>
 
 UartCookie::UartCookie(object_id_t handlerId, std::string deviceFile, UartModes uartMode,
-                       uint32_t baudrate, size_t maxReplyLen)
+                       UartBaudRate baudrate, size_t maxReplyLen)
     : handlerId(handlerId),
       deviceFile(deviceFile),
       uartMode(uartMode),
@@ -12,7 +12,7 @@ UartCookie::UartCookie(object_id_t handlerId, std::string deviceFile, UartModes 
 
 UartCookie::~UartCookie() {}
 
-uint32_t UartCookie::getBaudrate() const { return baudrate; }
+UartBaudRate UartCookie::getBaudrate() const { return baudrate; }
 
 size_t UartCookie::getMaxReplyLen() const { return maxReplyLen; }
 
@@ -24,23 +24,11 @@ void UartCookie::setParityEven() { parity = Parity::EVEN; }
 
 Parity UartCookie::getParity() const { return parity; }
 
-void UartCookie::setBitsPerWord(uint8_t bitsPerWord_) {
-  switch (bitsPerWord_) {
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-      break;
-    default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::debug << "UartCookie::setBitsPerWord: Invalid bits per word specified" << std::endl;
-#endif
-      return;
-  }
+void UartCookie::setBitsPerWord(BitsPerWord bitsPerWord_) {
   bitsPerWord = bitsPerWord_;
 }
 
-uint8_t UartCookie::getBitsPerWord() const { return bitsPerWord; }
+BitsPerWord UartCookie::getBitsPerWord() const { return bitsPerWord; }
 
 StopBits UartCookie::getStopBits() const { return stopBits; }
 
