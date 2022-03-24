@@ -51,6 +51,9 @@ void SimpleRingBuffer::confirmBytesWritten(size_t amount) {
 }
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data, size_t amount) {
+  if(data == nullptr) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
   if(amount > getMaxSize()) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
