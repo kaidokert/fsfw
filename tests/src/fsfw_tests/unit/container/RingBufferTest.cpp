@@ -31,6 +31,8 @@ TEST_CASE("Ring Buffer Test", "[RingBufferTest]") {
     for (uint8_t i = 0; i < 9; i++) {
       CHECK(readBuffer[i] == i);
     }
+    REQUIRE(ringBuffer.writeData(testData, 1024) == retval::CATCH_FAILED);
+    REQUIRE(ringBuffer.writeData(nullptr, 5) == retval::CATCH_FAILED);
   }
 
   SECTION("Get Free Element Test") {
