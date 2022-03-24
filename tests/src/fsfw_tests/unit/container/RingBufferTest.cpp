@@ -236,9 +236,8 @@ TEST_CASE("Ring Buffer Test3", "[RingBufferTest3]") {
 
   SECTION("Overflow") {
     REQUIRE(ringBuffer.availableWriteSpace() == 9);
-    // Writing more than the buffer is large, technically thats allowed
-    // But it is senseless and has undesired impact on read call
-    REQUIRE(ringBuffer.writeData(testData, 13) == retval::CATCH_OK);
+    // Writing more than the buffer is large. Will be rejected
+    REQUIRE(ringBuffer.writeData(testData, 13) == retval::CATCH_FAILED);
     REQUIRE(ringBuffer.getAvailableReadData() == 3);
     ringBuffer.clear();
     uint8_t *ptr = nullptr;
