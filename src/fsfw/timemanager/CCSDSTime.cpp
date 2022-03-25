@@ -489,11 +489,6 @@ ReturnValue_t CCSDSTime::checkTimeOfDay(const Clock::TimeOfDay_t* time) {
   return RETURN_OK;
 }
 
-ReturnValue_t CCSDSTime::convertTimevalToTimeOfDay(Clock::TimeOfDay_t* to, timeval* from) {
-  // This is rather tricky. Implement only if needed. Also, if so, move to OSAL.
-  return UNSUPPORTED_TIME_FORMAT;
-}
-
 ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from, size_t* foundLength,
                                         size_t maxLength) {
   uint8_t pField = *from;
