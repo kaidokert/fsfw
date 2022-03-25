@@ -46,6 +46,9 @@ ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
 
 ReturnValue_t Clock::convertTimevalToTimeOfDay(const timeval* from, TimeOfDay_t* to) {
   struct tm* timeInfo;
+  // According to https://en.cppreference.com/w/c/chrono/gmtime, the implementation of gmtime_s
+  // in the Windows CRT is incompatible with the C standard but this should not be an issue for
+  // this implementation
   timeInfo = gmtime(&from->tv_sec);
   to->year = timeInfo->tm_year + 1900;
   to->month = timeInfo->tm_mon + 1;
