@@ -91,7 +91,7 @@ ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to, const uint8_t* f
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  return Clock::convertTimevalToTimeOfDay(to, &time);
+  return Clock::convertTimevalToTimeOfDay(&time, to);
 }
 
 ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* from,
@@ -578,7 +578,7 @@ ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to, const CCSDSTime:
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  return Clock::convertTimevalToTimeOfDay(to, &tempTimeval);
+  return Clock::convertTimevalToTimeOfDay(&tempTimeval, to);
 }
 
 ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, uint8_t pField, const uint8_t* from,
