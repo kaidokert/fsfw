@@ -120,8 +120,6 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CHECK(cdsTime.msDay_l == 0xC5);
     CHECK(cdsTime.msDay_ll == 0xC3);
 
-    
-
     // Conversion back to timeval
     timeval timeReturnAsTimeval;
     result = CCSDSTime::convertFromCDS(&timeReturnAsTimeval, &cdsTime);

@@ -8,8 +8,8 @@
 
 #include <fstream>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/ipc/MutexGuard.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 uint32_t Clock::getTicksPerSecond(void) {
   uint32_t ticks = sysconf(_SC_CLK_TCK);
@@ -116,7 +116,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   ReturnValue_t result = checkOrCreateClockMutex();
-  if(result != HasReturnvaluesIF::RETURN_OK){
+  if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
   MutexGuard helper(timeMutex);

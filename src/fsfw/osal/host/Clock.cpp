@@ -2,9 +2,9 @@
 
 #include <chrono>
 
+#include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/platform.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/ipc/MutexGuard.h"
 
 #if defined(PLATFORM_WIN)
 #include <sysinfoapi.h>
@@ -125,8 +125,8 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
   auto fraction = now - seconds;
   time_t tt = SystemClock::to_time_t(now);
-    ReturnValue_t result = checkOrCreateClockMutex();
-  if(result != HasReturnvaluesIF::RETURN_OK){
+  ReturnValue_t result = checkOrCreateClockMutex();
+  if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
   MutexGuard helper(timeMutex);

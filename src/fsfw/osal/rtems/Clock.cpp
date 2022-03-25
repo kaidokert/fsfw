@@ -6,7 +6,6 @@
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/osal/rtems/RtemsBasic.h"
 
-
 uint32_t Clock::getTicksPerSecond(void) {
   rtems_interval ticks_per_second = rtems_clock_get_ticks_per_second();
   return static_cast<uint32_t>(ticks_per_second);

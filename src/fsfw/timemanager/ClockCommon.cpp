@@ -39,7 +39,7 @@ ReturnValue_t Clock::setLeapSeconds(const uint16_t leapSeconds_) {
 }
 
 ReturnValue_t Clock::getLeapSeconds(uint16_t* leapSeconds_) {
-  if(not leapSecondsSet){
+  if (not leapSecondsSet) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (checkOrCreateClockMutex() != HasReturnvaluesIF::RETURN_OK) {
@@ -58,7 +58,7 @@ ReturnValue_t Clock::convertTimevalToTimeOfDay(const timeval* from, TimeOfDay_t*
   // in the Windows CRT is incompatible with the C standard but this should not be an issue for
   // this implementation
   ReturnValue_t result = checkOrCreateClockMutex();
-  if(result != HasReturnvaluesIF::RETURN_OK){
+  if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
   MutexGuard helper(timeMutex);
