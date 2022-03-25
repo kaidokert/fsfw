@@ -4,15 +4,13 @@
 
 #include "fsfw/platform.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/ipc/MutexGuard.h"
 
 #if defined(PLATFORM_WIN)
 #include <sysinfoapi.h>
 #elif defined(PLATFORM_UNIX)
 #include <fstream>
 #endif
-
-uint16_t Clock::leapSeconds = 0;
-MutexIF* Clock::timeMutex = NULL;
 
 using SystemClock = std::chrono::system_clock;
 
@@ -127,6 +125,13 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
   auto fraction = now - seconds;
   time_t tt = SystemClock::to_time_t(now);
+    ReturnValue_t result = checkOrCreateClockMutex();
+  if(result != HasReturnvaluesIF::RETURN_OK){
+    return result;
+  }
+  MutexGuard helper(timeMutex);
+  // gmtime writes its output in a global buffer which is not Thread Safe
+  // Therefore we have to use a Mutex here
   struct tm* timeInfo;
   timeInfo = gmtime(&tt);
   time->year = timeInfo->tm_year + 1900;

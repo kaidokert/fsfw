@@ -173,6 +173,7 @@ class Clock {
 
   static MutexIF *timeMutex;
   static uint16_t leapSeconds;
+  static bool leapSecondsSet;
 };
 
 #endif /* FSFW_TIMEMANAGER_CLOCK_H_ */

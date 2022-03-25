@@ -120,6 +120,8 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CHECK(cdsTime.msDay_l == 0xC5);
     CHECK(cdsTime.msDay_ll == 0xC3);
 
+    
+
     // Conversion back to timeval
     timeval timeReturnAsTimeval;
     result = CCSDSTime::convertFromCDS(&timeReturnAsTimeval, &cdsTime);
@@ -128,5 +130,17 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     timeval difference = timeAsTimeval - timeReturnAsTimeval;
     CHECK(difference.tv_usec == 456);
     CHECK(difference.tv_sec == 0);
+
+    Clock::TimeOfDay_t timeReturnAsTimeOfDay;
+    result = CCSDSTime::convertFromCDS(&timeReturnAsTimeOfDay, &cdsTime);
+    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(timeReturnAsTimeOfDay.year == 2020);
+    CHECK(timeReturnAsTimeOfDay.month == 2);
+    CHECK(timeReturnAsTimeOfDay.day == 29);
+    CHECK(timeReturnAsTimeOfDay.hour == 13);
+    CHECK(timeReturnAsTimeOfDay.minute == 24);
+    CHECK(timeReturnAsTimeOfDay.second == 45);
+    // micro seconds precision is lost
+    CHECK(timeReturnAsTimeOfDay.usecond == 123000);
   }
 }
