@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
+- `SimpleRingBuffer::writeData` now checks if the amount is larger than the total size of the 
+  Buffer and rejects such writeData calls with `HasReturnvaluesIF::RETURN_FAILED`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/586
 
 ## Removed
 
