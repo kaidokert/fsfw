@@ -88,6 +88,26 @@ if(FSFW_BUILD_UNITTESTS)
     endif()
 endif()
 
+message(STATUS "Finding and/or providing ETL library")
+# Check whether the user has already installed Catch2 first
+find_package(etl QUIET)
+# Not installed, so use FetchContent to download and provide etl
+if(NOT etl_FOUND)
+    message(STATUS
+        "No ETL installation was found with find_package. Installing and providing "
+        "etl with FindPackage"
+    )
+    include(FetchContent)
+
+    FetchContent_Declare(
+        etl
+        GIT_REPOSITORY https://github.com/ETLCPP/etl
+        GIT_TAG        20.26.0
+    )
+
+    FetchContent_MakeAvailable(etl)
+endif()
+
 set(FSFW_CORE_INC_PATH "inc")
 
 set_property(CACHE FSFW_OSAL PROPERTY STRINGS host linux rtems freertos)
