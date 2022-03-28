@@ -6,6 +6,7 @@ set(FSFW_REVISION 0)
 
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(FSFW_ETL_LIB_NAME etl)
 
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
@@ -90,9 +91,9 @@ endif()
 
 message(STATUS "Finding and/or providing ETL library")
 # Check whether the user has already installed Catch2 first
-find_package(etl QUIET)
+find_package(${FSFW_ETL_LIB_NAME} QUIET)
 # Not installed, so use FetchContent to download and provide etl
-if(NOT etl_FOUND)
+if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
     message(STATUS
         "No ETL installation was found with find_package. Installing and providing "
         "etl with FindPackage"
@@ -100,7 +101,7 @@ if(NOT etl_FOUND)
     include(FetchContent)
 
     FetchContent_Declare(
-        etl
+        ${FSFW_ETL_LIB_NAME}
         GIT_REPOSITORY https://github.com/ETLCPP/etl
         GIT_TAG        20.26.0
     )
@@ -369,6 +370,7 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
 )
 
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+    ${FSFW_ETL_LIB_NAME}
     ${FSFW_ADDITIONAL_LINK_LIBS}
 )
 
