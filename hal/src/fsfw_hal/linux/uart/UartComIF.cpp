@@ -148,16 +148,16 @@ void UartComIF::setDatasizeOptions(struct termios* options, UartCookie* uartCook
   /* Clear size bits */
   options->c_cflag &= ~CSIZE;
   switch (uartCookie->getBitsPerWord()) {
-    case 5:
+    case BitsPerWord::BITS_5:
       options->c_cflag |= CS5;
       break;
-    case 6:
+    case BitsPerWord::BITS_6:
       options->c_cflag |= CS6;
       break;
-    case 7:
+    case BitsPerWord::BITS_7:
       options->c_cflag |= CS7;
       break;
-    case 8:
+    case BitsPerWord::BITS_8:
       options->c_cflag |= CS8;
       break;
     default:
@@ -193,81 +193,125 @@ void UartComIF::setFixedOptions(struct termios* options) {
 
 void UartComIF::configureBaudrate(struct termios* options, UartCookie* uartCookie) {
   switch (uartCookie->getBaudrate()) {
-    case 50:
+    case UartBaudRate::RATE_50:
       cfsetispeed(options, B50);
       cfsetospeed(options, B50);
       break;
-    case 75:
+    case UartBaudRate::RATE_75:
       cfsetispeed(options, B75);
       cfsetospeed(options, B75);
       break;
-    case 110:
+    case UartBaudRate::RATE_110:
       cfsetispeed(options, B110);
       cfsetospeed(options, B110);
       break;
-    case 134:
+    case UartBaudRate::RATE_134:
       cfsetispeed(options, B134);
       cfsetospeed(options, B134);
       break;
-    case 150:
+    case UartBaudRate::RATE_150:
       cfsetispeed(options, B150);
       cfsetospeed(options, B150);
       break;
-    case 200:
+    case UartBaudRate::RATE_200:
       cfsetispeed(options, B200);
       cfsetospeed(options, B200);
       break;
-    case 300:
+    case UartBaudRate::RATE_300:
       cfsetispeed(options, B300);
       cfsetospeed(options, B300);
       break;
-    case 600:
+    case UartBaudRate::RATE_600:
       cfsetispeed(options, B600);
       cfsetospeed(options, B600);
       break;
-    case 1200:
+    case UartBaudRate::RATE_1200:
       cfsetispeed(options, B1200);
       cfsetospeed(options, B1200);
       break;
-    case 1800:
+    case UartBaudRate::RATE_1800:
       cfsetispeed(options, B1800);
       cfsetospeed(options, B1800);
       break;
-    case 2400:
+    case UartBaudRate::RATE_2400:
       cfsetispeed(options, B2400);
       cfsetospeed(options, B2400);
       break;
-    case 4800:
+    case UartBaudRate::RATE_4800:
       cfsetispeed(options, B4800);
       cfsetospeed(options, B4800);
       break;
-    case 9600:
+    case UartBaudRate::RATE_9600:
       cfsetispeed(options, B9600);
       cfsetospeed(options, B9600);
       break;
-    case 19200:
+    case UartBaudRate::RATE_19200:
       cfsetispeed(options, B19200);
       cfsetospeed(options, B19200);
       break;
-    case 38400:
+    case UartBaudRate::RATE_38400:
       cfsetispeed(options, B38400);
       cfsetospeed(options, B38400);
       break;
-    case 57600:
+    case UartBaudRate::RATE_57600:
       cfsetispeed(options, B57600);
       cfsetospeed(options, B57600);
       break;
-    case 115200:
+    case UartBaudRate::RATE_115200:
       cfsetispeed(options, B115200);
       cfsetospeed(options, B115200);
       break;
-    case 230400:
+    case UartBaudRate::RATE_230400:
       cfsetispeed(options, B230400);
       cfsetospeed(options, B230400);
       break;
-    case 460800:
+    case UartBaudRate::RATE_460800:
       cfsetispeed(options, B460800);
       cfsetospeed(options, B460800);
+      break;
+    case UartBaudRate::RATE_500000:
+      cfsetispeed(options, B500000);
+      cfsetospeed(options, B500000);
+      break;
+    case UartBaudRate::RATE_576000:
+      cfsetispeed(options, B576000);
+      cfsetospeed(options, B576000);
+      break;
+    case UartBaudRate::RATE_921600:
+      cfsetispeed(options, B921600);
+      cfsetospeed(options, B921600);
+      break;
+    case UartBaudRate::RATE_1000000:
+      cfsetispeed(options, B1000000);
+      cfsetospeed(options, B1000000);
+      break;
+    case UartBaudRate::RATE_1152000:
+      cfsetispeed(options, B1152000);
+      cfsetospeed(options, B1152000);
+      break;
+    case UartBaudRate::RATE_1500000:
+      cfsetispeed(options, B1500000);
+      cfsetospeed(options, B1500000);
+      break;
+    case UartBaudRate::RATE_2000000:
+      cfsetispeed(options, B2000000);
+      cfsetospeed(options, B2000000);
+      break;
+    case UartBaudRate::RATE_2500000:
+      cfsetispeed(options, B2500000);
+      cfsetospeed(options, B2500000);
+      break;
+    case UartBaudRate::RATE_3000000:
+      cfsetispeed(options, B3000000);
+      cfsetospeed(options, B3000000);
+      break;
+    case UartBaudRate::RATE_3500000:
+      cfsetispeed(options, B3500000);
+      cfsetospeed(options, B3500000);
+      break;
+    case UartBaudRate::RATE_4000000:
+      cfsetispeed(options, B4000000);
+      cfsetospeed(options, B4000000);
       break;
     default:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
