@@ -1,6 +1,6 @@
-#include "definitions.h"
 #include "fsfw/power/PowerSwitcher.h"
 
+#include "definitions.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
@@ -46,8 +46,8 @@ void PowerSwitcher::commandSwitches(ReturnValue_t onOff) {
 }
 
 void PowerSwitcher::turnOn(bool checkCurrentState) {
-  if(checkCurrentState) {
-    if(getStateOfSwitches() == PowerSwitchIF::SWITCH_ON) {
+  if (checkCurrentState) {
+    if (getStateOfSwitches() == PowerSwitchIF::SWITCH_ON) {
       state = SWITCH_IS_ON;
       return;
     }
@@ -57,8 +57,8 @@ void PowerSwitcher::turnOn(bool checkCurrentState) {
 }
 
 void PowerSwitcher::turnOff(bool checkCurrentState) {
-  if(checkCurrentState) {
-    if(getStateOfSwitches() == PowerSwitchIF::SWITCH_OFF) {
+  if (checkCurrentState) {
+    if (getStateOfSwitches() == PowerSwitchIF::SWITCH_OFF) {
       state = SWITCH_IS_OFF;
       return;
     }
@@ -68,7 +68,7 @@ void PowerSwitcher::turnOff(bool checkCurrentState) {
 }
 
 bool PowerSwitcher::active() {
-  if(state == WAIT_OFF or state == WAIT_ON) {
+  if (state == WAIT_OFF or state == WAIT_ON) {
     return true;
   }
   return false;

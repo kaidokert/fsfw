@@ -1,8 +1,8 @@
 #include "DummyPowerSwitcher.h"
 
-DummyPowerSwitcher::DummyPowerSwitcher(size_t numberOfSwitches, size_t numberOfFuses, uint32_t switchDelayMs)
-: switcherList(numberOfSwitches), fuseList(numberOfFuses), switchDelayMs(switchDelayMs) {
-}
+DummyPowerSwitcher::DummyPowerSwitcher(size_t numberOfSwitches, size_t numberOfFuses,
+                                       uint32_t switchDelayMs)
+    : switcherList(numberOfSwitches), fuseList(numberOfFuses), switchDelayMs(switchDelayMs) {}
 
 void DummyPowerSwitcher::setInitialSwitcherList(std::vector<ReturnValue_t> switcherList) {
   this->switcherList = switcherList;
@@ -20,7 +20,7 @@ ReturnValue_t DummyPowerSwitcher::sendSwitchCommand(power::Switch_t switchNr, Re
 }
 
 ReturnValue_t DummyPowerSwitcher::sendFuseOnCommand(uint8_t fuseNr) {
-  if(fuseNr < fuseList.capacity()) {
+  if (fuseNr < fuseList.capacity()) {
     fuseList[fuseNr] = FUSE_ON;
   }
   return RETURN_FAILED;
@@ -33,10 +33,6 @@ ReturnValue_t DummyPowerSwitcher::getSwitchState(power::Switch_t switchNr) const
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t DummyPowerSwitcher::getFuseState(uint8_t fuseNr) const {
-  return RETURN_OK;
-}
+ReturnValue_t DummyPowerSwitcher::getFuseState(uint8_t fuseNr) const { return RETURN_OK; }
 
-uint32_t DummyPowerSwitcher::getSwitchDelayMs(void) const {
-  return 5000;
-}
+uint32_t DummyPowerSwitcher::getSwitchDelayMs(void) const { return 5000; }

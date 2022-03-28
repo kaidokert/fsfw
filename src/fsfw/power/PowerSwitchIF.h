@@ -1,9 +1,9 @@
 #ifndef FSFW_POWER_POWERSWITCHIF_H_
 #define FSFW_POWER_POWERSWITCHIF_H_
 
-#include "definitions.h"
 #include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
+#include "definitions.h"
 /**
  *
  * @brief   This interface defines a connection to a device that is capable of
