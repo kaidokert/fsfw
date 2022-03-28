@@ -106,7 +106,10 @@ endif()
 
 message(STATUS "Finding and/or providing ETL library")
 # Check whether the user has already installed Catch2 first
-find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
+# I think the version provisioning feature of CMake has not been implemented for the ETL library
+# yet. Therefore we can not specify any (not even the major) version here and we have to rely
+# on the user having installed the correct version for now
+find_package(${FSFW_ETL_LIB_NAME} QUIET)
 # Not installed, so use FetchContent to download and provide etl
 if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
     message(STATUS
