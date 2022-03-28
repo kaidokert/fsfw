@@ -1,6 +1,7 @@
 #ifndef FSFW_POWER_POWERSWITCHIF_H_
 #define FSFW_POWER_POWERSWITCHIF_H_
 
+#include "definitions.h"
 #include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 /**
@@ -37,11 +38,11 @@ class PowerSwitchIF : public HasReturnvaluesIF {
    * @param switchNr
    * @param onOff on == @c SWITCH_ON; off != @c SWITCH_ON
    */
-  virtual void sendSwitchCommand(uint8_t switchNr, ReturnValue_t onOff) const = 0;
+  virtual ReturnValue_t sendSwitchCommand(power::Switch_t switchNr, ReturnValue_t onOff) = 0;
   /**
    * Sends a command to the Power Unit to enable a certain fuse.
    */
-  virtual void sendFuseOnCommand(uint8_t fuseNr) const = 0;
+  virtual ReturnValue_t sendFuseOnCommand(uint8_t fuseNr) = 0;
 
   /**
    * get the state of the Switches.
@@ -51,7 +52,7 @@ class PowerSwitchIF : public HasReturnvaluesIF {
    *     - @c SWITCH_OFF if the specified switch is off.
    *     - @c RETURN_FAILED if an error occured
    */
-  virtual ReturnValue_t getSwitchState(uint8_t switchNr) const = 0;
+  virtual ReturnValue_t getSwitchState(power::Switch_t switchNr) const = 0;
   /**
    * get state of a fuse.
    * @param fuseNr

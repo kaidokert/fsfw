@@ -15,7 +15,9 @@ PowerSensor::PowerSensor(object_id_t objectId, sid_t setId, VariableIds ids, Def
                    limits.currentMin, limits.currentMax, events.currentLow, events.currentHigh),
       voltageLimit(objectId, MODULE_ID_VOLTAGE, ids.pidVoltage, confirmationCount,
                    limits.voltageMin, limits.voltageMax, events.voltageLow, events.voltageHigh) {
-  commandQueue = QueueFactory::instance()->createMessageQueue();
+  auto mqArgs = MqArgs(objectId, static_cast<void*>(this));
+  commandQueue = QueueFactory::instance()->createMessageQueue(
+      3, MessageQueueMessage::MAX_MESSAGE_SIZE, &mqArgs);
 }
 
 PowerSensor::~PowerSensor() { QueueFactory::instance()->deleteMessageQueue(commandQueue); }
