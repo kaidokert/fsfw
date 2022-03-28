@@ -102,11 +102,15 @@ void PeriodicTask::taskFunctionality() {
 
 ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
   ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
-  if (newObject == nullptr) {
+  return addComponent(newObject);
+}
+
+ReturnValue_t PeriodicTask::addComponent(ExecutableObjectIF* object) {
+  if (object == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
-  newObject->setTaskIF(this);
-  objectList.push_back(newObject);
+  object->setTaskIF(this);
+  objectList.push_back(object);
   return HasReturnvaluesIF::RETURN_OK;
 }
 
