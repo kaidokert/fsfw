@@ -168,7 +168,6 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CHECK(timeReturnAsTodFromBuffer.second == time.second);
     CHECK(timeReturnAsTodFromBuffer.usecond == 123000);
 
-
     Clock::TimeOfDay_t todFromCCSDS;
     result = CCSDSTime::convertFromCcsds(&todFromCCSDS, buffer, sizeof(cdsTime));
     CHECK(result == HasReturnvaluesIF::RETURN_OK);
@@ -180,7 +179,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CHECK(todFromCCSDS.second == time.second);
     CHECK(todFromCCSDS.usecond == 123000);
   }
-  SECTION("CCSDS Failures"){
+  SECTION("CCSDS Failures") {
     Clock::TimeOfDay_t time;
     time.year = 2020;
     time.month = 12;
