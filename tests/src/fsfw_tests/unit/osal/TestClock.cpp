@@ -51,20 +51,14 @@ TEST_CASE("OSAL::Clock Test", "[OSAL::Clock Test]") {
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     double timeAsUsecDouble = static_cast<double>(timeAsUsec) / 1000000.0;
     timeval timeAsUsecTimeval = timevalOperations::toTimeval(timeAsUsecDouble);
-    double difference = timevalOperations::toDouble(timeAsTimeval - timeAsUsecTimeval);
+    double difference = timevalOperations::toDouble(timeAsUsecTimeval - timeAsTimeval);
     // We accept 5 ms difference
-    CHECK(abs(difference) <= 0.005);
+    CHECK(difference >= 0.0);
+    CHECK(difference <= 0.005);
     uint64_t timevalAsUint64 = static_cast<uint64_t>(timeAsTimeval.tv_sec) * 1000000ull +
                                static_cast<uint64_t>(timeAsTimeval.tv_usec);
-    if (timeAsUsec > timevalAsUint64) {
-      // This should not be the case but we can see some rounding issue sometimes
-      // This is the case if used in valgrind. This might indicate an other issue
-      CHECK((timeAsUsec - timevalAsUint64) >= 0);
-      CHECK((timeAsUsec - timevalAsUint64) <= (5 * 1000));
-    } else {
-      CHECK((timevalAsUint64 - timeAsUsec) >= 0);
-      CHECK((timevalAsUint64 - timeAsUsec) <= (5 * 1000));
-    }
+    CHECK((timeAsUsec - timevalAsUint64) >= 0);
+    CHECK((timeAsUsec - timevalAsUint64) <= (5 * 1000));
   }
   SECTION("Test j2000") {
     double j2000;
