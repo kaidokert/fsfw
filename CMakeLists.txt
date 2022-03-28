@@ -105,7 +105,7 @@ if(FSFW_BUILD_UNITTESTS)
 endif()
 
 message(STATUS "Finding and/or providing ETL library")
-# Check whether the user has already installed Catch2 first
+# Check whether the user has already installed ETL first
 # I think the version provisioning feature of CMake has not been implemented for the ETL library
 # yet. Therefore we can not specify any (not even the major) version here and we have to rely
 # on the user having installed the correct version for now
