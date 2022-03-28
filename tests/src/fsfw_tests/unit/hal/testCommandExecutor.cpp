@@ -82,7 +82,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   readBytes = 0;
   sizesFifo.retrieve(&readBytes);
   // That's about the size of the reply
-  bool beTrue = (readBytes > 200) and (readBytes < 300);
+  bool beTrue = (readBytes > 200) and (readBytes < 400);
   REQUIRE(beTrue);
   uint8_t largerReadBuffer[1024] = {};
   outputBuffer.readData(largerReadBuffer, readBytes);
