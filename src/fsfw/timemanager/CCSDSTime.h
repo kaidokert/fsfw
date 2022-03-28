@@ -211,8 +211,8 @@ class CCSDSTime : public HasReturnvaluesIF {
   static uint32_t subsecondsToMicroseconds(uint16_t subseconds);
 
  private:
-  CCSDSTime();
-  virtual ~CCSDSTime();
+  CCSDSTime(){};
+  virtual ~CCSDSTime(){};
   /**
    * checks a ccs time stream for validity
    *

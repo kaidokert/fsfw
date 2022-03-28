@@ -6,10 +6,6 @@
 
 #include "fsfw/FSFW.h"
 
-CCSDSTime::CCSDSTime() {}
-
-CCSDSTime::~CCSDSTime() {}
-
 ReturnValue_t CCSDSTime::convertToCcsds(Ccs_seconds* to, const Clock::TimeOfDay_t* from) {
   ReturnValue_t result = checkTimeOfDay(from);
   if (result != RETURN_OK) {
