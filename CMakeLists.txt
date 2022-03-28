@@ -6,6 +6,7 @@ set(FSFW_REVISION 0)
 
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(FSFW_ETL_LIB_VERSION 20.26.0)
 set(FSFW_ETL_LIB_NAME etl)
 
 option(FSFW_GENERATE_SECTIONS
@@ -103,7 +104,7 @@ if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
     FetchContent_Declare(
         ${FSFW_ETL_LIB_NAME}
         GIT_REPOSITORY https://github.com/ETLCPP/etl
-        GIT_TAG        20.26.0
+        GIT_TAG        ${FSFW_ETL_LIB_VERSION}
     )
 
     FetchContent_MakeAvailable(etl)

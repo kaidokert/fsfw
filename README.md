@@ -11,9 +11,15 @@ with Airbus Defence and Space GmbH.
 
 ## Quick facts
 
-The framework is designed for systems, which communicate with external devices, perform control loops, receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore, a mode and health system provides control over the states of the software and the controlled devices. In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
+The framework is designed for systems, which communicate with external devices, perform control loops, 
+receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore,
+a mode and health system provides control over the states of the software and the controlled devices.
+In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
 
-The FSFW provides abstraction layers for operating systems to provide a uniform operating system abstraction layer (OSAL). Some components of this OSAL are required internally by the FSFW but is also very useful for developers to implement the same application logic on different operating systems with a uniform interface.
+The FSFW provides abstraction layers for operating systems to provide a uniform operating system
+abstraction layer (OSAL). Some components of this OSAL are required internally by the FSFW but is
+also very useful for developers to implement the same application logic on different operating
+systems with a uniform interface.
 
 Currently, the FSFW provides the following OSALs:
 
@@ -44,6 +50,22 @@ and need to be implemented by the mission developer.
 A template configuration folder was provided and can be copied into the project root to have
 a starting point. The [configuration section](docs/README-config.md#top) provides more specific 
 information about the possible options.
+
+## Prerequisites
+
+The Embedded Template Library (etl) is a dependency of the FSFW which is automatically
+installed and provided by the build system unless the correction version was installed.
+
+You can install the ETL library like this:
+
+```cpp
+git clone https://github.com/ETLCPP/etl
+cd etl
+git checkout <currentRecommendedVersion>
+mkdir build && cd build
+cmake ..
+cmake --install .
+```
 
 ## Adding the library
 
