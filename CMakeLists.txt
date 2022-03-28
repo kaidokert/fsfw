@@ -6,7 +6,13 @@ set(FSFW_REVISION 0)
 
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-set(FSFW_ETL_LIB_VERSION 20.26.0)
+
+set(FSFW_ETL_LIB_MAJOR_VERSION 20)
+set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.26.0)
+
+set(FSFW_CATCH2_LIB_MAJOR_VERSION 3)
+set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview4)
+
 set(FSFW_ETL_LIB_NAME etl)
 
 option(FSFW_GENERATE_SECTIONS
@@ -58,7 +64,7 @@ if(FSFW_BUILD_UNITTESTS)
         FetchContent_Declare(
             Catch2
             GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG        v3.0.0-preview4
+            GIT_TAG        ${FSFW_CATCH2_LIB_VERSION}
         )
 
         FetchContent_MakeAvailable(Catch2)

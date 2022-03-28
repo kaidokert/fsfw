@@ -55,6 +55,8 @@ information about the possible options.
 
 The Embedded Template Library (etl) is a dependency of the FSFW which is automatically
 installed and provided by the build system unless the correction version was installed.
+The current recommended version can be found inside the fsfw `CMakeLists.txt` file or by using
+`ccmake` and looking up the `FSFW_ETL_LIB_VERSION` variable.
 
 You can install the ETL library like this:
 
@@ -66,6 +68,11 @@ mkdir build && cd build
 cmake ..
 cmake --install .
 ```
+
+Right now, the version provision feature by the ETL library has not been implemented
+yet so `CMake` is unable to determine and check the major version of the ETL
+library. You have to ensure that the ETL library has been installed with the
+correct major version.
 
 ## Adding the library
 
@@ -104,6 +111,19 @@ add and link against the FSFW library in general.
 The FSFW also has unittests which use the [Catch2 library](https://github.com/catchorg/Catch2).
 These are built by setting the CMake option `FSFW_BUILD_UNITTESTS` to `ON` or `TRUE`
 from your project `CMakeLists.txt` file or from the command line.
+
+You can install the Catch2 library, which prevents the build system to avoid re-downloading
+the dependency if the unit tests are completely rebuilt. The current recommended version
+can be found inside the fsfw `CMakeLists.txt` file or by using `ccmake` and looking up
+the `FSFW_CATCH2_LIB_VERSION` variable.
+
+```sh
+git clone https://github.com/catchorg/Catch2.git
+cd Catch2
+git checkout <currentRecommendedVersion>
+cmake -Bbuild -H. -DBUILD_TESTING=OFF
+sudo cmake --build build/ --target install
+```
 
 The fsfw-tests binary will be built as part of the static library and dropped alongside it.
 If the unittests are built, the library and the tests will be built with coverage information by

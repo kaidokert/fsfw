@@ -19,6 +19,30 @@ A template configuration folder was provided and can be copied into the project 
 a starting point. The [configuration section](docs/README-config.md#top) provides more specific 
 information about the possible options.
 
+Prerequisites
+-------------------
+
+The Embedded Template Library (etl) is a dependency of the FSFW which is automatically
+installed and provided by the build system unless the correction version was installed.
+The current recommended version can be found inside the fsfw ``CMakeLists.txt`` file or by using
+``ccmake`` and looking up the ``FSFW_ETL_LIB_VERSION`` variable.
+
+You can install the ETL library like this:
+
+.. code-block:: console
+
+   git clone https://github.com/ETLCPP/etl
+   cd etl
+   git checkout <currentRecommendedVersion>
+   mkdir build && cd build
+   cmake ..
+   cmake --install .
+
+Right now, the version provision feature by the ETL library has not been implemented
+yet so ``CMake`` is unable to determine and check the major version of the ETL
+library. You have to ensure that the ETL library has been installed with the
+correct major version.
+
 Adding the library
 -------------------
 
@@ -59,6 +83,20 @@ Building the unittests
 The FSFW also has unittests which use the `Catch2 library`_.
 These are built by setting the CMake option ``FSFW_BUILD_UNITTESTS`` to ``ON`` or `TRUE`
 from your project `CMakeLists.txt` file or from the command line.
+
+You can install the Catch2 library, which prevents the build system to avoid re-downloading
+the dependency if the unit tests are completely rebuilt. The current recommended version
+can be found inside the fsfw ``CMakeLists.txt`` file or by using ``ccmake`` and looking up
+the ``FSFW_CATCH2_LIB_VERSION`` variable.
+
+.. code-block:: console
+
+   git clone https://github.com/catchorg/Catch2.git
+   cd Catch2
+   git checkout <currentRecommendedVersion>
+   cmake -Bbuild -H. -DBUILD_TESTING=OFF
+   sudo cmake --build build/ --target install
+
 
 The fsfw-tests binary will be built as part of the static library and dropped alongside it.
 If the unittests are built, the library and the tests will be built with coverage information by
