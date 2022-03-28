@@ -7,11 +7,19 @@ set(FSFW_REVISION 0)
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-set(FSFW_ETL_LIB_MAJOR_VERSION 20)
-set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.26.0)
+set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE
+    "ETL library major version requirement"
+)
+set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.26.0 CACHE
+    "ETL library exact version requirement"
+)
 
-set(FSFW_CATCH2_LIB_MAJOR_VERSION 3)
-set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview4)
+set(FSFW_CATCH2_LIB_MAJOR_VERSION 3 CACHE
+    "Catch2 library major version requirement"
+)
+set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview4 CACHE
+    "Catch2 library exact version requirement"
+)
 
 set(FSFW_ETL_LIB_NAME etl)
 
