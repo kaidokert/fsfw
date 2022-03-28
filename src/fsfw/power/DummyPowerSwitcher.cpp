@@ -33,6 +33,11 @@ ReturnValue_t DummyPowerSwitcher::getSwitchState(power::Switch_t switchNr) const
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t DummyPowerSwitcher::getFuseState(uint8_t fuseNr) const { return RETURN_OK; }
+ReturnValue_t DummyPowerSwitcher::getFuseState(uint8_t fuseNr) const {
+  if (fuseNr < fuseList.capacity()) {
+    return fuseList[fuseNr];
+  }
+  return HasReturnvaluesIF::RETURN_FAILED;
+}
 
-uint32_t DummyPowerSwitcher::getSwitchDelayMs(void) const { return 5000; }
+uint32_t DummyPowerSwitcher::getSwitchDelayMs(void) const { return switchDelayMs; }
