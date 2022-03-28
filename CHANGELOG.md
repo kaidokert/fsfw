@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `SimpleRingBuffer::writeData` now checks if the amount is larger than the total size of the 
   Buffer and rejects such writeData calls with `HasReturnvaluesIF::RETURN_FAILED`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/586
+- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
 
 ## Removed
 
