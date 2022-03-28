@@ -46,7 +46,7 @@ class StaticLocalDataSet : public LocalPoolDataSetBase {
   }
 
  private:
-  std::array<PoolVariableIF*, NUM_VARIABLES> poolVarList;
+  std::array<PoolVariableIF*, NUM_VARIABLES> poolVarList = {};
 };
 
 #endif /* FSFW_DATAPOOLLOCAL_STATICLOCALDATASET_H_ */
