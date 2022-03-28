@@ -26,18 +26,22 @@ class PeriodicTaskIF {
   virtual ReturnValue_t startTask() = 0;
 
   /**
-   * Add a component (object) to a periodic task. The pointer to the
-   * task can be set optionally
+   * Add a component (object) to a periodic task.
    * @param object
-   * Add an object to the task. The most important case is to add an
-   * executable object with a function which will be called regularly
-   * (see ExecutableObjectIF)
-   * @param setTaskIF
-   * Can be used to specify whether the task object pointer is passed
-   * to the component.
+   * Add an object to the task. The object needs to implement ExecutableObjectIF
    * @return
    */
   virtual ReturnValue_t addComponent(object_id_t object) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  };
+
+  /**
+   * Add an object to a periodic task.
+   * @param object
+   * Add an object to the task.
+   * @return
+   */
+  virtual ReturnValue_t addComponent(ExecutableObjectIF* object) {
     return HasReturnvaluesIF::RETURN_FAILED;
   };
 
