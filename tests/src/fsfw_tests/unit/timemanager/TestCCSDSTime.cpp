@@ -81,7 +81,8 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     std::string timeAscii = "2022-12-31T23:59:59.123Z";
     Clock::TimeOfDay_t timeTo;
     const uint8_t* timeChar = reinterpret_cast<const uint8_t*>(timeAscii.c_str());
-    CCSDSTime::convertFromASCII(&timeTo, timeChar, timeAscii.length());
+    auto result = CCSDSTime::convertFromASCII(&timeTo, timeChar, timeAscii.length());
+    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(timeTo.year == 2022);
     REQUIRE(timeTo.month == 12);
     REQUIRE(timeTo.day == 31);
@@ -89,6 +90,19 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     REQUIRE(timeTo.minute == 59);
     REQUIRE(timeTo.second == 59);
     REQUIRE(timeTo.usecond == Catch::Approx(123000));
+
+    std::string timeAscii2 = "2022-365T23:59:59.123Z";
+    const uint8_t* timeChar2 = reinterpret_cast<const uint8_t*>(timeAscii2.c_str());
+    Clock::TimeOfDay_t timeTo2;
+    result = CCSDSTime::convertFromCcsds(&timeTo2, timeChar2, timeAscii2.length());
+    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(timeTo2.year == 2022);
+    REQUIRE(timeTo2.month == 12);
+    REQUIRE(timeTo2.day == 31);
+    REQUIRE(timeTo2.hour == 23);
+    REQUIRE(timeTo2.minute == 59);
+    REQUIRE(timeTo2.second == 59);
+    REQUIRE(timeTo2.usecond == Catch::Approx(123000));
   }
 
   SECTION("CDS Conversions") {
@@ -119,6 +133,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CHECK(cdsTime.msDay_h == 0xE0);
     CHECK(cdsTime.msDay_l == 0xC5);
     CHECK(cdsTime.msDay_ll == 0xC3);
+    CHECK(cdsTime.pField == CCSDSTime::P_FIELD_CDS_SHORT);
 
     // Conversion back to timeval
     timeval timeReturnAsTimeval;
@@ -140,5 +155,45 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CHECK(timeReturnAsTimeOfDay.second == 45);
     // micro seconds precision is lost
     CHECK(timeReturnAsTimeOfDay.usecond == 123000);
+
+    Clock::TimeOfDay_t timeReturnAsTodFromBuffer;
+    const uint8_t* buffer = reinterpret_cast<const uint8_t*>(&cdsTime);
+    result = CCSDSTime::convertFromCDS(&timeReturnAsTodFromBuffer, buffer, sizeof(cdsTime));
+    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(timeReturnAsTodFromBuffer.year == time.year);
+    CHECK(timeReturnAsTodFromBuffer.month == time.month);
+    CHECK(timeReturnAsTodFromBuffer.day == time.day);
+    CHECK(timeReturnAsTodFromBuffer.hour == time.hour);
+    CHECK(timeReturnAsTodFromBuffer.minute == time.minute);
+    CHECK(timeReturnAsTodFromBuffer.second == time.second);
+    CHECK(timeReturnAsTodFromBuffer.usecond == 123000);
+
+
+    Clock::TimeOfDay_t todFromCCSDS;
+    result = CCSDSTime::convertFromCcsds(&todFromCCSDS, buffer, sizeof(cdsTime));
+    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(todFromCCSDS.year == time.year);
+    CHECK(todFromCCSDS.month == time.month);
+    CHECK(todFromCCSDS.day == time.day);
+    CHECK(todFromCCSDS.hour == time.hour);
+    CHECK(todFromCCSDS.minute == time.minute);
+    CHECK(todFromCCSDS.second == time.second);
+    CHECK(todFromCCSDS.usecond == 123000);
+  }
+  SECTION("CCSDS Failures"){
+    Clock::TimeOfDay_t time;
+    time.year = 2020;
+    time.month = 12;
+    time.day = 32;
+    time.hour = 13;
+    time.minute = 24;
+    time.second = 45;
+    time.usecond = 123456;
+    CCSDSTime::Ccs_mseconds to;
+    auto result = CCSDSTime::convertToCcsds(&to, &time);
+    REQUIRE(result == CCSDSTime::INVALID_TIME_FORMAT);
+    CCSDSTime::Ccs_seconds to2;
+    result = CCSDSTime::convertToCcsds(&to2, &time);
+    REQUIRE(result == CCSDSTime::INVALID_TIME_FORMAT);
   }
 }
