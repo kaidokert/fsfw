@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
+- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
 
 ## Removed
 
