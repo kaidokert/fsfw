@@ -1,8 +1,11 @@
 #include "DummyPowerSwitcher.h"
 
-DummyPowerSwitcher::DummyPowerSwitcher(size_t numberOfSwitches, size_t numberOfFuses,
-                                       uint32_t switchDelayMs)
-    : switcherList(numberOfSwitches), fuseList(numberOfFuses), switchDelayMs(switchDelayMs) {}
+DummyPowerSwitcher::DummyPowerSwitcher(object_id_t objectId, size_t numberOfSwitches,
+                                       size_t numberOfFuses, uint32_t switchDelayMs)
+    : SystemObject(objectId),
+      switcherList(numberOfSwitches),
+      fuseList(numberOfFuses),
+      switchDelayMs(switchDelayMs) {}
 
 void DummyPowerSwitcher::setInitialSwitcherList(std::vector<ReturnValue_t> switcherList) {
   this->switcherList = switcherList;

@@ -6,10 +6,12 @@
 
 #include "PowerSwitchIF.h"
 #include "definitions.h"
+#include "fsfw/objectmanager/SystemObject.h"
 
-class DummyPowerSwitcher : public PowerSwitchIF {
+class DummyPowerSwitcher : public SystemObject, public PowerSwitchIF {
  public:
-  DummyPowerSwitcher(size_t numberOfSwitches, size_t numberOfFuses, uint32_t switchDelayMs = 5000);
+  DummyPowerSwitcher(object_id_t objectId, size_t numberOfSwitches, size_t numberOfFuses,
+                     uint32_t switchDelayMs = 5000);
 
   void setInitialSwitcherList(std::vector<ReturnValue_t> switcherList);
   void setInitialFusesList(std::vector<ReturnValue_t> switcherList);
