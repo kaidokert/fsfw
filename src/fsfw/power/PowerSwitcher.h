@@ -18,7 +18,8 @@ class PowerSwitcher : public HasReturnvaluesIF {
   static const uint8_t INTERFACE_ID = CLASS_ID::POWER_SWITCHER;
   static const ReturnValue_t IN_POWER_TRANSITION = MAKE_RETURN_CODE(1);
   static const ReturnValue_t SWITCH_STATE_MISMATCH = MAKE_RETURN_CODE(2);
-  PowerSwitcher(PowerSwitchIF* switcher, uint8_t setSwitch1, uint8_t setSwitch2 = power::NO_SWITCH,
+  PowerSwitcher(PowerSwitchIF* switcher, power::Switch_t setSwitch1,
+                power::Switch_t setSwitch2 = power::NO_SWITCH,
                 State_t setStartState = SWITCH_IS_OFF);
   void turnOn(bool checkCurrentState = true);
   void turnOff(bool checkCurrentState = true);
