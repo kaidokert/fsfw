@@ -12,6 +12,41 @@ enum class StopBits { ONE_STOP_BIT, TWO_STOP_BITS };
 
 enum class UartModes { CANONICAL, NON_CANONICAL };
 
+enum class BitsPerWord { BITS_5, BITS_6, BITS_7, BITS_8 };
+
+enum class UartBaudRate {
+  RATE_50,
+  RATE_75,
+  RATE_110,
+  RATE_134,
+  RATE_150,
+  RATE_200,
+  RATE_300,
+  RATE_600,
+  RATE_1200,
+  RATE_1800,
+  RATE_2400,
+  RATE_4800,
+  RATE_9600,
+  RATE_19200,
+  RATE_38400,
+  RATE_57600,
+  RATE_115200,
+  RATE_230400,
+  RATE_460800,
+  RATE_500000,
+  RATE_576000,
+  RATE_921600,
+  RATE_1000000,
+  RATE_1152000,
+  RATE_1500000,
+  RATE_2000000,
+  RATE_2500000,
+  RATE_3000000,
+  RATE_3500000,
+  RATE_4000000
+};
+
 /**
  * @brief   Cookie for the UartComIF. There are many options available to configure the UART driver.
  *          The constructor only requests for common options like the baudrate. Other options can
@@ -27,25 +62,23 @@ class UartCookie : public CookieIF {
    * @param uartMode      Specify the UART mode. The canonical mode should be used if the
    *                      messages are separated by a delimited character like '\n'. See the
    *                      termios documentation for more information
-   * @param baudrate      The baudrate to use for input and output. Possible Baudrates are: 50,
-   *                      75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800, 9600, B19200,
-   *                      38400, 57600, 115200, 230400, 460800
+   * @param baudrate      The baudrate to use for input and output.
    * @param maxReplyLen   The maximum size an object using this cookie expects
    * @details
    * Default configuration: No parity
    *                        8 databits (number of bits transfered with one uart frame)
    *                        One stop bit
    */
-  UartCookie(object_id_t handlerId, std::string deviceFile, UartModes uartMode, uint32_t baudrate,
-             size_t maxReplyLen);
+  UartCookie(object_id_t handlerId, std::string deviceFile, UartModes uartMode,
+             UartBaudRate baudrate, size_t maxReplyLen);
 
   virtual ~UartCookie();
 
-  uint32_t getBaudrate() const;
+  UartBaudRate getBaudrate() const;
   size_t getMaxReplyLen() const;
   std::string getDeviceFile() const;
   Parity getParity() const;
-  uint8_t getBitsPerWord() const;
+  BitsPerWord getBitsPerWord() const;
   StopBits getStopBits() const;
   UartModes getUartMode() const;
   object_id_t getHandlerId() const;
@@ -76,7 +109,7 @@ class UartCookie : public CookieIF {
   /**
    * Function two set number of bits per UART frame.
    */
-  void setBitsPerWord(uint8_t bitsPerWord_);
+  void setBitsPerWord(BitsPerWord bitsPerWord_);
 
   /**
    * Function to specify the number of stopbits.
@@ -97,10 +130,10 @@ class UartCookie : public CookieIF {
   std::string deviceFile;
   const UartModes uartMode;
   bool flushInput = false;
-  uint32_t baudrate;
+  UartBaudRate baudrate;
   size_t maxReplyLen = 0;
   Parity parity = Parity::NONE;
-  uint8_t bitsPerWord = 8;
+  BitsPerWord bitsPerWord = BitsPerWord::BITS_8;
   uint8_t readCycles = 1;
   StopBits stopBits = StopBits::ONE_STOP_BIT;
   bool replySizeFixed = true;
