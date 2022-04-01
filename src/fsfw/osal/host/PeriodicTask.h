@@ -59,6 +59,16 @@ class PeriodicTask : public PeriodicTaskIF {
    */
   ReturnValue_t addComponent(object_id_t object);
 
+  /**
+   * Adds an object to the list of objects to be executed.
+   * The objects are executed in the order added.
+   * @param object pointer to the object to add.
+   * @return
+   *  -@c RETURN_OK on success
+   *  -@c RETURN_FAILED if the object could not be added.
+   */
+  ReturnValue_t addComponent(ExecutableObjectIF* object);
+
   uint32_t getPeriodMs() const;
 
   ReturnValue_t sleepFor(uint32_t ms);

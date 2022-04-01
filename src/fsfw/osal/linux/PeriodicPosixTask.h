@@ -42,6 +42,14 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
    */
   ReturnValue_t addComponent(object_id_t object) override;
 
+  /**
+   * Adds an object to the list of objects to be executed.
+   * The objects are executed in the order added.
+   * @param object pointer to the object to add.
+   * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
+   */
+  ReturnValue_t addComponent(ExecutableObjectIF* object) override;
+
   uint32_t getPeriodMs() const override;
 
   ReturnValue_t sleepFor(uint32_t ms) override;

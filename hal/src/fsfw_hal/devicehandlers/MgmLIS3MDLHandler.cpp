@@ -1,9 +1,6 @@
 #include "MgmLIS3MDLHandler.h"
 
 #include "fsfw/datapool/PoolReadGuard.h"
-#if FSFW_HAL_LIS3MDL_MGM_DEBUG == 1
-#include "fsfw/globalfunctions/PeriodicOperationDivider.h"
-#endif
 
 #include <cmath>
 
