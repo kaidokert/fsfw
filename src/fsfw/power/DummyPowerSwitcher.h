@@ -11,7 +11,7 @@
 class DummyPowerSwitcher : public SystemObject, public PowerSwitchIF {
  public:
   DummyPowerSwitcher(object_id_t objectId, size_t numberOfSwitches, size_t numberOfFuses,
-                     uint32_t switchDelayMs = 5000);
+                     bool registerGlobally = true, uint32_t switchDelayMs = 5000);
 
   void setInitialSwitcherList(std::vector<ReturnValue_t> switcherList);
   void setInitialFusesList(std::vector<ReturnValue_t> switcherList);
