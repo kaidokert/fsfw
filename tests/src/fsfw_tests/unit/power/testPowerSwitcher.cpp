@@ -22,6 +22,7 @@ TEST_CASE("Power Switcher", "[power-switcher]") {
     switcher.turnOn(true);
     REQUIRE(mock.getAmountSwitchStatWasRequested() == 1);
     REQUIRE(switcher.getState() == PowerSwitcher::WAIT_ON);
+    REQUIRE(switcher.checkSwitchState() == PowerSwitcher::IN_POWER_TRANSITION);
     REQUIRE(switcher.active());
     switcher.doStateMachine();
     REQUIRE(switcher.getState() == PowerSwitcher::SWITCH_IS_ON);
@@ -29,8 +30,10 @@ TEST_CASE("Power Switcher", "[power-switcher]") {
     REQUIRE(switchInfo.timesCalledOn == 1);
     REQUIRE(not switcher.active());
     REQUIRE(mock.getAmountSwitchStatWasRequested() == 2);
+    REQUIRE(switcher.checkSwitchState() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(mock.getAmountSwitchStatWasRequested() == 3);
     switcher.turnOff(false);
-    REQUIRE(mock.getAmountSwitchStatWasRequested() == 2);
+    REQUIRE(mock.getAmountSwitchStatWasRequested() == 3);
     REQUIRE(switcher.getState() == PowerSwitcher::WAIT_OFF);
     REQUIRE(switcher.active());
     REQUIRE(switcher.getState() == PowerSwitcher::WAIT_OFF);
@@ -40,7 +43,7 @@ TEST_CASE("Power Switcher", "[power-switcher]") {
     REQUIRE(switchInfo.timesCalledOn == 1);
     REQUIRE(switchInfo.timesCalledOff == 1);
     REQUIRE(not switcher.active());
-    REQUIRE(mock.getAmountSwitchStatWasRequested() == 3);
+    REQUIRE(mock.getAmountSwitchStatWasRequested() == 4);
   }
 
   SECTION("Dummy Test") {
@@ -62,5 +65,9 @@ TEST_CASE("Power Switcher", "[power-switcher]") {
     switcherUsingDummy.doStateMachine();
     REQUIRE(switcherUsingDummy.getState() == PowerSwitcher::SWITCH_IS_OFF);
     REQUIRE(not switcherUsingDummy.active());
+  }
+
+  SECTION("More Dummy Tests") {
+
   }
 }
