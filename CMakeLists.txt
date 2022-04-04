@@ -67,6 +67,7 @@ if(FSFW_BUILD_UNITTESTS)
     find_package(Catch2 ${FSFW_CATCH2_LIB_MAJOR_VERSION})
     # Not installed, so use FetchContent to download and provide Catch2
     if(NOT Catch2_FOUND)
+        message(STATUS "Catch2 installation not found. Downloading Catch2 library with FetchContent")
         include(FetchContent)
 
         FetchContent_Declare(
