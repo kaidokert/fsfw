@@ -787,6 +787,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   // Serialize set packet into store.
   size_t size = 0;
   result = setPacket.serialize(&storePtr, &size, expectedSize, SerializeIF::Endianness::BIG);
+  if(result != HasReturnvaluesIF::RETURN_OK) {
+      ipcStore->deleteData(storeId);
+      return result;
+  }
   if (expectedSize != size) {
     printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateSetStructurePacket",
                         HasReturnvaluesIF::RETURN_FAILED,
