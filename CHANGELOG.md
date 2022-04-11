@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
+- Added generic PUS TC Scheduler Service 11. It depends on the new added Emebeded Template Library
+  (ETL) dependency.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/594
 
 # [v4.0.0]
 
