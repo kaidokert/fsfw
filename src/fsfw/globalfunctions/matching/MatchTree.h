@@ -179,6 +179,9 @@ class MatchTree : public SerializeableMatcherIF<T>, public BinaryTree<Serializea
   virtual ReturnValue_t cleanUpElement(iterator position) { return HasReturnvaluesIF::RETURN_OK; }
 
   bool matchSubtree(iterator iter, T number) {
+    if(iter == nullptr) {
+      return false;
+    }
     bool isMatch = iter->match(number);
     if (isMatch) {
       if (iter.left() == this->end()) {

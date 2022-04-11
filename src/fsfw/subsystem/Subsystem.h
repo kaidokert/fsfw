@@ -1,7 +1,7 @@
 #ifndef FSFW_SUBSYSTEM_SUBSYSTEM_H_
 #define FSFW_SUBSYSTEM_SUBSYSTEM_H_
 
-#include <FSFWConfig.h>
+#include "fsfw/FSFW.h"
 
 #include "../container/FixedArrayList.h"
 #include "../container/FixedMap.h"
