@@ -25,9 +25,10 @@ Prerequisites
 The Embedded Template Library (etl) is a dependency of the FSFW which is automatically
 installed and provided by the build system unless the correction version was installed.
 The current recommended version can be found inside the fsfw ``CMakeLists.txt`` file or by using
-``ccmake`` and looking up the ``FSFW_ETL_LIB_VERSION`` variable.
+``ccmake`` and looking up the ``FSFW_ETL_LIB_MAJOR_VERSION`` variable.
 
-You can install the ETL library like this:
+You can install the ETL library like this. On Linux, it might be necessary to add ``sudo`` before
+the install call:
 
 .. code-block:: console
 
@@ -38,10 +39,8 @@ You can install the ETL library like this:
    cmake ..
    cmake --install .
 
-Right now, the version provision feature by the ETL library has not been implemented
-yet so ``CMake`` is unable to determine and check the major version of the ETL
-library. You have to ensure that the ETL library has been installed with the
-correct major version.
+It is recommended to install ``20.27.2`` or newer for the package version handling of
+ETL to work.
 
 Adding the library
 -------------------

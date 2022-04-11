@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
     "ETL library major version requirement"
 )
-set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.26.0 CACHE STRING
+set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.2 CACHE STRING
     "ETL library exact version requirement"
 )
 
@@ -106,11 +106,9 @@ if(FSFW_BUILD_UNITTESTS)
 endif()
 
 message(STATUS "Finding and/or providing ETL library")
+
 # Check whether the user has already installed ETL first
-# I think the version provisioning feature of CMake has not been implemented for the ETL library
-# yet. Therefore we can not specify any (not even the major) version here and we have to rely
-# on the user having installed the correct version for now
-find_package(${FSFW_ETL_LIB_NAME} QUIET)
+find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
 # Not installed, so use FetchContent to download and provide etl
 if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
     message(STATUS
