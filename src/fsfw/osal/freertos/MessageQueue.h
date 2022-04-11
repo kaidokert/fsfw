@@ -1,6 +1,7 @@
 #ifndef FSFW_OSAL_FREERTOS_MESSAGEQUEUE_H_
 #define FSFW_OSAL_FREERTOS_MESSAGEQUEUE_H_
 
+#include <fsfw/ipc/MessageQueueBase.h>
 #include "FreeRTOS.h"
 #include "TaskManagement.h"
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
@@ -33,7 +34,7 @@
  * @ingroup osal
  * @ingroup message_queue
  */
-class MessageQueue : public MessageQueueIF {
+class MessageQueue : public MessageQueueBase {
   friend class MessageQueueSenderIF;
 
  public:
@@ -75,39 +76,14 @@ class MessageQueue : public MessageQueueIF {
    */
   void switchSystemContext(CallContext callContext);
 
-  /** MessageQueueIF implementation */
-  ReturnValue_t sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                            bool ignoreFault = false) override;
+  QueueHandle_t getNativeQueueHandle();
 
-  ReturnValue_t sendToDefault(MessageQueueMessageIF* message) override;
-
-  ReturnValue_t reply(MessageQueueMessageIF* message) override;
+  // Implement non-generic MessageQueueIF functions not handled by MessageQueueBase
   virtual ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                         MessageQueueId_t sentFrom = NO_QUEUE,
                                         bool ignoreFault = false) override;
-
-  virtual ReturnValue_t sendToDefaultFrom(MessageQueueMessageIF* message,
-                                          MessageQueueId_t sentFrom = NO_QUEUE,
-                                          bool ignoreFault = false) override;
-
-  ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
-                               MessageQueueId_t* receivedFrom) override;
-
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
-
   ReturnValue_t flush(uint32_t* count) override;
-
-  MessageQueueId_t getLastPartner() const override;
-
-  MessageQueueId_t getId() const override;
-
-  void setDefaultDestination(MessageQueueId_t defaultDestination) override;
-
-  MessageQueueId_t getDefaultDestination() const override;
-
-  bool isDefaultDestinationSet() const override;
-
-  QueueHandle_t getNativeQueueHandle();
 
  protected:
   /**
@@ -138,12 +114,8 @@ class MessageQueue : public MessageQueueIF {
   static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
 
  private:
-  bool defaultDestinationSet = false;
   QueueHandle_t handle;
-  MessageQueueId_t queueId = MessageQueueIF::NO_QUEUE;
 
-  MessageQueueId_t defaultDestination = MessageQueueIF::NO_QUEUE;
-  MessageQueueId_t lastPartner = MessageQueueIF::NO_QUEUE;
   const size_t maxMessageSize;
   //! Stores the current system context
   CallContext callContext = CallContext::TASK;

@@ -5,7 +5,8 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* args)
-    : maxMessageSize(maxMessageSize) {
+    : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, args),
+      maxMessageSize(maxMessageSize) {
   handle = xQueueCreate(messageDepth, maxMessageSize);
   if (handle == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -15,10 +16,10 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* a
 #else
     sif::printError("MessageQueue::MessageQueue: Creation failed\n");
     sif::printError("Specified Message Depth: %d\n", messageDepth);
-    sif::printError("Specified MAximum Message Size: %d\n", maxMessageSize);
+    sif::printError("Specified Maximum Message Size: %d\n", maxMessageSize);
 #endif
   }
-  QueueMapManager::instance()->addMessageQueue(handle, &queueId);
+  QueueMapManager::instance()->addMessageQueue(handle, &id);
 }
 
 MessageQueue::~MessageQueue() {
@@ -28,28 +29,6 @@ MessageQueue::~MessageQueue() {
 }
 
 void MessageQueue::switchSystemContext(CallContext callContext) { this->callContext = callContext; }
-
-ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        bool ignoreFault) {
-  return sendMessageFrom(sendTo, message, this->getId(), ignoreFault);
-}
-
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessageIF* message) {
-  return sendToDefaultFrom(message, this->getId());
-}
-
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
-                                              MessageQueueId_t sentFrom, bool ignoreFault) {
-  return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
-}
-
-ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
-  if (this->lastPartner != MessageQueueIF::NO_QUEUE) {
-    return sendMessageFrom(this->lastPartner, message, this->getId());
-  } else {
-    return NO_REPLY_PARTNER;
-  }
-}
 
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                             MessageQueueId_t sentFrom, bool ignoreFault) {
@@ -72,26 +51,15 @@ ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
-                                           MessageQueueId_t* receivedFrom) {
-  ReturnValue_t status = this->receiveMessage(message);
-  if (status == HasReturnvaluesIF::RETURN_OK) {
-    *receivedFrom = this->lastPartner;
-  }
-  return status;
-}
-
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
   BaseType_t result = xQueueReceive(handle, reinterpret_cast<void*>(message->getBuffer()), 0);
   if (result == pdPASS) {
-    this->lastPartner = message->getSender();
+    this->last = message->getSender();
     return HasReturnvaluesIF::RETURN_OK;
   } else {
     return MessageQueueIF::EMPTY;
   }
 }
-
-MessageQueueId_t MessageQueue::getLastPartner() const { return lastPartner; }
 
 ReturnValue_t MessageQueue::flush(uint32_t* count) {
   // TODO FreeRTOS does not support flushing partially
@@ -99,17 +67,6 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
   xQueueReset(handle);
   return HasReturnvaluesIF::RETURN_OK;
 }
-
-MessageQueueId_t MessageQueue::getId() const { return queueId; }
-
-void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
-  defaultDestinationSet = true;
-  this->defaultDestination = defaultDestination;
-}
-
-MessageQueueId_t MessageQueue::getDefaultDestination() const { return defaultDestination; }
-
-bool MessageQueue::isDefaultDestinationSet() const { return defaultDestinationSet; }
 
 // static core function to send messages.
 ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
