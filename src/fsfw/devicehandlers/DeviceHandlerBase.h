@@ -478,7 +478,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @return - @c RETURN_OK when the command was successfully inserted,
    *         - @c RETURN_FAILED else.
    */
-  ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand);
+  ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand,
+                                   bool useAlternativeReply = false,
+                                   DeviceCommandId_t alternativeReplyId = 0);
 
   /**
    * Enables a periodic reply for a given command. It sets to delay cycles to the specified
@@ -751,6 +753,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
     //! if this is != NO_COMMANDER, DHB was commanded externally and shall
     //! report everything to commander.
     MessageQueueId_t sendReplyTo;
+    bool useAlternativeReplyId;
+    DeviceCommandId_t alternativeReplyId;
   };
   using DeviceCommandMap = std::map<DeviceCommandId_t, DeviceCommandInfo>;
   /**
