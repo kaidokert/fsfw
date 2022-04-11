@@ -11,14 +11,13 @@ class HybridIterator : public LinkedElement<T>::Iterator, public ArrayList<T, co
 
   HybridIterator(typename LinkedElement<T>::Iterator *iter)
       : LinkedElement<T>::Iterator(*iter), value(iter->value), linked(true) {
-    if(iter != nullptr) {
+    if (iter != nullptr) {
       value = iter->value;
     }
   }
 
-  HybridIterator(LinkedElement<T> *start)
-      : LinkedElement<T>::Iterator(start), linked(true) {
-    if(start != nullptr) {
+  HybridIterator(LinkedElement<T> *start) : LinkedElement<T>::Iterator(start), linked(true) {
+    if (start != nullptr) {
       value = start->value;
     }
   }

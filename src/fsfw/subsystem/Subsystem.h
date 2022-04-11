@@ -1,14 +1,13 @@
 #ifndef FSFW_SUBSYSTEM_SUBSYSTEM_H_
 #define FSFW_SUBSYSTEM_SUBSYSTEM_H_
 
-#include "fsfw/FSFW.h"
-
 #include "../container/FixedArrayList.h"
 #include "../container/FixedMap.h"
 #include "../container/HybridIterator.h"
 #include "../container/SinglyLinkedList.h"
 #include "../serialize/SerialArrayListAdapter.h"
 #include "SubsystemBase.h"
+#include "fsfw/FSFW.h"
 #include "modes/ModeDefinitions.h"
 
 /**

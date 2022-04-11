@@ -458,16 +458,15 @@ size_t DeviceHandlerBase::getNextReplyLength(DeviceCommandId_t commandId) {
   DeviceCommandId_t replyId = NO_COMMAND_ID;
   DeviceCommandMap::iterator command = cookieInfo.pendingCommand;
   if (command->second.useAlternativeReplyId) {
-	replyId = command->second.alternativeReplyId;
-  }
-  else {
-	replyId = commandId;
+    replyId = command->second.alternativeReplyId;
+  } else {
+    replyId = commandId;
   }
   DeviceReplyIter iter = deviceReplyMap.find(replyId);
   if (iter != deviceReplyMap.end()) {
-	if (iter->second.delayCycles != 0) {
-		return iter->second.replyLen;
-	}
+    if (iter->second.delayCycles != 0) {
+      return iter->second.replyLen;
+    }
   }
   return 0;
 }

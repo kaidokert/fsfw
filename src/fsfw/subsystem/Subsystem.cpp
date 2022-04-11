@@ -30,7 +30,7 @@ ReturnValue_t Subsystem::checkSequence(HybridIterator<ModeListEntry> iter,
     return FALLBACK_SEQUENCE_DOES_NOT_EXIST;
   }
 
-  if (iter.value ==nullptr) {
+  if (iter.value == nullptr) {
     return NO_TARGET_TABLE;
   }
 
@@ -74,8 +74,8 @@ void Subsystem::performChildOperation() {
         } else {
           Mode_t tableId = 0;
           auto seq = getSequence(targetMode);
-          if(seq.value != nullptr) {
-             tableId = seq->getTableId();
+          if (seq.value != nullptr) {
+            tableId = seq->getTableId();
           }
           transitionFailed(TARGET_TABLE_NOT_REACHED, tableId);
           return;
@@ -257,7 +257,7 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage *message) {
       result = modeTables.find(table, &entry);
       if (result != RETURN_OK or entry == nullptr) {
         replyToCommand(result, 0);
-        if(entry == nullptr) {
+        if (entry == nullptr) {
           return result;
         }
       }
