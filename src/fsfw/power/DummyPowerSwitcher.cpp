@@ -16,28 +16,28 @@ void DummyPowerSwitcher::setInitialFusesList(std::vector<ReturnValue_t> fuseList
 }
 
 ReturnValue_t DummyPowerSwitcher::sendSwitchCommand(power::Switch_t switchNr, ReturnValue_t onOff) {
-  if (switchNr < switcherList.capacity()) {
+  if (switchNr < switcherList.size()) {
     switcherList[switchNr] = onOff;
   }
   return RETURN_FAILED;
 }
 
 ReturnValue_t DummyPowerSwitcher::sendFuseOnCommand(uint8_t fuseNr) {
-  if (fuseNr < fuseList.capacity()) {
+  if (fuseNr < fuseList.size()) {
     fuseList[fuseNr] = FUSE_ON;
   }
   return RETURN_FAILED;
 }
 
 ReturnValue_t DummyPowerSwitcher::getSwitchState(power::Switch_t switchNr) const {
-  if (switchNr < switcherList.capacity()) {
+  if (switchNr < switcherList.size()) {
     return switcherList[switchNr];
   }
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 ReturnValue_t DummyPowerSwitcher::getFuseState(uint8_t fuseNr) const {
-  if (fuseNr < fuseList.capacity()) {
+  if (fuseNr < fuseList.size()) {
     return fuseList[fuseNr];
   }
   return HasReturnvaluesIF::RETURN_FAILED;
