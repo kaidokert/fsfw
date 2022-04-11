@@ -410,7 +410,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
     DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles, LocalPoolDataSetBase* replyDataSet,
     size_t replyLen, bool periodic, bool hasDifferentReplyId, DeviceCommandId_t replyId) {
   // No need to check, as we may try to insert multiple times.
-  insertInCommandMap(deviceCommand);
+  insertInCommandMap(deviceCommand, hasDifferentReplyId, replyId);
   if (hasDifferentReplyId) {
     return insertInReplyMap(replyId, maxDelayCycles, replyDataSet, replyLen, periodic);
   } else {
@@ -437,11 +437,15 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
   }
 }
 
-ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceCommand) {
+ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceCommand,
+                                                    bool useAlternativeReply,
+                                                    DeviceCommandId_t alternativeReplyId) {
   DeviceCommandInfo info;
   info.expectedReplies = 0;
   info.isExecuting = false;
   info.sendReplyTo = NO_COMMANDER;
+  info.useAlternativeReplyId = alternativeReplyId;
+  info.alternativeReplyId = alternativeReplyId;
   auto resultPair = deviceCommandMap.emplace(deviceCommand, info);
   if (resultPair.second) {
     return RETURN_OK;
@@ -451,12 +455,21 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
 }
 
 size_t DeviceHandlerBase::getNextReplyLength(DeviceCommandId_t commandId) {
-  DeviceReplyIter iter = deviceReplyMap.find(commandId);
-  if (iter != deviceReplyMap.end()) {
-    return iter->second.replyLen;
-  } else {
-    return 0;
+  DeviceCommandId_t replyId = NO_COMMAND_ID;
+  DeviceCommandMap::iterator command = cookieInfo.pendingCommand;
+  if (command->second.useAlternativeReplyId) {
+	replyId = command->second.alternativeReplyId;
   }
+  else {
+	replyId = commandId;
+  }
+  DeviceReplyIter iter = deviceReplyMap.find(replyId);
+  if (iter != deviceReplyMap.end()) {
+	if (iter->second.delayCycles != 0) {
+		return iter->second.replyLen;
+	}
+  }
+  return 0;
 }
 
 ReturnValue_t DeviceHandlerBase::updateReplyMapEntry(DeviceCommandId_t deviceReply,
@@ -651,7 +664,9 @@ void DeviceHandlerBase::doGetWrite() {
 
     // We need to distinguish here, because a raw command never expects a reply.
     //(Could be done in eRIRM, but then child implementations need to be careful.
-    result = enableReplyInReplyMap(cookieInfo.pendingCommand);
+    DeviceCommandMap::iterator command = cookieInfo.pendingCommand;
+    result = enableReplyInReplyMap(command, 1, command->second.useAlternativeReplyId,
+                                   command->second.alternativeReplyId);
   } else {
     // always generate a failure event, so that FDIR knows what's up
     triggerEvent(DEVICE_SENDING_COMMAND_FAILED, result, cookieInfo.pendingCommand->first);
