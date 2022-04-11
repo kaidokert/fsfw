@@ -801,7 +801,8 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
     HousekeepingMessage::setHkStuctureReportReply(&reply, sid, storeId);
   }
 
-  return hkQueue->reply(&reply);
+  hkQueue->reply(&reply);
+  return result;
 }
 
 void LocalDataPoolManager::clearReceiversList() {
