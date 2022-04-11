@@ -334,10 +334,9 @@ ReturnValue_t MessageQueue::handleOpenError(mq_attr* attributes, uint32_t messag
          */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "MessageQueue::MessageQueue: Default MQ size " << defaultMqMaxMsg
-                   << " is too small for requested size " << messageDepth << std::endl;
+                   << " is too small for requested message depth " << messageDepth << std::endl;
         sif::error << "This error can be fixed by setting the maximum "
-                      "allowed message size higher!"
-                   << std::endl;
+                      "allowed message depth higher" << std::endl;
 #else
         sif::printError(
             "MessageQueue::MessageQueue: Default MQ size %d is too small for"
