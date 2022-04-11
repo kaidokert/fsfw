@@ -48,9 +48,10 @@ add_library(${LIB_FSFW_NAME})
 if(FSFW_BUILD_UNITTESTS)
     message(STATUS "Building the FSFW unittests in addition to the static library")
     # Check whether the user has already installed Catch2 first
-    find_package(Catch2 3)
+    find_package(Catch2 3 QUIET)
     # Not installed, so use FetchContent to download and provide Catch2
     if(NOT Catch2_FOUND)
+        message(STATUS "Catch2 installation not found. Downloading Catch2 library with FetchContent")
         include(FetchContent)
 
         FetchContent_Declare(
