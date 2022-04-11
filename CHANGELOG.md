@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Fixed
 
 - Small bugfix in STM32 HAL for SPI
-  PR: 
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/599
 
 # [v4.0.0]
 
