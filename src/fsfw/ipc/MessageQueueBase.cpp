@@ -8,6 +8,8 @@ MessageQueueBase::MessageQueueBase(MessageQueueId_t id, MessageQueueId_t default
   }
 }
 
+MessageQueueBase::~MessageQueueBase() {}
+
 ReturnValue_t MessageQueueBase::sendToDefault(MessageQueueMessageIF* message) {
   return sendToDefaultFrom(message, this->getId(), false);
 }
@@ -27,8 +29,36 @@ ReturnValue_t MessageQueueBase::receiveMessage(MessageQueueMessageIF* message,
   return status;
 }
 
-ReturnValue_t MessageQueueBase::sendToDefaultFrom(MessageQueueMessageIF* message,
-                                              MessageQueueId_t sentFrom, bool ignoreFault) {
-  return sendMessageFrom(defaultDest, message, sentFrom, ignoreFault);
+MessageQueueId_t MessageQueueBase::getLastPartner() const {
+  return last;
 }
 
+MessageQueueId_t MessageQueueBase::getId() const {
+  return id;
+}
+
+MqArgs* MessageQueueBase::getMqArgs() {
+  return &args;
+}
+
+void MessageQueueBase::setDefaultDestination(MessageQueueId_t defaultDestination) {
+  this->defaultDest = defaultDestination;
+}
+
+MessageQueueId_t MessageQueueBase::getDefaultDestination() const {
+  return defaultDest;
+}
+
+bool MessageQueueBase::isDefaultDestinationSet() const {
+  return (defaultDest != NO_QUEUE);
+}
+
+ReturnValue_t MessageQueueBase::sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
+                                            bool ignoreFault) {
+  return sendMessageFrom(sendTo, message, this->getId(), false);
+}
+
+ReturnValue_t MessageQueueBase::sendToDefaultFrom(MessageQueueMessageIF* message,
+                                                  MessageQueueId_t sentFrom, bool ignoreFault) {
+  return sendMessageFrom(defaultDest, message, sentFrom, ignoreFault);
+}

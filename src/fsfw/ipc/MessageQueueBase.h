@@ -7,6 +7,7 @@
 class MessageQueueBase: public MessageQueueIF {
 public:
   MessageQueueBase(MessageQueueId_t id, MessageQueueId_t defaultDest, MqArgs* mqArgs);
+  virtual ~MessageQueueBase();
 
   // Default implementations for MessageQueueIF where possible
   virtual MessageQueueId_t getLastPartner() const override;
