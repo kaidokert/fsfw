@@ -37,8 +37,8 @@ MessageQueueId_t MessageQueueBase::getId() const {
   return id;
 }
 
-MqArgs* MessageQueueBase::getMqArgs() {
-  return &args;
+MqArgs& MessageQueueBase::getMqArgs() {
+  return args;
 }
 
 void MessageQueueBase::setDefaultDestination(MessageQueueId_t defaultDestination) {

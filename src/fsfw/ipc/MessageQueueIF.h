@@ -161,7 +161,7 @@ class MessageQueueIF {
 
   virtual bool isDefaultDestinationSet() const = 0;
 
-  virtual MqArgs* getMqArgs() = 0;
+  virtual MqArgs& getMqArgs() = 0;
 };
 
 #endif /* FSFW_IPC_MESSAGEQUEUEIF_H_ */

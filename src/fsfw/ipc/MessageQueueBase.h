@@ -12,7 +12,7 @@ public:
   // Default implementations for MessageQueueIF where possible
   virtual MessageQueueId_t getLastPartner() const override;
   virtual MessageQueueId_t getId() const override;
-  virtual MqArgs* getMqArgs() override;
+  virtual MqArgs& getMqArgs() override;
   virtual void setDefaultDestination(MessageQueueId_t defaultDestination) override;
   virtual MessageQueueId_t getDefaultDestination() const override;
   virtual bool isDefaultDestinationSet() const override;
