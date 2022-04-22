@@ -24,9 +24,7 @@ void UartCookie::setParityEven() { parity = Parity::EVEN; }
 
 Parity UartCookie::getParity() const { return parity; }
 
-void UartCookie::setBitsPerWord(BitsPerWord bitsPerWord_) {
-  bitsPerWord = bitsPerWord_;
-}
+void UartCookie::setBitsPerWord(BitsPerWord bitsPerWord_) { bitsPerWord = bitsPerWord_; }
 
 BitsPerWord UartCookie::getBitsPerWord() const { return bitsPerWord; }
 

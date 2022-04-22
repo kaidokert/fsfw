@@ -1,7 +1,8 @@
 #include "version.h"
-#include "fsfw/FSFWVersion.h"
 
 #include <cstdio>
+
+#include "fsfw/FSFWVersion.h"
 
 #ifdef major
 #undef major

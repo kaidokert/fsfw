@@ -30,7 +30,7 @@ class Version {
   }
 
   friend bool operator>(const Version& v1, const Version& v2) {
-    return not (v1 < v2) and not (v1 == v2);
+    return not(v1 < v2) and not(v1 == v2);
   }
 
   friend bool operator<=(const Version& v1, const Version& v2) { return ((v1 == v2) or (v1 < v2)); }
