@@ -11,12 +11,24 @@
 #undef minor
 #endif
 
-const fsfw::Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR,
-                                          FSFW_VERSION_REVISION};
+const Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR, FSFW_VERSION_REVISION};
 
-fsfw::Version::Version(uint32_t major, uint32_t minor, uint32_t revision)
-    : major(major), minor(minor), revision(revision) {}
+Version::Version(uint32_t major, uint32_t minor, uint32_t revision, const char* addInfo)
+    : major(major), minor(minor), revision(revision), addInfo(addInfo) {}
 
-void fsfw::Version::getVersion(char* str, size_t maxLen) const {
-  snprintf(str, maxLen, "%d.%d.%d", major, minor, revision);
+void Version::getVersion(char* str, size_t maxLen) const {
+  size_t len = snprintf(str, maxLen, "%d.%d.%d", major, minor, revision);
+  if (addInfo != nullptr) {
+    snprintf(str + len, maxLen - len, "-%s", addInfo);
+  }
 }
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+std::ostream& operator<<(std::ostream& os, const Version& v) {
+  os << v.major << "." << v.minor << "." << v.revision;
+  if (v.addInfo != nullptr) {
+    os << "-" << v.addInfo;
+  }
+  return os;
+}
+#endif
