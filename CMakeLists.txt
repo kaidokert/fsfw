@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.13)
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+set(MSG_PREFIX "fsfw |")
+
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
 )
@@ -60,12 +62,12 @@ if(NOT FSFW_REVISION)
 endif()
 
 if(FSFW_BUILD_UNITTESTS)
-    message(STATUS "Building the FSFW unittests in addition to the static library")
+    message(STATUS "${MSG_PREFIX} Building the FSFW unittests in addition to the static library")
     # Check whether the user has already installed Catch2 first
     find_package(Catch2 3 QUIET)
     # Not installed, so use FetchContent to download and provide Catch2
     if(NOT Catch2_FOUND)
-        message(STATUS "Catch2 installation not found. Downloading Catch2 library with FetchContent")
+        message(STATUS "${MSG_PREFIX} Catch2 installation not found. Downloading Catch2 library with FetchContent")
         include(FetchContent)
 
         FetchContent_Declare(
@@ -87,8 +89,8 @@ if(FSFW_BUILD_UNITTESTS)
     add_executable(${FSFW_TEST_TGT})
 
     if(FSFW_TESTS_GEN_COV)
-        message(STATUS "Generating coverage data for the library")
-        message(STATUS "Targets linking against ${LIB_FSFW_NAME} "
+        message(STATUS "${MSG_PREFIX} Generating coverage data for the library")
+        message(STATUS "${MSG_PREFIX} Targets linking against ${LIB_FSFW_NAME} "
             "will be compiled with coverage data as well"
         )
         include(FetchContent)
@@ -119,17 +121,17 @@ if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED True)
 elseif(${CMAKE_CXX_STANDARD} LESS 11)
-    message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
+    message(FATAL_ERROR "${MSG_PREFIX} Compiling the FSFW requires a minimum of C++11 support")
 endif()
 
 # Backwards comptability
 if(OS_FSFW AND NOT FSFW_OSAL)
-    message(WARNING "Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
+    message(WARNING "${MSG_PREFIX} Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
     set(FSFW_OSAL OS_FSFW)
 endif()
 
 if(NOT FSFW_OSAL)
-	message(STATUS "No OS for FSFW via FSFW_OSAL set. Assuming host OS")
+	message(STATUS "${MSG_PREFIX} No OS for FSFW via FSFW_OSAL set. Assuming host OS")
 	# Assume host OS and autodetermine from OS_FSFW
 	if(UNIX)
 		set(FSFW_OSAL  "linux" 
@@ -163,7 +165,7 @@ elseif(FSFW_OSAL STREQUAL rtems)
     set(FSFW_OSAL_RTEMS ON)
 else()
     message(WARNING
-        "Invalid operating system for FSFW specified! Setting to host.."
+        "${MSG_PREFIX} Invalid operating system for FSFW specified! Setting to host.."
     )
     set(FSFW_OS_NAME "Host")
     set(OS_FSFW "host")
@@ -172,7 +174,7 @@ endif()
 configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
 configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
 
-message(STATUS "Compiling FSFW for the ${FSFW_OS_NAME} operating system.")
+message(STATUS "${MSG_PREFIX} Compiling FSFW for the ${FSFW_OS_NAME} operating system")
 
 add_subdirectory(src)
 add_subdirectory(tests)
@@ -256,8 +258,8 @@ endif()
 if(NOT FSFW_CONFIG_PATH)
     set(DEF_CONF_PATH misc/defaultcfg/fsfwconfig)
     if(NOT FSFW_BUILD_DOCS)
-        message(WARNING "Flight Software Framework configuration path not set!")
-        message(WARNING "Setting default configuration from ${DEF_CONF_PATH} ..")
+        message(WARNING "${MSG_PREFIX} Flight Software Framework configuration path not set")
+        message(WARNING "${MSG_PREFIX} Setting default configuration from ${DEF_CONF_PATH} ..")
     endif()
     add_subdirectory(${DEF_CONF_PATH})
     set(FSFW_CONFIG_PATH ${DEF_CONF_PATH})
