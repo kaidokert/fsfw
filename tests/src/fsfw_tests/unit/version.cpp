@@ -14,8 +14,8 @@ TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   REQUIRE(Version(255, 0, 0) >= fsfw::FSFW_VERSION);
   REQUIRE(Version(0, 0, 0) < fsfw::FSFW_VERSION);
   REQUIRE(Version(0, 0, 0) <= fsfw::FSFW_VERSION);
-  Version v1 = fsfw::Version(1, 1, 1);
-  Version v2 = fsfw::Version(1, 1, 1);
+  Version v1 = Version(1, 1, 1);
+  Version v2 = Version(1, 1, 1);
   REQUIRE(v1 == v2);
   REQUIRE(not(v1 < v2));
   REQUIRE(not(v1 > v2));
