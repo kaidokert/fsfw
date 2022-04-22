@@ -13,7 +13,7 @@
 
 const Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR, FSFW_VERSION_REVISION};
 
-Version::Version(uint32_t major, uint32_t minor, uint32_t revision, const char* addInfo)
+Version::Version(int major, int minor, int revision, const char* addInfo)
     : major(major), minor(minor), revision(revision), addInfo(addInfo) {}
 
 void Version::getVersion(char* str, size_t maxLen) const {

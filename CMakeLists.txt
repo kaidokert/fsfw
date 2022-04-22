@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
 
-set(FSFW_VERSION 4)
-set(FSFW_SUBVERSION 0)
-set(FSFW_REVISION 0)
-
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -44,6 +40,24 @@ set(FSFW_DUMMY_TGT fsfw-dummy)
 
 project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
+
+# Version handling
+include("GetGitRevisionDescription")
+determine_version_with_git("--exclude" "docker_*")
+set(GIT_INFO ${GIT_INFO} CACHE STRING "Version information retrieved with git describe")
+list(GET GIT_INFO 1 FSFW_VERSION)
+list(GET GIT_INFO 2 FSFW_SUBVERSION)
+list(GET GIT_INFO 3 FSFW_REVISION)
+list(GET GIT_INFO 4 FSFW_VERSION_CST_GIT_SHA1)
+if(NOT FSFW_VERSION)
+    set(FSFW_VERSION -1)
+endif()
+if(NOT FSFW_SUBVERSION)
+    set(FSFW_SUBVERSION -1)
+endif()
+if(NOT FSFW_REVISION)
+    set(FSFW_REVISION -1)
+endif()
 
 if(FSFW_BUILD_UNITTESTS)
     message(STATUS "Building the FSFW unittests in addition to the static library")

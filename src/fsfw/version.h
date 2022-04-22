@@ -10,10 +10,10 @@
 
 class Version {
  public:
-  Version(uint32_t major, uint32_t minor, uint32_t revision, const char* addInfo = nullptr);
-  uint32_t major = 0;
-  uint32_t minor = 0;
-  uint32_t revision = 0;
+  Version(int major, int minor, int revision, const char* addInfo = nullptr);
+  int major = -1;
+  int minor = -1;
+  int revision = -1;
 
   // Additional information, e.g. a git SHA hash
   const char* addInfo = nullptr;
