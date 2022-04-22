@@ -12,7 +12,8 @@
 #undef minor
 #endif
 
-const Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR, FSFW_VERSION_REVISION};
+const Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR, FSFW_VERSION_REVISION,
+                                    FSFW_VERSION_CST_GIT_SHA1};
 
 Version::Version(int major, int minor, int revision, const char* addInfo)
     : major(major), minor(minor), revision(revision), addInfo(addInfo) {}
