@@ -6,7 +6,7 @@
 # 4. Revision
 # 5. git SHA hash and commits since tag
 function(determine_version_with_git)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake)
+    include(GetGitRevisionDescription)
     git_describe(VERSION ${ARGN})
     string(FIND ${VERSION} "." VALID_VERSION)
     if(VALID_VERSION EQUAL -1)

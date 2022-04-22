@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Add the cmake folder so the FindSphinx module is found
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules")
 set(MSG_PREFIX "fsfw |")
 
 option(FSFW_GENERATE_SECTIONS
@@ -44,7 +44,7 @@ project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
 
 # Version handling
-include("GetGitRevisionDescription")
+include(helpers)
 determine_version_with_git("--exclude" "docker_*")
 set(GIT_INFO ${GIT_INFO} CACHE STRING "Version information retrieved with git describe")
 list(GET GIT_INFO 1 FSFW_VERSION)
@@ -93,14 +93,7 @@ if(FSFW_BUILD_UNITTESTS)
         message(STATUS "${MSG_PREFIX} Targets linking against ${LIB_FSFW_NAME} "
             "will be compiled with coverage data as well"
         )
-        include(FetchContent)
-        FetchContent_Declare(
-            cmake-modules
-            GIT_REPOSITORY https://github.com/bilke/cmake-modules.git
-        )
-        FetchContent_MakeAvailable(cmake-modules)
         set(CMAKE_BUILD_TYPE "Debug")
-        list(APPEND CMAKE_MODULE_PATH ${cmake-modules_SOURCE_DIR})
         include(CodeCoverage)
     endif()
 endif()
