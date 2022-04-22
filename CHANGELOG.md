@@ -24,6 +24,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 - HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
+- Major update for version handling, using `git describe` to fetch version information with git.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/601
+  - Place `Version` class outside of `fsfw` namespace. It is generic
+  - Add helper functions provided by [`cmake-modules`](https://github.com/bilke/cmake-modules) manually now. Those should not change too often and only a small subset is needed
+  - Separate folder for easier update and for distintion
+  - LICENSE file included
+  - use `int` for version numbers to allow unset or uninitialized version
+  - Initialize Version object with numbers set to -1
+  - Instead of hardcoding the git hash, it is now retrieved from git
+  - `Version` now allows specifying additional version information like the git SHA1 hash and the versions since the last tag
+  - Additional information is set to the last part of the git describe output for `FSFW_VERSION` now.
+  - Version still need to be hand-updated if the FSFW is not included as a submodule for now.
 
 ## Removed
 
