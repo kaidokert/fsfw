@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Place `Version` class outside of `fsfw` namespace. It is generic
   - Add helper functions provided by [`cmake-modules`](https://github.com/bilke/cmake-modules)
     manually now. Those should not change too often and only a small subset is needed
-  - Separate folder for easier update and for distintion
+  - Separate folder for easier update and for distinction
   - LICENSE file included
   - use `int` for version numbers to allow unset or uninitialized version
   - Initialize Version object with numbers set to -1
