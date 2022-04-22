@@ -50,7 +50,7 @@ add_library(${LIB_FSFW_NAME})
 # Version handling
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
     message(STATUS "${MSG_PREFIX} Determining version information with git")
-    include(helpers)
+    include(FsfwHelpers)
     determine_version_with_git("--exclude" "docker_*")
     set(FSFW_GIT_INFO ${GIT_INFO} CACHE STRING "Version information retrieved with git describe")
     list(GET FSFW_GIT_INFO 1 FSFW_VERSION)
