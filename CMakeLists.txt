@@ -48,7 +48,8 @@ project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
 
 # Version handling
-if(EXISTS .git)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+    message(STATUS "${MSG_PREFIX} Determining version information with git")
     include(helpers)
     determine_version_with_git("--exclude" "docker_*")
     set(FSFW_GIT_INFO ${GIT_INFO} CACHE STRING "Version information retrieved with git describe")
