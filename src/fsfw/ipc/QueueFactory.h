@@ -5,6 +5,7 @@
 
 #include "MessageQueueIF.h"
 #include "MessageQueueMessage.h"
+#include "definitions.h"
 
 /**
  * Creates message queues.
@@ -22,7 +23,8 @@ class QueueFactory {
   static QueueFactory* instance();
 
   MessageQueueIF* createMessageQueue(uint32_t messageDepth = 3,
-                                     size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE);
+                                     size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE,
+                                     MqArgs* args = nullptr);
 
   void deleteMessageQueue(MessageQueueIF* queue);
 

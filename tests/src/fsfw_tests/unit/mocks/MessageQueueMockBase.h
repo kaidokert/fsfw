@@ -4,16 +4,18 @@
 #include <cstring>
 #include <queue>
 
+#include "fsfw/ipc/MessageQueueBase.h"
 #include "fsfw/ipc/CommandMessage.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw_tests/unit/CatchDefinitions.h"
 
-class MessageQueueMockBase : public MessageQueueIF {
+class MessageQueueMockBase : public MessageQueueBase {
  public:
-  MessageQueueId_t myQueueId = tconst::testQueueId;
+  MessageQueueMockBase()
+   : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, nullptr) {}
+
   uint8_t messageSentCounter = 0;
-  bool defaultDestSet = false;
   bool messageSent = false;
 
   bool wasMessageSent(uint8_t* messageSentCounter = nullptr, bool resetCounter = true) {
@@ -38,53 +40,30 @@ class MessageQueueMockBase : public MessageQueueIF {
     return receiveMessage(&message);
   }
 
-  virtual ReturnValue_t reply(MessageQueueMessageIF* message) {
-    return sendMessage(myQueueId, message);
-  };
-  virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
-                                       MessageQueueId_t* receivedFrom) {
-    return receiveMessage(message);
-  }
-
-  virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) {
+  virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override {
     if (messagesSentQueue.empty()) {
       return MessageQueueIF::EMPTY;
     }
-
+    this->last = message->getSender();
     std::memcpy(message->getBuffer(), messagesSentQueue.front().getBuffer(),
                 message->getMessageSize());
     messagesSentQueue.pop();
     return HasReturnvaluesIF::RETURN_OK;
   }
   virtual ReturnValue_t flush(uint32_t* count) { return HasReturnvaluesIF::RETURN_OK; }
-  virtual MessageQueueId_t getLastPartner() const { return myQueueId; }
-  virtual MessageQueueId_t getId() const { return myQueueId; }
   virtual ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        MessageQueueId_t sentFrom, bool ignoreFault = false) {
-    return sendMessage(sendTo, message);
-  }
-  virtual ReturnValue_t sendToDefaultFrom(MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
-                                          bool ignoreFault = false) {
-    return sendMessage(myQueueId, message);
-  }
-  virtual ReturnValue_t sendToDefault(MessageQueueMessageIF* message) {
-    return sendMessage(myQueueId, message);
-  }
-  virtual ReturnValue_t sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                    bool ignoreFault = false) override {
+                                        MessageQueueId_t sentFrom,
+                                        bool ignoreFault = false) override {
     messageSent = true;
     messageSentCounter++;
     MessageQueueMessage& messageRef = *(dynamic_cast<MessageQueueMessage*>(message));
     messagesSentQueue.push(messageRef);
     return HasReturnvaluesIF::RETURN_OK;
   }
-  virtual void setDefaultDestination(MessageQueueId_t defaultDestination) {
-    myQueueId = defaultDestination;
-    defaultDestSet = true;
-  }
 
-  virtual MessageQueueId_t getDefaultDestination() const { return myQueueId; }
-  virtual bool isDefaultDestinationSet() const { return defaultDestSet; }
+  virtual ReturnValue_t reply(MessageQueueMessageIF* message) override {
+    return sendMessageFrom(MessageQueueIF::NO_QUEUE, message, this->getId(), false);
+  }
 
   void clearMessages(bool clearCommandMessages = true) {
     while (not messagesSentQueue.empty()) {
