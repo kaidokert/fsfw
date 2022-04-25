@@ -91,7 +91,7 @@ ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to, const uint8_t* f
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  return convertTimevalToTimeOfDay(to, &time);
+  return Clock::convertTimevalToTimeOfDay(&time, to);
 }
 
 ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* from,
@@ -489,11 +489,6 @@ ReturnValue_t CCSDSTime::checkTimeOfDay(const Clock::TimeOfDay_t* time) {
   return RETURN_OK;
 }
 
-ReturnValue_t CCSDSTime::convertTimevalToTimeOfDay(Clock::TimeOfDay_t* to, timeval* from) {
-  // This is rather tricky. Implement only if needed. Also, if so, move to OSAL.
-  return UNSUPPORTED_TIME_FORMAT;
-}
-
 ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from, size_t* foundLength,
                                         size_t maxLength) {
   uint8_t pField = *from;
@@ -583,7 +578,7 @@ ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to, const CCSDSTime:
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  return CCSDSTime::convertTimevalToTimeOfDay(to, &tempTimeval);
+  return Clock::convertTimevalToTimeOfDay(&tempTimeval, to);
 }
 
 ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, uint8_t pField, const uint8_t* from,
