@@ -27,12 +27,13 @@ QueueFactory::QueueFactory() {}
 
 QueueFactory::~QueueFactory() {}
 
-MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth, size_t maxMessageSize) {
+MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth, size_t maxMessageSize,
+                                                 MqArgs* args) {
   // A thread-safe queue can be implemented  by using a combination
   // of std::queue and std::mutex. This uses dynamic memory allocation
   // which could be alleviated by using a custom allocator, external library
   // (etl::queue) or simply using std::queue, we're on a host machine anyway.
-  return new MessageQueue(messageDepth, maxMessageSize);
+  return new MessageQueue(messageDepth, maxMessageSize, args);
 }
 
 void QueueFactory::deleteMessageQueue(MessageQueueIF* queue) { delete queue; }
