@@ -42,6 +42,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   creation call. It allows passing context information and an arbitrary user argument into
   the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/583
+- Clock: 
+  - `timeval` to `TimeOfDay_t`
+  - Added Mutex for gmtime calls: (compare http://www.opengate.at/blog/2020/01/timeless/)
+  - Moved the statics used by Clock in ClockCommon.cpp to this file
+  - Better check for leap seconds
+  - Added Unittests for Clock (only getter)
 
 ## Removed
 

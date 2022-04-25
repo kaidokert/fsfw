@@ -3,4 +3,5 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
     testOpDivider.cpp
     testBitutil.cpp
     testCRC.cpp
+    testTimevalOperations.cpp
 )
