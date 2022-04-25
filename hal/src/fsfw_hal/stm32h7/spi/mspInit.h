@@ -21,7 +21,7 @@ using mspCb = void (*)(void);
 namespace spi {
 
 struct MspCfgBase {
-  MspCfgBase();
+  MspCfgBase() {}
   MspCfgBase(stm32h7::GpioCfg sck, stm32h7::GpioCfg mosi, stm32h7::GpioCfg miso,
              mspCb cleanupCb = nullptr, mspCb setupCb = nullptr)
       : sck(sck), mosi(mosi), miso(miso), cleanupCb(cleanupCb), setupCb(setupCb) {}
