@@ -21,8 +21,10 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
   REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
   REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
 
-  MessageQueueMockBase* mqMock = poolOwner->getMockQueueHandle();
-  REQUIRE(mqMock != nullptr);
+  MessageQueueMockBase* poolOwnerMock = poolOwner->getMockQueueHandle();
+  REQUIRE(poolOwnerMock != nullptr);
+
+  // MessageQueueIF* hkCommander = QueueFactory::instance()->createMessageQueue();
   CommandMessage messageSent;
   uint8_t messagesSent = 0;
 
@@ -41,9 +43,9 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     poolOwner->dataset.setChanged(true);
     /* Now the update message should be generated. */
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent() == true);
+    REQUIRE(poolOwnerMock->wasMessageSent() == true);
 
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() ==
           static_cast<int>(HousekeepingMessage::UPDATE_NOTIFICATION_SET));
 
@@ -53,9 +55,9 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     poolOwner->dataset.setChanged(true);
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() ==
           static_cast<int>(HousekeepingMessage::UPDATE_NOTIFICATION_SET));
 
@@ -63,15 +65,15 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     REQUIRE(poolOwner->subscribeWrapperSetUpdateHk() == retval::CATCH_OK);
     poolOwner->dataset.setChanged(true);
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 2);
     /* first message sent should be the update notification, considering
     the internal list is a vector checked in insertion order. */
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() ==
           static_cast<int>(HousekeepingMessage::UPDATE_NOTIFICATION_SET));
 
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() == static_cast<int>(HousekeepingMessage::HK_REPORT));
     /* Clear message to avoid memory leak, our mock won't do it for us (yet) */
     CommandMessageCleaner::clearCommandMessage(&messageSent);
@@ -99,9 +101,9 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
 
     /* Trigger generation of snapshot */
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     /* Check that snapshot was generated */
     CHECK(messageSent.getCommand() == static_cast<int>(HousekeepingMessage::UPDATE_SNAPSHOT_SET));
     /* Now we deserialize the snapshot into a new dataset instance */
@@ -162,12 +164,12 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 
     /* Check update snapshot was sent. */
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
 
     /* Should have been reset. */
     CHECK(poolVar->hasChanged() == false);
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() ==
           static_cast<int>(HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE));
     /* Now we deserialize the snapshot into a new dataset instance */
@@ -209,11 +211,11 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
 
     /* Check update notification was sent. */
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
     /* Should have been reset. */
     CHECK(poolVar->hasChanged() == false);
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() ==
           static_cast<int>(HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE));
     /* Now subscribe for the dataset update (HK and update) again with subscription interface */
@@ -225,26 +227,26 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     poolOwner->dataset.setChanged(true);
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
     /* Now two messages should be sent. */
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 2);
-    mqMock->clearMessages(true);
+    poolOwnerMock->clearMessages(true);
 
     poolOwner->dataset.setChanged(true);
     poolVar->setChanged(true);
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
     /* Now three messages should be sent. */
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 3);
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() ==
           static_cast<int>(HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE));
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() ==
           static_cast<int>(HousekeepingMessage::UPDATE_NOTIFICATION_SET));
-    REQUIRE(mqMock->receiveMessage(&messageSent) == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == retval::CATCH_OK);
     CHECK(messageSent.getCommand() == static_cast<int>(HousekeepingMessage::HK_REPORT));
     CommandMessageCleaner::clearCommandMessage(&messageSent);
-    REQUIRE(mqMock->receiveMessage(&messageSent) == static_cast<int>(MessageQueueIF::EMPTY));
+    REQUIRE(poolOwnerMock->receiveMessage(&messageSent) == static_cast<int>(MessageQueueIF::EMPTY));
   }
 
   SECTION("PeriodicHKAndMessaging") {
@@ -255,38 +257,38 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     REQUIRE(poolOwner->subscribePeriodicHk(true) == retval::CATCH_OK);
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
     /* Now HK packet should be sent as message immediately. */
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     LocalPoolDataSetBase* setHandle = poolOwner->getDataSetHandle(lpool::testSid);
     REQUIRE(setHandle != nullptr);
     CHECK(poolOwner->poolManager.generateHousekeepingPacket(lpool::testSid, setHandle, false) ==
           retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     CHECK(setHandle->getReportingEnabled() == true);
     CommandMessage hkCmd;
     HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, false, false);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
     CHECK(setHandle->getReportingEnabled() == false);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, true, false);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
     CHECK(setHandle->getReportingEnabled() == true);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, false, false);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
     CHECK(setHandle->getReportingEnabled() == false);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setCollectionIntervalModificationCommand(&hkCmd, lpool::testSid, 0.4,
                                                                   false);
@@ -294,23 +296,23 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     /* For non-diagnostics and a specified minimum frequency of 0.2 seconds, the
     resulting collection interval should be 1.0 second */
     CHECK(poolOwner->dataset.getCollectionInterval() == 1.0);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setStructureReportingCommand(&hkCmd, lpool::testSid, false);
     REQUIRE(poolOwner->poolManager.performHkOperation() == retval::CATCH_OK);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
     /* Now HK packet should be sent as message. */
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setOneShotReportCommand(&hkCmd, lpool::testSid, false);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setUpdateNotificationSetCommand(&hkCmd, lpool::testSid);
     sid_t sidToCheck;
@@ -326,62 +328,62 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) ==
           static_cast<int>(LocalDataPoolManager::WRONG_HK_PACKET_TYPE));
     /* We still expect a failure message being sent */
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setCollectionIntervalModificationCommand(&hkCmd, lpool::testSid, 0.4,
                                                                   false);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) ==
           static_cast<int>(LocalDataPoolManager::WRONG_HK_PACKET_TYPE));
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setStructureReportingCommand(&hkCmd, lpool::testSid, false);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) ==
           static_cast<int>(LocalDataPoolManager::WRONG_HK_PACKET_TYPE));
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setStructureReportingCommand(&hkCmd, lpool::testSid, true);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setCollectionIntervalModificationCommand(&hkCmd, lpool::testSid, 0.4,
                                                                   true);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, true, true);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setToggleReportingCommand(&hkCmd, lpool::testSid, false, true);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setOneShotReportCommand(&hkCmd, lpool::testSid, false);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) ==
           static_cast<int>(LocalDataPoolManager::WRONG_HK_PACKET_TYPE));
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setOneShotReportCommand(&hkCmd, lpool::testSid, true);
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
-    REQUIRE(mqMock->wasMessageSent(&messagesSent) == true);
+    REQUIRE(poolOwnerMock->wasMessageSent(&messagesSent) == true);
     CHECK(messagesSent == 1);
-    CHECK(mqMock->popMessage() == retval::CATCH_OK);
+    CHECK(poolOwnerMock->popMessage() == retval::CATCH_OK);
 
     HousekeepingMessage::setUpdateNotificationVariableCommand(&hkCmd, lpool::uint8VarGpid);
     gp_id_t gpidToCheck;
@@ -407,5 +409,5 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
   /* we need to reset the subscription list because the pool owner
   is a global object. */
   CHECK(poolOwner->reset() == retval::CATCH_OK);
-  mqMock->clearMessages(true);
+  poolOwnerMock->clearMessages(true);
 }
