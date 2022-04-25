@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Time
 
+PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/584 and
+https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
+
 - `timeval` to `TimeOfDay_t`
 - Added Mutex for gmtime calls: (compare http://www.opengate.at/blog/2020/01/timeless/)
 - Moved the statics used by Clock in ClockCommon.cpp to this file
