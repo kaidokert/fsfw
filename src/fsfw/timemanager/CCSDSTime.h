@@ -223,7 +223,6 @@ class CCSDSTime : public HasReturnvaluesIF {
                                          uint8_t *day);
 
   static bool isLeapYear(uint32_t year);
-  static ReturnValue_t convertTimevalToTimeOfDay(Clock::TimeOfDay_t *to, timeval *from);
 };
 
 #endif /* FSFW_TIMEMANAGER_CCSDSTIME_H_ */

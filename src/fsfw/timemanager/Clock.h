@@ -100,6 +100,13 @@ class Clock {
   static ReturnValue_t getDateAndTime(TimeOfDay_t *time);
 
   /**
+   * Convert to time of day struct given the POSIX timeval struct
+   * @param from
+   * @param to
+   * @return
+   */
+  static ReturnValue_t convertTimevalToTimeOfDay(const timeval *from, TimeOfDay_t *to);
+  /**
    * Converts a time of day struct to POSIX seconds.
    * @param time The time of day as input
    * @param timeval The corresponding seconds since the epoch.
@@ -166,6 +173,7 @@ class Clock {
 
   static MutexIF *timeMutex;
   static uint16_t leapSeconds;
+  static bool leapSecondsSet;
 };
 
 #endif /* FSFW_TIMEMANAGER_CLOCK_H_ */
