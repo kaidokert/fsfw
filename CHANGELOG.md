@@ -47,6 +47,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
+- Added ETL dependency and improved library dependency management
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/592
 
 ## Fixed
 
