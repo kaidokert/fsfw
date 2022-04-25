@@ -11,9 +11,6 @@
 // TODO sanitize input?
 // TODO much of this code can be reused for tick-only systems
 
-uint16_t Clock::leapSeconds = 0;
-MutexIF* Clock::timeMutex = nullptr;
-
 uint32_t Clock::getTicksPerSecond(void) { return 1000; }
 
 ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
