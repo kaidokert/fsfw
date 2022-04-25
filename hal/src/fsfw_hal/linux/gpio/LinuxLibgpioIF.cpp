@@ -55,7 +55,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
         if (regularGpio == nullptr) {
           return GPIO_INVALID_INSTANCE;
         }
-        configureGpioByChip(gpioConfig.first, *regularGpio);
+        result = configureGpioByChip(gpioConfig.first, *regularGpio);
         break;
       }
       case (gpio::GpioTypes::GPIO_REGULAR_BY_LABEL): {
@@ -82,6 +82,9 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
         gpioCallback->callback(gpioConfig.first, gpio::GpioOperation::WRITE,
                                gpioCallback->initValue, gpioCallback->callbackArgs);
       }
+    }
+    if (result != OK) {
+      return result;
     }
   }
   return RETURN_OK;
