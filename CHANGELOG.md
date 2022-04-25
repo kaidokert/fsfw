@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 - HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
+- IPC Message Queue Handling: Allow passing an optional `MqArgs` argument into the MessageQueue
+  creation call. It allows passing context information and an arbitrary user argument into
+  the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/583
 
 ## Removed
 
@@ -37,6 +41,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
+- Added ETL dependency and improved library dependency management
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/592
+
+## Fixed
+
+- Small bugfix in STM32 HAL for SPI
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/599
 
 # [v4.0.0]
 
