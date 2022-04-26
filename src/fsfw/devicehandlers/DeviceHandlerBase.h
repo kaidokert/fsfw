@@ -448,6 +448,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * by the device repeatedly without request) or not. Default is aperiodic (0).
    * Please note that periodic replies are disabled by default. You can enable them with
    * #updatePeriodicReply
+   * @param countdown Instead of using maxDelayCycles to timeout a device reply it is also possible
+   *                  to provide a pointer to a Countdown object which will signal the timeout
+   *                  when expired
    * @return	- @c RETURN_OK when the command was successfully inserted,
    *          - @c RETURN_FAILED else.
    */
@@ -455,7 +458,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
                                            LocalPoolDataSetBase *replyDataSet = nullptr,
                                            size_t replyLen = 0, bool periodic = false,
                                            bool hasDifferentReplyId = false,
-                                           DeviceCommandId_t replyId = 0);
+                                           DeviceCommandId_t replyId = 0,
+                                           Countdown *countdown = nullptr);
   /**
    * @brief 	This is a helper method to insert replies in the reply map.
    * @param deviceCommand	Identifier of the reply to add.
@@ -465,12 +469,15 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * by the device repeatedly without request) or not. Default is aperiodic (0).
    * Please note that periodic replies are disabled by default. You can enable them with
    * #updatePeriodicReply
+   * @param countdown Instead of using maxDelayCycles to timeout a device reply it is also possible
+   *                  to provide a pointer to a Countdown object which will signal the timeout
+   *                  when expired
    * @return	- @c RETURN_OK when the command was successfully inserted,
    *          - @c RETURN_FAILED else.
    */
   ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
                                  LocalPoolDataSetBase *dataSet = nullptr, size_t replyLen = 0,
-                                 bool periodic = false);
+                                 bool periodic = false, Countdown *countdown = nullptr);
 
   /**
    * @brief   A simple command to add a command to the commandList.
@@ -783,6 +790,11 @@ class DeviceHandlerBase : public DeviceHandlerIF,
     LocalPoolDataSetBase *dataSet = nullptr;
     //! The command that expects this reply.
     DeviceCommandMap::iterator command;
+    //! Instead of using delayCycles to specify the maximum time to wait for the device reply, it
+    //! is also possible specify a countdown
+    Countdown* countdown = nullptr;
+    //! will be set to true when reply is enabled
+    bool active = false;
   };
 
   using DeviceReplyMap = std::map<DeviceCommandId_t, DeviceReplyInfo>;
@@ -1242,6 +1254,17 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * is sent to the commanding object via commandQueue.
    */
   void doGetRead(void);
+
+  /**
+   * @brief Handles disabling of replies which use a timeout to detect missed replies.
+   */
+  void disableTimeoutControlledReply(DeviceReplyInfo* info);
+
+  /**
+   * @brief Handles disabling of replies which use a number of maximum delay cycles to detect
+   *        missed replies.
+   */
+  void disableDelayCyclesControlledReply(DeviceReplyInfo* info);
 
   /**
    * Retrive data from the #IPCStore.
