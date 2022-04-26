@@ -139,7 +139,7 @@ You can also use `-DFSFW_OSAL=linux` on Linux systems.
 
 Coverage data in HTML format can be generated using the `CodeCoverage`
 [CMake module](https://github.com/bilke/cmake-modules/tree/master).
-To build the unittests, run them and then generare the coverage data in this format,
+To build the unittests, run them and then generate the coverage data in this format,
 the following command can be used inside the build directory after the build system was set up
 
 ```sh
