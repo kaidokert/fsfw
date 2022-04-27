@@ -2,6 +2,7 @@
 #define FSFW_OSAL_FREERTOS_MESSAGEQUEUE_H_
 
 #include <fsfw/ipc/MessageQueueBase.h>
+
 #include "FreeRTOS.h"
 #include "TaskManagement.h"
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
