@@ -1,9 +1,9 @@
 #include "MessageQueueBase.h"
 
-MessageQueueBase::MessageQueueBase(MessageQueueId_t id, MessageQueueId_t defaultDest,
-    MqArgs* args): id(id) {
+MessageQueueBase::MessageQueueBase(MessageQueueId_t id, MessageQueueId_t defaultDest, MqArgs* args)
+    : id(id) {
   this->defaultDest = defaultDest;
-  if(args != nullptr) {
+  if (args != nullptr) {
     this->args = *args;
   }
 }
@@ -23,35 +23,25 @@ ReturnValue_t MessageQueueBase::reply(MessageQueueMessageIF* message) {
 }
 
 ReturnValue_t MessageQueueBase::receiveMessage(MessageQueueMessageIF* message,
-                                           MessageQueueId_t* receivedFrom) {
+                                               MessageQueueId_t* receivedFrom) {
   ReturnValue_t status = this->receiveMessage(message);
   *receivedFrom = this->last;
   return status;
 }
 
-MessageQueueId_t MessageQueueBase::getLastPartner() const {
-  return last;
-}
+MessageQueueId_t MessageQueueBase::getLastPartner() const { return last; }
 
-MessageQueueId_t MessageQueueBase::getId() const {
-  return id;
-}
+MessageQueueId_t MessageQueueBase::getId() const { return id; }
 
-MqArgs& MessageQueueBase::getMqArgs() {
-  return args;
-}
+MqArgs& MessageQueueBase::getMqArgs() { return args; }
 
 void MessageQueueBase::setDefaultDestination(MessageQueueId_t defaultDestination) {
   this->defaultDest = defaultDestination;
 }
 
-MessageQueueId_t MessageQueueBase::getDefaultDestination() const {
-  return defaultDest;
-}
+MessageQueueId_t MessageQueueBase::getDefaultDestination() const { return defaultDest; }
 
-bool MessageQueueBase::isDefaultDestinationSet() const {
-  return (defaultDest != NO_QUEUE);
-}
+bool MessageQueueBase::isDefaultDestinationSet() const { return (defaultDest != NO_QUEUE); }
 
 ReturnValue_t MessageQueueBase::sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                             bool ignoreFault) {
