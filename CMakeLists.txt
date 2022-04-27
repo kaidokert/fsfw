@@ -108,23 +108,23 @@ endif()
 message(STATUS "Finding and/or providing ETL library")
 
 # Check whether the user has already installed ETL first
-find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
+# find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
 # Not installed, so use FetchContent to download and provide etl
-if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
-    message(STATUS
-        "No ETL installation was found with find_package. Installing and providing "
-        "etl with FindPackage"
-    )
-    include(FetchContent)
+# if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
+message(STATUS
+    "No ETL installation was found with find_package. Installing and providing "
+    "etl with FindPackage"
+)
+include(FetchContent)
 
-    FetchContent_Declare(
-        ${FSFW_ETL_LIB_NAME}
-        GIT_REPOSITORY https://github.com/ETLCPP/etl
-        GIT_TAG        ${FSFW_ETL_LIB_VERSION}
-    )
+FetchContent_Declare(
+    ${FSFW_ETL_LIB_NAME}
+    GIT_REPOSITORY https://github.com/ETLCPP/etl
+    GIT_TAG        ${FSFW_ETL_LIB_VERSION}
+)
 
-    FetchContent_MakeAvailable(etl)
-endif()
+FetchContent_MakeAvailable(etl)
+# endif()
 
 set(FSFW_CORE_INC_PATH "inc")
 
