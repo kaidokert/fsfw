@@ -4,8 +4,8 @@
 #include <cstring>
 #include <queue>
 
-#include "fsfw/ipc/MessageQueueBase.h"
 #include "fsfw/ipc/CommandMessage.h"
+#include "fsfw/ipc/MessageQueueBase.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw_tests/unit/CatchDefinitions.h"
@@ -13,7 +13,7 @@
 class MessageQueueMockBase : public MessageQueueBase {
  public:
   MessageQueueMockBase()
-   : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, nullptr) {}
+      : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, nullptr) {}
 
   uint8_t messageSentCounter = 0;
   bool messageSent = false;
