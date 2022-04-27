@@ -78,7 +78,8 @@ if(FSFW_BUILD_UNITTESTS)
         )
 
         FetchContent_MakeAvailable(Catch2)
-        #fixes regression -preview4, to be confirmed in later releases
+        # fixes regression -preview4, to be confirmed in later releases
+        # Related GitHub issue: https://github.com/catchorg/Catch2/issues/2417
         set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
     endif()
 
