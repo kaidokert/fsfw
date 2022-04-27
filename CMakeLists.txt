@@ -77,10 +77,7 @@ if(FSFW_BUILD_UNITTESTS)
             GIT_TAG        ${FSFW_CATCH2_LIB_VERSION}
         )
 
-        FetchContent_MakeAvailable(Catch2)
-        # fixes regression -preview4, to be confirmed in later releases
-        # Related GitHub issue: https://github.com/catchorg/Catch2/issues/2417
-        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
+        list(APPEND FSFW_FETCH_CONTENT_TARGETS Catch2)
     endif()
 
     set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
@@ -125,8 +122,22 @@ if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
         GIT_TAG        ${FSFW_ETL_LIB_VERSION}
     )
 
-    FetchContent_MakeAvailable(${FSFW_ETL_LIB_NAME})
-    add_library(${FSFW_ETL_LINK_TARGET} ALIAS ${FSFW_ETL_LIB_NAME})
+    list(APPEND FSFW_FETCH_CONTENT_TARGETS ${FSFW_ETL_LIB_NAME})
+endif()
+
+# The documentation for FetchContent recommends declaring all the dependencies
+# before making them available. We make all declared dependency available here
+# after their declaration
+if(FSFW_FETCH_CONTENT_TARGETS)
+    FetchContent_MakeAvailable(${FSFW_FETCH_CONTENT_TARGETS})
+    if(TARGET ${FSFW_ETL_LIB_NAME})
+        add_library(${FSFW_ETL_LINK_TARGET} ALIAS ${FSFW_ETL_LIB_NAME})
+    endif()
+    if(TARGET Catch2)
+        # Fixes regression -preview4, to be confirmed in later releases
+        # Related GitHub issue: https://github.com/catchorg/Catch2/issues/2417
+        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
+    endif()
 endif()
 
 set(FSFW_CORE_INC_PATH "inc")
