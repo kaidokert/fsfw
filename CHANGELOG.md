@@ -76,6 +76,9 @@ https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
 
 - Small bugfix in STM32 HAL for SPI
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/599
+- HAL GPIO: Improved error checking in `LinuxLibgpioIF::configureGpios(...)`. If a GPIO
+  configuration fails, the function will exit prematurely with a dedicated error code
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/602
 
 # [v4.0.0]
 

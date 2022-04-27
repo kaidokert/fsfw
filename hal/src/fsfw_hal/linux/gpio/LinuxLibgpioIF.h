@@ -29,6 +29,8 @@ class LinuxLibgpioIF : public GpioIF, public SystemObject {
       HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 4);
   static constexpr ReturnValue_t GPIO_DUPLICATE_DETECTED =
       HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 5);
+  static constexpr ReturnValue_t GPIO_INIT_FAILED =
+      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 6);
 
   LinuxLibgpioIF(object_id_t objectId);
   virtual ~LinuxLibgpioIF();

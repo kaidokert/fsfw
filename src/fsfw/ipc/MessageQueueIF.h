@@ -2,6 +2,7 @@
 #define FSFW_IPC_MESSAGEQUEUEIF_H_
 
 #include <fsfw/ipc/definitions.h>
+
 #include <cstdint>
 
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -45,7 +46,8 @@ class MessageQueueIF {
   virtual ReturnValue_t reply(MessageQueueMessageIF* message) = 0;
 
   /**
-   * @brief	This function reads available messages from the message queue and returns the sender.
+   * @brief	This function reads available messages from the message queue and returns the
+   * sender.
    * @details
    * It works identically to the other receiveMessage call, but in addition
    * returns the sender's queue id.

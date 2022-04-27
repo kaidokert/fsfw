@@ -1,16 +1,16 @@
 #ifndef FRAMEWORK_OSAL_HOST_MESSAGEQUEUE_H_
 #define FRAMEWORK_OSAL_HOST_MESSAGEQUEUE_H_
 
-#include "fsfw/ipc/MessageQueueBase.h"
+#include <memory>
+#include <queue>
+
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
+#include "fsfw/ipc/MessageQueueBase.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/ipc/MutexIF.h"
 #include "fsfw/ipc/definitions.h"
 #include "fsfw/timemanager/Clock.h"
-
-#include <memory>
-#include <queue>
 
 /**
  * @brief		This class manages sending and receiving of
