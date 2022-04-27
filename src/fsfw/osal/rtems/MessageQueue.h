@@ -2,6 +2,7 @@
 #define FSFW_OSAL_RTEMS_MESSAGEQUEUE_H_
 
 #include <fsfw/ipc/MessageQueueBase.h>
+
 #include "RtemsBasic.h"
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
 #include "fsfw/ipc/MessageQueueIF.h"
@@ -52,8 +53,8 @@ class MessageQueue : public MessageQueueBase {
   // Implement non-generic MessageQueueIF functions not handled by MessageQueueBase
   ReturnValue_t flush(uint32_t* count) override;
   ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        MessageQueueId_t sentFrom = NO_QUEUE,
-                                        bool ignoreFault = false) override;
+                                MessageQueueId_t sentFrom = NO_QUEUE,
+                                bool ignoreFault = false) override;
 
  private:
   /**
