@@ -13,6 +13,7 @@ set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
 set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.2 CACHE STRING
     "ETL library exact version requirement"
 )
+set(FSFW_ETL_LINK_TARGET etl::etl)
 
 set(FSFW_CATCH2_LIB_MAJOR_VERSION 3 CACHE STRING
     "Catch2 library major version requirement"
@@ -108,23 +109,24 @@ endif()
 message(STATUS "Finding and/or providing ETL library")
 
 # Check whether the user has already installed ETL first
-# find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
+find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
 # Not installed, so use FetchContent to download and provide etl
-# if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
-message(STATUS
-    "No ETL installation was found with find_package. Installing and providing "
-    "etl with FindPackage"
-)
-include(FetchContent)
+if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
+    message(STATUS
+        "No ETL installation was found with find_package. Installing and providing "
+        "etl with FindPackage"
+    )
+    include(FetchContent)
 
-FetchContent_Declare(
-    ${FSFW_ETL_LIB_NAME}
-    GIT_REPOSITORY https://github.com/ETLCPP/etl
-    GIT_TAG        ${FSFW_ETL_LIB_VERSION}
-)
+    FetchContent_Declare(
+        ${FSFW_ETL_LIB_NAME}
+        GIT_REPOSITORY https://github.com/ETLCPP/etl
+        GIT_TAG        ${FSFW_ETL_LIB_VERSION}
+    )
 
-FetchContent_MakeAvailable(etl)
-# endif()
+    FetchContent_MakeAvailable(etl)
+    add_library(${FSFW_ETL_LINK_TARGET} ALIAS etl)
+endif()
 
 set(FSFW_CORE_INC_PATH "inc")
 
@@ -387,7 +389,7 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
 )
 
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
-    ${FSFW_ETL_LIB_NAME}
+    ${FSFW_ETL_LINK_TARGET}
     ${FSFW_ADDITIONAL_LINK_LIBS}
 )
 
