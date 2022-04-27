@@ -6,3 +6,8 @@ RUN apt-get --yes upgrade
 #tzdata is a dependency, won't install otherwise
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get --yes install gcc g++ cmake make lcov git valgrind nano iputils-ping
+
+RUN git clone https://github.com/catchorg/Catch2.git && \
+	cd Catch2 && \
+	cmake -Bbuild -H. -DBUILD_TESTING=OFF && \
+	cmake --build build/ --target install
