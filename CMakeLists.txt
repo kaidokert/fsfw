@@ -124,8 +124,8 @@ if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
         GIT_TAG        ${FSFW_ETL_LIB_VERSION}
     )
 
-    FetchContent_MakeAvailable(etl)
-    add_library(${FSFW_ETL_LINK_TARGET} ALIAS etl)
+    FetchContent_MakeAvailable(${FSFW_ETL_LIB_NAME})
+    add_library(${FSFW_ETL_LINK_TARGET} ALIAS ${FSFW_ETL_LIB_NAME})
 endif()
 
 set(FSFW_CORE_INC_PATH "inc")
