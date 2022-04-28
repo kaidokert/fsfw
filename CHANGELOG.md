@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
 - Added ETL dependency and improved library dependency management
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/592
+- `Subsystem`: New API to add table and sequence entries
 
 ## Fixed
 
