@@ -459,6 +459,7 @@ ReturnValue_t Subsystem::initialize() {
   }
 
   mode = initialMode;
+  submode = initSubmode;
 
   return RETURN_OK;
 }
@@ -596,7 +597,10 @@ ReturnValue_t Subsystem::checkObjectConnections() {
   return RETURN_OK;
 }
 
-void Subsystem::setInitialMode(Mode_t mode) { initialMode = mode; }
+void Subsystem::setInitialMode(Mode_t mode, Submode_t submode) {
+  this->initialMode = mode;
+  this->initSubmode = submode;
+}
 
 void Subsystem::cantKeepMode() {
   ReturnValue_t result;

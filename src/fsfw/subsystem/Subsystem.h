@@ -75,7 +75,7 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
   ReturnValue_t addTable(ArrayList<ModeListEntry> *table, Mode_t id, bool inStore = true,
                          bool preInit = true);
 
-  void setInitialMode(Mode_t mode);
+  void setInitialMode(Mode_t mode, Submode_t submode = SUBMODE_NONE);
 
   virtual ReturnValue_t initialize() override;
 
@@ -114,6 +114,7 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
   Submode_t targetSubmode;
 
   Mode_t initialMode = 0;
+  Submode_t initSubmode = SUBMODE_NONE;
 
   HybridIterator<ModeListEntry> currentSequenceIterator;
 
