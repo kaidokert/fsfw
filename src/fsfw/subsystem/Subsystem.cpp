@@ -299,6 +299,11 @@ void Subsystem::replyToCommand(ReturnValue_t status, uint32_t parameter) {
   }
 }
 
+ReturnValue_t Subsystem::addSequence(SequenceEntry sequence) {
+  return addSequence(sequence.table, sequence.mode, sequence.fallbackMode, sequence.inStore,
+                     sequence.preInit);
+}
+
 ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry> *sequence, Mode_t id,
                                      Mode_t fallbackSequence, bool inStore, bool preInit) {
   ReturnValue_t result;
@@ -340,6 +345,10 @@ ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry> *sequence, Mode_t 
   }
 
   return result;
+}
+
+ReturnValue_t Subsystem::addTable(TableEntry table) {
+  return addTable(table.table, table.mode, table.inStore, table.preInit);
 }
 
 ReturnValue_t Subsystem::addTable(ArrayList<ModeListEntry> *table, Mode_t id, bool inStore,

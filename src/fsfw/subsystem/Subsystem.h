@@ -11,6 +11,28 @@
 #include "SubsystemBase.h"
 #include "modes/ModeDefinitions.h"
 
+struct TableSequenceBase {
+ public:
+  TableSequenceBase(Mode_t mode, ArrayList<ModeListEntry> *table) : mode(mode), table(table){};
+  Mode_t mode;
+  ArrayList<ModeListEntry> *table;
+  bool inStore = false;
+  bool preInit = true;
+};
+
+struct TableEntry : public TableSequenceBase {
+ public:
+  TableEntry(Mode_t mode, ArrayList<ModeListEntry> *table) : TableSequenceBase(mode, table){};
+};
+
+struct SequenceEntry : public TableSequenceBase {
+ public:
+  SequenceEntry(Mode_t mode, ArrayList<ModeListEntry> *table, Mode_t fallbackMode)
+      : TableSequenceBase(mode, table), fallbackMode(fallbackMode) {}
+
+  Mode_t fallbackMode;
+};
+
 /**
  * @brief   TODO: documentation missing
  * @details
@@ -45,9 +67,11 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
             uint32_t maxNumberOfTables);
   virtual ~Subsystem();
 
+  ReturnValue_t addSequence(SequenceEntry sequence);
   ReturnValue_t addSequence(ArrayList<ModeListEntry> *sequence, Mode_t id, Mode_t fallbackSequence,
                             bool inStore = true, bool preInit = true);
 
+  ReturnValue_t addTable(TableEntry table);
   ReturnValue_t addTable(ArrayList<ModeListEntry> *table, Mode_t id, bool inStore = true,
                          bool preInit = true);
 
