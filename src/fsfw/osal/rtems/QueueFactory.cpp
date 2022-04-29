@@ -49,8 +49,9 @@ QueueFactory::QueueFactory() {}
 
 QueueFactory::~QueueFactory() {}
 
-MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth, size_t maxMessageSize) {
-  return new MessageQueue(messageDepth, maxMessageSize);
+MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth, size_t maxMessageSize,
+                                                 MqArgs* args) {
+  return new MessageQueue(messageDepth, maxMessageSize, args);
 }
 
 void QueueFactory::deleteMessageQueue(MessageQueueIF* queue) { delete queue; }

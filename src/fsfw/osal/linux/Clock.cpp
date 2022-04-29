@@ -8,10 +8,8 @@
 
 #include <fstream>
 
+#include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-
-uint16_t Clock::leapSeconds = 0;
-MutexIF* Clock::timeMutex = NULL;
 
 uint32_t Clock::getTicksPerSecond(void) {
   uint32_t ticks = sysconf(_SC_CLK_TCK);
@@ -117,7 +115,13 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
     // TODO errno
     return HasReturnvaluesIF::RETURN_FAILED;
   }
-
+  ReturnValue_t result = checkOrCreateClockMutex();
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  MutexGuard helper(timeMutex);
+  // gmtime writes its output in a global buffer which is not Thread Safe
+  // Therefore we have to use a Mutex here
   struct tm* timeInfo;
   timeInfo = gmtime(&timeUnix.tv_sec);
   time->year = timeInfo->tm_year + 1900;
