@@ -34,7 +34,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
   SerializeElement<T> limitValue;
   SerializeElement<ReturnValue_t> oldState;
   SerializeElement<ReturnValue_t> newState;
-  uint8_t rawTimestamp[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
+  uint8_t rawTimestamp[TimeStamperIF::MISSION_TIMESTAMP_SIZE] = {};
   SerializeElement<SerialBufferAdapter<uint8_t>> timestampSerializer;
   TimeStamperIF* timeStamper;
   MonitoringReportContent()
@@ -46,7 +46,6 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
         limitValue(0),
         oldState(0),
         newState(0),
-        rawTimestamp({0}),
         timestampSerializer(rawTimestamp, sizeof(rawTimestamp)),
         timeStamper(NULL) {
     setAllNext();

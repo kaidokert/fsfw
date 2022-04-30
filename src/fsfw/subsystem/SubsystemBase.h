@@ -127,9 +127,9 @@ class SubsystemBase : public SystemObject,
 
   virtual void startTransition(Mode_t mode, Submode_t submode) = 0;
 
-  virtual void getMode(Mode_t *mode, Submode_t *submode);
+  virtual void getMode(Mode_t *mode, Submode_t *submode) override;
 
-  virtual void setToExternalControl();
+  virtual void setToExternalControl() override;
 
   virtual void announceMode(bool recursive);
 

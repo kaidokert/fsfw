@@ -23,8 +23,8 @@ class LocalPoolObjectBase : public PoolVariableIF, public HasReturnvaluesIF, pub
   LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, DataSetIF* dataSet = nullptr,
                       pool_rwm_t setReadWriteMode = pool_rwm_t::VAR_READ_WRITE);
 
-  void setReadWriteMode(pool_rwm_t newReadWriteMode);
-  pool_rwm_t getReadWriteMode() const;
+  void setReadWriteMode(pool_rwm_t newReadWriteMode) override;
+  pool_rwm_t getReadWriteMode() const override;
 
   bool isValid() const override;
   void setValid(bool valid) override;
