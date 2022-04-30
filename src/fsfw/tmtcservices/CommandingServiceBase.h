@@ -104,7 +104,7 @@ class CommandingServiceBase : public SystemObject,
    *
    * @return requestQueue messageQueueId_t
    */
-  virtual MessageQueueId_t getRequestQueue();
+  virtual MessageQueueId_t getRequestQueue() override;
 
   /**
    * Returns the commandQueue MessageQueueId_t

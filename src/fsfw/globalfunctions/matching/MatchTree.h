@@ -25,7 +25,7 @@ class MatchTree : public SerializeableMatcherIF<T>, public BinaryTree<Serializea
       : BinaryTree<SerializeableMatcherIF<T>>(root.element), maxDepth(maxDepth) {}
   MatchTree() : BinaryTree<SerializeableMatcherIF<T>>(), maxDepth(-1) {}
   virtual ~MatchTree() {}
-  virtual bool match(T number) { return matchesTree(number); }
+  virtual bool match(T number) override { return matchesTree(number); }
   bool matchesTree(T number) {
     iterator iter = this->begin();
     if (iter == this->end()) {

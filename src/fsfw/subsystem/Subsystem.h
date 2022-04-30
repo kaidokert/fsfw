@@ -138,7 +138,7 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
                                          uint32_t *msToReachTheMode);
 
-  virtual void startTransition(Mode_t mode, Submode_t submode);
+  virtual void startTransition(Mode_t mode, Submode_t submode) override;
 
   void sendSerializablesAsCommandMessage(Command_t command, SerializeIF **elements, uint8_t count);
 

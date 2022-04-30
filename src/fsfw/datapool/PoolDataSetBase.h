@@ -109,7 +109,7 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
    */
   virtual ReturnValue_t unlockDataPool() override;
 
-  virtual uint16_t getFillCount() const;
+  virtual uint16_t getFillCount() const override;
 
   /* SerializeIF implementations */
   virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, const size_t maxSize,

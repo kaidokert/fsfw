@@ -332,6 +332,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
           -Warray-bounds=2 # Some array bounds violations will be found
           -Wshift-overflow=2 # Search for bit left shift overflows (<c++14)
           -Wcast-qual # Warn if the constness is cast away
+          -Winconsistent-missing-override
           -Wstringop-overflow=4
           # -Wstack-protector # Emits a few false positives for low level access
           # -Wconversion # Creates many false positives

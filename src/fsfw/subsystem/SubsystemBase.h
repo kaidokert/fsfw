@@ -123,7 +123,7 @@ class SubsystemBase : public SystemObject,
   virtual void performChildOperation() = 0;
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode) = 0;
+                                         uint32_t *msToReachTheMode) override = 0;
 
   virtual void startTransition(Mode_t mode, Submode_t submode) = 0;
 
