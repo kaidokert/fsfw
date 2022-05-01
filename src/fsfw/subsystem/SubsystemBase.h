@@ -125,13 +125,13 @@ class SubsystemBase : public SystemObject,
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
                                          uint32_t *msToReachTheMode) override = 0;
 
-  virtual void startTransition(Mode_t mode, Submode_t submode) = 0;
+  virtual void startTransition(Mode_t mode, Submode_t submode) override = 0;
 
   virtual void getMode(Mode_t *mode, Submode_t *submode) override;
 
   virtual void setToExternalControl() override;
 
-  virtual void announceMode(bool recursive);
+  virtual void announceMode(bool recursive) override;
 
   virtual void modeChanged();
 };

@@ -55,7 +55,7 @@ class ControllerBase : public HasModesIF,
   virtual void performControlOperation() = 0;
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode) = 0;
+                                         uint32_t *msToReachTheMode) override = 0;
 
   const object_id_t parentId;
 
@@ -80,9 +80,9 @@ class ControllerBase : public HasModesIF,
 
   /** Mode helpers */
   virtual void modeChanged(Mode_t mode, Submode_t submode);
-  virtual void startTransition(Mode_t mode, Submode_t submode);
-  virtual void getMode(Mode_t *mode, Submode_t *submode);
-  virtual void setToExternalControl();
+  virtual void startTransition(Mode_t mode, Submode_t submode) override;
+  virtual void getMode(Mode_t *mode, Submode_t *submode) override;
+  virtual void setToExternalControl() override;
   virtual void announceMode(bool recursive);
   /** HK helpers */
   virtual void changeHK(Mode_t mode, Submode_t submode, bool enable);

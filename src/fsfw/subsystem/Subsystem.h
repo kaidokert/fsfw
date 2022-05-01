@@ -129,7 +129,7 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
 
   virtual void performChildOperation() override;
 
-  virtual ReturnValue_t handleCommandMessage(CommandMessage *message);
+  virtual ReturnValue_t handleCommandMessage(CommandMessage *message) override;
 
   bool isFallbackSequence(Mode_t SequenceId);
 

@@ -21,11 +21,11 @@ class UdpTcPollingTask : public TcpIpBase, public SystemObject, public Executabl
  public:
   static constexpr size_t DEFAULT_MAX_RECV_SIZE = 1500;
   //! 0.5  default milliseconds timeout for now.
-  static constexpr timeval DEFAULT_TIMEOUT = {0, 500};
+  static const timeval DEFAULT_TIMEOUT;
 
   UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUdpBridge, size_t maxRecvSize = 0,
                    double timeoutSeconds = -1);
-  virtual ~UdpTcPollingTask();
+  ~UdpTcPollingTask() override = default;
 
   /**
    * Turn on optional timeout for UDP polling. In the default mode,
@@ -34,9 +34,9 @@ class UdpTcPollingTask : public TcpIpBase, public SystemObject, public Executabl
    */
   void setTimeout(double timeoutSeconds);
 
-  virtual ReturnValue_t performOperation(uint8_t opCode) override;
-  virtual ReturnValue_t initialize() override;
-  virtual ReturnValue_t initializeAfterTaskCreation() override;
+  [[noreturn]] ReturnValue_t performOperation(uint8_t opCode) override;
+  ReturnValue_t initialize() override;
+  ReturnValue_t initializeAfterTaskCreation() override;
 
  protected:
   StorageManagerIF* tcStore = nullptr;
@@ -51,7 +51,7 @@ class UdpTcPollingTask : public TcpIpBase, public SystemObject, public Executabl
   std::vector<uint8_t> receptionBuffer;
 
   size_t frameSize = 0;
-  timeval receptionTimeout;
+  timeval receptionTimeout{};
 
   ReturnValue_t handleSuccessfullTcRead(size_t bytesRead);
 };
