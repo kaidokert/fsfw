@@ -18,7 +18,7 @@ set(FSFW_ETL_LINK_TARGET etl::etl)
 set(FSFW_CATCH2_LIB_MAJOR_VERSION 3 CACHE STRING
     "Catch2 library major version requirement"
 )
-set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview4 CACHE STRING
+set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview5 CACHE STRING
     "Catch2 library exact version requirement"
 )
 
@@ -135,6 +135,7 @@ if(FSFW_FETCH_CONTENT_TARGETS)
     endif()
     if(TARGET Catch2)
         # Fixes regression -preview4, to be confirmed in later releases
+        # Related GitHub issue: https://github.com/catchorg/Catch2/issues/2417
         set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
     endif()
 endif()
