@@ -126,18 +126,18 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
 
   ReturnValue_t deleteTable(Mode_t id);
 
-  virtual void performChildOperation();
+  virtual void performChildOperation() override;
 
-  virtual ReturnValue_t handleCommandMessage(CommandMessage *message);
+  virtual ReturnValue_t handleCommandMessage(CommandMessage *message) override;
 
   bool isFallbackSequence(Mode_t SequenceId);
 
   bool isTableUsed(Mode_t tableId);
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode);
+                                         uint32_t *msToReachTheMode) override;
 
-  virtual void startTransition(Mode_t mode, Submode_t submode);
+  virtual void startTransition(Mode_t mode, Submode_t submode) override;
 
   void sendSerializablesAsCommandMessage(Command_t command, SerializeIF **elements, uint8_t count);
 
