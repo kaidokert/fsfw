@@ -10,9 +10,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
     "ETL library major version requirement"
 )
-set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.2 CACHE STRING
+set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.3 CACHE STRING
     "ETL library exact version requirement"
 )
+set(FSFW_ETL_LINK_TARGET etl::etl)
 
 set(FSFW_CATCH2_LIB_MAJOR_VERSION 3 CACHE STRING
     "Catch2 library major version requirement"
@@ -76,9 +77,7 @@ if(FSFW_BUILD_UNITTESTS)
             GIT_TAG        ${FSFW_CATCH2_LIB_VERSION}
         )
 
-        FetchContent_MakeAvailable(Catch2)
-        #fixes regression -preview4, to be confirmed in later releases
-        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
+        list(APPEND FSFW_FETCH_CONTENT_TARGETS Catch2)
     endif()
 
     set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
@@ -123,7 +122,21 @@ if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
         GIT_TAG        ${FSFW_ETL_LIB_VERSION}
     )
 
-    FetchContent_MakeAvailable(etl)
+    list(APPEND FSFW_FETCH_CONTENT_TARGETS ${FSFW_ETL_LIB_NAME})
+endif()
+
+# The documentation for FetchContent recommends declaring all the dependencies
+# before making them available. We make all declared dependency available here
+# after their declaration
+if(FSFW_FETCH_CONTENT_TARGETS)
+    FetchContent_MakeAvailable(${FSFW_FETCH_CONTENT_TARGETS})
+    if(TARGET ${FSFW_ETL_LIB_NAME})
+        add_library(${FSFW_ETL_LINK_TARGET} ALIAS ${FSFW_ETL_LIB_NAME})
+    endif()
+    if(TARGET Catch2)
+        # Fixes regression -preview4, to be confirmed in later releases
+        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
+    endif()
 endif()
 
 set(FSFW_CORE_INC_PATH "inc")
@@ -387,7 +400,7 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
 )
 
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
-    ${FSFW_ETL_LIB_NAME}
+    ${FSFW_ETL_LINK_TARGET}
     ${FSFW_ADDITIONAL_LINK_LIBS}
 )
 
