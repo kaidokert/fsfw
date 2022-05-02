@@ -51,9 +51,8 @@ class MonitorReporter : public HasParametersIF {
     return state;
   }
 
-  virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
-                                     ParameterWrapper *parameterWrapper,
-                                     const ParameterWrapper *newValues, uint16_t startAtIndex) {
+  ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId, ParameterWrapper *parameterWrapper,
+                             const ParameterWrapper *newValues, uint16_t startAtIndex) override {
     if (domainId != monitorId) {
       return INVALID_DOMAIN_ID;
     }

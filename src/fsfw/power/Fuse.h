@@ -63,13 +63,13 @@ class Fuse : public SystemObject,
                             SerializeIF::Endianness streamEndianness) override;
   void setAllMonitorsToUnchecked();
   ReturnValue_t performOperation(uint8_t opCode);
-  MessageQueueId_t getCommandQueue() const;
+  MessageQueueId_t getCommandQueue() const override;
   void setDataPoolEntriesInvalid();
-  ReturnValue_t setHealth(HealthState health);
-  HasHealthIF::HealthState getHealth();
+  ReturnValue_t setHealth(HealthState health) override;
+  HasHealthIF::HealthState getHealth() override;
 
   ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId, ParameterWrapper *parameterWrapper,
-                             const ParameterWrapper *newValues, uint16_t startAtIndex);
+                             const ParameterWrapper *newValues, uint16_t startAtIndex) override;
 
  private:
   uint8_t oldFuseState;
@@ -81,7 +81,7 @@ class Fuse : public SystemObject,
     template <typename... Args>
     PowerMonitor(Args... args) : MonitorReporter<float>(std::forward<Args>(args)...) {}
     ReturnValue_t checkPower(float sample, float lowerLimit, float upperLimit);
-    void sendTransitionEvent(float currentValue, ReturnValue_t state) {}
+    void sendTransitionEvent(float currentValue, ReturnValue_t state_) override {}
   };
   PowerMonitor powerMonitor;
   StaticLocalDataSet<3> set;

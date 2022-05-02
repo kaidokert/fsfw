@@ -7,7 +7,7 @@
 
 class PowerComponentIF : public SerializeIF, public HasParametersIF {
  public:
-  virtual ~PowerComponentIF() {}
+  ~PowerComponentIF() override = default;
 
   virtual object_id_t getDeviceObjectId() = 0;
 

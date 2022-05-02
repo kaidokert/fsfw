@@ -9,12 +9,15 @@
 
 class TcPacketStoredIF {
  public:
-  virtual ~TcPacketStoredIF(){};
+  virtual ~TcPacketStoredIF() = default;
+  ;
 
   /**
    * With this call, the stored packet can be set to another packet in a store. This is useful
    * if the packet is a class member and used for more than one packet.
    * @param setAddress    The new packet id to link to.
+   * @param packet        Explicit packet instance. The setData function should be called on this
+   * pointer
    */
   virtual void setStoreAddress(store_address_t setAddress, RedirectableDataPointerIF* packet) = 0;
 

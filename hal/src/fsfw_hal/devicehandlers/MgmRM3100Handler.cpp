@@ -329,9 +329,9 @@ ReturnValue_t MgmRM3100Handler::handleDataReadout(const uint8_t *packet) {
   int32_t fieldStrengthRawZ = ((packet[7] << 24) | (packet[8] << 16) | (packet[3] << 8)) >> 8;
 
   // Now scale to physical value in microtesla
-  float fieldStrengthX = fieldStrengthRawX * scaleFactorX;
-  float fieldStrengthY = fieldStrengthRawY * scaleFactorX;
-  float fieldStrengthZ = fieldStrengthRawZ * scaleFactorX;
+  float fieldStrengthX = static_cast<float>(fieldStrengthRawX) * scaleFactorX;
+  float fieldStrengthY = static_cast<float>(fieldStrengthRawY) * scaleFactorY;
+  float fieldStrengthZ = static_cast<float>(fieldStrengthRawZ) * scaleFactorZ;
 
   if (periodicPrintout) {
     if (debugDivider.checkAndIncrement()) {

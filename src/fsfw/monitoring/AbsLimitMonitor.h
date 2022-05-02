@@ -17,8 +17,8 @@ class AbsLimitMonitor : public MonitorBase<T> {
         limit(limit),
         violationEvent(violationEvent),
         aboveIsViolation(aboveIsViolation) {}
-  virtual ~AbsLimitMonitor() {}
-  virtual ReturnValue_t checkSample(T sample, T *crossedLimit) {
+  virtual ~AbsLimitMonitor() = default;
+  ReturnValue_t checkSample(T sample, T *crossedLimit) override {
     *crossedLimit = limit;
     if (aboveIsViolation) {
       if ((std::abs(sample) > limit)) {
@@ -32,9 +32,9 @@ class AbsLimitMonitor : public MonitorBase<T> {
     return HasReturnvaluesIF::RETURN_OK;  // We're not out of range.
   }
 
-  virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
-                                     ParameterWrapper *parameterWrapper,
-                                     const ParameterWrapper *newValues, uint16_t startAtIndex) {
+  ReturnValue_t getParameter(uint8_t domainId, uint8_t parameterId,
+                             ParameterWrapper *parameterWrapper, const ParameterWrapper *newValues,
+                             uint16_t startAtIndex) override {
     ReturnValue_t result = this->MonitorBase<T>::getParameter(
         domainId, parameterId, parameterWrapper, newValues, startAtIndex);
     // We'll reuse the DOMAIN_ID of MonitorReporter,
@@ -61,7 +61,7 @@ class AbsLimitMonitor : public MonitorBase<T> {
   void setLimit(T value) { limit = value; }
 
  protected:
-  void sendTransitionEvent(T currentValue, ReturnValue_t state) {
+  void sendTransitionEvent(T currentValue, ReturnValue_t state) override {
     switch (state) {
       case MonitoringIF::OUT_OF_RANGE:
         EventManagerIF::triggerEvent(this->reportingId, violationEvent, this->globalPoolId.objectId,

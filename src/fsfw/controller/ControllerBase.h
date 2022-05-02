@@ -80,10 +80,10 @@ class ControllerBase : public HasModesIF,
 
   /** Mode helpers */
   virtual void modeChanged(Mode_t mode, Submode_t submode);
-  virtual void startTransition(Mode_t mode, Submode_t submode) override;
-  virtual void getMode(Mode_t *mode, Submode_t *submode) override;
-  virtual void setToExternalControl() override;
-  virtual void announceMode(bool recursive);
+  void startTransition(Mode_t mode, Submode_t submode) override;
+  void getMode(Mode_t *mode, Submode_t *submode) override;
+  void setToExternalControl() override;
+  void announceMode(bool recursive) override;
   /** HK helpers */
   virtual void changeHK(Mode_t mode, Submode_t submode, bool enable);
 };

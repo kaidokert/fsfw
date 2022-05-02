@@ -17,8 +17,6 @@ MgmLIS3MDLHandler::MgmLIS3MDLHandler(object_id_t objectId, object_id_t deviceCom
   registers[4] = MGMLIS3MDL::CTRL_REG5_DEFAULT;
 }
 
-MgmLIS3MDLHandler::~MgmLIS3MDLHandler() {}
-
 void MgmLIS3MDLHandler::doStartUp() {
   switch (internalState) {
     case (InternalState::STATE_NONE): {
@@ -90,7 +88,7 @@ ReturnValue_t MgmLIS3MDLHandler::buildTransitionDeviceCommand(DeviceCommandId_t 
 
 uint8_t MgmLIS3MDLHandler::readCommand(uint8_t command, bool continuousCom) {
   command |= (1 << MGMLIS3MDL::RW_BIT);
-  if (continuousCom == true) {
+  if (continuousCom) {
     command |= (1 << MGMLIS3MDL::MS_BIT);
   }
   return command;
@@ -98,7 +96,7 @@ uint8_t MgmLIS3MDLHandler::readCommand(uint8_t command, bool continuousCom) {
 
 uint8_t MgmLIS3MDLHandler::writeCommand(uint8_t command, bool continuousCom) {
   command &= ~(1 << MGMLIS3MDL::RW_BIT);
-  if (continuousCom == true) {
+  if (continuousCom) {
     command |= (1 << MGMLIS3MDL::MS_BIT);
   }
   return command;

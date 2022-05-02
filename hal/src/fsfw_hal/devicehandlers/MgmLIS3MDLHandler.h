@@ -28,7 +28,7 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
 
   MgmLIS3MDLHandler(uint32_t objectId, object_id_t deviceCommunication, CookieIF *comCookie,
                     uint32_t transitionDelay);
-  virtual ~MgmLIS3MDLHandler();
+  ~MgmLIS3MDLHandler() override = default;
 
   void enablePeriodicPrintouts(bool enable, uint8_t divider);
   /**
@@ -46,7 +46,7 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
   void doShutDown() override;
   void doStartUp() override;
   void doTransition(Mode_t modeFrom, Submode_t subModeFrom) override;
-  virtual uint32_t getTransitionDelayMs(Mode_t from, Mode_t to) override;
+  uint32_t getTransitionDelayMs(Mode_t from, Mode_t to) override;
   ReturnValue_t buildCommandFromCommand(DeviceCommandId_t deviceCommand, const uint8_t *commandData,
                                         size_t commandDataLen) override;
   ReturnValue_t buildTransitionDeviceCommand(DeviceCommandId_t *id) override;
@@ -60,9 +60,9 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
    * @param packet
    * @return
    */
-  virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id, const uint8_t *packet) override;
+  ReturnValue_t interpretDeviceReply(DeviceCommandId_t id, const uint8_t *packet) override;
   void fillCommandAndReplyMap() override;
-  void modeChanged(void) override;
+  void modeChanged() override;
   ReturnValue_t initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                         LocalDataPoolManager &poolManager) override;
 
@@ -72,8 +72,6 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
   static const uint8_t SINGLE_COMMAND_ANSWER_LEN = 2;
 
   uint32_t transitionDelay;
-  // Single SPI command has 2 bytes, first for adress, second for content
-  size_t singleComandSize = 2;
   // Has the size for all adresses of the lis3mdl + the continous write bit
   uint8_t commandBuffer[MGMLIS3MDL::NR_OF_DATA_AND_CFG_REGISTERS + 1];
 
@@ -88,7 +86,6 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
    */
   uint8_t registers[MGMLIS3MDL::NR_OF_CTRL_REGISTERS];
 
-  uint8_t statusRegister = 0;
   bool goToNormalMode = false;
 
   enum class InternalState {
@@ -111,14 +108,14 @@ class MgmLIS3MDLHandler : public DeviceHandlerBase {
    * @param single command to set the read-bit at
    * @param boolean to select a continuous read bit, default = false
    */
-  uint8_t readCommand(uint8_t command, bool continuousCom = false);
+  static uint8_t readCommand(uint8_t command, bool continuousCom = false);
 
   /**
    * Sets the write bit for the command
    * @param single command to set the write-bit at
    * @param boolean to select a continuous write bit, default = false
    */
-  uint8_t writeCommand(uint8_t command, bool continuousCom = false);
+  static uint8_t writeCommand(uint8_t command, bool continuousCom = false);
 
   /**
    * This Method gets the full scale for the measurement range

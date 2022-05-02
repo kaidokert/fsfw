@@ -11,11 +11,11 @@ class CFDPPacket : public SpacePacketBase {
    * forwards the data pointer to the parent SpacePacketBase class.
    * @param setData	The position where the packet data lies.
    */
-  CFDPPacket(const uint8_t* setData);
+  explicit CFDPPacket(const uint8_t* setData);
   /**
    * This is the empty default destructor.
    */
-  virtual ~CFDPPacket();
+  ~CFDPPacket() override;
 
   /**
    * This is a debugging helper method that prints the whole packet content

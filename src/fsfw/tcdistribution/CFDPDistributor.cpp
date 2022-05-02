@@ -29,11 +29,11 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
                   storeId.packetIndex);
 #endif
 #endif
-  TcMqMapIter queueMapIt = this->queueMap.end();
+  auto queueMapIt = this->queueMap.end();
   if (this->currentPacket == nullptr) {
     return queueMapIt;
   }
-  this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
+  this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
   if (currentPacket->getWholeData() != nullptr) {
     tcStatus = checker.checkPacket(currentPacket);
     if (tcStatus != HasReturnvaluesIF::RETURN_OK) {

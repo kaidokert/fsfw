@@ -16,10 +16,10 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
    * Create stored packet from existing packet in store
    * @param setAddress
    */
-  CFDPPacketStored(store_address_t setAddress);
+  explicit CFDPPacketStored(store_address_t setAddress);
   CFDPPacketStored();
 
-  virtual ~CFDPPacketStored();
+  ~CFDPPacketStored() override;
 
   /**
    * Getter function for the raw data.
@@ -27,16 +27,16 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
    * @param dataSize [out] Address of size to set.
    * @return -@c RETURN_OK if data was retrieved successfully.
    */
-  ReturnValue_t getData(const uint8_t** dataPtr, size_t* dataSize);
+  ReturnValue_t getData(const uint8_t** dataPtr, size_t* dataSize) override;
 
-  void setStoreAddress(store_address_t setAddress);
+  void setStoreAddress(store_address_t setAddress, RedirectableDataPointerIF* packet) override;
 
-  store_address_t getStoreAddress();
+  store_address_t getStoreAddress() override;
 
-  ReturnValue_t deletePacket();
+  ReturnValue_t deletePacket() override;
 
  private:
-  bool isSizeCorrect();
+  bool isSizeCorrect() override;
 
  protected:
   /**
@@ -45,7 +45,7 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
    * call tries to set it and throws an error message in case of failures.
    * The default store is objects::TC_STORE.
    */
-  static StorageManagerIF* store;
+  static StorageManagerIF* STORE;
   /**
    * The address where the packet data of the object instance is stored.
    */
@@ -57,7 +57,7 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
    * @return  @li @c true if the store is linked or could be created.
    *          @li @c false otherwise.
    */
-  bool checkAndSetStore();
+  bool checkAndSetStore() override;
 };
 
 #endif /* FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_ */

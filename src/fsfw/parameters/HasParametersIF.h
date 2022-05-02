@@ -51,7 +51,7 @@ class HasParametersIF {
     return (domainId << 24) + (uniqueId << 16) + linearIndex;
   }
 
-  virtual ~HasParametersIF() {}
+  virtual ~HasParametersIF() = default;
 
   /**
    * This is the generic function overriden by child classes to set

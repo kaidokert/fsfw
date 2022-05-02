@@ -36,7 +36,7 @@ class HasHealthIF {
       12,
       severity::MEDIUM);  //!< Recovery was completed. Not necessarily successful. No parameters.
 
-  virtual ~HasHealthIF() {}
+  virtual ~HasHealthIF() = default;
 
   virtual MessageQueueId_t getCommandQueue() const = 0;
 

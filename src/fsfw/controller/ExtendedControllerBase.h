@@ -39,12 +39,12 @@ class ExtendedControllerBase : public ControllerBase,
    * @param message
    * @return
    */
-  virtual ReturnValue_t handleCommandMessage(CommandMessage* message) = 0;
+  virtual ReturnValue_t handleCommandMessage(CommandMessage* message) override = 0;
 
   /**
    * Periodic helper from ControllerBase, implemented by child class.
    */
-  virtual void performControlOperation() = 0;
+  virtual void performControlOperation() override = 0;
 
   /* Handle the four messages mentioned above */
   void handleQueue() override;

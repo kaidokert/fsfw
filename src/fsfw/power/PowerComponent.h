@@ -10,15 +10,15 @@ class PowerComponent : public PowerComponentIF {
   PowerComponent(object_id_t setId, uint8_t moduleId, float minPower, float maxPower,
                  uint8_t switchId1, bool twoSwitches = false, uint8_t switchId2 = 0xFF);
 
-  virtual object_id_t getDeviceObjectId();
+  object_id_t getDeviceObjectId() override;
 
-  virtual uint8_t getSwitchId1();
-  virtual uint8_t getSwitchId2();
+  uint8_t getSwitchId1() override;
+  uint8_t getSwitchId2() override;
 
-  bool hasTwoSwitches();
+  bool hasTwoSwitches() override;
 
-  float getMin();
-  float getMax();
+  float getMin() override;
+  float getMax() override;
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
@@ -29,7 +29,7 @@ class PowerComponent : public PowerComponentIF {
                             Endianness streamEndianness) override;
 
   ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId, ParameterWrapper* parameterWrapper,
-                             const ParameterWrapper* newValues, uint16_t startAtIndex);
+                             const ParameterWrapper* newValues, uint16_t startAtIndex) override;
 
  private:
   const object_id_t deviceObjectId = objects::NO_OBJECT;

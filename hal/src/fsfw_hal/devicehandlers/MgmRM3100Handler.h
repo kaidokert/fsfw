@@ -72,7 +72,6 @@ class MgmRM3100Handler : public DeviceHandlerBase {
   RM3100::Rm3100PrimaryDataset primaryDataset;
 
   uint8_t commandBuffer[10];
-  uint8_t commandBufferLen = 0;
 
   uint8_t cmmRegValue = RM3100::CMM_VALUE;
   uint8_t tmrcRegValue = RM3100::TMRC_DEFAULT_VALUE;
@@ -100,4 +99,4 @@ class MgmRM3100Handler : public DeviceHandlerBase {
   PeriodicOperationDivider debugDivider = PeriodicOperationDivider(3);
 };
 
-#endif /* MISSION_DEVICEHANDLING_MGMRM3100HANDLER_H_ */
+#endif /* MISSION_DEVICES_MGMRM3100HANDLER_H_ */

@@ -207,13 +207,11 @@ class DeviceHandlerBase : public DeviceHandlerIF,
 
   Mode_t getTransitionSourceMode() const;
   Submode_t getTransitionSourceSubMode() const;
-  virtual void getMode(Mode_t *mode, Submode_t *submode);
-  HealthState getHealth();
-  ReturnValue_t setHealth(HealthState health);
-  virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
-                                     ParameterWrapper *parameterWrapper,
-                                     const ParameterWrapper *newValues,
-                                     uint16_t startAtIndex) override;
+  void getMode(Mode_t *mode, Submode_t *submode) override;
+  HealthState getHealth() override;
+  ReturnValue_t setHealth(HealthState health) override;
+  ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId, ParameterWrapper *parameterWrapper,
+                             const ParameterWrapper *newValues, uint16_t startAtIndex) override;
 
  protected:
   /**
@@ -1042,11 +1040,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   bool isAwaitingReply();
 
   void handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t replyId, bool forceDirectTm = false);
-  //	void handleDeviceTM(uint8_t* data, size_t dataSize, DeviceCommandId_t replyId,
-  //	        bool forceDirectTm);
 
-  virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode);
+  ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
+                                 uint32_t *msToReachTheMode) override;
 
   virtual ReturnValue_t letChildHandleMessage(CommandMessage *message);
 
@@ -1062,7 +1058,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   /**
    * Same as triggerEvent, but for forwarding if object is used as proxy.
    */
-  virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const override;
+  void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const override;
 
   /**
    * Checks if current mode is transitional mode.

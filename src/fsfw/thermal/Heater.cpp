@@ -190,13 +190,13 @@ ReturnValue_t Heater::performOperation(uint8_t opCode) {
 }
 
 void Heater::setSwitch(uint8_t number, ReturnValue_t state, uint32_t* uptimeOfSwitching) {
-  if (powerSwitcher == NULL) {
+  if (powerSwitcher == nullptr) {
     return;
   }
   if (powerSwitcher->getSwitchState(number) == state) {
     *uptimeOfSwitching = INVALID_UPTIME;
   } else {
-    if ((*uptimeOfSwitching == INVALID_UPTIME)) {
+    if (*uptimeOfSwitching == INVALID_UPTIME) {
       powerSwitcher->sendSwitchCommand(number, state);
       Clock::getUptime(uptimeOfSwitching);
     } else {

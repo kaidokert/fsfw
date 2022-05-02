@@ -19,7 +19,7 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    * Constructor to set to an existing store address.
    * @param setAddress
    */
-  TcPacketStoredBase(store_address_t setAddress);
+  explicit TcPacketStoredBase(store_address_t setAddress);
   /**
    * Another constructor to create a TcPacket from a raw packet stream.
    * Takes the data and adds it unchecked to the TcStore.
@@ -70,14 +70,16 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    * The address where the packet data of the object instance is stored.
    */
   store_address_t storeAddress;
-  /**
-   * A helper method to check if a store is assigned to the class.
-   * If not, the method tries to retrieve the store from the global
-   * ObjectManager.
-   * @return  @li @c true if the store is linked or could be created.
-   *          @li @c false otherwise.
-   */
-  bool checkAndSetStore();
+
+  virtual /**
+           * A helper method to check if a store is assigned to the class.
+           * If not, the method tries to retrieve the store from the global
+           * ObjectManager.
+           * @return  @li @c true if the store is linked or could be created.
+           *          @li @c false otherwise.
+           */
+      bool
+      checkAndSetStore();
 };
 
 #endif /* TMTCPACKET_PUS_TcPacketStoredBase_H_ */
