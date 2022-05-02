@@ -10,15 +10,15 @@ StorageAccessor::StorageAccessor(store_address_t storeId) : ConstStorageAccessor
 StorageAccessor::StorageAccessor(store_address_t storeId, StorageManagerIF* store)
     : ConstStorageAccessor(storeId, store) {}
 
-StorageAccessor& StorageAccessor::operator=(StorageAccessor&& other) {
+StorageAccessor& StorageAccessor::operator=(StorageAccessor&& other) noexcept {
   // Call the parent move assignment and also assign own member.
   dataPointer = other.dataPointer;
-  StorageAccessor::operator=(std::move(other));
+  ConstStorageAccessor::operator=(std::move(other));
   return *this;
 }
 
 // Call the parent move ctor and also transfer own member.
-StorageAccessor::StorageAccessor(StorageAccessor&& other)
+StorageAccessor::StorageAccessor(StorageAccessor&& other) noexcept
     : ConstStorageAccessor(std::move(other)), dataPointer(other.dataPointer) {}
 
 ReturnValue_t StorageAccessor::getDataCopy(uint8_t* pointer, size_t maxSize) {

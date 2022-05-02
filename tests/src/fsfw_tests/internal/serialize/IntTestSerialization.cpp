@@ -147,8 +147,9 @@ ReturnValue_t testserialize::test_autoserialization() {
   }
 
   // These epsilon values were just guessed.. It appears to work though.
-  if (abs(tv_float - tv::tv_float) > 0.0001 or abs(tv_double - tv::tv_double) > 0.01 or
-      abs(tv_sfloat - tv::tv_sfloat) > 0.0001 or abs(tv_sdouble - tv::tv_sdouble) > 0.01) {
+  if (std::abs(tv_float - tv::tv_float) > 0.0001 or std::abs(tv_double - tv::tv_double) > 0.01 or
+      std::abs(tv_sfloat - tv::tv_sfloat) > 0.0001 or
+      std::abs(tv_sdouble - tv::tv_sdouble) > 0.01) {
     return unitt::put_error(id);
   }
 
