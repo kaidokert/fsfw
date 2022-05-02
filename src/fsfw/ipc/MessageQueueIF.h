@@ -1,6 +1,8 @@
 #ifndef FSFW_IPC_MESSAGEQUEUEIF_H_
 #define FSFW_IPC_MESSAGEQUEUEIF_H_
 
+#include <fsfw/ipc/definitions.h>
+
 #include <cstdint>
 
 #include "../returnvalues/HasReturnvaluesIF.h"
@@ -44,8 +46,8 @@ class MessageQueueIF {
   virtual ReturnValue_t reply(MessageQueueMessageIF* message) = 0;
 
   /**
-   * @brief	This function reads available messages from the message queue
-   *          and returns the sender.
+   * @brief	This function reads available messages from the message queue and returns the
+   * sender.
    * @details
    * It works identically to the other receiveMessage call, but in addition
    * returns the sender's queue id.
@@ -78,19 +80,16 @@ class MessageQueueIF {
    */
   virtual ReturnValue_t flush(uint32_t* count) = 0;
   /**
-   * @brief	This method returns the message queue
-   *          id of the last communication partner.
+   * @brief	This method returns the message queue ID of the last communication partner.
    */
   virtual MessageQueueId_t getLastPartner() const = 0;
   /**
-   * @brief	This method returns the message queue
-   *          id of this class's message queue.
+   * @brief	This method returns the message queue ID  of this class's message queue.
    */
   virtual MessageQueueId_t getId() const = 0;
 
   /**
-   * @brief	With the sendMessage call, a queue message
-   *          is sent to a receiving queue.
+   * @brief	With the sendMessage call, a queue message is sent to a receiving queue.
    * @details
    * This method takes the message provided, adds the sentFrom information
    * and passes it on to the destination provided with an operating system
@@ -129,8 +128,7 @@ class MessageQueueIF {
                                     bool ignoreFault = false) = 0;
 
   /**
-   * @brief	The sendToDefaultFrom method sends a queue message
-   *          to the default destination.
+   * @brief	The sendToDefaultFrom method sends a queue message to the default destination.
    * @details
    * In all other aspects, it works identical to the sendMessage method.
    * @param message
@@ -164,6 +162,8 @@ class MessageQueueIF {
   virtual MessageQueueId_t getDefaultDestination() const = 0;
 
   virtual bool isDefaultDestinationSet() const = 0;
+
+  virtual MqArgs& getMqArgs() = 0;
 };
 
 #endif /* FSFW_IPC_MESSAGEQUEUEIF_H_ */

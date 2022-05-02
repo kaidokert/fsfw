@@ -7,6 +7,22 @@ set(FSFW_REVISION 0)
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
+    "ETL library major version requirement"
+)
+set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.2 CACHE STRING
+    "ETL library exact version requirement"
+)
+
+set(FSFW_CATCH2_LIB_MAJOR_VERSION 3 CACHE STRING
+    "Catch2 library major version requirement"
+)
+set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview4 CACHE STRING
+    "Catch2 library exact version requirement"
+)
+
+set(FSFW_ETL_LIB_NAME etl)
+
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
 )
@@ -48,15 +64,16 @@ add_library(${LIB_FSFW_NAME})
 if(FSFW_BUILD_UNITTESTS)
     message(STATUS "Building the FSFW unittests in addition to the static library")
     # Check whether the user has already installed Catch2 first
-    find_package(Catch2 3)
+    find_package(Catch2 ${FSFW_CATCH2_LIB_MAJOR_VERSION})
     # Not installed, so use FetchContent to download and provide Catch2
     if(NOT Catch2_FOUND)
+        message(STATUS "Catch2 installation not found. Downloading Catch2 library with FetchContent")
         include(FetchContent)
 
         FetchContent_Declare(
             Catch2
             GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG        v3.0.0-preview4
+            GIT_TAG        ${FSFW_CATCH2_LIB_VERSION}
         )
 
         FetchContent_MakeAvailable(Catch2)
@@ -86,6 +103,27 @@ if(FSFW_BUILD_UNITTESTS)
         list(APPEND CMAKE_MODULE_PATH ${cmake-modules_SOURCE_DIR})
         include(CodeCoverage)
     endif()
+endif()
+
+message(STATUS "Finding and/or providing ETL library")
+
+# Check whether the user has already installed ETL first
+find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
+# Not installed, so use FetchContent to download and provide etl
+if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
+    message(STATUS
+        "No ETL installation was found with find_package. Installing and providing "
+        "etl with FindPackage"
+    )
+    include(FetchContent)
+
+    FetchContent_Declare(
+        ${FSFW_ETL_LIB_NAME}
+        GIT_REPOSITORY https://github.com/ETLCPP/etl
+        GIT_TAG        ${FSFW_ETL_LIB_VERSION}
+    )
+
+    FetchContent_MakeAvailable(etl)
 endif()
 
 set(FSFW_CORE_INC_PATH "inc")
@@ -349,6 +387,7 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
 )
 
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+    ${FSFW_ETL_LIB_NAME}
     ${FSFW_ADDITIONAL_LINK_LIBS}
 )
 

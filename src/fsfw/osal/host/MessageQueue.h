@@ -5,9 +5,11 @@
 #include <queue>
 
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
+#include "fsfw/ipc/MessageQueueBase.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/ipc/MutexIF.h"
+#include "fsfw/ipc/definitions.h"
 #include "fsfw/timemanager/Clock.h"
 
 /**
@@ -33,7 +35,7 @@
  * @ingroup osal
  * @ingroup message_queue
  */
-class MessageQueue : public MessageQueueIF {
+class MessageQueue : public MessageQueueBase {
   friend class MessageQueueSenderIF;
 
  public:
@@ -54,7 +56,8 @@ class MessageQueue : public MessageQueueIF {
    * This should be left default.
    */
   MessageQueue(size_t messageDepth = 3,
-               size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE);
+               size_t maxMessageSize = MessageQueueMessage::MAX_MESSAGE_SIZE,
+               MqArgs* args = nullptr);
 
   /** Copying message queues forbidden */
   MessageQueue(const MessageQueue&) = delete;
@@ -67,121 +70,12 @@ class MessageQueue : public MessageQueueIF {
    */
   virtual ~MessageQueue();
 
-  /**
-   * @brief	This operation sends a message to the given destination.
-   * @details	It directly uses the sendMessage call of the MessageQueueSender
-   * parent, but passes its queue id as "sentFrom" parameter.
-   * @param sendTo	This parameter specifies the message queue id of the
-   *  destination message queue.
-   * @param message	A pointer to a previously created message, which is sent.
-   * @param ignoreFault If set to true, the internal software fault counter
-   * is not incremented if queue is full.
-   */
-  ReturnValue_t sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                            bool ignoreFault = false) override;
-  /**
-   * @brief	This operation sends a message to the default destination.
-   * @details	As in the sendMessage method, this function uses the
-   * sendToDefault call of the MessageQueueSender parent class and adds its
-   * queue id as "sentFrom" information.
-   * @param message	A pointer to a previously created message, which is sent.
-   */
-  ReturnValue_t sendToDefault(MessageQueueMessageIF* message) override;
-  /**
-   * @brief	This operation sends a message to the last communication partner.
-   * @details	This operation simplifies answering an incoming message by using
-   * the stored lastPartner information as destination. If there was no
-   * message received yet (i.e. lastPartner is zero), an error code is returned.
-   * @param message	A pointer to a previously created message, which is sent.
-   */
-  ReturnValue_t reply(MessageQueueMessageIF* message) override;
-
-  /**
-   * @brief	With the sendMessage call, a queue message is sent to a
-   * 			receiving queue.
-   * @details
-   * This method takes the message provided, adds the sentFrom information and
-   * passes it on to the destination provided with an operating system call.
-   *  The OS's return value is returned.
-   * @param sendTo	This parameter specifies the message queue id to send
-   * the message to.
-   * @param message	This is a pointer to a previously created message,
-   * which is sent.
-   * @param sentFrom	The sentFrom information can be set to inject the
-   * sender's queue id into the message. This variable is set to zero by
-   * default.
-   * @param ignoreFault If set to true, the internal software fault counter
-   * is not incremented if queue is full.
-   */
+  // Implement non-generic MessageQueueIF functions not handled by MessageQueueBase
   virtual ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                         MessageQueueId_t sentFrom = NO_QUEUE,
                                         bool ignoreFault = false) override;
-
-  /**
-   * @brief	The sendToDefault method sends a queue message to the default
-   * 			destination.
-   * @details
-   * In all other aspects, it works identical to the sendMessage method.
-   * @param message	This is a pointer to a previously created message,
-   * which is sent.
-   * @param sentFrom	The sentFrom information can be set to inject the
-   * sender's queue id into the message. This variable is set to zero by
-   * default.
-   */
-  virtual ReturnValue_t sendToDefaultFrom(MessageQueueMessageIF* message,
-                                          MessageQueueId_t sentFrom = NO_QUEUE,
-                                          bool ignoreFault = false) override;
-
-  /**
-   * @brief	This function reads available messages from the message queue
-   * 			and returns the sender.
-   * @details
-   * It works identically to the other receiveMessage call, but in  addition
-   * returns the sender's queue id.
-   * @param message	A pointer to a message in which the received data is stored.
-   * @param receivedFrom	A pointer to a queue id in which the sender's id is stored.
-   */
-  ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
-                               MessageQueueId_t* receivedFrom) override;
-
-  /**
-   * @brief	This function reads available messages from the message queue.
-   * @details
-   * If data is available it is stored in the passed message pointer.
-   * The message's original content is overwritten and the sendFrom
-   * information is stored in the lastPartner attribute. Else, the lastPartner
-   * information remains untouched, the message's content is cleared and the
-   * function returns immediately.
-   * @param message	A pointer to a message in which the received data is stored.
-   */
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
-  /**
-   * Deletes all pending messages in the queue.
-   * @param count The number of flushed messages.
-   * @return RETURN_OK on success.
-   */
   ReturnValue_t flush(uint32_t* count) override;
-  /**
-   * @brief	This method returns the message queue id of the last
-   * 			communication partner.
-   */
-  MessageQueueId_t getLastPartner() const override;
-  /**
-   * @brief	This method returns the message queue id of this class's
-   * 			message queue.
-   */
-  MessageQueueId_t getId() const override;
-
-  /**
-   * @brief	This method is a simple setter for the default destination.
-   */
-  void setDefaultDestination(MessageQueueId_t defaultDestination) override;
-  /**
-   * @brief	This method is a simple getter for the default destination.
-   */
-  MessageQueueId_t getDefaultDestination() const override;
-
-  bool isDefaultDestinationSet() const override;
 
   ReturnValue_t lockQueue(MutexIF::TimeoutType timeoutType, dur_millis_t lockTimeout);
   ReturnValue_t unlockQueue();
@@ -211,23 +105,14 @@ class MessageQueue : public MessageQueueIF {
                                                    MessageQueueId_t sentFrom = NO_QUEUE,
                                                    bool ignoreFault = false);
 
-  // static ReturnValue_t handleSendResult(BaseType_t result, bool ignoreFault);
-
  private:
   std::queue<std::vector<uint8_t>> messageQueue;
-  /**
-   * @brief	The class stores the queue id it got assigned.
-   * 			If initialization fails, the queue id is set to zero.
-   */
-  MessageQueueId_t mqId = MessageQueueIF::NO_QUEUE;
   size_t messageSize = 0;
   size_t messageDepth = 0;
 
   MutexIF* queueLock;
 
-  bool defaultDestinationSet = false;
   MessageQueueId_t defaultDestination = MessageQueueIF::NO_QUEUE;
-  MessageQueueId_t lastPartner = MessageQueueIF::NO_QUEUE;
 };
 
 #endif /* FRAMEWORK_OSAL_HOST_MESSAGEQUEUE_H_ */
