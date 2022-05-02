@@ -19,6 +19,8 @@
 #include <ws2tcpip.h>
 #elif defined(PLATFORM_UNIX)
 #include <netdb.h>
+
+#include <utility>
 #endif
 
 const std::string TcpTmTcServer::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_PORT;
@@ -29,7 +31,7 @@ TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
     : SystemObject(objectId),
       tmtcBridgeId(tmtcTcpBridge),
       receptionMode(receptionMode),
-      tcpConfig(customTcpServerPort),
+      tcpConfig(std::move(customTcpServerPort)),
       receptionBuffer(receptionBufferSize),
       ringBuffer(ringBufferSize, true) {}
 

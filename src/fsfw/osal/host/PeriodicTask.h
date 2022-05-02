@@ -126,7 +126,7 @@ class PeriodicTask : public PeriodicTaskIF {
    */
   void taskFunctionality(void);
 
-  bool delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval);
+  static bool delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval);
 };
 
 #endif /* PERIODICTASK_H_ */

@@ -39,7 +39,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * @brief   Currently, the executed object's lifetime is not coupled with
    *          the task object's lifetime, so the destructor is empty.
    */
-  virtual ~FixedTimeslotTask(void);
+  ~FixedTimeslotTask() override;
 
   /**
    * @brief   The method to start the task.
@@ -48,7 +48,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    *          The address of the task object is passed as an argument
    *          to the system call.
    */
-  ReturnValue_t startTask(void);
+  ReturnValue_t startTask() override;
 
   /**
    * Add timeslot to the polling sequence table.
@@ -57,13 +57,14 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * @param executionStep
    * @return
    */
-  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs, int8_t executionStep);
+  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
+                        int8_t executionStep) override;
 
   ReturnValue_t checkSequence() const override;
 
-  uint32_t getPeriodMs() const;
+  uint32_t getPeriodMs() const override;
 
-  ReturnValue_t sleepFor(uint32_t ms);
+  ReturnValue_t sleepFor(uint32_t ms) override;
 
  protected:
   using chron_ms = std::chrono::milliseconds;

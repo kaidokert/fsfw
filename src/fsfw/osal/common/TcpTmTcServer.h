@@ -17,6 +17,7 @@
 #endif
 
 #include <string>
+#include <utility>
 #include <vector>
 
 class TcpTmTcBridge;
@@ -44,7 +45,7 @@ class TcpTmTcServer : public SystemObject, public TcpIpBase, public ExecutableOb
 
   struct TcpConfig {
    public:
-    TcpConfig(std::string tcpPort) : tcpPort(tcpPort) {}
+    TcpConfig(std::string tcpPort) : tcpPort(std::move(tcpPort)) {}
 
     /**
      * Passed to the recv call
@@ -84,7 +85,7 @@ class TcpTmTcServer : public SystemObject, public TcpIpBase, public ExecutableOb
                 size_t ringBufferSize = RING_BUFFER_SIZE,
                 std::string customTcpServerPort = DEFAULT_SERVER_PORT,
                 ReceptionModes receptionMode = ReceptionModes::SPACE_PACKETS);
-  virtual ~TcpTmTcServer();
+  ~TcpTmTcServer() override;
 
   void enableWiretapping(bool enable);
 

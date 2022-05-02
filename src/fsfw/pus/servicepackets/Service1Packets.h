@@ -69,7 +69,7 @@ class FailureReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 2, 4, 6
     return result;
   }
 
-  virtual size_t getSerializedSize() const {
+  size_t getSerializedSize() const override {
     size_t size = 0;
     size += SerializeAdapter::getSerializedSize(&packetId);
     size += sizeof(packetSequenceControl);

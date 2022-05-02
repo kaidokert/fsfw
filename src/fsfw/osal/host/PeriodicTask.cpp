@@ -33,7 +33,7 @@ PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStack
   tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
-PeriodicTask::~PeriodicTask(void) {
+PeriodicTask::~PeriodicTask() {
   // Do not delete objects, we were responsible for ptrs only.
   terminateThread = true;
   if (mainThread.joinable()) {
@@ -42,7 +42,7 @@ PeriodicTask::~PeriodicTask(void) {
 }
 
 void PeriodicTask::taskEntryPoint(void* argument) {
-  PeriodicTask* originalTask(reinterpret_cast<PeriodicTask*>(argument));
+  auto* originalTask(reinterpret_cast<PeriodicTask*>(argument));
 
   if (not originalTask->started) {
     // we have to suspend/block here until the task is started.
@@ -82,7 +82,6 @@ void PeriodicTask::taskFunctionality() {
   std::chrono::milliseconds periodChrono(static_cast<uint32_t>(period * 1000));
   auto currentStartTime{std::chrono::duration_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now().time_since_epoch())};
-  auto nextStartTime{currentStartTime};
 
   /* Enter the loop that defines the task behavior. */
   for (;;) {
@@ -101,7 +100,7 @@ void PeriodicTask::taskFunctionality() {
 }
 
 ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-  ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
+  auto* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
   return addComponent(newObject);
 }
 
@@ -114,7 +113,7 @@ ReturnValue_t PeriodicTask::addComponent(ExecutableObjectIF* object) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-uint32_t PeriodicTask::getPeriodMs() const { return period * 1000; }
+uint32_t PeriodicTask::getPeriodMs() const { return static_cast<uint32_t>(period * 1000); }
 
 bool PeriodicTask::delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval) {
   bool shouldDelay = false;

@@ -55,7 +55,7 @@ class HousekeepingSnapshot : public SerializeIF {
       : timeStamp(timeStamp), timeStampSize(timeStampSize), updateData(dataSetPtr){};
 
   virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
-                                  Endianness streamEndianness) const {
+                                  Endianness streamEndianness) const override {
     if (timeStamp != nullptr) {
       /* Endianness will always be MACHINE, so we can simply use memcpy
       here. */
@@ -70,7 +70,7 @@ class HousekeepingSnapshot : public SerializeIF {
     return updateData->serialize(buffer, size, maxSize, streamEndianness);
   }
 
-  virtual size_t getSerializedSize() const {
+  virtual size_t getSerializedSize() const override {
     if (updateData == nullptr) {
       return 0;
     }
