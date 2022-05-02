@@ -20,7 +20,9 @@ LinuxLibgpioIF::~LinuxLibgpioIF() {
 ReturnValue_t LinuxLibgpioIF::addGpios(GpioCookie* gpioCookie) {
   ReturnValue_t result;
   if (gpioCookie == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "LinuxLibgpioIF::addGpios: Invalid cookie" << std::endl;
+#endif
     return RETURN_FAILED;
   }
 
@@ -96,8 +98,10 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByLabel(gpioId_t gpioId,
   std::string& label = gpioByLabel.label;
   struct gpiod_chip* chip = gpiod_chip_open_by_label(label.c_str());
   if (chip == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "LinuxLibgpioIF::configureGpioByLabel: Failed to open gpio from gpio "
                  << "group with label " << label << ". Gpio ID: " << gpioId << std::endl;
+#endif
     return RETURN_FAILED;
   }
   std::string failOutput = "label: " + label;
@@ -108,8 +112,10 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByChip(gpioId_t gpioId, GpiodRegularB
   std::string& chipname = gpioByChip.chipname;
   struct gpiod_chip* chip = gpiod_chip_open_by_name(chipname.c_str());
   if (chip == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "LinuxLibgpioIF::configureGpioByChip: Failed to open chip " << chipname
                  << ". Gpio ID: " << gpioId << std::endl;
+#endif
     return RETURN_FAILED;
   }
   std::string failOutput = "chipname: " + chipname;
@@ -133,8 +139,10 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByLineName(gpioId_t gpioId,
 
   struct gpiod_chip* chip = gpiod_chip_open_by_name(chipname);
   if (chip == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "LinuxLibgpioIF::configureGpioByLineName: Failed to open chip " << chipname
                  << ". <Gpio ID: " << gpioId << std::endl;
+#endif
     return RETURN_FAILED;
   }
   std::string failOutput = "line name: " + lineName;
@@ -153,10 +161,12 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod
   lineNum = regularGpio.lineNum;
   lineHandle = gpiod_chip_get_line(chip, lineNum);
   if (!lineHandle) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "LinuxLibgpioIF::configureRegularGpio: Failed to open line " << std::endl;
     sif::warning << "GPIO ID: " << gpioId << ", line number: " << lineNum << ", " << failOutput
                  << std::endl;
     sif::warning << "Check if Linux GPIO configuration has changed. " << std::endl;
+#endif
     gpiod_chip_close(chip);
     return RETURN_FAILED;
   }
@@ -175,7 +185,9 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod
       break;
     }
     default: {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "LinuxLibgpioIF::configureGpios: Invalid direction specified" << std::endl;
+#endif
       return GPIO_INVALID_INSTANCE;
     }
 
