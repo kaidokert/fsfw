@@ -20,13 +20,13 @@
 const std::string UdpTmTcBridge::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_PORT;
 
 UdpTmTcBridge::UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
-                             std::string udpServerPort, object_id_t tmStoreId,
+                             const std::string& udpServerPort_, object_id_t tmStoreId,
                              object_id_t tcStoreId)
     : TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
-  if (udpServerPort == "") {
-    this->udpServerPort = DEFAULT_SERVER_PORT;
+  if (udpServerPort_.empty()) {
+    udpServerPort = DEFAULT_SERVER_PORT;
   } else {
-    this->udpServerPort = udpServerPort;
+    udpServerPort = udpServerPort_;
   }
 
   mutex = MutexFactory::instance()->createMutex();
@@ -117,7 +117,7 @@ ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
   tcpip::printAddress(&clientAddress);
 #endif
 
-  int bytesSent = sendto(serverSocket, reinterpret_cast<const char *>(data), dataLen, flags,
+  ssize_t bytesSent = sendto(serverSocket, reinterpret_cast<const char *>(data), dataLen, flags,
                          &clientAddress, clientAddressLen);
   if (bytesSent == SOCKET_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -150,7 +150,7 @@ void UdpTmTcBridge::checkAndSetClientAddress(sockaddr &newAddress) {
   clientAddressLen = sizeof(clientAddress);
 }
 
-void UdpTmTcBridge::setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs) {
-  this->timeoutType = timeoutType;
-  this->mutexTimeoutMs = timeoutMs;
+void UdpTmTcBridge::setMutexProperties(MutexIF::TimeoutType timeoutType_, dur_millis_t timeoutMs) {
+  timeoutType = timeoutType_;
+  mutexTimeoutMs = timeoutMs;
 }
