@@ -6,10 +6,6 @@
 
 #include "fsfw/FSFW.h"
 
-CCSDSTime::CCSDSTime() {}
-
-CCSDSTime::~CCSDSTime() {}
-
 ReturnValue_t CCSDSTime::convertToCcsds(Ccs_seconds* to, const Clock::TimeOfDay_t* from) {
   ReturnValue_t result = checkTimeOfDay(from);
   if (result != RETURN_OK) {
@@ -428,7 +424,7 @@ ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, const uint8_t* from, size_t
   from++;
   ReturnValue_t result = convertFromCUC(to, pField, from, foundLength, maxLength - 1);
   if (result == HasReturnvaluesIF::RETURN_OK) {
-    if (foundLength != NULL) {
+    if (foundLength != nullptr) {
       *foundLength += 1;
     }
   }
@@ -588,18 +584,18 @@ ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, uint8_t pField, const uint8
   uint8_t nCoarse = ((pField & 0b1100) >> 2) + 1;
   uint8_t nFine = (pField & 0b11);
   size_t totalLength = nCoarse + nFine;
-  if (foundLength != NULL) {
+  if (foundLength != nullptr) {
     *foundLength = totalLength;
   }
   if (totalLength > maxLength) {
     return LENGTH_MISMATCH;
   }
-  for (int count = 0; count < nCoarse; count++) {
-    secs += *from << ((nCoarse * 8 - 8) * (1 + count));
+  for (int count = nCoarse; count > 0; count--) {
+    secs += *from << (count * 8 - 8);
     from++;
   }
-  for (int count = 0; count < nFine; count++) {
-    subSeconds += *from << ((nFine * 8 - 8) * (1 + count));
+  for (int count = nFine; count > 0; count--) {
+    subSeconds += *from << (count * 8 - 8);
     from++;
   }
   // Move to POSIX epoch.

@@ -43,7 +43,7 @@ class Service3Housekeeping : public CommandingServiceBase, public AcceptsHkPacke
                             CommandMessage* optionalNextCommand, object_id_t objectId,
                             bool* isStep) override;
 
-  virtual MessageQueueId_t getHkQueue() const;
+  virtual MessageQueueId_t getHkQueue() const override;
 
  private:
   enum class Subservice {

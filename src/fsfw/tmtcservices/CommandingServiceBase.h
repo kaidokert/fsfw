@@ -95,7 +95,7 @@ class CommandingServiceBase : public SystemObject,
    */
   virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
-  virtual uint16_t getIdentifier();
+  virtual uint16_t getIdentifier() override;
 
   /**
    * Returns the requestQueue MessageQueueId_t
@@ -104,7 +104,7 @@ class CommandingServiceBase : public SystemObject,
    *
    * @return requestQueue messageQueueId_t
    */
-  virtual MessageQueueId_t getRequestQueue();
+  virtual MessageQueueId_t getRequestQueue() override;
 
   /**
    * Returns the commandQueue MessageQueueId_t

@@ -44,7 +44,7 @@ class HeaderSerializer : public SerializeIF, public PduHeaderIF {
   cfdp::WidthInBytes getLenEntityIds() const override;
   cfdp::WidthInBytes getLenSeqNum() const override;
   cfdp::SegmentMetadataFlag getSegmentMetadataFlag() const override;
-  bool hasSegmentMetadataFlag() const;
+  bool hasSegmentMetadataFlag() const override;
   void setSegmentationControl(cfdp::SegmentationControl);
 
   void getSourceId(cfdp::EntityId& sourceId) const override;
