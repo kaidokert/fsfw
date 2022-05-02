@@ -179,6 +179,27 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     CHECK(todFromCCSDS.second == time.second);
     CHECK(todFromCCSDS.usecond == 123000);
   }
+  SECTION("CUC") {
+    timeval to;
+    // seconds = 0x771E960F, microseconds = 0x237
+    // microseconds = 567000
+    // This gives 37158.912 1/65536 seconds -> rounded to 37159 -> 0x9127
+    // This results in -> 567001 us
+    std::array<uint8_t, 7> cucBuffer = {
+        CCSDSTime::P_FIELD_CUC_6B_CCSDS, 0x77, 0x1E, 0x96, 0x0F, 0x91, 0x27};
+    size_t foundLength = 0;
+    auto result = CCSDSTime::convertFromCUC(&to, cucBuffer.data(), &foundLength, cucBuffer.size());
+    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(foundLength == 7);
+    REQUIRE(to.tv_sec == 1619801999);  // TAI (no leap seconds)
+    REQUIRE(to.tv_usec == 567001);
+
+    Clock::TimeOfDay_t tod;
+    result = CCSDSTime::convertFromCUC(&tod, cucBuffer.data(), cucBuffer.size());
+    // This test must be changed if this is ever going to be implemented
+    REQUIRE(result == CCSDSTime::UNSUPPORTED_TIME_FORMAT);
+  }
+
   SECTION("CCSDS Failures") {
     Clock::TimeOfDay_t time;
     time.year = 2020;
