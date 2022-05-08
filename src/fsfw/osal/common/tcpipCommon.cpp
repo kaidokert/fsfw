@@ -61,9 +61,9 @@ void tcpip::printAddress(struct sockaddr *addr) {
     }
   }
   if (stringPtr == nullptr) {
-    FSFW_FLOGDT("Could not convert IP address to text representation, error code {} | {}", errno,
-                strerror(errno));
+    FSFW_LOGDT("Could not convert IP address to text representation, error code {} | {}", errno,
+               strerror(errno));
   } else {
-    FSFW_FLOGDT("IP Address Sender {}\n", ipAddress);
+    FSFW_LOGDT("IP Address Sender {}\n", ipAddress);
   }
 }

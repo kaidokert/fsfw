@@ -17,15 +17,15 @@ ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF* variable) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (state != States::STATE_SET_UNINITIALISED) {
-    FSFW_FLOGW("{}", "registerVariable: Call made in wrong position\n");
+    FSFW_LOGW("{}", "registerVariable: Call made in wrong position\n");
     return DataSetIF::DATA_SET_UNINITIALISED;
   }
   if (variable == nullptr) {
-    FSFW_FLOGW("{}", "registerVariable: Pool variable is nullptr\n");
+    FSFW_LOGW("{}", "registerVariable: Pool variable is nullptr\n");
     return DataSetIF::POOL_VAR_NULL;
   }
   if (fillCount >= maxFillCount) {
-    FSFW_FLOGW("{}", "registerVariable: DataSet is full\n");
+    FSFW_LOGW("{}", "registerVariable: DataSet is full\n");
     return DataSetIF::DATA_SET_FULL;
   }
   registeredVariables[fillCount] = variable;
@@ -47,7 +47,7 @@ ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType, uint32_t l
     state = States::STATE_SET_WAS_READ;
     unlockDataPool();
   } else {
-    FSFW_FLOGWT("{}", "read: Call made in wrong position. commit call might be missing\n");
+    FSFW_LOGWT("{}", "read: Call made in wrong position. commit call might be missing\n");
     result = SET_WAS_ALREADY_READ;
   }
 

@@ -156,9 +156,9 @@ ReturnValue_t DeviceHandlerBase::initialize() {
       printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
                           ObjectManagerIF::CHILD_INIT_FAILED,
                           "Raw receiver object ID set but no valid object found.");
-      FSFW_FLOGE("{}",
-                 "Make sure the raw receiver object is set up properly "
-                 "and implements AcceptsDeviceResponsesIF");
+      FSFW_LOGE("{}",
+                "Make sure the raw receiver object is set up properly "
+                "and implements AcceptsDeviceResponsesIF");
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
     defaultRawReceiver = rawReceiver->getDeviceQueue();
@@ -170,9 +170,9 @@ ReturnValue_t DeviceHandlerBase::initialize() {
       printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
                           ObjectManagerIF::CHILD_INIT_FAILED,
                           "Power switcher set but no valid object found.");
-      FSFW_FLOGE("{}",
-                 "Make sure the power switcher object is set up "
-                 "properly and implements PowerSwitchIF\n");
+      FSFW_LOGE("{}",
+                "Make sure the power switcher object is set up "
+                "properly and implements PowerSwitchIF\n");
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
@@ -755,9 +755,9 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData, size_t receivedD
           printWarningOrError(sif::OutputTypes::OUT_ERROR, "parseReply",
                               ObjectManagerIF::CHILD_INIT_FAILED,
                               "Power switcher set but no valid object found.");
-          FSFW_FLOGW("{}",
-                     "DeviceHandlerBase::parseReply: foundLen is 0! "
-                     "Packet parsing will be stuck\n");
+          FSFW_LOGW("{}",
+                    "DeviceHandlerBase::parseReply: foundLen is 0! "
+                    "Packet parsing will be stuck\n");
         }
         break;
       }
@@ -1462,11 +1462,11 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType, const ch
   }
 
   if (errorType == sif::OutputTypes::OUT_WARNING) {
-    FSFW_FLOGWT("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
-                errorPrint);
+    FSFW_LOGWT("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
+               errorPrint);
   } else if (errorType == sif::OutputTypes::OUT_ERROR) {
-    FSFW_FLOGET("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
-                errorPrint);
+    FSFW_LOGET("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
+               errorPrint);
   }
 }
 

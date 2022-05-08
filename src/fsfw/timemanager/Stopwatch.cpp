@@ -31,10 +31,10 @@ void Stopwatch::display() {
   if (displayMode == StopwatchDisplayMode::MILLIS) {
     auto timeMillis =
         static_cast<dur_millis_t>(elapsedTime.tv_sec * 1000 + elapsedTime.tv_usec / 1000);
-    FSFW_FLOGIT("Stopwatch::display: {} ms elapsed\n", timeMillis);
+    FSFW_LOGIT("Stopwatch::display: {} ms elapsed\n", timeMillis);
   } else if (displayMode == StopwatchDisplayMode::SECONDS) {
-    FSFW_FLOGIT("Stopwatch::display: {} seconds elapsed\n",
-                static_cast<float>(timevalOperations::toDouble(elapsedTime)));
+    FSFW_LOGIT("Stopwatch::display: {} seconds elapsed\n",
+               static_cast<float>(timevalOperations::toDouble(elapsedTime)));
   }
 }
 

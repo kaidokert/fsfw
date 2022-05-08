@@ -69,7 +69,7 @@ void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
   ReturnValue_t result =
       SerializeAdapter::serialize(&count, &pointer, &size, maxSize, SerializeIF::Endianness::BIG);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGW("{}", "printAll: Serialization of health table failed\n");
+    FSFW_LOGW("{}", "printAll: Serialization of health table failed\n");
     return;
   }
   for (const auto& health : healthMap) {

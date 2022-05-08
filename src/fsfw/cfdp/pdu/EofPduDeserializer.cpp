@@ -50,9 +50,9 @@ ReturnValue_t EofPduDeserializer::parseData() {
   if (info.getConditionCode() != cfdp::ConditionCode::NO_ERROR) {
     EntityIdTlv* tlvPtr = info.getFaultLoc();
     if (tlvPtr == nullptr) {
-      FSFW_FLOGW("{}",
-                 "parseData: Ca not deserialize fault location,"
-                 " given TLV pointer invalid\n");
+      FSFW_LOGW("{}",
+                "parseData: Ca not deserialize fault location,"
+                " given TLV pointer invalid\n");
       return HasReturnvaluesIF::RETURN_FAILED;
     }
     result = tlvPtr->deSerialize(&bufPtr, &deserLen, endianness);

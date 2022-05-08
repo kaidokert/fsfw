@@ -213,30 +213,13 @@ void error_st(const char* file, unsigned int line, fmt::format_string<T...> fmt,
 // The macros postfixed with T are the log variant with timing information
 
 #define FSFW_LOGI(...) sif::info(__VA_ARGS__)
-#define FSFW_FLOGI(format, ...) sif::info(FMT_STRING(format), __VA_ARGS__)
-
 #define FSFW_LOGIT(...) sif::info_t(__VA_ARGS__)
-#define FSFW_FLOGIT(format, ...) sif::info_t(FMT_STRING(format), __VA_ARGS__)
 
 #define FSFW_LOGD(...) sif::debug(__FILENAME__, __LINE__, __VA_ARGS__)
-#define FSFW_FLOGD(format, ...) sif::debug(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
-
 #define FSFW_LOGDT(...) sif::debug_t(__FILENAME__, __LINE__, __VA_ARGS__)
-#define FSFW_FLOGDT(format, ...) \
-  sif::debug_t(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
 
 #define FSFW_LOGW(...) sif::warning_s(__FILENAME__, __LINE__, __VA_ARGS__)
-#define FSFW_FLOGW(format, ...) \
-  sif::warning_s(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
-
 #define FSFW_LOGWT(...) sif::warning_st(__FILENAME__, __LINE__, __VA_ARGS__)
-#define FSFW_FLOGWT(format, ...) \
-  sif::warning_st(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
 
 #define FSFW_LOGE(...) sif::error_s(__FILENAME__, __LINE__, __VA_ARGS__)
-#define FSFW_FLOGE(format, ...) \
-  sif::error_s(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
-
 #define FSFW_LOGET(...) sif::error_st(__FILENAME__, __LINE__, __VA_ARGS__)
-#define FSFW_FLOGET(format, ...) \
-  sif::error_st(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)

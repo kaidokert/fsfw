@@ -23,7 +23,7 @@ StorageAccessor::StorageAccessor(StorageAccessor&& other)
 
 ReturnValue_t StorageAccessor::getDataCopy(uint8_t* pointer, size_t maxSize) {
   if (internalState == AccessState::UNINIT) {
-    FSFW_FLOGW("{}", "getDataCopy: Not initialized\n");
+    FSFW_LOGW("{}", "getDataCopy: Not initialized\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (size_ > maxSize) {

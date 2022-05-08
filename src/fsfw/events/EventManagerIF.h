@@ -41,7 +41,7 @@ class EventManagerIF {
     if (eventmanagerQueue == MessageQueueIF::NO_QUEUE) {
       auto* eventmanager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
       if (eventmanager == nullptr) {
-        FSFW_FLOGW("{}", "EventManagerIF::triggerEvent: EventManager invalid or not found\n");
+        FSFW_LOGW("{}", "EventManagerIF::triggerEvent: EventManager invalid or not found\n");
         return;
       }
       eventmanagerQueue = eventmanager->getEventReportQueue();

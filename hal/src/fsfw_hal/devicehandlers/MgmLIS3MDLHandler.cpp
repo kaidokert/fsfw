@@ -199,7 +199,7 @@ ReturnValue_t MgmLIS3MDLHandler::scanForReply(const uint8_t *start, size_t len,
     *foundId = getPendingCommand();
     if (*foundId == MGMLIS3MDL::IDENTIFY_DEVICE) {
       if (start[1] != MGMLIS3MDL::DEVICE_ID) {
-        FSFW_FLOGW(
+        FSFW_LOGW(
             "scanForReply: Device identification failed, found ID {} not equal to expected {}\n",
             start[1], MGMLIS3MDL::DEVICE_ID);
         return DeviceHandlerIF::INVALID_DATA;

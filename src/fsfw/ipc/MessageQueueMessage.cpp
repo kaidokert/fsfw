@@ -15,7 +15,7 @@ MessageQueueMessage::MessageQueueMessage(uint8_t* data, size_t size)
     memcpy(this->getData(), data, size);
     this->messageSize = this->HEADER_SIZE + size;
   } else {
-    FSFW_FLOGW("{}", "ctor: Passed size larger than maximum allowed size! Setting content to 0\n");
+    FSFW_LOGW("{}", "ctor: Passed size larger than maximum allowed size! Setting content to 0\n");
     memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
     this->messageSize = this->HEADER_SIZE;
   }

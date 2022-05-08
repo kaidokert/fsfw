@@ -212,7 +212,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
     }
 
     default:
-      FSFW_FLOGW("handleReply: Invalid reply with reply command {}\n", command);
+      FSFW_LOGW("handleReply: Invalid reply with reply command {}\n", command);
       return CommandingServiceBase::INVALID_REPLY;
   }
   return HasReturnvaluesIF::RETURN_OK;

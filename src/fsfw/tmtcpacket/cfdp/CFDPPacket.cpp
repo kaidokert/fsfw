@@ -11,6 +11,6 @@ CFDPPacket::CFDPPacket(const uint8_t* setData) : SpacePacketBase(setData) {}
 CFDPPacket::~CFDPPacket() {}
 
 void CFDPPacket::print() {
-  FSFW_FLOGI("{}", "CFDPPacket::print:\n");
+  FSFW_LOGI("{}", "CFDPPacket::print:\n");
   arrayprinter::print(getWholeData(), getFullSize());
 }

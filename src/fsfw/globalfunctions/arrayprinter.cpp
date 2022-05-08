@@ -8,11 +8,11 @@
 void arrayprinter::print(const uint8_t *data, size_t size, OutputType type, bool printInfo,
                          size_t maxCharPerLine) {
   if (size == 0) {
-    FSFW_FLOGI("{}", "Size is zero, nothing to print\n");
+    FSFW_LOGI("{}", "Size is zero, nothing to print\n");
     return;
   }
 
-  FSFW_FLOGI("Printing data with size {}:\n", size);
+  FSFW_LOGI("Printing data with size {}:\n", size);
   if (type == OutputType::HEX) {
     arrayprinter::printHex(data, size, maxCharPerLine);
   } else if (type == OutputType::DEC) {

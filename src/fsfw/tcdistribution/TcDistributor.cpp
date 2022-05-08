@@ -33,9 +33,9 @@ ReturnValue_t TcDistributor::handlePacket() {
 }
 
 void TcDistributor::print() {
-  FSFW_FLOGI("{}", "Distributor content is:\nID\t| Message Queue ID");
+  FSFW_LOGI("{}", "Distributor content is:\nID\t| Message Queue ID");
   for (const auto& queueMapIter : queueMap) {
-    FSFW_FLOGI("{} \t| {:#08x}", queueMapIter.first, queueMapIter.second);
+    FSFW_LOGI("{} \t| {:#08x}", queueMapIter.first, queueMapIter.second);
   }
 }
 

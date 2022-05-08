@@ -95,7 +95,7 @@ void CommandingServiceBase::handleCommandQueue() {
     } else if (result == MessageQueueIF::EMPTY) {
       break;
     } else {
-      FSFW_FLOGWT(
+      FSFW_LOGWT(
           "CommandingServiceBase::handleCommandQueue: Receiving message failed"
           "with code {}",
           result);

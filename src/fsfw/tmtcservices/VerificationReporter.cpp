@@ -26,8 +26,8 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, TcPacketPusB
                                  currentPacket->getPacketSequenceControl(), 0, set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGET("VerificationReporter::sendSuccessReport: Error writing to queue. Code: {}\n",
-                status);
+    FSFW_LOGET("VerificationReporter::sendSuccessReport: Error writing to queue. Code: {}\n",
+               status);
   }
 }
 
@@ -41,7 +41,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, uint8_t ackF
                                  set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGET(
+    FSFW_LOGET(
         "VerificationReporter::sendSuccessReport: Error writing "
         "to queue. Code: {}\n",
         status);
@@ -62,7 +62,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id, TcPacketPusBase*
       currentPacket->getPacketSequenceControl(), error_code, step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGET(
+    FSFW_LOGET(
         "VerificationReporter::sendFailureReport: Error writing "
         "to queue. Code: {}\n",
         status);

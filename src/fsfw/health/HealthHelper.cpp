@@ -35,12 +35,12 @@ ReturnValue_t HealthHelper::initialize() {
   eventSender = ObjectManager::instance()->get<EventReportingProxyIF>(objectId);
 
   if (healthTable == nullptr) {
-    FSFW_FLOGE("{}", "initialize: Health table object needs to be created in factory\n");
+    FSFW_LOGE("{}", "initialize: Health table object needs to be created in factory\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
   if (eventSender == nullptr) {
-    FSFW_FLOGE("{}", "initialize: Owner has to implement ReportingProxyIF\n");
+    FSFW_LOGE("{}", "initialize: Owner has to implement ReportingProxyIF\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
@@ -69,7 +69,7 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
   HealthMessage::setHealthMessage(&information, HealthMessage::HEALTH_INFO, health, oldHealth);
   if (MessageQueueSenderIF::sendMessage(parentQueue, &information, owner->getCommandQueue()) !=
       HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGWT("informParent: Object ID {:#08x} | Sending health reply failed\n", objectId);
+    FSFW_LOGWT("informParent: Object ID {:#08x} | Sending health reply failed\n", objectId);
   }
 }
 
@@ -86,7 +86,7 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* command) {
   }
   if (MessageQueueSenderIF::sendMessage(command->getSender(), &reply, owner->getCommandQueue()) !=
       HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGWT("handleSetHealthCommand: Object ID {:#08x} | Sending health reply failed\n",
-                objectId);
+    FSFW_LOGWT("handleSetHealthCommand: Object ID {:#08x} | Sending health reply failed\n",
+               objectId);
   }
 }

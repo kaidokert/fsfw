@@ -27,7 +27,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   size_t size = 0;
   ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(), &packet, &size);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGWT("{}", "selectDestination: Getting data from store failed");
+    FSFW_LOGWT("{}", "selectDestination: Getting data from store failed");
   }
   SpacePacketBase currentPacket(packet);
 

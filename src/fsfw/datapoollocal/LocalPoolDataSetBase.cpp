@@ -16,7 +16,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner, uint32_t
     : PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
   if (hkOwner == nullptr) {
     // Configuration error.
-    FSFW_FLOGW("{}", "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner invalid\n");
+    FSFW_LOGW("{}", "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner invalid\n");
     return;
   }
   AccessPoolManagerIF *accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
@@ -179,7 +179,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t **buffer, size
     auto result =
         SerializeAdapter::serialize(&currentPoolId, buffer, size, maxSize, streamEndianness);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      FSFW_FLOGW("{}", "serializeLocalPoolIds: Serialization error\n");
+      FSFW_LOGW("{}", "serializeLocalPoolIds: Serialization error\n");
       return result;
     }
   }

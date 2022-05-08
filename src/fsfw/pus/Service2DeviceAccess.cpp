@@ -25,7 +25,7 @@ ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
     case Subservice::COMMAND_TOGGLE_WIRETAPPING:
       return HasReturnvaluesIF::RETURN_OK;
     default:
-      FSFW_FLOGW("Invalid Subservice {}\n", subservice);
+      FSFW_LOGW("Invalid Subservice {}\n", subservice);
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
 }
@@ -116,8 +116,8 @@ void Service2DeviceAccess::handleUnrequestedReply(CommandMessage* reply) {
       sendWiretappingTm(reply, static_cast<uint8_t>(Subservice::REPLY_RAW));
       break;
     default:
-      FSFW_FLOGET("handleUnrequestedReply: Unknown message with command ID {}\n",
-                  reply->getCommand());
+      FSFW_LOGET("handleUnrequestedReply: Unknown message with command ID {}\n",
+                 reply->getCommand());
       break;
   }
   // Must be reached by all cases to clear message

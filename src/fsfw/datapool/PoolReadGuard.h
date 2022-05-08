@@ -17,7 +17,7 @@ class PoolReadGuard {
     if (readObject != nullptr) {
       readResult = readObject->read(timeoutType, mutexTimeout);
       if (readResult != HasReturnvaluesIF::RETURN_OK) {
-        FSFW_FLOGW("{}", "ctor: Read failed\n");
+        FSFW_LOGW("{}", "ctor: Read failed\n");
       }
     }
   }

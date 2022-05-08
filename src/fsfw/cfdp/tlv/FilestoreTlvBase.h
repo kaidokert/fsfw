@@ -128,7 +128,7 @@ class FilestoreTlvBase : public TlvIF {
   }
 
   void secondFileNameMissing() const {
-    FSFW_FLOGWT("{}", "secondFileNameMissing: Second file name required but TLV pointer not set\n");
+    FSFW_LOGWT("{}", "secondFileNameMissing: Second file name required but TLV pointer not set\n");
   }
 
   FilestoreActionCode getActionCode() const { return actionCode; }

@@ -37,7 +37,7 @@ ReturnValue_t TmTcBridge::setMaxNumberOfPacketsStored(uint8_t maxNumberOfPackets
     this->maxNumberOfPacketsStored = maxNumberOfPacketsStored_;
     return RETURN_OK;
   } else {
-    FSFW_FLOGW(
+    FSFW_LOGW(
         "setMaxNumberOfPacketsStored: Passed number of packets {} stored exceeds "
         "limit {}\nKeeping default value\n",
         maxNumberOfPacketsStored_, LIMIT_DOWNLINK_PACKETS_STORED);
@@ -87,7 +87,7 @@ ReturnValue_t TmTcBridge::handleTm() {
   ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
   ReturnValue_t result = handleTmQueue();
   if (result != RETURN_OK) {
-    FSFW_FLOGET("handleTm: Error handling TM queue with error code {:#04x}\n", result);
+    FSFW_LOGET("handleTm: Error handling TM queue with error code {:#04x}\n", result);
     status = result;
   }
 

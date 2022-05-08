@@ -3,6 +3,6 @@
 #include "fsfw/serviceinterface.h"
 
 ReturnValue_t unitt::put_error(const std::string& errorId) {
-  FSFW_FLOGET("Unit Tester error: Failed at test ID {}\n", errorId);
+  FSFW_LOGET("Unit Tester error: Failed at test ID {}\n", errorId);
   return HasReturnvaluesIF::RETURN_FAILED;
 }

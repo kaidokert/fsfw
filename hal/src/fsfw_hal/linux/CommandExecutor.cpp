@@ -61,7 +61,7 @@ ReturnValue_t CommandExecutor::close() {
 
 void CommandExecutor::printLastError(const std::string& funcName) const {
   if (lastError != 0) {
-    FSFW_FLOGW("{} | pclose failed with code {} | {}\n", funcName, lastError, strerror(lastError));
+    FSFW_LOGW("{} | pclose failed with code {} | {}\n", funcName, lastError, strerror(lastError));
   }
 }
 

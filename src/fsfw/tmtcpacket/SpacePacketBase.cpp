@@ -18,7 +18,7 @@ uint8_t SpacePacketBase::getPacketVersionNumber(void) {
 ReturnValue_t SpacePacketBase::initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader,
                                                      uint16_t apid, uint16_t sequenceCount) {
   if (data == nullptr) {
-    FSFW_FLOGWT("{}", "initSpacePacketHeader: Data pointer is invalid\n");
+    FSFW_LOGWT("{}", "initSpacePacketHeader: Data pointer is invalid\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   // reset header to zero:

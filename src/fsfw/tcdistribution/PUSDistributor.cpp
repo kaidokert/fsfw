@@ -44,7 +44,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         } else if (tcStatus == TcPacketCheckPUS::INCOMPLETE_PACKET) {
           keyword = "incomplete packet";
         }
-        FSFW_FLOGWT("selectDestination: Packet format invalid, {} error\n", keyword);
+        FSFW_LOGWT("selectDestination: Packet format invalid, {} error\n", keyword);
 #endif
       }
       uint32_t queue_id = currentPacket->getService();

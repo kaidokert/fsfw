@@ -26,7 +26,7 @@ ReturnValue_t I2cComIF::initializeInterface(CookieIF* cookie) {
   std::string deviceFile;
 
   if (cookie == nullptr) {
-    FSFW_FLOGE("{}", "initializeInterface: Invalid cookie\n");
+    FSFW_LOGE("{}", "initializeInterface: Invalid cookie\n");
     return NULLPOINTER;
   }
   auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
@@ -38,14 +38,14 @@ ReturnValue_t I2cComIF::initializeInterface(CookieIF* cookie) {
     I2cInstance i2cInstance = {std::vector<uint8_t>(maxReplyLen), 0};
     auto statusPair = i2cDeviceMap.emplace(i2cAddress, i2cInstance);
     if (not statusPair.second) {
-      FSFW_FLOGW("initializeInterface: Failed to insert device with address {} to I2C device map\n",
-                 i2cAddress);
+      FSFW_LOGW("initializeInterface: Failed to insert device with address {} to I2C device map\n",
+                i2cAddress);
       return HasReturnvaluesIF::RETURN_FAILED;
     }
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-  FSFW_FLOGE("initializeInterface: Device with address {} already in use\n", i2cAddress);
+  FSFW_LOGE("initializeInterface: Device with address {} already in use\n", i2cAddress);
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
@@ -55,7 +55,7 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
   std::string deviceFile;
 
   if (sendData == nullptr) {
-    FSFW_FLOGW("{}", "sendMessage: Send Data is nullptr\n");
+    FSFW_LOGW("{}", "sendMessage: Send Data is nullptr\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -65,14 +65,14 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
 
   auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
   if (i2cCookie == nullptr) {
-    FSFW_FLOGWT("{}", "sendMessage: Invalid I2C Cookie\n");
+    FSFW_LOGWT("{}", "sendMessage: Invalid I2C Cookie\n");
     return NULLPOINTER;
   }
 
   address_t i2cAddress = i2cCookie->getAddress();
   i2cDeviceMapIter = i2cDeviceMap.find(i2cAddress);
   if (i2cDeviceMapIter == i2cDeviceMap.end()) {
-    FSFW_FLOGWT("{}", "sendMessage: I2C address of cookie not registered in I2C device map\n");
+    FSFW_LOGWT("{}", "sendMessage: I2C address of cookie not registered in I2C device map\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -87,8 +87,8 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
   }
 
   if (write(fd, sendData, sendLen) != static_cast<int>(sendLen)) {
-    FSFW_FLOGE("sendMessage: Failed to send data to I2C device with error code {} | {}\n", errno,
-               strerror(errno));
+    FSFW_LOGE("sendMessage: Failed to send data to I2C device with error code {} | {}\n", errno,
+              strerror(errno));
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -112,7 +112,7 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
 
   auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
   if (i2cCookie == nullptr) {
-    FSFW_FLOGWT("{}", "requestReceiveMessage: Invalid I2C Cookie\n");
+    FSFW_LOGWT("{}", "requestReceiveMessage: Invalid I2C Cookie\n");
     i2cDeviceMapIter->second.replyLen = 0;
     return NULLPOINTER;
   }
@@ -120,8 +120,8 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
   address_t i2cAddress = i2cCookie->getAddress();
   i2cDeviceMapIter = i2cDeviceMap.find(i2cAddress);
   if (i2cDeviceMapIter == i2cDeviceMap.end()) {
-    FSFW_FLOGW("requestReceiveMessage: I2C address {} of Cookie not registered in i2cDeviceMap",
-               i2cAddress);
+    FSFW_LOGW("requestReceiveMessage: I2C address {} of Cookie not registered in i2cDeviceMap",
+              i2cAddress);
     i2cDeviceMapIter->second.replyLen = 0;
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -141,7 +141,7 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
 
   ssize_t readLen = read(fd, replyBuffer, requestLen);
   if (readLen != static_cast<int>(requestLen)) {
-    FSFW_FLOGWT(
+    FSFW_LOGWT(
         "requestReceiveMessage: Reading from I2C device failed with error code "
         "{} | {}\nRead only {} from {} bytes\n",
         errno, strerror(errno), readLen, requestLen);
@@ -161,15 +161,15 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
 ReturnValue_t I2cComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, size_t* size) {
   auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
   if (i2cCookie == nullptr) {
-    FSFW_FLOGW("{}", "readReceivedMessage: Invalid I2C Cookie\n");
+    FSFW_LOGW("{}", "readReceivedMessage: Invalid I2C Cookie\n");
     return NULLPOINTER;
   }
 
   address_t i2cAddress = i2cCookie->getAddress();
   i2cDeviceMapIter = i2cDeviceMap.find(i2cAddress);
   if (i2cDeviceMapIter == i2cDeviceMap.end()) {
-    FSFW_FLOGE("readReceivedMessage: I2C address {} of cookie not found in I2C device map\n",
-               i2cAddress);
+    FSFW_LOGE("readReceivedMessage: I2C address {} of cookie not found in I2C device map\n",
+              i2cAddress);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   *buffer = i2cDeviceMapIter->second.replyBuffer.data();
@@ -181,8 +181,8 @@ ReturnValue_t I2cComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, 
 ReturnValue_t I2cComIF::openDevice(std::string deviceFile, address_t i2cAddress,
                                    int* fileDescriptor) {
   if (ioctl(*fileDescriptor, I2C_SLAVE, i2cAddress) < 0) {
-    FSFW_FLOGWT("openDevice: Specifying target device failed with error code {} | {}\n", errno,
-                strerror(errno));
+    FSFW_LOGWT("openDevice: Specifying target device failed with error code {} | {}\n", errno,
+               strerror(errno));
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   return HasReturnvaluesIF::RETURN_OK;

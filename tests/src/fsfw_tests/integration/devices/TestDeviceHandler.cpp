@@ -17,7 +17,7 @@ TestDevice::~TestDevice() {}
 
 void TestDevice::performOperationHook() {
   if (periodicPrintout) {
-    FSFW_FLOGI("TestDevice {} | performOperationHook: Alive!\n", deviceIdx);
+    FSFW_LOGI("TestDevice {} | performOperationHook: Alive!\n", deviceIdx);
   }
 
   if (oneShot) {
@@ -27,7 +27,7 @@ void TestDevice::performOperationHook() {
 
 void TestDevice::doStartUp() {
   if (fullInfoPrintout) {
-    FSFW_FLOGI("TestDevice {} | doStartUp: Switching On\n", deviceIdx);
+    FSFW_LOGI("TestDevice {} | doStartUp: Switching On\n", deviceIdx);
   }
 
   setMode(_MODE_TO_ON);
@@ -35,7 +35,7 @@ void TestDevice::doStartUp() {
 
 void TestDevice::doShutDown() {
   if (fullInfoPrintout) {
-    FSFW_FLOGI("TestDevice {} | doShutDown: Switching Off\n", deviceIdx);
+    FSFW_LOGI("TestDevice {} | doShutDown: Switching Off\n", deviceIdx);
   }
 
   setMode(_MODE_SHUT_DOWN);
@@ -53,7 +53,7 @@ ReturnValue_t TestDevice::buildNormalDeviceCommand(DeviceCommandId_t* id) {
 ReturnValue_t TestDevice::buildTransitionDeviceCommand(DeviceCommandId_t* id) {
   if (mode == _MODE_TO_ON) {
     if (fullInfoPrintout) {
-      FSFW_FLOGI(
+      FSFW_LOGI(
           "TestDevice {} | buildTransitionDeviceCommand: Was called"
           " from _MODE_TO_ON mode\n",
           deviceIdx);
@@ -61,7 +61,7 @@ ReturnValue_t TestDevice::buildTransitionDeviceCommand(DeviceCommandId_t* id) {
   }
   if (mode == _MODE_TO_NORMAL) {
     if (fullInfoPrintout) {
-      FSFW_FLOGI(
+      FSFW_LOGI(
           "TestDevice {} | buildTransitionDeviceCommand: Was called "
           "from _MODE_TO_NORMAL mode\n",
           deviceIdx);
@@ -71,7 +71,7 @@ ReturnValue_t TestDevice::buildTransitionDeviceCommand(DeviceCommandId_t* id) {
   }
   if (mode == _MODE_SHUT_DOWN) {
     if (fullInfoPrintout) {
-      FSFW_FLOGI(
+      FSFW_LOGI(
           "TestDevice {} | buildTransitionDeviceCommand: Was called "
           "from _MODE_SHUT_DOWN mode\n",
           deviceIdx);
@@ -85,7 +85,7 @@ ReturnValue_t TestDevice::buildTransitionDeviceCommand(DeviceCommandId_t* id) {
 void TestDevice::doTransition(Mode_t modeFrom, Submode_t submodeFrom) {
   if (mode == _MODE_TO_NORMAL) {
     if (fullInfoPrintout) {
-      FSFW_FLOGI(
+      FSFW_LOGI(
           "TestDevice {} | doTransition: Custom transition to "
           "normal mode\n",
           deviceIdx);

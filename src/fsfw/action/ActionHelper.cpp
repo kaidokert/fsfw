@@ -28,7 +28,7 @@ ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
   }
 
   if (queueToUse == nullptr) {
-    FSFW_FLOGW("{}", "initialize: No queue set\n");
+    FSFW_LOGW("{}", "initialize: No queue set\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -90,7 +90,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
   size_t size = 0;
   ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, maxSize, &dataPtr);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGWT("{}", "reportData: Getting free element from IPC store failed\n");
+    FSFW_LOGWT("{}", "reportData: Getting free element from IPC store failed\n");
     return result;
   }
   result = data->serialize(&dataPtr, &size, maxSize, SerializeIF::Endianness::BIG);
@@ -125,7 +125,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
   store_address_t storeAddress;
   ReturnValue_t result = ipcStore->addData(&storeAddress, data, dataSize);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGWT("{}", "reportData: Adding data to IPC store failed\n");
+    FSFW_LOGWT("{}", "reportData: Adding data to IPC store failed\n");
     return result;
   }
 

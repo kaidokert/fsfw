@@ -19,7 +19,7 @@
 SpiComIF::SpiComIF(object_id_t objectId, GpioIF* gpioComIF)
     : SystemObject(objectId), gpioComIF(gpioComIF) {
   if (gpioComIF == nullptr) {
-    FSFW_FLOGET("{}", "SpiComIF::SpiComIF: GPIO communication interface invalid\n");
+    FSFW_LOGET("{}", "SpiComIF::SpiComIF: GPIO communication interface invalid\n");
   }
 
   spiMutex = MutexFactory::instance()->createMutex();
@@ -40,7 +40,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
     SpiInstance spiInstance(bufferSize);
     auto statusPair = spiDeviceMap.emplace(spiAddress, spiInstance);
     if (not statusPair.second) {
-      FSFW_FLOGWT(
+      FSFW_LOGWT(
           "SpiComIF::initializeInterface: Failed to insert device with address {} to SPI device "
           "map\n",
           spiAddress);
@@ -50,7 +50,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
     to the SPI driver transfer struct */
     spiCookie->assignReadBuffer(statusPair.first->second.replyBuffer.data());
   } else {
-    FSFW_FLOGWT("{}", "initializeInterface: SPI address already exists\n");
+    FSFW_LOGWT("{}", "initializeInterface: SPI address already exists\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -123,7 +123,7 @@ ReturnValue_t SpiComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
   }
 
   if (sendLen > spiCookie->getMaxBufferSize()) {
-    FSFW_FLOGW(
+    FSFW_LOGW(
         "sendMessage: Too much data sent, send length {} larger than maximum buffer length {}\n",
         spiCookie->getMaxBufferSize(), sendLen);
     return DeviceCommunicationIF::TOO_MUCH_DATA;
@@ -173,12 +173,12 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
   if (gpioId != gpio::NO_GPIO) {
     result = spiMutex->lockMutex(timeoutType, timeoutMs);
     if (result != RETURN_OK) {
-      FSFW_FLOGET("{}", "sendMessage: Failed to lock mutex\n");
+      FSFW_LOGET("{}", "sendMessage: Failed to lock mutex\n");
       return result;
     }
     result = gpioComIF->pullLow(gpioId);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      FSFW_FLOGW("{}", "sendMessage: Pulling low CS pin failed\n");
+      FSFW_LOGW("{}", "sendMessage: Pulling low CS pin failed\n");
       return result;
     }
   }
@@ -197,7 +197,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
   } else {
     /* We write with a blocking half-duplex transfer here */
     if (write(fileDescriptor, sendData, sendLen) != static_cast<ssize_t>(sendLen)) {
-      FSFW_FLOGET("{}", "sendMessage: Half-Duplex write operation failed\n");
+      FSFW_LOGET("{}", "sendMessage: Half-Duplex write operation failed\n");
       result = HALF_DUPLEX_TRANSFER_FAILED;
     }
   }
@@ -206,7 +206,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
     gpioComIF->pullHigh(gpioId);
     result = spiMutex->unlockMutex();
     if (result != RETURN_OK) {
-      FSFW_FLOGWT("{}", "sendMessage: Failed to unlock mutex\n");
+      FSFW_LOGWT("{}", "sendMessage: Failed to unlock mutex\n");
       return result;
     }
   }
@@ -248,14 +248,14 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
   if (gpioId != gpio::NO_GPIO) {
     result = spiMutex->lockMutex(timeoutType, timeoutMs);
     if (result != RETURN_OK) {
-      FSFW_FLOGW("{}", "getSendSuccess: Failed to lock mutex\n");
+      FSFW_LOGW("{}", "getSendSuccess: Failed to lock mutex\n");
       return result;
     }
     gpioComIF->pullLow(gpioId);
   }
 
   if (read(fileDescriptor, rxBuf, readSize) != static_cast<ssize_t>(readSize)) {
-    FSFW_FLOGW("{}", "sendMessage: Half-Duplex read operation failed\n");
+    FSFW_LOGW("{}", "sendMessage: Half-Duplex read operation failed\n");
     result = HALF_DUPLEX_TRANSFER_FAILED;
   }
 
@@ -263,7 +263,7 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
     gpioComIF->pullHigh(gpioId);
     result = spiMutex->unlockMutex();
     if (result != RETURN_OK) {
-      FSFW_FLOGW("{}", "getSendSuccess: Failed to unlock mutex\n");
+      FSFW_LOGW("{}", "getSendSuccess: Failed to unlock mutex\n");
       return result;
     }
   }

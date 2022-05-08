@@ -116,7 +116,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotT
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-  FSFW_FLOGE("addSlot: Component {:#08x} not found, not adding it to PST\n", componentId);
+  FSFW_LOGE("addSlot: Component {:#08x} not found, not adding it to PST\n", componentId);
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 

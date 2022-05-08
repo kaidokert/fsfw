@@ -20,7 +20,7 @@ FailureIsolationBase::~FailureIsolationBase() {
 ReturnValue_t FailureIsolationBase::initialize() {
   auto* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
   if (manager == nullptr) {
-    FSFW_FLOGE("{}", "initialize: Event Manager has not been initialized\n");
+    FSFW_LOGE("{}", "initialize: Event Manager has not been initialized\n");
     return RETURN_FAILED;
   }
   ReturnValue_t result = manager->registerListener(eventQueue->getId());
@@ -34,7 +34,7 @@ ReturnValue_t FailureIsolationBase::initialize() {
     }
     owner = ObjectManager::instance()->get<HasHealthIF>(ownerId);
     if (owner == nullptr) {
-      FSFW_FLOGE(
+      FSFW_LOGE(
           "FailureIsolationBase::intialize: Owner object {:#08x} invalid. "
           "Does it implement HasHealthIF?\n",
           ownerId);
@@ -44,9 +44,8 @@ ReturnValue_t FailureIsolationBase::initialize() {
   if (faultTreeParent != objects::NO_OBJECT) {
     auto* parentIF = ObjectManager::instance()->get<ConfirmsFailuresIF>(faultTreeParent);
     if (parentIF == nullptr) {
-      FSFW_FLOGW(
-          "intialize: Parent object {:#08x} invalid. Does it implement ConfirmsFailuresIF?\n",
-          faultTreeParent);
+      FSFW_LOGW("intialize: Parent object {:#08x} invalid. Does it implement ConfirmsFailuresIF?\n",
+                faultTreeParent);
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
     eventQueue->setDefaultDestination(parentIF->getEventReceptionQueue());

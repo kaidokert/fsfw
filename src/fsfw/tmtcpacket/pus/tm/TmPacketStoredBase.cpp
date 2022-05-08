@@ -89,13 +89,13 @@ void TmPacketStoredBase::handleStoreFailure(const char *const packetType, Return
   switch (result) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     case (StorageManagerIF::DATA_STORAGE_FULL): {
-      FSFW_FLOGWT("handleStoreFailure: {} | Store full for packet with size {}\n", packetType,
-                  sizeToReserve);
+      FSFW_LOGWT("handleStoreFailure: {} | Store full for packet with size {}\n", packetType,
+                 sizeToReserve);
       break;
     }
     case (StorageManagerIF::DATA_TOO_LARGE): {
-      FSFW_FLOGWT("handleStoreFailure: {} | Data with size {} too large\n", packetType,
-                  sizeToReserve);
+      FSFW_LOGWT("handleStoreFailure: {} | Data with size {} too large\n", packetType,
+                 sizeToReserve);
       break;
     }
 #else

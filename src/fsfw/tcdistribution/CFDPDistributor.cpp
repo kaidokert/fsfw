@@ -22,8 +22,8 @@ CFDPDistributor::~CFDPDistributor() {}
 CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 #if FSFW_CFDP_DISTRIBUTOR_DEBUGGING == 1
   store_address_t storeId = this->currentMessage.getStorageId();
-  FSFW_FLOGI("selectDestination was called with pool index {} and packet index {}\n",
-             storeId.poolIndex, storeId.packetIndex);
+  FSFW_LOGI("selectDestination was called with pool index {} and packet index {}\n",
+            storeId.poolIndex, storeId.packetIndex);
 #endif
   TcMqMapIter queueMapIt = this->queueMap.end();
   if (this->currentPacket == nullptr) {
@@ -33,8 +33,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
   if (currentPacket->getWholeData() != nullptr) {
     tcStatus = checker.checkPacket(currentPacket);
     if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
-      FSFW_FLOGWT("selectDestination: Packet format invalid, code {}\n",
-                  static_cast<int>(tcStatus));
+      FSFW_LOGWT("selectDestination: Packet format invalid, code {}\n", static_cast<int>(tcStatus));
     }
     queueMapIt = this->queueMap.find(0);
   } else {
@@ -43,7 +42,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 
   if (queueMapIt == this->queueMap.end()) {
     tcStatus = DESTINATION_NOT_FOUND;
-    FSFW_FLOGWT("{}", "handlePacket: Destination not found\n");
+    FSFW_LOGWT("{}", "handlePacket: Destination not found\n");
   }
 
   if (tcStatus != RETURN_OK) {
@@ -56,11 +55,11 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 ReturnValue_t CFDPDistributor::registerHandler(AcceptsTelecommandsIF* handler) {
   uint16_t handlerId =
       handler->getIdentifier();  // should be 0, because CFDPHandler does not set a set a service-ID
-  FSFW_FLOGIT("CFDPDistributor::registerHandler: Handler ID {}\n", static_cast<int>(handlerId));
+  FSFW_LOGIT("CFDPDistributor::registerHandler: Handler ID {}\n", static_cast<int>(handlerId));
   MessageQueueId_t queue = handler->getRequestQueue();
   auto returnPair = queueMap.emplace(handlerId, queue);
   if (not returnPair.second) {
-    FSFW_FLOGE("{}", "CFDPDistributor::registerHandler: Service ID already exists in map\n");
+    FSFW_LOGE("{}", "CFDPDistributor::registerHandler: Service ID already exists in map\n");
     return SERVICE_ID_ALREADY_EXISTS;
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -97,7 +96,7 @@ ReturnValue_t CFDPDistributor::initialize() {
 
   auto* ccsdsDistributor = ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
   if (ccsdsDistributor == nullptr) {
-    FSFW_FLOGE("{}", "initialize: Packet source invalid. Does it implement CCSDSDistributorIF?\n");
+    FSFW_LOGE("{}", "initialize: Packet source invalid. Does it implement CCSDSDistributorIF?\n");
     return RETURN_FAILED;
   }
   return ccsdsDistributor->registerApplication(this);

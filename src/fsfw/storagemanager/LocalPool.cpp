@@ -12,7 +12,7 @@ LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
       NUMBER_OF_SUBPOOLS(poolConfig.size()),
       spillsToHigherPools(spillsToHigherPools) {
   if (NUMBER_OF_SUBPOOLS == 0) {
-    FSFW_FLOGW("{}", "ctor: Passed pool configuration is invalid, 0 subpools\n");
+    FSFW_LOGW("{}", "ctor: Passed pool configuration is invalid, 0 subpools\n");
   }
   max_subpools_t index = 0;
   for (const auto& currentPoolConfig : poolConfig) {
@@ -125,8 +125,8 @@ ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
     sizeLists[storeId.poolIndex][storeId.packetIndex] = STORAGE_FREE;
   } else {
     // pool_index or packet_index is too large
-    FSFW_FLOGWT("Object ID {} | deleteData: Illegal store ID, no deletion\n",
-                SystemObject::getObjectId());
+    FSFW_LOGWT("Object ID {} | deleteData: Illegal store ID, no deletion\n",
+               SystemObject::getObjectId());
     status = ILLEGAL_STORAGE_ID;
   }
   return status;
@@ -175,7 +175,7 @@ ReturnValue_t LocalPool::initialize() {
   // Check if any pool size is large than the maximum allowed.
   for (uint8_t count = 0; count < NUMBER_OF_SUBPOOLS; count++) {
     if (elementSizes[count] >= STORAGE_FREE) {
-      FSFW_FLOGW(
+      FSFW_LOGW(
           "LocalPool::initialize: Pool is too large- "
           "Max. allowed size is: {}\n",
           STORAGE_FREE - 1);
@@ -199,7 +199,7 @@ ReturnValue_t LocalPool::reserveSpace(const size_t size, store_address_t* storeI
                                       bool ignoreFault) {
   ReturnValue_t status = getSubPoolIndex(size, &storeId->poolIndex);
   if (status != RETURN_OK) {
-    FSFW_FLOGW("ID {:#08x} | reserveSpace: Packet too large\n", SystemObject::getObjectId());
+    FSFW_LOGW("ID {:#08x} | reserveSpace: Packet too large\n", SystemObject::getObjectId());
     return status;
   }
   status = findEmpty(storeId->poolIndex, &storeId->packetIndex);

@@ -209,23 +209,23 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
                                          uint16_t startWritingAtIndex) {
   if (data == nullptr) {
-    FSFW_FLOGWT("{}", "copyFrom: Called on read-only variable\n");
+    FSFW_LOGWT("{}", "copyFrom: Called on read-only variable\n");
     return READONLY;
   }
 
   if (from->readonlyData == nullptr) {
-    FSFW_FLOGWT("{}", "copyFrom: Source not set\n");
+    FSFW_LOGWT("{}", "copyFrom: Source not set\n");
     return SOURCE_NOT_SET;
   }
 
   if (type != from->type) {
-    FSFW_FLOGW("{}", "copyFrom: Datatype missmatch\n");
+    FSFW_LOGW("{}", "copyFrom: Datatype missmatch\n");
     return DATATYPE_MISSMATCH;
   }
 
   // The smallest allowed value for rows and columns is one.
   if (rows == 0 or columns == 0) {
-    FSFW_FLOGW("{}", "ParameterWrapper::copyFrom: Columns or rows zero\n");
+    FSFW_LOGW("{}", "ParameterWrapper::copyFrom: Columns or rows zero\n");
     return COLUMN_OR_ROWS_ZERO;
   }
 

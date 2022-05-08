@@ -695,7 +695,7 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
   ReturnValue_t result = generateHousekeepingPacket(sid, dataSet, true);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     /* Configuration error */
-    FSFW_FLOGWT("{}", "performHkOperation: HK generation failed");
+    FSFW_LOGWT("{}", "performHkOperation: HK generation failed");
   }
 }
 
@@ -852,9 +852,9 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
   }
 
   if (outputType == sif::OutputTypes::OUT_WARNING) {
-    FSFW_FLOGWT("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
+    FSFW_LOGWT("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
   } else if (outputType == sif::OutputTypes::OUT_ERROR) {
-    FSFW_FLOGET("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
+    FSFW_LOGET("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
   }
 #endif /* #if FSFW_VERBOSE_LEVEL >= 1 */
 }

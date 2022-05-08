@@ -81,7 +81,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
     if (timeStamper == nullptr) {
       timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
       if (timeStamper == nullptr) {
-        FSFW_FLOGET("{}", "checkAndSetStamper: Stamper not found\n");
+        FSFW_LOGET("{}", "checkAndSetStamper: Stamper not found\n");
         return false;
       }
     }

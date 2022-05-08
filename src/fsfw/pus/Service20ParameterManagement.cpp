@@ -22,7 +22,7 @@ ReturnValue_t Service20ParameterManagement::isValidSubservice(uint8_t subservice
     case Subservice::PARAMETER_DUMP:
       return HasReturnvaluesIF::RETURN_OK;
     default:
-      FSFW_FLOGE("Invalid Subservice {} for Service 20\n", subservice);
+      FSFW_LOGE("Invalid Subservice {} for Service 20\n", subservice);
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
 }
@@ -55,7 +55,7 @@ ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue
   // check ReceivesParameterMessagesIF property of target
   auto* possibleTarget = ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
   if (possibleTarget == nullptr) {
-    FSFW_FLOGE(
+    FSFW_LOGE(
         "checkInterfaceAndAcquire: Can't retrieve message queue | Object ID {:#08x}\n"
         "Does it implement ReceivesParameterMessagesIF?\n",
         *objectId);

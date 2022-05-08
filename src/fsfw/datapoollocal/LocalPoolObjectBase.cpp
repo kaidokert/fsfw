@@ -11,10 +11,10 @@ LocalPoolObjectBase::LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkO
                                          DataSetIF* dataSet, pool_rwm_t setReadWriteMode)
     : localPoolId(poolId), readWriteMode(setReadWriteMode) {
   if (poolId == PoolVariableIF::NO_PARAMETER) {
-    FSFW_FLOGWT("{}", "ctor: Invalid pool ID, has NO_PARAMETER value\n");
+    FSFW_LOGWT("{}", "ctor: Invalid pool ID, has NO_PARAMETER value\n");
   }
   if (hkOwner == nullptr) {
-    FSFW_FLOGET("{}", "ctor: Supplied pool owner is a invalid\n");
+    FSFW_LOGET("{}", "ctor: Supplied pool owner is a invalid\n");
     return;
   }
   AccessPoolManagerIF* poolManAccessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
@@ -29,11 +29,11 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
                                          pool_rwm_t setReadWriteMode)
     : localPoolId(poolId), readWriteMode(setReadWriteMode) {
   if (poolId == PoolVariableIF::NO_PARAMETER) {
-    FSFW_FLOGWT("{}", "ctor: Invalid pool ID, has NO_PARAMETER value\n");
+    FSFW_LOGWT("{}", "ctor: Invalid pool ID, has NO_PARAMETER value\n");
   }
   auto* hkOwner = ObjectManager::instance()->get<HasLocalDataPoolIF>(poolOwner);
   if (hkOwner == nullptr) {
-    FSFW_FLOGWT(
+    FSFW_LOGWT(
         "ctor: The supplied pool owner {:#08x} did not implement the correct interface "
         "HasLocalDataPoolIF\n",
         poolOwner);
@@ -94,6 +94,6 @@ void LocalPoolObjectBase::reportReadCommitError(const char* variableType, Return
     errMsg = "Unknown error code";
   }
 
-  FSFW_FLOGW("{}: {} call | {} | Owner: {:#08x} | LPID: \n", variablePrintout, type, errMsg,
-             objectId, lpId);
+  FSFW_LOGW("{}: {} call | {} | Owner: {:#08x} | LPID: \n", variablePrintout, type, errMsg,
+            objectId, lpId);
 }

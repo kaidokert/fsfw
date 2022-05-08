@@ -210,7 +210,7 @@ ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t pack
   store_address_t storeId;
   ReturnValue_t result = tcStore->addData(&storeId, spacePacket, packetSize);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGWT("handleTcReception: Data storage with packet size {} failed\n", packetSize);
+    FSFW_LOGWT("handleTcReception: Data storage with packet size {} failed\n", packetSize);
     return result;
   }
 

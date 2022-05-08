@@ -46,14 +46,14 @@ const uint8_t* ConstStorageAccessor::data() const { return constDataPointer; }
 
 size_t ConstStorageAccessor::size() const {
   if (internalState == AccessState::UNINIT) {
-    FSFW_FLOGW("{}", "size: Not initialized\n");
+    FSFW_LOGW("{}", "size: Not initialized\n");
   }
   return size_;
 }
 
 ReturnValue_t ConstStorageAccessor::getDataCopy(uint8_t* pointer, size_t maxSize) {
   if (internalState == AccessState::UNINIT) {
-    FSFW_FLOGW("{}", "getDataCopy: Not initialized\n");
+    FSFW_LOGW("{}", "getDataCopy: Not initialized\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (size_ > maxSize) {

@@ -163,7 +163,7 @@ void DeviceHandlerFailureIsolation::clearFaultCounters() {
 ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
   ReturnValue_t result = FailureIsolationBase::initialize();
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_FLOGE("{}", "initialize: Could not initialize FailureIsolationBase\n");
+    FSFW_LOGE("{}", "initialize: Could not initialize FailureIsolationBase\n");
     return result;
   }
   auto* power = ObjectManager::instance()->get<ConfirmsFailuresIF>(powerConfirmationId);

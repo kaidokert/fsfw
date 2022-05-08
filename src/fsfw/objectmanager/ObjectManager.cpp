@@ -38,8 +38,8 @@ ReturnValue_t ObjectManager::insert(object_id_t id, SystemObjectIF* object) {
 #endif
     return this->RETURN_OK;
   } else {
-    FSFW_FLOGET("ObjectManager::insert: Object ID {:#08x} is already in use\nTerminating program\n",
-                static_cast<uint32_t>(id));
+    FSFW_LOGET("ObjectManager::insert: Object ID {:#08x} is already in use\nTerminating program\n",
+               static_cast<uint32_t>(id));
     // This is very severe and difficult to handle in other places.
     std::exit(INSERTION_FAILED);
   }
@@ -54,7 +54,7 @@ ReturnValue_t ObjectManager::remove(object_id_t id) {
 #endif
     return RETURN_OK;
   } else {
-    FSFW_FLOGW("removeObject: Requested object {:#08x} not found\n", id);
+    FSFW_LOGW("removeObject: Requested object {:#08x} not found\n", id);
     return NOT_FOUND;
   }
 }
@@ -78,27 +78,27 @@ void ObjectManager::initialize() {
     result = it.second->initialize();
     if (result != RETURN_OK) {
       object_id_t var = it.first;
-      FSFW_FLOGWT("initialize: Object {:#08x} failed to initialize with code {:#04x}\n", var,
-                  result);
+      FSFW_LOGWT("initialize: Object {:#08x} failed to initialize with code {:#04x}\n", var,
+                 result);
       errorCount++;
     }
   }
   if (errorCount > 0) {
-    FSFW_FLOGWT("{}", "initialize: Counted failed initializations\n");
+    FSFW_LOGWT("{}", "initialize: Counted failed initializations\n");
   }
   // Init was successful. Now check successful interconnections.
   errorCount = 0;
   for (auto const& it : objectList) {
     result = it.second->checkObjectConnections();
     if (result != RETURN_OK) {
-      FSFW_FLOGE("initialize: Object {:#08x} connection check failed with code {:#04x}\n", it.first,
-                 result);
+      FSFW_LOGE("initialize: Object {:#08x} connection check failed with code {:#04x}\n", it.first,
+                result);
       errorCount++;
     }
   }
   if (errorCount > 0) {
-    FSFW_FLOGE("{}", "ObjectManager::ObjectManager: Counted {} failed connection checks\n",
-               errorCount);
+    FSFW_LOGE("{}", "ObjectManager::ObjectManager: Counted {} failed connection checks\n",
+              errorCount);
   }
 }
 

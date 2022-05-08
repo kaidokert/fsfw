@@ -22,7 +22,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   handleRequestQueue();
   ReturnValue_t result = this->performService();
   if (result != RETURN_OK) {
-    FSFW_FLOGWT("performOperation: PUS service {} return with error {}\n", serviceId, result);
+    FSFW_LOGWT("performOperation: PUS service {} return with error {}\n", serviceId, result);
     return RETURN_FAILED;
   }
   return RETURN_OK;
@@ -71,8 +71,8 @@ void PusServiceBase::handleRequestQueue() {
       //      ": no new packet." << std::endl;
       break;
     } else {
-      FSFW_FLOGWT("performOperation: Service {}. Error receiving packed, code {}\n", serviceId,
-                  status);
+      FSFW_LOGWT("performOperation: Service {}. Error receiving packed, code {}\n", serviceId,
+                 status);
     }
   }
 }
@@ -89,7 +89,7 @@ ReturnValue_t PusServiceBase::initialize() {
   auto* destService = ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
   auto* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
   if (destService == nullptr or distributor == nullptr) {
-    FSFW_FLOGWT(
+    FSFW_LOGWT(
         "ctor: Service {} | Make sure static packetSource and packetDestination "
         "are defined correctly\n",
         serviceId);
