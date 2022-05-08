@@ -80,7 +80,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id, uint8_t ackFlags
                                  step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_LOGE("sendFailureReport: Error writing to queue. Code {:#04x}\n", status);
+    FSFW_LOGE("sendFailureReport: Error writing to queue. Code {:#06x}\n", status);
   }
 }
 

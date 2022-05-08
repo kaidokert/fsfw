@@ -69,7 +69,7 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
   HealthMessage::setHealthMessage(&information, HealthMessage::HEALTH_INFO, health, oldHealth);
   if (MessageQueueSenderIF::sendMessage(parentQueue, &information, owner->getCommandQueue()) !=
       HasReturnvaluesIF::RETURN_OK) {
-    FSFW_LOGWT("informParent: Object ID {:#08x} | Sending health reply failed\n", objectId);
+    FSFW_LOGWT("informParent: Object ID {:#010x} | Sending health reply failed\n", objectId);
   }
 }
 
@@ -86,7 +86,7 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* command) {
   }
   if (MessageQueueSenderIF::sendMessage(command->getSender(), &reply, owner->getCommandQueue()) !=
       HasReturnvaluesIF::RETURN_OK) {
-    FSFW_LOGWT("handleSetHealthCommand: Object ID {:#08x} | Sending health reply failed\n",
+    FSFW_LOGWT("handleSetHealthCommand: Object ID {:#010x} | Sending health reply failed\n",
                objectId);
   }
 }

@@ -1459,10 +1459,10 @@ void DeviceHandlerBase::printWarningOrError(sif::LogLevel errorType, const char*
   }
 
   if (errorType == sif::LogLevel::WARNING) {
-    FSFW_LOGWT("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
+    FSFW_LOGWT("{} | Object ID {:#010x} | {}", functionName, SystemObject::getObjectId(),
                errorPrint);
   } else if (errorType == sif::LogLevel::ERROR) {
-    FSFW_LOGET("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
+    FSFW_LOGET("{} | Object ID {:#010x} | {}", functionName, SystemObject::getObjectId(),
                errorPrint);
   }
 }

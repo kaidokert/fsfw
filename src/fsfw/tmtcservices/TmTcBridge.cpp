@@ -87,7 +87,7 @@ ReturnValue_t TmTcBridge::handleTm() {
   ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
   ReturnValue_t result = handleTmQueue();
   if (result != RETURN_OK) {
-    FSFW_LOGET("handleTm: Error handling TM queue with error code {:#04x}\n", result);
+    FSFW_LOGET("handleTm: Error handling TM queue with error code {:#06x}\n", result);
     status = result;
   }
 
@@ -183,7 +183,7 @@ ReturnValue_t TmTcBridge::handleStoredTm() {
 
     result = sendTm(data, size);
     if (result != RETURN_OK) {
-      FSFW_LOGW("handleStoredTm: Could not send stored downlink data, code {:#04x}\n", result);
+      FSFW_LOGW("handleStoredTm: Could not send stored downlink data, code {:#06x}\n", result);
       status = result;
     }
     packetSentCounter++;

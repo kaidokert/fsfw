@@ -132,7 +132,7 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
   size_t size = 0;
   ReturnValue_t result = IPCStore->getData(storeAddress, &data, &size);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_LOGW("sendWiretappingTm: Data Lost in handleUnrequestedReply with failure ID {:#04x}\n",
+    FSFW_LOGW("sendWiretappingTm: Data Lost in handleUnrequestedReply with failure ID {:#06x}\n",
               result);
     return;
   }

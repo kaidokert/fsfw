@@ -34,7 +34,7 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
   auto* hkOwner = ObjectManager::instance()->get<HasLocalDataPoolIF>(poolOwner);
   if (hkOwner == nullptr) {
     FSFW_LOGWT(
-        "ctor: The supplied pool owner {:#08x} did not implement the correct interface "
+        "ctor: The supplied pool owner {:#010x} did not implement the correct interface "
         "HasLocalDataPoolIF\n",
         poolOwner);
     return;
@@ -94,6 +94,6 @@ void LocalPoolObjectBase::reportReadCommitError(const char* variableType, Return
     errMsg = "Unknown error code";
   }
 
-  FSFW_LOGW("{}: {} call | {} | Owner: {:#08x} | LPID: \n", variablePrintout, type, errMsg,
+  FSFW_LOGW("{}: {} call | {} | Owner: {:#010x} | LPID: \n", variablePrintout, type, errMsg,
             objectId, lpId);
 }

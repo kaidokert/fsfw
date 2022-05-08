@@ -38,7 +38,7 @@ ReturnValue_t ObjectManager::insert(object_id_t id, SystemObjectIF* object) {
 #endif
     return ObjectManager::RETURN_OK;
   } else {
-    FSFW_LOGET("ObjectManager::insert: Object ID {:#08x} is already in use\nTerminating program\n",
+    FSFW_LOGET("ObjectManager::insert: Object ID {:#010x} is already in use\nTerminating program\n",
                static_cast<uint32_t>(id));
     // This is very severe and difficult to handle in other places.
     std::exit(INSERTION_FAILED);
@@ -54,7 +54,7 @@ ReturnValue_t ObjectManager::remove(object_id_t id) {
 #endif
     return RETURN_OK;
   } else {
-    FSFW_LOGW("removeObject: Requested object {:#08x} not found\n", id);
+    FSFW_LOGW("removeObject: Requested object {:#010x} not found\n", id);
     return NOT_FOUND;
   }
 }
@@ -78,7 +78,7 @@ void ObjectManager::initialize() {
     result = it.second->initialize();
     if (result != RETURN_OK) {
       object_id_t var = it.first;
-      FSFW_LOGWT("initialize: Object {:#08x} failed to initialize with code {:#04x}\n", var,
+      FSFW_LOGWT("initialize: Object {:#010x} failed to initialize with code {:#06x}\n", var,
                  result);
       errorCount++;
     }
@@ -91,7 +91,7 @@ void ObjectManager::initialize() {
   for (auto const& it : objectList) {
     result = it.second->checkObjectConnections();
     if (result != RETURN_OK) {
-      FSFW_LOGE("initialize: Object {:#08x} connection check failed with code {:#04x}\n", it.first,
+      FSFW_LOGE("initialize: Object {:#010x} connection check failed with code {:#06x}\n", it.first,
                 result);
       errorCount++;
     }
@@ -106,7 +106,7 @@ void ObjectManager::printList() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::info("ObjectManager: Object List contains:\n");
   for (auto const& it : objectList) {
-    sif::info("{:#08x} | {:#08x}\n", it.first, fmt::ptr(it.second));
+    sif::info("{:#010x} | {:#010x}\n", it.first, fmt::ptr(it.second));
   }
 #endif
 }

@@ -199,7 +199,7 @@ ReturnValue_t LocalPool::reserveSpace(const size_t size, store_address_t* storeI
                                       bool ignoreFault) {
   ReturnValue_t status = getSubPoolIndex(size, &storeId->poolIndex);
   if (status != RETURN_OK) {
-    FSFW_LOGW("ID {:#08x} | reserveSpace: Packet too large\n", SystemObject::getObjectId());
+    FSFW_LOGW("ID {:#010x} | reserveSpace: Packet too large\n", SystemObject::getObjectId());
     return status;
   }
   status = findEmpty(storeId->poolIndex, &storeId->packetIndex);

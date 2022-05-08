@@ -44,7 +44,7 @@ template <typename... T>
 size_t logTraced(LogLevel level, const char* file, unsigned int line, bool timed,
                  fmt::format_string<T...> fmt, T&&... args) noexcept {
   if (PRINT_MUTEX == nullptr) {
-    fmt::print("Please call sif::initialize at program startup\n");
+    fmt::print("ERRROR | {} | Please call sif::initialize at program startup\n", __FILENAME__);
     return 0;
   }
   try {
@@ -74,7 +74,7 @@ size_t logTraced(LogLevel level, const char* file, unsigned int line, bool timed
     PRINT_MUTEX->unlockMutex();
     return bufPos;
   } catch (const fmt::v8::format_error& e) {
-    fmt::print("Printing failed with error: {}\n", e.what());
+    fmt::print("ERROR | {} | Printing failed with error: {}\n", __FILENAME__, e.what());
     PRINT_MUTEX->unlockMutex();
     return 0;
   }
@@ -83,7 +83,7 @@ size_t logTraced(LogLevel level, const char* file, unsigned int line, bool timed
 template <typename... T>
 size_t log(LogLevel level, bool timed, fmt::format_string<T...> fmt, T&&... args) noexcept {
   if (PRINT_MUTEX == nullptr) {
-    fmt::print("Please call sif::initialize at program startup\n");
+    fmt::print("ERROR | {} | Please call sif::initialize at program startup\n", __FILENAME__);
     return 0;
   }
   try {
@@ -118,17 +118,30 @@ size_t log(LogLevel level, bool timed, fmt::format_string<T...> fmt, T&&... args
 }
 
 template <typename... T>
-void debug(const char* file, unsigned int line, fmt::format_string<T...> fmt,
-           T&&... args) noexcept {
+void debug(fmt::format_string<T...> fmt, T&&... args) noexcept {
+  log(LogLevel::DEBUG, false, fmt, args...);
+}
+
+template <typename... T>
+void debug_t(fmt::format_string<T...> fmt, T&&... args) noexcept {
+  log(LogLevel::DEBUG, true, fmt, args...);
+}
+
+/**
+ * Debug logger with source file information
+ */
+template <typename... T>
+void debug_s(const char* file, unsigned int line, fmt::format_string<T...> fmt,
+             T&&... args) noexcept {
   logTraced(LogLevel::DEBUG, file, line, false, fmt, args...);
 }
 
 /**
- * Debug logger with timestamp and file/line number prefix
+ * Debug logger with source file information and timestamp
  */
 template <typename... T>
-void debug_t(const char* file, unsigned int line, fmt::format_string<T...> fmt,
-             T&&... args) noexcept {
+void debug_st(const char* file, unsigned int line, fmt::format_string<T...> fmt,
+              T&&... args) noexcept {
   logTraced(LogLevel::DEBUG, file, line, true, fmt, args...);
 }
 
@@ -209,17 +222,27 @@ void error_st(const char* file, unsigned int line, fmt::format_string<T...> fmt,
 }  // namespace sif
 
 // Helper macros to simplify calling the logger functions
-// The macros prefixed with F can be used to print formatted output
 // The macros postfixed with T are the log variant with timing information
 
 #define FSFW_LOGI(...) sif::info(__VA_ARGS__)
 #define FSFW_LOGIT(...) sif::info_t(__VA_ARGS__)
 
-#define FSFW_LOGD(...) sif::debug(__FILENAME__, __LINE__, __VA_ARGS__)
-#define FSFW_LOGDT(...) sif::debug_t(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_LOGD(...) sif::debug_s(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_LOGDT(...) sif::debug_st(__FILENAME__, __LINE__, __VA_ARGS__)
 
 #define FSFW_LOGW(...) sif::warning_s(__FILENAME__, __LINE__, __VA_ARGS__)
 #define FSFW_LOGWT(...) sif::warning_st(__FILENAME__, __LINE__, __VA_ARGS__)
 
 #define FSFW_LOGE(...) sif::error_s(__FILENAME__, __LINE__, __VA_ARGS__)
 #define FSFW_LOGET(...) sif::error_st(__FILENAME__, __LINE__, __VA_ARGS__)
+
+// Using those reduced binary size marginally..
+
+//#define FSFW_LOGD(...) sif::debug(__VA_ARGS__)
+//#define FSFW_LOGDT(...) sif::debug_t(__VA_ARGS__)
+
+//#define FSFW_LOGW(...) sif::warning(__VA_ARGS__)
+//#define FSFW_LOGWT(...) sif::warning_t(__VA_ARGS__)
+
+//#define FSFW_LOGE(...) sif::error(__VA_ARGS__)
+//#define FSFW_LOGET(...) sif::error(__VA_ARGS__)

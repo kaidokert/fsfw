@@ -56,7 +56,7 @@ ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue
   auto* possibleTarget = ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
   if (possibleTarget == nullptr) {
     FSFW_LOGE(
-        "checkInterfaceAndAcquire: Can't retrieve message queue | Object ID {:#08x}\n"
+        "checkInterfaceAndAcquire: Can't retrieve message queue | Object ID {:#010x}\n"
         "Does it implement ReceivesParameterMessagesIF?\n",
         *objectId);
     return CommandingServiceBase::INVALID_OBJECT;
