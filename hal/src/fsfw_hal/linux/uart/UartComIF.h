@@ -90,7 +90,7 @@ class UartComIF : public DeviceCommunicationIF, public SystemObject {
    *                      parity settings.
    *
    */
-  void setParityOptions(struct termios* options, UartCookie* uartCookie);
+  static void setParityOptions(struct termios* options, UartCookie* uartCookie);
 
   void setStopBitOptions(struct termios* options, UartCookie* uartCookie);
 

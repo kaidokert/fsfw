@@ -4,9 +4,9 @@
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../objectmanager/ObjectManager.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "EventMessage.h"
 #include "eventmatching/eventmatching.h"
+#include "fsfw/serviceinterface.h"
 
 class EventManagerIF {
  public:
@@ -39,19 +39,9 @@ class EventManagerIF {
 
   static void triggerEvent(EventMessage* message, MessageQueueId_t sentFrom = 0) {
     if (eventmanagerQueue == MessageQueueIF::NO_QUEUE) {
-      EventManagerIF* eventmanager =
-          ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
+      auto* eventmanager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
       if (eventmanager == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "EventManagerIF::triggerEvent: EventManager invalid or not found!"
-                     << std::endl;
-#else
-        sif::printWarning(
-            "EventManagerIF::triggerEvent: "
-            "EventManager invalid or not found!");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+        FSFW_LOGW("{}", "EventManagerIF::triggerEvent: EventManager invalid or not found\n");
         return;
       }
       eventmanagerQueue = eventmanager->getEventReportQueue();

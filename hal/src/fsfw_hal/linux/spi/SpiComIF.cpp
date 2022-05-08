@@ -11,6 +11,7 @@
 #include <cstring>
 
 #include "fsfw/FSFW.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw_hal/linux/UnixFileGuard.h"
 #include "fsfw_hal/linux/spi/SpiCookie.h"
 #include "fsfw_hal/linux/utility.h"
@@ -18,13 +19,7 @@
 SpiComIF::SpiComIF(object_id_t objectId, GpioIF* gpioComIF)
     : SystemObject(objectId), gpioComIF(gpioComIF) {
   if (gpioComIF == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "SpiComIF::SpiComIF: GPIO communication interface invalid!" << std::endl;
-#else
-    sif::printError("SpiComIF::SpiComIF: GPIO communication interface invalid!\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGET("{}", "SpiComIF::SpiComIF: GPIO communication interface invalid\n");
   }
 
   spiMutex = MutexFactory::instance()->createMutex();
@@ -32,7 +27,7 @@ SpiComIF::SpiComIF(object_id_t objectId, GpioIF* gpioComIF)
 
 ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
   int retval = 0;
-  SpiCookie* spiCookie = dynamic_cast<SpiCookie*>(cookie);
+  auto* spiCookie = dynamic_cast<SpiCookie*>(cookie);
   if (spiCookie == nullptr) {
     return NULLPOINTER;
   }
@@ -45,30 +40,17 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
     SpiInstance spiInstance(bufferSize);
     auto statusPair = spiDeviceMap.emplace(spiAddress, spiInstance);
     if (not statusPair.second) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "SpiComIF::initializeInterface: Failed to insert device with address "
-                 << spiAddress << "to SPI device map" << std::endl;
-#else
-      sif::printError(
-          "SpiComIF::initializeInterface: Failed to insert device with address "
-          "%lu to SPI device map\n",
-          static_cast<unsigned long>(spiAddress));
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+      FSFW_LOGWT(
+          "SpiComIF::initializeInterface: Failed to insert device with address {} to SPI device "
+          "map\n",
+          spiAddress);
       return HasReturnvaluesIF::RETURN_FAILED;
     }
     /* Now we emplaced the read buffer in the map, we still need to assign that location
     to the SPI driver transfer struct */
     spiCookie->assignReadBuffer(statusPair.first->second.replyBuffer.data());
   } else {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "SpiComIF::initializeInterface: SPI address already exists!" << std::endl;
-#else
-    sif::printError("SpiComIF::initializeInterface: SPI address already exists!\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGWT("{}", "initializeInterface: SPI address already exists\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -133,7 +115,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
 }
 
 ReturnValue_t SpiComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, size_t sendLen) {
-  SpiCookie* spiCookie = dynamic_cast<SpiCookie*>(cookie);
+  auto* spiCookie = dynamic_cast<SpiCookie*>(cookie);
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
 
   if (spiCookie == nullptr) {
@@ -141,19 +123,9 @@ ReturnValue_t SpiComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
   }
 
   if (sendLen > spiCookie->getMaxBufferSize()) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "SpiComIF::sendMessage: Too much data sent, send length " << sendLen
-                 << "larger than maximum buffer length " << spiCookie->getMaxBufferSize()
-                 << std::endl;
-#else
-    sif::printWarning(
-        "SpiComIF::sendMessage: Too much data sent, send length %lu larger "
-        "than maximum buffer length %lu!\n",
-        static_cast<unsigned long>(sendLen),
-        static_cast<unsigned long>(spiCookie->getMaxBufferSize()));
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGW(
+        "sendMessage: Too much data sent, send length {} larger than maximum buffer length {}\n",
+        spiCookie->getMaxBufferSize(), sendLen);
     return DeviceCommunicationIF::TOO_MUCH_DATA;
   }
 
@@ -201,24 +173,12 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
   if (gpioId != gpio::NO_GPIO) {
     result = spiMutex->lockMutex(timeoutType, timeoutMs);
     if (result != RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "SpiComIF::sendMessage: Failed to lock mutex" << std::endl;
-#else
-      sif::printError("SpiComIF::sendMessage: Failed to lock mutex\n");
-#endif
-#endif
+      FSFW_LOGET("{}", "sendMessage: Failed to lock mutex\n");
       return result;
     }
-    ReturnValue_t result = gpioComIF->pullLow(gpioId);
+    result = gpioComIF->pullLow(gpioId);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "SpiComIF::sendMessage: Pulling low CS pin failed" << std::endl;
-#else
-      sif::printWarning("SpiComIF::sendMessage: Pulling low CS pin failed");
-#endif
-#endif
+      FSFW_LOGW("{}", "sendMessage: Pulling low CS pin failed\n");
       return result;
     }
   }
@@ -237,13 +197,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
   } else {
     /* We write with a blocking half-duplex transfer here */
     if (write(fileDescriptor, sendData, sendLen) != static_cast<ssize_t>(sendLen)) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "SpiComIF::sendMessage: Half-Duplex write operation failed!" << std::endl;
-#else
-      sif::printWarning("SpiComIF::sendMessage: Half-Duplex write operation failed!\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+      FSFW_LOGET("{}", "sendMessage: Half-Duplex write operation failed\n");
       result = HALF_DUPLEX_TRANSFER_FAILED;
     }
   }
@@ -252,9 +206,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
     gpioComIF->pullHigh(gpioId);
     result = spiMutex->unlockMutex();
     if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "SpiComIF::sendMessage: Failed to unlock mutex" << std::endl;
-#endif
+      FSFW_LOGWT("{}", "sendMessage: Failed to unlock mutex\n");
       return result;
     }
   }
@@ -264,7 +216,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
 ReturnValue_t SpiComIF::getSendSuccess(CookieIF* cookie) { return HasReturnvaluesIF::RETURN_OK; }
 
 ReturnValue_t SpiComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLen) {
-  SpiCookie* spiCookie = dynamic_cast<SpiCookie*>(cookie);
+  auto* spiCookie = dynamic_cast<SpiCookie*>(cookie);
   if (spiCookie == nullptr) {
     return NULLPOINTER;
   }
@@ -296,22 +248,14 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
   if (gpioId != gpio::NO_GPIO) {
     result = spiMutex->lockMutex(timeoutType, timeoutMs);
     if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "SpiComIF::getSendSuccess: Failed to lock mutex" << std::endl;
-#endif
+      FSFW_LOGW("{}", "getSendSuccess: Failed to lock mutex\n");
       return result;
     }
     gpioComIF->pullLow(gpioId);
   }
 
   if (read(fileDescriptor, rxBuf, readSize) != static_cast<ssize_t>(readSize)) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "SpiComIF::sendMessage: Half-Duplex read operation failed!" << std::endl;
-#else
-    sif::printWarning("SpiComIF::sendMessage: Half-Duplex read operation failed!\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGW("{}", "sendMessage: Half-Duplex read operation failed\n");
     result = HALF_DUPLEX_TRANSFER_FAILED;
   }
 
@@ -319,9 +263,7 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
     gpioComIF->pullHigh(gpioId);
     result = spiMutex->unlockMutex();
     if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "SpiComIF::getSendSuccess: Failed to unlock mutex" << std::endl;
-#endif
+      FSFW_LOGW("{}", "getSendSuccess: Failed to unlock mutex\n");
       return result;
     }
   }
@@ -330,7 +272,7 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
 }
 
 ReturnValue_t SpiComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, size_t* size) {
-  SpiCookie* spiCookie = dynamic_cast<SpiCookie*>(cookie);
+  auto* spiCookie = dynamic_cast<SpiCookie*>(cookie);
   if (spiCookie == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -361,16 +303,10 @@ void SpiComIF::performSpiWiretapping(SpiCookie* spiCookie) {
     return;
   }
   size_t dataLen = spiCookie->getTransferStructHandle()->len;
-  uint8_t* dataPtr = reinterpret_cast<uint8_t*>(spiCookie->getTransferStructHandle()->tx_buf);
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "Sent SPI data: " << std::endl;
+  auto* dataPtr = reinterpret_cast<uint8_t*>(spiCookie->getTransferStructHandle()->tx_buf);
+  sif::info("Sent SPI data:\n");
   arrayprinter::print(dataPtr, dataLen, OutputType::HEX, false);
-  sif::info << "Received SPI data: " << std::endl;
-#else
-  sif::printInfo("Sent SPI data: \n");
-  arrayprinter::print(dataPtr, dataLen, OutputType::HEX, false);
-  sif::printInfo("Received SPI data: \n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+  sif::info("Received SPI data:\n");
   dataPtr = reinterpret_cast<uint8_t*>(spiCookie->getTransferStructHandle()->rx_buf);
   arrayprinter::print(dataPtr, dataLen, OutputType::HEX, false);
 }

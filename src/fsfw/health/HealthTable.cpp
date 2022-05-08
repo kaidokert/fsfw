@@ -3,6 +3,7 @@
 #include "fsfw/ipc/MutexFactory.h"
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/serialize/SerializeAdapter.h"
+#include "fsfw/serviceinterface.h"
 
 HealthTable::HealthTable(object_id_t objectid) : SystemObject(objectid) {
   mutex = MutexFactory::instance()->createMutex();
@@ -68,13 +69,7 @@ void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
   ReturnValue_t result =
       SerializeAdapter::serialize(&count, &pointer, &size, maxSize, SerializeIF::Endianness::BIG);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "HealthTable::printAll: Serialization of health table failed" << std::endl;
-#else
-    sif::printWarning("HealthTable::printAll: Serialization of health table failed\n");
-#endif
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGW("{}", "printAll: Serialization of health table failed\n");
     return;
   }
   for (const auto& health : healthMap) {

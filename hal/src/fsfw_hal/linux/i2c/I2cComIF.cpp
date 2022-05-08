@@ -26,19 +26,10 @@ ReturnValue_t I2cComIF::initializeInterface(CookieIF* cookie) {
   std::string deviceFile;
 
   if (cookie == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::initializeInterface: Invalid cookie!" << std::endl;
-#endif
+    FSFW_LOGE("{}", "initializeInterface: Invalid cookie\n");
     return NULLPOINTER;
   }
-  I2cCookie* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
-  if (i2cCookie == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::initializeInterface: Invalid I2C cookie!" << std::endl;
-#endif
-    return NULLPOINTER;
-  }
-
+  auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
   i2cAddress = i2cCookie->getAddress();
 
   i2cDeviceMapIter = i2cDeviceMap.find(i2cAddress);
@@ -47,20 +38,14 @@ ReturnValue_t I2cComIF::initializeInterface(CookieIF* cookie) {
     I2cInstance i2cInstance = {std::vector<uint8_t>(maxReplyLen), 0};
     auto statusPair = i2cDeviceMap.emplace(i2cAddress, i2cInstance);
     if (not statusPair.second) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "I2cComIF::initializeInterface: Failed to insert device with address "
-                 << i2cAddress << "to I2C device "
-                 << "map" << std::endl;
-#endif
+      FSFW_LOGW("initializeInterface: Failed to insert device with address {} to I2C device map\n",
+                i2cAddress);
       return HasReturnvaluesIF::RETURN_FAILED;
     }
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::error << "I2cComIF::initializeInterface: Device with address " << i2cAddress
-             << "already in use" << std::endl;
-#endif
+  FSFW_LOGE("initializeInterface: Device with address {} already in use\n", i2cAddress);
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
@@ -70,9 +55,7 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
   std::string deviceFile;
 
   if (sendData == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::sendMessage: Send Data is nullptr" << std::endl;
-#endif
+    FSFW_LOGW("{}", "sendMessage: Send Data is nullptr\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -80,21 +63,16 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-  I2cCookie* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
+  auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
   if (i2cCookie == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::sendMessage: Invalid I2C Cookie!" << std::endl;
-#endif
+    FSFW_LOGWT("{}", "sendMessage: Invalid I2C Cookie\n");
     return NULLPOINTER;
   }
 
   address_t i2cAddress = i2cCookie->getAddress();
   i2cDeviceMapIter = i2cDeviceMap.find(i2cAddress);
   if (i2cDeviceMapIter == i2cDeviceMap.end()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::sendMessage: i2cAddress of Cookie not "
-               << "registered in i2cDeviceMap" << std::endl;
-#endif
+    FSFW_LOGWT("{}", "sendMessage: I2C address of cookie not registered in I2C device map\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -109,11 +87,8 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
   }
 
   if (write(fd, sendData, sendLen) != static_cast<int>(sendLen)) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::sendMessage: Failed to send data to I2C "
-                  "device with error code "
-               << errno << ". Error description: " << strerror(errno) << std::endl;
-#endif
+    FSFW_LOGE("sendMessage: Failed to send data to I2C device with error code {} | {}\n", errno,
+              strerror(errno));
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -135,11 +110,9 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-  I2cCookie* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
+  auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
   if (i2cCookie == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::requestReceiveMessage: Invalid I2C Cookie!" << std::endl;
-#endif
+    FSFW_LOGWT("{}", "requestReceiveMessage: Invalid I2C Cookie\n");
     i2cDeviceMapIter->second.replyLen = 0;
     return NULLPOINTER;
   }
@@ -147,10 +120,8 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
   address_t i2cAddress = i2cCookie->getAddress();
   i2cDeviceMapIter = i2cDeviceMap.find(i2cAddress);
   if (i2cDeviceMapIter == i2cDeviceMap.end()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::requestReceiveMessage: i2cAddress of Cookie not "
-               << "registered in i2cDeviceMap" << std::endl;
-#endif
+    FSFW_LOGW("requestReceiveMessage: I2C address {} of Cookie not registered in i2cDeviceMap",
+              i2cAddress);
     i2cDeviceMapIter->second.replyLen = 0;
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -168,20 +139,13 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
 
   uint8_t* replyBuffer = i2cDeviceMapIter->second.replyBuffer.data();
 
-  int readLen = read(fd, replyBuffer, requestLen);
+  ssize_t readLen = read(fd, replyBuffer, requestLen);
   if (readLen != static_cast<int>(requestLen)) {
-#if FSFW_VERBOSE_LEVEL >= 1 and FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::requestReceiveMessage: Reading from I2C "
-               << "device failed with error code " << errno << ". Description"
-               << " of error: " << strerror(errno) << std::endl;
-    sif::error << "I2cComIF::requestReceiveMessage: Read only " << readLen << " from " << requestLen
-               << " bytes" << std::endl;
-#endif
+    FSFW_LOGWT(
+        "requestReceiveMessage: Reading from I2C device failed with error code "
+        "{} | {}\nRead only {} from {} bytes\n",
+        errno, strerror(errno), readLen, requestLen);
     i2cDeviceMapIter->second.replyLen = 0;
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "I2cComIF::requestReceiveMessage: Read " << readLen << " of " << requestLen
-               << " bytes" << std::endl;
-#endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -195,21 +159,17 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
 }
 
 ReturnValue_t I2cComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, size_t* size) {
-  I2cCookie* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
+  auto* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
   if (i2cCookie == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::readReceivedMessage: Invalid I2C Cookie!" << std::endl;
-#endif
+    FSFW_LOGW("{}", "readReceivedMessage: Invalid I2C Cookie\n");
     return NULLPOINTER;
   }
 
   address_t i2cAddress = i2cCookie->getAddress();
   i2cDeviceMapIter = i2cDeviceMap.find(i2cAddress);
   if (i2cDeviceMapIter == i2cDeviceMap.end()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "I2cComIF::readReceivedMessage: i2cAddress of Cookie not "
-               << "found in i2cDeviceMap" << std::endl;
-#endif
+    FSFW_LOGE("readReceivedMessage: I2C address {} of cookie not found in I2C device map\n",
+              i2cAddress);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   *buffer = i2cDeviceMapIter->second.replyBuffer.data();
@@ -221,16 +181,8 @@ ReturnValue_t I2cComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, 
 ReturnValue_t I2cComIF::openDevice(std::string deviceFile, address_t i2cAddress,
                                    int* fileDescriptor) {
   if (ioctl(*fileDescriptor, I2C_SLAVE, i2cAddress) < 0) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "I2cComIF: Specifying target device failed with error code " << errno << "."
-                 << std::endl;
-    sif::warning << "Error description " << strerror(errno) << std::endl;
-#else
-    sif::printWarning("I2cComIF: Specifying target device failed with error code %d.\n");
-    sif::printWarning("Error description: %s\n", strerror(errno));
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGWT("openDevice: Specifying target device failed with error code {} | {}\n", errno,
+               strerror(errno));
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   return HasReturnvaluesIF::RETURN_OK;

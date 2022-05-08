@@ -442,7 +442,7 @@ string(CONCAT POST_BUILD_COMMENT
 # The additional / is important to remove the last character from the path.
 # Note that it does not matter if the OS uses / or \, because we are only
 # saving the path size.
-string(LENGTH "${CMAKE_SOURCE_DIR}/" SOURCE_PATH_SIZE)
+string(LENGTH "${CMAKE_SOURCE_DIR}/" FSFW_SOURCE_PATH_SIZE)
 target_compile_definitions(${LIB_FSFW_NAME} PRIVATE "-DFSFW_SOURCE_PATH_SIZE=${FSFW_SOURCE_PATH_SIZE}")
 
 add_custom_command(

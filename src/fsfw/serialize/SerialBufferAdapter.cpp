@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 template <typename count_t>
 SerialBufferAdapter<count_t>::SerialBufferAdapter(const uint8_t* buffer, count_t bufferLength,
@@ -95,11 +95,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer, 
 template <typename count_t>
 uint8_t* SerialBufferAdapter<count_t>::getBuffer() {
   if (buffer == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "Wrong access function for stored type !"
-                  " Use getConstBuffer()."
-               << std::endl;
-#endif
+    FSFW_LOGW("{}", "getBuffer: Wrong access function for stored type. Use getConstBuffer\n");
     return nullptr;
   }
   return buffer;
@@ -108,11 +104,7 @@ uint8_t* SerialBufferAdapter<count_t>::getBuffer() {
 template <typename count_t>
 const uint8_t* SerialBufferAdapter<count_t>::getConstBuffer() const {
   if (constBuffer == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "SerialBufferAdapter::getConstBuffer:"
-                  " Buffers are unitialized!"
-               << std::endl;
-#endif
+    FSFW_LOGE("{}", "getConstBuffer: Buffers are unitialized\n");
     return nullptr;
   }
   return constBuffer;

@@ -57,10 +57,10 @@ class ServiceInterfaceStream : public std::ostream {
 // Forward declaration of interface streams. These should be instantiated in
 // main. They can then be used like std::cout or std::cerr.
 namespace sif {
-extern ServiceInterfaceStream debug;
-extern ServiceInterfaceStream info;
-extern ServiceInterfaceStream warning;
-extern ServiceInterfaceStream error;
+// extern ServiceInterfaceStream debug;
+// extern ServiceInterfaceStream info;
+// extern ServiceInterfaceStream warning;
+// extern ServiceInterfaceStream error;
 }  // namespace sif
 
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */

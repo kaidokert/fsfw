@@ -1,6 +1,6 @@
-#include "fsfw/objectmanager/ObjectManager.h"
+#include "ObjectManager.h"
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 #include <iomanip>
@@ -38,15 +38,8 @@ ReturnValue_t ObjectManager::insert(object_id_t id, SystemObjectIF* object) {
 #endif
     return this->RETURN_OK;
   } else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "ObjectManager::insert: Object ID " << std::hex << static_cast<uint32_t>(id)
-               << std::dec << " is already in use!" << std::endl;
-    sif::error << "Terminating program" << std::endl;
-#else
-    sif::printError("ObjectManager::insert: Object ID 0x%08x is already in use!\n",
-                    static_cast<unsigned int>(id));
-    sif::printError("Terminating program");
-#endif
+    FSFW_LOGET("ObjectManager::insert: Object ID {:#08x} is already in use\nTerminating program\n",
+               static_cast<uint32_t>(id));
     // This is very severe and difficult to handle in other places.
     std::exit(INSERTION_FAILED);
   }
@@ -61,10 +54,7 @@ ReturnValue_t ObjectManager::remove(object_id_t id) {
 #endif
     return RETURN_OK;
   } else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "ObjectManager::removeObject: Requested object " << std::hex << (int)id
-               << std::dec << " not found." << std::endl;
-#endif
+    FSFW_LOGW("removeObject: Requested object {:#08x} not found\n", id);
     return NOT_FOUND;
   }
 }
@@ -79,64 +69,44 @@ SystemObjectIF* ObjectManager::getSystemObject(object_id_t id) {
 }
 
 void ObjectManager::initialize() {
-  if (objectFactoryFunction == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "ObjectManager::initialize: Passed produceObjects "
-                  "functions is nullptr!"
-               << std::endl;
-#else
-    sif::printError("ObjectManager::initialize: Passed produceObjects functions is nullptr!\n");
-#endif
-    return;
+  if (objectFactoryFunction != nullptr) {
+    objectFactoryFunction(factoryArgs);
   }
-  objectFactoryFunction(factoryArgs);
   ReturnValue_t result = RETURN_FAILED;
   uint32_t errorCount = 0;
   for (auto const& it : objectList) {
     result = it.second->initialize();
     if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
       object_id_t var = it.first;
-      sif::error << "ObjectManager::initialize: Object 0x" << std::hex << std::setw(8)
-                 << std::setfill('0') << var
-                 << " failed to "
-                    "initialize with code 0x"
-                 << result << std::dec << std::setfill(' ') << std::endl;
-#endif
+      FSFW_LOGWT("initialize: Object {:#08x} failed to initialize with code {:#04x}\n", var,
+                 result);
       errorCount++;
     }
   }
   if (errorCount > 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "ObjectManager::ObjectManager: Counted " << errorCount
-               << " failed initializations." << std::endl;
-#endif
+    FSFW_LOGWT("{}", "initialize: Counted failed initializations\n");
   }
   // Init was successful. Now check successful interconnections.
   errorCount = 0;
   for (auto const& it : objectList) {
     result = it.second->checkObjectConnections();
     if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "ObjectManager::ObjectManager: Object 0x" << std::hex << (int)it.first
-                 << " connection check failed with code 0x" << result << std::dec << std::endl;
-#endif
+      FSFW_LOGE("initialize: Object {:#08x} connection check failed with code {:#04x}\n", it.first,
+                result);
       errorCount++;
     }
   }
   if (errorCount > 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "ObjectManager::ObjectManager: Counted " << errorCount
-               << " failed connection checks." << std::endl;
-#endif
+    FSFW_LOGE("{}", "ObjectManager::ObjectManager: Counted {} failed connection checks\n",
+              errorCount);
   }
 }
 
 void ObjectManager::printList() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "ObjectManager: Object List contains:" << std::endl;
+  sif::info("ObjectManager: Object List contains:\n");
   for (auto const& it : objectList) {
-    sif::debug << std::hex << it.first << " | " << it.second << std::endl;
+    sif::info("{:#08x} | {:#08x}\n", it.first, it.second);
   }
 #endif
 }

@@ -1,7 +1,7 @@
 #include "fsfw/tcdistribution/TcDistributor.h"
 
 #include "fsfw/ipc/QueueFactory.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
 TcDistributor::TcDistributor(object_id_t objectId) : SystemObject(objectId) {
@@ -33,14 +33,10 @@ ReturnValue_t TcDistributor::handlePacket() {
 }
 
 void TcDistributor::print() {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "Distributor content is: " << std::endl << "ID\t| Message Queue ID" << std::endl;
-  sif::debug << std::setfill('0') << std::setw(8) << std::hex;
+  FSFW_LOGI("{}", "Distributor content is:\nID\t| Message Queue ID");
   for (const auto& queueMapIter : queueMap) {
-    sif::debug << queueMapIter.first << "\t| 0x" << queueMapIter.second << std::endl;
+    FSFW_LOGI("{} \t| {:#08x}", queueMapIter.first, queueMapIter.second);
   }
-  sif::debug << std::setfill(' ') << std::dec;
-#endif
 }
 
 ReturnValue_t TcDistributor::callbackAfterSending(ReturnValue_t queueStatus) { return RETURN_OK; }

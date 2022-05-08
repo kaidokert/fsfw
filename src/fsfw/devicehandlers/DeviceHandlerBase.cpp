@@ -150,22 +150,15 @@ ReturnValue_t DeviceHandlerBase::initialize() {
   }
 
   if (rawDataReceiverId != objects::NO_OBJECT) {
-    AcceptsDeviceResponsesIF* rawReceiver =
-        ObjectManager::instance()->get<AcceptsDeviceResponsesIF>(rawDataReceiverId);
+    auto* rawReceiver = ObjectManager::instance()->get<AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
     if (rawReceiver == nullptr) {
       printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
                           ObjectManagerIF::CHILD_INIT_FAILED,
                           "Raw receiver object ID set but no valid object found.");
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "Make sure the raw receiver object is set up properly"
-                    " and implements AcceptsDeviceResponsesIF"
-                 << std::endl;
-#else
-      sif::printError(
-          "Make sure the raw receiver object is set up "
-          "properly and implements AcceptsDeviceResponsesIF\n");
-#endif
+      FSFW_LOGE("{}",
+                "Make sure the raw receiver object is set up properly "
+                "and implements AcceptsDeviceResponsesIF");
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
     defaultRawReceiver = rawReceiver->getDeviceQueue();
@@ -177,14 +170,9 @@ ReturnValue_t DeviceHandlerBase::initialize() {
       printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
                           ObjectManagerIF::CHILD_INIT_FAILED,
                           "Power switcher set but no valid object found.");
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "Make sure the power switcher object is set up "
-                 << "properly and implements PowerSwitchIF" << std::endl;
-#else
-      sif::printError(
-          "Make sure the power switcher object is set up "
-          "properly and implements PowerSwitchIF\n");
-#endif
+      FSFW_LOGE("{}",
+                "Make sure the power switcher object is set up "
+                "properly and implements PowerSwitchIF\n");
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
@@ -767,11 +755,9 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData, size_t receivedD
           printWarningOrError(sif::OutputTypes::OUT_ERROR, "parseReply",
                               ObjectManagerIF::CHILD_INIT_FAILED,
                               "Power switcher set but no valid object found.");
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::warning << "DeviceHandlerBase::parseReply: foundLen is 0!"
-                          " Packet parsing will be stuck."
-                       << std::endl;
-#endif
+          FSFW_LOGW("{}",
+                    "DeviceHandlerBase::parseReply: foundLen is 0! "
+                    "Packet parsing will be stuck\n");
         }
         break;
       }
@@ -1476,23 +1462,11 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType, const ch
   }
 
   if (errorType == sif::OutputTypes::OUT_WARNING) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "DeviceHandlerBase::" << functionName << ": Object ID 0x" << std::hex
-                 << std::setw(8) << std::setfill('0') << this->getObjectId() << " | " << errorPrint
-                 << std::dec << std::setfill(' ') << std::endl;
-#else
-    sif::printWarning("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n", functionName,
-                      this->getObjectId(), errorPrint);
-#endif
+    FSFW_LOGWT("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
+               errorPrint);
   } else if (errorType == sif::OutputTypes::OUT_ERROR) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "DeviceHandlerBase::" << functionName << ": Object ID 0x" << std::hex
-               << std::setw(8) << std::setfill('0') << this->getObjectId() << " | " << errorPrint
-               << std::dec << std::setfill(' ') << std::endl;
-#else
-    sif::printError("DeviceHandlerBase::%s: Object ID 0x%08x | %s\n", functionName,
-                    this->getObjectId(), errorPrint);
-#endif
+    FSFW_LOGET("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
+               errorPrint);
   }
 }
 

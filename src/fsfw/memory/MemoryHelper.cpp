@@ -4,7 +4,7 @@
 #include "fsfw/memory/MemoryMessage.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serialize/EndianConverter.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 MemoryHelper::MemoryHelper(HasMemoryIF* workOnThis, MessageQueueIF* useThisQueue)
     : workOnThis(workOnThis),
@@ -17,9 +17,7 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
   lastSender = message->getSender();
   lastCommand = message->getCommand();
   if (busy) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "MemHelper: Busy!" << std::endl;
-#endif
+    FSFW_LOGW("{}", "MemoryHelper: Busy\n");
   }
   switch (lastCommand) {
     case MemoryMessage::CMD_MEMORY_DUMP:

@@ -18,13 +18,9 @@ FailureIsolationBase::~FailureIsolationBase() {
 }
 
 ReturnValue_t FailureIsolationBase::initialize() {
-  EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
+  auto* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
   if (manager == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "FailureIsolationBase::initialize: Event Manager has not"
-                  " been initialized!"
-               << std::endl;
-#endif
+    FSFW_LOGE("{}", "initialize: Event Manager has not been initialized\n");
     return RETURN_FAILED;
   }
   ReturnValue_t result = manager->registerListener(eventQueue->getId());
@@ -38,27 +34,19 @@ ReturnValue_t FailureIsolationBase::initialize() {
     }
     owner = ObjectManager::instance()->get<HasHealthIF>(ownerId);
     if (owner == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "FailureIsolationBase::intialize: Owner object "
-                    "invalid. Make sure it implements HasHealthIF"
-                 << std::endl;
-#endif
+      FSFW_LOGE(
+          "FailureIsolationBase::intialize: Owner object {:#08x} invalid. "
+          "Does it implement HasHealthIF?\n",
+          ownerId);
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
   if (faultTreeParent != objects::NO_OBJECT) {
-    ConfirmsFailuresIF* parentIF =
-        ObjectManager::instance()->get<ConfirmsFailuresIF>(faultTreeParent);
+    auto* parentIF = ObjectManager::instance()->get<ConfirmsFailuresIF>(faultTreeParent);
     if (parentIF == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "FailureIsolationBase::intialize: Parent object"
-                 << "invalid." << std::endl;
-#endif
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "Make sure it implements ConfirmsFailuresIF." << std::endl;
-#endif
+      FSFW_LOGW("intialize: Parent object {:#08x} invalid. Does it implement ConfirmsFailuresIF?\n",
+                faultTreeParent);
       return ObjectManagerIF::CHILD_INIT_FAILED;
-      return RETURN_FAILED;
     }
     eventQueue->setDefaultDestination(parentIF->getEventReceptionQueue());
   }

@@ -2,7 +2,7 @@
 
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tcdistribution/PUSDistributorIF.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
@@ -22,10 +22,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   handleRequestQueue();
   ReturnValue_t result = this->performService();
   if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PusService " << (uint16_t)this->serviceId << ": performService returned with "
-               << (int16_t)result << std::endl;
-#endif
+    FSFW_LOGWT("performOperation: PUS service {} return with error {}\n", serviceId, result);
     return RETURN_FAILED;
   }
   return RETURN_OK;
@@ -74,11 +71,8 @@ void PusServiceBase::handleRequestQueue() {
       //      ": no new packet." << std::endl;
       break;
     } else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "PusServiceBase::performOperation: Service " << this->serviceId
-                 << ": Error receiving packet. Code: " << std::hex << status << std::dec
-                 << std::endl;
-#endif
+      FSFW_LOGWT("performOperation: Service {}. Error receiving packed, code {}\n", serviceId,
+                 status);
     }
   }
 }
@@ -92,15 +86,13 @@ ReturnValue_t PusServiceBase::initialize() {
   if (result != RETURN_OK) {
     return result;
   }
-  AcceptsTelemetryIF* destService =
-      ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
-  PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
+  auto* destService = ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
+  auto* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
   if (destService == nullptr or distributor == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PusServiceBase::PusServiceBase: Service " << this->serviceId
-               << ": Configuration error. Make sure "
-               << "packetSource and packetDestination are defined correctly" << std::endl;
-#endif
+    FSFW_LOGWT(
+        "ctor: Service {} | Make sure static packetSource and packetDestination "
+        "are defined correctly\n",
+        serviceId);
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
   this->requestQueue->setDefaultDestination(destService->getReportReceptionQueue());

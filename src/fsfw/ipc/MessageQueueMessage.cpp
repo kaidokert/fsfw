@@ -3,7 +3,7 @@
 #include <cstring>
 
 #include "fsfw/globalfunctions/arrayprinter.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 MessageQueueMessage::MessageQueueMessage() : messageSize(getMinimumMessageSize()) {
   memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
@@ -15,11 +15,7 @@ MessageQueueMessage::MessageQueueMessage(uint8_t* data, size_t size)
     memcpy(this->getData(), data, size);
     this->messageSize = this->HEADER_SIZE + size;
   } else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "MessageQueueMessage: Passed size larger than maximum"
-                    "allowed size! Setting content to 0"
-                 << std::endl;
-#endif
+    FSFW_LOGW("{}", "ctor: Passed size larger than maximum allowed size! Setting content to 0\n");
     memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
     this->messageSize = this->HEADER_SIZE;
   }

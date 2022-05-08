@@ -21,13 +21,8 @@ CFDPDistributor::~CFDPDistributor() {}
 CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 #if FSFW_CFDP_DISTRIBUTOR_DEBUGGING == 1
   store_address_t storeId = this->currentMessage.getStorageId();
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "CFDPDistributor::handlePacket received: " << storeId.poolIndex << ", "
+  FSFW_LOGI("selectDestination: Recie" << storeId.poolIndex << ", "
              << storeId.packetIndex << std::endl;
-#else
-  sif::printDebug("CFDPDistributor::handlePacket received: %d, %d\n", storeId.poolIndex,
-                  storeId.packetIndex);
-#endif
 #endif
   TcMqMapIter queueMapIt = this->queueMap.end();
   if (this->currentPacket == nullptr) {

@@ -4,6 +4,7 @@
 #include "fsfw/ipc/CommandMessage.h"
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/storagemanager/storeAddress.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 
@@ -28,13 +29,7 @@ ReturnValue_t CFDPHandler::initialize() {
 }
 
 ReturnValue_t CFDPHandler::handleRequest(store_address_t storeId) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "CFDPHandler::handleRequest" << std::endl;
-#else
-  sif::printDebug("CFDPHandler::handleRequest\n");
-#endif /* !FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif
+  FSFW_LOGDT("{}", "CFDPHandler::handleRequest\n");
 
   // TODO read out packet from store using storeId
 

@@ -1,7 +1,7 @@
 #include "fsfw/action.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue)
     : owner(setOwner), queueToUse(useThisQueue) {}
@@ -28,13 +28,7 @@ ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
   }
 
   if (queueToUse == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ActionHelper::initialize: No queue set" << std::endl;
-#else
-    sif::printWarning("ActionHelper::initialize: No queue set\n");
-#endif
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGW("{}", "initialize: No queue set\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -96,14 +90,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
   size_t size = 0;
   ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, maxSize, &dataPtr);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ActionHelper::reportData: Getting free element from IPC store failed!"
-                 << std::endl;
-#else
-    sif::printWarning(
-        "ActionHelper::reportData: Getting free element from IPC "
-        "store failed!\n");
-#endif
+    FSFW_LOGWT("{}", "reportData: Getting free element from IPC store failed\n");
     return result;
   }
   result = data->serialize(&dataPtr, &size, maxSize, SerializeIF::Endianness::BIG);
@@ -138,11 +125,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
   store_address_t storeAddress;
   ReturnValue_t result = ipcStore->addData(&storeAddress, data, dataSize);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ActionHelper::reportData: Adding data to IPC store failed!" << std::endl;
-#else
-    sif::printWarning("ActionHelper::reportData: Adding data to IPC store failed!\n");
-#endif
+    FSFW_LOGWT("{}", "reportData: Adding data to IPC store failed\n");
     return result;
   }
 

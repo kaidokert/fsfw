@@ -7,13 +7,7 @@
 cfdp::VarLenField::VarLenField(cfdp::WidthInBytes width, size_t value) : VarLenField() {
   ReturnValue_t result = this->setValue(width, value);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_DISABLE_PRINTOUT == 0
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "cfdp::VarLenField: Setting value failed" << std::endl;
-#else
-    sif::printWarning("cfdp::VarLenField: Setting value failed\n");
-#endif
-#endif
+    FSFW_LOGW("{}", "cfdp::VarLenField: Setting value failed\n");
   }
 }
 

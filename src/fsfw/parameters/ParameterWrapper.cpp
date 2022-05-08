@@ -1,7 +1,7 @@
 #include "fsfw/parameters/ParameterWrapper.h"
 
 #include "fsfw/FSFW.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 ParameterWrapper::ParameterWrapper() : pointsToStream(false), type(Type::UNKNOWN_TYPE) {}
 
@@ -209,47 +209,23 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
                                          uint16_t startWritingAtIndex) {
   if (data == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ParameterWrapper::copyFrom: Called on read-only variable!" << std::endl;
-#else
-    sif::printWarning("ParameterWrapper::copyFrom: Called on read-only variable!\n");
-#endif
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGWT("{}", "copyFrom: Called on read-only variable\n");
     return READONLY;
   }
 
   if (from->readonlyData == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ParameterWrapper::copyFrom: Source not set!" << std::endl;
-#else
-    sif::printWarning("ParameterWrapper::copyFrom: Source not set!\n");
-#endif
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGWT("{}", "copyFrom: Source not set\n");
     return SOURCE_NOT_SET;
   }
 
   if (type != from->type) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ParameterWrapper::copyFrom: Datatype missmatch!" << std::endl;
-#else
-    sif::printWarning("ParameterWrapper::copyFrom: Datatype missmatch!\n");
-#endif
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGW("{}", "copyFrom: Datatype missmatch\n");
     return DATATYPE_MISSMATCH;
   }
 
   // The smallest allowed value for rows and columns is one.
   if (rows == 0 or columns == 0) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "ParameterWrapper::copyFrom: Columns or rows zero!" << std::endl;
-#else
-    sif::printWarning("ParameterWrapper::copyFrom: Columns or rows zero!\n");
-#endif
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGW("{}", "ParameterWrapper::copyFrom: Columns or rows zero\n");
     return COLUMN_OR_ROWS_ZERO;
   }
 

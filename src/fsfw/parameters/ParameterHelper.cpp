@@ -2,6 +2,7 @@
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/parameters/ParameterMessage.h"
+#include "fsfw/serviceinterface.h"
 
 ParameterHelper::ParameterHelper(ReceivesParameterMessagesIF* owner) : owner(owner) {}
 
@@ -43,10 +44,9 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage* message) {
       ConstStorageAccessor accessor(storeId);
       result = storage->getData(storeId, accessor);
       if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "ParameterHelper::handleParameterMessage: Getting"
-                   << " store data failed for load command." << std::endl;
-#endif
+        FSFW_LOGE("{}",
+                  "ParameterHelper::handleParameterMessage: Getting store data failed for "
+                  "load command\n");
         break;
       }
 

@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 SpacePacketBase::SpacePacketBase(const uint8_t* setAddress) {
   this->data = reinterpret_cast<SpacePacketPointer*>(const_cast<uint8_t*>(setAddress));
@@ -18,13 +18,7 @@ uint8_t SpacePacketBase::getPacketVersionNumber(void) {
 ReturnValue_t SpacePacketBase::initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader,
                                                      uint16_t apid, uint16_t sequenceCount) {
   if (data == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "SpacePacketBase::initSpacePacketHeader: Data pointer is invalid" << std::endl;
-#else
-    sif::printWarning("SpacePacketBase::initSpacePacketHeader: Data pointer is invalid!\n");
-#endif
-#endif
+    FSFW_LOGWT("{}", "initSpacePacketHeader: Data pointer is invalid\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   // reset header to zero:

@@ -6,7 +6,7 @@
 #include <fsfw/cfdp/tlv/Tlv.h>
 #include <fsfw/cfdp/tlv/TlvIF.h>
 #include <fsfw/serialize/SerializeIF.h>
-#include <fsfw/serviceinterface/ServiceInterface.h>
+#include <fsfw/serviceinterface.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -128,17 +128,7 @@ class FilestoreTlvBase : public TlvIF {
   }
 
   void secondFileNameMissing() const {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "FilestoreRequestTlv::deSerialize: Second file name required"
-                    " but TLV pointer not set"
-                 << std::endl;
-#else
-    sif::printWarning(
-        "FilestoreRequestTlv::deSerialize: Second file name required"
-        " but TLV pointer not set\n");
-#endif
-#endif
+    FSFW_LOGWT("{}", "secondFileNameMissing: Second file name required but TLV pointer not set\n");
   }
 
   FilestoreActionCode getActionCode() const { return actionCode; }

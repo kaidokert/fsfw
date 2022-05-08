@@ -12,7 +12,7 @@ enum class StopBits { ONE_STOP_BIT, TWO_STOP_BITS };
 
 enum class UartModes { CANONICAL, NON_CANONICAL };
 
-enum class BitsPerWord { BITS_5, BITS_6, BITS_7, BITS_8 };
+enum class BitsPerWord : unsigned int { BITS_5 = 5, BITS_6 = 6, BITS_7 = 7, BITS_8 = 8 };
 
 enum class UartBaudRate {
   RATE_50,

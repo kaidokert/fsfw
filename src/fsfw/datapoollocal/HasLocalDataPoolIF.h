@@ -166,15 +166,7 @@ class HasLocalDataPoolIF {
    * @return
    */
   virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden. "
-                    "Returning nullptr!"
-                 << std::endl;
-#else
-    sif::printWarning(
-        "HasLocalDataPoolIF::getPoolObjectHandle: "
-        "Not overriden. Returning nullptr!\n");
-#endif
+    FSFW_LOGW("{}", "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden. Returning nullptr\n");
     return nullptr;
   }
 };

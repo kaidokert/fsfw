@@ -1,10 +1,9 @@
 #ifndef FSFW_DATAPOOL_POOLREADHELPER_H_
 #define FSFW_DATAPOOL_POOLREADHELPER_H_
 
-#include <FSFWConfig.h>
-
-#include "../serviceinterface/ServiceInterface.h"
 #include "ReadCommitIF.h"
+#include "fsfw/FSFW.h"
+#include "fsfw/serviceinterface.h"
 
 /**
  * @brief 	Helper class to read data sets or pool variables
@@ -18,13 +17,7 @@ class PoolReadGuard {
     if (readObject != nullptr) {
       readResult = readObject->read(timeoutType, mutexTimeout);
       if (readResult != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL == 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "PoolReadHelper: Read failed!" << std::endl;
-#else
-        sif::printError("PoolReadHelper: Read failed!\n");
-#endif /* FSFW_PRINT_VERBOSITY_LEVEL == 1 */
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+        FSFW_LOGW("{}", "ctor: Read failed\n");
       }
     }
   }

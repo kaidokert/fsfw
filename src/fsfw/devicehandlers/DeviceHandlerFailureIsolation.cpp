@@ -5,7 +5,7 @@
 #include "fsfw/modes/HasModesIF.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/power/Fuse.h"
-#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/thermal/ThermalComponentIF.h"
 
 object_id_t DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
@@ -163,15 +163,10 @@ void DeviceHandlerFailureIsolation::clearFaultCounters() {
 ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
   ReturnValue_t result = FailureIsolationBase::initialize();
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "DeviceHandlerFailureIsolation::initialize: Could not"
-                  " initialize FailureIsolationBase."
-               << std::endl;
-#endif
+    FSFW_LOGE("{}", "initialize: Could not initialize FailureIsolationBase\n");
     return result;
   }
-  ConfirmsFailuresIF* power =
-      ObjectManager::instance()->get<ConfirmsFailuresIF>(powerConfirmationId);
+  auto* power = ObjectManager::instance()->get<ConfirmsFailuresIF>(powerConfirmationId);
   if (power != nullptr) {
     powerConfirmation = power->getEventReceptionQueue();
   }

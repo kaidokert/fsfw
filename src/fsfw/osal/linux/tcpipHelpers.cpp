@@ -1,10 +1,9 @@
 #include "fsfw/osal/common/tcpipHelpers.h"
 
-#include <errno.h>
-
+#include <cerrno>
 #include <string>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/TaskFactory.h"
 
 void tcpip::handleError(Protocol protocol, ErrorSources errorSrc, dur_millis_t sleepDuration) {
@@ -97,14 +96,13 @@ void tcpip::handleError(Protocol protocol, ErrorSources errorSrc, dur_millis_t s
   }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::warning << "tcpip::handleError: " << protocolString << " | " << errorSrcString << " | "
-               << infoString << std::endl;
+  FSFW_LOGWT("tcpip::handleError: {} | {} | {}\n", protocolString, errorSrcString, infoString);
 #else
   sif::printWarning("tcpip::handleError: %s | %s | %s\n", protocolString.c_str(),
                     errorSrcString.c_str(), infoString.c_str());
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
   if (sleepDuration > 0) {
-    TaskFactory::instance()->delayTask(sleepDuration);
+    TaskFactory::delayTask(sleepDuration);
   }
 }

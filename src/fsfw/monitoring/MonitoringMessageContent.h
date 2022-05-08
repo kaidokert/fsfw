@@ -81,11 +81,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
     if (timeStamper == nullptr) {
       timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
       if (timeStamper == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::error << "MonitoringReportContent::checkAndSetStamper: "
-                      "Stamper not found!"
-                   << std::endl;
-#endif
+        FSFW_LOGET("{}", "checkAndSetStamper: Stamper not found\n");
         return false;
       }
     }

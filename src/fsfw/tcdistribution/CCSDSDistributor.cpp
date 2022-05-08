@@ -1,7 +1,7 @@
 #include "fsfw/tcdistribution/CCSDSDistributor.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcpacket/SpacePacketBase.h"
 
 #define CCSDS_DISTRIBUTOR_DEBUGGING 0
@@ -27,17 +27,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   size_t size = 0;
   ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(), &packet, &size);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CCSDSDistributor::selectDestination: Getting data from"
-                  " store failed!"
-               << std::endl;
-#else
-    sif::printError(
-        "CCSDSDistributor::selectDestination: Getting data from"
-        " store failed!\n");
-#endif
-#endif
+    FSFW_LOGWT("{}", "selectDestination: Getting data from store failed");
   }
   SpacePacketBase currentPacket(packet);
 

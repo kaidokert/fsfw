@@ -7,7 +7,7 @@
 #include "fsfw/housekeeping/PeriodicHousekeepingHelper.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serialize/SerializeAdapter.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "internal/HasLocalDpIFUserAttorney.h"
 
 LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner, uint32_t setId,
@@ -16,14 +16,7 @@ LocalPoolDataSetBase::LocalPoolDataSetBase(HasLocalDataPoolIF *hkOwner, uint32_t
     : PoolDataSetBase(registeredVariablesArray, maxNumberOfVariables) {
   if (hkOwner == nullptr) {
     // Configuration error.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
-               << "invalid!" << std::endl;
-#else
-    sif::printError(
-        "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner "
-        "invalid!\n\r");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+    FSFW_LOGW("{}", "LocalPoolDataSetBase::LocalPoolDataSetBase: Owner invalid\n");
     return;
   }
   AccessPoolManagerIF *accessor = HasLocalDpIFUserAttorney::getAccessorHandle(hkOwner);
@@ -186,14 +179,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t **buffer, size
     auto result =
         SerializeAdapter::serialize(&currentPoolId, buffer, size, maxSize, streamEndianness);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "LocalPoolDataSetBase::serializeLocalPoolIds: "
-                   << "Serialization error!" << std::endl;
-#else
-      sif::printWarning(
-          "LocalPoolDataSetBase::serializeLocalPoolIds: "
-          "Serialization error!\n\r");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+      FSFW_LOGW("{}", "serializeLocalPoolIds: Serialization error\n");
       return result;
     }
   }

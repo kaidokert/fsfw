@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
 StorageAccessor::StorageAccessor(store_address_t storeId) : ConstStorageAccessor(storeId) {}
@@ -23,9 +23,7 @@ StorageAccessor::StorageAccessor(StorageAccessor&& other)
 
 ReturnValue_t StorageAccessor::getDataCopy(uint8_t* pointer, size_t maxSize) {
   if (internalState == AccessState::UNINIT) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "StorageAccessor: Not initialized!" << std::endl;
-#endif
+    FSFW_LOGW("{}", "getDataCopy: Not initialized\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (size_ > maxSize) {

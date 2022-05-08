@@ -1,8 +1,10 @@
 #ifndef FRAMEWORK_IPC_MUTEXGUARD_H_
 #define FRAMEWORK_IPC_MUTEXGUARD_H_
 
-#include "../serviceinterface/ServiceInterface.h"
-#include "MutexFactory.h"
+#include <fmt/core.h>
+
+#include "fsfw/ipc/MutexIF.h"
+#include "fsfw/serviceinterface.h"
 
 class MutexGuard {
  public:
@@ -10,35 +12,17 @@ class MutexGuard {
              uint32_t timeoutMs = 0)
       : internalMutex(mutex) {
     if (mutex == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "MutexGuard: Passed mutex is invalid!" << std::endl;
-#else
-      sif::printError("MutexGuard: Passed mutex is invalid!\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+      // It's tricky to use the error functions defined in the service interface
+      // because those functions require the mutex guard themselves
+      fmt::print("ERROR | Passed mutex is invalid\n");
       return;
     }
     result = mutex->lockMutex(timeoutType, timeoutMs);
-#if FSFW_VERBOSE_LEVEL >= 1
     if (result == MutexIF::MUTEX_TIMEOUT) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "MutexGuard: Lock of mutex failed with timeout of " << timeoutMs
-                 << " milliseconds!" << std::endl;
-#else
-      sif::printError("MutexGuard: Lock of mutex failed with timeout of %lu milliseconds\n",
-                      timeoutMs);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-
+      fmt::print("ERROR | Lock of mutex failed with timeout of {} milliseconds\n", timeoutMs);
     } else if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "MutexGuard: Lock of Mutex failed with code " << result << std::endl;
-#else
-      sif::printError("MutexGuard: Lock of Mutex failed with code %d\n", result);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+      fmt::print("ERROR | Lock of Mutex failed with code {}\n", result);
     }
-#else
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
   }
 
   ReturnValue_t getLockResult() const { return result; }

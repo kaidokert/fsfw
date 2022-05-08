@@ -4,7 +4,7 @@
 #include <cstring>
 
 #include "fsfw/globalfunctions/arrayprinter.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 template <typename T>
 PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid)
@@ -68,13 +68,7 @@ void PoolEntry<T>::print() {
   } else {
     validString = "Invalid";
   }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "PoolEntry information." << std::endl;
-  sif::info << "PoolEntry validity: " << validString << std::endl;
-#else
-  sif::printInfo("PoolEntry information.\n");
-  sif::printInfo("PoolEntry validity: %s\n", validString);
-#endif
+  FSFW_LOGI("PoolEntry Info. Validity {}\n", validString);
   arrayprinter::print(reinterpret_cast<uint8_t*>(address), getByteSize());
 }
 

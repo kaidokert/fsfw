@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/FixedTimeslotTaskIF.h"
 
 FixedSlotSequence::FixedSlotSequence(uint32_t setLengthMs) : lengthMs(setLengthMs) {
@@ -90,9 +90,7 @@ void FixedSlotSequence::addSlot(object_id_t componentId, uint32_t slotTimeMs, in
 
 ReturnValue_t FixedSlotSequence::checkSequence() const {
   if (slotList.empty()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "FixedSlotSequence::checkSequence: Slot list is empty!" << std::endl;
-#endif
+    FSFW_LOGW("{}", "FixedSlotSequence::checkSequence: Slot list is empty\n");
     return FixedTimeslotTaskIF::SLOT_LIST_EMPTY;
   }
 
@@ -100,10 +98,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
     ReturnValue_t result = customCheckFunction(slotList);
     if (result != HasReturnvaluesIF::RETURN_OK) {
       // Continue for now but print error output.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "FixedSlotSequence::checkSequence:"
-                 << " Custom check failed!" << std::endl;
-#endif
+      FSFW_LOGW("FixedSlotSequence::checkSequence: Custom check failed with result {}", result);
     }
   }
 
@@ -113,10 +108,8 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
     if (slot.executableObject == nullptr) {
       errorCount++;
     } else if (slot.pollingTimeMs < time) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "FixedSlotSequence::checkSequence: Time: " << slot.pollingTimeMs
-                 << " is smaller than previous with " << time << std::endl;
-#endif
+      FSFW_LOGET("FixedSlotSequence::checkSequence: Time {} is smaller than previous with {}\n",
+                 slot.pollingTimeMs, time);
       errorCount++;
     } else {
       // All ok, print slot.
@@ -151,11 +144,10 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
     }
   }
   if (count > 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "FixedSlotSequence::intializeSequenceAfterTaskCreation:"
-                  "Counted "
-               << count << " failed initializations!" << std::endl;
-#endif
+    FSFW_LOGE(
+        "FixedSlotSequence::intializeSequenceAfterTaskCreation: Counted {} "
+        "failed initializations\n",
+        count);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   return HasReturnvaluesIF::RETURN_OK;

@@ -3,7 +3,7 @@
 #include <cstring>
 
 #include "fsfw/datapool/ReadCommitIFAttorney.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
                                  const size_t maxFillCount)
@@ -17,27 +17,15 @@ ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF* variable) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (state != States::STATE_SET_UNINITIALISED) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "DataSet::registerVariable: Call made in wrong position." << std::endl;
-#else
-    sif::printError("DataSet::registerVariable: Call made in wrong position.");
-#endif
+    FSFW_LOGW("{}", "registerVariable: Call made in wrong position\n");
     return DataSetIF::DATA_SET_UNINITIALISED;
   }
   if (variable == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "DataSet::registerVariable: Pool variable is nullptr." << std::endl;
-#else
-    sif::printError("DataSet::registerVariable: Pool variable is nullptr.\n");
-#endif
+    FSFW_LOGW("{}", "registerVariable: Pool variable is nullptr\n");
     return DataSetIF::POOL_VAR_NULL;
   }
   if (fillCount >= maxFillCount) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "DataSet::registerVariable: DataSet is full." << std::endl;
-#else
-    sif::printError("DataSet::registerVariable: DataSet is full.\n");
-#endif
+    FSFW_LOGW("{}", "registerVariable: DataSet is full\n");
     return DataSetIF::DATA_SET_FULL;
   }
   registeredVariables[fillCount] = variable;
@@ -59,15 +47,7 @@ ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType, uint32_t l
     state = States::STATE_SET_WAS_READ;
     unlockDataPool();
   } else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "PoolDataSetBase::read: Call made in wrong position. Don't forget to "
-                    "commit member datasets!"
-                 << std::endl;
-#else
-    sif::printWarning(
-        "PoolDataSetBase::read: Call made in wrong position. Don't forget to "
-        "commit member datasets!\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+    FSFW_LOGWT("{}", "read: Call made in wrong position. commit call might be missing\n");
     result = SET_WAS_ALREADY_READ;
   }
 
