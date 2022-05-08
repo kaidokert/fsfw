@@ -2,7 +2,7 @@
 
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/modes/HasModesIF.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 ModeHelper::ModeHelper(HasModesIF* owner)
     : commandedMode(HasModesIF::MODE_OFF),

@@ -6,12 +6,12 @@
 #include "../ipc/MessageQueueIF.h"
 #include "../ipc/MutexIF.h"
 #include "../objectmanager/SystemObject.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "../storagemanager/LocalPool.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "EventManagerIF.h"
 #include "FSFWConfig.h"
 #include "eventmatching/EventMatchTree.h"
+#include "fsfw/serviceinterface.h"
 
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
 // forward declaration, should be implemented by mission

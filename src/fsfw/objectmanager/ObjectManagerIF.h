@@ -2,9 +2,9 @@
 #define FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "SystemObjectIF.h"
 #include "frameworkObjects.h"
+#include "fsfw/serviceinterface.h"
 
 /**
  * @brief	This class provides an interface to the global object manager.

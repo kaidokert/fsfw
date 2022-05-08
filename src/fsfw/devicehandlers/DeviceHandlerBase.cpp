@@ -8,7 +8,7 @@
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/subsystem/SubsystemBase.h"
 #include "fsfw/thermal/ThermalComponentIF.h"
@@ -45,16 +45,16 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t device
   cookieInfo.state = COOKIE_UNUSED;
   cookieInfo.pendingCommand = deviceCommandMap.end();
   if (comCookie == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "DeviceHandlerBase",
-                        HasReturnvaluesIF::RETURN_FAILED, "Invalid cookie");
+    printWarningOrError(sif::LogLevel::ERROR, "DeviceHandlerBase", HasReturnvaluesIF::RETURN_FAILED,
+                        "Invalid cookie");
   }
   if (this->fdirInstance == nullptr) {
     this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId, defaultFdirParentId);
   }
 }
 
-void DeviceHandlerBase::setHkDestination(object_id_t hkDestination) {
-  this->hkDestination = hkDestination;
+void DeviceHandlerBase::setHkDestination(object_id_t hkDestination_) {
+  this->hkDestination = hkDestination_;
 }
 
 void DeviceHandlerBase::setThermalStateRequestPoolIds(lp_id_t thermalStatePoolId,
@@ -130,22 +130,22 @@ ReturnValue_t DeviceHandlerBase::initialize() {
   communicationInterface =
       ObjectManager::instance()->get<DeviceCommunicationIF>(deviceCommunicationId);
   if (communicationInterface == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
-                        ObjectManagerIF::CHILD_INIT_FAILED, "Passed communication IF invalid");
+    printWarningOrError(sif::LogLevel::ERROR, "initialize", ObjectManagerIF::CHILD_INIT_FAILED,
+                        "Passed communication IF invalid");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
   result = communicationInterface->initializeInterface(comCookie);
   if (result != RETURN_OK) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
-                        ObjectManagerIF::CHILD_INIT_FAILED, "ComIF initialization failed");
+    printWarningOrError(sif::LogLevel::ERROR, "initialize", ObjectManagerIF::CHILD_INIT_FAILED,
+                        "ComIF initialization failed");
     return result;
   }
 
   IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
   if (IPCStore == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
-                        ObjectManagerIF::CHILD_INIT_FAILED, "IPC Store not set up");
+    printWarningOrError(sif::LogLevel::ERROR, "initialize", ObjectManagerIF::CHILD_INIT_FAILED,
+                        "IPC Store not set up");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
@@ -153,8 +153,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
     auto* rawReceiver = ObjectManager::instance()->get<AcceptsDeviceResponsesIF>(rawDataReceiverId);
 
     if (rawReceiver == nullptr) {
-      printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
-                          ObjectManagerIF::CHILD_INIT_FAILED,
+      printWarningOrError(sif::LogLevel::ERROR, "initialize", ObjectManagerIF::CHILD_INIT_FAILED,
                           "Raw receiver object ID set but no valid object found.");
       FSFW_LOGE("{}",
                 "Make sure the raw receiver object is set up properly "
@@ -167,8 +166,7 @@ ReturnValue_t DeviceHandlerBase::initialize() {
   if (powerSwitcherId != objects::NO_OBJECT) {
     powerSwitcher = ObjectManager::instance()->get<PowerSwitchIF>(powerSwitcherId);
     if (powerSwitcher == nullptr) {
-      printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize",
-                          ObjectManagerIF::CHILD_INIT_FAILED,
+      printWarningOrError(sif::LogLevel::ERROR, "initialize", ObjectManagerIF::CHILD_INIT_FAILED,
                           "Power switcher set but no valid object found.");
       FSFW_LOGE("{}",
                 "Make sure the power switcher object is set up "
@@ -305,8 +303,7 @@ void DeviceHandlerBase::doStateMachine() {
         sprintf(printout, "Transition timeout (%lu) occured !",
                 static_cast<unsigned long>(childTransitionDelay));
         /* Common configuration error for development, so print it */
-        printWarningOrError(sif::OutputTypes::OUT_WARNING, "doStateMachine", RETURN_FAILED,
-                            printout);
+        printWarningOrError(sif::LogLevel::WARNING, "doStateMachine", RETURN_FAILED, printout);
 #endif
         triggerEvent(MODE_TRANSITION_FAILED, childTransitionFailure, 0);
         setMode(transitionSourceMode, transitionSourceSubMode);
@@ -598,8 +595,8 @@ void DeviceHandlerBase::replyToReply(const DeviceCommandId_t command, DeviceRepl
   }
   DeviceCommandInfo* info = &replyInfo.command->second;
   if (info == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "replyToReply",
-                        HasReturnvaluesIF::RETURN_FAILED, "Command pointer not found");
+    printWarningOrError(sif::LogLevel::ERROR, "replyToReply", HasReturnvaluesIF::RETURN_FAILED,
+                        "Command pointer not found");
     return;
   }
 
@@ -740,7 +737,7 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData, size_t receivedD
       case RETURN_OK:
         handleReply(receivedData, foundId, foundLen);
         if (foundLen == 0) {
-          printWarningOrError(sif::OutputTypes::OUT_WARNING, "parseReply",
+          printWarningOrError(sif::LogLevel::WARNING, "parseReply",
                               ObjectManagerIF::CHILD_INIT_FAILED,
                               "Found length is one, parsing might be stuck");
         }
@@ -752,7 +749,7 @@ void DeviceHandlerBase::parseReply(const uint8_t* receivedData, size_t receivedD
           triggerEvent(DEVICE_INTERPRETING_REPLY_FAILED, result, foundId);
         }
         if (foundLen == 0) {
-          printWarningOrError(sif::OutputTypes::OUT_ERROR, "parseReply",
+          printWarningOrError(sif::LogLevel::ERROR, "parseReply",
                               ObjectManagerIF::CHILD_INIT_FAILED,
                               "Power switcher set but no valid object found.");
           FSFW_LOGW("{}",
@@ -1272,7 +1269,7 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId, MessageQueue
   return result;
 }
 
-void DeviceHandlerBase::buildInternalCommand(void) {
+void DeviceHandlerBase::buildInternalCommand() {
   /* Neither raw nor direct could build a command */
   ReturnValue_t result = NOTHING_TO_SEND;
   DeviceCommandId_t deviceCommandId = NO_COMMAND_ID;
@@ -1280,7 +1277,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
     result = buildNormalDeviceCommand(&deviceCommandId);
     if (result == BUSY) {
       /* So we can track misconfigurations */
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "buildInternalCommand",
+      printWarningOrError(sif::LogLevel::WARNING, "buildInternalCommand",
                           HasReturnvaluesIF::RETURN_FAILED, "Busy.");
       /* No need to report this */
       result = NOTHING_TO_SEND;
@@ -1298,14 +1295,14 @@ void DeviceHandlerBase::buildInternalCommand(void) {
     return;
   }
   if (result == RETURN_OK) {
-    DeviceCommandMap::iterator iter = deviceCommandMap.find(deviceCommandId);
+    auto iter = deviceCommandMap.find(deviceCommandId);
     if (iter == deviceCommandMap.end()) {
 #if FSFW_VERBOSE_LEVEL >= 1
       char output[36];
       sprintf(output, "Command 0x%08x unknown", static_cast<unsigned int>(deviceCommandId));
       // so we can track misconfigurations
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "buildInternalCommand",
-                          COMMAND_NOT_SUPPORTED, output);
+      printWarningOrError(sif::LogLevel::WARNING, "buildInternalCommand", COMMAND_NOT_SUPPORTED,
+                          output);
 #endif
       result = COMMAND_NOT_SUPPORTED;
     } else if (iter->second.isExecuting) {
@@ -1313,7 +1310,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
       char output[36];
       sprintf(output, "Command 0x%08x is executing", static_cast<unsigned int>(deviceCommandId));
       // so we can track misconfigurations
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "buildInternalCommand",
+      printWarningOrError(sif::LogLevel::WARNING, "buildInternalCommand",
                           HasReturnvaluesIF::RETURN_FAILED, output);
 #endif
       // this is an internal command, no need to report a failure here,
@@ -1334,7 +1331,7 @@ void DeviceHandlerBase::buildInternalCommand(void) {
 ReturnValue_t DeviceHandlerBase::buildChildRawCommand() { return NOTHING_TO_SEND; }
 
 uint8_t DeviceHandlerBase::getReplyDelayCycles(DeviceCommandId_t deviceCommand) {
-  DeviceReplyMap::iterator iter = deviceReplyMap.find(deviceCommand);
+  auto iter = deviceReplyMap.find(deviceCommand);
   if (iter == deviceReplyMap.end()) {
     return 0;
   }
@@ -1442,13 +1439,13 @@ void DeviceHandlerBase::setNormalDatapoolEntriesInvalid() {
   }
 }
 
-void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType, const char* functionName,
+void DeviceHandlerBase::printWarningOrError(sif::LogLevel errorType, const char* functionName,
                                             ReturnValue_t errorCode, const char* errorPrint) {
   if (errorPrint == nullptr) {
     if (errorCode == ObjectManagerIF::CHILD_INIT_FAILED) {
       errorPrint = "Initialization error";
     } else if (errorCode == HasReturnvaluesIF::RETURN_FAILED) {
-      if (errorType == sif::OutputTypes::OUT_WARNING) {
+      if (errorType == sif::LogLevel::WARNING) {
         errorPrint = "Generic Warning";
       } else {
         errorPrint = "Generic Error";
@@ -1461,10 +1458,10 @@ void DeviceHandlerBase::printWarningOrError(sif::OutputTypes errorType, const ch
     functionName = "unknown function";
   }
 
-  if (errorType == sif::OutputTypes::OUT_WARNING) {
+  if (errorType == sif::LogLevel::WARNING) {
     FSFW_LOGWT("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
                errorPrint);
-  } else if (errorType == sif::OutputTypes::OUT_ERROR) {
+  } else if (errorType == sif::LogLevel::ERROR) {
     FSFW_LOGET("{} | Object ID {:#08x} | {}", functionName, SystemObject::getObjectId(),
                errorPrint);
   }

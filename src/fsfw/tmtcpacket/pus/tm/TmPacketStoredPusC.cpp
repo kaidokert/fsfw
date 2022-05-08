@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
 TmPacketStoredPusC::TmPacketStoredPusC(store_address_t setAddress)

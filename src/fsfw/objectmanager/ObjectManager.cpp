@@ -36,7 +36,7 @@ ReturnValue_t ObjectManager::insert(object_id_t id, SystemObjectIF* object) {
     // sif::debug << "ObjectManager::insert: Object " << std::hex
     //            << (int)id << std::dec << " inserted." << std::endl;
 #endif
-    return this->RETURN_OK;
+    return ObjectManager::RETURN_OK;
   } else {
     FSFW_LOGET("ObjectManager::insert: Object ID {:#08x} is already in use\nTerminating program\n",
                static_cast<uint32_t>(id));

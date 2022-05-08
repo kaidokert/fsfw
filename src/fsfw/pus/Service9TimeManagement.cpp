@@ -2,14 +2,14 @@
 
 #include "fsfw/events/EventManagerIF.h"
 #include "fsfw/pus/servicepackets/Service9Packets.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/timemanager/CCSDSTime.h"
 
 Service9TimeManagement::Service9TimeManagement(object_id_t objectId, uint16_t apid,
                                                uint8_t serviceId)
     : PusServiceBase(objectId, apid, serviceId) {}
 
-Service9TimeManagement::~Service9TimeManagement() {}
+Service9TimeManagement::~Service9TimeManagement() = default;
 
 ReturnValue_t Service9TimeManagement::performService() { return RETURN_OK; }
 

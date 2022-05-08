@@ -5,11 +5,11 @@
 #include "../datapool/PoolVariableIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
 #include "../serialize/SerializeAdapter.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "AccessLocalPoolF.h"
 #include "HasLocalDataPoolIF.h"
 #include "LocalDataPoolManager.h"
 #include "LocalPoolObjectBase.h"
+#include "fsfw/serviceinterface.h"
 #include "internal/LocalDpManagerAttorney.h"
 
 /**

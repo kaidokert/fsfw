@@ -2,12 +2,12 @@
 
 #include <fsfw/datapool/PoolReadGuard.h>
 #include <fsfw/objectmanager/ObjectManager.h>
-#include <fsfw/serviceinterface/ServiceInterface.h>
+#include <fsfw/serviceinterface.h>
 
 TestController::TestController(object_id_t objectId, object_id_t parentId, size_t commandQueueDepth)
     : ExtendedControllerBase(objectId, parentId, commandQueueDepth) {}
 
-TestController::~TestController() {}
+TestController::~TestController() = default;
 
 ReturnValue_t TestController::handleCommandMessage(CommandMessage *message) {
   return HasReturnvaluesIF::RETURN_OK;

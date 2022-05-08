@@ -6,8 +6,8 @@
 #include "../datapool/PoolVariableIF.h"
 #include "../datapoollocal/LocalDataPoolManager.h"
 #include "../serialize/SerializeAdapter.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "LocalPoolObjectBase.h"
+#include "fsfw/serviceinterface.h"
 #include "internal/LocalDpManagerAttorney.h"
 
 /**

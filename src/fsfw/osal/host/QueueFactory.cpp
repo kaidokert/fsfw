@@ -5,7 +5,7 @@
 #include "fsfw/ipc/MessageQueueMessageIF.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/osal/host/MessageQueue.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 QueueFactory* QueueFactory::factoryInstance = nullptr;
 

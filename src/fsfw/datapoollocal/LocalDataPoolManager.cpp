@@ -3,6 +3,7 @@
 #include <array>
 #include <cmath>
 
+#include "fsfw/FSFW.h"
 #include "fsfw/datapoollocal.h"
 #include "fsfw/housekeeping/AcceptsHkPacketsIF.h"
 #include "fsfw/housekeeping/HousekeepingSetPacket.h"
@@ -21,15 +22,15 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQue
                                            bool appendValidityBuffer)
     : appendValidityBuffer(appendValidityBuffer) {
   if (owner == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "LocalDataPoolManager",
-                        HasReturnvaluesIF::RETURN_FAILED, "Invalid supplied owner");
+    printWarningOrError(sif::LogLevel::WARNING, "ctor", HasReturnvaluesIF::RETURN_FAILED,
+                        "Invalid supplied owner");
     return;
   }
   this->owner = owner;
   mutex = MutexFactory::instance()->createMutex();
   if (mutex == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "LocalDataPoolManager",
-                        HasReturnvaluesIF::RETURN_FAILED, "Could not create mutex");
+    printWarningOrError(sif::LogLevel::ERROR, "ctor", HasReturnvaluesIF::RETURN_FAILED,
+                        "Could not create mutex");
   }
 
   hkQueue = queueToUse;
@@ -44,25 +45,25 @@ LocalDataPoolManager::~LocalDataPoolManager() {
 ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
   if (queueToUse == nullptr) {
     /* Error, all destinations invalid */
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize", QUEUE_OR_DESTINATION_INVALID);
+    printWarningOrError(sif::LogLevel::ERROR, "initialize", QUEUE_OR_DESTINATION_INVALID);
   }
   hkQueue = queueToUse;
 
   ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
   if (ipcStore == nullptr) {
     /* Error, all destinations invalid */
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize", HasReturnvaluesIF::RETURN_FAILED,
+    printWarningOrError(sif::LogLevel::ERROR, "initialize", HasReturnvaluesIF::RETURN_FAILED,
                         "Could not set IPC store.");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
   if (defaultHkDestination != objects::NO_OBJECT) {
-    AcceptsHkPacketsIF* hkPacketReceiver =
+    auto* hkPacketReceiver =
         ObjectManager::instance()->get<AcceptsHkPacketsIF>(defaultHkDestination);
     if (hkPacketReceiver != nullptr) {
       hkDestinationId = hkPacketReceiver->getHkQueue();
     } else {
-      printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize", QUEUE_OR_DESTINATION_INVALID);
+      printWarningOrError(sif::LogLevel::ERROR, "initialize", QUEUE_OR_DESTINATION_INVALID);
       return QUEUE_OR_DESTINATION_INVALID;
     }
   }
@@ -84,7 +85,7 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
     return result;
   }
 
-  printWarningOrError(sif::OutputTypes::OUT_WARNING, "initializeHousekeepingPoolEntriesOnce",
+  printWarningOrError(sif::LogLevel::WARNING, "initializeHousekeepingPoolEntriesOnce",
                       HasReturnvaluesIF::RETURN_FAILED, "The map should only be initialized once");
   return HasReturnvaluesIF::RETURN_OK;
 }
@@ -150,8 +151,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
     LocalPoolObjectBase* poolObj =
         HasLocalDpIFManagerAttorney::getPoolObjectHandle(owner, receiver.dataId.localPoolId);
     if (poolObj == nullptr) {
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "handleNotificationUpdate",
-                          POOLOBJECT_NOT_FOUND);
+      printWarningOrError(sif::LogLevel::WARNING, "handleNotificationUpdate", POOLOBJECT_NOT_FOUND);
       return POOLOBJECT_NOT_FOUND;
     }
     if (poolObj->hasChanged()) {
@@ -170,8 +170,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
     LocalPoolDataSetBase* dataSet =
         HasLocalDpIFManagerAttorney::getDataSetHandle(owner, receiver.dataId.sid);
     if (dataSet == nullptr) {
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "handleNotificationUpdate",
-                          DATASET_NOT_FOUND);
+      printWarningOrError(sif::LogLevel::WARNING, "handleNotificationUpdate", DATASET_NOT_FOUND);
       return DATASET_NOT_FOUND;
     }
     if (dataSet->hasChanged()) {
@@ -199,7 +198,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     LocalPoolObjectBase* poolObj =
         HasLocalDpIFManagerAttorney::getPoolObjectHandle(owner, receiver.dataId.localPoolId);
     if (poolObj == nullptr) {
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "handleNotificationSnapshot",
+      printWarningOrError(sif::LogLevel::WARNING, "handleNotificationSnapshot",
                           POOLOBJECT_NOT_FOUND);
       return POOLOBJECT_NOT_FOUND;
     }
@@ -235,8 +234,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     LocalPoolDataSetBase* dataSet =
         HasLocalDpIFManagerAttorney::getDataSetHandle(owner, receiver.dataId.sid);
     if (dataSet == nullptr) {
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "handleNotificationSnapshot",
-                          DATASET_NOT_FOUND);
+      printWarningOrError(sif::LogLevel::WARNING, "handleNotificationSnapshot", DATASET_NOT_FOUND);
       return DATASET_NOT_FOUND;
     }
 
@@ -245,9 +243,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     /* Prepare and send update snapshot */
-    timeval now;
+    timeval now{};
     Clock::getClock_timeval(&now);
-    CCSDSTime::CDS_short cds;
+    CCSDSTime::CDS_short cds{};
     CCSDSTime::convertToCcsds(&cds, &now);
     HousekeepingSnapshot updatePacket(
         reinterpret_cast<uint8_t*>(&cds), sizeof(cds),
@@ -342,7 +340,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
   AcceptsHkPacketsIF* hkReceiverObject =
       ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
   if (hkReceiverObject == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
+    printWarningOrError(sif::LogLevel::WARNING, "subscribeForPeriodicPacket",
                         QUEUE_OR_DESTINATION_INVALID);
     return QUEUE_OR_DESTINATION_INVALID;
   }
@@ -368,10 +366,9 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
 ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid, bool isDiagnostics,
                                                              bool reportingEnabled,
                                                              object_id_t packetDestination) {
-  AcceptsHkPacketsIF* hkReceiverObject =
-      ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
+  auto* hkReceiverObject = ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
   if (hkReceiverObject == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
+    printWarningOrError(sif::LogLevel::WARNING, "subscribeForPeriodicPacket",
                         QUEUE_OR_DESTINATION_INVALID);
     return QUEUE_OR_DESTINATION_INVALID;
   }
@@ -524,8 +521,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
     case (HousekeepingMessage::GENERATE_ONE_DIAGNOSTICS_REPORT): {
       LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
       if (dataSet == nullptr) {
-        printWarningOrError(sif::OutputTypes::OUT_WARNING, "handleHousekeepingMessage",
-                            DATASET_NOT_FOUND);
+        printWarningOrError(sif::LogLevel::WARNING, "handleHousekeepingMessage", DATASET_NOT_FOUND);
         return DATASET_NOT_FOUND;
       }
       if (command == HousekeepingMessage::GENERATE_ONE_PARAMETER_REPORT and
@@ -588,8 +584,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
 ReturnValue_t LocalDataPoolManager::printPoolEntry(lp_id_t localPoolId) {
   auto poolIter = localPoolMap.find(localPoolId);
   if (poolIter == localPoolMap.end()) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "printPoolEntry",
-                        localpool::POOL_ENTRY_NOT_FOUND);
+    printWarningOrError(sif::LogLevel::WARNING, "printPoolEntry", localpool::POOL_ENTRY_NOT_FOUND);
     return localpool::POOL_ENTRY_NOT_FOUND;
   }
   poolIter->second->print();
@@ -606,8 +601,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
                                                                MessageQueueId_t destination) {
   if (dataSet == nullptr) {
     /* Configuration error. */
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateHousekeepingPacket",
-                        DATASET_NOT_FOUND);
+    printWarningOrError(sif::LogLevel::WARNING, "generateHousekeepingPacket", DATASET_NOT_FOUND);
     return DATASET_NOT_FOUND;
   }
 
@@ -630,14 +624,14 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
 
   if (hkQueue == nullptr) {
     /* Error, no queue available to send packet with. */
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateHousekeepingPacket",
+    printWarningOrError(sif::LogLevel::WARNING, "generateHousekeepingPacket",
                         QUEUE_OR_DESTINATION_INVALID);
     return QUEUE_OR_DESTINATION_INVALID;
   }
   if (destination == MessageQueueIF::NO_QUEUE) {
     if (hkDestinationId == MessageQueueIF::NO_QUEUE) {
       /* Error, all destinations invalid */
-      printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateHousekeepingPacket",
+      printWarningOrError(sif::LogLevel::WARNING, "generateHousekeepingPacket",
                           QUEUE_OR_DESTINATION_INVALID);
     }
     destination = hkDestinationId;
@@ -671,8 +665,7 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
   sid_t sid = receiver.dataId.sid;
   LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
   if (dataSet == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "performPeriodicHkGeneration",
-                        DATASET_NOT_FOUND);
+    printWarningOrError(sif::LogLevel::WARNING, "performPeriodicHkGeneration", DATASET_NOT_FOUND);
     return;
   }
 
@@ -703,8 +696,7 @@ ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid, bool ena
                                                              bool isDiagnostics) {
   LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
   if (dataSet == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "togglePeriodicGeneration",
-                        DATASET_NOT_FOUND);
+    printWarningOrError(sif::LogLevel::WARNING, "togglePeriodicGeneration", DATASET_NOT_FOUND);
     return DATASET_NOT_FOUND;
   }
 
@@ -726,8 +718,7 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid, float ne
                                                              bool isDiagnostics) {
   LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
   if (dataSet == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "changeCollectionInterval",
-                        DATASET_NOT_FOUND);
+    printWarningOrError(sif::LogLevel::WARNING, "changeCollectionInterval", DATASET_NOT_FOUND);
     return DATASET_NOT_FOUND;
   }
 
@@ -752,8 +743,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   /* Get and check dataset first. */
   LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
   if (dataSet == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "performPeriodicHkGeneration",
-                        DATASET_NOT_FOUND);
+    printWarningOrError(sif::LogLevel::WARNING, "performPeriodicHkGeneration", DATASET_NOT_FOUND);
     return DATASET_NOT_FOUND;
   }
 
@@ -774,7 +764,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   store_address_t storeId;
   ReturnValue_t result = ipcStore->getFreeElement(&storeId, expectedSize, &storePtr);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "generateSetStructurePacket",
+    printWarningOrError(sif::LogLevel::ERROR, "generateSetStructurePacket",
                         HasReturnvaluesIF::RETURN_FAILED,
                         "Could not get free element from IPC store.");
     return result;
@@ -788,7 +778,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
     return result;
   }
   if (expectedSize != size) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateSetStructurePacket",
+    printWarningOrError(sif::LogLevel::WARNING, "generateSetStructurePacket",
                         HasReturnvaluesIF::RETURN_FAILED,
                         "Expected size is not equal to serialized size");
   }
@@ -821,9 +811,8 @@ MutexIF* LocalDataPoolManager::getLocalPoolMutex() { return this->mutex; }
 
 object_id_t LocalDataPoolManager::getCreatorObjectId() const { return owner->getObjectId(); }
 
-void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
-                                               const char* functionName, ReturnValue_t error,
-                                               const char* errorPrint) {
+void LocalDataPoolManager::printWarningOrError(sif::LogLevel outputType, const char* functionName,
+                                               ReturnValue_t error, const char* errorPrint) {
 #if FSFW_VERBOSE_LEVEL >= 1
   if (errorPrint == nullptr) {
     if (error == DATASET_NOT_FOUND) {
@@ -831,7 +820,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
     } else if (error == POOLOBJECT_NOT_FOUND) {
       errorPrint = "Pool Object not found";
     } else if (error == HasReturnvaluesIF::RETURN_FAILED) {
-      if (outputType == sif::OutputTypes::OUT_WARNING) {
+      if (outputType == sif::LogLevel::WARNING) {
         errorPrint = "Generic Warning";
       } else {
         errorPrint = "Generic error";
@@ -851,9 +840,9 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
     objectId = owner->getObjectId();
   }
 
-  if (outputType == sif::OutputTypes::OUT_WARNING) {
+  if (outputType == sif::LogLevel::WARNING) {
     FSFW_LOGWT("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
-  } else if (outputType == sif::OutputTypes::OUT_ERROR) {
+  } else if (outputType == sif::LogLevel::ERROR) {
     FSFW_LOGET("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
   }
 #endif /* #if FSFW_VERBOSE_LEVEL >= 1 */

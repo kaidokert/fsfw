@@ -4,7 +4,7 @@
 #include "../../action/ActionMessage.h"
 #include "../../objectmanager/SystemObjectIF.h"
 #include "../../serialize/SerialLinkedListAdapter.h"
-#include "../../serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/serviceinterface.h"
 
 /**
  * @brief Subservice 128

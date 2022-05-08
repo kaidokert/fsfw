@@ -3,7 +3,7 @@
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/osal/common/tcpipHelpers.h"
 #include "fsfw/platform.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 #ifdef PLATFORM_WIN
 #include <ws2tcpip.h>

@@ -5,7 +5,7 @@
 #include "fsfw/parameters/ParameterMessage.h"
 #include "fsfw/parameters/ReceivesParameterMessagesIF.h"
 #include "fsfw/pus/servicepackets/Service20Packets.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 Service20ParameterManagement::Service20ParameterManagement(object_id_t objectId, uint16_t apid,
                                                            uint8_t serviceId,

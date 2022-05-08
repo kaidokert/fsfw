@@ -1,7 +1,7 @@
 #include "fsfw/power/PowerSwitcher.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 PowerSwitcher::PowerSwitcher(uint8_t setSwitch1, uint8_t setSwitch2,
                              PowerSwitcher::State_t setStartState)

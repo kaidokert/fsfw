@@ -6,8 +6,8 @@
 #include "../datapool/PoolEntryIF.h"
 #include "../housekeeping/HousekeepingMessage.h"
 #include "../ipc/MessageQueueSenderIF.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "LocalDataPoolManager.h"
+#include "fsfw/serviceinterface.h"
 #include "localPoolDefinitions.h"
 
 class AccessPoolManagerIF;

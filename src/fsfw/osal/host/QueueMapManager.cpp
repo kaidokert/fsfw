@@ -2,7 +2,7 @@
 
 #include "fsfw/ipc/MutexFactory.h"
 #include "fsfw/ipc/MutexGuard.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 QueueMapManager* QueueMapManager::mqManagerInstance = nullptr;
 

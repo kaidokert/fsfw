@@ -5,7 +5,7 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/pus/servicepackets/Service200Packets.h"
 #include "fsfw/serialize/SerialLinkedListAdapter.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 CService200ModeCommanding::CService200ModeCommanding(object_id_t objectId, uint16_t apid,
                                                      uint8_t serviceId, uint8_t numParallelCommands,
@@ -13,7 +13,7 @@ CService200ModeCommanding::CService200ModeCommanding(object_id_t objectId, uint1
     : CommandingServiceBase(objectId, apid, serviceId, numParallelCommands, commandTimeoutSeconds) {
 }
 
-CService200ModeCommanding::~CService200ModeCommanding() {}
+CService200ModeCommanding::~CService200ModeCommanding() = default;
 
 ReturnValue_t CService200ModeCommanding::isValidSubservice(uint8_t subservice) {
   switch (subservice) {

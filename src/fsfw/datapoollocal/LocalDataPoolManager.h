@@ -16,7 +16,7 @@
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/ipc/MutexIF.h"
 #include "fsfw/objectmanager/SystemObjectIF.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
@@ -375,7 +375,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
   ReturnValue_t handleNotificationSnapshot(HkReceiver& hkReceiver, ReturnValue_t& status);
   ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket, store_address_t& storeId);
 
-  void printWarningOrError(sif::OutputTypes outputType, const char* functionName,
+  void printWarningOrError(sif::LogLevel outputType, const char* functionName,
                            ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
                            const char* errorPrint = nullptr);
 };
@@ -389,14 +389,13 @@ inline ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
 
   auto poolIter = localPoolMap.find(localPoolId);
   if (poolIter == localPoolMap.end()) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",
-                        localpool::POOL_ENTRY_NOT_FOUND);
+    printWarningOrError(sif::LogLevel::WARNING, "fetchPoolEntry", localpool::POOL_ENTRY_NOT_FOUND);
     return localpool::POOL_ENTRY_NOT_FOUND;
   }
 
   *poolEntry = dynamic_cast<PoolEntry<T>*>(poolIter->second);
   if (*poolEntry == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "fetchPoolEntry",
+    printWarningOrError(sif::LogLevel::WARNING, "fetchPoolEntry",
                         localpool::POOL_ENTRY_TYPE_CONFLICT);
     return localpool::POOL_ENTRY_TYPE_CONFLICT;
   }

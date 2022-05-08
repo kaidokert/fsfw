@@ -3,7 +3,7 @@
 #include <cstdlib>
 
 #include "fsfw/FSFW.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/SemaphoreFactory.h"
 #include "fsfw/timemanager/Stopwatch.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"

@@ -19,8 +19,7 @@
 #include "fsfw/parameters/ParameterHelper.h"
 #include "fsfw/power/PowerSwitchIF.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tasks/PeriodicTaskIF.h"
 
@@ -1282,7 +1281,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param errorCode
    * @param errorPrint
    */
-  void printWarningOrError(sif::OutputTypes errorType, const char *functionName,
+  void printWarningOrError(sif::LogLevel errorType, const char *functionName,
                            ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
                            const char *errorPrint = nullptr);
 };

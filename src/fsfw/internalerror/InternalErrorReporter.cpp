@@ -3,7 +3,7 @@
 #include "fsfw/datapool/PoolReadGuard.h"
 #include "fsfw/ipc/MutexFactory.h"
 #include "fsfw/ipc/QueueFactory.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 InternalErrorReporter::InternalErrorReporter(object_id_t setObjectId, uint32_t messageQueueDepth)
     : SystemObject(setObjectId),

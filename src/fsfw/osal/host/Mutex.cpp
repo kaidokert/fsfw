@@ -1,8 +1,8 @@
 #include "fsfw/osal/host/Mutex.h"
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
-Mutex::Mutex() {}
+Mutex::Mutex() = default;
 
 ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
   if (timeoutType == TimeoutType::BLOCKING) {

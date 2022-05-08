@@ -87,7 +87,6 @@ void TmPacketStoredBase::handleStoreFailure(const char *const packetType, Return
   checkAndReportLostTm();
 #if FSFW_VERBOSE_LEVEL >= 1
   switch (result) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
     case (StorageManagerIF::DATA_STORAGE_FULL): {
       FSFW_LOGWT("handleStoreFailure: {} | Store full for packet with size {}\n", packetType,
                  sizeToReserve);
@@ -98,22 +97,6 @@ void TmPacketStoredBase::handleStoreFailure(const char *const packetType, Return
                  sizeToReserve);
       break;
     }
-#else
-    case (StorageManagerIF::DATA_STORAGE_FULL): {
-      sif::printWarning(
-          "TmPacketStoredPus%s: Store full for packet with "
-          "size %d\n",
-          packetType, sizeToReserve);
-      break;
-    }
-    case (StorageManagerIF::DATA_TOO_LARGE): {
-      sif::printWarning(
-          "TmPacketStoredPus%s: Data with size "
-          "%d too large\n",
-          packetType, sizeToReserve);
-      break;
-    }
-#endif
   }
 #endif
 }

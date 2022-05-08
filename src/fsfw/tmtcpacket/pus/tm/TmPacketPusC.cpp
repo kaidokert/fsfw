@@ -7,7 +7,7 @@
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/timemanager/CCSDSTime.h"
 
 TmPacketPusC::TmPacketPusC(uint8_t* setData) : TmPacketBase(setData) {

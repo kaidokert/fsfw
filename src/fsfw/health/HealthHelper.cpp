@@ -1,6 +1,6 @@
 #include "fsfw/health/HealthHelper.h"
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 HealthHelper::HealthHelper(HasHealthIF* owner, object_id_t objectId)
     : objectId(objectId), owner(owner) {}

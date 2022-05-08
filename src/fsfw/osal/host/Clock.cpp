@@ -4,7 +4,7 @@
 
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/platform.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 #if defined(PLATFORM_WIN)
 #include <sysinfoapi.h>

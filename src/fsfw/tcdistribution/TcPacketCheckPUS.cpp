@@ -1,7 +1,7 @@
 #include "fsfw/tcdistribution/TcPacketCheckPUS.h"
 
 #include "fsfw/globalfunctions/CRC.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tmtcpacket/pus/tc/TcPacketPusBase.h"
 #include "fsfw/tmtcpacket/pus/tc/TcPacketStoredBase.h"
@@ -11,8 +11,8 @@
 TcPacketCheckPUS::TcPacketCheckPUS(uint16_t setApid) : apid(setApid) {}
 
 ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketBase* currentPacket) {
-  TcPacketStoredBase* storedPacket = dynamic_cast<TcPacketStoredBase*>(currentPacket);
-  TcPacketPusBase* tcPacketBase = dynamic_cast<TcPacketPusBase*>(currentPacket);
+  auto* storedPacket = dynamic_cast<TcPacketStoredBase*>(currentPacket);
+  auto* tcPacketBase = dynamic_cast<TcPacketPusBase*>(currentPacket);
   if (tcPacketBase == nullptr or storedPacket == nullptr) {
     return RETURN_FAILED;
   }

@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
 TmPacketStoredPusA::TmPacketStoredPusA(store_address_t setAddress)
@@ -17,10 +17,10 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service, uint8_t s
     return;
   }
   uint8_t *pData = nullptr;
-  size_t sizeToReserve = getPacketMinimumSize() + size + headerSize;
+  size_t sizeToReserve = TmPacketPusA::getPacketMinimumSize() + size + headerSize;
   ReturnValue_t returnValue = store->getFreeElement(&storeAddress, sizeToReserve, &pData);
 
-  if (returnValue != store->RETURN_OK) {
+  if (returnValue != StorageManagerIF::RETURN_OK) {
     handleStoreFailure("A", returnValue, sizeToReserve);
     return;
   }

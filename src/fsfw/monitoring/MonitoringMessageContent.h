@@ -7,10 +7,10 @@
 #include "../serialize/SerialFixedArrayListAdapter.h"
 #include "../serialize/SerialLinkedListAdapter.h"
 #include "../serialize/SerializeElement.h"
-#include "../serviceinterface/ServiceInterface.h"
 #include "../timemanager/TimeStamperIF.h"
 #include "HasMonitorsIF.h"
 #include "MonitoringIF.h"
+#include "fsfw/serviceinterface.h"
 #include "monitoringConf.h"
 
 namespace Factory {

@@ -6,7 +6,7 @@
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/osal/host/QueueMapManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* args)
     : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, args),

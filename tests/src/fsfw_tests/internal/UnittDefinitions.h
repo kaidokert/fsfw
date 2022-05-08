@@ -6,7 +6,7 @@
 #include <string>
 
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 namespace tv {
 // POD test values

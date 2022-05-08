@@ -2,13 +2,13 @@
 
 #include "fsfw/FSFW.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 
 Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId)
     : PusServiceBase(objectId, apid, serviceId), packetSubCounter(0) {}
 
-Service17Test::~Service17Test() {}
+Service17Test::~Service17Test() = default;
 
 ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   switch (subservice) {

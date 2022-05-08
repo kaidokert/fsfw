@@ -9,7 +9,7 @@
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/serviceinterface/ServiceInterfaceStream.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/storagemanager/StorageAccessor.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
