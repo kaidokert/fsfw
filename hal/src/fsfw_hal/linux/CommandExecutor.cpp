@@ -59,22 +59,16 @@ ReturnValue_t CommandExecutor::close() {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void CommandExecutor::printLastError(std::string funcName) const {
+void CommandExecutor::printLastError(const std::string& funcName) const {
   if (lastError != 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << funcName << " pclose failed with code " << lastError << ": "
-                 << strerror(lastError) << std::endl;
-#else
-    sif::printError("%s pclose failed with code %d: %s\n", funcName, lastError,
-                    strerror(lastError));
-#endif
+    FSFW_FLOGW("{} | pclose failed with code {} | {}\n", funcName, lastError, strerror(lastError));
   }
 }
 
-void CommandExecutor::setRingBuffer(SimpleRingBuffer* ringBuffer,
-                                    DynamicFIFO<uint16_t>* sizesFifo) {
-  this->ringBuffer = ringBuffer;
-  this->sizesFifo = sizesFifo;
+void CommandExecutor::setRingBuffer(SimpleRingBuffer* ringBuffer_,
+                                    DynamicFIFO<uint16_t>* sizesFifo_) {
+  this->ringBuffer = ringBuffer_;
+  this->sizesFifo = sizesFifo_;
 }
 
 ReturnValue_t CommandExecutor::check(bool& replyReceived) {
@@ -102,23 +96,13 @@ ReturnValue_t CommandExecutor::check(bool& replyReceived) {
         ssize_t readBytes = read(currentFd, readVec.data(), readVec.size());
         if (readBytes == 0) {
           // Should not happen
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::warning << "CommandExecutor::check: No bytes read "
-                          "after poll event.."
-                       << std::endl;
-#else
-          sif::printWarning("CommandExecutor::check: No bytes read after poll event..\n");
-#endif
+          FSFW_LOGWT("CommandExecutor::check: No bytes read after poll event\n");
           break;
         } else if (readBytes > 0) {
           replyReceived = true;
           if (printOutput) {
             // It is assumed the command output is line terminated
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-            sif::info << currentCmd << " | " << readVec.data();
-#else
-            sif::printInfo("%s | %s", currentCmd, readVec.data());
-#endif
+            FSFW_LOGIT("{} | {}", currentCmd, readVec.data());
           }
           if (ringBuffer != nullptr) {
             ringBuffer->writeData(reinterpret_cast<const uint8_t*>(readVec.data()), readBytes);
@@ -130,20 +114,11 @@ ReturnValue_t CommandExecutor::check(bool& replyReceived) {
           }
         } else {
           // Should also not happen
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::warning << "CommandExecutor::check: Error " << errno << ": " << strerror(errno)
-                       << std::endl;
-#else
-          sif::printWarning("CommandExecutor::check: Error %d: %s\n", errno, strerror(errno));
-#endif
+          FSFW_LOGW("check: Error {} | {}\n", errno, strerror(errno));
         }
       }
       if (waiter.revents & POLLERR) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "CommandExecuter::check: Poll error" << std::endl;
-#else
-        sif::printWarning("CommandExecuter::check: Poll error\n");
-#endif
+        FSFW_LOGW("check: Poll error\n");
         return COMMAND_ERROR;
       }
       if (waiter.revents & POLLHUP) {
@@ -183,11 +158,7 @@ ReturnValue_t CommandExecutor::executeBlocking() {
   while (fgets(readVec.data(), readVec.size(), currentCmdFile) != nullptr) {
     std::string output(readVec.data());
     if (printOutput) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::info << currentCmd << " | " << output;
-#else
-      sif::printInfo("%s | %s", currentCmd, output);
-#endif
+      FSFW_LOGI("{} | {}", currentCmd, output);
     }
     if (ringBuffer != nullptr) {
       ringBuffer->writeData(reinterpret_cast<const uint8_t*>(output.data()), output.size());

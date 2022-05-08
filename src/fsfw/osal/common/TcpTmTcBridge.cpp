@@ -21,17 +21,13 @@ TcpTmTcBridge::TcpTmTcBridge(object_id_t objectId, object_id_t tcDestination, ob
     : TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
   mutex = MutexFactory::instance()->createMutex();
   // Connection is always up, TM is requested by connecting to server and receiving packets
-  registerCommConnect();
+  TmTcBridge::registerCommConnect();
 }
 
 ReturnValue_t TcpTmTcBridge::initialize() {
   ReturnValue_t result = TmTcBridge::initialize();
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "TcpTmTcBridge::initialize: TmTcBridge initialization failed!" << std::endl;
-#else
-    sif::printError("TcpTmTcBridge::initialize: TmTcBridge initialization failed!\n");
-#endif
+    FSFW_LOGE("TcpTmTcBridge::initialize: TmTcBridge initialization failed\n");
     return result;
   }
 

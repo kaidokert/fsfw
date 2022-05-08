@@ -37,7 +37,7 @@ class Service20ParameterManagement : public CommandingServiceBase {
   ReturnValue_t checkAndAcquireTargetID(object_id_t* objectIdToSet, const uint8_t* tcData,
                                         size_t tcDataLen);
   ReturnValue_t checkInterfaceAndAcquireMessageQueue(MessageQueueId_t* messageQueueToSet,
-                                                     object_id_t* objectId);
+                                                     const object_id_t* objectId);
   ReturnValue_t prepareDirectCommand(CommandMessage* message, const uint8_t* tcData,
                                      size_t tcDataLen);
 

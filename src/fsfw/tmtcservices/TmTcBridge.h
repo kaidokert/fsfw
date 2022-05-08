@@ -58,19 +58,19 @@ class TmTcBridge : public AcceptsTelemetryIF,
    * Initializes necessary FSFW components for the TMTC Bridge
    * @return
    */
-  virtual ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
   /**
    * @brief	Handles TMTC reception
    */
-  virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
+  ReturnValue_t performOperation(uint8_t operationCode) override;
 
   /** AcceptsTelemetryIF override */
-  virtual MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) override;
+  MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel) override;
 
   /** AcceptsTelecommandsIF override */
-  virtual uint16_t getIdentifier() override;
-  virtual MessageQueueId_t getRequestQueue() override;
+  uint16_t getIdentifier() override;
+  MessageQueueId_t getRequestQueue() override;
 
  protected:
   //! Cached for initialize function.

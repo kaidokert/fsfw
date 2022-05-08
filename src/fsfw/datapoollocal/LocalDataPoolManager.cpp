@@ -695,7 +695,7 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
   ReturnValue_t result = generateHousekeepingPacket(sid, dataSet, true);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     /* Configuration error */
-    FSFW_LOGWT("{}", "performHkOperation: HK generation failed");
+    FSFW_FLOGWT("{}", "performHkOperation: HK generation failed");
   }
 }
 
@@ -852,23 +852,9 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
   }
 
   if (outputType == sif::OutputTypes::OUT_WARNING) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "LocalDataPoolManager::" << functionName << ": Object ID 0x" << std::setw(8)
-                 << std::setfill('0') << std::hex << objectId << " | " << errorPrint << std::dec
-                 << std::setfill(' ') << std::endl;
-#else
-    sif::printWarning("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n", functionName, objectId,
-                      errorPrint);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+    FSFW_FLOGWT("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
   } else if (outputType == sif::OutputTypes::OUT_ERROR) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "LocalDataPoolManager::" << functionName << ": Object ID 0x" << std::setw(8)
-               << std::setfill('0') << std::hex << objectId << " | " << errorPrint << std::dec
-               << std::setfill(' ') << std::endl;
-#else
-    sif::printError("LocalDataPoolManager::%s: Object ID 0x%08x | %s\n", functionName, objectId,
-                    errorPrint);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+    FSFW_FLOGET("{} | Object ID {} | {}\n", functionName, objectId, errorPrint);
   }
 #endif /* #if FSFW_VERBOSE_LEVEL >= 1 */
 }

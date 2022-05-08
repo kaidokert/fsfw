@@ -29,7 +29,7 @@ ReturnValue_t CFDPHandler::initialize() {
 }
 
 ReturnValue_t CFDPHandler::handleRequest(store_address_t storeId) {
-  FSFW_LOGDT("{}", "CFDPHandler::handleRequest\n");
+  FSFW_FLOGDT("{}", "CFDPHandler::handleRequest\n");
 
   // TODO read out packet from store using storeId
 

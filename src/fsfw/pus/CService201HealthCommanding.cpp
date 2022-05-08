@@ -4,7 +4,7 @@
 #include "fsfw/health/HealthMessage.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/pus/servicepackets/Service201Packets.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId, uint16_t apid,
                                                          uint8_t serviceId,
@@ -22,9 +22,7 @@ ReturnValue_t CService201HealthCommanding::isValidSubservice(uint8_t subservice)
     case (Subservice::COMMAND_ANNOUNCE_HEALTH_ALL):
       return RETURN_OK;
     default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "Invalid Subservice" << std::endl;
-#endif
+      FSFW_LOGWT("Invalid Subservice\n");
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
 }
@@ -43,8 +41,8 @@ ReturnValue_t CService201HealthCommanding::getMessageQueueAndObject(uint8_t subs
 }
 
 ReturnValue_t CService201HealthCommanding::checkInterfaceAndAcquireMessageQueue(
-    MessageQueueId_t *messageQueueToSet, object_id_t *objectId) {
-  HasHealthIF *destination = ObjectManager::instance()->get<HasHealthIF>(*objectId);
+    MessageQueueId_t *messageQueueToSet, const object_id_t *objectId) {
+  auto *destination = ObjectManager::instance()->get<HasHealthIF>(*objectId);
   if (destination == nullptr) {
     return CommandingServiceBase::INVALID_OBJECT;
   }
@@ -96,9 +94,8 @@ ReturnValue_t CService201HealthCommanding::handleReply(const CommandMessage *rep
 
 // Not used for now, health state already reported by event
 ReturnValue_t CService201HealthCommanding::prepareHealthSetReply(const CommandMessage *reply) {
-  prepareHealthSetReply(reply);
-  uint8_t health = static_cast<uint8_t>(HealthMessage::getHealth(reply));
-  uint8_t oldHealth = static_cast<uint8_t>(HealthMessage::getOldHealth(reply));
+  auto health = static_cast<uint8_t>(HealthMessage::getHealth(reply));
+  auto oldHealth = static_cast<uint8_t>(HealthMessage::getOldHealth(reply));
   HealthSetReply healthSetReply(health, oldHealth);
   return sendTmPacket(Subservice::REPLY_HEALTH_SET, &healthSetReply);
 }

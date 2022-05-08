@@ -8,7 +8,7 @@
 #include "fsfw/osal/host/Mutex.h"
 #include "fsfw/osal/host/taskHelpers.h"
 #include "fsfw/platform.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 
 #if defined(PLATFORM_WIN)
@@ -42,7 +42,7 @@ PeriodicTask::~PeriodicTask(void) {
 }
 
 void PeriodicTask::taskEntryPoint(void* argument) {
-  PeriodicTask* originalTask(reinterpret_cast<PeriodicTask*>(argument));
+  auto* originalTask(reinterpret_cast<PeriodicTask*>(argument));
 
   if (not originalTask->started) {
     // we have to suspend/block here until the task is started.
@@ -52,11 +52,7 @@ void PeriodicTask::taskEntryPoint(void* argument) {
   }
 
   this->taskFunctionality();
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "PeriodicTask::taskEntryPoint: "
-                "Returned from taskFunctionality."
-             << std::endl;
-#endif
+  FSFW_LOGE("taskEntryPoint: Returned from taskFunctionality\n");
 }
 
 ReturnValue_t PeriodicTask::startTask() {

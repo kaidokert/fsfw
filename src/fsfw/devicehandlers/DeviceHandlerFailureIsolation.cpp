@@ -163,7 +163,7 @@ void DeviceHandlerFailureIsolation::clearFaultCounters() {
 ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
   ReturnValue_t result = FailureIsolationBase::initialize();
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_LOGE("{}", "initialize: Could not initialize FailureIsolationBase\n");
+    FSFW_FLOGE("{}", "initialize: Could not initialize FailureIsolationBase\n");
     return result;
   }
   auto* power = ObjectManager::instance()->get<ConfirmsFailuresIF>(powerConfirmationId);
@@ -239,10 +239,7 @@ bool DeviceHandlerFailureIsolation::isFdirInActionOrAreWeFaulty(EventMessage* ev
 
   if (owner == nullptr) {
     // Configuration error.
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "DeviceHandlerFailureIsolation::"
-               << "isFdirInActionOrAreWeFaulty: Owner not set!" << std::endl;
-#endif
+    FSFW_LOGE("isFdirInActionOrAreWeFaulty: Owner not set\n");
     return false;
   }
 

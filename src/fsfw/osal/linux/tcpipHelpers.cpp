@@ -96,7 +96,7 @@ void tcpip::handleError(Protocol protocol, ErrorSources errorSrc, dur_millis_t s
   }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-  FSFW_LOGWT("tcpip::handleError: {} | {} | {}\n", protocolString, errorSrcString, infoString);
+  FSFW_FLOGWT("tcpip::handleError: {} | {} | {}\n", protocolString, errorSrcString, infoString);
 #else
   sif::printWarning("tcpip::handleError: %s | %s | %s\n", protocolString.c_str(),
                     errorSrcString.c_str(), infoString.c_str());

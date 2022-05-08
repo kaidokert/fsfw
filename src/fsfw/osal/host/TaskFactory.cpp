@@ -6,7 +6,7 @@
 #include "fsfw/osal/host/PeriodicTask.h"
 #include "fsfw/osal/host/taskHelpers.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/PeriodicTaskIF.h"
 
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
@@ -47,9 +47,5 @@ ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
 
 void TaskFactory::printMissedDeadline() {
   std::string name = tasks::getTaskName(std::this_thread::get_id());
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::warning << "TaskFactory::printMissedDeadline: " << name << std::endl;
-#else
-  sif::printWarning("TaskFactory::printMissedDeadline: %s\n", name);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+  FSFW_LOGW("printMissedDeadline: {}\n", name);
 }

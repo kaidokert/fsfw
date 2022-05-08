@@ -15,11 +15,7 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* a
   queueLock = MutexFactory::instance()->createMutex();
   auto result = QueueMapManager::instance()->addMessageQueue(this, &id);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "MessageQueue::MessageQueue: Could not be created" << std::endl;
-#else
-    sif::printError("MessageQueue::MessageQueue: Could not be created\n");
-#endif
+    FSFW_LOGET("ctor: Could not be created\n");
   }
 }
 

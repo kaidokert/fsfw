@@ -27,7 +27,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   size_t size = 0;
   ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(), &packet, &size);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-    FSFW_LOGWT("{}", "selectDestination: Getting data from store failed");
+    FSFW_FLOGWT("{}", "selectDestination: Getting data from store failed");
   }
   SpacePacketBase currentPacket(packet);
 
@@ -72,17 +72,7 @@ ReturnValue_t CCSDSDistributor::initialize() {
   ReturnValue_t status = this->TcDistributor::initialize();
   this->tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
   if (this->tcStore == nullptr) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CCSDSDistributor::initialize: Could not initialize"
-                  " TC store!"
-               << std::endl;
-#else
-    sif::printError(
-        "CCSDSDistributor::initialize: Could not initialize"
-        " TC store!\n");
-#endif
-#endif
+    FSFW_LOGE("CCSDSDistributor::initialize: Could not initialize TC store\n");
     status = RETURN_FAILED;
   }
   return status;

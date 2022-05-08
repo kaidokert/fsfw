@@ -212,15 +212,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
     }
 
     default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "Service3Housekeeping::handleReply: Invalid reply with "
-                   << "reply command " << command << "!" << std::endl;
-#else
-      sif::printWarning(
-          "Service3Housekeeping::handleReply: Invalid reply with "
-          "reply command %hu!\n",
-          command);
-#endif
+      FSFW_FLOGW("handleReply: Invalid reply with reply command {}\n", command);
       return CommandingServiceBase::INVALID_REPLY;
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -241,39 +233,20 @@ void Service3Housekeeping::handleUnrequestedReply(CommandMessage* reply) {
       break;
     }
 
-    case (HousekeepingMessage::HK_REQUEST_SUCCESS): {
-      break;
-    }
-
+    case (HousekeepingMessage::HK_REQUEST_SUCCESS):
     case (HousekeepingMessage::HK_REQUEST_FAILURE): {
       break;
     }
 
     default: {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "Service3Housekeeping::handleUnrequestedReply: Invalid reply with reply "
-                      "command "
-                   << command << "!" << std::endl;
-#else
-      sif::printWarning(
-          "Service3Housekeeping::handleUnrequestedReply: Invalid reply with "
-          "reply command %hu!\n",
-          command);
-#endif
+      FSFW_LOGW("handleUnrequestedReply: Invalid reply with reply command {}\n", command);
       return;
     }
   }
 
   if (result != HasReturnvaluesIF::RETURN_OK) {
     /* Configuration error */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "Service3Housekeeping::handleUnrequestedReply: Could not generate reply!"
-                 << std::endl;
-#else
-    sif::printWarning(
-        "Service3Housekeeping::handleUnrequestedReply: "
-        "Could not generate reply!\n");
-#endif
+    FSFW_LOGWT("handleUnrequestedReply: Could not generate reply\n");
   }
 }
 

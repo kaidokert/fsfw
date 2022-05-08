@@ -123,17 +123,26 @@ void debug(const char* file, unsigned int line, fmt::format_string<T...> fmt,
   logTraced(LogLevel::DEBUG, file, line, false, fmt, args...);
 }
 
+/**
+ * Debug logger with timestamp and file/line number prefix
+ */
 template <typename... T>
 void debug_t(const char* file, unsigned int line, fmt::format_string<T...> fmt,
              T&&... args) noexcept {
   logTraced(LogLevel::DEBUG, file, line, true, fmt, args...);
 }
 
+/**
+ * Info logger with time stamp
+ */
 template <typename... T>
 void info_t(fmt::format_string<T...> fmt, T&&... args) {
   log(LogLevel::INFO, true, fmt, args...);
 }
 
+/**
+ * Info logger
+ */
 template <typename... T>
 void info(fmt::format_string<T...> fmt, T&&... args) {
   log(LogLevel::INFO, false, fmt, args...);
@@ -144,18 +153,27 @@ void warning(fmt::format_string<T...> fmt, T&&... args) {
   log(LogLevel::ERROR, false, fmt, args...);
 }
 
+/**
+ * Warning logger with time stamp
+ */
 template <typename... T>
 void warning_t(fmt::format_string<T...> fmt, T&&... args) {
   log(LogLevel::ERROR, true, fmt, args...);
 }
 
+/**
+ * Warning logger with file/line number prefix
+ */
 template <typename... T>
-void warning_f(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
+void warning_s(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
   logTraced(LogLevel::WARNING, file, line, false, fmt, args...);
 }
 
+/**
+ * Warning logger with timestamp and source file information
+ */
 template <typename... T>
-void warning_ft(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
+void warning_st(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
   logTraced(LogLevel::WARNING, file, line, true, fmt, args...);
 }
 
@@ -164,39 +182,61 @@ void error(fmt::format_string<T...> fmt, T&&... args) {
   log(LogLevel::ERROR, false, fmt, args...);
 }
 
+/**
+ * Error logger with timestamp
+ */
 template <typename... T>
 void error_t(fmt::format_string<T...> fmt, T&&... args) {
   log(LogLevel::ERROR, true, fmt, args...);
 }
 
+/**
+ * Error logger with source file information
+ */
 template <typename... T>
-void error_f(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
+void error_s(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
   logTraced(LogLevel::ERROR, file, line, false, fmt, args...);
 }
 
+/**
+ * Error logger with timestamp and source file information
+ */
 template <typename... T>
-void error_ft(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
+void error_st(const char* file, unsigned int line, fmt::format_string<T...> fmt, T&&... args) {
   logTraced(LogLevel::ERROR, file, line, true, fmt, args...);
 }
 
 }  // namespace sif
 
-#define FSFW_LOGI(format, ...) sif::info(FMT_STRING(format), __VA_ARGS__)
+// Helper macros to simplify calling the logger functions
+// The macros prefixed with F can be used to print formatted output
+// The macros postfixed with T are the log variant with timing information
 
-#define FSFW_LOGIT(format, ...) sif::info_t(FMT_STRING(format), __VA_ARGS__)
+#define FSFW_LOGI(...) sif::info(__VA_ARGS__)
+#define FSFW_FLOGI(format, ...) sif::info(FMT_STRING(format), __VA_ARGS__)
 
-#define FSFW_LOGD(format, ...) sif::debug(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
+#define FSFW_LOGIT(...) sif::info_t(__VA_ARGS__)
+#define FSFW_FLOGIT(format, ...) sif::info_t(FMT_STRING(format), __VA_ARGS__)
 
-#define FSFW_LOGDT(format, ...) \
+#define FSFW_LOGD(...) sif::debug(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_FLOGD(format, ...) sif::debug(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
+
+#define FSFW_LOGDT(...) sif::debug_t(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_FLOGDT(format, ...) \
   sif::debug_t(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
 
-#define FSFW_LOGW(format, ...) \
-  sif::warning_f(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
+#define FSFW_LOGW(...) sif::warning_s(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_FLOGW(format, ...) \
+  sif::warning_s(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
 
-#define FSFW_LOGWT(format, ...) \
-  sif::warning_ft(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
+#define FSFW_LOGWT(...) sif::warning_st(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_FLOGWT(format, ...) \
+  sif::warning_st(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
 
-#define FSFW_LOGE(format, ...) sif::error_f(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
+#define FSFW_LOGE(...) sif::error_s(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_FLOGE(format, ...) \
+  sif::error_s(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
 
-#define FSFW_LOGET(format, ...) \
-  sif::error_ft(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)
+#define FSFW_LOGET(...) sif::error_st(__FILENAME__, __LINE__, __VA_ARGS__)
+#define FSFW_FLOGET(format, ...) \
+  sif::error_st(__FILENAME__, __LINE__, FMT_STRING(format), __VA_ARGS__)

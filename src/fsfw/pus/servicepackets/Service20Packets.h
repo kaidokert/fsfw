@@ -1,12 +1,13 @@
 #ifndef FSFW_PUS_SERVICEPACKETS_SERVICE20PACKETS_H_
 #define FSFW_PUS_SERVICEPACKETS_SERVICE20PACKETS_H_
 
-#include <FSFWConfig.h>
 #include <fsfw/parameters/HasParametersIF.h>
 #include <fsfw/serialize/SerialBufferAdapter.h>
 #include <fsfw/serialize/SerialLinkedListAdapter.h>
 #include <fsfw/serialize/SerializeElement.h>
-#include <fsfw/serviceinterface/ServiceInterface.h>
+
+#include "fsfw/FSFW.h"
+#include "fsfw/serviceinterface.h"
 
 /**
  * @brief   This class encapsulates the packets sent to the PUS service 20 or sent by the
@@ -26,15 +27,9 @@ class ParameterCommand
    */
   ParameterCommand(uint8_t* storePointer, size_t parameterDataLen)
       : parameterBuffer(storePointer, parameterDataLen) {
-#if FSFW_VERBOSE_LEVEL >= 1
     if (parameterDataLen == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "ParameterCommand: Parameter data length is 0" << std::endl;
-#else
-      sif::printWarning("ParameterCommand: Parameter data length is 0!\n");
-#endif
+      FSFW_LOGWT("ParameterCommand: Parameter data length is 0\n");
     }
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
     setLoadLinks();
   }
 

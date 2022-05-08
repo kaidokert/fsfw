@@ -166,7 +166,7 @@ class HasLocalDataPoolIF {
    * @return
    */
   virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) {
-    FSFW_LOGW("{}", "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden. Returning nullptr\n");
+    FSFW_FLOGW("{}", "HasLocalDataPoolIF::getPoolObjectHandle: Not overriden. Returning nullptr\n");
     return nullptr;
   }
 };

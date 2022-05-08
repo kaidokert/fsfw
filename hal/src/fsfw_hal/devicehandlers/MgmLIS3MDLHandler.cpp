@@ -76,21 +76,16 @@ ReturnValue_t MgmLIS3MDLHandler::buildTransitionDeviceCommand(DeviceCommandId_t 
     }
     default: {
       /* might be a configuration error. */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "GyroHandler::buildTransitionDeviceCommand: Unknown internal state!"
-                   << std::endl;
-#else
-      sif::printWarning("GyroHandler::buildTransitionDeviceCommand: Unknown internal state!\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+      FSFW_LOGW("buildTransitionDeviceCommand: Unknown internal state\n");
       return HasReturnvaluesIF::RETURN_OK;
     }
   }
-  return buildCommandFromCommand(*id, NULL, 0);
+  return buildCommandFromCommand(*id, nullptr, 0);
 }
 
 uint8_t MgmLIS3MDLHandler::readCommand(uint8_t command, bool continuousCom) {
   command |= (1 << MGMLIS3MDL::RW_BIT);
-  if (continuousCom == true) {
+  if (continuousCom) {
     command |= (1 << MGMLIS3MDL::MS_BIT);
   }
   return command;
@@ -98,7 +93,7 @@ uint8_t MgmLIS3MDLHandler::readCommand(uint8_t command, bool continuousCom) {
 
 uint8_t MgmLIS3MDLHandler::writeCommand(uint8_t command, bool continuousCom) {
   command &= ~(1 << MGMLIS3MDL::RW_BIT);
-  if (continuousCom == true) {
+  if (continuousCom) {
     command |= (1 << MGMLIS3MDL::MS_BIT);
   }
   return command;
@@ -186,13 +181,7 @@ ReturnValue_t MgmLIS3MDLHandler::scanForReply(const uint8_t *start, size_t len,
     // Check validity by checking config registers
     if (start[1] != registers[0] or start[2] != registers[1] or start[3] != registers[2] or
         start[4] != registers[3] or start[5] != registers[4]) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "MGMHandlerLIS3MDL::scanForReply: Invalid registers!" << std::endl;
-#else
-      sif::printWarning("MGMHandlerLIS3MDL::scanForReply: Invalid registers!\n");
-#endif
-#endif
+      FSFW_LOGW("scanForReply: Invalid registers\n");
       return DeviceHandlerIF::INVALID_DATA;
     }
     if (mode == _MODE_START_UP) {
@@ -210,17 +199,9 @@ ReturnValue_t MgmLIS3MDLHandler::scanForReply(const uint8_t *start, size_t len,
     *foundId = getPendingCommand();
     if (*foundId == MGMLIS3MDL::IDENTIFY_DEVICE) {
       if (start[1] != MGMLIS3MDL::DEVICE_ID) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "MGMHandlerLIS3MDL::scanForReply: "
-                        "Device identification failed!"
-                     << std::endl;
-#else
-        sif::printWarning(
-            "MGMHandlerLIS3MDL::scanForReply: "
-            "Device identification failed!\n");
-#endif
-#endif
+        FSFW_FLOGW(
+            "scanForReply: Device identification failed, found ID {} not equal to expected {}\n",
+            start[1], MGMLIS3MDL::DEVICE_ID);
         return DeviceHandlerIF::INVALID_DATA;
       }
 
@@ -268,19 +249,10 @@ ReturnValue_t MgmLIS3MDLHandler::interpretDeviceReply(DeviceCommandId_t id, cons
 
       if (periodicPrintout) {
         if (debugDivider.checkAndIncrement()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::info << "MGMHandlerLIS3: Magnetic field strength in"
-                       " microtesla:"
-                    << std::endl;
-          sif::info << "X: " << mgmX << " uT" << std::endl;
-          sif::info << "Y: " << mgmY << " uT" << std::endl;
-          sif::info << "Z: " << mgmZ << " uT" << std::endl;
-#else
-          sif::printInfo("MGMHandlerLIS3: Magnetic field strength in microtesla:\n");
-          sif::printInfo("X: %f uT\n", mgmX);
-          sif::printInfo("Y: %f uT\n", mgmY);
-          sif::printInfo("Z: %f uT\n", mgmZ);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 0 */
+          FSFW_LOGI(
+              "MGMHandlerLIS3: Magnetic field strength in"
+              " microtesla (uT):\nX {} | Y {} | Z {}\n",
+              mgmX, mgmY, mgmZ);
         }
       }
 
@@ -311,15 +283,11 @@ ReturnValue_t MgmLIS3MDLHandler::interpretDeviceReply(DeviceCommandId_t id, cons
     }
 
     case MGMLIS3MDL::READ_TEMPERATURE: {
-      int16_t tempValueRaw = packet[2] << 8 | packet[1];
+      auto tempValueRaw = static_cast<int16_t>((packet[2] << 8) | packet[1]);
       float tempValue = 25.0 + ((static_cast<float>(tempValueRaw)) / 8.0);
       if (periodicPrintout) {
         if (debugDivider.check()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::info << "MGMHandlerLIS3: Temperature: " << tempValue << " C" << std::endl;
-#else
-          sif::printInfo("MGMHandlerLIS3: Temperature: %f C\n");
-#endif
+          FSFW_LOGI("MGMHandlerLIS3: Temperature: {} C\n", tempValue);
         }
       }
 

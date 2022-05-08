@@ -4,7 +4,7 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/osal/common/tcpipHelpers.h"
 #include "fsfw/platform.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 #ifdef PLATFORM_WIN
 #include <winsock2.h>
@@ -51,9 +51,7 @@ UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUdpBrid
                  receptionFlags, &senderAddress, &senderAddressSize);
     if (bytesReceived == SOCKET_ERROR) {
       /* Handle error */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "UdpTcPollingTask::performOperation: Reception error." << std::endl;
-#endif
+      FSFW_LOGW("performOperation: Reception error\n");
       tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::RECVFROM_CALL, 1000);
       continue;
     }
@@ -81,12 +79,7 @@ ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 
   ReturnValue_t result = tcStore->addData(&storeId, receptionBuffer.data(), bytesRead);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "UdpTcPollingTask::transferPusToSoftwareBus: Data storage failed." << std::endl;
-    sif::warning << "Packet size: " << bytesRead << std::endl;
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGWT("handleSuccessfullTcRead: Data storage failed. Packet size {}\n", bytesRead);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
@@ -94,13 +87,7 @@ ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 
   result = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "UdpTcPollingTask::handleSuccessfullTcRead: "
-                    " Sending message to queue failed"
-                 << std::endl;
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGWT("handleSuccessfullTcRead: Sending message to queue failed\n");
     tcStore->deleteData(storeId);
   }
   return result;
@@ -109,17 +96,13 @@ ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 ReturnValue_t UdpTcPollingTask::initialize() {
   tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
   if (tcStore == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "UdpTcPollingTask::initialize: TC store uninitialized!" << std::endl;
-#endif
+    FSFW_LOGE("initialize: TC store uninitialized\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
   tmtcBridge = ObjectManager::instance()->get<UdpTmTcBridge>(tmtcBridgeId);
   if (tmtcBridge == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "UdpTcPollingTask::initialize: Invalid TMTC bridge object!" << std::endl;
-#endif
+    FSFW_LOGE("initialize: Invalid TMTC bridge object\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
@@ -158,11 +141,7 @@ void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
   tval = timevalOperations::toTimeval(timeoutSeconds);
   int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(receptionTimeout));
   if (result == -1) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "TcSocketPollingTask::TcSocketPollingTask: Setting "
-                  "receive timeout failed with "
-               << strerror(errno) << std::endl;
-#endif
+    FSFW_LOGW("setTimeout: Setting receive timeout failed with {} | {}", errno, strerror(errno));
   }
 #endif
 }

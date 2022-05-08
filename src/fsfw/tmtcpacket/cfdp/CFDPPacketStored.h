@@ -45,7 +45,7 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
    * call tries to set it and throws an error message in case of failures.
    * The default store is objects::TC_STORE.
    */
-  static StorageManagerIF* store;
+  static StorageManagerIF* STORE;
   /**
    * The address where the packet data of the object instance is stored.
    */

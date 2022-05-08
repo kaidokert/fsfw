@@ -21,15 +21,10 @@ TestAssembly::TestAssembly(object_id_t objectId, object_id_t parentId, object_id
   commandTable.insert(newModeListEntry);
 }
 
-TestAssembly::~TestAssembly() {}
+TestAssembly::~TestAssembly() = default;
 
 ReturnValue_t TestAssembly::commandChildren(Mode_t mode, Submode_t submode) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "TestAssembly: Received command to go to mode " << mode << " submode "
-            << (int)submode << std::endl;
-#else
-  sif::printInfo("TestAssembly: Received command to go to mode %d submode %d\n", mode, submode);
-#endif
+  FSFW_LOGI("TestAssembly: Received command to go to mode {} submode {}", mode, submode);
   ReturnValue_t result = RETURN_OK;
   if (mode == MODE_OFF) {
     commandTable[0].setMode(MODE_OFF);

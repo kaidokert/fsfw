@@ -81,18 +81,8 @@ ReturnValue_t MgmRM3100Handler::buildTransitionDeviceCommand(DeviceCommandId_t *
       break;
     }
     default:
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
       // Might be a configuration error
-      sif::warning << "MgmRM3100Handler::buildTransitionDeviceCommand: "
-                      "Unknown internal state"
-                   << std::endl;
-#else
-      sif::printWarning(
-          "MgmRM3100Handler::buildTransitionDeviceCommand: "
-          "Unknown internal state\n");
-#endif
-#endif
+      FSFW_LOGW("buildTransitionDeviceCommand: Unknown internal state\n");
       return HasReturnvaluesIF::RETURN_OK;
   }
 
@@ -335,19 +325,10 @@ ReturnValue_t MgmRM3100Handler::handleDataReadout(const uint8_t *packet) {
 
   if (periodicPrintout) {
     if (debugDivider.checkAndIncrement()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::info << "MgmRM3100Handler: Magnetic field strength in"
-                   " microtesla:"
-                << std::endl;
-      sif::info << "X: " << fieldStrengthX << " uT" << std::endl;
-      sif::info << "Y: " << fieldStrengthY << " uT" << std::endl;
-      sif::info << "Z: " << fieldStrengthZ << " uT" << std::endl;
-#else
-      sif::printInfo("MgmRM3100Handler: Magnetic field strength in microtesla:\n");
-      sif::printInfo("X: %f uT\n", fieldStrengthX);
-      sif::printInfo("Y: %f uT\n", fieldStrengthY);
-      sif::printInfo("Z: %f uT\n", fieldStrengthZ);
-#endif
+      FSFW_LOGI(
+          "MgmRM3100Handler: Magnetic field strength in"
+          " microtesla(uT)\nX {} | Y {} | Z {}\n",
+          fieldStrengthX, fieldStrengthY, fieldStrengthZ);
     }
   }
 

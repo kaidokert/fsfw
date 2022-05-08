@@ -2,7 +2,7 @@
 
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tcdistribution/PUSDistributorIF.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
 #include "fsfw/tmtcpacket/pus/tm.h"
@@ -58,20 +58,15 @@ ReturnValue_t CommandingServiceBase::initialize() {
   if (packetDestination == objects::NO_OBJECT) {
     packetDestination = defaultPacketDestination;
   }
-  AcceptsTelemetryIF* packetForwarding =
-      ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
+  auto* packetForwarding = ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
 
   if (packetSource == objects::NO_OBJECT) {
     packetSource = defaultPacketSource;
   }
-  PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
+  auto* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
 
   if (packetForwarding == nullptr or distributor == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CommandingServiceBase::intialize: Packet source or "
-                  "packet destination invalid!"
-               << std::endl;
-#endif
+    FSFW_LOGE("CommandingServiceBase::intialize: Packet source or packet destination invalid\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
@@ -82,11 +77,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
   TCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
 
   if (IPCStore == nullptr or TCStore == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CommandingServiceBase::intialize: IPC store or TC store "
-                  "not initialized yet!"
-               << std::endl;
-#endif
+    FSFW_LOGE("CommandingServiceBase::intialize: IPC store or TC store not initialized yet\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
@@ -104,18 +95,10 @@ void CommandingServiceBase::handleCommandQueue() {
     } else if (result == MessageQueueIF::EMPTY) {
       break;
     } else {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "CommandingServiceBase::handleCommandQueue: Receiving message failed"
-                      "with code"
-                   << result << std::endl;
-#else
-      sif::printWarning(
-          "CommandingServiceBase::handleCommandQueue: Receiving message "
-          "failed with code %d\n",
+      FSFW_FLOGWT(
+          "CommandingServiceBase::handleCommandQueue: Receiving message failed"
+          "with code {}",
           result);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
       break;
     }
   }

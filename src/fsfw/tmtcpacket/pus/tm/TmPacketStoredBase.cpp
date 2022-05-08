@@ -3,7 +3,7 @@
 #include <cstring>
 
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
 StorageManagerIF *TmPacketStoredBase::store = nullptr;
@@ -45,9 +45,7 @@ bool TmPacketStoredBase::checkAndSetStore() {
   if (store == nullptr) {
     store = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
     if (store == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "TmPacketStored::TmPacketStored: TM Store not found!" << std::endl;
-#endif
+      FSFW_LOGW("TmPacketStored::TmPacketStored: TM Store not found\n");
       return false;
     }
   }
@@ -91,13 +89,13 @@ void TmPacketStoredBase::handleStoreFailure(const char *const packetType, Return
   switch (result) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     case (StorageManagerIF::DATA_STORAGE_FULL): {
-      sif::warning << "TmPacketStoredPus" << packetType << ": "
-                   << "Store full for packet with size" << sizeToReserve << std::endl;
+      FSFW_FLOGWT("handleStoreFailure: {} | Store full for packet with size {}\n", packetType,
+                  sizeToReserve);
       break;
     }
     case (StorageManagerIF::DATA_TOO_LARGE): {
-      sif::warning << "TmPacketStoredPus" << packetType << ": Data with size " << sizeToReserve
-                   << " too large" << std::endl;
+      FSFW_FLOGWT("handleStoreFailure: {} | Data with size {} too large\n", packetType,
+                  sizeToReserve);
       break;
     }
 #else

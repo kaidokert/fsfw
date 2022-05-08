@@ -41,7 +41,7 @@ class CService201HealthCommanding : public CommandingServiceBase {
   ReturnValue_t checkAndAcquireTargetID(object_id_t *objectIdToSet, const uint8_t *tcData,
                                         size_t tcDataLen);
   ReturnValue_t checkInterfaceAndAcquireMessageQueue(MessageQueueId_t *MessageQueueToSet,
-                                                     object_id_t *objectId);
+                                                     const object_id_t *objectId);
 
   ReturnValue_t prepareHealthSetReply(const CommandMessage *reply);
 

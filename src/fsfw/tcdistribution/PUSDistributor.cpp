@@ -1,7 +1,7 @@
 #include "fsfw/tcdistribution/PUSDistributor.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tcdistribution/CCSDSDistributorIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
@@ -44,15 +44,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         } else if (tcStatus == TcPacketCheckPUS::INCOMPLETE_PACKET) {
           keyword = "incomplete packet";
         }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::warning << "PUSDistributor::handlePacket: Packet format invalid, " << keyword
-                     << " error" << std::endl;
-#else
-        sif::printWarning(
-            "PUSDistributor::handlePacket: Packet format invalid, "
-            "%s error\n",
-            keyword);
-#endif
+        FSFW_FLOGWT("selectDestination: Packet format invalid, {} error\n", keyword);
 #endif
       }
       uint32_t queue_id = currentPacket->getService();
@@ -63,13 +55,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 
     if (queueMapIt == this->queueMap.end()) {
       tcStatus = DESTINATION_NOT_FOUND;
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::debug << "PUSDistributor::handlePacket: Destination not found" << std::endl;
-#else
-      sif::printDebug("PUSDistributor::handlePacket: Destination not found\n");
-#endif /* !FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif
+      FSFW_LOGW("selectDestination: Destination not found\n");
     }
 
     if (tcStatus != RETURN_OK) {
@@ -91,15 +77,7 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
   MessageQueueId_t queue = service->getRequestQueue();
   auto returnPair = queueMap.emplace(serviceId, queue);
   if (not returnPair.second) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PUSDistributor::registerService: Service ID already"
-                  " exists in map"
-               << std::endl;
-#else
-    sif::printError("PUSDistributor::registerService: Service ID already exists in map\n");
-#endif
-#endif
+    FSFW_LOGW("registerService: Service ID already exists in map\n");
     return SERVICE_ID_ALREADY_EXISTS;
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -133,16 +111,11 @@ ReturnValue_t PUSDistributor::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
-  CCSDSDistributorIF* ccsdsDistributor =
-      ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
+  auto* ccsdsDistributor = ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
   if (ccsdsDistributor == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PUSDistributor::initialize: Packet source invalid" << std::endl;
-    sif::error << " Make sure it exists and implements CCSDSDistributorIF!" << std::endl;
-#else
-    sif::printError("PUSDistributor::initialize: Packet source invalid\n");
-    sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
-#endif
+    FSFW_LOGWT(
+        "initialize: Packet source invalid\n Make sure it exists and implements "
+        "CCSDSDistributorIF\n");
     return RETURN_FAILED;
   }
   return ccsdsDistributor->registerApplication(this);

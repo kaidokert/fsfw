@@ -14,36 +14,24 @@
 
 using SystemClock = std::chrono::system_clock;
 
-uint32_t Clock::getTicksPerSecond(void) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::warning << "Clock::getTicksPerSecond: Not implemented for host OSAL" << std::endl;
-#else
-  sif::printWarning("Clock::getTicksPerSecond: Not implemented for host OSAL\n");
-#endif
+uint32_t Clock::getTicksPerSecond() {
+  FSFW_LOGW("getTicksPerSecond: Not implemented for host OSAL\n");
   /* To avoid division by zero */
   return 1;
 }
 
 ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
-  /* I don't know why someone would need to set a clock which is probably perfectly fine on a
-  host system with internet access so this is not implemented for now. */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::warning << "Clock::setClock: Not implemented for host OSAL" << std::endl;
-#else
-  sif::printWarning("Clock::setClock: Not implemented for host OSAL\n");
-#endif
-  return HasReturnvaluesIF::RETURN_OK;
+  // I don't know why someone would need to set a clock which is probably perfectly fine on a
+  // host system with internet access so this is not implemented for now.
+  FSFW_LOGI("Clock::setClock: Not implemented for host OSAL\n");
+  return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 ReturnValue_t Clock::setClock(const timeval* time) {
-  /* I don't know why someone would need to set a clock which is probably perfectly fine on a
-  host system with internet access so this is not implemented for now. */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::warning << "Clock::setClock: Not implemented for host OSAL" << std::endl;
-#else
-  sif::printWarning("Clock::setClock: Not implemented for host OSAL\n");
-#endif
-  return HasReturnvaluesIF::RETURN_OK;
+  // I don't know why someone would need to set a clock which is probably perfectly fine on a
+  // host system with internet access so this is not implemented for now.
+  FSFW_LOGI("Clock::setClock: Not implemented for host OSAL\n");
+  return HasReturnvaluesIF::RETURN_FAILED;
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {

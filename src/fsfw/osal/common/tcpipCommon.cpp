@@ -1,7 +1,9 @@
 #include "fsfw/osal/common/tcpipCommon.h"
 
+#include <cerrno>
+
 #include "fsfw/platform.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 #ifdef PLATFORM_WIN
 #include <ws2tcpip.h>
@@ -48,28 +50,20 @@ void tcpip::printAddress(struct sockaddr *addr) {
   const char *stringPtr = NULL;
   switch (addr->sa_family) {
     case AF_INET: {
-      struct sockaddr_in *addrIn = reinterpret_cast<struct sockaddr_in *>(addr);
+      auto *addrIn = reinterpret_cast<struct sockaddr_in *>(addr);
       stringPtr = inet_ntop(AF_INET, &(addrIn->sin_addr), ipAddress, INET_ADDRSTRLEN);
       break;
     }
     case AF_INET6: {
-      struct sockaddr_in6 *addrIn = reinterpret_cast<struct sockaddr_in6 *>(addr);
+      auto *addrIn = reinterpret_cast<struct sockaddr_in6 *>(addr);
       stringPtr = inet_ntop(AF_INET6, &(addrIn->sin6_addr), ipAddress, INET6_ADDRSTRLEN);
       break;
     }
   }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  if (stringPtr == NULL) {
-    sif::debug << "Could not convert IP address to text representation, error code " << errno
-               << std::endl;
+  if (stringPtr == nullptr) {
+    FSFW_FLOGDT("Could not convert IP address to text representation, error code {} | {}", errno,
+                strerror(errno));
   } else {
-    sif::debug << "IP Address Sender: " << ipAddress << std::endl;
+    FSFW_FLOGDT("IP Address Sender {}\n", ipAddress);
   }
-#else
-  if (stringPtr == NULL) {
-    sif::printDebug("Could not convert IP address to text representation, error code %d\n", errno);
-  } else {
-    sif::printDebug("IP Address Sender: %s\n", ipAddress);
-  }
-#endif
 }

@@ -8,7 +8,7 @@
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/platform.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/TaskFactory.h"
 #include "fsfw/tmtcservices/SpacePacketParser.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
@@ -54,11 +54,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
   }
   tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
   if (tcStore == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "TcpTmTcServer::initialize: TC store uninitialized!" << std::endl;
-#else
-    sif::printError("TcpTmTcServer::initialize: TC store uninitialized!\n");
-#endif
+    FSFW_LOGE("TcpTmTcServer::initialize: TC store uninitialized\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
@@ -204,11 +200,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
 
 ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t packetSize) {
   if (wiretappingEnabled) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "Received TC:" << std::endl;
-#else
-    sif::printInfo("Received TC:\n");
-#endif
+    FSFW_LOGI("Received TC:\n");
     arrayprinter::print(spacePacket, packetSize);
   }
 
@@ -218,17 +210,7 @@ ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t pack
   store_address_t storeId;
   ReturnValue_t result = tcStore->addData(&storeId, spacePacket, packetSize);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "TcpTmTcServer::handleServerOperation: Data storage with packet size"
-                 << packetSize << " failed" << std::endl;
-#else
-    sif::printWarning(
-        "TcpTmTcServer::handleServerOperation: Data storage with packet size %d "
-        "failed\n",
-        packetSize);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_FLOGWT("handleTcReception: Data storage with packet size {} failed\n", packetSize);
     return result;
   }
 
@@ -236,17 +218,7 @@ ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t pack
 
   result = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "TcpTmTcServer::handleServerOperation: "
-                    " Sending message to queue failed"
-                 << std::endl;
-#else
-    sif::printWarning(
-        "TcpTmTcServer::handleServerOperation: "
-        " Sending message to queue failed\n");
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGWT("handleTcReception: Sending message to queue failed\n");
     tcStore->deleteData(storeId);
   }
   return result;
@@ -254,15 +226,15 @@ ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t pack
 
 std::string TcpTmTcServer::getTcpPort() const { return tcpConfig.tcpPort; }
 
-void TcpTmTcServer::setSpacePacketParsingOptions(std::vector<uint16_t> validPacketIds) {
-  this->validPacketIds = validPacketIds;
+void TcpTmTcServer::setSpacePacketParsingOptions(std::vector<uint16_t> validPacketIds_) {
+  this->validPacketIds = std::move(validPacketIds_);
 }
 
 TcpTmTcServer::TcpConfig& TcpTmTcServer::getTcpConfigStruct() { return tcpConfig; }
 
 ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) {
   // Access to the FIFO is mutex protected because it is filled by the bridge
-  MutexGuard(tmtcBridge->mutex, tmtcBridge->timeoutType, tmtcBridge->mutexTimeoutMs);
+  MutexGuard mg(tmtcBridge->mutex, tmtcBridge->timeoutType, tmtcBridge->mutexTimeoutMs);
   store_address_t storeId;
   while ((not tmtcBridge->tmFifo->empty()) and
          (tmtcBridge->packetSentCounter < tmtcBridge->sentPacketsPerCycle)) {
@@ -276,15 +248,11 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) 
       return result;
     }
     if (wiretappingEnabled) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::info << "Sending TM:" << std::endl;
-#else
-      sif::printInfo("Sending TM:\n");
-#endif
+      FSFW_LOGI("Sending TM:");
       arrayprinter::print(storeAccessor.data(), storeAccessor.size());
     }
-    int retval = send(connSocket, reinterpret_cast<const char*>(storeAccessor.data()),
-                      storeAccessor.size(), tcpConfig.tcpTmFlags);
+    ssize_t retval = send(connSocket, reinterpret_cast<const char*>(storeAccessor.data()),
+                          storeAccessor.size(), tcpConfig.tcpTmFlags);
     if (retval == static_cast<int>(storeAccessor.size())) {
       // Packet sent, clear FIFO entry
       tmtcBridge->tmFifo->pop();
@@ -305,31 +273,14 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
   size_t readAmount = availableReadData;
   lastRingBufferSize = availableReadData;
   if (readAmount >= ringBuffer.getMaxSize()) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
     // Possible configuration error, too much data or/and data coming in too fast,
     // requiring larger buffers
-    sif::warning << "TcpTmTcServer::handleServerOperation: Ring buffer reached "
-                 << "fill count" << std::endl;
-#else
-    sif::printWarning(
-        "TcpTmTcServer::handleServerOperation: Ring buffer reached "
-        "fill count");
-#endif
-#endif
+    FSFW_LOGWT("handleTcRingBufferData: Ring buffer reached fill count\n");
   }
   if (readAmount >= receptionBuffer.size()) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
     // Possible configuration error, too much data or/and data coming in too fast,
     // requiring larger buffers
-    sif::warning << "TcpTmTcServer::handleServerOperation: "
-                    "Reception buffer too small "
-                 << std::endl;
-#else
-    sif::printWarning("TcpTmTcServer::handleServerOperation: Reception buffer too small\n");
-#endif
-#endif
+    FSFW_LOGWT("handleTcRingBufferData: Reception buffer too small\n");
     readAmount = receptionBuffer.size();
   }
   ringBuffer.readData(receptionBuffer.data(), readAmount, true);

@@ -1,6 +1,7 @@
 #include "fsfw/tcdistribution/CFDPDistributor.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tcdistribution/CCSDSDistributorIF.h"
 #include "fsfw/tmtcpacket/cfdp/CFDPPacketStored.h"
 
@@ -21,8 +22,8 @@ CFDPDistributor::~CFDPDistributor() {}
 CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 #if FSFW_CFDP_DISTRIBUTOR_DEBUGGING == 1
   store_address_t storeId = this->currentMessage.getStorageId();
-  FSFW_LOGI("selectDestination: Recie" << storeId.poolIndex << ", "
-             << storeId.packetIndex << std::endl;
+  FSFW_FLOGI("selectDestination was called with pool index {} and packet index {}\n",
+             storeId.poolIndex, storeId.packetIndex);
 #endif
   TcMqMapIter queueMapIt = this->queueMap.end();
   if (this->currentPacket == nullptr) {
@@ -32,15 +33,8 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
   if (currentPacket->getWholeData() != nullptr) {
     tcStatus = checker.checkPacket(currentPacket);
     if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::debug << "CFDPDistributor::handlePacket: Packet format invalid, code "
-                 << static_cast<int>(tcStatus) << std::endl;
-#else
-      sif::printDebug("CFDPDistributor::handlePacket: Packet format invalid, code %d\n",
-                      static_cast<int>(tcStatus));
-#endif
-#endif
+      FSFW_FLOGWT("selectDestination: Packet format invalid, code {}\n",
+                  static_cast<int>(tcStatus));
     }
     queueMapIt = this->queueMap.find(0);
   } else {
@@ -49,13 +43,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 
   if (queueMapIt == this->queueMap.end()) {
     tcStatus = DESTINATION_NOT_FOUND;
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "CFDPDistributor::handlePacket: Destination not found" << std::endl;
-#else
-    sif::printDebug("CFDPDistributor::handlePacket: Destination not found\n");
-#endif /* !FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif
+    FSFW_FLOGWT("{}", "handlePacket: Destination not found\n");
   }
 
   if (tcStatus != RETURN_OK) {
@@ -68,26 +56,11 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 ReturnValue_t CFDPDistributor::registerHandler(AcceptsTelecommandsIF* handler) {
   uint16_t handlerId =
       handler->getIdentifier();  // should be 0, because CFDPHandler does not set a set a service-ID
-#if FSFW_CFDP_DISTRIBUTOR_DEBUGGING == 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "CFDPDistributor::registerHandler: Handler ID: " << static_cast<int>(handlerId)
-            << std::endl;
-#else
-  sif::printInfo("CFDPDistributor::registerHandler: Handler ID: %d\n", static_cast<int>(handlerId));
-#endif
-#endif
+  FSFW_FLOGIT("CFDPDistributor::registerHandler: Handler ID {}\n", static_cast<int>(handlerId));
   MessageQueueId_t queue = handler->getRequestQueue();
   auto returnPair = queueMap.emplace(handlerId, queue);
   if (not returnPair.second) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CFDPDistributor::registerHandler: Service ID already"
-                  " exists in map"
-               << std::endl;
-#else
-    sif::printError("CFDPDistributor::registerHandler: Service ID already exists in map\n");
-#endif
-#endif
+    FSFW_FLOGE("{}", "CFDPDistributor::registerHandler: Service ID already exists in map\n");
     return SERVICE_ID_ALREADY_EXISTS;
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -122,16 +95,9 @@ ReturnValue_t CFDPDistributor::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
-  CCSDSDistributorIF* ccsdsDistributor =
-      ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
+  auto* ccsdsDistributor = ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
   if (ccsdsDistributor == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CFDPDistributor::initialize: Packet source invalid" << std::endl;
-    sif::error << " Make sure it exists and implements CCSDSDistributorIF!" << std::endl;
-#else
-    sif::printError("CFDPDistributor::initialize: Packet source invalid\n");
-    sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
-#endif
+    FSFW_FLOGE("{}", "initialize: Packet source invalid. Does it implement CCSDSDistributorIF?\n");
     return RETURN_FAILED;
   }
   return ccsdsDistributor->registerApplication(this);

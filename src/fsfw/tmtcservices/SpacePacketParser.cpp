@@ -1,10 +1,12 @@
-#include <fsfw/serviceinterface/ServiceInterface.h>
-#include <fsfw/tmtcservices/SpacePacketParser.h>
+#include "SpacePacketParser.h"
 
 #include <algorithm>
+#include <utility>
+
+#include "fsfw/serviceinterface.h"
 
 SpacePacketParser::SpacePacketParser(std::vector<uint16_t> validPacketIds)
-    : validPacketIds(validPacketIds) {}
+    : validPacketIds(std::move(validPacketIds)) {}
 
 ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t* buffer, const size_t maxSize,
                                                    size_t& startIndex, size_t& foundSize) {
@@ -17,11 +19,7 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const
                                                    size_t& startIndex, size_t& foundSize,
                                                    size_t& readLen) {
   if (buffer == nullptr or maxSize < 5) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "SpacePacketParser::parseSpacePackets: Frame invalid" << std::endl;
-#else
-    sif::printWarning("SpacePacketParser::parseSpacePackets: Frame invalid\n");
-#endif
+    FSFW_LOGW("SpacePacketParser::parseSpacePackets: Frame invalid\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   const uint8_t* bufPtr = *buffer;
@@ -49,7 +47,7 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const
 
   size_t idx = 0;
   // Space packet ID as start marker
-  if (validPacketIds.size() > 0) {
+  if (!validPacketIds.empty()) {
     while (idx < maxSize - 5) {
       uint16_t currentPacketId = bufPtr[idx] << 8 | bufPtr[idx + 1];
       if (std::find(validPacketIds.begin(), validPacketIds.end(), currentPacketId) !=

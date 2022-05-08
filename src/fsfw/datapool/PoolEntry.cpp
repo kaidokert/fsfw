@@ -68,7 +68,7 @@ void PoolEntry<T>::print() {
   } else {
     validString = "Invalid";
   }
-  FSFW_LOGI("PoolEntry Info. Validity {}\n", validString);
+  FSFW_FLOGI("PoolEntry Info. Validity {}\n", validString);
   arrayprinter::print(reinterpret_cast<uint8_t*>(address), getByteSize());
 }
 

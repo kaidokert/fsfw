@@ -30,15 +30,10 @@ ReturnValue_t QueueMapManager::addMessageQueue(MessageQueueIF* queueToInsert,
   auto returnPair = queueMap.emplace(currentId, queueToInsert);
   if (not returnPair.second) {
     /* This should never happen for the atomic variable. */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "QueueMapManager::addMessageQueue This ID is already "
-                  "inside the map!"
-               << std::endl;
-#else
-    sif::printError(
-        "QueueMapManager::addMessageQueue This ID is already "
-        "inside the map!\n");
-#endif
+    FSFW_LOGE(
+        "QueueMapManager::addMessageQueue The ID {} is already "
+        "inside the map\n",
+        currentId);
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (id != nullptr) {
@@ -52,13 +47,7 @@ MessageQueueIF* QueueMapManager::getMessageQueue(MessageQueueId_t messageQueueId
   if (queueIter != queueMap.end()) {
     return queueIter->second;
   } else {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "QueueMapManager::getQueueHandle: The ID " << messageQueueId
-                 << " does not exists in the map!" << std::endl;
-#else
-    sif::printWarning("QueueMapManager::getQueueHandle: The ID %d does not exist in the map!\n",
-                      messageQueueId);
-#endif
+    FSFW_LOGWT("getMessageQueue: The ID does not exists in the map\n");
   }
   return nullptr;
 }

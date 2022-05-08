@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 
+#include "fsfw/serviceinterface.h"
 #include "fsfw_tests/internal/UnittDefinitions.h"
 #include "fsfw_tests/internal/globalfunctions/TestArrayPrinter.h"
 #include "fsfw_tests/internal/osal/testMq.h"
@@ -15,11 +16,7 @@ InternalUnitTester::~InternalUnitTester() {}
 
 ReturnValue_t InternalUnitTester::performTests(
     const struct InternalUnitTester::TestConfig& testConfig) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "Running internal unit tests.. Error messages might follow" << std::endl;
-#else
-  sif::printInfo("Running internal unit tests..\n");
-#endif
+  FSFW_LOGI("Running internal unit tests.. Error messages might follow\n");
 
   testserialize::test_serialization();
   testmq::testMq();
@@ -32,10 +29,6 @@ ReturnValue_t InternalUnitTester::performTests(
     arrayprinter::testArrayPrinter();
   }
 
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "Internal unit tests finished." << std::endl;
-#else
-  sif::printInfo("Internal unit tests finished.\n");
-#endif
+  FSFW_LOGI("Internal unit tests finished\n");
   return RETURN_OK;
 }

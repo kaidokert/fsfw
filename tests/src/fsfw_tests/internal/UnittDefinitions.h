@@ -27,7 +27,7 @@ static const double tv_sdouble{-2.2421e19};
 }  // namespace tv
 
 namespace unitt {
-ReturnValue_t put_error(std::string errorId);
+ReturnValue_t put_error(const std::string& errorId);
 }
 
 #endif /* UNITTEST_INTERNAL_UNITTDEFINITIONS_H_ */

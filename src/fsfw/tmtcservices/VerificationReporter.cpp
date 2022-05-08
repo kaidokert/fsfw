@@ -3,7 +3,7 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/objectmanager/frameworkObjects.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
@@ -26,10 +26,8 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, TcPacketPusB
                                  currentPacket->getPacketSequenceControl(), 0, set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "VerificationReporter::sendSuccessReport: Error writing "
-               << "to queue. Code: " << std::hex << status << std::dec << std::endl;
-#endif
+    FSFW_FLOGET("VerificationReporter::sendSuccessReport: Error writing to queue. Code: {}\n",
+                status);
   }
 }
 
@@ -43,10 +41,10 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, uint8_t ackF
                                  set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "VerificationReporter::sendSuccessReport: Error writing "
-               << "to queue. Code: " << std::hex << status << std::dec << std::endl;
-#endif
+    FSFW_FLOGET(
+        "VerificationReporter::sendSuccessReport: Error writing "
+        "to queue. Code: {}\n",
+        status);
   }
 }
 
@@ -64,10 +62,10 @@ void VerificationReporter::sendFailureReport(uint8_t report_id, TcPacketPusBase*
       currentPacket->getPacketSequenceControl(), error_code, step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "VerificationReporter::sendFailureReport: Error writing "
-               << "to queue. Code: " << std::hex << "0x" << status << std::dec << std::endl;
-#endif
+    FSFW_FLOGET(
+        "VerificationReporter::sendFailureReport: Error writing "
+        "to queue. Code: {}\n",
+        status);
   }
 }
 
@@ -82,30 +80,22 @@ void VerificationReporter::sendFailureReport(uint8_t report_id, uint8_t ackFlags
                                  step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "VerificationReporter::sendFailureReport: Error writing "
-               << "to queue. Code: " << std::hex << "0x" << status << std::dec << std::endl;
-#endif
+    FSFW_LOGE("sendFailureReport: Error writing to queue. Code {:#04x}\n", status);
   }
 }
 
 void VerificationReporter::initialize() {
   if (messageReceiver == objects::NO_OBJECT) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "VerificationReporter::initialize: Verification message"
-                    " receiver object ID not set yet in Factory!"
-                 << std::endl;
-#endif
+    FSFW_LOGW(
+        "initialize: Verification message "
+        "receiver object ID not set yet in Factory\n");
     return;
   }
-  AcceptsVerifyMessageIF* temp =
-      ObjectManager::instance()->get<AcceptsVerifyMessageIF>(messageReceiver);
+  auto* temp = ObjectManager::instance()->get<AcceptsVerifyMessageIF>(messageReceiver);
   if (temp == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "VerificationReporter::initialize: Message "
-               << "receiver invalid. Make sure it is set up properly and "
-               << "implementsAcceptsVerifyMessageIF" << std::endl;
-#endif
+    FSFW_LOGE(
+        "VerificationReporter::initialize: Message receiver invalid. "
+        "Does it implement AcceptsVerifyMessageIF?\n");
     return;
   }
   this->acknowledgeQueue = temp->getVerificationQueue();

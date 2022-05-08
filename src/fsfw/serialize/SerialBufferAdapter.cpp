@@ -95,7 +95,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer, 
 template <typename count_t>
 uint8_t* SerialBufferAdapter<count_t>::getBuffer() {
   if (buffer == nullptr) {
-    FSFW_LOGW("{}", "getBuffer: Wrong access function for stored type. Use getConstBuffer\n");
+    FSFW_FLOGW("{}", "getBuffer: Wrong access function for stored type. Use getConstBuffer\n");
     return nullptr;
   }
   return buffer;
@@ -104,7 +104,7 @@ uint8_t* SerialBufferAdapter<count_t>::getBuffer() {
 template <typename count_t>
 const uint8_t* SerialBufferAdapter<count_t>::getConstBuffer() const {
   if (constBuffer == nullptr) {
-    FSFW_LOGE("{}", "getConstBuffer: Buffers are unitialized\n");
+    FSFW_FLOGE("{}", "getConstBuffer: Buffers are unitialized\n");
     return nullptr;
   }
   return constBuffer;

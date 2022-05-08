@@ -3,7 +3,7 @@
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/pus/servicepackets/Service1Packets.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
@@ -53,11 +53,9 @@ ReturnValue_t Service1TelecommandVerification::sendVerificationReport(
     result = generateSuccessReport(message);
   }
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "Service1TelecommandVerification::sendVerificationReport: "
-                  "Sending verification packet failed !"
-               << std::endl;
-#endif
+    FSFW_LOGE(
+        "Service1TelecommandVerification::sendVerificationReport: "
+        "Sending verification packet failed\n");
   }
   return result;
 }
@@ -91,15 +89,9 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
 
 ReturnValue_t Service1TelecommandVerification::initialize() {
   // Get target object for TC verification messages
-  AcceptsTelemetryIF* funnel =
-      ObjectManager::instance()->get<AcceptsTelemetryIF>(targetDestination);
+  auto* funnel = ObjectManager::instance()->get<AcceptsTelemetryIF>(targetDestination);
   if (funnel == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "Service1TelecommandVerification::initialize: Specified"
-                  " TM funnel invalid. Make sure it is set up and implements"
-                  " AcceptsTelemetryIF."
-               << std::endl;
-#endif
+    FSFW_LOGE("initialize: Specified TM funnel invalid. Does it implement AcceptsTelemetryIF?\n");
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
   tmQueue->setDefaultDestination(funnel->getReportReceptionQueue());

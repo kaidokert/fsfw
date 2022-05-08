@@ -14,15 +14,8 @@ UnixFileGuard::UnixFileGuard(std::string device, int* fileDescriptor, int flags,
   }
   *fileDescriptor = open(device.c_str(), flags);
   if (*fileDescriptor < 0) {
-#if FSFW_VERBOSE_LEVEL >= 1
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << diagnosticPrefix << ": Opening device failed with error code " << errno << ": "
-                 << strerror(errno) << std::endl;
-#else
-    sif::printWarning("%s: Opening device failed with error code %d: %s\n", diagnosticPrefix, errno,
-                      strerror(errno));
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-#endif /* FSFW_VERBOSE_LEVEL >= 1 */
+    FSFW_LOGW("{} | Opening device failed with error code {} | {}\n", diagnosticPrefix, errno,
+              strerror(errno));
     openStatus = OPEN_FILE_FAILED;
   }
 }

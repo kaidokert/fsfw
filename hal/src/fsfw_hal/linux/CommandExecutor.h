@@ -93,7 +93,7 @@ class CommandExecutor {
 
   States getCurrentState() const;
   int getLastError() const;
-  void printLastError(std::string funcName) const;
+  void printLastError(const std::string& funcName) const;
 
   /**
    * Assign a ring buffer and a FIFO which will be filled by the executor with the output

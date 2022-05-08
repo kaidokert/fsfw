@@ -60,16 +60,8 @@ ReturnValue_t GyroHandlerL3GD20H::buildTransitionDeviceCommand(DeviceCommandId_t
       return buildCommandFromCommand(*id, nullptr, 0);
     }
     default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
       /* Might be a configuration error. */
-      sif::warning << "GyroL3GD20Handler::buildTransitionDeviceCommand: "
-                      "Unknown internal state!"
-                   << std::endl;
-#else
-      sif::printDebug(
-          "GyroL3GD20Handler::buildTransitionDeviceCommand: "
-          "Unknown internal state!\n");
-#endif
+      FSFW_LOGW("buildTransitionDeviceCommand: Unknown internal state\n");
       return HasReturnvaluesIF::RETURN_OK;
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -192,17 +184,8 @@ ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
       if (periodicPrintout) {
         if (debugDivider.checkAndIncrement()) {
           /* Set terminal to utf-8 if there is an issue with micro printout. */
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::info << "GyroHandlerL3GD20H: Angular velocities (deg/s):" << std::endl;
-          sif::info << "X: " << angVelocX << std::endl;
-          sif::info << "Y: " << angVelocY << std::endl;
-          sif::info << "Z: " << angVelocZ << std::endl;
-#else
-          sif::printInfo("GyroHandlerL3GD20H: Angular velocities (deg/s):\n");
-          sif::printInfo("X: %f\n", angVelocX);
-          sif::printInfo("Y: %f\n", angVelocY);
-          sif::printInfo("Z: %f\n", angVelocZ);
-#endif
+          FSFW_LOGI("GyroHandlerL3GD20H: Angular velocities (deg/s):\nX {} | Y {} | Z {}\n",
+                    angVelocX, angVelocY, angVelocZ);
         }
       }
 

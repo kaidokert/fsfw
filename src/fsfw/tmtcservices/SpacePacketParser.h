@@ -33,7 +33,7 @@ class SpacePacketParser {
    * If an empty vector is passed, the parser will assume that the start of the given stream
    * contains the start of a new space packet.
    */
-  SpacePacketParser(std::vector<uint16_t> validPacketIds);
+  explicit SpacePacketParser(std::vector<uint16_t> validPacketIds);
 
   /**
    * Parse a given frame for space packets but also increment the given buffer and assign the
@@ -53,7 +53,7 @@ class SpacePacketParser {
    *      will be assigned.
    *  -@c RETURN_OK if a packet was found
    */
-  ReturnValue_t parseSpacePackets(const uint8_t** buffer, const size_t maxSize, size_t& startIndex,
+  ReturnValue_t parseSpacePackets(const uint8_t** buffer, size_t maxSize, size_t& startIndex,
                                   size_t& foundSize, size_t& readLen);
 
   /**

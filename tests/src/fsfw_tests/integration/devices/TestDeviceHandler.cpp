@@ -17,11 +17,7 @@ TestDevice::~TestDevice() {}
 
 void TestDevice::performOperationHook() {
   if (periodicPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "TestDevice" << deviceIdx << "::performOperationHook: Alive!" << std::endl;
-#else
-    sif::printInfo("TestDevice%d::performOperationHook: Alive!", deviceIdx);
-#endif
+    FSFW_FLOGI("TestDevice {} | performOperationHook: Alive!\n", deviceIdx);
   }
 
   if (oneShot) {
@@ -31,28 +27,18 @@ void TestDevice::performOperationHook() {
 
 void TestDevice::doStartUp() {
   if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "TestDevice" << deviceIdx << "::doStartUp: Switching On" << std::endl;
-#else
-    sif::printInfo("TestDevice%d::doStartUp: Switching On\n", static_cast<int>(deviceIdx));
-#endif
+    FSFW_FLOGI("TestDevice {} | doStartUp: Switching On\n", deviceIdx);
   }
 
   setMode(_MODE_TO_ON);
-  return;
 }
 
 void TestDevice::doShutDown() {
   if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "TestDevice" << deviceIdx << "::doShutDown: Switching Off" << std::endl;
-#else
-    sif::printInfo("TestDevice%d::doShutDown: Switching Off\n", static_cast<int>(deviceIdx));
-#endif
+    FSFW_FLOGI("TestDevice {} | doShutDown: Switching Off\n", deviceIdx);
   }
 
   setMode(_MODE_SHUT_DOWN);
-  return;
 }
 
 ReturnValue_t TestDevice::buildNormalDeviceCommand(DeviceCommandId_t* id) {
@@ -67,49 +53,28 @@ ReturnValue_t TestDevice::buildNormalDeviceCommand(DeviceCommandId_t* id) {
 ReturnValue_t TestDevice::buildTransitionDeviceCommand(DeviceCommandId_t* id) {
   if (mode == _MODE_TO_ON) {
     if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::info << "TestDevice" << deviceIdx
-                << "::buildTransitionDeviceCommand: Was called"
-                   " from _MODE_TO_ON mode"
-                << std::endl;
-#else
-      sif::printInfo(
-          "TestDevice%d::buildTransitionDeviceCommand: "
-          "Was called from _MODE_TO_ON mode\n",
+      FSFW_FLOGI(
+          "TestDevice {} | buildTransitionDeviceCommand: Was called"
+          " from _MODE_TO_ON mode\n",
           deviceIdx);
-#endif
     }
   }
   if (mode == _MODE_TO_NORMAL) {
     if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::info << "TestDevice" << deviceIdx
-                << "::buildTransitionDeviceCommand: Was called "
-                   "from _MODE_TO_NORMAL mode"
-                << std::endl;
-#else
-      sif::printInfo(
-          "TestDevice%d::buildTransitionDeviceCommand: Was called from "
-          " _MODE_TO_NORMAL mode\n",
+      FSFW_FLOGI(
+          "TestDevice {} | buildTransitionDeviceCommand: Was called "
+          "from _MODE_TO_NORMAL mode\n",
           deviceIdx);
-#endif
     }
 
     setMode(MODE_NORMAL);
   }
   if (mode == _MODE_SHUT_DOWN) {
     if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::info << "TestDevice" << deviceIdx
-                << "::buildTransitionDeviceCommand: Was called "
-                   "from _MODE_SHUT_DOWN mode"
-                << std::endl;
-#else
-      sif::printInfo(
-          "TestDevice%d::buildTransitionDeviceCommand: Was called from "
-          "_MODE_SHUT_DOWN mode\n",
+      FSFW_FLOGI(
+          "TestDevice {} | buildTransitionDeviceCommand: Was called "
+          "from _MODE_SHUT_DOWN mode\n",
           deviceIdx);
-#endif
     }
 
     setMode(MODE_OFF);
@@ -120,14 +85,10 @@ ReturnValue_t TestDevice::buildTransitionDeviceCommand(DeviceCommandId_t* id) {
 void TestDevice::doTransition(Mode_t modeFrom, Submode_t submodeFrom) {
   if (mode == _MODE_TO_NORMAL) {
     if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::info << "TestDevice" << deviceIdx
-                << "::doTransition: Custom transition to "
-                   "normal mode"
-                << std::endl;
-#else
-      sif::printInfo("TestDevice%d::doTransition: Custom transition to normal mode\n", deviceIdx);
-#endif
+      FSFW_FLOGI(
+          "TestDevice {} | doTransition: Custom transition to "
+          "normal mode\n",
+          deviceIdx);
     }
 
   } else {
@@ -229,17 +190,10 @@ ReturnValue_t TestDevice::buildTestCommand0(DeviceCommandId_t deviceCommand,
                                             const uint8_t* commandData, size_t commandDataLen) {
   using namespace testdevice;
   if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "TestDevice" << deviceIdx
-              << "::buildTestCommand0: Executing simple command "
-                 " with completion reply"
-              << std::endl;
-#else
-    sif::printInfo(
-        "TestDevice%d::buildTestCommand0: Executing simple command with "
-        "completion reply\n",
+    FSFW_LOGI(
+        "TestDevice {} | buildTestCommand0: Executing simple command "
+        "with completion reply\n",
         deviceIdx);
-#endif
   }
 
   if (commandDataLen > MAX_BUFFER_SIZE - sizeof(DeviceCommandId_t)) {
@@ -258,15 +212,10 @@ ReturnValue_t TestDevice::buildTestCommand1(DeviceCommandId_t deviceCommand,
     return DeviceHandlerIF::INVALID_NUMBER_OR_LENGTH_OF_PARAMETERS;
   }
   if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "TestDevice" << deviceIdx
-              << "::buildTestCommand1: Executing command with "
-                 "data reply"
-              << std::endl;
-#else
-    sif::printInfo("TestDevice%d:buildTestCommand1: Executing command with data reply\n",
-                   deviceIdx);
-#endif
+    FSFW_LOGI(
+        "TestDevice {} | buildTestCommand1: Executing command "
+        "with data reply\n",
+        deviceIdx);
   }
 
   deviceCommand = EndianConverter::convertBigEndian(deviceCommand);
@@ -374,17 +323,8 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
         return DeviceHandlerIF::LENGTH_MISSMATCH;
       }
       if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TestDevice" << deviceIdx
-                  << "::scanForReply: Reply for simple command "
-                     "(ID "
-                  << TEST_COMMAND_0 << ") received!" << std::endl;
-#else
-        sif::printInfo(
-            "TestDevice%d::scanForReply: Reply for simple command (ID %d) "
-            "received!\n",
-            deviceIdx, TEST_COMMAND_0);
-#endif
+        FSFW_LOGIT("TestDevice {} | scanForReply: Reply for simple command (ID {}) received!\n",
+                   deviceIdx, TEST_COMMAND_0);
       }
 
       *foundLen = TEST_COMMAND_0_SIZE;
@@ -394,17 +334,8 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
 
     case (TEST_COMMAND_1): {
       if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TestDevice" << deviceIdx
-                  << "::scanForReply: Reply for data command "
-                     "(ID "
-                  << TEST_COMMAND_1 << ") received!" << std::endl;
-#else
-        sif::printInfo(
-            "TestDevice%d::scanForReply: Reply for data command (ID %d) "
-            "received\n",
-            deviceIdx, TEST_COMMAND_1);
-#endif
+        FSFW_LOGIT("TestDevice {} | scanForReply: Reply for data command (ID {}) received\n",
+                   deviceIdx, TEST_COMMAND_1);
       }
 
       *foundLen = len;
@@ -576,12 +507,7 @@ ReturnValue_t TestDevice::interpretingNormalModeReply() {
 ReturnValue_t TestDevice::interpretingTestReply0(DeviceCommandId_t id, const uint8_t* packet) {
   CommandMessage commandMessage;
   if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "TestDevice::interpretingTestReply0: Generating step and finish reply"
-              << std::endl;
-#else
-    sif::printInfo("TestDevice::interpretingTestReply0: Generating step and finish reply\n");
-#endif
+    FSFW_LOGI("interpretingTestReply0: Generating step and finish reply\n");
   }
 
   MessageQueueId_t commander = getCommanderQueueId(id);
@@ -595,12 +521,7 @@ ReturnValue_t TestDevice::interpretingTestReply0(DeviceCommandId_t id, const uin
 ReturnValue_t TestDevice::interpretingTestReply1(DeviceCommandId_t id, const uint8_t* packet) {
   CommandMessage directReplyMessage;
   if (fullInfoPrintout) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::info << "TestDevice" << deviceIdx << "::interpretingReply1: Setting data reply"
-              << std::endl;
-#else
-    sif::printInfo("TestDevice%d::interpretingReply1: Setting data reply\n", deviceIdx);
-#endif
+    FSFW_LOGIT("TestDevice {} | interpretingReply1: Setting data reply\n", deviceIdx);
   }
 
   MessageQueueId_t commander = getCommanderQueueId(id);
@@ -609,25 +530,14 @@ ReturnValue_t TestDevice::interpretingTestReply1(DeviceCommandId_t id, const uin
       actionHelper.reportData(commander, id, packet, testdevice::TEST_COMMAND_1_SIZE, false);
 
   if (result != RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "TestDevice" << deviceIdx
-               << "::interpretingReply1: Sending data "
-                  "reply failed!"
-               << std::endl;
-#else
-    sif::printError("TestDevice%d::interpretingReply1: Sending data reply failed!\n", deviceIdx);
-#endif
+    FSFW_LOGWT("TestDevice {} | interpretingReply1: Sending data reply failed\n", deviceIdx);
+    /* Finish reply */
+    actionHelper.finish(false, commander, id, result);
     return result;
   }
 
-  if (result == HasReturnvaluesIF::RETURN_OK) {
-    /* Finish reply */
-    actionHelper.finish(true, commander, id);
-  } else {
-    /* Finish reply */
-    actionHelper.finish(false, commander, id, result);
-  }
-
+  /* Finish reply */
+  actionHelper.finish(true, commander, id);
   return RETURN_OK;
 }
 
@@ -659,15 +569,8 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
         uint32_t newValue = 0;
         ReturnValue_t result = newValues->getElement<uint32_t>(&newValue, 0, 0);
         if (result == HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::info << "TestDevice" << deviceIdx
-                    << "::getParameter: Setting parameter 0 to "
-                       "new value "
-                    << newValue << std::endl;
-#else
-          sif::printInfo("TestDevice%d::getParameter: Setting parameter 0 to new value %lu\n",
-                         deviceIdx, static_cast<unsigned long>(newValue));
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+          FSFW_LOGIT("TestDevice {} | getParameter: Setting parameter 0 to new value {}\n",
+                     newValue);
         }
       }
       parameterWrapper->set(testParameter0);
@@ -678,15 +581,8 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
         int32_t newValue = 0;
         ReturnValue_t result = newValues->getElement<int32_t>(&newValue, 0, 0);
         if (result == HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-          sif::info << "TestDevice" << deviceIdx
-                    << "::getParameter: Setting parameter 1 to "
-                       "new value "
-                    << newValue << std::endl;
-#else
-          sif::printInfo("TestDevice%d::getParameter: Setting parameter 1 to new value %lu\n",
-                         deviceIdx, static_cast<unsigned long>(newValue));
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+          FSFW_LOGIT("TestDevice {} | getParameter: Setting parameter 1 to new value {}\n",
+                     newValue);
         }
       }
       parameterWrapper->set(testParameter1);
@@ -700,18 +596,10 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
             newValues->getElement<float>(newVector + 2, 0, 2) != RETURN_OK) {
           return HasReturnvaluesIF::RETURN_FAILED;
         }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TestDevice" << deviceIdx
-                  << "::getParameter: Setting parameter 3 to "
-                     "(float vector with 3 entries) to new values ["
-                  << newVector[0] << ", " << newVector[1] << ", " << newVector[2] << "]"
-                  << std::endl;
-#else
-        sif::printInfo(
-            "TestDevice%d::getParameter: Setting parameter 3 to new values "
-            "[%f, %f, %f]\n",
-            deviceIdx, newVector[0], newVector[1], newVector[2]);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+        FSFW_LOGIT(
+            "TestDevice {} | getParameter: Setting parameter 3 (float vec with 3 entries) "
+            "to new values 0 {}, 1 {}, 2 {}\n",
+            newVector[0], newVector[1], newVector[2]);
       }
       parameterWrapper->setVector(vectorFloatParams2);
       break;
@@ -729,12 +617,7 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
         } else {
           printout = "disabled";
         }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TestDevice" << deviceIdx << "::getParameter: Periodic printout " << printout
-                  << std::endl;
-#else
-        sif::printInfo("TestDevice%d::getParameter: Periodic printout %s", printout);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+        FSFW_LOGIT("TestDevice {} | getParameter: Periodic printout {}\n", deviceIdx, printout);
       }
 
       parameterWrapper->set(periodicPrintout);
@@ -762,12 +645,7 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
         } else {
           printout = "disabled";
         }
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "TestDevice" << deviceIdx << "::getParameter: Changing datasets " << printout
-                  << std::endl;
-#else
-        sif::printInfo("TestDevice%d::getParameter: Changing datasets %s", printout);
-#endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
+        FSFW_LOGI("TestDevice {} | getParameter: Changing datasets {}\n", deviceIdx, printout);
       }
 
       parameterWrapper->set(changingDatasets);

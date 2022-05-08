@@ -25,7 +25,7 @@ ReturnValue_t UartComIF::initializeInterface(CookieIF* cookie) {
 
   auto* uartCookie = dynamic_cast<UartCookie*>(cookie);
   if (uartCookie == nullptr) {
-    FSFW_LOGE("{}", "initializeInterface: Invalid UART Cookie\n");
+    FSFW_FLOGE("{}", "initializeInterface: Invalid UART Cookie\n");
     return NULLPOINTER;
   }
 
@@ -41,11 +41,12 @@ ReturnValue_t UartComIF::initializeInterface(CookieIF* cookie) {
     UartElements uartElements = {fileDescriptor, std::vector<uint8_t>(maxReplyLen), 0};
     auto status = uartDeviceMap.emplace(deviceFile, uartElements);
     if (!status.second) {
-      FSFW_LOGW("initializeInterface: Failed to insert device {} to UART device map\n", deviceFile);
+      FSFW_FLOGW("initializeInterface: Failed to insert device {} to UART device map\n",
+                 deviceFile);
       return RETURN_FAILED;
     }
   } else {
-    FSFW_LOGW("initializeInterface: UART device {} already in use\n", deviceFile);
+    FSFW_FLOGW("initializeInterface: UART device {} already in use\n", deviceFile);
     return RETURN_FAILED;
   }
 
@@ -65,14 +66,14 @@ int UartComIF::configureUartPort(UartCookie* uartCookie) {
   int fd = open(deviceFile.c_str(), flags);
 
   if (fd < 0) {
-    FSFW_LOGW("configureUartPort: Failed to open UART {} with error code {} | {}\n", deviceFile,
-              errno, strerror(errno));
+    FSFW_FLOGW("configureUartPort: Failed to open UART {} with error code {} | {}\n", deviceFile,
+               errno, strerror(errno));
     return fd;
   }
 
   /* Read in existing settings */
   if (tcgetattr(fd, &options) != 0) {
-    FSFW_LOGW("configureUartPort: Error {} from tcgetattr: {}\n", errno, strerror(errno));
+    FSFW_FLOGW("configureUartPort: Error {} from tcgetattr: {}\n", errno, strerror(errno));
     return fd;
   }
 
@@ -93,8 +94,8 @@ int UartComIF::configureUartPort(UartCookie* uartCookie) {
 
   /* Save option settings */
   if (tcsetattr(fd, TCSANOW, &options) != 0) {
-    FSFW_LOGW("configureUartPort: Failed to set options with error {} | {}\n", errno,
-              strerror(errno));
+    FSFW_FLOGW("configureUartPort: Failed to set options with error {} | {}\n", errno,
+               strerror(errno));
     return fd;
   }
   return fd;
@@ -146,8 +147,8 @@ void UartComIF::setDatasizeOptions(struct termios* options, UartCookie* uartCook
       options->c_cflag |= CS8;
       break;
     default:
-      FSFW_LOGW("setDatasizeOptions: Invalid size {} specified\n",
-                static_cast<unsigned int>(uartCookie->getBitsPerWord()));
+      FSFW_FLOGW("setDatasizeOptions: Invalid size {} specified\n",
+                 static_cast<unsigned int>(uartCookie->getBitsPerWord()));
       break;
   }
 }
@@ -300,7 +301,7 @@ void UartComIF::configureBaudrate(struct termios* options, UartCookie* uartCooki
       break;
 #endif  // ! __APPLE__
     default:
-      FSFW_LOGW("{}", "UartComIF::configureBaudrate: Baudrate not supported\n");
+      FSFW_FLOGW("{}", "UartComIF::configureBaudrate: Baudrate not supported\n");
       break;
   }
 }
@@ -315,27 +316,27 @@ ReturnValue_t UartComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, 
   }
 
   if (sendData == nullptr) {
-    FSFW_LOGWT("{}", "sendMessage: Send data is nullptr");
+    FSFW_FLOGWT("{}", "sendMessage: Send data is nullptr");
     return RETURN_FAILED;
   }
 
   auto* uartCookie = dynamic_cast<UartCookie*>(cookie);
   if (uartCookie == nullptr) {
-    FSFW_LOGWT("{}", "sendMessage: Invalid UART Cookie\n");
+    FSFW_FLOGWT("{}", "sendMessage: Invalid UART Cookie\n");
     return NULLPOINTER;
   }
 
   deviceFile = uartCookie->getDeviceFile();
   uartDeviceMapIter = uartDeviceMap.find(deviceFile);
   if (uartDeviceMapIter == uartDeviceMap.end()) {
-    FSFW_LOGWT("{}", "sendMessage: Device file {} not in UART map\n", deviceFile);
+    FSFW_FLOGWT("{}", "sendMessage: Device file {} not in UART map\n", deviceFile);
     return RETURN_FAILED;
   }
 
   fd = uartDeviceMapIter->second.fileDescriptor;
 
   if (write(fd, sendData, sendLen) != static_cast<int>(sendLen)) {
-    FSFW_LOGE("sendMessage: Failed to send data with error code {} | {}", errno, strerror(errno));
+    FSFW_FLOGE("sendMessage: Failed to send data with error code {} | {}", errno, strerror(errno));
     return RETURN_FAILED;
   }
 
@@ -350,7 +351,7 @@ ReturnValue_t UartComIF::requestReceiveMessage(CookieIF* cookie, size_t requestL
 
   auto* uartCookie = dynamic_cast<UartCookie*>(cookie);
   if (uartCookie == nullptr) {
-    FSFW_LOGWT("{}", "requestReceiveMessage: Invalid UART Cookie\n");
+    FSFW_FLOGWT("{}", "requestReceiveMessage: Invalid UART Cookie\n");
     return NULLPOINTER;
   }
 
@@ -363,7 +364,7 @@ ReturnValue_t UartComIF::requestReceiveMessage(CookieIF* cookie, size_t requestL
   }
 
   if (uartDeviceMapIter == uartDeviceMap.end()) {
-    FSFW_LOGW("requestReceiveMessage: Device file {} not in UART map\n", deviceFile);
+    FSFW_FLOGW("requestReceiveMessage: Device file {} not in UART map\n", deviceFile);
     return RETURN_FAILED;
   }
 
@@ -392,7 +393,7 @@ ReturnValue_t UartComIF::handleCanonicalRead(UartCookie& uartCookie, UartDeviceM
     if (currentBytesRead >= maxReplySize) {
       // Overflow risk. Emit warning, trigger event and break. If this happens,
       // the reception buffer is not large enough or data is not polled often enough.
-      FSFW_LOGWT("{}", "requestReceiveMessage: Next read would cause overflow\n");
+      FSFW_FLOGWT("{}", "requestReceiveMessage: Next read would cause overflow\n");
       result = UART_RX_BUFFER_TOO_SMALL;
       break;
     } else {
@@ -403,7 +404,7 @@ ReturnValue_t UartComIF::handleCanonicalRead(UartCookie& uartCookie, UartDeviceM
     if (bytesRead < 0) {
       // EAGAIN: No data available in non-blocking mode
       if (errno != EAGAIN) {
-        FSFW_LOGWT("handleCanonicalRead: read failed with code {} | {}\n", errno, strerror(errno));
+        FSFW_FLOGWT("handleCanonicalRead: read failed with code {} | {}\n", errno, strerror(errno));
         return RETURN_FAILED;
       }
 
@@ -423,7 +424,7 @@ ReturnValue_t UartComIF::handleNoncanonicalRead(UartCookie& uartCookie, UartDevi
   auto bufferPtr = iter->second.replyBuffer.data();
   // Size check to prevent buffer overflow
   if (requestLen > uartCookie.getMaxReplyLen()) {
-    FSFW_LOGW("{}", "requestReceiveMessage: Next read would cause overflow\n");
+    FSFW_FLOGW("{}", "requestReceiveMessage: Next read would cause overflow\n");
     return UART_RX_BUFFER_TOO_SMALL;
   }
   ssize_t bytesRead = read(fd, bufferPtr, requestLen);
@@ -431,8 +432,8 @@ ReturnValue_t UartComIF::handleNoncanonicalRead(UartCookie& uartCookie, UartDevi
     return RETURN_FAILED;
   } else if (bytesRead != static_cast<int>(requestLen)) {
     if (uartCookie.isReplySizeFixed()) {
-      FSFW_LOGWT("UartComIF::requestReceiveMessage: Only read {} of {} bytes\n", bytesRead,
-                 requestLen);
+      FSFW_FLOGWT("UartComIF::requestReceiveMessage: Only read {} of {} bytes\n", bytesRead,
+                  requestLen);
       return RETURN_FAILED;
     }
   }
@@ -446,14 +447,14 @@ ReturnValue_t UartComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer,
 
   auto* uartCookie = dynamic_cast<UartCookie*>(cookie);
   if (uartCookie == nullptr) {
-    FSFW_LOGWT("{}", "readReceivedMessage: Invalid uart cookie");
+    FSFW_FLOGWT("{}", "readReceivedMessage: Invalid uart cookie");
     return NULLPOINTER;
   }
 
   deviceFile = uartCookie->getDeviceFile();
   uartDeviceMapIter = uartDeviceMap.find(deviceFile);
   if (uartDeviceMapIter == uartDeviceMap.end()) {
-    FSFW_LOGW("UartComIF::readReceivedMessage: Device file {} not in UART map\n", deviceFile);
+    FSFW_FLOGW("UartComIF::readReceivedMessage: Device file {} not in UART map\n", deviceFile);
     return RETURN_FAILED;
   }
 
@@ -471,7 +472,7 @@ ReturnValue_t UartComIF::flushUartRxBuffer(CookieIF* cookie) {
   UartDeviceMapIter uartDeviceMapIter;
   auto* uartCookie = dynamic_cast<UartCookie*>(cookie);
   if (uartCookie == nullptr) {
-    FSFW_LOGWT("{}", "flushUartRxBuffer: Invalid UART cookie\n");
+    FSFW_FLOGWT("{}", "flushUartRxBuffer: Invalid UART cookie\n");
     return NULLPOINTER;
   }
   deviceFile = uartCookie->getDeviceFile();
@@ -489,7 +490,7 @@ ReturnValue_t UartComIF::flushUartTxBuffer(CookieIF* cookie) {
   UartDeviceMapIter uartDeviceMapIter;
   auto* uartCookie = dynamic_cast<UartCookie*>(cookie);
   if (uartCookie == nullptr) {
-    FSFW_LOGWT("{}", "flushUartTxBuffer: Invalid uart cookie\n");
+    FSFW_FLOGWT("{}", "flushUartTxBuffer: Invalid uart cookie\n");
     return NULLPOINTER;
   }
   deviceFile = uartCookie->getDeviceFile();
@@ -507,7 +508,7 @@ ReturnValue_t UartComIF::flushUartTxAndRxBuf(CookieIF* cookie) {
   UartDeviceMapIter uartDeviceMapIter;
   auto* uartCookie = dynamic_cast<UartCookie*>(cookie);
   if (uartCookie == nullptr) {
-    FSFW_LOGWT("{}", "flushUartTxAndRxBuf: Invalid UART cookie\n");
+    FSFW_FLOGWT("{}", "flushUartTxAndRxBuf: Invalid UART cookie\n");
     return NULLPOINTER;
   }
   deviceFile = uartCookie->getDeviceFile();

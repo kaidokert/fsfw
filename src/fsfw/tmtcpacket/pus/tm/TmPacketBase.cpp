@@ -5,7 +5,7 @@
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/timemanager/CCSDSTime.h"
 
 TimeStamperIF* TmPacketBase::timeStamper = nullptr;
@@ -41,14 +41,10 @@ ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
 }
 
 bool TmPacketBase::checkAndSetStamper() {
-  if (timeStamper == NULL) {
+  if (timeStamper == nullptr) {
     timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
-    if (timeStamper == NULL) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::warning << "TmPacketBase::checkAndSetStamper: Stamper not found!" << std::endl;
-#else
-      sif::printWarning("TmPacketBase::checkAndSetStamper: Stamper not found!\n");
-#endif
+    if (timeStamper == nullptr) {
+      FSFW_LOGW("TmPacketBase::checkAndSetStamper: Stamper not found\n");
       return false;
     }
   }
@@ -56,10 +52,6 @@ bool TmPacketBase::checkAndSetStamper() {
 }
 
 void TmPacketBase::print() {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "TmPacketBase::print:" << std::endl;
-#else
-  sif::printInfo("TmPacketBase::print:\n");
-#endif
+  FSFW_LOGI("TmPacketBase::print:\n");
   arrayprinter::print(getWholeData(), getFullSize());
 }

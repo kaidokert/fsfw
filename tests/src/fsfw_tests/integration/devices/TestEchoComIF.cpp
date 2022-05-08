@@ -1,24 +1,20 @@
 #include "TestEchoComIF.h"
 
 #include <fsfw/serialize/SerializeAdapter.h>
-#include <fsfw/serviceinterface/ServiceInterface.h>
 #include <fsfw/tmtcpacket/pus/tm.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 
 #include "TestCookie.h"
+#include "fsfw/serviceinterface.h"
 
 TestEchoComIF::TestEchoComIF(object_id_t objectId) : SystemObject(objectId) {}
 
-TestEchoComIF::~TestEchoComIF() {}
+TestEchoComIF::~TestEchoComIF() = default;
 
 ReturnValue_t TestEchoComIF::initializeInterface(CookieIF *cookie) {
-  TestCookie *dummyCookie = dynamic_cast<TestCookie *>(cookie);
+  auto *dummyCookie = dynamic_cast<TestCookie *>(cookie);
   if (dummyCookie == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "TestEchoComIF::initializeInterface: Invalid cookie!" << std::endl;
-#else
-    sif::printWarning("TestEchoComIF::initializeInterface: Invalid cookie!\n");
-#endif
+    FSFW_LOGW("TestEchoComIF::initializeInterface: Invalid cookie\n");
     return NULLPOINTER;
   }
 
@@ -32,24 +28,14 @@ ReturnValue_t TestEchoComIF::initializeInterface(CookieIF *cookie) {
 
 ReturnValue_t TestEchoComIF::sendMessage(CookieIF *cookie, const uint8_t *sendData,
                                          size_t sendLen) {
-  TestCookie *dummyCookie = dynamic_cast<TestCookie *>(cookie);
+  auto *dummyCookie = dynamic_cast<TestCookie *>(cookie);
   if (dummyCookie == nullptr) {
     return NULLPOINTER;
   }
 
   ReplyBuffer &replyBuffer = replyMap.find(dummyCookie->getAddress())->second;
   if (sendLen > replyBuffer.capacity()) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "TestEchoComIF::sendMessage: Send length " << sendLen
-                 << " larger than "
-                    "current reply buffer length!"
-                 << std::endl;
-#else
-    sif::printWarning(
-        "TestEchoComIF::sendMessage: Send length %d larger than current "
-        "reply buffer length!\n",
-        sendLen);
-#endif
+    FSFW_LOGWT("sendMessage: Send length larger than current reply buffer length\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   replyBuffer.resize(sendLen);
@@ -64,7 +50,7 @@ ReturnValue_t TestEchoComIF::requestReceiveMessage(CookieIF *cookie, size_t requ
 }
 
 ReturnValue_t TestEchoComIF::readReceivedMessage(CookieIF *cookie, uint8_t **buffer, size_t *size) {
-  TestCookie *dummyCookie = dynamic_cast<TestCookie *>(cookie);
+  auto *dummyCookie = dynamic_cast<TestCookie *>(cookie);
   if (dummyCookie == nullptr) {
     return NULLPOINTER;
   }

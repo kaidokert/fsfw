@@ -36,13 +36,11 @@ UdpTmTcBridge::UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
 ReturnValue_t UdpTmTcBridge::initialize() {
   ReturnValue_t result = TmTcBridge::initialize();
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "UdpTmTcBridge::initialize: TmTcBridge initialization failed!" << std::endl;
-#endif
+    FSFW_LOGE("initialize: TmTcBridge initialization failed\n");
     return result;
   }
 
-#ifdef _WIN32
+#ifdef PLATFORM_WIN
   /* Initiates Winsock DLL. */
   WSAData wsaData;
   WORD wVersionRequested = MAKEWORD(2, 2);
@@ -120,9 +118,7 @@ ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
   ssize_t bytesSent = sendto(serverSocket, reinterpret_cast<const char *>(data), dataLen, flags,
                              &clientAddress, clientAddressLen);
   if (bytesSent == SOCKET_ERROR) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "TmTcUdpBridge::sendTm: Send operation failed." << std::endl;
-#endif
+    FSFW_LOGWT("sendTm: Send operation failed\n");
     tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SENDTO_CALL);
   }
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1

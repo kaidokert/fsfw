@@ -8,7 +8,7 @@
 #include "fsfw/serialize/EndianConverter.h"
 #include "fsfw/serialize/SerialLinkedListAdapter.h"
 #include "fsfw/serialize/SerializeAdapter.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
 Service2DeviceAccess::Service2DeviceAccess(object_id_t objectId, uint16_t apid, uint8_t serviceId,
@@ -25,9 +25,7 @@ ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
     case Subservice::COMMAND_TOGGLE_WIRETAPPING:
       return HasReturnvaluesIF::RETURN_OK;
     default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "Invalid Subservice" << std::endl;
-#endif
+      FSFW_FLOGW("Invalid Subservice {}\n", subservice);
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
 }
@@ -118,11 +116,8 @@ void Service2DeviceAccess::handleUnrequestedReply(CommandMessage* reply) {
       sendWiretappingTm(reply, static_cast<uint8_t>(Subservice::REPLY_RAW));
       break;
     default:
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "Unknown message in Service2DeviceAccess::"
-                    "handleUnrequestedReply with command ID "
-                 << reply->getCommand() << std::endl;
-#endif
+      FSFW_FLOGET("handleUnrequestedReply: Unknown message with command ID {}\n",
+                  reply->getCommand());
       break;
   }
   // Must be reached by all cases to clear message
@@ -137,11 +132,8 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
   size_t size = 0;
   ReturnValue_t result = IPCStore->getData(storeAddress, &data, &size);
   if (result != HasReturnvaluesIF::RETURN_OK) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "Service2DeviceAccess::sendWiretappingTm: Data Lost in "
-                  "handleUnrequestedReply with failure ID "
-               << result << std::endl;
-#endif
+    FSFW_LOGW("sendWiretappingTm: Data Lost in handleUnrequestedReply with failure ID {:#04x}\n",
+              result);
     return;
   }
 

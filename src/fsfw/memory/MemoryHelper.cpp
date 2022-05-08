@@ -17,7 +17,7 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
   lastSender = message->getSender();
   lastCommand = message->getCommand();
   if (busy) {
-    FSFW_LOGW("{}", "MemoryHelper: Busy\n");
+    FSFW_FLOGW("{}", "MemoryHelper: Busy\n");
   }
   switch (lastCommand) {
     case MemoryMessage::CMD_MEMORY_DUMP:

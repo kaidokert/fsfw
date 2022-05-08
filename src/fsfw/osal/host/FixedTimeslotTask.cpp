@@ -9,7 +9,7 @@
 #include "fsfw/osal/host/Mutex.h"
 #include "fsfw/osal/host/taskHelpers.h"
 #include "fsfw/platform.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 
 #if defined(PLATFORM_WIN)
@@ -48,7 +48,7 @@ FixedTimeslotTask::~FixedTimeslotTask(void) {
 }
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
-  FixedTimeslotTask* originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
+  auto* originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
 
   if (not originalTask->started) {
     // we have to suspend/block here until the task is started.
@@ -58,11 +58,7 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
   }
 
   this->taskFunctionality();
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "FixedTimeslotTask::taskEntryPoint: "
-                "Returned from taskFunctionality."
-             << std::endl;
-#endif
+  FSFW_LOGET("taskEntryPoint: Returned from taskFunctionality\n");
 }
 
 ReturnValue_t FixedTimeslotTask::startTask() {
@@ -114,22 +110,13 @@ void FixedTimeslotTask::taskFunctionality() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotTimeMs,
                                          int8_t executionStep) {
-  ExecutableObjectIF* executableObject =
-      ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
+  auto* executableObject = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
   if (executableObject != nullptr) {
     pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep, executableObject, this);
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::error << "Component " << std::hex << "0x" << componentId
-             << "not found, "
-                "not adding it to PST.."
-             << std::dec << std::endl;
-#else
-  sif::printError("Component 0x%08x not found, not adding it to PST..\n",
-                  static_cast<unsigned int>(componentId));
-#endif
+  FSFW_FLOGE("addSlot: Component {:#08x} not found, not adding it to PST\n", componentId);
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
