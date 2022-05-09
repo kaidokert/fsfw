@@ -106,6 +106,9 @@ if(FSFW_BUILD_UNITTESTS)
 
     project(${FSFW_TEST_TGT} CXX C)
     add_executable(${FSFW_TEST_TGT})
+    if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
+      set_property(TARGET ${FSFW_TEST_TGT} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif()
 
     if(FSFW_TESTS_GEN_COV)
         message(STATUS "Generating coverage data for the library")
