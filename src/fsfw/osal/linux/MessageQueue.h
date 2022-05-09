@@ -61,8 +61,7 @@ class MessageQueue : public MessageQueueBase {
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
   ReturnValue_t flush(uint32_t* count) override;
   ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        MessageQueueId_t sentFrom,
-                                        bool ignoreFault = false) override;
+                                MessageQueueId_t sentFrom, bool ignoreFault = false) override;
 
  protected:
   /**

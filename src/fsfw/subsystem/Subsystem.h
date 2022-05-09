@@ -1,14 +1,13 @@
 #ifndef FSFW_SUBSYSTEM_SUBSYSTEM_H_
 #define FSFW_SUBSYSTEM_SUBSYSTEM_H_
 
-#include <FSFWConfig.h>
-
 #include "../container/FixedArrayList.h"
 #include "../container/FixedMap.h"
 #include "../container/HybridIterator.h"
 #include "../container/SinglyLinkedList.h"
 #include "../serialize/SerialArrayListAdapter.h"
 #include "SubsystemBase.h"
+#include "fsfw/FSFW.h"
 #include "modes/ModeDefinitions.h"
 
 /**
@@ -127,18 +126,18 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
 
   ReturnValue_t deleteTable(Mode_t id);
 
-  virtual void performChildOperation();
+  virtual void performChildOperation() override;
 
-  virtual ReturnValue_t handleCommandMessage(CommandMessage *message);
+  virtual ReturnValue_t handleCommandMessage(CommandMessage *message) override;
 
   bool isFallbackSequence(Mode_t SequenceId);
 
   bool isTableUsed(Mode_t tableId);
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode);
+                                         uint32_t *msToReachTheMode) override;
 
-  virtual void startTransition(Mode_t mode, Submode_t submode);
+  virtual void startTransition(Mode_t mode, Submode_t submode) override;
 
   void sendSerializablesAsCommandMessage(Command_t command, SerializeIF **elements, uint8_t count);
 

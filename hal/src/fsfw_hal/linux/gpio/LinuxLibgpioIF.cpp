@@ -44,6 +44,7 @@ ReturnValue_t LinuxLibgpioIF::addGpios(GpioCookie* gpioCookie) {
 }
 
 ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
+  ReturnValue_t result = RETURN_OK;
   for (auto& gpioConfig : mapToAdd) {
     auto& gpioType = gpioConfig.second->gpioType;
     switch (gpioType) {
@@ -55,7 +56,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
         if (regularGpio == nullptr) {
           return GPIO_INVALID_INSTANCE;
         }
-        configureGpioByChip(gpioConfig.first, *regularGpio);
+        result = configureGpioByChip(gpioConfig.first, *regularGpio);
         break;
       }
       case (gpio::GpioTypes::GPIO_REGULAR_BY_LABEL): {
@@ -63,7 +64,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
         if (regularGpio == nullptr) {
           return GPIO_INVALID_INSTANCE;
         }
-        configureGpioByLabel(gpioConfig.first, *regularGpio);
+        result = configureGpioByLabel(gpioConfig.first, *regularGpio);
         break;
       }
       case (gpio::GpioTypes::GPIO_REGULAR_BY_LINE_NAME): {
@@ -71,7 +72,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
         if (regularGpio == nullptr) {
           return GPIO_INVALID_INSTANCE;
         }
-        configureGpioByLineName(gpioConfig.first, *regularGpio);
+        result = configureGpioByLineName(gpioConfig.first, *regularGpio);
         break;
       }
       case (gpio::GpioTypes::CALLBACK): {
@@ -83,8 +84,11 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
                                gpioCallback->initValue, gpioCallback->callbackArgs);
       }
     }
+    if (result != RETURN_OK) {
+      return GPIO_INIT_FAILED;
+    }
   }
-  return RETURN_OK;
+  return result;
 }
 
 ReturnValue_t LinuxLibgpioIF::configureGpioByLabel(gpioId_t gpioId,

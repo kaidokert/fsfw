@@ -1,8 +1,8 @@
 #include "MgmLIS3MDLHandler.h"
 
-#include "fsfw/datapool/PoolReadGuard.h"
-
 #include <cmath>
+
+#include "fsfw/datapool/PoolReadGuard.h"
 
 MgmLIS3MDLHandler::MgmLIS3MDLHandler(object_id_t objectId, object_id_t deviceCommunication,
                                      CookieIF *comCookie, uint32_t transitionDelay)

@@ -163,7 +163,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param counter Specifies which Action to perform
    * @return RETURN_OK for successful execution
    */
-  virtual ReturnValue_t performOperation(uint8_t counter);
+  virtual ReturnValue_t performOperation(uint8_t counter) override;
 
   /**
    * @brief  Initializes the device handler
@@ -173,7 +173,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * Calls fillCommandAndReplyMap().
    * @return
    */
-  virtual ReturnValue_t initialize();
+  virtual ReturnValue_t initialize() override;
 
   /**
    * @brief   Intialization steps performed after all tasks have been created.
@@ -1070,11 +1070,11 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param parameter1	Optional parameter 1
    * @param parameter2	Optional parameter 2
    */
-  void triggerEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+  void triggerEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) override;
   /**
    * Same as triggerEvent, but for forwarding if object is used as proxy.
    */
-  virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const;
+  virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const override;
 
   /**
    * Checks if current mode is transitional mode.
