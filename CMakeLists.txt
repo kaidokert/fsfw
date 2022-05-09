@@ -24,6 +24,13 @@ set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview5 CACHE
 
 set(FSFW_ETL_LIB_NAME etl)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
+if(NOT IPO_SUPPORTED)
+  message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
+endif()
+
+option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" ON)
 option(FSFW_GENERATE_SECTIONS
     "Generate function and data sections. Required to remove unused code" ON
 )
