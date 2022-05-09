@@ -17,6 +17,7 @@
 #endif
 
 #include <string>
+#include <utility>
 #include <vector>
 
 class TcpTmTcBridge;
@@ -44,7 +45,7 @@ class TcpTmTcServer : public SystemObject, public TcpIpBase, public ExecutableOb
 
   struct TcpConfig {
    public:
-    TcpConfig(std::string tcpPort) : tcpPort(tcpPort) {}
+    explicit TcpConfig(std::string tcpPort) : tcpPort(std::move(tcpPort)) {}
 
     /**
      * Passed to the recv call
@@ -84,7 +85,7 @@ class TcpTmTcServer : public SystemObject, public TcpIpBase, public ExecutableOb
                 size_t ringBufferSize = RING_BUFFER_SIZE,
                 std::string customTcpServerPort = DEFAULT_SERVER_PORT,
                 ReceptionModes receptionMode = ReceptionModes::SPACE_PACKETS);
-  virtual ~TcpTmTcServer();
+  ~TcpTmTcServer() override;
 
   void enableWiretapping(bool enable);
 
@@ -97,10 +98,10 @@ class TcpTmTcServer : public SystemObject, public TcpIpBase, public ExecutableOb
   void setSpacePacketParsingOptions(std::vector<uint16_t> validPacketIds);
 
   ReturnValue_t initialize() override;
-  ReturnValue_t performOperation(uint8_t opCode) override;
+  [[noreturn]] ReturnValue_t performOperation(uint8_t opCode) override;
   ReturnValue_t initializeAfterTaskCreation() override;
 
-  std::string getTcpPort() const;
+  [[nodiscard]] const std::string& getTcpPort() const;
 
  protected:
   StorageManagerIF* tcStore = nullptr;
@@ -115,7 +116,7 @@ class TcpTmTcServer : public SystemObject, public TcpIpBase, public ExecutableOb
 
   ReceptionModes receptionMode;
   TcpConfig tcpConfig;
-  struct sockaddr tcpAddress;
+  struct sockaddr tcpAddress = {};
   socket_t listenerTcpSocket = 0;
 
   MessageQueueId_t targetTcDestination = MessageQueueIF::NO_QUEUE;
