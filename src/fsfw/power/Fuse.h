@@ -54,7 +54,7 @@ class Fuse : public SystemObject,
 
   ReturnValue_t check();
   uint8_t getFuseId() const;
-  ReturnValue_t initialize();
+  ReturnValue_t initialize() override;
   DeviceList devices;
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           SerializeIF::Endianness streamEndianness) const override;

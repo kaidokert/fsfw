@@ -94,13 +94,14 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   const uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount) / 8.0);
   uint8_t *validityPtr = nullptr;
-#ifdef _MSC_VER
-  /* Use a std::vector here because MSVC will (rightly) not create a fixed size array
-  with a non constant size specifier */
-  std::vector<uint8_t> validityMask(validityMaskSize);
+#if defined(_MSC_VER) || defined(__clang__)
+  // Use a std::vector here because MSVC will (rightly) not create a fixed size array
+  // with a non constant size specifier. The Apple compiler (LLVM) will not accept
+  // the  initialization of a variable sized array
+  std::vector<uint8_t> validityMask(validityMaskSize, 0);
   validityPtr = validityMask.data();
 #else
-  uint8_t validityMask[validityMaskSize] = {0};
+  uint8_t validityMask[validityMaskSize] = {};
   validityPtr = validityMask;
 #endif
   uint8_t validBufferIndex = 0;
