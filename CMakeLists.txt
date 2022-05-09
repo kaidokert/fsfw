@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.13)
 
 set(MSG_PREFIX "fsfw |")
 
+# Add the cmake folder so the FindSphinx module is found
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules")
+
 ##########################
 # Version file handling  #
 ##########################
@@ -52,9 +56,6 @@ elseif(${CMAKE_CXX_STANDARD} LESS 17)
     message(FATAL_ERROR "${MSG_PREFIX} Compiling the FSFW requires a minimum of C++17 support")
 endif()
 
-# Add the cmake folder so the FindSphinx module is found
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules")
 
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
     "ETL library major version requirement"
