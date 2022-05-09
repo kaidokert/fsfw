@@ -8,6 +8,8 @@
 #endif
 #include <cstdint>
 
+namespace fsfw {
+
 class Version {
  public:
   Version(int major, int minor, int revision, const char* addInfo = nullptr);
@@ -54,8 +56,6 @@ class Version {
    */
   void getVersion(char* str, size_t maxLen) const;
 };
-
-namespace fsfw {
 
 extern const Version FSFW_VERSION;
 

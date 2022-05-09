@@ -12,18 +12,20 @@
 #undef minor
 #endif
 
-const Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR, FSFW_VERSION_REVISION,
-                                    FSFW_VERSION_CST_GIT_SHA1};
+const fsfw::Version fsfw::FSFW_VERSION = {FSFW_VERSION_MAJOR, FSFW_VERSION_MINOR,
+                                          FSFW_VERSION_REVISION, FSFW_VERSION_CST_GIT_SHA1};
 
-Version::Version(int major, int minor, int revision, const char* addInfo)
+fsfw::Version::Version(int major, int minor, int revision, const char* addInfo)
     : major(major), minor(minor), revision(revision), addInfo(addInfo) {}
 
-void Version::getVersion(char* str, size_t maxLen) const {
+void fsfw::Version::getVersion(char* str, size_t maxLen) const {
   size_t len = snprintf(str, maxLen, "%d.%d.%d", major, minor, revision);
   if (addInfo != nullptr) {
     snprintf(str + len, maxLen - len, "-%s", addInfo);
   }
 }
+
+namespace fsfw {
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 std::ostream& operator<<(std::ostream& os, const Version& v) {
@@ -34,3 +36,5 @@ std::ostream& operator<<(std::ostream& os, const Version& v) {
   return os;
 }
 #endif
+
+}  // namespace fsfw
