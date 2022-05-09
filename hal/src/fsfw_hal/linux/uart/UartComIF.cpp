@@ -265,6 +265,7 @@ void UartComIF::configureBaudrate(struct termios* options, UartCookie* uartCooki
       cfsetispeed(options, B230400);
       cfsetospeed(options, B230400);
       break;
+#ifndef __APPLE__
     case UartBaudRate::RATE_460800:
       cfsetispeed(options, B460800);
       cfsetospeed(options, B460800);
@@ -313,6 +314,7 @@ void UartComIF::configureBaudrate(struct termios* options, UartCookie* uartCooki
       cfsetispeed(options, B4000000);
       cfsetospeed(options, B4000000);
       break;
+#endif // ! __APPLE__
     default:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::warning << "UartComIF::configureBaudrate: Baudrate not supported" << std::endl;

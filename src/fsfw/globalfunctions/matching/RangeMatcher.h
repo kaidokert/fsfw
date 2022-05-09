@@ -15,7 +15,7 @@ class RangeMatcher : public SerializeableMatcherIF<T> {
   RangeMatcher(T lowerBound, T upperBound, bool inverted = false)
       : inverted(inverted), lowerBound(lowerBound), upperBound(upperBound) {}
 
-  bool match(T input) {
+  bool match(T input) override {
     if (inverted) {
       return !doMatch(input);
     } else {
