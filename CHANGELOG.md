@@ -43,6 +43,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Additions
 
+- Added options for CI/CD builds: `FSFW_CICD_BUILD`. This allows the source code to know
+  whether it is running in CI/CD
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/623
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
