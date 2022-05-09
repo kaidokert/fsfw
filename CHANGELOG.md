@@ -26,7 +26,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
 - Major update for version handling, using `git describe` to fetch version information with git.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/601
-  - Place `Version` class outside of `fsfw` namespace. It is generic
   - Add helper functions provided by [`cmake-modules`](https://github.com/bilke/cmake-modules)
     manually now. Those should not change too often and only a small subset is needed
   - Separate folder for easier update and for distinction

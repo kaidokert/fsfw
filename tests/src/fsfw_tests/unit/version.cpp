@@ -10,12 +10,12 @@ TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   // Check that major version is non-zero
   REQUIRE(fsfw::FSFW_VERSION.major > 0);
   uint32_t fsfwMajor = fsfw::FSFW_VERSION.major;
-  REQUIRE(Version(255, 0, 0) > fsfw::FSFW_VERSION);
-  REQUIRE(Version(255, 0, 0) >= fsfw::FSFW_VERSION);
-  REQUIRE(Version(0, 0, 0) < fsfw::FSFW_VERSION);
-  REQUIRE(Version(0, 0, 0) <= fsfw::FSFW_VERSION);
-  Version v1 = Version(1, 1, 1);
-  Version v2 = Version(1, 1, 1);
+  REQUIRE(fsfw::Version(255, 0, 0) > fsfw::FSFW_VERSION);
+  REQUIRE(fsfw::Version(255, 0, 0) >= fsfw::FSFW_VERSION);
+  REQUIRE(fsfw::Version(0, 0, 0) < fsfw::FSFW_VERSION);
+  REQUIRE(fsfw::Version(0, 0, 0) <= fsfw::FSFW_VERSION);
+  auto v1 = fsfw::Version(1, 1, 1);
+  auto v2 = fsfw::Version(1, 1, 1);
   REQUIRE(v1 == v2);
   REQUIRE(not(v1 < v2));
   REQUIRE(not(v1 > v2));
