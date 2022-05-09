@@ -52,6 +52,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Fixed
 
+- TCP TMTC Server: `MutexGuard` was not created properly in
+  `TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent)` call.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/618
 - Small bugfix in STM32 HAL for SPI
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/599
 - HAL GPIO: Improved error checking in `LinuxLibgpioIF::configureGpios(...)`. If a GPIO
