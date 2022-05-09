@@ -1,7 +1,7 @@
 #ifndef FSFW_PUS_CSERVICE201HEALTHCOMMANDING_H_
 #define FSFW_PUS_CSERVICE201HEALTHCOMMANDING_H_
 
-#include "../tmtcservices/CommandingServiceBase.h"
+#include "fsfw/tmtcservices/CommandingServiceBase.h"
 
 /**
  * @brief   Custom PUS service to set health of all objects
@@ -21,7 +21,7 @@ class CService201HealthCommanding : public CommandingServiceBase {
  public:
   CService201HealthCommanding(object_id_t objectId, uint16_t apid, uint8_t serviceId,
                               uint8_t numParallelCommands = 4, uint16_t commandTimeoutSeconds = 60);
-  virtual ~CService201HealthCommanding();
+  ~CService201HealthCommanding() override;
 
  protected:
   /* CSB abstract function implementations */
@@ -38,10 +38,8 @@ class CService201HealthCommanding : public CommandingServiceBase {
                             bool *isStep) override;
 
  private:
-  ReturnValue_t checkAndAcquireTargetID(object_id_t *objectIdToSet, const uint8_t *tcData,
-                                        size_t tcDataLen);
-  ReturnValue_t checkInterfaceAndAcquireMessageQueue(MessageQueueId_t *MessageQueueToSet,
-                                                     object_id_t *objectId);
+  static ReturnValue_t checkInterfaceAndAcquireMessageQueue(MessageQueueId_t *MessageQueueToSet,
+                                                     const object_id_t *objectId);
 
   ReturnValue_t prepareHealthSetReply(const CommandMessage *reply);
 
