@@ -13,8 +13,6 @@ CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId, u
     : CommandingServiceBase(objectId, apid, serviceId, numParallelCommands, commandTimeoutSeconds) {
 }
 
-CService201HealthCommanding::~CService201HealthCommanding() {}
-
 ReturnValue_t CService201HealthCommanding::isValidSubservice(uint8_t subservice) {
   switch (subservice) {
     case (Subservice::COMMAND_SET_HEALTH):
@@ -43,8 +41,8 @@ ReturnValue_t CService201HealthCommanding::getMessageQueueAndObject(uint8_t subs
 }
 
 ReturnValue_t CService201HealthCommanding::checkInterfaceAndAcquireMessageQueue(
-    MessageQueueId_t *messageQueueToSet, object_id_t *objectId) {
-  HasHealthIF *destination = ObjectManager::instance()->get<HasHealthIF>(*objectId);
+    MessageQueueId_t *messageQueueToSet, const object_id_t *objectId) {
+  auto *destination = ObjectManager::instance()->get<HasHealthIF>(*objectId);
   if (destination == nullptr) {
     return CommandingServiceBase::INVALID_OBJECT;
   }
@@ -77,6 +75,10 @@ ReturnValue_t CService201HealthCommanding::prepareCommand(CommandMessage *messag
       HealthMessage::setHealthMessage(message, HealthMessage::HEALTH_ANNOUNCE_ALL);
       break;
     }
+    default: {
+      // Should never happen, subservice was already checked
+      result = RETURN_FAILED;
+    }
   }
   return result;
 }
@@ -95,7 +97,7 @@ ReturnValue_t CService201HealthCommanding::handleReply(const CommandMessage *rep
 }
 
 // Not used for now, health state already reported by event
-ReturnValue_t CService201HealthCommanding::prepareHealthSetReply(const CommandMessage *reply) {
+[[maybe_unused]] ReturnValue_t CService201HealthCommanding::prepareHealthSetReply(const CommandMessage *reply) {
   auto health = static_cast<uint8_t>(HealthMessage::getHealth(reply));
   auto oldHealth = static_cast<uint8_t>(HealthMessage::getOldHealth(reply));
   HealthSetReply healthSetReply(health, oldHealth);
