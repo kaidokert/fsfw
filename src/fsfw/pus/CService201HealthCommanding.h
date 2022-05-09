@@ -21,7 +21,7 @@ class CService201HealthCommanding : public CommandingServiceBase {
  public:
   CService201HealthCommanding(object_id_t objectId, uint16_t apid, uint8_t serviceId,
                               uint8_t numParallelCommands = 4, uint16_t commandTimeoutSeconds = 60);
-  ~CService201HealthCommanding() override;
+  ~CService201HealthCommanding() override = default;
 
  protected:
   /* CSB abstract function implementations */

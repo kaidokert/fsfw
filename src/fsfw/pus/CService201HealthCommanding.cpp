@@ -13,8 +13,6 @@ CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId, u
     : CommandingServiceBase(objectId, apid, serviceId, numParallelCommands, commandTimeoutSeconds) {
 }
 
-CService201HealthCommanding::~CService201HealthCommanding() = default;
-
 ReturnValue_t CService201HealthCommanding::isValidSubservice(uint8_t subservice) {
   switch (subservice) {
     case (Subservice::COMMAND_SET_HEALTH):
