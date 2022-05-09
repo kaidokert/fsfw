@@ -59,6 +59,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Fixed
 
+- TCP TMTC Server: `MutexGuard` was not created properly in
+  `TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent)` call.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/618
 - Fix infinite recursion in `prepareHealthSetReply` of PUS Health Service 201.
   Is not currently used right now but might be used in the future
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/617

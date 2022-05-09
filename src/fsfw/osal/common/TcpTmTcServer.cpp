@@ -19,6 +19,8 @@
 #include <ws2tcpip.h>
 #elif defined(PLATFORM_UNIX)
 #include <netdb.h>
+
+#include <utility>
 #endif
 
 const std::string TcpTmTcServer::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_PORT;
@@ -29,7 +31,7 @@ TcpTmTcServer::TcpTmTcServer(object_id_t objectId, object_id_t tmtcTcpBridge,
     : SystemObject(objectId),
       tmtcBridgeId(tmtcTcpBridge),
       receptionMode(receptionMode),
-      tcpConfig(customTcpServerPort),
+      tcpConfig(std::move(customTcpServerPort)),
       receptionBuffer(receptionBufferSize),
       ringBuffer(ringBufferSize, true) {}
 
@@ -103,7 +105,7 @@ ReturnValue_t TcpTmTcServer::initialize() {
 
 TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
 
-ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
+[[noreturn]] ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
   using namespace tcpip;
   // If a connection is accepted, the corresponding socket will be assigned to the new socket
   socket_t connSocket = 0;
@@ -138,7 +140,6 @@ ReturnValue_t TcpTmTcServer::performOperation(uint8_t opCode) {
     closeSocket(connSocket);
     connSocket = 0;
   }
-  return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t TcpTmTcServer::initializeAfterTaskCreation() {
@@ -159,7 +160,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
 #endif
 
   while (true) {
-    int retval = recv(connSocket, reinterpret_cast<char*>(receptionBuffer.data()),
+    ssize_t retval = recv(connSocket, reinterpret_cast<char*>(receptionBuffer.data()),
                       receptionBuffer.capacity(), tcpConfig.tcpFlags);
     if (retval == 0) {
       size_t availableReadData = ringBuffer.getAvailableReadData();
@@ -252,17 +253,17 @@ ReturnValue_t TcpTmTcServer::handleTcReception(uint8_t* spacePacket, size_t pack
   return result;
 }
 
-std::string TcpTmTcServer::getTcpPort() const { return tcpConfig.tcpPort; }
+const std::string& TcpTmTcServer::getTcpPort() const { return tcpConfig.tcpPort; }
 
-void TcpTmTcServer::setSpacePacketParsingOptions(std::vector<uint16_t> validPacketIds) {
-  this->validPacketIds = validPacketIds;
+void TcpTmTcServer::setSpacePacketParsingOptions(std::vector<uint16_t> validPacketIds_) {
+  this->validPacketIds = std::move(validPacketIds_);
 }
 
 TcpTmTcServer::TcpConfig& TcpTmTcServer::getTcpConfigStruct() { return tcpConfig; }
 
 ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) {
   // Access to the FIFO is mutex protected because it is filled by the bridge
-  MutexGuard(tmtcBridge->mutex, tmtcBridge->timeoutType, tmtcBridge->mutexTimeoutMs);
+  MutexGuard mg(tmtcBridge->mutex, tmtcBridge->timeoutType, tmtcBridge->mutexTimeoutMs);
   store_address_t storeId;
   while ((not tmtcBridge->tmFifo->empty()) and
          (tmtcBridge->packetSentCounter < tmtcBridge->sentPacketsPerCycle)) {
@@ -283,7 +284,7 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) 
 #endif
       arrayprinter::print(storeAccessor.data(), storeAccessor.size());
     }
-    int retval = send(connSocket, reinterpret_cast<const char*>(storeAccessor.data()),
+    ssize_t retval = send(connSocket, reinterpret_cast<const char*>(storeAccessor.data()),
                       storeAccessor.size(), tcpConfig.tcpTmFlags);
     if (retval == static_cast<int>(storeAccessor.size())) {
       // Packet sent, clear FIFO entry
@@ -339,6 +340,9 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
   size_t foundSize = 0;
   size_t readLen = 0;
   while (readLen < readAmount) {
+    if(spacePacketParser == nullptr) {
+      return HasReturnvaluesIF::RETURN_FAILED;
+    }
     result =
         spacePacketParser->parseSpacePackets(bufPtrPtr, readAmount, startIdx, foundSize, readLen);
     switch (result) {
