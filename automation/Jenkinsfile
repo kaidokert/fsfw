@@ -14,7 +14,7 @@ pipeline {
         stage('Configure') {
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
+                    sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON -DFSFW_CICD_BUILD=ON ..'
                 }
             }
         }
