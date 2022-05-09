@@ -69,6 +69,10 @@ set(FSFW_DUMMY_TGT fsfw-dummy)
 project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
 
+if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
+  set_property(TARGET ${LIB_FSFW_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 if(FSFW_BUILD_UNITTESTS)
     message(STATUS "Building the FSFW unittests in addition to the static library")
     # Check whether the user has already installed Catch2 first
