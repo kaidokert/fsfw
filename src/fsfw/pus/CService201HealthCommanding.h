@@ -41,7 +41,7 @@ class CService201HealthCommanding : public CommandingServiceBase {
   static ReturnValue_t checkInterfaceAndAcquireMessageQueue(MessageQueueId_t *MessageQueueToSet,
                                                      const object_id_t *objectId);
 
-  ReturnValue_t prepareHealthSetReply(const CommandMessage *reply);
+  [[maybe_unused]] ReturnValue_t prepareHealthSetReply(const CommandMessage *reply);
 
   enum Subservice {
     //! [EXPORT] : [TC] Set health of target object
