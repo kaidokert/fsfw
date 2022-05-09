@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
+- Bump C++ required version to C++17. Every project which uses the FSFW and every modern
+  compiler supports it
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/622
 - HAL Linux SPI: Set the Clock Default State when setting new SPI speed
   and mode
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
@@ -65,6 +68,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Fixed
 
+- Move some CMake directives further up top so they are not ignored
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/621
 - Small bugfix in STM32 HAL for SPI
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/599
 - HAL GPIO: Improved error checking in `LinuxLibgpioIF::configureGpios(...)`. If a GPIO

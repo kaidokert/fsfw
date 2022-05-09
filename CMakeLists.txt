@@ -1,13 +1,60 @@
 cmake_minimum_required(VERSION 3.13)
 
+set(MSG_PREFIX "fsfw |")
+
+##########################
+# Version file handling  #
+##########################
+
 set(FSFW_VERSION_IF_GIT_FAILS 4)
 set(FSFW_SUBVERSION_IF_GIT_FAILS 0)
 set(FSFW_REVISION_IF_GIT_FAILS 0)
 
+set(FSFW_GIT_VER_HANDLING_OK FALSE)
+# Version handling
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+    message(STATUS "${MSG_PREFIX} Determining version information with git")
+    include(FsfwHelpers)
+    determine_version_with_git("--exclude" "docker_*")
+    if(GIT_INFO)
+        set(FSFW_GIT_INFO ${GIT_INFO} CACHE STRING "Version information retrieved with git describe")
+        list(GET FSFW_GIT_INFO 1 FSFW_VERSION)
+        list(GET FSFW_GIT_INFO 2 FSFW_SUBVERSION)
+        list(GET FSFW_GIT_INFO 3 FSFW_REVISION)
+        list(GET FSFW_GIT_INFO 4 FSFW_VERSION_CST_GIT_SHA1)
+        if(NOT FSFW_VERSION)
+            set(FSFW_VERSION ${FSFW_VERSION_IF_GIT_FAILS})
+        endif()
+        if(NOT FSFW_SUBVERSION)
+            set(FSFW_SUBVERSION ${FSFW_SUBVERSION_IF_GIT_FAILS})
+        endif()
+        if(NOT FSFW_REVISION)
+            set(FSFW_REVISION ${FSFW_REVISION_IF_GIT_FAILS})
+        endif()
+        set(FSFW_GIT_VER_HANDLING_OK TRUE)
+   else()
+        set(FSFW_GIT_VER_HANDLING_OK FALSE)
+   endif()
+endif()
+if(NOT FSFW_GIT_VER_HANDLING_OK)
+    set(FSFW_VERSION ${FSFW_VERSION_IF_GIT_FAILS})
+    set(FSFW_SUBVERSION ${FSFW_SUBVERSION_IF_GIT_FAILS})
+    set(FSFW_REVISION ${FSFW_REVISION_IF_GIT_FAILS})
+endif()
+
+set(LIB_FSFW_NAME fsfw)
+project(${LIB_FSFW_NAME} VERSION ${FSFW_VERSION}.${FSFW_SUBVERSION}.${FSFW_REVISION})
+
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED True)
+elseif(${CMAKE_CXX_STANDARD} LESS 17)
+    message(FATAL_ERROR "${MSG_PREFIX} Compiling the FSFW requires a minimum of C++17 support")
+endif()
+
 # Add the cmake folder so the FindSphinx module is found
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules")
-set(MSG_PREFIX "fsfw |")
 
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
     "ETL library major version requirement"
@@ -57,44 +104,12 @@ option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
 # Contrib sources
 option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
-set(LIB_FSFW_NAME fsfw)
+
 set(FSFW_TEST_TGT fsfw-tests)
 set(FSFW_DUMMY_TGT fsfw-dummy)
 
-project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
 
-set(FSFW_GIT_VER_HANDLING_OK FALSE)
-# Version handling
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
-    message(STATUS "${MSG_PREFIX} Determining version information with git")
-    include(FsfwHelpers)
-    determine_version_with_git("--exclude" "docker_*")
-    if(GIT_INFO)
-        set(FSFW_GIT_INFO ${GIT_INFO} CACHE STRING "Version information retrieved with git describe")
-        list(GET FSFW_GIT_INFO 1 FSFW_VERSION)
-        list(GET FSFW_GIT_INFO 2 FSFW_SUBVERSION)
-        list(GET FSFW_GIT_INFO 3 FSFW_REVISION)
-        list(GET FSFW_GIT_INFO 4 FSFW_VERSION_CST_GIT_SHA1)
-        if(NOT FSFW_VERSION)
-            set(FSFW_VERSION ${FSFW_VERSION_IF_GIT_FAILS})
-        endif()
-        if(NOT FSFW_SUBVERSION)
-            set(FSFW_SUBVERSION ${FSFW_SUBVERSION_IF_GIT_FAILS})
-        endif()
-        if(NOT FSFW_REVISION)
-            set(FSFW_REVISION ${FSFW_REVISION_IF_GIT_FAILS})
-        endif()
-        set(FSFW_GIT_VER_HANDLING_OK TRUE)
-   else()
-        set(FSFW_GIT_VER_HANDLING_OK FALSE)
-   endif()
-endif()
-if(NOT FSFW_GIT_VER_HANDLING_OK)
-    set(FSFW_VERSION ${FSFW_VERSION_IF_GIT_FAILS})
-    set(FSFW_SUBVERSION ${FSFW_SUBVERSION_IF_GIT_FAILS})
-    set(FSFW_REVISION ${FSFW_REVISION_IF_GIT_FAILS})
-endif()
 
 if(FSFW_BUILD_UNITTESTS)
     message(STATUS "${MSG_PREFIX} Building the FSFW unittests in addition to the static library")
@@ -178,13 +193,6 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 target_include_directories(${LIB_FSFW_NAME} INTERFACE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
-
-if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED True)
-elseif(${CMAKE_CXX_STANDARD} LESS 11)
-    message(FATAL_ERROR "${MSG_PREFIX} Compiling the FSFW requires a minimum of C++11 support")
-endif()
 
 # Backwards comptability
 if(OS_FSFW AND NOT FSFW_OSAL)
