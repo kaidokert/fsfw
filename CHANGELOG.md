@@ -55,6 +55,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Fixed
 
+- Fix infinite recursion in `prepareHealthSetReply` of PUS Health Service 201.
+  Is not currently used right now but might be used in the future
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/617
 - Move some CMake directives further up top so they are not ignored
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/621
 - Small bugfix in STM32 HAL for SPI
