@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Fixed
 
+- Move some CMake directives further up top so they are not ignored
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/621
 - Small bugfix in STM32 HAL for SPI
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/599
 - HAL GPIO: Improved error checking in `LinuxLibgpioIF::configureGpios(...)`. If a GPIO

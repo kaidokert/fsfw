@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.13)
 
+set(LIB_FSFW_NAME fsfw)
+project(${LIB_FSFW_NAME})
+
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED True)
+elseif(${CMAKE_CXX_STANDARD} LESS 11)
+    message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
+endif()
+
 set(FSFW_VERSION 4)
 set(FSFW_SUBVERSION 0)
 set(FSFW_REVISION 0)
@@ -62,11 +72,10 @@ option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
 # Contrib sources
 option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
-set(LIB_FSFW_NAME fsfw)
+
 set(FSFW_TEST_TGT fsfw-tests)
 set(FSFW_DUMMY_TGT fsfw-dummy)
 
-project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
 
 if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
@@ -163,12 +172,6 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED True)
-elseif(${CMAKE_CXX_STANDARD} LESS 11)
-    message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
-endif()
 
 # Backwards comptability
 if(OS_FSFW AND NOT FSFW_OSAL)
