@@ -74,7 +74,7 @@ set(FSFW_TEST_TGT fsfw-tests)
 set(FSFW_DUMMY_TGT fsfw-dummy)
 
 project(${LIB_FSFW_NAME})
-add_library(${LIB_FSFW_NAME} src/fsfw/serviceinterface/fmtWrapper.h src/fsfw/serviceinterface/fmtWrapper.cpp)
+add_library(${LIB_FSFW_NAME})
 
 if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
   set_property(TARGET ${LIB_FSFW_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
