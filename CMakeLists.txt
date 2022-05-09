@@ -30,6 +30,14 @@ set(FSFW_FMT_LIB_VERSION v${FSFW_FMT_LIB_MAJOR_VERSION}.1.1 CACHE STRING
   "{fmt} library exact version requirement"
   )
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
+if(NOT IPO_SUPPORTED)
+  message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
+endif()
+
+option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" ON)
+
 option(FSFW_GENERATE_SECTIONS
   "Generate function and data sections. Required to remove unused code" ON
   )
@@ -67,6 +75,10 @@ set(FSFW_DUMMY_TGT fsfw-dummy)
 
 project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME} src/fsfw/serviceinterface/fmtWrapper.h src/fsfw/serviceinterface/fmtWrapper.cpp)
+
+if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
+  set_property(TARGET ${LIB_FSFW_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
 if(FSFW_BUILD_UNITTESTS)
   message(STATUS "Building the FSFW unittests in addition to the static library")
@@ -427,7 +439,12 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
   ${COMPILER_FLAGS}
   )
 
+target_link_libraries(${LIB_FSFW_NAME} PUBLIC
+  ${FSFW_FMT_LINK_TARGET}
+  )
+
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
+  # If any ELT headers are ever exposed inside a header or as part of the API, the ETL target needs to be linked PUBLIC
   ${FSFW_ETL_LINK_TARGET}
   ${FSFW_ADDITIONAL_LINK_LIBS}
   )
