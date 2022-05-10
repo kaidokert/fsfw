@@ -4,7 +4,8 @@ set(MSG_PREFIX "fsfw |")
 
 # Add the cmake folder so the FindSphinx module is found
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules/bilke")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules/rpavlik")
 
 ##########################
 # Version file handling  #
@@ -56,6 +57,7 @@ elseif(${CMAKE_CXX_STANDARD} LESS 17)
     message(FATAL_ERROR "${MSG_PREFIX} Compiling the FSFW requires a minimum of C++17 support")
 endif()
 
+set(FSFW_SOURCES_DIR "${CMAKE_SOURCE_DIR}/src/fsfw")
 
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
     "ETL library major version requirement"
@@ -449,14 +451,14 @@ string(CONCAT POST_BUILD_COMMENT
 )
 
 add_custom_command(
-    TARGET ${LIB_FSFW_NAME}
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/FSFWVersion.h.in
-    COMMENT "${MSG_PREFIX} Updating FSFWVersion.h"
-)
-
-add_custom_command(
    TARGET ${LIB_FSFW_NAME}
    POST_BUILD
    COMMENT ${POST_BUILD_COMMENT}
+)
+
+add_custom_command(
+    TARGET ${LIB_FSFW_NAME}
+    PRE_BUILD
+    COMMAND touch ${FSFW_SOURCES_DIR}/FSFWVersion.h.in
+    COMMENT "${MSG_PREFIX} Updating FSFWVersion.h"
 )
