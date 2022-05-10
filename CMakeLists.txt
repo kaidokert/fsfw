@@ -147,7 +147,7 @@ if(FSFW_BUILD_UNITTESTS)
     endif()
 endif()
 
-message(STATUS "Finding and/or providing ETL library")
+message(STATUS "${MSG_PREFIX} Finding and/or providing ETL library")
 
 # Check whether the user has already installed ETL first
 find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
