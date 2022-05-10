@@ -17,11 +17,12 @@ set(FSFW_REVISION 0)
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+set(FSFW_ETL_LIB_NAME etl)
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
-    "ETL library major version requirement"
+  "ETL library major version requirement"
 )
 set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.3 CACHE STRING
-    "ETL library exact version requirement"
+  "ETL library exact version requirement"
 )
 set(FSFW_ETL_LINK_TARGET etl::etl)
 
@@ -32,26 +33,26 @@ set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview5 CACHE
     "Catch2 library exact version requirement"
 )
 
-set(FSFW_ETL_LIB_NAME etl)
-
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
 if(NOT IPO_SUPPORTED)
   message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
 endif()
 
-option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" ON)
+# Keep this off by default for now. See PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
+# for information which keeping this on by default is problematic
+option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" OFF)
 option(FSFW_GENERATE_SECTIONS
-    "Generate function and data sections. Required to remove unused code" ON
+  "Generate function and data sections. Required to remove unused code" ON
 )
 if(FSFW_GENERATE_SECTIONS)
-    option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
+  option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
 endif()
 
 option(FSFW_BUILD_UNITTESTS "Build unittest binary in addition to static library" OFF)
 option(FSFW_BUILD_DOCS "Build documentation with Sphinx and Doxygen" OFF)
 if(FSFW_BUILD_UNITTESTS)
-    option(FSFW_TESTS_GEN_COV "Generate coverage data for unittests" ON)
+  option(FSFW_TESTS_GEN_COV "Generate coverage data for unittests" ON)
 endif()
 
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
