@@ -48,6 +48,13 @@ endif()
 
 option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" ON)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
+if(NOT IPO_SUPPORTED)
+  message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
+endif()
+
+option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" ON)
 option(FSFW_GENERATE_SECTIONS
   "Generate function and data sections. Required to remove unused code" ON
   )
@@ -114,6 +121,9 @@ if(FSFW_BUILD_UNITTESTS)
   project(${FSFW_TEST_TGT} CXX C)
   add_executable(${FSFW_TEST_TGT})
 
+  if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
+    set_property(TARGET ${FSFW_TEST_TGT} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  endif()
   if(FSFW_TESTS_GEN_COV)
     message(STATUS "Generating coverage data for the library")
     message(STATUS "Targets linking against ${LIB_FSFW_NAME} "

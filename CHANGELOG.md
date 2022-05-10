@@ -46,6 +46,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Additions
 
+- LTO support: Allow using LTO/IPO by setting `FSFW_ENABLE_LTO=1`. CMake is able to detect whether
+  the user compiler supports IPO/LPO. LTO is on by default now. Most modern compilers support it,
+  can make good use of it and it usually makes the code faster and/or smaller.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
