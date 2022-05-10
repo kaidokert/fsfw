@@ -25,7 +25,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
         list(GET FSFW_GIT_INFO 1 FSFW_VERSION)
         list(GET FSFW_GIT_INFO 2 FSFW_SUBVERSION)
         list(GET FSFW_GIT_INFO 3 FSFW_REVISION)
-        list(GET FSFW_GIT_INFO 4 FSFW_VERSION_CST_GIT_SHA1)
+        list(GET FSFW_GIT_INFO 4 FSFW_VCS_INFO)
         if(NOT FSFW_VERSION)
             set(FSFW_VERSION ${FSFW_VERSION_IF_GIT_FAILS})
         endif()
@@ -446,6 +446,13 @@ string(CONCAT POST_BUILD_COMMENT
     "Built FSFW v${FSFW_VERSION}.${FSFW_SUBVERSION}.${FSFW_REVISION}, "
     "Target OSAL: ${FSFW_OS_NAME}\n"
     "######################################################################\n"
+)
+
+add_custom_command(
+    TARGET ${LIB_FSFW_NAME}
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/FSFWVersion.h.in
+    COMMENT "${MSG_PREFIX} Updating FSFWVersion.h"
 )
 
 add_custom_command(

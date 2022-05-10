@@ -6,6 +6,6 @@ static constexpr int FSFW_VERSION_MAJOR = @FSFW_VERSION@;
 static constexpr int FSFW_VERSION_MINOR = @FSFW_SUBVERSION@;
 static constexpr int FSFW_VERSION_REVISION = @FSFW_REVISION@;
 // Also contains CST (Commits since tag) information
-static const char FSFW_VERSION_CST_GIT_SHA1[] = "@FSFW_VERSION_CST_GIT_SHA1@";
+static const char FSFW_VCS_INFO[] = "@FSFW_VCS_INFO@";
 
 #endif /* FSFW_VERSION_H_ */
