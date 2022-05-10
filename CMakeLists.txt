@@ -36,13 +36,12 @@ set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview5 CACHE
 # Keep this off by default for now. See PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
 # for information which keeping this on by default is problematic
 option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" OFF)
-
 if(FSFW_ENABLE_IPO)
-include(CheckIPOSupported)
-check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
-if(NOT IPO_SUPPORTED)
-  message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
-endif()
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
+  if(NOT IPO_SUPPORTED)
+    message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
+  endif()
 endif()
 
 option(FSFW_GENERATE_SECTIONS
