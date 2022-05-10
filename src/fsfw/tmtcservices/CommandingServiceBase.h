@@ -166,7 +166,7 @@ class CommandingServiceBase : public SystemObject,
    * @param objectId Target object ID
    * @return
    * - @c RETURN_OK to generate a verification start message
-   * - @c EXECUTION_COMPELTE Fire-and-forget command. Generate a completion
+   * - @c EXECUTION_COMPLETE Fire-and-forget command. Generate a completion
    *      verification message.
    * - @c Anything else rejects the packets and generates a start failure
    *      verification.
