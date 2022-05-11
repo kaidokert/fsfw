@@ -30,11 +30,11 @@ ReturnValue_t Subsystem::checkSequence(HybridIterator<ModeListEntry> iter,
     return FALLBACK_SEQUENCE_DOES_NOT_EXIST;
   }
 
-  if (iter.value == NULL) {
+  if (iter.value == nullptr) {
     return NO_TARGET_TABLE;
   }
 
-  for (; iter.value != NULL; ++iter) {
+  for (; iter.value != nullptr; ++iter) {
     if (!existsModeTable(iter->getTableId())) {
       return TABLE_DOES_NOT_EXIST;
     } else {
@@ -66,13 +66,18 @@ HybridIterator<ModeListEntry> Subsystem::getCurrentTable() {
 void Subsystem::performChildOperation() {
   if (isInTransition) {
     if (commandsOutstanding <= 0) {  // all children of the current table were commanded and replied
-      if (currentSequenceIterator.value == NULL) {  // we're through with this sequence
+      if (currentSequenceIterator.value == nullptr) {  // we're through with this sequence
         if (checkStateAgainstTable(currentTargetTable, targetSubmode) == RETURN_OK) {
           setMode(targetMode, targetSubmode);
           isInTransition = false;
           return;
         } else {
-          transitionFailed(TARGET_TABLE_NOT_REACHED, getSequence(targetMode)->getTableId());
+          Mode_t tableId = 0;
+          auto seq = getSequence(targetMode);
+          if (seq.value != nullptr) {
+            tableId = seq->getTableId();
+          }
+          transitionFailed(TARGET_TABLE_NOT_REACHED, tableId);
           return;
         }
       }
@@ -248,10 +253,13 @@ ReturnValue_t Subsystem::handleCommandMessage(CommandMessage *message) {
     case ModeSequenceMessage::READ_TABLE: {
       ReturnValue_t result;
       Mode_t table = ModeSequenceMessage::getSequenceId(message);
-      EntryPointer *entry = NULL;
+      EntryPointer *entry = nullptr;
       result = modeTables.find(table, &entry);
-      if (result != RETURN_OK) {
+      if (result != RETURN_OK or entry == nullptr) {
         replyToCommand(result, 0);
+        if (entry == nullptr) {
+          return result;
+        }
       }
 
       SerializeIF *elements[2];
@@ -299,6 +307,11 @@ void Subsystem::replyToCommand(ReturnValue_t status, uint32_t parameter) {
   }
 }
 
+ReturnValue_t Subsystem::addSequence(SequenceEntry sequence) {
+  return addSequence(sequence.table, sequence.mode, sequence.fallbackMode, sequence.inStore,
+                     sequence.preInit);
+}
+
 ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry> *sequence, Mode_t id,
                                      Mode_t fallbackSequence, bool inStore, bool preInit) {
   ReturnValue_t result;
@@ -340,6 +353,10 @@ ReturnValue_t Subsystem::addSequence(ArrayList<ModeListEntry> *sequence, Mode_t 
   }
 
   return result;
+}
+
+ReturnValue_t Subsystem::addTable(TableEntry table) {
+  return addTable(table.table, table.mode, table.inStore, table.preInit);
 }
 
 ReturnValue_t Subsystem::addTable(ArrayList<ModeListEntry> *table, Mode_t id, bool inStore,
@@ -450,6 +467,7 @@ ReturnValue_t Subsystem::initialize() {
   }
 
   mode = initialMode;
+  submode = initSubmode;
 
   return RETURN_OK;
 }
@@ -587,7 +605,10 @@ ReturnValue_t Subsystem::checkObjectConnections() {
   return RETURN_OK;
 }
 
-void Subsystem::setInitialMode(Mode_t mode) { initialMode = mode; }
+void Subsystem::setInitialMode(Mode_t mode, Submode_t submode) {
+  this->initialMode = mode;
+  this->initSubmode = submode;
+}
 
 void Subsystem::cantKeepMode() {
   ReturnValue_t result;

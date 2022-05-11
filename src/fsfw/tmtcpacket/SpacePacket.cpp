@@ -19,8 +19,8 @@ SpacePacket::SpacePacket(uint16_t packetDataLength, bool isTelecommand, uint16_t
 SpacePacket::~SpacePacket(void) {}
 
 bool SpacePacket::addWholeData(const uint8_t* p_Data, uint32_t packet_size) {
-  if (packet_size <= sizeof(this->data)) {
-    memcpy(&this->localData.byteStream, p_Data, packet_size);
+  if (packet_size <= sizeof(this->localData)) {
+    memcpy(this->localData.byteStream, p_Data, packet_size);
     return true;
   } else {
     return false;

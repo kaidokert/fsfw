@@ -161,18 +161,37 @@ class CCSDSTime : public HasReturnvaluesIF {
    */
   static ReturnValue_t convertFromCcsds(timeval *to, uint8_t const *from, size_t *foundLength,
                                         size_t maxLength);
-
+  /**
+   * @brief Currently unsupported conversion due to leapseconds
+   *
+   * @param to Time Of Day (UTC)
+   * @param from Buffer to take the CUC from
+   * @param length Length of buffer
+   * @return ReturnValue_t UNSUPPORTED_TIME_FORMAT in any case ATM
+   */
   static ReturnValue_t convertFromCUC(Clock::TimeOfDay_t *to, uint8_t const *from, uint8_t length);
-
+  /**
+   * @brief Converts from CCSDS CUC to timeval
+   *
+   * If input is CCSDS Epoch this is TAI! -> No leapsecond support.
+   *
+   * Currently, it only supports seconds + 2 Byte Subseconds (1/65536 seconds)
+   *
+   *
+   * @param to Timeval to write the result to
+   * @param from Buffer to read from
+   * @param foundLength Length found by this function (can be nullptr if unused)
+   * @param maxLength Max length of the buffer to be read
+   * @return ReturnValue_t - RETURN_OK if successful
+   *                       - LENGTH_MISMATCH if expected length is larger than maxLength
+   */
   static ReturnValue_t convertFromCUC(timeval *to, uint8_t const *from, size_t *foundLength,
                                       size_t maxLength);
-
   static ReturnValue_t convertFromCUC(timeval *to, uint8_t pField, uint8_t const *from,
                                       size_t *foundLength, size_t maxLength);
 
   static ReturnValue_t convertFromCCS(timeval *to, uint8_t const *from, size_t *foundLength,
                                       size_t maxLength);
-
   static ReturnValue_t convertFromCCS(timeval *to, uint8_t pField, uint8_t const *from,
                                       size_t *foundLength, size_t maxLength);
 
@@ -192,8 +211,8 @@ class CCSDSTime : public HasReturnvaluesIF {
   static uint32_t subsecondsToMicroseconds(uint16_t subseconds);
 
  private:
-  CCSDSTime();
-  virtual ~CCSDSTime();
+  CCSDSTime(){};
+  virtual ~CCSDSTime(){};
   /**
    * checks a ccs time stream for validity
    *
