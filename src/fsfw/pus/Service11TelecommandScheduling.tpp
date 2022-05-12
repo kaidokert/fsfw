@@ -345,7 +345,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftAct
         "Service11TelecommandScheduling::doTimeshiftActivity: Either 0 or more than 1 TCs found. "
         "No explicit timeshifting possible\n");
 #endif
-    return RETURN_FAILED;
+    return TIMESHIFTING_NOT_POSSIBLE;
   }
 
   // temporarily hold the item
@@ -380,7 +380,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimesh
     return result;
   }
   if (relativeTime == 0) {
-    return RETURN_FAILED;
+    return INVALID_RELATIVE_TIME;
   }
 
   // Do time window

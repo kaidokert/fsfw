@@ -39,6 +39,11 @@ class Service11TelecommandScheduling final : public PusServiceBase {
 
   static constexpr ReturnValue_t INVALID_TYPE_TIME_WINDOW =
       HasReturnvaluesIF::makeReturnCode(CLASS_ID, 1);
+  static constexpr ReturnValue_t TIMESHIFTING_NOT_POSSIBLE =
+      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 2);
+  static constexpr ReturnValue_t INVALID_RELATIVE_TIME =
+      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
+
   // The types of PUS-11 subservices
   enum Subservice : uint8_t {
     ENABLE_SCHEDULING = 1,
