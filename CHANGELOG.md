@@ -69,6 +69,20 @@ https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
 
 ## Additions
 
+- LTO support: Allow using LTO/IPO by setting `FSFW_ENABLE_LTO=1`. CMake is able to detect whether
+  the user compiler supports IPO/LPO. LTO is on by default now. Most modern compilers support it,
+  can make good use of it and it usually makes the code faster and/or smaller.
+  After some more research:
+  Enabling LTO will actually cause the compiler to only produce thin LTO by adding 
+  `-flto -fno-fat-lto-objects` to the compiler options. I am not sure this is an ideal choice
+  because if an application linking against the FSFW does not use LTO, there can be compile
+  issues (e.g. observed when compiling the FSFW tests without LTO). This is a known issue as
+  can be seen in the multiple CMake issues for it: 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/22913, 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/16808, 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/21696
+  Easiest solution for now: Keep this option OFF by default.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
