@@ -8,6 +8,13 @@
 #include "definitions.h"
 #include "fsfw/objectmanager/SystemObject.h"
 
+/**
+ * @brief   This component can be used to simulate a power switcher like a
+ *          Power Control Distribution Unit (PCDU)
+ * @details
+ * The dummy switcher will simply cache the commanded fuse and switch states and return them
+ * in the according switch getter functions. In that sense, it simulates an ideal PCDU.
+ */
 class DummyPowerSwitcher : public SystemObject, public PowerSwitchIF {
  public:
   DummyPowerSwitcher(object_id_t objectId, size_t numberOfSwitches, size_t numberOfFuses,
