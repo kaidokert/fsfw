@@ -1,8 +1,9 @@
 #include "DummyPowerSwitcher.h"
 
 DummyPowerSwitcher::DummyPowerSwitcher(object_id_t objectId, size_t numberOfSwitches,
-                                       size_t numberOfFuses, uint32_t switchDelayMs)
-    : SystemObject(objectId),
+                                       size_t numberOfFuses, bool registerGlobally,
+                                       uint32_t switchDelayMs)
+    : SystemObject(objectId, registerGlobally),
       switcherList(numberOfSwitches),
       fuseList(numberOfFuses),
       switchDelayMs(switchDelayMs) {}
