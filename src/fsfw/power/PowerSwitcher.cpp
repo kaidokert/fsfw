@@ -1,19 +1,12 @@
 #include "fsfw/power/PowerSwitcher.h"
 
+#include "definitions.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface.h"
 
-PowerSwitcher::PowerSwitcher(uint8_t setSwitch1, uint8_t setSwitch2,
-                             PowerSwitcher::State_t setStartState)
-    : state(setStartState), firstSwitch(setSwitch1), secondSwitch(setSwitch2) {}
-
-ReturnValue_t PowerSwitcher::initialize(object_id_t powerSwitchId) {
-  power = ObjectManager::instance()->get<PowerSwitchIF>(powerSwitchId);
-  if (power == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
-  return HasReturnvaluesIF::RETURN_OK;
-}
+PowerSwitcher::PowerSwitcher(PowerSwitchIF* switcher, power::Switch_t setSwitch1,
+                             power::Switch_t setSwitch2, PowerSwitcher::State_t setStartState)
+    : power(switcher), state(setStartState), firstSwitch(setSwitch1), secondSwitch(setSwitch2) {}
 
 ReturnValue_t PowerSwitcher::getStateOfSwitches() {
   SwitchReturn_t result = howManySwitches();
@@ -52,18 +45,37 @@ void PowerSwitcher::commandSwitches(ReturnValue_t onOff) {
   return;
 }
 
-void PowerSwitcher::turnOn() {
+void PowerSwitcher::turnOn(bool checkCurrentState) {
+  if (checkCurrentState) {
+    if (getStateOfSwitches() == PowerSwitchIF::SWITCH_ON) {
+      state = SWITCH_IS_ON;
+      return;
+    }
+  }
   commandSwitches(PowerSwitchIF::SWITCH_ON);
   state = WAIT_ON;
 }
 
-void PowerSwitcher::turnOff() {
+void PowerSwitcher::turnOff(bool checkCurrentState) {
+  if (checkCurrentState) {
+    if (getStateOfSwitches() == PowerSwitchIF::SWITCH_OFF) {
+      state = SWITCH_IS_OFF;
+      return;
+    }
+  }
   commandSwitches(PowerSwitchIF::SWITCH_OFF);
   state = WAIT_OFF;
 }
 
+bool PowerSwitcher::active() {
+  if (state == WAIT_OFF or state == WAIT_ON) {
+    return true;
+  }
+  return false;
+}
+
 PowerSwitcher::SwitchReturn_t PowerSwitcher::howManySwitches() {
-  if (secondSwitch == NO_SWITCH) {
+  if (secondSwitch == power::NO_SWITCH) {
     return ONE_SWITCH;
   } else {
     return TWO_SWITCHES;
