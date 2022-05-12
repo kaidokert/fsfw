@@ -1,15 +1,36 @@
 #ifndef FSFW_SUBSYSTEM_SUBSYSTEM_H_
 #define FSFW_SUBSYSTEM_SUBSYSTEM_H_
 
-#include <FSFWConfig.h>
-
 #include "../container/FixedArrayList.h"
 #include "../container/FixedMap.h"
 #include "../container/HybridIterator.h"
 #include "../container/SinglyLinkedList.h"
 #include "../serialize/SerialArrayListAdapter.h"
 #include "SubsystemBase.h"
+#include "fsfw/FSFW.h"
 #include "modes/ModeDefinitions.h"
+
+struct TableSequenceBase {
+ public:
+  TableSequenceBase(Mode_t mode, ArrayList<ModeListEntry> *table) : mode(mode), table(table){};
+  Mode_t mode;
+  ArrayList<ModeListEntry> *table;
+  bool inStore = false;
+  bool preInit = true;
+};
+
+struct TableEntry : public TableSequenceBase {
+ public:
+  TableEntry(Mode_t mode, ArrayList<ModeListEntry> *table) : TableSequenceBase(mode, table){};
+};
+
+struct SequenceEntry : public TableSequenceBase {
+ public:
+  SequenceEntry(Mode_t mode, ArrayList<ModeListEntry> *table, Mode_t fallbackMode)
+      : TableSequenceBase(mode, table), fallbackMode(fallbackMode) {}
+
+  Mode_t fallbackMode;
+};
 
 /**
  * @brief   TODO: documentation missing
@@ -45,13 +66,15 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
             uint32_t maxNumberOfTables);
   virtual ~Subsystem();
 
+  ReturnValue_t addSequence(SequenceEntry sequence);
   ReturnValue_t addSequence(ArrayList<ModeListEntry> *sequence, Mode_t id, Mode_t fallbackSequence,
                             bool inStore = true, bool preInit = true);
 
+  ReturnValue_t addTable(TableEntry table);
   ReturnValue_t addTable(ArrayList<ModeListEntry> *table, Mode_t id, bool inStore = true,
                          bool preInit = true);
 
-  void setInitialMode(Mode_t mode);
+  void setInitialMode(Mode_t mode, Submode_t submode = SUBMODE_NONE);
 
   virtual ReturnValue_t initialize() override;
 
@@ -90,6 +113,7 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
   Submode_t targetSubmode;
 
   Mode_t initialMode = 0;
+  Submode_t initSubmode = SUBMODE_NONE;
 
   HybridIterator<ModeListEntry> currentSequenceIterator;
 
@@ -127,18 +151,18 @@ class Subsystem : public SubsystemBase, public HasModeSequenceIF {
 
   ReturnValue_t deleteTable(Mode_t id);
 
-  virtual void performChildOperation();
+  virtual void performChildOperation() override;
 
-  virtual ReturnValue_t handleCommandMessage(CommandMessage *message);
+  virtual ReturnValue_t handleCommandMessage(CommandMessage *message) override;
 
   bool isFallbackSequence(Mode_t SequenceId);
 
   bool isTableUsed(Mode_t tableId);
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode);
+                                         uint32_t *msToReachTheMode) override;
 
-  virtual void startTransition(Mode_t mode, Submode_t submode);
+  virtual void startTransition(Mode_t mode, Submode_t submode) override;
 
   void sendSerializablesAsCommandMessage(Command_t command, SerializeIF **elements, uint8_t count);
 

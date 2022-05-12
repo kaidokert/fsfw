@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.13)
 
+set(LIB_FSFW_NAME fsfw)
+project(${LIB_FSFW_NAME})
+
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED True)
+elseif(${CMAKE_CXX_STANDARD} LESS 17)
+    message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++17 support")
+endif()
+
 set(FSFW_VERSION 4)
 set(FSFW_SUBVERSION 0)
 set(FSFW_REVISION 0)
@@ -10,14 +20,15 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
     "ETL library major version requirement"
 )
-set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.2 CACHE STRING
+set(FSFW_ETL_LIB_VERSION ${FSFW_ETL_LIB_MAJOR_VERSION}.27.3 CACHE STRING
     "ETL library exact version requirement"
 )
+set(FSFW_ETL_LINK_TARGET etl::etl)
 
 set(FSFW_CATCH2_LIB_MAJOR_VERSION 3 CACHE STRING
     "Catch2 library major version requirement"
 )
-set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview4 CACHE STRING
+set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview5 CACHE STRING
     "Catch2 library exact version requirement"
 )
 
@@ -54,11 +65,10 @@ option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
 # Contrib sources
 option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
-set(LIB_FSFW_NAME fsfw)
+
 set(FSFW_TEST_TGT fsfw-tests)
 set(FSFW_DUMMY_TGT fsfw-dummy)
 
-project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
 
 if(FSFW_BUILD_UNITTESTS)
@@ -76,9 +86,7 @@ if(FSFW_BUILD_UNITTESTS)
             GIT_TAG        ${FSFW_CATCH2_LIB_VERSION}
         )
 
-        FetchContent_MakeAvailable(Catch2)
-        #fixes regression -preview4, to be confirmed in later releases
-        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
+        list(APPEND FSFW_FETCH_CONTENT_TARGETS Catch2)
     endif()
 
     set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
@@ -123,7 +131,22 @@ if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
         GIT_TAG        ${FSFW_ETL_LIB_VERSION}
     )
 
-    FetchContent_MakeAvailable(etl)
+    list(APPEND FSFW_FETCH_CONTENT_TARGETS ${FSFW_ETL_LIB_NAME})
+endif()
+
+# The documentation for FetchContent recommends declaring all the dependencies
+# before making them available. We make all declared dependency available here
+# after their declaration
+if(FSFW_FETCH_CONTENT_TARGETS)
+    FetchContent_MakeAvailable(${FSFW_FETCH_CONTENT_TARGETS})
+    if(TARGET ${FSFW_ETL_LIB_NAME})
+        add_library(${FSFW_ETL_LINK_TARGET} ALIAS ${FSFW_ETL_LIB_NAME})
+    endif()
+    if(TARGET Catch2)
+        # Fixes regression -preview4, to be confirmed in later releases
+        # Related GitHub issue: https://github.com/catchorg/Catch2/issues/2417
+        set_target_properties(Catch2 PROPERTIES DEBUG_POSTFIX "")
+    endif()
 endif()
 
 set(FSFW_CORE_INC_PATH "inc")
@@ -138,12 +161,6 @@ target_include_directories(${LIB_FSFW_NAME} INTERFACE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED True)
-elseif(${CMAKE_CXX_STANDARD} LESS 11)
-    message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
-endif()
 
 # Backwards comptability
 if(OS_FSFW AND NOT FSFW_OSAL)
@@ -387,7 +404,7 @@ target_compile_options(${LIB_FSFW_NAME} PRIVATE
 )
 
 target_link_libraries(${LIB_FSFW_NAME} PRIVATE
-    ${FSFW_ETL_LIB_NAME}
+    ${FSFW_ETL_LINK_TARGET}
     ${FSFW_ADDITIONAL_LINK_LIBS}
 )
 

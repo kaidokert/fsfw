@@ -95,7 +95,7 @@ class CommandingServiceBase : public SystemObject,
    */
   virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
-  virtual uint16_t getIdentifier();
+  virtual uint16_t getIdentifier() override;
 
   /**
    * Returns the requestQueue MessageQueueId_t
@@ -104,7 +104,7 @@ class CommandingServiceBase : public SystemObject,
    *
    * @return requestQueue messageQueueId_t
    */
-  virtual MessageQueueId_t getRequestQueue();
+  virtual MessageQueueId_t getRequestQueue() override;
 
   /**
    * Returns the commandQueue MessageQueueId_t
@@ -166,7 +166,7 @@ class CommandingServiceBase : public SystemObject,
    * @param objectId Target object ID
    * @return
    * - @c RETURN_OK to generate a verification start message
-   * - @c EXECUTION_COMPELTE Fire-and-forget command. Generate a completion
+   * - @c EXECUTION_COMPLETE Fire-and-forget command. Generate a completion
    *      verification message.
    * - @c Anything else rejects the packets and generates a start failure
    *      verification.
