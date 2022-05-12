@@ -17,14 +17,14 @@
 TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
   using namespace cfdp;
   int result = HasReturnvaluesIF::RETURN_OK;
-  std::array<uint8_t, 255> rawBuf;
+  std::array<uint8_t, 255> rawBuf{};
   uint8_t* serPtr = rawBuf.data();
   const uint8_t* deserPtr = rawBuf.data();
   size_t deserSize = 0;
   cfdp::EntityId sourceId = EntityId(cfdp::WidthInBytes::TWO_BYTES, 0x0ff0);
 
   SECTION("TLV Serialization") {
-    std::array<uint8_t, 8> tlvRawBuf;
+    std::array<uint8_t, 8> tlvRawBuf{};
     serPtr = tlvRawBuf.data();
     result =
         sourceId.serialize(&serPtr, &deserSize, tlvRawBuf.size(), SerializeIF::Endianness::NETWORK);
