@@ -25,18 +25,41 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
-- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
 - IPC Message Queue Handling: Allow passing an optional `MqArgs` argument into the MessageQueue
   creation call. It allows passing context information and an arbitrary user argument into
   the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/583
-- Clock: 
-  - `timeval` to `TimeOfDay_t`
-  - Added Mutex for gmtime calls: (compare http://www.opengate.at/blog/2020/01/timeless/)
-  - Moved the statics used by Clock in ClockCommon.cpp to this file
-  - Better check for leap seconds
-  - Added Unittests for Clock (only getter)
+
+### HAL
+
+- HAL Linux SPI: Set the Clock Default State when setting new SPI speed
+  and mode
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
+- GPIO HAL: `Direction`, `GpioOperation` and `Levels` are enum classes now, which prevents
+  name clashes with Windows defines.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
+- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
+
+### Time
+
+PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/584 and
+https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
+
+- `timeval` to `TimeOfDay_t`
+- Added Mutex for gmtime calls: (compare http://www.opengate.at/blog/2020/01/timeless/)
+- Moved the statics used by Clock in ClockCommon.cpp to this file
+- Better check for leap seconds
+- Added Unittests for Clock (only getter)
+
+### Power 
+
+- `PowerSwitchIF`: Remove `const` specifier from `sendSwitchCommand` and `sendFuseOnCommand` and
+  also specify a `ReturnValue_t` return type
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
+- Extend `PowerSwitcher` module to optionally check current state when calling `turnOn` or
+  `turnOff`. Tis can be helpful to avoid commanding switches which do not need commanding
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
 
 ## Removed
 
@@ -66,6 +89,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
 - Added ETL dependency and improved library dependency management
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/592
+- Add a `DummyPowerSwitcher` module which can be useful for test setups when no PCDU is available
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
+- New typedef for switcher type
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
 - `Subsystem`: New API to add table and sequence entries
 
 ## Fixed
