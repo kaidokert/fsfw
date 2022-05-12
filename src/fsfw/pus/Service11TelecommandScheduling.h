@@ -6,6 +6,7 @@
 #include <fsfw/tmtcservices/TmTcMessage.h>
 
 #include "fsfw/FSFW.h"
+#include "fsfw/returnvalues/FwClassIds.h"
 
 /**
  * @brief: PUS-Service 11 - Telecommand scheduling.
@@ -34,8 +35,12 @@
 template <size_t MAX_NUM_TCS>
 class Service11TelecommandScheduling final : public PusServiceBase {
  public:
+  static constexpr uint8_t CLASS_ID = CLASS_ID::PUS_SERVICE_11;
+
+  static constexpr ReturnValue_t INVALID_TYPE_TIME_WINDOW =
+      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 1);
   // The types of PUS-11 subservices
-  enum Subservice {
+  enum Subservice : uint8_t {
     ENABLE_SCHEDULING = 1,
     DISABLE_SCHEDULING = 2,
     RESET_SCHEDULING = 3,
@@ -103,31 +108,31 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @brief Logic to be performed on an incoming TC[11,4].
    * @return RETURN_OK if successful
    */
-  ReturnValue_t doInsertActivity(void);
+  ReturnValue_t doInsertActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,5].
    * @return RETURN_OK if successful
    */
-  ReturnValue_t doDeleteActivity(void);
+  ReturnValue_t doDeleteActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,6].
    * @return RETURN_OK if successful
    */
-  ReturnValue_t doFilterDeleteActivity(void);
+  ReturnValue_t doFilterDeleteActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,7].
    * @return RETURN_OK if successful
    */
-  ReturnValue_t doTimeshiftActivity(void);
+  ReturnValue_t doTimeshiftActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,8].
    * @return RETURN_OK if successful
    */
-  ReturnValue_t doFilterTimeshiftActivity(void);
+  ReturnValue_t doFilterTimeshiftActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Deserializes a generic type from a payload buffer by using the FSFW
@@ -158,7 +163,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @param [out] requestId Request ID
    * @return RETURN_OK if successful
    */
-  ReturnValue_t getRequestIdFromData(const uint8_t* data, size_t& dataSize, uint64_t& requestId);
+  ReturnValue_t getRequestIdFromData(const uint8_t*& data, size_t& dataSize, uint64_t& requestId);
 
   /**
    * @brief Builds the Request ID from its three elements.
@@ -177,9 +182,10 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @param [out] itEnd End of filter range
    * @return RETURN_OK if successful
    */
-  ReturnValue_t getMapFilterFromData(const uint8_t* data, size_t dataSize, TcMapIter& itBegin,
+  ReturnValue_t getMapFilterFromData(const uint8_t*& data, size_t& size, TcMapIter& itBegin,
                                      TcMapIter& itEnd);
 
+  ReturnValue_t handleInvalidData(const char* ctx);
   /**
    * @brief Prints content of multimap. Use for simple debugging only.
    */

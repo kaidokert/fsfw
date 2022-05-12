@@ -6,6 +6,8 @@
 
 #include <cstddef>
 
+static constexpr auto DEF_END = SerializeIF::Endianness::BIG;
+
 template <size_t MAX_NUM_TCS>
 inline Service11TelecommandScheduling<MAX_NUM_TCS>::Service11TelecommandScheduling(
     object_id_t objectId, uint16_t apid, uint8_t serviceId, AcceptsTelecommandsIF *tcRecipient,
@@ -28,17 +30,23 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
     sif::printInfo("PUS11::handleRequest: Handling request %d\n", subservice);
 #endif
   }
+  // Get de-serialized Timestamp
+  const uint8_t *data = currentPacket.getApplicationData();
+  size_t size = currentPacket.getApplicationDataSize();
+  if (data == nullptr) {
+    return handleInvalidData("handleRequest");
+  }
   switch (subservice) {
     case Subservice::INSERT_ACTIVITY:
-      return doInsertActivity();
+      return doInsertActivity(data, size);
     case Subservice::DELETE_ACTIVITY:
-      return doDeleteActivity();
+      return doDeleteActivity(data, size);
     case Subservice::FILTER_DELETE_ACTIVITY:
-      return doFilterDeleteActivity();
+      return doFilterDeleteActivity(data, size);
     case Subservice::TIMESHIFT_ACTIVITY:
-      return doTimeshiftActivity();
+      return doTimeshiftActivity(data, size);
     case Subservice::FILTER_TIMESHIFT_ACTIVITY:
-      return doFilterTimeshiftActivity();
+      return doFilterTimeshiftActivity(data, size);
     default:
       break;
   }
@@ -105,17 +113,15 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::initialize() {
 }
 
 template <size_t MAX_NUM_TCS>
-inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivity(void) {
-  // Get de-serialized Timestamp
-  const uint8_t *data = currentPacket.getApplicationData();
-  size_t dataSize = currentPacket.getApplicationDataSize();
-
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivity(
+    const uint8_t *data, size_t size) {
   uint32_t timestamp = 0;
-  if (deserializeViaFsfwInterface<uint32_t>(timestamp, data, dataSize) != RETURN_OK) {
-    return RETURN_FAILED;
+  const uint8_t *initData = data;
+  size_t initSz = size;
+  ReturnValue_t result = SerializeAdapter::deSerialize(&timestamp, &data, &size, DEF_END);
+  if (result != RETURN_OK) {
+    return result;
   }
-  data += sizeof(uint32_t);      // move ptr past timestamp (for later)
-  dataSize -= sizeof(uint32_t);  // and reduce size accordingly
 
   // Insert possible if sched. time is above margin
   // (See requirement for Time margin)
@@ -135,8 +141,8 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
   }
 
   // store currentPacket and receive the store address
-  store_address_t addr;
-  if (tcStore->addData(&addr, data, dataSize) != RETURN_OK ||
+  store_address_t addr{};
+  if (tcStore->addData(&addr, initData, initSz) != RETURN_OK ||
       addr.raw == storeId::INVALID_STORE_ADDRESS) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service11TelecommandScheduling::doInsertActivity: Adding data to TC Store failed"
@@ -172,14 +178,13 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
 }
 
 template <size_t MAX_NUM_TCS>
-inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doDeleteActivity(void) {
-  const uint8_t *data = currentPacket.getApplicationData();
-  size_t dataSize = currentPacket.getApplicationDataSize();
-
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doDeleteActivity(
+    const uint8_t *data, size_t size) {
   // Get request ID
   uint64_t requestId;
-  if (getRequestIdFromData(data, dataSize, requestId) != RETURN_OK) {
-    return RETURN_FAILED;
+  ReturnValue_t result = getRequestIdFromData(data, size, requestId);
+  if (result != RETURN_OK) {
+    return result;
   }
 
   // DEBUG
@@ -240,16 +245,15 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doDeleteActivi
 }
 
 template <size_t MAX_NUM_TCS>
-inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterDeleteActivity(void) {
-  const uint8_t *data = currentPacket.getApplicationData();
-  size_t dataSize = currentPacket.getApplicationDataSize();
-
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterDeleteActivity(
+    const uint8_t *data, size_t size) {
   TcMapIter itBegin;
   TcMapIter itEnd;
 
+  ReturnValue_t result = getMapFilterFromData(data, size, itBegin, itEnd);
   // get the filter window as map range via dedicated method
-  if (getMapFilterFromData(data, dataSize, itBegin, itEnd) != RETURN_OK) {
-    return RETURN_FAILED;
+  if (result != RETURN_OK) {
+    return result;
   }
 
   int deletedTCs = 0;
@@ -290,26 +294,22 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterDelete
 }
 
 template <size_t MAX_NUM_TCS>
-inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftActivity(void) {
-  const uint8_t *data = currentPacket.getApplicationData();
-  size_t dataSize = currentPacket.getApplicationDataSize();
-
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftActivity(
+    const uint8_t *data, size_t size) {
   // Get relative time
   uint32_t relativeTime = 0;
-  if (deserializeViaFsfwInterface<uint32_t>(relativeTime, data, dataSize) != RETURN_OK) {
-    return RETURN_FAILED;
+  ReturnValue_t result = SerializeAdapter::deSerialize(&relativeTime, &data, &size, DEF_END);
+  if (result != RETURN_OK) {
+    return result;
   }
   if (relativeTime == 0) {
     return RETURN_FAILED;
   }
   // TODO further check sanity of the relative time?
 
-  data += sizeof(uint32_t);
-  dataSize -= sizeof(uint32_t);
-
   // Get request ID
   uint64_t requestId;
-  if (getRequestIdFromData(data, dataSize, requestId) != RETURN_OK) {
+  if (getRequestIdFromData(data, size, requestId) != RETURN_OK) {
     return RETURN_FAILED;
   }
 
@@ -371,26 +371,24 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftAct
 }
 
 template <size_t MAX_NUM_TCS>
-inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimeshiftActivity(void) {
-  const uint8_t *data = currentPacket.getApplicationData();
-  uint32_t dataSize = currentPacket.getApplicationDataSize();
-
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimeshiftActivity(
+    const uint8_t *data, size_t size) {
   // Get relative time
   uint32_t relativeTime = 0;
-  if (deserializeViaFsfwInterface<uint32_t>(relativeTime, data, dataSize) != RETURN_OK) {
-    return RETURN_FAILED;
+  ReturnValue_t result = SerializeAdapter::deSerialize(&relativeTime, &data, &size, DEF_END);
+  if (result != RETURN_OK) {
+    return result;
   }
   if (relativeTime == 0) {
     return RETURN_FAILED;
   }
-  data += sizeof(uint32_t);
-  dataSize -= sizeof(uint32_t);
 
   // Do time window
   TcMapIter itBegin;
   TcMapIter itEnd;
-  if (getMapFilterFromData(data, dataSize, itBegin, itEnd) != RETURN_OK) {
-    return RETURN_FAILED;
+  result = getMapFilterFromData(data, size, itBegin, itEnd);
+  if (result != RETURN_OK) {
+    return result;
   }
 
   int shiftedItemsCount = 0;
@@ -438,27 +436,23 @@ inline uint64_t Service11TelecommandScheduling<MAX_NUM_TCS>::getRequestIdFromDat
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getRequestIdFromData(
-    const uint8_t *data, size_t &dataSize, uint64_t &requestId) {
+    const uint8_t *&data, size_t &dataSize, uint64_t &requestId) {
   uint32_t srcId = 0;
   uint16_t apid = 0;
   uint16_t ssc = 0;
 
-  if (deserializeViaFsfwInterface<uint32_t>(srcId, data, dataSize) != RETURN_OK) {
-    return RETURN_FAILED;
+  ReturnValue_t result = SerializeAdapter::deSerialize(&srcId, &data, &dataSize, DEF_END);
+  if (result != RETURN_OK) {
+    return result;
   }
-
-  data += sizeof(uint32_t);
-  dataSize -= sizeof(uint32_t);
-  if (deserializeViaFsfwInterface<uint16_t>(apid, data, dataSize) != RETURN_OK) {
-    return RETURN_FAILED;
+  result = SerializeAdapter::deSerialize(&apid, &data, &dataSize, DEF_END);
+  if (result != RETURN_OK) {
+    return result;
   }
-
-  data += sizeof(uint32_t);
-  dataSize -= sizeof(uint32_t);
-  if (deserializeViaFsfwInterface<uint16_t>(ssc, data, dataSize) != RETURN_OK) {
-    return RETURN_FAILED;
+  result = SerializeAdapter::deSerialize(&ssc, &data, &dataSize, DEF_END);
+  if (result != RETURN_OK) {
+    return result;
   }
-
   requestId = buildRequestId(srcId, apid, ssc);
 
   return RETURN_OK;
@@ -477,16 +471,17 @@ inline uint64_t Service11TelecommandScheduling<MAX_NUM_TCS>::buildRequestId(uint
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFromData(
-    const uint8_t *data, size_t dataSize, TcMapIter &itBegin, TcMapIter &itEnd) {
+    const uint8_t *&data, size_t &dataSize, TcMapIter &itBegin, TcMapIter &itEnd) {
   // get filter type first
-  uint32_t typeRaw;
-  if (deserializeViaFsfwInterface(typeRaw, data, dataSize) != RETURN_OK) {
-    return RETURN_FAILED;
+  uint32_t typeRaw = 0;
+  ReturnValue_t result = SerializeAdapter::deSerialize(&typeRaw, &data, &dataSize, DEF_END);
+  if (result != RETURN_OK) {
+    return result;
   }
-  // can be modified as the uint8_t pointer is passed by value (copy of ptr is modified)
-  data += sizeof(uint32_t);
-  dataSize -= sizeof(uint32_t);
 
+  if (typeRaw > 3) {
+    return INVALID_TYPE_TIME_WINDOW;
+  }
   TypeOfTimeWindow type = static_cast<TypeOfTimeWindow>(typeRaw);
 
   // we now have the type of delete activity - so now we set the range to delete,
@@ -501,9 +496,10 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
     }
 
     case TypeOfTimeWindow::FROM_TIMETAG: {
-      uint32_t fromTimestamp;
-      if (deserializeViaFsfwInterface<uint32_t>(fromTimestamp, data, dataSize) != RETURN_OK) {
-        return RETURN_FAILED;
+      uint32_t fromTimestamp = 0;
+      result = SerializeAdapter::deSerialize(&fromTimestamp, &data, &dataSize, DEF_END);
+      if (result != RETURN_OK) {
+        return result;
       }
 
       itBegin = telecommandMap.begin();
@@ -517,8 +513,9 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
 
     case TypeOfTimeWindow::TO_TIMETAG: {
       uint32_t toTimestamp;
-      if (deserializeViaFsfwInterface<uint32_t>(toTimestamp, data, dataSize) != RETURN_OK) {
-        return RETURN_FAILED;
+      result = SerializeAdapter::deSerialize(&toTimestamp, &data, &dataSize, DEF_END);
+      if (result != RETURN_OK) {
+        return result;
       }
       itBegin = telecommandMap.begin();
       itEnd = telecommandMap.begin();
@@ -532,14 +529,15 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
       uint32_t fromTimestamp;
       uint32_t toTimestamp;
 
-      if (deserializeViaFsfwInterface<uint32_t>(fromTimestamp, data, dataSize) != RETURN_OK) {
-        return RETURN_FAILED;
+      result = SerializeAdapter::deSerialize(&fromTimestamp, &data, &dataSize,
+                                             SerializeIF::Endianness::BIG);
+      if (result != RETURN_OK) {
+        return result;
       }
-      data += sizeof(uint32_t);
-      dataSize -= sizeof(uint32_t);
-
-      if (deserializeViaFsfwInterface<uint32_t>(toTimestamp, data, dataSize) != RETURN_OK) {
-        return RETURN_FAILED;
+      result = SerializeAdapter::deSerialize(&toTimestamp, &data, &dataSize,
+                                             SerializeIF::Endianness::BIG);
+      if (result != RETURN_OK) {
+        return result;
       }
       itBegin = telecommandMap.begin();
       itEnd = telecommandMap.begin();
@@ -568,25 +566,16 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
 }
 
 template <size_t MAX_NUM_TCS>
-template <typename T>
-inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::deserializeViaFsfwInterface(
-    T &output, const uint8_t *buf, size_t bufsize) {
-  if (buf == nullptr) {
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleInvalidData(
+    const char *ctx) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "Service11TelecommandScheduling::deserializeViaFsfwInterface: "
-                    "Invalid buffer"
-                 << std::endl;
+  sif::warning << "Service11TelecommandScheduling:: " << ctx << ": Invalid buffer" << std::endl;
 #else
-    sif::printWarning(
-        "Service11TelecommandScheduling::deserializeViaFsfwInterface: "
-        "Invalid buffer\n");
+  sif::printWarning("Service11TelecommandScheduling::%s: Invalid buffer\n", ctx);
 #endif
 #endif
-    return RETURN_FAILED;
-  }
-
-  return SerializeAdapter::deSerialize<T>(&output, &buf, &bufsize, SerializeIF::Endianness::BIG);
+  return RETURN_FAILED;
 }
 
 template <size_t MAX_NUM_TCS>
