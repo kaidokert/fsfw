@@ -49,15 +49,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added options for CI/CD builds: `FSFW_CICD_BUILD`. This allows the source code to know
   whether it is running in CI/CD
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/623
+- LTO support: Allow using LTO/IPO by setting `FSFW_ENABLE_LTO=1`. CMake is able to detect whether
+  the user compiler supports IPO/LPO. LTO is on by default now. Most modern compilers support it,
+  can make good use of it and it usually makes the code faster and/or smaller.
+  After some more research:
+  Enabling LTO will actually cause the compiler to only produce thin LTO by adding 
+  `-flto -fno-fat-lto-objects` to the compiler options. I am not sure this is an ideal choice
+  because if an application linking against the FSFW does not use LTO, there can be compile
+  issues (e.g. observed when compiling the FSFW tests without LTO). This is a known issue as
+  can be seen in the multiple CMake issues for it: 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/22913, 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/16808, 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/21696
+  Easiest solution for now: Keep this option OFF by default.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
 - Added ETL dependency and improved library dependency management
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/592
+- `Subsystem`: New API to add table and sequence entries
 
 ## Fixed
 
+- TCP TMTC Server: `MutexGuard` was not created properly in
+  `TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent)` call.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/618
+- Fix infinite recursion in `prepareHealthSetReply` of PUS Health Service 201.
+  Is not currently used right now but might be used in the future
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/617
 - Move some CMake directives further up top so they are not ignored
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/621
 - Small bugfix in STM32 HAL for SPI
