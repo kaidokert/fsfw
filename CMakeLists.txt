@@ -40,21 +40,17 @@ set(FSFW_FMT_LIB_VERSION v${FSFW_FMT_LIB_MAJOR_VERSION}.1.1 CACHE STRING
   "{fmt} library exact version requirement"
   )
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
-if(NOT IPO_SUPPORTED)
-  message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
+# Keep this off by default for now. See PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
+# for information which keeping this on by default is problematic
+option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" OFF)
+if(FSFW_ENABLE_IPO)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
+  if(NOT IPO_SUPPORTED)
+    message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
+  endif()
 endif()
 
-option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" ON)
-
-include(CheckIPOSupported)
-check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
-if(NOT IPO_SUPPORTED)
-  message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
-endif()
-
-option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" ON)
 option(FSFW_GENERATE_SECTIONS
   "Generate function and data sections. Required to remove unused code" ON
   )
