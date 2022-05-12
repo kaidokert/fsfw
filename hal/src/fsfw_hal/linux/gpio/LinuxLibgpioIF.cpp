@@ -216,7 +216,9 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod
 ReturnValue_t LinuxLibgpioIF::pullHigh(gpioId_t gpioId) {
   gpioMapIter = gpioMap.find(gpioId);
   if (gpioMapIter == gpioMap.end()) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "LinuxLibgpioIF::pullHigh: Unknown GPIO ID " << gpioId << std::endl;
+#endif
     return UNKNOWN_GPIO_ID;
   }
 
