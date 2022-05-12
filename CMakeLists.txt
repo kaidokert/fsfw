@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.13)
 
+set(LIB_FSFW_NAME fsfw)
+project(${LIB_FSFW_NAME})
+
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED True)
+elseif(${CMAKE_CXX_STANDARD} LESS 17)
+    message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++17 support")
+endif()
+
 set(FSFW_VERSION 4)
 set(FSFW_SUBVERSION 0)
 set(FSFW_REVISION 0)
@@ -7,6 +17,7 @@ set(FSFW_REVISION 0)
 # Add the cmake folder so the FindSphinx module is found
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+set(FSFW_ETL_LIB_NAME etl)
 set(FSFW_ETL_LIB_MAJOR_VERSION 20 CACHE STRING
   "ETL library major version requirement"
   )
@@ -22,7 +33,16 @@ set(FSFW_CATCH2_LIB_VERSION v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview5 CACHE
   "Catch2 library exact version requirement"
   )
 
-set(FSFW_ETL_LIB_NAME etl)
+# Keep this off by default for now. See PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
+# for information which keeping this on by default is problematic
+option(FSFW_ENABLE_IPO "Enable interprocedural optimization or link-time optimization if available" OFF)
+if(FSFW_ENABLE_IPO)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_ERROR)
+  if(NOT IPO_SUPPORTED)
+    message(STATUS "FSFW | IPO/LTO not supported: ${IPO_ERROR}")
+  endif()
+endif()
 
 option(FSFW_GENERATE_SECTIONS
   "Generate function and data sections. Required to remove unused code" ON
@@ -55,12 +75,15 @@ option(FSFW_ADD_TMSTORAGE "Compile with tm storage components" OFF)
 # Contrib sources
 option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 
-set(LIB_FSFW_NAME fsfw)
+
 set(FSFW_TEST_TGT fsfw-tests)
 set(FSFW_DUMMY_TGT fsfw-dummy)
 
-project(${LIB_FSFW_NAME})
 add_library(${LIB_FSFW_NAME})
+
+if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
+  set_property(TARGET ${LIB_FSFW_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
 if(FSFW_BUILD_UNITTESTS)
   message(STATUS "Building the FSFW unittests in addition to the static library")
@@ -86,6 +109,9 @@ if(FSFW_BUILD_UNITTESTS)
 
   project(${FSFW_TEST_TGT} CXX C)
   add_executable(${FSFW_TEST_TGT})
+  if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
+    set_property(TARGET ${FSFW_TEST_TGT} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  endif()
 
   if(FSFW_TESTS_GEN_COV)
     message(STATUS "Generating coverage data for the library")
@@ -151,13 +177,6 @@ target_include_directories(${LIB_FSFW_NAME} PRIVATE
 target_include_directories(${LIB_FSFW_NAME} INTERFACE
   ${CMAKE_CURRENT_BINARY_DIR}
   )
-
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 11)
-  set(CMAKE_CXX_STANDARD_REQUIRED True)
-elseif(${CMAKE_CXX_STANDARD} LESS 11)
-  message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++11 support")
-endif()
 
 # Backwards comptability
 if(OS_FSFW AND NOT FSFW_OSAL)
