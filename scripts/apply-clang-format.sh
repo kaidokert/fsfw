@@ -3,7 +3,7 @@ if [[ ! -f README.md ]]; then
 	cd ..
 fi
 
-cmake_fmt="python3 -m cmake-format"
+cmake_fmt="cmake-format"
 if command -v ${cmake_fmt} &> /dev/null; then
 	cmake_fmt_cmd="${cmake_fmt} -i CMakeLists.txt"
 	eval ${cmake_fmt_cmd}
