@@ -303,14 +303,15 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftAct
     return result;
   }
   if (relativeTime == 0) {
-    return RETURN_FAILED;
+    return INVALID_RELATIVE_TIME;
   }
   // TODO further check sanity of the relative time?
 
   // Get request ID
   uint64_t requestId;
-  if (getRequestIdFromData(data, size, requestId) != RETURN_OK) {
-    return RETURN_FAILED;
+  result = getRequestIdFromData(data, size, requestId);
+  if (result != RETURN_OK) {
+    return result;
   }
 
   if (debugMode) {
