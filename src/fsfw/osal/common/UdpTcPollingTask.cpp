@@ -154,7 +154,7 @@ void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
 #endif
   }
 #elif defined(PLATFORM_UNIX)
-  timeval tval {};
+  timeval tval{};
   tval = timevalOperations::toTimeval(timeoutSeconds);
   int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(receptionTimeout));
   if (result == -1) {

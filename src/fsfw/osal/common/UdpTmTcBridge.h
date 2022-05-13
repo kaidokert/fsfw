@@ -29,8 +29,8 @@ class UdpTmTcBridge : public TmTcBridge, public TcpIpBase {
   /* The ports chosen here should not be used by any other process. */
   static const std::string DEFAULT_SERVER_PORT;
 
-  UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination, const std::string& udpServerPort = "",
-                object_id_t tmStoreId = objects::TM_STORE,
+  UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
+                const std::string& udpServerPort = "", object_id_t tmStoreId = objects::TM_STORE,
                 object_id_t tcStoreId = objects::TC_STORE);
   ~UdpTmTcBridge() override;
 

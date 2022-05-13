@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
+- Renamed auto-formatting script to `auto-formatter.sh` and made it more robust.
+  If `cmake-format` is installed, it will also auto-format the `CMakeLists.txt` files now.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/625
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/626
 - Bump C++ required version to C++17. Every project which uses the FSFW and every modern
   compiler supports it
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/622
@@ -72,6 +76,8 @@ https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
 - Added options for CI/CD builds: `FSFW_CICD_BUILD`. This allows the source code to know
   whether it is running in CI/CD
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/623
+- Basic `clion` support: Update `.gitignore` and add some basic run configurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/625
 - LTO support: Allow using LTO/IPO by setting `FSFW_ENABLE_LTO=1`. CMake is able to detect whether
   the user compiler supports IPO/LPO. LTO is on by default now. Most modern compilers support it,
   can make good use of it and it usually makes the code faster and/or smaller.
