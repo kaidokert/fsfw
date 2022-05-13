@@ -5,7 +5,7 @@ fi
 
 cmake_fmt="python3 -m cmake-format"
 if command -v ${cmake_fmt} &> /dev/null
-	cmake_fmt_cmd=${cmake_fmt} -i CMakeLists.txt
+	cmake_fmt_cmd="${cmake_fmt} -i CMakeLists.txt"
 	eval ${cmake_fmt_cmd}
 then
 
