@@ -20,7 +20,7 @@
 const std::string UdpTmTcBridge::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_PORT;
 
 UdpTmTcBridge::UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
-                             const std::string& udpServerPort_, object_id_t tmStoreId,
+                             const std::string &udpServerPort_, object_id_t tmStoreId,
                              object_id_t tcStoreId)
     : TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
   if (udpServerPort_.empty()) {
@@ -118,7 +118,7 @@ ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
 #endif
 
   ssize_t bytesSent = sendto(serverSocket, reinterpret_cast<const char *>(data), dataLen, flags,
-                         &clientAddress, clientAddressLen);
+                             &clientAddress, clientAddressLen);
   if (bytesSent == SOCKET_ERROR) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "TmTcUdpBridge::sendTm: Send operation failed." << std::endl;

@@ -1,6 +1,14 @@
+# PyCharm and CLion
+/.idea/*
+!/.idea/runConfigurations
+!/.idea/cmake.xml
+!/.idea/codeStyles
+
+# Eclipse
 .cproject
 .project
 .settings
 .metadata
 
 /build*
+/cmake-build*
