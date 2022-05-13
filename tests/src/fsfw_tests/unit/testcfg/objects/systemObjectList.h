@@ -21,8 +21,9 @@ enum sourceObjects : uint32_t {
   HK_RECEIVER_MOCK = 22,
   TEST_LOCAL_POOL_OWNER_BASE = 25,
 
-  SHARED_SET_ID = 26
+  SHARED_SET_ID = 26,
 
+  DUMMY_POWER_SWITCHER = 27
 };
 }
 
