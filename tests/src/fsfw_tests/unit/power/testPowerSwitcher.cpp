@@ -67,7 +67,5 @@ TEST_CASE("Power Switcher", "[power-switcher]") {
     REQUIRE(not switcherUsingDummy.active());
   }
 
-  SECTION("More Dummy Tests") {
-
-  }
+  SECTION("More Dummy Tests") {}
 }
