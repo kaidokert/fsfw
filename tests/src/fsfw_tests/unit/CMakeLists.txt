@@ -11,7 +11,10 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
 )
 
 add_subdirectory(testcfg)
+add_subdirectory(mocks)
+
 add_subdirectory(action)
+add_subdirectory(power)
 add_subdirectory(container)
 add_subdirectory(osal)
 add_subdirectory(serialize)
