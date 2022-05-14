@@ -205,3 +205,5 @@ ReturnValue_t CommandExecutor::executeBlocking() {
   }
   return HasReturnvaluesIF::RETURN_OK;
 }
+
+const std::vector<char>& CommandExecutor::getReadVector() const { return readVec; }

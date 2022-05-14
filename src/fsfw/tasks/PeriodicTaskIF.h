@@ -31,7 +31,7 @@ class PeriodicTaskIF {
    * Add an object to the task. The object needs to implement ExecutableObjectIF
    * @return
    */
-  virtual ReturnValue_t addComponent(object_id_t object) {
+  virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode = 0) {
     return HasReturnvaluesIF::RETURN_FAILED;
   };
 
@@ -41,13 +41,15 @@ class PeriodicTaskIF {
    * Add an object to the task.
    * @return
    */
-  virtual ReturnValue_t addComponent(ExecutableObjectIF* object) {
+  virtual ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode = 0) {
     return HasReturnvaluesIF::RETURN_FAILED;
   };
 
   virtual ReturnValue_t sleepFor(uint32_t ms) = 0;
 
   virtual uint32_t getPeriodMs() const = 0;
+
+  virtual bool isEmpty() const = 0;
 };
 
 #endif /* PERIODICTASKIF_H_ */

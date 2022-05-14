@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 #define FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 
-#include <vector>
+#include <set>
 
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/ExecutableObjectIF.h"
@@ -40,7 +40,7 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
    * @param object Id of the object to add.
    * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
    */
-  ReturnValue_t addComponent(object_id_t object) override;
+  ReturnValue_t addComponent(object_id_t object, uint8_t opCode) override;
 
   /**
    * Adds an object to the list of objects to be executed.
@@ -48,14 +48,20 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
    * @param object pointer to the object to add.
    * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
    */
-  ReturnValue_t addComponent(ExecutableObjectIF* object) override;
+  ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) override;
 
   uint32_t getPeriodMs() const override;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
 
+  ReturnValue_t initObjsAfterTaskCreation();
+
+  bool isEmpty() const override;
+
  private:
-  typedef std::vector<ExecutableObjectIF*> ObjectList;  //!< Typedef for the List of objects.
+  //! Typedef for the List of objects. Will contain the objects to execute and their respective
+  //! op codes
+  using ObjectList = std::multiset<std::pair<ExecutableObjectIF*, uint8_t>>;
   /**
    * @brief	This attribute holds a list of objects to be executed.
    */

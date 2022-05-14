@@ -164,3 +164,5 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
 void FixedSlotSequence::addCustomCheck(ReturnValue_t (*customCheckFunction)(const SlotList&)) {
   this->customCheckFunction = customCheckFunction;
 }
+
+bool FixedSlotSequence::isEmpty() const { return slotList.empty(); }

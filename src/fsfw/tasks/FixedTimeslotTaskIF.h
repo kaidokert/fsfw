@@ -30,7 +30,7 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
    * Check whether the sequence is valid and perform all other required
    * initialization steps which are needed after task creation
    */
-  virtual ReturnValue_t checkSequence() const = 0;
+  virtual ReturnValue_t checkSequence() = 0;
 };
 
 #endif /* FRAMEWORK_TASKS_FIXEDTIMESLOTTASKIF_H_ */

@@ -24,15 +24,18 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
   FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, uint32_t periodMs_);
   virtual ~FixedTimeslotTask();
 
-  virtual ReturnValue_t startTask();
+  ReturnValue_t startTask() override;
 
-  virtual ReturnValue_t sleepFor(uint32_t ms);
+  ReturnValue_t sleepFor(uint32_t ms) override;
 
-  virtual uint32_t getPeriodMs() const;
+  uint32_t getPeriodMs() const override;
 
-  virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs, int8_t executionStep);
+  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
+                        int8_t executionStep) override;
 
-  virtual ReturnValue_t checkSequence() const;
+  ReturnValue_t checkSequence() override;
+
+  bool isEmpty() const override;
 
   /**
    * This static function can be used as #deadlineMissedFunc.

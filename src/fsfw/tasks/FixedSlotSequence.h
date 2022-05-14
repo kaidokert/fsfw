@@ -159,6 +159,8 @@ class FixedSlotSequence {
    */
   ReturnValue_t intializeSequenceAfterTaskCreation() const;
 
+  bool isEmpty() const;
+
  protected:
   /**
    * @brief	This list contains all PollingSlot objects, defining order and

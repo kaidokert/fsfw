@@ -14,6 +14,8 @@ FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_, size_t st
 
 FixedTimeslotTask::~FixedTimeslotTask() {}
 
+bool FixedTimeslotTask::isEmpty() const { return pst.isEmpty(); }
+
 void* FixedTimeslotTask::taskEntryPoint(void* arg) {
   // The argument is re-interpreted as PollingTask.
   FixedTimeslotTask* originalTask(reinterpret_cast<FixedTimeslotTask*>(arg));
@@ -50,7 +52,7 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotT
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t FixedTimeslotTask::checkSequence() const { return pst.checkSequence(); }
+ReturnValue_t FixedTimeslotTask::checkSequence() { return pst.checkSequence(); }
 
 void FixedTimeslotTask::taskFunctionality() {
   // Like FreeRTOS pthreads are running as soon as they are created

@@ -22,15 +22,17 @@ class SpiCookie;
  */
 class SpiComIF : public DeviceCommunicationIF, public SystemObject {
  public:
-  static constexpr uint8_t spiRetvalId = CLASS_ID::HAL_SPI;
+  static constexpr dur_millis_t DEFAULT_MUTEX_TIMEOUT = 20;
+
+  static constexpr uint8_t CLASS_ID = CLASS_ID::HAL_SPI;
   static constexpr ReturnValue_t OPENING_FILE_FAILED =
-      HasReturnvaluesIF::makeReturnCode(spiRetvalId, 0);
+      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 0);
   /* Full duplex (ioctl) transfer failure */
   static constexpr ReturnValue_t FULL_DUPLEX_TRANSFER_FAILED =
-      HasReturnvaluesIF::makeReturnCode(spiRetvalId, 1);
+      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 1);
   /* Half duplex (read/write) transfer failure */
   static constexpr ReturnValue_t HALF_DUPLEX_TRANSFER_FAILED =
-      HasReturnvaluesIF::makeReturnCode(spiRetvalId, 2);
+      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 2);
 
   SpiComIF(object_id_t objectId, GpioIF* gpioComIF);
 
@@ -45,6 +47,7 @@ class SpiComIF : public DeviceCommunicationIF, public SystemObject {
    *          the chip select must be driven from outside of the com if.
    */
   MutexIF* getMutex(MutexIF::TimeoutType* timeoutType = nullptr, uint32_t* timeoutMs = nullptr);
+  void setMutexParams(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs);
 
   /**
    * Perform a regular send operation using Linux iotcl. This is public so it can be used
@@ -59,6 +62,23 @@ class SpiComIF : public DeviceCommunicationIF, public SystemObject {
 
   GpioIF* getGpioInterface();
   void setSpiSpeedAndMode(int spiFd, spi::SpiModes mode, uint32_t speed);
+<<<<<<< Updated upstream
+=======
+  void getSpiSpeedAndMode(int spiFd, spi::SpiModes& mode, uint32_t& speed) const;
+
+  /**
+   * This updates the SPI clock default polarity. Only setting the mode does not update
+   * the line state, which can be an issue on mode switches because the clock line will
+   * switch the state after the chip select is pulled low.
+   *
+   * It is recommended to call this function after #setSpiSpeedAndMode and after locking the
+   * CS mutex if the SPI bus has multiple SPI devices with different speed and SPI modes attached.
+   * @param spiFd
+   */
+  void updateLinePolarity(int spiFd);
+
+  const std::string& getSpiDev() const;
+>>>>>>> Stashed changes
   void performSpiWiretapping(SpiCookie* spiCookie);
 
   ReturnValue_t getReadBuffer(address_t spiAddress, uint8_t** buffer);
@@ -73,7 +93,7 @@ class SpiComIF : public DeviceCommunicationIF, public SystemObject {
 
   MutexIF* spiMutex = nullptr;
   MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
-  uint32_t timeoutMs = 20;
+  uint32_t timeoutMs = DEFAULT_MUTEX_TIMEOUT;
   spi_ioc_transfer clockUpdateTransfer = {};
 
   using SpiDeviceMap = std::unordered_map<address_t, SpiInstance>;
