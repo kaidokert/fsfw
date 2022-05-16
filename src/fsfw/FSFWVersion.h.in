@@ -1,9 +1,11 @@
 #ifndef FSFW_VERSION_H_
 #define FSFW_VERSION_H_
 
-// Versioning is kept in project CMakeLists.txt file
-#define FSFW_VERSION_MAJOR @FSFW_VERSION@
-#define FSFW_VERSION_MINOR @FSFW_SUBVERSION@
-#define FSFW_VERSION_REVISION @FSFW_REVISION@
+// Versioning is managed in project CMakeLists.txt file
+static constexpr int FSFW_VERSION_MAJOR = @FSFW_VERSION@;
+static constexpr int FSFW_VERSION_MINOR = @FSFW_SUBVERSION@;
+static constexpr int FSFW_VERSION_REVISION = @FSFW_REVISION@;
+// Also contains CST (Commits since tag) information
+static const char FSFW_VCS_INFO[] = "@FSFW_VCS_INFO@";
 
 #endif /* FSFW_VERSION_H_ */
