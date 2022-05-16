@@ -4,4 +4,5 @@ target_sources(${LIB_FSFW_NAME} PRIVATE
     PowerSensor.cpp
     PowerSwitcher.cpp
     DummyPowerSwitcher.cpp
+    PowerSwitcherComponent.cpp
 )
