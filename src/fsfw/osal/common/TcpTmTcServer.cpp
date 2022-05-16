@@ -161,7 +161,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
 
   while (true) {
     ssize_t retval = recv(connSocket, reinterpret_cast<char*>(receptionBuffer.data()),
-                      receptionBuffer.capacity(), tcpConfig.tcpFlags);
+                          receptionBuffer.capacity(), tcpConfig.tcpFlags);
     if (retval == 0) {
       size_t availableReadData = ringBuffer.getAvailableReadData();
       if (availableReadData > lastRingBufferSize) {
@@ -285,7 +285,7 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) 
       arrayprinter::print(storeAccessor.data(), storeAccessor.size());
     }
     ssize_t retval = send(connSocket, reinterpret_cast<const char*>(storeAccessor.data()),
-                      storeAccessor.size(), tcpConfig.tcpTmFlags);
+                          storeAccessor.size(), tcpConfig.tcpTmFlags);
     if (retval == static_cast<int>(storeAccessor.size())) {
       // Packet sent, clear FIFO entry
       tmtcBridge->tmFifo->pop();
@@ -340,7 +340,7 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
   size_t foundSize = 0;
   size_t readLen = 0;
   while (readLen < readAmount) {
-    if(spacePacketParser == nullptr) {
+    if (spacePacketParser == nullptr) {
       return HasReturnvaluesIF::RETURN_FAILED;
     }
     result =
