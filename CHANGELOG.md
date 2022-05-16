@@ -102,6 +102,9 @@ https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
+- Added generic PUS TC Scheduler Service 11. It depends on the new added Emebeded Template Library
+  (ETL) dependency.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/594
 - Added ETL dependency and improved library dependency management
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/592
 - Add a `DummyPowerSwitcher` module which can be useful for test setups when no PCDU is available
