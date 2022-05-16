@@ -25,6 +25,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
+- Major update for version handling, using `git describe` to fetch version information with git.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/601
+  - Add helper functions provided by [`cmake-modules`](https://github.com/bilke/cmake-modules)
+    manually now. Those should not change too often and only a small subset is needed
+  - Separate folder for easier update and for distinction
+  - LICENSE file included
+  - use `int` for version numbers to allow unset or uninitialized version
+  - Initialize Version object with numbers set to -1
+  - Instead of hardcoding the git hash, it is now retrieved from git
+  - `Version` now allows specifying additional version information like the git SHA1 hash and the
+    versions since the last tag
+  - Additional information is set to the last part of the git describe output for `FSFW_VERSION` now.
+  - Version still need to be hand-updated if the FSFW is not included as a submodule for now.
 - IPC Message Queue Handling: Allow passing an optional `MqArgs` argument into the MessageQueue
   creation call. It allows passing context information and an arbitrary user argument into
   the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
@@ -32,6 +45,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### HAL
 
+- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
 - HAL Linux SPI: Set the Clock Default State when setting new SPI speed
   and mode
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
