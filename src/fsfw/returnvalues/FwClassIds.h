@@ -72,6 +72,7 @@ enum : uint8_t {
   DLE_ENCODER,                    // DLEE
   PUS_SERVICE_3,                  // PUS3
   PUS_SERVICE_9,                  // PUS9
+  PUS_SERVICE_11,                 // PUS11
   FILE_SYSTEM,                    // FILS
   LINUX_OSAL,                     // UXOS
   HAL_SPI,                        // HSPI
