@@ -1,4 +1,1 @@
-target_sources(${LIB_FSFW_NAME} 
-	PRIVATE 
-		TmStoreMessage.cpp
-)
+target_sources(${LIB_FSFW_NAME} PRIVATE TmStoreMessage.cpp)
