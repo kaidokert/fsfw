@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <fstream>
+#include <iostream>
 
 #include "fsfw/container/DynamicFIFO.h"
 #include "fsfw/container/SimpleRingBuffer.h"
@@ -62,7 +63,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   CHECK(readString == cmpString);
   outputBuffer.deleteData(12, true);
 
-  // Issues with CI/CD. Might be replaced with variant using echo
+  // Issues with CI/CD
 #if FSFW_CICD_BUILD == 0
   // Test more complex command
   result = cmdExecutor.load("ping -c 1 localhost", false, false);
@@ -84,10 +85,20 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   REQUIRE(cmdExecutor.getCurrentState() == CommandExecutor::States::IDLE);
   readBytes = 0;
   sizesFifo.retrieve(&readBytes);
+  uint8_t largerReadBuffer[1024] = {};
   // That's about the size of the reply
   bool beTrue = (readBytes > 100) and (readBytes < 400);
+  if (not beTrue) {
+    size_t readLen = outputBuffer.getAvailableReadData();
+    if (readLen > sizeof(largerReadBuffer) - 1) {
+      readLen = sizeof(largerReadBuffer) - 1;
+    }
+    outputBuffer.readData(largerReadBuffer, readLen);
+    std::string readString(reinterpret_cast<char*>(largerReadBuffer));
+    std::cerr << "Catch2 tag cmd-exec: Read " << readBytes << ": " << std::endl;
+    std::cerr << readString << std::endl;
+  }
   REQUIRE(beTrue);
-  uint8_t largerReadBuffer[1024] = {};
   outputBuffer.readData(largerReadBuffer, readBytes);
   // You can also check this output in the debugger
   std::string allTheReply(reinterpret_cast<char*>(largerReadBuffer));
