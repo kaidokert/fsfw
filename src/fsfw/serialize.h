@@ -4,7 +4,7 @@
 #include "src/core/serialize/EndianConverter.h"
 #include "src/core/serialize/SerialArrayListAdapter.h"
 #include "src/core/serialize/SerialBufferAdapter.h"
-#include "src/core/serialize/SerializeElement.h"
 #include "src/core/serialize/SerialLinkedListAdapter.h"
+#include "src/core/serialize/SerializeElement.h"
 
 #endif /* FSFW_INC_FSFW_SERIALIZE_H_ */

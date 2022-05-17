@@ -1,6 +1,11 @@
+target_sources(${LIB_FSFW_NAME} PRIVATE
+    version.cpp
+)
+
 # Core
 
 add_subdirectory(action)
+add_subdirectory(cfdp)
 add_subdirectory(container)
 add_subdirectory(controller)
 add_subdirectory(datapool)

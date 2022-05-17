@@ -1,28 +1,17 @@
 pipeline {
-    agent any
     environment {
-        BUILDDIR = 'build-unittests'
+        BUILDDIR = 'build-tests'
+    }
+    agent {
+        docker { image 'fsfw-ci:d2'}
     }
     stages {
-        stage('Create Docker') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    additionalBuildArgs  '--no-cache'
-                    reuseNode true
-                }
-            }
+        stage('Clean') {
             steps {
                 sh 'rm -rf $BUILDDIR'
             }
         }
         stage('Configure') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
@@ -30,38 +19,20 @@ pipeline {
             }
         }
         stage('Build') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake --build . -j'
+                    sh 'cmake --build . -j4'
                 }
             }
         }
         stage('Unittests') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake --build . -- fsfw-tests_coverage -j'
+                    sh 'cmake --build . -- fsfw-tests_coverage -j4'
                 }
             }
         }
         stage('Valgrind') {
-            agent {
-                dockerfile {
-                    dir 'automation'
-                    reuseNode true
-                }
-            }
             steps {
                 dir(BUILDDIR) {
                     sh 'valgrind --leak-check=full --error-exitcode=1 ./fsfw-tests'

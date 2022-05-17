@@ -1,11 +1,11 @@
 #ifndef COMMON_GPIO_GPIOCOOKIE_H_
 #define COMMON_GPIO_GPIOCOOKIE_H_
 
-#include "GpioIF.h"
-#include "gpioDefinitions.h"
-
 #include <fsfw/devicehandlers/CookieIF.h>
 #include <fsfw/returnvalues/HasReturnvaluesIF.h>
+
+#include "GpioIF.h"
+#include "gpioDefinitions.h"
 
 /**
  * @brief   Cookie for the GpioIF. Allows the GpioIF to determine which
@@ -17,25 +17,24 @@
  *
  * @author 	J. Meier
  */
-class GpioCookie: public CookieIF {
-public:
+class GpioCookie : public CookieIF {
+ public:
+  GpioCookie();
 
-    GpioCookie();
+  virtual ~GpioCookie();
 
-    virtual ~GpioCookie();
+  ReturnValue_t addGpio(gpioId_t gpioId, GpioBase* gpioConfig);
 
-    ReturnValue_t addGpio(gpioId_t gpioId, GpioBase* gpioConfig);
+  /**
+   * @brief	Get map with registered GPIOs.
+   */
+  GpioMap getGpioMap() const;
 
-    /**
-     * @brief	Get map with registered GPIOs.
-     */
-    GpioMap getGpioMap() const;
-
-private:
-    /**
-     * Returns a copy of the internal GPIO map.
-     */
-    GpioMap gpioMap;
+ private:
+  /**
+   * Returns a copy of the internal GPIO map.
+   */
+  GpioMap gpioMap;
 };
 
 #endif /* COMMON_GPIO_GPIOCOOKIE_H_ */

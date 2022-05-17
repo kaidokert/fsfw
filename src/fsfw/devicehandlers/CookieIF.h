@@ -27,8 +27,8 @@ using address_t = uint32_t;
  * @ingroup comm
  */
 class CookieIF {
-public:
-	virtual ~CookieIF() {};
+ public:
+  virtual ~CookieIF(){};
 };
 
 #endif /* FSFW_DEVICEHANDLER_COOKIE_H_ */

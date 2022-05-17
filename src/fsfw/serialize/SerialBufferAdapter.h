@@ -1,8 +1,8 @@
 #ifndef SERIALBUFFERADAPTER_H_
 #define SERIALBUFFERADAPTER_H_
 
-#include "fsfw/serialize/SerializeIF.h"
 #include "fsfw/serialize/SerializeAdapter.h"
+#include "fsfw/serialize/SerializeIF.h"
 
 /**
  * This adapter provides an interface for SerializeIF to serialize or deserialize
@@ -18,61 +18,59 @@
  *
  * \ingroup serialize
  */
-template<typename count_t>
-class SerialBufferAdapter: public SerializeIF {
-public:
+template <typename count_t>
+class SerialBufferAdapter : public SerializeIF {
+ public:
+  /**
+   * Constructor for constant uint8_t buffer. Length field can be serialized optionally.
+   * Type of length can be supplied as template type.
+   * @param buffer
+   * @param bufferLength
+   * @param serializeLength
+   */
+  SerialBufferAdapter(const uint8_t* buffer, count_t bufferLength, bool serializeLength = false);
 
-    /**
-     * Constructor for constant uint8_t buffer. Length field can be serialized optionally.
-     * Type of length can be supplied as template type.
-     * @param buffer
-     * @param bufferLength
-     * @param serializeLength
-     */
-    SerialBufferAdapter(const uint8_t* buffer, count_t bufferLength,
-            bool serializeLength = false);
+  /**
+   * Constructor for non-constant uint8_t buffer.
+   * Length field can be serialized optionally.
+   * Type of length can be supplied as template type.
+   * @param buffer
+   * @param bufferLength
+   * @param serializeLength Length field will be serialized with size count_t
+   */
+  SerialBufferAdapter(uint8_t* buffer, count_t bufferLength, bool serializeLength = false);
 
-    /**
-     * Constructor for non-constant uint8_t buffer.
-     * Length field can be serialized optionally.
-     * Type of length can be supplied as template type.
-     * @param buffer
-     * @param bufferLength
-     * @param serializeLength Length field will be serialized with size count_t
-     */
-    SerialBufferAdapter(uint8_t* buffer, count_t bufferLength,
-            bool serializeLength = false);
+  virtual ~SerialBufferAdapter();
 
-    virtual ~SerialBufferAdapter();
+  virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+                                  Endianness streamEndianness) const override;
 
-    virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-            size_t maxSize, Endianness streamEndianness) const override;
+  virtual size_t getSerializedSize() const override;
 
-    virtual size_t getSerializedSize() const override;
+  /**
+   * @brief This function deserializes a buffer into the member buffer.
+   * @details
+   * If a length field is present, it is ignored, as the size should have
+   * been set in the constructor. If the size is not known beforehand,
+   * consider using SerialFixedArrayListAdapter instead.
+   * @param buffer [out] Resulting buffer
+   * @param size remaining size to deserialize, should be larger than buffer
+   *        + size field size
+   * @param bigEndian
+   * @return
+   */
+  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                                    Endianness streamEndianness) override;
 
-    /**
-     * @brief This function deserializes a buffer into the member buffer.
-     * @details
-     * If a length field is present, it is ignored, as the size should have
-     * been set in the constructor. If the size is not known beforehand,
-     * consider using SerialFixedArrayListAdapter instead.
-     * @param buffer [out] Resulting buffer
-     * @param size remaining size to deserialize, should be larger than buffer
-     *        + size field size
-     * @param bigEndian
-     * @return
-     */
-    virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-            Endianness streamEndianness) override;
+  uint8_t* getBuffer();
+  const uint8_t* getConstBuffer() const;
+  void setBuffer(uint8_t* buffer, count_t bufferLength);
 
-    uint8_t * getBuffer();
-    const uint8_t * getConstBuffer();
-    void setBuffer(uint8_t* buffer, count_t bufferLength);
-private:
-	bool serializeLength = false;
-	const uint8_t *constBuffer = nullptr;
-	uint8_t *buffer = nullptr;
-	count_t bufferLength = 0;
+ private:
+  bool serializeLength = false;
+  const uint8_t* constBuffer = nullptr;
+  uint8_t* buffer = nullptr;
+  count_t bufferLength = 0;
 };
 
 #endif /* SERIALBUFFERADAPTER_H_ */

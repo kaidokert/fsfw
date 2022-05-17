@@ -1,47 +1,43 @@
 #ifndef FSFW_HEALTH_HEALTHTABLE_H_
 #define FSFW_HEALTH_HEALTHTABLE_H_
 
-#include "HealthTableIF.h"
-#include "../objectmanager/SystemObject.h"
-#include "../ipc/MutexIF.h"
 #include <map>
 
+#include "../ipc/MutexIF.h"
+#include "../objectmanager/SystemObject.h"
+#include "HealthTableIF.h"
 
-class HealthTable: public HealthTableIF, public SystemObject {
-public:
-	HealthTable(object_id_t objectid);
-	virtual ~HealthTable();
+class HealthTable : public HealthTableIF, public SystemObject {
+ public:
+  HealthTable(object_id_t objectid);
+  virtual ~HealthTable();
 
-	void setMutexTimeout(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs);
+  void setMutexTimeout(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs);
 
-    /** HealthTableIF overrides */
-    virtual ReturnValue_t registerObject(object_id_t object,
-            HasHealthIF::HealthState initilialState =
-            HasHealthIF::HEALTHY) override;
-    virtual size_t getPrintSize() override;
-    virtual void printAll(uint8_t *pointer, size_t maxSize) override;
+  /** HealthTableIF overrides */
+  virtual ReturnValue_t registerObject(
+      object_id_t object, HasHealthIF::HealthState initilialState = HasHealthIF::HEALTHY) override;
+  virtual size_t getPrintSize() override;
+  virtual void printAll(uint8_t* pointer, size_t maxSize) override;
 
-	/** ManagesHealthIF overrides */
-	virtual bool hasHealth(object_id_t object) override;
-	virtual void setHealth(object_id_t object,
-	        HasHealthIF::HealthState newState) override;
-	virtual HasHealthIF::HealthState getHealth(object_id_t) override;
+  /** ManagesHealthIF overrides */
+  virtual bool hasHealth(object_id_t object) override;
+  virtual void setHealth(object_id_t object, HasHealthIF::HealthState newState) override;
+  virtual HasHealthIF::HealthState getHealth(object_id_t) override;
 
-protected:
-	using HealthMap = std::map<object_id_t, HasHealthIF::HealthState>;
-	using HealthEntry = std::pair<object_id_t, HasHealthIF::HealthState>;
+ protected:
+  using HealthMap = std::map<object_id_t, HasHealthIF::HealthState>;
+  using HealthEntry = std::pair<object_id_t, HasHealthIF::HealthState>;
 
-	MutexIF* mutex;
-	MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
-	uint32_t mutexTimeoutMs = 20;
+  MutexIF* mutex;
+  MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
+  uint32_t mutexTimeoutMs = 20;
 
-	HealthMap healthMap;
+  HealthMap healthMap;
 
-	HealthMap::iterator mapIterator;
+  HealthMap::iterator mapIterator;
 
-	virtual ReturnValue_t iterate(
-	        HealthEntry* value,
-	        bool reset = false) override;
+  virtual ReturnValue_t iterate(HealthEntry* value, bool reset = false) override;
 };
 
 #endif /* FSFW_HEALTH_HEALTHTABLE_H_ */

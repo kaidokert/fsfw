@@ -10,7 +10,7 @@
  */
 namespace addresses {
 	/* Logical addresses have uint32_t datatype */
-	enum logicalAddresses: address_t {
+	enum LogAddr: address_t {
 	};
 }
 

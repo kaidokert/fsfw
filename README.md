@@ -11,9 +11,15 @@ with Airbus Defence and Space GmbH.
 
 ## Quick facts
 
-The framework is designed for systems, which communicate with external devices, perform control loops, receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore, a mode and health system provides control over the states of the software and the controlled devices. In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
+The framework is designed for systems, which communicate with external devices, perform control loops, 
+receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore,
+a mode and health system provides control over the states of the software and the controlled devices.
+In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
 
-The FSFW provides abstraction layers for operating systems to provide a uniform operating system abstraction layer (OSAL). Some components of this OSAL are required internally by the FSFW but is also very useful for developers to implement the same application logic on different operating systems with a uniform interface.
+The FSFW provides abstraction layers for operating systems to provide a uniform operating system
+abstraction layer (OSAL). Some components of this OSAL are required internally by the FSFW but is
+also very useful for developers to implement the same application logic on different operating
+systems with a uniform interface.
 
 Currently, the FSFW provides the following OSALs:
 
@@ -42,8 +48,30 @@ There are some functions like `printChar` which are different depending on the t
 and need to be implemented by the mission developer.
 
 A template configuration folder was provided and can be copied into the project root to have
-a starting point. The [configuration section](doc/README-config.md#top) provides more specific 
+a starting point. The [configuration section](docs/README-config.md#top) provides more specific 
 information about the possible options.
+
+## Prerequisites
+
+The Embedded Template Library (etl) is a dependency of the FSFW which is automatically
+installed and provided by the build system unless the correction version was installed.
+The current recommended version can be found inside the fsfw `CMakeLists.txt` file or by using
+`ccmake` and looking up the `FSFW_ETL_LIB_MAJOR_VERSION` variable.
+
+You can install the ETL library like this. On Linux, it might be necessary to add `sudo` before
+the install call:
+
+```cpp
+git clone https://github.com/ETLCPP/etl
+cd etl
+git checkout <currentRecommendedVersion>
+mkdir build && cd build
+cmake ..
+cmake --install .
+```
+
+It is recommended to install `20.27.2` or newer for the package version handling of
+ETL to work.
 
 ## Adding the library
 
@@ -71,9 +99,9 @@ add and link against the FSFW library in general.
 
 4. Link against the FSFW library
 
-	```cmake
-	target_link_libraries(<YourProjectName> PRIVATE fsfw)
-	```
+   ```cmake
+   target_link_libraries(${YourProjectName} PRIVATE fsfw)
+   ```
 
 5. It should now be possible use the FSFW as a static library from the user code.
 
@@ -83,6 +111,19 @@ The FSFW also has unittests which use the [Catch2 library](https://github.com/ca
 These are built by setting the CMake option `FSFW_BUILD_UNITTESTS` to `ON` or `TRUE`
 from your project `CMakeLists.txt` file or from the command line.
 
+You can install the Catch2 library, which prevents the build system to avoid re-downloading
+the dependency if the unit tests are completely rebuilt. The current recommended version
+can be found inside the fsfw `CMakeLists.txt` file or by using `ccmake` and looking up
+the `FSFW_CATCH2_LIB_VERSION` variable.
+
+```sh
+git clone https://github.com/catchorg/Catch2.git
+cd Catch2
+git checkout <currentRecommendedVersion>
+cmake -Bbuild -H. -DBUILD_TESTING=OFF
+sudo cmake --build build/ --target install
+```
+
 The fsfw-tests binary will be built as part of the static library and dropped alongside it.
 If the unittests are built, the library and the tests will be built with coverage information by
 default. This can be disabled by setting the `FSFW_TESTS_COV_GEN` option to `OFF` or `FALSE`.
@@ -91,7 +132,7 @@ You can use the following commands inside the `fsfw` folder to set up the build 
 
 ```sh
 mkdir build-Unittest && cd build-Unittest
-cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host ..
+cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
 You can also use `-DFSFW_OSAL=linux` on Linux systems.
@@ -107,16 +148,58 @@ cmake --build . -- fsfw-tests_coverage -j
 
 The `coverage.py` script located in the `script` folder can also be used to do this conveniently.
 
+## Building the documentations
+
+The FSFW documentation is built using the tools Sphinx, doxygen and breathe based on the
+instructions provided in  [this blogpost](https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/). If you
+want to do this locally, set up the prerequisites first. This requires a ``python3``
+installation as well. Example here is for Ubuntu.
+
+```sh
+sudo apt-get install doxygen graphviz
+```
+
+And the following Python packages
+
+```sh
+python3 -m pip install sphinx breathe
+```
+
+You can set up a documentation build system using the following commands
+
+```sh
+mkdir build-docs && cd build-docs
+cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..
+```
+
+Then you can generate the documentation using
+
+```sh
+cmake --build . -j
+```
+
+You can find the generated documentation inside the `docs/sphinx` folder inside the build
+folder. Simply open the `index.html` in the webbrowser of your choice.
+
+The `helper.py` script located in the script` folder can also be used to create, build
+and open the documentation conveniently. Try `helper.py -h for more information.
+
+## Formatting the sources
+
+The formatting is done by the `clang-format` tool. The configuration is contained within the
+`.clang-format` file in the repository root. As long as `clang-format` is installed, you
+can run the `apply-clang-format.sh` helper script to format all source files consistently.
+
 ## Index
 
-[1. High-level overview](doc/README-highlevel.md#top) <br>
-[2. Core components](doc/README-core.md#top) <br>
-[3. Configuration](doc/README-config.md#top) <br>
-[4. OSAL overview](doc/README-osal.md#top) <br>
-[5. PUS services](doc/README-pus.md#top) <br>
-[6. Device Handler overview](doc/README-devicehandlers.md#top) <br>
-[7. Controller overview](doc/README-controllers.md#top) <br>
-[8. Local Data Pools](doc/README-localpools.md#top) <br>
+[1. High-level overview](docs/README-highlevel.md#top) <br>
+[2. Core components](docs/README-core.md#top) <br>
+[3. Configuration](docs/README-config.md#top) <br>
+[4. OSAL overview](docs/README-osal.md#top) <br>
+[5. PUS services](docs/README-pus.md#top) <br>
+[6. Device Handler overview](docs/README-devicehandlers.md#top) <br>
+[7. Controller overview](docs/README-controllers.md#top) <br>
+[8. Local Data Pools](docs/README-localpools.md#top) <br>
 
 
 

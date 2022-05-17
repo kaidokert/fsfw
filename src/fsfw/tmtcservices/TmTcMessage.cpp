@@ -2,29 +2,25 @@
 
 #include <cstring>
 
+TmTcMessage::TmTcMessage() { this->messageSize += sizeof(store_address_t); }
 
-TmTcMessage::TmTcMessage() {
-	this->messageSize += sizeof(store_address_t);
-}
-
-TmTcMessage::~TmTcMessage() {
-}
+TmTcMessage::~TmTcMessage() {}
 
 store_address_t TmTcMessage::getStorageId() {
-	store_address_t temp_id;
-	memcpy(&temp_id, this->getData(), sizeof(store_address_t) );
-	return temp_id;
+  store_address_t temp_id;
+  memcpy(&temp_id, this->getData(), sizeof(store_address_t));
+  return temp_id;
 }
 
 TmTcMessage::TmTcMessage(store_address_t storeId) {
-	this->messageSize += sizeof(store_address_t);
-	this->setStorageId(storeId);
+  this->messageSize += sizeof(store_address_t);
+  this->setStorageId(storeId);
 }
 
 size_t TmTcMessage::getMinimumMessageSize() const {
-	return this->HEADER_SIZE + sizeof(store_address_t);
+  return this->HEADER_SIZE + sizeof(store_address_t);
 }
 
 void TmTcMessage::setStorageId(store_address_t storeId) {
-	memcpy(this->getData(), &storeId, sizeof(store_address_t) );
+  memcpy(this->getData(), &storeId, sizeof(store_address_t));
 }

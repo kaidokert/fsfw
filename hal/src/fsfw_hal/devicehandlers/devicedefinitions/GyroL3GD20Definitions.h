@@ -3,6 +3,7 @@
 
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
 #include <fsfw/devicehandlers/DeviceHandlerIF.h>
+
 #include <cstdint>
 
 namespace L3GD20H {
@@ -36,8 +37,8 @@ static constexpr uint8_t SET_Z_ENABLE = 1 << 2;
 static constexpr uint8_t SET_X_ENABLE = 1 << 1;
 static constexpr uint8_t SET_Y_ENABLE = 1;
 
-static constexpr uint8_t CTRL_REG_1_VAL = SET_POWER_NORMAL_MODE | SET_Z_ENABLE |
-		SET_Y_ENABLE | SET_X_ENABLE;
+static constexpr uint8_t CTRL_REG_1_VAL =
+    SET_POWER_NORMAL_MODE | SET_Z_ENABLE | SET_Y_ENABLE | SET_X_ENABLE;
 
 /* Register 2 */
 static constexpr uint8_t EXTERNAL_EDGE_ENB = 1 << 7;
@@ -104,40 +105,29 @@ static constexpr DeviceCommandId_t READ_CTRL_REGS = 2;
 
 static constexpr uint32_t GYRO_DATASET_ID = READ_REGS;
 
-enum GyroPoolIds: lp_id_t {
-    ANG_VELOC_X,
-	ANG_VELOC_Y,
-	ANG_VELOC_Z,
-	TEMPERATURE
+enum GyroPoolIds : lp_id_t { ANG_VELOC_X, ANG_VELOC_Y, ANG_VELOC_Z, TEMPERATURE };
+
+}  // namespace L3GD20H
+
+class GyroPrimaryDataset : public StaticLocalDataSet<5> {
+ public:
+  /** Constructor  for data users like controllers */
+  GyroPrimaryDataset(object_id_t mgmId)
+      : StaticLocalDataSet(sid_t(mgmId, L3GD20H::GYRO_DATASET_ID)) {
+    setAllVariablesReadOnly();
+  }
+
+  /* Angular velocities in degrees per second (DPS) */
+  lp_var_t<float> angVelocX = lp_var_t<float>(sid.objectId, L3GD20H::ANG_VELOC_X, this);
+  lp_var_t<float> angVelocY = lp_var_t<float>(sid.objectId, L3GD20H::ANG_VELOC_Y, this);
+  lp_var_t<float> angVelocZ = lp_var_t<float>(sid.objectId, L3GD20H::ANG_VELOC_Z, this);
+  lp_var_t<float> temperature = lp_var_t<float>(sid.objectId, L3GD20H::TEMPERATURE, this);
+
+ private:
+  friend class GyroHandlerL3GD20H;
+  /** Constructor  for the data creator */
+  GyroPrimaryDataset(HasLocalDataPoolIF* hkOwner)
+      : StaticLocalDataSet(hkOwner, L3GD20H::GYRO_DATASET_ID) {}
 };
-
-}
-
-class GyroPrimaryDataset: public StaticLocalDataSet<5> {
-public:
-
-    /** Constructor  for data users like controllers */
-    GyroPrimaryDataset(object_id_t mgmId):
-        StaticLocalDataSet(sid_t(mgmId, L3GD20H::GYRO_DATASET_ID)) {
-        setAllVariablesReadOnly();
-    }
-
-    /* Angular velocities in degrees per second (DPS) */
-    lp_var_t<float> angVelocX = lp_var_t<float>(sid.objectId,
-            L3GD20H::ANG_VELOC_X, this);
-    lp_var_t<float> angVelocY = lp_var_t<float>(sid.objectId,
-            L3GD20H::ANG_VELOC_Y, this);
-    lp_var_t<float> angVelocZ = lp_var_t<float>(sid.objectId,
-            L3GD20H::ANG_VELOC_Z, this);
-    lp_var_t<float> temperature = lp_var_t<float>(sid.objectId,
-            L3GD20H::TEMPERATURE, this);
-private:
-
-    friend class GyroHandlerL3GD20H;
-    /** Constructor  for the data creator */
-    GyroPrimaryDataset(HasLocalDataPoolIF* hkOwner):
-            StaticLocalDataSet(hkOwner, L3GD20H::GYRO_DATASET_ID) {}
-};
-
 
 #endif /* MISSION_DEVICES_DEVICEDEFINITIONS_GYROL3GD20DEFINITIONS_H_ */

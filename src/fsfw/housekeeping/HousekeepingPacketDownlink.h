@@ -16,23 +16,23 @@
  *  - Housekeeping Data: The rest of the packet will be the serialized housekeeping data. A validity
  *    buffer might be appended at the end, depending on the set configuration.
  */
-class HousekeepingPacketDownlink: public SerialLinkedListAdapter<SerializeIF> {
-public:
-    HousekeepingPacketDownlink(sid_t sid, LocalPoolDataSetBase* dataSetPtr):
-            sourceId(sid.objectId), setId(sid.ownerSetId), hkData(dataSetPtr) {
-        setLinks();
-    }
+class HousekeepingPacketDownlink : public SerialLinkedListAdapter<SerializeIF> {
+ public:
+  HousekeepingPacketDownlink(sid_t sid, LocalPoolDataSetBase* dataSetPtr)
+      : sourceId(sid.objectId), setId(sid.ownerSetId), hkData(dataSetPtr) {
+    setLinks();
+  }
 
-private:
-    void setLinks() {
-        setStart(&sourceId);
-        sourceId.setNext(&setId);
-        setId.setNext(&hkData);
-    }
+ private:
+  void setLinks() {
+    setStart(&sourceId);
+    sourceId.setNext(&setId);
+    setId.setNext(&hkData);
+  }
 
-    SerializeElement<object_id_t> sourceId;
-    SerializeElement<uint32_t> setId;
-    LinkedElement<SerializeIF> hkData;
+  SerializeElement<object_id_t> sourceId;
+  SerializeElement<uint32_t> setId;
+  LinkedElement<SerializeIF> hkData;
 };
 
 #endif /* FRAMEWORK_HOUSEKEEPING_HOUSEKEEPINGPACKETDOWNLINK_H_ */

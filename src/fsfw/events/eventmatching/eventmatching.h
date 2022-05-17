@@ -6,5 +6,4 @@
 #include "ReporterRangeMatcher.h"
 #include "SeverityRangeMatcher.h"
 
-
 #endif /* EVENTMATCHING_H_ */

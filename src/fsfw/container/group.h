@@ -11,5 +11,4 @@
  * as an Adapter to swap the endianness.
  */
 
-
 #endif /* GROUP_H_ */

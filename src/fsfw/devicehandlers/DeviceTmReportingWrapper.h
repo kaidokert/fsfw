@@ -5,23 +5,23 @@
 #include "../objectmanager/SystemObjectIF.h"
 #include "../serialize/SerializeIF.h"
 
-class DeviceTmReportingWrapper: public SerializeIF {
-public:
-	DeviceTmReportingWrapper(object_id_t objectId, ActionId_t actionId,
-			SerializeIF *data);
-	virtual ~DeviceTmReportingWrapper();
+class DeviceTmReportingWrapper : public SerializeIF {
+ public:
+  DeviceTmReportingWrapper(object_id_t objectId, ActionId_t actionId, SerializeIF* data);
+  virtual ~DeviceTmReportingWrapper();
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			size_t maxSize, Endianness streamEndianness) const override;
+  virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+                                  Endianness streamEndianness) const override;
 
-	virtual size_t getSerializedSize() const override;
+  virtual size_t getSerializedSize() const override;
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-			Endianness streamEndianness) override;
-private:
-	object_id_t objectId;
-	ActionId_t actionId;
-	SerializeIF *data;
+  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                                    Endianness streamEndianness) override;
+
+ private:
+  object_id_t objectId;
+  ActionId_t actionId;
+  SerializeIF* data;
 };
 
 #endif /* FSFW_DEVICEHANDLERS_DEVICETMREPORTINGWRAPPER_H_ */

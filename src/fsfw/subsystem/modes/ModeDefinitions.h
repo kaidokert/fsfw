@@ -3,147 +3,110 @@
 
 #include "../../modes/HasModesIF.h"
 #include "../../objectmanager/SystemObjectIF.h"
-#include "../../serialize/SerializeIF.h"
 #include "../../serialize/SerialLinkedListAdapter.h"
+#include "../../serialize/SerializeIF.h"
 
-class ModeListEntry: public SerializeIF, public LinkedElement<ModeListEntry> {
-public:
-	ModeListEntry(): LinkedElement<ModeListEntry>(this) {}
+class ModeListEntry : public SerializeIF, public LinkedElement<ModeListEntry> {
+ public:
+  ModeListEntry() : LinkedElement<ModeListEntry>(this) {}
 
-	uint32_t value1 = 0;
-	uint32_t value2 = 0;
-	uint8_t value3 = 0;
-	uint8_t value4 = 0;
+  uint32_t value1 = 0;
+  uint32_t value2 = 0;
+  uint8_t value3 = 0;
+  uint8_t value4 = 0;
 
-	virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size,
-			size_t maxSize, Endianness streamEndianness) const {
+  virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+                                  Endianness streamEndianness) const {
+    ReturnValue_t result;
 
-		ReturnValue_t result;
+    result = SerializeAdapter::serialize(&value1, buffer, size, maxSize, streamEndianness);
 
-		result = SerializeAdapter::serialize(&value1, buffer, size,
-				maxSize, streamEndianness);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
+    result = SerializeAdapter::serialize(&value2, buffer, size, maxSize, streamEndianness);
 
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
-		result = SerializeAdapter::serialize(&value2, buffer, size,
-				maxSize, streamEndianness);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
+    result = SerializeAdapter::serialize(&value3, buffer, size, maxSize, streamEndianness);
 
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
-		result = SerializeAdapter::serialize(&value3, buffer, size,
-				maxSize, streamEndianness);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
 
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
+    result = SerializeAdapter::serialize(&value4, buffer, size, maxSize, streamEndianness);
 
-		result = SerializeAdapter::serialize(&value4, buffer, size,
-				maxSize, streamEndianness);
+    return result;
+  }
 
-		return result;
+  virtual size_t getSerializedSize() const {
+    return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
+  }
 
-	}
+  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                                    Endianness streamEndianness) {
+    ReturnValue_t result;
 
-	virtual size_t getSerializedSize() const {
-		return sizeof(value1) + sizeof(value2) + sizeof(value3) + sizeof(value4);
-	}
+    result = SerializeAdapter::deSerialize(&value1, buffer, size, streamEndianness);
 
-	virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-	Endianness streamEndianness) {
-		ReturnValue_t result;
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
+    result = SerializeAdapter::deSerialize(&value2, buffer, size, streamEndianness);
 
-		result = SerializeAdapter::deSerialize(&value1, buffer, size,
-				streamEndianness);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
+    result = SerializeAdapter::deSerialize(&value3, buffer, size, streamEndianness);
 
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
-		result = SerializeAdapter::deSerialize(&value2, buffer, size,
-				streamEndianness);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
+    result = SerializeAdapter::deSerialize(&value4, buffer, size, streamEndianness);
 
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
-		result = SerializeAdapter::deSerialize(&value3, buffer, size,
-				streamEndianness);
+    return result;
+  }
 
-		if (result != HasReturnvaluesIF::RETURN_OK) {
-			return result;
-		}
-		result = SerializeAdapter::deSerialize(&value4, buffer, size,
-				streamEndianness);
+  // for Sequences
+  Mode_t getTableId() const { return value1; }
 
-		return result;
-	}
+  void setTableId(Mode_t tableId) { this->value1 = tableId; }
 
-	//for Sequences
-	Mode_t getTableId() const {
-		return value1;
-	}
+  uint8_t getWaitSeconds() const { return value2; }
 
-	void setTableId(Mode_t tableId) {
-		this->value1 = tableId;
-	}
+  void setWaitSeconds(uint8_t waitSeconds) { this->value2 = waitSeconds; }
 
-	uint8_t getWaitSeconds() const {
-		return value2;
-	}
+  bool checkSuccess() const { return value3 == 1; }
 
-	void setWaitSeconds(uint8_t waitSeconds) {
-		this->value2 = waitSeconds;
-	}
+  void setCheckSuccess(bool checkSuccess) { this->value3 = checkSuccess; }
 
-	bool checkSuccess() const {
-		return value3 == 1;
-	}
+  // for Tables
+  object_id_t getObject() const { return value1; }
 
-	void setCheckSuccess(bool checkSuccess) {
-		this->value3 = checkSuccess;
-	}
+  void setObject(object_id_t object) { this->value1 = object; }
 
-	//for Tables
-	object_id_t getObject() const {
-		return value1;
-	}
+  Mode_t getMode() const { return value2; }
 
-	void setObject(object_id_t object) {
-		this->value1 = object;
-	}
+  void setMode(Mode_t mode) { this->value2 = mode; }
 
-	Mode_t getMode() const {
-		return value2;
-	}
+  Submode_t getSubmode() const { return value3; }
 
-	void setMode(Mode_t mode) {
-		this->value2 = mode;
-	}
+  void setSubmode(Submode_t submode) { this->value3 = submode; }
 
-	Submode_t getSubmode() const {
-		return value3;
-	}
+  bool inheritSubmode() const { return value4 == 1; }
 
-	void setSubmode(Submode_t submode) {
-		this->value3 = submode;
-	}
+  void setInheritSubmode(bool inherit) {
+    if (inherit) {
+      value4 = 1;
+    } else {
+      value4 = 0;
+    }
+  }
 
-	bool inheritSubmode() const {
-		return value4 == 1;
-	}
-
-	void setInheritSubmode(bool inherit){
-		if (inherit){
-			value4 = 1;
-		} else {
-			value4 = 0;
-		}
-	}
-
-	bool operator==(ModeListEntry other) {
-		return ((value1 == other.value1) && (value2 == other.value2)
-				&& (value3 == other.value3));
-	}
+  bool operator==(ModeListEntry other) {
+    return ((value1 == other.value1) && (value2 == other.value2) && (value3 == other.value3));
+  }
 };
 
 #endif /* FSFW_SUBSYSTEM_MODES_MODEDEFINITIONS_H_ */

@@ -11,10 +11,12 @@
 
 //! More FSFW related printouts depending on level. Useful for development.
 #define FSFW_VERBOSE_LEVEL              0
-
+           
 //! Can be used to completely disable printouts, even the C stdio ones.
 #if FSFW_CPP_OSTREAM_ENABLED == 0 && FSFW_VERBOSE_LEVEL == 0
     #define FSFW_DISABLE_PRINTOUT       1
+#else
+    #define FSFW_DISABLE_PRINTOUT       0
 #endif
 
 #define FSFW_USE_PUS_C_TELEMETRY        1

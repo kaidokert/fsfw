@@ -1,93 +1,91 @@
 #include "fsfw/datapool/PoolEntry.h"
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/globalfunctions/arrayprinter.h"
-
-#include <cstring>
 #include <algorithm>
+#include <cstring>
+
+#include "fsfw/globalfunctions/arrayprinter.h"
+#include "fsfw/serviceinterface/ServiceInterface.h"
 
 template <typename T>
-PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid ):
-		length(static_cast<uint8_t>(initValue.size())), valid(setValid) {
-	this->address = new T[this->length];
-	if(initValue.size() == 0) {
-		std::memset(this->address, 0, this->getByteSize());
-	}
-	else {
-		std::copy(initValue.begin(), initValue.end(), this->address);
-	}
+PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid)
+    : length(static_cast<uint8_t>(initValue.size())), valid(setValid) {
+  this->address = new T[this->length];
+  if (initValue.size() == 0) {
+    std::memset(this->address, 0, this->getByteSize());
+  } else {
+    std::copy(initValue.begin(), initValue.end(), this->address);
+  }
 }
 
 template <typename T>
-PoolEntry<T>::PoolEntry(T* initValue, uint8_t setLength, bool setValid):
-		length(setLength), valid(setValid) {
-	this->address = new T[this->length];
-	if (initValue != nullptr) {
-		std::memcpy(this->address, initValue, this->getByteSize() );
-	} else {
-		std::memset(this->address, 0, this->getByteSize() );
-	}
+PoolEntry<T>::PoolEntry(T* initValue, uint8_t setLength, bool setValid)
+    : length(setLength), valid(setValid) {
+  this->address = new T[this->length];
+  if (initValue != nullptr) {
+    std::memcpy(this->address, initValue, this->getByteSize());
+  } else {
+    std::memset(this->address, 0, this->getByteSize());
+  }
 }
 
-//As the data pool is global, this dtor is only be called on program exit.
-//Warning! Never copy pool entries!
+// As the data pool is global, this dtor is only be called on program exit.
+// Warning! Never copy pool entries!
 template <typename T>
 PoolEntry<T>::~PoolEntry() {
-	delete[] this->address;
+  delete[] this->address;
 }
 
 template <typename T>
 uint16_t PoolEntry<T>::getByteSize() {
-	return ( sizeof(T) * this->length );
+  return (sizeof(T) * this->length);
 }
 
 template <typename T>
 uint8_t PoolEntry<T>::getSize() {
-	return this->length;
+  return this->length;
 }
 
 template <typename T>
 void* PoolEntry<T>::getRawData() {
-	return this->address;
+  return this->address;
 }
 
 template <typename T>
 void PoolEntry<T>::setValid(bool isValid) {
-	this->valid = isValid;
+  this->valid = isValid;
 }
 
 template <typename T>
 bool PoolEntry<T>::getValid() {
-	return valid;
+  return valid;
 }
 
 template <typename T>
 void PoolEntry<T>::print() {
-	const char* validString = nullptr;
-	if(valid) {
-		validString = "Valid";
-	}
-	else {
-		validString = "Invalid";
-	}
+  const char* validString = nullptr;
+  if (valid) {
+    validString = "Valid";
+  } else {
+    validString = "Invalid";
+  }
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-	 sif::info << "PoolEntry information." << std::endl;
-	 sif::info << "PoolEntry validity: " << validString << std::endl;
+  sif::info << "PoolEntry information." << std::endl;
+  sif::info << "PoolEntry validity: " << validString << std::endl;
 #else
-	 sif::printInfo("PoolEntry information.\n");
-	 sif::printInfo("PoolEntry validity: %s\n", validString);
+  sif::printInfo("PoolEntry information.\n");
+  sif::printInfo("PoolEntry validity: %s\n", validString);
 #endif
-	arrayprinter::print(reinterpret_cast<uint8_t*>(address), getByteSize());
+  arrayprinter::print(reinterpret_cast<uint8_t*>(address), getByteSize());
 }
 
-template<typename T>
+template <typename T>
 inline T* PoolEntry<T>::getDataPtr() {
-	return this->address;
+  return this->address;
 }
 
-template<typename T>
+template <typename T>
 Type PoolEntry<T>::getType() {
-	return PodTypeConversion<T>::type;
+  return PodTypeConversion<T>::type;
 }
 
 template class PoolEntry<uint8_t>;

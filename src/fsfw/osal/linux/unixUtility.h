@@ -6,7 +6,8 @@
 namespace utility {
 
 void printUnixErrorGeneric(const char* const className, const char* const function,
-        const char* const failString, sif::OutputTypes outputType = sif::OutputTypes::OUT_ERROR);
+                           const char* const failString,
+                           sif::OutputTypes outputType = sif::OutputTypes::OUT_ERROR);
 
 }
 

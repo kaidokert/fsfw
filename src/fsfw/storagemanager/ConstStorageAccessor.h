@@ -1,9 +1,10 @@
 #ifndef FSFW_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
 #define FSFW_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_
 
-#include "storeAddress.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
 #include <cstddef>
+
+#include "../returnvalues/HasReturnvaluesIF.h"
+#include "storeAddress.h"
 
 class StorageManagerIF;
 
@@ -19,96 +20,94 @@ class StorageManagerIF;
  * mechanisms to automatically clear storage data.
  */
 class ConstStorageAccessor {
-	//! StorageManager classes have exclusive access to private variables.
-	friend class PoolManager;
-	friend class LocalPool;
-public:
-	/**
-	 * @brief	Simple constructor which takes the store ID of the storage
-	 * 			entry to access.
-	 * @param storeId
-	 */
-	ConstStorageAccessor(store_address_t storeId);
-	ConstStorageAccessor(store_address_t storeId, StorageManagerIF* store);
+  //! StorageManager classes have exclusive access to private variables.
+  friend class PoolManager;
+  friend class LocalPool;
 
-	/**
-	 * @brief 	The destructor in default configuration takes care of
-	 * 			deleting the accessed pool entry and unlocking the mutex
-	 */
-	virtual ~ConstStorageAccessor();
+ public:
+  /**
+   * @brief	Simple constructor which takes the store ID of the storage
+   * 			entry to access.
+   * @param storeId
+   */
+  ConstStorageAccessor(store_address_t storeId);
+  ConstStorageAccessor(store_address_t storeId, StorageManagerIF* store);
 
-	/**
-	 * @brief	Returns a pointer to the read-only data
-	 * @return
-	 */
-	const uint8_t* data() const;
+  /**
+   * @brief 	The destructor in default configuration takes care of
+   * 			deleting the accessed pool entry and unlocking the mutex
+   */
+  virtual ~ConstStorageAccessor();
 
-	/**
-	 * @brief	Copies the read-only data to the supplied pointer
-	 * @param pointer
-	 */
-	virtual ReturnValue_t getDataCopy(uint8_t *pointer, size_t maxSize);
+  /**
+   * @brief	Returns a pointer to the read-only data
+   * @return
+   */
+  const uint8_t* data() const;
 
-	/**
-	 * @brief   Calling this will prevent the Accessor from deleting the data
-	 *          when the destructor is called.
-	 */
-	void release();
+  /**
+   * @brief	Copies the read-only data to the supplied pointer
+   * @param pointer
+   */
+  virtual ReturnValue_t getDataCopy(uint8_t* pointer, size_t maxSize);
 
-	/**
-	 * Get the size of the data
-	 * @return
-	 */
-	size_t size() const;
+  /**
+   * @brief   Calling this will prevent the Accessor from deleting the data
+   *          when the destructor is called.
+   */
+  void release();
 
-	/**
-	 * Get the storage ID.
-	 * @return
-	 */
-	store_address_t getId() const;
+  /**
+   * Get the size of the data
+   * @return
+   */
+  size_t size() const;
 
-	void print() const;
+  /**
+   * Get the storage ID.
+   * @return
+   */
+  store_address_t getId() const;
 
-	/**
-	 * @brief	Move ctor and move assignment allow returning accessors as
-	 * 			a returnvalue. They prevent resource being free prematurely.
-	 * Refer to: https://github.com/MicrosoftDocs/cpp-docs/blob/master/docs/cpp/
-	 * move-constructors-and-move-assignment-operators-cpp.md
-	 * @param
-	 * @return
-	 */
-	ConstStorageAccessor& operator= (ConstStorageAccessor&&);
-	ConstStorageAccessor(ConstStorageAccessor&&);
+  void print() const;
 
-	//! The copy ctor and copy assignemnt should be deleted implicitely
-	//! according to https://foonathan.net/2019/02/special-member-functions/
-	//! but I still deleted them to make it more explicit. (remember rule of 5).
-	ConstStorageAccessor& operator=(const ConstStorageAccessor&) = delete;
-	ConstStorageAccessor(const ConstStorageAccessor&) = delete;
-protected:
-	const uint8_t* constDataPointer = nullptr;
-	store_address_t storeId;
-	size_t size_ = 0;
-	//! Managing pool, has to assign itself.
-	StorageManagerIF* store = nullptr;
-	bool deleteData = true;
+  /**
+   * @brief	Move ctor and move assignment allow returning accessors as
+   * 			a returnvalue. They prevent resource being free prematurely.
+   * Refer to: https://github.com/MicrosoftDocs/cpp-docs/blob/master/docs/cpp/
+   * move-constructors-and-move-assignment-operators-cpp.md
+   * @param
+   * @return
+   */
+  ConstStorageAccessor& operator=(ConstStorageAccessor&&);
+  ConstStorageAccessor(ConstStorageAccessor&&);
 
-	enum class AccessState {
-		UNINIT,
-		ASSIGNED
-	};
-	//! Internal state for safety reasons.
-	AccessState internalState = AccessState::UNINIT;
-	/**
-	 * Used by the pool manager instances to assign themselves to the
-	 * accessor. This is necessary to delete the data when the acessor
-	 * exits the scope ! The internal state will be considered read
-	 * when this function is called, so take care all data is set properly as
-	 * well.
-	 * @param
-	 */
-	void assignStore(StorageManagerIF*);
+  //! The copy ctor and copy assignemnt should be deleted implicitely
+  //! according to https://foonathan.net/2019/02/special-member-functions/
+  //! but I still deleted them to make it more explicit. (remember rule of 5).
+  ConstStorageAccessor& operator=(const ConstStorageAccessor&) = delete;
+  ConstStorageAccessor(const ConstStorageAccessor&) = delete;
+
+ protected:
+  const uint8_t* constDataPointer = nullptr;
+  store_address_t storeId;
+  size_t size_ = 0;
+  //! Managing pool, has to assign itself.
+  StorageManagerIF* store = nullptr;
+  bool deleteData = true;
+
+  enum class AccessState { UNINIT, ASSIGNED };
+  //! Internal state for safety reasons.
+  AccessState internalState = AccessState::UNINIT;
+  /**
+   * Used by the pool manager instances to assign themselves to the
+   * accessor. This is necessary to delete the data when the acessor
+   * exits the scope ! The internal state will be considered read
+   * when this function is called, so take care all data is set properly as
+   * well.
+   * @param
+   */
+  void assignStore(StorageManagerIF*);
 };
-
 
 #endif /* FSFW_STORAGEMANAGER_CONSTSTORAGEACCESSOR_H_ */

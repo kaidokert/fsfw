@@ -1,100 +1,94 @@
 #ifndef FSFW_THERMAL_THERMALMODULE_H_
 #define FSFW_THERMAL_THERMALMODULE_H_
 
-#include "ThermalModuleIF.h"
-#include "tcsDefinitions.h"
-#include "RedundantHeater.h"
+#include <list>
 
 #include "../datapoollocal/LocalPoolDataSetBase.h"
 #include "../datapoollocal/LocalPoolVariable.h"
 #include "../devicehandlers/HealthDevice.h"
 #include "../events/EventReportingProxyIF.h"
-
-#include <list>
-
+#include "RedundantHeater.h"
+#include "ThermalModuleIF.h"
+#include "tcsDefinitions.h"
 
 class PowerSwitchIF;
 
 /**
  * @brief Allows creation of different thermal control domains within a system.
  */
-class ThermalModule: public ThermalModuleIF {
-	friend class ThermalController;
-public:
-	struct Parameters {
-		float heaterOn;
-		float hysteresis;
-	};
+class ThermalModule : public ThermalModuleIF {
+  friend class ThermalController;
 
-	ThermalModule(gp_id_t moduleTemperaturePoolId, gp_id_t currentStatePoolId,
-			gp_id_t targetStatePoolId, LocalPoolDataSetBase *dataSet,
-			Parameters parameters, RedundantHeater::Parameters heaterParameters);
+ public:
+  struct Parameters {
+    float heaterOn;
+    float hysteresis;
+  };
 
-	ThermalModule(gp_id_t moduleTemperaturePoolId,
-			LocalPoolDataSetBase *dataSet);
+  ThermalModule(gp_id_t moduleTemperaturePoolId, gp_id_t currentStatePoolId,
+                gp_id_t targetStatePoolId, LocalPoolDataSetBase *dataSet, Parameters parameters,
+                RedundantHeater::Parameters heaterParameters);
 
-	virtual ~ThermalModule();
+  ThermalModule(gp_id_t moduleTemperaturePoolId, LocalPoolDataSetBase *dataSet);
 
-	void performOperation(uint8_t opCode);
+  virtual ~ThermalModule();
 
-	void performMode(Strategy strategy);
+  void performOperation(uint8_t opCode);
 
-	float getTemperature();
+  void performMode(Strategy strategy);
 
-	void registerSensor(AbstractTemperatureSensor *sensor);
+  float getTemperature();
 
-	void registerComponent(ThermalComponentIF *component,
-			ThermalComponentIF::Priority priority);
+  void registerSensor(AbstractTemperatureSensor *sensor);
 
-	ThermalComponentIF *findComponent(object_id_t objectId);
+  void registerComponent(ThermalComponentIF *component, ThermalComponentIF::Priority priority);
 
-	void initialize(PowerSwitchIF* powerSwitch);
+  ThermalComponentIF *findComponent(object_id_t objectId);
 
-	void setHeating(bool on);
+  void initialize(PowerSwitchIF *powerSwitch);
 
-	virtual void setOutputInvalid();
+  void setHeating(bool on);
 
-protected:
-	enum Informee {
-		ALL, SAFE, NONE
-	};
+  virtual void setOutputInvalid();
 
-	struct ComponentData {
-		ThermalComponentIF *component;
-		ThermalComponentIF::Priority priority;
-		ThermalComponentIF::HeaterRequest request;
-	};
+ protected:
+  enum Informee { ALL, SAFE, NONE };
 
-	Strategy oldStrategy;
+  struct ComponentData {
+    ThermalComponentIF *component;
+    ThermalComponentIF::Priority priority;
+    ThermalComponentIF::HeaterRequest request;
+  };
 
-	float survivalTargetTemp = 0.0;
+  Strategy oldStrategy;
 
-	float targetTemp = 0.0;
+  float survivalTargetTemp = 0.0;
 
-	bool heating = false;
+  float targetTemp = 0.0;
 
-	Parameters parameters;
+  bool heating = false;
 
-	lp_var_t<float> moduleTemperature;
+  Parameters parameters;
 
-	RedundantHeater *heater = nullptr;
+  lp_var_t<float> moduleTemperature;
 
-	lp_var_t<int8_t> currentState;
-	lp_var_t<int8_t> targetState;
+  RedundantHeater *heater = nullptr;
 
-	std::list<AbstractTemperatureSensor *> sensors;
-	std::list<ComponentData> components;
+  lp_var_t<int8_t> currentState;
+  lp_var_t<int8_t> targetState;
 
-	void calculateTemperature();
+  std::list<AbstractTemperatureSensor *> sensors;
+  std::list<ComponentData> components;
 
-	ThermalComponentIF::HeaterRequest letComponentsPerformAndDeciceIfWeNeedToHeat(bool safeOnly);
+  void calculateTemperature();
 
-	void informComponentsAboutHeaterState(bool heaterIsOn,
-			Informee whomToInform);
+  ThermalComponentIF::HeaterRequest letComponentsPerformAndDeciceIfWeNeedToHeat(bool safeOnly);
 
-	bool calculateModuleHeaterRequestAndSetModuleStatus(Strategy strategy);
+  void informComponentsAboutHeaterState(bool heaterIsOn, Informee whomToInform);
 
-	void updateTargetTemperatures(ThermalComponentIF *component, bool isSafe);
+  bool calculateModuleHeaterRequestAndSetModuleStatus(Strategy strategy);
+
+  void updateTargetTemperatures(ThermalComponentIF *component, bool isSafe);
 };
 
 #endif /* FSFW_THERMAL_THERMALMODULE_H_ */
