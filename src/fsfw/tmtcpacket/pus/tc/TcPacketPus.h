@@ -49,6 +49,27 @@ class TcPacketPus : public TcPacketPusBase {
    */
   TcPacketPus(const uint8_t* setData);
 
+  /**
+   * Initializes the Tc Packet header.
+   * @param apid APID used.
+   * @param sequenceCount Sequence Count in the primary header.
+   * @param ack Which acknowledeges are expected from the receiver.
+   * @param service   PUS Service
+   * @param subservice PUS Subservice
+   */
+  void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack, uint8_t service,
+                          uint8_t subservice, pus::PusVersion pusVersion, uint16_t sourceId = 0);
+  /**
+   * Set the application data field by copying the provided data to the application data field.
+   * This function can also update the space packet length
+   * field. To only update the SP length field with empty application data, simply pass 0 as
+   * length of nullptr as data.
+   * @param data
+   * @param len
+   * @param updateSpLenField
+   */
+  void setApplicationData(const uint8_t* data, size_t len,  bool updateSpLenField);
+
   // Base class overrides
   uint8_t getSecondaryHeaderFlag() const override;
   uint8_t getPusVersionNumber() const override;
@@ -64,17 +85,6 @@ class TcPacketPus : public TcPacketPusBase {
 
  protected:
   ReturnValue_t setData(uint8_t* dataPtr, size_t maxSize, void* args = nullptr) override;
-
-  /**
-   * Initializes the Tc Packet header.
-   * @param apid APID used.
-   * @param sequenceCount Sequence Count in the primary header.
-   * @param ack Which acknowledeges are expected from the receiver.
-   * @param service   PUS Service
-   * @param subservice PUS Subservice
-   */
-  void initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack, uint8_t service,
-                          uint8_t subservice, pus::PusVersion pusVersion, uint16_t sourceId = 0);
 
   /**
    * A pointer to a structure which defines the data structure of

@@ -97,3 +97,15 @@ ReturnValue_t TcPacketPus::setData(uint8_t *dataPtr, size_t maxSize, void *args)
   tcData = reinterpret_cast<TcPacketPointer *>(const_cast<uint8_t *>(dataPtr));
   return HasReturnvaluesIF::RETURN_OK;
 }
+
+void TcPacketPus::setApplicationData(const uint8_t *data, size_t len, bool updateSpLenField) {
+  if(data == nullptr) {
+    len = 0;
+  }
+  if(data != nullptr) {
+    std::memcpy(&tcData->appData, data, len);
+  }
+  if(updateSpLenField) {
+    setPacketDataLength(calculateFullPacketLength(len) - sizeof(CCSDSPrimaryHeader) - 1);
+  }
+}
