@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 #define FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 
-#include <set>
+#include <vector>
 
 #include "../../objectmanager/ObjectManagerIF.h"
 #include "../../tasks/ExecutableObjectIF.h"
@@ -61,7 +61,7 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
  private:
   //! Typedef for the List of objects. Will contain the objects to execute and their respective
   //! op codes
-  using ObjectList = std::multiset<std::pair<ExecutableObjectIF*, uint8_t>>;
+  using ObjectList = std::vector<std::pair<ExecutableObjectIF*, uint8_t>>;
   /**
    * @brief	This attribute holds a list of objects to be executed.
    */

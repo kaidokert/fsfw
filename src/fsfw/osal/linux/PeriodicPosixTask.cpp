@@ -1,6 +1,7 @@
 #include "fsfw/osal/linux/PeriodicPosixTask.h"
 
-#include <errno.h>
+#include <set>
+#include <cerrno>
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
@@ -23,7 +24,7 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
   PeriodicPosixTask* originalTask(reinterpret_cast<PeriodicPosixTask*>(arg));
   // The task's functionality is called.
   originalTask->taskFunctionality();
-  return NULL;
+  return nullptr;
 }
 
 ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object, uint8_t opCode) {
@@ -43,7 +44,7 @@ ReturnValue_t PeriodicPosixTask::addComponent(ExecutableObjectIF* object, uint8_
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
-  objectList.emplace(object, opCode);
+  objectList.push_back({object, opCode});
   object->setTaskIF(this);
 
   return HasReturnvaluesIF::RETURN_OK;
