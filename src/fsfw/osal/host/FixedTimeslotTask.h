@@ -73,7 +73,6 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
 
   std::thread mainThread;
   std::atomic<bool> terminateThread{false};
-  TaskDeadlineMissedFunction dlmFunc = nullptr;
 
   //! Polling sequence table which contains the object to execute
   //! and information like the timeslots and the passed execution step.
@@ -89,7 +88,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * It is expressed in clock ticks.
    */
   TaskPeriod period;
-
+  TaskDeadlineMissedFunction dlmFunc = nullptr;
   /**
    * @brief   This is the function executed in the new task's context.
    * @details
@@ -111,7 +110,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    */
   void taskFunctionality();
 
-  bool delayForInterval(chron_ms* previousWakeTimeMs, chron_ms interval);
+  static bool delayForInterval(chron_ms* previousWakeTimeMs, chron_ms interval);
 };
 
 #endif /* FRAMEWORK_OSAL_HOST_FIXEDTIMESLOTTASK_H_ */

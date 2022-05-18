@@ -176,4 +176,4 @@ bool FixedTimeslotTask::delayForInterval(chron_ms* previousWakeTimeMs, const chr
   return false;
 }
 
-bool FixedTimeslotTask::isEmpty() const { return pollingSeqTable.isEmpty() };
+bool FixedTimeslotTask::isEmpty() const { return pollingSeqTable.isEmpty(); }
