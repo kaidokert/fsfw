@@ -4,7 +4,7 @@
 #include "fsfw/osal/freertos/BinarySemaphore.h"
 #include "fsfw/osal/freertos/CountingSemaphUsingTask.h"
 #include "fsfw/osal/freertos/CountingSemaphore.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 SemaphoreFactory* SemaphoreFactory::factoryInstance = nullptr;
 

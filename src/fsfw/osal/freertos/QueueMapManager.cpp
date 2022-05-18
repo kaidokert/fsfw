@@ -30,9 +30,10 @@ ReturnValue_t QueueMapManager::addMessageQueue(QueueHandle_t queue, MessageQueue
                   "inside the map!"
                << std::endl;
 #else
-    sif::printError(
-        "QueueMapManager::addMessageQueue This ID is already "
-        "inside the map!\n");
+    // TODO: FMTLOG
+//    sif::printError(
+//        "QueueMapManager::addMessageQueue This ID is already "
+//        "inside the map!\n");
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -51,8 +52,9 @@ QueueHandle_t QueueMapManager::getMessageQueue(MessageQueueId_t messageQueueId) 
     sif::warning << "QueueMapManager::getQueueHandle: The ID " << messageQueueId
                  << " does not exists in the map!" << std::endl;
 #else
-    sif::printWarning("QueueMapManager::getQueueHandle: The ID %d does not exist in the map!\n",
-                      messageQueueId);
+    // TODO: FMTLOG
+//    sif::printWarning("QueueMapManager::getQueueHandle: The ID %d does not exist in the map!\n",
+//                      messageQueueId);
 #endif
   }
   return nullptr;

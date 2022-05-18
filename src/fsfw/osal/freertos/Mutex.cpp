@@ -1,6 +1,6 @@
 #include "fsfw/osal/freertos/Mutex.h"
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 Mutex::Mutex() {
   handle = xSemaphoreCreateMutex();

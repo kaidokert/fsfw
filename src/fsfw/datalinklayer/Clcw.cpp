@@ -1,6 +1,6 @@
 #include "fsfw/datalinklayer/Clcw.h"
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 Clcw::Clcw() {
   content.raw = 0;

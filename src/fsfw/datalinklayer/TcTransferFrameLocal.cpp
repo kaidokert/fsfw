@@ -3,7 +3,7 @@
 #include <cstring>
 
 #include "fsfw/globalfunctions/CRC.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 TcTransferFrameLocal::TcTransferFrameLocal(bool bypass, bool controlCommand, uint16_t scid,
                                            uint8_t vcId, uint8_t sequenceNumber,

@@ -1,7 +1,7 @@
 #include "fsfw/osal/freertos/BinarySemaphore.h"
 
 #include "fsfw/osal/freertos/TaskManagement.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 BinarySemaphore::BinarySemaphore() {
   handle = xSemaphoreCreateBinary();

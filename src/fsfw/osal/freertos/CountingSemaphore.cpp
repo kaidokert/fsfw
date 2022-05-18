@@ -2,7 +2,7 @@
 
 #include "FreeRTOS.h"
 #include "fsfw/osal/freertos/TaskManagement.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "semphr.h"
 
 // Make sure #define configUSE_COUNTING_SEMAPHORES 1 is set in

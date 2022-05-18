@@ -1,6 +1,6 @@
 #include "fsfw/datalinklayer/TcTransferFrame.h"
 
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 TcTransferFrame::TcTransferFrame() { frame = nullptr; }
 

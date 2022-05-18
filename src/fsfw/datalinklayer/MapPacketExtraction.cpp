@@ -4,7 +4,7 @@
 
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tmtcpacket/SpacePacketBase.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"

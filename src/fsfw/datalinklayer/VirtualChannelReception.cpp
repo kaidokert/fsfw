@@ -8,7 +8,7 @@
 #include "fsfw/datalinklayer/VirtualChannelReception.h"
 
 #include "fsfw/datalinklayer/BCFrame.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 VirtualChannelReception::VirtualChannelReception(uint8_t setChannelId,
                                                  uint8_t setSlidingWindowWidth)

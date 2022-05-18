@@ -2,7 +2,7 @@
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/osal/freertos/QueueMapManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
 MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* args)
     : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, args),
@@ -14,9 +14,10 @@ MessageQueue::MessageQueue(size_t messageDepth, size_t maxMessageSize, MqArgs* a
     sif::error << "Specified Message Depth: " << messageDepth << std::endl;
     sif::error << "Specified Maximum Message Size: " << maxMessageSize << std::endl;
 #else
-    sif::printError("MessageQueue::MessageQueue: Creation failed\n");
-    sif::printError("Specified Message Depth: %d\n", messageDepth);
-    sif::printError("Specified Maximum Message Size: %d\n", maxMessageSize);
+    // TODO: FMTLOG
+//    sif::printError("MessageQueue::MessageQueue: Creation failed\n");
+//    sif::printError("Specified Message Depth: %d\n", messageDepth);
+//    sif::printError("Specified Maximum Message Size: %d\n", maxMessageSize);
 #endif
   }
   QueueMapManager::instance()->addMessageQueue(handle, &id);
