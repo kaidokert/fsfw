@@ -8,12 +8,10 @@
 #include "fsfw/tasks/ExecutableObjectIF.h"
 
 PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_,
-                                     uint32_t period_, void(deadlineMissedFunc_)())
+                                     uint32_t period_, TaskDeadlineMissedFunction dlMissedFunc_)
     : PosixThread(name_, priority_, stackSize_),
-      objectList(),
-      started(false),
-      periodMs(period_),
-      deadlineMissedFunc(deadlineMissedFunc_) {}
+      PeriodicTaskBase(period_, dlMissedFunc_),
+      started(false) {}
 
 PeriodicPosixTask::~PeriodicPosixTask() {
   // Not Implemented
@@ -27,31 +25,8 @@ void* PeriodicPosixTask::taskEntryPoint(void* arg) {
   return nullptr;
 }
 
-ReturnValue_t PeriodicPosixTask::addComponent(object_id_t object, uint8_t opCode) {
-  ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
-  return addComponent(newObject, opCode);
-}
-
-ReturnValue_t PeriodicPosixTask::addComponent(ExecutableObjectIF* object, uint8_t opCode) {
-  if (object == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
-               << " it implements ExecutableObjectIF!" << std::endl;
-#else
-    sif::printError(
-        "PeriodicTask::addComponent: Invalid object. Make sure it "
-        "implements ExecutableObjectIF!\n");
-#endif
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
-  objectList.push_back({object, opCode});
-  object->setTaskIF(this);
-
-  return HasReturnvaluesIF::RETURN_OK;
-}
-
 ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
-  return PosixThread::sleep((uint64_t)ms * 1000000);
+  return PosixThread::sleep(static_cast<uint64_t>(ms * 1000000));
 }
 
 ReturnValue_t PeriodicPosixTask::startTask(void) {
@@ -83,28 +58,4 @@ void PeriodicPosixTask::taskFunctionality(void) {
       }
     }
   }
-}
-
-uint32_t PeriodicPosixTask::getPeriodMs() const { return periodMs; }
-
-bool PeriodicPosixTask::isEmpty() const { return objectList.empty(); }
-
-ReturnValue_t PeriodicPosixTask::initObjsAfterTaskCreation() {
-  std::multiset<ExecutableObjectIF*> uniqueObjects;
-  ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
-  uint32_t count = 0;
-  for (const auto& obj : objectList) {
-    // Ensure that each unique object is initialized once.
-    if (uniqueObjects.find(obj.first) == uniqueObjects.end()) {
-      ReturnValue_t result = obj.first->initializeAfterTaskCreation();
-      if (result != HasReturnvaluesIF::RETURN_OK) {
-        count++;
-        status = result;
-      }
-      uniqueObjects.emplace(obj.first);
-    }
-  }
-  if (count > 0) {
-  }
-  return status;
 }
