@@ -119,17 +119,17 @@ void EventManager::printEvent(EventMessage* message) {
   switch (message->getSeverity()) {
     case severity::INFO: {
 #if FSFW_DEBUG_INFO == 1
-      printUtility(sif::OutputTypes::OUT_INFO, message);
+      printUtility(sif::LogLevel::INFO, message);
 #endif /* DEBUG_INFO_EVENT == 1 */
       break;
     }
     default:
-      printUtility(sif::OutputTypes::OUT_DEBUG, message);
+      printUtility(sif::LogLevel::DEBUG, message);
       break;
   }
 }
 
-void EventManager::printUtility(sif::OutputTypes printType, EventMessage* message) {
+void EventManager::printUtility(sif::LogLevel printType, EventMessage* message) {
   const char* string = 0;
   if (printType == sif::OutputTypes::OUT_INFO) {
     string = translateObject(message->getReporter());

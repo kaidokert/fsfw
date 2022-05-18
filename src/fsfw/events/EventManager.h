@@ -63,7 +63,7 @@ class EventManager : public EventManagerIF, public ExecutableObjectIF, public Sy
 
 #if FSFW_OBJ_EVENT_TRANSLATION == 1
   void printEvent(EventMessage* message);
-  void printUtility(sif::OutputTypes printType, EventMessage* message);
+  void printUtility(sif::LogLevel printType, EventMessage* message);
 #endif
 
   void lockMutex();
