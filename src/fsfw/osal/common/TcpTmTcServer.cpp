@@ -122,7 +122,6 @@ TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
     }
 
     connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
-    // connSocket = accept(listenerTcpSocket, nullptr, nullptr);
 
     if (connSocket == INVALID_SOCKET) {
       handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
