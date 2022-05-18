@@ -1,16 +1,16 @@
 #include "fsfw/osal/linux/PeriodicPosixTask.h"
 
-#include <set>
 #include <cerrno>
+#include <set>
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 
 PeriodicPosixTask::PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_,
-                                     uint32_t period_, TaskDeadlineMissedFunction dlMissedFunc_)
-    : PosixThread(name_, priority_, stackSize_),
-      PeriodicTaskBase(period_, dlMissedFunc_),
+                                     TaskPeriod period_, TaskDeadlineMissedFunction dlMissedFunc_)
+    : PeriodicTaskBase(period_, dlMissedFunc_),
+      posixThread(name_, priority_, stackSize_),
       started(false) {}
 
 PeriodicPosixTask::~PeriodicPosixTask() {
@@ -34,18 +34,19 @@ ReturnValue_t PeriodicPosixTask::startTask(void) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   started = true;
-  PosixThread::createTask(&taskEntryPoint, this);
+  posixThread.createTask(&taskEntryPoint, this);
   return HasReturnvaluesIF::RETURN_OK;
 }
 
 void PeriodicPosixTask::taskFunctionality(void) {
   if (not started) {
-    suspend();
+    posixThread.suspend();
   }
 
   initObjsAfterTaskCreation();
 
-  uint64_t lastWakeTime = getCurrentMonotonicTimeMs();
+  uint64_t lastWakeTime = posixThread.getCurrentMonotonicTimeMs();
+  uint64_t periodMs = getPeriodMs();
   // The task's "infinite" inner loop is entered.
   while (1) {
     for (auto const& objOpCodePair : objectList) {

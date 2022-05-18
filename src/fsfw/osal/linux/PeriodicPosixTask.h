@@ -1,17 +1,15 @@
 #ifndef FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 #define FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_
 
-#include "PosixThread.h"
-
 #include <vector>
 
+#include "PosixThread.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
-#include "fsfw/tasks/PeriodicTaskIF.h"
 #include "fsfw/tasks/PeriodicTaskBase.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
 
-
-class PeriodicPosixTask : public PosixThread, public PeriodicTaskBase {
+class PeriodicPosixTask : public PeriodicTaskBase {
  public:
   /**
    * Create a generic periodic task.
@@ -25,7 +23,7 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskBase {
    * @param period_
    * @param deadlineMissedFunc_
    */
-  PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, uint32_t period_,
+  PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, TaskPeriod period_,
                     void (*deadlineMissedFunc_)());
   virtual ~PeriodicPosixTask();
 
@@ -41,6 +39,7 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskBase {
   ReturnValue_t sleepFor(uint32_t ms) override;
 
  private:
+  PosixThread posixThread;
 
   /**
    * @brief Flag to indicate that the task was started and is allowed to run

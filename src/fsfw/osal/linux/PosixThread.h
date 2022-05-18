@@ -36,6 +36,21 @@ class PosixThread {
   void resume();
 
   /**
+   * @brief     Function that has to be called by derived class because the
+   *        derived class pointer has to be valid as argument.
+   * @details
+   * This function creates a pthread with the given parameters. As the
+   * function requires a pointer to the derived object it has to be called
+   * after the this pointer of the derived object is valid.
+   * Sets the taskEntryPoint as function to be called by new a thread.
+   * @param fnc_ Function which will be executed by the thread.
+   * @param arg_
+   * argument of the taskEntryPoint function, needs to be this pointer
+   * of derived class
+   */
+  void createTask(void* (*fnc_)(void*), void* arg_);
+
+  /**
    * Delay function similar to FreeRtos delayUntil function
    *
    * @param prevoiusWakeTime_ms Needs the previous wake time and returns the next wakeup time
@@ -54,21 +69,6 @@ class PosixThread {
 
  protected:
   pthread_t thread;
-
-  /**
-   * @brief 	Function that has to be called by derived class because the
-   *  		derived class pointer has to be valid as argument.
-   * @details
-   * This function creates a pthread with the given parameters. As the
-   * function requires a pointer to the derived object it has to be called
-   * after the this pointer of the derived object is valid.
-   * Sets the taskEntryPoint as function to be called by new a thread.
-   * @param fnc_ Function which will be executed by the thread.
-   * @param arg_
-   * argument of the taskEntryPoint function, needs to be this pointer
-   * of derived class
-   */
-  void createTask(void* (*fnc_)(void*), void* arg_);
 
  private:
   char name[PTHREAD_MAX_NAMELEN];

@@ -1,10 +1,10 @@
 #ifndef FRAMEWORK_TASK_PERIODICTASKIF_H_
 #define FRAMEWORK_TASK_PERIODICTASKIF_H_
 
+#include <cstddef>
+
 #include "fsfw/objectmanager/SystemObjectIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
-
-#include <cstddef>
 
 /**
  * New version of TaskIF

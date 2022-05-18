@@ -9,8 +9,10 @@ uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = PTHREAD_STACK_MIN;
 
 FixedTimeslotTask::FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_,
-                                     uint32_t periodMs_)
-    : PosixThread(name_, priority_, stackSize_), pst(periodMs_), started(false) {}
+                                     TaskPeriod periodSeconds_)
+    : posixThread(name_, priority_, stackSize_),
+      pst(static_cast<uint32_t>(periodSeconds_ * 1000)),
+      started(false) {}
 
 FixedTimeslotTask::~FixedTimeslotTask() {}
 
@@ -26,7 +28,7 @@ void* FixedTimeslotTask::taskEntryPoint(void* arg) {
 
 ReturnValue_t FixedTimeslotTask::startTask() {
   started = true;
-  createTask(&taskEntryPoint, this);
+  posixThread.createTask(&taskEntryPoint, this);
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -57,13 +59,13 @@ ReturnValue_t FixedTimeslotTask::checkSequence() { return pst.checkSequence(); }
 void FixedTimeslotTask::taskFunctionality() {
   // Like FreeRTOS pthreads are running as soon as they are created
   if (!started) {
-    suspend();
+    posixThread.suspend();
   }
 
   pst.intializeSequenceAfterTaskCreation();
 
   // The start time for the first entry is read.
-  uint64_t lastWakeTime = getCurrentMonotonicTimeMs();
+  uint64_t lastWakeTime = posixThread.getCurrentMonotonicTimeMs();
   uint64_t interval = pst.getIntervalToNextSlotMs();
 
   // The task's "infinite" inner loop is entered.

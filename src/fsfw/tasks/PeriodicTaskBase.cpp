@@ -1,17 +1,15 @@
-#include <fsfw/objectmanager/ObjectManager.h>
 #include "PeriodicTaskBase.h"
+
+#include <fsfw/objectmanager/ObjectManager.h>
 
 #include <set>
 
-PeriodicTaskBase::PeriodicTaskBase(uint32_t periodMs_,
-    TaskDeadlineMissedFunction deadlineMissedFunc_)
-  : periodMs(periodMs_), deadlineMissedFunc(deadlineMissedFunc_) {}
+PeriodicTaskBase::PeriodicTaskBase(TaskPeriod period_, TaskDeadlineMissedFunction dlmFunc_)
+    : period(period), dlmFunc(dlmFunc_) {}
 
-uint32_t PeriodicTaskBase::getPeriodMs() const { return periodMs; }
+uint32_t PeriodicTaskBase::getPeriodMs() const { return static_cast<uint32_t>(period * 1000); }
 
-bool PeriodicTaskBase::isEmpty() const {
-  return objectList.empty();
-}
+bool PeriodicTaskBase::isEmpty() const { return objectList.empty(); }
 
 ReturnValue_t PeriodicTaskBase::initObjsAfterTaskCreation() {
   std::multiset<ExecutableObjectIF*> uniqueObjects;

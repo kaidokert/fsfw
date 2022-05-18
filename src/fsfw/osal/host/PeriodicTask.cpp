@@ -20,8 +20,8 @@
 #endif
 
 PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStackSize setStack,
-                           TaskPeriod setPeriod, void (*setDeadlineMissedFunc)())
-    : started(false), taskName(name), period(setPeriod), deadlineMissedFunc(setDeadlineMissedFunc) {
+                           TaskPeriod setPeriod, TaskDeadlineMissedFunction dlmFunc_)
+    : PeriodicTaskBase(setPeriod, dlmFunc_), started(false), taskName(name) {
   // It is probably possible to set task priorities by using the native
   // task handles for Windows / Linux
   mainThread = std::thread(&PeriodicTask::taskEntryPoint, this, this);
@@ -75,9 +75,7 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 }
 
 void PeriodicTask::taskFunctionality() {
-  for (const auto& object : objectList) {
-    object->initializeAfterTaskCreation();
-  }
+  initObjsAfterTaskCreation();
 
   std::chrono::milliseconds periodChrono(static_cast<uint32_t>(period * 1000));
   auto currentStartTime{std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -89,32 +87,16 @@ void PeriodicTask::taskFunctionality() {
     if (terminateThread.load()) {
       break;
     }
-    for (const auto& object : objectList) {
-      object->performOperation();
+    for (const auto& objectPair : objectList) {
+      objectPair.first->performOperation(objectPair.second);
     }
     if (not delayForInterval(&currentStartTime, periodChrono)) {
-      if (deadlineMissedFunc != nullptr) {
-        this->deadlineMissedFunc();
+      if (dlmFunc != nullptr) {
+        this->dlmFunc();
       }
     }
   }
 }
-
-ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-  ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
-  return addComponent(newObject);
-}
-
-ReturnValue_t PeriodicTask::addComponent(ExecutableObjectIF* object) {
-  if (object == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
-  object->setTaskIF(this);
-  objectList.push_back(object);
-  return HasReturnvaluesIF::RETURN_OK;
-}
-
-uint32_t PeriodicTask::getPeriodMs() const { return period * 1000; }
 
 bool PeriodicTask::delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval) {
   bool shouldDelay = false;

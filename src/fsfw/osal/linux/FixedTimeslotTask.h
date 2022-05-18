@@ -3,11 +3,12 @@
 
 #include <pthread.h>
 
-#include "../../tasks/FixedSlotSequence.h"
-#include "../../tasks/FixedTimeslotTaskIF.h"
 #include "PosixThread.h"
+#include "fsfw/tasks/FixedSlotSequence.h"
+#include "fsfw/tasks/FixedTimeslotTaskIF.h"
+#include "fsfw/tasks/definitions.h"
 
-class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
+class FixedTimeslotTask : public FixedTimeslotTaskIF {
  public:
   /**
    * Create a generic periodic task.
@@ -21,7 +22,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
    * @param period_
    * @param deadlineMissedFunc_
    */
-  FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, uint32_t periodMs_);
+  FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, TaskPeriod periodSeconds_);
   virtual ~FixedTimeslotTask();
 
   ReturnValue_t startTask() override;
@@ -59,6 +60,8 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
   virtual void taskFunctionality();
 
  private:
+  PosixThread posixThread;
+
   /**
    * @brief	This is the entry point in a new thread.
    *

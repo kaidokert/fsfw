@@ -15,14 +15,14 @@ TaskFactory* TaskFactory::instance() { return TaskFactory::factoryInstance; }
 PeriodicTaskIF* TaskFactory::createPeriodicTask(
     TaskName name_, TaskPriority taskPriority_, TaskStackSize stackSize_,
     TaskPeriod periodInSeconds_, TaskDeadlineMissedFunction deadLineMissedFunction_) {
-  return new PeriodicPosixTask(name_, taskPriority_, stackSize_, periodInSeconds_ * 1000,
+  return new PeriodicPosixTask(name_, taskPriority_, stackSize_, periodInSeconds_,
                                deadLineMissedFunction_);
 }
 
 FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(
     TaskName name_, TaskPriority taskPriority_, TaskStackSize stackSize_,
     TaskPeriod periodInSeconds_, TaskDeadlineMissedFunction deadLineMissedFunction_) {
-  return new FixedTimeslotTask(name_, taskPriority_, stackSize_, periodInSeconds_ * 1000);
+  return new FixedTimeslotTask(name_, taskPriority_, stackSize_, periodInSeconds_);
 }
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
