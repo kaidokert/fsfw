@@ -401,33 +401,12 @@ void SpiComIF::setSpiSpeedAndMode(int spiFd, spi::SpiModes mode, uint32_t speed)
   if (retval != 0) {
     utility::handleIoctlError("SpiComIF::setSpiSpeedAndMode: Setting SPI speed failed");
   }
-}
-
-void SpiComIF::getSpiSpeedAndMode(int spiFd, spi::SpiModes& mode, uint32_t& speed) const {
-  uint8_t tmpMode = 0;
-  int retval = ioctl(spiFd, SPI_IOC_RD_MODE, &tmpMode);
-  if (retval != 0) {
-    utility::handleIoctlError("SpiComIF::getSpiSpeedAndMode: Reading SPI mode failed");
-  }
-  mode = static_cast<spi::SpiModes>(tmpMode);
-
-  retval = ioctl(spiFd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
-  if (retval != 0) {
-    utility::handleIoctlError("SpiComIF::getSpiSpeedAndMode: Getting SPI speed failed");
-  }
-}
-
-const std::string& SpiComIF::getSpiDev() const { return dev; }
-
-void SpiComIF::updateLinePolarity(int spiFd) {
+  // This updates the SPI clock default polarity. Only setting the mode does not update
+  // the line state, which can be an issue on mode switches because the clock line will
+  // switch the state after the chip select is pulled low
   clockUpdateTransfer.len = 0;
   retval = ioctl(spiFd, SPI_IOC_MESSAGE(1), &clockUpdateTransfer);
   if (retval != 0) {
     utility::handleIoctlError("SpiComIF::setSpiSpeedAndMode: Updating SPI default clock failed");
   }
-}
-
-void SpiComIF::setMutexParams(MutexIF::TimeoutType timeoutType_, uint32_t timeoutMs_) {
-  timeoutType = timeoutType_;
-  timeoutMs = timeoutMs_;
 }
