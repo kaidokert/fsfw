@@ -22,12 +22,12 @@
 
 FixedTimeslotTask::FixedTimeslotTask(const char* name, TaskPriority setPriority,
                                      TaskStackSize setStack, TaskPeriod setPeriod,
-                                     void (*setDeadlineMissedFunc)())
+                                     TaskDeadlineMissedFunction dlmFunc_)
     : started(false),
-      pollingSeqTable(setPeriod * 1000),
+      pollingSeqTable(static_cast<uint32_t>(setPeriod * 1000)),
       taskName(name),
       period(setPeriod),
-      deadlineMissedFunc(setDeadlineMissedFunc) {
+      dlmFunc(dlmFunc_) {
   // It is propably possible to set task priorities by using the native
   // task handles for Windows / Linux
   mainThread = std::thread(&FixedTimeslotTask::taskEntryPoint, this, this);
@@ -39,7 +39,7 @@ FixedTimeslotTask::FixedTimeslotTask(const char* name, TaskPriority setPriority,
   tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
-FixedTimeslotTask::~FixedTimeslotTask(void) {
+FixedTimeslotTask::~FixedTimeslotTask() {
   // Do not delete objects, we were responsible for ptrs only.
   terminateThread = true;
   if (mainThread.joinable()) {
@@ -48,7 +48,7 @@ FixedTimeslotTask::~FixedTimeslotTask(void) {
 }
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
-  FixedTimeslotTask* originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
+  auto* originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
 
   if (not originalTask->started) {
     // we have to suspend/block here until the task is started.
@@ -114,8 +114,7 @@ void FixedTimeslotTask::taskFunctionality() {
 
 ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotTimeMs,
                                          int8_t executionStep) {
-  ExecutableObjectIF* executableObject =
-      ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
+  auto* executableObject = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
   if (executableObject != nullptr) {
     pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep, executableObject, this);
     return HasReturnvaluesIF::RETURN_OK;
@@ -133,9 +132,9 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotT
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ReturnValue_t FixedTimeslotTask::checkSequence() const { return pollingSeqTable.checkSequence(); }
+ReturnValue_t FixedTimeslotTask::checkSequence() { return pollingSeqTable.checkSequence(); }
 
-uint32_t FixedTimeslotTask::getPeriodMs() const { return period * 1000; }
+uint32_t FixedTimeslotTask::getPeriodMs() const { return static_cast<uint32_t>(period * 1000); }
 
 bool FixedTimeslotTask::delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval) {
   bool shouldDelay = false;
@@ -176,3 +175,5 @@ bool FixedTimeslotTask::delayForInterval(chron_ms* previousWakeTimeMs, const chr
   (*previousWakeTimeMs) = currentStartTime;
   return false;
 }
+
+bool FixedTimeslotTask::isEmpty() const { return pollingSeqTable.isEmpty() };
