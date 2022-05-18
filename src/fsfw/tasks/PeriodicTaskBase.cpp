@@ -9,7 +9,7 @@ PeriodicTaskBase::PeriodicTaskBase(uint32_t periodMs_,
 
 uint32_t PeriodicTaskBase::getPeriodMs() const { return periodMs; }
 
-bool PeriodicTaskBase::isEmpty() const override {
+bool PeriodicTaskBase::isEmpty() const {
   return objectList.empty();
 }
 
