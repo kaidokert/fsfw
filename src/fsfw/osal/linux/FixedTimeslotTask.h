@@ -5,10 +5,10 @@
 
 #include "PosixThread.h"
 #include "fsfw/tasks/FixedSlotSequence.h"
-#include "fsfw/tasks/FixedTimeslotTaskIF.h"
+#include "fsfw/tasks/FixedTimeslotTaskBase.h"
 #include "fsfw/tasks/definitions.h"
 
-class FixedTimeslotTask : public FixedTimeslotTaskIF {
+class FixedTimeslotTask : public FixedTimeslotTaskBase {
  public:
   /**
    * Create a generic periodic task.
@@ -22,21 +22,13 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * @param period_
    * @param deadlineMissedFunc_
    */
-  FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, TaskPeriod periodSeconds_);
-  virtual ~FixedTimeslotTask();
+  FixedTimeslotTask(const char* name_, TaskPriority priority_, size_t stackSize_,
+                    TaskPeriod periodSeconds_, TaskDeadlineMissedFunction dlmFunc_);
+  ~FixedTimeslotTask() override = default;
 
   ReturnValue_t startTask() override;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
-
-  uint32_t getPeriodMs() const override;
-
-  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
-                        int8_t executionStep) override;
-
-  ReturnValue_t checkSequence() override;
-
-  bool isEmpty() const override;
 
   /**
    * This static function can be used as #deadlineMissedFunc.
@@ -57,10 +49,11 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * It links the functionalities provided by FixedSlotSequence with the
    * OS's System Calls to keep the timing of the periods.
    */
-  virtual void taskFunctionality();
+  [[noreturn]] virtual void taskFunctionality();
 
  private:
   PosixThread posixThread;
+  bool started;
 
   /**
    * @brief	This is the entry point in a new thread.
@@ -74,9 +67,6 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * arbitrary data.
    */
   static void* taskEntryPoint(void* arg);
-  FixedSlotSequence pst;
-
-  bool started;
 };
 
 #endif /* FSFW_OSAL_LINUX_FIXEDTIMESLOTTASK_H_ */

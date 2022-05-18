@@ -5,7 +5,7 @@
 #include <cstdint>
 
 using TaskName = const char*;
-using TaskPriority = uint32_t;
+using TaskPriority = int;
 using TaskStackSize = size_t;
 using TaskPeriod = double;
 using TaskDeadlineMissedFunction = void (*)();

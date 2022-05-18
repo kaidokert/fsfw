@@ -35,7 +35,7 @@ class FixedSlotSequence {
    * @brief	The constructor of the FixedSlotSequence object.
    * @param	setLength	The period length, expressed in ms.
    */
-  FixedSlotSequence(uint32_t setLengthMs);
+  explicit FixedSlotSequence(uint32_t setLengthMs);
 
   /**
    * @brief	The destructor of the FixedSlotSequence object.

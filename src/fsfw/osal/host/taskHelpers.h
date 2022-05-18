@@ -7,7 +7,7 @@
 
 namespace tasks {
 
-ReturnValue_t insertTaskName(std::thread::id threadId, std::string taskName);
+ReturnValue_t insertTaskName(std::thread::id threadId, const std::string& taskName);
 std::string getTaskName(std::thread::id threadId);
 
 }  // namespace tasks

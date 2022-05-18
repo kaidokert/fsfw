@@ -24,8 +24,8 @@ class PeriodicPosixTask : public PeriodicTaskBase {
    * @param deadlineMissedFunc_
    */
   PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, TaskPeriod period_,
-                    void (*deadlineMissedFunc_)());
-  virtual ~PeriodicPosixTask();
+                    TaskDeadlineMissedFunction dlmFunc_);
+  ~PeriodicPosixTask() override = default;
 
   /**
    * @brief	The method to start the task.
@@ -54,7 +54,7 @@ class PeriodicPosixTask : public PeriodicTaskBase {
    * will be blocked until the next period. On missing the deadline, the deadlineMissedFunction is
    * executed.
    */
-  virtual void taskFunctionality(void);
+  [[noreturn]] virtual void taskFunctionality();
   /**
    * @brief	This is the entry point in a new thread.
    *

@@ -3,9 +3,7 @@
 #include <chrono>
 #include <thread>
 
-#include "fsfw/ipc/MutexFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/osal/host/FixedTimeslotTask.h"
 #include "fsfw/osal/host/Mutex.h"
 #include "fsfw/osal/host/taskHelpers.h"
 #include "fsfw/platform.h"
@@ -23,11 +21,7 @@
 FixedTimeslotTask::FixedTimeslotTask(const char* name, TaskPriority setPriority,
                                      TaskStackSize setStack, TaskPeriod setPeriod,
                                      TaskDeadlineMissedFunction dlmFunc_)
-    : started(false),
-      pollingSeqTable(static_cast<uint32_t>(setPeriod * 1000)),
-      taskName(name),
-      period(setPeriod),
-      dlmFunc(dlmFunc_) {
+    : FixedTimeslotTaskBase(setPeriod, dlmFunc_), started(false), taskName(name) {
   // It is propably possible to set task priorities by using the native
   // task handles for Windows / Linux
   mainThread = std::thread(&FixedTimeslotTask::taskEntryPoint, this, this);
@@ -80,7 +74,7 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void FixedTimeslotTask::taskFunctionality() {
+[[noreturn]] void FixedTimeslotTask::taskFunctionality() {
   pollingSeqTable.intializeSequenceAfterTaskCreation();
 
   // A local iterator for the Polling Sequence Table is created to
@@ -106,8 +100,11 @@ void FixedTimeslotTask::taskFunctionality() {
       // we need to wait before executing the current slot
       // this gives us the time to wait:
       interval = chron_ms(this->pollingSeqTable.getIntervalToPreviousSlotMs());
-      delayForInterval(&currentStartTime, interval);
-      // TODO deadline missed check
+      if (not delayForInterval(&currentStartTime, interval)) {
+        if (dlmFunc != nullptr) {
+          dlmFunc();
+        }
+      }
     }
   }
 }
@@ -131,10 +128,6 @@ ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotT
 #endif
   return HasReturnvaluesIF::RETURN_FAILED;
 }
-
-ReturnValue_t FixedTimeslotTask::checkSequence() { return pollingSeqTable.checkSequence(); }
-
-uint32_t FixedTimeslotTask::getPeriodMs() const { return static_cast<uint32_t>(period * 1000); }
 
 bool FixedTimeslotTask::delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval) {
   bool shouldDelay = false;
@@ -175,5 +168,3 @@ bool FixedTimeslotTask::delayForInterval(chron_ms* previousWakeTimeMs, const chr
   (*previousWakeTimeMs) = currentStartTime;
   return false;
 }
-
-bool FixedTimeslotTask::isEmpty() const { return pollingSeqTable.isEmpty(); }

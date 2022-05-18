@@ -39,7 +39,7 @@ class PeriodicTask : public PeriodicTaskBase {
    * @brief	Currently, the executed object's lifetime is not coupled with
    * 			the task object's lifetime, so the destructor is empty.
    */
-  virtual ~PeriodicTask(void);
+  ~PeriodicTask() override;
 
   /**
    * @brief	The method to start the task.
@@ -48,9 +48,9 @@ class PeriodicTask : public PeriodicTaskBase {
    * 			The address of the task object is passed as an argument
    * 			to the system call.
    */
-  ReturnValue_t startTask(void);
+  ReturnValue_t startTask() override;
 
-  ReturnValue_t sleepFor(uint32_t ms);
+  ReturnValue_t sleepFor(uint32_t ms) override;
 
  protected:
   using chron_ms = std::chrono::milliseconds;
@@ -81,9 +81,9 @@ class PeriodicTask : public PeriodicTaskBase {
    * the checkAndRestartPeriod system call blocks the task until the next
    *  period. On missing the deadline, the deadlineMissedFunction is executed.
    */
-  void taskFunctionality(void);
+  void taskFunctionality();
 
-  bool delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval);
+  static bool delayForInterval(chron_ms* previousWakeTimeMs, chron_ms interval);
 };
 
-#endif /* PERIODICTASK_H_ */
+#endif /* FRAMEWORK_OSAL_HOST_PERIODICTASK_H_ */

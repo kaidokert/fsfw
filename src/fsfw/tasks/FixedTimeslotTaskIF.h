@@ -11,7 +11,7 @@
  */
 class FixedTimeslotTaskIF : public PeriodicTaskIF {
  public:
-  virtual ~FixedTimeslotTaskIF() {}
+  ~FixedTimeslotTaskIF() override = default;
 
   static constexpr ReturnValue_t SLOT_LIST_EMPTY =
       HasReturnvaluesIF::makeReturnCode(CLASS_ID::FIXED_SLOT_TASK_IF, 0);

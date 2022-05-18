@@ -17,7 +17,7 @@ class PeriodicTaskIF {
   /**
    * @brief	A virtual destructor as it is mandatory for interfaces.
    */
-  virtual ~PeriodicTaskIF() {}
+  virtual ~PeriodicTaskIF() = default;
   /**
    * @brief	With the startTask method, a created task can be started
    *          for the first time.

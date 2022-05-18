@@ -1,11 +1,21 @@
 #include "PeriodicTaskBase.h"
 
-#include <fsfw/objectmanager/ObjectManager.h>
-
 #include <set>
 
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serviceinterface.h"
+
 PeriodicTaskBase::PeriodicTaskBase(TaskPeriod period_, TaskDeadlineMissedFunction dlmFunc_)
-    : period(period), dlmFunc(dlmFunc_) {}
+    : period(period_), dlmFunc(dlmFunc_) {
+  // Hints at configuration error
+  if (PeriodicTaskBase::getPeriodMs() <= 1) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::warning << "Passed task period 0 or smaller than 1 ms" << std::endl;
+#else
+    sif::printWarning("Passed task period 0 or smaller than 1ms\n");
+#endif
+  }
+}
 
 uint32_t PeriodicTaskBase::getPeriodMs() const { return static_cast<uint32_t>(period * 1000); }
 
@@ -32,7 +42,7 @@ ReturnValue_t PeriodicTaskBase::initObjsAfterTaskCreation() {
 }
 
 ReturnValue_t PeriodicTaskBase::addComponent(object_id_t object, uint8_t opCode) {
-  ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
+  auto* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
   return addComponent(newObject, opCode);
 }
 

@@ -3,13 +3,10 @@
 #include <chrono>
 #include <thread>
 
-#include "fsfw/ipc/MutexFactory.h"
-#include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/osal/host/Mutex.h"
 #include "fsfw/osal/host/taskHelpers.h"
 #include "fsfw/platform.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tasks/ExecutableObjectIF.h"
 
 #if defined(PLATFORM_WIN)
 #include <processthreadsapi.h>
@@ -33,7 +30,7 @@ PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStack
   tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
-PeriodicTask::~PeriodicTask(void) {
+PeriodicTask::~PeriodicTask() {
   // Do not delete objects, we were responsible for ptrs only.
   terminateThread = true;
   if (mainThread.joinable()) {
@@ -42,7 +39,7 @@ PeriodicTask::~PeriodicTask(void) {
 }
 
 void PeriodicTask::taskEntryPoint(void* argument) {
-  PeriodicTask* originalTask(reinterpret_cast<PeriodicTask*>(argument));
+  auto* originalTask(reinterpret_cast<PeriodicTask*>(argument));
 
   if (not originalTask->started) {
     // we have to suspend/block here until the task is started.
@@ -80,8 +77,6 @@ void PeriodicTask::taskFunctionality() {
   std::chrono::milliseconds periodChrono(static_cast<uint32_t>(period * 1000));
   auto currentStartTime{std::chrono::duration_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now().time_since_epoch())};
-  auto nextStartTime{currentStartTime};
-
   /* Enter the loop that defines the task behavior. */
   for (;;) {
     if (terminateThread.load()) {

@@ -8,7 +8,7 @@
 
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/tasks/FixedSlotSequence.h"
-#include "fsfw/tasks/FixedTimeslotTaskIF.h"
+#include "fsfw/tasks/FixedTimeslotTaskBase.h"
 #include "fsfw/tasks/definitions.h"
 
 class ExecutableObjectIF;
@@ -19,7 +19,7 @@ class ExecutableObjectIF;
  * @details
  * @ingroup task_handling
  */
-class FixedTimeslotTask : public FixedTimeslotTaskIF {
+class FixedTimeslotTask : public FixedTimeslotTaskBase {
  public:
   /**
    * @brief   Standard constructor of the class.
@@ -57,14 +57,10 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * @param executionStep
    * @return
    */
-  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs, int8_t executionStep) override;
-
-  ReturnValue_t checkSequence() override;
+  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
+                        int8_t executionStep) override;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
-  uint32_t getPeriodMs() const override;
-
-  bool isEmpty() const override;
 
  protected:
   using chron_ms = std::chrono::milliseconds;
@@ -74,21 +70,10 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
   std::thread mainThread;
   std::atomic<bool> terminateThread{false};
 
-  //! Polling sequence table which contains the object to execute
-  //! and information like the timeslots and the passed execution step.
-  FixedSlotSequence pollingSeqTable;
-
   std::condition_variable initCondition;
   std::mutex initMutex;
   std::string taskName;
-  /**
-   * @brief   The period of the task.
-   * @details
-   * The period determines the frequency of the task's execution.
-   * It is expressed in clock ticks.
-   */
-  TaskPeriod period;
-  TaskDeadlineMissedFunction dlmFunc = nullptr;
+
   /**
    * @brief   This is the function executed in the new task's context.
    * @details
@@ -108,7 +93,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * the checkAndRestartPeriod system call blocks the task until the next
    *  period. On missing the deadline, the deadlineMissedFunction is executed.
    */
-  void taskFunctionality();
+  [[noreturn]] void taskFunctionality();
 
   static bool delayForInterval(chron_ms* previousWakeTimeMs, chron_ms interval);
 };
