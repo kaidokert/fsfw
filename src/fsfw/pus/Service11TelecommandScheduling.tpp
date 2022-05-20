@@ -117,8 +117,6 @@ template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivity(
     const uint8_t *data, size_t size) {
   uint32_t timestamp = 0;
-  const uint8_t *initData = data;
-  size_t initSz = size;
   ReturnValue_t result = SerializeAdapter::deSerialize(&timestamp, &data, &size, DEF_END);
   if (result != RETURN_OK) {
     return result;
@@ -143,7 +141,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
 
   // store currentPacket and receive the store address
   store_address_t addr{};
-  if (tcStore->addData(&addr, initData, initSz) != RETURN_OK ||
+  if (tcStore->addData(&addr, data, size) != RETURN_OK ||
       addr.raw == storeId::INVALID_STORE_ADDRESS) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service11TelecommandScheduling::doInsertActivity: Adding data to TC Store failed"
