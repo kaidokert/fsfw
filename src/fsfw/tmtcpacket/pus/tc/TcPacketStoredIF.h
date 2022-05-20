@@ -9,7 +9,7 @@
 
 class TcPacketStoredIF {
  public:
-  virtual ~TcPacketStoredIF(){};
+  virtual ~TcPacketStoredIF()= default;;
 
   /**
    * With this call, the stored packet can be set to another packet in a store. This is useful
