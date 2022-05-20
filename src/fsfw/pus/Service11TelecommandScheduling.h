@@ -45,19 +45,17 @@ class Service11TelecommandScheduling final : public PusServiceBase {
       HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
 
   // The types of PUS-11 subservices
-  enum Subservice : uint8_t {
-    ENABLE_SCHEDULING = 1,
-    DISABLE_SCHEDULING = 2,
-    RESET_SCHEDULING = 3,
-    INSERT_ACTIVITY = 4,
-    DELETE_ACTIVITY = 5,
-    FILTER_DELETE_ACTIVITY = 6,
-    TIMESHIFT_ACTIVITY = 7,
-    FILTER_TIMESHIFT_ACTIVITY = 8,
-    DETAIL_REPORT = 9,
-    TIMEBASE_SCHEDULE_DETAIL_REPORT = 10,
-    TIMESHIFT_ALL_SCHEDULE_ACTIVITIES = 15
-  };
+  enum [[maybe_unused]] Subservice : uint8_t{ENABLE_SCHEDULING = 1,
+                                             DISABLE_SCHEDULING = 2,
+                                             RESET_SCHEDULING = 3,
+                                             INSERT_ACTIVITY = 4,
+                                             DELETE_ACTIVITY = 5,
+                                             FILTER_DELETE_ACTIVITY = 6,
+                                             TIMESHIFT_ACTIVITY = 7,
+                                             FILTER_TIMESHIFT_ACTIVITY = 8,
+                                             DETAIL_REPORT = 9,
+                                             TIMEBASE_SCHEDULE_DETAIL_REPORT = 10,
+                                             TIMESHIFT_ALL_SCHEDULE_ACTIVITIES = 15};
 
   // The types of time windows for TC[11,6] and TC[11,8], as defined in ECSS-E-ST-70-41C,
   // requirement 8.11.3c (p. 507)
@@ -73,7 +71,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
                                  uint16_t releaseTimeMarginSeconds = DEFAULT_RELEASE_TIME_MARGIN,
                                  bool debugMode = false);
 
-  ~Service11TelecommandScheduling();
+  ~Service11TelecommandScheduling() override;
 
   /** PusServiceBase overrides */
   ReturnValue_t handleRequest(uint8_t subservice) override;
@@ -82,8 +80,8 @@ class Service11TelecommandScheduling final : public PusServiceBase {
 
  private:
   struct TelecommandStruct {
-    uint64_t requestId;
-    uint32_t seconds;
+    uint64_t requestId{};
+    uint32_t seconds{};
     store_address_t storeAddr;  // uint16
   };
 
@@ -91,9 +89,6 @@ class Service11TelecommandScheduling final : public PusServiceBase {
 
   // minimum release time offset to insert into schedule
   const uint16_t RELEASE_TIME_MARGIN_SECONDS = 5;
-
-  // the maximum amount of stored TCs is defined here
-  static constexpr uint16_t MAX_STORED_TELECOMMANDS = 500;
 
   bool debugMode = false;
   StorageManagerIF* tcStore = nullptr;
@@ -140,17 +135,6 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   ReturnValue_t doFilterTimeshiftActivity(const uint8_t* data, size_t size);
 
   /**
-   * @brief Deserializes a generic type from a payload buffer by using the FSFW
-   * SerializeAdapter Interface.
-   * @param output Output to be deserialized
-   * @param buf Payload buffer (application data)
-   * @param bufsize Remaining size of payload buffer (application data size)
-   * @return RETURN_OK if successful
-   */
-  template <typename T>
-  ReturnValue_t deserializeViaFsfwInterface(T& output, const uint8_t* buf, size_t bufsize);
-
-  /**
    * @brief Extracts the Request ID from the Application Data of a TC by utilizing a ctor of the
    * class TcPacketPus.
    * NOTE: This only works if the payload data is a TC (e.g. not for TC[11,5] which does not
@@ -177,7 +161,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @param ssc Source Sequence Count
    * @return Request ID
    */
-  uint64_t buildRequestId(uint32_t sourceId, uint16_t apid, uint16_t ssc) const;
+  [[nodiscard]] uint64_t buildRequestId(uint32_t sourceId, uint16_t apid, uint16_t ssc) const;
 
   /**
    * @brief Gets the filter range for filter TCs from a data packet
@@ -194,7 +178,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   /**
    * @brief Prints content of multimap. Use for simple debugging only.
    */
-  void debugPrintMultimapContent(void) const;
+  void debugPrintMultimapContent() const;
 };
 
 #include "Service11TelecommandScheduling.tpp"

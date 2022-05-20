@@ -1,10 +1,11 @@
 #pragma once
 
-#include <fsfw/objectmanager/ObjectManager.h>
-#include <fsfw/serialize/SerializeAdapter.h>
-#include <fsfw/tmtcservices/AcceptsTelecommandsIF.h>
-
 #include <cstddef>
+
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serialize/SerializeAdapter.h"
+#include "fsfw/serviceinterface.h"
+#include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 
 static constexpr auto DEF_END = SerializeIF::Endianness::BIG;
 
@@ -18,7 +19,7 @@ inline Service11TelecommandScheduling<MAX_NUM_TCS>::Service11TelecommandScheduli
       tcRecipient(tcRecipient) {}
 
 template <size_t MAX_NUM_TCS>
-inline Service11TelecommandScheduling<MAX_NUM_TCS>::~Service11TelecommandScheduling() {}
+inline Service11TelecommandScheduling<MAX_NUM_TCS>::~Service11TelecommandScheduling() = default;
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
@@ -404,7 +405,6 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimesh
     // and then insert it again as new entry
     telecommandMap.insert(std::make_pair(tempKey, tempTc));
     shiftedItemsCount++;
-    continue;
   }
 
   if (debugMode) {
@@ -463,9 +463,9 @@ template <size_t MAX_NUM_TCS>
 inline uint64_t Service11TelecommandScheduling<MAX_NUM_TCS>::buildRequestId(uint32_t sourceId,
                                                                             uint16_t apid,
                                                                             uint16_t ssc) const {
-  uint64_t sourceId64 = static_cast<uint64_t>(sourceId);
-  uint64_t apid64 = static_cast<uint64_t>(apid);
-  uint64_t ssc64 = static_cast<uint64_t>(ssc);
+  auto sourceId64 = static_cast<uint64_t>(sourceId);
+  auto apid64 = static_cast<uint64_t>(apid);
+  auto ssc64 = static_cast<uint64_t>(ssc);
 
   return (sourceId64 << 32) | (apid64 << 16) | ssc64;
 }
@@ -483,7 +483,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
   if (typeRaw > 3) {
     return INVALID_TYPE_TIME_WINDOW;
   }
-  TypeOfTimeWindow type = static_cast<TypeOfTimeWindow>(typeRaw);
+  auto type = static_cast<TypeOfTimeWindow>(typeRaw);
 
   // we now have the type of delete activity - so now we set the range to delete,
   // according to the type of time window.
@@ -558,7 +558,10 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
 
   // additional security check, this should never be true
   if (itBegin->first > itEnd->first) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+#else
     sif::printError("11::GetMapFilterFromData: itBegin > itEnd\n");
+#endif
     return RETURN_FAILED;
   }
 
@@ -580,19 +583,22 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleInvalidD
 }
 
 template <size_t MAX_NUM_TCS>
-inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapContent(void) const {
+inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapContent() const {
+  for (const auto &dit : telecommandMap) {
 #if FSFW_DISABLE_PRINTOUT == 0
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
-             << std::endl;
-  sif::debug << "[" << dit->first << "]: Request ID: " << dit->second.requestId << " | "
-             << "Store Address: " << dit->second.storeAddr << std::endl;
+    sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
+               << std::endl;
+    sif::debug << "[" << dit.first << "]: Request ID: " << dit.second.requestId << " | "
+               << "Store Address: " << dit.second.storeAddr.raw << std::endl;
 #else
-  sif::printDebug("Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
-  for (auto dit = telecommandMap.begin(); dit != telecommandMap.end(); ++dit) {
-    sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit->first,
-                    dit->second.requestId, dit->second.storeAddr);
+    sif::printDebug(
+        "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
+    for (auto dit = telecommandMap.begin(); dit != telecommandMap.end(); ++dit) {
+      sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit->first,
+                      dit->second.requestId, dit->second.storeAddr);
+    }
+#endif
+#endif
   }
-#endif
-#endif
 }
