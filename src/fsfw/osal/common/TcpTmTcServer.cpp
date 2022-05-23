@@ -109,8 +109,8 @@ TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
   using namespace tcpip;
   // If a connection is accepted, the corresponding socket will be assigned to the new socket
   socket_t connSocket = 0;
-  // sockaddr clientSockAddr = {};
-  // socklen_t connectorSockAddrLen = 0;
+  sockaddr clientSockAddr = {};
+  socklen_t connectorSockAddrLen = 0;
   int retval = 0;
 
   // Listen for connection requests permanently for lifetime of program
@@ -121,8 +121,7 @@ TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
       continue;
     }
 
-    // connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
-    connSocket = accept(listenerTcpSocket, nullptr, nullptr);
+    connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
 
     if (connSocket == INVALID_SOCKET) {
       handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
@@ -137,6 +136,7 @@ TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
     if (retval != 0) {
       handleError(Protocol::TCP, ErrorSources::SHUTDOWN_CALL);
     }
+
     closeSocket(connSocket);
     connSocket = 0;
   }
