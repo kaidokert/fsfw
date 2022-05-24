@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_
 #define FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_
 
-#include "../ipc/MessageQueueSenderIF.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
 
 /**
  * @brief 	This interface is implemented by classes that are sinks for
@@ -20,7 +20,7 @@ class AcceptsTelecommandsIF {
   /**
    * @brief The virtual destructor as it is mandatory for C++ interfaces.
    */
-  virtual ~AcceptsTelecommandsIF() {}
+  virtual ~AcceptsTelecommandsIF() = default;
   /**
    * @brief	Getter for the service id.
    * @details	Any receiving service (at least any PUS service) shall have a

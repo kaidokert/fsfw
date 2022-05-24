@@ -6,20 +6,20 @@
 #include "fsfw/objectmanager/frameworkObjects.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-StorageManagerIF* TcPacketStoredBase::store = nullptr;
+StorageManagerIF* TcPacketStoredBase::STORE = nullptr;
 
 TcPacketStoredBase::TcPacketStoredBase() {
   this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-  this->checkAndSetStore();
+  TcPacketStoredBase::checkAndSetStore();
 }
 
-TcPacketStoredBase::~TcPacketStoredBase() {}
+TcPacketStoredBase::~TcPacketStoredBase() = default;
 
 ReturnValue_t TcPacketStoredBase::getData(const uint8_t** dataPtr, size_t* dataSize) {
-  auto result = this->store->getData(storeAddress, dataPtr, dataSize);
+  auto result = TcPacketStoredBase::STORE->getData(storeAddress, dataPtr, dataSize);
   if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "TcPacketStoredBase: Could not get data!" << std::endl;
+    sif::warning << "TcPacketStoredBase: Could not get data" << std::endl;
 #else
     sif::printWarning("TcPacketStoredBase: Could not get data!\n");
 #endif
@@ -28,11 +28,13 @@ ReturnValue_t TcPacketStoredBase::getData(const uint8_t** dataPtr, size_t* dataS
 }
 
 bool TcPacketStoredBase::checkAndSetStore() {
-  if (this->store == nullptr) {
-    this->store = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
-    if (this->store == nullptr) {
+  if (TcPacketStoredBase::STORE == nullptr) {
+    TcPacketStoredBase::STORE = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+    if (TcPacketStoredBase::STORE == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "TcPacketStoredBase::TcPacketStoredBase: TC Store not found!" << std::endl;
+      sif::error << "TcPacketStoredBase::TcPacketStoredBase: TC Store not found" << std::endl;
+#else
+      sif::printError("TcPacketStoredBase::TcPacketStoredBase: TC Store not found\n");
 #endif
       return false;
     }
@@ -47,7 +49,7 @@ void TcPacketStoredBase::setStoreAddress(store_address_t setAddress,
   size_t tempSize;
   ReturnValue_t status = StorageManagerIF::RETURN_FAILED;
   if (this->checkAndSetStore()) {
-    status = this->store->getData(this->storeAddress, &tempData, &tempSize);
+    status = TcPacketStoredBase::STORE->getData(this->storeAddress, &tempData, &tempSize);
   }
 
   if (status == StorageManagerIF::RETURN_OK) {
