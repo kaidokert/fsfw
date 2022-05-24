@@ -45,17 +45,19 @@ class Service11TelecommandScheduling final : public PusServiceBase {
       HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
 
   // The types of PUS-11 subservices
-  enum [[maybe_unused]] Subservice : uint8_t{ENABLE_SCHEDULING = 1,
-                                             DISABLE_SCHEDULING = 2,
-                                             RESET_SCHEDULING = 3,
-                                             INSERT_ACTIVITY = 4,
-                                             DELETE_ACTIVITY = 5,
-                                             FILTER_DELETE_ACTIVITY = 6,
-                                             TIMESHIFT_ACTIVITY = 7,
-                                             FILTER_TIMESHIFT_ACTIVITY = 8,
-                                             DETAIL_REPORT = 9,
-                                             TIMEBASE_SCHEDULE_DETAIL_REPORT = 10,
-                                             TIMESHIFT_ALL_SCHEDULE_ACTIVITIES = 15};
+  enum Subservice : uint8_t {
+    ENABLE_SCHEDULING = 1,
+    DISABLE_SCHEDULING = 2,
+    RESET_SCHEDULING = 3,
+    INSERT_ACTIVITY = 4,
+    DELETE_ACTIVITY = 5,
+    FILTER_DELETE_ACTIVITY = 6,
+    TIMESHIFT_ACTIVITY = 7,
+    FILTER_TIMESHIFT_ACTIVITY = 8,
+    DETAIL_REPORT = 9,
+    TIMEBASE_SCHEDULE_DETAIL_REPORT = 10,
+    TIMESHIFT_ALL_SCHEDULE_ACTIVITIES = 15
+  };
 
   // The types of time windows for TC[11,6] and TC[11,8], as defined in ECSS-E-ST-70-41C,
   // requirement 8.11.3c (p. 507)

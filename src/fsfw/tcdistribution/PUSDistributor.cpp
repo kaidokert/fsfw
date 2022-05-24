@@ -48,8 +48,8 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         sif::warning << "PUSDistributor::handlePacket: Packet format invalid, " << keyword
                      << " error" << std::endl;
 #else
-        sif::printWarning(
-            "PUSDistributor::handlePacket: Packet format invalid, %s error\n", keyword);
+        sif::printWarning("PUSDistributor::handlePacket: Packet format invalid, %s error\n",
+                          keyword);
 #endif
 #endif
       }
@@ -131,8 +131,7 @@ ReturnValue_t PUSDistributor::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
-  auto* ccsdsDistributor =
-      ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
+  auto* ccsdsDistributor = ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
   if (ccsdsDistributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PUSDistributor::initialize: Packet source invalid" << std::endl;
