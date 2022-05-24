@@ -94,6 +94,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::performService
           sif::printInfo("Released TC & erased it from TC map\n");
 #endif
         }
+        telecommandMap.erase(it++);
       } else if (deleteExpiredTcWhenDisabled) {
         telecommandMap.erase(it++);
       }
