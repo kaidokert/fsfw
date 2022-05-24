@@ -38,6 +38,17 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
     return handleInvalidData("handleRequest");
   }
   switch (subservice) {
+    case Subservice::ENABLE_SCHEDULING: {
+      schedulingEnabled = true;
+      break;
+    }
+    case Subservice::DISABLE_SCHEDULING: {
+      schedulingEnabled = false;
+      break;
+    }
+    case Subservice::RESET_SCHEDULING: {
+      return handleResetCommand();
+    }
     case Subservice::INSERT_ACTIVITY:
       return doInsertActivity(data, size);
     case Subservice::DELETE_ACTIVITY:
@@ -49,41 +60,42 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
     case Subservice::FILTER_TIMESHIFT_ACTIVITY:
       return doFilterTimeshiftActivity(data, size);
     default:
-      break;
+      return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
-
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return RETURN_OK;
 }
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::performService() {
-  // DEBUG
-  // DebugPrintMultimapContent();
-
+  if (not schedulingEnabled) {
+    return RETURN_OK;
+  }
   // get current time as UNIX timestamp
   timeval tNow = {};
   Clock::getClock_timeval(&tNow);
 
+  // TODO: Optionally limit the max number of released TCs per cycle?
   // NOTE: The iterator is increased in the loop here. Increasing the iterator as for-loop arg
   // does not work in this case as we are deleting the current element here.
   for (auto it = telecommandMap.begin(); it != telecommandMap.end();) {
     if (it->first <= tNow.tv_sec) {
-      // release tc
-      TmTcMessage releaseMsg(it->second.storeAddr);
-      auto sendRet = this->requestQueue->sendMessage(recipientMsgQueueId, &releaseMsg, false);
+      if (schedulingEnabled) {
+        // release tc
+        TmTcMessage releaseMsg(it->second.storeAddr);
+        auto sendRet = this->requestQueue->sendMessage(recipientMsgQueueId, &releaseMsg, false);
 
-      if (sendRet != HasReturnvaluesIF::RETURN_OK) {
-        return sendRet;
-      }
-
-      telecommandMap.erase(it++);
-
-      if (debugMode) {
+        if (sendRet != HasReturnvaluesIF::RETURN_OK) {
+          return sendRet;
+        }
+        if (debugMode) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "Released TC & erased it from TC map" << std::endl;
+          sif::info << "Released TC & erased it from TC map" << std::endl;
 #else
-        sif::printInfo("Released TC & erased it from TC map\n");
+          sif::printInfo("Released TC & erased it from TC map\n");
 #endif
+        }
+      } else if (deleteExpiredTcWhenDisabled) {
+        telecommandMap.erase(it++);
       }
       continue;
     }
@@ -111,6 +123,26 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::initialize() {
   recipientMsgQueueId = tcRecipient->getRequestQueue();
 
   return res;
+}
+
+template <size_t MAX_NUM_TCS>
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleResetCommand() {
+  for (auto it = telecommandMap.begin(); it != telecommandMap.end(); it++) {
+    ReturnValue_t result = tcStore->deleteData(it->second.storeAddr);
+    if (result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+      // This should not happen
+      sif::warning << "Service11TelecommandScheduling::handleRequestDeleting: Deletion failed"
+                   << std::endl;
+#else
+      sif::printWarning("Service11TelecommandScheduling::handleRequestDeleting: Deletion failed\n");
+#endif
+      triggerEvent(TC_DELETION_FAILED, (it->second.requestId >> 32) & 0xffffffff,
+                   it->second.requestId & 0xffffffff);
+    }
+  }
+  telecommandMap.clear();
+  return RETURN_OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -582,7 +614,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleInvalidD
 
 template <size_t MAX_NUM_TCS>
 inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapContent() const {
-  for (const auto &dit : telecommandMap) {
+  for ([[maybe_unused]] const auto &dit : telecommandMap) {
 #if FSFW_DISABLE_PRINTOUT == 0
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
@@ -599,4 +631,14 @@ inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapConte
 #endif
 #endif
   }
+}
+
+template <size_t MAX_NUM_TCS>
+inline void Service11TelecommandScheduling<MAX_NUM_TCS>::enableExpiredTcDeletion() {
+  deleteExpiredTcWhenDisabled = true;
+}
+
+template <size_t MAX_NUM_TCS>
+inline void Service11TelecommandScheduling<MAX_NUM_TCS>::disableExpiredTcDeletion() {
+  deleteExpiredTcWhenDisabled = false;
 }

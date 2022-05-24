@@ -44,6 +44,12 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   static constexpr ReturnValue_t INVALID_RELATIVE_TIME =
       HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
 
+  static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_11;
+
+  //! [EXPORT] : [COMMENT] Deletion of a TC from the map failed.
+  //! P1: First 32 bit of request ID, P2. Last 32 bit of Request ID
+  static constexpr Event TC_DELETION_FAILED = event::makeEvent(SUBSYSTEM_ID, 0, severity::MEDIUM);
+
   // The types of PUS-11 subservices
   enum Subservice : uint8_t {
     ENABLE_SCHEDULING = 1,
@@ -75,6 +81,9 @@ class Service11TelecommandScheduling final : public PusServiceBase {
 
   ~Service11TelecommandScheduling() override;
 
+  void enableExpiredTcDeletion();
+  void disableExpiredTcDeletion();
+
   /** PusServiceBase overrides */
   ReturnValue_t handleRequest(uint8_t subservice) override;
   ReturnValue_t performService() override;
@@ -92,6 +101,11 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   // minimum release time offset to insert into schedule
   const uint16_t RELEASE_TIME_MARGIN_SECONDS = 5;
 
+  /**
+   * By default, the scheduling will be disabled. This is a standard requirement
+   */
+  bool schedulingEnabled = false;
+  bool deleteExpiredTcWhenDisabled = true;
   bool debugMode = false;
   StorageManagerIF* tcStore = nullptr;
   AcceptsTelecommandsIF* tcRecipient = nullptr;
@@ -106,6 +120,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
 
   TelecommandMap telecommandMap;
 
+  ReturnValue_t handleResetCommand();
   /**
    * @brief Logic to be performed on an incoming TC[11,4].
    * @return RETURN_OK if successful
