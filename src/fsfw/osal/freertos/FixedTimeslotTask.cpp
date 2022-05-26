@@ -1,27 +1,25 @@
 #include "fsfw/osal/freertos/FixedTimeslotTask.h"
 
-#include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
+#include "fsfw/serviceinterface.h"
 
-uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
+uint32_t FixedTimeslotTask::MISSED_DEADLINE_COUNT = 0;
+
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;
 
 FixedTimeslotTask::FixedTimeslotTask(TaskName name, TaskPriority setPriority,
-                                     TaskStackSize setStack, TaskPeriod overallPeriod,
-                                     void (*setDeadlineMissedFunc)())
-    : started(false), handle(nullptr), pst(overallPeriod * 1000) {
+                                     TaskStackSize setStack, TaskPeriod period,
+                                     TaskDeadlineMissedFunction dlmFunc_)
+    : FixedTimeslotTaskBase(period, dlmFunc_), started(false), handle(nullptr) {
   configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
   xTaskCreate(taskEntryPoint, name, stackSize, this, setPriority, &handle);
-  // All additional attributes are applied to the object.
-  this->deadlineMissedFunc = setDeadlineMissedFunc;
 }
 
-FixedTimeslotTask::~FixedTimeslotTask() {}
+FixedTimeslotTask::~FixedTimeslotTask() = default;
 
 void FixedTimeslotTask::taskEntryPoint(void* argument) {
   // The argument is re-interpreted as FixedTimeslotTask. The Task object is
   // global, so it is found from any place.
-  FixedTimeslotTask* originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
+  auto* originalTask(reinterpret_cast<FixedTimeslotTask*>(argument));
   /* Task should not start until explicitly requested,
    * but in FreeRTOS, tasks start as soon as they are created if the scheduler
    * is running but not if the scheduler is not running.
@@ -32,21 +30,23 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
    * can continue */
 
   if (not originalTask->started) {
-    vTaskSuspend(NULL);
+    vTaskSuspend(nullptr);
   }
 
   originalTask->taskFunctionality();
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::debug << "Polling task " << originalTask->handle << " returned from taskFunctionality."
              << std::endl;
+#else
+  sif::printDebug("Polling task returned from taskFunctionality\n");
 #endif
 }
 
 void FixedTimeslotTask::missedDeadlineCounter() {
-  FixedTimeslotTask::deadlineMissedCount++;
-  if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
+  FixedTimeslotTask::MISSED_DEADLINE_COUNT++;
+  if (FixedTimeslotTask::MISSED_DEADLINE_COUNT % 10 == 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount << " deadlines."
+    sif::error << "PST missed " << FixedTimeslotTask::MISSED_DEADLINE_COUNT << " deadlines"
                << std::endl;
 #endif
   }
@@ -63,31 +63,12 @@ ReturnValue_t FixedTimeslotTask::startTask() {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotTimeMs,
-                                         int8_t executionStep) {
-  ExecutableObjectIF* handler = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
-  if (handler != nullptr) {
-    pst.addSlot(componentId, slotTimeMs, executionStep, handler, this);
-    return HasReturnvaluesIF::RETURN_OK;
-  }
-
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::error << "Component " << std::hex << componentId << " not found, not adding it to pst"
-             << std::endl;
-#endif
-  return HasReturnvaluesIF::RETURN_FAILED;
-}
-
-uint32_t FixedTimeslotTask::getPeriodMs() const { return pst.getLengthMs(); }
-
-ReturnValue_t FixedTimeslotTask::checkSequence() const { return pst.checkSequence(); }
-
-void FixedTimeslotTask::taskFunctionality() {
+[[noreturn]] void FixedTimeslotTask::taskFunctionality() {
   // A local iterator for the Polling Sequence Table is created to find the
   // start time for the first entry.
-  auto slotListIter = pst.current;
+  auto slotListIter = pollingSeqTable.current;
 
-  pst.intializeSequenceAfterTaskCreation();
+  pollingSeqTable.intializeSequenceAfterTaskCreation();
 
   // The start time for the first entry is read.
   uint32_t intervalMs = slotListIter->pollingTimeMs;
@@ -108,10 +89,10 @@ void FixedTimeslotTask::taskFunctionality() {
   /* Enter the loop that defines the task behavior. */
   for (;;) {
     // The component for this slot is executed and the next one is chosen.
-    this->pst.executeAndAdvance();
-    if (not pst.slotFollowsImmediately()) {
+    this->pollingSeqTable.executeAndAdvance();
+    if (not pollingSeqTable.slotFollowsImmediately()) {
       // Get the interval till execution of the next slot.
-      intervalMs = this->pst.getIntervalToPreviousSlotMs();
+      intervalMs = this->pollingSeqTable.getIntervalToPreviousSlotMs();
       interval = pdMS_TO_TICKS(intervalMs);
 
 #if (tskKERNEL_VERSION_MAJOR == 10 && tskKERNEL_VERSION_MINOR >= 4) || tskKERNEL_VERSION_MAJOR > 10
@@ -132,8 +113,8 @@ void FixedTimeslotTask::taskFunctionality() {
 }
 
 void FixedTimeslotTask::handleMissedDeadline() {
-  if (deadlineMissedFunc != nullptr) {
-    this->deadlineMissedFunc();
+  if (dlmFunc != nullptr) {
+    dlmFunc();
   }
 }
 

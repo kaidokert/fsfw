@@ -5,8 +5,8 @@
 #include "fsfw/tasks/ExecutableObjectIF.h"
 
 PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStackSize setStack,
-                           TaskPeriod setPeriod, TaskDeadlineMissedFunction deadlineMissedFunc)
-    : started(false), handle(NULL), period(setPeriod), deadlineMissedFunc(deadlineMissedFunc) {
+                           TaskPeriod setPeriod, TaskDeadlineMissedFunction dlmFunc_)
+    : PeriodicTaskBase(setStack, dlmFunc_), started(false), handle(nullptr), period(setPeriod) {
   configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
   BaseType_t status = xTaskCreate(taskEntryPoint, name, stackSize, this, setPriority, &handle);
   if (status != pdPASS) {
@@ -18,14 +18,13 @@ PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStack
   }
 }
 
-PeriodicTask::~PeriodicTask(void) {
-  // Do not delete objects, we were responsible for ptrs only.
-}
+// Do not delete objects, we were responsible for ptrs only.
+PeriodicTask::~PeriodicTask() = default;
 
 void PeriodicTask::taskEntryPoint(void* argument) {
   // The argument is re-interpreted as PeriodicTask. The Task object is
   // global, so it is found from any place.
-  PeriodicTask* originalTask(reinterpret_cast<PeriodicTask*>(argument));
+  auto* originalTask(reinterpret_cast<PeriodicTask*>(argument));
   /* Task should not start until explicitly requested,
    * but in FreeRTOS, tasks start as soon as they are created if the scheduler
    * is running but not if the scheduler is not running.
@@ -36,7 +35,7 @@ void PeriodicTask::taskEntryPoint(void* argument) {
    * can continue */
 
   if (not originalTask->started) {
-    vTaskSuspend(NULL);
+    vTaskSuspend(nullptr);
   }
 
   originalTask->taskFunctionality();
@@ -62,7 +61,7 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void PeriodicTask::taskFunctionality() {
+[[noreturn]] void PeriodicTask::taskFunctionality() {
   TickType_t xLastWakeTime;
   const TickType_t xPeriod = pdMS_TO_TICKS(this->period * 1000.);
 
@@ -95,32 +94,10 @@ void PeriodicTask::taskFunctionality() {
   }
 }
 
-ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-  ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
-  return addComponent(newObject);
-}
-
-ReturnValue_t PeriodicTask::addComponent(ExecutableObjectIF* object) {
-  if (object == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
-                  "it implement ExecutableObjectIF"
-               << std::endl;
-#endif
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
-  objectList.push_back(object);
-  object->setTaskIF(this);
-
-  return HasReturnvaluesIF::RETURN_OK;
-}
-
-uint32_t PeriodicTask::getPeriodMs() const { return period * 1000; }
-
 TaskHandle_t PeriodicTask::getTaskHandle() { return handle; }
 
 void PeriodicTask::handleMissedDeadline() {
-  if (deadlineMissedFunc != nullptr) {
-    this->deadlineMissedFunc();
+  if (dlmFunc != nullptr) {
+    dlmFunc();
   }
 }

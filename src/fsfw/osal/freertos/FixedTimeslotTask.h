@@ -4,11 +4,11 @@
 #include "FreeRTOS.h"
 #include "FreeRTOSTaskIF.h"
 #include "fsfw/tasks/FixedSlotSequence.h"
-#include "fsfw/tasks/FixedTimeslotTaskIF.h"
-#include "fsfw/tasks/Typedef.h"
+#include "fsfw/tasks/FixedTimeslotTaskBase.h"
+#include "fsfw/tasks/definitions.h"
 #include "task.h"
 
-class FixedTimeslotTask : public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
+class FixedTimeslotTask : public FixedTimeslotTaskBase, public FreeRTOSTaskIF {
  public:
   /**
    * Keep in mind that you need to call before vTaskStartScheduler()!
@@ -23,7 +23,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
    * @return Pointer to the newly created task.
    */
   FixedTimeslotTask(TaskName name, TaskPriority setPriority, TaskStackSize setStack,
-                    TaskPeriod overallPeriod, void (*setDeadlineMissedFunc)());
+                    TaskPeriod overallPeriod, TaskDeadlineMissedFunction dlmFunc);
 
   /**
    * @brief	The destructor of the class.
@@ -32,9 +32,9 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
    * initialization for the PST and the device handlers. This is done by
    * calling the PST's destructor.
    */
-  virtual ~FixedTimeslotTask(void);
+  ~FixedTimeslotTask() override;
 
-  ReturnValue_t startTask(void);
+  ReturnValue_t startTask() override;
   /**
    * This static function can be used as #deadlineMissedFunc.
    * It counts missedDeadlines and prints the number of missed deadlines
@@ -44,14 +44,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
   /**
    * A helper variable to count missed deadlines.
    */
-  static uint32_t deadlineMissedCount;
-
-  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
-                        int8_t executionStep) override;
-
-  uint32_t getPeriodMs() const override;
-
-  ReturnValue_t checkSequence() const override;
+  static uint32_t MISSED_DEADLINE_COUNT;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
 
@@ -61,17 +54,6 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
   bool started;
   TaskHandle_t handle;
 
-  FixedSlotSequence pst;
-
-  /**
-   * @brief	This attribute holds a function pointer that is executed when
-   *          a deadline was missed.
-   * @details
-   * Another function may be announced to determine the actions to perform
-   * when a deadline was missed. Currently, only one function for missing
-   * any deadline is allowed. If not used, it shall be declared NULL.
-   */
-  void (*deadlineMissedFunc)(void);
   /**
    * @brief	This is the entry point for a new task.
    * @details
@@ -88,7 +70,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public FreeRTOSTaskIF {
    * It links the functionalities provided by FixedSlotSequence with the
    * OS's System Calls to keep the timing of the periods.
    */
-  void taskFunctionality(void);
+  [[noreturn]] void taskFunctionality();
 
   void handleMissedDeadline();
 };
