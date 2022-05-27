@@ -45,9 +45,9 @@ QueueFactory* QueueFactory::instance() {
   return factoryInstance;
 }
 
-QueueFactory::QueueFactory() {}
+QueueFactory::QueueFactory() = default;
 
-QueueFactory::~QueueFactory() {}
+QueueFactory::~QueueFactory() = default;
 
 MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth, size_t maxMessageSize,
                                                  MqArgs* args) {
