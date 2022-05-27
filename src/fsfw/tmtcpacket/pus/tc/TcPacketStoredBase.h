@@ -28,7 +28,7 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    */
   TcPacketStoredBase(const uint8_t* data, uint32_t size);
 
-  virtual ~TcPacketStoredBase();
+  ~TcPacketStoredBase() override;
 
   /**
    * Getter function for the raw data.
