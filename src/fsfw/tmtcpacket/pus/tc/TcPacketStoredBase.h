@@ -77,7 +77,7 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    * @return  @li @c true if the store is linked or could be created.
    *          @li @c false otherwise.
    */
-  bool checkAndSetStore();
+  static bool checkAndSetStore();
 };
 
-#endif /* TMTCPACKET_PUS_TcPacketStoredBase_H_ */
+#endif /* TMTCPACKET_PUS_TCPACKETSTORED_H_ */

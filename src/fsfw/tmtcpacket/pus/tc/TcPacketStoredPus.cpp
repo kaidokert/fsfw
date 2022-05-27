@@ -15,7 +15,7 @@ TcPacketStoredPus::TcPacketStoredPus(uint16_t apid, uint8_t service, uint8_t sub
   uint8_t* pData = nullptr;
   ReturnValue_t returnValue = TcPacketStoredPus::STORE->getFreeElement(
       &this->storeAddress, (TC_PACKET_MIN_SIZE + size), &pData);
-  if (returnValue != StorageManagerIF::RETURN_OK) {
+  if (returnValue != HasReturnvaluesIF::RETURN_OK) {
     FSFW_LOGW("TcPacketStoredBase: Could not get free element from store\n");
     return;
   }

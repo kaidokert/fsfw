@@ -15,15 +15,15 @@ PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
       tcStatus(RETURN_FAILED),
       packetSource(setPacketSource) {}
 
-PUSDistributor::~PUSDistributor() {}
+PUSDistributor::~PUSDistributor() = default;
 
 PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && PUS_DISTRIBUTOR_DEBUGGING == 1
-    store_address_t storeId = this->currentMessage.getStorageId());
+    store_address_t storeId = this->currentMessage.getStorageId();
     sif::debug << "PUSDistributor::handlePacket received: " << storeId.poolIndex << ", "
                << storeId.packetIndex << std::endl;
 #endif
-    TcMqMapIter queueMapIt = this->queueMap.end();
+    auto queueMapIt = this->queueMap.end();
     if (this->currentPacket == nullptr) {
       return queueMapIt;
     }

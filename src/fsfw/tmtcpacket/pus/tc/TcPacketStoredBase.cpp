@@ -10,10 +10,10 @@ StorageManagerIF* TcPacketStoredBase::STORE = nullptr;
 
 TcPacketStoredBase::TcPacketStoredBase() {
   this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
-  this->checkAndSetStore();
+  TcPacketStoredBase::checkAndSetStore();
 }
 
-TcPacketStoredBase::~TcPacketStoredBase() {}
+TcPacketStoredBase::~TcPacketStoredBase() = default;
 
 ReturnValue_t TcPacketStoredBase::getData(const uint8_t** dataPtr, size_t* dataSize) {
   auto result = TcPacketStoredBase::STORE->getData(storeAddress, dataPtr, dataSize);
