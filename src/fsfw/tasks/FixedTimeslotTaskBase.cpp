@@ -4,7 +4,7 @@
 
 FixedTimeslotTaskBase::FixedTimeslotTaskBase(TaskPeriod period_,
                                              TaskDeadlineMissedFunction dlmFunc_)
-    : pollingSeqTable(getPeriodMs()), period(period_), dlmFunc(dlmFunc_) {}
+    : period(period_), pollingSeqTable(getPeriodMs()), dlmFunc(dlmFunc_) {}
 uint32_t FixedTimeslotTaskBase::getPeriodMs() const { return static_cast<uint32_t>(period * 1000); }
 
 bool FixedTimeslotTaskBase::isEmpty() const { return pollingSeqTable.isEmpty(); }

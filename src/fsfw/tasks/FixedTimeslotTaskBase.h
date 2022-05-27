@@ -12,14 +12,14 @@ class FixedTimeslotTaskBase : public FixedTimeslotTaskIF {
   ;
 
  protected:
-  //! Polling sequence table which contains the object to execute
-  //! and information like the timeslots and the passed execution step.
-  FixedSlotSequence pollingSeqTable;
-
   /**
    * @brief Period of task in floating point seconds
    */
   TaskPeriod period;
+
+  //! Polling sequence table which contains the object to execute
+  //! and information like the timeslots and the passed execution step.
+  FixedSlotSequence pollingSeqTable;
 
   /**
    * @brief The pointer to the deadline-missed function.
