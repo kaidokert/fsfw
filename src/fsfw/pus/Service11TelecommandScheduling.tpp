@@ -1,10 +1,11 @@
 #pragma once
 
-#include <fsfw/objectmanager/ObjectManager.h>
-#include <fsfw/serialize/SerializeAdapter.h>
-#include <fsfw/tmtcservices/AcceptsTelecommandsIF.h>
-
 #include <cstddef>
+
+#include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serialize/SerializeAdapter.h"
+#include "fsfw/serviceinterface.h"
+#include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 
 static constexpr auto DEF_END = SerializeIF::Endianness::BIG;
 
@@ -18,7 +19,7 @@ inline Service11TelecommandScheduling<MAX_NUM_TCS>::Service11TelecommandScheduli
       tcRecipient(tcRecipient) {}
 
 template <size_t MAX_NUM_TCS>
-inline Service11TelecommandScheduling<MAX_NUM_TCS>::~Service11TelecommandScheduling() {}
+inline Service11TelecommandScheduling<MAX_NUM_TCS>::~Service11TelecommandScheduling() = default;
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
@@ -37,6 +38,17 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
     return handleInvalidData("handleRequest");
   }
   switch (subservice) {
+    case Subservice::ENABLE_SCHEDULING: {
+      schedulingEnabled = true;
+      break;
+    }
+    case Subservice::DISABLE_SCHEDULING: {
+      schedulingEnabled = false;
+      break;
+    }
+    case Subservice::RESET_SCHEDULING: {
+      return handleResetCommand();
+    }
     case Subservice::INSERT_ACTIVITY:
       return doInsertActivity(data, size);
     case Subservice::DELETE_ACTIVITY:
@@ -48,41 +60,43 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
     case Subservice::FILTER_TIMESHIFT_ACTIVITY:
       return doFilterTimeshiftActivity(data, size);
     default:
-      break;
+      return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
-
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return RETURN_OK;
 }
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::performService() {
-  // DEBUG
-  // DebugPrintMultimapContent();
-
+  if (not schedulingEnabled) {
+    return RETURN_OK;
+  }
   // get current time as UNIX timestamp
   timeval tNow = {};
   Clock::getClock_timeval(&tNow);
 
+  // TODO: Optionally limit the max number of released TCs per cycle?
   // NOTE: The iterator is increased in the loop here. Increasing the iterator as for-loop arg
   // does not work in this case as we are deleting the current element here.
   for (auto it = telecommandMap.begin(); it != telecommandMap.end();) {
     if (it->first <= tNow.tv_sec) {
-      // release tc
-      TmTcMessage releaseMsg(it->second.storeAddr);
-      auto sendRet = this->requestQueue->sendMessage(recipientMsgQueueId, &releaseMsg, false);
+      if (schedulingEnabled) {
+        // release tc
+        TmTcMessage releaseMsg(it->second.storeAddr);
+        auto sendRet = this->requestQueue->sendMessage(recipientMsgQueueId, &releaseMsg, false);
 
-      if (sendRet != HasReturnvaluesIF::RETURN_OK) {
-        return sendRet;
-      }
-
-      telecommandMap.erase(it++);
-
-      if (debugMode) {
+        if (sendRet != HasReturnvaluesIF::RETURN_OK) {
+          return sendRet;
+        }
+        if (debugMode) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-        sif::info << "Released TC & erased it from TC map" << std::endl;
+          sif::info << "Released TC & erased it from TC map" << std::endl;
 #else
-        sif::printInfo("Released TC & erased it from TC map\n");
+          sif::printInfo("Released TC & erased it from TC map\n");
 #endif
+        }
+        telecommandMap.erase(it++);
+      } else if (deleteExpiredTcWhenDisabled) {
+        telecommandMap.erase(it++);
       }
       continue;
     }
@@ -113,11 +127,29 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::initialize() {
 }
 
 template <size_t MAX_NUM_TCS>
+inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleResetCommand() {
+  for (auto it = telecommandMap.begin(); it != telecommandMap.end(); it++) {
+    ReturnValue_t result = tcStore->deleteData(it->second.storeAddr);
+    if (result != RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+      // This should not happen
+      sif::warning << "Service11TelecommandScheduling::handleRequestDeleting: Deletion failed"
+                   << std::endl;
+#else
+      sif::printWarning("Service11TelecommandScheduling::handleRequestDeleting: Deletion failed\n");
+#endif
+      triggerEvent(TC_DELETION_FAILED, (it->second.requestId >> 32) & 0xffffffff,
+                   it->second.requestId & 0xffffffff);
+    }
+  }
+  telecommandMap.clear();
+  return RETURN_OK;
+}
+
+template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivity(
     const uint8_t *data, size_t size) {
   uint32_t timestamp = 0;
-  const uint8_t *initData = data;
-  size_t initSz = size;
   ReturnValue_t result = SerializeAdapter::deSerialize(&timestamp, &data, &size, DEF_END);
   if (result != RETURN_OK) {
     return result;
@@ -142,7 +174,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
 
   // store currentPacket and receive the store address
   store_address_t addr{};
-  if (tcStore->addData(&addr, initData, initSz) != RETURN_OK ||
+  if (tcStore->addData(&addr, data, size) != RETURN_OK ||
       addr.raw == storeId::INVALID_STORE_ADDRESS) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service11TelecommandScheduling::doInsertActivity: Adding data to TC Store failed"
@@ -404,7 +436,6 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimesh
     // and then insert it again as new entry
     telecommandMap.insert(std::make_pair(tempKey, tempTc));
     shiftedItemsCount++;
-    continue;
   }
 
   if (debugMode) {
@@ -463,9 +494,9 @@ template <size_t MAX_NUM_TCS>
 inline uint64_t Service11TelecommandScheduling<MAX_NUM_TCS>::buildRequestId(uint32_t sourceId,
                                                                             uint16_t apid,
                                                                             uint16_t ssc) const {
-  uint64_t sourceId64 = static_cast<uint64_t>(sourceId);
-  uint64_t apid64 = static_cast<uint64_t>(apid);
-  uint64_t ssc64 = static_cast<uint64_t>(ssc);
+  auto sourceId64 = static_cast<uint64_t>(sourceId);
+  auto apid64 = static_cast<uint64_t>(apid);
+  auto ssc64 = static_cast<uint64_t>(ssc);
 
   return (sourceId64 << 32) | (apid64 << 16) | ssc64;
 }
@@ -483,7 +514,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
   if (typeRaw > 3) {
     return INVALID_TYPE_TIME_WINDOW;
   }
-  TypeOfTimeWindow type = static_cast<TypeOfTimeWindow>(typeRaw);
+  auto type = static_cast<TypeOfTimeWindow>(typeRaw);
 
   // we now have the type of delete activity - so now we set the range to delete,
   // according to the type of time window.
@@ -558,7 +589,10 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
 
   // additional security check, this should never be true
   if (itBegin->first > itEnd->first) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+#else
     sif::printError("11::GetMapFilterFromData: itBegin > itEnd\n");
+#endif
     return RETURN_FAILED;
   }
 
@@ -580,19 +614,32 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleInvalidD
 }
 
 template <size_t MAX_NUM_TCS>
-inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapContent(void) const {
+inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapContent() const {
+  for ([[maybe_unused]] const auto &dit : telecommandMap) {
 #if FSFW_DISABLE_PRINTOUT == 0
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
-             << std::endl;
-  sif::debug << "[" << dit->first << "]: Request ID: " << dit->second.requestId << " | "
-             << "Store Address: " << dit->second.storeAddr << std::endl;
+    sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
+               << std::endl;
+    sif::debug << "[" << dit.first << "]: Request ID: " << dit.second.requestId << " | "
+               << "Store Address: " << dit.second.storeAddr.raw << std::endl;
 #else
-  sif::printDebug("Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
-  for (auto dit = telecommandMap.begin(); dit != telecommandMap.end(); ++dit) {
-    sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit->first,
-                    dit->second.requestId, dit->second.storeAddr);
+    sif::printDebug(
+        "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
+    for (auto dit = telecommandMap.begin(); dit != telecommandMap.end(); ++dit) {
+      sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit->first,
+                      dit->second.requestId, dit->second.storeAddr);
+    }
+#endif
+#endif
   }
-#endif
-#endif
+}
+
+template <size_t MAX_NUM_TCS>
+inline void Service11TelecommandScheduling<MAX_NUM_TCS>::enableExpiredTcDeletion() {
+  deleteExpiredTcWhenDisabled = true;
+}
+
+template <size_t MAX_NUM_TCS>
+inline void Service11TelecommandScheduling<MAX_NUM_TCS>::disableExpiredTcDeletion() {
+  deleteExpiredTcWhenDisabled = false;
 }
