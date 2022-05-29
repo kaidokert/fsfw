@@ -14,7 +14,6 @@
 #endif
 
 #include <cstddef>
-#include <list>
 
 uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 
