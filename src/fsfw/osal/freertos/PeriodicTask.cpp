@@ -11,9 +11,11 @@ PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStack
   BaseType_t status = xTaskCreate(taskEntryPoint, name, stackSize, this, setPriority, &handle);
   if (status != pdPASS) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "PeriodicTask::PeriodicTask Insufficient heap memory remaining. Status: " << status << std::endl;
+    sif::debug << "PeriodicTask::PeriodicTask Insufficient heap memory remaining. Status: "
+               << status << std::endl;
 #else
-      sif::printDebug("PeriodicTask::PeriodicTask: Insufficient heap memory remaining. Status: %d\n", status);
+    sif::printDebug("PeriodicTask::PeriodicTask: Insufficient heap memory remaining. Status: %d\n",
+                    status);
 #endif
   }
 }

@@ -3,9 +3,10 @@
 
 #include <vector>
 
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../tasks/PeriodicTaskIF.h"
 #include "RTEMSTaskBase.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/tasks/PeriodicTaskBase.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
 
 class ExecutableObjectIF;
 
@@ -18,7 +19,7 @@ class ExecutableObjectIF;
  * @author  baetz
  * @ingroup task_handling
  */
-class PeriodicTask : public RTEMSTaskBase, public PeriodicTaskIF {
+class PeriodicTask : public PeriodicTaskBase, public RTEMSTaskBase {
  public:
   /**
    * @brief	Standard constructor of the class.
@@ -36,12 +37,12 @@ class PeriodicTask : public RTEMSTaskBase, public PeriodicTaskIF {
    * 								that shall be assigned.
    */
   PeriodicTask(const char *name, rtems_task_priority setPriority, size_t setStack,
-               rtems_interval setPeriod, void (*setDeadlineMissedFunc)());
+               TaskPeriod setPeriod, TaskDeadlineMissedFunction dlmFunc);
   /**
    * @brief	Currently, the executed object's lifetime is not coupled with the task object's
    * 			lifetime, so the destructor is empty.
    */
-  virtual ~PeriodicTask(void);
+  ~PeriodicTask() override;
 
   /**
    * @brief	The method to start the task.
@@ -50,33 +51,11 @@ class PeriodicTask : public RTEMSTaskBase, public PeriodicTaskIF {
    * 			The address of the task object is passed as an argument
    * 			to the system call.
    */
-  ReturnValue_t startTask(void);
-  /**
-   * Adds an object to the list of objects to be executed.
-   * The objects are executed in the order added.
-   * @param object Id of the object to add.
-   * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
-   */
-  ReturnValue_t addComponent(object_id_t object) override;
-
-  /**
-   * Adds an object to the list of objects to be executed.
-   * The objects are executed in the order added.
-   * @param object pointer to the object to add.
-   * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
-   */
-  ReturnValue_t addComponent(ExecutableObjectIF *object) override;
-
-  uint32_t getPeriodMs() const override;
+  ReturnValue_t startTask() override;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
 
  protected:
-  typedef std::vector<ExecutableObjectIF *> ObjectList;  //!< Typedef for the List of objects.
-  /**
-   * @brief	This attribute holds a list of objects to be executed.
-   */
-  ObjectList objectList;
   /**
    * @brief	The period of the task.
    * @details	The period determines the frequency of the task's execution. It is expressed in
@@ -87,14 +66,7 @@ class PeriodicTask : public RTEMSTaskBase, public PeriodicTaskIF {
    * @brief id of the associated OS period
    */
   rtems_id periodId = 0;
-  /**
-   * @brief	The pointer to the deadline-missed function.
-   * @details	This pointer stores the function that is executed if the task's deadline is missed.
-   * 			So, each may react individually on a timing failure. The pointer may be
-   * nullptr, then nothing happens on missing the deadline. The deadline is equal to the next
-   * execution of the periodic task.
-   */
-  void (*deadlineMissedFunc)(void);
+
   /**
    * @brief	This is the function executed in the new task's context.
    * @details	It converts the argument back to the thread object type and copies the class
@@ -110,7 +82,7 @@ class PeriodicTask : public RTEMSTaskBase, public PeriodicTaskIF {
    * are called. Afterwards the checkAndRestartPeriod system call blocks the task until the next
    * period. On missing the deadline, the deadlineMissedFunction is executed.
    */
-  void taskFunctionality(void);
+  [[noreturn]] void taskFunctionality();
 };
 
 #endif /* FSFW_OSAL_RTEMS_PERIODICTASK_H_ */
