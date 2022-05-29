@@ -62,20 +62,6 @@ class PeriodicTask : public PeriodicTaskBase, public FreeRTOSTaskIF {
   bool started;
   TaskHandle_t handle;
 
-  //! Typedef for the List of objects.
-  typedef std::vector<ExecutableObjectIF*> ObjectList;
-  /**
-   * @brief	This attribute holds a list of objects to be executed.
-   */
-  ObjectList objectList;
-  /**
-   * @brief	The period of the task.
-   * @details
-   * The period determines the frequency of the task's execution.
-   * It is expressed in clock ticks.
-   */
-  TaskPeriod period;
-
   /**
    * @brief	This is the function executed in the new task's context.
    * @details

@@ -6,14 +6,14 @@
 
 PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStackSize setStack,
                            TaskPeriod setPeriod, TaskDeadlineMissedFunction dlmFunc_)
-    : PeriodicTaskBase(setStack, dlmFunc_), started(false), handle(nullptr), period(setPeriod) {
+    : PeriodicTaskBase(setPeriod, dlmFunc_), started(false), handle(nullptr) {
   configSTACK_DEPTH_TYPE stackSize = setStack / sizeof(configSTACK_DEPTH_TYPE);
   BaseType_t status = xTaskCreate(taskEntryPoint, name, stackSize, this, setPriority, &handle);
   if (status != pdPASS) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "PeriodicTask Insufficient heap memory remaining. "
-                  "Status: "
-               << status << std::endl;
+    sif::debug << "PeriodicTask::PeriodicTask Insufficient heap memory remaining. Status: " << status << std::endl;
+#else
+      sif::printDebug("PeriodicTask::PeriodicTask: Insufficient heap memory remaining. Status: %d\n", status);
 #endif
   }
 }
@@ -65,9 +65,7 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
   TickType_t xLastWakeTime;
   const TickType_t xPeriod = pdMS_TO_TICKS(this->period * 1000.);
 
-  for (auto const& object : objectList) {
-    object->initializeAfterTaskCreation();
-  }
+  initObjsAfterTaskCreation();
 
   /* The xLastWakeTime variable needs to be initialized with the current tick
    count. Note that this is the only time the variable is written to
@@ -76,8 +74,8 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
   xLastWakeTime = xTaskGetTickCount();
   /* Enter the loop that defines the task behavior. */
   for (;;) {
-    for (auto const& object : objectList) {
-      object->performOperation();
+    for (auto const& objectPair : objectList) {
+      objectPair.first->performOperation(objectPair.second);
     }
 
 #if (tskKERNEL_VERSION_MAJOR == 10 && tskKERNEL_VERSION_MINOR >= 4) || tskKERNEL_VERSION_MAJOR > 10

@@ -13,9 +13,9 @@
  */
 class TestTask : public SystemObject, public ExecutableObjectIF, public HasReturnvaluesIF {
  public:
-  TestTask(object_id_t objectId);
-  virtual ~TestTask();
-  virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
+  explicit TestTask(object_id_t objectId);
+  ~TestTask() override;
+  ReturnValue_t performOperation(uint8_t operationCode) override;
 
  protected:
   virtual ReturnValue_t performOneShotAction();
