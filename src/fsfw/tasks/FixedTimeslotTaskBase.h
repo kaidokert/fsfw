@@ -37,7 +37,7 @@ class FixedTimeslotTaskBase : public FixedTimeslotTaskIF {
 
   [[nodiscard]] bool isEmpty() const override;
 
-  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
+  ReturnValue_t addSlot(object_id_t execId, ExecutableObjectIF* componentId, uint32_t slotTimeMs,
                         int8_t executionStep) override;
 };
 
