@@ -93,7 +93,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskBase {
    * the checkAndRestartPeriod system call blocks the task until the next
    *  period. On missing the deadline, the deadlineMissedFunction is executed.
    */
-  [[noreturn]] void taskFunctionality();
+  void taskFunctionality();
 
   static bool delayForInterval(chron_ms* previousWakeTimeMs, chron_ms interval);
 };

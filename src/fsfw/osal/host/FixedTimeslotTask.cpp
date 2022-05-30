@@ -74,8 +74,10 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-[[noreturn]] void FixedTimeslotTask::taskFunctionality() {
-  pollingSeqTable.intializeSequenceAfterTaskCreation();
+void FixedTimeslotTask::taskFunctionality() {
+  ReturnValue_t result = pollingSeqTable.intializeSequenceAfterTaskCreation();
+  // Ignore returnvalue for now
+  static_cast<void>(result);
 
   // A local iterator for the Polling Sequence Table is created to
   // find the start time for the first entry.
