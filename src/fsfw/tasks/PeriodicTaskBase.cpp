@@ -22,7 +22,7 @@ uint32_t PeriodicTaskBase::getPeriodMs() const { return static_cast<uint32_t>(pe
 bool PeriodicTaskBase::isEmpty() const { return objectList.empty(); }
 
 ReturnValue_t PeriodicTaskBase::initObjsAfterTaskCreation() {
-  std::multiset<ExecutableObjectIF*> uniqueObjects;
+  std::set<ExecutableObjectIF*> uniqueObjects;
   ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
   uint32_t count = 0;
   for (const auto& obj : objectList) {
