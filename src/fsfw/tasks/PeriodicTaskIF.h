@@ -35,9 +35,7 @@ class PeriodicTaskIF {
     return HasReturnvaluesIF::RETURN_FAILED;
   };
 
-  virtual ReturnValue_t addComponent(object_id_t object) {
-    return addComponent(object, 0);
-  };
+  virtual ReturnValue_t addComponent(object_id_t object) { return addComponent(object, 0); };
 
   /**
    * Adds an object to the list of objects to be executed.
@@ -49,9 +47,7 @@ class PeriodicTaskIF {
     return HasReturnvaluesIF::RETURN_FAILED;
   };
 
-  virtual ReturnValue_t addComponent(ExecutableObjectIF* object) {
-    return addComponent(object, 0);
-  }
+  virtual ReturnValue_t addComponent(ExecutableObjectIF* object) { return addComponent(object, 0); }
 
   virtual ReturnValue_t sleepFor(uint32_t ms) = 0;
 
