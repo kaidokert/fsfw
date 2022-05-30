@@ -26,11 +26,9 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
    * @param executionStep
    * @return
    */
-  virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
-                                int8_t executionStep) {
-    auto* execObj = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
-    return addSlot(componentId, execObj, slotTimeMs, executionStep);
-  }
+  virtual ReturnValue_t addSlot(object_id_t execId, ExecutableObjectIF* obj, uint32_t slotTimeMs,
+                                int8_t executionStep) = 0;
+
   /**
    * Add an object with a slot time and the execution step to the task.
    * The execution step will be passed to the object (e.g. as an operation
@@ -40,14 +38,25 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
    * @param executionStep
    * @return
    */
-  virtual ReturnValue_t addSlot(object_id_t execId, ExecutableObjectIF* obj, uint32_t slotTimeMs,
-                                int8_t executionStep) = 0;
+  virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
+                                int8_t executionStep) {
+    auto* execObj = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
+    return addSlot(componentId, execObj, slotTimeMs, executionStep);
+  }
 
   /**
    * Check whether the sequence is valid and perform all other required
    * initialization steps which are needed after task creation
    */
   virtual ReturnValue_t checkSequence() = 0;
+
+  virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
+
+  virtual ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
 };
 
 #endif /* FRAMEWORK_TASKS_FIXEDTIMESLOTTASKIF_H_ */

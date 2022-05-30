@@ -7,7 +7,7 @@
 class PeriodicTaskMock : public PeriodicTaskBase {
  public:
   PeriodicTaskMock(TaskPeriod period, TaskDeadlineMissedFunction dlmFunc)
-     : PeriodicTaskBase(period, dlmFunc) {}
+      : PeriodicTaskBase(period, dlmFunc) {}
 
   virtual ~PeriodicTaskMock() {}
   /**
@@ -20,7 +20,6 @@ class PeriodicTaskMock : public PeriodicTaskBase {
   };
 
   virtual ReturnValue_t sleepFor(uint32_t ms) override { return HasReturnvaluesIF::RETURN_OK; };
-
 };
 
 #endif  // FSFW_UNITTEST_TESTS_MOCKS_PERIODICTASKMOCK_H_

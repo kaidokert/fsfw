@@ -31,10 +31,7 @@ class PeriodicTaskIF {
    * @param object Id of the object to add.
    * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
    */
-  virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  };
-
+  virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode) = 0;
   virtual ReturnValue_t addComponent(object_id_t object) { return addComponent(object, 0); };
 
   /**
@@ -43,10 +40,7 @@ class PeriodicTaskIF {
    * @param object pointer to the object to add.
    * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
    */
-  virtual ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  };
-
+  virtual ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) = 0;
   virtual ReturnValue_t addComponent(ExecutableObjectIF* object) { return addComponent(object, 0); }
 
   virtual ReturnValue_t sleepFor(uint32_t ms) = 0;

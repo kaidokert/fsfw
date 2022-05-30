@@ -21,6 +21,12 @@ uint32_t PeriodicTaskBase::getPeriodMs() const { return static_cast<uint32_t>(pe
 
 bool PeriodicTaskBase::isEmpty() const { return objectList.empty(); }
 
+ReturnValue_t PeriodicTaskBase::addComponent(object_id_t object) { return addComponent(object, 0); }
+
+ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF* object) {
+  return addComponent(object, 0);
+}
+
 ReturnValue_t PeriodicTaskBase::initObjsAfterTaskCreation() {
   std::set<ExecutableObjectIF*> uniqueObjects;
   ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
@@ -62,12 +68,4 @@ ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF* object, uint8_t
   object->setTaskIF(this);
 
   return HasReturnvaluesIF::RETURN_OK;
-}
-
-ReturnValue_t PeriodicTaskBase::addComponent(object_id_t object) {
-  return addComponent(object, 0);
-}
-
-ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF *object) {
-  return addComponent(object, 0);
 }

@@ -50,16 +50,6 @@ class FixedTimeslotTask : public FixedTimeslotTaskBase {
    */
   ReturnValue_t startTask() override;
 
-  /**
-   * Add timeslot to the polling sequence table.
-   * @param componentId
-   * @param slotTimeMs
-   * @param executionStep
-   * @return
-   */
-  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs,
-                        int8_t executionStep) override;
-
   ReturnValue_t sleepFor(uint32_t ms) override;
 
  protected:

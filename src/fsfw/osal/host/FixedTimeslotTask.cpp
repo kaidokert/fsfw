@@ -111,26 +111,6 @@ void FixedTimeslotTask::taskFunctionality() {
   }
 }
 
-ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotTimeMs,
-                                         int8_t executionStep) {
-  auto* executableObject = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
-  if (executableObject != nullptr) {
-    pollingSeqTable.addSlot(componentId, slotTimeMs, executionStep, executableObject, this);
-    return HasReturnvaluesIF::RETURN_OK;
-  }
-
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::error << "Component " << std::hex << "0x" << componentId
-             << "not found, "
-                "not adding it to PST.."
-             << std::dec << std::endl;
-#else
-  sif::printError("Component 0x%08x not found, not adding it to PST..\n",
-                  static_cast<unsigned int>(componentId));
-#endif
-  return HasReturnvaluesIF::RETURN_FAILED;
-}
-
 bool FixedTimeslotTask::delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval) {
   bool shouldDelay = false;
   // Get current wakeup time
