@@ -71,7 +71,7 @@ set(FSFW_ETL_LIB_MAJOR_VERSION
     20
     CACHE STRING "ETL library major version requirement")
 set(FSFW_ETL_LIB_VERSION
-    ${FSFW_ETL_LIB_MAJOR_VERSION}.28.0
+    ${FSFW_ETL_LIB_MAJOR_VERSION}.27.3
     CACHE STRING "ETL library exact version requirement")
 set(FSFW_ETL_LINK_TARGET etl::etl)
 
@@ -185,7 +185,7 @@ endif()
 message(STATUS "${MSG_PREFIX} Finding and/or providing ETL library")
 
 # Check whether the user has already installed ETL first
-find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} CONFIG QUIET)
+find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
 # Not installed, so use FetchContent to download and provide etl
 if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
   message(
