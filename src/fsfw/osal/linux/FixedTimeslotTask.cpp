@@ -37,7 +37,8 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
     posixThread.suspend();
   }
 
-  pollingSeqTable.intializeSequenceAfterTaskCreation();
+  // Returnvalue ignored for now
+  static_cast<void>(pollingSeqTable.intializeSequenceAfterTaskCreation());
 
   // The start time for the first entry is read.
   uint64_t lastWakeTime = PosixThread::getCurrentMonotonicTimeMs();
