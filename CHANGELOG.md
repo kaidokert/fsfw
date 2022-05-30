@@ -43,6 +43,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/583
 
+### Task Module Refactoring
+
+PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/636
+
+- Convert `virtual ReturnValue_t addComponent(object_id_t object)` to
+  `virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode = 0)`, allowing to pass
+  the operation code passed to `performOperation`. Updated API taking
+  an `ExecutableObjectIF` accordingly
+- There was a lot of duplicate/boilerplate code inside the individual task IF OSAL implementations.
+  Remove it by introducing base classes `PeriodicTaskBase` and `FixedTimeslotTaskBase`.
+
 ### HAL
 
 - HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
