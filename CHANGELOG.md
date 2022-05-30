@@ -47,12 +47,33 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/636
 
+**Refactoring general task code**
+
+- There was a lot of duplicate/boilerplate code inside the individual task IF OSAL implementations.
+  Remove it by introducing base classes `PeriodicTaskBase` and `FixedTimeslotTaskBase`.
+
+**Refactor PeriodicTaskIF**
+
 - Convert `virtual ReturnValue_t addComponent(object_id_t object)` to
   `virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode = 0)`, allowing to pass
   the operation code passed to `performOperation`. Updated API taking
   an `ExecutableObjectIF` accordingly
-- There was a lot of duplicate/boilerplate code inside the individual task IF OSAL implementations.
-  Remove it by introducing base classes `PeriodicTaskBase` and `FixedTimeslotTaskBase`.
+
+**Refactor FixedTimeslotTaskIF**
+
+- Add additional `addSlot` function which takes an `ExecutableObjectIF` pointer and its Object ID
+
+**Refactor FixedSequenceSlot**
+
+- Introduce typedef `CustomCheckFunc` for `ReturnValue_t (*customCheckFunction)(const SlotList&)`.
+- Convert `ReturnValue_t (*customCheckFunction)(const SlotList&)` to
+  `ReturnValue_t (*customCheckFunction)(const SlotList&, void*)`, allowing arbitrary user arguments
+  for the custom checker
+
+**Linux Task Module**
+
+- Use composition instead of inheritance for the `PeriodicPosixTask` and make the `PosixTask` a
+  member of the class
 
 ### HAL
 
