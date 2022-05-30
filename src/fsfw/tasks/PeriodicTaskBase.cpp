@@ -63,3 +63,11 @@ ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF* object, uint8_t
 
   return HasReturnvaluesIF::RETURN_OK;
 }
+
+ReturnValue_t PeriodicTaskBase::addComponent(object_id_t object) {
+  return addComponent(object, 0);
+}
+
+ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF *object) {
+  return addComponent(object, 0);
+}

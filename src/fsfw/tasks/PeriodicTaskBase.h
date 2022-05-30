@@ -17,6 +17,9 @@ class PeriodicTaskBase : public PeriodicTaskIF {
   ReturnValue_t addComponent(object_id_t object, uint8_t opCode) override;
   ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) override;
 
+  ReturnValue_t addComponent(object_id_t object) override;
+  ReturnValue_t addComponent(ExecutableObjectIF* object) override;
+
   [[nodiscard]] uint32_t getPeriodMs() const override;
 
   [[nodiscard]] bool isEmpty() const override;
