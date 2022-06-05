@@ -3,7 +3,7 @@
 
 #include "fsfw/devicehandlers/CookieIF.h"
 
-class CookieIFMock {
+class CookieIFMock : public CookieIF {
  public:
   CookieIFMock();
   virtual ~CookieIFMock();

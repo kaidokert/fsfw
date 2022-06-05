@@ -1,4 +1,5 @@
 #include "DeviceHandlerCommander.h"
+#include <fsfw/ipc/QueueFactory.h>
 
 DeviceHandlerCommander::DeviceHandlerCommander(object_id_t objectId)
     : SystemObject(objectId), commandActionHelper(this) {
@@ -11,14 +12,11 @@ DeviceHandlerCommander::~DeviceHandlerCommander() {}
 
 ReturnValue_t DeviceHandlerCommander::performOperation(uint8_t operationCode) {
   readCommandQueue();
+  return RETURN_OK;
 }
 
 ReturnValue_t DeviceHandlerCommander::initialize() {
   ReturnValue_t result = commandActionHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
-    return result;
-  }
-  result = actionHelper.initialize(commandQueue);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
@@ -49,9 +47,6 @@ void DeviceHandlerCommander::readCommandQueue() {
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   for (result = commandQueue->receiveMessage(&message); result == HasReturnvaluesIF::RETURN_OK;
        result = commandQueue->receiveMessage(&message)) {
-    if (result != HasReturnvaluesIF::RETURN_OK) {
-      continue;
-    }
     result = commandActionHelper.handleReply(&message);
     if (result == HasReturnvaluesIF::RETURN_OK) {
       continue;

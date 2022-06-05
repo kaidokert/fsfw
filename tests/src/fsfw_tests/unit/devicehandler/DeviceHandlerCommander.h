@@ -37,6 +37,8 @@ class DeviceHandlerCommander : public ExecutableObjectIF,
 
  private:
 
+  static const uint32_t QUEUE_SIZE = 20;
+
   MessageQueueIF* commandQueue = nullptr;
 
   CommandActionHelper commandActionHelper;

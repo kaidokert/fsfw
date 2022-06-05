@@ -65,7 +65,9 @@ void DeviceHandlerBase::setThermalStateRequestPoolIds(lp_id_t thermalStatePoolId
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
-  delete comCookie;
+  if (comCookie != nullptr) {
+	delete comCookie;
+  }
   if (defaultFDIRUsed) {
     delete fdirInstance;
   }
@@ -253,7 +255,9 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
       replyToReply(replyPair.first, replyPair.second, TIMEOUT);
       missedReply(replyPair.first);
       timedOut = false;
-      replyPair.second.active = false;
+      if (not replyPair.second.periodic) {
+    	  replyPair.second.active = false;
+      }
     }
   }
 }
