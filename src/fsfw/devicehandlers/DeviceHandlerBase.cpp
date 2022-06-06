@@ -66,7 +66,7 @@ void DeviceHandlerBase::setThermalStateRequestPoolIds(lp_id_t thermalStatePoolId
 
 DeviceHandlerBase::~DeviceHandlerBase() {
   if (comCookie != nullptr) {
-	delete comCookie;
+    delete comCookie;
   }
   if (defaultFDIRUsed) {
     delete fdirInstance;
@@ -256,7 +256,7 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
       missedReply(replyPair.first);
       timedOut = false;
       if (not replyPair.second.periodic) {
-    	  replyPair.second.active = false;
+        replyPair.second.active = false;
       }
     }
   }
@@ -1396,8 +1396,7 @@ uint8_t DeviceHandlerBase::getReplyDelayCycles(DeviceCommandId_t deviceCommand) 
   DeviceReplyMap::iterator iter = deviceReplyMap.find(deviceCommand);
   if (iter == deviceReplyMap.end()) {
     return 0;
-  }
-  else if (iter->second.countdown != nullptr) {
+  } else if (iter->second.countdown != nullptr) {
     return 0;
   }
   return iter->second.delayCycles;

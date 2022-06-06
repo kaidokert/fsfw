@@ -1,16 +1,16 @@
 #ifndef TESTS_SRC_FSFW_TESTS_UNIT_DEVICEHANDLER_DEVICEHANDLERCOMMANDER_H_
 #define TESTS_SRC_FSFW_TESTS_UNIT_DEVICEHANDLER_DEVICEHANDLERCOMMANDER_H_
 
-#include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/action/CommandActionHelper.h"
 #include "fsfw/action/CommandsActionsIF.h"
-#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
 
 class DeviceHandlerCommander : public ExecutableObjectIF,
                                public SystemObject,
                                public CommandsActionsIF,
-			       public HasReturnvaluesIF {
+                               public HasReturnvaluesIF {
  public:
   DeviceHandlerCommander(object_id_t objectId);
   virtual ~DeviceHandlerCommander();
@@ -36,7 +36,6 @@ class DeviceHandlerCommander : public ExecutableObjectIF,
   void resetReplyReturnCode();
 
  private:
-
   static const uint32_t QUEUE_SIZE = 20;
 
   MessageQueueIF* commandQueue = nullptr;

@@ -42,13 +42,13 @@ ReturnValue_t DeviceHandlerMock::buildCommandFromCommand(DeviceCommandId_t devic
 ReturnValue_t DeviceHandlerMock::scanForReply(const uint8_t *start, size_t len,
                                               DeviceCommandId_t *foundId, size_t *foundLen) {
   switch (*start) {
-  case SIMPLE_COMMAND_DATA: {
-        *foundId = SIMPLE_COMMAND;
-        *foundLen = sizeof(SIMPLE_COMMAND_DATA);
-        return RETURN_OK;
-        break;
-      }
-  case PERIODIC_REPLY_DATA: {
+    case SIMPLE_COMMAND_DATA: {
+      *foundId = SIMPLE_COMMAND;
+      *foundLen = sizeof(SIMPLE_COMMAND_DATA);
+      return RETURN_OK;
+      break;
+    }
+    case PERIODIC_REPLY_DATA: {
       *foundId = PERIODIC_REPLY;
       *foundLen = sizeof(PERIODIC_REPLY_DATA);
       return RETURN_OK;
@@ -64,7 +64,7 @@ ReturnValue_t DeviceHandlerMock::interpretDeviceReply(DeviceCommandId_t id, cons
   switch (id) {
     case SIMPLE_COMMAND:
     case PERIODIC_REPLY: {
-    	periodicReplyReceived = true;
+      periodicReplyReceived = true;
       break;
     }
     default:
@@ -74,9 +74,9 @@ ReturnValue_t DeviceHandlerMock::interpretDeviceReply(DeviceCommandId_t id, cons
 }
 
 void DeviceHandlerMock::fillCommandAndReplyMap() {
-	insertInCommandAndReplyMap(SIMPLE_COMMAND, 0, nullptr, 0, false, false, 0,
-	                             &simpleCommandReplyTimeout);
-	insertInCommandAndReplyMap(PERIODIC_REPLY, 0, nullptr, 0, true, false, 0,
+  insertInCommandAndReplyMap(SIMPLE_COMMAND, 0, nullptr, 0, false, false, 0,
+                             &simpleCommandReplyTimeout);
+  insertInCommandAndReplyMap(PERIODIC_REPLY, 0, nullptr, 0, true, false, 0,
                              &periodicReplyCountdown);
 }
 
@@ -90,10 +90,6 @@ void DeviceHandlerMock::changeSimpleCommandReplyCountdown(uint32_t timeout) {
   simpleCommandReplyTimeout.setTimeout(timeout);
 }
 
-void DeviceHandlerMock::resetPeriodicReplyState() {
-  periodicReplyReceived = false;
-}
+void DeviceHandlerMock::resetPeriodicReplyState() { periodicReplyReceived = false; }
 
-bool DeviceHandlerMock::getPeriodicReplyReceived() {
-	return periodicReplyReceived;
-}
+bool DeviceHandlerMock::getPeriodicReplyReceived() { return periodicReplyReceived; }

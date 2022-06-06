@@ -792,7 +792,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
     DeviceCommandMap::iterator command;
     //! Instead of using delayCycles to specify the maximum time to wait for the device reply, it
     //! is also possible specify a countdown
-    Countdown* countdown = nullptr;
+    Countdown *countdown = nullptr;
     //! will be set to true when reply is enabled
     bool active = false;
   };
@@ -1259,13 +1259,13 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   /**
    * @brief Handles disabling of replies which use a timeout to detect missed replies.
    */
-  void disableTimeoutControlledReply(DeviceReplyInfo* info);
+  void disableTimeoutControlledReply(DeviceReplyInfo *info);
 
   /**
    * @brief Handles disabling of replies which use a number of maximum delay cycles to detect
    *        missed replies.
    */
-  void disableDelayCyclesControlledReply(DeviceReplyInfo* info);
+  void disableDelayCyclesControlledReply(DeviceReplyInfo *info);
 
   /**
    * Retrive data from the #IPCStore.

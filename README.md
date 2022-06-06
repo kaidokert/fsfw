@@ -188,7 +188,10 @@ and open the documentation conveniently. Try `helper.py -h for more information.
 
 The formatting is done by the `clang-format` tool. The configuration is contained within the
 `.clang-format` file in the repository root. As long as `clang-format` is installed, you
-can run the `apply-clang-format.sh` helper script to format all source files consistently.
+can run the `auto-format.sh` helper script to format all source files consistently. Furthermore cmake-format is required to format CMake files which can be installed with:
+````sh
+sudo pip install cmakelang
+````
 
 ## Index
 

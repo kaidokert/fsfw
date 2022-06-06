@@ -20,8 +20,7 @@ class EventManagerIF {
                                          bool forwardAllButSelected = false) = 0;
   virtual ReturnValue_t subscribeToEvent(MessageQueueId_t listener, EventId_t event) = 0;
   virtual ReturnValue_t subscribeToAllEventsFrom(MessageQueueId_t listener, object_id_t object) = 0;
-  virtual ReturnValue_t unsubscribeFromAllEvents(MessageQueueId_t listener,
-        object_id_t object) = 0;
+  virtual ReturnValue_t unsubscribeFromAllEvents(MessageQueueId_t listener, object_id_t object) = 0;
   virtual ReturnValue_t subscribeToEventRange(MessageQueueId_t listener, EventId_t idFrom = 0,
                                               EventId_t idTo = 0, bool idInverted = false,
                                               object_id_t reporterFrom = 0,

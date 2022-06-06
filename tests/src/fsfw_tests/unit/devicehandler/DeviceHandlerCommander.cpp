@@ -1,4 +1,5 @@
 #include "DeviceHandlerCommander.h"
+
 #include <fsfw/ipc/QueueFactory.h>
 
 DeviceHandlerCommander::DeviceHandlerCommander(object_id_t objectId)
@@ -60,6 +61,4 @@ ReturnValue_t DeviceHandlerCommander::sendCommand(object_id_t target, ActionId_t
 
 ReturnValue_t DeviceHandlerCommander::getReplyReturnCode() { return lastReplyReturnCode; }
 
-void DeviceHandlerCommander::resetReplyReturnCode() {
-  lastReplyReturnCode = RETURN_FAILED;
-}
+void DeviceHandlerCommander::resetReplyReturnCode() { lastReplyReturnCode = RETURN_FAILED; }
