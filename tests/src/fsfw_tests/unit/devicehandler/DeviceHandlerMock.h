@@ -33,8 +33,8 @@ class DeviceHandlerMock : public DeviceHandlerBase {
   uint32_t getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo) override;
 
  private:
-  Countdown simpleCommandReplyTimeout = Countdown(50);
-  Countdown periodicReplyCountdown = Countdown(10);
+  Countdown simpleCommandReplyTimeout = Countdown(1000);
+  Countdown periodicReplyCountdown = Countdown(1000);
 
   uint8_t commandBuffer[1];
 
