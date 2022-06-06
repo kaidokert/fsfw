@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
+- Bump C++ required version to C++17. Every project which uses the FSFW and every modern
+  compiler supports it
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/622
 - HAL Linux SPI: Set the Clock Default State when setting new SPI speed
   and mode
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
@@ -22,18 +25,56 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
-- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
+- Major update for version handling, using `git describe` to fetch version information with git.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/601
+  - Add helper functions provided by [`cmake-modules`](https://github.com/bilke/cmake-modules)
+    manually now. Those should not change too often and only a small subset is needed
+  - Separate folder for easier update and for distinction
+  - LICENSE file included
+  - use `int` for version numbers to allow unset or uninitialized version
+  - Initialize Version object with numbers set to -1
+  - Instead of hardcoding the git hash, it is now retrieved from git
+  - `Version` now allows specifying additional version information like the git SHA1 hash and the
+    versions since the last tag
+  - Additional information is set to the last part of the git describe output for `FSFW_VERSION` now.
+  - Version still need to be hand-updated if the FSFW is not included as a submodule for now.
 - IPC Message Queue Handling: Allow passing an optional `MqArgs` argument into the MessageQueue
   creation call. It allows passing context information and an arbitrary user argument into
   the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/583
-- Clock: 
-  - `timeval` to `TimeOfDay_t`
-  - Added Mutex for gmtime calls: (compare http://www.opengate.at/blog/2020/01/timeless/)
-  - Moved the statics used by Clock in ClockCommon.cpp to this file
-  - Better check for leap seconds
-  - Added Unittests for Clock (only getter)
+
+### HAL
+
+- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
+- HAL Linux SPI: Set the Clock Default State when setting new SPI speed
+  and mode
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/573
+- GPIO HAL: `Direction`, `GpioOperation` and `Levels` are enum classes now, which prevents
+  name clashes with Windows defines.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
+- HAL Linux Uart: Baudrate and bits per word are enums now, avoiding misconfigurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/585
+
+### Time
+
+PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/584 and
+https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
+
+- `timeval` to `TimeOfDay_t`
+- Added Mutex for gmtime calls: (compare http://www.opengate.at/blog/2020/01/timeless/)
+- Moved the statics used by Clock in ClockCommon.cpp to this file
+- Better check for leap seconds
+- Added Unittests for Clock (only getter)
+
+### Power 
+
+- `PowerSwitchIF`: Remove `const` specifier from `sendSwitchCommand` and `sendFuseOnCommand` and
+  also specify a `ReturnValue_t` return type
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
+- Extend `PowerSwitcher` module to optionally check current state when calling `turnOn` or
+  `turnOff`. Tis can be helpful to avoid commanding switches which do not need commanding
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
 
 ## Removed
 
@@ -43,15 +84,45 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Additions
 
+- LTO support: Allow using LTO/IPO by setting `FSFW_ENABLE_LTO=1`. CMake is able to detect whether
+  the user compiler supports IPO/LPO. LTO is on by default now. Most modern compilers support it,
+  can make good use of it and it usually makes the code faster and/or smaller.
+  After some more research:
+  Enabling LTO will actually cause the compiler to only produce thin LTO by adding 
+  `-flto -fno-fat-lto-objects` to the compiler options. I am not sure this is an ideal choice
+  because if an application linking against the FSFW does not use LTO, there can be compile
+  issues (e.g. observed when compiling the FSFW tests without LTO). This is a known issue as
+  can be seen in the multiple CMake issues for it: 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/22913, 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/16808, 
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/21696
+  Easiest solution for now: Keep this option OFF by default.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/616
 - Linux HAL: Add wiretapping option for I2C. Enabled with `FSFW_HAL_I2C_WIRETAPPING` defined to 1
 - Dedicated Version class and constant `fsfw::FSFW_VERSION` containing version information
   inside `fsfw/version.h`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/559
+- Added generic PUS TC Scheduler Service 11. It depends on the new added Emebeded Template Library
+  (ETL) dependency.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/594
 - Added ETL dependency and improved library dependency management
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/592
+- Add a `DummyPowerSwitcher` module which can be useful for test setups when no PCDU is available
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
+- New typedef for switcher type
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/590
+- `Subsystem`: New API to add table and sequence entries
 
 ## Fixed
 
+- TCP TMTC Server: `MutexGuard` was not created properly in
+  `TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent)` call.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/618
+- Fix infinite recursion in `prepareHealthSetReply` of PUS Health Service 201.
+  Is not currently used right now but might be used in the future
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/617
+- Move some CMake directives further up top so they are not ignored
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/621
 - Small bugfix in STM32 HAL for SPI
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/599
 - HAL GPIO: Improved error checking in `LinuxLibgpioIF::configureGpios(...)`. If a GPIO
