@@ -21,7 +21,7 @@ TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
 	result = deviceHandlerCommander.initialize();
 	REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
 
-  SECTION("Commanding") {
+  SECTION("Commanding nominal") {
   	comIF.setTestCase(ComIFMock::TestCase::SIMPLE_COMMAND_NOMINAL);
     result = deviceHandlerCommander.sendCommand(objects::DEVICE_HANDLER_MOCK,
                                                 DeviceHandlerMock::SIMPLE_COMMAND);
@@ -36,7 +36,28 @@ TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
   }
 
-  SECTION("Periodic reply") {
+  SECTION("Commanding missed reply") {
+    	comIF.setTestCase(ComIFMock::TestCase::MISSED_REPLY);
+    	deviceHandlerCommander.resetReplyReturnCode();
+    	// Set the timeout to 0 to immediately timeout the reply
+			deviceHandlerMock.changeSimpleCommandReplyCountdown(0);
+      result = deviceHandlerCommander.sendCommand(objects::DEVICE_HANDLER_MOCK,
+                                                  DeviceHandlerMock::SIMPLE_COMMAND);
+      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      deviceHandlerMock.performOperation(DeviceHandlerIF::PERFORM_OPERATION);
+      deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_WRITE);
+      deviceHandlerMock.performOperation(DeviceHandlerIF::GET_WRITE);
+      deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_READ);
+      deviceHandlerMock.performOperation(DeviceHandlerIF::GET_READ);
+      deviceHandlerMock.performOperation(DeviceHandlerIF::PERFORM_OPERATION);
+      deviceHandlerCommander.performOperation();
+      result = deviceHandlerCommander.getReplyReturnCode();
+      REQUIRE(result == DeviceHandlerIF::TIMEOUT);
+      uint32_t missedReplies = deviceFdirMock.getMissedReplyCount();
+      REQUIRE(missedReplies == 1);
+    }
+
+  SECTION("Periodic reply nominal") {
   	comIF.setTestCase(ComIFMock::TestCase::PERIODIC_REPLY_NOMINAL);
     deviceHandlerMock.performOperation(DeviceHandlerIF::PERFORM_OPERATION);
     deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_WRITE);

@@ -83,7 +83,11 @@ void DeviceHandlerMock::fillCommandAndReplyMap() {
 uint32_t DeviceHandlerMock::getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo) { return 500; }
 
 void DeviceHandlerMock::changePeriodicReplyCountdown(uint32_t timeout) {
-  periodicReplyCountdown.setTimeout(0);
+  periodicReplyCountdown.setTimeout(timeout);
+}
+
+void DeviceHandlerMock::changeSimpleCommandReplyCountdown(uint32_t timeout) {
+  simpleCommandReplyTimeout.setTimeout(timeout);
 }
 
 void DeviceHandlerMock::resetPeriodicReplyState() {

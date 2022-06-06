@@ -6,7 +6,8 @@
 
 /**
  * @brief	The ComIFMock supports the simulation of various device communication error cases
- * 			  like incomplete or wrong replies and can be used to test the DeviceHandlerBase.
+ * 			  like incomplete or wrong replies and can be used to test the
+ * DeviceHandlerBase.
  */
 class ComIFMock : public DeviceCommunicationIF, public SystemObject {
  public:

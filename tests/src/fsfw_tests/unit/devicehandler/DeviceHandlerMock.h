@@ -16,6 +16,7 @@ public:
 			CookieIF *comCookie, FailureIsolationBase* fdirInstance);
 	virtual ~DeviceHandlerMock();
 	void changePeriodicReplyCountdown(uint32_t timeout);
+	void changeSimpleCommandReplyCountdown(uint32_t timeout);
 	void resetPeriodicReplyState();
 	bool getPeriodicReplyReceived();
 
