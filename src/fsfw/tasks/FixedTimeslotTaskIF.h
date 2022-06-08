@@ -50,11 +50,11 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
    */
   virtual ReturnValue_t checkSequence() = 0;
 
-  virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode) {
+  ReturnValue_t addComponent(object_id_t object, uint8_t opCode) override {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
-  virtual ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) {
+  ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) override {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 };
