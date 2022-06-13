@@ -620,16 +620,15 @@ inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapConte
   sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
              << std::endl;
 #else
-  sif::printDebug(
-      "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
+  sif::printDebug("Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
 #endif
   for (const auto &dit : telecommandMap) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "[" << dit.first << "]: Request ID: " << dit.second.requestId << " | "
                << "Store Address: " << dit.second.storeAddr.raw << std::endl;
 #else
-      sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit.first,
-                      dit.second.requestId, dit.second.storeAddr);
+    sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit.first, dit.second.requestId,
+                    dit.second.storeAddr);
 #endif
   }
 #endif
