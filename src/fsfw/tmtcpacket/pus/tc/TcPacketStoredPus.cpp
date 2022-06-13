@@ -14,8 +14,8 @@ TcPacketStoredPus::TcPacketStoredPus(uint16_t apid, uint8_t service, uint8_t sub
   }
   uint8_t* pData = nullptr;
   ReturnValue_t returnValue =
-      this->store->getFreeElement(&this->storeAddress, (TC_PACKET_MIN_SIZE + size), &pData);
-  if (returnValue != this->store->RETURN_OK) {
+      this->STORE->getFreeElement(&this->storeAddress, (TC_PACKET_MIN_SIZE + size), &pData);
+  if (returnValue != this->STORE->RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "TcPacketStoredBase: Could not get free element from store!" << std::endl;
 #endif
@@ -44,19 +44,19 @@ TcPacketStoredPus::TcPacketStoredPus(const uint8_t* data, size_t size) : TcPacke
     return;
   }
   if (this->checkAndSetStore()) {
-    ReturnValue_t status = store->addData(&storeAddress, data, size);
+    ReturnValue_t status = STORE->addData(&storeAddress, data, size);
     if (status != HasReturnvaluesIF::RETURN_OK) {
       this->setData(nullptr, size);
     }
     const uint8_t* storePtr = nullptr;
     // Repoint base data pointer to the data in the store.
-    store->getData(storeAddress, &storePtr, &size);
+    STORE->getData(storeAddress, &storePtr, &size);
     this->setData(const_cast<uint8_t*>(storePtr), size);
   }
 }
 
 ReturnValue_t TcPacketStoredPus::deletePacket() {
-  ReturnValue_t result = this->store->deleteData(this->storeAddress);
+  ReturnValue_t result = this->STORE->deleteData(this->storeAddress);
   this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
   // To circumvent size checks
   this->setData(nullptr, -1);
@@ -68,7 +68,7 @@ TcPacketPusBase* TcPacketStoredPus::getPacketBase() { return this; }
 bool TcPacketStoredPus::isSizeCorrect() {
   const uint8_t* temp_data = nullptr;
   size_t temp_size;
-  ReturnValue_t status = this->store->getData(this->storeAddress, &temp_data, &temp_size);
+  ReturnValue_t status = this->STORE->getData(this->storeAddress, &temp_data, &temp_size);
   if (status == StorageManagerIF::RETURN_OK) {
     if (this->getFullSize() == temp_size) {
       return true;

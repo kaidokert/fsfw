@@ -1062,7 +1062,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   /**
    * Same as triggerEvent, but for forwarding if object is used as proxy.
    */
-  virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const override;
+  virtual void forwardEvent(Event event, uint32_t parameter1 = 0,
+                            uint32_t parameter2 = 0) const override;
 
   /**
    * Checks if current mode is transitional mode.

@@ -12,6 +12,7 @@ template <typename T, size_t MAX_SIZE, typename count_t = uint8_t>
 class FixedArrayList : public ArrayList<T, count_t> {
   static_assert(MAX_SIZE <= std::numeric_limits<count_t>::max(),
                 "count_t is not large enough to hold MAX_SIZE");
+
  private:
   T data[MAX_SIZE];
 

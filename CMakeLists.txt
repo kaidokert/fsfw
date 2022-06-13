@@ -1,28 +1,77 @@
 cmake_minimum_required(VERSION 3.13)
 
+set(MSG_PREFIX "fsfw |")
+
+# Add the cmake folder so the FindSphinx module is found
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH
+     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules/bilke")
+list(APPEND CMAKE_MODULE_PATH
+     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake-modules/rpavlik")
+
+# ##############################################################################
+# Version file handling  #
+# ##############################################################################
+
+set(FSFW_VERSION_IF_GIT_FAILS 4)
+set(FSFW_SUBVERSION_IF_GIT_FAILS 0)
+set(FSFW_REVISION_IF_GIT_FAILS 0)
+
+set(FSFW_GIT_VER_HANDLING_OK FALSE)
+# Version handling
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+  message(STATUS "${MSG_PREFIX} Determining version information with git")
+  include(FsfwHelpers)
+  determine_version_with_git("--exclude" "docker_*")
+  if(GIT_INFO)
+    set(FSFW_GIT_INFO
+        ${GIT_INFO}
+        CACHE STRING "Version information retrieved with git describe")
+    list(GET FSFW_GIT_INFO 1 FSFW_VERSION)
+    list(GET FSFW_GIT_INFO 2 FSFW_SUBVERSION)
+    list(GET FSFW_GIT_INFO 3 FSFW_REVISION)
+    list(GET FSFW_GIT_INFO 4 FSFW_VCS_INFO)
+    if(NOT FSFW_VERSION)
+      set(FSFW_VERSION ${FSFW_VERSION_IF_GIT_FAILS})
+    endif()
+    if(NOT FSFW_SUBVERSION)
+      set(FSFW_SUBVERSION ${FSFW_SUBVERSION_IF_GIT_FAILS})
+    endif()
+    if(NOT FSFW_REVISION)
+      set(FSFW_REVISION ${FSFW_REVISION_IF_GIT_FAILS})
+    endif()
+    set(FSFW_GIT_VER_HANDLING_OK TRUE)
+  else()
+    set(FSFW_GIT_VER_HANDLING_OK FALSE)
+  endif()
+endif()
+if(NOT FSFW_GIT_VER_HANDLING_OK)
+  set(FSFW_VERSION ${FSFW_VERSION_IF_GIT_FAILS})
+  set(FSFW_SUBVERSION ${FSFW_SUBVERSION_IF_GIT_FAILS})
+  set(FSFW_REVISION ${FSFW_REVISION_IF_GIT_FAILS})
+endif()
+
 set(LIB_FSFW_NAME fsfw)
-project(${LIB_FSFW_NAME})
+project(${LIB_FSFW_NAME}
+        VERSION ${FSFW_VERSION}.${FSFW_SUBVERSION}.${FSFW_REVISION})
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
   set(CMAKE_CXX_STANDARD_REQUIRED True)
 elseif(${CMAKE_CXX_STANDARD} LESS 17)
-  message(FATAL_ERROR "Compiling the FSFW requires a minimum of C++17 support")
+  message(
+    FATAL_ERROR
+      "${MSG_PREFIX} Compiling the FSFW requires a minimum of C++17 support")
 endif()
 
-set(FSFW_VERSION 4)
-set(FSFW_SUBVERSION 0)
-set(FSFW_REVISION 0)
-
-# Add the cmake folder so the FindSphinx module is found
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(FSFW_SOURCES_DIR "${CMAKE_SOURCE_DIR}/src/fsfw")
 
 set(FSFW_ETL_LIB_NAME etl)
 set(FSFW_ETL_LIB_MAJOR_VERSION
     20
     CACHE STRING "ETL library major version requirement")
 set(FSFW_ETL_LIB_VERSION
-    ${FSFW_ETL_LIB_MAJOR_VERSION}.27.3
+    ${FSFW_ETL_LIB_MAJOR_VERSION}.28.0
     CACHE STRING "ETL library exact version requirement")
 set(FSFW_ETL_LINK_TARGET etl::etl)
 
@@ -91,14 +140,16 @@ endif()
 
 if(FSFW_BUILD_UNITTESTS)
   message(
-    STATUS "Building the FSFW unittests in addition to the static library")
+    STATUS
+      "${MSG_PREFIX} Building the FSFW unittests in addition to the static library"
+  )
   # Check whether the user has already installed Catch2 first
   find_package(Catch2 ${FSFW_CATCH2_LIB_MAJOR_VERSION})
   # Not installed, so use FetchContent to download and provide Catch2
   if(NOT Catch2_FOUND)
     message(
       STATUS
-        "Catch2 installation not found. Downloading Catch2 library with FetchContent"
+        "${MSG_PREFIX} Catch2 installation not found. Downloading Catch2 library with FetchContent"
     )
     include(FetchContent)
 
@@ -123,23 +174,18 @@ if(FSFW_BUILD_UNITTESTS)
   endif()
 
   if(FSFW_TESTS_GEN_COV)
-    message(STATUS "Generating coverage data for the library")
-    message(STATUS "Targets linking against ${LIB_FSFW_NAME} "
+    message(STATUS "${MSG_PREFIX} Generating coverage data for the library")
+    message(STATUS "${MSG_PREFIX} Targets linking against ${LIB_FSFW_NAME} "
                    "will be compiled with coverage data as well")
-    include(FetchContent)
-    FetchContent_Declare(
-      cmake-modules GIT_REPOSITORY https://github.com/bilke/cmake-modules.git)
-    FetchContent_MakeAvailable(cmake-modules)
     set(CMAKE_BUILD_TYPE "Debug")
-    list(APPEND CMAKE_MODULE_PATH ${cmake-modules_SOURCE_DIR})
     include(CodeCoverage)
   endif()
 endif()
 
-message(STATUS "Finding and/or providing ETL library")
+message(STATUS "${MSG_PREFIX} Finding and/or providing ETL library")
 
 # Check whether the user has already installed ETL first
-find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
+find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} CONFIG QUIET)
 # Not installed, so use FetchContent to download and provide etl
 if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
   message(
@@ -182,7 +228,9 @@ target_include_directories(${LIB_FSFW_NAME}
 
 # Backwards comptability
 if(OS_FSFW AND NOT FSFW_OSAL)
-  message(WARNING "Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
+  message(
+    WARNING
+      "${MSG_PREFIX} Please pass the FSFW OSAL as FSFW_OSAL instead of OS_FSFW")
   set(FSFW_OSAL OS_FSFW)
 endif()
 
@@ -198,7 +246,6 @@ if(NOT FSFW_OSAL)
         "host"
         CACHE STRING "OS abstraction layer used in the FSFW")
   endif()
-
 endif()
 
 set(FSFW_OSAL_DEFINITION FSFW_OSAL_HOST)
@@ -218,7 +265,9 @@ elseif(FSFW_OSAL STREQUAL rtems)
   set(FSFW_OSAL_RTEMS ON)
 else()
   message(
-    WARNING "Invalid operating system for FSFW specified! Setting to host..")
+    WARNING
+      "${MSG_PREFIX} Invalid operating system for FSFW specified! Setting to host.."
+  )
   set(FSFW_OS_NAME "Host")
   set(OS_FSFW "host")
 endif()
@@ -226,7 +275,9 @@ endif()
 configure_file(src/fsfw/FSFW.h.in fsfw/FSFW.h)
 configure_file(src/fsfw/FSFWVersion.h.in fsfw/FSFWVersion.h)
 
-message(STATUS "Compiling FSFW for the ${FSFW_OS_NAME} operating system.")
+message(
+  STATUS "${MSG_PREFIX} Compiling FSFW for the ${FSFW_OS_NAME} operating system"
+)
 
 add_subdirectory(src)
 add_subdirectory(tests)
@@ -298,8 +349,12 @@ endif()
 if(NOT FSFW_CONFIG_PATH)
   set(DEF_CONF_PATH misc/defaultcfg/fsfwconfig)
   if(NOT FSFW_BUILD_DOCS)
-    message(WARNING "Flight Software Framework configuration path not set!")
-    message(WARNING "Setting default configuration from ${DEF_CONF_PATH} ..")
+    message(
+      WARNING
+        "${MSG_PREFIX} Flight Software Framework configuration path not set")
+    message(
+      WARNING
+        "${MSG_PREFIX} Setting default configuration from ${DEF_CONF_PATH} ..")
   endif()
   add_subdirectory(${DEF_CONF_PATH})
   set(FSFW_CONFIG_PATH ${DEF_CONF_PATH})

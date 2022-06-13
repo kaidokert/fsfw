@@ -39,7 +39,7 @@ class CService201HealthCommanding : public CommandingServiceBase {
 
  private:
   static ReturnValue_t checkInterfaceAndAcquireMessageQueue(MessageQueueId_t *MessageQueueToSet,
-                                                     const object_id_t *objectId);
+                                                            const object_id_t *objectId);
 
   [[maybe_unused]] ReturnValue_t prepareHealthSetReply(const CommandMessage *reply);
 
