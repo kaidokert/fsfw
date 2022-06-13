@@ -15,8 +15,6 @@
 
 #include <cstddef>
 
-uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
-
 FixedTimeslotTask::FixedTimeslotTask(const char *name, rtems_task_priority setPriority,
                                      size_t setStack, TaskPeriod setOverallPeriod,
                                      TaskDeadlineMissedFunction dlmFunc_)
@@ -36,16 +34,6 @@ rtems_task FixedTimeslotTask::taskEntryPoint(rtems_task_argument argument) {
   sif::error << "Polling task " << originalTask->getId() << " returned from taskFunctionality."
              << std::endl;
 #endif
-}
-
-void FixedTimeslotTask::missedDeadlineCounter() {
-  FixedTimeslotTask::deadlineMissedCount++;
-  if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount << " deadlines."
-               << std::endl;
-#endif
-  }
 }
 
 ReturnValue_t FixedTimeslotTask::startTask() {

@@ -35,16 +35,6 @@ class FixedTimeslotTask : public FixedTimeslotTaskBase, public FreeRTOSTaskIF {
   ~FixedTimeslotTask() override;
 
   ReturnValue_t startTask() override;
-  /**
-   * This static function can be used as #deadlineMissedFunc.
-   * It counts missedDeadlines and prints the number of missed deadlines
-   * every 10th time.
-   */
-  static void missedDeadlineCounter();
-  /**
-   * A helper variable to count missed deadlines.
-   */
-  static uint32_t MISSED_DEADLINE_COUNT;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
 

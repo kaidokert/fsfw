@@ -30,17 +30,6 @@ class FixedTimeslotTask : public FixedTimeslotTaskBase {
 
   ReturnValue_t sleepFor(uint32_t ms) override;
 
-  /**
-   * This static function can be used as #deadlineMissedFunc.
-   * It counts missedDeadlines and prints the number of missed deadlines every 10th time.
-   */
-  static void missedDeadlineCounter();
-
-  /**
-   * A helper variable to count missed deadlines.
-   */
-  static uint32_t deadlineMissedCount;
-
  protected:
   /**
    * @brief	This function holds the main functionality of the thread.

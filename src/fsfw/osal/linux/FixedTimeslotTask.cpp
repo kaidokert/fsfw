@@ -4,7 +4,6 @@
 
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = PTHREAD_STACK_MIN;
 
 FixedTimeslotTask::FixedTimeslotTask(const char* name_, TaskPriority priority_, size_t stackSize_,
@@ -60,15 +59,5 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
     }
     // The device handler for this slot is executed and the next one is chosen.
     pollingSeqTable.executeAndAdvance();
-  }
-}
-
-void FixedTimeslotTask::missedDeadlineCounter() {
-  FixedTimeslotTask::deadlineMissedCount++;
-  if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount << " deadlines."
-               << std::endl;
-#endif
   }
 }

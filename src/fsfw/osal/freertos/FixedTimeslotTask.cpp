@@ -2,8 +2,6 @@
 
 #include "fsfw/serviceinterface.h"
 
-uint32_t FixedTimeslotTask::MISSED_DEADLINE_COUNT = 0;
-
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = configMINIMAL_STACK_SIZE;
 
 FixedTimeslotTask::FixedTimeslotTask(TaskName name, TaskPriority setPriority,
@@ -40,16 +38,6 @@ void FixedTimeslotTask::taskEntryPoint(void* argument) {
 #else
   sif::printDebug("Polling task returned from taskFunctionality\n");
 #endif
-}
-
-void FixedTimeslotTask::missedDeadlineCounter() {
-  FixedTimeslotTask::MISSED_DEADLINE_COUNT++;
-  if (FixedTimeslotTask::MISSED_DEADLINE_COUNT % 10 == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PST missed " << FixedTimeslotTask::MISSED_DEADLINE_COUNT << " deadlines"
-               << std::endl;
-#endif
-  }
 }
 
 ReturnValue_t FixedTimeslotTask::startTask() {
