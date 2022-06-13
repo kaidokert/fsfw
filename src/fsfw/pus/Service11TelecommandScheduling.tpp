@@ -615,23 +615,24 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleInvalidD
 
 template <size_t MAX_NUM_TCS>
 inline void Service11TelecommandScheduling<MAX_NUM_TCS>::debugPrintMultimapContent() const {
-  for ([[maybe_unused]] const auto &dit : telecommandMap) {
 #if FSFW_DISABLE_PRINTOUT == 0
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
-               << std::endl;
+  sif::debug << "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content"
+             << std::endl;
+#else
+  sif::printDebug(
+      "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
+#endif
+  for (const auto &dit : telecommandMap) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "[" << dit.first << "]: Request ID: " << dit.second.requestId << " | "
                << "Store Address: " << dit.second.storeAddr.raw << std::endl;
 #else
-    sif::printDebug(
-        "Service11TelecommandScheduling::debugPrintMultimapContent: Multimap Content\n");
-    for (auto dit = telecommandMap.begin(); dit != telecommandMap.end(); ++dit) {
-      sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit->first,
-                      dit->second.requestId, dit->second.storeAddr);
-    }
-#endif
+      sif::printDebug("[%d]: Request ID: %d  | Store Address: %d\n", dit.first,
+                      dit.second.requestId, dit.second.storeAddr);
 #endif
   }
+#endif
 }
 
 template <size_t MAX_NUM_TCS>
