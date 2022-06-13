@@ -65,7 +65,7 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueu
   }
 
   ReturnValue_t returnCode = convertReturnCode(result);
-  if (result == MessageQueueIF::EMPTY) {
+  if (returnCode == MessageQueueIF::EMPTY) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
