@@ -65,7 +65,7 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    * call tries to set it and throws an error message in case of failures.
    * The default store is objects::TC_STORE.
    */
-  static StorageManagerIF* store;
+  static StorageManagerIF* STORE;
   /**
    * The address where the packet data of the object instance is stored.
    */
@@ -77,7 +77,7 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    * @return  @li @c true if the store is linked or could be created.
    *          @li @c false otherwise.
    */
-  bool checkAndSetStore();
+  static bool checkAndSetStore();
 };
 
-#endif /* TMTCPACKET_PUS_TcPacketStoredBase_H_ */
+#endif /* TMTCPACKET_PUS_TCPACKETSTORED_H_ */

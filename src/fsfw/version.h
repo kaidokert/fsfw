@@ -12,10 +12,13 @@ namespace fsfw {
 
 class Version {
  public:
-  Version(uint32_t major, uint32_t minor, uint32_t revision);
-  uint32_t major = 0;
-  uint32_t minor = 0;
-  uint32_t revision = 0;
+  Version(int major, int minor, int revision, const char* addInfo = nullptr);
+  int major = -1;
+  int minor = -1;
+  int revision = -1;
+
+  // Additional information, e.g. a git SHA hash
+  const char* addInfo = nullptr;
 
   friend bool operator==(const Version& v1, const Version& v2) {
     return (v1.major == v2.major and v1.minor == v2.minor and v1.revision == v2.revision);
@@ -43,10 +46,7 @@ class Version {
    * @param v
    * @return
    */
-  friend std::ostream& operator<<(std::ostream& os, const Version& v) {
-    os << v.major << "." << v.minor << "." << v.revision;
-    return os;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Version& v);
 #endif
 
   /**
@@ -57,7 +57,7 @@ class Version {
   void getVersion(char* str, size_t maxLen) const;
 };
 
-extern const fsfw::Version FSFW_VERSION;
+extern const Version FSFW_VERSION;
 
 }  // namespace fsfw
 

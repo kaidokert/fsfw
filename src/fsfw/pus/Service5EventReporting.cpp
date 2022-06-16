@@ -86,8 +86,8 @@ ReturnValue_t Service5EventReporting::handleRequest(uint8_t subservice) {
 // In addition to the default PUSServiceBase initialization, this service needs
 // to be registered to the event manager to listen for events.
 ReturnValue_t Service5EventReporting::initialize() {
-  EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
-  if (manager == NULL) {
+  auto* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
+  if (manager == nullptr) {
     return RETURN_FAILED;
   }
   // register Service 5 as listener for events

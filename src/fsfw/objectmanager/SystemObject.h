@@ -50,7 +50,8 @@ class SystemObject : public SystemObjectIF {
   virtual ReturnValue_t initialize() override;
   virtual ReturnValue_t checkObjectConnections() override;
 
-  virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const override;
+  virtual void forwardEvent(Event event, uint32_t parameter1 = 0,
+                            uint32_t parameter2 = 0) const override;
 };
 
 #endif /* FSFW_OBJECTMANAGER_SYSTEMOBJECT_H_ */

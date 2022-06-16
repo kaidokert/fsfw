@@ -9,7 +9,7 @@
 CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid, object_id_t setObjectId)
     : TcDistributor(setObjectId), defaultApid(setDefaultApid) {}
 
-CCSDSDistributor::~CCSDSDistributor() {}
+CCSDSDistributor::~CCSDSDistributor() = default;
 
 TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 #if CCSDS_DISTRIBUTOR_DEBUGGING == 1
@@ -38,6 +38,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
         " store failed!\n");
 #endif
 #endif
+    return queueMap.end();
   }
   SpacePacketBase currentPacket(packet);
 
@@ -45,7 +46,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   sif::info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex
             << currentPacket.getAPID() << std::dec << std::endl;
 #endif
-  TcMqMapIter position = this->queueMap.find(currentPacket.getAPID());
+  auto position = this->queueMap.find(currentPacket.getAPID());
   if (position != this->queueMap.end()) {
     return position;
   } else {

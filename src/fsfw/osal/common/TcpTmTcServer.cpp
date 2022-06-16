@@ -109,8 +109,8 @@ TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
   using namespace tcpip;
   // If a connection is accepted, the corresponding socket will be assigned to the new socket
   socket_t connSocket = 0;
-  // sockaddr clientSockAddr = {};
-  // socklen_t connectorSockAddrLen = 0;
+  sockaddr clientSockAddr = {};
+  socklen_t connectorSockAddrLen = 0;
   int retval = 0;
 
   // Listen for connection requests permanently for lifetime of program
@@ -121,8 +121,7 @@ TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
       continue;
     }
 
-    // connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
-    connSocket = accept(listenerTcpSocket, nullptr, nullptr);
+    connSocket = accept(listenerTcpSocket, &clientSockAddr, &connectorSockAddrLen);
 
     if (connSocket == INVALID_SOCKET) {
       handleError(Protocol::TCP, ErrorSources::ACCEPT_CALL, 500);
@@ -137,6 +136,7 @@ TcpTmTcServer::~TcpTmTcServer() { closeSocket(listenerTcpSocket); }
     if (retval != 0) {
       handleError(Protocol::TCP, ErrorSources::SHUTDOWN_CALL);
     }
+
     closeSocket(connSocket);
     connSocket = 0;
   }
@@ -161,7 +161,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
 
   while (true) {
     ssize_t retval = recv(connSocket, reinterpret_cast<char*>(receptionBuffer.data()),
-                      receptionBuffer.capacity(), tcpConfig.tcpFlags);
+                          receptionBuffer.capacity(), tcpConfig.tcpFlags);
     if (retval == 0) {
       size_t availableReadData = ringBuffer.getAvailableReadData();
       if (availableReadData > lastRingBufferSize) {
@@ -285,7 +285,7 @@ ReturnValue_t TcpTmTcServer::handleTmSending(socket_t connSocket, bool& tmSent) 
       arrayprinter::print(storeAccessor.data(), storeAccessor.size());
     }
     ssize_t retval = send(connSocket, reinterpret_cast<const char*>(storeAccessor.data()),
-                      storeAccessor.size(), tcpConfig.tcpTmFlags);
+                          storeAccessor.size(), tcpConfig.tcpTmFlags);
     if (retval == static_cast<int>(storeAccessor.size())) {
       // Packet sent, clear FIFO entry
       tmtcBridge->tmFifo->pop();
@@ -340,7 +340,7 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
   size_t foundSize = 0;
   size_t readLen = 0;
   while (readLen < readAmount) {
-    if(spacePacketParser == nullptr) {
+    if (spacePacketParser == nullptr) {
       return HasReturnvaluesIF::RETURN_FAILED;
     }
     result =

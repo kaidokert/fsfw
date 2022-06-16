@@ -1,5 +1,1 @@
-target_sources(${LIB_FSFW_NAME} 
-	PRIVATE 
-		ModeSequenceMessage.cpp
-		ModeStore.cpp
-)
+target_sources(${LIB_FSFW_NAME} PRIVATE ModeSequenceMessage.cpp ModeStore.cpp)
