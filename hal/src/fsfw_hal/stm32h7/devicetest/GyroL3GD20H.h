@@ -10,6 +10,10 @@
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_spi.h"
 
+#ifndef STM_USE_PERIPHERAL_TX_BUFFER_MPU_PROTECTION
+#define STM_USE_PERIPHERAL_TX_BUFFER_MPU_PROTECTION 1
+#endif
+
 enum class TransferStates { IDLE, WAIT, SUCCESS, FAILURE };
 
 class GyroL3GD20H {

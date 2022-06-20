@@ -59,8 +59,8 @@ class MessageQueue : public MessageQueueBase {
 
  private:
   /**
-   * \brief	This attribute stores a reference to the internal error reporter for reporting full
-   * queues. \details	In the event of a full destination queue, the reporter will be notified. The
+   * @brief	This attribute stores a reference to the internal error reporter for reporting full
+   * queues. @details	In the event of a full destination queue, the reporter will be notified. The
    * reference is set by lazy loading
    */
   InternalErrorReporterIF* internalErrorReporter;

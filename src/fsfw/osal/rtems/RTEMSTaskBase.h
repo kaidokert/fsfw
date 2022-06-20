@@ -36,9 +36,9 @@ class RTEMSTaskBase {
   /**
    * @brief	This method returns the task id of this class.
    */
-  rtems_id getId();
+  rtems_id getId() const;
 
-  ReturnValue_t sleepFor(uint32_t ms);
+  static ReturnValue_t sleepFor(uint32_t ms);
   static ReturnValue_t setAndStartPeriod(rtems_interval period, rtems_id *periodId);
   static rtems_status_code restartPeriod(rtems_interval period, rtems_id periodId);
 

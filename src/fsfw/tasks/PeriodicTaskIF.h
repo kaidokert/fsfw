@@ -3,9 +3,8 @@
 
 #include <cstddef>
 
-#include "../objectmanager/SystemObjectIF.h"
-#include "../timemanager/Clock.h"
-class ExecutableObjectIF;
+#include "fsfw/objectmanager/SystemObjectIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
 
 /**
  * New version of TaskIF
@@ -18,7 +17,7 @@ class PeriodicTaskIF {
   /**
    * @brief	A virtual destructor as it is mandatory for interfaces.
    */
-  virtual ~PeriodicTaskIF() {}
+  virtual ~PeriodicTaskIF() = default;
   /**
    * @brief	With the startTask method, a created task can be started
    *          for the first time.
@@ -26,28 +25,29 @@ class PeriodicTaskIF {
   virtual ReturnValue_t startTask() = 0;
 
   /**
-   * Add a component (object) to a periodic task.
-   * @param object
-   * Add an object to the task. The object needs to implement ExecutableObjectIF
-   * @return
+   * Adds an object to the list of objects to be executed.
+   * The objects are executed in the order added. The object needs to implement
+   * ExecutableObjectIF
+   * @param object Id of the object to add.
+   * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
    */
-  virtual ReturnValue_t addComponent(object_id_t object) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  };
+  virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode) = 0;
+  virtual ReturnValue_t addComponent(object_id_t object) { return addComponent(object, 0); };
 
   /**
-   * Add an object to a periodic task.
-   * @param object
-   * Add an object to the task.
-   * @return
+   * Adds an object to the list of objects to be executed.
+   * The objects are executed in the order added.
+   * @param object pointer to the object to add.
+   * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
    */
-  virtual ReturnValue_t addComponent(ExecutableObjectIF* object) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  };
+  virtual ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) = 0;
+  virtual ReturnValue_t addComponent(ExecutableObjectIF* object) { return addComponent(object, 0); }
 
   virtual ReturnValue_t sleepFor(uint32_t ms) = 0;
 
-  virtual uint32_t getPeriodMs() const = 0;
+  [[nodiscard]] virtual uint32_t getPeriodMs() const = 0;
+
+  [[nodiscard]] virtual bool isEmpty() const = 0;
 };
 
-#endif /* PERIODICTASKIF_H_ */
+#endif /* FRAMEWORK_TASK_PERIODICTASKIF_H_ */
