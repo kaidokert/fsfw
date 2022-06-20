@@ -105,6 +105,7 @@ endif()
 
 option(FSFW_BUILD_UNITTESTS
        "Build unittest binary in addition to static library" OFF)
+option(FSFW_CICD_BUILD "Build for CI/CD. This can disable problematic test" OFF)
 option(FSFW_BUILD_DOCS "Build documentation with Sphinx and Doxygen" OFF)
 if(FSFW_BUILD_UNITTESTS)
   option(FSFW_TESTS_GEN_COV "Generate coverage data for unittests" ON)
