@@ -210,7 +210,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
 #endif
       return result;
     }
-    ReturnValue_t result = gpioComIF->pullLow(gpioId);
+    result = gpioComIF->pullLow(gpioId);
     if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1

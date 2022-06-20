@@ -1,7 +1,6 @@
 #include "fsfw/tasks/TaskFactory.h"
 
 #include "fsfw/osal/rtems/FixedTimeslotTask.h"
-#include "fsfw/osal/rtems/InitTask.h"
 #include "fsfw/osal/rtems/PeriodicTask.h"
 #include "fsfw/osal/rtems/RtemsBasic.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
@@ -9,29 +8,29 @@
 // TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
 
-TaskFactory::~TaskFactory() {}
+TaskFactory::TaskFactory() = default;
+
+TaskFactory::~TaskFactory() = default;
 
 TaskFactory* TaskFactory::instance() { return TaskFactory::factoryInstance; }
 
 PeriodicTaskIF* TaskFactory::createPeriodicTask(
     TaskName name_, TaskPriority taskPriority_, TaskStackSize stackSize_,
     TaskPeriod periodInSeconds_, TaskDeadlineMissedFunction deadLineMissedFunction_) {
-  rtems_interval taskPeriod = periodInSeconds_ * Clock::getTicksPerSecond();
-
-  return static_cast<PeriodicTaskIF*>(
-      new PeriodicTask(name_, taskPriority_, stackSize_, taskPeriod, deadLineMissedFunction_));
+  return static_cast<PeriodicTaskIF*>(new PeriodicTask(name_, taskPriority_, stackSize_,
+                                                       periodInSeconds_, deadLineMissedFunction_));
 }
 
 FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(
     TaskName name_, TaskPriority taskPriority_, TaskStackSize stackSize_,
     TaskPeriod periodInSeconds_, TaskDeadlineMissedFunction deadLineMissedFunction_) {
-  rtems_interval taskPeriod = periodInSeconds_ * Clock::getTicksPerSecond();
-  return static_cast<FixedTimeslotTaskIF*>(
-      new FixedTimeslotTask(name_, taskPriority_, stackSize_, taskPeriod, deadLineMissedFunction_));
+  return static_cast<FixedTimeslotTaskIF*>(new FixedTimeslotTask(
+      name_, taskPriority_, stackSize_, periodInSeconds_, deadLineMissedFunction_));
 }
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
-  // TODO not implemented
+  // This should call the OS specific destructor
+  delete (dynamic_cast<PeriodicTask*>(task));
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
@@ -45,5 +44,3 @@ void TaskFactory::printMissedDeadline() {
   /* TODO: Implement */
   return;
 }
-
-TaskFactory::TaskFactory() {}

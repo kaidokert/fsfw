@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
+- Renamed auto-formatting script to `auto-formatter.sh` and made it more robust.
+  If `cmake-format` is installed, it will also auto-format the `CMakeLists.txt` files now.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/625
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/626
 - Bump C++ required version to C++17. Every project which uses the FSFW and every modern
   compiler supports it
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/622
@@ -42,6 +46,38 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   creation call. It allows passing context information and an arbitrary user argument into
   the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/583
+
+### Task Module Refactoring
+
+PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/636
+
+**Refactoring general task code**
+
+- There was a lot of duplicate/boilerplate code inside the individual task IF OSAL implementations.
+  Remove it by introducing base classes `PeriodicTaskBase` and `FixedTimeslotTaskBase`.
+
+**Refactor PeriodicTaskIF**
+
+- Convert `virtual ReturnValue_t addComponent(object_id_t object)` to
+  `virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode = 0)`, allowing to pass
+  the operation code passed to `performOperation`. Updated API taking
+  an `ExecutableObjectIF` accordingly
+
+**Refactor FixedTimeslotTaskIF**
+
+- Add additional `addSlot` function which takes an `ExecutableObjectIF` pointer and its Object ID
+
+**Refactor FixedSequenceSlot**
+
+- Introduce typedef `CustomCheckFunc` for `ReturnValue_t (*customCheckFunction)(const SlotList&)`.
+- Convert `ReturnValue_t (*customCheckFunction)(const SlotList&)` to
+  `ReturnValue_t (*customCheckFunction)(const SlotList&, void*)`, allowing arbitrary user arguments
+  for the custom checker
+
+**Linux Task Module**
+
+- Use composition instead of inheritance for the `PeriodicPosixTask` and make the `PosixTask` a
+  member of the class
 
 ### HAL
 
@@ -84,6 +120,8 @@ https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
 
 ## Additions
 
+- Basic `clion` support: Update `.gitignore` and add some basic run configurations
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/625
 - LTO support: Allow using LTO/IPO by setting `FSFW_ENABLE_LTO=1`. CMake is able to detect whether
   the user compiler supports IPO/LPO. LTO is on by default now. Most modern compilers support it,
   can make good use of it and it usually makes the code faster and/or smaller.

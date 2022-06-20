@@ -6,8 +6,8 @@
 #include "FreeRTOS.h"
 #include "FreeRTOSTaskIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
-#include "fsfw/tasks/PeriodicTaskIF.h"
-#include "fsfw/tasks/Typedef.h"
+#include "fsfw/tasks/PeriodicTaskBase.h"
+#include "fsfw/tasks/definitions.h"
 #include "task.h"
 
 class ExecutableObjectIF;
@@ -17,7 +17,7 @@ class ExecutableObjectIF;
  * 			periodic activities of multiple objects.
  * @ingroup task_handling
  */
-class PeriodicTask : public PeriodicTaskIF, public FreeRTOSTaskIF {
+class PeriodicTask : public PeriodicTaskBase, public FreeRTOSTaskIF {
  public:
   /**
    * Keep in Mind that you need to call before this vTaskStartScheduler()!
@@ -43,7 +43,7 @@ class PeriodicTask : public PeriodicTaskIF, public FreeRTOSTaskIF {
    * @brief	Currently, the executed object's lifetime is not coupled with
    * 			the task object's lifetime, so the destructor is empty.
    */
-  virtual ~PeriodicTask(void);
+  ~PeriodicTask() override;
 
   /**
    * @brief	The method to start the task.
@@ -53,27 +53,6 @@ class PeriodicTask : public PeriodicTaskIF, public FreeRTOSTaskIF {
    * 			to the system call.
    */
   ReturnValue_t startTask() override;
-  /**
-   * Adds an object to the list of objects to be executed.
-   * The objects are executed in the order added.
-   * @param object Id of the object to add.
-   * @return
-   * -@c RETURN_OK on success
-   * -@c RETURN_FAILED if the object could not be added.
-   */
-  ReturnValue_t addComponent(object_id_t object) override;
-
-  /**
-   * Adds an object to the list of objects to be executed.
-   * The objects are executed in the order added.
-   * @param object Id of the object to add.
-   * @return
-   * -@c RETURN_OK on success
-   * -@c RETURN_FAILED if the object could not be added.
-   */
-  ReturnValue_t addComponent(ExecutableObjectIF* object) override;
-
-  uint32_t getPeriodMs() const override;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
 
@@ -83,28 +62,6 @@ class PeriodicTask : public PeriodicTaskIF, public FreeRTOSTaskIF {
   bool started;
   TaskHandle_t handle;
 
-  //! Typedef for the List of objects.
-  typedef std::vector<ExecutableObjectIF*> ObjectList;
-  /**
-   * @brief	This attribute holds a list of objects to be executed.
-   */
-  ObjectList objectList;
-  /**
-   * @brief	The period of the task.
-   * @details
-   * The period determines the frequency of the task's execution.
-   * It is expressed in clock ticks.
-   */
-  TaskPeriod period;
-  /**
-   * @brief	The pointer to the deadline-missed function.
-   * @details
-   * This pointer stores the function that is executed if the task's deadline
-   * is missed so each may react individually on a timing failure.
-   * The pointer may be NULL, then nothing happens on missing the deadline.
-   * The deadline is equal to the next execution of the periodic task.
-   */
-  void (*deadlineMissedFunc)(void);
   /**
    * @brief	This is the function executed in the new task's context.
    * @details
@@ -125,7 +82,7 @@ class PeriodicTask : public PeriodicTaskIF, public FreeRTOSTaskIF {
    * the next period.
    * On missing the deadline, the deadlineMissedFunction is executed.
    */
-  void taskFunctionality(void);
+  [[noreturn]] void taskFunctionality();
 
   void handleMissedDeadline();
 };

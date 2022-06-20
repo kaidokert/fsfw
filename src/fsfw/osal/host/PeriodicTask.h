@@ -6,9 +6,9 @@
 #include <thread>
 #include <vector>
 
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../tasks/PeriodicTaskIF.h"
-#include "../../tasks/Typedef.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/tasks/PeriodicTaskBase.h"
+#include "fsfw/tasks/definitions.h"
 
 class ExecutableObjectIF;
 
@@ -19,7 +19,7 @@ class ExecutableObjectIF;
  *
  * @ingroup task_handling
  */
-class PeriodicTask : public PeriodicTaskIF {
+class PeriodicTask : public PeriodicTaskBase {
  public:
   /**
    * @brief	Standard constructor of the class.
@@ -34,12 +34,12 @@ class PeriodicTask : public PeriodicTaskIF {
    * assigned.
    */
   PeriodicTask(const char* name, TaskPriority setPriority, TaskStackSize setStack,
-               TaskPeriod setPeriod, void (*setDeadlineMissedFunc)());
+               TaskPeriod setPeriod, TaskDeadlineMissedFunction dlmFunc);
   /**
    * @brief	Currently, the executed object's lifetime is not coupled with
    * 			the task object's lifetime, so the destructor is empty.
    */
-  virtual ~PeriodicTask(void);
+  ~PeriodicTask() override;
 
   /**
    * @brief	The method to start the task.
@@ -48,63 +48,20 @@ class PeriodicTask : public PeriodicTaskIF {
    * 			The address of the task object is passed as an argument
    * 			to the system call.
    */
-  ReturnValue_t startTask(void);
-  /**
-   * Adds an object to the list of objects to be executed.
-   * The objects are executed in the order added.
-   * @param object Id of the object to add.
-   * @return
-   *  -@c RETURN_OK on success
-   *  -@c RETURN_FAILED if the object could not be added.
-   */
-  ReturnValue_t addComponent(object_id_t object);
+  ReturnValue_t startTask() override;
 
-  /**
-   * Adds an object to the list of objects to be executed.
-   * The objects are executed in the order added.
-   * @param object pointer to the object to add.
-   * @return
-   *  -@c RETURN_OK on success
-   *  -@c RETURN_FAILED if the object could not be added.
-   */
-  ReturnValue_t addComponent(ExecutableObjectIF* object);
-
-  uint32_t getPeriodMs() const;
-
-  ReturnValue_t sleepFor(uint32_t ms);
+  ReturnValue_t sleepFor(uint32_t ms) override;
 
  protected:
   using chron_ms = std::chrono::milliseconds;
   bool started;
-  //!< Typedef for the List of objects.
-  typedef std::vector<ExecutableObjectIF*> ObjectList;
   std::thread mainThread;
   std::atomic<bool> terminateThread{false};
-
-  /**
-   * @brief	This attribute holds a list of objects to be executed.
-   */
-  ObjectList objectList;
 
   std::condition_variable initCondition;
   std::mutex initMutex;
   std::string taskName;
-  /**
-   * @brief	The period of the task.
-   * @details
-   * The period determines the frequency of the task's execution.
-   * It is expressed in clock ticks.
-   */
-  TaskPeriod period;
-  /**
-   * @brief	The pointer to the deadline-missed function.
-   * @details
-   * This pointer stores the function that is executed if the task's deadline
-   * is missed. So, each may react individually on a timing failure.
-   * The pointer may be NULL, then nothing happens on missing the deadline.
-   * The deadline is equal to the next execution of the periodic task.
-   */
-  void (*deadlineMissedFunc)(void);
+
   /**
    * @brief	This is the function executed in the new task's context.
    * @details
@@ -124,9 +81,9 @@ class PeriodicTask : public PeriodicTaskIF {
    * the checkAndRestartPeriod system call blocks the task until the next
    *  period. On missing the deadline, the deadlineMissedFunction is executed.
    */
-  void taskFunctionality(void);
+  void taskFunctionality();
 
-  static bool delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval);
+  static bool delayForInterval(chron_ms* previousWakeTimeMs, chron_ms interval);
 };
 
-#endif /* PERIODICTASK_H_ */
+#endif /* FRAMEWORK_OSAL_HOST_PERIODICTASK_H_ */

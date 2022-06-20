@@ -29,7 +29,7 @@ void FixedSlotSequence::executeAndAdvance() {
 
 uint32_t FixedSlotSequence::getIntervalToNextSlotMs() {
   uint32_t oldTime;
-  SlotListIter slotListIter = current;
+  auto slotListIter = current;
   // Get the pollingTimeMs of the current slot object.
   oldTime = slotListIter->pollingTimeMs;
   // Advance to the next object.
@@ -51,7 +51,7 @@ uint32_t FixedSlotSequence::getIntervalToNextSlotMs() {
 
 uint32_t FixedSlotSequence::getIntervalToPreviousSlotMs() {
   uint32_t currentTime;
-  SlotListIter slotListIter = current;
+  auto slotListIter = current;
   // Get the pollingTimeMs of the current slot object.
   currentTime = slotListIter->pollingTimeMs;
 
@@ -67,7 +67,7 @@ uint32_t FixedSlotSequence::getIntervalToPreviousSlotMs() {
 
 bool FixedSlotSequence::slotFollowsImmediately() {
   uint32_t currentTime = current->pollingTimeMs;
-  SlotListIter fixedSequenceIter = this->current;
+  auto fixedSequenceIter = this->current;
   // Get the pollingTimeMs of the current slot object.
   if (fixedSequenceIter == slotList.begin()) return false;
   fixedSequenceIter--;
@@ -96,8 +96,8 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
     return FixedTimeslotTaskIF::SLOT_LIST_EMPTY;
   }
 
-  if (customCheckFunction != nullptr) {
-    ReturnValue_t result = customCheckFunction(slotList);
+  if (customChecker != nullptr) {
+    ReturnValue_t result = customChecker(slotList, customCheckArgs);
     if (result != HasReturnvaluesIF::RETURN_OK) {
       // Continue for now but print error output.
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -161,6 +161,9 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void FixedSlotSequence::addCustomCheck(ReturnValue_t (*customCheckFunction)(const SlotList&)) {
-  this->customCheckFunction = customCheckFunction;
+void FixedSlotSequence::addCustomCheck(CustomCheckFunc customChecker_, void* checkerArgs_) {
+  customChecker = customChecker_;
+  customCheckArgs = checkerArgs_;
 }
+
+bool FixedSlotSequence::isEmpty() const { return slotList.empty(); }

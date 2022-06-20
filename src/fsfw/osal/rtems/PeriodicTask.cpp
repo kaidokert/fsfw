@@ -5,12 +5,12 @@
 #include "fsfw/tasks/ExecutableObjectIF.h"
 
 PeriodicTask::PeriodicTask(const char* name, rtems_task_priority setPriority, size_t setStack,
-                           rtems_interval setPeriod, void (*setDeadlineMissedFunc)())
-    : RTEMSTaskBase(setPriority, setStack, name),
-      periodTicks(RtemsBasic::convertMsToTicks(setPeriod)),
-      deadlineMissedFunc(setDeadlineMissedFunc) {}
+                           TaskPeriod setPeriod, TaskDeadlineMissedFunction dlmFunc_)
+    : PeriodicTaskBase(setPeriod, dlmFunc_),
+      RTEMSTaskBase(setPriority, setStack, name),
+      periodTicks(RtemsBasic::convertMsToTicks(static_cast<uint32_t>(setPeriod * 1000.0))) {}
 
-PeriodicTask::~PeriodicTask(void) {
+PeriodicTask::~PeriodicTask() {
   /* Do not delete objects, we were responsible for pointers only. */
   rtems_rate_monotonic_delete(periodId);
 }
@@ -18,7 +18,7 @@ PeriodicTask::~PeriodicTask(void) {
 rtems_task PeriodicTask::taskEntryPoint(rtems_task_argument argument) {
   /* The argument is re-interpreted as MultiObjectTask. The Task object is global,
   so it is found from any place. */
-  PeriodicTask* originalTask(reinterpret_cast<PeriodicTask*>(argument));
+  auto* originalTask(reinterpret_cast<PeriodicTask*>(argument));
   return originalTask->taskFunctionality();
   ;
 }
@@ -28,8 +28,10 @@ ReturnValue_t PeriodicTask::startTask() {
       rtems_task_start(id, PeriodicTask::taskEntryPoint, rtems_task_argument((void*)this));
   if (status != RTEMS_SUCCESSFUL) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "ObjectTask::startTask for " << std::hex << this->getId() << std::dec
-               << " failed." << std::endl;
+    sif::error << "PeriodicTask::startTask for " << std::hex << this->getId() << std::dec
+               << " failed" << std::endl;
+#else
+    sif::printError("PeriodicTask::startTask for 0x%08x failed\n", getId());
 #endif
   }
   switch (status) {
@@ -47,38 +49,20 @@ ReturnValue_t PeriodicTask::startTask() {
 
 ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) { return RTEMSTaskBase::sleepFor(ms); }
 
-void PeriodicTask::taskFunctionality() {
+[[noreturn]] void PeriodicTask::taskFunctionality() {
   RTEMSTaskBase::setAndStartPeriod(periodTicks, &periodId);
-  for (const auto& object : objectList) {
-    object->initializeAfterTaskCreation();
-  }
+  initObjsAfterTaskCreation();
+
   /* The task's "infinite" inner loop is entered. */
-  while (1) {
-    for (const auto& object : objectList) {
-      object->performOperation();
+  while (true) {
+    for (const auto& objectPair : objectList) {
+      objectPair.first->performOperation(objectPair.second);
     }
     rtems_status_code status = RTEMSTaskBase::restartPeriod(periodTicks, periodId);
     if (status == RTEMS_TIMEOUT) {
-      if (this->deadlineMissedFunc != nullptr) {
-        this->deadlineMissedFunc();
+      if (dlmFunc != nullptr) {
+        dlmFunc();
       }
     }
   }
 }
-
-ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-  ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
-  return addComponent(newObject);
-}
-
-ReturnValue_t PeriodicTask::addComponent(ExecutableObjectIF* object) {
-  if (object == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
-  objectList.push_back(object);
-  object->setTaskIF(this);
-
-  return HasReturnvaluesIF::RETURN_OK;
-}
-
-uint32_t PeriodicTask::getPeriodMs() const { return RtemsBasic::convertTicksToMs(periodTicks); }
