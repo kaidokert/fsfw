@@ -71,7 +71,7 @@ set(FSFW_ETL_LIB_MAJOR_VERSION
     20
     CACHE STRING "ETL library major version requirement")
 set(FSFW_ETL_LIB_VERSION
-    ${FSFW_ETL_LIB_MAJOR_VERSION}.27.3
+    ${FSFW_ETL_LIB_MAJOR_VERSION}.28.0
     CACHE STRING "ETL library exact version requirement")
 set(FSFW_ETL_LINK_TARGET etl::etl)
 
