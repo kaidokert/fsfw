@@ -54,7 +54,9 @@ ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
       // If the deadline was missed, the deadlineMissedFunc is called.
       if (!PosixThread::delayUntil(&lastWakeTime, interval)) {
         // No time left on timer -> we missed the deadline
-        missedDeadlineCounter();
+        if(dlmFunc != nullptr){
+          dlmFunc();
+        }
       }
     }
     // The device handler for this slot is executed and the next one is chosen.
