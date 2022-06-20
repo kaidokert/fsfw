@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "TestsConfig.h"
 #include "fsfw/container/DynamicFIFO.h"
 #include "fsfw/container/SimpleRingBuffer.h"
 #include "fsfw/platform.h"
