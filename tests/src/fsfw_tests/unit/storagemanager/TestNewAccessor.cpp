@@ -156,4 +156,23 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
       CHECK(receptionArray[i] == 42);
     }
   }
+
+  SECTION("Operators"){
+    result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
+    REQUIRE(result == retval::CATCH_OK);
+    {
+      StorageAccessor accessor(testStoreId);
+      StorageAccessor accessor2(0);
+      accessor2 = std::move(accessor);
+      REQUIRE(accessor.data() == nullptr);
+      std::array<uint8_t, 10> data;
+      size_t size = 10;
+      result = accessor.write(data.data(), size);
+      REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
+      result = SimplePool.modifyData(testStoreId, accessor2);
+      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      CHECK(accessor2.getId() == testStoreId);
+      CHECK(accessor2.size() == 10);
+    }
+  }
 }
