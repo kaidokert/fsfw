@@ -99,7 +99,7 @@ add and link against the FSFW library in general.
 
 4. Link against the FSFW library
 
-   ```cmake
+   ```sh
    target_link_libraries(${YourProjectName} PRIVATE fsfw)
    ```
 
@@ -131,7 +131,7 @@ default. This can be disabled by setting the `FSFW_TESTS_COV_GEN` option to `OFF
 You can use the following commands inside the `fsfw` folder to set up the build system
 
 ```sh
-mkdir build-Unittest && cd build-Unittest
+mkdir build-tests && cd build-tests
 cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
