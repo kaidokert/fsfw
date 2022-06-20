@@ -37,8 +37,8 @@ class MessageQueue : public MessageQueueBase {
    * 							This should be left default.
    */
   explicit MessageQueue(size_t message_depth = 3,
-               size_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE,
-               MqArgs* args = nullptr);
+                        size_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE,
+                        MqArgs* args = nullptr);
 
   /** Copying message queues forbidden */
   MessageQueue(const MessageQueue&) = delete;
@@ -55,8 +55,7 @@ class MessageQueue : public MessageQueueBase {
 
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
   ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                MessageQueueId_t sentFrom,
-                                bool ignoreFault) override;
+                                MessageQueueId_t sentFrom, bool ignoreFault) override;
 
  private:
   /**
