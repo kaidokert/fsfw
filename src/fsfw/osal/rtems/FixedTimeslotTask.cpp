@@ -1,42 +1,32 @@
 #include "fsfw/osal/rtems/FixedTimeslotTask.h"
 
-#include <rtems/bspIo.h>
 #include <rtems/io.h>
-#include <rtems/rtems/ratemon.h>
 #include <rtems/rtems/status.h>
 #include <rtems/rtems/tasks.h>
 #include <rtems/rtems/types.h>
-#include <sys/_stdint.h>
 
-#include "fsfw/objectmanager/ObjectManager.h"
-#include "fsfw/objectmanager/SystemObjectIF.h"
 #include "fsfw/osal/rtems/RtemsBasic.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tasks/FixedSequenceSlot.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 #include <iostream>
 #endif
 
 #include <cstddef>
-#include <list>
-
-uint32_t FixedTimeslotTask::deadlineMissedCount = 0;
 
 FixedTimeslotTask::FixedTimeslotTask(const char *name, rtems_task_priority setPriority,
-                                     size_t setStack, uint32_t setOverallPeriod,
-                                     void (*setDeadlineMissedFunc)(void))
-    : RTEMSTaskBase(setPriority, setStack, name), periodId(0), pst(setOverallPeriod) {
-  // All additional attributes are applied to the object.
-  this->deadlineMissedFunc = setDeadlineMissedFunc;
-}
+                                     size_t setStack, TaskPeriod setOverallPeriod,
+                                     TaskDeadlineMissedFunction dlmFunc_)
+    : FixedTimeslotTaskBase(setOverallPeriod, dlmFunc_),
+      RTEMSTaskBase(setPriority, setStack, name),
+      periodId(0) {}
 
-FixedTimeslotTask::~FixedTimeslotTask() {}
+FixedTimeslotTask::~FixedTimeslotTask() = default;
 
 rtems_task FixedTimeslotTask::taskEntryPoint(rtems_task_argument argument) {
   /* The argument is re-interpreted as a FixedTimeslotTask */
-  FixedTimeslotTask *originalTask(reinterpret_cast<FixedTimeslotTask *>(argument));
+  auto *originalTask(reinterpret_cast<FixedTimeslotTask *>(argument));
   /* The task's functionality is called. */
   return originalTask->taskFunctionality();
   /* Should never be reached */
@@ -44,16 +34,6 @@ rtems_task FixedTimeslotTask::taskEntryPoint(rtems_task_argument argument) {
   sif::error << "Polling task " << originalTask->getId() << " returned from taskFunctionality."
              << std::endl;
 #endif
-}
-
-void FixedTimeslotTask::missedDeadlineCounter() {
-  FixedTimeslotTask::deadlineMissedCount++;
-  if (FixedTimeslotTask::deadlineMissedCount % 10 == 0) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PST missed " << FixedTimeslotTask::deadlineMissedCount << " deadlines."
-               << std::endl;
-#endif
-  }
 }
 
 ReturnValue_t FixedTimeslotTask::startTask() {
@@ -79,54 +59,35 @@ ReturnValue_t FixedTimeslotTask::startTask() {
   }
 }
 
-ReturnValue_t FixedTimeslotTask::addSlot(object_id_t componentId, uint32_t slotTimeMs,
-                                         int8_t executionStep) {
-  ExecutableObjectIF *object = ObjectManager::instance()->get<ExecutableObjectIF>(componentId);
-  if (object != nullptr) {
-    pst.addSlot(componentId, slotTimeMs, executionStep, object, this);
-    return HasReturnvaluesIF::RETURN_OK;
-  }
-
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::error << "Component " << std::hex << componentId << " not found, not adding it to pst"
-             << std::endl;
-#endif
-  return HasReturnvaluesIF::RETURN_FAILED;
-}
-
-uint32_t FixedTimeslotTask::getPeriodMs() const { return pst.getLengthMs(); }
-
-ReturnValue_t FixedTimeslotTask::checkSequence() const { return pst.checkSequence(); }
-
-void FixedTimeslotTask::taskFunctionality() {
+[[noreturn]] void FixedTimeslotTask::taskFunctionality() {
   /* A local iterator for the Polling Sequence Table is created to find the start time for
       the first entry. */
-  FixedSlotSequence::SlotListIter it = pst.current;
+  auto it = pollingSeqTable.current;
 
   /* Initialize the PST with the correct calling task */
-  pst.intializeSequenceAfterTaskCreation();
+  pollingSeqTable.intializeSequenceAfterTaskCreation();
 
   /* The start time for the first entry is read. */
   rtems_interval interval = RtemsBasic::convertMsToTicks(it->pollingTimeMs);
   RTEMSTaskBase::setAndStartPeriod(interval, &periodId);
   // The task's "infinite" inner loop is entered.
-  while (1) {
-    if (pst.slotFollowsImmediately()) {
+  while (true) {
+    if (pollingSeqTable.slotFollowsImmediately()) {
       /* Do nothing */
     } else {
       /* The interval for the next polling slot is selected. */
-      interval = RtemsBasic::convertMsToTicks(this->pst.getIntervalToNextSlotMs());
+      interval = RtemsBasic::convertMsToTicks(pollingSeqTable.getIntervalToNextSlotMs());
       /* The period is checked and restarted with the new interval.
                   If the deadline was missed, the deadlineMissedFunc is called. */
       rtems_status_code status = RTEMSTaskBase::restartPeriod(interval, periodId);
       if (status == RTEMS_TIMEOUT) {
-        if (this->deadlineMissedFunc != nullptr) {
-          this->deadlineMissedFunc();
+        if (dlmFunc != nullptr) {
+          dlmFunc();
         }
       }
     }
     /* The device handler for this slot is executed and the next one is chosen. */
-    this->pst.executeAndAdvance();
+    this->pollingSeqTable.executeAndAdvance();
   }
 }
 
