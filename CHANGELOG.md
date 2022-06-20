@@ -120,6 +120,9 @@ https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
 
 ## Additions
 
+- Added options for CI/CD builds: `FSFW_CICD_BUILD`. This allows the source code to know
+  whether it is running in CI/CD
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/623
 - Basic `clion` support: Update `.gitignore` and add some basic run configurations
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/625
 - LTO support: Allow using LTO/IPO by setting `FSFW_ENABLE_LTO=1`. CMake is able to detect whether
