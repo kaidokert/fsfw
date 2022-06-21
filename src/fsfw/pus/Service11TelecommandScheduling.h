@@ -44,6 +44,12 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   static constexpr ReturnValue_t INVALID_RELATIVE_TIME =
       HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
 
+  static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_11;
+
+  //! [EXPORT] : [COMMENT] Deletion of a TC from the map failed.
+  //! P1: First 32 bit of request ID, P2. Last 32 bit of Request ID
+  static constexpr Event TC_DELETION_FAILED = event::makeEvent(SUBSYSTEM_ID, 0, severity::MEDIUM);
+
   // The types of PUS-11 subservices
   enum Subservice : uint8_t {
     ENABLE_SCHEDULING = 1,
@@ -73,7 +79,10 @@ class Service11TelecommandScheduling final : public PusServiceBase {
                                  uint16_t releaseTimeMarginSeconds = DEFAULT_RELEASE_TIME_MARGIN,
                                  bool debugMode = false);
 
-  ~Service11TelecommandScheduling();
+  ~Service11TelecommandScheduling() override;
+
+  void enableExpiredTcDeletion();
+  void disableExpiredTcDeletion();
 
   /** PusServiceBase overrides */
   ReturnValue_t handleRequest(uint8_t subservice) override;
@@ -82,8 +91,8 @@ class Service11TelecommandScheduling final : public PusServiceBase {
 
  private:
   struct TelecommandStruct {
-    uint64_t requestId;
-    uint32_t seconds;
+    uint64_t requestId{};
+    uint32_t seconds{};
     store_address_t storeAddr;  // uint16
   };
 
@@ -92,9 +101,11 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   // minimum release time offset to insert into schedule
   const uint16_t RELEASE_TIME_MARGIN_SECONDS = 5;
 
-  // the maximum amount of stored TCs is defined here
-  static constexpr uint16_t MAX_STORED_TELECOMMANDS = 500;
-
+  /**
+   * By default, the scheduling will be disabled. This is a standard requirement
+   */
+  bool schedulingEnabled = false;
+  bool deleteExpiredTcWhenDisabled = true;
   bool debugMode = false;
   StorageManagerIF* tcStore = nullptr;
   AcceptsTelecommandsIF* tcRecipient = nullptr;
@@ -109,6 +120,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
 
   TelecommandMap telecommandMap;
 
+  ReturnValue_t handleResetCommand();
   /**
    * @brief Logic to be performed on an incoming TC[11,4].
    * @return RETURN_OK if successful
@@ -140,17 +152,6 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   ReturnValue_t doFilterTimeshiftActivity(const uint8_t* data, size_t size);
 
   /**
-   * @brief Deserializes a generic type from a payload buffer by using the FSFW
-   * SerializeAdapter Interface.
-   * @param output Output to be deserialized
-   * @param buf Payload buffer (application data)
-   * @param bufsize Remaining size of payload buffer (application data size)
-   * @return RETURN_OK if successful
-   */
-  template <typename T>
-  ReturnValue_t deserializeViaFsfwInterface(T& output, const uint8_t* buf, size_t bufsize);
-
-  /**
    * @brief Extracts the Request ID from the Application Data of a TC by utilizing a ctor of the
    * class TcPacketPus.
    * NOTE: This only works if the payload data is a TC (e.g. not for TC[11,5] which does not
@@ -177,7 +178,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @param ssc Source Sequence Count
    * @return Request ID
    */
-  uint64_t buildRequestId(uint32_t sourceId, uint16_t apid, uint16_t ssc) const;
+  [[nodiscard]] uint64_t buildRequestId(uint32_t sourceId, uint16_t apid, uint16_t ssc) const;
 
   /**
    * @brief Gets the filter range for filter TCs from a data packet
@@ -194,7 +195,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   /**
    * @brief Prints content of multimap. Use for simple debugging only.
    */
-  void debugPrintMultimapContent(void) const;
+  void debugPrintMultimapContent() const;
 };
 
 #include "Service11TelecommandScheduling.tpp"

@@ -6,8 +6,8 @@
 #include <fsfw/modes/HasModesIF.h>
 #include <fsfw/modes/ModeHelper.h>
 #include <fsfw/objectmanager/SystemObject.h>
-#include <fsfw/power/definitions.h>
 #include <fsfw/power/PowerSwitcher.h>
+#include <fsfw/power/definitions.h>
 #include <fsfw/tasks/ExecutableObjectIF.h>
 
 class PowerSwitchIF;
@@ -22,19 +22,17 @@ class PowerSwitchIF;
  * Commanding this component to MODE_OFF will cause the switcher to turn the switch off while
  * commanding in to MODE_ON will cause the switcher to turn the switch on.
  */
-class PowerSwitcherComponent:
-    public SystemObject,
-    public HasReturnvaluesIF,
-    public ExecutableObjectIF,
-    public HasModesIF,
-    public HasHealthIF {
-public:
-  PowerSwitcherComponent(object_id_t objectId, PowerSwitchIF* pwrSwitcher,
-      power::Switch_t pwrSwitch);
+class PowerSwitcherComponent : public SystemObject,
+                               public HasReturnvaluesIF,
+                               public ExecutableObjectIF,
+                               public HasModesIF,
+                               public HasHealthIF {
+ public:
+  PowerSwitcherComponent(object_id_t objectId, PowerSwitchIF *pwrSwitcher,
+                         power::Switch_t pwrSwitch);
 
-private:
-
-  MessageQueueIF* queue = nullptr;
+ private:
+  MessageQueueIF *queue = nullptr;
   PowerSwitcher switcher;
 
   Mode_t mode = MODE_OFF;
@@ -52,7 +50,7 @@ private:
   MessageQueueId_t getCommandQueue() const override;
   void getMode(Mode_t *mode, Submode_t *submode) override;
   ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode) override;
+                                 uint32_t *msToReachTheMode) override;
   void startTransition(Mode_t mode, Submode_t submode) override;
   void setToExternalControl() override;
   void announceMode(bool recursive) override;
