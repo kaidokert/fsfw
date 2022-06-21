@@ -14,12 +14,8 @@ ReturnValue_t FixedTimeslotTaskBase::checkSequence() { return pollingSeqTable.ch
 ReturnValue_t FixedTimeslotTaskBase::addSlot(object_id_t execId, ExecutableObjectIF* execObj,
                                              uint32_t slotTimeMs, int8_t executionStep) {
   if (execObj == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "Component 0x" << std::hex << std::setw(8) << std::setfill('0') << execObj
-               << std::setfill(' ') << " not found, not adding it to PST" << std::dec << std::endl;
-#else
-    sif::printError("Component 0x%08x not found, not adding it to PST\n");
-#endif
+    // TODO: Hex formatting
+    FSFW_LOGE("Component {} not found, not adding it to PST\n");
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   pollingSeqTable.addSlot(execId, slotTimeMs, executionStep, execObj, this);

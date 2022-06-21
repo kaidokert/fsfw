@@ -9,11 +9,7 @@ PeriodicTaskBase::PeriodicTaskBase(TaskPeriod period_, TaskDeadlineMissedFunctio
     : period(period_), dlmFunc(dlmFunc_) {
   // Hints at configuration error
   if (PeriodicTaskBase::getPeriodMs() <= 1) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "Passed task period 0 or smaller than 1 ms" << std::endl;
-#else
-    sif::printWarning("Passed task period 0 or smaller than 1ms\n");
-#endif
+    FSFW_LOGW("Passed task period 0 or smaller than 1ms\n");
   }
 }
 
@@ -54,14 +50,9 @@ ReturnValue_t PeriodicTaskBase::addComponent(object_id_t object, uint8_t opCode)
 
 ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF* object, uint8_t opCode) {
   if (object == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PeriodicTask::addComponent: Invalid object. Make sure"
-               << " it implements ExecutableObjectIF!" << std::endl;
-#else
-    sif::printError(
+    FSFW_LOGE(
         "PeriodicTask::addComponent: Invalid object. Make sure it "
         "implements ExecutableObjectIF!\n");
-#endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   objectList.push_back({object, opCode});
