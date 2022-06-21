@@ -16,7 +16,7 @@
 #include "fsfw_tests/unit/mocks/PeriodicTaskIFMock.h"
 
 TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
-  PeriodicTaskMock task(10);
+  PeriodicTaskMock task(10, nullptr);
   ObjectManagerIF* manager = ObjectManager::instance();
   if (manager == nullptr) {
     FAIL();
@@ -27,6 +27,8 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
     FAIL();
   }
   task.addComponent(objects::INTERNAL_ERROR_REPORTER);
+  // This calls the initializeAfterTaskCreation function
+  task.startTask();
   MessageQueueIF* testQueue = QueueFactory::instance()->createMessageQueue(1);
   MessageQueueIF* hkQueue = QueueFactory::instance()->createMessageQueue(1);
   internalErrorReporter->getSubscriptionInterface()->subscribeForSetUpdateMessage(

@@ -32,7 +32,7 @@ RTEMSTaskBase::RTEMSTaskBase(rtems_task_priority set_priority, size_t stack_size
 
 RTEMSTaskBase::~RTEMSTaskBase() { rtems_task_delete(id); }
 
-rtems_id RTEMSTaskBase::getId() { return this->id; }
+rtems_id RTEMSTaskBase::getId() const { return this->id; }
 
 ReturnValue_t RTEMSTaskBase::sleepFor(uint32_t ms) {
   rtems_status_code status = rtems_task_wake_after(RtemsBasic::convertMsToTicks(ms));
