@@ -30,12 +30,12 @@ class FixedSlotSequence {
  public:
   using SlotList = std::multiset<FixedSequenceSlot>;
   using SlotListIter = std::multiset<FixedSequenceSlot>::iterator;
-
+  using CustomCheckFunc = ReturnValue_t (*)(const SlotList&, void* args);
   /**
    * @brief	The constructor of the FixedSlotSequence object.
    * @param	setLength	The period length, expressed in ms.
    */
-  FixedSlotSequence(uint32_t setLengthMs);
+  explicit FixedSlotSequence(uint32_t setLengthMs);
 
   /**
    * @brief	The destructor of the FixedSlotSequence object.
@@ -106,7 +106,7 @@ class FixedSlotSequence {
   /**
    * @brief	This method returns the length of this FixedSlotSequence instance.
    */
-  uint32_t getLengthMs() const;
+  [[nodiscard]] uint32_t getLengthMs() const;
 
   /**
    * @brief	The method to execute the device handler entered in the current
@@ -137,7 +137,7 @@ class FixedSlotSequence {
    * @return
    *  - SLOT_LIST_EMPTY if the slot list is empty
    */
-  ReturnValue_t checkSequence() const;
+  [[nodiscard]] ReturnValue_t checkSequence() const;
 
   /**
    * @brief   A custom check can be injected for the respective slot list.
@@ -149,7 +149,7 @@ class FixedSlotSequence {
    * @param customCheckFunction
    *
    */
-  void addCustomCheck(ReturnValue_t (*customCheckFunction)(const SlotList&));
+  void addCustomCheck(CustomCheckFunc func, void* userArgs);
 
   /**
    * @brief 	Perform any initialization steps required after the executing
@@ -157,7 +157,9 @@ class FixedSlotSequence {
    * 			executing task!
    * @return
    */
-  ReturnValue_t intializeSequenceAfterTaskCreation() const;
+  [[nodiscard]] ReturnValue_t intializeSequenceAfterTaskCreation() const;
+
+  [[nodiscard]] bool isEmpty() const;
 
  protected:
   /**
@@ -173,7 +175,8 @@ class FixedSlotSequence {
    */
   SlotList slotList;
 
-  ReturnValue_t (*customCheckFunction)(const SlotList&) = nullptr;
+  CustomCheckFunc customChecker = nullptr;
+  void* customCheckArgs = nullptr;
 
   uint32_t lengthMs;
 };

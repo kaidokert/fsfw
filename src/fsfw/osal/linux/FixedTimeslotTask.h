@@ -3,11 +3,12 @@
 
 #include <pthread.h>
 
-#include "../../tasks/FixedSlotSequence.h"
-#include "../../tasks/FixedTimeslotTaskIF.h"
 #include "PosixThread.h"
+#include "fsfw/tasks/FixedSlotSequence.h"
+#include "fsfw/tasks/FixedTimeslotTaskBase.h"
+#include "fsfw/tasks/definitions.h"
 
-class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
+class FixedTimeslotTask : public FixedTimeslotTaskBase {
  public:
   /**
    * Create a generic periodic task.
@@ -21,29 +22,13 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
    * @param period_
    * @param deadlineMissedFunc_
    */
-  FixedTimeslotTask(const char* name_, int priority_, size_t stackSize_, uint32_t periodMs_);
-  virtual ~FixedTimeslotTask();
+  FixedTimeslotTask(const char* name_, TaskPriority priority_, size_t stackSize_,
+                    TaskPeriod periodSeconds_, TaskDeadlineMissedFunction dlmFunc_);
+  ~FixedTimeslotTask() override = default;
 
-  virtual ReturnValue_t startTask();
+  ReturnValue_t startTask() override;
 
-  virtual ReturnValue_t sleepFor(uint32_t ms);
-
-  virtual uint32_t getPeriodMs() const;
-
-  virtual ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs, int8_t executionStep);
-
-  virtual ReturnValue_t checkSequence() const;
-
-  /**
-   * This static function can be used as #deadlineMissedFunc.
-   * It counts missedDeadlines and prints the number of missed deadlines every 10th time.
-   */
-  static void missedDeadlineCounter();
-
-  /**
-   * A helper variable to count missed deadlines.
-   */
-  static uint32_t deadlineMissedCount;
+  ReturnValue_t sleepFor(uint32_t ms) override;
 
  protected:
   /**
@@ -53,9 +38,12 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
    * It links the functionalities provided by FixedSlotSequence with the
    * OS's System Calls to keep the timing of the periods.
    */
-  virtual void taskFunctionality();
+  [[noreturn]] virtual void taskFunctionality();
 
  private:
+  PosixThread posixThread;
+  bool started;
+
   /**
    * @brief	This is the entry point in a new thread.
    *
@@ -68,9 +56,6 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF, public PosixThread {
    * arbitrary data.
    */
   static void* taskEntryPoint(void* arg);
-  FixedSlotSequence pst;
-
-  bool started;
 };
 
 #endif /* FSFW_OSAL_LINUX_FIXEDTIMESLOTTASK_H_ */

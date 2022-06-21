@@ -6,11 +6,11 @@
 
 class FreeRTOSTaskIF {
  public:
-  virtual ~FreeRTOSTaskIF() {}
+  virtual ~FreeRTOSTaskIF() = default;
   virtual TaskHandle_t getTaskHandle() = 0;
 
  protected:
-  bool checkMissedDeadline(const TickType_t xLastWakeTime, const TickType_t interval) {
+  static bool checkMissedDeadline(const TickType_t xLastWakeTime, const TickType_t interval) {
     /* Check whether deadline was missed while also taking overflows
      * into account. Drawing this on paper with a timeline helps to understand
      * it. */

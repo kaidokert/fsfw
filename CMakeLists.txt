@@ -71,7 +71,7 @@ set(FSFW_ETL_LIB_MAJOR_VERSION
     20
     CACHE STRING "ETL library major version requirement")
 set(FSFW_ETL_LIB_VERSION
-    ${FSFW_ETL_LIB_MAJOR_VERSION}.27.3
+    ${FSFW_ETL_LIB_MAJOR_VERSION}.28.0
     CACHE STRING "ETL library exact version requirement")
 set(FSFW_ETL_LINK_TARGET etl::etl)
 
@@ -105,6 +105,7 @@ endif()
 
 option(FSFW_BUILD_UNITTESTS
        "Build unittest binary in addition to static library" OFF)
+option(FSFW_CICD_BUILD "Build for CI/CD. This can disable problematic test" OFF)
 option(FSFW_BUILD_DOCS "Build documentation with Sphinx and Doxygen" OFF)
 if(FSFW_BUILD_UNITTESTS)
   option(FSFW_TESTS_GEN_COV "Generate coverage data for unittests" ON)

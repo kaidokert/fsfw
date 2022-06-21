@@ -12,7 +12,7 @@ TestTask::TestTask(object_id_t objectId) : SystemObject(objectId), testMode(test
   IPCStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
 }
 
-TestTask::~TestTask() {}
+TestTask::~TestTask() = default;
 
 ReturnValue_t TestTask::performOperation(uint8_t operationCode) {
   ReturnValue_t result = RETURN_OK;
