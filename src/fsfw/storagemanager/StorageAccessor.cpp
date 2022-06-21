@@ -13,7 +13,7 @@ StorageAccessor::StorageAccessor(store_address_t storeId, StorageManagerIF* stor
 StorageAccessor& StorageAccessor::operator=(StorageAccessor&& other) {
   // Call the parent move assignment and also assign own member.
   dataPointer = other.dataPointer;
-  StorageAccessor::operator=(std::move(other));
+  ConstStorageAccessor::operator=(std::move(other));
   return *this;
 }
 

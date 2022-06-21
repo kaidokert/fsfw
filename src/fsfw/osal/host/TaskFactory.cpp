@@ -14,9 +14,9 @@ TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
 // Not used for the host implementation for now because C++ thread abstraction is used
 const size_t PeriodicTaskIF::MINIMUM_STACK_SIZE = 0;
 
-TaskFactory::TaskFactory() {}
+TaskFactory::TaskFactory() = default;
 
-TaskFactory::~TaskFactory() {}
+TaskFactory::~TaskFactory() = default;
 
 TaskFactory* TaskFactory::instance() { return TaskFactory::factoryInstance; }
 

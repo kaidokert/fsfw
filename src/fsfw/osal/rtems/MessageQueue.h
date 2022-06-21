@@ -36,9 +36,9 @@ class MessageQueue : public MessageQueueBase {
    * @param max_message_size	With this parameter, the maximum message size can be adjusted.
    * 							This should be left default.
    */
-  MessageQueue(size_t message_depth = 3,
-               size_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE,
-               MqArgs* args = nullptr);
+  explicit MessageQueue(size_t message_depth = 3,
+                        size_t max_message_size = MessageQueueMessage::MAX_MESSAGE_SIZE,
+                        MqArgs* args = nullptr);
 
   /** Copying message queues forbidden */
   MessageQueue(const MessageQueue&) = delete;
@@ -48,18 +48,19 @@ class MessageQueue : public MessageQueueBase {
    * @brief	The destructor deletes the formerly created message queue.
    * @details	This is accomplished by using the delete call provided by the operating system.
    */
-  virtual ~MessageQueue();
+  ~MessageQueue() override;
 
   // Implement non-generic MessageQueueIF functions not handled by MessageQueueBase
   ReturnValue_t flush(uint32_t* count) override;
+
+  ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
   ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                MessageQueueId_t sentFrom = NO_QUEUE,
-                                bool ignoreFault = false) override;
+                                MessageQueueId_t sentFrom, bool ignoreFault) override;
 
  private:
   /**
-   * \brief	This attribute stores a reference to the internal error reporter for reporting full
-   * queues. \details	In the event of a full destination queue, the reporter will be notified. The
+   * @brief	This attribute stores a reference to the internal error reporter for reporting full
+   * queues. @details	In the event of a full destination queue, the reporter will be notified. The
    * reference is set by lazy loading
    */
   InternalErrorReporterIF* internalErrorReporter;

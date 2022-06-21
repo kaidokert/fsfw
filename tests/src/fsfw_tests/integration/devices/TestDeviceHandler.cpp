@@ -13,7 +13,7 @@ TestDevice::TestDevice(object_id_t objectId, object_id_t comIF, CookieIF* cookie
       dataset(this),
       fullInfoPrintout(fullInfoPrintout) {}
 
-TestDevice::~TestDevice() {}
+TestDevice::~TestDevice() = default;
 
 void TestDevice::performOperationHook() {
   if (periodicPrintout) {
