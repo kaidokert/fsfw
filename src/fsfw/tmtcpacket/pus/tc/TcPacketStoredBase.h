@@ -38,7 +38,8 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    */
   ReturnValue_t getData(const uint8_t** dataPtr, size_t* dataSize) override;
 
-  void setStoreAddress(store_address_t setAddress, RedirectableDataPointerIF* packet) override;
+  ReturnValue_t setStoreAddress(store_address_t setAddress,
+                                RedirectableDataPointerIF* packet) override;
   store_address_t getStoreAddress() override;
 
   /**
