@@ -29,7 +29,7 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
    */
   ReturnValue_t getData(const uint8_t** dataPtr, size_t* dataSize);
 
-  void setStoreAddress(store_address_t setAddress);
+  ReturnValue_t setStoreAddress(store_address_t setAddress);
 
   store_address_t getStoreAddress();
 

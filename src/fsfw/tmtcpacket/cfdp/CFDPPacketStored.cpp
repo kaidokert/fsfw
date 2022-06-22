@@ -37,7 +37,7 @@ ReturnValue_t CFDPPacketStored::deletePacket() {
 // CFDPPacket* CFDPPacketStored::getPacketBase() {
 //     return this;
 // }
-void CFDPPacketStored::setStoreAddress(store_address_t setAddress) {
+ReturnValue_t CFDPPacketStored::setStoreAddress(store_address_t setAddress) {
   this->storeAddress = setAddress;
   const uint8_t* tempData = nullptr;
   size_t tempSize;
@@ -46,11 +46,11 @@ void CFDPPacketStored::setStoreAddress(store_address_t setAddress) {
     status = this->store->getData(this->storeAddress, &tempData, &tempSize);
   }
   if (status == StorageManagerIF::RETURN_OK) {
-    this->setData(const_cast<uint8_t*>(tempData), tempSize);
+    return this->setData(const_cast<uint8_t*>(tempData), tempSize);
   } else {
-    // To circumvent size checks
-    this->setData(nullptr, -1);
     this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
+    // To circumvent size checks
+    return this->setData(nullptr, -1);
   }
 }
 

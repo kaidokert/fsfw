@@ -42,7 +42,7 @@ bool TcPacketStoredBase::checkAndSetStore() {
   return true;
 }
 
-void TcPacketStoredBase::setStoreAddress(store_address_t setAddress,
+ReturnValue_t TcPacketStoredBase::setStoreAddress(store_address_t setAddress,
                                          RedirectableDataPointerIF* packet) {
   this->storeAddress = setAddress;
   const uint8_t* tempData = nullptr;
@@ -53,10 +53,10 @@ void TcPacketStoredBase::setStoreAddress(store_address_t setAddress,
   }
 
   if (status == StorageManagerIF::RETURN_OK) {
-    packet->setData(const_cast<uint8_t*>(tempData), tempSize);
+    return packet->setData(const_cast<uint8_t*>(tempData), tempSize);
   } else {
-    packet->setData(nullptr, -1);
     this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
+    return packet->setData(nullptr, -1);
   }
 }
 

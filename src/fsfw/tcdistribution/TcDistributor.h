@@ -36,6 +36,7 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
   static constexpr ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE(1);
   static constexpr ReturnValue_t DESTINATION_NOT_FOUND = MAKE_RETURN_CODE(2);
   static constexpr ReturnValue_t SERVICE_ID_ALREADY_EXISTS = MAKE_RETURN_CODE(3);
+  static constexpr ReturnValue_t PACKET_TOO_SHORT = MAKE_RETURN_CODE(4);
   /**
    * Within the default constructor, the SystemObject id is set and the
    * message queue is initialized.

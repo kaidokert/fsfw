@@ -27,7 +27,12 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     if (this->currentPacket == nullptr) {
       return queueMapIt;
     }
-    this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
+    ReturnValue_t result =
+        this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      tcStatus = PACKET_TOO_SHORT;
+      return this->queueMap.end();
+    }
     if (currentPacket->getWholeData() != nullptr) {
       tcStatus = checker.checkPacket(currentPacket);
       if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
@@ -106,6 +111,14 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 MessageQueueId_t PUSDistributor::getRequestQueue() { return tcQueue->getId(); }
 
 ReturnValue_t PUSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
+  if (tcStatus == PACKET_LOST or tcStatus == PACKET_TOO_SHORT) {
+    // The ack flags, packet id and sequence control are unknown for a packet which is too short or
+    // has been lost
+    this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE, UNKNOWN_ACK_FLAGS,
+                                          UNKNOWN_PACKET_ID, UNKNOWN_SEQUENCE_CONTROL, tcStatus);
+    currentPacket->deletePacket();
+    return RETURN_FAILED;
+  }
   if (queueStatus != RETURN_OK) {
     tcStatus = queueStatus;
   }

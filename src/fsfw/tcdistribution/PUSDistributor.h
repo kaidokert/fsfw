@@ -72,6 +72,11 @@ class PUSDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * success/failure messages.
    */
   ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus) override;
+
+ private:
+  static const uint8_t UNKNOWN_ACK_FLAGS = 0;
+  static const uint8_t UNKNOWN_PACKET_ID = 0;
+  static const uint8_t UNKNOWN_SEQUENCE_CONTROL = 0;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_ */

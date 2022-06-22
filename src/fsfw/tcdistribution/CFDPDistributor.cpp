@@ -33,7 +33,11 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
   if (this->currentPacket == nullptr) {
     return queueMapIt;
   }
-  this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
+  ReturnValue_t result = this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    tcStatus = PACKET_TOO_SHORT;
+    return this->queueMap.end();
+  }
   if (currentPacket->getWholeData() != nullptr) {
     tcStatus = checker.checkPacket(currentPacket);
     if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
