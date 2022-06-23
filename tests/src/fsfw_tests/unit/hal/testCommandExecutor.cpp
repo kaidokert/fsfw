@@ -4,12 +4,12 @@
 #include <fstream>
 #include <iostream>
 
-#include "tests/TestsConfig.h"
 #include "fsfw/container/DynamicFIFO.h"
 #include "fsfw/container/SimpleRingBuffer.h"
 #include "fsfw/platform.h"
 #include "fsfw/serviceinterface.h"
 #include "fsfw_hal/linux/CommandExecutor.h"
+#include "tests/TestsConfig.h"
 
 #ifdef PLATFORM_UNIX
 

@@ -33,7 +33,7 @@ TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
     deviceHandlerCommander.performOperation();
     result = deviceHandlerCommander.getReplyReturnCode();
     uint32_t missedReplies = deviceFdirMock.getMissedReplyCount();
-		REQUIRE(missedReplies == 0);
+    REQUIRE(missedReplies == 0);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
   }
 
@@ -84,12 +84,12 @@ TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
     // Test if disabling of periodic reply
     deviceHandlerMock.disablePeriodicReply(DeviceHandlerMock::PERIODIC_REPLY);
     deviceHandlerMock.performOperation(DeviceHandlerIF::PERFORM_OPERATION);
-		deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_WRITE);
-		deviceHandlerMock.performOperation(DeviceHandlerIF::GET_WRITE);
-		deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_READ);
-		deviceHandlerMock.performOperation(DeviceHandlerIF::GET_READ);
-		missedReplies = deviceFdirMock.getMissedReplyCount();
-		// Should still be 1 because periodic reply is now disabled
-		REQUIRE(missedReplies == 1);
+    deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_WRITE);
+    deviceHandlerMock.performOperation(DeviceHandlerIF::GET_WRITE);
+    deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_READ);
+    deviceHandlerMock.performOperation(DeviceHandlerIF::GET_READ);
+    missedReplies = deviceFdirMock.getMissedReplyCount();
+    // Should still be 1 because periodic reply is now disabled
+    REQUIRE(missedReplies == 1);
   }
 }

@@ -95,9 +95,9 @@ void DeviceHandlerMock::resetPeriodicReplyState() { periodicReplyReceived = fals
 bool DeviceHandlerMock::getPeriodicReplyReceived() { return periodicReplyReceived; }
 
 ReturnValue_t DeviceHandlerMock::enablePeriodicReply(DeviceCommandId_t replyId) {
-	return updatePeriodicReply(true, replyId);
+  return updatePeriodicReply(true, replyId);
 }
 
 ReturnValue_t DeviceHandlerMock::disablePeriodicReply(DeviceCommandId_t replyId) {
-	return updatePeriodicReply(false, replyId);
+  return updatePeriodicReply(false, replyId);
 }
