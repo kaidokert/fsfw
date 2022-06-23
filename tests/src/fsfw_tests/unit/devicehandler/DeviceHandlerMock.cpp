@@ -93,3 +93,11 @@ void DeviceHandlerMock::changeSimpleCommandReplyCountdown(uint32_t timeout) {
 void DeviceHandlerMock::resetPeriodicReplyState() { periodicReplyReceived = false; }
 
 bool DeviceHandlerMock::getPeriodicReplyReceived() { return periodicReplyReceived; }
+
+ReturnValue_t DeviceHandlerMock::enablePeriodicReply(DeviceCommandId_t replyId) {
+	return updatePeriodicReply(true, replyId);
+}
+
+ReturnValue_t DeviceHandlerMock::disablePeriodicReply(DeviceCommandId_t replyId) {
+	return updatePeriodicReply(false, replyId);
+}

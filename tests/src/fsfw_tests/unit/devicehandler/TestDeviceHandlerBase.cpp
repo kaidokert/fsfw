@@ -60,6 +60,7 @@ TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
 
   SECTION("Periodic reply nominal") {
     comIF.setTestCase(ComIFMock::TestCase::PERIODIC_REPLY_NOMINAL);
+    deviceHandlerMock.enablePeriodicReply(DeviceHandlerMock::PERIODIC_REPLY);
     deviceHandlerMock.performOperation(DeviceHandlerIF::PERFORM_OPERATION);
     deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_WRITE);
     deviceHandlerMock.performOperation(DeviceHandlerIF::GET_WRITE);
@@ -72,6 +73,7 @@ TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
     comIF.setTestCase(ComIFMock::TestCase::MISSED_REPLY);
     // Set the timeout to 0 to immediately timeout the reply
     deviceHandlerMock.changePeriodicReplyCountdown(0);
+    deviceHandlerMock.enablePeriodicReply(DeviceHandlerMock::PERIODIC_REPLY);
     deviceHandlerMock.performOperation(DeviceHandlerIF::PERFORM_OPERATION);
     deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_WRITE);
     deviceHandlerMock.performOperation(DeviceHandlerIF::GET_WRITE);
@@ -79,5 +81,15 @@ TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
     deviceHandlerMock.performOperation(DeviceHandlerIF::GET_READ);
     uint32_t missedReplies = deviceFdirMock.getMissedReplyCount();
     REQUIRE(missedReplies == 1);
+    // Test if disabling of periodic reply
+    deviceHandlerMock.disablePeriodicReply(DeviceHandlerMock::PERIODIC_REPLY);
+    deviceHandlerMock.performOperation(DeviceHandlerIF::PERFORM_OPERATION);
+		deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_WRITE);
+		deviceHandlerMock.performOperation(DeviceHandlerIF::GET_WRITE);
+		deviceHandlerMock.performOperation(DeviceHandlerIF::SEND_READ);
+		deviceHandlerMock.performOperation(DeviceHandlerIF::GET_READ);
+		missedReplies = deviceFdirMock.getMissedReplyCount();
+		// Should still be 1 because periodic reply is now disabled
+		REQUIRE(missedReplies == 1);
   }
 }

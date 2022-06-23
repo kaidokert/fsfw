@@ -446,9 +446,6 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
   info.dataSet = dataSet;
   info.command = deviceCommandMap.end();
   info.countdown = countdown;
-  if (info.periodic) {
-    info.active = true;
-  }
   auto resultPair = deviceReplyMap.emplace(replyId, info);
   if (resultPair.second) {
     return RETURN_OK;
@@ -522,8 +519,10 @@ ReturnValue_t DeviceHandlerBase::updatePeriodicReply(bool enable, DeviceCommandI
     }
     if (enable) {
       info->delayCycles = info->maxDelayCycles;
+      info->active = true;
     } else {
       info->delayCycles = 0;
+      info->active = false;
     }
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -999,6 +998,8 @@ ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(DeviceCommandMap::iterato
   }
   if (iter != deviceReplyMap.end()) {
     DeviceReplyInfo* info = &(iter->second);
+    // If a countdown has been set, the delay cycles will be ignored and the reply times out
+    // as soon as the countdown has expired
     info->delayCycles = info->maxDelayCycles;
     info->command = command;
     command->second.expectedReplies = expectedReplies;

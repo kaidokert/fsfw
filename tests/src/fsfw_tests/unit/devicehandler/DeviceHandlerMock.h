@@ -18,6 +18,8 @@ class DeviceHandlerMock : public DeviceHandlerBase {
   void changeSimpleCommandReplyCountdown(uint32_t timeout);
   void resetPeriodicReplyState();
   bool getPeriodicReplyReceived();
+  ReturnValue_t enablePeriodicReply(DeviceCommandId_t replyId);
+  ReturnValue_t disablePeriodicReply(DeviceCommandId_t replyId);
 
  protected:
   void doStartUp() override;
