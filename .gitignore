@@ -10,5 +10,8 @@
 .settings
 .metadata
 
+# VSCode
+.vscode
+
 /build*
 /cmake-build*
