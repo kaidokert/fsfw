@@ -1,9 +1,11 @@
 #ifndef FSFW_ACTION_ACTIONHELPER_H_
 #define FSFW_ACTION_ACTIONHELPER_H_
 
+#include <map>
 #include "../ipc/MessageQueueIF.h"
 #include "../serialize/SerializeIF.h"
 #include "ActionMessage.h"
+#include "Action.h"
 /**
  * @brief Action Helper is a helper class which handles action messages
  *
@@ -98,6 +100,10 @@ class ActionHelper {
    */
   void setQueueToUse(MessageQueueIF* queue);
 
+  void registerAction(Action* action);
+
+  std::map<ActionId_t, Action*> const* getActionMap();
+
  protected:
   //! Increase of value of this per step
   static const uint8_t STEP_OFFSET = 1;
@@ -108,6 +114,8 @@ class ActionHelper {
   MessageQueueIF* queueToUse;
   //! Pointer to an IPC Store, initialized during construction or
   StorageManagerIF* ipcStore = nullptr;
+  //! Map of all implemented Actions
+  std::map<ActionId_t, Action*> actionMap;
 
   /**
    * Internal function called by handleActionMessage

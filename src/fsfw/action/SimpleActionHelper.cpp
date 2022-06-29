@@ -44,11 +44,27 @@ void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId
   if (result != HasReturnvaluesIF::RETURN_OK) {
     ActionMessage::setStepReply(&reply, actionId, 0, result);
     queueToUse->sendMessage(commandedBy, &reply);
+    ipcStore->deleteData(dataAddress);
     return;
   }
-  lastCommander = commandedBy;
-  lastAction = actionId;
-  result = owner->executeAction(actionId, commandedBy, dataPtr, size);
+  auto actionIter = actionMap.find(actionId);
+  if (actionIter == actionMap.end()){
+    CommandMessage reply;
+    ActionMessage::setStepReply(&reply, actionId, 0, HasActionsIF::INVALID_ACTION_ID);
+    queueToUse->sendMessage(commandedBy, &reply);
+    ipcStore->deleteData(dataAddress);
+    return;
+  }
+  Action* action = actionIter->second;
+  result = action->deSerialize(&dataPtr, &size, SerializeIF::Endianness::NETWORK);
+  if (result != HasReturnvaluesIF::RETURN_OK){
+    CommandMessage reply;
+    ActionMessage::setStepReply(&reply, actionId, 0, HasActionsIF::INVALID_PARAMETERS);
+    queueToUse->sendMessage(commandedBy, &reply);
+    ipcStore->deleteData(dataAddress);
+    return;
+  }
+  result = action->handle();
   ipcStore->deleteData(dataAddress);
   switch (result) {
     case HasReturnvaluesIF::RETURN_OK:

@@ -1263,19 +1263,18 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t r
   }
 }
 
-ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
-                                               const uint8_t* data, size_t size) {
+ReturnValue_t DeviceHandlerBase::executeAction(Action *action, MessageQueueId_t commandedBy) {
   ReturnValue_t result = acceptExternalDeviceCommands();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  DeviceCommandMap::iterator iter = deviceCommandMap.find(actionId);
+  DeviceCommandMap::iterator iter = deviceCommandMap.find(action->getId());
   if (iter == deviceCommandMap.end()) {
     result = COMMAND_NOT_SUPPORTED;
   } else if (iter->second.isExecuting) {
     result = COMMAND_ALREADY_SENT;
   } else {
-    result = buildCommandFromCommand(actionId, data, size);
+    result = action->handle();
   }
   if (result == RETURN_OK) {
     iter->second.sendReplyTo = commandedBy;

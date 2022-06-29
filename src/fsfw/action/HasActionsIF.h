@@ -44,8 +44,11 @@ class HasActionsIF {
   /**
    * Function to get the MessageQueueId_t of the implementing object
    * @return MessageQueueId_t of the object
+   *
    */
   virtual MessageQueueId_t getCommandQueue() const = 0;
+
+  virtual ActionHelper* getActionHelper() = 0;
   /**
    * Execute or initialize the execution of a certain function.
    * The ActionHelpers will execute this function and behave differently
@@ -55,8 +58,7 @@ class HasActionsIF {
    * -@c EXECUTION_FINISHED Finish reply will be generated
    * -@c Not RETURN_OK Step failure reply will be generated
    */
-  virtual ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
-                                      const uint8_t* data, size_t size) = 0;
+  virtual ReturnValue_t executeAction(Action* action, MessageQueueId_t commandedBy) = 0;
 };
 
 #endif /* FSFW_ACTION_HASACTIONSIF_H_ */

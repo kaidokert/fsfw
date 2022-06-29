@@ -201,9 +201,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    */
   virtual void setParentQueue(MessageQueueId_t parentQueueId);
 
-  /** @brief  Implementation required for HasActionIF */
-  ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
-                              const uint8_t *data, size_t size) override;
+  /** @brief  Implementation required for HasActionIF */ 
+  ReturnValue_t executeAction(Action *action, MessageQueueId_t commandedBy) override;
 
   Mode_t getTransitionSourceMode() const;
   Submode_t getTransitionSourceSubMode() const;

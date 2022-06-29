@@ -57,6 +57,8 @@ void ActionHelper::finish(bool success, MessageQueueId_t reportTo, ActionId_t co
 
 void ActionHelper::setQueueToUse(MessageQueueIF* queue) { queueToUse = queue; }
 
+#include <stdio.h>
+
 void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId,
                                     store_address_t dataAddress) {
   const uint8_t* dataPtr = NULL;
@@ -66,9 +68,29 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
     CommandMessage reply;
     ActionMessage::setStepReply(&reply, actionId, 0, result);
     queueToUse->sendMessage(commandedBy, &reply);
+    ipcStore->deleteData(dataAddress);
     return;
   }
-  result = owner->executeAction(actionId, commandedBy, dataPtr, size);
+  auto actionIter = actionMap.find(actionId);
+  if (actionIter == actionMap.end()){
+    puts("end");
+    CommandMessage reply;
+    ActionMessage::setStepReply(&reply, actionId, 0, HasActionsIF::INVALID_ACTION_ID);
+    queueToUse->sendMessage(commandedBy, &reply);
+    ipcStore->deleteData(dataAddress);
+    return;
+  }
+  Action* action = actionIter->second;
+  result = action->deSerialize(&dataPtr, &size, SerializeIF::Endianness::NETWORK);
+  if ((result != HasReturnvaluesIF::RETURN_OK) || (size != 0)){ //TODO write unittest for second condition
+  printf("serialze %i, %x\n", size, result);
+    CommandMessage reply;
+    ActionMessage::setStepReply(&reply, actionId, 0, HasActionsIF::INVALID_PARAMETERS);
+    queueToUse->sendMessage(commandedBy, &reply);
+    ipcStore->deleteData(dataAddress);
+    return;
+  }
+  result = action->handle();
   ipcStore->deleteData(dataAddress);
   if (result == HasActionsIF::EXECUTION_FINISHED) {
     CommandMessage reply;
@@ -163,3 +185,11 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
   }
   return result;
 }
+
+void ActionHelper::registerAction(Action* action) {
+  //TODO error handling
+  ActionId_t id = action->getId();
+  actionMap.emplace(id, action);
+}
+
+std::map<ActionId_t, Action*> const* ActionHelper::getActionMap() { return &actionMap; }
