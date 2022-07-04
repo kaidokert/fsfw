@@ -67,6 +67,7 @@ endif()
 set(FSFW_SOURCES_DIR "${CMAKE_SOURCE_DIR}/src/fsfw")
 
 set(FSFW_ETL_LIB_NAME etl)
+set(FSFW_ETL_LINK_TARGET etl::etl)
 set(FSFW_ETL_LIB_MAJOR_VERSION
     20
     CACHE STRING "ETL library major version requirement")
@@ -447,8 +448,8 @@ target_include_directories(
 target_compile_options(${LIB_FSFW_NAME} PRIVATE ${FSFW_WARNING_FLAGS}
                                                 ${COMPILER_FLAGS})
 
-target_link_libraries(${LIB_FSFW_NAME} PRIVATE ${FSFW_ETL_LINK_TARGET}
-                                               ${FSFW_ADDITIONAL_LINK_LIBS})
+target_link_libraries(${LIB_FSFW_NAME} PRIVATE ${FSFW_ADDITIONAL_LINK_LIBS})
+target_link_libraries(${LIB_FSFW_NAME} PUBLIC ${FSFW_ETL_LINK_TARGET})
 
 string(
   CONCAT
