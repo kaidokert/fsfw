@@ -1,9 +1,9 @@
 #ifndef FSFW_ACTION_ACTIONHELPER_H_
 #define FSFW_ACTION_ACTIONHELPER_H_
 
-#include "../ipc/MessageQueueIF.h"
-#include "../serialize/SerializeIF.h"
 #include "ActionMessage.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/serialize/SerializeIF.h"
 /**
  * @brief Action Helper is a helper class which handles action messages
  *
