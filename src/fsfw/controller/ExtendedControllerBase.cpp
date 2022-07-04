@@ -6,7 +6,7 @@ ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId, object_id_t
       poolManager(this, commandQueue),
       actionHelper(this, commandQueue) {}
 
-ExtendedControllerBase::~ExtendedControllerBase() {}
+ExtendedControllerBase::~ExtendedControllerBase() = default;
 
 ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
                                                     MessageQueueId_t commandedBy,
@@ -31,7 +31,7 @@ ReturnValue_t ExtendedControllerBase::handleCommandMessage(CommandMessage *messa
 
 void ExtendedControllerBase::handleQueue() {
   CommandMessage command;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result;
   for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
        result = commandQueue->receiveMessage(&command)) {
     result = actionHelper.handleActionMessage(&command);
