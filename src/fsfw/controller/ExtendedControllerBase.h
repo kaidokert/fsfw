@@ -18,16 +18,16 @@ class ExtendedControllerBase : public ControllerBase,
                                public HasLocalDataPoolIF {
  public:
   ExtendedControllerBase(object_id_t objectId, object_id_t parentId, size_t commandQueueDepth = 3);
-  virtual ~ExtendedControllerBase();
+  ~ExtendedControllerBase() override;
 
   /* SystemObjectIF overrides */
-  virtual ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
-  virtual MessageQueueId_t getCommandQueue() const override;
+  [[nodiscard]] MessageQueueId_t getCommandQueue() const override;
 
   /* ExecutableObjectIF overrides */
-  virtual ReturnValue_t performOperation(uint8_t opCode) override;
-  virtual ReturnValue_t initializeAfterTaskCreation() override;
+  ReturnValue_t performOperation(uint8_t opCode) override;
+  ReturnValue_t initializeAfterTaskCreation() override;
 
  protected:
   LocalDataPoolManager poolManager;
@@ -39,32 +39,32 @@ class ExtendedControllerBase : public ControllerBase,
    * @param message
    * @return
    */
-  virtual ReturnValue_t handleCommandMessage(CommandMessage* message) override = 0;
+  ReturnValue_t handleCommandMessage(CommandMessage* message) override = 0;
 
   /**
    * Periodic helper from ControllerBase, implemented by child class.
    */
-  virtual void performControlOperation() override = 0;
+  void performControlOperation() override = 0;
 
   /* Handle the four messages mentioned above */
   void handleQueue() override;
 
   /* HasActionsIF overrides */
-  virtual ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
-                                      const uint8_t* data, size_t size) override;
+  ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
+                              const uint8_t* data, size_t size) override;
 
   /* HasLocalDatapoolIF overrides */
-  virtual LocalDataPoolManager* getHkManagerHandle() override;
-  virtual object_id_t getObjectId() const override;
-  virtual uint32_t getPeriodicOperationFrequency() const override;
+  LocalDataPoolManager* getHkManagerHandle() override;
+  [[nodiscard]] object_id_t getObjectId() const override;
+  [[nodiscard]] uint32_t getPeriodicOperationFrequency() const override;
 
-  virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
-                                                LocalDataPoolManager& poolManager) override = 0;
-  virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override = 0;
+  ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
+                                        LocalDataPoolManager& poolManager) override = 0;
+  LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override = 0;
 
   // Mode abstract functions
-  virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t* msToReachTheMode) override = 0;
+  ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
+                                 uint32_t* msToReachTheMode) override = 0;
 };
 
 #endif /* FSFW_CONTROLLER_EXTENDEDCONTROLLERBASE_H_ */

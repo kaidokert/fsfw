@@ -12,7 +12,7 @@ class ReadCommitIF {
   friend class ReadCommitIFAttorney;
 
  public:
-  virtual ~ReadCommitIF() {}
+  virtual ~ReadCommitIF() = default;
   virtual ReturnValue_t read(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) = 0;
   virtual ReturnValue_t commit(MutexIF::TimeoutType timeoutType, uint32_t timeoutMs) = 0;
 

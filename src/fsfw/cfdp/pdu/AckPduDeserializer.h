@@ -13,7 +13,7 @@ class AckPduDeserializer : public FileDirectiveDeserializer {
    * @return
    *  - cfdp::INVALID_DIRECTIVE_FIELDS: Invalid fields
    */
-  ReturnValue_t parseData();
+  ReturnValue_t parseData() override;
 
  private:
   bool checkAndSetCodes(uint8_t rawAckedByte, uint8_t rawAckedConditionCode);

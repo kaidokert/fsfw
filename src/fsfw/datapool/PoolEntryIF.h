@@ -24,7 +24,7 @@ class PoolEntryIF {
    * @brief	This is an empty virtual destructor,
    * 			as it is required for C++ interfaces.
    */
-  virtual ~PoolEntryIF() {}
+  virtual ~PoolEntryIF() = default;
   /**
    * @brief	getSize returns the array size of the entry.
    * 			A single variable parameter has size 1.

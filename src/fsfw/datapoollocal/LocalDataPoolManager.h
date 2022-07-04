@@ -80,7 +80,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    */
   LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
                        bool appendValidityBuffer = true);
-  virtual ~LocalDataPoolManager();
+  ~LocalDataPoolManager() override;
 
   /**
    * Assigns the queue to use. Make sure to call this in the #initialize
@@ -151,7 +151,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    * Otherwise, only an notification message is sent.
    * @return
    */
-  ReturnValue_t subscribeForSetUpdateMessage(const uint32_t setId, object_id_t destinationObject,
+  ReturnValue_t subscribeForSetUpdateMessage(uint32_t setId, object_id_t destinationObject,
                                              MessageQueueId_t targetQueueId,
                                              bool generateSnapshot) override;
 
@@ -169,7 +169,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    * Otherwise, only an notification message is sent.
    * @return
    */
-  ReturnValue_t subscribeForVariableUpdateMessage(const lp_id_t localPoolId,
+  ReturnValue_t subscribeForVariableUpdateMessage(lp_id_t localPoolId,
                                                   object_id_t destinationObject,
                                                   MessageQueueId_t targetQueueId,
                                                   bool generateSnapshot) override;
@@ -252,7 +252,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    */
   void clearReceiversList();
 
-  object_id_t getCreatorObjectId() const;
+  [[nodiscard]] object_id_t getCreatorObjectId() const;
 
   /**
    * Get the pointer to the mutex. Can be used to lock the data pool
@@ -262,7 +262,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    */
   MutexIF* getMutexHandle();
 
-  virtual LocalDataPoolManager* getPoolManagerHandle() override;
+  LocalDataPoolManager* getPoolManagerHandle() override;
 
  protected:
   /** Core data structure for the actual pool data */
@@ -306,8 +306,8 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
   struct HkUpdateResetHelper {
     DataType dataType = DataType::DATA_SET;
     DataId dataId;
-    uint8_t updateCounter;
-    uint8_t currentUpdateCounter;
+    uint8_t updateCounter{};
+    uint8_t currentUpdateCounter{};
   };
 
   using HkUpdateResetList = std::vector<struct HkUpdateResetHelper>;

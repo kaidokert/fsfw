@@ -30,7 +30,7 @@ class DataSetIF {
    * @brief	This is an empty virtual destructor,
    * 			as it is proposed for C++ interfaces.
    */
-  virtual ~DataSetIF() {}
+  virtual ~DataSetIF() = default;
 
   /**
    * @brief	This operation provides a method to register local data pool
@@ -39,7 +39,7 @@ class DataSetIF {
    */
   virtual ReturnValue_t registerVariable(PoolVariableIF* variable) = 0;
 
-  virtual uint16_t getFillCount() const = 0;
+  [[nodiscard]] virtual uint16_t getFillCount() const = 0;
 };
 
 #endif /* FSFW_DATAPOOL_DATASETIF_H_ */

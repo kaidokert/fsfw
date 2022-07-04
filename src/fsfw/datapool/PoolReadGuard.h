@@ -11,9 +11,9 @@
  */
 class PoolReadGuard {
  public:
-  PoolReadGuard(ReadCommitIF* readObject,
-                MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
-                uint32_t mutexTimeout = 20)
+  explicit PoolReadGuard(ReadCommitIF* readObject,
+                         MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+                         uint32_t mutexTimeout = 20)
       : readObject(readObject), mutexTimeout(mutexTimeout) {
     if (readObject != nullptr) {
       readResult = readObject->read(timeoutType, mutexTimeout);
@@ -29,7 +29,7 @@ class PoolReadGuard {
     }
   }
 
-  ReturnValue_t getReadResult() const { return readResult; }
+  [[nodiscard]] ReturnValue_t getReadResult() const { return readResult; }
 
   /**
    * @brief   Can be used to suppress commit on destruction.

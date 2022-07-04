@@ -24,21 +24,21 @@ class ControllerBase : public HasModesIF,
   static const Mode_t MODE_NORMAL = 2;
 
   ControllerBase(object_id_t setObjectId, object_id_t parentId, size_t commandQueueDepth = 3);
-  virtual ~ControllerBase();
+  ~ControllerBase() override;
 
   /** SystemObject override */
-  virtual ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
-  virtual MessageQueueId_t getCommandQueue() const override;
+  [[nodiscard]] MessageQueueId_t getCommandQueue() const override;
 
   /** HasHealthIF overrides */
-  virtual ReturnValue_t setHealth(HealthState health) override;
-  virtual HasHealthIF::HealthState getHealth() override;
+  ReturnValue_t setHealth(HealthState health) override;
+  HasHealthIF::HealthState getHealth() override;
 
   /** ExecutableObjectIF overrides */
-  virtual ReturnValue_t performOperation(uint8_t opCode) override;
-  virtual void setTaskIF(PeriodicTaskIF *task) override;
-  virtual ReturnValue_t initializeAfterTaskCreation() override;
+  ReturnValue_t performOperation(uint8_t opCode) override;
+  void setTaskIF(PeriodicTaskIF *task) override;
+  ReturnValue_t initializeAfterTaskCreation() override;
 
  protected:
   /**
@@ -54,8 +54,8 @@ class ControllerBase : public HasModesIF,
    */
   virtual void performControlOperation() = 0;
 
-  virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
-                                         uint32_t *msToReachTheMode) override = 0;
+  ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
+                                 uint32_t *msToReachTheMode) override = 0;
 
   const object_id_t parentId;
 

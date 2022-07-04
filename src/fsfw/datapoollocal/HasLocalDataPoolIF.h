@@ -44,14 +44,15 @@ class HasLocalDataPoolIF {
   friend class HasLocalDpIFUserAttorney;
 
  public:
-  virtual ~HasLocalDataPoolIF(){};
+  virtual ~HasLocalDataPoolIF() = default;
+  ;
 
   static constexpr uint32_t INVALID_LPID = localpool::INVALID_LPID;
 
-  virtual object_id_t getObjectId() const = 0;
+  [[nodiscard]] virtual object_id_t getObjectId() const = 0;
 
   /** Command queue for housekeeping messages. */
-  virtual MessageQueueId_t getCommandQueue() const = 0;
+  [[nodiscard]] virtual MessageQueueId_t getCommandQueue() const = 0;
 
   /**
    * Is used by pool owner to initialize the pool map once
@@ -66,7 +67,7 @@ class HasLocalDataPoolIF {
    * usually be the period the pool owner performs its periodic operation.
    * @return
    */
-  virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
+  [[nodiscard]] virtual dur_millis_t getPeriodicOperationFrequency() const = 0;
 
   /**
    * @brief   This function will be called by the manager if an update

@@ -24,8 +24,8 @@ class PoolVariableIF : public SerializeIF, public ReadCommitIF {
   static constexpr ReturnValue_t INVALID_READ_WRITE_MODE = MAKE_RETURN_CODE(0xA0);
   static constexpr ReturnValue_t INVALID_POOL_ENTRY = MAKE_RETURN_CODE(0xA1);
 
-  static constexpr bool VALID = 1;
-  static constexpr bool INVALID = 0;
+  static constexpr bool VALID = true;
+  static constexpr bool INVALID = false;
   static constexpr uint32_t NO_PARAMETER = 0xffffffff;
 
   enum ReadWriteMode_t { VAR_READ, VAR_WRITE, VAR_READ_WRITE };
@@ -34,23 +34,23 @@ class PoolVariableIF : public SerializeIF, public ReadCommitIF {
    * @brief	This is an empty virtual destructor,
    * 			as it is proposed for C++ interfaces.
    */
-  virtual ~PoolVariableIF() {}
+  ~PoolVariableIF() override = default;
   /**
    * @brief	This method returns if the variable is write-only,
    * 			read-write or read-only.
    */
-  virtual ReadWriteMode_t getReadWriteMode() const = 0;
+  [[nodiscard]] virtual ReadWriteMode_t getReadWriteMode() const = 0;
   virtual void setReadWriteMode(ReadWriteMode_t newMode) = 0;
 
   /**
    * @brief	This operation shall return the data pool id of the variable.
    */
-  virtual uint32_t getDataPoolId() const = 0;
+  [[nodiscard]] virtual uint32_t getDataPoolId() const = 0;
   /**
    * @brief	With this call, the valid information of the
    * 			variable is returned.
    */
-  virtual bool isValid() const = 0;
+  [[nodiscard]] virtual bool isValid() const = 0;
   /**
    * @brief	With this call, the valid information of the variable is set.
    */

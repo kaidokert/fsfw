@@ -9,16 +9,16 @@ class AckInfo {
   AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCode ackedConditionCode,
           cfdp::AckTransactionStatus transactionStatus, uint8_t directiveSubtypeCode = 0);
 
-  cfdp::ConditionCode getAckedConditionCode() const;
-  void setAckedConditionCode(cfdp::ConditionCode ackedConditionCode);
+  [[nodiscard]] cfdp::ConditionCode getAckedConditionCode() const;
+  void setAckedConditionCode(cfdp::ConditionCode ackedConditionCode_);
 
-  cfdp::FileDirectives getAckedDirective() const;
+  [[nodiscard]] cfdp::FileDirectives getAckedDirective() const;
   void setAckedDirective(cfdp::FileDirectives ackedDirective);
 
-  uint8_t getDirectiveSubtypeCode() const;
+  [[nodiscard]] uint8_t getDirectiveSubtypeCode() const;
   void setDirectiveSubtypeCode(uint8_t directiveSubtypeCode);
 
-  cfdp::AckTransactionStatus getTransactionStatus() const;
+  [[nodiscard]] cfdp::AckTransactionStatus getTransactionStatus() const;
   void setTransactionStatus(cfdp::AckTransactionStatus transactionStatus);
 
  private:

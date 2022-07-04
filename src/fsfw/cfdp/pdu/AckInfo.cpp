@@ -13,10 +13,12 @@ AckInfo::AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCode ackedC
   }
 }
 
+AckInfo::AckInfo() = default;
+
 cfdp::ConditionCode AckInfo::getAckedConditionCode() const { return ackedConditionCode; }
 
-void AckInfo::setAckedConditionCode(cfdp::ConditionCode ackedConditionCode) {
-  this->ackedConditionCode = ackedConditionCode;
+void AckInfo::setAckedConditionCode(cfdp::ConditionCode ackedConditionCode_) {
+  ackedConditionCode = ackedConditionCode_;
   if (ackedDirective == cfdp::FileDirectives::FINISH) {
     this->directiveSubtypeCode = 0b0001;
   } else {
@@ -26,20 +28,18 @@ void AckInfo::setAckedConditionCode(cfdp::ConditionCode ackedConditionCode) {
 
 cfdp::FileDirectives AckInfo::getAckedDirective() const { return ackedDirective; }
 
-void AckInfo::setAckedDirective(cfdp::FileDirectives ackedDirective) {
-  this->ackedDirective = ackedDirective;
+void AckInfo::setAckedDirective(cfdp::FileDirectives ackedDirective_) {
+  ackedDirective = ackedDirective_;
 }
 
 uint8_t AckInfo::getDirectiveSubtypeCode() const { return directiveSubtypeCode; }
 
-void AckInfo::setDirectiveSubtypeCode(uint8_t directiveSubtypeCode) {
-  this->directiveSubtypeCode = directiveSubtypeCode;
+void AckInfo::setDirectiveSubtypeCode(uint8_t directiveSubtypeCode_) {
+  directiveSubtypeCode = directiveSubtypeCode_;
 }
 
 cfdp::AckTransactionStatus AckInfo::getTransactionStatus() const { return transactionStatus; }
 
-AckInfo::AckInfo() {}
-
-void AckInfo::setTransactionStatus(cfdp::AckTransactionStatus transactionStatus) {
-  this->transactionStatus = transactionStatus;
+void AckInfo::setTransactionStatus(cfdp::AckTransactionStatus transactionStatus_) {
+  transactionStatus = transactionStatus_;
 }

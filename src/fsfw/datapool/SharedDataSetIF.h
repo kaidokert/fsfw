@@ -5,7 +5,7 @@
 
 class SharedDataSetIF {
  public:
-  virtual ~SharedDataSetIF(){};
+  virtual ~SharedDataSetIF() = default;
 
  private:
   virtual ReturnValue_t lockDataset(MutexIF::TimeoutType timeoutType,

@@ -64,8 +64,8 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
    * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
    *      commit() in between
    */
-  virtual ReturnValue_t read(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
-                             uint32_t lockTimeout = 20) override;
+  ReturnValue_t read(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+                     uint32_t lockTimeout = 20) override;
   /**
    * @brief	The commit call initializes writing back the registered variables.
    * @details
@@ -84,39 +84,38 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
    * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
    * 			  contains non write-only variables
    */
-  virtual ReturnValue_t commit(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
-                               uint32_t lockTimeout = 20) override;
+  ReturnValue_t commit(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+                       uint32_t lockTimeout = 20) override;
 
   /**
    * Register the passed pool variable instance into the data set.
    * @param variable
    * @return
    */
-  virtual ReturnValue_t registerVariable(PoolVariableIF* variable) override;
+  ReturnValue_t registerVariable(PoolVariableIF* variable) override;
 
   /**
    * Provides the means to lock the underlying data structure to ensure
    * thread-safety. Default implementation is empty
    * @return Always returns -@c RETURN_OK
    */
-  virtual ReturnValue_t lockDataPool(
-      MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
-      uint32_t timeoutMs = 20) override;
+  ReturnValue_t lockDataPool(MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
+                             uint32_t timeoutMs = 20) override;
   /**
    * Provides the means to unlock the underlying data structure to ensure
    * thread-safety. Default implementation is empty
    * @return Always returns -@c RETURN_OK
    */
-  virtual ReturnValue_t unlockDataPool() override;
+  ReturnValue_t unlockDataPool() override;
 
-  virtual uint16_t getFillCount() const override;
+  [[nodiscard]] uint16_t getFillCount() const override;
 
   /* SerializeIF implementations */
-  virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, const size_t maxSize,
-                                  SerializeIF::Endianness streamEndianness) const override;
-  virtual size_t getSerializedSize() const override;
-  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-                                    SerializeIF::Endianness streamEndianness) override;
+  ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+                          SerializeIF::Endianness streamEndianness) const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
+  ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                            SerializeIF::Endianness streamEndianness) override;
 
   /**
    * Can be used to individually protect every read and commit call.
@@ -156,7 +155,7 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
   const size_t maxFillCount = 0;
 
   void setContainer(PoolVariableIF** variablesContainer);
-  PoolVariableIF** getContainer() const;
+  [[nodiscard]] PoolVariableIF** getContainer() const;
 
  private:
   bool protectEveryReadCommitCall = false;

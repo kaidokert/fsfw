@@ -18,7 +18,7 @@ class AckPduSerializer : public FileDirectiveSerializer {
    */
   AckPduSerializer(AckInfo& ackInfo, PduConfig& pduConf);
 
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;

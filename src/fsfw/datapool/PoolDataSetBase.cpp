@@ -9,7 +9,7 @@ PoolDataSetBase::PoolDataSetBase(PoolVariableIF** registeredVariablesArray,
                                  const size_t maxFillCount)
     : registeredVariables(registeredVariablesArray), maxFillCount(maxFillCount) {}
 
-PoolDataSetBase::~PoolDataSetBase() {}
+PoolDataSetBase::~PoolDataSetBase() = default;
 
 ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF* variable) {
   if (registeredVariables == nullptr) {

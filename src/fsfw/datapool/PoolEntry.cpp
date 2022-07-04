@@ -11,7 +11,7 @@ PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid)
     : length(static_cast<uint8_t>(initValue.size())), valid(setValid) {
   this->address = new T[this->length];
   if (initValue.size() == 0) {
-    std::memset(this->address, 0, this->getByteSize());
+    std::memset(this->address, 0, PoolEntry<T>::getByteSize());
   } else {
     std::copy(initValue.begin(), initValue.end(), this->address);
   }
@@ -22,9 +22,9 @@ PoolEntry<T>::PoolEntry(T* initValue, uint8_t setLength, bool setValid)
     : length(setLength), valid(setValid) {
   this->address = new T[this->length];
   if (initValue != nullptr) {
-    std::memcpy(this->address, initValue, this->getByteSize());
+    std::memcpy(this->address, initValue, PoolEntry<T>::getByteSize());
   } else {
-    std::memset(this->address, 0, this->getByteSize());
+    std::memset(this->address, 0, PoolEntry<T>::getByteSize());
   }
 }
 
@@ -62,7 +62,7 @@ bool PoolEntry<T>::getValid() {
 
 template <typename T>
 void PoolEntry<T>::print() {
-  const char* validString = nullptr;
+  const char* validString;
   if (valid) {
     validString = "Valid";
   } else {

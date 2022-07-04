@@ -62,7 +62,7 @@ class PoolEntry : public PoolEntryIF {
    * @param setValid
    * Sets the initialization flag. It is invalid by default.
    */
-  PoolEntry(T* initValue, uint8_t setLength = 1, bool setValid = false);
+  explicit PoolEntry(T* initValue, uint8_t setLength = 1, bool setValid = false);
 
   //! Explicitely deleted copy ctor, copying is not allowed.
   PoolEntry(const PoolEntry&) = delete;
@@ -77,7 +77,7 @@ class PoolEntry : public PoolEntryIF {
    * PoolEntries shall never be copied, as a copy might delete the variable
    * on the heap.
    */
-  ~PoolEntry();
+  ~PoolEntry() override;
 
   /**
    * Return typed pointer to start of data.
@@ -91,32 +91,32 @@ class PoolEntry : public PoolEntryIF {
    * For non-array pool entries return type size, for vector entries
    * return type size times the number of entries.
    */
-  uint8_t getSize();
+  uint8_t getSize() override;
   /**
    * @brief	This operation returns the size in bytes.
    * @details	The size is calculated by sizeof(type) * array_size.
    */
-  uint16_t getByteSize();
+  uint16_t getByteSize() override;
   /**
    * @brief	This operation returns a the address pointer casted to void*.
    */
-  void* getRawData();
+  void* getRawData() override;
   /**
    * @brief	This method allows to set the valid information
    * 			of the pool entry.
    */
-  void setValid(bool isValid);
+  void setValid(bool isValid) override;
   /**
    * @brief	This method allows to get the valid information
    * 			of the pool entry.
    */
-  bool getValid();
+  bool getValid() override;
   /**
    * @brief	This is a debug method that prints all values and the valid
    * 			information to the screen. It prints all array entries in a row.
    */
-  void print();
-  Type getType();
+  void print() override;
+  Type getType() override;
 
  private:
   /**

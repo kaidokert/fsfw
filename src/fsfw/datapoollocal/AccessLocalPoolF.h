@@ -9,7 +9,8 @@ class MutexIF;
  */
 class AccessPoolManagerIF {
  public:
-  virtual ~AccessPoolManagerIF(){};
+  virtual ~AccessPoolManagerIF() = default;
+  ;
 
   virtual MutexIF* getLocalPoolMutex() = 0;
 

@@ -34,7 +34,7 @@ class SerializeIF {
   static const ReturnValue_t TOO_MANY_ELEMENTS =
       MAKE_RETURN_CODE(3);  // !< There are too many elements to be deserialized
 
-  virtual ~SerializeIF() {}
+  virtual ~SerializeIF() = default;
   /**
    * @brief
    * Function to serialize the object into a buffer with maxSize. Size represents the written
@@ -66,7 +66,7 @@ class SerializeIF {
    * Gets the size of a object if it would be serialized in a buffer
    * @return Size of serialized object
    */
-  virtual size_t getSerializedSize() const = 0;
+  [[nodiscard]] virtual size_t getSerializedSize() const = 0;
 
   /**
    * @brief

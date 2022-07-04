@@ -1,6 +1,5 @@
 #include "fsfw/datapoollocal/LocalDataPoolManager.h"
 
-#include <array>
 #include <cmath>
 
 #include "fsfw/datapoollocal.h"
@@ -57,7 +56,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
   }
 
   if (defaultHkDestination != objects::NO_OBJECT) {
-    AcceptsHkPacketsIF* hkPacketReceiver =
+    auto* hkPacketReceiver =
         ObjectManager::instance()->get<AcceptsHkPacketsIF>(defaultHkDestination);
     if (hkPacketReceiver != nullptr) {
       hkDestinationId = hkPacketReceiver->getHkQueue();
@@ -209,9 +208,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     /* Prepare and send update snapshot */
-    timeval now;
+    timeval now{};
     Clock::getClock_timeval(&now);
-    CCSDSTime::CDS_short cds;
+    CCSDSTime::CDS_short cds{};
     CCSDSTime::convertToCcsds(&cds, &now);
     HousekeepingSnapshot updatePacket(
         reinterpret_cast<uint8_t*>(&cds), sizeof(cds),
@@ -245,9 +244,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     /* Prepare and send update snapshot */
-    timeval now;
+    timeval now{};
     Clock::getClock_timeval(&now);
-    CCSDSTime::CDS_short cds;
+    CCSDSTime::CDS_short cds{};
     CCSDSTime::convertToCcsds(&cds, &now);
     HousekeepingSnapshot updatePacket(
         reinterpret_cast<uint8_t*>(&cds), sizeof(cds),
@@ -339,8 +338,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
                                                                float collectionInterval,
                                                                bool isDiagnostics,
                                                                object_id_t packetDestination) {
-  AcceptsHkPacketsIF* hkReceiverObject =
-      ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
+  auto* hkReceiverObject = ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
   if (hkReceiverObject == nullptr) {
     printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
                         QUEUE_OR_DESTINATION_INVALID);
@@ -368,8 +366,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
 ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid, bool isDiagnostics,
                                                              bool reportingEnabled,
                                                              object_id_t packetDestination) {
-  AcceptsHkPacketsIF* hkReceiverObject =
-      ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
+  auto* hkReceiverObject = ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
   if (hkReceiverObject == nullptr) {
     printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
                         QUEUE_OR_DESTINATION_INVALID);
@@ -696,7 +693,8 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     /* Configuration error */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "LocalDataPoolManager::performPeriodicHkOperation: HK generation failed." << std::endl;
+    sif::warning << "LocalDataPoolManager::performPeriodicHkOperation: HK generation failed."
+                 << std::endl;
 #else
     sif::printWarning("LocalDataPoolManager::performPeriodicHkOperation: HK generation failed.\n");
 #endif
