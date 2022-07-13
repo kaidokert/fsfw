@@ -114,6 +114,8 @@ https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/593
 
 ## Additions
 
+- New constructor for PoolEntry which allows to simply specify the length of the pool entry.
+  This is also the new default constructor for scalar value with 0 as an initial value
 - Added options for CI/CD builds: `FSFW_CICD_BUILD`. This allows the source code to know
   whether it is running in CI/CD
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/623

@@ -7,24 +7,26 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 template <typename T>
-PoolEntry<T>::PoolEntry(std::initializer_list<T> initValue, bool setValid)
-    : length(static_cast<uint8_t>(initValue.size())), valid(setValid) {
-  this->address = new T[this->length];
-  if (initValue.size() == 0) {
-    std::memset(this->address, 0, this->getByteSize());
-  } else {
-    std::copy(initValue.begin(), initValue.end(), this->address);
+PoolEntry<T>::PoolEntry(uint8_t len, bool setValid) : length(len), valid(setValid) {
+  this->address = new T[this->length]();
+  std::memset(this->address, 0, this->getByteSize());
+}
+
+template <typename T>
+PoolEntry<T>::PoolEntry(std::initializer_list<T> initValues, bool setValid)
+    : length(static_cast<uint8_t>(initValues.size())), valid(setValid) {
+  this->address = new T[this->length]();
+  if (initValues.size() > 0) {
+    std::copy(initValues.begin(), initValues.end(), this->address);
   }
 }
 
 template <typename T>
-PoolEntry<T>::PoolEntry(T* initValue, uint8_t setLength, bool setValid)
+PoolEntry<T>::PoolEntry(const T* initValue, uint8_t setLength, bool setValid)
     : length(setLength), valid(setValid) {
-  this->address = new T[this->length];
+  this->address = new T[this->length]();
   if (initValue != nullptr) {
     std::memcpy(this->address, initValue, this->getByteSize());
-  } else {
-    std::memset(this->address, 0, this->getByteSize());
   }
 }
 
