@@ -14,14 +14,14 @@ class CommandActionHelper {
   friend class CommandsActionsIF;
 
  public:
-  CommandActionHelper(CommandsActionsIF* owner);
+  explicit CommandActionHelper(CommandsActionsIF* owner);
   virtual ~CommandActionHelper();
   ReturnValue_t commandAction(object_id_t commandTo, ActionId_t actionId, const uint8_t* data,
                               uint32_t size);
   ReturnValue_t commandAction(object_id_t commandTo, ActionId_t actionId, SerializeIF* data);
   ReturnValue_t initialize();
   ReturnValue_t handleReply(CommandMessage* reply);
-  uint8_t getCommandCount() const;
+  [[nodiscard]] uint8_t getCommandCount() const;
 
  private:
   CommandsActionsIF* owner;

@@ -11,15 +11,15 @@
 class SimpleActionHelper : public ActionHelper {
  public:
   SimpleActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue);
-  virtual ~SimpleActionHelper();
+  ~SimpleActionHelper() override;
   void step(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
   void finish(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
   ReturnValue_t reportData(SerializeIF* data);
 
  protected:
   void prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId,
-                        store_address_t dataAddress);
-  virtual void resetHelper();
+                        store_address_t dataAddress) override;
+  void resetHelper() override;
 
  private:
   bool isExecuting;
@@ -28,4 +28,4 @@ class SimpleActionHelper : public ActionHelper {
   uint8_t stepCount = 0;
 };
 
-#endif /* SIMPLEACTIONHELPER_H_ */
+#endif /* FSFW_ACTION_SIMPLEACTIONHELPER_H_ */
