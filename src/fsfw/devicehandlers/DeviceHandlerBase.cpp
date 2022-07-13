@@ -239,25 +239,20 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
   for (std::pair<const DeviceCommandId_t, DeviceReplyInfo>& replyPair : deviceReplyMap) {
     if (replyPair.second.countdown != nullptr && replyPair.second.active) {
       if (replyPair.second.countdown->hasTimedOut()) {
+        disableTimeoutControlledReply(&replyPair.second);
         timedOut = true;
       }
     }
     if (replyPair.second.delayCycles != 0 && replyPair.second.countdown == nullptr) {
       replyPair.second.delayCycles--;
       if (replyPair.second.delayCycles == 0) {
-        if (replyPair.second.periodic) {
-          replyPair.second.delayCycles = replyPair.second.maxDelayCycles;
-        }
+        disableDelayCyclesControlledReply(&replyPair.second);
         timedOut = true;
       }
     }
     if (timedOut) {
       replyToReply(replyPair.first, replyPair.second, TIMEOUT);
       missedReply(replyPair.first);
-      timedOut = false;
-      if (not replyPair.second.periodic) {
-        replyPair.second.active = false;
-      }
     }
   }
 }
@@ -518,11 +513,19 @@ ReturnValue_t DeviceHandlerBase::updatePeriodicReply(bool enable, DeviceCommandI
       return COMMAND_NOT_SUPPORTED;
     }
     if (enable) {
-      info->delayCycles = info->maxDelayCycles;
       info->active = true;
+      if (info->countdown != nullptr) {
+        info->delayCycles = info->maxDelayCycles;
+      } else {
+        info->countdown->resetTimer();
+      }
     } else {
-      info->delayCycles = 0;
       info->active = false;
+      if (info->countdown != nullptr) {
+        info->delayCycles = 0;
+      } else {
+        info->countdown->timeOut();
+      }
     }
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -1398,7 +1401,12 @@ uint8_t DeviceHandlerBase::getReplyDelayCycles(DeviceCommandId_t deviceCommand) 
   if (iter == deviceReplyMap.end()) {
     return 0;
   } else if (iter->second.countdown != nullptr) {
-    return 0;
+    // fake a useful return value for legacy code
+    if (iter->second.active) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
   return iter->second.delayCycles;
 }
