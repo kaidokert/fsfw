@@ -65,7 +65,7 @@ void Factory::setStaticFrameworkObjectIds() {
   VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
 
   DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
-  DeviceHandlerBase::rawDataReceiverId = objects::PUS_SERVICE_2_DEVICE_ACCESS;
+  DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 
   LocalDataPoolManager::defaultHkDestination = objects::HK_RECEIVER_MOCK;
 
