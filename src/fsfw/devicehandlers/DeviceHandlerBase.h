@@ -1257,15 +1257,15 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   void doGetRead(void);
 
   /**
-   * @brief Handles disabling of replies which use a timeout to detect missed replies.
+   * @brief Resets replies which use a timeout to detect missed replies.
    */
-  void disableTimeoutControlledReply(DeviceReplyInfo *info);
+  void resetTimeoutControlledReply(DeviceReplyInfo *info);
 
   /**
-   * @brief Handles disabling of replies which use a number of maximum delay cycles to detect
+   * @brief Resets replies which use a number of maximum delay cycles to detect
    *        missed replies.
    */
-  void disableDelayCyclesControlledReply(DeviceReplyInfo *info);
+  void resetDelayCyclesControlledReply(DeviceReplyInfo *info);
 
   /**
    * Retrive data from the #IPCStore.

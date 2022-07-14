@@ -239,14 +239,14 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
   for (std::pair<const DeviceCommandId_t, DeviceReplyInfo>& replyPair : deviceReplyMap) {
     if (replyPair.second.countdown != nullptr && replyPair.second.active) {
       if (replyPair.second.countdown->hasTimedOut()) {
-        disableTimeoutControlledReply(&replyPair.second);
+        resetTimeoutControlledReply(&replyPair.second);
         timedOut = true;
       }
     }
     if (replyPair.second.delayCycles != 0 && replyPair.second.countdown == nullptr) {
       replyPair.second.delayCycles--;
       if (replyPair.second.delayCycles == 0) {
-        disableDelayCyclesControlledReply(&replyPair.second);
+        resetDelayCyclesControlledReply(&replyPair.second);
         timedOut = true;
       }
     }
@@ -841,9 +841,9 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData, DeviceCommandId
     }
 
     if (info->active && info->countdown != nullptr) {
-      disableTimeoutControlledReply(info);
+      resetTimeoutControlledReply(info);
     } else if (info->delayCycles != 0) {
-      disableDelayCyclesControlledReply(info);
+      resetDelayCyclesControlledReply(info);
     }
 
     if (result != RETURN_OK) {
@@ -862,7 +862,7 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData, DeviceCommandId
   }
 }
 
-void DeviceHandlerBase::disableTimeoutControlledReply(DeviceReplyInfo* info) {
+void DeviceHandlerBase::resetTimeoutControlledReply(DeviceReplyInfo* info) {
   if (info->periodic) {
     info->countdown->resetTimer();
   } else {
@@ -871,7 +871,7 @@ void DeviceHandlerBase::disableTimeoutControlledReply(DeviceReplyInfo* info) {
   }
 }
 
-void DeviceHandlerBase::disableDelayCyclesControlledReply(DeviceReplyInfo* info) {
+void DeviceHandlerBase::resetDelayCyclesControlledReply(DeviceReplyInfo* info) {
   if (info->periodic) {
     info->delayCycles = info->maxDelayCycles;
   } else {
