@@ -253,6 +253,7 @@ void DeviceHandlerBase::decrementDeviceReplyMap() {
     if (timedOut) {
       replyToReply(replyPair.first, replyPair.second, TIMEOUT);
       missedReply(replyPair.first);
+      timedOut = false;
     }
   }
 }
