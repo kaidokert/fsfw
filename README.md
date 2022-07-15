@@ -139,7 +139,7 @@ You can also use `-DFSFW_OSAL=linux` on Linux systems.
 
 Coverage data in HTML format can be generated using the `CodeCoverage`
 [CMake module](https://github.com/bilke/cmake-modules/tree/master).
-To build the unittests, run them and then generare the coverage data in this format,
+To build the unittests, run them and then generate the coverage data in this format,
 the following command can be used inside the build directory after the build system was set up
 
 ```sh
@@ -188,7 +188,10 @@ and open the documentation conveniently. Try `helper.py -h for more information.
 
 The formatting is done by the `clang-format` tool. The configuration is contained within the
 `.clang-format` file in the repository root. As long as `clang-format` is installed, you
-can run the `apply-clang-format.sh` helper script to format all source files consistently.
+can run the `auto-format.sh` helper script to format all source files consistently. Furthermore cmake-format is required to format CMake files which can be installed with:
+````sh
+sudo pip install cmakelang
+````
 
 ## Index
 

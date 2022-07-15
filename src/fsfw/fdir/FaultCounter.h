@@ -6,6 +6,8 @@
 
 class FaultCounter : public HasParametersIF {
  public:
+  enum class ParameterIds { FAILURE_THRESHOLD, FAULT_COUNT, TIMEOUT };
+
   FaultCounter();
   FaultCounter(uint32_t failureThreshold, uint32_t decrementAfterMs,
                uint8_t setParameterDomain = 0);
@@ -25,7 +27,8 @@ class FaultCounter : public HasParametersIF {
 
   virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
                                      ParameterWrapper *parameterWrapper,
-                                     const ParameterWrapper *newValues, uint16_t startAtIndex);
+                                     const ParameterWrapper *newValues = nullptr,
+                                     uint16_t startAtIndex = 0);
 
   void setParameterDomain(uint8_t domain);
 

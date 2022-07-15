@@ -48,6 +48,20 @@ def main():
         action="store_true",
         help="Run valgrind on generated test binary",
     )
+    parser.add_argument(
+        "-g",
+        "--generators",
+        default = "Ninja",
+        action="store",
+        help="CMake generators",
+    )
+    parser.add_argument(
+        "-w",
+        "--windows",
+        default=False,
+        action="store_true",
+        help="Run on windows",
+    )
 
     args = parser.parse_args()
     if args.all:
@@ -115,14 +129,14 @@ def handle_tests_type(args, build_dir_list: list):
     if args.create:
         if os.path.exists(UNITTEST_FOLDER_NAME):
             shutil.rmtree(UNITTEST_FOLDER_NAME)
-        create_tests_build_cfg()
+        create_tests_build_cfg(args)
         build_directory = UNITTEST_FOLDER_NAME
     elif len(build_dir_list) == 0:
         print(
             "No valid CMake tests build directory found. "
             "Trying to set up test build system"
         )
-        create_tests_build_cfg()
+        create_tests_build_cfg(args)
         build_directory = UNITTEST_FOLDER_NAME
     elif len(build_dir_list) == 1:
         build_directory = build_dir_list[0]
@@ -147,10 +161,15 @@ def handle_tests_type(args, build_dir_list: list):
         os.chdir("..")
 
 
-def create_tests_build_cfg():
+def create_tests_build_cfg(args):
     os.mkdir(UNITTEST_FOLDER_NAME)
     os.chdir(UNITTEST_FOLDER_NAME)
-    cmd_runner("cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..")
+    if args.windows:
+        cmake_cmd = 'cmake -G "' + args.generators + '" -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON \
+        -DGCOVR_PATH="py -m gcovr" ..'
+    else:
+        cmake_cmd = 'cmake -G "' + args.generators + '" -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
+    cmd_runner(cmake_cmd)
     os.chdir("..")
 
 

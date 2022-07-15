@@ -88,6 +88,11 @@ ReturnValue_t EventManager::subscribeToEventRange(MessageQueueId_t listener, Eve
   return result;
 }
 
+ReturnValue_t EventManager::unsubscribeFromAllEvents(MessageQueueId_t listener,
+                                                     object_id_t object) {
+  return unsubscribeFromEventRange(listener, 0, 0, true, object);
+}
+
 ReturnValue_t EventManager::unsubscribeFromEventRange(MessageQueueId_t listener, EventId_t idFrom,
                                                       EventId_t idTo, bool idInverted,
                                                       object_id_t reporterFrom,

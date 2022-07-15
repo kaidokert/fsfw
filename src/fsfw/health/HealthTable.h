@@ -17,6 +17,7 @@ class HealthTable : public HealthTableIF, public SystemObject {
   /** HealthTableIF overrides */
   virtual ReturnValue_t registerObject(
       object_id_t object, HasHealthIF::HealthState initilialState = HasHealthIF::HEALTHY) override;
+  ReturnValue_t removeObject(object_id_t object) override;
   virtual size_t getPrintSize() override;
   virtual void printAll(uint8_t* pointer, size_t maxSize) override;
 
