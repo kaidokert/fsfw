@@ -1,3 +1,1 @@
-target_sources(${LIB_FSFW_NAME} PRIVATE
-    gpio.cpp
-)
+target_sources(${LIB_FSFW_NAME} PRIVATE gpio.cpp)
