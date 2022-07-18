@@ -2,7 +2,7 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
     CatchDefinitions.cpp
     CatchFactory.cpp
     printChar.cpp
-    version.cpp
+    testVersion.cpp
 )
 
 target_sources(${FSFW_TEST_TGT} PRIVATE
