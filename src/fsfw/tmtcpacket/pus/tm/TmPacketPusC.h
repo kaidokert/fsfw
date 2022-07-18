@@ -114,7 +114,7 @@ class TmPacketPusC : public TmPacketBase {
    *
    * @param pData    A pointer to another PUS Telemetry Packet.
    */
-  ReturnValue_t setData(uint8_t* pData, size_t maxSize, void* args = nullptr) override;
+  ReturnValue_t setData(uint8_t* pData, size_t maxSize, void* args) override;
 
   /**
    * In case data was filled manually (almost never the case).

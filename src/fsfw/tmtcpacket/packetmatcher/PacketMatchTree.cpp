@@ -34,7 +34,7 @@ ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t sub
   data.data_field.service_type = type;
   data.data_field.service_subtype = subtype;
   TmPacketMinimal testPacket((uint8_t*)&data);
-  testPacket.setAPID(apid);
+  testPacket.setApid(apid);
   iterator lastTest;
   iterator rollback;
   ReturnValue_t result =
@@ -126,7 +126,7 @@ ReturnValue_t PacketMatchTree::removeMatch(uint16_t apid, uint8_t type, uint8_t 
   data.data_field.service_type = type;
   data.data_field.service_subtype = subtype;
   TmPacketMinimal testPacket((uint8_t*)&data);
-  testPacket.setAPID(apid);
+  testPacket.setApid(apid);
   iterator foundElement = findMatch(begin(), &testPacket);
   if (foundElement == this->end()) {
     return NO_MATCH;

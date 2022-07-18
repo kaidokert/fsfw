@@ -66,7 +66,7 @@ class TmPacketStoredPusC : public TmPacketStoredBase, public TmPacketPusC {
    * @param args
    * @return
    */
-  ReturnValue_t setData(uint8_t* newPointer, size_t maxSize, void* args = nullptr) override;
+  ReturnValue_t setData(uint8_t* newPointer, size_t maxSize, void* args) override;
 };
 
 #endif /* FSFW_TMTCPACKET_PUS_TMPACKETSTOREDPUSC_H_ */

@@ -25,11 +25,11 @@ uint8_t TmPacketPusA::getSubService() { return tmData->data_field.service_subtyp
 uint8_t* TmPacketPusA::getSourceData() { return &tmData->data; }
 
 uint16_t TmPacketPusA::getSourceDataSize() {
-  return getPacketDataLength() - sizeof(tmData->data_field) - CRC_SIZE + 1;
+  return SpacePacketBase::getPacketDataLen() - sizeof(tmData->data_field) - CRC_SIZE + 1;
 }
 
 ReturnValue_t TmPacketPusA::setData(uint8_t* p_Data, size_t maxSize, void* args) {
-  ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize);
+  ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize, args);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

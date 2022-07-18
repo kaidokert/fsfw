@@ -46,7 +46,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   sif::info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex
             << currentPacket.getAPID() << std::dec << std::endl;
 #endif
-  auto position = this->queueMap.find(currentPacket.getAPID());
+  auto position = this->queueMap.find(currentPacket.getApid());
   if (position != this->queueMap.end()) {
     return position;
   } else {

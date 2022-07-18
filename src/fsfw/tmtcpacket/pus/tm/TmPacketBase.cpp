@@ -13,12 +13,10 @@ object_id_t TmPacketBase::timeStamperId = objects::NO_OBJECT;
 
 TmPacketBase::TmPacketBase(uint8_t* setData) : SpacePacketBase(setData) {}
 
-TmPacketBase::~TmPacketBase() {
-  // Nothing to do.
-}
+TmPacketBase::~TmPacketBase() = default;
 
 uint16_t TmPacketBase::getSourceDataSize() {
-  return getPacketDataLength() - getDataFieldSize() - CRC_SIZE + 1;
+  return SpacePacketBase::getPacketDataLen() - getDataFieldSize() - CRC_SIZE + 1;
 }
 
 uint16_t TmPacketBase::getErrorControl() {
@@ -41,9 +39,9 @@ ReturnValue_t TmPacketBase::getPacketTime(timeval* timestamp) const {
 }
 
 bool TmPacketBase::checkAndSetStamper() {
-  if (timeStamper == NULL) {
+  if (timeStamper == nullptr) {
     timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
-    if (timeStamper == NULL) {
+    if (timeStamper == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::warning << "TmPacketBase::checkAndSetStamper: Stamper not found!" << std::endl;
 #else

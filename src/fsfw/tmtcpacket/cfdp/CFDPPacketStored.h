@@ -40,13 +40,6 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
 
  protected:
   /**
-   * This is a pointer to the store all instances of the class use.
-   * If the store is not yet set (i.e. @c store is NULL), every constructor
-   * call tries to set it and throws an error message in case of failures.
-   * The default store is objects::TC_STORE.
-   */
-  static StorageManagerIF* store;
-  /**
    * The address where the packet data of the object instance is stored.
    */
   store_address_t storeAddress;

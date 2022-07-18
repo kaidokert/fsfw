@@ -11,8 +11,8 @@
 TcPacketCheckPUS::TcPacketCheckPUS(uint16_t setApid) : apid(setApid) {}
 
 ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketBase* currentPacket) {
-  TcPacketStoredBase* storedPacket = dynamic_cast<TcPacketStoredBase*>(currentPacket);
-  TcPacketPusBase* tcPacketBase = dynamic_cast<TcPacketPusBase*>(currentPacket);
+  auto* storedPacket = dynamic_cast<TcPacketStoredBase*>(currentPacket);
+  auto* tcPacketBase = dynamic_cast<TcPacketPusBase*>(currentPacket);
   if (tcPacketBase == nullptr or storedPacket == nullptr) {
     return RETURN_FAILED;
   }
@@ -21,13 +21,13 @@ ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketBase* currentPacket) {
   if (calculated_crc != 0) {
     return INCORRECT_CHECKSUM;
   }
-  bool condition = (not tcPacketBase->hasSecondaryHeader()) or
-                   (tcPacketBase->getPacketVersionNumber() != CCSDS_VERSION_NUMBER) or
-                   (not tcPacketBase->isTelecommand());
+  bool condition = (not tcPacketBase->hasSecHeader()) or
+                   (tcPacketBase->getVersion() != CCSDS_VERSION_NUMBER) or
+                   (not tcPacketBase->isTc());
   if (condition) {
     return INCORRECT_PRIMARY_HEADER;
   }
-  if (tcPacketBase->getAPID() != this->apid) return ILLEGAL_APID;
+  if (tcPacketBase->getApid() != this->apid) return ILLEGAL_APID;
 
   if (not storedPacket->isSizeCorrect()) {
     return INCOMPLETE_PACKET;

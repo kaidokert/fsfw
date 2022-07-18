@@ -18,7 +18,7 @@
  * check can be performed by making use of the getWholeData method.
  * @ingroup tmtcpackets
  */
-class TcPacketPusBase : public SpacePacketBase, virtual public RedirectableDataPointerIF {
+class TcPacketPusBase : public SpacePacketBase {
   friend class TcPacketStoredBase;
 
  public:

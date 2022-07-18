@@ -133,7 +133,7 @@ option(FSFW_ADD_SGP4_PROPAGATOR "Add SGP4 propagator code" OFF)
 set(FSFW_TEST_TGT fsfw-tests)
 set(FSFW_DUMMY_TGT fsfw-dummy)
 
-add_library(${LIB_FSFW_NAME})
+add_library(${LIB_FSFW_NAME} src/fsfw/tmtcpacket/SpacePacketIF.h)
 
 if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
   set_property(TARGET ${LIB_FSFW_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION

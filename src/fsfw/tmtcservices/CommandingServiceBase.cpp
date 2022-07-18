@@ -350,7 +350,7 @@ void CommandingServiceBase::startExecution(TcPacketStoredPus* storedPacket, Comm
         iter->second.command = command.getCommand();
         iter->second.tcInfo.ackFlags = storedPacket->getAcknowledgeFlags();
         iter->second.tcInfo.tcPacketId = storedPacket->getPacketId();
-        iter->second.tcInfo.tcSequenceControl = storedPacket->getPacketSequenceControl();
+        iter->second.tcInfo.tcSequenceControl = storedPacket->getPacketSeqCtrl();
         acceptPacket(tc_verification::START_SUCCESS, storedPacket);
       } else {
         command.clearCommandMessage();

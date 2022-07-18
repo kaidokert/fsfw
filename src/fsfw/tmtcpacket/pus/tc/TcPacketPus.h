@@ -63,7 +63,7 @@ class TcPacketPus : public TcPacketPusBase {
   size_t calculateFullPacketLength(size_t appDataLen) const override;
 
  protected:
-  ReturnValue_t setData(uint8_t* dataPtr, size_t maxSize, void* args = nullptr) override;
+  ReturnValue_t setData(uint8_t* dataPtr, size_t maxSize, void* args) override;
 
   /**
    * Initializes the Tc Packet header.

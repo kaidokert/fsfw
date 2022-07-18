@@ -14,9 +14,7 @@ TmPacketPusC::TmPacketPusC(uint8_t* setData) : TmPacketBase(setData) {
   tmData = reinterpret_cast<TmPacketPointerPusC*>(setData);
 }
 
-TmPacketPusC::~TmPacketPusC() {
-  // Nothing to do.
-}
+TmPacketPusC::~TmPacketPusC() = default;
 
 uint8_t TmPacketPusC::getService() { return tmData->dataField.serviceType; }
 
@@ -25,11 +23,11 @@ uint8_t TmPacketPusC::getSubService() { return tmData->dataField.serviceSubtype;
 uint8_t* TmPacketPusC::getSourceData() { return &tmData->data; }
 
 uint16_t TmPacketPusC::getSourceDataSize() {
-  return getPacketDataLength() - sizeof(tmData->dataField) - CRC_SIZE + 1;
+  return SpacePacketBase::getPacketDataLen() - sizeof(tmData->dataField) - CRC_SIZE + 1;
 }
 
 ReturnValue_t TmPacketPusC::setData(uint8_t* p_Data, size_t maxSize, void* args) {
-  ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize);
+  ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize, args);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
@@ -64,9 +62,9 @@ ReturnValue_t TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service, u
       (pus::PusVersion::PUS_C_VERSION << 4) | timeRefField;
   tmData->dataField.serviceType = service;
   tmData->dataField.serviceSubtype = subservice;
-  tmData->dataField.subcounterMsb = packetSubcounter << 8 & 0xff;
+  tmData->dataField.subcounterMsb = (packetSubcounter << 8) & 0xff;
   tmData->dataField.subcounterLsb = packetSubcounter & 0xff;
-  tmData->dataField.destinationIdMsb = destinationId << 8 & 0xff;
+  tmData->dataField.destinationIdMsb = (destinationId << 8) & 0xff;
   tmData->dataField.destinationIdLsb = destinationId & 0xff;
   // Timestamp packet
   if (TmPacketBase::checkAndSetStamper()) {

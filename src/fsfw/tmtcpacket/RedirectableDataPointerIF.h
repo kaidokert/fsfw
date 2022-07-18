@@ -11,7 +11,7 @@
  */
 class RedirectableDataPointerIF {
  public:
-  virtual ~RedirectableDataPointerIF(){};
+  virtual ~RedirectableDataPointerIF() = default;
 
   /**
    * Redirect the data pointer, but allow an implementation to change the data.
@@ -25,9 +25,12 @@ class RedirectableDataPointerIF {
    *  - RETURN_OK if the pointer was set successfully
    *  - RETURN_FAILED on general error of if the maximum size is too small
    */
-  virtual ReturnValue_t setData(uint8_t* dataPtr, size_t maxSize, void* args = nullptr) = 0;
+  virtual ReturnValue_t setData(uint8_t* dataPtr, size_t maxSize, void* args) = 0;
+  virtual ReturnValue_t setData(uint8_t* dataPtr, size_t maxSize) {
+    return setData(dataPtr, maxSize, nullptr);
+  }
 
  private:
 };
 
-#endif /* FSFW_SRC_FSFW_TMTCPACKET_PUS_TC_SETTABLEDATAPOINTERIF_H_ */
+#endif /* TMTCPACKET_PUS_TC_SETTABLEDATAPOINTERIF_H_ */
