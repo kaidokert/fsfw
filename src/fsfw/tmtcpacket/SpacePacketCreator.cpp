@@ -3,11 +3,30 @@
 #include "fsfw/serialize/SerializeAdapter.h"
 
 SpacePacketCreator::SpacePacketCreator(uint16_t packetId_, uint16_t packetSeqCtrl_,
-                                       uint16_t packetLen_, uint8_t version_) {
+                                       uint16_t dataLen_, uint8_t version_) {
   packetId = packetId_;
   packetSeqCtrl = packetSeqCtrl_;
-  packetLen = packetLen_;
+  dataLen = dataLen_;
   version = version_;
+  valid = true;
+}
+
+SpacePacketCreator::SpacePacketCreator(ccsds::PacketType packetType, bool secHeaderFlag,
+                                       uint16_t apid, ccsds::SequenceFlags seqFlags,
+                                       uint16_t seqCount, uint16_t dataLen_, uint8_t version_) {
+  if (apid > ccsds::LIMIT_APID) {
+    valid = false;
+    return;
+  }
+  if (seqCount > ccsds::LIMIT_SEQUENCE_COUNT) {
+    valid = false;
+    return;
+  }
+  version = version_;
+  packetId =
+      (version_ << 13) | (static_cast<uint8_t>(packetType) << 12) | (secHeaderFlag << 11) | apid;
+  packetSeqCtrl = static_cast<uint8_t>(seqFlags) << 14 | seqCount;
+  dataLen = dataLen_;
 }
 
 uint16_t SpacePacketCreator::getPacketId() const { return 0; }
@@ -26,7 +45,7 @@ ReturnValue_t SpacePacketCreator::serialize(uint8_t **buffer, size_t *size, size
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  return SerializeAdapter::serialize(&packetLen, buffer, size, maxSize, streamEndianness);
+  return SerializeAdapter::serialize(&dataLen, buffer, size, maxSize, streamEndianness);
 }
 
 size_t SpacePacketCreator::getSerializedSize() const { return 0; }

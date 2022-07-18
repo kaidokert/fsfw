@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "fsfw/tmtcpacket/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/SpacePacketReader.h"
 
 TEST_CASE("CCSDS Test", "[ccsds]") {
@@ -11,5 +12,9 @@ TEST_CASE("CCSDS Test", "[ccsds]") {
     REQUIRE(ccsds::getTmSpacePacketIdFromApid(0x7ff) == 0xfff);
   }
 
-  SECTION("Header Tests") { SpacePacketReader base = SpacePacketReader(); }
+  SECTION("Header Creator Tests") {
+    SpacePacketCreator base = SpacePacketCreator(
+        ccsds::PacketType::TM, true, 0x22,
+        ccsds::SequenceFlags::CONTINUATION, 12, 0x42);
+  }
 }
