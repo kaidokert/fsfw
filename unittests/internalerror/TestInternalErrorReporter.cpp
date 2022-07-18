@@ -8,11 +8,11 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
+#include "CatchDefinitions.h"
 #include "fsfw/action/ActionMessage.h"
 #include "fsfw/ipc/CommandMessage.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/objectmanager/frameworkObjects.h"
-#include "CatchDefinitions.h"
 #include "mocks/PeriodicTaskIFMock.h"
 
 TEST_CASE("Internal Error Reporter", "[TestInternalError]") {

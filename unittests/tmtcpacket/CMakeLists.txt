@@ -1,3 +1,3 @@
 target_sources(${FSFW_TEST_TGT} PRIVATE
-  testCcsdsReader.cpp
+  TestCcsdsReader.cpp
 )
