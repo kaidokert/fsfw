@@ -60,14 +60,14 @@ ReturnValue_t FaultCounter::getParameter(uint8_t domainId, uint8_t uniqueId,
     return INVALID_DOMAIN_ID;
   }
 
-  switch (uniqueId) {
-    case 0:
+  switch (static_cast<ParameterIds>(uniqueId)) {
+    case ParameterIds::FAILURE_THRESHOLD:
       parameterWrapper->set(failureThreshold);
       break;
-    case 1:
+    case ParameterIds::FAULT_COUNT:
       parameterWrapper->set(faultCount);
       break;
-    case 2:
+    case ParameterIds::TIMEOUT:
       parameterWrapper->set(timer.timeout);
       break;
     default:

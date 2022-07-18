@@ -1,9 +1,9 @@
 #ifndef FSFW_ACTION_COMMANDSACTIONSIF_H_
 #define FSFW_ACTION_COMMANDSACTIONSIF_H_
 
-#include "../ipc/MessageQueueIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
 #include "CommandActionHelper.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 /**
  * Interface to separate commanding actions of other objects.
@@ -21,7 +21,7 @@ class CommandsActionsIF {
   static const uint8_t INTERFACE_ID = CLASS_ID::COMMANDS_ACTIONS_IF;
   static const ReturnValue_t OBJECT_HAS_NO_FUNCTIONS = MAKE_RETURN_CODE(1);
   static const ReturnValue_t ALREADY_COMMANDING = MAKE_RETURN_CODE(2);
-  virtual ~CommandsActionsIF() {}
+  virtual ~CommandsActionsIF() = default;
   virtual MessageQueueIF* getCommandQueuePtr() = 0;
 
  protected:
