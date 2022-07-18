@@ -3,17 +3,50 @@
 
 #include <cstdint>
 
-class PusTcIF {
- public:
-  virtual ~PusTcIF() = default;
+#include "TcPacketPus.h"
 
-  /**
-   * This command returns the CCSDS Secondary Header Flag.
-   * It shall always be zero for PUS Packets. This is the
-   * highest bit of the first byte of the Data Field Header.
-   * @return	the CCSDS Secondary Header Flag
-   */
-  [[nodiscard]] virtual uint8_t getSecondaryHeaderFlag() const = 0;
+namespace ecss {
+
+enum AckField {
+  //! No acknowledgements are expected.
+  ACK_NONE = 0b0000,
+  //! Acknowledgements on acceptance are expected.
+  ACK_ACCEPTANCE = 0b0001,
+  //! Acknowledgements on start are expected.
+  ACK_START = 0b0010,
+  //! Acknowledgements on step are expected.
+  ACK_STEP = 0b0100,
+  //! Acknowledgement on completion are expected.
+  ACK_COMPLETION = 0b1000
+};
+
+static constexpr uint8_t ACK_ALL = ACK_ACCEPTANCE | ACK_START | ACK_STEP | ACK_COMPLETION;
+
+/**
+ * This struct defines a byte-wise structured PUS C ata Field Header.
+ * Any optional fields in the header must be added or removed here.
+ * Currently, the Source Id field is present with one byte.
+ * No spare byte support for now.
+ * @ingroup tmtcpackets
+ */
+struct PusTcDataFieldHeader {
+  // Version and ACK byte, Service Byte, Subservice Byte, 2 byte Source ID
+  static constexpr size_t MIN_LEN = 5;
+  uint8_t pusVersion;
+  uint8_t ackFlags;
+  uint8_t serviceType;
+  uint8_t serviceSubtype;
+  uint16_t sourceId;
+};
+
+}  // namespace ecss
+
+class PusTcIF : public SpacePacketIF {
+ public:
+  ~PusTcIF() override = default;
+  static const uint16_t MIN_LEN =
+      (sizeof(CCSDSPrimaryHeader) + ecss::PusTcDataFieldHeader::MIN_LEN + 2);
+
   /**
    * This command returns the TC Packet PUS Version Number.
    * The version number of ECSS PUS 2003 is 1.

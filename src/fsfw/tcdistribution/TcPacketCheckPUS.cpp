@@ -3,7 +3,7 @@
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
-#include "fsfw/tmtcpacket/pus/tc/TcPacketPusBase.h"
+#include "fsfw/tmtcpacket/pus/tc/PusTcReader.h"
 #include "fsfw/tmtcpacket/pus/tc/TcPacketStoredBase.h"
 #include "fsfw/tmtcpacket/pus/tc/TcPacketStoredPus.h"
 #include "fsfw/tmtcservices/VerificationCodes.h"

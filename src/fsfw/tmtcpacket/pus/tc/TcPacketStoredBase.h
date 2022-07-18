@@ -1,6 +1,7 @@
 #ifndef TMTCPACKET_PUS_TCPACKETSTORED_H_
 #define TMTCPACKET_PUS_TCPACKETSTORED_H_
 
+#include "PusTcReader.h"
 #include "TcPacketStoredIF.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 

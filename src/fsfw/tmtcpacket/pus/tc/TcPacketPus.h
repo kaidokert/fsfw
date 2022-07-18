@@ -4,44 +4,25 @@
 #include <cstdint>
 
 #include "../definitions.h"
-#include "TcPacketPusBase.h"
+#include "PusTcReader.h"
 #include "fsfw/FSFW.h"
 #include "fsfw/tmtcpacket/ccsds_header.h"
-
-/**
- * This struct defines a byte-wise structured PUS TC A Data Field Header.
- * Any optional fields in the header must be added or removed here.
- * Currently, the Source Id field is present with one byte.
- * @ingroup tmtcpackets
- */
-struct PUSTcDataFieldHeader {
-  uint8_t versionTypeAck;
-  uint8_t serviceType;
-  uint8_t serviceSubtype;
-#if FSFW_USE_PUS_C_TELECOMMANDS == 1
-  uint8_t sourceIdH;
-  uint8_t sourceIdL;
-#else
-  uint8_t sourceId;
-#endif
-};
 
 /**
  * This struct defines the data structure of a PUS Telecommand A packet when
  * accessed via a pointer.
  * @ingroup tmtcpackets
  */
+/*
 struct TcPacketPointer {
-  CCSDSPrimaryHeader primary;
-  PUSTcDataFieldHeader dataField;
-  uint8_t appData;
+ CCSDSPrimaryHeader primary;
+ PusTcDataFieldHeader dataField;
+ uint8_t appData;
 };
+ */
 
 class TcPacketPus : public TcPacketPusBase {
  public:
-  static const uint16_t TC_PACKET_MIN_SIZE =
-      (sizeof(CCSDSPrimaryHeader) + sizeof(PUSTcDataFieldHeader) + 2);
-
   /**
    * Initialize a PUS A telecommand packet which already exists. You can also
    * create an empty (invalid) object by passing nullptr as the data pointer

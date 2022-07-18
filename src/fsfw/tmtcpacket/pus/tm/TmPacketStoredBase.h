@@ -2,7 +2,6 @@
 #define FSFW_TMTCPACKET_PUS_TMPACKETSTOREDBASE_H_
 
 #include "TmPacketBase.h"
-#include "TmPacketPusA.h"
 #include "TmPacketStoredBase.h"
 #include "fsfw/FSFW.h"
 #include "fsfw/internalerror/InternalErrorReporterIF.h"

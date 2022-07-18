@@ -4,9 +4,9 @@
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
 #include "fsfw/tmtcpacket/SpacePacketIF.h"
 
-class TcPacketDeserializer : public SpacePacketIF, public RedirectableDataPointerIF {
+class PusTcCreator : public SpacePacketIF {
  public:
-  TcPacketDeserializer(const uint8_t* data, size_t maxSize);
+  PusTcCreator(const uint8_t* data, size_t maxSize);
 
  private:
 };

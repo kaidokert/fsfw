@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include "ccsds_header.h"
+
 namespace ccsds {
 
 enum PacketType : uint8_t { TM = 0, TC = 1 };
@@ -35,6 +37,15 @@ constexpr uint16_t getTmSpacePacketIdFromApid(uint16_t apid, bool secondaryHeade
 
 class SpacePacketIF {
  public:
+  /**
+   * This definition defines the CRC size in byte.
+   */
+  static const uint8_t CRC_SIZE = 2;
+  /**
+   * This is the minimum size of a SpacePacket.
+   */
+  static const uint16_t MINIMUM_SIZE = sizeof(CCSDSPrimaryHeader) + CRC_SIZE;
+
   virtual ~SpacePacketIF() = default;
 
   /**

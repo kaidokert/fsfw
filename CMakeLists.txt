@@ -136,8 +136,8 @@ set(FSFW_DUMMY_TGT fsfw-dummy)
 add_library(
   ${LIB_FSFW_NAME}
   src/fsfw/tmtcpacket/SpacePacketIF.h
-  src/fsfw/tmtcpacket/pus/tc/TcPacketDeserializer.h
-  src/fsfw/tmtcpacket/pus/tc/TcPacketDeserializer.cpp
+  src/fsfw/tmtcpacket/pus/tc/PusTcCreator.h
+  src/fsfw/tmtcpacket/pus/tc/PusTcCreator.cpp
   src/fsfw/tmtcpacket/pus/tc/PusTcIF.h
   src/fsfw/tmtcpacket/SpacePacketCreator.h
   src/fsfw/tmtcpacket/SpacePacketCreator.cpp)

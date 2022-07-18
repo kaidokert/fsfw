@@ -3,7 +3,7 @@
 
 #include <fsfw/tmtcpacket/RedirectableDataPointerIF.h>
 
-#include "TcPacketPusBase.h"
+#include "PusTcReader.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/storagemanager/storeAddress.h"
 

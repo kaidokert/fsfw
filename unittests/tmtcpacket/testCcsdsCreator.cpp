@@ -4,7 +4,6 @@
 
 #include "fsfw/tmtcpacket/SpacePacketCreator.h"
 
-
 TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   SpacePacketCreator base = SpacePacketCreator(ccsds::PacketType::TC, true, 0x02,
                                                ccsds::SequenceFlags::FIRST_SEGMENT, 0x34, 0x16);
