@@ -23,11 +23,11 @@ uint8_t TmPacketPusC::getSubService() { return tmData->dataField.serviceSubtype;
 uint8_t* TmPacketPusC::getSourceData() { return &tmData->data; }
 
 uint16_t TmPacketPusC::getSourceDataSize() {
-  return SpacePacketBase::getPacketDataLen() - sizeof(tmData->dataField) - CRC_SIZE + 1;
+  return SpacePacketReader::getPacketDataLen() - sizeof(tmData->dataField) - CRC_SIZE + 1;
 }
 
 ReturnValue_t TmPacketPusC::setData(uint8_t* p_Data, size_t maxSize, void* args) {
-  ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize, args);
+  ReturnValue_t result = SpacePacketReader::setData(p_Data, maxSize, args);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

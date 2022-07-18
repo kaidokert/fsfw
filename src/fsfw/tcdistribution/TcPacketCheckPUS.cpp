@@ -10,7 +10,7 @@
 
 TcPacketCheckPUS::TcPacketCheckPUS(uint16_t setApid) : apid(setApid) {}
 
-ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketBase* currentPacket) {
+ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketReader* currentPacket) {
   auto* storedPacket = dynamic_cast<TcPacketStoredBase*>(currentPacket);
   auto* tcPacketBase = dynamic_cast<TcPacketPusBase*>(currentPacket);
   if (tcPacketBase == nullptr or storedPacket == nullptr) {

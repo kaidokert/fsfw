@@ -4,7 +4,7 @@
 #include "fsfw/objectmanager/SystemObjectIF.h"
 #include "fsfw/timemanager/Clock.h"
 #include "fsfw/timemanager/TimeStamperIF.h"
-#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/SpacePacketReader.h"
 
 namespace Factory {
 
@@ -23,7 +23,7 @@ void setStaticFrameworkObjectIds();
  * check can be performed by making use of the getWholeData method.
  * @ingroup tmtcpackets
  */
-class TmPacketBase : public SpacePacketBase {
+class TmPacketBase : public SpacePacketReader {
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:

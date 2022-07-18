@@ -2,7 +2,7 @@
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/SpacePacketReader.h"
 
 #define CCSDS_DISTRIBUTOR_DEBUGGING 0
 
@@ -40,7 +40,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 #endif
     return queueMap.end();
   }
-  SpacePacketBase currentPacket(packet);
+  SpacePacketReader currentPacket(packet);
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && CCSDS_DISTRIBUTOR_DEBUGGING == 1
   sif::info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex

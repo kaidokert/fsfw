@@ -40,7 +40,7 @@ struct SpacePacketPointer {
  * the most significant bit (from left).
  * @ingroup tmtcpackets
  */
-class SpacePacketBase : public SpacePacketIF, public RedirectableDataPointerIF {
+class SpacePacketReader : public SpacePacketIF, public RedirectableDataPointerIF {
  protected:
   /**
    * A pointer to a structure which defines the data structure of
@@ -58,16 +58,18 @@ class SpacePacketBase : public SpacePacketIF, public RedirectableDataPointerIF {
    * This is the minimum size of a SpacePacket.
    */
   static const uint16_t MINIMUM_SIZE = sizeof(CCSDSPrimaryHeader) + CRC_SIZE;
+  SpacePacketReader(uint16_t apid, ccsds::PacketType packetType, bool secHeader, uint16_t seqCount,
+                    uint16_t dataLen);
   /**
    * This is the default constructor.
    * It sets its internal data pointer to the address passed.
    * @param set_address	The position where the packet data lies.
    */
-  explicit SpacePacketBase(const uint8_t* set_address);
+  explicit SpacePacketReader(const uint8_t* set_address);
   /**
    * No data is allocated, so the destructor is empty.
    */
-  ~SpacePacketBase() override;
+  ~SpacePacketReader() override;
 
   ReturnValue_t initSpacePacketHeader(bool isTelecommand, bool hasSecondaryHeader, uint16_t apid,
                                       uint16_t sequenceCount = 0);

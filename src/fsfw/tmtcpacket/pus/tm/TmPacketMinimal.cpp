@@ -5,7 +5,7 @@
 
 #include "fsfw/tmtcpacket/pus/PacketTimestampInterpreterIF.h"
 
-TmPacketMinimal::TmPacketMinimal(const uint8_t* set_data) : SpacePacketBase(set_data) {
+TmPacketMinimal::TmPacketMinimal(const uint8_t* set_data) : SpacePacketReader(set_data) {
   this->tm_data = (TmPacketMinimalPointer*)set_data;
 }
 

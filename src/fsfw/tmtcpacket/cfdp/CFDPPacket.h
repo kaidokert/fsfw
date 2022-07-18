@@ -1,9 +1,9 @@
 #ifndef FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKET_H_
 #define FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKET_H_
 
-#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/SpacePacketReader.h"
 
-class CFDPPacket : public SpacePacketBase {
+class CFDPPacket : public SpacePacketReader {
  public:
   /**
    * This is the default constructor.

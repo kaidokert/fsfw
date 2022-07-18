@@ -2,7 +2,7 @@
 #define FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 
 #include "../../../returnvalues/HasReturnvaluesIF.h"
-#include "../../SpacePacketBase.h"
+#include "../../SpacePacketReader.h"
 
 struct timeval;
 class PacketTimestampInterpreterIF;
@@ -12,7 +12,7 @@ class PacketTimestampInterpreterIF;
  * This is required for handling TM packets with different APIDs with different
  * secondary headers.
  */
-class TmPacketMinimal : public SpacePacketBase {
+class TmPacketMinimal : public SpacePacketReader {
  public:
   /**
    * This is the default constructor.

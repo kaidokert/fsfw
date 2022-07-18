@@ -37,7 +37,7 @@ uint8_t TcPacketPus::getAcknowledgeFlags() const {
 const uint8_t *TcPacketPus::getApplicationData() const { return &tcData->appData; }
 
 uint16_t TcPacketPus::getApplicationDataSize() const {
-  return SpacePacketBase::getPacketDataLen() - sizeof(tcData->dataField) - CRC_SIZE + 1;
+  return SpacePacketReader::getPacketDataLen() - sizeof(tcData->dataField) - CRC_SIZE + 1;
 }
 
 uint16_t TcPacketPus::getErrorControl() const {
@@ -85,7 +85,7 @@ size_t TcPacketPus::calculateFullPacketLength(size_t appDataLen) const {
 }
 
 ReturnValue_t TcPacketPus::setData(uint8_t *dataPtr, size_t maxSize, void *args) {
-  ReturnValue_t result = SpacePacketBase::setData(dataPtr, maxSize, args);
+  ReturnValue_t result = SpacePacketReader::setData(dataPtr, maxSize, args);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

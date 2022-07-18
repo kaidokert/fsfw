@@ -11,12 +11,12 @@
 TimeStamperIF* TmPacketBase::timeStamper = nullptr;
 object_id_t TmPacketBase::timeStamperId = objects::NO_OBJECT;
 
-TmPacketBase::TmPacketBase(uint8_t* setData) : SpacePacketBase(setData) {}
+TmPacketBase::TmPacketBase(uint8_t* setData) : SpacePacketReader(setData) {}
 
 TmPacketBase::~TmPacketBase() = default;
 
 uint16_t TmPacketBase::getSourceDataSize() {
-  return SpacePacketBase::getPacketDataLen() - getDataFieldSize() - CRC_SIZE + 1;
+  return SpacePacketReader::getPacketDataLen() - getDataFieldSize() - CRC_SIZE + 1;
 }
 
 uint16_t TmPacketBase::getErrorControl() {

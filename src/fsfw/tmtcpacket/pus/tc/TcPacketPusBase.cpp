@@ -6,7 +6,7 @@
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-TcPacketPusBase::TcPacketPusBase(const uint8_t* setData) : SpacePacketBase(setData) {}
+TcPacketPusBase::TcPacketPusBase(const uint8_t* setData) : SpacePacketReader(setData) {}
 
 TcPacketPusBase::~TcPacketPusBase() {}
 

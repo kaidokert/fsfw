@@ -3,7 +3,7 @@
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 
-class SpacePacketBase;
+class SpacePacketReader;
 
 /**
  * This interface is used by PacketCheckers for PUS packets and CFDP packets .
@@ -24,7 +24,7 @@ class TcPacketCheckIF {
    * 			- @c INCORRECT_CHECKSUM if checksum is invalid.
    * 			- @c ILLEGAL_APID if APID does not match.
    */
-  virtual ReturnValue_t checkPacket(SpacePacketBase* currentPacket) = 0;
+  virtual ReturnValue_t checkPacket(SpacePacketReader* currentPacket) = 0;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_ */

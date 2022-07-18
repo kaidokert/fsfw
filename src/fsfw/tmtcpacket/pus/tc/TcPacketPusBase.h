@@ -5,7 +5,7 @@
 
 #include <cstddef>
 
-#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/SpacePacketReader.h"
 
 /**
  * This class is the basic data handler for any ECSS PUS Telecommand packet.
@@ -18,7 +18,7 @@
  * check can be performed by making use of the getWholeData method.
  * @ingroup tmtcpackets
  */
-class TcPacketPusBase : public SpacePacketBase {
+class TcPacketPusBase : public SpacePacketReader {
   friend class TcPacketStoredBase;
 
  public:

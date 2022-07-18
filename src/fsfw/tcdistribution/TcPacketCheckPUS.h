@@ -53,7 +53,7 @@ class TcPacketCheckPUS : public TcPacketCheckIF, public HasReturnvaluesIF {
    */
   TcPacketCheckPUS(uint16_t setApid);
 
-  ReturnValue_t checkPacket(SpacePacketBase* currentPacket) override;
+  ReturnValue_t checkPacket(SpacePacketReader* currentPacket) override;
 
   uint16_t getApid() const;
 };
