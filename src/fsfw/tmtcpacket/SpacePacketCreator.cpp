@@ -23,8 +23,7 @@ SpacePacketCreator::SpacePacketCreator(ccsds::PacketType packetType, bool secHea
     return;
   }
   version = version_;
-  packetId =
-      (version_ << 13) | (static_cast<uint8_t>(packetType) << 12) | (secHeaderFlag << 11) | apid;
+  packetId = (static_cast<uint16_t>(packetType) << 12) | (static_cast<uint16_t>(secHeaderFlag) << 11) | apid;
   packetSeqCtrl = static_cast<uint8_t>(seqFlags) << 14 | seqCount;
   dataLen = dataLen_;
 }
@@ -53,3 +52,4 @@ ReturnValue_t SpacePacketCreator::deSerialize(const uint8_t **buffer, size_t *si
                                               SerializeIF::Endianness streamEndianness) {
   return HasReturnvaluesIF::RETURN_FAILED;
 }
+bool SpacePacketCreator::isValid() const { return valid; }

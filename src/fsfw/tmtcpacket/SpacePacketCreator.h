@@ -11,7 +11,7 @@ class SpacePacketCreator : public SerializeIF, public SpacePacketIF {
                      uint8_t version = 0);
   SpacePacketCreator(uint16_t packetId, uint16_t packetSeqCtrl, uint16_t dataLen,
                      uint8_t version = 0);
-  bool valid;
+  [[nodiscard]] bool isValid() const;
   [[nodiscard]] uint16_t getPacketId() const override;
   [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
@@ -22,6 +22,7 @@ class SpacePacketCreator : public SerializeIF, public SpacePacketIF {
                             Endianness streamEndianness) override;
 
  private:
+  bool valid;
   uint16_t packetId;
   uint16_t packetSeqCtrl;
   uint16_t dataLen;
