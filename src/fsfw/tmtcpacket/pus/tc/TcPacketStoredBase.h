@@ -19,7 +19,7 @@ class TcPacketStoredBase : public TcPacketStoredIF {
    * Constructor to set to an existing store address.
    * @param setAddress
    */
-  TcPacketStoredBase(store_address_t setAddress);
+  explicit TcPacketStoredBase(store_address_t setAddress);
   /**
    * Another constructor to create a TcPacket from a raw packet stream.
    * Takes the data and adds it unchecked to the TcStore.
