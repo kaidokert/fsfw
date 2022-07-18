@@ -104,8 +104,8 @@ if(FSFW_GENERATE_SECTIONS)
   option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
 endif()
 
-option(FSFW_BUILD_TESTS
-       "Build unittest binary in addition to static library" OFF)
+option(FSFW_BUILD_TESTS "Build unittest binary in addition to static library"
+       OFF)
 option(FSFW_CICD_BUILD "Build for CI/CD. This can disable problematic test" OFF)
 option(FSFW_BUILD_DOCS "Build documentation with Sphinx and Doxygen" OFF)
 if(FSFW_BUILD_TESTS)

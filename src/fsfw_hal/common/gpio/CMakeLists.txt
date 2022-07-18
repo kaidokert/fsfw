@@ -1,3 +1,1 @@
-target_sources(${LIB_FSFW_NAME} PRIVATE
-    GpioCookie.cpp
-)
+target_sources(${LIB_FSFW_NAME} PRIVATE GpioCookie.cpp)

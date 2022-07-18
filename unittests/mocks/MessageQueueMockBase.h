@@ -4,11 +4,11 @@
 #include <cstring>
 #include <queue>
 
+#include "CatchDefinitions.h"
 #include "fsfw/ipc/CommandMessage.h"
 #include "fsfw/ipc/MessageQueueBase.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
-#include "CatchDefinitions.h"
 
 class MessageQueueMockBase : public MessageQueueBase {
  public:

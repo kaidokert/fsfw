@@ -1,3 +1,1 @@
-target_sources(${LIB_FSFW_NAME} PUBLIC
-	UioMapper.cpp
-)
+target_sources(${LIB_FSFW_NAME} PUBLIC UioMapper.cpp)
