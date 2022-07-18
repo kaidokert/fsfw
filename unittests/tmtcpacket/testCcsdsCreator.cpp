@@ -3,9 +3,9 @@
 #include <cmath>
 
 #include "fsfw/tmtcpacket/SpacePacketCreator.h"
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
 
-TEST_CASE("CCSDS Test", "[ccsds]") {
+
+TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   SpacePacketCreator base = SpacePacketCreator(ccsds::PacketType::TC, true, 0x02,
                                                ccsds::SequenceFlags::FIRST_SEGMENT, 0x34, 0x16);
   std::array<uint8_t, 6> buf{};
