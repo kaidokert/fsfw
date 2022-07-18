@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstring>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("Ring Buffer Test", "[RingBufferTest]") {
   uint8_t testData[13] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};

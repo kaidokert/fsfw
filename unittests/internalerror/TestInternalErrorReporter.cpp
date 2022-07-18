@@ -12,8 +12,8 @@
 #include "fsfw/ipc/CommandMessage.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/objectmanager/frameworkObjects.h"
-#include "fsfw_tests/unit/CatchDefinitions.h"
-#include "fsfw_tests/unit/mocks/PeriodicTaskIFMock.h"
+#include "CatchDefinitions.h"
+#include "mocks/PeriodicTaskIFMock.h"
 
 TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
   PeriodicTaskMock task(10, nullptr);
@@ -21,7 +21,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
   if (manager == nullptr) {
     FAIL();
   }
-  InternalErrorReporter* internalErrorReporter = dynamic_cast<InternalErrorReporter*>(
+  auto* internalErrorReporter = dynamic_cast<InternalErrorReporter*>(
       ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER));
   if (internalErrorReporter == nullptr) {
     FAIL();

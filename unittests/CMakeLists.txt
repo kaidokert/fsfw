@@ -27,3 +27,5 @@ add_subdirectory(cfdp)
 add_subdirectory(hal)
 add_subdirectory(internalerror)
 add_subdirectory(devicehandler)
+
+target_include_directories(${FSFW_TEST_TGT} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,6 +1,6 @@
 #include "DeviceFdirMock.h"
 
-#include <tests/src/fsfw_tests/unit/devicehandler/DeviceFdirMock.h>
+#include "devicehandler/DeviceFdirMock.h"
 
 DeviceFdirMock::DeviceFdirMock(object_id_t owner, object_id_t parent)
     : DeviceHandlerFailureIsolation(owner, parent) {}

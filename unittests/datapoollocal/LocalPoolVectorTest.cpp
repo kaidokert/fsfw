@@ -4,7 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "LocalPoolOwnerBase.h"
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 #include "tests/TestsConfig.h"
 
 TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {

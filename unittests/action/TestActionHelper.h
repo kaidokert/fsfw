@@ -6,7 +6,7 @@
 
 #include <cstring>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 class ActionHelperOwnerMockBase : public HasActionsIF {
  public:

@@ -3,7 +3,7 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 static bool test_value_bool = true;
 static uint16_t tv_uint16{283};

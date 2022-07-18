@@ -4,7 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("Dynamic Fifo Tests", "[TestDynamicFifo]") {
   INFO("Dynamic Fifo Tests");

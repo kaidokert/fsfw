@@ -2,14 +2,14 @@
 
 #include "ComIFMock.h"
 #include "DeviceFdirMock.h"
-#include "fsfw_tests/unit/devicehandler/CookieIFMock.h"
-#include "fsfw_tests/unit/devicehandler/DeviceHandlerCommander.h"
-#include "fsfw_tests/unit/devicehandler/DeviceHandlerMock.h"
-#include "fsfw_tests/unit/testcfg/objects/systemObjectList.h"
+#include "devicehandler/CookieIFMock.h"
+#include "DeviceHandlerCommander.h"
+#include "DeviceHandlerMock.h"
+#include "objects/systemObjectList.h"
 
 TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {
   // Will be deleted with DHB destructor
-  CookieIFMock* cookieIFMock = new CookieIFMock;
+  auto* cookieIFMock = new CookieIFMock;
   ComIFMock comIF(objects::COM_IF_MOCK);
   DeviceFdirMock deviceFdirMock(objects::DEVICE_HANDLER_MOCK, objects::NO_OBJECT);
   DeviceHandlerMock deviceHandlerMock(objects::DEVICE_HANDLER_MOCK, objects::COM_IF_MOCK,

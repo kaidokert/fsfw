@@ -5,7 +5,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstring>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
   LocalPool::LocalPoolConfig config = {{1, 10}};

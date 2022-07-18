@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "LocalPoolOwnerBase.h"
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
   LocalPoolOwnerBase* poolOwner =

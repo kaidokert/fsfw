@@ -8,7 +8,7 @@
 #include "fsfw/ipc/MessageQueueBase.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 class MessageQueueMockBase : public MessageQueueBase {
  public:

@@ -4,7 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "fsfw/serviceinterface.h"
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   // Check that major version is non-zero

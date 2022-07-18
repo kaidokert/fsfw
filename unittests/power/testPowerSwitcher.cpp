@@ -1,6 +1,6 @@
 #include <fsfw/power/DummyPowerSwitcher.h>
 #include <fsfw/power/PowerSwitcher.h>
-#include <fsfw_tests/unit/mocks/PowerSwitcherMock.h>
+#include "mocks/PowerSwitcherMock.h"
 
 #include <catch2/catch_test_macros.hpp>
 

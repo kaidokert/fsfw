@@ -104,11 +104,11 @@ if(FSFW_GENERATE_SECTIONS)
   option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
 endif()
 
-option(FSFW_BUILD_UNITTESTS
+option(FSFW_BUILD_TESTS
        "Build unittest binary in addition to static library" OFF)
 option(FSFW_CICD_BUILD "Build for CI/CD. This can disable problematic test" OFF)
 option(FSFW_BUILD_DOCS "Build documentation with Sphinx and Doxygen" OFF)
-if(FSFW_BUILD_UNITTESTS)
+if(FSFW_BUILD_TESTS)
   option(FSFW_TESTS_GEN_COV "Generate coverage data for unittests" ON)
 endif()
 
@@ -140,7 +140,7 @@ if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
                                                 TRUE)
 endif()
 
-if(FSFW_BUILD_UNITTESTS)
+if(FSFW_BUILD_TESTS)
   message(
     STATUS
       "${MSG_PREFIX} Building the FSFW unittests in addition to the static library"
@@ -163,7 +163,7 @@ if(FSFW_BUILD_UNITTESTS)
     list(APPEND FSFW_FETCH_CONTENT_TARGETS Catch2)
   endif()
 
-  set(FSFW_CONFIG_PATH unittests/testcfg/)
+  set(FSFW_CONFIG_PATH unittests/testcfg)
   configure_file(unittests/testcfg/FSFWConfig.h.in FSFWConfig.h)
   configure_file(unittests/testcfg/TestsConfig.h.in tests/TestsConfig.h)
 
@@ -282,11 +282,14 @@ message(
 
 add_subdirectory(src)
 add_subdirectory(contrib)
+if(FSFW_BUILD_TESTS)
+  add_subdirectory(unittests)
+endif()
 if(FSFW_BUILD_DOCS)
   add_subdirectory(docs)
 endif()
 
-if(FSFW_BUILD_UNITTESTS)
+if(FSFW_BUILD_TESTS)
   if(FSFW_TESTS_GEN_COV)
     if(CMAKE_COMPILER_IS_GNUCXX)
       include(CodeCoverage)

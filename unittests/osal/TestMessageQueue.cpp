@@ -4,7 +4,7 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("MessageQueue Basic Test", "[TestMq]") {
   MessageQueueIF* testSenderMq = QueueFactory::instance()->createMessageQueue(1);

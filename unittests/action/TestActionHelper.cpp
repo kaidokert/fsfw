@@ -6,7 +6,7 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw_tests/unit/mocks/MessageQueueMockBase.h"
+#include "mocks/MessageQueueMockBase.h"
 
 TEST_CASE("Action Helper", "[ActionHelper]") {
   ActionHelperOwnerMockBase testDhMock;

@@ -9,7 +9,7 @@
 #include "fsfw/cfdp/pdu/HeaderSerializer.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/serialize/SerializeAdapter.h"
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("CFDP Base", "[CfdpBase]") {
   using namespace cfdp;

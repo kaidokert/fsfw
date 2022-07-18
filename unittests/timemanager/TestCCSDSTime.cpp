@@ -5,11 +5,11 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
   INFO("CCSDSTime Tests");
-  CCSDSTime::Ccs_mseconds cssMilliSecconds;
+  CCSDSTime::Ccs_mseconds cssMilliSecconds{};
   Clock::TimeOfDay_t time;
   time.year = 2020;
   time.month = 2;

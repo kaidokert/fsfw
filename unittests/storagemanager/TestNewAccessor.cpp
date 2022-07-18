@@ -4,7 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstring>
 
-#include "fsfw_tests/unit/CatchDefinitions.h"
+#include "CatchDefinitions.h"
 
 TEST_CASE("New Accessor", "[NewAccessor]") {
   LocalPool::LocalPoolConfig poolCfg = {{1, 10}};
