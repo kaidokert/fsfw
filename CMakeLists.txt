@@ -163,10 +163,9 @@ if(FSFW_BUILD_UNITTESTS)
     list(APPEND FSFW_FETCH_CONTENT_TARGETS Catch2)
   endif()
 
-  set(FSFW_CONFIG_PATH tests/src/fsfw_tests/unit/testcfg)
-  configure_file(tests/src/fsfw_tests/unit/testcfg/FSFWConfig.h.in FSFWConfig.h)
-  configure_file(tests/src/fsfw_tests/unit/testcfg/TestsConfig.h.in
-                 tests/TestsConfig.h)
+  set(FSFW_CONFIG_PATH unittests/testcfg/)
+  configure_file(unittests/testcfg/FSFWConfig.h.in FSFWConfig.h)
+  configure_file(unittests/testcfg/TestsConfig.h.in tests/TestsConfig.h)
 
   project(${FSFW_TEST_TGT} CXX C)
   add_executable(${FSFW_TEST_TGT})
