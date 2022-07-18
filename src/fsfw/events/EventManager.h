@@ -37,6 +37,7 @@ class EventManager : public EventManagerIF, public ExecutableObjectIF, public Sy
                                       EventId_t idTo = 0, bool idInverted = false,
                                       object_id_t reporterFrom = 0, object_id_t reporterTo = 0,
                                       bool reporterInverted = false);
+  ReturnValue_t unsubscribeFromAllEvents(MessageQueueId_t listener, object_id_t object);
   ReturnValue_t unsubscribeFromEventRange(MessageQueueId_t listener, EventId_t idFrom = 0,
                                           EventId_t idTo = 0, bool idInverted = false,
                                           object_id_t reporterFrom = 0, object_id_t reporterTo = 0,

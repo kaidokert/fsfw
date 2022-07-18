@@ -14,6 +14,8 @@ class HealthTableIF : public ManagesHealthIF {
   virtual ReturnValue_t registerObject(
       object_id_t object, HasHealthIF::HealthState initilialState = HasHealthIF::HEALTHY) = 0;
 
+  virtual ReturnValue_t removeObject(object_id_t objectId) = 0;
+
   virtual size_t getPrintSize() = 0;
   virtual void printAll(uint8_t *pointer, size_t maxSize) = 0;
 

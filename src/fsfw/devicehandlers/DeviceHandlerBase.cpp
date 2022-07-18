@@ -65,7 +65,9 @@ void DeviceHandlerBase::setThermalStateRequestPoolIds(lp_id_t thermalStatePoolId
 }
 
 DeviceHandlerBase::~DeviceHandlerBase() {
-  delete comCookie;
+  if (comCookie != nullptr) {
+    delete comCookie;
+  }
   if (defaultFDIRUsed) {
     delete fdirInstance;
   }
@@ -219,16 +221,25 @@ ReturnValue_t DeviceHandlerBase::initialize() {
 }
 
 void DeviceHandlerBase::decrementDeviceReplyMap() {
+  bool timedOut = false;
   for (std::pair<const DeviceCommandId_t, DeviceReplyInfo>& replyPair : deviceReplyMap) {
-    if (replyPair.second.delayCycles != 0) {
+    if (replyPair.second.countdown != nullptr && replyPair.second.active) {
+      if (replyPair.second.countdown->hasTimedOut()) {
+        resetTimeoutControlledReply(&replyPair.second);
+        timedOut = true;
+      }
+    }
+    if (replyPair.second.delayCycles != 0 && replyPair.second.countdown == nullptr) {
       replyPair.second.delayCycles--;
       if (replyPair.second.delayCycles == 0) {
-        if (replyPair.second.periodic) {
-          replyPair.second.delayCycles = replyPair.second.maxDelayCycles;
-        }
-        replyToReply(replyPair.first, replyPair.second, TIMEOUT);
-        missedReply(replyPair.first);
+        resetDelayCyclesControlledReply(&replyPair.second);
+        timedOut = true;
       }
+    }
+    if (timedOut) {
+      replyToReply(replyPair.first, replyPair.second, TIMEOUT);
+      missedReply(replyPair.first);
+      timedOut = false;
     }
   }
 }
@@ -344,7 +355,6 @@ void DeviceHandlerBase::doStateMachine() {
         setMode(MODE_OFF);
         break;
       }
-
       if (currentUptime - timeoutStart >= powerSwitcher->getSwitchDelayMs()) {
         triggerEvent(MODE_TRANSITION_FAILED, PowerSwitchIF::SWITCH_TIMEOUT, 0);
         setMode(MODE_ERROR_ON);
@@ -393,20 +403,22 @@ ReturnValue_t DeviceHandlerBase::isModeCombinationValid(Mode_t mode, Submode_t s
 
 ReturnValue_t DeviceHandlerBase::insertInCommandAndReplyMap(
     DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles, LocalPoolDataSetBase* replyDataSet,
-    size_t replyLen, bool periodic, bool hasDifferentReplyId, DeviceCommandId_t replyId) {
+    size_t replyLen, bool periodic, bool hasDifferentReplyId, DeviceCommandId_t replyId,
+    Countdown* countdown) {
   // No need to check, as we may try to insert multiple times.
   insertInCommandMap(deviceCommand, hasDifferentReplyId, replyId);
   if (hasDifferentReplyId) {
-    return insertInReplyMap(replyId, maxDelayCycles, replyDataSet, replyLen, periodic);
+    return insertInReplyMap(replyId, maxDelayCycles, replyDataSet, replyLen, periodic, countdown);
   } else {
-    return insertInReplyMap(deviceCommand, maxDelayCycles, replyDataSet, replyLen, periodic);
+    return insertInReplyMap(deviceCommand, maxDelayCycles, replyDataSet, replyLen, periodic,
+                            countdown);
   }
 }
 
 ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
                                                   uint16_t maxDelayCycles,
                                                   LocalPoolDataSetBase* dataSet, size_t replyLen,
-                                                  bool periodic) {
+                                                  bool periodic, Countdown* countdown) {
   DeviceReplyInfo info;
   info.maxDelayCycles = maxDelayCycles;
   info.periodic = periodic;
@@ -414,6 +426,7 @@ ReturnValue_t DeviceHandlerBase::insertInReplyMap(DeviceCommandId_t replyId,
   info.replyLen = replyLen;
   info.dataSet = dataSet;
   info.command = deviceCommandMap.end();
+  info.countdown = countdown;
   auto resultPair = deviceReplyMap.emplace(replyId, info);
   if (resultPair.second) {
     return RETURN_OK;
@@ -449,7 +462,8 @@ size_t DeviceHandlerBase::getNextReplyLength(DeviceCommandId_t commandId) {
   }
   DeviceReplyIter iter = deviceReplyMap.find(replyId);
   if (iter != deviceReplyMap.end()) {
-    if (iter->second.delayCycles != 0) {
+    if ((iter->second.delayCycles != 0 && iter->second.countdown == nullptr) ||
+        (iter->second.active && iter->second.countdown != nullptr)) {
       return iter->second.replyLen;
     }
   }
@@ -485,9 +499,19 @@ ReturnValue_t DeviceHandlerBase::updatePeriodicReply(bool enable, DeviceCommandI
       return COMMAND_NOT_SUPPORTED;
     }
     if (enable) {
-      info->delayCycles = info->maxDelayCycles;
+      info->active = true;
+      if (info->countdown != nullptr) {
+        info->delayCycles = info->maxDelayCycles;
+      } else {
+        info->countdown->resetTimer();
+      }
     } else {
-      info->delayCycles = 0;
+      info->active = false;
+      if (info->countdown != nullptr) {
+        info->delayCycles = 0;
+      } else {
+        info->countdown->timeOut();
+      }
     }
   }
   return HasReturnvaluesIF::RETURN_OK;
@@ -791,17 +815,18 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData, DeviceCommandId
 
   DeviceReplyInfo* info = &(iter->second);
 
-  if (info->delayCycles != 0) {
+  if ((info->delayCycles != 0 && info->countdown == nullptr) ||
+      (info->active && info->countdown != nullptr)) {
     result = interpretDeviceReply(foundId, receivedData);
 
     if (result == IGNORE_REPLY_DATA) {
       return;
     }
 
-    if (info->periodic) {
-      info->delayCycles = info->maxDelayCycles;
-    } else {
-      info->delayCycles = 0;
+    if (info->active && info->countdown != nullptr) {
+      resetTimeoutControlledReply(info);
+    } else if (info->delayCycles != 0) {
+      resetDelayCyclesControlledReply(info);
     }
 
     if (result != RETURN_OK) {
@@ -817,6 +842,24 @@ void DeviceHandlerBase::handleReply(const uint8_t* receivedData, DeviceCommandId
     if (mode != _MODE_WAIT_OFF) {
       triggerEvent(DEVICE_UNREQUESTED_REPLY, foundId);
     }
+  }
+}
+
+void DeviceHandlerBase::resetTimeoutControlledReply(DeviceReplyInfo* info) {
+  if (info->periodic) {
+    info->countdown->resetTimer();
+  } else {
+    info->active = false;
+    info->countdown->timeOut();
+  }
+}
+
+void DeviceHandlerBase::resetDelayCyclesControlledReply(DeviceReplyInfo* info) {
+  if (info->periodic) {
+    info->delayCycles = info->maxDelayCycles;
+  } else {
+    info->delayCycles = 0;
+    info->active = false;
   }
 }
 
@@ -942,9 +985,15 @@ ReturnValue_t DeviceHandlerBase::enableReplyInReplyMap(DeviceCommandMap::iterato
   }
   if (iter != deviceReplyMap.end()) {
     DeviceReplyInfo* info = &(iter->second);
+    // If a countdown has been set, the delay cycles will be ignored and the reply times out
+    // as soon as the countdown has expired
     info->delayCycles = info->maxDelayCycles;
     info->command = command;
     command->second.expectedReplies = expectedReplies;
+    if (info->countdown != nullptr) {
+      info->countdown->resetTimer();
+    }
+    info->active = true;
     return RETURN_OK;
   } else {
     return NO_REPLY_EXPECTED;
@@ -1179,7 +1228,8 @@ void DeviceHandlerBase::setParentQueue(MessageQueueId_t parentQueueId) {
 bool DeviceHandlerBase::isAwaitingReply() {
   std::map<DeviceCommandId_t, DeviceReplyInfo>::iterator iter;
   for (iter = deviceReplyMap.begin(); iter != deviceReplyMap.end(); ++iter) {
-    if (iter->second.delayCycles != 0) {
+    if ((iter->second.delayCycles != 0 && iter->second.countdown == nullptr) ||
+        (iter->second.active && iter->second.countdown != nullptr)) {
       return true;
     }
   }
@@ -1334,6 +1384,13 @@ uint8_t DeviceHandlerBase::getReplyDelayCycles(DeviceCommandId_t deviceCommand) 
   auto iter = deviceReplyMap.find(deviceCommand);
   if (iter == deviceReplyMap.end()) {
     return 0;
+  } else if (iter->second.countdown != nullptr) {
+    // fake a useful return value for legacy code
+    if (iter->second.active) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
   return iter->second.delayCycles;
 }

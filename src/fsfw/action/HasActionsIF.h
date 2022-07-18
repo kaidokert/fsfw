@@ -1,11 +1,11 @@
 #ifndef FSFW_ACTION_HASACTIONSIF_H_
 #define FSFW_ACTION_HASACTIONSIF_H_
 
-#include "../ipc/MessageQueueIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
 #include "ActionHelper.h"
 #include "ActionMessage.h"
 #include "SimpleActionHelper.h"
+#include "fsfw/ipc/MessageQueueIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 /**
  * @brief
@@ -40,12 +40,12 @@ class HasActionsIF {
   static const ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(2);
   static const ReturnValue_t EXECUTION_FINISHED = MAKE_RETURN_CODE(3);
   static const ReturnValue_t INVALID_ACTION_ID = MAKE_RETURN_CODE(4);
-  virtual ~HasActionsIF() {}
+  virtual ~HasActionsIF() = default;
   /**
    * Function to get the MessageQueueId_t of the implementing object
    * @return MessageQueueId_t of the object
    */
-  virtual MessageQueueId_t getCommandQueue() const = 0;
+  [[nodiscard]] virtual MessageQueueId_t getCommandQueue() const = 0;
   /**
    * Execute or initialize the execution of a certain function.
    * The ActionHelpers will execute this function and behave differently

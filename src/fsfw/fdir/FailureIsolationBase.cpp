@@ -14,6 +14,16 @@ FailureIsolationBase::FailureIsolationBase(object_id_t owner, object_id_t parent
 }
 
 FailureIsolationBase::~FailureIsolationBase() {
+  EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
+  if (manager == nullptr) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << "FailureIsolationBase::~FailureIsolationBase: Event Manager has not"
+                  " been initialized!"
+               << std::endl;
+#endif
+    return;
+  }
+  manager->unsubscribeFromAllEvents(eventQueue->getId(), ownerId);
   QueueFactory::instance()->deleteMessageQueue(eventQueue);
 }
 

@@ -26,7 +26,7 @@ ReturnValue_t ControllerBase::initialize() {
 
   MessageQueueId_t parentQueue = 0;
   if (parentId != objects::NO_OBJECT) {
-    SubsystemBase* parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
+    auto* parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
     if (parent == nullptr) {
       return RETURN_FAILED;
     }
@@ -52,7 +52,7 @@ MessageQueueId_t ControllerBase::getCommandQueue() const { return commandQueue->
 
 void ControllerBase::handleQueue() {
   CommandMessage command;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result;
   for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
        result = commandQueue->receiveMessage(&command)) {
     result = modeHelper.handleModeCommand(&command);
@@ -73,20 +73,20 @@ void ControllerBase::handleQueue() {
   }
 }
 
-void ControllerBase::startTransition(Mode_t mode, Submode_t submode) {
+void ControllerBase::startTransition(Mode_t mode_, Submode_t submode_) {
   changeHK(this->mode, this->submode, false);
   triggerEvent(CHANGING_MODE, mode, submode);
-  this->mode = mode;
-  this->submode = submode;
+  mode = mode_;
+  submode = submode_;
   modeHelper.modeChanged(mode, submode);
   modeChanged(mode, submode);
   announceMode(false);
   changeHK(this->mode, this->submode, true);
 }
 
-void ControllerBase::getMode(Mode_t* mode, Submode_t* submode) {
-  *mode = this->mode;
-  *submode = this->submode;
+void ControllerBase::getMode(Mode_t* mode_, Submode_t* submode_) {
+  *mode_ = this->mode;
+  *submode_ = this->submode;
 }
 
 void ControllerBase::setToExternalControl() { healthHelper.setHealth(EXTERNAL_CONTROL); }
@@ -99,7 +99,7 @@ ReturnValue_t ControllerBase::performOperation(uint8_t opCode) {
   return RETURN_OK;
 }
 
-void ControllerBase::modeChanged(Mode_t mode, Submode_t submode) { return; }
+void ControllerBase::modeChanged(Mode_t mode_, Submode_t submode_) {}
 
 ReturnValue_t ControllerBase::setHealth(HealthState health) {
   switch (health) {
@@ -115,6 +115,6 @@ ReturnValue_t ControllerBase::setHealth(HealthState health) {
 HasHealthIF::HealthState ControllerBase::getHealth() { return healthHelper.getHealth(); }
 void ControllerBase::setTaskIF(PeriodicTaskIF* task_) { executingTask = task_; }
 
-void ControllerBase::changeHK(Mode_t mode, Submode_t submode, bool enable) {}
+void ControllerBase::changeHK(Mode_t mode_, Submode_t submode_, bool enable) {}
 
 ReturnValue_t ControllerBase::initializeAfterTaskCreation() { return HasReturnvaluesIF::RETURN_OK; }

@@ -6,7 +6,7 @@
 ActionHelper::ActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue)
     : owner(setOwner), queueToUse(useThisQueue) {}
 
-ActionHelper::~ActionHelper() {}
+ActionHelper::~ActionHelper() = default;
 
 ReturnValue_t ActionHelper::handleActionMessage(CommandMessage* command) {
   if (command->getCommand() == ActionMessage::EXECUTE_ACTION) {
@@ -53,7 +53,7 @@ void ActionHelper::setQueueToUse(MessageQueueIF* queue) { queueToUse = queue; }
 
 void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId,
                                     store_address_t dataAddress) {
-  const uint8_t* dataPtr = NULL;
+  const uint8_t* dataPtr = nullptr;
   size_t size = 0;
   ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
   if (result != HasReturnvaluesIF::RETURN_OK) {

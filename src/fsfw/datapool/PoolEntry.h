@@ -33,6 +33,9 @@ class PoolEntry : public PoolEntryIF {
                 "instead! The ECSS standard defines a boolean as a one bit "
                 "field. Therefore it is preferred to store a boolean as an "
                 "uint8_t");
+
+  PoolEntry(uint8_t len = 1, bool setValid = false);
+
   /**
    * @brief	In the classe's constructor, space is allocated on the heap and
    * 			potential initialization values are copied to that space.
@@ -49,7 +52,7 @@ class PoolEntry : public PoolEntryIF {
    * @param setValid
    * Sets the initialization flag. It is invalid by default.
    */
-  PoolEntry(std::initializer_list<T> initValue = {0}, bool setValid = false);
+  PoolEntry(std::initializer_list<T> initValue, bool setValid = false);
 
   /**
    * @brief	In the classe's constructor, space is allocated on the heap and
@@ -62,7 +65,7 @@ class PoolEntry : public PoolEntryIF {
    * @param setValid
    * Sets the initialization flag. It is invalid by default.
    */
-  PoolEntry(T* initValue, uint8_t setLength = 1, bool setValid = false);
+  PoolEntry(const T* initValue, uint8_t setLength = 1, bool setValid = false);
 
   //! Explicitely deleted copy ctor, copying is not allowed.
   PoolEntry(const PoolEntry&) = delete;

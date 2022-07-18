@@ -475,14 +475,8 @@ target_include_directories(
 
 target_compile_options(${LIB_FSFW_NAME} PRIVATE ${FSFW_WARNING_FLAGS}
                                                 ${COMPILER_FLAGS})
-
-target_link_libraries(${LIB_FSFW_NAME} PUBLIC ${FSFW_FMT_LINK_TARGET})
-
-target_link_libraries(
-  ${LIB_FSFW_NAME}
-  PRIVATE # If any ELT headers are ever exposed inside a header or as part of
-          # the API, the ETL target needs to be linked PUBLIC
-          ${FSFW_ETL_LINK_TARGET} ${FSFW_ADDITIONAL_LINK_LIBS})
+target_link_libraries(${LIB_FSFW_NAME} PRIVATE ${FSFW_ADDITIONAL_LINK_LIBS})
+target_link_libraries(${LIB_FSFW_NAME} PUBLIC ${FSFW_ETL_LINK_TARGET} ${FSFW_FMT_LINK_TARGET})
 
 string(
   CONCAT

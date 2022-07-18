@@ -28,6 +28,15 @@ ReturnValue_t HealthTable::registerObject(object_id_t object,
   return HasReturnvaluesIF::RETURN_OK;
 }
 
+ReturnValue_t HealthTable::removeObject(object_id_t object) {
+  mapIterator = healthMap.find(object);
+  if (mapIterator == healthMap.end()) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
+  healthMap.erase(mapIterator);
+  return HasReturnvaluesIF::RETURN_OK;
+}
+
 void HealthTable::setHealth(object_id_t object, HasHealthIF::HealthState newState) {
   MutexGuard(mutex, timeoutType, mutexTimeoutMs);
   HealthMap::iterator iter = healthMap.find(object);
