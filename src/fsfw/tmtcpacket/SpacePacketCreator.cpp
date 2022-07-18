@@ -29,9 +29,9 @@ SpacePacketCreator::SpacePacketCreator(ccsds::PacketType packetType, bool secHea
   dataLen = dataLen_;
 }
 
-uint16_t SpacePacketCreator::getPacketId() const { return 0; }
-uint16_t SpacePacketCreator::getPacketSeqCtrl() const { return 0; }
-uint16_t SpacePacketCreator::getPacketDataLen() const { return 0; }
+uint16_t SpacePacketCreator::getPacketId() const { return packetId; }
+uint16_t SpacePacketCreator::getPacketSeqCtrl() const { return packetSeqCtrl; }
+uint16_t SpacePacketCreator::getPacketDataLen() const { return dataLen; }
 
 ReturnValue_t SpacePacketCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                             SerializeIF::Endianness streamEndianness) const {

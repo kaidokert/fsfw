@@ -14,7 +14,13 @@ TEST_CASE("CCSDS Test", "[ccsds]") {
 
   SECTION("Header Creator Tests") {
     SpacePacketCreator base = SpacePacketCreator(
-        ccsds::PacketType::TM, true, 0x22,
-        ccsds::SequenceFlags::CONTINUATION, 12, 0x42);
+        ccsds::PacketType::TC, true, 0x02,
+        ccsds::SequenceFlags::FIRST_SEGMENT,  0x34, 0x16);
+    REQUIRE(base.getApid() == 0x02);
+    REQUIRE(base.getSequenceFlags() == ccsds::SequenceFlags::FIRST_SEGMENT);
+    REQUIRE(base.getVersion() == 0b000);
+    REQUIRE(base.getSequenceCount() == 0x34);
+    REQUIRE(base.getPacketDataLen() == 0x16);
+    REQUIRE(base.getPacketType() == ccsds::PacketType::TC);
   }
 }
