@@ -40,6 +40,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   creation call. It allows passing context information and an arbitrary user argument into
   the message queue. Also streamlined and simplified `MessageQueue` implementation for all OSALs
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/583
+- Internal API change: Moved the `fsfw_hal` to the `src` folder and integration and internal
+  tests part of `fsfw_tests` to `src`. Unittests are now in a deciated folder called `unittests`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/653
 
 ### Task Module Refactoring
 
