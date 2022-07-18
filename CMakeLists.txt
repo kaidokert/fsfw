@@ -282,10 +282,6 @@ message(
 )
 
 add_subdirectory(src)
-add_subdirectory(tests)
-if(FSFW_ADD_HAL)
-  add_subdirectory(hal)
-endif()
 add_subdirectory(contrib)
 if(FSFW_BUILD_DOCS)
   add_subdirectory(docs)
