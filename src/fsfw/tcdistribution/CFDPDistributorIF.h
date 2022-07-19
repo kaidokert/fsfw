@@ -13,7 +13,7 @@ class CFDPDistributorIF {
   /**
    * The empty virtual destructor.
    */
-  virtual ~CFDPDistributorIF() {}
+  virtual ~CFDPDistributorIF() = default;
   /**
    * With this method, Handlers can register themselves at the CFDP Distributor.
    * @param handler A pointer to the registering Handler.

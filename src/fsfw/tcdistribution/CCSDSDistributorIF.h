@@ -34,7 +34,7 @@ class CCSDSDistributorIF {
   /**
    * The empty virtual destructor.
    */
-  virtual ~CCSDSDistributorIF() {}
+  virtual ~CCSDSDistributorIF() = default;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_CCSDSDISTRIBUTORIF_H_ */

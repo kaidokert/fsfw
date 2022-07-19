@@ -45,12 +45,21 @@ struct PacketSeqCtrl {
   uint16_t seqCount;
 };
 
-class SpacePacketCreator : public SerializeIF, public SpacePacketIF {
+struct SpacePacketParams {
+  PacketId packetId;
+  PacketSeqCtrl packetSeqCtrl;
+  uint16_t dataLen;
+  uint8_t version = 0b000;
+};
+
+class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
  public:
+  /*
   SpacePacketCreator(ccsds::PacketType packetType, bool secHeaderFlag, uint16_t apid,
                      ccsds::SequenceFlags seqFlags, uint16_t seqCount, uint16_t dataLen,
                      uint8_t version = 0);
-  SpacePacketCreator(PacketId packetId, PacketSeqCtrl psc, uint16_t dataLen, uint8_t version = 0);
+  */
+  explicit SpacePacketCreator(SpacePacketParams &params);
   [[nodiscard]] bool isValid() const;
   [[nodiscard]] uint16_t getPacketId() const override;
   [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
@@ -73,9 +82,6 @@ class SpacePacketCreator : public SerializeIF, public SpacePacketIF {
   void checkFieldValidity();
 
   bool valid{};
-  PacketId packetId;
-  PacketSeqCtrl packetSeqCtrl;
-  uint16_t dataLen;
-  uint8_t version;
+  SpacePacketParams params;
 };
 #endif  // FSFW_TMTCPACKET_SPACEPACKETCREATOR_H

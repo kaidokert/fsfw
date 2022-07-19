@@ -11,6 +11,6 @@
 #include "tm/TmPacketStoredPusA.h"
 #endif
 
-#include "tm/TmPacketMinimal.h"
+#include "tm/PusTmMinimal.h"
 
 #endif /* FSFW_TMTCPACKET_PUS_TM_H_ */

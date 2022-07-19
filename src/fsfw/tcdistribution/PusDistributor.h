@@ -2,12 +2,14 @@
 #define FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
 
 #include "PUSDistributorIF.h"
+#include "PusPacketChecker.h"
 #include "TcDistributor.h"
-#include "TcPacketCheckPUS.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 #include "fsfw/tmtcservices/VerificationReporter.h"
+
+class PacketStorageHelper;
 
 /**
  * This class accepts PUS Telecommands and forwards them to Application
@@ -15,7 +17,7 @@
  * sends acceptance success or failure messages.
  * @ingroup tc_distribution
  */
-class PUSDistributor : public TcDistributor, public PUSDistributorIF, public AcceptsTelecommandsIF {
+class PusDistributor : public TcDistributor, public PUSDistributorIF, public AcceptsTelecommandsIF {
  public:
   /**
    * The ctor passes @c set_apid to the checker class and calls the
@@ -25,21 +27,23 @@ class PUSDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * @param setPacketSource Object ID of the source of TC packets.
    * Must implement CCSDSDistributorIF.
    */
-  PUSDistributor(uint16_t setApid, object_id_t setObjectId, object_id_t setPacketSource);
+  PusDistributor(StorageManagerIF* store, uint16_t setApid, object_id_t setObjectId,
+                 object_id_t setPacketSource);
   /**
    * The destructor is empty.
    */
-  virtual ~PUSDistributor();
+  ~PusDistributor() override;
   ReturnValue_t registerService(AcceptsTelecommandsIF* service) override;
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t initialize() override;
   uint16_t getIdentifier() override;
 
  protected:
+  StorageManagerIF* store;
   /**
    * This attribute contains the class, that performs a formal packet check.
    */
-  TcPacketCheckPUS checker;
+  PusPacketChecker checker;
   /**
    * With this class, verification messages are sent to the
    * TC Verification service.
@@ -48,7 +52,8 @@ class PUSDistributor : public TcDistributor, public PUSDistributorIF, public Acc
   /**
    * The currently handled packet is stored here.
    */
-  TcPacketStoredPus* currentPacket = nullptr;
+  PacketStorageHelper* currentPacket = nullptr;
+  PusTcReader reader;
 
   /**
    * With this variable, the current check status is stored to generate

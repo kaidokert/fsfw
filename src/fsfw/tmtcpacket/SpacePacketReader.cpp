@@ -2,39 +2,44 @@
 
 #include <cstring>
 
+#include "fsfw/serialize/SerializeIF.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-SpacePacketReader::SpacePacketReader(const uint8_t* setAddress) {
-  this->data = reinterpret_cast<SpacePacketPointer*>(const_cast<uint8_t*>(setAddress));
+SpacePacketReader::SpacePacketReader(const uint8_t* setAddress, size_t maxSize_) {
+  setInternalFields(setAddress, maxSize_);
+}
+
+ReturnValue_t SpacePacketReader::checkLength() const {
+  if (getFullPacketLen() > maxSize) {
+    return SerializeIF::STREAM_TOO_SHORT;
+  }
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
 SpacePacketReader::~SpacePacketReader() = default;
 
 inline uint16_t SpacePacketReader::getPacketId() const {
-  return ((this->data->header.packetIdHAndVersion) << 8) + this->data->header.packetIdL;
+  return ((spHeader->packetIdHAndVersion) << 8) + spHeader->packetIdL;
 }
 
-size_t SpacePacketReader::getFullSize() {
-  // +1 is done because size in packet data length field is: size of data field -1
-  return this->getPacketDataLen() + sizeof(this->data->header) + 1;
+const uint8_t* SpacePacketReader::getPacketData() { return packetDataField; }
+
+ReturnValue_t SpacePacketReader::setData(uint8_t* pData, size_t maxSize_, void* args) {
+  setInternalFields(pData, maxSize_);
 }
 
-uint8_t* SpacePacketReader::getWholeData() { return reinterpret_cast<uint8_t*>(this->data); }
-
-uint8_t* SpacePacketReader::getPacketData() { return &(data->packet_data); }
-
-ReturnValue_t SpacePacketReader::setData(uint8_t* pData, size_t maxSize, void* args) {
-  if (maxSize < 6) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
-  this->data = reinterpret_cast<SpacePacketPointer*>(const_cast<uint8_t*>(pData));
-  return HasReturnvaluesIF::RETURN_OK;
-}
 uint16_t SpacePacketReader::getPacketSeqCtrl() const {
-  return ((this->data->header.packetSeqCtrlH & 0b00111111) << 8) +
-         this->data->header.packetSeqCtrlL;
+  return (spHeader->packetSeqCtrlH << 8) + spHeader->packetSeqCtrlL;
 }
 
 uint16_t SpacePacketReader::getPacketDataLen() const {
-  return ((this->data->header.packetLenH) << 8) + this->data->header.packetLenL;
+  return (spHeader->packetLenH << 8) | spHeader->packetIdL;
 }
+void SpacePacketReader::setInternalFields(const uint8_t* data, size_t maxSize_) {
+  maxSize = maxSize_;
+  spHeader = reinterpret_cast<const CCSDSPrimaryHeader*>(data);
+  packetDataField = data + sizeof(CCSDSPrimaryHeader);
+}
+const uint8_t* SpacePacketReader::getFullData() {
+  return reinterpret_cast<const uint8_t*>(spHeader);
+};

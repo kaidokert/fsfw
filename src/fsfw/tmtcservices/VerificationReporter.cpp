@@ -11,9 +11,9 @@ object_id_t VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIF
 
 VerificationReporter::VerificationReporter() : acknowledgeQueue(MessageQueueIF::NO_QUEUE) {}
 
-VerificationReporter::~VerificationReporter() {}
+VerificationReporter::~VerificationReporter() = default;
 
-void VerificationReporter::sendSuccessReport(uint8_t set_report_id, TcPacketPusBase* currentPacket,
+void VerificationReporter::sendSuccessReport(uint8_t set_report_id, PusTcReader* currentPacket,
                                              uint8_t set_step) {
   if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
     this->initialize();
@@ -50,7 +50,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, uint8_t ackF
   }
 }
 
-void VerificationReporter::sendFailureReport(uint8_t report_id, TcPacketPusBase* currentPacket,
+void VerificationReporter::sendFailureReport(uint8_t report_id, PusTcReader* currentPacket,
                                              ReturnValue_t error_code, uint8_t step,
                                              uint32_t parameter1, uint32_t parameter2) {
   if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
@@ -98,8 +98,7 @@ void VerificationReporter::initialize() {
 #endif
     return;
   }
-  AcceptsVerifyMessageIF* temp =
-      ObjectManager::instance()->get<AcceptsVerifyMessageIF>(messageReceiver);
+  auto* temp = ObjectManager::instance()->get<AcceptsVerifyMessageIF>(messageReceiver);
   if (temp == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VerificationReporter::initialize: Message "

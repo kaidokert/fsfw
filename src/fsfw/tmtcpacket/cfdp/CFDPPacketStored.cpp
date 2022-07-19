@@ -1,14 +1,14 @@
-#include "fsfw/tmtcpacket/cfdp/CFDPPacketStored.h"
+#include "fsfw/tmtcpacket/cfdp/CfdpPacketStored.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
 
-CFDPPacketStored::CFDPPacketStored() : CFDPPacket(nullptr) {}
+CfdpPacketStored::CfdpPacketStored() : CfdpReader(nullptr) {}
 
-CFDPPacketStored::CFDPPacketStored(store_address_t setAddress) : CFDPPacket(nullptr) {
+CfdpPacketStored::CfdpPacketStored(store_address_t setAddress) : CfdpReader(nullptr) {
   this->setStoreAddress(setAddress);
 }
 
-CFDPPacketStored::CFDPPacketStored(const uint8_t* data, size_t size) : CFDPPacket(data) {
+CfdpPacketStored::CfdpPacketStored(const uint8_t* data, size_t size) : CfdpReader(data) {
   if (this->getFullSize() != size) {
     return;
   }
@@ -24,7 +24,7 @@ CFDPPacketStored::CFDPPacketStored(const uint8_t* data, size_t size) : CFDPPacke
   }
 }
 
-ReturnValue_t CFDPPacketStored::deletePacket() {
+ReturnValue_t CfdpPacketStored::deletePacket() {
   ReturnValue_t result = STORE->deleteData(this->storeAddress);
   this->storeAddress.raw = StorageManagerIF::INVALID_ADDRESS;
   // To circumvent size checks
@@ -35,7 +35,7 @@ ReturnValue_t CFDPPacketStored::deletePacket() {
 // CFDPPacket* CFDPPacketStored::getPacketBase() {
 //     return this;
 // }
-void CFDPPacketStored::setStoreAddress(store_address_t setAddress) {
+void CfdpPacketStored::setStoreAddress(store_address_t setAddress) {
   this->storeAddress = setAddress;
   const uint8_t* tempData = nullptr;
   size_t tempSize;
@@ -52,11 +52,11 @@ void CFDPPacketStored::setStoreAddress(store_address_t setAddress) {
   }
 }
 
-store_address_t CFDPPacketStored::getStoreAddress() { return this->storeAddress; }
+store_address_t CfdpPacketStored::getStoreAddress() { return this->storeAddress; }
 
-CFDPPacketStored::~CFDPPacketStored() = default;
+CfdpPacketStored::~CfdpPacketStored() = default;
 
-ReturnValue_t CFDPPacketStored::getData(const uint8_t** dataPtr, size_t* dataSize) {
+ReturnValue_t CfdpPacketStored::getData(const uint8_t** dataPtr, size_t* dataSize) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -64,7 +64,7 @@ ReturnValue_t CFDPPacketStored::getData(const uint8_t** dataPtr, size_t* dataSiz
 //     return HasReturnvaluesIF::RETURN_OK;
 // }
 
-bool CFDPPacketStored::checkAndSetStore() {
+bool CfdpPacketStored::checkAndSetStore() {
   if (STORE == nullptr) {
     STORE = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
     if (STORE == nullptr) {
@@ -77,7 +77,7 @@ bool CFDPPacketStored::checkAndSetStore() {
   return true;
 }
 
-bool CFDPPacketStored::isSizeCorrect() {
+bool CfdpPacketStored::isSizeCorrect() {
   const uint8_t* temp_data = nullptr;
   size_t temp_size;
   ReturnValue_t status = STORE->getData(this->storeAddress, &temp_data, &temp_size);

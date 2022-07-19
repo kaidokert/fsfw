@@ -1,4 +1,4 @@
-#include "fsfw/tmtcpacket/cfdp/CFDPPacket.h"
+#include "fsfw/tmtcpacket/cfdp/CfdpPacket.h"
 
 #include <cstring>
 
@@ -6,15 +6,16 @@
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-CFDPPacket::CFDPPacket(const uint8_t* setData) : SpacePacketReader(setData) {}
+CfdpReader::CfdpReader(const uint8_t* setData, size_t maxSize)
+    : SpacePacketReader(setData, maxSize) {}
 
-CFDPPacket::~CFDPPacket() {}
+CfdpReader::~CfdpReader() = default;
 
-void CFDPPacket::print() {
+void CfdpReader::print() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::info << "CFDPPacket::print:" << std::endl;
 #else
   sif::printInfo("CFDPPacket::print:\n");
 #endif
-  arrayprinter::print(getWholeData(), getFullSize());
+  // arrayprinter::print(getWholeData(), getFullSize());
 }

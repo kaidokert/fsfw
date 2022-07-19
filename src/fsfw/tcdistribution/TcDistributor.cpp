@@ -24,7 +24,7 @@ ReturnValue_t TcDistributor::performOperation(uint8_t opCode) {
 }
 
 ReturnValue_t TcDistributor::handlePacket() {
-  TcMqMapIter queueMapIt = this->selectDestination();
+  auto queueMapIt = this->selectDestination();
   ReturnValue_t returnValue = RETURN_FAILED;
   if (queueMapIt != this->queueMap.end()) {
     returnValue = this->tcQueue->sendMessage(queueMapIt->second, &this->currentMessage);

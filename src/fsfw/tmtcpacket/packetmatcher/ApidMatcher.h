@@ -1,18 +1,19 @@
 #ifndef FSFW_TMTCPACKET_PACKETMATCHER_APIDMATCHER_H_
 #define FSFW_TMTCPACKET_PACKETMATCHER_APIDMATCHER_H_
 
-#include "../../globalfunctions/matching/SerializeableMatcherIF.h"
-#include "../../serialize/SerializeAdapter.h"
-#include "../../tmtcpacket/pus/tm/TmPacketMinimal.h"
+#include "fsfw/globalfunctions/matching/SerializeableMatcherIF.h"
+#include "fsfw/serialize/SerializeAdapter.h"
+#include "fsfw/tmtcpacket/pus/tm/PusTmIF.h"
+#include "fsfw/tmtcpacket/pus/tm/PusTmMinimal.h"
 
-class ApidMatcher : public SerializeableMatcherIF<TmPacketMinimal*> {
+class ApidMatcher : public SerializeableMatcherIF<PusTmIF*> {
  private:
   uint16_t apid;
 
  public:
   explicit ApidMatcher(uint16_t setApid) : apid(setApid) {}
-  explicit ApidMatcher(TmPacketMinimal* test) : apid(test->getApid()) {}
-  bool match(TmPacketMinimal* packet) override {
+  explicit ApidMatcher(PusTmIF* test) : apid(test->getApid()) {}
+  bool match(PusTmIF* packet) override {
     if (packet->getApid() == apid) {
       return true;
     } else {

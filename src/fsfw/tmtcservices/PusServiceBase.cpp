@@ -11,8 +11,9 @@
 object_id_t PusServiceBase::packetSource = 0;
 object_id_t PusServiceBase::packetDestination = 0;
 
-PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId)
-    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId) {
+PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
+                               StorageManagerIF* store_)
+    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId), store(store_) {
   requestQueue = QueueFactory::instance()->createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
 }
 
@@ -31,7 +32,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   return RETURN_OK;
 }
 
-void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle) { this->taskHandle = taskHandle; }
+void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle_) { this->taskHandle = taskHandle_; }
 
 void PusServiceBase::handleRequestQueue() {
   TmTcMessage message;
@@ -49,7 +50,14 @@ void PusServiceBase::handleRequestQueue() {
     //		}
 
     if (status == RETURN_OK) {
-      this->currentPacket.setStoreAddress(message.getStorageId(), &currentPacket);
+      const uint8_t* dataPtr;
+      size_t dataLen = 0;
+      result = store->getData(message.getStorageId(), &dataPtr, &dataLen);
+      if (result != HasReturnvaluesIF::RETURN_OK) {
+        // TODO: Warning?
+      }
+
+      currentPacket.setData(dataPtr, dataLen);
       // info << "Service " << (uint16_t) this->serviceId <<
       //      ": new packet!" << std::endl;
 
@@ -65,7 +73,7 @@ void PusServiceBase::handleRequestQueue() {
                                                &this->currentPacket, result, 0, errorParameter1,
                                                errorParameter2);
       }
-      this->currentPacket.deletePacket();
+      store->deleteData(message.getStorageId());
       errorParameter1 = 0;
       errorParameter2 = 0;
     } else if (status == MessageQueueIF::EMPTY) {
@@ -92,9 +100,8 @@ ReturnValue_t PusServiceBase::initialize() {
   if (result != RETURN_OK) {
     return result;
   }
-  AcceptsTelemetryIF* destService =
-      ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
-  PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
+  auto* destService = ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
+  auto* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
   if (destService == nullptr or distributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PusServiceBase::PusServiceBase: Service " << this->serviceId

@@ -1,16 +1,16 @@
 #ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECKCFDP_H_
 #define FSFW_TCDISTRIBUTION_TCPACKETCHECKCFDP_H_
 
-#include "TcPacketCheckIF.h"
+#include "CcsdsPacketCheckIF.h"
 #include "fsfw/FSFW.h"
 
-class CFDPPacketStored;
+class CfdpPacketStored;
 
 /**
  * This class performs a formal packet check for incoming CFDP Packets.
  * @ingroup tc_distribution
  */
-class TcPacketCheckCFDP : public TcPacketCheckIF, public HasReturnvaluesIF {
+class CfdpPacketChecker : public CcsdsPacketCheckIF, public HasReturnvaluesIF {
  protected:
   /**
    * The packet id each correct packet should have.
@@ -23,11 +23,11 @@ class TcPacketCheckCFDP : public TcPacketCheckIF, public HasReturnvaluesIF {
    * The constructor only sets the APID attribute.
    * @param set_apid The APID to set.
    */
-  TcPacketCheckCFDP(uint16_t setApid);
+  explicit CfdpPacketChecker(uint16_t setApid);
 
-  ReturnValue_t checkPacket(SpacePacketReader* currentPacket) override;
+  ReturnValue_t checkPacket(SpacePacketReader* currentPacket, size_t packetLen) override;
 
-  uint16_t getApid() const;
+  [[nodiscard]] uint16_t getApid() const;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_TCPACKETCHECKCFDP_H_ */

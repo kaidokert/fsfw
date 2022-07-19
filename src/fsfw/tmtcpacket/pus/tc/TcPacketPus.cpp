@@ -10,7 +10,7 @@ TcPacketPus::TcPacketPus(const uint8_t *setData) : TcPacketPusBase(setData) {
 
 void TcPacketPus::initializeTcPacket(uint16_t apid, uint16_t sequenceCount, uint8_t ack,
                                      uint8_t service, uint8_t subservice,
-                                     pus::PusVersion pusVersion, uint16_t sourceId) {
+                                     ecss::PusVersion pusVersion, uint16_t sourceId) {
   initSpacePacketHeader(true, true, apid, sequenceCount);
   std::memset(&tcData->dataField, 0, sizeof(tcData->dataField));
   setPacketDataLength(sizeof(PUSTcDataFieldHeader) + CRC_SIZE - 1);

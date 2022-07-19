@@ -40,7 +40,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 #endif
     return queueMap.end();
   }
-  SpacePacketReader currentPacket(packet);
+  SpacePacketReader currentPacket(packet, size);
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && CCSDS_DISTRIBUTOR_DEBUGGING == 1
   sif::info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex

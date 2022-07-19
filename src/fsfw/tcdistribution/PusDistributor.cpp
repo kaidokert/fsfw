@@ -1,23 +1,25 @@
-#include "fsfw/tcdistribution/PUSDistributor.h"
+#include "fsfw/tcdistribution/PusDistributor.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tcdistribution/CCSDSDistributorIF.h"
+#include "fsfw/tmtcpacket/PacketStorageHelper.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
 #define PUS_DISTRIBUTOR_DEBUGGING 0
 
-PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
+PusDistributor::PusDistributor(StorageManagerIF* store_, uint16_t setApid, object_id_t setObjectId,
                                object_id_t setPacketSource)
     : TcDistributor(setObjectId),
-      checker(setApid),
+      store(store_),
+      checker(setApid, ccsds::PacketType::TC),
       verifyChannel(),
       tcStatus(RETURN_FAILED),
       packetSource(setPacketSource) {}
 
-PUSDistributor::~PUSDistributor() = default;
+PusDistributor::~PusDistributor() = default;
 
-PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
+PusDistributor::TcMqMapIter PusDistributor::selectDestination() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && PUS_DISTRIBUTOR_DEBUGGING == 1
     store_address_t storeId = this->currentMessage.getStorageId());
     sif::debug << "PUSDistributor::handlePacket received: " << storeId.poolIndex << ", "
@@ -27,9 +29,18 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     if (this->currentPacket == nullptr) {
       return queueMapIt;
     }
-    this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
-    if (currentPacket->getWholeData() != nullptr) {
-      tcStatus = checker.checkPacket(currentPacket);
+    // TODO: Need to set the data
+    const uint8_t* packetPtr = nullptr;
+    size_t packetLen = 0;
+    if (store->getData(currentMessage.getStorageId(), &packetPtr, &packetLen) !=
+        HasReturnvaluesIF::RETURN_OK) {
+      return queueMapIt;
+    }
+    reader.setData(packetPtr, packetLen);
+    // this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
+    if (reader.getFullData() != nullptr) {
+      tcStatus =
+          checker.checkPacket(dynamic_cast<PacketCheckIF*>(&reader), reader.getFullPacketLen());
       if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
         const char* keyword = "unnamed error";
@@ -53,7 +64,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 #endif
 #endif
       }
-      uint32_t queue_id = currentPacket->getService();
+      uint32_t queue_id = reader.getService();
       queueMapIt = this->queueMap.find(queue_id);
     } else {
       tcStatus = PACKET_LOST;
@@ -77,7 +88,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     }
 }
 
-ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
+ReturnValue_t PusDistributor::registerService(AcceptsTelecommandsIF* service) {
   uint16_t serviceId = service->getIdentifier();
 #if PUS_DISTRIBUTOR_DEBUGGING == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -103,29 +114,27 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-MessageQueueId_t PUSDistributor::getRequestQueue() { return tcQueue->getId(); }
+MessageQueueId_t PusDistributor::getRequestQueue() { return tcQueue->getId(); }
 
-ReturnValue_t PUSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
+ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
   if (queueStatus != RETURN_OK) {
     tcStatus = queueStatus;
   }
   if (tcStatus != RETURN_OK) {
-    this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE, currentPacket,
-                                          tcStatus);
+    this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE, &reader, tcStatus);
     // A failed packet is deleted immediately after reporting,
     // otherwise it will block memory.
-    currentPacket->deletePacket();
+    store->deleteData(currentMessage.getStorageId());
     return RETURN_FAILED;
   } else {
-    this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS, currentPacket);
+    this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS, &reader);
     return RETURN_OK;
   }
 }
 
-uint16_t PUSDistributor::getIdentifier() { return checker.getApid(); }
+uint16_t PusDistributor::getIdentifier() { return checker.getApid(); }
 
-ReturnValue_t PUSDistributor::initialize() {
-  currentPacket = new TcPacketStoredPus();
+ReturnValue_t PusDistributor::initialize() {
   if (currentPacket == nullptr) {
     // Should not happen, memory allocation failed!
     return ObjectManagerIF::CHILD_INIT_FAILED;
@@ -137,7 +146,7 @@ ReturnValue_t PUSDistributor::initialize() {
     sif::error << "PUSDistributor::initialize: Packet source invalid" << std::endl;
     sif::error << " Make sure it exists and implements CCSDSDistributorIF!" << std::endl;
 #else
-    sif::printError("PUSDistributor::initialize: Packet source invalid\n");
+    sif::printError("PusDistributor::initialize: Packet source invalid\n");
     sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
 #endif
     return RETURN_FAILED;

@@ -3,7 +3,7 @@
 
 #include "fsfw/tmtcpacket/SpacePacketReader.h"
 
-class CFDPPacket : public SpacePacketReader {
+class CfdpReader : public SpacePacketReader {
  public:
   /**
    * This is the default constructor.
@@ -11,11 +11,11 @@ class CFDPPacket : public SpacePacketReader {
    * forwards the data pointer to the parent SpacePacketBase class.
    * @param setData	The position where the packet data lies.
    */
-  CFDPPacket(const uint8_t* setData);
+  explicit CfdpReader(const uint8_t* setData, size_t maxSize);
   /**
    * This is the empty default destructor.
    */
-  virtual ~CFDPPacket();
+  ~CfdpReader() override;
 
   /**
    * This is a debugging helper method that prints the whole packet content

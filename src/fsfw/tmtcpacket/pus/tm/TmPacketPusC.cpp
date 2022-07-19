@@ -58,8 +58,7 @@ ReturnValue_t TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service, u
 
   /* Only account for last 4 bytes for time reference field */
   timeRefField &= 0b1111;
-  tmData->dataField.versionTimeReferenceField =
-      (pus::PusVersion::PUS_C_VERSION << 4) | timeRefField;
+  tmData->dataField.versionTimeReferenceField = (ecss::PusVersion::PUS_C << 4) | timeRefField;
   tmData->dataField.serviceType = service;
   tmData->dataField.serviceSubtype = subservice;
   tmData->dataField.subcounterMsb = (packetSubcounter << 8) & 0xff;

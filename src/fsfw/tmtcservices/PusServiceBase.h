@@ -9,11 +9,12 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
-#include "fsfw/tmtcpacket/pus/tc.h"
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
 }
+
+class StorageManagerIF;
 
 /**
  * @defgroup pus_services PUS Service Framework
@@ -50,11 +51,12 @@ class PusServiceBase : public ExecutableObjectIF,
    * @param setServiceId
    * The Service Identifier as specified in ECSS PUS.
    */
-  PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId);
+  PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
+                 StorageManagerIF* store);
   /**
    * The destructor is empty.
    */
-  virtual ~PusServiceBase();
+  ~PusServiceBase() override;
   /**
    * @brief 	The handleRequest method shall handle any kind of Telecommand
    * 			Request immediately.
@@ -97,12 +99,12 @@ class PusServiceBase : public ExecutableObjectIF,
    * 			@c RETURN_FAILED else.
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
-  virtual uint16_t getIdentifier() override;
+  uint16_t getIdentifier() override;
   MessageQueueId_t getRequestQueue() override;
-  virtual ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
-  virtual void setTaskIF(PeriodicTaskIF* taskHandle) override;
-  virtual ReturnValue_t initializeAfterTaskCreation() override;
+  void setTaskIF(PeriodicTaskIF* taskHandle) override;
+  ReturnValue_t initializeAfterTaskCreation() override;
 
  protected:
   /**
@@ -141,7 +143,9 @@ class PusServiceBase : public ExecutableObjectIF,
    * The current Telecommand to be processed.
    * It is deleted after handleRequest was executed.
    */
-  TcPacketStoredPus currentPacket;
+  // TcPacketStoredPus currentPacket;
+  StorageManagerIF* store;
+  PusTcReader currentPacket;
 
   static object_id_t packetSource;
 

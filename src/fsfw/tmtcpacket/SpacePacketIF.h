@@ -1,6 +1,7 @@
 #ifndef FSFW_TMTCPACKET_SPACEPACKETIF_H
 #define FSFW_TMTCPACKET_SPACEPACKETIF_H
 
+#include <cstddef>
 #include <cstdint>
 
 #include "ccsds_header.h"
@@ -72,6 +73,10 @@ class SpacePacketIF {
     return ((packetId >> 8) & 0b111) | (packetId & 0xFF);
   }
 
+  /**
+   * Returns the CCSDS version number
+   * @return
+   */
   [[nodiscard]] virtual uint8_t getVersion() const {
     uint16_t packetId = getPacketId();
     return (packetId >> 13) & 0b111;
@@ -97,6 +102,14 @@ class SpacePacketIF {
   }
 
   [[nodiscard]] virtual uint16_t getSequenceCount() const { return getPacketSeqCtrl() & 0x3FFF; }
+
+  /**
+   * Returns the full packet length based of the packet data length field
+   * @return
+   */
+  [[nodiscard]] virtual size_t getFullPacketLen() const {
+    return sizeof(CCSDSPrimaryHeader) + getPacketDataLen() + 1;
+  }
 };
 
 #endif  // FSFW_TMTCPACKET_SPACEPACKETIF_H

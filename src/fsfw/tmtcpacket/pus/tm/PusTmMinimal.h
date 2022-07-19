@@ -1,8 +1,9 @@
 #ifndef FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 #define FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 
-#include "../../../returnvalues/HasReturnvaluesIF.h"
-#include "../../SpacePacketReader.h"
+#include "PusTmIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tmtcpacket/SpacePacketReader.h"
 
 struct timeval;
 class PacketTimestampInterpreterIF;
@@ -12,7 +13,7 @@ class PacketTimestampInterpreterIF;
  * This is required for handling TM packets with different APIDs with different
  * secondary headers.
  */
-class TmPacketMinimal : public SpacePacketReader {
+class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
  public:
   /**
    * This is the default constructor.
@@ -20,40 +21,40 @@ class TmPacketMinimal : public SpacePacketReader {
    * forwards the data pointer to the parent SpacePacketBase class.
    * @param set_address	The position where the packet data lies.
    */
-  TmPacketMinimal(const uint8_t* set_data);
+  explicit PusTmMinimal(uint8_t* data);
   /**
    * This is the empty default destructor.
    */
-  virtual ~TmPacketMinimal();
-  /**
-   * This is a getter for the packet's PUS Service ID, which is the second
-   * byte of the Data Field Header.
-   * @return	The packet's PUS Service ID.
-   */
-  uint8_t getService();
-  /**
-   * This is a getter for the packet's PUS Service Subtype, which is the
-   * third byte of the Data Field Header.
-   * @return	The packet's PUS Service Subtype.
-   */
-  uint8_t getSubService();
-  /**
-   * Returns the subcounter.
-   * @return the subcounter of the Data Field Header.
-   */
-  uint8_t getPacketSubcounter();
-  struct PUSTmMinimalHeader {
-    uint8_t version_type_ack;
-    uint8_t service_type;
-    uint8_t service_subtype;
-    uint8_t subcounter;
-  };
+  ~PusTmMinimal() override;
+
+  void setApid(uint16_t apid);
 
   ReturnValue_t getPacketTime(timeval* timestamp);
 
-  ReturnValue_t getPacketTimeRaw(const uint8_t** timePtr, uint32_t* size);
-
   static void setInterpretTimestampObject(PacketTimestampInterpreterIF* interpreter);
+  ReturnValue_t setData(uint8_t* dataPtr, size_t size, void* args) override;
+  [[nodiscard]] uint16_t getPacketId() const override;
+  [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
+  [[nodiscard]] uint16_t getPacketDataLen() const override;
+  [[nodiscard]] uint8_t getPusVersion() const override;
+  [[nodiscard]] uint8_t getService() const override;
+  [[nodiscard]] uint8_t getSubService() const override;
+  const uint8_t* getUserData(size_t& appDataLen) const override;
+  [[nodiscard]] uint16_t getUserDataSize() const override;
+  uint8_t getScTimeRefStatus() override;
+  uint16_t getMessageTypeCounter() override;
+  uint16_t getDestId() override;
+  const uint8_t* getTimestamp(size_t& timeStampLen) override;
+  size_t getTimestampLen() override;
+
+  // NOTE: Only PUS C compatible!
+  struct PusTmMinimalSecHeader {
+    uint8_t versionAndScTimeRefStatus;
+    uint8_t service;
+    uint8_t subservice;
+    uint16_t messageTypeCounter;
+  };
+
   /**
    * This struct defines the data structure of a PUS Telecommand Packet when
    * accessed via a pointer.
@@ -61,7 +62,7 @@ class TmPacketMinimal : public SpacePacketReader {
    */
   struct TmPacketMinimalPointer {
     CCSDSPrimaryHeader primary;
-    PUSTmMinimalHeader data_field;
+    PusTmMinimalSecHeader secHeader;
     uint8_t rest;
   };
   // Must include a checksum and is therefore at least one larger than the above struct.
@@ -74,7 +75,7 @@ class TmPacketMinimal : public SpacePacketReader {
    *
    * To be hardware-safe, all elements are of byte size.
    */
-  TmPacketMinimalPointer* tm_data;
+  TmPacketMinimalPointer* tmData;
 
   static PacketTimestampInterpreterIF* timestampInterpreter;
 };

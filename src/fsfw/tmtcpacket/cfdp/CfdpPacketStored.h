@@ -1,25 +1,25 @@
-#ifndef FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_
-#define FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_
+#ifndef FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_
+#define FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_
 
 #include "../pus/tc/TcPacketStoredBase.h"
-#include "CFDPPacket.h"
+#include "CfdpPacket.h"
 
-class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
+class CfdpPacketStored : public CfdpReader {
  public:
   /**
    * Create stored packet with existing data.
    * @param data
    * @param size
    */
-  CFDPPacketStored(const uint8_t* data, size_t size);
+  CfdpPacketStored(const uint8_t* data, size_t size);
   /**
    * Create stored packet from existing packet in store
    * @param setAddress
    */
-  CFDPPacketStored(store_address_t setAddress);
-  CFDPPacketStored();
+  explicit CfdpPacketStored(store_address_t setAddress);
+  CfdpPacketStored();
 
-  virtual ~CFDPPacketStored();
+  ~CfdpPacketStored() override;
 
   /**
    * Getter function for the raw data.
@@ -53,4 +53,4 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
   bool checkAndSetStore();
 };
 
-#endif /* FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_ */
+#endif /* FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_ */

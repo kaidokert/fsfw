@@ -45,7 +45,7 @@ class CFDPHandler : public ExecutableObjectIF,
    * The current CFDP packet to be processed.
    * It is deleted after handleRequest was executed.
    */
-  CFDPPacketStored currentPacket;
+  CfdpPacketStored currentPacket;
 
   static object_id_t packetSource;
 
