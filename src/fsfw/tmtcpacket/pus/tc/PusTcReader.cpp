@@ -21,10 +21,10 @@ ReturnValue_t PusTcReader::parseData() {
   }
   // Might become variable sized field in the future
   size_t secHeaderLen = ecss::PusTcDataFieldHeader::MIN_LEN;
-  pointers.secHeaderStart = pointers.spHeaderStart + sizeof(CCSDSPrimaryHeader);
+  pointers.secHeaderStart = pointers.spHeaderStart + ccsds::HEADER_LEN;
   // TODO: No support for spare bytes yet
   pointers.userDataStart = pointers.secHeaderStart + secHeaderLen;
-  appDataSize = size - (sizeof(CCSDSPrimaryHeader) + secHeaderLen);
+  appDataSize = size - (ccsds::HEADER_LEN + secHeaderLen);
   pointers.crcStart = pointers.userDataStart + appDataSize;
   return HasReturnvaluesIF::RETURN_OK;
 }
@@ -50,8 +50,8 @@ uint16_t PusTcReader::getErrorControl() const {
   return pointers.crcStart[0] << 8 | pointers.crcStart[1];
 }
 
-uint16_t PusTcReader::getPacketId() const { return spReader.getPacketId(); }
-uint16_t PusTcReader::getPacketSeqCtrl() const { return spReader.getPacketSeqCtrl(); }
+uint16_t PusTcReader::getPacketIdRaw() const { return spReader.getPacketIdRaw(); }
+uint16_t PusTcReader::getPacketSeqCtrlRaw() const { return spReader.getPacketSeqCtrlRaw(); }
 uint16_t PusTcReader::getPacketDataLen() const { return spReader.getPacketDataLen(); }
 uint8_t PusTcReader::getPusVersion() const { return spReader.getVersion(); }
 const uint8_t* PusTcReader::getFullData() { return pointers.spHeaderStart; }
@@ -64,6 +64,7 @@ ReturnValue_t PusTcReader::setData(uint8_t* pData, size_t size_, void* args) {
 }
 ReturnValue_t PusTcReader::setData(const uint8_t* data, size_t size_) {
   setData(const_cast<uint8_t*>(data), size_, nullptr);
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
 /*

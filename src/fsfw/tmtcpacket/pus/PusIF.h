@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "fsfw/tmtcpacket/SpacePacketIF.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 
 class PusIF : public SpacePacketIF {
  public:

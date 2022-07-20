@@ -1,13 +1,23 @@
 #include "SpacePacketCreator.h"
 
+#include <utility>
+
 #include "fsfw/serialize/SerializeAdapter.h"
 
-SpacePacketCreator::SpacePacketCreator(SpacePacketParams &params_) : params(params_) {
+SpacePacketCreator::SpacePacketCreator(SpacePacketParams params_) : params(std::move(params_)) {
   checkFieldValidity();
 }
 
-uint16_t SpacePacketCreator::getPacketId() const { return params.packetId.raw(); }
-uint16_t SpacePacketCreator::getPacketSeqCtrl() const { return params.packetSeqCtrl.raw(); }
+SpacePacketCreator::SpacePacketCreator(ccsds::PacketType packetType, bool secHeaderFlag,
+                                       uint16_t apid, ccsds::SequenceFlags seqFlags,
+                                       uint16_t seqCount, uint16_t dataLen, uint8_t version)
+    : params(SpacePacketParams(PacketId(packetType, secHeaderFlag, apid),
+                               PacketSeqCtrl(seqFlags, seqCount), dataLen)) {
+  params.version = version;
+}
+
+uint16_t SpacePacketCreator::getPacketIdRaw() const { return params.packetId.raw(); }
+uint16_t SpacePacketCreator::getPacketSeqCtrlRaw() const { return params.packetSeqCtrl.raw(); }
 uint16_t SpacePacketCreator::getPacketDataLen() const { return params.dataLen; }
 
 ReturnValue_t SpacePacketCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,

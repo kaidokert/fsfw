@@ -1,7 +1,7 @@
 #ifndef FSFW_TMTCPACKET_SPACEPACKETREADERIF_H
 #define FSFW_TMTCPACKET_SPACEPACKETREADERIF_H
 
-#include "SpacePacketIF.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 
 class ReadablePacketIF {
  public:

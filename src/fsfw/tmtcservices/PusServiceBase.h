@@ -52,7 +52,7 @@ class PusServiceBase : public ExecutableObjectIF,
    * The Service Identifier as specified in ECSS PUS.
    */
   PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
-                 StorageManagerIF* store);
+                 StorageManagerIF* ipcStore);
   /**
    * The destructor is empty.
    */
@@ -144,7 +144,7 @@ class PusServiceBase : public ExecutableObjectIF,
    * It is deleted after handleRequest was executed.
    */
   // TcPacketStoredPus currentPacket;
-  StorageManagerIF* store;
+  StorageManagerIF* ipcStore;
   PusTcReader currentPacket;
 
   static object_id_t packetSource;

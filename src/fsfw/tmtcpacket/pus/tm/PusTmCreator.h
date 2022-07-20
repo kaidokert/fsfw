@@ -16,16 +16,18 @@ struct PusTmParams {
 class PusTmCreator : public PusIF {
  public:
   ~PusTmCreator() override = default;
-  explicit PusTmCreator(PusTmParams params);
+  explicit PusTmCreator(PusTmParams& params);
 
-  [[nodiscard]] uint16_t getPacketId() const override;
-  [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
+  [[nodiscard]] uint16_t getPacketIdRaw() const override;
+  [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
   [[nodiscard]] uint8_t getPusVersion() const override;
   [[nodiscard]] uint8_t getService() const override;
   [[nodiscard]] uint8_t getSubService() const override;
+  const uint8_t* getUserData(size_t& appDataLen) const override;
+  [[nodiscard]] uint16_t getUserDataSize() const override;
 
  private:
-  PusTmParams params;
+  PusTmParams& params;
 };
 #endif  // FSFW_TMTCPACKET_TMPACKETCREATOR_H

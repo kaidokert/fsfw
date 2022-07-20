@@ -5,7 +5,7 @@
 
 #include "PusTcIF.h"
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 /**
  * This class is the basic data handler for any ECSS PUS Telecommand packet.
@@ -40,8 +40,8 @@ class PusTcReader : public PusTcIF, public ReadablePacketIF, public Redirectable
    * to the screen.
    */
   // void print();
-  [[nodiscard]] uint16_t getPacketId() const override;
-  [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
+  [[nodiscard]] uint16_t getPacketIdRaw() const override;
+  [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
   [[nodiscard]] uint8_t getPusVersion() const override;
   [[nodiscard]] uint8_t getAcknowledgeFlags() const override;

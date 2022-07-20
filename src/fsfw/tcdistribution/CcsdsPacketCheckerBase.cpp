@@ -1,7 +1,7 @@
 #include "CcsdsPacketCheckerBase.h"
 
 #include "fsfw/tcdistribution/definitions.h"
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 CcsdsPacketCheckerBase::CcsdsPacketCheckerBase(uint16_t apid, ccsds::PacketType packetType_,
                                                uint8_t ccsdsVersion_)

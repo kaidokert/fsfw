@@ -5,8 +5,9 @@
 
 #include "fsfw/tmtcpacket/pus/PacketTimestampInterpreterIF.h"
 
+PusTmMinimal::PusTmMinimal(mintm::MinimalPusTm* data) { tmData = data; }
 PusTmMinimal::PusTmMinimal(uint8_t* data) {
-  this->tmData = reinterpret_cast<TmPacketMinimalPointer*>(data);
+  this->tmData = reinterpret_cast<mintm::MinimalPusTm*>(data);
 }
 
 PusTmMinimal::~PusTmMinimal() = default;
@@ -27,8 +28,8 @@ void PusTmMinimal::setInterpretTimestampObject(PacketTimestampInterpreterIF* int
 PacketTimestampInterpreterIF* PusTmMinimal::timestampInterpreter = nullptr;
 // TODO: Implement all of this
 ReturnValue_t PusTmMinimal::setData(uint8_t* dataPtr, size_t size, void* args) { return 0; }
-uint16_t PusTmMinimal::getPacketId() const { return 0; }
-uint16_t PusTmMinimal::getPacketSeqCtrl() const { return 0; }
+uint16_t PusTmMinimal::getPacketIdRaw() const { return 0; }
+uint16_t PusTmMinimal::getPacketSeqCtrlRaw() const { return 0; }
 uint16_t PusTmMinimal::getPacketDataLen() const { return 0; }
 uint8_t PusTmMinimal::getPusVersion() const { return 0; }
 uint8_t PusTmMinimal::getService() const { return tmData->secHeader.service; }
@@ -36,7 +37,9 @@ uint8_t PusTmMinimal::getSubService() const { return tmData->secHeader.subservic
 const uint8_t* PusTmMinimal::getUserData(size_t& appDataLen) const { return nullptr; }
 uint16_t PusTmMinimal::getUserDataSize() const { return 0; }
 uint8_t PusTmMinimal::getScTimeRefStatus() { return 0; }
-uint16_t PusTmMinimal::getMessageTypeCounter() { return tmData->secHeader.messageTypeCounter; }
+uint16_t PusTmMinimal::getMessageTypeCounter() {
+  return (tmData->secHeader.messageTypeH << 8) | tmData->secHeader.messageTypeL;
+}
 uint16_t PusTmMinimal::getDestId() { return 0; }
 const uint8_t* PusTmMinimal::getTimestamp(size_t& timeStampLen) { return nullptr; }
 size_t PusTmMinimal::getTimestampLen() { return 0; }

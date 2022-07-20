@@ -1,4 +1,4 @@
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "SpacePacketReader.h"
 
 #include <cstring>
 
@@ -18,27 +18,24 @@ ReturnValue_t SpacePacketReader::checkLength() const {
 
 SpacePacketReader::~SpacePacketReader() = default;
 
-inline uint16_t SpacePacketReader::getPacketId() const {
-  return ((spHeader->packetIdHAndVersion) << 8) + spHeader->packetIdL;
-}
+inline uint16_t SpacePacketReader::getPacketIdRaw() const { return ccsds::getPacketId(*spHeader); }
 
 const uint8_t* SpacePacketReader::getPacketData() { return packetDataField; }
 
 ReturnValue_t SpacePacketReader::setData(uint8_t* pData, size_t maxSize_, void* args) {
   setInternalFields(pData, maxSize_);
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
-uint16_t SpacePacketReader::getPacketSeqCtrl() const {
-  return (spHeader->packetSeqCtrlH << 8) + spHeader->packetSeqCtrlL;
+uint16_t SpacePacketReader::getPacketSeqCtrlRaw() const {
+  return ccsds::getPacketSeqCtrl(*spHeader);
 }
 
-uint16_t SpacePacketReader::getPacketDataLen() const {
-  return (spHeader->packetLenH << 8) | spHeader->packetIdL;
-}
+uint16_t SpacePacketReader::getPacketDataLen() const { return ccsds::getPacketLen(*spHeader); }
 void SpacePacketReader::setInternalFields(const uint8_t* data, size_t maxSize_) {
   maxSize = maxSize_;
-  spHeader = reinterpret_cast<const CCSDSPrimaryHeader*>(data);
-  packetDataField = data + sizeof(CCSDSPrimaryHeader);
+  spHeader = reinterpret_cast<const ccsds::PrimaryHeader*>(data);
+  packetDataField = data + ccsds::HEADER_LEN;
 }
 const uint8_t* SpacePacketReader::getFullData() {
   return reinterpret_cast<const uint8_t*>(spHeader);

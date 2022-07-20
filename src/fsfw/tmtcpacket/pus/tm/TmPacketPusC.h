@@ -5,7 +5,7 @@
 #include "fsfw/objectmanager/SystemObjectIF.h"
 #include "fsfw/timemanager/Clock.h"
 #include "fsfw/timemanager/TimeStamperIF.h"
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
@@ -35,7 +35,7 @@ struct PUSTmDataFieldHeaderPusC {
  * @ingroup tmtcpackets
  */
 struct TmPacketPointerPusC {
-  CCSDSPrimaryHeader primary;
+  ccsds::PrimaryHeader primary;
   PUSTmDataFieldHeaderPusC dataField;
   uint8_t data;
 };
@@ -52,7 +52,7 @@ class TmPacketPusC : public TmPacketBase {
    * This constant defines the minimum size of a valid PUS Telemetry Packet.
    */
   static const uint32_t TM_PACKET_MIN_SIZE =
-      (sizeof(CCSDSPrimaryHeader) + sizeof(PUSTmDataFieldHeaderPusC) + 2);
+      ccsds::HEADER_LEN + sizeof(PUSTmDataFieldHeaderPusC) + 2;
   //! Maximum size of a TM Packet in this mission.
   static const uint32_t MISSION_TM_PACKET_MAX_SIZE = fsfwconfig::FSFW_MAX_TM_PACKET_SIZE;
 

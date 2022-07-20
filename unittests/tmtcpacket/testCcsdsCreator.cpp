@@ -2,11 +2,12 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
 
-#include "fsfw/tmtcpacket/SpacePacketCreator.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 
 TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
-  SpacePacketCreator base = SpacePacketCreator(ccsds::PacketType::TC, true, 0x02,
-                                               ccsds::SequenceFlags::FIRST_SEGMENT, 0x34, 0x16);
+  auto params = SpacePacketParams(PacketId(ccsds::PacketType::TC, true, 0x02),
+                                  PacketSeqCtrl(ccsds::SequenceFlags::FIRST_SEGMENT, 0x34), 0x16);
+  SpacePacketCreator base = SpacePacketCreator(params);
   std::array<uint8_t, 6> buf{};
   uint8_t* bufPtr = buf.data();
   size_t serLen = 0;
@@ -27,7 +28,7 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
     REQUIRE(base.getSequenceCount() == 0x34);
     REQUIRE(base.getPacketDataLen() == 0x16);
     REQUIRE(base.getPacketType() == ccsds::PacketType::TC);
-    REQUIRE(base.getPacketId() == 0x1802);
+    REQUIRE(base.getPacketIdRaw() == 0x1802);
     REQUIRE(base.getSerializedSize() == 6);
   }
 
@@ -71,17 +72,15 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   }
 
   SECTION("Invalid APID") {
-    SpacePacketCreator invalid =
-        SpacePacketCreator(PacketId(ccsds::PacketType::TC, true, 0xFFFF),
-                           PacketSeqCtrl(ccsds::SequenceFlags::FIRST_SEGMENT, 0x34), 0x16);
+    SpacePacketCreator invalid = SpacePacketCreator(
+        ccsds::PacketType::TC, true, 0xFFFF, ccsds::SequenceFlags::FIRST_SEGMENT, 0x34, 0x16);
     REQUIRE(not invalid.isValid());
     REQUIRE(invalid.serialize(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
   }
 
   SECTION("Invalid Seq Count") {
-    SpacePacketCreator invalid =
-        SpacePacketCreator(PacketId(ccsds::PacketType::TC, true, 0x02),
-                           PacketSeqCtrl(ccsds::SequenceFlags::FIRST_SEGMENT, 0xFFFF), 0x16);
+    SpacePacketCreator invalid = SpacePacketCreator(
+        ccsds::PacketType::TC, true, 0x02, ccsds::SequenceFlags::FIRST_SEGMENT, 0xFFFF, 0x16);
     REQUIRE(not invalid.isValid());
     REQUIRE(invalid.serialize(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
   }

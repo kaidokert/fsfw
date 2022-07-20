@@ -22,8 +22,8 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, PusTcReader*
     return;
   }
   PusVerificationMessage message(set_report_id, currentPacket->getAcknowledgeFlags(),
-                                 currentPacket->getPacketId(), currentPacket->getPacketSeqCtrl(), 0,
-                                 set_step);
+                                 currentPacket->getPacketIdRaw(),
+                                 currentPacket->getPacketSeqCtrlRaw(), 0, set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -59,9 +59,9 @@ void VerificationReporter::sendFailureReport(uint8_t report_id, PusTcReader* cur
   if (currentPacket == nullptr) {
     return;
   }
-  PusVerificationMessage message(report_id, currentPacket->getAcknowledgeFlags(),
-                                 currentPacket->getPacketId(), currentPacket->getPacketSeqCtrl(),
-                                 error_code, step, parameter1, parameter2);
+  PusVerificationMessage message(
+      report_id, currentPacket->getAcknowledgeFlags(), currentPacket->getPacketIdRaw(),
+      currentPacket->getPacketSeqCtrlRaw(), error_code, step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

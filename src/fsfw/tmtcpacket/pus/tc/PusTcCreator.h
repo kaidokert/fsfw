@@ -2,8 +2,8 @@
 #define FSFW_TMTCPACKET_TCPACKETDESERIALIZER_H
 
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
-#include "fsfw/tmtcpacket/SpacePacketCreator.h"
-#include "fsfw/tmtcpacket/SpacePacketIF.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 #include "fsfw/tmtcpacket/pus/definitions.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
 
@@ -29,8 +29,8 @@ class PusTcCreator : public PusTcIF, public SerializeIF {
   [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override;
-  [[nodiscard]] uint16_t getPacketId() const override;
-  [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
+  [[nodiscard]] uint16_t getPacketIdRaw() const override;
+  [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
   [[nodiscard]] uint8_t getPusVersion() const override;
   [[nodiscard]] uint8_t getAcknowledgeFlags() const override;

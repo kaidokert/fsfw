@@ -2,7 +2,7 @@
 #define FSFW_TESTS_CCSDSPACKETCHECKERBASE_H
 
 #include "CcsdsPacketCheckIF.h"
-#include "fsfw/tmtcpacket/SpacePacketIF.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 
 class CcsdsPacketCheckerBase : public CcsdsPacketCheckIF, public HasReturnvaluesIF {
  public:

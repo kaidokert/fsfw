@@ -4,7 +4,7 @@
 #include "fsfw/objectmanager/SystemObjectIF.h"
 #include "fsfw/timemanager/Clock.h"
 #include "fsfw/timemanager/TimeStamperIF.h"
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 namespace Factory {
 

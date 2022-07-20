@@ -12,8 +12,8 @@ object_id_t PusServiceBase::packetSource = 0;
 object_id_t PusServiceBase::packetDestination = 0;
 
 PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
-                               StorageManagerIF* store_)
-    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId), store(store_) {
+                               StorageManagerIF* ipcStore_)
+    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId), ipcStore(ipcStore_) {
   requestQueue = QueueFactory::instance()->createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
 }
 
@@ -52,7 +52,7 @@ void PusServiceBase::handleRequestQueue() {
     if (status == RETURN_OK) {
       const uint8_t* dataPtr;
       size_t dataLen = 0;
-      result = store->getData(message.getStorageId(), &dataPtr, &dataLen);
+      result = ipcStore->getData(message.getStorageId(), &dataPtr, &dataLen);
       if (result != HasReturnvaluesIF::RETURN_OK) {
         // TODO: Warning?
       }
@@ -73,7 +73,7 @@ void PusServiceBase::handleRequestQueue() {
                                                &this->currentPacket, result, 0, errorParameter1,
                                                errorParameter2);
       }
-      store->deleteData(message.getStorageId());
+      ipcStore->deleteData(message.getStorageId());
       errorParameter1 = 0;
       errorParameter2 = 0;
     } else if (status == MessageQueueIF::EMPTY) {
@@ -112,6 +112,12 @@ ReturnValue_t PusServiceBase::initialize() {
   }
   this->requestQueue->setDefaultDestination(destService->getReportReceptionQueue());
   distributor->registerService(this);
+  if (ipcStore == nullptr) {
+    ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+    if (ipcStore == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+  }
   return HasReturnvaluesIF::RETURN_OK;
 }
 

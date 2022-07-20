@@ -3,10 +3,39 @@
 
 #include "PusTmIF.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 struct timeval;
+
 class PacketTimestampInterpreterIF;
+
+namespace mintm {
+
+// NOTE: Only PUS C compatible!
+struct PusTmMinimalSecHeader {
+  uint8_t versionAndScTimeRefStatus;
+  uint8_t service;
+  uint8_t subservice;
+  uint8_t messageTypeH;
+  uint8_t messageTypeL;
+};
+
+/**
+ * This struct defines the data structure of a PUS Telecommand Packet when
+ * accessed via a pointer.
+ * @ingroup tmtcpackets
+ */
+struct MinimalPusTm {
+  ccsds::PrimaryHeader primary;
+  PusTmMinimalSecHeader secHeader;
+  uint8_t rest;
+};
+
+// Must include a checksum and is therefore at least one larger than the above struct.
+static const uint16_t MINIMUM_SIZE = sizeof(MinimalPusTm) + 1;
+
+}  // namespace mintm
+
 /**
  * This is a minimal version of a PUS TmPacket without any variable field, or,
  * in other words with Service Type, Subtype and subcounter only.
@@ -15,6 +44,7 @@ class PacketTimestampInterpreterIF;
  */
 class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
  public:
+  explicit PusTmMinimal(mintm::MinimalPusTm* data);
   /**
    * This is the default constructor.
    * It sets its internal data pointer to the address passed and also
@@ -33,8 +63,8 @@ class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
 
   static void setInterpretTimestampObject(PacketTimestampInterpreterIF* interpreter);
   ReturnValue_t setData(uint8_t* dataPtr, size_t size, void* args) override;
-  [[nodiscard]] uint16_t getPacketId() const override;
-  [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
+  [[nodiscard]] uint16_t getPacketIdRaw() const override;
+  [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
   [[nodiscard]] uint8_t getPusVersion() const override;
   [[nodiscard]] uint8_t getService() const override;
@@ -47,27 +77,6 @@ class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
   const uint8_t* getTimestamp(size_t& timeStampLen) override;
   size_t getTimestampLen() override;
 
-  // NOTE: Only PUS C compatible!
-  struct PusTmMinimalSecHeader {
-    uint8_t versionAndScTimeRefStatus;
-    uint8_t service;
-    uint8_t subservice;
-    uint16_t messageTypeCounter;
-  };
-
-  /**
-   * This struct defines the data structure of a PUS Telecommand Packet when
-   * accessed via a pointer.
-   * @ingroup tmtcpackets
-   */
-  struct TmPacketMinimalPointer {
-    CCSDSPrimaryHeader primary;
-    PusTmMinimalSecHeader secHeader;
-    uint8_t rest;
-  };
-  // Must include a checksum and is therefore at least one larger than the above struct.
-  static const uint16_t MINIMUM_SIZE = sizeof(TmPacketMinimalPointer) + 1;
-
  protected:
   /**
    * A pointer to a structure which defines the data structure of
@@ -75,7 +84,7 @@ class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
    *
    * To be hardware-safe, all elements are of byte size.
    */
-  TmPacketMinimalPointer* tmData;
+  mintm::MinimalPusTm* tmData;
 
   static PacketTimestampInterpreterIF* timestampInterpreter;
 };

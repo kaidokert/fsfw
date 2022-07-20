@@ -51,9 +51,9 @@ ReturnValue_t PusTcCreator::deSerialize(const uint8_t **buffer, size_t *size,
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-uint16_t PusTcCreator::getPacketId() const { return spCreator.getPacketId(); }
+uint16_t PusTcCreator::getPacketIdRaw() const { return spCreator.getPacketIdRaw(); }
 
-uint16_t PusTcCreator::getPacketSeqCtrl() const { return spCreator.getPacketSeqCtrl(); }
+uint16_t PusTcCreator::getPacketSeqCtrlRaw() const { return spCreator.getPacketSeqCtrlRaw(); }
 
 uint16_t PusTcCreator::getPacketDataLen() const { return spCreator.getPacketDataLen(); }
 

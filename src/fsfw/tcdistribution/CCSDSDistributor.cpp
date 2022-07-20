@@ -2,7 +2,7 @@
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 #define CCSDS_DISTRIBUTOR_DEBUGGING 0
 

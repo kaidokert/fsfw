@@ -1,13 +1,12 @@
 #ifndef FSFW_TMTCPACKET_SPACEPACKETBASE_H_
 #define FSFW_TMTCPACKET_SPACEPACKETBASE_H_
 
-#include <fsfw/tmtcpacket/RedirectableDataPointerIF.h>
-
 #include <cstddef>
 
-#include "ReadablePacketIF.h"
-#include "ccsds_header.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/tmtcpacket/ReadablePacketIF.h"
+#include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
+#include "fsfw/tmtcpacket/ccsds/defs.h"
 
 /**
  * @defgroup tmtcpackets Space Packets
@@ -46,8 +45,8 @@ class SpacePacketReader : public SpacePacketIF,
    */
   ~SpacePacketReader() override;
 
-  [[nodiscard]] uint16_t getPacketId() const override;
-  [[nodiscard]] uint16_t getPacketSeqCtrl() const override;
+  [[nodiscard]] uint16_t getPacketIdRaw() const override;
+  [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
 
   const uint8_t* getFullData() override;
@@ -70,7 +69,7 @@ class SpacePacketReader : public SpacePacketIF,
    * the packet header.
    * To be hardware-safe, all elements are of byte size.
    */
-  const CCSDSPrimaryHeader* spHeader{};
+  const ccsds::PrimaryHeader* spHeader{};
   const uint8_t* packetDataField{};
   size_t maxSize = 0;
 

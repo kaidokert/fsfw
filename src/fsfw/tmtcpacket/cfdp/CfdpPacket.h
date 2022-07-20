@@ -1,7 +1,7 @@
 #ifndef FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKET_H_
 #define FSFW_INC_FSFW_TMTCPACKET_CFDP_CFDPPACKET_H_
 
-#include "fsfw/tmtcpacket/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 class CfdpReader : public SpacePacketReader {
  public:

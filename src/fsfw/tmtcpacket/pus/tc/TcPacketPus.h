@@ -6,7 +6,7 @@
 #include "../definitions.h"
 #include "PusTcReader.h"
 #include "fsfw/FSFW.h"
-#include "fsfw/tmtcpacket/ccsds_header.h"
+#include "fsfw/tmtcpacket/ccsds/defs.h"
 
 /**
  * This struct defines the data structure of a PUS Telecommand A packet when

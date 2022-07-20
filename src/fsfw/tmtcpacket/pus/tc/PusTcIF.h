@@ -45,7 +45,7 @@ class PusTcIF : public PusIF {
  public:
   ~PusTcIF() override = default;
   static const size_t MIN_LEN =
-      (sizeof(CCSDSPrimaryHeader) + ecss::PusTcDataFieldHeader::MIN_LEN + 2);
+      (sizeof(ccsds::PrimaryHeader) + ecss::PusTcDataFieldHeader::MIN_LEN + 2);
 
   /**
    * This is a getter for the packet's Ack field, which are the lowest four

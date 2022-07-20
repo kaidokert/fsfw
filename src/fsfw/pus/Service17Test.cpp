@@ -5,33 +5,25 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 
-Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId)
-    : PusServiceBase(objectId, apid, serviceId), packetSubCounter(0) {}
+Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId,
+                             StorageManagerIF* tmStore, StorageManagerIF* ipcStore,
+                             InternalErrorReporterIF* errReporter)
+    : PusServiceBase(objectId, apid, serviceId, ipcStore),
+      helper(tmStore, MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, errReporter),
+      packetSubCounter(0) {}
 
-Service17Test::~Service17Test() {}
+Service17Test::~Service17Test() = default;
 
 ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   switch (subservice) {
     case Subservice::CONNECTION_TEST: {
-#if FSFW_USE_PUS_C_TELEMETRY == 0
-      TmPacketStoredPusA connectionPacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT,
-                                          packetSubCounter++);
-#else
-      TmPacketStoredPusC connectionPacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT,
-                                          packetSubCounter++);
-#endif
-      connectionPacket.sendPacket(requestQueue->getDefaultDestination(), requestQueue->getId());
+      helper.preparePacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter);
+      helper.sendPacket();
       return HasReturnvaluesIF::RETURN_OK;
     }
     case Subservice::EVENT_TRIGGER_TEST: {
-#if FSFW_USE_PUS_C_TELEMETRY == 0
-      TmPacketStoredPusA connectionPacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT,
-                                          packetSubCounter++);
-#else
-      TmPacketStoredPusC connectionPacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT,
-                                          packetSubCounter++);
-#endif
-      connectionPacket.sendPacket(requestQueue->getDefaultDestination(), requestQueue->getId());
+      helper.preparePacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter++);
+      helper.sendPacket();
       triggerEvent(TEST, 1234, 5678);
       return RETURN_OK;
     }
@@ -41,3 +33,12 @@ ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
 }
 
 ReturnValue_t Service17Test::performService() { return HasReturnvaluesIF::RETURN_OK; }
+
+ReturnValue_t Service17Test::initialize() {
+  ReturnValue_t result = PusServiceBase::initialize();
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  helper.setMsgDestination(requestQueue->getDefaultDestination());
+  helper.setMsgSource(requestQueue->getId());
+  if (tm) }

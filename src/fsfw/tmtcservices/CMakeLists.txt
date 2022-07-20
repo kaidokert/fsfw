@@ -6,4 +6,5 @@ target_sources(
           TmTcBridge.cpp
           TmTcMessage.cpp
           VerificationReporter.cpp
-          SpacePacketParser.cpp)
+          SpacePacketParser.cpp
+          TmStoreHelper.cpp)
