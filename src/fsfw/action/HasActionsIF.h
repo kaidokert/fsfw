@@ -58,7 +58,7 @@ class HasActionsIF {
    * -@c EXECUTION_FINISHED Finish reply will be generated
    * -@c Not RETURN_OK Step failure reply will be generated
    */
-  virtual ReturnValue_t executeAction(Action* action, MessageQueueId_t commandedBy) = 0;
+  virtual ReturnValue_t executeAction(Action* action) = 0;
 };
 
 #endif /* FSFW_ACTION_HASACTIONSIF_H_ */

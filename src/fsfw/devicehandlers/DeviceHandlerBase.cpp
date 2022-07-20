@@ -1263,7 +1263,7 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t r
   }
 }
 
-ReturnValue_t DeviceHandlerBase::executeAction(Action *action, MessageQueueId_t commandedBy) {
+ReturnValue_t DeviceHandlerBase::executeAction(Action *action) {
   ReturnValue_t result = acceptExternalDeviceCommands();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
@@ -1277,7 +1277,7 @@ ReturnValue_t DeviceHandlerBase::executeAction(Action *action, MessageQueueId_t 
     result = action->handle();
   }
   if (result == RETURN_OK) {
-    iter->second.sendReplyTo = commandedBy;
+    iter->second.sendReplyTo = action->commandedBy;
     iter->second.isExecuting = true;
     cookieInfo.pendingCommand = iter;
     cookieInfo.state = COOKIE_WRITE_READY;

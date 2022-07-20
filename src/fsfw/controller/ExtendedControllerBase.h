@@ -50,7 +50,7 @@ class ExtendedControllerBase : public ControllerBase,
   void handleQueue() override;
 
   /* HasActionsIF overrides */
-  virtual ReturnValue_t executeAction(Action* actionId, MessageQueueId_t commandedBy) override;
+  virtual ReturnValue_t executeAction(Action* actionId) override;
 
   /* HasLocalDatapoolIF overrides */
   virtual LocalDataPoolManager* getHkManagerHandle() override;

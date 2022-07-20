@@ -24,6 +24,8 @@ class Action: public SerializeIF {
 #endif
   ActionId_t getId();
 
+  MessageQueueId_t commandedBy;
+
   virtual ReturnValue_t handle() = 0;
 
   void registerParameter(ParameterIF *parameter);
@@ -40,6 +42,7 @@ class Action: public SerializeIF {
 
  private:
   ActionId_t id;
+  
 #ifdef FSFW_INTROSPECTION
   const char *name;
 #endif

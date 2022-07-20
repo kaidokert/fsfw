@@ -37,7 +37,7 @@ class ActionHelperOwnerMockBase : public HasActionsIF {
 
   ActionHelper* getActionHelper() override { return &actionHelper; }
 
-  ReturnValue_t executeAction(Action* action, MessageQueueId_t commandedBy) override {
+  ReturnValue_t executeAction(Action* action) override {
     executeActionCalled = true;
     if (size > MAX_SIZE) {
       return 0xAFFE;

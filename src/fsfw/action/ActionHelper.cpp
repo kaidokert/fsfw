@@ -73,7 +73,6 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
   }
   auto actionIter = actionMap.find(actionId);
   if (actionIter == actionMap.end()){
-    puts("end");
     CommandMessage reply;
     ActionMessage::setStepReply(&reply, actionId, 0, HasActionsIF::INVALID_ACTION_ID);
     queueToUse->sendMessage(commandedBy, &reply);
@@ -83,14 +82,15 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
   Action* action = actionIter->second;
   result = action->deSerialize(&dataPtr, &size, SerializeIF::Endianness::NETWORK);
   if ((result != HasReturnvaluesIF::RETURN_OK) || (size != 0)){ //TODO write unittest for second condition
-  printf("serialze %i, %x\n", size, result);
     CommandMessage reply;
     ActionMessage::setStepReply(&reply, actionId, 0, HasActionsIF::INVALID_PARAMETERS);
     queueToUse->sendMessage(commandedBy, &reply);
     ipcStore->deleteData(dataAddress);
     return;
   }
-  result = action->handle();
+  //TODO call action->check()
+  action->commandedBy = commandedBy;
+  result = owner->executeAction(action);
   ipcStore->deleteData(dataAddress);
   if (result == HasActionsIF::EXECUTION_FINISHED) {
     CommandMessage reply;

@@ -8,7 +8,7 @@ ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId, object_id_t
 
 ExtendedControllerBase::~ExtendedControllerBase() {}
 
-ReturnValue_t ExtendedControllerBase::executeAction(Action *action, MessageQueueId_t commandedBy) {
+ReturnValue_t ExtendedControllerBase::executeAction(Action *action) {
   /* Needs to be overriden and implemented by child class. */
   return HasReturnvaluesIF::RETURN_OK;
 }
