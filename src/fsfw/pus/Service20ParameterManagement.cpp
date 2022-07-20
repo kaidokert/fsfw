@@ -137,7 +137,7 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(CommandMessage* m
   if (parameterDataLen == 0) {
     return CommandingServiceBase::INVALID_TC;
   }
-  ReturnValue_t result = IPCStore->getFreeElement(&storeAddress, parameterDataLen, &storePointer);
+  ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, parameterDataLen, &storePointer);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
@@ -169,7 +169,7 @@ ReturnValue_t Service20ParameterManagement::handleReply(const CommandMessage* re
 
   switch (replyId) {
     case ParameterMessage::REPLY_PARAMETER_DUMP: {
-      ConstAccessorPair parameterData = IPCStore->getData(ParameterMessage::getStoreId(reply));
+      ConstAccessorPair parameterData = ipcStore->getData(ParameterMessage::getStoreId(reply));
       if (parameterData.first != HasReturnvaluesIF::RETURN_OK) {
         return HasReturnvaluesIF::RETURN_FAILED;
       }

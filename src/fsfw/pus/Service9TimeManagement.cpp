@@ -9,7 +9,7 @@ Service9TimeManagement::Service9TimeManagement(object_id_t objectId, uint16_t ap
                                                uint8_t serviceId)
     : PusServiceBase(objectId, apid, serviceId) {}
 
-Service9TimeManagement::~Service9TimeManagement() {}
+Service9TimeManagement::~Service9TimeManagement() = default;
 
 ReturnValue_t Service9TimeManagement::performService() { return RETURN_OK; }
 
@@ -25,7 +25,9 @@ ReturnValue_t Service9TimeManagement::handleRequest(uint8_t subservice) {
 
 ReturnValue_t Service9TimeManagement::setTime() {
   Clock::TimeOfDay_t timeToSet;
-  TimePacket timePacket(currentPacket.getUserData(), currentPacket.getUserDataSize());
+  size_t userDataLen = 0;
+  const uint8_t* timeData = currentPacket.getUserData(userDataLen);
+  TimePacket timePacket(timeData, userDataLen);
   ReturnValue_t result =
       CCSDSTime::convertFromCcsds(&timeToSet, timePacket.getTime(), timePacket.getTimeSize());
   if (result != RETURN_OK) {

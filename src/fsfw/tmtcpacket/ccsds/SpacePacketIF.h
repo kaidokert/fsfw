@@ -18,7 +18,7 @@ class SpacePacketIF {
   /**
    * This is the minimum size of a SpacePacket.
    */
-  static const uint16_t MINIMUM_SIZE = sizeof(ccsds::PrimaryHeader) + CRC_SIZE;
+  static const uint16_t MIN_CCSDS_SIZE = sizeof(ccsds::PrimaryHeader) + CRC_SIZE;
 
   virtual ~SpacePacketIF() = default;
 

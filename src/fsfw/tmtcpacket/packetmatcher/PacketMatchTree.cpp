@@ -31,7 +31,7 @@ PacketMatchTree::~PacketMatchTree() = default;
 
 ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t subtype) {
   // We assume adding APID is always requested.
-  PusTmMinimal::TmPacketMinimalPointer data{};
+  mintm::MinimalPusTm data{};
   data.secHeader.service = type;
   data.secHeader.subservice = subtype;
   PusTmMinimal testPacket((uint8_t*)&data);
@@ -122,7 +122,7 @@ ReturnValue_t PacketMatchTree::findOrInsertMatch(iterator startAt, VALUE_T test,
 }
 
 ReturnValue_t PacketMatchTree::removeMatch(uint16_t apid, uint8_t type, uint8_t subtype) {
-  PusTmMinimal::TmPacketMinimalPointer data{};
+  mintm::MinimalPusTm data{};
   data.secHeader.service = type;
   data.secHeader.subservice = subtype;
   PusTmMinimal testPacket((uint8_t*)&data);

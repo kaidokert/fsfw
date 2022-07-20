@@ -2,6 +2,8 @@
 #define FSFW_TMTCSERVICES_PUSSERVICEBASE_H_
 
 #include "AcceptsTelecommandsIF.h"
+#include "TmSendHelper.h"
+#include "TmStoreHelper.h"
 #include "VerificationCodes.h"
 #include "VerificationReporter.h"
 #include "fsfw/ipc/MessageQueueIF.h"
@@ -51,12 +53,18 @@ class PusServiceBase : public ExecutableObjectIF,
    * @param setServiceId
    * The Service Identifier as specified in ECSS PUS.
    */
-  PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
-                 StorageManagerIF* ipcStore);
+  PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId);
   /**
    * The destructor is empty.
    */
   ~PusServiceBase() override;
+
+  void setCustomIpcStore(StorageManagerIF* ipcStore);
+  void setCustomErrorReporter(InternalErrorReporterIF* errReporter);
+
+  void initializeTmSendHelper(TmSendHelper& tmSendHelper);
+  void initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const;
+  void initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper);
   /**
    * @brief 	The handleRequest method shall handle any kind of Telecommand
    * 			Request immediately.
@@ -139,13 +147,14 @@ class PusServiceBase : public ExecutableObjectIF,
    * sending any kind of verification message to the TC Verification Service.
    */
   VerificationReporter verifyReporter;
+
   /**
    * The current Telecommand to be processed.
    * It is deleted after handleRequest was executed.
    */
-  // TcPacketStoredPus currentPacket;
-  StorageManagerIF* ipcStore;
   PusTcReader currentPacket;
+  StorageManagerIF* ipcStore = nullptr;
+  InternalErrorReporterIF* errReporter = nullptr;
 
   static object_id_t packetSource;
 

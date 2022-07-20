@@ -7,4 +7,5 @@ target_sources(
           TmTcMessage.cpp
           VerificationReporter.cpp
           SpacePacketParser.cpp
-          TmStoreHelper.cpp)
+          TmStoreHelper.cpp
+          TmSendHelper.cpp)

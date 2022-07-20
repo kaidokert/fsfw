@@ -11,9 +11,8 @@
 object_id_t PusServiceBase::packetSource = 0;
 object_id_t PusServiceBase::packetDestination = 0;
 
-PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
-                               StorageManagerIF* ipcStore_)
-    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId), ipcStore(ipcStore_) {
+PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId)
+    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId) {
   requestQueue = QueueFactory::instance()->createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
 }
 
@@ -36,7 +35,7 @@ void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle_) { this->taskHandle =
 
 void PusServiceBase::handleRequestQueue() {
   TmTcMessage message;
-  ReturnValue_t result = RETURN_FAILED;
+  ReturnValue_t result;
   for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
     ReturnValue_t status = this->requestQueue->receiveMessage(&message);
     //		if(status != MessageQueueIF::EMPTY) {
@@ -57,14 +56,9 @@ void PusServiceBase::handleRequestQueue() {
         // TODO: Warning?
       }
 
-      currentPacket.setData(dataPtr, dataLen);
-      // info << "Service " << (uint16_t) this->serviceId <<
-      //      ": new packet!" << std::endl;
+      currentPacket.setReadOnlyData(dataPtr, dataLen);
 
       result = this->handleRequest(currentPacket.getSubService());
-
-      // debug << "Service " << (uint16_t)this->serviceId <<
-      //    ": handleRequest returned: " << (int)return_code << std::endl;
       if (result == RETURN_OK) {
         this->verifyReporter.sendSuccessReport(tc_verification::COMPLETION_SUCCESS,
                                                &this->currentPacket);
@@ -78,8 +72,6 @@ void PusServiceBase::handleRequestQueue() {
       errorParameter2 = 0;
     } else if (status == MessageQueueIF::EMPTY) {
       status = RETURN_OK;
-      // debug << "PusService " << (uint16_t)this->serviceId <<
-      //      ": no new packet." << std::endl;
       break;
     } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -126,4 +118,31 @@ ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
   // function should be overriden and the system object task IF can
   // be used to get those parameters.
   return HasReturnvaluesIF::RETURN_OK;
+}
+
+void PusServiceBase::setCustomIpcStore(StorageManagerIF* ipcStore_) { ipcStore = ipcStore_; }
+
+void PusServiceBase::setCustomErrorReporter(InternalErrorReporterIF* errReporter_) {
+  errReporter = errReporter_;
+}
+
+void PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper) {
+  initializeTmSendHelper(tmSendHelper);
+  initializeTmStoreHelper(tmStoreHelper);
+}
+
+void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
+  tmSendHelper.setMsgSource(requestQueue->getId());
+  tmSendHelper.setMsgDestination(requestQueue->getDefaultDestination());
+  if (errReporter == nullptr) {
+    errReporter =
+        ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
+    if (errReporter != nullptr) {
+      tmSendHelper.setInternalErrorReporter(errReporter);
+    }
+  }
+}
+
+void PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
+  tmStoreHelper.setApid(apid);
 }

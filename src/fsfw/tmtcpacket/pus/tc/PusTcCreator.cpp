@@ -1,17 +1,20 @@
 #include "PusTcCreator.h"
 
+#include <utility>
+
 #include "PusTcIF.h"
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/serialize/SerializeAdapter.h"
 
 PusTcCreator::PusTcCreator(SpacePacketParams spParams, PusTcParams pusParams)
-    : spCreator(spParams), pusParams(pusParams) {
+    : spCreator(std::move(spParams)), pusParams(pusParams) {
   updateSpLengthField();
 }
 
 ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                       SerializeIF::Endianness streamEndianness) const {
-  if (*size + PusTcIF::MIN_LEN + pusParams.appDataLen > maxSize) {
+  size_t userDataLen = pusParams.dataWrapper.getLength();
+  if (*size + PusTcIF::MIN_LEN + userDataLen > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }
   ReturnValue_t result = spCreator.serialize(buffer, size, maxSize, streamEndianness);
@@ -33,15 +36,28 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  std::memcpy(*buffer, pusParams.appData, pusParams.appDataLen);
-  *buffer += pusParams.appDataLen;
-  *size += pusParams.appDataLen;
+  if (pusParams.dataWrapper.type == ecss::DataTypes::RAW) {
+    const uint8_t *data = pusParams.dataWrapper.dataUnion.raw.data;
+    if (data != nullptr and userDataLen > 0) {
+      std::memcpy(*buffer, data, userDataLen);
+      *buffer += userDataLen;
+      *size += userDataLen;
+    }
+  } else if (pusParams.dataWrapper.type == ecss::DataTypes::SERIALIZABLE and
+             pusParams.dataWrapper.dataUnion.serializable != nullptr) {
+    result = pusParams.dataWrapper.dataUnion.serializable->serialize(buffer, size, maxSize,
+                                                                     streamEndianness);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
+  }
+
   uint16_t crc16 = CRC::crc16ccitt(*buffer, getFullPacketLen() - 2);
   return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
 }
 
 void PusTcCreator::updateSpLengthField() {
-  spCreator.setDataLen(ecss::PusTcDataFieldHeader::MIN_LEN + pusParams.appDataLen + 1);
+  spCreator.setDataLen(ecss::PusTcDataFieldHeader::MIN_LEN + pusParams.dataWrapper.getLength() + 1);
 }
 
 size_t PusTcCreator::getSerializedSize() const { return spCreator.getFullPacketLen(); }
@@ -66,10 +82,4 @@ uint8_t PusTcCreator::getService() const { return pusParams.service; }
 uint8_t PusTcCreator::getSubService() const { return pusParams.subservice; }
 
 uint16_t PusTcCreator::getSourceId() const { return pusParams.sourceId; }
-
-const uint8_t *PusTcCreator::getUserData(size_t &appDataLen) const {
-  appDataLen = getUserDataSize();
-  return pusParams.appData;
-}
-
-uint16_t PusTcCreator::getUserDataSize() const { return pusParams.appDataLen; }
+ecss::DataWrapper &PusTcCreator::getDataWrapper() { return pusParams.dataWrapper; }

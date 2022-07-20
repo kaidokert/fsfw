@@ -34,15 +34,16 @@ uint16_t PusTmMinimal::getPacketDataLen() const { return 0; }
 uint8_t PusTmMinimal::getPusVersion() const { return 0; }
 uint8_t PusTmMinimal::getService() const { return tmData->secHeader.service; }
 uint8_t PusTmMinimal::getSubService() const { return tmData->secHeader.subservice; }
-const uint8_t* PusTmMinimal::getUserData(size_t& appDataLen) const { return nullptr; }
-uint16_t PusTmMinimal::getUserDataSize() const { return 0; }
 uint8_t PusTmMinimal::getScTimeRefStatus() { return 0; }
 uint16_t PusTmMinimal::getMessageTypeCounter() {
   return (tmData->secHeader.messageTypeH << 8) | tmData->secHeader.messageTypeL;
 }
 uint16_t PusTmMinimal::getDestId() { return 0; }
-const uint8_t* PusTmMinimal::getTimestamp(size_t& timeStampLen) { return nullptr; }
-size_t PusTmMinimal::getTimestampLen() { return 0; }
 void PusTmMinimal::setApid(uint16_t apid) {
   /* TODO: Implement. Maybe provide low level function to do this */
 }
+const uint8_t* PusTmMinimal::getUserData(size_t& userDataLen_) {
+  userDataLen_ = userDataLen;
+  return reinterpret_cast<const uint8_t*>(&tmData->rest);
+}
+TimeStamperIF* PusTmMinimal::getTimestamper() { return nullptr; }

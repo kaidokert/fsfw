@@ -70,8 +70,6 @@ void Factory::setStaticFrameworkObjectIds() {
   LocalDataPoolManager::defaultHkDestination = objects::HK_RECEIVER_MOCK;
 
   DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
-
-  TmPacketBase::timeStamperId = objects::NO_OBJECT;
 }
 
 #endif

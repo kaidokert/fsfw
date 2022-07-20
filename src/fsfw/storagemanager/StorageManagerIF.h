@@ -55,7 +55,7 @@ class StorageManagerIF : public HasReturnvaluesIF {
   /**
    * @brief This is the empty virtual destructor as required for C++ interfaces.
    */
-  virtual ~StorageManagerIF(){};
+  ~StorageManagerIF() override = default;
   /**
    * @brief	With addData, a free storage position is allocated and data
    * 			stored there.
@@ -160,8 +160,8 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * 					@li	RETURN_FAILED if data could not be added.
    * 						storageId is unchanged then.
    */
-  virtual ReturnValue_t getFreeElement(store_address_t* storageId, const size_t size,
-                                       uint8_t** p_data, bool ignoreFault = false) = 0;
+  virtual ReturnValue_t getFreeElement(store_address_t* storageId, size_t size, uint8_t** p_data,
+                                       bool ignoreFault = false) = 0;
 
   /**
    * Clears the whole store.
@@ -192,7 +192,7 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * Get number of pools.
    * @return
    */
-  virtual max_subpools_t getNumberOfSubPools() const = 0;
+  [[nodiscard]] virtual max_subpools_t getNumberOfSubPools() const = 0;
 };
 
 #endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */

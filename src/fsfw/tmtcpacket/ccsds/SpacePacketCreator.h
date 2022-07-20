@@ -9,6 +9,8 @@
 #include "fsfw/serialize/SerializeIF.h"
 
 struct SpacePacketParams {
+  SpacePacketParams() = default;
+
   SpacePacketParams(PacketId packetId, PacketSeqCtrl psc, uint16_t dataLen)
       : packetId(std::move(packetId)), packetSeqCtrl(std::move(psc)), dataLen(dataLen) {}
 
@@ -20,6 +22,7 @@ struct SpacePacketParams {
 
 class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
  public:
+  SpacePacketCreator() = default;
   explicit SpacePacketCreator(SpacePacketParams params);
   SpacePacketCreator(ccsds::PacketType packetType, bool secHeaderFlag, uint16_t apid,
                      ccsds::SequenceFlags seqFlags, uint16_t seqCount, uint16_t dataLen,
@@ -30,6 +33,8 @@ class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
   [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
 
+  SpacePacketParams &getParams();
+  void setParams(SpacePacketParams params);
   void setApid(uint16_t apid);
   void setSeqCount(uint16_t seqCount);
   void setSeqFlags(ccsds::SequenceFlags flags);
@@ -45,9 +50,7 @@ class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
 
  private:
   void checkFieldValidity();
-
-  SpacePacketCreator() = default;
   bool valid{};
-  SpacePacketParams params;
+  SpacePacketParams params{};
 };
 #endif  // FSFW_TMTCPACKET_SPACEPACKETCREATOR_H

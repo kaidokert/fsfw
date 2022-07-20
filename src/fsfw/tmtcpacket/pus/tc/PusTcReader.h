@@ -6,6 +6,7 @@
 #include "PusTcIF.h"
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/pus/RawUserDataReaderIF.h"
 
 /**
  * This class is the basic data handler for any ECSS PUS Telecommand packet.
@@ -18,7 +19,10 @@
  * check can be performed by making use of the getWholeData method.
  * @ingroup tmtcpackets
  */
-class PusTcReader : public PusTcIF, public ReadablePacketIF, public RedirectableDataPointerIF {
+class PusTcReader : public PusTcIF,
+                    public RawUserDataReaderIF,
+                    public ReadablePacketIF,
+                    public RedirectableDataPointerIF {
  public:
   PusTcReader() = default;
   /**
@@ -48,12 +52,11 @@ class PusTcReader : public PusTcIF, public ReadablePacketIF, public Redirectable
   [[nodiscard]] uint8_t getService() const override;
   [[nodiscard]] uint8_t getSubService() const override;
   [[nodiscard]] uint16_t getSourceId() const override;
-  [[nodiscard]] const uint8_t* getUserData(size_t& appDataLen) const override;
-  [[nodiscard]] uint16_t getUserDataSize() const override;
   [[nodiscard]] uint16_t getErrorControl() const;
   const uint8_t* getFullData() override;
 
-  ReturnValue_t setData(const uint8_t* data, size_t size);
+  ReturnValue_t setReadOnlyData(const uint8_t* data, size_t size);
+  const uint8_t* getUserData(size_t& userDataLen) override;
 
  protected:
   /**

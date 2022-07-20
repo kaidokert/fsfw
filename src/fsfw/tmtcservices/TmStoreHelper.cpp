@@ -1,43 +1,58 @@
 #include "TmStoreHelper.h"
 
 #include "TmTcMessage.h"
-#include "fsfw/ipc/MessageQueueSenderIF.h"
 
-TmStoreHelper::TmStoreHelper(StorageManagerIF *tmStore, MessageQueueId_t tmtcMsgDest,
-                             MessageQueueId_t tmtcMsgSrc, InternalErrorReporterIF *reporter)
-    : creator(params),
-      tmtcMsgDest(tmtcMsgDest),
-      tmtcMsgSrc(tmtcMsgSrc),
-      errReporter(reporter),
-      tmStore(tmStore) {}
-
-void TmStoreHelper::preparePacket(uint16_t apid, uint8_t service, uint8_t subservice,
-                                  uint16_t counter) {
-  // TODO: Implement
-  // creator.setApid(apid);
-  params.service = service;
-  params.subservice = subservice;
-  params.messageTypeCounter = counter;
-  // TODO: Implement serialize and then serialize into the store
+TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore,
+                             TimeStamperIF* timeStamper)
+    : creator(timeStamper), tmStore(tmStore) {
+  creator.setApid(defaultApid);
 }
 
-ReturnValue_t TmStoreHelper::sendPacket() {
-  TmTcMessage tmMessage(currentAddr);
-  ReturnValue_t result = MessageQueueSenderIF::sendMessage(tmtcMsgDest, &tmMessage, tmtcMsgSrc);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
-    tmStore->deleteData(currentAddr);
-    if (errReporter != nullptr) {
-      errReporter->lostTm();
-    }
-    return result;
-  }
+TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore)
+    : creator(nullptr), tmStore(tmStore) {
+  creator.setApid(defaultApid);
+}
+
+ReturnValue_t TmStoreHelper::preparePacket(uint8_t service, uint8_t subservice, uint16_t counter) {
+  // TODO: Implement
+  // creator.setApid(apid);
+  PusTmParams& params = creator.getParams();
+  params.secHeader.service = service;
+  params.secHeader.subservice = subservice;
+  params.secHeader.messageTypeCounter = counter;
+  // TODO: Implement serialize and then serialize into the store
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void TmStoreHelper::setMsgDestination(MessageQueueId_t msgDest) { tmtcMsgDest = msgDest; }
+StorageManagerIF* TmStoreHelper::getTmStore() { return tmStore; }
 
-void TmStoreHelper::setMsgSource(MessageQueueId_t msgSrc) { tmtcMsgSrc = msgSrc; }
+void TmStoreHelper::setTmStore(StorageManagerIF* store) { tmStore = store; }
+const store_address_t& TmStoreHelper::getCurrentAddr() const { return currentAddr; }
+ReturnValue_t TmStoreHelper::deletePacket() { return tmStore->deleteData(currentAddr); }
 
-void TmStoreHelper::setInternalErrorReporter(InternalErrorReporterIF *reporter) {
-  errReporter = reporter;
+void TmStoreHelper::setSourceDataRaw(const uint8_t* data, size_t len) {
+  PusTmParams& params = creator.getParams();
+  params.dataWrapper.type = ecss::DataTypes::RAW;
+  params.dataWrapper.dataUnion.raw.data = data;
+  params.dataWrapper.dataUnion.raw.len = len;
 }
+
+void TmStoreHelper::setSourceDataSerializable(SerializeIF* serializable) {
+  PusTmParams& params = creator.getParams();
+  params.dataWrapper.type = ecss::DataTypes::SERIALIZABLE;
+  params.dataWrapper.dataUnion.serializable = serializable;
+}
+
+ReturnValue_t TmStoreHelper::addPacketToStore() {
+  creator.updateSpLengthField();
+  uint8_t* dataPtr;
+  tmStore->getFreeElement(&currentAddr, creator.getSerializedSize(), &dataPtr);
+  size_t serLen = 0;
+  return creator.serialize(&dataPtr, &serLen, creator.getSerializedSize(),
+                           SerializeIF::Endianness::NETWORK);
+}
+
+void TmStoreHelper::setTimeStamper(TimeStamperIF* timeStamper_) {
+  creator.setTimeStamper(timeStamper_);
+}
+void TmStoreHelper::setApid(uint16_t apid) { creator.setApid(apid); }

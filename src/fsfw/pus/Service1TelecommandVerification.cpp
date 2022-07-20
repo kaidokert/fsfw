@@ -3,10 +3,10 @@
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/pus/servicepackets/Service1Packets.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
+#include "fsfw/tmtcservices/sendAndStoreHelper.h"
 
 Service1TelecommandVerification::Service1TelecommandVerification(object_id_t objectId,
                                                                  uint16_t apid, uint8_t serviceId,
@@ -15,7 +15,9 @@ Service1TelecommandVerification::Service1TelecommandVerification(object_id_t obj
     : SystemObject(objectId),
       apid(apid),
       serviceId(serviceId),
-      targetDestination(targetDestination) {
+      targetDestination(targetDestination),
+      sendHelper(nullptr),
+      storeHelper(apid, nullptr) {
   tmQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
@@ -67,32 +69,23 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
   FailureReport report(message->getReportId(), message->getTcPacketId(),
                        message->getTcSequenceControl(), message->getStep(), message->getErrorCode(),
                        message->getParameter1(), message->getParameter2());
-#if FSFW_USE_PUS_C_TELEMETRY == 0
-  TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(), packetSubCounter++, &report);
-#else
-  TmPacketStoredPusC tmPacket(apid, serviceId, message->getReportId(), packetSubCounter++, &report);
-#endif
-  ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(), tmQueue->getId());
-  return result;
+  storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
+  storeHelper.setSourceDataSerializable(&report);
+  return tm::storeAndSendTmPacket(storeHelper, sendHelper);
 }
 
 ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
     PusVerificationMessage* message) {
   SuccessReport report(message->getReportId(), message->getTcPacketId(),
                        message->getTcSequenceControl(), message->getStep());
-#if FSFW_USE_PUS_C_TELEMETRY == 0
-  TmPacketStoredPusA tmPacket(apid, serviceId, message->getReportId(), packetSubCounter++, &report);
-#else
-  TmPacketStoredPusC tmPacket(apid, serviceId, message->getReportId(), packetSubCounter++, &report);
-#endif
-  ReturnValue_t result = tmPacket.sendPacket(tmQueue->getDefaultDestination(), tmQueue->getId());
-  return result;
+  storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
+  storeHelper.setSourceDataSerializable(&report);
+  return tm::storeAndSendTmPacket(storeHelper, sendHelper);
 }
 
 ReturnValue_t Service1TelecommandVerification::initialize() {
   // Get target object for TC verification messages
-  AcceptsTelemetryIF* funnel =
-      ObjectManager::instance()->get<AcceptsTelemetryIF>(targetDestination);
+  auto* funnel = ObjectManager::instance()->get<AcceptsTelemetryIF>(targetDestination);
   if (funnel == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service1TelecommandVerification::initialize: Specified"
@@ -103,5 +96,12 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
   tmQueue->setDefaultDestination(funnel->getReportReceptionQueue());
+  if (tmStore == nullptr) {
+    tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
+    if (tmStore == nullptr) {
+      return ObjectManager::CHILD_INIT_FAILED;
+    }
+    storeHelper.setTmStore(tmStore);
+  }
   return SystemObject::initialize();
 }

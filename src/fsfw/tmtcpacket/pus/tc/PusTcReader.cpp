@@ -7,7 +7,7 @@
 #include "fsfw/serialize.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-PusTcReader::PusTcReader(const uint8_t* data, size_t size) { setData(data, size); }
+PusTcReader::PusTcReader(const uint8_t* data, size_t size) { setReadOnlyData(data, size); }
 
 PusTcReader::~PusTcReader() = default;
 
@@ -39,12 +39,6 @@ uint8_t PusTcReader::getSubService() const { return pointers.secHeaderStart[2]; 
 uint16_t PusTcReader::getSourceId() const {
   return (pointers.secHeaderStart[3] << 8) | pointers.secHeaderStart[4];
 }
-const uint8_t* PusTcReader::getUserData(size_t& appDataLen) const {
-  appDataLen = appDataSize;
-  return pointers.userDataStart;
-}
-
-uint16_t PusTcReader::getUserDataSize() const { return appDataSize; }
 
 uint16_t PusTcReader::getErrorControl() const {
   return pointers.crcStart[0] << 8 | pointers.crcStart[1];
@@ -62,9 +56,15 @@ ReturnValue_t PusTcReader::setData(uint8_t* pData, size_t size_, void* args) {
   spReader.setData(pData, size_, args);
   return HasReturnvaluesIF::RETURN_OK;
 }
-ReturnValue_t PusTcReader::setData(const uint8_t* data, size_t size_) {
+
+ReturnValue_t PusTcReader::setReadOnlyData(const uint8_t* data, size_t size_) {
   setData(const_cast<uint8_t*>(data), size_, nullptr);
   return HasReturnvaluesIF::RETURN_OK;
+}
+
+const uint8_t* PusTcReader::getUserData(size_t& userDataLen) {
+  userDataLen = appDataSize;
+  return pointers.userDataStart;
 }
 
 /*

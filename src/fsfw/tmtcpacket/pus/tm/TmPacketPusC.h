@@ -26,7 +26,7 @@ struct PUSTmDataFieldHeaderPusC {
   uint8_t subcounterLsb;
   uint8_t destinationIdMsb;
   uint8_t destinationIdLsb;
-  uint8_t time[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
+  // uint8_t time[TimeStamperIF::MISSION_TIMESTAMP_SIZE];
 };
 
 /**

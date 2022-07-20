@@ -13,17 +13,17 @@ VerificationReporter::VerificationReporter() : acknowledgeQueue(MessageQueueIF::
 
 VerificationReporter::~VerificationReporter() = default;
 
-void VerificationReporter::sendSuccessReport(uint8_t set_report_id, PusTcReader* currentPacket,
+void VerificationReporter::sendSuccessReport(uint8_t set_report_id, PusTcReader* correspondingTc,
                                              uint8_t set_step) {
   if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
     this->initialize();
   }
-  if (currentPacket == nullptr) {
+  if (correspondingTc == nullptr) {
     return;
   }
-  PusVerificationMessage message(set_report_id, currentPacket->getAcknowledgeFlags(),
-                                 currentPacket->getPacketIdRaw(),
-                                 currentPacket->getPacketSeqCtrlRaw(), 0, set_step);
+  PusVerificationMessage message(set_report_id, correspondingTc->getAcknowledgeFlags(),
+                                 correspondingTc->getPacketIdRaw(),
+                                 correspondingTc->getPacketSeqCtrlRaw(), 0, set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -50,18 +50,18 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, uint8_t ackF
   }
 }
 
-void VerificationReporter::sendFailureReport(uint8_t report_id, PusTcReader* currentPacket,
+void VerificationReporter::sendFailureReport(uint8_t report_id, PusTcReader* correspondingTc,
                                              ReturnValue_t error_code, uint8_t step,
                                              uint32_t parameter1, uint32_t parameter2) {
   if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
     this->initialize();
   }
-  if (currentPacket == nullptr) {
+  if (correspondingTc == nullptr) {
     return;
   }
   PusVerificationMessage message(
-      report_id, currentPacket->getAcknowledgeFlags(), currentPacket->getPacketIdRaw(),
-      currentPacket->getPacketSeqCtrlRaw(), error_code, step, parameter1, parameter2);
+      report_id, correspondingTc->getAcknowledgeFlags(), correspondingTc->getPacketIdRaw(),
+      correspondingTc->getPacketSeqCtrlRaw(), error_code, step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

@@ -84,7 +84,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
            message->getMaximumMessageSize());
   } else {
     if (not ignoreFault) {
-      InternalErrorReporterIF* internalErrorReporter =
+      auto* internalErrorReporter =
           ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
       if (internalErrorReporter != nullptr) {
         internalErrorReporter->queueMessageNotSent();

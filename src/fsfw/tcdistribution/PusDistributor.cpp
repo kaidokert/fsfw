@@ -36,7 +36,7 @@ PusDistributor::TcMqMapIter PusDistributor::selectDestination() {
         HasReturnvaluesIF::RETURN_OK) {
       return queueMapIt;
     }
-    reader.setData(packetPtr, packetLen);
+    reader.setReadOnlyData(packetPtr, packetLen);
     // this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
     if (reader.getFullData() != nullptr) {
       tcStatus =

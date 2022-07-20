@@ -1,15 +1,14 @@
 #include "fsfw/pus/Service17Test.h"
 
 #include "fsfw/FSFW.h"
+#include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
+#include "fsfw/tmtcservices/sendAndStoreHelper.h"
 
-Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId,
-                             StorageManagerIF* tmStore, StorageManagerIF* ipcStore,
-                             InternalErrorReporterIF* errReporter)
-    : PusServiceBase(objectId, apid, serviceId, ipcStore),
-      helper(tmStore, MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, errReporter),
+Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId)
+    : PusServiceBase(objectId, apid, serviceId),
+      storeHelper(apid, nullptr),
+      sendHelper(nullptr),
       packetSubCounter(0) {}
 
 Service17Test::~Service17Test() = default;
@@ -17,15 +16,13 @@ Service17Test::~Service17Test() = default;
 ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   switch (subservice) {
     case Subservice::CONNECTION_TEST: {
-      helper.preparePacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter);
-      helper.sendPacket();
-      return HasReturnvaluesIF::RETURN_OK;
+      storeHelper.preparePacket(serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter);
+      return tm::storeAndSendTmPacket(storeHelper, sendHelper);
     }
     case Subservice::EVENT_TRIGGER_TEST: {
-      helper.preparePacket(apid, serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter++);
-      helper.sendPacket();
+      storeHelper.preparePacket(serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter++);
       triggerEvent(TEST, 1234, 5678);
-      return RETURN_OK;
+      return tm::storeAndSendTmPacket(storeHelper, sendHelper);
     }
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
@@ -39,6 +36,17 @@ ReturnValue_t Service17Test::initialize() {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  helper.setMsgDestination(requestQueue->getDefaultDestination());
-  helper.setMsgSource(requestQueue->getId());
-  if (tm) }
+  initializeTmHelpers(sendHelper, storeHelper);
+  if (storeHelper.getTmStore() == nullptr) {
+    auto* tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
+    if (tmStore == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+    storeHelper.setTmStore(tmStore);
+  }
+  return result;
+}
+
+void Service17Test::setCustomTmStore(StorageManagerIF* tmStore_) {
+  storeHelper.setTmStore(tmStore_);
+}

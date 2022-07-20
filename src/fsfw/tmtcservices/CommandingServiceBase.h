@@ -2,6 +2,8 @@
 #define FSFW_TMTCSERVICES_COMMANDINGSERVICEBASE_H_
 
 #include "AcceptsTelecommandsIF.h"
+#include "TmSendHelper.h"
+#include "TmStoreHelper.h"
 #include "VerificationReporter.h"
 #include "fsfw/FSFW.h"
 #include "fsfw/container/FIFO.h"
@@ -69,8 +71,9 @@ class CommandingServiceBase : public SystemObject,
   CommandingServiceBase(object_id_t setObjectId, uint16_t apid, uint8_t service,
                         uint8_t numberOfParallelCommands, uint16_t commandTimeoutSeconds,
                         size_t queueDepth = 20);
-  virtual ~CommandingServiceBase();
+  ~CommandingServiceBase() override;
 
+  void setCustomTmStore(StorageManagerIF* store);
   /**
    * This setter can be used to set the packet source individually instead
    * of using the default static framework ID set in the factory.
@@ -93,9 +96,9 @@ class CommandingServiceBase : public SystemObject,
    * @param opCode is unused here at the moment
    * @return RETURN_OK
    */
-  virtual ReturnValue_t performOperation(uint8_t opCode) override;
+  ReturnValue_t performOperation(uint8_t opCode) override;
 
-  virtual uint16_t getIdentifier() override;
+  uint16_t getIdentifier() override;
 
   /**
    * Returns the requestQueue MessageQueueId_t
@@ -104,7 +107,7 @@ class CommandingServiceBase : public SystemObject,
    *
    * @return requestQueue messageQueueId_t
    */
-  virtual MessageQueueId_t getRequestQueue() override;
+  MessageQueueId_t getRequestQueue() override;
 
   /**
    * Returns the commandQueue MessageQueueId_t
@@ -114,7 +117,7 @@ class CommandingServiceBase : public SystemObject,
    */
   virtual MessageQueueId_t getCommandQueue();
 
-  virtual ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
   /**
    * Implementation of ExecutableObjectIF function
@@ -122,7 +125,7 @@ class CommandingServiceBase : public SystemObject,
    * Used to setup the reference of the task, that executes this component
    * @param task Pointer to the taskIF of this task
    */
-  virtual void setTaskIF(PeriodicTaskIF* task) override;
+  void setTaskIF(PeriodicTaskIF* task) override;
 
  protected:
   /**
@@ -230,15 +233,15 @@ class CommandingServiceBase : public SystemObject,
     object_id_t objectId;
     FIFO<store_address_t, COMMAND_INFO_FIFO_DEPTH> fifo;
 
-    virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
-                                    Endianness streamEndianness) const override {
+    ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+                            Endianness streamEndianness) const override {
       return HasReturnvaluesIF::RETURN_FAILED;
     };
 
-    virtual size_t getSerializedSize() const override { return 0; };
+    [[nodiscard]] size_t getSerializedSize() const override { return 0; };
 
-    virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-                                      Endianness streamEndianness) override {
+    ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                              Endianness streamEndianness) override {
       return HasReturnvaluesIF::RETURN_FAILED;
     };
   };
@@ -253,15 +256,21 @@ class CommandingServiceBase : public SystemObject,
 
   uint8_t tmPacketCounter = 0;
 
-  StorageManagerIF* IPCStore = nullptr;
+  StorageManagerIF* ipcStore = nullptr;
 
-  StorageManagerIF* TCStore = nullptr;
+  PusTcReader tcReader;
+  TmStoreHelper tmStoreHelper;
+  TmSendHelper tmSendHelper;
+
+  StorageManagerIF* tcStore = nullptr;
 
   MessageQueueIF* commandQueue = nullptr;
 
   MessageQueueIF* requestQueue = nullptr;
 
   VerificationReporter verificationReporter;
+
+  InternalErrorReporterIF* errReporter = nullptr;
 
   FixedMap<MessageQueueId_t, CommandInfo> commandMap;
 
@@ -284,13 +293,10 @@ class CommandingServiceBase : public SystemObject,
    * @brief   Send TM data from pointer to data.
    *          If a header is supplied it is added before data
    * @param subservice Number of subservice
-   * @param data Pointer to the data in the Packet
-   * @param dataLen Lenght of data in the Packet
-   * @param headerData HeaderData will be placed before data
-   * @param headerSize Size of HeaderData
+   * @param sourceData Custom source data
+   * @param sourceDataLen Lenght of data in the Packet
    */
-  ReturnValue_t sendTmPacket(uint8_t subservice, const uint8_t* data, size_t dataLen,
-                             const uint8_t* headerData = nullptr, size_t headerSize = 0);
+  ReturnValue_t sendTmPacket(uint8_t subservice, const uint8_t* sourceData, size_t sourceDataLen);
 
   /**
    * @brief   To send TM packets of objects that still need to be serialized
@@ -310,8 +316,7 @@ class CommandingServiceBase : public SystemObject,
    * @param content This is a pointer to the serialized packet
    * @param header Serialize IF header which will be placed before content
    */
-  ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF* content,
-                             SerializeIF* header = nullptr);
+  ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF* sourceData);
 
   void checkAndExecuteFifo(CommandMapIter& iter);
 
@@ -345,11 +350,12 @@ class CommandingServiceBase : public SystemObject,
    */
   void handleRequestQueue();
 
-  void rejectPacket(uint8_t reportId, TcPacketStoredPus* packet, ReturnValue_t errorCode);
+  void rejectPacket(uint8_t reportId, store_address_t tcStoreId, PusTcReader* tcPacket,
+                    ReturnValue_t errorCode);
 
-  void acceptPacket(uint8_t reportId, TcPacketStoredPus* packet);
+  void acceptPacket(uint8_t reportId, store_address_t tcStoreId, PusTcReader* tcPacket);
 
-  void startExecution(TcPacketStoredPus* storedPacket, CommandMapIter iter);
+  void startExecution(store_address_t storeId, PusTcReader* storedPacket, CommandMapIter iter);
 
   void handleCommandMessage(CommandMessage* reply);
   void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,

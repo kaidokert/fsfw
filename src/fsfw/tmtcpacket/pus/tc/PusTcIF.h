@@ -23,7 +23,7 @@ enum AckField {
 static constexpr uint8_t ACK_ALL = ACK_ACCEPTANCE | ACK_START | ACK_STEP | ACK_COMPLETION;
 
 /**
- * This struct defines a byte-wise structured PUS C ata Field Header.
+ * This struct defines a byte-wise structured PUS C data Field Header.
  * Any optional fields in the header must be added or removed here.
  * Currently, the Source Id field is present with one byte.
  * No spare byte support for now.

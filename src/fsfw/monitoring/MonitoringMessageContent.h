@@ -34,7 +34,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
   SerializeElement<T> limitValue;
   SerializeElement<ReturnValue_t> oldState;
   SerializeElement<ReturnValue_t> newState;
-  uint8_t rawTimestamp[TimeStamperIF::MISSION_TIMESTAMP_SIZE] = {};
+  uint8_t rawTimestamp[TimeStamperIF::MAXIMUM_TIMESTAMP_LEN] = {};
   SerializeElement<SerialBufferAdapter<uint8_t>> timestampSerializer;
   TimeStamperIF* timeStamper;
   MonitoringReportContent()
@@ -47,7 +47,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
         oldState(0),
         newState(0),
         timestampSerializer(rawTimestamp, sizeof(rawTimestamp)),
-        timeStamper(NULL) {
+        timeStamper(nullptr) {
     setAllNext();
   }
   MonitoringReportContent(gp_id_t globalPoolId, T value, T limitValue, ReturnValue_t oldState,
@@ -61,7 +61,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
         oldState(oldState),
         newState(newState),
         timestampSerializer(rawTimestamp, sizeof(rawTimestamp)),
-        timeStamper(NULL) {
+        timeStamper(nullptr) {
     setAllNext();
     if (checkAndSetStamper()) {
       timeStamper->addTimeStamp(rawTimestamp, sizeof(rawTimestamp));

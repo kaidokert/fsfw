@@ -33,16 +33,19 @@ class Service17Test : public PusServiceBase {
     EVENT_TRIGGER_TEST = 128,
   };
 
-  Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId,
-                InternalErrorReporterIF* errReporter, StorageManagerIF* tmStore = nullptr,
-                StorageManagerIF* ipcStore = nullptr);
+  Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId);
+
+  void setCustomTmStore(StorageManagerIF* tmStore);
+
   ~Service17Test() override;
   ReturnValue_t handleRequest(uint8_t subservice) override;
   ReturnValue_t performService() override;
   ReturnValue_t initialize() override;
 
  protected:
-  TmStoreHelper helper;
+  TmStoreHelper storeHelper;
+  TmSendHelper sendHelper;
+
   uint16_t packetSubCounter = 0;
 };
 

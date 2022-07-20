@@ -4,6 +4,7 @@
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
+#include "fsfw/tmtcpacket/pus/CreatorDataIF.h"
 #include "fsfw/tmtcpacket/pus/definitions.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
 
@@ -14,12 +15,11 @@ struct PusTcParams {
   uint8_t subservice;
   uint8_t ackFlags = ecss::ACK_ALL;
   uint16_t sourceId = 0;
-  uint8_t *appData = nullptr;
-  size_t appDataLen = 0;
+  ecss::DataWrapper dataWrapper{};
   uint8_t pusVersion = ecss::PusVersion::PUS_C;
 };
 
-class PusTcCreator : public PusTcIF, public SerializeIF {
+class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
  public:
   PusTcCreator(SpacePacketParams spParams, PusTcParams pusParams);
 
@@ -37,8 +37,7 @@ class PusTcCreator : public PusTcIF, public SerializeIF {
   [[nodiscard]] uint8_t getService() const override;
   [[nodiscard]] uint8_t getSubService() const override;
   [[nodiscard]] uint16_t getSourceId() const override;
-  const uint8_t *getUserData(size_t &appDataLen) const override;
-  [[nodiscard]] uint16_t getUserDataSize() const override;
+  ecss::DataWrapper &getDataWrapper() override;
 
  private:
   SpacePacketCreator spCreator;

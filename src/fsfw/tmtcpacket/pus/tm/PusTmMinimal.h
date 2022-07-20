@@ -4,6 +4,7 @@
 #include "PusTmIF.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
+#include "fsfw/tmtcpacket/pus/RawUserDataReaderIF.h"
 
 struct timeval;
 
@@ -12,7 +13,7 @@ class PacketTimestampInterpreterIF;
 namespace mintm {
 
 // NOTE: Only PUS C compatible!
-struct PusTmMinimalSecHeader {
+struct PusTmMinimalSecHeaderPacked {
   uint8_t versionAndScTimeRefStatus;
   uint8_t service;
   uint8_t subservice;
@@ -27,7 +28,7 @@ struct PusTmMinimalSecHeader {
  */
 struct MinimalPusTm {
   ccsds::PrimaryHeader primary;
-  PusTmMinimalSecHeader secHeader;
+  PusTmMinimalSecHeaderPacked secHeader;
   uint8_t rest;
 };
 
@@ -42,7 +43,7 @@ static const uint16_t MINIMUM_SIZE = sizeof(MinimalPusTm) + 1;
  * This is required for handling TM packets with different APIDs with different
  * secondary headers.
  */
-class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
+class PusTmMinimal : public PusTmIF, public RawUserDataReaderIF, public RedirectableDataPointerIF {
  public:
   explicit PusTmMinimal(mintm::MinimalPusTm* data);
   /**
@@ -69,13 +70,11 @@ class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
   [[nodiscard]] uint8_t getPusVersion() const override;
   [[nodiscard]] uint8_t getService() const override;
   [[nodiscard]] uint8_t getSubService() const override;
-  const uint8_t* getUserData(size_t& appDataLen) const override;
-  [[nodiscard]] uint16_t getUserDataSize() const override;
   uint8_t getScTimeRefStatus() override;
   uint16_t getMessageTypeCounter() override;
   uint16_t getDestId() override;
-  const uint8_t* getTimestamp(size_t& timeStampLen) override;
-  size_t getTimestampLen() override;
+  const uint8_t* getUserData(size_t& userDataLen) override;
+  TimeStamperIF* getTimestamper() override;
 
  protected:
   /**
@@ -84,6 +83,7 @@ class PusTmMinimal : public PusTmIF, public RedirectableDataPointerIF {
    *
    * To be hardware-safe, all elements are of byte size.
    */
+  size_t userDataLen = 0;
   mintm::MinimalPusTm* tmData;
 
   static PacketTimestampInterpreterIF* timestampInterpreter;

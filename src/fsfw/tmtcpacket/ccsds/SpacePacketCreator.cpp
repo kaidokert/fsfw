@@ -75,3 +75,7 @@ void SpacePacketCreator::checkFieldValidity() {
     valid = false;
   }
 }
+
+void SpacePacketCreator::setParams(SpacePacketParams params_) { params = std::move(params_); }
+
+SpacePacketParams &SpacePacketCreator::getParams() { return params; }
