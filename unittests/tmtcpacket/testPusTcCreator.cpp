@@ -54,6 +54,8 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
     REQUIRE(((buf[9] << 8) | buf[10]) == 0);
     // CRC16 check
     REQUIRE(CRC::crc16ccitt(buf.data(), serLen) == 0);
+    REQUIRE(buf[11] == 0xee);
+    REQUIRE(buf[12] == 0x63);
   }
 
   SECTION("Custom Source ID") {
@@ -82,12 +84,10 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
   SECTION("Test with Application Data Serializable") {
     auto& params = creator.getPusParams();
     auto simpleSer = SimpleSerializable();
-    params.dataWrapper.setSerializable(&simpleSer);
+    creator.setSerializableAppData(&simpleSer);
     auto& dataWrapper = creator.getDataWrapper();
     REQUIRE(dataWrapper.type == ecss::DataTypes::SERIALIZABLE);
     REQUIRE(dataWrapper.dataUnion.serializable == &simpleSer);
-    REQUIRE(creator.getSerializedSize() == 13);
-    creator.updateSpLengthField();
     REQUIRE(creator.getSerializedSize() == 16);
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serLen == 16);

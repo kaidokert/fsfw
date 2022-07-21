@@ -33,6 +33,9 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
   void updateSpLengthField();
   PusTcParams &getPusParams();
   SpacePacketParams &getSpParams();
+  void setRawAppData(ecss::DataWrapper::BufPairT bufPair);
+  void setSerializableAppData(SerializeIF *serAppData);
+
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize);
   [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,

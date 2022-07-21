@@ -54,7 +54,7 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
     }
   }
 
-  uint16_t crc16 = CRC::crc16ccitt(start, getFullPacketLen() - 2);
+  uint16_t crc16 = CRC::crc16ccitt(start, getFullPacketLen() - sizeof(ecss::PusChecksumT));
   return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
 }
 
@@ -94,4 +94,14 @@ SpacePacketParams &PusTcCreator::getSpParams() { return spCreator.getParams(); }
 
 ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize) {
   return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
+}
+
+void PusTcCreator::setRawAppData(ecss::DataWrapper::BufPairT bufPair) {
+  pusParams.dataWrapper.setRawData(bufPair);
+  updateSpLengthField();
+}
+
+void PusTcCreator::setSerializableAppData(SerializeIF *serAppData) {
+  pusParams.dataWrapper.setSerializable(serAppData);
+  updateSpLengthField();
 }

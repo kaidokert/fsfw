@@ -34,6 +34,7 @@ class PusTcReader : public PusTcIF,
    */
   PusTcReader(const uint8_t* setData, size_t size);
 
+  [[nodiscard]] bool isNull() const;
   ReturnValue_t parseDataWithCrcCheck();
   ReturnValue_t parseDataWithoutCrcCheck();
 
@@ -60,7 +61,7 @@ class PusTcReader : public PusTcIF,
 
   ReturnValue_t setReadOnlyData(const uint8_t* data, size_t size);
   [[nodiscard]] const uint8_t* getUserData() const override;
-  size_t getUserDataLen() const override;
+  [[nodiscard]] size_t getUserDataLen() const override;
 
  protected:
   /**

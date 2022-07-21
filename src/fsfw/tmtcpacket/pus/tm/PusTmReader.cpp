@@ -57,10 +57,6 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  if (spReader.getFullPacketLen() < spReader.getBufSize()) {
-    return SerializeIF::STREAM_TOO_SHORT;
-  }
-
   size_t currentOffset = SpacePacketReader::getHeaderLen();
   pointers.secHeaderStart = pointers.spHeaderStart + currentOffset;
   currentOffset += PusTmIF::MIN_SEC_HEADER_LEN;

@@ -74,7 +74,7 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
       return result;
     }
   }
-  uint16_t crc16 = CRC::crc16ccitt(*buffer, getFullPacketLen() - 2);
+  uint16_t crc16 = CRC::crc16ccitt(*buffer, getFullPacketLen() - sizeof(ecss::PusChecksumT));
   return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
 }
 

@@ -23,20 +23,18 @@ ReturnValue_t PusTcReader::parseData(bool withCrc) {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  // We already have access to the space packet fields here, so we can perform a sanity check
-  // on the length field
-  if (spReader.getFullPacketLen() < spReader.getBufSize()) {
-    return SerializeIF::STREAM_TOO_SHORT;
-  }
-
   size_t currentOffset = SpacePacketReader::getHeaderLen();
   pointers.secHeaderStart = pointers.spHeaderStart + currentOffset;
   // Might become variable sized field in the future
   // TODO: No support for spare bytes yet
   currentOffset += ecss::PusTcDataFieldHeader::MIN_SIZE;
-  pointers.userDataStart = pointers.spHeaderStart + currentOffset;
   appDataSize = spReader.getFullPacketLen() - currentOffset - sizeof(ecss::PusChecksumT);
-  pointers.crcStart = pointers.userDataStart + appDataSize;
+  pointers.userDataStart = nullptr;
+  if (appDataSize > 0) {
+    pointers.userDataStart = pointers.spHeaderStart + currentOffset;
+  }
+  currentOffset += appDataSize;
+  pointers.crcStart = pointers.spHeaderStart + currentOffset;
   if (withCrc) {
     uint16_t crc16 = CRC::crc16ccitt(spReader.getFullData(), getFullPacketLen());
     if (crc16 != 0) {
@@ -47,25 +45,28 @@ ReturnValue_t PusTcReader::parseData(bool withCrc) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-uint8_t PusTcReader::getAcknowledgeFlags() const {
-  return (pointers.secHeaderStart[0] >> 4) & 0b1111;
-}
+uint8_t PusTcReader::getPusVersion() const { return (pointers.secHeaderStart[0] >> 4) & 0b1111; }
+
+uint8_t PusTcReader::getAcknowledgeFlags() const { return pointers.secHeaderStart[0] & 0b1111; }
 
 uint8_t PusTcReader::getService() const { return pointers.secHeaderStart[1]; }
 
 uint8_t PusTcReader::getSubService() const { return pointers.secHeaderStart[2]; }
+
 uint16_t PusTcReader::getSourceId() const {
   return (pointers.secHeaderStart[3] << 8) | pointers.secHeaderStart[4];
 }
 
 uint16_t PusTcReader::getErrorControl() const {
-  return pointers.crcStart[0] << 8 | pointers.crcStart[1];
+  return (pointers.crcStart[0] << 8) | pointers.crcStart[1];
 }
 
 uint16_t PusTcReader::getPacketIdRaw() const { return spReader.getPacketIdRaw(); }
+
 uint16_t PusTcReader::getPacketSeqCtrlRaw() const { return spReader.getPacketSeqCtrlRaw(); }
+
 uint16_t PusTcReader::getPacketDataLen() const { return spReader.getPacketDataLen(); }
-uint8_t PusTcReader::getPusVersion() const { return spReader.getVersion(); }
+
 const uint8_t* PusTcReader::getFullData() { return pointers.spHeaderStart; }
 
 ReturnValue_t PusTcReader::setData(uint8_t* pData, size_t size_, void* args) {
@@ -80,13 +81,4 @@ ReturnValue_t PusTcReader::setReadOnlyData(const uint8_t* data, size_t size_) {
 const uint8_t* PusTcReader::getUserData() const { return pointers.userDataStart; }
 size_t PusTcReader::getUserDataLen() const { return appDataSize; }
 
-/*
-void PusTcReader::print() {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::info << "TcPacketBase::print:" << std::endl;
-#else
-  sif::printInfo("TcPacketBase::print:\n");
-#endif
-  arrayprinter::print(getWholeData(), getFullSize());
-}
-*/
+bool PusTcReader::isNull() const { return spReader.isNull(); }
