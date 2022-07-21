@@ -3,10 +3,15 @@
 
 #include <cstdint>
 
+#include "fsfw/returnvalues/FwClassIds.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 
 class PusIF : public SpacePacketIF {
  public:
+  static constexpr uint8_t INTERFACE_ID = CLASS_ID::PUS_IF;
+  static constexpr ReturnValue_t INVALID_CRC_16 =
+      HasReturnvaluesIF::makeReturnCode(INTERFACE_ID, 0);
+
   ~PusIF() override = default;
   /**
    * This command returns the TC Packet PUS Version Number.

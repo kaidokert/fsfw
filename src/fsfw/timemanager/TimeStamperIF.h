@@ -24,6 +24,7 @@ class TimeStamperIF : public SerializeIF {
 
   [[nodiscard]] virtual size_t getTimestampSize() const = 0;
   virtual ReturnValue_t addTimeStamp(uint8_t* buffer, uint8_t maxSize) = 0;
+
   ~TimeStamperIF() override = default;
 };
 

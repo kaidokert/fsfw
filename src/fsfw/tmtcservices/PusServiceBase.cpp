@@ -47,39 +47,51 @@ void PusServiceBase::handleRequestQueue() {
     //					<<  std::endl;
 #endif
     //		}
-
-    if (status == RETURN_OK) {
-      const uint8_t* dataPtr;
-      size_t dataLen = 0;
-      result = ipcStore->getData(message.getStorageId(), &dataPtr, &dataLen);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
-        // TODO: Warning?
-      }
-
-      currentPacket.setReadOnlyData(dataPtr, dataLen);
-
-      result = this->handleRequest(currentPacket.getSubService());
-      if (result == RETURN_OK) {
-        this->verifyReporter.sendSuccessReport(tc_verification::COMPLETION_SUCCESS,
-                                               &this->currentPacket);
-      } else {
-        this->verifyReporter.sendFailureReport(tc_verification::COMPLETION_FAILURE,
-                                               &this->currentPacket, result, 0, errorParameter1,
-                                               errorParameter2);
-      }
-      ipcStore->deleteData(message.getStorageId());
-      errorParameter1 = 0;
-      errorParameter2 = 0;
-    } else if (status == MessageQueueIF::EMPTY) {
+    if (status == MessageQueueIF::EMPTY) {
       status = RETURN_OK;
       break;
-    } else {
+    } else if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "PusServiceBase::performOperation: Service " << this->serviceId
                  << ": Error receiving packet. Code: " << std::hex << status << std::dec
                  << std::endl;
+#else
+      sif::printError(
+          "PusServiceBase::performOperation: Service %d. Error receiving packet. Code: %04x\n",
+          serviceId, status);
 #endif
+      break;
     }
+    const uint8_t* dataPtr;
+    size_t dataLen = 0;
+    result = ipcStore->getData(message.getStorageId(), &dataPtr, &dataLen);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      // TODO: Warning?
+      continue;
+    }
+
+    result = currentPacket.setReadOnlyData(dataPtr, dataLen);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      // TODO: Warning?
+      continue;
+    }
+    result = currentPacket.parseData();
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      // TODO: Warning?
+      continue;
+    }
+    result = this->handleRequest(currentPacket.getSubService());
+    if (result == RETURN_OK) {
+      this->verifyReporter.sendSuccessReport(tc_verification::COMPLETION_SUCCESS,
+                                             &this->currentPacket);
+    } else {
+      this->verifyReporter.sendFailureReport(tc_verification::COMPLETION_FAILURE,
+                                             &this->currentPacket, result, 0, errorParameter1,
+                                             errorParameter2);
+    }
+    ipcStore->deleteData(message.getStorageId());
+    errorParameter1 = 0;
+    errorParameter2 = 0;
   }
 }
 

@@ -504,7 +504,7 @@ ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from, size_t
   } else if ((pField & 0b11) == 0b10) {
     expectedLength += 4;
   }
-  if (foundLength != NULL) {
+  if (foundLength != nullptr) {
     *foundLength = expectedLength;
   }
   if (expectedLength > maxLength) {

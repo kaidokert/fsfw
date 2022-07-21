@@ -5,7 +5,7 @@
 #include "CcsdsPacketCheckerBase.h"
 #include "fsfw/FSFW.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
-#include "fsfw/tmtcpacket/pus/definitions.h"
+#include "fsfw/tmtcpacket/pus/defs.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
 class PacketCheckIF : public ReadablePacketIF, public PusIF {};

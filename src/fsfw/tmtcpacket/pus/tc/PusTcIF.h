@@ -31,7 +31,7 @@ static constexpr uint8_t ACK_ALL = ACK_ACCEPTANCE | ACK_START | ACK_STEP | ACK_C
  */
 struct PusTcDataFieldHeader {
   // Version and ACK byte, Service Byte, Subservice Byte, 2 byte Source ID
-  static constexpr size_t MIN_LEN = 5;
+  static constexpr size_t MIN_SIZE = 5;
   uint8_t pusVersion;
   uint8_t ackFlags;
   uint8_t serviceType;
@@ -44,8 +44,8 @@ struct PusTcDataFieldHeader {
 class PusTcIF : public PusIF {
  public:
   ~PusTcIF() override = default;
-  static const size_t MIN_LEN =
-      (sizeof(ccsds::PrimaryHeader) + ecss::PusTcDataFieldHeader::MIN_LEN + 2);
+  static const size_t MIN_SIZE =
+      (sizeof(ccsds::PrimaryHeader) + ecss::PusTcDataFieldHeader::MIN_SIZE + 2);
 
   /**
    * This is a getter for the packet's Ack field, which are the lowest four

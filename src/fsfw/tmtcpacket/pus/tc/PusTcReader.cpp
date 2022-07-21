@@ -12,20 +12,30 @@ PusTcReader::PusTcReader(const uint8_t* data, size_t size) { setReadOnlyData(dat
 PusTcReader::~PusTcReader() = default;
 
 ReturnValue_t PusTcReader::parseData() {
-  ReturnValue_t result = spReader.checkLength();
+  if (pointers.spHeaderStart == nullptr or spReader.isNull()) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
+  ReturnValue_t result = spReader.checkSize();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  if (size < PusTcIF::MIN_LEN) {
+  if (spReader.getBufSize() < PusTcIF::MIN_SIZE) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
+
+  size_t currentOffset = SpacePacketReader::getHeaderLen();
+  pointers.secHeaderStart = pointers.spHeaderStart + currentOffset;
   // Might become variable sized field in the future
-  size_t secHeaderLen = ecss::PusTcDataFieldHeader::MIN_LEN;
-  pointers.secHeaderStart = pointers.spHeaderStart + ccsds::HEADER_LEN;
   // TODO: No support for spare bytes yet
-  pointers.userDataStart = pointers.secHeaderStart + secHeaderLen;
-  appDataSize = size - (ccsds::HEADER_LEN + secHeaderLen);
+  currentOffset += ecss::PusTcDataFieldHeader::MIN_SIZE;
+  pointers.userDataStart = pointers.spHeaderStart + currentOffset;
+  appDataSize = spReader.getFullPacketLen() - currentOffset - sizeof(ecss::PusChecksumT);
   pointers.crcStart = pointers.userDataStart + appDataSize;
+  uint16_t crc16 = CRC::crc16ccitt(spReader.getFullData(), getFullPacketLen());
+  if (crc16 != 0) {
+    // Checksum failure
+    return PusIF::INVALID_CRC_16;
+  }
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -51,21 +61,16 @@ uint8_t PusTcReader::getPusVersion() const { return spReader.getVersion(); }
 const uint8_t* PusTcReader::getFullData() { return pointers.spHeaderStart; }
 
 ReturnValue_t PusTcReader::setData(uint8_t* pData, size_t size_, void* args) {
-  size = size_;
   pointers.spHeaderStart = pData;
-  spReader.setData(pData, size_, args);
-  return HasReturnvaluesIF::RETURN_OK;
+  return spReader.setReadOnlyData(pData, size_);
 }
 
 ReturnValue_t PusTcReader::setReadOnlyData(const uint8_t* data, size_t size_) {
-  setData(const_cast<uint8_t*>(data), size_, nullptr);
-  return HasReturnvaluesIF::RETURN_OK;
+  return setData(const_cast<uint8_t*>(data), size_, nullptr);
 }
 
-const uint8_t* PusTcReader::getUserData(size_t& userDataLen) {
-  userDataLen = appDataSize;
-  return pointers.userDataStart;
-}
+const uint8_t* PusTcReader::getUserData() const { return pointers.userDataStart; }
+size_t PusTcReader::getUserDataLen() const { return appDataSize; }
 
 /*
 void PusTcReader::print() {

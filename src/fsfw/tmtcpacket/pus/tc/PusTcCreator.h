@@ -5,7 +5,7 @@
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 #include "fsfw/tmtcpacket/pus/CreatorDataIF.h"
-#include "fsfw/tmtcpacket/pus/definitions.h"
+#include "fsfw/tmtcpacket/pus/defs.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
 
 struct PusTcParams {
@@ -24,6 +24,8 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
   PusTcCreator(SpacePacketParams spParams, PusTcParams pusParams);
 
   void updateSpLengthField();
+  PusTcParams &getPusParams();
+  SpacePacketParams &getSpParams();
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
   [[nodiscard]] size_t getSerializedSize() const override;

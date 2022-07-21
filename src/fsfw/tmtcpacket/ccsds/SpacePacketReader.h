@@ -22,17 +22,21 @@
  * This class is the basic data handler for any CCSDS Space Packet
  * compatible Telecommand and Telemetry packet.
  * It does not contain the packet data itself but a pointer to the
- * data must be set on instantiation. An invalid pointer may cause
- * damage, as no getter method checks data validity. Anyway, a NULL
- * check can be performed by making use of the getWholeData method.
- * Remark: All bit numbers in this documentation are counted from
- * the most significant bit (from left).
+ * data must be set on instantiation or with the @setData or @setReadOnlyData call.
+ * The @isNull and @checkSize methods can be used to check the validity of the data pointed to.
+ *
+ * This is a zero-copy reader class. It does not contain the packet data itself but a pointer to
+ * the data. Calling any accessor methods without pointing the object to valid data  first will
+ * cause undefined behaviour.
  * @ingroup tmtcpackets
  */
 class SpacePacketReader : public SpacePacketIF,
                           public ReadablePacketIF,
                           public RedirectableDataPointerIF {
  public:
+  /**
+   * Initialize an empty space packet reader which points to no data
+   */
   SpacePacketReader() = default;
   /**
    * This is the default constructor.
@@ -45,6 +49,24 @@ class SpacePacketReader : public SpacePacketIF,
    */
   ~SpacePacketReader() override;
 
+  /**
+   * Check whether any data is set for the reader object
+   * @return
+   */
+  [[nodiscard]] bool isNull() const;
+  /**
+   * Get size of the buffer. This is the size which is passed to the constructor or to the
+   * @setData call. It is not the content of the CCSDS data length field and it is not necessarily
+   * equal to the full packet length of the space packet.
+   * @return
+   */
+  [[nodiscard]] size_t getBufSize() const;
+
+  /**
+   * CCSDS header always has 6 bytes
+   * @return
+   */
+  static constexpr size_t getHeaderLen() { return ccsds::HEADER_LEN; }
   [[nodiscard]] uint16_t getPacketIdRaw() const override;
   [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
@@ -52,16 +74,11 @@ class SpacePacketReader : public SpacePacketIF,
   const uint8_t* getFullData() override;
 
   // Helper methods:
-  [[nodiscard]] ReturnValue_t checkLength() const;
+  [[nodiscard]] ReturnValue_t checkSize() const;
 
   const uint8_t* getPacketData();
 
-  /**
-   * With this method, the packet data pointer can be redirected to another
-   * location.
-   * @param p_Data A pointer to another raw Space Packet.
-   */
-  ReturnValue_t setData(uint8_t* p_Data, size_t maxSize, void* args) override;
+  ReturnValue_t setReadOnlyData(const uint8_t* data, size_t maxSize);
 
  protected:
   /**
@@ -71,9 +88,15 @@ class SpacePacketReader : public SpacePacketIF,
    */
   const ccsds::PrimaryHeader* spHeader{};
   const uint8_t* packetDataField{};
-  size_t maxSize = 0;
+  size_t bufSize = 0;
+  /**
+   * With this method, the packet data pointer can be redirected to another
+   * location.
+   * @param data A pointer to another raw Space Packet.
+   */
+  ReturnValue_t setData(uint8_t* data, size_t maxSize, void* args) override;
 
-  void setInternalFields(const uint8_t* data, size_t maxSize);
+  ReturnValue_t setInternalFields(const uint8_t* data, size_t maxSize);
 };
 
 #endif /* FSFW_TMTCPACKET_SPACEPACKETBASE_H_ */

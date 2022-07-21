@@ -7,16 +7,17 @@
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 #include "fsfw/tmtcpacket/pus/RawUserDataReaderIF.h"
+#include "fsfw/tmtcpacket/pus/defs.h"
 
 /**
- * This class is the basic data handler for any ECSS PUS Telecommand packet.
+ * This class is the basic reader class to read ECSS PUS C Telecommand packets.
  *
- * In addition to #SpacePacketBase, the class provides methods to handle
- * the standardized entries of the PUS TC Packet Data Field Header.
- * It does not contain the packet data itself but a pointer to the
- * data must be set on instantiation. An invalid pointer may cause
- * damage, as no getter method checks data validity. Anyway, a NULL
- * check can be performed by making use of the getWholeData method.
+ *  1. Implements the @SpacePacketIF to provide accessor methods for the contained space packet.
+ *  2. Implements the @PusTcIF to provide accessor methods for generic PUS C fields
+ *
+ * This is a zero-copy reader class. It does not contain the packet data itself but a pointer to
+ * the data. Calling any accessor methods without pointing the object to valid data  first will
+ * cause undefined behaviour.
  * @ingroup tmtcpackets
  */
 class PusTcReader : public PusTcIF,
@@ -56,7 +57,8 @@ class PusTcReader : public PusTcIF,
   const uint8_t* getFullData() override;
 
   ReturnValue_t setReadOnlyData(const uint8_t* data, size_t size);
-  const uint8_t* getUserData(size_t& userDataLen) override;
+  [[nodiscard]] const uint8_t* getUserData() const override;
+  size_t getUserDataLen() const override;
 
  protected:
   /**
@@ -70,20 +72,7 @@ class PusTcReader : public PusTcIF,
   ReturnValue_t setData(uint8_t* pData, size_t size, void* args) override;
 
   SpacePacketReader spReader;
-  /**
-   * This struct defines the data structure of a Space Packet when accessed
-   * via a pointer.
-   * @ingroup tmtcpackets
-   */
-  struct PusTcPointers {
-    const uint8_t* spHeaderStart;
-    const uint8_t* secHeaderStart;
-    const uint8_t* userDataStart;
-    const uint8_t* crcStart;
-  };
-
-  PusTcPointers pointers{};
-  size_t size = 0;
+  ecss::PusPointers pointers{};
   size_t appDataSize = 0;
 };
 

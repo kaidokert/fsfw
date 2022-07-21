@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "../definitions.h"
+#include "../defs.h"
 #include "TmPacketBase.h"
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/globalfunctions/arrayprinter.h"

@@ -1,9 +1,9 @@
 #ifndef FSFW_TIMEMANAGER_TIMESTAMPER_H_
 #define FSFW_TIMEMANAGER_TIMESTAMPER_H_
 
-#include "../objectmanager/SystemObject.h"
 #include "CCSDSTime.h"
 #include "TimeStamperIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
 
 /**
  * @brief   Time stamper which can be used to add any timestamp to a
@@ -34,10 +34,10 @@ class CdsShortTimeStamper : public TimeStamperIF, public SystemObject {
   ReturnValue_t addTimeStamp(uint8_t *buffer, uint8_t maxSize) override;
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override;
-  size_t getTimestampSize() const override;
+  [[nodiscard]] size_t getTimestampSize() const override;
 };
 
 #endif /* FSFW_TIMEMANAGER_TIMESTAMPER_H_ */

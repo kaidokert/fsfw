@@ -6,7 +6,7 @@
 
 #include "fsfw/timemanager/TimeStamperIF.h"
 #include "fsfw/tmtcpacket/pus/PusIF.h"
-#include "fsfw/tmtcpacket/pus/definitions.h"
+#include "fsfw/tmtcpacket/pus/defs.h"
 
 class PusTmIF : public PusIF {
  public:
@@ -19,12 +19,11 @@ class PusTmIF : public PusIF {
   /**
    * 2 bytes for CRC16
    */
-  static constexpr size_t MIN_TM_SIZE = sizeof(ccsds::PrimaryHeader) + MIN_SEC_HEADER_LEN + 2;
+  static constexpr size_t MIN_SIZE = sizeof(ccsds::PrimaryHeader) + MIN_SEC_HEADER_LEN + 2;
 
   virtual uint8_t getScTimeRefStatus() = 0;
   virtual uint16_t getMessageTypeCounter() = 0;
   virtual uint16_t getDestId() = 0;
-  virtual TimeStamperIF* getTimestamper() = 0;
 };
 
 #endif  // FSFW_TMTCPACKET_PUSTMIF_H

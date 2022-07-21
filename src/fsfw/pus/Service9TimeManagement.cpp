@@ -25,9 +25,7 @@ ReturnValue_t Service9TimeManagement::handleRequest(uint8_t subservice) {
 
 ReturnValue_t Service9TimeManagement::setTime() {
   Clock::TimeOfDay_t timeToSet;
-  size_t userDataLen = 0;
-  const uint8_t* timeData = currentPacket.getUserData(userDataLen);
-  TimePacket timePacket(timeData, userDataLen);
+  TimePacket timePacket(currentPacket.getUserData(), currentPacket.getUserDataLen());
   ReturnValue_t result =
       CCSDSTime::convertFromCcsds(&timeToSet, timePacket.getTime(), timePacket.getTimeSize());
   if (result != RETURN_OK) {

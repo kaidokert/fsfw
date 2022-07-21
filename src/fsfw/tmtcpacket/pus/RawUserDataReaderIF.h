@@ -6,7 +6,8 @@
 
 class RawUserDataReaderIF {
  public:
-  virtual const uint8_t* getUserData(size_t& userDataLen) = 0;
+  virtual const uint8_t* getUserData() const = 0;
+  virtual size_t getUserDataLen() const = 0;
 };
 
 #endif  // FSFW_TMTCPACKET_RAWDATAIF_H

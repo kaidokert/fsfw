@@ -73,8 +73,8 @@ class PusTmMinimal : public PusTmIF, public RawUserDataReaderIF, public Redirect
   uint8_t getScTimeRefStatus() override;
   uint16_t getMessageTypeCounter() override;
   uint16_t getDestId() override;
-  const uint8_t* getUserData(size_t& userDataLen) override;
-  TimeStamperIF* getTimestamper() override;
+  const uint8_t* getUserData() const override;
+  size_t getUserDataLen() const override;
 
  protected:
   /**

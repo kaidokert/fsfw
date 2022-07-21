@@ -1,6 +1,7 @@
+#include "fsfw/timemanager/CdsShortTimeStamper.h"
+
 #include <cstring>
 
-#include "fsfw/timemanager/CdsShortTimeStamper.h"
 #include "fsfw/timemanager/Clock.h"
 
 CdsShortTimeStamper::CdsShortTimeStamper(object_id_t objectId) : SystemObject(objectId) {}
@@ -27,9 +28,12 @@ ReturnValue_t CdsShortTimeStamper::serialize(uint8_t **buffer, size_t *size, siz
   *size += getSerializedSize();
   return result;
 }
+
 size_t CdsShortTimeStamper::getSerializedSize() const { return getTimestampSize(); }
+
 ReturnValue_t CdsShortTimeStamper::deSerialize(const uint8_t **buffer, size_t *size,
                                                SerializeIF::Endianness streamEndianness) {
   return HasReturnvaluesIF::RETURN_FAILED;
 }
+
 size_t CdsShortTimeStamper::getTimestampSize() const { return TIMESTAMP_LEN; }

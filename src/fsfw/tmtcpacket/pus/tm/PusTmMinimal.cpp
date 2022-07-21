@@ -42,8 +42,8 @@ uint16_t PusTmMinimal::getDestId() { return 0; }
 void PusTmMinimal::setApid(uint16_t apid) {
   /* TODO: Implement. Maybe provide low level function to do this */
 }
-const uint8_t* PusTmMinimal::getUserData(size_t& userDataLen_) {
-  userDataLen_ = userDataLen;
+size_t PusTmMinimal::getUserDataLen() const { return userDataLen; }
+
+const uint8_t* PusTmMinimal::getUserData() const {
   return reinterpret_cast<const uint8_t*>(&tmData->rest);
 }
-TimeStamperIF* PusTmMinimal::getTimestamper() { return nullptr; }

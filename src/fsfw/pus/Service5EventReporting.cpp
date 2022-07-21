@@ -99,4 +99,5 @@ ReturnValue_t Service5EventReporting::initialize() {
     return result;
   }
   initializeTmHelpers(sendHelper, storeHelper);
+  return result;
 }

@@ -14,7 +14,7 @@ PusTcCreator::PusTcCreator(SpacePacketParams spParams, PusTcParams pusParams)
 ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                       SerializeIF::Endianness streamEndianness) const {
   size_t userDataLen = pusParams.dataWrapper.getLength();
-  if (*size + PusTcIF::MIN_LEN + userDataLen > maxSize) {
+  if (*size + PusTcIF::MIN_SIZE + userDataLen > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }
   ReturnValue_t result = spCreator.serialize(buffer, size, maxSize, streamEndianness);
@@ -57,7 +57,8 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
 }
 
 void PusTcCreator::updateSpLengthField() {
-  spCreator.setDataLen(ecss::PusTcDataFieldHeader::MIN_LEN + pusParams.dataWrapper.getLength() + 1);
+  spCreator.setDataLen(ecss::PusTcDataFieldHeader::MIN_SIZE + pusParams.dataWrapper.getLength() +
+                       1);
 }
 
 size_t PusTcCreator::getSerializedSize() const { return spCreator.getFullPacketLen(); }
@@ -82,4 +83,9 @@ uint8_t PusTcCreator::getService() const { return pusParams.service; }
 uint8_t PusTcCreator::getSubService() const { return pusParams.subservice; }
 
 uint16_t PusTcCreator::getSourceId() const { return pusParams.sourceId; }
+
 ecss::DataWrapper &PusTcCreator::getDataWrapper() { return pusParams.dataWrapper; }
+
+PusTcParams &PusTcCreator::getPusParams() { return pusParams; }
+
+SpacePacketParams &PusTcCreator::getSpParams() { return spCreator.getParams(); }

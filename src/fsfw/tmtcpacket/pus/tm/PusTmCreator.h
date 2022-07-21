@@ -50,7 +50,7 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CreatorDataIF {
   [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override;
-  TimeStamperIF* getTimestamper() override;
+  TimeStamperIF* getTimestamper();
 
  private:
   ecss::DataWrapper& getDataWrapper() override;

@@ -251,8 +251,18 @@ void CommandingServiceBase::handleRequestQueue() {
     result = tcStore->getData(message.getStorageId(), &dataPtr, &dataLen);
     if (result != HasReturnvaluesIF::RETURN_OK) {
       // TODO: Warning?
+      continue;
     }
-    tcReader.setReadOnlyData(dataPtr, dataLen);
+    result = tcReader.setReadOnlyData(dataPtr, dataLen);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      // TODO: Warning?
+      continue;
+    }
+    result = tcReader.parseData();
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      // TODO: Warning?
+      continue;
+    }
 
     if ((tcReader.getSubService() == 0) or
         (isValidSubservice(tcReader.getSubService()) != RETURN_OK)) {
@@ -260,10 +270,8 @@ void CommandingServiceBase::handleRequestQueue() {
       continue;
     }
 
-    size_t appDataLen = 0;
-    const uint8_t* appData = tcReader.getUserData(appDataLen);
-    result =
-        getMessageQueueAndObject(tcReader.getSubService(), appData, appDataLen, &queue, &objectId);
+    result = getMessageQueueAndObject(tcReader.getSubService(), tcReader.getUserData(),
+                                      tcReader.getUserDataLen(), &queue, &objectId);
     if (result != HasReturnvaluesIF::RETURN_OK) {
       rejectPacket(tc_verification::START_FAILURE, address, &tcReader, result);
       continue;
@@ -332,10 +340,9 @@ void CommandingServiceBase::startExecution(store_address_t storeId, PusTcReader*
     return;
   }
   iter->second.subservice = storedPacket->getSubService();
-  size_t appDataLen = 0;
-  const uint8_t* appData = storedPacket->getUserData(appDataLen);
-  result = prepareCommand(&command, iter->second.subservice, appData, appDataLen,
-                          &iter->second.state, iter->second.objectId);
+  result =
+      prepareCommand(&command, iter->second.subservice, storedPacket->getUserData(),
+                     storedPacket->getUserDataLen(), &iter->second.state, iter->second.objectId);
 
   ReturnValue_t sendResult = RETURN_OK;
   switch (result) {
@@ -401,7 +408,16 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
     size_t dataLen = 0;
     ReturnValue_t result = tcStore->getData(address, &dataPtr, &dataLen);
     if (result == HasReturnvaluesIF::RETURN_OK) {
-      tcReader.setReadOnlyData(dataPtr, dataLen);
+      result = tcReader.setReadOnlyData(dataPtr, dataLen);
+      if (result != HasReturnvaluesIF::RETURN_OK) {
+        // TODO: Warning?
+        return;
+      }
+      result = tcReader.parseData();
+      if (result != HasReturnvaluesIF::RETURN_OK) {
+        // TODO: Warning?
+        return;
+      }
       startExecution(address, &tcReader, iter);
     } else {
       // TODO: Warning?

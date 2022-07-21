@@ -1,7 +1,7 @@
 #ifndef FSFW_TMTCPACKET_CREATORDATAIF_H
 #define FSFW_TMTCPACKET_CREATORDATAIF_H
 
-#include "definitions.h"
+#include "defs.h"
 
 class CreatorDataIF {
  public:

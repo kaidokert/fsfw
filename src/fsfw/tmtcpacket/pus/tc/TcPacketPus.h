@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "../definitions.h"
+#include "../defs.h"
 #include "PusTcReader.h"
 #include "fsfw/FSFW.h"
 #include "fsfw/tmtcpacket/ccsds/defs.h"

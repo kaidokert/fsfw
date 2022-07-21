@@ -7,20 +7,20 @@
 
 PusTmCreator::PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams,
                            TimeStamperIF* timeStamper)
-    : pusParams(initPusParams), spCreator(std::move(initSpParams)){};
+    : pusParams(initPusParams), spCreator(std::move(initSpParams)) {}
 
 PusTmCreator::PusTmCreator(TimeStamperIF* timeStamper_) {
   pusParams.secHeader.timeStamper = timeStamper_;
-};
+}
 
 PusTmCreator::PusTmCreator() = default;
 
-uint16_t PusTmCreator::getPacketIdRaw() const { return 0; }
-uint16_t PusTmCreator::getPacketSeqCtrlRaw() const { return 0; }
-uint16_t PusTmCreator::getPacketDataLen() const { return 0; }
-uint8_t PusTmCreator::getPusVersion() const { return 0; }
-uint8_t PusTmCreator::getService() const { return 0; }
-uint8_t PusTmCreator::getSubService() const { return 0; }
+uint16_t PusTmCreator::getPacketIdRaw() const { return spCreator.getPacketIdRaw(); }
+uint16_t PusTmCreator::getPacketSeqCtrlRaw() const { return spCreator.getPacketSeqCtrlRaw(); }
+uint16_t PusTmCreator::getPacketDataLen() const { return spCreator.getPacketDataLen(); }
+uint8_t PusTmCreator::getPusVersion() const { return pusParams.secHeader.pusVersion; }
+uint8_t PusTmCreator::getService() const { return pusParams.secHeader.service; }
+uint8_t PusTmCreator::getSubService() const { return pusParams.secHeader.subservice; }
 PusTmParams& PusTmCreator::getParams() { return pusParams; }
 void PusTmCreator::setTimeStamper(TimeStamperIF* timeStamper_) {
   pusParams.secHeader.timeStamper = timeStamper_;
@@ -89,11 +89,11 @@ TimeStamperIF* PusTmCreator::getTimestamper() { return pusParams.secHeader.timeS
 SpacePacketParams& PusTmCreator::getSpParams() { return spCreator.getParams(); }
 
 void PusTmCreator::updateSpLengthField() {
-  size_t headerLen = PusTmIF::MIN_TM_SIZE;
+  size_t headerLen = PusTmIF::MIN_SIZE;
   if (pusParams.secHeader.timeStamper != nullptr) {
     headerLen += pusParams.secHeader.timeStamper->getSerializedSize();
   }
   spCreator.setDataLen(headerLen + pusParams.dataWrapper.getLength() + 1);
 }
 
-void PusTmCreator::setApid(uint16_t apid) { spCreator.setApid(apid); };
+void PusTmCreator::setApid(uint16_t apid) { spCreator.setApid(apid); }

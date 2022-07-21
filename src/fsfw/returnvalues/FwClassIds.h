@@ -36,7 +36,8 @@ enum : uint8_t {
   TRIPLE_REDUNDACY_CHECK,         // TRC
   PACKET_CHECK,                   // TCC
   PACKET_DISTRIBUTION,            // TCD
-  ACCEPTS_TELECOMMANDS_IF,        // PUS
+  ACCEPTS_TELECOMMANDS_IF,        // ATC
+  PUS_IF,                         // PUS
   DEVICE_SERVICE_BASE,            // DSB
   COMMAND_SERVICE_BASE,           // CSB
   TM_STORE_BACKEND_IF,            // TMB
