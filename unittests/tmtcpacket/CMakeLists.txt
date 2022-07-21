@@ -3,4 +3,6 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
   testCcsdsReader.cpp
   testPusTcCreator.cpp
   testPusTcReader.cpp
+  testPusTmCreator.cpp
+  testPusTmReader.cpp
 )
