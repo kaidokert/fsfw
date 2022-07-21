@@ -57,7 +57,7 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  if (spReader.getBufSize() < PusTmIF::MIN_SIZE) {
+  if (spReader.getFullPacketLen() < spReader.getBufSize()) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
 

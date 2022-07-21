@@ -23,7 +23,9 @@ ReturnValue_t PusTcReader::parseData(bool withCrc) {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  if (spReader.getBufSize() < PusTcIF::MIN_SIZE) {
+  // We already have access to the space packet fields here, so we can perform a sanity check
+  // on the length field
+  if (spReader.getFullPacketLen() < spReader.getBufSize()) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
 

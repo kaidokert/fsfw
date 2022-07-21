@@ -5,6 +5,8 @@
 
 class ReadablePacketIF {
  public:
+  virtual ~ReadablePacketIF() = default;
+
   /**
    * This method returns a raw uint8_t pointer to the readable data
    */
