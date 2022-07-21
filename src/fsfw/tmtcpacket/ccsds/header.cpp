@@ -1,7 +1,7 @@
 #include "header.h"
 
 uint16_t ccsds::getPacketId(const PrimaryHeader &header) {
-  return ((header.packetIdHAndVersion & 0x1F00) << 8) + header.packetIdL;
+  return ((header.packetIdHAndVersion & 0x1F) << 8) + header.packetIdL;
 }
 
 uint16_t ccsds::getPacketSeqCtrl(const PrimaryHeader &header) {

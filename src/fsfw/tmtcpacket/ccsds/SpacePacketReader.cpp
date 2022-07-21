@@ -8,6 +8,9 @@ SpacePacketReader::SpacePacketReader(const uint8_t* setAddress, size_t maxSize_)
 }
 
 ReturnValue_t SpacePacketReader::checkSize() const {
+  if (isNull()) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
   if (getFullPacketLen() > bufSize) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
@@ -33,7 +36,9 @@ uint16_t SpacePacketReader::getPacketDataLen() const { return ccsds::getPacketLe
 ReturnValue_t SpacePacketReader::setInternalFields(const uint8_t* data, size_t maxSize_) {
   bufSize = maxSize_;
   spHeader = reinterpret_cast<const ccsds::PrimaryHeader*>(data);
-  packetDataField = data + ccsds::HEADER_LEN;
+  if (maxSize_ > 6) {
+    packetDataField = data + ccsds::HEADER_LEN;
+  }
   return checkSize();
 }
 

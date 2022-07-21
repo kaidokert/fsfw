@@ -23,6 +23,12 @@ class SpacePacketIF {
   virtual ~SpacePacketIF() = default;
 
   /**
+   * CCSDS header always has 6 bytes
+   * @return
+   */
+  static constexpr size_t getHeaderLen() { return ccsds::HEADER_LEN; }
+
+  /**
    * Returns the complete first two bytes of the packet, which together form
    * the CCSDS packet ID
    * @return	The CCSDS packet ID

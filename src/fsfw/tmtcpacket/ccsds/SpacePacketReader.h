@@ -62,11 +62,6 @@ class SpacePacketReader : public SpacePacketIF,
    */
   [[nodiscard]] size_t getBufSize() const;
 
-  /**
-   * CCSDS header always has 6 bytes
-   * @return
-   */
-  static constexpr size_t getHeaderLen() { return ccsds::HEADER_LEN; }
   [[nodiscard]] uint16_t getPacketIdRaw() const override;
   [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
