@@ -4,7 +4,8 @@
 #include "TmSendHelper.h"
 #include "TmStoreHelper.h"
 
-namespace tm {
+// I'd prefer to use tm, but there have been nameclashes with the tm struct
+namespace telemetry {
 
 ReturnValue_t storeAndSendTmPacket(TmStoreHelper& storeHelper, TmSendHelper& sendHelper);
 
@@ -42,6 +43,6 @@ class SourceDataWithObjectIdPrefix : public SerializeIF {
   size_t srcDataLen;
 };
 
-}  // namespace tm
+}  // namespace telemetry
 
 #endif  // FSFW_TMTCSERVICES_TMHELPERS_H_

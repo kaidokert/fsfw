@@ -70,7 +70,7 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
                        message->getParameter1(), message->getParameter2());
   storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
   storeHelper.setSourceDataSerializable(&report);
-  return tm::storeAndSendTmPacket(storeHelper, sendHelper);
+  return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
 }
 
 ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
@@ -79,7 +79,7 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
                        message->getTcSequenceControl(), message->getStep());
   storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
   storeHelper.setSourceDataSerializable(&report);
-  return tm::storeAndSendTmPacket(storeHelper, sendHelper);
+  return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
 }
 
 ReturnValue_t Service1TelecommandVerification::initialize() {

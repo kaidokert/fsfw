@@ -17,12 +17,12 @@ ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   switch (subservice) {
     case Subservice::CONNECTION_TEST: {
       storeHelper.preparePacket(serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter);
-      return tm::storeAndSendTmPacket(storeHelper, sendHelper);
+      return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
     }
     case Subservice::EVENT_TRIGGER_TEST: {
       storeHelper.preparePacket(serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter++);
       triggerEvent(TEST, 1234, 5678);
-      return tm::storeAndSendTmPacket(storeHelper, sendHelper);
+      return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
     }
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;

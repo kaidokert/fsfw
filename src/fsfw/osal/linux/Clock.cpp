@@ -122,7 +122,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   MutexGuard helper(timeMutex);
   // gmtime writes its output in a global buffer which is not Thread Safe
   // Therefore we have to use a Mutex here
-  struct tm* timeInfo;
+  struct telemetry* timeInfo;
   timeInfo = gmtime(&timeUnix.tv_sec);
   time->year = timeInfo->tm_year + 1900;
   time->month = timeInfo->tm_mon + 1;
@@ -136,7 +136,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 }
 
 ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval* to) {
-  tm fromTm;
+  telemetry fromTm;
   // Note: Fails for years before AD
   fromTm.tm_year = from->year - 1900;
   fromTm.tm_mon = from->month - 1;

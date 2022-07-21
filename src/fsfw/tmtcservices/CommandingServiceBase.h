@@ -15,9 +15,6 @@
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 
-class TcPacketStoredBase;
-class TcPacketStoredPus;
-
 namespace Factory {
 void setStaticFrameworkObjectIds();
 }

@@ -5,7 +5,6 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tcdistribution/PUSDistributorIF.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
-#include "fsfw/tmtcpacket/pus/tm.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 #include "fsfw/tmtcservices/tcHelpers.h"
@@ -290,7 +289,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, const uint
                                                   size_t sourceDataLen) {
   tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
   tmStoreHelper.setSourceDataRaw(sourceData, sourceDataLen);
-  ReturnValue_t result = tm::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
+  ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
   if (result == HasReturnvaluesIF::RETURN_OK) {
     this->tmPacketCounter++;
   }
@@ -299,10 +298,10 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, const uint
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_t objectId,
                                                   const uint8_t* data, size_t dataLen) {
-  tm::SourceDataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
+  telemetry::SourceDataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
   tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
   tmStoreHelper.setSourceDataSerializable(&dataWithObjId);
-  ReturnValue_t result = tm::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
+  ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
   if (result == HasReturnvaluesIF::RETURN_OK) {
     this->tmPacketCounter++;
   }
@@ -312,7 +311,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeIF* sourceData) {
   tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
   tmStoreHelper.setSourceDataSerializable(sourceData);
-  ReturnValue_t result = tm::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
+  ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
   if (result == HasReturnvaluesIF::RETURN_OK) {
     this->tmPacketCounter++;
   }
