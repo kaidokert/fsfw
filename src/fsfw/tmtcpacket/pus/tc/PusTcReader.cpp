@@ -11,7 +11,11 @@ PusTcReader::PusTcReader(const uint8_t* data, size_t size) { setReadOnlyData(dat
 
 PusTcReader::~PusTcReader() = default;
 
-ReturnValue_t PusTcReader::parseData() {
+ReturnValue_t PusTcReader::parseDataWithCrcCheck() { return parseData(true); }
+
+ReturnValue_t PusTcReader::parseDataWithoutCrcCheck() { return parseData(false); }
+
+ReturnValue_t PusTcReader::parseData(bool withCrc) {
   if (pointers.spHeaderStart == nullptr or spReader.isNull()) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -31,10 +35,12 @@ ReturnValue_t PusTcReader::parseData() {
   pointers.userDataStart = pointers.spHeaderStart + currentOffset;
   appDataSize = spReader.getFullPacketLen() - currentOffset - sizeof(ecss::PusChecksumT);
   pointers.crcStart = pointers.userDataStart + appDataSize;
-  uint16_t crc16 = CRC::crc16ccitt(spReader.getFullData(), getFullPacketLen());
-  if (crc16 != 0) {
-    // Checksum failure
-    return PusIF::INVALID_CRC_16;
+  if (withCrc) {
+    uint16_t crc16 = CRC::crc16ccitt(spReader.getFullData(), getFullPacketLen());
+    if (crc16 != 0) {
+      // Checksum failure
+      return PusIF::INVALID_CRC_16;
+    }
   }
   return HasReturnvaluesIF::RETURN_OK;
 }

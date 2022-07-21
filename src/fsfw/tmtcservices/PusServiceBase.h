@@ -59,7 +59,7 @@ class PusServiceBase : public ExecutableObjectIF,
    */
   ~PusServiceBase() override;
 
-  void setCustomIpcStore(StorageManagerIF* ipcStore);
+  void setCustomTcStore(StorageManagerIF* tcStore);
   void setCustomErrorReporter(InternalErrorReporterIF* errReporter);
 
   void initializeTmSendHelper(TmSendHelper& tmSendHelper);
@@ -153,7 +153,7 @@ class PusServiceBase : public ExecutableObjectIF,
    * It is deleted after handleRequest was executed.
    */
   PusTcReader currentPacket;
-  StorageManagerIF* ipcStore = nullptr;
+  StorageManagerIF* tcStore = nullptr;
   InternalErrorReporterIF* errReporter = nullptr;
 
   static object_id_t packetSource;

@@ -17,7 +17,8 @@ class PusTmReader : public PusTmIF,
   PusTmReader(const uint8_t* data, size_t size);
   PusTmReader(TimeReaderIF* timeReader, const uint8_t* data, size_t size);
 
-  ReturnValue_t parseData();
+  ReturnValue_t parseDataWithoutCrcCheck();
+  ReturnValue_t parseDataWithCrcCheck();
   const uint8_t* getFullData() override;
 
   void setTimeReader(TimeReaderIF* timeReader);
@@ -37,7 +38,7 @@ class PusTmReader : public PusTmIF,
 
  private:
   ReturnValue_t setData(uint8_t* dataPtr, size_t size, void* args) override;
-
+  ReturnValue_t parseData(bool crcCheck);
   SpacePacketReader spReader{};
   size_t sourceDataLen = 0;
   TimeReaderIF* timeReader{};

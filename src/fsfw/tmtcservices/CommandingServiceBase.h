@@ -350,12 +350,14 @@ class CommandingServiceBase : public SystemObject,
    */
   void handleRequestQueue();
 
+  ReturnValue_t setUpTcReader(store_address_t storeId);
+
   void rejectPacket(uint8_t reportId, store_address_t tcStoreId, PusTcReader* tcPacket,
                     ReturnValue_t errorCode);
 
   void acceptPacket(uint8_t reportId, store_address_t tcStoreId, PusTcReader* tcPacket);
 
-  void startExecution(store_address_t storeId, PusTcReader* storedPacket, CommandMapIter iter);
+  void startExecution(store_address_t storeId, CommandMapIter iter);
 
   void handleCommandMessage(CommandMessage* reply);
   void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,

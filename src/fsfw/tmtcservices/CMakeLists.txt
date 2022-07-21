@@ -8,4 +8,6 @@ target_sources(
           VerificationReporter.cpp
           SpacePacketParser.cpp
           TmStoreHelper.cpp
-          TmSendHelper.cpp)
+          TmSendHelper.cpp
+          tcHelpers.cpp
+          tmHelpers.cpp)

@@ -34,7 +34,9 @@ class PusTcReader : public PusTcIF,
    */
   PusTcReader(const uint8_t* setData, size_t size);
 
-  ReturnValue_t parseData();
+  ReturnValue_t parseDataWithCrcCheck();
+  ReturnValue_t parseDataWithoutCrcCheck();
+
   /**
    * This is the empty default destructor.
    */
@@ -70,6 +72,7 @@ class PusTcReader : public PusTcIF,
    * @param p_data    A pointer to another PUS Telecommand Packet.
    */
   ReturnValue_t setData(uint8_t* pData, size_t size, void* args) override;
+  ReturnValue_t parseData(bool withCrc);
 
   SpacePacketReader spReader;
   ecss::PusPointers pointers{};

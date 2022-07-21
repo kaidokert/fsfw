@@ -1,19 +1,12 @@
-#ifndef FSFW_TMTCSERVICES_SENDANDSTOREHELPER_H
-#define FSFW_TMTCSERVICES_SENDANDSTOREHELPER_H
+#ifndef FSFW_TMTCSERVICES_TMHELPERS_H_
+#define FSFW_TMTCSERVICES_TMHELPERS_H_
 
 #include "TmSendHelper.h"
 #include "TmStoreHelper.h"
 
 namespace tm {
 
-ReturnValue_t storeAndSendTmPacket(TmStoreHelper& storeHelper, TmSendHelper& sendHelper) {
-  storeHelper.addPacketToStore();
-  ReturnValue_t result = sendHelper.sendPacket(storeHelper.getCurrentAddr());
-  if (result != HasReturnvaluesIF::RETURN_OK) {
-    storeHelper.deletePacket();
-  }
-  return result;
-}
+ReturnValue_t storeAndSendTmPacket(TmStoreHelper& storeHelper, TmSendHelper& sendHelper);
 
 class SourceDataWithObjectIdPrefix : public SerializeIF {
  public:
@@ -51,4 +44,4 @@ class SourceDataWithObjectIdPrefix : public SerializeIF {
 
 }  // namespace tm
 
-#endif  // FSFW_TMTCSERVICES_SENDANDSTOREHELPER_H
+#endif  // FSFW_TMTCSERVICES_TMHELPERS_H_

@@ -121,13 +121,13 @@ ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
     tcStatus = queueStatus;
   }
   if (tcStatus != RETURN_OK) {
-    this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE, &reader, tcStatus);
+    this->verifyChannel.sendFailureReport(tcverif::ACCEPTANCE_FAILURE, &reader, tcStatus);
     // A failed packet is deleted immediately after reporting,
     // otherwise it will block memory.
     store->deleteData(currentMessage.getStorageId());
     return RETURN_FAILED;
   } else {
-    this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS, &reader);
+    this->verifyChannel.sendSuccessReport(tcverif::ACCEPTANCE_SUCCESS, &reader);
     return RETURN_OK;
   }
 }

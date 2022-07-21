@@ -6,7 +6,7 @@
 #include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
-#include "fsfw/tmtcservices/sendAndStoreHelper.h"
+#include "fsfw/tmtcservices/tmHelpers.h"
 
 Service1TelecommandVerification::Service1TelecommandVerification(object_id_t objectId,
                                                                  uint16_t apid, uint8_t serviceId,

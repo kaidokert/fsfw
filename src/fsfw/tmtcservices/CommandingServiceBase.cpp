@@ -8,7 +8,8 @@
 #include "fsfw/tmtcpacket/pus/tm.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
-#include "fsfw/tmtcservices/sendAndStoreHelper.h"
+#include "fsfw/tmtcservices/tcHelpers.h"
+#include "fsfw/tmtcservices/tmHelpers.h"
 
 object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
 object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
@@ -176,12 +177,12 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
     default:
       if (isStep) {
         verificationReporter.sendFailureReport(
-            tc_verification::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags,
-            iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl, result,
-            ++iter->second.step, failureParameter1, failureParameter2);
+            tcverif::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
+            iter->second.tcInfo.tcSequenceControl, result, ++iter->second.step, failureParameter1,
+            failureParameter2);
       } else {
         verificationReporter.sendFailureReport(
-            tc_verification::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
+            tcverif::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
             iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl, result, 0,
             failureParameter1, failureParameter2);
       }
@@ -208,28 +209,27 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result, Comma
   if (sendResult == RETURN_OK) {
     if (isStep and result != NO_STEP_MESSAGE) {
       verificationReporter.sendSuccessReport(
-          tc_verification::PROGRESS_SUCCESS, iter->second.tcInfo.ackFlags,
-          iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl,
-          ++iter->second.step);
+          tcverif::PROGRESS_SUCCESS, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
+          iter->second.tcInfo.tcSequenceControl, ++iter->second.step);
     } else {
       verificationReporter.sendSuccessReport(
-          tc_verification::COMPLETION_SUCCESS, iter->second.tcInfo.ackFlags,
-          iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl, 0);
+          tcverif::COMPLETION_SUCCESS, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
+          iter->second.tcInfo.tcSequenceControl, 0);
       checkAndExecuteFifo(iter);
     }
   } else {
     if (isStep) {
       nextCommand->clearCommandMessage();
       verificationReporter.sendFailureReport(
-          tc_verification::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags,
-          iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl, sendResult,
-          ++iter->second.step, failureParameter1, failureParameter2);
+          tcverif::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
+          iter->second.tcInfo.tcSequenceControl, sendResult, ++iter->second.step, failureParameter1,
+          failureParameter2);
     } else {
       nextCommand->clearCommandMessage();
       verificationReporter.sendFailureReport(
-          tc_verification::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
-          iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl, sendResult, 0,
-          failureParameter1, failureParameter2);
+          tcverif::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
+          iter->second.tcInfo.tcSequenceControl, sendResult, 0, failureParameter1,
+          failureParameter2);
     }
     failureParameter1 = 0;
     failureParameter2 = 0;
@@ -245,35 +245,22 @@ void CommandingServiceBase::handleRequestQueue() {
   object_id_t objectId;
   for (result = requestQueue->receiveMessage(&message); result == RETURN_OK;
        result = requestQueue->receiveMessage(&message)) {
-    address = message.getStorageId();
-    const uint8_t* dataPtr;
-    size_t dataLen = 0;
-    result = tcStore->getData(message.getStorageId(), &dataPtr, &dataLen);
+    result = setUpTcReader(message.getStorageId());
     if (result != HasReturnvaluesIF::RETURN_OK) {
       // TODO: Warning?
+      rejectPacket(tcverif::START_FAILURE, address, &tcReader, result);
       continue;
     }
-    result = tcReader.setReadOnlyData(dataPtr, dataLen);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
-      // TODO: Warning?
-      continue;
-    }
-    result = tcReader.parseData();
-    if (result != HasReturnvaluesIF::RETURN_OK) {
-      // TODO: Warning?
-      continue;
-    }
-
     if ((tcReader.getSubService() == 0) or
         (isValidSubservice(tcReader.getSubService()) != RETURN_OK)) {
-      rejectPacket(tc_verification::START_FAILURE, address, &tcReader, INVALID_SUBSERVICE);
+      rejectPacket(tcverif::START_FAILURE, address, &tcReader, INVALID_SUBSERVICE);
       continue;
     }
 
     result = getMessageQueueAndObject(tcReader.getSubService(), tcReader.getUserData(),
                                       tcReader.getUserDataLen(), &queue, &objectId);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      rejectPacket(tc_verification::START_FAILURE, address, &tcReader, result);
+      rejectPacket(tcverif::START_FAILURE, address, &tcReader, result);
       continue;
     }
 
@@ -284,16 +271,16 @@ void CommandingServiceBase::handleRequestQueue() {
     if (iter != commandMap.end()) {
       result = iter->second.fifo.insert(address);
       if (result != RETURN_OK) {
-        rejectPacket(tc_verification::START_FAILURE, address, &tcReader, OBJECT_BUSY);
+        rejectPacket(tcverif::START_FAILURE, address, &tcReader, OBJECT_BUSY);
       }
     } else {
       CommandInfo newInfo;  // Info will be set by startExecution if neccessary
       newInfo.objectId = objectId;
       result = commandMap.insert(queue, newInfo, &iter);
       if (result != RETURN_OK) {
-        rejectPacket(tc_verification::START_FAILURE, address, &tcReader, BUSY);
+        rejectPacket(tcverif::START_FAILURE, address, &tcReader, BUSY);
       } else {
-        startExecution(address, &tcReader, iter);
+        startExecution(address, iter);
       }
     }
   }
@@ -332,17 +319,12 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeI
   return result;
 }
 
-void CommandingServiceBase::startExecution(store_address_t storeId, PusTcReader* storedPacket,
-                                           CommandMapIter iter) {
+void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIter iter) {
   ReturnValue_t result = RETURN_OK;
   CommandMessage command;
-  if (storedPacket == nullptr) {
-    return;
-  }
-  iter->second.subservice = storedPacket->getSubService();
-  result =
-      prepareCommand(&command, iter->second.subservice, storedPacket->getUserData(),
-                     storedPacket->getUserDataLen(), &iter->second.state, iter->second.objectId);
+  iter->second.subservice = tcReader.getSubService();
+  result = prepareCommand(&command, iter->second.subservice, tcReader.getUserData(),
+                          tcReader.getUserDataLen(), &iter->second.state, iter->second.objectId);
 
   ReturnValue_t sendResult = RETURN_OK;
   switch (result) {
@@ -353,15 +335,15 @@ void CommandingServiceBase::startExecution(store_address_t storeId, PusTcReader*
       if (sendResult == RETURN_OK) {
         Clock::getUptime(&iter->second.uptimeOfStart);
         iter->second.step = 0;
-        iter->second.subservice = storedPacket->getSubService();
+        iter->second.subservice = tcReader.getSubService();
         iter->second.command = command.getCommand();
-        iter->second.tcInfo.ackFlags = storedPacket->getAcknowledgeFlags();
-        iter->second.tcInfo.tcPacketId = storedPacket->getPacketIdRaw();
-        iter->second.tcInfo.tcSequenceControl = storedPacket->getPacketSeqCtrlRaw();
-        acceptPacket(tc_verification::START_SUCCESS, storeId, storedPacket);
+        iter->second.tcInfo.ackFlags = tcReader.getAcknowledgeFlags();
+        iter->second.tcInfo.tcPacketId = tcReader.getPacketIdRaw();
+        iter->second.tcInfo.tcSequenceControl = tcReader.getPacketSeqCtrlRaw();
+        acceptPacket(tcverif::START_SUCCESS, storeId, &tcReader);
       } else {
         command.clearCommandMessage();
-        rejectPacket(tc_verification::START_FAILURE, storeId, storedPacket, sendResult);
+        rejectPacket(tcverif::START_FAILURE, storeId, &tcReader, sendResult);
         checkAndExecuteFifo(iter);
       }
       break;
@@ -371,17 +353,17 @@ void CommandingServiceBase::startExecution(store_address_t storeId, PusTcReader*
         sendResult = commandQueue->sendMessage(iter.value->first, &command);
       }
       if (sendResult == RETURN_OK) {
-        verificationReporter.sendSuccessReport(tc_verification::START_SUCCESS, storedPacket);
-        acceptPacket(tc_verification::COMPLETION_SUCCESS, storeId, storedPacket);
+        verificationReporter.sendSuccessReport(tcverif::START_SUCCESS, &tcReader);
+        acceptPacket(tcverif::COMPLETION_SUCCESS, storeId, &tcReader);
         checkAndExecuteFifo(iter);
       } else {
         command.clearCommandMessage();
-        rejectPacket(tc_verification::START_FAILURE, storeId, storedPacket, sendResult);
+        rejectPacket(tcverif::START_FAILURE, storeId, &tcReader, sendResult);
         checkAndExecuteFifo(iter);
       }
       break;
     default:
-      rejectPacket(tc_verification::START_FAILURE, storeId, storedPacket, result);
+      rejectPacket(tcverif::START_FAILURE, storeId, &tcReader, result);
       checkAndExecuteFifo(iter);
       break;
   }
@@ -404,23 +386,12 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
   if (iter->second.fifo.retrieve(&address) != RETURN_OK) {
     commandMap.erase(&iter);
   } else {
-    const uint8_t* dataPtr;
-    size_t dataLen = 0;
-    ReturnValue_t result = tcStore->getData(address, &dataPtr, &dataLen);
+    ReturnValue_t result = setUpTcReader(address);
     if (result == HasReturnvaluesIF::RETURN_OK) {
-      result = tcReader.setReadOnlyData(dataPtr, dataLen);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
-        // TODO: Warning?
-        return;
-      }
-      result = tcReader.parseData();
-      if (result != HasReturnvaluesIF::RETURN_OK) {
-        // TODO: Warning?
-        return;
-      }
-      startExecution(address, &tcReader, iter);
+      startExecution(address, iter);
     } else {
       // TODO: Warning?
+      rejectPacket(tcverif::START_FAILURE, address, &tcReader, result);
     }
   }
 }
@@ -440,8 +411,8 @@ void CommandingServiceBase::checkTimeout() {
   for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {
     if ((iter->second.uptimeOfStart + (timeoutSeconds * 1000)) < uptime) {
       verificationReporter.sendFailureReport(
-          tc_verification::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
-          iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl, TIMEOUT);
+          tcverif::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
+          iter->second.tcInfo.tcSequenceControl, TIMEOUT);
       checkAndExecuteFifo(iter);
     }
   }
@@ -451,4 +422,7 @@ void CommandingServiceBase::setTaskIF(PeriodicTaskIF* task_) { executingTask = t
 
 void CommandingServiceBase::setCustomTmStore(StorageManagerIF* store) {
   tmStoreHelper.setTmStore(store);
+}
+ReturnValue_t CommandingServiceBase::setUpTcReader(store_address_t storeId) {
+  return tc::prepareTcReader(tcStore, storeId, tcReader);
 }

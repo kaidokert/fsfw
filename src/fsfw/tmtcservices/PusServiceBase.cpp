@@ -7,6 +7,7 @@
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
+#include "fsfw/tmtcservices/tcHelpers.h"
 
 object_id_t PusServiceBase::packetSource = 0;
 object_id_t PusServiceBase::packetDestination = 0;
@@ -62,34 +63,20 @@ void PusServiceBase::handleRequestQueue() {
 #endif
       break;
     }
-    const uint8_t* dataPtr;
-    size_t dataLen = 0;
-    result = ipcStore->getData(message.getStorageId(), &dataPtr, &dataLen);
+    result = tc::prepareTcReader(tcStore, message.getStorageId(), currentPacket);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      // TODO: Warning?
-      continue;
-    }
-
-    result = currentPacket.setReadOnlyData(dataPtr, dataLen);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
-      // TODO: Warning?
-      continue;
-    }
-    result = currentPacket.parseData();
-    if (result != HasReturnvaluesIF::RETURN_OK) {
-      // TODO: Warning?
+      this->verifyReporter.sendFailureReport(tcverif::START_FAILURE, &this->currentPacket, result,
+                                             0, errorParameter1, errorParameter2);
       continue;
     }
     result = this->handleRequest(currentPacket.getSubService());
     if (result == RETURN_OK) {
-      this->verifyReporter.sendSuccessReport(tc_verification::COMPLETION_SUCCESS,
-                                             &this->currentPacket);
+      this->verifyReporter.sendSuccessReport(tcverif::COMPLETION_SUCCESS, &this->currentPacket);
     } else {
-      this->verifyReporter.sendFailureReport(tc_verification::COMPLETION_FAILURE,
-                                             &this->currentPacket, result, 0, errorParameter1,
-                                             errorParameter2);
+      this->verifyReporter.sendFailureReport(tcverif::COMPLETION_FAILURE, &this->currentPacket,
+                                             result, 0, errorParameter1, errorParameter2);
     }
-    ipcStore->deleteData(message.getStorageId());
+    tcStore->deleteData(message.getStorageId());
     errorParameter1 = 0;
     errorParameter2 = 0;
   }
@@ -116,9 +103,9 @@ ReturnValue_t PusServiceBase::initialize() {
   }
   this->requestQueue->setDefaultDestination(destService->getReportReceptionQueue());
   distributor->registerService(this);
-  if (ipcStore == nullptr) {
-    ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
-    if (ipcStore == nullptr) {
+  if (tcStore == nullptr) {
+    tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+    if (tcStore == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
@@ -132,7 +119,7 @@ ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void PusServiceBase::setCustomIpcStore(StorageManagerIF* ipcStore_) { ipcStore = ipcStore_; }
+void PusServiceBase::setCustomTcStore(StorageManagerIF* tcStore_) { tcStore = tcStore_; }
 
 void PusServiceBase::setCustomErrorReporter(InternalErrorReporterIF* errReporter_) {
   errReporter = errReporter_;
