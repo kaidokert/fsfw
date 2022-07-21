@@ -5,7 +5,6 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/pus/servicepackets/Service5Packets.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
 #include "fsfw/tmtcservices/tmHelpers.h"
 
 Service5EventReporting::Service5EventReporting(object_id_t objectId, uint16_t apid,

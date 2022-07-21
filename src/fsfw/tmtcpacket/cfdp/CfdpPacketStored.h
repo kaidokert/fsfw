@@ -1,8 +1,8 @@
 #ifndef FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_
 #define FSFW_TMTCPACKET_CFDP_CFDPPACKETSTORED_H_
 
-#include "../pus/tc/TcPacketStoredBase.h"
 #include "CfdpPacket.h"
+#include "fsfw/storagemanager/storeAddress.h"
 
 class CfdpPacketStored : public CfdpReader {
  public:
