@@ -2,6 +2,7 @@
 #define FSFW_SRC_FSFW_TMTCPACKET_PUS_TM_DEFINITIONS_H_
 
 #include <cstdint>
+#include <utility>
 
 #include "fsfw/serialize/SerializeIF.h"
 
@@ -27,6 +28,7 @@ union DataUnion {
 struct DataWrapper {
   DataTypes type;
   DataUnion dataUnion;
+  using BufPairT = std::pair<uint8_t*, size_t>;
 
   [[nodiscard]] size_t getLength() const {
     if (type == DataTypes::RAW) {
@@ -35,6 +37,17 @@ struct DataWrapper {
       return dataUnion.serializable->getSerializedSize();
     }
     return 0;
+  }
+
+  void setRawData(BufPairT bufPair) {
+    type = DataTypes::RAW;
+    dataUnion.raw.data = bufPair.first;
+    dataUnion.raw.len = bufPair.second;
+  }
+
+  void setSerializable(SerializeIF* serializable) {
+    type = DataTypes::SERIALIZABLE;
+    dataUnion.serializable = serializable;
   }
 };
 

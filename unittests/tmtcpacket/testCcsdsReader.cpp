@@ -4,26 +4,22 @@
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
+#define FULL_PACKET_LEN 29
+
 TEST_CASE("CCSDS Reader", "[ccsds-reader]") {
   auto params = SpacePacketParams(PacketId(ccsds::PacketType::TC, true, 0x02),
                                   PacketSeqCtrl(ccsds::SequenceFlags::FIRST_SEGMENT, 0x34), 0x16);
   SpacePacketCreator base = SpacePacketCreator(params);
   // This is enough to hold 0x16 (22) bytes + 6 (SP header length) + 1 as defined as the full packet
   // length derived from the length field
-  std::array<uint8_t, 32> buf{};
+  std::array<uint8_t, FULL_PACKET_LEN> buf{};
   uint8_t* bufPtr = buf.data();
   size_t serLen = 0;
   SpacePacketReader reader;
-  SECTION("Empty Reader") {
-    REQUIRE(reader.isNull());
-    REQUIRE(reader.checkSize() == HasReturnvaluesIF::RETURN_FAILED);
-  }
 
-  SECTION("Basic Read") {
-    REQUIRE(base.serialize(&bufPtr, &serLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_OK);
-    reader.setReadOnlyData(buf.data(), SpacePacketIF::getHeaderLen());
+  auto checkReader = [&](SpacePacketReader& reader) {
     REQUIRE(reader.getPacketDataLen() == 0x16);
+    REQUIRE(reader.getBufSize() == SpacePacketIF::getHeaderLen());
     REQUIRE(reader.getFullData() == buf.data());
     REQUIRE(reader.getFullPacketLen() == 0x16 + SpacePacketReader::getHeaderLen() + 1);
     REQUIRE(reader.getPacketIdRaw() == 0x1802);
@@ -35,12 +31,33 @@ TEST_CASE("CCSDS Reader", "[ccsds-reader]") {
     REQUIRE(not reader.isNull());
     // We only serialized the 6 bytes of the header, so the packer data should be invalid
     REQUIRE(reader.getPacketData() == nullptr);
+  };
+
+  SECTION("Empty Reader") {
+    REQUIRE(SpacePacketIF::getHeaderLen() == 6);
+    REQUIRE(reader.isNull());
+    REQUIRE(reader.checkSize() == HasReturnvaluesIF::RETURN_FAILED);
+  }
+
+  SECTION("Basic Read") {
+    REQUIRE(base.serialize(&bufPtr, &serLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
+            HasReturnvaluesIF::RETURN_OK);
+    SECTION("Setter") {
+      reader.setReadOnlyData(buf.data(), SpacePacketIF::getHeaderLen());
+      checkReader(reader);
+    }
+    SECTION("Direct Construction") {
+      SpacePacketReader secondReader(buf.data(), serLen);
+      checkReader(secondReader);
+    }
   }
 
   SECTION("Read with additional data") {
     REQUIRE(base.serialize(&bufPtr, &serLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
             HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.setReadOnlyData(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(reader.getBufSize() == buf.size());
+    REQUIRE(reader.getFullPacketLen() == FULL_PACKET_LEN);
     REQUIRE(reader.getPacketData() == buf.data() + SpacePacketIF::getHeaderLen());
   }
 

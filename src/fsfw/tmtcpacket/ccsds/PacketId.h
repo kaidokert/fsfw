@@ -19,6 +19,10 @@ struct PacketId : public SerializeIF {
   PacketId(ccsds::PacketType packetType_, bool secHeaderFlag_, uint16_t apid_)
       : packetType(packetType_), secHeaderFlag(secHeaderFlag_), apid(apid_) {}
 
+  bool operator==(const PacketId &other) const {
+    return packetType == other.packetType and secHeaderFlag == other.secHeaderFlag and
+           apid == other.apid;
+  }
   /**
    * NOTE: If the APID has an invalid value, the invalid bits will be cut off
    * @return

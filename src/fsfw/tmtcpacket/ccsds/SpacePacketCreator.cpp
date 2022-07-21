@@ -79,3 +79,7 @@ void SpacePacketCreator::checkFieldValidity() {
 void SpacePacketCreator::setParams(SpacePacketParams params_) { params = std::move(params_); }
 
 SpacePacketParams &SpacePacketCreator::getParams() { return params; }
+
+void SpacePacketCreator::setPacketType(ccsds::PacketType type) {
+  params.packetId.packetType = type;
+}

@@ -35,6 +35,7 @@ class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
 
   SpacePacketParams &getParams();
   void setParams(SpacePacketParams params);
+  void setPacketType(ccsds::PacketType type);
   void setApid(uint16_t apid);
   void setSeqCount(uint16_t seqCount);
   void setSeqFlags(ccsds::SequenceFlags flags);

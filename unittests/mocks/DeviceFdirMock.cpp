@@ -1,11 +1,9 @@
 #include "DeviceFdirMock.h"
 
-#include "devicehandler/DeviceFdirMock.h"
-
 DeviceFdirMock::DeviceFdirMock(object_id_t owner, object_id_t parent)
     : DeviceHandlerFailureIsolation(owner, parent) {}
 
-DeviceFdirMock::~DeviceFdirMock() {}
+DeviceFdirMock::~DeviceFdirMock() = default;
 
 uint32_t DeviceFdirMock::getMissedReplyCount() {
   ParameterWrapper parameterWrapper;

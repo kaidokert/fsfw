@@ -21,13 +21,19 @@ struct PusTcParams {
 
 class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
  public:
-  PusTcCreator(SpacePacketParams spParams, PusTcParams pusParams);
+  PusTcCreator(SpacePacketParams initSpParams, PusTcParams initPusParams);
 
+  /**
+   * If the parameter structure is changed in a way which changes the resulting serialized packet
+   * size, this function should be called to set the data length field in the space packet
+   * header. This fields is the primary source of information for length information.
+   *
+   * The only case for a telecommand where this size changes would be if user data is set.
+   */
   void updateSpLengthField();
   PusTcParams &getPusParams();
   SpacePacketParams &getSpParams();
-  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                          Endianness streamEndianness) const override;
+  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize);
   [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override;
@@ -42,6 +48,8 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
   ecss::DataWrapper &getDataWrapper() override;
 
  private:
+  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                          Endianness streamEndianness) const override;
   SpacePacketCreator spCreator;
   PusTcParams pusParams;
 };

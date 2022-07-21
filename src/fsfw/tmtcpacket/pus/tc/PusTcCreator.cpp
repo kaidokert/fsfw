@@ -8,22 +8,23 @@
 
 PusTcCreator::PusTcCreator(SpacePacketParams spParams, PusTcParams pusParams)
     : spCreator(std::move(spParams)), pusParams(pusParams) {
+  spCreator.setPacketType(ccsds::PacketType::TC);
   updateSpLengthField();
 }
 
 ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                       SerializeIF::Endianness streamEndianness) const {
+  const uint8_t *start = *buffer;
   size_t userDataLen = pusParams.dataWrapper.getLength();
-  if (*size + PusTcIF::MIN_SIZE + userDataLen > maxSize) {
+  if (*size + getFullPacketLen() > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
+  }
+  if (pusParams.pusVersion != ecss::PusVersion::PUS_C) {
+    return PusIF::INVALID_PUS_VERSION;
   }
   ReturnValue_t result = spCreator.serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
-  }
-  if (pusParams.pusVersion != ecss::PusVersion::PUS_C) {
-    // TODO: Dedicated returnvalue
-    return HasReturnvaluesIF::RETURN_FAILED;
   }
   **buffer = pusParams.pusVersion << 4 | pusParams.ackFlags;
   *buffer += 1;
@@ -31,6 +32,7 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
   *buffer += 1;
   **buffer = pusParams.subservice;
   *buffer += 1;
+  *size += 3;
   result =
       SerializeAdapter::serialize(&pusParams.sourceId, buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
@@ -52,7 +54,7 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
     }
   }
 
-  uint16_t crc16 = CRC::crc16ccitt(*buffer, getFullPacketLen() - 2);
+  uint16_t crc16 = CRC::crc16ccitt(start, getFullPacketLen() - 2);
   return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
 }
 
@@ -89,3 +91,7 @@ ecss::DataWrapper &PusTcCreator::getDataWrapper() { return pusParams.dataWrapper
 PusTcParams &PusTcCreator::getPusParams() { return pusParams; }
 
 SpacePacketParams &PusTcCreator::getSpParams() { return spCreator.getParams(); }
+
+ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize) {
+  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
+}
