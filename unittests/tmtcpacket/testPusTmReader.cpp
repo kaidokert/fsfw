@@ -91,4 +91,18 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
     REQUIRE(roData[1] == 2);
     REQUIRE(roData[2] == 3);
   }
+
+  SECTION("Invalid stream lengths") {
+    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    for (size_t i = 0; i < serLen - 1; i++) {
+      REQUIRE(reader.setReadOnlyData(buf.data(), i) == SerializeIF::STREAM_TOO_SHORT);
+    }
+  }
+
+  SECTION("Reading timestamp fails") {
+    timeStamperAndReader.nextDeserFails = true;
+    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_FAILED);
+  }
 }

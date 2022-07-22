@@ -12,6 +12,10 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
   ReturnValue_t lastDeserializeResult = HasReturnvaluesIF::RETURN_OK;
   ReturnValue_t lastSerializeResult = HasReturnvaluesIF::RETURN_OK;
   unsigned int getSizeCallCount = 0;
+  bool nextSerFails = false;
+  ReturnValue_t serFailRetval = HasReturnvaluesIF::RETURN_FAILED;
+  bool nextDeserFails = false;
+  ReturnValue_t deserFailRetval = HasReturnvaluesIF::RETURN_FAILED;
   std::array<uint8_t, 7> valueToStamp{};
 
   CdsShortTimestamperMock() = default;
@@ -23,6 +27,9 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
                           Endianness streamEndianness) const override {
     auto &thisNonConst = const_cast<CdsShortTimestamperMock &>(*this);
     thisNonConst.serializeCallCount += 1;
+    if (nextSerFails) {
+      return serFailRetval;
+    }
     if (*size + getSerializedSize() > maxSize) {
       thisNonConst.lastSerializeResult = SerializeIF::BUFFER_TOO_SHORT;
       return lastSerializeResult;
@@ -41,6 +48,9 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override {
     deserializeCallCount += 1;
+    if (nextDeserFails) {
+      return deserFailRetval;
+    }
     if (*size < 7) {
       lastDeserializeResult = SerializeIF::STREAM_TOO_SHORT;
       return lastDeserializeResult;
@@ -55,7 +65,15 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
   void reset() {
     serializeCallCount = 0;
     getSizeCallCount = 0;
+    deserializeCallCount = 0;
+    nextSerFails = false;
+    nextDeserFails = false;
+    lastSerializeResult = HasReturnvaluesIF::RETURN_OK;
+    lastDeserializeResult = HasReturnvaluesIF::RETURN_OK;
+    deserFailRetval = HasReturnvaluesIF::RETURN_FAILED;
+    serFailRetval = HasReturnvaluesIF::RETURN_FAILED;
   }
+
   ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override {
     return deSerialize(&buffer, &maxSize, SerializeIF::Endianness::NETWORK);
   }
