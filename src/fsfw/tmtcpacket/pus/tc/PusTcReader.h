@@ -33,15 +33,12 @@ class PusTcReader : public PusTcIF,
    * @param setData	The position where the packet data lies.
    */
   PusTcReader(const uint8_t* setData, size_t size);
+  ~PusTcReader() override;
 
+  explicit operator bool() const;
   [[nodiscard]] bool isNull() const;
   ReturnValue_t parseDataWithCrcCheck();
   ReturnValue_t parseDataWithoutCrcCheck();
-
-  /**
-   * This is the empty default destructor.
-   */
-  ~PusTcReader() override;
 
   /**
    * This is a debugging helper method that prints the whole packet content

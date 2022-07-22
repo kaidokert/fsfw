@@ -21,6 +21,8 @@ class PusTmReader : public PusTmIF,
   ReturnValue_t parseDataWithCrcCheck();
   const uint8_t* getFullData() override;
 
+  explicit operator bool() const;
+  [[nodiscard]] bool isNull() const;
   void setTimeReader(TimeReaderIF* timeReader);
   TimeReaderIF* getTimeReader();
   ReturnValue_t setReadOnlyData(const uint8_t* data, size_t size);
@@ -30,8 +32,8 @@ class PusTmReader : public PusTmIF,
   [[nodiscard]] uint8_t getPusVersion() const override;
   [[nodiscard]] uint8_t getService() const override;
   [[nodiscard]] uint8_t getSubService() const override;
-  const uint8_t* getUserData() const override;
-  size_t getUserDataLen() const override;
+  [[nodiscard]] const uint8_t* getUserData() const override;
+  [[nodiscard]] size_t getUserDataLen() const override;
   uint8_t getScTimeRefStatus() override;
   uint16_t getMessageTypeCounter() override;
   uint16_t getDestId() override;

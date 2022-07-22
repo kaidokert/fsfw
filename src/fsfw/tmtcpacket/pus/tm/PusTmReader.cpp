@@ -71,8 +71,11 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   currentOffset += timestampLen;
-  pointers.userDataStart = pointers.spHeaderStart + currentOffset;
   sourceDataLen = spReader.getFullPacketLen() - currentOffset - sizeof(ecss::PusChecksumT);
+  pointers.userDataStart = nullptr;
+  if (sourceDataLen > 0) {
+    pointers.userDataStart = pointers.spHeaderStart + currentOffset;
+  }
   currentOffset += sourceDataLen;
   pointers.crcStart = pointers.spHeaderStart + currentOffset;
   if (crcCheck) {
@@ -84,3 +87,6 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   }
   return HasReturnvaluesIF::RETURN_OK;
 }
+bool PusTmReader::isNull() const { return spReader.isNull(); }
+
+PusTmReader::operator bool() const { return not isNull(); }

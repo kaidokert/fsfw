@@ -82,3 +82,5 @@ const uint8_t* PusTcReader::getUserData() const { return pointers.userDataStart;
 size_t PusTcReader::getUserDataLen() const { return appDataSize; }
 
 bool PusTcReader::isNull() const { return spReader.isNull(); }
+
+PusTcReader::operator bool() const { return not isNull(); }

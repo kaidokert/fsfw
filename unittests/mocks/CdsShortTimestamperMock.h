@@ -5,9 +5,11 @@
 
 #include "fsfw/timemanager/TimeStamperIF.h"
 
-class CdsShortTimestamperMock : public TimeStamperIF {
+class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
  public:
   unsigned int serializeCallCount = 0;
+  unsigned int deserializeCallCount = 0;
+  ReturnValue_t lastDeserializeResult = HasReturnvaluesIF::RETURN_OK;
   ReturnValue_t lastSerializeResult = HasReturnvaluesIF::RETURN_OK;
   unsigned int getSizeCallCount = 0;
   std::array<uint8_t, 7> valueToStamp{};
@@ -38,8 +40,15 @@ class CdsShortTimestamperMock : public TimeStamperIF {
   }
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    deserializeCallCount += 1;
+    if (*size < 7) {
+      lastDeserializeResult = SerializeIF::STREAM_TOO_SHORT;
+      return lastDeserializeResult;
+    }
+    std::copy(*buffer, *buffer + getSerializedSize(), valueToStamp.begin());
+    return lastDeserializeResult;
   }
+
   [[nodiscard]] size_t getTimestampSize() const override { return getSerializedSize(); }
   ReturnValue_t addTimeStamp(uint8_t *buffer, uint8_t maxSize) override { return 0; }
 
@@ -47,7 +56,13 @@ class CdsShortTimestamperMock : public TimeStamperIF {
     serializeCallCount = 0;
     getSizeCallCount = 0;
   }
+  ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override {
+    return deSerialize(&buffer, &maxSize, SerializeIF::Endianness::NETWORK);
+  }
+  size_t getTimestampLen() override { return getSerializedSize(); }
+  timeval &getTime() override { return dummyTime; }
 
  private:
+  timeval dummyTime{};
 };
 #endif  // FSFW_TESTS_CDSSHORTTIMESTAMPERMOCK_H

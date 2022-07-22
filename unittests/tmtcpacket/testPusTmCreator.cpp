@@ -70,6 +70,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     REQUIRE(CRC::crc16ccitt(buf.data(), serLen) == 0);
     REQUIRE(buf[20] == 0x03);
     REQUIRE(buf[21] == 0x79);
+    REQUIRE(timeStamper.serializeCallCount == 1);
   }
 
   SECTION("Custom Fields") {

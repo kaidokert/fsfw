@@ -8,7 +8,7 @@
 class TimeReaderIF {
  public:
   virtual ~TimeReaderIF() = default;
-  virtual ReturnValue_t readTimeStamp(const uint8_t* buffer, uint8_t maxSize) = 0;
+  virtual ReturnValue_t readTimeStamp(const uint8_t* buffer, size_t maxSize) = 0;
   // Would be nice to have this, but the clock backend needs to be redesigned
   // virtual ReturnValue_t readTimestampLen(const uint8_t* buffer, uint8_t maxSize, size_t&
   // timestampLen) = 0;

@@ -14,13 +14,11 @@ TEST_CASE("PUS TC Reader", "[pus-tc-reader]") {
   uint8_t* dataPtr = buf.data();
   size_t serLen = 0;
   PusTcReader reader;
-  auto checkReaderFields = [&](PusTcReader& reader) {
-
-  };
 
   SECTION("State") {
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.isNull());
+    REQUIRE(not reader);
     PusTcReader* readerPtr = nullptr;
     bool callDelete = false;
     SECTION("Setter") {
@@ -35,6 +33,7 @@ TEST_CASE("PUS TC Reader", "[pus-tc-reader]") {
       REQUIRE(readerPtr->parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
     }
     REQUIRE(not readerPtr->isNull());
+    REQUIRE(*readerPtr);
     REQUIRE(readerPtr->getPacketType() == ccsds::PacketType::TC);
     REQUIRE(readerPtr->getApid() == 0x02);
     REQUIRE(readerPtr->getService() == 17);
