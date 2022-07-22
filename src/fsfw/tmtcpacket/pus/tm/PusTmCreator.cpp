@@ -5,15 +5,12 @@
 #include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/timemanager/TimeStamperIF.h"
 
-PusTmCreator::PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams,
-                           TimeStamperIF* timeStamper)
-    : pusParams(initPusParams), spCreator(std::move(initSpParams)) {}
-
-PusTmCreator::PusTmCreator(TimeStamperIF* timeStamper_) {
-  pusParams.secHeader.timeStamper = timeStamper_;
+PusTmCreator::PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams)
+    : pusParams(initPusParams), spCreator(std::move(initSpParams)) {
+  setup();
 }
 
-PusTmCreator::PusTmCreator() = default;
+PusTmCreator::PusTmCreator() { setup(); }
 
 uint16_t PusTmCreator::getPacketIdRaw() const { return spCreator.getPacketIdRaw(); }
 uint16_t PusTmCreator::getPacketSeqCtrlRaw() const { return spCreator.getPacketSeqCtrlRaw(); }
@@ -31,6 +28,7 @@ uint16_t PusTmCreator::getDestId() { return 0; }
 
 ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                                       SerializeIF::Endianness streamEndianness) const {
+  const uint8_t* start = *buffer;
   if (*size + getSerializedSize() > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }
@@ -74,7 +72,7 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
       return result;
     }
   }
-  uint16_t crc16 = CRC::crc16ccitt(*buffer, getFullPacketLen() - sizeof(ecss::PusChecksumT));
+  uint16_t crc16 = CRC::crc16ccitt(start, getFullPacketLen() - sizeof(ecss::PusChecksumT));
   return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
 }
 
@@ -85,15 +83,25 @@ ReturnValue_t PusTmCreator::deSerialize(const uint8_t** buffer, size_t* size,
 }
 
 ecss::DataWrapper& PusTmCreator::getDataWrapper() { return pusParams.dataWrapper; }
-TimeStamperIF* PusTmCreator::getTimestamper() { return pusParams.secHeader.timeStamper; }
+TimeStamperIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader.timeStamper; }
 SpacePacketParams& PusTmCreator::getSpParams() { return spCreator.getParams(); }
 
 void PusTmCreator::updateSpLengthField() {
-  size_t headerLen = PusTmIF::MIN_SIZE;
+  size_t headerLen = PusTmIF::MIN_SEC_HEADER_LEN + pusParams.dataWrapper.getLength() +
+                     sizeof(ecss::PusChecksumT) - 1;
   if (pusParams.secHeader.timeStamper != nullptr) {
     headerLen += pusParams.secHeader.timeStamper->getSerializedSize();
   }
-  spCreator.setDataLen(headerLen + pusParams.dataWrapper.getLength() + 1);
+  spCreator.setDataLen(headerLen);
 }
 
 void PusTmCreator::setApid(uint16_t apid) { spCreator.setApid(apid); }
+
+ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t maxSize) const {
+  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
+}
+
+void PusTmCreator::setup() {
+  updateSpLengthField();
+  spCreator.setPacketType(ccsds::PacketType::TM);
+}

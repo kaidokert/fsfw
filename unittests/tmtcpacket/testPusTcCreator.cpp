@@ -16,6 +16,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
   size_t serLen = 0;
 
   SECTION("State") {
+    REQUIRE(creator.isTc());
     REQUIRE(creator.getService() == 17);
     REQUIRE(creator.getSubService() == 1);
     REQUIRE(creator.getApid() == 0x02);

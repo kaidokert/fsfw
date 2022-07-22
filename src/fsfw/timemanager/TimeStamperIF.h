@@ -22,9 +22,9 @@ class TimeStamperIF : public SerializeIF {
   //! size reserved for timestamps.
   // static const uint8_t MISSION_TIMESTAMP_SIZE = fsfwconfig::FSFW_MISSION_TIMESTAMP_SIZE;
 
-  [[nodiscard]] virtual size_t getTimestampSize() const = 0;
-  virtual ReturnValue_t addTimeStamp(uint8_t* buffer, uint8_t maxSize) = 0;
+  [[nodiscard]] virtual size_t getTimestampSize() const { return getSerializedSize(); }
 
+  virtual ReturnValue_t addTimeStamp(uint8_t* buffer, uint8_t maxSize) = 0;
   ~TimeStamperIF() override = default;
 };
 

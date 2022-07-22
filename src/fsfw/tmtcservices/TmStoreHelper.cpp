@@ -4,12 +4,12 @@
 
 TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore,
                              TimeStamperIF* timeStamper)
-    : creator(timeStamper), tmStore(tmStore) {
+    : tmStore(tmStore) {
   creator.setApid(defaultApid);
+  creator.setTimeStamper(timeStamper);
 }
 
-TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore)
-    : creator(nullptr), tmStore(tmStore) {
+TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore) : tmStore(tmStore) {
   creator.setApid(defaultApid);
 }
 

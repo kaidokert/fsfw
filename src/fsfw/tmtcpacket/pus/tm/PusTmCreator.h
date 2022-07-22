@@ -6,18 +6,35 @@
 #include "fsfw/tmtcpacket/pus/CreatorDataIF.h"
 
 struct PusTmSecHeader {
-  uint8_t pusVersion;
-  uint8_t scTimeRefStatus;
-  uint8_t service;
-  uint8_t subservice;
-  uint16_t messageTypeCounter;
-  uint16_t destId;
-  TimeStamperIF* timeStamper;
+  PusTmSecHeader() = default;
+  PusTmSecHeader(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper)
+      : service(service), subservice(subservice), timeStamper(timeStamper) {}
+
+  uint8_t service = 0;
+  uint8_t subservice = 0;
+  TimeStamperIF* timeStamper = nullptr;
+  uint8_t pusVersion = ecss::PusVersion::PUS_C;
+  uint8_t scTimeRefStatus = 0;
+  uint16_t messageTypeCounter = 0;
+  uint16_t destId = 0;
 };
 
 struct PusTmParams {
+  PusTmParams() = default;
+  explicit PusTmParams(PusTmSecHeader secHeader) : secHeader(secHeader){};
+  PusTmParams(PusTmSecHeader secHeader, ecss::DataWrapper dataWrapper)
+      : secHeader(secHeader), dataWrapper(dataWrapper) {}
+
+  PusTmParams(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper)
+      : secHeader(service, subservice, timeStamper) {}
+
+  PusTmParams(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper,
+              ecss::DataWrapper dataWrapper_)
+      : PusTmParams(service, subservice, timeStamper) {
+    dataWrapper = dataWrapper_;
+  }
   PusTmSecHeader secHeader;
-  ecss::DataWrapper dataWrapper;
+  ecss::DataWrapper dataWrapper{};
 };
 
 class TimeStamperIF;
@@ -25,10 +42,7 @@ class TimeStamperIF;
 class PusTmCreator : public SerializeIF, public PusTmIF, public CreatorDataIF {
  public:
   PusTmCreator();
-
-  explicit PusTmCreator(TimeStamperIF* timeStamper);
-  PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams,
-               TimeStamperIF* timeStamper);
+  PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams);
   ~PusTmCreator() override = default;
 
   void setTimeStamper(TimeStamperIF* timeStamper);
@@ -45,17 +59,19 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CreatorDataIF {
   uint8_t getScTimeRefStatus() override;
   uint16_t getMessageTypeCounter() override;
   uint16_t getDestId() override;
+  ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize) const;
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override;
-  TimeStamperIF* getTimestamper();
+  [[nodiscard]] TimeStamperIF* getTimestamper() const;
 
  private:
   ecss::DataWrapper& getDataWrapper() override;
 
  private:
+  void setup();
   PusTmParams pusParams{};
   SpacePacketCreator spCreator;
 };
