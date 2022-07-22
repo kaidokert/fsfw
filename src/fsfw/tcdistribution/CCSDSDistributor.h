@@ -31,7 +31,7 @@ class CCSDSDistributor : public TcDistributor,
   /**
    * The destructor is empty.
    */
-  virtual ~CCSDSDistributor();
+  ~CCSDSDistributor() override;
 
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) override;

@@ -62,4 +62,45 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     REQUIRE(buf[20] == 0x03);
     REQUIRE(buf[21] == 0x79);
   }
+
+  SECTION("Custom Fields") {
+    creator.setApid(0x3ff);
+    SECTION("Using Params") {
+      auto& pusParams = creator.getParams();
+      pusParams.secHeader.destId = 0xfff;
+      pusParams.secHeader.messageTypeCounter = 0x313;
+    }
+    SECTION("Using Setters") {
+      auto& pusParams = creator.getParams();
+      creator.setDestId(0xfff);
+      creator.setMessageTypeCounter(0x313);
+    }
+    REQUIRE(creator.getApid() == 0x3ff);
+    REQUIRE(creator.getDestId() == 0xfff);
+    REQUIRE(creator.getMessageTypeCounter() == 0x313);
+    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    // Message Sequence Count
+    REQUIRE(((buf[9] << 8) | buf[10]) == 0x313);
+    // Destination ID
+    REQUIRE(((buf[11] << 8) | buf[12]) == 0xfff);
+  }
+
+  SECTION("Deserialization fails") {
+    const uint8_t* roDataPtr = nullptr;
+    REQUIRE(creator.deSerialize(&roDataPtr, &serLen, SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_FAILED);
+  }
+
+  SECTION("Serialize with Raw Data") {
+    std::array<uint8_t, 3> data{1, 2, 3};
+    creator.setRawSourceData({data.data(), data.size()});
+    REQUIRE(creator.getFullPacketLen() == 25);
+    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(buf[20] == 1);
+    REQUIRE(buf[21] == 2);
+    REQUIRE(buf[22] == 3);
+  }
+
+  SECTION("Serialize with Serializable") {
+
+  }
 }

@@ -13,17 +13,27 @@ PusTmCreator::PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusPa
 PusTmCreator::PusTmCreator() { setup(); }
 
 uint16_t PusTmCreator::getPacketIdRaw() const { return spCreator.getPacketIdRaw(); }
+
 uint16_t PusTmCreator::getPacketSeqCtrlRaw() const { return spCreator.getPacketSeqCtrlRaw(); }
+
 uint16_t PusTmCreator::getPacketDataLen() const { return spCreator.getPacketDataLen(); }
+
 uint8_t PusTmCreator::getPusVersion() const { return pusParams.secHeader.pusVersion; }
+
 uint8_t PusTmCreator::getService() const { return pusParams.secHeader.service; }
+
 uint8_t PusTmCreator::getSubService() const { return pusParams.secHeader.subservice; }
+
 PusTmParams& PusTmCreator::getParams() { return pusParams; }
+
 void PusTmCreator::setTimeStamper(TimeStamperIF* timeStamper_) {
   pusParams.secHeader.timeStamper = timeStamper_;
 }
+
 uint8_t PusTmCreator::getScTimeRefStatus() { return pusParams.secHeader.scTimeRefStatus; }
+
 uint16_t PusTmCreator::getMessageTypeCounter() { return pusParams.secHeader.messageTypeCounter; }
+
 uint16_t PusTmCreator::getDestId() { return pusParams.secHeader.destId; }
 
 ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
@@ -83,7 +93,9 @@ ReturnValue_t PusTmCreator::deSerialize(const uint8_t** buffer, size_t* size,
 }
 
 ecss::DataWrapper& PusTmCreator::getDataWrapper() { return pusParams.dataWrapper; }
+
 TimeStamperIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader.timeStamper; }
+
 SpacePacketParams& PusTmCreator::getSpParams() { return spCreator.getParams(); }
 
 void PusTmCreator::updateSpLengthField() {
@@ -104,4 +116,23 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
 void PusTmCreator::setup() {
   updateSpLengthField();
   spCreator.setPacketType(ccsds::PacketType::TM);
+}
+
+void PusTmCreator::setMessageTypeCounter(uint16_t messageTypeCounter) {
+  pusParams.secHeader.messageTypeCounter = messageTypeCounter;
+};
+
+void PusTmCreator::setDestId(uint16_t destId) { pusParams.secHeader.destId = destId; }
+
+void PusTmCreator::setRawSourceData(ecss::DataWrapper::BufPairT bufPair) {
+  pusParams.dataWrapper.type = ecss::DataTypes::RAW;
+  pusParams.dataWrapper.dataUnion.raw.data = bufPair.first;
+  pusParams.dataWrapper.dataUnion.raw.len = bufPair.second;
+  updateSpLengthField();
+}
+
+void PusTmCreator::setSerializableSourceData(SerializeIF* serializable) {
+  pusParams.dataWrapper.type = ecss::DataTypes::SERIALIZABLE;
+  pusParams.dataWrapper.dataUnion.serializable = serializable;
+  updateSpLengthField();
 }

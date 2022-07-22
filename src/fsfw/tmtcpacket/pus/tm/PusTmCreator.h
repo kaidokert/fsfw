@@ -47,7 +47,11 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CreatorDataIF {
 
   void setTimeStamper(TimeStamperIF* timeStamper);
   SpacePacketParams& getSpParams();
+  void setRawSourceData(ecss::DataWrapper::BufPairT bufPair);
+  void setSerializableSourceData(SerializeIF* serializable);
   void setApid(uint16_t apid);
+  void setDestId(uint16_t destId);
+  void setMessageTypeCounter(uint16_t messageTypeCounter);
   PusTmParams& getParams();
   void updateSpLengthField();
   [[nodiscard]] uint16_t getPacketIdRaw() const override;

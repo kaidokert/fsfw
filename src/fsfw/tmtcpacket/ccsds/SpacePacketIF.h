@@ -51,9 +51,8 @@ class SpacePacketIF {
   virtual PacketSeqCtrl getPacketSeqCtrl() { return PacketSeqCtrl::fromRaw(getPacketSeqCtrlRaw()); }
 
   [[nodiscard]] virtual uint16_t getApid() const {
-    uint16_t packetId = getPacketIdRaw();
     // Uppermost 11 bits of packet ID
-    return ((packetId >> 8) & 0b111) | (packetId & 0xFF);
+    return getPacketIdRaw() & 0x7ff;
   }
 
   /**
