@@ -42,8 +42,20 @@ struct PacketId : public SerializeIF {
 
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override {
-    uint16_t pscRaw = raw();
-    return SerializeAdapter::serialize(&pscRaw, buffer, size, maxSize, streamEndianness);
+    if (*size + getSerializedSize() > maxSize) {
+      return SerializeIF::BUFFER_TOO_SHORT;
+    }
+    uint16_t idRaw = raw();
+    // Leave the first three bits untouched, they could generally contain the CCSDS version,
+    // or more generally, the packet ID is a 13 bit field
+    **buffer &= ~0x1f;
+    **buffer |= (idRaw >> 8) & 0x1f;
+    *size += 1;
+    *buffer += 1;
+    **buffer = idRaw & 0xff;
+    *size += 1;
+    *buffer += 1;
+    return HasReturnvaluesIF::RETURN_OK;
   }
 
   [[nodiscard]] size_t getSerializedSize() const override { return 2; }

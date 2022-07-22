@@ -168,7 +168,7 @@ if(FSFW_BUILD_TESTS)
   configure_file(unittests/testcfg/TestsConfig.h.in tests/TestsConfig.h)
 
   project(${FSFW_TEST_TGT} CXX C)
-  add_executable(${FSFW_TEST_TGT})
+  add_executable(${FSFW_TEST_TGT} unittests/tmtcpacket/testCcsds.cpp)
   if(IPO_SUPPORTED AND FSFW_ENABLE_IPO)
     set_property(TARGET ${FSFW_TEST_TGT} PROPERTY INTERPROCEDURAL_OPTIMIZATION
                                                   TRUE)
