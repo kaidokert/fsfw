@@ -22,9 +22,9 @@ PusTmParams& PusTmCreator::getParams() { return pusParams; }
 void PusTmCreator::setTimeStamper(TimeStamperIF* timeStamper_) {
   pusParams.secHeader.timeStamper = timeStamper_;
 }
-uint8_t PusTmCreator::getScTimeRefStatus() { return 0; }
-uint16_t PusTmCreator::getMessageTypeCounter() { return 0; }
-uint16_t PusTmCreator::getDestId() { return 0; }
+uint8_t PusTmCreator::getScTimeRefStatus() { return pusParams.secHeader.scTimeRefStatus; }
+uint16_t PusTmCreator::getMessageTypeCounter() { return pusParams.secHeader.messageTypeCounter; }
+uint16_t PusTmCreator::getDestId() { return pusParams.secHeader.destId; }
 
 ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                                       SerializeIF::Endianness streamEndianness) const {
