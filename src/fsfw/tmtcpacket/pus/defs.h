@@ -28,7 +28,7 @@ union DataUnion {
 struct DataWrapper {
   DataTypes type;
   DataUnion dataUnion;
-  using BufPairT = std::pair<uint8_t*, size_t>;
+  using BufPairT = std::pair<const uint8_t*, size_t>;
 
   [[nodiscard]] size_t getLength() const {
     if (type == DataTypes::RAW) {

@@ -1,9 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/tmtcpacket/pus/tm.h"
-#include "fsfw/globalfunctions/CRC.h"
 #include "mocks/CdsShortTimestamperMock.h"
+#include "mocks/SimpleSerializable.h"
 
 TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   auto packetId = PacketId(ccsds::PacketType::TC, true, 0xef);
@@ -20,6 +21,8 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   SECTION("State") {
     REQUIRE(creator.isTm());
     REQUIRE(creator.getApid() == 0xef);
+    REQUIRE(creator.getPusVersion() == 2);
+    REQUIRE(creator.getScTimeRefStatus() == 0);
     REQUIRE(creator.getService() == 17);
     REQUIRE(creator.getSubService() == 2);
     REQUIRE(creator.getTimestamper() == &timeStamper);
@@ -32,6 +35,12 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     // the primary header minus 1
     REQUIRE(creator.getPacketDataLen() == 15);
     REQUIRE(timeStamper.getSizeCallCount == 1);
+  }
+
+  SECTION("SP Params") {
+    auto& spParamsRef = creator.getSpParams();
+    REQUIRE(spParamsRef.dataLen == 15);
+    REQUIRE(spParamsRef.packetId.apid == 0xef);
   }
 
   SECTION("Serialization") {
@@ -54,7 +63,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     // Destination ID
     REQUIRE(((buf[11] << 8) | buf[12]) == 0);
     // Custom timestamp
-    for(size_t i = 1; i < 8; i++) {
+    for (size_t i = 1; i < 8; i++) {
       REQUIRE(buf[12 + i] == i);
     }
     REQUIRE(serLen == 22);
@@ -87,12 +96,13 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
 
   SECTION("Deserialization fails") {
     const uint8_t* roDataPtr = nullptr;
-    REQUIRE(creator.deSerialize(&roDataPtr, &serLen, SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(creator.deSerialize(&roDataPtr, &serLen, SerializeIF::Endianness::NETWORK) ==
+            HasReturnvaluesIF::RETURN_FAILED);
   }
 
   SECTION("Serialize with Raw Data") {
     std::array<uint8_t, 3> data{1, 2, 3};
-    creator.setRawSourceData({data.data(), data.size()});
+    creator.setRawUserData(data.data(), data.size());
     REQUIRE(creator.getFullPacketLen() == 25);
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[20] == 1);
@@ -101,6 +111,34 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   }
 
   SECTION("Serialize with Serializable") {
+    auto simpleSer = SimpleSerializable();
+    creator.setSerializableUserData(&simpleSer);
+    REQUIRE(creator.getFullPacketLen() == 25);
+    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(buf[20] == 1);
+    REQUIRE(buf[21] == 2);
+    REQUIRE(buf[22] == 3);
+  }
 
+  SECTION("Empty Ctor") {
+    PusTmCreator creatorFromEmptyCtor;
+    // 6 bytes CCSDS header, 7 bytes secondary header, no timestamp (IF is null),
+    // 0 bytes application data, 2 bytes CRC
+    REQUIRE(creatorFromEmptyCtor.getFullPacketLen() == 15);
+    // As specified in standard, the data length fields is the total size of the packet without
+    // the primary header minus 1
+    REQUIRE(creatorFromEmptyCtor.getPacketDataLen() == 8);
+    creatorFromEmptyCtor.setTimeStamper(&timeStamper);
+    REQUIRE(creatorFromEmptyCtor.getFullPacketLen() == 22);
+    REQUIRE(creatorFromEmptyCtor.getPacketDataLen() == 15);
+  }
+
+  SECTION("Invalid Buffer Sizes") {
+    size_t reqSize = creator.getSerializedSize();
+    for (size_t maxSize = 0; maxSize < reqSize; maxSize++) {
+      dataPtr = buf.data();
+      serLen = 0;
+      REQUIRE(creator.serialize(&dataPtr, &serLen, maxSize) == SerializeIF::BUFFER_TOO_SHORT);
+    }
   }
 }

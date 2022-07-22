@@ -28,6 +28,7 @@ PusTmParams& PusTmCreator::getParams() { return pusParams; }
 
 void PusTmCreator::setTimeStamper(TimeStamperIF* timeStamper_) {
   pusParams.secHeader.timeStamper = timeStamper_;
+  updateSpLengthField();
 }
 
 uint8_t PusTmCreator::getScTimeRefStatus() { return pusParams.secHeader.scTimeRefStatus; }
@@ -92,8 +93,6 @@ ReturnValue_t PusTmCreator::deSerialize(const uint8_t** buffer, size_t* size,
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
-ecss::DataWrapper& PusTmCreator::getDataWrapper() { return pusParams.dataWrapper; }
-
 TimeStamperIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader.timeStamper; }
 
 SpacePacketParams& PusTmCreator::getSpParams() { return spCreator.getParams(); }
@@ -124,15 +123,13 @@ void PusTmCreator::setMessageTypeCounter(uint16_t messageTypeCounter) {
 
 void PusTmCreator::setDestId(uint16_t destId) { pusParams.secHeader.destId = destId; }
 
-void PusTmCreator::setRawSourceData(ecss::DataWrapper::BufPairT bufPair) {
-  pusParams.dataWrapper.type = ecss::DataTypes::RAW;
-  pusParams.dataWrapper.dataUnion.raw.data = bufPair.first;
-  pusParams.dataWrapper.dataUnion.raw.len = bufPair.second;
+ReturnValue_t PusTmCreator::setRawUserData(const uint8_t* data, size_t len) {
+  pusParams.dataWrapper.setRawData({data, len});
   updateSpLengthField();
+  return HasReturnvaluesIF::RETURN_OK;
 }
-
-void PusTmCreator::setSerializableSourceData(SerializeIF* serializable) {
-  pusParams.dataWrapper.type = ecss::DataTypes::SERIALIZABLE;
-  pusParams.dataWrapper.dataUnion.serializable = serializable;
+ReturnValue_t PusTmCreator::setSerializableUserData(SerializeIF* serializable) {
+  pusParams.dataWrapper.setSerializable(serializable);
   updateSpLengthField();
+  return HasReturnvaluesIF::RETURN_OK;
 }

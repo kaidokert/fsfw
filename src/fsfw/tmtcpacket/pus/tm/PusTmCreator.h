@@ -3,7 +3,7 @@
 
 #include "PusTmIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
-#include "fsfw/tmtcpacket/pus/CreatorDataIF.h"
+#include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
 
 struct PusTmSecHeader {
   PusTmSecHeader() = default;
@@ -39,7 +39,7 @@ struct PusTmParams {
 
 class TimeStamperIF;
 
-class PusTmCreator : public SerializeIF, public PusTmIF, public CreatorDataIF {
+class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF {
  public:
   PusTmCreator();
   PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams);
@@ -47,8 +47,6 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CreatorDataIF {
 
   void setTimeStamper(TimeStamperIF* timeStamper);
   SpacePacketParams& getSpParams();
-  void setRawSourceData(ecss::DataWrapper::BufPairT bufPair);
-  void setSerializableSourceData(SerializeIF* serializable);
   void setApid(uint16_t apid);
   void setDestId(uint16_t destId);
   void setMessageTypeCounter(uint16_t messageTypeCounter);
@@ -70,9 +68,8 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CreatorDataIF {
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override;
   [[nodiscard]] TimeStamperIF* getTimestamper() const;
-
- private:
-  ecss::DataWrapper& getDataWrapper() override;
+  ReturnValue_t setRawUserData(const uint8_t* data, size_t len) override;
+  ReturnValue_t setSerializableUserData(SerializeIF* serializable) override;
 
  private:
   void setup();

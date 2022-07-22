@@ -16,7 +16,7 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
                                       SerializeIF::Endianness streamEndianness) const {
   const uint8_t *start = *buffer;
   size_t userDataLen = pusParams.dataWrapper.getLength();
-  if (*size + getFullPacketLen() > maxSize) {
+  if (*size + getSerializedSize() > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }
   if (pusParams.pusVersion != ecss::PusVersion::PUS_C) {
@@ -86,8 +86,6 @@ uint8_t PusTcCreator::getSubService() const { return pusParams.subservice; }
 
 uint16_t PusTcCreator::getSourceId() const { return pusParams.sourceId; }
 
-ecss::DataWrapper &PusTcCreator::getDataWrapper() { return pusParams.dataWrapper; }
-
 PusTcParams &PusTcCreator::getPusParams() { return pusParams; }
 
 SpacePacketParams &PusTcCreator::getSpParams() { return spCreator.getParams(); }
@@ -96,12 +94,16 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
   return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
 }
 
-void PusTcCreator::setRawAppData(ecss::DataWrapper::BufPairT bufPair) {
-  pusParams.dataWrapper.setRawData(bufPair);
+ReturnValue_t PusTcCreator::setRawUserData(const uint8_t *data, size_t len) {
+  // TODO: Check length field?
+  pusParams.dataWrapper.setRawData({data, len});
   updateSpLengthField();
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
-void PusTcCreator::setSerializableAppData(SerializeIF *serAppData) {
-  pusParams.dataWrapper.setSerializable(serAppData);
+ReturnValue_t PusTcCreator::setSerializableUserData(SerializeIF *serializable) {
+  // TODO: Check length field?
+  pusParams.dataWrapper.setSerializable(serializable);
   updateSpLengthField();
+  return HasReturnvaluesIF::RETURN_OK;
 }

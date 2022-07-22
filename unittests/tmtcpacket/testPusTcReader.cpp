@@ -15,38 +15,43 @@ TEST_CASE("PUS TC Reader", "[pus-tc-reader]") {
   size_t serLen = 0;
   PusTcReader reader;
   auto checkReaderFields = [&](PusTcReader& reader) {
-    REQUIRE(not reader.isNull());
-    REQUIRE(reader.getPacketType() == ccsds::PacketType::TC);
-    REQUIRE(reader.getApid() == 0x02);
-    REQUIRE(reader.getService() == 17);
-    REQUIRE(reader.getSubService() == 1);
-    REQUIRE(reader.getFullPacketLen() == 13);
-    REQUIRE(reader.getPacketDataLen() == 6);
-    REQUIRE(reader.getPusVersion() == 2);
-    REQUIRE(reader.getSequenceCount() == 0x34);
-    REQUIRE(reader.getUserData() == nullptr);
-    REQUIRE(reader.getUserDataLen() == 0);
-    REQUIRE(reader.getFullData() == buf.data());
-    REQUIRE(reader.getSourceId() == 0x00);
-    REQUIRE(reader.getAcknowledgeFlags() == 0b1111);
-    // This value was verified to be correct
-    REQUIRE(reader.getErrorControl() == 0xee63);
+
   };
 
   SECTION("State") {
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.isNull());
-
+    PusTcReader* readerPtr = nullptr;
+    bool callDelete = false;
     SECTION("Setter") {
-      REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
-      REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
-      checkReaderFields(reader);
+      readerPtr = &reader;
+      REQUIRE(readerPtr->setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(readerPtr->parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Directly Constructed") {
-      PusTcReader secondReader(buf.data(), serLen);
-      REQUIRE(not secondReader.isNull());
-      REQUIRE(secondReader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
-      checkReaderFields(secondReader);
+      callDelete = true;
+      readerPtr = new PusTcReader(buf.data(), serLen);
+      REQUIRE(not readerPtr->isNull());
+      REQUIRE(readerPtr->parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+    }
+    REQUIRE(not readerPtr->isNull());
+    REQUIRE(readerPtr->getPacketType() == ccsds::PacketType::TC);
+    REQUIRE(readerPtr->getApid() == 0x02);
+    REQUIRE(readerPtr->getService() == 17);
+    REQUIRE(readerPtr->getSubService() == 1);
+    REQUIRE(readerPtr->getFullPacketLen() == 13);
+    REQUIRE(readerPtr->getPacketDataLen() == 6);
+    REQUIRE(readerPtr->getPusVersion() == 2);
+    REQUIRE(readerPtr->getSequenceCount() == 0x34);
+    REQUIRE(readerPtr->getUserData() == nullptr);
+    REQUIRE(readerPtr->getUserDataLen() == 0);
+    REQUIRE(readerPtr->getFullData() == buf.data());
+    REQUIRE(readerPtr->getSourceId() == 0x00);
+    REQUIRE(readerPtr->getAcknowledgeFlags() == 0b1111);
+    // This value was verified to be correct
+    REQUIRE(readerPtr->getErrorControl() == 0xee63);
+    if (callDelete) {
+      delete readerPtr;
     }
   }
 
@@ -67,7 +72,7 @@ TEST_CASE("PUS TC Reader", "[pus-tc-reader]") {
   SECTION("With application data") {
     auto& params = creator.getPusParams();
     std::array<uint8_t, 3> data{1, 2, 3};
-    creator.setRawAppData({data.data(), data.size()});
+    creator.setRawUserData(data.data(), data.size());
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);

@@ -4,7 +4,7 @@
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
-#include "fsfw/tmtcpacket/pus/CreatorDataIF.h"
+#include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
 #include "fsfw/tmtcpacket/pus/defs.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
 
@@ -19,7 +19,7 @@ struct PusTcParams {
   uint8_t pusVersion = ecss::PusVersion::PUS_C;
 };
 
-class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
+class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF {
  public:
   PusTcCreator(SpacePacketParams initSpParams, PusTcParams initPusParams);
 
@@ -33,8 +33,6 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
   void updateSpLengthField();
   PusTcParams &getPusParams();
   SpacePacketParams &getSpParams();
-  void setRawAppData(ecss::DataWrapper::BufPairT bufPair);
-  void setSerializableAppData(SerializeIF *serAppData);
 
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize);
   [[nodiscard]] size_t getSerializedSize() const override;
@@ -48,7 +46,8 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CreatorDataIF {
   [[nodiscard]] uint8_t getService() const override;
   [[nodiscard]] uint8_t getSubService() const override;
   [[nodiscard]] uint16_t getSourceId() const override;
-  ecss::DataWrapper &getDataWrapper() override;
+  ReturnValue_t setRawUserData(const uint8_t *data, size_t len) override;
+  ReturnValue_t setSerializableUserData(SerializeIF *serializable) override;
 
  private:
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
