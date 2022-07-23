@@ -14,13 +14,10 @@ TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore) : 
 }
 
 ReturnValue_t TmStoreHelper::preparePacket(uint8_t service, uint8_t subservice, uint16_t counter) {
-  // TODO: Implement
-  // creator.setApid(apid);
   PusTmParams& params = creator.getParams();
   params.secHeader.service = service;
   params.secHeader.subservice = subservice;
   params.secHeader.messageTypeCounter = counter;
-  // TODO: Implement serialize and then serialize into the store
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -31,22 +28,21 @@ const store_address_t& TmStoreHelper::getCurrentAddr() const { return currentAdd
 ReturnValue_t TmStoreHelper::deletePacket() { return tmStore->deleteData(currentAddr); }
 
 void TmStoreHelper::setSourceDataRaw(const uint8_t* data, size_t len) {
-  PusTmParams& params = creator.getParams();
-  params.dataWrapper.type = ecss::DataTypes::RAW;
-  params.dataWrapper.dataUnion.raw.data = data;
-  params.dataWrapper.dataUnion.raw.len = len;
+  creator.setRawUserData(data, len);
 }
 
 void TmStoreHelper::setSourceDataSerializable(SerializeIF* serializable) {
-  PusTmParams& params = creator.getParams();
-  params.dataWrapper.type = ecss::DataTypes::SERIALIZABLE;
-  params.dataWrapper.dataUnion.serializable = serializable;
+  creator.setSerializableUserData(serializable);
 }
 
 ReturnValue_t TmStoreHelper::addPacketToStore() {
   creator.updateSpLengthField();
   uint8_t* dataPtr;
-  tmStore->getFreeElement(&currentAddr, creator.getSerializedSize(), &dataPtr);
+  ReturnValue_t result =
+      tmStore->getFreeElement(&currentAddr, creator.getSerializedSize(), &dataPtr);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
   size_t serLen = 0;
   return creator.serialize(&dataPtr, &serLen, creator.getSerializedSize(),
                            SerializeIF::Endianness::NETWORK);
@@ -55,4 +51,5 @@ ReturnValue_t TmStoreHelper::addPacketToStore() {
 void TmStoreHelper::setTimeStamper(TimeStamperIF* timeStamper_) {
   creator.setTimeStamper(timeStamper_);
 }
+
 void TmStoreHelper::setApid(uint16_t apid) { creator.setApid(apid); }

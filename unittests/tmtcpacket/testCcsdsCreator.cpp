@@ -5,8 +5,9 @@
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 
 TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
-  auto params = SpacePacketParams(PacketId(ccsds::PacketType::TC, true, 0x02),
-                                  PacketSeqCtrl(ccsds::SequenceFlags::FIRST_SEGMENT, 0x34), 0x16);
+  auto packetId = PacketId(ccsds::PacketType::TC, true, 0x02);
+  auto psc = PacketSeqCtrl(ccsds::SequenceFlags::FIRST_SEGMENT, 0x34);
+  auto params = SpacePacketParams(packetId, psc, 0x16);
   SpacePacketCreator base = SpacePacketCreator(params);
   std::array<uint8_t, 6> buf{};
   uint8_t* bufPtr = buf.data();
@@ -21,15 +22,18 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   }
 
   SECTION("Basic Test") {
-    REQUIRE(base.isValid());
-    REQUIRE(base.getApid() == 0x02);
-    REQUIRE(base.getSequenceFlags() == ccsds::SequenceFlags::FIRST_SEGMENT);
-    REQUIRE(base.getVersion() == 0b000);
-    REQUIRE(base.getSequenceCount() == 0x34);
-    REQUIRE(base.getPacketDataLen() == 0x16);
-    REQUIRE(base.getPacketType() == ccsds::PacketType::TC);
-    REQUIRE(base.getPacketIdRaw() == 0x1802);
-    REQUIRE(base.getSerializedSize() == 6);
+    CHECK(base.isValid());
+    CHECK(base);
+    CHECK(base.getApid() == 0x02);
+    CHECK(base.getSequenceFlags() == ccsds::SequenceFlags::FIRST_SEGMENT);
+    CHECK(base.getVersion() == 0b000);
+    CHECK(base.getSequenceCount() == 0x34);
+    CHECK(base.getPacketDataLen() == 0x16);
+    CHECK(base.getPacketType() == ccsds::PacketType::TC);
+    CHECK(base.getPacketIdRaw() == 0x1802);
+    CHECK(base.getSerializedSize() == 6);
+    CHECK(base.getPacketSeqCtrl() == psc);
+    CHECK(base.getPacketId() == packetId);
   }
 
   SECTION("Deserialization Fails") {
@@ -42,18 +46,18 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   SECTION("Raw Output") {
     REQUIRE(base.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     // TC, and secondary header flag is set -> 0b0001100 -> 0x18
-    REQUIRE(buf[0] == 0x18);
+    CHECK(buf[0] == 0x18);
     // APID 0x02
-    REQUIRE(buf[1] == 0x02);
+    CHECK(buf[1] == 0x02);
     // Sequence count is one byte value, so the only set bit here is the bit
     // from the Sequence flag argument, which is the second bit for
     // SequenceFlags.FIRST_SEGMENT
-    REQUIRE(buf[2] == 0x40);
+    CHECK(buf[2] == 0x40);
     // Sequence Count specified above
-    REQUIRE(buf[3] == 0x34);
+    CHECK(buf[3] == 0x34);
     // This byte and the next byte should be 22 big endian (packet length)
-    REQUIRE(buf[4] == 0x00);
-    REQUIRE(buf[5] == 0x16);
+    CHECK(buf[4] == 0x00);
+    CHECK(buf[5] == 0x16);
   }
 
   SECTION("All Ones Output") {
@@ -63,19 +67,20 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
     base.setDataLen(static_cast<int>(std::pow(2, 16)) - 1);
     REQUIRE(base.isValid());
     REQUIRE(base.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(buf[0] == 0x1F);
-    REQUIRE(buf[1] == 0xFF);
-    REQUIRE(buf[2] == 0xFF);
-    REQUIRE(buf[3] == 0xFF);
-    REQUIRE(buf[4] == 0xFF);
-    REQUIRE(buf[5] == 0xFF);
+    CHECK(buf[0] == 0x1F);
+    CHECK(buf[1] == 0xFF);
+    CHECK(buf[2] == 0xFF);
+    CHECK(buf[3] == 0xFF);
+    CHECK(buf[4] == 0xFF);
+    CHECK(buf[5] == 0xFF);
   }
 
   SECTION("Invalid APID") {
-    SpacePacketCreator invalid = SpacePacketCreator(
+    SpacePacketCreator creator = SpacePacketCreator(
         ccsds::PacketType::TC, true, 0xFFFF, ccsds::SequenceFlags::FIRST_SEGMENT, 0x34, 0x16);
-    REQUIRE(not invalid.isValid());
-    REQUIRE(invalid.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(not creator.isValid());
+    REQUIRE(not creator);
+    REQUIRE(creator.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
   }
 
   SECTION("Invalid Seq Count") {

@@ -81,3 +81,5 @@ void SpacePacketCreator::setPacketType(ccsds::PacketType type) {
   params.packetId.packetType = type;
 }
 bool SpacePacketCreator::operator==(const SpacePacketCreator &other) const { return false; }
+
+SpacePacketCreator::operator bool() const { return isValid(); }

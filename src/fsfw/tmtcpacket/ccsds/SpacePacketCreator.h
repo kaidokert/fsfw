@@ -26,6 +26,7 @@ class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
   explicit SpacePacketCreator(SpacePacketParams params);
 
   bool operator==(const SpacePacketCreator &other) const;
+  explicit operator bool() const;
 
   SpacePacketCreator(ccsds::PacketType packetType, bool secHeaderFlag, uint16_t apid,
                      ccsds::SequenceFlags seqFlags, uint16_t seqCount, uint16_t dataLen,

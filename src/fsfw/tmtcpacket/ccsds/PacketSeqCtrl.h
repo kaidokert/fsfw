@@ -12,6 +12,10 @@ struct PacketSeqCtrl : public SerializeIF {
   PacketSeqCtrl(ccsds::SequenceFlags seqFlags, uint16_t seqCount)
       : seqFlags(seqFlags), seqCount(seqCount) {}
 
+  bool operator==(const PacketSeqCtrl &other) const {
+    return seqCount == other.seqCount and seqFlags == other.seqFlags;
+  }
+
   /**
    * NOTE: If the sequence control has an invalid value, the invalid bits will be cut off
    * @return
