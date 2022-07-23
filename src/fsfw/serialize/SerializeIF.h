@@ -66,7 +66,7 @@ class SerializeIF {
    * Gets the size of a object if it would be serialized in a buffer
    * @return Size of serialized object
    */
-  virtual size_t getSerializedSize() const = 0;
+  [[nodiscard]] virtual size_t getSerializedSize() const = 0;
 
   /**
    * @brief
@@ -99,7 +99,7 @@ class SerializeIF {
    * @param streamEndianness
    * @return
    */
-  virtual ReturnValue_t  serialize(uint8_t* buffer, size_t maxSize, Endianness streamEndianness) {
+  virtual ReturnValue_t  serialize(uint8_t* buffer, size_t maxSize, Endianness streamEndianness) const {
     size_t tmpSize = 0;
     return serialize(&buffer, &tmpSize, maxSize, streamEndianness);
   }
