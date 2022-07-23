@@ -75,20 +75,6 @@ class SerializeIF {
   }
 
   /**
-   * Forwards to regular @serialize call with network endianness
-   */
-  virtual ReturnValue_t serializeNe(uint8_t** buffer, size_t* size, size_t maxSize) {
-    return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
-  }
-
-  /**
-   * If endianness is not explicitly specified, use machine endianness
-   */
-  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) {
-    return serialize(buffer, size, maxSize, SerializeIF::Endianness::MACHINE);
-  }
-
-  /**
    * Gets the size of a object if it would be serialized in a buffer
    * @return Size of serialized object
    */

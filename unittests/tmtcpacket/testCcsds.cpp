@@ -41,7 +41,7 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
     packetId.secHeaderFlag = false;
     packetId.packetType = ccsds::PacketType::TM;
     REQUIRE(packetId.raw() == 0x1ff);
-    REQUIRE(packetId.SerializeIF::serialize(buf.data(), buf.size(), SerializeIF::Endianness::NETWORK) ==
+    REQUIRE(packetId.SerializeIF::serializeNe(buf.data(), buf.size()) ==
             HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[0] == 0x1);
     REQUIRE(buf[1] == 0xff);
