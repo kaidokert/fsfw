@@ -34,7 +34,7 @@ class SerializeIF {
   static const ReturnValue_t TOO_MANY_ELEMENTS =
       MAKE_RETURN_CODE(3);  // !< There are too many elements to be deserialized
 
-  virtual ~SerializeIF() {}
+  virtual ~SerializeIF() = default;
   /**
    * @brief
    * Function to serialize the object into a buffer with maxSize. Size represents the written
@@ -99,7 +99,8 @@ class SerializeIF {
    * @param streamEndianness
    * @return
    */
-  virtual ReturnValue_t  serialize(uint8_t* buffer, size_t maxSize, Endianness streamEndianness) const {
+  virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize,
+                                  Endianness streamEndianness) const {
     size_t tmpSize = 0;
     return serialize(&buffer, &tmpSize, maxSize, streamEndianness);
   }
@@ -112,7 +113,7 @@ class SerializeIF {
    * @param streamEndianness
    * @return
    */
-  virtual ReturnValue_t  deSerialize(const uint8_t* buffer, size_t maxSize,
+  virtual ReturnValue_t deSerialize(const uint8_t *buffer, size_t maxSize,
                                     Endianness streamEndianness) {
     return deSerialize(&buffer, &maxSize, streamEndianness);
   }
