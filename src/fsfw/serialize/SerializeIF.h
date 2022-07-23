@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 /**
  * @defgroup serialize Serialization
@@ -105,13 +105,13 @@ class SerializeIF {
   /**
    * Forwards to regular @deSerialize call with network endianness
    */
-  virtual ReturnValue_t deSerializeNe(const uint8_t** buffer, size_t* size, size_t maxSize) {
+  virtual ReturnValue_t deSerializeNe(const uint8_t** buffer, size_t* size) {
     return deSerialize(buffer, size, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t *size, size_t maxSize) {
+  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t *size) {
     return deSerialize(buffer, size, SerializeIF::Endianness::MACHINE);
   }
 
@@ -156,14 +156,14 @@ class SerializeIF {
   /**
    * Forwards to regular @serialize call with network endianness
    */
-  virtual ReturnValue_t deSerializeNe(uint8_t *buffer, size_t maxSize) const {
-    return serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
+  virtual ReturnValue_t deSerializeNe(const uint8_t *buffer, size_t maxSize) {
+    return deSerialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  virtual ReturnValue_t deSerialize(uint8_t *buffer, size_t maxSize) const {
-    return serialize(buffer, maxSize, SerializeIF::Endianness::MACHINE);
+  virtual ReturnValue_t deSerialize(const uint8_t *buffer, size_t maxSize) {
+    return deSerialize(buffer, maxSize, SerializeIF::Endianness::MACHINE);
   }
 };
 

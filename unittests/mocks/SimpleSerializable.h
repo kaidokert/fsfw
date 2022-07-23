@@ -2,6 +2,7 @@
 #define FSFW_TESTS_SIMPLESERIALIZABLE_H
 
 #include "fsfw/serialize.h"
+#include "fsfw/osal/Endiness.h"
 
 class SimpleSerializable : public SerializeIF {
  public:
@@ -24,8 +25,12 @@ class SimpleSerializable : public SerializeIF {
     }
     someU8 = **buffer;
     *size -= 1;
+    *buffer += 1;
     return SerializeAdapter::deSerialize(&someU16, buffer, size, streamEndianness);
   }
+
+  [[nodiscard]] uint8_t getU8() const { return someU8; }
+  [[nodiscard]] uint16_t getU16() const { return someU16; }
 
  private:
   uint8_t someU8 = 1;

@@ -1,11 +1,10 @@
-#include "TestSerialLinkedPacket.h"
-
 #include <fsfw/globalfunctions/arrayprinter.h>
 
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
 #include "CatchDefinitions.h"
+#include "SerialLinkedListAdapterPacket.h"
 
 TEST_CASE("Serial Linked Packet", "[SerLinkPacket]") {
   // perform set-up here
