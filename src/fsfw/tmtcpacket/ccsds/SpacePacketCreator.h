@@ -24,6 +24,9 @@ class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
  public:
   SpacePacketCreator() = default;
   explicit SpacePacketCreator(SpacePacketParams params);
+
+  bool operator==(const SpacePacketCreator &other) const;
+
   SpacePacketCreator(ccsds::PacketType packetType, bool secHeaderFlag, uint16_t apid,
                      ccsds::SequenceFlags seqFlags, uint16_t seqCount, uint16_t dataLen,
                      uint8_t version = 0);
@@ -41,7 +44,6 @@ class SpacePacketCreator : public SpacePacketIF, public SerializeIF {
   void setSeqFlags(ccsds::SequenceFlags flags);
   void setDataLen(uint16_t dataLen);
 
-  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) const;
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
 

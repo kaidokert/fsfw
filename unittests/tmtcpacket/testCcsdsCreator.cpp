@@ -40,7 +40,7 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   }
 
   SECTION("Raw Output") {
-    REQUIRE(base.serialize(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(base.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     // TC, and secondary header flag is set -> 0b0001100 -> 0x18
     REQUIRE(buf[0] == 0x18);
     // APID 0x02
@@ -62,7 +62,7 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
     base.setSeqFlags(ccsds::SequenceFlags::UNSEGMENTED);
     base.setDataLen(static_cast<int>(std::pow(2, 16)) - 1);
     REQUIRE(base.isValid());
-    REQUIRE(base.serialize(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(base.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[0] == 0x1F);
     REQUIRE(buf[1] == 0xFF);
     REQUIRE(buf[2] == 0xFF);
@@ -75,28 +75,28 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
     SpacePacketCreator invalid = SpacePacketCreator(
         ccsds::PacketType::TC, true, 0xFFFF, ccsds::SequenceFlags::FIRST_SEGMENT, 0x34, 0x16);
     REQUIRE(not invalid.isValid());
-    REQUIRE(invalid.serialize(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(invalid.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
   }
 
   SECTION("Invalid Seq Count") {
     SpacePacketCreator invalid = SpacePacketCreator(
         ccsds::PacketType::TC, true, 0x02, ccsds::SequenceFlags::FIRST_SEGMENT, 0xFFFF, 0x16);
     REQUIRE(not invalid.isValid());
-    REQUIRE(invalid.serialize(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(invalid.serializeNe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_FAILED);
   }
 
   SECTION("Invalid Buf Size 1") {
     serLen = 2;
-    REQUIRE(base.serialize(&bufPtr, &serLen, buf.size()) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(base.serializeNe(&bufPtr, &serLen, buf.size()) == SerializeIF::BUFFER_TOO_SHORT);
   }
 
   SECTION("Invalid Buf Size 2") {
     serLen = 4;
-    REQUIRE(base.serialize(&bufPtr, &serLen, buf.size()) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(base.serializeNe(&bufPtr, &serLen, buf.size()) == SerializeIF::BUFFER_TOO_SHORT);
   }
 
   SECTION("Invalid Buf Size 3") {
     serLen = 6;
-    REQUIRE(base.serialize(&bufPtr, &serLen, buf.size()) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(base.serializeNe(&bufPtr, &serLen, buf.size()) == SerializeIF::BUFFER_TOO_SHORT);
   }
 }

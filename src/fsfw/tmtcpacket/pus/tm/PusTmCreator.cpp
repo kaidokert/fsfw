@@ -43,7 +43,7 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
   if (*size + getSerializedSize() > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }
-  ReturnValue_t result = spCreator.serialize(buffer, size, maxSize);
+  ReturnValue_t result = spCreator.serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

@@ -48,9 +48,6 @@ ReturnValue_t SpacePacketCreator::deSerialize(const uint8_t **buffer, size_t *si
 }
 bool SpacePacketCreator::isValid() const { return valid; }
 
-ReturnValue_t SpacePacketCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize) const {
-  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
-}
 void SpacePacketCreator::setApid(uint16_t apid) {
   if (apid < ccsds::LIMIT_APID) {
     params.packetId.apid = apid;
@@ -83,3 +80,4 @@ SpacePacketParams &SpacePacketCreator::getParams() { return params; }
 void SpacePacketCreator::setPacketType(ccsds::PacketType type) {
   params.packetId.packetType = type;
 }
+bool SpacePacketCreator::operator==(const SpacePacketCreator &other) const { return false; }

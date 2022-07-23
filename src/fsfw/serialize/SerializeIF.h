@@ -63,6 +63,20 @@ class SerializeIF {
                                   Endianness streamEndianness) const = 0;
 
   /**
+   * Forwards to regular @serialize call with network endianness
+   */
+  virtual ReturnValue_t serializeNe(uint8_t** buffer, size_t* size, size_t maxSize) {
+    return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
+  }
+
+  /**
+   * If endianness is not explicitly specified, use machine endianness
+   */
+  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) {
+    return serialize(buffer, size, maxSize, SerializeIF::Endianness::MACHINE);
+  }
+
+  /**
    * Gets the size of a object if it would be serialized in a buffer
    * @return Size of serialized object
    */
@@ -90,6 +104,18 @@ class SerializeIF {
    */
   virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                                     Endianness streamEndianness) = 0;
+  /**
+   * Forwards to regular @deSerialize call with network endianness
+   */
+  virtual ReturnValue_t deSerializeNe(const uint8_t** buffer, size_t* size, size_t maxSize) {
+    return deSerialize(buffer, size, SerializeIF::Endianness::NETWORK);
+  }
+  /**
+   * If endianness is not explicitly specified, use machine endianness
+   */
+  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t *size, size_t maxSize) {
+    return deSerialize(buffer, size, SerializeIF::Endianness::MACHINE);
+  }
 
   /**
    * Helper method which can be used if serialization should be performed without any additional

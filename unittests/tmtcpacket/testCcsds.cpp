@@ -36,17 +36,22 @@ TEST_CASE("CCSDS Low Level", "[ccsds-ll]") {
 TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
   PacketId packetId;
   std::array<uint8_t, 3> buf{};
-  size_t serLen = 0;
-  uint8_t* ptr = buf.data();
   SECTION("Basic") {
     packetId.apid = 0x1ff;
     packetId.secHeaderFlag = false;
     packetId.packetType = ccsds::PacketType::TM;
     REQUIRE(packetId.raw() == 0x1ff);
-    REQUIRE(packetId.serialize(buf.data(), buf.size(), SerializeIF::Endianness::NETWORK) ==
+    REQUIRE(packetId.SerializeIF::serialize(buf.data(), buf.size(), SerializeIF::Endianness::NETWORK) ==
             HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[0] == 0x1);
     REQUIRE(buf[1] == 0xff);
+  }
+
+  SECTION("From Raw") {
+    auto newId = PacketId(ccsds::PacketType::TC, true, 0x2ff);
+    uint16_t rawId = newId.raw();
+    REQUIRE(rawId == 0x1aff);
+    REQUIRE(PacketId::fromRaw(rawId) == newId);
   }
 }
 
