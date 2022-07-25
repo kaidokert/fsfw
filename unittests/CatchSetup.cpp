@@ -31,7 +31,5 @@ int customSetup() {
 }
 
 int customTeardown() {
-  ObjectManager* objMan = ObjectManager::instance();
-  delete objMan;
   return 0;
 }
