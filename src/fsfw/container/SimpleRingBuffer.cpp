@@ -1,4 +1,7 @@
 #include "fsfw/container/SimpleRingBuffer.h"
+#include "fsfw/FSFW.h"
+
+#include "fsfw/serviceinterface.h"
 
 #include <cstring>
 
@@ -48,6 +51,19 @@ void SimpleRingBuffer::confirmBytesWritten(size_t amount) {
 }
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data, size_t amount) {
+  if(data == nullptr) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
+  if(amount > getMaxSize()) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+      sif::error << "SimpleRingBuffer::writeData: Amount of data too large" << std::endl;
+#else
+      sif::printError("SimpleRingBuffer::writeData: Amount of data too large\n");
+#endif
+#endif
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
   if (availableWriteSpace() >= amount or overwriteOld) {
     size_t amountTillWrap = writeTillWrap();
     if (amountTillWrap >= amount) {
