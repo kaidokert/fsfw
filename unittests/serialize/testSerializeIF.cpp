@@ -38,7 +38,7 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
       REQUIRE(simpleSer.serialize(&ptr, &len, buf.size(), SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.serializeNe(&ptr, &len, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.serializeBe(&ptr, &len, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     }
 
     CHECK(buf[0] == 1);
@@ -58,7 +58,7 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
       REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), buf.size(), SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::serializeNe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.SerializeIF::serializeBe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
     }
     CHECK(buf[0] == 1);
     CHECK(buf[1] == 2);
@@ -123,7 +123,7 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
       REQUIRE(simpleSer.deSerialize(&ptr, &len, SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::deSerializeNe(&ptr, &len) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.SerializeIF::deSerializeBe(&ptr, &len) == HasReturnvaluesIF::RETURN_OK);
     }
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 1);
@@ -140,7 +140,7 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
       REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), buf.size(), SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::deSerializeNe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.SerializeIF::deSerializeBe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
     }
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 1);
