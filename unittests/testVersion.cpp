@@ -1,10 +1,9 @@
 
-#include "fsfw/version.h"
-
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/serviceinterface.h"
 #include "CatchDefinitions.h"
+#include "fsfw/serviceinterface.h"
+#include "fsfw/version.h"
 
 TEST_CASE("Version API Tests", "[TestVersionAPI]") {
   // Check that major version is non-zero

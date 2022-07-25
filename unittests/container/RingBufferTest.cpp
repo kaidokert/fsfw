@@ -237,12 +237,12 @@ TEST_CASE("Ring Buffer Test3", "[RingBufferTest3]") {
 
   SECTION("Overflow") {
     REQUIRE(ringBuffer.availableWriteSpace() == 9);
-    // Writing more than the buffer is large. 
+    // Writing more than the buffer is large.
     // This write will be rejected and is seen as a configuration mistake
     REQUIRE(ringBuffer.writeData(testData, 13) == retval::CATCH_FAILED);
     REQUIRE(ringBuffer.getAvailableReadData() == 0);
     ringBuffer.clear();
-    // Using FreeElement allows the usage of excessBytes but 
+    // Using FreeElement allows the usage of excessBytes but
     // should be used with caution
     uint8_t *ptr = nullptr;
     REQUIRE(ringBuffer.getFreeElement(&ptr, 13) == retval::CATCH_OK);

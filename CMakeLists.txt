@@ -13,7 +13,7 @@ list(APPEND CMAKE_MODULE_PATH
 # Version file handling  #
 # ##############################################################################
 
-set(FSFW_VERSION_IF_GIT_FAILS 4)
+set(FSFW_VERSION_IF_GIT_FAILS 5)
 set(FSFW_SUBVERSION_IF_GIT_FAILS 0)
 set(FSFW_REVISION_IF_GIT_FAILS 0)
 

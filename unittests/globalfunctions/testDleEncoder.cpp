@@ -1,8 +1,8 @@
 #include <array>
 
+#include "CatchDefinitions.h"
 #include "catch2/catch_test_macros.hpp"
 #include "fsfw/globalfunctions/DleEncoder.h"
-#include "CatchDefinitions.h"
 
 const std::vector<uint8_t> TEST_ARRAY_0 = {0, 0, 0, 0, 0};
 const std::vector<uint8_t> TEST_ARRAY_1 = {0, DleEncoder::DLE_CHAR, 5};

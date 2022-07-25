@@ -11,8 +11,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
 
-#include "LocalPoolOwnerBase.h"
 #include "CatchDefinitions.h"
+#include "LocalPoolOwnerBase.h"
 
 TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
   LocalPoolOwnerBase* poolOwner =

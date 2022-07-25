@@ -8,8 +8,8 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-#include "LocalPoolOwnerBase.h"
 #include "CatchDefinitions.h"
+#include "LocalPoolOwnerBase.h"
 #include "tests/TestsConfig.h"
 
 TEST_CASE("DataSetTest", "[DataSetTest]") {
