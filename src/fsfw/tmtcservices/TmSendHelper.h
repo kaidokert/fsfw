@@ -9,13 +9,15 @@
 
 class TmSendHelper {
  public:
-  explicit TmSendHelper(InternalErrorReporterIF* reporter);
+  TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter, MessageQueueId_t tmtcMsgDest);
   TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter);
-  TmSendHelper(MessageQueueIF* queue, MessageQueueId_t tmtcMsgDest,
-               InternalErrorReporterIF* reporter);
+  explicit TmSendHelper(InternalErrorReporterIF* reporter);
+
+
   void setMsgQueue(MessageQueueIF* queue);
   void setMsgDestination(MessageQueueId_t msgDest);
   void setInternalErrorReporter(InternalErrorReporterIF* reporter);
+  ReturnValue_t sendPacket(MessageQueueId_t dest, const store_address_t& storeId);
   ReturnValue_t sendPacket(const store_address_t& storeId);
 
  private:

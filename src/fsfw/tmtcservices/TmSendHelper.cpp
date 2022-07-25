@@ -2,8 +2,7 @@
 
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 
-TmSendHelper::TmSendHelper(MessageQueueIF* queue, MessageQueueId_t tmtcMsgDest,
-                           InternalErrorReporterIF *reporter)
+TmSendHelper::TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF *reporter, MessageQueueId_t tmtcMsgDest)
     : tmtcMsgDest(tmtcMsgDest), queue(queue), errReporter(reporter) {}
 
 TmSendHelper::TmSendHelper(MessageQueueIF *queue, InternalErrorReporterIF *reporter)
@@ -32,3 +31,8 @@ void TmSendHelper::setInternalErrorReporter(InternalErrorReporterIF *reporter) {
   errReporter = reporter;
 }
 void TmSendHelper::setMsgQueue(MessageQueueIF *queue_) { queue = queue_; }
+
+ReturnValue_t TmSendHelper::sendPacket(MessageQueueId_t dest, const store_address_t &storeId) {
+  setMsgDestination(dest);
+  return sendPacket(storeId);
+}

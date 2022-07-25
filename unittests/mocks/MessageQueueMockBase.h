@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <queue>
+#include <map>
 
 #include "CatchDefinitions.h"
 #include "fsfw/ipc/CommandMessage.h"
@@ -10,14 +11,21 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 
+struct SendInfo {
+  explicit SendInfo(MessageQueueMessageIF* initMsg, unsigned int initCallCnt = 1): callCount(initCallCnt) {
+    msgs.push(initMsg);
+  }
+  unsigned int callCount = 0;
+  std::queue<MessageQueueMessageIF*> msgs;
+};
+
 class MessageQueueMockBase : public MessageQueueBase {
  public:
   MessageQueueMockBase();
 
   explicit MessageQueueMockBase(MessageQueueId_t queueId);
 
-  uint8_t messageSentCounter = 0;
-  bool messageSent = false;
+  std::map<MessageQueueId_t, SendInfo> sendMap;
 
   bool wasMessageSent(uint8_t* messageSentCounter_ = nullptr, bool resetCounter = true);
 
@@ -37,7 +45,6 @@ class MessageQueueMockBase : public MessageQueueBase {
 
   void clearMessages(bool clearCommandMessages = true);
  private:
-  std::queue<MessageQueueMessage> messagesSentQueue;
 };
 
 #endif /* FSFW_UNITTEST_TESTS_MOCKS_MESSAGEQUEUEMOCKBASE_H_ */

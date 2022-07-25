@@ -43,10 +43,13 @@ ReturnValue_t MessageQueueMockBase::flush(uint32_t* count) {
 ReturnValue_t MessageQueueMockBase::sendMessageFrom(MessageQueueId_t sendTo,
                                                     MessageQueueMessageIF* message,
                                                     MessageQueueId_t sentFrom, bool ignoreFault) {
-  messageSent = true;
-  messageSentCounter++;
-  MessageQueueMessage& messageRef = *(dynamic_cast<MessageQueueMessage*>(message));
-  messagesSentQueue.push(messageRef);
+  auto iter = sendMap.find(sendTo);
+  if (iter == sendMap.end()) {
+    sendMap.emplace(sendTo, SendInfo(message, 1));
+  } else {
+    iter->second.callCount += 1;
+    iter->second.msgs.push(message);
+  }
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -55,6 +58,12 @@ ReturnValue_t MessageQueueMockBase::reply(MessageQueueMessageIF* message) {
 }
 
 void MessageQueueMockBase::clearMessages(bool clearCommandMessages) {
+  for (const auto& destInfo: sendMap) {
+    if (clearCommandMessages) {
+      CommandMessage message;
+      std::memcpy(message.getBuffer(), destInfo.second.msgs.front()->getBuffer(),
+                  message.getMessageSize());
+  }
   while (not messagesSentQueue.empty()) {
     if (clearCommandMessages) {
       CommandMessage message;
