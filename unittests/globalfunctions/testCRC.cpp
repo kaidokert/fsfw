@@ -1,8 +1,8 @@
 #include <array>
 
+#include "CatchDefinitions.h"
 #include "catch2/catch_test_macros.hpp"
 #include "fsfw/globalfunctions/CRC.h"
-#include "CatchDefinitions.h"
 
 TEST_CASE("CRC", "[CRC]") {
   std::array<uint8_t, 10> testData = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};

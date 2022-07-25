@@ -2,9 +2,9 @@
 
 #include "ComIFMock.h"
 #include "DeviceFdirMock.h"
-#include "devicehandler/CookieIFMock.h"
 #include "DeviceHandlerCommander.h"
 #include "DeviceHandlerMock.h"
+#include "devicehandler/CookieIFMock.h"
 #include "objects/systemObjectList.h"
 
 TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {

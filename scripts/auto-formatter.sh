@@ -16,8 +16,7 @@ cpp_format="clang-format"
 file_selectors="-iname *.h -o -iname *.cpp -o -iname *.c -o -iname *.tpp"
 if command -v ${cpp_format} &> /dev/null; then
   find ./src ${file_selectors} | xargs ${cpp_format} --style=file -i
-  find ./hal ${file_selectors} | xargs ${cpp_format} --style=file -i
-  find ./tests ${file_selectors} | xargs ${cpp_format} --style=file -i
+  find ./unittests ${file_selectors} | xargs ${cpp_format} --style=file -i
 else
   echo "No ${cpp_format} tool found, not formatting C++/C files"
 fi

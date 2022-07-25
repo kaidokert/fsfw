@@ -2,6 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstring>
 
+#include "CatchDefinitions.h"
 #include "fsfw/cfdp/FileSize.h"
 #include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
 #include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
@@ -9,7 +10,6 @@
 #include "fsfw/cfdp/pdu/HeaderSerializer.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/serialize/SerializeAdapter.h"
-#include "CatchDefinitions.h"
 
 TEST_CASE("CFDP Base", "[CfdpBase]") {
   using namespace cfdp;

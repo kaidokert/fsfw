@@ -1,9 +1,9 @@
 #include <fsfw/power/DummyPowerSwitcher.h>
 #include <fsfw/power/PowerSwitcher.h>
-#include "mocks/PowerSwitcherMock.h"
 
 #include <catch2/catch_test_macros.hpp>
 
+#include "mocks/PowerSwitcherMock.h"
 #include "objects/systemObjectList.h"
 
 TEST_CASE("Power Switcher", "[power-switcher]") {
