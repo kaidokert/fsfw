@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "Clock.h"
 #include "clockDefinitions.h"
 
