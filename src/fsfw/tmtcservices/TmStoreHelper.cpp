@@ -58,3 +58,5 @@ void TmStoreHelper::setTimeStamper(TimeStamperIF& timeStamper_) {
 }
 
 void TmStoreHelper::setApid(uint16_t apid) { creator.setApid(apid); }
+
+PusTmCreator& TmStoreHelper::getCreatorRef() { return creator; }

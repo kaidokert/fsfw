@@ -90,7 +90,7 @@ bool LocalPoolOwnerBase::changedDataSetCallbackWasCalled(sid_t &sid, store_addre
   sid = changedDatasetSid;
   storeId = storeIdForChangedSet;
   this->changedDatasetSid.raw = sid_t::INVALID_SID;
-  this->storeIdForChangedSet = storeId::INVALID_STORE_ADDRESS;
+  this->storeIdForChangedSet = store_address_t::invalid();
   return condition;
 }
 
@@ -108,7 +108,7 @@ bool LocalPoolOwnerBase::changedVariableCallbackWasCalled(gp_id_t &gpid, store_a
   gpid = changedPoolVariableGpid;
   storeId = storeIdForChangedVariable;
   this->changedPoolVariableGpid.raw = gp_id_t::INVALID_GPID;
-  this->storeIdForChangedVariable = storeId::INVALID_STORE_ADDRESS;
+  this->storeIdForChangedVariable = store_address_t::invalid();
   return condition;
 }
 

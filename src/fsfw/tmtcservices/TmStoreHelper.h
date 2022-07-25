@@ -15,6 +15,7 @@ class TmStoreHelper {
 
   ReturnValue_t preparePacket(uint8_t service, uint8_t subservice, uint16_t counter);
 
+  PusTmCreator& getCreatorRef();
   void setTimeStamper(TimeStamperIF& timeStamper);
   [[nodiscard]] const store_address_t& getCurrentAddr() const;
   void setSourceDataRaw(const uint8_t* data, size_t len);

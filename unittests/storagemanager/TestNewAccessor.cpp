@@ -162,7 +162,7 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
     REQUIRE(result == retval::CATCH_OK);
     {
       StorageAccessor accessor(testStoreId);
-      StorageAccessor accessor2(0);
+      StorageAccessor accessor2(store_address_t::invalid());
       accessor2 = std::move(accessor);
       REQUIRE(accessor.data() == nullptr);
       std::array<uint8_t, 6> data;

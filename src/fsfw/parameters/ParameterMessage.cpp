@@ -44,7 +44,7 @@ store_address_t ParameterMessage::getParameterLoadCommand(const CommandMessage* 
   *pfc = packedParamSettings >> 16 & 0xff;
   *rows = packedParamSettings >> 8 & 0xff;
   *columns = packedParamSettings & 0xff;
-  return message->getParameter2();
+  return static_cast<store_address_t>(message->getParameter2());
 }
 
 void ParameterMessage::clear(CommandMessage* message) {

@@ -10,7 +10,7 @@ void CFDPMessage::setCommand(CommandMessage *message, store_address_t cfdpPacket
 
 store_address_t CFDPMessage::getStoreId(const CommandMessage *message) {
   store_address_t storeAddressCFDPPacket;
-  storeAddressCFDPPacket = message->getParameter();
+  storeAddressCFDPPacket = static_cast<store_address_t>(message->getParameter());
   return storeAddressCFDPPacket;
 }
 

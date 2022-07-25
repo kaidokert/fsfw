@@ -80,7 +80,7 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
   }
 
   SECTION("Handle failed") {
-    store_address_t toLongParamAddress = StorageManagerIF::INVALID_ADDRESS;
+    store_address_t toLongParamAddress = store_address_t::invalid();
     std::array<uint8_t, 5> toLongData = {5, 4, 3, 2, 1};
     REQUIRE(ipcStore->addData(&toLongParamAddress, toLongData.data(), 5) == retval::CATCH_OK);
     ActionMessage::setCommand(&actionMessage, testActionId, toLongParamAddress);
@@ -98,7 +98,7 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
   }
 
   SECTION("Missing IPC Data") {
-    ActionMessage::setCommand(&actionMessage, testActionId, StorageManagerIF::INVALID_ADDRESS);
+    ActionMessage::setCommand(&actionMessage, testActionId, store_address_t::invalid());
     CHECK(not testDhMock.executeActionCalled);
     REQUIRE(actionHelper.handleActionMessage(&actionMessage) == retval::CATCH_OK);
     CommandMessage testMessage;

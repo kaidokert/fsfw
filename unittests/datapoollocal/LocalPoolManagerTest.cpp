@@ -392,13 +392,13 @@ TEST_CASE("LocalPoolManagerTest", "[LocManTest]") {
     CHECK(gpidToCheck == lpool::uint8VarGpid);
 
     HousekeepingMessage::setUpdateSnapshotSetCommand(&hkCmd, lpool::testSid,
-                                                     storeId::INVALID_STORE_ADDRESS);
+                                                     store_address_t::invalid());
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
     CHECK(poolOwner->changedDataSetCallbackWasCalled(sidToCheck, storeId) == true);
     CHECK(sidToCheck == lpool::testSid);
 
     HousekeepingMessage::setUpdateSnapshotVariableCommand(&hkCmd, lpool::uint8VarGpid,
-                                                          storeId::INVALID_STORE_ADDRESS);
+                                                          store_address_t::invalid());
     CHECK(poolOwner->poolManager.handleHousekeepingMessage(&hkCmd) == retval::CATCH_OK);
     CHECK(poolOwner->changedVariableCallbackWasCalled(gpidToCheck, storeId) == true);
     CHECK(gpidToCheck == lpool::uint8VarGpid);
