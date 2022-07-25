@@ -9,9 +9,9 @@ namespace telemetry {
 
 ReturnValue_t storeAndSendTmPacket(TmStoreHelper& storeHelper, TmSendHelper& sendHelper);
 
-class SourceDataWithObjectIdPrefix : public SerializeIF {
+class DataWithObjectIdPrefix : public SerializeIF {
  public:
-  SourceDataWithObjectIdPrefix(object_id_t objectId, const uint8_t* srcData, size_t srcDataLen)
+  DataWithObjectIdPrefix(object_id_t objectId, const uint8_t* srcData, size_t srcDataLen)
       : objectId(objectId), srcData(srcData), srcDataLen(srcDataLen) {}
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override {

@@ -298,7 +298,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, const uint
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_t objectId,
                                                   const uint8_t* data, size_t dataLen) {
-  telemetry::SourceDataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
+  telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
   tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
   tmStoreHelper.setSourceDataSerializable(&dataWithObjId);
   ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
