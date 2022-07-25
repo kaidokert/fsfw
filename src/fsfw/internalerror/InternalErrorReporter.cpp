@@ -126,9 +126,9 @@ MessageQueueId_t InternalErrorReporter::getCommandQueue() const {
 
 ReturnValue_t InternalErrorReporter::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                              LocalDataPoolManager &poolManager) {
-  localDataPoolMap.emplace(errorPoolIds::TM_HITS, new PoolEntry<uint32_t>());
-  localDataPoolMap.emplace(errorPoolIds::QUEUE_HITS, new PoolEntry<uint32_t>());
-  localDataPoolMap.emplace(errorPoolIds::STORE_HITS, new PoolEntry<uint32_t>());
+  localDataPoolMap.emplace(errorPoolIds::TM_HITS, &tmHitsEntry);
+  localDataPoolMap.emplace(errorPoolIds::QUEUE_HITS, &queueHitsEntry);
+  localDataPoolMap.emplace(errorPoolIds::STORE_HITS,&storeHitsEntry);
   poolManager.subscribeForDiagPeriodicPacket(subdp::DiagnosticsHkPeriodicParams(
       internalErrorSid, false,
       static_cast<float>(getPeriodicOperationFrequency()) / static_cast<float>(1000.0)));
