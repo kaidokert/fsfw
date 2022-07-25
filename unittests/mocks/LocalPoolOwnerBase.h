@@ -7,10 +7,12 @@
 #include <fsfw/datapoollocal/LocalPoolVariable.h>
 #include <fsfw/datapoollocal/LocalPoolVector.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
+#include "fsfw/datapool/PoolEntry.h"
+
 #include <fsfw/ipc/QueueFactory.h>
 #include <fsfw/objectmanager/SystemObject.h>
 
-#include "../mocks/MessageQueueMock.h"
+#include "mocks/MessageQueueMock.h"
 #include "tests/TestsConfig.h"
 
 namespace lpool {
@@ -164,10 +166,15 @@ class LocalPoolOwnerBase : public SystemObject, public HasLocalDataPoolIF {
   gp_id_t changedPoolVariableGpid;
   store_address_t storeIdForChangedVariable;
 
+  PoolEntry<uint8_t> u8PoolEntry = PoolEntry<uint8_t>({0});
+  PoolEntry<float> floatPoolEntry = PoolEntry<float>({0});
+  PoolEntry<uint32_t> u32PoolEntry = PoolEntry<uint32_t>({0});
+  PoolEntry<uint16_t> u16VecPoolEntry = PoolEntry<uint16_t>({0, 0, 0});
+  PoolEntry<int64_t> i64VecPoolEntry = PoolEntry<int64_t>({0, 0});
+
   lp_var_t<uint8_t> testUint8 = lp_var_t<uint8_t>(this, lpool::uint8VarId);
   lp_var_t<float> testFloat = lp_var_t<float>(this, lpool::floatVarId);
   lp_var_t<uint32_t> testUint32 = lp_var_t<uint32_t>(this, lpool::uint32VarId);
-
   lp_vec_t<uint16_t, 3> testUint16Vec = lp_vec_t<uint16_t, 3>(this, lpool::uint16Vec3Id);
   lp_vec_t<int64_t, 2> testInt64Vec = lp_vec_t<int64_t, 2>(this, lpool::int64Vec2Id);
 

@@ -209,9 +209,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     /* Prepare and send update snapshot */
-    timeval now;
+    timeval now{};
     Clock::getClock_timeval(&now);
-    CCSDSTime::CDS_short cds;
+    CCSDSTime::CDS_short cds{};
     CCSDSTime::convertToCcsds(&cds, &now);
     HousekeepingSnapshot updatePacket(
         reinterpret_cast<uint8_t*>(&cds), sizeof(cds),
@@ -245,9 +245,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     /* Prepare and send update snapshot */
-    timeval now;
+    timeval now{};
     Clock::getClock_timeval(&now);
-    CCSDSTime::CDS_short cds;
+    CCSDSTime::CDS_short cds{};
     CCSDSTime::convertToCcsds(&cds, &now);
     HousekeepingSnapshot updatePacket(
         reinterpret_cast<uint8_t*>(&cds), sizeof(cds),
@@ -291,8 +291,7 @@ ReturnValue_t LocalDataPoolManager::addUpdateToStore(HousekeepingSnapshot& updat
 
 void LocalDataPoolManager::handleChangeResetLogic(DataType type, DataId dataId,
                                                   MarkChangedIF* toReset) {
-  HkUpdateResetList& listRef = hkUpdateResetList;
-  for (auto& changeInfo : listRef) {
+  for (auto& changeInfo : hkUpdateResetList) {
     if (changeInfo.dataType != type) {
       continue;
     }

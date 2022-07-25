@@ -19,12 +19,12 @@ ReturnValue_t LocalPoolOwnerBase::initializeHkManager() {
 ReturnValue_t LocalPoolOwnerBase::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                           LocalDataPoolManager &poolManager) {
   // Default initialization empty for now.
-  localDataPoolMap.emplace(lpool::uint8VarId, new PoolEntry<uint8_t>({0}));
-  localDataPoolMap.emplace(lpool::floatVarId, new PoolEntry<float>({0}));
-  localDataPoolMap.emplace(lpool::uint32VarId, new PoolEntry<uint32_t>({0}));
+  localDataPoolMap.emplace(lpool::uint8VarId, &u8PoolEntry);
+  localDataPoolMap.emplace(lpool::floatVarId, &floatPoolEntry);
+  localDataPoolMap.emplace(lpool::uint32VarId, &u32PoolEntry);
 
-  localDataPoolMap.emplace(lpool::uint16Vec3Id, new PoolEntry<uint16_t>({0, 0, 0}));
-  localDataPoolMap.emplace(lpool::int64Vec2Id, new PoolEntry<int64_t>({0, 0}));
+  localDataPoolMap.emplace(lpool::uint16Vec3Id, &u16VecPoolEntry);
+  localDataPoolMap.emplace(lpool::int64Vec2Id, &i64VecPoolEntry);
   return HasReturnvaluesIF::RETURN_OK;
 }
 
