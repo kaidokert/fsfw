@@ -52,7 +52,7 @@ class ProvidesDataPoolSubscriptionIF {
  public:
   virtual ~ProvidesDataPoolSubscriptionIF() = default;
   /**
-   * @brief   Subscribe for the generation of periodic packets.
+   * @brief   Subscribe for the generation of periodic packets. Used for regular HK packets
    * @details
    * This subscription mechanism will generally be used by the data creator
    * to generate housekeeping packets which are downlinked directly.
@@ -60,8 +60,28 @@ class ProvidesDataPoolSubscriptionIF {
    */
   virtual ReturnValue_t subscribeForRegularPeriodicPacket(
       subdp::RegularHkPeriodicParams params) = 0;
+  /**
+   * @brief   Subscribe for the generation of periodic packets. Used for diagnostic packets
+   * @details
+   * This subscription mechanism will generally be used by the data creator
+   * to generate housekeeping packets which are downlinked directly.
+   * @return
+   */
   virtual ReturnValue_t subscribeForDiagPeriodicPacket(
       subdp::DiagnosticsHkPeriodicParams params) = 0;
+
+  [[deprecated("Please use the new API which takes all arguments as one wrapper struct")]]
+  virtual ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
+                             float collectionInterval, bool isDiagnostics,
+                             object_id_t packetDestination) {
+    if(isDiagnostics) {
+      subdp::DiagnosticsHkPeriodicParams params(sid, enableReporting, collectionInterval);
+      return subscribeForDiagPeriodicPacket(params);
+    } else {
+      subdp::RegularHkPeriodicParams params(sid, enableReporting, collectionInterval);
+      return subscribeForRegularPeriodicPacket(params);
+    }
+  }
 
   /**
    * @brief   Subscribe for the  generation of packets if the dataset
@@ -75,6 +95,19 @@ class ProvidesDataPoolSubscriptionIF {
    */
   virtual ReturnValue_t subscribeForRegularUpdatePacket(subdp::RegularHkUpdateParams params) = 0;
   virtual ReturnValue_t subscribeForDiagUpdatePacket(subdp::DiagnosticsHkUpdateParams params) = 0;
+
+  [[deprecated("Please use the new API which takes all arguments as one wrapper struct")]]
+  virtual ReturnValue_t subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
+                                                 bool isDiagnostics,
+                                                 object_id_t packetDestination) {
+    if(isDiagnostics) {
+      subdp::DiagnosticsHkUpdateParams params(sid, reportingEnabled);
+      return subscribeForDiagUpdatePacket(params);
+    } else {
+      subdp::RegularHkUpdateParams params(sid, reportingEnabled);
+      return subscribeForRegularUpdatePacket(params);
+    }
+  }
 
   /**
    * @brief   Subscribe for a notification message which will be sent
