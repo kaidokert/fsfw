@@ -33,7 +33,6 @@ void Factory::produceFrameworkObjects(void* args) {
   new EventManager(objects::EVENT_MANAGER);
   new HealthTable(objects::HEALTH_TABLE);
   new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
-  new HkReceiverMock(objects::HK_RECEIVER_MOCK);
 
   {
     PoolManager::LocalPoolConfig poolCfg = {{100, 16}, {50, 32}, {25, 64}, {15, 128}, {5, 1024}};

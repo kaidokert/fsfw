@@ -13,6 +13,7 @@
 #include <catch2/catch_session.hpp>
 
 extern int customSetup();
+extern int customTeardown();
 
 int main(int argc, char* argv[]) {
   customSetup();
@@ -21,5 +22,6 @@ int main(int argc, char* argv[]) {
   int result = Catch::Session().run(argc, argv);
 
   // global clean-up
+  customTeardown();
   return result;
 }

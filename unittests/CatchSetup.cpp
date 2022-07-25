@@ -29,3 +29,9 @@ int customSetup() {
   objMan->initialize();
   return 0;
 }
+
+int customTeardown() {
+  ObjectManager* objMan = ObjectManager::instance();
+  delete objMan;
+  return 0;
+}
