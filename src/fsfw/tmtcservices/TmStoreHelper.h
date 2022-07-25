@@ -19,7 +19,7 @@ class TmStoreHelper {
   void setTimeStamper(TimeStamperIF& timeStamper);
   [[nodiscard]] const store_address_t& getCurrentAddr() const;
   ReturnValue_t setSourceDataRaw(const uint8_t* data, size_t len);
-  ReturnValue_t setSourceDataSerializable(SerializeIF* serializable);
+  ReturnValue_t setSourceDataSerializable(SerializeIF& serializable);
   void setApid(uint16_t apid);
   StorageManagerIF* getTmStore();
   void setTmStore(StorageManagerIF& store);

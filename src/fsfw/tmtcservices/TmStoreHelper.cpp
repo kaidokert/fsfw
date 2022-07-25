@@ -38,7 +38,7 @@ ReturnValue_t TmStoreHelper::setSourceDataRaw(const uint8_t* data, size_t len) {
   return creator.setRawUserData(data, len);
 }
 
-ReturnValue_t TmStoreHelper::setSourceDataSerializable(SerializeIF* serializable) {
+ReturnValue_t TmStoreHelper::setSourceDataSerializable(SerializeIF& serializable) {
   return creator.setSerializableUserData(serializable);
 }
 

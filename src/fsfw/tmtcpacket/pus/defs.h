@@ -45,9 +45,9 @@ struct DataWrapper {
     dataUnion.raw.len = bufPair.second;
   }
 
-  void setSerializable(SerializeIF* serializable) {
+  void setSerializable(SerializeIF& serializable) {
     type = DataTypes::SERIALIZABLE;
-    dataUnion.serializable = serializable;
+    dataUnion.serializable = &serializable;
   }
 };
 

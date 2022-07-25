@@ -113,7 +113,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
 
   SECTION("Serialize with Serializable") {
     auto simpleSer = SimpleSerializable();
-    creator.setSerializableUserData(&simpleSer);
+    creator.setSerializableUserData(simpleSer);
     REQUIRE(creator.getFullPacketLen() == 25);
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[20] == 1);

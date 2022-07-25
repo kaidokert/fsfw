@@ -313,7 +313,7 @@ class CommandingServiceBase : public SystemObject,
    * @param content This is a pointer to the serialized packet
    * @param header Serialize IF header which will be placed before content
    */
-  ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF* sourceData);
+  ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF& sourceData);
 
   void checkAndExecuteFifo(CommandMapIter& iter);
 

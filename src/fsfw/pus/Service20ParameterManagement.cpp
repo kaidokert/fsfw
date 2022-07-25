@@ -177,7 +177,7 @@ ReturnValue_t Service20ParameterManagement::handleReply(const CommandMessage* re
       ParameterId_t parameterId = ParameterMessage::getParameterId(reply);
       ParameterDumpReply parameterReply(objectId, parameterId, parameterData.second.data(),
                                         parameterData.second.size());
-      sendTmPacket(static_cast<uint8_t>(Subservice::PARAMETER_DUMP_REPLY), &parameterReply);
+      sendTmPacket(static_cast<uint8_t>(Subservice::PARAMETER_DUMP_REPLY), parameterReply);
       return HasReturnvaluesIF::RETURN_OK;
     }
     default:

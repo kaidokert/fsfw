@@ -300,7 +300,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_
                                                   const uint8_t* data, size_t dataLen) {
   telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
   tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
-  tmStoreHelper.setSourceDataSerializable(&dataWithObjId);
+  tmStoreHelper.setSourceDataSerializable(dataWithObjId);
   ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
   if (result == HasReturnvaluesIF::RETURN_OK) {
     this->tmPacketCounter++;
@@ -308,7 +308,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_
   return result;
 }
 
-ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeIF* sourceData) {
+ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeIF& sourceData) {
   tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
   tmStoreHelper.setSourceDataSerializable(sourceData);
   ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);

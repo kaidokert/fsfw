@@ -48,7 +48,7 @@ ReturnValue_t Service5EventReporting::generateEventReport(EventMessage message) 
   EventReport report(message.getEventId(), message.getReporter(), message.getParameter1(),
                      message.getParameter2());
   storeHelper.preparePacket(serviceId, message.getSeverity(), packetSubCounter);
-  storeHelper.setSourceDataSerializable(&report);
+  storeHelper.setSourceDataSerializable(report);
   ReturnValue_t result = telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
   if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

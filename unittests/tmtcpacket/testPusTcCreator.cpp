@@ -85,7 +85,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
   SECTION("Test with Application Data Serializable") {
     auto& params = creator.getPusParams();
     auto simpleSer = SimpleSerializable();
-    creator.setSerializableUserData(&simpleSer);
+    creator.setSerializableUserData(simpleSer);
     REQUIRE(creator.getSerializedSize() == 16);
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serLen == 16);

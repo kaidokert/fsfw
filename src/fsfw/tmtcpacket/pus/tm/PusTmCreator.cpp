@@ -128,7 +128,7 @@ ReturnValue_t PusTmCreator::setRawUserData(const uint8_t* data, size_t len) {
   updateSpLengthField();
   return HasReturnvaluesIF::RETURN_OK;
 }
-ReturnValue_t PusTmCreator::setSerializableUserData(SerializeIF* serializable) {
+ReturnValue_t PusTmCreator::setSerializableUserData(SerializeIF& serializable) {
   pusParams.dataWrapper.setSerializable(serializable);
   updateSpLengthField();
   return HasReturnvaluesIF::RETURN_OK;

@@ -69,7 +69,7 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
                             Endianness streamEndianness) override;
   [[nodiscard]] TimeStamperIF* getTimestamper() const;
   ReturnValue_t setRawUserData(const uint8_t* data, size_t len) override;
-  ReturnValue_t setSerializableUserData(SerializeIF* serializable) override;
+  ReturnValue_t setSerializableUserData(SerializeIF& serializable) override;
 
  private:
   void setup();
