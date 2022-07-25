@@ -14,18 +14,18 @@
 struct SendInfo {
   explicit SendInfo(MessageQueueMessage& initMsg, unsigned int initCallCnt = 1)
       : callCount(initCallCnt) {
-    msgs.push_back(initMsg);
+    msgs.push(initMsg);
   }
   unsigned int callCount = 0;
-  std::deque<MessageQueueMessage> msgs;
+  std::queue<MessageQueueMessage> msgs;
 };
 
-class MessageQueueMockBase : public MessageQueueBase {
+class MessageQueueMock : public MessageQueueBase {
  public:
-  MessageQueueMockBase();
+  MessageQueueMock();
 
   void addReceivedMessage(MessageQueueMessageIF& msg);
-  explicit MessageQueueMockBase(MessageQueueId_t queueId);
+  explicit MessageQueueMock(MessageQueueId_t queueId);
 
   //! Get next message which was sent to the default destination
   ReturnValue_t getNextSentMessage(MessageQueueMessageIF& message);
@@ -52,7 +52,7 @@ class MessageQueueMockBase : public MessageQueueBase {
  private:
   using SendMap = std::map<MessageQueueId_t, SendInfo>;
   SendMap sendMap;
-  std::deque<MessageQueueMessage> receivedMsgs;
+  std::queue<MessageQueueMessage> receivedMsgs;
 
   void clearEmptyEntries();
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;

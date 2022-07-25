@@ -10,7 +10,7 @@
 #include <fsfw/ipc/QueueFactory.h>
 #include <fsfw/objectmanager/SystemObject.h>
 
-#include "../mocks/MessageQueueMockBase.h"
+#include "../mocks/MessageQueueMock.h"
 #include "tests/TestsConfig.h"
 
 namespace lpool {

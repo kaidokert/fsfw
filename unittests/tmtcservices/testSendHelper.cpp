@@ -2,7 +2,7 @@
 
 #include "fsfw/tmtcservices/TmSendHelper.h"
 #include "mocks/InternalErrorReporterMock.h"
-#include "mocks/MessageQueueMockBase.h"
+#include "mocks/MessageQueueMock.h"
 
 TEST_CASE("TM Send Helper", "[tm-send-helper]") {
   auto errReporter = InternalErrorReporterMock();

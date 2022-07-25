@@ -6,11 +6,11 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "mocks/MessageQueueMockBase.h"
+#include "mocks/MessageQueueMock.h"
 
 TEST_CASE("Action Helper", "[ActionHelper]") {
   ActionHelperOwnerMockBase testDhMock;
-  MessageQueueMockBase testMqMock;
+  MessageQueueMock testMqMock;
   ActionHelper actionHelper = ActionHelper(&testDhMock, dynamic_cast<MessageQueueIF*>(&testMqMock));
   CommandMessage actionMessage;
   ActionId_t testActionId = 777;
