@@ -12,6 +12,7 @@ TEST_CASE("TM Store Helper", "[tm-store-helper]") {
 
   SECTION("State") {
     REQUIRE(storeHelper.getCurrentAddr() == store_address_t::invalid());
+    REQUIRE(storeHelper.getTmStore() == &pool);
     REQUIRE(storeHelper.preparePacket(17, 1, 1) == HasReturnvaluesIF::RETURN_OK);
     auto& creator = storeHelper.getCreatorRef();
     REQUIRE(creator.getApid() == 2);
@@ -25,5 +26,9 @@ TEST_CASE("TM Store Helper", "[tm-store-helper]") {
     REQUIRE(storeHelper.preparePacket(17, 1, 1) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(storeHelper.addPacketToStore() == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(storeHelper.getCurrentAddr() != store_address_t::invalid());
+    auto accessor = pool.getData(storeHelper.getCurrentAddr());
+    REQUIRE(accessor.first == HasReturnvaluesIF::RETURN_OK);
+    // Not going to verify individual fields, the creator was unittested separately
+    REQUIRE(accessor.second.size() == 22);
   }
 }

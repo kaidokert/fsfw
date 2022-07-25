@@ -28,16 +28,18 @@ ReturnValue_t TmStoreHelper::preparePacket(uint8_t service, uint8_t subservice, 
 
 StorageManagerIF* TmStoreHelper::getTmStore() { return tmStore; }
 
-void TmStoreHelper::setTmStore(StorageManagerIF* store) { tmStore = store; }
+void TmStoreHelper::setTmStore(StorageManagerIF& store) { tmStore = &store; }
+
 const store_address_t& TmStoreHelper::getCurrentAddr() const { return currentAddr; }
+
 ReturnValue_t TmStoreHelper::deletePacket() { return tmStore->deleteData(currentAddr); }
 
-void TmStoreHelper::setSourceDataRaw(const uint8_t* data, size_t len) {
-  creator.setRawUserData(data, len);
+ReturnValue_t TmStoreHelper::setSourceDataRaw(const uint8_t* data, size_t len) {
+  return creator.setRawUserData(data, len);
 }
 
-void TmStoreHelper::setSourceDataSerializable(SerializeIF* serializable) {
-  creator.setSerializableUserData(serializable);
+ReturnValue_t TmStoreHelper::setSourceDataSerializable(SerializeIF* serializable) {
+  return creator.setSerializableUserData(serializable);
 }
 
 ReturnValue_t TmStoreHelper::addPacketToStore() {

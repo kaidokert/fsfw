@@ -42,11 +42,11 @@ ReturnValue_t Service17Test::initialize() {
     if (tmStore == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
-    storeHelper.setTmStore(tmStore);
+    storeHelper.setTmStore(*tmStore);
   }
   return result;
 }
 
-void Service17Test::setCustomTmStore(StorageManagerIF* tmStore_) {
+void Service17Test::setCustomTmStore(StorageManagerIF& tmStore_) {
   storeHelper.setTmStore(tmStore_);
 }

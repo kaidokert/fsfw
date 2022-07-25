@@ -35,7 +35,7 @@ class Service17Test : public PusServiceBase {
 
   Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId);
 
-  void setCustomTmStore(StorageManagerIF* tmStore);
+  void setCustomTmStore(StorageManagerIF& tmStore);
 
   ~Service17Test() override;
   ReturnValue_t handleRequest(uint8_t subservice) override;

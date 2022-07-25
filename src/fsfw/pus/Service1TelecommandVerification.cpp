@@ -100,7 +100,7 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
     if (tmStore == nullptr) {
       return ObjectManager::CHILD_INIT_FAILED;
     }
-    storeHelper.setTmStore(tmStore);
+    storeHelper.setTmStore(*tmStore);
   }
   return SystemObject::initialize();
 }

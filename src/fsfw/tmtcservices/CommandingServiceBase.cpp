@@ -96,7 +96,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
     if (tmStore == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
-    tmStoreHelper.setTmStore(tmStore);
+    tmStoreHelper.setTmStore(*tmStore);
   }
   if (errReporter == nullptr) {
     errReporter =
@@ -419,7 +419,7 @@ void CommandingServiceBase::checkTimeout() {
 
 void CommandingServiceBase::setTaskIF(PeriodicTaskIF* task_) { executingTask = task_; }
 
-void CommandingServiceBase::setCustomTmStore(StorageManagerIF* store) {
+void CommandingServiceBase::setCustomTmStore(StorageManagerIF& store) {
   tmStoreHelper.setTmStore(store);
 }
 ReturnValue_t CommandingServiceBase::setUpTcReader(store_address_t storeId) {

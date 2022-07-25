@@ -18,11 +18,11 @@ class TmStoreHelper {
   PusTmCreator& getCreatorRef();
   void setTimeStamper(TimeStamperIF& timeStamper);
   [[nodiscard]] const store_address_t& getCurrentAddr() const;
-  void setSourceDataRaw(const uint8_t* data, size_t len);
-  void setSourceDataSerializable(SerializeIF* serializable);
+  ReturnValue_t setSourceDataRaw(const uint8_t* data, size_t len);
+  ReturnValue_t setSourceDataSerializable(SerializeIF* serializable);
   void setApid(uint16_t apid);
   StorageManagerIF* getTmStore();
-  void setTmStore(StorageManagerIF* store);
+  void setTmStore(StorageManagerIF& store);
   ReturnValue_t addPacketToStore();
   ReturnValue_t deletePacket();
 

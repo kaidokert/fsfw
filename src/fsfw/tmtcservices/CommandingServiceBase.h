@@ -70,7 +70,7 @@ class CommandingServiceBase : public SystemObject,
                         size_t queueDepth = 20);
   ~CommandingServiceBase() override;
 
-  void setCustomTmStore(StorageManagerIF* store);
+  void setCustomTmStore(StorageManagerIF& store);
   /**
    * This setter can be used to set the packet source individually instead
    * of using the default static framework ID set in the factory.
