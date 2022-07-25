@@ -6,11 +6,11 @@
 
 #include "CatchDefinitions.h"
 
-TEST_CASE("New Accessor", "[NewAccessor]") {
+TEST_CASE("Pool Accessor", "[pool-accessor]") {
   LocalPool::LocalPoolConfig poolCfg = {{1, 10}};
   LocalPool SimplePool = LocalPool(0, poolCfg);
-  std::array<uint8_t, 20> testDataArray;
-  std::array<uint8_t, 20> receptionArray;
+  std::array<uint8_t, 20> testDataArray{};
+  std::array<uint8_t, 20> receptionArray{};
   store_address_t testStoreId;
   ReturnValue_t result = retval::CATCH_FAILED;
 

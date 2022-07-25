@@ -11,7 +11,6 @@ Service5EventReporting::Service5EventReporting(object_id_t objectId, uint16_t ap
                                                uint8_t serviceId, size_t maxNumberReportsPerCycle,
                                                uint32_t messageQueueDepth)
     : PusServiceBase(objectId, apid, serviceId),
-      sendHelper(nullptr),
       storeHelper(apid),
       maxNumberReportsPerCycle(maxNumberReportsPerCycle) {
   eventQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);

@@ -15,7 +15,7 @@ bool MessageQueueMock::wasMessageSent() const {
       [](const std::pair<MessageQueueId_t, SendInfo>& pair) { return pair.second.callCount > 0; });
 }
 
-size_t MessageQueueMock::numberOfSentMessage() const {
+size_t MessageQueueMock::numberOfSentMessages() const {
   size_t callCount = 0;
   for (auto& destInfo : sendMap) {
     callCount += destInfo.second.callCount;
@@ -23,12 +23,16 @@ size_t MessageQueueMock::numberOfSentMessage() const {
   return callCount;
 }
 
-size_t MessageQueueMock::numberOfSentMessage(MessageQueueId_t id) const {
+size_t MessageQueueMock::numberOfSentMessagesToDest(MessageQueueId_t id) const {
   auto iter = sendMap.find(id);
   if (iter == sendMap.end()) {
     return 0;
   }
   return iter->second.callCount;
+}
+
+size_t MessageQueueMock::numberOfSentMessagesToDefault() const {
+  return numberOfSentMessagesToDest(MessageQueueBase::getDefaultDestination());
 }
 
 ReturnValue_t MessageQueueMock::clearLastReceivedMessage(bool clearCmdMsg) {
@@ -60,6 +64,10 @@ ReturnValue_t MessageQueueMock::sendMessageFrom(MessageQueueId_t sendTo,
                                                 MessageQueueId_t sentFrom, bool ignoreFault) {
   if (message == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
+  }
+  if (nextSendFailsPair.first) {
+    nextSendFailsPair.first = false;
+    return nextSendFailsPair.second;
   }
   auto iter = sendMap.find(sendTo);
   MessageQueueMessage messageCopy;
@@ -161,4 +169,8 @@ void MessageQueueMock::clearEmptyEntries() {
       ++it;
     }
   }
+}
+void MessageQueueMock::makeNextSendFail(ReturnValue_t retval) {
+  nextSendFailsPair.first = true;
+  nextSendFailsPair.second = retval;
 }

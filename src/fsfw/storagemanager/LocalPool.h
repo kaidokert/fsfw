@@ -132,6 +132,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * @return
    */
   max_subpools_t getNumberOfSubPools() const override;
+  bool hasDataAtId(store_address_t storeId) const override;
 
  protected:
   /**

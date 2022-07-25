@@ -6,10 +6,7 @@
 #include "fsfw/tmtcservices/tmHelpers.h"
 
 Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId)
-    : PusServiceBase(objectId, apid, serviceId),
-      storeHelper(apid),
-      sendHelper(nullptr),
-      packetSubCounter(0) {}
+    : PusServiceBase(objectId, apid, serviceId), storeHelper(apid), packetSubCounter(0) {}
 
 Service17Test::~Service17Test() = default;
 

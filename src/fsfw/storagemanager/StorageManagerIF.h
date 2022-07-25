@@ -163,6 +163,8 @@ class StorageManagerIF : public HasReturnvaluesIF {
   virtual ReturnValue_t getFreeElement(store_address_t* storageId, size_t size, uint8_t** p_data,
                                        bool ignoreFault = false) = 0;
 
+  [[nodiscard]] virtual bool hasDataAtId(store_address_t storeId) const = 0;
+
   /**
    * Clears the whole store.
    * Use with care!

@@ -9,22 +9,30 @@
 
 class TmSendHelper {
  public:
-  TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter,
+  TmSendHelper();
+  TmSendHelper(MessageQueueIF& queue, InternalErrorReporterIF& reporter,
                MessageQueueId_t tmtcMsgDest);
-  TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter);
-  explicit TmSendHelper(InternalErrorReporterIF* reporter);
+  TmSendHelper(MessageQueueIF& queue, InternalErrorReporterIF& reporter);
+  explicit TmSendHelper(InternalErrorReporterIF& reporter);
 
-  void setMsgQueue(MessageQueueIF* queue);
-  void setMsgDestination(MessageQueueId_t msgDest);
+  void setMsgQueue(MessageQueueIF& queue);
+  MessageQueueIF* getMsgQueue() const;
+
+  void setDefaultDestination(MessageQueueId_t msgDest);
+  [[nodiscard]] MessageQueueId_t getDefaultDestination() const;
+  [[nodiscard]] bool areFaultsIgnored() const;
+  void ignoreFaults();
+  void dontIgnoreFaults();
   void setInternalErrorReporter(InternalErrorReporterIF* reporter);
+  [[nodiscard]] InternalErrorReporterIF* getInternalErrorReporter() const;
   ReturnValue_t sendPacket(MessageQueueId_t dest, const store_address_t& storeId);
   ReturnValue_t sendPacket(const store_address_t& storeId);
 
  private:
-  MessageQueueId_t tmtcMsgDest = MessageQueueIF::NO_QUEUE;
+  MessageQueueId_t defaultDest = MessageQueueIF::NO_QUEUE;
   bool ignoreFault = false;
   MessageQueueIF* queue = nullptr;
-  InternalErrorReporterIF* errReporter;
+  InternalErrorReporterIF* errReporter = nullptr;
 };
 
 #endif  // FSFW_TMTCPACKET_TMSENDHELPER_H

@@ -131,8 +131,8 @@ void PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelp
 }
 
 void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
-  tmSendHelper.setMsgQueue(requestQueue);
-  tmSendHelper.setMsgDestination(requestQueue->getDefaultDestination());
+  tmSendHelper.setMsgQueue(*requestQueue);
+  tmSendHelper.setDefaultDestination(requestQueue->getDefaultDestination());
   if (errReporter == nullptr) {
     errReporter =
         ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);

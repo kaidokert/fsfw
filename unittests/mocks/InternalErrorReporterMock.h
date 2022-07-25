@@ -9,10 +9,11 @@ class InternalErrorReporterMock : public InternalErrorReporterIF {
   unsigned int lostTmCallCnt = 0;
   unsigned int storeFullCallCnt = 0;
   InternalErrorReporterMock();
+  void reset();
+
+ private:
   void queueMessageNotSent() override;
   void lostTm() override;
   void storeFull() override;
-
- private:
 };
 #endif  // FSFW_TESTS_INTERNALERRORREPORTERMOCK_H

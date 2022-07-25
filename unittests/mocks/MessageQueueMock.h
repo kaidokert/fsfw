@@ -32,8 +32,10 @@ class MessageQueueMock : public MessageQueueBase {
   //! Get message which was sent to a specific ID
   ReturnValue_t getNextSentMessage(MessageQueueId_t id, MessageQueueMessageIF& message);
   [[nodiscard]] bool wasMessageSent() const;
-  [[nodiscard]] size_t numberOfSentMessage() const;
-  [[nodiscard]] size_t numberOfSentMessage(MessageQueueId_t id) const;
+  void makeNextSendFail(ReturnValue_t retval);
+  [[nodiscard]] size_t numberOfSentMessages() const;
+  [[nodiscard]] size_t numberOfSentMessagesToDefault() const;
+  [[nodiscard]] size_t numberOfSentMessagesToDest(MessageQueueId_t id) const;
   /**
    * Pop a message, clearing it in the process.
    * @return
@@ -53,6 +55,7 @@ class MessageQueueMock : public MessageQueueBase {
   using SendMap = std::map<MessageQueueId_t, SendInfo>;
   SendMap sendMap;
   std::queue<MessageQueueMessage> receivedMsgs;
+  std::pair<bool, ReturnValue_t> nextSendFailsPair;
 
   void clearEmptyEntries();
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;

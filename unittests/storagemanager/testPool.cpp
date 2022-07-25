@@ -10,10 +10,10 @@
 TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
   LocalPool::LocalPoolConfig config = {{1, 10}};
   LocalPool simplePool(0, config);
-  std::array<uint8_t, 20> testDataArray;
-  std::array<uint8_t, 20> receptionArray;
+  std::array<uint8_t, 20> testDataArray{};
+  std::array<uint8_t, 20> receptionArray{};
   store_address_t testStoreId;
-  ReturnValue_t result = retval::CATCH_FAILED;
+  ReturnValue_t result;
   uint8_t* pointer = nullptr;
   const uint8_t* constPointer = nullptr;
 
@@ -23,8 +23,10 @@ TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
   size_t size = 10;
 
   SECTION("Basic tests") {
+    REQUIRE(not simplePool.hasDataAtId(testStoreId));
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
     REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(simplePool.hasDataAtId(testStoreId));
     result = simplePool.getData(testStoreId, &constPointer, &size);
     REQUIRE(result == retval::CATCH_OK);
     memcpy(receptionArray.data(), constPointer, size);
@@ -40,6 +42,7 @@ TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
     }
     result = simplePool.deleteData(testStoreId);
     REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(not simplePool.hasDataAtId(testStoreId));
     result = simplePool.addData(&testStoreId, testDataArray.data(), 15);
     CHECK(result == (int)StorageManagerIF::DATA_TOO_LARGE);
   }
