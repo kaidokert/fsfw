@@ -11,9 +11,15 @@ with Airbus Defence and Space GmbH.
 
 ## Quick facts
 
-The framework is designed for systems, which communicate with external devices, perform control loops, receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore, a mode and health system provides control over the states of the software and the controlled devices. In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
+The framework is designed for systems, which communicate with external devices, perform control loops, 
+receive telecommands and send telemetry, and need to maintain a high level of availability. Therefore,
+a mode and health system provides control over the states of the software and the controlled devices.
+In addition, a simple mechanism of event based fault detection, isolation and recovery is implemented as well. 
 
-The FSFW provides abstraction layers for operating systems to provide a uniform operating system abstraction layer (OSAL). Some components of this OSAL are required internally by the FSFW but is also very useful for developers to implement the same application logic on different operating systems with a uniform interface.
+The FSFW provides abstraction layers for operating systems to provide a uniform operating system
+abstraction layer (OSAL). Some components of this OSAL are required internally by the FSFW but is
+also very useful for developers to implement the same application logic on different operating
+systems with a uniform interface.
 
 Currently, the FSFW provides the following OSALs:
 
@@ -45,6 +51,28 @@ A template configuration folder was provided and can be copied into the project 
 a starting point. The [configuration section](docs/README-config.md#top) provides more specific 
 information about the possible options.
 
+## Prerequisites
+
+The Embedded Template Library (etl) is a dependency of the FSFW which is automatically
+installed and provided by the build system unless the correction version was installed.
+The current recommended version can be found inside the fsfw `CMakeLists.txt` file or by using
+`ccmake` and looking up the `FSFW_ETL_LIB_MAJOR_VERSION` variable.
+
+You can install the ETL library like this. On Linux, it might be necessary to add `sudo` before
+the install call:
+
+```cpp
+git clone https://github.com/ETLCPP/etl
+cd etl
+git checkout <currentRecommendedVersion>
+mkdir build && cd build
+cmake ..
+cmake --install .
+```
+
+It is recommended to install `20.27.2` or newer for the package version handling of
+ETL to work.
+
 ## Adding the library
 
 The following steps show how to add and use FSFW components. It is still recommended to
@@ -71,9 +99,9 @@ add and link against the FSFW library in general.
 
 4. Link against the FSFW library
 
-	```cmake
-	target_link_libraries(<YourProjectName> PRIVATE fsfw)
-	```
+   ```sh
+   target_link_libraries(${YourProjectName} PRIVATE fsfw)
+   ```
 
 5. It should now be possible use the FSFW as a static library from the user code.
 
@@ -83,6 +111,19 @@ The FSFW also has unittests which use the [Catch2 library](https://github.com/ca
 These are built by setting the CMake option `FSFW_BUILD_UNITTESTS` to `ON` or `TRUE`
 from your project `CMakeLists.txt` file or from the command line.
 
+You can install the Catch2 library, which prevents the build system to avoid re-downloading
+the dependency if the unit tests are completely rebuilt. The current recommended version
+can be found inside the fsfw `CMakeLists.txt` file or by using `ccmake` and looking up
+the `FSFW_CATCH2_LIB_VERSION` variable.
+
+```sh
+git clone https://github.com/catchorg/Catch2.git
+cd Catch2
+git checkout <currentRecommendedVersion>
+cmake -Bbuild -H. -DBUILD_TESTING=OFF
+sudo cmake --build build/ --target install
+```
+
 The fsfw-tests binary will be built as part of the static library and dropped alongside it.
 If the unittests are built, the library and the tests will be built with coverage information by
 default. This can be disabled by setting the `FSFW_TESTS_COV_GEN` option to `OFF` or `FALSE`.
@@ -90,7 +131,7 @@ default. This can be disabled by setting the `FSFW_TESTS_COV_GEN` option to `OFF
 You can use the following commands inside the `fsfw` folder to set up the build system
 
 ```sh
-mkdir build-Unittest && cd build-Unittest
+mkdir build-tests && cd build-tests
 cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
@@ -98,7 +139,7 @@ You can also use `-DFSFW_OSAL=linux` on Linux systems.
 
 Coverage data in HTML format can be generated using the `CodeCoverage`
 [CMake module](https://github.com/bilke/cmake-modules/tree/master).
-To build the unittests, run them and then generare the coverage data in this format,
+To build the unittests, run them and then generate the coverage data in this format,
 the following command can be used inside the build directory after the build system was set up
 
 ```sh
@@ -147,7 +188,10 @@ and open the documentation conveniently. Try `helper.py -h for more information.
 
 The formatting is done by the `clang-format` tool. The configuration is contained within the
 `.clang-format` file in the repository root. As long as `clang-format` is installed, you
-can run the `apply-clang-format.sh` helper script to format all source files consistently.
+can run the `auto-format.sh` helper script to format all source files consistently. Furthermore cmake-format is required to format CMake files which can be installed with:
+````sh
+sudo pip install cmakelang
+````
 
 ## Index
 

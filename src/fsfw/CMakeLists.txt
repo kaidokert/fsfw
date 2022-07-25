@@ -1,3 +1,5 @@
+target_sources(${LIB_FSFW_NAME} PRIVATE version.cpp)
+
 # Core
 
 add_subdirectory(action)
@@ -33,22 +35,22 @@ add_subdirectory(tmtcservices)
 # Optional
 
 if(FSFW_ADD_MONITORING)
-add_subdirectory(monitoring)
+  add_subdirectory(monitoring)
 endif()
 if(FSFW_ADD_PUS)
-    add_subdirectory(pus)
+  add_subdirectory(pus)
 endif()
 if(FSFW_ADD_TMSTORAGE)
-    add_subdirectory(tmstorage)
+  add_subdirectory(tmstorage)
 endif()
 if(FSFW_ADD_COORDINATES)
-    add_subdirectory(coordinates)
+  add_subdirectory(coordinates)
 endif()
 if(FSFW_ADD_RMAP)
-    add_subdirectory(rmap)
+  add_subdirectory(rmap)
 endif()
 if(FSFW_ADD_DATALINKLAYER)
-    add_subdirectory(datalinklayer)
+  add_subdirectory(datalinklayer)
 endif()
 
 # OSAL

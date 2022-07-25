@@ -110,7 +110,7 @@ ReturnValue_t LocalPool::modifyData(store_address_t storeId, uint8_t** packetPtr
 }
 
 ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
-#if FSFW_VERBOSE_PRINTOUT == 2
+#if FSFW_VERBOSE_LEVEL >= 2
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::debug << "Delete: Pool: " << std::dec << storeId.poolIndex
              << " Index: " << storeId.packetIndex << std::endl;
@@ -148,7 +148,7 @@ ReturnValue_t LocalPool::deleteData(uint8_t* ptr, size_t size, store_address_t* 
       // element of an object.
       localId.packetIndex = deltaAddress / elementSizes[n];
       result = deleteData(localId);
-#if FSFW_VERBOSE_PRINTOUT == 2
+#if FSFW_VERBOSE_LEVEL >= 2
       if (deltaAddress % elementSizes[n] != 0) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "LocalPool::deleteData: Address not aligned!" << std::endl;
@@ -219,7 +219,7 @@ ReturnValue_t LocalPool::reserveSpace(const size_t size, store_address_t* storeI
     status = findEmpty(storeId->poolIndex, &storeId->packetIndex);
   }
   if (status == RETURN_OK) {
-#if FSFW_VERBOSE_PRINTOUT == 2
+#if FSFW_VERBOSE_LEVEL >= 2
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "Reserve: Pool: " << std::dec << storeId->poolIndex
                << " Index: " << storeId->packetIndex << std::endl;
@@ -257,7 +257,7 @@ void LocalPool::setToSpillToHigherPools(bool enable) { this->spillsToHigherPools
 ReturnValue_t LocalPool::getSubPoolIndex(size_t packetSize, uint16_t* subpoolIndex,
                                          uint16_t startAtIndex) {
   for (uint16_t n = startAtIndex; n < NUMBER_OF_SUBPOOLS; n++) {
-#if FSFW_VERBOSE_PRINTOUT == 2
+#if FSFW_VERBOSE_LEVEL >= 2
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "LocalPool " << getObjectId() << "::getPoolIndex: Pool: " << n
                << ", Element Size: " << elementSizes[n] << std::endl;

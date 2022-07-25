@@ -84,8 +84,8 @@ ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
     return result;
   }
 
-  printWarningOrError(sif::OutputTypes::OUT_WARNING, "initialize", HasReturnvaluesIF::RETURN_FAILED,
-                      "The map should only be initialized once");
+  printWarningOrError(sif::OutputTypes::OUT_WARNING, "initializeHousekeepingPoolEntriesOnce",
+                      HasReturnvaluesIF::RETURN_FAILED, "The map should only be initialized once");
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -696,9 +696,10 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     /* Configuration error */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::warning << "LocalDataPoolManager::performHkOperation: HK generation failed." << std::endl;
+    sif::warning << "LocalDataPoolManager::performPeriodicHkOperation: HK generation failed."
+                 << std::endl;
 #else
-    sif::printWarning("LocalDataPoolManager::performHkOperation: HK generation failed.\n");
+    sif::printWarning("LocalDataPoolManager::performPeriodicHkOperation: HK generation failed.\n");
 #endif
   }
 }
@@ -787,6 +788,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   // Serialize set packet into store.
   size_t size = 0;
   result = setPacket.serialize(&storePtr, &size, expectedSize, SerializeIF::Endianness::BIG);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    ipcStore->deleteData(storeId);
+    return result;
+  }
   if (expectedSize != size) {
     printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateSetStructurePacket",
                         HasReturnvaluesIF::RETURN_FAILED,
@@ -801,7 +806,10 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
     HousekeepingMessage::setHkStuctureReportReply(&reply, sid, storeId);
   }
 
-  hkQueue->reply(&reply);
+  result = hkQueue->reply(&reply);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    ipcStore->deleteData(storeId);
+  }
   return result;
 }
 

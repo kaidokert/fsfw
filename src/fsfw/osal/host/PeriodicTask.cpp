@@ -3,13 +3,10 @@
 #include <chrono>
 #include <thread>
 
-#include "fsfw/ipc/MutexFactory.h"
-#include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/osal/host/Mutex.h"
 #include "fsfw/osal/host/taskHelpers.h"
 #include "fsfw/platform.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tasks/ExecutableObjectIF.h"
 
 #if defined(PLATFORM_WIN)
 #include <processthreadsapi.h>
@@ -20,8 +17,8 @@
 #endif
 
 PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStackSize setStack,
-                           TaskPeriod setPeriod, void (*setDeadlineMissedFunc)())
-    : started(false), taskName(name), period(setPeriod), deadlineMissedFunc(setDeadlineMissedFunc) {
+                           TaskPeriod setPeriod, TaskDeadlineMissedFunction dlmFunc_)
+    : PeriodicTaskBase(setPeriod, dlmFunc_), started(false), taskName(name) {
   // It is probably possible to set task priorities by using the native
   // task handles for Windows / Linux
   mainThread = std::thread(&PeriodicTask::taskEntryPoint, this, this);
@@ -33,7 +30,7 @@ PeriodicTask::PeriodicTask(const char* name, TaskPriority setPriority, TaskStack
   tasks::insertTaskName(mainThread.get_id(), taskName);
 }
 
-PeriodicTask::~PeriodicTask(void) {
+PeriodicTask::~PeriodicTask() {
   // Do not delete objects, we were responsible for ptrs only.
   terminateThread = true;
   if (mainThread.joinable()) {
@@ -42,7 +39,7 @@ PeriodicTask::~PeriodicTask(void) {
 }
 
 void PeriodicTask::taskEntryPoint(void* argument) {
-  PeriodicTask* originalTask(reinterpret_cast<PeriodicTask*>(argument));
+  auto* originalTask(reinterpret_cast<PeriodicTask*>(argument));
 
   if (not originalTask->started) {
     // we have to suspend/block here until the task is started.
@@ -75,42 +72,26 @@ ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
 }
 
 void PeriodicTask::taskFunctionality() {
-  for (const auto& object : objectList) {
-    object->initializeAfterTaskCreation();
-  }
+  initObjsAfterTaskCreation();
 
   std::chrono::milliseconds periodChrono(static_cast<uint32_t>(period * 1000));
   auto currentStartTime{std::chrono::duration_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now().time_since_epoch())};
-  auto nextStartTime{currentStartTime};
-
   /* Enter the loop that defines the task behavior. */
   for (;;) {
     if (terminateThread.load()) {
       break;
     }
-    for (const auto& object : objectList) {
-      object->performOperation();
+    for (const auto& objectPair : objectList) {
+      objectPair.first->performOperation(objectPair.second);
     }
     if (not delayForInterval(&currentStartTime, periodChrono)) {
-      if (deadlineMissedFunc != nullptr) {
-        this->deadlineMissedFunc();
+      if (dlmFunc != nullptr) {
+        this->dlmFunc();
       }
     }
   }
 }
-
-ReturnValue_t PeriodicTask::addComponent(object_id_t object) {
-  ExecutableObjectIF* newObject = ObjectManager::instance()->get<ExecutableObjectIF>(object);
-  if (newObject == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
-  newObject->setTaskIF(this);
-  objectList.push_back(newObject);
-  return HasReturnvaluesIF::RETURN_OK;
-}
-
-uint32_t PeriodicTask::getPeriodMs() const { return period * 1000; }
 
 bool PeriodicTask::delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval) {
   bool shouldDelay = false;

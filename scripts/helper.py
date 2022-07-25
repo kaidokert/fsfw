@@ -48,6 +48,20 @@ def main():
         action="store_true",
         help="Run valgrind on generated test binary",
     )
+    parser.add_argument(
+        "-g",
+        "--generators",
+        default = "Ninja",
+        action="store",
+        help="CMake generators",
+    )
+    parser.add_argument(
+        "-w",
+        "--windows",
+        default=False,
+        action="store_true",
+        help="Run on windows",
+    )
 
     args = parser.parse_args()
     if args.all:
@@ -97,11 +111,11 @@ def handle_docs_type(args, build_dir_list: list):
         build_directory = determine_build_dir(build_dir_list)
     os.chdir(build_directory)
     if args.build:
-        os.system("cmake --build . -j")
+        cmd_runner("cmake --build . -j")
     if args.open:
         if not os.path.isfile("docs/sphinx/index.html"):
             # try again..
-            os.system("cmake --build . -j")
+            cmd_runner("cmake --build . -j")
             if not os.path.isfile("docs/sphinx/index.html"):
                 print(
                     "No Sphinx documentation file detected. "
@@ -115,14 +129,14 @@ def handle_tests_type(args, build_dir_list: list):
     if args.create:
         if os.path.exists(UNITTEST_FOLDER_NAME):
             shutil.rmtree(UNITTEST_FOLDER_NAME)
-        create_tests_build_cfg()
+        create_tests_build_cfg(args)
         build_directory = UNITTEST_FOLDER_NAME
     elif len(build_dir_list) == 0:
         print(
             "No valid CMake tests build directory found. "
             "Trying to set up test build system"
         )
-        create_tests_build_cfg()
+        create_tests_build_cfg(args)
         build_directory = UNITTEST_FOLDER_NAME
     elif len(build_dir_list) == 1:
         build_directory = build_dir_list[0]
@@ -143,25 +157,26 @@ def handle_tests_type(args, build_dir_list: list):
         if which("valgrind") is None:
             print("Please install valgrind first")
             sys.exit(1)
-        if os.path.split(os.getcwd())[1] != UNITTEST_FOLDER_NAME:
-            # If we are in a different directory we try to switch into it but
-            # this might fail
-            os.chdir(UNITTEST_FOLDER_NAME)
-        os.system("valgrind --leak-check=full ./fsfw-tests")
+        cmd_runner("valgrind --leak-check=full ./fsfw-tests")
         os.chdir("..")
 
 
-def create_tests_build_cfg():
+def create_tests_build_cfg(args):
     os.mkdir(UNITTEST_FOLDER_NAME)
     os.chdir(UNITTEST_FOLDER_NAME)
-    os.system("cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..")
+    if args.windows:
+        cmake_cmd = 'cmake -G "' + args.generators + '" -DFSFW_OSAL=host -DFSFW_BUILD_TESTS=ON \
+        -DGCOVR_PATH="py -m gcovr" ..'
+    else:
+        cmake_cmd = 'cmake -G "' + args.generators + '" -DFSFW_OSAL=host -DFSFW_BUILD_TESTS=ON ..'
+    cmd_runner(cmake_cmd)
     os.chdir("..")
 
 
 def create_docs_build_cfg():
     os.mkdir(DOCS_FOLDER_NAME)
     os.chdir(DOCS_FOLDER_NAME)
-    os.system("cmake -DFSFW_OSAL=host -DFSFW_BUILD_DOCS=ON ..")
+    cmd_runner("cmake -DFSFW_OSAL=host -DFSFW_BUILD_DOCS=ON ..")
     os.chdir("..")
 
 
@@ -184,7 +199,7 @@ def check_for_cmake_build_dir(build_dir_list: list) -> list:
 def perform_lcov_operation(directory: str, chdir: bool):
     if chdir:
         os.chdir(directory)
-    os.system("cmake --build . -- fsfw-tests_coverage -j")
+    cmd_runner("cmake --build . -- fsfw-tests_coverage -j")
 
 
 def determine_build_dir(build_dir_list: List[str]):
@@ -204,6 +219,11 @@ def determine_build_dir(build_dir_list: List[str]):
         build_directory = build_dir_list[idx - 1]
         break
     return build_directory
+
+
+def cmd_runner(cmd: str):
+    print(f"Executing command: {cmd}")
+    os.system(cmd)
 
 
 if __name__ == "__main__":

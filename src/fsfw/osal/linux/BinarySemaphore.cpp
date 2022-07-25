@@ -1,6 +1,7 @@
 #include "fsfw/osal/linux/BinarySemaphore.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <time.h>
 
 #include <cstring>

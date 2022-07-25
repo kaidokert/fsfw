@@ -3,7 +3,7 @@
 SimpleActionHelper::SimpleActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue)
     : ActionHelper(setOwner, useThisQueue), isExecuting(false) {}
 
-SimpleActionHelper::~SimpleActionHelper() {}
+SimpleActionHelper::~SimpleActionHelper() = default;
 
 void SimpleActionHelper::step(ReturnValue_t result) {
   // STEP_OFFESET is subtracted to compensate for adding offset in base
@@ -38,7 +38,7 @@ void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId
     ActionMessage::setStepReply(&reply, actionId, 0, HasActionsIF::IS_BUSY);
     queueToUse->sendMessage(commandedBy, &reply);
   }
-  const uint8_t* dataPtr = NULL;
+  const uint8_t* dataPtr = nullptr;
   size_t size = 0;
   ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
   if (result != HasReturnvaluesIF::RETURN_OK) {

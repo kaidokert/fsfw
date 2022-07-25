@@ -2,9 +2,9 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
-ActionMessage::ActionMessage() {}
+ActionMessage::ActionMessage() = default;
 
-ActionMessage::~ActionMessage() {}
+ActionMessage::~ActionMessage() = default;
 
 void ActionMessage::setCommand(CommandMessage* message, ActionId_t fid,
                                store_address_t parameters) {
@@ -64,9 +64,8 @@ void ActionMessage::clear(CommandMessage* message) {
   switch (message->getCommand()) {
     case EXECUTE_ACTION:
     case DATA_REPLY: {
-      StorageManagerIF* ipcStore =
-          ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
-      if (ipcStore != NULL) {
+      auto* ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+      if (ipcStore != nullptr) {
         ipcStore->deleteData(getStoreId(message));
       }
       break;

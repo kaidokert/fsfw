@@ -6,10 +6,10 @@
 #include <thread>
 #include <vector>
 
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../tasks/FixedSlotSequence.h"
-#include "../../tasks/FixedTimeslotTaskIF.h"
-#include "../../tasks/Typedef.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/tasks/FixedSlotSequence.h"
+#include "fsfw/tasks/FixedTimeslotTaskBase.h"
+#include "fsfw/tasks/definitions.h"
 
 class ExecutableObjectIF;
 
@@ -19,7 +19,7 @@ class ExecutableObjectIF;
  * @details
  * @ingroup task_handling
  */
-class FixedTimeslotTask : public FixedTimeslotTaskIF {
+class FixedTimeslotTask : public FixedTimeslotTaskBase {
  public:
   /**
    * @brief   Standard constructor of the class.
@@ -39,7 +39,7 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * @brief   Currently, the executed object's lifetime is not coupled with
    *          the task object's lifetime, so the destructor is empty.
    */
-  virtual ~FixedTimeslotTask(void);
+  ~FixedTimeslotTask() override;
 
   /**
    * @brief   The method to start the task.
@@ -48,56 +48,22 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    *          The address of the task object is passed as an argument
    *          to the system call.
    */
-  ReturnValue_t startTask(void);
+  ReturnValue_t startTask() override;
 
-  /**
-   * Add timeslot to the polling sequence table.
-   * @param componentId
-   * @param slotTimeMs
-   * @param executionStep
-   * @return
-   */
-  ReturnValue_t addSlot(object_id_t componentId, uint32_t slotTimeMs, int8_t executionStep);
-
-  ReturnValue_t checkSequence() const override;
-
-  uint32_t getPeriodMs() const;
-
-  ReturnValue_t sleepFor(uint32_t ms);
+  ReturnValue_t sleepFor(uint32_t ms) override;
 
  protected:
   using chron_ms = std::chrono::milliseconds;
 
   bool started;
-  //!< Typedef for the List of objects.
-  typedef std::vector<ExecutableObjectIF*> ObjectList;
+
   std::thread mainThread;
   std::atomic<bool> terminateThread{false};
-
-  //! Polling sequence table which contains the object to execute
-  //! and information like the timeslots and the passed execution step.
-  FixedSlotSequence pollingSeqTable;
 
   std::condition_variable initCondition;
   std::mutex initMutex;
   std::string taskName;
-  /**
-   * @brief   The period of the task.
-   * @details
-   * The period determines the frequency of the task's execution.
-   * It is expressed in clock ticks.
-   */
-  TaskPeriod period;
 
-  /**
-   * @brief   The pointer to the deadline-missed function.
-   * @details
-   * This pointer stores the function that is executed if the task's deadline
-   * is missed. So, each may react individually on a timing failure.
-   * The pointer may be NULL, then nothing happens on missing the deadline.
-   * The deadline is equal to the next execution of the periodic task.
-   */
-  void (*deadlineMissedFunc)(void);
   /**
    * @brief   This is the function executed in the new task's context.
    * @details
@@ -117,9 +83,9 @@ class FixedTimeslotTask : public FixedTimeslotTaskIF {
    * the checkAndRestartPeriod system call blocks the task until the next
    *  period. On missing the deadline, the deadlineMissedFunction is executed.
    */
-  void taskFunctionality(void);
+  void taskFunctionality();
 
-  bool delayForInterval(chron_ms* previousWakeTimeMs, const chron_ms interval);
+  static bool delayForInterval(chron_ms* previousWakeTimeMs, chron_ms interval);
 };
 
 #endif /* FRAMEWORK_OSAL_HOST_FIXEDTIMESLOTTASK_H_ */

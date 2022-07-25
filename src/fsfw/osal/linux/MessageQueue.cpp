@@ -11,13 +11,10 @@
 #include "fsfw/osal/linux/unixUtility.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize)
-    : id(MessageQueueIF::NO_QUEUE),
-      lastPartner(MessageQueueIF::NO_QUEUE),
-      defaultDestination(MessageQueueIF::NO_QUEUE),
+MessageQueue::MessageQueue(uint32_t messageDepth, size_t maxMessageSize, MqArgs* args)
+    : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, args),
       maxMessageSize(maxMessageSize) {
   mq_attr attributes;
-  this->id = 0;
   // Set attributes
   attributes.mq_curmsgs = 0;
   attributes.mq_maxmsg = messageDepth;
@@ -50,30 +47,6 @@ MessageQueue::~MessageQueue() {
   }
 }
 
-ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        bool ignoreFault) {
-  return sendMessageFrom(sendTo, message, this->getId(), false);
-}
-
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessageIF* message) {
-  return sendToDefaultFrom(message, this->getId());
-}
-
-ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
-  if (this->lastPartner != 0) {
-    return sendMessageFrom(this->lastPartner, message, this->getId());
-  } else {
-    return NO_REPLY_PARTNER;
-  }
-}
-
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
-                                           MessageQueueId_t* receivedFrom) {
-  ReturnValue_t status = this->receiveMessage(message);
-  *receivedFrom = this->lastPartner;
-  return status;
-}
-
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
   if (message == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -96,7 +69,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
   int status = mq_receive(id, reinterpret_cast<char*>(message->getBuffer()),
                           message->getMaximumMessageSize(), &messagePriority);
   if (status > 0) {
-    this->lastPartner = message->getSender();
+    this->last = message->getSender();
     // Check size of incoming message.
     if (message->getMessageSize() < message->getMinimumMessageSize()) {
       return HasReturnvaluesIF::RETURN_FAILED;
@@ -164,8 +137,6 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
   }
 }
 
-MessageQueueId_t MessageQueue::getLastPartner() const { return this->lastPartner; }
-
 ReturnValue_t MessageQueue::flush(uint32_t* count) {
   mq_attr attrib;
   int status = mq_getattr(id, &attrib);
@@ -212,25 +183,10 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-MessageQueueId_t MessageQueue::getId() const { return this->id; }
-
-void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
-  this->defaultDestination = defaultDestination;
-}
-
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
-                                              MessageQueueId_t sentFrom, bool ignoreFault) {
-  return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
-}
-
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                             MessageQueueId_t sentFrom, bool ignoreFault) {
   return sendMessageFromMessageQueue(sendTo, message, sentFrom, ignoreFault);
 }
-
-MessageQueueId_t MessageQueue::getDefaultDestination() const { return this->defaultDestination; }
-
-bool MessageQueue::isDefaultDestinationSet() const { return (defaultDestination != NO_QUEUE); }
 
 uint16_t MessageQueue::queueCounter = 0;
 
@@ -240,9 +196,9 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
                                                         bool ignoreFault) {
   if (message == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is nullptr!" << std::endl;
+    sif::error << "MessageQueue::sendMessageFromMessageQueue: Message is nullptr" << std::endl;
 #else
-    sif::printError("MessageQueue::sendMessageFromMessageQueue: Message is nullptr!\n");
+    sif::printError("MessageQueue::sendMessageFromMessageQueue: Message is nullptr\n");
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }
@@ -256,7 +212,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     if (!ignoreFault) {
       InternalErrorReporterIF* internalErrorReporter =
           ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
-      if (internalErrorReporter != NULL) {
+      if (internalErrorReporter != nullptr) {
         internalErrorReporter->queueMessageNotSent();
       }
     }
@@ -334,9 +290,9 @@ ReturnValue_t MessageQueue::handleOpenError(mq_attr* attributes, uint32_t messag
          */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "MessageQueue::MessageQueue: Default MQ size " << defaultMqMaxMsg
-                   << " is too small for requested size " << messageDepth << std::endl;
+                   << " is too small for requested message depth " << messageDepth << std::endl;
         sif::error << "This error can be fixed by setting the maximum "
-                      "allowed message size higher!"
+                      "allowed message depth higher"
                    << std::endl;
 #else
         sif::printError(

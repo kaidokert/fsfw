@@ -6,7 +6,7 @@
 std::mutex nameMapLock;
 std::map<std::thread::id, std::string> taskNameMap;
 
-ReturnValue_t tasks::insertTaskName(std::thread::id threadId, std::string taskName) {
+ReturnValue_t tasks::insertTaskName(std::thread::id threadId, const std::string& taskName) {
   std::lock_guard<std::mutex> lg(nameMapLock);
   auto returnPair = taskNameMap.emplace(threadId, taskName);
   if (not returnPair.second) {

@@ -57,6 +57,9 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
       internalErrorDataset.storeHits.value += newStoreHits;
       internalErrorDataset.tmHits.value += newTmHits;
       internalErrorDataset.setValidity(true, true);
+      if ((newQueueHits != 0) or (newStoreHits != 0) or (newTmHits != 0)) {
+        internalErrorDataset.setChanged(true);
+      }
     }
   }
 
@@ -77,14 +80,6 @@ uint32_t InternalErrorReporter::getAndResetQueueHits() {
   return value;
 }
 
-uint32_t InternalErrorReporter::getQueueHits() {
-  uint32_t value;
-  mutex->lockMutex(timeoutType, timeoutMs);
-  value = queueHits;
-  mutex->unlockMutex();
-  return value;
-}
-
 void InternalErrorReporter::incrementQueueHits() {
   mutex->lockMutex(timeoutType, timeoutMs);
   queueHits++;
@@ -96,14 +91,6 @@ uint32_t InternalErrorReporter::getAndResetTmHits() {
   mutex->lockMutex(timeoutType, timeoutMs);
   value = tmHits;
   tmHits = 0;
-  mutex->unlockMutex();
-  return value;
-}
-
-uint32_t InternalErrorReporter::getTmHits() {
-  uint32_t value;
-  mutex->lockMutex(timeoutType, timeoutMs);
-  value = tmHits;
   mutex->unlockMutex();
   return value;
 }
@@ -121,14 +108,6 @@ uint32_t InternalErrorReporter::getAndResetStoreHits() {
   mutex->lockMutex(timeoutType, timeoutMs);
   value = storeHits;
   storeHits = 0;
-  mutex->unlockMutex();
-  return value;
-}
-
-uint32_t InternalErrorReporter::getStoreHits() {
-  uint32_t value;
-  mutex->lockMutex(timeoutType, timeoutMs);
-  value = storeHits;
   mutex->unlockMutex();
   return value;
 }

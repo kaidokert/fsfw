@@ -6,8 +6,9 @@
 #include "fsfw/osal/rtems/RtemsBasic.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size)
-    : id(0), lastPartner(0), defaultDestination(NO_QUEUE), internalErrorReporter(nullptr) {
+MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size, MqArgs* args)
+    : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, args),
+      internalErrorReporter(nullptr) {
   rtems_name name = ('Q' << 24) + (queueCounter++ << 8);
   rtems_status_code status =
       rtems_message_queue_create(name, message_depth, max_message_size, 0, &(this->id));
@@ -16,35 +17,11 @@ MessageQueue::MessageQueue(size_t message_depth, size_t max_message_size)
     sif::error << "MessageQueue::MessageQueue: Creating Queue " << std::hex << name << std::dec
                << " failed with status:" << (uint32_t)status << std::endl;
 #endif
-    this->id = 0;
+    this->id = MessageQueueIF::NO_QUEUE;
   }
 }
 
 MessageQueue::~MessageQueue() { rtems_message_queue_delete(id); }
-
-ReturnValue_t MessageQueue::sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        bool ignoreFault) {
-  return sendMessageFrom(sendTo, message, this->getId(), ignoreFault);
-}
-
-ReturnValue_t MessageQueue::sendToDefault(MessageQueueMessageIF* message) {
-  return sendToDefaultFrom(message, this->getId());
-}
-
-ReturnValue_t MessageQueue::reply(MessageQueueMessageIF* message) {
-  if (this->lastPartner != 0) {
-    return sendMessage(this->lastPartner, message, this->getId());
-  } else {
-    return NO_REPLY_PARTNER;
-  }
-}
-
-ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message,
-                                           MessageQueueId_t* receivedFrom) {
-  ReturnValue_t status = this->receiveMessage(message);
-  *receivedFrom = this->lastPartner;
-  return status;
-}
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
   size_t size = 0;
@@ -52,7 +29,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
       rtems_message_queue_receive(id, message->getBuffer(), &size, RTEMS_NO_WAIT, 1);
   if (status == RTEMS_SUCCESSFUL) {
     message->setMessageSize(size);
-    this->lastPartner = message->getSender();
+    this->last = message->getSender();
     // Check size of incoming message.
     if (message->getMessageSize() < message->getMinimumMessageSize()) {
       return HasReturnvaluesIF::RETURN_FAILED;
@@ -65,17 +42,9 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
   return convertReturnCode(status);
 }
 
-MessageQueueId_t MessageQueue::getLastPartner() const { return this->lastPartner; }
-
 ReturnValue_t MessageQueue::flush(uint32_t* count) {
   rtems_status_code status = rtems_message_queue_flush(id, count);
   return convertReturnCode(status);
-}
-
-MessageQueueId_t MessageQueue::getId() const { return this->id; }
-
-void MessageQueue::setDefaultDestination(MessageQueueId_t defaultDestination) {
-  this->defaultDestination = defaultDestination;
 }
 
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
@@ -96,21 +65,12 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueu
   }
 
   ReturnValue_t returnCode = convertReturnCode(result);
-  if (result == MessageQueueIF::EMPTY) {
+  if (returnCode == MessageQueueIF::EMPTY) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
 
   return returnCode;
 }
-
-ReturnValue_t MessageQueue::sendToDefaultFrom(MessageQueueMessageIF* message,
-                                              MessageQueueId_t sentFrom, bool ignoreFault) {
-  return sendMessageFrom(defaultDestination, message, sentFrom, ignoreFault);
-}
-
-MessageQueueId_t MessageQueue::getDefaultDestination() const { return this->defaultDestination; }
-
-bool MessageQueue::isDefaultDestinationSet() const { return (defaultDestination != NO_QUEUE); }
 
 ReturnValue_t MessageQueue::convertReturnCode(rtems_status_code inValue) {
   switch (inValue) {

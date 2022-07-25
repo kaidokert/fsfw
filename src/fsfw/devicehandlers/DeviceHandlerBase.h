@@ -163,7 +163,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param counter Specifies which Action to perform
    * @return RETURN_OK for successful execution
    */
-  virtual ReturnValue_t performOperation(uint8_t counter);
+  virtual ReturnValue_t performOperation(uint8_t counter) override;
 
   /**
    * @brief  Initializes the device handler
@@ -173,7 +173,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * Calls fillCommandAndReplyMap().
    * @return
    */
-  virtual ReturnValue_t initialize();
+  virtual ReturnValue_t initialize() override;
 
   /**
    * @brief   Intialization steps performed after all tasks have been created.
@@ -448,6 +448,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * by the device repeatedly without request) or not. Default is aperiodic (0).
    * Please note that periodic replies are disabled by default. You can enable them with
    * #updatePeriodicReply
+   * @param countdown Instead of using maxDelayCycles to timeout a device reply it is also possible
+   *                  to provide a pointer to a Countdown object which will signal the timeout
+   *                  when expired
    * @return	- @c RETURN_OK when the command was successfully inserted,
    *          - @c RETURN_FAILED else.
    */
@@ -455,7 +458,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
                                            LocalPoolDataSetBase *replyDataSet = nullptr,
                                            size_t replyLen = 0, bool periodic = false,
                                            bool hasDifferentReplyId = false,
-                                           DeviceCommandId_t replyId = 0);
+                                           DeviceCommandId_t replyId = 0,
+                                           Countdown *countdown = nullptr);
   /**
    * @brief 	This is a helper method to insert replies in the reply map.
    * @param deviceCommand	Identifier of the reply to add.
@@ -465,12 +469,15 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * by the device repeatedly without request) or not. Default is aperiodic (0).
    * Please note that periodic replies are disabled by default. You can enable them with
    * #updatePeriodicReply
+   * @param countdown Instead of using maxDelayCycles to timeout a device reply it is also possible
+   *                  to provide a pointer to a Countdown object which will signal the timeout
+   *                  when expired
    * @return	- @c RETURN_OK when the command was successfully inserted,
    *          - @c RETURN_FAILED else.
    */
   ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
                                  LocalPoolDataSetBase *dataSet = nullptr, size_t replyLen = 0,
-                                 bool periodic = false);
+                                 bool periodic = false, Countdown *countdown = nullptr);
 
   /**
    * @brief   A simple command to add a command to the commandList.
@@ -478,7 +485,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @return - @c RETURN_OK when the command was successfully inserted,
    *         - @c RETURN_FAILED else.
    */
-  ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand);
+  ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand,
+                                   bool useAlternativeReply = false,
+                                   DeviceCommandId_t alternativeReplyId = 0);
 
   /**
    * Enables a periodic reply for a given command. It sets to delay cycles to the specified
@@ -673,7 +682,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   //! Pointer to the raw packet that will be sent.
   uint8_t *rawPacket = nullptr;
   //! Size of the #rawPacket.
-  uint32_t rawPacketLen = 0;
+  size_t rawPacketLen = 0;
 
   /**
    * The mode the device handler is currently in.
@@ -751,6 +760,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
     //! if this is != NO_COMMANDER, DHB was commanded externally and shall
     //! report everything to commander.
     MessageQueueId_t sendReplyTo;
+    bool useAlternativeReplyId;
+    DeviceCommandId_t alternativeReplyId;
   };
   using DeviceCommandMap = std::map<DeviceCommandId_t, DeviceCommandInfo>;
   /**
@@ -779,6 +790,11 @@ class DeviceHandlerBase : public DeviceHandlerIF,
     LocalPoolDataSetBase *dataSet = nullptr;
     //! The command that expects this reply.
     DeviceCommandMap::iterator command;
+    //! Instead of using delayCycles to specify the maximum time to wait for the device reply, it
+    //! is also possible specify a countdown
+    Countdown *countdown = nullptr;
+    //! will be set to true when reply is enabled
+    bool active = false;
   };
 
   using DeviceReplyMap = std::map<DeviceCommandId_t, DeviceReplyInfo>;
@@ -1054,11 +1070,12 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param parameter1	Optional parameter 1
    * @param parameter2	Optional parameter 2
    */
-  void triggerEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+  void triggerEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) override;
   /**
    * Same as triggerEvent, but for forwarding if object is used as proxy.
    */
-  virtual void forwardEvent(Event event, uint32_t parameter1 = 0, uint32_t parameter2 = 0) const;
+  virtual void forwardEvent(Event event, uint32_t parameter1 = 0,
+                            uint32_t parameter2 = 0) const override;
 
   /**
    * Checks if current mode is transitional mode.
@@ -1240,6 +1257,17 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   void doGetRead(void);
 
   /**
+   * @brief Resets replies which use a timeout to detect missed replies.
+   */
+  void resetTimeoutControlledReply(DeviceReplyInfo *info);
+
+  /**
+   * @brief Resets replies which use a number of maximum delay cycles to detect
+   *        missed replies.
+   */
+  void resetDelayCyclesControlledReply(DeviceReplyInfo *info);
+
+  /**
    * Retrive data from the #IPCStore.
    *
    * @param storageAddress
@@ -1250,7 +1278,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *   - @c RETURN_FAILED IPCStore is nullptr
    *   - the return value from the IPCStore if it was not @c RETURN_OK
    */
-  ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data, uint32_t *len);
+  ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data, size_t *len);
 
   /**
    * @param modeTo either @c MODE_ON, MODE_NORMAL or MODE_RAW, nothing else!

@@ -15,7 +15,7 @@ PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
       tcStatus(RETURN_FAILED),
       packetSource(setPacketSource) {}
 
-PUSDistributor::~PUSDistributor() {}
+PUSDistributor::~PUSDistributor() = default;
 
 PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && PUS_DISTRIBUTOR_DEBUGGING == 1
@@ -23,7 +23,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     sif::debug << "PUSDistributor::handlePacket received: " << storeId.poolIndex << ", "
                << storeId.packetIndex << std::endl;
 #endif
-    TcMqMapIter queueMapIt = this->queueMap.end();
+    auto queueMapIt = this->queueMap.end();
     if (this->currentPacket == nullptr) {
       return queueMapIt;
     }
@@ -48,10 +48,8 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
         sif::warning << "PUSDistributor::handlePacket: Packet format invalid, " << keyword
                      << " error" << std::endl;
 #else
-        sif::printWarning(
-            "PUSDistributor::handlePacket: Packet format invalid, "
-            "%s error\n",
-            keyword);
+        sif::printWarning("PUSDistributor::handlePacket: Packet format invalid, %s error\n",
+                          keyword);
 #endif
 #endif
       }
@@ -133,8 +131,7 @@ ReturnValue_t PUSDistributor::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
-  CCSDSDistributorIF* ccsdsDistributor =
-      ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
+  auto* ccsdsDistributor = ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
   if (ccsdsDistributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PUSDistributor::initialize: Packet source invalid" << std::endl;

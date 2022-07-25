@@ -3,7 +3,7 @@ pipeline {
         BUILDDIR = 'build-tests'
     }
     agent {
-        docker { image 'fsfw-ci:d1'}
+        docker { image 'fsfw-ci:d3'}
     }
     stages {
         stage('Clean') {
@@ -14,21 +14,21 @@ pipeline {
         stage('Configure') {
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_UNITTESTS=ON ..'
+                    sh 'cmake -DFSFW_OSAL=host -DFSFW_BUILD_TESTS=ON -DFSFW_CICD_BUILD=ON ..'
                 }
             }
         }
         stage('Build') {
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake --build . -j'
+                    sh 'cmake --build . -j4'
                 }
             }
         }
         stage('Unittests') {
             steps {
                 dir(BUILDDIR) {
-                    sh 'cmake --build . -- fsfw-tests_coverage -j'
+                    sh 'cmake --build . -- fsfw-tests_coverage -j4'
                 }
             }
         }

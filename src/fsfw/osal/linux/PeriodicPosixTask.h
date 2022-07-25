@@ -3,12 +3,13 @@
 
 #include <vector>
 
-#include "../../objectmanager/ObjectManagerIF.h"
-#include "../../tasks/ExecutableObjectIF.h"
-#include "../../tasks/PeriodicTaskIF.h"
 #include "PosixThread.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/tasks/PeriodicTaskBase.h"
+#include "fsfw/tasks/PeriodicTaskIF.h"
 
-class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
+class PeriodicPosixTask : public PeriodicTaskBase {
  public:
   /**
    * Create a generic periodic task.
@@ -22,9 +23,9 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
    * @param period_
    * @param deadlineMissedFunc_
    */
-  PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, uint32_t period_,
-                    void (*deadlineMissedFunc_)());
-  virtual ~PeriodicPosixTask();
+  PeriodicPosixTask(const char* name_, int priority_, size_t stackSize_, TaskPeriod period_,
+                    TaskDeadlineMissedFunction dlmFunc_);
+  ~PeriodicPosixTask() override = default;
 
   /**
    * @brief	The method to start the task.
@@ -34,24 +35,11 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
    * 			to the system call.
    */
   ReturnValue_t startTask() override;
-  /**
-   * Adds an object to the list of objects to be executed.
-   * The objects are executed in the order added.
-   * @param object Id of the object to add.
-   * @return RETURN_OK on success, RETURN_FAILED if the object could not be added.
-   */
-  ReturnValue_t addComponent(object_id_t object) override;
-
-  uint32_t getPeriodMs() const override;
 
   ReturnValue_t sleepFor(uint32_t ms) override;
 
  private:
-  typedef std::vector<ExecutableObjectIF*> ObjectList;  //!< Typedef for the List of objects.
-  /**
-   * @brief	This attribute holds a list of objects to be executed.
-   */
-  ObjectList objectList;
+  PosixThread posixThread;
 
   /**
    * @brief Flag to indicate that the task was started and is allowed to run
@@ -59,17 +47,14 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
   bool started;
 
   /**
-   * @brief Period of the task in milliseconds
-   */
-  uint32_t periodMs;
-  /**
    * @brief	The function containing the actual functionality of the task.
    * @details	The method sets and starts
-   * 			the task's period, then enters a loop that is repeated indefinitely. Within the
-   * loop, all performOperation methods of the added objects are called. Afterwards the task will be
-   * blocked until the next period. On missing the deadline, the deadlineMissedFunction is executed.
+   * 			the task's period, then enters a loop that is repeated indefinitely. Within
+   * the loop, all performOperation methods of the added objects are called. Afterwards the task
+   * will be blocked until the next period. On missing the deadline, the deadlineMissedFunction is
+   * executed.
    */
-  virtual void taskFunctionality(void);
+  [[noreturn]] virtual void taskFunctionality();
   /**
    * @brief	This is the entry point in a new thread.
    *
@@ -77,14 +62,6 @@ class PeriodicPosixTask : public PosixThread, public PeriodicTaskIF {
    * of the child class. Needs a valid pointer to the derived class.
    */
   static void* taskEntryPoint(void* arg);
-  /**
-   * @brief	The pointer to the deadline-missed function.
-   * @details	This pointer stores the function that is executed if the task's deadline is missed.
-   * 			So, each may react individually on a timing failure. The pointer may be
-   * NULL, then nothing happens on missing the deadline. The deadline is equal to the next execution
-   * 			of the periodic task.
-   */
-  void (*deadlineMissedFunc)();
 };
 
 #endif /* FRAMEWORK_OSAL_LINUX_PERIODICPOSIXTASK_H_ */

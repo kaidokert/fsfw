@@ -16,11 +16,13 @@
 //! Debugging preprocessor define.
 #define FSFW_UDP_RECV_WIRETAPPING_ENABLED 0
 
+const timeval UdpTcPollingTask::DEFAULT_TIMEOUT = {0, 500000};
+
 UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUdpBridge,
                                    size_t maxRecvSize, double timeoutSeconds)
     : SystemObject(objectId), tmtcBridgeId(tmtcUdpBridge) {
-  if (frameSize > 0) {
-    this->frameSize = frameSize;
+  if (maxRecvSize > 0) {
+    this->frameSize = maxRecvSize;
   } else {
     this->frameSize = DEFAULT_MAX_RECV_SIZE;
   }
@@ -31,22 +33,20 @@ UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUdpBrid
   receptionBuffer.resize(this->frameSize);
 
   if (timeoutSeconds == -1) {
-    receptionTimeout = DEFAULT_TIMEOUT;
+    receptionTimeout = UdpTcPollingTask::DEFAULT_TIMEOUT;
   } else {
     receptionTimeout = timevalOperations::toTimeval(timeoutSeconds);
   }
 }
 
-UdpTcPollingTask::~UdpTcPollingTask() {}
-
-ReturnValue_t UdpTcPollingTask::performOperation(uint8_t opCode) {
+[[noreturn]] ReturnValue_t UdpTcPollingTask::performOperation(uint8_t opCode) {
   /* Sender Address is cached here. */
-  struct sockaddr senderAddress;
+  struct sockaddr senderAddress {};
   socklen_t senderAddressSize = sizeof(senderAddress);
 
   /* Poll for new UDP datagrams in permanent loop. */
   while (true) {
-    int bytesReceived =
+    ssize_t bytesReceived =
         recvfrom(this->serverSocket, reinterpret_cast<char*>(receptionBuffer.data()), frameSize,
                  receptionFlags, &senderAddress, &senderAddressSize);
     if (bytesReceived == SOCKET_ERROR) {
@@ -70,7 +70,6 @@ ReturnValue_t UdpTcPollingTask::performOperation(uint8_t opCode) {
     }
     tmtcBridge->checkAndSetClientAddress(senderAddress);
   }
-  return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
@@ -155,7 +154,7 @@ void UdpTcPollingTask::setTimeout(double timeoutSeconds) {
 #endif
   }
 #elif defined(PLATFORM_UNIX)
-  timeval tval;
+  timeval tval{};
   tval = timevalOperations::toTimeval(timeoutSeconds);
   int result = setsockopt(serverSocket, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(receptionTimeout));
   if (result == -1) {

@@ -29,10 +29,10 @@ class UdpTmTcBridge : public TmTcBridge, public TcpIpBase {
   /* The ports chosen here should not be used by any other process. */
   static const std::string DEFAULT_SERVER_PORT;
 
-  UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination, std::string udpServerPort = "",
-                object_id_t tmStoreId = objects::TM_STORE,
+  UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
+                const std::string& udpServerPort = "", object_id_t tmStoreId = objects::TM_STORE,
                 object_id_t tcStoreId = objects::TC_STORE);
-  virtual ~UdpTmTcBridge();
+  ~UdpTmTcBridge() override;
 
   /**
    * Set properties of internal mutex.
@@ -46,12 +46,12 @@ class UdpTmTcBridge : public TmTcBridge, public TcpIpBase {
   std::string getUdpPort() const;
 
  protected:
-  virtual ReturnValue_t sendTm(const uint8_t* data, size_t dataLen) override;
+  ReturnValue_t sendTm(const uint8_t* data, size_t dataLen) override;
 
  private:
   std::string udpServerPort;
 
-  struct sockaddr clientAddress;
+  struct sockaddr clientAddress = {};
   socklen_t clientAddressLen = 0;
 
   //! Access to the client address is mutex protected as it is set by another task.

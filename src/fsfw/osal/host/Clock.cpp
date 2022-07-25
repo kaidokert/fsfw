@@ -2,6 +2,7 @@
 
 #include <chrono>
 
+#include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/platform.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
@@ -10,9 +11,6 @@
 #elif defined(PLATFORM_UNIX)
 #include <fstream>
 #endif
-
-uint16_t Clock::leapSeconds = 0;
-MutexIF* Clock::timeMutex = NULL;
 
 using SystemClock = std::chrono::system_clock;
 
@@ -127,6 +125,13 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
   auto fraction = now - seconds;
   time_t tt = SystemClock::to_time_t(now);
+  ReturnValue_t result = checkOrCreateClockMutex();
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  MutexGuard helper(timeMutex);
+  // gmtime writes its output in a global buffer which is not Thread Safe
+  // Therefore we have to use a Mutex here
   struct tm* timeInfo;
   timeInfo = gmtime(&tt);
   time->year = timeInfo->tm_year + 1900;
@@ -150,16 +155,13 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval*
   time_tm.tm_hour = from->hour;
   time_tm.tm_min = from->minute;
   time_tm.tm_sec = from->second;
+  time_tm.tm_isdst = 0;
 
-  time_t seconds = mktime(&time_tm);
+  time_t seconds = timegm(&time_tm);
 
   to->tv_sec = seconds;
   to->tv_usec = from->usecond;
   // Fails in 2038..
-  return HasReturnvaluesIF::RETURN_OK;
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-  sif::warning << "Clock::convertTimeBla: not implemented yet" << std::endl;
-#endif
   return HasReturnvaluesIF::RETURN_OK;
 }
 

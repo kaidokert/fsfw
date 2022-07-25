@@ -1,6 +1,1 @@
-target_sources(${LIB_FSFW_NAME} 
-	PRIVATE 
-		HkSwitchHelper.cpp
-		PoolDataSetBase.cpp
-		PoolEntry.cpp
-)
+target_sources(${LIB_FSFW_NAME} PRIVATE PoolDataSetBase.cpp PoolEntry.cpp)
