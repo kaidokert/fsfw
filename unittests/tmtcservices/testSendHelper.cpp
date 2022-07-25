@@ -1,9 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
-#include <iostream>
 
 #include "fsfw/storagemanager/LocalPool.h"
 #include "fsfw/tmtcservices/TmSendHelper.h"
 #include "fsfw/tmtcservices/TmStoreHelper.h"
+#include "fsfw/tmtcservices/tmHelpers.h"
 #include "mocks/CdsShortTimestamperMock.h"
 #include "mocks/InternalErrorReporterMock.h"
 #include "mocks/MessageQueueMock.h"
@@ -61,10 +61,18 @@ TEST_CASE("TM Send Helper", "[tm-send-helper]") {
     REQUIRE(helper.getMsgQueue() == &msgQueue);
   }
   SECTION("Send") {
-    storeHelper.preparePacket(17, 2, 0);
-    REQUIRE(storeHelper.addPacketToStore() == HasReturnvaluesIF::RETURN_OK);
-    store_address_t storeId = storeHelper.getCurrentAddr();
-    REQUIRE(sendHelper.sendPacket(storeId) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(storeHelper.preparePacket(17, 2, 0) == HasReturnvaluesIF::RETURN_OK);
+    store_address_t storeId;
+    SECTION("Separate Helpers") {
+      REQUIRE(storeHelper.addPacketToStore() == HasReturnvaluesIF::RETURN_OK);
+      storeId = storeHelper.getCurrentAddr();
+      REQUIRE(sendHelper.sendPacket(storeId) == HasReturnvaluesIF::RETURN_OK);
+    }
+    SECTION("Helper Wrapper") {
+      REQUIRE(telemetry::storeAndSendTmPacket(storeHelper, sendHelper) ==
+              HasReturnvaluesIF::RETURN_OK);
+      storeId = storeHelper.getCurrentAddr();
+    }
     REQUIRE(msgQueue.wasMessageSent());
     REQUIRE(msgQueue.numberOfSentMessagesToDefault() == 1);
     TmTcMessage msg;

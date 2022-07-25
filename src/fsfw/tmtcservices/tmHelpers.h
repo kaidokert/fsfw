@@ -7,7 +7,8 @@
 // I'd prefer to use tm, but there have been nameclashes with the tm struct
 namespace telemetry {
 
-ReturnValue_t storeAndSendTmPacket(TmStoreHelper& storeHelper, TmSendHelper& sendHelper);
+ReturnValue_t storeAndSendTmPacket(TmStoreHelper& storeHelper, TmSendHelper& sendHelper,
+                                   bool delOnFailure = true);
 
 class DataWithObjectIdPrefix : public SerializeIF {
  public:
