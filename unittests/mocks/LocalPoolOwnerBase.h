@@ -64,26 +64,29 @@ class LocalPoolTestDataSet : public LocalDataSet {
 
 class LocalPoolOwnerBase : public SystemObject, public HasLocalDataPoolIF {
  public:
-  LocalPoolOwnerBase(object_id_t objectId = objects::TEST_LOCAL_POOL_OWNER_BASE);
+  explicit LocalPoolOwnerBase(MessageQueueIF& queue,
+                              object_id_t objectId = objects::TEST_LOCAL_POOL_OWNER_BASE);
 
-  ~LocalPoolOwnerBase();
+  ~LocalPoolOwnerBase() override;
 
-  object_id_t getObjectId() const override { return SystemObject::getObjectId(); }
+  [[nodiscard]] object_id_t getObjectId() const override { return SystemObject::getObjectId(); }
 
   ReturnValue_t initializeHkManager();
+
+  void setHkDestId(MessageQueueId_t id);
 
   ReturnValue_t initializeHkManagerAfterTaskCreation();
 
   /** Command queue for housekeeping messages. */
-  MessageQueueId_t getCommandQueue() const override { return messageQueue->getId(); }
+  [[nodiscard]] MessageQueueId_t getCommandQueue() const override { return queue.getId(); }
 
   // This is called by initializeAfterTaskCreation of the HK manager.
-  virtual ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
-                                                LocalDataPoolManager& poolManager) override;
+  ReturnValue_t initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
+                                        LocalDataPoolManager& poolManager) override;
 
   LocalDataPoolManager* getHkManagerHandle() override { return &poolManager; }
 
-  dur_millis_t getPeriodicOperationFrequency() const override { return 200; }
+  [[nodiscard]] dur_millis_t getPeriodicOperationFrequency() const override { return 200; }
 
   /**
    * This function is used by the pool manager to get a valid dataset
@@ -91,41 +94,54 @@ class LocalPoolOwnerBase : public SystemObject, public HasLocalDataPoolIF {
    * @param sid Corresponding structure ID
    * @return
    */
-  virtual LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override { return &dataset; }
+  LocalPoolDataSetBase* getDataSetHandle(sid_t sid) override { return &dataset; }
 
-  virtual LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) override;
+  LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) override;
 
-  MessageQueueMockBase* getMockQueueHandle() const {
-    return dynamic_cast<MessageQueueMockBase*>(messageQueue);
+  [[nodiscard]] MessageQueueMockBase& getMockQueueHandle() const {
+    return dynamic_cast<MessageQueueMockBase&>(queue);
   }
 
   ReturnValue_t subscribePeriodicHk(bool enableReporting) {
-    return poolManager.subscribeForPeriodicPacket(lpool::testSid, enableReporting, 0.2, false);
+    return poolManager.subscribeForRegularPeriodicPacket(
+        subdp::RegularHkPeriodicParams(lpool::testSid, enableReporting, 0.2));
   }
 
-  ReturnValue_t subscribeWrapperSetUpdate() {
+  ReturnValue_t subscribeWrapperSetUpdate(MessageQueueId_t receiverId) {
     return poolManager.subscribeForSetUpdateMessage(lpool::testSetId, objects::NO_OBJECT,
-                                                    objects::HK_RECEIVER_MOCK, false);
+                                                    receiverId, false);
   }
 
-  ReturnValue_t subscribeWrapperSetUpdateSnapshot() {
+  ReturnValue_t subscribeWrapperSetUpdateSnapshot(MessageQueueId_t receiverId) {
     return poolManager.subscribeForSetUpdateMessage(lpool::testSetId, objects::NO_OBJECT,
-                                                    objects::HK_RECEIVER_MOCK, true);
+                                                    receiverId, true);
   }
 
-  ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false) {
-    return poolManager.subscribeForUpdatePacket(lpool::testSid, diagnostics, false,
-                                                objects::HK_RECEIVER_MOCK);
+  ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false,
+                                            AcceptsHkPacketsIF* receiver = nullptr) {
+    if (diagnostics) {
+      auto params = subdp::DiagnosticsHkUpdateParams(lpool::testSid, true);
+      if (receiver != nullptr) {
+        params.receiver = receiver->getHkQueue();
+      }
+      return poolManager.subscribeForDiagUpdatePacket(params);
+    } else {
+      auto params = subdp::RegularHkUpdateParams(lpool::testSid, true);
+      if (receiver != nullptr) {
+        params.receiver = receiver->getHkQueue();
+      }
+      return poolManager.subscribeForRegularUpdatePacket(params);
+    }
   }
 
-  ReturnValue_t subscribeWrapperVariableUpdate(lp_id_t localPoolId) {
+  ReturnValue_t subscribeWrapperVariableUpdate(MessageQueueId_t receiverId, lp_id_t localPoolId) {
     return poolManager.subscribeForVariableUpdateMessage(localPoolId, MessageQueueIF::NO_QUEUE,
-                                                         objects::HK_RECEIVER_MOCK, false);
+                                                         receiverId, false);
   }
 
-  ReturnValue_t subscribeWrapperVariableSnapshot(lp_id_t localPoolId) {
+  ReturnValue_t subscribeWrapperVariableSnapshot(MessageQueueId_t receiverId, lp_id_t localPoolId) {
     return poolManager.subscribeForVariableUpdateMessage(localPoolId, MessageQueueIF::NO_QUEUE,
-                                                         objects::HK_RECEIVER_MOCK, true);
+                                                         receiverId, true);
   }
 
   ReturnValue_t reset();
@@ -155,7 +171,7 @@ class LocalPoolOwnerBase : public SystemObject, public HasLocalDataPoolIF {
   lp_vec_t<uint16_t, 3> testUint16Vec = lp_vec_t<uint16_t, 3>(this, lpool::uint16Vec3Id);
   lp_vec_t<int64_t, 2> testInt64Vec = lp_vec_t<int64_t, 2>(this, lpool::int64Vec2Id);
 
-  MessageQueueIF* messageQueue = nullptr;
+  MessageQueueIF& queue;
 
   bool initialized = false;
   bool initializedAfterTaskCreation = false;

@@ -79,8 +79,7 @@ class HasLocalDataPoolIF {
    * @param clearMessage  If this is set to true, the pool manager will take care of
    *                      clearing the store automatically
    */
-  virtual void handleChangedDataset(sid_t sid,
-                                    store_address_t storeId = store_address_t::invalid(),
+  virtual void handleChangedDataset(sid_t sid, store_address_t storeId = store_address_t::invalid(),
                                     bool* clearMessage = nullptr) {
     if (clearMessage != nullptr) {
       *clearMessage = true;

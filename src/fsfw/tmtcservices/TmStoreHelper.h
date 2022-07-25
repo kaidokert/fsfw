@@ -30,7 +30,6 @@ class TmStoreHelper {
   ReturnValue_t setSourceDataRaw(const uint8_t* data, size_t len);
   ReturnValue_t setSourceDataSerializable(SerializeIF& serializable);
 
-
   ReturnValue_t addPacketToStore();
   ReturnValue_t deletePacket();
 

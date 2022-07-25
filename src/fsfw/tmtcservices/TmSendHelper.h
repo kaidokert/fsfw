@@ -9,10 +9,10 @@
 
 class TmSendHelper {
  public:
-  TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter, MessageQueueId_t tmtcMsgDest);
+  TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter,
+               MessageQueueId_t tmtcMsgDest);
   TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter);
   explicit TmSendHelper(InternalErrorReporterIF* reporter);
-
 
   void setMsgQueue(MessageQueueIF* queue);
   void setMsgDestination(MessageQueueId_t msgDest);

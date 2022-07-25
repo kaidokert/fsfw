@@ -1,18 +1,17 @@
 #include "LocalPoolOwnerBase.h"
 
-LocalPoolOwnerBase::LocalPoolOwnerBase(object_id_t objectId)
-    : SystemObject(objectId), poolManager(this, messageQueue), dataset(this, lpool::testSetId) {
-  messageQueue = new MessageQueueMockBase();
-}
+LocalPoolOwnerBase::LocalPoolOwnerBase(MessageQueueIF &queue, object_id_t objectId)
+    : SystemObject(objectId),
+      queue(queue),
+      poolManager(this, &queue),
+      dataset(this, lpool::testSetId) {}
 
-LocalPoolOwnerBase::~LocalPoolOwnerBase() {
-  QueueFactory::instance()->deleteMessageQueue(messageQueue);
-}
+LocalPoolOwnerBase::~LocalPoolOwnerBase() = default;
 
 ReturnValue_t LocalPoolOwnerBase::initializeHkManager() {
   if (not initialized) {
     initialized = true;
-    return poolManager.initialize(messageQueue);
+    return poolManager.initialize(&queue);
   }
   return HasReturnvaluesIF::RETURN_OK;
 }
@@ -125,3 +124,5 @@ void LocalPoolOwnerBase::handleChangedPoolVariable(gp_id_t globPoolId, store_add
   this->changedPoolVariableGpid = globPoolId;
   this->storeIdForChangedVariable = storeId;
 }
+
+void LocalPoolOwnerBase::setHkDestId(MessageQueueId_t id) { poolManager.setHkDestinationId(id); }

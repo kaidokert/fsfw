@@ -57,8 +57,7 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
     step += 1;
     CHECK(testMqMock.wasMessageSent());
     CommandMessage testMessage;
-    REQUIRE(testMqMock.receiveMessage(&testMessage) ==
-            static_cast<uint32_t>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::STEP_FAILED));
     REQUIRE(testMessage.getParameter() == static_cast<uint32_t>(testActionId));
     uint32_t parameter2 = ((uint32_t)step << 16) | (uint32_t)status;
@@ -72,8 +71,7 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
     actionHelper.finish(false, testMqMock.getId(), testActionId, status);
     CHECK(testMqMock.wasMessageSent());
     CommandMessage testMessage;
-    REQUIRE(testMqMock.receiveMessage(&testMessage) ==
-            static_cast<uint32_t>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::COMPLETION_FAILED));
     REQUIRE(ActionMessage::getActionId(&testMessage) == testActionId);
     REQUIRE(ActionMessage::getReturnCode(&testMessage) == static_cast<uint32_t>(status));
@@ -89,8 +87,7 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
     REQUIRE(ipcStore->getData(toLongParamAddress).first ==
             static_cast<uint32_t>(StorageManagerIF::DATA_DOES_NOT_EXIST));
     CommandMessage testMessage;
-    REQUIRE(testMqMock.receiveMessage(&testMessage) ==
-            static_cast<uint32_t>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::STEP_FAILED));
     REQUIRE(ActionMessage::getReturnCode(&testMessage) == 0xAFFE);
     REQUIRE(ActionMessage::getStep(&testMessage) == 0);
@@ -102,8 +99,7 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
     CHECK(not testDhMock.executeActionCalled);
     REQUIRE(actionHelper.handleActionMessage(&actionMessage) == retval::CATCH_OK);
     CommandMessage testMessage;
-    REQUIRE(testMqMock.receiveMessage(&testMessage) ==
-            static_cast<uint32_t>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::STEP_FAILED));
     REQUIRE(ActionMessage::getReturnCode(&testMessage) ==
             static_cast<uint32_t>(StorageManagerIF::ILLEGAL_STORAGE_ID));

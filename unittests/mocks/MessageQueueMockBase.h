@@ -2,8 +2,8 @@
 #define FSFW_UNITTEST_TESTS_MOCKS_MESSAGEQUEUEMOCKBASE_H_
 
 #include <cstring>
-#include <queue>
 #include <map>
+#include <queue>
 
 #include "CatchDefinitions.h"
 #include "fsfw/ipc/CommandMessage.h"
@@ -12,39 +12,52 @@
 #include "fsfw/ipc/MessageQueueMessage.h"
 
 struct SendInfo {
-  explicit SendInfo(MessageQueueMessageIF* initMsg, unsigned int initCallCnt = 1): callCount(initCallCnt) {
-    msgs.push(initMsg);
+  explicit SendInfo(MessageQueueMessage& initMsg, unsigned int initCallCnt = 1)
+      : callCount(initCallCnt) {
+    msgs.push_back(initMsg);
   }
   unsigned int callCount = 0;
-  std::queue<MessageQueueMessageIF*> msgs;
+  std::deque<MessageQueueMessage> msgs;
 };
 
 class MessageQueueMockBase : public MessageQueueBase {
  public:
   MessageQueueMockBase();
 
+  void addReceivedMessage(MessageQueueMessageIF& msg);
   explicit MessageQueueMockBase(MessageQueueId_t queueId);
 
-  std::map<MessageQueueId_t, SendInfo> sendMap;
-
-  bool wasMessageSent(uint8_t* messageSentCounter_ = nullptr, bool resetCounter = true);
-
+  //! Get next message which was sent to the default destination
+  ReturnValue_t getNextSentMessage(MessageQueueMessageIF& message);
+  //! Get message which was sent to a specific ID
+  ReturnValue_t getNextSentMessage(MessageQueueId_t id, MessageQueueMessageIF& message);
+  [[nodiscard]] bool wasMessageSent() const;
+  [[nodiscard]] size_t numberOfSentMessage() const;
+  [[nodiscard]] size_t numberOfSentMessage(MessageQueueId_t id) const;
   /**
    * Pop a message, clearing it in the process.
    * @return
    */
-  ReturnValue_t popMessage();
-
-  ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
+  ReturnValue_t clearLastReceivedMessage(bool clearCmdMsg = true);
 
   ReturnValue_t flush(uint32_t* count) override;
   ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        MessageQueueId_t sentFrom,
-                                        bool ignoreFault = false) override;
+                                MessageQueueId_t sentFrom, bool ignoreFault = false) override;
   ReturnValue_t reply(MessageQueueMessageIF* message) override;
 
-  void clearMessages(bool clearCommandMessages = true);
+  ReturnValue_t clearLastSentMessage(MessageQueueId_t destId, bool clearCmdMsg = true);
+  ReturnValue_t clearLastSentMessage(bool clearCmdMsg = true);
+  void clearMessages(bool clearCmdMsg = true);
+
  private:
+  using SendMap = std::map<MessageQueueId_t, SendInfo>;
+  SendMap sendMap;
+  std::deque<MessageQueueMessage> receivedMsgs;
+
+  void clearEmptyEntries();
+  ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
+  static ReturnValue_t clearLastSentMessage(SendMap::iterator& iter, bool clearCmdMsg = true);
+  static void createMsgCopy(MessageQueueMessageIF& into, MessageQueueMessageIF& from);
 };
 
 #endif /* FSFW_UNITTEST_TESTS_MOCKS_MESSAGEQUEUEMOCKBASE_H_ */

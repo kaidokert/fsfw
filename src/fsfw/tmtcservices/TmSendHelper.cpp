@@ -2,16 +2,17 @@
 
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 
-TmSendHelper::TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF *reporter, MessageQueueId_t tmtcMsgDest)
+TmSendHelper::TmSendHelper(MessageQueueIF *queue, InternalErrorReporterIF *reporter,
+                           MessageQueueId_t tmtcMsgDest)
     : tmtcMsgDest(tmtcMsgDest), queue(queue), errReporter(reporter) {}
 
 TmSendHelper::TmSendHelper(MessageQueueIF *queue, InternalErrorReporterIF *reporter)
-  : queue(queue), errReporter(reporter) {}
+    : queue(queue), errReporter(reporter) {}
 
 TmSendHelper::TmSendHelper(InternalErrorReporterIF *reporter) : errReporter(reporter) {}
 
 ReturnValue_t TmSendHelper::sendPacket(const store_address_t &storeId) {
-  if(queue == nullptr) {
+  if (queue == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   TmTcMessage message(storeId);

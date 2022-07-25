@@ -101,7 +101,7 @@ ReturnValue_t PusTcCreator::setRawUserData(const uint8_t *data, size_t len) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t PusTcCreator::setSerializableUserData(SerializeIF& serializable) {
+ReturnValue_t PusTcCreator::setSerializableUserData(SerializeIF &serializable) {
   // TODO: Check length field?
   pusParams.dataWrapper.setSerializable(serializable);
   updateSpLengthField();

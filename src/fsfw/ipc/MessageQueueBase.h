@@ -17,18 +17,18 @@ class MessageQueueBase : public MessageQueueIF {
   [[nodiscard]] MessageQueueId_t getDefaultDestination() const override;
   [[nodiscard]] bool isDefaultDestinationSet() const override;
   ReturnValue_t sendMessage(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                    bool ignoreFault) override;
+                            bool ignoreFault) override;
   ReturnValue_t sendToDefault(MessageQueueMessageIF* message) override;
   ReturnValue_t reply(MessageQueueMessageIF* message) override;
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message,
-                                       MessageQueueId_t* receivedFrom) override;
+                               MessageQueueId_t* receivedFrom) override;
   ReturnValue_t sendToDefaultFrom(MessageQueueMessageIF* message, MessageQueueId_t sentFrom,
-                                          bool ignoreFault = false) override;
+                                  bool ignoreFault = false) override;
 
   // OSAL specific, forward the abstract function
   ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override = 0;
   ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
-                                        MessageQueueId_t sentFrom, bool ignoreFault = false) override = 0;
+                                MessageQueueId_t sentFrom, bool ignoreFault = false) override = 0;
 
  protected:
   MessageQueueId_t id = MessageQueueIF::NO_QUEUE;

@@ -2,13 +2,15 @@
 #define FSFW_UNITTEST_TESTS_MOCKS_HKRECEIVERMOCK_H_
 
 #include <fsfw/housekeeping/AcceptsHkPacketsIF.h>
-#include <fsfw/objectmanager/SystemObject.h>
 
-class HkReceiverMock : public SystemObject, public AcceptsHkPacketsIF {
+class HkReceiverMock : public AcceptsHkPacketsIF {
  public:
-  HkReceiverMock(object_id_t objectId) : SystemObject(objectId) {}
+  explicit HkReceiverMock(MessageQueueId_t queueId) : queueId(queueId) {}
 
-  MessageQueueId_t getHkQueue() const { return MessageQueueIF::NO_QUEUE; }
+  [[nodiscard]] MessageQueueId_t getHkQueue() const override { return queueId; }
+
+ private:
+  MessageQueueId_t queueId;
 };
 
 #endif /* FSFW_UNITTEST_TESTS_MOCKS_HKRECEIVERMOCK_H_ */

@@ -64,7 +64,7 @@ class SerializeIF {
   /**
    * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t serializeBe(uint8_t** buffer, size_t* size, size_t maxSize) {
+  virtual ReturnValue_t serializeBe(uint8_t **buffer, size_t *size, size_t maxSize) {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
@@ -105,7 +105,7 @@ class SerializeIF {
   /**
    * Forwards to regular @deSerialize call with big (network) endianness
    */
-  virtual ReturnValue_t deSerializeBe(const uint8_t** buffer, size_t* size) {
+  virtual ReturnValue_t deSerializeBe(const uint8_t **buffer, size_t *size) {
     return deSerialize(buffer, size, SerializeIF::Endianness::NETWORK);
   }
   /**

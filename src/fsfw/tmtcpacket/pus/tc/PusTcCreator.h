@@ -47,7 +47,7 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
   [[nodiscard]] uint8_t getSubService() const override;
   [[nodiscard]] uint16_t getSourceId() const override;
   ReturnValue_t setRawUserData(const uint8_t *data, size_t len) override;
-  ReturnValue_t setSerializableUserData(SerializeIF& serializable) override;
+  ReturnValue_t setSerializableUserData(SerializeIF &serializable) override;
 
  private:
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,

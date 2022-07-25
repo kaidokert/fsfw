@@ -4,11 +4,11 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "CatchDefinitions.h"
-#include "LocalPoolOwnerBase.h"
+#include "mocks/LocalPoolOwnerBase.h"
 #include "tests/TestsConfig.h"
 
 TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {
-  LocalPoolOwnerBase* poolOwner =
+  auto* poolOwner =
       ObjectManager::instance()->get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
   REQUIRE(poolOwner != nullptr);
   REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);

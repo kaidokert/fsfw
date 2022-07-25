@@ -3,8 +3,8 @@
 
 #include <cstring>
 
-#include "fsfw/ipc/MessageQueueMessage.h"
 #include "Clock.h"
+#include "fsfw/ipc/MessageQueueMessage.h"
 
 class TimeMessage : public MessageQueueMessage {
  protected:

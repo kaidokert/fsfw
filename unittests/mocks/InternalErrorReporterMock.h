@@ -3,7 +3,7 @@
 
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
 
-class InternalErrorReporterMock: public InternalErrorReporterIF {
+class InternalErrorReporterMock : public InternalErrorReporterIF {
  public:
   unsigned int queueMsgNotSentCallCnt = 0;
   unsigned int lostTmCallCnt = 0;

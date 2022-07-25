@@ -3,8 +3,8 @@
 
 #include <array>
 
-#include "fsfw/timemanager/TimeStamperIF.h"
 #include "fsfw/timemanager/TimeReaderIF.h"
+#include "fsfw/timemanager/TimeStamperIF.h"
 
 class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
  public:
@@ -75,7 +75,7 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
     serFailRetval = HasReturnvaluesIF::RETURN_FAILED;
   }
 
-  ReturnValue_t readTimeStamp(const uint8_t* buffer, size_t maxSize) override {
+  ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override {
     return deSerialize(&buffer, &maxSize, SerializeIF::Endianness::NETWORK);
   }
   size_t getTimestampLen() override { return getSerializedSize(); }

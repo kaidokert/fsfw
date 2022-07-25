@@ -2,9 +2,9 @@
 
 #include <linux/sysinfo.h>
 #include <sys/sysinfo.h>
-#include <ctime>
 #include <unistd.h>
 
+#include <ctime>
 #include <fstream>
 
 #include "fsfw/ipc/MutexGuard.h"

@@ -9,7 +9,5 @@ TEST_CASE("TM Send Helper", "[tm-send-helper]") {
   auto msgQueue = MessageQueueMockBase();
   TmSendHelper sendHelper(&msgQueue, &errReporter);
 
-  SECTION("State") {
-
-  }
+  SECTION("State") {}
 }

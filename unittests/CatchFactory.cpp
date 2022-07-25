@@ -10,7 +10,6 @@
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
 
-#include "datapoollocal/LocalPoolOwnerBase.h"
 #include "mocks/HkReceiverMock.h"
 #include "tests/TestsConfig.h"
 
@@ -34,8 +33,6 @@ void Factory::produceFrameworkObjects(void* args) {
   new EventManager(objects::EVENT_MANAGER);
   new HealthTable(objects::HEALTH_TABLE);
   new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
-
-  new LocalPoolOwnerBase(objects::TEST_LOCAL_POOL_OWNER_BASE);
   new HkReceiverMock(objects::HK_RECEIVER_MOCK);
 
   {
@@ -54,6 +51,9 @@ void Factory::produceFrameworkObjects(void* args) {
   }
 }
 
+// TODO: Our tests, and the code base in general should really not depend on some arbitrary function
+//       like this. Instead, this should be more like a general struct containing all important
+//       object IDs which are then explicitely passed in the object constructor
 void Factory::setStaticFrameworkObjectIds() {
   PusServiceBase::packetSource = objects::NO_OBJECT;
   PusServiceBase::packetDestination = objects::NO_OBJECT;
@@ -66,7 +66,8 @@ void Factory::setStaticFrameworkObjectIds() {
   DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
   DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 
-  LocalDataPoolManager::defaultHkDestination = objects::HK_RECEIVER_MOCK;
+  // TODO: Incredibly ugly, get rid of it
+  LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
 
   DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 }

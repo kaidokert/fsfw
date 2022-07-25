@@ -65,7 +65,8 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
               HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::serializeBe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.SerializeIF::serializeBe(buf.data(), buf.size()) ==
+              HasReturnvaluesIF::RETURN_OK);
     }
     CHECK(buf[0] == 1);
     CHECK(buf[1] == 2);
@@ -154,7 +155,8 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
               HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::deSerializeBe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.SerializeIF::deSerializeBe(buf.data(), buf.size()) ==
+              HasReturnvaluesIF::RETURN_OK);
     }
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 1);

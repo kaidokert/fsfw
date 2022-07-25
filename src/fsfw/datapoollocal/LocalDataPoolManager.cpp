@@ -1,6 +1,5 @@
 #include "fsfw/datapoollocal/LocalDataPoolManager.h"
 
-#include <array>
 #include <cmath>
 
 #include "fsfw/datapoollocal.h"
@@ -15,6 +14,7 @@
 #include "internal/HasLocalDpIFManagerAttorney.h"
 #include "internal/LocalPoolDataSetAttorney.h"
 
+// TODO: Get rid of this. This should be a constructor argument, not something hardcoded in any way
 object_id_t LocalDataPoolManager::defaultHkDestination = objects::PUS_SERVICE_3_HOUSEKEEPING;
 
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
@@ -57,7 +57,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
   }
 
   if (defaultHkDestination != objects::NO_OBJECT) {
-    AcceptsHkPacketsIF* hkPacketReceiver =
+    auto* hkPacketReceiver =
         ObjectManager::instance()->get<AcceptsHkPacketsIF>(defaultHkDestination);
     if (hkPacketReceiver != nullptr) {
       hkDestinationId = hkPacketReceiver->getHkQueue();
@@ -335,29 +335,32 @@ void LocalDataPoolManager::resetHkUpdateResetHelper() {
   }
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
-                                                               float collectionInterval,
-                                                               bool isDiagnostics,
-                                                               object_id_t packetDestination) {
-  AcceptsHkPacketsIF* hkReceiverObject =
-      ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
-  if (hkReceiverObject == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
-                        QUEUE_OR_DESTINATION_INVALID);
-    return QUEUE_OR_DESTINATION_INVALID;
-  }
+ReturnValue_t LocalDataPoolManager::subscribeForRegularPeriodicPacket(
+    subdp::RegularHkPeriodicParams params) {
+  return subscribeForPeriodicPacket(params);
+}
 
+ReturnValue_t LocalDataPoolManager::subscribeForDiagPeriodicPacket(
+    subdp::DiagnosticsHkPeriodicParams params) {
+  return subscribeForPeriodicPacket(params);
+}
+
+ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(subdp::ParamsBase& params) {
   struct HkReceiver hkReceiver;
-  hkReceiver.dataId.sid = sid;
+  hkReceiver.dataId.sid = params.sid;
   hkReceiver.reportingType = ReportingType::PERIODIC;
   hkReceiver.dataType = DataType::DATA_SET;
-  hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
+  if (params.receiver == MessageQueueIF::NO_QUEUE) {
+    hkReceiver.destinationQueue = hkDestinationId;
+  } else {
+    hkReceiver.destinationQueue = params.receiver;
+  }
 
-  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, params.sid);
   if (dataSet != nullptr) {
-    LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, enableReporting);
-    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
-    LocalPoolDataSetAttorney::initializePeriodicHelper(*dataSet, collectionInterval,
+    LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, params.enableReporting);
+    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, params.isDiagnostics());
+    LocalPoolDataSetAttorney::initializePeriodicHelper(*dataSet, params.collectionInterval,
                                                        owner->getPeriodicOperationFrequency());
   }
 
@@ -365,27 +368,30 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid, bool isDiagnostics,
-                                                             bool reportingEnabled,
-                                                             object_id_t packetDestination) {
-  AcceptsHkPacketsIF* hkReceiverObject =
-      ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
-  if (hkReceiverObject == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
-                        QUEUE_OR_DESTINATION_INVALID);
-    return QUEUE_OR_DESTINATION_INVALID;
-  }
+ReturnValue_t LocalDataPoolManager::subscribeForRegularUpdatePacket(
+    subdp::RegularHkUpdateParams params) {
+  return subscribeForUpdatePacket(params);
+}
+ReturnValue_t LocalDataPoolManager::subscribeForDiagUpdatePacket(
+    subdp::DiagnosticsHkUpdateParams params) {
+  return subscribeForUpdatePacket(params);
+}
 
+ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(subdp::ParamsBase& params) {
   struct HkReceiver hkReceiver;
-  hkReceiver.dataId.sid = sid;
+  hkReceiver.dataId.sid = params.sid;
   hkReceiver.reportingType = ReportingType::UPDATE_HK;
   hkReceiver.dataType = DataType::DATA_SET;
-  hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
+  if (params.receiver == MessageQueueIF::NO_QUEUE) {
+    hkReceiver.destinationQueue = hkDestinationId;
+  } else {
+    hkReceiver.destinationQueue = params.receiver;
+  }
 
-  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, params.sid);
   if (dataSet != nullptr) {
     LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, true);
-    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
+    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, params.isDiagnostics());
   }
 
   hkReceivers.push_back(hkReceiver);
@@ -639,6 +645,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
       /* Error, all destinations invalid */
       printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateHousekeepingPacket",
                           QUEUE_OR_DESTINATION_INVALID);
+      return QUEUE_OR_DESTINATION_INVALID;
     }
     destination = hkDestinationId;
   }
@@ -879,3 +886,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 }
 
 LocalDataPoolManager* LocalDataPoolManager::getPoolManagerHandle() { return this; }
+
+void LocalDataPoolManager::setHkDestinationId(MessageQueueId_t hkDestId) {
+  hkDestinationId = hkDestId;
+}

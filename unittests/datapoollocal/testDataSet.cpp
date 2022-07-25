@@ -13,11 +13,10 @@
 #include "tests/TestsConfig.h"
 
 TEST_CASE("DataSetTest", "[DataSetTest]") {
-  LocalPoolOwnerBase* poolOwner =
-      ObjectManager::instance()->get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
-  REQUIRE(poolOwner != nullptr);
-  REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
-  REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
+  auto queue = MessageQueueMockBase();
+  LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
+  REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
+  REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
   LocalPoolStaticTestDataSet localSet;
 
   SECTION("BasicTest") {
@@ -30,9 +29,9 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     size_t maxSize = localSet.getLocalPoolIdsSerializedSize(true);
     uint8_t localPoolIdBuff[maxSize];
     /* Skip size field */
-    lp_id_t* lpIds = reinterpret_cast<lp_id_t*>(localPoolIdBuff + 1);
+    auto* lpIds = reinterpret_cast<lp_id_t*>(localPoolIdBuff + 1);
     size_t serSize = 0;
-    uint8_t* localPoolIdBuffPtr = reinterpret_cast<uint8_t*>(localPoolIdBuff);
+    auto* localPoolIdBuffPtr = reinterpret_cast<uint8_t*>(localPoolIdBuff);
 
     /* Test local pool ID serialization */
     CHECK(localSet.serializeLocalPoolIds(&localPoolIdBuffPtr, &serSize, maxSize,
@@ -200,7 +199,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     }
 
     /* Common fault test cases */
-    LocalPoolObjectBase* variableHandle = poolOwner->getPoolObjectHandle(lpool::uint32VarId);
+    LocalPoolObjectBase* variableHandle = poolOwner.getPoolObjectHandle(lpool::uint32VarId);
     CHECK(variableHandle != nullptr);
     CHECK(localSet.registerVariable(variableHandle) == static_cast<int>(DataSetIF::DATA_SET_FULL));
     variableHandle = nullptr;
@@ -209,7 +208,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
   }
 
   SECTION("MorePoolVariables") {
-    LocalDataSet set(poolOwner, 2, 10);
+    LocalDataSet set(&poolOwner, 2, 10);
 
     /* Register same variables again to get more than 8 registered variables */
     for (uint8_t idx = 0; idx < 8; idx++) {
@@ -234,7 +233,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     uint8_t* buffPtr = buffer;
     CHECK(set.serialize(&buffPtr, &serSize, maxSize, SerializeIF::Endianness::MACHINE) ==
           retval::CATCH_OK);
-    std::array<uint8_t, 2> validityBuffer;
+    std::array<uint8_t, 2> validityBuffer{};
     std::memcpy(validityBuffer.data(), buffer + 9 + sizeof(uint16_t) * 3, 2);
     /* The first 9 variables should be valid */
     CHECK(validityBuffer[0] == 0xff);
@@ -258,7 +257,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
 
   SECTION("SharedDataSet") {
     object_id_t sharedSetId = objects::SHARED_SET_ID;
-    SharedLocalDataSet sharedSet(sharedSetId, poolOwner, lpool::testSetId, 5);
+    SharedLocalDataSet sharedSet(sharedSetId, &poolOwner, lpool::testSetId, 5);
     localSet.localPoolVarUint8.setReadWriteMode(pool_rwm_t::VAR_WRITE);
     localSet.localPoolUint16Vec.setReadWriteMode(pool_rwm_t::VAR_WRITE);
     CHECK(sharedSet.registerVariable(&localSet.localPoolVarUint8) == retval::CATCH_OK);
@@ -279,8 +278,4 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
 
     sharedSet.setReadCommitProtectionBehaviour(true);
   }
-
-  /* we need to reset the subscription list because the pool owner
-  is a global object. */
-  CHECK(poolOwner->reset() == retval::CATCH_OK);
 }
