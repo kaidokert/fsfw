@@ -60,17 +60,19 @@ class SerializeIF {
    * 		- @c RETURN_OK Successful serialization
    */
   [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                  Endianness streamEndianness) const = 0;
+                                                Endianness streamEndianness) const = 0;
   /**
    * Forwards to regular @serialize call with big (network) endianness
    */
-  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t** buffer, size_t* size, size_t maxSize) const {
+  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t **buffer, size_t *size,
+                                                  size_t maxSize) const {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) const {
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+                                                size_t maxSize) const {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::MACHINE);
   }
 
@@ -105,13 +107,13 @@ class SerializeIF {
   /**
    * Forwards to regular @deSerialize call with big (network) endianness
    */
-  virtual ReturnValue_t deSerializeBe(const uint8_t** buffer, size_t* size) {
+  virtual ReturnValue_t deSerializeBe(const uint8_t **buffer, size_t *size) {
     return deSerialize(buffer, size, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t *size) {
+  virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size) {
     return deSerialize(buffer, size, SerializeIF::Endianness::MACHINE);
   }
 
@@ -124,7 +126,7 @@ class SerializeIF {
    * @return
    */
   [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize,
-                                  Endianness streamEndianness) const {
+                                                Endianness streamEndianness) const {
     size_t tmpSize = 0;
     return serialize(&buffer, &tmpSize, maxSize, streamEndianness);
   }
