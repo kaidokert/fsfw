@@ -16,13 +16,21 @@ class TmStoreHelper {
   ReturnValue_t preparePacket(uint8_t service, uint8_t subservice, uint16_t counter);
 
   PusTmCreator& getCreatorRef();
+
   void setTimeStamper(TimeStamperIF& timeStamper);
+  [[nodiscard]] TimeStamperIF* getTimeStamper() const;
+
+  [[nodiscard]] StorageManagerIF* getTmStore() const;
+  void setTmStore(StorageManagerIF& store);
+
+  void setApid(uint16_t apid);
+  [[nodiscard]] uint16_t getApid() const;
+
   [[nodiscard]] const store_address_t& getCurrentAddr() const;
   ReturnValue_t setSourceDataRaw(const uint8_t* data, size_t len);
   ReturnValue_t setSourceDataSerializable(SerializeIF& serializable);
-  void setApid(uint16_t apid);
-  StorageManagerIF* getTmStore();
-  void setTmStore(StorageManagerIF& store);
+
+
   ReturnValue_t addPacketToStore();
   ReturnValue_t deletePacket();
 

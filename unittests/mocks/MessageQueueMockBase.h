@@ -18,11 +18,11 @@ class MessageQueueMockBase : public MessageQueueBase {
   uint8_t messageSentCounter = 0;
   bool messageSent = false;
 
-  bool wasMessageSent(uint8_t* messageSentCounter = nullptr, bool resetCounter = true) {
+  bool wasMessageSent(uint8_t* messageSentCounter_ = nullptr, bool resetCounter = true) {
     bool tempMessageSent = messageSent;
     messageSent = false;
-    if (messageSentCounter != nullptr) {
-      *messageSentCounter = this->messageSentCounter;
+    if (messageSentCounter_ != nullptr) {
+      *messageSentCounter_ = this->messageSentCounter;
     }
     if (resetCounter) {
       this->messageSentCounter = 0;
@@ -40,7 +40,7 @@ class MessageQueueMockBase : public MessageQueueBase {
     return receiveMessage(&message);
   }
 
-  virtual ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override {
+  ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override {
     if (messagesSentQueue.empty()) {
       return MessageQueueIF::EMPTY;
     }
@@ -50,8 +50,8 @@ class MessageQueueMockBase : public MessageQueueBase {
     messagesSentQueue.pop();
     return HasReturnvaluesIF::RETURN_OK;
   }
-  virtual ReturnValue_t flush(uint32_t* count) { return HasReturnvaluesIF::RETURN_OK; }
-  virtual ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
+  ReturnValue_t flush(uint32_t* count) override { return HasReturnvaluesIF::RETURN_OK; }
+  ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                         MessageQueueId_t sentFrom,
                                         bool ignoreFault = false) override {
     messageSent = true;
@@ -61,7 +61,7 @@ class MessageQueueMockBase : public MessageQueueBase {
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-  virtual ReturnValue_t reply(MessageQueueMessageIF* message) override {
+  ReturnValue_t reply(MessageQueueMessageIF* message) override {
     return sendMessageFrom(MessageQueueIF::NO_QUEUE, message, this->getId(), false);
   }
 

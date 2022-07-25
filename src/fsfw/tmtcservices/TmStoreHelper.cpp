@@ -26,13 +26,19 @@ ReturnValue_t TmStoreHelper::preparePacket(uint8_t service, uint8_t subservice, 
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-StorageManagerIF* TmStoreHelper::getTmStore() { return tmStore; }
+StorageManagerIF* TmStoreHelper::getTmStore() const { return tmStore; }
 
 void TmStoreHelper::setTmStore(StorageManagerIF& store) { tmStore = &store; }
 
 const store_address_t& TmStoreHelper::getCurrentAddr() const { return currentAddr; }
 
-ReturnValue_t TmStoreHelper::deletePacket() { return tmStore->deleteData(currentAddr); }
+ReturnValue_t TmStoreHelper::deletePacket() {
+  ReturnValue_t  result = tmStore->deleteData(currentAddr);
+  if(result == HasReturnvaluesIF::RETURN_OK) {
+    currentAddr = store_address_t::invalid();
+  }
+  return result;
+}
 
 ReturnValue_t TmStoreHelper::setSourceDataRaw(const uint8_t* data, size_t len) {
   return creator.setRawUserData(data, len);
@@ -62,3 +68,7 @@ void TmStoreHelper::setTimeStamper(TimeStamperIF& timeStamper_) {
 void TmStoreHelper::setApid(uint16_t apid) { creator.setApid(apid); }
 
 PusTmCreator& TmStoreHelper::getCreatorRef() { return creator; }
+
+TimeStamperIF* TmStoreHelper::getTimeStamper() const { return creator.getTimestamper(); }
+
+uint16_t TmStoreHelper::getApid() const { return creator.getApid(); }
