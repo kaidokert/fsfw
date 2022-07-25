@@ -291,11 +291,7 @@ ReturnValue_t LocalDataPoolManager::addUpdateToStore(HousekeepingSnapshot& updat
 
 void LocalDataPoolManager::handleChangeResetLogic(DataType type, DataId dataId,
                                                   MarkChangedIF* toReset) {
-  if (hkUpdateResetList == nullptr) {
-    /* Config error */
-    return;
-  }
-  HkUpdateResetList& listRef = *hkUpdateResetList;
+  HkUpdateResetList& listRef = hkUpdateResetList;
   for (auto& changeInfo : listRef) {
     if (changeInfo.dataType != type) {
       continue;
@@ -326,11 +322,7 @@ void LocalDataPoolManager::handleChangeResetLogic(DataType type, DataId dataId,
 }
 
 void LocalDataPoolManager::resetHkUpdateResetHelper() {
-  if (hkUpdateResetList == nullptr) {
-    return;
-  }
-
-  for (auto& changeInfo : *hkUpdateResetList) {
+  for (auto& changeInfo : hkUpdateResetList) {
     changeInfo.currentUpdateCounter = changeInfo.updateCounter;
   }
 }
@@ -442,11 +434,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessage(
 }
 
 void LocalDataPoolManager::handleHkUpdateResetListInsertion(DataType dataType, DataId dataId) {
-  if (hkUpdateResetList == nullptr) {
-    hkUpdateResetList = new std::vector<struct HkUpdateResetHelper>();
-  }
-
-  for (auto& updateResetStruct : *hkUpdateResetList) {
+  for (auto& updateResetStruct : hkUpdateResetList) {
     if (dataType == DataType::DATA_SET) {
       if (updateResetStruct.dataId.sid == dataId.sid) {
         updateResetStruct.updateCounter++;
@@ -470,7 +458,7 @@ void LocalDataPoolManager::handleHkUpdateResetListInsertion(DataType dataType, D
   } else {
     hkUpdateResetHelper.dataId.localPoolId = dataId.localPoolId;
   }
-  hkUpdateResetList->push_back(hkUpdateResetHelper);
+  hkUpdateResetList.push_back(hkUpdateResetHelper);
 }
 
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* message) {
@@ -824,9 +812,7 @@ void LocalDataPoolManager::clearReceiversList() {
   /* Clear the vector completely and releases allocated memory. */
   HkReceivers().swap(hkReceivers);
   /* Also clear the reset helper if it exists */
-  if (hkUpdateResetList != nullptr) {
-    HkUpdateResetList().swap(*hkUpdateResetList);
-  }
+  HkUpdateResetList().swap(hkUpdateResetList);
 }
 
 MutexIF* LocalDataPoolManager::getLocalPoolMutex() { return this->mutex; }

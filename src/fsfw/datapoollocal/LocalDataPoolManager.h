@@ -297,8 +297,8 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
 
   using HkUpdateResetList = std::vector<struct HkUpdateResetHelper>;
   /** This list is used to manage creating multiple update packets and only resetting
-  the update flag if all of them were created. Will only be created when needed. */
-  HkUpdateResetList* hkUpdateResetList = nullptr;
+  the update flag if all of them were created. */
+  HkUpdateResetList hkUpdateResetList = HkUpdateResetList();
 
   /** This is the map holding the actual data. Should only be initialized
    * once ! */
