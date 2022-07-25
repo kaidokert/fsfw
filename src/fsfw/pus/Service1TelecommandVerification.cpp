@@ -16,7 +16,7 @@ Service1TelecommandVerification::Service1TelecommandVerification(object_id_t obj
       serviceId(serviceId),
       targetDestination(targetDestination),
       sendHelper(nullptr),
-      storeHelper(apid, nullptr) {
+      storeHelper(apid) {
   tmQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 

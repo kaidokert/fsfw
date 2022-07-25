@@ -26,8 +26,8 @@ uint8_t PusTmCreator::getSubService() const { return pusParams.secHeader.subserv
 
 PusTmParams& PusTmCreator::getParams() { return pusParams; }
 
-void PusTmCreator::setTimeStamper(TimeStamperIF* timeStamper_) {
-  pusParams.secHeader.timeStamper = timeStamper_;
+void PusTmCreator::setTimeStamper(TimeStamperIF& timeStamper_) {
+  pusParams.secHeader.timeStamper = &timeStamper_;
   updateSpLengthField();
 }
 

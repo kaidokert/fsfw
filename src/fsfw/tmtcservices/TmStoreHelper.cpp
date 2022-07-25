@@ -2,16 +2,21 @@
 
 #include "TmTcMessage.h"
 
-TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore,
-                             TimeStamperIF* timeStamper)
-    : tmStore(tmStore) {
+TmStoreHelper::TmStoreHelper(uint16_t defaultApid): tmStore(nullptr) {
+  creator.setApid(defaultApid);
+}
+
+TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore) : tmStore(&tmStore) {
+  creator.setApid(defaultApid);
+}
+
+TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore,
+                             TimeStamperIF& timeStamper)
+    : tmStore(&tmStore) {
   creator.setApid(defaultApid);
   creator.setTimeStamper(timeStamper);
 }
 
-TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore) : tmStore(tmStore) {
-  creator.setApid(defaultApid);
-}
 
 ReturnValue_t TmStoreHelper::preparePacket(uint8_t service, uint8_t subservice, uint16_t counter) {
   PusTmParams& params = creator.getParams();
@@ -48,7 +53,7 @@ ReturnValue_t TmStoreHelper::addPacketToStore() {
                            SerializeIF::Endianness::NETWORK);
 }
 
-void TmStoreHelper::setTimeStamper(TimeStamperIF* timeStamper_) {
+void TmStoreHelper::setTimeStamper(TimeStamperIF& timeStamper_) {
   creator.setTimeStamper(timeStamper_);
 }
 

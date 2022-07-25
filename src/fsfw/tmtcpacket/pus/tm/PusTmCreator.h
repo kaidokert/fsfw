@@ -45,7 +45,7 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams);
   ~PusTmCreator() override = default;
 
-  void setTimeStamper(TimeStamperIF* timeStamper);
+  void setTimeStamper(TimeStamperIF& timeStamper);
   SpacePacketParams& getSpParams();
   void setApid(uint16_t apid);
   void setDestId(uint16_t destId);

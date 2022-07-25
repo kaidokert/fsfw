@@ -129,7 +129,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     // As specified in standard, the data length fields is the total size of the packet without
     // the primary header minus 1
     REQUIRE(creatorFromEmptyCtor.getPacketDataLen() == 8);
-    creatorFromEmptyCtor.setTimeStamper(&timeStamper);
+    creatorFromEmptyCtor.setTimeStamper(timeStamper);
     REQUIRE(creatorFromEmptyCtor.getFullPacketLen() == 22);
     REQUIRE(creatorFromEmptyCtor.getPacketDataLen() == 15);
   }

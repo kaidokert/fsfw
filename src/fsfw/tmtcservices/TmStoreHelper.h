@@ -9,12 +9,13 @@
 
 class TmStoreHelper {
  public:
-  explicit TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore);
-  TmStoreHelper(uint16_t defaultApid, StorageManagerIF* tmStore, TimeStamperIF* timeStamper);
+  explicit TmStoreHelper(uint16_t defaultApid);
+  TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore);
+  TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore, TimeStamperIF& timeStamper);
 
   ReturnValue_t preparePacket(uint8_t service, uint8_t subservice, uint16_t counter);
 
-  void setTimeStamper(TimeStamperIF* timeStamper);
+  void setTimeStamper(TimeStamperIF& timeStamper);
   [[nodiscard]] const store_address_t& getCurrentAddr() const;
   void setSourceDataRaw(const uint8_t* data, size_t len);
   void setSourceDataSerializable(SerializeIF* serializable);

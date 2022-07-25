@@ -20,7 +20,7 @@ CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId, uint16_t a
       apid(apid),
       service(service),
       timeoutSeconds(commandTimeoutSeconds),
-      tmStoreHelper(apid, nullptr),
+      tmStoreHelper(apid),
       tmSendHelper(nullptr),
       commandMap(numberOfParallelCommands) {
   commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
