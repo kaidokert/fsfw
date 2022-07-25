@@ -8,7 +8,7 @@ MessageQueueBase::MessageQueueBase(MessageQueueId_t id, MessageQueueId_t default
   }
 }
 
-MessageQueueBase::~MessageQueueBase() {}
+MessageQueueBase::~MessageQueueBase() = default;
 
 ReturnValue_t MessageQueueBase::sendToDefault(MessageQueueMessageIF* message) {
   return sendToDefaultFrom(message, this->getId(), false);

@@ -2,15 +2,21 @@
 
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 
-TmSendHelper::TmSendHelper(MessageQueueId_t tmtcMsgDest, MessageQueueId_t tmtcMsgSrc,
+TmSendHelper::TmSendHelper(MessageQueueIF* queue, MessageQueueId_t tmtcMsgDest,
                            InternalErrorReporterIF *reporter)
-    : tmtcMsgDest(tmtcMsgDest), tmtcMsgSrc(tmtcMsgSrc), errReporter(reporter) {}
+    : tmtcMsgDest(tmtcMsgDest), queue(queue), errReporter(reporter) {}
+
+TmSendHelper::TmSendHelper(MessageQueueIF *queue, InternalErrorReporterIF *reporter)
+  : queue(queue), errReporter(reporter) {}
 
 TmSendHelper::TmSendHelper(InternalErrorReporterIF *reporter) : errReporter(reporter) {}
 
 ReturnValue_t TmSendHelper::sendPacket(const store_address_t &storeId) {
+  if(queue == nullptr) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
   TmTcMessage message(storeId);
-  ReturnValue_t result = MessageQueueSenderIF::sendMessage(tmtcMsgDest, &message, tmtcMsgSrc);
+  ReturnValue_t result = queue->sendMessage(tmtcMsgDest, &message, ignoreFault);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     if (errReporter != nullptr) {
       errReporter->lostTm();
@@ -22,8 +28,7 @@ ReturnValue_t TmSendHelper::sendPacket(const store_address_t &storeId) {
 
 void TmSendHelper::setMsgDestination(MessageQueueId_t msgDest) { tmtcMsgDest = msgDest; }
 
-void TmSendHelper::setMsgSource(MessageQueueId_t msgSrc) { tmtcMsgSrc = msgSrc; }
-
 void TmSendHelper::setInternalErrorReporter(InternalErrorReporterIF *reporter) {
   errReporter = reporter;
 }
+void TmSendHelper::setMsgQueue(MessageQueueIF *queue_) { queue = queue_; }

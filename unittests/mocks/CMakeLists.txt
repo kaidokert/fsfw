@@ -4,4 +4,5 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
 	DeviceFdirMock.cpp
 	CookieIFMock.cpp
 	ComIFMock.cpp
+	MessageQueueMockBase.cpp
 )

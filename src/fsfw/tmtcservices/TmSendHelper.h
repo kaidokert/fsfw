@@ -10,16 +10,18 @@
 class TmSendHelper {
  public:
   explicit TmSendHelper(InternalErrorReporterIF* reporter);
-  TmSendHelper(MessageQueueId_t tmtcMsgDest, MessageQueueId_t tmtcMsgSrc,
+  TmSendHelper(MessageQueueIF* queue, InternalErrorReporterIF* reporter);
+  TmSendHelper(MessageQueueIF* queue, MessageQueueId_t tmtcMsgDest,
                InternalErrorReporterIF* reporter);
+  void setMsgQueue(MessageQueueIF* queue);
   void setMsgDestination(MessageQueueId_t msgDest);
-  void setMsgSource(MessageQueueId_t msgSrc);
   void setInternalErrorReporter(InternalErrorReporterIF* reporter);
   ReturnValue_t sendPacket(const store_address_t& storeId);
 
  private:
   MessageQueueId_t tmtcMsgDest = MessageQueueIF::NO_QUEUE;
-  MessageQueueId_t tmtcMsgSrc = MessageQueueIF::NO_QUEUE;
+  bool ignoreFault = false;
+  MessageQueueIF* queue = nullptr;
   InternalErrorReporterIF* errReporter;
 };
 

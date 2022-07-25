@@ -131,7 +131,7 @@ void PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelp
 }
 
 void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
-  tmSendHelper.setMsgSource(requestQueue->getId());
+  tmSendHelper.setMsgQueue(requestQueue);
   tmSendHelper.setMsgDestination(requestQueue->getDefaultDestination());
   if (errReporter == nullptr) {
     errReporter =

@@ -12,71 +12,30 @@
 
 class MessageQueueMockBase : public MessageQueueBase {
  public:
-  MessageQueueMockBase()
-      : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, nullptr) {}
+  MessageQueueMockBase();
+
+  explicit MessageQueueMockBase(MessageQueueId_t queueId);
 
   uint8_t messageSentCounter = 0;
   bool messageSent = false;
 
-  bool wasMessageSent(uint8_t* messageSentCounter_ = nullptr, bool resetCounter = true) {
-    bool tempMessageSent = messageSent;
-    messageSent = false;
-    if (messageSentCounter_ != nullptr) {
-      *messageSentCounter_ = this->messageSentCounter;
-    }
-    if (resetCounter) {
-      this->messageSentCounter = 0;
-    }
-    return tempMessageSent;
-  }
+  bool wasMessageSent(uint8_t* messageSentCounter_ = nullptr, bool resetCounter = true);
 
   /**
    * Pop a message, clearing it in the process.
    * @return
    */
-  ReturnValue_t popMessage() {
-    CommandMessage message;
-    message.clear();
-    return receiveMessage(&message);
-  }
+  ReturnValue_t popMessage();
 
-  ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override {
-    if (messagesSentQueue.empty()) {
-      return MessageQueueIF::EMPTY;
-    }
-    this->last = message->getSender();
-    std::memcpy(message->getBuffer(), messagesSentQueue.front().getBuffer(),
-                message->getMessageSize());
-    messagesSentQueue.pop();
-    return HasReturnvaluesIF::RETURN_OK;
-  }
-  ReturnValue_t flush(uint32_t* count) override { return HasReturnvaluesIF::RETURN_OK; }
+  ReturnValue_t receiveMessage(MessageQueueMessageIF* message) override;
+
+  ReturnValue_t flush(uint32_t* count) override;
   ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                         MessageQueueId_t sentFrom,
-                                        bool ignoreFault = false) override {
-    messageSent = true;
-    messageSentCounter++;
-    MessageQueueMessage& messageRef = *(dynamic_cast<MessageQueueMessage*>(message));
-    messagesSentQueue.push(messageRef);
-    return HasReturnvaluesIF::RETURN_OK;
-  }
+                                        bool ignoreFault = false) override;
+  ReturnValue_t reply(MessageQueueMessageIF* message) override;
 
-  ReturnValue_t reply(MessageQueueMessageIF* message) override {
-    return sendMessageFrom(MessageQueueIF::NO_QUEUE, message, this->getId(), false);
-  }
-
-  void clearMessages(bool clearCommandMessages = true) {
-    while (not messagesSentQueue.empty()) {
-      if (clearCommandMessages) {
-        CommandMessage message;
-        std::memcpy(message.getBuffer(), messagesSentQueue.front().getBuffer(),
-                    message.getMessageSize());
-        message.clear();
-      }
-      messagesSentQueue.pop();
-    }
-  }
-
+  void clearMessages(bool clearCommandMessages = true);
  private:
   std::queue<MessageQueueMessage> messagesSentQueue;
 };
