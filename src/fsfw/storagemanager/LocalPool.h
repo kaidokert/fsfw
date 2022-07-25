@@ -81,7 +81,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
   /**
    * @brief	In the LocalPool's destructor all allocated memory is freed.
    */
-  virtual ~LocalPool(void);
+  ~LocalPool() override;
 
   /**
    * Documentation: See StorageManagerIF.h
