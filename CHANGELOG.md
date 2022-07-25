@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
-# [v5.0.0]
+# [v5.0.0] 25.07.2022
 
 ## Changes
 
@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/572
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
+- `SimpleRingBuffer::writeData` now checks if the amount is larger than the total size of the 
+  Buffer and rejects such writeData calls with `HasReturnvaluesIF::RETURN_FAILED`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/586
 - Major update for version handling, using `git describe` to fetch version information with git.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/601
   - Add helper functions provided by [`cmake-modules`](https://github.com/bilke/cmake-modules)

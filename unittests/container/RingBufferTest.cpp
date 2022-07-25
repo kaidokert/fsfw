@@ -31,6 +31,8 @@ TEST_CASE("Ring Buffer Test", "[RingBufferTest]") {
     for (uint8_t i = 0; i < 9; i++) {
       CHECK(readBuffer[i] == i);
     }
+    REQUIRE(ringBuffer.writeData(testData, 1024) == retval::CATCH_FAILED);
+    REQUIRE(ringBuffer.writeData(nullptr, 5) == retval::CATCH_FAILED);
   }
 
   SECTION("Get Free Element Test") {
@@ -144,12 +146,13 @@ TEST_CASE("Ring Buffer Test2", "[RingBufferTest2]") {
 
   SECTION("Overflow") {
     REQUIRE(ringBuffer.availableWriteSpace() == 9);
-    // Writing more than the buffer is large, technically thats allowed
-    // But it is senseless and has undesired impact on read call
-    REQUIRE(ringBuffer.writeData(testData, 13) == retval::CATCH_OK);
-    REQUIRE(ringBuffer.getAvailableReadData() == 3);
+    // We don't allow writing of Data that is larger than the ring buffer in total
+    REQUIRE(ringBuffer.getMaxSize() == 9);
+    REQUIRE(ringBuffer.writeData(testData, 13) == retval::CATCH_FAILED);
+    REQUIRE(ringBuffer.getAvailableReadData() == 0);
     ringBuffer.clear();
     uint8_t *ptr = nullptr;
+    // With excess Bytes 13 Bytes can be written to this Buffer
     REQUIRE(ringBuffer.getFreeElement(&ptr, 13) == retval::CATCH_OK);
     REQUIRE(ptr != nullptr);
     memcpy(ptr, testData, 13);
@@ -234,11 +237,13 @@ TEST_CASE("Ring Buffer Test3", "[RingBufferTest3]") {
 
   SECTION("Overflow") {
     REQUIRE(ringBuffer.availableWriteSpace() == 9);
-    // Writing more than the buffer is large, technically thats allowed
-    // But it is senseless and has undesired impact on read call
-    REQUIRE(ringBuffer.writeData(testData, 13) == retval::CATCH_OK);
-    REQUIRE(ringBuffer.getAvailableReadData() == 3);
+    // Writing more than the buffer is large.
+    // This write will be rejected and is seen as a configuration mistake
+    REQUIRE(ringBuffer.writeData(testData, 13) == retval::CATCH_FAILED);
+    REQUIRE(ringBuffer.getAvailableReadData() == 0);
     ringBuffer.clear();
+    // Using FreeElement allows the usage of excessBytes but
+    // should be used with caution
     uint8_t *ptr = nullptr;
     REQUIRE(ringBuffer.getFreeElement(&ptr, 13) == retval::CATCH_OK);
     REQUIRE(ptr != nullptr);
