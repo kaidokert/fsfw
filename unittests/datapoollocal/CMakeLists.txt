@@ -3,5 +3,4 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
 	testLocalPoolVector.cpp
 	testDataSet.cpp
   testLocalPoolManager.cpp
-	LocalPoolOwnerBase.cpp
 )

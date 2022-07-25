@@ -4,15 +4,14 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "CatchDefinitions.h"
-#include "LocalPoolOwnerBase.h"
+#include "mocks/LocalPoolOwnerBase.h"
 #include "tests/TestsConfig.h"
 
 TEST_CASE("LocalPoolVariable", "[LocPoolVarTest]") {
-  auto* poolOwner =
-      ObjectManager::instance()->get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
-  REQUIRE(poolOwner != nullptr);
-  REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
-  REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
+  auto queue = MessageQueueMock();
+  LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
+  REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
+  REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
 
   SECTION("Basic Tests") {
     /* very basic test. */
@@ -106,6 +105,4 @@ TEST_CASE("LocalPoolVariable", "[LocPoolVarTest]") {
     lp_var_t<uint8_t> invalidObjectVar2 = lp_var_t<uint8_t>(globPoolId);
     lp_var_t<uint8_t> invalidObjectVar3 = lp_var_t<uint8_t>(nullptr, lpool::uint8VarId);
   }
-
-  CHECK(poolOwner->reset() == retval::CATCH_OK);
 }

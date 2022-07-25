@@ -9,11 +9,12 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "CatchDefinitions.h"
-#include "LocalPoolOwnerBase.h"
+#include "mocks/LocalPoolOwnerBase.h"
+#include "mocks/MessageQueueMock.h"
 #include "tests/TestsConfig.h"
 
 TEST_CASE("DataSetTest", "[DataSetTest]") {
-  auto queue = MessageQueueMockBase();
+  auto queue = MessageQueueMock();
   LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
   REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
   REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);

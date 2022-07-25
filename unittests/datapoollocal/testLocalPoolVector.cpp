@@ -8,11 +8,10 @@
 #include "tests/TestsConfig.h"
 
 TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {
-  auto* poolOwner =
-      ObjectManager::instance()->get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
-  REQUIRE(poolOwner != nullptr);
-  REQUIRE(poolOwner->initializeHkManager() == retval::CATCH_OK);
-  REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
+  auto queue = MessageQueueMock();
+  LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
+  REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
+  REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
 
   SECTION("BasicTest") {
     // very basic test.
@@ -106,5 +105,4 @@ TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {
         objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint16Vec3Id, nullptr, pool_rwm_t::VAR_READ);
     REQUIRE(readOnlyVec.commit() == static_cast<int>(PoolVariableIF::INVALID_READ_WRITE_MODE));
   }
-  poolOwner->reset();
 }

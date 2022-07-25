@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "CatchDefinitions.h"
-#include "LocalPoolOwnerBase.h"
+#include "mocks/LocalPoolOwnerBase.h"
 #include "mocks/HkReceiverMock.h"
 
 TEST_CASE("Local Pool Manager Tests", "[LocManTest]") {
@@ -20,12 +20,12 @@ TEST_CASE("Local Pool Manager Tests", "[LocManTest]") {
   const MessageQueueId_t hkDest = defaultDestId;
   const MessageQueueId_t subscriberId = 2;
   auto hkReceiver = HkReceiverMock(hkDest);
-  auto queue = MessageQueueMockBase();
+  auto queue = MessageQueueMock();
   LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
   REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
   REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);
 
-  MessageQueueMockBase& poolOwnerMock = poolOwner.getMockQueueHandle();
+  MessageQueueMock& poolOwnerMock = poolOwner.getMockQueueHandle();
 
   // TODO: This is ugly. This should be an arbitrary ctor argument. Fix this in the pool
   //       manager

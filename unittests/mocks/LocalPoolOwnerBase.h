@@ -98,8 +98,8 @@ class LocalPoolOwnerBase : public SystemObject, public HasLocalDataPoolIF {
 
   LocalPoolObjectBase* getPoolObjectHandle(lp_id_t localPoolId) override;
 
-  [[nodiscard]] MessageQueueMockBase& getMockQueueHandle() const {
-    return dynamic_cast<MessageQueueMockBase&>(queue);
+  [[nodiscard]] MessageQueueMock& getMockQueueHandle() const {
+    return dynamic_cast<MessageQueueMock&>(queue);
   }
 
   ReturnValue_t subscribePeriodicHk(bool enableReporting) {
