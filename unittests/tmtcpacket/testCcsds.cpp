@@ -43,15 +43,15 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
     packetId.secHeaderFlag = false;
     packetId.packetType = ccsds::PacketType::TM;
     REQUIRE(packetId.raw() == 0x1ff);
-    REQUIRE(packetId.SerializeIF::serializeNe(buf.data(), buf.size()) ==
+    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), buf.size()) ==
             HasReturnvaluesIF::RETURN_OK);
     CHECK(buf[0] == 0x1);
     CHECK(buf[1] == 0xff);
   }
 
   SECTION("Invalid Ser") {
-    REQUIRE(packetId.SerializeIF::serializeNe(buf.data(), 0) == SerializeIF::BUFFER_TOO_SHORT);
-    REQUIRE(packetId.SerializeIF::serializeNe(buf.data(), 1) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), 0) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), 1) == SerializeIF::BUFFER_TOO_SHORT);
   }
 
   SECTION("Invalid Deser") {
@@ -84,7 +84,7 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
     psc.seqFlags = ccsds::SequenceFlags::FIRST_SEGMENT;
     psc.seqCount = static_cast<uint16_t>(std::round(std::pow(2, 14) - 1));
     REQUIRE(psc.raw() == 0x7fff);
-    REQUIRE(psc.SerializeIF::serializeNe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(buf[0] == 0x7f);
     CHECK(buf[1] == 0xff);
   }
@@ -106,8 +106,8 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
   }
 
   SECTION("Invalid Ser") {
-    REQUIRE(psc.SerializeIF::serializeNe(buf.data(), 0) == SerializeIF::BUFFER_TOO_SHORT);
-    REQUIRE(psc.SerializeIF::serializeNe(buf.data(), 1) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), 0) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), 1) == SerializeIF::BUFFER_TOO_SHORT);
   }
 
   SECTION("Invalid Deser") {

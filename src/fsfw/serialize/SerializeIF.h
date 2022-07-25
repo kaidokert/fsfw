@@ -62,9 +62,9 @@ class SerializeIF {
   virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                   Endianness streamEndianness) const = 0;
   /**
-   * Forwards to regular @serialize call with network endianness
+   * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t serializeNe(uint8_t **buffer, size_t *size, size_t maxSize) {
+  virtual ReturnValue_t serializeBe(uint8_t** buffer, size_t* size, size_t maxSize) {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
@@ -103,9 +103,9 @@ class SerializeIF {
   virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                                     Endianness streamEndianness) = 0;
   /**
-   * Forwards to regular @deSerialize call with network endianness
+   * Forwards to regular @deSerialize call with big (network) endianness
    */
-  virtual ReturnValue_t deSerializeNe(const uint8_t **buffer, size_t *size) {
+  virtual ReturnValue_t deSerializeBe(const uint8_t** buffer, size_t* size) {
     return deSerialize(buffer, size, SerializeIF::Endianness::NETWORK);
   }
   /**
@@ -129,9 +129,9 @@ class SerializeIF {
     return serialize(&buffer, &tmpSize, maxSize, streamEndianness);
   }
   /**
-   * Forwards to regular @serialize call with network endianness
+   * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t serializeNe(uint8_t *buffer, size_t maxSize) const {
+  virtual ReturnValue_t serializeBe(uint8_t *buffer, size_t maxSize) const {
     return serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
@@ -154,9 +154,9 @@ class SerializeIF {
     return deSerialize(&buffer, &maxSize, streamEndianness);
   }
   /**
-   * Forwards to regular @serialize call with network endianness
+   * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t deSerializeNe(const uint8_t *buffer, size_t maxSize) {
+  virtual ReturnValue_t deSerializeBe(const uint8_t *buffer, size_t maxSize) {
     return deSerialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
