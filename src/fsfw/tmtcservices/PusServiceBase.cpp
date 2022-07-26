@@ -9,8 +9,8 @@
 #include "fsfw/tmtcservices/TmTcMessage.h"
 #include "fsfw/tmtcservices/tcHelpers.h"
 
-object_id_t PusServiceBase::packetDestination = 0;
-object_id_t PusServiceBase::pusDistributor = 0;
+object_id_t PusServiceBase::PACKET_DESTINATION = 0;
+object_id_t PusServiceBase::PUS_DISTRIBUTOR = 0;
 
 PusServiceBase::PusServiceBase(PsbParams params)
     : SystemObject(params.objectId), psbParams(params) {}
@@ -83,7 +83,12 @@ void PusServiceBase::handleRequestQueue() {
 
 uint16_t PusServiceBase::getIdentifier() { return psbParams.serviceId; }
 
-MessageQueueId_t PusServiceBase::getRequestQueue() { return psbParams.reqQueue->getId(); }
+MessageQueueId_t PusServiceBase::getRequestQueue() {
+  if (psbParams.reqQueue == nullptr) {
+    return MessageQueueIF::NO_QUEUE;
+  }
+  return psbParams.reqQueue->getId();
+}
 
 ReturnValue_t PusServiceBase::initialize() {
   ReturnValue_t result = SystemObject::initialize();
@@ -96,15 +101,16 @@ ReturnValue_t PusServiceBase::initialize() {
   } else {
     ownedQueue = false;
   }
+
   if (psbParams.tmReceiver == nullptr) {
-    psbParams.tmReceiver = ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
+    psbParams.tmReceiver = ObjectManager::instance()->get<AcceptsTelemetryIF>(PACKET_DESTINATION);
     if (psbParams.tmReceiver != nullptr) {
       psbParams.reqQueue->setDefaultDestination(psbParams.tmReceiver->getReportReceptionQueue());
     }
   }
 
-  if (psbParams.pusDistributor != nullptr) {
-    psbParams.pusDistributor = ObjectManager::instance()->get<PUSDistributorIF>(pusDistributor);
+  if (psbParams.pusDistributor == nullptr) {
+    psbParams.pusDistributor = ObjectManager::instance()->get<PUSDistributorIF>(PUS_DISTRIBUTOR);
     if (psbParams.pusDistributor != nullptr) {
       registerService(*psbParams.pusDistributor);
     }
@@ -127,17 +133,10 @@ ReturnValue_t PusServiceBase::initialize() {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
-  // If task parameters, for example task frequency are required, this
-  // function should be overriden and the system object task IF can
-  // be used to get those parameters.
-  return HasReturnvaluesIF::RETURN_OK;
-}
+void PusServiceBase::setTcPool(StorageManagerIF& tcPool) { psbParams.tcPool = &tcPool; }
 
-void PusServiceBase::setCustomTcStore(StorageManagerIF* tcPool) { psbParams.tcPool = tcPool; }
-
-void PusServiceBase::setCustomErrorReporter(InternalErrorReporterIF* errReporter_) {
-  psbParams.errReporter = errReporter_;
+void PusServiceBase::setErrorReporter(InternalErrorReporterIF& errReporter_) {
+  psbParams.errReporter = &errReporter_;
 }
 
 void PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper) {
@@ -155,8 +154,10 @@ void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
     psbParams.errReporter =
         ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
     if (psbParams.errReporter != nullptr) {
-      tmSendHelper.setInternalErrorReporter(psbParams.errReporter);
+      tmSendHelper.setInternalErrorReporter(*psbParams.errReporter);
     }
+  } else {
+    tmSendHelper.setInternalErrorReporter(*psbParams.errReporter);
   }
 }
 
@@ -164,16 +165,16 @@ void PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const
   tmStoreHelper.setApid(psbParams.apid);
 }
 
-void PusServiceBase::setVerificationReporter(VerificationReporterIF* reporter) {
-  psbParams.verifReporter = reporter;
+void PusServiceBase::setVerificationReporter(VerificationReporterIF& reporter) {
+  psbParams.verifReporter = &reporter;
 }
 
 ReturnValue_t PusServiceBase::registerService(PUSDistributorIF& distributor) {
   return distributor.registerService(this);
 }
 
-void PusServiceBase::setTmReceiver(AcceptsTelemetryIF* tmReceiver_) {
-  psbParams.tmReceiver = tmReceiver_;
+void PusServiceBase::setTmReceiver(AcceptsTelemetryIF& tmReceiver_) {
+  psbParams.tmReceiver = &tmReceiver_;
 }
 
-void PusServiceBase::setRequestQueue(MessageQueueIF* reqQueue) { psbParams.reqQueue = reqQueue; }
+void PusServiceBase::setRequestQueue(MessageQueueIF& reqQueue) { psbParams.reqQueue = &reqQueue; }

@@ -104,9 +104,12 @@ ReturnValue_t CommandingServiceBase::initialize() {
     errReporter =
         ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
     if (errReporter != nullptr) {
-      tmSendHelper.setInternalErrorReporter(errReporter);
+      tmSendHelper.setInternalErrorReporter(*errReporter);
     }
+  } else {
+    tmSendHelper.setInternalErrorReporter(*errReporter);
   }
+
   if (verificationReporter == nullptr) {
     verificationReporter =
         ObjectManager::instance()->get<VerificationReporterIF>(objects::TC_VERIFICATOR);

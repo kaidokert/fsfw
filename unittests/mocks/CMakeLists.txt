@@ -10,4 +10,5 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
 	PusVerificationReporterMock.cpp
 	PusServiceBaseMock.cpp
 	AcceptsTmMock.cpp
+	PusDistributorMock.cpp
 )

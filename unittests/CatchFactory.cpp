@@ -54,7 +54,7 @@ void Factory::produceFrameworkObjects(void* args) {
 //       like this. Instead, this should be more like a general struct containing all important
 //       object IDs which are then explicitely passed in the object constructor
 void Factory::setStaticFrameworkObjectIds() {
-  PusServiceBase::packetDestination = objects::NO_OBJECT;
+  PusServiceBase::PACKET_DESTINATION = objects::NO_OBJECT;
 
   CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
   CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
@@ -62,9 +62,7 @@ void Factory::setStaticFrameworkObjectIds() {
   DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
   DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 
-  // TODO: Incredibly ugly, get rid of it
   LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
-
   DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
 }
 

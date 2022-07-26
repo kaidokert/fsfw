@@ -8,7 +8,7 @@ DeviceHandlerMock::DeviceHandlerMock(object_id_t objectId, object_id_t deviceCom
   mode = MODE_ON;
 }
 
-DeviceHandlerMock::~DeviceHandlerMock() {}
+DeviceHandlerMock::~DeviceHandlerMock() = default;
 
 void DeviceHandlerMock::doStartUp() { setMode(_MODE_TO_ON); }
 

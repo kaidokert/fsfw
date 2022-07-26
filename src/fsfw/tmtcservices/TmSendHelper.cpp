@@ -30,8 +30,8 @@ ReturnValue_t TmSendHelper::sendPacket(const store_address_t &storeId) {
 
 void TmSendHelper::setDefaultDestination(MessageQueueId_t msgDest) { defaultDest = msgDest; }
 
-void TmSendHelper::setInternalErrorReporter(InternalErrorReporterIF *reporter) {
-  errReporter = reporter;
+void TmSendHelper::setInternalErrorReporter(InternalErrorReporterIF &reporter) {
+  errReporter = &reporter;
 }
 void TmSendHelper::setMsgQueue(MessageQueueIF &queue_) { queue = &queue_; }
 

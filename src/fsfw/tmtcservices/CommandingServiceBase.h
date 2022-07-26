@@ -18,7 +18,7 @@
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
-}
+};
 
 /**
  * @brief 	This class is the basis for all PUS Services, which have to
@@ -38,7 +38,7 @@ class CommandingServiceBase : public SystemObject,
                               public AcceptsTelecommandsIF,
                               public ExecutableObjectIF,
                               public HasReturnvaluesIF {
-  friend void(Factory::setStaticFrameworkObjectIds)();
+  friend void Factory::setStaticFrameworkObjectIds();
 
  public:
   // We could make this configurable via preprocessor and the FSFWConfig file.

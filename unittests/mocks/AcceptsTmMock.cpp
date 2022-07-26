@@ -1,6 +1,10 @@
 #include "AcceptsTmMock.h"
 
-AcceptsTmMock::AcceptsTmMock(MessageQueueId_t queueToReturn) : returnedQueue(queueToReturn) {}
+AcceptsTmMock::AcceptsTmMock(object_id_t registeredId, MessageQueueId_t queueToReturn)
+    : SystemObject(registeredId), returnedQueue(queueToReturn) {}
+
+AcceptsTmMock::AcceptsTmMock(MessageQueueId_t queueToReturn)
+    : SystemObject(objects::NO_OBJECT, false), returnedQueue(queueToReturn) {}
 
 MessageQueueId_t AcceptsTmMock::getReportReceptionQueue(uint8_t virtualChannel) {
   return returnedQueue;

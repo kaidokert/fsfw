@@ -33,8 +33,9 @@ TEST_CASE("TM Send Helper", "[tm-send-helper]") {
     REQUIRE(sendHelper.getDefaultDestination() == destId);
     sendHelper.setDefaultDestination(destId + 1);
     REQUIRE(sendHelper.getDefaultDestination() == destId + 1);
-    sendHelper.setInternalErrorReporter(nullptr);
-    REQUIRE(sendHelper.getInternalErrorReporter() == nullptr);
+    auto errReporter2 = InternalErrorReporterMock();
+    sendHelper.setInternalErrorReporter(errReporter2);
+    REQUIRE(sendHelper.getInternalErrorReporter() == &errReporter2);
   }
 
   SECTION("Default CTOR") {

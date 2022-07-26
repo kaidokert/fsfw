@@ -39,3 +39,15 @@ bool PsbMock::getAndPopNextSubservice(uint8_t& subservice) {
   subserviceQueue.pop();
   return true;
 }
+
+PsbParams& PsbMock::getParams() { return psbParams; }
+
+void PsbMock::setStaticPusDistributor(object_id_t pusDistributor) {
+  PUS_DISTRIBUTOR = pusDistributor;
+}
+
+object_id_t PsbMock::getStaticPusDistributor() { return PUS_DISTRIBUTOR; }
+
+void PsbMock::setStaticTmDest(object_id_t tmDest) { PACKET_DESTINATION = tmDest; }
+
+object_id_t PsbMock::getStaticTmDest() { return PACKET_DESTINATION; }

@@ -23,7 +23,7 @@ class TmSendHelper {
   [[nodiscard]] bool areFaultsIgnored() const;
   void ignoreFaults();
   void dontIgnoreFaults();
-  void setInternalErrorReporter(InternalErrorReporterIF* reporter);
+  void setInternalErrorReporter(InternalErrorReporterIF& reporter);
   [[nodiscard]] InternalErrorReporterIF* getInternalErrorReporter() const;
   ReturnValue_t sendPacket(MessageQueueId_t dest, const store_address_t& storeId);
   ReturnValue_t sendPacket(const store_address_t& storeId);

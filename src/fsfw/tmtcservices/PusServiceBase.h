@@ -14,10 +14,6 @@
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tcdistribution/PUSDistributorIF.h"
 
-namespace Factory {
-void setStaticFrameworkObjectIds();
-}
-
 class StorageManagerIF;
 
 /**
@@ -71,6 +67,10 @@ struct PsbParams {
   PUSDistributorIF* pusDistributor = nullptr;
 };
 
+namespace Factory {
+void setStaticFrameworkObjectIds();
+}
+
 /**
  * @defgroup pus_services PUS Service Framework
  * These group contains all implementations of PUS Services in the OBSW.
@@ -93,7 +93,7 @@ class PusServiceBase : public ExecutableObjectIF,
                        public AcceptsTelecommandsIF,
                        public SystemObject,
                        public HasReturnvaluesIF {
-  friend void(Factory::setStaticFrameworkObjectIds)();
+  friend void Factory::setStaticFrameworkObjectIds();
 
  public:
   /**
@@ -121,11 +121,11 @@ class PusServiceBase : public ExecutableObjectIF,
    * function will create one
    * @param reqQueue
    */
-  void setRequestQueue(MessageQueueIF* reqQueue);
-  void setTmReceiver(AcceptsTelemetryIF* tmReceiver);
-  void setCustomTcStore(StorageManagerIF* tcStore);
-  void setVerificationReporter(VerificationReporterIF* reporter);
-  void setCustomErrorReporter(InternalErrorReporterIF* errReporter);
+  void setRequestQueue(MessageQueueIF& reqQueue);
+  void setTmReceiver(AcceptsTelemetryIF& tmReceiver);
+  void setTcPool(StorageManagerIF& tcStore);
+  void setVerificationReporter(VerificationReporterIF& reporter);
+  void setErrorReporter(InternalErrorReporterIF& errReporter);
 
   /**
    * Helper methods if the implementing class wants to send telemetry
@@ -190,7 +190,6 @@ class PusServiceBase : public ExecutableObjectIF,
   ReturnValue_t initialize() override;
 
   void setTaskIF(PeriodicTaskIF* taskHandle) override;
-  ReturnValue_t initializeAfterTaskCreation() override;
 
  protected:
   /**
@@ -215,9 +214,8 @@ class PusServiceBase : public ExecutableObjectIF,
   PusTcReader currentPacket;
   bool ownedQueue = true;
 
-  static object_id_t packetDestination;
-  static object_id_t pusDistributor;
-  VerifSuccessParams successParams;
+  static object_id_t PACKET_DESTINATION;
+  static object_id_t PUS_DISTRIBUTOR;
 
  private:
   void handleRequestQueue();
