@@ -10,7 +10,8 @@
 
 TEST_CASE("Action Helper", "[ActionHelper]") {
   ActionHelperOwnerMockBase testDhMock;
-  MessageQueueMock testMqMock;
+  // TODO: Setting another number here breaks the test. Find out why
+  MessageQueueMock testMqMock(MessageQueueIF::NO_QUEUE);
   ActionHelper actionHelper = ActionHelper(&testDhMock, dynamic_cast<MessageQueueIF*>(&testMqMock));
   CommandMessage actionMessage;
   ActionId_t testActionId = 777;

@@ -41,8 +41,8 @@
  */
 class Service5EventReporting : public PusServiceBase {
  public:
-  Service5EventReporting(object_id_t objectId, uint16_t apid, uint8_t serviceId,
-                         size_t maxNumberReportsPerCycle = 10, uint32_t messageQueueDepth = 10);
+  Service5EventReporting(PsbParams params, size_t maxNumberReportsPerCycle = 10,
+                         uint32_t messageQueueDepth = 10);
   ~Service5EventReporting() override;
 
   /***

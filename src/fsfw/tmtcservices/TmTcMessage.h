@@ -18,7 +18,7 @@ class TmTcMessage : public MessageQueueMessage {
    * @brief	This call always returns the same fixed size of the message.
    * @return	Returns HEADER_SIZE + @c sizeof(store_address_t).
    */
-  size_t getMinimumMessageSize() const override;
+  [[nodiscard]] size_t getMinimumMessageSize() const override;
 
  public:
   /**
@@ -30,11 +30,11 @@ class TmTcMessage : public MessageQueueMessage {
    * 			into the message.
    * @param packet_id	The packet id to put into the message.
    */
-  TmTcMessage(store_address_t packetId);
+  explicit TmTcMessage(store_address_t packetId);
   /**
    * @brief	The class's destructor is empty.
    */
-  ~TmTcMessage();
+  ~TmTcMessage() override;
   /**
    * @brief	This getter returns the packet id in the correct format.
    * @return	Returns the packet id.

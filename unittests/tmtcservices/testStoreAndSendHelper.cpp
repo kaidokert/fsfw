@@ -17,7 +17,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
 
   MessageQueueId_t destId = 1;
   auto errReporter = InternalErrorReporterMock();
-  auto msgQueue = MessageQueueMock();
+  auto msgQueue = MessageQueueMock(2);
   msgQueue.setDefaultDestination(destId);
   TmSendHelper sendHelper(msgQueue, errReporter, destId);
   TmStoreAndSendWrapper tmHelper(17, storeHelper, sendHelper);

@@ -1,7 +1,6 @@
 #include "PusServiceBaseMock.h"
 
-PsbMock::PsbMock(uint8_t service, uint16_t apid, VerificationReporterIF& verifyReporter)
-    : PusServiceBase(0, service, apid, &verifyReporter) {}
+PsbMock::PsbMock(PsbParams params) : PusServiceBase(params) {}
 
 ReturnValue_t PsbMock::handleRequest(uint8_t subservice) {
   handleRequestCallCnt++;
@@ -27,6 +26,7 @@ void PsbMock::reset() {
   performServiceCallCnt = 0;
   std::queue<uint8_t>().swap(subserviceQueue);
 }
+
 void PsbMock::makeNextHandleReqCallFail(ReturnValue_t retval) {
   handleReqFailPair.first = true;
   handleReqFailPair.second = retval;

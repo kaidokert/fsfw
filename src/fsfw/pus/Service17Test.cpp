@@ -5,10 +5,10 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tmtcservices/tmHelpers.h"
 
-Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId)
-    : PusServiceBase(objectId, apid, serviceId),
-      storeHelper(apid),
-      tmHelper(serviceId, storeHelper, sendHelper) {}
+Service17Test::Service17Test(PsbParams params)
+    : PusServiceBase(params),
+      storeHelper(params.apid),
+      tmHelper(params.serviceId, storeHelper, sendHelper) {}
 
 Service17Test::~Service17Test() = default;
 

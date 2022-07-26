@@ -14,7 +14,7 @@
 #include "tests/TestsConfig.h"
 
 TEST_CASE("DataSetTest", "[DataSetTest]") {
-  auto queue = MessageQueueMock();
+  auto queue = MessageQueueMock(1);
   LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
   REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
   REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);

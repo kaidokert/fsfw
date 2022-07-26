@@ -8,9 +8,9 @@
 #include "mocks/MessageQueueMock.h"
 
 TEST_CASE("TM Send Helper", "[tm-send-helper]") {
-  MessageQueueId_t destId = 1;
+  MessageQueueId_t destId = 2;
   auto errReporter = InternalErrorReporterMock();
-  auto msgQueue = MessageQueueMock();
+  auto msgQueue = MessageQueueMock(1);
   msgQueue.setDefaultDestination(destId);
   TmSendHelper sendHelper(msgQueue, errReporter, destId);
   auto timeStamper = CdsShortTimestamperMock();

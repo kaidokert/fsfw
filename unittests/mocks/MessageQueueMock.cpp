@@ -3,9 +3,6 @@
 #include <algorithm>
 #include <stdexcept>
 
-MessageQueueMock::MessageQueueMock()
-    : MessageQueueBase(MessageQueueIF::NO_QUEUE, MessageQueueIF::NO_QUEUE, nullptr) {}
-
 MessageQueueMock::MessageQueueMock(MessageQueueId_t queueId)
     : MessageQueueBase(queueId, MessageQueueIF::NO_QUEUE, nullptr) {}
 

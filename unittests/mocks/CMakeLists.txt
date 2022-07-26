@@ -9,4 +9,5 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
 	LocalPoolOwnerBase.cpp
 	PusVerificationReporterMock.cpp
 	PusServiceBaseMock.cpp
+	AcceptsTmMock.cpp
 )

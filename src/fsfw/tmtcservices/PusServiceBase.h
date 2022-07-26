@@ -2,6 +2,7 @@
 #define FSFW_TMTCSERVICES_PUSSERVICEBASE_H_
 
 #include "AcceptsTelecommandsIF.h"
+#include "AcceptsTelemetryIF.h"
 #include "TmSendHelper.h"
 #include "TmStoreHelper.h"
 #include "VerificationCodes.h"
@@ -11,12 +12,51 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/tcdistribution/PUSDistributorIF.h"
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
 class StorageManagerIF;
+
+/**
+ * Configuration parameters for the PUS Service Base
+ */
+struct PsbParams {
+  PsbParams() = default;
+  PsbParams(uint16_t apid, AcceptsTelemetryIF* tmReceiver) : apid(apid), tmReceiver(tmReceiver) {}
+  PsbParams(object_id_t objectId, uint16_t apid, uint8_t serviceId)
+      : objectId(objectId), apid(apid), serviceId(serviceId) {}
+
+  object_id_t objectId = objects::NO_OBJECT;
+  uint16_t apid = 0;
+  uint8_t serviceId = 0;
+  /**
+   * The default destination ID for generated telemetry. If this is not set, @initialize of PSB
+   * will attempt to find a suitable object with the object ID @PusServiceBase::packetDestination
+   */
+  AcceptsTelemetryIF* tmReceiver = nullptr;
+  /**
+   * An instance of the VerificationReporter class, that simplifies
+   * sending any kind of verification message to the TC Verification Service. If this is not set,
+   * @initialize of PSB will attempt to find a suitable global object with the ID
+   * @objects::TC_VERIFICATOR
+   */
+  VerificationReporterIF* verifReporter = nullptr;
+  /**
+   * This is a complete instance of the telecommand reception queue
+   * of the class. It is initialized on construction of the class.
+   */
+  MessageQueueIF* reqQueue = nullptr;
+  /**
+   * The internal error reporter which will be used if there  are issues sending telemetry.
+   * If this is not set, and the TM send or store helpers are initialized with the PSB,
+   * the class will attempt to find a suitable global object with the ID
+   * @objects::INTERNAL_ERROR_REPORTER
+   */
+  InternalErrorReporterIF* errReporter = nullptr;
+};
 
 /**
  * @defgroup pus_services PUS Service Framework
@@ -44,22 +84,32 @@ class PusServiceBase : public ExecutableObjectIF,
 
  public:
   /**
+   * This constant sets the maximum number of packets accepted per call.
+   * Remember that one packet must be completely handled in one
+   * #handleRequest call.
+   */
+  static constexpr uint8_t PUS_SERVICE_MAX_RECEPTION = 10;
+  static constexpr uint8_t PSB_DEFAULT_QUEUE_DEPTH = 10;
+
+  /**
    * @brief	The passed values are set, but inter-object initialization is
    * 			done in the initialize method.
-   * @param setObjectId
-   * The system object identifier of this Service instance.
-   * @param setApid
-   * The APID the Service is instantiated for.
-   * @param setServiceId
-   * The Service Identifier as specified in ECSS PUS.
+   * @param params All configuration parameters for the PUS Service Base
    */
-  PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
-                 VerificationReporterIF* reporter = nullptr);
+  explicit PusServiceBase(PsbParams params);
   /**
    * The destructor is empty.
    */
   ~PusServiceBase() override;
 
+  ReturnValue_t registerService(PUSDistributorIF& distributor);
+  /**
+   * Set the request queue which is used to receive requests. If none is set, the initialize
+   * function will create one
+   * @param reqQueue
+   */
+  void setRequestQueue(MessageQueueIF* reqQueue);
+  void setTmReceiver(AcceptsTelemetryIF* tmReceiver);
   void setCustomTcStore(StorageManagerIF* tcStore);
   void setVerificationReporter(VerificationReporterIF* reporter);
   void setCustomErrorReporter(InternalErrorReporterIF* errReporter);
@@ -137,14 +187,6 @@ class PusServiceBase : public ExecutableObjectIF,
    */
   PeriodicTaskIF* taskHandle = nullptr;
   /**
-   * The APID of this instance of the Service.
-   */
-  uint16_t apid;
-  /**
-   * The Service Identifier.
-   */
-  uint8_t serviceId;
-  /**
    * One of two error parameters for additional error information.
    */
   uint32_t errorParameter1 = 0;
@@ -152,38 +194,19 @@ class PusServiceBase : public ExecutableObjectIF,
    * One of two error parameters for additional error information.
    */
   uint32_t errorParameter2 = 0;
-  /**
-   * This is a complete instance of the telecommand reception queue
-   * of the class. It is initialized on construction of the class.
-   */
-  MessageQueueIF* requestQueue = nullptr;
-  /**
-   * An instance of the VerificationReporter class, that simplifies
-   * sending any kind of verification message to the TC Verification Service.
-   */
-  VerificationReporterIF* verifyReporter;
-
+  PsbParams psbParams;
   /**
    * The current Telecommand to be processed.
    * It is deleted after handleRequest was executed.
    */
   PusTcReader currentPacket;
   StorageManagerIF* tcStore = nullptr;
-  InternalErrorReporterIF* errReporter = nullptr;
-
-  static object_id_t packetSource;
+  bool ownedQueue = true;
 
   static object_id_t packetDestination;
   VerifSuccessParams successParams;
 
  private:
-  /**
-   * This constant sets the maximum number of packets accepted per call.
-   * Remember that one packet must be completely handled in one
-   * #handleRequest call.
-   */
-  static const uint8_t PUS_SERVICE_MAX_RECEPTION = 10;
-
   void handleRequestQueue();
 };
 

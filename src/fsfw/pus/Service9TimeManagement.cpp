@@ -5,9 +5,7 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/timemanager/CCSDSTime.h"
 
-Service9TimeManagement::Service9TimeManagement(object_id_t objectId, uint16_t apid,
-                                               uint8_t serviceId)
-    : PusServiceBase(objectId, apid, serviceId) {}
+Service9TimeManagement::Service9TimeManagement(PsbParams params) : PusServiceBase(params) {}
 
 Service9TimeManagement::~Service9TimeManagement() = default;
 

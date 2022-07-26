@@ -20,7 +20,7 @@ TEST_CASE("Local Pool Manager Tests", "[LocManTest]") {
   const MessageQueueId_t hkDest = defaultDestId;
   const MessageQueueId_t subscriberId = 2;
   auto hkReceiver = HkReceiverMock(hkDest);
-  auto queue = MessageQueueMock();
+  auto queue = MessageQueueMock(3);
   LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
   REQUIRE(poolOwner.initializeHkManager() == retval::CATCH_OK);
   REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == retval::CATCH_OK);

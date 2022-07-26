@@ -16,16 +16,16 @@ class Service9TimeManagement : public PusServiceBase {
   /**
    * 	@brief This service provides the capability to set the on-board time.
    */
-  Service9TimeManagement(object_id_t objectId, uint16_t apid, uint8_t serviceId);
+  explicit Service9TimeManagement(PsbParams params);
 
-  virtual ~Service9TimeManagement();
+  ~Service9TimeManagement() override;
 
-  virtual ReturnValue_t performService() override;
+  ReturnValue_t performService() override;
 
   /**
    * 	@brief Sets the onboard-time by retrieving the time to set from TC[9,128].
    */
-  virtual ReturnValue_t handleRequest(uint8_t subservice) override;
+  ReturnValue_t handleRequest(uint8_t subservice) override;
 
   virtual ReturnValue_t setTime();
 

@@ -22,8 +22,6 @@ struct SendInfo {
 
 class MessageQueueMock : public MessageQueueBase {
  public:
-  MessageQueueMock();
-
   void addReceivedMessage(MessageQueueMessageIF& msg);
   explicit MessageQueueMock(MessageQueueId_t queueId);
 

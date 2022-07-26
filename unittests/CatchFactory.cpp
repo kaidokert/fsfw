@@ -54,7 +54,6 @@ void Factory::produceFrameworkObjects(void* args) {
 //       like this. Instead, this should be more like a general struct containing all important
 //       object IDs which are then explicitely passed in the object constructor
 void Factory::setStaticFrameworkObjectIds() {
-  PusServiceBase::packetSource = objects::NO_OBJECT;
   PusServiceBase::packetDestination = objects::NO_OBJECT;
 
   CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;

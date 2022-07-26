@@ -34,7 +34,7 @@ class Service17Test : public PusServiceBase {
     EVENT_TRIGGER_TEST = 128,
   };
 
-  Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId);
+  explicit Service17Test(PsbParams params);
 
   void setCustomTmStore(StorageManagerIF& tmStore);
 

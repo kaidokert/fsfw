@@ -7,12 +7,11 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tmtcservices/tmHelpers.h"
 
-Service5EventReporting::Service5EventReporting(object_id_t objectId, uint16_t apid,
-                                               uint8_t serviceId, size_t maxNumberReportsPerCycle,
+Service5EventReporting::Service5EventReporting(PsbParams params, size_t maxNumberReportsPerCycle,
                                                uint32_t messageQueueDepth)
-    : PusServiceBase(objectId, apid, serviceId),
-      storeHelper(apid),
-      tmHelper(serviceId, storeHelper, sendHelper),
+    : PusServiceBase(params),
+      storeHelper(params.apid),
+      tmHelper(params.serviceId, storeHelper, sendHelper),
       maxNumberReportsPerCycle(maxNumberReportsPerCycle) {
   eventQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
@@ -47,7 +46,7 @@ ReturnValue_t Service5EventReporting::performService() {
 ReturnValue_t Service5EventReporting::generateEventReport(EventMessage message) {
   EventReport report(message.getEventId(), message.getReporter(), message.getParameter1(),
                      message.getParameter2());
-  storeHelper.preparePacket(serviceId, message.getSeverity(), tmHelper.sendCounter);
+  storeHelper.preparePacket(psbParams.serviceId, message.getSeverity(), tmHelper.sendCounter);
   storeHelper.setSourceDataSerializable(report);
   ReturnValue_t result = tmHelper.storeAndSendTmPacket();
   if (result != HasReturnvaluesIF::RETURN_OK) {

@@ -4,7 +4,7 @@
 
 TmTcMessage::TmTcMessage() { this->messageSize += sizeof(store_address_t); }
 
-TmTcMessage::~TmTcMessage() {}
+TmTcMessage::~TmTcMessage() = default;
 
 store_address_t TmTcMessage::getStorageId() {
   store_address_t temp_id;
@@ -18,9 +18,9 @@ TmTcMessage::TmTcMessage(store_address_t storeId) {
 }
 
 size_t TmTcMessage::getMinimumMessageSize() const {
-  return this->HEADER_SIZE + sizeof(store_address_t);
+  return TmTcMessage::HEADER_SIZE + sizeof(store_address_t);
 }
 
 void TmTcMessage::setStorageId(store_address_t storeId) {
-  memcpy(this->getData(), &storeId, sizeof(store_address_t));
+  std::memcpy(this->getData(), &storeId, sizeof(store_address_t));
 }
