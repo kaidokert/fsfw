@@ -12,6 +12,7 @@ Service5EventReporting::Service5EventReporting(object_id_t objectId, uint16_t ap
                                                uint32_t messageQueueDepth)
     : PusServiceBase(objectId, apid, serviceId),
       storeHelper(apid),
+      tmHelper(serviceId, storeHelper, sendHelper),
       maxNumberReportsPerCycle(maxNumberReportsPerCycle) {
   eventQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
@@ -46,9 +47,9 @@ ReturnValue_t Service5EventReporting::performService() {
 ReturnValue_t Service5EventReporting::generateEventReport(EventMessage message) {
   EventReport report(message.getEventId(), message.getReporter(), message.getParameter1(),
                      message.getParameter2());
-  storeHelper.preparePacket(serviceId, message.getSeverity(), packetSubCounter);
+  storeHelper.preparePacket(serviceId, message.getSeverity(), tmHelper.sendCounter);
   storeHelper.setSourceDataSerializable(report);
-  ReturnValue_t result = telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
+  ReturnValue_t result = tmHelper.storeAndSendTmPacket();
   if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "Service5EventReporting::generateEventReport: "
@@ -59,8 +60,6 @@ ReturnValue_t Service5EventReporting::generateEventReport(EventMessage message) 
         "Service5EventReporting::generateEventReport: "
         "Could not send TM packet\n");
 #endif
-  } else {
-    packetSubCounter++;
   }
   return result;
 }

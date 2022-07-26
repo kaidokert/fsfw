@@ -148,7 +148,7 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
   // Init our dummy packet and correct endianness of object ID before
   // sending it back.
   WiretappingPacket tmPacket(DeviceHandlerMessage::getDeviceObjectId(reply), data);
-  sendTmPacket(subservice, tmPacket.objectId, tmPacket.data, size);
+  tmHelper.sendTmPacket(subservice, tmPacket.objectId, tmPacket.data, size);
 }
 
 MessageQueueId_t Service2DeviceAccess::getDeviceQueue() { return commandQueue->getId(); }

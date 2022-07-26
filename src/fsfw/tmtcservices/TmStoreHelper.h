@@ -27,6 +27,8 @@ class TmStoreHelper {
   [[nodiscard]] uint16_t getApid() const;
 
   [[nodiscard]] const store_address_t& getCurrentAddr() const;
+  ReturnValue_t setService(uint8_t service);
+  ReturnValue_t setSubservice(uint8_t subservice);
   ReturnValue_t setSourceDataRaw(const uint8_t* data, size_t len);
   ReturnValue_t setSourceDataSerializable(SerializeIF& serializable);
 

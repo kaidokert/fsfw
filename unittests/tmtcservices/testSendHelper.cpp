@@ -68,11 +68,6 @@ TEST_CASE("TM Send Helper", "[tm-send-helper]") {
       storeId = storeHelper.getCurrentAddr();
       REQUIRE(sendHelper.sendPacket(storeId) == HasReturnvaluesIF::RETURN_OK);
     }
-    SECTION("Helper Wrapper") {
-      REQUIRE(telemetry::storeAndSendTmPacket(storeHelper, sendHelper) ==
-              HasReturnvaluesIF::RETURN_OK);
-      storeId = storeHelper.getCurrentAddr();
-    }
     REQUIRE(msgQueue.wasMessageSent());
     REQUIRE(msgQueue.numberOfSentMessagesToDefault() == 1);
     TmTcMessage msg;

@@ -6,6 +6,7 @@
 #include "TmStoreHelper.h"
 #include "VerificationReporter.h"
 #include "fsfw/FSFW.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
 #include "fsfw/container/FIFO.h"
 #include "fsfw/container/FixedMap.h"
 #include "fsfw/ipc/CommandMessage.h"
@@ -251,18 +252,15 @@ class CommandingServiceBase : public SystemObject,
 
   const uint16_t timeoutSeconds;
 
-  uint8_t tmPacketCounter = 0;
-
-  StorageManagerIF* ipcStore = nullptr;
-
   PusTcReader tcReader;
   TmStoreHelper tmStoreHelper;
   TmSendHelper tmSendHelper;
+  TmStoreAndSendWrapper tmHelper;
 
   StorageManagerIF* tcStore = nullptr;
+  StorageManagerIF* ipcStore = nullptr;
 
   MessageQueueIF* commandQueue = nullptr;
-
   MessageQueueIF* requestQueue = nullptr;
 
   VerificationReporter verificationReporter;
@@ -286,33 +284,12 @@ class CommandingServiceBase : public SystemObject,
    */
   PeriodicTaskIF* executingTask = nullptr;
 
-  /**
-   * @brief   Send TM data from pointer to data.
-   *          If a header is supplied it is added before data
-   * @param subservice Number of subservice
-   * @param sourceData Custom source data
-   * @param sourceDataLen Lenght of data in the Packet
-   */
+  [[deprecated("Use function with same name provided by tmHelper")]]
   ReturnValue_t sendTmPacket(uint8_t subservice, const uint8_t* sourceData, size_t sourceDataLen);
-
-  /**
-   * @brief   To send TM packets of objects that still need to be serialized
-   *          and consist of an object ID with appended data.
-   * @param subservice Number of subservice
-   * @param objectId ObjectId is placed before data
-   * @param data Data to append to the packet
-   * @param dataLen Length of Data
-   */
+  [[deprecated("Use function with same name provided by tmHelper")]]
   ReturnValue_t sendTmPacket(uint8_t subservice, object_id_t objectId, const uint8_t* data,
                              size_t dataLen);
-
-  /**
-   * @brief   To send packets which are contained inside a class implementing
-   *          SerializeIF.
-   * @param subservice Number of subservice
-   * @param content This is a pointer to the serialized packet
-   * @param header Serialize IF header which will be placed before content
-   */
+  [[deprecated("Use function with same name provided by tmHelper")]]
   ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF& sourceData);
 
   void checkAndExecuteFifo(CommandMapIter& iter);

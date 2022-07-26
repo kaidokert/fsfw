@@ -9,6 +9,7 @@
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 #include "fsfw/tmtcservices/TmSendHelper.h"
 #include "fsfw/tmtcservices/TmStoreHelper.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
 
 /**
  * @brief Verify TC acceptance, start, progress and execution.
@@ -84,6 +85,7 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
 
   TmSendHelper sendHelper;
   TmStoreHelper storeHelper;
+  TmStoreAndSendWrapper tmHelper;
   StorageManagerIF* tmStore = nullptr;
   MessageQueueIF* tmQueue = nullptr;
 

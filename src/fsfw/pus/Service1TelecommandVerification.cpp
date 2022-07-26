@@ -15,7 +15,8 @@ Service1TelecommandVerification::Service1TelecommandVerification(object_id_t obj
       apid(apid),
       serviceId(serviceId),
       targetDestination(targetDestination),
-      storeHelper(apid) {
+      storeHelper(apid),
+      tmHelper(serviceId, storeHelper, sendHelper) {
   tmQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 
@@ -69,7 +70,7 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
                        message->getParameter1(), message->getParameter2());
   storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
   storeHelper.setSourceDataSerializable(report);
-  return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
+  return tmHelper.storeAndSendTmPacket();
 }
 
 ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
@@ -78,7 +79,7 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
                        message->getTcSequenceControl(), message->getStep());
   storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
   storeHelper.setSourceDataSerializable(report);
-  return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
+  return tmHelper.storeAndSendTmPacket();
 }
 
 ReturnValue_t Service1TelecommandVerification::initialize() {

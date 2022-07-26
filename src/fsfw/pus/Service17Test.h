@@ -4,6 +4,7 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tmtcservices/PusServiceBase.h"
 #include "fsfw/tmtcservices/TmStoreHelper.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
 
 /**
  * @brief Test Service
@@ -45,8 +46,7 @@ class Service17Test : public PusServiceBase {
  protected:
   TmStoreHelper storeHelper;
   TmSendHelper sendHelper;
-
-  uint16_t packetSubCounter = 0;
+  TmStoreAndSendWrapper tmHelper;
 };
 
 #endif /* FSFW_PUS_SERVICE17TEST_H_ */

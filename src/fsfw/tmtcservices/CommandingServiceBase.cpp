@@ -21,6 +21,7 @@ CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId, uint16_t a
       service(service),
       timeoutSeconds(commandTimeoutSeconds),
       tmStoreHelper(apid),
+      tmHelper(service, tmStoreHelper, tmSendHelper),
       commandMap(numberOfParallelCommands) {
   commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
   requestQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
@@ -286,35 +287,16 @@ void CommandingServiceBase::handleRequestQueue() {
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, const uint8_t* sourceData,
                                                   size_t sourceDataLen) {
-  tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
-  tmStoreHelper.setSourceDataRaw(sourceData, sourceDataLen);
-  ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
-    this->tmPacketCounter++;
-  }
-  return result;
+  return tmHelper.sendTmPacket(subservice, sourceData, sourceDataLen);
 }
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_t objectId,
                                                   const uint8_t* data, size_t dataLen) {
-  telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
-  tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
-  tmStoreHelper.setSourceDataSerializable(dataWithObjId);
-  ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
-    this->tmPacketCounter++;
-  }
-  return result;
+  return tmHelper.sendTmPacket(subservice, objectId, data, dataLen);
 }
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeIF& sourceData) {
-  tmStoreHelper.preparePacket(service, subservice, tmPacketCounter);
-  tmStoreHelper.setSourceDataSerializable(sourceData);
-  ReturnValue_t result = telemetry::storeAndSendTmPacket(tmStoreHelper, tmSendHelper);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
-    this->tmPacketCounter++;
-  }
-  return result;
+  return tmHelper.sendTmPacket(subservice, sourceData);
 }
 
 void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIter iter) {

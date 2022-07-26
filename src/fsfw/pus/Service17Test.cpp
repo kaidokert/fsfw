@@ -6,20 +6,20 @@
 #include "fsfw/tmtcservices/tmHelpers.h"
 
 Service17Test::Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId)
-    : PusServiceBase(objectId, apid, serviceId), storeHelper(apid), packetSubCounter(0) {}
+    : PusServiceBase(objectId, apid, serviceId),
+      storeHelper(apid),
+      tmHelper(serviceId, storeHelper, sendHelper) {}
 
 Service17Test::~Service17Test() = default;
 
 ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   switch (subservice) {
     case Subservice::CONNECTION_TEST: {
-      storeHelper.preparePacket(serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter);
-      return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
+      return tmHelper.sendTmPacket(Subservice::CONNECTION_TEST_REPORT);
     }
     case Subservice::EVENT_TRIGGER_TEST: {
-      storeHelper.preparePacket(serviceId, Subservice::CONNECTION_TEST_REPORT, packetSubCounter++);
       triggerEvent(TEST, 1234, 5678);
-      return telemetry::storeAndSendTmPacket(storeHelper, sendHelper);
+      return tmHelper.sendTmPacket(Subservice::EVENT_TRIGGER_TEST);
     }
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;

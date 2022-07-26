@@ -71,3 +71,7 @@ PusTmCreator& TmStoreHelper::getCreatorRef() { return creator; }
 TimeStamperIF* TmStoreHelper::getTimeStamper() const { return creator.getTimestamper(); }
 
 uint16_t TmStoreHelper::getApid() const { return creator.getApid(); }
+
+ReturnValue_t TmStoreHelper::setService(uint8_t service) { creator.setService(service); }
+
+ReturnValue_t TmStoreHelper::setSubservice(uint8_t subservice) { creator.setSubservice(subservice); }

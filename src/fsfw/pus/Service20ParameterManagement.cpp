@@ -14,7 +14,7 @@ Service20ParameterManagement::Service20ParameterManagement(object_id_t objectId,
     : CommandingServiceBase(objectId, apid, serviceId, numberOfParallelCommands,
                             commandTimeoutSeconds) {}
 
-Service20ParameterManagement::~Service20ParameterManagement() {}
+Service20ParameterManagement::~Service20ParameterManagement() = default;
 
 ReturnValue_t Service20ParameterManagement::isValidSubservice(uint8_t subservice) {
   switch (static_cast<Subservice>(subservice)) {
@@ -64,7 +64,7 @@ ReturnValue_t Service20ParameterManagement::checkAndAcquireTargetID(object_id_t*
 ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue(
     MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
   // check ReceivesParameterMessagesIF property of target
-  ReceivesParameterMessagesIF* possibleTarget =
+  auto* possibleTarget =
       ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
   if (possibleTarget == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -177,7 +177,7 @@ ReturnValue_t Service20ParameterManagement::handleReply(const CommandMessage* re
       ParameterId_t parameterId = ParameterMessage::getParameterId(reply);
       ParameterDumpReply parameterReply(objectId, parameterId, parameterData.second.data(),
                                         parameterData.second.size());
-      sendTmPacket(static_cast<uint8_t>(Subservice::PARAMETER_DUMP_REPLY), parameterReply);
+      tmHelper.sendTmPacket(static_cast<uint8_t>(Subservice::PARAMETER_DUMP_REPLY), parameterReply);
       return HasReturnvaluesIF::RETURN_OK;
     }
     default:

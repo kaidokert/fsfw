@@ -2,6 +2,7 @@
 #define FSFW_PUS_SERVICE5EVENTREPORTING_H_
 
 #include "fsfw/events/EventMessage.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
 #include "fsfw/tmtcservices/PusServiceBase.h"
 
 /**
@@ -74,11 +75,11 @@ class Service5EventReporting : public PusServiceBase {
   };
 
  private:
-  uint16_t packetSubCounter = 0;
   MessageQueueIF* eventQueue = nullptr;
   bool enableEventReport = true;
   TmSendHelper sendHelper;
   TmStoreHelper storeHelper;
+  TmStoreAndSendWrapper tmHelper;
   const uint8_t maxNumberReportsPerCycle;
 
   ReturnValue_t generateEventReport(EventMessage message);

@@ -32,26 +32,26 @@ class CommandExecutor {
 
   //! [EXPORT] : [COMMENT] Execution of the current command has finished
   static constexpr ReturnValue_t EXECUTION_FINISHED =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 0);
+      retval::makeCode(CLASS_ID, 0);
 
   //! [EXPORT] : [COMMENT] Command is pending. This will also be returned if the user tries
   //! to load another command but a command is still pending
-  static constexpr ReturnValue_t COMMAND_PENDING = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 1);
+  static constexpr ReturnValue_t COMMAND_PENDING = retval::makeCode(CLASS_ID, 1);
   //! [EXPORT] : [COMMENT] Some bytes have been read from the executing process
-  static constexpr ReturnValue_t BYTES_READ = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 2);
+  static constexpr ReturnValue_t BYTES_READ = retval::makeCode(CLASS_ID, 2);
   //! [EXPORT] : [COMMENT] Command execution failed
-  static constexpr ReturnValue_t COMMAND_ERROR = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
+  static constexpr ReturnValue_t COMMAND_ERROR = retval::makeCode(CLASS_ID, 3);
   //! [EXPORT] : [COMMENT]
   static constexpr ReturnValue_t NO_COMMAND_LOADED_OR_PENDING =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 4);
-  static constexpr ReturnValue_t PCLOSE_CALL_ERROR = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 6);
+      retval::makeCode(CLASS_ID, 4);
+  static constexpr ReturnValue_t PCLOSE_CALL_ERROR =retval::makeCode(CLASS_ID, 6);
 
   /**
    * Constructor. Is initialized with maximum size of internal buffer to read data from the
    * executed process.
    * @param maxSize
    */
-  CommandExecutor(const size_t maxSize);
+  explicit CommandExecutor(size_t maxSize);
 
   /**
    * Load a new command which should be executed

@@ -16,7 +16,7 @@ class TmSendHelper {
   explicit TmSendHelper(InternalErrorReporterIF& reporter);
 
   void setMsgQueue(MessageQueueIF& queue);
-  MessageQueueIF* getMsgQueue() const;
+  [[nodiscard]] MessageQueueIF* getMsgQueue() const;
 
   void setDefaultDestination(MessageQueueId_t msgDest);
   [[nodiscard]] MessageQueueId_t getDefaultDestination() const;
@@ -27,6 +27,7 @@ class TmSendHelper {
   [[nodiscard]] InternalErrorReporterIF* getInternalErrorReporter() const;
   ReturnValue_t sendPacket(MessageQueueId_t dest, const store_address_t& storeId);
   ReturnValue_t sendPacket(const store_address_t& storeId);
+
 
  private:
   MessageQueueId_t defaultDest = MessageQueueIF::NO_QUEUE;

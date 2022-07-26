@@ -49,6 +49,8 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   SpacePacketParams& getSpParams();
   void setApid(uint16_t apid);
   void setDestId(uint16_t destId);
+  void setService(uint8_t service);
+  void setSubservice(uint8_t subservice);
   void setMessageTypeCounter(uint16_t messageTypeCounter);
   PusTmParams& getParams();
   void updateSpLengthField();
