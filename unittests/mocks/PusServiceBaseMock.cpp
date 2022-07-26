@@ -1,5 +1,8 @@
 #include "PusServiceBaseMock.h"
 
+PsbMock::PsbMock(uint8_t service, uint16_t apid, VerificationReporterIF& verifyReporter)
+    : PusServiceBase(0, service, apid, &verifyReporter) {}
+
 ReturnValue_t PsbMock::handleRequest(uint8_t subservice) {
   handleRequestCallCnt++;
   subserviceQueue.push(subservice);

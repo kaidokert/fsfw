@@ -7,6 +7,7 @@
 
 class PsbMock : public PusServiceBase {
  public:
+  PsbMock(uint8_t service, uint16_t apid, VerificationReporterIF& verifyReporter);
   unsigned int handleRequestCallCnt = 0;
   std::queue<uint8_t> subserviceQueue;
   unsigned int performServiceCallCnt = 0;

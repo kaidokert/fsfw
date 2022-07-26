@@ -7,4 +7,6 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
   MessageQueueMock.cpp
 	InternalErrorReporterMock.cpp
 	LocalPoolOwnerBase.cpp
+	PusVerificationReporterMock.cpp
+	PusServiceBaseMock.cpp
 )
