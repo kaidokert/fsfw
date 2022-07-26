@@ -3,13 +3,15 @@
 
 #include <queue>
 
+#include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tmtcservices/VerificationReporterIF.h"
 
-class PusVerificationReporterMock : public VerificationReporterIF {
+class PusVerificationReporterMock : public SystemObject, public VerificationReporterIF {
  public:
   std::queue<VerifSuccessParams> successParams;
   std::queue<VerifFailureParams> failParams;
-
+  PusVerificationReporterMock();
+  explicit PusVerificationReporterMock(object_id_t registeredId);
   [[nodiscard]] size_t successCallCount() const;
   VerifSuccessParams& getNextSuccessCallParams();
   void popNextSuccessParams();

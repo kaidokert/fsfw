@@ -161,6 +161,15 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     REQUIRE(sendHelper.getDefaultDestination() == msgQueue.getDefaultDestination());
   }
 
+  SECTION("TM Store And Send Helper Initializer") {
+    TmStoreHelper storeHelper(0);
+    TmSendHelper sendHelper;
+    psb.initializeTmHelpers(sendHelper, storeHelper);
+    REQUIRE(sendHelper.getMsgQueue() == &msgQueue);
+    REQUIRE(sendHelper.getDefaultDestination() == msgQueue.getDefaultDestination());
+    REQUIRE(storeHelper.getApid() == apid);
+  }
+
   SECTION("TM Send Helper Initializer With Error Reporter") {
     TmSendHelper sendHelper;
     auto errReporter = InternalErrorReporterMock();
@@ -195,4 +204,19 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     auto& p = psb2.getParams();
     REQUIRE(p.tmReceiver == &packetDest);
   }
+
+  SECTION("Auto Initialize Verification Reporter") {
+    psbParams.verifReporter = nullptr;
+    psbParams.objectId = 1;
+    object_id_t reporterId = objects::TC_VERIFICATOR;
+    PusVerificationReporterMock otherReporter(reporterId);
+    auto psb2 = PsbMock(psbParams);
+    REQUIRE(psb2.initialize() == retval::OK);
+    auto& p = psb2.getParams();
+    REQUIRE(p.verifReporter == &otherReporter);
+  }
+
+  SECTION("Auto Initialize TC Pool") {}
+
+  SECTION("Invalid Verification Reporter") {}
 }

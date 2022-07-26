@@ -5,6 +5,7 @@
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
 object_id_t VerificationReporter::DEFAULT_RECEIVER = objects::PUS_SERVICE_1_VERIFICATION;
+object_id_t VerificationReporter::DEFAULT_REPORTER = objects::TC_VERIFICATOR;
 
 VerificationReporter::VerificationReporter(AcceptsVerifyMessageIF* receiver, object_id_t objectId)
     : SystemObject(objectId) {
