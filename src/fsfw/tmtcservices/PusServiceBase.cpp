@@ -25,7 +25,7 @@ PusServiceBase::~PusServiceBase() { QueueFactory::instance()->deleteMessageQueue
 
 ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   handleRequestQueue();
-  ReturnValue_t result = this->performService();
+  ReturnValue_t result = performService();
   if (result != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PusService " << (uint16_t)this->serviceId << ": performService returned with "
@@ -43,17 +43,7 @@ void PusServiceBase::handleRequestQueue() {
   ReturnValue_t result;
   for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
     ReturnValue_t status = this->requestQueue->receiveMessage(&message);
-    //		if(status != MessageQueueIF::EMPTY) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    //			sif::debug << "PusServiceBase::performOperation: Receiving from "
-    //					<< "MQ ID: " << std::hex << "0x" << std::setw(8)
-    //					<< std::setfill('0') << this->requestQueue->getId()
-    //					<< std::dec << " returned: " << status << std::setfill(' ')
-    //					<<  std::endl;
-#endif
-    //		}
     if (status == MessageQueueIF::EMPTY) {
-      status = RETURN_OK;
       break;
     } else if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
