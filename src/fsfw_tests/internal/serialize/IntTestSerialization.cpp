@@ -8,24 +8,23 @@
 
 #include "fsfw_tests/internal/UnittDefinitions.h"
 
-using retval = HasReturnvaluesIF;
 std::array<uint8_t, 512> testserialize::test_array = {0};
 
 ReturnValue_t testserialize::test_serialization() {
   // Here, we test all serialization tools. First test basic cases.
   ReturnValue_t result = test_endianness_tools();
-  if (result != retval::RETURN_OK) {
+  if (result != retval::OK) {
     return result;
   }
   result = test_autoserialization();
-  if (result != retval::RETURN_OK) {
+  if (result != retval::OK) {
     return result;
   }
   result = test_serial_buffer_adapter();
-  if (result != retval::RETURN_OK) {
+  if (result != retval::OK) {
     return result;
   }
-  return retval::RETURN_OK;
+  return retval::OK;
 }
 
 ReturnValue_t testserialize::test_endianness_tools() {
@@ -49,7 +48,7 @@ ReturnValue_t testserialize::test_endianness_tools() {
   if (test_array[0] != 0 and test_array[1] != 1) {
     return unitt::put_error(id);
   }
-  return retval::RETURN_OK;
+  return retval::OK;
 }
 
 ReturnValue_t testserialize::test_autoserialization() {
@@ -153,7 +152,7 @@ ReturnValue_t testserialize::test_autoserialization() {
   }
 
   // Check overflow
-  return retval::RETURN_OK;
+  return retval::OK;
 }
 
 // TODO: Also test for constant buffers.
@@ -206,5 +205,5 @@ ReturnValue_t testserialize::test_serial_buffer_adapter() {
   if (testUint16 != 16) {
     return unitt::put_error(id);
   }
-  return retval::RETURN_OK;
+  return retval::OK;
 }
