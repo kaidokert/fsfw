@@ -2,6 +2,7 @@
 
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/storagemanager/LocalPool.h"
+#include "fsfw/storagemanager/PoolManager.h"
 #include "mocks/AcceptsTmMock.h"
 #include "mocks/CdsShortTimestamperMock.h"
 #include "mocks/InternalErrorReporterMock.h"
@@ -216,7 +217,27 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     REQUIRE(p.verifReporter == &otherReporter);
   }
 
-  SECTION("Auto Initialize TC Pool") {}
+  SECTION("Auto Initialize TC Pool") {
+    PoolManager tcStoreGlobal(objects::TC_STORE, cfg);
+    psbParams.tcPool = nullptr;
+    psbParams.objectId = 1;
+    auto psb2 = PsbMock(psbParams);
+    REQUIRE(psb2.initialize() == retval::OK);
+    auto& p = psb2.getParams();
+    REQUIRE(p.tcPool == &tcStoreGlobal);
+  }
 
-  SECTION("Invalid Verification Reporter") {}
+  SECTION("Invalid Verification Reporter") {
+    psbParams.verifReporter = nullptr;
+    psbParams.objectId = 1;
+    auto psb2 = PsbMock(psbParams);
+    REQUIRE(psb2.initialize() == ObjectManagerIF::CHILD_INIT_FAILED);
+  }
+
+  SECTION("Invalid TC Store") {
+    psbParams.tcPool = nullptr;
+    psbParams.objectId = 1;
+    auto psb2 = PsbMock(psbParams);
+    REQUIRE(psb2.initialize() == ObjectManagerIF::CHILD_INIT_FAILED);
+  }
 }

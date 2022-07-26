@@ -36,11 +36,6 @@ void Factory::produceFrameworkObjects(void* args) {
 
   {
     PoolManager::LocalPoolConfig poolCfg = {{100, 16}, {50, 32}, {25, 64}, {15, 128}, {5, 1024}};
-    new PoolManager(objects::TC_STORE, poolCfg);
-  }
-
-  {
-    PoolManager::LocalPoolConfig poolCfg = {{100, 16}, {50, 32}, {25, 64}, {15, 128}, {5, 1024}};
     new PoolManager(objects::TM_STORE, poolCfg);
   }
 
