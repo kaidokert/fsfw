@@ -7,9 +7,6 @@
 // I'd prefer to use tm, but there have been nameclashes with the tm struct
 namespace telemetry {
 
-ReturnValue_t storeAndSendTmPacket(TmStoreHelper& storeHelper, TmSendHelper& sendHelper,
-                                   bool delOnFailure = true);
-
 class DataWithObjectIdPrefix : public SerializeIF {
  public:
   DataWithObjectIdPrefix(object_id_t objectId, const uint8_t* srcData, size_t srcDataLen)
@@ -34,8 +31,11 @@ class DataWithObjectIdPrefix : public SerializeIF {
 
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override {
-    // TODO: Implement
-    return HasReturnvaluesIF::RETURN_FAILED;
+    ReturnValue_t result = SerializeAdapter::deSerialize(&objectId, buffer, size, streamEndianness);
+    if (result != retval::OK) {
+      return result;
+    }
+    return retval::FAILED;
   }
 
  private:

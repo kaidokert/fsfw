@@ -128,7 +128,7 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(localpool::DataPool
                                                              LocalDataPoolManager &poolManager) {
   localDataPoolMap.emplace(errorPoolIds::TM_HITS, &tmHitsEntry);
   localDataPoolMap.emplace(errorPoolIds::QUEUE_HITS, &queueHitsEntry);
-  localDataPoolMap.emplace(errorPoolIds::STORE_HITS,&storeHitsEntry);
+  localDataPoolMap.emplace(errorPoolIds::STORE_HITS, &storeHitsEntry);
   poolManager.subscribeForDiagPeriodicPacket(subdp::DiagnosticsHkPeriodicParams(
       internalErrorSid, false,
       static_cast<float>(getPeriodicOperationFrequency()) / static_cast<float>(1000.0)));

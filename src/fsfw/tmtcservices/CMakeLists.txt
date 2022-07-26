@@ -9,5 +9,6 @@ target_sources(
           SpacePacketParser.cpp
           TmStoreHelper.cpp
           TmSendHelper.cpp
+          TmStoreAndSendHelper.cpp
           tcHelpers.cpp
           tmHelpers.cpp)

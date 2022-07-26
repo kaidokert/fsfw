@@ -7,11 +7,10 @@
 #include <fsfw/datapoollocal/LocalPoolVariable.h>
 #include <fsfw/datapoollocal/LocalPoolVector.h>
 #include <fsfw/datapoollocal/StaticLocalDataSet.h>
-#include "fsfw/datapool/PoolEntry.h"
-
 #include <fsfw/ipc/QueueFactory.h>
 #include <fsfw/objectmanager/SystemObject.h>
 
+#include "fsfw/datapool/PoolEntry.h"
 #include "mocks/MessageQueueMock.h"
 #include "tests/TestsConfig.h"
 
