@@ -6,7 +6,6 @@
 #include "TmStoreHelper.h"
 #include "VerificationReporter.h"
 #include "fsfw/FSFW.h"
-#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
 #include "fsfw/container/FIFO.h"
 #include "fsfw/container/FixedMap.h"
 #include "fsfw/ipc/CommandMessage.h"
@@ -15,6 +14,7 @@
 #include "fsfw/serialize/SerializeIF.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
@@ -284,13 +284,12 @@ class CommandingServiceBase : public SystemObject,
    */
   PeriodicTaskIF* executingTask = nullptr;
 
-  [[deprecated("Use function with same name provided by tmHelper")]]
-  ReturnValue_t sendTmPacket(uint8_t subservice, const uint8_t* sourceData, size_t sourceDataLen);
-  [[deprecated("Use function with same name provided by tmHelper")]]
-  ReturnValue_t sendTmPacket(uint8_t subservice, object_id_t objectId, const uint8_t* data,
-                             size_t dataLen);
-  [[deprecated("Use function with same name provided by tmHelper")]]
-  ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF& sourceData);
+  [[deprecated("Use function with same name provided by tmHelper")]] ReturnValue_t sendTmPacket(
+      uint8_t subservice, const uint8_t* sourceData, size_t sourceDataLen);
+  [[deprecated("Use function with same name provided by tmHelper")]] ReturnValue_t sendTmPacket(
+      uint8_t subservice, object_id_t objectId, const uint8_t* data, size_t dataLen);
+  [[deprecated("Use function with same name provided by tmHelper")]] ReturnValue_t sendTmPacket(
+      uint8_t subservice, SerializeIF& sourceData);
 
   void checkAndExecuteFifo(CommandMapIter& iter);
 

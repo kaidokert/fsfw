@@ -28,7 +28,6 @@ class TmSendHelper {
   ReturnValue_t sendPacket(MessageQueueId_t dest, const store_address_t& storeId);
   ReturnValue_t sendPacket(const store_address_t& storeId);
 
-
  private:
   MessageQueueId_t defaultDest = MessageQueueIF::NO_QUEUE;
   bool ignoreFault = false;

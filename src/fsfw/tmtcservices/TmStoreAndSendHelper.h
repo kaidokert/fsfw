@@ -5,12 +5,13 @@
 #include "TmStoreHelper.h"
 
 /**
- * Wrapper class intended to help with PUS TM handling. This wrapper class also caches the current packet count
- * and the service ID
+ * Wrapper class intended to help with PUS TM handling. This wrapper class also caches the current
+ * packet count and the service ID
  */
 class TmStoreAndSendWrapper {
  public:
-  TmStoreAndSendWrapper(uint8_t defaultService, TmStoreHelper& storeHelper, TmSendHelper& sendHelper);
+  TmStoreAndSendWrapper(uint8_t defaultService, TmStoreHelper& storeHelper,
+                        TmSendHelper& sendHelper);
   ReturnValue_t storeAndSendTmPacket();
 
   ReturnValue_t sendTmPacket(uint8_t subservice);

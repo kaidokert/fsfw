@@ -3,8 +3,8 @@
 
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tmtcservices/PusServiceBase.h"
-#include "fsfw/tmtcservices/TmStoreHelper.h"
 #include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
+#include "fsfw/tmtcservices/TmStoreHelper.h"
 
 /**
  * @brief Test Service

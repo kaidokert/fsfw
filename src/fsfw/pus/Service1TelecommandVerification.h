@@ -8,8 +8,8 @@
 #include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 #include "fsfw/tmtcservices/TmSendHelper.h"
-#include "fsfw/tmtcservices/TmStoreHelper.h"
 #include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
+#include "fsfw/tmtcservices/TmStoreHelper.h"
 
 /**
  * @brief Verify TC acceptance, start, progress and execution.

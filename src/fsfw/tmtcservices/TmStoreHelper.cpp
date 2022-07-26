@@ -18,10 +18,9 @@ TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore,
 }
 
 ReturnValue_t TmStoreHelper::preparePacket(uint8_t service, uint8_t subservice, uint16_t counter) {
-  PusTmParams& params = creator.getParams();
-  params.secHeader.service = service;
-  params.secHeader.subservice = subservice;
-  params.secHeader.messageTypeCounter = counter;
+  creator.setService(service);
+  creator.setSubservice(subservice);
+  creator.setMessageTypeCounter(counter);
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -72,6 +71,6 @@ TimeStamperIF* TmStoreHelper::getTimeStamper() const { return creator.getTimesta
 
 uint16_t TmStoreHelper::getApid() const { return creator.getApid(); }
 
-ReturnValue_t TmStoreHelper::setService(uint8_t service) { creator.setService(service); }
+void TmStoreHelper::setService(uint8_t service) { creator.setService(service); }
 
-ReturnValue_t TmStoreHelper::setSubservice(uint8_t subservice) { creator.setSubservice(subservice); }
+void TmStoreHelper::setSubservice(uint8_t subservice) { creator.setSubservice(subservice); }

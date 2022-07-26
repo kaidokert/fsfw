@@ -290,7 +290,8 @@ ReturnValue_t Service3Housekeeping::generateHkReply(const CommandMessage* hkMess
   }
 
   HkPacket hkPacket(sid, resultPair.second.data(), resultPair.second.size());
-  return sendTmPacket(static_cast<uint8_t>(subserviceId), hkPacket.hkData, hkPacket.hkSize);
+  return tmHelper.sendTmPacket(static_cast<uint8_t>(subserviceId), hkPacket.hkData,
+                               hkPacket.hkSize);
 }
 
 sid_t Service3Housekeeping::buildSid(object_id_t objectId, const uint8_t** tcData,

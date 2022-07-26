@@ -64,8 +64,7 @@ ReturnValue_t Service20ParameterManagement::checkAndAcquireTargetID(object_id_t*
 ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue(
     MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
   // check ReceivesParameterMessagesIF property of target
-  auto* possibleTarget =
-      ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
+  auto* possibleTarget = ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
   if (possibleTarget == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service20ParameterManagement::checkInterfaceAndAcquire"

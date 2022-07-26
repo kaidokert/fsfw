@@ -134,9 +134,7 @@ ReturnValue_t PusTmCreator::setSerializableUserData(SerializeIF& serializable) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void PusTmCreator::setService(uint8_t service) {
-  pusParams.secHeader.service = service;
-}
+void PusTmCreator::setService(uint8_t service) { pusParams.secHeader.service = service; }
 
 void PusTmCreator::setSubservice(uint8_t subservice) {
   pusParams.secHeader.subservice = subservice;

@@ -1,9 +1,10 @@
 #include "TmStoreAndSendHelper.h"
+
 #include "tmHelpers.h"
 
-TmStoreAndSendWrapper::TmStoreAndSendWrapper(
-    uint8_t defaultService, TmStoreHelper& storeHelper, TmSendHelper& sendHelper)
-  : storeHelper(storeHelper), sendHelper(sendHelper), defaultService(defaultService){}
+TmStoreAndSendWrapper::TmStoreAndSendWrapper(uint8_t defaultService, TmStoreHelper& storeHelper,
+                                             TmSendHelper& sendHelper)
+    : storeHelper(storeHelper), sendHelper(sendHelper), defaultService(defaultService) {}
 
 ReturnValue_t TmStoreAndSendWrapper::storeAndSendTmPacket() {
   ReturnValue_t result = storeHelper.addPacketToStore();
@@ -17,7 +18,7 @@ ReturnValue_t TmStoreAndSendWrapper::storeAndSendTmPacket() {
     }
     return result;
   }
-  if(incrementSendCounter) {
+  if (incrementSendCounter) {
     sendCounter++;
   }
   return result;

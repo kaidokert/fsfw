@@ -15,24 +15,17 @@ static constexpr uint8_t VERSION_BITS = 0b00100000;
 
 static constexpr uint8_t CFDP_CLASS_ID = CLASS_ID::CFDP;
 
-static constexpr ReturnValue_t INVALID_TLV_TYPE =
-    retval::makeCode(CFDP_CLASS_ID, 1);
-static constexpr ReturnValue_t INVALID_DIRECTIVE_FIELDS =
-    retval::makeCode(CFDP_CLASS_ID, 2);
-static constexpr ReturnValue_t INVALID_PDU_DATAFIELD_LEN =
-    retval::makeCode(CFDP_CLASS_ID, 3);
-static constexpr ReturnValue_t INVALID_ACK_DIRECTIVE_FIELDS =
-    retval::makeCode(CFDP_CLASS_ID, 4);
+static constexpr ReturnValue_t INVALID_TLV_TYPE = retval::makeCode(CFDP_CLASS_ID, 1);
+static constexpr ReturnValue_t INVALID_DIRECTIVE_FIELDS = retval::makeCode(CFDP_CLASS_ID, 2);
+static constexpr ReturnValue_t INVALID_PDU_DATAFIELD_LEN = retval::makeCode(CFDP_CLASS_ID, 3);
+static constexpr ReturnValue_t INVALID_ACK_DIRECTIVE_FIELDS = retval::makeCode(CFDP_CLASS_ID, 4);
 //! Can not parse options. This can also occur because there are options
 //! available but the user did not pass a valid options array
-static constexpr ReturnValue_t METADATA_CANT_PARSE_OPTIONS =
-    retval::makeCode(CFDP_CLASS_ID, 5);
-static constexpr ReturnValue_t NAK_CANT_PARSE_OPTIONS =
-    retval::makeCode(CFDP_CLASS_ID, 6);
+static constexpr ReturnValue_t METADATA_CANT_PARSE_OPTIONS = retval::makeCode(CFDP_CLASS_ID, 5);
+static constexpr ReturnValue_t NAK_CANT_PARSE_OPTIONS = retval::makeCode(CFDP_CLASS_ID, 6);
 static constexpr ReturnValue_t FINISHED_CANT_PARSE_FS_RESPONSES =
     retval::makeCode(CFDP_CLASS_ID, 6);
-static constexpr ReturnValue_t FILESTORE_REQUIRES_SECOND_FILE =
-    retval::makeCode(CFDP_CLASS_ID, 8);
+static constexpr ReturnValue_t FILESTORE_REQUIRES_SECOND_FILE = retval::makeCode(CFDP_CLASS_ID, 8);
 //! Can not parse filestore response because user did not pass a valid instance
 //! or remaining size is invalid
 static constexpr ReturnValue_t FILESTORE_RESPONSE_CANT_PARSE_FS_MESSAGE =
