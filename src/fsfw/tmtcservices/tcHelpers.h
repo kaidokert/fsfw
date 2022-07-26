@@ -7,7 +7,7 @@
 
 namespace tc {
 
-ReturnValue_t prepareTcReader(StorageManagerIF* tcStore, store_address_t storeId,
+ReturnValue_t prepareTcReader(StorageManagerIF& tcStore, store_address_t storeId,
                               PusTcReader& tcReader);
 
 }  // namespace tc

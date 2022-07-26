@@ -18,6 +18,7 @@ class PsbMock : public PusServiceBase {
   ReturnValue_t performService() override;
 
   void makeNextHandleReqCallFail(ReturnValue_t retval);
+  bool getAndPopNextSubservice(uint8_t& subservice);
   void reset();
 };
 

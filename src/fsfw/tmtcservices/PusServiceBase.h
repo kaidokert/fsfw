@@ -56,6 +56,19 @@ struct PsbParams {
    * @objects::INTERNAL_ERROR_REPORTER
    */
   InternalErrorReporterIF* errReporter = nullptr;
+  /**
+   * The storage manager which will be used to retrieve any TC packet using the store ID
+   * received via a message. If this is not set, the class will attempt to find a suitable global
+   * object with the ID @objects::TC_STORE
+   */
+  StorageManagerIF* tcPool = nullptr;
+  /**
+   * Usually, packets are sent via a dedicated PUS distributor. If this distributor is set,
+   * the PUS service will register itself there. Otherwise, the base class will try to find
+   * a suitable global distributor with the static ID @PusServiceBase::pusDistributor and
+   * register itself at that object.
+   */
+  PUSDistributorIF* pusDistributor = nullptr;
 };
 
 /**
@@ -200,10 +213,10 @@ class PusServiceBase : public ExecutableObjectIF,
    * It is deleted after handleRequest was executed.
    */
   PusTcReader currentPacket;
-  StorageManagerIF* tcStore = nullptr;
   bool ownedQueue = true;
 
   static object_id_t packetDestination;
+  static object_id_t pusDistributor;
   VerifSuccessParams successParams;
 
  private:

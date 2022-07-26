@@ -16,8 +16,19 @@ void PusVerificationReporterMock::popNextFailParams() {
 VerifFailureParams& PusVerificationReporterMock::getNextFailCallParams() {
   return failParams.front();
 }
+
 void PusVerificationReporterMock::popNextSuccessParams() {
   if (not successParams.empty()) {
     successParams.pop();
   }
+}
+
+ReturnValue_t PusVerificationReporterMock::sendSuccessReport(VerifSuccessParams params) {
+  successParams.push(params);
+  return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t PusVerificationReporterMock::sendFailureReport(VerifFailureParams params) {
+  failParams.push(params);
+  return HasReturnvaluesIF::RETURN_OK;
 }

@@ -422,7 +422,7 @@ void CommandingServiceBase::setCustomTmStore(StorageManagerIF& store) {
   tmStoreHelper.setTmStore(store);
 }
 ReturnValue_t CommandingServiceBase::setUpTcReader(store_address_t storeId) {
-  return tc::prepareTcReader(tcStore, storeId, tcReader);
+  return tc::prepareTcReader(*tcStore, storeId, tcReader);
 }
 
 void CommandingServiceBase::prepareVerificationFailureWithFullInfo(uint8_t reportId,

@@ -33,6 +33,9 @@ class VerificationReporter : public SystemObject, public VerificationReporterIF 
 
   ReturnValue_t sendFailureReport(VerifFailureParams params) override;
 
+  static object_id_t DEFAULT_RECEIVER;
+  ReturnValue_t initialize() override;
+
  private:
   MessageQueueId_t acknowledgeQueue;
 };

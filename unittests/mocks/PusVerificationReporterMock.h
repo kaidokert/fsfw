@@ -17,7 +17,7 @@ class PusVerificationReporterMock : public VerificationReporterIF {
   VerifFailureParams& getNextFailCallParams();
   void popNextFailParams();
 
-  ReturnValue_t sendSuccessReport(VerifSuccessParams params) override { return 0; }
-  ReturnValue_t sendFailureReport(VerifFailureParams params) override { return 0; }
+  ReturnValue_t sendSuccessReport(VerifSuccessParams params) override;
+  ReturnValue_t sendFailureReport(VerifFailureParams params) override;
 };
 #endif  // FSFW_TESTS_PUSVERIFICATIONREPORTERMOCK_H

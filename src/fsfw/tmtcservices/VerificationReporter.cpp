@@ -1,7 +1,10 @@
 #include "fsfw/tmtcservices/VerificationReporter.h"
 
+#include "fsfw/objectmanager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
+
+object_id_t VerificationReporter::DEFAULT_RECEIVER = objects::PUS_SERVICE_1_VERIFICATION;
 
 VerificationReporter::VerificationReporter(AcceptsVerifyMessageIF* receiver, object_id_t objectId)
     : SystemObject(objectId) {
@@ -41,4 +44,27 @@ ReturnValue_t VerificationReporter::sendSuccessReport(VerifSuccessParams params)
 #endif
   }
   return status;
+}
+
+ReturnValue_t VerificationReporter::initialize() {
+  if (acknowledgeQueue == MessageQueueIF::NO_QUEUE) {
+    auto* receiver = ObjectManager::instance()->get<AcceptsVerifyMessageIF>(DEFAULT_RECEIVER);
+    if (receiver != nullptr) {
+      acknowledgeQueue = receiver->getVerificationQueue();
+    } else {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+      sif::error
+          << "Could not find a suitable verification message receiver. Please ensure that it is set"
+             " via the constructor or creating a global one with the ID "
+             "VerificationReporter::DEFAULT_RECEIVER"
+          << std::endl;
+#else
+      sif::printError(
+          "Could not find a suitable verification message receiver. Please ensure "
+          "that it is set via the constructor or creating a global one with the ID "
+          "VerificationReporter::DEFAULT_RECEIVER\n");
+#endif
+    }
+  }
+  return SystemObject::initialize();
 }

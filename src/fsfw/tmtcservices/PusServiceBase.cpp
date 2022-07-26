@@ -10,6 +10,7 @@
 #include "fsfw/tmtcservices/tcHelpers.h"
 
 object_id_t PusServiceBase::packetDestination = 0;
+object_id_t PusServiceBase::pusDistributor = 0;
 
 PusServiceBase::PusServiceBase(PsbParams params)
     : SystemObject(params.objectId), psbParams(params) {}
@@ -54,9 +55,11 @@ void PusServiceBase::handleRequestQueue() {
 #endif
       break;
     }
-    result = tc::prepareTcReader(tcStore, message.getStorageId(), currentPacket);
+    result = tc::prepareTcReader(*psbParams.tcPool, message.getStorageId(), currentPacket);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      auto verifParams = VerifFailureParams(tcverif::START_FAILURE, currentPacket, result);
+      // We were not even able to retrieve the TC, so we can not retrieve any TC properties either
+      // without segfaulting
+      auto verifParams = VerifFailureParams(tcverif::START_FAILURE, 0, 0, result);
       verifParams.errorParam1 = errorParameter1;
       verifParams.errorParam2 = errorParameter2;
       psbParams.verifReporter->sendFailureReport(verifParams);
@@ -72,7 +75,7 @@ void PusServiceBase::handleRequestQueue() {
       failParams.errorParam2 = errorParameter2;
       psbParams.verifReporter->sendFailureReport(failParams);
     }
-    tcStore->deleteData(message.getStorageId());
+    psbParams.tcPool->deleteData(message.getStorageId());
     errorParameter1 = 0;
     errorParameter2 = 0;
   }
@@ -100,9 +103,16 @@ ReturnValue_t PusServiceBase::initialize() {
     }
   }
 
-  if (tcStore == nullptr) {
-    tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
-    if (tcStore == nullptr) {
+  if (psbParams.pusDistributor != nullptr) {
+    psbParams.pusDistributor = ObjectManager::instance()->get<PUSDistributorIF>(pusDistributor);
+    if (psbParams.pusDistributor != nullptr) {
+      registerService(*psbParams.pusDistributor);
+    }
+  }
+
+  if (psbParams.tcPool == nullptr) {
+    psbParams.tcPool = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+    if (psbParams.tcPool == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
@@ -124,7 +134,7 @@ ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void PusServiceBase::setCustomTcStore(StorageManagerIF* tcStore_) { tcStore = tcStore_; }
+void PusServiceBase::setCustomTcStore(StorageManagerIF* tcPool) { psbParams.tcPool = tcPool; }
 
 void PusServiceBase::setCustomErrorReporter(InternalErrorReporterIF* errReporter_) {
   psbParams.errReporter = errReporter_;

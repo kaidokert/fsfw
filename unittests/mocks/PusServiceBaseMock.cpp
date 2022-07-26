@@ -31,3 +31,11 @@ void PsbMock::makeNextHandleReqCallFail(ReturnValue_t retval) {
   handleReqFailPair.first = true;
   handleReqFailPair.second = retval;
 }
+bool PsbMock::getAndPopNextSubservice(uint8_t& subservice) {
+  if (subserviceQueue.empty()) {
+    return false;
+  }
+  subservice = subserviceQueue.front();
+  subserviceQueue.pop();
+  return true;
+}
