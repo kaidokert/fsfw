@@ -108,7 +108,7 @@ class TcpTmTcServer : public SystemObject, public TcpIpBase, public ExecutableOb
   StorageManagerIF* tmStore = nullptr;
 
  private:
-  static constexpr ReturnValue_t CONN_BROKEN = HasReturnvaluesIF::makeReturnCode(1, 0);
+  static constexpr ReturnValue_t CONN_BROKEN = retval::makeCode(1, 0);
   //! TMTC bridge is cached.
   object_id_t tmtcBridgeId = objects::NO_OBJECT;
   TcpTmTcBridge* tmtcBridge = nullptr;
