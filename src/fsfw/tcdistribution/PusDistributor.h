@@ -48,7 +48,7 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * With this class, verification messages are sent to the
    * TC Verification service.
    */
-  VerificationReporter verifyChannel;
+  VerificationReporterIF* verifyChannel = nullptr;
   /**
    * The currently handled packet is stored here.
    */

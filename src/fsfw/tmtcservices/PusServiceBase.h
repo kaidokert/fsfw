@@ -53,18 +53,33 @@ class PusServiceBase : public ExecutableObjectIF,
    * @param setServiceId
    * The Service Identifier as specified in ECSS PUS.
    */
-  PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId);
+  PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
+                 VerificationReporterIF* reporter = nullptr);
   /**
    * The destructor is empty.
    */
   ~PusServiceBase() override;
 
   void setCustomTcStore(StorageManagerIF* tcStore);
+  void setVerificationReporter(VerificationReporterIF* reporter);
   void setCustomErrorReporter(InternalErrorReporterIF* errReporter);
 
+  /**
+   * Helper methods if the implementing class wants to send telemetry
+   * @param tmSendHelper
+   */
   void initializeTmSendHelper(TmSendHelper& tmSendHelper);
+  /**
+   * Helper methods if the implementing class wants to store telemetry
+   * @param tmSendHelper
+   */
   void initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const;
+  /**
+   * Helper methods if the implementing class wants to both send and store telemetry
+   * @param tmSendHelper
+   */
   void initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper);
+
   /**
    * @brief 	The handleRequest method shall handle any kind of Telecommand
    * 			Request immediately.
@@ -146,7 +161,7 @@ class PusServiceBase : public ExecutableObjectIF,
    * An instance of the VerificationReporter class, that simplifies
    * sending any kind of verification message to the TC Verification Service.
    */
-  VerificationReporter verifyReporter;
+  VerificationReporterIF* verifyReporter;
 
   /**
    * The current Telecommand to be processed.
@@ -159,6 +174,7 @@ class PusServiceBase : public ExecutableObjectIF,
   static object_id_t packetSource;
 
   static object_id_t packetDestination;
+  VerifSuccessParams successParams;
 
  private:
   /**

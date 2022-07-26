@@ -2,8 +2,12 @@
 
 #include "fsfw/storagemanager/LocalPool.h"
 #include "fsfw/tmtcservices/TmSendHelper.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
 #include "fsfw/tmtcservices/TmStoreHelper.h"
 #include "mocks/CdsShortTimestamperMock.h"
+#include "mocks/InternalErrorReporterMock.h"
+#include "mocks/MessageQueueMock.h"
+#include "mocks/SimpleSerializable.h"
 
 TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
   auto timeStamper = CdsShortTimestamperMock();
@@ -16,4 +20,68 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
   auto msgQueue = MessageQueueMock();
   msgQueue.setDefaultDestination(destId);
   TmSendHelper sendHelper(msgQueue, errReporter, destId);
+  TmStoreAndSendWrapper tmHelper(17, storeHelper, sendHelper);
+
+  SECTION("State") {
+    CHECK(tmHelper.sendCounter == 0);
+    CHECK(tmHelper.defaultService == 17);
+    CHECK(tmHelper.delOnFailure);
+    CHECK(tmHelper.incrementSendCounter);
+    CHECK(&tmHelper.sendHelper == &sendHelper);
+    CHECK(&tmHelper.storeHelper == &storeHelper);
+  }
+
+  SECTION("Base Test") {
+    tmHelper.prepareTmPacket(2);
+    auto& creator = storeHelper.getCreatorRef();
+    REQUIRE(creator.getSubService() == 2);
+    REQUIRE(creator.getService() == 17);
+    auto& params = creator.getParams();
+    REQUIRE(params.dataWrapper.type == ecss::DataTypes::RAW);
+    REQUIRE(params.dataWrapper.dataUnion.raw.data == nullptr);
+    REQUIRE(params.dataWrapper.dataUnion.raw.len == 0);
+    REQUIRE(tmHelper.sendCounter == 0);
+    REQUIRE(tmHelper.storeAndSendTmPacket() == retval::OK);
+    REQUIRE(tmHelper.sendCounter == 1);
+    auto storeId = storeHelper.getCurrentAddr();
+    REQUIRE(msgQueue.wasMessageSent());
+    REQUIRE(msgQueue.numberOfSentMessagesToDefault() == 1);
+    TmTcMessage msg;
+    REQUIRE(msgQueue.getNextSentMessage(msg) == retval::OK);
+    REQUIRE(msg.getStorageId() == storeId);
+    REQUIRE(pool.hasDataAtId(msg.getStorageId()));
+    storeHelper.deletePacket();
+  }
+
+  SECTION("Raw Data Helper") {
+    std::array<uint8_t, 3> data = {1, 2, 3};
+    REQUIRE(tmHelper.prepareTmPacket(2, data.data(), data.size()) == retval::OK);
+    auto& creator = storeHelper.getCreatorRef();
+    auto& params = creator.getParams();
+    REQUIRE(params.dataWrapper.type == ecss::DataTypes::RAW);
+    REQUIRE(params.dataWrapper.dataUnion.raw.data == data.data());
+    REQUIRE(params.dataWrapper.dataUnion.raw.len == data.size());
+  }
+
+  SECTION("Serializable Helper") {
+    auto simpleSer = SimpleSerializable();
+    REQUIRE(tmHelper.prepareTmPacket(2, simpleSer) == retval::OK);
+    auto& creator = storeHelper.getCreatorRef();
+    auto& params = creator.getParams();
+    REQUIRE(params.dataWrapper.type == ecss::DataTypes::SERIALIZABLE);
+    REQUIRE(params.dataWrapper.dataUnion.serializable == &simpleSer);
+  }
+
+  SECTION("Object ID prefix Helper") {
+    uint32_t objectId = 0x01020304;
+    std::array<uint8_t, 3> data = {1, 2, 3};
+    telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data.data(), data.size());
+    REQUIRE(tmHelper.prepareTmPacket(2, dataWithObjId) == retval::OK);
+    auto& creator = storeHelper.getCreatorRef();
+    auto& params = creator.getParams();
+    REQUIRE(params.dataWrapper.type == ecss::DataTypes::SERIALIZABLE);
+    REQUIRE(params.dataWrapper.dataUnion.serializable == &dataWithObjId);
+  }
+
+  // TODO: Error handling
 }

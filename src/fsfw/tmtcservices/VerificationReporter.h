@@ -2,12 +2,11 @@
 #define FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_
 
 #include "PusVerificationReport.h"
+#include "VerificationReporterIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcCreator.h"
-
-namespace Factory {
-void setStaticFrameworkObjectIds();
-}
+#include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
 
 /**
  * @brief 	This helper object is used to forward verification messages
@@ -20,30 +19,21 @@ void setStaticFrameworkObjectIds();
  * to the PUS standard.
  *
  */
-class VerificationReporter {
-  friend void(Factory::setStaticFrameworkObjectIds)();
-
+class VerificationReporter : public SystemObject, public VerificationReporterIF {
  public:
-  VerificationReporter();
-  virtual ~VerificationReporter();
+  explicit VerificationReporter(AcceptsVerifyMessageIF* receiver,
+                                object_id_t objectId = objects::TC_VERIFICATOR);
+  ~VerificationReporter() override;
+
+  void setReceiver(AcceptsVerifyMessageIF& receiver);
 
   // TODO: The API is a little bit bloated. It might be better to group all the parameters
   //       into a dedicated struct
-  void sendSuccessReport(uint8_t set_report_id, PusTcReader* correspondingTc, uint8_t set_step = 0);
-  void sendSuccessReport(uint8_t set_report_id, uint8_t ackFlags, uint16_t tcPacketId,
-                         uint16_t tcSequenceControl, uint8_t set_step = 0);
+  ReturnValue_t sendSuccessReport(VerifSuccessParams params) override;
 
-  void sendFailureReport(uint8_t report_id, PusTcReader* correspondingTc,
-                         ReturnValue_t errorCode = 0, uint8_t step = 0, uint32_t parameter1 = 0,
-                         uint32_t parameter2 = 0);
-  void sendFailureReport(uint8_t report_id, uint8_t ackFlags, uint16_t tcPacketId,
-                         uint16_t tcSequenceControl, ReturnValue_t errorCode = 0, uint8_t step = 0,
-                         uint32_t parameter1 = 0, uint32_t parameter2 = 0);
-
-  void initialize();
+  ReturnValue_t sendFailureReport(VerifFailureParams params) override;
 
  private:
-  static object_id_t messageReceiver;
   MessageQueueId_t acknowledgeQueue;
 };
 

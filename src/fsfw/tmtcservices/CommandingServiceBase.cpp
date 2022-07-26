@@ -15,13 +15,15 @@ object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT
 
 CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId, uint16_t apid,
                                              uint8_t service, uint8_t numberOfParallelCommands,
-                                             uint16_t commandTimeoutSeconds, size_t queueDepth)
+                                             uint16_t commandTimeoutSeconds, size_t queueDepth,
+                                             VerificationReporterIF* verificationReporter)
     : SystemObject(setObjectId),
       apid(apid),
       service(service),
       timeoutSeconds(commandTimeoutSeconds),
       tmStoreHelper(apid),
       tmHelper(service, tmStoreHelper, tmSendHelper),
+      verificationReporter(verificationReporter),
       commandMap(numberOfParallelCommands) {
   commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
   requestQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
@@ -105,12 +107,19 @@ ReturnValue_t CommandingServiceBase::initialize() {
       tmSendHelper.setInternalErrorReporter(errReporter);
     }
   }
+  if (verificationReporter == nullptr) {
+    verificationReporter =
+        ObjectManager::instance()->get<VerificationReporterIF>(objects::TC_VERIFICATOR);
+    if (verificationReporter == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+  }
   return RETURN_OK;
 }
 
 void CommandingServiceBase::handleCommandQueue() {
   CommandMessage reply;
-  ReturnValue_t result = RETURN_FAILED;
+  ReturnValue_t result;
   while (true) {
     result = commandQueue->receiveMessage(&reply);
     if (result == HasReturnvaluesIF::RETURN_OK) {
@@ -175,16 +184,14 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
       break;
     default:
       if (isStep) {
-        verificationReporter.sendFailureReport(
-            tcverif::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
-            iter->second.tcInfo.tcSequenceControl, result, ++iter->second.step, failureParameter1,
-            failureParameter2);
+        prepareVerificationFailureWithFullInfo(tcverif::PROGRESS_FAILURE, iter->second.tcInfo,
+                                               result, true);
+        failParams.step = ++iter->second.step;
       } else {
-        verificationReporter.sendFailureReport(
-            tcverif::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags,
-            iter->second.tcInfo.tcPacketId, iter->second.tcInfo.tcSequenceControl, result, 0,
-            failureParameter1, failureParameter2);
+        prepareVerificationFailureWithFullInfo(tcverif::COMPLETION_FAILURE, iter->second.tcInfo,
+                                               result, true);
       }
+      verificationReporter->sendFailureReport(failParams);
       failureParameter1 = 0;
       failureParameter2 = 0;
       checkAndExecuteFifo(iter);
@@ -207,28 +214,26 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result, Comma
 
   if (sendResult == RETURN_OK) {
     if (isStep and result != NO_STEP_MESSAGE) {
-      verificationReporter.sendSuccessReport(
-          tcverif::PROGRESS_SUCCESS, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
-          iter->second.tcInfo.tcSequenceControl, ++iter->second.step);
+      prepareVerificationSuccessWithFullInfo(tcverif::PROGRESS_SUCCESS, iter->second.tcInfo);
+      successParams.step = ++iter->second.step;
+      verificationReporter->sendSuccessReport(successParams);
     } else {
-      verificationReporter.sendSuccessReport(
-          tcverif::COMPLETION_SUCCESS, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
-          iter->second.tcInfo.tcSequenceControl, 0);
+      prepareVerificationSuccessWithFullInfo(tcverif::COMPLETION_SUCCESS, iter->second.tcInfo);
+      verificationReporter->sendSuccessReport(successParams);
       checkAndExecuteFifo(iter);
     }
   } else {
     if (isStep) {
+      prepareVerificationFailureWithFullInfo(tcverif::PROGRESS_FAILURE, iter->second.tcInfo, result,
+                                             true);
+      failParams.step = ++iter->second.step;
       nextCommand->clearCommandMessage();
-      verificationReporter.sendFailureReport(
-          tcverif::PROGRESS_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
-          iter->second.tcInfo.tcSequenceControl, sendResult, ++iter->second.step, failureParameter1,
-          failureParameter2);
+      verificationReporter->sendFailureReport(failParams);
     } else {
+      prepareVerificationFailureWithFullInfo(tcverif::COMPLETION_FAILURE, iter->second.tcInfo,
+                                             result, true);
       nextCommand->clearCommandMessage();
-      verificationReporter.sendFailureReport(
-          tcverif::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
-          iter->second.tcInfo.tcSequenceControl, sendResult, 0, failureParameter1,
-          failureParameter2);
+      verificationReporter->sendFailureReport(failParams);
     }
     failureParameter1 = 0;
     failureParameter2 = 0;
@@ -247,19 +252,19 @@ void CommandingServiceBase::handleRequestQueue() {
     result = setUpTcReader(message.getStorageId());
     if (result != HasReturnvaluesIF::RETURN_OK) {
       // TODO: Warning?
-      rejectPacket(tcverif::START_FAILURE, address, &tcReader, result);
+      rejectPacket(tcverif::START_FAILURE, address, result);
       continue;
     }
     if ((tcReader.getSubService() == 0) or
         (isValidSubservice(tcReader.getSubService()) != RETURN_OK)) {
-      rejectPacket(tcverif::START_FAILURE, address, &tcReader, INVALID_SUBSERVICE);
+      rejectPacket(tcverif::START_FAILURE, address, INVALID_SUBSERVICE);
       continue;
     }
 
     result = getMessageQueueAndObject(tcReader.getSubService(), tcReader.getUserData(),
                                       tcReader.getUserDataLen(), &queue, &objectId);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      rejectPacket(tcverif::START_FAILURE, address, &tcReader, result);
+      rejectPacket(tcverif::START_FAILURE, address, result);
       continue;
     }
 
@@ -270,14 +275,14 @@ void CommandingServiceBase::handleRequestQueue() {
     if (iter != commandMap.end()) {
       result = iter->second.fifo.insert(address);
       if (result != RETURN_OK) {
-        rejectPacket(tcverif::START_FAILURE, address, &tcReader, OBJECT_BUSY);
+        rejectPacket(tcverif::START_FAILURE, address, OBJECT_BUSY);
       }
     } else {
       CommandInfo newInfo;  // Info will be set by startExecution if neccessary
       newInfo.objectId = objectId;
       result = commandMap.insert(queue, newInfo, &iter);
       if (result != RETURN_OK) {
-        rejectPacket(tcverif::START_FAILURE, address, &tcReader, BUSY);
+        rejectPacket(tcverif::START_FAILURE, address, BUSY);
       } else {
         startExecution(address, iter);
       }
@@ -287,24 +292,37 @@ void CommandingServiceBase::handleRequestQueue() {
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, const uint8_t* sourceData,
                                                   size_t sourceDataLen) {
-  return tmHelper.sendTmPacket(subservice, sourceData, sourceDataLen);
+  ReturnValue_t result = tmHelper.prepareTmPacket(subservice, sourceData, sourceDataLen);
+  if (result != retval::OK) {
+    return result;
+  }
+  return tmHelper.storeAndSendTmPacket();
 }
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_t objectId,
                                                   const uint8_t* data, size_t dataLen) {
-  return tmHelper.sendTmPacket(subservice, objectId, data, dataLen);
+  telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
+  ReturnValue_t result = tmHelper.prepareTmPacket(subservice, dataWithObjId);
+  if (result != retval::OK) {
+    return result;
+  }
+  return tmHelper.storeAndSendTmPacket();
 }
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeIF& sourceData) {
-  return tmHelper.sendTmPacket(subservice, sourceData);
+  ReturnValue_t result = tmHelper.prepareTmPacket(subservice, sourceData);
+  if (result != retval::OK) {
+    return result;
+  }
+  return tmHelper.storeAndSendTmPacket();
 }
 
-void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIter iter) {
-  ReturnValue_t result = RETURN_OK;
+void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIter& iter) {
   CommandMessage command;
   iter->second.subservice = tcReader.getSubService();
-  result = prepareCommand(&command, iter->second.subservice, tcReader.getUserData(),
-                          tcReader.getUserDataLen(), &iter->second.state, iter->second.objectId);
+  ReturnValue_t result =
+      prepareCommand(&command, iter->second.subservice, tcReader.getUserData(),
+                     tcReader.getUserDataLen(), &iter->second.state, iter->second.objectId);
 
   ReturnValue_t sendResult = RETURN_OK;
   switch (result) {
@@ -320,10 +338,10 @@ void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIt
         iter->second.tcInfo.ackFlags = tcReader.getAcknowledgeFlags();
         iter->second.tcInfo.tcPacketId = tcReader.getPacketIdRaw();
         iter->second.tcInfo.tcSequenceControl = tcReader.getPacketSeqCtrlRaw();
-        acceptPacket(tcverif::START_SUCCESS, storeId, &tcReader);
+        acceptPacket(tcverif::START_SUCCESS, storeId);
       } else {
         command.clearCommandMessage();
-        rejectPacket(tcverif::START_FAILURE, storeId, &tcReader, sendResult);
+        rejectPacket(tcverif::START_FAILURE, storeId, sendResult);
         checkAndExecuteFifo(iter);
       }
       break;
@@ -333,31 +351,31 @@ void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIt
         sendResult = commandQueue->sendMessage(iter.value->first, &command);
       }
       if (sendResult == RETURN_OK) {
-        verificationReporter.sendSuccessReport(tcverif::START_SUCCESS, &tcReader);
-        acceptPacket(tcverif::COMPLETION_SUCCESS, storeId, &tcReader);
+        verificationReporter->sendSuccessReport(
+            VerifSuccessParams(tcverif::START_SUCCESS, tcReader));
+        acceptPacket(tcverif::COMPLETION_SUCCESS, storeId);
         checkAndExecuteFifo(iter);
       } else {
         command.clearCommandMessage();
-        rejectPacket(tcverif::START_FAILURE, storeId, &tcReader, sendResult);
+        rejectPacket(tcverif::START_FAILURE, storeId, sendResult);
         checkAndExecuteFifo(iter);
       }
       break;
     default:
-      rejectPacket(tcverif::START_FAILURE, storeId, &tcReader, result);
+      rejectPacket(tcverif::START_FAILURE, storeId, result);
       checkAndExecuteFifo(iter);
       break;
   }
 }
 
 void CommandingServiceBase::rejectPacket(uint8_t reportId, store_address_t tcStoreId,
-                                         PusTcReader* correspondingTc, ReturnValue_t errorCode) {
-  verificationReporter.sendFailureReport(reportId, correspondingTc, errorCode);
+                                         ReturnValue_t errorCode) {
+  verificationReporter->sendFailureReport(VerifFailureParams(reportId, tcReader, errorCode));
   tcStore->deleteData(tcStoreId);
 }
 
-void CommandingServiceBase::acceptPacket(uint8_t reportId, store_address_t tcStoreId,
-                                         PusTcReader* packet) {
-  verificationReporter.sendSuccessReport(reportId, packet);
+void CommandingServiceBase::acceptPacket(uint8_t reportId, store_address_t tcStoreId) {
+  verificationReporter->sendSuccessReport(VerifSuccessParams(reportId, tcReader));
   tcStore->deleteData(tcStoreId);
 }
 
@@ -371,7 +389,7 @@ void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
       startExecution(address, iter);
     } else {
       // TODO: Warning?
-      rejectPacket(tcverif::START_FAILURE, address, &tcReader, result);
+      rejectPacket(tcverif::START_FAILURE, address, result);
     }
   }
 }
@@ -390,9 +408,9 @@ void CommandingServiceBase::checkTimeout() {
   CommandMapIter iter;
   for (iter = commandMap.begin(); iter != commandMap.end(); ++iter) {
     if ((iter->second.uptimeOfStart + (timeoutSeconds * 1000)) < uptime) {
-      verificationReporter.sendFailureReport(
-          tcverif::COMPLETION_FAILURE, iter->second.tcInfo.ackFlags, iter->second.tcInfo.tcPacketId,
-          iter->second.tcInfo.tcSequenceControl, TIMEOUT);
+      prepareVerificationFailureWithFullInfo(tcverif::COMPLETION_FAILURE, iter->second.tcInfo,
+                                             TIMEOUT, false);
+      verificationReporter->sendFailureReport(failParams);
       checkAndExecuteFifo(iter);
     }
   }
@@ -405,4 +423,26 @@ void CommandingServiceBase::setCustomTmStore(StorageManagerIF& store) {
 }
 ReturnValue_t CommandingServiceBase::setUpTcReader(store_address_t storeId) {
   return tc::prepareTcReader(tcStore, storeId, tcReader);
+}
+
+void CommandingServiceBase::prepareVerificationFailureWithFullInfo(uint8_t reportId,
+                                                                   CommandInfo::TcInfo& tcInfo,
+                                                                   ReturnValue_t errorCode,
+                                                                   bool setCachedFailParams) {
+  failParams.reportId = reportId;
+  failParams.tcPacketId = tcInfo.tcPacketId;
+  failParams.tcPsc = tcInfo.tcSequenceControl;
+  failParams.ackFlags = tcInfo.ackFlags;
+  failParams.errorCode = errorCode;
+  if (setCachedFailParams) {
+    failParams.errorParam1 = failureParameter1;
+    failParams.errorParam2 = failureParameter2;
+  }
+}
+void CommandingServiceBase::prepareVerificationSuccessWithFullInfo(
+    uint8_t reportId, CommandingServiceBase::CommandInfo::TcInfo& tcInfo) {
+  failParams.reportId = reportId;
+  failParams.tcPacketId = tcInfo.tcPacketId;
+  failParams.tcPsc = tcInfo.tcSequenceControl;
+  failParams.ackFlags = tcInfo.ackFlags;
 }

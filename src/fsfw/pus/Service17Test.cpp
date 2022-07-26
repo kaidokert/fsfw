@@ -15,11 +15,19 @@ Service17Test::~Service17Test() = default;
 ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   switch (subservice) {
     case Subservice::CONNECTION_TEST: {
-      return tmHelper.sendTmPacket(Subservice::CONNECTION_TEST_REPORT);
+      ReturnValue_t result = tmHelper.prepareTmPacket(Subservice::CONNECTION_TEST_REPORT);
+      if (result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+      }
+      return tmHelper.storeAndSendTmPacket();
     }
     case Subservice::EVENT_TRIGGER_TEST: {
       triggerEvent(TEST, 1234, 5678);
-      return tmHelper.sendTmPacket(Subservice::EVENT_TRIGGER_TEST);
+      ReturnValue_t result = tmHelper.prepareTmPacket(Subservice::EVENT_TRIGGER_TEST);
+      if (result != HasReturnvaluesIF::RETURN_OK) {
+        return result;
+      }
+      return tmHelper.storeAndSendTmPacket();
     }
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;

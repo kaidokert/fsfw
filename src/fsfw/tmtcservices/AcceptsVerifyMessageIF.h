@@ -1,11 +1,11 @@
 #ifndef FSFW_TMTCSERVICES_ACCEPTSVERIFICATIONMESSAGEIF_H_
 #define FSFW_TMTCSERVICES_ACCEPTSVERIFICATIONMESSAGEIF_H_
 
-#include "../ipc/MessageQueueSenderIF.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
 
 class AcceptsVerifyMessageIF {
  public:
-  virtual ~AcceptsVerifyMessageIF() {}
+  virtual ~AcceptsVerifyMessageIF() = default;
   virtual MessageQueueId_t getVerificationQueue() = 0;
 };
 

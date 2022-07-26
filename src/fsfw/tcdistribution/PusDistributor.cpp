@@ -12,7 +12,6 @@ PusDistributor::PusDistributor(StorageManagerIF* store_, uint16_t setApid, objec
     : TcDistributor(setObjectId),
       store(store_),
       checker(setApid, ccsds::PacketType::TC),
-      verifyChannel(),
       tcStatus(RETURN_FAILED),
       packetSource(setPacketSource) {}
 
@@ -120,13 +119,14 @@ ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
     tcStatus = queueStatus;
   }
   if (tcStatus != RETURN_OK) {
-    this->verifyChannel.sendFailureReport(tcverif::ACCEPTANCE_FAILURE, &reader, tcStatus);
+    verifyChannel->sendFailureReport(
+        VerifFailureParams(tcverif::ACCEPTANCE_FAILURE, reader, tcStatus));
     // A failed packet is deleted immediately after reporting,
     // otherwise it will block memory.
     store->deleteData(currentMessage.getStorageId());
     return RETURN_FAILED;
   } else {
-    this->verifyChannel.sendSuccessReport(tcverif::ACCEPTANCE_SUCCESS, &reader);
+    verifyChannel->sendSuccessReport(VerifSuccessParams(tcverif::ACCEPTANCE_SUCCESS, reader));
     return RETURN_OK;
   }
 }

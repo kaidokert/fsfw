@@ -60,8 +60,6 @@ void Factory::setStaticFrameworkObjectIds() {
   CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
   CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
 
-  VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
-
   DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
   DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 

@@ -12,8 +12,12 @@
 object_id_t PusServiceBase::packetSource = 0;
 object_id_t PusServiceBase::packetDestination = 0;
 
-PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId)
-    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId) {
+PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId,
+                               VerificationReporterIF* verifyReporter)
+    : SystemObject(setObjectId),
+      apid(setApid),
+      serviceId(setServiceId),
+      verifyReporter(verifyReporter) {
   requestQueue = QueueFactory::instance()->createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
 }
 
@@ -65,16 +69,21 @@ void PusServiceBase::handleRequestQueue() {
     }
     result = tc::prepareTcReader(tcStore, message.getStorageId(), currentPacket);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      this->verifyReporter.sendFailureReport(tcverif::START_FAILURE, &this->currentPacket, result,
-                                             0, errorParameter1, errorParameter2);
+      auto params = VerifFailureParams(tcverif::START_FAILURE, currentPacket, result);
+      params.errorParam1 = errorParameter1;
+      params.errorParam2 = errorParameter2;
+      verifyReporter->sendFailureReport(params);
       continue;
     }
-    result = this->handleRequest(currentPacket.getSubService());
+    result = handleRequest(currentPacket.getSubService());
     if (result == RETURN_OK) {
-      this->verifyReporter.sendSuccessReport(tcverif::COMPLETION_SUCCESS, &this->currentPacket);
+      verifyReporter->sendSuccessReport(
+          VerifSuccessParams(tcverif::COMPLETION_SUCCESS, currentPacket));
     } else {
-      this->verifyReporter.sendFailureReport(tcverif::COMPLETION_FAILURE, &this->currentPacket,
-                                             result, 0, errorParameter1, errorParameter2);
+      auto params = VerifFailureParams(tcverif::COMPLETION_FAILURE, currentPacket, result);
+      params.errorParam1 = errorParameter1;
+      params.errorParam2 = errorParameter2;
+      verifyReporter->sendFailureReport(params);
     }
     tcStore->deleteData(message.getStorageId());
     errorParameter1 = 0;
@@ -106,6 +115,13 @@ ReturnValue_t PusServiceBase::initialize() {
   if (tcStore == nullptr) {
     tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
     if (tcStore == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+  }
+  if (verifyReporter == nullptr) {
+    verifyReporter =
+        ObjectManager::instance()->get<VerificationReporterIF>(objects::TC_VERIFICATOR);
+    if (verifyReporter == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
@@ -144,4 +160,8 @@ void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
 
 void PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
   tmStoreHelper.setApid(apid);
+}
+
+void PusServiceBase::setVerificationReporter(VerificationReporterIF* reporter) {
+  verifyReporter = reporter;
 }

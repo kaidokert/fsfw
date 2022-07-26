@@ -3,6 +3,7 @@
 
 #include "TmSendHelper.h"
 #include "TmStoreHelper.h"
+#include "tmHelpers.h"
 
 /**
  * Wrapper class intended to help with PUS TM handling. This wrapper class also caches the current
@@ -12,37 +13,41 @@ class TmStoreAndSendWrapper {
  public:
   TmStoreAndSendWrapper(uint8_t defaultService, TmStoreHelper& storeHelper,
                         TmSendHelper& sendHelper);
-  ReturnValue_t storeAndSendTmPacket();
 
-  ReturnValue_t sendTmPacket(uint8_t subservice);
   /**
-   * @brief   Send TM data from pointer to data.
-   *          If a header is supplied it is added before data
+   * Prepares a TM packet with the given parameters. It will also set the default service.
+   * @param subservice
+   * @return
+   */
+  ReturnValue_t prepareTmPacket(uint8_t subservice);
+  /**
+   * Prepares a TM packet with the given parameters. It will also set the default service.
    * @param subservice Number of subservice
    * @param sourceData Custom source data
    * @param sourceDataLen Lenght of data in the Packet
    */
-  ReturnValue_t sendTmPacket(uint8_t subservice, const uint8_t* sourceData, size_t sourceDataLen);
+  ReturnValue_t prepareTmPacket(uint8_t subservice, const uint8_t* sourceData,
+                                size_t sourceDataLen);
 
   /**
-   * @brief   To send TM packets of objects that still need to be serialized
-   *          and consist of an object ID with appended data.
+   * Prepares a TM packet with the given parameters. It will also set the default service.
    * @param subservice Number of subservice
    * @param objectId ObjectId is placed before data
    * @param data Data to append to the packet
    * @param dataLen Length of Data
    */
-  ReturnValue_t sendTmPacket(uint8_t subservice, object_id_t objectId, const uint8_t* data,
-                             size_t dataLen);
+  ReturnValue_t prepareTmPacket(uint8_t subservice,
+                                telemetry::DataWithObjectIdPrefix& dataWithObjectId);
 
   /**
-   * @brief   To send packets which are contained inside a class implementing
-   *          SerializeIF.
+   * Prepares a TM packet with the given parameters. It will also set the default service.
    * @param subservice Number of subservice
    * @param content This is a pointer to the serialized packet
    * @param header Serialize IF header which will be placed before content
    */
-  ReturnValue_t sendTmPacket(uint8_t subservice, SerializeIF& sourceData);
+  ReturnValue_t prepareTmPacket(uint8_t subservice, SerializeIF& sourceData);
+
+  ReturnValue_t storeAndSendTmPacket();
 
   bool incrementSendCounter = true;
   TmStoreHelper& storeHelper;
