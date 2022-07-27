@@ -6,4 +6,4 @@ target_sources(
           PusPacketChecker.cpp
           TcPacketCheckCFDP.cpp
           CFDPDistributor.cpp
-          CcsdsPacketCheckerBase.cpp)
+          CcsdsPacketChecker.cpp)

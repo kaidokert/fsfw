@@ -73,6 +73,8 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * success/failure messages.
    */
   ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus) override;
+
+  void checkerFailurePrinter() const;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_ */

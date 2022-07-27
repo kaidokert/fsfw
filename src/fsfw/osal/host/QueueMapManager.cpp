@@ -54,7 +54,7 @@ MessageQueueIF* QueueMapManager::getMessageQueue(MessageQueueId_t messageQueueId
   } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "QueueMapManager::getQueueHandle: The ID " << messageQueueId
-                 << " does not exists in the map!" << std::endl;
+                 << " does not exist in the map" << std::endl;
 #else
     sif::printWarning("QueueMapManager::getQueueHandle: The ID %d does not exist in the map!\n",
                       messageQueueId);

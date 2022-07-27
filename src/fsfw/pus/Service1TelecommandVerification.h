@@ -86,6 +86,7 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
   TmSendHelper sendHelper;
   TmStoreHelper storeHelper;
   TmStoreAndSendWrapper tmHelper;
+  InternalErrorReporterIF* errReporter = nullptr;
   StorageManagerIF* tmStore = nullptr;
   MessageQueueIF* tmQueue = nullptr;
 

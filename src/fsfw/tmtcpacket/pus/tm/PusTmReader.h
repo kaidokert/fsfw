@@ -19,7 +19,7 @@ class PusTmReader : public PusTmIF,
 
   ReturnValue_t parseDataWithoutCrcCheck();
   ReturnValue_t parseDataWithCrcCheck();
-  const uint8_t* getFullData() override;
+  const uint8_t* getFullData() const override;
 
   explicit operator bool() const;
   [[nodiscard]] bool isNull() const;

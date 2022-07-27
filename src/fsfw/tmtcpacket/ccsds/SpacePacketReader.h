@@ -66,7 +66,7 @@ class SpacePacketReader : public SpacePacketIF,
   [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
 
-  const uint8_t* getFullData() override;
+  [[nodiscard]] const uint8_t* getFullData() const override;
 
   // Helper methods:
   [[nodiscard]] ReturnValue_t checkSize() const;

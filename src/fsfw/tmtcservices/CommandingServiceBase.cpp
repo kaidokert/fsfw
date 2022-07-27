@@ -103,6 +103,12 @@ ReturnValue_t CommandingServiceBase::initialize() {
   // Generally, all TM packets will pass through a layer where the sequence count is set.
   // This avoids duplicate calculation of the CRC16
   tmStoreHelper.disableCrcCalculation();
+  if (tmTimeStamper == nullptr) {
+    auto timerStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
+    if (timerStamper != nullptr) {
+      tmStoreHelper.setTimeStamper(*timerStamper);
+    }
+  }
 
   if (errReporter == nullptr) {
     errReporter =

@@ -54,7 +54,7 @@ class PusTcReader : public PusTcIF,
   [[nodiscard]] uint8_t getSubService() const override;
   [[nodiscard]] uint16_t getSourceId() const override;
   [[nodiscard]] uint16_t getErrorControl() const;
-  const uint8_t* getFullData() override;
+  const uint8_t* getFullData() const override;
 
   ReturnValue_t setReadOnlyData(const uint8_t* data, size_t size);
   [[nodiscard]] const uint8_t* getUserData() const override;

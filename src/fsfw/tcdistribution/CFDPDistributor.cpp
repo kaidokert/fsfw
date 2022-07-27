@@ -35,7 +35,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
   }
   this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
   if (currentPacket->getFullData() != nullptr) {
-    tcStatus = checker.checkPacket(currentPacket, currentPacket->getFullPacketLen());
+    tcStatus = checker.checkPacket(*currentPacket, currentPacket->getFullPacketLen());
     if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1

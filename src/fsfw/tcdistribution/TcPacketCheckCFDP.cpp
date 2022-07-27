@@ -3,7 +3,8 @@
 
 CfdpPacketChecker::CfdpPacketChecker(uint16_t setApid) : apid(setApid) {}
 
-ReturnValue_t CfdpPacketChecker::checkPacket(SpacePacketReader* currentPacket, size_t packetLen) {
+ReturnValue_t CfdpPacketChecker::checkPacket(const SpacePacketReader& currentPacket,
+                                             size_t packetLen) {
   return RETURN_OK;
 }
 

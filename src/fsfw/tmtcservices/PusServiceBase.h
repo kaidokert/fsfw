@@ -65,6 +65,7 @@ struct PsbParams {
    * register itself at that object.
    */
   PUSDistributorIF* pusDistributor = nullptr;
+  TimeStamperIF* timeStamper = nullptr;
 };
 
 namespace Factory {
@@ -133,7 +134,9 @@ class PusServiceBase : public ExecutableObjectIF,
    */
   void initializeTmSendHelper(TmSendHelper& tmSendHelper);
   /**
-   * Helper methods if the implementing class wants to store telemetry
+   * Helper methods if the implementing class wants to store telemetry. It will set the correct APID
+   * and it will also attempt to set a valid time stamper. If the manually specified time stamper is
+   * null, it will attempt to find a suitable one using @objects::TIME_STAMPER
    * @param tmSendHelper
    */
   void initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const;

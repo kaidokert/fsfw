@@ -68,8 +68,15 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
   FailureReport report(message->getReportId(), message->getTcPacketId(),
                        message->getTcSequenceControl(), message->getStep(), message->getErrorCode(),
                        message->getParameter1(), message->getParameter2());
-  storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
-  storeHelper.setSourceDataSerializable(report);
+  ReturnValue_t result =
+      storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  result = storeHelper.setSourceDataSerializable(report);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
   return tmHelper.storeAndSendTmPacket();
 }
 
@@ -77,8 +84,15 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
     PusVerificationMessage* message) {
   SuccessReport report(message->getReportId(), message->getTcPacketId(),
                        message->getTcSequenceControl(), message->getStep());
-  storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
-  storeHelper.setSourceDataSerializable(report);
+  ReturnValue_t result =
+      storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  result = storeHelper.setSourceDataSerializable(report);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
   return tmHelper.storeAndSendTmPacket();
 }
 
@@ -94,6 +108,9 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
 #endif
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
+  if (tmQueue == nullptr) {
+    return ObjectManagerIF::CHILD_INIT_FAILED;
+  }
   tmQueue->setDefaultDestination(funnel->getReportReceptionQueue());
   if (tmStore == nullptr) {
     tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
@@ -101,6 +118,15 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
       return ObjectManager::CHILD_INIT_FAILED;
     }
     storeHelper.setTmStore(*tmStore);
+  }
+
+  sendHelper.setMsgQueue(*tmQueue);
+  if (errReporter == nullptr) {
+    errReporter =
+        ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
+    if (errReporter != nullptr) {
+      sendHelper.setInternalErrorReporter(*errReporter);
+    }
   }
   return SystemObject::initialize();
 }

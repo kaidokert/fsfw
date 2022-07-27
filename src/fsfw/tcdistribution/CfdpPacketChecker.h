@@ -25,7 +25,7 @@ class CfdpPacketChecker : public CcsdsPacketCheckIF, public HasReturnvaluesIF {
    */
   explicit CfdpPacketChecker(uint16_t setApid);
 
-  ReturnValue_t checkPacket(SpacePacketReader* currentPacket, size_t packetLen) override;
+  ReturnValue_t checkPacket(const SpacePacketReader& currentPacket, size_t packetLen) override;
 
   [[nodiscard]] uint16_t getApid() const;
 };

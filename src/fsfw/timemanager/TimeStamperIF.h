@@ -26,6 +26,8 @@ class TimeStamperIF : public SerializeIF {
 
   virtual ReturnValue_t addTimeStamp(uint8_t* buffer, uint8_t maxSize) = 0;
   ~TimeStamperIF() override = default;
+
+ protected:
 };
 
 #endif /* FSFW_TIMEMANAGER_TIMESTAMPERIF_H_ */

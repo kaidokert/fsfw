@@ -4,6 +4,7 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tcdistribution/PUSDistributorIF.h"
+#include "fsfw/timemanager/CdsShortTimeStamper.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
@@ -163,6 +164,12 @@ void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
 
 void PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
   tmStoreHelper.setApid(psbParams.apid);
+  if (psbParams.timeStamper == nullptr) {
+    auto timerStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
+    if (timerStamper != nullptr) {
+      tmStoreHelper.setTimeStamper(*timerStamper);
+    }
+  }
 }
 
 void PusServiceBase::setVerificationReporter(VerificationReporterIF& reporter) {

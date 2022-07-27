@@ -42,7 +42,7 @@ ReturnValue_t SpacePacketReader::setInternalFields(const uint8_t* data, size_t m
   return checkSize();
 }
 
-const uint8_t* SpacePacketReader::getFullData() {
+const uint8_t* SpacePacketReader::getFullData() const {
   return reinterpret_cast<const uint8_t*>(spHeader);
 }
 size_t SpacePacketReader::getBufSize() const { return bufSize; }

@@ -12,13 +12,9 @@ PusTmCreator::PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusPa
 
 PusTmCreator::PusTmCreator() { setup(); }
 
-void PusTmCreator::disableCrcCalculation() {
-  calculateCrcOnSerialization = false;
-}
+void PusTmCreator::disableCrcCalculation() { calculateCrcOnSerialization = false; }
 
-void PusTmCreator::enableCrcCalculation() {
-  calculateCrcOnSerialization = true;
-}
+void PusTmCreator::enableCrcCalculation() { calculateCrcOnSerialization = true; }
 
 uint16_t PusTmCreator::getPacketIdRaw() const { return spCreator.getPacketIdRaw(); }
 
@@ -74,10 +70,13 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  result = pusParams.secHeader.timeStamper->serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
-    return result;
+  if (getTimestamper() != nullptr) {
+    result = pusParams.secHeader.timeStamper->serialize(buffer, size, maxSize, streamEndianness);
+    if (result != HasReturnvaluesIF::RETURN_OK) {
+      return result;
+    }
   }
+
   if (pusParams.dataWrapper.type == ecss::DataTypes::RAW and
       pusParams.dataWrapper.dataUnion.raw.data != nullptr) {
     std::memcpy(*buffer, pusParams.dataWrapper.dataUnion.raw.data, userDataLen);

@@ -15,7 +15,7 @@ ReturnValue_t PusTmReader::parseDataWithCrcCheck() { return parseData(true); }
 
 ReturnValue_t PusTmReader::parseDataWithoutCrcCheck() { return parseData(false); }
 
-const uint8_t *PusTmReader::getFullData() { return spReader.getFullData(); }
+const uint8_t *PusTmReader::getFullData() const { return spReader.getFullData(); }
 
 ReturnValue_t PusTmReader::setReadOnlyData(const uint8_t *data, size_t size) {
   return setData(const_cast<uint8_t *>(data), size, nullptr);

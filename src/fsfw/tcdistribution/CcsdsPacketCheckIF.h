@@ -26,7 +26,7 @@ class CcsdsPacketCheckIF {
    *            - @c INCORRECT_CHECKSUM if checksum is invalid.
    * 		- @c ILLEGAL_APID if APID does not match.
    */
-  virtual ReturnValue_t checkPacket(SpacePacketReader* currentPacket, size_t packetLen) = 0;
+  virtual ReturnValue_t checkPacket(const SpacePacketReader& currentPacket, size_t packetLen) = 0;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_ */

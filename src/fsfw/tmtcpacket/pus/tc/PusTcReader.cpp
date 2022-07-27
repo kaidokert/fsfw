@@ -67,7 +67,7 @@ uint16_t PusTcReader::getPacketSeqCtrlRaw() const { return spReader.getPacketSeq
 
 uint16_t PusTcReader::getPacketDataLen() const { return spReader.getPacketDataLen(); }
 
-const uint8_t* PusTcReader::getFullData() { return pointers.spHeaderStart; }
+const uint8_t* PusTcReader::getFullData() const { return pointers.spHeaderStart; }
 
 ReturnValue_t PusTcReader::setData(uint8_t* pData, size_t size_, void* args) {
   pointers.spHeaderStart = pData;
