@@ -6,7 +6,7 @@
 #include "fsfw/tcdistribution/CCSDSDistributorIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
-#define PUS_DISTRIBUTOR_DEBUGGING 1
+#define PUS_DISTRIBUTOR_DEBUGGING 0
 
 PusDistributor::PusDistributor(uint16_t setApid, object_id_t setObjectId,
                                CCSDSDistributorIF* distributor, StorageManagerIF* store_)

@@ -4,7 +4,7 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
-#define CCSDS_DISTRIBUTOR_DEBUGGING 1
+#define CCSDS_DISTRIBUTOR_DEBUGGING 0
 
 CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid, object_id_t setObjectId,
                                    CcsdsPacketCheckIF* packetChecker)
