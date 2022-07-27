@@ -120,6 +120,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
   } else {
     tmSendHelper.setInternalErrorReporter(*errReporter);
   }
+  tmSendHelper.setMsgQueue(*requestQueue);
 
   if (verificationReporter == nullptr) {
     verificationReporter =
