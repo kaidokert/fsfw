@@ -34,10 +34,10 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
   PusTcParams &getPusParams();
   SpacePacketParams &getSpParams();
 
-  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize);
+  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) const override;
+  ReturnValue_t serialize(uint8_t *buffer, size_t maxSize) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
-  ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
-                            Endianness streamEndianness) override;
+
   [[nodiscard]] uint16_t getPacketIdRaw() const override;
   [[nodiscard]] uint16_t getPacketSeqCtrlRaw() const override;
   [[nodiscard]] uint16_t getPacketDataLen() const override;
@@ -52,6 +52,9 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
  private:
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
+  // Forbidden to use
+  ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+                            Endianness streamEndianness) override;
   SpacePacketCreator spCreator;
   PusTcParams pusParams;
 };

@@ -78,13 +78,14 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
-  ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-                            Endianness streamEndianness) override;
   [[nodiscard]] TimeStamperIF* getTimestamper() const;
   ReturnValue_t setRawUserData(const uint8_t* data, size_t len) override;
   ReturnValue_t setSerializableUserData(SerializeIF& serializable) override;
 
  private:
+  // Forbidden to use
+  ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                            Endianness streamEndianness) override;
   void setup();
   PusTmParams pusParams{};
   bool calculateCrcOnSerialization = true;

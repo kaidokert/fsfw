@@ -95,9 +95,10 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
   }
 
   SECTION("Deserialization Fails") {
+    SerializeIF& deser = creator;
     size_t deserLen = buf.size();
     const uint8_t* roPtr = buf.data();
-    REQUIRE(creator.deSerialize(&roPtr, &deserLen, SerializeIF::Endianness::NETWORK) ==
+    REQUIRE(deser.deSerialize(&roPtr, &deserLen, SerializeIF::Endianness::NETWORK) ==
             HasReturnvaluesIF::RETURN_FAILED);
   }
 

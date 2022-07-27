@@ -90,10 +90,6 @@ PusTcParams &PusTcCreator::getPusParams() { return pusParams; }
 
 SpacePacketParams &PusTcCreator::getSpParams() { return spCreator.getParams(); }
 
-ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize) {
-  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
-}
-
 ReturnValue_t PusTcCreator::setRawUserData(const uint8_t *data, size_t len) {
   // TODO: Check length field?
   pusParams.dataWrapper.setRawData({data, len});
@@ -106,4 +102,12 @@ ReturnValue_t PusTcCreator::setSerializableUserData(SerializeIF &serializable) {
   pusParams.dataWrapper.setSerializable(serializable);
   updateSpLengthField();
   return HasReturnvaluesIF::RETURN_OK;
+}
+
+ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize) const {
+  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
+}
+
+ReturnValue_t PusTcCreator::serialize(uint8_t *buffer, size_t maxSize) const {
+  return SerializeIF::serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
 }

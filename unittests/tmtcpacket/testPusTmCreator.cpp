@@ -97,8 +97,9 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   }
 
   SECTION("Deserialization fails") {
+    SerializeIF& deser = creator;
     const uint8_t* roDataPtr = nullptr;
-    REQUIRE(creator.deSerialize(&roDataPtr, &serLen, SerializeIF::Endianness::NETWORK) ==
+    REQUIRE(deser.deSerialize(&roDataPtr, &serLen, SerializeIF::Endianness::NETWORK) ==
             HasReturnvaluesIF::RETURN_FAILED);
   }
 
