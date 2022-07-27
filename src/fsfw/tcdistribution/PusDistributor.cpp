@@ -9,12 +9,12 @@
 #define PUS_DISTRIBUTOR_DEBUGGING 0
 
 PusDistributor::PusDistributor(uint16_t setApid, object_id_t setObjectId,
-                               object_id_t setPacketSource, StorageManagerIF* store_)
+                               CCSDSDistributorIF* distributor, StorageManagerIF* store_)
     : TcDistributor(setObjectId),
       store(store_),
       checker(setApid, ccsds::PacketType::TC),
-      tcStatus(RETURN_FAILED),
-      packetSource(setPacketSource) {}
+      ccsdsDistributor(distributor),
+      tcStatus(RETURN_FAILED) {}
 
 PusDistributor::~PusDistributor() = default;
 
@@ -25,7 +25,7 @@ PusDistributor::TcMqMapIter PusDistributor::selectDestination() {
                << storeId.packetIndex << std::endl;
 #endif
     auto queueMapIt = this->queueMap.end();
-    if (this->currentPacket == nullptr) {
+    if (reader.isNull()) {
       return queueMapIt;
     }
     // TODO: Need to set the data
@@ -135,13 +135,13 @@ ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
 uint16_t PusDistributor::getIdentifier() { return checker.getApid(); }
 
 ReturnValue_t PusDistributor::initialize() {
-  if (currentPacket == nullptr) {
-    // Should not happen, memory allocation failed!
-    return ObjectManagerIF::CHILD_INIT_FAILED;
+  if (store == nullptr) {
+    store = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+    if (store == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
   }
-
-  auto* ccsdsDistributor = ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
-  if (ccsdsDistributor == nullptr) {
+  if(ccsdsDistributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PUSDistributor::initialize: Packet source invalid" << std::endl;
     sif::error << " Make sure it exists and implements CCSDSDistributorIF!" << std::endl;
@@ -149,13 +149,7 @@ ReturnValue_t PusDistributor::initialize() {
     sif::printError("PusDistributor::initialize: Packet source invalid\n");
     sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
 #endif
-    return RETURN_FAILED;
-  }
-  if (store == nullptr) {
-    store = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
-    if (store == nullptr) {
-      return ObjectManagerIF::CHILD_INIT_FAILED;
-    }
+    return ObjectManagerIF::CHILD_INIT_FAILED;
   }
   return ccsdsDistributor->registerApplication(this);
 }

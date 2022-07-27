@@ -9,7 +9,7 @@
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 #include "fsfw/tmtcservices/VerificationReporter.h"
 
-class PacketStorageHelper;
+class CCSDSDistributorIF;
 
 /**
  * This class accepts PUS Telecommands and forwards them to Application
@@ -27,7 +27,7 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * @param setPacketSource Object ID of the source of TC packets.
    * Must implement CCSDSDistributorIF.
    */
-  PusDistributor(uint16_t setApid, object_id_t setObjectId, object_id_t setPacketSource,
+  PusDistributor(uint16_t setApid, object_id_t setObjectId, CCSDSDistributorIF* packetSource,
                  StorageManagerIF* store = nullptr);
   /**
    * The destructor is empty.
@@ -49,10 +49,8 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * TC Verification service.
    */
   VerificationReporterIF* verifyChannel = nullptr;
-  /**
-   * The currently handled packet is stored here.
-   */
-  PacketStorageHelper* currentPacket = nullptr;
+  //! Cached for initialization
+  CCSDSDistributorIF* ccsdsDistributor = nullptr;
   PusTcReader reader;
 
   /**
@@ -60,8 +58,6 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * acceptance messages later.
    */
   ReturnValue_t tcStatus;
-
-  const object_id_t packetSource;
 
   /**
    * This method reads the packet service, checks if such a service is
