@@ -27,8 +27,8 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * @param setPacketSource Object ID of the source of TC packets.
    * Must implement CCSDSDistributorIF.
    */
-  PusDistributor(StorageManagerIF* store, uint16_t setApid, object_id_t setObjectId,
-                 object_id_t setPacketSource);
+  PusDistributor(uint16_t setApid, object_id_t setObjectId, object_id_t setPacketSource,
+                 StorageManagerIF* store = nullptr);
   /**
    * The destructor is empty.
    */

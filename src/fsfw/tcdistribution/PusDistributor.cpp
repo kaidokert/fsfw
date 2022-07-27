@@ -8,8 +8,8 @@
 
 #define PUS_DISTRIBUTOR_DEBUGGING 0
 
-PusDistributor::PusDistributor(StorageManagerIF* store_, uint16_t setApid, object_id_t setObjectId,
-                               object_id_t setPacketSource)
+PusDistributor::PusDistributor(uint16_t setApid, object_id_t setObjectId,
+                               object_id_t setPacketSource, StorageManagerIF* store_)
     : TcDistributor(setObjectId),
       store(store_),
       checker(setApid, ccsds::PacketType::TC),
@@ -150,6 +150,12 @@ ReturnValue_t PusDistributor::initialize() {
     sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
 #endif
     return RETURN_FAILED;
+  }
+  if (store == nullptr) {
+    store = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+    if (store == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
   }
   return ccsdsDistributor->registerApplication(this);
 }

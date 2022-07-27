@@ -645,7 +645,7 @@ ReturnValue_t TestDevice::initializeLocalDataPool(localpool::DataPool& localData
   sid_t sid(this->getObjectId(), td::TEST_SET_ID);
   /* Subscribe for periodic HK packets but do not enable reporting for now.
   Non-diangostic with a period of one second */
-  poolManager.subscribeForPeriodicPacket(sid, false, 1.0, false);
+  poolManager.subscribeForRegularPeriodicPacket(subdp::RegularHkPeriodicParams(sid, false, 1.0));
   return HasReturnvaluesIF::RETURN_OK;
 }
 

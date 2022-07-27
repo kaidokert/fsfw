@@ -63,7 +63,6 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   uint8_t getScTimeRefStatus() override;
   uint16_t getMessageTypeCounter() override;
   uint16_t getDestId() override;
-  ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize) const;
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
@@ -76,6 +75,7 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
  private:
   void setup();
   PusTmParams pusParams{};
+  bool calculateCrcOnSerialization = true;
   SpacePacketCreator spCreator;
 };
 #endif  // FSFW_TMTCPACKET_TMPACKETCREATOR_H

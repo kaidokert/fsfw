@@ -24,6 +24,7 @@ uint16_t getPacketLen(const PrimaryHeader& header);
 
 void setPacketId(PrimaryHeader& header, uint16_t packetId);
 void setApid(PrimaryHeader& header, uint16_t apid);
+void setSequenceCount(PrimaryHeader& header, uint16_t seqCount);
 
 }  // namespace ccsds
 

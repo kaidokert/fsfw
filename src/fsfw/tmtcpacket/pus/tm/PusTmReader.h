@@ -38,13 +38,15 @@ class PusTmReader : public PusTmIF,
   uint16_t getMessageTypeCounter() override;
   uint16_t getDestId() override;
 
- private:
-  ReturnValue_t setData(uint8_t* dataPtr, size_t size, void* args) override;
-  ReturnValue_t parseData(bool crcCheck);
+ protected:
+  ecss::PusPointers pointers{};
   SpacePacketReader spReader{};
   size_t sourceDataLen = 0;
   TimeReaderIF* timeReader{};
-  ecss::PusPointers pointers{};
+  ReturnValue_t setData(uint8_t* dataPtr, size_t size, void* args) override;
+  ReturnValue_t parseData(bool crcCheck);
+
+ private:
 };
 
 #endif  // FSFW_TMTCPACKET_PUSTMREADER_H

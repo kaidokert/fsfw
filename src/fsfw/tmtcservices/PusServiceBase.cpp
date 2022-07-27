@@ -27,7 +27,7 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   if (result != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PusService " << psbParams.serviceId << ": performService returned with "
-               <<  static_cast<uint16_t>(result) << std::endl;
+               << static_cast<uint16_t>(result) << std::endl;
 #endif
     return RETURN_FAILED;
   }

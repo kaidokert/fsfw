@@ -83,8 +83,11 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
       return result;
     }
   }
-  uint16_t crc16 = CRC::crc16ccitt(start, getFullPacketLen() - sizeof(ecss::PusChecksumT));
-  return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
+  if (calculateCrcOnSerialization) {
+    uint16_t crc16 = CRC::crc16ccitt(start, getFullPacketLen() - sizeof(ecss::PusChecksumT));
+    return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
+  }
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
 size_t PusTmCreator::getSerializedSize() const { return getFullPacketLen(); }
@@ -107,10 +110,6 @@ void PusTmCreator::updateSpLengthField() {
 }
 
 void PusTmCreator::setApid(uint16_t apid) { spCreator.setApid(apid); }
-
-ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t maxSize) const {
-  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
-}
 
 void PusTmCreator::setup() {
   updateSpLengthField();

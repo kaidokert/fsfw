@@ -17,7 +17,7 @@ uint16_t ccsds::getPacketLen(const PrimaryHeader &header) {
 }
 
 void ccsds::setPacketId(PrimaryHeader &header, uint16_t packetId) {
-  header.packetIdHAndVersion = (packetId >> 8) & 0x1F;
+  header.packetIdHAndVersion |= (packetId >> 8) & 0x1F;
   header.packetIdL = packetId & 0xff;
 }
 
@@ -26,4 +26,9 @@ void ccsds::setApid(PrimaryHeader &header, uint16_t apid) {
   packetIdRaw &= ~0x7FF;
   packetIdRaw |= apid & 0x7FF;
   setPacketId(header, packetIdRaw);
+}
+
+void ccsds::setSequenceCount(PrimaryHeader &header, uint16_t seqCount) {
+  header.packetSeqCtrlH |= (seqCount >> 8) & 0x3F;
+  header.packetSeqCtrlL = seqCount & 0xFF;
 }
