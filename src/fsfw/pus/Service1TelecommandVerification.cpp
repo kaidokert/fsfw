@@ -10,7 +10,8 @@
 Service1TelecommandVerification::Service1TelecommandVerification(object_id_t objectId,
                                                                  uint16_t apid, uint8_t serviceId,
                                                                  object_id_t targetDestination,
-                                                                 uint16_t messageQueueDepth)
+                                                                 uint16_t messageQueueDepth,
+                                                                 TimeStamperIF* timeStamper)
     : SystemObject(objectId),
       apid(apid),
       serviceId(serviceId),
@@ -119,6 +120,14 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
     }
     storeHelper.setTmStore(*tmStore);
   }
+  if(timeStamper == nullptr) {
+    timeStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
+    if(timeStamper == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+  } else {
+  }
+  storeHelper.setTimeStamper(*timeStamper);
 
   sendHelper.setMsgQueue(*tmQueue);
   if (errReporter == nullptr) {

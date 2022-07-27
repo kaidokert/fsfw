@@ -47,7 +47,8 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
   static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
 
   Service1TelecommandVerification(object_id_t objectId, uint16_t apid, uint8_t serviceId,
-                                  object_id_t targetDestination, uint16_t messageQueueDepth);
+                                  object_id_t targetDestination, uint16_t messageQueueDepth,
+                                  TimeStamperIF* timeStamper = nullptr);
   ~Service1TelecommandVerification() override;
 
   /**
@@ -87,6 +88,7 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
   TmStoreHelper storeHelper;
   TmStoreAndSendWrapper tmHelper;
   InternalErrorReporterIF* errReporter = nullptr;
+  TimeStamperIF* timeStamper = nullptr;
   StorageManagerIF* tmStore = nullptr;
   MessageQueueIF* tmQueue = nullptr;
 

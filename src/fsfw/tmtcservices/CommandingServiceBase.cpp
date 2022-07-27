@@ -104,11 +104,12 @@ ReturnValue_t CommandingServiceBase::initialize() {
   // This avoids duplicate calculation of the CRC16
   tmStoreHelper.disableCrcCalculation();
   if (tmTimeStamper == nullptr) {
-    auto timerStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
-    if (timerStamper != nullptr) {
-      tmStoreHelper.setTimeStamper(*timerStamper);
+    tmTimeStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
+    if (tmTimeStamper == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
+  tmStoreHelper.setTimeStamper(*tmTimeStamper);
 
   if (errReporter == nullptr) {
     errReporter =

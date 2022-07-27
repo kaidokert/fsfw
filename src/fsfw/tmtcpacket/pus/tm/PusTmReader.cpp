@@ -60,9 +60,8 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   size_t currentOffset = SpacePacketReader::getHeaderLen();
   pointers.secHeaderStart = pointers.spHeaderStart + currentOffset;
   currentOffset += PusTmIF::MIN_SEC_HEADER_LEN;
-  size_t minTimestampLen = spReader.getBufSize() - currentOffset;
-  result = timeReader->readTimeStamp(pointers.secHeaderStart + PusTmIF::MIN_SEC_HEADER_LEN,
-                                     minTimestampLen);
+  size_t minTimestampLen = spReader.getFullPacketLen() - currentOffset;
+  result = timeReader->readTimeStamp(pointers.spHeaderStart + currentOffset, minTimestampLen);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
