@@ -13,6 +13,9 @@ class TmStoreHelper {
   TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore);
   TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore, TimeStamperIF& timeStamper);
 
+  void disableCrcCalculation();
+  [[nodiscard]] bool crcCalculationEnabled() const;
+
   ReturnValue_t preparePacket(uint8_t service, uint8_t subservice, uint16_t counter);
 
   PusTmCreator& getCreatorRef();

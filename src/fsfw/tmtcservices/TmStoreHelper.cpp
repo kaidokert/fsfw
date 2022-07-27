@@ -74,3 +74,7 @@ uint16_t TmStoreHelper::getApid() const { return creator.getApid(); }
 void TmStoreHelper::setService(uint8_t service) { creator.setService(service); }
 
 void TmStoreHelper::setSubservice(uint8_t subservice) { creator.setSubservice(subservice); }
+
+void TmStoreHelper::disableCrcCalculation() { creator.disableCrcCalculation(); }
+
+bool TmStoreHelper::crcCalculationEnabled() const { return creator.crcCalculationEnabled(); }

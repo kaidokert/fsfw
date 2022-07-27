@@ -100,6 +100,10 @@ ReturnValue_t CommandingServiceBase::initialize() {
     }
     tmStoreHelper.setTmStore(*tmStore);
   }
+  // Generally, all TM packets will pass through a layer where the sequence count is set.
+  // This avoids duplicate calculation of the CRC16
+  tmStoreHelper.disableCrcCalculation();
+
   if (errReporter == nullptr) {
     errReporter =
         ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
