@@ -46,6 +46,15 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   ~PusTmCreator() override = default;
 
   void setTimeStamper(TimeStamperIF& timeStamper);
+  /**
+   * This function disables the CRC16 calculation on serialization. This is useful to avoid
+   * duplicate calculation if some lower level component needs to update fields like the sequence
+   * count, which would require a checksum update.
+   */
+  void disableCrcCalculation();
+  void enableCrcCalculation();
+  [[nodiscard]] bool crcCalculationEnabled() const;
+
   SpacePacketParams& getSpParams();
   void setApid(uint16_t apid);
   void setDestId(uint16_t destId);

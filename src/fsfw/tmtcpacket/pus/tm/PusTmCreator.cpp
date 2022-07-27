@@ -12,6 +12,14 @@ PusTmCreator::PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusPa
 
 PusTmCreator::PusTmCreator() { setup(); }
 
+void PusTmCreator::disableCrcCalculation() {
+  calculateCrcOnSerialization = false;
+}
+
+void PusTmCreator::enableCrcCalculation() {
+  calculateCrcOnSerialization = true;
+}
+
 uint16_t PusTmCreator::getPacketIdRaw() const { return spCreator.getPacketIdRaw(); }
 
 uint16_t PusTmCreator::getPacketSeqCtrlRaw() const { return spCreator.getPacketSeqCtrlRaw(); }
@@ -138,3 +146,4 @@ void PusTmCreator::setService(uint8_t service) { pusParams.secHeader.service = s
 void PusTmCreator::setSubservice(uint8_t subservice) {
   pusParams.secHeader.subservice = subservice;
 }
+bool PusTmCreator::crcCalculationEnabled() const { return calculateCrcOnSerialization; }
