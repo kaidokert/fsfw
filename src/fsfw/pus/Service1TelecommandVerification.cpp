@@ -50,13 +50,15 @@ ReturnValue_t Service1TelecommandVerification::sendVerificationReport(
     PusVerificationMessage* message) {
   ReturnValue_t result;
   uint8_t reportId = message->getReportId();
-  if(reportId == 0 or reportId > 8) {
+  if (reportId == 0 or reportId > 8) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "Service1TelecommandVerification::sendVerificationReport: Invalid report ID " <<
-        static_cast<int>(reportId) << " detected" << std::endl;
+    sif::error << "Service1TelecommandVerification::sendVerificationReport: Invalid report ID "
+               << static_cast<int>(reportId) << " detected" << std::endl;
 #else
-    sif::printError("Service1TelecommandVerification::sendVerificationReport: Invalid report ID "
-        "%d detected\n", reportId);
+    sif::printError(
+        "Service1TelecommandVerification::sendVerificationReport: Invalid report ID "
+        "%d detected\n",
+        reportId);
 #endif
     return HasReturnvaluesIF::RETURN_FAILED;
   }

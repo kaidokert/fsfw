@@ -72,6 +72,9 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   uint8_t getScTimeRefStatus() override;
   uint16_t getMessageTypeCounter() override;
   uint16_t getDestId() override;
+  // Override these to use default big endianness
+  ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize) const override;
+  ReturnValue_t serialize(uint8_t* buffer, size_t maxSize) const override;
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
   [[nodiscard]] size_t getSerializedSize() const override;

@@ -57,7 +57,7 @@ TEST_CASE("TM Send Helper", "[tm-send-helper]") {
   SECTION("Two Arg CTOR") {
     TmSendHelper helper(msgQueue, errReporter);
     REQUIRE(helper.getInternalErrorReporter() == &errReporter);
-    REQUIRE(helper.getDefaultDestination() == MessageQueueIF::NO_QUEUE);
+    REQUIRE(helper.getDefaultDestination() == 2);
     REQUIRE(helper.getMsgQueue() == &msgQueue);
   }
   SECTION("Send") {

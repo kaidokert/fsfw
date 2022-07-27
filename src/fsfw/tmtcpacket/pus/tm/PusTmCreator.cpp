@@ -146,3 +146,11 @@ void PusTmCreator::setSubservice(uint8_t subservice) {
   pusParams.secHeader.subservice = subservice;
 }
 bool PusTmCreator::crcCalculationEnabled() const { return calculateCrcOnSerialization; }
+
+ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t maxSize) const {
+  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
+}
+
+ReturnValue_t PusTmCreator::serialize(uint8_t* buffer, size_t maxSize) const {
+  return SerializeIF::serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
+}

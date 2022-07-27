@@ -78,7 +78,6 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
   ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override {
     return deSerialize(&buffer, &maxSize, SerializeIF::Endianness::NETWORK);
   }
-  size_t getTimestampLen() override { return getSerializedSize(); }
   timeval &getTime() override { return dummyTime; }
 
  private:

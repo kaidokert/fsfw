@@ -44,7 +44,8 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   }
 
   SECTION("Serialization") {
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.SerializeIF::serializeBe(&dataPtr, &serLen, buf.size()) ==
+            HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[0] == 0x08);
     REQUIRE(buf[1] == 0xef);
     // Unsegmented is the default
@@ -105,7 +106,8 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     std::array<uint8_t, 3> data{1, 2, 3};
     creator.setRawUserData(data.data(), data.size());
     REQUIRE(creator.getFullPacketLen() == 25);
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.SerializeIF::serialize(&dataPtr, &serLen, buf.size()) ==
+            HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[20] == 1);
     REQUIRE(buf[21] == 2);
     REQUIRE(buf[22] == 3);
@@ -139,7 +141,8 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     for (size_t maxSize = 0; maxSize < reqSize; maxSize++) {
       dataPtr = buf.data();
       serLen = 0;
-      REQUIRE(creator.serialize(&dataPtr, &serLen, maxSize) == SerializeIF::BUFFER_TOO_SHORT);
+      REQUIRE(creator.SerializeIF::serialize(&dataPtr, &serLen, maxSize) ==
+              SerializeIF::BUFFER_TOO_SHORT);
     }
   }
 }

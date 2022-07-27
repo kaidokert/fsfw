@@ -22,7 +22,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
     bool deleteReader = false;
     dataPtr = buf.data();
     serLen = 0;
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(not(*readerPtr));
     REQUIRE(readerPtr->isNull());
 

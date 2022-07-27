@@ -64,13 +64,13 @@ class SerializeIF {
   /**
    * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t serializeBe(uint8_t **buffer, size_t *size, size_t maxSize) {
+  virtual ReturnValue_t serializeBe(uint8_t **buffer, size_t *size, size_t maxSize) const {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) {
+  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) const {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::MACHINE);
   }
 

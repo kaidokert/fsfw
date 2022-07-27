@@ -140,9 +140,10 @@ void PusServiceBase::setErrorReporter(InternalErrorReporterIF& errReporter_) {
   psbParams.errReporter = &errReporter_;
 }
 
-ReturnValue_t PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper) {
+ReturnValue_t PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper,
+                                                  TmStoreHelper& tmStoreHelper) {
   ReturnValue_t result = initializeTmSendHelper(tmSendHelper);
-  if(result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
   return initializeTmStoreHelper(tmStoreHelper);
@@ -166,11 +167,11 @@ ReturnValue_t PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper)
   return RETURN_OK;
 }
 
-ReturnValue_t  PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
+ReturnValue_t PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
   tmStoreHelper.setApid(psbParams.apid);
-  if(tmStoreHelper.getTmStore() == nullptr) {
+  if (tmStoreHelper.getTmStore() == nullptr) {
     auto* tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
-    if(tmStore == nullptr) {
+    if (tmStore == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
     tmStoreHelper.setTmStore(*tmStore);

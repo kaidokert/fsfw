@@ -24,7 +24,7 @@ TEST_CASE("CCSDS Low Level", "[ccsds-ll]") {
     uint16_t packetIdRaw = 0x3ff;
     ccsds::setPacketId(header, packetIdRaw);
     ccsds::setApid(header, 0x1ff);
-    REQUIRE(ccsds::getPacketId(header) == 0x1ff);
+    REQUIRE(ccsds::getPacketId(header) == 0x3ff);
   }
 
   SECTION("Lowlevel Packet Length Test") {
