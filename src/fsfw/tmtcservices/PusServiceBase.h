@@ -132,19 +132,19 @@ class PusServiceBase : public ExecutableObjectIF,
    * Helper methods if the implementing class wants to send telemetry
    * @param tmSendHelper
    */
-  void initializeTmSendHelper(TmSendHelper& tmSendHelper);
+  ReturnValue_t initializeTmSendHelper(TmSendHelper& tmSendHelper);
   /**
    * Helper methods if the implementing class wants to store telemetry. It will set the correct APID
    * and it will also attempt to set a valid time stamper. If the manually specified time stamper is
    * null, it will attempt to find a suitable one using @objects::TIME_STAMPER
    * @param tmSendHelper
    */
-  void initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const;
+  ReturnValue_t initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const;
   /**
    * Helper methods if the implementing class wants to both send and store telemetry
    * @param tmSendHelper
    */
-  void initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper);
+  ReturnValue_t initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper);
 
   /**
    * @brief 	The handleRequest method shall handle any kind of Telecommand

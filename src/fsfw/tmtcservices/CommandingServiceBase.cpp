@@ -263,7 +263,8 @@ void CommandingServiceBase::handleRequestQueue() {
   object_id_t objectId;
   for (result = requestQueue->receiveMessage(&message); result == RETURN_OK;
        result = requestQueue->receiveMessage(&message)) {
-    result = setUpTcReader(message.getStorageId());
+    address = message.getStorageId();
+    result = setUpTcReader(address);
     if (result != HasReturnvaluesIF::RETURN_OK) {
       // TODO: Warning?
       rejectPacket(tcverif::START_FAILURE, address, result);

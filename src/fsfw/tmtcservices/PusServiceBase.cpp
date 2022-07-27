@@ -140,12 +140,15 @@ void PusServiceBase::setErrorReporter(InternalErrorReporterIF& errReporter_) {
   psbParams.errReporter = &errReporter_;
 }
 
-void PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper) {
-  initializeTmSendHelper(tmSendHelper);
-  initializeTmStoreHelper(tmStoreHelper);
+ReturnValue_t PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper, TmStoreHelper& tmStoreHelper) {
+  ReturnValue_t result = initializeTmSendHelper(tmSendHelper);
+  if(result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  return initializeTmStoreHelper(tmStoreHelper);
 }
 
-void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
+ReturnValue_t PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
   if (psbParams.reqQueue != nullptr) {
     tmSendHelper.setMsgQueue(*psbParams.reqQueue);
     tmSendHelper.setDefaultDestination(psbParams.reqQueue->getDefaultDestination());
@@ -160,16 +163,29 @@ void PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
   } else {
     tmSendHelper.setInternalErrorReporter(*psbParams.errReporter);
   }
+  return RETURN_OK;
 }
 
-void PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
+ReturnValue_t  PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
   tmStoreHelper.setApid(psbParams.apid);
+  if(tmStoreHelper.getTmStore() == nullptr) {
+    auto* tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
+    if(tmStore == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+    tmStoreHelper.setTmStore(*tmStore);
+  }
+
   if (psbParams.timeStamper == nullptr) {
     auto timerStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
     if (timerStamper != nullptr) {
       tmStoreHelper.setTimeStamper(*timerStamper);
     }
   }
+  // Generally, all TM packets will pass through a layer where the sequence count is set.
+  // This avoids duplicate calculation of the CRC16
+  tmStoreHelper.disableCrcCalculation();
+  return RETURN_OK;
 }
 
 void PusServiceBase::setVerificationReporter(VerificationReporterIF& reporter) {
