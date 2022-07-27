@@ -120,9 +120,9 @@ ReturnValue_t Service1TelecommandVerification::initialize() {
     }
     storeHelper.setTmStore(*tmStore);
   }
-  if(timeStamper == nullptr) {
+  if (timeStamper == nullptr) {
     timeStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
-    if(timeStamper == nullptr) {
+    if (timeStamper == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   } else {
