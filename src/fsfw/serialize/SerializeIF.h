@@ -59,18 +59,20 @@ class SerializeIF {
    * 		- @c RETURN_FAILED Generic error
    * 		- @c RETURN_OK Successful serialization
    */
-  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                  Endianness streamEndianness) const = 0;
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                                Endianness streamEndianness) const = 0;
   /**
    * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t serializeBe(uint8_t **buffer, size_t *size, size_t maxSize) const {
+  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t **buffer, size_t *size,
+                                                  size_t maxSize) const {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) const {
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size,
+                                                size_t maxSize) const {
     return serialize(buffer, size, maxSize, SerializeIF::Endianness::MACHINE);
   }
 
@@ -123,21 +125,21 @@ class SerializeIF {
    * @param streamEndianness
    * @return
    */
-  virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize,
-                                  Endianness streamEndianness) const {
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize,
+                                                Endianness streamEndianness) const {
     size_t tmpSize = 0;
     return serialize(&buffer, &tmpSize, maxSize, streamEndianness);
   }
   /**
    * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t serializeBe(uint8_t *buffer, size_t maxSize) const {
+  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t *buffer, size_t maxSize) const {
     return serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize) const {
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize) const {
     return serialize(buffer, maxSize, SerializeIF::Endianness::MACHINE);
   }
 
