@@ -457,8 +457,8 @@ void CommandingServiceBase::prepareVerificationFailureWithFullInfo(uint8_t repor
 }
 void CommandingServiceBase::prepareVerificationSuccessWithFullInfo(
     uint8_t reportId, CommandingServiceBase::CommandInfo::TcInfo& tcInfo) {
-  failParams.reportId = reportId;
-  failParams.tcPacketId = tcInfo.tcPacketId;
-  failParams.tcPsc = tcInfo.tcSequenceControl;
-  failParams.ackFlags = tcInfo.ackFlags;
+  successParams.reportId = reportId;
+  successParams.tcPacketId = tcInfo.tcPacketId;
+  successParams.tcPsc = tcInfo.tcSequenceControl;
+  successParams.ackFlags = tcInfo.ackFlags;
 }
