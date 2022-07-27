@@ -2,6 +2,7 @@
 #define FSFW_TIMEMANAGER_TIMESTAMPER_H_
 
 #include "CCSDSTime.h"
+#include "TimeReaderIF.h"
 #include "TimeStamperIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
 
@@ -14,7 +15,7 @@
  * overriding the #addTimeStamp function.
  * @ingroup utility
  */
-class CdsShortTimeStamper : public TimeStamperIF, public SystemObject {
+class CdsShortTimeStamper : public TimeStamperIF, public TimeReaderIF, public SystemObject {
  public:
   static constexpr size_t TIMESTAMP_LEN = 7;
   /**
@@ -37,7 +38,12 @@ class CdsShortTimeStamper : public TimeStamperIF, public SystemObject {
   [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override;
+  ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override;
+  timeval &getTime() override;
   [[nodiscard]] size_t getTimestampSize() const override;
+
+ private:
+  timeval readTime{};
 };
 
 #endif /* FSFW_TIMEMANAGER_TIMESTAMPER_H_ */

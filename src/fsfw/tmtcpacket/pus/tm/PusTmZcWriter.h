@@ -4,7 +4,7 @@
 #include "PusTmReader.h"
 class PusTmZeroCopyWriter : public PusTmReader {
  public:
-  PusTmZeroCopyWriter(uint8_t* data, size_t size);
+  PusTmZeroCopyWriter(TimeReaderIF* timeReader, uint8_t* data, size_t size);
 
   void setSequenceCount(uint16_t seqCount);
   void updateErrorControl();

@@ -66,7 +66,7 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  size_t timestampLen = timeReader->getTimestampLen();
+  size_t timestampLen = timeReader->getTimestampSize();
   if (currentOffset + timestampLen > spReader.getBufSize()) {
     return SerializeIF::STREAM_TOO_SHORT;
   }

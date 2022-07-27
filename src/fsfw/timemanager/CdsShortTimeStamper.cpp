@@ -36,4 +36,14 @@ ReturnValue_t CdsShortTimeStamper::deSerialize(const uint8_t **buffer, size_t *s
   return HasReturnvaluesIF::RETURN_FAILED;
 }
 
+ReturnValue_t CdsShortTimeStamper::readTimeStamp(const uint8_t *buffer, size_t maxSize) {
+  if (maxSize < getTimestampSize()) {
+    return SerializeIF::STREAM_TOO_SHORT;
+  }
+  size_t foundLen = 0;
+  return CCSDSTime::convertFromCcsds(&readTime, buffer, &foundLen, maxSize);
+}
+
+timeval &CdsShortTimeStamper::getTime() { return readTime; }
+
 size_t CdsShortTimeStamper::getTimestampSize() const { return TIMESTAMP_LEN; }

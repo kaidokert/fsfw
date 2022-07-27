@@ -2,7 +2,8 @@
 
 #include "fsfw/globalfunctions/CRC.h"
 
-PusTmZeroCopyWriter::PusTmZeroCopyWriter(uint8_t* data, size_t size) : PusTmReader(data, size) {}
+PusTmZeroCopyWriter::PusTmZeroCopyWriter(TimeReaderIF* timeReader, uint8_t* data, size_t size)
+    : PusTmReader(timeReader, data, size) {}
 
 void PusTmZeroCopyWriter::setSequenceCount(uint16_t seqCount) {
   auto* spHeader =

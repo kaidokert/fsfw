@@ -7,8 +7,6 @@
 
 class CcsdsTimestampReader : public TimeReaderIF {
  public:
-  ReturnValue_t readTimeStamp(const uint8_t* buffer, uint8_t maxSize) override;
-  size_t getTimestampLen() override;
   timeval& getTime() override;
 
  private:
