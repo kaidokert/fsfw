@@ -1,5 +1,6 @@
 #include "fsfw/tcdistribution/PusDistributor.h"
 
+#include "definitions.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tcdistribution/CCSDSDistributorIF.h"
@@ -42,15 +43,15 @@ PusDistributor::TcMqMapIter PusDistributor::selectDestination() {
       if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
         const char* keyword = "unnamed error";
-        if (tcStatus == TcPacketCheckPUS::INCORRECT_CHECKSUM) {
+        if (tcStatus == tcdistrib::INCORRECT_CHECKSUM) {
           keyword = "checksum";
-        } else if (tcStatus == TcPacketCheckPUS::INCORRECT_PRIMARY_HEADER) {
+        } else if (tcStatus == tcdistrib::INCORRECT_PRIMARY_HEADER) {
           keyword = "incorrect primary header";
-        } else if (tcStatus == TcPacketCheckPUS::ILLEGAL_APID) {
+        } else if (tcStatus == tcdistrib::INVALID_APID) {
           keyword = "illegal APID";
-        } else if (tcStatus == TcPacketCheckPUS::INCORRECT_SECONDARY_HEADER) {
+        } else if (tcStatus == tcdistrib::INCORRECT_SECONDARY_HEADER) {
           keyword = "incorrect secondary header";
-        } else if (tcStatus == TcPacketCheckPUS::INCOMPLETE_PACKET) {
+        } else if (tcStatus == tcdistrib::INCOMPLETE_PACKET) {
           keyword = "incomplete packet";
         }
 #if FSFW_CPP_OSTREAM_ENABLED == 1

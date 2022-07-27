@@ -26,8 +26,8 @@ ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   ReturnValue_t result = performService();
   if (result != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PusService " << (uint16_t)this->serviceId << ": performService returned with "
-               << (int16_t)result << std::endl;
+    sif::error << "PusService " << psbParams.serviceId << ": performService returned with "
+               <<  static_cast<uint16_t>(result) << std::endl;
 #endif
     return RETURN_FAILED;
   }
@@ -45,7 +45,7 @@ void PusServiceBase::handleRequestQueue() {
       break;
     } else if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "PusServiceBase::performOperation: Service " << this->serviceId
+      sif::error << "PusServiceBase::performOperation: Service " << psbParams.serviceId
                  << ": Error receiving packet. Code: " << std::hex << status << std::dec
                  << std::endl;
 #else
