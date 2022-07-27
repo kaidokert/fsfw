@@ -34,9 +34,6 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
   // Get de-serialized Timestamp
   const uint8_t *data = currentPacket.getUserData();
   size_t size = currentPacket.getUserDataLen();
-  if (data == nullptr) {
-    return handleInvalidData("handleRequest");
-  }
   switch (subservice) {
     case Subservice::ENABLE_SCHEDULING: {
       schedulingEnabled = true;
