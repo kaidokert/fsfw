@@ -19,17 +19,17 @@ TEST_CASE("MessageQueue Basic Test", "[TestMq]") {
 
   SECTION("Simple Tests") {
     auto result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     MessageQueueMessage recvMessage;
     result = testReceiverMq->receiveMessage(&recvMessage);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     CHECK(recvMessage.getData()[0] == 42);
 
     result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     MessageQueueId_t senderId = 0;
     result = testReceiverMq->receiveMessage(&recvMessage, &senderId);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     CHECK(recvMessage.getData()[0] == 42);
     CHECK(senderId == testSenderMqId);
     senderId = testReceiverMq->getLastPartner();
@@ -37,7 +37,7 @@ TEST_CASE("MessageQueue Basic Test", "[TestMq]") {
   }
   SECTION("Test Full") {
     auto result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
     REQUIRE(result == MessageQueueIF::FULL);
     // We try another message
@@ -45,12 +45,12 @@ TEST_CASE("MessageQueue Basic Test", "[TestMq]") {
     REQUIRE(result == MessageQueueIF::FULL);
     MessageQueueMessage recvMessage;
     result = testReceiverMq->receiveMessage(&recvMessage);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     CHECK(recvMessage.getData()[0] == 42);
     result = testSenderMq->sendMessage(testReceiverMqId, &testMessage);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = testReceiverMq->receiveMessage(&recvMessage);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     CHECK(recvMessage.getData()[0] == 42);
   }
   // We have to clear MQs ourself ATM

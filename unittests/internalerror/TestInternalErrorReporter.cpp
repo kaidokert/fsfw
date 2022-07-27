@@ -38,7 +38,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
     CommandMessage message;
     ActionMessage::setCompletionReply(&message, 10, true);
     auto result = hkQueue->sendMessage(testQueue->getId(), &message);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     uint32_t queueHits = 0;
     uint32_t lostTm = 0;
     uint32_t storeHits = 0;

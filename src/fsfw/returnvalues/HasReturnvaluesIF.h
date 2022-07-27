@@ -10,19 +10,19 @@
 #define MAKE_RETURN_CODE(number) ((INTERFACE_ID << 8) + (number))
 typedef uint16_t ReturnValue_t;
 
-namespace retval {
+namespace result {
 static constexpr ReturnValue_t OK = 0;
 static constexpr ReturnValue_t FAILED = 1;
 
 static constexpr ReturnValue_t makeCode(uint8_t classId, uint8_t number) {
   return (static_cast<ReturnValue_t>(classId) << 8) + number;
 }
-}  // namespace retval
+}  // namespace result
 
 class HasReturnvaluesIF {
  public:
-  static const ReturnValue_t RETURN_OK = retval::OK;
-  static const ReturnValue_t RETURN_FAILED = retval::FAILED;
+  static const ReturnValue_t RETURN_OK = result::OK;
+  static const ReturnValue_t RETURN_FAILED = result::FAILED;
 
   virtual ~HasReturnvaluesIF() = default;
 
@@ -33,9 +33,9 @@ class HasReturnvaluesIF {
    * @param number
    * @return
    */
-  [[deprecated("Use retval::makeCode instead")]] static constexpr ReturnValue_t makeReturnCode(
+  [[deprecated("Use result::makeCode instead")]] static constexpr ReturnValue_t makeReturnCode(
       uint8_t classId, uint8_t number) {
-    return retval::makeCode(classId, number);
+    return result::makeCode(classId, number);
   }
 };
 

@@ -29,10 +29,10 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     const uint8_t** dummyPtr = nullptr;
     ReturnValue_t deserResult =
         headerSerializer.deSerialize(dummyPtr, &serSize, SerializeIF::Endianness::NETWORK);
-    REQUIRE(deserResult == retval::CATCH_FAILED);
+    REQUIRE(deserResult == result::FAILED);
     deserResult = headerSerializer.serialize(nullptr, &serSize, serBuf.size(),
                                              SerializeIF::Endianness::NETWORK);
-    REQUIRE(deserResult == retval::CATCH_FAILED);
+    REQUIRE(deserResult == result::FAILED);
     REQUIRE(seqNum.getSerializedSize() == 1);
 
     REQUIRE(headerSerializer.getPduDataFieldLen() == 0);
@@ -62,7 +62,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
 
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                         SerializeIF::Endianness::BIG);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     REQUIRE(serSize == 7);
     // Only version bits are set
     REQUIRE(serBuf[0] == 0b00100000);
@@ -155,11 +155,11 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     REQUIRE(entityId == 0x00ff00ff);
 
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::ONE_BYTE, 0xfff);
-    REQUIRE(result == retval::CATCH_FAILED);
+    REQUIRE(result == result::FAILED);
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::TWO_BYTES, 0xfffff);
-    REQUIRE(result == retval::CATCH_FAILED);
+    REQUIRE(result == result::FAILED);
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xfffffffff);
-    REQUIRE(result == retval::CATCH_FAILED);
+    REQUIRE(result == result::FAILED);
     uint8_t oneByteSourceId = 32;
     serTarget = &oneByteSourceId;
     size_t deserLen = 1;
@@ -197,7 +197,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     auto headerSerializer = HeaderSerializer(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
     ReturnValue_t result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                                       SerializeIF::Endianness::BIG);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     REQUIRE(serBuf[1] == 0);
     REQUIRE(serBuf[2] == 0);
     // Entity and Transaction Sequence number are 1 byte large
@@ -207,7 +207,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     auto headerDeser = HeaderDeserializer(serBuf.data(), serBuf.size());
 
     ReturnValue_t serResult = headerDeser.parseData();
-    REQUIRE(serResult == retval::CATCH_OK);
+    REQUIRE(serResult == result::OK);
     REQUIRE(headerDeser.getPduDataFieldLen() == 0);
     REQUIRE(headerDeser.getHeaderSize() == 7);
     REQUIRE(headerDeser.getWholePduSize() == 7);
@@ -230,11 +230,11 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     headerSerializer.setPduType(cfdp::PduType::FILE_DATA);
     headerSerializer.setSegmentMetadataFlag(cfdp::SegmentMetadataFlag::PRESENT);
     result = pduConf.seqNum.setValue(cfdp::WidthInBytes::TWO_BYTES, 0x0fff);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xff00ff00);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = pduConf.destId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0x00ff00ff);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     serTarget = serBuf.data();
     serSize = 0;
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
@@ -242,7 +242,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     headerDeser = HeaderDeserializer(serBuf.data(), serBuf.size());
 
     result = headerDeser.parseData();
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     // Everything except version bit flipped to one now
     REQUIRE(serBuf[0] == 0x3f);
     REQUIRE(serBuf[3] == 0b11001010);
@@ -274,7 +274,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     serTarget = serBuf.data();
     const uint8_t** serTargetConst = const_cast<const uint8_t**>(&serTarget);
     result = headerDeser.parseData();
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
 
     headerDeser.setData(nullptr, -1);
     REQUIRE(headerDeser.getHeaderSize() == 0);
@@ -286,7 +286,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     pduConf.destId.setValue(cfdp::WidthInBytes::ONE_BYTE, 48);
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                         SerializeIF::Endianness::BIG);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     REQUIRE(headerDeser.getWholePduSize() == 8);
     headerDeser.setData(serBuf.data(), serBuf.size());
 
