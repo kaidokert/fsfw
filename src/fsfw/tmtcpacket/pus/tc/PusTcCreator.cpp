@@ -108,6 +108,6 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
   return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
 }
 
-ReturnValue_t PusTcCreator::serialize(uint8_t *buffer, size_t maxSize) const {
-  return SerializeIF::serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
+ReturnValue_t PusTcCreator::serialize(uint8_t *buffer, size_t &serLen, size_t maxSize) const {
+  return SerializeIF::serialize(buffer, serLen, maxSize, SerializeIF::Endianness::NETWORK);
 }

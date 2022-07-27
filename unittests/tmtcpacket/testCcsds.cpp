@@ -42,21 +42,28 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
     packetId.apid = 0x1ff;
     packetId.secHeaderFlag = false;
     packetId.packetType = ccsds::PacketType::TM;
+    size_t serLen = 0;
     REQUIRE(packetId.raw() == 0x1ff);
-    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), buf.size()) ==
+    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) ==
             HasReturnvaluesIF::RETURN_OK);
     CHECK(buf[0] == 0x1);
     CHECK(buf[1] == 0xff);
   }
 
   SECTION("Invalid Ser") {
-    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), 0) == SerializeIF::BUFFER_TOO_SHORT);
-    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), 1) == SerializeIF::BUFFER_TOO_SHORT);
+    size_t serLen = 0;
+    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), serLen, 0) ==
+            SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), serLen, 1) ==
+            SerializeIF::BUFFER_TOO_SHORT);
   }
 
   SECTION("Invalid Deser") {
-    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), 1) == SerializeIF::STREAM_TOO_SHORT);
-    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), 0) == SerializeIF::STREAM_TOO_SHORT);
+    size_t deserLen = 0;
+    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), deserLen, 1) ==
+            SerializeIF::STREAM_TOO_SHORT);
+    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), deserLen, 0) ==
+            SerializeIF::STREAM_TOO_SHORT);
   }
 
   SECTION("From Raw") {
@@ -69,9 +76,11 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
   SECTION("Deserialize") {
     buf[0] = 0x1a;
     buf[1] = 0xff;
-    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), buf.size()) ==
+    size_t deserLen = 0xff;
+    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), deserLen, buf.size()) ==
             HasReturnvaluesIF::RETURN_OK);
     CHECK(packetId.apid == 0x2ff);
+    CHECK(deserLen == 2);
     CHECK(packetId.packetType == ccsds::PacketType::TC);
     CHECK(packetId.secHeaderFlag == true);
   }
@@ -81,12 +90,15 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
   PacketSeqCtrl psc;
   std::array<uint8_t, 3> buf{};
   SECTION("Basic") {
+    size_t serLen = 0xff;
     psc.seqFlags = ccsds::SequenceFlags::FIRST_SEGMENT;
     psc.seqCount = static_cast<uint16_t>(std::round(std::pow(2, 14) - 1));
     REQUIRE(psc.raw() == 0x7fff);
-    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) ==
+            HasReturnvaluesIF::RETURN_OK);
     CHECK(buf[0] == 0x7f);
     CHECK(buf[1] == 0xff);
+    CHECK(serLen == 2);
   }
 
   SECTION("From Raw") {
@@ -100,18 +112,23 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
   SECTION("Deserialize") {
     buf[0] = 0xbf;
     buf[1] = 0xfe;
-    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    size_t deserLen = 0xff;
+    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), deserLen, buf.size()) ==
+            HasReturnvaluesIF::RETURN_OK);
     CHECK(psc.seqFlags == ccsds::SequenceFlags::LAST_SEGMENT);
+    CHECK(deserLen == 2);
     CHECK(psc.seqCount == static_cast<uint16_t>(std::round(std::pow(2, 14) - 2)));
   }
 
   SECTION("Invalid Ser") {
-    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), 0) == SerializeIF::BUFFER_TOO_SHORT);
-    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), 1) == SerializeIF::BUFFER_TOO_SHORT);
+    size_t deserLen = 0;
+    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), deserLen, 0) == SerializeIF::BUFFER_TOO_SHORT);
+    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), deserLen, 1) == SerializeIF::BUFFER_TOO_SHORT);
   }
 
   SECTION("Invalid Deser") {
-    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), 1) == SerializeIF::STREAM_TOO_SHORT);
-    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), 0) == SerializeIF::STREAM_TOO_SHORT);
+    size_t deserLen = 0;
+    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), deserLen, 1) == SerializeIF::STREAM_TOO_SHORT);
+    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), deserLen, 0) == SerializeIF::STREAM_TOO_SHORT);
   }
 }

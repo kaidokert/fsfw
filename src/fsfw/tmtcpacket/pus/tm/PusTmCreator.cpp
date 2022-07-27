@@ -94,6 +94,9 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
     uint16_t crc16 = CRC::crc16ccitt(start, getFullPacketLen() - sizeof(ecss::PusChecksumT));
     return SerializeAdapter::serialize(&crc16, buffer, size, maxSize, streamEndianness);
   }
+  // Even if no CRC is calculated, account for the space taken by it
+  *size += 2;
+  *buffer += 2;
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -151,6 +154,6 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
   return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
 }
 
-ReturnValue_t PusTmCreator::serialize(uint8_t* buffer, size_t maxSize) const {
-  return SerializeIF::serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
+ReturnValue_t PusTmCreator::serialize(uint8_t* buffer, size_t& serLen, size_t maxSize) const {
+  return SerializeIF::serialize(buffer, serLen, maxSize, SerializeIF::Endianness::NETWORK);
 }

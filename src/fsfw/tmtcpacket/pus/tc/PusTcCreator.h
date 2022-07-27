@@ -35,7 +35,7 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
   SpacePacketParams &getSpParams();
 
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) const override;
-  ReturnValue_t serialize(uint8_t *buffer, size_t maxSize) const override;
+  ReturnValue_t serialize(uint8_t *buffer, size_t &serLen, size_t maxSize) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
 
   [[nodiscard]] uint16_t getPacketIdRaw() const override;

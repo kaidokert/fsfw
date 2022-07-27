@@ -57,7 +57,8 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     REQUIRE(psb.performServiceCallCnt == 0);
     uint8_t* dataPtr;
     REQUIRE(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == retval::OK);
-    REQUIRE(creator.serializeBe(dataPtr, creator.getSerializedSize()) == retval::OK);
+    size_t serLen = 0;
+    REQUIRE(creator.serializeBe(dataPtr, serLen, creator.getSerializedSize()) == retval::OK);
     tmtcMsg.setStorageId(storeId);
     msgQueue.addReceivedMessage(tmtcMsg);
     REQUIRE(psb.performOperation(0) == retval::OK);
@@ -77,7 +78,8 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
   SECTION("Send Request with Failed Handling") {
     uint8_t* dataPtr;
     REQUIRE(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == retval::OK);
-    REQUIRE(creator.serializeBe(dataPtr, creator.getSerializedSize()) == retval::OK);
+    size_t serLen = 0;
+    REQUIRE(creator.serializeBe(dataPtr, serLen, creator.getSerializedSize()) == retval::OK);
     tmtcMsg.setStorageId(storeId);
     msgQueue.addReceivedMessage(tmtcMsg);
     psb.makeNextHandleReqCallFail(3);

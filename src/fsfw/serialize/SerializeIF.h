@@ -125,22 +125,26 @@ class SerializeIF {
    * @param streamEndianness
    * @return
    */
-  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize,
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t &serLen, size_t maxSize,
                                                 Endianness streamEndianness) const {
     size_t tmpSize = 0;
-    return serialize(&buffer, &tmpSize, maxSize, streamEndianness);
+    ReturnValue_t result = serialize(&buffer, &tmpSize, maxSize, streamEndianness);
+    serLen = tmpSize;
+    return result;
   }
   /**
    * Forwards to regular @serialize call with big (network) endianness
    */
-  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t *buffer, size_t maxSize) const {
-    return serialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
+  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t *buffer, size_t &serLen,
+                                                  size_t maxSize) const {
+    return serialize(buffer, serLen, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t maxSize) const {
-    return serialize(buffer, maxSize, SerializeIF::Endianness::MACHINE);
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t &serLen,
+                                                size_t maxSize) const {
+    return serialize(buffer, serLen, maxSize, SerializeIF::Endianness::MACHINE);
   }
 
   /**
@@ -151,21 +155,24 @@ class SerializeIF {
    * @param streamEndianness
    * @return
    */
-  virtual ReturnValue_t deSerialize(const uint8_t *buffer, size_t maxSize,
+  virtual ReturnValue_t deSerialize(const uint8_t *buffer, size_t &deserSize, size_t maxSize,
                                     Endianness streamEndianness) {
-    return deSerialize(&buffer, &maxSize, streamEndianness);
+    size_t deserLen = maxSize;
+    ReturnValue_t result = deSerialize(&buffer, &deserLen, streamEndianness);
+    deserSize = maxSize - deserLen;
+    return result;
   }
   /**
    * Forwards to regular @serialize call with big (network) endianness
    */
-  virtual ReturnValue_t deSerializeBe(const uint8_t *buffer, size_t maxSize) {
-    return deSerialize(buffer, maxSize, SerializeIF::Endianness::NETWORK);
+  virtual ReturnValue_t deSerializeBe(const uint8_t *buffer, size_t &deserSize, size_t maxSize) {
+    return deSerialize(buffer, deserSize, maxSize, SerializeIF::Endianness::NETWORK);
   }
   /**
    * If endianness is not explicitly specified, use machine endianness
    */
-  virtual ReturnValue_t deSerialize(const uint8_t *buffer, size_t maxSize) {
-    return deSerialize(buffer, maxSize, SerializeIF::Endianness::MACHINE);
+  virtual ReturnValue_t deSerialize(const uint8_t *buffer, size_t &deserSize, size_t maxSize) {
+    return deSerialize(buffer, deserSize, maxSize, SerializeIF::Endianness::MACHINE);
   }
 };
 

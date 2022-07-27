@@ -24,12 +24,14 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
   }
 
   SECTION("Little Endian Simple") {
-    REQUIRE(
-        simpleSer.SerializeIF::serialize(buf.data(), buf.size(), SerializeIF::Endianness::LITTLE) ==
-        HasReturnvaluesIF::RETURN_OK);
+    size_t serLen = 0xff;
+    REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), serLen, buf.size(),
+                                             SerializeIF::Endianness::LITTLE) ==
+            HasReturnvaluesIF::RETURN_OK);
     CHECK(buf[0] == 1);
     CHECK(buf[1] == 3);
     CHECK(buf[2] == 2);
+    CHECK(serLen == 3);
   }
 
   SECTION("Big Endian Normal") {
@@ -54,23 +56,25 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
   }
 
   SECTION("Big Endian Simple") {
+    size_t serLen = 0xff;
     SECTION("Explicit") {
-      REQUIRE(
-          simpleSer.SerializeIF::serialize(buf.data(), buf.size(), SerializeIF::Endianness::BIG) ==
-          HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), serLen, buf.size(),
+                                               SerializeIF::Endianness::BIG) ==
+              HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 0") {
-      REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), buf.size(),
+      REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), serLen, buf.size(),
                                                SerializeIF::Endianness::NETWORK) ==
               HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::serializeBe(buf.data(), buf.size()) ==
+      REQUIRE(simpleSer.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) ==
               HasReturnvaluesIF::RETURN_OK);
     }
     CHECK(buf[0] == 1);
     CHECK(buf[1] == 2);
     CHECK(buf[2] == 3);
+    CHECK(serLen == 3);
   }
 
   SECTION("Machine Endian Implicit") {
@@ -90,7 +94,8 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
   }
 
   SECTION("Machine Endian Simple Implicit") {
-    REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), buf.size()) ==
+    size_t serLen = 0xff;
+    REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), serLen, buf.size()) ==
             HasReturnvaluesIF::RETURN_OK);
     CHECK(buf[0] == 1);
 #if BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
@@ -100,6 +105,7 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
     CHECK(buf[1] == 2);
     CHECK(buf[2] == 3);
 #endif
+    CHECK(serLen == 3);
   }
 }
 
@@ -119,10 +125,13 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
   }
 
   SECTION("Little Endian Simple") {
-    REQUIRE(simpleSer.SerializeIF::deSerialize(ptr, len, SerializeIF::Endianness::LITTLE) ==
-            HasReturnvaluesIF::RETURN_OK);
+    size_t deserLen = 0xff;
+    REQUIRE(
+        simpleSer.SerializeIF::deSerialize(ptr, deserLen, len, SerializeIF::Endianness::LITTLE) ==
+        HasReturnvaluesIF::RETURN_OK);
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 0x0100);
+    CHECK(deserLen == 3);
   }
 
   SECTION("Big Endian Normal") {
@@ -144,22 +153,24 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
   }
 
   SECTION("Big Endian Simple") {
+    size_t deserLen = 0xff;
     SECTION("Explicit") {
-      REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), buf.size(),
+      REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), deserLen, buf.size(),
                                                  SerializeIF::Endianness::BIG) ==
               HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 0") {
-      REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), buf.size(),
+      REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), deserLen, buf.size(),
                                                  SerializeIF::Endianness::NETWORK) ==
               HasReturnvaluesIF::RETURN_OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::deSerializeBe(buf.data(), buf.size()) ==
+      REQUIRE(simpleSer.SerializeIF::deSerializeBe(buf.data(), deserLen, buf.size()) ==
               HasReturnvaluesIF::RETURN_OK);
     }
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 1);
+    CHECK(deserLen == 3);
   }
 
   SECTION("Machine Endian Implicit") {
@@ -176,7 +187,8 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
   }
 
   SECTION("Machine Endian Simple Implicit") {
-    REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), buf.size()) ==
+    size_t deserLen = 0xff;
+    REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), deserLen, buf.size()) ==
             HasReturnvaluesIF::RETURN_OK);
     CHECK(simpleSer.getU8() == 5);
 #if BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
@@ -184,5 +196,6 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
 #else
     CHECK(simpleSer.getU16() == 1);
 #endif
+    CHECK(deserLen == 3);
   }
 }

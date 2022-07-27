@@ -94,6 +94,18 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
     REQUIRE(buf[13] == 3);
   }
 
+  SECTION("Test with Application Data Serializable Simple Ser API") {
+    auto& params = creator.getPusParams();
+    auto simpleSer = SimpleSerializable();
+    creator.setSerializableUserData(simpleSer);
+    REQUIRE(creator.getSerializedSize() == 16);
+    REQUIRE(creator.serialize(dataPtr, serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(serLen == 16);
+    REQUIRE(buf[11] == 1);
+    REQUIRE(buf[12] == 2);
+    REQUIRE(buf[13] == 3);
+  }
+
   SECTION("Deserialization Fails") {
     SerializeIF& deser = creator;
     size_t deserLen = buf.size();
