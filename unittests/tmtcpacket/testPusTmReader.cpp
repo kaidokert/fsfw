@@ -38,9 +38,10 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
       readerPtr->setTimeReader(&timeStamperAndReader);
       deleteReader = true;
     }
-    REQUIRE(readerPtr);
-    REQUIRE(not readerPtr->isNull());
+    REQUIRE(not *readerPtr);
+    REQUIRE(readerPtr->isNull());
     REQUIRE(readerPtr->parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(not readerPtr->isNull());
     REQUIRE(readerPtr->getService() == 17);
     REQUIRE(readerPtr->getSubService() == 2);
     REQUIRE(readerPtr->getApid() == 0xef);

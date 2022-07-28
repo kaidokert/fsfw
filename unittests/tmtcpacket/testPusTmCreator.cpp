@@ -146,4 +146,13 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
               SerializeIF::BUFFER_TOO_SHORT);
     }
   }
+
+  SECTION("No CRC Generation") {
+    creator.disableCrcCalculation();
+    REQUIRE(not creator.crcCalculationEnabled());
+    REQUIRE(creator.serialize(dataPtr, serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(serLen == 22);
+    REQUIRE(buf[20] == 0x00);
+    REQUIRE(buf[21] == 0x00);
+  }
 }
