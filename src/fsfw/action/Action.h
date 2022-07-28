@@ -26,7 +26,7 @@ class Action: public SerializeIF {
 
   MessageQueueId_t commandedBy;
 
-  virtual ReturnValue_t handle() = 0;
+  [[nodiscard]] virtual ReturnValue_t handle() = 0;
 
   void registerParameter(ParameterIF *parameter);
 

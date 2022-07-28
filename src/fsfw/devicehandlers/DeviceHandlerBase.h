@@ -201,7 +201,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    */
   virtual void setParentQueue(MessageQueueId_t parentQueueId);
 
-  /** @brief  Implementation required for HasActionIF */ 
+  /** @brief  Implementations required for HasActionIF */
+  ActionHelper* getActionHelper() override;
   ReturnValue_t executeAction(Action *action) override;
 
   Mode_t getTransitionSourceMode() const;
@@ -310,6 +311,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *    - Anything else triggers an even with the returnvalue as a parameter
    */
   virtual ReturnValue_t buildTransitionDeviceCommand(DeviceCommandId_t *id) = 0;
+  
+  //TODO Remove and update documentation
   /**
    * @brief 	Build a device command packet from data supplied by a direct
    *          command (PUS Service 8)

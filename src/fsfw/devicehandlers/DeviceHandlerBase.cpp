@@ -1263,6 +1263,10 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t r
   }
 }
 
+ActionHelper *DeviceHandlerBase::getActionHelper() {
+  return &actionHelper;
+}
+
 ReturnValue_t DeviceHandlerBase::executeAction(Action *action) {
   ReturnValue_t result = acceptExternalDeviceCommands();
   if (result != HasReturnvaluesIF::RETURN_OK) {
