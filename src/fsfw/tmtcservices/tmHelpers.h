@@ -28,16 +28,16 @@ class DataWithObjectIdPrefix : public SerializeIF {
     }
     if (dataWrapper.type != ecss::DataTypes::RAW) {
       if ((dataWrapper.dataUnion.raw.data == nullptr) and (dataWrapper.dataUnion.raw.len > 0)) {
-        return retval::FAILED;
+        return result::FAILED;
       }
     } else if (dataWrapper.type == ecss::DataTypes::SERIALIZABLE) {
       if (dataWrapper.dataUnion.serializable == nullptr) {
-        return retval::FAILED;
+        return result::FAILED;
       }
     }
     ReturnValue_t result =
         SerializeAdapter::serialize(&objectId, buffer, size, maxSize, streamEndianness);
-    if (result != retval::OK) {
+    if (result != result::OK) {
       return result;
     }
     if (dataWrapper.type != ecss::DataTypes::RAW) {
@@ -47,7 +47,7 @@ class DataWithObjectIdPrefix : public SerializeIF {
     } else {
       return dataWrapper.dataUnion.serializable->serialize(buffer, size, maxSize, streamEndianness);
     }
-    return retval::OK;
+    return result::OK;
   }
 
   [[nodiscard]] size_t getSerializedSize() const override {
@@ -58,7 +58,7 @@ class DataWithObjectIdPrefix : public SerializeIF {
                             Endianness streamEndianness) override {
     // As long as there is no way to know how long the expected data will be, this function
     // does not make sense
-    return retval::FAILED;
+    return result::FAILED;
   }
 
  private:

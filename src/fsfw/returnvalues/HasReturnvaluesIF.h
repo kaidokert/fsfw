@@ -33,8 +33,7 @@ class HasReturnvaluesIF {
    * @param number
    * @return
    */
-  static constexpr ReturnValue_t makeReturnCode(
-      uint8_t classId, uint8_t number) {
+  static constexpr ReturnValue_t makeReturnCode(uint8_t classId, uint8_t number) {
     return result::makeCode(classId, number);
   }
 };

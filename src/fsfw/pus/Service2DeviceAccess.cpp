@@ -136,7 +136,7 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
   const uint8_t* data = nullptr;
   size_t size = 0;
   ReturnValue_t result = ipcStore->getData(storeAddress, &data, &size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service2DeviceAccess::sendWiretappingTm: Data Lost in "
                   "handleUnrequestedReply with failure ID "
@@ -149,7 +149,7 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
   // sending it back.
   WiretappingPacket tmPacket(DeviceHandlerMessage::getDeviceObjectId(reply), data);
   result = sendTmPacket(subservice, tmPacket.objectId, tmPacket.data, size);
-  if (result != retval::OK) {
+  if (result != RETURN_OK) {
     // TODO: Warning
     return;
   }

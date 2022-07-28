@@ -9,8 +9,8 @@
 class PusIF : public SpacePacketIF {
  public:
   static constexpr uint8_t INTERFACE_ID = CLASS_ID::PUS_IF;
-  static constexpr ReturnValue_t INVALID_PUS_VERSION = retval::makeCode(INTERFACE_ID, 0);
-  static constexpr ReturnValue_t INVALID_CRC_16 = retval::makeCode(INTERFACE_ID, 1);
+  static constexpr ReturnValue_t INVALID_PUS_VERSION = result::makeCode(INTERFACE_ID, 0);
+  static constexpr ReturnValue_t INVALID_CRC_16 = result::makeCode(INTERFACE_ID, 1);
 
   ~PusIF() override = default;
   /**

@@ -309,7 +309,7 @@ void CommandingServiceBase::handleRequestQueue() {
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, const uint8_t* sourceData,
                                                   size_t sourceDataLen) {
   ReturnValue_t result = tmHelper.prepareTmPacket(subservice, sourceData, sourceDataLen);
-  if (result != retval::OK) {
+  if (result != result::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();
@@ -319,7 +319,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_
                                                   const uint8_t* data, size_t dataLen) {
   telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
   ReturnValue_t result = tmHelper.prepareTmPacket(subservice, dataWithObjId);
-  if (result != retval::OK) {
+  if (result != result::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();
@@ -327,7 +327,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeIF& sourceData) {
   ReturnValue_t result = tmHelper.prepareTmPacket(subservice, sourceData);
-  if (result != retval::OK) {
+  if (result != result::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();

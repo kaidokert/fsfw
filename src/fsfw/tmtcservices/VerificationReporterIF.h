@@ -41,7 +41,7 @@ struct VerifFailureParams : public VerifParamsBase {
   VerifFailureParams(uint8_t reportId, PusTcIF& tc)
       : VerifParamsBase(reportId, tc.getPacketIdRaw(), tc.getPacketSeqCtrlRaw()) {}
 
-  ReturnValue_t errorCode = retval::OK;
+  ReturnValue_t errorCode = result::OK;
   uint8_t step = 0;
   uint32_t errorParam1 = 0;
   uint32_t errorParam2 = 0;

@@ -36,7 +36,7 @@ ReturnValue_t VerificationReporter::sendFailureReport(VerifFailureParams params)
 
 ReturnValue_t VerificationReporter::sendSuccessReport(VerifSuccessParams params) {
   PusVerificationMessage message(params.reportId, params.ackFlags, params.tcPacketId, params.tcPsc,
-                                 retval::OK, params.step);
+                                 result::OK, params.step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
   if (status != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

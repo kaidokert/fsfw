@@ -25,10 +25,10 @@ TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
   SECTION("Basic tests") {
     REQUIRE(not simplePool.hasDataAtId(testStoreId));
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     REQUIRE(simplePool.hasDataAtId(testStoreId));
     result = simplePool.getData(testStoreId, &constPointer, &size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     memcpy(receptionArray.data(), constPointer, size);
     for (size_t i = 0; i < size; i++) {
       CHECK(receptionArray[i] == i);
@@ -36,12 +36,12 @@ TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
     memset(receptionArray.data(), 0, size);
     result = simplePool.modifyData(testStoreId, &pointer, &size);
     memcpy(receptionArray.data(), pointer, size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     for (size_t i = 0; i < size; i++) {
       CHECK(receptionArray[i] == i);
     }
     result = simplePool.deleteData(testStoreId);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     REQUIRE(not simplePool.hasDataAtId(testStoreId));
     result = simplePool.addData(&testStoreId, testDataArray.data(), 15);
     CHECK(result == (int)StorageManagerIF::DATA_TOO_LARGE);
@@ -50,12 +50,12 @@ TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
   SECTION("Reservation Tests ") {
     pointer = nullptr;
     result = simplePool.getFreeElement(&testStoreId, size, &pointer);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     memcpy(pointer, testDataArray.data(), size);
     constPointer = nullptr;
     result = simplePool.getData(testStoreId, &constPointer, &size);
 
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     memcpy(receptionArray.data(), constPointer, size);
     for (size_t i = 0; i < size; i++) {
       CHECK(receptionArray[i] == i);
@@ -64,21 +64,21 @@ TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
 
   SECTION("Add, delete, add, add when full") {
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = simplePool.getData(testStoreId, &constPointer, &size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     memcpy(receptionArray.data(), constPointer, size);
     for (size_t i = 0; i < size; i++) {
       CHECK(receptionArray[i] == i);
     }
 
     result = simplePool.deleteData(testStoreId);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
 
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = simplePool.getData(testStoreId, &constPointer, &size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     memcpy(receptionArray.data(), constPointer, size);
     for (size_t i = 0; i < size; i++) {
       CHECK(receptionArray[i] == i);
@@ -105,20 +105,20 @@ TEST_CASE("Local Pool Simple Tests [1 Pool]", "[TestPool]") {
 
   SECTION("Initialize and clear store, delete with pointer") {
     result = simplePool.initialize();
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     simplePool.clearStore();
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     result = simplePool.modifyData(testStoreId, &pointer, &size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     store_address_t newId;
     result = simplePool.deleteData(pointer, size, &testStoreId);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     REQUIRE(testStoreId.raw != (uint32_t)StorageManagerIF::INVALID_ADDRESS);
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
   }
 }
 
@@ -141,10 +141,10 @@ TEST_CASE("Local Pool Extended Tests [3 Pools]", "[TestPool2]") {
   runIdx++;
 
   LocalPool simplePool(0, *config);
-  std::array<uint8_t, 20> testDataArray;
-  std::array<uint8_t, 20> receptionArray;
+  std::array<uint8_t, 20> testDataArray{};
+  std::array<uint8_t, 20> receptionArray{};
   store_address_t testStoreId;
-  ReturnValue_t result = retval::CATCH_FAILED;
+  ReturnValue_t result = result::FAILED;
   for (size_t i = 0; i < testDataArray.size(); i++) {
     testDataArray[i] = i;
   }
@@ -153,20 +153,20 @@ TEST_CASE("Local Pool Extended Tests [3 Pools]", "[TestPool2]") {
   SECTION("Basic tests") {
     size = 8;
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     // Should be on second page of the pool now for 8 bytes
     CHECK(testStoreId.poolIndex == 1);
     CHECK(testStoreId.packetIndex == 0);
 
     size = 15;
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     // Should be on third page of the pool now for 15 bytes
     CHECK(testStoreId.poolIndex == 2);
     CHECK(testStoreId.packetIndex == 0);
 
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     // Should be on third page of the pool now for 15 bytes
     CHECK(testStoreId.poolIndex == 2);
     CHECK(testStoreId.packetIndex == 1);
@@ -177,7 +177,7 @@ TEST_CASE("Local Pool Extended Tests [3 Pools]", "[TestPool2]") {
 
     size = 8;
     result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     // Should still work
     CHECK(testStoreId.poolIndex == 1);
     CHECK(testStoreId.packetIndex == 1);
@@ -185,7 +185,7 @@ TEST_CASE("Local Pool Extended Tests [3 Pools]", "[TestPool2]") {
     // fill the rest of the pool
     for (uint8_t idx = 2; idx < 5; idx++) {
       result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-      REQUIRE(result == retval::CATCH_OK);
+      REQUIRE(result == result::OK);
       CHECK(testStoreId.poolIndex == 1);
       CHECK(testStoreId.packetIndex == idx);
     }
@@ -206,21 +206,21 @@ TEST_CASE("Local Pool Extended Tests [3 Pools]", "[TestPool2]") {
     size = 5;
     for (uint8_t idx = 0; idx < 10; idx++) {
       result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-      REQUIRE(result == retval::CATCH_OK);
+      REQUIRE(result == result::OK);
       CHECK(testStoreId.poolIndex == 0);
       CHECK(testStoreId.packetIndex == idx);
     }
     size = 10;
     for (uint8_t idx = 0; idx < 5; idx++) {
       result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-      REQUIRE(result == retval::CATCH_OK);
+      REQUIRE(result == result::OK);
       CHECK(testStoreId.poolIndex == 1);
       CHECK(testStoreId.packetIndex == idx);
     }
     size = 20;
     for (uint8_t idx = 0; idx < 2; idx++) {
       result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-      REQUIRE(result == retval::CATCH_OK);
+      REQUIRE(result == result::OK);
       CHECK(testStoreId.poolIndex == 2);
       CHECK(testStoreId.packetIndex == idx);
     }
@@ -247,7 +247,7 @@ TEST_CASE("Local Pool Extended Tests [3 Pools]", "[TestPool2]") {
     size = 5;
     for (uint8_t idx = 0; idx < 10; idx++) {
       result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-      REQUIRE(result == retval::CATCH_OK);
+      REQUIRE(result == result::OK);
       CHECK(testStoreId.poolIndex == 0);
       CHECK(testStoreId.packetIndex == idx);
     }
@@ -264,7 +264,7 @@ TEST_CASE("Local Pool Extended Tests [3 Pools]", "[TestPool2]") {
     size = 10;
     for (uint8_t idx = 0; idx < 5; idx++) {
       result = simplePool.addData(&testStoreId, testDataArray.data(), size);
-      REQUIRE(result == retval::CATCH_OK);
+      REQUIRE(result == result::OK);
       CHECK(testStoreId.poolIndex == 1);
       CHECK(testStoreId.packetIndex == idx);
     }

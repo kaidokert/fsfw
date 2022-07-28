@@ -18,6 +18,6 @@ TEST_CASE("TM ZC Helper", "[tm-zc-helper]") {
 
   SECTION("Basic") {
     REQUIRE(creator.serialize(dataPtr, serLen, buf.size()) == result::OK);
-    PusTmZeroCopyWriter()
+    PusTmZeroCopyWriter(timeStamper, dataPtr, serLen);
   }
 }
