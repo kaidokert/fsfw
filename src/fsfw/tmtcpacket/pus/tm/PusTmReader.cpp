@@ -86,6 +86,6 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   }
   return HasReturnvaluesIF::RETURN_OK;
 }
-bool PusTmReader::isNull() const { return spReader.isNull(); }
+bool PusTmReader::isNull() const { return spReader.isNull() or pointers.secHeaderStart == nullptr; }
 
 PusTmReader::operator bool() const { return not isNull(); }

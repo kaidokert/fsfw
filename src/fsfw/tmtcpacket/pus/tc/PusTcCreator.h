@@ -19,6 +19,12 @@ struct PusTcParams {
   uint8_t pusVersion = ecss::PusVersion::PUS_C;
 };
 
+/**
+ * This class provides a high-level interface to create PUS TC packets and then @serialize
+ * them into a raw byte format. It implements @SerializeIF for that purpose.
+ * A custom time stamper can be set, with the implementation of @TimeStamperIF as the only
+ * requirement.
+ */
 class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF {
  public:
   PusTcCreator(SpacePacketParams initSpParams, PusTcParams initPusParams);

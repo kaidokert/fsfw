@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "fsfw/globalfunctions/CRC.h"
 #include "fsfw/tmtcpacket/pus/tm.h"
 #include "fsfw/tmtcpacket/pus/tm/PusTmZcWriter.h"
 #include "mocks/CdsShortTimestamperMock.h"
@@ -16,8 +17,26 @@ TEST_CASE("TM ZC Helper", "[tm-zc-helper]") {
   uint8_t* dataPtr = buf.data();
   size_t serLen = 0;
 
+  SECTION("No Crash For Uninitialized Object") {
+    REQUIRE(creator.serialize(dataPtr, serLen, buf.size()) == result::OK);
+    PusTmZeroCopyWriter writer(timeStamper, dataPtr, serLen);
+    REQUIRE(writer.getSequenceCount() == 22);
+    writer.setSequenceCount(23);
+    // Can't set anything, parse function was not called
+    REQUIRE(writer.getSequenceCount() == 22);
+    writer.updateErrorControl();
+  }
+
   SECTION("Basic") {
     REQUIRE(creator.serialize(dataPtr, serLen, buf.size()) == result::OK);
-    PusTmZeroCopyWriter(timeStamper, dataPtr, serLen);
+    PusTmZeroCopyWriter writer(timeStamper, dataPtr, serLen);
+    REQUIRE(writer.parseDataWithoutCrcCheck() == result::OK);
+    REQUIRE(writer.getSequenceCount() == 22);
+    writer.setSequenceCount(23);
+    REQUIRE(writer.getSequenceCount() == 23);
+    // CRC is invalid now
+    REQUIRE(CRC::crc16ccitt(dataPtr, serLen) != 0);
+    writer.updateErrorControl();
+    REQUIRE(CRC::crc16ccitt(dataPtr, serLen) == 0);
   }
 }

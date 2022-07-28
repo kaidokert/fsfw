@@ -39,8 +39,18 @@ struct PusTmParams {
 
 class TimeStamperIF;
 
+/**
+ * This class provides a high-level interface to create PUS TM packets and then @serialize
+ * them into a raw byte format. It implements @SerializeIF for that purpose.
+ * A custom time stamper can be set, with the implementation of @TimeStamperIF as the only
+ * requirement.
+ */
 class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF {
  public:
+  /**
+   * Empty creator with all-default parameters. Please note that serializing this will
+   * generate an invalid PUS packet with no timestamp.
+   */
   PusTmCreator();
   PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams);
   ~PusTmCreator() override = default;
