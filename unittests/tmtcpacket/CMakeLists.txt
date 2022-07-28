@@ -6,4 +6,5 @@ target_sources(${FSFW_TEST_TGT} PRIVATE
   testPusTmCreator.cpp
   testPusTmReader.cpp
   testCcsds.cpp
+  testZcTmWriter.cpp
 )
