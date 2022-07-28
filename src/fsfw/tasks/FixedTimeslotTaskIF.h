@@ -15,7 +15,7 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
   ~FixedTimeslotTaskIF() override = default;
 
   static constexpr ReturnValue_t SLOT_LIST_EMPTY =
-      retval::makeCode(CLASS_ID::FIXED_SLOT_TASK_IF, 0);
+      result::makeCode(CLASS_ID::FIXED_SLOT_TASK_IF, 0);
 
   /**
    * Add an object with a slot time and the execution step to the task.

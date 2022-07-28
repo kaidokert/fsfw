@@ -60,7 +60,7 @@ TEST_CASE("DleEncoder", "[DleEncoder]") {
                               const std::vector<uint8_t>& expectedVec) {
     result = encoder.encode(vecToEncode.data(), vecToEncode.size(), buffer.data(), buffer.size(),
                             &encodedLen);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     for (size_t idx = 0; idx < expectedVec.size(); idx++) {
       REQUIRE(buffer[idx] == expectedVec[idx]);
     }
@@ -71,7 +71,7 @@ TEST_CASE("DleEncoder", "[DleEncoder]") {
                               const std::vector<uint8_t>& expectedVec) {
     result = encoder.decode(testVecEncoded.data(), testVecEncoded.size(), &readLen, buffer.data(),
                             buffer.size(), &decodedLen);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     REQUIRE(readLen == testVecEncoded.size());
     REQUIRE(decodedLen == expectedVec.size());
     for (size_t idx = 0; idx < decodedLen; idx++) {

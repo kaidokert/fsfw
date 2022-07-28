@@ -20,12 +20,12 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
   StorageManagerIF* ipcStore = tglob::getIpcStoreHandle();
   REQUIRE(ipcStore != nullptr);
   ipcStore->addData(&paramAddress, testParams.data(), 3);
-  REQUIRE(actionHelper.initialize() == retval::CATCH_OK);
+  REQUIRE(actionHelper.initialize() == result::OK);
 
   SECTION("Simple tests") {
     ActionMessage::setCommand(&actionMessage, testActionId, paramAddress);
     CHECK(not testDhMock.executeActionCalled);
-    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == retval::CATCH_OK);
+    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == result::OK);
     CHECK(testDhMock.executeActionCalled);
     // No message is sent if everything is alright.
     CHECK(not testMqMock.wasMessageSent());
@@ -81,10 +81,10 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
   SECTION("Handle failed") {
     store_address_t toLongParamAddress = store_address_t::invalid();
     std::array<uint8_t, 5> toLongData = {5, 4, 3, 2, 1};
-    REQUIRE(ipcStore->addData(&toLongParamAddress, toLongData.data(), 5) == retval::CATCH_OK);
+    REQUIRE(ipcStore->addData(&toLongParamAddress, toLongData.data(), 5) == result::OK);
     ActionMessage::setCommand(&actionMessage, testActionId, toLongParamAddress);
     CHECK(not testDhMock.executeActionCalled);
-    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == retval::CATCH_OK);
+    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == result::OK);
     REQUIRE(ipcStore->getData(toLongParamAddress).first ==
             static_cast<uint32_t>(StorageManagerIF::DATA_DOES_NOT_EXIST));
     CommandMessage testMessage;
@@ -98,7 +98,7 @@ TEST_CASE("Action Helper", "[ActionHelper]") {
   SECTION("Missing IPC Data") {
     ActionMessage::setCommand(&actionMessage, testActionId, store_address_t::invalid());
     CHECK(not testDhMock.executeActionCalled);
-    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == retval::CATCH_OK);
+    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == result::OK);
     CommandMessage testMessage;
     REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::STEP_FAILED));

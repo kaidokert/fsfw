@@ -40,7 +40,7 @@ TEST_CASE("Serial Linked Packet", "[SerLinkPacket]") {
     // Deserialize big endian packet by setting bigEndian to true.
     ReturnValue_t result =
         testClass.deSerialize(&readOnlyPointer, &packetLen, SerializeIF::Endianness::BIG);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     CHECK(testClass.getHeader() == 42);
     // Equivalent check.
     // CHECK(testClass.getBuffer()[0] == 1);
@@ -59,7 +59,7 @@ TEST_CASE("Serial Linked Packet", "[SerLinkPacket]") {
     // serialize for ground: bigEndian = true.
     ReturnValue_t result = testClass.serialize(&packetPointer, &serializedSize, packetMaxSize,
                                                SerializeIF::Endianness::BIG);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == result::OK);
     // Result should be big endian now.
     CHECK(packet[3] == 42);
     CHECK(packet[4] == 1);
