@@ -124,6 +124,7 @@ void PusTmCreator::setApid(uint16_t apid) { spCreator.setApid(apid); }
 void PusTmCreator::setup() {
   updateSpLengthField();
   spCreator.setPacketType(ccsds::PacketType::TM);
+  spCreator.setSecHeaderFlag();
 }
 
 void PusTmCreator::setMessageTypeCounter(uint16_t messageTypeCounter) {

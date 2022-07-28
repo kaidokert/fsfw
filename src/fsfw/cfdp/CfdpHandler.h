@@ -12,18 +12,18 @@ namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
-class CFDPHandler : public ExecutableObjectIF,
+class CfdpHandler : public ExecutableObjectIF,
                     public AcceptsTelecommandsIF,
                     public SystemObject,
                     public HasReturnvaluesIF {
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:
-  CFDPHandler(object_id_t setObjectId, CFDPDistributor* distributor);
+  CfdpHandler(object_id_t setObjectId, CFDPDistributor* distributor);
   /**
    * The destructor is empty.
    */
-  virtual ~CFDPHandler();
+  virtual ~CfdpHandler();
 
   virtual ReturnValue_t handleRequest(store_address_t storeId);
 

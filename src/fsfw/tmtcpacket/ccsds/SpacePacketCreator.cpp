@@ -83,3 +83,5 @@ void SpacePacketCreator::setPacketType(ccsds::PacketType type) {
 bool SpacePacketCreator::operator==(const SpacePacketCreator &other) const { return false; }
 
 SpacePacketCreator::operator bool() const { return isValid(); }
+
+void SpacePacketCreator::setSecHeaderFlag() { params.packetId.secHeaderFlag = true; }

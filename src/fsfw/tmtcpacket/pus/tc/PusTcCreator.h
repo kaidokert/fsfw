@@ -61,6 +61,7 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
   // Forbidden to use
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override;
+  void setup();
   SpacePacketCreator spCreator;
   PusTcParams pusParams;
 };

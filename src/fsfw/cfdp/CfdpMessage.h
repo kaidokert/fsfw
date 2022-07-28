@@ -5,14 +5,14 @@
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
-class CFDPMessage {
+class CfdpMessage {
  private:
-  CFDPMessage();
+  CfdpMessage();
 
  public:
   static const uint8_t MESSAGE_ID = messagetypes::CFDP;
 
-  virtual ~CFDPMessage();
+  virtual ~CfdpMessage();
   static void setCommand(CommandMessage* message, store_address_t cfdpPacket);
 
   static store_address_t getStoreId(const CommandMessage* message);

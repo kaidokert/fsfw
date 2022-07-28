@@ -16,20 +16,21 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
   size_t serLen = 0;
 
   SECTION("State") {
-    REQUIRE(creator.isTc());
-    REQUIRE(creator.getService() == 17);
-    REQUIRE(creator.getSubService() == 1);
-    REQUIRE(creator.getApid() == 0x02);
-    REQUIRE(creator.getPusVersion() == 2);
-    REQUIRE(creator.getAcknowledgeFlags() == 0b1111);
-    REQUIRE(creator.getSourceId() == 0x00);
-    REQUIRE(creator.getPacketSeqCtrlRaw() == 0xc034);
+    CHECK(creator.isTc());
+    CHECK(creator.hasSecHeader());
+    CHECK(creator.getService() == 17);
+    CHECK(creator.getSubService() == 1);
+    CHECK(creator.getApid() == 0x02);
+    CHECK(creator.getPusVersion() == 2);
+    CHECK(creator.getAcknowledgeFlags() == 0b1111);
+    CHECK(creator.getSourceId() == 0x00);
+    CHECK(creator.getPacketSeqCtrlRaw() == 0xc034);
     // bytes CCSDS header, 5 bytes secondary header, 2 bytes CRC, 3 bytes app data
-    REQUIRE(creator.getFullPacketLen() == 13);
+    CHECK(creator.getFullPacketLen() == 13);
     // The data length field is the full packet length minus the primary header minus 1
-    REQUIRE(creator.getPacketDataLen() == 6);
+    CHECK(creator.getPacketDataLen() == 6);
     auto& paramsLocal = creator.getSpParams();
-    REQUIRE(paramsLocal.packetId == packetId);
+    CHECK(paramsLocal.packetId == packetId);
   }
 
   SECTION("Serialized") {

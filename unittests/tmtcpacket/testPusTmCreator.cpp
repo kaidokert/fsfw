@@ -19,22 +19,23 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   size_t serLen = 0;
 
   SECTION("State") {
-    REQUIRE(creator.isTm());
-    REQUIRE(creator.getApid() == 0xef);
-    REQUIRE(creator.getPusVersion() == 2);
-    REQUIRE(creator.getScTimeRefStatus() == 0);
-    REQUIRE(creator.getService() == 17);
-    REQUIRE(creator.getSubService() == 2);
-    REQUIRE(creator.getTimestamper() == &timeStamper);
-    REQUIRE(creator.getSequenceFlags() == ccsds::SequenceFlags::UNSEGMENTED);
-    REQUIRE(creator.getSequenceCount() == 22);
+    CHECK(creator.isTm());
+    CHECK(creator.hasSecHeader());
+    CHECK(creator.getApid() == 0xef);
+    CHECK(creator.getPusVersion() == 2);
+    CHECK(creator.getScTimeRefStatus() == 0);
+    CHECK(creator.getService() == 17);
+    CHECK(creator.getSubService() == 2);
+    CHECK(creator.getTimestamper() == &timeStamper);
+    CHECK(creator.getSequenceFlags() == ccsds::SequenceFlags::UNSEGMENTED);
+    CHECK(creator.getSequenceCount() == 22);
     // 6 bytes CCSDS header, 7 bytes secondary header, 7 bytes CDS short timestamp,
     // 0 bytes application data, 2 bytes CRC
-    REQUIRE(creator.getFullPacketLen() == 22);
+    CHECK(creator.getFullPacketLen() == 22);
     // As specified in standard, the data length fields is the total size of the packet without
     // the primary header minus 1
-    REQUIRE(creator.getPacketDataLen() == 15);
-    REQUIRE(timeStamper.getSizeCallCount == 1);
+    CHECK(creator.getPacketDataLen() == 15);
+    CHECK(timeStamper.getSizeCallCount == 1);
   }
 
   SECTION("SP Params") {

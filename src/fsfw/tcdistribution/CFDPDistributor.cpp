@@ -72,7 +72,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 
 ReturnValue_t CFDPDistributor::registerHandler(AcceptsTelecommandsIF* handler) {
   uint16_t handlerId =
-      handler->getIdentifier();  // should be 0, because CFDPHandler does not set a set a service-ID
+      handler->getIdentifier();  // should be 0, because CfdpHandler does not set a set a service-ID
 #if FSFW_CFDP_DISTRIBUTOR_DEBUGGING == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::info << "CFDPDistributor::registerHandler: Handler ID: " << static_cast<int>(handlerId)

@@ -7,7 +7,7 @@ PoolManager::PoolManager(object_id_t setObjectId, const LocalPoolConfig& localPo
   mutex = MutexFactory::instance()->createMutex();
 }
 
-PoolManager::~PoolManager(void) { MutexFactory::instance()->deleteMutex(mutex); }
+PoolManager::~PoolManager() { MutexFactory::instance()->deleteMutex(mutex); }
 
 ReturnValue_t PoolManager::reserveSpace(const size_t size, store_address_t* address,
                                         bool ignoreFault) {
@@ -17,7 +17,7 @@ ReturnValue_t PoolManager::reserveSpace(const size_t size, store_address_t* addr
 }
 
 ReturnValue_t PoolManager::deleteData(store_address_t storeId) {
-#if FSFW_VERBOSE_LEVEL >= 2
+#if FSFW_VERBOSE_LEVEL >= 2 && FSFW_OBJ_EVENT_TRANSLATION == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::debug << "PoolManager( " << translateObject(getObjectId()) << " )::deleteData from store "
              << storeId.poolIndex << ". id is " << storeId.packetIndex << std::endl;
