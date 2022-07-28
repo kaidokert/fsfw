@@ -8,9 +8,12 @@ ExtendedControllerBase::ExtendedControllerBase(object_id_t objectId, object_id_t
 
 ExtendedControllerBase::~ExtendedControllerBase() {}
 
+ActionHelper *ExtendedControllerBase::getActionHelper() {
+  return &actionHelper;
+}
+
 ReturnValue_t ExtendedControllerBase::executeAction(Action *action) {
-  /* Needs to be overriden and implemented by child class. */
-  return HasReturnvaluesIF::RETURN_OK;
+  return action->handle();
 }
 
 object_id_t ExtendedControllerBase::getObjectId() const { return SystemObject::getObjectId(); }

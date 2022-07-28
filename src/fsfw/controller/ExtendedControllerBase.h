@@ -29,6 +29,10 @@ class ExtendedControllerBase : public ControllerBase,
   virtual ReturnValue_t performOperation(uint8_t opCode) override;
   virtual ReturnValue_t initializeAfterTaskCreation() override;
 
+  /* HasActionsIF overrides */
+  ActionHelper* getActionHelper() override;
+  ReturnValue_t executeAction(Action* actionId) override;
+
  protected:
   LocalDataPoolManager poolManager;
   ActionHelper actionHelper;
@@ -48,9 +52,6 @@ class ExtendedControllerBase : public ControllerBase,
 
   /* Handle the four messages mentioned above */
   void handleQueue() override;
-
-  /* HasActionsIF overrides */
-  virtual ReturnValue_t executeAction(Action* actionId) override;
 
   /* HasLocalDatapoolIF overrides */
   virtual LocalDataPoolManager* getHkManagerHandle() override;
