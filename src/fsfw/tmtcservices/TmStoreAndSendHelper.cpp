@@ -6,6 +6,12 @@ TmStoreAndSendWrapper::TmStoreAndSendWrapper(uint8_t defaultService, TmStoreHelp
                                              TmSendHelper& sendHelper)
     : storeHelper(storeHelper), sendHelper(sendHelper), defaultService(defaultService) {}
 
+/**
+ * Helper wrapper which stores the TM packet into the store and then sends it.
+ * @return
+ *   - StorageManagerIF returnvalue if storage fails
+ *   - MessageQueueIF returnvalue if sending fails
+ */
 ReturnValue_t TmStoreAndSendWrapper::storeAndSendTmPacket() {
   ReturnValue_t result = storeHelper.addPacketToStore();
   if (result != HasReturnvaluesIF::RETURN_OK) {

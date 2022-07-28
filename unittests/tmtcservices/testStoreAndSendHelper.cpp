@@ -31,6 +31,13 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     CHECK(&tmHelper.storeHelper == &storeHelper);
   }
 
+  SECTION("Storage Fails") {
+    // Too large to fit in store
+    std::array<uint8_t, 80> data{};
+    REQUIRE(storeHelper.setSourceDataRaw(data.data(), data.size()) == result::OK);
+    REQUIRE(tmHelper.storeAndSendTmPacket() == StorageManagerIF::DATA_TOO_LARGE);
+  }
+
   SECTION("Base Test") {
     tmHelper.prepareTmPacket(2);
     auto& creator = storeHelper.getCreatorRef();
