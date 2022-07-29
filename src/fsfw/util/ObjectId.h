@@ -50,7 +50,7 @@ struct std::hash<ObjectId>
 {
   std::size_t operator()(ObjectId const& s) const noexcept
   {
-    return std::hash<uint32_t>{}(s.id());
+    return std::hash<object_id_t>{}(s.id());
   }
 };
 
