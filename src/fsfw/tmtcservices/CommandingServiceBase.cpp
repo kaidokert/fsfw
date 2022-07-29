@@ -50,7 +50,7 @@ ReturnValue_t CommandingServiceBase::performOperation(uint8_t opCode) {
   return RETURN_OK;
 }
 
-uint16_t CommandingServiceBase::getIdentifier() { return service; }
+uint32_t CommandingServiceBase::getIdentifier() { return service; }
 
 MessageQueueId_t CommandingServiceBase::getRequestQueue() { return requestQueue->getId(); }
 

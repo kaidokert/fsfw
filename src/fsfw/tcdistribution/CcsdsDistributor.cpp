@@ -80,7 +80,7 @@ ReturnValue_t CcsdsDistributor::registerApplication(uint16_t apid, MessageQueueI
   return returnValue;
 }
 
-uint16_t CcsdsDistributor::getIdentifier() { return 0; }
+uint32_t CcsdsDistributor::getIdentifier() { return 0; }
 
 ReturnValue_t CcsdsDistributor::initialize() {
   if (packetChecker == nullptr) {

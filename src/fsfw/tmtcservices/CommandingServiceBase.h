@@ -106,7 +106,7 @@ class CommandingServiceBase : public SystemObject,
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
 
-  uint16_t getIdentifier() override;
+  uint32_t getIdentifier() override;
 
   /**
    * Returns the requestQueue MessageQueueId_t

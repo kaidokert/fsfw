@@ -82,7 +82,7 @@ void PusServiceBase::handleRequestQueue() {
   }
 }
 
-uint16_t PusServiceBase::getIdentifier() { return psbParams.serviceId; }
+uint32_t PusServiceBase::getIdentifier() { return psbParams.serviceId; }
 
 MessageQueueId_t PusServiceBase::getRequestQueue() {
   if (psbParams.reqQueue == nullptr) {

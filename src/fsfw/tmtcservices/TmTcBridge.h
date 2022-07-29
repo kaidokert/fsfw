@@ -69,7 +69,7 @@ class TmTcBridge : public AcceptsTelemetryIF,
   virtual MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) override;
 
   /** AcceptsTelecommandsIF override */
-  virtual uint16_t getIdentifier() override;
+  virtual uint32_t getIdentifier() override;
   virtual MessageQueueId_t getRequestQueue() override;
 
  protected:

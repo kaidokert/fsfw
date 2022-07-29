@@ -52,6 +52,6 @@ ReturnValue_t CfdpHandler::performOperation(uint8_t opCode) {
   return RETURN_OK;
 }
 
-uint16_t CfdpHandler::getIdentifier() { return 0; }
+uint32_t CfdpHandler::getIdentifier() { return 0; }
 
 MessageQueueId_t CfdpHandler::getRequestQueue() { return this->requestQueue->getId(); }

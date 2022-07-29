@@ -38,7 +38,7 @@ class CcsdsDistributor : public TcDistributor,
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) override;
   ReturnValue_t registerApplication(AcceptsTelecommandsIF* application) override;
-  uint16_t getIdentifier() override;
+  uint32_t getIdentifier() override;
   ReturnValue_t initialize() override;
 
  protected:

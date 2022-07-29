@@ -247,7 +247,7 @@ MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
 
 void TmTcBridge::printData(uint8_t* data, size_t dataLen) { arrayprinter::print(data, dataLen); }
 
-uint16_t TmTcBridge::getIdentifier() {
+uint32_t TmTcBridge::getIdentifier() {
   // This is no PUS service, so we just return 0
   return 0;
 }

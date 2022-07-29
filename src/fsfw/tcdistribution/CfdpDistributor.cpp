@@ -118,7 +118,7 @@ MessageQueueId_t CfdpDistributor::getRequestQueue() { return tcQueue->getId(); }
 //     }
 // }
 
-uint16_t CfdpDistributor::getIdentifier() { return this->apid; }
+uint32_t CfdpDistributor::getIdentifier() { return this->apid; }
 
 ReturnValue_t CfdpDistributor::initialize() {
   currentPacket = new CfdpPacketStored();

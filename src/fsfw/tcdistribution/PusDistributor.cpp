@@ -117,7 +117,7 @@ ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
   }
 }
 
-uint16_t PusDistributor::getIdentifier() { return checker.getApid(); }
+uint32_t PusDistributor::getIdentifier() { return checker.getApid(); }
 
 ReturnValue_t PusDistributor::initialize() {
   if (store == nullptr) {

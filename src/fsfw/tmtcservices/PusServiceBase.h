@@ -188,7 +188,7 @@ class PusServiceBase : public ExecutableObjectIF,
    * 			@c RETURN_FAILED else.
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
-  uint16_t getIdentifier() override;
+  uint32_t getIdentifier() override;
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t initialize() override;
 

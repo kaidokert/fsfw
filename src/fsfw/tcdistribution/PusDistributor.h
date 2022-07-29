@@ -36,7 +36,7 @@ class PusDistributor : public TcDistributor, public PusDistributorIF, public Acc
   ReturnValue_t registerService(AcceptsTelecommandsIF* service) override;
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t initialize() override;
-  uint16_t getIdentifier() override;
+  uint32_t getIdentifier() override;
 
  protected:
   StorageManagerIF* store;
