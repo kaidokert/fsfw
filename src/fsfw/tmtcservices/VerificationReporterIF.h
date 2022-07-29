@@ -13,6 +13,12 @@ struct VerifParamsBase {
   uint16_t tcPsc;
   uint8_t ackFlags = ecss::ACK_ALL;
   uint8_t step = 0;
+
+  void resetTcFields() {
+    tcPacketId = 0;
+    tcPsc = 0;
+    ackFlags = 0;
+  }
 };
 
 struct VerifSuccessParams : public VerifParamsBase {
@@ -27,10 +33,10 @@ struct VerifFailureParams : public VerifParamsBase {
   VerifFailureParams() = default;
   VerifFailureParams(uint8_t reportId, uint16_t tcPacketId, uint16_t tcPsc, ReturnValue_t errorCode,
                      uint32_t errorParam1, uint32_t errorParams2)
-      : VerifParamsBase(reportId, tcPacketId, tcPsc), errorCode(errorCode) {
-    errorParam1 = errorParam1;
-    errorParams2 = errorParams2;
-  }
+      : VerifParamsBase(reportId, tcPacketId, tcPsc),
+        errorCode(errorCode),
+        errorParam1(errorParam1),
+        errorParam2(errorParams2) {}
   VerifFailureParams(uint8_t reportId, uint16_t tcPacketId, uint16_t tcPsc, ReturnValue_t errorCode)
       : VerifParamsBase(reportId, tcPacketId, tcPsc), errorCode(errorCode) {}
   VerifFailureParams(uint8_t reportId, uint16_t tcPacketId, uint16_t tcPsc)
@@ -41,7 +47,13 @@ struct VerifFailureParams : public VerifParamsBase {
   VerifFailureParams(uint8_t reportId, PusTcIF& tc)
       : VerifParamsBase(reportId, tc.getPacketIdRaw(), tc.getPacketSeqCtrlRaw()) {}
 
-  ReturnValue_t errorCode = result::OK;
+  void resetFailParams() {
+    errorCode = result::FAILED;
+    errorParam1 = 0;
+    errorParam2 = 0;
+  }
+
+  ReturnValue_t errorCode = result::FAILED;
   uint8_t step = 0;
   uint32_t errorParam1 = 0;
   uint32_t errorParam2 = 0;

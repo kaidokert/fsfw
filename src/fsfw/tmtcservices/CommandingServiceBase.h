@@ -52,7 +52,13 @@ class CommandingServiceBase : public SystemObject,
 
   static const ReturnValue_t EXECUTION_COMPLETE = MAKE_RETURN_CODE(1);
   static const ReturnValue_t NO_STEP_MESSAGE = MAKE_RETURN_CODE(2);
+  /**
+   * Target object has too many pending requests
+   */
   static const ReturnValue_t OBJECT_BUSY = MAKE_RETURN_CODE(3);
+  /**
+   * Command map is full
+   */
   static const ReturnValue_t BUSY = MAKE_RETURN_CODE(4);
   static const ReturnValue_t INVALID_TC = MAKE_RETURN_CODE(5);
   static const ReturnValue_t INVALID_OBJECT = MAKE_RETURN_CODE(6);
@@ -330,16 +336,24 @@ class CommandingServiceBase : public SystemObject,
 
   ReturnValue_t setUpTcReader(store_address_t storeId);
 
-  void rejectPacket(uint8_t reportId, store_address_t tcStoreId, ReturnValue_t errorCode);
+  /**
+   * The TC format is invalid or there was an issue retrieving a TC packet from the store.
+   * @param errorCode Result of the failed operation, will be sent with the verification failure
+   *    message
+   * @return
+   */
+  ReturnValue_t rejectPacketInvalidTc(ReturnValue_t errorCode, store_address_t tcStoreId);
+  ReturnValue_t rejectPacket(uint8_t reportId, store_address_t tcStoreId, ReturnValue_t errorCode);
 
-  void acceptPacket(uint8_t reportId, store_address_t tcStoreId);
+  ReturnValue_t acceptPacket(uint8_t reportId, store_address_t tcStoreId);
 
   void startExecution(store_address_t storeId, CommandMapIter& iter);
 
   void handleCommandMessage(CommandMessage* reply);
   void handleReplyHandlerResult(ReturnValue_t result, CommandMapIter iter,
                                 CommandMessage* nextCommand, CommandMessage* reply, bool& isStep);
-
+  void prepareVerificationFailureWithNoTcInfo(uint8_t reportId, ReturnValue_t errorCode,
+                                              bool setCachedFailParams);
   void prepareVerificationFailureWithFullInfo(uint8_t reportId, CommandInfo::TcInfo& tcInfo,
                                               ReturnValue_t errorCode, bool setCachedFailParams);
   void prepareVerificationSuccessWithFullInfo(uint8_t reportId, CommandInfo::TcInfo& tcInfo);

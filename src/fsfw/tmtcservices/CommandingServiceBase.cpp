@@ -267,8 +267,7 @@ void CommandingServiceBase::handleRequestQueue() {
     address = message.getStorageId();
     result = setUpTcReader(address);
     if (result != HasReturnvaluesIF::RETURN_OK) {
-      // TODO: Warning?
-      rejectPacket(tcverif::START_FAILURE, address, result);
+      rejectPacketInvalidTc(result, address);
       continue;
     }
     if ((tcReader.getSubService() == 0) or
@@ -384,15 +383,29 @@ void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIt
   }
 }
 
-void CommandingServiceBase::rejectPacket(uint8_t reportId, store_address_t tcStoreId,
-                                         ReturnValue_t errorCode) {
-  verificationReporter->sendFailureReport(VerifFailureParams(reportId, tcReader, errorCode));
-  tcStore->deleteData(tcStoreId);
+ReturnValue_t CommandingServiceBase::rejectPacketInvalidTc(ReturnValue_t errorCode,
+                                                           store_address_t tcStoreId) {
+  failureParameter1 = INVALID_TC;
+  prepareVerificationFailureWithNoTcInfo(tcverif::START_FAILURE, errorCode, true);
+  if (tcStoreId != store_address_t::invalid()) {
+    tcStore->deleteData(tcStoreId);
+  }
+  return verificationReporter->sendFailureReport(failParams);
 }
 
-void CommandingServiceBase::acceptPacket(uint8_t reportId, store_address_t tcStoreId) {
-  verificationReporter->sendSuccessReport(VerifSuccessParams(reportId, tcReader));
+ReturnValue_t CommandingServiceBase::rejectPacket(uint8_t reportId, store_address_t tcStoreId,
+                                                  ReturnValue_t errorCode) {
+  ReturnValue_t result =
+      verificationReporter->sendFailureReport(VerifFailureParams(reportId, tcReader, errorCode));
   tcStore->deleteData(tcStoreId);
+  return result;
+}
+
+ReturnValue_t CommandingServiceBase::acceptPacket(uint8_t reportId, store_address_t tcStoreId) {
+  ReturnValue_t result =
+      verificationReporter->sendSuccessReport(VerifSuccessParams(reportId, tcReader));
+  tcStore->deleteData(tcStoreId);
+  return result;
 }
 
 void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
@@ -437,10 +450,23 @@ void CommandingServiceBase::setTaskIF(PeriodicTaskIF* task_) { executingTask = t
 void CommandingServiceBase::setCustomTmStore(StorageManagerIF& store) {
   tmStoreHelper.setTmStore(store);
 }
+
 ReturnValue_t CommandingServiceBase::setUpTcReader(store_address_t storeId) {
   return tc::prepareTcReader(*tcStore, storeId, tcReader);
 }
 
+void CommandingServiceBase::prepareVerificationFailureWithNoTcInfo(uint8_t reportId,
+                                                                   ReturnValue_t errorCode,
+                                                                   bool setCachedFailParams) {
+  failParams.resetTcFields();
+  failParams.resetFailParams();
+  failParams.reportId = reportId;
+  failParams.errorCode = errorCode;
+  if (setCachedFailParams) {
+    failParams.errorParam1 = failureParameter1;
+    failParams.errorParam2 = failureParameter2;
+  }
+}
 void CommandingServiceBase::prepareVerificationFailureWithFullInfo(uint8_t reportId,
                                                                    CommandInfo::TcInfo& tcInfo,
                                                                    ReturnValue_t errorCode,
@@ -449,6 +475,7 @@ void CommandingServiceBase::prepareVerificationFailureWithFullInfo(uint8_t repor
   failParams.tcPacketId = tcInfo.tcPacketId;
   failParams.tcPsc = tcInfo.tcSequenceControl;
   failParams.ackFlags = tcInfo.ackFlags;
+  failParams.resetFailParams();
   failParams.errorCode = errorCode;
   if (setCachedFailParams) {
     failParams.errorParam1 = failureParameter1;
