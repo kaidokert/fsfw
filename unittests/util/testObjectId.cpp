@@ -19,5 +19,8 @@ TEST_CASE("Object Id", "[object-id]") {
       CHECK(iter != testMap.end());
       CHECK(std::strcmp(iter->first.name(), "TEST_ID") == 0);
       CHECK(iter->second == 10);
+      auto otherIdSameName = ObjectId(12, "TEST_ID");
+      insertPair = testMap.emplace(otherIdSameName, 10);
+      CHECK(insertPair.second);
     }
 }
