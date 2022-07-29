@@ -15,6 +15,7 @@ add_subdirectory(mocks)
 
 add_subdirectory(action)
 add_subdirectory(power)
+add_subdirectory(util)
 add_subdirectory(container)
 add_subdirectory(osal)
 add_subdirectory(serialize)
