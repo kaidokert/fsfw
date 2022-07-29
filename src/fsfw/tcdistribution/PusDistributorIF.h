@@ -8,12 +8,12 @@
  * This interface allows PUS Services to register themselves at a PUS Distributor.
  * @ingroup tc_distribution
  */
-class PUSDistributorIF {
+class PusDistributorIF {
  public:
   /**
    * The empty virtual destructor.
    */
-  virtual ~PUSDistributorIF() {}
+  virtual ~PusDistributorIF() = default;
   /**
    * With this method, Services can register themselves at the PUS Distributor.
    * @param service A pointer to the registering Service.

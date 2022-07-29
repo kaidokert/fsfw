@@ -2,9 +2,9 @@
 #define FSFW_TESTS_PUSDISTRIBUTORMOCK_H
 
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/tcdistribution/PUSDistributorIF.h"
+#include "fsfw/tcdistribution/PusDistributorIF.h"
 
-class PusDistributorMock : public SystemObject, public PUSDistributorIF {
+class PusDistributorMock : public SystemObject, public PusDistributorIF {
  public:
   PusDistributorMock();
   explicit PusDistributorMock(object_id_t registeredId);

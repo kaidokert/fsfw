@@ -8,12 +8,12 @@
  * This interface allows CFDP Services to register themselves at a CFDP Distributor.
  * @ingroup tc_distribution
  */
-class CFDPDistributorIF {
+class CfdpDistributorIF {
  public:
   /**
    * The empty virtual destructor.
    */
-  virtual ~CFDPDistributorIF() = default;
+  virtual ~CfdpDistributorIF() = default;
   /**
    * With this method, Handlers can register themselves at the CFDP Distributor.
    * @param handler A pointer to the registering Handler.

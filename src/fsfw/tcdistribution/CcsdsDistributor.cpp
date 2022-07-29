@@ -1,4 +1,4 @@
-#include "fsfw/tcdistribution/CCSDSDistributor.h"
+#include "fsfw/tcdistribution/CcsdsDistributor.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
@@ -6,13 +6,13 @@
 
 #define CCSDS_DISTRIBUTOR_DEBUGGING 0
 
-CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid, object_id_t setObjectId,
+CcsdsDistributor::CcsdsDistributor(uint16_t setDefaultApid, object_id_t setObjectId,
                                    CcsdsPacketCheckIF* packetChecker)
     : TcDistributor(setObjectId), defaultApid(setDefaultApid), packetChecker(packetChecker) {}
 
-CCSDSDistributor::~CCSDSDistributor() = default;
+CcsdsDistributor::~CcsdsDistributor() = default;
 
-TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
+TcDistributor::TcMqMapIter CcsdsDistributor::selectDestination() {
 #if CCSDS_DISTRIBUTOR_DEBUGGING == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::debug << "CCSDSDistributor::selectDestination received: "
@@ -59,9 +59,9 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   }
 }
 
-MessageQueueId_t CCSDSDistributor::getRequestQueue() { return tcQueue->getId(); }
+MessageQueueId_t CcsdsDistributor::getRequestQueue() { return tcQueue->getId(); }
 
-ReturnValue_t CCSDSDistributor::registerApplication(AcceptsTelecommandsIF* application) {
+ReturnValue_t CcsdsDistributor::registerApplication(AcceptsTelecommandsIF* application) {
   ReturnValue_t returnValue = RETURN_OK;
   auto insertPair =
       this->queueMap.emplace(application->getIdentifier(), application->getRequestQueue());
@@ -71,7 +71,7 @@ ReturnValue_t CCSDSDistributor::registerApplication(AcceptsTelecommandsIF* appli
   return returnValue;
 }
 
-ReturnValue_t CCSDSDistributor::registerApplication(uint16_t apid, MessageQueueId_t id) {
+ReturnValue_t CcsdsDistributor::registerApplication(uint16_t apid, MessageQueueId_t id) {
   ReturnValue_t returnValue = RETURN_OK;
   auto insertPair = this->queueMap.emplace(apid, id);
   if (not insertPair.second) {
@@ -80,9 +80,9 @@ ReturnValue_t CCSDSDistributor::registerApplication(uint16_t apid, MessageQueueI
   return returnValue;
 }
 
-uint16_t CCSDSDistributor::getIdentifier() { return 0; }
+uint16_t CcsdsDistributor::getIdentifier() { return 0; }
 
-ReturnValue_t CCSDSDistributor::initialize() {
+ReturnValue_t CcsdsDistributor::initialize() {
   if (packetChecker == nullptr) {
     packetChecker = new CcsdsPacketChecker(ccsds::PacketType::TC);
   }
@@ -105,7 +105,7 @@ ReturnValue_t CCSDSDistributor::initialize() {
   return status;
 }
 
-ReturnValue_t CCSDSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
+ReturnValue_t CcsdsDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
   if (queueStatus != RETURN_OK) {
     tcStore->deleteData(currentMessage.getStorageId());
   }

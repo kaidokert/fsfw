@@ -3,13 +3,13 @@
 #include "definitions.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tcdistribution/CCSDSDistributorIF.h"
+#include "fsfw/tcdistribution/CcsdsDistributorIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
 #define PUS_DISTRIBUTOR_DEBUGGING 0
 
 PusDistributor::PusDistributor(uint16_t setApid, object_id_t setObjectId,
-                               CCSDSDistributorIF* distributor, StorageManagerIF* store_)
+                               CcsdsDistributorIF* distributor, StorageManagerIF* store_)
     : TcDistributor(setObjectId),
       store(store_),
       checker(setApid, ccsds::PacketType::TC),
@@ -132,7 +132,7 @@ ReturnValue_t PusDistributor::initialize() {
     sif::error << " Make sure it exists and implements CCSDSDistributorIF!" << std::endl;
 #else
     sif::printError("PusDistributor::initialize: Packet source invalid\n");
-    sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
+    sif::printError("Make sure it exists and implements CcsdsDistributorIF\n");
 #endif
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }

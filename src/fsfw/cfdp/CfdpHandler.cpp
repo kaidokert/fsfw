@@ -10,7 +10,7 @@
 object_id_t CfdpHandler::packetSource = 0;
 object_id_t CfdpHandler::packetDestination = 0;
 
-CfdpHandler::CfdpHandler(object_id_t setObjectId, CFDPDistributor* dist)
+CfdpHandler::CfdpHandler(object_id_t setObjectId, CfdpDistributor* dist)
     : SystemObject(setObjectId) {
   requestQueue = QueueFactory::instance()->createMessageQueue(CFDP_HANDLER_MAX_RECEPTION);
   distributor = dist;

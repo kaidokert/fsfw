@@ -12,7 +12,7 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
-#include "fsfw/tcdistribution/PUSDistributorIF.h"
+#include "fsfw/tcdistribution/PusDistributorIF.h"
 
 class StorageManagerIF;
 
@@ -64,7 +64,7 @@ struct PsbParams {
    * a suitable global distributor with the static ID @PusServiceBase::pusDistributor and
    * register itself at that object.
    */
-  PUSDistributorIF* pusDistributor = nullptr;
+  PusDistributorIF* pusDistributor = nullptr;
   TimeStamperIF* timeStamper = nullptr;
 };
 
@@ -116,7 +116,7 @@ class PusServiceBase : public ExecutableObjectIF,
    */
   ~PusServiceBase() override;
 
-  ReturnValue_t registerService(PUSDistributorIF& distributor);
+  ReturnValue_t registerService(PusDistributorIF& distributor);
   /**
    * Set the request queue which is used to receive requests. If none is set, the initialize
    * function will create one

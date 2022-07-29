@@ -11,7 +11,7 @@
  * to route the TC's to.
  * @ingroup tc_distribution
  */
-class CCSDSDistributorIF {
+class CcsdsDistributorIF {
  public:
   /**
    * With this call, a class implementing the CCSDSApplicationIF can register
@@ -34,7 +34,7 @@ class CCSDSDistributorIF {
   /**
    * The empty virtual destructor.
    */
-  virtual ~CCSDSDistributorIF() = default;
+  virtual ~CcsdsDistributorIF() = default;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_CCSDSDISTRIBUTORIF_H_ */

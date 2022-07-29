@@ -5,7 +5,7 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
-#include "fsfw/tcdistribution/CFDPDistributor.h"
+#include "fsfw/tcdistribution/CfdpDistributor.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 
 namespace Factory {
@@ -19,7 +19,7 @@ class CfdpHandler : public ExecutableObjectIF,
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:
-  CfdpHandler(object_id_t setObjectId, CFDPDistributor* distributor);
+  CfdpHandler(object_id_t setObjectId, CfdpDistributor* distributor);
   /**
    * The destructor is empty.
    */
@@ -39,7 +39,7 @@ class CfdpHandler : public ExecutableObjectIF,
    */
   MessageQueueIF* requestQueue = nullptr;
 
-  CFDPDistributor* distributor = nullptr;
+  CfdpDistributor* distributor = nullptr;
 
   /**
    * The current CFDP packet to be processed.

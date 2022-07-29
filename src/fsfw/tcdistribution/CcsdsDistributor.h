@@ -3,21 +3,21 @@
 
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
-#include "fsfw/tcdistribution/CCSDSDistributorIF.h"
+#include "fsfw/tcdistribution/CcsdsDistributorIF.h"
 #include "fsfw/tcdistribution/CcsdsPacketChecker.h"
 #include "fsfw/tcdistribution/TcDistributor.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 
 /**
- * @brief 	An instantiation of the CCSDSDistributorIF.
+ * @brief 	An instantiation of the CcsdsDistributorIF.
  * @details
  * It receives Space Packets, and selects a destination depending on the
  * APID of the telecommands.
  * The Secondary Header (with Service/Subservice) is ignored.
  * @ingroup tc_distribution
  */
-class CCSDSDistributor : public TcDistributor,
-                         public CCSDSDistributorIF,
+class CcsdsDistributor : public TcDistributor,
+                         public CcsdsDistributorIF,
                          public AcceptsTelecommandsIF {
  public:
   /**
@@ -28,12 +28,12 @@ class CCSDSDistributor : public TcDistributor,
    * @param unknownApid The default APID, where packets with unknown
    * destination are sent to.
    */
-  CCSDSDistributor(uint16_t unknownApid, object_id_t setObjectId,
+  CcsdsDistributor(uint16_t unknownApid, object_id_t setObjectId,
                    CcsdsPacketCheckIF* packetChecker = nullptr);
   /**
    * The destructor is empty.
    */
-  ~CCSDSDistributor() override;
+  ~CcsdsDistributor() override;
 
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) override;

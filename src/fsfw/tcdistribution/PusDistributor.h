@@ -1,7 +1,7 @@
 #ifndef FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
 #define FSFW_TCDISTRIBUTION_PUSDISTRIBUTOR_H_
 
-#include "PUSDistributorIF.h"
+#include "PusDistributorIF.h"
 #include "PusPacketChecker.h"
 #include "TcDistributor.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
@@ -9,7 +9,7 @@
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 #include "fsfw/tmtcservices/VerificationReporter.h"
 
-class CCSDSDistributorIF;
+class CcsdsDistributorIF;
 
 /**
  * This class accepts PUS Telecommands and forwards them to Application
@@ -17,7 +17,7 @@ class CCSDSDistributorIF;
  * sends acceptance success or failure messages.
  * @ingroup tc_distribution
  */
-class PusDistributor : public TcDistributor, public PUSDistributorIF, public AcceptsTelecommandsIF {
+class PusDistributor : public TcDistributor, public PusDistributorIF, public AcceptsTelecommandsIF {
  public:
   /**
    * The ctor passes @c set_apid to the checker class and calls the
@@ -25,9 +25,9 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    * @param setApid The APID of this receiving Application.
    * @param setObjectId Object ID of the distributor itself
    * @param setPacketSource Object ID of the source of TC packets.
-   * Must implement CCSDSDistributorIF.
+   * Must implement CcsdsDistributorIF.
    */
-  PusDistributor(uint16_t setApid, object_id_t setObjectId, CCSDSDistributorIF* packetSource,
+  PusDistributor(uint16_t setApid, object_id_t setObjectId, CcsdsDistributorIF* packetSource,
                  StorageManagerIF* store = nullptr);
   /**
    * The destructor is empty.
@@ -50,7 +50,7 @@ class PusDistributor : public TcDistributor, public PUSDistributorIF, public Acc
    */
   VerificationReporterIF* verifyChannel = nullptr;
   //! Cached for initialization
-  CCSDSDistributorIF* ccsdsDistributor = nullptr;
+  CcsdsDistributorIF* ccsdsDistributor = nullptr;
   PusTcReader reader;
 
   /**

@@ -7,7 +7,7 @@
 #include "../tmtcpacket/cfdp/CfdpPacketStored.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/VerificationReporter.h"
-#include "CFDPDistributorIF.h"
+#include "CfdpDistributorIF.h"
 #include "TcDistributor.h"
 
 /**
@@ -15,8 +15,8 @@
  * services.
  * @ingroup tc_distribution
  */
-class CFDPDistributor : public TcDistributor,
-                        public CFDPDistributorIF,
+class CfdpDistributor : public TcDistributor,
+                        public CfdpDistributorIF,
                         public AcceptsTelecommandsIF {
  public:
   /**
@@ -25,13 +25,13 @@ class CFDPDistributor : public TcDistributor,
    * @param setApid The APID of this receiving Application.
    * @param setObjectId Object ID of the distributor itself
    * @param setPacketSource Object ID of the source of TC packets.
-   * Must implement CCSDSDistributorIF.
+   * Must implement CcsdsDistributorIF.
    */
-  CFDPDistributor(uint16_t setApid, object_id_t setObjectId, object_id_t setPacketSource);
+  CfdpDistributor(uint16_t setApid, object_id_t setObjectId, object_id_t setPacketSource);
   /**
    * The destructor is empty.
    */
-  ~CFDPDistributor() override;
+  ~CfdpDistributor() override;
   ReturnValue_t registerHandler(AcceptsTelecommandsIF* handler) override;
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t initialize() override;

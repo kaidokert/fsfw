@@ -18,11 +18,11 @@
  */
 
 /**
- * This is the base class to implement distributors for Space Packets.
- * Typically, the distribution is required to forward Telecommand packets
+ * This is the base class to implement distributors for telecommands.
+ * Typically, the distribution is required to forward telecommand packets
  * over the satellite applications and services. The class receives
- * Space Packets over a message queue and holds a map that links other
- * message queue ids to some identifier. The process of unpacking the
+ * TC packets over a message queue and holds a map that links other
+ * message queue IDs to some identifier. The process of unpacking the
  * destination information from the packet is handled by the child class
  * implementations.
  * @ingroup tc_distribution
@@ -43,12 +43,12 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
    * @param set_object_id	This id is assigned to the distributor
    * 		implementation.
    */
-  TcDistributor(object_id_t objectId);
+  explicit TcDistributor(object_id_t objectId);
   /**
    * The destructor is empty, the message queues are not in the vicinity of
    * this class.
    */
-  virtual ~TcDistributor();
+  ~TcDistributor() override;
   /**
    * The method is called cyclically and fetches new incoming packets from
    * the message queue.
@@ -56,7 +56,7 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
    * with distribution.
    * @return The error code of the message queue call.
    */
-  ReturnValue_t performOperation(uint8_t opCode);
+  ReturnValue_t performOperation(uint8_t opCode) override;
   /**
    * A simple debug print, that prints all distribution information stored in
    * queueMap.
