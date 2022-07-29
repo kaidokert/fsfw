@@ -1,9 +1,8 @@
 
+#include <array>
 #include <catch2/catch_test_macros.hpp>
 
 #include "fsfw/util/UnsignedByteField.h"
-
-#include <array>
 
 TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
   auto testByteField = UnsignedByteField<uint32_t>(10);
@@ -28,7 +27,8 @@ TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
   }
 
   SECTION("Serialize U32") {
-    CHECK(testByteField.serializeBe(buf.data(), serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    CHECK(testByteField.serializeBe(buf.data(), serLen, buf.size()) ==
+          HasReturnvaluesIF::RETURN_OK);
     CHECK(serLen == 4);
     CHECK(buf[0] == 0);
     CHECK(buf[3] == 10);
@@ -60,7 +60,8 @@ TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
     buf[2] = 0x30;
     buf[3] = 0x20;
     size_t deserLen = 0;
-    CHECK(testByteField.deSerializeBe(buf.data(), deserLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    CHECK(testByteField.deSerializeBe(buf.data(), deserLen, buf.size()) ==
+          HasReturnvaluesIF::RETURN_OK);
     CHECK(testByteField.getValue() == 0x50403020);
   }
 
@@ -68,7 +69,8 @@ TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
     buf[0] = 0x50;
     buf[1] = 0x40;
     size_t deserLen = 0;
-    CHECK(u16ByteField.deSerializeBe(buf.data(), deserLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    CHECK(u16ByteField.deSerializeBe(buf.data(), deserLen, buf.size()) ==
+          HasReturnvaluesIF::RETURN_OK);
     CHECK(u16ByteField.getValue() == 0x5040);
   }
 }

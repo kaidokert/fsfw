@@ -4,7 +4,7 @@
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 
-class CcsdsUnpacker: public ExecutableObjectIF, public AcceptsTelecommandsIF {
+class CcsdsUnpacker : public ExecutableObjectIF, public AcceptsTelecommandsIF {
  public:
   CcsdsUnpacker();
   ReturnValue_t performOperation(uint8_t operationCode) override;
