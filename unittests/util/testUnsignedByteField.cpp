@@ -28,28 +28,28 @@ TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
   }
 
   SECTION("Serialize U32") {
-    CHECK(testByteField.serializeBe(buf.data(), serLen, buf.size()) == result::OK);
+    CHECK(testByteField.serializeBe(buf.data(), serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(serLen == 4);
     CHECK(buf[0] == 0);
     CHECK(buf[3] == 10);
   }
 
   SECTION("Serialize U32 Concrete") {
-    CHECK(u32ByteField.serializeBe(buf.data(), serLen, buf.size()) == result::OK);
+    CHECK(u32ByteField.serializeBe(buf.data(), serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(serLen == 4);
     CHECK(buf[0] == 0);
     CHECK(buf[3] == 10);
   }
 
   SECTION("Serialize U16 Concrete") {
-    CHECK(u16ByteField.serializeBe(buf.data(), serLen, buf.size()) == result::OK);
+    CHECK(u16ByteField.serializeBe(buf.data(), serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(serLen == 2);
     CHECK(buf[0] == 0);
     CHECK(buf[1] == 5);
   }
 
   SECTION("Serialize U8 Concrete") {
-    CHECK(u8ByteField.serializeBe(buf.data(), serLen, buf.size()) == result::OK);
+    CHECK(u8ByteField.serializeBe(buf.data(), serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(serLen == 1);
     CHECK(buf[0] == 2);
   }
@@ -60,7 +60,7 @@ TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
     buf[2] = 0x30;
     buf[3] = 0x20;
     size_t deserLen = 0;
-    CHECK(testByteField.deSerializeBe(buf.data(), deserLen, buf.size()) == result::OK);
+    CHECK(testByteField.deSerializeBe(buf.data(), deserLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(testByteField.getValue() == 0x50403020);
   }
 
@@ -68,7 +68,7 @@ TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
     buf[0] = 0x50;
     buf[1] = 0x40;
     size_t deserLen = 0;
-    CHECK(u16ByteField.deSerializeBe(buf.data(), deserLen, buf.size()) == result::OK);
+    CHECK(u16ByteField.deSerializeBe(buf.data(), deserLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(u16ByteField.getValue() == 0x5040);
   }
 }
