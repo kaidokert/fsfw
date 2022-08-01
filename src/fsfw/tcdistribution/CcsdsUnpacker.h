@@ -11,8 +11,8 @@ class CcsdsUnpacker : public ExecutableObjectIF, public AcceptsTelecommandsIF {
 
   void setDifferentTargetStore(StorageManagerIF& otherTargetStore);
   ReturnValue_t performOperation(uint8_t operationCode) override;
-  uint32_t getIdentifier() override;
-  MessageQueueId_t getRequestQueue() override;
+  uint32_t getIdentifier() const override;
+  MessageQueueId_t getRequestQueue() const override;
 
  private:
   StorageManagerIF& sourceStore;

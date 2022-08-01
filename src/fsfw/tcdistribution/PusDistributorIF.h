@@ -20,7 +20,7 @@ class PusDistributorIF {
    * @return	- @c RETURN_OK on success,
    * 			- @c RETURN_FAILED on failure.
    */
-  virtual ReturnValue_t registerService(AcceptsTelecommandsIF* service) = 0;
+  virtual ReturnValue_t registerService(const AcceptsTelecommandsIF& service) = 0;
 };
 
 #endif /* FSFW_TCDISTRIBUTION_PUSDISTRIBUTORIF_H_ */

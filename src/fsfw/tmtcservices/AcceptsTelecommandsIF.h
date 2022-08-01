@@ -21,6 +21,8 @@ class AcceptsTelecommandsIF {
    * @brief The virtual destructor as it is mandatory for C++ interfaces.
    */
   virtual ~AcceptsTelecommandsIF() = default;
+  [[nodiscard]] virtual const char* getName() const = 0;
+
   /**
    * @brief	Getter for a generic identifier ID.
    * @details	Any receiving service (at least any PUS service) shall have an identifier. For
@@ -28,13 +30,13 @@ class AcceptsTelecommandsIF {
    *    service for a component expecting specific PUS service packets.
    * @return	The identifier.
    */
-  virtual uint32_t getIdentifier() = 0;
+  [[nodiscard]] virtual uint32_t getIdentifier() const = 0;
   /**
    * @brief	This method returns the message queue id of the telecommand
    * 			receiving message queue.
    * @return	The telecommand reception message queue id.
    */
-  virtual MessageQueueId_t getRequestQueue() = 0;
+  [[nodiscard]] virtual MessageQueueId_t getRequestQueue() const = 0;
 };
 
 #endif /* FRAMEWORK_TMTCSERVICES_ACCEPTSTELECOMMANDSIF_H_ */

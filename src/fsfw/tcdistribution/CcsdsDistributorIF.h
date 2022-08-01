@@ -1,8 +1,9 @@
 #ifndef FSFW_TCDISTRIBUTION_CCSDSDISTRIBUTORIF_H_
 #define FSFW_TCDISTRIBUTION_CCSDSDISTRIBUTORIF_H_
 
-#include "../ipc/MessageQueueSenderIF.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
+#include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
+
 /**
  * This is the Interface to a CCSDS Distributor.
  * On a CCSDS Distributor, Applications (in terms of CCSDS) may register
@@ -13,24 +14,37 @@
  */
 class CcsdsDistributorIF {
  public:
-  /**
-   * With this call, a class implementing the CCSDSApplicationIF can register
-   * at the distributor.
-   * @param application A pointer to the Application to register.
-   * @return	- @c RETURN_OK on success,
-   * 			- @c RETURN_FAILED on failure.
-   */
-  virtual ReturnValue_t registerApplication(AcceptsTelecommandsIF* application) = 0;
+  struct DestInfo {
+    DestInfo(const char* name, uint16_t apid, MessageQueueId_t destId, bool removeHeader)
+        : name(name), apid(apid), destId(destId), removeHeader(removeHeader) {}
+    DestInfo(const char* name, AcceptsTelecommandsIF& ccsdsReceiver, bool removeHeader_)
+        : name(name) {
+      apid = ccsdsReceiver.getIdentifier();
+      destId = ccsdsReceiver.getRequestQueue();
+      removeHeader = removeHeader_;
+    }
+    const char* name;
+    uint16_t apid;
+    MessageQueueId_t destId;
+    bool removeHeader;
+  };
+
   /**
    * With this call, other Applications can register to the CCSDS distributor.
    * This is done by passing an APID and a MessageQueueId to the method.
-   * @param apid	The APID to register.
-   * @param id	The MessageQueueId of the message queue to send the
-   *              TC Packets to.
-   * @return	- @c RETURN_OK on success,
-   * 			- @c RETURN_FAILED on failure.
+   * @param info	Contains all necessary info to register an application.
+   * @return
+   *  - @c RETURN_OK on success,
+   *  - @c RETURN_FAILED or tcdistrib error code on failure.
+   *  - @c tcdistrib::INVALID_CCSDS_VERSION
+   *  - @c tcdistrib::INVALID_APID No APID available to handle this packet
+   *  - @c tcdistrib::INVALID_PACKET_TYPE Packet type TM detected
+   *  - @c tcdistrib::INCORRECT_PRIMARY_HEADER Something other wrong with primary header
+   *  - @c tcdistrib::INCOMPLETE_PACKET Size missmatch between data length field and actual
+   *       length
    */
-  virtual ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) = 0;
+  virtual ReturnValue_t registerApplication(DestInfo info) = 0;
+
   /**
    * The empty virtual destructor.
    */

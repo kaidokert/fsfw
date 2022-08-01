@@ -11,8 +11,8 @@ Service20ParameterManagement::Service20ParameterManagement(object_id_t objectId,
                                                            uint8_t serviceId,
                                                            uint8_t numberOfParallelCommands,
                                                            uint16_t commandTimeoutSeconds)
-    : CommandingServiceBase(objectId, apid, serviceId, numberOfParallelCommands,
-                            commandTimeoutSeconds) {}
+    : CommandingServiceBase(objectId, apid, "PUS 20 Parameter MGMT", serviceId,
+                            numberOfParallelCommands, commandTimeoutSeconds) {}
 
 Service20ParameterManagement::~Service20ParameterManagement() = default;
 
