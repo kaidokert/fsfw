@@ -1,5 +1,6 @@
-#include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/tcdistribution/TcDistributorBase.h"
+
+#include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
 TcDistributorBase::TcDistributorBase(object_id_t objectId) : SystemObject(objectId) {
