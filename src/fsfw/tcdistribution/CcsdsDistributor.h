@@ -37,9 +37,9 @@ class CcsdsDistributor : public TcDistributorBase,
    */
   ~CcsdsDistributor() override;
 
-  MessageQueueId_t getRequestQueue() const override;
+  [[nodiscard]] MessageQueueId_t getRequestQueue() const override;
   ReturnValue_t registerApplication(DestInfo info) override;
-  uint32_t getIdentifier() const override;
+  [[nodiscard]] uint32_t getIdentifier() const override;
   ReturnValue_t initialize() override;
   [[nodiscard]] const char* getName() const override;
 
@@ -63,6 +63,7 @@ class CcsdsDistributor : public TcDistributorBase,
 
   static void handlePacketCheckFailure(ReturnValue_t result);
 
+  ReturnValue_t handleCcsdsHeaderRemoval();
   void print();
   /**
    * The default APID, where packets with unknown APID are sent to.

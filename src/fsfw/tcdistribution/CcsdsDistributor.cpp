@@ -1,3 +1,4 @@
+#include "fsfw/FSFW.h"
 #include "fsfw/tcdistribution/CcsdsDistributor.h"
 
 #include "definitions.h"
@@ -9,7 +10,9 @@
 
 CcsdsDistributor::CcsdsDistributor(uint16_t setDefaultApid, object_id_t setObjectId,
                                    CcsdsPacketCheckIF* packetChecker)
-    : TcDistributorBase(setObjectId), defaultApid(setDefaultApid), packetChecker(packetChecker) {}
+    : TcDistributorBase(setObjectId),
+      defaultApid(setDefaultApid),
+      packetChecker(packetChecker) {}
 
 CcsdsDistributor::~CcsdsDistributor() = default;
 
@@ -52,13 +55,16 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
   sif::info << "CCSDSDistributor::selectDestination has packet with APID 0x" << std::hex
             << currentPacket.getApid() << std::dec << std::endl;
 #endif
-  auto position = receiverMap.find(currentPacket.getApid());
-  if (position != receiverMap.end()) {
-    destId = position->second.destId;
+  auto iter = receiverMap.find(currentPacket.getApid());
+  if (iter != receiverMap.end()) {
+    destId = iter->second.destId;
+    if (iter->second.removeHeader) {
+      handleCcsdsHeaderRemoval();
+    }
   } else {
     // The APID was not found. Forward packet to main SW-APID anyway to
     //  create acceptance failure report.
-    auto iter = receiverMap.find(defaultApid);
+    iter = receiverMap.find(defaultApid);
     if (iter != receiverMap.end()) {
       destId = iter->second.destId;
     } else {
@@ -69,6 +75,7 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
 }
 
 void CcsdsDistributor::handlePacketCheckFailure(ReturnValue_t result) {
+#if FSFW_VERBOSE_LEVEL >= 1
   const char* reason = "Unknown reason";
   if (result == tcdistrib::INVALID_CCSDS_VERSION) {
     reason = "Invalid CCSDS version";
@@ -79,7 +86,6 @@ void CcsdsDistributor::handlePacketCheckFailure(ReturnValue_t result) {
   } else if (result == tcdistrib::INVALID_PACKET_TYPE) {
     reason = "Invalid Packet Type TM detected";
   }
-#if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::warning << "CCSDS packet check failed: " << reason << std::endl;
 #else
@@ -144,3 +150,16 @@ void CcsdsDistributor::print() {
 }
 
 const char* CcsdsDistributor::getName() const { return "CCSDS Distributor"; }
+
+ReturnValue_t CcsdsDistributor::handleCcsdsHeaderRemoval() {
+  currentMessage;
+  auto accessorPair = tcStore->getData(currentMessage.getStorageId());
+  if(accessorPair.first != HasReturnvaluesIF::RETURN_OK) {
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << __func__ << ": Getting TC data failed" << std::endl;
+#else
+    sif::printError("%s: Getting TC data failed\n", __func__);
+#endif
+    return accessorPair.first;
+  }
+}

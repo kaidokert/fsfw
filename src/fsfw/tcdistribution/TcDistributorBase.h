@@ -65,15 +65,16 @@ class TcDistributorBase : public SystemObject, public ExecutableObjectIF, public
    * The last received incoming packet information is stored in this
    * member.
    * As different child classes unpack the incoming packet differently
-   * (i.e. as a CCSDS Space Packet or as a PUS Telecommand Packet), it
-   * is not tried to unpack the packet information within this class.
+   * (i.e. as a CCSDS Space Packet or as a PUS Telecommand Packet), no unpacking will be
+   * done in this class.
    */
   TmTcMessage currentMessage;
 
   /**
    * This method shall unpack the routing information from the incoming
    * packet and select the map entry which represents the packet's target.
-   * @return	An iterator to the map element to forward to or queuMap.end().
+   * @return
+   *  - @c RETURN_OK if a desitnation was selected successfully
    */
   virtual ReturnValue_t selectDestination(MessageQueueId_t& destId) = 0;
   /**

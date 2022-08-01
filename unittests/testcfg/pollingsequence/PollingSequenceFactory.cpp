@@ -1,3 +1,4 @@
+#include "fsfw/FSFW.h"
 #include "PollingSequenceFactory.h"
 
 #include <fsfw/devicehandlers/DeviceHandlerIF.h>
@@ -20,7 +21,7 @@ ReturnValue_t pst::pollingSequenceInitDefault(FixedTimeslotTaskIF *thisSequence)
   if (thisSequence->checkSequence() == HasReturnvaluesIF::RETURN_OK) {
     return HasReturnvaluesIF::RETURN_OK;
   } else {
-#if FSFW_CPP_OSTREAM_ENABLED
+#if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "pst::pollingSequenceInitDefault: Sequence invalid!" << std::endl;
 #else
     sif::printError("pst::pollingSequenceInitDefault: Sequence invalid!");

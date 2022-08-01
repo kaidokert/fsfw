@@ -192,7 +192,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     REQUIRE(PsbMock::getStaticPusDistributor() == distributorId);
     REQUIRE(psb2.initialize() == result::OK);
     REQUIRE(pusDistrib.registerCallCount == 1);
-    REQUIRE(pusDistrib.lastServiceArg == &psb2);
+    REQUIRE(pusDistrib.registeredServies.front() == &psb2);
   }
 
   SECTION("Auto Initialize Packet Destination") {

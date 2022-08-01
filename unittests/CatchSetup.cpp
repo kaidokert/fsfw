@@ -1,3 +1,4 @@
+#include "fsfw/FSFW.h"
 #include "CatchDefinitions.h"
 #include "CatchFactory.h"
 

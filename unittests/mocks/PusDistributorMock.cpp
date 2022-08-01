@@ -5,8 +5,8 @@ PusDistributorMock::PusDistributorMock() : SystemObject(objects::NO_OBJECT, fals
 PusDistributorMock::PusDistributorMock(object_id_t registeredId)
     : SystemObject(registeredId, true) {}
 
-ReturnValue_t PusDistributorMock::registerService(AcceptsTelecommandsIF *service) {
+ReturnValue_t PusDistributorMock::registerService(const AcceptsTelecommandsIF& service) {
   registerCallCount++;
-  lastServiceArg = service;
+  registeredServies.push_back(&service);
   return HasReturnvaluesIF::RETURN_OK;
 }

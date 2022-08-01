@@ -1,3 +1,4 @@
+#include "fsfw/FSFW.h"
 #include "CatchDefinitions.h"
 
 #include <fsfw/objectmanager/ObjectManager.h>

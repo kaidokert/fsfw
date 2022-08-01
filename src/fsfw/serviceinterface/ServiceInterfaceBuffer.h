@@ -1,9 +1,9 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACEBUFFER_H_
 
-#include <FSFWConfig.h>
+#include "fsfw/FSFW.h"
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 
-#include <FSFWConfig.h>
+#include "fsfw/FSFW.h"
 
 #include "ServiceInterfaceBuffer.h"
 
