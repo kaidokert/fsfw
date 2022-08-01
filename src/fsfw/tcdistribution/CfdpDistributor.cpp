@@ -68,6 +68,7 @@ ReturnValue_t CfdpDistributor::selectDestination(MessageQueueId_t& destId) {
   //  } else {
   //    return queueMapIt;
   //  }
+  return HasReturnvaluesIF::RETURN_OK;
 }
 
 ReturnValue_t CfdpDistributor::registerHandler(AcceptsTelecommandsIF* handler) {
@@ -141,4 +142,5 @@ ReturnValue_t CfdpDistributor::initialize() {
   //    return RETURN_FAILED;
   //  }
   //  return ccsdsDistributor->registerApplication(this);
+  return HasReturnvaluesIF::RETURN_OK;
 }

@@ -4,29 +4,28 @@
 
 CcsdsUnpacker::CcsdsUnpacker(MessageQueueIF& msgQueue, AcceptsTelecommandsIF& receiver,
                              StorageManagerIF& sourceStore)
-  : sourceStore(sourceStore), msgQueue(msgQueue), receiver(receiver) {
+    : sourceStore(sourceStore), msgQueue(msgQueue), receiver(receiver) {
   msgQueue.setDefaultDestination(receiver.getRequestQueue());
 }
 
 ReturnValue_t CcsdsUnpacker::performOperation(uint8_t operationCode) {
   TmTcMessage msg;
   ReturnValue_t result;
-  for (result =  msgQueue.receiveMessage(&msg); result == HasReturnvaluesIF::RETURN_OK;
+  for (result = msgQueue.receiveMessage(&msg); result == HasReturnvaluesIF::RETURN_OK;
        result = msgQueue.receiveMessage(&msg)) {
     auto resultPair = sourceStore.getData(msg.getStorageId());
-    if(resultPair.first != HasReturnvaluesIF::RETURN_OK) {
+    if (resultPair.first != HasReturnvaluesIF::RETURN_OK) {
       continue;
     }
-    if(resultPair.second.size() < 6) {
+    if (resultPair.second.size() < 6) {
       // TODO: This is a config error. Does it make sense to forward the message?
       result = msgQueue.sendToDefault(&msg);
-      if(result != HasReturnvaluesIF::RETURN_OK) {
-
+      if (result != HasReturnvaluesIF::RETURN_OK) {
       }
       continue;
     }
     StorageManagerIF* tgtStore;
-    if(targetStore != nullptr) {
+    if (targetStore != nullptr) {
       tgtStore = targetStore;
     } else {
       tgtStore = &sourceStore;
@@ -34,23 +33,21 @@ ReturnValue_t CcsdsUnpacker::performOperation(uint8_t operationCode) {
     store_address_t newId;
     uint8_t* ptr;
     result = tgtStore->getFreeElement(&newId, resultPair.second.size(), &ptr);
-    if(result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != HasReturnvaluesIF::RETURN_OK) {
       // TODO: Implement error handling
     }
     std::memcpy(ptr, resultPair.second.data() + 6, resultPair.second.size() - 6);
     result = sourceStore.deleteData(msg.getStorageId());
-    if(result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != HasReturnvaluesIF::RETURN_OK) {
       // TODO: Implement error handling (though this really should not happen)
     }
     TmTcMessage newMsg(newId);
     result = msgQueue.sendToDefault(&newMsg);
-    if(result != HasReturnvaluesIF::RETURN_OK) {
-
+    if (result != HasReturnvaluesIF::RETURN_OK) {
     }
   }
   return result;
 }
-
 
 void CcsdsUnpacker::setDifferentTargetStore(StorageManagerIF& otherTargetStore) {
   targetStore = &otherTargetStore;

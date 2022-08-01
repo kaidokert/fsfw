@@ -1,10 +1,10 @@
 #ifndef FSFW_TESTS_PUSDISTRIBUTORMOCK_H
 #define FSFW_TESTS_PUSDISTRIBUTORMOCK_H
 
+#include <vector>
+
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tcdistribution/PusDistributorIF.h"
-
-#include <vector>
 
 class PusDistributorMock : public SystemObject, public PusDistributorIF {
  public:

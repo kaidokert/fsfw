@@ -1,6 +1,6 @@
-#include "fsfw/FSFW.h"
 #include "CatchDefinitions.h"
 #include "CatchFactory.h"
+#include "fsfw/FSFW.h"
 
 #ifdef GCOV
 #include <gcov.h>

@@ -104,7 +104,8 @@ if(FSFW_GENERATE_SECTIONS)
   option(FSFW_REMOVE_UNUSED_CODE "Remove unused code" ON)
 endif()
 
-option(FSFW_BUILD_TESTS "Build unittest binary in addition to static library"
+option(FSFW_BUILD_TESTS
+       "Build unittest binary in addition to static library. Requires Catch2"
        OFF)
 option(FSFW_CICD_BUILD "Build for CI/CD. This can disable problematic test" OFF)
 option(FSFW_BUILD_DOCS "Build documentation with Sphinx and Doxygen" OFF)
@@ -115,7 +116,6 @@ endif()
 option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 # Options to exclude parts of the FSFW from compilation.
 option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
-option(FSFW_ADD_UNITTESTS "Add regular unittests. Requires Catch2" OFF)
 option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
 
 # Optional sources

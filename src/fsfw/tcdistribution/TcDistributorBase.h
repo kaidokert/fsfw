@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include "fsfw/events/Event.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
@@ -33,6 +34,10 @@ class TcDistributorBase : public SystemObject, public ExecutableObjectIF, public
   static constexpr ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE(1);
   static constexpr ReturnValue_t DESTINATION_NOT_FOUND = MAKE_RETURN_CODE(2);
   static constexpr ReturnValue_t SERVICE_ID_ALREADY_EXISTS = MAKE_RETURN_CODE(3);
+
+  static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::TC_DISTRIBUTION;
+  //! P1: Returnvalue, P2: Line number
+  static constexpr Event HANDLE_PACKET_FAILED = event::makeEvent(SUBSYSTEM_ID, 0, severity::LOW);
   /**
    * Within the default constructor, the SystemObject id is set and the
    * message queue is initialized.
@@ -40,7 +45,7 @@ class TcDistributorBase : public SystemObject, public ExecutableObjectIF, public
    * @param set_object_id	This id is assigned to the distributor
    * 		implementation.
    */
-  explicit TcDistributorBase(object_id_t objectId);
+  explicit TcDistributorBase(object_id_t objectId, MessageQueueIF* tcQueue = nullptr);
   /**
    * The destructor is empty, the message queues are not in the vicinity of
    * this class.
@@ -56,6 +61,7 @@ class TcDistributorBase : public SystemObject, public ExecutableObjectIF, public
   ReturnValue_t performOperation(uint8_t opCode) override;
 
  protected:
+  bool ownedQueue = false;
   /**
    * This is the receiving queue for incoming Telecommands.
    * The child classes must make its queue id public.

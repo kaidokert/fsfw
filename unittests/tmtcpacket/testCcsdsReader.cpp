@@ -64,7 +64,7 @@ TEST_CASE("CCSDS Reader", "[ccsds-reader]") {
   SECTION("Invalid Size") {
     for (size_t i = 0; i < 5; i++) {
       REQUIRE(reader.setReadOnlyData(buf.data(), i) == SerializeIF::STREAM_TOO_SHORT);
-      REQUIRE(not reader.isNull());
+      REQUIRE(reader.isNull());
       REQUIRE(reader.getPacketData() == nullptr);
     }
   }

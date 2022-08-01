@@ -3,11 +3,11 @@
 
 #include <map>
 
+#include "LocalDataPoolManager.h"
 #include "fsfw/datapool/PoolEntryIF.h"
 #include "fsfw/housekeeping/HousekeepingMessage.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/serviceinterface.h"
-#include "LocalDataPoolManager.h"
 #include "localPoolDefinitions.h"
 
 class AccessPoolManagerIF;

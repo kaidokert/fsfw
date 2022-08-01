@@ -1,10 +1,10 @@
-#include "fsfw/FSFW.h"
 #include "PollingSequenceFactory.h"
 
 #include <fsfw/devicehandlers/DeviceHandlerIF.h>
 #include <fsfw/serviceinterface/ServiceInterface.h>
 #include <fsfw/tasks/FixedTimeslotTaskIF.h>
 
+#include "fsfw/FSFW.h"
 #include "tests/TestsConfig.h"
 
 ReturnValue_t pst::pollingSequenceInitDefault(FixedTimeslotTaskIF *thisSequence) {

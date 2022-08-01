@@ -17,8 +17,8 @@ class CcsdsDistributorIF {
   struct DestInfo {
     DestInfo(const char* name, uint16_t apid, MessageQueueId_t destId, bool removeHeader)
         : name(name), apid(apid), destId(destId), removeHeader(removeHeader) {}
-    DestInfo(const char* name, const AcceptsTelecommandsIF& ccsdsReceiver, bool removeHeader_)
-        : name(name) {
+    DestInfo(const AcceptsTelecommandsIF& ccsdsReceiver, bool removeHeader_)
+        : name(ccsdsReceiver.getName()) {
       apid = ccsdsReceiver.getIdentifier();
       destId = ccsdsReceiver.getRequestQueue();
       removeHeader = removeHeader_;

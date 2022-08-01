@@ -7,7 +7,8 @@
 
 class CcsdsUnpacker : public ExecutableObjectIF, public AcceptsTelecommandsIF {
  public:
-  CcsdsUnpacker(MessageQueueIF& msgQueue, AcceptsTelecommandsIF& receiver, StorageManagerIF& sourceStore);
+  CcsdsUnpacker(MessageQueueIF& msgQueue, AcceptsTelecommandsIF& receiver,
+                StorageManagerIF& sourceStore);
 
   void setDifferentTargetStore(StorageManagerIF& otherTargetStore);
   ReturnValue_t performOperation(uint8_t operationCode) override;

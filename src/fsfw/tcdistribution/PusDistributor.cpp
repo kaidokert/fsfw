@@ -139,8 +139,7 @@ ReturnValue_t PusDistributor::initialize() {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
-  return ccsdsDistributor->registerApplication(
-      CcsdsDistributorIF::DestInfo(getName(), *this, false));
+  return ccsdsDistributor->registerApplication(CcsdsDistributorIF::DestInfo(*this, false));
 }
 
 void PusDistributor::checkerFailurePrinter() const {

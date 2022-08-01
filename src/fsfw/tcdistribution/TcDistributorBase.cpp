@@ -3,22 +3,35 @@
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
-TcDistributorBase::TcDistributorBase(object_id_t objectId) : SystemObject(objectId) {
-  tcQueue = QueueFactory::instance()->createMessageQueue(DISTRIBUTER_MAX_PACKETS);
+TcDistributorBase::TcDistributorBase(object_id_t objectId, MessageQueueIF* tcQueue_)
+    : SystemObject(objectId), tcQueue(tcQueue_) {
+  if (tcQueue == nullptr) {
+    ownedQueue = true;
+    tcQueue = QueueFactory::instance()->createMessageQueue(DISTRIBUTER_MAX_PACKETS);
+  }
 }
 
-TcDistributorBase::~TcDistributorBase() { QueueFactory::instance()->deleteMessageQueue(tcQueue); }
+TcDistributorBase::~TcDistributorBase() {
+  if (ownedQueue) {
+    QueueFactory::instance()->deleteMessageQueue(tcQueue);
+  }
+}
 
 ReturnValue_t TcDistributorBase::performOperation(uint8_t opCode) {
   ReturnValue_t status;
+  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   for (status = tcQueue->receiveMessage(&currentMessage); status == RETURN_OK;
        status = tcQueue->receiveMessage(&currentMessage)) {
-    status = handlePacket();
+    ReturnValue_t packetResult = handlePacket();
+    if (packetResult != HasReturnvaluesIF::RETURN_OK) {
+      result = packetResult;
+      triggerEvent(HANDLE_PACKET_FAILED, packetResult, __LINE__);
+    }
   }
   if (status == MessageQueueIF::EMPTY) {
-    return RETURN_OK;
+    return result;
   }
-  return status;
+  return result;
 }
 
 ReturnValue_t TcDistributorBase::handlePacket() {

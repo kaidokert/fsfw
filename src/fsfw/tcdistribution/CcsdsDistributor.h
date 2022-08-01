@@ -31,6 +31,7 @@ class CcsdsDistributor : public TcDistributorBase,
    * destination are sent to.
    */
   CcsdsDistributor(uint16_t unknownApid, object_id_t setObjectId,
+                   StorageManagerIF* tcStore = nullptr, MessageQueueIF* msgQueue = nullptr,
                    CcsdsPacketCheckIF* packetChecker = nullptr);
   /**
    * The destructor is empty.
@@ -63,7 +64,7 @@ class CcsdsDistributor : public TcDistributorBase,
 
   static void handlePacketCheckFailure(ReturnValue_t result);
 
-  ReturnValue_t handleCcsdsHeaderRemoval();
+  ReturnValue_t handleCcsdsHeaderRemoval(ConstStorageAccessor& accessor);
   void print();
   /**
    * The default APID, where packets with unknown APID are sent to.

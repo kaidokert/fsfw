@@ -1,7 +1,7 @@
-#include "fsfw/FSFW.h"
 #include "fsfw/tcdistribution/CcsdsDistributor.h"
 
 #include "definitions.h"
+#include "fsfw/FSFW.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
@@ -9,9 +9,11 @@
 #define CCSDS_DISTRIBUTOR_DEBUGGING 0
 
 CcsdsDistributor::CcsdsDistributor(uint16_t setDefaultApid, object_id_t setObjectId,
+                                   StorageManagerIF* tcStore, MessageQueueIF* queue,
                                    CcsdsPacketCheckIF* packetChecker)
-    : TcDistributorBase(setObjectId),
+    : TcDistributorBase(setObjectId, queue),
       defaultApid(setDefaultApid),
+      tcStore(tcStore),
       packetChecker(packetChecker) {}
 
 CcsdsDistributor::~CcsdsDistributor() = default;
@@ -28,9 +30,8 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
                   currentMessage.getStorageId().packetIndex);
 #endif
 #endif
-  const uint8_t* packet = nullptr;
-  size_t size = 0;
-  ReturnValue_t result = tcStore->getData(currentMessage.getStorageId(), &packet, &size);
+  auto accessorPair = tcStore->getData(currentMessage.getStorageId());
+  ReturnValue_t result = accessorPair.first;
   if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -45,8 +46,11 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
 #endif
     return result;
   }
-  SpacePacketReader currentPacket(packet, size);
-  result = packetChecker->checkPacket(currentPacket, size);
+  if (accessorPair.second.size() < ccsds::HEADER_LEN) {
+    return SerializeIF::STREAM_TOO_SHORT;
+  }
+  SpacePacketReader currentPacket(accessorPair.second.data(), accessorPair.second.size());
+  result = packetChecker->checkPacket(currentPacket, accessorPair.second.size());
   if (result != HasReturnvaluesIF::RETURN_OK) {
     handlePacketCheckFailure(result);
     return result;
@@ -59,11 +63,12 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
   if (iter != receiverMap.end()) {
     destId = iter->second.destId;
     if (iter->second.removeHeader) {
-      handleCcsdsHeaderRemoval();
+      // Do not call accessor release method here to ensure the old packet gets deleted.
+      return handleCcsdsHeaderRemoval(accessorPair.second);
     }
   } else {
     // The APID was not found. Forward packet to main SW-APID anyway to
-    //  create acceptance failure report.
+    // create acceptance failure report.
     iter = receiverMap.find(defaultApid);
     if (iter != receiverMap.end()) {
       destId = iter->second.destId;
@@ -71,6 +76,7 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
       return DESTINATION_NOT_FOUND;
     }
   }
+  accessorPair.second.release();
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -111,23 +117,28 @@ ReturnValue_t CcsdsDistributor::initialize() {
   if (packetChecker == nullptr) {
     packetChecker = new CcsdsPacketChecker(ccsds::PacketType::TC);
   }
-  ReturnValue_t status = this->TcDistributorBase::initialize();
-  this->tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
-  if (this->tcStore == nullptr) {
+  ReturnValue_t result = TcDistributorBase::initialize();
+  if (result != HasReturnvaluesIF::RETURN_OK) {
+    return result;
+  }
+  if (tcStore == nullptr) {
+    tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+    if (tcStore == nullptr) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CCSDSDistributor::initialize: Could not initialize"
-                  " TC store!"
-               << std::endl;
+      sif::error << "CCSDSDistributor::initialize: Could not initialize"
+                    " TC store!"
+                 << std::endl;
 #else
-    sif::printError(
-        "CCSDSDistributor::initialize: Could not initialize"
-        " TC store!\n");
+      sif::printError(
+          "CCSDSDistributor::initialize: Could not initialize"
+          " TC store!\n");
 #endif
 #endif
-    status = RETURN_FAILED;
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
   }
-  return status;
+  return result;
 }
 
 ReturnValue_t CcsdsDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
@@ -151,15 +162,19 @@ void CcsdsDistributor::print() {
 
 const char* CcsdsDistributor::getName() const { return "CCSDS Distributor"; }
 
-ReturnValue_t CcsdsDistributor::handleCcsdsHeaderRemoval() {
-  currentMessage;
-  auto accessorPair = tcStore->getData(currentMessage.getStorageId());
-  if(accessorPair.first != HasReturnvaluesIF::RETURN_OK) {
+ReturnValue_t CcsdsDistributor::handleCcsdsHeaderRemoval(ConstStorageAccessor& accessor) {
+  store_address_t newStoreId;
+  ReturnValue_t result = tcStore->addData(&newStoreId, accessor.data() + ccsds::HEADER_LEN,
+                                          accessor.size() - ccsds::HEADER_LEN);
+  if (result != HasReturnvaluesIF::RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << __func__ << ": Getting TC data failed" << std::endl;
+    sif::error << __func__ << ": TC store full" << std::endl;
 #else
-    sif::printError("%s: Getting TC data failed\n", __func__);
+    sif::printError("%s: TC store full\n", __func__);
 #endif
-    return accessorPair.first;
+    return result;
   }
+  currentMessage.setStorageId(newStoreId);
+  // The const accessor will delete the old data automatically
+  return HasReturnvaluesIF::RETURN_OK;
 }
