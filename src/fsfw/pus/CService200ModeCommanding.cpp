@@ -10,8 +10,8 @@
 CService200ModeCommanding::CService200ModeCommanding(object_id_t objectId, uint16_t apid,
                                                      uint8_t serviceId, uint8_t numParallelCommands,
                                                      uint16_t commandTimeoutSeconds)
-    : CommandingServiceBase(objectId, apid, serviceId, numParallelCommands, commandTimeoutSeconds) {
-}
+    : CommandingServiceBase(objectId, apid, "PUS 200 Mode MGMT", serviceId, numParallelCommands,
+                            commandTimeoutSeconds) {}
 
 CService200ModeCommanding::~CService200ModeCommanding() {}
 

@@ -1,11 +1,13 @@
 #ifndef FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_
 #define FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_
 
+#include <map>
+
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tcdistribution/CcsdsDistributorIF.h"
 #include "fsfw/tcdistribution/CcsdsPacketChecker.h"
-#include "fsfw/tcdistribution/TcDistributor.h"
+#include "fsfw/tcdistribution/TcDistributorBase.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 
 /**
@@ -16,7 +18,7 @@
  * The Secondary Header (with Service/Subservice) is ignored.
  * @ingroup tc_distribution
  */
-class CcsdsDistributor : public TcDistributor,
+class CcsdsDistributor : public TcDistributorBase,
                          public CcsdsDistributorIF,
                          public AcceptsTelecommandsIF {
  public:
@@ -35,13 +37,16 @@ class CcsdsDistributor : public TcDistributor,
    */
   ~CcsdsDistributor() override;
 
-  MessageQueueId_t getRequestQueue() override;
-  ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) override;
-  ReturnValue_t registerApplication(AcceptsTelecommandsIF* application) override;
-  uint32_t getIdentifier() override;
+  MessageQueueId_t getRequestQueue() const override;
+  ReturnValue_t registerApplication(DestInfo info) override;
+  uint32_t getIdentifier() const override;
   ReturnValue_t initialize() override;
+  [[nodiscard]] const char* getName() const override;
 
  protected:
+  using CcsdsReceiverMap = std::map<uint16_t, DestInfo>;
+  CcsdsReceiverMap receiverMap;
+
   /**
    * This implementation checks if an application with fitting APID has
    * registered and forwards the packet to the according message queue.
@@ -49,13 +54,16 @@ class CcsdsDistributor : public TcDistributor,
    * where a Acceptance Failure message should be generated.
    * @return Iterator to map entry of found APID or iterator to default APID.
    */
-  TcMqMapIter selectDestination() override;
+  ReturnValue_t selectDestination(MessageQueueId_t& destId) override;
   /**
    * The callback here handles the generation of acceptance
    * success/failure messages.
    */
   ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus) override;
 
+  static void handlePacketCheckFailure(ReturnValue_t result);
+
+  void print();
   /**
    * The default APID, where packets with unknown APID are sent to.
    */

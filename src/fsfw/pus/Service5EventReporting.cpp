@@ -13,6 +13,7 @@ Service5EventReporting::Service5EventReporting(PsbParams params, size_t maxNumbe
       storeHelper(params.apid),
       tmHelper(params.serviceId, storeHelper, sendHelper),
       maxNumberReportsPerCycle(maxNumberReportsPerCycle) {
+  psbParams.name = "PUS 5 Event Reporting";
   eventQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
 

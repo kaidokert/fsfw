@@ -27,11 +27,8 @@
  * implementations.
  * @ingroup tc_distribution
  */
-class TcDistributor : public SystemObject, public ExecutableObjectIF, public HasReturnvaluesIF {
+class TcDistributorBase : public SystemObject, public ExecutableObjectIF, public HasReturnvaluesIF {
  public:
-  using TcMessageQueueMap = std::map<uint32_t, MessageQueueId_t>;
-  using TcMqMapIter = std::map<uint32_t, MessageQueueId_t>::iterator;
-
   static constexpr uint8_t INTERFACE_ID = CLASS_ID::PACKET_DISTRIBUTION;
   static constexpr ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE(1);
   static constexpr ReturnValue_t DESTINATION_NOT_FOUND = MAKE_RETURN_CODE(2);
@@ -43,12 +40,12 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
    * @param set_object_id	This id is assigned to the distributor
    * 		implementation.
    */
-  explicit TcDistributor(object_id_t objectId);
+  explicit TcDistributorBase(object_id_t objectId);
   /**
    * The destructor is empty, the message queues are not in the vicinity of
    * this class.
    */
-  ~TcDistributor() override;
+  ~TcDistributorBase() override;
   /**
    * The method is called cyclically and fetches new incoming packets from
    * the message queue.
@@ -57,11 +54,6 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
    * @return The error code of the message queue call.
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
-  /**
-   * A simple debug print, that prints all distribution information stored in
-   * queueMap.
-   */
-  void print();
 
  protected:
   /**
@@ -77,19 +69,13 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
    * is not tried to unpack the packet information within this class.
    */
   TmTcMessage currentMessage;
-  /**
-   * The map that links certain packet information to a destination.
-   * The packet information may be the APID of the packet or the service
-   * identifier. Filling of the map is under control of the different child
-   * classes.
-   */
-  TcMessageQueueMap queueMap;
+
   /**
    * This method shall unpack the routing information from the incoming
    * packet and select the map entry which represents the packet's target.
    * @return	An iterator to the map element to forward to or queuMap.end().
    */
-  virtual TcMqMapIter selectDestination() = 0;
+  virtual ReturnValue_t selectDestination(MessageQueueId_t& destId) = 0;
   /**
    * The handlePacket method calls the child class's selectDestination method
    * and forwards the packet to its destination, if found.

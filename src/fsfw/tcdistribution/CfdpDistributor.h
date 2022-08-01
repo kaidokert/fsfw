@@ -8,14 +8,14 @@
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/VerificationReporter.h"
 #include "CfdpDistributorIF.h"
-#include "TcDistributor.h"
+#include "TcDistributorBase.h"
 
 /**
  * This class accepts CFDP Telecommands and forwards them to Application
  * services.
  * @ingroup tc_distribution
  */
-class CfdpDistributor : public TcDistributor,
+class CfdpDistributor : public TcDistributorBase,
                         public CfdpDistributorIF,
                         public AcceptsTelecommandsIF {
  public:
@@ -33,9 +33,9 @@ class CfdpDistributor : public TcDistributor,
    */
   ~CfdpDistributor() override;
   ReturnValue_t registerHandler(AcceptsTelecommandsIF* handler) override;
-  MessageQueueId_t getRequestQueue() override;
+  MessageQueueId_t getRequestQueue() const override;
   ReturnValue_t initialize() override;
-  uint32_t getIdentifier() override;
+  uint32_t getIdentifier() const override;
 
  protected:
   uint16_t apid;
@@ -60,7 +60,7 @@ class CfdpDistributor : public TcDistributor,
    * @return Iterator to map entry of found service id
    * or iterator to @c map.end().
    */
-  TcMqMapIter selectDestination() override;
+  ReturnValue_t selectDestination(MessageQueueId_t& destId) override;
   /**
    * The callback here handles the generation of acceptance
    * success/failure messages.

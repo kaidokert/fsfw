@@ -82,9 +82,9 @@ void PusServiceBase::handleRequestQueue() {
   }
 }
 
-uint32_t PusServiceBase::getIdentifier() { return psbParams.serviceId; }
+uint32_t PusServiceBase::getIdentifier() const { return psbParams.serviceId; }
 
-MessageQueueId_t PusServiceBase::getRequestQueue() {
+MessageQueueId_t PusServiceBase::getRequestQueue() const {
   if (psbParams.reqQueue == nullptr) {
     return MessageQueueIF::NO_QUEUE;
   }
@@ -194,7 +194,7 @@ void PusServiceBase::setVerificationReporter(VerificationReporterIF& reporter) {
 }
 
 ReturnValue_t PusServiceBase::registerService(PusDistributorIF& distributor) {
-  return distributor.registerService(this);
+  return distributor.registerService(*this);
 }
 
 void PusServiceBase::setTmReceiver(AcceptsTelemetryIF& tmReceiver_) {
@@ -202,3 +202,5 @@ void PusServiceBase::setTmReceiver(AcceptsTelemetryIF& tmReceiver_) {
 }
 
 void PusServiceBase::setRequestQueue(MessageQueueIF& reqQueue) { psbParams.reqQueue = &reqQueue; }
+
+const char* PusServiceBase::getName() const { return psbParams.name; }

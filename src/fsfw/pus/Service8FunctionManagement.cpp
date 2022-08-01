@@ -12,8 +12,8 @@ Service8FunctionManagement::Service8FunctionManagement(object_id_t objectId, uin
                                                        uint8_t serviceId,
                                                        uint8_t numParallelCommands,
                                                        uint16_t commandTimeoutSeconds)
-    : CommandingServiceBase(objectId, apid, serviceId, numParallelCommands, commandTimeoutSeconds) {
-}
+    : CommandingServiceBase(objectId, apid, "PUS 8 Functional Commanding", serviceId,
+                            numParallelCommands, commandTimeoutSeconds) {}
 
 Service8FunctionManagement::~Service8FunctionManagement() {}
 
