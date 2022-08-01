@@ -105,7 +105,7 @@ You can use the following commands inside the ``fsfw`` folder to set up the buil
 
 .. code-block:: console
 
-   mkdir cmake-build-tests && cd cmake-build-tests
+   mkdir build-tests && cd build-tests
    cmake -DFSFW_BUILD_TESTS=ON -DFSFW_OSAL=host ..
 
 
