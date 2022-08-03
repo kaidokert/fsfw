@@ -78,6 +78,7 @@ class CcsdsDistributor : public TcDistributorBase,
    */
   StorageManagerIF* tcStore = nullptr;
 
+  bool ownedPacketChecker = false;
   CcsdsPacketCheckIF* packetChecker = nullptr;
 };
 

@@ -16,7 +16,11 @@ CcsdsDistributor::CcsdsDistributor(uint16_t setDefaultApid, object_id_t setObjec
       tcStore(tcStore),
       packetChecker(packetChecker) {}
 
-CcsdsDistributor::~CcsdsDistributor() = default;
+CcsdsDistributor::~CcsdsDistributor() {
+  if (ownedPacketChecker) {
+    delete packetChecker;
+  }
+}
 
 ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
 #if CCSDS_DISTRIBUTOR_DEBUGGING == 1
@@ -123,12 +127,13 @@ ReturnValue_t CcsdsDistributor::registerApplication(DestInfo info) {
 uint32_t CcsdsDistributor::getIdentifier() const { return 0; }
 
 ReturnValue_t CcsdsDistributor::initialize() {
-  if (packetChecker == nullptr) {
-    packetChecker = new CcsdsPacketChecker(ccsds::PacketType::TC);
-  }
   ReturnValue_t result = TcDistributorBase::initialize();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
+  }
+  if (packetChecker == nullptr) {
+    ownedPacketChecker = true;
+    packetChecker = new CcsdsPacketChecker(ccsds::PacketType::TC);
   }
   if (tcStore == nullptr) {
     tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
