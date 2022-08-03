@@ -21,8 +21,8 @@ struct TransactionSeqNum : public VarLenField {
 
 class PduConfig {
  public:
-  PduConfig(cfdp::TransmissionModes mode, cfdp::TransactionSeqNum seqNum, cfdp::EntityId sourceId,
-            cfdp::EntityId destId, bool crcFlag = false, bool largeFile = false,
+  PduConfig(cfdp::EntityId sourceId, cfdp::EntityId destId, cfdp::TransmissionModes mode,
+            cfdp::TransactionSeqNum seqNum, bool crcFlag = false, bool largeFile = false,
             cfdp::Direction direction = cfdp::Direction::TOWARDS_RECEIVER);
   cfdp::TransmissionModes mode;
   cfdp::TransactionSeqNum seqNum;

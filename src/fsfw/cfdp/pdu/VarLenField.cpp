@@ -118,3 +118,10 @@ ReturnValue_t cfdp::VarLenField::deSerialize(const uint8_t **buffer, size_t *siz
     }
   }
 }
+
+template <typename T>
+cfdp::VarLenField::VarLenField(UnsignedByteField<T> byteField)
+    : width(static_cast<WidthInBytes>(sizeof(T))) {
+  static_assert((sizeof(T) % 2) == 0);
+  value = byteField.getValue();
+}

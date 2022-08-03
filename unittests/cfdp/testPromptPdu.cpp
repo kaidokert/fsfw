@@ -14,7 +14,7 @@ TEST_CASE("Prompt PDU", "[PromptPdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(TransmissionModes::ACKNOWLEDGED, seqNum, sourceId, destId);
+  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
 
   SECTION("Serialize") {
     PromptPduSerializer serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
@@ -24,7 +24,7 @@ TEST_CASE("Prompt PDU", "[PromptPdu]") {
     REQUIRE(sz == 12);
     REQUIRE(serializer.getPduDataFieldLen() == 2);
     REQUIRE(rawBuf[10] == FileDirectives::PROMPT);
-    REQUIRE((rawBuf[sz - 1] >> 7) & 0x01 == cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
+    REQUIRE(((rawBuf[sz - 1] >> 7) & 0x01) == cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
 
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {
       uint8_t* buffer = rawBuf.data();

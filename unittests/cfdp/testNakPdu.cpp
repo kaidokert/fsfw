@@ -15,7 +15,7 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(TransmissionModes::ACKNOWLEDGED, seqNum, sourceId, destId);
+  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
 
   FileSize startOfScope(50);
   FileSize endOfScope(1050);

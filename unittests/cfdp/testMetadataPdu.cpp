@@ -17,7 +17,7 @@ TEST_CASE("Metadata PDU", "[MetadataPdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(TransmissionModes::ACKNOWLEDGED, seqNum, sourceId, destId);
+  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
 
   std::string firstFileName = "hello.txt";
   cfdp::Lv sourceFileName(reinterpret_cast<const uint8_t*>(firstFileName.data()),

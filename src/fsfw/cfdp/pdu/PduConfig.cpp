@@ -1,12 +1,14 @@
 #include "PduConfig.h"
 
-PduConfig::PduConfig(cfdp::TransmissionModes mode, cfdp::TransactionSeqNum seqNum,
-                     cfdp::EntityId sourceId, cfdp::EntityId destId, bool crcFlag, bool largeFile,
+#include <utility>
+
+PduConfig::PduConfig(cfdp::EntityId sourceId, cfdp::EntityId destId, cfdp::TransmissionModes mode,
+                     cfdp::TransactionSeqNum seqNum, bool crcFlag, bool largeFile,
                      cfdp::Direction direction)
     : mode(mode),
-      seqNum(seqNum),
-      sourceId(sourceId),
-      destId(destId),
+      seqNum(std::move(seqNum)),
+      sourceId(std::move(sourceId)),
+      destId(std::move(destId)),
       crcFlag(crcFlag),
       largeFile(largeFile),
       direction(direction) {}

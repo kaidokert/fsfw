@@ -42,17 +42,17 @@ enum ChecksumType {
   NULL_CHECKSUM = 15
 };
 
-enum PduType : bool { FILE_DIRECTIVE = 0, FILE_DATA = 1 };
+enum PduType : uint8_t { FILE_DIRECTIVE = 0, FILE_DATA = 1 };
 
-enum TransmissionModes : bool { ACKNOWLEDGED = 0, UNACKNOWLEDGED = 1 };
+enum TransmissionModes : uint8_t { ACKNOWLEDGED = 0, UNACKNOWLEDGED = 1 };
 
-enum SegmentMetadataFlag : bool { NOT_PRESENT = 0, PRESENT = 1 };
+enum SegmentMetadataFlag : bool { NOT_PRESENT = false, PRESENT = true };
 
-enum Direction : bool { TOWARDS_RECEIVER = 0, TOWARDS_SENDER = 1 };
+enum Direction : uint8_t { TOWARDS_RECEIVER = 0, TOWARDS_SENDER = 1 };
 
 enum SegmentationControl : bool {
-  NO_RECORD_BOUNDARIES_PRESERVATION = 0,
-  RECORD_BOUNDARIES_PRESERVATION = 1
+  NO_RECORD_BOUNDARIES_PRESERVATION = false,
+  RECORD_BOUNDARIES_PRESERVATION = true
 };
 
 enum WidthInBytes : uint8_t {
@@ -106,7 +106,7 @@ enum FinishedFileStatus {
   FILE_STATUS_UNREPORTED = 3
 };
 
-enum PromptResponseRequired : bool { PROMPT_NAK = 0, PROMPT_KEEP_ALIVE = 1 };
+enum PromptResponseRequired : uint8_t { PROMPT_NAK = 0, PROMPT_KEEP_ALIVE = 1 };
 
 enum TlvTypes : uint8_t {
   FILESTORE_REQUEST = 0x00,

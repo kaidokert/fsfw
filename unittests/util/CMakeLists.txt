@@ -1,4 +1,2 @@
-target_sources(${FSFW_TEST_TGT} PRIVATE
-  testUnsignedByteField.cpp
-  testObjectId.cpp
-)
+target_sources(${FSFW_TEST_TGT} PRIVATE testUnsignedByteField.cpp
+                                        testObjectId.cpp)

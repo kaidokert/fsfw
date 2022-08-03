@@ -4,9 +4,9 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "../definitions.h"
+#include "fsfw/cfdp/definitions.h"
 #include "fsfw/serialize/SerializeIF.h"
-
+#include "fsfw/util/UnsignedByteField.h"
 namespace cfdp {
 
 class VarLenField : public SerializeIF {
@@ -19,6 +19,8 @@ class VarLenField : public SerializeIF {
   };
 
   VarLenField();
+  template <typename T>
+  explicit VarLenField(UnsignedByteField<T> byteField);
   VarLenField(cfdp::WidthInBytes width, size_t value);
 
   ReturnValue_t setValue(cfdp::WidthInBytes, size_t value);
@@ -26,13 +28,13 @@ class VarLenField : public SerializeIF {
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
 
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   ReturnValue_t deSerialize(cfdp::WidthInBytes width, const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness);
 
-  cfdp::WidthInBytes getWidth() const;
-  size_t getValue() const;
+  [[nodiscard]] cfdp::WidthInBytes getWidth() const;
+  [[nodiscard]] size_t getValue() const;
 
  private:
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,

@@ -13,13 +13,13 @@
 
 TEST_CASE("CFDP Base", "[CfdpBase]") {
   using namespace cfdp;
-  std::array<uint8_t, 32> serBuf;
+  std::array<uint8_t, 32> serBuf{};
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   cfdp::TransactionSeqNum seqNum = TransactionSeqNum(cfdp::WidthInBytes::ONE_BYTE, 2);
   cfdp::EntityId sourceId = EntityId(cfdp::WidthInBytes::ONE_BYTE, 0);
   cfdp::EntityId destId = EntityId(cfdp::WidthInBytes::ONE_BYTE, 1);
   PduConfig pduConf =
-      PduConfig(cfdp::TransmissionModes::ACKNOWLEDGED, seqNum, sourceId, destId, false);
+      PduConfig(sourceId, destId, cfdp::TransmissionModes::ACKNOWLEDGED, seqNum, false);
   uint8_t* serTarget = serBuf.data();
   const uint8_t* deserTarget = serTarget;
   size_t serSize = 0;
@@ -79,8 +79,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     REQUIRE(serBuf[6] == 1);
 
     for (uint8_t idx = 0; idx < 7; idx++) {
-      ReturnValue_t result =
-          headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG);
+      result = headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG);
       REQUIRE(result == static_cast<int>(SerializeIF::BUFFER_TOO_SHORT));
     }
 
@@ -123,8 +122,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
                                         SerializeIF::Endianness::BIG);
 
     for (uint8_t idx = 0; idx < 14; idx++) {
-      ReturnValue_t result =
-          headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG);
+      result = headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG);
       REQUIRE(result == static_cast<int>(SerializeIF::BUFFER_TOO_SHORT));
     }
     REQUIRE(headerSerializer.getCrcFlag() == true);
@@ -144,11 +142,11 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
                                   SerializeIF::Endianness::NETWORK);
     REQUIRE(deSerSize == 4);
     REQUIRE(entityId == 0xff00ff00);
-    uint16_t seqNum = 0;
-    SerializeAdapter::deSerialize(&seqNum, serBuf.data() + 8, &deSerSize,
+    uint16_t seqNumRaw = 0;
+    SerializeAdapter::deSerialize(&seqNumRaw, serBuf.data() + 8, &deSerSize,
                                   SerializeIF::Endianness::NETWORK);
     REQUIRE(deSerSize == 2);
-    REQUIRE(seqNum == 0x0fff);
+    REQUIRE(seqNumRaw == 0x0fff);
     SerializeAdapter::deSerialize(&entityId, serBuf.data() + 10, &deSerSize,
                                   SerializeIF::Endianness::NETWORK);
     REQUIRE(deSerSize == 4);
@@ -195,8 +193,8 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     // We unittested the serializer before, so we can use it now to generate valid raw  CFDP
     // data
     auto headerSerializer = HeaderSerializer(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
-    ReturnValue_t result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                                      SerializeIF::Endianness::BIG);
+    result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
+                                        SerializeIF::Endianness::BIG);
     REQUIRE(result == result::OK);
     REQUIRE(serBuf[1] == 0);
     REQUIRE(serBuf[2] == 0);
@@ -272,7 +270,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
 
     size_t deSerSize = headerDeser.getWholePduSize();
     serTarget = serBuf.data();
-    const uint8_t** serTargetConst = const_cast<const uint8_t**>(&serTarget);
+    const auto** serTargetConst = const_cast<const uint8_t**>(&serTarget);
     result = headerDeser.parseData();
     REQUIRE(result == result::OK);
 
@@ -356,8 +354,7 @@ TEST_CASE("CFDP Base", "[CfdpBase]") {
     cfdp::FileSize fss;
     REQUIRE(fss.getSize() == 0);
     fss.setFileSize(0x20, false);
-    ReturnValue_t result =
-        fss.serialize(&buffer, &size, fssBuf.size(), SerializeIF::Endianness::MACHINE);
+    result = fss.serialize(&buffer, &size, fssBuf.size(), SerializeIF::Endianness::MACHINE);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     uint32_t fileSize = 0;
     result = SerializeAdapter::deSerialize(&fileSize, fssBuf.data(), nullptr,

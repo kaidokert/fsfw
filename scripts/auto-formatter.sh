@@ -7,7 +7,8 @@ cmake_fmt="cmake-format"
 file_selectors="-iname CMakeLists.txt"
 if command -v ${cmake_fmt} &> /dev/null; then
   ${cmake_fmt} -i CMakeLists.txt
-  find ./src ${file_selectors} | xargs ${cmake_fmt}  -i
+  find ./src ${file_selectors} | xargs ${cmake_fmt} -i
+  find ./unittests ${file_selectors} | xargs ${cmake_fmt} -i
 else
   echo "No ${cmake_fmt} tool found, not formatting CMake files"
 fi
