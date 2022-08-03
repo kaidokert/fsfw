@@ -38,11 +38,12 @@ size_t HeaderReader::getHeaderSize() const {
 }
 
 size_t HeaderReader::getPduDataFieldLen() const {
-  uint16_t pduFiedlLen = (fixedHeader->pduDataFieldLenH << 8) | fixedHeader->pduDataFieldLenL;
-  return pduFiedlLen;
+  return (fixedHeader->pduDataFieldLenH << 8) | fixedHeader->pduDataFieldLenL;
 }
 
-size_t HeaderReader::getWholePduSize() const { return getPduDataFieldLen() + getHeaderSize(); }
+size_t HeaderReader::getWholePduSize() const {
+  return getPduDataFieldLen() + HeaderReader::getHeaderSize();
+}
 
 cfdp::PduType HeaderReader::getPduType() const {
   return static_cast<cfdp::PduType>((fixedHeader->firstByte >> 4) & 0x01);

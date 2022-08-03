@@ -51,8 +51,10 @@ TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
     REQUIRE(deserializer.getPromptResponseRequired() ==
             cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
     sz = deserializer.getWholePduSize();
+    // Set invalid size
     rawBuf[2] = 1;
     result = deserializer.parseData();
+    size_t sz2 = deserializer.getWholePduSize();
     REQUIRE(result == SerializeIF::STREAM_TOO_SHORT);
     rawBuf[2] = 2;
 

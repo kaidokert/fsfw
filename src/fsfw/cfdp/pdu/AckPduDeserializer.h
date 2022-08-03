@@ -2,9 +2,9 @@
 #define FSFW_SRC_FSFW_CFDP_PDU_ACKPDUDESERIALIZER_H_
 
 #include "AckInfo.h"
-#include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
-class AckPduDeserializer : public FileDirectiveDeserializer {
+class AckPduDeserializer : public FileDirectiveReader {
  public:
   AckPduDeserializer(const uint8_t* pduBuf, size_t maxSize, AckInfo& info);
 

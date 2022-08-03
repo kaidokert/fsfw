@@ -1,11 +1,11 @@
-#include "FileDirectiveDeserializer.h"
+#include "FileDirectiveReader.h"
 
-FileDirectiveDeserializer::FileDirectiveDeserializer(const uint8_t *pduBuf, size_t maxSize)
+FileDirectiveReader::FileDirectiveReader(const uint8_t *pduBuf, size_t maxSize)
     : HeaderReader(pduBuf, maxSize) {}
 
-cfdp::FileDirectives FileDirectiveDeserializer::getFileDirective() const { return fileDirective; }
+cfdp::FileDirectives FileDirectiveReader::getFileDirective() const { return fileDirective; }
 
-ReturnValue_t FileDirectiveDeserializer::parseData() {
+ReturnValue_t FileDirectiveReader::parseData() {
   ReturnValue_t result = HeaderReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
@@ -13,7 +13,7 @@ ReturnValue_t FileDirectiveDeserializer::parseData() {
   if (this->getPduDataFieldLen() < 1) {
     return cfdp::INVALID_PDU_DATAFIELD_LEN;
   }
-  if (FileDirectiveDeserializer::getWholePduSize() > maxSize) {
+  if (FileDirectiveReader::getWholePduSize() > maxSize) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   size_t currentIdx = HeaderReader::getHeaderSize();
@@ -24,12 +24,12 @@ ReturnValue_t FileDirectiveDeserializer::parseData() {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-size_t FileDirectiveDeserializer::getHeaderSize() const {
+size_t FileDirectiveReader::getHeaderSize() const {
   // return size of header plus the directive byte
   return HeaderReader::getHeaderSize() + 1;
 }
 
-bool FileDirectiveDeserializer::checkFileDirective(uint8_t rawByte) {
+bool FileDirectiveReader::checkFileDirective(uint8_t rawByte) {
   if (rawByte < cfdp::FileDirectives::EOF_DIRECTIVE or
       (rawByte > cfdp::FileDirectives::PROMPT and rawByte != cfdp::FileDirectives::KEEP_ALIVE)) {
     // Invalid directive field. TODO: Custom returnvalue
@@ -38,12 +38,12 @@ bool FileDirectiveDeserializer::checkFileDirective(uint8_t rawByte) {
   return true;
 }
 
-void FileDirectiveDeserializer::setFileDirective(cfdp::FileDirectives fileDirective) {
-  this->fileDirective = fileDirective;
+void FileDirectiveReader::setFileDirective(cfdp::FileDirectives fileDirective_) {
+  fileDirective = fileDirective_;
 }
 
-void FileDirectiveDeserializer::setEndianness(SerializeIF::Endianness endianness) {
-  this->endianness = endianness;
+void FileDirectiveReader::setEndianness(SerializeIF::Endianness endianness_) {
+  endianness = endianness_;
 }
 
-SerializeIF::Endianness FileDirectiveDeserializer::getEndianness() const { return endianness; }
+SerializeIF::Endianness FileDirectiveReader::getEndianness() const { return endianness; }

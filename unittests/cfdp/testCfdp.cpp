@@ -3,8 +3,8 @@
 #include <cstring>
 
 #include "fsfw/cfdp/FileSize.h"
-#include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
-#include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
+#include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/serialize/SerializeAdapter.h"
 
@@ -22,7 +22,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
   size_t serSize = 0;
 
   SECTION("File Directive") {
-    auto fdSer = FileDirectiveSerializer(pduConf, FileDirectives::ACK, 4);
+    auto fdSer = FileDirectiveCreator(pduConf, FileDirectives::ACK, 4);
     REQUIRE(fdSer.getSerializedSize() == 8);
     serTarget = serBuf.data();
     serSize = 0;
@@ -59,7 +59,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
 
     deserTarget = serBuf.data();
     deserSize = 0;
-    auto fdDeser = FileDirectiveDeserializer(deserTarget, serBuf.size());
+    auto fdDeser = FileDirectiveReader(deserTarget, serBuf.size());
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::NETWORK);
     fdDeser.setEndianness(SerializeIF::Endianness::MACHINE);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::MACHINE);

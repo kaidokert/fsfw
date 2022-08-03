@@ -2,9 +2,9 @@
 #define FSFW_SRC_FSFW_CFDP_PDU_KEEPALIVEPDUSERIALIZER_H_
 
 #include "fsfw/cfdp/FileSize.h"
-#include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 
-class KeepAlivePduSerializer : public FileDirectiveSerializer {
+class KeepAlivePduSerializer : public FileDirectiveCreator {
  public:
   KeepAlivePduSerializer(PduConfig& conf, cfdp::FileSize& progress);
 

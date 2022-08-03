@@ -1,10 +1,9 @@
-#include "FileDataDeserializer.h"
+#include "FileDataReader.h"
 
-FileDataDeserializer::FileDataDeserializer(const uint8_t* pduBuf, size_t maxSize,
-                                           FileDataInfo& info)
+FileDataReader::FileDataReader(const uint8_t* pduBuf, size_t maxSize, FileDataInfo& info)
     : HeaderReader(pduBuf, maxSize), info(info) {}
 
-ReturnValue_t FileDataDeserializer::parseData() {
+ReturnValue_t FileDataReader::parseData() {
   ReturnValue_t result = HeaderReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
@@ -41,8 +40,8 @@ ReturnValue_t FileDataDeserializer::parseData() {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-SerializeIF::Endianness FileDataDeserializer::getEndianness() const { return endianness; }
+SerializeIF::Endianness FileDataReader::getEndianness() const { return endianness; }
 
-void FileDataDeserializer::setEndianness(SerializeIF::Endianness endianness) {
-  this->endianness = endianness;
+void FileDataReader::setEndianness(SerializeIF::Endianness endianness_) {
+  endianness = endianness_;
 }

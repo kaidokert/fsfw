@@ -2,10 +2,10 @@
 #define FSFW_SRC_FSFW_CFDP_PDU_EOFPDUSERIALIZER_H_
 
 #include "EofInfo.h"
-#include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 #include "fsfw/cfdp/tlv/EntityIdTlv.h"
 
-class EofPduSerializer : public FileDirectiveSerializer {
+class EofPduSerializer : public FileDirectiveCreator {
  public:
   EofPduSerializer(PduConfig& conf, EofInfo& info);
 

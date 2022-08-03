@@ -4,8 +4,8 @@ target_sources(
           VarLenField.cpp
           HeaderCreator.cpp
           HeaderReader.cpp
-          FileDirectiveDeserializer.cpp
-          FileDirectiveSerializer.cpp
+          FileDirectiveReader.cpp
+          FileDirectiveCreator.cpp
           AckInfo.cpp
           AckPduSerializer.cpp
           AckPduDeserializer.cpp
@@ -25,6 +25,6 @@ target_sources(
           KeepAlivePduDeserializer.cpp
           PromptPduSerializer.cpp
           PromptPduDeserializer.cpp
-          FileDataSerializer.cpp
-          FileDataDeserializer.cpp
+          FileDataCreator.cpp
+          FileDataReader.cpp
           FileDataInfo.cpp)

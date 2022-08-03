@@ -1,10 +1,10 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_
 
-#include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 #include "fsfw/cfdp/pdu/FinishedInfo.h"
 
-class FinishPduDeserializer : public FileDirectiveDeserializer {
+class FinishPduDeserializer : public FileDirectiveReader {
  public:
   FinishPduDeserializer(const uint8_t* pduBuf, size_t maxSize, FinishedInfo& info);
 

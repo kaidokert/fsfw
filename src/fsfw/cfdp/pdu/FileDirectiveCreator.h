@@ -3,18 +3,18 @@
 
 #include "fsfw/cfdp/pdu/HeaderCreator.h"
 
-class FileDirectiveSerializer : public HeaderCreator {
+class FileDirectiveCreator : public HeaderCreator {
  public:
-  FileDirectiveSerializer(PduConfig& pduConf, cfdp::FileDirectives directiveCode,
-                          size_t directiveParamFieldLen);
+  FileDirectiveCreator(PduConfig& pduConf, cfdp::FileDirectives directiveCode,
+                       size_t directiveParamFieldLen);
 
   /**
    * This only returns the size of the PDU header + 1 for the directive code octet.
-   * Use FileDirectiveSerializer::getWholePduSize to get the full packet length, assuming
+   * Use FileDirectiveCreator::getWholePduSize to get the full packet length, assuming
    * the length fields was set correctly
    * @return
    */
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;

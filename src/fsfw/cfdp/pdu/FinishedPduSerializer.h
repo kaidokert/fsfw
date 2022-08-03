@@ -2,10 +2,10 @@
 #define FSFW_SRC_FSFW_CFDP_PDU_FINISHEDPDUSERIALIZER_H_
 
 #include "FinishedInfo.h"
-#include "fsfw/cfdp/pdu/FileDataSerializer.h"
-#include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
+#include "fsfw/cfdp/pdu/FileDataCreator.h"
+#include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 
-class FinishPduSerializer : public FileDirectiveSerializer {
+class FinishPduSerializer : public FileDirectiveCreator {
  public:
   FinishPduSerializer(PduConfig& pduConf, FinishedInfo& finishInfo);
 

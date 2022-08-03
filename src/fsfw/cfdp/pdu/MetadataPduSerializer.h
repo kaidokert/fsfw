@@ -1,10 +1,10 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_METADATAPDUSERIALIZER_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_METADATAPDUSERIALIZER_H_
 
-#include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 #include "fsfw/cfdp/pdu/MetadataInfo.h"
 
-class MetadataPduSerializer : public FileDirectiveSerializer {
+class MetadataPduSerializer : public FileDirectiveCreator {
  public:
   MetadataPduSerializer(PduConfig& conf, MetadataInfo& info);
 

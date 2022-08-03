@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
-#include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
+#include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
 TEST_CASE("CFDP File Directive", "[cfdp]") {
   using namespace cfdp;
@@ -18,7 +18,7 @@ TEST_CASE("CFDP File Directive", "[cfdp]") {
   size_t serSize = 0;
 
   SECTION("File Directive") {
-    auto fdSer = FileDirectiveSerializer(pduConf, FileDirectives::ACK, 4);
+    auto fdSer = FileDirectiveCreator(pduConf, FileDirectives::ACK, 4);
     REQUIRE(fdSer.getSerializedSize() == 8);
     serTarget = serBuf.data();
     serSize = 0;
@@ -55,7 +55,7 @@ TEST_CASE("CFDP File Directive", "[cfdp]") {
 
     deserTarget = serBuf.data();
     deserSize = 0;
-    auto fdDeser = FileDirectiveDeserializer(deserTarget, serBuf.size());
+    auto fdDeser = FileDirectiveReader(deserTarget, serBuf.size());
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::NETWORK);
     fdDeser.setEndianness(SerializeIF::Endianness::MACHINE);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::MACHINE);

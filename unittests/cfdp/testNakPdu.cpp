@@ -25,7 +25,7 @@ TEST_CASE("NAK PDU", "[cfdp][pdu]") {
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serializer.getSerializedSize() == 19);
-    REQUIRE(serializer.FileDirectiveSerializer::getSerializedSize() == 11);
+    REQUIRE(serializer.FileDirectiveCreator::getSerializedSize() == 11);
     REQUIRE(sz == 19);
     REQUIRE(serializer.getPduDataFieldLen() == 9);
     REQUIRE(((nakBuffer[1] << 8) | nakBuffer[2]) == 0x09);

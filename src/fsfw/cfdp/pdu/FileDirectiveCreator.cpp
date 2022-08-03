@@ -1,21 +1,20 @@
-#include "FileDirectiveSerializer.h"
+#include "FileDirectiveCreator.h"
 
-FileDirectiveSerializer::FileDirectiveSerializer(PduConfig &pduConf,
-                                                 cfdp::FileDirectives directiveCode,
-                                                 size_t directiveParamFieldLen)
+FileDirectiveCreator::FileDirectiveCreator(PduConfig &pduConf, cfdp::FileDirectives directiveCode,
+                                           size_t directiveParamFieldLen)
     : HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, directiveParamFieldLen + 1),
       directiveCode(directiveCode) {}
 
-size_t FileDirectiveSerializer::getSerializedSize() const {
+size_t FileDirectiveCreator::getSerializedSize() const {
   return HeaderCreator::getSerializedSize() + 1;
 }
 
-ReturnValue_t FileDirectiveSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                                 Endianness streamEndianness) const {
+ReturnValue_t FileDirectiveCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                              Endianness streamEndianness) const {
   if (buffer == nullptr or size == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
-  if (FileDirectiveSerializer::getWholePduSize() > maxSize) {
+  if (FileDirectiveCreator::getWholePduSize() > maxSize) {
     return BUFFER_TOO_SHORT;
   }
   ReturnValue_t result = HeaderCreator::serialize(buffer, size, maxSize, streamEndianness);
@@ -32,7 +31,7 @@ ReturnValue_t FileDirectiveSerializer::serialize(uint8_t **buffer, size_t *size,
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-void FileDirectiveSerializer::setDirectiveDataFieldLen(size_t len) {
+void FileDirectiveCreator::setDirectiveDataFieldLen(size_t len) {
   // Set length of data field plus 1 byte for the directive octet
   HeaderCreator::setPduDataFieldLen(len + 1);
 }

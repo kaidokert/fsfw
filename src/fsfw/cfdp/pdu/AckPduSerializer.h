@@ -2,10 +2,10 @@
 #define FSFW_SRC_FSFW_CFDP_PDU_ACKPDUSERIALIZER_H_
 
 #include "AckInfo.h"
-#include "FileDirectiveDeserializer.h"
-#include "FileDirectiveSerializer.h"
+#include "FileDirectiveCreator.h"
+#include "FileDirectiveReader.h"
 
-class AckPduSerializer : public FileDirectiveSerializer {
+class AckPduSerializer : public FileDirectiveCreator {
  public:
   /**
    * @brief   Serializer to pack ACK PDUs

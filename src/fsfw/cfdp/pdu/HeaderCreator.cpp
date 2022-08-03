@@ -47,8 +47,7 @@ ReturnValue_t HeaderCreator::serialize(uint8_t **buffer, size_t *size, size_t ma
 }
 
 size_t HeaderCreator::getSerializedSize() const {
-  size_t shit = pduConf.seqNum.getWidth() + pduConf.sourceId.getWidth() * 2 + 4;
-  return shit;
+  return pduConf.seqNum.getWidth() + pduConf.sourceId.getWidth() * 2 + 4;
 }
 
 ReturnValue_t HeaderCreator::deSerialize(const uint8_t **buffer, size_t *size,

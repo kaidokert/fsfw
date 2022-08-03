@@ -1,7 +1,7 @@
 #include "MetadataPduSerializer.h"
 
 MetadataPduSerializer::MetadataPduSerializer(PduConfig &conf, MetadataInfo &info)
-    : FileDirectiveSerializer(conf, cfdp::FileDirectives::METADATA, 5), info(info) {
+    : FileDirectiveCreator(conf, cfdp::FileDirectives::METADATA, 5), info(info) {
   updateDirectiveFieldLen();
 }
 
@@ -10,13 +10,12 @@ void MetadataPduSerializer::updateDirectiveFieldLen() {
 }
 
 size_t MetadataPduSerializer::getSerializedSize() const {
-  return FileDirectiveSerializer::getWholePduSize();
+  return FileDirectiveCreator::getWholePduSize();
 }
 
 ReturnValue_t MetadataPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                                Endianness streamEndianness) const {
-  ReturnValue_t result =
-      FileDirectiveSerializer::serialize(buffer, size, maxSize, streamEndianness);
+  ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

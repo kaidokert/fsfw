@@ -11,24 +11,24 @@
  * This is a zero-copy implementation and #parseData needs to be called to ensure the data is
  * valid.
  */
-class FileDirectiveDeserializer : public HeaderReader {
+class FileDirectiveReader : public HeaderReader {
  public:
-  FileDirectiveDeserializer(const uint8_t* pduBuf, size_t maxSize);
+  FileDirectiveReader(const uint8_t* pduBuf, size_t maxSize);
 
   /**
    * This needs to be called before accessing the PDU fields to avoid segmentation faults.
    * @return
    */
-  virtual ReturnValue_t parseData();
-  size_t getHeaderSize() const;
+  ReturnValue_t parseData() override;
+  [[nodiscard]] size_t getHeaderSize() const override;
 
-  cfdp::FileDirectives getFileDirective() const;
+  [[nodiscard]] cfdp::FileDirectives getFileDirective() const;
 
   void setEndianness(SerializeIF::Endianness endianness);
-  SerializeIF::Endianness getEndianness() const;
+  [[nodiscard]] SerializeIF::Endianness getEndianness() const;
 
  protected:
-  bool checkFileDirective(uint8_t rawByte);
+  static bool checkFileDirective(uint8_t rawByte);
 
  private:
   void setFileDirective(cfdp::FileDirectives fileDirective);

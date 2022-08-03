@@ -1,16 +1,15 @@
 #include "AckPduSerializer.h"
 
 AckPduSerializer::AckPduSerializer(AckInfo &ackInfo, PduConfig &pduConf)
-    : FileDirectiveSerializer(pduConf, cfdp::FileDirectives::ACK, 2), ackInfo(ackInfo) {}
+    : FileDirectiveCreator(pduConf, cfdp::FileDirectives::ACK, 2), ackInfo(ackInfo) {}
 
 size_t AckPduSerializer::getSerializedSize() const {
-  return FileDirectiveSerializer::getWholePduSize();
+  return FileDirectiveCreator::getWholePduSize();
 }
 
 ReturnValue_t AckPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                           Endianness streamEndianness) const {
-  ReturnValue_t result =
-      FileDirectiveSerializer::serialize(buffer, size, maxSize, streamEndianness);
+  ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

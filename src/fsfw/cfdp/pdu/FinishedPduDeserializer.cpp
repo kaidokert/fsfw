@@ -2,21 +2,21 @@
 
 FinishPduDeserializer::FinishPduDeserializer(const uint8_t* pduBuf, size_t maxSize,
                                              FinishedInfo& info)
-    : FileDirectiveDeserializer(pduBuf, maxSize), finishedInfo(info) {}
+    : FileDirectiveReader(pduBuf, maxSize), finishedInfo(info) {}
 
 ReturnValue_t FinishPduDeserializer::parseData() {
-  ReturnValue_t result = FileDirectiveDeserializer::parseData();
+  ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  size_t currentIdx = FileDirectiveDeserializer::getHeaderSize();
+  size_t currentIdx = FileDirectiveReader::getHeaderSize();
   const uint8_t* buf = rawPtr + currentIdx;
-  size_t remSize = FileDirectiveDeserializer::getWholePduSize() - currentIdx;
+  size_t remSize = FileDirectiveReader::getWholePduSize() - currentIdx;
   if (remSize < 1) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   uint8_t firstByte = *buf;
-  cfdp::ConditionCode condCode = static_cast<cfdp::ConditionCode>((firstByte >> 4) & 0x0f);
+  auto condCode = static_cast<cfdp::ConditionCode>((firstByte >> 4) & 0x0f);
   finishedInfo.setConditionCode(condCode);
   finishedInfo.setDeliveryCode(static_cast<cfdp::FinishedDeliveryCode>(firstByte >> 2 & 0b1));
   finishedInfo.setFileStatus(static_cast<cfdp::FinishedFileStatus>(firstByte & 0b11));

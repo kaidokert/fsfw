@@ -1,9 +1,9 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_PROMPTPDUDESERIALIZER_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_PROMPTPDUDESERIALIZER_H_
 
-#include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
-class PromptPduDeserializer : public FileDirectiveDeserializer {
+class PromptPduDeserializer : public FileDirectiveReader {
  public:
   PromptPduDeserializer(const uint8_t *pduBuf, size_t maxSize);
 

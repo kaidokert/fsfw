@@ -1,14 +1,14 @@
 #include "AckPduDeserializer.h"
 
 AckPduDeserializer::AckPduDeserializer(const uint8_t* pduBuf, size_t maxSize, AckInfo& info)
-    : FileDirectiveDeserializer(pduBuf, maxSize), info(info) {}
+    : FileDirectiveReader(pduBuf, maxSize), info(info) {}
 
 ReturnValue_t AckPduDeserializer::parseData() {
-  ReturnValue_t result = FileDirectiveDeserializer::parseData();
+  ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  size_t currentIdx = FileDirectiveDeserializer::getHeaderSize();
+  size_t currentIdx = FileDirectiveReader::getHeaderSize();
   if (currentIdx + 2 > this->maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }

@@ -1,7 +1,7 @@
 #include "NakPduSerializer.h"
 
 NakPduSerializer::NakPduSerializer(PduConfig &pduConf, NakInfo &nakInfo)
-    : FileDirectiveSerializer(pduConf, cfdp::FileDirectives::NAK, 0), nakInfo(nakInfo) {
+    : FileDirectiveCreator(pduConf, cfdp::FileDirectives::NAK, 0), nakInfo(nakInfo) {
   updateDirectiveFieldLen();
 }
 
@@ -10,13 +10,12 @@ void NakPduSerializer::updateDirectiveFieldLen() {
 }
 
 size_t NakPduSerializer::getSerializedSize() const {
-  return FileDirectiveSerializer::getWholePduSize();
+  return FileDirectiveCreator::getWholePduSize();
 }
 
 ReturnValue_t NakPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                           Endianness streamEndianness) const {
-  ReturnValue_t result =
-      FileDirectiveSerializer::serialize(buffer, size, maxSize, streamEndianness);
+  ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

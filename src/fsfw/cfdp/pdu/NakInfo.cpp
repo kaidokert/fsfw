@@ -26,7 +26,7 @@ bool NakInfo::hasSegmentRequests() const {
 }
 
 bool NakInfo::canHoldSegmentRequests() const {
-  if (this->segmentRequests != nullptr and maxSegmentRequestsLen > 0) {
+  if (segmentRequests != nullptr and maxSegmentRequestsLen > 0) {
     return true;
   }
   return false;

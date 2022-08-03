@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/FileDataDeserializer.h"
-#include "fsfw/cfdp/pdu/FileDataSerializer.h"
+#include "fsfw/cfdp/pdu/FileDataCreator.h"
+#include "fsfw/cfdp/pdu/FileDataReader.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/serviceinterface.h"
 
@@ -26,7 +26,7 @@ TEST_CASE("File Data PDU", "[cfdp][pdu]") {
   FileDataInfo info(offset, fileBuffer.data(), 10);
 
   SECTION("Serialization") {
-    FileDataSerializer serializer(pduConf, info);
+    FileDataCreator serializer(pduConf, info);
     result =
         serializer.serialize(&buffer, &sz, fileDataBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
@@ -102,14 +102,14 @@ TEST_CASE("File Data PDU", "[cfdp][pdu]") {
   }
 
   SECTION("Deserialization") {
-    FileDataSerializer serializer(pduConf, info);
+    FileDataCreator serializer(pduConf, info);
     result =
         serializer.serialize(&buffer, &sz, fileDataBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
 
     FileSize emptyOffset;
     FileDataInfo emptyInfo(emptyOffset);
-    FileDataDeserializer deserializer(fileDataBuffer.data(), fileDataBuffer.size(), emptyInfo);
+    FileDataReader deserializer(fileDataBuffer.data(), fileDataBuffer.size(), emptyInfo);
     result = deserializer.parseData();
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(deserializer.getWholePduSize() == 24);

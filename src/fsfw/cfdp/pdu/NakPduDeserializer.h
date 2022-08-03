@@ -1,10 +1,10 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_NAKPDUDESERIALIZER_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_NAKPDUDESERIALIZER_H_
 
-#include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 #include "fsfw/cfdp/pdu/NakInfo.h"
 
-class NakPduDeserializer : public FileDirectiveDeserializer {
+class NakPduDeserializer : public FileDirectiveReader {
  public:
   NakPduDeserializer(const uint8_t* pduBuf, size_t maxSize, NakInfo& info);
 

@@ -1,12 +1,12 @@
 #include "KeepAlivePduSerializer.h"
 
 KeepAlivePduSerializer::KeepAlivePduSerializer(PduConfig &conf, cfdp::FileSize &progress)
-    : FileDirectiveSerializer(conf, cfdp::FileDirectives::KEEP_ALIVE, 4), progress(progress) {
+    : FileDirectiveCreator(conf, cfdp::FileDirectives::KEEP_ALIVE, 4), progress(progress) {
   updateDirectiveFieldLen();
 }
 
 size_t KeepAlivePduSerializer::getSerializedSize() const {
-  return FileDirectiveSerializer::getWholePduSize();
+  return FileDirectiveCreator::getWholePduSize();
 }
 
 void KeepAlivePduSerializer::updateDirectiveFieldLen() {
@@ -17,8 +17,7 @@ void KeepAlivePduSerializer::updateDirectiveFieldLen() {
 
 ReturnValue_t KeepAlivePduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                                 Endianness streamEndianness) const {
-  ReturnValue_t result =
-      FileDirectiveSerializer::serialize(buffer, size, maxSize, streamEndianness);
+  ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }

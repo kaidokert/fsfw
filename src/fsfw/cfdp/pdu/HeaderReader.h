@@ -41,7 +41,7 @@ class HeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
    *  - SerializeIF::BUFFER_TOO_SHORT if buffer is shorter than expected
    */
   virtual ReturnValue_t parseData();
-  [[nodiscard]] size_t getHeaderSize() const;
+  [[nodiscard]] virtual size_t getHeaderSize() const;
 
   [[nodiscard]] size_t getPduDataFieldLen() const override;
   [[nodiscard]] size_t getWholePduSize() const override;

@@ -5,12 +5,12 @@
 #include "FileDataInfo.h"
 #include "HeaderReader.h"
 
-class FileDataDeserializer : public HeaderReader {
+class FileDataReader : public HeaderReader {
  public:
-  FileDataDeserializer(const uint8_t* pduBuf, size_t maxSize, FileDataInfo& info);
+  FileDataReader(const uint8_t* pduBuf, size_t maxSize, FileDataInfo& info);
 
-  ReturnValue_t parseData();
-  SerializeIF::Endianness getEndianness() const;
+  ReturnValue_t parseData() override;
+  [[nodiscard]] SerializeIF::Endianness getEndianness() const;
   void setEndianness(SerializeIF::Endianness endianness = SerializeIF::Endianness::NETWORK);
 
  private:

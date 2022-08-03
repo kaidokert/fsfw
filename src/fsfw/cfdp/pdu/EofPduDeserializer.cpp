@@ -4,10 +4,10 @@
 #include "fsfw/serviceinterface.h"
 
 EofPduDeserializer::EofPduDeserializer(const uint8_t* pduBuf, size_t maxSize, EofInfo& eofInfo)
-    : FileDirectiveDeserializer(pduBuf, maxSize), info(eofInfo) {}
+    : FileDirectiveReader(pduBuf, maxSize), info(eofInfo) {}
 
 ReturnValue_t EofPduDeserializer::parseData() {
-  ReturnValue_t result = FileDirectiveDeserializer::parseData();
+  ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
@@ -17,7 +17,7 @@ ReturnValue_t EofPduDeserializer::parseData() {
   if (this->getLargeFileFlag()) {
     expectedFileFieldLen = 8;
   }
-  size_t currentIdx = FileDirectiveDeserializer::getHeaderSize();
+  size_t currentIdx = FileDirectiveReader::getHeaderSize();
   size_t deserLen = maxSize;
   if (maxSize < currentIdx + 5 + expectedFileFieldLen) {
     return SerializeIF::STREAM_TOO_SHORT;

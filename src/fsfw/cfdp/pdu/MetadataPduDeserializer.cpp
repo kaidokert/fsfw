@@ -2,16 +2,16 @@
 
 MetadataPduDeserializer::MetadataPduDeserializer(const uint8_t* pduBuf, size_t maxSize,
                                                  MetadataInfo& info)
-    : FileDirectiveDeserializer(pduBuf, maxSize), info(info) {}
+    : FileDirectiveReader(pduBuf, maxSize), info(info) {}
 
 ReturnValue_t MetadataPduDeserializer::parseData() {
-  ReturnValue_t result = FileDirectiveDeserializer::parseData();
+  ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  size_t currentIdx = FileDirectiveDeserializer::getHeaderSize();
+  size_t currentIdx = FileDirectiveReader::getHeaderSize();
   const uint8_t* buf = rawPtr + currentIdx;
-  size_t remSize = FileDirectiveDeserializer::getWholePduSize() - currentIdx;
+  size_t remSize = FileDirectiveReader::getWholePduSize() - currentIdx;
   if (remSize < 1) {
     return SerializeIF::STREAM_TOO_SHORT;
   }

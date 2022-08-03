@@ -2,9 +2,9 @@
 #define FSFW_SRC_FSFW_CFDP_PDU_EOFPDUDESERIALIZER_H_
 
 #include "EofInfo.h"
-#include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
-class EofPduDeserializer : public FileDirectiveDeserializer {
+class EofPduDeserializer : public FileDirectiveReader {
  public:
   EofPduDeserializer(const uint8_t* pduBuf, size_t maxSize, EofInfo& eofInfo);
 

@@ -6,9 +6,9 @@
 #include "NakInfo.h"
 #include "fsfw/cfdp/FileSize.h"
 #include "fsfw/cfdp/definitions.h"
-#include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
+#include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 
-class NakPduSerializer : public FileDirectiveSerializer {
+class NakPduSerializer : public FileDirectiveCreator {
  public:
   /**
    *
