@@ -1,0 +1,6 @@
+#ifndef FSFW_CFDP_CFDPDESTHANDLER_H
+#define FSFW_CFDP_CFDPDESTHANDLER_H
+
+class CfdpDestHandler {};
+
+#endif  // FSFW_CFDP_CFDPDESTHANDLER_H
