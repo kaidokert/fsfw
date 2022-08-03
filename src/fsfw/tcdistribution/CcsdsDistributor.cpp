@@ -46,7 +46,16 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
 #endif
     return result;
   }
-  if (accessorPair.second.size() < ccsds::HEADER_LEN) {
+  // Minimum length of a space packet
+  if (accessorPair.second.size() < ccsds::HEADER_LEN + 1) {
+#if FSFW_VERBOSE_LEVEL >= 1
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << __func__ << ": SP with length" << accessorPair.second.size() << " too short"
+               << std::endl;
+#else
+    sif::printError("%s: SP with length %d too short\n", __func__, accessorPair.second.size());
+#endif
+#endif
     return SerializeIF::STREAM_TOO_SHORT;
   }
   SpacePacketReader currentPacket(accessorPair.second.data(), accessorPair.second.size());
@@ -62,11 +71,7 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
   auto iter = receiverMap.find(currentPacket.getApid());
   if (iter != receiverMap.end()) {
     destId = iter->second.destId;
-    if (iter->second.removeHeader) {
-      // Do not call accessor release method here to ensure the old packet gets deleted.
-      return handleCcsdsHeaderRemoval(accessorPair.second);
-    }
-  } else {
+  } else if (iter == receiverMap.end()) {
     // The APID was not found. Forward packet to main SW-APID anyway to
     // create acceptance failure report.
     iter = receiverMap.find(defaultApid);
@@ -75,6 +80,10 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
     } else {
       return DESTINATION_NOT_FOUND;
     }
+  }
+  if (iter->second.removeHeader) {
+    // Do not call accessor release method here to ensure the old packet gets deleted.
+    return handleCcsdsHeaderRemoval(accessorPair.second);
   }
   accessorPair.second.release();
   return HasReturnvaluesIF::RETURN_OK;

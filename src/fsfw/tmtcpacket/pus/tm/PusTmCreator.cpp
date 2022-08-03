@@ -111,12 +111,12 @@ TimeStamperIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader
 SpacePacketParams& PusTmCreator::getSpParams() { return spCreator.getParams(); }
 
 void PusTmCreator::updateSpLengthField() {
-  size_t headerLen = PusTmIF::MIN_SEC_HEADER_LEN + pusParams.dataWrapper.getLength() +
-                     sizeof(ecss::PusChecksumT) - 1;
+  size_t headerLen =
+      PusTmIF::MIN_SEC_HEADER_LEN + pusParams.dataWrapper.getLength() + sizeof(ecss::PusChecksumT);
   if (pusParams.secHeader.timeStamper != nullptr) {
     headerLen += pusParams.secHeader.timeStamper->getSerializedSize();
   }
-  spCreator.setDataLen(headerLen);
+  spCreator.setCcsdsLenFromTotalDataFieldLen(headerLen);
 }
 
 void PusTmCreator::setApid(uint16_t apid) { spCreator.setApid(apid); }

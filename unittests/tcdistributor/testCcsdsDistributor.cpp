@@ -28,15 +28,25 @@ TEST_CASE("CCSDS Distributor", "[ccsds-distrib]") {
   SpacePacketCreator spCreator(spParams);
   std::array<uint8_t, 32> buf{};
 
-  auto createSpacePacket = [&](uint16_t apid, TmTcMessage& msg) {
+  auto createSpacePacket = [&](uint16_t apid, TmTcMessage& msg, uint8_t* dataField = nullptr,
+                               size_t dataFieldLen = 1) {
     store_address_t storeId{};
     spCreator.setApid(tcAcceptorApid);
+    spCreator.setCcsdsLenFromTotalDataFieldLen(dataFieldLen);
     uint8_t* dataPtr;
-    REQUIRE(pool.getFreeElement(&storeId, spCreator.getSerializedSize(), &dataPtr) == result::OK);
+    REQUIRE(pool.getFreeElement(&storeId, spCreator.getSerializedSize() + dataFieldLen, &dataPtr) ==
+            result::OK);
     size_t serLen = 0;
     REQUIRE(spCreator.SerializeIF::serializeBe(dataPtr, serLen, ccsds::HEADER_LEN) == result::OK);
     REQUIRE(spCreator.SerializeIF::serializeBe(buf.data(), serLen, ccsds::HEADER_LEN) ==
             result::OK);
+    if (dataField == nullptr) {
+      dataPtr[ccsds::HEADER_LEN] = 0;
+      buf[ccsds::HEADER_LEN] = 0;
+    } else {
+      std::memcpy(dataPtr + ccsds::HEADER_LEN, dataField, dataFieldLen);
+      std::memcpy(buf.data() + ccsds::HEADER_LEN, dataField, dataFieldLen);
+    }
     msg.setStorageId(storeId);
   };
 
@@ -57,7 +67,7 @@ TEST_CASE("CCSDS Distributor", "[ccsds-distrib]") {
     store_address_t storeId = message.getStorageId();
     queue.addReceivedMessage(message);
     REQUIRE(ccsdsDistrib.performOperation(0) == result::OK);
-    CHECK(checkerMock.checkedPacketLen == 6);
+    CHECK(checkerMock.checkedPacketLen == 7);
     CHECK(checkerMock.checkCallCount == 1);
     CHECK(queue.wasMessageSent());
     CHECK(queue.numberOfSentMessages() == 1);
@@ -68,7 +78,7 @@ TEST_CASE("CCSDS Distributor", "[ccsds-distrib]") {
     CHECK(sentMsg.getStorageId() == storeId);
     auto accessor = pool.getData(storeId);
     CHECK(accessor.first == result::OK);
-    CHECK(accessor.second.size() == ccsds::HEADER_LEN);
+    CHECK(accessor.second.size() == ccsds::HEADER_LEN + 1);
     for (size_t i = 0; i < ccsds::HEADER_LEN; i++) {
       CHECK(accessor.second.data()[i] == buf[i]);
     }
@@ -92,7 +102,7 @@ TEST_CASE("CCSDS Distributor", "[ccsds-distrib]") {
     message.setStorageId(storeId);
     queue.addReceivedMessage(message);
     REQUIRE(ccsdsDistrib.performOperation(0) == result::OK);
-    CHECK(checkerMock.checkedPacketLen == 6);
+    CHECK(checkerMock.checkedPacketLen == 7);
     CHECK(checkerMock.checkCallCount == 1);
     CHECK(queue.wasMessageSent());
     CHECK(queue.numberOfSentMessages() == 1);
@@ -103,11 +113,56 @@ TEST_CASE("CCSDS Distributor", "[ccsds-distrib]") {
     CHECK(sentMsg.getStorageId() == storeId);
     auto accessor = pool.getData(storeId);
     CHECK(accessor.first == result::OK);
-    CHECK(accessor.second.size() == ccsds::HEADER_LEN);
+    CHECK(accessor.second.size() == ccsds::HEADER_LEN + 1);
     for (size_t i = 0; i < ccsds::HEADER_LEN; i++) {
       CHECK(accessor.second.data()[i] == buf[i]);
     }
   }
 
-  SECTION("Remove CCSDS header") {}
+  SECTION("Remove CCSDS header") {
+    uint16_t tgtApid = 0;
+    MessageQueueId_t tgtQueueId = MessageQueueIF::NO_QUEUE;
+    SECTION("Default destination") {
+      CcsdsDistributor::DestInfo info(defReceiverMock, true);
+      tgtApid = defaultApid;
+      tgtQueueId = defaultQueueId;
+      REQUIRE(ccsdsDistrib.registerApplication(info) == result::OK);
+    }
+    SECTION("Specific destination") {
+      CcsdsDistributor::DestInfo info(tcAcceptorMock, true);
+      tgtApid = tcAcceptorApid;
+      tgtQueueId = tcAcceptorQueueId;
+      REQUIRE(ccsdsDistrib.registerApplication(info) == result::OK);
+    }
+    TmTcMessage message;
+    std::array<uint8_t, 5> dataField = {0, 1, 2, 3, 4};
+    createSpacePacket(tgtApid, message, dataField.data(), 5);
+    store_address_t storeId = message.getStorageId();
+    message.setStorageId(storeId);
+    queue.addReceivedMessage(message);
+    REQUIRE(ccsdsDistrib.performOperation(0) == result::OK);
+    CHECK(checkerMock.checkedPacketLen == 11);
+    CHECK(checkerMock.checkCallCount == 1);
+    // Data was deleted from old slot to re-store without the header
+    CHECK(not pool.hasDataAtId(storeId));
+    TmTcMessage sentMsg;
+    CHECK(queue.getNextSentMessage(tgtQueueId, sentMsg) == result::OK);
+    CHECK(sentMsg.getStorageId() != storeId);
+    auto accessor = pool.getData(sentMsg.getStorageId());
+    CHECK(accessor.first == result::OK);
+    CHECK(accessor.second.size() == 5);
+    // Verify correctness of data field
+    for (size_t i = 0; i < 5; i++) {
+      CHECK(accessor.second.data()[i] == i);
+    }
+  }
+
+  SECTION("Invalid Space Packet, Too Short") {
+    store_address_t storeId{};
+    std::array<uint8_t, 4> data = {1, 2, 3, 4};
+    pool.addData(&storeId, data.data(), data.size());
+    TmTcMessage message(storeId);
+    queue.addReceivedMessage(message);
+    REQUIRE(ccsdsDistrib.performOperation(0) == SerializeIF::STREAM_TOO_SHORT);
+  }
 }

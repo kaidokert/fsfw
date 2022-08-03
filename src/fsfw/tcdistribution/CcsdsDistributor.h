@@ -53,7 +53,9 @@ class CcsdsDistributor : public TcDistributorBase,
    * registered and forwards the packet to the according message queue.
    * If the packet is not found, it returns the queue to @c defaultApid,
    * where a Acceptance Failure message should be generated.
-   * @return Iterator to map entry of found APID or iterator to default APID.
+   * @return
+   *  - @c RETURN_OK if a valid desintation was found, error code otherwise
+   *  - @c SerializeIF::STREAM_TOO_SHORT: Packet too short to be a space packet
    */
   ReturnValue_t selectDestination(MessageQueueId_t& destId) override;
   /**

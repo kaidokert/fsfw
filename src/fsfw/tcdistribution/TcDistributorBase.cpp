@@ -40,8 +40,7 @@ ReturnValue_t TcDistributorBase::handlePacket() {
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  result = tcQueue->sendMessage(destId, &currentMessage);
-  return callbackAfterSending(result);
+  return callbackAfterSending(tcQueue->sendMessage(destId, &currentMessage));
 }
 
 ReturnValue_t TcDistributorBase::callbackAfterSending(ReturnValue_t queueStatus) {

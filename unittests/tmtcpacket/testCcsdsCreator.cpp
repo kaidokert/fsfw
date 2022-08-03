@@ -39,7 +39,8 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   SECTION("Deserialization Fails") {
     serLen = 6;
     const uint8_t* readOnlyPtr = buf.data();
-    REQUIRE(base.deSerialize(&readOnlyPtr, &serLen, SerializeIF::Endianness::BIG) ==
+    SerializeIF& ser = dynamic_cast<SerializeIF&>(base);
+    REQUIRE(ser.deSerialize(&readOnlyPtr, &serLen, SerializeIF::Endianness::BIG) ==
             HasReturnvaluesIF::RETURN_FAILED);
   }
 
@@ -64,7 +65,7 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
     base.setApid(static_cast<int>(std::pow(2, 11)) - 1);
     base.setSeqCount(static_cast<int>(std::pow(2, 14)) - 1);
     base.setSeqFlags(ccsds::SequenceFlags::UNSEGMENTED);
-    base.setDataLen(static_cast<int>(std::pow(2, 16)) - 1);
+    base.setDataLenField(static_cast<int>(std::pow(2, 16)) - 1);
     REQUIRE(base.isValid());
     REQUIRE(base.serializeBe(&bufPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     CHECK(buf[0] == 0x1F);
@@ -73,6 +74,15 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
     CHECK(buf[3] == 0xFF);
     CHECK(buf[4] == 0xFF);
     CHECK(buf[5] == 0xFF);
+  }
+
+  SECTION("Setting data length 0 is ignored") {
+    SpacePacketCreator creator = SpacePacketCreator(
+        ccsds::PacketType::TC, true, 0xFFFF, ccsds::SequenceFlags::FIRST_SEGMENT, 0x34, 0x22);
+    creator.setCcsdsLenFromTotalDataFieldLen(0);
+    REQUIRE(creator.getPacketDataLen() == 0x22);
+    creator.setCcsdsLenFromTotalDataFieldLen(1);
+    REQUIRE(creator.getPacketDataLen() == 0x00);
   }
 
   SECTION("Invalid APID") {

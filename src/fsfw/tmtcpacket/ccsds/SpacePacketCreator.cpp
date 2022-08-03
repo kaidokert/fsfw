@@ -40,7 +40,13 @@ ReturnValue_t SpacePacketCreator::serialize(uint8_t **buffer, size_t *size, size
   return SerializeAdapter::serialize(&params.dataLen, buffer, size, maxSize, streamEndianness);
 }
 
-size_t SpacePacketCreator::getSerializedSize() const { return 6; }
+void SpacePacketCreator::setCcsdsLenFromTotalDataFieldLen(size_t actualLength) {
+  if (actualLength == 0) {
+    return;
+  }
+  setDataLenField(actualLength - 1);
+}
+size_t SpacePacketCreator::getSerializedSize() const { return ccsds::HEADER_LEN; }
 
 ReturnValue_t SpacePacketCreator::deSerialize(const uint8_t **buffer, size_t *size,
                                               SerializeIF::Endianness streamEndianness) {
@@ -64,7 +70,7 @@ void SpacePacketCreator::setSeqCount(uint16_t seqCount) {
 void SpacePacketCreator::setSeqFlags(ccsds::SequenceFlags flags) {
   params.packetSeqCtrl.seqFlags = flags;
 }
-void SpacePacketCreator::setDataLen(uint16_t dataLen_) { params.dataLen = dataLen_; }
+void SpacePacketCreator::setDataLenField(uint16_t dataLen_) { params.dataLen = dataLen_; }
 void SpacePacketCreator::checkFieldValidity() {
   valid = true;
   if (params.packetId.apid > ccsds::LIMIT_APID or
