@@ -153,10 +153,10 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(deserSize == 3);
     REQUIRE(rawBuf[0] == 2);
-    uint16_t sourceId = 0;
-    result = SerializeAdapter::deSerialize(&sourceId, rawBuf.data() + 1, &deserSize,
+    uint16_t sourceIdRaw = 0;
+    result = SerializeAdapter::deSerialize(&sourceIdRaw, rawBuf.data() + 1, &deserSize,
                                            SerializeIF::Endianness::BIG);
-    REQUIRE(sourceId == 0x0ff0);
+    REQUIRE(sourceIdRaw == 0x0ff0);
 
     auto lvEmpty = Lv(nullptr, 0);
     REQUIRE(lvEmpty.getSerializedSize() == 1);
@@ -169,7 +169,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
   }
 
   SECTION("LV Deserialization") {
-    std::array<uint8_t, 8> lvRawBuf;
+    std::array<uint8_t, 8> lvRawBuf{};
     serPtr = lvRawBuf.data();
     result =
         sourceId.serialize(&serPtr, &deserSize, lvRawBuf.size(), SerializeIF::Endianness::NETWORK);
@@ -186,10 +186,10 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(uninitLv.getSerializedSize() == 3);
     const uint8_t* storedValue = uninitLv.getValue(nullptr);
-    uint16_t sourceId = 0;
-    result = SerializeAdapter::deSerialize(&sourceId, storedValue, &deserSize,
+    uint16_t sourceIdRaw = 0;
+    result = SerializeAdapter::deSerialize(&sourceIdRaw, storedValue, &deserSize,
                                            SerializeIF::Endianness::BIG);
-    REQUIRE(sourceId == 0x0ff0);
+    REQUIRE(sourceIdRaw == 0x0ff0);
 
     auto lvEmpty = Lv(nullptr, 0);
     REQUIRE(lvEmpty.getSerializedSize() == 1);
@@ -306,7 +306,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     FaultHandlerOverrideTlv faultOverrideTlv(cfdp::ConditionCode::FILESTORE_REJECTION,
                                              cfdp::FaultHandlerCode::NOTICE_OF_CANCELLATION);
     size_t sz = 0;
-    ReturnValue_t result =
+    result =
         faultOverrideTlv.serialize(&serPtr, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(faultOverrideTlv.getSerializedSize() == 3);
     REQUIRE(sz == 3);
