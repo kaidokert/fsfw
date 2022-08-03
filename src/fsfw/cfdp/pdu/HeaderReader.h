@@ -25,6 +25,7 @@ struct PduHeaderFixedStruct {
  */
 class HeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
  public:
+  HeaderReader() = default;
   /**
    * Initialize a PDU header from raw data. This is a zero-copy implementation and #parseData
    * needs to be called to ensure the data is valid

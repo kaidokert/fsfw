@@ -1,4 +1,4 @@
-target_sources(${LIB_FSFW_NAME} PRIVATE CfdpMessage.cpp CfdpRouter.cpp)
+target_sources(${LIB_FSFW_NAME} PRIVATE CfdpMessage.cpp CfdpDistributor.cpp)
 
 # CfdpDistributor.cpp CfdpHandler.cpp
 add_subdirectory(pdu)
