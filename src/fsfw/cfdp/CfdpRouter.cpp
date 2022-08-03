@@ -1,7 +1,5 @@
 #include "CfdpRouter.h"
 
-#include <algorithm>
-
 #include "fsfw/tcdistribution/definitions.h"
 
 CfdpRouter::CfdpRouter(CfdpRouterCfg cfg) : TcDistributorBase(cfg.objectId), tmQueue(cfg.tmQueue) {}

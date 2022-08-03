@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/HeaderDeserializer.h"
-#include "fsfw/cfdp/pdu/HeaderSerializer.h"
+#include "fsfw/cfdp/pdu/HeaderCreator.h"
+#include "fsfw/cfdp/pdu/HeaderReader.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 TEST_CASE("CFDP Header", "[cfdp]") {
@@ -19,7 +19,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
   size_t serSize = 0;
 
   SECTION("Header Serialization") {
-    auto headerSerializer = HeaderSerializer(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
+    auto headerSerializer = HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
     const uint8_t** dummyPtr = nullptr;
     ReturnValue_t deserResult =
         headerSerializer.deSerialize(dummyPtr, &serSize, SerializeIF::Endianness::NETWORK);
@@ -186,7 +186,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
   SECTION("Header Deserialization") {
     // We unittested the serializer before, so we can use it now to generate valid raw  CFDP
     // data
-    auto headerSerializer = HeaderSerializer(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
+    auto headerSerializer = HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                         SerializeIF::Endianness::BIG);
     REQUIRE(result == result::OK);
@@ -196,7 +196,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     REQUIRE(serBuf[3] == 0b00010001);
     REQUIRE(serSize == 7);
     // Deser call not strictly necessary
-    auto headerDeser = HeaderDeserializer(serBuf.data(), serBuf.size());
+    auto headerDeser = HeaderReader(serBuf.data(), serBuf.size());
 
     ReturnValue_t serResult = headerDeser.parseData();
     REQUIRE(serResult == result::OK);
@@ -231,7 +231,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     serSize = 0;
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                         SerializeIF::Endianness::BIG);
-    headerDeser = HeaderDeserializer(serBuf.data(), serBuf.size());
+    headerDeser = HeaderReader(serBuf.data(), serBuf.size());
 
     result = headerDeser.parseData();
     REQUIRE(result == result::OK);

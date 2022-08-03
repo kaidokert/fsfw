@@ -1,9 +1,9 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_FILEDIRECTIVESERIALIZER_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_FILEDIRECTIVESERIALIZER_H_
 
-#include "fsfw/cfdp/pdu/HeaderSerializer.h"
+#include "fsfw/cfdp/pdu/HeaderCreator.h"
 
-class FileDirectiveSerializer : public HeaderSerializer {
+class FileDirectiveSerializer : public HeaderCreator {
  public:
   FileDirectiveSerializer(PduConfig& pduConf, cfdp::FileDirectives directiveCode,
                           size_t directiveParamFieldLen);

@@ -1,20 +1,20 @@
-#include "HeaderDeserializer.h"
+#include "HeaderReader.h"
 
 #include <fsfw/serialize/SerializeAdapter.h>
 
 #include <cstring>
 
-HeaderDeserializer::HeaderDeserializer(const uint8_t *pduBuf, size_t maxSize)
+HeaderReader::HeaderReader(const uint8_t *pduBuf, size_t maxSize)
     : rawPtr(pduBuf), maxSize(maxSize) {}
 
-ReturnValue_t HeaderDeserializer::parseData() {
+ReturnValue_t HeaderReader::parseData() {
   if (maxSize < 7) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   return setData(const_cast<uint8_t *>(rawPtr), maxSize);
 }
 
-ReturnValue_t HeaderDeserializer::setData(uint8_t *dataPtr, size_t maxSize, void *args) {
+ReturnValue_t HeaderReader::setData(uint8_t *dataPtr, size_t maxSize_, void *args) {
   if (dataPtr == nullptr) {
     // Allowed for now
     this->fixedHeader = nullptr;
@@ -26,76 +26,74 @@ ReturnValue_t HeaderDeserializer::setData(uint8_t *dataPtr, size_t maxSize, void
   cfdp::WidthInBytes widthSeqNum = getLenSeqNum();
   seqNumRaw = static_cast<uint8_t *>(sourceIdRaw) + static_cast<uint8_t>(widthEntityIds);
   destIdRaw = static_cast<uint8_t *>(seqNumRaw) + static_cast<uint8_t>(widthSeqNum);
-  this->maxSize = maxSize;
+  maxSize = maxSize_;
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-size_t HeaderDeserializer::getHeaderSize() const {
+size_t HeaderReader::getHeaderSize() const {
   if (fixedHeader != nullptr) {
     return getLenEntityIds() * 2 + getLenSeqNum() + 4;
   }
   return 0;
 }
 
-size_t HeaderDeserializer::getPduDataFieldLen() const {
+size_t HeaderReader::getPduDataFieldLen() const {
   uint16_t pduFiedlLen = (fixedHeader->pduDataFieldLenH << 8) | fixedHeader->pduDataFieldLenL;
   return pduFiedlLen;
 }
 
-size_t HeaderDeserializer::getWholePduSize() const {
-  return getPduDataFieldLen() + getHeaderSize();
-}
+size_t HeaderReader::getWholePduSize() const { return getPduDataFieldLen() + getHeaderSize(); }
 
-cfdp::PduType HeaderDeserializer::getPduType() const {
+cfdp::PduType HeaderReader::getPduType() const {
   return static_cast<cfdp::PduType>((fixedHeader->firstByte >> 4) & 0x01);
 }
 
-cfdp::Direction HeaderDeserializer::getDirection() const {
+cfdp::Direction HeaderReader::getDirection() const {
   return static_cast<cfdp::Direction>((fixedHeader->firstByte >> 3) & 0x01);
 }
 
-cfdp::TransmissionModes HeaderDeserializer::getTransmissionMode() const {
+cfdp::TransmissionModes HeaderReader::getTransmissionMode() const {
   return static_cast<cfdp::TransmissionModes>((fixedHeader->firstByte >> 2) & 0x01);
 }
 
-bool HeaderDeserializer::getCrcFlag() const { return (fixedHeader->firstByte >> 1) & 0x01; }
+bool HeaderReader::getCrcFlag() const { return (fixedHeader->firstByte >> 1) & 0x01; }
 
-bool HeaderDeserializer::getLargeFileFlag() const { return fixedHeader->firstByte & 0x01; }
+bool HeaderReader::getLargeFileFlag() const { return fixedHeader->firstByte & 0x01; }
 
-cfdp::SegmentationControl HeaderDeserializer::getSegmentationControl() const {
+cfdp::SegmentationControl HeaderReader::getSegmentationControl() const {
   return static_cast<cfdp::SegmentationControl>((fixedHeader->fourthByte >> 7) & 0x01);
 }
 
-cfdp::WidthInBytes HeaderDeserializer::getLenEntityIds() const {
+cfdp::WidthInBytes HeaderReader::getLenEntityIds() const {
   return static_cast<cfdp::WidthInBytes>((fixedHeader->fourthByte >> 4) & 0x07);
 }
 
-cfdp::WidthInBytes HeaderDeserializer::getLenSeqNum() const {
+cfdp::WidthInBytes HeaderReader::getLenSeqNum() const {
   return static_cast<cfdp::WidthInBytes>(fixedHeader->fourthByte & 0x07);
 }
 
-cfdp::SegmentMetadataFlag HeaderDeserializer::getSegmentMetadataFlag() const {
+cfdp::SegmentMetadataFlag HeaderReader::getSegmentMetadataFlag() const {
   return static_cast<cfdp::SegmentMetadataFlag>((fixedHeader->fourthByte >> 3) & 0x01);
 }
 
-void HeaderDeserializer::getSourceId(cfdp::EntityId &sourceId) const {
+void HeaderReader::getSourceId(cfdp::EntityId &sourceId) const {
   assignVarLenField(dynamic_cast<cfdp::VarLenField *>(&sourceId), getLenEntityIds(),
                     this->sourceIdRaw);
 }
 
-void HeaderDeserializer::getDestId(cfdp::EntityId &destId) const {
+void HeaderReader::getDestId(cfdp::EntityId &destId) const {
   assignVarLenField(dynamic_cast<cfdp::VarLenField *>(&destId), getLenEntityIds(), this->destIdRaw);
 }
 
-void HeaderDeserializer::getTransactionSeqNum(cfdp::TransactionSeqNum &seqNum) const {
+void HeaderReader::getTransactionSeqNum(cfdp::TransactionSeqNum &seqNum) const {
   assignVarLenField(dynamic_cast<cfdp::VarLenField *>(&seqNum), getLenSeqNum(), this->seqNumRaw);
 }
 
-void HeaderDeserializer::assignVarLenField(cfdp::VarLenField *field, cfdp::WidthInBytes width,
-                                           void *sourcePtr) const {
+void HeaderReader::assignVarLenField(cfdp::VarLenField *field, cfdp::WidthInBytes width,
+                                     void *sourcePtr) const {
   switch (width) {
     case (cfdp::WidthInBytes::ONE_BYTE): {
-      uint8_t *fieldTyped = static_cast<uint8_t *>(sourcePtr);
+      auto *fieldTyped = static_cast<uint8_t *>(sourcePtr);
       field->setValue(width, *fieldTyped);
       break;
     }
@@ -118,11 +116,15 @@ void HeaderDeserializer::assignVarLenField(cfdp::VarLenField *field, cfdp::Width
   }
 }
 
-size_t HeaderDeserializer::getMaxSize() const { return maxSize; }
+size_t HeaderReader::getMaxSize() const { return maxSize; }
 
-bool HeaderDeserializer::hasSegmentMetadataFlag() const {
+bool HeaderReader::hasSegmentMetadataFlag() const {
   if (this->getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT) {
     return true;
   }
   return false;
+}
+
+ReturnValue_t HeaderReader::setData(const uint8_t *dataPtr, size_t maxSize_) {
+  return setData(const_cast<uint8_t *>(dataPtr), maxSize_, nullptr);
 }

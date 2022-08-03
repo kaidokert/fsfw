@@ -3,9 +3,9 @@
 
 #include "../definitions.h"
 #include "FileDataInfo.h"
-#include "HeaderDeserializer.h"
+#include "HeaderReader.h"
 
-class FileDataDeserializer : public HeaderDeserializer {
+class FileDataDeserializer : public HeaderReader {
  public:
   FileDataDeserializer(const uint8_t* pduBuf, size_t maxSize, FileDataInfo& info);
 

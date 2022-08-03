@@ -2,16 +2,16 @@
 
 FileDataDeserializer::FileDataDeserializer(const uint8_t* pduBuf, size_t maxSize,
                                            FileDataInfo& info)
-    : HeaderDeserializer(pduBuf, maxSize), info(info) {}
+    : HeaderReader(pduBuf, maxSize), info(info) {}
 
 ReturnValue_t FileDataDeserializer::parseData() {
-  ReturnValue_t result = HeaderDeserializer::parseData();
+  ReturnValue_t result = HeaderReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
-  size_t currentIdx = HeaderDeserializer::getHeaderSize();
+  size_t currentIdx = HeaderReader::getHeaderSize();
   const uint8_t* buf = rawPtr + currentIdx;
-  size_t remSize = HeaderDeserializer::getWholePduSize() - currentIdx;
+  size_t remSize = HeaderReader::getWholePduSize() - currentIdx;
   if (remSize < 1) {
     return SerializeIF::STREAM_TOO_SHORT;
   }

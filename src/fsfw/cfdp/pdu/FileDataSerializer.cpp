@@ -3,8 +3,7 @@
 #include <cstring>
 
 FileDataSerializer::FileDataSerializer(PduConfig& conf, FileDataInfo& info)
-    : HeaderSerializer(conf, cfdp::PduType::FILE_DATA, 0, info.getSegmentMetadataFlag()),
-      info(info) {
+    : HeaderCreator(conf, cfdp::PduType::FILE_DATA, 0, info.getSegmentMetadataFlag()), info(info) {
   update();
 }
 
@@ -16,7 +15,7 @@ void FileDataSerializer::update() {
 
 ReturnValue_t FileDataSerializer::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                                             Endianness streamEndianness) const {
-  ReturnValue_t result = HeaderSerializer::serialize(buffer, size, maxSize, streamEndianness);
+  ReturnValue_t result = HeaderCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
   }
@@ -51,5 +50,5 @@ ReturnValue_t FileDataSerializer::serialize(uint8_t** buffer, size_t* size, size
 }
 
 size_t FileDataSerializer::getSerializedSize() const {
-  return HeaderSerializer::getSerializedSize() + info.getSerializedSize(this->getLargeFileFlag());
+  return HeaderCreator::getSerializedSize() + info.getSerializedSize(this->getLargeFileFlag());
 }

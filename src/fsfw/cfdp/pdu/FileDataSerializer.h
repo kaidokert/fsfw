@@ -3,9 +3,9 @@
 
 #include "../definitions.h"
 #include "FileDataInfo.h"
-#include "HeaderSerializer.h"
+#include "HeaderCreator.h"
 
-class FileDataSerializer : public HeaderSerializer {
+class FileDataSerializer : public HeaderCreator {
  public:
   FileDataSerializer(PduConfig& conf, FileDataInfo& info);
 

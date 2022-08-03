@@ -7,7 +7,7 @@ class PromptPduDeserializer : public FileDirectiveDeserializer {
  public:
   PromptPduDeserializer(const uint8_t *pduBuf, size_t maxSize);
 
-  cfdp::PromptResponseRequired getPromptResponseRequired() const;
+  [[nodiscard]] cfdp::PromptResponseRequired getPromptResponseRequired() const;
   ReturnValue_t parseData() override;
 
  private:

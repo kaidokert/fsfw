@@ -2,8 +2,8 @@ target_sources(
   ${LIB_FSFW_NAME}
   PRIVATE PduConfig.cpp
           VarLenField.cpp
-          HeaderSerializer.cpp
-          HeaderDeserializer.cpp
+          HeaderCreator.cpp
+          HeaderReader.cpp
           FileDirectiveDeserializer.cpp
           FileDirectiveSerializer.cpp
           AckInfo.cpp

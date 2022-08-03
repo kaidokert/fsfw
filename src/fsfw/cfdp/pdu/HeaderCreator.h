@@ -6,9 +6,9 @@
 #include "PduHeaderIF.h"
 #include "fsfw/serialize/SerializeIF.h"
 
-class HeaderSerializer : public SerializeIF, public PduHeaderIF {
+class HeaderCreator : public SerializeIF, public PduHeaderIF {
  public:
-  HeaderSerializer(
+  HeaderCreator(
       PduConfig& pduConf, cfdp::PduType pduType, size_t initPduDataFieldLen,
       cfdp::SegmentMetadataFlag segmentMetadataFlag = cfdp::SegmentMetadataFlag::NOT_PRESENT,
       cfdp::SegmentationControl segCtrl =
