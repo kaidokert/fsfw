@@ -5,7 +5,7 @@
 #include "fsfw/cfdp/pdu/KeepAlivePduSerializer.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
-TEST_CASE("Keep Alive PDU", "[KeepAlivePdu]") {
+TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
   using namespace cfdp;
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   std::array<uint8_t, 256> kaBuffer = {};

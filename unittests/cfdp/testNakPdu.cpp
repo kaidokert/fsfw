@@ -6,7 +6,7 @@
 #include "fsfw/cfdp/pdu/PduConfig.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
-TEST_CASE("NAK PDU", "[NakPdu]") {
+TEST_CASE("NAK PDU", "[cfdp][pdu]") {
   using namespace cfdp;
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   std::array<uint8_t, 256> nakBuffer = {};

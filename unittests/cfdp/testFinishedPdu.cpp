@@ -5,7 +5,7 @@
 #include "fsfw/cfdp/pdu/FinishedPduSerializer.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
-TEST_CASE("Finished PDU", "[FinishedPdu]") {
+TEST_CASE("Finished PDU", "[cfdp][pdu]") {
   using namespace cfdp;
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   std::array<uint8_t, 256> fnBuffer = {};

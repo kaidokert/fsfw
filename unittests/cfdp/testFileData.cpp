@@ -6,7 +6,7 @@
 #include "fsfw/globalfunctions/arrayprinter.h"
 #include "fsfw/serviceinterface.h"
 
-TEST_CASE("File Data PDU", "[FileDataPdu]") {
+TEST_CASE("File Data PDU", "[cfdp][pdu]") {
   using namespace cfdp;
 
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;

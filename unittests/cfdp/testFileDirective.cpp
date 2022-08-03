@@ -1,14 +1,10 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
-#include <cstring>
 
-#include "fsfw/cfdp/FileSize.h"
 #include "fsfw/cfdp/pdu/FileDirectiveDeserializer.h"
 #include "fsfw/cfdp/pdu/FileDirectiveSerializer.h"
-#include "fsfw/globalfunctions/arrayprinter.h"
-#include "fsfw/serialize/SerializeAdapter.h"
 
-TEST_CASE("CFDP Base", "[cfdp]") {
+TEST_CASE("CFDP File Directive", "[cfdp]") {
   using namespace cfdp;
   std::array<uint8_t, 32> serBuf{};
   ReturnValue_t result;
@@ -73,21 +69,5 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     serBuf[7] = 0xff;
     // Invalid file directive
     REQUIRE(fdDeser.parseData() == cfdp::INVALID_DIRECTIVE_FIELDS);
-  }
-
-  SECTION("FileSize") {
-    std::array<uint8_t, 8> fssBuf = {};
-    uint8_t* buffer = fssBuf.data();
-    size_t size = 0;
-    cfdp::FileSize fss;
-    REQUIRE(fss.getSize() == 0);
-    fss.setFileSize(0x20, false);
-    result = fss.serialize(&buffer, &size, fssBuf.size(), SerializeIF::Endianness::MACHINE);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
-    uint32_t fileSize = 0;
-    result = SerializeAdapter::deSerialize(&fileSize, fssBuf.data(), nullptr,
-                                           SerializeIF::Endianness::MACHINE);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(fileSize == 0x20);
   }
 }

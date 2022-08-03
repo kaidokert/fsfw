@@ -8,7 +8,7 @@
 #include "mocks/CcsdsCheckerMock.h"
 #include "mocks/MessageQueueMock.h"
 
-TEST_CASE("CCSDS Distributor", "[ccsds-distrib]") {
+TEST_CASE("CCSDS Distributor", "[ccsds][tcdistrib]") {
   LocalPool::LocalPoolConfig cfg = {{5, 32}, {2, 64}};
   LocalPool pool(objects::NO_OBJECT, cfg);
   auto queue = MessageQueueMock(1);

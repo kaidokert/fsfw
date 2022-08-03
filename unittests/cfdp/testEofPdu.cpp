@@ -5,7 +5,7 @@
 #include "fsfw/cfdp/pdu/EofPduSerializer.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
-TEST_CASE("EOF PDU", "[EofPdu]") {
+TEST_CASE("EOF PDU", "[cfdp][pdu]") {
   using namespace cfdp;
 
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;

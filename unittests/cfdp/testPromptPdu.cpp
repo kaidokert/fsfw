@@ -5,7 +5,7 @@
 #include "fsfw/cfdp/pdu/PromptPduSerializer.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
-TEST_CASE("Prompt PDU", "[PromptPdu]") {
+TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
   using namespace cfdp;
   ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
   std::array<uint8_t, 256> rawBuf = {};

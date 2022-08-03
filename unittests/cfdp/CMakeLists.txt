@@ -10,4 +10,5 @@ target_sources(
           testKeepAlivePdu.cpp
           testMetadataPdu.cpp
           testFileData.cpp
-          testCfdpHeader.cpp)
+          testCfdpHeader.cpp
+          testFileDirective.cpp)
