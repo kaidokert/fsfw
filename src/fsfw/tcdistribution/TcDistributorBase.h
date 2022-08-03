@@ -34,10 +34,6 @@ class TcDistributorBase : public SystemObject, public ExecutableObjectIF, public
   static constexpr ReturnValue_t PACKET_LOST = MAKE_RETURN_CODE(1);
   static constexpr ReturnValue_t DESTINATION_NOT_FOUND = MAKE_RETURN_CODE(2);
   static constexpr ReturnValue_t SERVICE_ID_ALREADY_EXISTS = MAKE_RETURN_CODE(3);
-
-  static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::TC_DISTRIBUTION;
-  //! P1: Returnvalue, P2: Line number
-  static constexpr Event HANDLE_PACKET_FAILED = event::makeEvent(SUBSYSTEM_ID, 0, severity::LOW);
   /**
    * Within the default constructor, the SystemObject id is set and the
    * message queue is initialized.

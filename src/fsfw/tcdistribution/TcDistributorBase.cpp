@@ -1,5 +1,6 @@
 #include "fsfw/tcdistribution/TcDistributorBase.h"
 
+#include "definitions.h"
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
@@ -25,7 +26,7 @@ ReturnValue_t TcDistributorBase::performOperation(uint8_t opCode) {
     ReturnValue_t packetResult = handlePacket();
     if (packetResult != HasReturnvaluesIF::RETURN_OK) {
       result = packetResult;
-      triggerEvent(HANDLE_PACKET_FAILED, packetResult, __LINE__);
+      triggerEvent(tmtcdistrib::HANDLE_PACKET_FAILED, packetResult, 1);
     }
   }
   if (status == MessageQueueIF::EMPTY) {

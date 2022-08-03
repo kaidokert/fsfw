@@ -35,12 +35,12 @@ class CcsdsDistributorIF {
    * @param info	Contains all necessary info to register an application.
    * @return
    *  - @c RETURN_OK on success,
-   *  - @c RETURN_FAILED or tcdistrib error code on failure.
-   *  - @c tcdistrib::INVALID_CCSDS_VERSION
-   *  - @c tcdistrib::INVALID_APID No APID available to handle this packet
-   *  - @c tcdistrib::INVALID_PACKET_TYPE Packet type TM detected
-   *  - @c tcdistrib::INCORRECT_PRIMARY_HEADER Something other wrong with primary header
-   *  - @c tcdistrib::INCOMPLETE_PACKET Size missmatch between data length field and actual
+   *  - @c RETURN_FAILED or tmtcdistrib error code on failure.
+   *  - @c tmtcdistrib::INVALID_CCSDS_VERSION
+   *  - @c tmtcdistrib::INVALID_APID No APID available to handle this packet
+   *  - @c tmtcdistrib::INVALID_PACKET_TYPE Packet type TM detected
+   *  - @c tmtcdistrib::INCORRECT_PRIMARY_HEADER Something other wrong with primary header
+   *  - @c tmtcdistrib::INCOMPLETE_PACKET Size missmatch between data length field and actual
    *       length
    */
   virtual ReturnValue_t registerApplication(DestInfo info) = 0;

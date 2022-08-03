@@ -118,3 +118,11 @@ ReturnValue_t cfdp::VarLenField::deSerialize(const uint8_t **buffer, size_t *siz
     }
   }
 }
+
+bool cfdp::VarLenField::operator<(const cfdp::VarLenField &other) const {
+  return getValue() < other.getValue();
+}
+
+bool cfdp::VarLenField::operator==(const cfdp::VarLenField &other) const {
+  return getValue() == other.getValue();
+}

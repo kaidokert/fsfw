@@ -96,13 +96,13 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
 void CcsdsDistributor::handlePacketCheckFailure(ReturnValue_t result) {
 #if FSFW_VERBOSE_LEVEL >= 1
   const char* reason = "Unknown reason";
-  if (result == tcdistrib::INVALID_CCSDS_VERSION) {
+  if (result == tmtcdistrib::INVALID_CCSDS_VERSION) {
     reason = "Invalid CCSDS version";
   } else if (result == tcdistrib::INCOMPLETE_PACKET) {
     reason = "Size missmatch between CCSDS  data length and packet length";
-  } else if (result == tcdistrib::INVALID_APID) {
+  } else if (result == tmtcdistrib::INVALID_APID) {
     reason = "No valid handler APID found";
-  } else if (result == tcdistrib::INVALID_PACKET_TYPE) {
+  } else if (result == tmtcdistrib::INVALID_PACKET_TYPE) {
     reason = "Invalid Packet Type TM detected";
   }
 #if FSFW_CPP_OSTREAM_ENABLED == 1

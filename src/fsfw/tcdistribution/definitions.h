@@ -3,10 +3,12 @@
 
 #include <cstdint>
 
+#include "fsfw/events/Event.h"
+#include "fsfw/events/fwSubsystemIdRanges.h"
 #include "fsfw/returnvalues/FwClassIds.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
-namespace tcdistrib {
+namespace tmtcdistrib {
 static const uint8_t INTERFACE_ID = CLASS_ID::PACKET_CHECK;
 static constexpr ReturnValue_t INVALID_CCSDS_VERSION = MAKE_RETURN_CODE(0);
 static constexpr ReturnValue_t INVALID_APID = MAKE_RETURN_CODE(1);
@@ -20,5 +22,9 @@ static constexpr ReturnValue_t INCORRECT_CHECKSUM = MAKE_RETURN_CODE(7);
 static constexpr ReturnValue_t ILLEGAL_PACKET_SUBTYPE = MAKE_RETURN_CODE(8);
 static constexpr ReturnValue_t INCORRECT_SECONDARY_HEADER = MAKE_RETURN_CODE(9);
 
-};      // namespace tcdistrib
+static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::TMTC_DISTRIBUTION;
+//! P1: Returnvalue, P2: 0 for TM issues, 1 for TC issues
+static constexpr Event HANDLE_PACKET_FAILED = event::makeEvent(SUBSYSTEM_ID, 0, severity::LOW);
+
+};      // namespace tmtcdistrib
 #endif  // FSFW_TMTCPACKET_DEFINITIONS_H

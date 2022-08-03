@@ -147,13 +147,13 @@ void PusDistributor::checkerFailurePrinter() const {
   const char* reason = "Unknown reason";
   if (tcStatus == tcdistrib::INCORRECT_CHECKSUM) {
     reason = "Checksum Error";
-  } else if (tcStatus == tcdistrib::INCORRECT_PRIMARY_HEADER) {
+  } else if (tcStatus == tmtcdistrib::INCORRECT_PRIMARY_HEADER) {
     reason = "Incorrect Primary Header";
-  } else if (tcStatus == tcdistrib::INVALID_APID) {
+  } else if (tcStatus == tmtcdistrib::INVALID_APID) {
     reason = "Illegal APID";
-  } else if (tcStatus == tcdistrib::INCORRECT_SECONDARY_HEADER) {
+  } else if (tcStatus == tmtcdistrib::INCORRECT_SECONDARY_HEADER) {
     reason = "Incorrect Secondary Header";
-  } else if (tcStatus == tcdistrib::INCOMPLETE_PACKET) {
+  } else if (tcStatus == tmtcdistrib::INCOMPLETE_PACKET) {
     reason = "Incomplete packet";
   }
 #if FSFW_CPP_OSTREAM_ENABLED == 1

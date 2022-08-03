@@ -23,6 +23,9 @@ class VarLenField : public SerializeIF {
   explicit VarLenField(UnsignedByteField<T> byteField);
   VarLenField(cfdp::WidthInBytes width, size_t value);
 
+  bool operator==(const VarLenField &other) const;
+  bool operator<(const VarLenField &other) const;
+
   ReturnValue_t setValue(cfdp::WidthInBytes, size_t value);
 
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
