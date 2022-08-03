@@ -21,27 +21,27 @@ cfdp::VarLenField::VarLenField() : width(cfdp::WidthInBytes::ONE_BYTE) { value.o
 
 cfdp::WidthInBytes cfdp::VarLenField::getWidth() const { return width; }
 
-ReturnValue_t cfdp::VarLenField::setValue(cfdp::WidthInBytes widthInBytes, size_t value) {
+ReturnValue_t cfdp::VarLenField::setValue(cfdp::WidthInBytes widthInBytes, size_t value_) {
   switch (widthInBytes) {
     case (cfdp::WidthInBytes::ONE_BYTE): {
-      if (value > UINT8_MAX) {
+      if (value_ > UINT8_MAX) {
         return HasReturnvaluesIF::RETURN_FAILED;
       }
-      this->value.oneByte = value;
+      this->value.oneByte = value_;
       break;
     }
     case (cfdp::WidthInBytes::TWO_BYTES): {
-      if (value > UINT16_MAX) {
+      if (value_ > UINT16_MAX) {
         return HasReturnvaluesIF::RETURN_FAILED;
       }
-      this->value.twoBytes = value;
+      this->value.twoBytes = value_;
       break;
     }
     case (cfdp::WidthInBytes::FOUR_BYTES): {
-      if (value > UINT32_MAX) {
+      if (value_ > UINT32_MAX) {
         return HasReturnvaluesIF::RETURN_FAILED;
       }
-      this->value.fourBytes = value;
+      this->value.fourBytes = value_;
       break;
     }
     default: {
@@ -93,9 +93,9 @@ ReturnValue_t cfdp::VarLenField::serialize(uint8_t **buffer, size_t *size, size_
 
 size_t cfdp::VarLenField::getSerializedSize() const { return width; }
 
-ReturnValue_t cfdp::VarLenField::deSerialize(cfdp::WidthInBytes width, const uint8_t **buffer,
+ReturnValue_t cfdp::VarLenField::deSerialize(cfdp::WidthInBytes width_, const uint8_t **buffer,
                                              size_t *size, Endianness streamEndianness) {
-  this->width = width;
+  this->width = width_;
   return deSerialize(buffer, size, streamEndianness);
 }
 
@@ -117,11 +117,4 @@ ReturnValue_t cfdp::VarLenField::deSerialize(const uint8_t **buffer, size_t *siz
       return HasReturnvaluesIF::RETURN_FAILED;
     }
   }
-}
-
-template <typename T>
-cfdp::VarLenField::VarLenField(UnsignedByteField<T> byteField)
-    : width(static_cast<WidthInBytes>(sizeof(T))) {
-  static_assert((sizeof(T) % 2) == 0);
-  value = byteField.getValue();
 }

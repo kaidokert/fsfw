@@ -41,8 +41,15 @@ class VarLenField : public SerializeIF {
                             Endianness streamEndianness) override;
 
   cfdp::WidthInBytes width;
-  LengthFieldLen value;
+  LengthFieldLen value{};
 };
+
+template <typename T>
+cfdp::VarLenField::VarLenField(UnsignedByteField<T> byteField)
+    : width(static_cast<WidthInBytes>(sizeof(T))) {
+  static_assert((sizeof(T) % 2) == 0);
+  setValue(width, byteField.getValue());
+}
 
 }  // namespace cfdp
 

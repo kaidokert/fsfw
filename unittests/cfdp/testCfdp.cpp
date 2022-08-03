@@ -75,7 +75,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     REQUIRE(fdDeser.parseData() == cfdp::INVALID_DIRECTIVE_FIELDS);
   }
 
-  SECTION("FileSize") {
+  SECTION("File Size") {
     std::array<uint8_t, 8> fssBuf = {};
     uint8_t* buffer = fssBuf.data();
     size_t size = 0;
@@ -89,5 +89,17 @@ TEST_CASE("CFDP Base", "[cfdp]") {
                                            SerializeIF::Endianness::MACHINE);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(fileSize == 0x20);
+  }
+
+  SECTION("Var Length Field") {
+    VarLenField defaultField;
+    CHECK(defaultField.getValue() == 0);
+    CHECK(defaultField.getWidth() == WidthInBytes::ONE_BYTE);
+    VarLenField explicitField(WidthInBytes::FOUR_BYTES, 12);
+    CHECK(explicitField.getWidth() == WidthInBytes::FOUR_BYTES);
+    CHECK(explicitField.getValue() == 12);
+    VarLenField fromUnsignedByteField(UnsignedByteField<uint16_t>(12));
+    CHECK(fromUnsignedByteField.getWidth() == WidthInBytes::TWO_BYTES);
+    CHECK(fromUnsignedByteField.getValue() == 12);
   }
 }
