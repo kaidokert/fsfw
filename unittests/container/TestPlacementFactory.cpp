@@ -7,7 +7,7 @@
 
 #include "CatchDefinitions.h"
 
-TEST_CASE("PlacementFactory Tests", "[TestPlacementFactory]") {
+TEST_CASE("PlacementFactory Tests", "[containers]") {
   INFO("PlacementFactory Tests");
 
   LocalPool::LocalPoolConfig poolCfg = {

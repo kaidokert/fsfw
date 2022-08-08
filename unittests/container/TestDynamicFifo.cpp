@@ -6,7 +6,7 @@
 
 #include "CatchDefinitions.h"
 
-TEST_CASE("Dynamic Fifo Tests", "[TestDynamicFifo]") {
+TEST_CASE("Dynamic Fifo Tests", "[containers]") {
   INFO("Dynamic Fifo Tests");
   struct Test {
     uint64_t number1;

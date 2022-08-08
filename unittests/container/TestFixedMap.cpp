@@ -7,7 +7,7 @@
 
 template class FixedMap<unsigned int, unsigned short>;
 
-TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
+TEST_CASE("FixedMap Tests", "[containers]") {
   INFO("FixedMap Tests");
 
   FixedMap<unsigned int, unsigned short> map(30);

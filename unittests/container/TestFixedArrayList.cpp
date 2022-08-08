@@ -5,7 +5,7 @@
 
 #include "CatchDefinitions.h"
 
-TEST_CASE("FixedArrayList Tests", "[TestFixedArrayList]") {
+TEST_CASE("FixedArrayList Tests", "[containers]") {
   INFO("FixedArrayList Tests");
   using testList = FixedArrayList<uint32_t, 260, uint16_t>;
   testList list;

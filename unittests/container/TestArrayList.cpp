@@ -8,7 +8,7 @@
 /**
  * @brief 	Array List test
  */
-TEST_CASE("Array List", "[ArrayListTest]") {
+TEST_CASE("Array List", "[containers]") {
   // perform set-up here
   ArrayList<uint16_t> list(20);
   struct TestClass {

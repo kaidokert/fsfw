@@ -5,7 +5,7 @@
 
 #include "CatchDefinitions.h"
 
-TEST_CASE("Ring Buffer Test", "[RingBufferTest]") {
+TEST_CASE("Ring Buffer Test", "[containers]") {
   uint8_t testData[13] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   uint8_t readBuffer[10] = {13, 13, 13, 13, 13, 13, 13, 13, 13, 13};
   SimpleRingBuffer ringBuffer(10, false, 5);

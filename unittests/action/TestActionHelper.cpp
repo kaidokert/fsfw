@@ -8,7 +8,7 @@
 
 #include "mocks/MessageQueueMock.h"
 
-TEST_CASE("Action Helper", "[ActionHelper]") {
+TEST_CASE("Action Helper", "[action]") {
   ActionHelperOwnerMockBase testDhMock;
   // TODO: Setting another number here breaks the test. Find out why
   MessageQueueMock testMqMock(MessageQueueIF::NO_QUEUE);

@@ -5,7 +5,7 @@
 
 #include "CatchDefinitions.h"
 
-TEST_CASE("FixedOrderedMultimap Tests", "[TestFixedOrderedMultimap]") {
+TEST_CASE("FixedOrderedMultimap Tests", "[containers]") {
   INFO("FixedOrderedMultimap Tests");
 
   FixedOrderedMultimap<unsigned int, unsigned short> map(30);

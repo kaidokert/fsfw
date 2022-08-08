@@ -6,7 +6,7 @@
 
 #include "CatchDefinitions.h"
 
-TEST_CASE("Static Fifo Tests", "[TestFifo]") {
+TEST_CASE("Static Fifo Tests", "[containers]") {
   INFO("Fifo Tests");
   struct Test {
     uint64_t number1;
