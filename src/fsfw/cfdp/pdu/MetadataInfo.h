@@ -13,10 +13,11 @@ class MetadataInfo {
 
   size_t getSerializedSize(bool fssLarge = false);
 
-  void setOptionsArray(cfdp::Tlv** optionsArray, size_t* optionsLen, size_t* maxOptionsLen);
-  cfdp::ChecksumType getChecksumType() const;
+  void setOptionsArray(cfdp::Tlv** optionsArray, const size_t* optionsLen,
+                       const size_t* maxOptionsLen);
+  [[nodiscard]] cfdp::ChecksumType getChecksumType() const;
   void setChecksumType(cfdp::ChecksumType checksumType);
-  bool isClosureRequested() const;
+  [[nodiscard]] bool isClosureRequested() const;
   void setClosureRequested(bool closureRequested = false);
 
   void setDestFileName(cfdp::Lv& destFileName);
@@ -26,13 +27,13 @@ class MetadataInfo {
   cfdp::Lv& getSourceFileName();
   cfdp::FileSize& getFileSize();
 
-  bool hasOptions() const;
-  bool canHoldOptions() const;
+  [[nodiscard]] bool hasOptions() const;
+  [[nodiscard]] bool canHoldOptions() const;
   ReturnValue_t getOptions(cfdp::Tlv*** optionsArray, size_t* optionsLen, size_t* maxOptsLen);
   void setOptionsLen(size_t optionsLen);
-  size_t getOptionsLen() const;
+  [[nodiscard]] size_t getOptionsLen() const;
   void setMaxOptionsLen(size_t maxOptionsLen);
-  size_t getMaxOptionsLen() const;
+  [[nodiscard]] size_t getMaxOptionsLen() const;
 
  private:
   bool closureRequested = false;

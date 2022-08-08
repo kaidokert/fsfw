@@ -19,8 +19,8 @@ target_sources(
           FinishedPduSerializer.cpp
           FinishedPduDeserializer.cpp
           MetadataInfo.cpp
-          MetadataPduSerializer.cpp
-          MetadataPduDeserializer.cpp
+          MetadataPduCreator.cpp
+          MetadataPduReader.cpp
           KeepAlivePduSerializer.cpp
           KeepAlivePduDeserializer.cpp
           PromptPduSerializer.cpp

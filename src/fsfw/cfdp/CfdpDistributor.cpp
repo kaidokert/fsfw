@@ -2,7 +2,7 @@
 
 #include "fsfw/tcdistribution/definitions.h"
 
-CfdpDistributor::CfdpDistributor(CfdpRouterCfg cfg)
+CfdpDistributor::CfdpDistributor(CfdpDistribCfg cfg)
     : TcDistributorBase(cfg.objectId, cfg.tcQueue), cfg(cfg) {}
 
 ReturnValue_t CfdpDistributor::registerTcDestination(const cfdp::EntityId& address,
@@ -47,7 +47,7 @@ ReturnValue_t CfdpDistributor::selectDestination(MessageQueueId_t& destId) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-const char* CfdpDistributor::getName() const { return "CFDP Router"; }
+const char* CfdpDistributor::getName() const { return "CFDP Distributor"; }
 
 uint32_t CfdpDistributor::getIdentifier() const { return 0; }
 

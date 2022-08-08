@@ -8,12 +8,16 @@ namespace cfdp {
 struct EntityId : public VarLenField {
  public:
   EntityId() : VarLenField() {}
+  template <typename T>
+  explicit EntityId(UnsignedByteField<T> byteField) : VarLenField(byteField) {}
   EntityId(cfdp::WidthInBytes width, size_t entityId) : VarLenField(width, entityId) {}
 };
 
 struct TransactionSeqNum : public VarLenField {
  public:
   TransactionSeqNum() : VarLenField() {}
+  template <typename T>
+  explicit TransactionSeqNum(UnsignedByteField<T> byteField) : VarLenField(byteField) {}
   TransactionSeqNum(cfdp::WidthInBytes width, size_t seqNum) : VarLenField(width, seqNum) {}
 };
 

@@ -1,10 +1,9 @@
-#include "MetadataPduDeserializer.h"
+#include "MetadataPduReader.h"
 
-MetadataPduDeserializer::MetadataPduDeserializer(const uint8_t* pduBuf, size_t maxSize,
-                                                 MetadataInfo& info)
+MetadataPduReader::MetadataPduReader(const uint8_t* pduBuf, size_t maxSize, MetadataInfo& info)
     : FileDirectiveReader(pduBuf, maxSize), info(info) {}
 
-ReturnValue_t MetadataPduDeserializer::parseData() {
+ReturnValue_t MetadataPduReader::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;

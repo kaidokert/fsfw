@@ -12,8 +12,8 @@
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 #include "fsfw/tmtcservices/VerificationReporter.h"
 
-struct CfdpRouterCfg {
-  CfdpRouterCfg(object_id_t objectId, StorageManagerIF& tcStore, MessageQueueIF* tcQueue)
+struct CfdpDistribCfg {
+  CfdpDistribCfg(object_id_t objectId, StorageManagerIF& tcStore, MessageQueueIF* tcQueue)
       : objectId(objectId), tcStore(tcStore), tcQueue(tcQueue) {}
 
   object_id_t objectId;
@@ -37,7 +37,7 @@ class CfdpDistributor : public TcDistributorBase, public AcceptsTelecommandsIF {
    * @param setPacketSource Object ID of the source of TC packets.
    * Must implement CcsdsDistributorIF.
    */
-  explicit CfdpDistributor(CfdpRouterCfg cfg);
+  explicit CfdpDistributor(CfdpDistribCfg cfg);
 
   [[nodiscard]] const char* getName() const override;
   [[nodiscard]] uint32_t getIdentifier() const override;
@@ -58,7 +58,7 @@ class CfdpDistributor : public TcDistributorBase, public AcceptsTelecommandsIF {
   // I don't think a regular OBSW will have more than 1 or 2 of these destinations, so I think
   // it is okay to accept the overhead here
   std::vector<EntityInfo> tcDestinations;
-  CfdpRouterCfg cfg;
+  CfdpDistribCfg cfg;
 
   ReturnValue_t selectDestination(MessageQueueId_t& destId) override;
 

@@ -3,8 +3,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/MetadataPduDeserializer.h"
-#include "fsfw/cfdp/pdu/MetadataPduSerializer.h"
+#include "fsfw/cfdp/pdu/MetadataPduCreator.h"
+#include "fsfw/cfdp/pdu/MetadataPduReader.h"
 #include "fsfw/cfdp/tlv/FilestoreResponseTlv.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
@@ -39,7 +39,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
   REQUIRE(options[1]->getSerializedSize() == 5);
 
   SECTION("Serialize") {
-    MetadataPduSerializer serializer(pduConf, info);
+    MetadataPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serializer.getWholePduSize() == 27);
@@ -72,7 +72,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
                              otherFileName.size());
     info.setSourceFileName(otherFileNameLv);
     size_t sizeOfOptions = options.size();
-    info.setOptionsArray(options.data(), &sizeOfOptions, &sizeOfOptions);
+    info.setOptionsArray(*options.data(), &sizeOfOptions, &sizeOfOptions);
     REQUIRE(info.getMaxOptionsLen() == 2);
     info.setMaxOptionsLen(3);
     REQUIRE(info.getMaxOptionsLen() == 3);
@@ -115,22 +115,22 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
   }
 
   SECTION("Deserialize") {
-    MetadataPduSerializer serializer(pduConf, info);
+    MetadataPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
 
-    MetadataPduDeserializer deserializer(mdBuffer.data(), mdBuffer.size(), info);
+    MetadataPduReader deserializer(mdBuffer.data(), mdBuffer.size(), info);
     result = deserializer.parseData();
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     size_t fullSize = deserializer.getWholePduSize();
     for (size_t maxSz = 0; maxSz < fullSize; maxSz++) {
-      MetadataPduDeserializer invalidSzDeser(mdBuffer.data(), maxSz, info);
+      MetadataPduReader invalidSzDeser(mdBuffer.data(), maxSz, info);
       result = invalidSzDeser.parseData();
       REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
     }
     size_t sizeOfOptions = options.size();
     size_t maxSize = 4;
-    info.setOptionsArray(options.data(), &sizeOfOptions, &maxSize);
+    info.setOptionsArray(reinterpret_cast<Tlv*>(options.data()), &sizeOfOptions, &maxSize);
     REQUIRE(info.getOptionsLen() == 2);
     info.setChecksumType(cfdp::ChecksumType::CRC_32C);
     info.setClosureRequested(true);
@@ -142,7 +142,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
 
-    MetadataPduDeserializer deserializer2(mdBuffer.data(), mdBuffer.size(), info);
+    MetadataPduReader deserializer2(mdBuffer.data(), mdBuffer.size(), info);
     result = deserializer2.parseData();
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(options[0]->getType() == cfdp::TlvTypes::FILESTORE_RESPONSE);
@@ -169,9 +169,9 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     mdBuffer[2] = 36 & 0xff;
     info.setOptionsArray(nullptr, nullptr, nullptr);
     REQUIRE(deserializer2.parseData() == cfdp::METADATA_CANT_PARSE_OPTIONS);
-    info.setOptionsArray(options.data(), &sizeOfOptions, nullptr);
+    info.setOptionsArray(reinterpret_cast<Tlv*>(options.data()), &sizeOfOptions, nullptr);
     for (size_t maxSz = 0; maxSz < 46; maxSz++) {
-      MetadataPduDeserializer invalidSzDeser(mdBuffer.data(), maxSz, info);
+      MetadataPduReader invalidSzDeser(mdBuffer.data(), maxSz, info);
       result = invalidSzDeser.parseData();
       REQUIRE(result == SerializeIF::STREAM_TOO_SHORT);
     }

@@ -1,20 +1,20 @@
-#include "MetadataPduSerializer.h"
+#include "MetadataPduCreator.h"
 
-MetadataPduSerializer::MetadataPduSerializer(PduConfig &conf, MetadataInfo &info)
+MetadataPduCreator::MetadataPduCreator(PduConfig &conf, MetadataInfo &info)
     : FileDirectiveCreator(conf, cfdp::FileDirectives::METADATA, 5), info(info) {
   updateDirectiveFieldLen();
 }
 
-void MetadataPduSerializer::updateDirectiveFieldLen() {
+void MetadataPduCreator::updateDirectiveFieldLen() {
   setDirectiveDataFieldLen(info.getSerializedSize(getLargeFileFlag()));
 }
 
-size_t MetadataPduSerializer::getSerializedSize() const {
+size_t MetadataPduCreator::getSerializedSize() const {
   return FileDirectiveCreator::getWholePduSize();
 }
 
-ReturnValue_t MetadataPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                               Endianness streamEndianness) const {
+ReturnValue_t MetadataPduCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                            Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
