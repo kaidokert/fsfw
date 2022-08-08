@@ -98,7 +98,7 @@ void CcsdsDistributor::handlePacketCheckFailure(ReturnValue_t result) {
   const char* reason = "Unknown reason";
   if (result == tmtcdistrib::INVALID_CCSDS_VERSION) {
     reason = "Invalid CCSDS version";
-  } else if (result == tcdistrib::INCOMPLETE_PACKET) {
+  } else if (result == tmtcdistrib::INCOMPLETE_PACKET) {
     reason = "Size missmatch between CCSDS  data length and packet length";
   } else if (result == tmtcdistrib::INVALID_APID) {
     reason = "No valid handler APID found";

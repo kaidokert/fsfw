@@ -2,7 +2,8 @@
 
 #include "fsfw/tcdistribution/definitions.h"
 
-CfdpDistributor::CfdpDistributor(CfdpRouterCfg cfg) : TcDistributorBase(cfg.objectId), cfg(cfg) {}
+CfdpDistributor::CfdpDistributor(CfdpRouterCfg cfg)
+    : TcDistributorBase(cfg.objectId, cfg.tcQueue), cfg(cfg) {}
 
 ReturnValue_t CfdpDistributor::registerTcDestination(const cfdp::EntityId& address,
                                                      AcceptsTelecommandsIF& tcDest) {

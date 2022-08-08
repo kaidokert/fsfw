@@ -13,14 +13,12 @@
 #include "fsfw/tmtcservices/VerificationReporter.h"
 
 struct CfdpRouterCfg {
-  CfdpRouterCfg(object_id_t objectId, MessageQueueIF& tmQueue, StorageManagerIF& tcStore,
-                StorageManagerIF& tmStore)
-      : objectId(objectId), tmQueue(tmQueue), tcStore(tcStore), tmStore(tmStore) {}
+  CfdpRouterCfg(object_id_t objectId, StorageManagerIF& tcStore, MessageQueueIF* tcQueue)
+      : objectId(objectId), tcStore(tcStore), tcQueue(tcQueue) {}
 
   object_id_t objectId;
-  MessageQueueIF& tmQueue;
   StorageManagerIF& tcStore;
-  StorageManagerIF& tmStore;
+  MessageQueueIF* tcQueue;
 };
 
 /**

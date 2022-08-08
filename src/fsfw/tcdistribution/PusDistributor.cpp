@@ -145,7 +145,7 @@ ReturnValue_t PusDistributor::initialize() {
 void PusDistributor::checkerFailurePrinter() const {
 #if FSFW_VERBOSE_LEVEL >= 1
   const char* reason = "Unknown reason";
-  if (tcStatus == tcdistrib::INCORRECT_CHECKSUM) {
+  if (tcStatus == tmtcdistrib::INCORRECT_CHECKSUM) {
     reason = "Checksum Error";
   } else if (tcStatus == tmtcdistrib::INCORRECT_PRIMARY_HEADER) {
     reason = "Incorrect Primary Header";
