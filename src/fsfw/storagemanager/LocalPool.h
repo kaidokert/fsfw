@@ -88,7 +88,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    */
   ReturnValue_t addData(store_address_t* storeId, const uint8_t* data, size_t size,
                         bool ignoreFault = false) override;
-  ReturnValue_t getFreeElement(store_address_t* storeId, const size_t size, uint8_t** pData,
+  ReturnValue_t getFreeElement(store_address_t* storeId, size_t size, uint8_t** pData,
                                bool ignoreFault = false) override;
 
   ConstAccessorPair getData(store_address_t storeId) override;

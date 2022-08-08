@@ -1,5 +1,5 @@
-#ifndef FSFW_SRC_FSFW_CFDP_FILESIZE_H_
-#define FSFW_SRC_FSFW_CFDP_FILESIZE_H_
+#ifndef FSFW_CFDP_FILESIZE_H_
+#define FSFW_CFDP_FILESIZE_H_
 
 #include "fsfw/serialize/SerializeAdapter.h"
 #include "fsfw/serialize/SerializeIF.h"
@@ -10,7 +10,7 @@ struct FileSize : public SerializeIF {
  public:
   FileSize() : largeFile(false){};
 
-  FileSize(uint64_t fileSize, bool isLarge = false) { setFileSize(fileSize, isLarge); };
+  explicit FileSize(uint64_t fileSize, bool isLarge = false) { setFileSize(fileSize, isLarge); };
 
   ReturnValue_t serialize(bool isLarge, uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) {
@@ -27,7 +27,7 @@ struct FileSize : public SerializeIF {
     return SerializeAdapter::serialize(&fileSize, buffer, size, maxSize, streamEndianness);
   }
 
-  size_t getSerializedSize() const override {
+  [[nodiscard]] size_t getSerializedSize() const override {
     if (largeFile) {
       return 8;
     } else {
@@ -60,7 +60,7 @@ struct FileSize : public SerializeIF {
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-  bool isLargeFile() const { return largeFile; }
+  [[nodiscard]] bool isLargeFile() const { return largeFile; }
   uint64_t getSize(bool *largeFile = nullptr) const {
     if (largeFile != nullptr) {
       *largeFile = this->largeFile;
@@ -75,4 +75,4 @@ struct FileSize : public SerializeIF {
 
 }  // namespace cfdp
 
-#endif /* FSFW_SRC_FSFW_CFDP_FILESIZE_H_ */
+#endif /* FSFW_CFDP_FILESIZE_H_ */

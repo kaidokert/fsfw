@@ -9,7 +9,7 @@ ReturnValue_t FileDataReader::parseData() {
     return result;
   }
   size_t currentIdx = HeaderReader::getHeaderSize();
-  const uint8_t* buf = rawPtr + currentIdx;
+  const uint8_t* buf = pointers.rawPtr + currentIdx;
   size_t remSize = HeaderReader::getWholePduSize() - currentIdx;
   if (remSize < 1) {
     return SerializeIF::STREAM_TOO_SHORT;

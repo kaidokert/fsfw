@@ -17,10 +17,10 @@ ReturnValue_t FileDirectiveReader::parseData() {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   size_t currentIdx = HeaderReader::getHeaderSize();
-  if (not checkFileDirective(rawPtr[currentIdx])) {
+  if (not checkFileDirective(pointers.rawPtr[currentIdx])) {
     return cfdp::INVALID_DIRECTIVE_FIELDS;
   }
-  setFileDirective(static_cast<cfdp::FileDirectives>(rawPtr[currentIdx]));
+  setFileDirective(static_cast<cfdp::FileDirectives>(pointers.rawPtr[currentIdx]));
   return HasReturnvaluesIF::RETURN_OK;
 }
 

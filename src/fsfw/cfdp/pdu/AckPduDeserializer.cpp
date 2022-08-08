@@ -12,7 +12,7 @@ ReturnValue_t AckPduDeserializer::parseData() {
   if (currentIdx + 2 > this->maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }
-  if (not checkAndSetCodes(rawPtr[currentIdx], rawPtr[currentIdx + 1])) {
+  if (not checkAndSetCodes(pointers.rawPtr[currentIdx], pointers.rawPtr[currentIdx + 1])) {
     return cfdp::INVALID_ACK_DIRECTIVE_FIELDS;
   }
   return HasReturnvaluesIF::RETURN_OK;

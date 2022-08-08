@@ -12,9 +12,24 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   auto queue = MessageQueueMock(1);
   CfdpDistribCfg distribCfg(1, pool, &queue);
   auto distributor = CfdpDistributor(distribCfg);
-  auto entityId = cfdp::EntityId(UnsignedByteField<uint16_t>(2));
+  auto obswEntityId = cfdp::EntityId(UnsignedByteField<uint16_t>(2));
+  auto groundEntityId = cfdp::EntityId(UnsignedByteField<uint16_t>(1));
   MessageQueueId_t acceptorQueueId = 3;
   auto tcAcceptor = AcceptsTcMock("TC Acceptor", 0, acceptorQueueId);
+  cfdp::FileSize fileSize(12);
+  const cfdp::EntityId& sourceId(groundEntityId);
+  const cfdp::EntityId& destId(obswEntityId);
+  cfdp::TransactionSeqNum seqNum(UnsignedByteField<uint16_t>(12));
+  auto pduConf = PduConfig(sourceId, destId, cfdp::TransmissionModes::UNACKNOWLEDGED, seqNum);
+  std::string sourceFileString = "hello.txt";
+  cfdp::Lv sourceFileName(sourceFileString.c_str(), sourceFileString.size());
+  std::string destFileString = "hello2.txt";
+  cfdp::Lv destFileName(destFileString.c_str(), sourceFileString.size());
+  MetadataInfo metadataInfo(false, cfdp::ChecksumType::CRC_32, fileSize, sourceFileName,
+                            destFileName);
+  MetadataPduCreator creator(pduConf, metadataInfo);
+  uint8_t* dataPtr = nullptr;
+
   SECTION("State") {
     CHECK(distributor.initialize() == result::OK);
     CHECK(std::strcmp(distributor.getName(), "CFDP Distributor") == 0);
@@ -24,7 +39,14 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
 
   SECTION("Register Listener") {
     CHECK(distributor.initialize() == result::OK);
-    CHECK(distributor.registerTcDestination(entityId, tcAcceptor));
-    // queue.addReceivedMessage()
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
+    size_t serLen = 0;
+    store_address_t storeId;
+    CHECK(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == result::OK);
+    REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
+            result::OK);
+    TmTcMessage msg(storeId);
+    queue.addReceivedMessage(msg);
+    CHECK(distributor.performOperation(0) == result::OK);
   }
 }

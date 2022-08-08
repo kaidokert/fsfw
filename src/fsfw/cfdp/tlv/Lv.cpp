@@ -6,6 +6,13 @@ cfdp::Lv::Lv(const uint8_t* value, size_t size) : value(value, size, true) {
   }
 }
 
+cfdp::Lv::Lv(const char* value, size_t size)
+    : value(reinterpret_cast<const uint8_t*>(value), size, true) {
+  if (size > 0) {
+    zeroLen = false;
+  }
+}
+
 cfdp::Lv::Lv() : value(static_cast<uint8_t*>(nullptr), 0, true) {}
 
 cfdp::Lv::Lv(const Lv& other)

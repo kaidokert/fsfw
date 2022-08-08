@@ -11,7 +11,7 @@ ReturnValue_t KeepAlivePduDeserializer::parseData() {
   }
   size_t currentIdx = FileDirectiveReader::getHeaderSize();
   size_t remLen = FileDirectiveReader::getWholePduSize() - currentIdx;
-  const uint8_t* buffer = rawPtr + currentIdx;
+  const uint8_t* buffer = pointers.rawPtr + currentIdx;
   return progress.deSerialize(&buffer, &remLen, getEndianness());
 }
 

@@ -12,7 +12,7 @@ ReturnValue_t EofPduDeserializer::parseData() {
     return result;
   }
 
-  const uint8_t* bufPtr = rawPtr;
+  const uint8_t* bufPtr = pointers.rawPtr;
   size_t expectedFileFieldLen = 4;
   if (this->getLargeFileFlag()) {
     expectedFileFieldLen = 8;

@@ -13,6 +13,7 @@ namespace cfdp {
 class Lv : public SerializeIF {
  public:
   Lv(const uint8_t* value, size_t size);
+  Lv(const char* value, size_t size);
   Lv();
 
   // Delete copy ctor and assingment ctor for now because this class contains a reference to
@@ -23,7 +24,7 @@ class Lv : public SerializeIF {
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
 
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   /**
    * @brief Deserialize a LV field from a raw buffer

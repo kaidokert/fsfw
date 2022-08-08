@@ -16,6 +16,6 @@ ReturnValue_t PromptPduDeserializer::parseData() {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   responseRequired = static_cast<cfdp::PromptResponseRequired>(
-      (rawPtr[FileDirectiveReader::getHeaderSize()] >> 7) & 0x01);
+      (pointers.rawPtr[FileDirectiveReader::getHeaderSize()] >> 7) & 0x01);
   return HasReturnvaluesIF::RETURN_OK;
 }

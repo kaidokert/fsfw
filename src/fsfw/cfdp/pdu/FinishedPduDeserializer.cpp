@@ -10,7 +10,7 @@ ReturnValue_t FinishPduDeserializer::parseData() {
     return result;
   }
   size_t currentIdx = FileDirectiveReader::getHeaderSize();
-  const uint8_t* buf = rawPtr + currentIdx;
+  const uint8_t* buf = pointers.rawPtr + currentIdx;
   size_t remSize = FileDirectiveReader::getWholePduSize() - currentIdx;
   if (remSize < 1) {
     return SerializeIF::STREAM_TOO_SHORT;

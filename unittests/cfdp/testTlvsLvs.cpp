@@ -158,7 +158,7 @@ TEST_CASE("CFDP TLV LV", "[cfdp]") {
                                            SerializeIF::Endianness::BIG);
     REQUIRE(sourceIdRaw == 0x0ff0);
 
-    auto lvEmpty = Lv(nullptr, 0);
+    auto lvEmpty = Lv();
     REQUIRE(lvEmpty.getSerializedSize() == 1);
     serPtr = rawBuf.data();
     deserSize = 0;
@@ -191,7 +191,7 @@ TEST_CASE("CFDP TLV LV", "[cfdp]") {
                                            SerializeIF::Endianness::BIG);
     REQUIRE(sourceIdRaw == 0x0ff0);
 
-    auto lvEmpty = Lv(nullptr, 0);
+    auto lvEmpty = Lv();
     REQUIRE(lvEmpty.getSerializedSize() == 1);
     serPtr = rawBuf.data();
     deserSize = 0;
