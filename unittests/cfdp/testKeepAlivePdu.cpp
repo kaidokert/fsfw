@@ -71,9 +71,11 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
 
     // invalid max size
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {
-      deserializer.setData(kaBuffer.data(), invalidMaxSz);
-      result = deserializer.parseData();
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      ReturnValue_t setResult = deserializer.setData(kaBuffer.data(), invalidMaxSz);
+      if (setResult == HasReturnvaluesIF::RETURN_OK) {
+        result = deserializer.parseData();
+        REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      }
     }
   }
 }

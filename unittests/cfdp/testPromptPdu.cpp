@@ -59,9 +59,11 @@ TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
     rawBuf[2] = 2;
 
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {
-      deserializer.setData(rawBuf.data(), invalidMaxSz);
-      result = deserializer.parseData();
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      ReturnValue_t setResult = deserializer.setData(rawBuf.data(), invalidMaxSz);
+      if (setResult == result::OK) {
+        result = deserializer.parseData();
+        REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      }
     }
   }
 }

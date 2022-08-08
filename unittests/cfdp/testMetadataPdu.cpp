@@ -2,6 +2,7 @@
 
 #include <array>
 #include <catch2/catch_test_macros.hpp>
+#include <iostream>
 
 #include "fsfw/cfdp/pdu/MetadataPduCreator.h"
 #include "fsfw/cfdp/pdu/MetadataPduReader.h"
@@ -172,8 +173,10 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     info.setOptionsArray(options.data(), &sizeOfOptions, nullptr);
     for (size_t maxSz = 0; maxSz < 46; maxSz++) {
       MetadataPduReader invalidSzDeser(mdBuffer.data(), maxSz, info);
-      result = invalidSzDeser.parseData();
-      REQUIRE(result == SerializeIF::STREAM_TOO_SHORT);
+      if (not invalidSzDeser.isNull()) {
+        result = invalidSzDeser.parseData();
+        REQUIRE(result == SerializeIF::STREAM_TOO_SHORT);
+      }
     }
   }
 }
