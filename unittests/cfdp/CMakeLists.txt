@@ -11,4 +11,5 @@ target_sources(
           testMetadataPdu.cpp
           testFileData.cpp
           testCfdpHeader.cpp
-          testFileDirective.cpp)
+          testFileDirective.cpp
+          testDistributor.cpp)

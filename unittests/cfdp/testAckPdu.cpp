@@ -5,7 +5,7 @@
 #include "fsfw/cfdp/pdu/AckPduSerializer.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
-TEST_CASE("ACK PDU", "[AckPdu]") {
+TEST_CASE("ACK PDU", "[cfdp][pdu]") {
   using namespace cfdp;
   ReturnValue_t result;
   std::array<uint8_t, 256> buf = {};
