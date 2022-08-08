@@ -12,4 +12,6 @@ target_sources(
           testFileData.cpp
           testCfdpHeader.cpp
           testFileDirective.cpp
-          testDistributor.cpp)
+          testDistributor.cpp
+          testDestHandler.cpp
+          testSourceHandler.cpp)
