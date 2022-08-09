@@ -1,9 +1,10 @@
 #ifndef FSFW_TESTS_STORAGEMANAGERMOCK_H
 #define FSFW_TESTS_STORAGEMANAGERMOCK_H
 
+#include "fsfw/storagemanager/LocalPool.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
-class StorageManagerMock: public StorageManagerIF {
+class StorageManagerMock: public LocalPool {
  public:
   ReturnValue_t addData(store_address_t *storageId, const uint8_t *data, size_t size,
                         bool ignoreFault) override;
@@ -20,5 +21,12 @@ class StorageManagerMock: public StorageManagerIF {
   void getFillCount(uint8_t *buffer, uint8_t *bytesWritten) override;
   size_t getTotalSize(size_t *additionalSize) override;
   [[nodiscard]] max_subpools_t getNumberOfSubPools() const override;
+
+  std::pair<bool, ReturnValue_t> nextAddDataCallFails;
+  std::pair<bool, ReturnValue_t> nextModifyDataCallFails;
+  std::pair<bool, ReturnValue_t> nextGetDataCallFails;
+  std::pair<bool, ReturnValue_t> nextDeleteDataCallFails;
+
+  void reset();
 };
 #endif  // FSFW_TESTS_STORAGEMANAGERMOCK_H
