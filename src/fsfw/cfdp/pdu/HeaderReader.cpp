@@ -134,4 +134,4 @@ bool HeaderReader::isNull() const {
   return pointers.rawPtr == nullptr or pointers.fixedHeader == nullptr;
 }
 
-HeaderReader::operator bool() const { return isNull(); }
+HeaderReader::operator bool() const { return not isNull(); }

@@ -16,9 +16,9 @@ TEST_CASE("CFDP File Directive", "[cfdp]") {
   uint8_t* serTarget = serBuf.data();
   const uint8_t* deserTarget = serTarget;
   size_t serSize = 0;
+  auto fdSer = FileDirectiveCreator(pduConf, FileDirectives::ACK, 4);
 
-  SECTION("File Directive") {
-    auto fdSer = FileDirectiveCreator(pduConf, FileDirectives::ACK, 4);
+  SECTION("Serialization") {
     REQUIRE(fdSer.getSerializedSize() == 8);
     serTarget = serBuf.data();
     serSize = 0;
@@ -38,24 +38,34 @@ TEST_CASE("CFDP File Directive", "[cfdp]") {
     // Dest ID
     REQUIRE(serBuf[6] == 1);
     REQUIRE(serBuf[7] == FileDirectives::ACK);
+  }
 
-    serTarget = serBuf.data();
-    size_t deserSize = 20;
-    serSize = 0;
-    REQUIRE(fdSer.deSerialize(&deserTarget, &deserSize, SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+  SECTION("Serialization fails") {
     REQUIRE(fdSer.serialize(nullptr, nullptr, 85, SerializeIF::Endianness::NETWORK) ==
             HasReturnvaluesIF::RETURN_FAILED);
+  }
+
+  SECTION("Buffer Too Short") {
     for (uint8_t idx = 0; idx < 8; idx++) {
       serTarget = serBuf.data();
       serSize = 0;
       REQUIRE(fdSer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::NETWORK) ==
               SerializeIF::BUFFER_TOO_SHORT);
     }
+  }
 
+  SECTION("Deserialize") {
+    CHECK(fdSer.serialize(&serTarget, &serSize, serBuf.size(), SerializeIF::Endianness::NETWORK) ==
+          result::OK);
+    serTarget = serBuf.data();
+
+    REQUIRE(fdSer.deSerialize(&deserTarget, &serSize, SerializeIF::Endianness::NETWORK) ==
+            HasReturnvaluesIF::RETURN_FAILED);
     deserTarget = serBuf.data();
-    deserSize = 0;
+    CHECK(serSize == 8);
     auto fdDeser = FileDirectiveReader(deserTarget, serBuf.size());
+    REQUIRE(not fdDeser.isNull());
+    REQUIRE(fdDeser);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::NETWORK);
     fdDeser.setEndianness(SerializeIF::Endianness::MACHINE);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::MACHINE);
