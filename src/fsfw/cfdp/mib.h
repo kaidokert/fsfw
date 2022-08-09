@@ -15,5 +15,4 @@ struct LocalEntityCfg {
   IndicationCfg indicCfg;
 };
 
-
 #endif  // FSFW_CFDP_MIB_H

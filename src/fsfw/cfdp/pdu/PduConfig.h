@@ -1,8 +1,8 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_PDUCONFIG_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_PDUCONFIG_H_
 
-#include "fsfw/cfdp/definitions.h"
 #include "VarLenField.h"
+#include "fsfw/cfdp/definitions.h"
 
 namespace cfdp {
 
@@ -22,7 +22,7 @@ struct TransactionSeqNum : public VarLenField {
   TransactionSeqNum(cfdp::WidthInBytes width, size_t seqNum) : VarLenField(width, seqNum) {}
 };
 
-}
+}  // namespace cfdp
 
 class PduConfig {
  public:

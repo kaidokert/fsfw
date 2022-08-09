@@ -1,5 +1,3 @@
-#include <fsfw/cfdp/tlv/MessageToUserTlv.h>
-
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
@@ -7,6 +5,7 @@
 #include "fsfw/cfdp/pdu/MetadataPduCreator.h"
 #include "fsfw/cfdp/pdu/MetadataPduReader.h"
 #include "fsfw/cfdp/tlv/FilestoreResponseTlv.h"
+#include "fsfw/cfdp/tlv/MessageToUserTlv.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
 TEST_CASE("Metadata PDU", "[cfdp][pdu]") {

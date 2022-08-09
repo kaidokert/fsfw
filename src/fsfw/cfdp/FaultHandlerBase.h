@@ -5,10 +5,12 @@
 
 #include "definitions.h"
 
-class CfdpFaultHandlerBase {
+namespace cfdp {
+
+class FaultHandlerBase {
  public:
-  virtual ~CfdpFaultHandlerBase();
-  CfdpFaultHandlerBase();
+  virtual ~FaultHandlerBase();
+  FaultHandlerBase();
 
   /**
    * Get the fault handler code for the given condition code
@@ -45,5 +47,7 @@ class CfdpFaultHandlerBase {
       etl::pair{cfdp::ConditionCode::UNSUPPORTED_CHECKSUM_TYPE,
                 cfdp::FaultHandlerCodes::IGNORE_ERROR}};
 };
+
+}  // namespace cfdp
 
 #endif  // FSFW_CFDP_FAULTHANDLERBASE_H

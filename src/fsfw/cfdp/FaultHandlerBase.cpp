@@ -1,19 +1,21 @@
 #include "FaultHandlerBase.h"
 
-CfdpFaultHandlerBase::CfdpFaultHandlerBase() = default;
+namespace cfdp {
 
-bool CfdpFaultHandlerBase::getFaultHandler(
-    cfdp::ConditionCode code, cfdp::FaultHandlerCodes& handler) const {
+FaultHandlerBase::FaultHandlerBase() = default;
+FaultHandlerBase::~FaultHandlerBase() = default;
+
+bool FaultHandlerBase::getFaultHandler(cfdp::ConditionCode code,
+                                       cfdp::FaultHandlerCodes& handler) const {
   auto iter = faultHandlerMap.find(code);
-  if(iter == faultHandlerMap.end()) {
+  if (iter == faultHandlerMap.end()) {
     return false;
   }
   handler = iter->second;
   return true;
 }
 
-bool CfdpFaultHandlerBase::setFaultHandler(cfdp::ConditionCode code,
-                                           cfdp::FaultHandlerCodes handler) {
+bool FaultHandlerBase::setFaultHandler(cfdp::ConditionCode code, cfdp::FaultHandlerCodes handler) {
   if (not faultHandlerMap.contains(code)) {
     return false;
   }
@@ -21,21 +23,20 @@ bool CfdpFaultHandlerBase::setFaultHandler(cfdp::ConditionCode code,
   return true;
 }
 
-bool CfdpFaultHandlerBase::faultCallback(cfdp::ConditionCode code) {
+bool FaultHandlerBase::faultCallback(cfdp::ConditionCode code) {
   if (not faultHandlerMap.contains(code)) {
     return false;
   }
   cfdp::FaultHandlerCodes fh = faultHandlerMap[code];
   if (fh == cfdp::FaultHandlerCodes::IGNORE_ERROR) {
     ignoreCb(code);
-  } else if(fh == cfdp::FaultHandlerCodes::ABANDON_TRANSACTION) {
+  } else if (fh == cfdp::FaultHandlerCodes::ABANDON_TRANSACTION) {
     abandonCb(code);
-  } else if(fh == cfdp::FaultHandlerCodes::NOTICE_OF_CANCELLATION) {
+  } else if (fh == cfdp::FaultHandlerCodes::NOTICE_OF_CANCELLATION) {
     noticeOfCancellationCb(code);
   } else {
     noticeOfSuspensionCb(code);
   }
   return true;
 }
-
-CfdpFaultHandlerBase::~CfdpFaultHandlerBase() = default;
+}  // namespace cfdp

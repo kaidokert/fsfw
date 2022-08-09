@@ -1,17 +1,5 @@
-target_sources(
-  ${FSFW_TEST_TGT}
-  PRIVATE testCfdp.cpp
-          testTlvsLvs.cpp
-          testAckPdu.cpp
-          testEofPdu.cpp
-          testNakPdu.cpp
-          testFinishedPdu.cpp
-          testPromptPdu.cpp
-          testKeepAlivePdu.cpp
-          testMetadataPdu.cpp
-          testFileData.cpp
-          testCfdpHeader.cpp
-          testFileDirective.cpp
-          testDistributor.cpp
-          testDestHandler.cpp
-          testSourceHandler.cpp)
+target_sources(${FSFW_TEST_TGT} PRIVATE testCfdp.cpp testTlvsLvs.cpp
+                                        testSourceHandler.cpp)
+
+add_subdirectory(handler)
+add_subdirectory(pdu)
