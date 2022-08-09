@@ -19,6 +19,12 @@ bool FaultHandlerBase::setFaultHandler(cfdp::ConditionCode code, cfdp::FaultHand
   if (not faultHandlerMap.contains(code)) {
     return false;
   }
+  if (handler != FaultHandlerCodes::NOTICE_OF_SUSPENSION and
+      handler != FaultHandlerCodes::ABANDON_TRANSACTION and
+      handler != FaultHandlerCodes::NOTICE_OF_CANCELLATION and
+      handler != FaultHandlerCodes::IGNORE_ERROR) {
+    return false;
+  }
   faultHandlerMap[code] = handler;
   return true;
 }
@@ -34,8 +40,11 @@ bool FaultHandlerBase::reportFault(cfdp::ConditionCode code) {
     abandonCb(code);
   } else if (fh == cfdp::FaultHandlerCodes::NOTICE_OF_CANCELLATION) {
     noticeOfCancellationCb(code);
-  } else {
+  } else if (fh == cfdp::FaultHandlerCodes::NOTICE_OF_SUSPENSION) {
     noticeOfSuspensionCb(code);
+  } else {
+    // Should never happen, but use defensive programming
+    return false;
   }
   return true;
 }
