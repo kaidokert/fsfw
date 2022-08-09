@@ -3,6 +3,7 @@
 #include "fsfw/cfdp/CfdpDistributor.h"
 #include "fsfw/cfdp/pdu/MetadataPduCreator.h"
 #include "fsfw/storagemanager/LocalPool.h"
+#include "fsfw/tcdistribution/definitions.h"
 #include "mocks/AcceptsTcMock.h"
 #include "mocks/MessageQueueMock.h"
 #include "mocks/StorageManagerMock.h"
@@ -17,6 +18,8 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   auto groundEntityId = cfdp::EntityId(UnsignedByteField<uint16_t>(1));
   MessageQueueId_t receiverQueueId = 3;
   auto tcAcceptor = AcceptsTcMock("CFDP Receiver", 0, receiverQueueId);
+
+  // Set up Metadata PDU for generate test data.
   cfdp::FileSize fileSize(12);
   const cfdp::EntityId& sourceId(groundEntityId);
   const cfdp::EntityId& destId(obswEntityId);
@@ -43,7 +46,8 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
     CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
     size_t serLen = 0;
     store_address_t storeId;
-    CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == result::OK);
+    CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
+          result::OK);
     REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
             result::OK);
     TmTcMessage msg(storeId);
@@ -56,5 +60,39 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
     TmTcMessage sentMsg;
     CHECK(queue.getNextSentMessage(receiverQueueId, sentMsg) == result::OK);
     CHECK(sentMsg.getStorageId() == storeId);
+  }
+
+  SECTION("No Destination found") {
+    CHECK(distributor.initialize() == result::OK);
+    size_t serLen = 0;
+    store_address_t storeId;
+    CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
+          result::OK);
+    REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
+            result::OK);
+    TmTcMessage msg(storeId);
+    queue.addReceivedMessage(msg);
+    CHECK(distributor.performOperation(0) == tmtcdistrib::NO_DESTINATION_FOUND);
+  }
+
+  SECTION("Getting data fails") {
+    pool.nextModifyDataCallFails.first = true;
+    pool.nextModifyDataCallFails.second = StorageManagerIF::DATA_DOES_NOT_EXIST;
+    size_t serLen = 0;
+    store_address_t storeId;
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
+    CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
+          result::OK);
+    REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
+            result::OK);
+    TmTcMessage msg(storeId);
+    queue.addReceivedMessage(msg);
+    CHECK(distributor.performOperation(0) == StorageManagerIF::DATA_DOES_NOT_EXIST);
+  }
+
+  SECTION("Duplicate registration") {
+    CHECK(distributor.initialize() == result::OK);
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::FAILED);
   }
 }

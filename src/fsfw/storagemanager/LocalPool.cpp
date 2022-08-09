@@ -167,8 +167,7 @@ void LocalPool::clearStore() {
   }
 }
 
-ReturnValue_t LocalPool::reserveSpace(size_t size, store_address_t* storeId,
-                                      bool ignoreFault) {
+ReturnValue_t LocalPool::reserveSpace(size_t size, store_address_t* storeId, bool ignoreFault) {
   ReturnValue_t status = getSubPoolIndex(size, &storeId->poolIndex);
   if (status != RETURN_OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1

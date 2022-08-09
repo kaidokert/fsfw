@@ -8,7 +8,7 @@ ReturnValue_t StorageManagerMock::addData(store_address_t *storageId, const uint
   return LocalPool::addData(storageId, data, size, ignoreFault);
 }
 ReturnValue_t StorageManagerMock::deleteData(store_address_t packet_id) {
-  if(nextDeleteDataCallFails.first) {
+  if (nextDeleteDataCallFails.first) {
     return nextDeleteDataCallFails.second;
   }
   return LocalPool::deleteData(packet_id);
@@ -16,7 +16,7 @@ ReturnValue_t StorageManagerMock::deleteData(store_address_t packet_id) {
 
 ReturnValue_t StorageManagerMock::deleteData(uint8_t *buffer, size_t size,
                                              store_address_t *storeId) {
-  if(nextDeleteDataCallFails.first) {
+  if (nextDeleteDataCallFails.first) {
     return nextDeleteDataCallFails.second;
   }
   return LocalPool::deleteData(buffer, size, storeId);
@@ -24,9 +24,6 @@ ReturnValue_t StorageManagerMock::deleteData(uint8_t *buffer, size_t size,
 
 ReturnValue_t StorageManagerMock::getData(store_address_t packet_id, const uint8_t **packet_ptr,
                                           size_t *size) {
-  if (nextGetDataCallFails.first) {
-    return nextGetDataCallFails.second;
-  }
   return LocalPool::getData(packet_id, packet_ptr, size);
 }
 
@@ -49,9 +46,7 @@ ReturnValue_t StorageManagerMock::getFreeElement(store_address_t *storageId, siz
 bool StorageManagerMock::hasDataAtId(store_address_t storeId) const {
   return LocalPool::hasDataAtId(storeId);
 }
-void StorageManagerMock::clearStore() {
-  return LocalPool::clearStore();
-}
+void StorageManagerMock::clearStore() { return LocalPool::clearStore(); }
 
 void StorageManagerMock::clearSubPool(uint8_t poolIndex) {
   return LocalPool::clearSubPool(poolIndex);
@@ -75,8 +70,6 @@ void StorageManagerMock::reset() {
   nextAddDataCallFails.second = result::OK;
   nextModifyDataCallFails.first = false;
   nextModifyDataCallFails.second = result::OK;
-  nextGetDataCallFails.first = false;
-  nextGetDataCallFails.second = result::OK;
   nextDeleteDataCallFails.first = false;
   nextDeleteDataCallFails.second = result::OK;
   nextFreeElementCallFails.first = false;
@@ -85,5 +78,4 @@ void StorageManagerMock::reset() {
 
 StorageManagerMock::StorageManagerMock(object_id_t setObjectId,
                                        const LocalPool::LocalPoolConfig &poolConfig)
-  : LocalPool(setObjectId, poolConfig) {
-}
+    : LocalPool(setObjectId, poolConfig) {}

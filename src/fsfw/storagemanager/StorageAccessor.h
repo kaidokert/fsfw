@@ -26,8 +26,8 @@ class StorageAccessor : public ConstStorageAccessor {
    * @param
    * @return
    */
-  StorageAccessor& operator=(StorageAccessor&&) noexcept ;
-  StorageAccessor(StorageAccessor&&) noexcept ;
+  StorageAccessor& operator=(StorageAccessor&&) noexcept;
+  StorageAccessor(StorageAccessor&&) noexcept;
 
   ReturnValue_t write(uint8_t* data, size_t size, uint16_t offset = 0);
   uint8_t* data();

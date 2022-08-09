@@ -80,8 +80,8 @@ class ConstStorageAccessor {
    * @param
    * @return
    */
-  ConstStorageAccessor& operator=(ConstStorageAccessor&&) noexcept ;
-  ConstStorageAccessor(ConstStorageAccessor&&) noexcept ;
+  ConstStorageAccessor& operator=(ConstStorageAccessor&&) noexcept;
+  ConstStorageAccessor(ConstStorageAccessor&&) noexcept;
 
   //! The copy ctor and copy assignemnt should be deleted implicitely
   //! according to https://foonathan.net/2019/02/special-member-functions/

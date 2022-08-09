@@ -4,9 +4,9 @@
 #include "fsfw/storagemanager/LocalPool.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 
-class StorageManagerMock: public LocalPool {
+class StorageManagerMock : public LocalPool {
  public:
-  StorageManagerMock(object_id_t setObjectId, const LocalPoolConfig& poolConfig);
+  StorageManagerMock(object_id_t setObjectId, const LocalPoolConfig &poolConfig);
 
   ReturnValue_t addData(store_address_t *storageId, const uint8_t *data, size_t size,
                         bool ignoreFault) override;
@@ -25,8 +25,11 @@ class StorageManagerMock: public LocalPool {
   [[nodiscard]] max_subpools_t getNumberOfSubPools() const override;
 
   std::pair<bool, ReturnValue_t> nextAddDataCallFails;
+  /**
+   * This can be used to make both the modify and get API call fail. This is because generally,
+   * the pool implementation get functions will use the modify API internally.
+   */
   std::pair<bool, ReturnValue_t> nextModifyDataCallFails;
-  std::pair<bool, ReturnValue_t> nextGetDataCallFails;
   std::pair<bool, ReturnValue_t> nextDeleteDataCallFails;
   std::pair<bool, ReturnValue_t> nextFreeElementCallFails;
   void reset();

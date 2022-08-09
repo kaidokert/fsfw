@@ -27,7 +27,7 @@ class PoolManager : public LocalPool {
    * @brief	In the PoolManager's destructor all allocated memory
    * 			is freed.
    */
-  virtual ~PoolManager();
+  ~PoolManager() override;
 
   /**
    * Set the default mutex timeout for internal calls.
@@ -40,8 +40,7 @@ class PoolManager : public LocalPool {
    * 			which wraps LocalPool calls with a mutex protection.
    */
   ReturnValue_t deleteData(store_address_t) override;
-  ReturnValue_t deleteData(uint8_t* buffer, size_t size,
-                           store_address_t* storeId = nullptr) override;
+  ReturnValue_t deleteData(uint8_t* buffer, size_t size, store_address_t* storeId) override;
 
   /**
    * The developer is allowed to lock the mutex in case the lock needs
@@ -58,8 +57,7 @@ class PoolManager : public LocalPool {
   //! Default mutex timeout value to prevent permanent blocking.
   uint32_t mutexTimeoutMs = 20;
 
-  ReturnValue_t reserveSpace(const size_t size, store_address_t* address,
-                             bool ignoreFault) override;
+  ReturnValue_t reserveSpace(size_t size, store_address_t* address, bool ignoreFault) override;
 
   /**
    * @brief	The mutex is created in the constructor and makes

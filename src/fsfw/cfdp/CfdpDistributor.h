@@ -42,6 +42,14 @@ class CfdpDistributor : public TcDistributorBase, public AcceptsTelecommandsIF {
   [[nodiscard]] const char* getName() const override;
   [[nodiscard]] uint32_t getIdentifier() const override;
   [[nodiscard]] MessageQueueId_t getRequestQueue() const override;
+
+  /**
+   * Register a new CFDP entity which can receive PDUs.
+   * @param address
+   * @param tcDest
+   * @return
+   *  - @c RETURN_FAILED: Entry already exists for the given address
+   */
   ReturnValue_t registerTcDestination(const cfdp::EntityId& address, AcceptsTelecommandsIF& tcDest);
 
  protected:

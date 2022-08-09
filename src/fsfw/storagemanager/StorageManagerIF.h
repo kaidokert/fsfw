@@ -92,8 +92,7 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * @return	@li RETURN_OK on success.
    * 			@li	failure code if deletion did not work
    */
-  virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
-                                   store_address_t* storeId) = 0;
+  virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size, store_address_t* storeId) = 0;
   virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size) {
     return deleteData(buffer, size, nullptr);
   }
