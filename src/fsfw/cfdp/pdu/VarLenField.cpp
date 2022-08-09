@@ -1,6 +1,5 @@
 #include "VarLenField.h"
 
-#include "fsfw/FSFW.h"
 #include "fsfw/serialize/SerializeAdapter.h"
 #include "fsfw/serviceinterface.h"
 

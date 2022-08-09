@@ -1,5 +1,5 @@
-#ifndef FSFW_SRC_FSFW_CFDP_PDU_VARLENFIELD_H_
-#define FSFW_SRC_FSFW_CFDP_PDU_VARLENFIELD_H_
+#ifndef FSFW_CFDP_PDU_VARLENFIELD_H_
+#define FSFW_CFDP_PDU_VARLENFIELD_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -7,6 +7,7 @@
 #include "fsfw/cfdp/definitions.h"
 #include "fsfw/serialize/SerializeIF.h"
 #include "fsfw/util/UnsignedByteField.h"
+
 namespace cfdp {
 
 class VarLenField : public SerializeIF {
@@ -21,6 +22,7 @@ class VarLenField : public SerializeIF {
   VarLenField();
   template <typename T>
   explicit VarLenField(UnsignedByteField<T> byteField);
+
   VarLenField(cfdp::WidthInBytes width, size_t value);
 
   bool operator==(const VarLenField &other) const;
@@ -49,11 +51,11 @@ class VarLenField : public SerializeIF {
 
 template <typename T>
 cfdp::VarLenField::VarLenField(UnsignedByteField<T> byteField)
-    : width(static_cast<WidthInBytes>(sizeof(T))) {
+    : width(static_cast<cfdp::WidthInBytes>(sizeof(T))) {
   static_assert((sizeof(T) % 2) == 0);
   setValue(width, byteField.getValue());
 }
 
 }  // namespace cfdp
 
-#endif /* FSFW_SRC_FSFW_CFDP_PDU_VARLENFIELD_H_ */
+#endif /* FSFW_CFDP_PDU_VARLENFIELD_H_ */

@@ -1,9 +1,9 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_HEADERSERIALIZER_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_HEADERSERIALIZER_H_
 
-#include "../definitions.h"
 #include "PduConfig.h"
 #include "PduHeaderIF.h"
+#include "fsfw/cfdp/definitions.h"
 #include "fsfw/serialize/SerializeIF.h"
 
 class HeaderCreator : public SerializeIF, public PduHeaderIF {
@@ -23,7 +23,7 @@ class HeaderCreator : public SerializeIF, public PduHeaderIF {
    * data field length was not properly.
    * @return
    */
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override;
@@ -32,19 +32,19 @@ class HeaderCreator : public SerializeIF, public PduHeaderIF {
   void setPduType(cfdp::PduType pduType);
   void setSegmentMetadataFlag(cfdp::SegmentMetadataFlag);
 
-  size_t getPduDataFieldLen() const override;
-  size_t getWholePduSize() const override;
+  [[nodiscard]] size_t getPduDataFieldLen() const override;
+  [[nodiscard]] size_t getWholePduSize() const override;
 
-  cfdp::PduType getPduType() const override;
-  cfdp::Direction getDirection() const override;
-  cfdp::TransmissionModes getTransmissionMode() const override;
-  bool getCrcFlag() const override;
-  bool getLargeFileFlag() const override;
-  cfdp::SegmentationControl getSegmentationControl() const override;
-  cfdp::WidthInBytes getLenEntityIds() const override;
-  cfdp::WidthInBytes getLenSeqNum() const override;
-  cfdp::SegmentMetadataFlag getSegmentMetadataFlag() const override;
-  bool hasSegmentMetadataFlag() const override;
+  [[nodiscard]] cfdp::PduType getPduType() const override;
+  [[nodiscard]] cfdp::Direction getDirection() const override;
+  [[nodiscard]] cfdp::TransmissionModes getTransmissionMode() const override;
+  [[nodiscard]] bool getCrcFlag() const override;
+  [[nodiscard]] bool getLargeFileFlag() const override;
+  [[nodiscard]] cfdp::SegmentationControl getSegmentationControl() const override;
+  [[nodiscard]] cfdp::WidthInBytes getLenEntityIds() const override;
+  [[nodiscard]] cfdp::WidthInBytes getLenSeqNum() const override;
+  [[nodiscard]] cfdp::SegmentMetadataFlag getSegmentMetadataFlag() const override;
+  [[nodiscard]] bool hasSegmentMetadataFlag() const override;
   void setSegmentationControl(cfdp::SegmentationControl);
 
   void getSourceId(cfdp::EntityId& sourceId) const override;

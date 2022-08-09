@@ -6,7 +6,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "fsfw/cfdp/pdu/PduHeaderIF.h"
 #include "fsfw/returnvalues/FwClassIds.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
@@ -132,20 +131,6 @@ enum RecordContinuationState {
   CONTAINS_START_NO_END = 0b01,
   CONTAINS_END_NO_START = 0b10,
   CONTAINS_START_AND_END = 0b11
-};
-
-struct IndicationCfg {
-  bool eofSentIndicRequired = true;
-  bool eofRecvIndicRequired = true;
-  bool fileSegmentRecvIndicRequired = true;
-  bool transactionFinishedIndicRequired = true;
-  bool suspendedIndicRequired = true;
-  bool resumedIndicRequired = true;
-};
-
-struct LocalEntityCfg {
-  EntityId localId;
-  IndicationCfg indicCfg;
 };
 
 }  // namespace cfdp

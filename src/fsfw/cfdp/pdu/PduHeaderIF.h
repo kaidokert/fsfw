@@ -3,8 +3,8 @@
 
 #include <cstddef>
 
-#include "../definitions.h"
 #include "PduConfig.h"
+#include "fsfw/cfdp/definitions.h"
 
 /**
  * @brief   Generic interface to access all fields of a PDU header

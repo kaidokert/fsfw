@@ -1,7 +1,5 @@
 #include "HeaderCreator.h"
 
-#include "HeaderReader.h"
-
 HeaderCreator::HeaderCreator(PduConfig &pduConf, cfdp::PduType pduType, size_t initPduDataFieldLen,
                              cfdp::SegmentMetadataFlag segmentMetadataFlag,
                              cfdp::SegmentationControl segCtrl)
