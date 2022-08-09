@@ -6,6 +6,8 @@
 
 class StorageManagerMock: public LocalPool {
  public:
+  StorageManagerMock(object_id_t setObjectId, const LocalPoolConfig& poolConfig);
+
   ReturnValue_t addData(store_address_t *storageId, const uint8_t *data, size_t size,
                         bool ignoreFault) override;
   ReturnValue_t deleteData(store_address_t packet_id) override;
@@ -26,7 +28,7 @@ class StorageManagerMock: public LocalPool {
   std::pair<bool, ReturnValue_t> nextModifyDataCallFails;
   std::pair<bool, ReturnValue_t> nextGetDataCallFails;
   std::pair<bool, ReturnValue_t> nextDeleteDataCallFails;
-
+  std::pair<bool, ReturnValue_t> nextFreeElementCallFails;
   void reset();
 };
 #endif  // FSFW_TESTS_STORAGEMANAGERMOCK_H

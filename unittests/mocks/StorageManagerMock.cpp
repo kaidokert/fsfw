@@ -37,10 +37,15 @@ ReturnValue_t StorageManagerMock::modifyData(store_address_t packet_id, uint8_t 
   }
   return LocalPool::modifyData(packet_id, packet_ptr, size);
 }
+
 ReturnValue_t StorageManagerMock::getFreeElement(store_address_t *storageId, size_t size,
                                                  uint8_t **p_data, bool ignoreFault) {
-  return 0;
+  if (nextFreeElementCallFails.first) {
+    return nextFreeElementCallFails.second;
+  }
+  return LocalPool::getFreeElement(storageId, size, p_data, ignoreFault);
 }
+
 bool StorageManagerMock::hasDataAtId(store_address_t storeId) const {
   return LocalPool::hasDataAtId(storeId);
 }
@@ -74,4 +79,11 @@ void StorageManagerMock::reset() {
   nextGetDataCallFails.second = result::OK;
   nextDeleteDataCallFails.first = false;
   nextDeleteDataCallFails.second = result::OK;
+  nextFreeElementCallFails.first = false;
+  nextFreeElementCallFails.second = result::OK;
+}
+
+StorageManagerMock::StorageManagerMock(object_id_t setObjectId,
+                                       const LocalPool::LocalPoolConfig &poolConfig)
+  : LocalPool(setObjectId, poolConfig) {
 }

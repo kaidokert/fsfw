@@ -5,10 +5,11 @@
 #include "fsfw/storagemanager/LocalPool.h"
 #include "mocks/AcceptsTcMock.h"
 #include "mocks/MessageQueueMock.h"
+#include "mocks/StorageManagerMock.h"
 
 TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   LocalPool::LocalPoolConfig cfg = {{5, 32}, {2, 64}};
-  LocalPool pool(objects::NO_OBJECT, cfg);
+  StorageManagerMock pool(objects::NO_OBJECT, cfg);
   auto queue = MessageQueueMock(1);
   CfdpDistribCfg distribCfg(1, pool, &queue);
   auto distributor = CfdpDistributor(distribCfg);
@@ -42,7 +43,7 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
     CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
     size_t serLen = 0;
     store_address_t storeId;
-    CHECK(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == result::OK);
+    CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == result::OK);
     REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
             result::OK);
     TmTcMessage msg(storeId);
