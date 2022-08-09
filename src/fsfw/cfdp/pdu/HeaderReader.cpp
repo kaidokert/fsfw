@@ -7,12 +7,14 @@
 HeaderReader::HeaderReader(const uint8_t *pduBuf, size_t maxSize) { setData(pduBuf, maxSize); }
 
 ReturnValue_t HeaderReader::parseData() {
-  if (isNull()) {
+  if (pointers.rawPtr == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   if (maxSize < 7) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
+  pointers.fixedHeader =
+      reinterpret_cast<PduHeaderFixedStruct *>(const_cast<uint8_t *>(pointers.rawPtr));
   sourceIdRaw = static_cast<uint8_t *>(&pointers.fixedHeader->variableFieldsStart);
   cfdp::WidthInBytes widthEntityIds = getLenEntityIds();
   cfdp::WidthInBytes widthSeqNum = getLenSeqNum();
@@ -22,11 +24,13 @@ ReturnValue_t HeaderReader::parseData() {
 }
 
 ReturnValue_t HeaderReader::setData(uint8_t *dataPtr, size_t maxSize_, void *args) {
+  if (dataPtr == nullptr) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
   if (maxSize_ < 7) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   pointers.rawPtr = dataPtr;
-  pointers.fixedHeader = reinterpret_cast<PduHeaderFixedStruct *>(const_cast<uint8_t *>(dataPtr));
   maxSize = maxSize_;
   return HasReturnvaluesIF::RETURN_OK;
 }

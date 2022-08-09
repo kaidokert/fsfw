@@ -64,13 +64,15 @@ TEST_CASE("CFDP File Directive", "[cfdp]") {
     deserTarget = serBuf.data();
     CHECK(serSize == 8);
     auto fdDeser = FileDirectiveReader(deserTarget, serBuf.size());
-    REQUIRE(not fdDeser.isNull());
-    REQUIRE(fdDeser);
+    REQUIRE(fdDeser.isNull());
+    REQUIRE(not fdDeser);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::NETWORK);
     fdDeser.setEndianness(SerializeIF::Endianness::MACHINE);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::MACHINE);
     fdDeser.setEndianness(SerializeIF::Endianness::NETWORK);
     REQUIRE(fdDeser.parseData() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(not fdDeser.isNull());
+    REQUIRE(fdDeser);
     REQUIRE(fdDeser.getFileDirective() == FileDirectives::ACK);
     REQUIRE(fdDeser.getPduDataFieldLen() == 5);
     REQUIRE(fdDeser.getHeaderSize() == 8);

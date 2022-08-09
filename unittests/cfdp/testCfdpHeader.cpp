@@ -268,8 +268,8 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     result = headerDeser.parseData();
     REQUIRE(result == result::OK);
 
-    headerDeser.setData(nullptr, -1);
-    REQUIRE(headerDeser.getHeaderSize() == 0);
+    CHECK(headerDeser.setData(nullptr, -1) != result::OK);
+    REQUIRE(headerDeser.getHeaderSize() == 14);
     headerDeser.setData(serBuf.data(), serBuf.size());
 
     serTarget = serBuf.data();
