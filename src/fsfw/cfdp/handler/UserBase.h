@@ -1,6 +1,7 @@
 #ifndef FSFW_CFDP_USERBASE_H
 #define FSFW_CFDP_USERBASE_H
 
+#include "fsfw/cfdp/VarLenFields.h"
 #include "fsfw/filesystem/HasFileSystemIF.h"
 
 namespace cfdp {
@@ -21,6 +22,20 @@ class UserBase {
    * @param vfs Virtual Filestore Object. Will be used for all file operations
    */
   explicit UserBase(HasFileSystemIF& vfs);
+
+  virtual void transactionIndication(TransactionId id) = 0;
+  virtual void eofSentIndication(TransactionId id) = 0;
+
+  virtual void abandonedIndication(TransactionId id, ConditionCode code, uint64_t progress) = 0;
+  virtual void eofRecvIndication(TransactionId id) = 0;
+
+  // TODO: Parameters
+  virtual void transactionFinishedIndication() = 0;
+  virtual void metadataRecvdIndication() = 0;
+  virtual void fileSegmentRecvdIndication() = 0;
+  virtual void reportIndication() = 0;
+  virtual void suspendedIndication() = 0;
+  virtual void resumedIndication() = 0;
 
  private:
   HasFileSystemIF& vfs;

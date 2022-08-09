@@ -2,5 +2,6 @@
 
 #include <utility>
 
-cfdp::DestHandler::DestHandler(LocalEntityCfg cfg, UserBase& user)
-    : cfg(std::move(cfg)), user(user) {}
+cfdp::DestHandler::DestHandler(LocalEntityCfg cfg, UserBase& user,
+                               RemoteConfigTableIF& remoteCfgTable)
+    : cfg(std::move(cfg)), user(user), remoteCfgTable(remoteCfgTable) {}

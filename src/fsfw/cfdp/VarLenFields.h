@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 
 #include "fsfw/cfdp/definitions.h"
 #include "fsfw/serialize/SerializeIF.h"
@@ -55,6 +56,34 @@ cfdp::VarLenField::VarLenField(UnsignedByteField<T> byteField)
   static_assert((sizeof(T) % 2) == 0);
   setValue(width, byteField.getValue());
 }
+
+struct EntityId : public VarLenField {
+ public:
+  EntityId() : VarLenField() {}
+  template <typename T>
+  explicit EntityId(UnsignedByteField<T> byteField) : VarLenField(byteField) {}
+  EntityId(cfdp::WidthInBytes width, size_t entityId) : VarLenField(width, entityId) {}
+};
+
+struct TransactionSeqNum : public VarLenField {
+ public:
+  TransactionSeqNum() : VarLenField() {}
+  template <typename T>
+  explicit TransactionSeqNum(UnsignedByteField<T> byteField) : VarLenField(byteField) {}
+  TransactionSeqNum(cfdp::WidthInBytes width, size_t seqNum) : VarLenField(width, seqNum) {}
+};
+
+struct TransactionId {
+  TransactionId(EntityId entityId, TransactionSeqNum seqNum)
+      : entityId(std::move(entityId)), seqNum(std::move(seqNum)) {}
+
+  bool operator==(const TransactionId &other) {
+    return entityId == other.entityId and seqNum == other.seqNum;
+  }
+
+  EntityId entityId;
+  TransactionSeqNum seqNum;
+};
 
 }  // namespace cfdp
 

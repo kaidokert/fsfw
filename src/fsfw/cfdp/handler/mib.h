@@ -26,6 +26,16 @@ struct LocalEntityCfg {
   FaultHandlerBase& fhBase;
 };
 
+struct RemoteEntityCfg {
+  EntityId remoteId;
+  size_t maxFileSegmentLen;
+  bool closureRequested;
+  bool crcOnTransmission;
+  TransmissionModes defaultTransmissionMode;
+  ChecksumType defaultChecksum;
+  const uint8_t version = CFDP_VERSION_2;
+};
+
 }  // namespace cfdp
 
 #endif  // FSFW_CFDP_MIB_H

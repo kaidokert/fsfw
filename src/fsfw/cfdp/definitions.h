@@ -11,7 +11,11 @@
 
 namespace cfdp {
 
-static constexpr uint8_t VERSION_BITS = 0b00100000;
+static constexpr char CFDP_VERSION_2_NAME[] = "CCSDS 727.0-B-5";
+
+// Second version of the protocol, only this one is supported here
+static constexpr uint8_t CFDP_VERSION_2 = 0b001;
+static constexpr uint8_t VERSION_BITS = CFDP_VERSION_2 << 5;
 
 static constexpr uint8_t CFDP_CLASS_ID = CLASS_ID::CFDP;
 

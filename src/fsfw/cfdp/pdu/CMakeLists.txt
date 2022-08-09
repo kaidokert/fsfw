@@ -1,7 +1,6 @@
 target_sources(
   ${LIB_FSFW_NAME}
   PRIVATE PduConfig.cpp
-          VarLenField.cpp
           HeaderCreator.cpp
           HeaderReader.cpp
           FileDirectiveReader.cpp

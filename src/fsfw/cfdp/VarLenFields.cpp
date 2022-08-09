@@ -1,4 +1,4 @@
-#include "VarLenField.h"
+#include "VarLenFields.h"
 
 #include "fsfw/serialize/SerializeAdapter.h"
 #include "fsfw/serviceinterface.h"
@@ -119,9 +119,15 @@ ReturnValue_t cfdp::VarLenField::deSerialize(const uint8_t **buffer, size_t *siz
 }
 
 bool cfdp::VarLenField::operator<(const cfdp::VarLenField &other) const {
-  return getValue() < other.getValue();
+  if (getWidth() < other.getWidth()) {
+    return true;
+  } else if (getWidth() == other.getWidth()) {
+    return getValue() < other.getValue();
+  } else {
+    return false;
+  }
 }
 
 bool cfdp::VarLenField::operator==(const cfdp::VarLenField &other) const {
-  return getValue() == other.getValue();
+  return getWidth() == other.getWidth() and getValue() == other.getValue();
 }
