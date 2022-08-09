@@ -4,7 +4,7 @@
 #include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 #include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
-TEST_CASE("CFDP File Directive", "[cfdp]") {
+TEST_CASE("CFDP File Directive", "[cfdp][pdu]") {
   using namespace cfdp;
   std::array<uint8_t, 32> serBuf{};
   ReturnValue_t result;

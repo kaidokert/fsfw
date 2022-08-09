@@ -23,7 +23,7 @@ bool FaultHandlerBase::setFaultHandler(cfdp::ConditionCode code, cfdp::FaultHand
   return true;
 }
 
-bool FaultHandlerBase::faultCallback(cfdp::ConditionCode code) {
+bool FaultHandlerBase::reportFault(cfdp::ConditionCode code) {
   if (not faultHandlerMap.contains(code)) {
     return false;
   }

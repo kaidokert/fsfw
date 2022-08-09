@@ -19,7 +19,7 @@ class CfdpFaultHandlerMock : public cfdp::FaultHandlerBase {
   void ignoreCb(cfdp::ConditionCode code) override;
 
   FaultInfo& getFhInfo(cfdp::FaultHandlerCodes fhCode);
-  bool faultCbWasCalled() const;
+  [[nodiscard]] bool faultCbWasCalled() const;
   void reset();
 
  private:
