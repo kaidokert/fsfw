@@ -17,18 +17,10 @@ TEST_CASE("CFDP Header", "[cfdp]") {
   uint8_t* serTarget = serBuf.data();
   const uint8_t* deserTarget = serTarget;
   size_t serSize = 0;
+  auto headerSerializer = HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
 
-  SECTION("Header Serialization") {
-    auto headerSerializer = HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
-    const uint8_t** dummyPtr = nullptr;
-    ReturnValue_t deserResult =
-        headerSerializer.deSerialize(dummyPtr, &serSize, SerializeIF::Endianness::NETWORK);
-    REQUIRE(deserResult == result::FAILED);
-    deserResult = headerSerializer.serialize(nullptr, &serSize, serBuf.size(),
-                                             SerializeIF::Endianness::NETWORK);
-    REQUIRE(deserResult == result::FAILED);
+  SECTION("Header State") {
     REQUIRE(seqNum.getSerializedSize() == 1);
-
     REQUIRE(headerSerializer.getPduDataFieldLen() == 0);
     REQUIRE(headerSerializer.getSerializedSize() == 7);
     REQUIRE(headerSerializer.getWholePduSize() == 7);
@@ -41,7 +33,6 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     REQUIRE(headerSerializer.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::NOT_PRESENT);
     REQUIRE(headerSerializer.getSegmentationControl() == false);
     REQUIRE(headerSerializer.getTransmissionMode() == cfdp::TransmissionModes::ACKNOWLEDGED);
-
     cfdp::TransactionSeqNum seqNumLocal;
     headerSerializer.getTransactionSeqNum(seqNumLocal);
     REQUIRE(seqNumLocal.getWidth() == cfdp::WidthInBytes::ONE_BYTE);
@@ -53,7 +44,127 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     headerSerializer.getDestId(sourceDestId);
     REQUIRE(sourceDestId.getWidth() == cfdp::WidthInBytes::ONE_BYTE);
     REQUIRE(sourceDestId.getValue() == 1);
+  }
 
+  SECTION("Deserialization fails") {
+    const uint8_t** dummyPtr = nullptr;
+    REQUIRE(headerSerializer.deSerialize(dummyPtr, &serSize, SerializeIF::Endianness::NETWORK) ==
+            result::FAILED);
+  }
+
+  SECTION("Serialization fails") {
+    REQUIRE(headerSerializer.serialize(nullptr, &serSize, serBuf.size(),
+                                       SerializeIF::Endianness::NETWORK) == result::FAILED);
+  }
+
+  SECTION("Buffer Too Short") {
+    for (uint8_t idx = 0; idx < 7; idx++) {
+      result = headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG);
+      REQUIRE(result == static_cast<int>(SerializeIF::BUFFER_TOO_SHORT));
+    }
+  }
+
+  SECTION("Set Data Field Len") {
+    // Set PDU data field len
+    headerSerializer.setPduDataFieldLen(0x0ff0);
+    REQUIRE(headerSerializer.getPduDataFieldLen() == 0x0ff0);
+    REQUIRE(headerSerializer.getSerializedSize() == 7);
+    REQUIRE(headerSerializer.getWholePduSize() == 7 + 0x0ff0);
+    serTarget = serBuf.data();
+    serSize = 0;
+    result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
+                                        SerializeIF::Endianness::BIG);
+    REQUIRE(serBuf[1] == 0x0f);
+    REQUIRE(serBuf[2] == 0xf0);
+  }
+
+  SECTION("Serialize with Fields Flipped") {
+    pduConf.crcFlag = true;
+    pduConf.largeFile = true;
+    pduConf.direction = cfdp::Direction::TOWARDS_SENDER;
+    pduConf.mode = cfdp::TransmissionModes::UNACKNOWLEDGED;
+    headerSerializer.setSegmentationControl(
+        cfdp::SegmentationControl::RECORD_BOUNDARIES_PRESERVATION);
+    headerSerializer.setPduType(cfdp::PduType::FILE_DATA);
+    headerSerializer.setSegmentMetadataFlag(cfdp::SegmentMetadataFlag::PRESENT);
+    serTarget = serBuf.data();
+    serSize = 0;
+
+    SECTION("Regular") {
+      // Everything except version bit flipped to one now
+      REQUIRE(headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
+                                         SerializeIF::Endianness::BIG) == result::OK);
+      CHECK(serBuf[0] == 0x3f);
+      CHECK(serBuf[3] == 0x99);
+      REQUIRE(headerSerializer.getCrcFlag() == true);
+      REQUIRE(headerSerializer.getDirection() == cfdp::Direction::TOWARDS_SENDER);
+      REQUIRE(headerSerializer.getLargeFileFlag() == true);
+      REQUIRE(headerSerializer.getLenEntityIds() == 1);
+      REQUIRE(headerSerializer.getLenSeqNum() == 1);
+      REQUIRE(headerSerializer.getPduType() == cfdp::PduType::FILE_DATA);
+      REQUIRE(headerSerializer.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT);
+      REQUIRE(headerSerializer.getTransmissionMode() == cfdp::TransmissionModes::UNACKNOWLEDGED);
+      REQUIRE(headerSerializer.getSegmentationControl() == true);
+    }
+
+    SECTION("Other variable sized fields") {
+      pduConf.seqNum.setValue(cfdp::WidthInBytes::TWO_BYTES, 0x0fff);
+      pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xff00ff00);
+      pduConf.destId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0x00ff00ff);
+      REQUIRE(pduConf.sourceId.getSerializedSize() == 4);
+      REQUIRE(headerSerializer.getSerializedSize() == 14);
+      REQUIRE(headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
+                                         SerializeIF::Endianness::BIG) == result::OK);
+      REQUIRE(headerSerializer.getCrcFlag() == true);
+      REQUIRE(headerSerializer.getDirection() == cfdp::Direction::TOWARDS_SENDER);
+      REQUIRE(headerSerializer.getLargeFileFlag() == true);
+      REQUIRE(headerSerializer.getLenEntityIds() == 4);
+      REQUIRE(headerSerializer.getLenSeqNum() == 2);
+      REQUIRE(headerSerializer.getPduType() == cfdp::PduType::FILE_DATA);
+      REQUIRE(headerSerializer.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT);
+      REQUIRE(headerSerializer.getTransmissionMode() == cfdp::TransmissionModes::UNACKNOWLEDGED);
+      REQUIRE(headerSerializer.getSegmentationControl() == true);
+      // Last three bits are 2 now (length of seq number) and bit 1 to bit 3 is 4 (len entity IDs)
+      REQUIRE(serBuf[3] == 0b11001010);
+      uint32_t entityId = 0;
+      size_t deSerSize = 0;
+      SerializeAdapter::deSerialize(&entityId, serBuf.data() + 4, &deSerSize,
+                                    SerializeIF::Endianness::NETWORK);
+      CHECK(deSerSize == 4);
+      CHECK(entityId == 0xff00ff00);
+      uint16_t seqNumRaw = 0;
+      SerializeAdapter::deSerialize(&seqNumRaw, serBuf.data() + 8, &deSerSize,
+                                    SerializeIF::Endianness::NETWORK);
+      CHECK(deSerSize == 2);
+      CHECK(seqNumRaw == 0x0fff);
+      SerializeAdapter::deSerialize(&entityId, serBuf.data() + 10, &deSerSize,
+                                    SerializeIF::Endianness::NETWORK);
+      CHECK(deSerSize == 4);
+      CHECK(entityId == 0x00ff00ff);
+    }
+
+    SECTION("Buffer Too Short") {
+      pduConf.seqNum.setValue(cfdp::WidthInBytes::TWO_BYTES, 0x0fff);
+      pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xff00ff00);
+      pduConf.destId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0x00ff00ff);
+      for (uint8_t idx = 0; idx < 14; idx++) {
+        REQUIRE(
+            headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG) ==
+            SerializeIF::BUFFER_TOO_SHORT);
+      }
+    }
+  }
+
+  SECTION("Invalid Variable Sized Fields") {
+    result = pduConf.sourceId.setValue(cfdp::WidthInBytes::ONE_BYTE, 0xfff);
+    REQUIRE(result == result::FAILED);
+    result = pduConf.sourceId.setValue(cfdp::WidthInBytes::TWO_BYTES, 0xfffff);
+    REQUIRE(result == result::FAILED);
+    result = pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xfffffffff);
+    REQUIRE(result == result::FAILED);
+  }
+
+  SECTION("Header Serialization") {
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                         SerializeIF::Endianness::BIG);
     REQUIRE(result == result::OK);
@@ -72,86 +183,6 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     // Dest ID
     REQUIRE(serBuf[6] == 1);
 
-    for (uint8_t idx = 0; idx < 7; idx++) {
-      result = headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG);
-      REQUIRE(result == static_cast<int>(SerializeIF::BUFFER_TOO_SHORT));
-    }
-
-    // Set PDU data field len
-    headerSerializer.setPduDataFieldLen(0x0ff0);
-    REQUIRE(headerSerializer.getPduDataFieldLen() == 0x0ff0);
-    REQUIRE(headerSerializer.getSerializedSize() == 7);
-    REQUIRE(headerSerializer.getWholePduSize() == 7 + 0x0ff0);
-    serTarget = serBuf.data();
-    serSize = 0;
-    result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                        SerializeIF::Endianness::BIG);
-    REQUIRE(serBuf[1] == 0x0f);
-    REQUIRE(serBuf[2] == 0xf0);
-
-    pduConf.crcFlag = true;
-    pduConf.largeFile = true;
-    pduConf.direction = cfdp::Direction::TOWARDS_SENDER;
-    pduConf.mode = cfdp::TransmissionModes::UNACKNOWLEDGED;
-    headerSerializer.setSegmentationControl(
-        cfdp::SegmentationControl::RECORD_BOUNDARIES_PRESERVATION);
-    headerSerializer.setPduType(cfdp::PduType::FILE_DATA);
-    headerSerializer.setSegmentMetadataFlag(cfdp::SegmentMetadataFlag::PRESENT);
-    serTarget = serBuf.data();
-    serSize = 0;
-    result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                        SerializeIF::Endianness::BIG);
-
-    // Everything except version bit flipped to one now
-    REQUIRE(serBuf[0] == 0x3f);
-    REQUIRE(serBuf[3] == 0x99);
-    pduConf.seqNum.setValue(cfdp::WidthInBytes::TWO_BYTES, 0x0fff);
-    pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xff00ff00);
-    pduConf.destId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0x00ff00ff);
-    REQUIRE(pduConf.sourceId.getSerializedSize() == 4);
-    REQUIRE(headerSerializer.getSerializedSize() == 14);
-    serTarget = serBuf.data();
-    serSize = 0;
-    result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                        SerializeIF::Endianness::BIG);
-
-    for (uint8_t idx = 0; idx < 14; idx++) {
-      result = headerSerializer.serialize(&serTarget, &serSize, idx, SerializeIF::Endianness::BIG);
-      REQUIRE(result == static_cast<int>(SerializeIF::BUFFER_TOO_SHORT));
-    }
-    REQUIRE(headerSerializer.getCrcFlag() == true);
-    REQUIRE(headerSerializer.getDirection() == cfdp::Direction::TOWARDS_SENDER);
-    REQUIRE(headerSerializer.getLargeFileFlag() == true);
-    REQUIRE(headerSerializer.getLenEntityIds() == 4);
-    REQUIRE(headerSerializer.getLenSeqNum() == 2);
-    REQUIRE(headerSerializer.getPduType() == cfdp::PduType::FILE_DATA);
-    REQUIRE(headerSerializer.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT);
-    REQUIRE(headerSerializer.getTransmissionMode() == cfdp::TransmissionModes::UNACKNOWLEDGED);
-    REQUIRE(headerSerializer.getSegmentationControl() == true);
-    // Last three bits are 2 now (length of seq number) and bit 1 to bit 3 is 4 (len entity IDs)
-    REQUIRE(serBuf[3] == 0b11001010);
-    uint32_t entityId = 0;
-    size_t deSerSize = 0;
-    SerializeAdapter::deSerialize(&entityId, serBuf.data() + 4, &deSerSize,
-                                  SerializeIF::Endianness::NETWORK);
-    REQUIRE(deSerSize == 4);
-    REQUIRE(entityId == 0xff00ff00);
-    uint16_t seqNumRaw = 0;
-    SerializeAdapter::deSerialize(&seqNumRaw, serBuf.data() + 8, &deSerSize,
-                                  SerializeIF::Endianness::NETWORK);
-    REQUIRE(deSerSize == 2);
-    REQUIRE(seqNumRaw == 0x0fff);
-    SerializeAdapter::deSerialize(&entityId, serBuf.data() + 10, &deSerSize,
-                                  SerializeIF::Endianness::NETWORK);
-    REQUIRE(deSerSize == 4);
-    REQUIRE(entityId == 0x00ff00ff);
-
-    result = pduConf.sourceId.setValue(cfdp::WidthInBytes::ONE_BYTE, 0xfff);
-    REQUIRE(result == result::FAILED);
-    result = pduConf.sourceId.setValue(cfdp::WidthInBytes::TWO_BYTES, 0xfffff);
-    REQUIRE(result == result::FAILED);
-    result = pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xfffffffff);
-    REQUIRE(result == result::FAILED);
     uint8_t oneByteSourceId = 32;
     serTarget = &oneByteSourceId;
     size_t deserLen = 1;
@@ -184,12 +215,8 @@ TEST_CASE("CFDP Header", "[cfdp]") {
   }
 
   SECTION("Header Deserialization") {
-    // We unittested the serializer before, so we can use it now to generate valid raw  CFDP
-    // data
-    auto headerSerializer = HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
-    result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                        SerializeIF::Endianness::BIG);
-    REQUIRE(result == result::OK);
+    REQUIRE(headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
+                                       SerializeIF::Endianness::BIG) == result::OK);
     REQUIRE(serBuf[1] == 0);
     REQUIRE(serBuf[2] == 0);
     // Entity and Transaction Sequence number are 1 byte large
