@@ -14,8 +14,8 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   auto distributor = CfdpDistributor(distribCfg);
   auto obswEntityId = cfdp::EntityId(UnsignedByteField<uint16_t>(2));
   auto groundEntityId = cfdp::EntityId(UnsignedByteField<uint16_t>(1));
-  MessageQueueId_t acceptorQueueId = 3;
-  auto tcAcceptor = AcceptsTcMock("TC Acceptor", 0, acceptorQueueId);
+  MessageQueueId_t receiverQueueId = 3;
+  auto tcAcceptor = AcceptsTcMock("CFDP Receiver", 0, receiverQueueId);
   cfdp::FileSize fileSize(12);
   const cfdp::EntityId& sourceId(groundEntityId);
   const cfdp::EntityId& destId(obswEntityId);
@@ -48,5 +48,12 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
     TmTcMessage msg(storeId);
     queue.addReceivedMessage(msg);
     CHECK(distributor.performOperation(0) == result::OK);
+    CHECK(queue.wasMessageSent());
+    CHECK(queue.numberOfSentMessages() == 1);
+    // The packet is forwarded, with no need to delete the data
+    CHECK(pool.hasDataAtId(storeId));
+    TmTcMessage sentMsg;
+    CHECK(queue.getNextSentMessage(receiverQueueId, sentMsg) == result::OK);
+    CHECK(sentMsg.getStorageId() == storeId);
   }
 }
