@@ -4,6 +4,7 @@ API
 .. toctree::
    :maxdepth: 4
 
+   api/cfdp
    api/objectmanager
    api/task
    api/ipc

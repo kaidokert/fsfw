@@ -3,6 +3,7 @@
 
 #include <utility>
 
+#include "fsfw/cfdp/pdu/PduConfig.h"
 #include "FaultHandlerBase.h"
 
 namespace cfdp {
