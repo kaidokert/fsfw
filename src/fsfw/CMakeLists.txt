@@ -31,6 +31,7 @@ add_subdirectory(thermal)
 add_subdirectory(timemanager)
 add_subdirectory(tmtcpacket)
 add_subdirectory(tmtcservices)
+add_subdirectory(filesystem)
 
 # Optional
 

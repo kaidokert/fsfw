@@ -1,7 +1,7 @@
 #ifndef FSFW_CFDP_USERBASE_H
 #define FSFW_CFDP_USERBASE_H
 
-#include "fsfw/memory/HasFileSystemIF.h"
+#include "fsfw/filesystem/HasFileSystemIF.h"
 
 namespace cfdp {
 

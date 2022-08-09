@@ -1,10 +1,9 @@
 #include "fsfw/ipc/CommandMessageCleaner.h"
 
-#include "fsfw/FSFW.h"
 #include "fsfw/devicehandlers/DeviceHandlerMessage.h"
+#include "fsfw/filesystem/GenericFileSystemMessage.h"
 #include "fsfw/health/HealthMessage.h"
 #include "fsfw/housekeeping/HousekeepingMessage.h"
-#include "fsfw/memory/GenericFileSystemMessage.h"
 #include "fsfw/memory/MemoryMessage.h"
 #include "fsfw/modes/ModeMessage.h"
 #include "fsfw/monitoring/MonitoringMessage.h"

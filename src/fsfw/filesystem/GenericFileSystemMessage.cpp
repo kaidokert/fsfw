@@ -1,4 +1,4 @@
-#include "fsfw/memory/GenericFileSystemMessage.h"
+#include "GenericFileSystemMessage.h"
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"

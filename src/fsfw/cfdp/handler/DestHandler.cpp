@@ -2,4 +2,5 @@
 
 #include <utility>
 
-cfdp::DestHandler::DestHandler(LocalEntityCfg cfg) : cfg(std::move(cfg)) {}
+cfdp::DestHandler::DestHandler(LocalEntityCfg cfg, UserBase& user)
+    : cfg(std::move(cfg)), user(user) {}
