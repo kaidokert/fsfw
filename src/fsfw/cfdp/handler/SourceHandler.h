@@ -1,6 +1,6 @@
 #ifndef FSFW_CFDP_CFDPSOURCEHANDLER_H
 #define FSFW_CFDP_CFDPSOURCEHANDLER_H
 
-class CfdpSourceHandler {};
+class SourceHandler {};
 
 #endif  // FSFW_CFDP_CFDPSOURCEHANDLER_H

@@ -43,12 +43,13 @@ TEST_CASE("CFDP Fault Handler", "[cfdp]") {
 
   SECTION("Invalid Reported Code") { CHECK(not fhMock.reportFault(ConditionCode::NO_ERROR)); }
 
-  SECTION("Invalid FH code"){
-      CHECK(not fhMock.setFaultHandler(ConditionCode::KEEP_ALIVE_LIMIT_REACHED, FaultHandlerCodes::RESERVED));
-      CHECK(fhMock.getFaultHandler(ConditionCode::KEEP_ALIVE_LIMIT_REACHED, fhCode));
-      CHECK(fhCode == FaultHandlerCodes::IGNORE_ERROR);
-      CHECK(not fhMock.setFaultHandler(ConditionCode::NO_ERROR, FaultHandlerCodes::IGNORE_ERROR));
-      CHECK(not fhMock.getFaultHandler(ConditionCode::NO_ERROR, fhCode));
+  SECTION("Invalid FH code") {
+    CHECK(not fhMock.setFaultHandler(ConditionCode::KEEP_ALIVE_LIMIT_REACHED,
+                                     FaultHandlerCodes::RESERVED));
+    CHECK(fhMock.getFaultHandler(ConditionCode::KEEP_ALIVE_LIMIT_REACHED, fhCode));
+    CHECK(fhCode == FaultHandlerCodes::IGNORE_ERROR);
+    CHECK(not fhMock.setFaultHandler(ConditionCode::NO_ERROR, FaultHandlerCodes::IGNORE_ERROR));
+    CHECK(not fhMock.getFaultHandler(ConditionCode::NO_ERROR, fhCode));
   }
 
   SECTION("Set Other Fault Handler") {

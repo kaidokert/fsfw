@@ -3,7 +3,7 @@
 
 #include <etl/flat_map.h>
 
-#include "definitions.h"
+#include "fsfw/cfdp/definitions.h"
 
 namespace cfdp {
 

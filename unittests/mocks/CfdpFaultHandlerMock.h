@@ -4,7 +4,7 @@
 #include <map>
 #include <queue>
 
-#include "fsfw/cfdp/FaultHandlerBase.h"
+#include "fsfw/cfdp/handler/FaultHandlerBase.h"
 
 class CfdpFaultHandlerMock : public cfdp::FaultHandlerBase {
  public:

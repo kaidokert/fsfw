@@ -1,6 +1,12 @@
 #ifndef FSFW_CFDP_MIB_H
 #define FSFW_CFDP_MIB_H
 
+#include <utility>
+
+#include "FaultHandlerBase.h"
+
+namespace cfdp {
+
 struct IndicationCfg {
   bool eofSentIndicRequired = true;
   bool eofRecvIndicRequired = true;
@@ -11,8 +17,14 @@ struct IndicationCfg {
 };
 
 struct LocalEntityCfg {
-  cfdp::EntityId localId;
+  LocalEntityCfg(EntityId localId, IndicationCfg indicationCfg, FaultHandlerBase& fhBase)
+      : localId(std::move(localId)), indicCfg(indicationCfg), fhBase(fhBase) {}
+
+  EntityId localId;
   IndicationCfg indicCfg;
+  FaultHandlerBase& fhBase;
 };
+
+}  // namespace cfdp
 
 #endif  // FSFW_CFDP_MIB_H
