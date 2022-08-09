@@ -304,7 +304,7 @@ TEST_CASE("CFDP TLV LV", "[cfdp]") {
     FlowLabelTlv flowLabelTlv(&flowLabel, 1);
 
     FaultHandlerOverrideTlv faultOverrideTlv(cfdp::ConditionCode::FILESTORE_REJECTION,
-                                             cfdp::FaultHandlerCode::NOTICE_OF_CANCELLATION);
+                                             cfdp::FaultHandlerCodes::NOTICE_OF_CANCELLATION);
     size_t sz = 0;
     result =
         faultOverrideTlv.serialize(&serPtr, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);

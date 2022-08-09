@@ -1,10 +1,10 @@
 #include "FaultHandlerOverrideTlv.h"
 
 FaultHandlerOverrideTlv::FaultHandlerOverrideTlv(cfdp::ConditionCode conditionCode,
-                                                 cfdp::FaultHandlerCode handlerCode)
+                                                 cfdp::FaultHandlerCodes handlerCode)
     : conditionCode(conditionCode), handlerCode(handlerCode) {}
 
-FaultHandlerOverrideTlv::FaultHandlerOverrideTlv() {}
+FaultHandlerOverrideTlv::FaultHandlerOverrideTlv() = default;
 
 uint8_t FaultHandlerOverrideTlv::getLengthField() const { return 1; }
 
@@ -45,7 +45,7 @@ ReturnValue_t FaultHandlerOverrideTlv::deSerialize(const uint8_t **buffer, size_
   *buffer += 1;
   *size += 1;
   this->conditionCode = static_cast<cfdp::ConditionCode>((**buffer >> 4) & 0x0f);
-  this->handlerCode = static_cast<cfdp::FaultHandlerCode>(**buffer & 0x0f);
+  this->handlerCode = static_cast<cfdp::FaultHandlerCodes>(**buffer & 0x0f);
   *buffer += 1;
   *size += 1;
   return HasReturnvaluesIF::RETURN_OK;

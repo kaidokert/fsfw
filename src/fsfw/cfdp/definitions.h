@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "fsfw/cfdp/pdu/PduHeaderIF.h"
 #include "fsfw/returnvalues/FwClassIds.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
@@ -90,6 +91,14 @@ enum ConditionCode : uint8_t {
   CANCEL_REQUEST_RECEIVED = 0b1111
 };
 
+enum FaultHandlerCodes {
+  RESERVED = 0b0000,
+  NOTICE_OF_CANCELLATION = 0b0001,
+  NOTICE_OF_SUSPENSION = 0b0010,
+  IGNORE_ERROR = 0b0011,
+  ABANDON_TRANSACTION = 0b0100
+};
+
 enum AckTransactionStatus {
   UNDEFINED = 0b00,
   ACTIVE = 0b01,
@@ -123,6 +132,20 @@ enum RecordContinuationState {
   CONTAINS_START_NO_END = 0b01,
   CONTAINS_END_NO_START = 0b10,
   CONTAINS_START_AND_END = 0b11
+};
+
+struct IndicationCfg {
+  bool eofSentIndicRequired = true;
+  bool eofRecvIndicRequired = true;
+  bool fileSegmentRecvIndicRequired = true;
+  bool transactionFinishedIndicRequired = true;
+  bool suspendedIndicRequired = true;
+  bool resumedIndicRequired = true;
+};
+
+struct LocalEntityCfg {
+  EntityId localId;
+  IndicationCfg indicCfg;
 };
 
 }  // namespace cfdp
