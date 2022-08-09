@@ -132,7 +132,7 @@ You can use the following commands inside the `fsfw` folder to set up the build 
 
 ```sh
 mkdir build-tests && cd build-tests
-cmake -DFSFW_BUILD_UNITTESTS=ON -DFSFW_OSAL=host -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DFSFW_BUILD_TESTS=ON -DFSFW_OSAL=host -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
 You can also use `-DFSFW_OSAL=linux` on Linux systems.
