@@ -40,7 +40,7 @@ ReturnValue_t CfdpDistributor::selectDestination(MessageQueueId_t& destId) {
   }
   if (not destFound) {
     // TODO: Warning and event?
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return tmtcdistrib::NO_DESTINATION_FOUND;
   }
   // Packet was forwarded successfully, so do not delete it.
   accessorPair.second.release();

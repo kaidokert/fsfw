@@ -13,4 +13,5 @@ target_sources(
           AcceptsTmMock.cpp
           PusDistributorMock.cpp
           CcsdsCheckerMock.cpp
-          AcceptsTcMock.cpp)
+          AcceptsTcMock.cpp
+          StorageManagerMock.cpp)

@@ -37,7 +37,7 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
     CHECK(distributor.getRequestQueue() == queue.getId());
   }
 
-  SECTION("Register Listener") {
+  SECTION("Packet Forwarding") {
     CHECK(distributor.initialize() == result::OK);
     CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
     size_t serLen = 0;

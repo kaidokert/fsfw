@@ -9,12 +9,13 @@
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 namespace tmtcdistrib {
-static const uint8_t INTERFACE_ID = CLASS_ID::PACKET_CHECK;
-static constexpr ReturnValue_t INVALID_CCSDS_VERSION = MAKE_RETURN_CODE(0);
-static constexpr ReturnValue_t INVALID_APID = MAKE_RETURN_CODE(1);
-static constexpr ReturnValue_t INVALID_PACKET_TYPE = MAKE_RETURN_CODE(2);
-static constexpr ReturnValue_t INVALID_SEC_HEADER_FIELD = MAKE_RETURN_CODE(3);
-static constexpr ReturnValue_t INCORRECT_PRIMARY_HEADER = MAKE_RETURN_CODE(4);
+static const uint8_t INTERFACE_ID = CLASS_ID::TMTC_DISTRIBUTION;
+static constexpr ReturnValue_t NO_DESTINATION_FOUND = result::makeCode(INTERFACE_ID, 0);
+static constexpr ReturnValue_t INVALID_CCSDS_VERSION = MAKE_RETURN_CODE(1);
+static constexpr ReturnValue_t INVALID_APID = MAKE_RETURN_CODE(2);
+static constexpr ReturnValue_t INVALID_PACKET_TYPE = MAKE_RETURN_CODE(3);
+static constexpr ReturnValue_t INVALID_SEC_HEADER_FIELD = MAKE_RETURN_CODE(4);
+static constexpr ReturnValue_t INCORRECT_PRIMARY_HEADER = MAKE_RETURN_CODE(5);
 
 static constexpr ReturnValue_t INCOMPLETE_PACKET = MAKE_RETURN_CODE(5);
 static constexpr ReturnValue_t INVALID_PUS_VERSION = MAKE_RETURN_CODE(6);

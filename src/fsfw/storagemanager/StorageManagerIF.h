@@ -68,7 +68,12 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * 						storageId is unchanged then.
    */
   virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t* data, size_t size,
-                                bool ignoreFault = false) = 0;
+                                bool ignoreFault) = 0;
+
+  virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t* data, size_t size) {
+    return addData(storageId, data, size, false);
+  }
+
   /**
    * @brief	With deleteData, the storageManager frees the memory region
    * 			identified by packet_id.
@@ -88,8 +93,10 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * 			@li	failure code if deletion did not work
    */
   virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
-                                   store_address_t* storeId = nullptr) = 0;
-
+                                   store_address_t* storeId) = 0;
+  virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size) {
+    return deleteData(buffer, size, nullptr);
+  }
   /**
    * @brief 	Access the data by supplying a store ID.
    * @details
@@ -98,7 +105,13 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * @param storeId
    * @return Pair of return value and a ConstStorageAccessor instance
    */
-  virtual ConstAccessorPair getData(store_address_t storeId) = 0;
+  virtual ConstAccessorPair getData(store_address_t storeId) {
+    uint8_t* tempData = nullptr;
+    ConstStorageAccessor constAccessor(storeId, this);
+    ReturnValue_t status = modifyData(storeId, &tempData, &constAccessor.size_);
+    constAccessor.constDataPointer = tempData;
+    return {status, std::move(constAccessor)};
+  }
 
   /**
    * @brief 	Access the data by supplying a store ID and a helper
@@ -107,7 +120,13 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * @param constAccessor Wrapper function to access store data.
    * @return
    */
-  virtual ReturnValue_t getData(store_address_t storeId, ConstStorageAccessor& constAccessor) = 0;
+  virtual ReturnValue_t getData(store_address_t storeId, ConstStorageAccessor& accessor) {
+    uint8_t* tempData = nullptr;
+    ReturnValue_t status = modifyData(storeId, &tempData, &accessor.size_);
+    accessor.assignStore(this);
+    accessor.constDataPointer = tempData;
+    return status;
+  }
 
   /**
    * @brief	getData returns an address to data and the size of the data
@@ -128,7 +147,12 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * @param storeId
    * @return Pair of return value and StorageAccessor helper
    */
-  virtual AccessorPair modifyData(store_address_t storeId) = 0;
+  virtual AccessorPair modifyData(store_address_t storeId) {
+    StorageAccessor accessor(storeId, this);
+    ReturnValue_t status = modifyData(storeId, &accessor.dataPointer, &accessor.size_);
+    accessor.assignConstPointer();
+    return {status, std::move(accessor)};
+  }
 
   /**
    * Modify data by supplying a store ID and a StorageAccessor helper instance.
@@ -136,7 +160,12 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * @param accessor Helper class to access the modifiable data.
    * @return
    */
-  virtual ReturnValue_t modifyData(store_address_t storeId, StorageAccessor& accessor) = 0;
+  virtual ReturnValue_t modifyData(store_address_t storeId, StorageAccessor& accessor) {
+    accessor.assignStore(this);
+    ReturnValue_t status = modifyData(storeId, &accessor.dataPointer, &accessor.size_);
+    accessor.assignConstPointer();
+    return status;
+  }
 
   /**
    * Get pointer and size of modifiable data by supplying the storeId
@@ -155,13 +184,17 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * written to p_data!
    * @param storageId A pointer to the storageId to retrieve.
    * @param size		The size of the space to be reserved.
-   * @param p_data	A pointer to the element data is returned here.
+   * @param dataPtr	A pointer to the element data is returned here.
    * @return	Returns @li RETURN_OK if data was added.
    * 					@li	RETURN_FAILED if data could not be added.
    * 						storageId is unchanged then.
    */
-  virtual ReturnValue_t getFreeElement(store_address_t* storageId, size_t size, uint8_t** p_data,
-                                       bool ignoreFault = false) = 0;
+  virtual ReturnValue_t getFreeElement(store_address_t* storageId, size_t size, uint8_t** dataPtr,
+                                       bool ignoreFault) = 0;
+
+  virtual ReturnValue_t getFreeElement(store_address_t* storageId, size_t size, uint8_t** dataPtr) {
+    return getFreeElement(storageId, size, dataPtr, false);
+  }
 
   [[nodiscard]] virtual bool hasDataAtId(store_address_t storeId) const = 0;
 
