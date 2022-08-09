@@ -1,10 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "mocks/CfdpFaultHandlerMock.h"
+#include "mocks/cfdp/FaultHandlerMock.h"
 
 TEST_CASE("CFDP Fault Handler", "[cfdp]") {
   using namespace cfdp;
-  auto fhMock = CfdpFaultHandlerMock();
+  auto fhMock = FaultHandlerMock();
   cfdp::FaultHandlerCodes fhCode;
 
   SECTION("State") {

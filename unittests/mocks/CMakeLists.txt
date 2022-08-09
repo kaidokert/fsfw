@@ -14,5 +14,6 @@ target_sources(
           PusDistributorMock.cpp
           CcsdsCheckerMock.cpp
           AcceptsTcMock.cpp
-          StorageManagerMock.cpp
-          CfdpFaultHandlerMock.cpp)
+          StorageManagerMock.cpp)
+
+add_subdirectory(cfdp)
