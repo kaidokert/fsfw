@@ -27,10 +27,10 @@ class Tlv : public TlvIF {
    *  - INVALID_TLV_TYPE
    *  - SerializeIF returncode on wrong serialization parameters
    */
-  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                  Endianness streamEndianness) const override;
+  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                          Endianness streamEndianness) const override;
 
-  virtual size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   /**
    * @brief Deserialize a LV field from a raw buffer. Zero-copy implementation
@@ -41,15 +41,15 @@ class Tlv : public TlvIF {
    *  - INVALID_TLV_TYPE
    *  - SerializeIF returncode on wrong deserialization parameters
    */
-  virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
-                                    Endianness streamEndianness) override;
+  ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
+                            Endianness streamEndianness) override;
 
   void setValue(uint8_t *value, size_t len);
 
-  const uint8_t *getValue() const;
+  [[nodiscard]] const uint8_t *getValue() const;
   void setType(TlvTypes type);
-  TlvTypes getType() const override;
-  uint8_t getLengthField() const override;
+  [[nodiscard]] TlvTypes getType() const override;
+  [[nodiscard]] uint8_t getLengthField() const override;
 
  private:
   bool checkType(uint8_t rawType);

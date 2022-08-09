@@ -2,9 +2,8 @@
 
 FinishedInfo::FinishedInfo() {}
 
-FinishedInfo::FinishedInfo(cfdp::ConditionCode conditionCode,
-                           cfdp::FinishedDeliveryCode deliveryCode,
-                           cfdp::FinishedFileStatus fileStatus)
+FinishedInfo::FinishedInfo(cfdp::ConditionCode conditionCode, cfdp::FileDeliveryCode deliveryCode,
+                           cfdp::FileDeliveryStatus fileStatus)
     : conditionCode(conditionCode), deliveryCode(deliveryCode), fileStatus(fileStatus) {}
 
 size_t FinishedInfo::getSerializedSize() const {
@@ -83,13 +82,13 @@ void FinishedInfo::setConditionCode(cfdp::ConditionCode conditionCode) {
   this->conditionCode = conditionCode;
 }
 
-cfdp::FinishedDeliveryCode FinishedInfo::getDeliveryCode() const { return deliveryCode; }
+cfdp::FileDeliveryCode FinishedInfo::getDeliveryCode() const { return deliveryCode; }
 
-void FinishedInfo::setDeliveryCode(cfdp::FinishedDeliveryCode deliveryCode) {
+void FinishedInfo::setDeliveryCode(cfdp::FileDeliveryCode deliveryCode) {
   this->deliveryCode = deliveryCode;
 }
 
-cfdp::FinishedFileStatus FinishedInfo::getFileStatus() const { return fileStatus; }
+cfdp::FileDeliveryStatus FinishedInfo::getFileStatus() const { return fileStatus; }
 
 void FinishedInfo::setFilestoreResponsesArrayLen(size_t fsResponsesLen) {
   this->fsResponsesLen = fsResponsesLen;
@@ -97,6 +96,6 @@ void FinishedInfo::setFilestoreResponsesArrayLen(size_t fsResponsesLen) {
 
 size_t FinishedInfo::getFsResponsesLen() const { return fsResponsesLen; }
 
-void FinishedInfo::setFileStatus(cfdp::FinishedFileStatus fileStatus) {
+void FinishedInfo::setFileStatus(cfdp::FileDeliveryStatus fileStatus) {
   this->fileStatus = fileStatus;
 }

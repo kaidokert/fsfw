@@ -1,10 +1,46 @@
 #ifndef FSFW_CFDP_USERBASE_H
 #define FSFW_CFDP_USERBASE_H
 
+#include <optional>
+#include <utility>
+
+#include "StatusReportIF.h"
 #include "fsfw/cfdp/VarLenFields.h"
+#include "fsfw/cfdp/tlv/FilestoreResponseTlv.h"
+#include "fsfw/cfdp/tlv/MessageToUserTlv.h"
 #include "fsfw/filesystem/HasFileSystemIF.h"
 
 namespace cfdp {
+
+struct TransactionFinishedParams {
+  TransactionFinishedParams(TransactionId id, ConditionCode code, FileDeliveryStatus status,
+                            FileDeliveryCode delivCode)
+      : id(std::move(id)), condCode(code), status(status), deliveryCode(delivCode) {}
+
+  TransactionId id;
+  ConditionCode condCode;
+  FileDeliveryStatus status;
+  FileDeliveryCode deliveryCode;
+  std::pair<uint8_t, FilestoreResponseTlv**> fsResponses;
+  StatusReportIF* statusReport = nullptr;
+};
+
+struct MetadataRecvParams {
+  TransactionId id;
+  EntityId sourceId;
+  size_t fileSize;
+  const char* sourceFileName;
+  const char* destFileName;
+  std::pair<uint8_t, MessageToUserTlv**> msgsToUser;
+};
+
+struct FileSegmentRecvdParams {
+  TransactionId id;
+  size_t offset;
+  size_t length;
+  std::optional<RecordContinuationState> recContState = std::nullopt;
+  std::pair<const uint8_t*, size_t> segmentMetadata;
+};
 
 class UserBase {
  public:
@@ -30,9 +66,9 @@ class UserBase {
   virtual void eofRecvIndication(TransactionId id) = 0;
 
   // TODO: Parameters
-  virtual void transactionFinishedIndication() = 0;
-  virtual void metadataRecvdIndication() = 0;
-  virtual void fileSegmentRecvdIndication() = 0;
+  virtual void transactionFinishedIndication(TransactionFinishedParams params) = 0;
+  virtual void metadataRecvdIndication(MetadataRecvParams params) = 0;
+  virtual void fileSegmentRecvdIndication(FileSegmentRecvdParams params) = 0;
   virtual void reportIndication() = 0;
   virtual void suspendedIndication() = 0;
   virtual void resumedIndication() = 0;

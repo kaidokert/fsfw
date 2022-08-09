@@ -8,8 +8,8 @@
 class FinishedInfo {
  public:
   FinishedInfo();
-  FinishedInfo(cfdp::ConditionCode conditionCode, cfdp::FinishedDeliveryCode deliveryCode,
-               cfdp::FinishedFileStatus fileStatus);
+  FinishedInfo(cfdp::ConditionCode conditionCode, cfdp::FileDeliveryCode deliveryCode,
+               cfdp::FileDeliveryStatus fileStatus);
 
   [[nodiscard]] size_t getSerializedSize() const;
 
@@ -27,15 +27,15 @@ class FinishedInfo {
   ReturnValue_t getFaultLocation(EntityIdTlv** entityId);
   [[nodiscard]] cfdp::ConditionCode getConditionCode() const;
   void setConditionCode(cfdp::ConditionCode conditionCode);
-  [[nodiscard]] cfdp::FinishedDeliveryCode getDeliveryCode() const;
-  void setDeliveryCode(cfdp::FinishedDeliveryCode deliveryCode);
-  [[nodiscard]] cfdp::FinishedFileStatus getFileStatus() const;
-  void setFileStatus(cfdp::FinishedFileStatus fileStatus);
+  [[nodiscard]] cfdp::FileDeliveryCode getDeliveryCode() const;
+  void setDeliveryCode(cfdp::FileDeliveryCode deliveryCode);
+  [[nodiscard]] cfdp::FileDeliveryStatus getFileStatus() const;
+  void setFileStatus(cfdp::FileDeliveryStatus fileStatus);
 
  private:
   cfdp::ConditionCode conditionCode = cfdp::ConditionCode::NO_CONDITION_FIELD;
-  cfdp::FinishedDeliveryCode deliveryCode = cfdp::FinishedDeliveryCode::DATA_COMPLETE;
-  cfdp::FinishedFileStatus fileStatus = cfdp::FinishedFileStatus::DISCARDED_DELIBERATELY;
+  cfdp::FileDeliveryCode deliveryCode = cfdp::FileDeliveryCode::DATA_COMPLETE;
+  cfdp::FileDeliveryStatus fileStatus = cfdp::FileDeliveryStatus::DISCARDED_DELIBERATELY;
   FilestoreResponseTlv** fsResponses = nullptr;
   size_t fsResponsesLen = 0;
   size_t fsResponsesMaxLen = 0;

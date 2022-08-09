@@ -18,8 +18,8 @@ ReturnValue_t FinishPduDeserializer::parseData() {
   uint8_t firstByte = *buf;
   auto condCode = static_cast<cfdp::ConditionCode>((firstByte >> 4) & 0x0f);
   finishedInfo.setConditionCode(condCode);
-  finishedInfo.setDeliveryCode(static_cast<cfdp::FinishedDeliveryCode>(firstByte >> 2 & 0b1));
-  finishedInfo.setFileStatus(static_cast<cfdp::FinishedFileStatus>(firstByte & 0b11));
+  finishedInfo.setDeliveryCode(static_cast<cfdp::FileDeliveryCode>(firstByte >> 2 & 0b1));
+  finishedInfo.setFileStatus(static_cast<cfdp::FileDeliveryStatus>(firstByte & 0b11));
   buf += 1;
   remSize -= 1;
   currentIdx += 1;

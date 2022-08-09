@@ -109,9 +109,9 @@ enum AckTransactionStatus {
   UNRECOGNIZED = 0b11
 };
 
-enum FinishedDeliveryCode { DATA_COMPLETE = 0, DATA_INCOMPLETE = 1 };
+enum FileDeliveryCode { DATA_COMPLETE = 0, DATA_INCOMPLETE = 1 };
 
-enum FinishedFileStatus {
+enum FileDeliveryStatus {
   DISCARDED_DELIBERATELY = 0,
   DISCARDED_FILESTORE_REJECTION = 1,
   RETAINED_IN_FILESTORE = 2,

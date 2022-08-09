@@ -18,8 +18,8 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
 
   cfdp::Lv emptyFsMsg;
   FinishedInfo info(cfdp::ConditionCode::INACTIVITY_DETECTED,
-                    cfdp::FinishedDeliveryCode::DATA_INCOMPLETE,
-                    cfdp::FinishedFileStatus::DISCARDED_DELIBERATELY);
+                    cfdp::FileDeliveryCode::DATA_INCOMPLETE,
+                    cfdp::FileDeliveryStatus::DISCARDED_DELIBERATELY);
 
   SECTION("Serialize") {
     FinishPduSerializer serializer(pduConf, info);
@@ -29,8 +29,8 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     REQUIRE(((fnBuffer[1] << 8) | fnBuffer[2]) == 2);
     REQUIRE(fnBuffer[10] == cfdp::FileDirectives::FINISH);
     REQUIRE(((fnBuffer[sz - 1] >> 4) & 0x0f) == cfdp::ConditionCode::INACTIVITY_DETECTED);
-    REQUIRE(((fnBuffer[sz - 1] >> 2) & 0x01) == cfdp::FinishedDeliveryCode::DATA_INCOMPLETE);
-    REQUIRE((fnBuffer[sz - 1] & 0b11) == cfdp::FinishedFileStatus::DISCARDED_DELIBERATELY);
+    REQUIRE(((fnBuffer[sz - 1] >> 2) & 0x01) == cfdp::FileDeliveryCode::DATA_INCOMPLETE);
+    REQUIRE((fnBuffer[sz - 1] & 0b11) == cfdp::FileDeliveryStatus::DISCARDED_DELIBERATELY);
     REQUIRE(sz == 12);
 
     // Add a filestore response
@@ -73,10 +73,10 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     info.setConditionCode(cfdp::ConditionCode::FILESTORE_REJECTION);
     REQUIRE(serializer.getSerializedSize() == 12 + 14 + 15 + 4);
     REQUIRE(sz == 12 + 14 + 15 + 4);
-    info.setFileStatus(cfdp::FinishedFileStatus::DISCARDED_FILESTORE_REJECTION);
-    REQUIRE(info.getFileStatus() == cfdp::FinishedFileStatus::DISCARDED_FILESTORE_REJECTION);
-    info.setDeliveryCode(cfdp::FinishedDeliveryCode::DATA_INCOMPLETE);
-    REQUIRE(info.getDeliveryCode() == cfdp::FinishedDeliveryCode::DATA_INCOMPLETE);
+    info.setFileStatus(cfdp::FileDeliveryStatus::DISCARDED_FILESTORE_REJECTION);
+    REQUIRE(info.getFileStatus() == cfdp::FileDeliveryStatus::DISCARDED_FILESTORE_REJECTION);
+    info.setDeliveryCode(cfdp::FileDeliveryCode::DATA_INCOMPLETE);
+    REQUIRE(info.getDeliveryCode() == cfdp::FileDeliveryCode::DATA_INCOMPLETE);
     for (size_t maxSz = 0; maxSz < 45; maxSz++) {
       sz = 0;
       buffer = fnBuffer.data();
@@ -93,9 +93,9 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     FinishPduDeserializer deserializer(fnBuffer.data(), fnBuffer.size(), emptyInfo);
     result = deserializer.parseData();
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(emptyInfo.getFileStatus() == cfdp::FinishedFileStatus::DISCARDED_DELIBERATELY);
+    REQUIRE(emptyInfo.getFileStatus() == cfdp::FileDeliveryStatus::DISCARDED_DELIBERATELY);
     REQUIRE(emptyInfo.getConditionCode() == cfdp::ConditionCode::INACTIVITY_DETECTED);
-    REQUIRE(emptyInfo.getDeliveryCode() == cfdp::FinishedDeliveryCode::DATA_INCOMPLETE);
+    REQUIRE(emptyInfo.getDeliveryCode() == cfdp::FileDeliveryCode::DATA_INCOMPLETE);
 
     // Add a filestore response
     sz = 0;

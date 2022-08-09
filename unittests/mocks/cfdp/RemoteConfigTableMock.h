@@ -5,11 +5,11 @@
 
 namespace cfdp {
 
-class RemoteConfigTableMock: public RemoteConfigTableIF {
+class RemoteConfigTableMock : public RemoteConfigTableIF {
  public:
   bool getRemoteCfg(EntityId remoteId, RemoteEntityCfg *cfg) override;
 };
 
-}
+}  // namespace cfdp
 
 #endif  // FSFW_TESTS_CFDP_REMOTCONFIGTABLEMOCK_H
