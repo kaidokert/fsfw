@@ -7,6 +7,27 @@
 
 namespace cfdp {
 
+/**
+ * @brief Provides a way to implement the fault handling procedures as specified
+ * in chapter 4.8 of the CFDP standard.
+ *
+ * @details
+ * It is passed into the CFDP handlers as part of the local entity configuration and provides
+ * a way to specify custom user error handlers.
+ *
+ * It does so by mapping each applicable CFDP condition code to a fault handler which
+ * is denoted by the four @cfdp::FaultHandlerCodes. This code is used to dispatch
+ * to a user-provided callback function:
+ *
+ * 1. @FaultHandlerCodes::IGNORE_ERROR -> @ignore_cb
+ * 2. @FaultHandlerCodes::NOTICE_OF_CANCELLATION` -> @notice_of_cancellation_cb
+ * 3. @FaultHandlerCodes::NOTICE_OF_SUSPENSION` -> @notice_of_suspension_cb
+ * 4. @FaultHandlerCodes::ABANDON_TRANSACTION` -> @abandon_transaction_cb
+ *
+ * For each error reported by @reportError, the appropriate fault handler callback
+ * will be called. The user provides the callbacks by providing a custom class which implements
+ * these base class and all abstract fault handler callbacks.
+ */
 class FaultHandlerBase {
  public:
   virtual ~FaultHandlerBase();
