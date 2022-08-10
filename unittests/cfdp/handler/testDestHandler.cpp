@@ -8,8 +8,6 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   EntityId localId = EntityId(UnsignedByteField<uint16_t>(2));
   auto fhMock = FaultHandlerMock();
   auto localEntityCfg = LocalEntityCfg(localId, IndicationCfg(), fhMock);
-  // auto destHandler = DestHandler();
-  cfdp::testFunc();
 
   SECTION("State") {}
 }

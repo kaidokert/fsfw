@@ -4,17 +4,18 @@
 #include "Lv.h"
 #include "TlvIF.h"
 #include "fsfw/cfdp/tlv/FilestoreTlvBase.h"
+#include "fsfw/cfdp/tlv/StringLv.h"
 #include "fsfw/cfdp/tlv/Tlv.h"
 
 class FilestoreResponseTlv : public cfdp::FilestoreTlvBase {
  public:
-  FilestoreResponseTlv(cfdp::Lv& firstFileName, cfdp::Lv* fsMsg);
+  FilestoreResponseTlv(cfdp::StringLv& firstFileName, cfdp::Lv* fsMsg);
 
   FilestoreResponseTlv(cfdp::FilestoreActionCode actionCode, uint8_t statusCode,
-                       cfdp::Lv& firstFileName, cfdp::Lv* fsMsg);
+                       cfdp::StringLv& firstFileName, cfdp::Lv* fsMsg);
 
-  uint8_t getStatusCode() const;
-  void setSecondFileName(cfdp::Lv* secondFileName);
+  [[nodiscard]] uint8_t getStatusCode() const;
+  void setSecondFileName(cfdp::StringLv* secondFileName);
   void setFilestoreMessage(cfdp::Lv* filestoreMsg);
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
@@ -31,12 +32,12 @@ class FilestoreResponseTlv : public cfdp::FilestoreTlvBase {
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override;
 
-  uint8_t getLengthField() const override;
-  cfdp::TlvTypes getType() const override;
+  [[nodiscard]] uint8_t getLengthField() const override;
+  [[nodiscard]] cfdp::TlvTypes getType() const override;
 
  private:
   uint8_t statusCode;
-  cfdp::Lv* secondFileName = nullptr;
+  cfdp::StringLv* secondFileName = nullptr;
   cfdp::Lv* filestoreMsg = nullptr;
 
   ReturnValue_t deSerializeFromValue(const uint8_t** buffer, size_t* size,

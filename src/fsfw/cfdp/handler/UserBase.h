@@ -13,8 +13,6 @@
 
 namespace cfdp {
 
-void testFunc();
-
 struct TransactionFinishedParams {
   TransactionFinishedParams(TransactionId id, ConditionCode code, FileDeliveryStatus status,
                             FileDeliveryCode delivCode)
@@ -24,18 +22,17 @@ struct TransactionFinishedParams {
   ConditionCode condCode;
   FileDeliveryStatus status;
   FileDeliveryCode deliveryCode;
-  std::pair<uint8_t, FilestoreResponseTlv**> fsResponses;
+  std::vector<FilestoreResponseTlv*> fsResponses;
   StatusReportIF* statusReport = nullptr;
 };
 
-struct MetadataRecvParams {
+struct MetadataRecvdParams {
   TransactionId id;
   EntityId sourceId;
   size_t fileSize;
   const char* sourceFileName;
   const char* destFileName;
   std::vector<MessageToUserTlv*> msgsToUser;
-  // std::pair<uint8_t, MessageToUserTlv**> msgsToUser;
 };
 
 struct FileSegmentRecvdParams {
@@ -65,17 +62,15 @@ class UserBase {
 
   virtual void transactionIndication(TransactionId id) = 0;
   virtual void eofSentIndication(TransactionId id) = 0;
-
-  virtual void abandonedIndication(TransactionId id, ConditionCode code, uint64_t progress) = 0;
-  virtual void eofRecvIndication(TransactionId id) = 0;
-
-  // TODO: Parameters
   virtual void transactionFinishedIndication(TransactionFinishedParams params) = 0;
-  virtual void metadataRecvdIndication(MetadataRecvParams params) = 0;
+  virtual void metadataRecvdIndication(MetadataRecvdParams params) = 0;
   virtual void fileSegmentRecvdIndication(FileSegmentRecvdParams params) = 0;
-  virtual void reportIndication() = 0;
-  virtual void suspendedIndication() = 0;
-  virtual void resumedIndication() = 0;
+  virtual void reportIndication(TransactionId id, StatusReportIF& report) = 0;
+  virtual void suspendedIndication(TransactionId id, ConditionCode code) = 0;
+  virtual void resumedIndication(TransactionId id, size_t progress) = 0;
+  virtual void faultIndication(TransactionId id, ConditionCode code, size_t progress) = 0;
+  virtual void abandonedIndication(TransactionId id, ConditionCode code, size_t progress) = 0;
+  virtual void eofRecvIndication(TransactionId id) = 0;
 
  private:
   HasFileSystemIF& vfs;

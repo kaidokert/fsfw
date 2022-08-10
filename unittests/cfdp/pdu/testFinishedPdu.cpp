@@ -35,7 +35,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
 
     // Add a filestore response
     std::string firstName = "hello.txt";
-    cfdp::Lv firstNameLv(reinterpret_cast<const uint8_t*>(firstName.data()), firstName.size());
+    cfdp::StringLv firstNameLv(firstName);
     FilestoreResponseTlv response(cfdp::FilestoreActionCode::DELETE_FILE,
                                   cfdp::FSR_APPEND_FILE_1_NOT_EXISTS, firstNameLv, nullptr);
     FilestoreResponseTlv* responsePtr = &response;
@@ -53,7 +53,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
 
     // Add two filestore responses and a fault location parameter
     std::string secondName = "hello2.txt";
-    cfdp::Lv secondNameLv(reinterpret_cast<const uint8_t*>(secondName.data()), secondName.size());
+    cfdp::StringLv secondNameLv(secondName);
     FilestoreResponseTlv response2(cfdp::FilestoreActionCode::DENY_FILE, cfdp::FSR_SUCCESS,
                                    secondNameLv, nullptr);
     REQUIRE(response2.getSerializedSize() == 15);
@@ -101,7 +101,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     sz = 0;
     buffer = fnBuffer.data();
     std::string firstName = "hello.txt";
-    cfdp::Lv firstNameLv(reinterpret_cast<const uint8_t*>(firstName.data()), firstName.size());
+    cfdp::StringLv firstNameLv(firstName);
     FilestoreResponseTlv response(cfdp::FilestoreActionCode::DELETE_FILE, cfdp::FSR_NOT_PERFORMED,
                                   firstNameLv, nullptr);
     FilestoreResponseTlv* responsePtr = &response;
@@ -130,7 +130,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
 
     // Add two filestore responses and a fault location parameter
     std::string secondName = "hello2.txt";
-    cfdp::Lv secondNameLv(reinterpret_cast<const uint8_t*>(secondName.data()), secondName.size());
+    cfdp::StringLv secondNameLv(secondName);
     FilestoreResponseTlv response2(cfdp::FilestoreActionCode::DENY_FILE, cfdp::FSR_SUCCESS,
                                    secondNameLv, nullptr);
     REQUIRE(response2.getSerializedSize() == 15);

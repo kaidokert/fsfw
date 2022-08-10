@@ -25,9 +25,9 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
 
   SECTION("Filestore Response TLV") {
     std::string name = "hello.txt";
-    cfdp::Lv firstName(reinterpret_cast<const uint8_t*>(name.data()), name.size());
+    cfdp::StringLv firstName(name);
     std::string name2 = "hello2.txt";
-    cfdp::Lv secondName(reinterpret_cast<const uint8_t*>(name2.data()), name2.size());
+    cfdp::StringLv secondName(name2);
     std::string msg = "12345";
     cfdp::Lv fsMsg(reinterpret_cast<const uint8_t*>(msg.data()), msg.size());
     FilestoreResponseTlv response(cfdp::FilestoreActionCode::APPEND_FILE, cfdp::FSR_SUCCESS,
@@ -42,8 +42,8 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
                                    SerializeIF::Endianness::NETWORK);
     REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(rawResponse.getType() == cfdp::TlvTypes::FILESTORE_RESPONSE);
-    cfdp::Lv emptyMsg;
-    cfdp::Lv emptySecondName;
+    cfdp::StringLv emptyMsg;
+    cfdp::StringLv emptySecondName;
     FilestoreResponseTlv emptyTlv(firstName, &emptyMsg);
     emptyTlv.setSecondFileName(&emptySecondName);
     result = emptyTlv.deSerialize(rawResponse, SerializeIF::Endianness::NETWORK);
@@ -59,9 +59,9 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
 
   SECTION("Filestore Request TLV") {
     std::string name = "hello.txt";
-    cfdp::Lv firstName(reinterpret_cast<const uint8_t*>(name.data()), name.size());
+    cfdp::StringLv firstName(name);
     std::string name2 = "hello2.txt";
-    cfdp::Lv secondName(reinterpret_cast<const uint8_t*>(name2.data()), name2.size());
+    cfdp::StringLv secondName(name2);
     FilestoreRequestTlv request(cfdp::FilestoreActionCode::APPEND_FILE, firstName);
 
     // second name not set yet

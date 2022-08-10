@@ -9,6 +9,7 @@ namespace cfdp {
 
 class StringLv : public Lv {
  public:
+  StringLv();
   explicit StringLv(const std::string& fileName);
   explicit StringLv(const char* filename, size_t len);
 };

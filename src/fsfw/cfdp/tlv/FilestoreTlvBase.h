@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "StringLv.h"
 #include "fsfw/FSFW.h"
 
 namespace cfdp {
@@ -65,8 +66,8 @@ static constexpr uint8_t FSR_DENY_DIR_NOT_ALLOWED = 0b0010;
 
 class FilestoreTlvBase : public TlvIF {
  public:
-  FilestoreTlvBase(cfdp::Lv& firstFileName) : firstFileName(firstFileName){};
-  FilestoreTlvBase(FilestoreActionCode actionCode, cfdp::Lv& firstFileName)
+  explicit FilestoreTlvBase(cfdp::StringLv& firstFileName) : firstFileName(firstFileName){};
+  FilestoreTlvBase(FilestoreActionCode actionCode, cfdp::StringLv& firstFileName)
       : actionCode(actionCode), firstFileName(firstFileName){};
 
   ReturnValue_t commonSerialize(uint8_t** buffer, size_t* size, size_t maxSize,
@@ -101,7 +102,7 @@ class FilestoreTlvBase : public TlvIF {
     if (*size < 3) {
       return SerializeIF::STREAM_TOO_SHORT;
     }
-    cfdp::TlvTypes type = static_cast<cfdp::TlvTypes>(**buffer);
+    auto type = static_cast<cfdp::TlvTypes>(**buffer);
     if (type != getType()) {
       return cfdp::INVALID_TLV_TYPE;
     }
@@ -117,7 +118,7 @@ class FilestoreTlvBase : public TlvIF {
     return HasReturnvaluesIF::RETURN_OK;
   }
 
-  bool requiresSecondFileName() const {
+  [[nodiscard]] bool requiresSecondFileName() const {
     using namespace cfdp;
     if (actionCode == FilestoreActionCode::RENAME_FILE or
         actionCode == FilestoreActionCode::APPEND_FILE or
@@ -141,9 +142,9 @@ class FilestoreTlvBase : public TlvIF {
 #endif
   }
 
-  FilestoreActionCode getActionCode() const { return actionCode; }
+  [[nodiscard]] FilestoreActionCode getActionCode() const { return actionCode; }
 
-  void setActionCode(FilestoreActionCode actionCode) { this->actionCode = actionCode; }
+  void setActionCode(FilestoreActionCode actionCode_) { this->actionCode = actionCode_; }
 
   cfdp::Lv& getFirstFileName() { return firstFileName; }
 
@@ -160,11 +161,11 @@ class FilestoreTlvBase : public TlvIF {
     return result;
   }
 
-  size_t getSerializedSize() const override { return getLengthField() + 2; }
+  [[nodiscard]] size_t getSerializedSize() const override { return getLengthField() + 2; }
 
  protected:
   FilestoreActionCode actionCode = FilestoreActionCode::INVALID;
-  cfdp::Lv& firstFileName;
+  cfdp::StringLv& firstFileName;
 };
 
 }  // namespace cfdp

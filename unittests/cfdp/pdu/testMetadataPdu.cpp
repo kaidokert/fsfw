@@ -20,8 +20,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
   PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
 
   std::string firstFileName = "hello.txt";
-  cfdp::Lv sourceFileName(reinterpret_cast<const uint8_t*>(firstFileName.data()),
-                          firstFileName.size());
+  cfdp::StringLv sourceFileName(firstFileName);
   cfdp::Lv destFileName;
   FileSize fileSize(35);
   MetadataInfo info(false, ChecksumType::MODULAR, fileSize, sourceFileName, destFileName);

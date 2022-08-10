@@ -9,9 +9,9 @@
 
 class FilestoreRequestTlv : public cfdp::FilestoreTlvBase {
  public:
-  FilestoreRequestTlv(cfdp::FilestoreActionCode actionCode, cfdp::Lv &firstFileName);
+  FilestoreRequestTlv(cfdp::FilestoreActionCode actionCode, cfdp::StringLv &firstFileName);
 
-  FilestoreRequestTlv(cfdp::Lv &firstFileName);
+  explicit FilestoreRequestTlv(cfdp::StringLv &firstFileName);
 
   void setSecondFileName(cfdp::Lv *secondFileName);
 
@@ -29,8 +29,8 @@ class FilestoreRequestTlv : public cfdp::FilestoreTlvBase {
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override;
 
-  uint8_t getLengthField() const override;
-  cfdp::TlvTypes getType() const override;
+  [[nodiscard]] uint8_t getLengthField() const override;
+  [[nodiscard]] cfdp::TlvTypes getType() const override;
 
  private:
   cfdp::Lv *secondFileName = nullptr;
