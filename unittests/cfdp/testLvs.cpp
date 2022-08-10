@@ -3,7 +3,7 @@
 
 #include "fsfw/cfdp.h"
 
-TEST_CASE("CFDP TLV", "[cfdp][lv]") {
+TEST_CASE("CFDP LV", "[cfdp][lv]") {
   using namespace cfdp;
   ReturnValue_t result;
   std::array<uint8_t, 255> rawBuf{};

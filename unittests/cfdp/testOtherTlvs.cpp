@@ -14,7 +14,7 @@
 #include "fsfw/cfdp/tlv/Tlv.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
-TEST_CASE("CFDP LV", "[cfdp][lv]") {
+TEST_CASE("CFDP Other TLVs", "[cfdp][tlv]") {
   using namespace cfdp;
   ReturnValue_t result;
   std::array<uint8_t, 255> rawBuf{};
