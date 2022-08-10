@@ -93,7 +93,7 @@ TEST_CASE("CFDP TLV", "[cfdp][lv]") {
             SerializeIF::STREAM_TOO_SHORT);
   }
 
-  SECTION("String LV") {
+  SECTION("String LV String") {
     std::string filename = "hello.txt";
     StringLv sourceFileName(filename);
     REQUIRE(sourceFileName.getSerializedSize() == 1 + filename.size());
@@ -101,5 +101,16 @@ TEST_CASE("CFDP TLV", "[cfdp][lv]") {
     REQUIRE(rawBuf[0] == filename.size());
     std::string filenameFromRaw(reinterpret_cast<const char*>(rawBuf.data() + 1), filename.size());
     REQUIRE(filenameFromRaw == filename);
+  }
+
+  SECTION("String LV Const Char") {
+    const char filename[] = "hello.txt";
+    StringLv sourceFileName(filename, sizeof(filename) - 1);
+    REQUIRE(sourceFileName.getSerializedSize() == 1 + sizeof(filename) - 1);
+    REQUIRE(sourceFileName.serializeBe(rawBuf.data(), deserSize, rawBuf.size()) == result::OK);
+    REQUIRE(rawBuf[0] == sizeof(filename) - 1);
+    rawBuf[deserSize] = '\0';
+    const char* filenameFromRaw = reinterpret_cast<const char*>(rawBuf.data() + 1);
+    REQUIRE(std::strcmp(filename, filenameFromRaw) == 0);
   }
 }
