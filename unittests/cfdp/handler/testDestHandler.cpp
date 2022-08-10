@@ -3,6 +3,7 @@
 #include "fsfw/cfdp.h"
 #include "mocks/cfdp/FaultHandlerMock.h"
 #include "mocks/cfdp/UserMock.h"
+
 TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   using namespace cfdp;
   EntityId localId = EntityId(UnsignedByteField<uint16_t>(2));

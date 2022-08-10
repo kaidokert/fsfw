@@ -1,11 +1,33 @@
 #ifndef FSFW_MOCKS_FILESYSTEMMOCK_H
 #define FSFW_MOCKS_FILESYSTEMMOCK_H
 
+#include <queue>
+#include <string>
+#include <map>
+#include <utility>
+
 #include "fsfw/filesystem.h"
 
 class FilesystemMock : public HasFileSystemIF {
  public:
-  MessageQueueId_t getCommandQueue() const override;
+  struct FileWriteInfo {
+    FileWriteInfo(std::string filename, size_t offset, const uint8_t* data, size_t len)
+      : filename(std::move(filename)), offset(offset) {
+      this->data.insert(this->data.end(), data, data + len);
+    }
+    std::string filename;
+    size_t offset;
+    std::vector<uint8_t> data;
+  };
+  using FileSegmentQueue = std::queue<FileWriteInfo>;
+
+  struct FileInfo {
+    FileSegmentQueue fileSegQueue;
+    std::vector<uint8_t> fileRaw;
+  };
+
+  std::map<std::string, FileInfo> fileMap;
+
   ReturnValue_t writeToFile(FileOpParams params, const uint8_t *data) override;
   ReturnValue_t readFromFile(FileOpParams fileOpInfo, uint8_t **buffer, size_t &readSize,
                              size_t maxSize) override;
