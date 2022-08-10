@@ -9,7 +9,7 @@ void cfdp::UserMock::abandonedIndication(cfdp::TransactionId id, cfdp::Condition
 void cfdp::UserMock::eofRecvIndication(cfdp::TransactionId id) {}
 void cfdp::UserMock::transactionFinishedIndication(TransactionFinishedParams finishedParams) {}
 void cfdp::UserMock::metadataRecvdIndication(MetadataRecvParams params) {}
-void cfdp::UserMock::fileSegmentRecvdIndication() {}
+void cfdp::UserMock::fileSegmentRecvdIndication(FileSegmentRecvdParams params) {}
 void cfdp::UserMock::reportIndication() {}
 void cfdp::UserMock::suspendedIndication() {}
 void cfdp::UserMock::resumedIndication() {}

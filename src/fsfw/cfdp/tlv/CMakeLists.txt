@@ -5,6 +5,7 @@ target_sources(
           FilestoreResponseTlv.cpp
           Lv.cpp
           Tlv.cpp
+          StringLv.cpp
           FlowLabelTlv.cpp
           MessageToUserTlv.cpp
           FaultHandlerOverrideTlv.cpp)

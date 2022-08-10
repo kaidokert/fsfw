@@ -1,5 +1,7 @@
-#ifndef FSFW_SRC_FSFW_CFDP_LV_H_
-#define FSFW_SRC_FSFW_CFDP_LV_H_
+#ifndef FSFW_CFDP_LV_H_
+#define FSFW_CFDP_LV_H_
+
+#include <vector>
 
 #include "fsfw/serialize/SerialBufferAdapter.h"
 
@@ -12,12 +14,10 @@ namespace cfdp {
  */
 class Lv : public SerializeIF {
  public:
+  explicit Lv(const std::vector<uint8_t>& data);
   Lv(const uint8_t* value, size_t size);
-  Lv(const char* value, size_t size);
   Lv();
 
-  // Delete copy ctor and assingment ctor for now because this class contains a reference to
-  // data
   Lv(const Lv&);
   Lv& operator=(const Lv&);
 
@@ -51,4 +51,4 @@ class Lv : public SerializeIF {
 
 }  // namespace cfdp
 
-#endif /* FSFW_SRC_FSFW_CFDP_LV_H_ */
+#endif /* FSFW_CFDP_LV_H_ */

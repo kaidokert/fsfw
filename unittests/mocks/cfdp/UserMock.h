@@ -14,7 +14,7 @@ class UserMock : public UserBase {
   void eofRecvIndication(TransactionId id) override;
   void transactionFinishedIndication(TransactionFinishedParams params) override;
   void metadataRecvdIndication(MetadataRecvParams params) override;
-  void fileSegmentRecvdIndication() override;
+  void fileSegmentRecvdIndication(FileSegmentRecvdParams params) override;
   void reportIndication() override;
   void suspendedIndication() override;
   void resumedIndication() override;

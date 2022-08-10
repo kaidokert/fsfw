@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "StatusReportIF.h"
 #include "fsfw/cfdp/VarLenFields.h"
@@ -11,6 +12,8 @@
 #include "fsfw/filesystem/HasFileSystemIF.h"
 
 namespace cfdp {
+
+void testFunc();
 
 struct TransactionFinishedParams {
   TransactionFinishedParams(TransactionId id, ConditionCode code, FileDeliveryStatus status,
@@ -31,7 +34,8 @@ struct MetadataRecvParams {
   size_t fileSize;
   const char* sourceFileName;
   const char* destFileName;
-  std::pair<uint8_t, MessageToUserTlv**> msgsToUser;
+  std::vector<MessageToUserTlv*> msgsToUser;
+  // std::pair<uint8_t, MessageToUserTlv**> msgsToUser;
 };
 
 struct FileSegmentRecvdParams {

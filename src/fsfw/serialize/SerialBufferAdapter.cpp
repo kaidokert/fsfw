@@ -21,15 +21,15 @@ SerialBufferAdapter<count_t>::SerialBufferAdapter(uint8_t* buffer, count_t buffe
       bufferLength(bufferLength) {}
 
 template <typename count_t>
-SerialBufferAdapter<count_t>::~SerialBufferAdapter() {}
+SerialBufferAdapter<count_t>::~SerialBufferAdapter() = default;
 
 template <typename count_t>
-ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, size_t* size,
+ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer_, size_t* size,
                                                       size_t maxSize,
                                                       Endianness streamEndianness) const {
   if (serializeLength) {
     ReturnValue_t result =
-        SerializeAdapter::serialize(&bufferLength, buffer, size, maxSize, streamEndianness);
+        SerializeAdapter::serialize(&bufferLength, buffer_, size, maxSize, streamEndianness);
     if (result != HasReturnvaluesIF::RETURN_OK) {
       return result;
     }
@@ -40,16 +40,16 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, size_t* 
   }
 
   if (this->constBuffer != nullptr) {
-    std::memcpy(*buffer, this->constBuffer, bufferLength);
+    std::memcpy(*buffer_, this->constBuffer, bufferLength);
   } else if (this->buffer != nullptr) {
     // This will propably be never reached, constBuffer should always be
     // set if non-const buffer is set.
-    std::memcpy(*buffer, this->buffer, bufferLength);
+    std::memcpy(*buffer_, this->buffer, bufferLength);
   } else {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
   *size += bufferLength;
-  (*buffer) += bufferLength;
+  (*buffer_) += bufferLength;
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -63,7 +63,7 @@ size_t SerialBufferAdapter<count_t>::getSerializedSize() const {
 }
 
 template <typename count_t>
-ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer, size_t* size,
+ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer_, size_t* size,
                                                         Endianness streamEndianness) {
   if (this->buffer == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
@@ -72,7 +72,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer, 
   if (serializeLength) {
     count_t lengthField = 0;
     ReturnValue_t result =
-        SerializeAdapter::deSerialize(&lengthField, buffer, size, streamEndianness);
+        SerializeAdapter::deSerialize(&lengthField, buffer_, size, streamEndianness);
     if (result != HasReturnvaluesIF::RETURN_OK) {
       return result;
     }
@@ -84,8 +84,8 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer, 
 
   if (bufferLength <= *size) {
     *size -= bufferLength;
-    std::memcpy(this->buffer, *buffer, bufferLength);
-    (*buffer) += bufferLength;
+    std::memcpy(this->buffer, *buffer_, bufferLength);
+    (*buffer_) += bufferLength;
     return HasReturnvaluesIF::RETURN_OK;
   } else {
     return STREAM_TOO_SHORT;
@@ -119,10 +119,9 @@ const uint8_t* SerialBufferAdapter<count_t>::getConstBuffer() const {
 }
 
 template <typename count_t>
-void SerialBufferAdapter<count_t>::setBuffer(uint8_t* buffer, count_t bufferLength) {
-  this->buffer = buffer;
-  this->constBuffer = buffer;
-  this->bufferLength = bufferLength;
+void SerialBufferAdapter<count_t>::setBuffer(const uint8_t* data, count_t len) {
+  this->constBuffer = data;
+  this->bufferLength = len;
 }
 
 // forward Template declaration for linker

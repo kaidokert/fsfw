@@ -40,12 +40,12 @@ class SerialBufferAdapter : public SerializeIF {
    */
   SerialBufferAdapter(uint8_t* buffer, count_t bufferLength, bool serializeLength = false);
 
-  virtual ~SerialBufferAdapter();
+  ~SerialBufferAdapter() override;
 
-  virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
-                                  Endianness streamEndianness) const override;
+  ReturnValue_t serialize(uint8_t** buffer_, size_t* size, size_t maxSize,
+                          Endianness streamEndianness) const override;
 
-  virtual size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   /**
    * @brief This function deserializes a buffer into the member buffer.
@@ -53,18 +53,18 @@ class SerialBufferAdapter : public SerializeIF {
    * If a length field is present, it is ignored, as the size should have
    * been set in the constructor. If the size is not known beforehand,
    * consider using SerialFixedArrayListAdapter instead.
-   * @param buffer [out] Resulting buffer
+   * @param buffer_ [out] Resulting buffer
    * @param size remaining size to deserialize, should be larger than buffer
    *        + size field size
    * @param bigEndian
    * @return
    */
-  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-                                    Endianness streamEndianness) override;
+  ReturnValue_t deSerialize(const uint8_t** buffer_, size_t* size,
+                            Endianness streamEndianness) override;
 
   uint8_t* getBuffer();
-  const uint8_t* getConstBuffer() const;
-  void setBuffer(uint8_t* buffer, count_t bufferLength);
+  [[nodiscard]] const uint8_t* getConstBuffer() const;
+  void setBuffer(const uint8_t* buffer, count_t bufferLength);
 
  private:
   bool serializeLength = false;

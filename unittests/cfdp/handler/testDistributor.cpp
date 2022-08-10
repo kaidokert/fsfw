@@ -2,6 +2,7 @@
 
 #include "fsfw/cfdp/CfdpDistributor.h"
 #include "fsfw/cfdp/pdu/MetadataPduCreator.h"
+#include "fsfw/cfdp/tlv/StringLv.h"
 #include "fsfw/storagemanager/LocalPool.h"
 #include "fsfw/tcdistribution/definitions.h"
 #include "mocks/AcceptsTcMock.h"
@@ -26,9 +27,9 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   cfdp::TransactionSeqNum seqNum(UnsignedByteField<uint16_t>(12));
   auto pduConf = PduConfig(sourceId, destId, cfdp::TransmissionModes::UNACKNOWLEDGED, seqNum);
   std::string sourceFileString = "hello.txt";
-  cfdp::Lv sourceFileName(sourceFileString.c_str(), sourceFileString.size());
+  cfdp::StringLv sourceFileName(sourceFileString);
   std::string destFileString = "hello2.txt";
-  cfdp::Lv destFileName(destFileString.c_str(), sourceFileString.size());
+  cfdp::StringLv destFileName(destFileString);
   MetadataInfo metadataInfo(false, cfdp::ChecksumType::CRC_32, fileSize, sourceFileName,
                             destFileName);
   MetadataPduCreator creator(pduConf, metadataInfo);
