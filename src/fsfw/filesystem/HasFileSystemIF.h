@@ -4,9 +4,24 @@
 #include <cstddef>
 
 #include "FileSystemArgsIF.h"
+#include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/messageQueueDefinitions.h"
 #include "fsfw/returnvalues/FwClassIds.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
+
+struct FilesystemParams {
+  explicit FilesystemParams(const char* path) : path(path) {}
+
+  const char* path;
+  FileSystemArgsIF* args = nullptr;
+};
+
+struct FileOpParams : public FilesystemParams {
+  FileOpParams(const char* path, size_t size) : FilesystemParams(path), size(size) {}
+
+  size_t size;
+  size_t offset = 0;
+};
 
 /**
  * @brief	Generic interface for objects which expose a file system to enable
@@ -37,30 +52,47 @@ class HasFileSystemIF {
   //! [EXPORT] : P1: Sequence number missing
   static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(16);
 
-  virtual ~HasFileSystemIF() {}
+  virtual ~HasFileSystemIF() = default;
 
   /**
    * Function to get the MessageQueueId_t of the implementing object
    * @return MessageQueueId_t of the object
    */
-  virtual MessageQueueId_t getCommandQueue() const = 0;
+  [[nodiscard]] virtual MessageQueueId_t getCommandQueue() const {
+    return MessageQueueIF::NO_QUEUE;
+  }
 
   /**
    * @brief   Generic function to append to file.
-   * @param dirname Directory of the file
-   * @param filename The filename of the file
+   * @param fileOpInfo General information: File name, size to write, offset, additional arguments
    * @param data The data to write to the file
-   * @param size The size of the data to write
-   * @param packetNumber Current packet number. Can be used to verify that
-   * there are no missing packets.
-   * @param args Any other arguments which an implementation might require.
-   * @param bytesWritten Actual bytes written to file
-   * For large files the write procedure must be split in multiple calls
-   * to writeToFile
    */
-  virtual ReturnValue_t appendToFile(const char* repositoryPath, const char* filename,
-                                     const uint8_t* data, size_t size, uint16_t packetNumber,
-                                     FileSystemArgsIF* args = nullptr) = 0;
+  virtual ReturnValue_t writeToFile(FileOpParams params, const uint8_t* data) = 0;
+
+  /**
+   * @brief Generic function to read from a file. This variant takes a pointer to a buffer and
+   * performs pointer arithmetic by incrementing the pointer by the read size
+   * @param fileOpInfo General information: File name, size to write, offset, additional arguments
+   * @param buffer [in/out] Data will be read into the provided buffer, and the pointer will be
+   *    incremented by the read length
+   * @param readSize [out] Will be incremented by the read length
+   * @param maxSize Maximum size of the provided buffer
+   * @param args
+   * @return
+   */
+  virtual ReturnValue_t readFromFile(FileOpParams fileOpInfo, uint8_t** buffer, size_t& readSize,
+                                     size_t maxSize) = 0;
+  /**
+   * Variant of the @readFromFile which does not perform pointer arithmetic.
+   * @param fileOpInfo General information: File name, size to write, offset, additional arguments
+   * @param buf
+   * @param maxSize
+   * @return
+   */
+  virtual ReturnValue_t readFromFile(FileOpParams fileOpInfo, uint8_t* buf, size_t maxSize) {
+    size_t dummy = 0;
+    return readFromFile(fileOpInfo, &buf, dummy, maxSize);
+  }
 
   /**
    * @brief   Generic function to create a new file.
@@ -71,9 +103,10 @@ class HasFileSystemIF {
    * @param args Any other arguments which an implementation might require
    * @return
    */
-  virtual ReturnValue_t createFile(const char* repositoryPath, const char* filename,
-                                   const uint8_t* data = nullptr, size_t size = 0,
-                                   FileSystemArgsIF* args = nullptr) = 0;
+  virtual ReturnValue_t createFile(FilesystemParams params) {
+    return createFile(params, nullptr, 0);
+  }
+  virtual ReturnValue_t createFile(FilesystemParams params, const uint8_t* data, size_t size) = 0;
 
   /**
    * @brief   Generic function to delete a file.
@@ -82,8 +115,8 @@ class HasFileSystemIF {
    * @param args Any other arguments which an implementation might require
    * @return
    */
-  virtual ReturnValue_t removeFile(const char* repositoryPath, const char* filename,
-                                   FileSystemArgsIF* args = nullptr) = 0;
+  virtual ReturnValue_t removeFile(const char* path, FileSystemArgsIF* args) = 0;
+  virtual ReturnValue_t removeFile(const char* path) { return removeFile(path, nullptr); }
 
   /**
    * @brief   Generic function to create a directory
@@ -93,21 +126,22 @@ class HasFileSystemIF {
    * @param args Any other arguments which an implementation might require
    * @return
    */
-  virtual ReturnValue_t createDirectory(const char* repositoryPath, const char* dirname,
-                                        bool createParentDirs,
-                                        FileSystemArgsIF* args = nullptr) = 0;
+  virtual ReturnValue_t createDirectory(FilesystemParams params, bool createParentDirs) = 0;
 
   /**
    * @brief   Generic function to remove a directory
    * @param repositoryPath
    * @param args Any other arguments which an implementation might require
    */
-  virtual ReturnValue_t removeDirectory(const char* repositoryPath, const char* dirname,
-                                        bool deleteRecurively = false,
-                                        FileSystemArgsIF* args = nullptr) = 0;
+  virtual ReturnValue_t removeDirectory(FilesystemParams params, bool deleteRecurively) = 0;
+  virtual ReturnValue_t removeDirectory(FilesystemParams params) {
+    return removeDirectory(params, false);
+  }
 
-  virtual ReturnValue_t renameFile(const char* repositoryPath, const char* oldFilename,
-                                   const char* newFilename, FileSystemArgsIF* args = nullptr) = 0;
+  virtual ReturnValue_t renameFile(const char* oldPath, char* newPath) {
+    return renameFile(oldPath, newPath, nullptr);
+  }
+  virtual ReturnValue_t renameFile(const char* oldPath, char* newPath, FileSystemArgsIF* args) = 0;
 };
 
 #endif /* FSFW_MEMORY_HASFILESYSTEMIF_H_ */
