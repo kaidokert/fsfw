@@ -15,7 +15,7 @@
 
 static const char TEST_FILE_NAME[] = "/tmp/fsfw-unittest-test.txt";
 
-TEST_CASE("Command Executor", "[cmd-exec]") {
+TEST_CASE("Command Executor", "[hal][linux]") {
   // Check blocking mode first
   CommandExecutor cmdExecutor(1024);
   std::string cmd = "echo \"test\" >> " + std::string(TEST_FILE_NAME);

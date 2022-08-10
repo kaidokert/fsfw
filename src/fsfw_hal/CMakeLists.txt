@@ -1,5 +1,6 @@
 add_subdirectory(devicehandlers)
 add_subdirectory(common)
+add_subdirectory(host)
 
 if(UNIX)
   add_subdirectory(linux)
