@@ -5,7 +5,7 @@
 
 TEST_CASE("CFDP LV", "[cfdp][lv]") {
   using namespace cfdp;
-  ReturnValue_t result;
+  ReturnValue_t result = result::OK;
   std::array<uint8_t, 255> rawBuf{};
   uint8_t* serPtr = rawBuf.data();
   const uint8_t* deserPtr = rawBuf.data();
@@ -17,7 +17,6 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
     serPtr = lvRawBuf.data();
     REQUIRE(sourceId.serialize(&serPtr, &deserSize, lvRawBuf.size(),
                                SerializeIF::Endianness::NETWORK) == result::OK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(deserSize == 2);
 
     auto lv = cfdp::Lv(lvRawBuf.data(), 2);
