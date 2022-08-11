@@ -132,7 +132,8 @@ ReturnValue_t HostFilesystem::removeDirectory(FilesystemParams params, bool dele
   return HasFileSystemIF::GENERIC_DIR_ERROR;
 }
 
-ReturnValue_t HostFilesystem::rename(const char *oldPath_, char *newPath_, FileSystemArgsIF *args) {
+ReturnValue_t HostFilesystem::rename(const char *oldPath_, const char *newPath_,
+                                     FileSystemArgsIF *args) {
   if (oldPath_ == nullptr or newPath_ == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }

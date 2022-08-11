@@ -64,7 +64,8 @@ ReturnValue_t FilesystemMock::removeDirectory(FilesystemParams params, bool dele
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t FilesystemMock::rename(const char *oldPath, char *newPath, FileSystemArgsIF *args) {
+ReturnValue_t FilesystemMock::rename(const char *oldPath, const char *newPath,
+                                     FileSystemArgsIF *args) {
   renameQueue.push(RenameInfo(oldPath, newPath));
   return HasReturnvaluesIF::RETURN_OK;
 }

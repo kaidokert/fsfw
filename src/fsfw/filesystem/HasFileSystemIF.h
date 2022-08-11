@@ -132,6 +132,9 @@ class HasFileSystemIF {
    * @return
    */
   virtual ReturnValue_t createDirectory(FilesystemParams params, bool createParentDirs) = 0;
+  virtual ReturnValue_t createDirectory(FilesystemParams params) {
+    return createDirectory(params, false);
+  }
 
   /**
    * @brief   Generic function to remove a directory
@@ -143,10 +146,11 @@ class HasFileSystemIF {
     return removeDirectory(params, false);
   }
 
-  virtual ReturnValue_t renameFile(const char* oldPath, char* newPath) {
+  virtual ReturnValue_t rename(const char* oldPath, const char* newPath) {
     return rename(oldPath, newPath, nullptr);
   }
-  virtual ReturnValue_t rename(const char* oldPath, char* newPath, FileSystemArgsIF* args) = 0;
+  virtual ReturnValue_t rename(const char* oldPath, const char* newPath,
+                               FileSystemArgsIF* args) = 0;
 };
 
 #endif /* FSFW_MEMORY_HASFILESYSTEMIF_H_ */
