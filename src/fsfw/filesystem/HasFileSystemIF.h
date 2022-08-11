@@ -16,9 +16,18 @@ struct FilesystemParams {
   FileSystemArgsIF* args = nullptr;
 };
 
-struct FileOpParams : public FilesystemParams {
-  FileOpParams(const char* path, size_t size) : FilesystemParams(path), size(size) {}
+struct FileOpParams {
+  FileOpParams(const char* path, size_t size) : fsParams(path), size(size) {}
 
+  [[nodiscard]] const char* path() const {
+    return fsParams.path;
+  }
+
+  [[nodiscard]] FileSystemArgsIF* args() const {
+    return fsParams.args;
+  }
+
+  FilesystemParams fsParams;
   size_t size;
   size_t offset = 0;
 };

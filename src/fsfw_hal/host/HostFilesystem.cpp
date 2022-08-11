@@ -11,10 +11,10 @@ using namespace std;
 HostFilesystem::HostFilesystem() = default;
 
 ReturnValue_t HostFilesystem::writeToFile(FileOpParams params, const uint8_t *data) {
-  if (params.path == nullptr) {
+  if (params.path() == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
-  path path(params.path);
+  path path(params.path());
   if (not exists(path)) {
     return HasFileSystemIF::FILE_DOES_NOT_EXIST;
   }
@@ -29,10 +29,10 @@ ReturnValue_t HostFilesystem::writeToFile(FileOpParams params, const uint8_t *da
 
 ReturnValue_t HostFilesystem::readFromFile(FileOpParams params, uint8_t **buffer, size_t &readSize,
                                            size_t maxSize) {
-  if (params.path == nullptr) {
+  if (params.path() == nullptr) {
     return HasReturnvaluesIF::RETURN_FAILED;
   }
-  path path(params.path);
+  path path(params.path());
   if (not exists(path)) {
     return HasFileSystemIF::FILE_DOES_NOT_EXIST;
   }

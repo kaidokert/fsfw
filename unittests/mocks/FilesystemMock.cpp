@@ -9,7 +9,7 @@ ReturnValue_t FilesystemMock::writeToFile(FileOpParams params, const uint8_t *da
 
 ReturnValue_t FilesystemMock::readFromFile(FileOpParams params, uint8_t **buffer, size_t &readSize,
                                            size_t maxSize) {
-  std::string filename(params.path);
+  std::string filename(params.path());
   auto iter = fileMap.find(filename);
   if (iter == fileMap.end()) {
     return HasFileSystemIF::FILE_DOES_NOT_EXIST;
@@ -71,7 +71,7 @@ ReturnValue_t FilesystemMock::rename(const char *oldPath, const char *newPath,
 }
 
 void FilesystemMock::createOrAddToFile(FileOpParams params, const uint8_t *data) {
-  std::string filename(params.path);
+  std::string filename(params.path());
   auto iter = fileMap.find(filename);
   if (iter == fileMap.end()) {
     FileSegmentQueue queue;
