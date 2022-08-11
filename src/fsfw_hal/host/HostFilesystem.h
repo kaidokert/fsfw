@@ -18,7 +18,8 @@ class HostFilesystem : public HasFileSystemIF {
   ReturnValue_t rename(const char *oldPath, char *newPath, FileSystemArgsIF *args) override;
 
   std::error_code errorCode;
-
+  using HasFileSystemIF::createFile;
+  using HasFileSystemIF::removeFile;
  private:
 };
 #endif  // FSFW_HAL_HOSTFILESYSTEM_H
