@@ -15,7 +15,7 @@ class HostFilesystem : public HasFileSystemIF {
   ReturnValue_t removeFile(const char *path, FileSystemArgsIF *args) override;
   ReturnValue_t createDirectory(FilesystemParams params, bool createParentDirs) override;
   ReturnValue_t removeDirectory(FilesystemParams params, bool deleteRecurively) override;
-  ReturnValue_t renameFile(const char *oldPath, char *newPath, FileSystemArgsIF *args) override;
+  ReturnValue_t rename(const char *oldPath, char *newPath, FileSystemArgsIF *args) override;
 
   std::error_code errorCode;
 
