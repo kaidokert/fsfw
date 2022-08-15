@@ -139,7 +139,7 @@ ReturnValue_t TestDevice::buildCommandFromCommand(DeviceCommandId_t deviceComman
                                                   const uint8_t* commandData,
                                                   size_t commandDataLen) {
   using namespace testdevice;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   switch (deviceCommand) {
     case (TEST_NORMAL_MODE_CMD): {
       commandSent = true;
@@ -222,7 +222,7 @@ ReturnValue_t TestDevice::buildNormalModeCommand(DeviceCommandId_t deviceCommand
   }
   /* The command is passed on in the command buffer as it is */
   passOnCommand(deviceCommand, commandData, commandDataLen);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestDevice::buildTestCommand0(DeviceCommandId_t deviceCommand,
@@ -248,7 +248,7 @@ ReturnValue_t TestDevice::buildTestCommand0(DeviceCommandId_t deviceCommand,
 
   /* The command is passed on in the command buffer as it is */
   passOnCommand(deviceCommand, commandData, commandDataLen);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestDevice::buildTestCommand1(DeviceCommandId_t deviceCommand,
@@ -277,7 +277,7 @@ ReturnValue_t TestDevice::buildTestCommand1(DeviceCommandId_t deviceCommand,
   size_t size = commandDataLen;
   ReturnValue_t result =
       SerializeAdapter::deSerialize(&parameter1, &commandData, &size, SerializeIF::Endianness::BIG);
-  if (result == HasReturnvaluesIF::RETURN_FAILED) {
+  if (result == returnvalue::FAILED) {
     return result;
   }
 
@@ -299,7 +299,7 @@ ReturnValue_t TestDevice::buildTestCommand1(DeviceCommandId_t deviceCommand,
   memcpy(commandBuffer + 6, &parameter2, sizeof(parameter2));
   rawPacket = commandBuffer;
   rawPacketLen = sizeof(deviceCommand) + sizeof(parameter1) + sizeof(parameter2);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TestDevice::passOnCommand(DeviceCommandId_t command, const uint8_t* commandData,
@@ -342,7 +342,7 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
   size_t size = len;
   ReturnValue_t result =
       SerializeAdapter::deSerialize(foundId, &start, &size, SerializeIF::Endianness::BIG);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -366,7 +366,7 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
 
       *foundLen = len;
       *foundId = pendingCmd;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
 
     case (TEST_COMMAND_0): {
@@ -389,7 +389,7 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
 
       *foundLen = TEST_COMMAND_0_SIZE;
       *foundId = pendingCmd;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
 
     case (TEST_COMMAND_1): {
@@ -409,7 +409,7 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
 
       *foundLen = len;
       *foundId = pendingCmd;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
 
     default:
@@ -418,7 +418,7 @@ ReturnValue_t TestDevice::scanForReply(const uint8_t* start, size_t len, DeviceC
 }
 
 ReturnValue_t TestDevice::interpretDeviceReply(DeviceCommandId_t id, const uint8_t* packet) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   switch (id) {
     /* Periodic replies */
     case testdevice::TEST_NORMAL_MODE_CMD: {
@@ -460,7 +460,7 @@ ReturnValue_t TestDevice::interpretingNormalModeReply() {
       dataset.testFloat3Vec.value[2] = 0.0;
       dataset.setValidity(false, true);
     }
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 
   PoolReadGuard readHelper(&dataset);
@@ -570,7 +570,7 @@ ReturnValue_t TestDevice::interpretingNormalModeReply() {
     }
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestDevice::interpretingTestReply0(DeviceCommandId_t id, const uint8_t* packet) {
@@ -589,7 +589,7 @@ ReturnValue_t TestDevice::interpretingTestReply0(DeviceCommandId_t id, const uin
   actionHelper.step(1, commander, id);
   actionHelper.finish(true, commander, id);
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestDevice::interpretingTestReply1(DeviceCommandId_t id, const uint8_t* packet) {
@@ -608,7 +608,7 @@ ReturnValue_t TestDevice::interpretingTestReply1(DeviceCommandId_t id, const uin
   ReturnValue_t result =
       actionHelper.reportData(commander, id, packet, testdevice::TEST_COMMAND_1_SIZE, false);
 
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "TestDevice" << deviceIdx
                << "::interpretingReply1: Sending data "
@@ -620,7 +620,7 @@ ReturnValue_t TestDevice::interpretingTestReply1(DeviceCommandId_t id, const uin
     return result;
   }
 
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     /* Finish reply */
     actionHelper.finish(true, commander, id);
   } else {
@@ -628,7 +628,7 @@ ReturnValue_t TestDevice::interpretingTestReply1(DeviceCommandId_t id, const uin
     actionHelper.finish(false, commander, id, result);
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint32_t TestDevice::getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo) { return 5000; }
@@ -645,8 +645,13 @@ ReturnValue_t TestDevice::initializeLocalDataPool(localpool::DataPool& localData
   sid_t sid(this->getObjectId(), td::TEST_SET_ID);
   /* Subscribe for periodic HK packets but do not enable reporting for now.
   Non-diangostic with a period of one second */
+<<<<<<< HEAD
   poolManager.subscribeForRegularPeriodicPacket(subdp::RegularHkPeriodicParams(sid, false, 1.0));
   return HasReturnvaluesIF::RETURN_OK;
+=======
+  poolManager.subscribeForPeriodicPacket(sid, false, 1.0, false);
+  return returnvalue::OK;
+>>>>>>> mueller/expand-retval-if
 }
 
 ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
@@ -658,7 +663,7 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
       if (fullInfoPrintout) {
         uint32_t newValue = 0;
         ReturnValue_t result = newValues->getElement<uint32_t>(&newValue, 0, 0);
-        if (result == HasReturnvaluesIF::RETURN_OK) {
+        if (result == returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
           sif::info << "TestDevice" << deviceIdx
                     << "::getParameter: Setting parameter 0 to "
@@ -677,7 +682,7 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
       if (fullInfoPrintout) {
         int32_t newValue = 0;
         ReturnValue_t result = newValues->getElement<int32_t>(&newValue, 0, 0);
-        if (result == HasReturnvaluesIF::RETURN_OK) {
+        if (result == returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
           sif::info << "TestDevice" << deviceIdx
                     << "::getParameter: Setting parameter 1 to "
@@ -695,10 +700,10 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
     case ParameterUniqueIds::TEST_FLOAT_VEC3_2: {
       if (fullInfoPrintout) {
         float newVector[3];
-        if (newValues->getElement<float>(newVector, 0, 0) != RETURN_OK or
-            newValues->getElement<float>(newVector + 1, 0, 1) != RETURN_OK or
-            newValues->getElement<float>(newVector + 2, 0, 2) != RETURN_OK) {
-          return HasReturnvaluesIF::RETURN_FAILED;
+        if (newValues->getElement<float>(newVector, 0, 0) != returnvalue::OK or
+            newValues->getElement<float>(newVector + 1, 0, 1) != returnvalue::OK or
+            newValues->getElement<float>(newVector + 2, 0, 2) != returnvalue::OK) {
+          return returnvalue::FAILED;
         }
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::info << "TestDevice" << deviceIdx
@@ -720,7 +725,7 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
       if (fullInfoPrintout) {
         uint8_t enabled = 0;
         ReturnValue_t result = newValues->getElement<uint8_t>(&enabled, 0, 0);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
+        if (result != returnvalue::OK) {
           return result;
         }
         char const* printout = nullptr;
@@ -743,7 +748,7 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
     case (ParameterUniqueIds::CHANGING_DATASETS): {
       uint8_t enabled = 0;
       ReturnValue_t result = newValues->getElement<uint8_t>(&enabled, 0, 0);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       if (not enabled) {
@@ -776,7 +781,7 @@ ReturnValue_t TestDevice::getParameter(uint8_t domainId, uint8_t uniqueId,
     default:
       return INVALID_IDENTIFIER_ID;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 LocalPoolObjectBase* TestDevice::getPoolObjectHandle(lp_id_t localPoolId) {

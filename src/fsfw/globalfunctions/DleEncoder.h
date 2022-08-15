@@ -30,7 +30,7 @@
  * are escaped with DLE. If the receiver detects a DLE char, it needs to read the next char
  * to determine whether a start (STX) or end (ETX) of a frame has been detected.
  */
-class DleEncoder : public HasReturnvaluesIF {
+class DleEncoder {
  public:
   /**
    * Create an encoder instance with the given configuration.

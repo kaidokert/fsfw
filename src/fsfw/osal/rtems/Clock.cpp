@@ -23,13 +23,13 @@ ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
   rtems_status_code status = rtems_clock_set(&timeRtems);
   switch (status) {
     case RTEMS_SUCCESSFUL:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case RTEMS_INVALID_ADDRESS:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_CLOCK:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -38,7 +38,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
   newTime.tv_sec = time->tv_sec;
   if (time->tv_usec < 0) {
     // better returnvalue.
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   newTime.tv_nsec = time->tv_usec * TOD_NANOSECONDS_PER_MICROSECOND;
 
@@ -48,10 +48,10 @@ ReturnValue_t Clock::setClock(const timeval* time) {
   Status_Control status = _TOD_Set(&newTime, &context);
   _TOD_Unlock();
   if (status == STATUS_SUCCESSFUL) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   // better returnvalue
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
@@ -59,11 +59,11 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
   rtems_status_code status = rtems_clock_get_tod_timeval(time);
   switch (status) {
     case RTEMS_SUCCESSFUL:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case RTEMS_NOT_DEFINED:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -77,16 +77,16 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
   uptime->tv_usec = time.tv_nsec;
   switch (status) {
     case RTEMS_SUCCESSFUL:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
   // This counter overflows after 50 days
   *uptimeMs = rtems_clock_get_ticks_since_boot();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
@@ -95,9 +95,9 @@ ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
   *time = ((uint64_t)temp_time.tv_sec * 1000000) + temp_time.tv_usec;
   switch (returnValue) {
     case RTEMS_SUCCESSFUL:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -118,16 +118,16 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
       time->usecond =
           static_cast<float>(timeRtems.ticks) / rtems_clock_get_ticks_per_second() * 1e6;
       time->year = timeRtems.year;
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case RTEMS_NOT_DEFINED:
       /* System date and time is not set */
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_ADDRESS:
       /* time_buffer is NULL */
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -143,10 +143,10 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval*
   timeRtems.ticks = from->usecond * getTicksPerSecond() / 1e6;
   to->tv_sec = _TOD_To_seconds(&timeRtems);
   to->tv_usec = from->usecond;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
   *JD2000 = (time.tv_sec - 946728000. + time.tv_usec / 1000000.) / 24. / 3600.;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

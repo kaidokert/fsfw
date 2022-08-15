@@ -361,7 +361,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
   ReturnValue_t addUpdateToStore(HousekeepingSnapshot& updatePacket, store_address_t& storeId);
 
   void printWarningOrError(sif::OutputTypes outputType, const char* functionName,
-                           ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
+                           ReturnValue_t errorCode = returnvalue::FAILED,
                            const char* errorPrint = nullptr);
 };
 
@@ -369,7 +369,7 @@ template <class T>
 inline ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
                                                           PoolEntry<T>** poolEntry) {
   if (poolEntry == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   auto poolIter = localPoolMap.find(localPoolId);
@@ -385,7 +385,7 @@ inline ReturnValue_t LocalDataPoolManager::fetchPoolEntry(lp_id_t localPoolId,
                         localpool::POOL_ENTRY_TYPE_CONFLICT);
     return localpool::POOL_ENTRY_TYPE_CONFLICT;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 #endif /* FSFW_DATAPOOLLOCAL_LOCALDATAPOOLMANAGER_H_ */

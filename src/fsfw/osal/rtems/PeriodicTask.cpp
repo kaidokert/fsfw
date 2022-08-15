@@ -37,13 +37,13 @@ ReturnValue_t PeriodicTask::startTask() {
   switch (status) {
     case RTEMS_SUCCESSFUL:
       /* Task started successfully */
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
       /* RTEMS_INVALID_ADDRESS - invalid task entry point
               RTEMS_INVALID_ID - invalid task id
               RTEMS_INCORRECT_STATE - task not in the dormant state
               RTEMS_ILLEGAL_ON_REMOTE_OBJECT - cannot start remote task */
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 

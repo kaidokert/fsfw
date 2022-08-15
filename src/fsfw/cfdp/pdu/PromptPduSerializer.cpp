@@ -13,7 +13,7 @@ ReturnValue_t PromptPduSerializer::serialize(uint8_t **buffer, size_t *size, siz
                                              Endianness streamEndianness) const {
   ReturnValue_t result =
       FileDirectiveSerializer::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (*size + 1 > maxSize) {

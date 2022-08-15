@@ -52,15 +52,15 @@ class Index : public SerializeIF {
                           Endianness streamEndianness) const {
     ReturnValue_t result =
         SerializeAdapter::serialize(&blockStartAddress, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = indexType.serialize(buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&this->size, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result =
@@ -71,19 +71,19 @@ class Index : public SerializeIF {
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size, Endianness streamEndianness) {
     ReturnValue_t result =
         SerializeAdapter::deSerialize(&blockStartAddress, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = indexType.deSerialize(buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&this->size, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&this->storedPackets, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     return result;
@@ -449,13 +449,13 @@ class IndexedRingMemoryArray : public SerializeIF, public ArrayList<Index<T>, ui
     // Check Next Block
     if (!isNextBlockWritable()) {
       // The Index is full and does not overwrite old
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     // Next block can be written, update Metadata
     currentWriteBlock = getNextWrite();
     currentWriteBlock->setSize(0);
     currentWriteBlock->setStoredPackets(0);
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   /**
@@ -475,21 +475,21 @@ class IndexedRingMemoryArray : public SerializeIF, public ArrayList<Index<T>, ui
       additionalInfo->serialize(buffer, size, maxSize, streamEndianness);
     }
     ReturnValue_t result = currentWriteBlock->serialize(buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&this->size, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
 
     uint32_t i = 0;
-    while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->size)) {
+    while ((result == returnvalue::OK) && (i < this->size)) {
       result =
           SerializeAdapter::serialize(&this->entries[i], buffer, size, maxSize, streamEndianness);
       ++i;
     }
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     uint16_t crc = Calculate_CRC(crcBuffer, (*size - oldSize));
@@ -523,44 +523,44 @@ class IndexedRingMemoryArray : public SerializeIF, public ArrayList<Index<T>, ui
    */
 
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size, Endianness streamEndianness) {
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    ReturnValue_t result = returnvalue::OK;
     if (additionalInfo != NULL) {
       result = additionalInfo->deSerialize(buffer, size, streamEndianness);
     }
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
 
     Index<T> tempIndex;
     result = tempIndex.deSerialize(buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     uint32_t tempSize = 0;
     result = SerializeAdapter::deSerialize(&tempSize, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     if (this->size != tempSize) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     uint32_t i = 0;
-    while ((result == HasReturnvaluesIF::RETURN_OK) && (i < this->size)) {
+    while ((result == returnvalue::OK) && (i < this->size)) {
       result = SerializeAdapter::deSerialize(&this->entries[i], buffer, size, streamEndianness);
       ++i;
     }
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     typename IndexedRingMemoryArray<T>::Iterator cmp(&tempIndex);
     for (typename IndexedRingMemoryArray<T>::Iterator it = this->begin(); it != this->end(); ++it) {
       if (*(cmp.value) == *(it.value)) {
         currentWriteBlock = it;
-        return HasReturnvaluesIF::RETURN_OK;
+        return returnvalue::OK;
       }
     }
     // Reached if current write block iterator is not found
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   uint32_t getIndexAddress() const { return indexAddress; }

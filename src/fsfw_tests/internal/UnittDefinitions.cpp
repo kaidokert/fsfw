@@ -6,5 +6,5 @@ ReturnValue_t unitt::put_error(std::string errorId) {
 #else
   sif::printError("Unit Tester error: Failed at test ID %s\n", errorId.c_str());
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }

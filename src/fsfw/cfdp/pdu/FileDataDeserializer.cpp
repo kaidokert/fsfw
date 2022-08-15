@@ -6,7 +6,7 @@ FileDataDeserializer::FileDataDeserializer(const uint8_t* pduBuf, size_t maxSize
 
 ReturnValue_t FileDataDeserializer::parseData() {
   ReturnValue_t result = HeaderDeserializer::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentIdx = HeaderDeserializer::getHeaderSize();
@@ -32,13 +32,13 @@ ReturnValue_t FileDataDeserializer::parseData() {
     }
   }
   result = info.getOffset().deSerialize(&buf, &remSize, this->getEndianness());
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (remSize > 0) {
     info.setFileData(buf, remSize);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 SerializeIF::Endianness FileDataDeserializer::getEndianness() const { return endianness; }

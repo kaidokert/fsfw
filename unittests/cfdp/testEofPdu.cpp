@@ -8,7 +8,7 @@
 TEST_CASE("EOF PDU", "[EofPdu]") {
   using namespace cfdp;
 
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 128> buf = {};
   uint8_t* bufPtr = buf.data();
   size_t sz = 0;
@@ -25,17 +25,17 @@ TEST_CASE("EOF PDU", "[EofPdu]") {
   auto eofSerializer = EofPduSerializer(pduConf, eofInfo);
   SECTION("Serialize") {
     result = eofSerializer.serialize(&bufPtr, &sz, buf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(((buf[1] << 8) | buf[2]) == 10);
     uint32_t checksum = 0;
     result = SerializeAdapter::deSerialize(&checksum, buf.data() + sz - 8, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(checksum == 5);
     uint32_t fileSizeVal = 0;
     result = SerializeAdapter::deSerialize(&fileSizeVal, buf.data() + sz - 4, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(fileSizeVal == 12);
     REQUIRE(buf[sz - 10] == cfdp::FileDirectives::EOF_DIRECTIVE);
     REQUIRE(buf[sz - 9] == 0x00);
@@ -50,7 +50,7 @@ TEST_CASE("EOF PDU", "[EofPdu]") {
     sz = 0;
     result = serializeWithFaultLocation.serialize(&bufPtr, &sz, buf.size(),
                                                   SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(sz == 28);
     REQUIRE(buf[10] == cfdp::FileDirectives::EOF_DIRECTIVE);
     REQUIRE(buf[11] >> 4 == cfdp::ConditionCode::FILESTORE_REJECTION);
@@ -80,12 +80,12 @@ TEST_CASE("EOF PDU", "[EofPdu]") {
 
   SECTION("Deserialize") {
     result = eofSerializer.serialize(&bufPtr, &sz, buf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     EntityIdTlv tlv(destId);
     EofInfo emptyInfo(&tlv);
     auto deserializer = EofPduDeserializer(buf.data(), buf.size(), emptyInfo);
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getConditionCode() == cfdp::ConditionCode::NO_ERROR);
     REQUIRE(emptyInfo.getChecksum() == 5);
     REQUIRE(emptyInfo.getFileSize().getSize() == 12);
@@ -101,7 +101,7 @@ TEST_CASE("EOF PDU", "[EofPdu]") {
                                                   SerializeIF::Endianness::NETWORK);
     auto deserializer2 = EofPduDeserializer(buf.data(), buf.size(), emptyInfo);
     result = deserializer2.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getConditionCode() == cfdp::ConditionCode::FILESTORE_REJECTION);
     REQUIRE(emptyInfo.getChecksum() == 5);
     REQUIRE(emptyInfo.getFileSize().getSize() == 0x10ffffff10);
@@ -112,7 +112,7 @@ TEST_CASE("EOF PDU", "[EofPdu]") {
     for (size_t maxSz = 0; maxSz < deserializer2.getWholePduSize() - 1; maxSz++) {
       auto invalidDeser = EofPduDeserializer(buf.data(), maxSz, emptyInfo);
       result = invalidDeser.parseData();
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
   }
 }

@@ -17,14 +17,14 @@ ReturnValue_t pst::pollingSequenceInitDefault(FixedTimeslotTaskIF *thisSequence)
   thisSequence->addSlot(objects::TEST_DEVICE, 0.6 * length, DeviceHandlerIF::SEND_READ);
   thisSequence->addSlot(objects::TEST_DEVICE, 0.8 * length, DeviceHandlerIF::GET_READ);
 
-  if (thisSequence->checkSequence() == HasReturnvaluesIF::RETURN_OK) {
-    return HasReturnvaluesIF::RETURN_OK;
+  if (thisSequence->checkSequence() == returnvalue::OK) {
+    return returnvalue::OK;
   } else {
 #if FSFW_CPP_OSTREAM_ENABLED
     sif::error << "pst::pollingSequenceInitDefault: Sequence invalid!" << std::endl;
 #else
     sif::printError("pst::pollingSequenceInitDefault: Sequence invalid!");
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }

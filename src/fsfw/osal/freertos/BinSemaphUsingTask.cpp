@@ -42,7 +42,7 @@ ReturnValue_t BinarySemaphoreUsingTask::acquireWithTickTimeout(TimeoutType timeo
                                                                TickType_t timeoutTicks) {
   BaseType_t returncode = ulTaskNotifyTake(pdTRUE, timeoutTicks);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return SemaphoreIF::SEMAPHORE_TIMEOUT;
   }
@@ -56,10 +56,10 @@ ReturnValue_t BinarySemaphoreUsingTask::release(TaskHandle_t taskHandle) {
   }
   BaseType_t returncode = xTaskNotifyGive(taskHandle);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     // This should never happen.
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
@@ -82,7 +82,7 @@ ReturnValue_t BinarySemaphoreUsingTask::releaseFromISR(TaskHandle_t taskHandle,
     return SemaphoreIF::SEMAPHORE_NOT_OWNED;
   }
   vTaskNotifyGiveFromISR(taskHandle, higherPriorityTaskWoken);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint8_t BinarySemaphoreUsingTask::getSemaphoreCounterFromISR(TaskHandle_t taskHandle,

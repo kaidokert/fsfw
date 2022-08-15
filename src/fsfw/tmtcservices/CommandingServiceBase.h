@@ -40,8 +40,7 @@ void setStaticFrameworkObjectIds();
  */
 class CommandingServiceBase : public SystemObject,
                               public AcceptsTelecommandsIF,
-                              public ExecutableObjectIF,
-                              public HasReturnvaluesIF {
+                              public ExecutableObjectIF {
   friend void Factory::setStaticFrameworkObjectIds();
 
  public:
@@ -156,7 +155,7 @@ class CommandingServiceBase : public SystemObject,
    * @param objectId Object ID is extracted and stored here
    * @return
    * - @c RETURN_OK Cotinue message handling
-   * - @c RETURN_FAILED Reject the packet and generates a start failure
+   * - @c returnvalue::FAILED Reject the packet and generates a start failure
    *      verification
    */
   virtual ReturnValue_t getMessageQueueAndObject(uint8_t subservice, const uint8_t* tcData,
@@ -204,7 +203,7 @@ class CommandingServiceBase : public SystemObject,
    * - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
    *   generate TC verification success
    * - @c INVALID_REPLY Calls handleUnrequestedReply
-   * - Anything else triggers a TC verification failure. If RETURN_FAILED or
+   * - Anything else triggers a TC verification failure. If returnvalue::FAILED or
    * 	 INVALID_REPLY is returned and the command ID is
    * 	 CommandMessage::REPLY_REJECTED, a failure verification message with
    * 	 the reason as the error parameter and the initial command as
@@ -243,14 +242,14 @@ class CommandingServiceBase : public SystemObject,
 
     ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                             Endianness streamEndianness) const override {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     };
 
     [[nodiscard]] size_t getSerializedSize() const override { return 0; };
 
     ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                               Endianness streamEndianness) override {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     };
   };
 

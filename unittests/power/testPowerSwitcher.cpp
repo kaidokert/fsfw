@@ -30,7 +30,7 @@ TEST_CASE("Power Switcher", "[power-switcher]") {
     REQUIRE(switchInfo.timesCalledOn == 1);
     REQUIRE(not switcher.active());
     REQUIRE(mock.getAmountSwitchStatWasRequested() == 2);
-    REQUIRE(switcher.checkSwitchState() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(switcher.checkSwitchState() == returnvalue::OK);
     REQUIRE(mock.getAmountSwitchStatWasRequested() == 3);
     switcher.turnOff(false);
     REQUIRE(mock.getAmountSwitchStatWasRequested() == 3);

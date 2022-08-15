@@ -20,7 +20,7 @@ ReturnValue_t SharedLocalDataSet::lockDataset(MutexIF::TimeoutType timeoutType,
   if (datasetLock != nullptr) {
     return datasetLock->lockMutex(timeoutType, mutexTimeout);
   }
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 SharedLocalDataSet::~SharedLocalDataSet() { MutexFactory::instance()->deleteMutex(datasetLock); }
@@ -29,5 +29,5 @@ ReturnValue_t SharedLocalDataSet::unlockDataset() {
   if (datasetLock != nullptr) {
     return datasetLock->unlockMutex();
   }
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }

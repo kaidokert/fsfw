@@ -9,7 +9,7 @@
 TEST_CASE("File Data PDU", "[FileDataPdu]") {
   using namespace cfdp;
 
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 128> fileBuffer = {};
   std::array<uint8_t, 256> fileDataBuffer = {};
   uint8_t* buffer = fileDataBuffer.data();
@@ -29,7 +29,7 @@ TEST_CASE("File Data PDU", "[FileDataPdu]") {
     FileDataSerializer serializer(pduConf, info);
     result =
         serializer.serialize(&buffer, &sz, fileDataBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(sz == 24);
     // 10 file bytes plus 4 byte offset
     REQUIRE(((fileDataBuffer[1] << 8) | fileDataBuffer[2]) == 14);
@@ -39,7 +39,7 @@ TEST_CASE("File Data PDU", "[FileDataPdu]") {
     buffer = fileDataBuffer.data();
     result = SerializeAdapter::deSerialize(&offsetRaw, buffer + 10, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(offsetRaw == 50);
     buffer = fileDataBuffer.data() + 14;
     for (size_t idx = 0; idx < 10; idx++) {
@@ -62,7 +62,7 @@ TEST_CASE("File Data PDU", "[FileDataPdu]") {
 
     result =
         serializer.serialize(&buffer, &sz, fileDataBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(((fileDataBuffer[1] << 8) | fileDataBuffer[2]) == 25);
     // First bit: Seg Ctrl is set
     // Bits 1 to 3 length of enitity IDs is 2
@@ -88,7 +88,7 @@ TEST_CASE("File Data PDU", "[FileDataPdu]") {
       buffer = fileDataBuffer.data();
       sz = 0;
       result = serializer.serialize(&buffer, &invalidStartSz, sz, SerializeIF::Endianness::NETWORK);
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
 
     info.setSegmentMetadataFlag(true);
@@ -105,13 +105,13 @@ TEST_CASE("File Data PDU", "[FileDataPdu]") {
     FileDataSerializer serializer(pduConf, info);
     result =
         serializer.serialize(&buffer, &sz, fileDataBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     FileSize emptyOffset;
     FileDataInfo emptyInfo(emptyOffset);
     FileDataDeserializer deserializer(fileDataBuffer.data(), fileDataBuffer.size(), emptyInfo);
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserializer.getWholePduSize() == 24);
     REQUIRE(deserializer.getPduDataFieldLen() == 14);
     REQUIRE(deserializer.getSegmentationControl() ==
@@ -136,10 +136,10 @@ TEST_CASE("File Data PDU", "[FileDataPdu]") {
     sz = 0;
     result =
         serializer.serialize(&buffer, &sz, fileDataBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     REQUIRE(emptyInfo.getOffset().getSize() == 50);
     REQUIRE(emptyInfo.hasSegmentMetadata() == true);
@@ -164,7 +164,7 @@ TEST_CASE("File Data PDU", "[FileDataPdu]") {
       // Starting at 15, the file data is parsed. There is not leading file data length
       // field to the parser can't check whether the remaining length is valid
       if (invalidPduField < 15) {
-        REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+        REQUIRE(result != returnvalue::OK);
       }
     }
   }

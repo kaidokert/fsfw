@@ -12,19 +12,19 @@ TcDistributor::~TcDistributor() { QueueFactory::instance()->deleteMessageQueue(t
 
 ReturnValue_t TcDistributor::performOperation(uint8_t opCode) {
   ReturnValue_t status;
-  for (status = tcQueue->receiveMessage(&currentMessage); status == RETURN_OK;
+  for (status = tcQueue->receiveMessage(&currentMessage); status == returnvalue::OK;
        status = tcQueue->receiveMessage(&currentMessage)) {
     status = handlePacket();
   }
   if (status == MessageQueueIF::EMPTY) {
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   return status;
 }
 
 ReturnValue_t TcDistributor::handlePacket() {
   auto queueMapIt = selectDestination();
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   if (queueMapIt != queueMap.end()) {
     result = tcQueue->sendMessage(queueMapIt->second, &currentMessage);
   }
@@ -42,4 +42,6 @@ void TcDistributor::print() {
 #endif
 }
 
-ReturnValue_t TcDistributor::callbackAfterSending(ReturnValue_t queueStatus) { return RETURN_OK; }
+ReturnValue_t TcDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
+  return returnvalue::OK;
+}

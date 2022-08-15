@@ -36,7 +36,7 @@ ReturnValue_t DeviceHandlerMock::buildCommandFromCommand(DeviceCommandId_t devic
       WARN("DeviceHandlerMock::buildCommandFromCommand: Invalid device command");
       break;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t DeviceHandlerMock::scanForReply(const uint8_t *start, size_t len,
@@ -45,19 +45,19 @@ ReturnValue_t DeviceHandlerMock::scanForReply(const uint8_t *start, size_t len,
     case SIMPLE_COMMAND_DATA: {
       *foundId = SIMPLE_COMMAND;
       *foundLen = sizeof(SIMPLE_COMMAND_DATA);
-      return RETURN_OK;
+      return returnvalue::OK;
       break;
     }
     case PERIODIC_REPLY_DATA: {
       *foundId = PERIODIC_REPLY;
       *foundLen = sizeof(PERIODIC_REPLY_DATA);
-      return RETURN_OK;
+      return returnvalue::OK;
       break;
     }
     default:
       break;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t DeviceHandlerMock::interpretDeviceReply(DeviceCommandId_t id, const uint8_t *packet) {
@@ -70,7 +70,7 @@ ReturnValue_t DeviceHandlerMock::interpretDeviceReply(DeviceCommandId_t id, cons
     default:
       break;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void DeviceHandlerMock::fillCommandAndReplyMap() {

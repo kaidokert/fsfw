@@ -12,7 +12,7 @@ ReturnValue_t ExtendedControllerBase::executeAction(ActionId_t actionId,
                                                     MessageQueueId_t commandedBy,
                                                     const uint8_t *data, size_t size) {
   /* Needs to be overriden and implemented by child class. */
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 object_id_t ExtendedControllerBase::getObjectId() const { return SystemObject::getObjectId(); }
@@ -23,7 +23,7 @@ uint32_t ExtendedControllerBase::getPeriodicOperationFrequency() const {
 
 ReturnValue_t ExtendedControllerBase::handleCommandMessage(CommandMessage *message) {
   ReturnValue_t result = actionHelper.handleActionMessage(message);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     return result;
   }
   return poolManager.handleHousekeepingMessage(message);
@@ -32,30 +32,30 @@ ReturnValue_t ExtendedControllerBase::handleCommandMessage(CommandMessage *messa
 void ExtendedControllerBase::handleQueue() {
   CommandMessage command;
   ReturnValue_t result;
-  for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+  for (result = commandQueue->receiveMessage(&command); result == returnvalue::OK;
        result = commandQueue->receiveMessage(&command)) {
     result = actionHelper.handleActionMessage(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = modeHelper.handleModeCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = healthHelper.handleHealthCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = poolManager.handleHousekeepingMessage(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = handleCommandMessage(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
     command.setToUnknownCommand();
@@ -65,11 +65,11 @@ void ExtendedControllerBase::handleQueue() {
 
 ReturnValue_t ExtendedControllerBase::initialize() {
   ReturnValue_t result = ControllerBase::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = actionHelper.initialize(commandQueue);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -86,7 +86,7 @@ ReturnValue_t ExtendedControllerBase::performOperation(uint8_t opCode) {
   /* We do this after performing control operation because variables will be set changed
   in this function. */
   poolManager.performHkOperation();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 MessageQueueId_t ExtendedControllerBase::getCommandQueue() const { return commandQueue->getId(); }

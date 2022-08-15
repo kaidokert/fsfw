@@ -8,7 +8,7 @@
 
 TEST_CASE("NAK PDU", "[NakPdu]") {
   using namespace cfdp;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 256> nakBuffer = {};
   uint8_t* buffer = nakBuffer.data();
   size_t sz = 0;
@@ -23,7 +23,7 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
   SECTION("Serializer") {
     NakPduSerializer serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getSerializedSize() == 19);
     REQUIRE(serializer.FileDirectiveSerializer::getSerializedSize() == 11);
     REQUIRE(sz == 19);
@@ -33,11 +33,11 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
     uint32_t scope = 0;
     result = SerializeAdapter::deSerialize(&scope, nakBuffer.data() + 11, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(scope == 50);
     result = SerializeAdapter::deSerialize(&scope, nakBuffer.data() + 15, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(scope == 1050);
 
     NakInfo::SegmentRequest segReq0(cfdp::FileSize(2020), cfdp::FileSize(2520));
@@ -50,26 +50,26 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
     size_t sz = 0;
     serializer.updateDirectiveFieldLen();
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getSerializedSize() == 35);
     REQUIRE(serializer.getPduDataFieldLen() == 25);
     REQUIRE(((nakBuffer[1] << 8) | nakBuffer[2]) == 25);
     uint32_t segReqScopes = 0;
     result = SerializeAdapter::deSerialize(&segReqScopes, nakBuffer.data() + 19, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(segReqScopes == 2020);
     result = SerializeAdapter::deSerialize(&segReqScopes, nakBuffer.data() + 23, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(segReqScopes == 2520);
     result = SerializeAdapter::deSerialize(&segReqScopes, nakBuffer.data() + 27, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(segReqScopes == 2932);
     result = SerializeAdapter::deSerialize(&segReqScopes, nakBuffer.data() + 31, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(segReqScopes == 3021);
 
     for (size_t maxSz = 0; maxSz < 35; maxSz++) {
@@ -89,13 +89,13 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
   SECTION("Deserializer") {
     NakPduSerializer serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     info.getStartOfScope().setFileSize(0, false);
     info.getEndOfScope().setFileSize(0, false);
     NakPduDeserializer deserializer(nakBuffer.data(), nakBuffer.size(), info);
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserializer.getWholePduSize() == 19);
     REQUIRE(info.getStartOfScope().getSize() == 50);
     REQUIRE(info.getEndOfScope().getSize() == 1050);
@@ -110,11 +110,11 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
     size_t sz = 0;
     serializer.updateDirectiveFieldLen();
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     NakPduDeserializer deserializeWithSegReqs(nakBuffer.data(), nakBuffer.size(), info);
     result = deserializeWithSegReqs.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     NakInfo::SegmentRequest* segReqsPtr = nullptr;
     size_t readSegReqs = 0;
     info.getSegmentRequests(&segReqsPtr, &readSegReqs, nullptr);
@@ -128,7 +128,7 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
     for (size_t idx = 0; idx < 34; idx++) {
       NakPduDeserializer faultyDeserializer(nakBuffer.data(), idx, info);
       result = faultyDeserializer.parseData();
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
     for (size_t pduFieldLen = 0; pduFieldLen < 25; pduFieldLen++) {
       nakBuffer[1] = (pduFieldLen >> 8) & 0xff;
@@ -143,7 +143,7 @@ TEST_CASE("NAK PDU", "[NakPdu]") {
         REQUIRE(info.getSegmentRequestsLen() == 2);
       }
       if (pduFieldLen != 9 and pduFieldLen != 17 and pduFieldLen != 25) {
-        REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+        REQUIRE(result != returnvalue::OK);
       }
     }
     info.setMaxSegmentRequestLen(5);

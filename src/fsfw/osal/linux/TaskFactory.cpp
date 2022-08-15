@@ -28,7 +28,7 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
   // TODO not implemented
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {

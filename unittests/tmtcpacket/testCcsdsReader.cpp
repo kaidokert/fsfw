@@ -36,12 +36,12 @@ TEST_CASE("CCSDS Reader", "[ccsds-reader]") {
   SECTION("Empty Reader") {
     REQUIRE(SpacePacketIF::getHeaderLen() == 6);
     REQUIRE(reader.isNull());
-    REQUIRE(reader.checkSize() == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(reader.checkSize() == returnvalue::FAILED);
   }
 
   SECTION("Basic Read") {
     REQUIRE(base.serialize(&bufPtr, &serLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
     SECTION("Setter") {
       reader.setReadOnlyData(buf.data(), SpacePacketIF::getHeaderLen());
       checkReader(reader);
@@ -54,8 +54,8 @@ TEST_CASE("CCSDS Reader", "[ccsds-reader]") {
 
   SECTION("Read with additional data") {
     REQUIRE(base.serialize(&bufPtr, &serLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.setReadOnlyData(buf.data(), buf.size()) == HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), buf.size()) == returnvalue::OK);
     REQUIRE(reader.getBufSize() == buf.size());
     REQUIRE(reader.getFullPacketLen() == FULL_PACKET_LEN);
     REQUIRE(reader.getPacketData() == buf.data() + SpacePacketIF::getHeaderLen());

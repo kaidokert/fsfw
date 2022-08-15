@@ -137,7 +137,7 @@ class Clock {
    * @param[out] tt timeval, corresponding to Terrestial Time
    * @return
    *  - @c RETURN_OK on success
-   *  - @c RETURN_FAILED if leapSeconds are not set
+   *  - @c returnvalue::FAILED if leapSeconds are not set
    */
   static ReturnValue_t convertUTCToTT(timeval utc, timeval *tt);
 
@@ -158,7 +158,7 @@ class Clock {
    * @param[out] leapSeconds_
    * @return
    *  - @c RETURN_OK on success.
-   *  - @c RETURN_FAILED on error
+   *  - @c returnvalue::FAILED on error
    */
   static ReturnValue_t getLeapSeconds(uint16_t *leapSeconds_);
 
@@ -167,7 +167,7 @@ class Clock {
    * Function to check and create the Mutex for the clock
    * @return
    *  - @c RETURN_OK on success.
-   *  - Otherwise @c RETURN_FAILED if not able to create one
+   *  - Otherwise @c returnvalue::FAILED if not able to create one
    */
   static ReturnValue_t checkOrCreateClockMutex();
 

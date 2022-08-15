@@ -8,9 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
+## Changes
+
+- Removed `HasReturnvaluesIF` class in favor of `returnvalue` namespace with `OK` and `FAILED`
+  constants.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/659
+
 ## Added
 
 - Add new `UnsignedByteField` class
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/660
 
 # [v5.0.0] 25.07.2022
 

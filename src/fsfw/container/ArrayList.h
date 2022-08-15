@@ -191,7 +191,7 @@ class ArrayList {
     }
     entries[size] = entry;
     ++size;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   /**

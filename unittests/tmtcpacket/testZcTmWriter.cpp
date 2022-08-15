@@ -18,7 +18,7 @@ TEST_CASE("TM ZC Helper", "[tm-zc-helper]") {
   size_t serLen = 0;
 
   SECTION("No Crash For Uninitialized Object") {
-    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == result::OK);
+    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == returnvalue::OK);
     PusTmZeroCopyWriter writer(timeStamper, dataPtr, serLen);
     REQUIRE(writer.getSequenceCount() == 22);
     writer.setSequenceCount(23);
@@ -28,9 +28,9 @@ TEST_CASE("TM ZC Helper", "[tm-zc-helper]") {
   }
 
   SECTION("Basic") {
-    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == result::OK);
+    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == returnvalue::OK);
     PusTmZeroCopyWriter writer(timeStamper, dataPtr, serLen);
-    REQUIRE(writer.parseDataWithoutCrcCheck() == result::OK);
+    REQUIRE(writer.parseDataWithoutCrcCheck() == returnvalue::OK);
     REQUIRE(writer.getSequenceCount() == 22);
     writer.setSequenceCount(23);
     REQUIRE(writer.getSequenceCount() == 23);

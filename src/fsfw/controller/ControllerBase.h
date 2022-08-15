@@ -18,8 +18,7 @@
 class ControllerBase : public HasModesIF,
                        public HasHealthIF,
                        public ExecutableObjectIF,
-                       public SystemObject,
-                       public HasReturnvaluesIF {
+                       public SystemObject {
  public:
   static const Mode_t MODE_NORMAL = 2;
 

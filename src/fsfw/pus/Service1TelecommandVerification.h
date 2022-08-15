@@ -41,8 +41,7 @@
  */
 class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
                                         public SystemObject,
-                                        public ExecutableObjectIF,
-                                        public HasReturnvaluesIF {
+                                        public ExecutableObjectIF {
  public:
   static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
 

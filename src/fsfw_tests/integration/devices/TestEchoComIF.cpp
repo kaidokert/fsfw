@@ -25,9 +25,9 @@ ReturnValue_t TestEchoComIF::initializeInterface(CookieIF *cookie) {
   auto resultPair =
       replyMap.emplace(dummyCookie->getAddress(), ReplyBuffer(dummyCookie->getReplyMaxLen()));
   if (not resultPair.second) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestEchoComIF::sendMessage(CookieIF *cookie, const uint8_t *sendData,
@@ -50,17 +50,17 @@ ReturnValue_t TestEchoComIF::sendMessage(CookieIF *cookie, const uint8_t *sendDa
         "reply buffer length!\n",
         sendLen);
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   replyBuffer.resize(sendLen);
   memcpy(replyBuffer.data(), sendData, sendLen);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
-ReturnValue_t TestEchoComIF::getSendSuccess(CookieIF *cookie) { return RETURN_OK; }
+ReturnValue_t TestEchoComIF::getSendSuccess(CookieIF *cookie) { return returnvalue::OK; }
 
 ReturnValue_t TestEchoComIF::requestReceiveMessage(CookieIF *cookie, size_t requestLen) {
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestEchoComIF::readReceivedMessage(CookieIF *cookie, uint8_t **buffer, size_t *size) {
@@ -78,5 +78,5 @@ ReturnValue_t TestEchoComIF::readReceivedMessage(CookieIF *cookie, uint8_t **buf
     // add anything that needs to be read periodically by dummy handler
     dummyReplyCounter = 0;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }

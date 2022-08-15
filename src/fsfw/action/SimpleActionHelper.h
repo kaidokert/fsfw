@@ -12,8 +12,8 @@ class SimpleActionHelper : public ActionHelper {
  public:
   SimpleActionHelper(HasActionsIF* setOwner, MessageQueueIF* useThisQueue);
   ~SimpleActionHelper() override;
-  void step(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
-  void finish(ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
+  void step(ReturnValue_t result = returnvalue::OK);
+  void finish(ReturnValue_t result = returnvalue::OK);
   ReturnValue_t reportData(SerializeIF* data);
 
  protected:

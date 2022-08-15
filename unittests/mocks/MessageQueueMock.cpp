@@ -42,7 +42,7 @@ ReturnValue_t MessageQueueMock::clearLastReceivedMessage(bool clearCmdMsg) {
     message.clearCommandMessage();
   }
   receivedMsgs.pop();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MessageQueueMock::receiveMessage(MessageQueueMessageIF* message) {
@@ -51,16 +51,16 @@ ReturnValue_t MessageQueueMock::receiveMessage(MessageQueueMessageIF* message) {
   }
   std::memcpy(message->getBuffer(), receivedMsgs.front().getBuffer(), message->getMessageSize());
   receivedMsgs.pop();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
-ReturnValue_t MessageQueueMock::flush(uint32_t* count) { return HasReturnvaluesIF::RETURN_FAILED; }
+ReturnValue_t MessageQueueMock::flush(uint32_t* count) { return returnvalue::FAILED; }
 
 ReturnValue_t MessageQueueMock::sendMessageFrom(MessageQueueId_t sendTo,
                                                 MessageQueueMessageIF* message,
                                                 MessageQueueId_t sentFrom, bool ignoreFault) {
   if (message == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (nextSendFailsPair.first) {
     nextSendFailsPair.first = false;
@@ -76,7 +76,7 @@ ReturnValue_t MessageQueueMock::sendMessageFrom(MessageQueueId_t sendTo,
     createMsgCopy(messageCopy, *message);
     iter->second.msgs.push(messageCopy);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MessageQueueMock::reply(MessageQueueMessageIF* message) {
@@ -121,7 +121,7 @@ ReturnValue_t MessageQueueMock::getNextSentMessage(MessageQueueId_t id,
     return MessageQueueIF::EMPTY;
   }
   createMsgCopy(message, iter->second.msgs.front());
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MessageQueueMock::getNextSentMessage(MessageQueueMessageIF& message) {
@@ -156,7 +156,7 @@ ReturnValue_t MessageQueueMock::clearLastSentMessage(
   }
   iter->second.msgs.pop();
   iter->second.callCount--;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 void MessageQueueMock::clearEmptyEntries() {
   for (auto it = sendMap.cbegin(); it != sendMap.cend();) {

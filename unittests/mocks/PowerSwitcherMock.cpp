@@ -16,7 +16,7 @@ ReturnValue_t PowerSwitcherMock::sendSwitchCommand(power::Switch_t switchNr, Ret
       info.timesCalledOff++;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PowerSwitcherMock::sendFuseOnCommand(uint8_t fuseNr) {
@@ -26,7 +26,7 @@ ReturnValue_t PowerSwitcherMock::sendFuseOnCommand(uint8_t fuseNr) {
     FuseInfo& info = fuseMap.at(fuseNr);
     info.timesCalled++;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PowerSwitcherMock::getSwitchState(power::Switch_t switchNr) const {
@@ -35,7 +35,7 @@ ReturnValue_t PowerSwitcherMock::getSwitchState(power::Switch_t switchNr) const 
     SWITCH_REQUEST_UPDATE_VALUE++;
     return info.currentState;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t PowerSwitcherMock::getFuseState(uint8_t fuseNr) const {
@@ -44,7 +44,7 @@ ReturnValue_t PowerSwitcherMock::getFuseState(uint8_t fuseNr) const {
   } else {
     return FUSE_OFF;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 uint32_t PowerSwitcherMock::getSwitchDelayMs(void) const { return 5000; }

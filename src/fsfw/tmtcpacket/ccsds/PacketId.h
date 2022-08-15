@@ -55,7 +55,7 @@ struct PacketId : public SerializeIF {
     **buffer = idRaw & 0xff;
     *size += 1;
     *buffer += 1;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   [[nodiscard]] size_t getSerializedSize() const override { return 2; }
@@ -73,7 +73,7 @@ struct PacketId : public SerializeIF {
     packetType = static_cast<ccsds::PacketType>((highByte >> 4) & 0b1);
     secHeaderFlag = (highByte >> 3) & 0b1;
     apid = static_cast<uint16_t>((highByte & 0b111) << 8 | lowByte);
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   ccsds::PacketType packetType = ccsds::PacketType::TM;

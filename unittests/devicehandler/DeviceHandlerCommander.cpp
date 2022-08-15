@@ -13,15 +13,15 @@ DeviceHandlerCommander::~DeviceHandlerCommander() {}
 
 ReturnValue_t DeviceHandlerCommander::performOperation(uint8_t operationCode) {
   readCommandQueue();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t DeviceHandlerCommander::initialize() {
   ReturnValue_t result = commandActionHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 MessageQueueIF* DeviceHandlerCommander::getCommandQueuePtr() { return commandQueue; }
@@ -35,7 +35,7 @@ void DeviceHandlerCommander::dataReceived(ActionId_t actionId, const uint8_t* da
 }
 
 void DeviceHandlerCommander::completionSuccessfulReceived(ActionId_t actionId) {
-  lastReplyReturnCode = RETURN_OK;
+  lastReplyReturnCode = returnvalue::OK;
 }
 
 void DeviceHandlerCommander::completionFailedReceived(ActionId_t actionId,
@@ -45,11 +45,11 @@ void DeviceHandlerCommander::completionFailedReceived(ActionId_t actionId,
 
 void DeviceHandlerCommander::readCommandQueue() {
   CommandMessage message;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-  for (result = commandQueue->receiveMessage(&message); result == HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
+  for (result = commandQueue->receiveMessage(&message); result == returnvalue::OK;
        result = commandQueue->receiveMessage(&message)) {
     result = commandActionHelper.handleReply(&message);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
   }
@@ -61,4 +61,4 @@ ReturnValue_t DeviceHandlerCommander::sendCommand(object_id_t target, ActionId_t
 
 ReturnValue_t DeviceHandlerCommander::getReplyReturnCode() { return lastReplyReturnCode; }
 
-void DeviceHandlerCommander::resetReplyReturnCode() { lastReplyReturnCode = RETURN_FAILED; }
+void DeviceHandlerCommander::resetReplyReturnCode() { lastReplyReturnCode = returnvalue::FAILED; }

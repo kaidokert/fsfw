@@ -12,10 +12,7 @@ namespace Factory {
 void setStaticFrameworkObjectIds();
 }
 
-class CfdpHandler : public ExecutableObjectIF,
-                    public AcceptsTelecommandsIF,
-                    public SystemObject,
-                    public HasReturnvaluesIF {
+class CfdpHandler : public ExecutableObjectIF, public AcceptsTelecommandsIF, public SystemObject {
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:

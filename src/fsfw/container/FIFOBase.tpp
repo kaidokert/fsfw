@@ -17,7 +17,7 @@ inline ReturnValue_t FIFOBase<T>::insert(T value) {
     values[writeIndex] = value;
     writeIndex = next(writeIndex);
     ++currentSize;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 };
 
@@ -27,12 +27,12 @@ inline ReturnValue_t FIFOBase<T>::retrieve(T* value) {
     return EMPTY;
   } else {
     if (value == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     *value = values[readIndex];
     readIndex = next(readIndex);
     --currentSize;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 };
 
@@ -42,10 +42,10 @@ inline ReturnValue_t FIFOBase<T>::peek(T* value) {
     return EMPTY;
   } else {
     if (value == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     *value = values[readIndex];
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 };
 

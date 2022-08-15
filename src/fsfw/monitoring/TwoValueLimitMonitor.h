@@ -18,7 +18,7 @@ class TwoValueLimitMonitor : public LimitMonitor<T> {
   ReturnValue_t doCheck(T lowSample, T highSample) {
     T crossedLimit;
     ReturnValue_t currentState = this->checkSample(lowSample, &crossedLimit);
-    if (currentState != HasReturnvaluesIF::RETURN_OK) {
+    if (currentState != returnvalue::OK) {
       return this->monitorStateIs(currentState, lowSample, crossedLimit);
     }
     currentState = this->checkSample(highSample, &crossedLimit);

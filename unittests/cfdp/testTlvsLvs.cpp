@@ -16,7 +16,7 @@
 
 TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
   using namespace cfdp;
-  int result = HasReturnvaluesIF::RETURN_OK;
+  int result = returnvalue::OK;
   std::array<uint8_t, 255> rawBuf;
   uint8_t* serPtr = rawBuf.data();
   const uint8_t* deserPtr = rawBuf.data();
@@ -28,7 +28,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = tlvRawBuf.data();
     result =
         sourceId.serialize(&serPtr, &deserSize, tlvRawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserSize == 2);
     auto tlv = Tlv(TlvTypes::ENTITY_ID, tlvRawBuf.data(), deserSize);
     REQUIRE(tlv.getSerializedSize() == 4);
@@ -36,7 +36,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = rawBuf.data();
     deserSize = 0;
     result = tlv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserSize == 4);
     REQUIRE(rawBuf[0] == TlvTypes::ENTITY_ID);
     REQUIRE(rawBuf[1] == 2);
@@ -55,33 +55,32 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = rawBuf.data();
     deserSize = 0;
     result = tlv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(rawBuf[0] == TlvTypes::ENTITY_ID);
     REQUIRE(rawBuf[1] == 4);
 
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     serPtr = rawBuf.data();
     deserSize = 0;
     auto tlvInvalid = Tlv(cfdp::TlvTypes::INVALID_TLV, tlvRawBuf.data(), 0);
     REQUIRE(tlvInvalid.serialize(&serPtr, &deserSize, rawBuf.size(),
-                                 SerializeIF::Endianness::NETWORK) != HasReturnvaluesIF::RETURN_OK);
+                                 SerializeIF::Endianness::NETWORK) != returnvalue::OK);
     tlvInvalid = Tlv(cfdp::TlvTypes::ENTITY_ID, nullptr, 3);
     REQUIRE(tlvInvalid.serialize(&serPtr, &deserSize, rawBuf.size(),
-                                 SerializeIF::Endianness::NETWORK) != HasReturnvaluesIF::RETURN_OK);
+                                 SerializeIF::Endianness::NETWORK) != returnvalue::OK);
     REQUIRE(tlvInvalid.serialize(&serPtr, &deserSize, 0, SerializeIF::Endianness::NETWORK) !=
-            HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
     REQUIRE(tlvInvalid.getSerializedSize() == 0);
     REQUIRE(tlvInvalid.serialize(nullptr, nullptr, 0, SerializeIF::Endianness::NETWORK) !=
-            HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
 
     Tlv zeroLenField(TlvTypes::FAULT_HANDLER, nullptr, 0);
     REQUIRE(zeroLenField.getSerializedSize() == 2);
     serPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(zeroLenField.serialize(&serPtr, &deserSize, rawBuf.size(),
-                                   SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_OK);
+                                   SerializeIF::Endianness::NETWORK) == returnvalue::OK);
     REQUIRE(rawBuf[0] == TlvTypes::FAULT_HANDLER);
     REQUIRE(rawBuf[1] == 0);
   }
@@ -100,7 +99,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     Tlv tlv;
     deserPtr = rawBuf.data();
     result = tlv.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(tlv.getSerializedSize() == 4);
     REQUIRE(tlv.getType() == TlvTypes::ENTITY_ID);
     deserPtr = tlv.getValue();
@@ -110,8 +109,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
                                   SerializeIF::Endianness::NETWORK);
     REQUIRE(entityId == 0x0ff0);
 
-    REQUIRE(tlv.deSerialize(nullptr, nullptr, SerializeIF::Endianness::NETWORK) !=
-            HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(tlv.deSerialize(nullptr, nullptr, SerializeIF::Endianness::NETWORK) != returnvalue::OK);
     deserPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(tlv.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::NETWORK) ==
@@ -120,17 +118,16 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     rawBuf[0] = TlvTypes::INVALID_TLV;
     deserSize = 4;
     REQUIRE(tlv.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::NETWORK) !=
-            HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
 
     Tlv zeroLenField(TlvTypes::FAULT_HANDLER, nullptr, 0);
     serPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(zeroLenField.serialize(&serPtr, &deserSize, rawBuf.size(),
-                                   SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_OK);
+                                   SerializeIF::Endianness::NETWORK) == returnvalue::OK);
     deserPtr = rawBuf.data();
     result = zeroLenField.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(zeroLenField.getSerializedSize() == 2);
     REQUIRE(deserSize == 0);
   }
@@ -140,7 +137,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = lvRawBuf.data();
     result =
         sourceId.serialize(&serPtr, &deserSize, lvRawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserSize == 2);
     auto lv = cfdp::Lv(lvRawBuf.data(), 2);
     auto lvCopy = cfdp::Lv(lv);
@@ -150,7 +147,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = rawBuf.data();
     deserSize = 0;
     result = lv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserSize == 3);
     REQUIRE(rawBuf[0] == 2);
     uint16_t sourceId = 0;
@@ -164,7 +161,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     deserSize = 0;
     result =
         lvEmpty.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserSize == 1);
   }
 
@@ -177,13 +174,13 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = rawBuf.data();
     deserSize = 0;
     result = lv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     Lv uninitLv;
     deserPtr = rawBuf.data();
     deserSize = 3;
     result = uninitLv.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::BIG);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(uninitLv.getSerializedSize() == 3);
     const uint8_t* storedValue = uninitLv.getValue(nullptr);
     uint16_t sourceId = 0;
@@ -197,15 +194,15 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     deserSize = 0;
     result =
         lvEmpty.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserSize == 1);
     deserPtr = rawBuf.data();
     result = uninitLv.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::BIG);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(uninitLv.getSerializedSize() == 1);
 
     REQUIRE(uninitLv.deSerialize(nullptr, nullptr, SerializeIF::Endianness::BIG) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+            returnvalue::FAILED);
     serPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(uninitLv.serialize(&serPtr, &deserSize, 0, SerializeIF::Endianness::BIG) ==
@@ -233,14 +230,14 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     std::array<uint8_t, 128> serBuf = {};
     result = response.convertToTlv(rawResponse, serBuf.data(), serBuf.size(),
                                    SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(rawResponse.getType() == cfdp::TlvTypes::FILESTORE_RESPONSE);
     cfdp::Lv emptyMsg;
     cfdp::Lv emptySecondName;
     FilestoreResponseTlv emptyTlv(firstName, &emptyMsg);
     emptyTlv.setSecondFileName(&emptySecondName);
     result = emptyTlv.deSerialize(rawResponse, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyTlv.getActionCode() == cfdp::FilestoreActionCode::APPEND_FILE);
     REQUIRE(emptyTlv.getStatusCode() == cfdp::FSR_SUCCESS);
     size_t firstNameLen = 0;
@@ -274,26 +271,26 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     REQUIRE(expectedSz == 10 + 11 + 1);
     REQUIRE(request.getSerializedSize() == expectedSz + 2);
     result = request.serialize(&ptr, &sz, serBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(sz == expectedSz + 2);
 
     FilestoreRequestTlv emptyRequest(firstName);
     emptyRequest.setSecondFileName(&secondName);
     const uint8_t* constptr = serBuf.data();
     result = emptyRequest.deSerialize(&constptr, &sz, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     cfdp::Tlv rawRequest;
     ptr = serBuf.data();
     sz = 0;
     result = request.convertToTlv(rawRequest, serBuf.data(), serBuf.size(),
                                   SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(rawRequest.getType() == cfdp::TlvTypes::FILESTORE_REQUEST);
 
     emptyRequest.setActionCode(cfdp::FilestoreActionCode::DELETE_FILE);
     result = emptyRequest.deSerialize(rawRequest, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyRequest.getType() == cfdp::TlvTypes::FILESTORE_REQUEST);
     REQUIRE(emptyRequest.getActionCode() == cfdp::FilestoreActionCode::APPEND_FILE);
   }
@@ -310,11 +307,11 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
         faultOverrideTlv.serialize(&serPtr, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(faultOverrideTlv.getSerializedSize() == 3);
     REQUIRE(sz == 3);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     FaultHandlerOverrideTlv emptyOverrideTlv;
     result = emptyOverrideTlv.deSerialize(&deserPtr, &sz, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     EntityId entId(cfdp::WidthInBytes::TWO_BYTES, 0x42);
     EntityId emptyId;
@@ -322,9 +319,9 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = rawBuf.data();
     result = idTlv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
     cfdp::Tlv rawTlv(cfdp::TlvTypes::ENTITY_ID, rawBuf.data() + 2, 2);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     deserPtr = rawBuf.data();
     result = idTlv.deSerialize(rawTlv, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
   }
 }

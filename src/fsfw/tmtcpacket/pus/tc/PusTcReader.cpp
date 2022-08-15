@@ -17,10 +17,10 @@ ReturnValue_t PusTcReader::parseDataWithoutCrcCheck() { return parseData(false);
 
 ReturnValue_t PusTcReader::parseData(bool withCrc) {
   if (pointers.spHeaderStart == nullptr or spReader.isNull()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   ReturnValue_t result = spReader.checkSize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentOffset = SpacePacketReader::getHeaderLen();
@@ -42,7 +42,7 @@ ReturnValue_t PusTcReader::parseData(bool withCrc) {
       return PusIF::INVALID_CRC_16;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint8_t PusTcReader::getPusVersion() const { return (pointers.secHeaderStart[0] >> 4) & 0b1111; }

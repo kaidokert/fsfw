@@ -17,7 +17,7 @@ ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
   timeval time_timeval;
 
   ReturnValue_t result = convertTimeOfDayToTimeval(time, &time_timeval);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -31,7 +31,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 
   Timekeeper::instance()->setOffset(offset);
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
@@ -41,13 +41,13 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 
   *time = offset + uptime;
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getUptime(timeval* uptime) {
   *uptime = getUptime();
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 timeval Clock::getUptime() {
@@ -58,7 +58,7 @@ timeval Clock::getUptime() {
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
   timeval uptime = getUptime();
   *uptimeMs = uptime.tv_sec * 1000 + uptime.tv_usec / 1000;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 // uint32_t Clock::getUptimeSeconds() {
@@ -69,17 +69,17 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
   timeval time_timeval;
   ReturnValue_t result = getClock_timeval(&time_timeval);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   *time = time_timeval.tv_sec * 1000000 + time_timeval.tv_usec;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   timeval time_timeval;
   ReturnValue_t result = getClock_timeval(&time_timeval);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   struct tm time_tm;
@@ -96,7 +96,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 
   time->usecond = time_timeval.tv_usec;
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval* to) {
@@ -115,10 +115,10 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval*
   to->tv_sec = seconds;
   to->tv_usec = from->usecond;
   // Fails in 2038..
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
   *JD2000 = (time.tv_sec - 946728000. + time.tv_usec / 1000000.) / 24. / 3600.;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

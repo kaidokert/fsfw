@@ -20,7 +20,7 @@ bool operator==(const timeval &lhs, const timeval &rhs);
  *
  * Still work in progress
  */
-class CCSDSTime : public HasReturnvaluesIF {
+class CCSDSTime {
  public:
   /**
    * The Time code identifications, bits 4-6 in the P-Field

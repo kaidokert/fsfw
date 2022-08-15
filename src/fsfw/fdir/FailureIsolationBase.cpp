@@ -35,15 +35,15 @@ ReturnValue_t FailureIsolationBase::initialize() {
                   " been initialized!"
                << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   ReturnValue_t result = manager->registerListener(eventQueue->getId());
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (ownerId != objects::NO_OBJECT) {
     result = manager->subscribeToAllEventsFrom(eventQueue->getId(), ownerId);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     owner = ObjectManager::instance()->get<HasHealthIF>(ownerId);
@@ -68,16 +68,16 @@ ReturnValue_t FailureIsolationBase::initialize() {
       sif::error << "Make sure it implements ConfirmsFailuresIF." << std::endl;
 #endif
       return ObjectManagerIF::CHILD_INIT_FAILED;
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     eventQueue->setDefaultDestination(parentIF->getEventReceptionQueue());
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void FailureIsolationBase::checkForFailures() {
   EventMessage event;
-  for (ReturnValue_t result = eventQueue->receiveMessage(&event); result == RETURN_OK;
+  for (ReturnValue_t result = eventQueue->receiveMessage(&event); result == returnvalue::OK;
        result = eventQueue->receiveMessage(&event)) {
     if (event.getSender() == eventQueue->getId()) {
       // We already got this event, because we sent it.
@@ -124,7 +124,7 @@ ReturnValue_t FailureIsolationBase::sendConfirmationRequest(EventMessage* event,
   } else if (faultTreeParent != objects::NO_OBJECT) {
     return eventQueue->sendToDefault(event);
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 void FailureIsolationBase::eventConfirmed(EventMessage* event) {}

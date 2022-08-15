@@ -79,7 +79,7 @@ class AssemblyBase : public SubsystemBase {
    * @param submode The targeted submmode
    * @return Any information why this combination is invalid from HasModesIF
    * 			like HasModesIF::INVALID_SUBMODE.
-   * 			On success return HasReturnvaluesIF::RETURN_OK
+   * 			On success return returnvalue::OK
    */
   virtual ReturnValue_t isModeCombinationValid(Mode_t mode, Submode_t submode) = 0;
 

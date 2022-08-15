@@ -22,7 +22,7 @@ class HousekeepingSetPacket : public SerialLinkedListAdapter<SerializeIF> {
                           Endianness streamEndianness) const override {
     ReturnValue_t result =
         SerialLinkedListAdapter::serialize(buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     return dataSet->serializeLocalPoolIds(buffer, size, maxSize, streamEndianness);
@@ -36,7 +36,7 @@ class HousekeepingSetPacket : public SerialLinkedListAdapter<SerializeIF> {
 
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
  private:

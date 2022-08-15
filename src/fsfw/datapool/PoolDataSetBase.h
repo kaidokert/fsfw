@@ -29,20 +29,20 @@
  * @author	Bastian Baetz
  * @ingroup data_pool
  */
-class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasReturnvaluesIF {
+class PoolDataSetBase : public PoolDataSetIF, public SerializeIF {
  public:
   /**
    * @brief	Creates an empty dataset. Use registerVariable or
    * 			supply a pointer to this dataset to PoolVariable
    * 			initializations to register pool variables.
    */
-  PoolDataSetBase(PoolVariableIF** registeredVariablesArray, const size_t maxFillCount);
+  PoolDataSetBase(PoolVariableIF** registeredVariablesArray, size_t maxFillCount);
 
   /* Forbidden for now */
   PoolDataSetBase(const PoolDataSetBase& otherSet) = delete;
   const PoolDataSetBase& operator=(const PoolDataSetBase& otherSet) = delete;
 
-  virtual ~PoolDataSetBase();
+  ~PoolDataSetBase() override;
 
   /**
    * @brief	The read call initializes reading out all registered variables.

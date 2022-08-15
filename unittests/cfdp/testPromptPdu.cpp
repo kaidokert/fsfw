@@ -7,7 +7,7 @@
 
 TEST_CASE("Prompt PDU", "[PromptPdu]") {
   using namespace cfdp;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 256> rawBuf = {};
   uint8_t* buffer = rawBuf.data();
   size_t sz = 0;
@@ -19,7 +19,7 @@ TEST_CASE("Prompt PDU", "[PromptPdu]") {
   SECTION("Serialize") {
     PromptPduSerializer serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
     result = serializer.serialize(&buffer, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getWholePduSize() == 12);
     REQUIRE(sz == 12);
     REQUIRE(serializer.getPduDataFieldLen() == 2);
@@ -30,24 +30,24 @@ TEST_CASE("Prompt PDU", "[PromptPdu]") {
       uint8_t* buffer = rawBuf.data();
       size_t sz = 0;
       result = serializer.serialize(&buffer, &sz, invalidMaxSz, SerializeIF::Endianness::NETWORK);
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
     for (size_t invalidSz = 1; invalidSz < sz; invalidSz++) {
       size_t locSz = invalidSz;
       uint8_t* buffer = rawBuf.data();
       result = serializer.serialize(&buffer, &locSz, sz, SerializeIF::Endianness::NETWORK);
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
   }
 
   SECTION("Deserialize") {
     PromptPduSerializer serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
     result = serializer.serialize(&buffer, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     PromptPduDeserializer deserializer(rawBuf.data(), rawBuf.size());
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserializer.getPromptResponseRequired() ==
             cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
     sz = deserializer.getWholePduSize();
@@ -59,7 +59,7 @@ TEST_CASE("Prompt PDU", "[PromptPdu]") {
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {
       deserializer.setData(rawBuf.data(), invalidMaxSz);
       result = deserializer.parseData();
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
   }
 }

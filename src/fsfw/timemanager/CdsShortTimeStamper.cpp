@@ -20,7 +20,7 @@ ReturnValue_t CdsShortTimeStamper::serialize(uint8_t **buffer, size_t *size, siz
   Clock::getClock_timeval(&now);
   CCSDSTime::CDS_short cds{};
   ReturnValue_t result = CCSDSTime::convertToCcsds(&cds, &now);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   std::memcpy(*buffer, &cds, sizeof(cds));
@@ -33,7 +33,7 @@ size_t CdsShortTimeStamper::getSerializedSize() const { return getTimestampSize(
 
 ReturnValue_t CdsShortTimeStamper::deSerialize(const uint8_t **buffer, size_t *size,
                                                SerializeIF::Endianness streamEndianness) {
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t CdsShortTimeStamper::readTimeStamp(const uint8_t *buffer, size_t maxSize) {

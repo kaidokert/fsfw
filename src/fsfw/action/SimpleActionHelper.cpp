@@ -9,7 +9,7 @@ void SimpleActionHelper::step(ReturnValue_t result) {
   // STEP_OFFESET is subtracted to compensate for adding offset in base
   // method, which is not necessary here.
   ActionHelper::step(stepCount - STEP_OFFSET, lastCommander, lastAction, result);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     resetHelper();
   }
 }
@@ -41,7 +41,7 @@ void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId
   const uint8_t* dataPtr = nullptr;
   size_t size = 0;
   ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     ActionMessage::setStepReply(&reply, actionId, 0, result);
     queueToUse->sendMessage(commandedBy, &reply);
     return;
@@ -51,12 +51,12 @@ void SimpleActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId
   result = owner->executeAction(actionId, commandedBy, dataPtr, size);
   ipcStore->deleteData(dataAddress);
   switch (result) {
-    case HasReturnvaluesIF::RETURN_OK:
+    case returnvalue::OK:
       isExecuting = true;
       stepCount++;
       break;
     case HasActionsIF::EXECUTION_FINISHED:
-      ActionMessage::setCompletionReply(&reply, actionId, true, HasReturnvaluesIF::RETURN_OK);
+      ActionMessage::setCompletionReply(&reply, actionId, true, returnvalue::OK);
       queueToUse->sendMessage(commandedBy, &reply);
       break;
     default:

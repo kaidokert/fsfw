@@ -31,16 +31,16 @@ ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
   if (task == nullptr) {
     // delete self
     vTaskDelete(nullptr);
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     // TODO not implemented
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
   vTaskDelay(pdMS_TO_TICKS(delayMs));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TaskFactory::printMissedDeadline() {

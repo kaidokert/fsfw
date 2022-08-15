@@ -16,7 +16,7 @@ ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   switch (subservice) {
     case Subservice::CONNECTION_TEST: {
       ReturnValue_t result = tmHelper.prepareTmPacket(Subservice::CONNECTION_TEST_REPORT);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       return tmHelper.storeAndSendTmPacket();
@@ -24,7 +24,7 @@ ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
     case Subservice::EVENT_TRIGGER_TEST: {
       triggerEvent(TEST, 1234, 5678);
       ReturnValue_t result = tmHelper.prepareTmPacket(Subservice::EVENT_TRIGGER_TEST);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       return tmHelper.storeAndSendTmPacket();
@@ -34,11 +34,11 @@ ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
   }
 }
 
-ReturnValue_t Service17Test::performService() { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t Service17Test::performService() { return returnvalue::OK; }
 
 ReturnValue_t Service17Test::initialize() {
   ReturnValue_t result = PusServiceBase::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   initializeTmHelpers(sendHelper, storeHelper);

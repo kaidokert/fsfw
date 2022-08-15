@@ -40,7 +40,7 @@ class PlacementFactory {
     store_address_t tempId;
     uint8_t* pData = nullptr;
     ReturnValue_t result = dataBackend->getFreeElement(&tempId, sizeof(T), &pData);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return nullptr;
     }
     T* temp = new (pData) T(std::forward<Args>(args)...);
@@ -56,7 +56,7 @@ class PlacementFactory {
   template <typename T>
   ReturnValue_t destroy(T* thisElement) {
     if (thisElement == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     // Need to call destructor first, in case something was allocated by the object (shouldn't do
     // that, however).

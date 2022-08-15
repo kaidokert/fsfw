@@ -36,13 +36,13 @@ TEST_CASE("PlacementFactory Tests", "[TestPlacementFactory]") {
             static_cast<int>(StorageManagerIF::DATA_TOO_LARGE));
     uint64_t* number2 = factory.generate<uint64_t>(12345);
     REQUIRE(number2 == nullptr);
-    REQUIRE(factory.destroy(number) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(factory.destroy(number) == static_cast<int>(returnvalue::OK));
     REQUIRE(storagePool.getFreeElement(&address, sizeof(uint64_t), &ptr) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
-    REQUIRE(storagePool.deleteData(address) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+            static_cast<int>(returnvalue::OK));
+    REQUIRE(storagePool.deleteData(address) == static_cast<int>(returnvalue::OK));
 
     // Check that PlacementFactory checks for nullptr
     ptr = nullptr;
-    REQUIRE(factory.destroy(ptr) == static_cast<int>(HasReturnvaluesIF::RETURN_FAILED));
+    REQUIRE(factory.destroy(ptr) == static_cast<int>(returnvalue::FAILED));
   }
 }

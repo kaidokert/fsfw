@@ -58,16 +58,16 @@ ReturnValue_t ConstStorageAccessor::getDataCopy(uint8_t* pointer, size_t maxSize
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (size_ > maxSize) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "StorageAccessor: Supplied buffer not large enough" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   std::copy(constDataPointer, constDataPointer + size_, pointer);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void ConstStorageAccessor::release() { deleteData = false; }

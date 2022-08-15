@@ -8,7 +8,7 @@
 
 ReturnValue_t CCSDSTime::convertToCcsds(Ccs_seconds* to, const Clock::TimeOfDay_t* from) {
   ReturnValue_t result = checkTimeOfDay(from);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -22,12 +22,12 @@ ReturnValue_t CCSDSTime::convertToCcsds(Ccs_seconds* to, const Clock::TimeOfDay_
   to->minute = from->minute;
   to->second = from->second;
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertToCcsds(Ccs_mseconds* to, const Clock::TimeOfDay_t* from) {
   ReturnValue_t result = checkTimeOfDay(from);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -43,7 +43,7 @@ ReturnValue_t CCSDSTime::convertToCcsds(Ccs_mseconds* to, const Clock::TimeOfDay
   to->secondEminus2 = from->usecond / 10000;
   to->secondEminus4 = (from->usecond % 10000) / 100;
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertFromCcsds(Clock::TimeOfDay_t* to, const uint8_t* from,
@@ -53,8 +53,8 @@ ReturnValue_t CCSDSTime::convertFromCcsds(Clock::TimeOfDay_t* to, const uint8_t*
     return LENGTH_MISMATCH;
   }
   result = convertFromASCII(to, from, length);  // Try to parse it as ASCII
-  if (result == RETURN_OK) {
-    return RETURN_OK;
+  if (result == returnvalue::OK) {
+    return returnvalue::OK;
   }
 
   // Seems to be no ascii, try the other formats
@@ -84,7 +84,7 @@ ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to, const uint8_t* f
                                         uint8_t length) {
   timeval time;
   ReturnValue_t result = convertFromCDS(&time, from, NULL, length);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return Clock::convertTimevalToTimeOfDay(&time, to);
@@ -102,7 +102,7 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
 
   ReturnValue_t result = checkCcs(from, maxLength);
 
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   // At this point we made sure that this is a valid ccs time
@@ -118,7 +118,7 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
     uint8_t tempDay = 0;
     uint8_t tempMonth = 0;
     result = convertDaysOfYear(tempDayOfYear, to->year, &tempMonth, &tempDay);
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     to->month = tempMonth;
@@ -144,13 +144,13 @@ ReturnValue_t CCSDSTime::convertFromCCS(Clock::TimeOfDay_t* to, const uint8_t* f
     to->usecond += temp->secondEminus4 * 100;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t* from,
                                           uint8_t length) {
   if (length < 19) {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   // Newlib nano can't parse uint8, see SCNu8 documentation and https://sourceware.org/newlib/README
   // Suggestion: use uint16 all the time. This should work on all systems.
@@ -174,7 +174,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
     to->minute = minute;
     to->second = second;
     to->usecond = (second - floor(second)) * 1000000;
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 
   // try Code B (yyyy-ddd)
@@ -187,8 +187,8 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
     uint8_t tempDay;
     ReturnValue_t result = CCSDSTime::convertDaysOfYear(
         day, year, reinterpret_cast<uint8_t*>(&month), reinterpret_cast<uint8_t*>(&tempDay));
-    if (result != RETURN_OK) {
-      return RETURN_FAILED;
+    if (result != returnvalue::OK) {
+      return returnvalue::FAILED;
     }
     to->year = year;
     to->month = month;
@@ -197,7 +197,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
     to->minute = minute;
     to->second = second;
     to->usecond = (second - floor(second)) * 1000000;
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   // Warning: Compiler/Linker fails ambiguously if library does not implement
   // C99 I/O
@@ -220,7 +220,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
     to->minute = minute;
     to->second = second;
     to->usecond = (second - floor(second)) * 1000000;
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 
   // try Code B (yyyy-ddd)
@@ -229,8 +229,8 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
   if (count == 5) {
     uint8_t tempDay;
     ReturnValue_t result = CCSDSTime::convertDaysOfYear(day, year, &month, &tempDay);
-    if (result != RETURN_OK) {
-      return RETURN_FAILED;
+    if (result != returnvalue::OK) {
+      return returnvalue::FAILED;
     }
     to->year = year;
     to->month = month;
@@ -239,7 +239,7 @@ ReturnValue_t CCSDSTime::convertFromASCII(Clock::TimeOfDay_t* to, const uint8_t*
     to->minute = minute;
     to->second = second;
     to->usecond = (second - floor(second)) * 1000000;
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 #endif
 
@@ -284,7 +284,7 @@ ReturnValue_t CCSDSTime::checkCcs(const uint8_t* time, uint8_t length) {
       return INVALID_TIME_FORMAT;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertDaysOfYear(uint16_t dayofYear, uint16_t year, uint8_t* month,
@@ -301,21 +301,21 @@ ReturnValue_t CCSDSTime::convertDaysOfYear(uint16_t dayofYear, uint16_t year, ui
   *month = 1;
   if (dayofYear <= 31) {
     *day = dayofYear;
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   *month += 1;
   dayofYear -= 31;
   if (isLeapYear(year)) {
     if (dayofYear <= 29) {
       *day = dayofYear;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
     *month += 1;
     dayofYear -= 29;
   } else {
     if (dayofYear <= 28) {
       *day = dayofYear;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
     *month += 1;
     dayofYear -= 28;
@@ -323,7 +323,7 @@ ReturnValue_t CCSDSTime::convertDaysOfYear(uint16_t dayofYear, uint16_t year, ui
   while (*month <= 12) {
     if (dayofYear <= 31) {
       *day = dayofYear;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
     *month += 1;
     dayofYear -= 31;
@@ -334,7 +334,7 @@ ReturnValue_t CCSDSTime::convertDaysOfYear(uint16_t dayofYear, uint16_t year, ui
 
     if (dayofYear <= 30) {
       *day = dayofYear;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
     *month += 1;
     dayofYear -= 30;
@@ -369,7 +369,7 @@ ReturnValue_t CCSDSTime::convertToCcsds(CDS_short* to, const timeval* from) {
   to->msDay_h = (msDay & 0xFF0000) >> 16;
   to->msDay_l = (msDay & 0xFF00) >> 8;
   to->msDay_ll = (msDay & 0xFF);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertToCcsds(OBT_FLP* to, const timeval* from) {
@@ -387,7 +387,7 @@ ReturnValue_t CCSDSTime::convertToCcsds(OBT_FLP* to, const timeval* from) {
   to->subsecondsMSB = (temp >> 8) & 0xff;
   to->subsecondsLSB = temp & 0xff;
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertFromCcsds(timeval* to, const uint8_t* from, size_t* foundLength,
@@ -396,7 +396,7 @@ ReturnValue_t CCSDSTime::convertFromCcsds(timeval* to, const uint8_t* from, size
     Clock::TimeOfDay_t timeOfDay;
     /* Try to parse it as ASCII */
     ReturnValue_t result = convertFromASCII(&timeOfDay, from, maxLength);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       return Clock::convertTimeOfDayToTimeval(&timeOfDay, to);
     }
   }
@@ -423,7 +423,7 @@ ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, const uint8_t* from, size_t
   uint8_t pField = *from;
   from++;
   ReturnValue_t result = convertFromCUC(to, pField, from, foundLength, maxLength - 1);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     if (foundLength != nullptr) {
       *foundLength += 1;
     }
@@ -482,7 +482,7 @@ ReturnValue_t CCSDSTime::checkTimeOfDay(const Clock::TimeOfDay_t* time) {
     return INVALID_TIME_FORMAT;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from, size_t* foundLength,
@@ -545,12 +545,12 @@ ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const uint8_t* from, size_t
     // Not very useful.
     to->tv_usec += (picosecs / 1000);
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const CCSDSTime::CDS_short* from) {
   if (to == nullptr or from == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   uint16_t days = (from->dayMSB << 8) + from->dayLSB;
   if (days <= DAYS_CCSDS_TO_UNIX_EPOCH) {
@@ -562,16 +562,16 @@ ReturnValue_t CCSDSTime::convertFromCDS(timeval* to, const CCSDSTime::CDS_short*
       (from->msDay_hh << 24) + (from->msDay_h << 16) + (from->msDay_l << 8) + from->msDay_ll;
   to->tv_sec += (msDay / 1000);
   to->tv_usec = (msDay % 1000) * 1000;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CCSDSTime::convertFromCDS(Clock::TimeOfDay_t* to, const CCSDSTime::CDS_short* from) {
   if (to == nullptr or from == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   timeval tempTimeval;
   ReturnValue_t result = convertFromCDS(&tempTimeval, from);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return Clock::convertTimevalToTimeOfDay(&tempTimeval, to);
@@ -605,7 +605,7 @@ ReturnValue_t CCSDSTime::convertFromCUC(timeval* to, uint8_t pField, const uint8
     to->tv_sec -= (DAYS_CCSDS_TO_UNIX_EPOCH * SECONDS_PER_DAY);
   }
   to->tv_usec = subsecondsToMicroseconds(subSeconds);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint32_t CCSDSTime::subsecondsToMicroseconds(uint16_t subseconds) {
@@ -617,7 +617,7 @@ ReturnValue_t CCSDSTime::convertFromCCS(timeval* to, const uint8_t* from, size_t
                                         size_t maxLength) {
   Clock::TimeOfDay_t tempTime;
   ReturnValue_t result = convertFromCCS(&tempTime, from, foundLength, maxLength);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 

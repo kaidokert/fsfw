@@ -6,7 +6,7 @@ MetadataPduDeserializer::MetadataPduDeserializer(const uint8_t* pduBuf, size_t m
 
 ReturnValue_t MetadataPduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveDeserializer::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentIdx = FileDirectiveDeserializer::getHeaderSize();
@@ -21,15 +21,15 @@ ReturnValue_t MetadataPduDeserializer::parseData() {
   buf += 1;
   auto endianness = getEndianness();
   result = info.getFileSize().deSerialize(&buf, &remSize, endianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = info.getSourceFileName().deSerialize(&buf, &remSize, endianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = info.getDestFileName().deSerialize(&buf, &remSize, endianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -47,7 +47,7 @@ ReturnValue_t MetadataPduDeserializer::parseData() {
         return cfdp::METADATA_CANT_PARSE_OPTIONS;
       }
       result = optionsArray[optsIdx]->deSerialize(&buf, &remSize, endianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       optsIdx++;

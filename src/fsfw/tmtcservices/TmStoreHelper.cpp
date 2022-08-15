@@ -21,7 +21,7 @@ ReturnValue_t TmStoreHelper::preparePacket(uint8_t service, uint8_t subservice, 
   creator.setService(service);
   creator.setSubservice(subservice);
   creator.setMessageTypeCounter(counter);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 StorageManagerIF* TmStoreHelper::getTmStore() const { return tmStore; }
@@ -32,7 +32,7 @@ const store_address_t& TmStoreHelper::getCurrentAddr() const { return currentAdd
 
 ReturnValue_t TmStoreHelper::deletePacket() {
   ReturnValue_t result = tmStore->deleteData(currentAddr);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     currentAddr = store_address_t::invalid();
   }
   return result;
@@ -51,7 +51,7 @@ ReturnValue_t TmStoreHelper::addPacketToStore() {
   uint8_t* dataPtr;
   ReturnValue_t result =
       tmStore->getFreeElement(&currentAddr, creator.getSerializedSize(), &dataPtr);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t serLen = 0;

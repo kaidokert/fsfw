@@ -31,18 +31,18 @@ class CommandExecutor {
   static constexpr uint8_t CLASS_ID = CLASS_ID::LINUX_OSAL;
 
   //! [EXPORT] : [COMMENT] Execution of the current command has finished
-  static constexpr ReturnValue_t EXECUTION_FINISHED = result::makeCode(CLASS_ID, 0);
+  static constexpr ReturnValue_t EXECUTION_FINISHED = returnvalue::makeCode(CLASS_ID, 0);
 
   //! [EXPORT] : [COMMENT] Command is pending. This will also be returned if the user tries
   //! to load another command but a command is still pending
-  static constexpr ReturnValue_t COMMAND_PENDING = result::makeCode(CLASS_ID, 1);
+  static constexpr ReturnValue_t COMMAND_PENDING = returnvalue::makeCode(CLASS_ID, 1);
   //! [EXPORT] : [COMMENT] Some bytes have been read from the executing process
-  static constexpr ReturnValue_t BYTES_READ = result::makeCode(CLASS_ID, 2);
+  static constexpr ReturnValue_t BYTES_READ = returnvalue::makeCode(CLASS_ID, 2);
   //! [EXPORT] : [COMMENT] Command execution failed
-  static constexpr ReturnValue_t COMMAND_ERROR = result::makeCode(CLASS_ID, 3);
+  static constexpr ReturnValue_t COMMAND_ERROR = returnvalue::makeCode(CLASS_ID, 3);
   //! [EXPORT] : [COMMENT]
-  static constexpr ReturnValue_t NO_COMMAND_LOADED_OR_PENDING = result::makeCode(CLASS_ID, 4);
-  static constexpr ReturnValue_t PCLOSE_CALL_ERROR = result::makeCode(CLASS_ID, 6);
+  static constexpr ReturnValue_t NO_COMMAND_LOADED_OR_PENDING = returnvalue::makeCode(CLASS_ID, 4);
+  static constexpr ReturnValue_t PCLOSE_CALL_ERROR = returnvalue::makeCode(CLASS_ID, 6);
 
   /**
    * Constructor. Is initialized with maximum size of internal buffer to read data from the
@@ -62,7 +62,7 @@ class CommandExecutor {
   /**
    * Execute the loaded command.
    * @return
-   *  - In blocking mode, it will return RETURN_FAILED if
+   *  - In blocking mode, it will return returnvalue::FAILED if
    *    the result of the system call was not 0. The error value can be accessed using
    *    getLastError
    *  - In non-blocking mode, this call will start
@@ -76,7 +76,7 @@ class CommandExecutor {
    *  - BYTES_READ if bytes have been read from the executing process. It is recommended to call
    *    check again after this
    *  - RETURN_OK execution is pending, but no bytes have been read from the executing process
-   *  - RETURN_FAILED if execution has failed, error value can be accessed using getLastError
+   *  - returnvalue::FAILED if execution has failed, error value can be accessed using getLastError
    *  - EXECUTION_FINISHED if the process was executed successfully
    *  - NO_COMMAND_LOADED_OR_PENDING self-explanatory
    *  - COMMAND_ERROR internal poll error

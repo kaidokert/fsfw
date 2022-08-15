@@ -32,7 +32,7 @@ class ApidSsc : public SerializeIF {
                           Endianness streamEndianness) const {
     ReturnValue_t result =
         SerializeAdapter::serialize(&apid, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     return SerializeAdapter::serialize(&ssc, buffer, size, maxSize, streamEndianness);
@@ -42,7 +42,7 @@ class ApidSsc : public SerializeIF {
 
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size, Endianness streamEndianness) {
     ReturnValue_t result = SerializeAdapter::deSerialize(&apid, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     return SerializeAdapter::deSerialize(&ssc, buffer, size, streamEndianness);
@@ -87,7 +87,7 @@ class TmPacketInformation : public SerializeIF {
     const uint8_t* pField = NULL;
     uint32_t size = 0;
     ReturnValue_t result = packet->getPacketTimeRaw(&pField, &size);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return;
     }
     if (*pField == CCSDSTime::P_FIELD_CDS_SHORT && size <= TimeStamperIF::MISSION_TIMESTAMP_SIZE) {
@@ -97,13 +97,13 @@ class TmPacketInformation : public SerializeIF {
     }
     timeval time = {0, 0};
     result = packet->getPacketTime(&time);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return;
     }
 
     CCSDSTime::CDS_short cdsFormat;
     result = CCSDSTime::convertToCcsds(&cdsFormat, &time);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return;
     }
     memcpy(rawTimestamp, &cdsFormat, sizeof(cdsFormat));
@@ -196,24 +196,24 @@ class TmPacketInformation : public SerializeIF {
                           Endianness streamEndianness) const {
     ReturnValue_t result =
         SerializeAdapter::serialize(&apid, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result =
         SerializeAdapter::serialize(&sourceSequenceCount, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&serviceType, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&serviceSubtype, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&subCounter, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     SerialBufferAdapter<uint8_t> adapter(rawTimestamp, sizeof(rawTimestamp));
@@ -234,23 +234,23 @@ class TmPacketInformation : public SerializeIF {
 
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size, Endianness streamEndianness) {
     ReturnValue_t result = SerializeAdapter::deSerialize(&apid, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&sourceSequenceCount, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&serviceType, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&serviceSubtype, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&subCounter, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     SerialBufferAdapter<uint8_t> adapter(rawTimestamp, sizeof(rawTimestamp));

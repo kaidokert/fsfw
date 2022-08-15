@@ -31,13 +31,13 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
   // This should call the OS specific destructor
   delete (dynamic_cast<PeriodicTask*>(task));
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
   rtems_task_wake_after(RtemsBasic::convertMsToTicks(delayMs));
   // Only return value is "RTEMS_SUCCESSFUL - always successful" so it has been neglected
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TaskFactory::printMissedDeadline() {

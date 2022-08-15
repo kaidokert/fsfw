@@ -58,18 +58,18 @@ class RingBufferBase {
   ReturnValue_t readData(uint32_t amount, uint8_t n = 0) {
     if (getAvailableReadData(n) >= amount) {
       incrementRead(amount, n);
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     } else {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
   ReturnValue_t writeData(uint32_t amount) {
     if (availableWriteSpace() >= amount or overwriteOld) {
       incrementWrite(amount);
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     } else {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 

@@ -24,13 +24,13 @@ ReturnValue_t MemoryHelper::handleMemoryCommand(CommandMessage* message) {
   switch (lastCommand) {
     case MemoryMessage::CMD_MEMORY_DUMP:
       handleMemoryCheckOrDump(message);
-      return RETURN_OK;
+      return returnvalue::OK;
     case MemoryMessage::CMD_MEMORY_LOAD:
       handleMemoryLoad(message);
-      return RETURN_OK;
+      return returnvalue::OK;
     case MemoryMessage::CMD_MEMORY_CHECK:
       handleMemoryCheckOrDump(message);
-      return RETURN_OK;
+      return returnvalue::OK;
     default:
       lastCommand = CommandMessage::CMD_NONE;
       return UNKNOWN_CMD;
@@ -51,7 +51,7 @@ void MemoryHelper::completeLoad(ReturnValue_t errorCode, const uint8_t* dataToCo
       EndianConverter::convertBigEndian(copyHere, dataToCopy, size);
       break;
     case HasMemoryIF::ACTIVITY_COMPLETED:
-    case RETURN_OK:
+    case returnvalue::OK:
       break;
     default:
       ipcStore->deleteData(ipcAddress);
@@ -75,7 +75,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode, const uint8_t* dataToCo
     case HasMemoryIF::DO_IT_MYSELF:
       busy = true;
       return;
-    case HasReturnvaluesIF::RETURN_OK:
+    case returnvalue::OK:
     case HasMemoryIF::POINTS_TO_MEMORY:
     case HasMemoryIF::POINTS_TO_VARIABLE:
       //"data" must be valid pointer!
@@ -118,7 +118,7 @@ void MemoryHelper::completeDump(ReturnValue_t errorCode, const uint8_t* dataToCo
       ipcStore->deleteData(ipcAddress);
       break;
   }
-  if (queueToUse->sendMessage(lastSender, &reply) != RETURN_OK) {
+  if (queueToUse->sendMessage(lastSender, &reply) != returnvalue::OK) {
     reply.clear();
   }
 }
@@ -148,7 +148,7 @@ void MemoryHelper::handleMemoryLoad(CommandMessage* message) {
   uint8_t* dataPointer = NULL;
   size_t size = 0;
   ReturnValue_t returnCode = ipcStore->getData(ipcAddress, &p_data, &size);
-  if (returnCode == RETURN_OK) {
+  if (returnCode == returnvalue::OK) {
     returnCode = workOnThis->handleMemoryLoad(address, p_data, size, &dataPointer);
     completeLoad(returnCode, p_data, size, dataPointer);
   } else {
@@ -164,7 +164,7 @@ void MemoryHelper::handleMemoryCheckOrDump(CommandMessage* message) {
   uint32_t size = MemoryMessage::getLength(message);
   uint8_t* dataPointer = NULL;
   ReturnValue_t returnCode = ipcStore->getFreeElement(&ipcAddress, size, &reservedSpaceInIPC);
-  if (returnCode == RETURN_OK) {
+  if (returnCode == returnvalue::OK) {
     returnCode = workOnThis->handleMemoryDump(address, size, &dataPointer, reservedSpaceInIPC);
     completeDump(returnCode, dataPointer, size);
   } else {
@@ -176,7 +176,7 @@ void MemoryHelper::handleMemoryCheckOrDump(CommandMessage* message) {
 
 ReturnValue_t MemoryHelper::initialize(MessageQueueIF* queueToUse_) {
   if (queueToUse_ == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   this->queueToUse = queueToUse_;
   return initialize();
@@ -185,8 +185,8 @@ ReturnValue_t MemoryHelper::initialize(MessageQueueIF* queueToUse_) {
 ReturnValue_t MemoryHelper::initialize() {
   ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
   if (ipcStore != nullptr) {
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }

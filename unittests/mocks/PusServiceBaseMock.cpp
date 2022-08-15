@@ -9,7 +9,7 @@ ReturnValue_t PsbMock::handleRequest(uint8_t subservice) {
     handleReqFailPair.first = false;
     return handleReqFailPair.second;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PsbMock::performService() {
@@ -18,7 +18,7 @@ ReturnValue_t PsbMock::performService() {
     performServiceFailPair.first = false;
     return performServiceFailPair.second;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PsbMock::reset() {

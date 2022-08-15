@@ -34,7 +34,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
   SECTION("Storage Fails") {
     // Too large to fit in store
     std::array<uint8_t, 80> data{};
-    REQUIRE(storeHelper.setSourceDataRaw(data.data(), data.size()) == result::OK);
+    REQUIRE(storeHelper.setSourceDataRaw(data.data(), data.size()) == returnvalue::OK);
     REQUIRE(tmHelper.storeAndSendTmPacket() == StorageManagerIF::DATA_TOO_LARGE);
   }
 
@@ -48,13 +48,13 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(params.dataWrapper.dataUnion.raw.data == nullptr);
     REQUIRE(params.dataWrapper.dataUnion.raw.len == 0);
     REQUIRE(tmHelper.sendCounter == 0);
-    REQUIRE(tmHelper.storeAndSendTmPacket() == result::OK);
+    REQUIRE(tmHelper.storeAndSendTmPacket() == returnvalue::OK);
     REQUIRE(tmHelper.sendCounter == 1);
     auto storeId = storeHelper.getCurrentAddr();
     REQUIRE(msgQueue.wasMessageSent());
     REQUIRE(msgQueue.numberOfSentMessagesToDefault() == 1);
     TmTcMessage msg;
-    REQUIRE(msgQueue.getNextSentMessage(msg) == result::OK);
+    REQUIRE(msgQueue.getNextSentMessage(msg) == returnvalue::OK);
     REQUIRE(msg.getStorageId() == storeId);
     REQUIRE(pool.hasDataAtId(msg.getStorageId()));
     storeHelper.deletePacket();
@@ -62,7 +62,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
 
   SECTION("Raw Data Helper") {
     std::array<uint8_t, 3> data = {1, 2, 3};
-    REQUIRE(tmHelper.prepareTmPacket(2, data.data(), data.size()) == result::OK);
+    REQUIRE(tmHelper.prepareTmPacket(2, data.data(), data.size()) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
     REQUIRE(params.dataWrapper.type == ecss::DataTypes::RAW);
@@ -72,7 +72,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
 
   SECTION("Serializable Helper") {
     auto simpleSer = SimpleSerializable();
-    REQUIRE(tmHelper.prepareTmPacket(2, simpleSer) == result::OK);
+    REQUIRE(tmHelper.prepareTmPacket(2, simpleSer) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
     REQUIRE(params.dataWrapper.type == ecss::DataTypes::SERIALIZABLE);
@@ -83,7 +83,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     uint32_t objectId = 0x01020304;
     std::array<uint8_t, 3> data = {1, 2, 3};
     telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data.data(), data.size());
-    REQUIRE(tmHelper.prepareTmPacket(2, dataWithObjId) == result::OK);
+    REQUIRE(tmHelper.prepareTmPacket(2, dataWithObjId) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
     REQUIRE(params.dataWrapper.type == ecss::DataTypes::SERIALIZABLE);

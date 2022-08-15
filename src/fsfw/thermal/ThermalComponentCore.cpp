@@ -18,7 +18,7 @@ ThermalComponentCore::ThermalComponentCore(object_id_t reportingObjectId, uint8_
   // Set thermal state once, then leave to operator.
   targetState.setReadWriteMode(PoolVariableIF::VAR_WRITE);
   ReturnValue_t result = targetState.read();
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     targetState = initialTargetState;
     targetState.setValid(true);
     targetState.commit();
@@ -91,7 +91,7 @@ ReturnValue_t ThermalComponentCore::setTargetState(int8_t newState) {
   targetState.setReadWriteMode(pool_rwm_t::VAR_READ_WRITE);
   targetState.read();
   if ((targetState == STATE_REQUEST_OPERATIONAL) and (newState != STATE_REQUEST_IGNORE)) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   switch (newState) {
@@ -106,7 +106,7 @@ ReturnValue_t ThermalComponentCore::setTargetState(int8_t newState) {
   }
   targetState.setValid(true);
   targetState.commit();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void ThermalComponentCore::setOutputInvalid() {
@@ -267,5 +267,5 @@ ReturnValue_t ThermalComponentCore::getParameter(uint8_t domainId, uint8_t uniqu
     default:
       return INVALID_IDENTIFIER_ID;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

@@ -48,12 +48,12 @@ struct VerifFailureParams : public VerifParamsBase {
       : VerifParamsBase(reportId, tc.getPacketIdRaw(), tc.getPacketSeqCtrlRaw()) {}
 
   void resetFailParams() {
-    errorCode = result::FAILED;
+    errorCode = returnvalue::FAILED;
     errorParam1 = 0;
     errorParam2 = 0;
   }
 
-  ReturnValue_t errorCode = result::FAILED;
+  ReturnValue_t errorCode = returnvalue::FAILED;
   uint8_t step = 0;
   uint32_t errorParam1 = 0;
   uint32_t errorParam2 = 0;

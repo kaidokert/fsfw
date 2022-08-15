@@ -32,14 +32,14 @@ ReturnValue_t SimpleRingBuffer::getFreeElement(uint8_t** writePointer, size_t am
     size_t amountTillWrap = writeTillWrap();
     if (amountTillWrap < amount) {
       if ((amount - amountTillWrap + excessBytes) > maxExcessBytes) {
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       }
       excessBytes = amount - amountTillWrap;
     }
     *writePointer = &buffer[write];
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
@@ -52,7 +52,7 @@ void SimpleRingBuffer::confirmBytesWritten(size_t amount) {
 
 ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data, size_t amount) {
   if (data == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (amount > getMaxSize()) {
 #if FSFW_VERBOSE_LEVEL >= 1
@@ -62,7 +62,7 @@ ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data, size_t amount) {
     sif::printError("SimpleRingBuffer::writeData: Amount of data too large\n");
 #endif
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (availableWriteSpace() >= amount or overwriteOld) {
     size_t amountTillWrap = writeTillWrap();
@@ -74,9 +74,9 @@ ReturnValue_t SimpleRingBuffer::writeData(const uint8_t* data, size_t amount) {
       memcpy(buffer, data + amountTillWrap, amount - amountTillWrap);
     }
     incrementWrite(amount);
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
@@ -89,7 +89,7 @@ ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, size_t amount, bool incr
       // more data available than amount specified.
       amount = availableData;
     } else {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
   if (trueAmount != nullptr) {
@@ -105,7 +105,7 @@ ReturnValue_t SimpleRingBuffer::readData(uint8_t* data, size_t amount, bool incr
   if (incrementReadPtr) {
     deleteData(amount, readRemaining);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t SimpleRingBuffer::getExcessBytes() const { return excessBytes; }
@@ -124,12 +124,12 @@ ReturnValue_t SimpleRingBuffer::deleteData(size_t amount, bool deleteRemaining,
     if (deleteRemaining) {
       amount = availableData;
     } else {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
   if (trueAmount != nullptr) {
     *trueAmount = amount;
   }
   incrementRead(amount, READ_PTR);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

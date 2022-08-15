@@ -23,7 +23,7 @@ class RedirectableDataPointerIF {
    * @param args Any additional user arguments required to set the data pointer
    * @return
    *  - RETURN_OK if the pointer was set successfully
-   *  - RETURN_FAILED on general error of if the maximum size is too small
+   *  - returnvalue::FAILED on general error of if the maximum size is too small
    */
   virtual ReturnValue_t setData(uint8_t* dataPtr, size_t size, void* args) = 0;
   virtual ReturnValue_t setData(uint8_t* dataPtr, size_t size) {

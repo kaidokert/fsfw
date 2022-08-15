@@ -35,7 +35,7 @@ UdpTmTcBridge::UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
 
 ReturnValue_t UdpTmTcBridge::initialize() {
   ReturnValue_t result = TmTcBridge::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "UdpTmTcBridge::initialize: TmTcBridge initialization failed!" << std::endl;
 #endif
@@ -56,7 +56,7 @@ ReturnValue_t UdpTmTcBridge::initialize() {
 #else
     sif::printError("UdpTmTcBridge::UdpTmTcBridge: WSAStartup failed with error: %d\n", err);
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 #endif
 
@@ -75,14 +75,14 @@ ReturnValue_t UdpTmTcBridge::initialize() {
   int retval = getaddrinfo(nullptr, udpServerPort.c_str(), &hints, &addrResult);
   if (retval != 0) {
     tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::GETADDRINFO_CALL);
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   serverSocket = socket(addrResult->ai_family, addrResult->ai_socktype, addrResult->ai_protocol);
   if (serverSocket == INVALID_SOCKET) {
     freeaddrinfo(addrResult);
     tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::SOCKET_CALL);
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
 #if FSFW_UDP_SEND_WIRETAPPING_ENABLED == 1
@@ -93,10 +93,10 @@ ReturnValue_t UdpTmTcBridge::initialize() {
   if (retval != 0) {
     freeaddrinfo(addrResult);
     tcpip::handleError(tcpip::Protocol::UDP, tcpip::ErrorSources::BIND_CALL);
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   freeaddrinfo(addrResult);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 UdpTmTcBridge::~UdpTmTcBridge() {
@@ -131,7 +131,7 @@ ReturnValue_t UdpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
                 " sent."
              << std::endl;
 #endif
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void UdpTmTcBridge::checkAndSetClientAddress(sockaddr &newAddress) {

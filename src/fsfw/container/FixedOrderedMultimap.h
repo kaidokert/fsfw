@@ -148,7 +148,7 @@ class FixedOrderedMultimap {
    */
   Iterator find(key_t key) const {
     ReturnValue_t result = exists(key);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return end();
     }
     return Iterator(&theMap[findFirstIndex(key)]);

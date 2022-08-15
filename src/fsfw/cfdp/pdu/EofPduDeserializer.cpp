@@ -8,7 +8,7 @@ EofPduDeserializer::EofPduDeserializer(const uint8_t* pduBuf, size_t maxSize, Eo
 
 ReturnValue_t EofPduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveDeserializer::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -31,7 +31,7 @@ ReturnValue_t EofPduDeserializer::parseData() {
   uint32_t checksum = 0;
   auto endianness = getEndianness();
   result = SerializeAdapter::deSerialize(&checksum, &bufPtr, &deserLen, endianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   info.setChecksum(checksum);
@@ -44,7 +44,7 @@ ReturnValue_t EofPduDeserializer::parseData() {
     result = SerializeAdapter::deSerialize(&fileSizeValue, &bufPtr, &deserLen, endianness);
     info.setFileSize(fileSizeValue, false);
   }
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (info.getConditionCode() != cfdp::ConditionCode::NO_ERROR) {
@@ -61,7 +61,7 @@ ReturnValue_t EofPduDeserializer::parseData() {
           " given TLV pointer invalid");
 #endif
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     result = tlvPtr->deSerialize(&bufPtr, &deserLen, endianness);
   }

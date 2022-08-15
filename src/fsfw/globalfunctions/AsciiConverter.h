@@ -3,7 +3,7 @@
 
 #include "../returnvalues/HasReturnvaluesIF.h"
 
-class AsciiConverter : public HasReturnvaluesIF {
+class AsciiConverter {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::ASCII_CONVERTER;
   static const ReturnValue_t TOO_LONG_FOR_TARGET_TYPE = MAKE_RETURN_CODE(1);

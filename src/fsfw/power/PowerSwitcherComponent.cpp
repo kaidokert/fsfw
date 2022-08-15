@@ -16,15 +16,15 @@ ReturnValue_t PowerSwitcherComponent::performOperation(uint8_t opCode) {
   ReturnValue_t result;
   CommandMessage command;
 
-  for (result = queue->receiveMessage(&command); result == RETURN_OK;
+  for (result = queue->receiveMessage(&command); result == returnvalue::OK;
        result = queue->receiveMessage(&command)) {
     result = healthHelper.handleHealthCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = modeHelper.handleModeCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
   }
@@ -37,16 +37,16 @@ ReturnValue_t PowerSwitcherComponent::performOperation(uint8_t opCode) {
       setMode(MODE_ON, 0);
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PowerSwitcherComponent::initialize() {
   ReturnValue_t result = modeHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = healthHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return SystemObject::initialize();
@@ -61,7 +61,7 @@ void PowerSwitcherComponent::getMode(Mode_t *mode, Submode_t *submode) {
 
 ReturnValue_t PowerSwitcherComponent::setHealth(HealthState health) {
   healthHelper.setHealth(health);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PowerSwitcherComponent::checkModeCommand(Mode_t mode, Submode_t submode,
@@ -70,7 +70,7 @@ ReturnValue_t PowerSwitcherComponent::checkModeCommand(Mode_t mode, Submode_t su
   if (mode != MODE_ON and mode != MODE_OFF) {
     return TRANS_NOT_ALLOWED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PowerSwitcherComponent::startTransition(Mode_t mode, Submode_t submode) {

@@ -13,7 +13,7 @@
  * 		 which simply calls all other tests from other files manually.
  * 		 Maybe there is a better way..
  */
-class InternalUnitTester : public HasReturnvaluesIF {
+class InternalUnitTester {
  public:
   struct TestConfig {
     bool testArrayPrinter = false;

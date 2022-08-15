@@ -36,7 +36,7 @@ ReturnValue_t ObjectManager::insert(object_id_t id, SystemObjectIF* object) {
     // sif::debug << "ObjectManager::insert: Object " << std::hex
     //            << (int)id << std::dec << " inserted." << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "ObjectManager::insert: Object ID " << std::hex << static_cast<uint32_t>(id)
@@ -59,7 +59,7 @@ ReturnValue_t ObjectManager::remove(object_id_t id) {
     // sif::debug << "ObjectManager::removeObject: Object " << std::hex
     //            << (int)id << std::dec << " removed." << std::endl;
 #endif
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "ObjectManager::removeObject: Requested object " << std::hex << (int)id
@@ -90,11 +90,11 @@ void ObjectManager::initialize() {
     return;
   }
   objectFactoryFunction(factoryArgs);
-  ReturnValue_t result = RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   uint32_t errorCount = 0;
   for (auto const& it : objectList) {
     result = it.second->initialize();
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       object_id_t var = it.first;
       sif::error << "ObjectManager::initialize: Object 0x" << std::hex << std::setw(8)
@@ -116,7 +116,7 @@ void ObjectManager::initialize() {
   errorCount = 0;
   for (auto const& it : objectList) {
     result = it.second->checkObjectConnections();
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "ObjectManager::ObjectManager: Object 0x" << std::hex << (int)it.first
                  << " connection check failed with code 0x" << result << std::dec << std::endl;

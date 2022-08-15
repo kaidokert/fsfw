@@ -11,7 +11,7 @@ ReturnValue_t AckPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t
                                           Endianness streamEndianness) const {
   ReturnValue_t result =
       FileDirectiveSerializer::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   cfdp::FileDirectives ackedDirective = ackInfo.getAckedDirective();
@@ -21,7 +21,7 @@ ReturnValue_t AckPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t
   if (ackedDirective != cfdp::FileDirectives::FINISH and
       ackedDirective != cfdp::FileDirectives::EOF_DIRECTIVE) {
     // TODO: better returncode
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (*size + 2 > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
@@ -32,5 +32,5 @@ ReturnValue_t AckPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t
   **buffer = ackedConditionCode << 4 | transactionStatus;
   *buffer += 1;
   *size += 1;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

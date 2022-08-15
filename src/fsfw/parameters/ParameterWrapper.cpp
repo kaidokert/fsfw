@@ -28,16 +28,16 @@ ReturnValue_t ParameterWrapper::serialize(uint8_t **buffer, size_t *size, size_t
   ReturnValue_t result;
 
   result = SerializeAdapter::serialize(&type, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = SerializeAdapter::serialize(&columns, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = SerializeAdapter::serialize(&rows, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -91,11 +91,11 @@ template <typename T>
 ReturnValue_t ParameterWrapper::serializeData(uint8_t **buffer, size_t *size, size_t maxSize,
                                               Endianness streamEndianness) const {
   const T *element = (const T *)readonlyData;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   uint16_t dataSize = columns * rows;
   while (dataSize != 0) {
     result = SerializeAdapter::serialize(element, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     element++;
@@ -112,7 +112,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow, uint8_t sta
   const uint8_t *fromAsStream = reinterpret_cast<const uint8_t *>(from);
   size_t streamSize = fromRows * fromColumns * sizeof(T);
 
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
 
   for (uint8_t fromRow = 0; fromRow < fromRows; fromRow++) {
     // get the start element of this row in data
@@ -122,7 +122,7 @@ ReturnValue_t ParameterWrapper::deSerializeData(uint8_t startingRow, uint8_t sta
     for (uint8_t fromColumn = 0; fromColumn < fromColumns; fromColumn++) {
       result = SerializeAdapter::deSerialize(dataWithDataType + fromColumn, &fromAsStream,
                                              &streamSize, SerializeIF::Endianness::BIG);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     }
@@ -142,7 +142,7 @@ ReturnValue_t ParameterWrapper::deSerialize(const uint8_t **buffer, size_t *size
   ParameterWrapper streamDescription;
 
   ReturnValue_t result = streamDescription.set(*buffer, *size, buffer, size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -163,24 +163,24 @@ ReturnValue_t ParameterWrapper::set(Type type, uint8_t rows, uint8_t columns, co
   this->data = nullptr;
   this->readonlyData = data;
   pointsToStream = true;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
                                     const uint8_t **remainingStream, size_t *remainingSize) {
   ReturnValue_t result =
       SerializeAdapter::deSerialize(&type, &stream, &streamSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result =
       SerializeAdapter::deSerialize(&columns, &stream, &streamSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = SerializeAdapter::deSerialize(&rows, &stream, &streamSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -203,7 +203,7 @@ ReturnValue_t ParameterWrapper::set(const uint8_t *stream, size_t streamSize,
     *remainingSize = streamSize;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
@@ -265,7 +265,7 @@ ReturnValue_t ParameterWrapper::copyFrom(const ParameterWrapper *from,
 
   uint8_t typeSize = type.getSize();
 
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   // copy data
   if (from->pointsToStream) {
     switch (type) {

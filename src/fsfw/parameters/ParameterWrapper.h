@@ -185,7 +185,7 @@ inline ReturnValue_t ParameterWrapper::getElement(T *value, uint8_t row, uint8_t
   } else {
     const T *dataWithType = static_cast<const T *>(readonlyData);
     *value = dataWithType[row * columns + column];
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 }
 

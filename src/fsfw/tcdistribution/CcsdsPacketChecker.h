@@ -4,7 +4,7 @@
 #include "CcsdsPacketCheckIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 
-class CcsdsPacketChecker : public CcsdsPacketCheckIF, public HasReturnvaluesIF {
+class CcsdsPacketChecker : public CcsdsPacketCheckIF {
  public:
   CcsdsPacketChecker(ccsds::PacketType packetType, uint8_t ccsdsVersion = 0b000);
 

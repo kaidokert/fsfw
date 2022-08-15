@@ -33,10 +33,10 @@ void PusVerificationReporterMock::popNextSuccessParams() {
 
 ReturnValue_t PusVerificationReporterMock::sendSuccessReport(VerifSuccessParams params) {
   successParams.push(params);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PusVerificationReporterMock::sendFailureReport(VerifFailureParams params) {
   failParams.push(params);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

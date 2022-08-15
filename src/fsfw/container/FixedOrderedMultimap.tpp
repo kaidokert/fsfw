@@ -16,7 +16,7 @@ inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::insert(key_t k
   if (storedValue != nullptr) {
     *storedValue = Iterator(&theMap[position]);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 template <typename key_t, typename T, typename KEY_COMPARE>
 inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::insert(std::pair<key_t, T> pair) {
@@ -27,7 +27,7 @@ template <typename key_t, typename T, typename KEY_COMPARE>
 inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::exists(key_t key) const {
   ReturnValue_t result = KEY_DOES_NOT_EXIST;
   if (findFirstIndex(key) < _size) {
-    result = HasReturnvaluesIF::RETURN_OK;
+    result = returnvalue::OK;
   }
   return result;
 }
@@ -44,7 +44,7 @@ inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(Iterator
   } else {
     *iter = begin();
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename key_t, typename T, typename KEY_COMPARE>
@@ -57,17 +57,17 @@ inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::erase(key_t ke
     removeFromPosition(i);
     i = findFirstIndex(key, i);
   } while (i < _size);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename key_t, typename T, typename KEY_COMPARE>
 inline ReturnValue_t FixedOrderedMultimap<key_t, T, KEY_COMPARE>::find(key_t key, T **value) const {
   ReturnValue_t result = exists(key);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   *value = &theMap[findFirstIndex(key)].second;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename key_t, typename T, typename KEY_COMPARE>

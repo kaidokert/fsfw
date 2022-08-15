@@ -32,11 +32,11 @@ void TmSendHelper::setMsgQueue(MessageQueueIF &queue_) { queue = &queue_; }
 
 ReturnValue_t TmSendHelper::sendPacket(MessageQueueId_t dest, const store_address_t &storeId) {
   if (queue == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   TmTcMessage message(storeId);
   ReturnValue_t result = queue->sendMessage(dest, &message, ignoreFault);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     if (errReporter != nullptr and not ignoreFault) {
       errReporter->lostTm();
     }

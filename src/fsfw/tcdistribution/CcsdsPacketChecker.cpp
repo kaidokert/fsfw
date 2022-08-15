@@ -24,7 +24,7 @@ ReturnValue_t CcsdsPacketChecker::checkPacket(const SpacePacketReader& currentPa
   if (currentPacket.getFullPacketLen() != packetLen) {
     return tcdistrib::INCOMPLETE_PACKET;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void CcsdsPacketChecker::setApidToCheck(uint16_t apid_) {

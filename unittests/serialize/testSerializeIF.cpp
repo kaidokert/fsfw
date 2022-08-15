@@ -14,7 +14,7 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
 
   SECTION("Little Endian Normal") {
     REQUIRE(simpleSer.serialize(&ptr, &len, buf.size(), SerializeIF::Endianness::LITTLE) ==
-            HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
     CHECK(buf[0] == 1);
     CHECK(buf[1] == 3);
     CHECK(buf[2] == 2);
@@ -26,8 +26,7 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
   SECTION("Little Endian Simple") {
     size_t serLen = 0xff;
     REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), serLen, buf.size(),
-                                             SerializeIF::Endianness::LITTLE) ==
-            HasReturnvaluesIF::RETURN_OK);
+                                             SerializeIF::Endianness::LITTLE) == returnvalue::OK);
     CHECK(buf[0] == 1);
     CHECK(buf[1] == 3);
     CHECK(buf[2] == 2);
@@ -37,14 +36,14 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
   SECTION("Big Endian Normal") {
     SECTION("Explicit") {
       REQUIRE(simpleSer.serialize(&ptr, &len, buf.size(), SerializeIF::Endianness::BIG) ==
-              HasReturnvaluesIF::RETURN_OK);
+              returnvalue::OK);
     }
     SECTION("Network 0") {
       REQUIRE(simpleSer.serialize(&ptr, &len, buf.size(), SerializeIF::Endianness::NETWORK) ==
-              HasReturnvaluesIF::RETURN_OK);
+              returnvalue::OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.serializeBe(&ptr, &len, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.serializeBe(&ptr, &len, buf.size()) == returnvalue::OK);
     }
 
     CHECK(buf[0] == 1);
@@ -59,17 +58,16 @@ TEST_CASE("Serialize IF Serialize", "[serialize-if-ser]") {
     size_t serLen = 0xff;
     SECTION("Explicit") {
       REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), serLen, buf.size(),
-                                               SerializeIF::Endianness::BIG) ==
-              HasReturnvaluesIF::RETURN_OK);
+                                               SerializeIF::Endianness::BIG) == returnvalue::OK);
     }
     SECTION("Network 0") {
       REQUIRE(simpleSer.SerializeIF::serialize(buf.data(), serLen, buf.size(),
                                                SerializeIF::Endianness::NETWORK) ==
-              HasReturnvaluesIF::RETURN_OK);
+              returnvalue::OK);
     }
     SECTION("Network 1") {
       REQUIRE(simpleSer.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) ==
-              HasReturnvaluesIF::RETURN_OK);
+              returnvalue::OK);
     }
     CHECK(buf[0] == 1);
     CHECK(buf[1] == 2);
@@ -85,8 +83,7 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
   size_t len = buf.size();
 
   SECTION("Little Endian Normal") {
-    REQUIRE(simpleSer.deSerialize(&ptr, &len, SerializeIF::Endianness::LITTLE) ==
-            HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(simpleSer.deSerialize(&ptr, &len, SerializeIF::Endianness::LITTLE) == returnvalue::OK);
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 0x0100);
     CHECK(ptr == buf.data() + 3);
@@ -95,9 +92,8 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
 
   SECTION("Little Endian Simple") {
     size_t deserLen = 0xff;
-    REQUIRE(
-        simpleSer.SerializeIF::deSerialize(ptr, deserLen, len, SerializeIF::Endianness::LITTLE) ==
-        HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(simpleSer.SerializeIF::deSerialize(ptr, deserLen, len,
+                                               SerializeIF::Endianness::LITTLE) == returnvalue::OK);
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 0x0100);
     CHECK(deserLen == 3);
@@ -105,15 +101,14 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
 
   SECTION("Big Endian Normal") {
     SECTION("Explicit") {
-      REQUIRE(simpleSer.deSerialize(&ptr, &len, SerializeIF::Endianness::BIG) ==
-              HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.deSerialize(&ptr, &len, SerializeIF::Endianness::BIG) == returnvalue::OK);
     }
     SECTION("Network 0") {
       REQUIRE(simpleSer.deSerialize(&ptr, &len, SerializeIF::Endianness::NETWORK) ==
-              HasReturnvaluesIF::RETURN_OK);
+              returnvalue::OK);
     }
     SECTION("Network 1") {
-      REQUIRE(simpleSer.SerializeIF::deSerializeBe(&ptr, &len) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(simpleSer.SerializeIF::deSerializeBe(&ptr, &len) == returnvalue::OK);
     }
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 1);
@@ -125,17 +120,16 @@ TEST_CASE("SerializeIF Deserialize", "[serialize-if-de]") {
     size_t deserLen = 0xff;
     SECTION("Explicit") {
       REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), deserLen, buf.size(),
-                                                 SerializeIF::Endianness::BIG) ==
-              HasReturnvaluesIF::RETURN_OK);
+                                                 SerializeIF::Endianness::BIG) == returnvalue::OK);
     }
     SECTION("Network 0") {
       REQUIRE(simpleSer.SerializeIF::deSerialize(buf.data(), deserLen, buf.size(),
                                                  SerializeIF::Endianness::NETWORK) ==
-              HasReturnvaluesIF::RETURN_OK);
+              returnvalue::OK);
     }
     SECTION("Network 1") {
       REQUIRE(simpleSer.SerializeIF::deSerializeBe(buf.data(), deserLen, buf.size()) ==
-              HasReturnvaluesIF::RETURN_OK);
+              returnvalue::OK);
     }
     CHECK(simpleSer.getU8() == 5);
     CHECK(simpleSer.getU16() == 1);

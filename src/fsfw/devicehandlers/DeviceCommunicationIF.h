@@ -34,7 +34,7 @@
  *  @ingroup interfaces
  *  @ingroup comm
  */
-class DeviceCommunicationIF : public HasReturnvaluesIF {
+class DeviceCommunicationIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::DEVICE_COMMUNICATION_IF;
 

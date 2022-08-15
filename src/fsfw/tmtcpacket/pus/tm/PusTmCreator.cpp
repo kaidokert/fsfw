@@ -48,7 +48,7 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
     return SerializeIF::BUFFER_TOO_SHORT;
   }
   ReturnValue_t result = spCreator.serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t userDataLen = pusParams.dataWrapper.getLength();
@@ -62,17 +62,17 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
   *size += 3;
   result = SerializeAdapter::serialize(&pusParams.secHeader.messageTypeCounter, buffer, size,
                                        maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = SerializeAdapter::serialize(&pusParams.secHeader.destId, buffer, size, maxSize,
                                        streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (getTimestamper() != nullptr) {
     result = pusParams.secHeader.timeStamper->serialize(buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -86,7 +86,7 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
              pusParams.dataWrapper.dataUnion.serializable != nullptr) {
     result = pusParams.dataWrapper.dataUnion.serializable->serialize(buffer, size, maxSize,
                                                                      streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -97,13 +97,13 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
   // Even if no CRC is calculated, account for the space taken by it
   *size += 2;
   *buffer += 2;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t PusTmCreator::getSerializedSize() const { return getFullPacketLen(); }
 ReturnValue_t PusTmCreator::deSerialize(const uint8_t** buffer, size_t* size,
                                         SerializeIF::Endianness streamEndianness) {
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 TimeStamperIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader.timeStamper; }
@@ -136,12 +136,12 @@ void PusTmCreator::setDestId(uint16_t destId) { pusParams.secHeader.destId = des
 ReturnValue_t PusTmCreator::setRawUserData(const uint8_t* data, size_t len) {
   pusParams.dataWrapper.setRawData({data, len});
   updateSpLengthField();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 ReturnValue_t PusTmCreator::setSerializableUserData(SerializeIF& serializable) {
   pusParams.dataWrapper.setSerializable(serializable);
   updateSpLengthField();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PusTmCreator::setService(uint8_t service) { pusParams.secHeader.service = service; }

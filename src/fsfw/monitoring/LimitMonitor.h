@@ -32,7 +32,7 @@ class LimitMonitor : public MonitorBase<T> {
       *crossedLimit = lowerLimit;
       return MonitoringIF::BELOW_LOW_LIMIT;
     } else {
-      return HasReturnvaluesIF::RETURN_OK;  // Within limits.
+      return returnvalue::OK;  // Within limits.
     }
   }
 
@@ -55,7 +55,7 @@ class LimitMonitor : public MonitorBase<T> {
       default:
         return this->INVALID_IDENTIFIER_ID;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   bool isOutOfLimits() {
     if (this->oldState == MonitoringIF::ABOVE_HIGH_LIMIT or

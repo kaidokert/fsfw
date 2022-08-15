@@ -10,7 +10,7 @@ class CfdpPacketStored;
  * This class performs a formal packet check for incoming CFDP Packets.
  * @ingroup tc_distribution
  */
-class CfdpPacketChecker : public CcsdsPacketCheckIF, public HasReturnvaluesIF {
+class CfdpPacketChecker : public CcsdsPacketCheckIF {
  protected:
   /**
    * The packet id each correct packet should have.

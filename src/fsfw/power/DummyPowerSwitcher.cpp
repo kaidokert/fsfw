@@ -20,28 +20,28 @@ ReturnValue_t DummyPowerSwitcher::sendSwitchCommand(power::Switch_t switchNr, Re
   if (switchNr < switcherList.size()) {
     switcherList[switchNr] = onOff;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t DummyPowerSwitcher::sendFuseOnCommand(uint8_t fuseNr) {
   if (fuseNr < fuseList.size()) {
     fuseList[fuseNr] = FUSE_ON;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t DummyPowerSwitcher::getSwitchState(power::Switch_t switchNr) const {
   if (switchNr < switcherList.size()) {
     return switcherList[switchNr];
   }
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t DummyPowerSwitcher::getFuseState(uint8_t fuseNr) const {
   if (fuseNr < fuseList.size()) {
     return fuseList[fuseNr];
   }
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 uint32_t DummyPowerSwitcher::getSwitchDelayMs(void) const { return switchDelayMs; }

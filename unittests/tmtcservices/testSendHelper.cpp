@@ -44,7 +44,7 @@ TEST_CASE("TM Send Helper", "[tm-send-helper]") {
     REQUIRE(emptyHelper.getDefaultDestination() == MessageQueueIF::NO_QUEUE);
     store_address_t dummy;
     // basic robustness
-    REQUIRE(emptyHelper.sendPacket(dummy) == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(emptyHelper.sendPacket(dummy) == returnvalue::FAILED);
   }
 
   SECTION("One Arg CTOR") {
@@ -61,46 +61,46 @@ TEST_CASE("TM Send Helper", "[tm-send-helper]") {
     REQUIRE(helper.getMsgQueue() == &msgQueue);
   }
   SECTION("Send") {
-    REQUIRE(storeHelper.preparePacket(17, 2, 0) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(storeHelper.preparePacket(17, 2, 0) == returnvalue::OK);
     store_address_t storeId;
     SECTION("Separate Helpers") {
-      REQUIRE(storeHelper.addPacketToStore() == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(storeHelper.addPacketToStore() == returnvalue::OK);
       storeId = storeHelper.getCurrentAddr();
-      REQUIRE(sendHelper.sendPacket(storeId) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(sendHelper.sendPacket(storeId) == returnvalue::OK);
     }
     REQUIRE(msgQueue.wasMessageSent());
     REQUIRE(msgQueue.numberOfSentMessagesToDefault() == 1);
     TmTcMessage msg;
-    REQUIRE(msgQueue.getNextSentMessage(msg) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(msgQueue.getNextSentMessage(msg) == returnvalue::OK);
     REQUIRE(msg.getStorageId() == storeId);
     REQUIRE(pool.hasDataAtId(msg.getStorageId()));
   }
 
   SECTION("Send to Non-Default") {
     storeHelper.preparePacket(17, 2, 0);
-    REQUIRE(storeHelper.addPacketToStore() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(storeHelper.addPacketToStore() == returnvalue::OK);
     store_address_t storeId = storeHelper.getCurrentAddr();
-    REQUIRE(sendHelper.sendPacket(destId + 1, storeId) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(sendHelper.sendPacket(destId + 1, storeId) == returnvalue::OK);
     REQUIRE(msgQueue.wasMessageSent());
     REQUIRE(msgQueue.numberOfSentMessagesToDest(destId + 1) == 1);
   }
 
   SECTION("Sending fails, errors not ignored") {
-    msgQueue.makeNextSendFail(HasReturnvaluesIF::RETURN_FAILED);
+    msgQueue.makeNextSendFail(returnvalue::FAILED);
     storeHelper.preparePacket(17, 2, 0);
-    REQUIRE(storeHelper.addPacketToStore() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(storeHelper.addPacketToStore() == returnvalue::OK);
     store_address_t storeId = storeHelper.getCurrentAddr();
-    REQUIRE(sendHelper.sendPacket(destId + 1, storeId) == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(sendHelper.sendPacket(destId + 1, storeId) == returnvalue::FAILED);
     REQUIRE(errReporter.lostTmCallCnt == 1);
   }
 
   SECTION("Sending fails, errors ignored") {
-    msgQueue.makeNextSendFail(HasReturnvaluesIF::RETURN_FAILED);
+    msgQueue.makeNextSendFail(returnvalue::FAILED);
     storeHelper.preparePacket(17, 2, 0);
     sendHelper.ignoreFaults();
-    REQUIRE(storeHelper.addPacketToStore() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(storeHelper.addPacketToStore() == returnvalue::OK);
     store_address_t storeId = storeHelper.getCurrentAddr();
-    REQUIRE(sendHelper.sendPacket(destId + 1, storeId) == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(sendHelper.sendPacket(destId + 1, storeId) == returnvalue::FAILED);
     REQUIRE(errReporter.lostTmCallCnt == 0);
   }
 }

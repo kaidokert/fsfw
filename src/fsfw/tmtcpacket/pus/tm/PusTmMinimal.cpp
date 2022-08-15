@@ -14,7 +14,7 @@ PusTmMinimal::~PusTmMinimal() = default;
 
 ReturnValue_t PusTmMinimal::getPacketTime(timeval* timestamp) {
   if (timestampInterpreter == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return timestampInterpreter->getPacketTime(this, timestamp);
 }

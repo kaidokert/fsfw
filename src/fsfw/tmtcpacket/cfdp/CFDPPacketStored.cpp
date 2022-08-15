@@ -13,9 +13,15 @@ CfdpPacketStored::CfdpPacketStored(const uint8_t* data, size_t size) : CfdpReade
     return;
   }
   if (this->checkAndSetStore()) {
+<<<<<<< HEAD
     ReturnValue_t status = STORE->addData(&storeAddress, data, size);
     if (status != HasReturnvaluesIF::RETURN_OK) {
       this->setData(nullptr, -1, nullptr);
+=======
+    ReturnValue_t status = store->addData(&storeAddress, data, size);
+    if (status != returnvalue::OK) {
+      this->setData(nullptr, -1);
+>>>>>>> mueller/expand-retval-if
     }
     const uint8_t* storePtr = nullptr;
     // Repoint base data pointer to the data in the store.
@@ -39,12 +45,17 @@ void CfdpPacketStored::setStoreAddress(store_address_t setAddress) {
   this->storeAddress = setAddress;
   const uint8_t* tempData = nullptr;
   size_t tempSize;
-  ReturnValue_t status = StorageManagerIF::RETURN_FAILED;
+  ReturnValue_t status = returnvalue::FAILED;
   if (this->checkAndSetStore()) {
     status = STORE->getData(this->storeAddress, &tempData, &tempSize);
   }
+<<<<<<< HEAD
   if (status == StorageManagerIF::RETURN_OK) {
     this->setData(const_cast<uint8_t*>(tempData), tempSize, nullptr);
+=======
+  if (status == returnvalue::OK) {
+    this->setData(const_cast<uint8_t*>(tempData), tempSize);
+>>>>>>> mueller/expand-retval-if
   } else {
     // To circumvent size checks
     this->setData(nullptr, -1, nullptr);
@@ -56,12 +67,17 @@ store_address_t CfdpPacketStored::getStoreAddress() { return this->storeAddress;
 
 CfdpPacketStored::~CfdpPacketStored() = default;
 
+<<<<<<< HEAD
 ReturnValue_t CfdpPacketStored::getData(const uint8_t** dataPtr, size_t* dataSize) {
   return HasReturnvaluesIF::RETURN_OK;
+=======
+ReturnValue_t CFDPPacketStored::getData(const uint8_t** dataPtr, size_t* dataSize) {
+  return returnvalue::OK;
+>>>>>>> mueller/expand-retval-if
 }
 
 // ReturnValue_t CFDPPacketStored::setData(const uint8_t *data) {
-//     return HasReturnvaluesIF::RETURN_OK;
+//     return returnvalue::OK;
 // }
 
 bool CfdpPacketStored::checkAndSetStore() {
@@ -80,8 +96,13 @@ bool CfdpPacketStored::checkAndSetStore() {
 bool CfdpPacketStored::isSizeCorrect() {
   const uint8_t* temp_data = nullptr;
   size_t temp_size;
+<<<<<<< HEAD
   ReturnValue_t status = STORE->getData(this->storeAddress, &temp_data, &temp_size);
   if (status == StorageManagerIF::RETURN_OK) {
+=======
+  ReturnValue_t status = store->getData(this->storeAddress, &temp_data, &temp_size);
+  if (status == returnvalue::OK) {
+>>>>>>> mueller/expand-retval-if
     if (this->getFullSize() == temp_size) {
       return true;
     }
