@@ -56,7 +56,7 @@ class HealthHelper {
    * @param message
    * @return
    * -@c RETURN_OK if the message was handled
-   * -@c RETURN_FAILED if the message could not be handled
+   * -@c returnvalue::FAILED if the message could not be handled
    *     (ie it was not a @c HEALTH_SET or @c HEALTH_READ message)
    */
   ReturnValue_t handleHealthCommand(CommandMessage* message);
@@ -90,7 +90,7 @@ class HealthHelper {
    * @return
    * -@c RETURN_OK if the Health Table was found and the object
    * could be registered
-   * -@c RETURN_FAILED else
+   * -@c returnvalue::FAILED else
    */
   ReturnValue_t initialize(MessageQueueId_t parentQueue);
 

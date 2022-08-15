@@ -14,7 +14,7 @@ void RedundantHeater::performOperation(uint8_t opCode) {
 void RedundantHeater::set(bool on, bool both, bool passive) {
   if (on) {
     ReturnValue_t result = heater0.set();
-    if (result != HasReturnvaluesIF::RETURN_OK || both) {
+    if (result != returnvalue::OK || both) {
       heater1.set();
     } else {
       heater1.clear(passive);

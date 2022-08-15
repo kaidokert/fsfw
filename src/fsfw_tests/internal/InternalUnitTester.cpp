@@ -37,5 +37,5 @@ ReturnValue_t InternalUnitTester::performTests(
 #else
   sif::printInfo("Internal unit tests finished.\n");
 #endif
-  return RETURN_OK;
+  return returnvalue::OK;
 }

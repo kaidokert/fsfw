@@ -39,7 +39,7 @@ class SerializeAdapter {
    *     SerializeIF::Endianness
    * @return
    * 		- @c BUFFER_TOO_SHORT The given buffer in is too short
-   * 		- @c RETURN_FAILED Generic Error
+   * 		- @c returnvalue::FAILED Generic Error
    * 		- @c RETURN_OK Successful serialization
    */
   template <typename T>
@@ -64,14 +64,14 @@ class SerializeAdapter {
    *     SerializeIF::Endianness
    * @return
    *      - @c BUFFER_TOO_SHORT The given buffer in is too short
-   *      - @c RETURN_FAILED Generic Error
+   *      - @c returnvalue::FAILED Generic Error
    *      - @c RETURN_OK Successful serialization
    */
   template <typename T>
   static ReturnValue_t serialize(const T *object, uint8_t *const buffer, size_t *serSize,
                                  size_t maxSize, SerializeIF::Endianness streamEndianness) {
     if (object == nullptr or buffer == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     InternalSerializeAdapter<T, std::is_base_of<SerializeIF, T>::value> adapter;
     uint8_t **tempPtr = const_cast<uint8_t **>(&buffer);
@@ -113,7 +113,7 @@ class SerializeAdapter {
    * @return
    * 	- @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
    * 	- @c TOO_MANY_ELEMENTS The buffer has more inputs than expected
-   * 	- @c RETURN_FAILED Generic Error
+   * 	- @c returnvalue::FAILED Generic Error
    * 	- @c RETURN_OK Successful deserialization
    */
   template <typename T>
@@ -136,14 +136,14 @@ class SerializeAdapter {
    * @return
    *  - @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
    *  - @c TOO_MANY_ELEMENTS The buffer has more inputs than expected
-   *  - @c RETURN_FAILED Generic Error
+   *  - @c returnvalue::FAILED Generic Error
    *  - @c RETURN_OK Successful deserialization
    */
   template <typename T>
   static ReturnValue_t deSerialize(T *object, const uint8_t *buffer, size_t *deserSize,
                                    SerializeIF::Endianness streamEndianness) {
     if (object == nullptr or buffer == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     InternalSerializeAdapter<T, std::is_base_of<SerializeIF, T>::value> adapter;
     const uint8_t **tempPtr = &buffer;
@@ -200,7 +200,7 @@ class SerializeAdapter {
         std::memcpy(*buffer, &tmp, sizeof(T));
         *size += sizeof(T);
         (*buffer) += sizeof(T);
-        return HasReturnvaluesIF::RETURN_OK;
+        return returnvalue::OK;
       } else {
         return SerializeIF::BUFFER_TOO_SHORT;
       }
@@ -226,7 +226,7 @@ class SerializeAdapter {
         }
 
         *buffer += sizeof(T);
-        return HasReturnvaluesIF::RETURN_OK;
+        return returnvalue::OK;
       } else {
         return SerializeIF::STREAM_TOO_SHORT;
       }

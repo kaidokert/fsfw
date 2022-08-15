@@ -14,7 +14,7 @@ PoolDataSetBase::~PoolDataSetBase() {}
 ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF* variable) {
   if (registeredVariables == nullptr) {
     /* Underlying container invalid */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (state != States::STATE_SET_UNINITIALISED) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -42,17 +42,17 @@ ReturnValue_t PoolDataSetBase::registerVariable(PoolVariableIF* variable) {
   }
   registeredVariables[fillCount] = variable;
   fillCount++;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   ReturnValue_t error = result;
   if (state == States::STATE_SET_UNINITIALISED) {
     lockDataPool(timeoutType, lockTimeout);
     for (uint16_t count = 0; count < fillCount; count++) {
       result = readVariable(count);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         error = result;
       }
     }
@@ -71,7 +71,7 @@ ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType, uint32_t l
     result = SET_WAS_ALREADY_READ;
   }
 
-  if (error != HasReturnvaluesIF::RETURN_OK) {
+  if (error != returnvalue::OK) {
     result = error;
   }
   return result;
@@ -80,10 +80,10 @@ ReturnValue_t PoolDataSetBase::read(MutexIF::TimeoutType timeoutType, uint32_t l
 uint16_t PoolDataSetBase::getFillCount() const { return fillCount; }
 
 ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   if (registeredVariables[count] == nullptr) {
     /* Configuration error. */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   /* These checks are often performed by the respective variable implementation too, but I guess
@@ -98,7 +98,7 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
       result = ReadCommitIFAttorney::readWithoutLock(registeredVariables[count]);
     }
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       result = INVALID_PARAMETER_DEFINITION;
     }
   }
@@ -108,7 +108,7 @@ ReturnValue_t PoolDataSetBase::readVariable(uint16_t count) {
 ReturnValue_t PoolDataSetBase::commit(MutexIF::TimeoutType timeoutType, uint32_t lockTimeout) {
   if (state == States::STATE_SET_WAS_READ) {
     handleAlreadyReadDatasetCommit(timeoutType, lockTimeout);
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return handleUnreadDatasetCommit(timeoutType, lockTimeout);
   }
@@ -134,7 +134,7 @@ void PoolDataSetBase::handleAlreadyReadDatasetCommit(MutexIF::TimeoutType timeou
 
 ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(MutexIF::TimeoutType timeoutType,
                                                          uint32_t lockTimeout) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   lockDataPool(timeoutType, lockTimeout);
   for (uint16_t count = 0; count < fillCount; count++) {
     if ((registeredVariables[count]->getReadWriteMode() == PoolVariableIF::VAR_WRITE) and
@@ -165,17 +165,17 @@ ReturnValue_t PoolDataSetBase::handleUnreadDatasetCommit(MutexIF::TimeoutType ti
 
 ReturnValue_t PoolDataSetBase::lockDataPool(MutexIF::TimeoutType timeoutType,
                                             uint32_t lockTimeout) {
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
-ReturnValue_t PoolDataSetBase::unlockDataPool() { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t PoolDataSetBase::unlockDataPool() { return returnvalue::OK; }
 
 ReturnValue_t PoolDataSetBase::serialize(uint8_t** buffer, size_t* size, const size_t maxSize,
                                          SerializeIF::Endianness streamEndianness) const {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (uint16_t count = 0; count < fillCount; count++) {
     result = registeredVariables[count]->serialize(buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -184,10 +184,10 @@ ReturnValue_t PoolDataSetBase::serialize(uint8_t** buffer, size_t* size, const s
 
 ReturnValue_t PoolDataSetBase::deSerialize(const uint8_t** buffer, size_t* size,
                                            SerializeIF::Endianness streamEndianness) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (uint16_t count = 0; count < fillCount; count++) {
     result = registeredVariables[count]->deSerialize(buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }

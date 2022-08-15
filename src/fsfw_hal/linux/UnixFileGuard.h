@@ -24,7 +24,7 @@ class UnixFileGuard {
 
  private:
   int* fileDescriptor = nullptr;
-  ReturnValue_t openStatus = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t openStatus = returnvalue::OK;
 };
 
 #endif /* LINUX_UTILITY_UNIXFILEGUARD_H_ */

@@ -51,7 +51,7 @@ class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
    * Same as acquire() with timeout in FreeRTOS ticks.
    * @param timeoutTicks
    * @return - @c RETURN_OK on success
-   *         - @c RETURN_FAILED on failure
+   *         - @c returnvalue::FAILED on failure
    */
   ReturnValue_t acquireWithTickTimeout(TimeoutType timeoutType = TimeoutType::BLOCKING,
                                        TickType_t timeoutTicks = portMAX_DELAY);
@@ -66,7 +66,7 @@ class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
    * Wrapper function to give back semaphore from handle
    * @param semaphore
    * @return - @c RETURN_OK on success
-   *         - @c RETURN_FAILED on failure
+   *         - @c returnvalue::FAILED on failure
    */
   static ReturnValue_t release(TaskHandle_t taskToNotify);
 
@@ -77,7 +77,7 @@ class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
    * a higher priority was unblocked. A context switch should be requested
    * from an ISR if this is the case (see TaskManagement functions)
    * @return - @c RETURN_OK on success
-   *         - @c RETURN_FAILED on failure
+   *         - @c returnvalue::FAILED on failure
    */
   static ReturnValue_t releaseFromISR(TaskHandle_t taskToNotify,
                                       BaseType_t* higherPriorityTaskWoken);

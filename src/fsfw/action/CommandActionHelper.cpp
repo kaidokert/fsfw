@@ -16,12 +16,12 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo, ActionId
   uint8_t *storePointer;
   size_t maxSize = data->getSerializedSize();
   ReturnValue_t result = ipcStore->getFreeElement(&storeId, maxSize, &storePointer);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t size = 0;
   result = data->serialize(&storePointer, &size, maxSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return sendCommand(receiver->getCommandQueue(), actionId, storeId);
@@ -35,7 +35,7 @@ ReturnValue_t CommandActionHelper::commandAction(object_id_t commandTo, ActionId
   }
   store_address_t storeId;
   ReturnValue_t result = ipcStore->addData(&storeId, data, size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return sendCommand(receiver->getCommandQueue(), actionId, storeId);
@@ -46,7 +46,7 @@ ReturnValue_t CommandActionHelper::sendCommand(MessageQueueId_t queueId, ActionI
   CommandMessage command;
   ActionMessage::setCommand(&command, actionId, storeId);
   ReturnValue_t result = queueToUse->sendMessage(queueId, &command);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     ipcStore->deleteData(storeId);
   }
   lastTarget = queueId;
@@ -57,44 +57,44 @@ ReturnValue_t CommandActionHelper::sendCommand(MessageQueueId_t queueId, ActionI
 ReturnValue_t CommandActionHelper::initialize() {
   ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
   if (ipcStore == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   queueToUse = owner->getCommandQueuePtr();
   if (queueToUse == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CommandActionHelper::handleReply(CommandMessage *reply) {
   if (reply->getSender() != lastTarget) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   switch (reply->getCommand()) {
     case ActionMessage::COMPLETION_SUCCESS:
       commandCount--;
       owner->completionSuccessfulReceived(ActionMessage::getActionId(reply));
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case ActionMessage::COMPLETION_FAILED:
       commandCount--;
       owner->completionFailedReceived(ActionMessage::getActionId(reply),
                                       ActionMessage::getReturnCode(reply));
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case ActionMessage::STEP_SUCCESS:
       owner->stepSuccessfulReceived(ActionMessage::getActionId(reply),
                                     ActionMessage::getStep(reply));
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case ActionMessage::STEP_FAILED:
       commandCount--;
       owner->stepFailedReceived(ActionMessage::getActionId(reply), ActionMessage::getStep(reply),
                                 ActionMessage::getReturnCode(reply));
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case ActionMessage::DATA_REPLY:
       extractDataForOwner(ActionMessage::getActionId(reply), ActionMessage::getStoreId(reply));
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -104,7 +104,7 @@ void CommandActionHelper::extractDataForOwner(ActionId_t actionId, store_address
   const uint8_t *data = nullptr;
   size_t size = 0;
   ReturnValue_t result = ipcStore->getData(storeId, &data, &size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return;
   }
   owner->dataReceived(actionId, data, size);

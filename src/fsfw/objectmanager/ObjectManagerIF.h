@@ -16,7 +16,7 @@
  * @author	Bastian Baetz
  * @ingroup system_objects
  */
-class ObjectManagerIF : public HasReturnvaluesIF {
+class ObjectManagerIF {
  public:
   static constexpr uint8_t INTERFACE_ID = CLASS_ID::OBJECT_MANAGER_IF;
   static constexpr ReturnValue_t INSERTION_FAILED = MAKE_RETURN_CODE(1);

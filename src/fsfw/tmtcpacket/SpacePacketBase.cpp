@@ -25,7 +25,7 @@ ReturnValue_t SpacePacketBase::initSpacePacketHeader(bool isTelecommand, bool ha
     sif::printWarning("SpacePacketBase::initSpacePacketHeader: Data pointer is invalid!\n");
 #endif
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   // reset header to zero:
   memset(data, 0, sizeof(this->data->header));
@@ -37,7 +37,7 @@ ReturnValue_t SpacePacketBase::initSpacePacketHeader(bool isTelecommand, bool ha
   // Always initialize as standalone packets.
   data->header.sequence_control_h = 0b11000000;
   setPacketSequenceCount(sequenceCount);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 bool SpacePacketBase::isTelecommand(void) {
@@ -111,8 +111,8 @@ uint8_t* SpacePacketBase::getPacketData() { return &(data->packet_data); }
 
 ReturnValue_t SpacePacketBase::setData(uint8_t* pData, size_t maxSize, void* args) {
   if (maxSize < 6) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   this->data = reinterpret_cast<SpacePacketPointer*>(const_cast<uint8_t*>(pData));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

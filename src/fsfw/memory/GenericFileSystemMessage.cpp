@@ -157,10 +157,10 @@ ReturnValue_t GenericFileSystemMessage::clear(CommandMessage *message) {
       store_address_t storeId = GenericFileSystemMessage::getStoreId(message);
       auto ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
       if (ipcStore == nullptr) {
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       }
       return ipcStore->deleteData(storeId);
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

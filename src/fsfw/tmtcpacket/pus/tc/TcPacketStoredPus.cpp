@@ -15,7 +15,7 @@ TcPacketStoredPus::TcPacketStoredPus(uint16_t apid, uint8_t service, uint8_t sub
   uint8_t* pData = nullptr;
   ReturnValue_t returnValue =
       this->STORE->getFreeElement(&this->storeAddress, (TC_PACKET_MIN_SIZE + size), &pData);
-  if (returnValue != this->STORE->RETURN_OK) {
+  if (returnValue != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "TcPacketStoredBase: Could not get free element from store!" << std::endl;
 #endif
@@ -45,7 +45,7 @@ TcPacketStoredPus::TcPacketStoredPus(const uint8_t* data, size_t size) : TcPacke
   }
   if (this->checkAndSetStore()) {
     ReturnValue_t status = STORE->addData(&storeAddress, data, size);
-    if (status != HasReturnvaluesIF::RETURN_OK) {
+    if (status != returnvalue::OK) {
       this->setData(nullptr, size);
     }
     const uint8_t* storePtr = nullptr;
@@ -69,7 +69,7 @@ bool TcPacketStoredPus::isSizeCorrect() {
   const uint8_t* temp_data = nullptr;
   size_t temp_size;
   ReturnValue_t status = this->STORE->getData(this->storeAddress, &temp_data, &temp_size);
-  if (status == StorageManagerIF::RETURN_OK) {
+  if (status == returnvalue::OK) {
     if (this->getFullSize() == temp_size) {
       return true;
     }

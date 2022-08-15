@@ -20,7 +20,6 @@
 class SubsystemBase : public SystemObject,
                       public HasModesIF,
                       public HasHealthIF,
-                      public HasReturnvaluesIF,
                       public ExecutableObjectIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::SUBSYSTEM_BASE;

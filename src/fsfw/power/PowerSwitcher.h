@@ -6,7 +6,7 @@
 #include "../timemanager/Countdown.h"
 #include "PowerSwitchIF.h"
 
-class PowerSwitcher : public HasReturnvaluesIF {
+class PowerSwitcher {
  public:
   enum State_t {
     WAIT_OFF,

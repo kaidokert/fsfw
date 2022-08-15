@@ -13,7 +13,6 @@
 class TmTcBridge : public AcceptsTelemetryIF,
                    public AcceptsTelecommandsIF,
                    public ExecutableObjectIF,
-                   public HasReturnvaluesIF,
                    public SystemObject {
  public:
   static constexpr uint8_t TMTC_RECEPTION_QUEUE_DEPTH = 20;
@@ -32,7 +31,7 @@ class TmTcBridge : public AcceptsTelemetryIF,
    * value must be smaller than MAX_STORED_DATA_SENT_PER_CYCLE
    * @param sentPacketsPerCycle
    * @return -@c RETURN_OK if value was set successfully
-   * 		   -@c RETURN_FAILED otherwise, stored value stays the same
+   * 		   -@c returnvalue::FAILED otherwise, stored value stays the same
    */
   ReturnValue_t setNumberOfSentPacketsPerCycle(uint8_t sentPacketsPerCycle);
 
@@ -41,7 +40,7 @@ class TmTcBridge : public AcceptsTelemetryIF,
    * value must be smaller than MAX_DOWNLINK_PACKETS_STORED
    * @param sentPacketsPerCycle
    * @return -@c RETURN_OK if value was set successfully
-   *         -@c RETURN_FAILED otherwise, stored value stays the same
+   *         -@c returnvalue::FAILED otherwise, stored value stays the same
    */
   ReturnValue_t setMaxNumberOfPacketsStored(uint8_t maxNumberOfPacketsStored);
 

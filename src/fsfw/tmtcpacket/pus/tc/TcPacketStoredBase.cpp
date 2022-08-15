@@ -17,7 +17,7 @@ TcPacketStoredBase::~TcPacketStoredBase() = default;
 
 ReturnValue_t TcPacketStoredBase::getData(const uint8_t** dataPtr, size_t* dataSize) {
   auto result = TcPacketStoredBase::STORE->getData(storeAddress, dataPtr, dataSize);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "TcPacketStoredBase: Could not get data" << std::endl;
 #else
@@ -47,12 +47,12 @@ void TcPacketStoredBase::setStoreAddress(store_address_t setAddress,
   this->storeAddress = setAddress;
   const uint8_t* tempData = nullptr;
   size_t tempSize;
-  ReturnValue_t status = StorageManagerIF::RETURN_FAILED;
+  ReturnValue_t status = returnvalue::FAILED;
   if (this->checkAndSetStore()) {
     status = TcPacketStoredBase::STORE->getData(this->storeAddress, &tempData, &tempSize);
   }
 
-  if (status == StorageManagerIF::RETURN_OK) {
+  if (status == returnvalue::OK) {
     packet->setData(const_cast<uint8_t*>(tempData), tempSize);
   } else {
     packet->setData(nullptr, -1);

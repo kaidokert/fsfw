@@ -23,9 +23,9 @@ DeviceHandlerFailureIsolation::~DeviceHandlerFailureIsolation() {}
 
 ReturnValue_t DeviceHandlerFailureIsolation::eventReceived(EventMessage* event) {
   if (isFdirInActionOrAreWeFaulty(event)) {
-    return RETURN_OK;
+    return returnvalue::OK;
   }
-  ReturnValue_t result = RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   switch (event->getEvent()) {
     case HasModesIF::MODE_TRANSITION_FAILED:
     case HasModesIF::OBJECT_IN_INVALID_MODE:
@@ -48,7 +48,7 @@ ReturnValue_t DeviceHandlerFailureIsolation::eventReceived(EventMessage* event) 
       // The two above should never be confirmed.
     case DeviceHandlerIF::DEVICE_MISSED_REPLY:
       result = sendConfirmationRequest(event);
-      if (result == HasReturnvaluesIF::RETURN_OK) {
+      if (result == returnvalue::OK) {
         break;
       }
       // else
@@ -72,7 +72,7 @@ ReturnValue_t DeviceHandlerFailureIsolation::eventReceived(EventMessage* event) 
     case PowerSwitchIF::SWITCH_WENT_OFF:
       if (powerConfirmation != MessageQueueIF::NO_QUEUE) {
         result = sendConfirmationRequest(event, powerConfirmation);
-        if (result == RETURN_OK) {
+        if (result == returnvalue::OK) {
           setFdirState(DEVICE_MIGHT_BE_OFF);
         }
       }
@@ -106,9 +106,9 @@ ReturnValue_t DeviceHandlerFailureIsolation::eventReceived(EventMessage* event) 
       //		break;
     default:
       // We don't know the event, someone else should handle it.
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void DeviceHandlerFailureIsolation::eventConfirmed(EventMessage* event) {
@@ -162,7 +162,7 @@ void DeviceHandlerFailureIsolation::clearFaultCounters() {
 
 ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
   ReturnValue_t result = FailureIsolationBase::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "DeviceHandlerFailureIsolation::initialize: Could not"
                   " initialize FailureIsolationBase."
@@ -176,7 +176,7 @@ ReturnValue_t DeviceHandlerFailureIsolation::initialize() {
     powerConfirmation = power->getEventReceptionQueue();
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void DeviceHandlerFailureIsolation::setFdirState(FDIRState state) {

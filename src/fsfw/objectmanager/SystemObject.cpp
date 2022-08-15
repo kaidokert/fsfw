@@ -22,9 +22,9 @@ void SystemObject::triggerEvent(Event event, uint32_t parameter1, uint32_t param
   EventManagerIF::triggerEvent(objectId, event, parameter1, parameter2);
 }
 
-ReturnValue_t SystemObject::initialize() { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t SystemObject::initialize() { return returnvalue::OK; }
 
-ReturnValue_t SystemObject::checkObjectConnections() { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t SystemObject::checkObjectConnections() { return returnvalue::OK; }
 
 void SystemObject::forwardEvent(Event event, uint32_t parameter1, uint32_t parameter2) const {
   EventManagerIF::triggerEvent(objectId, event, parameter1, parameter2);

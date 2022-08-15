@@ -61,7 +61,7 @@ class DataLinkLayer : public CCSDSReturnValuesIF {
    * handle Frames directed to this VC.
    * @param virtualChannelId	Id of the VC. Shall be smaller than 64.
    * @param object	Reference to the object that handles the Frame.
-   * @return	@c RETURN_OK on success, @c RETURN_FAILED otherwise.
+   * @return	@c RETURN_OK on success, @c returnvalue::FAILED otherwise.
    */
   ReturnValue_t addVirtualChannel(uint8_t virtualChannelId, VirtualChannelReceptionIF* object);
   /**

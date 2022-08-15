@@ -7,7 +7,7 @@ cfdp::FileDirectives FileDirectiveDeserializer::getFileDirective() const { retur
 
 ReturnValue_t FileDirectiveDeserializer::parseData() {
   ReturnValue_t result = HeaderDeserializer::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (this->getPduDataFieldLen() < 1) {
@@ -21,7 +21,7 @@ ReturnValue_t FileDirectiveDeserializer::parseData() {
     return cfdp::INVALID_DIRECTIVE_FIELDS;
   }
   setFileDirective(static_cast<cfdp::FileDirectives>(rawPtr[currentIdx]));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t FileDirectiveDeserializer::getHeaderSize() const {

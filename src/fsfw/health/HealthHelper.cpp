@@ -11,13 +11,13 @@ ReturnValue_t HealthHelper::handleHealthCommand(CommandMessage* message) {
   switch (message->getCommand()) {
     case HealthMessage::HEALTH_SET:
       handleSetHealthCommand(message);
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case HealthMessage::HEALTH_ANNOUNCE: {
       eventSender->forwardEvent(HasHealthIF::HEALTH_INFO, getHealth(), getHealth());
     }
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -53,10 +53,10 @@ ReturnValue_t HealthHelper::initialize() {
   }
 
   ReturnValue_t result = healthTable->registerObject(objectId, HasHealthIF::HEALTHY);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void HealthHelper::setHealth(HasHealthIF::HealthState health) {
@@ -76,7 +76,7 @@ void HealthHelper::informParent(HasHealthIF::HealthState health,
   CommandMessage information;
   HealthMessage::setHealthMessage(&information, HealthMessage::HEALTH_INFO, health, oldHealth);
   if (MessageQueueSenderIF::sendMessage(parentQueue, &information, owner->getCommandQueue()) !=
-      HasReturnvaluesIF::RETURN_OK) {
+      returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "HealthHelper::informParent: sending health reply failed." << std::endl;
 #endif
@@ -89,13 +89,13 @@ void HealthHelper::handleSetHealthCommand(CommandMessage* command) {
     return;
   }
   CommandMessage reply;
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     HealthMessage::setHealthMessage(&reply, HealthMessage::REPLY_HEALTH_SET);
   } else {
     reply.setReplyRejected(result, command->getCommand());
   }
   if (MessageQueueSenderIF::sendMessage(command->getSender(), &reply, owner->getCommandQueue()) !=
-      HasReturnvaluesIF::RETURN_OK) {
+      returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "HealthHelper::handleHealthCommand: sending health "
                   "reply failed."

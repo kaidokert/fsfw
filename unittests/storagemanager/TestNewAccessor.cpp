@@ -12,7 +12,7 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
   std::array<uint8_t, 20> testDataArray;
   std::array<uint8_t, 20> receptionArray;
   store_address_t testStoreId;
-  ReturnValue_t result = result::FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
 
   for (size_t i = 0; i < testDataArray.size(); i++) {
     testDataArray[i] = i;
@@ -21,9 +21,9 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
 
   SECTION("Simple tests getter functions") {
     result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     auto resultPair = SimplePool.getData(testStoreId);
-    REQUIRE(resultPair.first == result::OK);
+    REQUIRE(resultPair.first == returnvalue::OK);
     resultPair.second.getDataCopy(receptionArray.data(), 20);
     CHECK(resultPair.second.getId() == testStoreId);
     CHECK(resultPair.second.size() == 10);
@@ -39,18 +39,18 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
 
     {
       auto resultPairLoc = SimplePool.getData(testStoreId);
-      REQUIRE(resultPairLoc.first == result::OK);
+      REQUIRE(resultPairLoc.first == returnvalue::OK);
       // data should be deleted when accessor goes out of scope.
     }
     resultPair = SimplePool.getData(testStoreId);
     REQUIRE(resultPair.first == (int)StorageManagerIF::DATA_DOES_NOT_EXIST);
 
     result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     {
       ConstStorageAccessor constAccessor(testStoreId);
       result = SimplePool.getData(testStoreId, constAccessor);
-      REQUIRE(result == result::OK);
+      REQUIRE(result == returnvalue::OK);
       constAccessor.getDataCopy(receptionArray.data(), 20);
       for (size_t i = 0; i < size; i++) {
         CHECK(receptionArray[i] == i);
@@ -63,12 +63,12 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
     result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
     {
       resultPair = SimplePool.getData(testStoreId);
-      REQUIRE(resultPair.first == result::OK);
+      REQUIRE(resultPair.first == returnvalue::OK);
       resultPair.second.release();
       // now data should not be deleted anymore
     }
     resultPair = SimplePool.getData(testStoreId);
-    REQUIRE(resultPair.first == result::OK);
+    REQUIRE(resultPair.first == returnvalue::OK);
     resultPair.second.getDataCopy(receptionArray.data(), 20);
     for (size_t i = 0; i < size; i++) {
       CHECK(receptionArray[i] == i);
@@ -77,11 +77,11 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
 
   SECTION("Simple tests modify functions") {
     result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     {
       StorageAccessor accessor(testStoreId);
       result = SimplePool.modifyData(testStoreId, accessor);
-      REQUIRE(result == result::OK);
+      REQUIRE(result == returnvalue::OK);
       CHECK(accessor.getId() == testStoreId);
       CHECK(accessor.size() == 10);
       accessor.getDataCopy(receptionArray.data(), 20);
@@ -98,10 +98,10 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
     REQUIRE(resultPair.first == (int)StorageManagerIF::DATA_DOES_NOT_EXIST);
 
     result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     {
       auto resultPairLoc = SimplePool.modifyData(testStoreId);
-      REQUIRE(resultPairLoc.first == result::OK);
+      REQUIRE(resultPairLoc.first == returnvalue::OK);
       CHECK(resultPairLoc.second.getId() == testStoreId);
       CHECK(resultPairLoc.second.size() == 10);
       resultPairLoc.second.getDataCopy(receptionArray.data(), 20);
@@ -117,22 +117,22 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
       // data should not be deleted when accessor goes out of scope
     }
     resultPair = SimplePool.getData(testStoreId);
-    REQUIRE(resultPair.first == result::OK);
+    REQUIRE(resultPair.first == returnvalue::OK);
   }
 
   SECTION("Write tests") {
     result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     {
       auto resultPair = SimplePool.modifyData(testStoreId);
-      REQUIRE(resultPair.first == result::OK);
+      REQUIRE(resultPair.first == returnvalue::OK);
       testDataArray[9] = 42;
       resultPair.second.write(testDataArray.data(), 10, 0);
       // now data should not be deleted
       resultPair.second.release();
     }
     auto resultConstPair = SimplePool.getData(testStoreId);
-    REQUIRE(resultConstPair.first == result::OK);
+    REQUIRE(resultConstPair.first == returnvalue::OK);
 
     resultConstPair.second.getDataCopy(receptionArray.data(), 10);
     for (size_t i = 0; i < size - 1; i++) {
@@ -141,15 +141,15 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
     CHECK(receptionArray[9] == 42);
 
     auto resultPair = SimplePool.modifyData(testStoreId);
-    REQUIRE(resultPair.first == result::OK);
+    REQUIRE(resultPair.first == returnvalue::OK);
     result = resultPair.second.write(testDataArray.data(), 20, 0);
-    REQUIRE(result == result::FAILED);
+    REQUIRE(result == returnvalue::FAILED);
     result = resultPair.second.write(testDataArray.data(), 10, 5);
-    REQUIRE(result == result::FAILED);
+    REQUIRE(result == returnvalue::FAILED);
 
     std::memset(testDataArray.data(), 42, 5);
     result = resultPair.second.write(testDataArray.data(), 5, 5);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     resultConstPair = SimplePool.getData(testStoreId);
     resultPair.second.getDataCopy(receptionArray.data(), 20);
     for (size_t i = 5; i < 10; i++) {
@@ -159,7 +159,7 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
 
   SECTION("Operators") {
     result = SimplePool.addData(&testStoreId, testDataArray.data(), size);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     {
       StorageAccessor accessor(testStoreId);
       StorageAccessor accessor2(0);
@@ -168,19 +168,19 @@ TEST_CASE("New Accessor", "[NewAccessor]") {
       std::array<uint8_t, 6> data;
       size_t size = 6;
       result = accessor.write(data.data(), data.size());
-      REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
+      REQUIRE(result == returnvalue::FAILED);
       result = SimplePool.modifyData(testStoreId, accessor2);
-      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result == returnvalue::OK);
       CHECK(accessor2.getId() == testStoreId);
       CHECK(accessor2.size() == 10);
 
       std::array<uint8_t, 10> newData;
-      // Expect data to be invalid so this must return RETURN_FAILED
+      // Expect data to be invalid so this must return returnvalue::FAILED
       result = accessor.getDataCopy(newData.data(), newData.size());
-      REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
+      REQUIRE(result == returnvalue::FAILED);
       // Expect data to be too small
       result = accessor2.getDataCopy(data.data(), data.size());
-      REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
+      REQUIRE(result == returnvalue::FAILED);
     }
   }
 }

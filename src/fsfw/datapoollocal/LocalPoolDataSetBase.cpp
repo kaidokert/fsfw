@@ -85,13 +85,13 @@ ReturnValue_t LocalPoolDataSetBase::lockDataPool(MutexIF::TimeoutType timeoutTyp
   if (mutexIfSingleDataCreator != nullptr) {
     return mutexIfSingleDataCreator->lockMutex(timeoutType, timeoutMs);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(
     uint8_t **buffer, size_t *size, size_t maxSize,
     SerializeIF::Endianness streamEndianness) const {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   const uint8_t validityMaskSize = std::ceil(static_cast<float>(fillCount) / 8.0);
   uint8_t *validityPtr = nullptr;
 #if defined(_MSC_VER) || defined(__clang__)
@@ -119,7 +119,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(
     }
 
     result = registeredVariables[count]->serialize(buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -135,10 +135,10 @@ ReturnValue_t LocalPoolDataSetBase::serializeWithValidityBuffer(
 
 ReturnValue_t LocalPoolDataSetBase::deSerializeWithValidityBuffer(
     const uint8_t **buffer, size_t *size, SerializeIF::Endianness streamEndianness) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (uint16_t count = 0; count < fillCount; count++) {
     result = registeredVariables[count]->deSerialize(buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -169,7 +169,7 @@ ReturnValue_t LocalPoolDataSetBase::unlockDataPool() {
   if (mutexIfSingleDataCreator != nullptr) {
     return mutexIfSingleDataCreator->unlockMutex();
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t **buffer, size_t *size,
@@ -185,7 +185,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t **buffer, size
     lp_id_t currentPoolId = registeredVariables[count]->getDataPoolId();
     auto result =
         SerializeAdapter::serialize(&currentPoolId, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::warning << "LocalPoolDataSetBase::serializeLocalPoolIds: "
                    << "Serialization error!" << std::endl;
@@ -197,7 +197,7 @@ ReturnValue_t LocalPoolDataSetBase::serializeLocalPoolIds(uint8_t **buffer, size
       return result;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint8_t LocalPoolDataSetBase::getLocalPoolIdsSerializedSize(bool serializeFillCount) const {

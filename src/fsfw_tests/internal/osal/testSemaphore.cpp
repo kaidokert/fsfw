@@ -54,7 +54,7 @@ void testsemaph::testCountingSemaph() {
     // release 3 times in a row
     for (int i = 0; i < 3; i++) {
       auto result = countingSemaph->release();
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         unitt::put_error(id);
       }
     }
@@ -75,7 +75,7 @@ void testsemaph::testBinSemaphoreImplementation(SemaphoreIF* binSemaph, std::str
     unitt::put_error(id);
   }
   result = binSemaph->acquire(SemaphoreIF::BLOCKING);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     unitt::put_error(id);
   }
 
@@ -104,7 +104,7 @@ void testsemaph::testBinSemaphoreImplementation(SemaphoreIF* binSemaph, std::str
   }
 
   result = binSemaph->release();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     unitt::put_error(id);
   }
 }
@@ -122,7 +122,7 @@ void testsemaph::testCountingSemaphImplementation(SemaphoreIF* countingSemaph, s
   // acquire 3 times in a row
   for (int i = 0; i < 3; i++) {
     result = countingSemaph->acquire(SemaphoreIF::BLOCKING);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       unitt::put_error(id);
     }
   }
@@ -144,7 +144,7 @@ void testsemaph::testCountingSemaphImplementation(SemaphoreIF* countingSemaph, s
   // release 3 times in a row
   for (int i = 0; i < 3; i++) {
     result = countingSemaph->release();
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       unitt::put_error(id);
     }
   }

@@ -15,7 +15,7 @@ class HasLocalDataPoolIF;
  * @brief 	This class serves as a non-template base for pool objects like pool variables
  * 			or pool vectors.
  */
-class LocalPoolObjectBase : public PoolVariableIF, public HasReturnvaluesIF, public MarkChangedIF {
+class LocalPoolObjectBase : public PoolVariableIF, public MarkChangedIF {
  public:
   LocalPoolObjectBase(lp_id_t poolId, HasLocalDataPoolIF* hkOwner, DataSetIF* dataSet,
                       pool_rwm_t setReadWriteMode);

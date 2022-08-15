@@ -36,7 +36,7 @@ class MonitorBase : public MonitorReporter<T> {
 
     // 2. If returning from fetch != OK, parameter is invalid.
     // Report (if oldState is != invalidity).
-    if (validity != HasReturnvaluesIF::RETURN_OK) {
+    if (validity != returnvalue::OK) {
       this->monitorStateIs(validity, sample, 0);
     } else {
       // 3. Otherwise, check sample.
@@ -56,14 +56,14 @@ class MonitorBase : public MonitorReporter<T> {
  protected:
   virtual ReturnValue_t fetchSample(T* sample) {
     ReturnValue_t result = poolVariable.read();
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     if (not poolVariable.isValid()) {
       return MonitoringIF::INVALID;
     }
     *sample = poolVariable.value;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   LocalPoolVariable<T> poolVariable;

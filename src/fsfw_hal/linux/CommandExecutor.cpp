@@ -23,7 +23,7 @@ ReturnValue_t CommandExecutor::load(std::string command, bool blocking, bool pri
   if (state == States::IDLE) {
     state = States::COMMAND_LOADED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CommandExecutor::execute() {
@@ -35,7 +35,7 @@ ReturnValue_t CommandExecutor::execute() {
   currentCmdFile = popen(currentCmd.c_str(), "r");
   if (currentCmdFile == nullptr) {
     lastError = errno;
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (blocking) {
     ReturnValue_t result = executeBlocking();
@@ -46,7 +46,7 @@ ReturnValue_t CommandExecutor::execute() {
     waiter.fd = currentFd;
   }
   state = States::PENDING;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CommandExecutor::close() {
@@ -56,7 +56,7 @@ ReturnValue_t CommandExecutor::close() {
       pclose(currentCmdFile);
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void CommandExecutor::printLastError(std::string funcName) const {
@@ -79,7 +79,7 @@ void CommandExecutor::setRingBuffer(SimpleRingBuffer* ringBuffer,
 
 ReturnValue_t CommandExecutor::check(bool& replyReceived) {
   if (blocking) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   switch (state) {
     case (States::IDLE):
@@ -94,7 +94,7 @@ ReturnValue_t CommandExecutor::check(bool& replyReceived) {
   int result = poll(&waiter, 1, 0);
   switch (result) {
     case (0): {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
       break;
     }
     case (1): {
@@ -151,7 +151,7 @@ ReturnValue_t CommandExecutor::check(bool& replyReceived) {
         ReturnValue_t retval = EXECUTION_FINISHED;
         if (result != 0) {
           lastError = result;
-          retval = HasReturnvaluesIF::RETURN_FAILED;
+          retval = returnvalue::FAILED;
         }
         state = States::IDLE;
         currentCmdFile = nullptr;
@@ -161,7 +161,7 @@ ReturnValue_t CommandExecutor::check(bool& replyReceived) {
       break;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void CommandExecutor::reset() {
@@ -201,7 +201,7 @@ ReturnValue_t CommandExecutor::executeBlocking() {
   int result = pclose(currentCmdFile);
   if (result != 0) {
     lastError = result;
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

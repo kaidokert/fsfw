@@ -93,7 +93,7 @@ ReturnValue_t MgmRM3100Handler::buildTransitionDeviceCommand(DeviceCommandId_t *
           "Unknown internal state\n");
 #endif
 #endif
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
   }
 
   return buildCommandFromCommand(*id, commandBuffer, commandLen);
@@ -146,7 +146,7 @@ ReturnValue_t MgmRM3100Handler::buildCommandFromCommand(DeviceCommandId_t device
     default:
       return DeviceHandlerIF::COMMAND_NOT_IMPLEMENTED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MgmRM3100Handler::buildNormalDeviceCommand(DeviceCommandId_t *id) {
@@ -159,11 +159,11 @@ ReturnValue_t MgmRM3100Handler::scanForReply(const uint8_t *start, size_t len,
   // For SPI, ID will always be the one of the last sent command
   *foundId = this->getPendingCommand();
   *foundLen = len;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MgmRM3100Handler::interpretDeviceReply(DeviceCommandId_t id, const uint8_t *packet) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   switch (id) {
     case (RM3100::CONFIGURE_CMM):
     case (RM3100::CONFIGURE_CYCLE_COUNT):
@@ -250,7 +250,7 @@ ReturnValue_t MgmRM3100Handler::handleCycleCountConfigCommand(DeviceCommandId_t 
   std::memcpy(commandBuffer + 5, &cycleCountRegValueZ, 2);
   rawPacketLen = 7;
   rawPacket = commandBuffer;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MgmRM3100Handler::handleCycleCommand(bool oneCycleValue, const uint8_t *commandData,
@@ -258,7 +258,7 @@ ReturnValue_t MgmRM3100Handler::handleCycleCommand(bool oneCycleValue, const uin
   RM3100::CycleCountCommand command(oneCycleValue);
   ReturnValue_t result =
       command.deSerialize(&commandData, &commandDataLen, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -274,7 +274,7 @@ ReturnValue_t MgmRM3100Handler::handleCycleCommand(bool oneCycleValue, const uin
   cycleCountRegValueX = command.cycleCountX;
   cycleCountRegValueY = command.cycleCountY;
   cycleCountRegValueZ = command.cycleCountZ;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MgmRM3100Handler::handleTmrcConfigCommand(DeviceCommandId_t deviceCommand,
@@ -289,7 +289,7 @@ ReturnValue_t MgmRM3100Handler::handleTmrcConfigCommand(DeviceCommandId_t device
   tmrcRegValue = commandData[0];
   rawPacketLen = 2;
   rawPacket = commandBuffer;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void MgmRM3100Handler::fillCommandAndReplyMap() {
@@ -311,7 +311,7 @@ ReturnValue_t MgmRM3100Handler::initializeLocalDataPool(localpool::DataPool &loc
                                                         LocalDataPoolManager &poolManager) {
   localDataPoolMap.emplace(RM3100::FIELD_STRENGTHS, &mgmXYZ);
   poolManager.subscribeForPeriodicPacket(primaryDataset.getSid(), false, 10.0, false);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint32_t MgmRM3100Handler::getTransitionDelayMs(Mode_t from, Mode_t to) {
@@ -352,13 +352,13 @@ ReturnValue_t MgmRM3100Handler::handleDataReadout(const uint8_t *packet) {
 
   // TODO: Sanity check on values?
   PoolReadGuard readGuard(&primaryDataset);
-  if (readGuard.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
+  if (readGuard.getReadResult() == returnvalue::OK) {
     primaryDataset.fieldStrengths[0] = fieldStrengthX;
     primaryDataset.fieldStrengths[1] = fieldStrengthY;
     primaryDataset.fieldStrengths[2] = fieldStrengthZ;
     primaryDataset.setValidity(true, true);
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void MgmRM3100Handler::enablePeriodicPrintouts(bool enable, uint8_t divider) {

@@ -15,7 +15,7 @@ HeaderSerializer::HeaderSerializer(PduConfig &pduConf, cfdp::PduType pduType,
 ReturnValue_t HeaderSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                           Endianness streamEndianness) const {
   if (buffer == nullptr or size == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (maxSize < this->getSerializedSize()) {
     return BUFFER_TOO_SHORT;
@@ -32,19 +32,19 @@ ReturnValue_t HeaderSerializer::serialize(uint8_t **buffer, size_t *size, size_t
   *buffer += 1;
   *size += 4;
   ReturnValue_t result = pduConf.sourceId.serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = pduConf.seqNum.serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = pduConf.destId.serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t HeaderSerializer::getSerializedSize() const {
@@ -55,7 +55,7 @@ size_t HeaderSerializer::getSerializedSize() const {
 ReturnValue_t HeaderSerializer::deSerialize(const uint8_t **buffer, size_t *size,
                                             Endianness streamEndianness) {
   // We could implement this, but I prefer dedicated classes
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 size_t HeaderSerializer::getWholePduSize() const {

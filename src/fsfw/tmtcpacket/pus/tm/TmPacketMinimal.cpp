@@ -19,14 +19,14 @@ uint8_t TmPacketMinimal::getPacketSubcounter() { return tm_data->data_field.subc
 
 ReturnValue_t TmPacketMinimal::getPacketTime(timeval* timestamp) {
   if (timestampInterpreter == NULL) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return timestampInterpreter->getPacketTime(this, timestamp);
 }
 
 ReturnValue_t TmPacketMinimal::getPacketTimeRaw(const uint8_t** timePtr, uint32_t* size) {
   if (timestampInterpreter == NULL) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return timestampInterpreter->getPacketTimeRaw(this, timePtr, size);
 }

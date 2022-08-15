@@ -56,7 +56,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
           static_cast<unsigned long>(spiAddress));
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     /* Now we emplaced the read buffer in the map, we still need to assign that location
     to the SPI driver transfer struct */
@@ -69,7 +69,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
     sif::printError("SpiComIF::initializeInterface: SPI address already exists!\n");
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   /* Pull CS high in any case to be sure that device is inactive */
@@ -87,7 +87,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
   int fileDescriptor = 0;
   UnixFileGuard fileHelper(spiCookie->getSpiDevice(), &fileDescriptor, O_RDWR,
                            "SpiComIF::initializeInterface");
-  if (fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
+  if (fileHelper.getOpenResult() != returnvalue::OK) {
     return fileHelper.getOpenResult();
   }
 
@@ -129,12 +129,12 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF* cookie) {
           "Could not write bits per word!");
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t SpiComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, size_t sendLen) {
   SpiCookie* spiCookie = dynamic_cast<SpiCookie*>(cookie);
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
 
   if (spiCookie == nullptr) {
     return NULLPOINTER;
@@ -178,13 +178,13 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
     spiCookie->assignReadBuffer(iter->second.replyBuffer.data());
   }
 
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   int retval = 0;
   /* Prepare transfer */
   int fileDescriptor = 0;
   std::string device = spiCookie->getSpiDevice();
   UnixFileGuard fileHelper(device, &fileDescriptor, O_RDWR, "SpiComIF::sendMessage");
-  if (fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
+  if (fileHelper.getOpenResult() != returnvalue::OK) {
     return OPENING_FILE_FAILED;
   }
   spi::SpiModes spiMode = spi::SpiModes::MODE_0;
@@ -200,7 +200,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
   /* Pull SPI CS low. For now, no support for active high given  */
   if (gpioId != gpio::NO_GPIO) {
     result = spiMutex->lockMutex(timeoutType, timeoutMs);
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "SpiComIF::sendMessage: Failed to lock mutex" << std::endl;
@@ -211,7 +211,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
       return result;
     }
     result = gpioComIF->pullLow(gpioId);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::warning << "SpiComIF::sendMessage: Pulling low CS pin failed" << std::endl;
@@ -251,7 +251,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
   if (gpioId != gpio::NO_GPIO) {
     gpioComIF->pullHigh(gpioId);
     result = spiMutex->unlockMutex();
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "SpiComIF::sendMessage: Failed to unlock mutex" << std::endl;
 #endif
@@ -261,7 +261,7 @@ ReturnValue_t SpiComIF::performRegularSendOperation(SpiCookie* spiCookie, const 
   return result;
 }
 
-ReturnValue_t SpiComIF::getSendSuccess(CookieIF* cookie) { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t SpiComIF::getSendSuccess(CookieIF* cookie) { return returnvalue::OK; }
 
 ReturnValue_t SpiComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLen) {
   SpiCookie* spiCookie = dynamic_cast<SpiCookie*>(cookie);
@@ -270,32 +270,32 @@ ReturnValue_t SpiComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
   }
 
   if (spiCookie->isFullDuplex()) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   return performHalfDuplexReception(spiCookie);
 }
 
 ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::string device = spiCookie->getSpiDevice();
   int fileDescriptor = 0;
   UnixFileGuard fileHelper(device, &fileDescriptor, O_RDWR, "SpiComIF::requestReceiveMessage");
-  if (fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
+  if (fileHelper.getOpenResult() != returnvalue::OK) {
     return OPENING_FILE_FAILED;
   }
 
   uint8_t* rxBuf = nullptr;
   size_t readSize = spiCookie->getCurrentTransferSize();
   result = getReadBuffer(spiCookie->getSpiAddress(), &rxBuf);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   gpioId_t gpioId = spiCookie->getChipSelectPin();
   if (gpioId != gpio::NO_GPIO) {
     result = spiMutex->lockMutex(timeoutType, timeoutMs);
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "SpiComIF::getSendSuccess: Failed to lock mutex" << std::endl;
 #endif
@@ -318,7 +318,7 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
   if (gpioId != gpio::NO_GPIO) {
     gpioComIF->pullHigh(gpioId);
     result = spiMutex->unlockMutex();
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "SpiComIF::getSendSuccess: Failed to unlock mutex" << std::endl;
 #endif
@@ -332,18 +332,18 @@ ReturnValue_t SpiComIF::performHalfDuplexReception(SpiCookie* spiCookie) {
 ReturnValue_t SpiComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, size_t* size) {
   SpiCookie* spiCookie = dynamic_cast<SpiCookie*>(cookie);
   if (spiCookie == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   uint8_t* rxBuf = nullptr;
   ReturnValue_t result = getReadBuffer(spiCookie->getSpiAddress(), &rxBuf);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   *buffer = rxBuf;
   *size = spiCookie->getCurrentTransferSize();
   spiCookie->setTransferSize(0);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 MutexIF* SpiComIF::getMutex(MutexIF::TimeoutType* timeoutType, uint32_t* timeoutMs) {
@@ -377,16 +377,16 @@ void SpiComIF::performSpiWiretapping(SpiCookie* spiCookie) {
 
 ReturnValue_t SpiComIF::getReadBuffer(address_t spiAddress, uint8_t** buffer) {
   if (buffer == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   auto iter = spiDeviceMap.find(spiAddress);
   if (iter == spiDeviceMap.end()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   *buffer = iter->second.replyBuffer.data();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 GpioIF* SpiComIF::getGpioInterface() { return gpioComIF; }

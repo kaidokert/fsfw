@@ -86,14 +86,14 @@ size_t TcPacketPus::calculateFullPacketLength(size_t appDataLen) const {
 
 ReturnValue_t TcPacketPus::setData(uint8_t *dataPtr, size_t maxSize, void *args) {
   ReturnValue_t result = SpacePacketBase::setData(dataPtr, maxSize);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (maxSize < sizeof(TcPacketPointer)) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   // This function is const-correct, but it was decided to keep the pointer non-const
   // for convenience. Therefore, cast away constness here and then cast to packet type.
   tcData = reinterpret_cast<TcPacketPointer *>(const_cast<uint8_t *>(dataPtr));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

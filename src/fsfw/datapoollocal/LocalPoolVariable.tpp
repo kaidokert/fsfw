@@ -29,7 +29,7 @@ inline ReturnValue_t LocalPoolVariable<T>::read(MutexIF::TimeoutType timeoutType
   }
   MutexIF* mutex = LocalDpManagerAttorney::getMutexHandle(*hkManager);
   ReturnValue_t result = mutex->lockMutex(timeoutType, timeoutMs);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = readWithoutLock();
@@ -49,7 +49,7 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
   PoolEntry<T>* poolEntry = nullptr;
   ReturnValue_t result =
       LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId, &poolEntry);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     object_id_t ownerObjectId = hkManager->getCreatorObjectId();
     reportReadCommitError("LocalPoolVariable", result, false, ownerObjectId, localPoolId);
     return result;
@@ -57,7 +57,7 @@ inline ReturnValue_t LocalPoolVariable<T>::readWithoutLock() {
 
   this->value = *(poolEntry->getDataPtr());
   this->valid = poolEntry->getValid();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename T>
@@ -75,7 +75,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commit(MutexIF::TimeoutType timeoutTy
   }
   MutexIF* mutex = LocalDpManagerAttorney::getMutexHandle(*hkManager);
   ReturnValue_t result = mutex->lockMutex(timeoutType, timeoutMs);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = commitWithoutLock();
@@ -95,7 +95,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
   PoolEntry<T>* poolEntry = nullptr;
   ReturnValue_t result =
       LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId, &poolEntry);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     object_id_t ownerObjectId = hkManager->getCreatorObjectId();
     reportReadCommitError("LocalPoolVariable", result, false, ownerObjectId, localPoolId);
     return result;
@@ -103,7 +103,7 @@ inline ReturnValue_t LocalPoolVariable<T>::commitWithoutLock() {
 
   *(poolEntry->getDataPtr()) = this->value;
   poolEntry->setValid(this->valid);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename T>

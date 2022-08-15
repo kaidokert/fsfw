@@ -49,7 +49,7 @@ const std::vector<uint8_t> TEST_ARRAY_4_ENCODED_NON_ESCAPED = {
 
 TEST_CASE("DleEncoder", "[DleEncoder]") {
   DleEncoder dleEncoder;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 32> buffer;
 
   size_t encodedLen = 0;
@@ -60,7 +60,7 @@ TEST_CASE("DleEncoder", "[DleEncoder]") {
                               const std::vector<uint8_t>& expectedVec) {
     result = encoder.encode(vecToEncode.data(), vecToEncode.size(), buffer.data(), buffer.size(),
                             &encodedLen);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     for (size_t idx = 0; idx < expectedVec.size(); idx++) {
       REQUIRE(buffer[idx] == expectedVec[idx]);
     }
@@ -71,7 +71,7 @@ TEST_CASE("DleEncoder", "[DleEncoder]") {
                               const std::vector<uint8_t>& expectedVec) {
     result = encoder.decode(testVecEncoded.data(), testVecEncoded.size(), &readLen, buffer.data(),
                             buffer.size(), &decodedLen);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(readLen == testVecEncoded.size());
     REQUIRE(decodedLen == expectedVec.size());
     for (size_t idx = 0; idx < decodedLen; idx++) {

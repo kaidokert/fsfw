@@ -11,26 +11,26 @@ TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {
   LocalPoolOwnerBase* poolOwner =
       ObjectManager::instance()->get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
   REQUIRE(poolOwner != nullptr);
-  REQUIRE(poolOwner->initializeHkManager() == result::OK);
-  REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == result::OK);
+  REQUIRE(poolOwner->initializeHkManager() == returnvalue::OK);
+  REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == returnvalue::OK);
 
   SECTION("BasicTest") {
     // very basic test.
     lp_vec_t<uint16_t, 3> testVector =
         lp_vec_t<uint16_t, 3>(objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint16Vec3Id);
-    REQUIRE(testVector.read() == result::OK);
+    REQUIRE(testVector.read() == returnvalue::OK);
     testVector.value[0] = 5;
     testVector.value[1] = 232;
     testVector.value[2] = 32023;
 
-    REQUIRE(testVector.commit(true) == result::OK);
+    REQUIRE(testVector.commit(true) == returnvalue::OK);
     CHECK(testVector.isValid());
 
     testVector.value[0] = 0;
     testVector.value[1] = 0;
     testVector.value[2] = 0;
 
-    CHECK(testVector.read() == result::OK);
+    CHECK(testVector.read() == returnvalue::OK);
     CHECK(testVector.value[0] == 5);
     CHECK(testVector.value[1] == 232);
     CHECK(testVector.value[2] == 32023);
@@ -41,7 +41,7 @@ TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {
     (we can't throw exceptions) */
     testVector[4] = 12;
     CHECK(testVector[2] == 12);
-    CHECK(testVector.commit() == result::OK);
+    CHECK(testVector.commit() == returnvalue::OK);
 
     /* Use read-only reference. */
     const lp_vec_t<uint16_t, 3>& roTestVec = testVector;
@@ -58,7 +58,7 @@ TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {
     uint8_t* vecPtr = reinterpret_cast<uint8_t*>(serializedVector);
     size_t serSize = 0;
     REQUIRE(testVector.serialize(&vecPtr, &serSize, maxSize, SerializeIF::Endianness::MACHINE) ==
-            result::OK);
+            returnvalue::OK);
 
     CHECK(serSize == 6);
     CHECK(serializedVector[0] == 5);
@@ -75,7 +75,7 @@ TEST_CASE("LocalPoolVector", "[LocPoolVecTest]") {
 
     const uint8_t* constVecPtr = reinterpret_cast<const uint8_t*>(serializedVector);
     REQUIRE(testVector.deSerialize(&constVecPtr, &serSize, SerializeIF::Endianness::MACHINE) ==
-            result::OK);
+            returnvalue::OK);
     CHECK(testVector[0] == 16);
     CHECK(testVector[1] == 7832);
     CHECK(testVector[2] == 39232);

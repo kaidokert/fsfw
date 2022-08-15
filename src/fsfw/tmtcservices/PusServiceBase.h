@@ -35,8 +35,7 @@ void setStaticFrameworkObjectIds();
  */
 class PusServiceBase : public ExecutableObjectIF,
                        public AcceptsTelecommandsIF,
-                       public SystemObject,
-                       public HasReturnvaluesIF {
+                       public SystemObject {
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:
@@ -94,7 +93,7 @@ class PusServiceBase : public ExecutableObjectIF,
    * the TC requests afterwards.
    * performService is always executed afterwards.
    * @return	@c RETURN_OK if the periodic performService was successful.
-   * 			@c RETURN_FAILED else.
+   * 			@c returnvalue::FAILED else.
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
   virtual uint16_t getIdentifier() override;

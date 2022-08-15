@@ -39,7 +39,7 @@ cfdp::FileSize& MetadataInfo::getFileSize() { return fileSize; }
 ReturnValue_t MetadataInfo::getOptions(cfdp::Tlv*** optionsArray, size_t* optionsLen,
                                        size_t* maxOptsLen) {
   if (optionsArray == nullptr or this->optionsArray == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *optionsArray = this->optionsArray;
   if (optionsLen != nullptr) {
@@ -48,7 +48,7 @@ ReturnValue_t MetadataInfo::getOptions(cfdp::Tlv*** optionsArray, size_t* option
   if (maxOptsLen != nullptr) {
     *maxOptsLen = this->maxOptionsLen;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 bool MetadataInfo::hasOptions() const {

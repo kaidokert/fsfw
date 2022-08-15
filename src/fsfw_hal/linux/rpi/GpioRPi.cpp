@@ -9,7 +9,7 @@ ReturnValue_t gpio::createRpiGpioConfig(GpioCookie* cookie, gpioId_t gpioId, int
                                         std::string consumer, gpio::Direction direction,
                                         gpio::Levels initValue) {
   if (cookie == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   auto config = new GpiodRegularByChip();
@@ -30,9 +30,9 @@ ReturnValue_t gpio::createRpiGpioConfig(GpioCookie* cookie, gpioId_t gpioId, int
     sif::printError("createRpiGpioConfig: BCM pin %d invalid!\n", bcmPin);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   config->lineNum = bcmPin;
   cookie->addGpio(gpioId, config);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

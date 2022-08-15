@@ -25,7 +25,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, TcPacketPusB
                                  currentPacket->getPacketId(),
                                  currentPacket->getPacketSequenceControl(), 0, set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
-  if (status != HasReturnvaluesIF::RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VerificationReporter::sendSuccessReport: Error writing "
                << "to queue. Code: " << std::hex << status << std::dec << std::endl;
@@ -42,7 +42,7 @@ void VerificationReporter::sendSuccessReport(uint8_t set_report_id, uint8_t ackF
   PusVerificationMessage message(set_report_id, ackFlags, tcPacketId, tcSequenceControl, 0,
                                  set_step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
-  if (status != HasReturnvaluesIF::RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VerificationReporter::sendSuccessReport: Error writing "
                << "to queue. Code: " << std::hex << status << std::dec << std::endl;
@@ -63,7 +63,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id, TcPacketPusBase*
       report_id, currentPacket->getAcknowledgeFlags(), currentPacket->getPacketId(),
       currentPacket->getPacketSequenceControl(), error_code, step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
-  if (status != HasReturnvaluesIF::RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VerificationReporter::sendFailureReport: Error writing "
                << "to queue. Code: " << std::hex << "0x" << status << std::dec << std::endl;
@@ -81,7 +81,7 @@ void VerificationReporter::sendFailureReport(uint8_t report_id, uint8_t ackFlags
   PusVerificationMessage message(report_id, ackFlags, tcPacketId, tcSequenceControl, error_code,
                                  step, parameter1, parameter2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
-  if (status != HasReturnvaluesIF::RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VerificationReporter::sendFailureReport: Error writing "
                << "to queue. Code: " << std::hex << "0x" << status << std::dec << std::endl;

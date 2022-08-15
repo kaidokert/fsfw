@@ -20,7 +20,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
   time.usecond = 123456;
   SECTION("Test CCS Time") {
     auto result = CCSDSTime::convertToCcsds(&cssMilliSecconds, &time);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(cssMilliSecconds.pField == 0x52);  // 0b01010010
     REQUIRE(cssMilliSecconds.yearMSB == 0x07);
     REQUIRE(cssMilliSecconds.yearLSB == 0xe4);
@@ -36,7 +36,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     const uint8_t* dataPtr = reinterpret_cast<const uint8_t*>(&cssMilliSecconds);
     size_t length = sizeof(CCSDSTime::Ccs_mseconds);
     result = CCSDSTime::convertFromCCS(&timeTo, dataPtr, &length, sizeof(CCSDSTime::Ccs_mseconds));
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(cssMilliSecconds.pField == 0x52);  // 0b01010010
     REQUIRE(cssMilliSecconds.yearMSB == 0x07);
     REQUIRE(cssMilliSecconds.yearLSB == 0xe4);
@@ -59,7 +59,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     size_t length = ccsDayOfYear.size();
     auto result =
         CCSDSTime::convertFromCCS(&timeTo, ccsDayOfYear.data(), &length, ccsDayOfYear.size());
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     // Check constness
     REQUIRE(ccsDayOfYear[0] == 0b01011000);
     REQUIRE(ccsDayOfYear[1] == 0x07);
@@ -82,7 +82,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     Clock::TimeOfDay_t timeTo;
     const uint8_t* timeChar = reinterpret_cast<const uint8_t*>(timeAscii.c_str());
     auto result = CCSDSTime::convertFromASCII(&timeTo, timeChar, timeAscii.length());
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(timeTo.year == 2022);
     REQUIRE(timeTo.month == 12);
     REQUIRE(timeTo.day == 31);
@@ -95,7 +95,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     const uint8_t* timeChar2 = reinterpret_cast<const uint8_t*>(timeAscii2.c_str());
     Clock::TimeOfDay_t timeTo2;
     result = CCSDSTime::convertFromCcsds(&timeTo2, timeChar2, timeAscii2.length());
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(timeTo2.year == 2022);
     REQUIRE(timeTo2.month == 12);
     REQUIRE(timeTo2.day == 31);
@@ -117,14 +117,14 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     time.usecond = 123456;
     timeval timeAsTimeval;
     auto result = Clock::convertTimeOfDayToTimeval(&time, &timeAsTimeval);
-    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(result == returnvalue::OK);
     CHECK(timeAsTimeval.tv_sec == 1582982685);
     CHECK(timeAsTimeval.tv_usec == 123456);
 
     // Conversion to CDS Short
     CCSDSTime::CDS_short cdsTime;
     result = CCSDSTime::convertToCcsds(&cdsTime, &timeAsTimeval);
-    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(result == returnvalue::OK);
     // Days in CCSDS Epoch 22704 (0x58B0)
     CHECK(cdsTime.dayMSB == 0x58);
     CHECK(cdsTime.dayLSB == 0xB0);
@@ -138,7 +138,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     // Conversion back to timeval
     timeval timeReturnAsTimeval;
     result = CCSDSTime::convertFromCDS(&timeReturnAsTimeval, &cdsTime);
-    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(result == returnvalue::OK);
     // micro seconds precision is lost
     timeval difference = timeAsTimeval - timeReturnAsTimeval;
     CHECK(difference.tv_usec == 456);
@@ -146,7 +146,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
 
     Clock::TimeOfDay_t timeReturnAsTimeOfDay;
     result = CCSDSTime::convertFromCDS(&timeReturnAsTimeOfDay, &cdsTime);
-    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(result == returnvalue::OK);
     CHECK(timeReturnAsTimeOfDay.year == 2020);
     CHECK(timeReturnAsTimeOfDay.month == 2);
     CHECK(timeReturnAsTimeOfDay.day == 29);
@@ -159,7 +159,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
     Clock::TimeOfDay_t timeReturnAsTodFromBuffer;
     const uint8_t* buffer = reinterpret_cast<const uint8_t*>(&cdsTime);
     result = CCSDSTime::convertFromCDS(&timeReturnAsTodFromBuffer, buffer, sizeof(cdsTime));
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     CHECK(timeReturnAsTodFromBuffer.year == time.year);
     CHECK(timeReturnAsTodFromBuffer.month == time.month);
     CHECK(timeReturnAsTodFromBuffer.day == time.day);
@@ -170,7 +170,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
 
     Clock::TimeOfDay_t todFromCCSDS;
     result = CCSDSTime::convertFromCcsds(&todFromCCSDS, buffer, sizeof(cdsTime));
-    CHECK(result == HasReturnvaluesIF::RETURN_OK);
+    CHECK(result == returnvalue::OK);
     CHECK(todFromCCSDS.year == time.year);
     CHECK(todFromCCSDS.month == time.month);
     CHECK(todFromCCSDS.day == time.day);
@@ -189,7 +189,7 @@ TEST_CASE("CCSDSTime Tests", "[TestCCSDSTime]") {
         CCSDSTime::P_FIELD_CUC_6B_CCSDS, 0x77, 0x1E, 0x96, 0x0F, 0x91, 0x27};
     size_t foundLength = 0;
     auto result = CCSDSTime::convertFromCUC(&to, cucBuffer.data(), &foundLength, cucBuffer.size());
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(foundLength == 7);
     REQUIRE(to.tv_sec == 1619801999);  // TAI (no leap seconds)
     REQUIRE(to.tv_usec == 567001);

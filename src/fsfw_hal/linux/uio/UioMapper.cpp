@@ -18,17 +18,17 @@ UioMapper::UioMapper(std::string uioFile, int mapNum) : uioFile(uioFile), mapNum
 UioMapper::~UioMapper() {}
 
 ReturnValue_t UioMapper::getMappedAdress(uint32_t** address, Permissions permissions) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   int fd = open(uioFile.c_str(), O_RDWR);
   if (fd < 1) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PtmeAxiConfig::initialize: Invalid UIO device file" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   size_t size = 0;
   result = getMapSize(&size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   *address = static_cast<uint32_t*>(
@@ -39,9 +39,9 @@ ReturnValue_t UioMapper::getMappedAdress(uint32_t** address, Permissions permiss
     sif::error << "UioMapper::getMappedAdress: Failed to map physical address of uio device "
                << uioFile.c_str() << " and map" << static_cast<int>(mapNum) << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t UioMapper::getMapSize(size_t* size) {
@@ -54,7 +54,7 @@ ReturnValue_t UioMapper::getMapSize(size_t* size) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "UioMapper::getMapSize: Failed to open file " << namestream.str() << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   char hexstring[SIZE_HEX_STRING] = "";
   int items = fscanf(fp, "%s", hexstring);
@@ -66,7 +66,7 @@ ReturnValue_t UioMapper::getMapSize(size_t* size) {
                << namestream.str() << std::endl;
 #endif
     fclose(fp);
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   uint32_t sizeTmp = 0;
   items = sscanf(hexstring, "%x", &sizeTmp);
@@ -79,8 +79,8 @@ ReturnValue_t UioMapper::getMapSize(size_t* size) {
                << "size of map" << mapNum << " to integer" << std::endl;
 #endif
     fclose(fp);
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   fclose(fp);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

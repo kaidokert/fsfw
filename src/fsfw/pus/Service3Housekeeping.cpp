@@ -22,7 +22,7 @@ ReturnValue_t Service3Housekeeping::isValidSubservice(uint8_t subservice) {
     case Subservice::GENERATE_ONE_DIAGNOSTICS_REPORT:
     case Subservice::MODIFY_PARAMETER_REPORT_COLLECTION_INTERVAL:
     case Subservice::MODIFY_DIAGNOSTICS_REPORT_COLLECTION_INTERVAL:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
       // Telemetry or invalid subservice.
     case Subservice::HK_DEFINITIONS_REPORT:
     case Subservice::DIAGNOSTICS_DEFINITION_REPORT:
@@ -38,7 +38,7 @@ ReturnValue_t Service3Housekeeping::getMessageQueueAndObject(uint8_t subservice,
                                                              size_t tcDataLen, MessageQueueId_t* id,
                                                              object_id_t* objectId) {
   ReturnValue_t result = checkAndAcquireTargetID(objectId, tcData, tcDataLen);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return checkInterfaceAndAcquireMessageQueue(id, objectId);
@@ -48,10 +48,10 @@ ReturnValue_t Service3Housekeeping::checkAndAcquireTargetID(object_id_t* objectI
                                                             const uint8_t* tcData,
                                                             size_t tcDataLen) {
   if (SerializeAdapter::deSerialize(objectIdToSet, &tcData, &tcDataLen,
-                                    SerializeIF::Endianness::BIG) != HasReturnvaluesIF::RETURN_OK) {
+                                    SerializeIF::Endianness::BIG) != returnvalue::OK) {
     return CommandingServiceBase::INVALID_TC;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service3Housekeeping::checkInterfaceAndAcquireMessageQueue(
@@ -63,7 +63,7 @@ ReturnValue_t Service3Housekeeping::checkInterfaceAndAcquireMessageQueue(
     return CommandingServiceBase::INVALID_OBJECT;
   }
   *messageQueueToSet = possibleTarget->getCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service3Housekeeping::prepareCommand(CommandMessage* message, uint8_t subservice,
@@ -100,9 +100,9 @@ ReturnValue_t Service3Housekeeping::prepareCommand(CommandMessage* message, uint
       return CommandingServiceBase::INVALID_TC;
     default:
       // should never happen, subservice was already checked.
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service3Housekeeping::prepareReportingTogglingCommand(
@@ -116,7 +116,7 @@ ReturnValue_t Service3Housekeeping::prepareReportingTogglingCommand(
   sid_t targetSid = buildSid(objectId, &tcData, &tcDataLen);
   HousekeepingMessage::setToggleReportingCommand(command, targetSid, enableReporting,
                                                  isDiagnostics);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service3Housekeeping::prepareStructureReportingCommand(CommandMessage* command,
@@ -131,7 +131,7 @@ ReturnValue_t Service3Housekeeping::prepareStructureReportingCommand(CommandMess
 
   sid_t targetSid = buildSid(objectId, &tcData, &tcDataLen);
   HousekeepingMessage::setStructureReportingCommand(command, targetSid, isDiagnostics);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service3Housekeeping::prepareOneShotReportCommand(CommandMessage* command,
@@ -146,7 +146,7 @@ ReturnValue_t Service3Housekeeping::prepareOneShotReportCommand(CommandMessage* 
 
   sid_t targetSid = buildSid(objectId, &tcData, &tcDataLen);
   HousekeepingMessage::setOneShotReportCommand(command, targetSid, isDiagnostics);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service3Housekeeping::prepareCollectionIntervalModificationCommand(
@@ -163,7 +163,7 @@ ReturnValue_t Service3Housekeeping::prepareCollectionIntervalModificationCommand
                                 SerializeIF::Endianness::BIG);
   HousekeepingMessage::setCollectionIntervalModificationCommand(
       command, targetSid, newCollectionInterval, isDiagnostics);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
@@ -174,7 +174,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
   switch (command) {
     case (HousekeepingMessage::HK_REPORT): {
       ReturnValue_t result = generateHkReply(reply, static_cast<uint8_t>(Subservice::HK_REPORT));
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       return CommandingServiceBase::EXECUTION_COMPLETE;
@@ -183,7 +183,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
     case (HousekeepingMessage::DIAGNOSTICS_REPORT): {
       ReturnValue_t result =
           generateHkReply(reply, static_cast<uint8_t>(Subservice::DIAGNOSTICS_REPORT));
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       return CommandingServiceBase::EXECUTION_COMPLETE;
@@ -205,7 +205,7 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
 
     case (HousekeepingMessage::HK_REQUEST_FAILURE): {
       failureParameter1 = objectId;
-      ReturnValue_t error = HasReturnvaluesIF::RETURN_FAILED;
+      ReturnValue_t error = returnvalue::FAILED;
       HousekeepingMessage::getHkRequestFailureReply(reply, &error);
       failureParameter2 = error;
       return CommandingServiceBase::EXECUTION_COMPLETE;
@@ -223,11 +223,11 @@ ReturnValue_t Service3Housekeeping::handleReply(const CommandMessage* reply,
 #endif
       return CommandingServiceBase::INVALID_REPLY;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void Service3Housekeeping::handleUnrequestedReply(CommandMessage* reply) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   Command_t command = reply->getCommand();
 
   switch (command) {
@@ -264,7 +264,7 @@ void Service3Housekeeping::handleUnrequestedReply(CommandMessage* reply) {
     }
   }
 
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     /* Configuration error */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "Service3Housekeeping::handleUnrequestedReply: Could not generate reply!"
@@ -285,7 +285,7 @@ ReturnValue_t Service3Housekeeping::generateHkReply(const CommandMessage* hkMess
 
   sid_t sid = HousekeepingMessage::getHkDataReply(hkMessage, &storeId);
   auto resultPair = IPCStore->getData(storeId);
-  if (resultPair.first != HasReturnvaluesIF::RETURN_OK) {
+  if (resultPair.first != returnvalue::OK) {
     return resultPair.first;
   }
 

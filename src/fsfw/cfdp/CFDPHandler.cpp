@@ -20,11 +20,11 @@ CFDPHandler::~CFDPHandler() {}
 
 ReturnValue_t CFDPHandler::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   this->distributor->registerHandler(this);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CFDPHandler::handleRequest(store_address_t storeId) {
@@ -38,18 +38,18 @@ ReturnValue_t CFDPHandler::handleRequest(store_address_t storeId) {
 
   // TODO read out packet from store using storeId
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CFDPHandler::performOperation(uint8_t opCode) {
-  ReturnValue_t status = RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
   CommandMessage currentMessage;
-  for (status = this->requestQueue->receiveMessage(&currentMessage); status == RETURN_OK;
+  for (status = this->requestQueue->receiveMessage(&currentMessage); status == returnvalue::OK;
        status = this->requestQueue->receiveMessage(&currentMessage)) {
     store_address_t storeId = CFDPMessage::getStoreId(&currentMessage);
     this->handleRequest(storeId);
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint16_t CFDPHandler::getIdentifier() { return 0; }

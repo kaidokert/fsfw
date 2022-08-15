@@ -49,7 +49,7 @@ class I2cComIF : public DeviceCommunicationIF, public SystemObject {
    * @param deviceFile	The name of the device file. E.g. i2c-0
    * @param i2cAddress	The address of the i2c slave device.
    * @param fileDescriptor	Pointer to device descriptor.
-   * @return	RETURN_OK if successful, otherwise RETURN_FAILED.
+   * @return	RETURN_OK if successful, otherwise returnvalue::FAILED.
    */
   ReturnValue_t openDevice(std::string deviceFile, address_t i2cAddress, int *fileDescriptor);
 };

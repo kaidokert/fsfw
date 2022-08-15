@@ -16,7 +16,7 @@ CFDPPacketStored::CFDPPacketStored(const uint8_t* data, size_t size) : CFDPPacke
   }
   if (this->checkAndSetStore()) {
     ReturnValue_t status = store->addData(&storeAddress, data, size);
-    if (status != HasReturnvaluesIF::RETURN_OK) {
+    if (status != returnvalue::OK) {
       this->setData(nullptr, -1);
     }
     const uint8_t* storePtr = nullptr;
@@ -41,11 +41,11 @@ void CFDPPacketStored::setStoreAddress(store_address_t setAddress) {
   this->storeAddress = setAddress;
   const uint8_t* tempData = nullptr;
   size_t tempSize;
-  ReturnValue_t status = StorageManagerIF::RETURN_FAILED;
+  ReturnValue_t status = returnvalue::FAILED;
   if (this->checkAndSetStore()) {
     status = this->store->getData(this->storeAddress, &tempData, &tempSize);
   }
-  if (status == StorageManagerIF::RETURN_OK) {
+  if (status == returnvalue::OK) {
     this->setData(const_cast<uint8_t*>(tempData), tempSize);
   } else {
     // To circumvent size checks
@@ -59,11 +59,11 @@ store_address_t CFDPPacketStored::getStoreAddress() { return this->storeAddress;
 CFDPPacketStored::~CFDPPacketStored() {}
 
 ReturnValue_t CFDPPacketStored::getData(const uint8_t** dataPtr, size_t* dataSize) {
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 // ReturnValue_t CFDPPacketStored::setData(const uint8_t *data) {
-//     return HasReturnvaluesIF::RETURN_OK;
+//     return returnvalue::OK;
 // }
 
 bool CFDPPacketStored::checkAndSetStore() {
@@ -82,8 +82,8 @@ bool CFDPPacketStored::checkAndSetStore() {
 bool CFDPPacketStored::isSizeCorrect() {
   const uint8_t* temp_data = nullptr;
   size_t temp_size;
-  ReturnValue_t status = this->store->getData(this->storeAddress, &temp_data, &temp_size);
-  if (status == StorageManagerIF::RETURN_OK) {
+  ReturnValue_t status = store->getData(this->storeAddress, &temp_data, &temp_size);
+  if (status == returnvalue::OK) {
     if (this->getFullSize() == temp_size) {
       return true;
     }

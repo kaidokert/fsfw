@@ -28,19 +28,19 @@ class EventReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 1, 2, 3, 
                                   SerializeIF::Endianness streamEndianness) const override {
     ReturnValue_t result =
         SerializeAdapter::serialize(&reportId, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&objectId, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&parameter1, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&parameter2, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     return result;
@@ -57,7 +57,7 @@ class EventReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 1, 2, 3, 
 
   virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                                     SerializeIF::Endianness streamEndianness) override {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
  private:

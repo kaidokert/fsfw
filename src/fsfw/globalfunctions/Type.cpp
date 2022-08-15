@@ -52,12 +52,12 @@ ReturnValue_t Type::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
   uint8_t ptc;
   uint8_t pfc;
   ReturnValue_t result = getPtcPfc(&ptc, &pfc);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = SerializeAdapter::serialize(&ptc, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -75,18 +75,18 @@ ReturnValue_t Type::deSerialize(const uint8_t** buffer, size_t* size, Endianness
   uint8_t ptc;
   uint8_t pfc;
   ReturnValue_t result = SerializeAdapter::deSerialize(&ptc, buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = SerializeAdapter::deSerialize(&pfc, buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   actualType = getActualType(ptc, pfc);
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Type::getPtcPfc(uint8_t* ptc, uint8_t* pfc) const {
@@ -124,9 +124,9 @@ ReturnValue_t Type::getPtcPfc(uint8_t* ptc, uint8_t* pfc) const {
       *pfc = 2;
       break;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 Type::ActualType_t Type::getActualType(uint8_t ptc, uint8_t pfc) {

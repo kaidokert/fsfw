@@ -17,15 +17,15 @@ ReturnValue_t NakPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t
                                           Endianness streamEndianness) const {
   ReturnValue_t result =
       FileDirectiveSerializer::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = nakInfo.getStartOfScope().serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = nakInfo.getEndOfScope().serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (nakInfo.hasSegmentRequests()) {
@@ -34,11 +34,11 @@ ReturnValue_t NakPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t
     nakInfo.getSegmentRequests(&segmentRequests, &segmentRequestLen, nullptr);
     for (size_t idx = 0; idx < segmentRequestLen; idx++) {
       result = segmentRequests[idx].first.serialize(buffer, size, maxSize, streamEndianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       result = segmentRequests[idx].second.serialize(buffer, size, maxSize, streamEndianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     }

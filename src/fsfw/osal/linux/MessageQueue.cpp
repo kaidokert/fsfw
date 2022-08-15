@@ -54,7 +54,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
                   "nullptr!"
                << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   if (message->getMaximumMessageSize() < maxMessageSize) {
@@ -62,7 +62,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
     sif::error << "MessageQueue::receiveMessage: Message size " << message->getMaximumMessageSize()
                << " too small to receive data!" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   unsigned int messagePriority = 0;
@@ -72,9 +72,9 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
     this->last = message->getSender();
     // Check size of incoming message.
     if (message->getMessageSize() < message->getMinimumMessageSize()) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else if (status == 0) {
     // Success but no message received
     return MessageQueueIF::EMPTY;
@@ -131,9 +131,9 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
       }
 
       default:
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
@@ -152,9 +152,9 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
         utility::printUnixErrorGeneric(CLASS_NAME, "flush", "EINVAL");
         break;
       default:
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *count = attrib.mq_curmsgs;
   attrib.mq_curmsgs = 0;
@@ -176,11 +176,11 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
         utility::printUnixErrorGeneric(CLASS_NAME, "flush", "EINVAL");
         break;
       default:
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
@@ -200,7 +200,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
 #else
     sif::printError("MessageQueue::sendMessageFromMessageQueue: Message is nullptr\n");
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   message->setSender(sentFrom);
@@ -257,11 +257,11 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
         utility::printUnixErrorGeneric(CLASS_NAME, "sendMessageFromMessageQueue", "EMSGSIZE");
         break;
       default:
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MessageQueue::handleOpenError(mq_attr* attributes, uint32_t messageDepth) {
@@ -320,7 +320,7 @@ ReturnValue_t MessageQueue::handleOpenError(mq_attr* attributes, uint32_t messag
         if (tempId != -1) {
           // Successful mq_open
           this->id = tempId;
-          return HasReturnvaluesIF::RETURN_OK;
+          return returnvalue::OK;
         }
       }
       break;
@@ -331,5 +331,5 @@ ReturnValue_t MessageQueue::handleOpenError(mq_attr* attributes, uint32_t messag
       utility::printUnixErrorGeneric(CLASS_NAME, "MessageQueue", "Unknown");
     }
   }
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }

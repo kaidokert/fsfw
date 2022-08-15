@@ -45,7 +45,7 @@ class ExecutableObjectIF {
    * called so the execution frequency can't be cached in initialize()
    * @return
    */
-  virtual ReturnValue_t initializeAfterTaskCreation() { return HasReturnvaluesIF::RETURN_OK; }
+  virtual ReturnValue_t initializeAfterTaskCreation() { return returnvalue::OK; }
 };
 
 #endif /* FRAMEWORK_TASKS_EXECUTABLEOBJECTIF_H_ */

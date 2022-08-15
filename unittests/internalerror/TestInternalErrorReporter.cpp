@@ -38,7 +38,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
     CommandMessage message;
     ActionMessage::setCompletionReply(&message, 10, true);
     auto result = hkQueue->sendMessage(testQueue->getId(), &message);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     uint32_t queueHits = 0;
     uint32_t lostTm = 0;
     uint32_t storeHits = 0;
@@ -49,7 +49,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
     {
       CommandMessage hkMessage;
       result = hkQueue->receiveMessage(&hkMessage);
-      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result == returnvalue::OK);
       REQUIRE(hkMessage.getCommand() == HousekeepingMessage::UPDATE_SNAPSHOT_SET);
       store_address_t storeAddress;
       gp_id_t gpid =
@@ -59,12 +59,12 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       InternalErrorDataset dataset(objects::INTERNAL_ERROR_REPORTER);
       CCSDSTime::CDS_short time;
       ConstAccessorPair data = ipcStore->getData(storeAddress);
-      REQUIRE(data.first == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(data.first == returnvalue::OK);
       HousekeepingSnapshot hkSnapshot(&time, &dataset);
       const uint8_t* buffer = data.second.data();
       size_t size = data.second.size();
       result = hkSnapshot.deSerialize(&buffer, &size, SerializeIF::Endianness::MACHINE);
-      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result == returnvalue::OK);
       // Remember the amount of queueHits before to see the increase
       queueHits = dataset.queueHits.value;
       lostTm = dataset.tmHits.value;
@@ -78,7 +78,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       internalErrorReporter->performOperation(0);
       CommandMessage hkMessage;
       result = hkQueue->receiveMessage(&hkMessage);
-      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result == returnvalue::OK);
       REQUIRE(hkMessage.getCommand() == HousekeepingMessage::UPDATE_SNAPSHOT_SET);
       store_address_t storeAddress;
       gp_id_t gpid =
@@ -86,7 +86,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       REQUIRE(gpid.objectId == objects::INTERNAL_ERROR_REPORTER);
 
       ConstAccessorPair data = ipcStore->getData(storeAddress);
-      REQUIRE(data.first == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(data.first == returnvalue::OK);
       CCSDSTime::CDS_short time;
       // We need the object ID of the reporter here (NO_OBJECT)
       InternalErrorDataset dataset(objects::INTERNAL_ERROR_REPORTER);
@@ -94,7 +94,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       const uint8_t* buffer = data.second.data();
       size_t size = data.second.size();
       result = hkSnapshot.deSerialize(&buffer, &size, SerializeIF::Endianness::MACHINE);
-      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result == returnvalue::OK);
       // Test that we had one more queueHit
       REQUIRE(dataset.queueHits.value == (queueHits + 1));
       REQUIRE(dataset.tmHits.value == (lostTm + 1));
@@ -111,7 +111,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       sid_t sid(objects::INTERNAL_ERROR_REPORTER, InternalErrorDataset::ERROR_SET_ID);
       HousekeepingMessage::setToggleReportingCommand(&message, sid, true, false);
       result = hkQueue->sendMessage(id, &message);
-      REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result == returnvalue::OK);
       internalErrorReporter->performOperation(0);
     }
   }

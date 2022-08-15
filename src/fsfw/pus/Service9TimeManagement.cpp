@@ -11,7 +11,7 @@ Service9TimeManagement::Service9TimeManagement(object_id_t objectId, uint16_t ap
 
 Service9TimeManagement::~Service9TimeManagement() {}
 
-ReturnValue_t Service9TimeManagement::performService() { return RETURN_OK; }
+ReturnValue_t Service9TimeManagement::performService() { return returnvalue::OK; }
 
 ReturnValue_t Service9TimeManagement::handleRequest(uint8_t subservice) {
   switch (subservice) {
@@ -28,7 +28,7 @@ ReturnValue_t Service9TimeManagement::setTime() {
   TimePacket timePacket(currentPacket.getApplicationData(), currentPacket.getApplicationDataSize());
   ReturnValue_t result =
       CCSDSTime::convertFromCcsds(&timeToSet, timePacket.getTime(), timePacket.getTimeSize());
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     triggerEvent(CLOCK_SET_FAILURE, result, 0);
     return result;
   }
@@ -37,13 +37,13 @@ ReturnValue_t Service9TimeManagement::setTime() {
   Clock::getUptime(&formerUptime);
   result = Clock::setClock(&timeToSet);
 
-  if (result == RETURN_OK) {
+  if (result == returnvalue::OK) {
     uint32_t newUptime;
     Clock::getUptime(&newUptime);
     triggerEvent(CLOCK_SET, newUptime, formerUptime);
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
     triggerEvent(CLOCK_SET_FAILURE, result, 0);
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }

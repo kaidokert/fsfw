@@ -63,7 +63,7 @@ class MapPacketExtraction : public MapPacketExtractionIF {
   ReturnValue_t extractPackets(TcTransferFrame* frame);
   /**
    * The #packetStore and the default destination of #tcQueue are initialized here.
-   * @return	@c RETURN_OK on success, @c RETURN_FAILED otherwise.
+   * @return	@c RETURN_OK on success, @c returnvalue::FAILED otherwise.
    */
   ReturnValue_t initialize();
   /**

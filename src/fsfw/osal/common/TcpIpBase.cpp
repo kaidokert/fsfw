@@ -21,10 +21,10 @@ ReturnValue_t TcpIpBase::initialize() {
     sif::error << "TmTcWinUdpBridge::TmTcWinUdpBridge: WSAStartup failed with error: " << err
                << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 #endif
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 TcpIpBase::~TcpIpBase() {

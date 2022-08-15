@@ -9,13 +9,13 @@ TmStoreMessage::TmStoreMessage() {}
 ReturnValue_t TmStoreMessage::setEnableStoringMessage(CommandMessage* cmd, bool setEnabled) {
   cmd->setCommand(ENABLE_STORING);
   cmd->setParameter(setEnabled);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TmStoreMessage::setDeleteContentMessage(CommandMessage* cmd, ApidSsc upTo) {
   cmd->setCommand(DELETE_STORE_CONTENT);
   cmd->setParameter((upTo.apid << 16) + upTo.ssc);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TmStoreMessage::setDownlinkContentMessage(CommandMessage* cmd, ApidSsc fromPacket,
@@ -23,7 +23,7 @@ ReturnValue_t TmStoreMessage::setDownlinkContentMessage(CommandMessage* cmd, Api
   cmd->setCommand(DOWNLINK_STORE_CONTENT);
   cmd->setParameter((fromPacket.apid << 16) + fromPacket.ssc);
   cmd->setParameter2((toPacket.apid << 16) + toPacket.ssc);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ApidSsc TmStoreMessage::getPacketId1(CommandMessage* cmd) {
@@ -86,7 +86,7 @@ bool TmStoreMessage::getAddToSelection(CommandMessage* cmd) { return (bool)cmd->
 
 ReturnValue_t TmStoreMessage::setReportSelectionDefinitionMessage(CommandMessage* cmd) {
   cmd->setCommand(REPORT_SELECTION_DEFINITION);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TmStoreMessage::setSelectionDefinitionReportMessage(CommandMessage* cmd,
@@ -97,7 +97,7 @@ void TmStoreMessage::setSelectionDefinitionReportMessage(CommandMessage* cmd,
 
 ReturnValue_t TmStoreMessage::setReportStoreCatalogueMessage(CommandMessage* cmd) {
   cmd->setCommand(REPORT_STORE_CATALOGUE);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TmStoreMessage::setStoreCatalogueReportMessage(CommandMessage* cmd, object_id_t objectId,
@@ -127,18 +127,18 @@ ReturnValue_t TmStoreMessage::setDeleteBlocksMessage(CommandMessage* cmd, uint32
   cmd->setCommand(DELETE_STORE_CONTENT_BLOCKS);
   cmd->setParameter(addressLow);
   cmd->setParameter2(addressHigh);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 ReturnValue_t TmStoreMessage::setDownlinkBlocksMessage(CommandMessage* cmd, uint32_t addressLow,
                                                        uint32_t addressHigh) {
   cmd->setCommand(DOWNLINK_STORE_CONTENT_BLOCKS);
   cmd->setParameter(addressLow);
   cmd->setParameter2(addressHigh);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 ReturnValue_t TmStoreMessage::setIndexRequestMessage(CommandMessage* cmd) {
   cmd->setCommand(REPORT_INDEX_REQUEST);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TmStoreMessage::setIndexReportMessage(CommandMessage* cmd, store_address_t storeId) {

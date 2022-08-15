@@ -25,7 +25,7 @@ using ConstAccessorPair = std::pair<ReturnValue_t, ConstStorageAccessor>;
  * @author	Bastian Baetz
  * @date	18.09.2012
  */
-class StorageManagerIF : public HasReturnvaluesIF {
+class StorageManagerIF {
  public:
   using size_type = size_t;
   using max_subpools_t = uint8_t;
@@ -64,7 +64,7 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * @param data	The data to be stored in the StorageManager.
    * @param size	The amount of data to be stored.
    * @return	Returns @li RETURN_OK if data was added.
-   * 					@li	RETURN_FAILED if data could not be added.
+   * 					@li	returnvalue::FAILED if data could not be added.
    * 						storageId is unchanged then.
    */
   virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t* data, size_t size,
@@ -74,7 +74,7 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * 			identified by packet_id.
    * @param packet_id	The identifier of the memory region to be freed.
    * @return	@li RETURN_OK on success.
-   * 			@li	RETURN_FAILED if deletion did not work
+   * 			@li	returnvalue::FAILED if deletion did not work
    * 				(e.g. an illegal packet_id was passed).
    */
   virtual ReturnValue_t deleteData(store_address_t packet_id) = 0;
@@ -117,7 +117,7 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * 						position
    * @param size			The exact size of the stored data is returned here.
    * @return	@li RETURN_OK on success.
-   * 			@li	RETURN_FAILED if fetching data did not work
+   * 			@li	returnvalue::FAILED if fetching data did not work
    * 				(e.g. an illegal packet_id was passed).
    */
   virtual ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
@@ -157,7 +157,7 @@ class StorageManagerIF : public HasReturnvaluesIF {
    * @param size		The size of the space to be reserved.
    * @param p_data	A pointer to the element data is returned here.
    * @return	Returns @li RETURN_OK if data was added.
-   * 					@li	RETURN_FAILED if data could not be added.
+   * 					@li	returnvalue::FAILED if data could not be added.
    * 						storageId is unchanged then.
    */
   virtual ReturnValue_t getFreeElement(store_address_t* storageId, const size_t size,

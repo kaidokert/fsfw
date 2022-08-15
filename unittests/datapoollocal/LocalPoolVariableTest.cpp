@@ -11,23 +11,23 @@ TEST_CASE("LocalPoolVariable", "[LocPoolVarTest]") {
   auto* poolOwner =
       ObjectManager::instance()->get<LocalPoolOwnerBase>(objects::TEST_LOCAL_POOL_OWNER_BASE);
   REQUIRE(poolOwner != nullptr);
-  REQUIRE(poolOwner->initializeHkManager() == result::OK);
-  REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == result::OK);
+  REQUIRE(poolOwner->initializeHkManager() == returnvalue::OK);
+  REQUIRE(poolOwner->initializeHkManagerAfterTaskCreation() == returnvalue::OK);
 
   SECTION("Basic Tests") {
     /* very basic test. */
     lp_var_t<uint8_t> testVariable =
         lp_var_t<uint8_t>(objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);
-    REQUIRE(testVariable.read() == result::OK);
+    REQUIRE(testVariable.read() == returnvalue::OK);
     CHECK(testVariable.value == 0);
     testVariable.value = 5;
-    REQUIRE(testVariable.commit() == result::OK);
-    REQUIRE(testVariable.read() == result::OK);
+    REQUIRE(testVariable.commit() == returnvalue::OK);
+    REQUIRE(testVariable.read() == returnvalue::OK);
     REQUIRE(testVariable.value == 5);
     CHECK(not testVariable.isValid());
     testVariable.setValid(true);
     CHECK(testVariable.isValid());
-    CHECK(testVariable.commit(true) == result::OK);
+    CHECK(testVariable.commit(true) == returnvalue::OK);
 
     testVariable.setReadWriteMode(pool_rwm_t::VAR_READ);
     CHECK(testVariable.getReadWriteMode() == pool_rwm_t::VAR_READ);
@@ -43,7 +43,7 @@ TEST_CASE("LocalPoolVariable", "[LocPoolVarTest]") {
 
     gp_id_t globPoolId(objects::TEST_LOCAL_POOL_OWNER_BASE, lpool::uint8VarId);
     lp_var_t<uint8_t> testVariable2 = lp_var_t<uint8_t>(globPoolId);
-    REQUIRE(testVariable2.read() == result::OK);
+    REQUIRE(testVariable2.read() == returnvalue::OK);
     CHECK(testVariable2 == 5);
     CHECK(testVariable == testVariable2);
     testVariable = 10;
@@ -55,12 +55,12 @@ TEST_CASE("LocalPoolVariable", "[LocPoolVarTest]") {
     CHECK(maxSize == 1);
     size_t serSize = 0;
     CHECK(testVariable.serialize(&varPtr, &serSize, maxSize, SerializeIF::Endianness::MACHINE) ==
-          result::OK);
+          returnvalue::OK);
     CHECK(variableRaw == 10);
     const uint8_t* varConstPtr = &variableRaw;
     testVariable = 5;
     CHECK(testVariable.deSerialize(&varConstPtr, &serSize, SerializeIF::Endianness::MACHINE) ==
-          result::OK);
+          returnvalue::OK);
     CHECK(testVariable == 10);
     CHECK(testVariable != testVariable2);
     CHECK(testVariable2 < testVariable);
@@ -107,5 +107,5 @@ TEST_CASE("LocalPoolVariable", "[LocPoolVarTest]") {
     lp_var_t<uint8_t> invalidObjectVar3 = lp_var_t<uint8_t>(nullptr, lpool::uint8VarId);
   }
 
-  CHECK(poolOwner->reset() == result::OK);
+  CHECK(poolOwner->reset() == returnvalue::OK);
 }

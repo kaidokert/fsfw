@@ -19,7 +19,7 @@ ReturnValue_t pst::pollingSequenceInitDefault(
 		sif::error << "pst::pollingSequenceInitDefault: Sequence invalid!"
 		        << std::endl;
 #endif
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return HasReturnvaluesIF::returnvalue::FAILED;
 	}
 }
 

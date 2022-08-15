@@ -17,7 +17,7 @@ void FileDataSerializer::update() {
 ReturnValue_t FileDataSerializer::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                                             Endianness streamEndianness) const {
   ReturnValue_t result = HeaderSerializer::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (*size + this->getSerializedSize() > maxSize) {
@@ -36,7 +36,7 @@ ReturnValue_t FileDataSerializer::serialize(uint8_t** buffer, size_t* size, size
   }
   cfdp::FileSize& offset = info.getOffset();
   result = offset.serialize(this->getLargeFileFlag(), buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t fileSize = 0;
@@ -47,7 +47,7 @@ ReturnValue_t FileDataSerializer::serialize(uint8_t** buffer, size_t* size, size
   std::memcpy(*buffer, readOnlyPtr, fileSize);
   *buffer += fileSize;
   *size += fileSize;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t FileDataSerializer::getSerializedSize() const {

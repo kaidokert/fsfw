@@ -54,28 +54,28 @@ ReturnValue_t ModeStore::storeArray(ArrayList<ModeListEntry>* sequence,
   }
   pointer->setNext(NULL);
   OSAL::unlockMutex(mutex);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ModeStore::deleteList(ModeListEntry* sequence) {
   ReturnValue_t result = isValidEntry(sequence);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
   deleteListNoLock(sequence);
   OSAL::unlockMutex(mutex);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ModeStore::readList(ModeListEntry* sequence, ArrayList<ModeListEntry>* into) {
   ReturnValue_t result = isValidEntry(sequence);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   OSAL::lockMutex(mutex, OSAL::NO_TIMEOUT);
   result = into->insert(*sequence->value);
-  while ((result == HasReturnvaluesIF::RETURN_OK) && (sequence->getNext() != NULL)) {
+  while ((result == returnvalue::OK) && (sequence->getNext() != NULL)) {
     result = into->insert(*sequence->value);
     sequence = sequence->getNext()->value;
   }
@@ -117,7 +117,7 @@ ReturnValue_t ModeStore::isValidEntry(ModeListEntry* sequence) {
   if ((sequence < store.front()) || (sequence > store.back()) || sequence->getNext() == emptySlot) {
     return INVALID_ENTRY;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 #endif

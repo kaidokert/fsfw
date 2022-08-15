@@ -13,7 +13,7 @@ class TcPacketStoredBase;
  * Currently, it only checks if the APID and CRC are correct.
  * @ingroup tc_distribution
  */
-class TcPacketCheckPUS : public TcPacketCheckIF, public HasReturnvaluesIF {
+class TcPacketCheckPUS : public TcPacketCheckIF {
  protected:
   /**
    * Describes the version number a packet must have to pass.

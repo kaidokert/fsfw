@@ -31,12 +31,12 @@ ReturnValue_t EventMatchTree::addMatch(EventId_t idFrom, EventId_t idTo, bool id
   iterator lastTest;
   ReturnValue_t result = findOrInsertRangeMatcher<EventId_t, EventIdRangeMatcher>(
       begin(), idFrom, idTo, idInverted, &lastTest);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (reporterFrom == 0) {
     // No need to add another AND branch
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   if (reporterTo == 0) {
     reporterTo = reporterFrom;
@@ -95,7 +95,7 @@ inline ReturnValue_t EventMatchTree::findOrInsertRangeMatcher(iterator start, VA
     if ((matcher->rangeMatcher.lowerBound == idFrom) &&
         (matcher->rangeMatcher.upperBound == idTo) &&
         (matcher->rangeMatcher.inverted == inverted)) {
-      return RETURN_OK;
+      return returnvalue::OK;
     } else {
       iter = iter.right();
     }
@@ -115,9 +115,9 @@ inline ReturnValue_t EventMatchTree::findOrInsertRangeMatcher(iterator start, VA
   *lastTest = insert(attachToBranch, *lastTest, newNode);
   if (*lastTest == end()) {
     // This actaully never fails, so creating a dedicated returncode seems an overshoot.
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename VALUE_T, typename INSERTION_T>

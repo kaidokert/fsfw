@@ -33,7 +33,7 @@ void TmPacketStoredBase::setStoreAddress(store_address_t setAddress) {
     return;
   }
   ReturnValue_t status = store->getData(storeAddress, &tempData, &tempSize);
-  if (status == StorageManagerIF::RETURN_OK) {
+  if (status == returnvalue::OK) {
     setData(const_cast<uint8_t *>(tempData), tempSize);
   } else {
     setData(nullptr, -1);
@@ -58,11 +58,11 @@ ReturnValue_t TmPacketStoredBase::sendPacket(MessageQueueId_t destination,
                                              MessageQueueId_t sentFrom, bool doErrorReporting) {
   if (getAllTmData() == nullptr) {
     // SHOULDDO: More decent code.
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   TmTcMessage tmMessage(getStoreAddress());
   ReturnValue_t result = MessageQueueSenderIF::sendMessage(destination, &tmMessage, sentFrom);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     deletePacket();
     if (doErrorReporting) {
       checkAndReportLostTm();
@@ -71,7 +71,7 @@ ReturnValue_t TmPacketStoredBase::sendPacket(MessageQueueId_t destination,
   }
   // SHOULDDO: In many cases, some counter is incremented for successfully sent packets. The check
   // is often not done, but just incremented.
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TmPacketStoredBase::checkAndReportLostTm() {

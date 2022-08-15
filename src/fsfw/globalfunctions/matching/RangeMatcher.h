@@ -27,11 +27,11 @@ class RangeMatcher : public SerializeableMatcherIF<T> {
                           SerializeIF::Endianness streamEndianness) const override {
     ReturnValue_t result =
         SerializeAdapter::serialize(&lowerBound, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&upperBound, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     return SerializeAdapter::serialize(&inverted, buffer, size, maxSize, streamEndianness);
@@ -45,11 +45,11 @@ class RangeMatcher : public SerializeableMatcherIF<T> {
                             SerializeIF::Endianness streamEndianness) override {
     ReturnValue_t result =
         SerializeAdapter::deSerialize(&lowerBound, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&upperBound, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     return SerializeAdapter::deSerialize(&inverted, buffer, size, streamEndianness);

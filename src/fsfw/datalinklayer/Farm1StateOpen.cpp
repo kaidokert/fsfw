@@ -11,7 +11,7 @@ ReturnValue_t Farm1StateOpen::handleADFrame(TcTransferFrame* frame, ClcwIF* clcw
   if (diff == 0) {
     myVC->vR++;
     clcw->setRetransmitFlag(false);
-    return RETURN_OK;
+    return returnvalue::OK;
   } else if (diff < myVC->positiveWindow && diff > 0) {
     clcw->setRetransmitFlag(true);
     return NS_POSITIVE_W;

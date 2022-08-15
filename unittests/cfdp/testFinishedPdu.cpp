@@ -7,7 +7,7 @@
 
 TEST_CASE("Finished PDU", "[FinishedPdu]") {
   using namespace cfdp;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 256> fnBuffer = {};
   uint8_t* buffer = fnBuffer.data();
   size_t sz = 0;
@@ -24,7 +24,7 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
   SECTION("Serialize") {
     FinishPduSerializer serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getSerializedSize() == 12);
     REQUIRE(((fnBuffer[1] << 8) | fnBuffer[2]) == 2);
     REQUIRE(fnBuffer[10] == cfdp::FileDirectives::FINISH);
@@ -47,7 +47,7 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
     sz = 0;
     buffer = fnBuffer.data();
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getSerializedSize() == 12 + 14);
     REQUIRE(serializer.getPduDataFieldLen() == 16);
 
@@ -69,7 +69,7 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
     sz = 0;
     buffer = fnBuffer.data();
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     info.setConditionCode(cfdp::ConditionCode::FILESTORE_REJECTION);
     REQUIRE(serializer.getSerializedSize() == 12 + 14 + 15 + 4);
     REQUIRE(sz == 12 + 14 + 15 + 4);
@@ -81,7 +81,7 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
       sz = 0;
       buffer = fnBuffer.data();
       result = serializer.serialize(&buffer, &sz, maxSz, SerializeIF::Endianness::NETWORK);
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
   }
 
@@ -89,10 +89,10 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
     FinishedInfo emptyInfo;
     FinishPduSerializer serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     FinishPduDeserializer deserializer(fnBuffer.data(), fnBuffer.size(), emptyInfo);
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getFileStatus() == cfdp::FinishedFileStatus::DISCARDED_DELIBERATELY);
     REQUIRE(emptyInfo.getConditionCode() == cfdp::ConditionCode::INACTIVITY_DETECTED);
     REQUIRE(emptyInfo.getDeliveryCode() == cfdp::FinishedDeliveryCode::DATA_INCOMPLETE);
@@ -110,13 +110,13 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
     serializer.updateDirectiveFieldLen();
     REQUIRE(serializer.getPduDataFieldLen() == 16);
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     FilestoreResponseTlv emptyResponse(firstNameLv, nullptr);
     responsePtr = &emptyResponse;
     emptyInfo.setFilestoreResponsesArray(&responsePtr, nullptr, &len);
     FinishPduDeserializer deserializer2(fnBuffer.data(), fnBuffer.size(), emptyInfo);
     result = deserializer2.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getFsResponsesLen() == 1);
     FilestoreResponseTlv** responseArray = nullptr;
     emptyInfo.getFilestoreResonses(&responseArray, nullptr, nullptr);
@@ -145,7 +145,7 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
     sz = 0;
     buffer = fnBuffer.data();
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     EntityId emptyId;
     EntityIdTlv emptyFaultLoc(emptyId);
     emptyInfo.setFaultLocation(&emptyFaultLoc);
@@ -154,7 +154,7 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
     response2.setFilestoreMessage(&emptyFsMsg);
     FinishPduDeserializer deserializer3(fnBuffer.data(), fnBuffer.size(), emptyInfo);
     result = deserializer3.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     auto& infoRef = deserializer3.getInfo();
     REQUIRE(deserializer3.getWholePduSize() == 45);
 
@@ -183,7 +183,7 @@ TEST_CASE("Finished PDU", "[FinishedPdu]") {
     for (size_t maxSz = 0; maxSz < 45; maxSz++) {
       FinishPduDeserializer faultyDeser(fnBuffer.data(), maxSz, emptyInfo);
       result = faultyDeser.parseData();
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
   }
 }

@@ -20,8 +20,8 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
   SECTION("Fill and erase") {
     for (uint16_t i = 0; i < 30; i++) {
       REQUIRE(map.insert(std::make_pair(i, i + 1)) ==
-              static_cast<int>(HasReturnvaluesIF::RETURN_OK));
-      REQUIRE(map.exists(i) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+              static_cast<int>(returnvalue::OK));
+      REQUIRE(map.exists(i) == static_cast<int>(returnvalue::OK));
       REQUIRE(map.find(i)->second == i + 1);
       REQUIRE(not map.empty());
     }
@@ -32,7 +32,7 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
     REQUIRE(map.full());
     {
       uint16_t* ptr;
-      REQUIRE(map.find(5, &ptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+      REQUIRE(map.find(5, &ptr) == static_cast<int>(returnvalue::OK));
       REQUIRE(*ptr == 6);
       REQUIRE(*(map.findValue(6)) == 7);
       REQUIRE(map.find(31, &ptr) ==
@@ -41,7 +41,7 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
 
     REQUIRE(map.getSerializedSize() ==
             (sizeof(uint32_t) + 30 * (sizeof(uint32_t) + sizeof(uint16_t))));
-    REQUIRE(map.erase(2) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.erase(2) == static_cast<int>(returnvalue::OK));
     REQUIRE(map.erase(31) == static_cast<int>(FixedMap<uint32_t, uint16_t>::KEY_DOES_NOT_EXIST));
     REQUIRE(map.exists(2) == static_cast<int>(FixedMap<uint32_t, uint16_t>::KEY_DOES_NOT_EXIST));
     REQUIRE(map.size() == 29);
@@ -60,7 +60,7 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
     }
 
     for (FixedMap<uint32_t, uint16_t>::Iterator it = map.begin(); it != map.end(); it++) {
-      REQUIRE(map.erase(&it) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+      REQUIRE(map.erase(&it) == static_cast<int>(returnvalue::OK));
     }
 
     REQUIRE(map.size() == 0);
@@ -73,11 +73,11 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
 
   SECTION("Insert variants") {
     FixedMap<uint32_t, uint16_t>::Iterator it = map.end();
-    REQUIRE(map.insert(36, 37, &it) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(36, 37, &it) == static_cast<int>(returnvalue::OK));
     REQUIRE(it->first == 36);
     REQUIRE(it->second == 37);
     REQUIRE(map.size() == 1);
-    REQUIRE(map.insert(37, 38, nullptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(37, 38, nullptr) == static_cast<int>(returnvalue::OK));
     REQUIRE(map.find(37)->second == 38);
     REQUIRE(map.size() == 2);
     REQUIRE(map.insert(37, 24, nullptr) ==
@@ -86,8 +86,8 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
     REQUIRE(map.size() == 2);
   };
   SECTION("Serialize and DeSerialize") {
-    REQUIRE(map.insert(36, 37, nullptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
-    REQUIRE(map.insert(37, 38, nullptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(36, 37, nullptr) == static_cast<int>(returnvalue::OK));
+    REQUIRE(map.insert(37, 38, nullptr) == static_cast<int>(returnvalue::OK));
     uint8_t buffer[sizeof(uint32_t) + 2 * (sizeof(uint32_t) + sizeof(uint16_t))];
     REQUIRE(map.getSerializedSize() ==
             (sizeof(uint32_t) + 2 * (sizeof(uint32_t) + sizeof(uint16_t))));
@@ -99,25 +99,25 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
     size = 0;
     REQUIRE(map.serialize(
                 &loc_ptr, &size, sizeof(uint32_t) + 2 * (sizeof(uint32_t) + sizeof(uint16_t)),
-                SerializeIF::Endianness::BIG) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+                SerializeIF::Endianness::BIG) == static_cast<int>(returnvalue::OK));
     REQUIRE(size == 16);
 
     uint32_t internal_size = 0;
     const uint8_t* ptr2 = buffer;
     REQUIRE(
         SerializeAdapter::deSerialize(&internal_size, &ptr2, &size, SerializeIF::Endianness::BIG) ==
-        static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+        static_cast<int>(returnvalue::OK));
     REQUIRE(internal_size == 2);
     for (uint8_t i = 36; i < 38; i++) {
       uint32_t first_element = 0;
       REQUIRE(SerializeAdapter::deSerialize(&first_element, &ptr2, &size,
                                             SerializeIF::Endianness::BIG) ==
-              static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+              static_cast<int>(returnvalue::OK));
       REQUIRE(first_element == i);
       uint16_t second_element = 0;
       REQUIRE(SerializeAdapter::deSerialize(&second_element, &ptr2, &size,
                                             SerializeIF::Endianness::BIG) ==
-              static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+              static_cast<int>(returnvalue::OK));
       REQUIRE(second_element == i + 1);
     }
     REQUIRE(size == 0);
@@ -126,7 +126,7 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
     size = 16;
     REQUIRE(map.size() == 0);
     REQUIRE(map.deSerialize(&constPtr, &size, SerializeIF::Endianness::BIG) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+            static_cast<int>(returnvalue::OK));
     REQUIRE(map.size() == 2);
     REQUIRE(map.find(36)->second == 37);
     for (auto& element : map) {
@@ -154,12 +154,12 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
     size_t size = 0;
     size_t max_size = sizeof(uint32_t) + 1 * (sizeof(uint32_t) + sizeof(uint16_t));
     REQUIRE(map.serialize(&ptr, &size, max_size, SerializeIF::Endianness::LITTLE) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+            static_cast<int>(returnvalue::OK));
     map.clear();
     REQUIRE(map.size() == 0);
     const uint8_t* ptr2 = newBuffer;
     REQUIRE(map.deSerialize(&ptr2, &size, SerializeIF::Endianness::LITTLE) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+            static_cast<int>(returnvalue::OK));
     REQUIRE(map.size() == 1);
     REQUIRE(map.find(10)->second == 20);
   };

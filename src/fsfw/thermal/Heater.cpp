@@ -21,14 +21,14 @@ ReturnValue_t Heater::set() {
   passive = false;
   // wait for clear before doing anything
   if (internalState == STATE_WAIT) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   if (healthHelper.healthTable->isHealthy(getObjectId())) {
     doAction(SET);
     if ((internalState == STATE_OFF) || (internalState == STATE_PASSIVE)) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     } else {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
   } else {
     if (healthHelper.healthTable->isFaulty(getObjectId())) {
@@ -37,7 +37,7 @@ ReturnValue_t Heater::set() {
         doAction(CLEAR);
       }
     }
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
@@ -186,7 +186,7 @@ ReturnValue_t Heater::performOperation(uint8_t opCode) {
     wasOn = false;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void Heater::setSwitch(uint8_t number, ReturnValue_t state, uint32_t* uptimeOfSwitching) {
@@ -220,54 +220,54 @@ MessageQueueId_t Heater::getCommandQueue() const { return commandQueue->getId();
 
 ReturnValue_t Heater::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   EventManagerIF* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
   if (manager == NULL) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   result = manager->registerListener(eventQueue->getId());
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   ConfirmsFailuresIF* pcdu = ObjectManager::instance()->get<ConfirmsFailuresIF>(
       DeviceHandlerFailureIsolation::powerConfirmationId);
   if (pcdu == NULL) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   pcduQueueId = pcdu->getEventReceptionQueue();
 
   result = manager->subscribeToAllEventsFrom(eventQueue->getId(), getObjectId());
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = parameterHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = healthHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void Heater::handleQueue() {
   CommandMessage command;
   ReturnValue_t result = commandQueue->receiveMessage(&command);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     result = healthHelper.handleHealthCommand(&command);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       return;
     }
     result = parameterHelper.handleParameterMessage(&command);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       return;
     }
   }
@@ -286,13 +286,13 @@ ReturnValue_t Heater::getParameter(uint8_t domainId, uint8_t uniqueId,
     default:
       return INVALID_IDENTIFIER_ID;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void Heater::handleEventQueue() {
   EventMessage event;
   for (ReturnValue_t result = eventQueue->receiveMessage(&event);
-       result == HasReturnvaluesIF::RETURN_OK; result = eventQueue->receiveMessage(&event)) {
+       result == returnvalue::OK; result = eventQueue->receiveMessage(&event)) {
     switch (event.getMessageId()) {
       case EventMessage::EVENT_MESSAGE:
         switch (event.getEvent()) {

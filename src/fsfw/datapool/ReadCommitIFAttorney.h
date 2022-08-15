@@ -12,14 +12,14 @@ class ReadCommitIFAttorney {
  private:
   static ReturnValue_t readWithoutLock(ReadCommitIF* readCommitIF) {
     if (readCommitIF == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     return readCommitIF->readWithoutLock();
   }
 
   static ReturnValue_t commitWithoutLock(ReadCommitIF* readCommitIF) {
     if (readCommitIF == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     return readCommitIF->commitWithoutLock();
   }

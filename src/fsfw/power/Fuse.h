@@ -16,7 +16,6 @@ void setStaticFrameworkObjectIds();
 
 class Fuse : public SystemObject,
              public HasHealthIF,
-             public HasReturnvaluesIF,
              public ReceivesParameterMessagesIF,
              public SerializeIF {
   friend void(Factory::setStaticFrameworkObjectIds)();

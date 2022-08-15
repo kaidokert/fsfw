@@ -24,11 +24,11 @@ ReturnValue_t PowerSwitcher::getStateOfSwitches() {
                  (secondSwitchState == PowerSwitchIF::SWITCH_OFF)) {
         return PowerSwitchIF::SWITCH_OFF;
       } else {
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       }
     }
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -111,18 +111,18 @@ ReturnValue_t PowerSwitcher::checkSwitchState() {
       return IN_POWER_TRANSITION;
     case SWITCH_IS_OFF:
       if (getStateOfSwitches() == PowerSwitchIF::SWITCH_OFF) {
-        return RETURN_OK;
+        return returnvalue::OK;
       } else {
         return SWITCH_STATE_MISMATCH;
       }
     case SWITCH_IS_ON:
       if (getStateOfSwitches() == PowerSwitchIF::SWITCH_ON) {
-        return RETURN_OK;
+        return returnvalue::OK;
       } else {
         return SWITCH_STATE_MISMATCH;
       }
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 PowerSwitcher::State_t PowerSwitcher::getState() { return state; }

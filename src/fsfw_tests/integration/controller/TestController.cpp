@@ -10,7 +10,7 @@ TestController::TestController(object_id_t objectId, object_id_t parentId, size_
 TestController::~TestController() {}
 
 ReturnValue_t TestController::handleCommandMessage(CommandMessage *message) {
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TestController::performControlOperation() {}
@@ -24,7 +24,7 @@ LocalPoolDataSetBase *TestController::getDataSetHandle(sid_t sid) { return nullp
 
 ReturnValue_t TestController::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                       LocalDataPoolManager &poolManager) {
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestController::initializeAfterTaskCreation() {
@@ -33,5 +33,5 @@ ReturnValue_t TestController::initializeAfterTaskCreation() {
 
 ReturnValue_t TestController::checkModeCommand(Mode_t mode, Submode_t submode,
                                                uint32_t *msToReachTheMode) {
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

@@ -50,7 +50,7 @@ bool AssemblyBase::isInTransition() {
 bool AssemblyBase::handleChildrenChanged() {
   if (childrenChangedMode) {
     ReturnValue_t result = checkChildrenState();
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
       handleChildrenLostMode(result);
     }
     return true;
@@ -116,7 +116,7 @@ void AssemblyBase::handleChildrenTransition() {
         break;
     }
     ReturnValue_t result = checkChildrenState();
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       handleModeReached();
     } else {
       handleModeTransitionFailed(result);
@@ -149,7 +149,7 @@ void AssemblyBase::handleModeTransitionFailed(ReturnValue_t result) {
 void AssemblyBase::sendHealthCommand(MessageQueueId_t sendTo, HealthState health) {
   CommandMessage command;
   HealthMessage::setHealthMessage(&command, HealthMessage::HEALTH_SET, health);
-  if (commandQueue->sendMessage(sendTo, &command) == RETURN_OK) {
+  if (commandQueue->sendMessage(sendTo, &command) == returnvalue::OK) {
     commandsOutstanding++;
   }
 }
@@ -164,25 +164,25 @@ ReturnValue_t AssemblyBase::checkChildrenState() {
 
 ReturnValue_t AssemblyBase::checkChildrenStateOff() {
   for (const auto& childIter : childrenMap) {
-    if (checkChildOff(childIter.first) != RETURN_OK) {
+    if (checkChildOff(childIter.first) != returnvalue::OK) {
       return NOT_ENOUGH_CHILDREN_IN_CORRECT_STATE;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t AssemblyBase::checkChildOff(uint32_t objectId) {
   ChildInfo childInfo = childrenMap.find(objectId)->second;
   if (healthHelper.healthTable->isCommandable(objectId)) {
     if (childInfo.submode != SUBMODE_NONE) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     } else {
       if ((childInfo.mode != MODE_OFF) && (childInfo.mode != DeviceHandlerIF::MODE_ERROR_ON)) {
-        return RETURN_FAILED;
+        return returnvalue::FAILED;
       }
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t AssemblyBase::checkModeCommand(Mode_t mode, Submode_t submode,
@@ -192,7 +192,7 @@ ReturnValue_t AssemblyBase::checkModeCommand(Mode_t mode, Submode_t submode,
     if (submode != SUBMODE_NONE) {
       return INVALID_SUBMODE;
     }
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 
   if ((mode != MODE_ON) && (mode != DeviceHandlerIF::MODE_NORMAL)) {
@@ -212,7 +212,7 @@ ReturnValue_t AssemblyBase::handleHealthReply(CommandMessage* message) {
     if (health != EXTERNAL_CONTROL) {
       updateChildChangedHealth(message->getSender(), true);
     }
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   if (message->getCommand() == HealthMessage::REPLY_HEALTH_SET ||
       (message->getCommand() == CommandMessage::REPLY_REJECTED &&
@@ -220,9 +220,9 @@ ReturnValue_t AssemblyBase::handleHealthReply(CommandMessage* message) {
     if (isInTransition()) {
       commandsOutstanding--;
     }
-    return RETURN_OK;
+    return returnvalue::OK;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 bool AssemblyBase::checkAndHandleRecovery() {

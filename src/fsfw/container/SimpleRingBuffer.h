@@ -48,7 +48,7 @@ class SimpleRingBuffer : public RingBufferBase<> {
    * @param data
    * @param amount
    * @return -@c RETURN_OK if write operation was successful
-   * -@c RETURN_FAILED if
+   * -@c returnvalue::FAILED if
    */
   ReturnValue_t writeData(const uint8_t* data, size_t amount);
 
@@ -96,7 +96,7 @@ class SimpleRingBuffer : public RingBufferBase<> {
    * to the passed value.
    * @return
    * - @c RETURN_OK if data was read successfully
-   * - @c RETURN_FAILED if not enough data was available and readRemaining
+   * - @c returnvalue::FAILED if not enough data was available and readRemaining
    *      was set to false.
    */
   ReturnValue_t readData(uint8_t* data, size_t amount, bool incrementReadPtr = false,

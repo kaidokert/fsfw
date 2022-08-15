@@ -56,7 +56,7 @@ class SerializeIF {
    * SerializeIF::Endianness
    * @return
    * 		- @c BUFFER_TOO_SHORT The given buffer in is too short
-   * 		- @c RETURN_FAILED Generic error
+   * 		- @c returnvalue::FAILED Generic error
    * 		- @c RETURN_OK Successful serialization
    */
   [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
@@ -92,7 +92,7 @@ class SerializeIF {
    * @return
    * 	- @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
    * 	- @c TOO_MANY_ELEMENTS The buffer has more inputs than expected
-   * 	- @c RETURN_FAILED Generic Error
+   * 	- @c returnvalue::FAILED Generic Error
    * 	- @c RETURN_OK Successful deserialization
    */
   virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,

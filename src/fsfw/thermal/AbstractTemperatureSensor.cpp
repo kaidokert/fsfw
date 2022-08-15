@@ -24,11 +24,11 @@ MessageQueueId_t AbstractTemperatureSensor::getCommandQueue() const {
 
 ReturnValue_t AbstractTemperatureSensor::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = healthHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = parameterHelper.initialize();
@@ -38,24 +38,24 @@ ReturnValue_t AbstractTemperatureSensor::initialize() {
 ReturnValue_t AbstractTemperatureSensor::performOperation(uint8_t opCode) {
   handleCommandQueue();
   doChildOperation();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t AbstractTemperatureSensor::performHealthOp() {
   handleCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void AbstractTemperatureSensor::handleCommandQueue() {
   CommandMessage command;
   ReturnValue_t result = commandQueue->receiveMessage(&command);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     result = healthHelper.handleHealthCommand(&command);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       return;
     }
     result = parameterHelper.handleParameterMessage(&command);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       return;
     }
     command.setToUnknownCommand();
@@ -65,7 +65,7 @@ void AbstractTemperatureSensor::handleCommandQueue() {
 
 ReturnValue_t AbstractTemperatureSensor::setHealth(HealthState health) {
   healthHelper.setHealth(health);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 HasHealthIF::HealthState AbstractTemperatureSensor::getHealth() { return healthHelper.getHealth(); }

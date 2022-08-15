@@ -14,8 +14,7 @@ void setStaticFrameworkObjectIds();
 
 class CFDPHandler : public ExecutableObjectIF,
                     public AcceptsTelecommandsIF,
-                    public SystemObject,
-                    public HasReturnvaluesIF {
+                    public SystemObject {
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:

@@ -55,12 +55,12 @@ ReturnValue_t PeriodicTask::startTask() {
     vTaskResume(handle);
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
   vTaskDelay(pdMS_TO_TICKS(ms));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 [[noreturn]] void PeriodicTask::taskFunctionality() {

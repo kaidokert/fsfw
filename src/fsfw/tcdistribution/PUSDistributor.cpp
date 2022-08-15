@@ -12,7 +12,7 @@ PUSDistributor::PUSDistributor(uint16_t setApid, object_id_t setObjectId,
     : TcDistributor(setObjectId),
       checker(setApid),
       verifyChannel(),
-      tcStatus(RETURN_FAILED),
+      tcStatus(returnvalue::FAILED),
       packetSource(setPacketSource) {}
 
 PUSDistributor::~PUSDistributor() = default;
@@ -30,7 +30,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
     this->currentPacket->setStoreAddress(this->currentMessage.getStorageId(), currentPacket);
     if (currentPacket->getWholeData() != nullptr) {
       tcStatus = checker.checkPacket(currentPacket);
-      if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
+      if (tcStatus != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
         const char* keyword = "unnamed error";
         if (tcStatus == TcPacketCheckPUS::INCORRECT_CHECKSUM) {
@@ -70,7 +70,7 @@ PUSDistributor::TcMqMapIter PUSDistributor::selectDestination() {
 #endif
     }
 
-    if (tcStatus != RETURN_OK) {
+    if (tcStatus != returnvalue::OK) {
       return this->queueMap.end();
     } else {
       return queueMapIt;
@@ -100,25 +100,25 @@ ReturnValue_t PUSDistributor::registerService(AcceptsTelecommandsIF* service) {
 #endif
     return SERVICE_ID_ALREADY_EXISTS;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 MessageQueueId_t PUSDistributor::getRequestQueue() { return tcQueue->getId(); }
 
 ReturnValue_t PUSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
-  if (queueStatus != RETURN_OK) {
+  if (queueStatus != returnvalue::OK) {
     tcStatus = queueStatus;
   }
-  if (tcStatus != RETURN_OK) {
+  if (tcStatus != returnvalue::OK) {
     this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE, currentPacket,
                                           tcStatus);
     // A failed packet is deleted immediately after reporting,
     // otherwise it will block memory.
     currentPacket->deletePacket();
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   } else {
     this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS, currentPacket);
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 }
 
@@ -140,7 +140,7 @@ ReturnValue_t PUSDistributor::initialize() {
     sif::printError("PUSDistributor::initialize: Packet source invalid\n");
     sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return ccsdsDistributor->registerApplication(this);
 }

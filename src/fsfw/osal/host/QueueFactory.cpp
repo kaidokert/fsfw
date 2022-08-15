@@ -13,7 +13,7 @@ ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
                                                 MessageQueueMessageIF* message,
                                                 MessageQueueId_t sentFrom, bool ignoreFault) {
   return MessageQueue::sendMessageFromMessageQueue(sendTo, message, sentFrom, ignoreFault);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 QueueFactory* QueueFactory::instance() {
