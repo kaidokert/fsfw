@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
+## Added
+
+- Add new `UnsignedByteField` class
+
 # [v5.0.0] 25.07.2022
 
 ## Changes

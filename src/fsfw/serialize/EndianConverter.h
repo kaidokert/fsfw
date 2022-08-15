@@ -75,7 +75,6 @@ class EndianConverter {
     }
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
     memcpy(out, in, size);
-    return;
 #endif
   }
 
@@ -112,7 +111,6 @@ class EndianConverter {
     for (size_t count = 0; count < size; count++) {
       out[size - count - 1] = in[count];
     }
-    return;
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
     memcpy(out, in, size);
 #endif

@@ -101,11 +101,7 @@ class CycleCountCommand : public SerialLinkedListAdapter<SerializeIF> {
 
 static constexpr uint32_t MGM_DATASET_ID = READ_DATA;
 
-enum MgmPoolIds : lp_id_t {
-  FIELD_STRENGTH_X,
-  FIELD_STRENGTH_Y,
-  FIELD_STRENGTH_Z,
-};
+enum MgmPoolIds : lp_id_t { FIELD_STRENGTHS };
 
 class Rm3100PrimaryDataset : public StaticLocalDataSet<3> {
  public:
@@ -113,10 +109,10 @@ class Rm3100PrimaryDataset : public StaticLocalDataSet<3> {
 
   Rm3100PrimaryDataset(object_id_t mgmId) : StaticLocalDataSet(sid_t(mgmId, MGM_DATASET_ID)) {}
 
-  // Field strengths in micro Tesla.
-  lp_var_t<float> fieldStrengthX = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_X, this);
-  lp_var_t<float> fieldStrengthY = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_Y, this);
-  lp_var_t<float> fieldStrengthZ = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_Z, this);
+  /**
+   * Field strenghts in uT
+   */
+  lp_vec_t<float, 3> fieldStrengths = lp_vec_t<float, 3>(sid.objectId, FIELD_STRENGTHS, this);
 };
 
 }  // namespace RM3100

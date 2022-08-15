@@ -309,9 +309,8 @@ void MgmRM3100Handler::modeChanged(void) { internalState = InternalState::NONE; 
 
 ReturnValue_t MgmRM3100Handler::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                         LocalDataPoolManager &poolManager) {
-  localDataPoolMap.emplace(RM3100::FIELD_STRENGTH_X, new PoolEntry<float>({0.0}));
-  localDataPoolMap.emplace(RM3100::FIELD_STRENGTH_Y, new PoolEntry<float>({0.0}));
-  localDataPoolMap.emplace(RM3100::FIELD_STRENGTH_Z, new PoolEntry<float>({0.0}));
+  localDataPoolMap.emplace(RM3100::FIELD_STRENGTHS, &mgmXYZ);
+  poolManager.subscribeForPeriodicPacket(primaryDataset.getSid(), false, 10.0, false);
   return HasReturnvaluesIF::RETURN_OK;
 }
 
@@ -354,9 +353,9 @@ ReturnValue_t MgmRM3100Handler::handleDataReadout(const uint8_t *packet) {
   // TODO: Sanity check on values?
   PoolReadGuard readGuard(&primaryDataset);
   if (readGuard.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
-    primaryDataset.fieldStrengthX = fieldStrengthX;
-    primaryDataset.fieldStrengthY = fieldStrengthY;
-    primaryDataset.fieldStrengthZ = fieldStrengthZ;
+    primaryDataset.fieldStrengths[0] = fieldStrengthX;
+    primaryDataset.fieldStrengths[1] = fieldStrengthY;
+    primaryDataset.fieldStrengths[2] = fieldStrengthZ;
     primaryDataset.setValidity(true, true);
   }
   return RETURN_OK;
