@@ -90,7 +90,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     REQUIRE(creator.getApid() == 0x3ff);
     REQUIRE(creator.getDestId() == 0xfff);
     REQUIRE(creator.getMessageTypeCounter() == 0x313);
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     // Message Sequence Count
     REQUIRE(((buf[9] << 8) | buf[10]) == 0x313);
     // Destination ID
@@ -108,8 +108,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     std::array<uint8_t, 3> data{1, 2, 3};
     creator.setRawUserData(data.data(), data.size());
     REQUIRE(creator.getFullPacketLen() == 25);
-    REQUIRE(creator.SerializeIF::serialize(&dataPtr, &serLen, buf.size()) ==
-            HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[20] == 1);
     REQUIRE(buf[21] == 2);
     REQUIRE(buf[22] == 3);
@@ -119,7 +118,8 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     auto simpleSer = SimpleSerializable();
     creator.setSerializableUserData(simpleSer);
     REQUIRE(creator.getFullPacketLen() == 25);
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
+            HasReturnvaluesIF::RETURN_OK);
     REQUIRE(buf[20] == 1);
     REQUIRE(buf[21] == 2);
     REQUIRE(buf[22] == 3);
@@ -143,7 +143,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     for (size_t maxSize = 0; maxSize < reqSize; maxSize++) {
       dataPtr = buf.data();
       serLen = 0;
-      REQUIRE(creator.SerializeIF::serialize(&dataPtr, &serLen, maxSize) ==
+      REQUIRE(creator.serialize(&dataPtr, &serLen, maxSize, SerializeIF::Endianness::NETWORK) ==
               SerializeIF::BUFFER_TOO_SHORT);
     }
   }
@@ -151,7 +151,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   SECTION("No CRC Generation") {
     creator.disableCrcCalculation();
     REQUIRE(not creator.crcCalculationEnabled());
-    REQUIRE(creator.serialize(dataPtr, serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serLen == 22);
     REQUIRE(buf[20] == 0x00);
     REQUIRE(buf[21] == 0x00);

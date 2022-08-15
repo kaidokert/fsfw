@@ -305,12 +305,13 @@ void MgmRM3100Handler::fillCommandAndReplyMap() {
   insertInCommandAndReplyMap(RM3100::READ_DATA, 3, &primaryDataset);
 }
 
-void MgmRM3100Handler::modeChanged(void) { internalState = InternalState::NONE; }
+void MgmRM3100Handler::modeChanged() { internalState = InternalState::NONE; }
 
 ReturnValue_t MgmRM3100Handler::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                         LocalDataPoolManager &poolManager) {
   localDataPoolMap.emplace(RM3100::FIELD_STRENGTHS, &mgmXYZ);
-  poolManager.subscribeForPeriodicPacket(primaryDataset.getSid(), false, 10.0, false);
+  poolManager.subscribeForRegularPeriodicPacket(
+      subdp::RegularHkPeriodicParams(primaryDataset.getSid(), false, 10.0));
   return HasReturnvaluesIF::RETURN_OK;
 }
 

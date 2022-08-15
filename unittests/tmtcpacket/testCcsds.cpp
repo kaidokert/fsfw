@@ -60,9 +60,9 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
 
   SECTION("Invalid Deser") {
     size_t deserLen = 0;
-    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), deserLen, 1) ==
+    REQUIRE(packetId.deSerialize(buf.data(), deserLen, 1, SerializeIF::Endianness::NETWORK) ==
             SerializeIF::STREAM_TOO_SHORT);
-    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), deserLen, 0) ==
+    REQUIRE(packetId.deSerialize(buf.data(), deserLen, 0, SerializeIF::Endianness::NETWORK) ==
             SerializeIF::STREAM_TOO_SHORT);
   }
 
@@ -77,8 +77,8 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
     buf[0] = 0x1a;
     buf[1] = 0xff;
     size_t deserLen = 0xff;
-    REQUIRE(packetId.SerializeIF::deSerialize(buf.data(), deserLen, buf.size()) ==
-            HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(packetId.deSerialize(buf.data(), deserLen, buf.size(),
+                                 SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_OK);
     CHECK(packetId.apid == 0x2ff);
     CHECK(deserLen == 2);
     CHECK(packetId.packetType == ccsds::PacketType::TC);
@@ -113,7 +113,7 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
     buf[0] = 0xbf;
     buf[1] = 0xfe;
     size_t deserLen = 0xff;
-    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), deserLen, buf.size()) ==
+    REQUIRE(psc.deSerialize(buf.data(), deserLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
             HasReturnvaluesIF::RETURN_OK);
     CHECK(psc.seqFlags == ccsds::SequenceFlags::LAST_SEGMENT);
     CHECK(deserLen == 2);
@@ -128,7 +128,9 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
 
   SECTION("Invalid Deser") {
     size_t deserLen = 0;
-    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), deserLen, 1) == SerializeIF::STREAM_TOO_SHORT);
-    REQUIRE(psc.SerializeIF::deSerialize(buf.data(), deserLen, 0) == SerializeIF::STREAM_TOO_SHORT);
+    REQUIRE(psc.deSerialize(buf.data(), deserLen, 1, SerializeIF::Endianness::NETWORK) ==
+            SerializeIF::STREAM_TOO_SHORT);
+    REQUIRE(psc.deSerialize(buf.data(), deserLen, 0, SerializeIF::Endianness::NETWORK) ==
+            SerializeIF::STREAM_TOO_SHORT);
   }
 }

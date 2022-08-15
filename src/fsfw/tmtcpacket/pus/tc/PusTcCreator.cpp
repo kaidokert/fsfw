@@ -103,13 +103,6 @@ ReturnValue_t PusTcCreator::setSerializableUserData(SerializeIF &serializable) {
   return HasReturnvaluesIF::RETURN_OK;
 }
 
-ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize) const {
-  return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
-}
-
-ReturnValue_t PusTcCreator::serialize(uint8_t *buffer, size_t &serLen, size_t maxSize) const {
-  return SerializeIF::serialize(buffer, serLen, maxSize, SerializeIF::Endianness::NETWORK);
-}
 void PusTcCreator::setup() {
   spCreator.setPacketType(ccsds::PacketType::TC);
   spCreator.setSecHeaderFlag();

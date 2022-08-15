@@ -34,7 +34,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
   }
 
   SECTION("Serialized") {
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serLen == 13);
     REQUIRE(buf[0] == 0x18);
     REQUIRE(buf[1] == 0x02);
@@ -64,7 +64,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
     auto& params = creator.getPusParams();
     params.sourceId = 0x5ff;
     REQUIRE(creator.getSourceId() == 0x5ff);
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(((buf[9] << 8) | buf[10]) == 0x5ff);
   }
 
@@ -76,7 +76,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
     REQUIRE(creator.getSerializedSize() == 13);
     creator.updateSpLengthField();
     REQUIRE(creator.getSerializedSize() == 16);
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serLen == 16);
     REQUIRE(buf[11] == 1);
     REQUIRE(buf[12] == 2);
@@ -88,7 +88,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
     auto simpleSer = SimpleSerializable();
     creator.setSerializableUserData(simpleSer);
     REQUIRE(creator.getSerializedSize() == 16);
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serLen == 16);
     REQUIRE(buf[11] == 1);
     REQUIRE(buf[12] == 2);
@@ -100,7 +100,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
     auto simpleSer = SimpleSerializable();
     creator.setSerializableUserData(simpleSer);
     REQUIRE(creator.getSerializedSize() == 16);
-    REQUIRE(creator.serialize(dataPtr, serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(serLen == 16);
     REQUIRE(buf[11] == 1);
     REQUIRE(buf[12] == 2);
@@ -120,13 +120,13 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
     for (size_t maxSize = 0; maxSize < reqSize; maxSize++) {
       dataPtr = buf.data();
       serLen = 0;
-      REQUIRE(creator.serialize(&dataPtr, &serLen, maxSize) == SerializeIF::BUFFER_TOO_SHORT);
+      REQUIRE(creator.serializeBe(&dataPtr, &serLen, maxSize) == SerializeIF::BUFFER_TOO_SHORT);
     }
   }
 
   SECTION("Invalid PUS Version") {
     auto& params = creator.getPusParams();
     params.pusVersion = 0;
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == PusIF::INVALID_PUS_VERSION);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == PusIF::INVALID_PUS_VERSION);
   }
 }
