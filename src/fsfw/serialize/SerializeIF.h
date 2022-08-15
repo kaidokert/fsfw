@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/HasReturnvaluesIF.h"
 
 /**
  * @defgroup serialize Serialization
@@ -34,7 +34,7 @@ class SerializeIF {
   static const ReturnValue_t TOO_MANY_ELEMENTS =
       MAKE_RETURN_CODE(3);  // !< There are too many elements to be deserialized
 
-  virtual ~SerializeIF() {}
+  virtual ~SerializeIF() = default;
   /**
    * @brief
    * Function to serialize the object into a buffer with maxSize. Size represents the written
@@ -59,14 +59,21 @@ class SerializeIF {
    * 		- @c RETURN_FAILED Generic error
    * 		- @c RETURN_OK Successful serialization
    */
-  virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                  Endianness streamEndianness) const = 0;
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                                Endianness streamEndianness) const = 0;
+  /**
+   * Forwards to regular @serialize call with big (network) endianness
+   */
+  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t **buffer, size_t *size,
+                                                  size_t maxSize) const {
+    return serialize(buffer, size, maxSize, SerializeIF::Endianness::NETWORK);
+  }
 
   /**
    * Gets the size of a object if it would be serialized in a buffer
    * @return Size of serialized object
    */
-  virtual size_t getSerializedSize() const = 0;
+  [[nodiscard]] virtual size_t getSerializedSize() const = 0;
 
   /**
    * @brief
@@ -90,6 +97,57 @@ class SerializeIF {
    */
   virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                                     Endianness streamEndianness) = 0;
+  /**
+   * Forwards to regular @deSerialize call with big (network) endianness
+   */
+  virtual ReturnValue_t deSerializeBe(const uint8_t **buffer, size_t *size) {
+    return deSerialize(buffer, size, SerializeIF::Endianness::NETWORK);
+  }
+
+  /**
+   * Helper method which can be used if serialization should be performed without any additional
+   * pointer arithmetic on a passed buffer pointer
+   * @param buffer
+   * @param maxSize
+   * @param streamEndianness
+   * @return
+   */
+  [[nodiscard]] virtual ReturnValue_t serialize(uint8_t *buffer, size_t &serLen, size_t maxSize,
+                                                Endianness streamEndianness) const {
+    size_t tmpSize = 0;
+    ReturnValue_t result = serialize(&buffer, &tmpSize, maxSize, streamEndianness);
+    serLen = tmpSize;
+    return result;
+  }
+  /**
+   * Forwards to regular @serialize call with big (network) endianness
+   */
+  [[nodiscard]] virtual ReturnValue_t serializeBe(uint8_t *buffer, size_t &serLen,
+                                                  size_t maxSize) const {
+    return serialize(buffer, serLen, maxSize, SerializeIF::Endianness::NETWORK);
+  }
+
+  /**
+   * Helper methods which can be used if deserialization should be performed without any additional
+   * pointer arithmetic on a passed buffer pointer
+   * @param buffer
+   * @param maxSize
+   * @param streamEndianness
+   * @return
+   */
+  virtual ReturnValue_t deSerialize(const uint8_t *buffer, size_t &deserSize, size_t maxSize,
+                                    Endianness streamEndianness) {
+    size_t deserLen = maxSize;
+    ReturnValue_t result = deSerialize(&buffer, &deserLen, streamEndianness);
+    deserSize = maxSize - deserLen;
+    return result;
+  }
+  /**
+   * Forwards to regular @serialize call with big (network) endianness
+   */
+  virtual ReturnValue_t deSerializeBe(const uint8_t *buffer, size_t &deserSize, size_t maxSize) {
+    return deSerialize(buffer, deserSize, maxSize, SerializeIF::Endianness::NETWORK);
+  }
 };
 
 #endif /* FSFW_SERIALIZE_SERIALIZEIF_H_ */

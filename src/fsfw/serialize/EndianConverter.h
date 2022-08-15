@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstring>
 
-#include "../osal/Endiness.h"
+#include "fsfw/osal/Endiness.h"
 
 /**
  * Helper class to convert variables or bitstreams between machine
@@ -36,7 +36,7 @@
  */
 class EndianConverter {
  private:
-  EndianConverter(){};
+  EndianConverter() = default;
 
  public:
   /**
@@ -49,8 +49,8 @@ class EndianConverter {
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
     T tmp;
-    uint8_t *pointerOut = (uint8_t *)&tmp;
-    uint8_t *pointerIn = (uint8_t *)&in;
+    auto *pointerOut = reinterpret_cast<uint8_t *>(&tmp);
+    auto *pointerIn = reinterpret_cast<uint8_t *>(&in);
     for (size_t count = 0; count < sizeof(T); count++) {
       pointerOut[sizeof(T) - count - 1] = pointerIn[count];
     }
@@ -73,10 +73,8 @@ class EndianConverter {
     for (size_t count = 0; count < size; count++) {
       out[size - count - 1] = in[count];
     }
-    return;
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
     memcpy(out, in, size);
-    return;
 #endif
   }
 
@@ -90,8 +88,8 @@ class EndianConverter {
 #error BYTE_ORDER_SYSTEM not defined
 #elif BYTE_ORDER_SYSTEM == BIG_ENDIAN
     T tmp;
-    uint8_t *pointerOut = (uint8_t *)&tmp;
-    uint8_t *pointerIn = (uint8_t *)&in;
+    auto *pointerOut = reinterpret_cast<uint8_t *>(&tmp);
+    auto *pointerIn = reinterpret_cast<uint8_t *>(&in);
     for (size_t count = 0; count < sizeof(T); count++) {
       pointerOut[sizeof(T) - count - 1] = pointerIn[count];
     }
@@ -113,10 +111,8 @@ class EndianConverter {
     for (size_t count = 0; count < size; count++) {
       out[size - count - 1] = in[count];
     }
-    return;
 #elif BYTE_ORDER_SYSTEM == LITTLE_ENDIAN
     memcpy(out, in, size);
-    return;
 #endif
   }
 };

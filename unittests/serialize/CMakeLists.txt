@@ -1,5 +1,6 @@
 target_sources(${FSFW_TEST_TGT} PRIVATE
-	TestSerialBufferAdapter.cpp
-	TestSerialization.cpp
-	TestSerialLinkedPacket.cpp
+	testSerialBufferAdapter.cpp
+  testSerializeAdapter.cpp
+	testSerialLinkedPacket.cpp
+	testSerializeIF.cpp
 )
