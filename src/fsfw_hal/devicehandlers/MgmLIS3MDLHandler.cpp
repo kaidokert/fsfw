@@ -286,26 +286,22 @@ ReturnValue_t MgmLIS3MDLHandler::interpretDeviceReply(DeviceCommandId_t id, cons
 
       PoolReadGuard readHelper(&dataset);
       if (readHelper.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
+        if (std::abs(mgmX) > absLimitX or std::abs(mgmY) > absLimitY or
+            std::abs(mgmZ) > absLimitZ) {
+          dataset.fieldStrengths.setValid(false);
+        }
         if (std::abs(mgmX) < absLimitX) {
-          dataset.fieldStrengthX = mgmX;
-          dataset.fieldStrengthX.setValid(true);
-        } else {
-          dataset.fieldStrengthX.setValid(false);
+          dataset.fieldStrengths[0] = mgmX;
         }
 
         if (std::abs(mgmY) < absLimitY) {
-          dataset.fieldStrengthY = mgmY;
-          dataset.fieldStrengthY.setValid(true);
-        } else {
-          dataset.fieldStrengthY.setValid(false);
+          dataset.fieldStrengths[1] = mgmY;
         }
 
         if (std::abs(mgmZ) < absLimitZ) {
-          dataset.fieldStrengthZ = mgmZ;
-          dataset.fieldStrengthZ.setValid(true);
-        } else {
-          dataset.fieldStrengthZ.setValid(false);
+          dataset.fieldStrengths[2] = mgmZ;
         }
+        dataset.fieldStrengths.setValid(true);
       }
       break;
     }
@@ -468,10 +464,9 @@ void MgmLIS3MDLHandler::modeChanged(void) { internalState = InternalState::STATE
 
 ReturnValue_t MgmLIS3MDLHandler::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                          LocalDataPoolManager &poolManager) {
-  localDataPoolMap.emplace(MGMLIS3MDL::FIELD_STRENGTH_X, new PoolEntry<float>({0.0}));
-  localDataPoolMap.emplace(MGMLIS3MDL::FIELD_STRENGTH_Y, new PoolEntry<float>({0.0}));
-  localDataPoolMap.emplace(MGMLIS3MDL::FIELD_STRENGTH_Z, new PoolEntry<float>({0.0}));
-  localDataPoolMap.emplace(MGMLIS3MDL::TEMPERATURE_CELCIUS, new PoolEntry<float>({0.0}));
+  localDataPoolMap.emplace(MGMLIS3MDL::FIELD_STRENGTHS, &mgmXYZ);
+  localDataPoolMap.emplace(MGMLIS3MDL::TEMPERATURE_CELCIUS, &temperature);
+  poolManager.subscribeForPeriodicPacket(dataset.getSid(), false, 10.0, false);
   return HasReturnvaluesIF::RETURN_OK;
 }
 
