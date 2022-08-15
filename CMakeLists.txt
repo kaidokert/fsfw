@@ -189,7 +189,10 @@ if(FSFW_BUILD_TESTS)
   endif()
 endif()
 
-message(STATUS "${MSG_PREFIX} Finding and/or providing ETL library")
+message(
+  STATUS
+    "${MSG_PREFIX} Finding and/or providing etl library with version ${FSFW_ETL_LIB_MAJOR_VERSION}"
+)
 
 # Check whether the user has already installed ETL first
 find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
@@ -197,7 +200,7 @@ find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
 if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
   message(
     STATUS
-      "No ETL installation was found with find_package. Installing and providing "
+      "${MSG_PREFIX} No ETL installation was found with find_package. Installing and providing "
       "etl with FindPackage")
   include(FetchContent)
 
