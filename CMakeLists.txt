@@ -118,6 +118,12 @@ option(FSFW_WARNING_SHADOW_LOCAL_GCC "Enable -Wshadow=local warning in GCC" ON)
 option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
 option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
 
+if(UNIX)
+  option(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS "Add Linux peripheral drivers"
+         OFF)
+  option(FSFW_HAL_LINUX_ADD_LIBGPIOD "Attempt to add Linux GPIOD drivers" OFF)
+endif()
+
 # Optional sources
 option(FSFW_ADD_PUS "Compile with PUS sources" ON)
 option(FSFW_ADD_MONITORING "Compile with monitoring components" ON)
@@ -183,7 +189,10 @@ if(FSFW_BUILD_TESTS)
   endif()
 endif()
 
-message(STATUS "${MSG_PREFIX} Finding and/or providing ETL library")
+message(
+  STATUS
+    "${MSG_PREFIX} Finding and/or providing etl library with version ${FSFW_ETL_LIB_MAJOR_VERSION}"
+)
 
 # Check whether the user has already installed ETL first
 find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
@@ -191,7 +200,7 @@ find_package(${FSFW_ETL_LIB_NAME} ${FSFW_ETL_LIB_MAJOR_VERSION} QUIET)
 if(NOT ${FSFW_ETL_LIB_NAME}_FOUND)
   message(
     STATUS
-      "No ETL installation was found with find_package. Installing and providing "
+      "${MSG_PREFIX} No ETL installation was found with find_package. Installing and providing "
       "etl with FindPackage")
   include(FetchContent)
 
