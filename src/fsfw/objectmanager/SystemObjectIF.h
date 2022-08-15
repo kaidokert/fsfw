@@ -16,7 +16,7 @@
  * This is the typedef for object identifiers.
  * @ingroup system_objects
  */
-typedef uint32_t object_id_t;
+using object_id_t = uint32_t;
 
 /**
  * This interface allows a class to be included in the object manager
