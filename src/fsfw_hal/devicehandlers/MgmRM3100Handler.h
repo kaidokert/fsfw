@@ -85,6 +85,7 @@ class MgmRM3100Handler : public DeviceHandlerBase {
 
   bool goToNormalModeAtStartup = false;
   uint32_t transitionDelay;
+  PoolEntry<float> mgmXYZ = PoolEntry<float>(3);
 
   ReturnValue_t handleCycleCountConfigCommand(DeviceCommandId_t deviceCommand,
                                               const uint8_t *commandData, size_t commandDataLen);

@@ -118,6 +118,12 @@ option(FSFW_ADD_INTERNAL_TESTS "Add internal unit tests" ON)
 option(FSFW_ADD_UNITTESTS "Add regular unittests. Requires Catch2" OFF)
 option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
 
+if(UNIX)
+  option(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS "Add Linux peripheral drivers"
+         OFF)
+  option(FSFW_HAL_LINUX_ADD_LIBGPIOD "Attempt to add Linux GPIOD drivers" OFF)
+endif()
+
 # Optional sources
 option(FSFW_ADD_PUS "Compile with PUS sources" ON)
 option(FSFW_ADD_MONITORING "Compile with monitoring components" ON)
