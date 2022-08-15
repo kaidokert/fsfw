@@ -55,6 +55,9 @@ struct PacketSeqCtrl : public SerializeIF {
 
   ccsds::SequenceFlags seqFlags = ccsds::SequenceFlags::CONTINUATION;
   uint16_t seqCount = 0;
+
+  using SerializeIF::deSerialize;
+  using SerializeIF::serialize;
 };
 
 #endif  // FSFW_TMTCPACKET_PACKETSEQCTRL_H

@@ -466,7 +466,8 @@ ReturnValue_t MgmLIS3MDLHandler::initializeLocalDataPool(localpool::DataPool &lo
                                                          LocalDataPoolManager &poolManager) {
   localDataPoolMap.emplace(MGMLIS3MDL::FIELD_STRENGTHS, &mgmXYZ);
   localDataPoolMap.emplace(MGMLIS3MDL::TEMPERATURE_CELCIUS, &temperature);
-  poolManager.subscribeForPeriodicPacket(dataset.getSid(), false, 10.0, false);
+  poolManager.subscribeForRegularPeriodicPacket(
+      subdp::RegularHkPeriodicParams(dataset.getSid(), false, 10.0));
   return HasReturnvaluesIF::RETURN_OK;
 }
 

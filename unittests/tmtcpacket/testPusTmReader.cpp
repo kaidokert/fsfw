@@ -62,7 +62,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
   }
 
   SECTION("Invalid CRC") {
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     buf[20] = 0;
     REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.parseDataWithCrcCheck() == PusIF::INVALID_CRC_16);
@@ -74,7 +74,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
   }
 
   SECTION("Invalid CRC ignored") {
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     buf[20] = 0;
     REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.parseDataWithoutCrcCheck() == HasReturnvaluesIF::RETURN_OK);
@@ -83,7 +83,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
   SECTION("Read with source data") {
     std::array<uint8_t, 3> data{1, 2, 3};
     creator.setRawUserData(data.data(), data.size());
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.getUserDataLen() == 3);
@@ -94,7 +94,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
   }
 
   SECTION("Invalid stream lengths") {
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     for (size_t i = 0; i < serLen - 1; i++) {
       REQUIRE(reader.setReadOnlyData(buf.data(), i) == SerializeIF::STREAM_TOO_SHORT);
     }
@@ -102,7 +102,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
 
   SECTION("Reading timestamp fails") {
     timeStamperAndReader.nextDeserFails = true;
-    REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
     REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_FAILED);
   }

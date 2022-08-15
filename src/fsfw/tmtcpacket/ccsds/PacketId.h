@@ -79,6 +79,9 @@ struct PacketId : public SerializeIF {
   ccsds::PacketType packetType = ccsds::PacketType::TM;
   bool secHeaderFlag = false;
   uint16_t apid = 0;
+
+  using SerializeIF::deSerialize;
+  using SerializeIF::serialize;
 };
 
 #endif  // FSFW_TMTCPACKET_PACKETID_H

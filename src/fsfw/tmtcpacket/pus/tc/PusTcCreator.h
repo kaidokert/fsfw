@@ -40,8 +40,6 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
   PusTcParams &getPusParams();
   SpacePacketParams &getSpParams();
 
-  ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize) const override;
-  ReturnValue_t serialize(uint8_t *buffer, size_t &serLen, size_t maxSize) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
 
   [[nodiscard]] uint16_t getPacketIdRaw() const override;
@@ -55,7 +53,11 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
   ReturnValue_t setRawUserData(const uint8_t *data, size_t len) override;
   ReturnValue_t setSerializableUserData(SerializeIF &serializable) override;
 
+  // Load all big endian helpers into the class namespace
+  using SerializeIF::serializeBe;
+
  private:
+  // Forbidden to use, enforce big endian serialization
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
   // Forbidden to use
