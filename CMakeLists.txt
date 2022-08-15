@@ -119,8 +119,9 @@ option(FSFW_ADD_UNITTESTS "Add regular unittests. Requires Catch2" OFF)
 option(FSFW_ADD_HAL "Add Hardware Abstraction Layer" ON)
 
 if(UNIX)
-    option(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS "Add Linux peripheral drivers" OFF)
-    option(FSFW_HAL_LINUX_ADD_LIBGPIOD "Attempt to add Linux GPIOD drivers" OFF)
+  option(FSFW_HAL_LINUX_ADD_PERIPHERAL_DRIVERS "Add Linux peripheral drivers"
+         OFF)
+  option(FSFW_HAL_LINUX_ADD_LIBGPIOD "Attempt to add Linux GPIOD drivers" OFF)
 endif()
 
 # Optional sources
