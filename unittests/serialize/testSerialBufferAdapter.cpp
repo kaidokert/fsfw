@@ -92,7 +92,7 @@ TEST_CASE("Serial Buffer Adapter", "[single-file]") {
     testArray[3] = 1;
     testArray[4] = 1;
     testArray[5] = 0;
-    std::array<uint8_t, 4> test_recv_array;
+    std::array<uint8_t, 4> test_recv_array{};
     arrayPtr = testArray.data();
     // copy testArray[1] to testArray[4] into receive buffer, skip
     // size field (testArray[0]) for deSerialization.
@@ -116,7 +116,7 @@ TEST_CASE("Serial Buffer Adapter", "[single-file]") {
     testArray[3] = 1;
     testArray[4] = 1;
     testArray[5] = 0;
-    std::array<uint8_t, 4> test_recv_array;
+    std::array<uint8_t, 4> test_recv_array{};
     arrayPtr = testArray.data() + 2;
     // copy testArray[1] to testArray[4] into receive buffer, skip
     // size field (testArray[0])

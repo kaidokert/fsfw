@@ -26,13 +26,13 @@ class TestPacket : public SerialLinkedListAdapter<SerializeIF> {
     setLinks();
   }
 
-  uint32_t getHeader() const { return header.entry; }
+  [[nodiscard]] uint32_t getHeader() const { return header.entry; }
 
-  const uint8_t* getBuffer() { return buffer.entry.getConstBuffer(); }
+  [[nodiscard]] const uint8_t* getBuffer() const { return buffer.entry.getConstBuffer(); }
 
   size_t getBufferLength() { return buffer.getSerializedSize(); }
 
-  uint16_t getTail() const { return tail.entry; }
+  [[nodiscard]] uint16_t getTail() const { return tail.entry; }
 
  private:
   void setLinks() {
@@ -47,4 +47,4 @@ class TestPacket : public SerialLinkedListAdapter<SerializeIF> {
   SerializeElement<uint32_t> tail = 0;
 };
 
-#endif /* UNITTEST_TESTFW_NEWTESTS_TESTTEMPLATE_H_ */
+#endif /* UNITTEST_HOSTED_TESTSERIALLINKEDPACKET_H_ */

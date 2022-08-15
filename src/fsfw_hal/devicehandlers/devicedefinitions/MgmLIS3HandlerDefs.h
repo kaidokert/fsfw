@@ -139,12 +139,7 @@ static const uint8_t CTRL_REG5_DEFAULT = 0;
 
 static const uint32_t MGM_DATA_SET_ID = READ_CONFIG_AND_DATA;
 
-enum MgmPoolIds : lp_id_t {
-  FIELD_STRENGTH_X,
-  FIELD_STRENGTH_Y,
-  FIELD_STRENGTH_Z,
-  TEMPERATURE_CELCIUS
-};
+enum MgmPoolIds : lp_id_t { FIELD_STRENGTHS, TEMPERATURE_CELCIUS };
 
 class MgmPrimaryDataset : public StaticLocalDataSet<4> {
  public:
@@ -152,9 +147,10 @@ class MgmPrimaryDataset : public StaticLocalDataSet<4> {
 
   MgmPrimaryDataset(object_id_t mgmId) : StaticLocalDataSet(sid_t(mgmId, MGM_DATA_SET_ID)) {}
 
-  lp_var_t<float> fieldStrengthX = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_X, this);
-  lp_var_t<float> fieldStrengthY = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_Y, this);
-  lp_var_t<float> fieldStrengthZ = lp_var_t<float>(sid.objectId, FIELD_STRENGTH_Z, this);
+  /**
+   * Field strenghts in uT
+   */
+  lp_vec_t<float, 3> fieldStrengths = lp_vec_t<float, 3>(sid.objectId, FIELD_STRENGTHS, this);
   lp_var_t<float> temperature = lp_var_t<float>(sid.objectId, TEMPERATURE_CELCIUS, this);
 };
 
