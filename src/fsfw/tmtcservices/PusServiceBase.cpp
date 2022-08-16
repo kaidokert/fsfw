@@ -126,7 +126,7 @@ ReturnValue_t PusServiceBase::initialize() {
 
   if (psbParams.verifReporter == nullptr) {
     psbParams.verifReporter =
-        ObjectManager::instance()->get<VerificationReporterIF>(objects::TC_VERIFICATOR);
+        ObjectManager::instance()->get<VerificationReporterIF>(objects::VERIFICATION_REPORTER);
     if (psbParams.verifReporter == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
