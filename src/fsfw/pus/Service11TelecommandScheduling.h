@@ -123,31 +123,31 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   ReturnValue_t handleResetCommand();
   /**
    * @brief Logic to be performed on an incoming TC[11,4].
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    */
   ReturnValue_t doInsertActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,5].
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    */
   ReturnValue_t doDeleteActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,6].
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    */
   ReturnValue_t doFilterDeleteActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,7].
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    */
   ReturnValue_t doTimeshiftActivity(const uint8_t* data, size_t size);
 
   /**
    * @brief Logic to be performed on an incoming TC[11,8].
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    */
   ReturnValue_t doFilterTimeshiftActivity(const uint8_t* data, size_t size);
 
@@ -167,7 +167,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @param data Pointer to first byte described data
    * @param dataSize Remaining size of data NOTE: non-const, this is modified by the function
    * @param [out] requestId Request ID
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    */
   ReturnValue_t getRequestIdFromData(const uint8_t*& data, size_t& dataSize, uint64_t& requestId);
 
@@ -186,7 +186,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @param dataSize TC data size
    * @param [out] itBegin Begin of filter range
    * @param [out] itEnd End of filter range
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    */
   ReturnValue_t getMapFilterFromData(const uint8_t*& data, size_t& size, TcMapIter& itBegin,
                                      TcMapIter& itEnd);

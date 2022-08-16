@@ -51,7 +51,7 @@ class PlacementFactory {
    * This must be called by the user.
    *
    * @param thisElement Element to be destroyed
-   * @return RETURN_OK if the element was destroyed, different errors on failure
+   * @return returnvalue::OK if the element was destroyed, different errors on failure
    */
   template <typename T>
   ReturnValue_t destroy(T* thisElement) {

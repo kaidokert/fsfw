@@ -17,7 +17,7 @@ class CCSDSDistributorIF {
    * With this call, a class implementing the CCSDSApplicationIF can register
    * at the distributor.
    * @param application A pointer to the Application to register.
-   * @return	- @c RETURN_OK on success,
+   * @return	- @c returnvalue::OK on success,
    * 			- @c returnvalue::FAILED on failure.
    */
   virtual ReturnValue_t registerApplication(AcceptsTelecommandsIF* application) = 0;
@@ -27,7 +27,7 @@ class CCSDSDistributorIF {
    * @param apid	The APID to register.
    * @param id	The MessageQueueId of the message queue to send the
    *              TC Packets to.
-   * @return	- @c RETURN_OK on success,
+   * @return	- @c returnvalue::OK on success,
    * 			- @c returnvalue::FAILED on failure.
    */
   virtual ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) = 0;

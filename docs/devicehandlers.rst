@@ -75,11 +75,11 @@ and the respective source file with sensible default return values:
 	void TestDeviceHandler::doShutDown() {}
 
 	ReturnValue_t TestDeviceHandler::buildNormalDeviceCommand(DeviceCommandId_t* id) {
-	  return HasReturnvaluesIF::RETURN_OK;
+	  return returnvalue::OK;
 	}
 
 	ReturnValue_t TestDeviceHandler::buildTransitionDeviceCommand(DeviceCommandId_t* id) {
-	  return HasReturnvaluesIF::RETURN_OK;
+	  return returnvalue::OK;
 	}
 
 	void TestDeviceHandler::fillCommandAndReplyMap() {}
@@ -87,17 +87,17 @@ and the respective source file with sensible default return values:
 	ReturnValue_t TestDeviceHandler::buildCommandFromCommand(DeviceCommandId_t deviceCommand,
 	                                                         const uint8_t* commandData,
 	                                                         size_t commandDataLen) {
-	  return HasReturnvaluesIF::RETURN_OK;
+	  return returnvalue::OK;
 	}
 
 	ReturnValue_t TestDeviceHandler::scanForReply(const uint8_t* start, size_t remainingSize,
 	                                              DeviceCommandId_t* foundId, size_t* foundLen) {
-	  return HasReturnvaluesIF::RETURN_OK;
+	  return returnvalue::OK;
 	}
 
 	ReturnValue_t TestDeviceHandler::interpretDeviceReply(DeviceCommandId_t id,
 	                                                      const uint8_t* packet) {
-	  return HasReturnvaluesIF::RETURN_OK;
+	  return returnvalue::OK;
 	}
 
 	uint32_t TestDeviceHandler::getTransitionDelayMs(Mode_t modeFrom, Mode_t modeTo) {
@@ -106,5 +106,5 @@ and the respective source file with sensible default return values:
 
 	ReturnValue_t TestDeviceHandler::initializeLocalDataPool(localpool::DataPool& localDataPoolMap,
 	                                                         LocalDataPoolManager& poolManager) {
-	  return HasReturnvaluesIF::RETURN_OK;
+	  return returnvalue::OK;
 	}

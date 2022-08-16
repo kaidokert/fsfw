@@ -25,7 +25,7 @@ class CFDPPacketStored : public CFDPPacket, public TcPacketStoredBase {
    * Getter function for the raw data.
    * @param dataPtr [out] Pointer to the data pointer to set
    * @param dataSize [out] Address of size to set.
-   * @return -@c RETURN_OK if data was retrieved successfully.
+   * @return -@c returnvalue::OK if data was retrieved successfully.
    */
   ReturnValue_t getData(const uint8_t** dataPtr, size_t* dataSize);
 

@@ -184,7 +184,7 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result, Comma
 
   // In case a new command is to be sent immediately, this is performed here.
   // If no new command is sent, only analyse reply result by initializing
-  // sendResult as RETURN_OK
+  // sendResult as returnvalue::OK
   ReturnValue_t sendResult = returnvalue::OK;
   if (nextCommand->getCommand() != CommandMessage::CMD_NONE) {
     sendResult = commandQueue->sendMessage(reply->getSender(), nextCommand);

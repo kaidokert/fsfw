@@ -144,7 +144,7 @@ ReturnValue_t GyroHandler::initializeLocalDataPool(localpool::DataPool &localDat
 			new PoolEntry<uint8_t>({0}));
 
 	poolManager.subscribeForPeriodicPacket(gyroData.getSid(), false, 4.0, false);
-	return HasReturnvaluesIF::RETURN_OK;
+	return returnvalue::OK;
 }
 ```
 
@@ -154,7 +154,7 @@ in any case:
 
 ```cpp
 PoolReadGuard readHelper(&gyroData);
-if(readHelper.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
+if(readHelper.getReadResult() == returnvalue::OK) {
 	if(not gyroData.isValid()) {
 		gyroData.setValidity(true, true);
 	}

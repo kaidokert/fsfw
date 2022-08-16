@@ -183,7 +183,7 @@ class ArrayList {
    * @param entry
    * @return
    *          -@c FULL if the List is full
-   *          -@c RETURN_OK else
+   *          -@c returnvalue::OK else
    */
   ReturnValue_t insert(T entry) {
     if (size >= maxSize_) {

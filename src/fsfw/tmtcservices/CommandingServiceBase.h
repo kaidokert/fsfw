@@ -90,7 +90,7 @@ class CommandingServiceBase : public SystemObject,
    * Handle request queue for external commands.
    * Handle command Queue for internal commands.
    * @param opCode is unused here at the moment
-   * @return RETURN_OK
+   * @return returnvalue::OK
    */
   virtual ReturnValue_t performOperation(uint8_t opCode) override;
 
@@ -128,7 +128,7 @@ class CommandingServiceBase : public SystemObject,
    * Check the target subservice
    * @param subservice[in]
    * @return
-   * -@c RETURN_OK Subservice valid, continue message handling
+   * -@c returnvalue::OK Subservice valid, continue message handling
    * -@c INVALID_SUBSERVICE if service is not known, rejects packet.
    */
   virtual ReturnValue_t isValidSubservice(uint8_t subservice) = 0;
@@ -143,7 +143,7 @@ class CommandingServiceBase : public SystemObject,
    * @param id MessageQueue ID is stored here
    * @param objectId Object ID is extracted and stored here
    * @return
-   * - @c RETURN_OK Cotinue message handling
+   * - @c returnvalue::OK Cotinue message handling
    * - @c returnvalue::FAILED Reject the packet and generates a start failure
    *      verification
    */
@@ -164,7 +164,7 @@ class CommandingServiceBase : public SystemObject,
    * communication
    * @param objectId Target object ID
    * @return
-   * - @c RETURN_OK to generate a verification start message
+   * - @c returnvalue::OK to generate a verification start message
    * - @c EXECUTION_COMPLETE Fire-and-forget command. Generate a completion
    *      verification message.
    * - @c Anything else rejects the packets and generates a start failure
@@ -189,7 +189,7 @@ class CommandingServiceBase : public SystemObject,
    * @param objectId Source object ID
    * @param isStep Flag value to mark steps of command execution
    * @return
-   * - @c RETURN_OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
+   * - @c returnvalue::OK, @c EXECUTION_COMPLETE or @c NO_STEP_MESSAGE to
    *   generate TC verification success
    * - @c INVALID_REPLY Calls handleUnrequestedReply
    * - Anything else triggers a TC verification failure. If returnvalue::FAILED or

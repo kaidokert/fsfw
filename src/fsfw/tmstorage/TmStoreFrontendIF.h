@@ -28,7 +28,7 @@ class TmStoreFrontendIF {
    * @param packet	Pointer to the newly received Space Packet.
    * @param address	Start address of the packet found
    * @param isLastPacket	Indicates if no more packets can be fetched.
-   * @return	If more packets shall be fetched, RETURN_OK must be returned.
+   * @return	If more packets shall be fetched, returnvalue::OK must be returned.
    * 			Any other code stops fetching packets.
    */
   virtual ReturnValue_t packetRetrieved(TmPacketMinimal* packet, uint32_t address) = 0;

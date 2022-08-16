@@ -17,7 +17,7 @@ namespace returnvalue {
 
 /**
  * It is discouraged to use the input parameters 0,0 and 0,1 as this
- * will generate the RETURN_OK and returnvalue::FAILED returnvalues.
+ * will generate the returnvalue::OK and returnvalue::FAILED returnvalues.
  * @param interfaceId
  * @param number
  * @return

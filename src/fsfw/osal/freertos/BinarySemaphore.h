@@ -47,7 +47,7 @@ class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
    * for a maximum of #timeoutMs or until the semaphore is given back,
    * for example by an ISR or another task.
    * @param timeoutMs
-   * @return -@c RETURN_OK on success
+   * @return -@c returnvalue::OK on success
    *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
    */
   ReturnValue_t acquire(TimeoutType timeoutType = TimeoutType::BLOCKING,
@@ -56,7 +56,7 @@ class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
   /**
    * Same as lockBinarySemaphore() with timeout in FreeRTOS ticks.
    * @param timeoutTicks
-   * @return -@c RETURN_OK on success
+   * @return -@c returnvalue::OK on success
    *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
    */
   ReturnValue_t acquireWithTickTimeout(TimeoutType timeoutType = TimeoutType::BLOCKING,
@@ -64,7 +64,7 @@ class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
 
   /**
    * Release the binary semaphore.
-   * @return -@c RETURN_OK on success
+   * @return -@c returnvalue::OK on success
    *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
    *         	already available.
    */
@@ -79,7 +79,7 @@ class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
   /**
    * Wrapper function to give back semaphore from handle
    * @param semaphore
-   * @return -@c RETURN_OK on success
+   * @return -@c returnvalue::OK on success
    *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
    *         	already available.
    */
@@ -91,7 +91,7 @@ class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
    * @param higherPriorityTaskWoken This will be set to pdPASS if a task with
    * a higher priority was unblocked. A context switch from an ISR should
    * then be requested (see TaskManagement functions)
-   * @return -@c RETURN_OK on success
+   * @return -@c returnvalue::OK on success
    *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
    *         	already available.
    */

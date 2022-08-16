@@ -16,7 +16,7 @@ FixedSlotSequence::~FixedSlotSequence() {
 
 void FixedSlotSequence::executeAndAdvance() {
   current->executableObject->performOperation(current->opcode);
-  //	if (returnValue != RETURN_OK) {
+  //	if (returnValue != returnvalue::OK) {
   //		this->sendErrorMessage( returnValue );
   //	}
   // Increment the polling Sequence iterator

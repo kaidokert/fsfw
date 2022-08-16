@@ -51,7 +51,7 @@ class SpacePacketParser {
    *      will be set to the detected packet size and startIndex will be set to the start of the
    *      detected packet. buffer and read length will not be incremented but the found length
    *      will be assigned.
-   *  -@c RETURN_OK if a packet was found
+   *  -@c returnvalue::OK if a packet was found
    */
   ReturnValue_t parseSpacePackets(const uint8_t** buffer, const size_t maxSize, size_t& startIndex,
                                   size_t& foundSize, size_t& readLen);
@@ -67,7 +67,7 @@ class SpacePacketParser {
    *  -@c SPLIT_PACKET if a packet was found but the detected size exceeds maxSize. foundSize
    *      will be set to the detected packet size and startIndex will be set to the start of the
    *      detected packet
-   *  -@c RETURN_OK if a packet was found
+   *  -@c returnvalue::OK if a packet was found
    */
   ReturnValue_t parseSpacePackets(const uint8_t* buffer, const size_t maxSize, size_t& startIndex,
                                   size_t& foundSize);

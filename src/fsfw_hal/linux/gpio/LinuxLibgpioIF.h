@@ -71,7 +71,7 @@ class LinuxLibgpioIF : public GpioIF, public SystemObject {
    *
    * @param mapToAdd	The GPIOs which shall be added to the gpioMap.
    *
-   * @return	RETURN_OK if successful, otherwise returnvalue::FAILED
+   * @return	returnvalue::OK if successful, otherwise returnvalue::FAILED
    */
   ReturnValue_t checkForConflicts(GpioMap& mapToAdd);
 

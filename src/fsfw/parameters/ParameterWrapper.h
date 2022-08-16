@@ -58,7 +58,7 @@ class ParameterWrapper : public SerializeIF {
    * @param row
    * @param column
    * @return
-   * -@c RETURN_OK if element was retrieved successfully
+   * -@c returnvalue::OK if element was retrieved successfully
    * -@c NOT_SET data has not been set yet
    * -@c DATATYPE_MISSMATCH Invalid supplied type
    * -@c OUT_OF_BOUNDS Invalid row and/or column.

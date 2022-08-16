@@ -63,7 +63,7 @@ class StorageManagerIF {
    * @param storageId A pointer to the storageId to retrieve.
    * @param data	The data to be stored in the StorageManager.
    * @param size	The amount of data to be stored.
-   * @return	Returns @li RETURN_OK if data was added.
+   * @return	Returns @li returnvalue::OK if data was added.
    * 					@li	returnvalue::FAILED if data could not be added.
    * 						storageId is unchanged then.
    */
@@ -73,7 +73,7 @@ class StorageManagerIF {
    * @brief	With deleteData, the storageManager frees the memory region
    * 			identified by packet_id.
    * @param packet_id	The identifier of the memory region to be freed.
-   * @return	@li RETURN_OK on success.
+   * @return	@li returnvalue::OK on success.
    * 			@li	returnvalue::FAILED if deletion did not work
    * 				(e.g. an illegal packet_id was passed).
    */
@@ -84,7 +84,7 @@ class StorageManagerIF {
    * @param buffer	Pointer to the data.
    * @param size		Size of data to be stored.
    * @param storeId	Store id of the deleted element (optional)
-   * @return	@li RETURN_OK on success.
+   * @return	@li returnvalue::OK on success.
    * 			@li	failure code if deletion did not work
    */
   virtual ReturnValue_t deleteData(uint8_t* buffer, size_t size,
@@ -116,7 +116,7 @@ class StorageManagerIF {
    * @param packet_ptr	The passed pointer address is set to the the memory
    * 						position
    * @param size			The exact size of the stored data is returned here.
-   * @return	@li RETURN_OK on success.
+   * @return	@li returnvalue::OK on success.
    * 			@li	returnvalue::FAILED if fetching data did not work
    * 				(e.g. an illegal packet_id was passed).
    */
@@ -156,7 +156,7 @@ class StorageManagerIF {
    * @param storageId A pointer to the storageId to retrieve.
    * @param size		The size of the space to be reserved.
    * @param p_data	A pointer to the element data is returned here.
-   * @return	Returns @li RETURN_OK if data was added.
+   * @return	Returns @li returnvalue::OK if data was added.
    * 					@li	returnvalue::FAILED if data could not be added.
    * 						storageId is unchanged then.
    */

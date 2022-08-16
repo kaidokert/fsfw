@@ -47,7 +47,7 @@ class SimpleRingBuffer : public RingBufferBase<> {
    * Write to circular buffer and increment write pointer by amount.
    * @param data
    * @param amount
-   * @return -@c RETURN_OK if write operation was successful
+   * @return -@c returnvalue::OK if write operation was successful
    * -@c returnvalue::FAILED if
    */
   ReturnValue_t writeData(const uint8_t* data, size_t amount);
@@ -95,7 +95,7 @@ class SimpleRingBuffer : public RingBufferBase<> {
    * If readRemaining was set to true, the true amount read will be assigned
    * to the passed value.
    * @return
-   * - @c RETURN_OK if data was read successfully
+   * - @c returnvalue::OK if data was read successfully
    * - @c returnvalue::FAILED if not enough data was available and readRemaining
    *      was set to false.
    */

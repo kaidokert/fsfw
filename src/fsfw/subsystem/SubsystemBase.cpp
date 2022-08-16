@@ -223,14 +223,14 @@ ReturnValue_t SubsystemBase::handleModeReply(CommandMessage* message) {
       return returnvalue::OK;
       //	case ModeMessage::CMD_MODE_COMMAND:
       //		handleCommandedMode(message);
-      //		return RETURN_OK;
+      //		return returnvalue::OK;
       //	case ModeMessage::CMD_MODE_ANNOUNCE:
       //		triggerEvent(MODE_INFO, mode, submode);
-      //		return RETURN_OK;
+      //		return returnvalue::OK;
       //	case ModeMessage::CMD_MODE_ANNOUNCE_RECURSIVELY:
       //		triggerEvent(MODE_INFO, mode, submode);
       //		commandAllChildren(message);
-      //		return RETURN_OK;
+      //		return returnvalue::OK;
     default:
       return returnvalue::FAILED;
   }

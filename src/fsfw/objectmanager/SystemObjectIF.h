@@ -45,7 +45,7 @@ class SystemObjectIF : public EventReportingProxyIF {
    * which might not have been built yet.
    * Therefore, a two-step initialization resolves this problem and prevents
    * circular dependencies of not-fully initialized objects on start up.
-   * @return	- @c RETURN_OK in case the initialization was successful
+   * @return	- @c returnvalue::OK in case the initialization was successful
    * 			- @c returnvalue::FAILED otherwise
    */
   virtual ReturnValue_t initialize() = 0;
@@ -54,7 +54,7 @@ class SystemObjectIF : public EventReportingProxyIF {
    *          for operation.
    * Some objects need certain other objects (or a certain number), to be
    * registered as children. These checks can be done in this method.
-   * @return	- @c RETURN_OK in case the check was successful
+   * @return	- @c returnvalue::OK in case the check was successful
    * 			- @c any other code otherwise
    */
   virtual ReturnValue_t checkObjectConnections() = 0;

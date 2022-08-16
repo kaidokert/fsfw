@@ -51,7 +51,7 @@ class DataLinkLayer : public CCSDSReturnValuesIF {
    * This method tries to process a frame that is placed in #frameBuffer.
    * The procedures described in the Standard are performed.
    * @param length	Length of the incoming frame candidate.
-   * @return	@c RETURN_OK on successful handling, otherwise the return codes of the higher
+   * @return	@c returnvalue::OK on successful handling, otherwise the return codes of the higher
    * methods.
    */
   ReturnValue_t processFrame(uint16_t length);
@@ -61,12 +61,12 @@ class DataLinkLayer : public CCSDSReturnValuesIF {
    * handle Frames directed to this VC.
    * @param virtualChannelId	Id of the VC. Shall be smaller than 64.
    * @param object	Reference to the object that handles the Frame.
-   * @return	@c RETURN_OK on success, @c returnvalue::FAILED otherwise.
+   * @return	@c returnvalue::OK on success, @c returnvalue::FAILED otherwise.
    */
   ReturnValue_t addVirtualChannel(uint8_t virtualChannelId, VirtualChannelReceptionIF* object);
   /**
    * The initialization method calls the @c initialize routine of all virtual channels.
-   * @return The return code of the first failed VC initialization or @c RETURN_OK.
+   * @return The return code of the first failed VC initialization or @c returnvalue::OK.
    */
   ReturnValue_t initialize();
 
@@ -91,19 +91,19 @@ class DataLinkLayer : public CCSDSReturnValuesIF {
       virtualChannels;  //!< Map of all virtual channels assigned.
   /**
    * Method that performs all possible frame validity checks (as specified).
-   * @return	Various error codes or @c RETURN_OK on success.
+   * @return	Various error codes or @c returnvalue::OK on success.
    */
   ReturnValue_t frameValidationCheck();
   /**
    * First method to call.
    * Removes start sequence bytes and checks if the complete frame was received.
    * SHOULDDO: Maybe handling the start sequence must be done more variable.
-   * @return @c RETURN_OK or @c TOO_SHORT.
+   * @return @c returnvalue::OK or @c TOO_SHORT.
    */
   ReturnValue_t frameDelimitingAndFillRemoval();
   /**
    * Small helper method to check the CRC of the Frame.
-   * @return @c RETURN_OK or @c CRC_FAILED.
+   * @return @c returnvalue::OK or @c CRC_FAILED.
    */
   ReturnValue_t frameCheckCRC();
   /**

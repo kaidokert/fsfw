@@ -17,7 +17,7 @@ class CFDPDistributorIF {
   /**
    * With this method, Handlers can register themselves at the CFDP Distributor.
    * @param handler A pointer to the registering Handler.
-   * @return	- @c RETURN_OK on success,
+   * @return	- @c returnvalue::OK on success,
    * 			- @c returnvalue::FAILED on failure.
    */
   virtual ReturnValue_t registerHandler(AcceptsTelecommandsIF* handler) = 0;

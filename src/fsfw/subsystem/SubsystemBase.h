@@ -42,7 +42,7 @@ class SubsystemBase : public SystemObject,
    * 	Also adds them to the internal childrenMap.
    *
    * @param objectId
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    * 		   CHILD_DOESNT_HAVE_MODES if Child is no HasHealthIF and no HasModesIF
    * 		   COULD_NOT_INSERT_CHILD If the Child could not be added to the ChildrenMap
    */
