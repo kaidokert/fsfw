@@ -27,8 +27,8 @@ class VerificationReporter : public SystemObject, public VerificationReporterIF 
   friend void Factory::setStaticFrameworkObjectIds();
 
  public:
-  explicit VerificationReporter(AcceptsVerifyMessageIF* receiver,
-                                object_id_t objectId = DEFAULT_REPORTER);
+  explicit VerificationReporter(object_id_t objectId = DEFAULT_REPORTER,
+                                AcceptsVerifyMessageIF* receiver = nullptr);
   ~VerificationReporter() override;
 
   void setReceiver(AcceptsVerifyMessageIF& receiver);
