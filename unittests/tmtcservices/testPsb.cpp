@@ -211,7 +211,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
   SECTION("Auto Initialize Verification Reporter") {
     psbParams.verifReporter = nullptr;
     psbParams.objectId = 1;
-    object_id_t reporterId = objects::TC_VERIFICATOR;
+    object_id_t reporterId = objects::VERIFICATION_REPORTER;
     PusVerificationReporterMock otherReporter(reporterId);
     auto psb2 = PsbMock(psbParams);
     REQUIRE(psb2.initialize() == result::OK);
