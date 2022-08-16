@@ -18,7 +18,7 @@ Failure Handling
 -----------------
 
 Functions should return a defined :cpp:type:`ReturnValue_t` to signal to the caller that something has
-gone wrong. Returnvalues must be unique. For this the function :cpp:func:`HasReturnvaluesIF::makeReturnCode`
+gone wrong. Returnvalues must be unique. For this the function :cpp:func:`returnvalue::makeCode`
 or the :ref:`macro MAKE_RETURN_CODE <retvalapi>` can be used. The ``CLASS_ID`` is a unique ID for that type of object.
 See the :ref:`FSFW Class IDs file <fwclassids>`. The user can add custom ``CLASS_ID``\s via the
 ``fsfwconfig`` folder.

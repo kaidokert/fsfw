@@ -38,11 +38,11 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   static constexpr uint8_t CLASS_ID = CLASS_ID::PUS_SERVICE_11;
 
   static constexpr ReturnValue_t INVALID_TYPE_TIME_WINDOW =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 1);
+      returnvalue::makeCode(CLASS_ID, 1);
   static constexpr ReturnValue_t TIMESHIFTING_NOT_POSSIBLE =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 2);
+      returnvalue::makeCode(CLASS_ID, 2);
   static constexpr ReturnValue_t INVALID_RELATIVE_TIME =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
+      returnvalue::makeCode(CLASS_ID, 3);
 
   static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_11;
 

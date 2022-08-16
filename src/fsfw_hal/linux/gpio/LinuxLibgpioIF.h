@@ -20,17 +20,17 @@ class LinuxLibgpioIF : public GpioIF, public SystemObject {
   static const uint8_t gpioRetvalId = CLASS_ID::HAL_GPIO;
 
   static constexpr ReturnValue_t UNKNOWN_GPIO_ID =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 1);
+      returnvalue::makeCode(gpioRetvalId, 1);
   static constexpr ReturnValue_t DRIVE_GPIO_FAILURE =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 2);
+      returnvalue::makeCode(gpioRetvalId, 2);
   static constexpr ReturnValue_t GPIO_TYPE_FAILURE =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 3);
+      returnvalue::makeCode(gpioRetvalId, 3);
   static constexpr ReturnValue_t GPIO_INVALID_INSTANCE =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 4);
+      returnvalue::makeCode(gpioRetvalId, 4);
   static constexpr ReturnValue_t GPIO_DUPLICATE_DETECTED =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 5);
+      returnvalue::makeCode(gpioRetvalId, 5);
   static constexpr ReturnValue_t GPIO_INIT_FAILED =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 6);
+      returnvalue::makeCode(gpioRetvalId, 6);
 
   LinuxLibgpioIF(object_id_t objectId);
   virtual ~LinuxLibgpioIF();

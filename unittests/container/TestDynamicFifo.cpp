@@ -82,8 +82,8 @@ TEST_CASE("Dynamic Fifo Tests", "[TestDynamicFifo]") {
     REQUIRE(fifo.size() == 0);
     REQUIRE(fifo.empty());
     // struct Test* ptr = nullptr;
-    // REQUIRE(fifo.retrieve(ptr) == static_cast<int>(HasReturnvaluesIF::returnvalue::FAILED));
-    // REQUIRE(fifo.peek(ptr) == static_cast<int>(HasReturnvaluesIF::returnvalue::FAILED));
+    // REQUIRE(fifo.retrieve(ptr) == static_cast<int>(returnvalue::FAILED));
+    // REQUIRE(fifo.peek(ptr) == static_cast<int>(returnvalue::FAILED));
   };
   SECTION("Copy Test") {
     REQUIRE(fifo.insert(structOne) == static_cast<int>(returnvalue::OK));
