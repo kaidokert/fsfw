@@ -5,7 +5,7 @@
 #include "../events/EventReportingProxyIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "HasHealthIF.h"
 #include "HealthMessage.h"
 #include "HealthTableIF.h"

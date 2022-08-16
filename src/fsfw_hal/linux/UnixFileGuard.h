@@ -2,7 +2,7 @@
 #define LINUX_UTILITY_UNIXFILEGUARD_H_
 
 #include <fcntl.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 #include <unistd.h>
 
 #include <string>

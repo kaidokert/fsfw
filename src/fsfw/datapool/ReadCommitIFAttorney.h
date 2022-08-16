@@ -2,7 +2,7 @@
 #define FSFW_DATAPOOL_READCOMMITIFATTORNEY_H_
 
 #include <fsfw/datapool/ReadCommitIF.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 /**
  * @brief   This class determines which members are allowed to access protected members

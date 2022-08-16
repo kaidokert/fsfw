@@ -5,7 +5,7 @@
 #include "ActionMessage.h"
 #include "SimpleActionHelper.h"
 #include "fsfw/ipc/MessageQueueIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @brief

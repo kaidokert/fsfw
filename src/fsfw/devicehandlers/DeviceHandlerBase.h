@@ -18,7 +18,7 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/parameters/ParameterHelper.h"
 #include "fsfw/power/PowerSwitchIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"

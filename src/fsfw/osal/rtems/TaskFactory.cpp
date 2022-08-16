@@ -3,7 +3,7 @@
 #include "fsfw/osal/rtems/FixedTimeslotTask.h"
 #include "fsfw/osal/rtems/PeriodicTask.h"
 #include "fsfw/osal/rtems/RtemsBasic.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 // TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();

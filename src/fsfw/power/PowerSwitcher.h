@@ -2,7 +2,7 @@
 #define FSFW_POWER_POWERSWITCHER_H_
 
 #include "../objectmanager/SystemObjectIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../timemanager/Countdown.h"
 #include "PowerSwitchIF.h"
 

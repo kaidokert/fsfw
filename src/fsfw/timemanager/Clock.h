@@ -6,7 +6,7 @@
 #include "clockDefinitions.h"
 #include "fsfw/globalfunctions/timevalOperations.h"
 #include "fsfw/ipc/MutexFactory.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 #ifdef WIN32
 #include <winsock2.h>

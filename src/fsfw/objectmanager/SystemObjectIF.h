@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "../events/EventReportingProxyIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 /**
  * @defgroup system_objects Software System Object Management
  * The classes to create System Objects and classes to manage these are

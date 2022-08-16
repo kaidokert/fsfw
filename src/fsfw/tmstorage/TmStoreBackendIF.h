@@ -3,7 +3,7 @@
 
 #include "fsfw/objectmanager/SystemObjectIF.h"
 #include "fsfw/parameters/HasParametersIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/timemanager/Clock.h"
 #include "tmStorageConf.h"

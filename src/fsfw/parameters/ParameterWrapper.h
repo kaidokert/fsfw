@@ -4,7 +4,7 @@
 #include <cstddef>
 
 #include "../globalfunctions/Type.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serialize/SerializeAdapter.h"
 #include "../serialize/SerializeIF.h"
 

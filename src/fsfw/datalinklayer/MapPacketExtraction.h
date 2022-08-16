@@ -5,7 +5,7 @@
 #include "dllConf.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class StorageManagerIF;
 

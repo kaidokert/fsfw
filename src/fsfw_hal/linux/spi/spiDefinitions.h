@@ -7,7 +7,7 @@
 
 #include "../../common/gpio/gpioDefinitions.h"
 #include "../../common/spi/spiCommon.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class SpiCookie;
 class SpiComIF;

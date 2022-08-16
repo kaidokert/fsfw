@@ -6,7 +6,7 @@
 #include "fsfw/devicehandlers/HealthDevice.h"
 #include "fsfw/parameters/ParameterHelper.h"
 #include "fsfw/power/PowerSwitchIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/timemanager/Countdown.h"
 
 class Heater : public HealthDevice, public ReceivesParameterMessagesIF {

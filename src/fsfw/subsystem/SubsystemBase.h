@@ -9,7 +9,7 @@
 #include "../ipc/MessageQueueIF.h"
 #include "../modes/HasModesIF.h"
 #include "../objectmanager/SystemObject.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "modes/HasModeSequenceIF.h"
 

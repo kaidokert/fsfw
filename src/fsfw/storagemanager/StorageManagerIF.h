@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "../events/Event.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "StorageAccessor.h"
 #include "storeAddress.h"
 

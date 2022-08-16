@@ -4,7 +4,7 @@
 #include "fsfw/devicehandlers/DeviceHandlerMessage.h"
 #include "fsfw/globalfunctions/bitutility.h"
 #include "fsfw/objectmanager/SystemObjectIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 MgmRM3100Handler::MgmRM3100Handler(object_id_t objectId, object_id_t deviceCommunication,
                                    CookieIF *comCookie, uint32_t transitionDelay)

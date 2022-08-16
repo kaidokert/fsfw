@@ -3,7 +3,7 @@
 
 #include <FSFWConfig.h>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 /**
  * A class implementing this IF provides facilities to add a time stamp to the

@@ -1,7 +1,7 @@
 #ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_
 #define FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 class SpacePacketBase;
 

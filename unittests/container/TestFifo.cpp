@@ -1,6 +1,6 @@
 #include <fsfw/container/DynamicFIFO.h>
 #include <fsfw/container/FIFO.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 #include <catch2/catch_test_macros.hpp>
 

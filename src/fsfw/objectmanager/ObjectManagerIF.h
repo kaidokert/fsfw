@@ -1,7 +1,7 @@
 #ifndef FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 #define FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "SystemObjectIF.h"
 #include "frameworkObjects.h"

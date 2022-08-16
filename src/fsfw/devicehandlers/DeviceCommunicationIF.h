@@ -1,7 +1,7 @@
 #ifndef FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
 #define FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "CookieIF.h"
 #include "DeviceHandlerIF.h"
 /**

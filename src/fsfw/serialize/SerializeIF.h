@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @defgroup serialize Serialization

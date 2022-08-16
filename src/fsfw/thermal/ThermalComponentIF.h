@@ -4,7 +4,7 @@
 #include "../events/Event.h"
 #include "../objectmanager/SystemObjectIF.h"
 #include "../parameters/HasParametersIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 class ThermalComponentIF : public HasParametersIF {
  public:

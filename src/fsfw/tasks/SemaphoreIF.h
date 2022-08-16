@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include "../returnvalues/FwClassIds.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 /**
  * @brief 	Generic interface for semaphores, which can be used to achieve

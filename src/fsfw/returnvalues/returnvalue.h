@@ -1,5 +1,5 @@
-#ifndef FSFW_RETURNVALUES_HASRETURNVALUESIF_H_
-#define FSFW_RETURNVALUES_HASRETURNVALUESIF_H_
+#ifndef FSFW_RETURNVALUES_RETURNVALUE_H_
+#define FSFW_RETURNVALUES_RETURNVALUE_H_
 
 #include <returnvalues/classIds.h>
 
@@ -29,4 +29,4 @@ static constexpr ReturnValue_t makeCode(
 
 }
 
-#endif /* FSFW_RETURNVALUES_HASRETURNVALUESIF_H_ */
+#endif /* FSFW_RETURNVALUES_RETURNVALUE_H_ */

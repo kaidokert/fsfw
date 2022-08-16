@@ -11,7 +11,7 @@
 #include "ClcwIF.h"
 #include "TcTransferFrame.h"
 #include "dllConf.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * This is the interface for Virtual Channel reception classes.

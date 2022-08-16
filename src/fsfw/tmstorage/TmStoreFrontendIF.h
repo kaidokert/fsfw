@@ -3,7 +3,7 @@
 
 #include "TmStorePackets.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "tmStorageConf.h"
 
 class TmPacketMinimal;

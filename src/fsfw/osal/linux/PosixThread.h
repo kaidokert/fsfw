@@ -7,7 +7,7 @@
 
 #include <cstdlib>
 
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../returnvalues/returnvalue.h"
 
 class PosixThread {
  public:

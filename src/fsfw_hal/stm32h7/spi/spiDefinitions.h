@@ -3,7 +3,7 @@
 
 #include "../../common/spi/spiCommon.h"
 #include "fsfw/returnvalues/FwClassIds.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_spi.h"
 

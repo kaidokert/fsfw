@@ -4,7 +4,7 @@
 #include <cstddef>
 
 #include "RMAPCookie.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "rmapConf.h"
 
 class RMAPChannelIF {

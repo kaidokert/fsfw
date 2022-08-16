@@ -1,6 +1,6 @@
 #include <fsfw/container/ArrayList.h>
 #include <fsfw/container/PlacementFactory.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 #include <fsfw/storagemanager/LocalPool.h>
 
 #include <catch2/catch_test_macros.hpp>

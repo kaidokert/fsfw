@@ -2,7 +2,7 @@
 
 #include "fsfw/osal/linux/FixedTimeslotTask.h"
 #include "fsfw/osal/linux/PeriodicPosixTask.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 // TODO: Different variant than the lazy loading in QueueFactory. What's better and why?

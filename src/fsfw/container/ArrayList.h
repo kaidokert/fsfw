@@ -1,7 +1,7 @@
 #ifndef FSFW_CONTAINER_ARRAYLIST_H_
 #define FSFW_CONTAINER_ARRAYLIST_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serialize/SerializeAdapter.h"
 #include "../serialize/SerializeIF.h"
 

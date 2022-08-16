@@ -6,7 +6,7 @@
 #include <rtems/rtems/types.h>
 
 #include "fsfw/osal/rtems/RtemsBasic.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1

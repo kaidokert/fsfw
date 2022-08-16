@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @brief   Class to help opening uio device files and mapping the physical addresses into the user

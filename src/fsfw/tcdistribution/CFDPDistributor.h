@@ -3,7 +3,7 @@
 
 #include <fsfw/tcdistribution/TcPacketCheckCFDP.h>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../tmtcpacket/cfdp/CFDPPacketStored.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/VerificationReporter.h"

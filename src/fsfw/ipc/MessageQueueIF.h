@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "MessageQueueMessageIF.h"
 #include "messageQueueDefinitions.h"
 

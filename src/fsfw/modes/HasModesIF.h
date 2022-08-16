@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "../events/Event.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "ModeHelper.h"
 #include "ModeMessage.h"
 

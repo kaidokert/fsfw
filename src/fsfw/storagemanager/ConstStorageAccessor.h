@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "storeAddress.h"
 
 class StorageManagerIF;

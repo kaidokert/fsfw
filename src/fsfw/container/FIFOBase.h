@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstring>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 template <typename T>
 class FIFOBase {

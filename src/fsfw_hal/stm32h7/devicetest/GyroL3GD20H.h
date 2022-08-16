@@ -6,7 +6,7 @@
 
 #include "../spi/mspInit.h"
 #include "../spi/spiDefinitions.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_spi.h"
 

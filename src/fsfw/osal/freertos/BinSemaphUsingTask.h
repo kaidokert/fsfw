@@ -2,7 +2,7 @@
 #define FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
 
 #include "FreeRTOS.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tasks/SemaphoreIF.h"
 #include "task.h"
 
@@ -20,7 +20,7 @@
  * (for example in the initializeAfterTaskCreation() function) or
  * by calling refreshTaskHandle() with the correct executing task.
  */
-class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
+class BinarySemaphoreUsingTask : public SemaphoreIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 

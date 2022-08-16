@@ -7,7 +7,7 @@
 #include <cstdint>
 
 #include "fsfw/returnvalues/FwClassIds.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 namespace cfdp {
 

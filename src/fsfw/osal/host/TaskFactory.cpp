@@ -5,7 +5,7 @@
 #include "fsfw/osal/host/FixedTimeslotTask.h"
 #include "fsfw/osal/host/PeriodicTask.h"
 #include "fsfw/osal/host/taskHelpers.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tasks/PeriodicTaskIF.h"
 

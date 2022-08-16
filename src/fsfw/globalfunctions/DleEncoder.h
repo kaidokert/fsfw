@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @brief   This DLE Encoder (Data Link Encoder) can be used to encode and

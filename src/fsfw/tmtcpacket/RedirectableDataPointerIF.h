@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @brief   This interface can be used for classes which store a reference to data. It allows

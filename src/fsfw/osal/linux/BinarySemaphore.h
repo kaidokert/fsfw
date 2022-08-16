@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 #define FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../returnvalues/returnvalue.h"
 #include "../../tasks/SemaphoreIF.h"
 
 extern "C" {
@@ -17,7 +17,7 @@ extern "C" {
  * @author 	R. Mueller
  * @ingroup osal
  */
-class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
+class BinarySemaphore : public SemaphoreIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 

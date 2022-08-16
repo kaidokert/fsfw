@@ -6,7 +6,7 @@
 #include <cstddef>
 
 #include "ccsds_header.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @defgroup tmtcpackets Space Packets

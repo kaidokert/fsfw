@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "fsfw/returnvalues/FwClassIds.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class SimpleRingBuffer;
 template <typename T>

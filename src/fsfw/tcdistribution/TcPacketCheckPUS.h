@@ -3,7 +3,7 @@
 
 #include "TcPacketCheckIF.h"
 #include "fsfw/FSFW.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 
 class TcPacketStoredBase;

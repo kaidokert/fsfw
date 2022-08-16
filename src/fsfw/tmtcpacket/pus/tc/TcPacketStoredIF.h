@@ -4,7 +4,7 @@
 #include <fsfw/tmtcpacket/RedirectableDataPointerIF.h>
 
 #include "TcPacketPusBase.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/storagemanager/storeAddress.h"
 
 class TcPacketStoredIF {

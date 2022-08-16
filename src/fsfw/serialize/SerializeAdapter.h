@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "EndianConverter.h"
 #include "SerializeIF.h"
 

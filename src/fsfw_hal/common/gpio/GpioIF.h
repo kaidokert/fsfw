@@ -2,7 +2,7 @@
 #define COMMON_GPIO_GPIOIF_H_
 
 #include <fsfw/devicehandlers/CookieIF.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 #include "gpioDefinitions.h"
 

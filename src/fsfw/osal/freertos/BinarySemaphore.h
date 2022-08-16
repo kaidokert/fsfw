@@ -2,7 +2,7 @@
 #define FSFW_OSAL_FREERTOS_BINARYSEMPAHORE_H_
 
 #include "FreeRTOS.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tasks/SemaphoreIF.h"
 #include "semphr.h"
 
@@ -22,7 +22,7 @@
  * @author 	R. Mueller
  * @ingroup osal
  */
-class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
+class BinarySemaphore : public SemaphoreIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 

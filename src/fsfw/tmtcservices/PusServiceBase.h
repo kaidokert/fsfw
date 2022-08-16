@@ -7,7 +7,7 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
 
