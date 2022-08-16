@@ -8,9 +8,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
+# [v6.0.0]
+
 ## Added
 
 - Add new `UnsignedByteField` class
+
+## Changes
+
+- Overhaul of the TMTC stack, including various changes and improvements
+  for other modules
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
+  which also includes a migration guide
 
 # [v5.0.0] 25.07.2022
 
