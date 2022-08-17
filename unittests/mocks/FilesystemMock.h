@@ -1,6 +1,7 @@
 #ifndef FSFW_MOCKS_FILESYSTEMMOCK_H
 #define FSFW_MOCKS_FILESYSTEMMOCK_H
 
+#include <fstream>
 #include <map>
 #include <queue>
 #include <string>
@@ -53,6 +54,7 @@ class FilesystemMock : public HasFileSystemIF {
   };
   std::queue<RenameInfo> renameQueue;
 
+  ReturnValue_t feedFile(const std::string &filename, std::ifstream &file);
   ReturnValue_t writeToFile(FileOpParams params, const uint8_t *data) override;
   ReturnValue_t readFromFile(FileOpParams params, uint8_t **buffer, size_t &readSize,
                              size_t maxSize) override;
@@ -63,6 +65,10 @@ class FilesystemMock : public HasFileSystemIF {
   ReturnValue_t rename(const char *oldPath, const char *newPath, FileSystemArgsIF *args) override;
 
   void reset();
+
+  using HasFileSystemIF::createDirectory;
+  using HasFileSystemIF::createFile;
+  using HasFileSystemIF::readFromFile;
 
  private:
   void createOrAddToFile(FileOpParams params, const uint8_t *data);

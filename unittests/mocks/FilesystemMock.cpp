@@ -1,6 +1,20 @@
 #include "FilesystemMock.h"
 
+#include <filesystem>
+
 #include "fsfw/serialize/SerializeIF.h"
+
+ReturnValue_t FilesystemMock::feedFile(const std::string &filename, std::ifstream &file) {
+  if (not std::filesystem::exists(filename)) {
+    return HasReturnvaluesIF::RETURN_FAILED;
+  }
+  size_t fileSize = std::filesystem::file_size(filename);
+  FileOpParams params(filename.c_str(), fileSize);
+  std::vector<uint8_t> rawData(fileSize);
+  file.read(reinterpret_cast<char *>(rawData.data()), static_cast<unsigned int>(rawData.size()));
+  createOrAddToFile(params, rawData.data());
+  return HasReturnvaluesIF::RETURN_OK;
+}
 
 ReturnValue_t FilesystemMock::writeToFile(FileOpParams params, const uint8_t *data) {
   createOrAddToFile(params, data);
@@ -75,7 +89,9 @@ void FilesystemMock::createOrAddToFile(FileOpParams params, const uint8_t *data)
   auto iter = fileMap.find(filename);
   if (iter == fileMap.end()) {
     FileSegmentQueue queue;
-    queue.push(FileWriteInfo(filename, params.offset, data, params.size));
+    if (params.size > 0) {
+      queue.push(FileWriteInfo(filename, params.offset, data, params.size));
+    }
     FileInfo info;
     info.fileSegQueue = queue;
     if (data != nullptr) {
@@ -105,4 +121,6 @@ void FilesystemMock::createOrAddToFile(FileOpParams params, const uint8_t *data)
 void FilesystemMock::reset() {
   fileMap.clear();
   dirMap.clear();
+  std::queue<RenameInfo> empty;
+  std::swap(renameQueue, empty);
 }
