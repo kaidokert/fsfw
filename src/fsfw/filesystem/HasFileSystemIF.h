@@ -19,13 +19,9 @@ struct FilesystemParams {
 struct FileOpParams {
   FileOpParams(const char* path, size_t size) : fsParams(path), size(size) {}
 
-  [[nodiscard]] const char* path() const {
-    return fsParams.path;
-  }
+  [[nodiscard]] const char* path() const { return fsParams.path; }
 
-  [[nodiscard]] FileSystemArgsIF* args() const {
-    return fsParams.args;
-  }
+  [[nodiscard]] FileSystemArgsIF* args() const { return fsParams.args; }
 
   FilesystemParams fsParams;
   size_t size;

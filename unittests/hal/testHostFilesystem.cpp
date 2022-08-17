@@ -1,10 +1,13 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
+#include <fstream>
 
 #include "fsfw_hal/host/HostFilesystem.h"
 
+using namespace std;
+
 TEST_CASE("Host Filesystem", "[hal][host]") {
-  namespace fs = std::filesystem;
+  namespace fs = filesystem;
   auto hostFs = HostFilesystem();
   auto tmpDir = fs::temp_directory_path();
   fs::path file0 = tmpDir / "hello.txt";
@@ -62,8 +65,35 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
     REQUIRE(hostFs.createFile(params.fsParams) == result::OK);
     CHECK(fs::is_regular_file(file0));
     REQUIRE(fs::exists(file0));
-    hostFs.writeToFile(params, reinterpret_cast<const uint8_t*>(data.c_str()));
-    // TODO: Read back file and verify content
+    CHECK(hostFs.writeToFile(params, reinterpret_cast<const uint8_t*>(data.c_str())) ==
+          HasReturnvaluesIF::RETURN_OK);
+    CHECK(fs::file_size(file0) == data.size());
+    ifstream ifile(file0);
+    char readBuf[524]{};
+    ifile.read(readBuf, sizeof(readBuf));
+    std::string readBackString(readBuf);
+    CHECK(data == readBackString);
+    REQUIRE_NOTHROW(fs::remove(file1));
+  }
+
+  SECTION("Read From File") {
+    std::string data = "hello world!";
+    FileOpParams params(file0.c_str(), data.size());
+    REQUIRE(hostFs.createFile(params.fsParams) == result::OK);
+    CHECK(fs::is_regular_file(file0));
+    ofstream of(file0);
+    of.write(data.c_str(), static_cast<unsigned int>(data.size()));
+    of.close();
+    CHECK(fs::file_size(file0) == data.size());
+    REQUIRE(fs::exists(file0));
+    std::array<uint8_t, 256> readBuf{};
+    uint8_t* readPtr = readBuf.data();
+    size_t readSize = 0;
+    CHECK(hostFs.readFromFile(params, &readPtr, readSize, readBuf.size()) ==
+          HasReturnvaluesIF::RETURN_OK);
+    std::string readBackString(reinterpret_cast<const char*>(readBuf.data()));
+    CHECK(readSize == data.size());
+    CHECK(data == readBackString);
     REQUIRE_NOTHROW(fs::remove(file1));
   }
 

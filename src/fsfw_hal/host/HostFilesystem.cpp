@@ -40,14 +40,14 @@ ReturnValue_t HostFilesystem::readFromFile(FileOpParams params, uint8_t **buffer
   if (file.fail()) {
     return HasFileSystemIF::GENERIC_FILE_ERROR;
   }
-  auto readLen = static_cast<unsigned int>(params.offset);
-  file.seekg(readLen);
-  if (readSize + params.size > maxSize) {
+  auto sizeToRead = static_cast<unsigned int>(params.size);
+  file.seekg(static_cast<unsigned int>(params.offset));
+  if (readSize + sizeToRead > maxSize) {
     return SerializeIF::BUFFER_TOO_SHORT;
   }
-  file.read(reinterpret_cast<char *>(*buffer), readLen);
-  readSize += readLen;
-  *buffer += readLen;
+  file.read(reinterpret_cast<char *>(*buffer), sizeToRead);
+  readSize += sizeToRead;
+  *buffer += sizeToRead;
   return HasReturnvaluesIF::RETURN_OK;
 }
 
