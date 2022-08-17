@@ -90,9 +90,7 @@ ReturnValue_t HostFilesystem::createDirectory(FilesystemParams params, bool crea
   if (exists(dirPath)) {
     return HasFileSystemIF::DIRECTORY_ALREADY_EXISTS;
   }
-  if (is_regular_file(dirPath)) {
-    return HasFileSystemIF::NOT_A_DIRECTORY;
-  }
+
   if (createParentDirs) {
     if (create_directories(dirPath, errorCode)) {
       return HasReturnvaluesIF::RETURN_OK;
