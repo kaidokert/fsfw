@@ -18,7 +18,8 @@
 template <typename T>
 class DynamicFIFO : public FIFOBase<T> {
  public:
-  DynamicFIFO(size_t maxCapacity) : FIFOBase<T>(nullptr, maxCapacity), fifoVector(maxCapacity) {
+  explicit DynamicFIFO(size_t maxCapacity)
+      : FIFOBase<T>(nullptr, maxCapacity), fifoVector(maxCapacity) {
     // trying to pass the pointer of the uninitialized vector
     // to the FIFOBase constructor directly lead to a super evil bug.
     // So we do it like this now.

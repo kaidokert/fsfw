@@ -14,7 +14,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   auto fsMock = FilesystemMock();
   auto userMock = UserMock(fsMock);
   auto remoteCfgTableMock = RemoteConfigTableMock();
-  auto destHandler = DestHandler(localEntityCfg, userMock, remoteCfgTableMock);
+  // auto destHandler = DestHandler(localEntityCfg, userMock, remoteCfgTableMock);
 
   SECTION("State") {}
 }

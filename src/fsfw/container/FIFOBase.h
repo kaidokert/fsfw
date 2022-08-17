@@ -15,7 +15,7 @@ class FIFOBase {
 
   /** Default ctor, takes pointer to first entry of underlying container
    *  and maximum capacity */
-  FIFOBase(T* values, const size_t maxCapacity);
+  FIFOBase(T* values, size_t maxCapacity);
 
   /**
    * Insert value into FIFO
@@ -60,7 +60,7 @@ class FIFOBase {
    * Get maximal capacity of fifo
    * @return size_t with max capacity of this fifo
    */
-  size_t getMaxCapacity() const;
+  [[nodiscard]] size_t getMaxCapacity() const;
 
  protected:
   void setContainer(T* data);
