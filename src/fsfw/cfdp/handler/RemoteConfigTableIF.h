@@ -8,7 +8,7 @@ namespace cfdp {
 class RemoteConfigTableIF {
  public:
   virtual ~RemoteConfigTableIF() = default;
-  virtual bool getRemoteCfg(EntityId remoteId, RemoteEntityCfg* cfg) = 0;
+  virtual bool getRemoteCfg(const cfdp::EntityId& remoteId, cfdp::RemoteEntityCfg** cfg) = 0;
 };
 
 }  // namespace cfdp

@@ -5,9 +5,9 @@
 namespace cfdp {
 
 class UserMock : public UserBase {
+ public:
   explicit UserMock(HasFileSystemIF& vfs);
 
- public:
   void transactionIndication(TransactionId id) override;
   void eofSentIndication(TransactionId id) override;
   void abandonedIndication(TransactionId id, ConditionCode code, size_t progress) override;
