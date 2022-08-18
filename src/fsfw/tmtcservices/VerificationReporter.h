@@ -33,10 +33,7 @@ class VerificationReporter : public SystemObject, public VerificationReporterIF 
 
   void setReceiver(AcceptsVerifyMessageIF& receiver);
 
-  // TODO: The API is a little bit bloated. It might be better to group all the parameters
-  //       into a dedicated struct
   ReturnValue_t sendSuccessReport(VerifSuccessParams params) override;
-
   ReturnValue_t sendFailureReport(VerifFailureParams params) override;
 
   static object_id_t DEFAULT_REPORTER;
@@ -44,7 +41,7 @@ class VerificationReporter : public SystemObject, public VerificationReporterIF 
   ReturnValue_t initialize() override;
 
  private:
-  MessageQueueId_t acknowledgeQueue;
+  MessageQueueId_t acknowledgeQueue = MessageQueueIF::NO_QUEUE;
 };
 
 #endif /* FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_ */

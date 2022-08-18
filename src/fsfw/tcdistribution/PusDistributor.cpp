@@ -105,14 +105,13 @@ ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
     tcStatus = queueStatus;
   }
   if (tcStatus != RETURN_OK) {
-    verifyChannel->sendFailureReport(
-        VerifFailureParams(tcverif::ACCEPTANCE_FAILURE, reader, tcStatus));
+    verifyChannel->sendFailureReport({tcverif::ACCEPTANCE_FAILURE, reader, tcStatus});
     // A failed packet is deleted immediately after reporting,
     // otherwise it will block memory.
     store->deleteData(currentMessage.getStorageId());
     return RETURN_FAILED;
   } else {
-    verifyChannel->sendSuccessReport(VerifSuccessParams(tcverif::ACCEPTANCE_SUCCESS, reader));
+    verifyChannel->sendSuccessReport({tcverif::ACCEPTANCE_SUCCESS, reader});
     return RETURN_OK;
   }
 }
