@@ -42,7 +42,9 @@ class ObjectManager : public ObjectManagerIF {
   ReturnValue_t insert(object_id_t id, SystemObjectIF* object) override;
   ReturnValue_t remove(object_id_t id) override;
   void initialize() override;
+  void produce() override;
   void printList() override;
+  const std::map<object_id_t, SystemObjectIF*> * getObjectList() override;
 
  protected:
   SystemObjectIF* getSystemObject(object_id_t id) override;

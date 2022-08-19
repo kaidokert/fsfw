@@ -78,7 +78,7 @@ SystemObjectIF* ObjectManager::getSystemObject(object_id_t id) {
   }
 }
 
-void ObjectManager::initialize() {
+void ObjectManager::produce() {
   if (objectFactoryFunction == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "ObjectManager::initialize: Passed produceObjects "
@@ -90,6 +90,10 @@ void ObjectManager::initialize() {
     return;
   }
   objectFactoryFunction(factoryArgs);
+}
+
+void ObjectManager::initialize() {
+  produce();
   ReturnValue_t result = RETURN_FAILED;
   uint32_t errorCount = 0;
   for (auto const& it : objectList) {
@@ -139,4 +143,8 @@ void ObjectManager::printList() {
     sif::debug << std::hex << it.first << " | " << it.second << std::endl;
   }
 #endif
+}
+
+const std::map<object_id_t, SystemObjectIF*> * ObjectManager::getObjectList(){
+  return &objectList;
 }

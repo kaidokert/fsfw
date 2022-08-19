@@ -1,6 +1,8 @@
 #ifndef FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 #define FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
+#include <map>
+
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "SystemObjectIF.h"
@@ -58,12 +60,14 @@ class ObjectManagerIF : public HasReturnvaluesIF {
    * 			@li RETURN_OK in case the object was successfully removed
    */
   virtual ReturnValue_t remove(object_id_t id) = 0;
+  virtual void produce() = 0;
   virtual void initialize() = 0;
   /**
    * @brief	This is a debug function, that prints the current content of the
    * 			object list.
    */
   virtual void printList() = 0;
+  virtual const std::map<object_id_t, SystemObjectIF*>* getObjectList() = 0;
 };
 
 #endif /* OBJECTMANAGERIF_H_ */
