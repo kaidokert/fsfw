@@ -100,6 +100,12 @@ class ActionHelper {
    */
   void setQueueToUse(MessageQueueIF* queue);
 
+  /**
+   * Needed so templateAction can check if actionHelper was
+   * contructed already to aid in debuggig a nasty coding error.
+   */
+  MessageQueueIF const * getQueue() const;
+
   void registerAction(Action* action);
 
   std::map<ActionId_t, Action*> const* getActionMap();

@@ -57,7 +57,9 @@ void ActionHelper::finish(bool success, MessageQueueId_t reportTo, ActionId_t co
 
 void ActionHelper::setQueueToUse(MessageQueueIF* queue) { queueToUse = queue; }
 
-#include <stdio.h>
+MessageQueueIF const * ActionHelper::getQueue() const {
+  return queueToUse;
+}
 
 void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t actionId,
                                     store_address_t dataAddress) {
