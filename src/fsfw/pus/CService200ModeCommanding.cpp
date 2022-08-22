@@ -41,7 +41,7 @@ ReturnValue_t CService200ModeCommanding::getMessageQueueAndObject(uint8_t subser
 
 ReturnValue_t CService200ModeCommanding::checkInterfaceAndAcquireMessageQueue(
     MessageQueueId_t *messageQueueToSet, object_id_t *objectId) {
-  HasModesIF *destination = ObjectManager::instance()->get<HasModesIF>(*objectId);
+  auto *destination = ObjectManager::instance()->get<HasModesIF>(*objectId);
   if (destination == nullptr) {
     return CommandingServiceBase::INVALID_OBJECT;
   }

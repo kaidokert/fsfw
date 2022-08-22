@@ -9,3 +9,4 @@ ReturnValue_t CfdpPacketChecker::checkPacket(const SpacePacketReader& currentPac
 }
 
 uint16_t CfdpPacketChecker::getApid() const { return apid; }
+

@@ -2,7 +2,7 @@
 #define FSFW_POWER_POWERSWITCHIF_H_
 
 #include "../events/Event.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "definitions.h"
 /**
  *
@@ -20,7 +20,7 @@ class PowerSwitchIF {
    */
   virtual ~PowerSwitchIF() {}
   /**
-   * The Returnvalues id of this class, required by HasReturnvaluesIF
+   * The Returnvalues id of this class
    */
   static const uint8_t INTERFACE_ID = CLASS_ID::POWER_SWITCH_IF;
   static const ReturnValue_t SWITCH_ON = MAKE_RETURN_CODE(1);

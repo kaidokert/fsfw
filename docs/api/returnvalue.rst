@@ -3,7 +3,7 @@
 Returnvalue API
 ==================
 
-.. doxygenfile:: HasReturnvaluesIF.h
+.. doxygenfile:: returnvalue.h
 
 .. _fwclassids:
 

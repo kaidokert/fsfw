@@ -1,7 +1,7 @@
 #ifndef HASMEMORYIF_H_
 #define HASMEMORYIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 class HasMemoryIF {
  public:

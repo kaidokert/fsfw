@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 template <uint8_t N_READ_PTRS = 1>
 class RingBufferBase {

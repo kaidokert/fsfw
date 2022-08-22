@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "../globalfunctions/CRC.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serialize/SerialArrayListAdapter.h"
 #include "../serviceinterface/ServiceInterfaceStream.h"
 #include "ArrayList.h"

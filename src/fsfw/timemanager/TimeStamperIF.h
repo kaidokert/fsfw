@@ -2,7 +2,7 @@
 #define FSFW_TIMEMANAGER_TIMESTAMPERIF_H_
 
 #include "TimeStampIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serialize/SerializeIF.h"
 
 /**

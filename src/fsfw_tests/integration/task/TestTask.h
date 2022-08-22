@@ -11,7 +11,7 @@
  * @details
  * Should not be used for board specific tests. Instead, a derived board test class should be used.
  */
-class TestTask : public SystemObject, public ExecutableObjectIF, public HasReturnvaluesIF {
+class TestTask : public SystemObject, public ExecutableObjectIF {
  public:
   explicit TestTask(object_id_t objectId);
   ~TestTask() override;

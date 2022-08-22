@@ -7,7 +7,7 @@
 #include "../devicehandlers/HealthDevice.h"
 #include "../monitoring/AbsLimitMonitor.h"
 #include "../parameters/ParameterHelper.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "PowerComponentIF.h"
 #include "PowerSwitchIF.h"
 namespace Factory {

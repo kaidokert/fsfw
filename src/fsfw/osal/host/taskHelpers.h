@@ -1,7 +1,7 @@
 #ifndef FSFW_OSAL_HOST_TASKHELPERS_H_
 #define FSFW_OSAL_HOST_TASKHELPERS_H_
 
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 #include <thread>
 

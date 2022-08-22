@@ -9,12 +9,12 @@
 #define CCSDSRETURNVALUESIF_H_
 
 #include "dllConf.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 /**
  * This is a helper class to collect special return values that come up during CCSDS Handling.
  * @ingroup ccsds_handling
  */
-class CCSDSReturnValuesIF : public HasReturnvaluesIF {
+class CCSDSReturnValuesIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::CCSDS_HANDLER_IF;  //!< Basic ID of the interface.
 

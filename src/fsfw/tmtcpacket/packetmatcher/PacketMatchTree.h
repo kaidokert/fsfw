@@ -7,7 +7,11 @@
 #include "fsfw/tmtcpacket/pus/tm/PusTmIF.h"
 #include "fsfw/tmtcpacket/pus/tm/PusTmMinimal.h"
 
+<<<<<<< HEAD
 class PacketMatchTree : public MatchTree<PusTmIF*> {
+=======
+class PacketMatchTree : public MatchTree<TmPacketMinimal*> {
+>>>>>>> origin/development
  public:
   explicit PacketMatchTree(Node* root);
   explicit PacketMatchTree(iterator root);

@@ -7,7 +7,7 @@
 
 #include "../../container/ArrayList.h"
 #include "../../container/SinglyLinkedList.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../returnvalues/returnvalue.h"
 #include "ModeDefinitions.h"
 
 class ModeStoreIF {

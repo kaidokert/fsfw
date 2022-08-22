@@ -100,7 +100,7 @@ class FixedOrderedMultimap {
    * @param[in] value Value of the new element
    * @param[in/out] (optional) storedValue On success this points to the new value, otherwise a
    * nullptr
-   * @return RETURN_OK if insert was successful, MAP_FULL if no space is available
+   * @return returnvalue::OK if insert was successful, MAP_FULL if no space is available
    */
   ReturnValue_t insert(key_t key, T value, Iterator* storedValue = nullptr);
 
@@ -108,14 +108,14 @@ class FixedOrderedMultimap {
    * Used to insert new pair instead of single values
    *
    * @param pair Pair to be inserted
-   * @return RETURN_OK if insert was successful, MAP_FULL if no space is available
+   * @return returnvalue::OK if insert was successful, MAP_FULL if no space is available
    */
   ReturnValue_t insert(std::pair<key_t, T> pair);
 
   /***
    * Can be used to check if a certain key is in the map
    * @param key Key to be checked
-   * @return RETURN_OK if the key exists KEY_DOES_NOT_EXIST otherwise
+   * @return returnvalue::OK if the key exists KEY_DOES_NOT_EXIST otherwise
    */
   ReturnValue_t exists(key_t key) const;
 
@@ -127,14 +127,14 @@ class FixedOrderedMultimap {
    *
    * @warning The iterator needs to be valid and dereferenceable
    * @param[in/out] iter Pointer to iterator to the element that needs to be ereased
-   * @return RETURN_OK if erased, KEY_DOES_NOT_EXIST if the there is no element like this
+   * @return returnvalue::OK if erased, KEY_DOES_NOT_EXIST if the there is no element like this
    */
   ReturnValue_t erase(Iterator* iter);
 
   /***
    * Used to erase by key
    * @param key Key to be erased
-   * @return RETURN_OK if erased, KEY_DOES_NOT_EXIST if the there is no element like this
+   * @return returnvalue::OK if erased, KEY_DOES_NOT_EXIST if the there is no element like this
    */
   ReturnValue_t erase(key_t key);
 
@@ -160,7 +160,7 @@ class FixedOrderedMultimap {
    *
    * @param key Key to search for
    * @param value Found value
-   * @return RETURN_OK if it points to the value,
+   * @return returnvalue::OK if it points to the value,
    * KEY_DOES_NOT_EXIST if the key is not in the map
    */
   ReturnValue_t find(key_t key, T** value) const;

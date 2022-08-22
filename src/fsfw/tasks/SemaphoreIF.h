@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include "../returnvalues/FwClassIds.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 /**
  * @brief 	Generic interface for semaphores, which can be used to achieve
@@ -46,14 +46,14 @@ class SemaphoreIF {
    * for a maximum of timeoutMs while trying to acquire the semaphore.
    * This can be used to achieve task synchrnization.
    * @param timeoutMs
-   * @return - c RETURN_OK for successfull acquisition
+   * @return - c returnvalue::OK for successfull acquisition
    */
   virtual ReturnValue_t acquire(TimeoutType timeoutType = TimeoutType::BLOCKING,
                                 uint32_t timeoutMs = 0) = 0;
 
   /**
    * Corrensponding call to release a semaphore.
-   * @return -@c RETURN_OK for successfull release
+   * @return -@c returnvalue::OK for successfull release
    */
   virtual ReturnValue_t release() = 0;
 

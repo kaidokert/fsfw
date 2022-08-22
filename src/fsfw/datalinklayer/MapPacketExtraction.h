@@ -5,7 +5,7 @@
 #include "dllConf.h"
 #include "fsfw/ipc/MessageQueueSenderIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class StorageManagerIF;
 
@@ -36,7 +36,7 @@ class MapPacketExtraction : public MapPacketExtractionIF {
    * Method that is called if the segmentation flag is @c NO_SEGMENTATION.
    * The method extracts one or more packets within the frame and forwards them to the OBSW.
    * @param frame	The TC Transfer Frame to work on.
-   * @return	@c RETURN_OK if all Packets were extracted. If something is entirely wrong,
+   * @return	@c returnvalue::OK if all Packets were extracted. If something is entirely wrong,
    * 	 @c DATA_CORRUPTED is returned, if some bytes are left over @c RESIDUAL_DATA.
    */
   ReturnValue_t unpackBlockingPackets(TcTransferFrame* frame);
@@ -63,7 +63,7 @@ class MapPacketExtraction : public MapPacketExtractionIF {
   ReturnValue_t extractPackets(TcTransferFrame* frame);
   /**
    * The #packetStore and the default destination of #tcQueue are initialized here.
-   * @return	@c RETURN_OK on success, @c returnvalue::FAILED otherwise.
+   * @return	@c returnvalue::OK on success, @c returnvalue::FAILED otherwise.
    */
   ReturnValue_t initialize();
   /**

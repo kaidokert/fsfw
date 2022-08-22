@@ -36,7 +36,7 @@ class HeaderDeserializer : public RedirectableDataPointerIF, public PduHeaderIF 
   /**
    * This needs to be called before accessing the PDU fields to avoid segmentation faults.
    * @return
-   *  - RETURN_OK on parse success
+   *  - returnvalue::OK on parse success
    *  - returnvalue::FAILED Invalid raw data
    *  - SerializeIF::BUFFER_TOO_SHORT if buffer is shorter than expected
    */

@@ -92,7 +92,7 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
 //	struct sysinfo sysInfo;
 //	int result = sysinfo(&sysInfo);
 //	if(result != 0){
-//		return HasReturnvaluesIF::returnvalue::FAILED;
+//		return returnvalue::FAILED;
 //	}
 //	return sysInfo.uptime;
 //}

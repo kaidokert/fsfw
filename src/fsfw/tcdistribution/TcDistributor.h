@@ -6,7 +6,7 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
@@ -101,11 +101,11 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF {
    * This method gives the child class a chance to perform some kind of
    * operation after the parent tried to forward the message.
    * A typically application would be sending success/failure messages.
-   * The default implementation just returns @c RETURN_OK.
+   * The default implementation just returns @c returnvalue::OK.
    * @param queueStatus	The status of the message queue after an attempt
    *                      to send the TC.
-   * @return	- @c RETURN_OK on success
-   * 			- @c returnvalue::FAILED on failure
+   * @return	- @c returnvalue::OK on success
+   * 		- @c returnvalue::FAILED on failure
    */
   virtual ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus);
 

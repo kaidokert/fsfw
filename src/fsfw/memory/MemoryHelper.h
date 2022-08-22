@@ -3,7 +3,7 @@
 
 #include "../ipc/CommandMessage.h"
 #include "../ipc/MessageQueueIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "AcceptsMemoryMessagesIF.h"
 

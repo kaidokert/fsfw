@@ -1,7 +1,7 @@
 #ifndef FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
 #define FSFW_DEVICES_DEVICECOMMUNICATIONIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "CookieIF.h"
 #include "DeviceHandlerIF.h"
 /**
@@ -61,7 +61,7 @@ class DeviceCommunicationIF {
    * initialization.
    * @param cookie
    * @return
-   *  - @c RETURN_OK if initialization was successfull
+   *  - @c returnvalue::OK if initialization was successfull
    *  - Everything else triggers failure event with returnvalue as parameter 1
    */
   virtual ReturnValue_t initializeInterface(CookieIF *cookie) = 0;
@@ -74,7 +74,7 @@ class DeviceCommunicationIF {
    * @param data
    * @param len If this is 0, nothing shall be sent.
    * @return
-   *  - @c RETURN_OK for successfull send
+   *  - @c returnvalue::OK for successfull send
    *  - Everything else triggers failure event with returnvalue as parameter 1
    */
   virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t *sendData, size_t sendLen) = 0;
@@ -84,7 +84,7 @@ class DeviceCommunicationIF {
    * Get send confirmation that the data in sendMessage() was sent successfully.
    * @param cookie
    * @return
-   *  - @c RETURN_OK if data was sent successfully but a reply is expected
+   *  - @c returnvalue::OK if data was sent successfully but a reply is expected
    *  - NO_REPLY_EXPECTED if data was sent successfully and no reply is expected
    *  - Everything else to indicate failure
    */
@@ -99,7 +99,7 @@ class DeviceCommunicationIF {
    *
    * @param cookie
    * @param requestLen Size of data to read
-   * @return - @c RETURN_OK to confirm the request for data has been sent.
+   * @return - @c returnvalue::OK to confirm the request for data has been sent.
    *         - Everything else triggers failure event with
    *           returnvalue as parameter 1
    */
@@ -113,7 +113,7 @@ class DeviceCommunicationIF {
    * @param buffer [out] Set reply here (by using *buffer = ...)
    * @param size [out] size pointer to set (by using *size = ...).
    * 	           Set to 0 if no reply was received
-   * @return - @c RETURN_OK for successfull receive
+   * @return - @c returnvalue::OK for successfull receive
    * 		   - @c NO_REPLY_RECEIVED if not reply was received. Setting size to
    * 		   	   0 has the same effect
    *         - Everything else triggers failure event with

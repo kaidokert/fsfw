@@ -8,7 +8,7 @@
 
 #include "Clock.h"
 #include "clockDefinitions.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 bool operator<(const timeval &lhs, const timeval &rhs);
 bool operator<=(const timeval &lhs, const timeval &rhs);
@@ -105,7 +105,7 @@ class CCSDSTime {
    * @param to pointer to a CCS struct
    * @param from pointer to a TimeOfDay Struct
    * @return
-   * 		- @c RETURN_OK if OK
+   * 		- @c returnvalue::OK if OK
    * 		- @c INVALID_TIMECODE if not OK
    */
   static ReturnValue_t convertToCcsds(Ccs_seconds *to, Clock::TimeOfDay_t const *from);
@@ -115,7 +115,7 @@ class CCSDSTime {
    * @param to pointer to the CDS struct to generate
    * @param from pointer to a timeval struct which comprises a time of day since UNIX epoch.
    * @return
-   * 		- @c RETURN_OK as it assumes a valid timeval.
+   * 		- @c returnvalue::OK as it assumes a valid timeval.
    */
   static ReturnValue_t convertToCcsds(CDS_short *to, timeval const *from);
 
@@ -129,7 +129,7 @@ class CCSDSTime {
    * @param to pointer to a CCS struct
    * @param from pointer to a TimeOfDay Struct
    * @return
-   * 		- @c RETURN_OK if OK
+   * 		- @c returnvalue::OK if OK
    * 		- @c INVALID_TIMECODE if not OK
    */
   static ReturnValue_t convertToCcsds(Ccs_mseconds *to, Clock::TimeOfDay_t const *from);
@@ -145,7 +145,7 @@ class CCSDSTime {
    * @param from pointer to an CCSDS Time code
    * @param length length of the Time code
    * @return
-   * 		- @c RETURN_OK if successful
+   * 		- @c returnvalue::OK if successful
    * 		- @c UNSUPPORTED_TIME_FORMAT if a (possibly valid) time code is not supported
    * 		- @c LENGTH_MISMATCH if the length does not match the P Field
    * 		- @c INVALID_TIME_FORMAT if the format or a value is invalid
@@ -182,7 +182,7 @@ class CCSDSTime {
    * @param from Buffer to read from
    * @param foundLength Length found by this function (can be nullptr if unused)
    * @param maxLength Max length of the buffer to be read
-   * @return ReturnValue_t - RETURN_OK if successful
+   * @return ReturnValue_t - returnvalue::OK if successful
    *                       - LENGTH_MISMATCH if expected length is larger than maxLength
    */
   static ReturnValue_t convertFromCUC(timeval *to, uint8_t const *from, size_t *foundLength,

@@ -4,7 +4,7 @@
 #include "fsfw/housekeeping/AcceptsHkPacketsIF.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/messageQueueDefinitions.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "localPoolDefinitions.h"
 
 namespace subdp {

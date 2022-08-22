@@ -2,7 +2,7 @@
 
 #include "fsfw/osal/freertos/FixedTimeslotTask.h"
 #include "fsfw/osal/freertos/PeriodicTask.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
 

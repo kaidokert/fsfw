@@ -5,7 +5,7 @@
 #include "../health/HealthMessage.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../parameters/HasParametersIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "ConfirmsFailuresIF.h"
 #include "FaultCounter.h"
 

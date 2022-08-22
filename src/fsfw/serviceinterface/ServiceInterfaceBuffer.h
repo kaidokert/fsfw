@@ -3,7 +3,7 @@
 
 #include <FSFWConfig.h>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 

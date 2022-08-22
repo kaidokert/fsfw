@@ -101,10 +101,10 @@ ReturnValue_t CFDPDistributor::registerHandler(AcceptsTelecommandsIF* handler) {
 MessageQueueId_t CFDPDistributor::getRequestQueue() { return tcQueue->getId(); }
 
 // ReturnValue_t CFDPDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
-//     if (queueStatus != RETURN_OK) {
+//     if (queueStatus != returnvalue::OK) {
 //         tcStatus = queueStatus;
 //     }
-//     if (tcStatus != RETURN_OK) {
+//     if (tcStatus != returnvalue::OK) {
 //         this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE,
 //                 currentPacket, tcStatus);
 //         // A failed packet is deleted immediately after reporting,
@@ -114,7 +114,7 @@ MessageQueueId_t CFDPDistributor::getRequestQueue() { return tcQueue->getId(); }
 //     } else {
 //         this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS,
 //                 currentPacket);
-//         return RETURN_OK;
+//         return returnvalue::OK;
 //     }
 // }
 

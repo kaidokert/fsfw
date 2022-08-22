@@ -19,18 +19,12 @@ class LinuxLibgpioIF : public GpioIF, public SystemObject {
  public:
   static const uint8_t gpioRetvalId = CLASS_ID::HAL_GPIO;
 
-  static constexpr ReturnValue_t UNKNOWN_GPIO_ID =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 1);
-  static constexpr ReturnValue_t DRIVE_GPIO_FAILURE =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 2);
-  static constexpr ReturnValue_t GPIO_TYPE_FAILURE =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 3);
-  static constexpr ReturnValue_t GPIO_INVALID_INSTANCE =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 4);
-  static constexpr ReturnValue_t GPIO_DUPLICATE_DETECTED =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 5);
-  static constexpr ReturnValue_t GPIO_INIT_FAILED =
-      HasReturnvaluesIF::makeReturnCode(gpioRetvalId, 6);
+  static constexpr ReturnValue_t UNKNOWN_GPIO_ID = returnvalue::makeCode(gpioRetvalId, 1);
+  static constexpr ReturnValue_t DRIVE_GPIO_FAILURE = returnvalue::makeCode(gpioRetvalId, 2);
+  static constexpr ReturnValue_t GPIO_TYPE_FAILURE = returnvalue::makeCode(gpioRetvalId, 3);
+  static constexpr ReturnValue_t GPIO_INVALID_INSTANCE = returnvalue::makeCode(gpioRetvalId, 4);
+  static constexpr ReturnValue_t GPIO_DUPLICATE_DETECTED = returnvalue::makeCode(gpioRetvalId, 5);
+  static constexpr ReturnValue_t GPIO_INIT_FAILED = returnvalue::makeCode(gpioRetvalId, 6);
 
   LinuxLibgpioIF(object_id_t objectId);
   virtual ~LinuxLibgpioIF();
@@ -71,7 +65,7 @@ class LinuxLibgpioIF : public GpioIF, public SystemObject {
    *
    * @param mapToAdd	The GPIOs which shall be added to the gpioMap.
    *
-   * @return	RETURN_OK if successful, otherwise returnvalue::FAILED
+   * @return	returnvalue::OK if successful, otherwise returnvalue::FAILED
    */
   ReturnValue_t checkForConflicts(GpioMap& mapToAdd);
 

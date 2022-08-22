@@ -1,6 +1,6 @@
 #include <fsfw/container/DynamicFIFO.h>
 #include <fsfw/container/FIFO.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -81,9 +81,6 @@ TEST_CASE("Dynamic Fifo Tests", "[TestDynamicFifo]") {
     REQUIRE(fifo.pop() == static_cast<int>(returnvalue::OK));
     REQUIRE(fifo.size() == 0);
     REQUIRE(fifo.empty());
-    // struct Test* ptr = nullptr;
-    // REQUIRE(fifo.retrieve(ptr) == static_cast<int>(HasReturnvaluesIF::returnvalue::FAILED));
-    // REQUIRE(fifo.peek(ptr) == static_cast<int>(HasReturnvaluesIF::returnvalue::FAILED));
   };
   SECTION("Copy Test") {
     REQUIRE(fifo.insert(structOne) == static_cast<int>(returnvalue::OK));

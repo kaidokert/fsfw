@@ -4,7 +4,7 @@
 #include <cstddef>
 
 #include "RMAPCookie.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "rmapConf.h"
 
 class RMAPChannelIF {
@@ -21,7 +21,7 @@ class RMAPChannelIF {
    * @return
    *      - @c LINK_DOWN	when the link is down and all replies were missed
    *      - @c COMMAND_CHANNEL_DEACTIVATED if the channel's port is NULL
-   *      - @c RETURN_OK else
+   *      - @c returnvalue::OK else
    */
   virtual ReturnValue_t reset() = 0;
 
@@ -72,7 +72,7 @@ class RMAPChannelIF {
    * @param data data to be sent
    * @param datalen length of data
    * @return
-   *      - @c RETURN_OK
+   *      - @c returnvalue::OK
    *      - @c COMMAND_NO_DESCRIPTORS_AVAILABLE 	no descriptors available for sending
    * command; command was not sent
    *      - @c COMMAND_BUFFER_FULL				no receiver buffer available for

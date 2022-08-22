@@ -5,7 +5,7 @@ class PeriodicTaskIF;
 
 #include <cstring>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 /**
  * @brief	The interface provides a method to execute objects within a task.
  * @details	The performOperation method, that is required by the interface is

@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "../objectmanager/ObjectManagerIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "ManagesHealthIF.h"
 
 class HealthTableIF : public ManagesHealthIF {

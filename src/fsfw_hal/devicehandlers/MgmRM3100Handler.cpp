@@ -4,7 +4,7 @@
 #include "fsfw/devicehandlers/DeviceHandlerMessage.h"
 #include "fsfw/globalfunctions/bitutility.h"
 #include "fsfw/objectmanager/SystemObjectIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 MgmRM3100Handler::MgmRM3100Handler(object_id_t objectId, object_id_t deviceCommunication,
                                    CookieIF *comCookie, uint32_t transitionDelay)
@@ -310,8 +310,7 @@ void MgmRM3100Handler::modeChanged() { internalState = InternalState::NONE; }
 ReturnValue_t MgmRM3100Handler::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                         LocalDataPoolManager &poolManager) {
   localDataPoolMap.emplace(RM3100::FIELD_STRENGTHS, &mgmXYZ);
-  poolManager.subscribeForRegularPeriodicPacket(
-      subdp::RegularHkPeriodicParams(primaryDataset.getSid(), false, 10.0));
+  poolManager.subscribeForRegularPeriodicPacket({primaryDataset.getSid(), false, 10.0});
   return returnvalue::OK;
 }
 

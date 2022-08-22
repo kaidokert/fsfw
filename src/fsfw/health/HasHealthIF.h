@@ -3,7 +3,7 @@
 
 #include "../events/Event.h"
 #include "../ipc/MessageQueueSenderIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 class HasHealthIF {
  public:

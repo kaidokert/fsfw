@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "EndianConverter.h"
 #include "SerializeIF.h"
 
@@ -40,7 +40,7 @@ class SerializeAdapter {
    * @return
    * 		- @c BUFFER_TOO_SHORT The given buffer in is too short
    * 		- @c returnvalue::FAILED Generic Error
-   * 		- @c RETURN_OK Successful serialization
+   * 		- @c returnvalue::OK Successful serialization
    */
   template <typename T>
   static ReturnValue_t serialize(const T *object, uint8_t **buffer, size_t *size, size_t maxSize,
@@ -65,7 +65,7 @@ class SerializeAdapter {
    * @return
    *      - @c BUFFER_TOO_SHORT The given buffer in is too short
    *      - @c returnvalue::FAILED Generic Error
-   *      - @c RETURN_OK Successful serialization
+   *      - @c returnvalue::OK Successful serialization
    */
   template <typename T>
   static ReturnValue_t serialize(const T *object, uint8_t *const buffer, size_t *serSize,
@@ -114,7 +114,7 @@ class SerializeAdapter {
    * 	- @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
    * 	- @c TOO_MANY_ELEMENTS The buffer has more inputs than expected
    * 	- @c returnvalue::FAILED Generic Error
-   * 	- @c RETURN_OK Successful deserialization
+   * 	- @c returnvalue::OK Successful deserialization
    */
   template <typename T>
   static ReturnValue_t deSerialize(T *object, const uint8_t **buffer, size_t *size,
@@ -137,7 +137,7 @@ class SerializeAdapter {
    *  - @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
    *  - @c TOO_MANY_ELEMENTS The buffer has more inputs than expected
    *  - @c returnvalue::FAILED Generic Error
-   *  - @c RETURN_OK Successful deserialization
+   *  - @c returnvalue::OK Successful deserialization
    */
   template <typename T>
   static ReturnValue_t deSerialize(T *object, const uint8_t *buffer, size_t *deserSize,

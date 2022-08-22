@@ -6,7 +6,7 @@
 #include "clockDefinitions.h"
 #include "fsfw/globalfunctions/timevalOperations.h"
 #include "fsfw/ipc/MutexFactory.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -38,7 +38,7 @@ class Clock {
    * This system call sets the system time.
    * To set the time, it uses a TimeOfDay_t struct.
    * @param time The struct with the time settings to set.
-   * @return	-@c RETURN_OK on success. Otherwise, the OS failure code
+   * @return	-@c returnvalue::OK on success. Otherwise, the OS failure code
    * 				is returned.
    */
   static ReturnValue_t setClock(const TimeOfDay_t *time);
@@ -46,7 +46,7 @@ class Clock {
    * This system call sets the system time.
    * To set the time, it uses a timeval struct.
    * @param time The struct with the time settings to set.
-   * @return	-@c RETURN_OK on success. Otherwise, the OS failure code is returned.
+   * @return	-@c returnvalue::OK on success. Otherwise, the OS failure code is returned.
    */
   static ReturnValue_t setClock(const timeval *time);
   /**
@@ -54,7 +54,7 @@ class Clock {
    * The timval format has the fields @c tv_sec with seconds and @c tv_usec with
    * microseconds since an OS-defined epoch.
    * @param time	A pointer to a timeval struct where the current time is stored.
-   * @return @c RETURN_OK on success. Otherwise, the OS failure code is returned.
+   * @return @c returnvalue::OK on success. Otherwise, the OS failure code is returned.
    */
   static ReturnValue_t getClock_timeval(timeval *time);
 
@@ -62,7 +62,7 @@ class Clock {
    * Get the time since boot in a timeval struct
    *
    * @param[out] time A pointer to a timeval struct where the uptime is stored.
-   * @return @c RETURN_OK on success. Otherwise, the OS failure code is returned.
+   * @return @c returnvalue::OK on success. Otherwise, the OS failure code is returned.
    *
    * @deprecated, I do not think this should be able to fail, use timeval getUptime()
    */
@@ -77,7 +77,7 @@ class Clock {
    * between two calls up to 49 days by always using uint32_t in the calculation
    *
    * @param ms uptime in ms
-   * @return RETURN_OK on success. Otherwise, the OS failure code is returned.
+   * @return returnvalue::OK on success. Otherwise, the OS failure code is returned.
    */
   static ReturnValue_t getUptime(uint32_t *uptimeMs);
 
@@ -86,7 +86,7 @@ class Clock {
    * The time is returned in a 64 bit unsigned integer.
    * @param time A pointer to a 64 bit unisigned integer where the data is stored.
    * @return
-   *  - @c RETURN_OK on success.
+   *  - @c returnvalue::OK on success.
    *  - Otherwise, the OS failure code is returned.
    */
   static ReturnValue_t getClock_usecs(uint64_t *time);
@@ -94,7 +94,7 @@ class Clock {
    * Returns the time in a TimeOfDay_t struct.
    * @param time A pointer to a TimeOfDay_t struct.
    * @return
-   *  - @c RETURN_OK on success.
+   *  - @c returnvalue::OK on success.
    *  - Otherwise, the OS failure code is returned.
    */
   static ReturnValue_t getDateAndTime(TimeOfDay_t *time);
@@ -111,7 +111,7 @@ class Clock {
    * @param time The time of day as input
    * @param timeval The corresponding seconds since the epoch.
    * @return
-   *  - @c RETURN_OK on success.
+   *  - @c returnvalue::OK on success.
    *  - Otherwise, the OS failure code is returned.
    */
   static ReturnValue_t convertTimeOfDayToTimeval(const TimeOfDay_t *from, timeval *to);
@@ -122,7 +122,7 @@ class Clock {
    *
    * @param time seconds since unix epoch
    * @param[out] JD2000 days since J2000
-   * @return @c RETURN_OK
+   * @return @c returnvalue::OK
    */
   static ReturnValue_t convertTimevalToJD2000(timeval time, double *JD2000);
 
@@ -136,7 +136,7 @@ class Clock {
    * @param utc timeval, corresponding to UTC time
    * @param[out] tt timeval, corresponding to Terrestial Time
    * @return
-   *  - @c RETURN_OK on success
+   *  - @c returnvalue::OK on success
    *  - @c returnvalue::FAILED if leapSeconds are not set
    */
   static ReturnValue_t convertUTCToTT(timeval utc, timeval *tt);
@@ -146,7 +146,7 @@ class Clock {
    *
    * @param leapSeconds_
    * @return
-   *  - @c RETURN_OK on success.
+   *  - @c returnvalue::OK on success.
    */
   static ReturnValue_t setLeapSeconds(uint16_t leapSeconds_);
 
@@ -157,7 +157,7 @@ class Clock {
    *
    * @param[out] leapSeconds_
    * @return
-   *  - @c RETURN_OK on success.
+   *  - @c returnvalue::OK on success.
    *  - @c returnvalue::FAILED on error
    */
   static ReturnValue_t getLeapSeconds(uint16_t *leapSeconds_);
@@ -166,7 +166,7 @@ class Clock {
   /**
    * Function to check and create the Mutex for the clock
    * @return
-   *  - @c RETURN_OK on success.
+   *  - @c returnvalue::OK on success.
    *  - Otherwise @c returnvalue::FAILED if not able to create one
    */
   static ReturnValue_t checkOrCreateClockMutex();

@@ -2,7 +2,7 @@
 #define FSFW_OSAL_FREERTOS_BINSEMAPHUSINGTASK_H_
 
 #include "FreeRTOS.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tasks/SemaphoreIF.h"
 #include "task.h"
 
@@ -20,7 +20,7 @@
  * (for example in the initializeAfterTaskCreation() function) or
  * by calling refreshTaskHandle() with the correct executing task.
  */
-class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
+class BinarySemaphoreUsingTask : public SemaphoreIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 
@@ -50,7 +50,7 @@ class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
   /**
    * Same as acquire() with timeout in FreeRTOS ticks.
    * @param timeoutTicks
-   * @return - @c RETURN_OK on success
+   * @return - @c returnvalue::OK on success
    *         - @c returnvalue::FAILED on failure
    */
   ReturnValue_t acquireWithTickTimeout(TimeoutType timeoutType = TimeoutType::BLOCKING,
@@ -65,7 +65,7 @@ class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
   /**
    * Wrapper function to give back semaphore from handle
    * @param semaphore
-   * @return - @c RETURN_OK on success
+   * @return - @c returnvalue::OK on success
    *         - @c returnvalue::FAILED on failure
    */
   static ReturnValue_t release(TaskHandle_t taskToNotify);
@@ -76,7 +76,7 @@ class BinarySemaphoreUsingTask : public SemaphoreIF, public HasReturnvaluesIF {
    * @param higherPriorityTaskWoken This will be set to pdPASS if a task with
    * a higher priority was unblocked. A context switch should be requested
    * from an ISR if this is the case (see TaskManagement functions)
-   * @return - @c RETURN_OK on success
+   * @return - @c returnvalue::OK on success
    *         - @c returnvalue::FAILED on failure
    */
   static ReturnValue_t releaseFromISR(TaskHandle_t taskToNotify,

@@ -1,7 +1,7 @@
 #ifndef FSFW_TMTCPACKET_PUS_PACKETTIMESTAMPINTERPRETERIF_H_
 #define FSFW_TMTCPACKET_PUS_PACKETTIMESTAMPINTERPRETERIF_H_
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class PusTmMinimal;
 

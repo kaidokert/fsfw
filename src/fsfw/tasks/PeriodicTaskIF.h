@@ -29,7 +29,7 @@ class PeriodicTaskIF {
    * The objects are executed in the order added. The object needs to implement
    * ExecutableObjectIF
    * @param object Id of the object to add.
-   * @return RETURN_OK on success, returnvalue::FAILED if the object could not be added.
+   * @return returnvalue::OK on success, returnvalue::FAILED if the object could not be added.
    */
   virtual ReturnValue_t addComponent(object_id_t object, uint8_t opCode) = 0;
   virtual ReturnValue_t addComponent(object_id_t object) { return addComponent(object, 0); };
@@ -38,7 +38,7 @@ class PeriodicTaskIF {
    * Adds an object to the list of objects to be executed.
    * The objects are executed in the order added.
    * @param object pointer to the object to add.
-   * @return RETURN_OK on success, returnvalue::FAILED if the object could not be added.
+   * @return returnvalue::OK on success, returnvalue::FAILED if the object could not be added.
    */
   virtual ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) = 0;
   virtual ReturnValue_t addComponent(ExecutableObjectIF* object) { return addComponent(object, 0); }
