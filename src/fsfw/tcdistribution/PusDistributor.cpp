@@ -135,7 +135,8 @@ ReturnValue_t PusDistributor::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
   if (verifyChannel == nullptr) {
-    verifyChannel = ObjectManager::instance()->get<VerificationReporterIF>(objects::VERIFICATION_REPORTER);
+    verifyChannel =
+        ObjectManager::instance()->get<VerificationReporterIF>(objects::VERIFICATION_REPORTER);
     if (verifyChannel == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
