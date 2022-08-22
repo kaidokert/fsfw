@@ -74,8 +74,7 @@ TEST_CASE("Array List", "[ArrayListTest]") {
   SECTION("Const Iterator") {
     ArrayList<TestClass>::Iterator it = complexList.begin();
     for (auto i = 0; i < 10; i++) {
-      REQUIRE(complexList.insert(TestClass(i, i + 1)) ==
-              static_cast<int>(returnvalue::OK));
+      REQUIRE(complexList.insert(TestClass(i, i + 1)) == static_cast<int>(returnvalue::OK));
     }
     it++;
     const TestClass* secondTest = it.value;

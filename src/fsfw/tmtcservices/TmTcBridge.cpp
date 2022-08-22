@@ -133,8 +133,7 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
   size_t size = 0;
   ReturnValue_t status = returnvalue::OK;
   for (ReturnValue_t result = tmTcReceptionQueue->receiveMessage(&message);
-       result == returnvalue::OK;
-       result = tmTcReceptionQueue->receiveMessage(&message)) {
+       result == returnvalue::OK; result = tmTcReceptionQueue->receiveMessage(&message)) {
 #if FSFW_VERBOSE_LEVEL >= 3
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::info << "Sent packet counter: " << static_cast<int>(packetSentCounter) << std::endl;

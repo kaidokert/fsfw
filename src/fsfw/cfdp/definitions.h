@@ -15,20 +15,16 @@ static constexpr uint8_t VERSION_BITS = 0b00100000;
 
 static constexpr uint8_t CFDP_CLASS_ID = CLASS_ID::CFDP;
 
-static constexpr ReturnValue_t INVALID_TLV_TYPE =
-    returnvalue::makeCode(CFDP_CLASS_ID, 1);
-static constexpr ReturnValue_t INVALID_DIRECTIVE_FIELDS =
-    returnvalue::makeCode(CFDP_CLASS_ID, 2);
-static constexpr ReturnValue_t INVALID_PDU_DATAFIELD_LEN =
-    returnvalue::makeCode(CFDP_CLASS_ID, 3);
+static constexpr ReturnValue_t INVALID_TLV_TYPE = returnvalue::makeCode(CFDP_CLASS_ID, 1);
+static constexpr ReturnValue_t INVALID_DIRECTIVE_FIELDS = returnvalue::makeCode(CFDP_CLASS_ID, 2);
+static constexpr ReturnValue_t INVALID_PDU_DATAFIELD_LEN = returnvalue::makeCode(CFDP_CLASS_ID, 3);
 static constexpr ReturnValue_t INVALID_ACK_DIRECTIVE_FIELDS =
     returnvalue::makeCode(CFDP_CLASS_ID, 4);
 //! Can not parse options. This can also occur because there are options
 //! available but the user did not pass a valid options array
 static constexpr ReturnValue_t METADATA_CANT_PARSE_OPTIONS =
     returnvalue::makeCode(CFDP_CLASS_ID, 5);
-static constexpr ReturnValue_t NAK_CANT_PARSE_OPTIONS =
-    returnvalue::makeCode(CFDP_CLASS_ID, 6);
+static constexpr ReturnValue_t NAK_CANT_PARSE_OPTIONS = returnvalue::makeCode(CFDP_CLASS_ID, 6);
 static constexpr ReturnValue_t FINISHED_CANT_PARSE_FS_RESPONSES =
     returnvalue::makeCode(CFDP_CLASS_ID, 6);
 static constexpr ReturnValue_t FILESTORE_REQUIRES_SECOND_FILE =

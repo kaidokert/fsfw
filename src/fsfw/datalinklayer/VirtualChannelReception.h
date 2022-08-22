@@ -102,7 +102,8 @@ class VirtualChannelReception : public VirtualChannelReceptionIF, public CCSDSRe
    * Helper method to simplify adding a mapChannel during construction.
    * @param mapId	The mapId of the object to add.
    * @param object	Pointer to the MapPacketExtraction object itself.
-   * @return	@c returnvalue::OK if the channel was successfully inserted, @c returnvalue::FAILED otherwise.
+   * @return	@c returnvalue::OK if the channel was successfully inserted, @c returnvalue::FAILED
+   * otherwise.
    */
   ReturnValue_t addMapChannel(uint8_t mapId, MapPacketExtractionIF* object);
   /**

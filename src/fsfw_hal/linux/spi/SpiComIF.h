@@ -23,8 +23,7 @@ class SpiCookie;
 class SpiComIF : public DeviceCommunicationIF, public SystemObject {
  public:
   static constexpr uint8_t spiRetvalId = CLASS_ID::HAL_SPI;
-  static constexpr ReturnValue_t OPENING_FILE_FAILED =
-      returnvalue::makeCode(spiRetvalId, 0);
+  static constexpr ReturnValue_t OPENING_FILE_FAILED = returnvalue::makeCode(spiRetvalId, 0);
   /* Full duplex (ioctl) transfer failure */
   static constexpr ReturnValue_t FULL_DUPLEX_TRANSFER_FAILED =
       returnvalue::makeCode(spiRetvalId, 1);

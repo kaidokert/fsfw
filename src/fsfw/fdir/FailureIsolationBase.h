@@ -9,8 +9,7 @@
 #include "ConfirmsFailuresIF.h"
 #include "FaultCounter.h"
 
-class FailureIsolationBase : public ConfirmsFailuresIF,
-                             public HasParametersIF {
+class FailureIsolationBase : public ConfirmsFailuresIF, public HasParametersIF {
  public:
   static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::FDIR_1;
   static const Event FDIR_CHANGED_STATE =

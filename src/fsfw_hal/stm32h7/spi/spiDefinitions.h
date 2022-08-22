@@ -10,8 +10,7 @@
 namespace spi {
 
 static constexpr uint8_t HAL_SPI_ID = CLASS_ID::HAL_SPI;
-static constexpr ReturnValue_t HAL_TIMEOUT_RETVAL =
-    returnvalue::makeCode(HAL_SPI_ID, 0);
+static constexpr ReturnValue_t HAL_TIMEOUT_RETVAL = returnvalue::makeCode(HAL_SPI_ID, 0);
 static constexpr ReturnValue_t HAL_BUSY_RETVAL = returnvalue::makeCode(HAL_SPI_ID, 1);
 static constexpr ReturnValue_t HAL_ERROR_RETVAL = returnvalue::makeCode(HAL_SPI_ID, 2);
 

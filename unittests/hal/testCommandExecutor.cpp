@@ -113,8 +113,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   REQUIRE(result == returnvalue::OK);
   result = cmdExecutor.execute();
   REQUIRE(result == returnvalue::OK);
-  while (result != CommandExecutor::EXECUTION_FINISHED and
-         result != returnvalue::FAILED) {
+  while (result != CommandExecutor::EXECUTION_FINISHED and result != returnvalue::FAILED) {
     limitIdx++;
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);

@@ -31,8 +31,7 @@ class CommandExecutor {
   static constexpr uint8_t CLASS_ID = CLASS_ID::LINUX_OSAL;
 
   //! [EXPORT] : [COMMENT] Execution of the current command has finished
-  static constexpr ReturnValue_t EXECUTION_FINISHED =
-      returnvalue::makeCode(CLASS_ID, 0);
+  static constexpr ReturnValue_t EXECUTION_FINISHED = returnvalue::makeCode(CLASS_ID, 0);
 
   //! [EXPORT] : [COMMENT] Command is pending. This will also be returned if the user tries
   //! to load another command but a command is still pending
@@ -42,8 +41,7 @@ class CommandExecutor {
   //! [EXPORT] : [COMMENT] Command execution failed
   static constexpr ReturnValue_t COMMAND_ERROR = returnvalue::makeCode(CLASS_ID, 3);
   //! [EXPORT] : [COMMENT]
-  static constexpr ReturnValue_t NO_COMMAND_LOADED_OR_PENDING =
-      returnvalue::makeCode(CLASS_ID, 4);
+  static constexpr ReturnValue_t NO_COMMAND_LOADED_OR_PENDING = returnvalue::makeCode(CLASS_ID, 4);
   static constexpr ReturnValue_t PCLOSE_CALL_ERROR = returnvalue::makeCode(CLASS_ID, 6);
 
   /**

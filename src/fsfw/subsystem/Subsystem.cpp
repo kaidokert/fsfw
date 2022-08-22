@@ -55,7 +55,9 @@ ReturnValue_t Subsystem::checkSequence(Mode_t sequence) {
   return checkSequence(iter, getFallbackSequence(sequence));
 }
 
-bool Subsystem::existsModeSequence(Mode_t id) { return modeSequences.exists(id) == returnvalue::OK; }
+bool Subsystem::existsModeSequence(Mode_t id) {
+  return modeSequences.exists(id) == returnvalue::OK;
+}
 
 bool Subsystem::existsModeTable(Mode_t id) { return modeTables.exists(id) == returnvalue::OK; }
 

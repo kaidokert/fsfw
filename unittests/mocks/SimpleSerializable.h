@@ -1,8 +1,8 @@
 #ifndef FSFW_TESTS_SIMPLESERIALIZABLE_H
 #define FSFW_TESTS_SIMPLESERIALIZABLE_H
 
-#include "fsfw/serialize.h"
 #include "fsfw/osal/Endiness.h"
+#include "fsfw/serialize.h"
 
 class SimpleSerializable : public SerializeIF {
  public:

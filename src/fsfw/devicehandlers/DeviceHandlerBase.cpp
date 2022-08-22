@@ -45,8 +45,8 @@ DeviceHandlerBase::DeviceHandlerBase(object_id_t setObjectId, object_id_t device
   cookieInfo.state = COOKIE_UNUSED;
   cookieInfo.pendingCommand = deviceCommandMap.end();
   if (comCookie == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "DeviceHandlerBase",
-                        returnvalue::FAILED, "Invalid cookie");
+    printWarningOrError(sif::OutputTypes::OUT_ERROR, "DeviceHandlerBase", returnvalue::FAILED,
+                        "Invalid cookie");
   }
   if (this->fdirInstance == nullptr) {
     this->fdirInstance = new DeviceHandlerFailureIsolation(setObjectId, defaultFdirParentId);
@@ -634,8 +634,8 @@ void DeviceHandlerBase::replyToReply(const DeviceCommandId_t command, DeviceRepl
   }
   DeviceCommandInfo* info = &replyInfo.command->second;
   if (info == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "replyToReply",
-                        returnvalue::FAILED, "Command pointer not found");
+    printWarningOrError(sif::OutputTypes::OUT_ERROR, "replyToReply", returnvalue::FAILED,
+                        "Command pointer not found");
     return;
   }
 

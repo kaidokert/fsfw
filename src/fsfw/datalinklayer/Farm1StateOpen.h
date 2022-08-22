@@ -37,8 +37,8 @@ class Farm1StateOpen : public Farm1StateIF {
    * change to Farm1StateLockout.
    * @param frame	The frame to handle.
    * @param clcw	Any changes to the CLCW shall be done with the help of this interface.
-   * @return If the Sequence Number is ok, it returns returnvalue::OK. Otherwise either #NS_POSITIVE_W,
-   * 			#NS_NEGATIVE_W or NS_LOCKOUT is returned.
+   * @return If the Sequence Number is ok, it returns returnvalue::OK. Otherwise either
+   * #NS_POSITIVE_W, #NS_NEGATIVE_W or NS_LOCKOUT is returned.
    */
   ReturnValue_t handleADFrame(TcTransferFrame* frame, ClcwIF* clcw);
   /**

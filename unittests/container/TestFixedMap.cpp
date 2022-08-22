@@ -19,8 +19,7 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
 
   SECTION("Fill and erase") {
     for (uint16_t i = 0; i < 30; i++) {
-      REQUIRE(map.insert(std::make_pair(i, i + 1)) ==
-              static_cast<int>(returnvalue::OK));
+      REQUIRE(map.insert(std::make_pair(i, i + 1)) == static_cast<int>(returnvalue::OK));
       REQUIRE(map.exists(i) == static_cast<int>(returnvalue::OK));
       REQUIRE(map.find(i)->second == i + 1);
       REQUIRE(not map.empty());
@@ -97,9 +96,9 @@ TEST_CASE("FixedMap Tests", "[TestFixedMap]") {
             static_cast<int>(SerializeIF::BUFFER_TOO_SHORT));
     loc_ptr = buffer;
     size = 0;
-    REQUIRE(map.serialize(
-                &loc_ptr, &size, sizeof(uint32_t) + 2 * (sizeof(uint32_t) + sizeof(uint16_t)),
-                SerializeIF::Endianness::BIG) == static_cast<int>(returnvalue::OK));
+    REQUIRE(map.serialize(&loc_ptr, &size,
+                          sizeof(uint32_t) + 2 * (sizeof(uint32_t) + sizeof(uint16_t)),
+                          SerializeIF::Endianness::BIG) == static_cast<int>(returnvalue::OK));
     REQUIRE(size == 16);
 
     uint32_t internal_size = 0;

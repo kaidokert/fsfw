@@ -50,8 +50,7 @@ ReturnValue_t TcpTmTcBridge::handleTm() {
   TmTcMessage message;
   ReturnValue_t status = returnvalue::OK;
   for (ReturnValue_t result = tmTcReceptionQueue->receiveMessage(&message);
-       result == returnvalue::OK;
-       result = tmTcReceptionQueue->receiveMessage(&message)) {
+       result == returnvalue::OK; result = tmTcReceptionQueue->receiveMessage(&message)) {
     status = storeDownlinkData(&message);
     if (status != returnvalue::OK) {
       break;

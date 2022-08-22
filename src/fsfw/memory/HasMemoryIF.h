@@ -30,9 +30,7 @@ class HasMemoryIF {
    * Sets the address of the memory, if possible.
    * startAddress is a proposal for an address, or the base address if multiple addresses are set.
    */
-  virtual ReturnValue_t setAddress(uint32_t* startAddress) {
-    return returnvalue::FAILED;
-  }
+  virtual ReturnValue_t setAddress(uint32_t* startAddress) { return returnvalue::FAILED; }
   static bool memAccessWasSuccessful(ReturnValue_t result) {
     switch (result) {
       case DO_IT_MYSELF:

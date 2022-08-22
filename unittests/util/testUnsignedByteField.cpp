@@ -1,9 +1,8 @@
 
+#include <array>
 #include <catch2/catch_test_macros.hpp>
 
 #include "fsfw/util/UnsignedByteField.h"
-
-#include <array>
 
 TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
   auto testByteField = UnsignedByteField<uint32_t>(10);

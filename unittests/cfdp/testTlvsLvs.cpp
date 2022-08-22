@@ -80,8 +80,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(zeroLenField.serialize(&serPtr, &deserSize, rawBuf.size(),
-                                   SerializeIF::Endianness::NETWORK) ==
-            returnvalue::OK);
+                                   SerializeIF::Endianness::NETWORK) == returnvalue::OK);
     REQUIRE(rawBuf[0] == TlvTypes::FAULT_HANDLER);
     REQUIRE(rawBuf[1] == 0);
   }
@@ -110,8 +109,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
                                   SerializeIF::Endianness::NETWORK);
     REQUIRE(entityId == 0x0ff0);
 
-    REQUIRE(tlv.deSerialize(nullptr, nullptr, SerializeIF::Endianness::NETWORK) !=
-            returnvalue::OK);
+    REQUIRE(tlv.deSerialize(nullptr, nullptr, SerializeIF::Endianness::NETWORK) != returnvalue::OK);
     deserPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(tlv.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::NETWORK) ==
@@ -126,8 +124,7 @@ TEST_CASE("CFDP TLV LV", "[CfdpTlvLv]") {
     serPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(zeroLenField.serialize(&serPtr, &deserSize, rawBuf.size(),
-                                   SerializeIF::Endianness::NETWORK) ==
-            returnvalue::OK);
+                                   SerializeIF::Endianness::NETWORK) == returnvalue::OK);
     deserPtr = rawBuf.data();
     result = zeroLenField.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);

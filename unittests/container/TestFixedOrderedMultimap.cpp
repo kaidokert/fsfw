@@ -14,8 +14,7 @@ TEST_CASE("FixedOrderedMultimap Tests", "[TestFixedOrderedMultimap]") {
 
   SECTION("Test insert, find, exists") {
     for (uint16_t i = 0; i < 30; i++) {
-      REQUIRE(map.insert(std::make_pair(i, i + 1)) ==
-              static_cast<int>(returnvalue::OK));
+      REQUIRE(map.insert(std::make_pair(i, i + 1)) == static_cast<int>(returnvalue::OK));
       REQUIRE(map.exists(i) == static_cast<int>(returnvalue::OK));
       REQUIRE(map.find(i)->second == i + 1);
     }
@@ -188,23 +187,19 @@ TEST_CASE("FixedOrderedMultimap Non Trivial Type", "[TestFixedOrderedMultimapNon
 
   SECTION("Test different insert variants") {
     FixedOrderedMultimap<uint32_t, TestClass>::Iterator it = map.end();
-    REQUIRE(map.insert(36, TestClass(37, 36), &it) ==
-            static_cast<int>(returnvalue::OK));
+    REQUIRE(map.insert(36, TestClass(37, 36), &it) == static_cast<int>(returnvalue::OK));
     REQUIRE(it->first == 36);
     bool compare = it->second == TestClass(37, 36);
     REQUIRE(compare);
     REQUIRE(map.size() == 1);
-    REQUIRE(map.insert(37, TestClass(38, 37), nullptr) ==
-            static_cast<int>(returnvalue::OK));
+    REQUIRE(map.insert(37, TestClass(38, 37), nullptr) == static_cast<int>(returnvalue::OK));
     compare = map.find(37)->second == TestClass(38, 37);
     REQUIRE(compare);
     REQUIRE(map.size() == 2);
-    REQUIRE(map.insert(37, TestClass(24, 37), nullptr) ==
-            static_cast<int>(returnvalue::OK));
+    REQUIRE(map.insert(37, TestClass(24, 37), nullptr) == static_cast<int>(returnvalue::OK));
     compare = map.find(37)->second == TestClass(38, 37);
     REQUIRE(compare);
-    REQUIRE(map.insert(0, TestClass(1, 0), nullptr) ==
-            static_cast<int>(returnvalue::OK));
+    REQUIRE(map.insert(0, TestClass(1, 0), nullptr) == static_cast<int>(returnvalue::OK));
     compare = map.find(0)->second == TestClass(1, 0);
     REQUIRE(compare);
     REQUIRE(map.size() == 4);

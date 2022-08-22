@@ -291,8 +291,8 @@ ReturnValue_t Heater::getParameter(uint8_t domainId, uint8_t uniqueId,
 
 void Heater::handleEventQueue() {
   EventMessage event;
-  for (ReturnValue_t result = eventQueue->receiveMessage(&event);
-       result == returnvalue::OK; result = eventQueue->receiveMessage(&event)) {
+  for (ReturnValue_t result = eventQueue->receiveMessage(&event); result == returnvalue::OK;
+       result = eventQueue->receiveMessage(&event)) {
     switch (event.getMessageId()) {
       case EventMessage::EVENT_MESSAGE:
         switch (event.getEvent()) {

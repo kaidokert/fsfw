@@ -21,15 +21,15 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQue
                                            bool appendValidityBuffer)
     : appendValidityBuffer(appendValidityBuffer) {
   if (owner == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "LocalDataPoolManager",
-                        returnvalue::FAILED, "Invalid supplied owner");
+    printWarningOrError(sif::OutputTypes::OUT_WARNING, "LocalDataPoolManager", returnvalue::FAILED,
+                        "Invalid supplied owner");
     return;
   }
   this->owner = owner;
   mutex = MutexFactory::instance()->createMutex();
   if (mutex == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "LocalDataPoolManager",
-                        returnvalue::FAILED, "Could not create mutex");
+    printWarningOrError(sif::OutputTypes::OUT_ERROR, "LocalDataPoolManager", returnvalue::FAILED,
+                        "Could not create mutex");
   }
 
   hkQueue = queueToUse;
@@ -780,8 +780,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   ReturnValue_t result = ipcStore->getFreeElement(&storeId, expectedSize, &storePtr);
   if (result != returnvalue::OK) {
     printWarningOrError(sif::OutputTypes::OUT_ERROR, "generateSetStructurePacket",
-                        returnvalue::FAILED,
-                        "Could not get free element from IPC store.");
+                        returnvalue::FAILED, "Could not get free element from IPC store.");
     return result;
   }
 
@@ -794,8 +793,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   }
   if (expectedSize != size) {
     printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateSetStructurePacket",
-                        returnvalue::FAILED,
-                        "Expected size is not equal to serialized size");
+                        returnvalue::FAILED, "Expected size is not equal to serialized size");
   }
 
   // Send structure reporting reply.

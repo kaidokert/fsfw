@@ -43,4 +43,6 @@ void TcDistributor::print() {
 #endif
 }
 
-ReturnValue_t TcDistributor::callbackAfterSending(ReturnValue_t queueStatus) { return returnvalue::OK; }
+ReturnValue_t TcDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
+  return returnvalue::OK;
+}
