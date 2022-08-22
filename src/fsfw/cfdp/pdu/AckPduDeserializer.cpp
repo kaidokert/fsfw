@@ -6,6 +6,7 @@ AckPduDeserializer::AckPduDeserializer(const uint8_t* pduBuf, size_t maxSize, Ac
 ReturnValue_t AckPduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != returnvalue::OK) {
+    return result;
   }
   size_t currentIdx = FileDirectiveReader::getHeaderSize();
   if (currentIdx + 2 > this->maxSize) {

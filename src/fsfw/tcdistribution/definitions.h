@@ -10,7 +10,7 @@
 
 namespace tmtcdistrib {
 static const uint8_t INTERFACE_ID = CLASS_ID::TMTC_DISTRIBUTION;
-static constexpr ReturnValue_t NO_DESTINATION_FOUND = result::makeCode(INTERFACE_ID, 0);
+static constexpr ReturnValue_t NO_DESTINATION_FOUND = returnvalue::makeCode(INTERFACE_ID, 0);
 static constexpr ReturnValue_t INVALID_CCSDS_VERSION = MAKE_RETURN_CODE(1);
 static constexpr ReturnValue_t INVALID_APID = MAKE_RETURN_CODE(2);
 static constexpr ReturnValue_t INVALID_PACKET_TYPE = MAKE_RETURN_CODE(3);

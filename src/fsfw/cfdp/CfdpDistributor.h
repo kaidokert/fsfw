@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "fsfw/cfdp/pdu/HeaderReader.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tcdistribution/CfdpPacketChecker.h"
 #include "fsfw/tcdistribution/TcDistributorBase.h"
 #include "fsfw/tmtcpacket/cfdp/CfdpPacketStored.h"
@@ -61,8 +61,8 @@ class CfdpDistributor : public TcDistributorBase, public AcceptsTelecommandsIF {
     MessageQueueId_t queueId;
   };
   HeaderReader pduReader;
-  ReturnValue_t lastTcError = HasReturnvaluesIF::RETURN_OK;
-  ReturnValue_t lastTmError = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t lastTcError = returnvalue::OK;
+  ReturnValue_t lastTmError = returnvalue::OK;
   // I don't think a regular OBSW will have more than 1 or 2 of these destinations, so I think
   // it is okay to accept the overhead here
   std::vector<EntityInfo> tcDestinations;

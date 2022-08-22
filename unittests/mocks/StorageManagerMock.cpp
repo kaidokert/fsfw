@@ -67,13 +67,13 @@ StorageManagerIF::max_subpools_t StorageManagerMock::getNumberOfSubPools() const
 void StorageManagerMock::reset() {
   clearStore();
   nextAddDataCallFails.first = false;
-  nextAddDataCallFails.second = result::OK;
+  nextAddDataCallFails.second = returnvalue::OK;
   nextModifyDataCallFails.first = false;
-  nextModifyDataCallFails.second = result::OK;
+  nextModifyDataCallFails.second = returnvalue::OK;
   nextDeleteDataCallFails.first = false;
-  nextDeleteDataCallFails.second = result::OK;
+  nextDeleteDataCallFails.second = returnvalue::OK;
   nextFreeElementCallFails.first = false;
-  nextFreeElementCallFails.second = result::OK;
+  nextFreeElementCallFails.second = returnvalue::OK;
 }
 
 StorageManagerMock::StorageManagerMock(object_id_t setObjectId,

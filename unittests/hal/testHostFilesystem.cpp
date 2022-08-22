@@ -23,51 +23,51 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
 
   SECTION("Create file") {
     FilesystemParams params(file0.c_str());
-    REQUIRE(hostFs.createFile(params) == result::OK);
+    REQUIRE(hostFs.createFile(params) == returnvalue::OK);
     CHECK(fs::is_regular_file(file0));
     REQUIRE(fs::exists(file0));
   }
 
   SECTION("Remove File") {
     FilesystemParams params(file0.c_str());
-    REQUIRE(hostFs.createFile(params) == result::OK);
+    REQUIRE(hostFs.createFile(params) == returnvalue::OK);
     CHECK(fs::is_regular_file(file0));
     REQUIRE(fs::exists(file0));
-    REQUIRE(hostFs.removeFile(file0.c_str()) == result::OK);
+    REQUIRE(hostFs.removeFile(file0.c_str()) == returnvalue::OK);
     REQUIRE(not fs::exists(file0));
   }
 
   SECTION("Create Directory") {
     FilesystemParams params(dir0.c_str());
-    REQUIRE(hostFs.createDirectory(params) == result::OK);
+    REQUIRE(hostFs.createDirectory(params) == returnvalue::OK);
     CHECK(fs::is_directory(dir0));
     REQUIRE(fs::exists(dir0));
   }
 
   SECTION("Remove Directory") {
     FilesystemParams params(dir0.c_str());
-    REQUIRE(hostFs.createDirectory(params) == result::OK);
+    REQUIRE(hostFs.createDirectory(params) == returnvalue::OK);
     REQUIRE(fs::exists(dir0));
-    REQUIRE(hostFs.removeDirectory(params) == result::OK);
+    REQUIRE(hostFs.removeDirectory(params) == returnvalue::OK);
     REQUIRE(not fs::exists(dir0));
   }
 
   SECTION("Rename File") {
     FilesystemParams params(file0.c_str());
-    REQUIRE(hostFs.createFile(params) == result::OK);
+    REQUIRE(hostFs.createFile(params) == returnvalue::OK);
     CHECK(fs::is_regular_file(file0));
     REQUIRE(fs::exists(file0));
-    REQUIRE(hostFs.rename(file0.c_str(), file1.c_str()) == result::OK);
+    REQUIRE(hostFs.rename(file0.c_str(), file1.c_str()) == returnvalue::OK);
   }
 
   SECTION("Write To File") {
     std::string data = "hello world!";
     FileOpParams params(file0.c_str(), data.size());
-    REQUIRE(hostFs.createFile(params.fsParams) == result::OK);
+    REQUIRE(hostFs.createFile(params.fsParams) == returnvalue::OK);
     CHECK(fs::is_regular_file(file0));
     REQUIRE(fs::exists(file0));
     CHECK(hostFs.writeToFile(params, reinterpret_cast<const uint8_t*>(data.c_str())) ==
-          HasReturnvaluesIF::RETURN_OK);
+          returnvalue::OK);
     CHECK(fs::file_size(file0) == data.size());
     ifstream ifile(file0);
     char readBuf[524]{};
@@ -79,7 +79,7 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
   SECTION("Read From File") {
     std::string data = "hello world!";
     FileOpParams params(file0.c_str(), data.size());
-    REQUIRE(hostFs.createFile(params.fsParams) == result::OK);
+    REQUIRE(hostFs.createFile(params.fsParams) == returnvalue::OK);
     CHECK(fs::is_regular_file(file0));
     ofstream of(file0);
     of.write(data.c_str(), static_cast<unsigned int>(data.size()));
@@ -89,8 +89,7 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
     std::array<uint8_t, 256> readBuf{};
     uint8_t* readPtr = readBuf.data();
     size_t readSize = 0;
-    CHECK(hostFs.readFromFile(params, &readPtr, readSize, readBuf.size()) ==
-          HasReturnvaluesIF::RETURN_OK);
+    CHECK(hostFs.readFromFile(params, &readPtr, readSize, readBuf.size()) == returnvalue::OK);
     std::string readBackString(reinterpret_cast<const char*>(readBuf.data()));
     CHECK(readSize == data.size());
     CHECK(data == readBackString);
@@ -98,20 +97,20 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
 
   SECTION("Invalid Input does not crash") {
     FileOpParams params(nullptr, 10);
-    REQUIRE(hostFs.createFile(params.fsParams) != result::OK);
-    REQUIRE(hostFs.createDirectory(params.fsParams) != result::OK);
-    REQUIRE(hostFs.createFile(params.fsParams) != result::OK);
-    REQUIRE(hostFs.removeDirectory(params.fsParams) != result::OK);
-    REQUIRE(hostFs.removeFile(nullptr) != result::OK);
-    REQUIRE(hostFs.rename(nullptr, nullptr) != result::OK);
-    REQUIRE(hostFs.writeToFile(params, nullptr) != result::OK);
+    REQUIRE(hostFs.createFile(params.fsParams) != returnvalue::OK);
+    REQUIRE(hostFs.createDirectory(params.fsParams) != returnvalue::OK);
+    REQUIRE(hostFs.createFile(params.fsParams) != returnvalue::OK);
+    REQUIRE(hostFs.removeDirectory(params.fsParams) != returnvalue::OK);
+    REQUIRE(hostFs.removeFile(nullptr) != returnvalue::OK);
+    REQUIRE(hostFs.rename(nullptr, nullptr) != returnvalue::OK);
+    REQUIRE(hostFs.writeToFile(params, nullptr) != returnvalue::OK);
     size_t readLen = 0;
-    REQUIRE(hostFs.readFromFile(params, nullptr, readLen, 20) != result::OK);
+    REQUIRE(hostFs.readFromFile(params, nullptr, readLen, 20) != returnvalue::OK);
   }
 
   SECTION("Create File but already exists") {
     FilesystemParams params(file0.c_str());
-    REQUIRE(hostFs.createFile(params) == result::OK);
+    REQUIRE(hostFs.createFile(params) == returnvalue::OK);
     REQUIRE(hostFs.createFile(params) == HasFileSystemIF::FILE_ALREADY_EXISTS);
   }
 
@@ -121,7 +120,7 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
 
   SECTION("Create Directory but already exists") {
     FileOpParams params(file0.c_str(), 12);
-    REQUIRE(hostFs.createDirectory(params.fsParams) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(hostFs.createDirectory(params.fsParams) == returnvalue::OK);
     REQUIRE(hostFs.createDirectory(params.fsParams) == HasFileSystemIF::DIRECTORY_ALREADY_EXISTS);
   }
 
@@ -158,7 +157,7 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
     ofstream of(fileInDir0);
     CHECK(fs::is_directory(dir0));
     CHECK(fs::is_regular_file(fileInDir0));
-    REQUIRE(hostFs.removeDirectory(FilesystemParams(dir0.c_str()), true) == result::OK);
+    REQUIRE(hostFs.removeDirectory(FilesystemParams(dir0.c_str()), true) == returnvalue::OK);
     CHECK(not fs::is_directory(dir0));
     CHECK(not fs::is_regular_file(fileInDir0));
   }
@@ -173,7 +172,7 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
   }
 
   SECTION("Create directory with parent directory") {
-    CHECK(hostFs.createDirectory(FilesystemParams(dirWithParent.c_str()), true) == result::OK);
+    CHECK(hostFs.createDirectory(FilesystemParams(dirWithParent.c_str()), true) == returnvalue::OK);
     CHECK(fs::is_directory(dir0));
     CHECK(fs::is_directory(dirWithParent));
   }

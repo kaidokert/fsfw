@@ -10,7 +10,7 @@ TEST_CASE("Filesystem Mock", "[mocks]") {
 
   SECTION("Create File") {
     FilesystemParams params("hello.txt");
-    CHECK(fsMock.createFile(params) == result::OK);
+    CHECK(fsMock.createFile(params) == returnvalue::OK);
     auto iter = fsMock.fileMap.find("hello.txt");
     REQUIRE(iter != fsMock.fileMap.end());
     FilesystemMock::FileInfo &stats = iter->second;
@@ -22,7 +22,7 @@ TEST_CASE("Filesystem Mock", "[mocks]") {
     std::string testData = "test data";
     FileOpParams params("hello.txt", testData.size());
     CHECK(fsMock.writeToFile(params, reinterpret_cast<const uint8_t *>(testData.data())) ==
-          HasReturnvaluesIF::RETURN_OK);
+          returnvalue::OK);
     auto iter = fsMock.fileMap.find("hello.txt");
     REQUIRE(iter != fsMock.fileMap.end());
     FilesystemMock::FileInfo &stats = iter->second;
@@ -38,7 +38,7 @@ TEST_CASE("Filesystem Mock", "[mocks]") {
 
   SECTION("Create Directory") {
     FilesystemParams params("hello");
-    CHECK(fsMock.createDirectory(params) == result::OK);
+    CHECK(fsMock.createDirectory(params) == returnvalue::OK);
     REQUIRE(not fsMock.dirMap.empty());
     auto iter = fsMock.dirMap.find("hello");
     REQUIRE(iter != fsMock.dirMap.end());

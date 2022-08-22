@@ -7,7 +7,7 @@ class CcsdsCheckerMock : public CcsdsPacketCheckIF {
   CcsdsCheckerMock();
   unsigned int checkCallCount = 0;
   size_t checkedPacketLen = 0;
-  ReturnValue_t nextResult = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t nextResult = returnvalue::OK;
   ReturnValue_t checkPacket(const SpacePacketReader& currentPacket, size_t packetLen) override;
 
  private:

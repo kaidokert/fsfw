@@ -7,7 +7,7 @@ cfdp::FileDirectives FileDirectiveReader::getFileDirective() const { return file
 
 ReturnValue_t FileDirectiveReader::parseData() {
   ReturnValue_t result = HeaderReader::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (this->getPduDataFieldLen() < 1) {
@@ -21,7 +21,7 @@ ReturnValue_t FileDirectiveReader::parseData() {
     return cfdp::INVALID_DIRECTIVE_FIELDS;
   }
   setFileDirective(static_cast<cfdp::FileDirectives>(pointers.rawPtr[currentIdx]));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t FileDirectiveReader::getHeaderSize() const {

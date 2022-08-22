@@ -5,7 +5,7 @@
 
 TEST_CASE("CFDP LV", "[cfdp][lv]") {
   using namespace cfdp;
-  ReturnValue_t result = result::OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 255> rawBuf{};
   uint8_t* serPtr = rawBuf.data();
   const uint8_t* deserPtr = rawBuf.data();
@@ -16,7 +16,7 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
     std::array<uint8_t, 8> lvRawBuf{};
     serPtr = lvRawBuf.data();
     REQUIRE(sourceId.serialize(&serPtr, &deserSize, lvRawBuf.size(),
-                               SerializeIF::Endianness::NETWORK) == result::OK);
+                               SerializeIF::Endianness::NETWORK) == returnvalue::OK);
     REQUIRE(deserSize == 2);
 
     auto lv = cfdp::Lv(lvRawBuf.data(), 2);
@@ -31,12 +31,12 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
     serPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(lv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK) ==
-            result::OK);
+            returnvalue::OK);
     REQUIRE(deserSize == 3);
     REQUIRE(rawBuf[0] == 2);
     uint16_t sourceIdRaw = 0;
     REQUIRE(SerializeAdapter::deSerialize(&sourceIdRaw, rawBuf.data() + 1, &deserSize,
-                                          SerializeIF::Endianness::BIG) == result::OK);
+                                          SerializeIF::Endianness::BIG) == returnvalue::OK);
     REQUIRE(sourceIdRaw == 0x0ff0);
   }
 
@@ -47,11 +47,11 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
     deserSize = 0;
     result =
         lvEmpty.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(deserSize == 1);
     deserPtr = rawBuf.data();
     result = lvEmpty.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::BIG);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(lvEmpty.getSerializedSize() == 1);
   }
 
@@ -59,29 +59,29 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
     std::array<uint8_t, 8> lvRawBuf{};
     serPtr = lvRawBuf.data();
     REQUIRE(sourceId.serialize(&serPtr, &deserSize, lvRawBuf.size(),
-                               SerializeIF::Endianness::NETWORK) == result::OK);
+                               SerializeIF::Endianness::NETWORK) == returnvalue::OK);
     auto lv = cfdp::Lv(lvRawBuf.data(), 2);
     serPtr = rawBuf.data();
     deserSize = 0;
     result = lv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     Lv uninitLv;
     deserPtr = rawBuf.data();
     deserSize = 3;
     result = uninitLv.deSerialize(&deserPtr, &deserSize, SerializeIF::Endianness::BIG);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(uninitLv.getSerializedSize() == 3);
     const uint8_t* storedValue = uninitLv.getValue(nullptr);
     uint16_t sourceIdRaw = 0;
     REQUIRE(SerializeAdapter::deSerialize(&sourceIdRaw, storedValue, &deserSize,
-                                          SerializeIF::Endianness::BIG) == result::OK);
+                                          SerializeIF::Endianness::BIG) == returnvalue::OK);
     REQUIRE(sourceIdRaw == 0x0ff0);
   }
 
   SECTION("Invalid Input") {
     Lv uninitLv;
     REQUIRE(uninitLv.deSerialize(nullptr, nullptr, SerializeIF::Endianness::BIG) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+            returnvalue::FAILED);
     serPtr = rawBuf.data();
     deserSize = 0;
     REQUIRE(uninitLv.serialize(&serPtr, &deserSize, 0, SerializeIF::Endianness::BIG) ==
@@ -96,7 +96,7 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
     std::string filename = "hello.txt";
     StringLv sourceFileName(filename);
     REQUIRE(sourceFileName.getSerializedSize() == 1 + filename.size());
-    REQUIRE(sourceFileName.serializeBe(rawBuf.data(), deserSize, rawBuf.size()) == result::OK);
+    REQUIRE(sourceFileName.serializeBe(rawBuf.data(), deserSize, rawBuf.size()) == returnvalue::OK);
     REQUIRE(rawBuf[0] == filename.size());
     std::string filenameFromRaw(reinterpret_cast<const char*>(rawBuf.data() + 1), filename.size());
     REQUIRE(filenameFromRaw == filename);
@@ -106,7 +106,7 @@ TEST_CASE("CFDP LV", "[cfdp][lv]") {
     const char filename[] = "hello.txt";
     StringLv sourceFileName(filename, sizeof(filename) - 1);
     REQUIRE(sourceFileName.getSerializedSize() == 1 + sizeof(filename) - 1);
-    REQUIRE(sourceFileName.serializeBe(rawBuf.data(), deserSize, rawBuf.size()) == result::OK);
+    REQUIRE(sourceFileName.serializeBe(rawBuf.data(), deserSize, rawBuf.size()) == returnvalue::OK);
     REQUIRE(rawBuf[0] == sizeof(filename) - 1);
     rawBuf[deserSize] = '\0';
     const char* filenameFromRaw = reinterpret_cast<const char*>(rawBuf.data() + 1);

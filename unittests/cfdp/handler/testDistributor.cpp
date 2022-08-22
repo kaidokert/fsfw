@@ -36,41 +36,41 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   uint8_t* dataPtr = nullptr;
 
   SECTION("State") {
-    CHECK(distributor.initialize() == result::OK);
+    CHECK(distributor.initialize() == returnvalue::OK);
     CHECK(std::strcmp(distributor.getName(), "CFDP Distributor") == 0);
     CHECK(distributor.getIdentifier() == 0);
     CHECK(distributor.getRequestQueue() == queue.getId());
   }
 
   SECTION("Packet Forwarding") {
-    CHECK(distributor.initialize() == result::OK);
-    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
+    CHECK(distributor.initialize() == returnvalue::OK);
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == returnvalue::OK);
     size_t serLen = 0;
     store_address_t storeId;
     CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
-          result::OK);
+          returnvalue::OK);
     REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
-            result::OK);
+            returnvalue::OK);
     TmTcMessage msg(storeId);
     queue.addReceivedMessage(msg);
-    CHECK(distributor.performOperation(0) == result::OK);
+    CHECK(distributor.performOperation(0) == returnvalue::OK);
     CHECK(queue.wasMessageSent());
     CHECK(queue.numberOfSentMessages() == 1);
     // The packet is forwarded, with no need to delete the data
     CHECK(pool.hasDataAtId(storeId));
     TmTcMessage sentMsg;
-    CHECK(queue.getNextSentMessage(receiverQueueId, sentMsg) == result::OK);
+    CHECK(queue.getNextSentMessage(receiverQueueId, sentMsg) == returnvalue::OK);
     CHECK(sentMsg.getStorageId() == storeId);
   }
 
   SECTION("No Destination found") {
-    CHECK(distributor.initialize() == result::OK);
+    CHECK(distributor.initialize() == returnvalue::OK);
     size_t serLen = 0;
     store_address_t storeId;
     CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
-          result::OK);
+          returnvalue::OK);
     REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
-            result::OK);
+            returnvalue::OK);
     TmTcMessage msg(storeId);
     queue.addReceivedMessage(msg);
     CHECK(distributor.performOperation(0) == tmtcdistrib::NO_DESTINATION_FOUND);
@@ -81,19 +81,19 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
     pool.nextModifyDataCallFails.second = StorageManagerIF::DATA_DOES_NOT_EXIST;
     size_t serLen = 0;
     store_address_t storeId;
-    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == returnvalue::OK);
     CHECK(pool.LocalPool::getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
-          result::OK);
+          returnvalue::OK);
     REQUIRE(creator.SerializeIF::serializeBe(dataPtr, serLen, creator.getSerializedSize()) ==
-            result::OK);
+            returnvalue::OK);
     TmTcMessage msg(storeId);
     queue.addReceivedMessage(msg);
     CHECK(distributor.performOperation(0) == StorageManagerIF::DATA_DOES_NOT_EXIST);
   }
 
   SECTION("Duplicate registration") {
-    CHECK(distributor.initialize() == result::OK);
-    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::OK);
-    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == result::FAILED);
+    CHECK(distributor.initialize() == returnvalue::OK);
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == returnvalue::OK);
+    CHECK(distributor.registerTcDestination(obswEntityId, tcAcceptor) == returnvalue::FAILED);
   }
 }

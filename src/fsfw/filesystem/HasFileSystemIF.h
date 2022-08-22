@@ -7,7 +7,7 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/messageQueueDefinitions.h"
 #include "fsfw/returnvalues/FwClassIds.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 struct FilesystemParams {
   explicit FilesystemParams(const char* path) : path(path) {}

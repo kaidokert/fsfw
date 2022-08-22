@@ -12,13 +12,13 @@ size_t FileDirectiveCreator::getSerializedSize() const {
 ReturnValue_t FileDirectiveCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                               Endianness streamEndianness) const {
   if (buffer == nullptr or size == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (FileDirectiveCreator::getWholePduSize() > maxSize) {
     return BUFFER_TOO_SHORT;
   }
   ReturnValue_t result = HeaderCreator::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -28,7 +28,7 @@ ReturnValue_t FileDirectiveCreator::serialize(uint8_t **buffer, size_t *size, si
   **buffer = directiveCode;
   *buffer += 1;
   *size += 1;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void FileDirectiveCreator::setDirectiveDataFieldLen(size_t len) {

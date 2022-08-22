@@ -23,30 +23,30 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
     case TransactionStep::SENDING_FINISHED_PDU:
       break;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t cfdp::DestHandler::passPacket(PacketInfo packet) {
   if (p.packetListRef.full()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   p.packetListRef.push_back(packet);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t cfdp::DestHandler::initialize() {
   if (p.tmStore == nullptr) {
     p.tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
     if (p.tmStore == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
   if (p.tcStore == nullptr) {
     p.tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
     if (p.tcStore == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

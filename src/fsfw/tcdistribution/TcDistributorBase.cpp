@@ -20,11 +20,11 @@ TcDistributorBase::~TcDistributorBase() {
 
 ReturnValue_t TcDistributorBase::performOperation(uint8_t opCode) {
   ReturnValue_t status;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-  for (status = tcQueue->receiveMessage(&currentMessage); status == RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
+  for (status = tcQueue->receiveMessage(&currentMessage); status == returnvalue::OK;
        status = tcQueue->receiveMessage(&currentMessage)) {
     ReturnValue_t packetResult = handlePacket();
-    if (packetResult != HasReturnvaluesIF::RETURN_OK) {
+    if (packetResult != returnvalue::OK) {
       result = packetResult;
       triggerEvent(tmtcdistrib::HANDLE_PACKET_FAILED, packetResult, 1);
     }
@@ -38,12 +38,12 @@ ReturnValue_t TcDistributorBase::performOperation(uint8_t opCode) {
 ReturnValue_t TcDistributorBase::handlePacket() {
   MessageQueueId_t destId;
   ReturnValue_t result = selectDestination(destId);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return callbackAfterSending(tcQueue->sendMessage(destId, &currentMessage));
 }
 
 ReturnValue_t TcDistributorBase::callbackAfterSending(ReturnValue_t queueStatus) {
-  return RETURN_OK;
+  return returnvalue::OK;
 }

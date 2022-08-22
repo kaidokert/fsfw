@@ -36,7 +36,7 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
 #endif
   auto accessorPair = tcStore->getData(currentMessage.getStorageId());
   ReturnValue_t result = accessorPair.first;
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "CCSDSDistributor::selectDestination: Getting data from"
@@ -64,7 +64,7 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
   }
   SpacePacketReader currentPacket(accessorPair.second.data(), accessorPair.second.size());
   result = packetChecker->checkPacket(currentPacket, accessorPair.second.size());
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     handlePacketCheckFailure(result);
     return result;
   }
@@ -90,7 +90,7 @@ ReturnValue_t CcsdsDistributor::selectDestination(MessageQueueId_t& destId) {
     return handleCcsdsHeaderRemoval(accessorPair.second);
   }
   accessorPair.second.release();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void CcsdsDistributor::handlePacketCheckFailure(ReturnValue_t result) {
@@ -116,10 +116,10 @@ void CcsdsDistributor::handlePacketCheckFailure(ReturnValue_t result) {
 MessageQueueId_t CcsdsDistributor::getRequestQueue() const { return tcQueue->getId(); }
 
 ReturnValue_t CcsdsDistributor::registerApplication(DestInfo info) {
-  ReturnValue_t returnValue = RETURN_OK;
+  ReturnValue_t returnValue = returnvalue::OK;
   auto insertPair = receiverMap.emplace(info.apid, info);
   if (not insertPair.second) {
-    returnValue = RETURN_FAILED;
+    returnValue = returnvalue::FAILED;
   }
   return returnValue;
 }
@@ -128,7 +128,7 @@ uint32_t CcsdsDistributor::getIdentifier() const { return 0; }
 
 ReturnValue_t CcsdsDistributor::initialize() {
   ReturnValue_t result = TcDistributorBase::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (packetChecker == nullptr) {
@@ -156,10 +156,10 @@ ReturnValue_t CcsdsDistributor::initialize() {
 }
 
 ReturnValue_t CcsdsDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
-  if (queueStatus != RETURN_OK) {
+  if (queueStatus != returnvalue::OK) {
     tcStore->deleteData(currentMessage.getStorageId());
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void CcsdsDistributor::print() {
@@ -180,7 +180,7 @@ ReturnValue_t CcsdsDistributor::handleCcsdsHeaderRemoval(ConstStorageAccessor& a
   store_address_t newStoreId;
   ReturnValue_t result = tcStore->addData(&newStoreId, accessor.data() + ccsds::HEADER_LEN,
                                           accessor.size() - ccsds::HEADER_LEN);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << __func__ << ": TC store full" << std::endl;
 #else
@@ -190,5 +190,5 @@ ReturnValue_t CcsdsDistributor::handleCcsdsHeaderRemoval(ConstStorageAccessor& a
   }
   currentMessage.setStorageId(newStoreId);
   // The const accessor will delete the old data automatically
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

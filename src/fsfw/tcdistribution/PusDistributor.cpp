@@ -27,8 +27,8 @@ ReturnValue_t PusDistributor::selectDestination(MessageQueueId_t& destId) {
   // TODO: Need to set the data
   const uint8_t* packetPtr = nullptr;
   size_t packetLen = 0;
-  ReturnValue_t result = store->getData(currentMessage.getStorageId(), &packetPtr, &packetLen) !=
-                         returnvalue::OK;
+  ReturnValue_t result =
+      store->getData(currentMessage.getStorageId(), &packetPtr, &packetLen) != returnvalue::OK;
   if (result != returnvalue::OK) {
     tcStatus = PACKET_LOST;
     return result;

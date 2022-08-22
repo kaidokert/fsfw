@@ -12,7 +12,7 @@ HostFilesystem::HostFilesystem() = default;
 
 ReturnValue_t HostFilesystem::writeToFile(FileOpParams params, const uint8_t *data) {
   if (params.path() == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   path path(params.path());
   if (not exists(path)) {
@@ -24,13 +24,13 @@ ReturnValue_t HostFilesystem::writeToFile(FileOpParams params, const uint8_t *da
   }
   file.seekp(static_cast<unsigned int>(params.offset));
   file.write(reinterpret_cast<const char *>(data), static_cast<unsigned int>(params.size));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t HostFilesystem::readFromFile(FileOpParams params, uint8_t **buffer, size_t &readSize,
                                            size_t maxSize) {
   if (params.path() == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   path path(params.path());
   if (not exists(path)) {
@@ -48,13 +48,13 @@ ReturnValue_t HostFilesystem::readFromFile(FileOpParams params, uint8_t **buffer
   file.read(reinterpret_cast<char *>(*buffer), sizeToRead);
   readSize += sizeToRead;
   *buffer += sizeToRead;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t HostFilesystem::createFile(FilesystemParams params, const uint8_t *data,
                                          size_t size) {
   if (params.path == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   path path(params.path);
   if (exists(path)) {
@@ -64,26 +64,26 @@ ReturnValue_t HostFilesystem::createFile(FilesystemParams params, const uint8_t 
   if (file.fail()) {
     return HasFileSystemIF::GENERIC_FILE_ERROR;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t HostFilesystem::removeFile(const char *path_, FileSystemArgsIF *args) {
   if (path_ == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   path path(path_);
   if (not exists(path)) {
     return HasFileSystemIF::FILE_DOES_NOT_EXIST;
   }
   if (remove(path, errorCode)) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   return HasFileSystemIF::GENERIC_FILE_ERROR;
 }
 
 ReturnValue_t HostFilesystem::createDirectory(FilesystemParams params, bool createParentDirs) {
   if (params.path == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   path dirPath(params.path);
 
@@ -93,19 +93,19 @@ ReturnValue_t HostFilesystem::createDirectory(FilesystemParams params, bool crea
 
   if (createParentDirs) {
     if (create_directories(dirPath, errorCode)) {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     return HasFileSystemIF::GENERIC_DIR_ERROR;
   }
   if (create_directory(dirPath, errorCode)) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   return HasFileSystemIF::GENERIC_DIR_ERROR;
 }
 
 ReturnValue_t HostFilesystem::removeDirectory(FilesystemParams params, bool deleteRecurively) {
   if (params.path == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   path dirPath(params.path);
   if (not exists(dirPath)) {
@@ -116,11 +116,11 @@ ReturnValue_t HostFilesystem::removeDirectory(FilesystemParams params, bool dele
   }
   if (deleteRecurively) {
     if (remove_all(dirPath, errorCode)) {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
   } else {
     if (remove(dirPath, errorCode)) {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
   }
   // Error handling
@@ -133,7 +133,7 @@ ReturnValue_t HostFilesystem::removeDirectory(FilesystemParams params, bool dele
 ReturnValue_t HostFilesystem::rename(const char *oldPath_, const char *newPath_,
                                      FileSystemArgsIF *args) {
   if (oldPath_ == nullptr or newPath_ == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   path oldPath(oldPath_);
   path newPath(newPath_);
@@ -142,5 +142,5 @@ ReturnValue_t HostFilesystem::rename(const char *oldPath_, const char *newPath_,
   if (errorCode) {
     return HasFileSystemIF::GENERIC_RENAME_ERROR;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

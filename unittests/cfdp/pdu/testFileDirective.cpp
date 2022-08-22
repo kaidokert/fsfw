@@ -23,7 +23,7 @@ TEST_CASE("CFDP File Directive", "[cfdp][pdu]") {
     serTarget = serBuf.data();
     serSize = 0;
     result = fdSer.serialize(&serTarget, &serSize, serBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     // Only version bits are set
     REQUIRE(serBuf[0] == 0b00100000);
     // PDU data field length is 5 (4 + Directive code octet)
@@ -42,7 +42,7 @@ TEST_CASE("CFDP File Directive", "[cfdp][pdu]") {
 
   SECTION("Serialization fails") {
     REQUIRE(fdSer.serialize(nullptr, nullptr, 85, SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+            returnvalue::FAILED);
   }
 
   SECTION("Buffer Too Short") {
@@ -56,11 +56,11 @@ TEST_CASE("CFDP File Directive", "[cfdp][pdu]") {
 
   SECTION("Deserialize") {
     CHECK(fdSer.serialize(&serTarget, &serSize, serBuf.size(), SerializeIF::Endianness::NETWORK) ==
-          result::OK);
+          returnvalue::OK);
     serTarget = serBuf.data();
 
     REQUIRE(fdSer.deSerialize(&deserTarget, &serSize, SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+            returnvalue::FAILED);
     deserTarget = serBuf.data();
     CHECK(serSize == 8);
     auto fdDeser = FileDirectiveReader(deserTarget, serBuf.size());
@@ -70,7 +70,7 @@ TEST_CASE("CFDP File Directive", "[cfdp][pdu]") {
     fdDeser.setEndianness(SerializeIF::Endianness::MACHINE);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::MACHINE);
     fdDeser.setEndianness(SerializeIF::Endianness::NETWORK);
-    REQUIRE(fdDeser.parseData() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(fdDeser.parseData() == returnvalue::OK);
     REQUIRE(not fdDeser.isNull());
     REQUIRE(fdDeser);
     REQUIRE(fdDeser.getFileDirective() == FileDirectives::ACK);

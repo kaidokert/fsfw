@@ -8,7 +8,7 @@ HeaderReader::HeaderReader(const uint8_t *pduBuf, size_t maxSize) { setData(pduB
 
 ReturnValue_t HeaderReader::parseData() {
   if (pointers.rawPtr == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (maxSize < 7) {
     return SerializeIF::STREAM_TOO_SHORT;
@@ -20,19 +20,19 @@ ReturnValue_t HeaderReader::parseData() {
   cfdp::WidthInBytes widthSeqNum = getLenSeqNum();
   seqNumRaw = static_cast<uint8_t *>(sourceIdRaw) + static_cast<uint8_t>(widthEntityIds);
   destIdRaw = static_cast<uint8_t *>(seqNumRaw) + static_cast<uint8_t>(widthSeqNum);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t HeaderReader::setData(uint8_t *dataPtr, size_t maxSize_, void *args) {
   if (dataPtr == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (maxSize_ < 7) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   pointers.rawPtr = dataPtr;
   maxSize = maxSize_;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t HeaderReader::getHeaderSize() const {

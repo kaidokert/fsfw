@@ -3,7 +3,7 @@
 
 #include "fsfw/cfdp/pdu/HeaderCreator.h"
 #include "fsfw/cfdp/pdu/HeaderReader.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 TEST_CASE("CFDP Header", "[cfdp]") {
   using namespace cfdp;
@@ -49,12 +49,12 @@ TEST_CASE("CFDP Header", "[cfdp]") {
   SECTION("Deserialization fails") {
     const uint8_t** dummyPtr = nullptr;
     REQUIRE(headerSerializer.deSerialize(dummyPtr, &serSize, SerializeIF::Endianness::NETWORK) ==
-            result::FAILED);
+            returnvalue::FAILED);
   }
 
   SECTION("Serialization fails") {
     REQUIRE(headerSerializer.serialize(nullptr, &serSize, serBuf.size(),
-                                       SerializeIF::Endianness::NETWORK) == result::FAILED);
+                                       SerializeIF::Endianness::NETWORK) == returnvalue::FAILED);
   }
 
   SECTION("Buffer Too Short") {
@@ -93,7 +93,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     SECTION("Regular") {
       // Everything except version bit flipped to one now
       REQUIRE(headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                         SerializeIF::Endianness::BIG) == result::OK);
+                                         SerializeIF::Endianness::BIG) == returnvalue::OK);
       CHECK(serBuf[0] == 0x3f);
       CHECK(serBuf[3] == 0x99);
       REQUIRE(headerSerializer.getCrcFlag() == true);
@@ -114,7 +114,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
       REQUIRE(pduConf.sourceId.getSerializedSize() == 4);
       REQUIRE(headerSerializer.getSerializedSize() == 14);
       REQUIRE(headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                         SerializeIF::Endianness::BIG) == result::OK);
+                                         SerializeIF::Endianness::BIG) == returnvalue::OK);
       REQUIRE(headerSerializer.getCrcFlag() == true);
       REQUIRE(headerSerializer.getDirection() == cfdp::Direction::TOWARDS_SENDER);
       REQUIRE(headerSerializer.getLargeFileFlag() == true);
@@ -157,17 +157,17 @@ TEST_CASE("CFDP Header", "[cfdp]") {
 
   SECTION("Invalid Variable Sized Fields") {
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::ONE_BYTE, 0xfff);
-    REQUIRE(result == result::FAILED);
+    REQUIRE(result == returnvalue::FAILED);
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::TWO_BYTES, 0xfffff);
-    REQUIRE(result == result::FAILED);
+    REQUIRE(result == returnvalue::FAILED);
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xfffffffff);
-    REQUIRE(result == result::FAILED);
+    REQUIRE(result == returnvalue::FAILED);
   }
 
   SECTION("Header Serialization") {
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                         SerializeIF::Endianness::BIG);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serSize == 7);
     // Only version bits are set
     REQUIRE(serBuf[0] == 0b00100000);
@@ -216,7 +216,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
 
   SECTION("Header Deserialization") {
     REQUIRE(headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
-                                       SerializeIF::Endianness::BIG) == result::OK);
+                                       SerializeIF::Endianness::BIG) == returnvalue::OK);
     REQUIRE(serBuf[1] == 0);
     REQUIRE(serBuf[2] == 0);
     // Entity and Transaction Sequence number are 1 byte large
@@ -226,7 +226,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     auto headerDeser = HeaderReader(serBuf.data(), serBuf.size());
 
     ReturnValue_t serResult = headerDeser.parseData();
-    REQUIRE(serResult == result::OK);
+    REQUIRE(serResult == returnvalue::OK);
     REQUIRE(headerDeser.getPduDataFieldLen() == 0);
     REQUIRE(headerDeser.getHeaderSize() == 7);
     REQUIRE(headerDeser.getWholePduSize() == 7);
@@ -249,11 +249,11 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     headerSerializer.setPduType(cfdp::PduType::FILE_DATA);
     headerSerializer.setSegmentMetadataFlag(cfdp::SegmentMetadataFlag::PRESENT);
     result = pduConf.seqNum.setValue(cfdp::WidthInBytes::TWO_BYTES, 0x0fff);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     result = pduConf.sourceId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0xff00ff00);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     result = pduConf.destId.setValue(cfdp::WidthInBytes::FOUR_BYTES, 0x00ff00ff);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     serTarget = serBuf.data();
     serSize = 0;
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
@@ -261,7 +261,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     headerDeser = HeaderReader(serBuf.data(), serBuf.size());
 
     result = headerDeser.parseData();
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     // Everything except version bit flipped to one now
     REQUIRE(serBuf[0] == 0x3f);
     REQUIRE(serBuf[3] == 0b11001010);
@@ -293,9 +293,9 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     serTarget = serBuf.data();
     const auto** serTargetConst = const_cast<const uint8_t**>(&serTarget);
     result = headerDeser.parseData();
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
 
-    CHECK(headerDeser.setData(nullptr, -1) != result::OK);
+    CHECK(headerDeser.setData(nullptr, -1) != returnvalue::OK);
     REQUIRE(headerDeser.getHeaderSize() == 14);
     headerDeser.setData(serBuf.data(), serBuf.size());
 
@@ -305,7 +305,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     pduConf.destId.setValue(cfdp::WidthInBytes::ONE_BYTE, 48);
     result = headerSerializer.serialize(&serTarget, &serSize, serBuf.size(),
                                         SerializeIF::Endianness::BIG);
-    REQUIRE(result == result::OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(headerDeser.getWholePduSize() == 8);
     headerDeser.setData(serBuf.data(), serBuf.size());
 

@@ -35,11 +35,12 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
     spCreator.setCcsdsLenFromTotalDataFieldLen(dataFieldLen);
     uint8_t* dataPtr;
     REQUIRE(pool.getFreeElement(&storeId, spCreator.getSerializedSize() + dataFieldLen, &dataPtr) ==
-            result::OK);
+            returnvalue::OK);
     size_t serLen = 0;
-    REQUIRE(spCreator.SerializeIF::serializeBe(dataPtr, serLen, ccsds::HEADER_LEN) == result::OK);
+    REQUIRE(spCreator.SerializeIF::serializeBe(dataPtr, serLen, ccsds::HEADER_LEN) ==
+            returnvalue::OK);
     REQUIRE(spCreator.SerializeIF::serializeBe(buf.data(), serLen, ccsds::HEADER_LEN) ==
-            result::OK);
+            returnvalue::OK);
     if (dataField == nullptr) {
       dataPtr[ccsds::HEADER_LEN] = 0;
       buf[ccsds::HEADER_LEN] = 0;
@@ -51,7 +52,7 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
   };
 
   SECTION("State") {
-    CHECK(ccsdsDistrib.initialize() == result::OK);
+    CHECK(ccsdsDistrib.initialize() == returnvalue::OK);
     CHECK(ccsdsDistrib.getRequestQueue() == 1);
     CHECK(ccsdsDistrib.getIdentifier() == 0);
     CHECK(ccsdsDistrib.getObjectId() == 1);
@@ -61,12 +62,12 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
 
   SECTION("Basic Forwarding") {
     CcsdsDistributor::DestInfo info(tcAcceptorMock, false);
-    REQUIRE(ccsdsDistrib.registerApplication(info) == result::OK);
+    REQUIRE(ccsdsDistrib.registerApplication(info) == returnvalue::OK);
     TmTcMessage message;
     createSpacePacket(tcAcceptorApid, message);
     store_address_t storeId = message.getStorageId();
     queue.addReceivedMessage(message);
-    REQUIRE(ccsdsDistrib.performOperation(0) == result::OK);
+    REQUIRE(ccsdsDistrib.performOperation(0) == returnvalue::OK);
     CHECK(checkerMock.checkedPacketLen == 7);
     CHECK(checkerMock.checkCallCount == 1);
     CHECK(queue.wasMessageSent());
@@ -74,10 +75,10 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
     // The packet is forwarded, with no need to delete the data
     CHECK(pool.hasDataAtId(storeId));
     TmTcMessage sentMsg;
-    CHECK(queue.getNextSentMessage(tcAcceptorQueueId, sentMsg) == result::OK);
+    CHECK(queue.getNextSentMessage(tcAcceptorQueueId, sentMsg) == returnvalue::OK);
     CHECK(sentMsg.getStorageId() == storeId);
     auto accessor = pool.getData(storeId);
-    CHECK(accessor.first == result::OK);
+    CHECK(accessor.first == returnvalue::OK);
     CHECK(accessor.second.size() == ccsds::HEADER_LEN + 1);
     for (size_t i = 0; i < ccsds::HEADER_LEN; i++) {
       CHECK(accessor.second.data()[i] == buf[i]);
@@ -101,7 +102,7 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
     store_address_t storeId = message.getStorageId();
     message.setStorageId(storeId);
     queue.addReceivedMessage(message);
-    REQUIRE(ccsdsDistrib.performOperation(0) == result::OK);
+    REQUIRE(ccsdsDistrib.performOperation(0) == returnvalue::OK);
     CHECK(checkerMock.checkedPacketLen == 7);
     CHECK(checkerMock.checkCallCount == 1);
     CHECK(queue.wasMessageSent());
@@ -109,10 +110,10 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
     // The packet is forwarded, with no need to delete the data
     CHECK(pool.hasDataAtId(storeId));
     TmTcMessage sentMsg;
-    CHECK(queue.getNextSentMessage(defaultQueueId, sentMsg) == result::OK);
+    CHECK(queue.getNextSentMessage(defaultQueueId, sentMsg) == returnvalue::OK);
     CHECK(sentMsg.getStorageId() == storeId);
     auto accessor = pool.getData(storeId);
-    CHECK(accessor.first == result::OK);
+    CHECK(accessor.first == returnvalue::OK);
     CHECK(accessor.second.size() == ccsds::HEADER_LEN + 1);
     for (size_t i = 0; i < ccsds::HEADER_LEN; i++) {
       CHECK(accessor.second.data()[i] == buf[i]);
@@ -126,13 +127,13 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
       CcsdsDistributor::DestInfo info(defReceiverMock, true);
       tgtApid = defaultApid;
       tgtQueueId = defaultQueueId;
-      REQUIRE(ccsdsDistrib.registerApplication(info) == result::OK);
+      REQUIRE(ccsdsDistrib.registerApplication(info) == returnvalue::OK);
     }
     SECTION("Specific destination") {
       CcsdsDistributor::DestInfo info(tcAcceptorMock, true);
       tgtApid = tcAcceptorApid;
       tgtQueueId = tcAcceptorQueueId;
-      REQUIRE(ccsdsDistrib.registerApplication(info) == result::OK);
+      REQUIRE(ccsdsDistrib.registerApplication(info) == returnvalue::OK);
     }
     TmTcMessage message;
     std::array<uint8_t, 5> dataField = {0, 1, 2, 3, 4};
@@ -140,16 +141,16 @@ TEST_CASE("CCSDS Distributor", "[ccsds][tmtcdistrib]") {
     store_address_t storeId = message.getStorageId();
     message.setStorageId(storeId);
     queue.addReceivedMessage(message);
-    REQUIRE(ccsdsDistrib.performOperation(0) == result::OK);
+    REQUIRE(ccsdsDistrib.performOperation(0) == returnvalue::OK);
     CHECK(checkerMock.checkedPacketLen == 11);
     CHECK(checkerMock.checkCallCount == 1);
     // Data was deleted from old slot to re-store without the header
     CHECK(not pool.hasDataAtId(storeId));
     TmTcMessage sentMsg;
-    CHECK(queue.getNextSentMessage(tgtQueueId, sentMsg) == result::OK);
+    CHECK(queue.getNextSentMessage(tgtQueueId, sentMsg) == returnvalue::OK);
     CHECK(sentMsg.getStorageId() != storeId);
     auto accessor = pool.getData(sentMsg.getStorageId());
-    CHECK(accessor.first == result::OK);
+    CHECK(accessor.first == returnvalue::OK);
     CHECK(accessor.second.size() == 5);
     // Verify correctness of data field
     for (size_t i = 0; i < 5; i++) {
