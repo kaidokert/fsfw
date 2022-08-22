@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "fsfw/returnvalues/FwClassIds.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 namespace tcdistrib {
 static const uint8_t INTERFACE_ID = CLASS_ID::PACKET_CHECK;

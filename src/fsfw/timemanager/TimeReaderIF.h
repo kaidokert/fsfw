@@ -4,7 +4,7 @@
 #include <cstdlib>
 
 #include "TimeStampIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class TimeReaderIF : public TimeStampIF {
  public:

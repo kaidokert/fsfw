@@ -5,7 +5,6 @@
 
 #include "../returnvalues/returnvalue.h"
 #include "../tmtcpacket/cfdp/CfdpPacketStored.h"
-
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/VerificationReporter.h"
 #include "CFDPDistributorIF.h"

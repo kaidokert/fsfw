@@ -5,7 +5,7 @@
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/ipc/messageQueueDefinitions.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class TmSendHelper {
  public:

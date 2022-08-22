@@ -1,13 +1,9 @@
 #ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_
 #define FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_
 
-<<<<<<< HEAD:src/fsfw/tcdistribution/CcsdsPacketCheckIF.h
 #include <cstddef>
-=======
-#include "../returnvalues/returnvalue.h"
->>>>>>> origin/development:src/fsfw/tcdistribution/TcPacketCheckIF.h
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class SpacePacketReader;
 

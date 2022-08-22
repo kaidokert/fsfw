@@ -3,7 +3,6 @@
 #include "fsfw/cfdp/CfdpMessage.h"
 #include "fsfw/ipc/CommandMessage.h"
 #include "fsfw/ipc/QueueFactory.h"
-#include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/storagemanager/storeAddress.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 
